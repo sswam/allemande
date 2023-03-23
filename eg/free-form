@@ -1,6 +1,8 @@
 #!/bin/bash -eu
-# Run assistant in watch mode with the experiment config,
-# the -r option for raw / free-form input, and the --no-trim option
-# to allow the model to predict the user.
+
+# Run assistant in watch mode with the experiment config, the -r option for
+# raw / free-form input, the --delim "" option to avoid adding delimiters,
+# and the --no-trim option to allow the model to predict the user.
+
 cd "$(dirname "$(readlink -f "$0")")/.."
-assistant -w . -c config/experiment.yaml -v "$@" -r --no-trim
+assistant -w . -c config/experiment.yaml "$@" -r --no-trim --delim $'\n'

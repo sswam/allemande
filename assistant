@@ -509,6 +509,9 @@ if __name__ == "__main__":
 # A better approach might be to implement the simplest possible generic client-server forking singleton thing for the command line, to accelerate loading.
 # Let's get this working here and now, then switch to that method for modularity.
 
+# BUGS
+
+# - raw mode still adds spacing, if anything it should strip the spacing.
 
 # TODO
 
