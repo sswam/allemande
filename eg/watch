@@ -1,0 +1,4 @@
+#!/bin/bash -eu
+# Run assistant in watch mode with the experiment config.
+cd "$(dirname "$(readlink -f "$0")")/.."
+assistant -w . -c config/experiment.yaml -v "$@"
