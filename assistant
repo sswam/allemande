@@ -136,7 +136,7 @@ def input_with_prefill(prompt, text):
 	readline.set_pre_input_hook()
 	return result
 
-def get_fulltext(args, model, history, history_start, invitation2, delim):
+def get_fulltext_old(args, model, history, history_start, invitation2, delim):
 	fulltext = delim.join(history[history_start:]) + delim + invitation2
 	n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
 	logger.info(f"n_tokens is {n_tokens}")
@@ -147,6 +147,42 @@ def get_fulltext(args, model, history, history_start, invitation2, delim):
 		n_tokens -= d_tokens
 		dropped = True
 		logger.info(f"dropped some history, history_start: {history_start}, n_tokens: {n_tokens}, d_tokens: {d_tokens}")
+	if dropped:
+		fulltext = delim.join(history[history_start:]) + delim + invitation2
+	logger.info("fulltext: "+fulltext)
+	return fulltext, history_start
+
+def get_fulltext(args, model, history, history_start, invitation2, delim):
+	fulltext = delim.join(history[history_start:]) + delim + invitation2
+	n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
+	logger.info(f"n_tokens is {n_tokens}")
+	dropped = False
+	# TODO use a better search method
+	last = False
+	while n_tokens > args.memory:
+		if len(history) - history_start < 10:
+			guess = 1
+		else:
+			logger.info(f"guessing how many tokens to drop...")
+			logger.info(f"  args.memory: {args.memory}")
+			logger.info(f"  n_tokens: {n_tokens}")
+			logger.info(f"  len(history): {len(history)}")
+			logger.info(f"  history_start: {history_start}")
+			guess = ((n_tokens - args.memory) / n_tokens) * (len(history) - history_start)
+			guess =	int(guess * 0.7)
+			logger.info(f"  guess: {guess}")
+			if guess <= 0:
+				guess = 1
+			if guess >= len(history) - history_start:
+				guess = len(history) - history_start - 1
+				last = 1
+		history_start += guess
+		fulltext = delim.join(history[history_start:]) + delim + invitation2
+		n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
+		dropped = True
+		logger.info(f"dropped some history, history_start: {history_start}, n_tokens: {n_tokens}")
+		if last:
+			break
 	if dropped:
 		fulltext = delim.join(history[history_start:]) + delim + invitation2
 	logger.info("fulltext: "+fulltext)

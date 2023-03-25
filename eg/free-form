@@ -4,5 +4,6 @@
 # raw / free-form input, the --delim "" option to avoid adding delimiters,
 # and the --no-trim option to allow the model to predict the user.
 
+dir="$PWD"
 cd "$(dirname "$(readlink -f "$0")")/.."
-assistant -w . -c config/experiment.yaml "$@" -r --no-trim --delim $'\n'
+assistant -w "$dir" -c config/experiment.yaml "$@" -r --no-trim --delim $'\n'
