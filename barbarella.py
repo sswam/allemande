@@ -2,11 +2,10 @@
 
 # electric barbarella v1
 
-import os, json, itertools, bisect, gc
+import os, json, itertools, bisect, gc, re
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
 import transformers
 import torch
 from accelerate import Accelerator
@@ -20,6 +19,9 @@ import yaml
 from math import inf
 from pathlib import Path
 from typing import Any, Dict
+import re
+
+# TODO use functools.cache or functools.lru_cache decorator?  https://docs.python.org/3/library/functools.html
 
 model_cache: Dict[str, Any]  = {}
 
@@ -73,8 +75,8 @@ def load_model(model_path: Path, eight_bit=False, device_map="auto"):
 	gpu_count = torch.cuda.device_count()
 	logger.info('gpu_count %r', gpu_count)
 
-	tokenizer = transformers.LlamaTokenizer.from_pretrained(str(model_path))
-	model = transformers.LlamaForCausalLM.from_pretrained(
+	tokenizer = transformers.AutoTokenizer.from_pretrained(str(model_path))
+	model = transformers.AutoModelForCausalLM.from_pretrained(
 		str(model_path),
 		device_map=device_map,
 		#device_map="auto",
@@ -82,7 +84,7 @@ def load_model(model_path: Path, eight_bit=False, device_map="auto"):
 		#max_memory = {0: "14GB", 1: "14GB", 2: "14GB", 3: "14GB",4: "14GB",5: "14GB",6: "14GB",7: "14GB"},
 		max_memory = {0: "20GB"},
 		load_in_8bit=eight_bit,
-		# load_in_8bit_threshold=0.8,
+#		load_in_8bit_threshold=0.8,  # TODO needed to avoid crash with inf / double check this.
 		low_cpu_mem_usage=True,
 		cache_dir="cache"
 	).cuda()
@@ -96,35 +98,113 @@ def load_model(model_path: Path, eight_bit=False, device_map="auto"):
 def count_tokens_in_text(text, tokenizer):
 	return len(tokenizer(text).input_ids)
 
-def gen(model, fulltext, config=None):
+def leading_spaces(text):
+	return re.match(r"\s*", text).group(0)
+
+def gen(model, input_text, config=None):
+	tokenizer = model.tokenizer
 	if config is None:
 		config = config_default
 	if model is None:
-		return "", fulltext
+		return "", input_text
 	if "pad_token_id" not in config:
-		config["pad_token_id"] = model.tokenizer.eos_token_id
+		config["pad_token_id"] = tokenizer.eos_token_id
 	generated_text = ""
-	gen_in = model.tokenizer(fulltext, return_tensors="pt").input_ids.cuda()
-	in_tokens = gen_in.shape[1]
-	logger.info(f"gen: {in_tokens=}")
+	in_tokens = model.tokenizer(input_text, return_tensors="pt").input_ids.cuda()
+	n_in_tokens = in_tokens.shape[1]
+#	logger.info(f"gen: {in_tokens=}")
+#	print("in_tokens")
+#	for i in range(5):
+#		print(i, in_tokens[0][i], repr(tokenizer.decode(in_tokens[0][i], skip_special_tokens=False)))
 	with torch.no_grad():
-			generated_ids = model.generate(
-				gen_in,
-				**config,
-			)
-			generated_text = model.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0] # for some reason, batch_decode returns an array of one element?
+		gen_tokens = model.generate(
+			in_tokens,
+			**config,
+		)
+		# gen_tokens should start with in_tokens, is that right?
+#		print(in_tokens[:,:5])
+#		print(gen_tokens[:,:5])
 
-			text_without_prompt = generated_text[len(fulltext):]  # this fails when we send too many tokens?
+		if gen_tokens[0][-1] == tokenizer.eos_token_id:
+#			print("gen: removing eos")
+			gen_tokens = gen_tokens[:,:-1]
 
-	return text_without_prompt, generated_text
+#		while gen_tokens[0][-1] in (1, 2):
+#			print("gen: removing eos")
+#			gen_tokens = gen_tokens[:,:-1]
+
+		if torch.equal(in_tokens, gen_tokens[:,:n_in_tokens]):
+			new_tokens = gen_tokens[:,n_in_tokens:]
+			error = ""
+		else:
+			logger.warning(f"gen: gen_tokens does not start with in_tokens. Will append entire generation.")
+			new_tokens = gen_tokens
+			error = "<ERROR>"
+
+		# TODO it's messy that it's all wrapped, can be good if we run multiple batches at once though
+#		print(f"gen: {new_tokens.shape=} {new_tokens[0]=!r}")
+
+		# tokens often being with spaces, but we don't want to double up on spaces
+		new_text = tokenizer.batch_decode(new_tokens, skip_special_tokens=True)[0]
+		if new_text.startswith(' ') and input_text[-1:].isspace():
+			new_text = new_text[1:]
+		elif new_text[:2] == " \n":
+			new_text = new_text[1:]
+		elif new_text == " ":   # e.g. 2, 1
+			new_text = ""
+
+		new_text = error + new_text
+
+		# TODO remove this?
+		generated_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)[0]
+
+#
+#		# So extract the new tokens first and then decode them, rather than attempting to fix up the text.
+#
+##		print("gen_tokens[0]")
+##		for i in range(5):
+##			print(i, gen_tokens[0][i], repr(tokenizer.decode(gen_tokens[0][i], skip_special_tokens=False)))
+#		generated_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)[0] # for some reason, batch_decode returns an array of one element?
+#
+#		# not sure why the decoded generated_text often has extra spaces at the start
+#		s1 = leading_spaces(input_text)
+#		s2 = leading_spaces(generated_text)
+#		if s1 != s2:
+#			logger.info(f"gen: leading_spaces differ: {s1!r} != {s2!r}")
+#			generated_text = s1 + generated_text[len(s2):]
+#
+#		# Check that the generated text starts with the input_text.
+#		# If it doesn't, then we probably sent too many tokens, and the model is confused.
+#		if generated_text.startswith(input_text):
+#			new_text = generated_text[len(input_text):]
+#		else:
+#			logger.warning(f"gen: generated_text does not start with input_text: {generated_text!r} != {input_text!r}")
+#			# In this case, let's append both together with a delimiter, and let the user sort it out.
+#			# Another possibility would be to raise an exception, or to redo with smaller input.
+#			# This gen function is supposed to be simple, the user can wrap it with something more sophisticated.
+#			# TODO Even this is too much, it should just return the raw generated_text and not try to separate the new text.
+#			new_text = "<generation error>" + generated_text
+
+#	print("gen debug:")
+#	print(f"[{input_text=!r}]")
+#	print()
+#	print(f"[{generated_text=!r}]")
+#	print()
+#	print(f"[{new_text=!r}]")
+#	print()
+
+	return new_text, generated_text
 
 def trim_response(response, args):
 	if args.raw:
-		response = response.split(args.delim)[0]
+		messages = response.split(args.delim)
+		if messages and not re.search(r'\S', messages[0]):
+			messages = messages[1:]
+		response = messages[0] if messages else ""
 	else:
 		human_invitation = args.user + ": "
 		response = response.split(human_invitation)[0]
-	response = response.strip()
+		response = response.strip()
 	return response
 
 def input_with_prefill(prompt, text):
@@ -136,24 +216,24 @@ def input_with_prefill(prompt, text):
 	readline.set_pre_input_hook()
 	return result
 
-def get_fulltext_old(args, model, history, history_start, invitation2, delim):
-	fulltext = delim.join(history[history_start:]) + delim + invitation2
-	n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
-	logger.info(f"n_tokens is {n_tokens}")
-	dropped = False
-	while n_tokens > args.memory:
-		d_tokens = count_tokens_in_text(history[history_start] + delim , model.tokenizer)
-		history_start += 1
-		n_tokens -= d_tokens
-		dropped = True
-		logger.info(f"dropped some history, history_start: {history_start}, n_tokens: {n_tokens}, d_tokens: {d_tokens}")
-	if dropped:
-		fulltext = delim.join(history[history_start:]) + delim + invitation2
-	logger.info("fulltext: "+fulltext)
-	return fulltext, history_start
+#def get_fulltext_old(args, model, history, history_start, invitation, delim):
+#	fulltext = delim.join(history[history_start:]) + delim + invitation
+#	n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
+#	logger.info(f"n_tokens is {n_tokens}")
+#	dropped = False
+#	while n_tokens > args.memory:
+#		d_tokens = count_tokens_in_text(history[history_start] + delim , model.tokenizer)
+#		history_start += 1
+#		n_tokens -= d_tokens
+#		dropped = True
+#		logger.info(f"dropped some history, history_start: {history_start}, n_tokens: {n_tokens}, d_tokens: {d_tokens}")
+#	if dropped:
+#		fulltext = delim.join(history[history_start:]) + delim + invitation
+#	logger.info("fulltext: "+fulltext)
+#	return fulltext, history_start
 
-def get_fulltext(args, model, history, history_start, invitation2, delim):
-	fulltext = delim.join(history[history_start:]) + delim + invitation2
+def get_fulltext(args, model, history, history_start, invitation, delim):
+	fulltext = delim.join(history[history_start:]) + invitation
 	n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
 	logger.info(f"n_tokens is {n_tokens}")
 	dropped = False
@@ -177,15 +257,15 @@ def get_fulltext(args, model, history, history_start, invitation2, delim):
 				guess = len(history) - history_start - 1
 				last = 1
 		history_start += guess
-		fulltext = delim.join(history[history_start:]) + delim + invitation2
+		fulltext = delim.join(history[history_start:]) + invitation
 		n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
 		dropped = True
 		logger.info(f"dropped some history, history_start: {history_start}, n_tokens: {n_tokens}")
 		if last:
 			break
-	if dropped:
-		fulltext = delim.join(history[history_start:]) + delim + invitation2
-	logger.info("fulltext: "+fulltext)
+#	if dropped:
+#		fulltext = delim.join(history[history_start:]) + invitation
+	logger.info("fulltext: ["+fulltext+"]")
 	return fulltext, history_start
 
 def chat(model, args, history, history_start=0):
@@ -205,7 +285,7 @@ def chat(model, args, history, history_start=0):
 			args.user = msg.split(":")[0]
 
 		history.append(msg)
-		history_write(args.file, history[-1:], delim=delim)
+		history_write(args.file, history[-1:], delim=delim, invitation=delim)
 
 	if args.edit:
 		invitation2 = input_with_prefill("", invitation)
@@ -228,7 +308,7 @@ def chat(model, args, history, history_start=0):
 	print("")
 
 	history.append(invitation2 + response)
-	history_write(args.file, history[-1:], delim=args.delim)
+	history_write(args.file, history[-1:], delim=args.delim, invitation=delim)
 
 	return history_start
 
@@ -236,20 +316,23 @@ def chat_loop(model, args, history, history_start=0):
 	while True:
 		history_start = chat(model, args, history, history_start=history_start)
 
-def history_read(file, delim="\n"):
+def history_read(file, args):
 	text = ""
 	if file and os.path.exists(file):
 		with open(file) as f:
 			text = f.read()
-	history = text.rstrip().split(delim) if text else []
-	while history and not history[-1]:
-		history.pop()
+	history = text.split(args.delim) if text else []
+
+	# remove up to one blank line from the end, allows to continue same line or not
+	# using a normal editor that always ends the file with a newline
+#	if args.strip_final_newline and history and not history[-1]:
+#		history.pop()
 	return history
 
 def history_write(file, history, delim="\n", mode="a", invitation=""):
 	if not file:
 		return
-	text = delim.join(history) + delim + invitation
+	text = delim.join(history) + invitation
 	with open(file, mode) as f:
 		f.write(text)
 
@@ -278,7 +361,10 @@ def get_roles_from_history(history, args):
 	logger.info("bot: "+args.bot)
 
 def interactive(model, args):
-	history = history_read(args.file, delim=args.delim)
+	history = history_read(args.file, args)
+
+	if history and not history[-1]:
+		history.pop()
 
 	for message in history:
 		print(message + args.delim, end="")
@@ -295,27 +381,36 @@ def interactive(model, args):
 def process_file(model, file, args, history_start=0):
 	logger.info("Processing %s", file)
 
-	history = history_read(file, delim=args.delim)
+	history = history_read(file, args)
+
+	print("history:", history)
 
 	# get latest user name and bot name from history
 	if not args.raw:
 		get_roles_from_history(history, args)
 
-	invitation = args.bot + ": " if args.bot else ""
-	human_invitation = args.user + ": " if args.user else ""
+	invitation = args.delim + args.bot + ": " if args.bot else ""
+	human_invitation = args.delim + args.user + ": " if args.user else ""
+
+	if not args.raw and history and history[-1] != "":
+		history.append("")
+		history_write(file, ['', ''], delim=args.delim)
 
 	fulltext, history_start = get_fulltext(args, model, history, history_start, invitation, args.delim)
 
-	logger.debug("fulltext: "+fulltext)
+	logger.debug("fulltext: ["+fulltext+"]")
 
 	args.gen_config = load_config(args.config)
 
 	response, _fulltext2 = gen(model, fulltext, args.gen_config)
 
+#	logger.debug("response: ["+response+"]")
+#	logger.debug("_fulltext2: ["+_fulltext2+"]")
+
 	if args.trim:
 		response = trim_response(response, args)
 
-	history.append(invitation + response)
+	history.append(invitation.lstrip() + response)
 	history_write(file, history[-1:], delim=args.delim, invitation=human_invitation)
 
 def find_files(dir, ext=None, maxdepth=inf):
@@ -334,7 +429,11 @@ def find_files(dir, ext=None, maxdepth=inf):
 		pass
 
 def watch_step(model, args, mtimes):
-	files = find_files(args.watch, ext=args.ext, maxdepth=args.depth)
+	files = []
+	dirs = args.watch.split(":")
+	dirs = list(set(dirs))
+	for dir in dirs:
+		files += find_files(dir, ext=args.ext, maxdepth=args.depth)
 
 	first = False
 
@@ -351,9 +450,10 @@ def watch_step(model, args, mtimes):
 			continue
 		if mtime <= mtimes.get(file, -1):
 			continue
-		process_file(model, file, args)
+		if os.path.getsize(file) > 0:
+			process_file(model, file, args)
 		mtimes[file] = os.path.getmtime(file)
-	
+
 	return mtimes
 
 def watch_loop(model, args):
@@ -427,7 +527,7 @@ def get_opts():
 	modes_group.add_argument("--interactive", "-i", action="store_true", help="Interactive mode, can use --file to load history")
 	modes_group.add_argument("--file", "-f", default=None, help="Process and append to a file")
 	modes_group.add_argument("--stream", "-s", action="store_true", help="Stream mode")
-	modes_group.add_argument("--watch", "-w", default=None, help="Watch mode, watch for changes in a directory")
+	modes_group.add_argument("--watch", "-w", default=None, help="Watch mode, watch for changes in directories, colon separated")
 
 	interactive_group = parser.add_argument_group("Interactive mode options")
 	interactive_group.add_argument("--edit", "-e", action="store_true", help="Edit the names during the session")
@@ -447,6 +547,7 @@ def get_opts():
 	format_group.add_argument("--trim", action="store_true", default=True, help="Trim the bot's response (enabled by default)")
 	format_group.add_argument("--no-trim", action="store_false", dest="trim", help="Don't trim the bot's response, i.e let it predict the user's speech")
 	format_group.add_argument("--memory", "-x", type=int, default=512, help="Max number of tokens to keep in history, before we drop old messages")
+	format_group.add_argument("--strip-final-newline", type=bool, default=True, help="Strip final newline from input, allows to continue lines")
 
 	model_group = parser.add_argument_group("Model options")
 	model_group.add_argument("--model", "-m", default="alpaca", help="Model name or path")
