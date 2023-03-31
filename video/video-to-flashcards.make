@@ -7,7 +7,7 @@ img_rate=1
 SHELL := /bin/bash
 WHISPER_MODEL := large
 
-m=3+
+m=4
 
 default: goal
 
