@@ -18,32 +18,32 @@ web-address.txt:
 		echo $$url >$@; \
 	fi
 
-video: web-address.txt
+video.webm: web-address.txt
 	yt-dlp -q -f bestvideo -o "$@" "`<$<`"
 	if [ ! -e "$@" ]; then mv -i "$@".* "$@"; fi
 	if [ -e "$@" ]; then touch $@; fi
 
-audio: web-address.txt
+audio.webm: web-address.txt
 	yt-dlp -q -f bestaudio -o "$@" "`<$<`"
 	if [ ! -e "$@" ]; then mv -i "$@".* "$@"; fi
 	if [ -e "$@" ]; then touch $@; fi
 
-av: video audio
-	ffmpeg -loglevel error -i $^ -c copy $@
+av.webm: video.webm audio.webm
+	ffmpeg -loglevel error -i video.webm -i audio.webm -c copy $@
 	if [ ! -e "$@" ]; then mv -i "$@".* "$@"; fi
 
 title.txt: web-address.txt
 	web-title "`<web-address.txt`" >$@
 
 # get images from the video, one every $img_rate seconds
-images: video
+images: video.webm
 	mkdir -p images
 	ffmpeg -loglevel error -i $< -vf fps=1/$(img_rate) -qscale:v 2 images/%06d.jpeg
 
 audio-extract: av
 	ffmpeg -loglevel error -i $< -vn -c copy $@
 
-audio.txt: audio
+audio.txt: audio.webm
 	whisper --model $(WHISPER_MODEL) $<
 
 audio-clean.txt: audio.txt
