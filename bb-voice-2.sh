@@ -9,7 +9,7 @@ bot="$3"
 add_prompts="${4:-}"
 mission=${5:-"* $bot is $user's good friend."}
 
-: ${SPEAK:=speak.sh -tempo=30 -pitch=1}
+: ${SPEAK:=speak.sh -tempo=30 -pitch=1}  # female; or -5 for faux-male
 
 . opts
 
@@ -48,7 +48,7 @@ while true; do
 			$last = "user";
 		}
 		print STDERR "line: $_\n";
-		s/[^ -~]//g; 
+		s/[^ -~\x{7e3}]//g;    # filter out emojis; but \x7e9 is closing single-quote / "smart" apostrophe
 		print STDERR "line 2: $_\n";
 
 		if ($. == 1) {
@@ -61,9 +61,9 @@ while true; do
 			print STDERR "$_\n";
 			s/^\Q$ENV{bot}\E:\s*//;
 #			system "touch", "/tmp/drop-the-mic";
-			system "amixer", "sset", "Capture", "10%";
+			system "amixer", "sset", "Capture", "nocap";
 			system "v", @speak, " $_";
-			system "amixer", "sset", "Capture", "100%";
+			system "amixer", "sset", "Capture", "cap";
 #			system "rm", "-f", "/tmp/drop-the-mic";
 #			exit(0);
 		} else {
