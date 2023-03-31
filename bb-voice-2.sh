@@ -6,20 +6,29 @@ set -a
 file="$1"
 user="$2"
 bot="$3"
-mission=${4:-"* $bot is $user's good friend."}
-speed=1.3
+add_prompts="${4:-}"
+mission=${5:-"* $bot is $user's good friend."}
 
-> "$file"
+: ${SPEAK:=speak -speed=1.3}
 
-rm -f /tmp/drop-the-mic
+. opts
+
+if [ ! -e "$file" ]; then
+	> "$file"
+fi
+
+# rm -f /tmp/drop-the-mic
 
 mike.py | tee /dev/stderr | (
-first=1
 while read line; do
-	if [ -n "$first" ]; then
-		printf "%s\n%s: %s\n" "$mission" "$user" "$line" > "$file"
-		first=
+	if [ ! -s "$file" -a -n "$mission" ]; then
+		echo >&2 1
+		printf "%s\n%s: %s\n" "$mission" "$user" "$line" >> "$file"
+	elif [ -n "$add_prompts" ]; then
+		echo >&2 2
+		printf "%s: %s\n" "$user" "$line" >> "$file"
 	else
+		echo >&2 3
 		printf "%s\n" "$line" >> "$file"
 	fi
 	while read -t 0.1 line; do
@@ -30,22 +39,35 @@ done
 
 trap "pkill -P $$; rf -f /tmp/drop-the-mic" EXIT
 
-while true; do
+#while true; do
 	tail -f -n0 "$file" |
 	perl -ne '
-		BEGIN {$|=1;}
+		BEGIN {
+			$|=1;
+			@speak = split / /, $ENV{SPEAK};
+			$last = "user";
+		}
+		print STDERR "line: $_\n";
 		s/[^ -~]//g; 
+		print STDERR "line 2: $_\n";
+
 		if ($. == 1) {
 			# skip first line, that is the users message
-		} elsif (/^\Q$ENV{bot}\E:/ || !/^\w+: /) {
+			print STDERR "skipping first line: $_\n";
+		} elsif (/^\Q$ENV{user}\E:/) {
+			$last = "user";
+		} elsif (/^\Q$ENV{bot}\E:/ || (!/^\w+: /) && $last eq "bot") {
+			$last = "bot";
 			print STDERR "$_\n";
 			s/^\Q$ENV{bot}\E:\s*//;
 #			system "touch", "/tmp/drop-the-mic";
 			system "amixer", "sset", "Capture", "10%";
-			system "speak", "-speed=$ENV{speed}", " $_";
+			system "v", @speak, " $_";
 			system "amixer", "sset", "Capture", "100%";
 #			system "rm", "-f", "/tmp/drop-the-mic";
-			exit(0);a
+#			exit(0);
+		} else {
+			print STDERR "skipping like with user or unknown role: $_\n";
 		}
 	'
-done
+#done

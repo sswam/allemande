@@ -297,7 +297,7 @@ def chat(model, args, history, history_start=0):
 
 	fulltext, history_start = get_fulltext(args, model, history, history_start, invitation2, delim)
 
-	args.gen_config = load_config(args.config)
+	args.gen_config = load_config(args)
 
 	response, _fulltext2 = gen(model, fulltext, args.gen_config)
 
@@ -400,7 +400,7 @@ def process_file(model, file, args, history_start=0):
 
 	logger.debug("fulltext: ["+fulltext+"]")
 
-	args.gen_config = load_config(args.config)
+	args.gen_config = load_config(args)
 
 	response, _fulltext2 = gen(model, fulltext, args.gen_config)
 
@@ -482,14 +482,15 @@ def default_bot():
 	else:
 		return "Assistant"
 
-def load_config(config_file):
+def load_config(args):
 	config = config_default.copy()
-	if not config_file:
-		return config
-	with open(config_file) as f:
-		settings = yaml.load(f, Loader=yaml.FullLoader)
-	for k, v in settings.items():
-		config[k] = v
+	if args.config:
+		with open(args.config) as f:
+			settings = yaml.load(f, Loader=yaml.FullLoader)
+		for k, v in settings.items():
+			config[k] = v
+	if args.max_tokens:
+		config["max_new_tokens"] = args.max_tokens
 	return config
 
 def prog_dir():
@@ -554,10 +555,11 @@ def get_opts():
 	model_group.add_argument("--config", "-c", default=None, help="Model config file, in YAML format")
 	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
 	model_group.add_argument("--bytes", "-8", action="store_true", help="Load in 8-bit mode, to save GPU memory")
+	model_group.add_argument("--max-tokens", "-n", type=int, help="Maximum number of new tokens to generate")
 
-	model_group = parser.add_argument_group("Deluxe options")
-	model_group.add_argument("--retry", default=3, help="Number of times to retry if the bot fails to respond")
-	model_group.add_argument("--retry-temperature-boost", default=0.1, help="Temperature boost to apply when retrying")
+#	model_group = parser.add_argument_group("Deluxe options")
+#	model_group.add_argument("--retry", default=3, help="Number of times to retry if the bot fails to respond")
+#	model_group.add_argument("--retry-temperature-boost", default=0.1, help="Temperature boost to apply when retrying")
 
 	dev_group = parser.add_argument_group("Developer options")
 	dev_group.add_argument("--no-model", "-M", action="store_false", dest="model", help="Don't load the model, for testing purposes")
@@ -590,7 +592,7 @@ def main():
 			print(f"{model_name} ({model['abbrev']}): {model['description']}")
 		sys.exit(0)
 
-	args.gen_config = load_config(args.config)
+	args.gen_config = load_config(args)
 
 	logger.info(f"{args.gen_config=}")
 

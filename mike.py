@@ -46,7 +46,9 @@ def speech_to_text(run_event, q_audio, q_text, model, lang):
 		result = model.transcribe(torch_audio, language=lang)
 		print(result, file=sys.stderr)
 		text = result.get("text").strip()
-		if text:
+		segs = result["segments"]
+		no_speech_prob = sum(x["no_speech_prob"] for x in segs) / (len(segs) or 1)
+		if text and no_speech_prob < 0.5:
 			q_text.put_nowait(text)
 	q_text.put_nowait(None)
 
