@@ -9,7 +9,7 @@ bot="$3"
 add_prompts="${4:-}"
 mission=${5:-"* $bot is $user's good friend."}
 
-: ${SPEAK:=speak.sh -speed=1.3}
+: ${SPEAK:=speak.sh -tempo=30 -pitch=1}
 
 . opts
 
