@@ -39,7 +39,7 @@ done
 
 trap "pkill -P $$; rf -f /tmp/drop-the-mic" EXIT
 
-#while true; do
+while true; do
 	tail -f -n0 "$file" |
 	perl -ne '
 		BEGIN {
@@ -70,4 +70,4 @@ trap "pkill -P $$; rf -f /tmp/drop-the-mic" EXIT
 			print STDERR "skipping like with user or unknown role: $_\n";
 		}
 	'
-#done
+done
