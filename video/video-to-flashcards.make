@@ -5,7 +5,7 @@ img_rate=1
 # threads=$(shell nproc)
 
 SHELL := /bin/bash
-WHISPER_MODEL := medium.en
+WHISPER_MODEL := large
 
 m=3+
 
@@ -44,7 +44,7 @@ audio-extract: av
 	ffmpeg -loglevel error -i $< -vn -c copy $@
 
 audio.txt: audio.webm
-	whisper --model $(WHISPER_MODEL) $<
+	whisper --language en --model $(WHISPER_MODEL) $<
 
 audio-clean.txt: audio.txt
 	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines 1 > $@
