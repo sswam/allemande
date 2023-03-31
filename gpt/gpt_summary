@@ -1,0 +1,4 @@
+#!/bin/bash
+m=
+. opts
+gpt_process -m="$m" "Please replace this text with a very short cogent summary. Only give the summary."

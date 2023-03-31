@@ -1,0 +1,16 @@
+#!/bin/bash
+gpt_process -m=4 "Please list the main ideas and terms, with definitions suitable for flashcard study, in the form:
+
+Prompt: the prompt
+Answer: the bare answer, *not including the prompt*
+Extra: extra extended info
+
+With a blank line between cards. Preferably make the notes suitable for reversible flashcards, i.e. they should still make sense if prompt and answer are swapped, so don't include the main words from the prompt in the answer.
+
+$*
+
+Only give the requested output."
+
+
+#PromptImage: a search query that should return relevant images for the prompt; include this only if the flashcard needs an image on the prompt side
+#AnswerImage: a search query that should return relevant images for the answer; include this only if the flashcard needs an image on the answer side
