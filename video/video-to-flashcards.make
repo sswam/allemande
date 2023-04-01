@@ -4,10 +4,23 @@ img_rate=1
 
 # threads=$(shell nproc)
 
+MAKEFILE_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+export PATH := $(MAKEFILE_DIR):$(PATH)
+
+
 SHELL := /bin/bash
 WHISPER_MODEL := large
 
 m=4
+
+
+transcript.sent.txt: transcript.txt
+	< $< split_sentences > $@
+
+transcript.sent2.txt: transcript.sent.txt
+	< $< ai_split_long_sentences.py > $@
+
+
 
 default: goal
 
@@ -45,6 +58,9 @@ audio-extract: av
 
 audio.txt: audio.webm
 	whisper --language en --model $(WHISPER_MODEL) $<
+
+transcript.md: transcript.txt
+	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown >$@
 
 audio-clean.txt: audio.txt
 	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines 1 > $@
