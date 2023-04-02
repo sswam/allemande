@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
+""" electric barbarella v2 """
 
-# electric barbarella v1
-
-import os, json, itertools, bisect, gc, re
-
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
-
-import transformers
-import torch
-from accelerate import Accelerator
-import accelerate
+import os
+# json, itertools, bisect, gc
 import time
 import sys
 import argparse
 import logging
-import readline
-import yaml
+import re
 from math import inf
 from pathlib import Path
 from typing import Any, Dict
-import re
+import readline
+
+import torch
+# from accelerate import Accelerator
+# import accelerate
+import yaml
+
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+import transformers
 
 # TODO use functools.cache or functools.lru_cache decorator?  https://docs.python.org/3/library/functools.html
 
@@ -56,18 +57,20 @@ config_default = {
 default_file_extension = "bb"
 
 def load_model(model_path: Path, eight_bit=False, device_map="auto"):
-	global model_cache
+	""" Load a model from cache or disk. """
+	# global model_cache
 
 	logger.info("model_path %r", model_path)
 	logger.info("model_path.name %r", model_path.name)
 
 	model_name = model_path.name
 
-	if model_name in model_cache:
-		logger.info("Using "+model_name+" from cache...")
-		return model_cache[model_name]
+	model = model_cache.get(model_name, None)
+	if model:
+		logger.info("Using %r from cache...", model_name)
+		return model
 
-	logger.info("Loading "+model_name+"...")
+	logger.info("Loading %s ...", model_name)
 
 	if device_map == "zero":
 		device_map = "balanced_low_0"
@@ -96,12 +99,15 @@ def load_model(model_path: Path, eight_bit=False, device_map="auto"):
 	return model
 
 def count_tokens_in_text(text, tokenizer):
+	""" Count the number of tokens in a text. """
 	return len(tokenizer(text).input_ids)
 
 def leading_spaces(text):
+	""" Return the number of leading spaces in a text. """
 	return re.match(r"\s*", text).group(0)
 
 def gen(model, input_text, config=None):
+	""" Generate text from a model. """
 	tokenizer = model.tokenizer
 	if config is None:
 		config = config_default
@@ -137,14 +143,14 @@ def gen(model, input_text, config=None):
 			new_tokens = gen_tokens[:,n_in_tokens:]
 			error = ""
 		else:
-			logger.warning(f"gen: gen_tokens does not start with in_tokens. Will append entire generation.")
+			logger.warning("gen: gen_tokens does not start with in_tokens. Will append entire generation.")
 			new_tokens = gen_tokens
 			error = "<ERROR>"
 
 		# TODO it's messy that it's all wrapped, can be good if we run multiple batches at once though
 #		print(f"gen: {new_tokens.shape=} {new_tokens[0]=!r}")
 
-		# tokens often being with spaces, but we don't want to double up on spaces
+		# tokens often begin with spaces, but we don't want to double up on spaces
 		new_text = tokenizer.batch_decode(new_tokens, skip_special_tokens=True)[0]
 		if new_text.startswith(' ') and input_text[-1:].isspace():
 			new_text = new_text[1:]
@@ -158,44 +164,10 @@ def gen(model, input_text, config=None):
 		# TODO remove this?
 		generated_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)[0]
 
-#
-#		# So extract the new tokens first and then decode them, rather than attempting to fix up the text.
-#
-##		print("gen_tokens[0]")
-##		for i in range(5):
-##			print(i, gen_tokens[0][i], repr(tokenizer.decode(gen_tokens[0][i], skip_special_tokens=False)))
-#		generated_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)[0] # for some reason, batch_decode returns an array of one element?
-#
-#		# not sure why the decoded generated_text often has extra spaces at the start
-#		s1 = leading_spaces(input_text)
-#		s2 = leading_spaces(generated_text)
-#		if s1 != s2:
-#			logger.info(f"gen: leading_spaces differ: {s1!r} != {s2!r}")
-#			generated_text = s1 + generated_text[len(s2):]
-#
-#		# Check that the generated text starts with the input_text.
-#		# If it doesn't, then we probably sent too many tokens, and the model is confused.
-#		if generated_text.startswith(input_text):
-#			new_text = generated_text[len(input_text):]
-#		else:
-#			logger.warning(f"gen: generated_text does not start with input_text: {generated_text!r} != {input_text!r}")
-#			# In this case, let's append both together with a delimiter, and let the user sort it out.
-#			# Another possibility would be to raise an exception, or to redo with smaller input.
-#			# This gen function is supposed to be simple, the user can wrap it with something more sophisticated.
-#			# TODO Even this is too much, it should just return the raw generated_text and not try to separate the new text.
-#			new_text = "<generation error>" + generated_text
-
-#	print("gen debug:")
-#	print(f"[{input_text=!r}]")
-#	print()
-#	print(f"[{generated_text=!r}]")
-#	print()
-#	print(f"[{new_text=!r}]")
-#	print()
-
 	return new_text, generated_text
 
 def trim_response(response, args):
+	""" Trim the response to the first message. """
 	if args.raw:
 		messages = response.split(args.delim)
 		if messages and not re.search(r'\S', messages[0]):
@@ -208,6 +180,7 @@ def trim_response(response, args):
 	return response
 
 def input_with_prefill(prompt, text):
+	""" Input with a prefill. """
 	def hook():
 		readline.insert_text(text)
 		readline.redisplay()
@@ -216,41 +189,26 @@ def input_with_prefill(prompt, text):
 	readline.set_pre_input_hook()
 	return result
 
-#def get_fulltext_old(args, model, history, history_start, invitation, delim):
-#	fulltext = delim.join(history[history_start:]) + delim + invitation
-#	n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
-#	logger.info(f"n_tokens is {n_tokens}")
-#	dropped = False
-#	while n_tokens > args.memory:
-#		d_tokens = count_tokens_in_text(history[history_start] + delim , model.tokenizer)
-#		history_start += 1
-#		n_tokens -= d_tokens
-#		dropped = True
-#		logger.info(f"dropped some history, history_start: {history_start}, n_tokens: {n_tokens}, d_tokens: {d_tokens}")
-#	if dropped:
-#		fulltext = delim.join(history[history_start:]) + delim + invitation
-#	logger.info("fulltext: "+fulltext)
-#	return fulltext, history_start
-
 def get_fulltext(args, model, history, history_start, invitation, delim):
+	""" Get the full text from the history, and cut to the right length. """
 	fulltext = delim.join(history[history_start:]) + invitation
 	n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
-	logger.info(f"n_tokens is {n_tokens}")
-	dropped = False
+	logger.info("n_tokens is %r", n_tokens)
+#	dropped = False
 	# TODO use a better search method
 	last = False
 	while n_tokens > args.memory:
 		if len(history) - history_start < 10:
 			guess = 1
 		else:
-			logger.info(f"guessing how many tokens to drop...")
-			logger.info(f"  args.memory: {args.memory}")
-			logger.info(f"  n_tokens: {n_tokens}")
-			logger.info(f"  len(history): {len(history)}")
-			logger.info(f"  history_start: {history_start}")
+			logger.info("guessing how many tokens to drop...")
+			logger.info("  args.memory: %r", args.memory)
+			logger.info("  n_tokens: %r", n_tokens)
+			logger.info("  len(history): %r", len(history))
+			logger.info("  history_start: %r", history_start)
 			guess = ((n_tokens - args.memory) / n_tokens) * (len(history) - history_start)
 			guess =	int(guess * 0.7)
-			logger.info(f"  guess: {guess}")
+			logger.info("  guess: %r", guess)
 			if guess <= 0:
 				guess = 1
 			if guess >= len(history) - history_start:
@@ -259,16 +217,17 @@ def get_fulltext(args, model, history, history_start, invitation, delim):
 		history_start += guess
 		fulltext = delim.join(history[history_start:]) + invitation
 		n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
-		dropped = True
-		logger.info(f"dropped some history, history_start: {history_start}, n_tokens: {n_tokens}")
+#		dropped = True
+		logger.info("dropped some history, history_start: %r, n_tokens: %r", history_start, n_tokens)
 		if last:
 			break
 #	if dropped:
 #		fulltext = delim.join(history[history_start:]) + invitation
-	logger.info("fulltext: ["+fulltext+"]")
+	logger.info("fulltext: %r", fulltext)
 	return fulltext, history_start
 
 def chat(model, args, history, history_start=0):
+	""" Chat with the model. """
 	invitation = args.bot + ": " if args.bot else ""
 	human_invitation = args.user + ": " if args.user else ""
 	delim = args.delim
@@ -313,13 +272,15 @@ def chat(model, args, history, history_start=0):
 	return history_start
 
 def chat_loop(model, args, history, history_start=0):
+	""" Chat with the model in a loop. """
 	while True:
 		history_start = chat(model, args, history, history_start=history_start)
 
 def history_read(file, args):
+	""" Read the history from a file. """
 	text = ""
 	if file and os.path.exists(file):
-		with open(file) as f:
+		with open(file, encoding="utf-8") as f:
 			text = f.read()
 	history = text.split(args.delim) if text else []
 
@@ -330,13 +291,15 @@ def history_read(file, args):
 	return history
 
 def history_write(file, history, delim="\n", mode="a", invitation=""):
+	""" Write or append the history to a file. """
 	if not file:
 		return
 	text = delim.join(history) + invitation
-	with open(file, mode) as f:
+	with open(file, mode, encoding="utf-8") as f:
 		f.write(text)
 
 def get_roles_from_history(history, args):
+	""" Get the roles from the history. """
 	def get_role(history, i=None, not_equal_to=None):
 		if i is None:
 			i = len(history) - 1
@@ -351,16 +314,17 @@ def get_roles_from_history(history, args):
 	hist_user, i = get_role(history, not_equal_to=args.bot)
 	if hist_user:
 		args.user = hist_user
-	logger.info(f"user: {args.user}, i: {i}")
+	logger.info("user: %r, i: %r", args.user, i)
 	hist_bot, i = get_role(history, i=i, not_equal_to=args.user)
 	if hist_bot:
 		args.bot = hist_bot
-	logger.info(f"bot: {args.bot}, i: {i}")
+	logger.info("bot: %r, i: %r", args.bot, i)
 
-	logger.info("user: "+args.user)
-	logger.info("bot: "+args.bot)
+	logger.info("user: %r", args.user)
+	logger.info("bot: %r", args.bot)
 
 def interactive(model, args):
+	""" Interactive chat with the model. """
 	history = history_read(args.file, args)
 
 	if history and not history[-1]:
@@ -379,6 +343,7 @@ def interactive(model, args):
 		pass
 
 def process_file(model, file, args, history_start=0):
+	""" Process a file. """
 	logger.info("Processing %s", file)
 
 	history = history_read(file, args)
@@ -398,7 +363,7 @@ def process_file(model, file, args, history_start=0):
 
 	fulltext, history_start = get_fulltext(args, model, history, history_start, invitation, args.delim)
 
-	logger.debug("fulltext: ["+fulltext+"]")
+	logger.debug("fulltext: %r", fulltext)
 
 	args.gen_config = load_config(args)
 
@@ -413,9 +378,10 @@ def process_file(model, file, args, history_start=0):
 	history.append(invitation.lstrip() + response)
 	history_write(file, history[-1:], delim=args.delim, invitation=human_invitation)
 
-def find_files(dir, ext=None, maxdepth=inf):
+def find_files(folder, ext=None, maxdepth=inf):
+	""" Find chat files under a directory. """
 	try:
-		for subdir in os.scandir(dir):
+		for subdir in os.scandir(folder):
 			if subdir.is_dir():
 				if subdir.name.startswith("."):
 					continue
@@ -425,15 +391,15 @@ def find_files(dir, ext=None, maxdepth=inf):
 				if not ext or subdir.name.endswith(ext):
 					yield subdir.path
 	except PermissionError as e:
-		logger.warning("find_files: "+str(e))
-		pass
+		logger.warning("find_files: %r", e)
 
 def watch_step(model, args, mtimes):
+	""" Watch a directory for changes, one step. """
 	files = []
 	dirs = args.watch.split(":")
 	dirs = list(set(dirs))
-	for dir in dirs:
-		files += find_files(dir, ext=args.ext, maxdepth=args.depth)
+	for folder in dirs:
+		files += find_files(folder, ext=args.ext, maxdepth=args.depth)
 
 	first = False
 
@@ -448,7 +414,7 @@ def watch_step(model, args, mtimes):
 		if first:
 			mtimes[file] = mtime
 			continue
-		if mtime <= mtimes.get(file, -1):
+		if mtime <= old_mtime:
 			continue
 		if os.path.getsize(file) > 0:
 			process_file(model, file, args)
@@ -457,7 +423,8 @@ def watch_step(model, args, mtimes):
 	return mtimes
 
 def watch_loop(model, args):
-	logger.info(f"Watching {args.watch} for files with extension {args.ext} and depth {args.depth}")
+	""" Watch a directory for changes, and process files as they change. """
+	logger.info("Watching %r for files with extension %r and depth %r", args.watch, args.ext, args.depth)
 
 	mtimes = None
 	while True:
@@ -479,13 +446,13 @@ def default_bot():
 		realpath = os.path.realpath(sys.argv[0])
 		basename = os.path.basename(realpath)
 		return os.path.splitext(basename)[0].title()
-	else:
-		return "Assistant"
+	return "Assistant"
 
 def load_config(args):
+	""" Load the generations config file. """
 	config = config_default.copy()
 	if args.config:
-		with open(args.config) as f:
+		with open(args.config, encoding="utf-8") as f:
 			settings = yaml.load(f, Loader=yaml.FullLoader)
 		for k, v in settings.items():
 			config[k] = v
@@ -494,6 +461,7 @@ def load_config(args):
 	return config
 
 def prog_dir():
+	""" Get the directory of the program. """
 	return Path(sys.argv[0]).resolve().parent
 
 def setup_logging(args):
@@ -522,6 +490,7 @@ def add_logging_options(parser):
 	logging_group.add_argument('--log', default=None, help="log file")
 
 def get_opts():
+	""" Get the command line options. """
 	parser = argparse.ArgumentParser(description="Chat with a trained model, specifically Point Alpaca (fine-tuned LLaMA).", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 	modes_group = parser.add_argument_group("Modes of operation")
@@ -584,17 +553,17 @@ def get_opts():
 	return args
 
 def main():
+	""" Main function. """
 	args = get_opts()
 
 	if args.list_models:
-		for model_name in models:
-			model = models[model_name]
+		for model_name, model in models.items():
 			print(f"{model_name} ({model['abbrev']}): {model['description']}")
 		sys.exit(0)
 
 	args.gen_config = load_config(args)
 
-	logger.info(f"{args.gen_config=}")
+	logger.info("args.gen_config=%r", args.gen_config)
 
 	if args.dump_config:
 		print(yaml.dump(args.gen_config, default_flow_style=False, sort_keys=False))
@@ -636,7 +605,7 @@ def main():
 		process_file(model, args.file, args)
 	elif args.stream:
 		logger.error("Stream mode, not implemented yet")
-		stream(model, args)
+		# stream(model, args)
 
 if __name__ == "__main__":
 	main()

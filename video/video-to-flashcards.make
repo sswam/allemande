@@ -66,20 +66,20 @@ audio-clean.txt: audio.txt
 	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines 1 > $@
 
 summary.txt: audio-clean.txt
-	< $< gpt_summary -m=$m > $@
+	< $< gpt-summary -m "$m" > $@
 
 name.txt: audio-clean.txt
 	if [ -n "$(name)" ] ; then \
 		echo "$(name)" > $@ ; \
 	else \
-		< $< gpt_process -m=$m "Please respond with just the name or a suitable name for the following:" > $@ ; \
+		< $< gpt process -m "$m"" "Please respond with just the name or a suitable name for the following:" > $@ ; \
 	fi
 
 topic.txt: audio-clean.txt
-	< $< gpt_topic -m=$m > $@
+	< $< gpt-topic -m "$m" > $@
 
 flashcards-1.txt: audio-clean.txt
-	< $< gpt_flashcards -m=$m > $@
+	< $< gpt-flashcards -m "$m" > $@
 
 flashcards.txt: flashcards-1.txt
 	(< $< sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single_blank_lines > $@
@@ -94,17 +94,17 @@ prompt-transcript.txt: audio-clean.txt correct.prompt
 	CONTENT=`< $<` shell-template correct.prompt > $@
 
 transcript.txt: prompt-transcript.txt
-	< $< gpt_process -m=$m "Please reply with just the corrected transcript." > $@
+	< $< gpt process -m "$m" "Please reply with just the corrected transcript." > $@
 
 
 # We could also search to find the title or canonical page.
 
 
 search-lyrics.txt: name.txt
-	search "\"`< name.txt`\" lyrics or transcript" > $@
+	search.py "\"`< name.txt`\" lyrics or transcript" > $@
 
 lyrics-url.txt: search-lyrics.txt name.txt
-	< $< gpt_process -m=$m "Please reply with just the best URL to get lyrics or a transcript for `<name.txt`, based on these search results or your knowledge. If nothing looks promising, just reply 'about:blank'." > $@
+	< $< gpt process -m "$m" "Please reply with just the best URL to get lyrics or a transcript for `<name.txt`, based on these search results or your knowledge. If nothing looks promising, just reply 'about:blank'." > $@
 
 lyrics.html: lyrics-url.txt
 	wg "`< $<`" -O- >$@ || true
@@ -126,7 +126,7 @@ lyrics.txt: prompt-lyrics.txt name.txt
 	if [ ! -s $< ]; then \
 		echo "No lyrics found." ; > $@ ; \
 	else \
-		< $< gpt_process -m=$m "Please reply with just the lyrics or transcript for `<name.txt`, based on the page `<lyrics-url.txt`." > $@ ; \
+		< $< gpt process -m "$m" "Please reply with just the lyrics or transcript for `<name.txt`, based on the page `<lyrics-url.txt`." > $@ ; \
 	fi
 
 post.txt: title.txt web-address.txt name.txt topic.txt summary.txt flashcards.txt transcript.txt lyrics.txt

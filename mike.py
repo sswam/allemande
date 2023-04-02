@@ -1,29 +1,40 @@
 #!/usr/bin/env python3
+""" Transcribe speech to text using microphone input and whisper """
 
 import sys
 import os
 import io
-import argh
 from threading import Thread, Event
 from queue import Queue
+import logging
+
+from argh import dispatch_command
 from pydub import AudioSegment
-import sounddevice
 import speech_recognition as sr
 import whisper
 import torch
 import numpy as np
 
-def record_speech(run_event, q_audio, energy, pause, dynamic_energy, save):
+logger = logging.getLogger(__name__)
+logger_fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
+logging.basicConfig(level=logging.DEBUG, format=logger_fmt)
+
+def record_speech(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise=True):
 	""" Record audio from microphone and put it in the queue """
 	r = sr.Recognizer()
 	r.energy_threshold = energy
 	r.pause_threshold = pause
 	r.dynamic_energy_threshold = dynamic_energy
 	i = 0
-	with sr.Microphone(sample_rate=16000) as source:
+	with sr.Microphone(sample_rate=16000, device_index=device_index) as source:
 		while run_event.is_set():
 #			drop = os.path.isfile("/tmp/drop-the-mic")
+			if adjust_for_ambient_noise:
+				logger.debug("Adjusting for ambient noise")
+				r.adjust_for_ambient_noise(source)
+			logger.debug("Listening")
 			audio = r.listen(source)
+			logger.debug("Got audio")
 			if save:
 				data = io.BytesIO(audio.get_wav_data())
 				audio_clip = AudioSegment.from_file(data)
@@ -44,7 +55,7 @@ def speech_to_text(run_event, q_audio, q_text, model, lang):
 		if torch_audio is None:
 			break
 		result = model.transcribe(torch_audio, language=lang)
-		print(result, file=sys.stderr)
+		logger.info(result)
 		text = result.get("text").strip()
 		segs = result["segments"]
 		no_speech_prob = sum(x["no_speech_prob"] for x in segs) / (len(segs) or 1)
@@ -52,8 +63,24 @@ def speech_to_text(run_event, q_audio, q_text, model, lang):
 			q_text.put_nowait(text)
 	q_text.put_nowait(None)
 
-def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=0.8, save=None):
+def do_list_devices():
+	""" List available microphone devices """
+	for index, name in enumerate(sr.Microphone.list_microphone_names()):
+		print(f'{index}\t{name}')
+
+def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=0.8, save=None, device_index=None, list_devices=False):
 	""" Transcribe speech to text using microphone input """
+	if list_devices:
+		do_list_devices()
+		sys.exit(0)
+
+#	if device_index == -1:
+#		for index, name in enumerate(sr.Microphone.list_microphone_names()):
+#			print(name)
+#			if name == "sysdefault":
+#				device_index = index
+#				break
+
 	run_event = Event()
 	run_event.set()
 
@@ -63,7 +90,7 @@ def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=
 		q_text = Queue()
 		Thread(
 			target=record_speech,
-			args=(run_event, q_audio, energy, pause, dynamic_energy, save)
+			args=(run_event, q_audio, energy, pause, dynamic_energy, save, device_index)
 			).start()
 		Thread(
 			target=speech_to_text,
@@ -78,10 +105,9 @@ def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=
 			print(text)
 			sys.stdout.flush()
 	except KeyboardInterrupt:
-		print("Interrupted!", file=sys.stderr)
-		run_event.clear()
+		logger.exception("Interrupted!")
 	finally:
-		done = True
+		run_event.clear()
 
 if __name__ == '__main__':
-	argh.dispatch_command(mike)
+	dispatch_command(mike)

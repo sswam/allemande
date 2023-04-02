@@ -9,7 +9,8 @@ bot="$3"
 add_prompts="${4:-}"
 mission=${5:-"* $bot is $user's good friend."}
 
-: ${SPEAK:=speak.sh -tempo=30 -pitch=1}  # female; or -5 for faux-male
+#: ${SPEAK:=speak.sh -tempo=30 -pitch=1}  # female; or -5 for faux-male
+: ${SPEAK:=speak.py --tempo 1.3 --pitch 1}  # female; or -5 for faux-male
 
 . opts
 
@@ -18,6 +19,10 @@ if [ ! -e "$file" ]; then
 fi
 
 # rm -f /tmp/drop-the-mic
+
+mic_on() { amixer sset Capture cap; }
+trap 'mic_on' EXIT
+mic_on
 
 mike.py | tee /dev/stderr | (
 while read line; do
@@ -37,11 +42,13 @@ while read line; do
 done 
 ) &
 
-trap "pkill -P $$; rf -f /tmp/drop-the-mic" EXIT
+#trap "pkill -P $$; rm -f /tmp/drop-the-mic" EXIT
+trap "pkill -P $$" EXIT
 
 while true; do
 	tail -f -n0 "$file" |
 	perl -ne '
+		chomp;
 		BEGIN {
 			$|=1;
 			@speak = split / /, $ENV{SPEAK};
@@ -61,13 +68,14 @@ while true; do
 			print STDERR "$_\n";
 			s/^\Q$ENV{bot}\E:\s*//;
 #			system "touch", "/tmp/drop-the-mic";
-			system "amixer", "sset", "Capture", "nocap";
-			system "v", @speak, " $_";
-			system "amixer", "sset", "Capture", "cap";
+#			system "oe", "amixer", "sset", "Capture", "nocap";
+#			system "v", @speak, " $_";
+			print("$_\n");
+#			system "oe amixer", "sset", "Capture", "cap";
 #			system "rm", "-f", "/tmp/drop-the-mic";
 #			exit(0);
 		} else {
 			print STDERR "skipping like with user or unknown role: $_\n";
 		}
 	'
-done
+done | $SPEAK

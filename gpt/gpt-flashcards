@@ -1,5 +1,5 @@
 #!/bin/bash
-gpt_process -m=4 "Please list the main ideas and terms, with definitions suitable for flashcard study, in the form:
+gpt process -m 4 "Please list the main ideas and terms, with definitions suitable for flashcard study, in the form:
 
 Prompt: the prompt
 Answer: the bare answer, *not including the prompt*
