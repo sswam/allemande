@@ -7,6 +7,7 @@ import os
 import tempfile
 import logging
 from functools import partial
+import signal
 
 from argh import arg, dispatch_command
 import sounddevice as sd
@@ -32,6 +33,30 @@ DEFAULT_MODELS = {
 DEFAULT_MODEL = "coqui:" + DEFAULT_MODELS['coqui']
 # DEFAULT_MODEL = "gtts:" + DEFAULT_MODELS['gtts']
 
+COQUI_TRIES = 3
+COQUI_TIMEOUT = 5
+
+# I'm using sigalrm to timeout the TTS calls
+# This only works on Linux and doesn't play well with threads.
+# We might try using multiprocessing instead later:
+# refer: https://stackoverflow.com/questions/492519/timeout-on-a-function-call
+# check alse here: https://chat.openai.com/chat?model=gpt-4
+
+def retry_timeout(fn, timeout, tries):
+	""" Retry a function until it succeeds or the timeout is reached """
+	for _i in range(tries-1):
+		try:
+			def handler(signum, frame):
+				raise TimeoutError("timeout")
+			signal.signal(signal.SIGALRM, handler)
+			signal.alarm(timeout)
+			result = fn()
+			signal.alarm(0)
+			return result
+		except TimeoutError:
+			logger.warning("Timeout, retrying")
+	return fn()
+
 def get_synth_coqui(model=DEFAULT_MODELS["coqui"]):
 	""" Get a Coqui TTS speak function for the given model """
 	# download and load the TTS model
@@ -46,7 +71,9 @@ def get_synth_coqui(model=DEFAULT_MODELS["coqui"]):
 	)
 
 	def speak_fn(text, out, **_kwargs):
-		audio = synth.tts(text)
+		def do_it():
+			return synth.tts(text)
+		audio = retry_timeout(do_it, COQUI_TIMEOUT, COQUI_TRIES-1)
 		stem, ext = os.path.splitext(out)
 		if ext != '.wav':
 			out = stem + '.wav'
