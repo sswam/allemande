@@ -42,6 +42,6 @@ The world has already realized the power of artificial intelligence, and it's ti
 Take advantage of this timely and exclusive offer while it lasts! Together, we can revolutionize your business to new heights and harness the limitless potential of AI. Remember, the first consultation is <i>FREE</i> with absolutely no strings attached. Don't let this opportunity slip away! Schedule your consult today!
 </details>
 
-## AI generated cyborg concept-art
+## Concept art
 
 <img style="float:right; border-radius: 1em; padding: 1em;" src="https://sam.ucm.dev/pix/barbarella.jpg" height="512" width="256">
