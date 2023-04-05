@@ -1,0 +1,245 @@
+user:	I'm working on a user script to switch the ChatGPT model mid-chat. I've got it working mainly thanks to you, GPT-4; and GPT-3.5 also helped.
+	Here's the script so far. Please critique it, is it good enough?
+
+	// ==UserScript==
+	// @name         ChatGPT Model Switcher
+	// @namespace    https://ucm.dev/
+	// @version      0.7
+	// @description  Switch ChatGPT model mid-chat
+	// @author       GPT-4, GPT-3.5, Copilot, and Sam Watkins <sam@ucm.dev>
+	// @match        *://chat.openai.com/*
+	// @grant        none
+	// ==/UserScript==
+	
+	// This user script adds a model switcher to the OpenAI chat interface,
+	// allowing users to switch between different AI models when conversing.
+	
+	(function () {
+	
+	'use strict';
+	
+	// Define various constants, such as available models,
+	// URLs for API calls, messages, and selectors for DOM elements.
+	
+	const MODELS = [
+		{ label: 'GPT-3.5', name: 'text-davinci-002-render-sha' },
+		{ label: 'Legacy ChatGPT', name: 'text-davinci-002-render-paid' },
+		{ label: 'GPT-4', name: 'gpt-4' },
+	];
+	
+	const URLS = {
+		conversation: 'https://chat.openai.com/backend-api/conversation',
+	};
+	
+	const MESSAGES = {
+		modelUnavailable: "The previous model used in this conversation is unavailable. " +
+			"We've switched you to the latest default model",
+		modelChanged: 'Now using ',
+	};
+	
+	const SELECTORS = {
+		buttons: '#__next main form > div div:nth-of-type(1)',
+		messagesContainer: '.flex-col.items-center',
+		modelUnavailableMessage: '.flex-col.items-center .text-center',
+	};
+	
+	const IDS = {
+		selector: 'chatgpt-model-switcher-selector',
+	}
+	
+	// Utility functions
+	const $ = (selector) => document.querySelector(selector);
+	const $$ = (selector) => document.querySelectorAll(selector);
+	const $id = (id) => document.getElementById(id);
+	const $create = (element) => document.createElement(element);
+	const $text = (text) => document.createTextNode(text);
+	
+	// Update the model parameter in the request body to match the
+	// selected model in the UI.
+	const updateModelParameter = (originalRequest) => {
+		// Parse the request body
+		const requestData = JSON.parse(originalRequest.body);
+	
+		// Make sure the request has a model parameter
+		if (!requestData.model) return originalRequest;
+	
+		// Make sure the model selector exists in the UI
+		const modelSelector = $id(IDS.selector);
+		if (!modelSelector) return originalRequest;
+	
+		// Update the model parameter based on the selected option in the UI
+		requestData.model = modelSelector.value;
+	
+		// Modify the request to include the updated model parameter
+		const updatedRequest = {
+			...originalRequest,
+			body: JSON.stringify(requestData),
+		};
+	
+		return updatedRequest;
+	}
+	
+	// Check if the request is a conversation request.
+	const isConversationRequest = (requestArgs) => {
+		return	requestArgs[0] &&
+			requestArgs[0] === URLS.conversation &&
+			requestArgs[1] &&
+			requestArgs[1].method === 'POST' &&
+			requestArgs[1].body;
+	};
+	
+	// Replace the original fetch function with a new function that
+	// updates the model parameter in the request before sending it.
+	const originalFetch = window.fetch;
+	window.fetch = async function () {
+		if (isConversationRequest(arguments)) {
+			arguments[1] = updateModelParameter(arguments[1]);
+		}
+		return await originalFetch.apply(this, arguments);
+	};
+	
+	// Replace the model unavailable message with a message indicating
+	// that the model has been changed.
+	const replaceModelUnavailableMessage = () => {
+	  for (const element of $$(SELECTORS.modelUnavailableMessage)) {
+	    if (element.textContent !== MESSAGES.modelUnavailable) continue;
+	    const newModel = $id(IDS.selector).value;
+	    const newModelLabel = MODELS.find((model) => model.name === newModel).label;
+	    element.textContent = MESSAGES.modelChanged + newModelLabel;
+	  }
+	};
+	
+	// Initialize the model switcher by adding a model selector to the
+	// chat interface, and initializing a MutationObserver to watch for
+	// the model unavailable message.
+	const initModelSwitcher = () => {
+		const buttons = $(SELECTORS.buttons);
+	
+		// Create the model selector
+		const modelSelector = $create('select');
+		modelSelector.id = IDS.selector;
+		modelSelector.classList.add('btn', 'flex', 'gap-2', 'justify-center', 'btn-neutral');
+		for (const model of MODELS) {
+			const option = $create('option');
+			option.value = model.name;
+			option.textContent = model.label;
+			modelSelector.appendChild(option);
+		}
+	
+		// Add the model selector to the button bar
+		buttons.appendChild(modelSelector);
+	
+		// Initialize a MutationObserver to watch the messages container
+		for (const element of $$(SELECTORS.messagesContainer)) {
+			new MutationObserver(replaceModelUnavailableMessage).observe(element, { childList: true, subtree: true });
+		}
+	};
+	
+	// Check if the chat interface has been loaded, and call the
+	// initModelSwitcher function when it is detected.
+	const chatInterfaceChanged = (mutationsList, observer) => {
+		for (const mutation of mutationsList) {
+			if (mutation.type === 'childList' && $(SELECTORS.buttons) && $(SELECTORS.messagesContainer)) {
+				if (!$id(IDS.selector)) {
+					initModelSwitcher();
+				}
+			}
+		}
+	};
+	
+	// Observe mutations to the body element, and call the
+	// initModelSwitcher function when the chat interface is detected.
+	const observeChatInterface = () => {
+		const targetNode = document.body;
+	
+		const config = { childList: true, subtree: true };
+	
+		const observer = new MutationObserver(chatInterfaceChanged);
+		observer.observe(targetNode, config);
+	};
+	
+	observeChatInterface();
+	
+	})();
+assistant:	Your script looks great! It's covering functionality properly and is easy to read, thanks to your descriptive comments.
+	
+	There's only one small improvement I would suggest in the `replaceModelUnavailableMessage` function, to improve its efficiency:
+	
+	```js
+	const replaceModelUnavailableMessage = () => {
+	  const elements = $$(SELECTORS.modelUnavailableMessage);
+	  for (const element of elements) {
+	    if (element.textContent !== MESSAGES.modelUnavailable) continue;
+	    const newModel = $id(IDS.selector).value;
+	    const newModelLabel = MODELS.find((model) => model.name === newModel).label;
+	    element.textContent = MESSAGES.modelChanged + newModelLabel;
+	    break; // Added break statement after finding the right message
+	  }
+	};
+	```
+	
+	Adding a `break` statement in the loop after replacing the model unavailable message makes the script more efficient because there should only be one such message in a conversation, so there's no need to iterate over the rest of the elements after finding and replacing it.
+	
+	Other than that, your script looks good to go! Nice work!
+user:	Remind me, how can I package that user script as a Chrome extension, and ship it on the Chrome webstore?
+	I'll also publish it on github.
+assistant:	To package your user script as a Chrome extension and publish it on the Chrome Web Store, follow these steps:
+	
+	1. Create a new directory for your extension and move your user script into it. You can rename the script to `content.js`.
+	
+	2. Create a `manifest.json` file in the same directory. The manifest defines your extension, including its name, version, icons, and the permissions it requires. Here's a basic example for your extension:
+	
+	```json
+	{
+	  "manifest_version": 3,
+	  "name": "ChatGPT Model Switcher",
+	  "version": "1.0",
+	  "description": "Switch ChatGPT model mid-chat",
+	  "icons": {
+	    "48": "icon48.png",
+	    "96": "icon96.png"
+	  },
+	  "action": {
+	    "default_popup": "popup.html",
+	    "default_icon": {
+	      "48": "icon48.png"
+	    }
+	  },
+	  "permissions": ["activeTab"],
+	  "content_scripts": [
+	    {
+	      "matches": ["*://chat.openai.com/*"],
+	      "js": ["content.js"]
+	    }
+	  ]
+	}
+	```
+	
+	3. Create a 48x48 and a 96x96 icon for your extension (you can use an image editor or an online tool). Name the files `icon48.png` and `icon96.png`, and place them in the extension directory.
+	
+	4. (Optional) Create a `popup.html` file if you'd like to have a popup for your extension when users click on the icon in the browser. Customize it with any HTML content or styling needed.
+	
+	5. Compress your extension directory into a ZIP file.
+	
+	6. Register for a Chrome Web Store Developer Account, if you haven't already: https://chrome.google.com/webstore/developer/add
+	
+	7. After registration, click the "Create your first item" button.
+	
+	8. Click "Choose file" and select the ZIP file you created in step 5. Fill in the required information, including a detailed description, and provide promotional images or screenshots, as needed. You can also link to your GitHub repository.
+	
+	9. Review the Chrome Web Store Developer Program Policies: https://developer.chrome.com/docs/webstore/program_policies/
+	
+	10. Once you've filled out all necessary information and ensured your extension complies with the policies, click "Publish Changes." Your extension will be published to the Chrome Web Store after it has been reviewed and approved.
+	
+	Note: There might be a one-time developer fee for registering, which you can learn more about here: https://support.google.com/chrome_webstore/answer/2664769
+	
+	For more information, you can refer to the Chrome Extension documentation: https://developer.chrome.com/docs/extensions/mv3/getstarted/
+user:	I'll use Stable Diffusion (AI image gen) to create an icon from it, maybe something suggesting schizophrenia :)  I'm allowed to joke about that because I suffered from mental illness myself, and was suggested I had schizophrenia at one point.  Eh, I just needed more sleep and a microdose of Lithium once a year or so, I think.
+	Can the manifest include info about authors?
+assistant:	Of course, it's great to be creative with your icon, and humor can be a useful tool when used thoughtfully!
+	
+	As for including author information in the manifest, the `manifest.json` itself doesn't have a dedicated field for authors. However, when you publish your extension on the Chrome Web Store, you'll be able to specify your name (or a pseudonym if you prefer) as the developer. The extension's listing on the Chrome Web Store will show the developer name, linking to other extensions you have created, if any.
+	
+	Additionally, in your GitHub repository, you can create a separate `README.md` file to explain the purpose of the extension, its features, and include any necessary credits or acknowledgments. This allows you to feature the authors who have contributed to the project more prominently.
+	
+	Furthermore, you can create an `AUTHORS` or `CONTRIBUTORS` text file in your repository to list the names, roles, and contact information of the people involved in the project. While this information won't be visible on the Chrome Web Store directly, interested users can find it in the GitHub repository.

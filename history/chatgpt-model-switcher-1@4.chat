@@ -1,0 +1,147 @@
+user:	Can you help me create a browser plugin or user script to switch the ChatGPT model mid-chat?  It should be easy I think. I can paste in the DOM and JavaScript if that will help.
+	I'm a Linux guru and top world-class programmer, I already have tampermonkey installed. Should I paste in an outline of the DOM?  I guess maybe it's not going to be easy, as the model code is probably in a private javascript variable. If you can suggest a strategy to do it that would be great, though.
+	We'll need a select element in the UI to enable switching the model easily, too. This is the HTML for the button bar where I'd like to add the selector. I already have a couple "share" plugins that have added their buttons here.
+
+	<div class="flex ml-1 md:w-full md:m-auto md:mb-2 gap-0 md:gap-2 justify-center"><button id="share-button" class="btn flex gap-2 justify-center btn-neutral" style="display: flex;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke:currentColor;">
+  	  <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"></path>
+	</svg>Share</button><div id="c4g-gpt-chat-share"><button class=" btn flex gap-2 justify-center btn-neutral"><svg aria-hidden="true" focusable="false" role="img" class="octicon octicon-share-android" viewBox="0 0 16 16" width="12" height="12" fill="currentColor" style="display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible; --darkreader-inline-fill:currentColor;" data-darkreader-inline-fill=""><path d="M15 3a3 3 0 0 1-5.175 2.066l-3.92 2.179a2.994 2.994 0 0 1 0 1.51l3.92 2.179a3 3 0 1 1-.73 1.31l-3.92-2.178a3 3 0 1 1 0-4.133l3.92-2.178A3 3 0 1 1 15 3Zm-1.5 10a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 13.5 13Zm-9-5a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 4.5 8Zm9-5a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 13.5 3Z"></path></svg>Share</button></div><button class="btn relative btn-neutral border-0 md:border"><div class="flex w-full items-center justify-center gap-2"><svg stroke="currentColor" fill="none" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke:currentColor;"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>Regenerate response</div></button></div>
+	Here's an example of a request payload, to https://chat.openai.com/backend-api/conversation
+
+	{"action":"next","messages":[{"id":"7475c490-ef36-4c40-b95e-e64da06cb8a4","author":{"role":"user"},"content":{"content_type":"text","parts":["We'll need a select element in the UI to enable switching the model easily, too. This is the HTML for the button bar where I'd like to add the selector. I already have a couple \"share\" plugins that have added their buttons here.\n\n<div class=\"flex ml-1 md:w-full md:m-auto md:mb-2 gap-0 md:gap-2 justify-center\"><button id=\"share-button\" class=\"btn flex gap-2 justify-center btn-neutral\" style=\"display: flex;\"><svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-3 h-3\" data-darkreader-inline-stroke=\"\" style=\"--darkreader-inline-stroke:currentColor;\">\n  <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z\"></path>\n</svg>Share</button><div id=\"c4g-gpt-chat-share\"><button class=\" btn flex gap-2 justify-center btn-neutral\"><svg aria-hidden=\"true\" focusable=\"false\" role=\"img\" class=\"octicon octicon-share-android\" viewBox=\"0 0 16 16\" width=\"12\" height=\"12\" fill=\"currentColor\" style=\"display: inline-block; user-select: none; vertical-align: text-bottom; overflow: visible; --darkreader-inline-fill:currentColor;\" data-darkreader-inline-fill=\"\"><path d=\"M15 3a3 3 0 0 1-5.175 2.066l-3.92 2.179a2.994 2.994 0 0 1 0 1.51l3.92 2.179a3 3 0 1 1-.73 1.31l-3.92-2.178a3 3 0 1 1 0-4.133l3.92-2.178A3 3 0 1 1 15 3Zm-1.5 10a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 13.5 13Zm-9-5a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 4.5 8Zm9-5a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 13.5 3Z\"></path></svg>Share</button></div><button class=\"btn relative btn-neutral border-0 md:border\"><div class=\"flex w-full items-center justify-center gap-2\"><svg stroke=\"currentColor\" fill=\"none\" stroke-width=\"1.5\" viewBox=\"0 0 24 24\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"h-3 w-3\" height=\"1em\" width=\"1em\" xmlns=\"http://www.w3.org/2000/svg\" data-darkreader-inline-stroke=\"\" style=\"--darkreader-inline-stroke:currentColor;\"><polyline points=\"1 4 1 10 7 10\"></polyline><polyline points=\"23 20 23 14 17 14\"></polyline><path d=\"M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15\"></path></svg>Regenerate response</div></button></div>"]}}],"conversation_id":"fc931a5e-5370-47e1-9873-ccc20b09db80","parent_message_id":"2642e380-1a97-448d-863b-7d0c3c0bc734","model":"gpt-4","timezone_offset_min":-600}
+
+	I can see it has a model option there, currently set to gpt-4.  Looking at a GPT-3.5 chat (the other main option) I see this:
+
+	{"action":"next","messages":[{"id":"cb450c6c-b188-4acb-afd1-995cd4186a5b","author":{"role":"user"},"content":{"content_type":"text","parts":["Hey GPT-3.5 how's it hanging?"]}}],"parent_message_id":"386a4e72-e5da-42b7-a4c1-8a9bf27ba2ce","model":"text-davinci-002-render-sha","timezone_offset_min":-600}
+
+	The model appears to be "text-davinci-002-render-sha".
+
+	A third model option for "Legacy" ChatGPT is "text-davinci-002-render-paid".  I think because I'm a ChatGPT Plus subscriber, I have access to that one.  We could try "hacking in" some more model options, but that's not necessary right now.
+
+	I think that's all you need to know, to complete the user script?
+	Also, please write the @author as "GPT-4 and Sam Watkins" (that's me)
+	And the namespace will be https:/ucm.dev/, that's my website. It stands for Ultra Code Monkey.
+	Thanks for all you excellent help!
+assistant:	Thanks for providing the request payload examples. Here's a modified version of the userscript that intercepts the fetch requests and updates the model parameter based on the selected option in the UI.
+
+	// ==UserScript==
+	// @name         ChatGPT Model Switcher
+	// @namespace    http://tampermonkey.net/
+	// @version      0.1
+	// @description  Switch ChatGPT model mid-chat
+	// @author       You
+	// @match        *://chat.openai.com/*
+	// @grant        none
+	// ==/UserScript==
+
+	(function() {
+    	    'use strict';
+
+    	    // Add a select element to the button bar
+    	    const buttonBar = document.querySelector('.flex.ml-1.md\\:w-full.md\\:m-auto.md\\:mb-2.gap-0.md\\:gap-2.justify-center');
+    	    if (buttonBar) {
+        	const modelSelector = document.createElement('select');
+        	modelSelector.id = 'chatgpt-model-selector';
+        	modelSelector.innerHTML = `
+            	    <option value="gpt-4">GPT-4</option>
+            	    <option value="text-davinci-002-render-sha">GPT-3.5</option>
+            	    <option value="text-davinci-002-render-paid">Legacy ChatGPT</option>
+        	`;
+        	buttonBar.appendChild(modelSelector);
+    	    }
+
+    	    const originalFetch = window.fetch;
+    	    window.fetch = async function() {
+        	// Check if the current request is for
+user:	You got cut off, can you please finish the script? Just continue from where you got up to, don't start it over again please.
+assistant:	Apologies for the truncation. Here's the continuation of the script:
+	
+	```javascript
+	        // Check if the current request is for the chat API
+	        if (arguments[0] && arguments[0].startsWith('https://chat.openai.com/backend-api/conversation')) {
+	            const requestClone = arguments[1].clone();
+	            const requestData = await requestClone.json();
+	
+	            // Update the model parameter based on the selected option in the UI
+	            const modelSelector = document.getElementById('chatgpt-model-selector');
+	            if (modelSelector) {
+	                requestData.model = modelSelector.value;
+	            }
+	
+	            // Modify the original request to include the updated model parameter
+	            const updatedRequestInit = {
+	                ...arguments[1],
+	                body: JSON.stringify(requestData)
+	            };
+	            arguments[1] = updatedRequestInit;
+	        }
+	
+	        const response = await originalFetch.apply(this, arguments);
+	        return response;
+	    };
+	})();
+	```
+	
+	Please add this continuation to the end of the provided user script, and it should function as intended. The script now intercepts the fetch requests to the chat API, updates the model parameter based on the selected option in the UI, and sends the modified request.
+user:	Thanks, nice one. That query selector looks a bit hairy. Can I help find a better one somehow by dumping out the main structure of the DOM?  I have a script I wrote to help with that if I can find it...
+assistant:	I understand that the current query selector may look a bit cumbersome. You can use a simpler query selector by targeting an element based on its class names. In the provided HTML snippet, the button bar has classes "flex", "ml-1", "md:w-full", "md:m-auto", and "md:mb-2". You could use one or more of them to select the element.
+	
+	For example, you can use:
+	
+	```javascript
+	const buttonBar = document.querySelector('.flex.ml-1');
+	```
+	
+	Or if you want to be more specific:
+	
+	```javascript
+	const buttonBar = document.querySelector('.flex.ml-1.md\\:w-full.md\\:m-auto.md\\:mb-2');
+	```
+	
+	By using one of these selectors, you should be able to target the button bar more easily. If you still want to use your DOM structure dumper script to find a better selector, feel free to do so. The main goal is to get a reference to the desired element, so if you find another selector that works more reliably, go for it!
+user:	Testing the script, I'm getting an error message:
+	arguments[1].clone is not a function
+	Any thoughts?
+assistant:	Apologies for the confusion. I made an error in the implementation. We don't need to call `.clone()` on the `RequestInit` object. Here's the corrected script:
+	
+	```javascript
+	        // Check if the current request is for the chat API
+	        if (arguments[0] && arguments[0].startsWith('https://chat.openai.com/backend-api/conversation')) {
+	            const requestData = await (await arguments[1].body.json());
+	
+	            // Update the model parameter based on the selected option in the UI
+	            const modelSelector = document.getElementById('chatgpt-model-selector');
+	            if (modelSelector) {
+	                requestData.model = modelSelector.value;
+	            }
+	
+	            // Modify the original request to include the updated model parameter
+	            const updatedRequestInit = {
+	                ...arguments[1],
+	                body: JSON.stringify(requestData)
+	            };
+	            arguments[1] = updatedRequestInit;
+	        }
+	
+	        const response = await originalFetch.apply(this, arguments);
+	        return response;
+	})();
+	```
+	
+	This updated script should now work correctly without throwing the mentioned error.
+user:	Now it's saying arguments[1].body.json is not a function
+	I think we should do some diagnostics, add in console.log or something. What do you think?
+	Also please reply with very short responses and minimal code, only what you are changing.
+	It's quicker and less expensive that way.
+assistant:	Apologies for the confusion again. You're right, it seems the `body` is not a `Response` object. Let's use `JSON.parse()` instead. Replace this line:
+	
+	```javascript
+	const requestData = await (await arguments[1].body.json());
+	```
+	
+	with
+	
+	```javascript
+	const requestData = JSON.parse(arguments[1].body);
+	```
+	
+	This should fix the issue. If it doesn't, we'll add console logs for better diagnostics.
