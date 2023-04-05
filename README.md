@@ -30,7 +30,7 @@ I offer extremely affordable AI consulting and software development. The first c
 </summary>
 <br>
 (GPT-4 tries to help me sell this...)
-
+<br>
 Don't miss out on this exceptional opportunity to grow and advance your business at unparalleled affordable rates! For a limited time only, I'm offering <i>FREE</i> first AI consultation and highly cost-effective software development services as I launch my innovative AI business venture.
 
 The world has already realized the power of artificial intelligence, and it's time for you to seize the potential that AI can offer to your business. By availing my exceptional services, you get access to:
