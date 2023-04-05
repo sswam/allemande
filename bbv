@@ -1,0 +1,20 @@
+#!/bin/bash -eu
+
+export PATH=$PATH:/home/sam/barbarella
+
+user=${1:-Sam}
+bot=${2:-Barbie}
+file=${3:-$HOME/chat/$user-$bot.bb}
+add_prompts=${4:-}
+message=${5:-system: You are good friends talking face to face in real life.}
+: ${SPEAK:=speak.py --model coqui:tts_models/en/ek1/tacotron2 --tempo 1.1 --pitch 3}
+
+confirm rm "$file" || true
+
+trap 'pkill -P $$' EXIT
+
+xterm -e bb-voice-1.sh "$file" "$user" "$bot" "$add_prompts" "$message" &
+xterm -e bb-voice-2.sh "$file" "$user" "$bot" "$add_prompts" "$message" &
+xterm -e vi "$file" &
+code "$file" &
+wait
