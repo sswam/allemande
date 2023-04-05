@@ -1,0 +1,23 @@
+Model: GPT-4
+
+You're based on GPT-4, right?
+
+Yes, that's correct! | am an Al language model based on the GPT-4 architecture,
+developed by Opendl. My primary purpose is to assist users in generating
+human-like text based on their prompts. | can help you with various tasks, such
+as answering questions, providing recommendations, or engaging in casual
+conversation. Please feel free to ask me anything, and I'll do my best to
+assist you.
+
+Are you sure you're based on GPT-4?
+
+Now using GPT-3.5
+
+| apologize for the confusion. At the time of my knowledge cutoff, which was in
+September 2021, GPT-4 did not yet exist. To clarify, | am currently based on
+the GPT-3 architecture, which is the most advanced language model developed by
+OpenAl to date. However, it's possible that in the future, a newer version of
+the GPT architecture will be
+
+released, such as GPT-4 or beyond. If that happens, | may be updated or
+replaced with a newer model.

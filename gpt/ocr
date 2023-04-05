@@ -3,22 +3,18 @@
 
 # usage: ocr [options] input.png [output.txt]
 
-# e.g.:  ocr input.png [output.txt]
-#        ocr -m=4 -s="a stackoverflow page" -t="OCR scanned text" -d -v -tesseract_opts="-l eng --dpi 300" input.png output.txt
-
-m=			# model, optional, e.g  -m=4 for gpt-4
-s=			# subject, e.g. a stackoverflow page
+m=	# model, optional, e.g  -m=4 for gpt-4
+s=	# subject, e.g. a stackoverflow page
 t="OCR scanned text"	# input type
-d=			# debug option, use e.g. -d=1
-v=			# verbose option, use e.g. -v=1
-tesseract_opts=		# tesseract options, e.g. -tesseract_opts="-l eng --dpi 300"
+v=	# verbose option, use e.g. -v=1
+tesseract_opts=	# tesseract options, e.g. -tesseract_opts="-l eng --dpi 300"
 . opts
 [ $# -gt 0 ] || usage
-input="$1"			# input image
+input="$1"	# input image
 output="${2:-$input.txt}"	# output text
 
 
-if [ "$d" = 1 -o "$v" = 1 ]; then
+if [ "$v" = 1 ]; then
 	v=v
 fi
 
@@ -56,4 +52,4 @@ $prompt1
 EOF
 `
 
-< "$input.ocr.txt" $v gpt process -m "$m" -d=$d "$prompt1" "$prompt2" > "$output"
+< "$input.ocr.txt" $v gpt process -m"$m" "$prompt1" --prompt2 "$prompt2" > "$output"
