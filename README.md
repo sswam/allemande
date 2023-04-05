@@ -41,6 +41,7 @@ I offer extremely affordable AI consulting and software development. The first c
 <li>Cutting-edge software development crafted to optimize your business processes, enhance productivity, and unlock new growth opportunities.</li>
 
 <li>Tailored AI strategies designed to keep you at the forefront of the constantly changing and competitive business landscape.</li>
+</ol>
 
 <p>Take advantage of this timely and exclusive offer while it lasts! Together, we can revolutionize your business to new heights and harness the limitless potential of AI. Remember, the first consultation is <i>FREE</i> with absolutely no strings attached. Don't let this opportunity slip away! Schedule your consult today!</p>
 </details>
