@@ -26,7 +26,7 @@ See that page for info on obtaining the weights.
 
 <details>
 <summary>
-I offer extremely affordable AI consulting and software development. The first consult is free. This is a *limited time offer*, while I get the business up and running. See my website for details: [sam.ucm.dev](https://sam.ucm.dev/)
+I offer extremely affordable AI consulting and software development. The first consult is free. This is a *limited time offer*, while I get the business up and running. See my website for details: <a href="https://sam.ucm.dev/">sam.ucm.dev</a>.
 </summary>
 
 Don't miss out on this exceptional opportunity to grow and advance your business at unparalleled affordable rates! For a limited time only, I'm offering *FREE* first AI consultation and highly cost-effective software development services as I launch my innovative AI business venture.
