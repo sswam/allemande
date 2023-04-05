@@ -9,8 +9,10 @@ See that page for info on obtaining the weights.
 ## What's in the box?
 
 - Shell tools for ChatGPT / GPT-4.
+- An OCR script that uses GPT for proofreading.
 - Automatically generate Anki flashcards and summaries from short YouTube videos (up to 15 minutes or so).
 - Voice and in-editor text chat with an AI model Barbarella (point-alpaca), or you can call her whatever you like.
+- chatgpt-model-switcher, a user script that enables us to switch models mid-chat in the ChatGPT web app
 
 ## Requirements
 
@@ -20,7 +22,7 @@ See that page for info on obtaining the weights.
 
 ## Video demo
 
-[![Electric Barbarella: AI Voice Chat and shell tools](http://img.youtube.com/vi/q8Cl2fZTyOs/0.jpg)](http://www.youtube.com/watch?v=q8Cl2fZTyOs "Electric Barbarella: AI Voice Chat and shell tools")
+[![Electric Barbarella: AI Voice Chat and shell tools](https://img.youtube.com/vi/q8Cl2fZTyOs/maxresdefault.jpg)](http://www.youtube.com/watch?v=q8Cl2fZTyOs "Electric Barbarella: AI Voice Chat and shell tools")
 
 ## Consulting
 

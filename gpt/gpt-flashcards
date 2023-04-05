@@ -31,7 +31,7 @@ Prompt: the prompt
 Answer: the bare answer, *not including the prompt*
 Extra: extra extended info
 
-Include a blank line between cards. Preferably make the notes suitable for reversible flashcards, i.e. they should still make sense if prompt and answer are swapped, so don't include the main words from the prompt in the answer. Note: Do not include key words from the prompt in the answer! Please include TeX math, code examples, command samples, links, and markdown images (linked from online) where appropriate. Please highlight the main terms in boldface.
+Include a blank line between cards. Preferably make the notes suitable for reversible flashcards, i.e. they should still make sense if prompt and answer are swapped, so don't include the main words from the prompt in the answer. Note: Do not include key words from the prompt in the answer! Please include mathematical equations if needed (using TeX), code examples, command samples, links, and markdown images (linked from online) where appropriate. Please highlight the main terms in boldface.
 
 Even if it doesn't seem a suitable topic for flashcard study, please have a go anyway. Please produce rich and detailed flashcards, with plenty of extra info.
 "
