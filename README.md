@@ -1,8 +1,6 @@
-<img style="float:right; border-radius: 1em; padding: 1em;" src="https://sam.ucm.dev/pix/barbarella.jpg" height="512" width="256">
-
 [![Electric Barbarella: AI Voice Chat and shell tools](http://img.youtube.com/vi/q8Cl2fZTyOs/0.jpg)](http://www.youtube.com/watch?v=q8Cl2fZTyOs "Electric Barbarella: AI Voice Chat and shell tools")
 
-# barbarella
+# Electric Barbarella
 
 ## What is this?
 
@@ -15,3 +13,6 @@ See that page for info on obtaining the weights.
 - Shell tools for ChatGPT / GPT-4.
 - Automatically generate Anki flashcards and summaries from YouTube videos, saves some time.
 - Text and voice chat with an AI model (point-alpaca, aka "Barbie", or you can call it whatever you like).
+
+<img style="float:right; border-radius: 1em; padding: 1em;" src="https://sam.ucm.dev/pix/barbarella.jpg" height="512" width="256">
+

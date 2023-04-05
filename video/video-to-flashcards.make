@@ -9,10 +9,14 @@ export PATH := $(MAKEFILE_DIR):$(PATH)
 
 
 SHELL := /bin/bash
-WHISPER_MODEL := large
+WHISPER := large
+SEARCH := google
 
+m0=3+
 m=4
 
+
+default: goal
 
 transcript.sent.txt: transcript.txt
 	< $< split_sentences > $@
@@ -21,8 +25,6 @@ transcript.sent2.txt: transcript.sent.txt
 	< $< ai_split_long_sentences.py > $@
 
 
-
-default: goal
 
 web-address.txt:
 	if [ -n "$(url)" ]; then \
@@ -48,6 +50,9 @@ av.webm: video.webm audio.webm
 title.txt: web-address.txt
 	web-title "`<web-address.txt`" >$@
 
+title-clean.txt: title.txt
+	< $< perl -pe 's/- YouTube$$//; s/\(.*?\)//g; s/\[.*?\]//g; s/\{.*?\}//g;' > $@
+
 # get images from the video, one every $img_rate seconds
 images: video.webm
 	mkdir -p images
@@ -57,7 +62,7 @@ audio-extract: av
 	ffmpeg -loglevel error -i $< -vn -c copy $@
 
 audio.txt: audio.webm
-	whisper --language en --model $(WHISPER_MODEL) $<
+	whisper --language en --model $(WHISPER) $<
 
 transcript.md: transcript.txt
 	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown >$@
@@ -66,20 +71,20 @@ audio-clean.txt: audio.txt
 	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines 1 > $@
 
 summary.txt: audio-clean.txt
-	< $< gpt-summary -m "$m" > $@
+	< $< gpt-summary -m="$m" > $@
 
 name.txt: audio-clean.txt
 	if [ -n "$(name)" ] ; then \
 		echo "$(name)" > $@ ; \
 	else \
-		< $< gpt process -m "$m"" "Please respond with just the name or a suitable name for the following:" > $@ ; \
+		< $< gpt process -m "$m" "Please respond with just the name or a suitable name for the following:" > $@ ; \
 	fi
 
 topic.txt: audio-clean.txt
-	< $< gpt-topic -m "$m" > $@
+	< $< gpt-topic -m="$m" > $@
 
 flashcards-1.txt: audio-clean.txt
-	< $< gpt-flashcards -m "$m" > $@
+	< $< gpt-flashcards -m="$m" > $@
 
 flashcards.txt: flashcards-1.txt
 	(< $< sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single_blank_lines > $@
@@ -94,14 +99,16 @@ prompt-transcript.txt: audio-clean.txt correct.prompt
 	CONTENT=`< $<` shell-template correct.prompt > $@
 
 transcript.txt: prompt-transcript.txt
-	< $< gpt process -m "$m" "Please reply with just the corrected transcript." > $@
+	< $< gpt process -m "$(m0)" "Please reply with just the corrected transcript." > $@
 
 
 # We could also search to find the title or canonical page.
 
+search-lyrics-query.txt: name.txt title-clean.txt
+	echo "`< title-clean.txt` lyrics or transcript" > $@
 
-search-lyrics.txt: name.txt
-	search.py "\"`< name.txt`\" lyrics or transcript" > $@
+search-lyrics.txt: search-lyrics-query.txt
+	search -e $(SEARCH) "`< search-lyrics-query.txt`" >$@
 
 lyrics-url.txt: search-lyrics.txt name.txt
 	< $< gpt process -m "$m" "Please reply with just the best URL to get lyrics or a transcript for `<name.txt`, based on these search results or your knowledge. If nothing looks promising, just reply 'about:blank'." > $@
