@@ -29,19 +29,20 @@ See that page for info on obtaining the weights.
 I offer extremely affordable AI consulting and software development. The first consult is free. This is a <i>limited time offer</i>, while I get the business up and running. See my website for details: <a href="https://sam.ucm.dev/">sam.ucm.dev</a>.
 </summary>
 <br>
-(GPT-4 tries to help me sell this...)
-<br>
-Don't miss out on this exceptional opportunity to grow and advance your business at unparalleled affordable rates! For a limited time only, I'm offering <i>FREE</i> first AI consultation and highly cost-effective software development services as I launch my innovative AI business venture.
+<p>(GPT-4 tries to help me sell this...)</p>
 
-The world has already realized the power of artificial intelligence, and it's time for you to seize the potential that AI can offer to your business. By availing my exceptional services, you get access to:
+<p>Don't miss out on this exceptional opportunity to grow and advance your business at unparalleled affordable rates! For a limited time only, I'm offering <i>FREE</i> first AI consultation and highly cost-effective software development services as I launch my innovative AI business venture.</p>
 
-1. Profound consultation to identify the AI solutions that effectively align with your business needs.
+<p>The world has already realized the power of artificial intelligence, and it's time for you to seize the potential that AI can offer to your business. By availing my exceptional services, you get access to:</p>
 
-2. Cutting-edge software development crafted to optimize your business processes, enhance productivity, and unlock new growth opportunities.
+<ol>
+<li>Profound consultation to identify the AI solutions that effectively align with your business needs.</li>
 
-3. Tailored AI strategies designed to keep you at the forefront of the constantly changing and competitive business landscape.
+<li>Cutting-edge software development crafted to optimize your business processes, enhance productivity, and unlock new growth opportunities.</li>
 
-Take advantage of this timely and exclusive offer while it lasts! Together, we can revolutionize your business to new heights and harness the limitless potential of AI. Remember, the first consultation is <i>FREE</i> with absolutely no strings attached. Don't let this opportunity slip away! Schedule your consult today!
+<li>Tailored AI strategies designed to keep you at the forefront of the constantly changing and competitive business landscape.</li>
+
+<p>Take advantage of this timely and exclusive offer while it lasts! Together, we can revolutionize your business to new heights and harness the limitless potential of AI. Remember, the first consultation is <i>FREE</i> with absolutely no strings attached. Don't let this opportunity slip away! Schedule your consult today!</p>
 </details>
 
 ## Mildly NSFW cyborg concept art
