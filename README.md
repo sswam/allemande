@@ -44,6 +44,12 @@ The world has already realized the power of artificial intelligence, and it's ti
 Take advantage of this timely and exclusive offer while it lasts! Together, we can revolutionize your business to new heights and harness the limitless potential of AI. Remember, the first consultation is <i>FREE</i> with absolutely no strings attached. Don't let this opportunity slip away! Schedule your consult today!
 </details>
 
-## Concept art
+## Mildly NSFW cyborg concept art
 
-<img style="float:right; border-radius: 1em; padding: 1em;" src="https://sam.ucm.dev/pix/barbarella.jpg" height="512" width="256">
+<details>
+<summary>
+This captivating and mildly NSFW cyborg concept art is an enthralling blend of technology and desire, making it impossible for the viewer not to be enveloped in its world. The unparalleled attention to detail, as well as the thought-provoking themes presented, make this image a perfect representation of the artist's incredible talent and insight into the future of human evolution. (spoiler blurb by GPT-4).
+</summary>
+
+<img style="border-radius: 1em; padding: 1em;" src="pix/barbarella.jpg" height="512" width="256">
+</details>

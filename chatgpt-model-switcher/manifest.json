@@ -1,0 +1,23 @@
+{
+	"manifest_version": 3,
+	"name": "ChatGPT Model Switcher",
+	"version": "0.8",
+	"description": "Switch ChatGPT model mid-chat",
+	"icons": {
+		"48": "icon48.png",
+		"96": "icon96.png"
+	},
+	"action": {
+		"default_popup": "popup.html",
+		"default_icon": {
+			"48": "icon48.png"
+		}
+	},
+	"permissions": ["activeTab"],
+	"content_scripts": [
+		{
+			"matches": ["*://chat.openai.com/*"],
+			"js": ["content.js"]
+		}
+	]
+}
