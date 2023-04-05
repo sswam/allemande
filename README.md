@@ -28,6 +28,7 @@ See that page for info on obtaining the weights.
 <summary>
 I offer extremely affordable AI consulting and software development. The first consult is free. This is a <i>limited time offer</i>, while I get the business up and running. See my website for details: <a href="https://sam.ucm.dev/">sam.ucm.dev</a>.
 </summary>
+<br>
 (GPT-4 tries to help me sell this...)
 
 Don't miss out on this exceptional opportunity to grow and advance your business at unparalleled affordable rates! For a limited time only, I'm offering <i>FREE</i> first AI consultation and highly cost-effective software development services as I launch my innovative AI business venture.
@@ -49,5 +50,6 @@ Take advantage of this timely and exclusive offer while it lasts! Together, we c
 <summary>
 This captivating and mildly NSFW cyborg concept art is an enthralling blend of technology and desire, making it impossible for the viewer not to be enveloped in its world. The unparalleled attention to detail, as well as the thought-provoking themes presented, make this image a perfect representation of the artist's incredible talent and insight into the future of human evolution (spoiler blurb by GPT-4).
 </summary>
-<img style="border-radius: 1em; padding: 1em; margin-top: 1em;" src="pix/barbarella.jpg" height="512" width="256">
+<br>
+<img style="border-radius: 1em; padding: 1em;" src="pix/barbarella.jpg" height="512" width="256">
 </details>
