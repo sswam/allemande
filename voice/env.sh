@@ -1,6 +1,6 @@
 BARBARELLA=$HOME/barbarella
 CHATPATH=$HOME/chat
-PATH=$PATH:$BARBARELLA:$BARBARELLA/x:$BARBARELLA/voice
+PATH=$PATH:$BARBARELLA:$BARBARELLA/tools:$BARBARELLA/voice
 user=${USER^}
 bot=Barbie
 file=$HOME/chat/$user-$bot.bb

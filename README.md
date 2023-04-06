@@ -37,7 +37,7 @@ I am also including some of my other AI tools.
 - Add to your ~/.bashrc:
 ```
 export BARBARELLA=$HOME/barbarella   # or wherever you put it
-export PATH=$PATH:$BARBARELLA:$BARBARELLA/x:$BARBARELLA/voice
+export PATH=$PATH:$BARBARELLA:$BARBARELLA/tools:$BARBARELLA/voice
 export OPENAI_API_KEY=....
 ```
 
