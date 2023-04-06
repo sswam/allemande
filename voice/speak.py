@@ -178,9 +178,7 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 		if postproc:
 			audio, rate_pp = postproc(file, audio, rate)
 
-		# TODO process the audio with:
-		# - soundstretch
-		# - a vocoder?
+		# TODO process the audio with a vocoder?
 
 		if mute_capture_device:
 			sd.wait()
@@ -191,16 +189,13 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 		if play:
 			sd.wait()
 			sd.play(audio, samplerate=rate_pp)
-
+	except ZeroDivisionError as e:
+		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
+	finally:
 		if mute_capture_device:
 			sd.wait()
 			amixer.sset("Capture", "cap")
 			logger.info("Mic on")
-	except ZeroDivisionError as e:
-		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
-		pass
-	finally:
-		# delete the temporary file
 		if out_is_temp:
 			os.remove(out)
 
