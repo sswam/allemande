@@ -32,6 +32,8 @@ I am also including some of my other AI tools.
 
 - pip install -r requirements.txt
 
+- segment-anything
+
 - Add to your ~/.bashrc:
 ```
 export BARBARELLA=$HOME/barbarella   # or wherever you put it

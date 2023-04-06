@@ -1,0 +1,3 @@
+#!/bin/bash -eu
+# amg: generate masks for a given image, using the segment-anything model
+exec /opt/venvs/python3.10-ai/venv/bin/python3 /home/sam/soft-ai/segment-anything/scripts/amg.py "$@"
