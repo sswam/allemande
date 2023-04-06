@@ -7,7 +7,8 @@ import os
 import tempfile
 import logging
 from functools import partial
-import signal
+import multiprocessing
+import torch
 
 from argh import arg, dispatch_command
 import sounddevice as sd
@@ -33,32 +34,14 @@ DEFAULT_MODELS = {
 DEFAULT_MODEL = "coqui:" + DEFAULT_MODELS['coqui']
 # DEFAULT_MODEL = "gtts:" + DEFAULT_MODELS['gtts']
 
-COQUI_TRIES = 3
-COQUI_TIMEOUT = 5
 
-# I'm using sigalrm to timeout the TTS calls
-# This only works on Linux and doesn't play well with threads.
-# We might try using multiprocessing instead later:
-# refer: https://stackoverflow.com/questions/492519/timeout-on-a-function-call
-# check alse here: https://chat.openai.com/chat?model=gpt-4
+use_cuda = torch.cuda.is_available()
 
-def retry_timeout(fn, timeout, tries):
-	""" Retry a function until it succeeds or the timeout is reached """
-	for _i in range(tries-1):
-		try:
-			def handler(signum, frame):
-				raise TimeoutError("timeout")
-			signal.signal(signal.SIGALRM, handler)
-			signal.alarm(timeout)
-			result = fn()
-			signal.alarm(0)
-			return result
-		except TimeoutError:
-			logger.warning("Timeout, retrying")
-	return fn()
 
 def get_synth_coqui(model=DEFAULT_MODELS["coqui"]):
 	""" Get a Coqui TTS speak function for the given model """
+	global use_cuda
+
 	# download and load the TTS model
 	model_manager = ModelManager()
 	model_path, config_path, _model_item = model_manager.download_model(model)
@@ -67,20 +50,18 @@ def get_synth_coqui(model=DEFAULT_MODELS["coqui"]):
 	synth = Synthesizer(
 		tts_checkpoint=model_path,
 		tts_config_path=config_path,
-		vocoder_checkpoint=None
+		vocoder_checkpoint=None,
+		use_cuda=use_cuda,
 	)
 
 	def speak_fn(text, out, **_kwargs):
-		def do_it():
-			return synth.tts(text)
-		audio = retry_timeout(do_it, COQUI_TIMEOUT, COQUI_TRIES-1)
+		audio = synth.tts(text)
 		stem, ext = os.path.splitext(out)
 		if ext != '.wav':
 			out = stem + '.wav'
 		synth.save_wav(audio, out)
 		rate = synth.tts_config.audio['sample_rate']
 		return out, audio, rate
-
 	return speak_fn
 
 def get_synth_gtts(model=DEFAULT_MODELS["gtts"]):
@@ -215,10 +196,9 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 			sd.wait()
 			amixer.sset("Capture", "cap")
 			logger.info("Mic on")
-
-#	except Exception as e:
-#		print(f'Error: {e}')
-
+	except ZeroDivisionError as e:
+		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
+		pass
 	finally:
 		# delete the temporary file
 		if out_is_temp:

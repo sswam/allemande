@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 logger_fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
 logging.basicConfig(level=logging.DEBUG, format=logger_fmt)
 
-def record_speech(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise=True):
+def record_speech(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise=False):
 	""" Record audio from microphone and put it in the queue """
 	r = sr.Recognizer()
 	r.energy_threshold = energy
@@ -68,7 +68,7 @@ def do_list_devices():
 	for index, name in enumerate(sr.Microphone.list_microphone_names()):
 		print(f'{index}\t{name}')
 
-def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=0.8, save=None, device_index=None, list_devices=False):
+def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=0.8, save=None, device_index=None, list_devices=False, adjust_for_ambient_noise=False):
 	""" Transcribe speech to text using microphone input """
 	if list_devices:
 		do_list_devices()
@@ -90,7 +90,7 @@ def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=
 		q_text = Queue()
 		Thread(
 			target=record_speech,
-			args=(run_event, q_audio, energy, pause, dynamic_energy, save, device_index)
+			args=(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise)
 			).start()
 		Thread(
 			target=speech_to_text,

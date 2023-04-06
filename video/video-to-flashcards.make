@@ -65,10 +65,10 @@ audio.txt: audio.webm
 	whisper --language en --model $(WHISPER) $<
 
 transcript.md: transcript.txt
-	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown >$@
+	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown.sh >$@
 
 audio-clean.txt: audio.txt
-	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines 1 > $@
+	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
 
 summary.txt: audio-clean.txt
 	< $< gpt-summary -m="$m" > $@
@@ -87,16 +87,16 @@ flashcards-1.txt: audio-clean.txt
 	< $< gpt-flashcards -m="$m" > $@
 
 flashcards.txt: flashcards-1.txt
-	(< $< sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single_blank_lines > $@
+	(< $< sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single_blank_lines.pl > $@
 
 flashcards.tsv: flashcards.txt
-	< $< recs2tsv | grep '\S' > $@
+	< $< recs2tsv.pl | grep '\S' > $@
 
 correct.prompt:
 	ln -s `wich correct.prompt` .
 
 prompt-transcript.txt: audio-clean.txt correct.prompt
-	CONTENT=`< $<` shell-template correct.prompt > $@
+	CONTENT=`< $<` shell-template.sh correct.prompt > $@
 
 transcript.txt: prompt-transcript.txt
 	< $< gpt process -m "$(m0)" "Please reply with just the corrected transcript." > $@
@@ -126,7 +126,7 @@ prompt-lyrics.txt: lyrics-page.txt extract.prompt
 	if [ ! -s $< ]; then \
 		echo "No lyrics found." ; > $@ ; \
 	else \
-		CONTENT=`< $<` shell-template extract.prompt > $@ ; \
+		CONTENT=`< $<` shell-template.sh extract.prompt > $@ ; \
 	fi
 
 lyrics.txt: prompt-lyrics.txt name.txt

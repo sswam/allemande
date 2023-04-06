@@ -1,0 +1,83 @@
+# opts: a simple option parser for bash
+# no dependencies, no magic, no bullshit
+
+usage() {
+	# read the script itself to output usage:
+
+	# if -h was not passed, output usage to stderr
+	if [ "${1:-}" != -h ]; then
+		echo exec to stderr
+
+		exec >&2
+	fi
+
+	# use perl to strip out the shebang and the opts section
+	< "$0" perl -pe '
+		$_ = "" if m{^#!/};
+		$_ = "", $after=1, next if /^\. opts$/;
+		last if $after && /^$/;
+
+		s/=/\t/;
+		s/(^|\t)#\s*/$1/;
+	' | tsv2txt
+
+	# if -h was passed, exit with success
+	if [ "${1:-}" = -h ]; then
+		exit 0
+	fi
+
+	# else, exit with failure
+	exit 1
+}
+
+OPTS=()
+OPTS_N=0
+while true; do
+	case "${1:-}" in
+	-|--)
+		shift
+		break
+		;;
+	-h|-help|--help)
+		usage -h
+		;;
+	-*)
+		OPTS[$OPTS_N]="$1"
+		OPTVAL="${1#-}"
+		OPTVAL="${OPTVAL#-}"
+		OPT=${OPTVAL%%=*}
+		OPT="${OPT//-/_}"
+		case "$OPTVAL" in
+		*=*)
+			VAL=${OPTVAL#*=}
+			eval $OPT=\$VAL
+			;;
+		[a-zA-Z]*)
+			eval $OPT=1
+			;;
+		*)
+			eval opt_$OPT=1
+			;;
+		# TODO list-valued options like in a2b?
+		esac
+		shift
+		OPTS_N=$[$OPTS_N + 1]
+		;;
+	*)
+		break
+		;;
+	esac
+done
+
+
+# # usage from bash
+# # e.g. for a -debug switch and -mode=foo option:
+#
+# #!/bin/bash
+# debug=
+# mode=normal
+# . opts
+# if (( debug )); then echo "debug mode"; fi
+# echo "mode=$mode"
+# echo opts: "${OPTS[@]}"
+# echo args: "$@"

@@ -350,6 +350,11 @@ def process_file(model, file, args, history_start=0):
 
 	print("history:", history)
 
+	if args.ignore and history and history[-1].rstrip().endswith(args.ignore):
+		return
+	if args.require and history and history[-1].rstrip().endswith(args.require):
+		return
+
 	# get latest user name and bot name from history
 	if not args.raw:
 		get_roles_from_history(history, args)
@@ -393,7 +398,7 @@ def find_files(folder, ext=None, maxdepth=inf):
 	except PermissionError as e:
 		logger.warning("find_files: %r", e)
 
-def watch_step(model, args, mtimes):
+def watch_step(model, args, stats):
 	""" Watch a directory for changes, one step. """
 	files = []
 	dirs = args.watch.split(":")
@@ -403,32 +408,35 @@ def watch_step(model, args, mtimes):
 
 	first = False
 
-	if mtimes is None:
-		mtimes = {}
+	if stats is None:
+		stats = {}
 		first = True
 
 	for file in files:
 		# check if modified since last time
-		mtime = os.path.getmtime(file)
-		old_mtime = mtimes.get(file, -1)
-		if first:
-			mtimes[file] = mtime
-			continue
-		if mtime <= old_mtime:
-			continue
-		if os.path.getsize(file) > 0:
-			process_file(model, file, args)
-		mtimes[file] = os.path.getmtime(file)
+		stats0 = stats.get(file, {"st_mtime": -1, "st_size": 0})
+		stats1 = os.stat(file)
 
-	return mtimes
+		if first:
+			stats[file] = stats1
+			continue
+		if stats1.st_mtime <= stats0.st_mtime:
+			pass
+		elif args.ignore_shrink and stats1.st_size < stats0.st_size:
+			pass
+		elif stats1.st_size > 0:
+			process_file(model, file, args)
+		stats[file] = stats1
+
+	return stats
 
 def watch_loop(model, args):
 	""" Watch a directory for changes, and process files as they change. """
 	logger.info("Watching %r for files with extension %r and depth %r", args.watch, args.ext, args.depth)
 
-	mtimes = None
+	stats = None
 	while True:
-		mtimes = watch_step(model, args, mtimes)
+		stats = watch_step(model, args, stats)
 		time.sleep(args.interval)
 		print(".", file=sys.stderr, end="", flush=True)
 
@@ -506,6 +514,9 @@ def get_opts():
 	watch_group.add_argument("--ext", default=default_file_extension, help="File extension to watch for")
 	watch_group.add_argument("--depth", type=int, default=1, help="Maximum depth to search for and watch files")
 	watch_group.add_argument("--interval", type=float, default=1.0, help="Interval between checks")
+	watch_group.add_argument("--ignore-shrink", action="store_true", help="Don't react if the file shrinks")
+	watch_group.add_argument("--ignore", default=None, help="Ignore if this string occurs at the end")
+	watch_group.add_argument("--require", default=None, help="Ignore unless this string occurs at the end")
 
 	names_group = parser.add_argument_group("User and bot names")
 	names_group.add_argument("--user", "-u", default=default_user(), help="User name")

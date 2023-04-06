@@ -11,16 +11,38 @@ I am also including some of my other AI tools.
 ## What's in the box?
 
 - Voice and in-editor text chat with an AI model Barbarella (point-alpaca), or you can call her whatever you like.
-- Shell tools for ChatGPT / GPT-4.
+- Shell tools for ChatGPT 3.5 and GPT-4.
 - An OCR script that uses GPT for proofreading.
-- Automatically generate Anki flashcards and summaries from short YouTube videos (up to 15 minutes or so).
-- chatgpt-model-switcher, a user script that enables us to switch models mid-chat in the ChatGPT web app
+- video-to-flashcards: Automatically generate Anki flashcards from YouTube videos (up to 15 minutes or so).
+- chatgpt-model-switcher: switch models mid-chat in the ChatGPT web app, install it [from GreasyFork](https://greasyfork.org/en/scripts/463362-chatgpt-model-switcher).
+- An away script: try to keep an AI chatbot active while you're away, without it going insane!
 
 ## Requirements
 
 - GNU/Linux
-- TODO: Detailed install instructions
-- If you want to use this, which you should because it's fucking awesome, please contact me and I'll take notes while helping you to set it up!
+- python3 < 3.11
+- perl 5
+- bash
+- LLaMA 7B
+- point.alpaca
+- whisper
+- Coqui TTS
+
+- apt install soundstretch amixer tesseract yt-dlp ffmpeg
+
+- pip install -r requirements.txt
+
+- Add to your ~/.bashrc:
+```
+export BARBARELLA=$HOME/barbarella   # or wherever you put it
+export PATH=$PATH:$BARBARELLA:$BARBARELLA/x:$BARBARELLA/voice
+export OPENAI_API_KEY=....
+```
+
+- Run the voice chat:
+```
+bbv
+```
 
 ## Video demo
 

@@ -1,28 +1,34 @@
 #!/usr/bin/env python3
 
-# search: Search the web from the command line
-
-# TODO: update my existing google script to use this
-
-import requests
-from bs4 import BeautifulSoup
-
-from ucm import setup_logging, add_logging_options
+""" search: Search the web from the command line """
 
 import argparse
 import logging
 
 from typing import List, Dict
 
-import io, pprint, csv, json, tabulate
+import io
+import pprint
+import csv
+import json
+
+import requests
+from bs4 import BeautifulSoup
+import tabulate
+from youtube_search import YoutubeSearch
+
+
+from ucm import setup_logging, add_logging_options
 
 logger = logging.getLogger(__name__)
 
 user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36'
 
-from youtube_search import YoutubeSearch
+# TODO don't just hard code this
+timeout = 30
 
 def duckduckgo_search(query, max_results=10, safe="off"):
+	""" Search DuckDuckGo for `query` and return a list of results """
 	url = 'https://html.duckduckgo.com/html/'
 	kp = {
 		'off': -2,
@@ -32,12 +38,12 @@ def duckduckgo_search(query, max_results=10, safe="off"):
 	params = {
 		'q': query,
 		'kl': 'us-en',
-		'kp': safe,
+		'kp': kp[safe],
 	}
 	headers = {
 		'User-Agent': user_agent,
 	}
-	response = requests.get(url, headers=headers, params=params)
+	response = requests.get(url, headers=headers, params=params, timeout=timeout)
 	response.raise_for_status()
 
 	soup = BeautifulSoup(response.text, 'html.parser')
@@ -49,6 +55,7 @@ def duckduckgo_search(query, max_results=10, safe="off"):
 	return [{'title': result.a.text.strip(), 'url': result.a['href']} for result in search_results]
 
 def google_search(query, max_results=10, safe="off"):
+	""" Search Google for `query` and return a list of results """
 	url = 'https://www.google.com/search'
 	params = {
 		'q': query,
@@ -57,7 +64,7 @@ def google_search(query, max_results=10, safe="off"):
 	headers = {
 		'User-Agent': user_agent,
 	}
-	response = requests.get(url, headers=headers, params=params)
+	response = requests.get(url, headers=headers, params=params, timeout=timeout)
 	response.raise_for_status()
 
 	soup = BeautifulSoup(response.text, 'html.parser')
@@ -69,6 +76,7 @@ def google_search(query, max_results=10, safe="off"):
 	return [{'title': result.find('h3').text.strip(), 'url': result.find('a')['href']} for result in search_results]
 
 def bing_search(query, max_results=10, safe="off"):
+	""" Search Bing for `query` and return a list of results """
 	url = 'https://www.bing.com/search'
 	params = {
 		'q': query,
@@ -77,7 +85,7 @@ def bing_search(query, max_results=10, safe="off"):
 	headers = {
 		'User-Agent': user_agent,
 	}
-	response = requests.get(url, headers=headers, params=params)
+	response = requests.get(url, headers=headers, params=params, timeout=timeout)
 	response.raise_for_status()
 
 	soup = BeautifulSoup(response.text, 'html.parser')
@@ -89,7 +97,9 @@ def bing_search(query, max_results=10, safe="off"):
 	return [{'title': result.find('h2').text.strip(), 'url': result.find('a')['href']} for result in search_results]
 
 def youtube_search(query, max_results=10, detailed=False, safe="off"):
-	# TODO safe search not implemented
+	""" Search YouTube for `query` and return a list of results """
+	if safe != "off":
+		logger.warning("Safe search not implemented for YouTube")
 	results = YoutubeSearch(query, max_results=max_results).to_dict()
 
 	for result in results:
@@ -110,30 +120,36 @@ engines = {
 }
 
 def search(query, engine='ddg', max_results=10, safe="off"):
+	""" Search `query` using `engine` and return a list of results """
 	results = engines[engine](query, max_results=max_results, safe=safe)
 	return results[:max_results]
 
 
 # output formatters
 
-def format_csv(object: List[Dict[str, str]], delimiter=',') -> str:
+def format_csv(obj: List[Dict[str, str]], delimiter=',') -> str:
+	""" Format `obj` as CSV """
 	output = io.StringIO()
-	writer = csv.DictWriter(output, fieldnames=object[0].keys(), delimiter=delimiter, dialect='unix', quoting=csv.QUOTE_MINIMAL)
+	writer = csv.DictWriter(output, fieldnames=obj[0].keys(), delimiter=delimiter, dialect='unix', quoting=csv.QUOTE_MINIMAL)
 	writer.writeheader()
-	writer.writerows(object)
+	writer.writerows(obj)
 	return output.getvalue()
 
-def format_tsv(object: List[Dict[str, str]]) -> str:
-	return format_csv(object, delimiter='\t')
+def format_tsv(obj: List[Dict[str, str]]) -> str:
+	""" Format `obj` as TSV """
+	return format_csv(obj, delimiter='\t')
 
-def format_json(object) -> str:
-	return json.dumps(object, indent=4)
+def format_json(obj) -> str:
+	""" Format `obj` as JSON """
+	return json.dumps(obj, indent=4)
 
-def format_python(object) -> str:
-	return pprint.pformat(object, indent=4)
+def format_python(obj) -> str:
+	""" Format `obj` as Python code """
+	return pprint.pformat(obj, indent=4)
 
-def format_tabulate(object: List[Dict[str, str]]) -> str:
-	return tabulate.tabulate(object, headers='keys')
+def format_tabulate(obj: List[Dict[str, str]]) -> str:
+	""" Format `obj` as a table """
+	return tabulate.tabulate(obj, headers='keys')
 
 formatters = {
 	'tsv': format_tsv,
@@ -144,20 +160,25 @@ formatters = {
 }
 
 def dict_first(d):
+	""" Return the first key in a dictionary """
 	return next(iter(d))
 
-def main():
+def parse_args():
+	""" Parse command line arguments """
 	parser = argparse.ArgumentParser()
 	add_logging_options(parser)
-
 	parser.add_argument('queries', nargs='*', help='Search queries')
 	parser.add_argument('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=engines.keys())
 	parser.add_argument('-format', '-f', help='Output format', default=dict_first(formatters), choices=formatters.keys())
 	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=10)
 	parser.add_argument('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
-
 	args = parser.parse_args()
+	return args
 
+
+def main():
+	""" Main function """
+	args = parse_args()
 	setup_logging(args)
 
 	# search_queries = ['newest adafruit microcontroller boards', 'newest teensy microcontroller boards']
