@@ -46,7 +46,7 @@ bbv
 
 ## Video demo
 
-[![Electric Barbarella: AI Voice Chat and shell tools](https://img.youtube.com/vi/q8Cl2fZTyOs/maxresdefault.jpg)](http://www.youtube.com/watch?v=q8Cl2fZTyOs "Electric Barbarella: AI Voice Chat and shell tools")
+[![Electric Barbarella: AI Voice Chat and shell tools](https://img.youtube.com/vi/q8Cl2fZTyOs/0.jpg)](http://www.youtube.com/watch?v=q8Cl2fZTyOs "Electric Barbarella: AI Voice Chat and shell tools")
 
 ## Consulting
 
