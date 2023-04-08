@@ -12,7 +12,8 @@ SHELL := /bin/bash
 WHISPER := large
 SEARCH := google
 
-m0=3+
+# m0=3+
+m0=4
 m=4
 
 
@@ -87,7 +88,7 @@ flashcards-1.txt: audio-clean.txt
 	< $< gpt-flashcards -m="$m" > $@
 
 flashcards.txt: flashcards-1.txt
-	(< $< sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single_blank_lines.pl > $@
+	(< $< sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single-blank-lines.pl > $@
 
 flashcards.tsv: flashcards.txt
 	< $< recs2tsv.pl | grep '\S' > $@
