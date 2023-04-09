@@ -7,7 +7,7 @@ import time
 import sys
 import argparse
 import logging
-import re
+import re, regex
 from math import inf
 from pathlib import Path
 from typing import Any, Dict
@@ -298,6 +298,8 @@ def history_write(file, history, delim="\n", mode="a", invitation=""):
 	with open(file, mode, encoding="utf-8") as f:
 		f.write(text)
 
+regex_name = r"^[\p{L}\p{M}']+([\p{Zs}\-][\p{L}\p{M}']+)*$"
+
 def get_roles_from_history(history, args):
 	""" Get the roles from the history. """
 	def get_role(history, i=None, not_equal_to=None):
@@ -306,7 +308,7 @@ def get_roles_from_history(history, args):
 		while i > 0:
 			if ":" in history[i]:
 				role = history[i].split(":")[0]
-				if role and role != not_equal_to:
+				if role and regex.match(regex_name, role) and role != not_equal_to:
 					return role, i - 1
 			i -= 1
 		return None, i

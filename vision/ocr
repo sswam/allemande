@@ -3,7 +3,7 @@
 
 # usage: ocr [options] input.png [output.txt]
 
-m=	# model, optional, e.g  -m=4 for gpt-4
+m=4	# model, optional, e.g  -m=4 for gpt-4
 s=	# subject, e.g. a stackoverflow page
 t="OCR scanned text"	# input type
 v=	# verbose option, use e.g. -v=1
@@ -22,7 +22,9 @@ if [ -n "$s" ]; then
 	s=" of $s"
 fi
 
-$v tesseract $tesseract_opts "$input" "$input.ocr"
+if [ ! -e "$input.ocr.txt" ]; then
+	$v tesseract $tesseract_opts "$input" "$input.ocr"
+fi
 
 #prompt1=`cat <<EOF
 #Please correct scanning errors only in this $t$s.
