@@ -1,7 +1,5 @@
 #!/bin/bash -eu
 
-. ./env.sh
-
 nt brain
 
 barbarella.py -w "$CHATPATH" -c "$BARBARELLA/config/experiment.yaml" --delim $'\n' -u "$user" -b "$bot" -n 200 --ignore-shrink --ignore "$user:"

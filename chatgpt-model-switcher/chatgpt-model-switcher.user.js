@@ -6,6 +6,7 @@
 // @author       GPT-4, GPT-3.5, Copilot, and Sam Watkins <sam@ucm.dev>
 // @match        *://chat.openai.com/*
 // @grant        none
+// @license      MIT
 // ==/UserScript==
 
 // This user script adds a model switcher to the OpenAI chat interface,

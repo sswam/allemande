@@ -3,8 +3,6 @@
 
 set -a
 
-. ./env.sh
-
 nt speak
 
 if [ ! -e "$file" ]; then

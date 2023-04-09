@@ -3,8 +3,6 @@
 
 set -a
 
-. ./env.sh
-
 nt mic
 
 if [ ! -e "$file" ]; then
