@@ -59,7 +59,6 @@
 	const $$ = (selector) => document.querySelectorAll(selector);
 	const $id = (id) => document.getElementById(id);
 	const $create = (element) => document.createElement(element);
-	const $text = (text) => document.createTextNode(text);
 
 	// Update the model parameter in the request body to match the
 	// selected model in the UI.
@@ -170,7 +169,7 @@
 
 	// Check if the chat interface has been loaded, and call the
 	// initModelSwitcher function when it is detected.
-	function chatInterfaceChanged(mutationsList, observer) {
+	function chatInterfaceChanged() {
 		if ($(SELECTORS.buttons) && $(SELECTORS.messagesContainer)) {
 			initModelSwitcher();
 		}
