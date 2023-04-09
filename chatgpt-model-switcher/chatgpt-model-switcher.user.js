@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT Model Switcher
 // @namespace    https://ucm.dev/
-// @version      0.7
+// @version      0.9
 // @description  Switch ChatGPT model mid-chat
 // @author       GPT-4, GPT-3.5, Copilot, and Sam Watkins <sam@ucm.dev>
 // @match        *://chat.openai.com/*
@@ -19,10 +19,19 @@
 // URLs for API calls, messages, and selectors for DOM elements.
 
 const MODELS = [
-	{ label: 'GPT-3.5', name: 'text-davinci-002-render-sha' },
-	{ label: 'Legacy ChatGPT', name: 'text-davinci-002-render-paid' },
-	{ label: 'GPT-4', name: 'gpt-4' },
-];
+	{
+		"name": "text-davinci-002-render-sha",
+		"label": "Default (GPT-3.5)"
+	},
+	{
+		"name": "text-davinci-002-render-paid",
+		"label": "Legacy (GPT-3.5)"
+	},
+	{
+		"name": "gpt-4",
+		"label": "GPT-4"
+	}
+]
 
 const URLS = {
 	conversation: 'https://chat.openai.com/backend-api/conversation',
@@ -38,10 +47,11 @@ const SELECTORS = {
 	buttons: '#__next main form > div div:nth-of-type(1)',
 	messagesContainer: '.flex-col.items-center',
 	modelUnavailableMessage: '.flex-col.items-center .text-center',
+	chatGPTModelSelect: '#__next button[data-headlessui-state]',
 };
 
 const IDS = {
-	selector: 'chatgpt-model-switcher-selector',
+	switcher: 'chatgpt-model-switcher',
 }
 
 // Utility functions
@@ -60,12 +70,12 @@ const updateModelParameter = (originalRequest) => {
 	// Make sure the request has a model parameter
 	if (!requestData.model) return originalRequest;
 
-	// Make sure the model selector exists in the UI
-	const modelSelector = $id(IDS.selector);
-	if (!modelSelector) return originalRequest;
+	// Make sure the model switcher exists in the UI
+	const modelSwitcher = $id(IDS.switcher);
+	if (!modelSwitcher) return originalRequest;
 
 	// Update the model parameter based on the selected option in the UI
-	requestData.model = modelSelector.value;
+	requestData.model = modelSwitcher.value;
 
 	// Modify the request to include the updated model parameter
 	const updatedRequest = {
@@ -98,33 +108,49 @@ window.fetch = async function () {
 // Replace the model unavailable message with a message indicating
 // that the model has been changed.
 const replaceModelUnavailableMessage = () => {
-  for (const element of $$(SELECTORS.modelUnavailableMessage)) {
-    if (element.textContent !== MESSAGES.modelUnavailable) continue;
-    const newModel = $id(IDS.selector).value;
-    const newModelLabel = MODELS.find((model) => model.name === newModel).label;
-    element.textContent = MESSAGES.modelChanged + newModelLabel;
-  }
+	for (const element of $$(SELECTORS.modelUnavailableMessage)) {
+		if (element.textContent !== MESSAGES.modelUnavailable) continue;
+		const newModel = $id(IDS.switcher).value;
+		const newModelLabel = MODELS.find((model) => model.name === newModel).label;
+		element.textContent = MESSAGES.modelChanged + newModelLabel;
+	}
 };
 
-// Initialize the model switcher by adding a model selector to the
-// chat interface, and initializing a MutationObserver to watch for
-// the model unavailable message.
+// Synchronize the custom model switcher with the original model selector.
+// Update the custom model switcher's value to match the currently selected
+// model in the original model selector.
+const syncCustomModelSwitcher = () => {
+	const chatGPTModelSelect = $(SELECTORS.chatGPTModelSelect);
+	const modelLabel = chatGPTModelSelect.innerText.split("\n")[1];
+	const customModelSwitcher = $id(IDS.switcher);
+
+	for (const model of MODELS) {
+		if (model.label !== modelLabel) continue;
+		customModelSwitcher.value = model.name;
+		break;
+	}
+};
+
+// Initialize the model switcher: Add it to the chat interface, watch the
+// original model selector, and watch for the model unavailable message.
 const initModelSwitcher = () => {
+	if ($id(IDS.switcher)) return;
+
 	const buttons = $(SELECTORS.buttons);
 
-	// Create the model selector
-	const modelSelector = $create('select');
-	modelSelector.id = IDS.selector;
-	modelSelector.classList.add('btn', 'flex', 'gap-2', 'justify-center', 'btn-neutral');
+	// Create the model switcher
+	const modelSwitcher = $create('select');
+	modelSwitcher.id = IDS.switcher;
+	modelSwitcher.classList.add('btn', 'flex', 'gap-2', 'justify-center', 'btn-neutral');
 	for (const model of MODELS) {
 		const option = $create('option');
 		option.value = model.name;
 		option.textContent = model.label;
-		modelSelector.appendChild(option);
+		modelSwitcher.appendChild(option);
 	}
 
-	// Add the model selector to the button bar
-	buttons.appendChild(modelSelector);
+	// Add the model switcher to the button bar
+	buttons.appendChild(modelSwitcher);
 
 	// Initialize a MutationObserver to watch the messages container
 	for (const element of $$(SELECTORS.messagesContainer)) {
@@ -132,29 +158,29 @@ const initModelSwitcher = () => {
 	}
 };
 
+let chatGPTModelSelectObserver = null;
+
+// Watch ChatGPT's model selector
+const watchChatGPTModelSelect = () => {
+	if (chatGPTModelSelectObserver) return;
+	const chatGPTModelSelect = $(SELECTORS.chatGPTModelSelect);
+	chatGPTModelSelectObserver = new MutationObserver(syncCustomModelSwitcher)
+	chatGPTModelSelectObserver.observe(chatGPTModelSelect, { childList: true, characterData: true, subtree: true });
+}
+
 // Check if the chat interface has been loaded, and call the
 // initModelSwitcher function when it is detected.
 const chatInterfaceChanged = (mutationsList, observer) => {
-	for (const mutation of mutationsList) {
-		if (mutation.type === 'childList' && $(SELECTORS.buttons) && $(SELECTORS.messagesContainer)) {
-			if (!$id(IDS.selector)) {
-				initModelSwitcher();
-			}
-		}
+	if ($(SELECTORS.buttons) && $(SELECTORS.messagesContainer)) {
+		initModelSwitcher();
+	}
+	if ($(SELECTORS.chatGPTModelSelect)) {
+		watchChatGPTModelSelect();
 	}
 };
 
 // Observe mutations to the body element, and call the
 // initModelSwitcher function when the chat interface is detected.
-const observeChatInterface = () => {
-	const targetNode = document.body;
-
-	const config = { childList: true, subtree: true };
-
-	const observer = new MutationObserver(chatInterfaceChanged);
-	observer.observe(targetNode, config);
-};
-
-observeChatInterface();
+new MutationObserver(chatInterfaceChanged).observe(document.body, { childList: true, subtree: true });
 
 })();
