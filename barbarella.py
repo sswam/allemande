@@ -398,6 +398,8 @@ def find_files(folder, ext=None, maxdepth=inf):
 	except PermissionError as e:
 		logger.warning("find_files: %r", e)
 
+stats_null = type("stats_null", (object,), {"st_mtime": -1, "st_size": 0})
+
 def watch_step(model, args, stats):
 	""" Watch a directory for changes, one step. """
 	files = []
@@ -414,7 +416,7 @@ def watch_step(model, args, stats):
 
 	for file in files:
 		# check if modified since last time
-		stats0 = stats.get(file, {"st_mtime": -1, "st_size": 0})
+		stats0 = stats.get(file, stats_null)
 		stats1 = os.stat(file)
 
 		if first:
