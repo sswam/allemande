@@ -35,3 +35,4 @@ sounddevice
 soundfile
 gTTS
 TTS
+clip-interrogator

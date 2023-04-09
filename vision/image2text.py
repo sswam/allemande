@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""
+image2text: Generate text prompts from images
+
+Copied from https://github.com/pharmapsychotic/clip-interrogator/blob/main/run_cli.py
+with minor changes by Sam Watkins.
+"""
+
 import argparse
 import csv
 import os
