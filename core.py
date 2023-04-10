@@ -162,7 +162,7 @@ def serve_requests(ports, fn):
 			continue
 		todo = port/"todo"
 		for req in todo.iterdir():
-			if req.is_dir():
+			if not req.is_dir():
 				continue
 			process_request(ports, port, req.name, fn)
 	for event in i.event_gen(yield_nones=False):
