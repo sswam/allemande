@@ -133,8 +133,8 @@ def process_request(ports, port, req, fn, *args, **kwargs):
 		logger.exception("%s:%s - error: %s", port, req, e)
 		try:
 			os.rename(d, port/"err"/req)
-		except Exception as e:
-			logger.exception("%s:%s - error: %s", port, req, e)
+		except Exception as e2:
+			logger.exception("%s:%s - error: %s", port, req, e2)
 	finally:
 		if log_handler:
 			logger.removeHandler(log_handler)
