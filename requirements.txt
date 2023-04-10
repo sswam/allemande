@@ -36,3 +36,5 @@ soundfile
 gTTS
 TTS
 clip-interrogator
+
+watchdog

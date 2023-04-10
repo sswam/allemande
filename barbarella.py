@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+
 """ electric barbarella v2 """
 
 import os
-# json, itertools, bisect, gc
 import time
 import sys
 import argparse
@@ -14,15 +14,11 @@ from typing import Any, Dict
 import readline
 
 import torch
-# from accelerate import Accelerator
-# import accelerate
 import yaml
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 import transformers
-
-# TODO use functools.cache or functools.lru_cache decorator?  https://docs.python.org/3/library/functools.html
 
 model_cache: Dict[str, Any]  = {}
 
@@ -42,11 +38,9 @@ default_model = os.environ.get("BB_MODEL", first_model)
 config_default = {
 	"max_new_tokens": 200,
 	"use_cache": True,
-	#	"pad_token_id": model.tokenizer.eos_token_id,
 	"num_return_sequences": 1,
 	"do_sample": True,
-	"repetition_penalty": 1.1, # 1.0 means 'off'. unfortunately if we penalize it it will not output Sphynx:
-#	"repetition_penalty": 1.2, # 1.0 means 'off'. unfortunately if we penalize it it will not output Sphynx:
+	"repetition_penalty": 1.1, # 1.0 means 'off'
 	"penalty_alpha": 0.4, # default?  try also 0.6  # https://huggingface.co/blog/introducing-csearch
 	"temperature": 0.5, # default: 1.0
 	"top_k": 50, # default: 50
@@ -627,6 +621,12 @@ if __name__ == "__main__":
 
 
 # NOTE XXX
+
+# json, itertools, bisect, gc
+# from accelerate import Accelerator
+# import accelerate
+
+# TODO use functools.cache or functools.lru_cache decorator?  https://docs.python.org/3/library/functools.html
 
 # Ideally I would prefer a generic solution not all this hackery and complexity...
 # A better approach might be to implement the simplest possible generic client-server forking singleton thing for the command line, to accelerate loading.

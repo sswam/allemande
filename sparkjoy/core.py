@@ -1,57 +1,101 @@
 #!/usr/bin/env python3
 
-# Electric Barbarella v2 - core
+# Electric Barbarella v3 - core
 
-# As simple as possible...
+import sys
+import os
+import yaml
+import transformers
+from collections import namedtuple
 
-import os, json, itertools, bisect, gc
+import argh
+# import sh
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, AutoConfig
-import transformers
-import torch
-from accelerate import Accelerator
-import accelerate
-import time
-import sys
-import argparse
-import logging
-import readline
-import yaml
-from math import inf
-from pathlib import Path
-from typing import Any, Dict
 
-# TODO consider dynamic reloading as an alternative:
-# https://docs.python.org/3/library/functools.html
+# look for models at /opt/models/llm by default
 
-# q. Do I need the model cache?
-# a. Yes, because the model is loaded into GPU memory, and if you load it again, it will be loaded into a different GPU memory location, and the model will not work.
-# q. But I am reworking this to be a minimal core. I imagine that the system will run one "core" process for each model, and it won't be able to use any different model.
-#    So I don't think I need the model cache for this use-case.
-# a. I think you are right. I will remove the model cache.
-# q. On the other hand, it might be useful when using this stuff from a library or notebook or whatever, and it's not a big deal to keep it.
-# a. I think you are right. I will keep the model cache.
+class LLMModelServer:
+	# types?
+	model = None
+	tokenizer = None
 
-# I can always remove it easier, it's slightly more difficult to add it back in.
-# I'll do it in a wrapper function anyway.
+	def __init__(self):
+		self.model = self.load_model()
+		self.cow = 123
 
-# I'll just remove it for now, the code is still there in assistant.py (v1)
-# The main thing to do for core.py is make it as simple and stable as possible.
+	load_model_default_args = {
+#		"path": "EleutherAI/gpt-neo-2.7B",
+		"path": os.environ.get("LLM_MODEL_DIR", "/opt/models/llm"),
+	}
 
-logger = logging.getLogger(__name__)
 
-def load_model(model_path: Path, eight_bit=False, device_map="auto"):
+	def load_model(name=None, **kwargs):
+		kwargs.extend(self.load_model_default_args)
+		print(kwargs)
+		return
+
+		kwargs["name"] = name
+		o = namedtuple("args", kwargs.keys())(*kwargs.values())
+		o.path = os.path.join(o.path, o.name)
+
+		self.tokenizer = transformers.LlamaTokenizer.from_pretrained(o.path)
+		self.model = transformers.LlamaForCausalLM.from_pretrained(
+			o.path,
+			device_map=device_map,
+			#device_map="auto",
+			torch_dtype=torch.float16,
+			#max_memory = {0: "14GB", 1: "14GB", 2: "14GB", 3: "14GB",4: "14GB",5: "14GB",6: "14GB",7: "14GB"},
+			max_memory = {0: "20GB"},
+			load_in_8bit=o["load_in_8bit"],
+			# load_in_8bit_threshold=0.8,
+			low_cpu_mem_usage=True,
+			cache_dir="cache"
+		).cuda()
+
+		model.tokenizer = tokenizer
+
+		return model
+
+
+	def request_loop(self):
+		# Main loop
+		pass
+		# calls: 
+
+	def read_headers(self):
+		# Read headers
+		pass
+
+	def read_body(self, content_length):
+		# Read body, ideally streaming?
+		pass
+
+	def handle_request(self, request):
+#	def process_request(request):
+		# Handle request
+		# Process the request and generate a response using your AI LLM model
+		# Example: response = model.generate(request['input_text'])
+		# TODO
+		response = "blah blah"
+		return response
+
+	def send_response(self, response):
+		# Send response
+		pass
+
+
+def load_model(model_path, eight_bit=False, device_map="auto"):
+	# Load your AI LLM model here and allocate VRAM
+	# For example, using TensorFlow or PyTorch
 	if device_map == "zero":
 		device_map = "balanced_low_0"
 
-	gpu_count = torch.cuda.device_count()
-	logger.info('gpu_count %r', gpu_count)
+	tokenizer = transformers.LlamaTokenizer.from_pretrained(model_path)
 
-	tokenizer = transformers.LlamaTokenizer.from_pretrained(str(model_path))
 	model = transformers.LlamaForCausalLM.from_pretrained(
-		str(model_path),
+		model_path,
 		device_map=device_map,
 		#device_map="auto",
 		torch_dtype=torch.float16,
@@ -65,6 +109,66 @@ def load_model(model_path: Path, eight_bit=False, device_map="auto"):
 
 	model.tokenizer = tokenizer
 
-	model_cache[model_name] = model
-
 	return model
+
+def process(model, inp, out):
+	headers = read_headers()
+	read_input(headers)
+#	model.
+
+def main2():
+	model = load_model(model_path, load_in_8bit=load_in_8bit)
+	while True:
+		process(sys.stdin, sys.stdout)
+
+
+def main3():
+	# TODO parse args using argh
+
+	model = load_model()
+
+	while not sys.stdin.closed:
+		# Read headers
+		headers = []
+		while (line := sys.stdin.readline().strip()) != "":
+			headers.append(line)
+
+		if not headers:
+			break
+
+		# Parse YAML headers, case insensitive
+		headers = "\n".join(headers)
+		metadata = {k.lower(): v for k, v in yaml.safe_load(headers).items()}
+
+		# Read content_length bytes from stdin
+		content_length = int(metadata["content-length"])
+		input_text = sys.stdin.read(content_length)
+
+		# Process request and generate response
+		request = {"input_text": input_text}
+		response = process_request(request)
+
+		# Print response metadata and body
+		response_metadata = {"content-length": len(response)}
+		response_metadata_yaml = yaml.dump(response_metadata)
+		print(response_metadata_yaml)
+		print(response)
+
+#if __name__ == "__main__":
+#	main()
+
+def parse_args():
+	pass
+	# use argh
+	
+
+if __name__ == "__main__":
+	server = LLMModelServer()
+	server.request_loop()
+
+# TODO handle EOFError to exit cleanly?
+
+
+# TODO test load_in_8bit with load_in_8bit_threshold
+# TODO accept all options as arguments, or via a yaml file?
+# TODO make sure I fully understand all the options we are using there, e.g. device_map, max_memory, load_in_8bit, low_cpu_mem_usage, cache_dir ...

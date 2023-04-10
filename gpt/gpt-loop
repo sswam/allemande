@@ -8,7 +8,7 @@ v=	        # verbose
 b="arcs	-N -q"  # backup
 q=	        # quiet
 r=1	        # reload
-m=              # model
+m=3+            # model
 d=              # depth
 
 # o="-d --log gpt.log"
@@ -70,7 +70,7 @@ while true; do
 				model="${base_model#*@}"
 			fi
 
-			<"$file" gpt -m=$model $o | tee -a "$file" &
+			<"$file" gpt chat -m $model $o | tee -a "$file" &
 			printf "\n"
 			count=$[count+1]
 		done
