@@ -45,13 +45,14 @@ def split_file(input_file: TextIO, opts: argparse.Namespace) -> None:
 
 	# get the output file prefix
 	try:
-		output_file_prefix = opts.o or input_file.name+"-"
+		output_file_prefix = opts.o or input_file.name
 	except AttributeError:
-		output_file_prefix = "unknown-"
-	if output_file_prefix == "<stdin>-":
-		output_file_prefix = "stdin-"
+		output_file_prefix = "unknown"
+	if output_file_prefix == "<stdin>":
+		output_file_prefix = "stdin"
 
 	basename, ext = os.path.splitext(output_file_prefix)
+	basename += "-"
 
 	input_size = get_file_size(input_file)
 
