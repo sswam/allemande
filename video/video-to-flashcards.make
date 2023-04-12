@@ -19,13 +19,19 @@ m=4
 
 default: goal
 
+clean: cleanish
+	rm *.webm *.txt
+
+cleanish:
+	mv web-address.txt web-address.txt.bak || true
+	rm *.txt *.html *.md *.tsv *.json *.txt *.vtt *.srt *.prompt
+	mv web-address.txt.bak web-address.txt || true
+
 transcript.sent.txt: transcript.txt
 	< $< split_sentences > $@
 
 transcript.sent2.txt: transcript.sent.txt
 	< $< ai_split_long_sentences.py > $@
-
-
 
 web-address.txt:
 	if [ -n "$(url)" ]; then \
@@ -65,26 +71,23 @@ audio-extract: av
 audio.txt: audio.webm
 	whisper --language en --model $(WHISPER) $<
 
-transcript.md: transcript.txt
-	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown.sh >$@
-
 audio-clean.txt: audio.txt
 	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
 
-summary.txt: audio-clean.txt
+summary.txt: transcript.txt
 	< $< gpt-summary -m="$m" > $@
 
-name.txt: audio-clean.txt
+name.txt: transcript.txt title-clean.txt
 	if [ -n "$(name)" ] ; then \
 		echo "$(name)" > $@ ; \
 	else \
-		< $< gpt process -m "$m" "Please respond with just the name or a suitable name for the following:" > $@ ; \
+		< $< gpt process -m "$m" "Please respond with a short name for this article / video transcript. The given title was `<title-clean.txt`:" --prompt2 "Respond with just a short name for the above article." > $@ ; \
 	fi
 
-topic.txt: audio-clean.txt
+topic.txt: transcript.txt
 	< $< gpt-topic -m="$m" > $@
 
-flashcards-1.txt: audio-clean.txt
+flashcards-1.txt: transcript.txt
 	< $< gpt-flashcards -m="$m" > $@
 
 flashcards.txt: flashcards-1.txt
@@ -99,8 +102,11 @@ correct.prompt:
 prompt-transcript.txt: audio-clean.txt correct.prompt
 	CONTENT=`< $<` shell-template.sh correct.prompt > $@
 
-transcript.txt: prompt-transcript.txt
-	< $< gpt process -m "$(m0)" "Please reply with just the corrected transcript." > $@
+transcript.txt: prompt-transcript.txt title-clean.txt
+	< $< gpt process -m "$(m0)" "Please reply with just the corrected transcript. The proper title of the video is `<title-clean.txt`" > $@
+
+transcript.md: transcript.txt
+	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown.sh >$@
 
 
 # We could also search to find the title or canonical page.
@@ -137,7 +143,7 @@ lyrics.txt: prompt-lyrics.txt name.txt
 		< $< gpt process -m "$m" "Please reply with just the lyrics or transcript for `<name.txt`, based on the page `<lyrics-url.txt`." > $@ ; \
 	fi
 
-post.txt: title.txt web-address.txt name.txt topic.txt summary.txt flashcards.txt transcript.txt lyrics.txt
+post.txt: title.txt web-address.txt name.txt topic.txt summary.txt flashcards.txt transcript.txt # lyrics.txt
 	cat-sections.py $^ > $@
 
 %.words.txt: %.txt
