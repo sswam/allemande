@@ -48,7 +48,7 @@ while read file; do
 	file_url="https://huggingface.co$repo/resolve/main/$file"
 	# if "$file" is small, then remove it; it's likely the git lfs pointer, not the model file
 	if [ -e "$file" ] && [ $(stat -c%s "$file") -lt 1000 ]; then
-		rm -v "$file"
+		rm -v "$file" >&2   # WTF rm, write messages on stdout?!
 		echo
 	fi
 	printf "%q " wget -c "$file_url"
