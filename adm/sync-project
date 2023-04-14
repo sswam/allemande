@@ -10,7 +10,7 @@ git push; git pull
 
 for branch in allemande barbarella; do
 	git checkout $branch
-	git merge main
+	git merge --no-edit main
 	git push; git pull
 done
 
