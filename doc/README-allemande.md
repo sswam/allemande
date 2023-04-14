@@ -1,16 +1,12 @@
-# Electric Barbarella
+# Allemande
 
 ## What is this?
 
-This is a work-in-progress AI chat system based on [point-alpaca](https://github.com/pointnetwork/point-alpaca).
-
-See that page for info on obtaining the weights.
-
-I am also including some of my other AI tools.
+This is a work-in-progress AI software toolkit in the UNIX tradition.
 
 ## What's in the box?
 
-- Voice and in-editor text chat with an AI model Barbarella (point-alpaca), or you can call her whatever you like.
+- Voice and in-editor text chat with an AI model (e.g. point-alpaca).
 - Shell tools for ChatGPT 3.5 and GPT-4.
 - An OCR script that uses GPT for proofreading.
 - video-to-flashcards: Automatically generate Anki flashcards from YouTube videos (up to 15 minutes or so).
@@ -34,21 +30,15 @@ I am also including some of my other AI tools.
 
 - segment-anything
 
-- Add to your ~/.bashrc:
+- Make sure your API keys are defined in the envioronment, e.g. source a keys script from your bashrc:
 ```
-export BARBARELLA=$HOME/barbarella   # or wherever you put it
-export PATH=$PATH:$BARBARELLA:$BARBARELLA/tools:$BARBARELLA/voice
 export OPENAI_API_KEY=....
 ```
-
-- Run the voice chat:
+- Edit and source `env.sh`
+- Try running the voice chat:
 ```
 bbv
 ```
-
-## Video demo
-
-[![Electric Barbarella: AI Voice Chat and shell tools](https://img.youtube.com/vi/q8Cl2fZTyOs/0.jpg)](http://www.youtube.com/watch?v=q8Cl2fZTyOs "Electric Barbarella: AI Voice Chat and shell tools")
 
 ## Consulting
 
@@ -72,14 +62,4 @@ I offer extremely affordable AI consulting and software development. The first c
 </ol>
 
 <p>Take advantage of this timely and exclusive offer while it lasts! Together, we can revolutionize your business to new heights and harness the limitless potential of AI. Remember, the first consultation is <i>FREE</i> with absolutely no strings attached. Don't let this opportunity slip away! Schedule your consult today!</p>
-</details>
-
-## Mildly NSFW cyborg concept art
-
-<details>
-<summary>
-This captivating and mildly NSFW cyborg concept art is an enthralling blend of technology and desire, making it impossible for the viewer not to be enveloped in its world. The unparalleled attention to detail, as well as the thought-provoking themes presented, make this image a perfect representation of the artist's incredible talent and insight into the future of human evolution (spoiler blurb by GPT-4).
-</summary>
-<br>
-<img style="border-radius: 1em; padding: 1em;" src="pix/barbarella.jpg" height="512" width="256">
 </details>
