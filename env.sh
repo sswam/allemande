@@ -1,5 +1,6 @@
 ALLEMANDE_ENV=$(realpath "${BASH_SOURCE[0]}")
 ALLEMANDE=$(dirname "$ALLEMANDE_ENV")
+bot=Barbie
 
 PYTHONPATH=$PYTHONPATH:$ALLEMANDE/py
 

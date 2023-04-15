@@ -132,7 +132,7 @@ def process_request(ports, port, req, fn, *args, **kwargs):
 	except Exception as e:
 		logger.exception("%s:%s - error: %s", port, req, e)
 		try:
-			os.rename(d, port/"err"/req)
+			os.rename(d, port/"error"/req)
 		except Exception as e2:
 			logger.exception("%s:%s - error: %s", port, req, e2)
 	finally:
@@ -142,7 +142,7 @@ def process_request(ports, port, req, fn, *args, **kwargs):
 
 def port_setup(port):
 	""" Set up a port """
-	for box in ("todo", "doing", "done", "err"):
+	for box in ("prep", "todo", "doing", "done", "error", "history"):
 		(port/box).mkdir(exist_ok=True)
 
 
@@ -206,4 +206,4 @@ if __name__ == "__main__":
 #  - setup_logging(): sets up logging with different levels (verbose or debug)
 #  - main(): loads the model if a path is provided, sets up partial function with the model, and serves requests
 #- The program watches specified directories for incoming requests and processes them using the Transformer-based language model for text generation.
-#- The generated text is saved in the respective directories based on the status of the request (e.g., "done" or "err").
+#- The generated text is saved in the respective directories based on the status of the request (e.g., "done" or "error").
