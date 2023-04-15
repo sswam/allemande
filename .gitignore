@@ -1,7 +1,7 @@
 decrypted_src
 xor-c
 .DS_Store
-models/*
+chat/models/*
 c/test_lua
 c/test_perl
 c/test_python
