@@ -73,8 +73,10 @@ def load_model(model_path: Path, eight_bit=False, device_map="auto"):
 	gpu_count = torch.cuda.device_count()
 	logger.info('gpu_count %r', gpu_count)
 
-	tokenizer = transformers.AutoTokenizer.from_pretrained(str(model_path))
-	model = transformers.AutoModelForCausalLM.from_pretrained(
+#	tokenizer = transformers.AutoTokenizer.from_pretrained(str(model_path))
+#	model = transformers.AutoModelForCausalLM.from_pretrained(
+	tokenizer = transformers.LlamaTokenizer.from_pretrained(str(model_path))
+	model = transformers.LlamaForCausalLM.from_pretrained(
 		str(model_path),
 		device_map=device_map,
 		#device_map="auto",
@@ -594,7 +596,7 @@ def main():
 		if len(abbrev_models) == 1:
 			args.model = abbrev_models[0]
 
-		model_dir = prog_dir()/"models"
+		model_dir = prog_dir()/".."/"models"/"llm"
 		model_path = Path(args.model)
 		if not model_path.is_absolute():
 			model_path = Path(model_dir) / model_path
