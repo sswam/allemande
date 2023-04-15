@@ -1,5 +1,7 @@
 #!/bin/bash -eu
 
+set -a
+
 progdir="$(dirname "$(readlink -f "$0")")"
 cd "$progdir"
 

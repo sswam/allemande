@@ -222,7 +222,7 @@ def get_fulltext(args, model, history, history_start, invitation, delim):
 
 def chat(model, args, history, history_start=0):
 	""" Chat with the model. """
-	invitation = args.bot + ": " if args.bot else ""
+	invitation = args.bot + ": " if args.bot else ""   # accidental emoji mode!
 	human_invitation = args.user + ": " if args.user else ""
 	delim = args.delim
 
