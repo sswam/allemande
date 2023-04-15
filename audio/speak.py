@@ -297,19 +297,19 @@ if __name__ == "__main__":
 
 # alt idea for controlling the Linux mixer:
 #
-# import alsaaudio
+#import alsaaudio
 #
-# def mute_capture_device(device_name='Capture'):
-#     mixer = alsaaudio.Mixer(device_name)
-#     mixer.setrec(0)
+#def mute_capture_device(device_name='Capture'):
+#	mixer = alsaaudio.Mixer(device_name)
+#	mixer.setrec(0)
 #
-# def unmute_capture_device(device_name='Capture'):
-#     mixer = alsaaudio.Mixer(device_name)
-#     mixer.setrec(1)
+#def unmute_capture_device(device_name='Capture'):
+#	mixer = alsaaudio.Mixer(device_name)
+#	mixer.setrec(1)
 #
-# if __name__ == '__main__':
-#     mute_capture_device()
-#     time.sleep(5)  # Example: Sleep for 5 seconds while the microphone is muted
-#     unmute_capture_device()
+#if __name__ == '__main__':
+#	mute_capture_device()
+#	time.sleep(5)  # Example: Sleep for 5 seconds while the microphone is muted
+#	unmute_capture_device()
 
 # Ideally, it would be better just to tell the mike app not to record during this time.
