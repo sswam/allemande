@@ -1,0 +1,7 @@
+CFLAGS = -Wall $(shell python3.10-config --cflags)
+LDLIBS = $(shell python3.10-config --ldflags) -lpython3.10
+
+test_python: test_python.o
+
+clean:
+	rm -f test_python test_python.o

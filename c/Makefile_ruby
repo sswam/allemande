@@ -1,0 +1,7 @@
+CFLAGS = -Wall $(shell pkg-config --cflags ruby)
+LDLIBS = $(shell pkg-config --libs ruby)
+
+test_ruby: test_ruby.o
+
+clean:
+	rm -f test_ruby test_ruby.o
