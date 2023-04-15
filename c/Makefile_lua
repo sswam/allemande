@@ -1,0 +1,7 @@
+CFLAGS = -Wall $(shell pkg-config --cflags lua)
+LDLIBS = $(shell pkg-config --libs lua)
+
+test_lua: test_lua.o
+
+clean:
+	rm -f test_lua test_lua.o

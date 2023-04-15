@@ -2,3 +2,11 @@ decrypted_src
 xor-c
 .DS_Store
 models/*
+c/test_lua
+c/test_perl
+c/test_python
+c/test_quickjs
+c/test_ruby
+c/test_mozjs
+c/test_v8
+c/perlxsi.c

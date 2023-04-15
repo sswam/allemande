@@ -1,0 +1,12 @@
+CFLAGS = -Wall $(shell perl -MExtUtils::Embed -e ccopts)
+LDLIBS = -ldl $(shell perl -MExtUtils::Embed -e ldopts)
+
+PERL = perl
+
+test_perl: test_perl.o perlxsi.o
+
+perlxsi.c:
+	$(PERL) -MExtUtils::Embed -e xsinit -- -o perlxsi.c
+
+clean:
+	rm -f test_perl test_perl.o perlxsi.o perlxsi.c
