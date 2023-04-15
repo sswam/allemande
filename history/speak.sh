@@ -82,7 +82,7 @@ EOF
 # Function to remove the temporary file
 
 function cleanup {
-    rm -f "$audio"
+	rm -f "$audio"
 }
 
 # if an output file is specified, use it, otherwise create a temporary file

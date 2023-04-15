@@ -34,24 +34,24 @@ assistant:	Thanks for providing the request payload examples. Here's a modified 
 	// ==/UserScript==
 
 	(function() {
-    	    'use strict';
-
-    	    // Add a select element to the button bar
-    	    const buttonBar = document.querySelector('.flex.ml-1.md\\:w-full.md\\:m-auto.md\\:mb-2.gap-0.md\\:gap-2.justify-center');
-    	    if (buttonBar) {
-        	const modelSelector = document.createElement('select');
-        	modelSelector.id = 'chatgpt-model-selector';
-        	modelSelector.innerHTML = `
-            	    <option value="gpt-4">GPT-4</option>
-            	    <option value="text-davinci-002-render-sha">GPT-3.5</option>
-            	    <option value="text-davinci-002-render-paid">Legacy ChatGPT</option>
-        	`;
-        	buttonBar.appendChild(modelSelector);
-    	    }
-
-    	    const originalFetch = window.fetch;
-    	    window.fetch = async function() {
-        	// Check if the current request is for
+	    'use strict';
+	
+	    // Add a select element to the button bar
+	    const buttonBar = document.querySelector('.flex.ml-1.md\\:w-full.md\\:m-auto.md\\:mb-2.gap-0.md\\:gap-2.justify-center');
+	    if (buttonBar) {
+	        const modelSelector = document.createElement('select');
+	        modelSelector.id = 'chatgpt-model-selector';
+	        modelSelector.innerHTML = `
+	            <option value="gpt-4">GPT-4</option>
+	            <option value="text-davinci-002-render-sha">GPT-3.5</option>
+	            <option value="text-davinci-002-render-paid">Legacy ChatGPT</option>
+	        `;
+	        buttonBar.appendChild(modelSelector);
+	    }
+	
+	    const originalFetch = window.fetch;
+	    window.fetch = async function() {
+	        // Check if the current request is for
 user:	You got cut off, can you please finish the script? Just continue from where you got up to, don't start it over again please.
 assistant:	Apologies for the truncation. Here's the continuation of the script:
 	
