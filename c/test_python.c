@@ -8,7 +8,7 @@ int main() { // int argc, char *argv[]) {
 
 	Py_Initialize();
 
-//	PyRun_SimpleString("import this");
+	PyRun_SimpleString("import this");
 	PyRun_SimpleString("from math import pi");
 
 	PyObject *main_module = PyImport_AddModule("__main__");
