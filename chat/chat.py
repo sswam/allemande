@@ -169,9 +169,9 @@ def trim_response(response, args):
 			messages = messages[1:]
 		response = messages[0] if messages else ""
 	else:
-		human_invitation = args.user + ": "
+		human_invitation = args.user + ":"
 		response = response.split(human_invitation)[0]
-		response = response.strip()
+		response = " " + response.strip()
 	return response
 
 def input_with_prefill(prompt, text):
@@ -226,9 +226,9 @@ def chat(model, args, history, history_start=0):
 	invitation = args.bot + ":" if args.bot else ""
 	human_invitation = args.user + ":" if args.user else ""
 	if args.emo and invitation:
-		args.invitation += " "
-	if args.emo and human_invitation:
-		args.human_invitation += " "
+		invitation += " "
+	# if args.emo and human_invitation:
+	human_invitation += " "
 	delim = args.delim
 
 	if args.edit:
@@ -363,9 +363,9 @@ def process_file(model, file, args, history_start=0):
 	invitation = args.delim + args.bot + ":" if args.bot else ""
 	human_invitation = args.delim + args.user + ":" if args.user else ""
 	if args.emo and invitation:
-		args.invitation += " "
-	if args.emo and human_invitation:
-		args.human_invitation += " "
+		invitation += " "
+	# if args.emo and human_invitation:
+	human_invitation += " "
 
 	if not args.raw and history and history[-1] != "":
 		history.append("")
@@ -536,7 +536,7 @@ def get_opts():
 	format_group.add_argument("--no-trim", action="store_false", dest="trim", help="Don't trim the bot's response, i.e let it predict the user's speech")
 	format_group.add_argument("--memory", "-x", type=int, default=512, help="Max number of tokens to keep in history, before we drop old messages")
 	format_group.add_argument("--strip-final-newline", type=bool, default=True, help="Strip final newline from input, allows to continue lines")
-	format_group.add_argument("--emo", type=bool, default=True, help="End the bot invitation with a space, which causes the bot to respond with an emoji first!")
+	format_group.add_argument("--emo", type=bool, default=False, help="End the bot invitation with a space, which causes the bot to respond with an emoji first!")
 
 	model_group = parser.add_argument_group("Model options")
 	model_group.add_argument("--model", "-m", default="alpaca", help="Model name or path")
