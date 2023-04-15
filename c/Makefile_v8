@@ -1,0 +1,8 @@
+CC = g++
+CXXFLAGS = -Wall -I/usr/include/v8
+LDLIBS = -lv8 -lm
+
+test_v8: test_v8.o
+
+clean:
+	rm -f test_v8 test_v8.o

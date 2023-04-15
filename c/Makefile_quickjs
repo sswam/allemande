@@ -1,0 +1,7 @@
+CFLAGS = -Wall -I/usr/include/quickjs
+LDLIBS = -L/usr/lib/quickjs -lquickjs -lm
+
+test_quickjs: test_quickjs.o
+
+clean:
+	rm -f test_quickjs test_quickjs.o
