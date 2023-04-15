@@ -7,4 +7,4 @@ paragraphs = input_text.split('\n\n')
 paragraphs.reverse()
 
 for paragraph in paragraphs:
-    print(paragraph.rstrip("\n"), end='\n\n')
+	print(paragraph.rstrip("\n"), end='\n\n')
