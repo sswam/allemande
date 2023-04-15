@@ -3,7 +3,7 @@ set -o pipefail
 
 git checkout main
 
-git-confirm-add-commit
+git-add-commit
 
 arcs
 git push; git pull
