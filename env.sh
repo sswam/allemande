@@ -3,7 +3,7 @@ ALLEMANDE=$(dirname "$ALLEMANDE_ENV")
 
 PYTHONPATH=$PYTHONPATH:$ALLEMANDE/py
 
-for dir in adm core tools text data image audio video code gpt web voice-chat eg; do
+for dir in adm core tools text data image audio video code openai anthropic web voice-chat eg; do
 	PATH=$PATH:$ALLEMANDE/$dir
 done
 
