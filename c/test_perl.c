@@ -5,13 +5,6 @@ static PerlInterpreter *my_perl;
 EXTERN_C void xs_init (pTHX);
 
 int main(int argc, char **argv, char **env) {
-//	const char *perl_code = "sub calculate_y {"
-//	                            "use Math::Trig;"
-//	                            "print $::str, \"\\n\";"
-//	                            "$::y = pi * $::x;"
-//	                            "print $::y, \"\\n\";"
-//	                        "}";
-
 	const char *perl_code =
 		"use Math::Trig;"
 		"print $str, \"\\n\";"
