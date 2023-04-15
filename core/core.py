@@ -24,7 +24,7 @@ prog_dir = Path(__file__).parent
 def load_model(model_path, device_map="auto"):
 	""" Load a model """
 	model_path = str(model_path)
-	model = transformers.AutoModelForCausalLM.from_pretrained(
+	model = transformers.LlamaForCausalLM.from_pretrained(
 		model_path,
 		device_map=device_map,
 		torch_dtype=torch.float16,
@@ -32,7 +32,7 @@ def load_model(model_path, device_map="auto"):
 		low_cpu_mem_usage=True,
 		cache_dir="cache"
 	).cuda()
-	model.tokenizer = transformers.AutoTokenizer.from_pretrained(model_path)
+	model.tokenizer = transformers.LlamaTokenizer.from_pretrained(model_path)
 	return model
 
 
@@ -194,3 +194,16 @@ def main(ports=".", model_path=None, verbose=False, debug=False):
 
 if __name__ == "__main__":
 	argh.dispatch_command(main)
+
+#- The program, electric barbarella v3 - core, uses a Transformer-based language model for text generation.
+#- Main functions:
+#  - load_model(): loads a pretrained model, tokenizer, and additional configurations
+#  - gen(): generates new text based on the input and the configuration provided
+#  - load(): loads a file from a directory or its parent directories
+#  - process_request(): processes a request on a specified port, handles errors, and moves the request to the appropriate directory
+#  - port_setup(): sets up directories for a given port
+#  - serve_requests(): watches a directory for new requests and processes them using the provided function
+#  - setup_logging(): sets up logging with different levels (verbose or debug)
+#  - main(): loads the model if a path is provided, sets up partial function with the model, and serves requests
+#- The program watches specified directories for incoming requests and processes them using the Transformer-based language model for text generation.
+#- The generated text is saved in the respective directories based on the status of the request (e.g., "done" or "err").
