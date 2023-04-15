@@ -44,7 +44,6 @@ int main(int argc, char *argv[]) {
 	printf("y = %.2f\n", y);
 
 fail:
-	printf("Done 1\n");
 //	JS_FreeValue(ctx, hello_val);
 //	JS_FreeValue(ctx, x_val);
 //	JS_FreeValue(ctx, y_val);
