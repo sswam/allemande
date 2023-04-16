@@ -212,7 +212,8 @@ def chat(model, args, history, history_start=0):
 	if args.emo and invitation:
 		invitation += " "
 	# if args.emo and human_invitation:
-	human_invitation += " "
+	if human_invitation:
+		human_invitation += " "
 	delim = args.delim
 
 	if args.edit:
@@ -360,7 +361,8 @@ def process_file(model, file, args, history_start=0):
 	if args.emo and invitation:
 		invitation += " "
 	# if args.emo and human_invitation:
-	human_invitation += " "
+	if human_invitation:
+		human_invitation += " "
 
 	if not args.raw and history and history[-1] != "":
 		history.append("")
@@ -428,6 +430,7 @@ def watch_step(model, args, stats):
 			pass
 		elif stats1.st_size > 0:
 			process_file(model, file, args)
+			stats1 = os.stat(file)
 		stats[file] = stats1
 
 	return stats
