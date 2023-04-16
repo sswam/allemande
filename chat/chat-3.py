@@ -120,7 +120,7 @@ def remove_response(port, resp):
 	""" Move a response to the history directory. """
 	history = port/"history"
 	while True:
-		history_name = f"{resp.name}-{time.time()}"
+		history_name = f"{time.time():.2f}-{resp.name}"
 		try:
 			resp.rename(history/history_name)
 			break
@@ -346,8 +346,6 @@ def process_file(model, file, args, history_start=0):
 
 	history = history_read(file, args)
 
-	print("history:", history)
-
 	if args.ignore and history and history[-1].rstrip().endswith(args.ignore):
 		return
 	if args.require and history and history[-1].rstrip().endswith(args.require):
@@ -376,8 +374,8 @@ def process_file(model, file, args, history_start=0):
 
 	response, _fulltext2 = client_request(args.port, fulltext, config=args.gen_config)
 
-#	logger.debug("response: ["+response+"]")
-#	logger.debug("_fulltext2: ["+_fulltext2+"]")
+	logger.debug("response: ["+response+"]")
+	logger.debug("_fulltext2: ["+_fulltext2+"]")
 
 	if args.trim:
 		response = trim_response(response, args)

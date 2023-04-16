@@ -65,25 +65,13 @@ def gen(config, input_text, *_args, model=None, **_kwargs):
 		)
 		if gen_tokens[0][-1] == tokenizer.eos_token_id:
 			gen_tokens = gen_tokens[:,:-1]
-		if torch.equal(in_tokens, gen_tokens[:,:n_in_tokens]):
-			new_tokens = gen_tokens[:,n_in_tokens:]
-			error = ""
-		else:
-			logger.warning("gen: gen_tokens does not start with in_tokens. Will append entire generation.")
-			new_tokens = gen_tokens
-			error = "<ERROR>"
-
-		# tokens often begin with spaces, but we don't want to double up on spaces
-		new_text = tokenizer.batch_decode(new_tokens, skip_special_tokens=True)[0]
-		if new_text.startswith(" ") and input_text[-1:].isspace():
-			new_text = new_text[1:]
-		elif new_text[:2] == " \n":
-			new_text = new_text[1:]
-		elif new_text == " ":   # e.g. 2, 1
-			new_text = ""
-		new_text = error + new_text
-
 		full_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)[0]
+		if full_text.startswith(input_text):
+			new_text = full_text[len(input_text):]
+		else:
+			logger.warning("gen: full_text does not start with input_text. Will append entire generation.")
+			new_text = full_text
+		# TODO might not match due to leading spaces or something, could strip both?
 
 	response = {
 		"new.txt": new_text,
@@ -135,6 +123,8 @@ def process_request(ports, port, req, fn, *args, **kwargs):
 			os.rename(d, port/"error"/req)
 		except Exception as e2:
 			logger.exception("%s:%s - error: %s", port, req, e2)
+		if 'CUDA error' in str(e):
+			raise
 	finally:
 		if log_handler:
 			logger.removeHandler(log_handler)
