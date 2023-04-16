@@ -4,4 +4,4 @@
 
 dir="$PWD"
 cd "$(dirname "$(readlink -f "$0")")/.."
-barbarella.py -w "$dir" -c config/experiment.yaml "$@"
+chat.py -w "$dir" -c config/experiment.yaml "$@"

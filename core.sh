@@ -1,3 +1,3 @@
 #!/bin/bash
 cd "$ALLEMANDE"
-core.py -p ports -m models/llm/point-alpaca-7B -v
+core.py -p ports -m models/llm/point-alpaca-7B -d
