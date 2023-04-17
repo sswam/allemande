@@ -1,0 +1,11 @@
+#!/bin/bash -eu
+
+if command -v whisper &> /dev/null
+then
+	exec whisper "$@"
+	exit 1
+else
+	cd /opt/whisper.cpp
+	exec ./whisper "$@"
+	exit 1
+fi

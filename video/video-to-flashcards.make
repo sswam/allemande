@@ -9,8 +9,13 @@ export PATH := $(MAKEFILE_DIR):$(PATH)
 
 
 SHELL := /bin/bash
-WHISPER := large
+WHISPER := whisper
+WHISPER_MODEL := large
 SEARCH := google
+
+# WHISPER := whisp
+# WHISPER_MODEL := models/ggml-large.bin
+
 
 # m0=3+
 m0=4
@@ -50,6 +55,9 @@ audio.webm: web-address.txt
 	if [ ! -e "$@" ]; then mv -i "$@".* "$@"; fi
 	if [ -e "$@" ]; then touch $@; fi
 
+audio.wav: audio.webm
+	ffmpeg -loglevel error -i $< -vn -acodec pcm_s16le -ac 1 -ar 16000 $@
+
 av.webm: video.webm audio.webm
 	ffmpeg -loglevel error -i video.webm -i audio.webm -c copy $@
 	if [ ! -e "$@" ]; then mv -i "$@".* "$@"; fi
@@ -68,8 +76,8 @@ images: video.webm
 audio-extract: av
 	ffmpeg -loglevel error -i $< -vn -c copy $@
 
-audio.txt: audio.webm
-	whisper --language en --model $(WHISPER) $<
+audio.txt: audio.wav
+	$(WHISPER) --language en --model $(WHISPER_MODEL) $$PWD/$<
 
 audio-clean.txt: audio.txt
 	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
