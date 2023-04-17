@@ -8,7 +8,7 @@ from threading import Thread, Event
 from queue import Queue
 import logging
 
-from argh import dispatch_command
+import argh
 from pydub import AudioSegment
 import speech_recognition as sr
 import whisper
@@ -16,8 +16,29 @@ import torch
 import numpy as np
 
 logger = logging.getLogger(__name__)
-logger_fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
-logging.basicConfig(level=logging.DEBUG, format=logger_fmt)
+
+from contextlib import contextmanager
+
+
+# TODO move to a library
+
+@contextmanager
+def redirect_fd_to_devnull(fileno=2):
+	devnull_fd = os.open('/dev/null', os.O_WRONLY)
+	saved_fd = os.dup(fileno)
+	os.dup2(devnull_fd, fileno)
+	try:
+		yield
+	finally:
+		os.dup2(saved_fd, fileno)
+		os.close(saved_fd)
+		os.close(devnull_fd)
+
+@contextmanager
+def open_microphone_spamfree(sr, *args, **kwargs):
+	with redirect_fd_to_devnull(2):
+		with sr.Microphone(*args, **kwargs) as source:
+			yield source
 
 def record_speech(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise=False):
 	""" Record audio from microphone and put it in the queue """
@@ -26,7 +47,8 @@ def record_speech(run_event, q_audio, energy, pause, dynamic_energy, save, devic
 	r.pause_threshold = pause
 	r.dynamic_energy_threshold = dynamic_energy
 	i = 0
-	with sr.Microphone(sample_rate=16000, device_index=device_index) as source:
+	
+	with open_microphone_spamfree(sr, sample_rate=16000, device_index=device_index) as source:
 		while run_event.is_set():
 #			drop = os.path.isfile("/tmp/drop-the-mic")
 			if adjust_for_ambient_noise:
@@ -68,8 +90,22 @@ def do_list_devices():
 	for index, name in enumerate(sr.Microphone.list_microphone_names()):
 		print(f'{index}\t{name}')
 
-def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=0.8, save=None, device_index=None, list_devices=False, adjust_for_ambient_noise=False):
+def setup_logging(verbose, debug):
+	logger_fmt = "%(message)s"
+	if debug:
+		log_level = logging.DEBUG
+		logger_fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
+	elif verbose:
+		log_level = logging.INFO
+	else:
+		log_level = logging.WARNING
+	logging.basicConfig(level=log_level, format=logger_fmt)
+
+@argh.arg("-d", "--debug", help="Enable debug logging")
+def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=0.8, save=None, device_index=None, list_devices=False, adjust_for_ambient_noise=False, verbose=False, debug=False):
 	""" Transcribe speech to text using microphone input """
+	setup_logging(verbose, debug)
+
 	if list_devices:
 		do_list_devices()
 		sys.exit(0)
@@ -110,4 +146,4 @@ def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=
 		run_event.clear()
 
 if __name__ == '__main__':
-	dispatch_command(mike)
+	argh.dispatch_command(mike)
