@@ -7,6 +7,8 @@ import io
 from threading import Thread, Event
 from queue import Queue
 import logging
+from contextlib import contextmanager
+from functools import partial
 
 import argh
 from pydub import AudioSegment
@@ -17,38 +19,42 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-from contextlib import contextmanager
-
 
 # TODO move to a library
 
 @contextmanager
-def redirect_fd_to_devnull(fileno=2):
-	devnull_fd = os.open('/dev/null', os.O_WRONLY)
+def redirect(fileno, target):
+	""" Redirect a file descriptor temporarily """
+	target_fd = os.open(target, os.O_WRONLY)
 	saved_fd = os.dup(fileno)
-	os.dup2(devnull_fd, fileno)
+	os.dup2(target_fd, fileno)
 	try:
 		yield
 	finally:
 		os.dup2(saved_fd, fileno)
 		os.close(saved_fd)
-		os.close(devnull_fd)
+		os.close(target_fd)
+
+redirect_stderr_to_dev_null = partial(redirect, sys.stderr.fileno(), "/dev/null")
 
 @contextmanager
-def open_microphone_spamfree(sr, *args, **kwargs):
-	with redirect_fd_to_devnull(2):
+def open_microphone_spamfree(*args, **kwargs):
+	""" Open microphone without spamming stderr """
+	with redirect_stderr_to_dev_null():
 		with sr.Microphone(*args, **kwargs) as source:
 			yield source
 
-def record_speech(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise=False):
+def record_speech(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise=False, debug=False):
 	""" Record audio from microphone and put it in the queue """
 	r = sr.Recognizer()
 	r.energy_threshold = energy
 	r.pause_threshold = pause
 	r.dynamic_energy_threshold = dynamic_energy
 	i = 0
-	
-	with open_microphone_spamfree(sr, sample_rate=16000, device_index=device_index) as source:
+
+	open_microphone = sr.Microphone if debug else open_microphone_spamfree
+
+	with open_microphone(sample_rate=16000, device_index=device_index) as source:
 		while run_event.is_set():
 #			drop = os.path.isfile("/tmp/drop-the-mic")
 			if adjust_for_ambient_noise:
@@ -91,6 +97,7 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 def setup_logging(verbose, debug):
+	""" Setup logging """
 	logger_fmt = "%(message)s"
 	if debug:
 		log_level = logging.DEBUG
@@ -126,7 +133,7 @@ def mike(model="medium.en", lang="en", energy=1200, dynamic_energy=False, pause=
 		q_text = Queue()
 		Thread(
 			target=record_speech,
-			args=(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise)
+			args=(run_event, q_audio, energy, pause, dynamic_energy, save, device_index, adjust_for_ambient_noise, debug)
 			).start()
 		Thread(
 			target=speech_to_text,
