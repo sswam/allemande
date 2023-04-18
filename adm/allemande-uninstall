@@ -1,0 +1,11 @@
+#!/bin/bash -eu
+
+# remove allemande user and ports directory
+
+if [ `id -u` != 0 ]; then
+	exec sudo -E "$0"
+	exit $?
+fi
+
+confirm rm -rf "$ALLEMANDE_PORTS"
+userdel "$ALLEMANDE_USER" || true

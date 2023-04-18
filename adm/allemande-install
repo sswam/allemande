@@ -1,0 +1,42 @@
+#!/bin/bash -eu
+
+# setup the allemande user and ports directory
+
+python_dir="${1:-$(dirname "$(which python)")}"
+
+if [ `id -u` != 0 ]; then
+	exec sudo -E "$0" "$python_dir"
+	exit $?
+fi
+
+user="$ALLEMANDE_USER"
+ports="$ALLEMANDE_PORTS"
+
+useradd -d "$ports" -s "$(which bash)" $user || true
+
+mkdir -p "$ports"
+chown $user:$user "$ports"
+
+cat <<END >"$ports/.profile"
+set -a
+. $ALLEMANDE_HOME/env.sh
+PATH="$python_dir:\$PATH"
+set +a
+END
+
+mkdir "$ports/.cache"
+rm -f "$ports/.cache/whisper"
+ln -s "$ALLEMANDE_MODELS/whisper" "$ports/.cache/whisper"
+chown -R "$user:$user" "$ports/.cache"
+
+for module in $ALLEMANDE_MODULES; do
+	module_dir="$ports/$module"
+
+	mkdir -p "$module_dir"
+	CONFIG="$ALLEMANDE_HOME/config/$module/default.yaml"
+	if [ -e "$CONFIG" ]; then
+		ln -s "$CONFIG" "$module_dir/config.yaml"
+	fi
+
+	chown $user:$user "$module_dir"
+done

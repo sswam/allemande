@@ -1,3 +1,7 @@
 #!/bin/bash
-cd "$ALLEMANDE"
-core.py -p ports -m models/llm/point-alpaca-7B -d
+cd "$ALLEMANDE_HOME"
+# kill subprocesses on exit
+trap "kill 0" EXIT
+core/llm_llama.py &
+core/stt_whisper.py &
+wait
