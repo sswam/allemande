@@ -14,6 +14,8 @@ I am also including my AI software toolkit, [Allemande](https://github.com/sswam
 - Shell tools for ChatGPT 3.5 and GPT-4.
 - An OCR script that uses GPT for proofreading.
 - video-to-flashcards: Automatically generate Anki flashcards from YouTube videos (up to 15 minutes or so).
+- a local API service for core AI models, based on directories and files not sockets
+- API servers for alpaca and whisper models
 - chatgpt-model-switcher: switch models mid-chat in the ChatGPT web app, install it [from GreasyFork](https://greasyfork.org/en/scripts/463362-chatgpt-model-switcher).
 - An away script: try to keep an AI chatbot active while you're away, without it going insane!
 
