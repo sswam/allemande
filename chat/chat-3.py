@@ -12,25 +12,23 @@ from pathlib import Path
 import re
 import readline
 from types import SimpleNamespace
-import itertools
 
 import yaml
 import regex
-import inotify.adapters
+
+import ucm
+import allemande
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
-
-import transformers
+import transformers  # pylint: disable=wrong-import-position, wrong-import-order
 
 logger = logging.getLogger(__name__)
 
-allemande = Path(os.environ["ALLEMANDE"])
+server = "llm_llama"
+default_port = allemande.get_default_port(server)
 
-user_id = os.environ["USER"]
-default_ports_dir = allemande/"ports"
-#default_port_id = f'{user_id}-{os.getpid()}'   # TODO?
-default_port_id = f'{user_id}'
-default_port = default_ports_dir/default_port_id
+
+# TODO can't select model from here now
 
 models = {
 	"point-alpaca-7B": {
@@ -56,94 +54,6 @@ def count_tokens_in_text(text, tokenizer):
 def leading_spaces(text):
 	""" Return the number of leading spaces in a text. """
 	return re.match(r"\s*", text).group(0)
-
-# TODO use a client object
-
-req_id = 0
-
-def prepare_request(port, input_text, config=None):
-	""" Make a request to the core server. """
-	global req_id
-	prep = port/"prep"
-	req = prep/f"req-{req_id:06d}"
-	req_id += 1
-	req.mkdir(parents=True, exist_ok=True)
-	req_input = req/"request.txt"
-	req_input.write_text(input_text)
-	if config:
-		req_config = req/"config.yaml"
-		req_config.write_text(yaml.dump(config))
-	return req
-
-def send_request(port, req):
-	""" Send a request to the core server. """
-	todo = port/"todo"
-	req.rename(todo/req.name)
-
-def wait_for_response(port, req):
-	""" Wait for a response from the core server. """
-	done = port/"done"
-	error = port/"error"
-	i = inotify.adapters.Inotify()
-
-	# watch for the response dir in the done and error directories
-	for path in [done, error]:
-		i.add_watch(str(path), mask=inotify.constants.IN_CREATE | inotify.constants.IN_MOVED_TO)
-
-	resp = None
-
-	# check if the response is already there
-	for resp in itertools.chain(done.iterdir(), error.iterdir()):
-		if resp.is_dir() and resp.name == req.name:
-			status = resp.parent.name
-			return resp, status
-
-	# wait for the response
-	for event in i.event_gen(yield_nones=False):
-		(_, type_names, path, filename) = event
-		logger.debug("PATH=[%r] FILENAME=[%r] EVENT_TYPES=%r", path, filename, type_names)
-		path = Path(path)
-		resp = path/filename
-		if resp.is_dir() and filename == req.name:
-			status = path.name
-			return resp, status
-
-	raise RuntimeError("no response")
-
-def show_request_logs(resp):
-	""" Show the logs from a failed request. """
-	log = resp/"log.txt"
-	if log.exists():
-		logger.error("request failed: %s", log.read_text())
-
-def remove_response(port, resp):
-	""" Move a response to the history directory. """
-	history = port/"history"
-	while True:
-		history_name = f"{time.time():.2f}-{resp.name}"
-		try:
-			resp.rename(history/history_name)
-			break
-		except FileExistsError:
-			pass
-
-def client_request(port, input_text, config=None):
-	""" Call the core server and get a response. """
-	req = prepare_request(port, input_text, config=config)
-	send_request(port, req)
-	resp, status = wait_for_response(port, req)
-
-	if status == "error":
-		show_request_logs(resp)
-		new_text = ""
-		generated_text = input_text
-	else:
-		new_text = (resp/"new.txt").read_text()
-		generated_text = (resp/"full.txt").read_text()
-
-	remove_response(port, resp)
-
-	return new_text, generated_text
 
 def trim_response(response, args):
 	""" Trim the response to the first message. """
@@ -205,6 +115,28 @@ def get_fulltext(args, model, history, history_start, invitation, delim):
 	logger.info("fulltext: %r", fulltext)
 	return fulltext, history_start
 
+def client_request(port, input_text, config=None):
+	""" Call the core server and get a response. """
+
+	req = allemande.prepare_request(port, config=config)
+
+	req_input = req/"request.txt"
+	req_input.write_text(input_text)
+
+	allemande.send_request(port, req)
+
+	resp, status = allemande.wait_for_response(port, req)
+
+	if status == "error":
+		allemande.response_error(resp)
+
+	new_text = (resp/"new.txt").read_text()
+	generated_text = (resp/"full.txt").read_text()
+
+	allemande.remove_response(port, resp)
+
+	return new_text, generated_text
+
 def chat(model, args, history, history_start=0):
 	""" Chat with the model. """
 	invitation = args.bot + ":" if args.bot else ""
@@ -221,8 +153,8 @@ def chat(model, args, history, history_start=0):
 	else:
 		msg = human_invitation + input(human_invitation)
 
-	logger.debug(f"{history=}")
-	logger.debug(f"{history_start=}")
+#	logger.debug(f"{history=}")
+#	logger.debug(f"{history_start=}")
 
 	if msg:
 		print("")
@@ -233,7 +165,7 @@ def chat(model, args, history, history_start=0):
 		history.append(msg)
 		history_write(args.file, history[-1:], delim=delim, invitation=delim)
 
-	logger.debug(f"{history=}")
+#	logger.debug(f"{history=}")
 
 	if args.edit:
 		invitation2 = input_with_prefill("", invitation)
@@ -247,13 +179,13 @@ def chat(model, args, history, history_start=0):
 
 	args.gen_config = load_config(args)
 
-	logger.debug(f"{history=}")
-	logger.debug(f"{history_start=}")
-	logger.debug("fulltext: %r", fulltext)
-	logger.debug("model: %r", model)
-	logger.debug("invitation: %r", invitation)
-	logger.debug("invitation2: %r", invitation2)
-	logger.debug("delim: %r", delim)
+#	logger.debug(f"{history=}")
+#	logger.debug(f"{history_start=}")
+#	logger.debug("fulltext: %r", fulltext)
+#	logger.debug("model: %r", model)
+#	logger.debug("invitation: %r", invitation)
+#	logger.debug("invitation2: %r", invitation2)
+#	logger.debug("delim: %r", delim)
 
 	response, _fulltext2 = client_request(args.port, fulltext, config=args.gen_config)
 
@@ -376,8 +308,8 @@ def process_file(model, file, args, history_start=0):
 
 	response, _fulltext2 = client_request(args.port, fulltext, config=args.gen_config)
 
-	logger.debug("response: ["+response+"]")
-	logger.debug("_fulltext2: ["+_fulltext2+"]")
+	logger.debug("response: %r", response)
+	logger.debug("_fulltext2: %r", _fulltext2)
 
 	if args.trim:
 		response = trim_response(response, args)
@@ -451,6 +383,7 @@ def watch_loop(model, args):
 
 def default_user():
 	""" Try to get the user's name from $user in the environment, or fall back to $USER """
+	user_id = os.environ["USER"]
 	return os.environ.get("user", user_id).title()
 
 def default_bot():
@@ -474,31 +407,6 @@ def load_config(args):
 def prog_dir():
 	""" Get the directory of the program. """
 	return Path(sys.argv[0]).resolve().parent
-
-def setup_logging(args):
-	""" Set up logging. """
-
-	# get basename of program in upper case
-	prog_name_uc = os.path.basename(sys.argv[0]).upper()
-
-	log_file = args.log or os.environ.get(f'{prog_name_uc}_LOG')
-	fmt = "%(message)s"
-	if args.log_level == logging.DEBUG:
-		fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
-
-	# if a log_file was specified, use it
-	log_file = log_file or os.environ.get('BB_LOG_FILE')
-	logging.basicConfig(level=args.log_level, format=fmt, filename=log_file)
-
-def add_logging_options(parser):
-	""" Add logging options to an argument parser. """
-	logging_group = parser.add_argument_group('Logging options')
-	logging_group.set_defaults(log_level=logging.WARNING)
-	logging_group.add_argument('-d', '--debug', dest='log_level', action='store_const', const=logging.DEBUG, help="Show debug messages")
-	logging_group.add_argument('-v', '--verbose', dest='log_level', action='store_const', const=logging.INFO, help="Show verbose messages")
-	logging_group.add_argument('-q', '--quiet', dest='log_level', action='store_const', const=logging.ERROR, help="Show only errors")
-	logging_group.add_argument('-Q', '--silent', dest='log_level', action='store_const', const=logging.CRITICAL, help="Show nothing")
-	logging_group.add_argument('--log', default=None, help="log file")
 
 def get_opts():
 	""" Get the command line options. """
@@ -550,11 +458,11 @@ def get_opts():
 	dev_group.add_argument("--no-model", "-M", action="store_false", dest="model", help="Don't load the model, for testing purposes")
 	dev_group.add_argument("--dump-config", "-C", action="store_true", help="Dump the model config in YAML format, and exit")
 
-	add_logging_options(parser)
+	ucm.add_logging_options(parser)
 
 	args = parser.parse_args()
 
-	setup_logging(args)
+	ucm.setup_logging(args)
 
 	logger.debug("Options: %r", args)
 
@@ -629,7 +537,11 @@ def main():
 		# stream(model, args)
 
 if __name__ == "__main__":
-	main()
+	try:
+		main()
+	except KeyboardInterrupt:
+		logger.info("interrupted")
+		sys.exit(0)
 
 
 # NOTE XXX
