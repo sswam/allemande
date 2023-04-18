@@ -1,0 +1,44 @@
+#!/bin/bash
+# confirm: ask a yes/no question, and optionally execute a command
+# Usage: confirm [-y] [-n] [command]
+
+function confirm() {
+	local default= is_command= yes= yn
+
+	OPTIND=1
+	while getopts "yn" opt; do
+		case "$opt" in
+		y) default=y ;;
+		n) default=n ;;
+		esac
+	done
+	shift $((OPTIND-1))
+
+	is_command=
+	prompt="$*"
+	if [[ $prompt != *\? ]]; then
+		prompt="$prompt ?"
+		is_command=1
+	fi
+
+	confirmed=
+	while true; do
+		read -p "$prompt " yn
+		case "${yn:-$default}" in
+		y*)
+			confirmed=1
+			break
+			;;
+		n*)
+			break
+			;;
+		esac
+		echo -n "! [yn] "
+	done
+
+	[ -n "$confirmed" ] && if [ -n "$is_command" ]; then "$@"; fi
+}
+
+if [ "$0" = "$BASH_SOURCE" ]; then
+	confirm "$@"
+fi

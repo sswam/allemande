@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
-""" electric barbarella v3 - core """
+""" electric barbarella v3 - core llama module """
 
+import sys
 import os
 import logging
 from pathlib import Path
 from functools import partial
+from types import SimpleNamespace
 
 import argh
 import inotify.adapters
@@ -18,7 +20,19 @@ import transformers
 
 logger = logging.getLogger(__name__)
 
-prog_dir = Path(__file__).parent
+def prog_info():
+	""" Get info about the program """
+	prog = SimpleNamespace()
+	prog.path = Path(__file__)
+	prog.dir = prog.path.parent
+	prog.filename = prog.path.name
+	prog.name = prog.path.stem
+	return prog
+
+prog = prog_info()
+
+ports_dir = Path(os.environ["ALLEMANDE_PORTS"])/prog.name
+models_dir = Path(os.environ["ALLEMANDE_MODELS"])
 
 
 def load_model(model_path, device_map="auto"):
@@ -93,7 +107,7 @@ def load(ports, d, filename):
 		if p == d:
 			break
 		d = p
-	f = prog_dir/filename
+	f = prog.dir/filename
 	if f.exists():
 		return f.read_text()
 	raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
@@ -130,10 +144,10 @@ def process_request(ports, port, req, fn, *args, **kwargs):
 			logger.removeHandler(log_handler)
 
 
-def port_setup(port):
-	""" Set up a port """
-	for box in ("prep", "todo", "doing", "done", "error", "history"):
-		(port/box).mkdir(exist_ok=True)
+#def port_setup(port):
+#	""" Set up a port """
+#	for box in ("prep", "todo", "doing", "done", "error", "history"):
+#		(port/box).mkdir(exist_ok=True)
 
 
 def serve_requests(ports, fn):
@@ -143,7 +157,7 @@ def serve_requests(ports, fn):
 	for port in Path(ports).iterdir():
 		if not port.is_dir():
 			continue
-		port_setup(port)
+		# port_setup(port)
 		todo = port/"todo"
 		logger.info("watching %s", todo)
 		i.add_watch(str(todo), mask=inotify.constants.IN_CREATE | inotify.constants.IN_MOVED_TO)
@@ -174,16 +188,20 @@ def setup_logging(verbose, debug):
 	logging.basicConfig(level=log_level, format=fmt)
 
 
-def main(ports=".", model_path=None, verbose=False, debug=False):
+def main(ports=str(ports_dir), model=str(models_dir/"llm/point-alpaca"), verbose=False, debug=False):
 	""" main function """
 	setup_logging(verbose, debug)
-	model = load_model(model_path) if model_path else None
-	fn = partial(gen, model=model)
+	the_model = load_model(model) if model else None
+	fn = partial(gen, model=the_model)
 	serve_requests(ports, fn)
 
 
 if __name__ == "__main__":
-	argh.dispatch_command(main)
+	try:
+		argh.dispatch_command(main)
+	except KeyboardInterrupt:
+		logger.info("interrupted")
+		sys.exit(1)
 
 #- The program, electric barbarella v3 - core, uses a Transformer-based language model for text generation.
 #- Main functions:
