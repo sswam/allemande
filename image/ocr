@@ -35,7 +35,7 @@ fi
 
 prompt1=`cat <<EOF
 Please correct the OCR errors in this $t$s.
-Pleae remove any spurious characters and blank lines that appear in the input.
+Please remove any spurious characters and blank lines that appear in the input.
 EOF
 `
 
