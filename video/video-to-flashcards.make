@@ -18,7 +18,7 @@ SEARCH := google
 
 
 # m0=3+
-m0=4
+m0=3+
 m=4
 
 
@@ -99,7 +99,7 @@ flashcards-1.txt: transcript.txt
 	< $< gpt-flashcards -m="$m" > $@
 
 flashcards.txt: flashcards-1.txt
-	(< $< sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single-blank-lines.pl > $@
+	(< $< grep -v '^$$' | sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single-blank-lines.pl > $@
 
 flashcards.tsv: flashcards.txt
 	< $< recs2tsv.pl | grep '\S' > $@
