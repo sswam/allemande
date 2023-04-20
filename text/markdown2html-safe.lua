@@ -11,7 +11,8 @@ end
 
 local function is_trusted_domain(url)
     -- Update the pattern to match your trusted domain
-    return url:match("^https?://trusted%.example%.com/") ~= nil
+    return not is_external(url)
+    -- return url:match("^https?://trusted%.example%.com/") ~= nil
 end
 
 function Link(el)

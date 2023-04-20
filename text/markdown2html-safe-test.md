@@ -11,3 +11,5 @@ Let's see...
 [Click Me](javascript:alert('Uh oh...'))
 
 ![An Image](pix/barbarella.jpg)
+
+![An Image](https://hackersRus.biz/fake-image.cgi)
