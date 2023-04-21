@@ -1,0 +1,14 @@
+#!/bin/bash
+# perms: set file permissions for the web app
+if [ `id -u` != 0 ]; then
+	exec sudo -E "$0" "$@"
+	exit $?
+fi
+mode() {
+	mode=$1 ; shift
+	chown $SUDO_USER:www-data "$@"
+	chmod $mode "$@"
+}
+mode 770 rooms files
+mode 660 rooms/*
+mode 640 .htpasswd static/logout/.htpasswd

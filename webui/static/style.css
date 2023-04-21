@@ -1,0 +1,87 @@
+* {
+	box-sizing: border-box;
+}
+body, html {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+body, textarea {
+	font-family: helvetica, arial, sans-serif;
+}
+.fill {
+	width: 100%;
+	height: 100%;
+}
+.admin {
+	display: none;
+}
+.hidden {
+	display: none;
+}
+.messages {
+/*	padding: 8px 8px 8px 24px; */
+/*	overflow-y: scroll;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	*/
+}
+.message {
+	display: block;
+	background-color: white;
+	padding: 2px;
+}
+.message > .name {
+	margin: 0 0 0 -16px;
+	font-weight: bold;
+	text-transform: capitalize;
+	background-color: white;
+	padding: 2px;
+}
+.message.me > .name { color: blue; }
+.message > .text {
+	white-space: pre-wrap;
+}
+input, textarea { padding: 2px; }
+.message_in {
+	height: 3em;
+	min-height: 1em;
+}
+.pad {
+	padding: 8px;
+}
+.row {
+	display: flex;
+	flex-direction: row;
+}
+.col {
+	display: flex;
+	flex-direction: column;
+}
+.col > * {
+	margin: 8px 0 0 0;
+}
+.row > * {
+	margin: 0 0 0 8px;
+}
+.col > :first-child, .row > :first-child {
+	margin: 0;
+}
+.flex {
+	flex: 1;
+}
+.outline {
+	border: 1px solid black;
+}
+.inputfile.hide {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+.attached {
+	overflow: hidden;
+}
