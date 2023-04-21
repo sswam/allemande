@@ -5,7 +5,7 @@ git checkout main
 
 git-add-commit
 
-arcs
+#arcs
 git push; git pull
 
 for branch in allemande barbarella; do
@@ -15,3 +15,9 @@ for branch in allemande barbarella; do
 done
 
 git checkout main
+
+if [ -n "`git-ls-untracked`" -o -n "`git-ls-unstaged`" ]; then
+	echo >&2 "not running arcs because of untracked or unstaged files"
+else
+	arcs
+fi
