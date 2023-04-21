@@ -39,3 +39,4 @@ clip-interrogator
 watchdog
 
 anthropic
+aionotify
