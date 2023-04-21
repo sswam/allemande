@@ -6,15 +6,20 @@ import uvicorn
 
 app = Starlette()
 
-@app.route("/whoami", methods=["GET"])
-async def whoami(request):
-	username = request.headers['X-Forwarded-User']
-	return JSONResponse({"user": username})
+ADMINS = ["sam"]
 
-@app.route("/post/{room}", methods=["POST"])
+@app.route("/x/whoami", methods=["GET", "POST"])
+async def whoami(request):
+	# TODO admin might depend on the room
+	user = request.headers['X-Forwarded-User']
+	admin = user in ADMINS
+	return JSONResponse({"user": user, "admin": admin})
+
+@app.route("/x/post", methods=["POST"])
 async def post(request):
-	room = request.path_params['room']
-	return JSONResponse({"message": f"Posting to room: {room}!"})
+	# room = request.path_params['room']
+	print(request)
+	return JSONResponse({"message": f"Posting"})
 
 async def stream_data():
 	for i in range(3):

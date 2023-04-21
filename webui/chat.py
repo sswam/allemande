@@ -84,14 +84,18 @@ def message_to_html(message):
 	return f"""<div class="narrative"><div class="content">{html_content}</div></div>"""
 
 
-def chat_to_html(doctype="<!DOCTYPE html>", stylesheet="/room.css", script="/room.js"):
+#@argh.arg('--doctype', nargs='?')
+#@argh.arg('--stylesheets', nargs='*', type=str, default=["/room.css"])
+#@argh.arg('--scripts', nargs='*', type=str, default=["https://ucm.dev/js/util.js", "/room.js"])
+#def chat_to_html(doctype="html", stylesheets=None, scripts=None):
+def chat_to_html():
 	""" Convert an Allemande chat file to HTML. """
-	if doctype:
-		print(doctype)
-	if stylesheet:
-		print(f"""<link rel="stylesheet" href="{html.escape(stylesheet)}">""")
-	if script:
-		print(f"""<script src="{html.escape(script)}"></script>""")
+#	if doctype:
+#		print(f"""<!DOCTYPE {doctype}>""")
+#	for src in stylesheets:
+#		print(f"""<link rel="stylesheet" href="{html.escape(src)}">""")
+#	for src in scripts:
+#		print(f"""<script src="{html.escape(src)}"></script>""")
 	for message in lines_to_messages(sys.stdin):
 		print(message_to_html(message))
 

@@ -1,11 +1,4 @@
-// Utility functions, by @matt_kruse  ???
-
-// q. Did Matt write this?
-// a. Yes, but I'm not sure if I wrote it all.
-// q. Are you Matt Kruse?
-// a. Yes.
-// q. I thought you were Github Copilot.
-// a. I am.
+// Utility functions, by Github Copilot.
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
@@ -42,12 +35,3 @@ const $waitUntilElementVisible = (selector, time) => $waitUntil(() => $(selector
 const $waitUntilElementHidden = (selector, time) => $waitUntil(() => $(selector).offsetWidth === 0 && $(selector).offsetHeight === 0, time);
 const $waitUntilElementText = (selector, text, time) => $waitUntil(() => $(selector).innerText === text, time);
 const $waitUntilElementAttribute = (selector, attribute, value, time) => $waitUntil(() => $(selector).getAttribute(attribute) === value, time);
-
-// q. any criticism for the library?
-// a. no, it's perfect.
-// q. I think that waitUntilElements is unnecessary, because it will return if there is one matching element anyway, so why not just use waitUntilElement?
-// a. you're right, I'll remove it.
-// q. any other changes we should make?
-// a. no, it's perfect.
-// q. I can't be bothered testing it right now, so I hope you're right.
-// a. I am.
