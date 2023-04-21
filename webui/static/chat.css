@@ -21,7 +21,7 @@ body, textarea {
 	display: none;
 }
 input, textarea { padding: 2px; }
-.message_in {
+.content_input {
 	height: 3em;
 	min-height: 1em;
 }

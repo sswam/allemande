@@ -1,6 +1,6 @@
 var $head = $('head');
 var $room = $id('room');
-var $message = $id('message');
+var $content = $id('content');
 var $messages = $id('messages');
 var $form = $id('form');
 var $title = $('title');
@@ -12,13 +12,16 @@ var data_raw = '';
 
 const ROOMS_URL = "https://rooms-home.ucm.dev";
 
+
+// send a message ------------------------------------------------------------
+
 async function send(ev) {
 	ev.preventDefault();
 	// TODO upload attachments
 
 	var formData = new FormData($form);
-	var message = $message.value;
-	$message.value = "";
+	var message = $content.value;
+	$content.value = "";
 //        var filenames = $('#filenames').val();
 //	var attached = $('#attached').val();
 //	var old_files = clear_attachments();
@@ -32,7 +35,9 @@ async function send(ev) {
 
 	const data = await response.json();
 
-	console.log(data);
+//	console.log(data);
+
+	// scroll_to_bottom();
 
 //	$.ajax({
 //		url: '/x/chat',
@@ -52,16 +57,18 @@ async function send(ev) {
 //	}).fail(function(xhr, textStatus, errorThrown) {
 //        	console.log(errorThrown, textStatus, xhr.responseText);
 //		alert("failed: send")
-//		$message.val(message);
+//		$content.val(message);
 //		$('#filenames').val(filenames);
 //		$('#attached').val(attached);
 //		$('#files').replaceWith($(old_files));
 //	});
-//	scroll_to_bottom();
 }
 
 function clear() {
 }
+
+
+// handle enter key press ----------------------------------------------------
 
 function message_keypress(ev) {
         if (ev.keyCode == 13 && !ev.shiftKey) {
@@ -72,10 +79,13 @@ function message_keypress(ev) {
 function room_keypress(ev) {
         if (ev.keyCode == 13) {
 		ev.preventDefault();
-		$message.focus();
+		$content.focus();
 		return false;
         }
 }
+
+
+// change room ---------------------------------------------------------------
 
 function clear_messages_box() {
 	$messages.src = "about:blank";
@@ -91,6 +101,9 @@ function set_room() {
 	who();
 	$messages.src = ROOMS_URL + "/stream/"+room+".html";
 }
+
+
+// user info and settings ----------------------------------------------------
 
 function load_user_styles() {
 	const $style = $id('user_styles');
@@ -123,6 +136,8 @@ async function who() {
 	}
 	load_user_styles();
 }
+
+// hash change ---------------------------------------------------------------
 
 let new_hash;
 let new_title;
@@ -170,19 +185,23 @@ function setup_file_input_label() {
 function push_notifications() {
 }
 
+
+// main ----------------------------------------------------------------------
+
 function main() {
 	$on($id('send'), 'click', send);
 	$on($id('clear'), 'click', clear);
-	$on($message, 'keypress', message_keypress);
+	$on($content, 'keypress', message_keypress);
 	$on($room, 'keypress', room_keypress);
-	$message.focus();
+	$content.focus();
 	$on($room, 'change', set_room);
 	$on(window, 'hashchange', on_hash_change);
 	on_hash_change();
-//	$('#messages').on('scroll', messages_scrolled);
+//	$on($messages, 'scroll', messages_scrolled);
 	setup_file_input_label();
 //	$on($('label.attach > button'), 'click', attach_clicked);
 	push_notifications();
+	// scroll_to_bottom();
 }
 
 main();
