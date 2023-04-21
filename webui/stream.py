@@ -21,8 +21,14 @@ logger = logging.getLogger(__name__)
 
 base_dir = Path(".").resolve()
 
-FOLLOW_SLEEP = 0.1
-FOLLOW_KEEPALIVE = 50
+FOLLOW_KEEPALIVE = 5
+
+HTML_PRELUDE = """<!DOCTYPE html>
+<link rel="stylesheet" href="/room.css">
+<script src="https://ucm.dev/js/util.js"></script>
+<script src="/room.js"></script>
+"""
+HTML_KEEPALIVE = "<script>online()</script>\n"
 
 
 def sanitize_path(base_dir: Path, path: Path) -> Path:
@@ -34,11 +40,28 @@ def sanitize_path(base_dir: Path, path: Path) -> Path:
 		raise ValueError("Invalid or unsafe path provided.")
 
 
-async def follow(file, keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n"):
+async def follow(file, prelude="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n"):
 	""" Follow a file and yield new lines as they are added. """
+
+	if prelude:
+		yield prelude
+
+	if not Path(file).exists():
+		folder = str(Path(file).parent)
+		watcher = aionotify.Watcher()
+		watcher.watch(folder, aionotify.Flags.CREATE | aionotify.Flags.MOVED_TO)
+		await watcher.setup(asyncio.get_event_loop())
+		while not Path(file).exists():
+			try:
+				logger.info(f"waiting for file to be created")
+				event = await asyncio.wait_for(watcher.get_event(), timeout=keepalive)
+			except asyncio.TimeoutError:
+				logger.info(f"sending keepalive: {keepalive_string}")
+				yield keepalive_string
+		watcher.close()
+
 	watcher = aionotify.Watcher()
 	watcher.watch(file, aionotify.Flags.MODIFY)
-
 	await watcher.setup(asyncio.get_event_loop())
 
 	async with aiofiles.open(file, mode='r') as f:
@@ -63,14 +86,16 @@ async def stream(request):
 	safe_path = sanitize_path(base_dir, path)
 
 	media_type = "text/plain"
+	prelude = ""
 	keepalive_string = "\n"
 	ext = safe_path.suffix
 	if ext == ".html":
 		media_type = "text/html"
-		keepalive_string = "<script>online()</script>\n"
+		prelude = HTML_PRELUDE
+		keepalive_string = HTML_KEEPALIVE
 
 	logger.info(f"tail: {safe_path}")
-	follower = follow(str(safe_path), keepalive_string=keepalive_string)
+	follower = follow(str(safe_path), prelude=prelude, keepalive_string=keepalive_string)
 	return StreamingResponse(follower, media_type=media_type)
 
 

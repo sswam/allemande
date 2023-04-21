@@ -1,10 +1,5 @@
 // This script shows a status indicator in the chat window.
 
-const $id = (id) => document.getElementById(id);
-const $create = (element) => document.createElement(element);
-const $append = (parent, child) => parent.appendChild(child);
-const $on = (element, event, handler) => element.addEventListener(event, handler);
-
 const timeout_seconds = 60;
 
 let timeout;
