@@ -83,6 +83,9 @@ def fix_indentation_list(lines, n, char):
 
 	tab_old = get_tab_string(lines)
 
+	if not tab_old:
+		raise ValueError("No common indentation found")
+
 	if tab_old != tab:
 		lines = map(lambda line: replace_indentation(line, tab_old, tab), lines)
 
