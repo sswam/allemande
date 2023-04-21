@@ -5,8 +5,7 @@
 <title>chat</title>
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<link rel="stylesheet" href="style.css">
-<script src="chat.js"></script>
+<link rel="stylesheet" href="chat.css">
 <style id="style_user_name"></style>
 </head>
 <body>
@@ -19,7 +18,7 @@
 		<button onclick="location.href = '/logout'; return false;">logout</button>
 	</div>
 
-	<iframe id="messages" class="messages flex" src="https://rooms-home.ucm.dev/stream/main.html"></iframe>
+	<iframe id="messages" class="messages flex" src="about:blank"></iframe>
 
 	<textarea id="message" name="message" class="message_in"></textarea>
 
@@ -33,5 +32,7 @@
 	</div>
 </div>
 </form>
+<script src="https://ucm.dev/js/util.js"></script>
+<script src="chat.js"></script>
 </body>
 </html>

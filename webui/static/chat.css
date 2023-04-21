@@ -20,29 +20,6 @@ body, textarea {
 .hidden {
 	display: none;
 }
-.messages {
-/*	padding: 8px 8px 8px 24px; */
-/*	overflow-y: scroll;
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
-	*/
-}
-.message {
-	display: block;
-	background-color: white;
-	padding: 2px;
-}
-.message > .name {
-	margin: 0 0 0 -16px;
-	font-weight: bold;
-	text-transform: capitalize;
-	background-color: white;
-	padding: 2px;
-}
-.message.me > .name { color: blue; }
-.message > .text {
-	white-space: pre-wrap;
-}
 input, textarea { padding: 2px; }
 .message_in {
 	height: 3em;
