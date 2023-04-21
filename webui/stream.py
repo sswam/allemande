@@ -6,13 +6,14 @@ import sys
 import logging
 from pathlib import Path
 import asyncio
+
 import aiofiles
 import aionotify
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse, StreamingResponse, PlainTextResponse
 import uvicorn
 
-from starlette.routing import Convertor
+import chat
 
 app = Starlette()
 
@@ -27,17 +28,9 @@ HTML_PRELUDE = """<!DOCTYPE html>
 <link rel="stylesheet" href="/room.css">
 <script src="https://ucm.dev/js/util.js"></script>
 <script src="/room.js"></script>
+<body>
 """
 HTML_KEEPALIVE = "<script>online()</script>\n"
-
-
-def sanitize_path(base_dir: Path, path: Path) -> Path:
-	""" Return a safe path, or raise ValueError if the path is invalid or unsafe. """
-	safe_path = base_dir.joinpath(path).resolve()
-	if base_dir in safe_path.parents:
-		return safe_path
-	else:
-		raise ValueError("Invalid or unsafe path provided.")
 
 
 async def follow(file, prelude="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n"):
@@ -83,7 +76,7 @@ async def follow(file, prelude="", keepalive=FOLLOW_KEEPALIVE, keepalive_string=
 async def stream(request):
 	""" Stream a file to the browser, like tail -f """
 	path = Path(request.path_params['path'])
-	safe_path = sanitize_path(base_dir, path)
+	safe_path = chat.safe_join(base_dir, path)
 
 	media_type = "text/plain"
 	prelude = ""

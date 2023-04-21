@@ -5,6 +5,7 @@
 import sys
 import itertools
 import html
+from pathlib import Path
 
 import argh
 import markdown
@@ -12,6 +13,15 @@ import markdown
 
 USER_NARRATIVE = object()
 USER_CONTINUED = object()
+
+
+def safe_join(base_dir: Path, path: Path) -> Path:
+	""" Return a safe path under base_dir, or raise ValueError if the path is unsafe. """
+	safe_path = base_dir.joinpath(path).resolve()
+	if base_dir in safe_path.parents:
+		return safe_path
+	else:
+		raise ValueError("Invalid or unsafe path provided: %r, %r" % (base_dir, path))
 
 
 def split_message_line(line):
@@ -72,6 +82,22 @@ def lines_to_messages(lines):
 			message = {"content": content}
 		else:
 			message = {"user": user, "content": content}
+
+
+def message_to_text(message):
+	""" Convert a chat message to text. """
+	user = message.get("user")
+	content = message["content"]
+	if user:
+		lines = content.splitlines() or [""]
+		lines2 = []
+		lines2.append(f"{user}:\t{lines[0]}\n")
+		for line in lines[1:]:
+			lines2.append(f"\t{line}\n")
+		text = "".join(lines2)
+	else:
+		text = content
+	return text
 
 
 def message_to_html(message):
