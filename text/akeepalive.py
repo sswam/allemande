@@ -12,21 +12,41 @@ import ucm
 logger = logging.getLogger(__name__)
 
 
-async def async_keepalive(iterable, timeout, timeout_return=None):
+class AsyncKeepalive:
 	""" Async Keepalive Generator """
 
-	iterator = aiter(iterable)
-	next_item_task = None
-	timeout_task = None
+	def __init__(self, iterable, timeout, timeout_return=None):
+		""" Initialize the Async Keepalive Generator """
+		self.iterator = aiter(iterable)
+		self.timeout = timeout
+		self.timeout_return = timeout_return
+		self.next_item_task = None
+		self.timeout_task = None
 
-	while True:
-		if timeout_task is None:
-			timeout_task = asyncio.create_task(asyncio.sleep(timeout))
-		if next_item_task is None:
-			next_item_task = asyncio.create_task(anext(iterator))
+	async def run(self):
+		""" Run the Async Keepalive Generator """
+
+		try:
+			while True:
+				async for item in self.step():
+					yield item
+		except StopAsyncIteration:
+			pass
+
+		for task in self.next_item_task, self.timeout_task:
+			if task:
+				task.cancel()
+
+	async def step(self):
+		""" Step the Async Keepalive Generator """
+
+		if self.timeout_task is None:
+			self.timeout_task = asyncio.create_task(asyncio.sleep(self.timeout))
+		if self.next_item_task is None:
+			self.next_item_task = asyncio.create_task(anext(self.iterator))
 
 		done, _ = await asyncio.wait(
-			{next_item_task, timeout_task},
+			{ self.next_item_task,  self.timeout_task },
 			return_when=asyncio.FIRST_COMPLETED,
 		)
 
@@ -34,32 +54,24 @@ async def async_keepalive(iterable, timeout, timeout_return=None):
 
 		task = done.pop()
 
-		if task == timeout_task:
-			timeout_task = None
-			yield timeout_return
-			continue
+		if task == self.timeout_task:
+			self.timeout_task = None
+			yield self.timeout_return
+		else:
+			assert task == self.next_item_task
 
-		assert task == next_item_task
+			self.next_item_task = None
+			self.timeout_task.cancel()
+			self.timeout_task = None
 
-		next_item_task = None
-		timeout_task.cancel()
-		timeout_task = None
-
-		try:
 			yield task.result()
-		except StopAsyncIteration:
-			break
-
-	for task in next_item_task, timeout_task:
-		if task:
-			task.cancel()
 
 
 async def async_keepalive_demo(timeout, timeout_return):
 	""" Async Timed Iterator Demo """
 	async with aiofiles.open(sys.stdin.fileno(), mode='r') as iterable:
-		async_iterable = async_keepalive(iterable, timeout, timeout_return)
-		async for item in async_iterable:
+		keepalive = AsyncKeepalive(iterable, timeout, timeout_return)
+		async for item in keepalive.run():
 			print(item, end='', flush=True)
 
 
