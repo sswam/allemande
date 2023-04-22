@@ -50,16 +50,20 @@ class BB2HTML:
 
 	async def file_changed(self, bb_file, html_file, old_size, new_size):
 		""" convert a bb file to html """
-		if new_size <= (old_size or 0):
+
+		# assume the file was appended to ...
+		html_file_mode = "a"
+
+		# ... unless the file has shrunk
+		if old_size and new_size < old_size:
 			logger.warning("bb file was truncated: %s from %s to %s", bb_file, old_size, new_size)
-			return
+			html_file_mode = "w"
 
-		# assume the file was appended to
-
-		with Path(bb_file).open("r", encoding="utf-8") as bb:
-			if old_size:
-				bb.seek(old_size)
-			with Path(html_file).open("a", encoding="utf-8") as html:
+		with open(bb_file, "r", encoding="utf-8") as bb:
+			with open(html_file, html_file_mode, encoding="utf-8") as html:
+				html_file_size = html.tell()
+				if old_size and html_file_size:
+					bb.seek(old_size)
 				for message in chat.lines_to_messages(bb):
 					print(chat.message_to_html(message), file=html)
 				row = [html_file]

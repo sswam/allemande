@@ -314,8 +314,14 @@ def process_file(model, file, args, history_start=0):
 	if args.trim:
 		response = trim_response(response, args)
 
-	history.append(invitation.lstrip() + response)
-	history_write(file, history[-1:], delim=args.delim, invitation=human_invitation)
+	if invitation:
+		tidy_response = invitation.strip() + "\t" + response.strip()
+	else:
+		tidy_response = response
+
+	history.append(tidy_response)
+#	history_write(file, history[-1:], delim=args.delim, invitation=human_invitation)
+	history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
 
 def find_files(folder, ext=None, maxdepth=inf):
 	""" Find chat files under a directory. """

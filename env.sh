@@ -10,6 +10,8 @@ ALLEMANDE_PORTS="/var/spool/allemande"
 ALLEMANDE_MODULES="llm_llama stt_whisper"
 ALLEMANDE_BOXES="prep todo doing done error history"
 
+ALLEMANDE_ROOMS="$ALLEMANDE_HOME/rooms"
+
 PYTHON=$(which python3)
 
 . "$ALLEMANDE_HOME/voice-chat/env.sh"
