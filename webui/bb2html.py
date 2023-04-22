@@ -56,10 +56,10 @@ class BB2HTML:
 
 		# assume the file was appended to
 
-		with Path(bb_file).open("r") as bb:
+		with Path(bb_file).open("r", encoding="utf-8") as bb:
 			if old_size:
 				bb.seek(old_size)
-			with Path(html_file).open("a") as html:
+			with Path(html_file).open("a", encoding="utf-8") as html:
 				for message in chat.lines_to_messages(bb):
 					print(chat.message_to_html(message), file=html)
 				row = [html_file]
