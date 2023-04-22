@@ -12,6 +12,7 @@ app = Starlette()
 
 ADMINS = ["sam"]
 ROOMS = "rooms"
+EXTENSION = ".bb"
 
 @app.route("/x/whoami", methods=["GET", "POST"])
 async def whoami(request):
@@ -22,7 +23,7 @@ async def whoami(request):
 
 def write_to_room(room, user, content):
 	base_dir = Path(ROOMS).resolve()
-	markdown_file = chat.safe_join(base_dir, room+".md")
+	markdown_file = chat.safe_join(base_dir, room + EXTENSION)
 	html_file = chat.safe_join(base_dir, room+".html")
 	message = {"user": user, "content": content}
 

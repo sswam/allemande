@@ -1,11 +1,9 @@
-#!/bin/bash -eu
-
-set -a
+#!/bin/bash -eua
 
 progdir="$(dirname "$(readlink -f "$0")")"
 cd "$progdir"
 
-. ./env.sh
+. ./env-work.sh
 
 nt bb-voice
 

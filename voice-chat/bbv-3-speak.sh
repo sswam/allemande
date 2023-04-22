@@ -1,9 +1,11 @@
-#!/bin/bash -eu
+#!/bin/bash -eua
 # bb-voice: a simple voice chat program
 
 set -a
 
 nt speak
+
+. ./env-work.sh
 
 if [ ! -e "$file" ]; then
 	> "$file"
@@ -14,7 +16,7 @@ mic_on
 
 trap "mic_on; pkill -P $$" EXIT
 
-tail-f.py -n"${rewind:-0}" "$file" |
+atail.py -n"${rewind:-0}" "$file" |
 perl -ne '
 	chomp;
 	BEGIN {
