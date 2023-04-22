@@ -3,10 +3,6 @@
 
 set -a
 
-nt speak
-
-. ./env-work.sh
-
 if [ ! -e "$file" ]; then
 	> "$file"
 fi
@@ -26,7 +22,7 @@ perl -ne '
 	s/[^ -~\x{7e9}]//g;    # filter out emojis; but \x7e9 is closing single-quote / "smart" apostrophe
 	if (/^\Q$ENV{user}\E:/) {
 		$last = "user";
-	} elsif (/^\Q$ENV{bot}\E:/ || (!/^\w+: /) && $last eq "bot") {
+	} elsif (/^\Q$ENV{bot}\E:/ || (!/^\w+:\s/) && $last eq "bot") {
 		$last = "bot";
 		print STDERR "$_\n";
 		s/^\Q$ENV{bot}\E:\s*//;

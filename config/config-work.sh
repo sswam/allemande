@@ -1,9 +1,10 @@
-CHATPATH=$HOME/chat
+CHATPATH=$ALLEMANDE_HOME/rooms
+
 user=${USER^}
 bot=Barbie
-file=$HOME/chat/$user-$bot.bb
-mission="system: You are good friends talking face to face in real life."
-add_prompts=   # 1
+file=$CHATPATH/chat.bb
+mission=$'system:\tYou are friends and co-workers talking face to face and working enthusiastically on developing an AI toolkit.'
+add_prompts=1   # 1
 rewind=2
 
 #speak="speak.py --model coqui:tts_models/en/ek1/tacotron2 --tempo 1.2 --pitch 4"

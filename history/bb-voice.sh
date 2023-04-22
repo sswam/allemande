@@ -3,8 +3,6 @@
 progdir="$(dirname "$(readlink -f "$0")")"
 cd "$progdir"
 
-. ./env-work.sh
-
 nt bb-voice
 
 # xterm -e "bash -i -c 'nt core; core.sh; exec bash'" &

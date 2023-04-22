@@ -1,4 +1,4 @@
-# The `env.sh` script sets various environment variables and paths for my AI toolkit, Allemande. It initializes the 'bot' variable with the value 'Barbie', updates the Python path, and sets the PATH environment variable to include several directories within the Allemande framework. Lastly, it initializes the CHATPATH variable with the user's home directory followed by '/chat'.
+# set environment variables and paths for Allemande AI toolkit
 
 ALLEMANDE_ENV=$(realpath "${BASH_SOURCE[0]}")
 ALLEMANDE_HOME=$(dirname "$ALLEMANDE_ENV")
@@ -10,9 +10,9 @@ ALLEMANDE_PORTS="/var/spool/allemande"
 ALLEMANDE_MODULES="llm_llama stt_whisper"
 ALLEMANDE_BOXES="prep todo doing done error history"
 
-PYTHON=$(which python3)
+ALLEMANDE_ROOMS="$ALLEMANDE_HOME/rooms"
 
-. "$ALLEMANDE_HOME/voice-chat/env.sh"
+PYTHON=$(which python3)
 
 PYTHONPATH=$PYTHONPATH:$ALLEMANDE_HOME/py:$ALLEMANDE_HOME/text
 
@@ -20,4 +20,10 @@ for dir in adm core sys tools text data image audio video code openai anthropic 
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
-: ${CHATPATH:=$HOME/chat}
+: ${CONFIG:=$ALLEMANDE_HOME/config.sh}
+
+if [ ! -e "$CONFIG" ]; then
+	ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
+fi
+
+. "$CONFIG"

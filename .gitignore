@@ -11,7 +11,7 @@ c/test_mozjs
 c/test_v8
 c/perlxsi.c
 ref
-webui/rooms
 webui/files
 webui/users
 go/atail
+/config.sh
