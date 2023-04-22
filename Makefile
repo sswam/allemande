@@ -30,21 +30,19 @@ chrome-webui-home:
 	chrome "https://chat-home.ucm.dev/#chat" &
 
 llm:
-	nt llm
 	core/llm_llama.py
 
 whisper:
-	nt whisper
 	core/stt_whisper.py
 
 brain:
-	cd voice-chat && ./bbv-1-brain.sh
+	cd voice-chat && ./brain.sh
 
 mike:
-	cd voice-chat && ./bbv-2-mike.sh
+	cd voice-chat && ./mike.sh
 
 speak:
-	cd voice-chat && ./bbv-3-speak.sh
+	cd voice-chat && ./speak.sh
 
 vi:
 	vi $$file
@@ -53,27 +51,21 @@ vscode:
 	code $$file &
 
 chat-api:
-	nt chat-api
 	uvicorn chat-api:app --app-dir $(WEBUI) --reload  # --reload-include *.csv
 
 stream:
-	nt stream
 	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBUI) --reload  --reload-dir $(WEBUI) --port 8001
 
 watch:
-	nt watch
 	awatch.py -x bb $(ROOMS) >> $(WATCH_LOG)
 
 bb2html:
-	nt bb2html
 	$(WEBUI)/bb2html.py -w $(WATCH_LOG)
 
 nginx:
-	nt nginx
 	inotifywait -q -m -e modify $(WEBUI)/nginx | while read e; do v sudo systemctl restart nginx; done
 
 logs:
-	nt logs
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
 
 perms:
@@ -81,7 +73,7 @@ perms:
 
 
 %.xt:
-	xterm -e $(MAKE) $* &
+	xterm -e "nt $* ; $(MAKE) $*" &
 
 
 .PHONY: default $(JOBS) %.xt

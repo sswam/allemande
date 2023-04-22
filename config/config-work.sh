@@ -1,6 +1,7 @@
-CHATPATH=$ALLEMANDE_HOME/webui/rooms
+CHATPATH=$ALLEMANDE_HOME/rooms
+
 user=${USER^}
-bot=Nika
+bot=Barbie
 file=$CHATPATH/chat.bb
 mission=$'system:\tYou are friends and co-workers talking face to face and working enthusiastically on developing an AI toolkit.'
 add_prompts=1   # 1
