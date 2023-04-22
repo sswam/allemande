@@ -40,3 +40,7 @@ watchdog
 
 anthropic
 aionotify
+
+starlette
+uvicorn
+watchfiles
