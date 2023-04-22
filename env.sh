@@ -12,7 +12,7 @@ ALLEMANDE_BOXES="prep todo doing done error history"
 
 PYTHON=$(which python3)
 
-bot=Barbie
+. "$ALLEMANDE_HOME/voice-chat/env.sh"
 
 PYTHONPATH=$PYTHONPATH:$ALLEMANDE_HOME/py
 

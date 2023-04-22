@@ -1,9 +1,9 @@
-#!/bin/bash -eu
+#!/bin/bash -eua
 # bb-voice: a simple voice chat program
 
-set -a
-
 nt mic
+
+. ./env-work.sh
 
 if [ ! -e "$file" ]; then
 	> "$file"
