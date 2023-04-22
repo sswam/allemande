@@ -16,7 +16,7 @@ mic_on
 
 trap "mic_on; pkill -P $$" EXIT
 
-atail.py -n"${rewind:-0}" "$file" |
+atail.py -f -r -n"${rewind:-0}" "$file" |
 perl -ne '
 	chomp;
 	BEGIN {

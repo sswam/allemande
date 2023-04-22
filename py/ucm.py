@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['p', 'redirect_stderr_to_dev_null', 'powerset', 'seq_diff', 'join_a_foo_and_a_bar', 'confirm_delete', 'setup_logging',
-           'add_logging_options', 'redirect', 'git_root', 'export']
+           'add_logging_options', 'redirect', 'run_async', 'git_root', 'export']
 
 # %% ../blog/posts/multilabel2/multilabel2.ipynb 5
 import sys
@@ -95,6 +95,20 @@ def redirect(fileno, target):
 redirect_stderr_to_dev_null = partial(redirect, sys.stderr.fileno(), "/dev/null")
 
 # %% ../blog/posts/multilabel2/multilabel2.ipynb 27
+import os
+import asyncio
+
+def run_async(coro):
+	loop = asyncio.get_event_loop()
+	try:
+		loop.run_until_complete(coro)
+	except KeyboardInterrupt as e:
+		loop.close()
+		os._exit(130)
+	finally:
+		loop.close()
+
+# %% ../blog/posts/multilabel2/multilabel2.ipynb 29
 from nbdev.export import nb_export
 import ipynbname
 from pathlib import Path

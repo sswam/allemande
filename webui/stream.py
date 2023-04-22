@@ -14,6 +14,9 @@ from starlette.responses import JSONResponse, StreamingResponse, PlainTextRespon
 import uvicorn
 
 import chat
+import atail
+import akeepalive
+
 
 app = Starlette()
 
@@ -22,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 base_dir = Path(".").resolve()
 
-FOLLOW_KEEPALIVE = 5
+FOLLOW_KEEPALIVE = 50
 
 HTML_PRELUDE = """<!DOCTYPE html>
 <link rel="stylesheet" href="/room.css">
@@ -39,37 +42,11 @@ async def follow(file, prelude="", keepalive=FOLLOW_KEEPALIVE, keepalive_string=
 	if prelude:
 		yield prelude
 
-	if not Path(file).exists():
-		folder = str(Path(file).parent)
-		watcher = aionotify.Watcher()
-		watcher.watch(folder, aionotify.Flags.CREATE | aionotify.Flags.MOVED_TO)
-		await watcher.setup(asyncio.get_event_loop())
-		while not Path(file).exists():
-			try:
-				logger.info(f"waiting for file to be created")
-				event = await asyncio.wait_for(watcher.get_event(), timeout=keepalive)
-			except asyncio.TimeoutError:
-				logger.info(f"sending keepalive: {keepalive_string}")
-				yield keepalive_string
-		watcher.close()
+	tail = atail.AsyncTail(filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True).run()
+	tail2 = akeepalive.AsyncKeepAlive(tail, keepalive, timeout_return=keepalive_string).run()
 
-	watcher = aionotify.Watcher()
-	watcher.watch(file, aionotify.Flags.MODIFY)
-	await watcher.setup(asyncio.get_event_loop())
-
-	async with aiofiles.open(file, mode='r') as f:
-		while True:
-			while line := await f.readline():
-				logger.info(f"sending line: {line}")
-				yield line
-			try:
-				logger.info(f"waiting for file to change")
-				event = await asyncio.wait_for(watcher.get_event(), timeout=keepalive)
-			except asyncio.TimeoutError:
-				logger.info(f"sending keepalive: {keepalive_string}")
-				yield keepalive_string
-
-	watcher.close()
+	async for line in tail2:
+		yield line
 
 
 @app.route("/stream/{path:path}", methods=["GET"])

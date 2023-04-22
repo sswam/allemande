@@ -14,6 +14,14 @@ logs:
 	nt logs
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
 
+watch:
+	nt watch
+	awatch.py -x bb rooms/ >> watch.log
+
+bb2html:
+	nt bb2html
+	./bb2html.py -w watch.log
+
 perms:
 	adm/perms
 
