@@ -3,10 +3,6 @@
 
 set -a
 
-nt speak
-
-. ./env-work.sh
-
 if [ ! -e "$file" ]; then
 	> "$file"
 fi
