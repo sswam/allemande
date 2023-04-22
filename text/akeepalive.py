@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" atimeout: Async Timeout Iterator """
+""" akeepalive: Async Keepalive Generator """
 
 import sys
 import argparse
@@ -12,58 +12,74 @@ import ucm
 logger = logging.getLogger(__name__)
 
 
-async def async_keepalive(iterable, timeout, timeout_return=None):
+class AsyncKeepalive:
 	""" Async Keepalive Generator """
 
-	iterator = iterable.__aiter__()
-	timeout_task = next_item_task = None
+	def __init__(self, iterable, timeout, timeout_return=None):
+		""" Initialize the Async Keepalive Generator """
+		self.iterator = aiter(iterable)
+		self.timeout = timeout
+		self.timeout_return = timeout_return
+		self.next_item_task = None
+		self.timeout_task = None
 
-	while True:
-		if timeout_task is None:
-			timeout_task = asyncio.create_task(asyncio.sleep(timeout))
-		if next_item_task is None:
-			next_item_task = asyncio.create_task(iterator.__anext__())
+	async def run(self):
+		""" Run the Async Keepalive Generator """
 
-		done, pending = await asyncio.wait(
-			{next_item_task, timeout_task},
+		try:
+			while True:
+				async for item in self.step():
+					yield item
+		except StopAsyncIteration:
+			pass
+
+		for task in self.next_item_task, self.timeout_task:
+			if task:
+				task.cancel()
+
+	async def step(self):
+		""" Step the Async Keepalive Generator """
+
+		if self.timeout_task is None:
+			self.timeout_task = asyncio.create_task(asyncio.sleep(self.timeout))
+		if self.next_item_task is None:
+			self.next_item_task = asyncio.create_task(anext(self.iterator))
+
+		done, _ = await asyncio.wait(
+			{ self.next_item_task,  self.timeout_task },
 			return_when=asyncio.FIRST_COMPLETED,
 		)
 
-		if len(done) != 1:
-			raise RuntimeError("Unexpected number of completed tasks")
+		assert len(done) == 1
 
-		if next_item_task in done:
-			next_item_task = None
-			timeout_task.cancel()
-			timeout_task = None
+		task = done.pop()
+
+		if task == self.timeout_task:
+			self.timeout_task = None
+			yield self.timeout_return
 		else:
-			assert timeout_task in done
-			timeout_task = None
+			assert task == self.next_item_task
 
-		try:
-			yield done.pop().result()
-		except StopAsyncIteration:
-			for task in pending:
-				task.cancel()
-			break
+			self.next_item_task = None
+			self.timeout_task.cancel()
+			self.timeout_task = None
+
+			yield task.result()
 
 
 async def async_keepalive_demo(timeout, timeout_return):
 	""" Async Timed Iterator Demo """
 	async with aiofiles.open(sys.stdin.fileno(), mode='r') as iterable:
-		async_iterable = async_keepalive(iterable, timeout, timeout_return)
-		async for item in async_iterable:
-			if item is None:
-				print("Timeout")
-			else:
-				print(item, end='')
+		keepalive = AsyncKeepalive(iterable, timeout, timeout_return)
+		async for item in keepalive.run():
+			print(item, end='', flush=True)
 
 
 def get_opts():
 	""" Get command line options """
 	parser = argparse.ArgumentParser(description="atimeout", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument('-t', '--timeout', type=float, default=1, help="Timeout value in seconds")
-	parser.add_argument('-r', '--timeout-return', default=None, help="Value to return on timeout")
+	parser.add_argument('-r', '--timeout-return', default=".", help="Value to return on timeout")
 	ucm.add_logging_options(parser)
 	opts = parser.parse_args()
 	return opts
