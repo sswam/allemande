@@ -12,7 +12,7 @@ import ucm
 logger = logging.getLogger(__name__)
 
 
-class AsyncKeepalive:
+class AsyncKeepAlive:
 	""" Async Keepalive Generator """
 
 	def __init__(self, iterable, timeout, timeout_return=None):
@@ -70,7 +70,7 @@ class AsyncKeepalive:
 async def async_keepalive_demo(timeout, timeout_return):
 	""" Async Timed Iterator Demo """
 	async with aiofiles.open(sys.stdin.fileno(), mode='r') as iterable:
-		keepalive = AsyncKeepalive(iterable, timeout, timeout_return)
+		keepalive = AsyncKeepAlive(iterable, timeout, timeout_return)
 		async for item in keepalive.run():
 			print(item, end='', flush=True)
 

@@ -2,6 +2,8 @@
 
 # gpt_loop: run gpt on all newly modified chat files
 
+# TODO do this in Python
+
 o=              # options
 i=2             # interval
 v=	        # verbose

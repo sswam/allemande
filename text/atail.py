@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 import asyncio
 import io
+import os
 
 import aiofiles
 import aionotify
@@ -29,7 +30,6 @@ class AsyncTail:
 		self.all_lines = all_lines
 		self.follow = follow
 		self.rewind = rewind
-
 		logger.debug("self dict: %r", self.__dict__)
 
 	async def run(self):
@@ -86,9 +86,10 @@ class AsyncTail:
 
 async def atail(output=sys.stdout, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False):
 	""" Tail a file - for command-line tool, and an example of usage """
-	tail = AsyncTail(filename=filename, wait_for_create=wait_for_create, lines=lines, all_lines=all_lines, follow=follow, rewind=rewind)
-	async for line in tail.run():
+	tail = AsyncTail(filename=filename, wait_for_create=wait_for_create, lines=lines, all_lines=all_lines, follow=follow, rewind=rewind).run()
+	async for line in tail:
 		print(line, end='', file=output)
+		output.flush()
 
 
 def get_opts():
@@ -109,7 +110,7 @@ def main():
 	""" Main function """
 	opts = get_opts()
 	ucm.setup_logging(opts)
-	asyncio.run(atail(filename=opts.filename, wait_for_create=opts.wait_for_create, lines=opts.lines, all_lines=opts.all_lines, follow=opts.follow, rewind=opts.rewind))
+	ucm.run_async(atail(filename=opts.filename, wait_for_create=opts.wait_for_create, lines=opts.lines, all_lines=opts.all_lines, follow=opts.follow, rewind=opts.rewind))
 
 
 if __name__ == '__main__':
