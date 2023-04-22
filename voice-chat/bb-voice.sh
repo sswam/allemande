@@ -3,7 +3,7 @@
 progdir="$(dirname "$(readlink -f "$0")")"
 cd "$progdir"
 
-. ./env-work.sh
+. ./env.sh
 
 nt bb-voice
 

@@ -2,8 +2,8 @@ CHATPATH=$ALLEMANDE_HOME/webui/rooms
 user=${USER^}
 bot=Nika
 file=$CHATPATH/chat.bb
-mission="system: You are friends and co-workers talking face to face and working enthusiastically on developing an AI toolkit."
-add_prompts=   # 1
+mission=$'system:\tYou are friends and co-workers talking face to face and working enthusiastically on developing an AI toolkit.'
+add_prompts=1   # 1
 rewind=2
 
 #speak="speak.py --model coqui:tts_models/en/ek1/tacotron2 --tempo 1.2 --pitch 4"
