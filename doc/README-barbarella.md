@@ -12,10 +12,11 @@ I am also including my AI software toolkit, [Allemande](https://github.com/sswam
 
 - Voice and in-editor text chat with an AI model (e.g. point-alpaca).
 - Shell tools for ChatGPT 3.5 and GPT-4.
+- WebUI for multi-user, multi-bot, multi-agent chat
+- a local API service for core AI models, based on directories and files not sockets
 - An OCR script that uses GPT for proofreading.
 - video-to-flashcards: Automatically generate Anki flashcards from YouTube videos (up to 15 minutes or so).
-- a local API service for core AI models, based on directories and files not sockets
-- API servers for alpaca and whisper models
+- API servers for alpaca LLM and whisper STT models
 - chatgpt-model-switcher: switch models mid-chat in the ChatGPT web app, install it [from GreasyFork](https://greasyfork.org/en/scripts/463362-chatgpt-model-switcher).
 - An away script: try to keep an AI chatbot active while you're away, without it going insane!
 
@@ -29,6 +30,7 @@ I am also including my AI software toolkit, [Allemande](https://github.com/sswam
 - point.alpaca
 - whisper
 - Coqui TTS
+- nginx
 
 - apt install soundstretch amixer tesseract yt-dlp ffmpeg
 
@@ -40,10 +42,11 @@ I am also including my AI software toolkit, [Allemande](https://github.com/sswam
 ```
 export OPENAI_API_KEY=....
 ```
-- Edit and source `env.sh`
-- Try running the voice chat:
+- Edit and source `env.sh` and `config.sh`
+- For the WebUI, set up hostnames and SSL, and use the config files in webui/nginx
+- Try running everything:
 ```
-bbv
+make
 ```
 
 ## Video demo
