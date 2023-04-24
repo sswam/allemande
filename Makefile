@@ -88,7 +88,7 @@ chrome-webui-home:
 	xterm -e "nt $* ; $(MAKE) $*" &
 
 i3-layout:
-	i3-msg "append_layout $$ALLEMANDE_HOME/i3-layout.json"
+	if which i3-msg; then i3-msg "append_layout $$ALLEMANDE_HOME/i3-layout.json"; fi
 
 
 .PHONY: default $(JOBS) %.xt
