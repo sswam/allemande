@@ -8,12 +8,22 @@ JOBS := run-dev run core vi vscode voice webui webui-dev llm whisper \
 	firefox-webui-home chrome-webui-home
 
 
-default: run-dev.xt
+default: run-i3
 
 
-run-dev.xt: core.xt vi.xt vscode voice.xt webui-dev.xt firefox-webui-home chrome-webui-home
+run-i3:: i3-layout
+run-i3:: run
 
-run.xt: core.xt vi.xt vscode voice.xt webui.xt
+
+run: frontend backend dev
+
+
+frontend: vi.xt vscode firefox-webui-home chrome-webui-home
+
+backend: core.xt voice.xt webui.xt
+
+dev: perms cleanup nginx.xt logs.xt
+
 
 core.xt: llm.xt whisper.xt
 
@@ -21,13 +31,9 @@ voice.xt: brain.xt mike.xt speak.xt
 
 webui.xt: chat-api.xt stream.xt watch.xt bb2html.xt
 
-webui-dev.xt: perms webui.xt nginx.xt logs.xt 
 
-firefox-webui-home:
-	firefox "https://chat-home.ucm.dev/#chat" &
-
-chrome-webui-home:
-	chrome "https://chat-home.ucm.dev/#chat" &
+cleanup:
+	spool-cleanup
 
 llm:
 	core/llm_llama.py
@@ -71,9 +77,18 @@ logs:
 perms:
 	cd $(WEBUI) && adm/perms
 
+firefox-webui-home:
+	firefox "https://chat-home.ucm.dev/#$$room" &
+
+chrome-webui-home:
+	chrome "https://chat-home.ucm.dev/#$$room" &
+
 
 %.xt:
 	xterm -e "nt $* ; $(MAKE) $*" &
+
+i3-layout:
+	i3-msg "append_layout $$ALLEMANDE_HOME/i3-layout.json"
 
 
 .PHONY: default $(JOBS) %.xt
