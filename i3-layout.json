@@ -1,0 +1,376 @@
+// vim:ts=4:sw=4:et
+{
+    // splitv split container with 2 children
+    "border": "normal",
+    "floating": "auto_off",
+    "layout": "splitv",
+    "marks": [],
+    "percent": 1,
+    "type": "con",
+    "nodes": [
+        {
+            // splith split container with 3 children
+            "border": "normal",
+            "floating": "auto_off",
+            "layout": "splith",
+            "marks": [],
+            "percent": 0.854442344045368,
+            "type": "con",
+            "nodes": [
+                {
+                    // tabbed split container with 2 children
+                    "border": "normal",
+                    "floating": "auto_off",
+                    "layout": "tabbed",
+                    "marks": [],
+                    "percent": 0.333333333333333,
+                    "type": "con",
+                    "nodes": [
+                        {
+                            "border": "normal",
+                            "current_border_width": 2,
+                            "floating": "auto_off",
+                            "geometry": {
+                               "height": 316,
+                               "width": 484,
+                               "x": 0,
+                               "y": 0
+                            },
+                            "marks": [],
+                            "name": "chat.bb",
+                            "percent": 0.5,
+                            "swallows": [
+                               {
+                               "instance": "^xterm$",
+                               "title": "\\.bb$"
+                               }
+                            ],
+                            "type": "con"
+                        },
+                        {
+                            "border": "normal",
+                            "current_border_width": 2,
+                            "floating": "auto_off",
+                            "geometry": {
+                               "height": 190,
+                               "width": 1916,
+                               "x": 2,
+                               "y": 866
+                            },
+                            "marks": [],
+                            "name": "chat.bb - Visual Studio Code",
+                            "percent": 0.5,
+                            "swallows": [
+                               {
+                               "instance": "^code$",
+                               "title": "\\.bb\\ \\-\\ Visual\\ Studio\\ Code$"
+                               }
+                            ],
+                            "type": "con"
+                        }
+                    ]
+                },
+                {
+                    // tabbed split container with 2 children
+                    "border": "normal",
+                    "floating": "auto_off",
+                    "layout": "tabbed",
+                    "marks": [],
+                    "percent": 0.333333333333333,
+                    "type": "con",
+                    "nodes": [
+                        {
+                            "border": "normal",
+                            "current_border_width": 2,
+                            "floating": "auto_off",
+                            "geometry": {
+                               "height": 243,
+                               "width": 1916,
+                               "x": 0,
+                               "y": 0
+                            },
+                            "marks": [],
+                            "name": "chat - chat — Mozilla Firefox",
+                            "percent": 0.5,
+                            "swallows": [
+                               {
+                               "class": "^firefox$",
+                               "instance": "^Navigator$",
+                               "title": "chat\\ \\—\\ Mozilla\\ Firefox$",
+                               "window_role": "^browser$"
+                               }
+                            ],
+                            "type": "con"
+                        },
+                        {
+                            "border": "normal",
+                            "current_border_width": 2,
+                            "floating": "auto_off",
+                            "geometry": {
+                               "height": 331,
+                               "width": 1916,
+                               "x": 2,
+                               "y": 725
+                            },
+                            "marks": [],
+                            "name": "chat - chat - Google Chrome",
+                            "percent": 0.5,
+                            "swallows": [
+                               {
+                               "class": "^Google\\-chrome",
+                               "instance": "^google\\-chrome",
+                               "title": "chat\\ \\-\\ Google\\ Chrome$",
+                               "window_role": "^browser$"
+                               }
+                            ],
+                            "type": "con"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            // splith split container with 9 children
+            "border": "normal",
+            "floating": "auto_off",
+            "layout": "splith",
+            "marks": [],
+            "percent": 0.145557655954631,
+            "type": "con",
+            "nodes": [
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "llm",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^llm$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "whisper",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^whisper$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "speak",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^speak$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "brain",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^brain$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "stream",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^stream$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "mike",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^mike$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "bb2html",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^bb2html$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "watch",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^watch$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "chat-api",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^chat\\-api$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "logs",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^logs$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "nginx",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^nginx$"
+                       }
+                    ],
+                    "type": "con"
+                }
+            ]
+        }
+    ]
+}
+

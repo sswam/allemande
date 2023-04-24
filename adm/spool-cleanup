@@ -1,0 +1,1 @@
+find /var/spool/allemande/ -name '\.*' -prune -o -type d -name 'req-*' -print | xa mr

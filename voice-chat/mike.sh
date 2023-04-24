@@ -7,10 +7,14 @@ fi
 
 # rm -f /tmp/drop-the-mic
 
-mic_on() { amixer sset Capture cap; }
-mic_on
+if [ -n "`amixer sget Capture | grep '\[off\]'`" ]; then
+	mic_state=nocap
+	echo >&2 warning: microphone is off
+else
+	mic_state=cap
+fi
 
-trap "mic_on; pkill -P $$" EXIT
+trap "amixer sset Capture $mic_state; pkill -P $$" EXIT
 
 mike.py | tee /dev/stderr | (
 while read line; do
