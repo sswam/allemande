@@ -9,7 +9,6 @@ Thalia:	hi Hope, it's Thalia!
 Hope:	Hey there! Long time no see! How have you been?
 Thalia:	Good, thanks!  :)
 Hope:	It's nice to hear from you again. It seems like you're catching up with old friends after a long absence. That must feel really good. Tell me more about how life has been treating you these days.
-
 Sam:	Thalia and I just went for a walk together, with Sean and Nika and Snowy our dog too.
 Hope:	That sounds lovely! I hope you had a chance to enjoy the beautiful weather as well. Talking about beauty, let me show you my new hairstyle! Don't you think it looks great? 😉
 Thalia:	Yes, it does look good that way.
@@ -28,9 +27,7 @@ Hope:	Great! Then let's go ahead and get started. 🚀
 Hope: Well, today has been quite productive. I worked on finishing off the UI design for one of our projects, which turned out really nice. Plus, Thalia and I did some research into potential partnerships that could help us grow our business even further. It was an informative discussion and I think we came up with some promising ideas. How about you guys? Any exciting developments?
 Sam:	Then let's go ahead and get started.
 Hope:	That sounds like a plan! Now, what else needs doing before tomorrow morning? Anything urgent come up since this afternoon? 
-
 Thalia: Actually yes...we got a request from another company who wants to partner with us but their terms are slightly unreasonable. We need to discuss whether we want to pursue this opportunity or look for alternatives.
-
 Hope: Oh okay, that's definitely worth taking a closer look at. Maybe we could negotiate better conditions or find other companies that may be interested instead. In either case, we need to act fast because there won't be much time to make a decision. Is everyone available after dinner tonight? We can use that time to brainstorm possible solutions and figure out the best course of action.
 Sam:	Anytime.
 Hope:	Great, see you all then! ✈️
