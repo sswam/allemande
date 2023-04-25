@@ -3,9 +3,9 @@ ROOMS := $$ALLEMANDE_ROOMS
 WATCH_LOG := $$ALLEMANDE_HOME/watch.log
 
 
-JOBS := run-dev run core vi vscode voice webui webui-dev llm whisper \
-	chat-api stream watch bb2html nginx logs perms brain mike speak \
-	firefox-webui-home chrome-webui-home
+JOBS := default run-i3 run frontend backend dev run core vi vscode voice webui \
+	llm whisper chat-api stream watch bb2html nginx logs perms \
+	brain mike speak firefox-webui-home chrome-webui-home
 
 
 default: run-i3
@@ -20,16 +20,16 @@ run: frontend backend dev
 
 frontend: vi.xt vscode firefox-webui-home chrome-webui-home
 
-backend: core.xt voice.xt webui.xt
+backend: core voice webui
 
 dev: perms cleanup nginx.xt logs.xt
 
 
-core.xt: llm.xt whisper.xt
+core: llm.xt whisper.xt
 
-voice.xt: brain.xt mike.xt speak.xt
+voice: brain.xt mike.xt speak.xt
 
-webui.xt: chat-api.xt stream.xt watch.xt bb2html.xt
+webui: chat-api.xt stream.xt watch.xt bb2html.xt
 
 
 cleanup:
@@ -85,7 +85,7 @@ chrome-webui-home:
 
 
 %.xt:
-	xterm -e "nt $* ; $(MAKE) $*" &
+	xt nt-make "$*" &
 
 i3-layout:
 	if which i3-msg; then i3-msg "append_layout $$ALLEMANDE_HOME/i3-layout.json"; fi
