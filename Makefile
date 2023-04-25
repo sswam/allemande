@@ -42,7 +42,7 @@ whisper:
 	core/stt_whisper.py
 
 brain:
-	cd voice-chat && ./brain.sh
+	cd chat && ./brain.sh
 
 mike:
 	cd voice-chat && ./mike.sh
