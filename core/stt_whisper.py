@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" electric barbarella v3 - core whisper module """
+""" allemande - core whisper module """
 
 import sys
 import os

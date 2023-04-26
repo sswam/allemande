@@ -1,0 +1,3 @@
+#!/bin/bash
+printf -v cmd ' %q' "$@"
+xterm -e bash --init-file /dev/fd/3 3<<<". ~/.bashrc; set -m;$cmd"

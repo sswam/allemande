@@ -17,7 +17,7 @@ import yaml
 import regex
 
 import ucm
-import allemande
+import ports
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # pylint: disable=wrong-import-position, wrong-import-order
@@ -25,7 +25,7 @@ import transformers  # pylint: disable=wrong-import-position, wrong-import-order
 logger = logging.getLogger(__name__)
 
 server = "llm_llama"
-default_port = allemande.get_default_port(server)
+default_port = ports.get_default_port(server)
 
 
 # TODO can't select model from here now
@@ -118,22 +118,22 @@ def get_fulltext(args, model, history, history_start, invitation, delim):
 def client_request(port, input_text, config=None):
 	""" Call the core server and get a response. """
 
-	req = allemande.prepare_request(port, config=config)
+	req = ports.prepare_request(port, config=config)
 
 	req_input = req/"request.txt"
 	req_input.write_text(input_text)
 
-	allemande.send_request(port, req)
+	ports.send_request(port, req)
 
-	resp, status = allemande.wait_for_response(port, req)
+	resp, status = ports.wait_for_response(port, req)
 
 	if status == "error":
-		allemande.response_error(resp)
+		ports.response_error(resp)
 
 	new_text = (resp/"new.txt").read_text()
 	generated_text = (resp/"full.txt").read_text()
 
-	allemande.remove_response(port, resp)
+	ports.remove_response(port, resp)
 
 	return new_text, generated_text
 
