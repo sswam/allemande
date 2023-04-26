@@ -1,0 +1,17 @@
+#!/bin/sh
+
+exec screen -x "$@"
+
+# tmux crashes sometimes, switching back to screen
+#tmux a -t 0-1 || tmux new-session -s 0-1 -t 0
+
+#exec screen -x "$@"
+
+#!/bin/bash
+#. opts
+#if [ -n "$1" ]; then
+#	attach=-t
+#else
+#	attach=
+#fi
+#tmux attach "${OPTS[@]}" $attach "$@"

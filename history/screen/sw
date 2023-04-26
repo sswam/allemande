@@ -1,0 +1,29 @@
+#!/bin/bash
+# sw - create a screen and window
+
+set -ue
+s=$1 w=$2 dir=${3:-}
+
+exists=0
+for S in `slist`; do
+	if [ "$S" = "$s" ]; then
+		exists=1
+	fi
+done
+
+RCFILE_ARGS=
+if [ -e dev/rc ]; then
+	RCFILE_ARGS="--rcfile dev/rc"
+fi
+
+export TERMINAL_TITLE=$s
+
+if [ "$exists" = 0 ]; then
+	screen -AdmS  "$s"              -t  "$w"   bash $RCFILE_ARGS
+else
+	screen -S     "$s"   -X screen  -t  "$w"   bash $RCFILE_ARGS
+fi
+
+if [ -n "$dir" ]; then
+	sst "$s" "$w" "cd \"$dir\""
+fi

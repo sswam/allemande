@@ -7,11 +7,6 @@ if [ ! -e "$file" ]; then
 	> "$file"
 fi
 
-mic_on() { amixer sset Capture cap; }
-mic_on
-
-trap "mic_on; pkill -P $$" EXIT
-
 atail.py -f -r -n"${rewind:-0}" "$file" |
 perl -ne '
 	chomp;
@@ -20,7 +15,9 @@ perl -ne '
 		$last = "user";
 	}
 	s/[^ -~\x{7e9}]//g;    # filter out emojis; but \x7e9 is closing single-quote / "smart" apostrophe
-	if (/^\Q$ENV{user}\E:/) {
+	if (/^$/) {
+		$last = "";
+	} elsif (/^\Q$ENV{user}\E:/) {
 		$last = "user";
 	} elsif (/^\Q$ENV{bot}\E:/ || (!/^\w+:\s/) && $last eq "bot") {
 		$last = "bot";

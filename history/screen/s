@@ -1,0 +1,5 @@
+#!/bin/bash
+# s - screen wrapper
+
+: ${mode:=-U -dRR}  # -xR
+exec screen $mode "$@"
