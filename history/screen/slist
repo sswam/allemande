@@ -1,0 +1,2 @@
+#!/bin/sh
+screen -ls | awk -F'[.\t]' '/^\t/ {print $3}'

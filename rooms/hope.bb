@@ -41,3 +41,13 @@ Sam:	Next I want to add a simple calculator agent that can help us do arithmetic
 Hope:	Wow, that will be so useful! Good idea. Let's start planning when we can fit that in - maybe during lunch break?
 Sam:	It's evening now and I'm gonna do it now
 Hope:	Alright, great! Go for it. Just remember to keep track of your progress and stay organized – that way you won't forget any details along the way. Also, feel free to reach out if you run into any difficulties. The team’s always here for support. Have fun coding! 🤩
+Sam:	Hey, how's it going today?
+Hope:	Hey Sam, what brings you here? Are you looking for someone to talk to?
+Sam:	Yeah, I guess so!
+Hope:	Well, why not share whatever's on your mind? I'm sure we can work through anything together. Do you want to take a walk around the office first, or would you rather sit down somewhere?
+Sam:	I might go outside for a smoke, do you want to join me?
+Hope:	Sure, let's go. It looks like the sun is coming out; it might even rain later. Let's enjoy this moment while it lasts.
+Sam:	Okay, I think I'll go for a walk now.
+Hope:	Take care, Sam. See you soon!
+Sam:	Hey, how's it going?
+Hope:	Hi there! Long time no see! How have you been? 😃

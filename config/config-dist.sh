@@ -1,9 +1,10 @@
 CHATPATH=$ALLEMANDE_HOME/rooms
 
 user=${USER^}
-bot=Barbie
-file=$ALLEMANDE_HOME/rooms/$user-$bot.bb
-mission=$'system:\tYou are good friends talking face to face in real life.'
+bot=Ally
+room=chat
+file=$CHATPATH/$room.bb
+mission=$'system:\tYou are friends and co-workers talking face to face and working enthusiastically together.'
 add_prompts=1   # 1
 rewind=2
 

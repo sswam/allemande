@@ -1,6 +1,12 @@
-WEBUI := $$ALLEMANDE_HOME/webui
-ROOMS := $$ALLEMANDE_ROOMS
-WATCH_LOG := $$ALLEMANDE_HOME/watch.log
+export
+
+SHELL := /bin/bash
+
+WEBUI := $(ALLEMANDE_HOME)/webui
+ROOMS := $(ALLEMANDE_ROOMS)
+WATCH_LOG := $(ALLEMANDE_HOME)/watch.log
+SCREEN := $(ALLEMANDE_SCREEN)
+SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 
 
 JOBS := default run-i3 run frontend backend dev run core vi vscode voice webui \
@@ -8,11 +14,12 @@ JOBS := default run-i3 run frontend backend dev run core vi vscode voice webui \
 	brain mike speak firefox-webui-home chrome-webui-home
 
 
-default: run-i3
+default: run-i3-screen
 
 
-run-i3:: i3-layout
-run-i3:: run
+run-i3-screen:: i3-layout
+run-i3-screen:: stop
+run-i3-screen:: run
 
 
 run: frontend backend dev
@@ -42,7 +49,7 @@ whisper:
 	core/stt_whisper.py
 
 brain:
-	cd voice-chat && ./brain.sh
+	cd chat && ./brain.sh
 
 mike:
 	cd voice-chat && ./mike.sh
@@ -54,7 +61,7 @@ vi:
 	vi $$file
 
 vscode:
-	code $$file &
+	code $$file & disown
 
 chat-api:
 	uvicorn chat-api:app --app-dir $(WEBUI) --reload  # --reload-include *.csv
@@ -78,17 +85,20 @@ perms:
 	cd $(WEBUI) && adm/perms
 
 firefox-webui-home:
-	firefox "https://chat-home.ucm.dev/#$$room" &
+	(sleep 1; firefox "https://chat-home.ucm.dev/#$$room") & disown
 
 chrome-webui-home:
-	chrome "https://chat-home.ucm.dev/#$$room" &
+	(sleep 1; chrome "https://chat-home.ucm.dev/#$$room") & disown
 
 
 %.xt:
-	xt nt-make "$*" &
+	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"
 
 i3-layout:
-	if which i3-msg; then i3-msg "append_layout $$ALLEMANDE_HOME/i3-layout.json"; fi
+	if which i3-msg; then i3-msg "append_layout $(ALLEMANDE_HOME)/i3-layout.json"; fi
+
+stop:
+	screen -S "$(SCREEN)" -X quit || true
 
 
 .PHONY: default $(JOBS) %.xt

@@ -1,0 +1,4 @@
+#!/bin/bash
+# stuff keypresses to a screen window, clear screen and press enter
+s=$1 w=$2; shift 2
+sstuff "$s" "$w" "^L$*^M"

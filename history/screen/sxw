@@ -1,0 +1,6 @@
+#!/bin/bash
+# sxw - attach to a certain screen window
+
+set -ue
+s=$1 w=$2
+exec screen -x "$s" -p "$w"

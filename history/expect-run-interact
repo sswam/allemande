@@ -1,0 +1,8 @@
+#!/usr/bin/env expect
+log_user 0
+set init_commands [lindex $argv 0]
+set bash_prompt {[\$\#] }
+
+spawn bash
+expect -re $bash_prompt {send -- "$init_commands\r"}
+interact

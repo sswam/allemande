@@ -1,16 +1,16 @@
-" For the Barbarella chat and story system, which uses the .bb extension
+" For the Allemande chat and story system, which uses the .bb extension
 " we don't always want the file to end with a newline.
 " This enables the AI to continue a line rather than starting a new one.
 
-function! BarbarellaFormat()
+function! AllemandeFormat()
 	set binary
 	set noeol
-	echo "Barbarella"
+	echo "Allemande"
 endfunction
 
-augroup BarbarellaSettings
+augroup AllemandeSettings
 	autocmd!
-	autocmd BufEnter *.bb call BarbarellaFormat()
+	autocmd BufEnter *.bb call AllemandeFormat()
 augroup END
 
 
