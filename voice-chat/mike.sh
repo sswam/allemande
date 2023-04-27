@@ -5,8 +5,6 @@ if [ ! -e "$file" ]; then
 	> "$file"
 fi
 
-# rm -f /tmp/drop-the-mic
-
 if [ -n "`amixer sget Capture | grep '\[off\]'`" ]; then
 	mic_state=nocap
 	echo >&2 warning: microphone is off
