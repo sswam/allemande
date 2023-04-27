@@ -22,9 +22,10 @@ for module in "${modules[@]}"; do
 
 	umask 007
 	mkdir -p "$user_dir"
-	for box in $ALLEMANDE_BOXES; do
-		mkdir -p "$user_dir/$box"
-	done
+	(
+		cd "$user_dir"
+		mkdir -p $ALLEMANDE_BOXES
+	)
 	chown -R $user:$ALLEMANDE_USER "$user_dir"
 
 	chmod -R g+s,ug-x+X "$user_dir"   # the 2 is for setgid (group sticky bit)
