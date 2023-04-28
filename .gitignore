@@ -15,3 +15,5 @@ webui/files
 webui/users
 go/atail
 /config.sh
+rooms/*.bb
+rooms/*.html
