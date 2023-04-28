@@ -1,4 +1,6 @@
 #!/usr/bin/perl -n
+# Get the lines spoken by the bot from the chat.
+
 use strict;
 use warnings;
 chomp;
