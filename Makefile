@@ -11,7 +11,7 @@ SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 
 JOBS := default run-i3 run frontend backend dev run core vi vscode voice webui \
 	llm whisper chat-api stream watch bb2html nginx logs perms \
-	brain mike speak firefox-webui-home chrome-webui-home
+	brain mike speak firefox-webui-local chrome-webui-local
 
 
 default: run-i3-screen
@@ -25,7 +25,7 @@ run-i3-screen:: run
 run: frontend backend dev
 
 
-frontend: vi.xt vscode firefox-webui-home chrome-webui-home
+frontend: vi.xt vscode firefox-webui-local chrome-webui-local
 
 backend: core voice webui
 
@@ -64,10 +64,10 @@ vscode:
 	code $$file & disown
 
 chat-api:
-	uvicorn chat-api:app --app-dir $(WEBUI) --reload  # --reload-include *.csv
+	uvicorn chat-api:app --app-dir $(WEBUI) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
 
 stream:
-	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBUI) --reload  --reload-dir $(WEBUI) --port 8001
+	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBUI) --reload  --reload-dir $(WEBUI) --port 8001 --timeout-graceful-shutdown 1
 
 watch:
 	awatch.py -x bb $(ROOMS) >> $(WATCH_LOG)
@@ -76,7 +76,7 @@ bb2html:
 	$(WEBUI)/bb2html.py -w $(WATCH_LOG)
 
 nginx:
-	inotifywait -q -m -e modify $(WEBUI)/nginx | while read e; do v sudo systemctl restart nginx; done
+	(echo; inotifywait -q -m -e modify $(WEBUI)/nginx ) | while read e; do v sudo systemctl restart nginx; done
 
 logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
@@ -84,11 +84,11 @@ logs:
 perms:
 	cd $(WEBUI) && adm/perms
 
-firefox-webui-home:
-	(sleep 1; firefox "https://chat-home.ucm.dev/#$$room") & disown
+firefox-webui-local:
+	(sleep 1; firefox "https://chat-local.ucm.dev/#$$room") & disown
 
-chrome-webui-home:
-	(sleep 1; chrome "https://chat-home.ucm.dev/#$$room") & disown
+chrome-webui-local:
+	(sleep 1; chrome "https://chat-local.ucm.dev/#$$room") & disown
 
 
 %.xt:
