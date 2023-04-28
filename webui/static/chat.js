@@ -10,7 +10,8 @@ var user;
 var admin;
 var data_raw = '';
 
-const ROOMS_URL = "https://rooms-home.ucm.dev";
+// const ROOMS_URL = "https://rooms-local.ucm.dev";
+const ROOMS_URL = "//" + location.host.replace("chat", "rooms")
 
 
 // send a message ------------------------------------------------------------

@@ -1,5 +1,5 @@
 server {
-	server_name rooms.ucm.dev rooms-home.ucm.dev;
+	server_name rooms.ucm.dev rooms-local.ucm.dev;
 
 	charset UTF-8;
 

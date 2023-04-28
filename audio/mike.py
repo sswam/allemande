@@ -135,7 +135,7 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 
-def mike(lang="en", energy=1200, dynamic_energy=False, pause=0.8, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port):
+def mike(lang="en", energy=1200, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port):
 	""" Transcribe speech to text using microphone input """
 
 	if list_devices:

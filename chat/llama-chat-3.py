@@ -63,8 +63,10 @@ def trim_response(response, args):
 			messages = messages[1:]
 		response = messages[0] if messages else ""
 	else:
-		human_invitation = args.user + ":"
-		response = response.split(human_invitation)[0]
+#		human_invitation = args.user + ":"
+#		response = response.split(human_invitation)[0]
+		response = response.strip()
+		response = re.sub(r"\n\w+:.*", "", response, flags=re.DOTALL)
 		response = " " + response.strip()
 	return response
 
