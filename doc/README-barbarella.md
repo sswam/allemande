@@ -2,11 +2,9 @@
 
 ## What is this?
 
-This is a work-in-progress AI chat system based on [Point Alpaca](https://github.com/pointnetwork/point-alpaca).
+This is a work-in-progress AI toolkit and chat app.
 
-See the Point Alpaca page for info on obtaining the weights.
-
-I am also including my AI software toolkit, [Allemande](https://github.com/sswam/allemande).
+See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for info on obtaining the LLM.
 
 ## Screenshots
 
@@ -30,7 +28,7 @@ I am also including my AI software toolkit, [Allemande](https://github.com/sswam
 
 ## Requirements
 
-- Currently Allemande requires a 24GB GPU such as a 3090 to run the LLM model, speech recognition, and speech synthesis at once. In future I hope to reduce the memory requirements.
+- Currently this system requires a 24GB GPU such as a 3090 to run the LLM model, speech recognition, and speech synthesis at once. In future I hope to reduce the memory requirements.
 
 - GNU/Linux
 - python3 < 3.11

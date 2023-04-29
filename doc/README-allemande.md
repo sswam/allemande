@@ -2,7 +2,9 @@
 
 ## What is this?
 
-This is a work-in-progress AI software toolkit in the UNIX tradition.
+This is a work-in-progress AI toolkit and chat app.
+
+See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for info on obtaining the LLM.
 
 ## Screenshots
 
@@ -25,6 +27,8 @@ This is a work-in-progress AI software toolkit in the UNIX tradition.
 - An away script: try to keep an AI chatbot active while you're away, without it going insane!
 
 ## Requirements
+
+- Currently this system requires a 24GB GPU such as a 3090 to run the LLM model, speech recognition, and speech synthesis at once. In future I hope to reduce the memory requirements.
 
 - GNU/Linux
 - python3 < 3.11
