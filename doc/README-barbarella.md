@@ -8,6 +8,14 @@ See the Point Alpaca page for info on obtaining the weights.
 
 I am also including my AI software toolkit, [Allemande](https://github.com/sswam/allemande).
 
+## Screenshots
+
+![Multi-user AI chat](pix/ally1.png)
+
+![There was a bug where the AI chat used too many emojis!](pix/emotional.png)
+
+![AI software tools](pix/fortune-poem.png)
+
 ## What's in the box?
 
 - Voice and in-editor text chat with an AI model (e.g. point-alpaca).
@@ -21,6 +29,8 @@ I am also including my AI software toolkit, [Allemande](https://github.com/sswam
 - An away script: try to keep an AI chatbot active while you're away, without it going insane!
 
 ## Requirements
+
+- Currently Allemande requires a 24GB GPU such as a 3090 to run the LLM model, speech recognition, and speech synthesis at once. In future I hope to reduce the memory requirements.
 
 - GNU/Linux
 - python3 < 3.11
