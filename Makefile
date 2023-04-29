@@ -50,6 +50,7 @@ webui: chat-api.xt stream.xt watch.xt bb2html.xt
 cleanup:
 	spool-cleanup
 	spool-history-rm
+	> watch.log
 
 llm:
 	core/llm_llama.py
