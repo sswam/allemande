@@ -2,7 +2,6 @@ numpy
 rouge_score
 fire
 openai
-#git+https://github.com/zphang/transformers.git@68d640f7c368bcaaaecfc678f11908ebbd3d6176
 transformers
 torch
 sentencepiece
@@ -28,8 +27,8 @@ pytest
 spacy
 
 pydub
-speech_recognition
-whisper
+SpeechRecognition
+openai-whisper
 sounddevice
 soundfile
 gTTS
@@ -44,3 +43,8 @@ aionotify
 starlette
 uvicorn
 watchfiles
+
+inotify
+
+websockets
+pyaudio

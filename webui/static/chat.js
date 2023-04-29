@@ -191,7 +191,7 @@ function push_notifications() {
 
 function main() {
 	$on($id('send'), 'click', send);
-	$on($id('clear'), 'click', clear);
+//	$on($id('clear'), 'click', clear);
 	$on($content, 'keypress', message_keypress);
 	$on($room, 'keypress', room_keypress);
 	$content.focus();
