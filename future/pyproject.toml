@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "barbarella"
+name = "allemande"
 version = "1"
 authors = [
 	{ name="Sam Watkins", email="sam@ucm.dev" },
 ]
-description = "AI Chat System"
+description = "AI Toolkit and Chat System"
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
@@ -18,5 +18,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/sswam/barbarella"
-"Bug Tracker" = "https://github.com/sswam/barbarella/issues"
+"Homepage" = "https://github.com/sswam/allemande"
+"Bug Tracker" = "https://github.com/sswam/allemande/issues"

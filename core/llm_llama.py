@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" electric barbarella v3 - core llama module """
+""" allemande - core llama module """
 
 import sys
 import os
@@ -203,7 +203,7 @@ if __name__ == "__main__":
 		logger.info("interrupted")
 		sys.exit(1)
 
-#- The program, electric barbarella v3 - core, uses a Transformer-based language model for text generation.
+#- The program uses a Transformer-based language model for text generation.
 #- Main functions:
 #  - load_model(): loads a pretrained model, tokenizer, and additional configurations
 #  - gen(): generates new text based on the input and the configuration provided

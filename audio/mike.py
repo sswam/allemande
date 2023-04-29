@@ -16,12 +16,12 @@ import speech_recognition as sr
 import yaml
 
 import ucm
-import allemande
+import ports
 
 logger = logging.getLogger(__name__)
 
 server = "stt_whisper"
-default_port = allemande.get_default_port(server)
+default_port = ports.get_default_port(server)
 
 opts = None
 
@@ -73,7 +73,7 @@ def record_speech(run_event, q_audio, energy, pause, dynamic_energy, device_inde
 def client_request(port, audio, config=None):
 	""" Call the core server and get a response. """
 
-	req = allemande.prepare_request(port, config=config)
+	req = ports.prepare_request(port, config=config)
 
 	req_audio = req/"request.aud"
 
@@ -81,19 +81,19 @@ def client_request(port, audio, config=None):
 	audio_clip = AudioSegment.from_file(data)
 	audio_clip.export(str(req_audio), format="flac")
 
-	allemande.send_request(port, req)
+	ports.send_request(port, req)
 
-	resp, status = allemande.wait_for_response(port, req)
+	resp, status = ports.wait_for_response(port, req)
 
 	if status == "error":
-		allemande.response_error(resp)
+		ports.response_error(resp)
 
 	text = (resp/"text.txt").read_text()
 	result = yaml.safe_load((resp/"result.yaml").read_text())
 
 	logger.info("%r", result)
 
-	allemande.remove_response(port, resp)
+	ports.remove_response(port, resp)
 
 	return text, result
 
@@ -135,7 +135,7 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 
-def mike(lang="en", energy=1200, dynamic_energy=False, pause=0.8, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port):
+def mike(lang="en", energy=1200, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port):
 	""" Transcribe speech to text using microphone input """
 
 	if list_devices:

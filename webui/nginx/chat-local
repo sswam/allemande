@@ -1,5 +1,5 @@
 server {
-	server_name chat.ucm.dev chat-home.ucm.dev;
+	server_name chat.ucm.dev chat-local.ucm.dev;
 
 	charset UTF-8;
 

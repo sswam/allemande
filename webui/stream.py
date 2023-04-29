@@ -6,12 +6,15 @@ import sys
 import logging
 from pathlib import Path
 import asyncio
+import json
+import re
 
 import aiofiles
 import aionotify
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse, StreamingResponse, PlainTextResponse
 import uvicorn
+from starlette.templating import Jinja2Templates
 
 import chat
 import atail
@@ -25,22 +28,18 @@ logger = logging.getLogger(__name__)
 
 base_dir = Path(".").resolve()
 
+templates = Jinja2Templates(directory="templates")
+
 FOLLOW_KEEPALIVE = 50
 
-HTML_PRELUDE = """<!DOCTYPE html>
-<link rel="stylesheet" href="/room.css">
-<script src="https://ucm.dev/js/util.js"></script>
-<script src="/room.js"></script>
-<body>
-"""
 HTML_KEEPALIVE = "<script>online()</script>\n"
 
 
-async def follow(file, prelude="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n"):
+async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n"):
 	""" Follow a file and yield new lines as they are added. """
 
-	if prelude:
-		yield prelude
+	if head:
+		yield head
 
 	tail = atail.AsyncTail(filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True).run()
 	tail2 = akeepalive.AsyncKeepAlive(tail, keepalive, timeout_return=keepalive_string).run()
@@ -56,18 +55,23 @@ async def stream(request):
 	safe_path = chat.safe_join(base_dir, path)
 
 	media_type = "text/plain"
-	prelude = ""
+	head = ""
 	keepalive_string = "\n"
 	ext = safe_path.suffix
 	if ext == ".html":
 		media_type = "text/html"
-		prelude = HTML_PRELUDE
+		user = request.headers.get('X-Forwarded-User', 'guest')
+		context = {
+			"request": request,
+			"user": user
+		}
+		head = templates.get_template("room-head.html").render(context)
 		keepalive_string = HTML_KEEPALIVE
 
 	logger.info(f"tail: {safe_path}")
-	follower = follow(str(safe_path), prelude=prelude, keepalive_string=keepalive_string)
+	follower = follow(str(safe_path), head=head, keepalive_string=keepalive_string)
 	return StreamingResponse(follower, media_type=media_type)
 
 
 if __name__ == "__main__":
-	uvicorn.run(app, host="127.0.0.1", port=8000)
+	uvicorn.run(app, host="127.0.0.1", port=8001)
