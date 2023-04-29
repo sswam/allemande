@@ -13,15 +13,18 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 <figcaption>Multi-user AI chat</figcaption>
 </figure>
 
+
 <figure>
 <img src="pix/emotional.png">
 <figcaption>There was a bug where the AI chat used too many emojis!</figcaption>
 </figure>
 
+
 <figure>
 <img src="pix/fortune-poem.png">
 <figcaption>AI software tools</figcaption>
 </figure>
+
 
 ## What's in the box?
 
