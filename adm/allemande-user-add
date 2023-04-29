@@ -3,15 +3,12 @@
 # setup the allemande ports for a user
 # usage: allemande-user-add [user [module ...]]
 
+. get_root
+
 user=${1:-$USER}
 if [ "$#" -gt 0 ]; then shift; fi
 modules=(${@:-$ALLEMANDE_MODULES})
 ports="$ALLEMANDE_PORTS"
-
-if [ `id -u` != 0 ]; then
-	exec sudo -E "$0" "$user" "${modules[@]}"
-	exit $?
-fi
 
 for module in "${modules[@]}"; do
 	module_dir="$ports/$module"

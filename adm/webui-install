@@ -1,0 +1,24 @@
+#!/bin/bash -eu
+# webui-install: set permissions for the web app and install nginx config
+. get_root
+mode() {
+	mode=$1 ; shift
+	chown $SUDO_USER:www-data "$@"
+	chmod $mode "$@"
+}
+cd webui
+mkdir -p files
+mode 770 rooms files
+mode 660 rooms/*.bb rooms/*.html
+if [ ! -e .htpasswd ]; then
+	touch .htpasswd
+fi
+mode 640 .htpasswd static/logout/.htpasswd
+
+cd nginx
+for site in *; do
+	ln -sf "$PWD/$site" /etc/nginx/sites-available/
+	ln -sf "../sites-available/$site" /etc/nginx/sites-enabled/
+done
+
+systemctl restart nginx

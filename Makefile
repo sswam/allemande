@@ -29,8 +29,16 @@ frontend: vi.xt vscode firefox-webui-local chrome-webui-local
 
 backend: core voice webui
 
-dev: perms cleanup nginx.xt logs.xt
+dev: cleanup nginx.xt logs.xt
 
+install:
+	allemande-install
+	allemande-user-add $$USER
+	webui-install
+
+uninstall:
+	allemande-uninstall
+	webui-uninstall
 
 core: llm.xt whisper.xt
 
@@ -41,6 +49,7 @@ webui: chat-api.xt stream.xt watch.xt bb2html.xt
 
 cleanup:
 	spool-cleanup
+	spool-history-rm
 
 llm:
 	core/llm_llama.py
@@ -80,9 +89,6 @@ nginx:
 
 logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
-
-perms:
-	cd $(WEBUI) && adm/perms
 
 firefox-webui-local:
 	(sleep 1; firefox "https://chat-local.ucm.dev/#$$room") & disown
