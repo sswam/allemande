@@ -4,6 +4,14 @@
 
 This is a work-in-progress AI software toolkit in the UNIX tradition.
 
+## Screenshots
+
+![Multi-user AI chat](pix/ally1.png)
+
+![There was a bug where the AI chat used too many emojis!](pix/emotional.png)
+
+![AI software tools](pix/fortune-poem.png)
+
 ## What's in the box?
 
 - Voice and in-editor text chat with an AI model (e.g. point-alpaca).
