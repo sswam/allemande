@@ -8,11 +8,20 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 
 ## Screenshots
 
-![Multi-user AI chat](pix/ally1.png)
+<figure>
+<img src="pix/ally1.png">
+<figcaption>Multi-user AI chat</figcaption>
+</figure>
 
-![There was a bug where the AI chat used too many emojis!](pix/emotional.png)
+<figure>
+<img src="pix/emotional.png">
+<figcaption>There was a bug where the AI chat used too many emojis!</figcaption>
+</figure>
 
-![AI software tools](pix/fortune-poem.png)
+<figure>
+<img src="pix/fortune-poem.png">
+<figcaption>AI software tools</figcaption>
+</figure>
 
 ## What's in the box?
 
