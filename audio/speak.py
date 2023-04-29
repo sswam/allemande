@@ -24,7 +24,7 @@ from sh import amixer, soundstretch
 
 logger = logging.getLogger(__name__)
 logger_fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
-logging.basicConfig(level=logging.DEBUG, format=logger_fmt)
+logging.basicConfig(level=logging.INFO, format=logger_fmt)
 
 DEFAULT_MODELS = {
 	'coqui': 'tts_models/en/ek1/tacotron2',
