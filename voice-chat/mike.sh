@@ -14,7 +14,7 @@ fi
 
 trap "amixer sset Capture $mic_state; pkill -P $$" EXIT
 
-mike.py | tee /dev/stderr | (
+mike.py -v | tee /dev/stderr | (
 while read line; do
 	if [ ! -s "$file" -a -n "$mission" ]; then
 		printf "%s\n%s:\t%s\n" "$mission" "$user" "$line" >> "$file"
