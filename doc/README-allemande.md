@@ -1,10 +1,8 @@
 ![Allemande AI Banner](pix/allemande.png)
 
-# Allemande
-
 ## What is this?
 
-This is a work-in-progress AI toolkit and chat app.
+Allemande is a work-in-progress AI toolkit and chat app.
 
 See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for info on obtaining the LLM.
 
