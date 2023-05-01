@@ -95,4 +95,10 @@ I offer extremely affordable AI consulting and software development. The first c
 
 ## Mildly NSFW cyborg concept art
 
-<img style="border-radius: 1em; padding: 1em;" src="pix/barbarella.jpg" height="512" width="256">
+<details>
+<summary>
+This captivating and mildly NSFW cyborg concept art is an enthralling blend of technology and desire, making it impossible for the viewer not to be enveloped in its world. The unparalleled attention to detail, as well as the thought-provoking themes presented, make this image a perfect representation of the artist's incredible talent and insight into the future of human evolution (spoiler blurb by GPT-4).
+</summary>
+<br>
+<img style="borderradius: 1em; padding: 1em;" src="pix/barbarella.jpg" height="512" width="256">
+</details>
