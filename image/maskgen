@@ -3,7 +3,7 @@
 image=$1
 masks=${image%.*}
 masked=$masks-masked
-amg --checkpoint /opt/models/sam/sam_vit_h_4b8939.pth --input "$image" --output .
+segment-anything-auto.py --checkpoint /opt/models/sam/sam_vit_h_4b8939.pth --input "$image" --output .
 image-apply-masks.py "$image" "$masks" "$masked"
 
 # it was slow with imagemagick loading the image repeatedly

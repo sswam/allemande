@@ -98,7 +98,7 @@ def client_request(port, audio, config=None):
 	return text, result
 
 
-def speech_to_text(port, run_event, q_audio, q_text, lang):
+def speech_to_text(port, run_event, q_audio, q_text, lang, confidence_threshold=0.8):
 	""" Transcribe from the audio queue to the text queue """
 
 	config = {
@@ -123,7 +123,7 @@ def speech_to_text(port, run_event, q_audio, q_text, lang):
 		text = text.strip()
 		segs = result["segments"]
 		no_speech_prob = sum(x["no_speech_prob"] for x in segs) / (len(segs) or 1)
-		if text and no_speech_prob < 0.5:
+		if text and no_speech_prob < (1 - confidence_threshold):
 			q_text.put_nowait(text)
 
 	q_text.put_nowait(None)
@@ -135,7 +135,7 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 
-def mike(lang="en", energy=1200, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port):
+def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.95):
 	""" Transcribe speech to text using microphone input """
 
 	if list_devices:
@@ -156,7 +156,7 @@ def mike(lang="en", energy=1200, dynamic_energy=False, pause=2, device_index=Non
 			).start()
 		Thread(
 			target=speech_to_text,
-			args=(port, run_event, q_audio, q_text, lang)
+			args=(port, run_event, q_audio, q_text, lang, confidence_threshold)
 			).start()
 		while True:
 			text = q_text.get()
