@@ -1,3 +1,5 @@
+![Allemande AI Banner](pix/allemande.png)
+
 # Allemande
 
 ## What is this?
