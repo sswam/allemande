@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>HTML inside SVG</title>
+    <style type="text/css"></style></head>
+    <body>
+        <div>I'm a div inside the HTML</div>
+        <svg width="500" height="300" style="border:1px red solid" xmlns="http://www.w3.org/2000/svg">
+            <foreignObject class="node" x="46" y="22" width="100" height="100">
+                <div style="border:1px green solid">I'm a div inside a SVG.</div>                
+            </foreignObject>
+            <circle cx="100" cy="160" r="50" fill="blue"></circle>
+        </svg>
+        <div>Interesting! But you a Foreign Object.</div>
+    </body>
+</html>

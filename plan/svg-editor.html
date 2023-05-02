@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple SVG Graph Editor</title>
+    <style>
+        svg {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <svg width="800" height="600">
+        <g class="draggable" transform="translate(100,100)">
+            <circle cx="0" cy="0" r="30" fill="lightblue"></circle>
+            <text x="0" y="5" text-anchor="middle" font-size="16" fill="black">Node 1</text>
+        </g>
+        <g class="draggable" transform="translate(300,300)">
+            <circle cx="0" cy="0" r="30" fill="lightgreen"></circle>
+            <text x="0" y="5" text-anchor="middle" font-size="16" fill="black">Node 2</text>
+        </g>
+    </svg>
+
+    <script>
+        const svg = document.querySelector("svg");
+        const draggableElements = document.querySelectorAll(".draggable");
+
+        let selectedElement, offset, transform;
+
+        draggableElements.forEach(el => {
+            el.addEventListener("mousedown", startDrag);
+        });
+
+        function startDrag(evt) {
+            selectedElement = evt.target.parentElement;
+            offset = getMousePosition(evt);
+            transform = selectedElement.transform.baseVal.getItem(0);
+            offset.x -= transform.matrix.e;
+            offset.y -= transform.matrix.f;
+        }
+
+        function getMousePosition(evt) {
+            const CTM = svg.getScreenCTM();
+            return {
+                x: (evt.clientX - CTM.e) / CTM.a,
+                y: (evt.clientY - CTM.f) / CTM.d
+            };
+        }
+
+        svg.addEventListener("mousemove", drag);
+        svg.addEventListener("mouseup", endDrag);
+
+        function drag(evt) {
+            if (selectedElement) {
+                evt.preventDefault();
+                const coord = getMousePosition(evt);
+                transform.setTranslate(coord.x - offset.x, coord.y - offset.y);
+            }
+        }
+
+        function endDrag(evt) {
+            selectedElement = null;
+        }
+    </script>
+</body>
+</html>
