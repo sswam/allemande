@@ -20,6 +20,19 @@ body, html {
 svg {
 /*    border: 1px solid red; */
 }
+foreignObject > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 8px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    outline: none;
+}
 </style>
 
 </head>
@@ -31,7 +44,7 @@ svg {
         <g id="node1" class="draggable" transform="translate(100,100)">
             <circle cx="0" cy="0" r="30" fill="lightblue"></circle>
             <foreignObject x="-25" y="-15" width="50" height="30">
-                <div xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 16px;" contenteditable="true">Node 1</div>
+                <div xmlns="http://www.w3.org/1999/xhtml" contenteditable="true">Node 1</div>
             </foreignObject>
         </g>
         <g id="node2" class="draggable" transform="translate(300,300)">
@@ -57,8 +70,26 @@ function updateArc(arcElement) {
     const x2 = transform2.matrix.e;
     const y2 = transform2.matrix.f;
 
-    const controlX = (x1 + x2) / 2;
-    const controlY = (y1 + y2) / 2 - 100;
+    const fraction = +0.2; // Change this value to adjust the control point's position
+
+    // Calculate the midpoint between the nodes
+    const midpointX = (x1 + x2) / 2;
+    const midpointY = (y1 + y2) / 2;
+
+    // Calculate the vector between the nodes
+    const vectorX = x2 - x1;
+    const vectorY = y2 - y1;
+
+    // Calculate the length of the vector
+    const length = Math.sqrt(vectorX * vectorX + vectorY * vectorY);
+
+    // Calculate the normalized perpendicular vector
+    const perpendicularX = -vectorY / length;
+    const perpendicularY = vectorX / length;
+
+    // Calculate the control point by adding the fraction of the perpendicular vector to the midpoint
+    const controlX = midpointX + fraction * length * perpendicularX;
+    const controlY = midpointY + fraction * length * perpendicularY;
 
     const pathData = `M${x1},${y1} Q${controlX},${controlY} ${x2},${y2}`;
     arc.setAttribute("d", pathData);
