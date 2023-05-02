@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple SVG Graph Editor</title>
+
+<style>
+* {
+	box-sizing: border-box;
+}
+body, html {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+    overflow: hidden;
+}
+svg {
+/*    border: 1px solid red; */
+}
+foreignObject * {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+    font-size: 8px;
+    background: red;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+</style>
+
+</head>
+
+<body>
+
+    <svg width="100px" height="100px">
+        <path id="arc" class="arc" data-from="node1" data-to="node2" data-bend="-0.2" d="" stroke="black" fill="none" />
+        <g id="node1" class="draggable" transform="translate(100,100)">
+            <circle cx="0" cy="0" r="30" fill="lightblue"></circle>
+            <foreignObject x="-25" y="-15" width="50" height="30">
+                <div xmlns="http://www.w3.org/1999/xhtml" contenteditable="true"><pre>Node 1</pre></div>
+            </foreignObject>
+        </g>
+        <g id="node2" class="draggable" transform="translate(300,300)">
+            <circle cx="0" cy="0" r="30" fill="lightgreen"></circle>
+            <text x="0" y="5" text-anchor="middle" font-size="16" fill="black">Node 2</text>
+        </g>
+    </svg>
+
+<script>
+const graphData = {
+  node_ids: ["node1", "node2"],
+  nodes: {
+    node1: { id: "node1", text: "Node 1", x: 100, y: 100, connectedArcs: [] },
+    node2: { id: "node2", text: "Node 2", x: 300, y: 300, connectedArcs: [] },
+  },
+  arcs: {
+    arc1: { id: "arc1", from: "node1", to: "node2", fraction: -0.1 },
+  },
+};
+
+const svg = document.querySelector("svg");
+const arc = document.getElementById("arc");
+
+let selectedElement, offset, transform;
+
+function updateSVGElements() {
+  // Remove all existing nodes and arcs from the SVG
+  const existingNodes = svg.querySelectorAll("circle, foreignObject, path.arc");
+  existingNodes.forEach((node) => {
+    node.remove();
+  });
+
+  // Add nodes from graphData to the SVG
+  Object.values(graphData.nodes).forEach((node) => {
+    // Create circle element
+    const circle = document.createElementNS(svgNS, "circle");
+    circle.setAttribute("id", `circle-${node.id}`);
+    circle.setAttribute("cx", node.x);
+    circle.setAttribute("cy", node.y);
+    circle.setAttribute("r", 30);
+    circle.setAttribute("fill", "white");
+    circle.setAttribute("stroke", "black");
+    svg.appendChild(circle);
+
+    // Create foreignObject element
+    const foreignObj = document.createElementNS(svgNS, "foreignObject");
+    foreignObj.setAttribute("id", `foreignObject-${node.id}`);
+    foreignObj.setAttribute("x", node.x - 25);
+    foreignObj.setAttribute("y", node.y - 25);
+    foreignObj.setAttribute("width", 50);
+    foreignObj.setAttribute("height", 50);
+    svg.appendChild(foreignObj);
+
+    // Create div inside foreignObject
+    const div = document.createElement("div");
+    div.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+    div.textContent = node.text;
+    div.setAttribute("contenteditable", "true");
+    foreignObj.appendChild(div);
+  });
+
+  // Add arcs from graphData to the SVG
+  Object.values(graphData.arcs).forEach((arc) => {
+    // Get the coordinates of the connected nodes
+    const fromNode = graphData.nodes[arc.from];
+    const toNode = graphData.nodes[arc.to];
+
+    // Calculate control point for the arc
+    // ... (use the code from the previous answer that calculates controlX and controlY)
+
+    // Create path element
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("id", `arc-${arc.id}`);
+    path.setAttribute("class", "arc");
+    path.setAttribute("d", `M${fromNode.x},${fromNode.y} Q${controlX},${controlY} ${toNode.x},${toNode.y}`);
+    path.setAttribute("fill", "none");
+    path.setAttribute("stroke", "black");
+    svg.appendChild(path);
+  });
+}
+
+function updateArc(arcElement) {
+    const fromNode = document.querySelector(`#${arcElement.dataset.from}`);
+    const toNode = document.querySelector(`#${arcElement.dataset.to}`);
+    const transform1 = node1.transform.baseVal.getItem(0);
+    const transform2 = node2.transform.baseVal.getItem(0);
+
+    const x1 = transform1.matrix.e;
+    const y1 = transform1.matrix.f;
+    const x2 = transform2.matrix.e;
+    const y2 = transform2.matrix.f;
+
+    const fraction = arcElement.dataset.bend || 0; // Change this value to adjust the control point's position
+
+    // Calculate the midpoint between the nodes
+    const midpointX = (x1 + x2) / 2;
+    const midpointY = (y1 + y2) / 2;
+
+    // Calculate the vector between the nodes
+    const vectorX = x2 - x1;
+    const vectorY = y2 - y1;
+
+    // Calculate the length of the vector
+    const length = Math.sqrt(vectorX * vectorX + vectorY * vectorY);
+
+    // Calculate the normalized perpendicular vector
+    const perpendicularX = -vectorY / length;
+    const perpendicularY = vectorX / length;
+
+    // Calculate the control point by adding the fraction of the perpendicular vector to the midpoint
+    const controlX = midpointX + fraction * length * perpendicularX;
+    const controlY = midpointY + fraction * length * perpendicularY;
+
+    const pathData = `M${x1},${y1} Q${controlX},${controlY} ${x2},${y2}`;
+    arc.setAttribute("d", pathData);
+}
+
+function updateArcs() {
+    const arcs = document.querySelectorAll("path.arc");
+    arcs.forEach(arcElement => updateArc(arcElement));
+}
+
+function updateArcsForNode(nodeId) {
+    const connectedArcs = document.querySelectorAll(`path.arc[data-from="${nodeId}"], path.arc[data-to="${nodeId}"]`);
+    connectedArcs.forEach(arcElement => updateArc(arcElement));
+}
+
+function startDrag(evt) {
+    if (evt.target.closest(".draggable")) {
+        selectedElement = evt.target.closest(".draggable");
+        offset = getMousePosition(evt);
+        transform = selectedElement.transform.baseVal.getItem(0);
+        offset.x -= transform.matrix.e;
+        offset.y -= transform.matrix.f;
+    }
+}
+
+function getMousePosition(evt) {
+    const CTM = svg.getScreenCTM();
+    return {
+        x: (evt.clientX - CTM.e) / CTM.a,
+        y: (evt.clientY - CTM.f) / CTM.d
+    };
+}
+
+svg.addEventListener("mousedown", startDrag);
+svg.addEventListener("mousemove", drag);
+svg.addEventListener("mouseup", endDrag);
+
+function drag(evt) {
+    if (selectedElement) {
+        evt.preventDefault();
+        const coord = getMousePosition(evt);
+        transform.setTranslate(coord.x - offset.x, coord.y - offset.y);
+        updateArcsForNode(selectedElement.id);
+    }
+}
+
+function endDrag(evt) {
+    selectedElement = null;
+}
+
+updateArcs();
+
+function setSvgViewBox() {
+    svg.setAttribute('width', window.innerWidth);
+    svg.setAttribute('height', window.innerHeight);
+    svg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+}
+
+window.addEventListener('resize', setSvgViewBox);
+setSvgViewBox(); // Set initial viewBox size
+</script>
+</body>
+</html>
