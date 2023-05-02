@@ -1,6 +1,8 @@
 #!/bin/bash -eu
 set -o pipefail
 
+cd "$ALLEMANDE_HOME"
+
 git checkout main
 
 git-add-commit
