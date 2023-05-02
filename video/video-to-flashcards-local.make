@@ -28,9 +28,9 @@ clean: cleanish
 	rm *.webm *.txt
 
 cleanish:
-	mv web-address.txt web-address.txt.bak || true
+	mv url.txt url.txt.bak || true
 	rm *.txt *.html *.md *.tsv *.json *.txt *.vtt *.srt *.prompt
-	mv web-address.txt.bak web-address.txt || true
+	mv url.txt.bak url.txt || true
 
 transcript.sent.txt: transcript.txt
 	< $< split_sentences > $@
@@ -38,32 +38,26 @@ transcript.sent.txt: transcript.txt
 transcript.sent2.txt: transcript.sent.txt
 	< $< ai_split_long_sentences.py > $@
 
-web-address.txt:
-	if [ -n "$(url)" ]; then \
-		echo "$(url)" >$@; \
-		else read -p "Enter URL: " url; \
-		echo $$url >$@; \
+url.txt:
+	if [ -n "$(file)" ]; then \
+		echo "$(file)" >$@; \
+		else read -p "Enter filename: " file; \
+		echo $$file >$@; \
 	fi
 
-video.webm: web-address.txt
-	yt-dlp -q -f bestvideo -o "$@" "`<$<`"
-	if [ ! -e "$@" ]; then mv -i "$@".* "$@"; fi
-	if [ -e "$@" ]; then touch $@; fi
-
-audio.webm: web-address.txt
-	yt-dlp -q -f bestaudio -o "$@" "`<$<`"
-	if [ ! -e "$@" ]; then mv -i "$@".* "$@"; fi
-	if [ -e "$@" ]; then touch $@; fi
-
-audio.wav: audio.webm
-	ffmpeg -loglevel error -i $< -vn -acodec pcm_s16le -ac 1 -ar 16000 $@
+audio.wav: url.txt
+	ffmpeg -loglevel error -i "`<$<`" -vn -acodec pcm_s16le -ac 1 -ar 16000 $@
 
 av.webm: video.webm audio.webm
 	ffmpeg -loglevel error -i video.webm -i audio.webm -c copy $@
 	if [ ! -e "$@" ]; then mv -i "$@".* "$@"; fi
 
-title.txt: web-address.txt
-	web-title "`<web-address.txt`" >$@
+title.txt:
+	if [ -n "$(title)" ]; then \
+		echo "$(title)" >$@; \
+		else read -p "Enter title: " title; \
+		echo $$title >$@; \
+	fi
 
 title-clean.txt: title.txt
 	< $< perl -pe 's/- YouTube$$//; s/\(.*?\)//g; s/\[.*?\]//g; s/\{.*?\}//g;' > $@
@@ -111,7 +105,9 @@ prompt-transcript.txt: audio-clean.txt correct.prompt
 	CONTENT=`< $<` shell-template.sh correct.prompt > $@
 
 transcript.txt: prompt-transcript.txt title-clean.txt
-	< $< gpt process -m "$(m0)" "Please reply with just the corrected transcript. The proper title of the video is `<title-clean.txt`" > $@
+	# < $< gpt process -m "$(m0)" "This is an audio transcript made using AI speech recognition software. There are likely transcription errors. Please reply with the carefully corrected transcript. The topic is `<title-clean.txt`" > $@
+	# < $< gpt process -m "$(m0)" "Please reply with just the corrected transcript. The proper title of the video is `<title-clean.txt`" > $@
+	cp audio-clean.txt $@
 
 transcript.md: transcript.txt
 	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown.sh >$@
@@ -151,7 +147,7 @@ lyrics.txt: prompt-lyrics.txt name.txt
 		< $< gpt process -m "$m" "Please reply with just the lyrics or transcript for `<name.txt`, based on the page `<lyrics-url.txt`." > $@ ; \
 	fi
 
-post.txt: title.txt web-address.txt name.txt topic.txt summary.txt flashcards.txt transcript.txt # lyrics.txt
+post.txt: title.txt url.txt name.txt topic.txt summary.txt flashcards.txt transcript.txt # lyrics.txt
 	cat-sections.py $^ > $@
 
 %.words.txt: %.txt
