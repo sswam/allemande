@@ -80,7 +80,7 @@ audio.txt: audio.wav
 	$(WHISPER) --language en --model $(WHISPER_MODEL) $$PWD/$<
 
 audio-clean.txt: audio.txt
-	< $< tr -d '♪' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
+	< $< perl -pe 's/♪//g' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
 
 summary.txt: transcript.txt
 	< $< gpt-summary -m="$m" > $@
