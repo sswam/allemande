@@ -31,7 +31,7 @@ backend: core voice webui
 
 dev: cleanup nginx.xt logs.xt
 
-install-dev:
+install:
 	allemande-install
 	allemande-user-add www-data
 	webui-install
