@@ -1,6 +1,8 @@
 #!/bin/bash -eu
 # webui-install: set permissions for the web app and install nginx config
+
 . get_root
+
 mode() {
 	mode=$1 ; shift
 	chown $SUDO_USER:www-data "$@"
