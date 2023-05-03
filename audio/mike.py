@@ -88,8 +88,8 @@ def client_request(port, audio, config=None):
 	if status == "error":
 		ports.response_error(resp)
 
-	text = (resp/"text.txt").read_text()
-	result = yaml.safe_load((resp/"result.yaml").read_text())
+	text = (resp/"text.txt").read_text(encoding="utf-8")
+	result = yaml.safe_load((resp/"result.yaml").read_text(encoding="utf-8"))
 
 	logger.info("%r", result)
 

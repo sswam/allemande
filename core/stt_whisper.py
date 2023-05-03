@@ -58,7 +58,7 @@ def load(ports, d, filename):
 	while True:
 		f = d/filename
 		if f.exists():
-			return f.read_text()
+			return f.read_text(encoding="utf-8")
 		if d == ports:
 			break
 		p = d.parent
@@ -67,7 +67,7 @@ def load(ports, d, filename):
 		d = p
 	f = prog.dir/filename
 	if f.exists():
-		return f.read_text()
+		return f.read_text(encoding="utf-8")
 	raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
@@ -86,7 +86,7 @@ def process_request(ports, port, req, fn, *args, **kwargs):
 		request = d/"request.aud"
 		response = fn(config, request, *args, **kwargs)
 		for k, v in response.items():
-			(d/k).write_text(v)
+			(d/k).write_text(v, encoding="utf-8")
 		os.rename(d, port/"done"/req)
 		logger.info("%s:%s - done", port, req)
 	except Exception as e:

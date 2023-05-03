@@ -123,7 +123,7 @@ def client_request(port, input_text, config=None):
 	req = ports.prepare_request(port, config=config)
 
 	req_input = req/"request.txt"
-	req_input.write_text(input_text)
+	req_input.write_text(input_text, encoding="utf-8")
 
 	ports.send_request(port, req)
 
@@ -132,8 +132,8 @@ def client_request(port, input_text, config=None):
 	if status == "error":
 		ports.response_error(resp)
 
-	new_text = (resp/"new.txt").read_text()
-	generated_text = (resp/"full.txt").read_text()
+	new_text = (resp/"new.txt").read_text(encoding="utf-8")
+	generated_text = (resp/"full.txt").read_text(encoding="utf-8")
 
 	ports.remove_response(port, resp)
 
