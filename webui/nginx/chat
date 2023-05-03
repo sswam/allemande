@@ -1,5 +1,5 @@
 server {
-	server_name chat.ucm.dev chat-local.ucm.dev chat.allemande.ai;
+	server_name chat.allemande.ai chat-local.allemande.ai;
 
 	charset UTF-8;
 
@@ -20,8 +20,8 @@ server {
 	# Read up on ssl_ciphers to ensure a secure configuration.
 	# See: https://bugs.debian.org/765782
 
-	ssl_certificate /etc/letsencrypt/live/ucm.dev/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/ucm.dev/privkey.pem;
+	ssl_certificate /etc/letsencrypt/live/allemande.ai/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/allemande.ai/privkey.pem;
 
 	root /var/www/allemande/static/;
 	index index.html;
