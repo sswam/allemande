@@ -17,3 +17,4 @@ go/atail
 /config.sh
 rooms/*.bb
 rooms/*.html
+venv
