@@ -9,7 +9,7 @@ mode() {
 	chmod $mode "$@"
 }
 
-cd webui
+cd "$ALLEMANDE_HOME/webui"
 
 mkdir -p files
 mode 770 rooms files
@@ -27,5 +27,8 @@ for site in *; do
 	ln -sf "$PWD/$site" /etc/nginx/sites-available/
 	ln -sf "../sites-available/$site" /etc/nginx/sites-enabled/
 done
+
+grep -q 'text\/plain *md bb;' /etc/nginx/mime.types ||
+sed -i '/^}$/{ s/^/    text\/plain                            md bb;\n/ }' /etc/nginx/mime.types
 
 systemctl restart nginx

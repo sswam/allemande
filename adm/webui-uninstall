@@ -1,10 +1,15 @@
 #!/bin/bash -eu
 # webui-uninstall: uninstall nginx config
+
 . get_root
-cd webui/nginx
+
+cd "$ALLEMANDE_HOME/webui/nginx"
+
 for site in *; do
 	rm -f "/etc/nginx/sites-enabled/$site"
 	rm -f "/etc/nginx/sites-available/$site"
 done
+
+sed -i '/text\/plain *md bb;/d' /etc/nginx/mime.types
 
 systemctl restart nginx
