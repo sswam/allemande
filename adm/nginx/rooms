@@ -23,12 +23,12 @@ server {
 	ssl_certificate /etc/letsencrypt/live/allemande.ai/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/allemande.ai/privkey.pem;
 
-	root /var/www/allemande/rooms/;
+	root /var/www/allychat/rooms/;
 	index index.html;
 
 	location / {
 		auth_basic "Auth";
-		auth_basic_user_file /var/www/allemande/.htpasswd;
+		auth_basic_user_file /var/www/allychat/.htpasswd;
 		autoindex on;
 		try_files $uri $uri/ =404;
 # TODO if we want strong privacy
@@ -38,7 +38,7 @@ server {
 
 	location /stream {
 		auth_basic "Auth";
-		auth_basic_user_file /var/www/allemande/.htpasswd;
+		auth_basic_user_file /var/www/allychat/.htpasswd;
 		proxy_pass http://127.0.0.1:8001;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
@@ -57,7 +57,7 @@ server {
 
 	location /logout {
 		auth_basic "Auth";
-		auth_basic_user_file /var/www/allemande/static/logout/.htpasswd;
+		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
 		autoindex on;
 		try_files $uri $uri/ =404;
 #		access_log off;

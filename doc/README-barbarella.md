@@ -47,6 +47,7 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 - whisper
 - Coqui TTS
 - nginx
+- haproxy (if needed)
 
 - apt install soundstretch amixer tesseract yt-dlp ffmpeg
 
@@ -59,7 +60,7 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 export OPENAI_API_KEY=....
 ```
 - Edit and source `env.sh` and `config.sh`
-- For the WebUI, set up hostnames and SSL, and use the config files in webui/nginx
+- For the WebChat, set up hostnames and SSL, and use the config files in adm/nginx
 - Try running everything:
 ```
 make

@@ -42,7 +42,7 @@ def prepare_request(port, config=None):
 
 	if config:
 		req_config = req/"config.yaml"
-		req_config.write_text(yaml.dump(config))
+		req_config.write_text(yaml.dump(config), encoding="utf-8")
 	return req
 
 def send_request(port, req):
@@ -84,7 +84,7 @@ def response_error(resp, raise_exception=True):
 	""" Show the logs from a failed request. """
 	log = resp/"log.txt"
 	if log.exists():
-		log_text = log.read_text()
+		log_text = log.read_text(encoding="utf-8")
 		logger.error("request failed: %s", log_text)
 		raise RuntimeError(f"request failed: {log_text}")
 

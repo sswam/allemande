@@ -105,18 +105,18 @@ def read_image(f):
 def read_audio(f):
 	return soundfile.read(f)
 def read_json(f):
-	return json.loads(f.read_text())
+	return json.loads(f.read_text(encoding="utf-8"))
 def read_jsonl(f):
-	return [json.loads(line) for line in f.read_text().splitlines()]
+	return [json.loads(line) for line in f.read_text(encoding="utf-8").splitlines()]
 def read_yaml(f):
-	return yaml.safe_load(f.read_text())
+	return yaml.safe_load(f.read_text(encoding="utf-8"))
 def read_html(f):
-	return bs4.BeautifulSoup(f.read_text(), "html.parser")
+	return bs4.BeautifulSoup(f.read_text(encoding="utf-8"), "html.parser")
 def read_xml(f):
-	return bs4.BeautifulSoup(f.read_text(), "xml")
+	return bs4.BeautifulSoup(f.read_text(encoding="utf-8"), "xml")
 
 def write_text(f, data):
-	return f.write_text(data)
+	return f.write_text(data, encoding="utf-8")
 def write_bytes(f, data):
 	return f.write_bytes(data)
 def write_csv(f, data, sep=","):
@@ -127,16 +127,16 @@ def write_image(f, data):
 def write_audio(f, data):
 	return soundfile.write(f, data[0], data[1])
 def write_json(f, data):
-	return f.write_text(json.dumps(data, indent=4))
+	return f.write_text(json.dumps(data, indent=4), encoding="utf-8")
 def write_jsonl(f, data):
 	for d in data:
-		f.write_text(json.dumps(d) + "\n")
+		f.write_text(json.dumps(d) + "\n", encoding="utf-8")
 def write_yaml(f, data):
-	return f.write_text(yaml.safe_dump(data))
+	return f.write_text(yaml.safe_dump(data), encoding="utf-8")
 def write_html(f, data):
-	return f.write_text(data.prettify())
+	return f.write_text(data.prettify(), encoding="utf-8")
 def write_xml(f, data):
-	return f.write_text(data.prettify())
+	return f.write_text(data.prettify(), encoding="utf-8")
 
 readers = {
 	".csv": read_csv,

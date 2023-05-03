@@ -1,9 +1,9 @@
 #!/bin/bash -eu
-# webui-uninstall: uninstall nginx config
+# web-uninstall: uninstall nginx config
 
 . get_root
 
-cd "$ALLEMANDE_HOME/webui/nginx"
+cd "$ALLEMANDE_HOME/adm/nginx"
 
 for site in *; do
 	rm -f "/etc/nginx/sites-enabled/$site"

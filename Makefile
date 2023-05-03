@@ -2,16 +2,16 @@ export
 
 SHELL := /bin/bash
 
-WEBUI := $(ALLEMANDE_HOME)/webui
+WEBCHAT := $(ALLEMANDE_HOME)/webchat
 ROOMS := $(ALLEMANDE_ROOMS)
 WATCH_LOG := $(ALLEMANDE_HOME)/watch.log
 SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 
 
-JOBS := default run-i3 run frontend backend dev run core vi vscode voice webui \
+JOBS := default run-i3 run frontend backend dev run core vi vscode voice webchat \
 	llm whisper chat-api stream watch bb2html nginx logs perms \
-	brain mike speak firefox-webui-local chrome-webui-local
+	brain mike speak firefox-webchat-local chrome-webchat-local
 
 
 default: run-i3-screen
@@ -25,31 +25,31 @@ run-i3-screen:: run
 run: frontend backend dev
 
 
-frontend: vi.xt vscode firefox-webui-local chrome-webui-local
+frontend: vi.xt vscode firefox-webchat-local chrome-webchat-local
 
-backend: core voice webui
+backend: core voice webchat
 
 dev: cleanup nginx.xt logs.xt
 
 install:
 	allemande-install
 	allemande-user-add www-data
-	webui-install
+	web-install
 
 install-dev:
 	allemande-install
 	allemande-user-add $$USER
-	webui-install-dev
+	web-install
 
 uninstall:
 	allemande-uninstall
-	webui-uninstall
+	web-uninstall
 
 core: llm.xt whisper.xt
 
 voice: brain.xt mike.xt speak.xt
 
-webui: chat-api.xt stream.xt watch.xt bb2html.xt
+webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 
 
 cleanup:
@@ -58,10 +58,10 @@ cleanup:
 	> watch.log
 
 llm:
-	core/llm_llama.py
+	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py
 
 whisper:
-	core/stt_whisper.py
+	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py
 
 brain:
 	cd chat && ./brain.sh
@@ -79,28 +79,28 @@ vscode:
 	code $$file & disown
 
 chat-api:
-	uvicorn chat-api:app --app-dir $(WEBUI) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
+	uvicorn chat-api:app --app-dir $(WEBCHAT) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
 
 stream:
-	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBUI) --reload  --reload-dir $(WEBUI) --port 8001 --timeout-graceful-shutdown 1
+	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBCHAT) --reload  --reload-dir $(WEBCHAT) --port 8001 --timeout-graceful-shutdown 1
 
 watch:
 	awatch.py -x bb $(ROOMS) >> $(WATCH_LOG)
 
 bb2html:
-	$(WEBUI)/bb2html.py -w $(WATCH_LOG)
+	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 nginx:
-	(echo; inotifywait -q -m -e modify $(WEBUI)/nginx ) | while read e; do v sudo systemctl restart nginx; done
+	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v sudo systemctl restart nginx; done
 
 logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
 
-firefox-webui-local:
-	(sleep 1; firefox "https://chat-local.ucm.dev/#$$room") & disown
+firefox-webchat-local:
+	(sleep 1; firefox "https://chat-local.allemande.ai/#$$room") & disown
 
-chrome-webui-local:
-	(sleep 1; chrome "https://chat-local.ucm.dev/#$$room") & disown
+chrome-webchat-local:
+	(sleep 1; chrome "https://chat-local.allemande.ai/#$$room") & disown
 
 
 %.xt:
