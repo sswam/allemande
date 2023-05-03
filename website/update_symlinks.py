@@ -3,6 +3,7 @@
 import os
 from pathlib import Path
 from bs4 import BeautifulSoup
+import re
 
 
 def create_symlink(resource_path):
@@ -13,8 +14,12 @@ def create_symlink(resource_path):
         for symlink in resource_path.parent.glob(f'{resource_path.stem}@*{resource_path.suffix}'):
             if symlink.is_symlink():
                 os.remove(symlink)
-        os.symlink(resource_path.name, resource_path.parent / symlink_name)
+        os.symlink(resource_path.name, target)
     return symlink_name
+
+
+def remove_timestamp_from_filename(filename):
+    return re.sub(r'(@\d+)', '', filename)
 
 
 def update_html_files(html_files, resource_files):
@@ -24,21 +29,26 @@ def update_html_files(html_files, resource_files):
 
         soup = BeautifulSoup(html_content, 'html.parser')
 
-        for resource_path, new_symlink in resource_files.items():
-            if resource_path.suffix == '.css':
-                tag = 'link'
-                attribute = 'href'
-            elif resource_path.suffix == '.js':
-                tag = 'script'
-                attribute = 'src'
-            elif resource_path.suffix in {'.jpg', '.jpeg', '.png', '.gif'}:
-                tag = 'img'
-                attribute = 'src'
-            else:
-                continue
+        for element in soup():
+            update_element = False
+            attribute = None
 
-            for element in soup.find_all(tag, **{attribute: str(resource_path)}):
-                element[attribute] = str(new_symlink)
+            if element.name == 'link' and 'href' in element.attrs:
+                attribute = 'href'
+                update_element = element['href'].endswith('.css')
+            elif element.name == 'script' and 'src' in element.attrs:
+                attribute = 'src'
+                update_element = element['src'].endswith('.js')
+            elif element.name == 'img' and 'src' in element.attrs:
+                attribute = 'src'
+                update_element = element['src'].endswith(('.jpg', '.jpeg', '.png', '.gif'))
+
+            if update_element:
+                original_name = remove_timestamp_from_filename(element[attribute])
+                resource_path = Path(original_name)
+                if resource_path in resource_files:
+                    new_symlink = resource_files[resource_path]
+                    element[attribute] = str(new_symlink)
 
         with open(html_file, 'w') as file:
             file.write(str(soup))
