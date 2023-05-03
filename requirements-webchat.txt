@@ -1,0 +1,5 @@
+starlette
+uvicorn
+watchfiles
+inotify
+websockets
