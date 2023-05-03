@@ -28,7 +28,4 @@ for site in *; do
 	ln -sf "../sites-available/$site" /etc/nginx/sites-enabled/
 done
 
-grep -q 'text\/plain *md bb;' /etc/nginx/mime.types ||
-sed -i '/^}$/{ s/^/    text\/plain                            md bb;\n/ }' /etc/nginx/mime.types
-
 systemctl restart nginx
