@@ -2,20 +2,31 @@
 
 # Demonstrate Python basics and new features  
 
+# Add type hints
+from typing import List, Dict, Set
+
+
+# Add logging for debugging:
+
+import logging
+
+logger = logging.getLogger(__name__)
+logger.info("Program started")
+
 # Use f-string for string interpolation  
 name = "John"  
 print(f"Hello, {name}!")  
 
 # Use a list comprehension  
-squares = [x*x for x in range(10)]  
+squares: List[int] = [x*x for x in range(10)]  
 print(squares)  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
 
 # Use a dictionary comprehension 
-square_dict = {x: x*x for x in range(10)}
+square_dict: Dict[int, int] = {x: x*x for x in range(10)}
 print(square_dict)  # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25, 6: 36, 7: 49, 8: 64, 9: 81}  
 
 # Use a set comprehension
-square_set = {x*x for x in range(10)}
+square_set: Set[int] = {x*x for x in range(10)}
 print(square_set)  # {0, 1, 4, 9, 16, 25, 36, 49, 64, 81}
 
 # Define a function with a default argument
@@ -52,6 +63,7 @@ import time
 
 # Timer context manager 
 class Timer:
+    """A context manager for timing a block of code."""
     def __enter__(self):
         self.start = time.time()
         return self
