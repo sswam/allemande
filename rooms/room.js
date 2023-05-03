@@ -1,1 +1,1 @@
-../webui/static/room.js
+../webchat/static/room.js

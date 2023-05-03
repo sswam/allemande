@@ -11,8 +11,8 @@ c/test_mozjs
 c/test_v8
 c/perlxsi.c
 ref
-webui/files
-webui/users
+webchat/files
+webchat/users
 go/atail
 /config.sh
 rooms/*.bb
