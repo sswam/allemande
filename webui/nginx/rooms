@@ -67,7 +67,7 @@ server {
 	include /etc/nginx/mime.types;
 
 	types {
-		text/plain                                   md markdown;
+		text/plain                                   md markdown bb;
 		# should be text/markdown, but the browser won't show it (Firefox)
 	}
 }
