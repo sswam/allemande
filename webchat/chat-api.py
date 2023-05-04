@@ -7,7 +7,9 @@ import asyncio
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+from starlette.exceptions import HTTPException
 import uvicorn
+import re
 
 import chat
 
@@ -17,7 +19,15 @@ ROOMS = "rooms"
 EXTENSION = ".bb"
 
 
-app = Starlette()
+async def http_exception(request: Request, exc: HTTPException):
+    return JSONResponse({"error": exc.detail}, status_code=exc.status_code)
+
+exception_handlers = {
+    HTTPException: http_exception,
+}
+
+
+app = Starlette(exception_handlers=exception_handlers)
 
 
 @app.route("/x/whoami", methods=["GET", "POST"])
@@ -27,6 +37,10 @@ async def whoami(request):
 	user = request.headers.get('X-Forwarded-User', 'guest')
 	admin = user in ADMINS
 	return JSONResponse({"user": user, "admin": admin})
+
+
+def validate_room(room):
+	return re.match(r"^[a-z0-9_-]+$", room)
 
 
 def write_to_room(room, user, content):
@@ -53,10 +67,12 @@ async def post(request):
 	""" Post a message to a room. """
 	form = await request.form()
 	room = form["room"]
+	if not validate_room(room):
+		raise HTTPException(status_code=400, detail="Invalid room name")
 	content = form["content"]
 	user = request.headers['X-Forwarded-User']
 	write_to_room(room, user, content)
-	return JSONResponse({"status": "okay"})
+	return JSONResponse({})
 
 
 if __name__ == "__main__":
