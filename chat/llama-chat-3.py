@@ -70,6 +70,16 @@ def trim_response(response, args):
 		response = " " + response.strip()
 	return response
 
+def fix_indentation(response, args):
+	lines = response.split("\n")
+	for i in range(1, len(lines)):
+#		if ":" in lines[i]:
+#			lines[i] = re.sub(r':\s*', ':\t', lines[i])
+#		else:
+		lines[i] = "\t" + lines[i]
+	response = "\n".join(lines) + "\n"
+	return response
+
 def input_with_prefill(prompt, text):
 	""" Input with a prefill. """
 	def hook():
@@ -315,6 +325,8 @@ def process_file(model, file, args, history_start=0):
 
 	if args.trim:
 		response = trim_response(response, args)
+	if not args.narrative:
+		response = fix_indentation(response, args)
 
 	if invitation:
 		tidy_response = invitation.strip() + "\t" + response.strip()
@@ -374,7 +386,7 @@ def watch_step(model, args, stats):
 				stats1 = os.stat(file)
 			stats[file] = stats1
 		except Exception as e:
-			logger.warning("watch_step: %r", e)
+			logger.exception("watch_step: %r", e)
 
 	return stats
 
@@ -452,6 +464,7 @@ def get_opts():
 	format_group.add_argument("--memory", "-x", type=int, default=512, help="Max number of tokens to keep in history, before we drop old messages")
 	format_group.add_argument("--strip-final-newline", type=bool, default=True, help="Strip final newline from input, allows to continue lines")
 	format_group.add_argument("--emo", type=bool, default=False, help="End the bot invitation with a space, which causes the bot to respond with an emoji first!")
+	format_group.add_argument("--narrative", type=bool, default=False, help="Allow non-indented narrative text")
 
 	model_group = parser.add_argument_group("Model options")
 	model_group.add_argument("--port", "-p", default=default_port, help="Path to port directory")
