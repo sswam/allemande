@@ -9,17 +9,22 @@ SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 
 
-JOBS := default run-i3 run frontend backend dev run core vi vscode voice webchat \
-	llm whisper chat-api stream watch bb2html nginx logs perms \
-	brain mike speak firefox-webchat-local chrome-webchat-local
+JOBS := server_start home server default run-i3 run frontend backend dev \
+	run core vi vscode voice webchat llm whisper chat-api stream watch \
+	bb2html nginx logs perms brain mike speak \
+	firefox-webchat-local chrome-webchat-local stop mount umount fresh \
+	install install-dev uninstall cleanup i3-layout
 
 
-opal: webchat
+default: server_start home
 
-beorn: mount run-i3-screen
+server_start:
+	ssh $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && make server"
 
+home: mount run-i3-screen
 
-default: run-i3-screen
+server:: stop
+server:: webchat
 
 
 run-i3-screen:: i3-layout
@@ -118,11 +123,11 @@ stop:
 	screen -S "$(SCREEN)" -X quit || true
 
 mount:
-	mkdir -p rooms.opal
-	sshfs ucm.dev:$(ALLEMANDE_ROOMS) rooms.opal -o cache=no || true
+	mkdir -p $(ALLEMANDE_ROOMS_SERVER)
+	sshfs $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) -o cache=no || true
 
 umount:
-	fusermount -u rooms.opal || true
+	fusermount -u $(ALLEMANDE_ROOMS_SERVER) || true
 
 fresh:
 	mv $(file) $(file).bak.$(shell date +%Y%m%d-%H%M%S)
