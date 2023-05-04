@@ -14,8 +14,11 @@ ALLEMANDE_SCREEN="allemande"
 
 ALLEMANDE_ROOMS="$ALLEMANDE_HOME/rooms"
 
+if [ -e "$ALLEMANDE_HOME/venv" ]; then
+	. "$ALLEMANDE_HOME/venv/bin/activate"
+fi
+
 PYTHON=$(which python3)
-PYTHONIOENCODING="utf-8"
 
 PYTHONPATH=$ALLEMANDE_HOME/py:$ALLEMANDE_HOME/text:$ALLEMANDE_HOME/chat:$PYTHONPATH
 

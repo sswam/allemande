@@ -9,12 +9,28 @@ SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 
 
-JOBS := default run-i3 run frontend backend dev run core vi vscode voice webchat \
-	llm whisper chat-api stream watch bb2html nginx logs perms \
-	brain mike speak firefox-webchat-local chrome-webchat-local
+JOBS := server_start server_stop home server default run-i3 run frontend backend dev \
+	run core vi vscode voice webchat llm whisper chat-api stream watch \
+	bb2html nginx logs perms brain mike speak \
+	firefox-webchat-local chrome-webchat-local stop mount umount fresh \
+	install install-dev uninstall cleanup i3-layout
 
 
-default: run-i3-screen
+default: server_start home
+
+
+server_start:
+	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make server"
+
+server_stop:
+	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
+
+
+home: mount run-i3-screen
+
+
+server:: stop
+server:: webchat
 
 
 run-i3-screen:: i3-layout
@@ -85,7 +101,7 @@ stream:
 	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBCHAT) --reload  --reload-dir $(WEBCHAT) --port 8001 --timeout-graceful-shutdown 1
 
 watch:
-	awatch.py -x bb $(ROOMS) >> $(WATCH_LOG)
+	awatch.py -x bb -p $(ROOMS) >> $(WATCH_LOG)
 
 bb2html:
 	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
@@ -113,14 +129,17 @@ stop:
 	screen -S "$(SCREEN)" -X quit || true
 
 mount:
-	mkdir -p rooms.opal
-	sshfs ucm.dev:$(ALLEMANDE_ROOMS) rooms.opal -o cache=no
+	mkdir -p $(ALLEMANDE_ROOMS_SERVER)
+	sshfs $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) -o cache=no || true
 
 umount:
-	fusermount -u rooms.opal
+	fusermount -u $(ALLEMANDE_ROOMS_SERVER) || true
 
 fresh:
-	mv $(file) $(file).bak.$(shell date +%Y%m%d-%H%M%S)
+	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
+	if [ -s $(file) ]; then mv -v $(file) $(file).$$time; fi ; \
+	if [ -s $$html ]; then mv $$html $$html.$$time; fi ; \
+	touch $(file) $$html
 
 
 .PHONY: default $(JOBS) %.xt

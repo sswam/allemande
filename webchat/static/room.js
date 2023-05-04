@@ -60,6 +60,7 @@ function messages_scrolled() {
 		if (messages_height != messages_height_at_last_scroll) {
 			messages_height_at_last_scroll = messages_height;
 			scroll_to_bottom($e)
+			online();
 		}
 	}
 	messages_at_bottom = is_at_bottom($e);
