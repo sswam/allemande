@@ -19,3 +19,5 @@ rooms/*.bb
 rooms/*.html
 rooms.*
 venv
+*.bak
+*.bak.*
