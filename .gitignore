@@ -14,7 +14,8 @@ ref
 webchat/files
 webchat/users
 go/atail
-/config.sh
+config.sh
 rooms/*.bb
 rooms/*.html
+rooms.*
 venv
