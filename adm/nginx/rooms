@@ -29,7 +29,7 @@ server {
 	location / {
 		auth_basic "Auth";
 		auth_basic_user_file /var/www/allychat/.htpasswd;
-		autoindex on;
+#		autoindex on;
 		try_files $uri $uri/ =404;
 # TODO if we want strong privacy
 #		access_log off;

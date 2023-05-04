@@ -31,6 +31,7 @@ s/’/'/g;
 s/[^\0-~]//g;    # filter out emojis; but \x7e9 is closing single-quote / "smart" apostrophe
 #s{\bThalia\b}{<phoneme ph="təˈliːə">Tahlia</phoneme>}g;
 s{\bThalia\b}{Tah-leeia}g;
+s{\bAlly\b}{Allie}g;
 s{\bkinda\b}{kind-a}g;
 s/\b([A-Z]{2,})\b/$letter_by_letter{$1} ? to_letters($1) : ucfirst(lc $1)/ge;
 s/\bDr ([A-Z])/Doctor $1/g;
