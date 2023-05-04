@@ -9,7 +9,7 @@ SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 
 
-JOBS := server_start home server default run-i3 run frontend backend dev \
+JOBS := server_start server_stop home server default run-i3 run frontend backend dev \
 	run core vi vscode voice webchat llm whisper chat-api stream watch \
 	bb2html nginx logs perms brain mike speak \
 	firefox-webchat-local chrome-webchat-local stop mount umount fresh \
@@ -18,10 +18,16 @@ JOBS := server_start home server default run-i3 run frontend backend dev \
 
 default: server_start home
 
+
 server_start:
-	ssh $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && make server"
+	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make server"
+
+server_stop:
+	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
+
 
 home: mount run-i3-screen
+
 
 server:: stop
 server:: webchat
