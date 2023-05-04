@@ -1,4 +1,4 @@
-CHATPATH=$ALLEMANDE_HOME/rooms
+CHATPATH="$ALLEMANDE_ROOMS"
 
 user=${USER^}
 bot=Ally
