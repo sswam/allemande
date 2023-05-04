@@ -1,9 +1,14 @@
-CHATPATH=$ALLEMANDE_HOME/rooms
+SERVER="allemande.ai"
+SERVER_SSH="$SERVER"
+SERVER_ROOMS_SSH="$SERVER_SSH:$ALLEMANDE_ROOMS"
+
+ALLEMANDE_ROOMS_SERVER="$ALLEMANDE_HOME/rooms.server"
+CHATPATH="$ALLEMANDE_ROOMS:$ALLEMANDE_ROOMS_SERVER"
 
 user=${USER^}
 bot=Ally
 room=chat
-file=$CHATPATH/$room.bb
+file=$ALLEMANDE_ROOMS/$room.bb
 mission=$'system:\tYou are friends and co-workers talking face to face and working enthusiastically together.'
 add_prompts=1   # 1
 rewind=2

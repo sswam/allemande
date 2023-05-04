@@ -150,7 +150,7 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
 def get_opts():
 	""" Get the command line options """
 	parser = argparse.ArgumentParser(description="awatch: watch files and directories for changes", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-	parser.add_argument('paths', nargs='*', default=".", help="the files and directories to watch")
+	parser.add_argument('-p', '--paths', nargs='*', default=".", help="the files and directories to watch")
 	parser.add_argument('-x', '--extension', nargs='*', help="the file extensions to watch")
 	parser.add_argument('-a', '--all-files', action='store_true', help="watch all files")
 	parser.add_argument('-H', '--hidden', action='store_true', help="watch hidden files")
