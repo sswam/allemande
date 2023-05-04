@@ -1,5 +1,20 @@
+argh
+sh
 starlette
 uvicorn
 watchfiles
 inotify
 websockets
+markdown
+aiofiles
+aionotify
+jinja2
+python-multipart
+
+# TODO just inline needed things from ucm.py, shouldn't depend on libraries we don't need
+fastcore
+inflect
+ipywidgets
+send2trash
+ipynbname
+nbdev

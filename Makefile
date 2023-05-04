@@ -112,5 +112,15 @@ i3-layout:
 stop:
 	screen -S "$(SCREEN)" -X quit || true
 
+mount:
+	mkdir -p rooms.opal
+	sshfs ucm.dev:$(ALLEMANDE_ROOMS) rooms.opal -o cache=no
+
+umount:
+	fusermount -u rooms.opal
+
+fresh:
+	mv $(file) $(file).bak.$(shell date +%Y%m%d-%H%M%S)
+
 
 .PHONY: default $(JOBS) %.xt

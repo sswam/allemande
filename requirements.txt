@@ -19,6 +19,7 @@ inflect
 ipywidgets
 send2trash
 ipynbname
+nbdev
 
 argh
 sh
@@ -48,3 +49,8 @@ inotify
 
 websockets
 pyaudio
+
+markdown
+aiofiles
+jinja2
+python-multipart
