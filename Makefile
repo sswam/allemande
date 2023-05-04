@@ -101,7 +101,7 @@ stream:
 	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBCHAT) --reload  --reload-dir $(WEBCHAT) --port 8001 --timeout-graceful-shutdown 1
 
 watch:
-	awatch.py -x bb $(ROOMS) >> $(WATCH_LOG)
+	awatch.py -x bb -p $(ROOMS) >> $(WATCH_LOG)
 
 bb2html:
 	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
