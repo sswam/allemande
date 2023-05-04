@@ -12,7 +12,7 @@ SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 JOBS := server_start server_stop home server default run-i3 run frontend backend dev \
 	run core vi vscode voice webchat llm whisper chat-api stream watch \
 	bb2html nginx logs perms brain mike speak \
-	firefox-webchat-local chrome-webchat-local stop mount umount fresh \
+	firefox-webchat-local chrome-webchat-online stop mount umount fresh \
 	install install-dev uninstall cleanup i3-layout
 
 
@@ -41,7 +41,7 @@ run-i3-screen:: run
 run: frontend backend dev
 
 
-frontend: vi.xt vscode firefox-webchat-local chrome-webchat-local
+frontend: vi.xt vscode firefox-webchat-local chrome-webchat-online
 
 backend: core voice webchat
 
@@ -115,8 +115,8 @@ logs:
 firefox-webchat-local:
 	(sleep 1; firefox "https://chat-local.allemande.ai/#$$room") & disown
 
-chrome-webchat-local:
-	(sleep 1; chrome "https://chat-local.allemande.ai/#$$room") & disown
+chrome-webchat-online:
+	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
 
 
 %.xt:
