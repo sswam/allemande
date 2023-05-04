@@ -14,6 +14,11 @@ JOBS := default run-i3 run frontend backend dev run core vi vscode voice webchat
 	brain mike speak firefox-webchat-local chrome-webchat-local
 
 
+opal: webchat
+
+beorn: mount run-i3-screen
+
+
 default: run-i3-screen
 
 
@@ -114,10 +119,10 @@ stop:
 
 mount:
 	mkdir -p rooms.opal
-	sshfs ucm.dev:$(ALLEMANDE_ROOMS) rooms.opal -o cache=no
+	sshfs ucm.dev:$(ALLEMANDE_ROOMS) rooms.opal -o cache=no || true
 
 umount:
-	fusermount -u rooms.opal
+	fusermount -u rooms.opal || true
 
 fresh:
 	mv $(file) $(file).bak.$(shell date +%Y%m%d-%H%M%S)
