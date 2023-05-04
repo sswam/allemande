@@ -358,20 +358,23 @@ def watch_step(model, args, stats):
 
 	for file in files:
 		# check if modified since last time
-		stats0 = stats.get(file, stats_null)
-		stats1 = os.stat(file)
-
-		if first:
-			stats[file] = stats1
-			continue
-		if stats1.st_mtime <= stats0.st_mtime:
-			pass
-		elif args.ignore_shrink and stats1.st_size < stats0.st_size:
-			pass
-		elif stats1.st_size > 0:
-			process_file(model, file, args)
+		try:
+			stats0 = stats.get(file, stats_null)
 			stats1 = os.stat(file)
-		stats[file] = stats1
+	
+			if first:
+				stats[file] = stats1
+				continue
+			if stats1.st_mtime <= stats0.st_mtime:
+				pass
+			elif args.ignore_shrink and stats1.st_size < stats0.st_size:
+				pass
+			elif stats1.st_size > 0:
+				process_file(model, file, args)
+				stats1 = os.stat(file)
+			stats[file] = stats1
+		except Exception as e:
+			logger.warning("watch_step: %r", e)
 
 	return stats
 

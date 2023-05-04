@@ -14,6 +14,26 @@ import markdown
 USER_NARRATIVE = object()
 USER_CONTINUED = object()
 
+# see: https://python-markdown.github.io/extensions/
+MARKDOWN_EXTENSIONS = [
+	'abbr',
+	# 'attr_list',
+	'def_list',
+	'fenced_code',
+	'footnotes',
+	'md_in_html',
+	'tables',
+	'admonition',
+	'codehilite',
+	# 'legacy_attrs',
+	# 'legacy_em',
+	# 'meta',
+	'nl2br',
+	'sane_lists',
+	'smarty',
+	'toc',
+	'wikilinks',
+]
 
 def safe_join(base_dir: Path, path: Path) -> Path:
 	""" Return a safe path under base_dir, or raise ValueError if the path is unsafe. """
@@ -102,7 +122,7 @@ def message_to_text(message):
 
 def message_to_html(message):
 	""" Convert a chat message to HTML. """
-	html_content = markdown.markdown(message["content"])
+	html_content = markdown.markdown(message["content"], extensions=MARKDOWN_EXTENSIONS)
 	user = message.get("user")
 	if user:
 		user_ee = html.escape(user)
