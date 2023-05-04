@@ -136,7 +136,10 @@ umount:
 	fusermount -u $(ALLEMANDE_ROOMS_SERVER) || true
 
 fresh:
-	mv $(file) $(file).bak.$(shell date +%Y%m%d-%H%M%S)
+	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
+	if [ -s $(file) ]; then mv -v $(file) $(file).$$time; fi ; \
+	if [ -s $$html ]; then mv $$html $$html.$$time; fi ; \
+	touch $(file) $$html
 
 
 .PHONY: default $(JOBS) %.xt
