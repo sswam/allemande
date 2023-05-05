@@ -26,17 +26,19 @@ generate-commit-message "$model"
 while true; do
 	cat "$file"
 	echo
-	read -p "Commit with this message? [y/n/e/3/4/?] " -n 1 -r choice 2>&1
+	read -p "Commit with this message? [y/n/e/d/3/4/?] " -n 1 -r choice 2>&1
 	echo
 	case "$choice" in
 		y|Y ) break;;
 		n|N|q|Q ) exit 1;;
 		e|E ) ${EDITOR:-vi} "$file";;
+		d|D ) git diff --staged;;
 		3 ) generate-commit-message 3+;;
 		4 ) generate-commit-message 4;;
 		\?|h ) echo "y: commit with this message"
 			echo "n: abort"
 			echo "e: edit the message"
+			echo "d: diff the staged changes"
 			echo "3: generate with ChatGPT-3.5"
 			echo "4: generate with GPT-4";;
 		* ) echo "Invalid choice";;
