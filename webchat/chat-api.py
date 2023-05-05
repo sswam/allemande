@@ -79,7 +79,7 @@ def sanitize_pathname(room):
 	parts = map(sanitize_filename, parts)
 
 	# remove empty parts
-	parts = filter(ident, parts)
+	parts = list(filter(ident, parts))
 
 	if not parts:
 		raise HTTPException(status_code=400, detail="Please enter the name of a room.")

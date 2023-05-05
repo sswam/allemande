@@ -10,7 +10,7 @@ SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 
 
 JOBS := server_start server_stop home server default run-i3 run frontend backend dev \
-	run core vi vscode voice webchat llm whisper chat-api stream watch \
+	run core vi vscode voice webchat llm whisper chat-api stream auth watch \
 	bb2html nginx logs perms brain mike speak \
 	firefox-webchat-local chrome-webchat-online stop mount umount fresh \
 	install install-dev uninstall cleanup i3-layout
@@ -100,6 +100,9 @@ chat-api:
 stream:
 	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBCHAT) --reload  --reload-dir $(WEBCHAT) --port 8001 --timeout-graceful-shutdown 1
 
+auth:
+	uvicorn main:app --app-dir auth --reload --timeout-graceful-shutdown 5 --port 8002 # --reload-include *.csv
+
 watch:
 	awatch.py -x bb -p $(ROOMS) >> $(WATCH_LOG)
 
@@ -113,7 +116,7 @@ logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
 
 firefox-webchat-local:
-	(sleep 1; firefox "https://chat-local.allemande.ai/#$$room") & disown
+	(sleep 1; firefox -P "$$USER" "https://chat-local.allemande.ai/#$$room") & disown
 
 chrome-webchat-online:
 	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
