@@ -3,10 +3,16 @@
 
 from sys import stdin, stdout
 import re
+import logging
+import ucm
+import argparse
+from typing import IO
 
 from os.path import commonprefix
 
-from argh import dispatch_command
+import argh
+
+logger = logging.getLogger(__name__)
 
 
 def identity(x):
@@ -66,17 +72,16 @@ def replace_indentation(line, tab_old, tab):
 		return line
 	indent_len = len(indent) // len(tab_old)
 	if indent != tab_old * indent_len:
-		raise ValueError("Inconsistent indentation: " + repr(line))
+		logging.info("Inconsistent indentation: " + repr(line))
+		return line
 	return tab * indent_len + line[len(indent):]
 
 def add_newline(lines):
 	""" add a newlines to the end of the lines """
 	return map(lambda line: line + "\n", lines)
 
-def fix_indentation_list(lines, n, char):
+def fix_indentation_list(lines, tab):
 	""" fix the indentation of the lines """
-
-	tab = n * char
 
 	lines = rstrip_lines(lines)
 	lines = strip_common_indent(lines)
@@ -84,7 +89,8 @@ def fix_indentation_list(lines, n, char):
 	tab_old = get_tab_string(lines)
 
 	if not tab_old:
-		raise ValueError("No common indentation found")
+		logging.info("No indentation found")
+		return lines
 
 	if tab_old != tab:
 		lines = map(lambda line: replace_indentation(line, tab_old, tab), lines)
@@ -93,11 +99,23 @@ def fix_indentation_list(lines, n, char):
 
 	return lines
 
-def fix_indentation(inp=stdin, out=stdout, n=1, char='\t'):
+@argh.arg('-c', help='character to use for tab')
+def fix_indentation(inp: IO[str]=stdin, out: IO[str]=stdout, n=1, c='\t', tab=None):
 	""" fix the indentation of a file """
+	if not tab:
+		tab = n * c
 	input_lines = inp.readlines()
-	fixed_lines = list(fix_indentation_list(input_lines, n, char))
+	fixed_lines = list(fix_indentation_list(input_lines, tab))
 	out.writelines(fixed_lines)
 
-if __name__ == "__main__":
-	dispatch_command(fix_indentation)
+#if __name__ == "__main__":
+#	dispatch_command(fix_indentation)
+
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser()
+	argh.add_commands(parser, [fix_indentation])
+	argh.set_default_command(parser, fix_indentation)
+	ucm.add_logging_options(parser)
+	opts = parser.parse_args()
+	ucm.setup_logging(opts)
+	argh.dispatch(parser)
