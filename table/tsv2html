@@ -1,0 +1,27 @@
+#!/usr/local/bin/cz --
+use b
+Main:
+	cstr name = "table"
+	char *p = strrchr(name, '.')
+	if p:
+		*p = '\0'
+	getargs(name)
+	say("<html>")
+	say("<head>")
+	sf("  <title>%s</title>", name)
+	say("  <link href=\"/styles.css\" rel=\"stylesheet\" type=\"text/css\"/>")
+	say("</head>")
+	say("<body>")
+	say("<table class=\"table auto\">")
+	new(v, vec, cstr, 32)
+	new(b, buffer, 256)
+	read_tsv_vec(v):
+		say("  <tr>")
+		for_vec(i, v, cstr):
+			bufclr(b)
+			html_encode(b, *i)
+			sf("    <td>%s</td>", buffer_to_cstr(b))
+		say("  </tr>")
+	say("</table>")
+	buffer_free(b)
+	vec_free(v)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" gpt.py: a simple wrapper for the OpenAI ChatGPT API """
+""" gpt.py: a simple wrapper for the OpenAI ChatGPT API and also Anthropic's Claude """
 
 # TODO create compatible libraries for other APIs in future
 
@@ -8,10 +8,14 @@ import os
 import logging
 import re
 from typing import Optional, IO
+from math import inf
+
 from argh import dispatch_commands
-import tab
 
 import openai
+
+import tab
+import claude
 
 # import json
 
@@ -47,6 +51,34 @@ models = {
 		"description": "Snapshot of gpt-4-32 from March 14th 2023. Unlike gpt-4-32k, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
 		"cost": 0.06,
 	},
+	"claude-v1": {
+		"abbrev": "c",
+		"description": "Anthropic's Claude is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
+		"cost": 0.0  # at least for now!
+	},
+	"claude-v1.0": {
+		"description": "An earlier version of claude-v1.",
+		"cost": 0.0
+	},
+	"claude-v1.2": {
+		"description": "An improved version of claude-v1. It is slightly improved at general helpfulness, instruction following, coding, and other tasks. It is also considerably better with non-English languages. This model also has the ability to role play (in harmless ways) more consistently, and it defaults to writing somewhat longer and more thorough responses.",
+		"cost": 0.0
+	},
+	"claude-v1.3": {
+		"description": "A significantly improved version of claude-v1. Compared to claude-v1.2, it's more robust against red-team inputs, better at precise instruction-following, better at code, and better and non-English dialogue and writing.",
+		"cost": 0.0
+	},
+	"claude-instant-v1": {
+		"abbrev": "i",
+		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
+		"cost": 0.0
+	},
+	"claude-instant-v1.0": {
+		"description": "Current default for claude-instant-v1.",
+		"cost": 0.0
+	}
+}
+
 #	"code-davinci-002": {
 #		"abbrev": "x2",
 #		"description": "Code completion model trained on 1.5 billion lines of code. Will be updated with our latest model iteration.",
@@ -57,7 +89,6 @@ models = {
 #		"description": "Almost as capable as Davinci Codex, but slightly faster. This speed advantage may make it preferable for real-time applications.",
 #		"cost": 0,
 #	},
-}
 
 # default is $GPT_MODEL or first model in the dict
 
@@ -65,6 +96,9 @@ first_model = next(iter(models.keys()))
 default_model = os.environ.get("GPT_MODEL", first_model)
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
+
+DEFAULT_TEMPERATURE = 1
+TOKEN_LIMIT = inf
 
 fake_completion = {
 	"choices": [
@@ -96,24 +130,40 @@ def get_model_by_abbrev(model):
 		model = abbrev_models[0]
 	return model
 
-def gpt(messages, model=default_model, fake=False, temperature=1):  # 0.9, max_tokens=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
-	""" Send a list of messages to the model, and return the response. """
+def chat_claude(*args, **kwargs):
+	response = claude.chat_claude(*args, **kwargs)
+	completion = claude.response_completion(response)
+	message = { "role": "assistant", "content": completion }
+	return message
 
-	logger.debug("gpt: input: %r", messages)
+def llm_chat(messages, model=default_model, fake=False, temperature=None, token_limit=None):
+	""" Send a list of messages to the model, and return the response. """
+	logger.debug("llm_chat: input: %r", messages)
 
 	if fake:
 		completion = fake_completion
+	elif model.startswith("claude"):
+		return chat_claude(messages, model=model, temperature=temperature, token_limit=token_limit)
+	elif model.startswith("gpt"):
+		return chat_gpt(messages, model=model, temperature=temperature, token_limit=token_limit)
 	else:
-		completion = openai.ChatCompletion.create(
-			model=model,
-			messages=messages
-		)
+		raise ValueError(f"unknown model: {model}")
+
+	logger.debug("llm_chat: output message: %s", output_message)
+
+def chat_gpt(messages, model=default_model, temperature=None, token_limit=None):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
+	if temperature is None:
+		temperature = DEFAULT_TEMPERATURE
+	if token_limit is None:
+		token_limit = TOKEN_LIMIT
+	completion = openai.ChatCompletion.create(
+		model=model,
+		messages=messages
+	)
 
 	logger.debug("gpt: completion: %s", completion)
 
 	output_message = completion['choices'][0]['message']
-
-	logger.debug("gpt: output message: %s", output_message)
 
 	return output_message
 
@@ -183,7 +233,7 @@ def messages_to_lines(messages):
 	return lines
 
 
-def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optional[str]=None, model: str=default_model, indent="\t"):
+def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optional[str]=None, model: str=default_model, indent="\t", temperature=None, token_limit=None):
 	""" Process some text through GPT with a prompt. """
 	prompt = prompt.rstrip()
 	input_text = inp.read().rstrip()
@@ -199,35 +249,37 @@ def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optio
 	if prompt2:
 		full_input += "\n" + prompt2 + "\n"
 
-	return query(full_input, out=out, model=model, indent=indent)
+	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit)
 
 
-def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t"):
+def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None):
 	""" Ask GPT a question. """
 
 	model = get_model_by_abbrev(model)
 
+	prompt = prompt.rstrip() + "\n"
+
 	# TODO use a system message?
 
 	input_message = {"role": "user", "content": prompt}
-	output_message = gpt([input_message], model=model)
+	output_message = llm_chat([input_message], model=model)
 	content = output_message["content"]
 
 	# fix indentation for code
 	if indent:
 		lines = content.splitlines()
 		lines = tab.fix_indentation_list(lines, indent)
-		content = "\n".join(lines) + "\n"
+		content = "".join(lines)
 
 	out.write(content)
 
 
-def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=1):
-	""" The main function, called when this module is run as a script. """
+def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None):
+	""" Chat with GPT. """
 	model = get_model_by_abbrev(model)
 	input_lines = inp.readlines()
 	input_messages = lines_to_messages(input_lines)
-	response_message = gpt(input_messages, fake=fake, model=model)
+	response_message = llm_chat(input_messages, fake=fake, model=model, temperature=temperature, token_limit=token_limit)
 	output_lines = messages_to_lines([response_message])
 	out.writelines(output_lines)
 
@@ -239,4 +291,4 @@ def list_models():
 
 
 if __name__ == "__main__":
-	dispatch_commands([query, chat, process, list_models])
+	dispatch_commands([chat, query, process, list_models])
