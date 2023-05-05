@@ -207,6 +207,8 @@ def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t
 
 	model = get_model_by_abbrev(model)
 
+	prompt = prompt.rstrip() + "\n"
+
 	# TODO use a system message?
 
 	input_message = {"role": "user", "content": prompt}
