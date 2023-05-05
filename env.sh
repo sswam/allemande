@@ -22,7 +22,9 @@ fi
 
 PYTHON=$(which python3)
 
-PYTHONPATH=$ALLEMANDE_HOME/py:$ALLEMANDE_HOME/text:$ALLEMANDE_HOME/chat:$PYTHONPATH
+for dir in py text chat anthropic; do
+	PYTHONPATH=$PYTHONPATH:$ALLEMANDE_HOME/$dir
+done
 
 for dir in adm core sys tools text data image audio video code openai anthropic web chat voice-chat eg www html; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
