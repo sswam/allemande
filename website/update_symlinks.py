@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from bs4 import BeautifulSoup
 import re
+import argh
 
 
 def create_symlink(resource_path):
@@ -54,7 +55,7 @@ def update_html_files(html_files, resource_files):
             file.write(str(soup))
 
 
-if __name__ == '__main__':
+def update_symlinks()
     resource_dir = Path('.')
     html_files = list(resource_dir.glob('*.html'))
     css_files = list(resource_dir.glob('**/*.css'))
@@ -71,3 +72,7 @@ if __name__ == '__main__':
         new_symlinks[resource_path] = resource_path.parent / new_symlink
 
     update_html_files(html_files, new_symlinks)
+
+
+if __name__ == '__main__':
+    argh.dispatch_command(update_symlinks)

@@ -22,6 +22,8 @@ from gtts import gTTS
 
 from sh import amixer, soundstretch
 
+from ucm import FileMutex
+
 logger = logging.getLogger(__name__)
 logger_fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
 logging.basicConfig(level=logging.INFO, format=logger_fmt)
@@ -157,7 +159,7 @@ def get_synth(model=DEFAULT_MODEL):
 		raise ValueError(f'Unknown engine: {model_type}') from e
 	return engine(model)
 
-def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, mute_capture_device=True, postproc=None):
+def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, lock=None):
 	""" Speak a line of text """
 
 	if not synth:
@@ -180,19 +182,20 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 
 		# TODO process the audio with a vocoder?
 
-		if mute_capture_device:
-			sd.wait()
-			amixer.sset("Capture", "nocap")
-			logger.info("Mic off")
-
-		# play the audio
-		if play:
-			sd.wait()
-			sd.play(audio, samplerate=rate_pp)
+		with FileMutex(lock):
+			if deafen:
+				sd.wait()
+				amixer.sset("Capture", "nocap")
+				logger.info("Mic off")
+	
+			# play the audio
+			if play:
+				sd.wait()
+				sd.play(audio, samplerate=rate_pp)
 	except ZeroDivisionError as e:
 		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
 	finally:
-		if mute_capture_device:
+		if deafen:
 			sd.wait()
 			amixer.sset("Capture", "cap")
 			logger.info("Mic on")
@@ -202,7 +205,7 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 	if play and wait:
 		sd.wait()
 
-def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, mute_capture_device=True, postproc=None):
+def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, lock=None):
 	""" Speak lines of text """
 	if not synth:
 		synth = get_synth(model)
@@ -213,7 +216,7 @@ def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, 
 		logger.info("speak_lines: line: %r", line)
 		if out:
 			out = f'{stem}_{i:06d}{ext}'
-		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, mute_capture_device=mute_capture_device, postproc=postproc)
+		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, lock=lock)
 
 	if play and wait:
 		sd.wait()
@@ -252,7 +255,7 @@ def do_list_models():
 		print("\t".join([k, lang, tld, accent]))
 
 @arg('--model', '-m')
-def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, mute_capture_device=True, tempo=1.0, pitch=0.0, list_models=False):
+def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, lock=os.environ.get('ALLEMANDE_AUDIO_LOCK', None)):
 	""" Speak text """
 	add_gtts_models()
 	add_coqui_models()
@@ -278,9 +281,9 @@ def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play
 		postproc = partial(postproc_soundstretch, tempo=tempo, pitch=pitch)
 
 	if text:
-		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, mute_capture_device=mute_capture_device, postproc=postproc)
+		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, lock=lock)
 	else:
-		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, mute_capture_device=mute_capture_device, postproc=postproc)
+		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
 
 if __name__ == "__main__":
 	dispatch_command(speak)
@@ -299,17 +302,17 @@ if __name__ == "__main__":
 #
 #import alsaaudio
 #
-#def mute_capture_device(device_name='Capture'):
+#def deafen(device_name='Capture'):
 #	mixer = alsaaudio.Mixer(device_name)
 #	mixer.setrec(0)
 #
-#def unmute_capture_device(device_name='Capture'):
+#def undeafen(device_name='Capture'):
 #	mixer = alsaaudio.Mixer(device_name)
 #	mixer.setrec(1)
 #
 #if __name__ == '__main__':
-#	mute_capture_device()
+#	deafen()
 #	time.sleep(5)  # Example: Sleep for 5 seconds while the microphone is muted
-#	unmute_capture_device()
+#	undeafen()
 
 # Ideally, it would be better just to tell the mike app not to record during this time.

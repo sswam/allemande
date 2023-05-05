@@ -40,7 +40,16 @@ class SupabaseAuthBackend(AuthenticationBackend):
             return SimpleUser(user_id)
         except Exception as e:
             return None
-        
+
+def decode_jwt(token, secret):
+    try:
+        payload = jwt.decode(token, secret, algorithms=["HS256"])
+        logger.info(f"Payload: {payload}")
+        return payload
+    except jwt.InvalidTokenError:
+        logger.info("Invalid token")
+        return None
+
 # Homepage
 # @requires("authenticated", redirect="login")
 async def homepage(request):
@@ -66,10 +75,12 @@ async def login(request):
         password = form.get("password")
         response = supabase.auth.sign_in(email=email, password=password)
         logger.info("superbase response %s", json.dumps(response, indent=4))
+        # TODO I think we need try/except here
         decoded = jwt.decode(response["access_token"], SECRET_KEY, algorithms=["HS256"], audience="authenticated", verify=True)
         logger.info("decoded jwt: %s", json.dumps(decoded, indent=4))
         error = response.get("error")
         if error is None:
+            # TODO set HTTP-only cookie or something
             return RedirectResponse(url="/")
     else:
         error = None
