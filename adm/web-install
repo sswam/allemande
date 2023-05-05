@@ -1,12 +1,19 @@
 #!/bin/bash -eu
-# webui-install: set permissions for the web app and install nginx config
+# web-install: set permissions for the web app and install nginx config
+
 . get_root
+
 mode() {
 	mode=$1 ; shift
 	chown $SUDO_USER:www-data "$@"
 	chmod $mode "$@"
 }
-cd webui
+
+rm -f /var/www/allemande
+ln -s "$ALLEMANDE_HOME/website" /var/www/allemande
+
+cd "$ALLEMANDE_HOME/webchat"
+
 mkdir -p files
 mode 770 rooms files
 mode 660 rooms/*.bb rooms/*.html
@@ -15,7 +22,10 @@ if [ ! -e .htpasswd ]; then
 fi
 mode 640 .htpasswd static/logout/.htpasswd
 
-cd nginx
+rm -f /var/www/allychat
+ln -s $PWD /var/www/allychat
+
+cd "$ALLEMANDE_HOME/adm/nginx"
 for site in *; do
 	ln -sf "$PWD/$site" /etc/nginx/sites-available/
 	ln -sf "../sites-available/$site" /etc/nginx/sites-enabled/

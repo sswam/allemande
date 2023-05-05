@@ -14,6 +14,12 @@ ALLEMANDE_SCREEN="allemande"
 
 ALLEMANDE_ROOMS="$ALLEMANDE_HOME/rooms"
 
+ALLEMANDE_AUDIO_LOCK="/var/lock/allemande-audio.lock"
+
+if [ -e "$ALLEMANDE_HOME/venv" ]; then
+	. "$ALLEMANDE_HOME/venv/bin/activate"
+fi
+
 PYTHON=$(which python3)
 
 PYTHONPATH=$ALLEMANDE_HOME/py:$ALLEMANDE_HOME/text:$ALLEMANDE_HOME/chat:$PYTHONPATH

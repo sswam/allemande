@@ -2,19 +2,35 @@ export
 
 SHELL := /bin/bash
 
-WEBUI := $(ALLEMANDE_HOME)/webui
+WEBCHAT := $(ALLEMANDE_HOME)/webchat
 ROOMS := $(ALLEMANDE_ROOMS)
 WATCH_LOG := $(ALLEMANDE_HOME)/watch.log
 SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 
 
-JOBS := default run-i3 run frontend backend dev run core vi vscode voice webui \
-	llm whisper chat-api stream watch bb2html nginx logs perms \
-	brain mike speak firefox-webui-local chrome-webui-local
+JOBS := server_start server_stop home server default run-i3 run frontend backend dev \
+	run core vi vscode voice webchat llm whisper chat-api stream auth watch \
+	bb2html nginx logs perms brain mike speak \
+	firefox-webchat-local chrome-webchat-online stop mount umount fresh \
+	install install-dev uninstall cleanup i3-layout
 
 
-default: run-i3-screen
+default: server_start home
+
+
+server_start:
+	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make server"
+
+server_stop:
+	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
+
+
+home: mount run-i3-screen
+
+
+server:: stop
+server:: webchat
 
 
 run-i3-screen:: i3-layout
@@ -25,26 +41,31 @@ run-i3-screen:: run
 run: frontend backend dev
 
 
-frontend: vi.xt vscode firefox-webui-local chrome-webui-local
+frontend: vi.xt vscode firefox-webchat-local chrome-webchat-online
 
-backend: core voice webui
+backend: core voice webchat
 
 dev: cleanup nginx.xt logs.xt
 
 install:
 	allemande-install
+	allemande-user-add www-data
+	web-install
+
+install-dev:
+	allemande-install
 	allemande-user-add $$USER
-	webui-install
+	web-install
 
 uninstall:
 	allemande-uninstall
-	webui-uninstall
+	web-uninstall
 
 core: llm.xt whisper.xt
 
 voice: brain.xt mike.xt speak.xt
 
-webui: chat-api.xt stream.xt watch.xt bb2html.xt
+webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 
 
 cleanup:
@@ -53,10 +74,10 @@ cleanup:
 	> watch.log
 
 llm:
-	core/llm_llama.py
+	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py
 
 whisper:
-	core/stt_whisper.py
+	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py
 
 brain:
 	cd chat && ./brain.sh
@@ -74,28 +95,31 @@ vscode:
 	code $$file & disown
 
 chat-api:
-	uvicorn chat-api:app --app-dir $(WEBUI) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
+	uvicorn chat-api:app --app-dir $(WEBCHAT) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
 
 stream:
-	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBUI) --reload  --reload-dir $(WEBUI) --port 8001 --timeout-graceful-shutdown 1
+	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBCHAT) --reload  --reload-dir $(WEBCHAT) --port 8001 --timeout-graceful-shutdown 1
+
+auth:
+	uvicorn main:app --app-dir auth --reload --timeout-graceful-shutdown 5 --port 8002 # --reload-include *.csv
 
 watch:
-	awatch.py -x bb $(ROOMS) >> $(WATCH_LOG)
+	awatch.py -x bb -p $(ROOMS) >> $(WATCH_LOG)
 
 bb2html:
-	$(WEBUI)/bb2html.py -w $(WATCH_LOG)
+	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 nginx:
-	(echo; inotifywait -q -m -e modify $(WEBUI)/nginx ) | while read e; do v sudo systemctl restart nginx; done
+	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v sudo systemctl restart nginx; done
 
 logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
 
-firefox-webui-local:
-	(sleep 1; firefox "https://chat-local.ucm.dev/#$$room") & disown
+firefox-webchat-local:
+	(sleep 1; firefox -P "$$USER" "https://chat-local.allemande.ai/#$$room") & disown
 
-chrome-webui-local:
-	(sleep 1; chrome "https://chat-local.ucm.dev/#$$room") & disown
+chrome-webchat-online:
+	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
 
 
 %.xt:
@@ -106,6 +130,19 @@ i3-layout:
 
 stop:
 	screen -S "$(SCREEN)" -X quit || true
+
+mount:
+	mkdir -p $(ALLEMANDE_ROOMS_SERVER)
+	sshfs $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) -o cache=no || true
+
+umount:
+	fusermount -u $(ALLEMANDE_ROOMS_SERVER) || true
+
+fresh:
+	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
+	if [ -s $(file) ]; then mv -v $(file) $(file).$$time; fi ; \
+	if [ -s $$html ]; then mv $$html $$html.$$time; fi ; \
+	touch $(file) $$html
 
 
 .PHONY: default $(JOBS) %.xt

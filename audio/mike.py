@@ -2,6 +2,7 @@
 """ Transcribe speech to text using microphone input and whisper """
 
 import sys
+import os
 import io
 from threading import Thread, Event
 from queue import Queue
@@ -17,6 +18,8 @@ import yaml
 
 import ucm
 import ports
+
+from ucm import FileMutex
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +39,7 @@ def open_microphone_spamfree(*args, **kwargs):
 	finally:
 		source.__exit__(None, None, None)
 
-def record_speech(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise=False):
+def record_speech(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise=False, lock=None):
 	""" Record audio from microphone and put it in the queue """
 	r = sr.Recognizer()
 	r.energy_threshold = energy
@@ -57,13 +60,16 @@ def record_speech(run_event, q_audio, energy, pause, dynamic_energy, device_inde
 			if adjust_for_ambient_noise:
 				logger.debug("Adjusting for ambient noise")
 				r.adjust_for_ambient_noise(source)
-			if first:
-				logger.info("Listening")
-				first = False
-			else:
-				logger.debug("Listening")
-			audio = r.listen(source)
-			logger.debug("Got audio")
+
+			with FileMutex(lock):
+				if first:
+					logger.info("Listening")
+					first = False
+				else:
+					logger.debug("Listening")
+				audio = r.listen(source)
+				logger.debug("Got audio")
+
 #			if not drop and not os.path.isfile("/tmp/drop-the-mic"):
 			q_audio.put_nowait(audio)
 			i += 1
@@ -88,8 +94,8 @@ def client_request(port, audio, config=None):
 	if status == "error":
 		ports.response_error(resp)
 
-	text = (resp/"text.txt").read_text()
-	result = yaml.safe_load((resp/"result.yaml").read_text())
+	text = (resp/"text.txt").read_text(encoding="utf-8")
+	result = yaml.safe_load((resp/"result.yaml").read_text(encoding="utf-8"))
 
 	logger.info("%r", result)
 
@@ -135,7 +141,7 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 
-def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.95):
+def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.90, lock=os.environ.get('ALLEMANDE_AUDIO_LOCK', None)):
 	""" Transcribe speech to text using microphone input """
 
 	if list_devices:
@@ -152,7 +158,7 @@ def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=Non
 		q_text = Queue()
 		Thread(
 			target=record_speech,
-			args=(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise)
+			args=(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise, lock)
 			).start()
 		Thread(
 			target=speech_to_text,

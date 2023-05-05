@@ -25,7 +25,7 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 ## What's in the box?
 
 - Voice and in-editor text chat with an AI model (e.g. point-alpaca).
-- Shell tools for ChatGPT 3.5 and GPT-4.
+- Shell tools for ChatGPT 3.5, GPT-4 and Claude.
 - WebUI for multi-user, multi-bot, multi-agent chat
 - a local API service for core AI models, based on directories and files not sockets
 - An OCR script that uses GPT for proofreading.
@@ -47,6 +47,7 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 - whisper
 - Coqui TTS
 - nginx
+- haproxy (if needed)
 
 - apt install soundstretch amixer tesseract yt-dlp ffmpeg
 
@@ -59,7 +60,7 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 export OPENAI_API_KEY=....
 ```
 - Edit and source `env.sh` and `config.sh`
-- For the WebUI, set up hostnames and SSL, and use the config files in webui/nginx
+- For the WebChat, set up hostnames and SSL, and use the config files in adm/nginx
 - Try running everything:
 ```
 make
@@ -73,7 +74,7 @@ make
 
 <details>
 <summary>
-I offer extremely affordable AI consulting and software development. The first consult is free. This is a <i>limited time offer</i>, while I get the business up and running. See my website for details: <a href="https://sam.ucm.dev/">sam.ucm.dev</a>.
+We offer extremely affordable AI consulting and software development. The first consult is free. This is a <i>limited time offer</i>, while we get the business up and running. See my website for details: <a href="https://sam.ucm.dev/">sam.ucm.dev</a>.
 </summary>
 <br>
 <p>(GPT-4 tries to help me sell this...)</p>

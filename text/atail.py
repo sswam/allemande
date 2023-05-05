@@ -60,29 +60,33 @@ class AsyncTail:
 
 	async def follow_changes(self, f):
 		""" Follow the file """
-		watcher = aionotify.Watcher()
-		watcher.watch(self.filename, aionotify.Flags.MODIFY)
-		await watcher.setup(asyncio.get_event_loop())
-		while True:
-			count = 0
-			while line := await f.readline():
-				yield line
-				count += 1
-			if self.rewind and not count:
-				await self.seek_to_end(f)
-			await watcher.get_event()
-		watcher.close()
-
+		try:
+			watcher = aionotify.Watcher()
+			watcher.watch(self.filename, aionotify.Flags.MODIFY)
+			await watcher.setup(asyncio.get_event_loop())
+			while True:
+				count = 0
+				while line := await f.readline():
+					yield line
+					count += 1
+				if self.rewind and not count:
+					await self.seek_to_end(f)
+				await watcher.get_event()
+		finally:
+			watcher.close()
+	
 	async def wait_for_file_creation(self):
 		""" Wait for the file to be created """
 		folder = str(Path(self.filename).parent)
-		watcher = aionotify.Watcher()
-		watcher.watch(folder, aionotify.Flags.CREATE | aionotify.Flags.MOVED_TO)
-		await watcher.setup(asyncio.get_event_loop())
-		while not Path(self.filename).exists():
-			await watcher.get_event()
-		watcher.close()
-
+		try:
+			watcher = aionotify.Watcher()
+			watcher.watch(folder, aionotify.Flags.CREATE | aionotify.Flags.MOVED_TO)
+			await watcher.setup(asyncio.get_event_loop())
+			while not Path(self.filename).exists():
+				await watcher.get_event()
+		finally:
+			watcher.close()
+	
 
 async def atail(output=sys.stdout, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False):
 	""" Tail a file - for command-line tool, and an example of usage """
