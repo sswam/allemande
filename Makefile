@@ -126,7 +126,7 @@ chrome-webchat-online:
 	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"
 
 i3-layout:
-	if which i3-msg; then i3-msg "append_layout $(ALLEMANDE_HOME)/i3-layout.json"; fi
+	if which i3-msg; then i3-msg "append_layout $(ALLEMANDE_HOME)/i3/layout.json"; fi
 
 stop:
 	screen -S "$(SCREEN)" -X quit || true
