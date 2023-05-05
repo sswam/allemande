@@ -89,10 +89,8 @@ def fix_indentation_list(lines, tab):
 	tab_old = get_tab_string(lines)
 
 	if not tab_old:
-		logging.info("No indentation found")
-		return lines
-
-	if tab_old != tab:
+		logging.debug("No indentation found")
+	elif tab_old != tab:
 		lines = map(lambda line: replace_indentation(line, tab_old, tab), lines)
 
 	lines = add_newline(lines)
@@ -104,8 +102,8 @@ def fix_indentation(inp: IO[str]=stdin, out: IO[str]=stdout, n=1, c='\t', tab=No
 	""" fix the indentation of a file """
 	if not tab:
 		tab = n * c
-	input_lines = inp.readlines()
-	fixed_lines = list(fix_indentation_list(input_lines, tab))
+	# input_lines = inp.readlines()
+	fixed_lines = list(fix_indentation_list(inp, tab))
 	out.writelines(fixed_lines)
 
 #if __name__ == "__main__":
