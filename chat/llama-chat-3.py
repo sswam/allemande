@@ -349,7 +349,7 @@ def find_files(folder, ext=None, maxdepth=inf):
 			elif subdir.is_file():
 				if not ext or subdir.name.endswith(ext):
 					yield subdir.path
-	except PermissionError as e:
+	except (PermissionError, FileNotFoundError) as e:
 		logger.warning("find_files: %r", e)
 
 stats_null = type("stats_null", (object,), {"st_mtime": -1, "st_size": 0})

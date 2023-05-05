@@ -54,3 +54,5 @@ markdown
 aiofiles
 jinja2
 python-multipart
+
+pyjwt

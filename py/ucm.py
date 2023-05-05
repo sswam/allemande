@@ -2,7 +2,7 @@
 
 # %% auto 0
 __all__ = ['p', 'redirect_stderr_to_dev_null', 'powerset', 'seq_diff', 'join_a_foo_and_a_bar', 'confirm_delete', 'setup_logging',
-           'add_logging_options', 'redirect', 'run_async', 'git_root', 'export']
+           'add_logging_options', 'redirect', 'run_async', 'FileMutex', 'git_root', 'export']
 
 # %% ../blog/posts/multilabel2/multilabel2.ipynb 5
 import sys
@@ -81,16 +81,16 @@ from functools import partial
 
 @contextmanager
 def redirect(fileno, target):
-	""" Redirect a file descriptor temporarily """
-	target_fd = os.open(target, os.O_WRONLY)
-	saved_fd = os.dup(fileno)
-	os.dup2(target_fd, fileno)
-	try:
-		yield
-	finally:
-		os.dup2(saved_fd, fileno)
-		os.close(saved_fd)
-		os.close(target_fd)
+    """ Redirect a file descriptor temporarily """
+    target_fd = os.open(target, os.O_WRONLY)
+    saved_fd = os.dup(fileno)
+    os.dup2(target_fd, fileno)
+    try:
+        yield
+    finally:
+        os.dup2(saved_fd, fileno)
+        os.close(saved_fd)
+        os.close(target_fd)
 
 redirect_stderr_to_dev_null = partial(redirect, sys.stderr.fileno(), "/dev/null")
 
@@ -99,16 +99,44 @@ import os
 import asyncio
 
 def run_async(coro):
-	loop = asyncio.get_event_loop()
-	try:
-		loop.run_until_complete(coro)
-	except KeyboardInterrupt as e:
-		loop.close()
-		os._exit(130)
-	finally:
-		loop.close()
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(coro)
+    except KeyboardInterrupt as e:
+        loop.close()
+        os._exit(130)
+    finally:
+        loop.close()
 
-# %% ../blog/posts/multilabel2/multilabel2.ipynb 29
+# %% ../blog/posts/multilabel2/multilabel2.ipynb 30
+import os
+import fcntl
+
+class FileMutex:
+    def __init__(self, lock_file):
+        self.lock_file = lock_file
+        self.fd = None
+
+    def acquire(self):
+        if not self.lock_file:
+            return
+        self.fd = os.open(self.lock_file, os.O_CREAT)
+        fcntl.flock(self.fd, fcntl.LOCK_EX)
+
+    def release(self):
+        if not self.fd:
+            return
+        fcntl.flock(self.fd, fcntl.LOCK_UN)
+        os.close(self.fd)
+        self.fd = None
+
+    def __enter__(self):
+        self.acquire()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.release()
+
+# %% ../blog/posts/multilabel2/multilabel2.ipynb 33
 from nbdev.export import nb_export
 import ipynbname
 from pathlib import Path
