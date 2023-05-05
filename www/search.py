@@ -113,8 +113,8 @@ def youtube_search(query, max_results=10, detailed=False, safe="off"):
 	return [{'title': result['title'], 'url': result['url'], 'thumbnail': result['thumbnails'][0]} for result in results]
 
 engines = {
-	'ddg': duckduckgo_search,
 	'google': google_search,
+	'ddg': duckduckgo_search,
 	'bing': bing_search,
 	'youtube': youtube_search,
 }

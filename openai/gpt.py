@@ -9,6 +9,7 @@ import logging
 import re
 from typing import Optional, IO
 from argh import dispatch_commands
+import tab
 
 import openai
 
@@ -88,7 +89,14 @@ fake_completion = {
 }
 
 
-def gpt(messages, model=default_model, fake=False):
+def get_model_by_abbrev(model):
+	""" If the model is an abbreviation, expand it. """
+	abbrev_models = [k for k, v in models.items() if v.get("abbrev") == model]
+	if len(abbrev_models) == 1:
+		model = abbrev_models[0]
+	return model
+
+def gpt(messages, model=default_model, fake=False, temperature=1):  # 0.9, max_tokens=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
 	""" Send a list of messages to the model, and return the response. """
 
 	logger.debug("gpt: input: %r", messages)
@@ -115,8 +123,8 @@ def split_message_line(message, allowed_roles=None):
 
 	try:
 		role, message = message.split(":", 1)
-	except ValueError as e:
-		raise ValueError(f"invalid message, missing role: {message}") from e
+	except ValueError as ex:
+		raise ValueError(f"invalid message, missing role: {message}") from ex
 
 	if allowed_roles is not None and role not in allowed_roles:
 		raise ValueError(f"invalid role in message: {role}")
@@ -175,51 +183,46 @@ def messages_to_lines(messages):
 	return lines
 
 
-def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optional[str]=None, model: str=default_model):
+def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optional[str]=None, model: str=default_model, indent="\t"):
 	""" Process some text through GPT with a prompt. """
-	model = get_model_by_abbrev(model)
 	prompt = prompt.rstrip()
 	input_text = inp.read().rstrip()
 	if prompt2:
 		prompt2 = prompt2.rstrip()
 
 	full_input = f"""
-{prompt.rstrip()}
+{prompt}
 
-{input_text.rstrip()}
+{input_text}
 """
 
 	if prompt2:
-		full_input += "\n" + prompt2
+		full_input += "\n" + prompt2 + "\n"
+
+	return query(full_input, out=out, model=model, indent=indent)
+
+
+def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t"):
+	""" Ask GPT a question. """
+
+	model = get_model_by_abbrev(model)
 
 	# TODO use a system message?
 
-	input_message = {"role": "user", "content": full_input}
-
+	input_message = {"role": "user", "content": prompt}
 	output_message = gpt([input_message], model=model)
-
 	content = output_message["content"]
 
-	# TODO fix indentation?
+	# fix indentation for code
+	if indent:
+		lines = content.splitlines()
+		lines = tab.fix_indentation_list(lines, indent)
+		content = "\n".join(lines) + "\n"
 
 	out.write(content)
 
 
-def list_models():
-	""" List the available models. """
-	for model in models:
-		print(model)
-
-
-def get_model_by_abbrev(model):
-	""" If the model is an abbreviation, expand it. """
-	abbrev_models = [k for k, v in models.items() if v.get("abbrev") == model]
-	if len(abbrev_models) == 1:
-		model = abbrev_models[0]
-	return model
-
-
-def chat(inp=stdin, out=stdout, model=default_model, fake=False):
+def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=1):
 	""" The main function, called when this module is run as a script. """
 	model = get_model_by_abbrev(model)
 	input_lines = inp.readlines()
@@ -229,5 +232,11 @@ def chat(inp=stdin, out=stdout, model=default_model, fake=False):
 	out.writelines(output_lines)
 
 
+def list_models():
+	""" List the available models. """
+	for model in models:
+		print(model)
+
+
 if __name__ == "__main__":
-	dispatch_commands([chat, process, list_models])
+	dispatch_commands([query, chat, process, list_models])

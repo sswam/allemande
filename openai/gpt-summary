@@ -1,4 +1,5 @@
 #!/bin/bash
-m=
+# gpt-summary: Summarize text from stdin using ChatGPT
+model=3+
 . opts
-gpt process -m 4 "Please replace this text with a short cogent summary. Only give the summary."
+gpt process -m $model "Please replace this text with a short cogent summary. Only give the summary."
