@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-""" gpt.py: a simple wrapper for the OpenAI ChatGPT API and also Anthropic's Claude """
+""" llm.py: a simple wrapper for the OpenAI ChatGPT API and Anthropic's Claude API """
 
 # TODO create compatible libraries for other APIs in future
+# TODO consider splitting off the OpenAI specific stuff into a separate library
 
 from sys import stdin, stdout
 import os
@@ -34,6 +35,16 @@ models = {
 		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
 		"cost": 0.03,
 	},
+	"claude-v1": {
+		"abbrev": "c",
+		"description": "Anthropic's Claude is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
+		"cost": 0.0,  # at least for now!
+	},
+	"claude-instant-v1": {
+		"abbrev": "i",
+		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
+		"cost": 0.0,  # at least for now!
+	},
 	"gpt-4-32k": {
 		"abbrev": "4+",
 		"description": "Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with our latest model iteration.",
@@ -51,11 +62,6 @@ models = {
 		"description": "Snapshot of gpt-4-32 from March 14th 2023. Unlike gpt-4-32k, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
 		"cost": 0.06,
 	},
-	"claude-v1": {
-		"abbrev": "c",
-		"description": "Anthropic's Claude is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
-		"cost": 0.0  # at least for now!
-	},
 	"claude-v1.0": {
 		"description": "An earlier version of claude-v1.",
 		"cost": 0.0
@@ -66,11 +72,6 @@ models = {
 	},
 	"claude-v1.3": {
 		"description": "A significantly improved version of claude-v1. Compared to claude-v1.2, it's more robust against red-team inputs, better at precise instruction-following, better at code, and better and non-English dialogue and writing.",
-		"cost": 0.0
-	},
-	"claude-instant-v1": {
-		"abbrev": "i",
-		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
 		"cost": 0.0
 	},
 	"claude-instant-v1.0": {
@@ -90,10 +91,10 @@ models = {
 #		"cost": 0,
 #	},
 
-# default is $GPT_MODEL or first model in the dict
+# default is $LLM_MODEL or first model in the dict
 
 first_model = next(iter(models.keys()))
-default_model = os.environ.get("GPT_MODEL", first_model)
+default_model = os.environ.get("LLM_MODEL", first_model)
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
 
@@ -161,7 +162,7 @@ def chat_gpt(messages, model=default_model, temperature=None, token_limit=None):
 		messages=messages
 	)
 
-	logger.debug("gpt: completion: %s", completion)
+	logger.debug("llm: completion: %s", completion)
 
 	output_message = completion['choices'][0]['message']
 
@@ -234,7 +235,7 @@ def messages_to_lines(messages):
 
 
 def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optional[str]=None, model: str=default_model, indent="\t", temperature=None, token_limit=None):
-	""" Process some text through GPT with a prompt. """
+	""" Process some text through the LLM with a prompt. """
 	prompt = prompt.rstrip()
 	input_text = inp.read().rstrip()
 	if prompt2:
@@ -253,7 +254,7 @@ def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optio
 
 
 def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None):
-	""" Ask GPT a question. """
+	""" Ask the LLM a question. """
 
 	model = get_model_by_abbrev(model)
 
@@ -275,7 +276,7 @@ def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t
 
 
 def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None):
-	""" Chat with GPT. """
+	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
 	model = get_model_by_abbrev(model)
 	input_lines = inp.readlines()
 	input_messages = lines_to_messages(input_lines)

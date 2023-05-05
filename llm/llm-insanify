@@ -1,2 +1,4 @@
 #!/bin/bash
-gpt process "Please insanify the following, in the same tense and person as the original."
+m=i
+. opts
+llm process -m $m "Please insanify the following, in the same tense and person as the original."

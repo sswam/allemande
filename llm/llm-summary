@@ -1,5 +1,5 @@
 #!/bin/bash
-# gpt-summary: Summarize text from stdin using ChatGPT
-model=3+
+# llm-summary: Summarize text from stdin using an LLM
+m=3+
 . opts
-gpt process -m $model "Please replace this text with a short cogent summary. Only give the summary."
+llm process -m $m "Please replace this text with a short cogent summary. Only give the summary."
