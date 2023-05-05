@@ -56,3 +56,4 @@ jinja2
 python-multipart
 
 pyjwt
+supabase_py

@@ -30,7 +30,7 @@ MARKDOWN_EXTENSIONS = [
 	# 'meta',
 	'nl2br',
 	'sane_lists',
-	'smarty',
+	# 'smarty',
 	'toc',
 	'wikilinks',
 ]
