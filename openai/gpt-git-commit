@@ -35,6 +35,8 @@ generate-commit-message() {
 		gpt process -m $model 'Please describe this diff, for a git commit message, following the Conventional Commits spec.
 The required format is as follows:
 a very short summary line, preferably around 50 chars, and strictly not more than 70 chars
+Do not invent anything that is not in the diff!
+Only describe the actual changes, lines starting with + and -, not the surrounding context.
 
 - concise info about first change, if needed, not more than 78 chars per line
 - concise info about second change, if any, not more than 78 chars per line
