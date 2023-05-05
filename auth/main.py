@@ -13,10 +13,12 @@ import supabase_py
 import jwt
 import os
 import logging
+import json
 
 from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format="%(message)s")
 load_dotenv()
 
 # Configure Supabase
@@ -39,15 +41,6 @@ class SupabaseAuthBackend(AuthenticationBackend):
         except Exception as e:
             return None
         
-def decode_jwt(token, secret):
-    try:
-        payload = jwt.decode(token, secret, algorithms=["HS256"])
-        logger.info(f"Payload: {payload}")
-        return payload
-    except jwt.InvalidTokenError:
-        logger.info("Invalid token")
-        return None
-
 # Homepage
 # @requires("authenticated", redirect="login")
 async def homepage(request):
@@ -72,10 +65,9 @@ async def login(request):
         email = form.get("email")
         password = form.get("password")
         response = supabase.auth.sign_in(email=email, password=password)
-        logger.info("superbase response %r", response)
-        logger.info("SECRET_KEY: %r", SECRET_KEY)
-        decoded_payload = decode_jwt(response["access_token"], SECRET_KEY)
-        logger.info("decoded jwt: %r", decoded_payload)
+        logger.info("superbase response %s", json.dumps(response, indent=4))
+        decoded = jwt.decode(response["access_token"], SECRET_KEY, algorithms=["HS256"], audience="authenticated", verify=True)
+        logger.info("decoded jwt: %s", json.dumps(decoded, indent=4))
         error = response.get("error")
         if error is None:
             return RedirectResponse(url="/")
