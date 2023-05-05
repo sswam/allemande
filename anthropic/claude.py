@@ -14,7 +14,12 @@ logger = logging.getLogger(__name__)
 
 logging.basicConfig(level=logging.INFO)
 
-max_tokens = 9216
+DEFAULT_TEMPERATURE = 1.0
+TOKEN_LIMIT = 9216
+# TODO does this vary for claude-instant-v1 and other models?
+DEFAULT_MODEL = "claude-v1"
+INSTANT_MODEL = "claude-instant-v1"
+OTHER_MODELS = ["claude-v1.0", "claude-v1.1", "claude-v1.2", "claude-v1.3", "claude-instant-v1.0"]
 
 def count(message, add_prompts=True):
 	""" Count the number of tokens in a message """
@@ -47,17 +52,33 @@ def stream_completion(data, completion, out):
 		print(part, file=out, end="", flush=True)
 	return completion
 
-def complete(message, max_tokens_to_sample: int = 10000, model="claude-v1.3", streaming=False, _async=False):
-	""" Complete a message """
-	prompt=f"{anthropic.HUMAN_PROMPT} {message}{anthropic.AI_PROMPT}"
+def message_to_string(message):
+	""" Convert a message object to a string """
+	if message["role"] in ["system", "user"]:
+		prompt = anthropic.HUMAN_PROMPT
+	elif message["role"] == "assistant":
+		prompt = anthropic.AI_PROMPT
+	else:
+		raise ValueError(f"unknown role: {message['role']}")
+	return f"{prompt} {message['content']}"
+
+def chat_claude(messages, model=None, token_limit: int = None, temperature=None, streaming=False, _async=False):
+	if model is None:
+		model = DEFAULT_MODEL
+	if token_limit is None:
+		token_limit = TOKEN_LIMIT
+	if temperature is None:
+		temperature = DEFAULT_TEMPERATURE
+	message_strings = map(message_to_string, messages)
+	prompt = "".join(message_strings) + anthropic.AI_PROMPT
 	prompt_tokens = anthropic.count_tokens(prompt)
-	max_possible_tokens_to_sample = max_tokens - prompt_tokens
+	max_possible_tokens_to_sample = TOKEN_LIMIT - prompt_tokens
 	if max_possible_tokens_to_sample <= 0:
 		logger.warning("Prompt is too long: %d tokens", prompt_tokens)
 		return ""
-	if max_tokens_to_sample > max_possible_tokens_to_sample:
-		max_tokens_to_sample = max_possible_tokens_to_sample
-		logger.debug("Reducing max_tokens_to_sample to %d", max_tokens_to_sample)
+	if token_limit > max_possible_tokens_to_sample:
+		token_limit = max_possible_tokens_to_sample
+		logger.debug("Reducing token_limit to %d", token_limit)
 	c = anthropic.Client(os.environ["ANTHROPIC_API_KEY"])
 	fn = c.completion_stream if streaming else c.completion
 	if _async:
@@ -68,54 +89,59 @@ def complete(message, max_tokens_to_sample: int = 10000, model="claude-v1.3", st
 		prompt=prompt,
 		stop_sequences=[anthropic.HUMAN_PROMPT],
 		model=model,
-		max_tokens_to_sample=max_tokens_to_sample,
+		max_tokens_to_sample=token_limit,
 		streaming=streaming,
+		temperature=temperature,
 	)
 	return response
 
-def query(message, max_tokens_to_sample: int = 10000, model="claude-v1.3", debug=False):
-	""" Syncronous access to the anthropic API """
-	if debug:
-		logging.basicConfig(level=logging.DEBUG)
-	response = complete(message, max_tokens_to_sample=max_tokens_to_sample, model=model)
-	return response_completion(response)
+def complete(message, **kwargs):
+	""" Complete a message """
+	messages = [ { "role": "user", "content": message, }, ]
+	return chat_claude(messages, **kwargs)
 
-def stream(message, max_tokens_to_sample: int = 10000, model="claude-v1.3", out=sys.stdout, debug=False):
-	""" Streaming access to the anthropic API """
-	if debug:
-		logging.basicConfig(level=logging.DEBUG)
-	response = complete(message, max_tokens_to_sample=max_tokens_to_sample, model=model, streaming=True)
-	completion = ""
-	for data in response:
-		completion = stream_completion(data, completion, out)
-	# return completion
-
-async def async_query(message, max_tokens_to_sample: int = 10000, model="claude-v1.3", debug=False):
+async def async_query(message, debug=False, **kwargs):
 	""" Asyncronous access to the anthropic API """
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
-	response = await complete(message, max_tokens_to_sample=max_tokens_to_sample, model=model, _async=True)
+	response = await complete(message, _async=True, **kwargs)
 	return response_completion(response)
 
-async def async_stream(message, max_tokens_to_sample: int = 10000, model="claude-v1.3", out=sys.stdout, debug=False):
+async def async_stream(message, out=sys.stdout, debug=False, **kwargs):
 	""" Asyncronous streaming access to the anthropic API """
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
-	response = await complete(message, max_tokens_to_sample=max_tokens_to_sample, model=model, streaming=True, _async=True)
+	response = await complete(message, streaming=True, _async=True, **kwargs)
 	completion = ""
 	async for data in response:
 		completion = stream_completion(data, completion, out)
 	# return completion
 
-def aquery(message, max_tokens_to_sample: int = 10000, model="claude-v1.3", debug=False):
+def query(message, model=DEFAULT_MODEL, debug=False, token_limit: int = TOKEN_LIMIT, temperature=DEFAULT_TEMPERATURE):
+	""" Syncronous access to the anthropic API """
+	if debug:
+		logging.basicConfig(level=logging.DEBUG)
+	response = complete(message, model=model, token_limit=token_limit, temperature=temperature)
+	return response_completion(response)
+
+def stream(message, model=DEFAULT_MODEL, out=sys.stdout, debug=False, token_limit: int = TOKEN_LIMIT, temperature=DEFAULT_TEMPERATURE):
+	""" Streaming access to the anthropic API """
+	if debug:
+		logging.basicConfig(level=logging.DEBUG)
+	response = complete(message, model=model, token_limit=token_limit, streaming=True, temperature=temperature)
+	completion = ""
+	for data in response:
+		completion = stream_completion(data, completion, out)
+	# return completion
+
+def aquery(message, model=DEFAULT_MODEL, debug=False, token_limit: int = TOKEN_LIMIT, temperature=DEFAULT_TEMPERATURE):
 	""" Asyncronous access to the anthropic API - argh wrapper """
-	response = asyncio.run(async_query(message, max_tokens_to_sample=max_tokens_to_sample, model=model, debug=debug))
+	response = asyncio.run(async_query(message, model=model, debug=debug, token_limit=token_limit, temperature=temperature))
 	return response
 
-def astream(message, max_tokens_to_sample: int = 10000, model="claude-v1.3", out=sys.stdout, debug=False):
+def astream(message, model=DEFAULT_MODEL, out=sys.stdout, debug=False, token_limit: int = TOKEN_LIMIT, temperature=DEFAULT_TEMPERATURE):
 	""" Asyncronous streaming access to the anthropic API - argh wrapper """
-	response = asyncio.run(async_stream(message, max_tokens_to_sample=max_tokens_to_sample, model=model, out=out, debug=debug))
-	return response
+	asyncio.run(async_stream(message, model=model, out=out, debug=debug, token_limit=token_limit, temperature=temperature))
 
 if __name__ == "__main__":
 	argh.dispatch_commands([query, stream, aquery, astream, count])
