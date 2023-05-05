@@ -72,8 +72,8 @@ if [ -n "$model" ]; then
 fi
 
 cleanup-and-exit() {
-	if type move-to-rubbish >/dev/null 2>&1; then
-		move-to-rubbish "$file" "$review" 2>/dev/null
+	if type move-rubbish >/dev/null 2>&1; then
+		move-rubbish "$file" "$review" 2>/dev/null
 	else
 		rm -f "$file" "$review"
 	fi
