@@ -1,0 +1,7 @@
+#!/bin/bash
+# i3-tree-simple: print the layout of the current i3 tree simply
+i3-msg -t get_tree |
+jq '
+	def simplify: {type, name} + if (.nodes | length) > 0 then {nodes: (.nodes | map(simplify)?)} else {} end;
+	simplify
+'
