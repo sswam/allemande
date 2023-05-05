@@ -36,8 +36,8 @@ generate-commit-message() {
 The required format is as follows:
 a very short summary line, preferably around 50 chars, and strictly not more than 70 chars
 
-- concise info about first change, not more than 78 chars per line
-- concise info about second change, not more than 78 chars per line
+- concise info about first change, if needed, not more than 78 chars per line
+- concise info about second change, if any, not more than 78 chars per line
 - and so on
 ' |
 	fmt -s -w 78 -g 78 > "$file"
