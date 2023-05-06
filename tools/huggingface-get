@@ -31,6 +31,8 @@ repo="${url#https://huggingface.co}"
 base=$(basename "$repo")
 dir=$(dirname "${repo#/}")
 
+nt "$base"
+
 if [ "$repo" = "$url" ]; then
 	echo >&2 "error: not a huggingface.co url: $url"
 	exit 1

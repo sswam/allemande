@@ -1,3 +1,1 @@
-#!/bin/bash
-# nt: set the terminal title
-echo -n $'\x1b]0;'"$*"$'\x07'
+name-terminal
