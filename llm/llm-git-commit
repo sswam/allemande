@@ -14,7 +14,7 @@ usage() {
 	echo "  -h: show this help message"
 }
 
-while getopts "34cimeh" opt; do
+while getopts "34cim:eh" opt; do
 	case "$opt" in
 	3 ) model="3+";;
 	4 ) model="4";;

@@ -149,12 +149,7 @@ let new_hash;
 let new_title;
 
 function query_to_title(query) {
-	let new_title = $title.innerText;
-	new_title = new_title.replace(/.* - |^/, '');
-	if (query != '') {
-		new_title = query + ' - ' + new_title;
-	}
-	return new_title;
+	return query;
 }
 
 function set_title_hash(query) {

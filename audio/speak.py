@@ -283,7 +283,7 @@ def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play
 	if text:
 		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, lock=lock)
 	else:
-		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
+		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, lock=lock)
 
 if __name__ == "__main__":
 	dispatch_command(speak)

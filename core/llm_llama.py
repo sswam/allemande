@@ -32,7 +32,7 @@ def prog_info():
 prog = prog_info()
 
 ports_dir = Path(os.environ["ALLEMANDE_PORTS"])/prog.name
-models_dir = Path(os.environ["ALLEMANDE_MODELS"])
+models_dir = Path(os.environ["ALLEMANDE_MODELS"])/"llm"
 
 
 def load_model(model_path, device_map="auto"):
@@ -188,10 +188,10 @@ def setup_logging(verbose, debug):
 	logging.basicConfig(level=log_level, format=fmt)
 
 
-def main(ports=str(ports_dir), model=str(models_dir/"llm/point-alpaca"), verbose=False, debug=False):
+def main(ports=str(ports_dir), model="default", verbose=False, debug=False):
 	""" main function """
 	setup_logging(verbose, debug)
-	the_model = load_model(model) if model else None
+	the_model = load_model(models_dir/model) if model else None
 	fn = partial(gen, model=the_model)
 	serve_requests(ports, fn)
 

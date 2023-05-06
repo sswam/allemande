@@ -468,7 +468,7 @@ def get_opts():
 
 	model_group = parser.add_argument_group("Model options")
 	model_group.add_argument("--port", "-p", default=default_port, help="Path to port directory")
-	model_group.add_argument("--model", "-m", default="alpaca", help="Model name or path")
+	model_group.add_argument("--model", "-m", default="default", help="Model name or path")
 	model_group.add_argument("--config", "-c", default=None, help="Model config file, in YAML format")
 	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
 	model_group.add_argument("--bytes", "-8", action="store_true", help="Load in 8-bit mode, to save GPU memory")
@@ -528,10 +528,9 @@ def main():
 		if len(abbrev_models) == 1:
 			args.model = abbrev_models[0]
 
-		model_dir = prog_dir()/".."/"models"/"llm"
-		model_path = Path(args.model)
-		if not model_path.is_absolute():
-			model_path = Path(model_dir) / model_path
+		models_dir = Path(os.environ["ALLEMANDE_MODELS"])/"llm"
+		# model_dirs = prog_dir()/".."/"models"/"llm"
+		model_path = Path(models_dir) / args.model
 		model.tokenizer = load_tokenizer(model_path)
 	else:
 		model.tokenizer = None

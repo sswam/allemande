@@ -16,7 +16,9 @@ JOBS := server_start server_stop home server default run-i3 run frontend backend
 	install install-dev uninstall cleanup i3-layout
 
 
-default: server_start home
+default: home
+
+all: server_start home
 
 
 server_start:
@@ -74,7 +76,7 @@ cleanup:
 	> watch.log
 
 llm:
-	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py
+	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py -m $(LLM_MODEL)
 
 whisper:
 	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py

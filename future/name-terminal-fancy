@@ -1,0 +1,35 @@
+#!/bin/bash
+# nt: name-terminal: set the terminal title
+
+set_screen_window=
+include_screen_name_in_title=
+
+while getopts s12 opt; do
+    case $opt in
+	s) set_screen_window=1;;
+	1) include_screen_name_in_title=1 ;;
+	2) include_screen_name_in_title=2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+window_title="$*"
+
+if [ -n "$STY" -a "$set_screen_window" = 1 ]; then
+	screen -X title "$window_title"
+fi
+
+screen_name=${STY#*.}
+
+if [ -n "$STY" -a "$include_screen_name_in_title" = 1 ]; then
+	tty_title="$screen_name: $window_title"
+elif [ -n "$STY" -a "$include_screen_name_in_title" = 2 ]; then
+	tty_title="$window_title - $screen_name"
+else
+	tty_title="$window_title"
+fi
+
+# set terminal title
+if [ -n "$DISPLAY" ]; then
+	echo -n $'\x1b]0;'"$tty_title"$'\x07' # >/dev/tty
+fi
