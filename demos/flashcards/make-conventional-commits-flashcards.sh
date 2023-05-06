@@ -1,0 +1,1 @@
+w3m -dump https://www.conventionalcommits.org/en/v1.0.0/ | llm-flashcards -adj="brilliant quality" -user="an advanced programmer and Linux user" -topic="Conventional Commits" -types="concepts, terms, best practices, and other topics"
