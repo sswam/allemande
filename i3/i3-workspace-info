@@ -9,7 +9,7 @@ while getopts "nh" opt; do
 			;;
 		h)
 			echo "Usage: $0 [-n|-h]"
-			echo "  -n: get just the name of the workspace"
+			echo "  -n: show just the name of the workspace"
 			echo "  -h: show this help"
 			exit 0
 			;;
