@@ -77,20 +77,20 @@ audio-clean.txt: audio.txt
 	< $< perl -pe 's/♪//g' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
 
 summary.txt: transcript.txt
-	< $< gpt-summary -m="$m" > $@
+	< $< llm-summary -m="$m" > $@
 
 name.txt: transcript.txt title-clean.txt
 	if [ -n "$(name)" ] ; then \
 		echo "$(name)" > $@ ; \
 	else \
-		< $< gpt process -m "$m" "Please respond with a short name for this article / video transcript. The given title was `<title-clean.txt`:" --prompt2 "Respond with just a short name for the above article." > $@ ; \
+		< $< llm process -m "$m" "Please respond with a short name for this article / video transcript. The given title was `<title-clean.txt`:" --prompt2 "Respond with just a short name for the above article." > $@ ; \
 	fi
 
 topic.txt: transcript.txt
-	< $< gpt-topic -m="$m" > $@
+	< $< llm-topic -m="$m" > $@
 
 flashcards-1.txt: transcript.txt
-	< $< gpt-flashcards -m="$m" > $@
+	< $< llm-flashcards -m="$m" > $@
 
 flashcards.txt: flashcards-1.txt
 	(< $< grep -v '^$$' | sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single-blank-lines.pl > $@
@@ -105,8 +105,8 @@ prompt-transcript.txt: audio-clean.txt correct.prompt
 	CONTENT=`< $<` shell-template.sh correct.prompt > $@
 
 transcript.txt: prompt-transcript.txt title-clean.txt
-	# < $< gpt process -m "$(m0)" "This is an audio transcript made using AI speech recognition software. There are likely transcription errors. Please reply with the carefully corrected transcript. The topic is `<title-clean.txt`" > $@
-	# < $< gpt process -m "$(m0)" "Please reply with just the corrected transcript. The proper title of the video is `<title-clean.txt`" > $@
+	# < $< llm process -m "$(m0)" "This is an audio transcript made using AI speech recognition software. There are likely transcription errors. Please reply with the carefully corrected transcript. The topic is `<title-clean.txt`" > $@
+	# < $< llm process -m "$(m0)" "Please reply with just the corrected transcript. The proper title of the video is `<title-clean.txt`" > $@
 	cp audio-clean.txt $@
 
 transcript.md: transcript.txt
@@ -122,7 +122,7 @@ search-lyrics.txt: search-lyrics-query.txt
 	search -e $(SEARCH) "`< search-lyrics-query.txt`" >$@
 
 lyrics-url.txt: search-lyrics.txt name.txt
-	< $< gpt process -m "$m" "Please reply with just the best URL to get lyrics or a transcript for `<name.txt`, based on these search results or your knowledge. If nothing looks promising, just reply 'about:blank'." > $@
+	< $< llm process -m "$m" "Please reply with just the best URL to get lyrics or a transcript for `<name.txt`, based on these search results or your knowledge. If nothing looks promising, just reply 'about:blank'." > $@
 
 lyrics.html: lyrics-url.txt
 	wg "`< $<`" -O- >$@ || true
@@ -144,7 +144,7 @@ lyrics.txt: prompt-lyrics.txt name.txt
 	if [ ! -s $< ]; then \
 		echo "No lyrics found." ; > $@ ; \
 	else \
-		< $< gpt process -m "$m" "Please reply with just the lyrics or transcript for `<name.txt`, based on the page `<lyrics-url.txt`." > $@ ; \
+		< $< llm process -m "$m" "Please reply with just the lyrics or transcript for `<name.txt`, based on the page `<lyrics-url.txt`." > $@ ; \
 	fi
 
 post.txt: title.txt url.txt name.txt topic.txt summary.txt flashcards.txt transcript.txt # lyrics.txt

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# gpt_pp: preprocess chatgpt conversations, to clean them up
+# llm-pp: preprocess LLM conversations, to clean them up
 
 # example usage with input and output:
 
@@ -25,7 +25,7 @@ assistant:	okay I'll do it...
 	Summary: The princess was cursed by a wicked witch and fell into an unbreakable sleep.
 """
 
-# gpt_pp: preprocess chatgpt conversations
+# llm-pp: preprocess LLM conversations
 
 import os
 import sys
@@ -35,12 +35,12 @@ def eprint(*args, **kwargs):
 	print(*args, file=sys.stderr, **kwargs)
 
 def preprocess(file):
-	user = os.environ.get('GPT_USER', os.getlogin()).lower()
+	user = os.environ.get('LLM_USER', os.getlogin()).lower()
 	User = user.title()
 
-	assistant_labels = ['ai', 'assistant', 'chatgpt', 'gpt', 'bot']
+	assistant_labels = ['ai', 'assistant', 'chatgpt', 'gpt', 'gpt4', 'gpt-4', 'bot', 'robot', 'claude', 'claude-instant', 'instant']
 	user_labels = ['user', user]
-	system_labels = ['system', 'sys']
+	system_labels = ['system', 'sys', 'mission', 'scenario']
 	warn_unknown_labels = True
 
 	first_line = True   # to flag, whether the first line has a label or not

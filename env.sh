@@ -26,7 +26,7 @@ for dir in py text chat anthropic; do
 	PYTHONPATH=$PYTHONPATH:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code openai anthropic web chat voice-chat eg www html i3; do
+for dir in adm core sys tools text data image audio video code llm openai anthropic web chat voice-chat eg www html i3; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 

@@ -21,6 +21,6 @@ Here is the function we are summarizing:
 Please give a summary of that function $func_name for the ODD, starting with a level-3 heading being just the function name, i.e. ### $func_name
 "
 
-echo "$input" | gpt process -m $m "$prompt1"
+echo "$input" | llm process -m $m "$prompt1"
 echo
 echo
