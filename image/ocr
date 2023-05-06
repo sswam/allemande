@@ -54,4 +54,4 @@ $prompt1
 EOF
 `
 
-< "$input.ocr.txt" $v gpt process -m"$m" "$prompt1" --prompt2 "$prompt2" > "$output"
+< "$input.ocr.txt" $v llm process -m"$m" "$prompt1" --prompt2 "$prompt2" > "$output"
