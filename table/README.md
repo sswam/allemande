@@ -9,3 +9,6 @@ project idea:
 - datatable user script, add datatable to existing tables in any website
 	- or browser extension
 - AI tools using tabular format
+- immediate applications:
+	- tables and graphs of project tasks
+	- tables and graphs of AI models
