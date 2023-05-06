@@ -62,3 +62,41 @@ input, textarea { padding: 2px; }
 .attached {
 	overflow: hidden;
 }
+button, input, textarea, iframe {
+	border-radius: 6px;
+}
+
+
+
+// default colours
+
+
+
+body#app {
+	background: white;
+	color: black;
+}
+
+input, textarea, button {
+	background: #eee;
+	color: black;
+}
+
+input, textarea, button, iframe {
+	border: 1px solid #999;
+}
+
+input:focus, textarea:focus, iframe:focus {
+	outline: none;
+	background: #ddd;
+}
+
+button {
+	background: #aaa;
+	color: black;
+}
+
+button:hover, button:focus {
+	outline: none;
+	background: #888;
+}

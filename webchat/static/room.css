@@ -2,12 +2,16 @@
 	box-sizing: border-box;
 	font-family: helvetica, arial, sans-serif;
 }
-body, html {
+html, body {
 	width: 100%;
 	height: 100%;
-	margin: 0;
+	margin: 0.5em;
 	padding: 0;
-	padding: 0.5em;
+	margin: 0;
+}
+div.messages {
+	margin: 1em 1em 0 1em;
+	padding-bottom: 0.5em;
 }
 .label {
 	margin-right: 1em;
@@ -35,4 +39,15 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin: 4px;
 	max-width: 75vw;
 	max-height: 75vh;
+}
+
+
+
+// default colours
+
+
+
+body#messages, input, textarea {
+	background: #aaa;
+	color: black;
 }
