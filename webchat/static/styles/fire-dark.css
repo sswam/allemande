@@ -1,0 +1,60 @@
+* {
+	color: black;
+}
+
+body#app {
+	background: #801100;
+}
+
+body#messages, input, textarea {
+	background: #fac000;
+}
+
+input, textarea, button, iframe {
+	background: #ff7500;
+	border: 1px solid black;
+}
+
+input:focus, textarea:focus, iframe:focus {
+	background: #fc6400;
+}
+
+button {
+	background: #d73502;
+	color: white;
+}
+
+button:hover, button:focus {
+	background: #b62203;
+}
+
+
+/* 
+outer frame
+message background
+input background
+input focus
+button
+button focus
+borders
+text
+*/
+
+
+/* TODO check the following: */
+
+/*
+
+*:disabled { color: grey; }
+.message.me > .name { color: lightgreen; }
+a:link { color: lightblue; }
+a:visited { color: pink; }
+
+*/
+
+
+
+/*
+body, textarea, input, button { font-size: x-large; }
+.content_input { height: 1.5em; }
+*/

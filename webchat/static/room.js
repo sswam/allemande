@@ -14,6 +14,10 @@ function get_status_element() {
 	return status;
 }
 
+function reload() {
+	window.location.reload();
+}
+
 function online() {
 	clearTimeout(timeout);
 	timeout = setTimeout(offline, 1000 * timeout_seconds);
@@ -24,6 +28,7 @@ function online() {
 function offline() {
 	const status = get_status_element();
 	status.innerText = '🔴';
+	document.addEventListener('mouseenter', reload)
 }
 
 function ready_state_change() {

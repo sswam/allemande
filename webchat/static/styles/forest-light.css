@@ -1,0 +1,48 @@
+:root {
+	--col0: white;
+	--col1: #0aeb9f;
+	--col2: #039660;
+	--col3: #026641;
+	--col4: #014421;
+	--col5: #002d0b;
+	--col6: #001800;
+	--col7: black;
+
+	--frame: var(--col1);
+	--input: var(--col2);
+	--focus: var(--col3);
+	--background: var(--col4);
+	--button: var(--col5);
+	--button-focus: var(--col6);
+	--border: var(--col7);
+	--text: var(--col7);
+}
+
+*, input, textarea, button {
+	color: var(--text);
+}
+
+body#app {
+	background: var(--frame);
+}
+
+body#messages {
+	background: var(--background);
+}
+
+input, textarea, button, iframe {
+	background: var(--input);
+	border: 1px solid var(--border);
+}
+
+input:focus, textarea:focus, iframe:focus {
+	background: var(--focus);
+}
+
+button {
+	background: var(--button);
+}
+
+button:hover, button:focus {
+	background: var(--button-focus);
+}

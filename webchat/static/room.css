@@ -41,6 +41,13 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	max-height: 75vh;
 }
 
+table {
+	border-collapse: collapse;
+}
+table, th, td {
+	border: 1px solid var(--col4);
+}
+
 
 
 // default colours

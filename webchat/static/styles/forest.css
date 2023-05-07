@@ -1,0 +1,45 @@
+:root {
+	--green1: #001800;
+	--green2: #002d0b;
+	--green3: #014421;
+	--green4: #026641;
+	--green5: #039660;
+
+	--text: white;
+	--border: black;
+	--frame: black;
+	--background: var(--green1);
+	--input: var(--green2);
+	--focus: var(--green3);
+	--button: var(--green4);
+	--button-focus: var(--green5);
+}
+
+*, input, textarea, button {
+	color: var(--text);
+}
+
+body#app {
+	background: var(--frame);
+}
+
+body#messages {
+	background: var(--background);
+}
+
+input, textarea, button, iframe {
+	background: var(--input);
+	border: 1px solid var(--border);
+}
+
+input:focus, textarea:focus, iframe:focus {
+	background: var(--focus);
+}
+
+button {
+	background: var(--button);
+}
+
+button:hover, button:focus {
+	background: var(--button-focus);
+}

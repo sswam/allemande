@@ -20,7 +20,7 @@ body, textarea {
 .hidden {
 	display: none;
 }
-input, textarea { padding: 2px; }
+input, textarea { padding: 4px; }
 .content_input {
 	height: 3em;
 	min-height: 1em;
@@ -64,6 +64,10 @@ input, textarea { padding: 2px; }
 }
 button, input, textarea, iframe {
 	border-radius: 6px;
+}
+
+button {
+	font-size: 1.2rem;
 }
 
 

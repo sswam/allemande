@@ -1,34 +1,47 @@
+* {
+	color: black;
+}
+
 body#app {
-	background: black;
-	color: white;
+	background: white;
 }
 
 body#messages, input, textarea {
-	background: midnightblue;
-	color: white;
+	background: #aaa;
 }
 
 input, textarea, button, iframe {
-	border: 1px solid cyan;
+	background: #eee;
+	border: 1px solid #999;
 }
 
 input:focus, textarea:focus, iframe:focus {
-	background: #339;
+	background: #ddd;
 }
 
 button {
-	background: blue;
-	color: white;
+	background: #aaa;
 }
 
 button:hover, button:focus {
-	background: #55f;
+	background: #888;
 }
 
 
-/* TODO fix these */
+/* TODO check the following: */
+
+/*
 
 *:disabled { color: grey; }
 .message.me > .name { color: lightgreen; }
 a:link { color: lightblue; }
 a:visited { color: pink; }
+
+*/
+
+
+
+/*
+body, textarea, input, button { font-size: x-large; }
+.content_input { height: 1.5em; }
+*/
