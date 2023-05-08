@@ -63,6 +63,36 @@ button:hover, button:focus {
 	background: var(--background);
 }
 
+/* light mode / dark mode default colours, avoid flash of white or black */
+
+@media (prefers-color-scheme: light) {
+	:root {
+		/* gradient.py --css 1 .5 8 */
+		--col0: #ff0000;
+		--col1: #ededed;
+		--col2: #dbdbdb;
+		--col3: #c9c9c9;
+		--col4: #b6b6b6;
+		--col5: #a4a4a4;
+		--col6: #929292;
+		--col7: #808080;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		/* gradient.py --css 0 .5 8 */
+		--col0: #00ff00;
+		--col1: #121212;
+		--col2: #242424;
+		--col3: #363636;
+		--col4: #494949;
+		--col5: #5b5b5b;
+		--col6: #6d6d6d;
+		--col7: #808080;
+	}
+}
+
 /* default color mappings for a gradient theme */
 
 :root {
