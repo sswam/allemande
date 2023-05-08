@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
-# gradient.py: generate a gradient of colors
+
+"""
+gradient.py: generate a gradient of colors
+
+Accepts colors in the following formats:
+	- hex code: #000000
+	- rgb code: rgb(255,0,0)
+	- single channel float: 1.0
+	- single channel int: 255
+	- rgba hex code: #00000000
+	- rgba code: rgba(0,255,0,0)
+"""
 
 import sys
 import numpy as np
@@ -39,7 +50,7 @@ def to_rgb(x):
 	if re.match(r'\s*[\d.]+$', x):
 		t = float(x)
 		if "." not in x:
-			t = x / 256
+			t = t / 256
 		return (t, t, t)
 	if re.match(r'\s*[\d.]+\s*(,\s*[\d.]+\s*){2,3}$', x):
 		t = map(float, x.split(','))
@@ -53,7 +64,7 @@ def gradient(start, end, steps, out=sys.stdout, css=False):
 		print(f"\t/* gradient.py --css {start} {end} {steps} */", file=out)
 
 	start, end = map(to_rgb, (start, end))
-	steps = 8
+	steps = int(steps)
 
 	a0, a1 = map(np.array, (start, end))
 
@@ -85,4 +96,6 @@ def test_gradient():
 """
 
 if __name__ == '__main__':
-	argh.dispatch_command(gradient)
+	parser = argh.ArghParser(description=__doc__)
+	parser.set_default_command(gradient)
+	argh.dispatch(parser)
