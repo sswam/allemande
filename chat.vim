@@ -76,11 +76,15 @@ augroup END
 
 " Enable autoread for all files
 
-call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
-Plug 'djoshea/vim-autoread'
-call plug#end()
+function! AllemandeAutoread()
+	call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
+	Plug 'djoshea/vim-autoread'
+	call plug#end()
 
-set autoread
+	set autoread
 
-source ~/.local/share/nvim/plugged/vim-autoread/plugin/autoread.vim
-execute WatchForChanges('*', {'autoread': 1})
+	source ~/.local/share/nvim/plugged/vim-autoread/plugin/autoread.vim
+	execute WatchForChanges('*', {'autoread': 1})
+endfunction
+
+command! -nargs=0 AllemandeAutoread call AllemandeAutoread()
