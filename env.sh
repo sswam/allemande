@@ -1,8 +1,11 @@
 # set environment variables and paths for Allemande AI toolkit
 
+set -a
+
 ALLEMANDE_ENV=$(realpath "${BASH_SOURCE[0]}")
 ALLEMANDE_HOME=$(dirname "$ALLEMANDE_ENV")
-ALLYCHAT_HOME="$ALLEMANDE_HOME/allychat"
+ALLYCHAT_HOME="$ALLEMANDE_HOME/webchat"
+ALLYCHAT_THEMES="$ALLYCHAT_HOME/static/themes"
 
 ALLEMANDE_MODELS="$ALLEMANDE_HOME/models"
 
