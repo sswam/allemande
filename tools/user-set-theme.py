@@ -13,7 +13,9 @@ def set_theme(user, theme):
 	home = os.environ['ALLYCHAT_HOME']
 	os.chdir(home)
 
-	target = Path("..")/".."/"static"/"themes"/(theme + ".css")
+	if not theme.endswith(".css"):
+		theme += ".css"
+	target = Path("..")/".."/"static"/"themes"/theme
 	link = Path("users")/user/"theme.css"
 	link.unlink(missing_ok=True)
 	link.symlink_to(target)

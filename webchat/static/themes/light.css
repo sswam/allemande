@@ -1,11 +1,10 @@
 :root {
-	/* gradient.py --css 1. 0.5 8 */
-	--col0: #ffffff;
-	--col1: #ededed;
-	--col2: #dbdbdb;
-	--col3: #c9c9c9;
-	--col4: #b6b6b6;
-	--col5: #a4a4a4;
-	--col6: #929292;
-	--col7: #808080;
+	--text: black;
+	--border: #999;
+	--frame: white;
+	--input: #eee;
+	--focus: #ddd;
+	--background: #aaa;
+	--button: #eee;
+	--button-focus: #888;
 }
