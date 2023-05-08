@@ -2,6 +2,7 @@
 
 ALLEMANDE_ENV=$(realpath "${BASH_SOURCE[0]}")
 ALLEMANDE_HOME=$(dirname "$ALLEMANDE_ENV")
+ALLYCHAT_HOME="$ALLEMANDE_HOME/allychat"
 
 ALLEMANDE_MODELS="$ALLEMANDE_HOME/models"
 
@@ -22,7 +23,7 @@ fi
 
 PYTHON=$(which python3)
 
-for dir in py text chat anthropic; do
+for dir in py text chat anthropic www; do
 	PYTHONPATH=$PYTHONPATH:$ALLEMANDE_HOME/$dir
 done
 
