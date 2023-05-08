@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" electric barbarella v3 - chat app """
+""" electric barbarella v4 - chat app """
 
 import os
 import time
@@ -14,10 +14,11 @@ import readline
 from types import SimpleNamespace
 
 import yaml
-import regex
 
 import ucm
 import ports
+import conductor
+import search
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # pylint: disable=wrong-import-position, wrong-import-order
@@ -42,6 +43,22 @@ first_model = next(iter(models.keys()))
 default_model = os.environ.get("BB_MODEL", first_model)
 
 default_file_extension = "bb"
+
+AGENTS = {}
+
+def register_search_agents():
+	""" Register search agents """
+	for engine in search.engines:
+		box = (engine,)
+		AGENTS[engine] = {
+			"fn": lambda query, **kwargs: search.search(query, engine=box[0], markdown=True, **kwargs),
+			"type": "tool",
+		}
+
+def register_agents():
+	""" Register agents """
+	register_search_agents()
+	# TODO Moar!
 
 def load_tokenizer(model_path: Path):
 	""" Load the Llama tokenizer """
@@ -70,7 +87,8 @@ def trim_response(response, args):
 		response = " " + response.strip()
 	return response
 
-def fix_indentation(response, args):
+def fix_indentation(response, _args):
+	""" Fix the indentation of the response. """
 	lines = response.split("\n")
 	for i in range(1, len(lines)):
 #		if ":" in lines[i]:
@@ -239,33 +257,6 @@ def history_write(file, history, delim="\n", mode="a", invitation=""):
 	with open(file, mode, encoding="utf-8") as f:
 		f.write(text)
 
-regex_name = r"^[\p{L}\p{M}']+([\p{Zs}\-][\p{L}\p{M}']+)*$"
-
-def get_roles_from_history(history, args):
-	""" Get the roles from the history. """
-	def get_role(history, i=None, not_equal_to=None):
-		if i is None:
-			i = len(history) - 1
-		while i > 0:
-			if ":" in history[i]:
-				role = history[i].split(":")[0]
-				if role and regex.match(regex_name, role) and role != not_equal_to:
-					return role, i - 1
-			i -= 1
-		return None, i
-
-	hist_user, i = get_role(history, not_equal_to=args.bot)
-	if hist_user:
-		args.user = hist_user
-	logger.info("user: %r, i: %r", args.user, i)
-	hist_bot, i = get_role(history, i=i, not_equal_to=args.user)
-	if hist_bot:
-		args.bot = hist_bot
-	logger.info("bot: %r, i: %r", args.bot, i)
-
-	logger.info("user: %r", args.user)
-	logger.info("bot: %r", args.bot)
-
 def interactive(model, args):
 	""" Interactive chat with the model. """
 	history = history_read(args.file, args)
@@ -277,8 +268,15 @@ def interactive(model, args):
 		print(message + args.delim, end="")
 
 	# get latest user name and bot name from history
-	if not args.raw:
-		get_roles_from_history(history, args)
+	# XXX this is unreliable!
+	if args.raw:
+		pass
+	elif args.get_roles_from_history:
+		args.user, args.bot = conductor.get_roles_from_history(history, args.user, args.bot)
+	else:
+		# use conductor
+		# TODO !!!!!!!!
+		pass
 
 	try:
 		chat_loop(model, args, history)
@@ -296,9 +294,17 @@ def process_file(model, file, args, history_start=0):
 	if args.require and history and history[-1].rstrip().endswith(args.require):
 		return
 
+
 	# get latest user name and bot name from history
-	if not args.raw:
-		get_roles_from_history(history, args)
+	# XXX this is unreliable!
+	if args.raw:
+		pass
+	elif args.get_roles_from_history:
+		args.user, args.bot = conductor.get_roles_from_history(history, args.user, args.bot)
+	else:
+		# use conductor
+		# TODO !!!!!!!!
+		pass
 
 	invitation = args.delim + args.bot + ":" if args.bot else ""
 	human_invitation = args.delim + args.user + ":" if args.user else ""
@@ -352,7 +358,7 @@ def find_files(folder, ext=None, maxdepth=inf):
 	except (PermissionError, FileNotFoundError) as e:
 		logger.warning("find_files: %r", e)
 
-stats_null = type("stats_null", (object,), {"st_mtime": -1, "st_size": 0})
+stats_null = type("stats_null", (object,), {"st_mtime": inf, "st_size": 0})
 
 def watch_step(model, args, stats):
 	""" Watch a directory for changes, one step. """
@@ -373,7 +379,7 @@ def watch_step(model, args, stats):
 		try:
 			stats0 = stats.get(file, stats_null)
 			stats1 = os.stat(file)
-	
+
 			if first:
 				stats[file] = stats1
 				continue
@@ -456,6 +462,7 @@ def get_opts():
 	names_group.add_argument("--user", "-u", default=default_user(), help="User name")
 	names_group.add_argument("--bot", "-b", default=default_bot(), help="Bot name")
 	names_group.add_argument("--raw", "-r", action="store_true", help="Don't auto-add names, free-form mode")
+	names_group.add_argument("--get-roles-from-history", "-H", action="store_true", help="Get user and bot names from history file")
 
 	format_group = parser.add_argument_group("Format options")
 	format_group.add_argument("--delim", default="\n\n", help="Delimiter between messages")
@@ -473,6 +480,12 @@ def get_opts():
 	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
 	model_group.add_argument("--bytes", "-8", action="store_true", help="Load in 8-bit mode, to save GPU memory")
 	model_group.add_argument("--max-tokens", "-n", type=int, help="Maximum number of new tokens to generate")
+
+	agent_group = parser.add_argument_group("Agent options")
+	agent_group.add_argument("--agents", "-a", default=["all"], nargs="*", help="Enable listed or all agents")
+	agent_group.add_argument("--no-agents", "-A", dest="agents", action="store_const", const=[], help="Disable all agents")
+	agent_group.add_argument("--no-ai", action="store_true", help="Disable all AI agents")  # TODO
+	agent_group.add_argument("--no-tools", action="store_true", help="Disable all software tool agents")  # TODO
 
 #	model_group = parser.add_argument_group("Deluxe options")
 #	model_group.add_argument("--retry", default=3, help="Number of times to retry if the bot fails to respond")
@@ -501,10 +514,20 @@ def get_opts():
 	if isinstance(args.port, str):
 		args.port = Path(args.port)
 
+	# check agents are valid
+	if args.agents == ["all"]:
+		args.agents = AGENTS.keys()
+	else:
+		for a in set(args.agents) - set(AGENTS):
+			logger.warning("Unknown agent: %s", a)
+		args.agents = set(args.agents) & set(AGENTS)
+
 	return args
 
 def main():
 	""" Main function. """
+	register_agents()
+
 	args = get_opts()
 
 	if args.list_models:
