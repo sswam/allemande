@@ -2,6 +2,8 @@
 
 const timeout_seconds = 60;
 
+const CHAT_URL = location.protocol + "//" + location.host.replace(/^rooms\b/, "chat")
+
 let timeout;
 
 function get_status_element() {
@@ -96,3 +98,35 @@ function mutated(mutations) {
 new MutationObserver(mutated).observe($('html'), { childList: true, subtree: true });
 
 $on(window, 'scroll', messages_scrolled);
+
+// keyboard shortcuts --------------------------------------------------------
+// use mousetrap.js   -- Copilot suggestion <3
+
+//function change_room() {
+//	window.parent.postMessage({ type: 'change_room' }, CHAT_URL);
+//	return false;
+//}
+
+function relay_event(ev) {
+//	console.log("relay_event", ev);
+	const copy = {
+		type: ev.type,
+		key: ev.key,
+		code: ev.code,
+		keyCode: ev.keyCode,
+		ctrlKey: ev.ctrlKey,
+		altKey: ev.altKey,
+		shiftKey: ev.shiftKey,
+		metaKey: ev.metaKey,
+	};
+	window.parent.postMessage(copy, CHAT_URL);
+}
+
+function keyboard_shortcuts() {
+	// Mousetrap.bind('esc', change_room);
+	// handle any keypress
+	$on(document, 'keypress', relay_event);
+	$on(document, 'keydown', relay_event);
+}
+
+keyboard_shortcuts();
