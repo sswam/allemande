@@ -21,6 +21,13 @@ This is a list of our current and planned projects, and ideas for future project
 	- swapper
 	- connect to OpenAI and Claude
 	- agents
+	- option to whisper.cpp instead of Python whisper
+	- option to whisper API instead of Python whisper
+	- multi-user voice recognition
+	- multi-bot speech synthesis
+	- join by login
+	- logout is broken, doesn't log out of rooms, can use a page with two iframes
+	- CSS import not working: import url('large.css');
 - Ally Stories
 - video scenes and best images
 - image to text: ocr, pictures, diagrams, segmentation
@@ -40,6 +47,11 @@ This is a list of our current and planned projects, and ideas for future project
 	- live web editor
 - blog series on multi-label classifier
 - multi-label audio classifier
+- autoblog
+	- recent - find all files changed recently
+	- recent-date - summarize files for a certain date
+	- shell history is in git
+	- git history
 
 ## Tools
 
