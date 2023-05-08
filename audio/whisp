@@ -5,7 +5,6 @@ then
 	exec whisper "$@"
 	exit 1
 else
-	cd /opt/whisper.cpp
-	exec ./whisper "$@"
+	exec whisper.cpp "$@"
 	exit 1
 fi

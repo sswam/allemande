@@ -252,8 +252,13 @@ def do_list_models():
 		print("\t".join([k, lang, tld, accent]))
 
 @arg('--model', '-m')
-def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, debug=False):
+def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, debug=False, cuda=False):
 	""" Speak text """
+	global use_cuda
+
+	if not cuda:
+		use_cuda = False
+
 	add_gtts_models()
 	add_coqui_models()
 	if list_models:
