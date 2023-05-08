@@ -159,7 +159,7 @@ def get_synth(model=DEFAULT_MODEL):
 		raise ValueError(f'Unknown engine: {model_type}') from e
 	return engine(model)
 
-def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, lock=None):
+def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None):
 	""" Speak a line of text """
 
 	if not synth:
@@ -180,18 +180,15 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 		if postproc:
 			audio, rate_pp = postproc(file, audio, rate)
 
-		# TODO process the audio with a vocoder?
+		if deafen:
+			sd.wait()
+			amixer.sset("Capture", "nocap")
+			logger.info("Mic off")
 
-		with FileMutex(lock):
-			if deafen:
-				sd.wait()
-				amixer.sset("Capture", "nocap")
-				logger.info("Mic off")
-	
-			# play the audio
-			if play:
-				sd.wait()
-				sd.play(audio, samplerate=rate_pp)
+		# play the audio
+		if play:
+			sd.wait()
+			sd.play(audio, samplerate=rate_pp)
 	except ZeroDivisionError as e:
 		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
 	finally:
@@ -205,7 +202,7 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 	if play and wait:
 		sd.wait()
 
-def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, lock=None):
+def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None):
 	""" Speak lines of text """
 	if not synth:
 		synth = get_synth(model)
@@ -216,7 +213,7 @@ def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, 
 		logger.info("speak_lines: line: %r", line)
 		if out:
 			out = f'{stem}_{i:06d}{ext}'
-		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, lock=lock)
+		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
 
 	if play and wait:
 		sd.wait()
@@ -255,8 +252,13 @@ def do_list_models():
 		print("\t".join([k, lang, tld, accent]))
 
 @arg('--model', '-m')
-def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, lock=os.environ.get('ALLEMANDE_AUDIO_LOCK', None)):
+def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, debug=False, cuda=False):
 	""" Speak text """
+	global use_cuda
+
+	if not cuda:
+		use_cuda = False
+
 	add_gtts_models()
 	add_coqui_models()
 	if list_models:
@@ -281,9 +283,9 @@ def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play
 		postproc = partial(postproc_soundstretch, tempo=tempo, pitch=pitch)
 
 	if text:
-		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, lock=lock)
+		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
 	else:
-		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, lock=lock)
+		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
 
 if __name__ == "__main__":
 	dispatch_command(speak)

@@ -16,6 +16,7 @@ import requests
 from bs4 import BeautifulSoup
 import tabulate
 from youtube_search import YoutubeSearch
+import tabulate
 
 
 from ucm import setup_logging, add_logging_options
@@ -114,15 +115,21 @@ def youtube_search(query, max_results=10, detailed=False, safe="off"):
 
 engines = {
 	'google': google_search,
-	'ddg': duckduckgo_search,
+	'duckduckgo': duckduckgo_search,
 	'bing': bing_search,
 	'youtube': youtube_search,
 }
 
-def search(query, engine='ddg', max_results=10, safe="off"):
+def list_to_markdown_table(items):
+	return tabulate.tabulate(items, tablefmt="pipe", headers="keys")
+
+def search(query, engine='duckduckgo', max_results=10, safe="on", markdown=False):
 	""" Search `query` using `engine` and return a list of results """
 	results = engines[engine](query, max_results=max_results, safe=safe)
-	return results[:max_results]
+	results2 = results[:max_results]
+	if markdown:
+		return list_to_markdown_table(results2)
+	return results2
 
 
 # output formatters

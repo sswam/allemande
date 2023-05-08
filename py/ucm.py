@@ -120,13 +120,17 @@ class FileMutex:
     def acquire(self):
         if not self.lock_file:
             return
+        print("lock open 1", file=sys.stderr)
         self.fd = os.open(self.lock_file, os.O_CREAT)
+        print("lock open w", file=sys.stderr)
         fcntl.flock(self.fd, fcntl.LOCK_EX)
+        print("locked", file=sys.stderr)
 
     def release(self):
         if not self.fd:
             return
         fcntl.flock(self.fd, fcntl.LOCK_UN)
+        print("unlocked", file=sys.stderr)
         os.close(self.fd)
         self.fd = None
 

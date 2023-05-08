@@ -1,14 +1,3 @@
-* {
-	box-sizing: border-box;
-	font-family: helvetica, arial, sans-serif;
-}
-html, body {
-	width: 100%;
-	height: 100%;
-	margin: 0.5em;
-	padding: 0;
-	margin: 0;
-}
 div.messages {
 	margin: 1em 1em 0 1em;
 	padding-bottom: 0.5em;
@@ -39,6 +28,13 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin: 4px;
 	max-width: 75vw;
 	max-height: 75vh;
+}
+
+table {
+	border-collapse: collapse;
+}
+table, th, td {
+	border: 1px solid var(--col4);
 }
 
 

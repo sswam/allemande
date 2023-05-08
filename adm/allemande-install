@@ -1,15 +1,21 @@
 #!/bin/bash -eu
 
+# symlink the allemande home directory to /opt/allemande
 # setup the allemande user and ports directory
 
 python_dir="${1:-$(dirname "$(which python)")}"
 
 . get_root
 
+home="$ALLEMANDE_HOME"
 user="$ALLEMANDE_USER"
 ports="$ALLEMANDE_PORTS"
 
-useradd -d "$ports" -s "$(which bash)" $user || true
+ln -sfT "$home" /opt/allemande
+
+cp -T "$home/adm/crontab" /etc/cron.d/allemande
+
+useradd -d "$ports" -s "$(which bash)" "$user" || true
 
 mkdir -p "$ports"
 chown $user:$user "$ports"
@@ -23,7 +29,7 @@ END
 
 mkdir -p "$ports/.cache"
 rm -f "$ports/.cache/whisper"
-ln -sf "$ALLEMANDE_MODELS/whisper" "$ports/.cache/whisper"
+ln -sfT "$ALLEMANDE_MODELS/whisper" "$ports/.cache/whisper"
 chown -R "$user:$user" "$ports/.cache"
 
 for module in $ALLEMANDE_MODULES; do
@@ -32,7 +38,7 @@ for module in $ALLEMANDE_MODULES; do
 	mkdir -p "$module_dir"
 	CONFIG="$ALLEMANDE_HOME/config/$module/default.yaml"
 	if [ -e "$CONFIG" ]; then
-		ln -sf "$CONFIG" "$module_dir/config.yaml"
+		ln -sfT "$CONFIG" "$module_dir/config.yaml"
 	fi
 
 	chown $user:$user "$module_dir"

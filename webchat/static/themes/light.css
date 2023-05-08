@@ -1,0 +1,10 @@
+:root {
+	--text: black;
+	--border: #999;
+	--frame: white;
+	--input: #eee;
+	--focus: #ddd;
+	--background: #aaa;
+	--button: #eee;
+	--button-focus: #888;
+}

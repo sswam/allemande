@@ -1,15 +1,3 @@
-* {
-	box-sizing: border-box;
-}
-body, html {
-	width: 100%;
-	height: 100%;
-	margin: 0;
-	padding: 0;
-}
-body, textarea {
-	font-family: helvetica, arial, sans-serif;
-}
 .fill {
 	width: 100%;
 	height: 100%;
@@ -20,10 +8,10 @@ body, textarea {
 .hidden {
 	display: none;
 }
-input, textarea { padding: 2px; }
-.content_input {
-	height: 3em;
+#content {
+	height: 42px;
 	min-height: 1em;
+	flex-grow: 1;
 }
 .pad {
 	padding: 8px;
@@ -62,41 +50,19 @@ input, textarea { padding: 2px; }
 .attached {
 	overflow: hidden;
 }
-button, input, textarea, iframe {
-	border-radius: 6px;
-}
 
-
-
-// default colours
-
-
-
-body#app {
-	background: white;
-	color: black;
-}
-
-input, textarea, button {
-	background: #eee;
-	color: black;
+input, textarea {
+	padding: 4px;
 }
 
 input, textarea, button, iframe {
-	border: 1px solid #999;
-}
-
-input:focus, textarea:focus, iframe:focus {
-	outline: none;
-	background: #ddd;
+	border-radius: 6px;
 }
 
 button {
-	background: #aaa;
-	color: black;
+	font-size: 1.2rem;
 }
 
-button:hover, button:focus {
+input:focus, textarea:focus, iframe:focus, button:focus {
 	outline: none;
-	background: #888;
 }

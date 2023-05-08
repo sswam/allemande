@@ -1,0 +1,19 @@
+:root {
+	--col0: #f18;
+	--col1: #f39;
+	--col2: #f5a;
+	--col3: #f7b;
+	--col4: #f9c;
+	--col5: #fbd;
+	--col6: #fde;
+	--col7: white;
+
+	--text: black;
+	--border: var(--col2);
+	--frame: var(--col2);
+	--input: var(--col3);
+	--focus: var(--col4);
+	--background: var(--col5);
+	--button: var(--col6);
+	--button-focus: var(--col7);
+}

@@ -39,7 +39,7 @@ def open_microphone_spamfree(*args, **kwargs):
 	finally:
 		source.__exit__(None, None, None)
 
-def record_speech(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise=False, lock=None):
+def record_speech(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise=False):
 	""" Record audio from microphone and put it in the queue """
 	r = sr.Recognizer()
 	r.energy_threshold = energy
@@ -56,21 +56,18 @@ def record_speech(run_event, q_audio, energy, pause, dynamic_energy, device_inde
 
 	with open_microphone(sample_rate=16000, device_index=device_index) as source:
 		while run_event.is_set():
-#			drop = os.path.isfile("/tmp/drop-the-mic")
 			if adjust_for_ambient_noise:
 				logger.debug("Adjusting for ambient noise")
 				r.adjust_for_ambient_noise(source)
 
-			with FileMutex(lock):
-				if first:
-					logger.info("Listening")
-					first = False
-				else:
-					logger.debug("Listening")
-				audio = r.listen(source)
-				logger.debug("Got audio")
+			if first:
+				logger.info("Listening")
+				first = False
+			else:
+				logger.debug("Listening")
+			audio = r.listen(source)
+			logger.debug("Got audio")
 
-#			if not drop and not os.path.isfile("/tmp/drop-the-mic"):
 			q_audio.put_nowait(audio)
 			i += 1
 	q_audio.put_nowait(None)
@@ -141,7 +138,7 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 
-def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.90, lock=os.environ.get('ALLEMANDE_AUDIO_LOCK', None)):
+def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.90):
 	""" Transcribe speech to text using microphone input """
 
 	if list_devices:
@@ -158,7 +155,7 @@ def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=Non
 		q_text = Queue()
 		Thread(
 			target=record_speech,
-			args=(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise, lock)
+			args=(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise)
 			).start()
 		Thread(
 			target=speech_to_text,

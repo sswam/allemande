@@ -18,6 +18,9 @@ BEGIN {
 		PCI
 		PCMCIA
 		CPR
+		HTML
+		CSS
+		JS
 	);
 }
 sub to_letters {

@@ -1,0 +1,19 @@
+:root {
+	--blue0: #0e0e79;
+	--blue1: #0f5e9c;
+	--blue2: #2389da;
+	--blue3: #1ca3ec;
+	--blue4: #31aafa;
+	--blue5: #5abcd8;
+	--blue6: #74ccf4;
+	--blue7: white;
+
+	--text: black;
+	--border: var(--blue0);
+	--frame: var(--blue0);
+	--background: var(--blue4);
+	--input: var(--blue1);
+	--focus: var(--blue2);
+	--button: var(--blue5);
+	--button-focus: var(--blue6);
+}

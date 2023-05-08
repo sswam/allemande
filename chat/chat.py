@@ -6,6 +6,7 @@ import sys
 import itertools
 import html
 from pathlib import Path
+import re
 
 import argh
 import markdown
@@ -13,6 +14,8 @@ import markdown
 
 USER_NARRATIVE = object()
 USER_CONTINUED = object()
+ROOM_MAX_LENGTH = 100
+ROOM_MAX_DEPTH = 10
 
 # see: https://python-markdown.github.io/extensions/
 MARKDOWN_EXTENSIONS = [
@@ -42,6 +45,56 @@ def safe_join(base_dir: Path, path: Path) -> Path:
 		return safe_path
 	else:
 		raise ValueError("Invalid or unsafe path provided: %r, %r" % (base_dir, path))
+
+def sanitize_filename(f):
+	""" Sanitize a filename, allowing most characters. """
+
+	assert isinstance(f, str)
+	assert "/" not in f
+
+	# remove leading dots and whitespace:
+	# don't want hidden files
+	f = re.sub(r"^[.\s]+", "", f)
+
+	# remove trailing dots and whitespace:
+	# don't want confusion around file extensions
+	f = re.sub(r"[.\s]+$", "", f)
+
+	# squeeze whitespace
+	f = re.sub(r"\s+", " ", f)
+
+	return f
+
+
+def sanitize_pathname(room):
+	""" Sanitize a pathname, allowing most characters. """
+
+	# split into parts
+	parts = room.split("/")
+
+	# sanitize each part
+	parts = map(sanitize_filename, parts)
+
+	# remove empty parts
+	parts = list(filter(lambda x: x, parts))
+
+	if not parts:
+		raise HTTPException(status_code=400, detail="Please enter the name of a room.")
+
+	if len(parts) > ROOM_MAX_DEPTH:
+		raise HTTPException(status_code=400, detail=f"The room is too deeply nested, max {ROOM_MAX_DEPTH} parts.")
+
+	# join back together
+	room = "/".join(parts)
+
+	if len(room) > ROOM_MAX_LENGTH:
+		raise HTTPException(status_code=400, detail=f"The room name is too long, max {ROOM_MAX_LENGTH} characters.")
+
+	# check for control characters
+	if re.search(r"[\x00-\x1F\x7F]", room):
+		raise HTTPException(status_code=400, detail="The room name cannot contain control characters.")
+
+	return room
 
 
 def split_message_line(line):
@@ -97,7 +150,7 @@ def lines_to_messages(lines):
 
 		if message and user == USER_NARRATIVE and "user" not in message:
 			message["content"] += "\n" * skipped_blank + content
-			continued
+			continue
 
 		# yield the previous message
 		if message:

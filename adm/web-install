@@ -12,11 +12,17 @@ mode() {
 rm -f /var/www/allemande
 ln -s "$ALLEMANDE_HOME/website" /var/www/allemande
 
+cd "$ALLEMANDE_HOME/js"
+if [ ! -e js/mousetrap ]; then
+	git clone https://github.com/ccampbell/mousetrap js/mousetrap
+fi
+
 cd "$ALLEMANDE_HOME/webchat"
 
 mkdir -p files
-mode 770 rooms files
+mode 771 rooms files
 mode 660 rooms/*.bb rooms/*.html
+mode 440 rooms/-.bb rooms/-.html
 if [ ! -e .htpasswd ]; then
 	touch .htpasswd
 fi

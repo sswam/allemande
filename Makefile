@@ -2,11 +2,12 @@ export
 
 SHELL := /bin/bash
 
-WEBCHAT := $(ALLEMANDE_HOME)/webchat
+WEBCHAT := $(ALLYCHAT_HOME)
 ROOMS := $(ALLEMANDE_ROOMS)
 WATCH_LOG := $(ALLEMANDE_HOME)/watch.log
 SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
+TEMPLATES := $(WEBCHAT)/templates
 
 
 JOBS := server_start server_stop home server default run-i3 run frontend backend dev \
@@ -112,7 +113,7 @@ bb2html:
 	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 nginx:
-	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v sudo systemctl restart nginx; done
+	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx.sh; echo ... done; done
 
 logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log

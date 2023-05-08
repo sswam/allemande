@@ -15,9 +15,8 @@ webchat/files
 webchat/users
 go/atail
 config.sh
-rooms/*.bb
-rooms/*.html
-rooms/*.bb.*
-rooms/*.html.*
+rooms
 rooms.*
+!rooms.dist
 venv
+js/mousetrap
