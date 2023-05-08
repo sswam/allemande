@@ -2,8 +2,8 @@
 
 """ A simple chat API for use with the chat client. """
 
+import os
 from pathlib import Path
-import re
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -14,11 +14,9 @@ import uvicorn
 import chat
 
 
-ADMINS = ["sam"]
+ADMINS = os.environ.get("ALLYCHAT_ADMINS", "").split()
 ROOMS = "rooms"
 EXTENSION = ".bb"
-ROOM_MAX_LENGTH = 100
-ROOM_MAX_DEPTH = 10
 
 
 async def http_exception(_request: Request, exc: HTTPException):
@@ -37,67 +35,15 @@ app = Starlette(exception_handlers=exception_handlers)
 @app.route("/x/whoami", methods=["GET", "POST"])
 async def whoami(request):
 	""" Return the user and whether they are an admin. """
-	# TODO admin status might depend on the room
-	# TODO sanitize the room
+	form = await request.form()
+	room = form.get("room")
+	if room:
+		room = chat.sanitize_pathname(room)
+	# TODO moderator status might depend on the room
 	user = request.headers.get('X-Forwarded-User', 'guest')
 	admin = user in ADMINS
-	return JSONResponse({"user": user, "admin": admin})
-
-
-def sanitize_filename(f):
-	""" Sanitize a filename, allowing most characters. """
-
-	assert isinstance(f, str)
-	assert "/" not in f
-
-	# remove leading dots and whitespace:
-	# don't want hidden files
-	f = re.sub(r"^[.\s]+", "", f)
-
-	# remove trailing dots and whitespace:
-	# don't want confusion around file extensions
-	f = re.sub(r"[.\s]+$", "", f)
-
-	# squeeze whitespace
-	f = re.sub(r"\s+", " ", f)
-
-	return f
-
-
-def ident(f):
-	""" identity function """
-	return f
-
-
-def sanitize_pathname(room):
-	""" Sanitize a pathname, allowing most characters. """
-
-	# split into parts
-	parts = room.split("/")
-
-	# sanitize each part
-	parts = map(sanitize_filename, parts)
-
-	# remove empty parts
-	parts = list(filter(ident, parts))
-
-	if not parts:
-		raise HTTPException(status_code=400, detail="Please enter the name of a room.")
-
-	if len(parts) > ROOM_MAX_DEPTH:
-		raise HTTPException(status_code=400, detail=f"The room is too deeply nested, max {ROOM_MAX_DEPTH} parts.")
-
-	# join back together
-	room = "/".join(parts)
-
-	if len(room) > ROOM_MAX_LENGTH:
-		raise HTTPException(status_code=400, detail=f"The room name is too long, max {ROOM_MAX_LENGTH} characters.")
-
-	# check for control characters
-	if re.search(r"[\x00-\x1F\x7F]", room):
-		raise HTTPException(status_code=400, detail="The room name cannot contain control characters.")
-
-	return room
+	mod = admin
+	return JSONResponse({"user": user, "room": room, "admin": admin, "mod": mod})
 
 
 def write_to_room(room, user, content):
@@ -112,7 +58,7 @@ def write_to_room(room, user, content):
 	message = {"user": user_tc, "content": content}
 
 	text = chat.message_to_text(message)
-	dirname = Path(room).parent
+	dirname = Path(markdown_file).parent
 	dirname.mkdir(parents=True, exist_ok=True)
 	with markdown_file.open("a", encoding="utf-8") as f:
 		f.write(text)
@@ -129,10 +75,13 @@ async def post(request):
 	""" Post a message to a room. """
 	form = await request.form()
 	room = form["room"]
-	room = sanitize_pathname(room)
+	room = chat.sanitize_pathname(room)
 	content = form["content"]
 	user = request.headers['X-Forwarded-User']
-	write_to_room(room, user, content)
+	try:
+		write_to_room(room, user, content)
+	except PermissionError:
+		raise HTTPException(status_code=403, detail="You are not allowed to post to this room.")
 	return JSONResponse({})
 
 

@@ -8,6 +8,7 @@ import logging
 from pathlib import Path
 from functools import partial
 from types import SimpleNamespace
+import re
 
 import argh
 import inotify.adapters
@@ -16,10 +17,11 @@ import yaml
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
-import transformers
+import transformers  # pylint: disable=wrong-import-position
 
 logger = logging.getLogger(__name__)
 
+# TODO move to a library, allemande.py?
 def prog_info():
 	""" Get info about the program """
 	prog = SimpleNamespace()
@@ -29,9 +31,9 @@ def prog_info():
 	prog.name = prog.path.stem
 	return prog
 
-prog = prog_info()
+PROG = prog_info()
 
-ports_dir = Path(os.environ["ALLEMANDE_PORTS"])/prog.name
+ports_dir = Path(os.environ["ALLEMANDE_PORTS"])/PROG.name
 models_dir = Path(os.environ["ALLEMANDE_MODELS"])/"llm"
 
 
@@ -41,7 +43,7 @@ def load_model(model_path, device_map="auto"):
 	model = transformers.LlamaForCausalLM.from_pretrained(
 		model_path,
 		device_map=device_map,
-		torch_dtype=torch.float16,
+		torch_dtype=torch.float16,  # pylint: disable=no-member
 		max_memory = { 0: "24GB" },
 		low_cpu_mem_usage=True,
 		cache_dir="cache"
@@ -71,7 +73,7 @@ def gen(config, input_text, *_args, model=None, **_kwargs):
 
 	full_text = ""
 	in_tokens = model.tokenizer(input_text, return_tensors="pt").input_ids.cuda()
-	n_in_tokens = in_tokens.shape[1]
+	# n_in_tokens = in_tokens.shape[1]
 	with torch.no_grad():
 		gen_tokens = model.generate(
 			in_tokens,
@@ -107,14 +109,20 @@ def load(ports, d, filename):
 		if p == d:
 			break
 		d = p
-	f = prog.dir/filename
+	f = PROG.dir/filename
 	if f.exists():
 		return f.read_text(encoding="utf-8")
 	raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
-
 def process_request(ports, port, req, fn, *args, **kwargs):
 	""" Process a request on a port """
+
+	def try_rename(src, dst):
+		try:
+			os.rename(src, dst)
+		except Exception as e2:  # pylint: disable=broad-except
+			logger.exception("%s:%s - error: %s", port, req, e2)
+
 	port = Path(port)
 	logger.info("%s:%s - processing", port, req)
 	log_handler = None
@@ -131,14 +139,16 @@ def process_request(ports, port, req, fn, *args, **kwargs):
 			(d/k).write_text(v, encoding="utf-8")
 		os.rename(d, port/"done"/req)
 		logger.info("%s:%s - done", port, req)
-	except Exception as e:
+	except Exception as e:  # pylint: disable=broad-except
 		logger.exception("%s:%s - error: %s", port, req, e)
-		try:
-			os.rename(d, port/"error"/req)
-		except Exception as e2:
-			logger.exception("%s:%s - error: %s", port, req, e2)
-		if 'CUDA error' in str(e):
-			raise
+
+		# in case of CUDA error, CUDA out of memory:
+		# exit now and retry the request later
+		if re.search(r'\bCUDA\b', str(e)):
+			try_rename(d, port/"todo"/req)
+			raise e
+
+		try_rename(d, port/"error"/req)
 	finally:
 		if log_handler:
 			logger.removeHandler(log_handler)
