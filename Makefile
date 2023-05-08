@@ -113,7 +113,7 @@ bb2html:
 	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 nginx:
-	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx.sh; done
+	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx.sh; echo ... done; done
 
 logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
