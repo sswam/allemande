@@ -32,15 +32,25 @@ server {
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
+		add_header Cache-Control "no-cache";
 	}
 
 	location /users {
 		root /var/www/allychat/;
 		autoindex on;
-		try_files $uri $uri/ =404;
+#		try_files $uri $uri/ =404;
+		try_files $uri $uri/ @redirect;
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
+		add_header Cache-Control "no-cache";
+	}
+
+	location @redirect {
+		if ($request_uri ~* (^/users/[^/]*/styles.css$)) {
+			return 302 $scheme://$host/styles/default.css;
+		}
+		return 404;
 	}
 
 	location /logout {

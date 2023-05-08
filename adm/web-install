@@ -15,8 +15,9 @@ ln -s "$ALLEMANDE_HOME/website" /var/www/allemande
 cd "$ALLEMANDE_HOME/webchat"
 
 mkdir -p files
-mode 770 rooms files
+mode 771 rooms files
 mode 660 rooms/*.bb rooms/*.html
+mode 440 rooms/-.bb rooms/-.html
 if [ ! -e .htpasswd ]; then
 	touch .htpasswd
 fi

@@ -32,6 +32,7 @@ server {
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
+		add_header Cache-Control "no-cache";
 	}
 }
 
