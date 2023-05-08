@@ -9,11 +9,11 @@
 	--col7: #white;
 
 	--text: var(--col7);
-	--border: var(--col1);
+	--border: var(--col6);
 	--frame: var(--col2);
 	--input: var(--col5);
 	--focus: var(--col4);
 	--background: var(--col3);
-	--button: var(--col2);
+	--button: var(--col4);
 	--button-focus: var(--col1);
 }

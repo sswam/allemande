@@ -47,8 +47,8 @@ server {
 	}
 
 	location @redirect {
-		if ($request_uri ~* (^/users/[^/]*/styles.css$)) {
-			return 302 $scheme://$host/users/default/styles.css;
+		if ($request_uri ~* (^/users/[^/]*/theme.css$)) {
+			return 302 $scheme://$host/users/default/theme.css;
 		}
 		return 404;
 	}

@@ -128,7 +128,7 @@ function load_user_styles() {
 	$link.id = 'user_styles';
 	$link.rel = 'stylesheet';
 	$link.type = 'text/css';
-	$link.href = '/users/'+user+'/styles.css';
+	$link.href = '/users/'+user+'/theme.css';
 	$head.append($link);
 }
 
