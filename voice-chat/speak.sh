@@ -18,4 +18,4 @@ trap "amixer sset Capture $mic_state; pkill -P $$" EXIT
 atail.py -f -r -n"${rewind:-0}" "$file" |
 get-bot-lines.pl |
 filter-speech.pl |
-$speak
+v $speak
