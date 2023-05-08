@@ -1,48 +1,11 @@
 :root {
+	/* gradient.py --css (0.0, 0.0, 0.0) (0.5, 0.5, 0.5) 8 */
 	--col0: #000000;
-	--col1: #242424;
-	--col2: #494949;
-	--col3: #6d6d6d;
-	--col4: #929292;
-	--col5: #b6b6b6;
-	--col6: #dbdbdb;
-	--col7: #ffffff;
-
-	--text: var(--col0);
-	--border: var(--col1);
-	--frame: var(--col2);
-	--input: var(--col3);
-	--focus: var(--col4);
-	--background: var(--col5);
-	--button: var(--col6);
-	--button-focus: var(--col7);
-}
-
-*, input, textarea, button {
-	color: var(--text);
-}
-
-body#app {
-	background: var(--frame);
-}
-
-body#messages {
-	background: var(--background);
-}
-
-input, textarea, button, iframe {
-	background: var(--input);
-	border: 1px solid var(--border);
-}
-
-input:focus, textarea:focus, iframe:focus {
-	background: var(--focus);
-}
-
-button {
-	background: var(--button);
-}
-
-button:hover, button:focus {
-	background: var(--button-focus);
+	--col1: #121212;
+	--col2: #242424;
+	--col3: #363636;
+	--col4: #494949;
+	--col5: #5b5b5b;
+	--col6: #6d6d6d;
+	--col7: #808080;
 }

@@ -1,14 +1,3 @@
-* {
-	box-sizing: border-box;
-	font-family: helvetica, arial, sans-serif;
-}
-html, body {
-	width: 100%;
-	height: 100%;
-	margin: 0.5em;
-	padding: 0;
-	margin: 0;
-}
 div.messages {
 	margin: 1em 1em 0 1em;
 	padding-bottom: 0.5em;

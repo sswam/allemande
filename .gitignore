@@ -21,3 +21,4 @@ rooms/*.bb.*
 rooms/*.html.*
 rooms.*
 venv
+js/mousetrap

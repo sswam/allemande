@@ -5,6 +5,7 @@
 <title>Allemande AI</title>
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="chat.css">
 <style id="style_user_name"></style>
 </head>
@@ -13,27 +14,33 @@
 <input type="hidden" id="op" name="op" value="post">
 <div class="col pad o fill">
 	<div class="row">
-		<input id="room" name="room" class="flex">
+		<input id="room" name="room" class="flex mousetrap">
 <!--		<button id="subscribe"></button> -->
 		<button onclick="location.href = '/logout'; return false;">logout</button>
 	</div>
 
 	<iframe id="messages" class="messages flex" src="about:blank"></iframe>
 
-	<textarea id="content" name="content" class="content_input"></textarea>
+	<div class="row">
+	<textarea id="content" name="content" class="content_input mousetrap"></textarea>
+	<button id="send">send</button>
+	</div>
 
+<!--
 	<div class="row">
 		<div style="flex-grow: 1"></div>
 		<button id="send">send</button>
-<!--		<button id="clear" class="admin">clear</button>
+		<button id="clear" class="admin">clear</button>
 		<input id="files" name="files" type="file" class="inputfile hide" data-multiple-caption="{count} files: {filenames}" multiple/>
 		<label for="files" class="attach"><button class="fill">attach</button></label>
  	 	<textarea id="attached" class="attached flex hidden" readonly rows=1></textarea>
-		<input id="filenames" name="filenames" type="hidden">-->
+		<input id="filenames" name="filenames" type="hidden">
 	</div>
+-->
 </div>
 </form>
-<script src="https://ucm.dev/js/util.js"></script>
+<script src="mousetrap.min.js"></script>
+<script src="util.js"></script>
 <script src="chat.js"></script>
 </body>
 </html>

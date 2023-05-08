@@ -1,34 +1,10 @@
-body#app {
-	background: black;
-	color: white;
+:root {
+	--background: midnightblue;
+	--focus: #339;
+	--input: midnightblue;
+	--button-focus: #55f;
+	--button: blue;
+	--frame: black;
+	--border: cyan;
+	--text: white;
 }
-
-body#messages, input, textarea {
-	background: midnightblue;
-	color: white;
-}
-
-input, textarea, button, iframe {
-	border: 1px solid cyan;
-}
-
-input:focus, textarea:focus, iframe:focus {
-	background: #339;
-}
-
-button {
-	background: blue;
-	color: white;
-}
-
-button:hover, button:focus {
-	background: #55f;
-}
-
-
-/* TODO fix these */
-
-*:disabled { color: grey; }
-.message.me > .name { color: lightgreen; }
-a:link { color: lightblue; }
-a:visited { color: pink; }

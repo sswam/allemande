@@ -1,47 +1,10 @@
-* {
-	color: black;
+:root {
+	--background: #fff7cc;
+	--focus: #fdb;
+	--input: #fec;
+	--button-focus: #fa8;
+	--button: #fca;
+	--frame: #fcc;
+	--border: #999;
+	--text: black;
 }
-
-body#app {
-	background: #fcc;
-}
-
-body#messages, input, textarea {
-	background: #fff7cc;
-}
-
-input, textarea, button, iframe {
-	background: #fec;
-	border: 1px solid #999;
-}
-
-input:focus, textarea:focus, iframe:focus {
-	background: #fdb;
-}
-
-button {
-	background: #fca;
-}
-
-button:hover, button:focus {
-	background: #fa8;
-}
-
-
-/* TODO check the following: */
-
-/*
-
-*:disabled { color: grey; }
-.message.me > .name { color: lightgreen; }
-a:link { color: lightblue; }
-a:visited { color: pink; }
-
-*/
-
-
-
-/*
-body, textarea, input, button { font-size: x-large; }
-.content_input { height: 1.5em; }
-*/
