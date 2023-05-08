@@ -345,6 +345,9 @@ def process_file(model, file, args, history_start=0):
 
 def find_files(folder, ext=None, maxdepth=inf):
 	""" Find chat files under a directory. """
+	if not os.path.isdir(folder):
+		print("?", file=sys.stderr, end="", flush=True)
+		return
 	try:
 		for subdir in os.scandir(folder):
 			if subdir.is_dir():

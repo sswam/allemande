@@ -5,7 +5,7 @@
 
 . get_root
 
-user=${1:-$USER}
+user=${1:-$SUDO_USER}
 if [ "$#" -gt 0 ]; then shift; fi
 modules=(${@:-$ALLEMANDE_MODULES})
 ports="$ALLEMANDE_PORTS"
