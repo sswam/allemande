@@ -9,6 +9,7 @@ from pathlib import Path
 import re
 
 from watchfiles import Change
+import regex
 
 import ucm
 import atail
@@ -136,7 +137,6 @@ class Conductor:
 #				row = [html_file]
 #				yield row
 
-
 async def conductor_main(opts, watch_log, out=sys.stdout):
 	""" Main function """
 	conductor = Conductor(opts=opts, watch_log=watch_log)
@@ -196,3 +196,37 @@ if __name__ == '__main__':
 # We could assume that each agent runs a core process, using port directories to communicate with clients.
 # Perhaps the conductor process can tie it all together, that would make sense.
 # In that case, this library might be called who instead of conductor.
+
+
+
+# obsolescent get_roles_from_history function --------------------------------------
+
+regex_name = r"^[\p{L}\p{M}']+([\p{Zs}\-][\p{L}\p{M}']+)*$"
+
+def get_roles_from_history(history, user, bot):
+	""" Get the latest user and bot names from history """
+	def get_role(history, i=None, not_equal_to=None):
+		if i is None:
+			i = len(history) - 1
+		while i > 0:
+			if ":" in history[i]:
+				role = history[i].split(":")[0]
+				if role and regex.match(regex_name, role) and role != not_equal_to:
+					return role, i - 1
+			i -= 1
+		return None, i
+
+	hist_user, i = get_role(history, not_equal_to=bot)
+	if hist_user:
+		user = hist_user
+	logger.info("user: %r, i: %r", user, i)
+	hist_bot, i = get_role(history, i=i, not_equal_to=user)
+	if hist_bot:
+		bot = hist_bot
+	logger.info("bot: %r, i: %r", bot, i)
+
+	logger.info("user: %r", user)
+	logger.info("bot: %r", bot)
+
+	return user, bot
+
