@@ -24,7 +24,8 @@ function online() {
 	clearTimeout(timeout);
 	timeout = setTimeout(offline, 1000 * timeout_seconds);
 	const status = get_status_element();
-	status.innerText = '🔵';
+//	status.innerText = '🔵';
+	status.innerText = '';
 }
 
 function offline() {
