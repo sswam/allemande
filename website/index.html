@@ -8,13 +8,53 @@
 <link href="css/style@1683143762.css" rel="stylesheet"/>
 </head>
 <body>
+<script type="text/javascript">
+function animate_alpha() {
+	var rand = Math.random;
+	var dy = rand()*2+1
+	var x1 = rand()*4-2
+	var y1 = -dy
+	var x2 = rand()*3-1.5
+	var y2 = y1 - dy
+	var x3 = rand()*2-1
+	var y3 = y2 - dy
+	var shadow1 = x1+'px '+y1+'px 7px rgb(255, 255, 0)';
+	var shadow2 = x2+'px '+y2+'px 14px rgb(255, 127, 0)';
+	var shadow3 = x3+'px '+y3+'px 21px rgb(255, 0, 0)';
+	var shadow = shadow1 + ', ' + shadow2 + ', ' + shadow3;
+	document.getElementById("hello").style.textShadow = shadow;
+}
+var a = 0;
+function animate_fame() {
+	var sin = Math.sin, cos = Math.cos, pi2 = 2*Math.PI;
+	var r = 4;
+	var x1 = r*sin(a), y1 = r*cos(a);
+	var x2 = r*sin(a+pi2/3), y2 = r*cos(a+pi2/3);
+	var x3 = r*sin(a-pi2/3), y3 = r*cos(a-pi2/3);
+	var shadow1 = x1+'px '+y1+'px 15px rgb(255, 0, 0)';
+	var shadow2 = x2+'px '+y2+'px 15px rgb(0, 200, 0)';
+	var shadow3 = x3+'px '+y3+'px 15px rgb(63, 63, 255)';
+	var shadow = shadow1 + ', ' + shadow2 + ', ' + shadow3;
+	document.getElementById("fame").style.textShadow = shadow;
+	a += pi2*20/360;
+}
+function animate() {
+	animate_alpha();
+//	animate_fame();
+}
+</script>
+<div id="hello">Hello world</div>
 <img alt="Allemande" id="banner" src="allemande@1683146134.jpg"/>
 <div class="space" style="flex-grow: 1; max-height: 15em;"></div>
-<div class="info">
+<div class="info" id="info">
 <p><i>Allemande</i> is a work-in-progress AI toolkit and chat app.</p>
 <p>It is currently in development and is not yet ready for public use.</p>
 <p>Please check out <a href="https://github.com/sswam/allemande">our code</a> on Github, it's open-source.</p>
-<p style="text-align:center"><a class="register-button" href="https://forms.gle/LEnaHJBurcKbBkGH6">Register Your Interest</a></p>
+<p style="text-align:center">
+<a class="button" href="https://github.com/sswam/allemande">Ally Chat <span id="alpha">α</span></a>
+<a class="register-button" href="https://forms.gle/LEnaHJBurcKbBkGH6">Register Interest</a>
+<a class="button" href="https://github.com/sswam/allemande">Open Source</a>
+</p>
 </div>
 <div class="space" style="flex-grow: 3;"></div>
 </body>
