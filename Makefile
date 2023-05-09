@@ -82,10 +82,10 @@ cleanup:
 	> watch.log
 
 llm:
-	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py -m $(LLM_MODEL)
+	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py -m $(LLM_MODEL) -d
 
 whisper:
-	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py
+	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
 
 brain:
 	cd chat && ./brain.sh
