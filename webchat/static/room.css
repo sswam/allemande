@@ -1,6 +1,6 @@
 div.messages {
-	margin: 1em 1em 0 1em;
-	padding-bottom: 0.5em;
+/*	margin: 1em 1em 0 1em; */
+	padding: 0.5em 1em;
 }
 .label {
 	margin-right: 1em;
@@ -17,7 +17,6 @@ div.messages {
 	right: 0.5em;
 }
 
-/* TODO: this isn't needed, could be a user style */
 h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin-top: 0.75rem;
 	margin-bottom: 0.75rem;
@@ -30,20 +29,11 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	max-height: 75vh;
 }
 
+/* borders for markdown tables */
+
 table {
 	border-collapse: collapse;
 }
 table, th, td {
 	border: 1px solid var(--col4);
-}
-
-
-
-// default colours
-
-
-
-body#messages, input, textarea {
-	background: #aaa;
-	color: black;
 }
