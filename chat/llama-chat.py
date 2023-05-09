@@ -14,6 +14,7 @@ import readline
 from types import SimpleNamespace
 
 import yaml
+import regex
 
 import ucm
 import ports
@@ -91,10 +92,12 @@ def fix_indentation(response, _args):
 	""" Fix the indentation of the response. """
 	lines = response.split("\n")
 	for i in range(1, len(lines)):
-#		if ":" in lines[i]:
-#			lines[i] = re.sub(r':\s*', ':\t', lines[i])
-#		else:
-		lines[i] = "\t" + lines[i]
+		if ":" in lines[i]:
+			role = lines[i].split(":")[0]
+			if role and regex.match(conductor.regex_name, role):
+				lines[i] = re.sub(r':\s*', ':\t', lines[i])
+		else:
+			lines[i] = "\t" + lines[i]
 	response = "\n".join(lines) + "\n"
 	return response
 
