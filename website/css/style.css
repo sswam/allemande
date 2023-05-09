@@ -51,6 +51,21 @@ body {
 	text-decoration: underline;
 }
 
+a.button {
+	display: inline-block;
+	background-color: #242;
+	color: #cfc;
+	text-decoration: none;
+	padding: 10px 40px;
+	border-radius: 5px;
+	font-weight: 500;
+	margin-top: 20px;
+}
+
+.button:hover {
+	background-color: #363;
+}
+
 a.register-button {
 	display: inline-block;
 	background-color: #242;

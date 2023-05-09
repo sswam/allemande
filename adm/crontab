@@ -3,3 +3,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/allemande
 PYTHONPATH=/opt/allemande/tools
 # 34 10 * * *   root    user-set-theme.py default -f
 * * * * *   root    . /opt/allemande/env.sh ; user-set-theme.py default -f
+0 0 * * *   root    . /opt/allemande/env.sh ; chat-rotate chat
