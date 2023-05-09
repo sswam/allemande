@@ -1,0 +1,16 @@
+#!/usr/local/bin/cz --
+/* prepend: prepend a string to each line of input */
+
+use b
+
+Main():
+	cstr s
+	if args == 0:
+		s = "\t"
+	eif args == 1:
+		s = arg[0]
+	else:
+		usage("[string]")
+	Eachline(l):
+		Print(s)
+		Say(l)

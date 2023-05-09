@@ -10,6 +10,7 @@ user=${USER^}
 bot=Ally
 room=chat
 file=$ALLEMANDE_ROOMS/$room.bb
+file_server=$ALLEMANDE_ROOMS_SERVER/$room.bb
 mission=$'system:\tYou are friends and co-workers talking face to face and working enthusiastically together.'
 add_prompts=1   # 1
 rewind=2

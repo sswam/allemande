@@ -9,18 +9,14 @@ SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 TEMPLATES := $(WEBCHAT)/templates
 
-
 JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
 	run core vi vscode voice webchat llm whisper chat-api stream auth watch \
 	bb2html nginx logs perms brain mike speak \
-	firefox-webchat-local chrome-webchat-online stop mount umount fresh \
+	firefox-webchat-local firefox-webchat-online chrome-webchat-local chrome-webchat-online \
+	stop mount umount fresh \
 	install install-dev uninstall cleanup i3-layout
 
-
 all: server_start beorn
-
-default: beorn
-
 
 server_start:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make server"
@@ -28,14 +24,11 @@ server_start:
 server_stop:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
 
-
 beorn: mount run-i3-screen
 i3: connect-i3-screen
 
-
 server:: stop
 server:: webchat
-
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -83,8 +76,6 @@ voice.xtc: brain.xtc mike.xtc speak.xtc
 
 webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc
 
-
-
 cleanup:
 	spool-cleanup
 	spool-history-rm
@@ -106,10 +97,10 @@ speak:
 	cd voice-chat && ./speak.sh
 
 vi:
-	vi $$file
+	vi -p $$file $$file_server
 
 vscode:
-	code $$file & disown
+	code $$file $$file_server & disown
 
 chat-api:
 	uvicorn chat-api:app --app-dir $(WEBCHAT) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
@@ -135,12 +126,17 @@ logs:
 firefox-webchat-local:
 	(sleep 1; firefox -P "$$USER" "https://chat-local.allemande.ai/#$$room") & disown
 
+firefox-webchat-online:
+	(sleep 1; firefox -P "$$USER" "https://chat.allemande.ai/#$$room") & disown
+
+chrome-webchat-local:
+	(sleep 1; chrome "https://chat-local.allemande.ai/#$$room") & disown
+
 chrome-webchat-online:
 	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
 
-
 %.xt:
-	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"
+	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"; sleep 0.1
 
 %.xtc:
 	xterm-screen-connect.sh "$(SCREEN)" "$*"
@@ -164,5 +160,4 @@ fresh:
 	if [ -s $$html ]; then mv $$html $$html.$$time; fi ; \
 	touch $(file) $$html
 
-
-.PHONY: default $(JOBS) %.xt
+.PHONY: all default $(JOBS) %.xt
