@@ -53,8 +53,8 @@ body {
 
 a.button {
 	display: inline-block;
-	background-color: #242;
-	color: #cfc;
+	background-color: #333;
+	color: #eee;
 	text-decoration: none;
 	padding: 10px 40px;
 	border-radius: 5px;
@@ -63,21 +63,33 @@ a.button {
 }
 
 .button:hover {
-	background-color: #363;
+	background-color: #444;
 }
 
-a.register-button {
-	display: inline-block;
+.button.red {
+	background-color: #422;
+	color: #fcc;
+}
+
+.button.red:hover {
+	background-color: #633;
+}
+
+.button.yellow {
+	background-color: #663;
+	color: #ffe;
+}
+
+.button.yellow:hover {
+	background-color: #884;
+}
+
+.button.green {
 	background-color: #242;
 	color: #cfc;
-	text-decoration: none;
-	padding: 10px 40px;
-	border-radius: 5px;
-	font-weight: 500;
-	margin-top: 20px;
 }
 
-.register-button:hover {
+.button.green:hover {
 	background-color: #363;
 }
 
