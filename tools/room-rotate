@@ -1,8 +1,23 @@
 #!/bin/bash -eu
-# chat-rotate: rotate chat file
+# room-rotate: rotate a chat room file
+
 room=${1:-chat}
 from="$ALLEMANDE_HOME/rooms/$room.bb"
-to="$ALLEMANDE_HOME/rooms/$room-`date +%Y%m%d`.bb"
-if [ -f "$from" ]; then
-	mv -i "$from" "$to"
+from_html="$ALLEMANDE_HOME/rooms/$room.html"
+dir="$ALLEMANDE_HOME/rooms/$room/"
+yesterday=`date +%Y%m%d -d "-1 hour"`
+to="$dir/$yesterday.bb"
+to_html="$dir/$yesterday.html"
+
+if [ ! -f "$from" ]; then
+	echo "No such file: $from" >&2
+	exit 1
 fi
+if [ -e "$to" ]; then
+	echo "File exists: $to" >&2
+	exit 1
+fi
+
+mkdir -p "$dir"
+mv -i "$from_html" "$to_html" </dev/null || true
+mv -i "$from" "$to" </dev/null

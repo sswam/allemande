@@ -10,16 +10,16 @@ SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 TEMPLATES := $(WEBCHAT)/templates
 
 
-JOBS := server_start server_stop home server default run-i3 run frontend backend dev \
+JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
 	run core vi vscode voice webchat llm whisper chat-api stream auth watch \
 	bb2html nginx logs perms brain mike speak \
 	firefox-webchat-local chrome-webchat-online stop mount umount fresh \
 	install install-dev uninstall cleanup i3-layout
 
 
-default: beorn
+all: server_start beorn
 
-all: server_start home
+default: beorn
 
 
 server_start:
