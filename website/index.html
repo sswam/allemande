@@ -6,10 +6,8 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Allemande AI</title>
 <link href="css/style@1683143762.css" rel="stylesheet"/>
-</head>
-<body>
 <script type="text/javascript">
-function animate_alpha() {
+function animate_fire() {
 	var rand = Math.random;
 	var dy = rand()*2+1
 	var x1 = rand()*4-2
@@ -22,7 +20,9 @@ function animate_alpha() {
 	var shadow2 = x2+'px '+y2+'px 14px rgb(255, 127, 0)';
 	var shadow3 = x3+'px '+y3+'px 21px rgb(255, 0, 0)';
 	var shadow = shadow1 + ', ' + shadow2 + ', ' + shadow3;
-	document.getElementById("hello").style.textShadow = shadow;
+	for (const e of document.querySelectorAll(".fire")) {
+		e.style.textShadow = shadow;
+	}
 }
 var a = 0;
 function animate_fame() {
@@ -35,27 +35,33 @@ function animate_fame() {
 	var shadow2 = x2+'px '+y2+'px 15px rgb(0, 200, 0)';
 	var shadow3 = x3+'px '+y3+'px 15px rgb(63, 63, 255)';
 	var shadow = shadow1 + ', ' + shadow2 + ', ' + shadow3;
-	document.getElementById("fame").style.textShadow = shadow;
+	for (const e of document.querySelectorAll(".fame")) {
+		e.style.textShadow = shadow;
+	}
 	a += pi2*20/360;
 }
 function animate() {
-	animate_alpha();
-//	animate_fame();
+	animate_fire();
+	animate_fame();
 }
 </script>
-<div id="hello">Hello world</div>
+</head>
+<body onload="window.setInterval(animate, 50);">
 <img alt="Allemande" id="banner" src="allemande@1683146134.jpg"/>
 <div class="space" style="flex-grow: 1; max-height: 15em;"></div>
 <div class="info" id="info">
-<p><i>Allemande</i> is a work-in-progress AI toolkit and chat app.</p>
-<p>It is currently in development and is not yet ready for public use.</p>
-<p>Please check out <a href="https://github.com/sswam/allemande">our code</a> on Github, it's open-source.</p>
+<p>We are <i>Allemande</i>, a family business in Melbourne Australia.</p>
+<p>Our innovative chat app, <i>Ally Chat</i>, is now available for early access.</p>
+<p>Try it today, and you can help shape the future of multi-user AI chat.</p>
+<p>Ally Chat is open-source, free to use, and we will never sell your data.</p>
+<p><i>Allemande</i> also offers affordable AI consulting and development.</p>
 <p style="text-align:center">
-<a class="button" href="https://github.com/sswam/allemande">Ally Chat <span id="alpha">α</span></a>
-<a class="register-button" href="https://forms.gle/LEnaHJBurcKbBkGH6">Register Interest</a>
-<a class="button" href="https://github.com/sswam/allemande">Open Source</a>
+<a class="button red fire" href="https://github.com/sswam/allemande"><span class="fire">Ally Chat α</span></a>
+<a class="button yellow" href="https://forms.gle/LEnaHJBurcKbBkGH6">Consulting</a>
+<a class="button green fame" href="https://github.com/sswam/allemande"><span class="fame">Open Source</a></a>
 </p>
 </div>
 <div class="space" style="flex-grow: 3;"></div>
+<script>animate()</script>
 </body>
 </html>
