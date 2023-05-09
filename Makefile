@@ -17,7 +17,7 @@ JOBS := server_start server_stop home server default run-i3 run frontend backend
 	install install-dev uninstall cleanup i3-layout
 
 
-default: home
+default: beorn
 
 all: server_start home
 
@@ -29,7 +29,8 @@ server_stop:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
 
 
-home: mount run-i3-screen
+beorn: mount run-i3-screen
+i3: connect-i3-screen
 
 
 server:: stop
@@ -40,15 +41,21 @@ run-i3-screen:: i3-layout
 run-i3-screen:: stop
 run-i3-screen:: run
 
+connect-i3-screen:: i3-layout
+connect-i3-screen:: connect
 
 run: frontend backend dev
-
+connect: frontend backend.xtc dev.xtc
+disconnect:
+	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
 frontend: vi.xt vscode firefox-webchat-local chrome-webchat-online
 
 backend: core voice webchat
+backend.xtc: core.xtc voice.xtc webchat.xtc
 
 dev: cleanup nginx.xt logs.xt
+dev.xtc: cleanup nginx.xtc logs.xtc
 
 install:
 	allemande-install
@@ -69,6 +76,13 @@ core: llm.xt whisper.xt
 voice: brain.xt mike.xt speak.xt
 
 webchat: chat-api.xt stream.xt watch.xt bb2html.xt
+
+core.xtc: llm.xtc whisper.xtc
+
+voice.xtc: brain.xtc mike.xtc speak.xtc
+
+webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc
+
 
 
 cleanup:
@@ -128,7 +142,7 @@ chrome-webchat-online:
 %.xt:
 	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"
 
-%.xt2:
+%.xtc:
 	xterm-screen-connect.sh "$(SCREEN)" "$*"
 
 i3-layout:

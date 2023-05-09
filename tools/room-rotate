@@ -1,0 +1,8 @@
+#!/bin/bash -eu
+# chat-rotate: rotate chat file
+room=${1:-chat}
+from="$ALLEMANDE_HOME/rooms/$room.bb"
+to="$ALLEMANDE_HOME/rooms/$room-`date +%Y%m%d`.bb"
+if [ -f "$from" ]; then
+	mv -i "$from" "$to"
+fi

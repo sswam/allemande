@@ -143,7 +143,6 @@ def add_gtts_models():
 
 def download_all_coqui_models():
 	""" Download all Coqui TTS models """
-	# TODO this is not called anywhere, should be an option
 	for model_name in TTS.list_models():
 		_tts = TTS(model_name)
 
@@ -252,12 +251,16 @@ def do_list_models():
 		print("\t".join([k, lang, tld, accent]))
 
 @arg('--model', '-m')
-def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, debug=False, cuda=False):
+def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, debug=False, cuda=False, download_all_models=False):
 	""" Speak text """
 	global use_cuda
 
 	if not cuda:
 		use_cuda = False
+
+	if download_all_models:
+		download_all_coqui_models()
+		sys.exit(0)
 
 	add_gtts_models()
 	add_coqui_models()

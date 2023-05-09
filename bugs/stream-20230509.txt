@@ -1,0 +1,44 @@
+INFO:     59.102.6.231:0 - "GET /stream/chat.html HTTP/1.1" 200 OK
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 428, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 184, in __call__
+    raise exc
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/routing.py", line 718, in __call__   
+    await route.handle(scope, receive, send)
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/routing.py", line 69, in app
+    await response(scope, receive, send)
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/responses.py", line 270, in __call__ 
+    async with anyio.create_task_group() as task_group:
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/anyio/_backends/_asyncio.py", line 662, in __aexit__
+    raise exceptions[0]
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/responses.py", line 273, in wrap
+    await func()
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/starlette/responses.py", line 262, in stream_response
+    async for chunk in self.body_iterator:
+  File "/home/sam/allemande/webchat/stream.py", line 70, in follow
+    async for line in tail2:
+  File "/home/sam/allemande/text/akeepalive.py", line 31, in run
+    async for item in self.step():
+  File "/home/sam/allemande/text/akeepalive.py", line 67, in step
+    yield task.result()
+  File "/home/sam/allemande/text/atail.py", line 52, in run
+    async for line in self.follow_changes(f):
+  File "/home/sam/allemande/text/atail.py", line 76, in follow_changes
+    watcher.close()
+  File "/home/sam/allemande/venv/lib/python3.10/site-packages/aionotify/base.py", line 100, in close
+    self._transport.close()
+AttributeError: 'NoneType' object has no attribute 'close'

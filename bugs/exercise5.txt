@@ -1,0 +1,26 @@
+	
+	# EXERCISE #5
+Sean:	Hmm? What do you mean?
+Ally:	You said "break-a-way" when referring to getting away from something.
+Sean:	I was referring to exercise #5. What is that?
+Ally:	Exercise #5 is called a breakaway drill. It helps players develop their individual skills such as agility, acceleration, dexterity and coordination by simulating one-on-one situations against the goalie. You start by dribbling the ball around cones while being chased by another player who acts as the goalkeeper. The idea is to shake them off and score past the keeper into the net. Let's give it a try!
+	
+	<nooutput>
+	</output>
+	"""
+	    output = [
+	        'Hello there!',
+	        '<noinput>',
+	        '',
+	        'Welcome to GPT Model Tasks! This task requires the model to answer questions related to a conversation between two people. Please provide the next input here.',
+	        '<noinput>'
+	    ]
+	    
+	    input_text = 'Ally: Hi Sean, what's going on?'
+	    expected_answer = 'Nothing much. Just hanging out.'
+	    model.predict(input_text)['classes'][0] = expected_answer
+	    assert expected_answer == model.evaluate(input_text), f'Model evaluation failed!'
+	
+	if __name__ == '__main__':
+	    main()
+

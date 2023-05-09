@@ -14,6 +14,7 @@ import readline
 from types import SimpleNamespace
 
 import yaml
+import regex
 
 import ucm
 import ports
@@ -91,10 +92,12 @@ def fix_indentation(response, _args):
 	""" Fix the indentation of the response. """
 	lines = response.split("\n")
 	for i in range(1, len(lines)):
-#		if ":" in lines[i]:
-#			lines[i] = re.sub(r':\s*', ':\t', lines[i])
-#		else:
-		lines[i] = "\t" + lines[i]
+		if ":" in lines[i]:
+			role = lines[i].split(":")[0]
+			if role and regex.match(conductor.regex_name, role):
+				lines[i] = re.sub(r':\s*', ':\t', lines[i])
+		else:
+			lines[i] = "\t" + lines[i]
 	response = "\n".join(lines) + "\n"
 	return response
 
@@ -361,8 +364,6 @@ def find_files(folder, ext=None, maxdepth=inf):
 	except (PermissionError, FileNotFoundError) as e:
 		logger.warning("find_files: %r", e)
 
-stats_null = type("stats_null", (object,), {"st_mtime": inf, "st_size": 0})
-
 def watch_step(model, args, stats):
 	""" Watch a directory for changes, one step. """
 	files = []
@@ -376,6 +377,13 @@ def watch_step(model, args, stats):
 	if stats is None:
 		stats = {}
 		first = True
+
+	now = time.time()
+	
+	# If a file is newly added, we want to respond if it's a newly created file, let's say newer than now - args.interval * 2
+	# but we don't want to respond if it's an old file that was renamed or moved in.
+	# This isn't 100% reliable, but it's better than nothing
+	stats_null = type("stats_null", (object,), {"st_mtime": now - args.interval * 2, "st_size": 0})
 
 	for file in files:
 		# check if modified since last time
