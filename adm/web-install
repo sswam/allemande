@@ -37,4 +37,16 @@ for site in *; do
 	ln -sf "../sites-available/$site" /etc/nginx/sites-enabled/
 done
 
+
+# build pro
+
+
+cd "$ALLEMANDE_HOME/pro"
+ln -s $PWD /var/www/allychat-pro
+npm run build
+cd build
+ln -s ../package*.json ./
+npm ci --omit dev
+
+
 systemctl restart nginx
