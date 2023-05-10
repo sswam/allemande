@@ -30,7 +30,7 @@ for dir in py text chat anthropic www; do
 	PYTHONPATH=$PYTHONPATH:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code llm openai anthropic web chat voice-chat eg www html table i3 git; do
+for dir in adm core sys tools text data image audio video code llm openai anthropic web chat voice-chat eg www html table i3 git gradio; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
@@ -41,3 +41,5 @@ if [ ! -e "$CONFIG" ]; then
 fi
 
 . "$CONFIG"
+
+GRADIO_ANALYTICS_ENABLED=False

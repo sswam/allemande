@@ -1,0 +1,51 @@
+# ./runner.sh 'wc -l'
+
+Launching in *reload mode* on: http://127.0.0.1:7860 (Press CTRL+C to quit)
+
+Watching: '/home/sam/soft-ai/gradio/gradio', '/home/sam/allemande/gradio'
+
+/home/sam/soft-ai/gradio/gradio/inputs.py:27: UserWarning: Usage of gradio.inputs is deprecated, and will not be supported in the future, please import your component from gradio.components
+  warnings.warn(
+/home/sam/soft-ai/gradio/gradio/deprecation.py:40: UserWarning: `optional` parameter is deprecated, and it has no effect
+  warnings.warn(value)
+/home/sam/soft-ai/gradio/gradio/deprecation.py:40: UserWarning: `numeric` parameter is deprecated, and it has no effect
+  warnings.warn(value)
+/home/sam/soft-ai/gradio/gradio/outputs.py:22: UserWarning: Usage of gradio.outputs is deprecated, and will not be supported in the future, please import your components from gradio.components
+  warnings.warn(
+/home/sam/soft-ai/gradio/gradio/outputs.py:98: UserWarning: Usage of gradio.outputs is deprecated, and will not be supported in the future, please import your components from gradio.components
+  warnings.warn(
+/home/sam/soft-ai/gradio/gradio/deprecation.py:40: UserWarning: `server_name` is deprecated in `Interface()`, please use it within `launch()` instead.
+  warnings.warn(value)
+/home/sam/soft-ai/gradio/gradio/deprecation.py:40: UserWarning: `server_port` is deprecated in `Interface()`, please use it within `launch()` instead.
+  warnings.warn(value)
+Starting new HTTPS connection (1): checkip.amazonaws.com:443
+https://api.gradio.app:443 "GET /gradio-messaging/en HTTP/1.1" 200 3
+https://checkip.amazonaws.com:443 "GET / HTTP/1.1" 200 14
+entering code: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering fence: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering blockquote: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering hr: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering list: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering reference: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering html_block: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering heading: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering lheading: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering paragraph: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+Starting new HTTPS connection (1): api.gradio.app:443
+Starting new HTTPS connection (1): api.gradio.app:443
+https://api.gradio.app:443 "GET /pkg-version HTTP/1.1" 200 21
+entering code: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering fence: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering blockquote: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering hr: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering list: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering reference: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering html_block: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering code: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering fence: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering blockquote: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering hr: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering list: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering reference: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+entering html_block: StateBlock(line=0,level=0,tokens=0), 0, 1, False
+https://api.gradio.app:443 "POST /gradio-initiated-analytics/ HTTP/1.1" 200 None

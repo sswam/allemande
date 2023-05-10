@@ -4,7 +4,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 const config = {
 	plugins: [sveltekit()],
 	server: {
-		port: 5173,
+		// use same port as prod server for dev server, for compatibility
+		port: 3000,  // 5173,
 		strictPort: false,
 	},
 	preview: {

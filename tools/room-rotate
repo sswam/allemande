@@ -39,3 +39,7 @@ mv -n "$from_html" "$to_html.orig"
 sleep 1
 mv -n "$to_html.orig" "$to_html"
 rm -f "$to_html.orig"
+
+# touch original
+touch "$from"
+touch "$from_html"

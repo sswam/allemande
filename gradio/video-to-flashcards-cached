@@ -1,0 +1,27 @@
+#!/bin/bash -eu
+# video to flashcards
+
+url=$1
+cache_dir=$HOME/.cache/video-to-flashcards/
+dir=$cache_dir${url/:\/\//\/}
+
+# cache dir is url, with :// changed to /
+# We need to sanitise the URL / cache dir.
+
+# get canonical pathname for dir
+dir=$(readlink -f "$dir")
+
+# must be under the cache_dir
+if [[ ! "$dir" =~ ^"$cache_dir" ]]; then
+    echo "Invalid URL: $url" >&2
+    exit 1
+fi
+
+# Create the cache dir if it doesn't exist
+mkdir -p "$dir"
+cd "$dir"
+
+# the tool is a Makefile, so it will not re-run the job if it is already done.
+video-to-flashcards.make url="$url"
+
+cat post.txt
