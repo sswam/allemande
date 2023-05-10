@@ -55,7 +55,7 @@ def update_html_files(html_files, resource_files):
             file.write(str(soup))
 
 
-def update_symlinks()
+def update_symlinks():
     resource_dir = Path('.')
     html_files = list(resource_dir.glob('*.html'))
     css_files = list(resource_dir.glob('**/*.css'))
