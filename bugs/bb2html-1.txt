@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/home/sam/allemande/webchat/bb2html.py", line 101, in <module>
+    main()
+  File "/home/sam/allemande/webchat/bb2html.py", line 97, in main
+    ucm.run_async(bb2html_main(opts=opts, watch_log=opts.watch_log))
+  File "/home/sam/allemande/py/ucm.py", line 104, in run_async
+    loop.run_until_complete(coro)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/home/sam/allemande/webchat/bb2html.py", line 77, in bb2html_main
+    async for row in bb2html.run():
+  File "/home/sam/allemande/webchat/bb2html.py", line 49, in run
+    async for row in self.file_changed(bb_file, html_file, old_size, new_size):
+  File "/home/sam/allemande/webchat/bb2html.py", line 68, in file_changed
+    for message in chat.lines_to_messages(bb):
+  File "/home/sam/allemande/chat/chat.py", line 140, in lines_to_messages
+    user, content = split_message_line(line)
+  File "/home/sam/allemande/chat/chat.py", line 116, in split_message_line
+    raise ValueError("Invalid label missing colon, in line: %s" % line)
+ValueError: Invalid label missing colon, in line: •   Actors: The AI system will play both roles (the customer and the provider) by providing dialogue based on user input. The conversations may contain slang words and phrases. •        Environment: The conversation takes place in an informal setting, as if two friends were discussing things over text message. •       Outcome: After completing the conversation, users receive feedback on how successful they were at negotiating prices and getting what they wanted without compromising safety.

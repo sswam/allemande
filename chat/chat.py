@@ -113,7 +113,9 @@ def split_message_line(line):
 	elif label.endswith(":"):
 		user = label[:-1]
 	else:
-		raise ValueError("Invalid label missing colon, in line: %s" % line)
+		logger.warning("Invalid label missing colon, in line: %s", line)
+		user = USER_NARRATIVE
+		content = label + "\t" + content
 
 	return user, content
 
