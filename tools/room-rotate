@@ -2,22 +2,40 @@
 # room-rotate: rotate a chat room file
 
 room=${1:-chat}
+
+room=${room%.bb}
+room=${room%.html}
+
 from="$ALLEMANDE_HOME/rooms/$room.bb"
 from_html="$ALLEMANDE_HOME/rooms/$room.html"
-dir="$ALLEMANDE_HOME/rooms/$room/"
-yesterday=`date +%Y%m%d -d "-1 hour"`
-to="$dir/$yesterday.bb"
-to_html="$dir/$yesterday.html"
 
 if [ ! -f "$from" ]; then
 	echo "No such file: $from" >&2
 	exit 1
 fi
-if [ -e "$to" ]; then
+
+dir="$ALLEMANDE_HOME/rooms/$room/"
+# yesterday=`date +%Y%m%d -d "-1 hour"`
+secs=`stat -c %Y "$from"`
+date=`date +%Y%m%d -d "@$secs"`
+
+to="$dir/$date.bb"
+to_html="$dir/$date.html"
+
+if [ -e "$to" -o -e "$to" ]; then
+	timestamp=`date +%Y%m%d%H%M%S -d "@$secs"`
+	to="$dir/$timestamp.bb"
+	to_html="$dir/$timestamp.html"
+fi
+
+if [ -e "$to" -o -e "$to" ]; then
 	echo "File exists: $to" >&2
 	exit 1
 fi
 
 mkdir -p "$dir"
-mv -i "$from_html" "$to_html" </dev/null || true
-mv -i "$from" "$to" </dev/null
+mv -n "$from" "$to"
+mv -n "$from_html" "$to_html.orig"
+sleep 1
+mv -n "$to_html.orig" "$to_html"
+rm -f "$to_html.orig"

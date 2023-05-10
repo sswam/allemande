@@ -10,7 +10,7 @@ mode() {
 }
 
 rm -f /var/www/allemande
-ln -s "$ALLEMANDE_HOME/website" /var/www/allemande
+ln -s "$ALLEMANDE_HOME/site" /var/www/allemande
 
 cd "$ALLEMANDE_HOME/js"
 if [ ! -e js/mousetrap ]; then
