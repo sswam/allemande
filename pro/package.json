@@ -25,6 +25,7 @@
 	"dependencies": {
 		"@supabase/supabase-js": "^2.21.0",
 		"openai": "^3.2.1",
+		"showdown": "^2.1.0",
 		"supabase": "^1.55.1"
 	}
 }
