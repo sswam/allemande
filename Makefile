@@ -74,6 +74,7 @@ webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 pro: svelte.xt
 
 svelte:
+	cd $(ALLEMANDE_HOME)/pro && npm run build
 	cd $(ALLEMANDE_HOME)/pro && node build
 
 core.xtc: llm.xtc whisper.xtc
