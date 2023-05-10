@@ -2,11 +2,23 @@
 
 ## What is this?
 
-Allemande is a work-in-progress AI toolkit and chat app.
+We are [https://allemande.ai](Allemande AI), a growing AI consultancy in Melbourne, Australia.
 
-See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for info on obtaining the LLM.
+This is an innovative multi-player chat app called <A href="https://chat.allemande.ai">Ally Chat</A>, based on a powerful AI toolkit.
 
 ## Screenshots
+
+### Roadmap
+
+![Too Many Post-It Notes](pix/plan.jpeg)
+
+### Themes
+
+![Themes](pix/themes.jpeg)
+
+### Diffused Themes (Preview)
+
+![Themes](pix/themes-sd.jpeg)
 
 ### Multi-user AI chat
 
@@ -23,29 +35,28 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 ## What's in the box?
 
 - Voice and in-editor text chat with an AI model (e.g. point-alpaca).
-- Shell tools for ChatGPT 3.5, GPT-4 and Claude.
-- WebUI for multi-user, multi-bot, multi-agent chat
-- a local API service for core AI models, based on directories and files not sockets
+- Shell tools to use GPT-4, ChatGPT 3.5, Claude, and Claude Instant.
+- Our WebUI and systems to support multi-user, multi-bot, multi-agent chat.
+- A local API service to run the core AI models, based on directories and files rather than sockets.
 - An OCR script that uses GPT for proofreading.
-- video-to-flashcards: Automatically generate Anki flashcards from YouTube videos (up to 15 minutes or so).
+- video-to-flashcards: Automatically generate summaries and Anki flashcards from YouTube videos (up to 15 minutes or so).
+- llm-git-commit: Automatically writes your git commit messages. Unanimously voted "the best shell script ever" by all of our developers at Allemande.
 - API servers for alpaca LLM and whisper STT models
 - chatgpt-model-switcher: switch models mid-chat in the ChatGPT web app, install it [from GreasyFork](https://greasyfork.org/en/scripts/463362-chatgpt-model-switcher).
 - An away script: try to keep an AI chatbot active while you're away, without it going insane!
 
 ## Requirements
 
-- Currently this system requires a 24GB GPU such as a 3090 to run the LLM model, speech recognition, and speech synthesis at once. In future I hope to reduce the memory requirements.
-
-- GNU/Linux
+- GNU/Linux, preferably Debian 12
+- Our "Ally" LLM; see the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for info on obtaining the weights.
+- A 24GB GPU, such as a 3090, is needed if you want to run <i>Ally Chat</i> locally.
 - python3 < 3.11
 - perl 5
 - bash
-- LLaMA 7B
-- point.alpaca
 - whisper
 - Coqui TTS
 - nginx
-- haproxy (if needed)
+- haproxy (if you want to run apache on the same server)
 
 - apt install soundstretch amixer tesseract yt-dlp ffmpeg
 
@@ -68,7 +79,7 @@ make
 
 <details>
 <summary>
-We offer extremely affordable AI consulting and software development. The first consult is free. This is a <i>limited time offer</i>, while we get the business up and running. See my website for details: <a href="https://sam.ucm.dev/">sam.ucm.dev</a>.
+We offer affordable AI consulting and software development. The first consult is free, and ongoing consulting is available for between $50 and $500/month, depending on your needs.  Please "Contact Us" from our website <a href="htttp://allemande.ai">allemande.ai</a> to take advantage of this offer.
 </summary>
 <br>
 <p>(GPT-4 tries to help me sell this...)</p>
