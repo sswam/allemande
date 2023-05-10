@@ -90,7 +90,7 @@
                                "y": 0
                             },
                             "marks": [],
-                            "name": "chat - chat — Mozilla Firefox",
+                            "name": "chat — Mozilla Firefox",
                             "percent": 0.5,
                             "swallows": [
                                {
@@ -107,13 +107,82 @@
                             "current_border_width": 2,
                             "floating": "auto_off",
                             "geometry": {
+                               "height": 243,
+                               "width": 1916,
+                               "x": 0,
+                               "y": 0
+                            },
+                            "marks": [],
+                            "name": "chat — Mozilla Firefox",
+                            "percent": 0.5,
+                            "swallows": [
+                               {
+                               "class": "^firefox$",
+                               "instance": "^Navigator$",
+                               "title": "chat\\ \\—\\ Mozilla\\ Firefox$",
+                               "window_role": "^browser$"
+                               }
+                            ],
+                            "type": "con"
+                        },
+                        {
+                            "border": "normal",
+                            "current_border_width": 2,
+                            "floating": "auto_off",
+                            "geometry": {
+                               "height": 243,
+                               "width": 1916,
+                               "x": 0,
+                               "y": 0
+                            },
+                            "marks": [],
+                            "name": "pro — Mozilla Firefox",
+                            "percent": 0.5,
+                            "swallows": [
+                               {
+                               "class": "^firefox$",
+                               "instance": "^Navigator$",
+                               "title": "pro\\ \\—\\ Mozilla\\ Firefox$",
+                               "window_role": "^browser$"
+                               }
+                            ],
+                            "type": "con"
+                        },
+                        {
+                            "border": "normal",
+                            "current_border_width": 2,
+                            "floating": "auto_off",
+                            "geometry": {
+                               "height": 243,
+                               "width": 1916,
+                               "x": 0,
+                               "y": 0
+                            },
+                            "marks": [],
+                            "name": "pro — Mozilla Firefox",
+                            "percent": 0.5,
+                            "swallows": [
+                               {
+                               "class": "^firefox$",
+                               "instance": "^Navigator$",
+                               "title": "pro\\ \\—\\ Mozilla\\ Firefox$",
+                               "window_role": "^browser$"
+                               }
+                            ],
+                            "type": "con"
+                        },
+                        {
+                            "border": "normal",
+                            "current_border_width": 2,
+                            "floating": "auto_off",
+                            "geometry": {
                                "height": 331,
                                "width": 1916,
                                "x": 2,
                                "y": 725
                             },
                             "marks": [],
-                            "name": "chat - chat - Google Chrome",
+                            "name": "chat - Google Chrome",
                             "percent": 0.5,
                             "swallows": [
                                {
