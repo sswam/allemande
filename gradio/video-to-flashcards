@@ -1,0 +1,11 @@
+#!/bin/bash -eu
+# video to flashcards
+
+dir=$1
+url=$2
+
+mkdir -p "$dir"
+cd "$dir"
+video-to-flashcards.make url="$url"
+
+cat post.txt
