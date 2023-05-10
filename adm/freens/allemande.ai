@@ -1,0 +1,42 @@
+mx1	in1-smtp.messagingengine.com
+mx2	in2-smtp.messagingengine.com
+pi	pi.nipl.net
+opal1	opal1.nipl.net
+opal2	opal2.nipl.net
+opal	opal2
+us	pi
+au	opal
+ns1	pi
+ns2	opal1
+.	au
+
+samau	opal
+samus	pi
+sam	samau
+www	.
+mail	.
+
+home	203.221.235.116
+local	192.168.1.2
+beorn	home
+www.home	home
+# avs.home	home
+plan.home	home
+plan-api.home	home
+
+local.home	127.0.0.1
+# mg.home	mailgun.org
+
+chat-local	local
+rooms-local	local
+
+chat-home	home
+rooms-home	home
+
+chat	opal
+rooms	opal
+test.chat	opal
+test.rooms	opal
+
+pro	opal
+pro-local	home
