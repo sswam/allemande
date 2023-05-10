@@ -12,7 +12,8 @@ TEMPLATES := $(WEBCHAT)/templates
 JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
 	run core vi vscode voice webchat llm whisper chat-api stream auth watch \
 	bb2html nginx logs perms brain mike speak \
-	firefox-webchat-local firefox-webchat-online chrome-webchat-local chrome-webchat-online \
+	firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online \
+	chrome-webchat-local \
 	stop mount umount fresh \
 	install install-dev uninstall cleanup i3-layout
 
@@ -28,8 +29,7 @@ beorn: mount run-i3-screen
 i3: connect-i3-screen
 
 server:: stop
-server:: webchat
-server:: pro.xt
+server:: webchat pro
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -38,12 +38,12 @@ run-i3-screen:: run
 connect-i3-screen:: i3-layout
 connect-i3-screen:: connect
 
-run: frontend backend dev
-connect: frontend backend.xtc dev.xtc
+run: frontend backend dev pro-dev
+connect: frontend backend.xtc dev.xtc pro-dev.xtc
 disconnect:
 	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
-frontend: vi.xt vscode firefox-webchat-local chrome-webchat-online
+frontend: vi.xt vscode firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online chrome-webchat-local
 
 backend: core voice webchat
 backend.xtc: core.xtc voice.xtc webchat.xtc
@@ -72,10 +72,14 @@ voice: brain.xt mike.xt speak.xt
 webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 
 pro: svelte.xt
+pro-dev: svelte-dev.xt
 
 svelte:
 	cd $(ALLEMANDE_HOME)/pro && npm run build
 	cd $(ALLEMANDE_HOME)/pro && node build
+
+svelte-dev:
+	cd $(ALLEMANDE_HOME)/pro && npm run dev
 
 core.xtc: llm.xtc whisper.xtc
 
@@ -84,6 +88,7 @@ voice.xtc: brain.xtc mike.xtc speak.xtc
 webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc
 
 pro.xtc: svelte.xtc
+pro-dev.xtc: svelte-dev.xtc
 
 cleanup:
 	spool-cleanup
@@ -138,11 +143,14 @@ firefox-webchat-local:
 firefox-webchat-online:
 	(sleep 1; firefox -P "$$USER" "https://chat.allemande.ai/#$$room") & disown
 
+firefox-pro-local:
+	(sleep 1; firefox -P "$$USER" "https://pro-local.allemande.ai/") & disown
+
+firefox-pro-online:
+	(sleep 1; firefox -P "$$USER" "https://pro.allemande.ai/") & disown
+
 chrome-webchat-local:
 	(sleep 1; chrome "https://chat-local.allemande.ai/#$$room") & disown
-
-chrome-webchat-online:
-	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
 
 %.xt:
 	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"; sleep 0.1
