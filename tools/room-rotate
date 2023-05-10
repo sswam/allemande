@@ -34,5 +34,8 @@ if [ -e "$to" -o -e "$to" ]; then
 fi
 
 mkdir -p "$dir"
-mv -i "$from_html" "$to_html" </dev/null || true
-mv -i "$from" "$to" </dev/null
+mv -n "$from" "$to"
+mv -n "$from_html" "$to_html.orig"
+sleep 1
+mv -n "$to_html.orig" "$to_html"
+rm -f "$to_html.orig"
