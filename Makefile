@@ -29,6 +29,7 @@ i3: connect-i3-screen
 
 server:: stop
 server:: webchat
+server:: pro.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -70,11 +71,18 @@ voice: brain.xt mike.xt speak.xt
 
 webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 
+pro: svelte.xt
+
+svelte:
+	cd $(ALLEMANDE_HOME)/pro && node build
+
 core.xtc: llm.xtc whisper.xtc
 
 voice.xtc: brain.xtc mike.xtc speak.xtc
 
 webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc
+
+pro.xtc: svelte.xtc
 
 cleanup:
 	spool-cleanup

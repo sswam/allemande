@@ -9,12 +9,11 @@ mode() {
 	chmod $mode "$@"
 }
 
-rm -f /var/www/allemande
-ln -s "$ALLEMANDE_HOME/site" /var/www/allemande
+ln -sfT "$ALLEMANDE_HOME/site" /var/www/allemande
 
 cd "$ALLEMANDE_HOME/js"
-if [ ! -e js/mousetrap ]; then
-	git clone https://github.com/ccampbell/mousetrap js/mousetrap
+if [ ! -e mousetrap ]; then
+	git clone https://github.com/ccampbell/mousetrap
 fi
 
 cd "$ALLEMANDE_HOME/webchat"
@@ -28,8 +27,7 @@ if [ ! -e .htpasswd ]; then
 fi
 mode 640 .htpasswd static/logout/.htpasswd
 
-rm -f /var/www/allychat
-ln -s $PWD /var/www/allychat
+ln -sfT $PWD /var/www/allychat
 
 cd "$ALLEMANDE_HOME/adm/nginx"
 for site in *; do
@@ -37,4 +35,18 @@ for site in *; do
 	ln -sf "../sites-available/$site" /etc/nginx/sites-enabled/
 done
 
+
+# build pro
+
+
+cd "$ALLEMANDE_HOME/pro"
+ln -sfT $PWD /var/www/allychat-pro
+npm install
+npm run build
+cd build
+ln -sf ../package*.json ./
+npm ci --omit dev
+
+
 systemctl restart nginx
+systemctl restart haproxy
