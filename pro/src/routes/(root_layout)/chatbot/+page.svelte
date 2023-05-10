@@ -1,4 +1,6 @@
 <script>
+	import Markdown from '$lib/Markdown.svelte';
+
 	let messageInput = '';
 	let messages = [];
 	let model = 'gpt-3.5-turbo';
@@ -58,6 +60,11 @@
 		<div class={message.isUser ? 'userMessage' : 'botMessage'}>
 			{message.text}
 		</div>
+		<!--
+		<Markdown>
+			hello
+		</Markdown>
+		-->
 	{/each}
 	{#if isTyping}
 		<div class="botMessage">
@@ -106,6 +113,7 @@
 		border-radius: 10px;
 		background-color: #ddd;
 		align-self: flex-start;
+		white-space: pre-wrap;
 	}
 
 	.botMessage {
@@ -114,6 +122,7 @@
 		border-radius: 10px;
 		background-color: #eee;
 		align-self: flex-end;
+		white-space: pre-wrap;
 	}
 
 	form {
