@@ -15,7 +15,7 @@ JOBS := server_start server_stop beorn server default run-i3 run frontend backen
 	firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online \
 	chrome-webchat-local \
 	stop mount umount fresh \
-	install install-dev uninstall cleanup i3-layout
+	install install-dev uninstall clean i3-layout
 
 all: server_start beorn
 
@@ -48,8 +48,8 @@ frontend: vi.xt vscode firefox-webchat-local firefox-webchat-online firefox-pro-
 backend: core voice webchat
 backend.xtc: core.xtc voice.xtc webchat.xtc
 
-dev: cleanup nginx.xt logs.xt
-dev.xtc: cleanup nginx.xtc logs.xtc
+dev: clean nginx.xt logs.xt
+dev.xtc: clean nginx.xtc logs.xtc
 
 install:
 	allemande-install
@@ -90,7 +90,7 @@ webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc
 pro.xtc: svelte.xtc
 pro-dev.xtc: svelte-dev.xtc
 
-cleanup:
+clean:
 	spool-cleanup
 	spool-history-rm
 	> watch.log
