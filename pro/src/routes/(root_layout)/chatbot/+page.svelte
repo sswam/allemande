@@ -123,7 +123,7 @@
 		border-radius: 10px;
 		background-color: #ddd;
 		align-self: flex-start;
-//		white-space: pre-wrap;
+/*		white-space: pre-wrap; */
 	}
 
 	.botMessage {
@@ -132,7 +132,7 @@
 		border-radius: 10px;
 		background-color: #eee;
 		align-self: flex-end;
-//		white-space: pre-wrap;
+/*		white-space: pre-wrap; */
 	}
 
 	form {
