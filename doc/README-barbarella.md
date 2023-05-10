@@ -16,11 +16,11 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 
 ### Themes
 
-![Themes](pix/themes.jpeg)
+![Themes](pix/themes.jpg)
 
 ### Diffused Themes (Preview)
 
-![Themes](pix/themes-sd.jpeg)
+![Themes](pix/themes-sd.jpg)
 
 ### Multi-user AI chat
 
