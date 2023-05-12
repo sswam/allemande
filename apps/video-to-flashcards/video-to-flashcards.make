@@ -9,7 +9,7 @@ export PATH := $(MAKEFILE_DIR):$(PATH)
 
 
 SHELL := /bin/bash
-WHISPER := whisper
+WHISPER := whisp
 WHISPER_MODEL := large
 SEARCH := google
 
@@ -77,10 +77,10 @@ audio-extract: av
 	ffmpeg -loglevel error -i $< -vn -c copy $@
 
 audio.txt: audio.wav
-	$(WHISPER) --language en --model $(WHISPER_MODEL) $$PWD/$<
+	$(WHISPER) --language en --model $(WHISPER_MODEL) --output_format txt $$PWD/$<
 
 audio-clean.txt: audio.txt
-	< $< perl -pe 's/♪//g' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
+	< $< perl -pe 's/\[Music\]/ /g; s/♪//g; s/(\w){8,}/$$1 x 8/ge;' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
 
 summary.txt: transcript.txt
 	< $< llm-summary -m="$m" > $@
@@ -112,6 +112,12 @@ prompt-transcript.txt: audio-clean.txt correct.prompt
 
 transcript.txt: prompt-transcript.txt title-clean.txt
 	< $< llm process -m "$(m0)" "Please reply with just the corrected transcript. The proper title of the video is `<title-clean.txt`" > $@
+	# check if output is less thatn 90% length of input, means it was probably cut off
+	if (( `wc -c < $@` < `wc -c < $<` * 9 / 10 )); then \
+		echo "Transcript was probably cut off, so not using it." >&2; \
+		mv $@ $@.bak; \
+		cp -a $< $@; \
+	fi
 
 transcript.md: transcript.txt
 	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown.sh >$@
