@@ -463,7 +463,7 @@ def get_opts():
 
 	watch_group = parser.add_argument_group("Watch mode options")
 	watch_group.add_argument("--ext", default=default_file_extension, help="File extension to watch for")
-	watch_group.add_argument("--depth", type=int, default=1, help="Maximum depth to search for and watch files")
+	watch_group.add_argument("--depth", type=int, default=2, help="Maximum depth to search for and watch files")
 	watch_group.add_argument("--interval", type=float, default=1.0, help="Interval between checks")
 	watch_group.add_argument("--ignore-shrink", action="store_true", help="Don't react if the file shrinks")
 	watch_group.add_argument("--ignore", default=None, help="Ignore if this string occurs at the end")
