@@ -17,9 +17,10 @@ SEARCH := google
 # WHISPER_MODEL := models/ggml-large.bin
 
 
-m0=3+
+#m0=3+
+m0=c+
 # m0=4   # gives "Gateway timeout" for large inputs
-m=4
+m=c+
 
 
 default: goal
