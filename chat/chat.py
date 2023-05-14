@@ -7,9 +7,13 @@ import itertools
 import html
 from pathlib import Path
 import re
+import logging
 
 import argh
 import markdown
+
+
+logger = logging.getLogger(__name__)
 
 
 USER_NARRATIVE = object()
