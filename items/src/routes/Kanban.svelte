@@ -1,5 +1,13 @@
 <script>
+  import { onMount } from 'svelte';
   import { items } from '../store.js';
+  import Item from './Item.svelte';
+
+  onMount(async () => {
+    const response = await fetch('/api/items');
+    const items = await response.json();
+    items.set(items);
+  });
 //  let items = [
 //    { id: 1, status: 'todo', subject: 'Item 1' },
 //    { id: 2, status: 'doing', subject: 'Item 2' },
@@ -28,21 +36,21 @@
   <div class="kanban-column">
     <h2>To Do</h2>
     {#each $items.filter(item => item.status === 'todo') as item}
-      <div class="kanban-item">{item.subject}</div>
+      <Item {item} />
     {/each}
   </div>
 
   <div class="kanban-column">
     <h2>Doing</h2>
     {#each $items.filter(item => item.status === 'doing') as item}
-      <div class="kanban-item">{item.subject}</div>
+      <Item {item} />
     {/each}
   </div>
 
   <div class="kanban-column">
     <h2>Done</h2>
     {#each $items.filter(item => item.status === 'done') as item}
-      <div class="kanban-item">{item.subject}</div>
+      <Item {item} />
     {/each}
   </div>
 </div>
