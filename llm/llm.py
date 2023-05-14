@@ -45,39 +45,49 @@ models = {
 		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
 		"cost": 0.0,  # at least for now!
 	},
+	"claude-v1-100k": {
+		"abbrev": "c+",
+		"description": "Anthropic's Claude with an 100k token window.",
+		"cost": 0.0,  # at least for now!
+	},
+	"claude-instant-v1-100k": {
+		"abbrev": "i+",
+		"description": "Anthropic's Claude Instant with an 100k token window.",
+		"cost": 0.0,  # at least for now!
+	},
 	"gpt-4-32k": {
 		"abbrev": "4+",
 		"description": "Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with our latest model iteration.",
 		"cost": 0.06,
 	},
-	"gpt-3.5-turbo-0301": {
-		"description": "Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.",
-		"cost": 0.002,
-	},
-	"gpt-4-0314": {
-		"description": "Snapshot of gpt-4 from March 14th 2023. Unlike gpt-4, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
-		"cost": 0.03,
-	},
-	"gpt-4-32k-0314": {
-		"description": "Snapshot of gpt-4-32 from March 14th 2023. Unlike gpt-4-32k, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
-		"cost": 0.06,
-	},
-	"claude-v1.0": {
-		"description": "An earlier version of claude-v1.",
-		"cost": 0.0
-	},
-	"claude-v1.2": {
-		"description": "An improved version of claude-v1. It is slightly improved at general helpfulness, instruction following, coding, and other tasks. It is also considerably better with non-English languages. This model also has the ability to role play (in harmless ways) more consistently, and it defaults to writing somewhat longer and more thorough responses.",
-		"cost": 0.0
-	},
-	"claude-v1.3": {
-		"description": "A significantly improved version of claude-v1. Compared to claude-v1.2, it's more robust against red-team inputs, better at precise instruction-following, better at code, and better and non-English dialogue and writing.",
-		"cost": 0.0
-	},
-	"claude-instant-v1.0": {
-		"description": "Current default for claude-instant-v1.",
-		"cost": 0.0
-	}
+#	"gpt-3.5-turbo-0301": {
+#		"description": "Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.",
+#		"cost": 0.002,
+#	},
+#	"gpt-4-0314": {
+#		"description": "Snapshot of gpt-4 from March 14th 2023. Unlike gpt-4, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
+#		"cost": 0.03,
+#	},
+#	"gpt-4-32k-0314": {
+#		"description": "Snapshot of gpt-4-32 from March 14th 2023. Unlike gpt-4-32k, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
+#		"cost": 0.06,
+#	},
+#	"claude-v1.0": {
+#		"description": "An earlier version of claude-v1.",
+#		"cost": 0.0
+#	},
+#	"claude-v1.2": {
+#		"description": "An improved version of claude-v1. It is slightly improved at general helpfulness, instruction following, coding, and other tasks. It is also considerably better with non-English languages. This model also has the ability to role play (in harmless ways) more consistently, and it defaults to writing somewhat longer and more thorough responses.",
+#		"cost": 0.0
+#	},
+#	"claude-v1.3": {
+#		"description": "A significantly improved version of claude-v1. Compared to claude-v1.2, it's more robust against red-team inputs, better at precise instruction-following, better at code, and better and non-English dialogue and writing.",
+#		"cost": 0.0
+#	},
+#	"claude-instant-v1.0": {
+#		"description": "Current default for claude-instant-v1.",
+#		"cost": 0.0
+#	}
 }
 
 #	"code-davinci-002": {

@@ -7,6 +7,7 @@ import os
 import logging
 import asyncio
 import json
+from typing import Optional
 import argh
 import anthropic
 
@@ -16,10 +17,13 @@ logging.basicConfig(level=logging.INFO)
 
 DEFAULT_TEMPERATURE = 1.0
 TOKEN_LIMIT = 9216
-# TODO does this vary for claude-instant-v1 and other models?
-DEFAULT_MODEL = "claude-v1"
-INSTANT_MODEL = "claude-instant-v1"
-OTHER_MODELS = ["claude-v1.0", "claude-v1.1", "claude-v1.2", "claude-v1.3", "claude-instant-v1.0"]
+TOKEN_LIMIT_100K = 100000  # exactly?
+# TODO does this vary for claude-instant-v1 and other models?  It does with 100K clearly
+MODEL_DEFAULT = "claude-v1"
+MODEL_INSTANT = "claude-instant-v1"
+MODEL_100K = "claude-v1-100k"
+MODEL_INSTANT_100K = "claude-instant-v1-100k"
+# see also: https://console.anthropic.com/docs/api/reference
 
 def count(message, add_prompts=True):
 	""" Count the number of tokens in a message """
@@ -64,7 +68,7 @@ def message_to_string(message):
 
 def chat_claude(messages, model=None, token_limit: int = None, temperature=None, streaming=False, _async=False):
 	if model is None:
-		model = DEFAULT_MODEL
+		model = MODEL_DEFAULT
 	if token_limit is None:
 		token_limit = TOKEN_LIMIT
 	if temperature is None:
@@ -117,30 +121,41 @@ async def async_stream(message, out=sys.stdout, debug=False, **kwargs):
 		completion = stream_completion(data, completion, out)
 	# return completion
 
-def query(message, model=DEFAULT_MODEL, debug=False, token_limit: int = TOKEN_LIMIT, temperature=DEFAULT_TEMPERATURE):
+def default_token_limit_for_model(model: str):
+	return TOKEN_LIMIT_100K if "100k" in model else TOKEN_LIMIT
+
+def query(message, model=MODEL_DEFAULT, debug=False, token_limit: Optional[int] = None, temperature=DEFAULT_TEMPERATURE):
 	""" Syncronous access to the anthropic API """
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
+	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	response = complete(message, model=model, token_limit=token_limit, temperature=temperature)
 	return response_completion(response)
 
-def stream(message, model=DEFAULT_MODEL, out=sys.stdout, debug=False, token_limit: int = TOKEN_LIMIT, temperature=DEFAULT_TEMPERATURE):
+def stream(message, model=MODEL_DEFAULT, out=sys.stdout, debug=False, token_limit: Optional[int] = None, temperature=DEFAULT_TEMPERATURE):
 	""" Streaming access to the anthropic API """
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
+	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	response = complete(message, model=model, token_limit=token_limit, streaming=True, temperature=temperature)
 	completion = ""
 	for data in response:
 		completion = stream_completion(data, completion, out)
 	# return completion
 
-def aquery(message, model=DEFAULT_MODEL, debug=False, token_limit: int = TOKEN_LIMIT, temperature=DEFAULT_TEMPERATURE):
+def aquery(message, model=MODEL_DEFAULT, debug=False, token_limit: Optional[int] = None, temperature=DEFAULT_TEMPERATURE):
 	""" Asyncronous access to the anthropic API - argh wrapper """
+	if debug:
+		logging.basicConfig(level=logging.DEBUG)
+	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	response = asyncio.run(async_query(message, model=model, debug=debug, token_limit=token_limit, temperature=temperature))
 	return response
 
-def astream(message, model=DEFAULT_MODEL, out=sys.stdout, debug=False, token_limit: int = TOKEN_LIMIT, temperature=DEFAULT_TEMPERATURE):
+def astream(message, model=MODEL_DEFAULT, out=sys.stdout, debug=False, token_limit: Optional[int] = None, temperature=DEFAULT_TEMPERATURE):
 	""" Asyncronous streaming access to the anthropic API - argh wrapper """
+	if debug:
+		logging.basicConfig(level=logging.DEBUG)
+	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	asyncio.run(async_stream(message, model=model, out=out, debug=debug, token_limit=token_limit, temperature=temperature))
 
 if __name__ == "__main__":

@@ -12,6 +12,8 @@ import logging
 import tempfile
 from pathlib import Path
 
+os.environ["PATH"] = os.environ.get("PATH", "") + ":" + os.getcwd()
+
 WHISPER = os.environ.get("WHISPER", "whisp")
 
 os.environ["GRADIO_ANALYTICS"] = "False"
@@ -29,7 +31,7 @@ title = os.environ.get("RUNNER_TITLE", f"{name}")
 desc = os.environ.get("RUNNER_DESC", f"Enter the URL of a short video (<15m). The program will try to summarize the video, and produce flashcards.")
 
 
-def process_text(Video_url):
+def process_text(video_url):
     """ run a text processing command in a web interface """
 
     logger.info("Processing: %r", video_url)
@@ -88,8 +90,8 @@ demo = gr.Interface(
     inputs=[
         gr.inputs.Textbox(label="Video URL",
         lines=1,
-        placeholder="Enter the URL here...",
-        default="https://www.youtube.com/watch?v=NsevBxOWFXs"),
+        placeholder="https://www.youtube.com/watch?v=",
+        default=""),
     ],
     outputs=[
         gr.outputs.Textbox(label="Exit Status"),
