@@ -2,6 +2,7 @@
 # video to flashcards
 
 url=$1
+shift
 cache_dir=$HOME/.cache/video-to-flashcards/
 dir=$cache_dir${url/:\/\//\/}
 
@@ -9,7 +10,7 @@ dir=$cache_dir${url/:\/\//\/}
 # We need to sanitise the URL / cache dir.
 
 # get canonical pathname for dir
-dir=$(readlink -f "$dir")
+dir=$(readlink -m "$dir")
 
 # must be under the cache_dir
 if [[ ! "$dir" =~ ^"$cache_dir" ]]; then
@@ -21,7 +22,13 @@ fi
 mkdir -p "$dir"
 cd "$dir"
 
-# the tool is a Makefile, so it will not re-run the job if it is already done.
-video-to-flashcards.make url="$url"
-
-cat post.txt
+# The tool is a Makefile, so it will not re-run the job if it is already done.
+# We can just run the makefile instead of checking if it is already cached.
+if video-to-flashcards.make url="$url" "$@" >&2; then
+    v cat post.txt
+else
+    # delete empty files
+    status=$?
+    find "$dir" -type f -size 0 | xa rm -f
+    exit $status
+fi

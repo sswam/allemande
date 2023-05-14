@@ -2,7 +2,7 @@
 
 ## What is this?
 
-We are [https://allemande.ai](Allemande AI), a growing AI consultancy in Melbourne, Australia.
+We are [Allemande AI](https://allemande.ai), a growing AI consultancy in Melbourne, Australia.
 
 This is an innovative multi-player chat app called <A href="https://chat.allemande.ai">Ally Chat</A>, based on a powerful AI toolkit.
 

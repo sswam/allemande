@@ -12,6 +12,8 @@ import logging
 import tempfile
 from pathlib import Path
 
+WHISPER = os.environ.get("WHISPER", "whisp")
+
 os.environ["GRADIO_ANALYTICS"] = "False"
 import gradio as gr   # pylint: disable=wrong-import-position
 
@@ -21,28 +23,50 @@ logger = logging.getLogger(__name__)
 
 
 cmd = "video-to-flashcards-cached"
+opts = [ "WHISPER="+WHISPER ]
 name = "Video to Flashcards"
 title = os.environ.get("RUNNER_TITLE", f"{name}")
 desc = os.environ.get("RUNNER_DESC", f"Enter the URL of a short video (<15m). The program will try to summarize the video, and produce flashcards.")
 
 
-def process_text(youtube_url):
+def process_text(Video_url):
     """ run a text processing command in a web interface """
 
-    logger.info("Processing: %r", youtube_url)
-    logger.info("PATH: %r", os.environ["PATH"])
+    logger.info("Processing: %r", video_url)
+
+    error_text = ""
+    output_text = ""
+    status = 255
+
+    result = None
+
+    # show PATH
+    logger.debug("PATH: %r", os.environ["PATH"].split(":"))
 
     result = subprocess.run(
-        [cmd, youtube_url],
+        [cmd, video_url, *opts],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
         check=False,
     )
 
-    output_text = result.stdout
-    error_text = result.stderr
-    status = result.returncode
+#    try:
+#        result = subprocess.run(
+#            [cmd, video_url],
+#            stdout=subprocess.PIPE,
+#            stderr=subprocess.PIPE,
+#            text=True,
+#            check=False,
+#        )
+#    except subprocess.CalledProcessError as err:
+#        logger.error("Error: %r", err)
+#        error_text += repr(err) + "\n\n"
+
+    if result:
+        output_text = result.stdout
+        error_text += result.stderr
+        status = result.returncode
 
     tmpdir = tempfile.mkdtemp()
     output_file = Path(tmpdir) / "post.txt"
@@ -62,7 +86,10 @@ def process_text(youtube_url):
 demo = gr.Interface(
     fn=process_text,
     inputs=[
-        gr.inputs.Textbox(label="YouTube URL", lines=1, placeholder="Enter the URL here..."),
+        gr.inputs.Textbox(label="Video URL",
+        lines=1,
+        placeholder="Enter the URL here...",
+        default="https://www.youtube.com/watch?v=NsevBxOWFXs"),
     ],
     outputs=[
         gr.outputs.Textbox(label="Exit Status"),
@@ -75,9 +102,7 @@ demo = gr.Interface(
     allow_flagging='never',
 )
 
-
 if __name__ == "__main__":
     demo.launch(
-#        server_name="0.0.0.0",
         server_port=8080,
     )

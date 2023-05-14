@@ -20,3 +20,4 @@ rooms.*
 !rooms.dist
 venv
 js/mousetrap
+pix/banner?.*
