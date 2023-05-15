@@ -30,6 +30,11 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 
 ![There was a bug where the AI used too many emojis!](pix/emotional.png)
 
+### There is still a "behavioural issue" where the AI uses too many hashtags and sometimes goes into emoji world too.
+
+![There is still a "behavioural issue" where the AI uses too many hashtags and sometimes goes into emoji world too.
+](pix/hashjunkie.png)
+
 ### AI software tools
 
 ![AI software tools](pix/fortune-poem.png)
