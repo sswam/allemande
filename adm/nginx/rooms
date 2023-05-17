@@ -69,7 +69,7 @@ server {
 		proxy_read_timeout 120s;
 	}
 
-	location /logout {
+	location /logout/logout {
 		auth_basic "Auth";
 		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
 		autoindex on;

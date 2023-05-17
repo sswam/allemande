@@ -39,11 +39,12 @@ def open_microphone_spamfree(*args, **kwargs):
 	finally:
 		source.__exit__(None, None, None)
 
-def record_speech(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise=False):
+def record_speech(run_event, q_audio, energy, pause, non_speaking_duration, dynamic_energy, device_index, adjust_for_ambient_noise=False):
 	""" Record audio from microphone and put it in the queue """
 	r = sr.Recognizer()
 	r.energy_threshold = energy
 	r.pause_threshold = pause
+	r.non_speaking_duration = non_speaking_duration
 	r.dynamic_energy_threshold = dynamic_energy
 	i = 0
 
@@ -138,7 +139,7 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 
-def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.90):
+def mike(lang="en", energy=1500, dynamic_energy=False, pause=2.0, non_speaking_duration=0.5, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.90):
 	""" Transcribe speech to text using microphone input """
 
 	if list_devices:
@@ -155,7 +156,7 @@ def mike(lang="en", energy=1500, dynamic_energy=False, pause=2, device_index=Non
 		q_text = Queue()
 		Thread(
 			target=record_speech,
-			args=(run_event, q_audio, energy, pause, dynamic_energy, device_index, adjust_for_ambient_noise)
+			args=(run_event, q_audio, energy, pause, non_speaking_duration, dynamic_energy, device_index, adjust_for_ambient_noise)
 			).start()
 		Thread(
 			target=speech_to_text,

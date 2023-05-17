@@ -53,12 +53,12 @@ server {
 		return 404;
 	}
 
-	location /logout {
-		auth_basic "Auth";
-		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
-		autoindex on;
-		try_files $uri $uri/ =404;
-	}
+#	location /logout/logout {
+#		auth_basic "Auth";
+#		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
+#		autoindex on;
+#		try_files $uri $uri/ =404;
+#	}
 
 	location /x {
 		auth_basic "Auth";
