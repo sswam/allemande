@@ -4,12 +4,21 @@
 usage() {
 	# read the script itself to output usage:
 
-	# if -h was not passed, output usage to stderr
-	if [ "${1:-}" != -h ]; then
-		echo exec to stderr
-
+	case "$*" in
+	-h|-help|--help)
+		# if -h was passed, not an error: output usage to stdout
+		exit=0
+		;;
+	*)
+		# error: if a message was passed, output it to stderr
+		exit=1
 		exec >&2
-	fi
+		if [ -n "$*" ]; then
+			echo "$*"
+			echo
+		fi
+		;;
+	esac
 
 	# use perl to strip out the shebang and the opts section
 	< "$0" perl -pe '
@@ -17,23 +26,68 @@ usage() {
 		$_ = "", $after=1, next if /^\. opts$/;
 		last if $after && /^$/;
 
-		s/=/\t/;
+		s/=/\t/ unless /^#/;
 		s/(^|\t)#\s*/$1/;
-	' | tsv2txt
+	' | kut 1 3 2 4 5 6 | tsv2txt
 
-	# if -h was passed, exit with success
-	if [ "${1:-}" = -h ]; then
-		exit 0
-	fi
-
-	# else, exit with failure
-	exit 1
+	exit $exit
 }
 
+OPTS_UNKNOWN=()
 OPTS=()
 OPTS_N=0
+
+opts_set_scalar() {
+	local type=$1 OPT=$2 VAL=$3
+
+	# check that $OPT is declared as a string or an int
+	if [ "$type" != "string" ] && [ "$type" != "int" ]; then
+		usage "error: not a string or an int: $OPT"
+	fi
+
+	# check int
+	if [ "$type" = "int" ] && ! [[ $VAL =~ ^[0-9]+$ ]]; then
+		usage "error: not an int: $OPT=$VAL"
+	fi
+
+	eval $OPT=\$VAL
+}
+
+opts_set_array() {
+	local type=$1 OPT=$2 VAL=$3
+
+	# check that $OPT is declared as an array
+	if [ "$type" != "array" ]; then
+		usage "error: not an array: $OPT"
+	fi
+
+	# if OPTVAL is foo,a,b,c
+	# then set OPT as an array to (a b c)
+	
+	local IFS_OLD=$IFS
+	eval IFS=, $OPT=\(\$VAL\)
+	IFS=$IFS_OLD
+}
+
+opts_set_assoc() {
+	# TODO this doesn't work yet
+	local type=$1 OPT=$2 VAL=$3
+	
+	# check that $OPT is declared as an assoc
+	if [ "$type" != "assoc" ]; then
+		usage "error: not an associative array: $OPT"
+	fi
+
+	local IFS_OLD=$IFS
+	eval IFS=, $OPT=\(\$VAL\)
+	IFS=$IFS_OLD
+}
+
 while true; do
 	case "${1:-}" in
+	"")
+		break
+		;;
 	-|--)
 		shift
 		break
@@ -41,33 +95,84 @@ while true; do
 	-h|-help|--help)
 		usage -h
 		;;
-	-*)
-		OPTS[$OPTS_N]="$1"
-		OPTVAL="${1#-}"
-		OPTVAL="${OPTVAL#-}"
-		OPT=${OPTVAL%%=*}
-		OPT="${OPT//-/_}"
-		case "$OPTVAL" in
-		*=*)
-			VAL=${OPTVAL#*=}
-			eval $OPT=\$VAL
-			;;
-		[a-zA-Z]*)
-			eval $OPT=1
-			;;
-		*)
-			eval opt_$OPT=1
-			;;
-		# TODO list-valued options like in a2b?
-		esac
-		shift
-		OPTS_N=$[$OPTS_N + 1]
-		;;
-	*)
+	[!-]*)
 		break
 		;;
 	esac
+
+	OPTS[$OPTS_N]="$1"
+	OPTVAL="${1#-}"
+	OPTVAL="${OPTVAL#-}"
+
+	OPT=${OPTVAL%%[=,\[]*}
+	OPT="${OPT//-/_}"
+	# if $OPT doesn't start with a letter, add opt_ prefix
+	if ! [[ $OPT =~ ^[a-zA-Z] ]]; then
+		OPT="opt_$OPT"
+	fi
+
+	OPTS_DECLARATION=`declare -p "$OPT" 2>/dev/null`
+
+	case "$OPTS_DECLARATION" in
+	declare\ -a*)
+		type=array
+		;;
+	declare\ -A*)
+		type=assoc
+		;;
+	declare\ -i*)
+		type=int
+		;;
+	*)
+		type=string
+		;;
+	esac
+
+	# check if there's a function named $OPT, use declare -F
+	function=0
+	if declare -F "$OPT" >/dev/null 2>&1; then
+		function=1
+	fi
+
+	# q. are there any other types as opposed to attributes?
+	# a. yes, there are: -r, -x, -t, -n, -p, -f, -F, -C, -S, -T, -u, -r, -x, -t, -n, -p, -f, -F, -C, -S, -T, -u
+	#   but they are not relevant to opts
+	#
+
+	if [ -z "$type" ]; then
+		OPTS_UNKNOWN+=("$OPT")
+	fi
+
+	case "$OPTVAL" in
+	*=*)
+		VAL=${OPTVAL#*=}
+		opts_set_scalar "$type" "$OPT" "$VAL"
+		;;
+	*,*)
+		VAL=${OPTVAL#*,}
+		opts_set_array "$type" "$OPT" "$VAL"
+		;;
+	*\[*\])
+		VAL=${OPTVAL#*\[}
+		VAL=${VAL%]}
+		opts_set_assoc "$type" "$OPT" "$VAL"
+		;;
+	*:*)
+		VAR=${OPTVAL%:*}
+		opts_set_func "$function" "$OPT" "$VAR"
+		;;
+	*)
+		opts_set_scalar "$type" "$OPT" 1
+		eval $OPT=1
+		;;
+	esac
+	shift
+	OPTS_N=$[$OPTS_N + 1]
 done
+
+if [ ${#OPTS_UNKNOWN[@]} -gt 0 ]; then
+	usage "error: unknown options: ${OPTS_UNKNOWN[*]}"
+fi
 
 
 # # usage from bash
@@ -81,3 +186,9 @@ done
 # echo "mode=$mode"
 # echo opts: "${OPTS[@]}"
 # echo args: "$@"
+
+# There are four syntaxes for options:
+# -foo		set $foo to 1
+# -foo=bar	set $foo to bar
+# -foo,a,b,c	set $foo to (a b c)
+# -foo[a=b,c=d]	set $foo to (a=b c=d)
