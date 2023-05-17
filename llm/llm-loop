@@ -7,7 +7,8 @@
 o=              # options
 i=2             # interval
 v=	        # verbose
-b="arcs	-N -q"  # backup
+b=	        # backup
+#b="arcs -N -q"	# backup
 q=	        # quiet
 r=1	        # reload
 m=3+            # model
