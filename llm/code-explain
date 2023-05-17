@@ -1,0 +1,12 @@
+#!/bin/bash -eu
+m=4
+. opts
+name="${1:-}"
+prompt="Please explain this code in brief and what the tool is supposed to do."
+if [ -n "$name" ]; then
+    prompt+=" The program is called $name."
+fi
+if [ -t 0 ] && [ -f "$name" ]; then
+    exec < "$name"
+fi
+exec kia llm process -m $m "$prompt"
