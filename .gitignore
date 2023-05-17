@@ -21,3 +21,4 @@ rooms.*
 venv
 js/mousetrap
 pix/banner?.*
+config2.sh
