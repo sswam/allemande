@@ -56,7 +56,7 @@ a.button {
 	background-color: #333;
 	color: #eee;
 	text-decoration: none;
-	padding: 10px 40px;
+	padding: 10px 25px;
 	border-radius: 5px;
 	font-weight: 500;
 	margin-top: 20px;
@@ -96,6 +96,6 @@ a.button {
 @media (max-width: 600px) {
 	.info {
 		padding: 10px 20px;
-		font-size: 16px;
+		font-size: 15px;
 	}
 }
