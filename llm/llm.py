@@ -244,7 +244,11 @@ def messages_to_lines(messages):
 	return lines
 
 
-def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optional[str]=None, model: str=default_model, indent="\t", temperature=None, token_limit=None):
+def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3):
+	return retry(process2, retries, prompt, inp=inp, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit)
+
+
+def process2(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optional[str]=None, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3):
 	""" Process some text through the LLM with a prompt. """
 	prompt = prompt.rstrip()
 	input_text = inp.read().rstrip()
@@ -263,7 +267,11 @@ def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optio
 	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit)
 
 
-def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None):
+def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3):
+	return retry(query2, retries, prompt, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit)
+
+
+def query2(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None):
 	""" Ask the LLM a question. """
 
 	model = get_model_by_abbrev(model)
@@ -285,8 +293,23 @@ def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t
 	out.write(content)
 
 
-def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None):
+def retry(fn, n_tries, *args, **kwargs):
+	""" Retry a function n_tries times. """
+	for i in range(n_tries):
+		try:
+			return fn(*args, **kwargs)
+		except Exception as ex:
+			logger.warning("retry: exception: %s", ex)
+			if i == n_tries - 1:
+				raise
+
+
+def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=3):
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
+	return retry(chat2, retries, inp=inp, out=out, model=model, fake=fake, temperature=temperature, token_limit=token_limit)
+
+
+def chat2(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=3):
 	model = get_model_by_abbrev(model)
 	input_lines = inp.readlines()
 	input_messages = lines_to_messages(input_lines)
