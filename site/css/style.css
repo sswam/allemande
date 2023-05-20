@@ -59,7 +59,7 @@ a.button {
 	padding: 10px 25px;
 	border-radius: 5px;
 	font-weight: 500;
-	margin-top: 20px;
+	margin: 20px 7px 0px 7px;
 }
 
 .button:hover {
