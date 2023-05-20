@@ -1,4 +1,4 @@
-![Allemande AI Banner](pix/banner.png)
+![Allemande AI Banner](pix/banner.jpg)
 
 # Electric Barbarella
 
