@@ -121,7 +121,8 @@ function load_user_styles() {
 
 function logged_out() {
 	// hide #logout button
-	
+	// TODO show a different logged-out screen, or just go to https://allemande.ai
+
 	const $logout = $id('logout');
 	if ($logout) { $logout.style.display = "none"; }
 }
@@ -151,6 +152,10 @@ async function who() {
 
 	user = data.user;
 	admin = data.admin;
+
+	const $user = $id('user');
+	$user.innerText = user;
+
 	if (admin) {
 		for (const $e of $$(".admin")) {
 			$e.style.display = "block";

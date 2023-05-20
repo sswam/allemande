@@ -1,4 +1,4 @@
-![Allemande AI Banner](pix/allemande.png)
+![Allemande AI Banner](pix/allemande.jpg)
 
 ## What is this?
 

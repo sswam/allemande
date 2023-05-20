@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
@@ -46,7 +45,7 @@ function animate() {
 }
 </script>
 </head>
-<body onload="window.setInterval(animate, 50);">
+<body onload="window.setInterval(animate, 200);">
 <img alt="Allemande" id="banner" src="allemande@1683146134.jpg"/>
 <div class="space" style="flex-grow: 1; max-height: 15em;"></div>
 <div class="info" id="info">
@@ -55,12 +54,17 @@ function animate() {
 <p>Our flagship product is <i class="fame">Ally Chat</i>, an innovative multi-user chat system.</p>
 <p>Schedule a free meeting with us today, to learn how AI can help you.</p>
 <p style="text-align:center">
-<a class="button red" href="https://chat.allemande.ai"><span class="fire">Ally Chat α</span></a>
+<a class="button red" id="chatlink" href="https://chat.allemande.ai"><span class="fire">Ally Chat α</span></a>
 <a class="button yellow" href="https://forms.gle/LEnaHJBurcKbBkGH6">Contact Us</a>
 <a class="button green" href="https://github.com/sswam/allemande"><span class="fame">Open Source</span></a>
 </p>
 </div>
 <div class="space" style="flex-grow: 3;"></div>
-<script>animate()</script>
+<script>
+if (location.href.indexOf("local.") > -1) {
+	document.getElementById("chatlink").href = "https://chat-local.allemande.ai";
+}
+animate()
+</script>
 </body>
 </html>
