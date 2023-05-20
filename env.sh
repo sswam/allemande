@@ -26,8 +26,8 @@ fi
 
 PYTHON=$(which python3)
 
-for dir in py text chat anthropic www; do
-	PYTHONPATH=$PYTHONPATH:$ALLEMANDE_HOME/$dir
+for dir in py text www chat anthropic google; do
+	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
 for dir in adm core sys tools text data image audio video code llm openai anthropic web chat voice-chat eg www html table i3 git gradio apps; do

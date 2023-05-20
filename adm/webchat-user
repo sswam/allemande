@@ -1,0 +1,90 @@
+#!/bin/bash -eu
+# webchat-user: manage users in the Allemande webchat
+cd ~/allemande
+. ./env.sh
+cd webchat
+. opts
+
+function add_user() {
+	change_password "$@"
+}
+
+function change_password() {
+	local user=${1:-} pass=${2:-}
+	if [ -z "$user" ]; then
+		read -p "Username: " user
+	fi
+	if [ -z "$pass" ]; then
+		pass=`pwgen 6 -1 | head -n1 | tr -d '\n'`
+	fi
+	htpasswd -b .htpasswd "$user" "$pass"
+	echo "+ $user $pass"
+}
+
+function remove_user() {
+	local user=${1:-}
+	if [ -z "$user" ]; then
+		read -p "Username: " user
+	fi
+	htpasswd -D .htpasswd "$user"
+	echo "- $user"
+}
+
+function disable_user() {
+	local user=${1:-} comment=${2:-}
+	if [ -z "$user" ]; then
+		read -p "Username: " user
+	fi
+	if [ -z "$comment" ]; then
+		read -p "Comment: " comment
+	fi
+	perl -pi -e "s/^\Q$user\E:(.*)\$/*$user:*\$1:$comment/" .htpasswd
+	echo "_ $user"
+}
+
+function enable_user() {
+	local user=${1:-}
+	if [ -z "$user" ]; then
+		read -p "Username: " user
+	fi
+	perl -pi -e "s/^\*\Q$user\E:\*(.*?):?\$/$user:\$1/" .htpasswd
+	echo "+ $user"
+}
+
+function list_users() {
+	local filter=${1:-}
+	< .htpasswd cut -f1 -d":" | grep -i "$filter"
+}
+
+function main() {
+	cmd=${1:-}
+	shift || true
+	case $cmd in
+	"add")
+		add_user "$@"
+		;;
+	"passwd")
+		change_password "$@"
+		;;
+	"rm")
+		remove_user "$@"
+		;;
+	"off")
+		disable_user "$@"
+		;;
+	"on")
+		enable_user "$@"
+		;;
+	"list")
+		list_users "$@"
+		;;
+	*)
+		echo "Usage: $0 {add|passwd|rm|off|on|list} [args...]"
+		exit 1
+		;;
+	esac
+}
+
+if [[ "$0" == "$BASH_SOURCE" ]]; then
+	main "$@"
+fi

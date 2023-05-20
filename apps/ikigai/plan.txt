@@ -1,0 +1,21 @@
+1. Try applying revisions step by step.
+2. Encourage it to redo the language and formatting.
+3. Generate 4 alternative style sheets.
+4. Focus more on ikigai plan than on resume?
+5. Try to get it to generate a resume from scratch.
+6. Try getting to fill a given template resume.
+7. Solicit jobsearch info such as desired salary, location, etc.
+8. Search web for best relevant jobs.
+	- major companies from their pages
+	- job boards
+	- linkedin
+	- craigslist (?)
+9. Filter jobs by user approval.
+10. Write cover letter for approved jobs.
+11. Optionally tweak resume for each job.
+12. Apply to jobs with user's approval.
+14. Fill in job application forms online.
+13. Fill in unemployment paperwork online.
+14. For freelance consultants, search for clients.
+15. For freelance consultants, write proposals.
+16. For freelance consultants, write invoices.

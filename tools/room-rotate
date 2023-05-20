@@ -43,3 +43,9 @@ rm -f "$to_html.orig"
 # touch original
 touch "$from"
 touch "$from_html"
+
+# copy ownership and permissions from original
+chown --reference="$to" "$from"
+chmod --reference="$to" "$from"
+chown --reference="$to_html" "$from_html"
+chmod --reference="$to_html" "$from_html"

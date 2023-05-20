@@ -18,7 +18,7 @@ import argh
 
 
 class Bard:
-    def __init__(self, timeout=30, proxies=None, session=None, state=None, state_file=None, auto_save=True):
+    def __init__(self, timeout=30, proxies=None, session=None, state=None, state_file=None, auto_save=None):
         """
         Initialize Bard
 
@@ -36,6 +36,8 @@ class Bard:
         self.proxies = proxies
         self.timeout = timeout
         self.state_file = state_file
+        if auto_save is None:
+            auto_save = bool(state_file)
         self.auto_save = auto_save
         headers = {
             "Host": "bard.google.com",
@@ -61,8 +63,6 @@ class Bard:
                     state = json.load(f)
             except FileNotFoundError:
                 pass
-
-        print(state)
 
         if state:
             self.conversation_id = state["conversation_id"]

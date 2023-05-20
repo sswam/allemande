@@ -1,0 +1,4 @@
+#!/bin/bash -eu
+m=4
+. opts
+llm query -m $m "$@"

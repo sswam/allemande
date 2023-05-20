@@ -7,6 +7,7 @@ import argparse
 import logging
 from pathlib import Path
 import re
+import random
 
 from watchfiles import Change
 import regex
@@ -203,30 +204,30 @@ if __name__ == '__main__':
 
 regex_name = r"^[\p{L}\p{M}']+([\p{Zs}\-][\p{L}\p{M}']+)*$"
 
+# TODO lib
+def uniqo(l):
+	# unique in order
+	return list(dict.fromkeys(l))
+
 def get_roles_from_history(history, user, bot):
 	""" Get the latest user and bot names from history """
-	def get_role(history, i=None, not_equal_to=None):
-		if i is None:
-			i = len(history) - 1
-		while i > 0:
-			if ":" in history[i]:
-				role = history[i].split(":")[0]
-				if role and regex.match(regex_name, role) and role != not_equal_to:
-					return role, i - 1
-			i -= 1
-		return None, i
 
-	hist_user, i = get_role(history, not_equal_to=bot)
-	if hist_user:
-		user = hist_user
-	logger.info("user: %r, i: %r", user, i)
-	hist_bot, i = get_role(history, i=i, not_equal_to=user)
-	if hist_bot:
-		bot = hist_bot
-	logger.info("bot: %r, i: %r", bot, i)
-
-	logger.info("user: %r", user)
-	logger.info("bot: %r", bot)
+	recent = reversed(history[-20:])
+	print("recent: ", recent)
+	roles = map(lambda line: line.split(":")[0], recent)
+	print("roles: ", roles)
+	roles = uniqo(roles)
+	print("roles: ", roles)
+	roles = list(filter(lambda role: role and regex.match(regex_name, role), roles))
+	print("roles: ", roles)
+	if roles:
+		user = roles[0]
+	if len(roles) > 1 and random.random() < 0.5 and "Ally" in roles and user != "Ally":
+		return user, "Ally"
+	if len(roles) > 1:
+		# return a random out of the remaining roles
+		bot = random.choice(roles[1:])
+	print("user, bot:", user, bot)
 
 	return user, bot
 

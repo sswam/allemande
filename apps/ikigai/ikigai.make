@@ -16,6 +16,7 @@ SHELL=/bin/bash
 goal: resume4.html resume.css
 
 ikigai.chat: info.txt $(PROG_DIR)/ikigai.prompt
+	if [ -e $@ ]; then mv $@ $@.bak.$(shell date +%Y%m%d%H%M%S); fi
 	> $@
 	cat $(PROG_DIR)/ikigai.prompt >> $@
 	echo "	Some info about me:" >> $@
@@ -23,6 +24,7 @@ ikigai.chat: info.txt $(PROG_DIR)/ikigai.prompt
 	llm-chat-ed -m=$(IKIGAI_MODEL) $@
 
 ikigai.txt: ikigai.chat
+	if [ -e $@ ]; then mv $@ $@.bak.$(shell date +%Y%m%d%H%M%S); fi
 	< $< llm process -m 4 "Please summarize the following chat about ikigai in structured markdown with dotpoint lists and perhaps other markdown features, to help with preparing a resume. Focus on the agreed possible ikigai, findings, and other final thoughts not so much on the process." | tee $@
 
 extra.txt: $(EXTRA_TEXT_FILES)
@@ -52,18 +54,18 @@ extra.txt: $(EXTRA_TEXT_FILES)
 info.txt: resume.txt
 	< $< llm process -m 4 "Please summarize the most important points from the following resume in structured markdown with dotpoint lists. Include name, skills, hobbies, interests, but not so much detailed job and education history." | tee $@
 
-
 suggest-%.txt: resume.txt
 	< $< llm process -m $* "Please read my resume and suggest how we can improve it, in a step by step plan." | tee $@
 
-plan.txt: suggest-4.txt suggest-c.txt suggest-3+.txt
-	catpg -break=$$'\n----\n' $^ | llm process -m 4 "Please combine these three lists of suggestions to improve a resume, into one step-by-step plan without any repetition." | tee $@
+plan.txt: suggest-4.txt suggest-c.txt suggest-3+.txt # suggest-b.txt
+	catpg -break=$$'\n----\n' $^ | llm process -m 4 "Please combine these lists of suggestions to improve a resume, into one step-by-step plan without any repetition. You may remove any bad suggestions if you wish." | tee $@
 
 form.txt: resume.txt plan.txt ikigai.txt extra.txt
 	(catpg -break=$$'\n----\n' $^ ; date +"It is now %b %Y, might need to add recent work etc.") | \
 		llm process -m 4 "$$(<$(PROG_DIR)/form.prompt)" | tee $@
 
 form-filled.txt: form.txt
+	if [ -e $@ ]; then mv $@ $@.bak.$(shell date +%Y%m%d%H%M%S); fi
 	cp $< $@
 	$$EDITOR $@
 
@@ -82,5 +84,8 @@ resume3.html: resume3.md
 resume4.html: resume3.html
 	< $< llm process -m 4 "Please modify this HTML removing the inline stylesheet and adding classes for various things, and add a link to use resume.css." | tee $@
 
-resume.css: resume4.html
-	< $< llm process -m 4 "Please write a CSS stylesheet resume.css for this resume to make it look awesome." | tee $@
+colour.txt:
+	read -p "What is your favorite colour? " colour; echo "$$colour" > $@
+
+resume.css: resume4.html colour.txt
+	< $< llm process -m 4 "Please write a creative and stylish CSS stylesheet resume.css for this resume to make it look exciting, awesome, brilliant. My favourite colour is $$(<colour.txt), so please include this as one of the major colours in the theme." | tee $@
