@@ -24,9 +24,16 @@ async function send(ev) {
 	var formData = new FormData($form);
 	var message = $content.value;
 	$content.value = "";
-//        var filenames = $('#filenames').val();
+//      var filenames = $('#filenames').val();
 //	var attached = $('#attached').val();
 //	var old_files = clear_attachments();
+	
+	const restore = () => {
+		$content.value = message;
+//		$('#filenames').val(filenames);
+//		$('#attached').val(attached);
+//		$('#files').replaceWith($(old_files));
+	};
 
 	// use DOM fetch instead of jquery
 
@@ -35,45 +42,26 @@ async function send(ev) {
 		body: formData,
 	});
 
+	if (!response.ok) {
+		alert("failed: send");
+		restore();
+		return;
+	}
+
 	const data = await response.json();
 
 	if (data.error) {
 		alert(data.error);
+		restore();
 		return;
 	}
-
-//	console.log(data);
-
-	// scroll_to_bottom();
-
-//	$.ajax({
-//		url: '/x/chat',
-//		type: 'POST',
-//		data: formData,
-//                async: true,
-//                cache: false,
-//                contentType: false,
-//                processData: false,
-//		success: function(data) {
-//			var length = +data;
-//			if (length < data_raw.length) {
-//				clear_messages_box();
-//			}
-//			poll();
-//		},
-//	}).fail(function(xhr, textStatus, errorThrown) {
-//        	console.log(errorThrown, textStatus, xhr.responseText);
-//		alert("failed: send")
-//		$content.val(message);
-//		$('#filenames').val(filenames);
-//		$('#attached').val(attached);
-//		$('#files').replaceWith($(old_files));
-//	});
 }
+
+
+// clear messages (admin function) not implemented yet -----------------------
 
 function clear() {
 }
-
 
 // handle enter key press ----------------------------------------------------
 
@@ -90,7 +78,6 @@ function room_keypress(ev) {
 		return false;
         }
 }
-
 
 // change room ---------------------------------------------------------------
 
@@ -132,6 +119,13 @@ function load_user_styles() {
 	$head.append($link);
 }
 
+function logged_out() {
+	// hide #logout button
+	
+	const $logout = $id('logout');
+	if ($logout) { $logout.style.display = "none"; }
+}
+
 async function who() {
 	const response = await fetch('/x/whoami', {
 		method: 'POST',
@@ -142,7 +136,19 @@ async function who() {
 			room: room,
 		}),
 	});
+
+	if (!response.ok) {
+		logged_out();
+		return;
+	}
+
 	const data = await response.json();
+
+	if (data.error) {
+		alert(data.error);
+		return;
+	}
+
 	user = data.user;
 	admin = data.admin;
 	if (admin) {
