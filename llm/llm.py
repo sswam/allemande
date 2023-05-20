@@ -8,15 +8,17 @@ from sys import stdin, stdout
 import os
 import logging
 import re
-from typing import Optional, IO
+from typing import Optional, IO, List
 from math import inf
+import argparse
 
-from argh import dispatch_commands
+import argh
 
 import openai
 
 import tab
 import claude
+from bard import Bard
 
 # import json
 
@@ -60,6 +62,10 @@ models = {
 		"description": "Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with our latest model iteration.",
 		"cost": 0.06,
 	},
+	"bard": {
+		"abbrev": "b",
+		"description": "Google Bard is a large language model (LLM) chatbot developed by Google AI. It is trained on a massive dataset of text and code, and can generate text, translate languages, write different kinds of creative content, and answer your questions in an informative way.",
+	}
 #	"gpt-3.5-turbo-0301": {
 #		"description": "Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.",
 #		"cost": 0.002,
@@ -141,34 +147,47 @@ def get_model_by_abbrev(model):
 		model = abbrev_models[0]
 	return model
 
-def chat_claude(*args, **kwargs):
-	response = claude.chat_claude(*args, **kwargs)
-	completion = claude.response_completion(response)
-	message = { "role": "assistant", "content": completion }
-	return message
 
-def llm_chat(messages, model=default_model, fake=False, temperature=None, token_limit=None):
-	""" Send a list of messages to the model, and return the response. """
-	logger.debug("llm_chat: input: %r", messages)
+class AutoInit:
+	def __init__(self, **kwargs):
+		for k, v in kwargs.items():
+			if hasattr(self, k):
+				setattr(self, k, v)
 
-	if fake:
-		completion = fake_completion
-	elif model.startswith("claude"):
-		return chat_claude(messages, model=model, temperature=temperature, token_limit=token_limit)
-	elif model.startswith("gpt"):
-		return chat_gpt(messages, model=model, temperature=temperature, token_limit=token_limit)
-	else:
-		raise ValueError(f"unknown model: {model}")
+# simple namespace
+class Options(AutoInit):
+	model: str = default_model
+	fake: bool = False
+	temperature: Optional[float] = None
+	token_limit: Optional[int] = None
+	indent: str = "\t"
+	state_file: Optional[str] = None
+	auto_save: bool = False
+	def __init__(self, **kwargs):
+		if kwargs.get("model"):
+			kwargs["model"] = get_model_by_abbrev(kwargs["model"])
+		if kwargs.get("state_file") and kwargs.get("auto_save") is None:
+			kwargs["auto_save"] = True
+		super().__init__(**kwargs)
 
-	logger.debug("llm_chat: output message: %s", output_message)
 
-def chat_gpt(messages, model=default_model, temperature=None, token_limit=None):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
+opts: Options = Options()
+
+
+def set_opts(_opts):
+	global opts
+	opts = Options(**_opts)
+
+
+def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
+	temperature = opts.temperature
+	token_limit = opts.token_limit
 	if temperature is None:
 		temperature = DEFAULT_TEMPERATURE
 	if token_limit is None:
 		token_limit = TOKEN_LIMIT
 	completion = openai.ChatCompletion.create(
-		model=model,
+		model=opts.model,
 		messages=messages
 	)
 
@@ -177,6 +196,49 @@ def chat_gpt(messages, model=default_model, temperature=None, token_limit=None):
 	output_message = completion['choices'][0]['message']
 
 	return output_message
+
+
+def chat_claude(messages):
+	model = opts.model
+	temperature = opts.temperature
+	token_limit = opts.token_limit
+	response = claude.chat_claude(messages, model=model, temperature=temperature, token_limit=token_limit)
+	completion = claude.response_completion(response)
+	message = { "role": "assistant", "content": completion }
+	return message
+
+
+def chat_bard(messages):
+	# We can only pass in the last user message; let's hope we have the right state file!
+	# We can't run all the user messages again; Bard will likely not do the same thing so it would be a mess.
+	# Perhaps we should save state in chat metadata.
+	if not messages or messages[-1]["role"] == "assistant":
+		raise ValueError("Bard requires a conversation ending with a user message.")
+	bard = Bard(state_file=opts.state_file, auto_save=opts.auto_save)
+	response = bard.get_answer(messages[-1]["content"])
+	completion = response["content"]
+	message = { "role": "assistant", "content": completion }
+	return message
+
+
+def llm_chat(messages):
+	""" Send a list of messages to the model, and return the response. """
+	logger.debug("llm_chat: input: %r", messages)
+
+	model = opts.model
+
+	if opts.fake:
+		completion = fake_completion
+	elif model.startswith("claude"):
+		return chat_claude(messages)
+	elif model.startswith("gpt"):
+		return chat_gpt(messages)
+	elif model.startswith("bard"):
+		return chat_bard(messages)
+	else:
+		raise ValueError(f"unknown model: {model}")
+
+	logger.debug("llm_chat: output message: %s", output_message)
 
 
 def split_message_line(message, allowed_roles=None):
@@ -244,12 +306,11 @@ def messages_to_lines(messages):
 	return lines
 
 
-def process(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3):
-	return retry(process2, retries, prompt, inp=inp, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit)
-
-
-def process2(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Optional[str]=None, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
 	""" Process some text through the LLM with a prompt. """
+	set_opts(vars())
+
+	prompt = " ".join(prompt)
 	prompt = prompt.rstrip()
 	input_text = inp.read().rstrip()
 	if prompt2:
@@ -264,30 +325,30 @@ def process2(prompt: str, inp: IO[str]=stdin, out: IO[str]=stdout, prompt2: Opti
 	if prompt2:
 		full_input += "\n" + prompt2 + "\n"
 
-	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit)
+	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file)
 
 
-def query(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3):
-	return retry(query2, retries, prompt, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit)
+def query(*prompt, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
+	set_opts(vars())
+	return retry(query2, retries, *prompt, out=out)
 
 
-def query2(prompt: str, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None):
+def query2(*prompt, out: IO[str]=stdout):
 	""" Ask the LLM a question. """
-
-	model = get_model_by_abbrev(model)
+	prompt = " ".join(prompt)
 
 	prompt = prompt.rstrip() + "\n"
 
 	# TODO use a system message?
 
 	input_message = {"role": "user", "content": prompt}
-	output_message = llm_chat([input_message], model=model)
+	output_message = llm_chat([input_message])
 	content = output_message["content"]
 
 	# fix indentation for code
-	if indent:
+	if opts.indent:
 		lines = content.splitlines()
-		lines = tab.fix_indentation_list(lines, indent)
+		lines = tab.fix_indentation_list(lines, opts.indent)
 		content = "".join(lines)
 
 	out.write(content)
@@ -304,16 +365,24 @@ def retry(fn, n_tries, *args, **kwargs):
 				raise
 
 
-def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=3):
+#def dict_to_namespace(d):
+#	""" Convert a dict to an argparse namespace. """
+#	ns = argparse.Namespace()
+#	for k, v in d.items():
+#		setattr(ns, k, v)
+#	return ns
+
+
+def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=3, state_file=None, auto_save=None):
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
-	return retry(chat2, retries, inp=inp, out=out, model=model, fake=fake, temperature=temperature, token_limit=token_limit)
+	set_opts(vars())
+	return retry(chat2, retries, inp=inp, out=out)
 
 
-def chat2(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=3):
-	model = get_model_by_abbrev(model)
+def chat2(inp=stdin, out=stdout):
 	input_lines = inp.readlines()
 	input_messages = lines_to_messages(input_lines)
-	response_message = llm_chat(input_messages, fake=fake, model=model, temperature=temperature, token_limit=token_limit)
+	response_message = llm_chat(input_messages)
 	output_lines = messages_to_lines([response_message])
 	out.writelines(output_lines)
 
@@ -325,4 +394,4 @@ def list_models():
 
 
 if __name__ == "__main__":
-	dispatch_commands([chat, query, process, list_models])
+	argh.dispatch_commands([chat, query, process, list_models])

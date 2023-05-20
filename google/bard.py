@@ -64,8 +64,6 @@ class Bard:
             except FileNotFoundError:
                 pass
 
-        print(state)
-
         if state:
             self.conversation_id = state["conversation_id"]
             self.response_id = state["response_id"]
