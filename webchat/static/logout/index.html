@@ -1,6 +1,14 @@
-<iframe src="logout"></iframe>
-<iframe id="rooms_logout"></iframe>
+<!DOCTYPE html>
+<h1>Logout</h1>
+<h2>Just close the login windows from this page.<h2>
+<h3>chat logout</h3>
+<iframe src="logout/"></iframe>
+<h3>rooms logout</h3>
 <script>
-const ROOMS_URL = location.protocol + "//" + location.host.replace(/^chat\b/, "rooms")
-//document.getElementById("rooms_logout").src = ROOMS_URL + "/logout/logout";
+// redirect after 1 second to /
+setTimeout(function() {
+    window.location.href = "/";
+}, 1000);
+const ROOMS_URL = location.protocol + "//" + location.host.replace(/^chat\b/, "rooms") + "/logout/logout/"
+document.body.innerHTML += '<iframe id="rooms_logout" src="' + ROOMS_URL + '"></iframe>';
 </script>
