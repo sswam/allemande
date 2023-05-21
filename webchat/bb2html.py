@@ -43,12 +43,15 @@ class BB2HTML:
 			if not bb_file.endswith(self.opts.exts):
 				continue
 			html_file = str(Path(bb_file).with_suffix(".html"))
-			if change_type == Change.deleted:
-				Path(html_file).unlink(missing_ok=True)
-				continue
-			async for row in self.file_changed(bb_file, html_file, old_size, new_size):
-				yield row
-
+			try:
+				if change_type == Change.deleted:
+					Path(html_file).unlink(missing_ok=True)
+					continue
+				async for row in self.file_changed(bb_file, html_file, old_size, new_size):
+					yield row
+			except PermissionError as exc:
+				logger.error("PermissionError: %s", exc)
+	
 	async def file_changed(self, bb_file, html_file, old_size, new_size):
 		""" convert a bb file to html """
 
