@@ -1,10 +1,5 @@
-map $host $redirect_host {
-	default chat.allemande.ai;
-	~^rooms(-\w+)?\.allemande\.ai$ chat$1.allemande.ai;
-}
-
 server {
-	server_name rooms.allemande.ai rooms-local.allemande.ai;
+	server_name chat.allemande.ai chat-local.allemande.ai;
 
 	charset UTF-8;
 
@@ -28,13 +23,24 @@ server {
 	ssl_certificate /etc/letsencrypt/live/allemande.ai/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/allemande.ai/privkey.pem;
 
-	root /var/www/allychat/rooms/;
+	root /var/www/allychat/static/;
 	index index.html;
 
 	location / {
-		auth_basic "Auth";
-		auth_basic_user_file /var/www/allychat/.htpasswd;
+		if ($is_banned) {
+			return 302 https://allemande.ai/ban.html;
+		}
 #		autoindex on;
+		try_files $uri $uri/ =404;
+# TODO if we want strong privacy
+#		access_log off;
+#		error_log /dev/null;
+		add_header Cache-Control "no-cache";
+	}
+
+	location /users {
+		root /var/www/allychat/;
+		autoindex on;
 #		try_files $uri $uri/ =404;
 		try_files $uri $uri/ @redirect;
 # TODO if we want strong privacy
@@ -44,30 +50,10 @@ server {
 	}
 
 	location @redirect {
-		if ($request_uri ~* (^/(favicon\.ico|styles\.css|room\.css|util\.js|room\.js|mousetrap\.min.js)$|^/users/)) {
-			return 302 $scheme://$redirect_host$request_uri;
+		if ($request_uri ~* (^/users/[^/]*/theme.css$)) {
+			return 302 $scheme://$host/users/default/theme.css;
 		}
 		return 404;
-	}
-
-	location /stream {
-		auth_basic "Auth";
-		auth_basic_user_file /var/www/allychat/.htpasswd;
-		proxy_pass http://127.0.0.1:8001;
-		proxy_set_header Host $host;
-		proxy_set_header X-Real-IP $remote_addr;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto https;
-		proxy_set_header Authorization "";
-		proxy_set_header X-Forwarded-User $remote_user;
-
-		# settings for streaming response
-		gzip off;
-		proxy_http_version 1.1;
-		proxy_buffering off;
-		proxy_set_header Connection "";
-		proxy_read_timeout 120s;
-		proxy_bind $host:$server_port;
 	}
 
 	location /logout/logout {
@@ -75,14 +61,18 @@ server {
 		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
 		autoindex on;
 		try_files $uri $uri/ =404;
-#		access_log off;
-#		error_log /dev/null;
 	}
 
-	include /etc/nginx/mime.types;
-
-	types {
-		text/plain                                   md markdown bb;
-		# should be text/markdown, but the browser won't show it (Firefox)
+	location /x {
+		auth_basic "Auth";
+		auth_basic_user_file /var/www/allychat/.htpasswd;
+		proxy_pass http://127.0.0.1:8000;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto https;
+		proxy_set_header Authorization "";
+		proxy_set_header X-Forwarded-User $remote_user;
+		proxy_bind $host:$server_port;
 	}
 }

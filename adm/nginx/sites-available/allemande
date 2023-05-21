@@ -26,6 +26,17 @@ server {
 	root /var/www/allemande/;
 	index index.html;
 
+	location = /ban.html {
+		try_files $uri =404;
+		add_header Cache-Control "no-cache";
+	}
+
+	location = / {
+		if ($is_banned) {
+			return 302 https://allemande.ai/ban.html;
+		}
+	}
+
 	location / {
 		autoindex on;
 		try_files $uri $uri/ =404;
