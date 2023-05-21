@@ -56,7 +56,7 @@ done
 cd "$ALLEMANDE_HOME/adm"
 
 if [ ! -L /etc/haproxy/haproxy.cfg ]; then
-	mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
+	mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.dist
 fi
  
 ln -sf "$PWD/haproxy/haproxy.cfg" -t /etc/haproxy/

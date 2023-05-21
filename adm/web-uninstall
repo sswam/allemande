@@ -3,14 +3,9 @@
 
 . get_root
 
-# remove the haproxy config --------------------------------------------------
+# restore the original haproxy config ----------------------------------------
 
-cd "$ALLEMANDE_HOME/adm"
-
-ln -sf "haproxy/haproxy.cfg" -t /etc/haproxy/
-
-systemctl restart nginx
-systemctl restart haproxy
+mv /etc/haproxy/haproxy.cfg.dist /etc/haproxy/haproxy.cfg
 
 # remove nginx sites ---------------------------------------------------------
 
@@ -29,3 +24,4 @@ while read conf; do
 done
 
 systemctl restart nginx
+systemctl restart haproxy
