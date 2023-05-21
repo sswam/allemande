@@ -9,12 +9,18 @@ mode() {
 	chmod $mode "$@"
 }
 
+# install the allemande.ai website -------------------------------------------
+
 ln -sfT "$ALLEMANDE_HOME/site" /var/www/allemande
+
+# install mousetrap library --------------------------------------------------
 
 cd "$ALLEMANDE_HOME/js"
 if [ ! -e mousetrap ]; then
 	git clone https://github.com/ccampbell/mousetrap
 fi
+
+# install the webchat web app ------------------------------------------------
 
 cd "$ALLEMANDE_HOME/webchat"
 
@@ -29,24 +35,31 @@ mode 640 .htpasswd static/logout/.htpasswd
 
 ln -sfT $PWD /var/www/allychat
 
+# install the nginx config and sites -----------------------------------------
+
 cd "$ALLEMANDE_HOME/adm/nginx"
+find . -type f \( -name ".*" -o -print \) |
+while read conf; do
+	dir=$(dirname "$conf")
+	ln -sf "$PWD/$conf" -t /etc/nginx/$dir/
+done
+
+# enable the nginx sites -----------------------------------------------------
+
+cd "sites-available"
 for site in *; do
-	ln -sf "$PWD/$site" /etc/nginx/sites-available/
 	ln -sf "../sites-available/$site" /etc/nginx/sites-enabled/
 done
 
+# install the haproxy config -------------------------------------------------
 
-# build pro
+cd "$ALLEMANDE_HOME/adm"
 
-
-cd "$ALLEMANDE_HOME/pro"
-ln -sfT $PWD /var/www/allychat-pro
-npm install
-npm run build
-cd build
-ln -sf ../package*.json ./
-npm ci --omit dev
-
+if [ ! -L /etc/haproxy/haproxy.cfg ]; then
+	mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.bak
+fi
+ 
+ln -sf "$PWD/haproxy/haproxy.cfg" -t /etc/haproxy/
 
 systemctl restart nginx
 systemctl restart haproxy

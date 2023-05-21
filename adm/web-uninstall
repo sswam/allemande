@@ -3,11 +3,29 @@
 
 . get_root
 
-cd "$ALLEMANDE_HOME/adm/nginx"
+# remove the haproxy config --------------------------------------------------
 
+cd "$ALLEMANDE_HOME/adm"
+
+ln -sf "haproxy/haproxy.cfg" -t /etc/haproxy/
+
+systemctl restart nginx
+systemctl restart haproxy
+
+# remove nginx sites ---------------------------------------------------------
+
+cd "$ALLEMANDE_HOME/adm/nginx/sites-available"
 for site in *; do
 	rm -f "/etc/nginx/sites-enabled/$site"
-	rm -f "/etc/nginx/sites-available/$site"
+done
+
+# remove nginx config --------------------------------------------------------
+
+cd "$ALLEMANDE_HOME/adm/nginx"
+
+find . -type f \( -name ".*" -o -print \) |
+while read conf; do
+	rm -f "/etc/nginx/$conf"
 done
 
 systemctl restart nginx
