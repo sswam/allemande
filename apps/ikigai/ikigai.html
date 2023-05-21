@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Page Title</title>
+<style>
+html, body, svg { background: white; }
+circle.colour { mix-blend-mode: add; opacity: 0.5; }
+circle.outline { stroke: white; stroke-width: 10px; fill: none; }
+text.ikigai { font-family: serif; font-size: 32px; fill: white; }
+text.label { font-family: serif; font-size: 20px; fill: black; }
+text.label.major {  }
+text.label.minor { }
+</style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="-400 -400 800 800">
+    <!-- Four overlapping circles at N, S, E, and W positions -->
+    <!-- FFA FCC CCF CFC -->
+    <circle class="colour" cx="0" cy="-150" r="220" fill="#FFA"/> <!-- Light Yellow -->
+    <circle class="colour" cx="150" cy="0" r="220" fill="#FCC"/> <!-- Light Red -->
+    <circle class="colour" cx="0" cy="150" r="220" fill="#CCF"/> <!-- Light Blue -->
+    <circle class="colour" cx="-150" cy="0" r="220" fill="#CFC"/> <!-- Light Green -->
+
+    <circle class="outline" cx="0" cy="-150" r="210" />
+    <circle class="outline" cx="150" cy="0" r="210" />
+    <circle class="outline" cx="0" cy="150" r="210" />
+    <circle class="outline" cx="-150" cy="0" r="210" />
+
+    <text class="ikigai" x="0" y="0" text-anchor="middle" alignment-baseline="middle">ikigai</text>
+    
+    <text class="label major" x="0" y="-270" text-anchor="middle">What you<tspan x="0" dy="24">LOVE</tspan></text>
+    <text class="label major" x="260" y="0" text-anchor="middle">What the world<tspan x="260" dy="24">NEEDS</tspan></text>
+    <text class="label major" x="0" y="270" text-anchor="middle">What you can be<tspan x="0" dy="24">PAID FOR</tspan></text>
+    <text class="label major" x="-260" y="0" text-anchor="middle">What you are<tspan x="-260" dy="24">GOOD AT</tspan></text>
+    
+    <text class="label minor" x="120" y="-120" text-anchor="middle">MISSION</text>
+    <text class="label minor" x="120" y="120" text-anchor="middle">VOCATION</text>
+    <text class="label minor" x="-120" y="120" text-anchor="middle">PROFESSION</text>
+    <text class="label minor" x="-120" y="-120" text-anchor="middle">PASSION</text>
+  </svg>
+</body>
+</html>
