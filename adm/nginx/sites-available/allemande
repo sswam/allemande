@@ -27,6 +27,9 @@ server {
 	index index.html;
 
 	location = /ban.html {
+		if ($is_banned = 0) {
+			return 302 https://allemande.ai/;
+		}
 		try_files $uri =404;
 		add_header Cache-Control "no-cache";
 	}
