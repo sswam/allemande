@@ -71,7 +71,7 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 	real_token_limit = TOKEN_LIMIT_100K if "100k" in model else TOKEN_LIMIT
 	if model is None:
 		model = MODEL_DEFAULT
-	if token_limit is None and "100k" in model:
+	if token_limit is None:
 		token_limit = real_token_limit
 	if temperature is None:
 		temperature = DEFAULT_TEMPERATURE
