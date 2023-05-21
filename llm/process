@@ -1,4 +1,4 @@
 #!/bin/bash -eu
-m=i
+m=4
 . opts
 llm process -m $m "$@"
