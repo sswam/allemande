@@ -1,0 +1,12 @@
+#!/bin/bash -eu
+# web-install-pro: install pro version of web app
+
+. get_root
+
+cd "$ALLEMANDE_HOME/pro"
+ln -sfT $PWD /var/www/allychat-pro
+npm install
+npm run build
+cd build
+ln -sf ../package*.json ./
+npm ci --omit dev

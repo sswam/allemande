@@ -8,17 +8,19 @@ usage() {
 	echo "  -3: generate with ChatGPT-3.5"
 	echo "  -4: generate with GPT-4"
 	echo "  -c: generate with Claude"
+	echo "  -C: generate with Claude 100k"
 	echo "  -i: generate with Claude Instant"
 	echo "  -m: use the given message instead of generating one"
 	echo "  -e: normal git commit using the editor"
 	echo "  -h: show this help message"
 }
 
-while getopts "34cim:eh" opt; do
+while getopts "34cCim:eh" opt; do
 	case "$opt" in
 	3 ) model="3+";;
 	4 ) model="4";;
 	c ) model="c";;
+	C ) model="c+";;
 	i ) model="i";;
 	e ) exec git commit ;;
 	m ) exec git commit -m "$OPTARG" ;;
@@ -38,6 +40,7 @@ model-name() {
 	3+ ) echo "ChatGPT-3.5";;
 	4 ) echo "GPT-4";;
 	c ) echo "Claude";;
+	c+ ) echo "Claude 100k";;
 	i ) echo "Claude Instant";;
 	esac
 }
@@ -107,6 +110,9 @@ while true; do
 		c )
 			generate-commit-message c
 			;;
+		c )
+			generate-commit-message c+
+			;;
 		i )
 			generate-commit-message i
 			;;
@@ -126,6 +132,7 @@ while true; do
 			echo "3: generate with ChatGPT-3.5"
 			echo "4: generate with GPT-4"
 			echo "c: generate with Claude"
+			echo "C: generate with Claude 100k"
 			echo "i: generate with Cluade Instant"
 			echo "d: diff the staged changes"
 			echo "v: vimdiff the staged changes"

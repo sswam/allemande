@@ -67,16 +67,18 @@ def message_to_string(message):
 	return f"{prompt} {message['content']}"
 
 def chat_claude(messages, model=None, token_limit: int = None, temperature=None, streaming=False, _async=False):
+	""" Chat with claude """
+	real_token_limit = TOKEN_LIMIT_100K if "100k" in model else TOKEN_LIMIT
 	if model is None:
 		model = MODEL_DEFAULT
-	if token_limit is None:
-		token_limit = TOKEN_LIMIT
+	if token_limit is None and "100k" in model:
+		token_limit = real_token_limit
 	if temperature is None:
 		temperature = DEFAULT_TEMPERATURE
 	message_strings = map(message_to_string, messages)
 	prompt = "".join(message_strings) + anthropic.AI_PROMPT
 	prompt_tokens = anthropic.count_tokens(prompt)
-	max_possible_tokens_to_sample = TOKEN_LIMIT - prompt_tokens
+	max_possible_tokens_to_sample = real_token_limit - prompt_tokens
 	if max_possible_tokens_to_sample <= 0:
 		logger.warning("Prompt is too long: %d tokens", prompt_tokens)
 		return ""
