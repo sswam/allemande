@@ -55,7 +55,7 @@ def duckduckgo_search(query, max_results=10, safe="off"):
 
 	return [{'title': result.a.text.strip(), 'url': result.a['href']} for result in search_results]
 
-def google_search(query, max_results=10, safe="off"):
+def google_search(query, max_results=10, safe="off", limit_max_results=True):
 	""" Search Google for `query` and return a list of results """
 	url = 'https://www.google.com/search'
 	params = {
@@ -65,14 +65,43 @@ def google_search(query, max_results=10, safe="off"):
 	headers = {
 		'User-Agent': user_agent,
 	}
-	response = requests.get(url, headers=headers, params=params, timeout=timeout)
-	response.raise_for_status()
 
-	soup = BeautifulSoup(response.text, 'html.parser')
+	search_results = []
+	response = None
+	soup = None
 
-	search_results = soup.find_all('div', class_='g')
+	start = 0
 
-	search_results = search_results[:max_results]
+	while len(search_results) < max_results:
+		if response is not None:
+			start += 10
+			params['start'] = start
+			logger.warning("Getting next page of results, start=%d", start)
+
+		if start > max_results * 1.5:
+			logger.warning("Start is %d, which is > 1.5 * max_results (%d), breaking", start, max_results)
+			break
+
+		logger.warning("Searching at %s", url)
+
+		response = requests.get(url, headers=headers, params=params, timeout=timeout)
+		response.raise_for_status()
+
+		soup = BeautifulSoup(response.text, 'html.parser')
+
+		search_results2 = soup.find_all('div', class_='g')
+
+		logger.warning("Found %d results", len(search_results2))
+
+		search_results += search_results2
+		logger.warning("Total results so far: %d", len(search_results))
+
+		if len(search_results2) == 0:
+			logger.warning("No more results, breaking")
+			break
+
+	if limit_max_results:
+		search_results = search_results[:max_results]
 
 	return [{'title': result.find('h3').text.strip(), 'url': result.find('a')['href']} for result in search_results]
 
@@ -177,7 +206,7 @@ def parse_args():
 	parser.add_argument('queries', nargs='*', help='Search queries')
 	parser.add_argument('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=engines.keys())
 	parser.add_argument('-format', '-f', help='Output format', default=dict_first(formatters), choices=formatters.keys())
-	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=10)
+	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=50)
 	parser.add_argument('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
 	args = parser.parse_args()
 	return args
