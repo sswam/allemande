@@ -12,7 +12,7 @@ var data_raw = '';
 
 const ROOMS_URL = location.protocol + "//" + location.host.replace(/^chat\b/, "rooms")
 const MAX_ROOM_NUMBER = 1e3; // 1e12;
-const DEFAULT_ROOM = 'chat';
+const DEFAULT_ROOM = 'Ally Chat';
 
 
 // send a message ------------------------------------------------------------

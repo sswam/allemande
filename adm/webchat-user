@@ -13,6 +13,7 @@ function add_user() {
 	echo "`change_password "$@"`" |
 	while read x user pass; do
 		cat <<END
+Thanks for agreeing to try Ally Chat!
 Here's the info to access the alpha webchat when you get a chance:
 
 $user $pass
