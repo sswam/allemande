@@ -2,5 +2,4 @@
 PROG_DIR=$(dirname "$(readlink -f "$0")")
 PATH=$PATH:$PROG_DIR
 rm-empty-files
-#make -j 8 -f "$PROG_DIR/ikigai.make" "$@"
-make -f "$PROG_DIR/ikigai.make" "$@"
+make -f "$PROG_DIR/sherlock.make" "$@"

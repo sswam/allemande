@@ -17,13 +17,20 @@ logging.basicConfig(level=logging.INFO)
 
 DEFAULT_TEMPERATURE = 1.0
 TOKEN_LIMIT = 9216
-TOKEN_LIMIT_100K = 100000  # exactly?
+TOKEN_LIMIT_100K = 100000  # 100000  # exactly?
 # TODO does this vary for claude-instant-v1 and other models?  It does with 100K clearly
 MODEL_DEFAULT = "claude-v1"
 MODEL_INSTANT = "claude-instant-v1"
 MODEL_100K = "claude-v1-100k"
 MODEL_INSTANT_100K = "claude-instant-v1-100k"
 # see also: https://console.anthropic.com/docs/api/reference
+
+def show_args(*args, **kwargs):
+	""" Show the arguments """
+	# use yaml
+	import yaml
+	logger.warning("args:\n%s", yaml.dump(args))
+	logger.warning("kwargs:\n%s", yaml.dump(kwargs))
 
 def count(message, add_prompts=True):
 	""" Count the number of tokens in a message """
@@ -69,6 +76,8 @@ def message_to_string(message):
 def chat_claude(messages, model=None, token_limit: int = None, temperature=None, streaming=False, _async=False):
 	""" Chat with claude """
 	real_token_limit = TOKEN_LIMIT_100K if "100k" in model else TOKEN_LIMIT
+	logger.warning("model: %s", model)
+	logger.warning("real_token_limit: %s", real_token_limit)
 	if model is None:
 		model = MODEL_DEFAULT
 	if token_limit is None:
@@ -78,19 +87,27 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 	message_strings = map(message_to_string, messages)
 	prompt = "".join(message_strings) + anthropic.AI_PROMPT
 	prompt_tokens = anthropic.count_tokens(prompt)
-	max_possible_tokens_to_sample = real_token_limit - prompt_tokens
+	max_possible_tokens_to_sample = min(real_token_limit - prompt_tokens, 3000)  # gen tokens is limited to 9216
 	if max_possible_tokens_to_sample <= 0:
 		logger.warning("Prompt is too long: %d tokens", prompt_tokens)
 		return ""
 	if token_limit > max_possible_tokens_to_sample:
 		token_limit = max_possible_tokens_to_sample
-		logger.debug("Reducing token_limit to %d", token_limit)
+		logger.warning("Reducing token_limit to %d", token_limit)
 	c = anthropic.Client(os.environ["ANTHROPIC_API_KEY"])
 	fn = c.completion_stream if streaming else c.completion
 	if _async:
 		fn = c.acompletion_stream if streaming else c.acompletion
 	else:
 		fn = c.completion_stream if streaming else c.completion
+	show_args(
+		prompt=prompt,
+		stop_sequences=[anthropic.HUMAN_PROMPT],
+		model=model,
+		max_tokens_to_sample=token_limit,
+		streaming=streaming,
+		temperature=temperature,
+	)
 	response = fn(
 		prompt=prompt,
 		stop_sequences=[anthropic.HUMAN_PROMPT],

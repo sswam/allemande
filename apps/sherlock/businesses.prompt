@@ -1,0 +1,4 @@
+Please make a numbered list of just individual businesses and links from the search results, tab-separated as is the input. Do not include directories or other sites, only individual business websites or pages. Just filter the list of names and links, do not add or infer extra info. The output should be exact lines from the input, but only the businesses, not other websites. Example row for output:
+1. The Grand Designed Silo House Inverloch	https://www.riparide.com/listings/4148-the-grand-designed-silo-house-inverloch
+...
+Thanks for always doing a good job!
