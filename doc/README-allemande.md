@@ -8,6 +8,10 @@ This is an innovative multi-player chat app called <A href="https://chat.alleman
 
 ## Screenshots
 
+### Launch Video
+
+![Ally Chat launch video](pix/launch.webm)
+
 ### Roadmap
 
 ![Too Many Post-It Notes](pix/plan.jpeg)

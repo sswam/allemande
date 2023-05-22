@@ -10,6 +10,10 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 
 ## Screenshots
 
+### Launch Video
+
+![Ally Chat launch video](pix/launch.webm)
+
 ### Roadmap
 
 ![Too Many Post-It Notes](pix/plan.jpeg)
