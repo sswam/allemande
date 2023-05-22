@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 # room-rotate: rotate a chat room file
 
-room=${1:-chat}
+room=${1:-Ally Chat}
 
 room=${room%.bb}
 room=${room%.html}
