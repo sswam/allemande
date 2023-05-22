@@ -37,7 +37,7 @@
                                "y": 0
                             },
                             "marks": [],
-                            "name": "chat.bb",
+                            "name": "Ally Chat.bb",
                             "percent": 0.5,
                             "swallows": [
                                {
@@ -58,7 +58,7 @@
                                "y": 866
                             },
                             "marks": [],
-                            "name": "chat.bb - Visual Studio Code",
+                            "name": "Ally Chat.bb - Visual Studio Code",
                             "percent": 0.5,
                             "swallows": [
                                {
@@ -90,13 +90,13 @@
                                "y": 0
                             },
                             "marks": [],
-                            "name": "chat — Mozilla Firefox",
+                            "name": "Ally Chat — Mozilla Firefox",
                             "percent": 0.5,
                             "swallows": [
                                {
                                "class": "^firefox$",
                                "instance": "^Navigator$",
-                               "title": "chat\\ \\—\\ Mozilla\\ Firefox$",
+                               "title": "Ally Chat\\ \\—\\ Mozilla\\ Firefox$",
                                "window_role": "^browser$"
                                }
                             ],
@@ -113,13 +113,13 @@
                                "y": 0
                             },
                             "marks": [],
-                            "name": "chat — Mozilla Firefox",
+                            "name": "Ally Chat — Mozilla Firefox",
                             "percent": 0.5,
                             "swallows": [
                                {
                                "class": "^firefox$",
                                "instance": "^Navigator$",
-                               "title": "chat\\ \\—\\ Mozilla\\ Firefox$",
+                               "title": "Ally Chat\\ \\—\\ Mozilla\\ Firefox$",
                                "window_role": "^browser$"
                                }
                             ],
@@ -182,13 +182,13 @@
                                "y": 725
                             },
                             "marks": [],
-                            "name": "chat - Google Chrome",
+                            "name": "Ally Chat - Google Chrome",
                             "percent": 0.5,
                             "swallows": [
                                {
                                "class": "^Google\\-chrome",
                                "instance": "^google\\-chrome",
-                               "title": "chat\\ \\-\\ Google\\ Chrome$",
+                               "title": "Ally Chat\\ \\-\\ Google\\ Chrome$",
                                "window_role": "^browser$"
                                }
                             ],
