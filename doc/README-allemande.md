@@ -10,7 +10,7 @@ This is an innovative multi-player chat app called <A href="https://chat.alleman
 
 ### Launch Video
 
-https://chat.allemande.ai/src/pix/launch.mp4
+<video width="960" height="540" src="https://chat.allemande.ai/src/pix/launch.mp4"></video>
 
 ### Roadmap
 
