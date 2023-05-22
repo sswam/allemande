@@ -12,7 +12,10 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 
 ### Launch Video
 
-![Ally Chat launch video](pix/launch.webm)
+<video controls="" width="640" height="480">
+	<source src="https://chat.allemande.ai/src/pix/launch.webm" type="video/webm">
+	Your browser does not support the video tag.
+</video>
 
 ### Roadmap
 
