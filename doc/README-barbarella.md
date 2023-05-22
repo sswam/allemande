@@ -12,7 +12,7 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 
 ### Launch Video
 
-<video width="960" height="540" src="https://chat.allemande.ai/src/pix/launch.mp4"></video>
+[![Launch Video](pix/launch.jpg)](https://chat.allemande.ai/src/pix/launch.mp4)
 
 ### Roadmap
 
