@@ -54,7 +54,11 @@ def write_to_room(room, user, content):
 	base_dir = Path(ROOMS).resolve()
 	markdown_file = chat.safe_join(base_dir, room + EXTENSION)
 	# html_file = chat.safe_join(base_dir, room+".html")
-	user_tc = user.title()
+	if user == user.lower() or user == user.upper():
+		user_tc = user.title()
+	else:
+		user_tc = user
+	user_tc = user_tc.replace(".", " ")
 	message = {"user": user_tc, "content": content}
 
 	text = chat.message_to_text(message)

@@ -192,6 +192,8 @@ def message_to_text(message):
 def message_to_html(message):
 	""" Convert a chat message to HTML. """
 	html_content = markdown.markdown(message["content"], extensions=MARKDOWN_EXTENSIONS)
+	if html_content == "":
+		html_content = "&nbsp;"
 	user = message.get("user")
 	if user:
 		user_ee = html.escape(user)

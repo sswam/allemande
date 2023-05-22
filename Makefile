@@ -111,10 +111,10 @@ speak:
 	cd voice-chat && ./speak.sh
 
 vi:
-	vi -p $$file $$file_server
+	vi -p "$$file" "$$file_server"
 
 vscode:
-	code $$file $$file_server & disown
+	code "$$file" "$$file_server" & disown
 
 chat-api:
 	uvicorn chat-api:app --app-dir $(WEBCHAT) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
@@ -173,8 +173,8 @@ umount:
 
 fresh:
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
-	if [ -s $(file) ]; then mv -v $(file) $(file).$$time; fi ; \
-	if [ -s $$html ]; then mv $$html $$html.$$time; fi ; \
-	touch $(file) $$html
+	if [ -s "$(file)" ]; then mv -v "$(file)" "$(file).$$time"; fi ; \
+	if [ -s "$$html" ]; then mv "$$html" "$$html.$$time"; fi ; \
+	touch "$(file)" "$$html"
 
 .PHONY: all default $(JOBS) %.xt
