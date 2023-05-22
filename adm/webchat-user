@@ -6,7 +6,20 @@ cd webchat
 . opts
 
 function add_user() {
-	change_password "$@"
+	if list_users | grep -q -F -w "$1"; then
+		echo "User $1 already exists"
+		exit 1
+	fi
+	echo "`change_password "$@"`" |
+	while read x user pass; do
+		cat <<END
+Here's the info to access the alpha webchat when you get a chance:
+
+$user $pass
+^user ^password
+https://allemande.ai <- click "Ally Chat" then log in twice (!), then reload the page and tell the browser to save the login.
+END
+	done
 }
 
 function change_password() {
