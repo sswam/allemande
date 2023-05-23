@@ -15,7 +15,8 @@ ln -sfT "$home" /opt/allemande
 
 cp -T "$home/adm/crontab" /etc/cron.d/allemande
 
-useradd -d "$ports" -s "$(which bash)" "$user" || true
+groupadd -g "$ALLEMANDE_GID" "$user" || true
+useradd -d "$ports" -s "$(which bash)" -u "$ALLEMANDE_UID" -g "$ALLEMANDE_GID" "$user" || true
 
 mkdir -p "$ports"
 chown $user:$user "$ports"

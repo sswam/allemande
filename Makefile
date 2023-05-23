@@ -166,10 +166,12 @@ stop:
 
 mount:
 	mkdir -p $(ALLEMANDE_ROOMS_SERVER)
-	sshfs $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) -o cache=no || true
+	sshfs -o cache=no -o allow_root $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) || true
+	sudo -u www-data sshfs -o cache=no -o allow_root ucm.dev:/var/spool/allemande/stt_whisper/www-data /var/spool/allemande/stt_whisper/www-data -o cache=no || true
 
 umount:
 	fusermount -u $(ALLEMANDE_ROOMS_SERVER) || true
+	sudo -u www-data fusermount -u /var/spool/allemande/stt_whisper/www-data || true
 
 fresh:
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
