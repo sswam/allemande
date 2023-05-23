@@ -166,8 +166,8 @@ stop:
 
 mount:
 	mkdir -p $(ALLEMANDE_ROOMS_SERVER)
-	sshfs -o cache=no -o allow_root $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) || true
-	sudo -u www-data sshfs -o cache=no -o allow_root ucm.dev:/var/spool/allemande/stt_whisper/www-data /var/spool/allemande/stt_whisper/www-data -o cache=no || true
+	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) || true
+	sudo -u www-data sshfs -o cache=no -o allow_root -o allow_other -o idmap=none ucm.dev:/var/spool/allemande/stt_whisper/www-data /var/spool/allemande/stt_whisper/www-data -o cache=no || true
 
 umount:
 	fusermount -u $(ALLEMANDE_ROOMS_SERVER) || true
