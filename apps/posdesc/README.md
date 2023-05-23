@@ -1,30 +1,39 @@
-This code is written in bash, a Unix shell scripting language. Its purpose is to generate a comprehensive position description based on multiple PDF files. The code can be divided into four main parts:
+This is a Bash script that generates a position description from a set of PDF documents. We can break down the script into few sections to understand its working:
 
-1. Extract text from PDF files:
-```bash
+1. Set up variables:
+```
+pos="Executive Director of Bongotronics International. The candidate should be strong in web development, graphic design, community management, IT admininstration, network administation, people skills and politics."
+template="template.txt"
+```
+This sets up two variables: `pos`, which contains a description of the position, and `template`, which contains the file name of a template text file.
+
+2. Extract text from PDFs:
+```
 for A in *.pdf; do pdftotext "$A" ; done
 ```
-This loop iterates through all the PDF files in the current directory (*.pdf) and extracts the text from each PDF using the `pdftotext` command. The extracted text is saved in a text file with the same name as the original PDF.
+This `for` loop goes through all the files in the current directory with the `.pdf` extension and converts them to plain text using the `pdftotext` command.
 
-2. Process the summaries using GPT:
-```bash
+3. Create a directory and generate dot point summaries:
+```
+mkdir -p dp
+
 for A in *.txt; do < "$A" gpt process "Please summarize the requirements for this position description without omitting anything, in dot point form" >dp/"$A"; done
 ```
-This loop iterates through all the text files (*.txt) in the current directory that resulted from the PDF to text extraction. For each text file, the code input its content to the GPT process asking it to summarize the requirements for the position description in dot point form. The summarized content is then saved in a new text file inside a folder called `dp`.
+The `mkdir -p dp` command creates a new directory named `dp` if it doesn't already exist. Then, the `for` loop goes through all the `.txt` files, and for each file, it processes the text using the `gpt` command to generate a summarized dot point form of the requirements for the position. The summaries are stored in the `dp` directory.
 
-3. Generate a comprehensive position description using GPT:
-```bash
-cat dp/*.txt | gpt process 'Please produce a comprehensive single position description from these documents, with detailed dot points, maybe 1 or 2 pages of markdown. The position is executive director of the Inverloch Tourism Association. The candidate should also be strong in web development, graphic design, community management, IT administration, network administration, people skills and politics. Please add details around these requirements also. Follow the outline format of this document:
-TEMPLATE DOCUMENT:
-'"`cat 'EGMi EO PD-2022.txt'`"'
-END TEMPLATE DOCUMENT' | tee pos-desc-3.md
+4. Generate a comprehensive position description:
 ```
-This code concatenates all the text files in the `dp` folder and feeds them into the GPT process. It asks GPT to produce a comprehensive single position description based on the provided summaries, which will be saved in a Markdown file called `pos-desc-3.md`. The output is generated using a template document that is read from `EGMi EO PD-2022.txt`.
+for try in `seq 1 3`; do
+	cat dp/*.txt | gpt process "Please produce a comprehensive single position description from these documents, with detailed dot points, maybe 1 or 2 pages of markdown. The position is $pos Please add details around these requirements also. Follow the outline format of this document:
+	TEMPLATE DOCUMENT:
+	`cat "$template"`
+	END TEMPLATE DOCUMENT" | tee pos-desc-$try.md
 
-4. Convert the Markdown file to a Microsoft Word document:
-```bash
-pandoc pos-desc-3.md -o pos-desc-3.docx
+	pandoc pos-desc-$try.md -o pos-desc-$try.docx
+done
 ```
-Lastly, the code uses `pandoc` - a document conversion tool - to convert the Markdown file (`pos-desc-3.md`) into a Microsoft Word document (`pos-desc-3.docx`).
+This `for` loop iterates three times and does the following:
+- It concatenates all the `.txt` files in the `dp` directory, and for the combined text, it generates a comprehensive and detailed position description using the `gpt` command that follows the outline format of the `template` file. The generated description is in markdown format and is saved in a file named `pos-desc-<try number>.md` (for example, `pos-desc-1.md`, `pos-desc-2.md`, `pos-desc-3.md`).
+- It converts the markdown file to a Word document using the `pandoc` command and saves it in a file with the same name and the `.docx` extension (for example, `pos-desc-1.docx`, `pos-desc-2.docx`, `pos-desc-3.docx`).
 
-Overall, this code takes text from multiple PDF files, processes and summarizes them using GPT, generates a comprehensive position description in a Markdown file, and finally converts it to a Microsoft Word document.
+In summary, this script extracts text from a set of PDF documents, summarizes their content, and then generates a comprehensive position description from these summaries in both markdown and Word document formats.
