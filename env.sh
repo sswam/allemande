@@ -39,7 +39,9 @@ done
 : ${CONFIG:=$ALLEMANDE_HOME/config.sh}
 
 if [ ! -e "$CONFIG" ]; then
-	ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
+	echo "Creating config.sh: $CONFIG"
+
+	v ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
 fi
 
 . "$CONFIG"
