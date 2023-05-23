@@ -10,6 +10,8 @@ ALLYCHAT_THEMES="$ALLYCHAT_HOME/static/themes"
 ALLEMANDE_MODELS="$ALLEMANDE_HOME/models"
 
 ALLEMANDE_USER="allemande"
+ALLEMANDE_UID="777"
+ALLEMANDE_GID="$ALLEMANDE_UID"
 ALLEMANDE_PORTS="/var/spool/allemande"
 ALLEMANDE_MODULES="llm_llama stt_whisper"
 ALLEMANDE_BOXES="prep todo doing done error history"
