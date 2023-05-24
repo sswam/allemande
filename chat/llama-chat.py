@@ -126,6 +126,12 @@ AGENTS_PROGLANG = {
 
 TOKENIZERS = {}
 
+REMOTE_AGENT_RETRIES = 3
+
+ADULT = False
+
+UNSAFE = False
+
 
 def register_agents_local():
 	""" Register LLM local agents """
@@ -160,7 +166,8 @@ def register_agents_search():
 		agent_lc = agent_name.lower()
 		agent_base = { "name": agent_name }
 		AGENTS[agent_lc] = make_agent(agent_base)
-	del AGENTS["pornhub"]
+	if not ADULT:
+		del AGENTS["pornhub"]
 #	AGENTS["duck"] = AGENTS["duckduckgo"]
 
 
@@ -207,7 +214,8 @@ def register_agents():
 	register_agents_local()
 	register_agents_search()
 	register_agents_remote()
-	# register_agents_proglang()
+	if UNSAFE:
+		register_agents_proglang()
 	# TODO Moar!
 	# - calculator: Calc
 	# - translator: Poly
@@ -542,7 +550,7 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 				args.bot = who[0]
 			else:
 				args.bot = None
-			logger.warning("who from conductor: %r", who)
+			logger.warning("who should respond: %r", who)
 
 	if args.bot and args.bot.lower() in AGENTS:
 		logger.warning("history: %r", history)
@@ -645,7 +653,9 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 		agents_lc = list(map(str.lower, agent_names))
 
 		for msg in context_messages:
-			u = msg["user"].lower()
+			logger.warning(msg)
+			u = msg.get("user")
+			u = u.lower() if u is not None else None
 			if u in agents_lc:
 				role = "assistant"
 			else:
@@ -663,7 +673,7 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 			"indent": "\t",
 		}
 		llm.set_opts(opts)
-		output_message = llm.llm_chat(remote_messages)
+		output_message = llm.retry(llm.llm_chat, REMOTE_AGENT_RETRIES, remote_messages)
 		response = output_message["content"]
 
 		# fix indentation for code
