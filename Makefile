@@ -38,12 +38,12 @@ run-i3-screen:: run
 connect-i3-screen:: i3-layout
 connect-i3-screen:: connect
 
-run: frontend backend dev pro-dev
-connect: frontend backend.xtc dev.xtc pro-dev.xtc
+run: frontend backend dev pro-dev vi.xt
+connect: frontend backend.xtc dev.xtc pro-dev.xtc vi.xtc
 disconnect:
 	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
-frontend: vi.xt vscode firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online chrome-webchat-local
+frontend: vscode firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online chrome-webchat-local
 
 backend: core voice webchat
 backend.xtc: core.xtc voice.xtc webchat.xtc
