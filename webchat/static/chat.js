@@ -67,7 +67,10 @@ function clear() {
 
 function message_keypress(ev) {
         if (ev.keyCode == 13 && !ev.shiftKey) {
-		send(ev);
+		ev.preventDefault();
+		if ($content.value !== "") {
+			send(ev);
+		}
         }
 }
 
