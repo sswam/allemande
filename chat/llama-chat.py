@@ -206,7 +206,7 @@ def register_agents():
 	register_agents_local()
 	register_agents_search()
 	register_agents_remote()
-	register_agents_proglang()
+	# register_agents_proglang()
 	# TODO Moar!
 	# - calculator: Calc
 	# - translator: Poly
