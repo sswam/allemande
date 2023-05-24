@@ -56,12 +56,13 @@ def who_is_named(content, user, agents, include_self=False):
 
 def who_spoke_last(history, user, agents, include_self=False):
 	""" check who else spoke in recent history """
+	user_lc = user.lower() if user is not None else None
 	for i in range(len(history)-1, -1, -1):
 		user2 = history[i].get("user")
 		if user2 is None:
 			continue
-		user2_lc = user2.lower()
-		if user2_lc in agents and (include_self or user2_lc != user.lower()):
+		user2_lc = user2.lower() if user2 is not None else None
+		if user2_lc in agents and (include_self or user2_lc != user_lc) and agents[user2_lc]["type"] != "tool":
 			return [user2]
 	return []
 
@@ -96,13 +97,16 @@ def who_should_respond(message, agents=None, history=None, default=None, include
 	agents_lc_to_agents = dict(zip(agents_lc, agents))
 
 	user = message.get("user")
-	user_lc = user.lower()
+	if user:
+		user_lc = user.lower()
+	else:
+		user_lc = None
 
-	logger.warning("user, user_lc: %r %r", user, user_lc)
+	logger.debug("user, user_lc: %r %r", user, user_lc)
 
 	if user_lc in agents_lc:
 		user_agent = agents[user_lc]
-		logger.warning('user_agent["type"]: %r', user_agent["type"])
+		logger.debug('user_agent["type"]: %r', user_agent["type"])
 		if user_agent["type"] == "tool":
 			invoked = who_spoke_last(history, user, agents, include_self=include_self)
 			return invoked
@@ -112,16 +116,16 @@ def who_should_respond(message, agents=None, history=None, default=None, include
 	agents_with_at = [f"@{agent}" for agent in agent_names]
 
 	invoked = who_is_named(content, f"@{user}", agents_with_at, include_self=include_self)
-	logger.warning("who_is_named @: %r", invoked)
+	logger.debug("who_is_named @: %r", invoked)
 	if not invoked:
 		invoked = who_is_named(content, user, agent_names, include_self=include_self)
-		logger.warning("who_is_named 2: %r", invoked)
+		logger.debug("who_is_named 2: %r", invoked)
 	if not invoked:
-		invoked = who_spoke_last(history, user, agent_names, include_self=include_self)
-		logger.warning("who_spoke_last 2: %r", invoked)
+		invoked = who_spoke_last(history, user, agents, include_self=include_self)
+		logger.debug("who_spoke_last 2: %r", invoked)
 	if not invoked and default and user_lc != default.lower() and agents[user_lc]["type"] == "person":
 		invoked = [default]
-		logger.warning("default %r", invoked)
+		logger.debug("default %r", invoked)
 
 	invoked = [agents_lc_to_agents.get(agent_lc, agent_lc) for agent_lc in invoked]
 

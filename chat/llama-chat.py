@@ -22,9 +22,11 @@ import conductor
 import search
 import chat
 import llm
+import tab
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # pylint: disable=wrong-import-position, wrong-import-order
+
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,9 @@ default_model = os.environ.get("BB_MODEL", first_model)
 
 default_file_extension = "bb"
 
-AGENTS = {}
+
+AGENTS = {
+}
 
 AGENT_DEFAULT = "Ally"
 
@@ -64,28 +68,66 @@ AGENTS_REMOTE = {
 	"GPT-4": {
 		"name": "Emmy",
 		"model": "gpt-4",
+		"default_context": 5,
 	},
 	"GPT-3.5": {
 		"name": "Leo",
 		"model": "gpt-3.5-turbo",
+		"default_context": 10,
 	},
 	"Claude": {
 		"model": "claude-v1",
+		"default_context": 20,
 	},
 	"Claude Instant": {
 		"name": "Claudia",
 		"model": "claude-instant-v1",
+		"default_context": 40,
 	},
 	"Bard": {
 		"name": "Jaskier",
 		"model": "bard",
+		"default_context": 1,
 	},
 }
 
-tokenizers = {}
+AGENTS_PROGLANG = {
+	"Doug": {
+		"command": [],
+	},
+	"Guido": {
+		"command": ["python"],
+	},
+	"Larry": {
+		"command": ["perl"],
+	},
+	"Matz": {
+		"command": ["ruby"],
+	},
+	"Lua": {
+		"command": ["lua"],
+	},
+	"Ryan": {
+		"command": ["node"],
+	},
+	"Dahl": {
+		"command": ["deno"],
+	},
+	"Fabrice": {
+		"command": ["tcc", "-run", "-"],
+	},
+	"Bellard": {
+		"command": ["qjs"],
+	},
+	"Calc": {
+		"command": ["calc"],
+	},
+}
+
+TOKENIZERS = {}
 
 
-def register_local_agents():
+def register_agents_local():
 	""" Register LLM local agents """
 	def make_agent(agent_base):
 		agent = agent_base.copy()
@@ -104,7 +146,7 @@ def register_local_agents():
 			AGENTS[name_lc] = agent
 
 
-def register_search_agents():
+def register_agents_search():
 	""" Register search engines """
 	def make_agent(agent_base):
 		agent = agent_base.copy()
@@ -121,7 +163,7 @@ def register_search_agents():
 #	AGENTS["duck"] = AGENTS["duckduckgo"]
 
 
-def register_remote_agents():
+def register_agents_remote():
 	""" Register LLM API agents """
 	def make_agent(agent_base):
 		agent = agent_base.copy()
@@ -139,28 +181,51 @@ def register_remote_agents():
 		if name_lc != agent_lc:
 			AGENTS[name_lc] = agent
 
+
+def register_agents_proglang():
+	""" Register programming language agents """
+	def make_agent(agent_base):
+		agent = agent_base.copy()
+		agent["fn"] = lambda *args, **kwargs: safe_shell(agent, *args, **kwargs)
+		agent["type"] = "tool"
+		if "name" not in agent:
+			agent["name"] = agent_name
+		return agent
+
+	for agent_name in AGENTS_PROGLANG:
+		agent_base = AGENTS_PROGLANG[agent_name]
+		agent_lc = agent_name.lower()
+		agent = AGENTS[agent_lc] = make_agent(agent_base)
+		name_lc = agent["name"].lower()
+		if name_lc != agent_lc:
+			AGENTS[name_lc] = agent
+
+
 def register_agents():
 	""" Register agents """
-	register_local_agents()
-	register_search_agents()
-	register_remote_agents()
+	register_agents_local()
+	register_agents_search()
+	register_agents_remote()
+	# register_agents_proglang()
 	# TODO Moar!
 	# - calculator: Calc
-	# - Linux shell: Ken
-	# - Python: Guido
 	# - translator: Poly
+
 
 def load_tokenizer(model_path: Path):
 	""" Load the Llama tokenizer """
 	return transformers.LlamaTokenizer.from_pretrained(str(model_path))
 
+
 def count_tokens_in_text(text, tokenizer):
 	""" Count the number of tokens in a text. """
 	return len(tokenizer(text).input_ids)
 
+
 def leading_spaces(text):
 	""" Return the number of leading spaces in a text. """
 	return re.match(r"\s*", text).group(0)
+
 
 def trim_response(response, args):
 	""" Trim the response to the first message. """
@@ -176,6 +241,7 @@ def trim_response(response, args):
 		response = re.sub(r"\n\w+:.*", "", response, flags=re.DOTALL)
 		response = " " + response.strip()
 	return response
+
 
 def fix_layout(response, _args):
 	""" Fix the layout and indentation of the response. """
@@ -193,26 +259,29 @@ def fix_layout(response, _args):
 		# ... and after them too, but we'll see what's needed later...
 		# TODO detect end of table somehow
 
-		done = False
+#		done = False
 
 		if i == 0:
 			out.append(line)
-			done = True
-
-		if i > 0 and ":" in lines[i]:
-			role = lines[i].split(":")[0]
-			if role and regex.match(conductor.regex_name, role):
-				line = re.sub(r':\s*', ':\t', lines[i])
-				out.append(line)
-				done = True
-
-		if not done:
+		else:
 			line = "\t" + lines[i]
 			out.append(line)
+
+#			done = True
+
+#		if i > 0 and ":" in lines[i]:
+#			role = lines[i].split(":")[0]
+#			if role and regex.match(conductor.regex_name, role):
+#				line = re.sub(r':\s*', ':\t', lines[i])
+#				out.append(line)
+#				done = True
+#
+#		if not done:
 
 	response = "\n".join(out) + "\n"
 
 	return response
+
 
 def input_with_prefill(prompt, text):
 	""" Input with a prefill. """
@@ -224,9 +293,10 @@ def input_with_prefill(prompt, text):
 	readline.set_pre_input_hook()
 	return result
 
+
 def get_fulltext(args, model_name, history, history_start, invitation, delim):
 	""" Get the full text from the history, and cut to the right length. """
-	tokenizer = tokenizers[model_name]
+	tokenizer = TOKENIZERS[model_name]
 	fulltext = delim.join(history[history_start:]) + invitation
 	n_tokens = count_tokens_in_text(fulltext, tokenizer)
 	logger.info("n_tokens is %r", n_tokens)
@@ -262,6 +332,7 @@ def get_fulltext(args, model_name, history, history_start, invitation, delim):
 	logger.info("fulltext: %r", fulltext)
 	return fulltext, history_start
 
+
 def client_request(port, input_text, config=None):
 	""" Call the core server and get a response. """
 
@@ -283,6 +354,7 @@ def client_request(port, input_text, config=None):
 	ports.remove_response(port, resp)
 
 	return new_text, generated_text
+
 
 def chat_to_user(model, args, history, history_start=0):
 	""" Chat with the model. """
@@ -348,10 +420,12 @@ def chat_to_user(model, args, history, history_start=0):
 
 	return history_start
 
+
 def chat_loop(model, args, history, history_start=0):
 	""" Chat with the model in a loop. """
 	while True:
 		history_start = chat_to_user(model, args, history, history_start=history_start)
+
 
 def history_read(file, args):
 	""" Read the history from a file. """
@@ -367,6 +441,7 @@ def history_read(file, args):
 #		history.pop()
 	return history
 
+
 def history_write(file, history, delim="\n", mode="a", invitation=""):
 	""" Write or append the history to a file. """
 	if not file:
@@ -374,6 +449,7 @@ def history_write(file, history, delim="\n", mode="a", invitation=""):
 	text = delim.join(history) + invitation
 	with open(file, mode, encoding="utf-8") as f:
 		f.write(text)
+
 
 def interactive(model, args):
 	""" Interactive chat with the model. """
@@ -405,30 +481,30 @@ def interactive(model, args):
 def run_search(agent, query, file, args, history, history_start):
 	""" Run a search agent. """
 	name = agent["name"]
-	logger.warning("history: %r", history)
+	logger.debug("history: %r", history)
 	history_messages = list(chat.lines_to_messages(history))
-	logger.warning("history_messages: %r", history_messages)
+	logger.debug("history_messages: %r", history_messages)
 	message = history_messages[-1]
 	query = message["content"]
-	logger.warning("query 1: %r", query)
+	logger.debug("query 1: %r", query)
 	query = query.split("\n")[0]
-	logger.warning("query 2: %r", query)
+	logger.debug("query 2: %r", query)
 	rx = r'((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b'+re.escape(name)+r'\b'
-	logger.warning("rx: %r", rx)
+	logger.debug("rx: %r", rx)
 	query = re.sub(rx, '', query, flags=re.IGNORECASE)
-	logger.warning("query 3: %r", query)
+	logger.debug("query 3: %r", query)
 	query = re.sub(r'(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+', '', query, re.IGNORECASE)
-	logger.warning("query 4: %r", query)
+	logger.debug("query 4: %r", query)
 	query = re.sub(r'#.*', '', query)
-	logger.warning("query 5: %r", query)
+	logger.debug("query 5: %r", query)
 	query = re.sub(r'[^\x00-~]', '', query)   # filter out emojis
-	logger.warning("query 6: %r", query)
+	logger.debug("query 6: %r", query)
 	query = re.sub(r'^\s*[,;.]|[,;.]\s*$', '', query).strip()
-	logger.warning("query 7: %r", query)
+	logger.debug("query 7: %r", query)
 	response = search.search(query, engine=name, markdown=True)
 	response2 = f"{name}:\t{response}"
 	response3 = fix_layout(response2, args)
-	logger.warning("response3:\n%s", response3)
+	logger.debug("response3:\n%s", response3)
 	return response3
 
 
@@ -438,7 +514,10 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 	logger.info("Processing %s", file)
 
 	history = history_read(file, args)
-	
+
+	while history and history[-1] == "":
+		history.pop()
+
 	history_count = len(history)
 
 	if args.ignore and history and history[-1].rstrip().endswith(args.ignore):
@@ -465,8 +544,11 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 			logger.warning("who from conductor: %r", who)
 
 	if args.bot and args.bot.lower() in AGENTS:
+		logger.warning("history: %r", history)
 		query1 = history[-1] if history else None
-		query = chat.lines_to_messages([query1])[-1]["content"] if query1 else ""
+		logger.warning("query1: %r", query1)
+		query = list(chat.lines_to_messages([query1]))[-1]["content"] if query1 else ""
+		logger.warning("query: %r", query)
 		agent = AGENTS[args.bot.lower()]
 		response = run_agent(agent, query, file, args, history, history_start=history_start)
 		history.append(response)
@@ -489,6 +571,7 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 def run_agent(agent, query, file, args, history, history_start=0):
 	""" Run an agent. """
 	fn = agent["fn"]
+	logger.warning("query: %r", query)
 	return fn(query, file, args, history, history_start=history_start)
 
 
@@ -537,8 +620,118 @@ def local_agent(agent, query, file, args, history, history_start=0):
 
 	return tidy_response
 
+
 def remote_agent(agent, query, file, args, history, history_start=0):
-	return f"""{agent["name"]}:\tDuh I'm not connected yet!"""
+	# for now do just query, not the full chat
+	if agent["default_context"] == 1:
+		logger.warning("history: %r", history)
+		logger.warning("query: %r", query)
+		response = llm.query(query, out=None, model=agent["model"])
+	else:
+		query = query.rstrip() + "\n"
+
+		# todo use a system message?
+
+		context_proc = []
+
+		n_context = agent["default_context"]
+		context = history[-n_context:]
+		context_messages = list(chat.lines_to_messages(context))
+
+		remote_messages = []
+
+		agent_names = list(AGENTS.keys())
+		agents_lc = list(map(str.lower, agent_names))
+
+		for msg in context_messages:
+			u = msg["user"].lower()
+			if u in agents_lc:
+				role = "assistant"
+			else:
+				role = "user"
+			msg2 = {
+				"role": role,
+				"content": msg["content"],
+			}
+			logger.warning("msg: %r", msg2)
+			remote_messages.append(msg2)
+
+		# TODO this is a bit dodgy and won't work with async
+		opts = {
+			"model": agent["model"],
+			"indent": "\t",
+		}
+		llm.set_opts(opts)
+		output_message = llm.llm_chat(remote_messages)
+		response = output_message["content"]
+
+		# fix indentation for code
+		if opts["indent"]:
+			lines = response.splitlines()
+			lines = tab.fix_indentation_list(lines, opts["indent"])
+			response = "".join(lines)
+
+
+	logger.warning("response 1: %r", response)
+	if args.trim:
+		response = trim_response(response, args)
+	logger.warning("response 2: %r", response)
+	if not args.narrative:
+		response = fix_layout(response, args)
+	logger.warning("response 3: %r", response)
+	response = f"{agent['name']}:\t{response.strip()}"
+	logger.warning("response 4: %r", response)
+	return response
+
+
+def safe_shell(agent, query, file, args, history, history_start=0, command=None):
+	""" Run a shell agent. """
+	name = agent["name"]
+	logger.warning("history: %r", history)
+	history_messages = list(chat.lines_to_messages(history))
+	logger.warning("history_messages: %r", history_messages)
+	message = history_messages[-1]
+	query = message["content"]
+	logger.warning("query 1: %r", query)
+#	query = query.split("\n")[0]
+#	logger.warning("query 2: %r", query)
+	rx = r'((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b'+re.escape(name)+r'\b'
+	logger.warning("rx: %r", rx)
+	query = re.sub(rx, '', query, flags=re.IGNORECASE)
+	logger.warning("query 3: %r", query)
+#	query = re.sub(r'(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+', '', query, re.IGNORECASE)
+#	logger.warning("query 4: %r", query)
+#	query = re.sub(r'#.*', '', query)
+#	logger.warning("query 5: %r", query)
+#	query = re.sub(r'[^\x00-~]', '', query)   # filter out emojis
+#	logger.warning("query 6: %r", query)
+	query = re.sub(r'^\s*[,;.]|\s*$', '', query).strip()
+	logger.warning("query 7: %r", query)
+
+
+	command = ['ssh', '-T', 'allemande-nobody@localhost'] + agent["command"]
+
+	# echo the query to the subprocess
+	import subprocess
+	proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	proc.stdin.write(query.encode("utf-8"))
+	proc.stdin.close()
+	# read the output and stderr
+	response = ""
+	output = proc.stdout.read().decode("utf-8")
+	errors = proc.stderr.read().decode("utf-8")
+	status = proc.wait()
+	if errors or status:
+		response += "\n## status:\n" + str(status) + "\n\n"
+		response += "## errors:\n```\n" + errors + "\n```\n\n"
+		response += "## output:\n"
+	response += "```\n" + output + "\n```\n"
+
+	response2 = f"{name}:\t{response}"
+	response3 = fix_layout(response2, args)
+	logger.warning("response3:\n%s", response3)
+	return response3
+
 
 def find_files(folder, ext=None, maxdepth=inf):
 	""" Find chat files under a directory. """
@@ -557,6 +750,7 @@ def find_files(folder, ext=None, maxdepth=inf):
 					yield subdir.path
 	except (PermissionError, FileNotFoundError) as e:
 		logger.warning("find_files: %r", e)
+
 
 def watch_step(model, args, stats):
 	""" Watch a directory for changes, one step. """
@@ -602,6 +796,7 @@ def watch_step(model, args, stats):
 
 	return stats
 
+
 def watch_loop(model, args):
 	""" Watch a directory for changes, and process files as they change. """
 	logger.info("Watching %r for files with extension %r and depth %r", args.watch, args.ext, args.depth)
@@ -612,18 +807,22 @@ def watch_loop(model, args):
 		time.sleep(args.interval)
 		print(".", file=sys.stderr, end="", flush=True)
 
+
 #def stream(model, args):
 #	# TODO
 #	pass
+
 
 def default_user():
 	""" Try to get the user's name from $user in the environment, or fall back to $USER """
 	user_id = os.environ["USER"]
 	return os.environ.get("user", user_id).title()
 
+
 def default_bot():
 	""" Try to get the bot's name from the environment, or fall back to "Assistant" """
 	return os.environ.get("bot", "Assistant").title()
+
 
 def load_config(args):
 	""" Load the generations config file. """
@@ -639,9 +838,11 @@ def load_config(args):
 		config = None
 	return config
 
+
 def prog_dir():
 	""" Get the directory of the program. """
 	return Path(sys.argv[0]).resolve().parent
+
 
 def get_opts():
 	""" Get the command line options. """
@@ -730,6 +931,7 @@ def get_opts():
 
 	return args
 
+
 def main():
 	""" Main function. """
 	register_agents()
@@ -761,7 +963,7 @@ def main():
 		# model_dirs = prog_dir()/".."/"models"/"llm"
 		model_path = Path(models_dir) / args.model
 		model.tokenizer = load_tokenizer(model_path)
-		tokenizers[args.model] = model.tokenizer
+		TOKENIZERS[args.model] = model.tokenizer
 	else:
 		model.tokenizer = None
 
@@ -788,6 +990,7 @@ def main():
 	elif args.stream:
 		logger.error("Stream mode, not implemented yet")
 		# stream(model, args)
+
 
 if __name__ == "__main__":
 	try:
