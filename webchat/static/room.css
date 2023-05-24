@@ -6,6 +6,7 @@ div.messages {
 	margin-right: 1em;
 	font-weight: bold;
 	float: left;
+	clear: both;
 }
 .message.me > .label { color: blue; }
 .message > .content {
@@ -36,4 +37,15 @@ table {
 }
 table, th, td {
 	border: 1px solid var(--col4);
+}
+
+.caption {
+	width: 280px;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.caption: hover {
+	overflow: visible;
+	white-space: normal;
 }

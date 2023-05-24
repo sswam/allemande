@@ -21,6 +21,8 @@ BEGIN {
 		HTML
 		CSS
 		JS
+		VR
+		AR
 	);
 }
 sub to_letters {
