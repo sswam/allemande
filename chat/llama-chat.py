@@ -20,6 +20,7 @@ import ucm
 import ports
 import conductor
 import search
+import chat
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # pylint: disable=wrong-import-position, wrong-import-order
@@ -48,13 +49,18 @@ default_file_extension = "bb"
 AGENTS = {}
 
 def register_search_agents():
-	""" Register search agents """
-	for engine in search.engines:
-		box = (engine,)
-		AGENTS[engine] = {
-			"fn": lambda query, **kwargs: search.search(query, engine=box[0], markdown=True, **kwargs),
-			"type": "tool",
-		}
+    """ Register search agents """
+    def make_agent(engine):
+        return {
+            "fn": lambda query, **kwargs: search.search(query, engine=engine, markdown=True, **kwargs),
+            "type": "tool",
+            "name": engine,
+        }
+
+    for engine in search.engines:
+        engine_lc = engine.lower()
+        AGENTS[engine_lc] = make_agent(engine)
+    AGENTS["duck"] = AGENTS["duckduckgo"]
 
 def register_agents():
 	""" Register agents """
@@ -92,11 +98,13 @@ def fix_indentation(response, _args):
 	""" Fix the indentation of the response. """
 	lines = response.split("\n")
 	for i in range(1, len(lines)):
+		done = False
 		if ":" in lines[i]:
 			role = lines[i].split(":")[0]
 			if role and regex.match(conductor.regex_name, role):
 				lines[i] = re.sub(r':\s*', ':\t', lines[i])
-		else:
+				done = True
+		if not done:
 			lines[i] = "\t" + lines[i]
 	response = "\n".join(lines) + "\n"
 	return response
@@ -170,7 +178,7 @@ def client_request(port, input_text, config=None):
 
 	return new_text, generated_text
 
-def chat(model, args, history, history_start=0):
+def chat_to_user(model, args, history, history_start=0):
 	""" Chat with the model. """
 	invitation = args.bot + ":" if args.bot else ""
 	human_invitation = args.user + ":" if args.user else ""
@@ -236,7 +244,7 @@ def chat(model, args, history, history_start=0):
 def chat_loop(model, args, history, history_start=0):
 	""" Chat with the model in a loop. """
 	while True:
-		history_start = chat(model, args, history, history_start=history_start)
+		history_start = chat_to_user(model, args, history, history_start=history_start)
 
 def history_read(file, args):
 	""" Read the history from a file. """
@@ -286,6 +294,33 @@ def interactive(model, args):
 	except EOFError:
 		pass
 
+
+def run_agent(bot, model, file, args, history, history_start):
+	""" Run an agent. """
+	agent = AGENTS[bot]
+	agent_fn = agent["fn"]
+	name = agent["name"]
+	history_messages = list(chat.lines_to_messages(history))
+	message = history_messages[-1]
+	query = message["content"]
+#	query = query.replace(bot, "").strip()
+	logger.warning("%r", (r'\b'+re.escape(bot)+r'\b', query))
+
+	query = re.sub(r'\b'+re.escape(bot)+r'\b', '', query, re.IGNORECASE)
+	query = re.sub(r'^\s*[,;]|[,;]\s*$', '', query).strip()
+	response = agent_fn(query)
+#	reply = {"user":args.bot, "content":response}
+	response2 = f"{name}:\t{response}"
+	response3 = fix_indentation(response2, args)
+	logger.warning("response3:\n%s", response3)
+	history.append(response3)
+#	history_write(file, history[-1:], delim=args.delim, invitation=human_invitation)
+	history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
+
+	# TODO markdown links, thumbnails
+	# TODO uniq
+
+
 def process_file(model, file, args, history_start=0):
 	""" Process a file. """
 	logger.info("Processing %s", file)
@@ -305,9 +340,34 @@ def process_file(model, file, args, history_start=0):
 	elif args.get_roles_from_history:
 		args.user, args.bot = conductor.get_roles_from_history(history, args.user, args.bot)
 	else:
+		default = "Ally"
+		if history:
+			history_messages = list(chat.lines_to_messages(history))
+			agents = ["Ally", "GPT-4", "GPT-3.5", "Emmy", "Leo", "Claude",
+					"Claudia"]
+			agents = list(map(str.lower, agents))
+
+			logger.warning(history_messages)
+
+			agents += list(conductor.participants(history_messages))
+			agents += AGENTS.keys()
+			who = conductor.who_should_respond(history_messages[-1], agents=agents, history=history_messages, default=default)
+			if who:
+				args.bot = who[0]
+			else:
+				args.bot = None
+			logger.warning("who from conductor:", who)
+
 		# use conductor
 		# TODO !!!!!!!!
 		pass
+
+	llama_agents = ["Ally"]
+
+	if args.bot and args.bot.lower() in AGENTS:
+		return run_agent(args.bot.lower(), model, file, args, history, history_start=history_start)
+	if args.bot and args.bot not in llama_agents:
+		return
 
 	invitation = args.delim + args.bot + ":" if args.bot else ""
 	human_invitation = args.delim + args.user + ":" if args.user else ""
@@ -379,7 +439,7 @@ def watch_step(model, args, stats):
 		first = True
 
 	now = time.time()
-	
+
 	# If a file is newly added, we want to respond if it's a newly created file, let's say newer than now - args.interval * 2
 	# but we don't want to respond if it's an old file that was renamed or moved in.
 	# This isn't 100% reliable, but it's better than nothing

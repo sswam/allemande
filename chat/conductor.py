@@ -61,12 +61,17 @@ def who_spoke_last(history, user, agents, include_self=False):
 	return []
 
 
+def participants(history):
+	agents = set(x["user"] for x in history)
+	return agents
+
+
 def who_should_respond(message, agents=None, history=None, default=None, include_self=False):
 	""" who should respond to a message """
 	if not history:
 		history = []
 	if not agents:
-		agents = set(x["user"] for x in history)
+		agents = participants(history)
 
 	user = message.get("user")
 	content = message["content"]
