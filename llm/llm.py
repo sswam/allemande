@@ -353,7 +353,8 @@ def query2(*prompt, out: Optional[IO[str]]=stdout):
 
 	if out:
 		out.write(content)
-	return content
+	else:
+		return content
 
 
 def retry(fn, n_tries, *args, **kwargs):

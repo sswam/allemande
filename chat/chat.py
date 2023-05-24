@@ -137,8 +137,7 @@ def lines_to_messages(lines):
 
 	message = None
 
-	# add a sentinel blank line
-	# lines = itertools.chain(lines)
+	lines = iter(lines)
 	skipped_blank = 0
 
 	while True:
@@ -146,7 +145,8 @@ def lines_to_messages(lines):
 		if line is None:
 			break
 
-		line = line.decode("utf-8")
+		if type(line) is bytes:
+			line = line.decode("utf-8")
 
 		# skip blank lines
 		if line.rstrip("\r\n") == "":

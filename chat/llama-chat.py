@@ -92,7 +92,7 @@ AGENTS_REMOTE = {
 }
 
 AGENTS_PROGLANG = {
-	"Ken": {
+	"Doug": {
 		"command": [],
 	},
 	"Guido": {
