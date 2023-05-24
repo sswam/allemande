@@ -68,7 +68,7 @@ AGENTS_REMOTE = {
 	"GPT-4": {
 		"name": "Emmy",
 		"model": "gpt-4",
-		"default_context": 5,
+		"default_context": 10,
 	},
 	"GPT-3.5": {
 		"name": "Leo",
@@ -77,12 +77,12 @@ AGENTS_REMOTE = {
 	},
 	"Claude": {
 		"model": "claude-v1",
-		"default_context": 20,
+		"default_context": 10,
 	},
 	"Claude Instant": {
 		"name": "Claudia",
 		"model": "claude-instant-v1",
-		"default_context": 40,
+		"default_context": 10,
 	},
 	"Bard": {
 		"name": "Jaskier",
@@ -509,7 +509,7 @@ def run_search(agent, query, file, args, history, history_start):
 	query = re.sub(r'[^\x00-~]', '', query)   # filter out emojis
 	logger.debug("query 6: %r", query)
 	query = re.sub(r'^\s*[,;.]|[,;.]\s*$', '', query).strip()
-	logger.debug("query 7: %r", query)
+	logger.warning("query: %r %r", name, query)
 	response = search.search(query, engine=name, markdown=True)
 	response2 = f"{name}:\t{response}"
 	response3 = fix_layout(response2, args)
@@ -670,6 +670,9 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 			}
 			logger.warning("msg: %r", msg2)
 			remote_messages.append(msg2)
+
+		while remote_messages and remote_messages[0]["role"] == "assistant" and "claude" in agent["model"]:
+			remote_messages.pop(0)
 
 		# TODO this is a bit dodgy and won't work with async
 		opts = {

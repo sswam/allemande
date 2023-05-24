@@ -202,7 +202,7 @@ def message_to_text(message):
 		text = "".join(lines2)
 	else:
 		text = content
-	return text
+	return text.rstrip()
 
 
 def message_to_html(message):
