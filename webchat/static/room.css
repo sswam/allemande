@@ -6,6 +6,8 @@ div.messages {
 	margin-right: 1em;
 	font-weight: bold;
 	float: left;
+}
+.message {
 	clear: both;
 }
 .message.me > .label { color: blue; }
@@ -37,15 +39,40 @@ table {
 }
 table, th, td {
 	border: 1px solid var(--col4);
+	padding: 4px;
 }
 
 .caption {
 	width: 280px;
 	overflow: hidden;
 	white-space: nowrap;
+	text-overflow: ellipsis;
+	position: relative;
+	background: var(--background);
 }
 
-.caption: hover {
+.caption:hover {
 	overflow: visible;
 	white-space: normal;
+	z-index: 100;
+}
+
+.thumb {
+	width: 280px;
+	margin: 0 0 4px 0 !important;
+}
+
+.embed {
+	width: 280px;
+	height: 177px;
+	float: left;
+	margin: 10px;
+	padding: 0;
+}
+
+a {
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
 }
