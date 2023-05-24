@@ -13,6 +13,7 @@ import csv
 import json
 import urllib
 import html
+import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -30,13 +31,14 @@ user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 # TODO don't just hard code this
 timeout = 30
 
-def duckduckgo_search(query, max_results=10, safe="off", limit_max_results=True):
+def duckduckgo_search(query, max_results=12, safe="off", limit_max_results=True):
 	""" Search DuckDuckGo for `query` and return a list of results """
 	url = 'https://html.duckduckgo.com/html/'
 	kp = {
 		'off': -2,
 		'moderate': -1,
 		'strict': 1,
+		'on': 1,
 	}
 	params = {
 		'q': query,
@@ -46,7 +48,7 @@ def duckduckgo_search(query, max_results=10, safe="off", limit_max_results=True)
 	headers = {
 		'User-Agent': user_agent,
 	}
-	response = requests.get(url, headers=headers, params=params, timeout=timeout)
+	response = requests.get(url, headers=headers, data=params, timeout=timeout)
 	response.raise_for_status()
 
 	soup = BeautifulSoup(response.text, 'html.parser')
@@ -56,17 +58,20 @@ def duckduckgo_search(query, max_results=10, safe="off", limit_max_results=True)
 	search_results2 = soup.find_all('h2', class_='result__title')
 
 	for res in search_results2:
-		if res not in search_results:
-			search_results.append(res)
+		res2 = {'title': result.a.text.strip(), 'url': result.a['href']}
+		if res2 not in search_results:
+			search_results.append(res2)
 
 	search_results = search_results[:max_results]
 
 	if limit_max_results:
 		search_results = search_results[:max_results]
 
-	return [{'title': result.a.text.strip(), 'url': result.a['href']} for result in search_results]
+	logger.warning("Results: %r", search_results)
 
-def google_search(query, max_results=10, safe="off", limit_max_results=True):
+	return search_results
+
+def google_search(query, max_results=12, safe="off", limit_max_results=True):
 	""" Search Google for `query` and return a list of results """
 	url = 'https://www.google.com/search'
 	params = {
@@ -105,8 +110,15 @@ def google_search(query, max_results=10, safe="off", limit_max_results=True):
 		logger.warning("Found %d results", len(search_results2))
 
 		for res in search_results2:
-			if res not in search_results:
-				search_results.append(res)
+			h3 = res.find('h3')
+			a = res.find('a')
+			if not (h3 and a):
+				continue
+			res2 = {'title': h3.text.strip(), 'url': a['href']}
+			if res2["url"].startswith("/"):
+				continue
+			if res2 not in search_results:
+				search_results.append(res2)
 
 		logger.warning("Total results so far: %d", len(search_results))
 
@@ -117,9 +129,9 @@ def google_search(query, max_results=10, safe="off", limit_max_results=True):
 	if limit_max_results:
 		search_results = search_results[:max_results]
 
-	return [{'title': result.find('h3').text.strip(), 'url': result.find('a')['href']} for result in search_results]
+	return search_results
 
-def bing_search(query, max_results=10, safe="off", limit_max_results=True):
+def bing_search(query, max_results=12, safe="off", limit_max_results=True):
 	""" Search Bing for `query` and return a list of results """
 	url = 'https://www.bing.com/search'
 	params = {
@@ -138,6 +150,9 @@ def bing_search(query, max_results=10, safe="off", limit_max_results=True):
 
 	search_results2 = soup.find_all('li', class_='b_algo')
 
+	search_results2 = [{'title': result.find('h2').text.strip(), 'url': result.find('a').get('href')} for result in search_results2]
+	search_results2 = [result for result in search_results2 if result['url'] is not None]
+
 	for res in search_results2:
 		if res not in search_results:
 			search_results.append(res)
@@ -147,9 +162,9 @@ def bing_search(query, max_results=10, safe="off", limit_max_results=True):
 	if limit_max_results:
 		search_results = search_results[:max_results]
 
-	return [{'title': result.find('h2').text.strip(), 'url': result.find('a')['href']} for result in search_results]
+	return search_results
 
-def youtube_search(query, max_results=10, detailed=False, safe="off", limit_max_results=True):
+def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_results=True):
 	""" Search YouTube for `query` and return a list of results """
 	if safe != "off":
 		logger.warning("Safe search not implemented for YouTube")
@@ -174,11 +189,43 @@ def youtube_search(query, max_results=10, detailed=False, safe="off", limit_max_
 
 	return [{'title': result['title'], 'url': result['url'], 'thumbnail': result['thumbnails'][0]} for result in search_results]
 
+def pornhub_search(query, max_results=10, safe="off"):
+	site = 'https://www.pornhub.com'
+	url = site + '/video/search'
+
+	params = {
+		'search': query,
+	}
+
+	headers = {
+		'User-Agent': user_agent,
+	}
+	response = requests.get(url, headers=headers, params=params)
+	response.raise_for_status()
+
+	soup = BeautifulSoup(response.text, 'html.parser')
+
+	search_results = soup.find_all('a', class_='linkVideoThumb')
+
+#	def get_thumbnail_url(result):
+#		thumb = result.find('img')
+#		thumb_url = thumb.get('src') # or thumb.get('data-image') or thumb.get('data-mediumthumb')
+#		return thumb_url
+
+	search_results = search_results[:max_results]
+
+	return [
+		{'title': result['title'], 'url': site + result['href'], 'thumbnail': result.find('img')['src']}
+		for result in search_results
+		if not result['href'].startswith('javascript:')
+	]
+
 engines = {
 	'Google': google_search,
-	'DuckDuckGo': duckduckgo_search,
-	'Bing': bing_search,
+#	'DuckDuckGo': duckduckgo_search,
+#	'Bing': bing_search,
 	'YouTube': youtube_search,
+	'PornHub': pornhub_search,
 }
 
 def esc(s):
@@ -189,33 +236,56 @@ def esc(s):
 
 def list_to_markdown_table(items, engine):
 	# format title and url together as a link
+	i = 1
 	for item in items:
+		item['#'] = i
+		i += 1
 		url_enc = esc(item['url'])
 		title_enc = esc(item['title'])
 		item['page'] = f"""<a href="{url_enc}" target="_blank">{title_enc}</a>"""
 		f"[{item['title']}]({item['url']})"
-		if engine != 'YouTube':
+		if engine not in ('YouTube', 'PornHub'):
 			item['site'] = urllib.parse.urlparse(item['url']).netloc
 		if 'thumbnail' in item:
 			# convert to markdown image
-			image = f"""<img src="{esc(item['thumbnail'])}" alt="{title_enc}" height="100">"""
+			image = f"""<img class="thumb" src="{esc(item['thumbnail'])}" alt="{title_enc}">"""
 			del item['thumbnail']
 			item['thumbnail'] = image
-		if engine == 'YouTube':
-			video_id = urllib.parse.parse_qs(urllib.parse.urlparse(item['url']).query)['v'][0]
-			embed = f"""<div style="float:left;"><iframe width="280" height="157" src="https://www.youtube.com/embed/{video_id}" title="{title_enc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><div class="caption">{item['page']}</div></div>"""
-			item['video'] = embed
-			del item['thumbnail']
-			del item['page']
+		if engine in ('YouTube', 'PornHub'):
+			video_id = None
+			params = urllib.parse.parse_qs(urllib.parse.urlparse(item['url']).query)
+			video_id = params.get('v', [None])[0]
+			if not video_id:
+				video_id = params.get('viewkey', [None])[0]
+			if not video_id:
+				# Try shorts URL format
+				# https://www.youtube.com/shorts/pbU5lUon9AU
+				if re.match(r'^/shorts/', urllib.parse.urlparse(item['url']).path):
+					video_id = urllib.parse.urlparse(item['url']).path.split('/')[-1]
+			if not video_id:
+				logger.warning("Could not parse YouTube video ID from URL %s", item['url'])
+			if video_id:
+				img = item['thumbnail']
+				video = f"""<div class="embed" data-site="{engine.lower()}" data-videoid="{video_id}">""" + img + f"""<br><div class="caption">{item['page']}</div></div>"""
+
+#				<iframe width="280" height="157" src="https://www.youtube.com/embed/{video_id}" title="{title_enc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><div class="caption">{item['page']}</div></div>"""
+#				embed = f"""<div style="float:left;"><iframe width="280" height="157" src="https://www.youtube.com/embed/{video_id}" title="{title_enc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><div class="caption">{item['page']}</div></div>"""
+				item['video'] = video
+				del item['thumbnail']
+				del item['page']
 		del item['url']
 		del item['title']
-	if engine == 'YouTube':
-		return "\n".join([item['video'] for item in items])
+
+	# check all items have video
+	if engine in ('YouTube', 'PornHub') and all('video' in item for item in items):
+		return "<br><div>" + ("\n".join([item['video'] for item in items])) + "</div>"
 	return tabulate.tabulate(items, tablefmt="pipe", headers="keys")
 
-def search(query, engine='duckduckgo', max_results=10, safe="on", markdown=False):
+def search(query, engine='duckduckgo', max_results=12, safe="off", markdown=False):
 	""" Search `query` using `engine` and return a list of results """
-	results = engines[engine](query, max_results=max_results, safe=safe)
+	lc_keys_to_keys = {k.lower(): k for k in engines.keys()}
+	key = lc_keys_to_keys[engine.lower()]
+	results = engines[key](query, max_results=max_results, safe=safe)
 	results2 = results[:max_results]
 	if markdown:
 		return list_to_markdown_table(results2, engine)
@@ -226,6 +296,8 @@ def search(query, engine='duckduckgo', max_results=10, safe="on", markdown=False
 
 def format_csv(obj: List[Dict[str, str]], delimiter=',') -> str:
 	""" Format `obj` as CSV """
+	if not obj:
+		return ""
 	output = io.StringIO()
 	writer = csv.DictWriter(output, fieldnames=obj[0].keys(), delimiter=delimiter, dialect='unix', quoting=csv.QUOTE_MINIMAL)
 	writer.writeheader()
@@ -246,6 +318,8 @@ def format_python(obj) -> str:
 
 def format_tabulate(obj: List[Dict[str, str]]) -> str:
 	""" Format `obj` as a table """
+	if not obj:
+		return ""
 	return tabulate.tabulate(obj, headers='keys')
 
 formatters = {
@@ -265,9 +339,9 @@ def parse_args():
 	parser = argparse.ArgumentParser()
 	add_logging_options(parser)
 	parser.add_argument('queries', nargs='*', help='Search queries')
-	parser.add_argument('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=engines.keys())
+	parser.add_argument('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
 	parser.add_argument('-format', '-f', help='Output format', default=dict_first(formatters), choices=formatters.keys())
-	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=10)
+	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=12)
 	parser.add_argument('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
 	args = parser.parse_args()
 	return args

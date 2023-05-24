@@ -131,3 +131,35 @@ function keyboard_shortcuts() {
 }
 
 keyboard_shortcuts();
+
+// embeds --------------------------------------------------------------------
+
+// when we click an image of class thumb, we convert it to an embed
+
+// embed = `<iframe width="280" height="157" src="https://www.youtube.com/embed/{video_id}" title="{title_enc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
+
+function embed_click($thumb) {
+	const $embed = $thumb.parentNode;
+	let iframe_html;
+	if ($embed.dataset.site == "youtube") {
+		iframe_html = `<iframe width="280" height="157" src="https://www.youtube.com/embed/${$embed.dataset.videoid}?autoplay=1" title="${$thumb.alt}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>`;
+	} else if ($embed.dataset.site == "pornhub") {
+		iframe_html = `<iframe src="https://www.pornhub.com/embed/${$embed.dataset.videoid}" frameborder="0" width="280" height="157" scrolling="no" allowfullscreen></iframe>`;
+	}
+	// replace $thumb element with iframe_html
+	if (iframe_html == undefined) {
+		return;
+	}
+	const $node = document.createElement('div');
+	$node.innerHTML = iframe_html;
+	$embed.replaceChild($node.firstChild, $thumb);
+	$node.remove();
+}
+
+function click(ev) {
+	if (ev.target.classList.contains('thumb')) {
+		embed_click(ev.target);
+	}
+}
+
+$on(document, 'click', click);
