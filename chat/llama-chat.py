@@ -126,6 +126,12 @@ AGENTS_PROGLANG = {
 
 TOKENIZERS = {}
 
+REMOTE_AGENT_RETRIES = 3
+
+ADULT = False
+
+UNSAFE = False
+
 
 def register_agents_local():
 	""" Register LLM local agents """
@@ -160,7 +166,8 @@ def register_agents_search():
 		agent_lc = agent_name.lower()
 		agent_base = { "name": agent_name }
 		AGENTS[agent_lc] = make_agent(agent_base)
-	del AGENTS["pornhub"]
+	if not ADULT:
+		del AGENTS["pornhub"]
 #	AGENTS["duck"] = AGENTS["duckduckgo"]
 
 
@@ -207,7 +214,8 @@ def register_agents():
 	register_agents_local()
 	register_agents_search()
 	register_agents_remote()
-	# register_agents_proglang()
+	if UNSAFE:
+		register_agents_proglang()
 	# TODO Moar!
 	# - calculator: Calc
 	# - translator: Poly
@@ -542,14 +550,14 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 				args.bot = who[0]
 			else:
 				args.bot = None
-			logger.warning("who from conductor: %r", who)
+			logger.info("who should respond: %r", who)
 
 	if args.bot and args.bot.lower() in AGENTS:
-		logger.warning("history: %r", history)
+		logger.debug("history: %r", history)
 		query1 = history[-1] if history else None
-		logger.warning("query1: %r", query1)
+		logger.debug("query1: %r", query1)
 		query = list(chat.lines_to_messages([query1]))[-1]["content"] if query1 else ""
-		logger.warning("query: %r", query)
+		logger.debug("query: %r", query)
 		agent = AGENTS[args.bot.lower()]
 		response = run_agent(agent, query, file, args, history, history_start=history_start)
 		history.append(response)
@@ -562,9 +570,9 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 	if len(history) == history_count:
 		return
 
-	logger.warning("len(history), history_count: %r %r", len(history), history_count)
-	logger.warning("history[-1]: %r", history[-1])
-	logger.warning("running process_file again")
+	logger.debug("len(history), history_count: %r %r", len(history), history_count)
+	logger.debug("history[-1]: %r", history[-1])
+	logger.debug("running process_file again")
 
 	process_file(model, file, args, history_start=history_start, count=count, max_count=max_count)
 
@@ -572,7 +580,7 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 def run_agent(agent, query, file, args, history, history_start=0):
 	""" Run an agent. """
 	fn = agent["fn"]
-	logger.warning("query: %r", query)
+	logger.debug("query: %r", query)
 	return fn(query, file, args, history, history_start=history_start)
 
 
@@ -596,13 +604,13 @@ def local_agent(agent, query, file, args, history, history_start=0):
 
 	args.gen_config = load_config(args)
 
-	logger.warning("fulltext: %r", fulltext)
-	logger.warning("config: %r", args.gen_config)
-	logger.warning("port: %r", args.port)
+	logger.debug("fulltext: %r", fulltext)
+	logger.debug("config: %r", args.gen_config)
+	logger.debug("port: %r", args.port)
 
 	response, _fulltext2 = client_request(args.port, fulltext, config=args.gen_config)
 
-	logger.warning("response: %r", response)
+	logger.debug("response: %r", response)
 
 	logger.debug("response: %r", response)
 	logger.debug("_fulltext2: %r", _fulltext2)
@@ -617,7 +625,7 @@ def local_agent(agent, query, file, args, history, history_start=0):
 	else:
 		tidy_response = response
 
-	logger.warning("tidy response: %r", tidy_response)
+	logger.debug("tidy response: %r", tidy_response)
 
 	return tidy_response
 
@@ -625,8 +633,8 @@ def local_agent(agent, query, file, args, history, history_start=0):
 def remote_agent(agent, query, file, args, history, history_start=0):
 	# for now do just query, not the full chat
 	if agent["default_context"] == 1:
-		logger.warning("history: %r", history)
-		logger.warning("query: %r", query)
+		logger.debug("history: %r", history)
+		logger.debug("query: %r", query)
 		response = llm.query(query, out=None, model=agent["model"])
 	else:
 		query = query.rstrip() + "\n"
@@ -645,7 +653,9 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 		agents_lc = list(map(str.lower, agent_names))
 
 		for msg in context_messages:
-			u = msg["user"].lower()
+			logger.warning(msg)
+			u = msg.get("user")
+			u = u.lower() if u is not None else None
 			if u in agents_lc:
 				role = "assistant"
 			else:
@@ -654,7 +664,7 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 				"role": role,
 				"content": msg["content"],
 			}
-			logger.warning("msg: %r", msg2)
+			logger.debug("msg: %r", msg2)
 			remote_messages.append(msg2)
 
 		# TODO this is a bit dodgy and won't work with async
@@ -663,7 +673,7 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 			"indent": "\t",
 		}
 		llm.set_opts(opts)
-		output_message = llm.llm_chat(remote_messages)
+		output_message = llm.retry(llm.llm_chat, REMOTE_AGENT_RETRIES, remote_messages)
 		response = output_message["content"]
 
 		# fix indentation for code
@@ -673,41 +683,41 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 			response = "".join(lines)
 
 
-	logger.warning("response 1: %r", response)
+	logger.debug("response 1: %r", response)
 	if args.trim:
 		response = trim_response(response, args)
-	logger.warning("response 2: %r", response)
+	logger.debug("response 2: %r", response)
 	if not args.narrative:
 		response = fix_layout(response, args)
-	logger.warning("response 3: %r", response)
+	logger.debug("response 3: %r", response)
 	response = f"{agent['name']}:\t{response.strip()}"
-	logger.warning("response 4: %r", response)
+	logger.debug("response 4: %r", response)
 	return response
 
 
 def safe_shell(agent, query, file, args, history, history_start=0, command=None):
 	""" Run a shell agent. """
 	name = agent["name"]
-	logger.warning("history: %r", history)
+	logger.debug("history: %r", history)
 	history_messages = list(chat.lines_to_messages(history))
-	logger.warning("history_messages: %r", history_messages)
+	logger.debug("history_messages: %r", history_messages)
 	message = history_messages[-1]
 	query = message["content"]
-	logger.warning("query 1: %r", query)
+	logger.debug("query 1: %r", query)
 #	query = query.split("\n")[0]
-#	logger.warning("query 2: %r", query)
+#	logger.debug("query 2: %r", query)
 	rx = r'((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b'+re.escape(name)+r'\b'
-	logger.warning("rx: %r", rx)
+	logger.debug("rx: %r", rx)
 	query = re.sub(rx, '', query, flags=re.IGNORECASE)
-	logger.warning("query 3: %r", query)
+	logger.debug("query 3: %r", query)
 #	query = re.sub(r'(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+', '', query, re.IGNORECASE)
-#	logger.warning("query 4: %r", query)
+#	logger.debug("query 4: %r", query)
 #	query = re.sub(r'#.*', '', query)
-#	logger.warning("query 5: %r", query)
+#	logger.debug("query 5: %r", query)
 #	query = re.sub(r'[^\x00-~]', '', query)   # filter out emojis
-#	logger.warning("query 6: %r", query)
+#	logger.debug("query 6: %r", query)
 	query = re.sub(r'^\s*[,;.]|\s*$', '', query).strip()
-	logger.warning("query 7: %r", query)
+	logger.debug("query 7: %r", query)
 
 
 	command = ['ssh', '-T', 'allemande-nobody@localhost'] + agent["command"]
@@ -730,7 +740,7 @@ def safe_shell(agent, query, file, args, history, history_start=0, command=None)
 
 	response2 = f"{name}:\t{response}"
 	response3 = fix_layout(response2, args)
-	logger.warning("response3:\n%s", response3)
+	logger.debug("response3:\n%s", response3)
 	return response3
 
 
