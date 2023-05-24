@@ -663,7 +663,7 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 			else:
 				role = "user"
 				if u:
-					content = u + ":\t" + content
+					content = u + ": " + content
 			msg2 = {
 				"role": role,
 				"content": content,
@@ -677,8 +677,13 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 			"indent": "\t",
 		}
 		llm.set_opts(opts)
+		logger.warning("querying %r = %r", agent['name'], agent["model"])
 		output_message = llm.retry(llm.llm_chat, REMOTE_AGENT_RETRIES, remote_messages)
 		response = output_message["content"]
+
+		if response.startswith(agent['name']+": "):
+			logger.warning("stripping agent name from response")
+			response = response[len(agent['name'])+2:]
 
 		# fix indentation for code
 		if opts["indent"]:
@@ -696,7 +701,7 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 	logger.debug("response 3: %r", response)
 	response = f"{agent['name']}:\t{response.strip()}"
 	logger.debug("response 4: %r", response)
-	return response
+	return response.rstrip()
 
 
 def safe_shell(agent, query, file, args, history, history_start=0, command=None):
