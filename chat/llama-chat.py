@@ -21,6 +21,7 @@ import ports
 import conductor
 import search
 import chat
+import llm
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # pylint: disable=wrong-import-position, wrong-import-order
@@ -48,24 +49,106 @@ default_file_extension = "bb"
 
 AGENTS = {}
 
-def register_search_agents():
-    """ Register search agents """
-    def make_agent(engine):
-        return {
-            "fn": lambda query, **kwargs: search.search(query, engine=engine, markdown=True, **kwargs),
-            "type": "tool",
-            "name": engine,
-        }
+AGENT_DEFAULT = "Ally"
 
-    for engine in search.engines:
-        engine_lc = engine.lower()
-        AGENTS[engine_lc] = make_agent(engine)
-    AGENTS["duck"] = AGENTS["duckduckgo"]
+AGENTS_LOCAL = {
+	"Ally": {
+		"model": "point-alpaca-7B",
+	},
+	"Callum": {
+		"model": "point-alpaca-7B",
+	},
+}
+
+AGENTS_REMOTE = {
+	"GPT-4": {
+		"name": "Emmy",
+		"model": "gpt-4",
+	},
+	"GPT-3.5": {
+		"name": "Leo",
+		"model": "gpt-3.5-turbo",
+	},
+	"Claude": {
+		"model": "claude-v1",
+	},
+	"Claude Instant": {
+		"name": "Claudia",
+		"model": "claude-instant-v1",
+	},
+	"Bard": {
+		"name": "Jaskier",
+		"model": "bard",
+	},
+}
+
+tokenizers = {}
+
+
+def register_local_agents():
+	""" Register LLM local agents """
+	def make_agent(agent_base):
+		agent = agent_base.copy()
+		agent["fn"] = lambda *args, **kwargs: local_agent(agent, *args, **kwargs)
+		agent["type"] = "local"
+		if "name" not in agent:
+			agent["name"] = agent_name
+		return agent
+
+	for agent_name in AGENTS_LOCAL:
+		agent_base = AGENTS_LOCAL[agent_name]
+		agent_lc = agent_name.lower()
+		agent = AGENTS[agent_lc] = make_agent(agent_base)
+		name_lc = agent["name"].lower()
+		if name_lc != agent_lc:
+			AGENTS[name_lc] = agent
+
+
+def register_search_agents():
+	""" Register search engines """
+	def make_agent(agent_base):
+		agent = agent_base.copy()
+		agent["fn"] = lambda *args, **kwargs: run_search(agent, *args, **kwargs)
+		agent["type"] = "tool"
+		if "name" not in agent:
+			agent["name"] = agent_name
+		return agent
+
+	for agent_name in search.engines:
+		agent_lc = agent_name.lower()
+		agent_base = { "name": agent_name }
+		AGENTS[agent_lc] = make_agent(agent_base)
+#	AGENTS["duck"] = AGENTS["duckduckgo"]
+
+
+def register_remote_agents():
+	""" Register LLM API agents """
+	def make_agent(agent_base):
+		agent = agent_base.copy()
+		agent["fn"] = lambda *args, **kwargs: remote_agent(agent, *args, **kwargs)
+		agent["type"] = "remote"
+		if "name" not in agent:
+			agent["name"] = agent_name
+		return agent
+
+	for agent_name in AGENTS_REMOTE:
+		agent_base = AGENTS_REMOTE[agent_name]
+		agent_lc = agent_name.lower()
+		agent = AGENTS[agent_lc] = make_agent(agent_base)
+		name_lc = agent["name"].lower()
+		if name_lc != agent_lc:
+			AGENTS[name_lc] = agent
 
 def register_agents():
 	""" Register agents """
+	register_local_agents()
 	register_search_agents()
+	register_remote_agents()
 	# TODO Moar!
+	# - calculator: Calc
+	# - Linux shell: Ken
+	# - Python: Guido
+	# - translator: Poly
 
 def load_tokenizer(model_path: Path):
 	""" Load the Llama tokenizer """
@@ -94,19 +177,41 @@ def trim_response(response, args):
 		response = " " + response.strip()
 	return response
 
-def fix_indentation(response, _args):
-	""" Fix the indentation of the response. """
+def fix_layout(response, _args):
+	""" Fix the layout and indentation of the response. """
 	lines = response.split("\n")
-	for i in range(1, len(lines)):
+	out = []
+	in_table = False
+	for i in range(0, len(lines)):
+		# markdown tables must have a blank line before them ...
+		line = lines[i]
+		if not in_table and ("---" in line or re.search(r'\|.*\|', line)):
+			if i > 0 and lines[i-1].strip():
+				out.append("\t")
+			in_table = True
+
+		# ... and after them too, but we'll see what's needed later...
+		# TODO detect end of table somehow
+
 		done = False
-		if ":" in lines[i]:
+
+		if i == 0:
+			out.append(line)
+			done = True
+
+		if i > 0 and ":" in lines[i]:
 			role = lines[i].split(":")[0]
 			if role and regex.match(conductor.regex_name, role):
-				lines[i] = re.sub(r':\s*', ':\t', lines[i])
+				line = re.sub(r':\s*', ':\t', lines[i])
+				out.append(line)
 				done = True
+
 		if not done:
-			lines[i] = "\t" + lines[i]
-	response = "\n".join(lines) + "\n"
+			line = "\t" + lines[i]
+			out.append(line)
+
+	response = "\n".join(out) + "\n"
+
 	return response
 
 def input_with_prefill(prompt, text):
@@ -119,10 +224,11 @@ def input_with_prefill(prompt, text):
 	readline.set_pre_input_hook()
 	return result
 
-def get_fulltext(args, model, history, history_start, invitation, delim):
+def get_fulltext(args, model_name, history, history_start, invitation, delim):
 	""" Get the full text from the history, and cut to the right length. """
+	tokenizer = tokenizers[model_name]
 	fulltext = delim.join(history[history_start:]) + invitation
-	n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
+	n_tokens = count_tokens_in_text(fulltext, tokenizer)
 	logger.info("n_tokens is %r", n_tokens)
 #	dropped = False
 	# TODO use a better search method
@@ -146,7 +252,7 @@ def get_fulltext(args, model, history, history_start, invitation, delim):
 				last = 1
 		history_start += guess
 		fulltext = delim.join(history[history_start:]) + invitation
-		n_tokens = count_tokens_in_text(fulltext, model.tokenizer)
+		n_tokens = count_tokens_in_text(fulltext, tokenizer)
 #		dropped = True
 		logger.info("dropped some history, history_start: %r, n_tokens: %r", history_start, n_tokens)
 		if last:
@@ -216,7 +322,8 @@ def chat_to_user(model, args, history, history_start=0):
 	if ":" in invitation2:
 		args.bot = invitation2.split(":")[0]
 
-	fulltext, history_start = get_fulltext(args, model, history, history_start, delim+invitation2, delim)
+	model_name = args.model
+	fulltext, history_start = get_fulltext(args, model_name, history, history_start, delim+invitation2, delim)
 
 	args.gen_config = load_config(args)
 
@@ -295,43 +402,49 @@ def interactive(model, args):
 		pass
 
 
-def run_agent(bot, model, file, args, history, history_start):
-	""" Run an agent. """
-	agent = AGENTS[bot]
-	agent_fn = agent["fn"]
+def run_search(agent, query, file, args, history, history_start):
+	""" Run a search agent. """
 	name = agent["name"]
+	logger.warning("history: %r", history)
 	history_messages = list(chat.lines_to_messages(history))
+	logger.warning("history_messages: %r", history_messages)
 	message = history_messages[-1]
 	query = message["content"]
-#	query = query.replace(bot, "").strip()
-	logger.warning("%r", (r'\b'+re.escape(bot)+r'\b', query))
-
-	query = re.sub(r'\b'+re.escape(bot)+r'\b', '', query, re.IGNORECASE)
-	query = re.sub(r'^\s*[,;]|[,;]\s*$', '', query).strip()
-	response = agent_fn(query)
-#	reply = {"user":args.bot, "content":response}
+	logger.warning("query 1: %r", query)
+	query = query.split("\n")[0]
+	logger.warning("query 2: %r", query)
+	rx = r'((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b'+re.escape(name)+r'\b'
+	logger.warning("rx: %r", rx)
+	query = re.sub(rx, '', query, flags=re.IGNORECASE)
+	logger.warning("query 3: %r", query)
+	query = re.sub(r'(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+', '', query, re.IGNORECASE)
+	logger.warning("query 4: %r", query)
+	query = re.sub(r'#.*', '', query)
+	logger.warning("query 5: %r", query)
+	query = re.sub(r'[^\x00-~]', '', query)   # filter out emojis
+	logger.warning("query 6: %r", query)
+	query = re.sub(r'^\s*[,;.]|[,;.]\s*$', '', query).strip()
+	logger.warning("query 7: %r", query)
+	response = search.search(query, engine=name, markdown=True)
 	response2 = f"{name}:\t{response}"
-	response3 = fix_indentation(response2, args)
+	response3 = fix_layout(response2, args)
 	logger.warning("response3:\n%s", response3)
-	history.append(response3)
-#	history_write(file, history[-1:], delim=args.delim, invitation=human_invitation)
-	history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
-
-	# TODO markdown links, thumbnails
-	# TODO uniq
+	return response3
 
 
-def process_file(model, file, args, history_start=0):
+def process_file(model, file, args, history_start=0, count=0, max_count=4):
 	""" Process a file. """
+	# TODO don't need model any longer
 	logger.info("Processing %s", file)
 
 	history = history_read(file, args)
+	
+	history_count = len(history)
 
 	if args.ignore and history and history[-1].rstrip().endswith(args.ignore):
 		return
 	if args.require and history and history[-1].rstrip().endswith(args.require):
 		return
-
 
 	# get latest user name and bot name from history
 	# XXX this is unreliable!
@@ -340,36 +453,49 @@ def process_file(model, file, args, history_start=0):
 	elif args.get_roles_from_history:
 		args.user, args.bot = conductor.get_roles_from_history(history, args.user, args.bot)
 	else:
-		default = "Ally"
+		default = AGENT_DEFAULT
 		if history:
 			history_messages = list(chat.lines_to_messages(history))
-			agents = ["Ally", "GPT-4", "GPT-3.5", "Emmy", "Leo", "Claude",
-					"Claudia"]
-			agents = list(map(str.lower, agents))
 
-			logger.warning(history_messages)
-
-			agents += list(conductor.participants(history_messages))
-			agents += AGENTS.keys()
-			who = conductor.who_should_respond(history_messages[-1], agents=agents, history=history_messages, default=default)
+			who = conductor.who_should_respond(history_messages[-1], agents=AGENTS, history=history_messages, default=default)
 			if who:
 				args.bot = who[0]
 			else:
 				args.bot = None
-			logger.warning("who from conductor:", who)
-
-		# use conductor
-		# TODO !!!!!!!!
-		pass
-
-	llama_agents = ["Ally"]
+			logger.warning("who from conductor: %r", who)
 
 	if args.bot and args.bot.lower() in AGENTS:
-		return run_agent(args.bot.lower(), model, file, args, history, history_start=history_start)
-	if args.bot and args.bot not in llama_agents:
+		query1 = history[-1] if history else None
+		query = chat.lines_to_messages([query1])[-1]["content"] if query1 else ""
+		agent = AGENTS[args.bot.lower()]
+		response = run_agent(agent, query, file, args, history, history_start=history_start)
+		history.append(response)
+		history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
+
+	count += 1
+	if count >= max_count:
 		return
 
-	invitation = args.delim + args.bot + ":" if args.bot else ""
+	if len(history) == history_count:
+		return
+
+	logger.warning("len(history), history_count: %r %r", len(history), history_count)
+	logger.warning("history[-1]: %r", history[-1])
+	logger.warning("running process_file again")
+
+	process_file(model, file, args, history_start=history_start, count=count, max_count=max_count)
+
+
+def run_agent(agent, query, file, args, history, history_start=0):
+	""" Run an agent. """
+	fn = agent["fn"]
+	return fn(query, file, args, history, history_start=history_start)
+
+
+def local_agent(agent, query, file, args, history, history_start=0):
+	""" Run a local agent. """
+	print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
+	invitation = args.delim + agent["name"] + ":" if args.bot else ""
 	human_invitation = args.delim + args.user + ":" if args.user else ""
 	if args.emo and invitation:
 		invitation += " "
@@ -381,13 +507,18 @@ def process_file(model, file, args, history_start=0):
 		history.append("")
 		history_write(file, ['', ''], delim=args.delim)
 
-	fulltext, history_start = get_fulltext(args, model, history, history_start, invitation, args.delim)
-
-	logger.debug("fulltext: %r", fulltext)
+	model_name = agent["model"]
+	fulltext, history_start = get_fulltext(args, model_name, history, history_start, invitation, args.delim)
 
 	args.gen_config = load_config(args)
 
+	logger.warning("fulltext: %r", fulltext)
+	logger.warning("config: %r", args.gen_config)
+	logger.warning("port: %r", args.port)
+
 	response, _fulltext2 = client_request(args.port, fulltext, config=args.gen_config)
+
+	logger.warning("response: %r", response)
 
 	logger.debug("response: %r", response)
 	logger.debug("_fulltext2: %r", _fulltext2)
@@ -395,16 +526,19 @@ def process_file(model, file, args, history_start=0):
 	if args.trim:
 		response = trim_response(response, args)
 	if not args.narrative:
-		response = fix_indentation(response, args)
+		response = fix_layout(response, args)
 
 	if invitation:
 		tidy_response = invitation.strip() + "\t" + response.strip()
 	else:
 		tidy_response = response
 
-	history.append(tidy_response)
-#	history_write(file, history[-1:], delim=args.delim, invitation=human_invitation)
-	history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
+	logger.warning("tidy response: %r", tidy_response)
+
+	return tidy_response
+
+def remote_agent(agent, query, file, args, history, history_start=0):
+	return f"""{agent["name"]}:\tDuh I'm not connected yet!"""
 
 def find_files(folder, ext=None, maxdepth=inf):
 	""" Find chat files under a directory. """
@@ -443,13 +577,13 @@ def watch_step(model, args, stats):
 	# If a file is newly added, we want to respond if it's a newly created file, let's say newer than now - args.interval * 2
 	# but we don't want to respond if it's an old file that was renamed or moved in.
 	# This isn't 100% reliable, but it's better than nothing
-	stats_null = type("stats_null", (object,), {"st_mtime": now - args.interval * 2, "st_size": 0})
+	stats_null = type("stats_null", (object,), {"st_mtime": now - args.interval * 5, "st_size": 0})
 
 	for file in files:
 		# check if modified since last time
+		stats1 = os.stat(file)
 		try:
 			stats0 = stats.get(file, stats_null)
-			stats1 = os.stat(file)
 
 			if first:
 				stats[file] = stats1
@@ -461,9 +595,10 @@ def watch_step(model, args, stats):
 			elif stats1.st_size > 0:
 				process_file(model, file, args)
 				stats1 = os.stat(file)
-			stats[file] = stats1
 		except Exception as e:
 			logger.exception("watch_step: %r", e)
+			stats1 = os.stat(file)
+		stats[file] = stats1
 
 	return stats
 
@@ -626,6 +761,7 @@ def main():
 		# model_dirs = prog_dir()/".."/"models"/"llm"
 		model_path = Path(models_dir) / args.model
 		model.tokenizer = load_tokenizer(model_path)
+		tokenizers[args.model] = model.tokenizer
 	else:
 		model.tokenizer = None
 

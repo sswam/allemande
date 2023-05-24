@@ -28,7 +28,7 @@ fi
 
 PYTHON=$(which python3)
 
-for dir in py text www chat anthropic google; do
+for dir in py text www chat anthropic google llm; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 

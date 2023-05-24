@@ -147,7 +147,7 @@ def lines_to_messages(lines):
 
 		# accumulate continued lines
 		if message and user == USER_CONTINUED:
-			message["content"] += "\n" * skipped_blank + content
+			message["content"] += "\n" * (skipped_blank+1) + content
 			continue
 
 		if not message and user == USER_CONTINUED:
@@ -155,7 +155,7 @@ def lines_to_messages(lines):
 			user = USER_NARRATIVE
 
 		if message and user == USER_NARRATIVE and "user" not in message:
-			message["content"] += "\n" * skipped_blank + content
+			message["content"] += "\n" * (skipped_blank+1) + content
 			continue
 
 		# yield the previous message
