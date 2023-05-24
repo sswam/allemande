@@ -160,6 +160,7 @@ def register_agents_search():
 		agent_lc = agent_name.lower()
 		agent_base = { "name": agent_name }
 		AGENTS[agent_lc] = make_agent(agent_base)
+	del AGENTS["pornhub"]
 #	AGENTS["duck"] = AGENTS["duckduckgo"]
 
 
