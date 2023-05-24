@@ -550,7 +550,7 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 				args.bot = who[0]
 			else:
 				args.bot = None
-			logger.info("who should respond: %r", who)
+			logger.warning("who should respond: %r", who)
 
 	if args.bot and args.bot.lower() in AGENTS:
 		logger.debug("history: %r", history)
@@ -656,7 +656,8 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 			logger.warning(msg)
 			u = msg.get("user")
 			u = u.lower() if u is not None else None
-			if u in agents_lc:
+#			if u in agents_lc:
+			if u == agent['name'].lower()
 				role = "assistant"
 			else:
 				role = "user"
@@ -664,7 +665,7 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 				"role": role,
 				"content": msg["content"],
 			}
-			logger.debug("msg: %r", msg2)
+			logger.warning("msg: %r", msg2)
 			remote_messages.append(msg2)
 
 		# TODO this is a bit dodgy and won't work with async
