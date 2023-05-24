@@ -328,12 +328,12 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file)
 
 
-def query(*prompt, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
+def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
 	set_opts(vars())
 	return retry(query2, retries, *prompt, out=out)
 
 
-def query2(*prompt, out: IO[str]=stdout):
+def query2(*prompt, out: Optional[IO[str]]=stdout):
 	""" Ask the LLM a question. """
 	prompt = " ".join(prompt)
 
@@ -351,7 +351,9 @@ def query2(*prompt, out: IO[str]=stdout):
 		lines = tab.fix_indentation_list(lines, opts.indent)
 		content = "".join(lines)
 
-	out.write(content)
+	if out:
+		out.write(content)
+	return content
 
 
 def retry(fn, n_tries, *args, **kwargs):
