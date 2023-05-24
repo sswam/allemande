@@ -7,10 +7,10 @@ const CHAT_URL = location.protocol + "//" + location.host.replace(/^rooms\b/, "c
 let timeout;
 
 function get_status_element() {
-	let status = $id('status');
+	let status = $id('allemande_status');
 	if (!status) {
 		status = $create('div');
-		status.id = 'status';
+		status.id = 'allemande_status';
 		$append(document.lastChild, status);
 	}
 	return status;

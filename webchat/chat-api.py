@@ -58,7 +58,7 @@ def write_to_room(room, user, content):
 		user_tc = user.title()
 	else:
 		user_tc = user
-	user_tc = user_tc.replace(".", " ")
+	user_tc = user_tc.replace(".", "_")
 	message = {"user": user_tc, "content": content}
 
 	text = chat.message_to_text(message)

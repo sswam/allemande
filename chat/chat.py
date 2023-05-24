@@ -16,8 +16,14 @@ import markdown
 logger = logging.getLogger(__name__)
 
 
-USER_NARRATIVE = object()
-USER_CONTINUED = object()
+class Singleton:
+	def __init__(self, name):
+		self.name = name
+	def __repr__(self):
+		return f"<{self.name}>"
+
+USER_NARRATIVE = Singleton("Narrative")
+USER_CONTINUED = Singleton("Continued")
 ROOM_MAX_LENGTH = 100
 ROOM_MAX_DEPTH = 10
 
@@ -31,7 +37,7 @@ MARKDOWN_EXTENSIONS = [
 	'md_in_html',
 	'tables',
 	'admonition',
-	'codehilite',
+	# 'codehilite',
 	# 'legacy_attrs',
 	# 'legacy_em',
 	# 'meta',
@@ -110,6 +116,8 @@ def split_message_line(line):
 		label = None
 		content = line
 
+	logger.debug("split_message_line line, label, content: %r, %r, %r", line, label, content)
+
 	if label is None:
 		user = USER_NARRATIVE
 	elif label == "":
@@ -130,7 +138,7 @@ def lines_to_messages(lines):
 	message = None
 
 	# add a sentinel blank line
-	lines = itertools.chain(lines)
+	# lines = itertools.chain(lines)
 	skipped_blank = 0
 
 	while True:
@@ -138,16 +146,20 @@ def lines_to_messages(lines):
 		if line is None:
 			break
 
+		line = line.decode("utf-8")
+
 		# skip blank lines
 		if line.rstrip("\r\n") == "":
 			skipped_blank += 1
 			continue
 
 		user, content = split_message_line(line)
+		logger.debug("split_message_line user, content: %r, %r", user, content)
 
 		# accumulate continued lines
 		if message and user == USER_CONTINUED:
-			message["content"] += "\n" * (skipped_blank+1) + content
+			message["content"] += "\n" * skipped_blank + content
+			skipped_blank = 0
 			continue
 
 		if not message and user == USER_CONTINUED:
@@ -155,21 +167,25 @@ def lines_to_messages(lines):
 			user = USER_NARRATIVE
 
 		if message and user == USER_NARRATIVE and "user" not in message:
-			message["content"] += "\n" * (skipped_blank+1) + content
+			message["content"] += "\n" * skipped_blank + content
+			skipped_blank = 0
 			continue
 
 		# yield the previous message
 		if message:
+			logger.debug(message)
 			yield message
 			message = None
 
 		# start a new message
+		skipped_blank = 0
 		if user == USER_NARRATIVE:
 			message = {"content": content}
 		else:
 			message = {"user": user, "content": content}
 
 	if message is not None:
+		logger.debug(message)
 		yield message
 
 
@@ -191,7 +207,9 @@ def message_to_text(message):
 
 def message_to_html(message):
 	""" Convert a chat message to HTML. """
+	logger.debug("converting message to html: %r", message["content"])
 	html_content = markdown.markdown(message["content"], extensions=MARKDOWN_EXTENSIONS)
+	logger.debug("html_content: %r", html_content)
 	if html_content == "":
 		html_content = "&nbsp;"
 	user = message.get("user")
@@ -213,7 +231,7 @@ def chat_to_html():
 #		print(f"""<link rel="stylesheet" href="{html.escape(src)}">""")
 #	for src in scripts:
 #		print(f"""<script src="{html.escape(src)}"></script>""")
-	for message in lines_to_messages(sys.stdin):
+	for message in lines_to_messages(sys.stdin.buffer):
 		print(message_to_html(message))
 
 

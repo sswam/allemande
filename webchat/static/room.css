@@ -14,7 +14,7 @@ div.messages {
 .message > .content {
 	margin: 0 1em 0 1em;
 }
-#status {
+#allemande_status {
 	position: fixed;
 	top: 0.5em;
 	right: 0.5em;
@@ -75,4 +75,17 @@ a {
 }
 a:hover {
 	text-decoration: underline;
+}
+
+@font-face {
+	font-family: "fixed";
+	src: url("/MISCFS__.TTF");
+	font-style: normal;
+	font-weight: 400;
+}
+
+code {
+	font: 12px fixed;
+	white-space: pre-wrap;
+	display: inline-block;
 }
