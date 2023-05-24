@@ -228,6 +228,7 @@ function change_room() {
 		leave_room();
 	} else {
 		$room.focus();
+		$room.select();
 	}
 	return false;
 }

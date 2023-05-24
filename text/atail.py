@@ -73,8 +73,8 @@ class AsyncTail:
 					await self.seek_to_end(f)
 				await watcher.get_event()
 		finally:
-			watcher.close()
-	
+			self.close_watcher(watcher)
+
 	async def wait_for_file_creation(self):
 		""" Wait for the file to be created """
 		folder = str(Path(self.filename).parent)
@@ -85,8 +85,15 @@ class AsyncTail:
 			while not Path(self.filename).exists():
 				await watcher.get_event()
 		finally:
+			self.close_watcher(watcher)
+
+	def close_watcher(self, watcher):
+		try:
 			watcher.close()
-	
+		except Exception as e:
+			logger.warning("Exception closing watcher: %r", e)
+
+
 
 async def atail(output=sys.stdout, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False):
 	""" Tail a file - for command-line tool, and an example of usage """
