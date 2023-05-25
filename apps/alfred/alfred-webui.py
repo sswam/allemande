@@ -91,7 +91,7 @@ def process_files(mission, document_files, turbo):
 	my_opts = opts.copy()
 
 	if turbo:
-		my_opts += ["LLM_MODEL=i", "LLM_MODEL_LONG=i+", "OCR_MODEL=i"]
+		my_opts += ["LLM_MODEL=i", "LLM_MODEL_LONG=i+", "OCR_MODEL=i", "IMAGE2TEXT_MODE=fast"]
 
 	tmpdir = tempfile.mkdtemp()
 	input_dir = Path(tmpdir) / "input"

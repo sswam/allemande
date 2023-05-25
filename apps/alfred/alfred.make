@@ -15,7 +15,7 @@ OUTPUTS=output.md output.pdf output.docx output.html
 
 WHISPER=whisp  # speech recognition engine
 
-IMAGE2TEXT_MODE=fast
+IMAGE2TEXT_MODE=best
 
 LLM_MODEL_LONG=c+
 LLM_MODEL=4
