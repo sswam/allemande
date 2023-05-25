@@ -252,8 +252,8 @@ def preprocess(content):
 		if math.startswith("`") and math.endswith("`"):
 			# already processed
 			is_math = False
-		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
-			is_math = False
+#		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
+#			is_math = False
 		elif d1 != d2:
 			is_math = False
 		elif re.match(r'^\w', post):
@@ -274,7 +274,7 @@ def preprocess(content):
 		#	is_html = True
 		if re.search(r"</?(html|base|head|link|meta|style|title|body|address|article|aside|footer|header|h1|h2|h3|h4|h5|h6|hgroup|main|nav|section|blockquote|dd|div|dl|dt|figcaption|figure|hr|li|main|ol|p|pre|ul|a|abbr|b|bdi|bdo|br|cite|code|data|dfn|em|i|kbd|mark|q|rb|rp|rt|rtc|ruby|s|samp|small|span|strong|sub|sup|time|u|var|wbr|area|audio|img|map|track|video|embed|iframe|object|param|picture|source|canvas|noscript|script|del|ins|caption|col|colgroup|table|tbody|td|tfoot|th|thead|tr|button|datalist|fieldset|form|input|label|legend|meter|optgroup|option|output|progress|select|textarea|details|dialog|menu|summary|slot|template|acronym|applet|basefont|bgsound|big|blink|center|command|content|dir|element|font|frame|frameset|image|isindex|keygen|listing|marquee|menuitem|multicol|nextid|nobr|noembed|noframes|plaintext|shadow|spacer|strike|tt|xmp)\b", line):
 			is_html = True
-		logger.warning("check line: %r", line)
+		logger.debug("check line: %r", line)
 		if line == "$$" and not in_math:
 			out.append("```math")
 			in_math = True

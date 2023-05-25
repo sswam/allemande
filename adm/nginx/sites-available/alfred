@@ -27,6 +27,8 @@ server {
 		if ($is_banned) {
 			return 302 https://allemande.ai/ban.html;
 		}
+		auth_basic "Auth";
+		auth_basic_user_file /var/www/allychat/.htpasswd;
 		proxy_pass http://localhost:8081;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
@@ -42,5 +44,36 @@ server {
 		proxy_set_header Connection "";
 		proxy_read_timeout 600s;
 		proxy_bind $host:$server_port;
+	}
+
+	location /logout {
+		if ($is_banned) {
+			return 302 https://allemande.ai/ban.html;
+		}
+		auth_basic "Auth";
+		auth_basic_user_file /var/www/allychat/.htpasswd;
+#		autoindex on;
+#		try_files $uri $uri/ =404;
+		try_files $uri $uri/ @redirect;
+# TODO if we want strong privacy
+#		access_log off;
+#		error_log /dev/null;
+		add_header Cache-Control "no-cache";
+	}
+
+	location @redirect {
+		if ($request_uri ~* (^/(favicon\.ico|styles\.css|room\.css|util\.js|room\.js|mousetrap\.min.js)$|^/users/)) {
+			return 302 $scheme://$redirect_host$request_uri;
+		}
+		return 404;
+	}
+
+	location /logout/logout {
+		auth_basic "Auth";
+		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
+		autoindex on;
+		try_files $uri $uri/ =404;
+#		access_log off;
+#		error_log /dev/null;
 	}
 }

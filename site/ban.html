@@ -5,65 +5,15 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Allemande AI</title>
-<link href="style@1684667555.css" rel="stylesheet"/>
-<script type="text/javascript">
-function animate_fire() {
-	var rand = Math.random;
-	var dy = rand()*2+1
-	var x1 = rand()*4-2
-	var y1 = -dy
-	var x2 = rand()*3-1.5
-	var y2 = y1 - dy
-	var x3 = rand()*2-1
-	var y3 = y2 - dy
-	var shadow1 = x1+'px '+y1+'px 7px rgb(255, 255, 0)';
-	var shadow2 = x2+'px '+y2+'px 14px rgb(255, 127, 0)';
-	var shadow3 = x3+'px '+y3+'px 21px rgb(255, 0, 0)';
-	var shadow = shadow1 + ', ' + shadow2 + ', ' + shadow3;
-	for (const e of document.querySelectorAll(".fire")) {
-		e.style.textShadow = shadow;
-	}
-}
-var a = 0;
-function animate_fame() {
-	var sin = Math.sin, cos = Math.cos, pi2 = 2*Math.PI;
-	var r = 4;
-	var x1 = r*sin(a), y1 = r*cos(a);
-	var x2 = r*sin(a+pi2/3), y2 = r*cos(a+pi2/3);
-	var x3 = r*sin(a-pi2/3), y3 = r*cos(a-pi2/3);
-	var shadow1 = x1+'px '+y1+'px 15px rgb(255, 0, 0)';
-	var shadow2 = x2+'px '+y2+'px 15px rgb(0, 200, 0)';
-	var shadow3 = x3+'px '+y3+'px 15px rgb(63, 63, 255)';
-	var shadow = shadow1 + ', ' + shadow2 + ', ' + shadow3;
-	for (const e of document.querySelectorAll(".fame")) {
-		e.style.textShadow = shadow;
-	}
-	a += pi2*20/360;
-}
-function animate() {
-	animate_fire();
-	animate_fame();
-}
-</script>
+<link href="style@1685044848.css" rel="stylesheet"/>
 </head>
-<body onload="window.setInterval(animate, 200);">
+<body>
 <img alt="Allemande" id="banner" src="allemande@1683146134.jpg"/>
 <div class="space" style="flex-grow: 1; max-height: 15em;"></div>
 <div class="info" id="info">
 <p>Sorry, your IP address was banned for 24 hours.</p>
 <p>If this was a mistake, please contact us for help.</p>
-<p style="text-align:center">
-<a class="button red" href="https://chat.allemande.ai" id="chatlink"><span class="fire">Ally Chat α</span></a>
-<a class="button yellow" href="https://forms.gle/LEnaHJBurcKbBkGH6">Contact Us</a>
-<a class="button green" href="https://github.com/sswam/allemande"><span class="fame">Open Source</span></a>
-</p>
 </div>
 <div class="space" style="flex-grow: 3;"></div>
-<script>
-if (location.href.indexOf("local.") > -1) {
-	document.getElementById("chatlink").href = "https://chat-local.allemande.ai";
-}
-animate()
-</script>
 </body>
 </html>
