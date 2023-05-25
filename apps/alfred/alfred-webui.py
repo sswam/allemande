@@ -27,7 +27,7 @@ cmd = "alfred"
 opts = [ "WHISPER="+WHISPER ]
 name = "Alfred Document Processor"
 title = name
-desc = "Upload documents (PDFs, Word docs, etc.). Alfred will convert them to text, summarize them, and perform tasks based on the documents' contents."
+desc = "Upload documents (PDFs, Word docs, HTML, images, audio, videos, etc.) and enter URLs to download. Alfred will convert them to text, summarize them, and perform tasks based on the documents' contents."
 
 prog_dir = os.environ.get("PROG_DIR", os.getcwd())
 
@@ -37,9 +37,10 @@ if default_mission_file.exists():
 else:
 	mission_default = ""
 mission_placeholder = """Enter your mission here..."""
+urls_placeholder = """Enter URLs of webpages and media here..."""
 
 
-def process_files(mission, document_files, turbo): # pylint: disable=too-many-locals
+def process_files(mission, document_files, urls_text, turbo): # pylint: disable=too-many-locals
 	""" run a file processing command in a web interface """
 
 	# show PATH
@@ -73,13 +74,30 @@ def process_files(mission, document_files, turbo): # pylint: disable=too-many-lo
 		src_file.close()
 		docs.append(path)
 
+	# chdir to the input dir
+	os.chdir(tmpdir)
+	os.chdir("input")
+
+	all_text = ""
+
+	# download URLs
+	urls = re.split(r'\s+', urls_text.strip())
+	for url in urls:
+		if not re.match(r'^https?://', url):
+			url = "https://" + url
+		status, _stdout_lines, _stderr_lines, all_lines = run_subprocess(["yt-dlp", "-i", "-f", "251/bestaudio/best"], check=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+		all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
+		if status != 0:
+			status, _stdout_lines, _stderr_lines, all_lines = run_subprocess(["wget", url], check=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+			all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
+
 	# chdir to the tempdir
 	os.chdir(tmpdir)
 
 	# run command
 	status, _stdout_lines, _stderr_lines, all_lines = run_subprocess(cmd, *my_opts)
 
-	all_text = "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
+	all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
 	# _output_text = "".join(stdout_lines)
 	# _error_text = "".join(stderr_lines)
 
@@ -111,6 +129,7 @@ demo = gr.Interface(
 	inputs=[
 		gr.inputs.Textbox(lines=5, label="Mission", default=mission_default, placeholder=mission_placeholder),
 		gr.inputs.File(label="Documents", file_count="multiple"),
+		gr.inputs.Textbox(lines=5, label="URLs", placeholder=urls_placeholder),
 		gr.inputs.Checkbox(label="Turbo Mode", default=True),
 	],
 	outputs=[
