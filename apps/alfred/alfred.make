@@ -63,7 +63,7 @@ w/%.ost.txt: w/%.ost
 	mv output/Inbox.mbox.txt $@
 
 w/%.16k.wav: w/%.aud
-	sox $< -r 16k -e signed -b 16 -c 1 $@
+	ffmpeg -i $< -ar 16000 -acodec pcm_s16le -ac 1 $@
 
 w/%.txt: w/%.16k.wav
 	$(WHISPER) --output_format txt --output_dir w $<
