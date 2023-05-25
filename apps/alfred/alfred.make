@@ -15,6 +15,8 @@ OUTPUTS=output.md output.pdf output.docx output.html
 
 WHISPER=whisp  # speech recognition engine
 
+IMAGE2TEXT_MODE=fast
+
 SHELL=/bin/bash
 
 
@@ -75,7 +77,7 @@ w/%.aud: w/%.vid
 w/%.img.ocr.txt: w/%.img
 	ocr $< > $@
 w/%.img.desc.txt: w/%.img
-	image2text.py -i $< > $@
+	image2text.py -m $(IMAGE2TEXT_MODE) -i $< > $@
 w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 	catpg $^ > $@
 

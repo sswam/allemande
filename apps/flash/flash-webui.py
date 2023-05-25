@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" run video-to-flashcards in a web interface """
+""" run flash in a web interface """
 
 # TODO other data types:
 # text, image, audio, video, sketchpad, or label
@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 logger = logging.getLogger(__name__)
 
 
-cmd = "video-to-flashcards-cached"
+cmd = "flash-cached"
 opts = [ "WHISPER="+WHISPER ]
 name = "Video to Flashcards"
 title = os.environ.get("RUNNER_TITLE", f"{name}")
