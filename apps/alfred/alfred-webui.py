@@ -85,10 +85,10 @@ def process_files(mission, document_files, urls_text, turbo): # pylint: disable=
 	for url in urls:
 		if not re.match(r'^https?://', url):
 			url = "https://" + url
-		status, _stdout_lines, _stderr_lines, all_lines = run_subprocess(["yt-dlp", "-i", "-f", "251/bestaudio/best"], check=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+		status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("yt-dlp", "-i", "-f", "251/bestaudio/best", "-o", "%(title)s.%(ext)s")
 		all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
 		if status != 0:
-			status, _stdout_lines, _stderr_lines, all_lines = run_subprocess(["wget", url], check=True, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+			status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("wget", url)
 			all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
 
 	# chdir to the tempdir
