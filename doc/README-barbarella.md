@@ -10,6 +10,10 @@ See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for in
 
 ## Screenshots
 
+### Embedded Math
+
+![Emmy is a smarty-pants](pix/math.png)
+
 ### Launch Video
 
 [![Launch Video](pix/launch.jpg)](https://chat.allemande.ai/src/pix/launch.mp4)

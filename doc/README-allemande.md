@@ -8,6 +8,10 @@ This is an innovative multi-player chat app called <A href="https://chat.alleman
 
 ## Screenshots
 
+### Embedded Math
+
+![Emmy is a smarty-pants](pix/math.png)
+
 ### Launch Video
 
 [![Launch Video](pix/launch.jpg)](https://chat.allemande.ai/src/pix/launch.mp4)

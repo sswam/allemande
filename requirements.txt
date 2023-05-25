@@ -58,3 +58,4 @@ python-multipart
 
 pyjwt
 supabase_py
+markdown-katex

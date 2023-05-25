@@ -46,7 +46,15 @@ MARKDOWN_EXTENSIONS = [
 	# 'smarty',
 	'toc',
 	'wikilinks',
+	'markdown_katex',
 ]
+
+MARKDOWN_EXTENSION_CONFIGS = {
+	'markdown_katex': {
+#		'no_inline_svg': True, # fix for WeasyPrint
+		'insert_fonts_css': True,
+	},
+}
 
 def safe_join(base_dir: Path, path: Path) -> Path:
 	""" Return a safe path under base_dir, or raise ValueError if the path is unsafe. """
@@ -110,6 +118,9 @@ def sanitize_pathname(room):
 def split_message_line(line):
 	""" Split a message line into user and content. """
 
+	if not line.endswith("\n"):
+		line += "\n"
+
 	if "\t" in line:
 		label, content = line.split("\t", 1)
 	else:
@@ -154,7 +165,6 @@ def lines_to_messages(lines):
 			continue
 
 		user, content = split_message_line(line)
-		logger.debug("split_message_line user, content: %r, %r", user, content)
 
 		# accumulate continued lines
 		if message and user == USER_CONTINUED:
@@ -189,6 +199,26 @@ def lines_to_messages(lines):
 		yield message
 
 
+def test_split_message_line():
+	line = "Ally:	Hello\n"
+	user, content = split_message_line(line)
+	assert user == "Ally"
+	assert content == "Hello\n"
+
+
+def test_lines_to_messages():
+	lines = """Ally:	Hello
+	World
+Sam:	How are you?
+"""
+	messages = list(lines_to_messages(lines.splitlines()))
+	assert len(messages) == 2
+	assert messages[0]["user"] == "Ally"
+	assert messages[0]["content"] == "Hello\nWorld\n"
+	assert messages[1]["user"] == "Sam"
+	assert messages[1]["content"] == "How are you?\n"
+
+
 def message_to_text(message):
 	""" Convert a chat message to text. """
 	user = message.get("user")
@@ -202,13 +232,39 @@ def message_to_text(message):
 		text = "".join(lines2)
 	else:
 		text = content
-	return text.rstrip()
+	return text.rstrip()+"\n"
+
+
+def preprocess(content):
+	""" Preprocess chat message content, for markdown-katex """
+
+	# replace $foo$ with $`foo`$
+	# replace $$\n...\n$$ with ```math\n...\n```
+
+	out = []
+
+	in_math = False
+	for line in content.splitlines():
+		if line == "$$" and not in_math:
+			out.append("```math")
+			in_math = True
+		elif line == "$$" and in_math:
+			out.append("```")
+			in_math = False
+		else:
+			line = re.sub(r'\$(.*?)\$', r'$`\1`$', line)
+			out.append(line)
+
+	content = "\n".join(out)+"\n"
+	logger.warning("preprocess content: %r", content)
+	return content
 
 
 def message_to_html(message):
 	""" Convert a chat message to HTML. """
 	logger.debug("converting message to html: %r", message["content"])
-	html_content = markdown.markdown(message["content"], extensions=MARKDOWN_EXTENSIONS)
+	content = preprocess(message["content"])
+	html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
 	logger.debug("html_content: %r", html_content)
 	if html_content == "":
 		html_content = "&nbsp;"
