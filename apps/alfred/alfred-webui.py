@@ -29,6 +29,11 @@ name = "Alfred Document Processor"
 title = name
 desc = "Upload documents (PDFs, Word docs, etc.). Alfred will convert them to text, summarize them, and perform tasks based on the documents' contents."
 
+prog_dir = os.environ.get("PROG_DIR", os.getcwd())
+mission_file = Path(prog_dir) / "mission.txt"
+mission_default = mission_file.read_text(encoding="utf-8").rstrip()
+mission_placeholder = """Enter your mission here..."""
+
 def print_and_flush(*args, file=sys.stdout, **kwargs):
 	print(*args, file=file, flush=True, **kwargs)
 
@@ -69,7 +74,7 @@ def run_subprocess(cmd, *args, **kwargs):
 	exit_code = process.wait()
 	return exit_code, stdout_lines, stderr_lines, all_lines
 
-def process_files(document_files, mission):
+def process_files(mission, document_files):
 	""" run a file processing command in a web interface """
 
 	# show PATH
@@ -136,8 +141,8 @@ def process_files(document_files, mission):
 demo = gr.Interface(
 	fn=process_files,
 	inputs=[
+		gr.inputs.Textbox(lines=5, label="Mission", default=mission_default, placeholder=mission_placeholder),
 		gr.inputs.File(label="Documents", file_count="multiple"),
-		gr.inputs.Textbox(lines=5, label="Mission"),
 	],
 	outputs=[
 		gr.outputs.Textbox(label="Exit Status"),
