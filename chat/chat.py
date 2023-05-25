@@ -246,7 +246,7 @@ def preprocess(content):
 	# replace $foo$ with $`foo`$
 	# replace $$\n...\n$$ with ```math\n...\n```
 
-	def quote_math_inline(pre, math, post):
+	def quote_math_inline(pre, d1, math, d2, post):
 		# check if it looks like math...
 		is_math = True
 		if math.startswith("`") and math.endswith("`"):
@@ -254,42 +254,56 @@ def preprocess(content):
 			is_math = False
 		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
 			is_math = False
+		elif d1 != d2:
+			is_math = False
 		elif re.match(r'^\w', post):
 			is_math = False
 		elif re.match(r'\w$', pre):
 			is_math = False
 		if is_math:
 			return f"$`{math}`$"
-		return f"${math}$"
+		return f"{d1}{math}{d2}"
 
 	out = []
 
 	in_math = False
+	in_code = False
 	for line in content.splitlines():
 		is_html = False
 		#if first and re.search(r"\t<", line[0]):
 		#	is_html = True
 		if re.search(r"</?(html|base|head|link|meta|style|title|body|address|article|aside|footer|header|h1|h2|h3|h4|h5|h6|hgroup|main|nav|section|blockquote|dd|div|dl|dt|figcaption|figure|hr|li|main|ol|p|pre|ul|a|abbr|b|bdi|bdo|br|cite|code|data|dfn|em|i|kbd|mark|q|rb|rp|rt|rtc|ruby|s|samp|small|span|strong|sub|sup|time|u|var|wbr|area|audio|img|map|track|video|embed|iframe|object|param|picture|source|canvas|noscript|script|del|ins|caption|col|colgroup|table|tbody|td|tfoot|th|thead|tr|button|datalist|fieldset|form|input|label|legend|meter|optgroup|option|output|progress|select|textarea|details|dialog|menu|summary|slot|template|acronym|applet|basefont|bgsound|big|blink|center|command|content|dir|element|font|frame|frameset|image|isindex|keygen|listing|marquee|menuitem|multicol|nextid|nobr|noembed|noframes|plaintext|shadow|spacer|strike|tt|xmp)\b", line):
 			is_html = True
-		if not is_html:
-			line = html.escape(line)
+		logger.warning("check line: %r", line)
 		if line == "$$" and not in_math:
 			out.append("```math")
 			in_math = True
+			in_code = True
 		elif line == "$$" and in_math:
 			out.append("```")
 			in_math = False
+			in_code = False
+		elif re.match(r'^```', line) and not in_code:
+			out.append(line)
+			in_code = True
+		elif re.match(r'^```', line) and in_code:
+			out.append(line)
+			in_code = False
 		else:
 			# run the regexp sub repeatedly
 			start = 0
 			while True:
 				logger.debug("preprocess line part from: %r %r", start, line[start:])
-				match = re.match(r'^(.*?)\$(.*?)\$(.*)$', line[start:])
+				match = re.match(r'^(.*?)(\$\$?)(.*?)(\$\$?)(.*)$', line[start:])
 				logger.debug("preprocess match: %r", match)
 				if match is None:
+					if not in_code and not is_html:
+						line = line[:start] + html.escape(line[start:])
 					break
-				pre, math, post = match.groups()
-				replace = quote_math_inline(pre, math, post)
+				pre, d1, math, d2, post = match.groups()
+				replace = quote_math_inline(pre, d1, math, d2, post)
+				if not in_code and not is_html:
+					pre = html.escape(pre)
 				line = line[:start] + pre + replace + post
 				start += len(pre) + len(replace)
 			out.append(line)
