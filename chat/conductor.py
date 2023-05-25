@@ -34,7 +34,7 @@ def find_name_in_content(content, name, ignore_case=True):
 	return (len(content), None)
 
 
-def who_is_named(content, user, agents, include_self=False):
+def who_is_named(content, user, agents, include_self=True):
 	""" check who is named first in the message """
 #	matches = [find_name_in_content(content, agent) for agent in agents + EVERYONE_WORDS]
 	matches = [find_name_in_content(content, agent) for agent in agents]
@@ -73,7 +73,7 @@ def participants(history):
 	return agents
 
 
-def who_should_respond(message, agents=None, history=None, default=None, include_self=False):
+def who_should_respond(message, agents=None, history=None, default=None, include_self=True):
 	""" who should respond to a message """
 	if not history:
 		history = []
@@ -109,8 +109,13 @@ def who_should_respond(message, agents=None, history=None, default=None, include
 		user_agent = agents[user_lc]
 		logger.warning('user_agent["type"]: %r', user_agent["type"])
 		if user_agent["type"] == "tool":
-			invoked = who_spoke_last(history, user, agents, include_self=include_self)
+			invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self)
 			return invoked
+
+	is_person = user_lc in agents_lc and agents[user_lc]["type"] == "person"
+
+	if not is_person:
+		include_self = False
 
 	content = message["content"]
 
@@ -122,7 +127,7 @@ def who_should_respond(message, agents=None, history=None, default=None, include
 		invoked = who_is_named(content, user, agent_names, include_self=include_self)
 		logger.warning("who_is_named 2: %r", invoked)
 	if not invoked:
-		invoked = who_spoke_last(history, user, agents, include_self=include_self)
+		invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self)
 		logger.warning("who_spoke_last 2: %r", invoked)
 	if not invoked and default and user_lc != default.lower() and agents[user_lc]["type"] == "person":
 		invoked = [default]
