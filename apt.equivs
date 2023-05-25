@@ -1,4 +1,4 @@
-python3 < 3.11
+python3 (<< 3.11)
 perl
 bash
 make
@@ -14,3 +14,6 @@ pandoc
 pdftotext
 antiword
 imagemagick
+mailutils
+pstutils
+sox

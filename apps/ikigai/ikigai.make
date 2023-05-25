@@ -15,7 +15,7 @@ SHELL=/bin/bash
 
 goal: resume4.html resume.css
 
-ikigai.chat: info.txt $(PROG_DIR)/ikigai.prompt
+ikigai.chat: info.txt
 	if [ -e $@ ]; then mv $@ $@.bak.$(shell date +%Y%m%d%H%M%S); fi
 	> $@
 	cat $(PROG_DIR)/ikigai.prompt >> $@

@@ -5,6 +5,7 @@ import sys
 import os
 import logging
 from pathlib import Path
+import re
 import tempfile
 import subprocess
 import shutil
@@ -55,7 +56,7 @@ def run_subprocess(cmd, *args, **kwargs):
 	process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
 	thread_out = threading.Thread(
 		target=print_and_save_stream,
-		args=(process.stdout, stdout_lines, print_and_flush, all_lines, "out")
+		args=(process.stdout, stdout_lines, print_and_flush, all_lines, None)
 	)
 	thread_err = threading.Thread(
 		target=print_and_save_stream,
@@ -80,11 +81,16 @@ def process_files(document_files, mission):
 
 	docs = []
 
+	# write mission text into tmpdir/mission.txt
+	mission_file = Path(tmpdir) / "mission.txt"
+	mission_file.write_text(mission, encoding="utf-8")
+
 	# put all the document files into the tempdir
 	for src_file in document_files:
 		src_path = Path(src_file.name)
 		basename = src_path.name
-		path = input_dir / basename
+		basename_no_stupid_chars = re.sub(r"[^a-zA-Z0-9_.-]", "_", basename)
+		path = input_dir / basename_no_stupid_chars
 		logger.warning("Copying %r to %r", src_path, path)
 		shutil.copy(src_path, str(path))
 		src_file.close()
@@ -96,7 +102,7 @@ def process_files(document_files, mission):
 	# run command
 	status, stdout_lines, stderr_lines, all_lines = run_subprocess(cmd, *opts)
 
-	all_text = "".join(map(lambda d: f"{d['label']}: {d['line']}", all_lines))
+	all_text = "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
 	output_text = "".join(stdout_lines)
 	error_text = "".join(stderr_lines)
 
@@ -108,7 +114,10 @@ def process_files(document_files, mission):
 	output_file_pdf = Path(tmpdir) / "output.pdf"
 	output_file_docx = Path(tmpdir) / "output.docx"
 
-	output_file_text = output_file.read_text(encoding="utf-8")
+	if output_file_md.exists():
+		output_file_text = output_file_md.read_text(encoding="utf-8")
+	else:
+		output_file_text = ""
 
 #	with open(output_file, "w", encoding="utf-8") as f:
 #		f.write(output_text)
@@ -118,7 +127,10 @@ def process_files(document_files, mission):
 
 	# TODO display all_lines in HTML with error lines highlighted red or whatever
 
-	return status, all_text, output_file_text, str(output_file_md), str(output_file_html), str(output_file_pdf), str(output_file_docx)
+	output_files = [output_file_md, output_file_html, output_file_pdf, output_file_docx]
+	output_files = [str(f) if f.exists() else None for f in output_files]
+
+	return status, all_text, output_file_text, *output_files
 
 
 demo = gr.Interface(
