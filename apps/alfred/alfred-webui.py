@@ -30,8 +30,12 @@ title = name
 desc = "Upload documents (PDFs, Word docs, etc.). Alfred will convert them to text, summarize them, and perform tasks based on the documents' contents."
 
 prog_dir = os.environ.get("PROG_DIR", os.getcwd())
+
 mission_file = Path(prog_dir) / "mission.txt"
-mission_default = mission_file.read_text(encoding="utf-8").rstrip()
+if mission_file.exists():
+	mission_default = mission_file.read_text(encoding="utf-8").rstrip()
+else:
+	mission_default = ""
 mission_placeholder = """Enter your mission here..."""
 
 def print_and_flush(*args, file=sys.stdout, **kwargs):
@@ -118,6 +122,7 @@ def process_files(mission, document_files):
 	output_file_html = Path(tmpdir) / "output.html"
 	output_file_pdf = Path(tmpdir) / "output.pdf"
 	output_file_docx = Path(tmpdir) / "output.docx"
+	output_file_zip = Path(tmpdir) / "output.zip"
 
 	if output_file_md.exists():
 		output_file_text = output_file_md.read_text(encoding="utf-8")
@@ -132,7 +137,7 @@ def process_files(mission, document_files):
 
 	# TODO display all_lines in HTML with error lines highlighted red or whatever
 
-	output_files = [output_file_md, output_file_html, output_file_pdf, output_file_docx]
+	output_files = [output_file_zip, output_file_md, output_file_html, output_file_pdf, output_file_docx]
 	output_files = [str(f) if f.exists() else None for f in output_files]
 
 	return status, all_text, output_file_text, *output_files
@@ -148,6 +153,7 @@ demo = gr.Interface(
 		gr.outputs.Textbox(label="Exit Status"),
 		gr.outputs.Textbox(label="Messages"),
 		gr.outputs.Textbox(label="Output Text"),
+		gr.outputs.File(label="Full Output (Zip)"),
 		gr.outputs.File(label="Output File (Markdown)"),
 		gr.outputs.File(label="Output File (HTML)"),
 		gr.outputs.File(label="Output File (PDF)"),

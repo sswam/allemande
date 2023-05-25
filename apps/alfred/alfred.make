@@ -29,7 +29,7 @@ SHELL=/bin/bash
 
 .PHONY: goal
 
-goal: output.md output.pdf output.html output.docx
+goal: output.zip outputs
 
 %.html.txt: %.html
 	w3m -dump $< > $@
@@ -116,8 +116,10 @@ goal: output.md output.pdf output.html output.docx
 	image-to-text $< > $@
 
 summary/%.txt: input/%.txt
+	mkdir -p summary
 	words=`wc -w < $<`; \
-	if [ $$words -gt 5000 ]; then model=c; else model=4; fi; \
+	if [ $$words -gt 5000 ]; then model=c+; else model=4; fi; \
+	echo >&2 "model: $$model"; \
 	llm process -m $$model "$$(< $(PROG_DIR)/summary.prompt)" < $< > $@
 
 full_input.txt: $(SUMMARY_FILES)
@@ -128,3 +130,10 @@ output.md: full_input.txt mission.txt
 
 output.%: output.md
 	pandoc $< -o $@
+
+outputs: output.md output.pdf output.html output.docx
+
+output.zip: outputs $(SUMMARY_FILES) full_input.txt $(TEXT_FILES) $(INPUT_FILES)
+	zip -r $@ output.md output.pdf output.html output.docx full_input.txt summary inputs
+
+.PRECIOUS: %.txt
