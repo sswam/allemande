@@ -1,0 +1,20 @@
+:root {
+	--col0: #100423;
+	--col1: #101e33;
+	--col2: #001105;
+	--col3: #201e02;
+	--col4: #201003;
+	--col5: #000000;
+	--col6: #220805;
+	--col7: #808080;
+
+	--text: var(--col7);
+	--border: var(--col0);
+	--frame: var(--col2);
+	--input: var(--col3);
+	--focus: var(--col4);
+	--background: var(--col5);
+	--button: var(--col6);
+	--button-focus: var(--col1);
+	--link: #807870;
+}
