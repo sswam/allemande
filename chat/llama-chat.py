@@ -77,12 +77,12 @@ AGENTS_REMOTE = {
 	},
 	"Claude": {
 		"model": "claude-v1-100k",
-		"default_context": 10,
+		"default_context": 1000,
 	},
 	"Claude Instant": {
 		"name": "Claudia",
 		"model": "claude-instant-v1-100k",
-		"default_context": 10,
+		"default_context": 1000,
 	},
 	"Bard": {
 		"name": "Jaskier",
