@@ -80,7 +80,10 @@ w/%.img.ocr.txt: w/%.img
 w/%.img.desc.txt: w/%.img
 	image2text.py -i $< > $@
 w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
-	catpg $^ > $@
+	printf "## Image Text:\n\n" ; \
+	cat w/$*.img.ocr.txt ; \
+	printf "\n## Image Description:\n\n" ; \
+	cat w/$*.img.desc.txt > $@
 
 summary/%.txt: w/%.txt
 	words=`wc -w < $<`; \
