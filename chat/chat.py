@@ -263,9 +263,15 @@ def preprocess(content):
 		return f"${math}$"
 
 	out = []
+	first = True
 
 	in_math = False
+	is_html = False
 	for line in content.splitlines():
+		if first and line[0] == '<':
+			is_html = True
+		if not is_html:
+			line = html.escape(line)
 		if line == "$$" and not in_math:
 			out.append("```math")
 			in_math = True
