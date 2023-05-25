@@ -6,77 +6,80 @@
 
 INPUT_FILES=$(shell find input -type f)
 
-# from input/foo.wav to work/foo.wav.txt
 TEXT_FILES=$(addsuffix .txt,$(INPUT_FILES))
-WORK_FILES=$(addprefix work/,$(notdir $(TEXT_FILES)))
+WORK_FILES=$(addprefix w/,$(notdir $(TEXT_FILES)))
 
 SUMMARY_FILES=$(addprefix summary/,$(notdir $(WORK_FILES)))
+
+OUTPUTS=output.md output.pdf output.docx output.html
 
 WHISPER=whisp  # speech recognition engine
 
 SHELL=/bin/bash
 
-.PHONY: goal mkdirs outputs
 
-goal: mkdirs | output.zip outputs
+.PHONY: goal mkdirs
+
+goal: mkdirs | output.zip $(OUTPUTS)
 
 mkdirs:
-	mkdir -p input work summary
+	mkdir -p input w summary
 
-work/%: input/%
+w/%: input/%
 	same -s $< $@
 
-%.html.txt: %.html
+w/%.html.txt: w/%.html
 	w3m -dump $< > $@
-%.html: %.htm
+w/%.html: w/%.htm
 	ln $< $@
 
-%.pdf.txt: %.pdf
+w/%.pdf.txt: w/%.pdf
 	pdftotext $< $@
 
-%.txt: %.office
+w/%.txt: w/%.office
 	antiword $< > $@
 
-%.xls.txt: %.xls
+w/%.xls.txt: w/%.xls
 	xlsx2csv $< > $@
-%.xlsx.txt: %.xlsx
+w/%.xlsx.txt: w/%.xlsx
 	xlsx2csv $< > $@
 
 # email: forget about attachments for now
 # ripmime -i $< -d output
 
-%.eml.txt: %.eml
+w/%.eml.txt: w/%.eml
 	mail -f $< -N decode > $@
 
-%.msg.txt: %.msg
+w/%.msg.txt: w/%.msg
 	mail -f $< -N decode > $@
-%.mbox.txt: %.mbox
+w/%.mbox.txt: w/%.mbox
 	mail -f $< -N decode > $@
 
-%.pst.txt: %.pst
+w/%.pst.txt: w/%.pst
 	readpst -o output $<
 	mv output/Inbox.mbox.txt $@
-%.ost.txt: %.ost
+w/%.ost.txt: w/%.ost
 	readpst -o output $<
 	mv output/Inbox.mbox.txt $@
 
-%.16k.wav: %.aud
+w/%.16k.wav: w/%.aud
 	sox $< -r 16k -e signed -b 16 -c 1 $@
 
-%.txt: %.16k.wav
-	$(WHISPER) --output_format txt $<
+w/%.txt: w/%.16k.wav
+	$(WHISPER) --output_format txt --output_dir w $<
+	mv w/$$(basename $< .16k.wav).16k.txt $@
 
-%.aud: %.vid
+w/%.aud: w/%.vid
 	ffmpeg -i $< -f wav $@
 
-%.img.ocr.txt: %.img
+w/%.img.ocr.txt: w/%.img
 	ocr $< > $@
-%.img.desc.txt: %.img
+w/%.img.desc.txt: w/%.img
 	image2text.py -i $< > $@
-%.txt: %.img.ocr.txt %.img.desc.txt
+w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 	catpg $^ > $@
 
-summary/%.txt: work/%.txt
+summary/%.txt: w/%.txt
 	words=`wc -w < $<`; \
 	if [ $$words -gt 5000 ]; then model=c+; else model=4; fi; \
 	echo >&2 "model: $$model"; \
@@ -89,69 +92,67 @@ output.md: summary.txt mission.txt
 	llm process -m 4 "$$(< mission.txt)" < $< > $@
 
 output.%: output.md
-	pandoc $< --latex-engine=xelatex -t latex -o $@
+	pandoc $< --pdf-engine=xelatex -o $@
 
-outputs: output.md output.pdf output.html output.docx
+output.zip: mission.txt $(OUTPUTS) summary.txt input w summary
+	zip -r $@ $^
 
-output.zip: outputs $(SUMMARY_FILES) summary.txt $(WORK_FILES) $(INPUT_FILES)
-	zip -r $@ output.md output.pdf output.html output.docx summary.txt summary inputs
+.PRECIOUS: %
 
-.PRECIOUS: %.txt
-
-%.doc.office: %.doc
+w/%.doc.office: w/%.doc
 	same -s $< $@
-%.docx.office: %.docx
+w/%.docx.office: w/%.docx
 	same -s $< $@
-%.ppt.office: %.ppt
+w/%.ppt.office: w/%.ppt
 	same -s $< $@
-%.pptx.office: %.pptx
+w/%.pptx.office: w/%.pptx
 	same -s $< $@
-%.odt.office: %.odt
+w/%.odt.office: w/%.odt
 	same -s $< $@
 
-%.md.txt: %.md
+w/%.md.txt: w/%.md
 	same -s $< $@
 
-%.csv.txt: %.csv
+w/%.csv.txt: w/%.csv
 	same -s $< $@
-%.tsv.txt: %.tsv
+w/%.tsv.txt: w/%.tsv
 	same -s $< $@
-%.json.txt: %.json
+w/%.json.txt: w/%.json
 	same -s $< $@
-%.xml.txt: %.xml
+w/%.xml.txt: w/%.xml
 	same -s $< $@
-%.yaml.txt: %.yaml
-	same -s $< $@
-
-%.mp3.aud: %.mp3
-	same -s $< $@
-%.ogg.aud: %.ogg
-	same -s $< $@
-%.wav.aud: %.wav
-	same -s $< $@
-%.flac.aud: %.flac
+w/%.yaml.txt: w/%.yaml
 	same -s $< $@
 
-%.mp4.vid: %.mp4
+w/%.mp3.aud: w/%.mp3
 	same -s $< $@
-%.mkv.vid: %.mkv
+w/%.ogg.aud: w/%.ogg
 	same -s $< $@
-%.mov.vid: %.mov
+w/%.wav.aud: w/%.wav
 	same -s $< $@
-%.avi.vid: %.avi
-	same -s $< $@
-%.m4v.vid: %.m4v
-	same -s $< $@
-%.webm.vid: %.webm
+w/%.flac.aud: w/%.flac
 	same -s $< $@
 
-%.jpg.img: %.jpg
+w/%.mp4.vid: w/%.mp4
 	same -s $< $@
-%.jpeg.img: %.jpeg
+w/%.mkv.vid: w/%.mkv
 	same -s $< $@
-%.png.img: %.png
+w/%.mov.vid: w/%.mov
 	same -s $< $@
-%.gif.img: %.gif
+w/%.avi.vid: w/%.avi
 	same -s $< $@
-%.webp.img: %.webp
+w/%.m4v.vid: w/%.m4v
+	same -s $< $@
+w/%.webm.vid: w/%.webm
+	same -s $< $@
+
+w/%.jpg.img: w/%.jpg
+	same -s $< $@
+w/%.jpeg.img: w/%.jpeg
+	same -s $< $@
+w/%.png.img: w/%.png
+	same -s $< $@
+w/%.gif.img: w/%.gif
+	same -s $< $@
+w/%.webp.img: w/%.webp
 	same -s $< $@
