@@ -36,11 +36,11 @@ server {
 		proxy_set_header X-Forwarded-User $remote_user;
 
 		# settings for streaming response
-#		gzip off;
-#		proxy_http_version 1.1;
-#		proxy_buffering off;
-#		proxy_set_header Connection "";
-#		proxy_read_timeout 120s;
+		gzip off;
+		proxy_http_version 1.1;
+		proxy_buffering off;
+		proxy_set_header Connection "";
+		proxy_read_timeout 600s;
 		proxy_bind $host:$server_port;
 	}
 }

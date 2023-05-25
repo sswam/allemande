@@ -17,6 +17,10 @@ WHISPER=whisp  # speech recognition engine
 
 IMAGE2TEXT_MODE=fast
 
+LLM_MODEL_LONG=c+
+LLM_MODEL=4
+OCR_MODEL=4
+
 SHELL=/bin/bash
 
 
@@ -75,15 +79,18 @@ w/%.aud: w/%.vid
 	ffmpeg -i $< -f wav $@
 
 w/%.img.ocr.txt: w/%.img
-	ocr $< $@
+	ocr -m=$(OCR_MODEL) $< $@
 w/%.img.desc.txt: w/%.img
 	image2text.py -m $(IMAGE2TEXT_MODE) -i $< > $@
 w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
-	catpg $^ > $@
+	printf "## Image Text:\n\n" ; \
+	cat w/$*.img.ocr.txt ; \
+	printf "\n## Image Description:\n\n" ; \
+	cat w/$*.img.desc.txt > $@
 
 summary/%.txt: w/%.txt
 	words=`wc -w < $<`; \
-	if [ $$words -gt 5000 ]; then model=c+; else model=4; fi; \
+	if [ $$words -gt 5000 ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$$(< $(PROG_DIR)/summary.prompt)" < $< > $@
 
@@ -91,7 +98,7 @@ summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
 
 output.md: summary.txt mission.txt
-	llm process -m 4 "$$(< mission.txt)" < $< > $@
+	llm process -m $(LLM_MODEL) "$$(< mission.txt)" < $< > $@
 
 output.%: output.md
 	pandoc $< --pdf-engine=xelatex -o $@
