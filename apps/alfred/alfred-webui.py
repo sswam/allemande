@@ -78,11 +78,16 @@ def run_subprocess(cmd, *args, **kwargs):
 	exit_code = process.wait()
 	return exit_code, stdout_lines, stderr_lines, all_lines
 
-def process_files(mission, document_files):
+def process_files(mission, document_files, turbo):
 	""" run a file processing command in a web interface """
 
 	# show PATH
 	logger.debug("PATH: %r", os.environ["PATH"].split(":"))
+
+	my_opts = opts.copy()
+
+	if turbo:
+		my_opts += ["LLM_MODEL=i", "LLM_MODEL_LONG=i+", "OCR_MODEL=i"]
 
 	tmpdir = tempfile.mkdtemp()
 	input_dir = Path(tmpdir) / "input"
@@ -148,6 +153,7 @@ demo = gr.Interface(
 	inputs=[
 		gr.inputs.Textbox(lines=5, label="Mission", default=mission_default, placeholder=mission_placeholder),
 		gr.inputs.File(label="Documents", file_count="multiple"),
+		gr.inputs.Checkbox(label="Turbo Mode", default=True),
 	],
 	outputs=[
 		gr.outputs.Textbox(label="Exit Status"),

@@ -38,8 +38,8 @@ run-i3-screen:: run
 connect-i3-screen:: i3-layout
 connect-i3-screen:: connect
 
-run: frontend backend dev pro-dev video-to-flashcards.xt alfred.xt vi.xt
-connect: frontend backend.xtc dev.xtc pro-dev.xtc video-to-flashcards.xtc alfred.xtc vi.xtc
+run: frontend backend dev pro-dev flash.xt alfred.xt vi.xt
+connect: frontend backend.xtc dev.xtc pro-dev.xtc flash.xtc alfred.xtc vi.xtc
 disconnect:
 	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
@@ -81,9 +81,9 @@ svelte:
 svelte-dev:
 	cd $(ALLEMANDE_HOME)/pro && npm run dev
 
-video-to-flashcards:
-	cd $(ALLEMANDE_HOME)/apps/video-to-flashcards && \
-	./video-to-flashcards-webui.py
+flash:
+	cd $(ALLEMANDE_HOME)/apps/flash && \
+	./flash-webui.py
 
 alfred:
 	cd $(ALLEMANDE_HOME)/apps/alfred && \

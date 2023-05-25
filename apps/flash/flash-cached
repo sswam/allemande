@@ -3,7 +3,7 @@
 
 url=$1
 shift
-cache_dir=$HOME/.cache/video-to-flashcards/
+cache_dir=$HOME/.cache/flash/
 dir=$cache_dir${url/:\/\//\/}
 
 # cache dir is url, with :// changed to /
@@ -24,7 +24,7 @@ cd "$dir"
 
 # The tool is a Makefile, so it will not re-run the job if it is already done.
 # We can just run the makefile instead of checking if it is already cached.
-if video-to-flashcards.make url="$url" "$@" >&2; then
+if flash.make url="$url" "$@" >&2; then
     v cat post.txt
 else
     # delete empty files

@@ -87,7 +87,8 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 	message_strings = map(message_to_string, messages)
 	prompt = "".join(message_strings) + anthropic.AI_PROMPT
 	prompt_tokens = anthropic.count_tokens(prompt)
-	max_possible_tokens_to_sample = min(real_token_limit - prompt_tokens, 3000)  # gen tokens is limited to 9216
+	# max_possible_tokens_to_sample = min(real_token_limit - prompt_tokens, TOKEN_LIMIT)  # gen tokens is limited to 9216?
+	max_possible_tokens_to_sample = real_token_limit - prompt_tokens
 	if max_possible_tokens_to_sample <= 0:
 		logger.warning("Prompt is too long: %d tokens", prompt_tokens)
 		return ""
@@ -100,14 +101,14 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 		fn = c.acompletion_stream if streaming else c.acompletion
 	else:
 		fn = c.completion_stream if streaming else c.completion
-	show_args(
-		prompt=prompt,
-		stop_sequences=[anthropic.HUMAN_PROMPT],
-		model=model,
-		max_tokens_to_sample=token_limit,
-		streaming=streaming,
-		temperature=temperature,
-	)
+#	show_args(
+#		prompt=prompt,
+#		stop_sequences=[anthropic.HUMAN_PROMPT],
+#		model=model,
+#		max_tokens_to_sample=token_limit,
+#		streaming=streaming,
+#		temperature=temperature,
+#	)
 	response = fn(
 		prompt=prompt,
 		stop_sequences=[anthropic.HUMAN_PROMPT],
