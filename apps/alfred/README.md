@@ -37,3 +37,15 @@ This `for` loop iterates three times and does the following:
 - It converts the markdown file to a Word document using the `pandoc` command and saves it in a file with the same name and the `.docx` extension (for example, `pos-desc-1.docx`, `pos-desc-2.docx`, `pos-desc-3.docx`).
 
 In summary, this script extracts text from a set of PDF documents, summarizes their content, and then generates a comprehensive position description from these summaries in both markdown and Word document formats.
+
+```
+HTML_FILE_EXTENSIONS=html htm
+PDF_FILE_EXTENSION=pdf
+OFFICE_FILE_EXTENSIONS=doc docx ppt pptx odt
+TEXT_FILE_EXTENSIONS=txt md
+DATA_FILE_EXTENSIONS=csv tsv json xml yaml xls xlsx
+EMAIL_FILE_EXTENSIONS=eml msg mbox pst ost
+AUDIO_FILE_EXTENSIONS=mp3 ogg wav flac
+VIDEO_FILE_EXTENSIONS=mp4 mkv mov avi m4v webm
+IMAGE_FILE_EXTENSIONS=jpg jpeg png gif webp
+```

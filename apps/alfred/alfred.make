@@ -1,72 +1,42 @@
 #!/usr/bin/make -f
 
-# I have an info directory with HTML and PDF files in it. I want to make a
-# list of .txt files with the same stem in the info directory.
-
-HTML_FILE_EXTENSIONS=html htm
-PDF_FILE_EXTENSION=pdf
-OFFICE_FILE_EXTENSIONS=doc docx ppt pptx odt
-TEXT_FILE_EXTENSIONS=txt md
-DATA_FILE_EXTENSIONS=csv tsv json xml yaml xls xlsx
-EMAIL_FILE_EXTENSIONS=eml msg mbox pst ost
-AUDIO_FILE_EXTENSIONS=mp3 ogg wav flac
-VIDEO_FILE_EXTENSIONS=mp4 mkv mov avi m4v webm
-IMAGE_FILE_EXTENSIONS=jpg jpeg png gif webp
-
 # TODO: archives
-# TODO: forget about attachments for now
 # TODO: urls, download HTML, PDF, youtube, video, etc
+# TODO: email attachments
 
-# find all input files with any of those extensions, under input/
 INPUT_FILES=$(shell find input -type f)
 
-# for each input file, make a txt version by appending .txt
+# from input/foo.wav to work/foo.wav.txt
 TEXT_FILES=$(addsuffix .txt,$(INPUT_FILES))
+WORK_FILES=$(addprefix work/,$(notdir $(TEXT_FILES)))
 
-SUMMARY_FILES=$(addprefix summary/,$(notdir $(TEXT_FILES)))
+SUMMARY_FILES=$(addprefix summary/,$(notdir $(WORK_FILES)))
 
 WHISPER=whisp  # speech recognition engine
 
 SHELL=/bin/bash
 
-.PHONY: goal
+.PHONY: goal mkdirs outputs
 
-goal: output.zip outputs
+goal: mkdirs | output.zip outputs
+
+mkdirs:
+	mkdir -p input work summary
+
+work/%: input/%
+	same -s $< $@
 
 %.html.txt: %.html
 	w3m -dump $< > $@
 %.html: %.htm
-	ln -s $< $@
+	ln $< $@
 
 %.pdf.txt: %.pdf
 	pdftotext $< $@
 
 %.txt: %.office
 	antiword $< > $@
-%.doc.office: %.doc
-	ln -s $< $@
-%.docx.office: %.docx
-	ln -s $< $@
-%.ppt.office: %.ppt
-	ln -s $< $@
-%.pptx.office: %.pptx
-	ln -s $< $@
-%.odt.office: %.odt
-	ln -s $< $@
 
-%.md.txt: %.md
-	ln -s $< $@
-
-%.csv.txt: %.csv
-	ln -s $< $@
-%.tsv.txt: %.tsv
-	ln -s $< $@
-%.json.txt: %.json
-	ln -s $< $@
-%.xml.txt: %.xml
-	ln -s $< $@
-%.yaml.txt: %.yaml
-	ln -s $< $@
 %.xls.txt: %.xls
 	xlsx2csv $< > $@
 %.xlsx.txt: %.xlsx
@@ -92,43 +62,13 @@ goal: output.zip outputs
 
 %.16k.wav: %.aud
 	sox $< -r 16k -e signed -b 16 -c 1 $@
-%.mp3.aud: %.mp3
-	ln -s $< $@
-%.ogg.aud: %.ogg
-	ln -s $< $@
-%.wav.aud: %.wav
-	ln -s $< $@
-%.flac.aud: %.flac
-	ln -s $< $@
 
 %.txt: %.16k.wav
 	$(WHISPER) --output_format txt $<
 
 %.aud: %.vid
 	ffmpeg -i $< -f wav $@
-%.mp4.vid: %.mp4
-	ln -s $< $@
-%.mkv.vid: %.mkv
-	ln -s $< $@
-%.mov.vid: %.mov
-	ln -s $< $@
-%.avi.vid: %.avi
-	ln -s $< $@
-%.m4v.vid: %.m4v
-	ln -s $< $@
-%.webm.vid: %.webm
-	ln -s $< $@
 
-%.jpg.img: %.jpg
-	ln -s $< $@
-%.jpeg.img: %.jpeg
-	ln -s $< $@
-%.png.img: %.png
-	ln -s $< $@
-%.gif.img: %.gif
-	ln -s $< $@
-%.webp.img: %.webp
-	ln -s $< $@
 %.img.ocr.txt: %.img
 	ocr $< > $@
 %.img.desc.txt: %.img
@@ -136,25 +76,82 @@ goal: output.zip outputs
 %.txt: %.img.ocr.txt %.img.desc.txt
 	catpg $^ > $@
 
-summary/%.txt: input/%.txt
-	mkdir -p summary
+summary/%.txt: work/%.txt
 	words=`wc -w < $<`; \
 	if [ $$words -gt 5000 ]; then model=c+; else model=4; fi; \
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$$(< $(PROG_DIR)/summary.prompt)" < $< > $@
 
-full_input.txt: $(SUMMARY_FILES)
+summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
 
-output.md: full_input.txt mission.txt
+output.md: summary.txt mission.txt
 	llm process -m 4 "$$(< mission.txt)" < $< > $@
 
 output.%: output.md
-	pandoc $< -o $@
+	pandoc $< --latex-engine=xelatex -t latex -o $@
 
 outputs: output.md output.pdf output.html output.docx
 
-output.zip: outputs $(SUMMARY_FILES) full_input.txt $(TEXT_FILES) $(INPUT_FILES)
-	zip -r $@ output.md output.pdf output.html output.docx full_input.txt summary inputs
+output.zip: outputs $(SUMMARY_FILES) summary.txt $(WORK_FILES) $(INPUT_FILES)
+	zip -r $@ output.md output.pdf output.html output.docx summary.txt summary inputs
 
 .PRECIOUS: %.txt
+
+%.doc.office: %.doc
+	same -s $< $@
+%.docx.office: %.docx
+	same -s $< $@
+%.ppt.office: %.ppt
+	same -s $< $@
+%.pptx.office: %.pptx
+	same -s $< $@
+%.odt.office: %.odt
+	same -s $< $@
+
+%.md.txt: %.md
+	same -s $< $@
+
+%.csv.txt: %.csv
+	same -s $< $@
+%.tsv.txt: %.tsv
+	same -s $< $@
+%.json.txt: %.json
+	same -s $< $@
+%.xml.txt: %.xml
+	same -s $< $@
+%.yaml.txt: %.yaml
+	same -s $< $@
+
+%.mp3.aud: %.mp3
+	same -s $< $@
+%.ogg.aud: %.ogg
+	same -s $< $@
+%.wav.aud: %.wav
+	same -s $< $@
+%.flac.aud: %.flac
+	same -s $< $@
+
+%.mp4.vid: %.mp4
+	same -s $< $@
+%.mkv.vid: %.mkv
+	same -s $< $@
+%.mov.vid: %.mov
+	same -s $< $@
+%.avi.vid: %.avi
+	same -s $< $@
+%.m4v.vid: %.m4v
+	same -s $< $@
+%.webm.vid: %.webm
+	same -s $< $@
+
+%.jpg.img: %.jpg
+	same -s $< $@
+%.jpeg.img: %.jpeg
+	same -s $< $@
+%.png.img: %.png
+	same -s $< $@
+%.gif.img: %.gif
+	same -s $< $@
+%.webp.img: %.webp
+	same -s $< $@
