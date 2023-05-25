@@ -2,6 +2,7 @@ import sys
 import os
 import subprocess
 import threading
+from functools import partial
 
 
 """ utilities for running subprocesses in a web interface """
