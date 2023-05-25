@@ -1,4 +1,4 @@
-max_new_tokens: 200
+max_new_tokens: 100000
 use_cache: true
 num_return_sequences: 1
 do_sample: true

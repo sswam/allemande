@@ -76,12 +76,12 @@ AGENTS_REMOTE = {
 		"default_context": 10,
 	},
 	"Claude": {
-		"model": "claude-v1",
+		"model": "claude-v1-100k",
 		"default_context": 10,
 	},
 	"Claude Instant": {
 		"name": "Claudia",
-		"model": "claude-instant-v1",
+		"model": "claude-instant-v1-100k",
 		"default_context": 10,
 	},
 	"Bard": {
@@ -236,8 +236,15 @@ def leading_spaces(text):
 	return re.match(r"\s*", text).group(0)
 
 
-def trim_response(response, args):
+def trim_response(response, args, people_lc = None):
 	""" Trim the response to the first message. """
+	if people_lc is None:
+		people_lc = []
+	def check_person_remove(match):
+		""" Check if the message is from the person and remove it. """
+		if match.group(2).lower() in people_lc:
+			return ""
+		return match.group(1)
 	if args.raw:
 		messages = response.split(args.delim)
 		if messages and not re.search(r'\S', messages[0]):
@@ -247,7 +254,7 @@ def trim_response(response, args):
 #		human_invitation = args.user + ":"
 #		response = response.split(human_invitation)[0]
 		response = response.strip()
-		response = re.sub(r"\n\w+:.*", "", response, flags=re.DOTALL)
+		response = re.sub(r"(\n(\w+):.*)", check_person_remove, response, flags=re.DOTALL)
 		response = " " + response.strip()
 	return response
 
@@ -615,8 +622,13 @@ def local_agent(agent, query, file, args, history, history_start=0):
 	logger.debug("response: %r", response)
 	logger.debug("_fulltext2: %r", _fulltext2)
 
+	agent_names = list(AGENTS.keys())
+	history_messages = list(chat.lines_to_messages(history))
+	all_people = conductor.participants(history_messages)
+	people_lc = list(map(str.lower, set(agent_names + all_people)))
+
 	if args.trim:
-		response = trim_response(response, args)
+		response = trim_response(response, args, people_lc=people_lc)
 	if not args.narrative:
 		response = fix_layout(response, args)
 
@@ -697,8 +709,8 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 
 
 	logger.debug("response 1: %r", response)
-	if args.trim:
-		response = trim_response(response, args)
+#	if args.trim:
+#		response = trim_response(response, args)
 	logger.debug("response 2: %r", response)
 	if not args.narrative:
 		response = fix_layout(response, args)

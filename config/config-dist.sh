@@ -15,7 +15,7 @@ mission=$'system:\tYou are friends and co-workers talking face to face and worki
 add_prompts=1   # 1
 rewind=2
 
-TOKEN_LIMIT=2000
+TOKEN_LIMIT=100000
 LLM_MODEL="point-alpaca"
 # LLM_MODEL="WizardLM-7B-Uncensored"
 

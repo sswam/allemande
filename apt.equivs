@@ -1,0 +1,19 @@
+python3 (<< 3.11)
+perl
+bash
+make
+nginx
+haproxy
+soundstretch
+amixer
+tesseract
+yt-dlp
+ffmpeg
+xlsx2csv
+pandoc
+pdftotext
+antiword
+imagemagick
+mailutils
+pstutils
+sox

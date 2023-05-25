@@ -1,5 +1,6 @@
 #!/bin/bash -eu
 # video to flashcards
+BASENAME=$(basename "$0")
 
 dir=$1
 url=$2
@@ -7,6 +8,6 @@ url=$2
 mkdir -p "$dir"
 cd "$dir"
 rm-empty-files
-video-to-flashcards.make url="$url"
+"$BASENAME.make" url="$url"
 
 cat post.txt

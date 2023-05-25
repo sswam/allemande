@@ -22,3 +22,4 @@ venv
 js/mousetrap
 pix/banner?.*
 config2.sh
+apps/alfred/mission.txt
