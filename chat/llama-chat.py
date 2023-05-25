@@ -586,7 +586,7 @@ def run_agent(agent, query, file, args, history, history_start=0):
 
 def local_agent(agent, query, file, args, history, history_start=0):
 	""" Run a local agent. """
-	print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
+	# print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 	invitation = args.delim + agent["name"] + ":" if args.bot else ""
 	human_invitation = args.delim + args.user + ":" if args.user else ""
 	if args.emo and invitation:
