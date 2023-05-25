@@ -77,12 +77,12 @@ AGENTS_REMOTE = {
 	},
 	"Claude": {
 		"model": "claude-v1-100k",
-		"default_context": 10,
+		"default_context": 1000,
 	},
 	"Claude Instant": {
 		"name": "Claudia",
 		"model": "claude-instant-v1-100k",
-		"default_context": 10,
+		"default_context": 1000,
 	},
 	"Bard": {
 		"name": "Jaskier",
@@ -255,6 +255,10 @@ def trim_response(response, args, people_lc = None):
 #		response = response.split(human_invitation)[0]
 		response = response.strip()
 		response = re.sub(r"(\n(\w+):.*)", check_person_remove, response, flags=re.DOTALL)
+		response_before = response
+		response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput)\n.*", "", response)
+		if response != response_before:
+			logger.warning("Trimmed response: %r\nto: %r", response_before, response)
 		response = " " + response.strip()
 	return response
 

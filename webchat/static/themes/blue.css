@@ -5,6 +5,7 @@
 	--button-focus: #55f;
 	--button: blue;
 	--frame: black;
-	--border: cyan;
-	--text: white;
+	--border: #00dddd;
+	--text: #dddddd;
+	--link: #00dddd;
 }

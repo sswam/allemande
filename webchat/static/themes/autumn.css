@@ -6,7 +6,7 @@
 	--col4: #c75a48;
 	--col5: #b03b37;
 	--col6: #44110a;
-	--col7: #white;
+	--col7: black;
 
 	--text: var(--col7);
 	--border: var(--col6);
@@ -16,4 +16,6 @@
 	--background: var(--col3);
 	--button: var(--col4);
 	--button-focus: var(--col1);
+
+	--link: #770000;
 }

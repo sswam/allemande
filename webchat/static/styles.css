@@ -107,4 +107,5 @@ button:hover, button:focus {
 
 	--scrollbar-background: var(--background);
 	--scrollbar: var(--frame);
+	--link: midnightblue;
 }
