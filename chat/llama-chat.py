@@ -680,6 +680,7 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 		logger.warning("querying %r = %r", agent['name'], agent["model"])
 		output_message = llm.retry(llm.llm_chat, REMOTE_AGENT_RETRIES, remote_messages)
 		response = output_message["content"]
+		logger.warning("response: %r", response)
 
 		if response.startswith(agent['name']+": "):
 			logger.warning("stripping agent name from response")
