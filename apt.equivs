@@ -1,19 +1,19 @@
-python3 (<< 3.11)
+python3
 perl
 bash
 make
 nginx
 haproxy
 soundstretch
-amixer
-tesseract
+alsa-utils
+tesseract-ocr
 yt-dlp
 ffmpeg
 xlsx2csv
 pandoc
-pdftotext
+poppler-utils
 antiword
 imagemagick
 mailutils
-pstutils
+pst-utils
 sox
