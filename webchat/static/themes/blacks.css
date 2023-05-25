@@ -1,20 +1,20 @@
 :root {
-	--col0: #1a0e2d;
+	--col0: #100423;
 	--col1: #101e33;
-	--col2: #072818;
-	--col3: #453a02;
-	--col4: #462206;
+	--col2: #001105;
+	--col3: #201e02;
+	--col4: #201003;
 	--col5: #000000;
-	--col6: #44110a;
-	--col7: #ccf;
+	--col6: #220805;
+	--col7: #808080;
 
 	--text: var(--col7);
-	--border: var(--col2);
+	--border: var(--col0);
 	--frame: var(--col2);
 	--input: var(--col3);
 	--focus: var(--col4);
 	--background: var(--col5);
 	--button: var(--col6);
 	--button-focus: var(--col1);
-	--link: #00cccc;
+	--link: #807870;
 }

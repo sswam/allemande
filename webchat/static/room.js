@@ -31,7 +31,7 @@ function online() {
 function offline() {
 	const status = get_status_element();
 	status.innerText = '🔴';
-	document.addEventListener('mouseenter', reload)
+	document.body.addEventListener('mouseenter', reload, { once: true });
 }
 
 function ready_state_change() {

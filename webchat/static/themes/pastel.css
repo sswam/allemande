@@ -7,7 +7,7 @@
 	--yellow: #fec;
 	--dark-pink: #c46;
 	--peach: #ffc0cb;
-	--light-blue: #ccf
+	--light-blue: #ccf;
 
 	--text: black;
 	--border: black;
@@ -17,4 +17,5 @@
 	--focus: var(--pink);
 	--button: var(--cyan);
 	--button-focus: var(--teal);
+	--link: var(--dark-pink);
 }
