@@ -26,6 +26,8 @@ SHELL=/bin/bash
 goal: output.md output.pdf output.html output.docx
 
 output.md: $(TEXT_FILES)
+	find input
+	echo $(TEXT_FILES)
 	printf "%s\n" "Hello, world: $^" > $@
 
 output.%: output.md

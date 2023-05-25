@@ -103,7 +103,10 @@ def process_files(document_files, mission):
 	# chdir to /
 	os.chdir("/")
 
-	output_file = Path(tmpdir) / "output.md"
+	output_file_md = Path(tmpdir) / "output.md"
+	output_file_html = Path(tmpdir) / "output.html"
+	output_file_pdf = Path(tmpdir) / "output.pdf"
+	output_file_docx = Path(tmpdir) / "output.docx"
 
 	output_file_text = output_file.read_text(encoding="utf-8")
 
@@ -115,7 +118,7 @@ def process_files(document_files, mission):
 
 	# TODO display all_lines in HTML with error lines highlighted red or whatever
 
-	return status, all_text, output_file_text, str(output_file)
+	return status, all_text, output_file_text, str(output_file_md), str(output_file_html), str(output_file_pdf), str(output_file_docx)
 
 
 demo = gr.Interface(
@@ -128,7 +131,10 @@ demo = gr.Interface(
 		gr.outputs.Textbox(label="Exit Status"),
 		gr.outputs.Textbox(label="Messages"),
 		gr.outputs.Textbox(label="Output Text"),
-		gr.outputs.File(label="Output File"),
+		gr.outputs.File(label="Output File (Markdown)"),
+		gr.outputs.File(label="Output File (HTML)"),
+		gr.outputs.File(label="Output File (PDF)"),
+		gr.outputs.File(label="Output File (DOCX)"),
 	],
 	title=title,
 	description=desc,
