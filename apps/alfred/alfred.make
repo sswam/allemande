@@ -3,7 +3,9 @@
 # I have an info directory with HTML and PDF files in it. I want to make a
 # list of .txt files with the same stem in the info directory.
 
-DOCUMENT_FILE_EXTENSIONS=html htm pdf doc docx ppt pptx odt
+HTML_FILE_EXTENSIONS=html htm
+PDF_FILE_EXTENSION=pdf
+OFFICE_FILE_EXTENSIONS=doc docx ppt pptx odt
 TEXT_FILE_EXTENSIONS=txt md
 DATA_FILE_EXTENSIONS=csv tsv json xml yaml xls xlsx
 EMAIL_FILE_EXTENSIONS=eml msg mbox pst ost
@@ -23,7 +25,7 @@ TEXT_FILES=$(addsuffix .txt,$(INPUT_FILES))
 
 SUMMARY_FILES=$(addprefix summary/,$(notdir $(TEXT_FILES)))
 
-WHISPER=whisp --output_format txt  # speech recognition engine
+WHISPER=whisp  # speech recognition engine
 
 SHELL=/bin/bash
 
@@ -33,48 +35,54 @@ goal: output.zip outputs
 
 %.html.txt: %.html
 	w3m -dump $< > $@
-%.htm.txt: %.htm
-	w3m -dump $< > $@
+%.html: %.htm
+	ln -s $< $@
+
 %.pdf.txt: %.pdf
 	pdftotext $< $@
-%.doc.txt: %.doc
+
+%.txt: %.office
 	antiword $< > $@
-%.docx.txt: %.docx
-	antiword $< > $@
-%.ppt.txt: %.ppt
-	antiword $< > $@
-%.pptx.txt: %.pptx
-	antiword $< > $@
-%.odt.txt: %.odt
-	antiword $< > $@
-%.txt.txt: %.txt
-	cp $< $@
+%.doc.office: %.doc
+	ln -s $< $@
+%.docx.office: %.docx
+	ln -s $< $@
+%.ppt.office: %.ppt
+	ln -s $< $@
+%.pptx.office: %.pptx
+	ln -s $< $@
+%.odt.office: %.odt
+	ln -s $< $@
+
 %.md.txt: %.md
-	cp $< $@
+	ln -s $< $@
 
 %.csv.txt: %.csv
-	cp $< $@
+	ln -s $< $@
 %.tsv.txt: %.tsv
-	cp $< $@
+	ln -s $< $@
 %.json.txt: %.json
-	cp $< $@
+	ln -s $< $@
 %.xml.txt: %.xml
-	cp $< $@
+	ln -s $< $@
 %.yaml.txt: %.yaml
-	cp $< $@
+	ln -s $< $@
 %.xls.txt: %.xls
 	xlsx2csv $< > $@
 %.xlsx.txt: %.xlsx
 	xlsx2csv $< > $@
 
+# email: forget about attachments for now
+# ripmime -i $< -d output
+
 %.eml.txt: %.eml
 	mail -f $< -N decode > $@
-	# forget about attachments for now
-	# ripmime -i $< -d output
+
 %.msg.txt: %.msg
 	mail -f $< -N decode > $@
 %.mbox.txt: %.mbox
 	mail -f $< -N decode > $@
+
 %.pst.txt: %.pst
 	readpst -o output $<
 	mv output/Inbox.mbox.txt $@
@@ -82,38 +90,51 @@ goal: output.zip outputs
 	readpst -o output $<
 	mv output/Inbox.mbox.txt $@
 
-%.mp3.txt: %.mp3
-	sox $< -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
-%.ogg.txt: %.ogg
-	sox $< -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
-%.wav.txt: %.wav
-	sox $< -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
-%.flac.txt: %.flac
-	sox $< -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
+%.16k.wav: %.aud
+	sox $< -r 16k -e signed -b 16 -c 1 $@
+%.mp3.aud: %.mp3
+	ln -s $< $@
+%.ogg.aud: %.ogg
+	ln -s $< $@
+%.wav.aud: %.wav
+	ln -s $< $@
+%.flac.aud: %.flac
+	ln -s $< $@
 
-%.mp4.txt: %.mp4
-	ffmpeg -i $< -f wav - | sox -t wav - -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
-%.mkv.txt: %.mkv
-	ffmpeg -i $< -f wav - | sox -t wav - -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
-%.mov.txt: %.mov
-	ffmpeg -i $< -f wav - | sox -t wav - -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
-%.avi.txt: %.avi
-	ffmpeg -i $< -f wav - | sox -t wav - -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
-%.m4v.txt: %.m4v
-	ffmpeg -i $< -f wav - | sox -t wav - -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
-%.webm.txt: %.webm
-	ffmpeg -i $< -f wav - | sox -t wav - -t raw -r 16k -e signed -b 16 -c 1 - | $(WHISPER) > $@
+%.txt: %.16k.wav
+	$(WHISPER) --output_format txt $<
 
-%.jpg.txt: %.jpg
-	image-to-text $< > $@
-%.jpeg.txt: %.jpeg
-	image-to-text $< > $@
-%.png.txt: %.png
-	image-to-text $< > $@
-%.gif.txt: %.gif
-	image-to-text $< > $@
-%.webp.txt: %.webp
-	image-to-text $< > $@
+%.aud: %.vid
+	ffmpeg -i $< -f wav $@
+%.mp4.vid: %.mp4
+	ln -s $< $@
+%.mkv.vid: %.mkv
+	ln -s $< $@
+%.mov.vid: %.mov
+	ln -s $< $@
+%.avi.vid: %.avi
+	ln -s $< $@
+%.m4v.vid: %.m4v
+	ln -s $< $@
+%.webm.vid: %.webm
+	ln -s $< $@
+
+%.jpg.img: %.jpg
+	ln -s $< $@
+%.jpeg.img: %.jpeg
+	ln -s $< $@
+%.png.img: %.png
+	ln -s $< $@
+%.gif.img: %.gif
+	ln -s $< $@
+%.webp.img: %.webp
+	ln -s $< $@
+%.img.ocr.txt: %.img
+	ocr $< > $@
+%.img.desc.txt: %.img
+	image2text.py -i $< > $@
+%.txt: %.img.ocr.txt %.img.desc.txt
+	catpg $^ > $@
 
 summary/%.txt: input/%.txt
 	mkdir -p summary
