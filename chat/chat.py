@@ -110,6 +110,9 @@ def sanitize_pathname(room):
 def split_message_line(line):
 	""" Split a message line into user and content. """
 
+	if not line.endswith("\n"):
+		line += "\n"
+
 	if "\t" in line:
 		label, content = line.split("\t", 1)
 	else:
@@ -154,7 +157,6 @@ def lines_to_messages(lines):
 			continue
 
 		user, content = split_message_line(line)
-		logger.debug("split_message_line user, content: %r, %r", user, content)
 
 		# accumulate continued lines
 		if message and user == USER_CONTINUED:
@@ -187,6 +189,26 @@ def lines_to_messages(lines):
 	if message is not None:
 		logger.debug(message)
 		yield message
+
+
+def test_split_message_line():
+	line = "Ally:	Hello\n"
+	user, content = split_message_line(line)
+	assert user == "Ally"
+	assert content == "Hello\n"
+
+
+def test_lines_to_messages():
+	lines = """Ally:	Hello
+	World
+Sam:	How are you?
+"""
+	messages = list(lines_to_messages(lines.splitlines()))
+	assert len(messages) == 2
+	assert messages[0]["user"] == "Ally"
+	assert messages[0]["content"] == "Hello\nWorld\n"
+	assert messages[1]["user"] == "Sam"
+	assert messages[1]["content"] == "How are you?\n"
 
 
 def message_to_text(message):

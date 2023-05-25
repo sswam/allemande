@@ -176,6 +176,14 @@ def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_
 	search_results = []
 
 	for res in search_results2:
+		# remove crap from thumbnail URL
+		if 'thumbnails' in res and len(res['thumbnails']) > 0:
+			res['thumbnail'] = re.sub(r'\?.*', '', res['thumbnails'][0])
+
+		# remove crap from the main URL
+		if re.match(r'https?://www.youtube.com/watch\?v=', res['url']):
+			res['url'] = re.sub(r'&.*', '', res['url'])
+
 		if res not in search_results:
 			search_results.append(res)
 
@@ -187,7 +195,7 @@ def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_
 	if detailed:
 		return search_results
 
-	return [{'title': result['title'], 'url': result['url'], 'thumbnail': result['thumbnails'][0]} for result in search_results]
+	return [{'title': result['title'], 'url': result['url'], 'thumbnail': result['thumbnail']} for result in search_results]
 
 def pornhub_search(query, max_results=10, safe="off"):
 	site = 'https://www.pornhub.com'
