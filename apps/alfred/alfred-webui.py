@@ -38,8 +38,10 @@ else:
 	mission_default = ""
 mission_placeholder = """Enter your mission here..."""
 
+
 def print_and_flush(*args, file=sys.stdout, **kwargs):
 	print(*args, file=file, flush=True, **kwargs)
+
 
 def print_and_save_stream(stream, lines=None, printer=print, all_lines=None, label=None):
 	for line in iter(stream.readline, ''):
@@ -49,6 +51,7 @@ def print_and_save_stream(stream, lines=None, printer=print, all_lines=None, lab
 			all_lines.append({"label":label, "line":line})
 		if printer is not None:
 			printer(line, end='')
+
 
 def run_subprocess(cmd, *args, **kwargs):
 	# set environment variables
@@ -77,6 +80,7 @@ def run_subprocess(cmd, *args, **kwargs):
 	thread_err.join()
 	exit_code = process.wait()
 	return exit_code, stdout_lines, stderr_lines, all_lines
+
 
 def process_files(mission, document_files, turbo):
 	""" run a file processing command in a web interface """
@@ -114,7 +118,7 @@ def process_files(mission, document_files, turbo):
 	os.chdir(tmpdir)
 
 	# run command
-	status, stdout_lines, stderr_lines, all_lines = run_subprocess(cmd, *opts)
+	status, stdout_lines, stderr_lines, all_lines = run_subprocess(cmd, *my_opts)
 
 	all_text = "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
 	output_text = "".join(stdout_lines)
