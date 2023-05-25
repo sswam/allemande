@@ -75,7 +75,7 @@ w/%.aud: w/%.vid
 	ffmpeg -i $< -f wav $@
 
 w/%.img.ocr.txt: w/%.img
-	ocr $< > $@
+	ocr $< $@
 w/%.img.desc.txt: w/%.img
 	image2text.py -m $(IMAGE2TEXT_MODE) -i $< > $@
 w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt

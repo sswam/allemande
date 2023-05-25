@@ -22,8 +22,8 @@ if [ -n "$s" ]; then
 	s=" of $s"
 fi
 
-if [ ! -e "$input.ocr.txt" ]; then
-	$v tesseract $tesseract_opts "$input" "$input.ocr"
+if [ ! -e "$input.ocr.raw.txt" ]; then
+	$v tesseract $tesseract_opts "$input" "$input.ocr.raw"
 fi
 
 #prompt1=`cat <<EOF
@@ -54,4 +54,4 @@ $prompt1
 EOF
 `
 
-< "$input.ocr.txt" $v llm process -m"$m" "$prompt1" --prompt2 "$prompt2" > "$output"
+< "$input.ocr.raw.txt" $v llm process -m"$m" "$prompt1" --prompt2 "$prompt2" > "$output"
