@@ -118,7 +118,7 @@ def process_files(mission, document_files, turbo):
 	os.chdir(tmpdir)
 
 	# run command
-	status, stdout_lines, stderr_lines, all_lines = run_subprocess(cmd, *opts)
+	status, stdout_lines, stderr_lines, all_lines = run_subprocess(cmd, *my_opts)
 
 	all_text = "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
 	output_text = "".join(stdout_lines)
