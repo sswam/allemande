@@ -119,6 +119,8 @@ w/%.pptx.office: w/%.pptx
 w/%.odt.office: w/%.odt
 	same -s $< $@
 
+w/%.txt.txt: w/%.txt
+	same -s $< $@
 w/%.md.txt: w/%.md
 	same -s $< $@
 

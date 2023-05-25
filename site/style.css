@@ -59,7 +59,7 @@ a.button {
 	padding: 10px 25px;
 	border-radius: 5px;
 	font-weight: 500;
-	margin: 20px 7px 0px 7px;
+	margin: 7px;
 }
 
 .button:hover {
@@ -93,6 +93,24 @@ a.button {
 	background-color: #363;
 }
 
+.button.blue {
+	background-color: #226;
+	color: #ccf;
+}
+
+.button.blue:hover {
+	background-color: #338;
+}
+
+.button.violet {
+	background-color: #424;
+	color: #fcf;
+}
+
+.button.violet:hover {
+	background-color: #636;
+}
+
 @media (max-width: 600px) {
 	.info {
 		padding: 10px 15px;
@@ -102,6 +120,6 @@ a.button {
 	}
 	a.button {
 		padding: 10px 15px;
-		margin: 20px 5px 0px 5px;
+		margin: 5px;
 	}
 }

@@ -73,16 +73,16 @@ AGENTS_REMOTE = {
 	"GPT-3.5": {
 		"name": "Leo",
 		"model": "gpt-3.5-turbo",
-		"default_context": 10,
+		"default_context": 20,
 	},
 	"Claude": {
 		"model": "claude-v1-100k",
-		"default_context": 1000,
+		"default_context": 100,
 	},
 	"Claude Instant": {
 		"name": "Claudia",
 		"model": "claude-instant-v1-100k",
-		"default_context": 1000,
+		"default_context": 100,
 	},
 	"Bard": {
 		"name": "Jaskier",
