@@ -1,29 +1,27 @@
 #!/usr/bin/env python3
 """ run document processor in a web interface """
 
-import sys
 import os
 import logging
 from pathlib import Path
 import re
 import tempfile
-import subprocess
 import shutil
-import threading
 
-from functools import partial
+from ucm_gradio import run_subprocess
 
-from ucm_gradio import print_and_flush, print_and_save_stream, run_subprocess
+os.environ["GRADIO_ANALYTICS"] = "False"
+import gradio as gr  # pylint: disable=wrong-import-position
+
 
 os.environ["PATH"] = os.environ.get("PATH", "") + ":" + os.getcwd()
 
 WHISPER = os.environ.get("WHISPER", "whisp")
 
-os.environ["GRADIO_ANALYTICS"] = "False"
-import gradio as gr
 
 logging.basicConfig(level=logging.DEBUG, format='%(message)s')
 logger = logging.getLogger(__name__)
+
 
 cmd = "alfred"
 opts = [ "WHISPER="+WHISPER ]
@@ -33,15 +31,15 @@ desc = "Upload documents (PDFs, Word docs, etc.). Alfred will convert them to te
 
 prog_dir = os.environ.get("PROG_DIR", os.getcwd())
 
-mission_file = Path(prog_dir) / "mission.txt"
-if mission_file.exists():
-	mission_default = mission_file.read_text(encoding="utf-8").rstrip()
+default_mission_file = Path(prog_dir) / "mission.txt"
+if default_mission_file.exists():
+	mission_default = default_mission_file.read_text(encoding="utf-8").rstrip()
 else:
 	mission_default = ""
 mission_placeholder = """Enter your mission here..."""
 
 
-def process_files(mission, document_files, turbo):
+def process_files(mission, document_files, turbo): # pylint: disable=too-many-locals
 	""" run a file processing command in a web interface """
 
 	# show PATH
@@ -51,6 +49,8 @@ def process_files(mission, document_files, turbo):
 
 	if turbo:
 		my_opts += ["LLM_MODEL=i", "LLM_MODEL_LONG=i+", "OCR_MODEL=i", "IMAGE2TEXT_MODE=fast"]
+
+	# TODO how to delete the tmpdir
 
 	tmpdir = tempfile.mkdtemp()
 	input_dir = Path(tmpdir) / "input"
@@ -77,35 +77,30 @@ def process_files(mission, document_files, turbo):
 	os.chdir(tmpdir)
 
 	# run command
-	status, stdout_lines, stderr_lines, all_lines = run_subprocess(cmd, *my_opts)
+	status, _stdout_lines, _stderr_lines, all_lines = run_subprocess(cmd, *my_opts)
 
 	all_text = "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
-	output_text = "".join(stdout_lines)
-	error_text = "".join(stderr_lines)
+	# _output_text = "".join(stdout_lines)
+	# _error_text = "".join(stderr_lines)
 
 	# chdir to /
 	os.chdir("/")
 
+	output_files = list(Path(tmpdir) / f"output.{ext}" for ext in ["zip", "md", "html", "pdf", "docx"])
+
 	output_file_md = Path(tmpdir) / "output.md"
-	output_file_html = Path(tmpdir) / "output.html"
-	output_file_pdf = Path(tmpdir) / "output.pdf"
-	output_file_docx = Path(tmpdir) / "output.docx"
-	output_file_zip = Path(tmpdir) / "output.zip"
+
 
 	if output_file_md.exists():
 		output_file_text = output_file_md.read_text(encoding="utf-8")
 	else:
 		output_file_text = ""
 
-#	with open(output_file, "w", encoding="utf-8") as f:
-#		f.write(output_text)
-
 	status_str = "Success" if status == 0 else "Error"
 	status = f"{status}: {status_str}"
 
 	# TODO display all_lines in HTML with error lines highlighted red or whatever
 
-	output_files = [output_file_zip, output_file_md, output_file_html, output_file_pdf, output_file_docx]
 	output_files = [str(f) if f.exists() else None for f in output_files]
 
 	return status, all_text, output_file_text, *output_files
