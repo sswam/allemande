@@ -3,27 +3,31 @@
 """ chat.py: Allemande chat file format library """
 
 import sys
-import itertools
 import html
 from pathlib import Path
 import re
 import logging
+from typing import Dict, Optional
 
 import argh
 import markdown
+from starlette.exceptions import HTTPException
 
 
 logger = logging.getLogger(__name__)
 
 
-class Singleton:
+class Symbol:  # pylint: disable=too-few-public-methods
+	""" A symbol singleton object """
 	def __init__(self, name):
+		""" Create a new symbol with the given name """
 		self.name = name
 	def __repr__(self):
+		""" Return a string representation of the symbol """
 		return f"<{self.name}>"
 
-USER_NARRATIVE = Singleton("Narrative")
-USER_CONTINUED = Singleton("Continued")
+USER_NARRATIVE = Symbol("Narrative")
+USER_CONTINUED = Symbol("Continued")
 ROOM_MAX_LENGTH = 100
 ROOM_MAX_DEPTH = 10
 
@@ -61,8 +65,7 @@ def safe_join(base_dir: Path, path: Path) -> Path:
 	safe_path = base_dir.joinpath(path).resolve()
 	if base_dir in safe_path.parents:
 		return safe_path
-	else:
-		raise ValueError("Invalid or unsafe path provided: %r, %r" % (base_dir, path))
+	raise ValueError(f"Invalid or unsafe path provided: {base_dir}, {path}")
 
 def sanitize_filename(f):
 	""" Sanitize a filename, allowing most characters. """
@@ -146,7 +149,7 @@ def split_message_line(line):
 def lines_to_messages(lines):
 	""" A generator to convert an iterable of lines to chat messages. """
 
-	message = None
+	message: Optional[Dict] = None
 
 	lines = iter(lines)
 	skipped_blank = 0
@@ -156,7 +159,7 @@ def lines_to_messages(lines):
 		if line is None:
 			break
 
-		if type(line) is bytes:
+		if isinstance(line, bytes):
 			line = line.decode("utf-8")
 
 		# skip blank lines
@@ -167,8 +170,8 @@ def lines_to_messages(lines):
 		user, content = split_message_line(line)
 
 		# accumulate continued lines
-		if message and user == USER_CONTINUED:
-			message["content"] += "\n" * skipped_blank + content
+		if message and user == USER_CONTINUED:  # pylint: disable=unsupported-assignment-operation
+			message["content"] += "\n" * skipped_blank + content  # pylint: disable=unsupported-assignment-operation
 			skipped_blank = 0
 			continue
 
@@ -176,8 +179,8 @@ def lines_to_messages(lines):
 			logger.warning("Continued line with no previous incomplete message: %s", line)
 			user = USER_NARRATIVE
 
-		if message and user == USER_NARRATIVE and "user" not in message:
-			message["content"] += "\n" * skipped_blank + content
+		if message and user == USER_NARRATIVE and "user" not in message:  # pylint: disable=unsupported-membership-test
+			message["content"] += "\n" * skipped_blank + content  # pylint: disable=unsupported-assignment-operation
 			skipped_blank = 0
 			continue
 
@@ -200,6 +203,7 @@ def lines_to_messages(lines):
 
 
 def test_split_message_line():
+	""" Test split_message_line. """
 	line = "Ally:	Hello\n"
 	user, content = split_message_line(line)
 	assert user == "Ally"
@@ -207,6 +211,7 @@ def test_split_message_line():
 
 
 def test_lines_to_messages():
+	""" Test lines_to_messages. """
 	lines = """Ally:	Hello
 	World
 Sam:	How are you?
@@ -241,6 +246,23 @@ def preprocess(content):
 	# replace $foo$ with $`foo`$
 	# replace $$\n...\n$$ with ```math\n...\n```
 
+	def quote_math_inline(match):
+		pre, math, post = match.groups()
+		# check if it looks like math...
+		is_math = True
+		if math.startswith("`") and math.endswith("`"):
+			# already processed
+			is_math = False
+		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math)):
+			is_math = False
+		elif re.match(r'^\w', post):
+			is_math = False
+		elif re.match(r'\w$', pre):
+			is_math = False
+		if is_math:
+			return f"{pre}$`{math}`${post}"
+		return match.group(0)
+
 	out = []
 
 	in_math = False
@@ -252,7 +274,16 @@ def preprocess(content):
 			out.append("```")
 			in_math = False
 		else:
-			line = re.sub(r'\$(.*?)\$', r'$`\1`$', line)
+			# run the regexp sub repeatedly
+			start = 0
+			while True:
+				match = re.match(r'^(.*?)\$(.*?)\$(.*)$', line[start:])
+				if match is None:
+					break
+				pre, _math, _post = match.groups()
+				replace = quote_math_inline(match)
+				line = line[:start] + replace
+				start += len(pre) + len(replace)
 			out.append(line)
 
 	content = "\n".join(out)+"\n"
