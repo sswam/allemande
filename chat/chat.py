@@ -67,24 +67,24 @@ def safe_join(base_dir: Path, path: Path) -> Path:
 		return safe_path
 	raise ValueError(f"Invalid or unsafe path provided: {base_dir}, {path}")
 
-def sanitize_filename(f):
+def sanitize_filename(filename):
 	""" Sanitize a filename, allowing most characters. """
 
-	assert isinstance(f, str)
-	assert "/" not in f
+	assert isinstance(filename, str)
+	assert "/" not in filename
 
 	# remove leading dots and whitespace:
 	# don't want hidden files
-	f = re.sub(r"^[.\s]+", "", f)
+	filename = re.sub(r"^[.\s]+", "", filename)
 
 	# remove trailing dots and whitespace:
 	# don't want confusion around file extensions
-	f = re.sub(r"[.\s]+$", "", f)
+	filename = re.sub(r"[.\s]+$", "", filename)
 
 	# squeeze whitespace
-	f = re.sub(r"\s+", " ", f)
+	filename = re.sub(r"\s+", " ", filename)
 
-	return f
+	return filename
 
 
 def sanitize_pathname(room):
