@@ -76,8 +76,8 @@ def message_to_string(message):
 def chat_claude(messages, model=None, token_limit: int = None, temperature=None, streaming=False, _async=False):
 	""" Chat with claude """
 	real_token_limit = TOKEN_LIMIT_100K if "100k" in model else TOKEN_LIMIT
-	logger.warning("model: %s", model)
-	logger.warning("real_token_limit: %s", real_token_limit)
+	logger.debug("model: %s", model)
+	logger.debug("real_token_limit: %s", real_token_limit)
 	if model is None:
 		model = MODEL_DEFAULT
 	if token_limit is None:
@@ -94,7 +94,7 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 		return ""
 	if token_limit > max_possible_tokens_to_sample:
 		token_limit = max_possible_tokens_to_sample
-		logger.warning("Reducing token_limit to %d", token_limit)
+		logger.debug("Reducing token_limit to %d", token_limit)
 	c = anthropic.Client(os.environ["ANTHROPIC_API_KEY"])
 	fn = c.completion_stream if streaming else c.completion
 	if _async:

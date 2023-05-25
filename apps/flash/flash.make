@@ -18,9 +18,9 @@ SEARCH := google
 
 
 #m0=3+
-m0=c+
+m0=4
 # m0=4   # gives "Gateway timeout" for large inputs
-m=c+
+m=4
 
 
 default: goal
