@@ -246,22 +246,21 @@ def preprocess(content):
 	# replace $foo$ with $`foo`$
 	# replace $$\n...\n$$ with ```math\n...\n```
 
-	def quote_math_inline(match):
-		pre, math, post = match.groups()
+	def quote_math_inline(pre, math, post):
 		# check if it looks like math...
 		is_math = True
 		if math.startswith("`") and math.endswith("`"):
 			# already processed
 			is_math = False
-		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math)):
+		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
 			is_math = False
 		elif re.match(r'^\w', post):
 			is_math = False
 		elif re.match(r'\w$', pre):
 			is_math = False
 		if is_math:
-			return f"{pre}$`{math}`${post}"
-		return match.group(0)
+			return f"$`{math}`$"
+		return f"${math}$"
 
 	out = []
 
@@ -277,17 +276,19 @@ def preprocess(content):
 			# run the regexp sub repeatedly
 			start = 0
 			while True:
+				logger.debug("preprocess line part from: %r %r", start, line[start:])
 				match = re.match(r'^(.*?)\$(.*?)\$(.*)$', line[start:])
+				logger.debug("preprocess match: %r", match)
 				if match is None:
 					break
-				pre, _math, _post = match.groups()
-				replace = quote_math_inline(match)
-				line = line[:start] + replace
+				pre, math, post = match.groups()
+				replace = quote_math_inline(pre, math, post)
+				line = line[:start] + pre + replace + post
 				start += len(pre) + len(replace)
 			out.append(line)
 
 	content = "\n".join(out)+"\n"
-	logger.warning("preprocess content: %r", content)
+	logger.debug("preprocess content: %r", content)
 	return content
 
 

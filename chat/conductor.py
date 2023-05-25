@@ -42,6 +42,7 @@ def who_is_named(content, user, agents, include_self=False):
 		matches = [m for m in matches if m[1] and m[1].lower() != user.lower()]
 	if not matches:
 		return []
+	logger.warning("who_is_named, matches: %r", matches)
 	_pos, agent = min(matches)
 	if agent is None:
 		invoked = []
