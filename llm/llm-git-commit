@@ -50,14 +50,18 @@ generate-commit-message() {
 	echo "Generating commit message using `model-name $model` ..."
 	git diff --staged |
 		llm process -m $model 'Please describe this diff, for a git commit message, following the Conventional Commits spec.
-The required format is as follows:
-a very short summary line, preferably around 50 chars, and strictly not more than 70 chars
 Do not invent anything that is not in the diff!
 Only describe the actual changes, lines starting with + and -, not the surrounding context.
+The required format is as follows:
+
+feat|fix(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
 
 - concise info about first change, if needed, not more than 78 chars per line
 - concise info about second change, if any, not more than 78 chars per line
 - and so on
+
+There can be only one feat or fix line per commit, but there can be multiple lines starting with -.
+The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
 ' |
 	fmt -s -w 78 -g 78 > "$file"
 }
