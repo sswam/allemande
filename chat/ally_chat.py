@@ -105,7 +105,7 @@ AGENTS_REMOTE = {
 
 AGENTS_PROGRAMMING = {
 	"Dogu": {
-		"command": [],
+		"command": ["bash"],
 	},
 	"Gid": {
 		"command": ["python"],

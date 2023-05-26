@@ -44,7 +44,7 @@ extra.txt: $(EXTRA_TEXT_FILES)
 	cat $@
 
 %.txt: %.html
-	w3m -dump $< > $@
+	lynx -dump $< > $@
 	cat $@
 
 %.txt: %.doc
