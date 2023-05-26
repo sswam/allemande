@@ -236,6 +236,14 @@ engines = {
 	'PornHub': pornhub_search,
 }
 
+agents = {
+	'Serry': google_search,
+#	'DuckDuckGo': duckduckgo_search,
+#	'Bing': bing_search,
+	'Jadev': youtube_search,
+	'Pr0nto': pornhub_search,
+}
+
 def esc(s):
 	s = html.escape(s)  # Handles HTML entities
 	s = s.replace("|", "&#124;")  # Handles "|" character for Markdown tables

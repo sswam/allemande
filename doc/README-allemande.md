@@ -4,7 +4,102 @@
 
 We are [Allemande AI](https://allemande.ai), a growing AI consultancy in Melbourne, Australia.
 
-This is an innovative multi-player chat app called <A href="https://chat.allemande.ai">Ally Chat</A>, based on a powerful AI toolkit.
+Our flagship product is an innovative multi-player chat app called <A href="https://chat.allemande.ai">Ally Chat</A>, based on a powerful open-source AI toolkit.
+
+## Ally Chat
+
+Ally Chat is a chat system of many multiples:
+
+- multi-user: many people can chat in one chat room, or you chat one-on-one; or just to yourself!
+- multi-place: anyone can create a new chat room instantly, just by setting its name
+- multi-AI: we have six different AI large language models, and you chat to any or all of them in each room
+- multi-agent: we have ten different programming tools for seven important languages
+- multi-search: we have at least two web search tools
+
+### Electric People
+
+- Ally, a human-like model based on Point Alpaca, and the star of our show.
+- Callam, Ally's male counterpart, configured identically at the moment.
+- Emy, OpenAI's GPT-4, with a default context of ten messages.
+- Dav, OpenAI's ChatGPT 3.5, with a default context of twenty messages.
+- Claud, Claude from Anthropic, with a default context of fifty messages.
+- Clia, Claude Instant from Anthropic, with a default context of one hundred messages.
+- Jaski, Google Bard, currently limited to a single message of context, and AWOL due to an API change.
+
+### Programming Agents
+
+- Dogu, the bash shell
+- Gid, the Python programming language
+- Lary, the Perl programming language
+- Matz, the Ruby programming language
+- Luah, the Lua programming language
+- Jyan, the node JS programming system
+- Jahl, the deno JS programming system
+- Faby, the tiny C compiler
+- Qell, the quick JS programming system
+- Palc, a calculator using Python
+
+### Search Agents
+
+- Serry, the Google search engine
+- Jadev, find videos on YouTube
+- ... and more!
+
+### Applications
+
+These applications are currently stand-alone tools; they are not yet integrated into Ally Chat.
+
+- Flash, automatically create study flashcards from online videos
+- Alfred, an anything-processor, taking any sort of input and producing a document.
+- Ikigai, a resume assistant, and chat agent to help you find your ikigai, work in progress
+- Sherlock, a research agent, work in progress
+
+## Our Names
+
+### The Company
+
+Allemande is a dance style originating in Germany, characterized by intricate handholds, turns, and moderate pace, often featured in Baroque-era court dances and instrumental suites. The lead developer loves the music of Johann Sebastian Bach. Bach wrote Allemandes for keyboard, violin, cello, lute, and flute.
+
+Allemand is the French word for the German language.
+
+The word Allemande contains the letters LLM in that order.
+
+We have named our main protagonist Ally, short for Allemande, and evoking a sincere helper.
+
+### Electric People
+
+- Ally, short for Allemande (a slow dance), with the letters LLM, and evoking a sincere helper (ally).
+- Callam, a male name variant of Callum, with the letters LLM
+- Emmy, after Emmy Noether, a famous scientist, and continuing OpenAI's naming convention: Ada, Babbage, Curie, DaVinci, Emmy
+- Dav, after Leonardo da Vinci; the code name for GPT 3 is "davinci"
+- Claud, short for Claude, the official name of Anthropic's large language model
+- Clia, short for Claudia, a female variant of Claude
+- Jaski, after Jaskier, the bard from the Witcher series
+
+### Programming Agents
+
+- Dogu, after Doug McIlroy, the leader Bell labs when UNIX was developed, and inventor of pipes
+- Gud, after Guido van Rossum, the creator of Python
+- Lary, after Larry Wall, the creator of Perl
+- Matz, after Yukihiro Matsumoto, the creator of Ruby
+- Luah, after Lua, meaning moon
+- Jyan, after JavaScript and Ryan Dahl, the creator of Node JS
+- Jahl, after JavaScript and Ryan Dahl, the creator of Deno
+- Faby, after Fabrice Bellard, the creator of the tiny C compiler
+- Qell, after Quick and Fabrice Bellard, the creator of QuickJS
+- Palc, for Python Calculator
+
+### Search Agents
+
+- Serry, after Sergey Brin and Larry Page, the founders of Google
+- Jadev, after Jawed Karim, and Chad Hurley, and Steve Chen, the founders of YouTube
+
+### Applications
+
+- Flash, for spaced repetition flash-cards
+- Alfred, after Alfred Pennyworth, Batman's fictional butler
+- Ikigai, a Japanese word combining "iki" (life) and "gai" (value): find what you love, are good at, can be paid for, and the world needs.
+- Sherlock, after Sherlock Holmes, the famous fictional detective
 
 ## Screenshots
 
