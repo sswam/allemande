@@ -38,7 +38,7 @@ def who_is_named(content, user, agents, include_self=True):
 	""" check who is named first in the message """
 #	matches = [find_name_in_content(content, agent) for agent in agents + EVERYONE_WORDS]
 	matches = [find_name_in_content(content, agent) for agent in agents]
-	if not include_self:
+	if not include_self and user:
 		matches = [m for m in matches if m[1] and m[1].lower() != user.lower()]
 	if not matches:
 		return []

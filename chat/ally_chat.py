@@ -129,7 +129,7 @@ AGENTS_PROGRAMMING = {
 		"command": ["tcc", "-run", "-"],
 	},
 	"Qell": {
-		"command": ["qjs"],
+		"command": ["sh", "-c", 't=`mktemp`; cat >$t; qjs --std --bignum --qjscalc $t; rm $t'],
 	},
 	"Palc": {
 		"command": ["calc"],
@@ -831,7 +831,7 @@ def safe_shell(agent, query, file, args, history, history_start=0, command=None)
 	logger.debug("query 7: %r", query)
 
 
-	command = ['ssh', '-T', 'allemande-nobody@localhost'] + agent["command"]
+	command = ['sshc', 'allemande-nobody@localhost'] + agent["command"]
 
 	# echo the query to the subprocess
 	with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
