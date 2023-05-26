@@ -255,8 +255,8 @@ agents = {
 
 
 agent_engine = {
-	'serry': 'Google',
-	'jadev': 'YouTube',
+	'goog': 'Google',
+	'utube': 'YouTube',
 	'pr0nto': 'PornHub',
 }
 
