@@ -303,7 +303,7 @@ def trim_response(response, args, people_lc = None):
 		response = response.strip()
 		response = re.sub(r"(\n(\w+):.*)", check_person_remove, response, flags=re.DOTALL)
 		response_before = response
-		response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output)\n.*", "", response , flags=re.DOTALL|re.IGNORECASE)
+		response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|// end of output //)\n.*", "", response , flags=re.DOTALL|re.IGNORECASE)
 		if response != response_before:
 			logger.warning("Trimmed response: %r\nto: %r", response_before, response)
 		response = " " + response.strip()
