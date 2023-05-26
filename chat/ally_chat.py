@@ -107,7 +107,7 @@ AGENTS_PROGRAMMING = {
 	"Dogu": {
 		"command": [],
 	},
-	"Gud": {
+	"Gid": {
 		"command": ["python"],
 	},
 	"Lary": {
@@ -695,7 +695,7 @@ def local_agent(agent, _query, file, args, history, history_start=0):
 	return tidy_response
 
 
-def apply_maps(mapping, mapping_cs, history):
+def apply_maps(mapping, mapping_cs, context):
 	""" for each word in the mapping, replace it with the value """
 
 	logger.warning("apply_maps: %r %r", mapping, mapping_cs)
@@ -713,11 +713,11 @@ def apply_maps(mapping, mapping_cs, history):
 			out = word
 		return out
 
-	for i, msg in enumerate(history):
+	for i, msg in enumerate(context):
 		old = msg
-		history[i] = re.sub(r"\b(.+?)\b", map_word, msg)
-		if history[i] != old:
-			logger.warning("map: %r -> %r", old, history[i])
+		context[i] = re.sub(r"\b(.+?)\b", map_word, msg)
+		if context[i] != old:
+			logger.warning("map: %r -> %r", old, context[i])
 
 
 def remote_agent(agent, query, file, args, history, history_start=0):
@@ -738,6 +738,8 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 		apply_maps(agent["input_map"], agent["input_map_cs"], context)
 
 		context_messages = list(chat.lines_to_messages(context))
+
+		logger.warning("DEBUG RM: context_messages: %r", context_messages)
 
 		remote_messages = []
 
