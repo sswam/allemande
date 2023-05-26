@@ -9,6 +9,7 @@ with minor changes by Sam Watkins.
 import argparse
 import csv
 import os
+import re
 import requests
 import torch
 from PIL import Image
@@ -93,6 +94,8 @@ def main():
         for file in files:
             image = Image.open(os.path.join(args.folder, file)).convert('RGB')
             prompt = inference(ci, image, args.mode)
+            prompt = re.sub(r'arafed', '', prompt, flags=re.IGNORECASE)  # IDK WTF it outputs the "word" arafed, which means nothing
+            prompt = re.sum(r'\s\s+', ' ', prompt).strip()
             prompts.append(prompt)
             print(file, prompt, sep='\t')
 

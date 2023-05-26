@@ -10,19 +10,21 @@ import logging
 from math import inf
 from pathlib import Path
 import re
-import readline
+import subprocess
 from types import SimpleNamespace
 
+import readline
+
 import yaml
-import regex
+# import regex
 
 import ucm
 import ports
 import conductor
 import search
+import tab
 import chat
 import llm
-import tab
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # pylint: disable=wrong-import-position, wrong-import-order
@@ -30,8 +32,8 @@ import transformers  # pylint: disable=wrong-import-position, wrong-import-order
 
 logger = logging.getLogger(__name__)
 
-server = "llm_llama"
-default_port = ports.get_default_port(server)
+SERVER = "llm_llama"
+DEFAULT_PORT = ports.get_default_port(SERVER)
 
 
 # TODO can't select model from here now
@@ -47,7 +49,7 @@ models = {
 first_model = next(iter(models.keys()))
 default_model = os.environ.get("BB_MODEL", first_model)
 
-default_file_extension = "bb"
+DEFAULT_FILE_EXTENSION = "bb"
 
 
 AGENTS = {
@@ -77,10 +79,13 @@ AGENTS_REMOTE = {
 	},
 	"Claude": {
 		"model": "claude-v1-100k",
-		"default_context": 100,
+		"default_context": 50,
 	},
 	"Claude Instant": {
 		"name": "Claudia",
+		"map": {
+			"Claudia": "Claude",
+		},
 		"model": "claude-instant-v1-100k",
 		"default_context": 100,
 	},
@@ -143,8 +148,7 @@ def register_agents_local():
 			agent["name"] = agent_name
 		return agent
 
-	for agent_name in AGENTS_LOCAL:
-		agent_base = AGENTS_LOCAL[agent_name]
+	for agent_name, agent_base in AGENTS_LOCAL.items():
 		agent_lc = agent_name.lower()
 		agent = AGENTS[agent_lc] = make_agent(agent_base)
 		name_lc = agent["name"].lower()
@@ -181,8 +185,7 @@ def register_agents_remote():
 			agent["name"] = agent_name
 		return agent
 
-	for agent_name in AGENTS_REMOTE:
-		agent_base = AGENTS_REMOTE[agent_name]
+	for agent_name, agent_base in AGENTS_REMOTE.items():
 		agent_lc = agent_name.lower()
 		agent = AGENTS[agent_lc] = make_agent(agent_base)
 		name_lc = agent["name"].lower()
@@ -200,13 +203,49 @@ def register_agents_proglang():
 			agent["name"] = agent_name
 		return agent
 
-	for agent_name in AGENTS_PROGLANG:
-		agent_base = AGENTS_PROGLANG[agent_name]
+	for agent_name, agent_base in AGENTS_PROGLANG.items():
 		agent_lc = agent_name.lower()
 		agent = AGENTS[agent_lc] = make_agent(agent_base)
 		name_lc = agent["name"].lower()
 		if name_lc != agent_lc:
 			AGENTS[name_lc] = agent
+
+
+def setup_agent_maps():
+	""" Setup maps for all agents """
+	for _agent_name, agent in AGENTS.items():
+		setup_maps_for_agent(agent)
+
+
+def setup_maps_for_agent(agent):
+	""" Setup maps for an agent """
+	for k in "input_map", "output_map", "map", "map_cs", "input_map_cs", "output_map_cs":
+		if k not in agent:
+			agent[k] = {}
+	for k, v in agent["input_map"].items():
+		k_lc = k.lower()
+		if k == k_lc:
+			continue
+		del agent["input_map"][k]
+		agent["input_map"][k_lc] = v
+	for k, v in agent["output_map"].items():
+		k_lc = k.lower()
+		if k == k_lc:
+			continue
+		del agent["output_map"][k]
+		agent["output_map"][k_lc] = v
+	for k, v in agent["map"].items():
+		k_lc = k.lower()
+		v_lc = v.lower()
+		if k_lc not in agent["input_map"]:
+			agent["input_map"][k_lc] = v
+		if v_lc not in agent["output_map"]:
+			agent["output_map"][v_lc] = k
+	for k, v in agent["map_cs"].items():
+		if k not in agent["input_map_cs"]:
+			agent["input_map_cs"][k] = v
+		if v not in agent["output_map_cs"]:
+			agent["output_map_cs"][v] = k
 
 
 def register_agents():
@@ -216,6 +255,7 @@ def register_agents():
 	register_agents_remote()
 	if UNSAFE:
 		register_agents_proglang()
+	setup_agent_maps()
 	# TODO Moar!
 	# - calculator: Calc
 	# - translator: Poly
@@ -256,7 +296,7 @@ def trim_response(response, args, people_lc = None):
 		response = response.strip()
 		response = re.sub(r"(\n(\w+):.*)", check_person_remove, response, flags=re.DOTALL)
 		response_before = response
-		response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput)\n.*", "", response)
+		response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output)\n.*", "", response , flags=re.DOTALL|re.IGNORECASE)
 		if response != response_before:
 			logger.warning("Trimmed response: %r\nto: %r", response_before, response)
 		response = " " + response.strip()
@@ -268,9 +308,8 @@ def fix_layout(response, _args):
 	lines = response.split("\n")
 	out = []
 	in_table = False
-	for i in range(0, len(lines)):
+	for i, line in enumerate(lines):
 		# markdown tables must have a blank line before them ...
-		line = lines[i]
 		if not in_table and ("---" in line or re.search(r'\|.*\|', line)):
 			if i > 0 and lines[i-1].strip():
 				out.append("\t")
@@ -376,7 +415,7 @@ def client_request(port, input_text, config=None):
 	return new_text, generated_text
 
 
-def chat_to_user(model, args, history, history_start=0):
+def chat_to_user(_model, args, history, history_start=0):
 	""" Chat with the model. """
 	invitation = args.bot + ":" if args.bot else ""
 	human_invitation = args.user + ":" if args.user else ""
@@ -595,7 +634,7 @@ def run_agent(agent, query, file, args, history, history_start=0):
 	return fn(query, file, args, history, history_start=history_start)
 
 
-def local_agent(agent, query, file, args, history, history_start=0):
+def local_agent(agent, _query, file, args, history, history_start=0):
 	""" Run a local agent. """
 	# print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 	invitation = args.delim + agent["name"] + ":" if args.bot else ""
@@ -611,7 +650,9 @@ def local_agent(agent, query, file, args, history, history_start=0):
 		history_write(file, ['', ''], delim=args.delim)
 
 	model_name = agent["model"]
-	fulltext, history_start = get_fulltext(args, model_name, history, history_start, invitation, args.delim)
+	history2 = history.copy()
+	apply_maps(agent["input_map"], agent["input_map_cs"], history2)
+	fulltext, history_start = get_fulltext(args, model_name, history2, history_start, invitation, args.delim)
 
 	args.gen_config = load_config(args)
 
@@ -620,6 +661,7 @@ def local_agent(agent, query, file, args, history, history_start=0):
 	logger.debug("port: %r", args.port)
 
 	response, _fulltext2 = client_request(args.port, fulltext, config=args.gen_config)
+	apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
 	logger.debug("response: %r", response)
 
@@ -646,7 +688,33 @@ def local_agent(agent, query, file, args, history, history_start=0):
 	return tidy_response
 
 
+def apply_maps(mapping, mapping_cs, history):
+	""" for each word in the mapping, replace it with the value """
+
+	logger.warning("apply_maps: %r %r", mapping, mapping_cs)
+
+	if not (mapping or mapping_cs):
+		return
+
+	def map_word(match):
+		word = match.group(1)
+		word_lc = word.lower()
+		out = mapping_cs.get(word)
+		if out is None:
+			out = mapping.get(word_lc)
+		if out is None:
+			out = word
+		return out
+
+	for i, msg in enumerate(history):
+		old = msg
+		history[i] = re.sub(r"\b(.+?)\b", map_word, msg)
+		if history[i] != old:
+			logger.warning("map: %r -> %r", old, history[i])
+
+
 def remote_agent(agent, query, file, args, history, history_start=0):
+	""" Run a remote agent. """
 	# for now do just query, not the full chat
 	if agent["default_context"] == 1:
 		logger.debug("history: %r", history)
@@ -657,19 +725,20 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 
 		# todo use a system message?
 
-		context_proc = []
-
 		n_context = agent["default_context"]
 		context = history[-n_context:]
+		# put remote_messages[-1] through the input_maps
+		apply_maps(agent["input_map"], agent["input_map_cs"], context)
+
 		context_messages = list(chat.lines_to_messages(context))
 
 		remote_messages = []
 
-		agent_names = list(AGENTS.keys())
-		agents_lc = list(map(str.lower, agent_names))
+#		agent_names = list(AGENTS.keys())
+#		agents_lc = list(map(str.lower, agent_names))
 
 		for msg in context_messages:
-			logger.warning(msg)
+			logger.debug("msg1: %r", msg)
 			u = msg.get("user")
 			u_lc = u.lower() if u is not None else None
 #			if u in agents_lc:
@@ -684,7 +753,7 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 				"role": role,
 				"content": content,
 			}
-			logger.warning("msg: %r", msg2)
+			logger.debug("msg2: %r", msg2)
 			remote_messages.append(msg2)
 
 		while remote_messages and remote_messages[0]["role"] == "assistant" and "claude" in agent["model"]:
@@ -696,10 +765,14 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 			"indent": "\t",
 		}
 		llm.set_opts(opts)
+
 		logger.warning("querying %r = %r", agent['name'], agent["model"])
 		output_message = llm.retry(llm.llm_chat, REMOTE_AGENT_RETRIES, remote_messages)
+
 		response = output_message["content"]
-		logger.warning("response: %r", response)
+		box = [response]
+		apply_maps(agent["output_map"], agent["output_map_cs"], box)
+		response = box[0]
 
 		if response.startswith(agent['name']+": "):
 			logger.warning("stripping agent name from response")
@@ -752,15 +825,14 @@ def safe_shell(agent, query, file, args, history, history_start=0, command=None)
 	command = ['ssh', '-T', 'allemande-nobody@localhost'] + agent["command"]
 
 	# echo the query to the subprocess
-	import subprocess
-	proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-	proc.stdin.write(query.encode("utf-8"))
-	proc.stdin.close()
-	# read the output and stderr
-	response = ""
-	output = proc.stdout.read().decode("utf-8")
-	errors = proc.stderr.read().decode("utf-8")
-	status = proc.wait()
+	with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+		proc.stdin.write(query.encode("utf-8"))
+		proc.stdin.close()
+		# read the output and stderr
+		response = ""
+		output = proc.stdout.read().decode("utf-8")
+		errors = proc.stderr.read().decode("utf-8")
+		status = proc.wait()
 	if errors or status:
 		response += "\n## status:\n" + str(status) + "\n\n"
 		response += "## errors:\n```\n" + errors + "\n```\n\n"
@@ -829,7 +901,7 @@ def watch_step(model, args, stats):
 			elif stats1.st_size > 0:
 				process_file(model, file, args)
 				stats1 = os.stat(file)
-		except Exception as e:
+		except Exception as e:  # pylint: disable=broad-except
 			logger.exception("watch_step: %r", e)
 			stats1 = os.stat(file)
 		stats[file] = stats1
@@ -884,7 +956,7 @@ def prog_dir():
 	return Path(sys.argv[0]).resolve().parent
 
 
-def get_opts():
+def get_opts():  # pylint: disable=too-many-statements
 	""" Get the command line options. """
 	parser = argparse.ArgumentParser(description="Chat with a trained model, specifically Point Alpaca (fine-tuned LLaMA).", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
@@ -898,7 +970,7 @@ def get_opts():
 	interactive_group.add_argument("--edit", "-e", action="store_true", help="Edit the names during the session")
 
 	watch_group = parser.add_argument_group("Watch mode options")
-	watch_group.add_argument("--ext", default=default_file_extension, help="File extension to watch for")
+	watch_group.add_argument("--ext", default=DEFAULT_FILE_EXTENSION, help="File extension to watch for")
 	watch_group.add_argument("--depth", type=int, default=2, help="Maximum depth to search for and watch files")
 	watch_group.add_argument("--interval", type=float, default=1.0, help="Interval between checks")
 	watch_group.add_argument("--ignore-shrink", action="store_true", help="Don't react if the file shrinks")
@@ -921,7 +993,7 @@ def get_opts():
 	format_group.add_argument("--narrative", type=bool, default=False, help="Allow non-indented narrative text")
 
 	model_group = parser.add_argument_group("Model options")
-	model_group.add_argument("--port", "-p", default=default_port, help="Path to port directory")
+	model_group.add_argument("--port", "-p", default=DEFAULT_PORT, help="Path to port directory")
 	model_group.add_argument("--model", "-m", default="default", help="Model name or path")
 	model_group.add_argument("--config", "-c", default=None, help="Model config file, in YAML format")
 	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
@@ -1038,53 +1110,3 @@ if __name__ == "__main__":
 	except KeyboardInterrupt:
 		logger.info("interrupted")
 		sys.exit(0)
-
-
-# NOTE XXX
-
-# json, itertools, bisect, gc
-# from accelerate import Accelerator
-# import accelerate
-
-# TODO use functools.cache or functools.lru_cache decorator?  https://docs.python.org/3/library/functools.html
-
-# Ideally I would prefer a generic solution not all this hackery and complexity...
-# A better approach might be to implement the simplest possible generic client-server forking singleton thing for the command line, to accelerate loading.
-# Let's get this working here and now, then switch to that method for modularity.
-
-# BUGS
-
-# - raw mode still adds spacing, if anything it should strip the spacing.
-
-# TODO
-
-# ✓ pass model as a parameter
-# ✓ specify invitations, i.e. human and assistant names
-# ✓ readline for interactive, and allow to edit prompts
-# ✓ allow to specify a file to read history from, and append to it
-# ✓ non-interactive mode on a single file
-#   ✓ not very useful but a foundation for watching files
-# ✓ watch multiple files
-# ✓ use previous names in interactive edit mode
-# ✓ use previous names in process_file mode
-# ✓ raw mode, don't insert invitations
-# ✓ option to forget old history so can continue chatting
-# ✓ 8-bit quantization option
-#   - not working?
-# ✓ allow dynamic config, reload each time we run the model
-
-# - options to insert a system message at the start of the chat, or just before the user's message
-# - could do a virtual or real group chat I suppose
-# - object oriented
-# - use plugins
-# - allow to go back in interactive
-# - allow to edit history
-# - allow to remove first lines when run out of space
-# - try using it in a notebook
-# - try running with aliases instead of standard invitations
-# - system prompt or whatever
-# - reload python code without quitting
-# - or run a pure model service that I don't need to restart
-# - what sort of API?
-# - try it with llama.cpp
-# - run it on my webservers?
