@@ -61,70 +61,77 @@ AGENTS_LOCAL = {
 	"Ally": {
 		"model": "point-alpaca-7B",
 	},
-	"Callum": {
+	"Callam": {
 		"model": "point-alpaca-7B",
 	},
 }
 
 AGENTS_REMOTE = {
 	"GPT-4": {
-		"name": "Emmy",
+		"name": "Emy",
 		"model": "gpt-4",
 		"default_context": 10,
 	},
 	"GPT-3.5": {
-		"name": "Leo",
+		"name": "Dav",
 		"model": "gpt-3.5-turbo",
 		"default_context": 20,
 	},
 	"Claude": {
+		"name": "Claud",
+		"map": {
+			"Claud": "Claude",
+		},
 		"model": "claude-v1-100k",
 		"default_context": 50,
 	},
 	"Claude Instant": {
-		"name": "Claudia",
+		"name": "Clia",
 		"map": {
-			"Claudia": "Claude",
+			"Clia": "Claude",
 		},
 		"model": "claude-instant-v1-100k",
 		"default_context": 100,
 	},
 	"Bard": {
-		"name": "Jaskier",
+		"name": "Jaski",
+#		"map": {
+#			"Jaski": "Bard",
+#		},
 		"model": "bard",
 		"default_context": 1,
 	},
 }
 
-AGENTS_PROGLANG = {
-	"Doug": {
+AGENTS_PROGRAMMING = {
+	"Dogu": {
 		"command": [],
 	},
-	"Guido": {
+	"Gud": {
 		"command": ["python"],
 	},
-	"Larry": {
+	"Lary": {
 		"command": ["perl"],
 	},
 	"Matz": {
 		"command": ["ruby"],
 	},
-	"Lua": {
+	"Luah": {
 		"command": ["lua"],
 	},
-	"Ryan": {
+	"Jyan": {
 		"command": ["node"],
 	},
-	"Dahl": {
+	"Jahl": {
 		"command": ["deno"],
 	},
-	"Fabrice": {
+	"Faby": {
 		"command": ["tcc", "-run", "-"],
 	},
-	"Bellard": {
+	"Qell": {
 		"command": ["qjs"],
 	},
-	"Calc": {
+	"Palc": {
 		"command": ["calc"],
 	},
 }
@@ -133,9 +140,9 @@ TOKENIZERS = {}
 
 REMOTE_AGENT_RETRIES = 3
 
-ADULT = False
+ADULT = True
 
-UNSAFE = False
+UNSAFE = True
 
 
 def register_agents_local():
@@ -166,7 +173,7 @@ def register_agents_search():
 			agent["name"] = agent_name
 		return agent
 
-	for agent_name in search.engines:
+	for agent_name in search.agents:
 		agent_lc = agent_name.lower()
 		agent_base = { "name": agent_name }
 		AGENTS[agent_lc] = make_agent(agent_base)
@@ -193,7 +200,7 @@ def register_agents_remote():
 			AGENTS[name_lc] = agent
 
 
-def register_agents_proglang():
+def register_agents_programming():
 	""" Register programming language agents """
 	def make_agent(agent_base):
 		agent = agent_base.copy()
@@ -203,7 +210,7 @@ def register_agents_proglang():
 			agent["name"] = agent_name
 		return agent
 
-	for agent_name, agent_base in AGENTS_PROGLANG.items():
+	for agent_name, agent_base in AGENTS_PROGRAMMING.items():
 		agent_lc = agent_name.lower()
 		agent = AGENTS[agent_lc] = make_agent(agent_base)
 		name_lc = agent["name"].lower()
@@ -254,7 +261,7 @@ def register_agents():
 	register_agents_search()
 	register_agents_remote()
 	if UNSAFE:
-		register_agents_proglang()
+		register_agents_programming()
 	setup_agent_maps()
 	# TODO Moar!
 	# - calculator: Calc
