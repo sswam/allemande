@@ -123,7 +123,7 @@ AGENTS_PROGRAMMING = {
 		"command": ["node"],
 	},
 	"Jahl": {
-		"command": ["deno"],
+		"command": ["deno", "run", "--quiet", "--allow-all", "-"],
 	},
 	"Faby": {
 		"command": ["tcc", "-run", "-"],
