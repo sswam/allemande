@@ -85,11 +85,17 @@ def process_files(mission, document_files, urls_text, turbo): # pylint: disable=
 	for url in urls:
 		if not re.match(r'^https?://', url):
 			url = "https://" + url
-		status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("yt-dlp", "-i", "-f", "251/bestaudio/best", "-o", "%(title)s.%(ext)s")
+		status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("yt-dlp", "-i", "-f", "251/bestaudio/best", "-o", "%(title)s.%(ext)s", url)
 		all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
 		if status != 0:
-			status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("wget", url)
+			status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("wget", "--trust-server-names", url)
 			all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
+
+	# rename downloaded files
+	for filename in os.listdir("."):
+		new_filename = re.sub(r"[^a-zA-Z0-9_.-]", "_", filename)
+		if new_filename != filename:
+			os.rename(filename, new_filename)
 
 	# chdir to the tempdir
 	os.chdir(tmpdir)
