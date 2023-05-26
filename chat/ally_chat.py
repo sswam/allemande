@@ -68,7 +68,7 @@ AGENTS_LOCAL = {
 
 AGENTS_REMOTE = {
 	"GPT-4": {
-		"name": "Emy",
+		"name": "Emmy",
 		"model": "gpt-4",
 		"default_context": 10,
 	},

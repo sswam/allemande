@@ -22,7 +22,7 @@ Ally Chat is a chat system of many multiples:
 
 - Ally, a human-like model based on Point Alpaca, uncensored, and the star of our show.
 - Callam, Ally's male counterpart, configured identically at the moment.
-- Emy, OpenAI's GPT-4, with a default context of ten messages.
+- Emmy, OpenAI's GPT-4, with a default context of ten messages.
 - Dav, OpenAI's ChatGPT 3.5, with a default context of twenty messages.
 - Claud, Claude from Anthropic, with a default context of fifty messages.
 - Clia, Claude Instant from Anthropic, with a default context of one hundred messages.
