@@ -35,7 +35,7 @@ w/%: input/%
 	same -s $< $@
 
 w/%.html.txt: w/%.html
-	w3m -dump $< > $@
+	lynx -dump $< > $@
 w/%.html: w/%.htm
 	ln $< $@
 

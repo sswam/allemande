@@ -1,0 +1,224 @@
+#!/bin/bash
+# arcs - Automatic Revision Control System, version 2
+
+set -eu
+
+arcs_d=$(dirname "$(readlink -f "$0")")
+
+# read default arcs.hosts from global .gitconfig in home dir
+peer_hosts=`git config --global --get-all arcs.hosts 2>/dev/null || true`
+if [ -z "$peer_hosts" ]; then
+	peer_hosts="ucm.dev pi.ucm.dev"
+
+	cat <<-EOF
+warning: no arcs.hosts in ~/.gitconfig
+defaulting to $peer_hosts
+you can add peer hosts with, for example:
+  git config --global --add arcs.hosts ucm.dev
+  git config --global --add arcs.hosts pi.ucm.dev
+
+EOF
+
+fi
+
+net=1 qv=-q quiet= net=1 fork=
+
+m() { if [ -z "$quiet" ]; then echo >&2 "$@"; fi }
+die() { if [ $# -gt 0 ]; then echo >&2 "$@"; fi; exit 1; }
+v() { m "$@"; "$@"; }
+qe() { "$@" 2>/dev/null; }
+
+prog=`basename $0`
+
+usage() {
+	echo "usage: $prog [opts] [dir ...]"
+	echo "  -i      init"
+	echo "  -c url  clone"
+	echo "  -p url  push to"
+	echo "  [-s]    sync"
+	echo "  -q      quiet"
+	echo "  -v      verbose"
+	echo "  -n      no action"
+	echo "  -N      no net"
+	echo "  -f      fork"
+}
+
+init() {
+	cd "$1"
+	m "$PWD"
+	git init $qv --shared -b main
+	git config --unset-all receive.denyNonFastforwards
+	git config receive.denyCurrentBranch updateInstead
+#	cp -a "$arcs_d/git-info-exclude" .git/info/exclude
+	if [ -e .arcs/peers ]; then
+		git config --unset-all arcs.peers || true
+		cat .arcs/peers |
+		while read peer; do
+			git config --add arcs.peers "$peer"
+		done
+	fi
+	git config --replace-all arcs.init 1
+	if git config arcs.main; then
+		:
+	elif [ -n "`git branch --list main`" ]; then
+		git config arcs.main main
+	elif [ -n "`git branch --list master`" ]; then
+		git config arcs.main master
+	else
+		git config arcs.main main
+	fi
+	if [ -z "$quiet" ]; then
+		if ! git config --get-all arcs.peers; then
+			setup_peers
+		fi
+	fi
+}
+
+setup_peers() {
+	origin=`git remote show origin 2>/dev/null | sed -n '/: /{s/.*: //; p; q;}'`
+	m "You can add a peer with, for example:"
+	WD=`pwd -P`
+	if [ -n "$origin" ]; then
+		m "  git config --add arcs.peers $origin"
+	fi
+	for host in $peer_hosts; do
+		m "  git config --add arcs.peers $USER@$host:${WD#$HOME/}"
+	done
+	m "Do this now? [y/N]"
+	if read -r -n 1 -t 10; then
+		if [ "$REPLY" = y -o "$REPLY" = Y ]; then
+			if [ -n "$origin" ]; then
+				git config --add arcs.peers $origin
+			fi
+			for host in $peer_hosts; do
+				git config --add arcs.peers $USER@$host:${WD#$HOME/}
+			done
+		fi
+	fi
+}
+
+check() {
+	cd "$1"
+	go_to_git_root
+	v git add -A -n
+}
+
+sync() {
+	cd "$1"
+	go_to_git_root
+	peers=
+	if [ -n "$net" ]; then
+		peers=`git config --get-all arcs.peers || true`
+	fi
+	main1=`git config arcs.main || true`
+#	main=${main1:-`git rev-parse --abbrev-ref HEAD 2>/dev/null`}
+#	main=${main:-main}
+	main=${main1:-`git rev-parse --abbrev-ref HEAD`}
+	v git add -A
+	v git commit $qv -m . || true
+	for peer in $peers; do
+		v sshc "$peer" sh -c "git init $qv --shared; git config --unset-all receive.denyNonFastforwards; git config receive.denyCurrentBranch updateInstead; git add -A; git commit $qv -m . || true" &
+	done
+	wait
+	for peer in $peers; do
+		v git pull $qv --no-edit "$peer" $main || true
+	done
+	for peer in $peers; do
+#		v git push $qv "$peer" $main:in
+		v git push $qv "$peer" $main &
+#		v sshc "$peer" sh -c "git merge $qv in; if [ x$quiet != x1 ]; then git log --format=format:%H%n -n1; fi; \`git config --get arcs.make || true\`"
+	done
+	wait
+	if [ -z "$quiet" ]; then v git log --format=format:%H%n -n1 | cat; fi
+	`git config --get arcs.make || true`
+	if [ -z "$main1" ]; then
+		git config arcs.main $main
+	fi
+}
+
+go_to_git_root() {
+	m "$PWD"
+	root=$(qe git rev-parse --show-toplevel || die "can't find .git")
+	cd "$root"
+	if ! git config --get-all arcs.init >/dev/null; then
+		if git config --get-all arcs.peers >/dev/null; then
+			git config --replace-all arcs.init 1
+		else
+			die "first run: $prog -i"
+		fi
+	fi
+	m "$PWD"
+}
+
+clone() {
+	from=$clone_url
+	dir=$1
+	if [ -z "$dir" -o "$dir" = . ]; then
+		dir=${from##*/} dir=${dir##*:}
+	fi
+	v git clone $qv "$from" "$dir"
+	cd "$dir"
+	v git config --add arcs.peers "$from"
+	init .
+}
+
+push() {
+	to=$push_url
+	dir=$1
+	cd "$dir"
+	init .
+	v git config --add arcs.peers "$to"
+	sync .
+}
+
+loop() {
+	op=$1 ; shift
+	if [ $# = 0 ]; then
+		("$op" .)
+		m
+		return
+	fi
+	for arg; do
+		if [ -n "$fork" ]; then
+			("$op" "$arg") &
+		else
+			("$op" "$arg")
+			m
+		fi
+	done
+	wait
+	return
+}
+
+main() {
+	while [ $# -gt 0 ]; do
+		opt=$1
+		case "$opt" in
+		-*) shift ;;
+		*) break ;;
+		esac
+		case "$opt" in
+		-h|-help|--help) usage ; exit ;;
+		-i)	loop init "$@" ; exit ;;
+		-c)	clone_url=$1 ; shift ; loop clone "$@" ; exit ;;
+		-p)	push_url=${1-} ; shift ; loop push "$@" ; exit ;;
+		-s)	break ;;
+		-n)	loop check "$@" ; exit ;;
+		-N)	net= ;;
+		-q)	quiet=1 ;;
+		-v)	qv= ;;
+		-f)	fork=1 ;;
+		-y)	yes=1 ;;
+		-no)	no=1 ;;
+		--)	break ;;
+		esac
+	done
+
+	loop sync "$@"
+}
+
+main "$@"
+
+# TODO auto-exclude ELF and other executables at each sync
+# TODO commit message, use $task instead of . and put $task in shell prompt and/or screen window name
+

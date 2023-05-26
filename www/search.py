@@ -31,6 +31,7 @@ user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 # TODO don't just hard code this
 timeout = 30
 
+
 def duckduckgo_search(query, max_results=12, safe="off", limit_max_results=True):
 	""" Search DuckDuckGo for `query` and return a list of results """
 	url = 'https://html.duckduckgo.com/html/'
@@ -70,6 +71,7 @@ def duckduckgo_search(query, max_results=12, safe="off", limit_max_results=True)
 	logger.warning("Results: %r", search_results)
 
 	return search_results
+
 
 def google_search(query, max_results=12, safe="off", limit_max_results=True):
 	""" Search Google for `query` and return a list of results """
@@ -131,6 +133,7 @@ def google_search(query, max_results=12, safe="off", limit_max_results=True):
 
 	return search_results
 
+
 def bing_search(query, max_results=12, safe="off", limit_max_results=True):
 	""" Search Bing for `query` and return a list of results """
 	url = 'https://www.bing.com/search'
@@ -163,6 +166,7 @@ def bing_search(query, max_results=12, safe="off", limit_max_results=True):
 		search_results = search_results[:max_results]
 
 	return search_results
+
 
 def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_results=True):
 	""" Search YouTube for `query` and return a list of results """
@@ -197,6 +201,7 @@ def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_
 
 	return [{'title': result['title'], 'url': result['url'], 'thumbnail': result['thumbnail']} for result in search_results]
 
+
 def pornhub_search(query, max_results=10, safe="off"):
 	site = 'https://www.pornhub.com'
 	url = site + '/video/search'
@@ -213,7 +218,9 @@ def pornhub_search(query, max_results=10, safe="off"):
 
 	soup = BeautifulSoup(response.text, 'html.parser')
 
-	search_results = soup.find_all('a', class_='linkVideoThumb')
+	container = soup.find('ul', id='videoSearchResult')
+
+	search_results = container.find_all('a', class_='linkVideoThumb')
 
 #	def get_thumbnail_url(result):
 #		thumb = result.find('img')
@@ -228,6 +235,7 @@ def pornhub_search(query, max_results=10, safe="off"):
 		if not result['href'].startswith('javascript:')
 	]
 
+
 engines = {
 	'Google': google_search,
 #	'DuckDuckGo': duckduckgo_search,
@@ -235,6 +243,7 @@ engines = {
 	'YouTube': youtube_search,
 	'PornHub': pornhub_search,
 }
+
 
 agents = {
 	'Serry': google_search,
@@ -244,14 +253,23 @@ agents = {
 	'Pr0nto': pornhub_search,
 }
 
+
+agent_engine = {
+	'serry': 'Google',
+	'jadev': 'YouTube',
+	'pr0nto': 'PornHub',
+}
+
+
 def esc(s):
 	s = html.escape(s)  # Handles HTML entities
 	s = s.replace("|", "&#124;")  # Handles "|" character for Markdown tables
 	s = s.replace("\n", "&#10;")  # newlines
 	return s
 
+
 def list_to_markdown_table(items, engine):
-	# format title and url together as a link
+	engine = agent_engine.get(engine.lower(), engine)
 	i = 1
 	for item in items:
 		item['#'] = i
@@ -283,9 +301,6 @@ def list_to_markdown_table(items, engine):
 			if video_id:
 				img = item['thumbnail']
 				video = f"""<div class="embed" data-site="{engine.lower()}" data-videoid="{video_id}">""" + img + f"""<br><div class="caption">{item['page']}</div></div>"""
-
-#				<iframe width="280" height="157" src="https://www.youtube.com/embed/{video_id}" title="{title_enc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><div class="caption">{item['page']}</div></div>"""
-#				embed = f"""<div style="float:left;"><iframe width="280" height="157" src="https://www.youtube.com/embed/{video_id}" title="{title_enc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br><div class="caption">{item['page']}</div></div>"""
 				item['video'] = video
 				del item['thumbnail']
 				del item['page']
@@ -297,11 +312,13 @@ def list_to_markdown_table(items, engine):
 		return "<br><div>" + ("\n".join([item['video'] for item in items])) + "</div>"
 	return tabulate.tabulate(items, tablefmt="pipe", headers="keys")
 
-def search(query, engine='duckduckgo', max_results=12, safe="off", markdown=False):
+
+def search(query, engine='duckduckgo', max_results=8, safe="off", markdown=False):
 	""" Search `query` using `engine` and return a list of results """
-	lc_keys_to_keys = {k.lower(): k for k in engines.keys()}
+	lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
 	key = lc_keys_to_keys[engine.lower()]
-	results = engines[key](query, max_results=max_results, safe=safe)
+	eng = engines.get(key, agents.get(key))
+	results = eng(query, max_results=max_results, safe=safe)
 	results2 = results[:max_results]
 	if markdown:
 		return list_to_markdown_table(results2, engine)
@@ -309,6 +326,7 @@ def search(query, engine='duckduckgo', max_results=12, safe="off", markdown=Fals
 
 
 # output formatters
+
 
 def format_csv(obj: List[Dict[str, str]], delimiter=',') -> str:
 	""" Format `obj` as CSV """
@@ -320,23 +338,28 @@ def format_csv(obj: List[Dict[str, str]], delimiter=',') -> str:
 	writer.writerows(obj)
 	return output.getvalue()
 
+
 def format_tsv(obj: List[Dict[str, str]]) -> str:
 	""" Format `obj` as TSV """
 	return format_csv(obj, delimiter='\t')
+
 
 def format_json(obj) -> str:
 	""" Format `obj` as JSON """
 	return json.dumps(obj, indent=4)
 
+
 def format_python(obj) -> str:
 	""" Format `obj` as Python code """
 	return pprint.pformat(obj, indent=4)
+
 
 def format_tabulate(obj: List[Dict[str, str]]) -> str:
 	""" Format `obj` as a table """
 	if not obj:
 		return ""
 	return tabulate.tabulate(obj, headers='keys')
+
 
 formatters = {
 	'tsv': format_tsv,
@@ -346,9 +369,11 @@ formatters = {
 	'txt': format_tabulate,
 }
 
+
 def dict_first(d):
 	""" Return the first key in a dictionary """
 	return next(iter(d))
+
 
 def parse_args():
 	""" Parse command line arguments """
@@ -357,7 +382,7 @@ def parse_args():
 	parser.add_argument('queries', nargs='*', help='Search queries')
 	parser.add_argument('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
 	parser.add_argument('-format', '-f', help='Output format', default=dict_first(formatters), choices=formatters.keys())
-	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=12)
+	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=8)
 	parser.add_argument('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
 	args = parser.parse_args()
 	return args
@@ -383,6 +408,7 @@ def main():
 #			print(result.get('title'))
 #			print(result['url'])
 #			print()
+
 
 if __name__ == '__main__':
 	main()
