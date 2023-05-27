@@ -30,7 +30,7 @@ directories.txt: queries.txt mission.txt search.txt
 		gpt process "$$(< $(PROG_DIR)/directories.prompt)" | tee "directories/$$F"; echo ; echo; done < $< | tee $@
 
 %-sorted.txt: %.txt
-	< $< grep -v '^##' | sed 's/...//' | grep -v '^$' | uniqoc | sort -rn > $@
+	< $< grep -v '^##' | sed 's/^[^ ]* //' | grep -v '^$' | uniqoc | sort -rn > $@
 
 #directories.txt: mission.txt search-clipped.txt
 #	cat-sections $^ | gpt process 'Please make a numbered list of just business directory services and search engines from the search results.' | tee $@
