@@ -1,0 +1,21 @@
+:root {
+	--lilac: #cdb4db;
+	--light-pink: #ffe0f0;
+	--pink: #fcd;
+	--cyan: #bde0fe;
+	--teal: #a2d2ff;
+	--yellow: #fec;
+	--dark-pink: #c46;
+	--peach: #ffc0cb;
+	--light-blue: #ccf;
+
+	--text: black;
+	--border: black;
+	--frame: var(--light-blue);
+	--background: var(--yellow);
+	--input: var(--light-pink);
+	--focus: var(--pink);
+	--button: var(--cyan);
+	--button-focus: var(--teal);
+	--link: var(--dark-pink);
+}
