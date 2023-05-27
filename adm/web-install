@@ -1,12 +1,12 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 # web-install: set permissions for the web app and install nginx config
 
 . get_root
 
 mode() {
 	mode=$1 ; shift
-	chown $SUDO_USER:www-data "$@"
-	chmod $mode "$@"
+	chown $SUDO_USER:www-data -- "$@"
+	chmod $mode -- "$@"
 }
 
 # install the allemande.ai website -------------------------------------------
