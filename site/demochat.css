@@ -1,6 +1,5 @@
-body {
+html {
 	padding: 1em;
 	max-width: 500px;
 	width: 500px;
-	overflow: hidden;
 }
