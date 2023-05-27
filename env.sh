@@ -37,7 +37,7 @@ for dir in adm core sys tools text data image audio video code llm openai anthro
 done
 
 for app in flash alfred ikigai sherlock jeeves best-of; do
-	PATH=$PATH:$ALLEMANDE_HOME/apps/$dir
+	PATH=$PATH:$ALLEMANDE_HOME/apps/$app
 done
 
 : ${CONFIG:=$ALLEMANDE_HOME/config.sh}
