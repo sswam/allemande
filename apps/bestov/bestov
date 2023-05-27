@@ -1,16 +1,18 @@
 #!/bin/bash -eu
 
-# the-best-of	a script to make an album of the best of a given artist
+# bestov	a script to make an album of the best of a given artist
 
 a="The Chemical Brothers"	# artist
 q=	# query
-n=20	# number of items to solicit from each LLM
+n=20	# number of items to ask from each LLM
 t="Please list the %s best and most famous tracks / songs / pieces of '%s' in dot-point markdown, each line starting with '- '. Only return the markdown list, no other output please. Do not quote the titles. Thanks for being awesome and always doing a great job!"	# query prompt template
 d="Please deduplicate these lists, and count how many times each item occurs. Output line like: - 4x 'Hey Jude' by The Beatles. Only return the markdown list, no other output please. Do not quote the titles. Thanks for being awesome and always doing a great job!"	# dedup prompt
 m="4 3+ c i b"	# list of models
 md=4	# dedup model
 w="${a:-$q}"	# work directory
 x="official music video"	# extra search terms
+v=	# verbose flag
+o=--no-mtime	# don't set mtime from the video
 
 . opts
 
@@ -23,6 +25,17 @@ models="$m"
 dedup_model="$md"
 work="$w"
 extra="$x"
+yt_dlp_opts="$o"
+
+# verbose
+if [ "$v" = 1 ]; then
+	v=v
+fi
+
+# extra search terms
+if [ -n "$extra" ]; then
+	extra=" - $extra"
+fi
 
 # if no work directory specified, create one
 if [ -z "$work" ]; then
@@ -52,14 +65,25 @@ cat-sections results-*.txt > results.txt
 
 # run the deduplication
 llm process -m "$dedup_model" "$dedup" < results.txt > dedup.txt
-< dedup perl -ne 'if (s/^\s*[-*]\s*//) { s/(\d+)x\b/$1/g; print }' | sort -rn > dedup-sorted.txt
+
+# sort and deduplicate the results again
+< dedup.txt perl -ne 'if (s/^\s*[-*]\s*//) { s/(\d+)x\b\s*/$1\t/g; print }' | kut 2 | sort -rns | lc | uniqoc > dedup-sorted.txt
+
+# search and get a track
+yt_search_and_get() {
+	local url=`$v search -m 1 -e youtube "$track - $artist - $extra" | kut 2 | tail -n +2`
+	$v yt-dlp $yt_dlp_opts "$url"
+}
 
 # download the tracks
+mkdir -p tracks
+cd tracks
 < ../dedup-sorted.txt kut 2 |
 while read track; do
-	url=`search -m 1 -e youtube "$track - $artist - $extra" | kut 2 | tail -n +2`
-	v yt-dlp "$url"
+	. parallel yt_search_and_get "$track - $artist$extra"
+	sleep 1
 done
+wait
 
 # number the files
 ls -tr1 |

@@ -36,7 +36,7 @@ for dir in adm core sys tools text data image audio video code llm openai anthro
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
-for app in flash alfred ikigai sherlock jeeves best-of; do
+for app in flash alfred ikigai sherlock jeeves bestov giles; do
 	PATH=$PATH:$ALLEMANDE_HOME/apps/$app
 done
 
