@@ -23,6 +23,10 @@ OCR_MODEL=4
 
 SHELL=/bin/bash
 
+summary_prompt="Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible."
+
+mission=
+
 
 .PHONY: goal mkdirs
 
@@ -92,10 +96,16 @@ summary/%.txt: w/%.txt
 	words=`wc -w < $<`; \
 	if [ $$words -gt 5000 ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
 	echo >&2 "model: $$model"; \
-	llm process -m $$model "$$(< $(PROG_DIR)/summary.prompt)" < $< > $@
+	llm process -m $$model "$(SUMMARY_PROMPT)" < $< > $@
 
 summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
+
+mission.txt:
+	if [ -z "$(mission)" ]; then \
+		read -p "Enter the mission:" mission; \
+	fi; \
+	printf "%s\n" "$$mission" > $@
 
 output.md: summary.txt mission.txt
 	llm process -m $(LLM_MODEL) "$$(< mission.txt)" < $< > $@
