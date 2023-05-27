@@ -275,11 +275,12 @@ def preprocess(content):
 		if re.search(r"</?(html|base|head|link|meta|style|title|body|address|article|aside|footer|header|h1|h2|h3|h4|h5|h6|hgroup|main|nav|section|blockquote|dd|div|dl|dt|figcaption|figure|hr|li|main|ol|p|pre|ul|a|abbr|b|bdi|bdo|br|cite|code|data|dfn|em|i|kbd|mark|q|rb|rp|rt|rtc|ruby|s|samp|small|span|strong|sub|sup|time|u|var|wbr|area|audio|img|map|track|video|embed|iframe|object|param|picture|source|canvas|noscript|script|del|ins|caption|col|colgroup|table|tbody|td|tfoot|th|thead|tr|button|datalist|fieldset|form|input|label|legend|meter|optgroup|option|output|progress|select|textarea|details|dialog|menu|summary|slot|template|acronym|applet|basefont|bgsound|big|blink|center|command|content|dir|element|font|frame|frameset|image|isindex|keygen|listing|marquee|menuitem|multicol|nextid|nobr|noembed|noframes|plaintext|shadow|spacer|strike|tt|xmp)\b", line):
 			is_html = True
 		logger.debug("check line: %r", line)
-		if line == "$$" and not in_math:
+		is_math_delim = re.match(r"\s*\$\$$", line)
+		if is_math_delim and not in_math:
 			out.append("```math")
 			in_math = True
 			in_code = True
-		elif line == "$$" and in_math:
+		elif is_math_delim and in_math:
 			out.append("```")
 			in_math = False
 			in_code = False
@@ -317,15 +318,19 @@ def message_to_html(message):
 	""" Convert a chat message to HTML. """
 	logger.debug("converting message to html: %r", message["content"])
 	content = preprocess(message["content"])
-	html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
+	try:
+		html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
+	except Exception as e:
+		logger.error("markdown error: %r", e)
+		html_content = f"<pre>{html.escape(content)}</pre>"
 	logger.debug("html_content: %r", html_content)
 	if html_content == "":
 		html_content = "&nbsp;"
 	user = message.get("user")
 	if user:
 		user_ee = html.escape(user)
-		return f"""<div class="message" user="{user_ee}"><div class="label">{user_ee}:</div><div class="content">{html_content}</div></div>"""
-	return f"""<div class="narrative"><div class="content">{html_content}</div></div>"""
+		return f"""<div class="message" user="{user_ee}"><div class="label">{user_ee}:</div><div class="content">{html_content}</div></div>\n"""
+	return f"""<div class="narrative"><div class="content">{html_content}</div></div>\n"""
 
 
 #@argh.arg('--doctype', nargs='?')
