@@ -41,8 +41,8 @@ Ally Chat is a chat system of many multiples:
 
 ### Search Agents
 
-- Serry, the Google search engine
-- Jadev, find videos on YouTube
+- Goog, the Google search engine
+- UTube, find videos on YouTube
 - ... and more!
 
 ### Applications

@@ -246,17 +246,17 @@ engines = {
 
 
 agents = {
-	'Serry': google_search,
+	'Goog': google_search,
 #	'DuckDuckGo': duckduckgo_search,
 #	'Bing': bing_search,
-	'Jadev': youtube_search,
+	'UTube': youtube_search,
 	'Pr0nto': pornhub_search,
 }
 
 
 agent_engine = {
-	'serry': 'Google',
-	'jadev': 'YouTube',
+	'goog': 'Google',
+	'utube': 'YouTube',
 	'pr0nto': 'PornHub',
 }
 
