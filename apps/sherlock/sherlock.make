@@ -6,10 +6,13 @@ default: search-clipped.txt businesses-sorted.txt directories-sorted.txt
 
 mission-raw.txt:
 	mike.py -e 800 --pause 1 -n 1 -c 0.6 | tee -a $@
-mission.txt: mission-raw.txt
+mission-%.txt: mission-raw-%.txt
 	gpt process 'Please clean this up and just show the problem statement without any other crap.' <$< | tee $@
 
-queries.txt: mission.txt
+queries-%.txt: mission-%.txt
+	gpt process "$$(< $(PROG_DIR)/queries.prompt)" <$< | tee $@
+
+landmark-queries.txt: mission-landmarks.txt
 	gpt process "$$(< $(PROG_DIR)/queries.prompt)" <$< | tee $@
 
 search.txt: queries.txt
