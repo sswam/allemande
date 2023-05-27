@@ -83,7 +83,7 @@ AGENTS_REMOTE = {
 			"Claud": "Claude",
 		},
 		"model": "claude-v1-100k",
-		"default_context": 50,
+		"default_context": 100,
 	},
 	"Claude Instant": {
 		"name": "Clia",
@@ -91,7 +91,7 @@ AGENTS_REMOTE = {
 			"Clia": "Claude",
 		},
 		"model": "claude-instant-v1-100k",
-		"default_context": 100,
+		"default_context": 1000,
 	},
 	"Bard": {
 		"name": "Jaski",
@@ -303,7 +303,7 @@ def trim_response(response, args, people_lc = None):
 		response = response.strip()
 		response = re.sub(r"(\n(\w+):.*)", check_person_remove, response, flags=re.DOTALL)
 		response_before = response
-		response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output)\n.*", "", response , flags=re.DOTALL|re.IGNORECASE)
+		response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //)\n.*", "", response , flags=re.DOTALL|re.IGNORECASE)
 		if response != response_before:
 			logger.warning("Trimmed response: %r\nto: %r", response_before, response)
 		response = " " + response.strip()
@@ -896,8 +896,8 @@ def watch_step(model, args, stats):
 
 	for file in files:
 		# check if modified since last time
-		stats1 = os.stat(file)
 		try:
+			stats1 = os.stat(file)
 			stats0 = stats.get(file, stats_null)
 
 			if first:
@@ -912,8 +912,12 @@ def watch_step(model, args, stats):
 				stats1 = os.stat(file)
 		except Exception as e:  # pylint: disable=broad-except
 			logger.exception("watch_step: %r", e)
-			stats1 = os.stat(file)
-		stats[file] = stats1
+			try:
+				stats1 = os.stat(file)
+			except Exception as e2:
+				logger.exception("watch_step: %r", e)
+		finally:
+			stats[file] = stats1
 
 	return stats
 
