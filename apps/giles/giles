@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+
+n_results=10
+query=
+summary_prompt="Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible."
+
+SHELL=/bin/bash
+
+default: summaries
+
+query.txt:
+	if [ -z "$$query" ]; then \
+		read -p "Enter the search query:" query; \
+	fi; \
+	printf "%s\n" "$$query" > $@
+
+results.txt: query.txt
+	search -m "$(n_results)" "$$(< $<)" > $@
+
+page: results.txt
+	mkdir -p page
+	(cd pages && giles_get) < $<
+
+.PHONY: default
