@@ -12,6 +12,8 @@ md=4	# dedup model
 w="${a:-$q}"	# work directory
 x="official music video"	# extra search terms
 
+. opts
+
 artist="$a"
 query="$q"
 number="$n"
