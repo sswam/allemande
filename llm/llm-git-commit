@@ -33,7 +33,7 @@ done
 shift $((OPTIND-1))
 
 timestamp=`date +%Y%m%d%H%M%S`
-file="commit-message.$timestamp.txt"
+commit_message="commit-message.$timestamp.txt"
 review="review.$timestamp.txt"
 
 model-name() {
@@ -51,6 +51,10 @@ model-name() {
 generate-commit-message() {
 	model="$1"
 	echo "Generating commit message using `model-name $model` ..."
+	if [ -e "$commit_message" ]; then
+		echo >&2 "Commit message already exists: $commit_message, moving it to rubbish."
+		mr "$commit_message"
+	fi
 	git diff --staged |
 		llm process -m $model 'Please describe this diff, for a git commit message, following the Conventional Commits spec.
 Do not invent anything that is not in the diff!
@@ -66,15 +70,20 @@ feat|fix(short-module-name): a short summary line, preferably around 50 chars, n
 There can be only one feat or fix line per commit, then a blank, line, then there can be multiple lines starting with -.
 The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
 ' |
-	fmt -s -w 78 -g 78 > "$file"
+	fmt -s -w 78 -g 78 > "$commit_message"
 }
 
 check-for-bugs() {
 	model="$1"
 	echo "Checking for bugs using `model-name $model` ..."
+	if [ -e "$review" ]; then
+		echo >&2 "Code review already exists: $review, moving it to rubbish."
+		mr "$review"
+	fi
 	git diff --staged |
-		llm process -m $model 'Please do a code review: check this diff carefully for bugs, and tell me in brief about any bugs or other issues.' |
-	fmt -s -w 78 -g 78 | tee "$review"
+		llm process -m $model 'Please do a code review: check this diff carefully for bugs, and tell me in brief about any bugs, other issues, or suggestions to improve it.' |
+		fmt -s -w 78 -g 78 |
+		tee "$review"
 }
 
 if [ -n "$model" ]; then
@@ -83,16 +92,16 @@ fi
 
 cleanup-and-exit() {
 	if type move-rubbish >/dev/null 2>&1; then
-		move-rubbish "$file" "$review" 2>/dev/null
+		move-rubbish "$commit_message" "$review" 2>/dev/null
 	else
-		rm -f "$file" "$review"
+		rm -f "$commit_message" "$review"
 	fi
 	exit "$1"
 }
 
 while true; do
-	if [ -e "$file" ]; then
-		cat "$file"
+	if [ -e "$commit_message" ]; then
+		cat "$commit_message"
 		echo
 		prompt="Commit with this message?"
 	else
@@ -106,7 +115,7 @@ while true; do
 			cleanup-and-exit 1
 			;;
 		e|E)
-			${EDITOR:-vi} "$file"
+			${EDITOR:-vi} "$commit_message"
 			;;
 		3)
 			generate-commit-message 3+
@@ -156,5 +165,5 @@ while true; do
 	esac
 done
 
-git commit -F "$file"
+git commit -F "$commit_message"
 cleanup-and-exit "$?"
