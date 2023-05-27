@@ -1,12 +1,16 @@
 #!/usr/bin/make -f
 
-n_results=10
-query=
-summary_prompt="Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible."
+# giles: search on a topic, fetch webpages, and run alfred to perform a mission
 
 SHELL=/bin/bash
 
-default: summaries
+export
+
+n_results=10
+query=F Break Beach, near Inverloch, Victoria, Australia
+
+default: output.zip
+models: 4 3+ c i
 
 query.txt:
 	if [ -z "$$query" ]; then \
@@ -17,8 +21,15 @@ query.txt:
 results.txt: query.txt
 	search -m "$(n_results)" "$$(< $<)" > $@
 
-page: results.txt
-	mkdir -p page
-	(cd pages && giles_get) < $<
+input: results.txt
+	mkdir -p input
+	(cd input && giles_get) < $<
+
+mission.txt: mission.in.txt
+	perl -pe 's/\$$query\b/$$ENV{query}/g' < $< > $@
+
+output.zip: input mission.txt
+	alfred
+
 
 .PHONY: default

@@ -4,6 +4,9 @@
 # TODO: urls, download HTML, PDF, youtube, video, etc
 # TODO: email attachments
 
+SHELL=/bin/bash
+export
+
 INPUT_FILES=$(shell find input -type f)
 
 TEXT_FILES=$(addsuffix .txt,$(INPUT_FILES))
@@ -20,10 +23,10 @@ IMAGE2TEXT_MODE=best
 LLM_MODEL_LONG=c+
 LLM_MODEL=4
 OCR_MODEL=4
+LLM_MODEL_WORDS_MAX=2200
+# TODO count tokens, not words
 
-SHELL=/bin/bash
-
-summary_prompt="Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible."
+summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible.
 
 mission=
 
@@ -34,6 +37,10 @@ goal: mkdirs | output.zip $(OUTPUTS)
 
 mkdirs:
 	mkdir -p input w summary
+
+w: $(WORK_FILES)
+	mkdir -p $@
+	touch $@
 
 w/%: input/%
 	same -s $< $@
@@ -94,9 +101,9 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 
 summary/%.txt: w/%.txt
 	words=`wc -w < $<`; \
-	if [ $$words -gt 5000 ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
+	if [ $$words -gt $(LLM_MODEL_WORDS_MAX) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
 	echo >&2 "model: $$model"; \
-	llm process -m $$model "$(SUMMARY_PROMPT)" < $< > $@
+	llm process -m $$model "$(summary_prompt)" < $< > $@
 
 summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
