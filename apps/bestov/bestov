@@ -72,7 +72,7 @@ llm process -m "$dedup_model" "$dedup" < results.txt > dedup.txt
 # search and get a track
 yt_search_and_get() {
 	local url=`$v search -m 1 -e youtube "$track - $artist - $extra" | kut 2 | tail -n +2`
-	$v yt-dlp $yt_dlp_opts "$url"
+	$v yt-dlp $yt_dlp_opts "$url" || true
 }
 
 # download the tracks
