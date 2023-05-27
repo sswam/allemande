@@ -90,3 +90,7 @@ code {
 	white-space: pre-wrap;
 	display: inline-block;
 }
+
+pre {
+	white-space: pre-wrap;
+}
