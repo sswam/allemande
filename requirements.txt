@@ -61,3 +61,5 @@ supabase_py
 markdown-katex
 
 segment-anything
+
+tiktoken

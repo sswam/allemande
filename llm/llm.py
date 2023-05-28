@@ -15,6 +15,7 @@ import argparse
 import argh
 
 import openai
+import tiktoken
 
 import tab
 import claude
@@ -383,11 +384,28 @@ def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=Non
 
 
 def chat2(inp=stdin, out=stdout):
+	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
 	input_lines = inp.readlines()
 	input_messages = lines_to_messages(input_lines)
 	response_message = llm_chat(input_messages)
 	output_lines = messages_to_lines([response_message])
 	out.writelines(output_lines)
+
+
+def count(inp=stdin, model=default_model):
+	""" count tokens in a file """
+	set_opts(vars())
+	text = inp.read()
+	model = opts.model
+	if model.startswith("gpt"):
+		enc = tiktoken.get_encoding("cl100k_base")
+		tokens = enc.encode(text)
+		count = len(tokens)
+	elif model.startswith("claude"):
+		return claude.count(text)
+	else:
+		raise ValueError(f"unknown model: {model}")
+	return count
 
 
 def list_models():
@@ -397,4 +415,4 @@ def list_models():
 
 
 if __name__ == "__main__":
-	argh.dispatch_commands([chat, query, process, list_models])
+	argh.dispatch_commands([chat, query, process, count, list_models])

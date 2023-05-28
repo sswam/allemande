@@ -23,8 +23,9 @@ IMAGE2TEXT_MODE=best
 LLM_MODEL_LONG=c+
 LLM_MODEL=4
 OCR_MODEL=4
-LLM_MODEL_WORDS_MAX=2200
-# TODO count tokens, not words
+LLM_MODEL_TOKENS_MAX=8192
+LLM_MODEL_TOKENS_FOR_RESPONSE=1024
+LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODEL_TOKENS_FOR_RESPONSE) ])
 
 summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible.
 
@@ -46,7 +47,7 @@ w/%: input/%
 	same -s $< $@
 
 w/%.html.txt: w/%.html
-	lynx -dump $< > $@
+	w3m -dump $< > $@
 w/%.html: w/%.htm
 	ln $< $@
 
@@ -100,8 +101,8 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 	cat w/$*.img.desc.txt ) > $@
 
 summary/%.txt: w/%.txt
-	words=`wc -w < $<`; \
-	if [ $$words -gt $(LLM_MODEL_WORDS_MAX) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
+	tokens=`llm count -m $$model < $<`; \
+	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$(summary_prompt)" < $< > $@
 
