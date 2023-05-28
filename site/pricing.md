@@ -1,16 +1,23 @@
-We are now offering personal individual accounts on Ally Chat early access, for $10 / month; and small business / family accounts for $50 / month, including access for up to ten colleagues, or their friends and family. There is a free 1-month trial in each case, and no credit card is required to enjoy the free trial.
+We are excited to present our Ally Chat pricing plans, designed to cater to individual users and small businesses or families alike. To help you decide on the right plan for you, we offer a free 1-month trial with no credit card required.
 
-Ally Chat includes access to GPT-4 and ChatGPT 3.5 through a superior user interface, which is valued at more than $20 / month in itself; and numerous other cutting edge features that will blow your mind. We are also developing a "pro" user-interface, based on Svelte, which will be available at no extra charge, and might be more appropriate for corporate use.
+* Individual Plan: $10 / month
+* Business / Family Plan (10 users): $50 / month (50% discount per user compared to individual plans)
 
-All of our products, services, and features, going forward, will be available to members at no extra cost, unless this is financially unfeasible. We offer highly discounted consulting to Ally Chat members.
+Explore Ally Chat's incredible features, including superior user interface with access to GPT-4 and ChatGPT 3.5, valued at over $20/month, as well as numerous other cutting-edge features. Plus, access our "pro" user-interface designed for corporate use, coming soon at no extra cost.
 
-Alternatively, if you prefer, you may buy Ally Chat access outright, for $250, which is equivalent to a 25 month subscription. This includes full access to our services, including Open AI's models, for as long as the two companies do last; and we're not planning to let OpenAI outlast us!
+As a member of Ally Chat, all updates, products, services, and features will be available to you without additional charges. Ally Chat also offers highly discounted consulting services to members.
 
-The cost for a permanent business or family account is $1,250, including permanent transferable accounts for 10 people. This is a 50% discount compared to the cost of ten individual accounts.
+**Pricing Table**
 
-If you do not use Ally Chat very much in a certain calendar month - maybe you were on holiday away from the Internet - we will happily refund your access fee for that month. We're not looking to rip you off.
+| Plan Type                 | Monthly Price | Yearly Access | Permanent Access  |
+| ------------------------- | ------------- | ------------- | ----------------- |
+| Individual                | $10           | $100          | $250              |
+| Business / Family (10 users) | $50       | $500          | $1,250            |
 
-We offer a six-month money back guarantee, both for subscriptions and for the permanent purchase, assuming that we are still financially viable. You can try Ally Chat for six months, and if you genuinely do not like and value it, we will give you your money back along with an additional gift to apologize for not meeting you expectations (maybe a box of poop in the mail... just kidding!).
+**Prefer a one-time payment?** Enjoy permanent access to Ally Chat with a 25-month equivalent base price - $250 for individuals and $1,250 for business/family (10 users) accounts. This includes ongoing access to all of our services, including Open AI's models, for as long as both companies exist.
 
-You are allowed any reasonable amount of use of any model, including GPT-4, subject to our company financial imperatives; and we implement transparent retry so that when OpenAI's service is overwhelmed, your messages should still get through.
+**Flexible Refunds and Money-Back Guarantee**: If you use Ally Chat minimally during any calendar month, we offer a refund for that month's access fee. We also provide a six-month money-back guarantee for both subscriptions and permanent purchases. Try Ally Chat for six months, and if you're not satisfied, we'll refund your payment.
 
+**Transparent Usage**: Our plans allow for any reasonable use of our AI models, including GPT-4. We also provide transparent retries, ensuring your messages reach their destination even when an upstream service is overwhelmed.
+
+**Additional Perks**: If you contribute to our company or projects, at our discretion we may offer you a period of free access as a gesture of our gratitude. Feel free to reach out to us for more information.
