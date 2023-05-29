@@ -1,4 +1,4 @@
 Please make a numbered list of just business directories and lists, with links, from the search results, tab-separated as is the input. Do not include individual businesses or other sites, only business directory websites or pages and lists of businesses. Just filter the list of names and links, do not add or infer extra info. The output should be exact lines from the input, but only the business directories or lists, not other websites. Example row for output:
 1. Inverloch Business Directory	https://www.localbusinessguide.com.au/victoria/inverloch/
-...
+
 Thanks for always doing a good job!
