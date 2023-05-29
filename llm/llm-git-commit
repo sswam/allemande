@@ -70,10 +70,8 @@ The required format is as follows:
 
 feat|fix(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
 
-- concise info about first change, if needed, please wrap at around 78 chars
-  per line
-- concise info about second change, if any, not more than 78 chars per line,
-  but wrapping is okay if needed
+- concise info about first change, if needed, do not wrap
+- concise info about second change, if any, do not wrap
 - and so on ...
 
 There can be only one feat or fix line per commit, then a blank line, then there can be multiple list items starting with -
