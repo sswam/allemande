@@ -1,0 +1,9 @@
+- Optimus: prompt optimiser, evolutionary refinement
+- Polysmith: function-preserving software translator, list functionality, plan, translate, assess; and test suite
+- Karton: after Kent Beck, Martin Fowler, and Ron Jeffries: create a suite of tests either for a planned project / component, or for an existing system; test that the tests run, and fix them. Supports Polysmith
+- Namer: generate interesting names for projects
+- Brainstormer: help with brainstorming and out-of-the-box ideas
+- Planner: help with project planning and step-by-step / next step advice; interactive chat interface, perhaps
+- Interview helper: Kane's project
+- GUIfier: Make a gradio tool for a certain shell tool, based on a template example
+- Meta-app: create an LLM app based on a problem statement or step-by-step algorithm, a directory of tools and their usage, and example code of other apps.
