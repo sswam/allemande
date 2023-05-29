@@ -16,6 +16,7 @@ query=
 
 default: output.zip
 models: 4 3+ c i
+summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Do not mention other areas. Be factual.
 
 results.txt:
 	if [ -z "$(query)" ]; then echo "ERROR: query is empty"; exit 1; fi

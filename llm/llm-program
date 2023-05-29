@@ -1,0 +1,25 @@
+#!/bin/bash -eu
+# llm-program:	Write a program based on a template and a spec
+
+l=python
+t=
+n=
+s=
+
+. opts
+
+language=$l
+template=$t
+name=$n
+specfile=$s
+
+if [ -z "$specfile" ]; then
+	name=""
+	specfile=`mktmpl $language`
+fi
+
+if [ -z "$template" ]; then
+	template=$ALLEMANDE_HOME/$language/hello.py
+fi
+
+cat-sections inverloch.md map-find-goog.py | process 'Write a python script in a similar style to the example script `map-find-goog.py`, to read markdown in this format into a sensible data structure. Include comments, and a small example of the data structure include keys title, introduction, see_subheading, see, etc.' | tee place_md_to_wordpress_2

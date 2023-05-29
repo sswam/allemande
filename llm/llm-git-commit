@@ -32,6 +32,13 @@ while getopts "34cCiIm:eh" opt; do
 done
 shift $((OPTIND-1))
 
+cleanup() {
+	f -type f -name 'commit-message.*.txt' -size 0 -- | xa rm
+}
+
+trap 'cleanup; exit' EXIT
+trap 'cleanup; exit 1' INT
+
 timestamp=`date +%Y%m%d%H%M%S`
 commit_message="commit-message.$timestamp.txt"
 review="review.$timestamp.txt"
@@ -63,14 +70,12 @@ The required format is as follows:
 
 feat|fix(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
 
-- concise info about first change, if needed, please wrap at around 78 chars
-  per line
-- concise info about second change, if any, not more than 78 chars per line,
-  but wrapping is okay if needed
+- concise info about first change, if needed. DO NOT WRAP THE LINES
+- concise info about second change, if any. DO NOT WRAP THE LINES
 - and so on ...
 
-There can be only one feat or fix line per commit, then a blank line, then there can be multiple list items starting with -
-and possibly extending over several lines. The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
+There can be only one feat or fix line per commit, then a blank line, then there can be multiple list items starting with -, DO NOT WRAP THE LINES.
+The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
 ' |
 	fmt -s -w 78 -g 78 > "$commit_message"
 }

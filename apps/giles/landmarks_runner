@@ -1,0 +1,29 @@
+#!/bin/bash -eu
+# landmarks_runner:	run giles on a list of landmarks
+
+region=", Bass Coast, South Gippsland, Victoria"
+PARALLEL_MAX=50
+confirm="confirm"
+
+. opts
+
+run_giles_for_landmarks() {
+	printf "\n\n----------------------------------------\n\n"
+	printf "*** $name ***\n\n"
+	mkdir -p "$name"
+	if [ ! -e "$name/mission.in.txt" ]; then
+		cp mission.in.txt "$name"
+	fi
+	query="$name$region"
+	(
+		cd "$name"
+		giles query="$query"
+	) 2>&1 | tee -a "$name/runner.log"
+}
+
+while read name; do
+	. parallel run_giles_for_landmarks
+done
+wait
+
+$confirm ./add_all_to_wordpress
