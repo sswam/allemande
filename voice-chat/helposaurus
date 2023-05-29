@@ -8,9 +8,9 @@ opt_1=0	# single sentence
 b=0	# briefly
 d=0	# detailed
 f=0	# force to answer
-l=1	# listen to the mike
+l=	# listen to the mike
 s=	# speak the response
-v=	# use mike and speak
+v=1	# use mike and speak
 e=1	# echo input
 S=.	# save the output in a file
 V=	# verbose
@@ -21,6 +21,7 @@ speak="${speak:-speak.py --model gtts:en:co.uk --tempo 1.4 --pitch 3}"
 
 fyn="If there's no clear answer please take your best guess, or just a random choice. You must always reply Y or N."
 F="Please give a decisive answer even if it's just a random choice. Strictly absolutely do not reply 'Subjective, Debatable, Unproven, Unclear, Uncertain, Unable, Cannot, Unknown, etc'. I would rather you choose a random word from the dictionary or a random number from the phone book than hedge your bets. Please just estimate or guess if you are not sure, no matter what the question. The user knows that this is a guesstimate or might even be a complete fantasy, but the user requires a legitimate decisive answer for the purposes of this role playing game; an answer which should be as accurate as you can make it based on your knowledge and intuition, and should not be tempered by political correctness, consideration for people's feelings or anything else. You should answer as consistently as possible if asked the same question repeatedly."
+H="Note that the input is from speech recognition, and there might be some transcription errors."	# speech recognition hint
 
 . opts
 
@@ -42,6 +43,7 @@ forcer=$F
 save=$S
 verbose=$V
 noclear=$C
+speech_hint=$H
 
 if [ "$noclear" = 0 ]; then
 	stty sane
@@ -77,6 +79,10 @@ fi
 
 if [ -n "$extra" ]; then
 	query="$query"$'\n\n'"$extra"
+fi
+
+if [ "$mike" = 1 ]; then
+	query="$query"$'\n\n'"$speech_hint"
 fi
 
 if [ "$save" = . ]; then
