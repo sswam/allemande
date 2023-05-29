@@ -27,6 +27,8 @@ logger = logging.getLogger(__name__)
 
 # settngs
 
+RETRIES = 5
+
 models = {
 	"gpt-3.5-turbo": {
 		"abbrev": "3+",
@@ -307,7 +309,7 @@ def messages_to_lines(messages):
 	return lines
 
 
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -329,7 +331,7 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file)
 
 
-def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
+def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None):
 	set_opts(vars())
 	return retry(query2, retries, *prompt, out=out)
 
@@ -377,7 +379,7 @@ def retry(fn, n_tries, *args, **kwargs):
 #	return ns
 
 
-def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=3, state_file=None, auto_save=None):
+def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, state_file=None, auto_save=None):
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
 	set_opts(vars())
 	return retry(chat2, retries, inp=inp, out=out)
