@@ -8,13 +8,13 @@
 .hidden {
 	display: none;
 }
-#content {
-	height: 42px;
-	min-height: 1em;
-	flex-grow: 1;
+#messages {
 }
-.pad {
-	padding: 8px;
+#inputrow {
+}
+#content {
+	min-height: 64px;
+	height 100% !important;
 }
 .row {
 	display: flex;
@@ -24,17 +24,32 @@
 	display: flex;
 	flex-direction: column;
 }
+
+/* define --pad */
+
+:root {
+	--pad: 12px;
+}
+
 .col > * {
-	margin: 8px 0 0 0;
+	margin: var(--pad) 0 0 0;
+	width: 100%;
 }
 .row > * {
-	margin: 0 0 0 8px;
+	margin: 0 0 0 var(--pad);
+	height: 100%;
+}
+.pad {
+	padding: var(--pad);
 }
 .col > :first-child, .row > :first-child {
 	margin: 0;
 }
 .flex {
 	flex: 1;
+}
+.grow {
+	flex-grow: 1;
 }
 .outline {
 	border: 1px solid black;
