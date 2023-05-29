@@ -83,6 +83,7 @@ if [ "$save" = . ]; then
 	# replace non-sensible characters and spaces with underscores
 	save=${save//[^a-zA-Z0-9_-]/_}
 	save="`echo "$save" | sed 's/_*$//'`"
+	save="helposaurus/$save"
 fi
 
 length_opts="$yesno $word $sentence $brief $detail"
