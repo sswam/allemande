@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 # settngs
 
 RETRIES = 5
+BAD_ERRORS_NO_RETRY = "maximum context length", "context_length_exceeded"
 
 models = {
 	"gpt-3.5-turbo": {
@@ -367,7 +368,9 @@ def retry(fn, n_tries, *args, **kwargs):
 			return fn(*args, **kwargs)
 		except Exception as ex:
 			logger.warning("retry: exception: %s", ex)
-			if i == n_tries - 1:
+			msg = str(ex)
+			bad = any(bad_error in msg for bad_error in BAD_ERRORS_NO_RETRY)
+			if bad or i == n_tries - 1:
 				raise
 
 
