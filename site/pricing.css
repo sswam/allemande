@@ -1,0 +1,6 @@
+html {
+	padding: 1em;
+}
+th, td {
+	white-space: nowrap;
+}
