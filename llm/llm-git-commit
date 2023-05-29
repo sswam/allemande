@@ -101,6 +101,8 @@ cleanup-and-exit() {
 	exit "$1"
 }
 
+trap 'find -type f -name commit-message.\*.txt -size 0 -delete' EXIT
+
 while true; do
 	if [ -e "$commit_message" ]; then
 		cat "$commit_message"
