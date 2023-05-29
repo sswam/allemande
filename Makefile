@@ -25,10 +25,11 @@ server_start:
 server_stop:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
 
-beorn: mount run-i3-screen
+beorn: clean mount run-i3-screen
 i3: connect-i3-screen
 
 server:: stop
+server:: clean
 server:: webchat pro
 
 run-i3-screen:: i3-layout
