@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+# mod: add a new plan to the existing plan
+m=4
+. opts
+process -m "$m" 'Please; $*. Keep the existing text, and reply with the whole text; just make minor changes to add in the Free plan. Thanks for being awesome!'
