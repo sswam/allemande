@@ -24,6 +24,8 @@ def wordpress_add(
 ):
 	""" Create a new page or post in WordPress from an HTML file """
 
+	type_tc = type.title()
+
 	# Full API endpoint for creating pages or posts
 	endpoint = "pages" if type == "page" else "posts"
 	api_url = f"{site_url}/wp-json/wp/v2/{endpoint}"
@@ -53,9 +55,9 @@ def wordpress_add(
 
 	# Check if the request was successful
 	if response.status_code == 201:  # 201 is the status code for 'Created'
-		print("Page created successfully!")
+		print(f"{type_tc} created successfully!")
 	else:
-		print("There was an error creating the page:", response.text)
+		print(f"There was an error creating the {type}:", response.text)
 
 if __name__ == "__main__":
 	argh.dispatch_command(wordpress_add)

@@ -16,5 +16,5 @@ for D in */; do
 	if [ ! -e "$D/output.md" ]; then
 		continue
 	fi
-	wordpress_add.py --title "$D" "$D.wordpress"
+	wordpress_add.py --type post --title "$D" "$D.wordpress"
 done
