@@ -8,7 +8,7 @@ for D in */; do
 		continue
 	fi
 	ln -sf "$D/output.md" "$D.md"
-	v ./place_md_to_wordpress < "$D.md" > "$D.wordpress"
+	v ./place_md_to_wordpress -a "$D, Bass Coast, Victoria" < "$D.md" > "$D.wordpress"
 done
 
 for D in */; do
@@ -16,5 +16,6 @@ for D in */; do
 	if [ ! -e "$D/output.md" ]; then
 		continue
 	fi
-	wordpress_add.py --type post --title "$D" "$D.wordpress"
+#	wordpress_add.py --type post --title "$D" "$D.wordpress"
+	wordpress_add.py --type page --title "$D" "$D.wordpress"
 done
