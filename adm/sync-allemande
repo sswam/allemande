@@ -5,8 +5,8 @@ cd "$ALLEMANDE_HOME"
 
 git checkout main
 
-git pull sam@ucm.dev:allemande
-git pull sam@pi.ucm.dev:allemande
+git pull --commit --no-edit sam@ucm.dev:allemande
+git pull --commit --no-edit sam@pi.ucm.dev:allemande
 git push sam@ucm.dev:allemande
 git push sam@pi.ucm.dev:allemande
 
