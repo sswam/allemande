@@ -3,7 +3,6 @@
 
 region=", Bass Coast, South Gippsland, Victoria"
 PARALLEL_MAX=50
-confirm="confirm"
 
 . opts
 
@@ -26,4 +25,4 @@ while read name; do
 done
 wait
 
-$confirm ./add_all_to_wordpress
+./add_all_to_wordpress
