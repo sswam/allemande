@@ -39,6 +39,7 @@ Ally Chat is a chat system of many multiples:
 - Jahl, the deno JS programming system
 - Faby, the tiny C compiler
 - Qell, the quick JS programming system
+- Bilda, run GNU Make
 - Palc, a calculator using Python
 
 ### Search Agents
