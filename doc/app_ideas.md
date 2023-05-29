@@ -7,3 +7,4 @@
 - Interview helper: Kane's project
 - GUIfier: Make a gradio tool for a certain shell tool, based on a template example
 - Meta-app: create an LLM app based on a problem statement or step-by-step algorithm, a directory of tools and their usage, and example code of other apps.
+- SEO project: ref: https://yoast.com/use-focus-keyword-once/
