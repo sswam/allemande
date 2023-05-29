@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" map-find.py:	Search for a location using Google Maps API """
+""" map-find-goog.py:	Search for a location using Google Maps API """
 
 import os
 import requests
