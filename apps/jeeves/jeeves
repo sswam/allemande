@@ -1,17 +1,6 @@
 #!/bin/bash -eu
 
-# jeeves.sh: generate multiple documents, with multiple drafts, and multiple parts
-
-# The initial application for this tool is to generate a set of legal documents for a new business.
-# But, it should be able to be used for any other purpose,
-# such as generating a set of design documents for a new project, or generating a website.
-
-# TODO document dependencies, so that we can refer to one finished document when generating another
-#      and tsort the list of documents to generate, so that we can generate them in the right order
-
-# TODO automatically fix the writing around the split points
-
-# TODO get it to write a written plan for what to change with each revision
+# jeeves.sh:	generate multiple documents, with multiple drafts, and multiple parts
 
 m0=4	# LLM model for planning the list of documents to generate
 m1=4	# LLM model for generating each document
@@ -27,8 +16,8 @@ w="as if written by a top queens counsel"	# who writes it
 x="all the legal documents required for"	# what to write
 p=8	# max number of parts to generate
 n=3	# number of drafts to generate
-d=	# description of the context, will be filled automatically from -c -t -hq -cl -l -s -w, if not provided; conversely, those other options are not required if you provide the full specification
-a=	# description of the task for all outputs, will be filled automatically from -x and -d, if not provided
+d=	# description of the context, will be filled from -c -t -hq -cl -l -s -w, if not provided
+a=	# description of the task for all outputs, will be filled from -x and -d, if not provided
 f1=1	# ask user for feedback on the first draft
 f=	# ask user for feedback on each and every draft
 f2=1	# ask user for feedback before the fair copy
@@ -39,6 +28,17 @@ S="__SPLIT_POINT__"	# split point marker, between parts; need to check and fix a
 V="vi"	# tool to use for viewing or editing documents, could also use ghostwriter for example
 
 . opts
+
+# The initial application for this tool is to generate a set of legal documents for a new business.
+# But, it should be able to be used for any other purpose,
+# such as generating a set of design documents for a new project, or generating a website.
+
+# TODO document dependencies, so that we can refer to one finished document when generating another
+#      and tsort the list of documents to generate, so that we can generate them in the right order
+
+# TODO automatically fix the writing around the split points
+
+# TODO get it to write a written plan for what to change with each revision
 
 # nice names for the options
 

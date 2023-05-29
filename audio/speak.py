@@ -22,11 +22,14 @@ from gtts import gTTS
 
 from sh import amixer, soundstretch
 
-from ucm import FileMutex
+# from ucm import FileMutex
+import ucm_main
+
+opts = None
 
 logger = logging.getLogger(__name__)
 logger_fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
-logging.basicConfig(level=logging.INFO, format=logger_fmt)
+logging.basicConfig(level=logging.WARNING, format=logger_fmt)
 
 DEFAULT_MODELS = {
 	'coqui': 'tts_models/en/ek1/tacotron2',
@@ -158,13 +161,15 @@ def get_synth(model=DEFAULT_MODEL):
 		raise ValueError(f'Unknown engine: {model_type}') from e
 	return engine(model)
 
-def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None):
+def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True):
 	""" Speak a line of text """
 
 	if not synth:
 		synth = get_synth(model)
 
-	logger.info("speak_line: text: %r", text)
+	logger.debug("speak_line: text: %r", text)
+	if echo:
+		print(text)
 
 	# create a temporary file to store the audio output
 	out_is_temp = not out
@@ -182,7 +187,7 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 		if deafen:
 			sd.wait()
 			amixer.sset("Capture", "nocap")
-			logger.info("Mic off")
+			logger.debug("Mic off")
 
 		# play the audio
 		if play:
@@ -194,14 +199,14 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 		if deafen:
 			sd.wait()
 			amixer.sset("Capture", "cap")
-			logger.info("Mic on")
+			logger.debug("Mic on")
 		if out_is_temp:
 			os.remove(out)
 
 	if play and wait:
 		sd.wait()
 
-def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None):
+def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True):
 	""" Speak lines of text """
 	if not synth:
 		synth = get_synth(model)
@@ -209,10 +214,10 @@ def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, 
 		stem, ext = os.path.splitext(out)
 
 	for i, line in enumerate(inp):
-		logger.info("speak_lines: line: %r", line)
+		logger.debug("speak_lines: line: %r", line)
 		if out:
 			out = f'{stem}_{i:06d}{ext}'
-		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
+		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo)
 
 	if play and wait:
 		sd.wait()
@@ -251,7 +256,7 @@ def do_list_models():
 		print("\t".join([k, lang, tld, accent]))
 
 @arg('--model', '-m')
-def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, debug=False, cuda=False, download_all_models=False):
+def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, cuda=False, download_all_models=False, echo=True):
 	""" Speak text """
 	global use_cuda
 
@@ -286,12 +291,13 @@ def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play
 		postproc = partial(postproc_soundstretch, tempo=tempo, pitch=pitch)
 
 	if text:
-		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
+		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo)
 	else:
-		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
+		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo)
 
-if __name__ == "__main__":
-	dispatch_command(speak)
+
+if __name__ == '__main__':
+	ucm_main.run(speak, globals())
 	sd.wait()
 
 

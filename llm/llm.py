@@ -15,6 +15,7 @@ import argparse
 import argh
 
 import openai
+import tiktoken
 
 import tab
 import claude
@@ -25,6 +26,8 @@ from bard import Bard
 logger = logging.getLogger(__name__)
 
 # settngs
+
+RETRIES = 5
 
 models = {
 	"gpt-3.5-turbo": {
@@ -306,7 +309,7 @@ def messages_to_lines(messages):
 	return lines
 
 
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -328,7 +331,7 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file)
 
 
-def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
+def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None):
 	set_opts(vars())
 	return retry(query2, retries, *prompt, out=out)
 
@@ -376,18 +379,35 @@ def retry(fn, n_tries, *args, **kwargs):
 #	return ns
 
 
-def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=3, state_file=None, auto_save=None):
+def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, state_file=None, auto_save=None):
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
 	set_opts(vars())
 	return retry(chat2, retries, inp=inp, out=out)
 
 
 def chat2(inp=stdin, out=stdout):
+	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
 	input_lines = inp.readlines()
 	input_messages = lines_to_messages(input_lines)
 	response_message = llm_chat(input_messages)
 	output_lines = messages_to_lines([response_message])
 	out.writelines(output_lines)
+
+
+def count(inp=stdin, model=default_model):
+	""" count tokens in a file """
+	set_opts(vars())
+	text = inp.read()
+	model = opts.model
+	if model.startswith("gpt"):
+		enc = tiktoken.get_encoding("cl100k_base")
+		tokens = enc.encode(text)
+		count = len(tokens)
+	elif model.startswith("claude"):
+		return claude.count(text)
+	else:
+		raise ValueError(f"unknown model: {model}")
+	return count
 
 
 def list_models():
@@ -397,4 +417,4 @@ def list_models():
 
 
 if __name__ == "__main__":
-	argh.dispatch_commands([chat, query, process, list_models])
+	argh.dispatch_commands([chat, query, process, count, list_models])

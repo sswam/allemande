@@ -1,0 +1,16 @@
+STEP 1: Collect factual information 
+please provide all the information you have on [Business/Location/Landmark Name] 
+[website]
+
+STEP 2: Write article
+Write an article about [Name] using the information in Step 1
+
+STEP 3: Re-write article in a given style.
+Eg.
+Hi GPT, please rewrite the following article. This is a promotional piece going in professional publications. Use descriptive and engaging style like Anthony Bourdain. Do not mention food. 
+
+Try
+Please rewrite the article in STEP 2. 
+This is a [PURPOSE OF PIECE] going in a [TYPE OF PUBLICATION].
+Use [STYLE OF LANGUAGE] like [EXAMPLE AUTHOR]. 
+Do not [LIST EXCLUSIONS]

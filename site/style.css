@@ -75,6 +75,15 @@ a.button {
 	background-color: #633;
 }
 
+.button.orange {
+	background-color: #642;
+	color: #ffc;
+}
+
+.button.orange:hover {
+	background-color: #852;
+}
+
 .button.yellow {
 	background-color: #663;
 	color: #ffe;
@@ -91,6 +100,15 @@ a.button {
 
 .button.green:hover {
 	background-color: #363;
+}
+
+.button.cyan {
+	background-color: #255;
+	color: #cff;
+}
+
+.button.cyan:hover {
+	background-color: #377;
 }
 
 .button.blue {

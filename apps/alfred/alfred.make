@@ -4,6 +4,9 @@
 # TODO: urls, download HTML, PDF, youtube, video, etc
 # TODO: email attachments
 
+SHELL=/bin/bash
+export
+
 INPUT_FILES=$(shell find input -type f)
 
 TEXT_FILES=$(addsuffix .txt,$(INPUT_FILES))
@@ -20,8 +23,13 @@ IMAGE2TEXT_MODE=best
 LLM_MODEL_LONG=c+
 LLM_MODEL=4
 OCR_MODEL=4
+LLM_MODEL_TOKENS_MAX=8192
+LLM_MODEL_TOKENS_FOR_RESPONSE=1024
+LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $$[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODEL_TOKENS_FOR_RESPONSE) ])
 
-SHELL=/bin/bash
+summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible.
+
+mission=
 
 
 .PHONY: goal mkdirs
@@ -31,11 +39,15 @@ goal: mkdirs | output.zip $(OUTPUTS)
 mkdirs:
 	mkdir -p input w summary
 
+w: $(WORK_FILES)
+	mkdir -p $@
+	touch $@
+
 w/%: input/%
 	same -s $< $@
 
 w/%.html.txt: w/%.html
-	lynx -dump $< > $@
+	w3m -dump $< > $@
 w/%.html: w/%.htm
 	ln $< $@
 
@@ -89,13 +101,19 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 	cat w/$*.img.desc.txt ) > $@
 
 summary/%.txt: w/%.txt
-	words=`wc -w < $<`; \
-	if [ $$words -gt 5000 ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
+	tokens=`llm count -m $(LLM_MODEL) < $<`; \
+	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
 	echo >&2 "model: $$model"; \
-	llm process -m $$model "$$(< $(PROG_DIR)/summary.prompt)" < $< > $@
+	llm process -m $$model "$(summary_prompt)" < $< > $@
 
 summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
+
+mission.txt:
+	if [ -z "$(mission)" ]; then \
+		read -p "Enter the mission:" mission; \
+	fi; \
+	printf "%s\n" "$$mission" > $@
 
 output.md: summary.txt mission.txt
 	llm process -m $(LLM_MODEL) "$$(< mission.txt)" < $< > $@

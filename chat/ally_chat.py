@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" electric barbarella v4 - chat app """
+""" Ally Chat / Electric Barbarella v5 - multi-user LLM chat app """
 
 import os
 import time
@@ -130,6 +130,14 @@ AGENTS_PROGRAMMING = {
 	},
 	"Qell": {
 		"command": ["sh", "-c", 't=`mktemp`; cat >$t; qjs --std --bignum --qjscalc $t; rm $t'],
+	},
+	# TODO but awk is a filter, needs input in addition to the program...
+	# TODO split input vs program code in the query
+#	"Awky": {
+#		"command": ["awk"],
+#	},
+	"Bilda" {
+		"command": ["make", "-f", "/dev/stdin"],
 	},
 	"Palc": {
 		"command": ["calc"],

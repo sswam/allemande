@@ -18,15 +18,16 @@ import yaml
 
 import ucm
 import ports
+import ucm_main
 
-from ucm import FileMutex
+opts = None
+
+# from ucm import FileMutex
 
 logger = logging.getLogger(__name__)
 
 server = "stt_whisper"
 default_port = ports.get_default_port(server)
-
-opts = None
 
 
 @contextmanager
@@ -139,7 +140,7 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 
-def mike(lang="en", energy=1500, dynamic_energy=False, pause=0.5, non_speaking_duration=0.5, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.90):
+def mike(lang="en", energy=1500, dynamic_energy=False, pause=1, non_speaking_duration=0.5, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.90):
 	""" Transcribe speech to text using microphone input """
 
 	if list_devices:
@@ -176,10 +177,4 @@ def mike(lang="en", energy=1500, dynamic_energy=False, pause=0.5, non_speaking_d
 # TODO factor out this main biolerplate stuff
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	argh.add_commands(parser, [mike])
-	argh.set_default_command(parser, mike)
-	ucm.add_logging_options(parser)
-	opts = parser.parse_args()
-	ucm.setup_logging(opts)
-	argh.dispatch(parser)
+	ucm_main.run(mike, globals())
