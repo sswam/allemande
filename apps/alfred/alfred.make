@@ -25,7 +25,7 @@ LLM_MODEL=4
 OCR_MODEL=4
 LLM_MODEL_TOKENS_MAX=8192
 LLM_MODEL_TOKENS_FOR_RESPONSE=1024
-LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODEL_TOKENS_FOR_RESPONSE) ])
+LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $$[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODEL_TOKENS_FOR_RESPONSE) ])
 
 summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible.
 
@@ -101,7 +101,7 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 	cat w/$*.img.desc.txt ) > $@
 
 summary/%.txt: w/%.txt
-	tokens=`llm count -m $$model < $<`; \
+	tokens=`llm count -m $(LLM_MODEL) < $<`; \
 	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$(summary_prompt)" < $< > $@
