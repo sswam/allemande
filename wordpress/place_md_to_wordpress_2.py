@@ -22,8 +22,8 @@ def read_markdown(text):
 	sub_heading = ""
 	sub_heading_lc = ""
 
-	def add_heading(section):
-		nonlocal heading, heading_lc, sub_heading, sub_heading_lc, data
+	def add_heading(section, heading_override=None):
+		nonlocal key, heading, heading_lc, sub_heading, sub_heading_lc, data
 		heading = section[2:].strip()
 		detail = ""
 
@@ -33,21 +33,25 @@ def read_markdown(text):
 
 		heading_lc = heading.lower()
 
-		data[heading_lc] = { "heading": heading, "sections": [] }
+		key = heading_override or heading_lc
+
+		data[key] = { "heading": heading, "sections": [] }
 
 		if detail:
-			data[heading_lc]["detail"] = detail
+			data[key]["detail"] = detail
 
 		sub_heading = ""
 		sub_heading_lc = ""
+		key = heading_override or heading_lc
 
 	def add_sub_heading(section):
-		nonlocal sub_heading, sub_heading_lc, data
+		nonlocal key, sub_heading, sub_heading_lc, data, heading_lc
 		sub_heading = section[3:].strip()
 		sub_heading_lc = sub_heading.lower()
-		data[heading_lc]["sections"].append({ "sub_heading": sub_heading, "content": "" })
+		data[key or heading_lc]["sections"].append({ "sub_heading": sub_heading, "content": "" })
 
 	sub_heading = ""
+	key = ""
 
 	for section in sections:
 		section = section.strip()
@@ -55,7 +59,10 @@ def read_markdown(text):
 			continue
 
 		# heading / starting section
-		if section.startswith('## '):
+		if section.startswith("# "):
+			add_heading(section, key)
+
+		elif section.startswith('## '):
 			add_heading(section)
 
 		# sub heading / sub section
@@ -66,12 +73,12 @@ def read_markdown(text):
 		else:
 			content = section.strip() + '\n\n'
 			if not heading:
-				add_heading('## Introduction')
+				add_heading('## BLANK')
 			if not sub_heading:
-				add_sub_heading('### Introduction')
-			if not data[heading_lc]["sections"]:
-				add_sub_heading('### Introduction')
-			data[heading_lc]["sections"][-1]["content"] += content
+				add_sub_heading('### BLANK')
+			if not data[key]["sections"]:
+				add_sub_heading('### BLANK')
+			data[key]["sections"][-1]["content"] += content
 
 	return data
 
@@ -102,7 +109,6 @@ Whether you're a seasoned water sports enthusiast...
 Inverloch was once a bustling port...'''
 
 	data = read_markdown(markdown_text)
-	# logger.warning(json.dumps(data, indent=4))
 	assert data['inverloch']['heading'] == "Inverloch"
 	assert data['inverloch']['detail'] == "Victoria's Coastal Gem"
 	assert data['see']['sections'][0]['sub_heading'] == "Bunurong Coastal Drive"
@@ -114,36 +120,45 @@ Inverloch was once a bustling port...'''
 
 def replace_tags(text, data, map_contact_tags):
 	""" Replace tags in text with data. """
-	logger.debug("replace_tags data: %s", json.dumps(list(data.keys()), indent=4))
-	logger.debug("replace_tags map_contact_tags: %s", json.dumps(list(map_contact_tags.keys()), indent=4))
+	logger.warning("replace_tags data: %s", json.dumps(list(data.keys()), indent=4))
+	logger.warning("replace_tags map_contact_tags: %s", json.dumps(list(map_contact_tags.keys()), indent=4))
 	def quote(text, quoted):
+		logger.warning("quote text: %r, quoted: %r", text, quoted)
+		if isinstance(text, dict):
+			text = text["TEXT"]
+		text = text.strip()
 		if quoted:
 			return f'"{text}"'
 		return text
 	def replace_tag(match):
 		matched = match.group(0)
 		quoted = matched.startswith('"') and matched.endswith('"')
+		logger.warning("replace_tag matched: %r, quoted: %r", matched, quoted)
 		tag = match.group(1) or match.group(2)
 		tag = tag.upper()
+		logger.warning("looking for tag %r", tag)
 		if tag in data:
-			logger.debug("tag: %r, data: %r", tag, data[tag])
+			logger.warning("tag in data: %r, data: %r", tag, data)
 			if isinstance(data[tag], list):
-				return quote(data[tag][0]["TEXT"], quoted)
+				return quote(data[tag][0], quoted)
 			return quote(data[tag], quoted)
 		elif tag in map_contact_tags:
+			logger.warning("tag in map_contact_tags data: %r, data: %r", tag, map_contact_tags)
 			tag2 = map_contact_tags[tag]
 			if tag2 in data:
 				markdown_link = data[tag2][0]["TEXT"]
 				link = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\2', markdown_link)
 				return quote(link, quoted)
 		else:
-			logger.debug("Tag not found: %s", tag)
+			logger.warning("Tag not found: %s", tag)
+			logger.warning("replace_tags data: %s", json.dumps(data, indent=4)) # list(data.keys()), indent=4))
+			logger.warning("replace_tags map_contact_tags: %s", json.dumps(map_contact_tags, indent=4)) #
 			return quote("", quoted)
-	logger.debug("replace_tags text: %r, %r %r", r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag, text)
+	logger.warning("replace_tags text: %r, %r %r", r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag, text)
 	text = re.sub(r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag, text)
 	return text
 
-def fill_template(data1, template_file):
+def fill_template(data1, template_file, address):
 	""" Fill template with data. """
 	template = open(template_file).read()
 
@@ -172,7 +187,7 @@ def fill_template(data1, template_file):
 	first_heading = headings[0]
 
 	# pretty print data1 for debugging
-	# logger.warning(json.dumps(data1, indent=4))
+	logger.debug(json.dumps(data1, indent=4))
 
 	# change data1 structure to match template
 
@@ -186,8 +201,21 @@ def fill_template(data1, template_file):
 	#        ]
 	#    }
 
-	single_tags = ["INTRO_TITLE", "INTRO_TEXT"]
-	main_sections = ["SEE", "DO", "LEARN", "TRAVEL", "AWARE", "AREA", "LOCALGROUPS", "EATANDDRINK", "AMENITIES", "RECAP"]
+	single_tags = ["INTRO_TITLE", "INTRO_TEXT", "ADDRESS"]
+	main_sections = ["SEE", "DO", "LEARN", "TRAVEL", "BE_AWARE", "IN_THE_AREA", "LOCAL_GROUPS", "EAT_AND_DRINK", "ACCESSIBILITY", "RECAP"]
+
+	main_sections_map = {
+		"SEE": "See",
+		"DO": "Do",
+		"LEARN": "Learn",
+		"TRAVEL": "Travel",
+		"BE_AWARE": "Be Aware",
+		"IN_THE_AREA": "In the Area",
+		"LOCAL_GROUPS": "Local Groups",
+		"EAT_AND_DRINK": "Eat & Drink",
+		"ACCESSIBILITY": "Accessibility",
+		"RECAP": "Recap",
+	}
 
 	map_contact_tags = {
 		"FACEBOOK_LINK": "FACEBOOK",
@@ -205,11 +233,12 @@ def fill_template(data1, template_file):
 	data = {
 		"INTRO_TITLE": data1[first_heading]['heading'] + (": " + data1[first_heading]['detail'] if 'detail' in data1[first_heading] else ""),
 		"INTRO_TEXT": data1[first_heading]['sections'][0]['content'],
+		"ADDRESS": address,
 	}
 
 	for heading in headings[1:]:
 		heading_uc = heading.upper().replace(' ', '_')
-		data[heading_uc + "_HEADING"] = data1[heading]['heading']
+		data[heading_uc + "_SUBHEADING"] = data1[heading]['heading']
 		data[heading_uc] = []
 		for section in data1[heading]['sections']:
 			section_data = {
@@ -220,7 +249,7 @@ def fill_template(data1, template_file):
 
 	# pretty print data for debugging
 
-	# logger.warning(json.dumps(data, indent=4))
+	logger.debug(json.dumps(data, indent=4))
 
 	# process template one line at a time
 
@@ -234,31 +263,41 @@ def fill_template(data1, template_file):
 			line = replace_tags(line, data, map_contact_tags)
 			out_lines.append(line)
 		else:
-			main_section = multi_tags[0].split('_')[0].lower()
+			main_section = multi_tags[0].lower()
 			main_section_uc = main_section.upper()
 			sections = data[main_section_uc]
 
+			first = True
 			for section in sections:
 				line2 = line
 				tag_sub_heading = main_section_uc + "_SUBHEADING"
-				tag_text = main_section_uc # + "_TEXT"
+				tag_text = main_section_uc + "_TEXT"
 				sub_heading = section['SUBHEADING']
+				if sub_heading == "BLANK":
+					sub_heading = ""
 				text = section['TEXT']
 				section_info = {
 					tag_sub_heading: sub_heading,
 					tag_text: text,
+					"ADDRESS": address,
 				}
+				if first:
+					section_info[main_section_uc] = main_sections_map[main_section_uc]
+					first = False
+				else:
+					section_info[main_section_uc] = ""
+
 				# section_info.update(data)
 				line2 = replace_tags(line2, section_info, map_contact_tags)
 				out_lines.append(line2)
 
 	return '\n'.join(out_lines) + '\n'
 
-def place_md_to_wordpress(file=sys.stdin, template_file="template/tourism.txt"):
+def place_md_to_wordpress(file=sys.stdin, template_file="template/tourism.txt", address=""):
 	""" Place markdown text into Wordpress template. """
 	text = file.read()
 	data = read_markdown(text)
-	page = fill_template(data, template_file)
+	page = fill_template(data, template_file, address=address)
 	return page
 
 if __name__ == "__main__":
