@@ -20,6 +20,7 @@ SEARCH := google
 m0=3+
 # m0=4   # gives "Gateway timeout" for large inputs
 m=4
+file=
 
 
 default: goal
@@ -41,7 +42,7 @@ transcript.sent2.txt: transcript.sent.txt
 url.txt:
 	if [ -n "$(file)" ]; then \
 		echo "$(file)" >$@; \
-		else read -p "Enter filename: " file; \
+	else read -p "Enter filename: " file; \
 		echo $$file >$@; \
 	fi
 
