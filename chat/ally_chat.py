@@ -131,18 +131,19 @@ AGENTS_PROGRAMMING = {
 	"Qell": {
 		"command": ["sh", "-c", 't=`mktemp`; cat >$t; qjs --std --bignum --qjscalc $t; rm $t'],
 	},
-	# TODO but awk is a filter, needs input in addition to the program...
-	# TODO split input vs program code in the query
-#	"Awky": {
-#		"command": ["awk"],
-#	},
-	"Bilda" {
+	"Bilda": {
 		"command": ["make", "-f", "/dev/stdin"],
 	},
 	"Palc": {
 		"command": ["calc"],
 	},
 }
+
+# TODO but awk is a filter, needs input in addition to the program...
+# TODO split input vs program code in the query
+#	"Awky": {
+#		"command": ["awk"],
+#	},
 
 TOKENIZERS = {}
 
