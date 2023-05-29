@@ -3,7 +3,10 @@
 
 import sys
 import os
+import logging
 import argh
+
+logger = logging.getLogger(__name__)
 
 def hello(name="world", greeting="Hello", template="%(greeting)s, %(name)s"):
 	""" Say hello to name """

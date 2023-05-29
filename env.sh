@@ -36,7 +36,7 @@ for dir in adm core sys tools text data image audio video code llm anthropic cha
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
-for appdir in apps/*; do
+for appdir in "$ALLEMANDE_HOME/apps"/*; do
 	if [ ! -d "$appdir" ]; then
 		continue
 	fi
