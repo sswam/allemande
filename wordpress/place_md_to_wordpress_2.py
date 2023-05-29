@@ -265,7 +265,7 @@ def fill_template(data1, template_file, address):
 		else:
 			main_section = multi_tags[0].lower()
 			main_section_uc = main_section.upper()
-			sections = data[main_section_uc]
+			sections = data.get(main_section_uc, [])
 
 			first = True
 			for section in sections:
