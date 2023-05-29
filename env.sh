@@ -32,11 +32,14 @@ for dir in py text www chat anthropic google llm; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code llm openai anthropic web chat voice-chat eg www html table i3 git gradio; do
+for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
 for appdir in apps/*; do
+	if [ ! -d "$appdir" ]; then
+		continue
+	fi
 	app=$(basename "$appdir")
 	PATH=$PATH:$ALLEMANDE_HOME/apps/$app
 done
