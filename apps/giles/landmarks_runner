@@ -1,5 +1,7 @@
-#!/bin/bash -eu
+#!/bin/bash -eua
 # landmarks_runner:	run giles on a list of landmarks
+
+. wordpress-env.sh
 
 region=", Bass Coast, South Gippsland, Victoria"
 PARALLEL_MAX=50

@@ -32,7 +32,7 @@ for dir in py text www chat anthropic google llm; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio; do
+for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio wordpress; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
