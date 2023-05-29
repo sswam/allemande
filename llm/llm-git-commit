@@ -70,12 +70,12 @@ The required format is as follows:
 
 feat|fix(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
 
-- concise info about first change, if needed, do not wrap
-- concise info about second change, if any, do not wrap
+- concise info about first change, if needed. DO NOT WRAP THE LINES
+- concise info about second change, if any. DO NOT WRAP THE LINES
 - and so on ...
 
-There can be only one feat or fix line per commit, then a blank line, then there can be multiple list items starting with -
-and possibly extending over several lines. The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
+There can be only one feat or fix line per commit, then a blank line, then there can be multiple list items starting with -, DO NOT WRAP THE LINES.
+The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
 ' |
 	fmt -s -w 78 -g 78 > "$commit_message"
 }
