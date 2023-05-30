@@ -21,9 +21,10 @@ Ally Chat is a chat system of many multiples:
 ### Electric People
 
 - Ally, a human-like model based on Point Alpaca, uncensored, and the star of our show.
+- Barbie, a human-like model similar to Ally, configured identically at the moment.
 - Callam, Ally's male counterpart, configured identically at the moment.
-- Emmy, OpenAI's GPT-4, with a default context of ten messages.
 - Dav, OpenAI's ChatGPT 3.5, with a default context of twenty messages.
+- Emmy, OpenAI's GPT-4, with a default context of ten messages.
 - Claud, Claude from Anthropic, with a default context of fifty messages.
 - Clia, Claude Instant from Anthropic, with a default context of one hundred messages.
 - Jaski, Google Bard, currently limited to a single message of context, and AWOL due to an API change.
@@ -57,6 +58,27 @@ These applications are currently stand-alone tools; they are not yet integrated 
 - Ikigai, a resume assistant, and chat agent to help you find your ikigai, work in progress
 - Sherlock, a research agent, work in progress
 
+### Future Plans
+
+- Integrate Cophelia, GitHub Copilot
+- Integrate existing apps and tools to Ally Chat: 
+	- alfred
+	- bestov
+	- flash
+	- giles
+	- ikigai
+	- jeeves
+	- sherlock
+- Missions
+- User-definable AI Personas, based on Point Alpaca or other models
+- Files
+- Dev Mode, with ssh / vim / vscode
+- Admin Mode
+- Editable chat history
+	- Admins
+	- Users
+- Separate domains for kids, teens, edu, safe, work, make, fun, date, adult, anon, LGQBTQIA+, etc.
+
 ## Our Names
 
 ### The Company
@@ -67,14 +89,15 @@ Allemand is the French word for the German language.
 
 The word Allemande contains the letters LLM in that order.
 
-We have named our main protagonist Ally, short for Allemande, and evoking a sincere helper.
+We have named our main protagonist Ally, short for Allemanda, and evoking a sincere helper.
 
 ### Electric People
 
-- Ally, short for Allemande (a slow dance), with the letters LLM, and evoking a sincere helper (ally).
+- Ally, short for Allemanda (after Allemande, a slow dance), with the letters LLM, and evoking a sincere helper (ally).
+- Barbie, short for Barbarella (after the famous movie, and Electric Barbarella by Duran Duran), suggesting a lack of inhibitions; also contains LL.
 - Callam, a male name variant of Callum, with the letters LLM
-- Emmy, after Emmy Noether, a famous scientist, and continuing OpenAI's naming convention: Ada, Babbage, Curie, DaVinci, Emmy
 - Dav, after Leonardo da Vinci; the code name for GPT 3 is "davinci"
+- Emmy, after Emmy Noether, a famous scientist, and continuing OpenAI's naming convention: Ada, Babbage, Curie, DaVinci, Emmy
 - Claud, short for Claude, the official name of Anthropic's large language model
 - Clia, short for Claudia, a female variant of Claude
 - Jaski, after Jaskier, the bard from the Witcher series
@@ -96,7 +119,7 @@ We have named our main protagonist Ally, short for Allemande, and evoking a sinc
 
 - Serry, after Sergey Brin and Larry Page, the founders of Google
 - Jadev, after Jawed Karim, and Chad Hurley, and Steve Chen, the founders of YouTube
-- Pr0nto, for pron pronto!
+- Pr0nto, for pr0n pronto!
 
 ### Applications
 
