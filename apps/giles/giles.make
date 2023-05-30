@@ -10,6 +10,9 @@ OCR_MODEL=4
 # Note: OCR_MODEL is not used by giles
 LLM_MODEL_WORDS_MAX=1800
 
+MISSIONS_IN=$(wildcard mission.*.in.txt)
+MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
+
 export
 
 n_results=10
@@ -27,11 +30,11 @@ input: results.txt
 	mkdir -p input
 	(cd input && giles_get) < $<
 
-mission.txt: mission.in.txt
+mission.%.txt: mission.%.in.txt
 	if [ -z "$(query)" ]; then echo "ERROR: query is empty"; exit 1; fi
 	perl -pe 's/\$$query\b/$$ENV{query}/g' < $< > $@
 
-output.zip: input mission.txt
+output.zip: input $(MISSIONS)
 	alfred IMAGE2TEXT_MODE="$(IMAGE2TEXT_MODE)" LLM_MODEL="$(LLM_MODEL)" LLM_MODEL_LONG="$(LLM_MODEL_LONG)" LLM_MODEL_WORDS_MAX="$(LLM_MODEL_WORDS_MAX)" OCR_MODEL="$(OCR_MODEL)"
 
 

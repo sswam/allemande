@@ -29,8 +29,8 @@ LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $$[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODE
 
 summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible. Avoid repetition.
 
-mission=
-
+MISSIONS_IN=$(wildcard mission.*.in.txt)
+MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
 
 .PHONY: goal mkdirs
 
@@ -117,19 +117,22 @@ summary-condensed.txt: summary.txt
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$(summary_prompt)" < $< > $@
 
-mission.txt:
-	if [ -z "$(mission)" ]; then \
-		read -p "Enter the mission:" mission; \
-	fi; \
-	printf "%s\n" "$$mission" > $@
+#mission.txt:
+#	if [ -z "$(mission)" ]; then \
+#		read -p "Enter the mission:" mission; \
+#	fi; \
+#	printf "%s\n" "$$mission" > $@
 
-output.md: summary-condensed.txt mission.txt
-	llm process -m $(LLM_MODEL) "$$(< mission.txt)" < $< > $@
+output.md: summary-condensed.txt $(MISSIONS)
+	for mission in $(MISSIONS); do \
+		echo >&2 "mission: $$mission"; \
+		llm process -m $(LLM_MODEL) "$$(< $$mission)" < $< > $@; \
+	done
 
 output.%: output.md
 	pandoc $< --pdf-engine=xelatex -o $@
 
-output.zip: mission.txt $(OUTPUTS) summary.txt summary-condensed.txt input w summary
+output.zip: $(MISSIONS) $(OUTPUTS) summary.txt summary-condensed.txt input w summary
 	zip -r $@ $^
 
 .PRECIOUS: %

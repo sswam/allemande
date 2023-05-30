@@ -12,9 +12,12 @@ run_giles_for_landmarks() {
 	printf "\n\n----------------------------------------\n\n"
 	printf "*** $name ***\n\n"
 	mkdir -p "$name"
-	if [ ! -e "$name/mission.in.txt" ]; then
-		cp mission.in.txt "$name"
-	fi
+	for mission in mission.*.in.txt; do
+		if [ ! -f "$mission" ]; then
+			continue
+		fi
+		cp "$mission" "$name"
+	done
 	query="$name$region"
 	(
 		cd "$name"
@@ -27,4 +30,4 @@ while read name; do
 done
 wait
 
-./add_all_to_wordpress
+# ./add_all_to_wordpress
