@@ -40,6 +40,11 @@ def fetch_url(title: str, url: str, number: int, format: str = "%03d_%s") -> Non
 		if number:
 			file = format % (number, file)
 
+		# save the URL in a file
+		url_file = format % (number, f'{title_clean}.url')
+		with open(url_file, 'w') as f:
+			f.write(f"{url}\n")
+
 		command = ['wg', f"-O={file}", url]
 
 		logger.info(f'Running {" ".join(command)}')

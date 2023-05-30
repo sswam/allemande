@@ -1,0 +1,31 @@
+#/bin/bash -eu
+# lynx-dump-clean: clean up the output of lynx -dump, for LLM input
+# ideally we could convert it to markdown
+
+url=$1
+base=${2:-.}
+
+v lynx -dump -base="$base" "$url" |
+fgrep -v "file://$(readlink -f .)" |
+base=$base perl -pe '
+	use strict;
+	use warnings;
+	our ($refs, $prev, $site);
+	BEGIN {
+		$refs = 0;
+		$prev = "";
+	}
+	s{file:///}{$ENV{base}};
+	s/\[\d+\]//g;
+	if (/^References$/) {
+		$refs = 1;
+	} elsif ($refs) {
+		s/^\s*\d+\.\s*//;   # change to bullet list to help with deduplication
+		($site) = m{https?://(.*?)(/|$)};
+		if ($site eq $prev) {
+			s{https?://(.*?)(/|$)}{\t$2};
+		}
+		s/^(\s*)/$1- /;
+		$prev = $site;
+	}
+' | uniqo

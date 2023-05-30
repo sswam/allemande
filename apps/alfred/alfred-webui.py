@@ -36,11 +36,13 @@ if default_mission_file.exists():
 	mission_default = default_mission_file.read_text(encoding="utf-8").rstrip()
 else:
 	mission_default = ""
+topic_default = ""
+topic_placeholder = """Enter the topic here..."""
 mission_placeholder = """Enter your mission here..."""
 urls_placeholder = """Enter URLs of webpages and media here..."""
 
 
-def process_files(mission, document_files, urls_text, turbo): # pylint: disable=too-many-locals
+def process_files(topic, mission, document_files, urls_text, turbo): # pylint: disable=too-many-locals
 	""" run a file processing command in a web interface """
 
 	# show PATH
@@ -49,7 +51,7 @@ def process_files(mission, document_files, urls_text, turbo): # pylint: disable=
 	my_opts = opts.copy()
 
 	if turbo:
-		my_opts += ["LLM_MODEL=i", "LLM_MODEL_LONG=i+", "OCR_MODEL=i", "IMAGE2TEXT_MODE=fast"]
+		my_opts += ["LLM_MODEL=i", "LLM_MODEL_LONG=i+", "OCR_MODEL=i", "IMAGE2TEXT_MODE=fast", f"TOPIC={topic}"]
 
 	# TODO how to delete the tmpdir
 
@@ -133,6 +135,7 @@ def process_files(mission, document_files, urls_text, turbo): # pylint: disable=
 demo = gr.Interface(
 	fn=process_files,
 	inputs=[
+		gr.inputs.Textbox(lines=1, label="Topic", default=topic_default, placeholder=topic_placeholder),
 		gr.inputs.Textbox(lines=5, label="Mission", default=mission_default, placeholder=mission_placeholder),
 		gr.inputs.File(label="Documents", file_count="multiple"),
 		gr.inputs.Textbox(lines=5, label="URLs", placeholder=urls_placeholder),

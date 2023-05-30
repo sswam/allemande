@@ -1,0 +1,14 @@
+#!/bin/bash -eu
+# fc:	add flashcards
+
+v=
+f="$HOME/my/flashcards.txt"
+
+. opts
+
+if [ -n "$v" ]; then
+	less "$f"
+	exit
+fi
+
+cat >> "$f"

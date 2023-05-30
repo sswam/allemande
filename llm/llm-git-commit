@@ -4,9 +4,10 @@
 model_code=""
 
 usage() {
-	echo "Usage: llm-git-commit [-3|-4|-c|-i] [-m message] [-e] [-h]"
+	echo "Usage: llm-git-commit [-4|-n|-3|-c|-i] [-m message] [-e] [-h]"
+	echo "  -4: generate with GPT-4 (default)"
+	echo "  -n: start at menu, do not generate"
 	echo "  -3: generate with ChatGPT-3.5"
-	echo "  -4: generate with GPT-4"
 	echo "  -c: generate with Claude"
 	echo "  -C: generate with Claude 100k"
 	echo "  -i: generate with Claude Instant"
@@ -16,24 +17,35 @@ usage() {
 	echo "  -h: show this help message"
 }
 
-while getopts "34cCiIm:eh" opt; do
+model="4"
+
+while getopts "4n3cCiIm:eh" opt; do
 	case "$opt" in
-	3 ) model="3+";;
 	4 ) model="4";;
+	n ) model="";;
+	3 ) model="3+";;
 	c ) model="c";;
 	C ) model="c+";;
 	i ) model="i";;
 	I ) model="i+";;
-	e ) exec git commit ;;
 	m ) exec git commit -m "$OPTARG" ;;
+	e ) exec git commit ;;
 	h ) usage; exit 0;;
 	* ) usage; exit 1;;
 	esac
 done
 shift $((OPTIND-1))
 
+files=( "$@" )
+
 cleanup() {
-	f -type f -name 'commit-message.*.txt' -size 0 -- | xa rm
+	# remove empty commit messages, that are not open
+	f -type f -name 'commit-message.*.txt' -size 0 -- |
+	while read -r file; do
+		if ! lsof "$file" >/dev/null 2>&1; then
+			rm -v "$file"
+		fi
+	done
 }
 
 trap 'cleanup; exit' EXIT
@@ -55,6 +67,24 @@ model-name() {
 	esac
 }
 
+run-git-diff() {
+	local difftext
+	if [ "${#files[@]}" -eq 0 ]; then
+		git diff --staged
+	else
+		difftext=`git diff -- "${files[@]}"`
+		if [ -n "$difftext" ]; then
+			printf "%s\n" "$difftext"
+		elif [ -z "$difftext" ]; then
+			for file in "${files[@]}"; do
+				if [ -e "$file" ] && [ -n "$(git ls-files --exclude-standard --others --directory --no-empty-directory --error-unmatch "$file" 2>/dev/null)" ]; then
+					cat-sections.py -k "$file"
+				fi
+			done
+		fi
+	fi
+}
+
 generate-commit-message() {
 	model="$1"
 	echo "Generating commit message using `model-name $model` ..."
@@ -62,7 +92,7 @@ generate-commit-message() {
 		echo >&2 "Commit message already exists: $commit_message, moving it to rubbish."
 		mr "$commit_message"
 	fi
-	git diff --staged |
+	run-git-diff |
 		llm process -m $model 'Please describe this diff, for a git commit message, following the Conventional Commits spec.
 Do not invent anything that is not in the diff!
 Only describe the actual changes, lines starting with + and -, not the surrounding context.
@@ -76,6 +106,7 @@ feat|fix(short-module-name): a short summary line, preferably around 50 chars, n
 
 There can be only one feat or fix line per commit, then a blank line, then there can be multiple list items starting with -, DO NOT WRAP THE LINES.
 The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
+Do not belabour the obvious; we do not need too much detail, e.g. moving folders do not list every file that was moved.
 ' |
 	fmt -s -w 78 -g 78 > "$commit_message"
 }
@@ -87,7 +118,7 @@ check-for-bugs() {
 		echo >&2 "Code review already exists: $review, moving it to rubbish."
 		mr "$review"
 	fi
-	git diff --staged |
+	run-git-diff |
 		llm process -m $model 'Please do a code review: check this diff carefully for bugs, and tell me in brief about any bugs, other issues, or suggestions to improve it.' |
 		fmt -s -w 78 -g 78 |
 		tee "$review"
@@ -104,6 +135,14 @@ cleanup-and-exit() {
 		rm -f "$commit_message" "$review"
 	fi
 	exit "$1"
+}
+
+run-git-vimdiff() {
+	if [ "${#files[@]}" -eq 0 ]; then
+		git-vimdiff-staged
+	else
+		git-vimdiff "${files[@]}"
+	fi
 }
 
 while true; do
@@ -143,10 +182,10 @@ while true; do
 			generate-commit-message i
 			;;
 		d|D)
-			git diff --staged
+			run-git-diff
 			;;
 		v|V)
-			git-vimdiff-staged
+			run-git-vimdiff
 			;;
 		b|B)
 			check-for-bugs 4
@@ -172,5 +211,10 @@ while true; do
 	esac
 done
 
+if [ "${#files[@]}" -gt 0 ]; then
+	git add -- "${files[@]}"
+fi
+
 git commit -F "$commit_message"
+
 cleanup-and-exit "$?"

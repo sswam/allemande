@@ -1,0 +1,34 @@
+make: *** [/home/sam/allemande/apps/giles/giles.make:38: output.zip] Error 2
+WARNING:claude:Prompt is too long: 2918465 tokens
+WARNING:__main__:retry: exception: 'str' object has no attribute 'get'
+WARNING:claude:Prompt is too long: 2918465 tokens
+WARNING:__main__:retry: exception: 'str' object has no attribute 'get'
+WARNING:claude:Prompt is too long: 2918465 tokens
+WARNING:__main__:retry: exception: 'str' object has no attribute 'get'
+Traceback (most recent call last):
+  File "/home/sam/allemande/llm/llm", line 442, in <module>
+    argh.dispatch_commands([chat, query, process, count, list_models])
+  File "/home/sam/ai/venv/lib/python3.10/site-packages/argh/dispatching.py", line 349, in dispatch_commands
+    dispatch(parser, *args, **kwargs)
+  File "/home/sam/ai/venv/lib/python3.10/site-packages/argh/dispatching.py", line 179, in dispatch
+    for line in lines:
+  File "/home/sam/ai/venv/lib/python3.10/site-packages/argh/dispatching.py", line 290, in _execute_command
+    for line in result:
+  File "/home/sam/ai/venv/lib/python3.10/site-packages/argh/dispatching.py", line 273, in _call
+    result = function(*positional, **keywords)
+  File "/home/sam/allemande/llm/llm", line 350, in process
+    return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file)
+  File "/home/sam/allemande/llm/llm", line 355, in query
+    return retry(query2, retries, *prompt, out=out)
+  File "/home/sam/allemande/llm/llm", line 386, in retry
+    return fn(*args, **kwargs)
+  File "/home/sam/allemande/llm/llm", line 367, in query2
+    output_message = llm_chat([input_message])
+  File "/home/sam/allemande/llm/llm", line 241, in llm_chat
+    return chat_claude(messages)
+  File "/home/sam/allemande/llm/llm", line 214, in chat_claude
+    completion = claude.response_completion(response)
+  File "/home/sam/allemande/anthropic/claude.py", line 45, in response_completion
+    completion = response.get("completion")
+AttributeError: 'str' object has no attribute 'get'
+

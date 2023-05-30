@@ -90,8 +90,7 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 	# max_possible_tokens_to_sample = min(real_token_limit - prompt_tokens, TOKEN_LIMIT)  # gen tokens is limited to 9216?
 	max_possible_tokens_to_sample = real_token_limit - prompt_tokens
 	if max_possible_tokens_to_sample <= 0:
-		logger.warning("Prompt is too long: %d tokens", prompt_tokens)
-		return ""
+		raise ValueError(f"[context_length_exceeded] Prompt is too long: {prompt_tokens} tokens > {real_token_limit}")
 	if token_limit > max_possible_tokens_to_sample:
 		token_limit = max_possible_tokens_to_sample
 		logger.debug("Reducing token_limit to %d", token_limit)

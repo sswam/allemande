@@ -3,4 +3,4 @@ BASENAME=$(basename "$0")
 PROG_DIR=$(dirname "$(readlink -f "$0")")
 PATH=$PATH:$PROG_DIR
 rm-empty-files
-make -f "$PROG_DIR/$BASENAME.make" -j12 "$@"
+make -f "$PROG_DIR/$BASENAME.make" "$@"

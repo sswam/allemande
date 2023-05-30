@@ -28,11 +28,15 @@ fi
 
 PYTHON=$(which python3)
 
-for dir in py text www chat anthropic google llm; do
+for dir in python text www chat anthropic google llm; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio wordpress; do
+for dir in perl; do
+	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
+done
+
+for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio wordpress python perl; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 

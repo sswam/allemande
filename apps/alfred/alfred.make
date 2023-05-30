@@ -1,20 +1,18 @@
 #!/usr/bin/make -f
 
 # TODO: archives
-# TODO: urls, download HTML, PDF, youtube, video, etc
+# TODO: urls, download HTML, PDF, docx, youtube, video, etc
 # TODO: email attachments
 
 SHELL=/bin/bash
 export
 
-INPUT_FILES=$(shell find input -type f)
+INPUT_FILES=$(shell find input -type f -not -name '*.url')
 
 TEXT_FILES=$(addsuffix .txt,$(INPUT_FILES))
 WORK_FILES=$(addprefix w/,$(notdir $(TEXT_FILES)))
 
 SUMMARY_FILES=$(addprefix summary/,$(notdir $(WORK_FILES)))
-
-OUTPUTS=output.md output.pdf output.docx output.html
 
 WHISPER=whisp  # speech recognition engine
 
@@ -26,11 +24,25 @@ OCR_MODEL=4
 LLM_MODEL_TOKENS_MAX=8192
 LLM_MODEL_TOKENS_FOR_RESPONSE=2048
 LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $$[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODEL_TOKENS_FOR_RESPONSE) ])
+TOPIC=
 
-summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible. Avoid repetition.
+summary_prompt=Please summarize this info regarding the topic: $(TOPIC), using markdown dot-point form. Be as comprehensive and factual as possible, but fairly concise without omiting anything relevant. Avoid repetition. Only Include info relevant to the topic: $(TOPIC). There may be a lot of other crap in the input document such as website boilerplate links and stuff. Please include relevant links (only) in [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown\#Hyperlinks) format.
 
-mission=
+MISSIONS_IN=$(wildcard mission.*.in.txt)
+MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
 
+# missions are like mission.1.txt
+# output_md files are like output.1.md
+# so we need to replace mission -> output at the start of the filename
+
+OUTPUTS_MD=$(patsubst mission.%.txt,output.%.md,$(MISSIONS))
+OUTPUTS_HTML=$(patsubst mission.%.txt,output.%.html,$(MISSIONS))
+OUTPUTS_PDF=$(patsubst mission.%.txt,output.%.pdf,$(MISSIONS))
+OUTPUTS_DOCX=$(patsubst mission.%.txt,output.%.docx,$(MISSIONS))
+
+OUTPUTS=$(OUTPUTS_MD) $(OUTPUTS_HTML) $(OUTPUTS_PDF) $(OUTPUTS_DOCX)
+
+HTML_DUMP_FILTER=cat
 
 .PHONY: goal mkdirs
 
@@ -46,8 +58,12 @@ w: $(WORK_FILES)
 w/%: input/%
 	same -s $< $@
 
-w/%.html.txt: w/%.html
-	w3m -dump $< > $@
+w/%.html.txt: w/%.html w/%.url
+	# lynx -dump -base "$$(< w/$*.url)" $< > $@
+	# w3m -dump $< > $@
+	lecho $$HTML_DUMP_FILTER
+	pandoc-dump "$<" $$(<w/$*.url) | $$HTML_DUMP_FILTER > "$@"
+
 w/%.html: w/%.htm
 	ln $< $@
 
@@ -101,6 +117,7 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 	cat w/$*.img.desc.txt ) > $@
 
 summary/%.txt: w/%.txt
+	sleep .$$RANDOM
 	tokens=`llm count -m $(LLM_MODEL) < $<`; \
 	echo >&2 "tokens: $$tokens"; \
 	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
@@ -111,25 +128,35 @@ summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
 
 summary-condensed.txt: summary.txt
+	sleep .$$RANDOM
 	tokens=`llm count -m $(LLM_MODEL) < $<`; \
 	echo >&2 "tokens: $$tokens"; \
 	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$(summary_prompt)" < $< > $@
 
-mission.txt:
-	if [ -z "$(mission)" ]; then \
-		read -p "Enter the mission:" mission; \
-	fi; \
-	printf "%s\n" "$$mission" > $@
+#mission.txt:
+#	if [ -z "$(mission)" ]; then \
+#		read -p "Enter the mission:" mission; \
+#	fi; \
+#	printf "%s\n" "$$mission" > $@
 
-output.md: summary-condensed.txt mission.txt
-	llm process -m $(LLM_MODEL) "$$(< mission.txt)" < $< > $@
+output.%.md: summary-condensed.txt mission.%.txt
+	echo >&2 "mission: $$mission"
+	sleep .$$RANDOM
+	< mission.$*.txt llm process -m $(LLM_MODEL) "$$(< mission.$*.txt)" < $< > $@
 
-output.%: output.md
+output.%.html: output.%.md
+	pandoc $< --pdf-engine=xelatex -o $@
+output.%.pdf: output.%.md
+	pandoc $< --pdf-engine=xelatex -o $@
+output.%.docx: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@
 
-output.zip: mission.txt $(OUTPUTS) summary.txt summary-condensed.txt input w summary
+outputs: $(OUTPUTS)
+.PHONY: outputs
+
+output.zip: $(MISSIONS) $(OUTPUTS) summary.txt summary-condensed.txt input w summary
 	zip -r $@ $^
 
 .PRECIOUS: %

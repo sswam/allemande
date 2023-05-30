@@ -1,0 +1,3 @@
+#!/bin/bash
+# this is stupidly un-general, but I'm in a hurry
+tr '\n' ' ' | grep -ioP '(?<=<title>).*?(?=</title>)'

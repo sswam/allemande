@@ -167,7 +167,7 @@ def replace_tags(text, data, map_contact_tags):
 		logger.warning("replace_tag_debug match: %r, rv: %r", match, rv)
 		return rv
 	logger.warning("replace_tags text: %r, %r %r", r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag_debug, text)
-	text = re.sub(r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag_debug, text)
+	text = re.sub(r'\{([A-Z_]+)\}|"#([A-Z_]+)"', replace_tag_debug, text)
 	return text
 
 def replace_tags_debug(text, data, map_contact_tags):
@@ -235,14 +235,37 @@ def fill_template(data1, template_file, address):
 	}
 
 	map_contact_tags = {
-		"FACEBOOK_LINK": "FACEBOOK",
-		"INSTAGRAM_LINK": "INSTAGRAM",
-		"LINKEDIN_LINK": "LINKEDIN",
-		"TWITTER_LINK": "TWITTER",
-		"VIMEO_LINK": "VIMEO",
-		"YOUTUBE_LINK": "YOUTUBE",
-		"EMAIL_LINK": "EMAIL",
-		"PHONE_LINK": "PHONE_NUMBER",
+		"social-facebook": "FACEBOOK",
+		"social-instagram": "INSTAGRAM",
+		"social-linkedin": "LINKEDIN",
+		"social-twitter": "TWITTER",
+		"social-vimeo": "VIMEO",
+		"social-youtube": "YOUTUBE",
+		"social-email": "EMAIL",
+		"social-phone-number": "PHONE_NUMBER",
+		"social-blogger": "BLOGGER",
+		"social-deviantart": "DEVIANTART",
+		"social-digg": "DIGG",
+		"social-discord": "DISCORD",
+		"social-dropbox": "DROPBOX",
+		"social-flickr": "FLICKR",
+		"social-paypal": "PAYPAL",
+		"social-phone": "PHONE",
+		"social-pinterest": "PINTEREST",
+		"social-reddit": "REDDIT",
+		"social-rss": "RSS",
+		"social-skype": "SKYPE",
+		"social-snapchat": "SNAPCHAT",
+		"social-soundcloud": "SOUNDCLOUD",
+		"social-spotify": "SPOTIFY",
+		"social-teams": "TEAMS",
+		"social-tiktok": "TIKTOK",
+		"social-tumblr": "TUMBLR",
+		"social-twitch": "TWITCH",
+		"social-wechat": "WECHAT",
+		"social-whatsapp": "WHATSAPP",
+		"social-yahoo": "YAHOO",
+		"social-yelp": "YELP",
 	}
 
 	single_tags += map_contact_tags.values()

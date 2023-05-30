@@ -1,0 +1,38 @@
+#!/bin/bash -eu
+# pandoc-dump:	Convert HTML to Markdown, as cleanly as possible.
+
+c=1	# clean
+
+. opts
+
+html="$1"
+url="${2:-}"
+
+clean=$c
+title=`html-title < "$html"`
+
+pandoc_convert() {
+	pandoc --wrap=none -f html -t markdown
+}
+
+clean() {
+	perl -ne '
+		chomp;
+		s/{.*?}//g;
+		s/\[\]//g;
+		s/\s+/ /g;
+		s/^\s+$//;
+		s/^:::.*//;
+		print "$_\n";
+	' |
+	grep -v '!(data:image' |
+	single-blank-lines.pl
+}
+
+(
+	printf "<h1>title: %s</h1>\n" "$title"
+	if [ -n "$url" ]; then
+		printf "<h2>From: %s</h2>\n" "$url"
+	fi
+	cat "$html"
+) | pandoc_convert | clean

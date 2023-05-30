@@ -32,7 +32,7 @@ user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 timeout = 30
 
 
-def duckduckgo_search(query, max_results=12, safe="off", limit_max_results=True):
+def duckduckgo_search(query, max_results=12, safe="off", limit_max_results=False):
 	""" Search DuckDuckGo for `query` and return a list of results """
 	url = 'https://html.duckduckgo.com/html/'
 	kp = {
@@ -73,7 +73,7 @@ def duckduckgo_search(query, max_results=12, safe="off", limit_max_results=True)
 	return search_results
 
 
-def google_search(query, max_results=12, safe="off", limit_max_results=True):
+def google_search(query, max_results=12, safe="off", limit_max_results=False):
 	""" Search Google for `query` and return a list of results """
 	url = 'https://www.google.com/search'
 	params = {
@@ -116,7 +116,10 @@ def google_search(query, max_results=12, safe="off", limit_max_results=True):
 			a = res.find('a')
 			if not (h3 and a):
 				continue
-			res2 = {'title': h3.text.strip(), 'url': a['href']}
+			href = a.get('href')
+			if not href:
+				continue
+			res2 = {'title': h3.text.strip(), 'url': href}
 			if res2["url"].startswith("/"):
 				continue
 			if res2 not in search_results:
@@ -134,7 +137,7 @@ def google_search(query, max_results=12, safe="off", limit_max_results=True):
 	return search_results
 
 
-def bing_search(query, max_results=12, safe="off", limit_max_results=True):
+def bing_search(query, max_results=12, safe="off", limit_max_results=False):
 	""" Search Bing for `query` and return a list of results """
 	url = 'https://www.bing.com/search'
 	params = {
@@ -168,7 +171,7 @@ def bing_search(query, max_results=12, safe="off", limit_max_results=True):
 	return search_results
 
 
-def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_results=True):
+def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_results=False):
 	""" Search YouTube for `query` and return a list of results """
 	if safe != "off":
 		logger.warning("Safe search not implemented for YouTube")
@@ -313,7 +316,7 @@ def list_to_markdown_table(items, engine):
 	return tabulate.tabulate(items, tablefmt="pipe", headers="keys")
 
 
-def search(query, engine='duckduckgo', max_results=8, safe="off", markdown=False):
+def search(query, engine='duckduckgo', max_results=8, safe="off", markdown=False, limit=False):
 	""" Search `query` using `engine` and return a list of results """
 	lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
 	key = lc_keys_to_keys[engine.lower()]
@@ -382,8 +385,9 @@ def parse_args():
 	parser.add_argument('queries', nargs='*', help='Search queries')
 	parser.add_argument('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
 	parser.add_argument('-format', '-f', help='Output format', default=dict_first(formatters), choices=formatters.keys())
-	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=8)
+	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=12)
 	parser.add_argument('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
+	parser.add_argument('-limit', '-l', help='Limit to specified max results', action='store_true')
 	args = parser.parse_args()
 	return args
 
@@ -397,7 +401,7 @@ def main():
 	# search_queries = ['newest adafruit microcontroller boards']
 
 	for query in args.queries:
-		results = search(query, engine=args.engine, max_results=args.max_results, safe=args.safe)
+		results = search(query, engine=args.engine, max_results=args.max_results, safe=args.safe, limit=args.limit)
 
 		# output using the specified formatter
 		formatter = formatters[args.format]
