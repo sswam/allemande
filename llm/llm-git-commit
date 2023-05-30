@@ -68,10 +68,20 @@ model-name() {
 }
 
 run-git-diff() {
+	local difftext
 	if [ "${#files[@]}" -eq 0 ]; then
 		git diff --staged
 	else
-		git diff -- "${files[@]}"
+		difftext=`git diff -- "${files[@]}"`
+		if [ -n "$difftext" ]; then
+			printf "%s\n" "$difftext"
+		elif [ -z "$difftext" ]; then
+			for file in "${files[@]}"; do
+				if [ -e "$file" ] && [ -n "$(git ls-files --exclude-standard --others --directory --no-empty-directory --error-unmatch "$file" 2>/dev/null)" ]; then
+					cat-sections.py -k "$file"
+				fi
+			done
+		fi
 	fi
 }
 
