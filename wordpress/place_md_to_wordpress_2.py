@@ -126,6 +126,7 @@ def replace_tags(text, data, map_contact_tags):
 		logger.warning("quote text: %r, quoted: %r", text, quoted)
 		if isinstance(text, dict):
 			text = text["TEXT"]
+		test = text or ""
 		text = text.strip()
 		if quoted:
 			return f'"{text}"'
@@ -148,15 +149,31 @@ def replace_tags(text, data, map_contact_tags):
 			if tag2 in data:
 				markdown_link = data[tag2][0]["TEXT"]
 				link = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\2', markdown_link)
+				if re.search(r'[][]', link):
+					logger.warning("link has square brackets: %r", link)
+					link = re.sub(r'[][]', '', link)
+				link = link.strip()
+				if not link or link == "Unknown" or link == "N/A":
+					link = ""
 				return quote(link, quoted)
+			return quote("", quoted)
 		else:
 			logger.warning("Tag not found: %s", tag)
 			logger.warning("replace_tags data: %s", json.dumps(data, indent=4)) # list(data.keys()), indent=4))
 			logger.warning("replace_tags map_contact_tags: %s", json.dumps(map_contact_tags, indent=4)) #
 			return quote("", quoted)
-	logger.warning("replace_tags text: %r, %r %r", r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag, text)
-	text = re.sub(r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag, text)
+	def replace_tag_debug(match):
+		rv = replace_tag(match)
+		logger.warning("replace_tag_debug match: %r, rv: %r", match, rv)
+		return rv
+	logger.warning("replace_tags text: %r, %r %r", r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag_debug, text)
+	text = re.sub(r'\[([A-Z_]+)\]|"#([A-Z_]+)"', replace_tag_debug, text)
 	return text
+
+def replace_tags_debug(text, data, map_contact_tags):
+    rv = replace_tags(text, data, map_contact_tags)
+    # logger.warning("replace_tags_debug text: %r, data: %r, map_contact_tags: %r, rv: %r", text, data, map_contact_tags, rv)
+    return rv
 
 def fill_template(data1, template_file, address):
 	""" Fill template with data. """
@@ -260,7 +277,7 @@ def fill_template(data1, template_file, address):
 		# any multi tags?
 		multi_tags = [tag for tag in tags if tag in main_sections]
 		if not multi_tags:
-			line = replace_tags(line, data, map_contact_tags)
+			line = replace_tags_debug(line, data, map_contact_tags)
 			out_lines.append(line)
 		else:
 			main_section = multi_tags[0].lower()
@@ -288,7 +305,7 @@ def fill_template(data1, template_file, address):
 					section_info[main_section_uc] = ""
 
 				# section_info.update(data)
-				line2 = replace_tags(line2, section_info, map_contact_tags)
+				line2 = replace_tags_debug(line2, section_info, map_contact_tags)
 				out_lines.append(line2)
 
 	return '\n'.join(out_lines) + '\n'
