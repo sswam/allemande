@@ -11,6 +11,8 @@ import re
 from typing import Optional, IO, List
 from math import inf
 import argparse
+import time
+import random
 
 import argh
 
@@ -115,6 +117,8 @@ models = {
 
 first_model = next(iter(models.keys()))
 default_model = os.environ.get("LLM_MODEL", first_model)
+if default_model not in models:
+	default_model = first_model
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
 
@@ -310,13 +314,27 @@ def messages_to_lines(messages):
 	return lines
 
 
+def read_utf_replace(inp):
+	""" Read input, replacing invalid UTF-8 with the replacement character. """
+	try:
+		input_data = inp.buffer.read()
+		input_text = input_data.decode("utf-8", errors="replace")
+	except Exception as ex:
+		logger.warning("error reading input: %s", ex)
+		input_text = inp.read()
+	return input_text
+
+
 def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
 	prompt = " ".join(prompt)
 	prompt = prompt.rstrip()
-	input_text = inp.read().rstrip()
+
+	input_text = read_utf_replace(inp)
+	input_text = input_text.rstrip()
+
 	if prompt2:
 		prompt2 = prompt2.rstrip()
 
@@ -361,7 +379,7 @@ def query2(*prompt, out: Optional[IO[str]]=stdout):
 		return content
 
 
-def retry(fn, n_tries, *args, **kwargs):
+def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 	""" Retry a function n_tries times. """
 	for i in range(n_tries):
 		try:
@@ -372,6 +390,7 @@ def retry(fn, n_tries, *args, **kwargs):
 			bad = any(bad_error in msg for bad_error in BAD_ERRORS_NO_RETRY)
 			if bad or i == n_tries - 1:
 				raise
+			time.sleep(random.uniform(sleep_min, sleep_max))
 
 
 #def dict_to_namespace(d):
@@ -390,7 +409,7 @@ def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=Non
 
 def chat2(inp=stdin, out=stdout):
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
-	input_lines = inp.readlines()
+	input_lines = read_utf_replace(inp).splitlines()
 	input_messages = lines_to_messages(input_lines)
 	response_message = llm_chat(input_messages)
 	output_lines = messages_to_lines([response_message])
@@ -400,7 +419,7 @@ def chat2(inp=stdin, out=stdout):
 def count(inp=stdin, model=default_model):
 	""" count tokens in a file """
 	set_opts(vars())
-	text = inp.read()
+	text = read_utf_replace(inp)
 	model = opts.model
 	if model.startswith("gpt"):
 		enc = tiktoken.get_encoding("cl100k_base")
