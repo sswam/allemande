@@ -1,0 +1,21 @@
+
+# TODO lib for this
+# q. is this code okay?
+# a. no, it's not. it's terrible. but it works.
+# q. why is it terrible?
+# a. because it's not thread safe. it's not even process safe.
+# q. eh?
+# a. if you run two instances of this program, they will both set the volume to quiet.
+# q. yeah we'll be okay with that, it's reading from the microphone, we don't typically run two of those at once
+# a. okay, but what if you run this program, then run another program that sets the volume to something else, then run this program again?
+# q. it will fsck up the volume, no big deal, it's not like someone's life support. Anything to add?
+# a. yeah, it's not portable. it only works on linux.
+# q. true. but it's not like we're going to run this on windows.
+# a. okay, but it's not even portable to other linuxes. it only works on systems that use alsa.
+# q. Do we have a portable mixer library?
+# a. no, but we could write one.
+# q. yeah when I take a sabbatical.
+# a. okay, but it's not even portable to other linuxes that use alsa. it only works on systems that use alsa and have a mixer called "Master".
+# q. okay, but I don't give a sh1t, it's primarily for me; if people want to make it more portable, it's open source, knock yourself out. ok?
+# a. okay, but it's not even portable to other linuxes that use alsa and have a mixer called "Master". it only works on systems that use alsa and have a mixer called "Master" and have a volume range of 0-100.
+

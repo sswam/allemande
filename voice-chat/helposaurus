@@ -62,7 +62,7 @@ fi
 exec 3>&1
 
 if [ "$mike" = 1 ]; then
-	q mic.sh -on
+	q mic -on
 	read query < <(qe $verbose mike.py) 
 else
 	echo >&2 "Enter query:"

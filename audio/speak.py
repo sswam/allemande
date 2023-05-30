@@ -161,7 +161,7 @@ def get_synth(model=DEFAULT_MODEL):
 		raise ValueError(f'Unknown engine: {model_type}') from e
 	return engine(model)
 
-def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True):
+def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True, loud_while_speaking=None):
 	""" Speak a line of text """
 
 	if not synth:
@@ -192,7 +192,37 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 		# play the audio
 		if play:
 			sd.wait()
-			sd.play(audio, samplerate=rate_pp)
+
+			def play_it():
+				sd.play(audio, samplerate=rate_pp)
+		
+			if loud_while_speaking is not None:
+				# TODO put this in a lib, generic and audio control
+				# TODO process / thread safety?
+				# get the current volume
+				vol = alsaaudio.Mixer().getvolume()[0]
+				# set the volume to quiet
+				alsaaudio.Mixer().setvolume(loud_while_speaking)
+		
+				# set a handler to reset the volume
+				def reset_volume(*args):
+					alsaaudio.Mixer().setvolume(vol)
+					sys.exit(0)
+		
+				# signal handlers
+				signal.signal(signal.SIGINT, reset_volume)
+				signal.signal(signal.SIGTERM, reset_volume)
+		
+				# on exit
+				atexit.register(reset_volume)
+		
+				play_it()
+
+				reset_volume()
+			else:
+				play_it()
+
+			
 	except ZeroDivisionError as e:
 		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
 	finally:
@@ -206,7 +236,7 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 	if play and wait:
 		sd.wait()
 
-def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True):
+def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True, loud_while_speaking=None):
 	""" Speak lines of text """
 	if not synth:
 		synth = get_synth(model)
@@ -217,7 +247,7 @@ def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, 
 		logger.debug("speak_lines: line: %r", line)
 		if out:
 			out = f'{stem}_{i:06d}{ext}'
-		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo)
+		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo, loud_while_speaking=loud_while_speaking)
 
 	if play and wait:
 		sd.wait()
@@ -256,7 +286,7 @@ def do_list_models():
 		print("\t".join([k, lang, tld, accent]))
 
 @arg('--model', '-m')
-def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, cuda=False, download_all_models=False, echo=True):
+def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, cuda=False, download_all_models=False, echo=True, loud_while_speaking=100):
 	""" Speak text """
 	global use_cuda
 
@@ -277,7 +307,6 @@ def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play
 
 	# TODO put various options into a dict or something so we can pass them around more easily
 
-
 	# Play an optional short silence to wake up the speakers
 	if silence > 0 and play:
 		sd.wait()
@@ -291,9 +320,9 @@ def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play
 		postproc = partial(postproc_soundstretch, tempo=tempo, pitch=pitch)
 
 	if text:
-		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo)
+		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo, loud_while_speaking=loud_while_speaking)
 	else:
-		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo)
+		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo, loud_while_speaking=loud_while_speaking)
 
 
 if __name__ == '__main__':
