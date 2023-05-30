@@ -1,0 +1,2 @@
+#!/bin/bash -eu
+grep -v '^Choose a suburb, town or city'
