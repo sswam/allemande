@@ -76,6 +76,7 @@ feat|fix(short-module-name): a short summary line, preferably around 50 chars, n
 
 There can be only one feat or fix line per commit, then a blank line, then there can be multiple list items starting with -, DO NOT WRAP THE LINES.
 The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
+Do not belabour the obvious; we do not need too much detail, e.g. moving folders do not list every file that was moved.
 ' |
 	fmt -s -w 78 -g 78 > "$commit_message"
 }
