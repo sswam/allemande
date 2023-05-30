@@ -65,3 +65,4 @@ segment-anything
 tiktoken
 
 pyalsaaudio
+wordpress_api
