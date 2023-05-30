@@ -11,6 +11,8 @@ from contextlib import contextmanager
 from pathlib import Path
 import argparse
 import alsaaudio
+import signal
+import atexit
 
 import argh
 from pydub import AudioSegment
@@ -143,7 +145,7 @@ def do_list_devices():
 
 @argh.arg("--lang", "-l", default="en", help="Language")
 @argh.arg("--energy", "-e", default=700, help="Energy threshold")
-@argh.arg("--dynamic-energy", "-d", default=False, help="Dynamic energy threshold")
+@argh.arg("--dynamic-energy", "-E", default=False, help="Dynamic energy threshold")
 @argh.arg("--pause", "-p", default=1, help="Pause threshold")
 @argh.arg("--non-speaking-duration", "-n", default=1, help="Non-speaking duration")
 @argh.arg("--device-index", "-i", default=None, help="Device index")
@@ -151,8 +153,8 @@ def do_list_devices():
 @argh.arg("--adjust-for-ambient-noise", "-a", default=False, help="Adjust for ambient noise")
 @argh.arg("--port", "-P", default=default_port, help="Allemande core port for speech recognition")
 @argh.arg("--confidence-threshold", "-c", default=0.6, help="Confidence threshold")
-@argh.arg("--quiet-while-listening", "-q", default=20, help="Quiet while listening, volume level")
-def mike(lang="en", energy=700, dynamic_energy=False, pause=1, non_speaking_duration=1, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.6, quiet_while_listening=20):
+@argh.arg("--quiet-while-listening", "-m", default=40, help="Quiet or mute speakers while listening, volume level")
+def mike(lang="en", energy=700, dynamic_energy=False, pause=1, non_speaking_duration=1, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.6, quiet_while_listening=40):
 	""" Transcribe speech to text using microphone input """
 
 	if quiet_while_listening is not None:
@@ -164,16 +166,17 @@ def mike(lang="en", energy=700, dynamic_energy=False, pause=1, non_speaking_dura
 		alsaaudio.Mixer().setvolume(quiet_while_listening)
 
 		# set a handler to reset the volume
-		def reset_volume(*args):
+		def reset_volume(*args, exit=True):
 			alsaaudio.Mixer().setvolume(vol)
-			sys.exit(0)
+			if exit:
+				sys.exit(0)
 
 		# signal handlers
 		signal.signal(signal.SIGINT, reset_volume)
 		signal.signal(signal.SIGTERM, reset_volume)
 
 		# on exit
-		atexit.register(reset_volume)
+		atexit.register(reset_volume, exit=False)
 
 	if list_devices:
 		do_list_devices()
