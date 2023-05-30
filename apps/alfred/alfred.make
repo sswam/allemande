@@ -24,10 +24,10 @@ LLM_MODEL_LONG=c+
 LLM_MODEL=4
 OCR_MODEL=4
 LLM_MODEL_TOKENS_MAX=8192
-LLM_MODEL_TOKENS_FOR_RESPONSE=1024
+LLM_MODEL_TOKENS_FOR_RESPONSE=2048
 LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $$[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODEL_TOKENS_FOR_RESPONSE) ])
 
-summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible.
+summary_prompt=Please summarize this info in detail, using markdown dot-point form. Be as comprehensive and factual as possible. Avoid repetition.
 
 mission=
 
@@ -102,6 +102,7 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 
 summary/%.txt: w/%.txt
 	tokens=`llm count -m $(LLM_MODEL) < $<`; \
+	echo >&2 "tokens: $$tokens"; \
 	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$(summary_prompt)" < $< > $@
@@ -109,19 +110,26 @@ summary/%.txt: w/%.txt
 summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
 
+summary-condensed.txt: summary.txt
+	tokens=`llm count -m $(LLM_MODEL) < $<`; \
+	echo >&2 "tokens: $$tokens"; \
+	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
+	echo >&2 "model: $$model"; \
+	llm process -m $$model "$(summary_prompt)" < $< > $@
+
 mission.txt:
 	if [ -z "$(mission)" ]; then \
 		read -p "Enter the mission:" mission; \
 	fi; \
 	printf "%s\n" "$$mission" > $@
 
-output.md: summary.txt mission.txt
+output.md: summary-condensed.txt mission.txt
 	llm process -m $(LLM_MODEL) "$$(< mission.txt)" < $< > $@
 
 output.%: output.md
 	pandoc $< --pdf-engine=xelatex -o $@
 
-output.zip: mission.txt $(OUTPUTS) summary.txt input w summary
+output.zip: mission.txt $(OUTPUTS) summary.txt summary-condensed.txt input w summary
 	zip -r $@ $^
 
 .PRECIOUS: %

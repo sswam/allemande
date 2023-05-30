@@ -1,12 +1,15 @@
-# toggle the mic, mute or unmute
-bindsym $mod+m exec --no-startup-id mic.sh
+# Mic and Speaker control
+bindsym $mod+m exec --no-startup-id mic
+bindsym $mod+q exec --no-startup-id speaker
 
 # Ally Chat
 bindsym $mod+a exec firefox -P sam https://chat.allemande.ai
 
-# helposaurus
-bindsym $mod+q exec bash -c 'xterm-screen-run.sh "helposaurus" "quick-$RANDOM" hh'
-bindsym $mod+i exec bash -c 'xterm-screen-run.sh "helposaurus" "normal-$RANDOM" hhh'
+# Helposaurus
+bindsym $mod+i exec bash -c 'xterm-screen-run.sh "helposaurus" "default-$RANDOM" helposaurus'
+bindsym $mod+j exec bash -c 'xterm-screen-run.sh "helposaurus" "sentence-$RANDOM" helposaurus -1'
+bindsym $mod+k exec bash -c 'xterm-screen-run.sh "helposaurus" "brief-$RANDOM" helposaurus -b'
+
 
 # workspaces
 

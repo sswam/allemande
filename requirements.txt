@@ -63,3 +63,5 @@ markdown-katex
 segment-anything
 
 tiktoken
+
+pyalsaaudio

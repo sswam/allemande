@@ -6,7 +6,8 @@ SHELL=/bin/bash
 IMAGE2TEXT_MODE=best  # not used
 LLM_MODEL_LONG=c+
 LLM_MODEL=4
-OCR_MODEL=4  # not used
+OCR_MODEL=4
+# Note: OCR_MODEL is not used by giles
 LLM_MODEL_WORDS_MAX=1800
 
 export

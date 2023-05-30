@@ -1,0 +1,15 @@
+#!/bin/bash -eu
+# get-page-headless:	
+
+url=$1
+
+tries=5
+while true; do
+	port=$RANDOM
+	
+	chrome --headless --disable-gpu --timeout=10000 --window-size=1920,20480 --virtual-time-budget=5000 --remote-debugging-port=$port "$url"
+	break
+done
+
+curl -sS "http://localhost:9222/json/version" | jq -r ".webSocketDebuggerUrl" | websocat --text - --execute "Runtime.evaluate {expression: 'window.scrollTo(0, document.body.scrollHeight); new Promise(x => setTimeout(x, 3000));')" &&
+curl -sS "http://localhost:9222/json/version" | jq -r ".webSocketDebuggerUrl" | websocat --text - --execute "Runtime.evaluate {expression: 'document.documentElement.outerHTML;'}"
