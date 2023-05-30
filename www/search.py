@@ -116,7 +116,10 @@ def google_search(query, max_results=12, safe="off", limit_max_results=True):
 			a = res.find('a')
 			if not (h3 and a):
 				continue
-			res2 = {'title': h3.text.strip(), 'url': a['href']}
+			href = a.get('href')
+			if not href:
+				continue
+			res2 = {'title': h3.text.strip(), 'url': href}
 			if res2["url"].startswith("/"):
 				continue
 			if res2 not in search_results:
