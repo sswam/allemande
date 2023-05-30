@@ -61,6 +61,9 @@ AGENTS_LOCAL = {
 	"Ally": {
 		"model": "point-alpaca-7B",
 	},
+	"Barbie": {
+		"model": "point-alpaca-7B",
+	},
 	"Callam": {
 		"model": "point-alpaca-7B",
 	},
@@ -553,7 +556,7 @@ def interactive(model, args):
 		pass
 
 
-def run_search(agent, query, file, args, history, history_start):
+def run_search(agent, query, file, args, history, history_start, limit=True):
 	""" Run a search agent. """
 	name = agent["name"]
 	logger.debug("history: %r", history)
@@ -576,7 +579,7 @@ def run_search(agent, query, file, args, history, history_start):
 	logger.debug("query 6: %r", query)
 	query = re.sub(r'^\s*[,;.]|[,;.]\s*$', '', query).strip()
 	logger.warning("query: %r %r", name, query)
-	response = search.search(query, engine=name, markdown=True)
+	response = search.search(query, engine=name, markdown=True, limit=limit)
 	response2 = f"{name}:\t{response}"
 	response3 = fix_layout(response2, args)
 	logger.debug("response3:\n%s", response3)
