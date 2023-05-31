@@ -38,6 +38,13 @@ shift $((OPTIND-1))
 
 files=( "$@" )
 
+# check if already staged; in which case, unstage, it works better that way
+for file in "${files[@]}"; do
+	if ! git diff --staged --quiet "${files[@]}"; then
+		v git restore --staged "${files[@]}"
+	fi
+done
+
 cleanup() {
 	# remove empty commit messages, that are not open
 	f -type f -name 'commit-message.*.txt' -size 0 -- |
