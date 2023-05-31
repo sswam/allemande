@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 # settngs
 
-RETRIES = 5
+RETRIES = 10
 BAD_ERRORS_NO_RETRY = "maximum context length", "context_length_exceeded"
 
 models = {
@@ -394,6 +394,8 @@ def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 			if bad or i == n_tries - 1:
 				raise
 			time.sleep(random.uniform(sleep_min, sleep_max))
+			sleep_min *= 2
+			sleep_max *= 2
 
 
 #def dict_to_namespace(d):
