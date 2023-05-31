@@ -1,0 +1,28 @@
+#!/usr/bin/perl -n
+# pandoc-dump-clean - clean up pandoc HTML to markdown dump
+
+use strict;
+use warnings;
+
+chomp;
+
+s/{.*?}//g;	# remove pandoc footnotes
+s{\[(Like|Comment|Most relevant|Share|Log in|Posts|About|Photos|Videos|More)\]}{}g;	# remove facebook buttons
+s{(\bAll reactions:|### \d+ comments\b|\bSee more\b)}{}g;
+s/^-? *:::.*//;	# remove pandoc divs
+s/<.*?>//g;	# remove html tags
+s/!(\[.*?\])?\(.*?\)//g;	# remove images
+s{(https://\S+?)\?[^\s\)"']*}{$1}g;	# remove query strings from urls
+s{(\(/\S+?)\?[^\s\)"']*}{\($1}g;	# remove query strings from relative urls
+s{\((https://www.facebook.com)?/photo/|https://l.facebook.com/l.php\)}{}g;	# remove facebook photos
+
+1 while s/\[+[\s\d]*\]+//g;	# remove empty square brackets
+s/[\[\(\{\(\<]+$//g;	# remove broken brackets
+s/^[\]\)\}\>]+//g;	# remove broken brackets
+s/\s+/ /g;	# remove extra whitespace
+s/^\s+$//;	# remove empty lines
+
+my $ok = 1;
+$ok &&= !/\bdata:iamge\b/;
+
+print "$_\n" if $ok;
