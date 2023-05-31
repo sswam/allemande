@@ -1,0 +1,6 @@
+# slugify 
+  File "/home/sam/ai/venv/bin/slugify", line 15
+    print slugify.slugify(line.decode('utf-8'))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SyntaxError: Missing parentheses in call to 'print'. Did you mean print(...)?
+
