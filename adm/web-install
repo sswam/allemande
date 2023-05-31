@@ -1,4 +1,4 @@
-#!/bin/bash -eux
+#!/bin/bash -eu
 # web-install: set permissions for the web app and install nginx config
 
 . get_root
