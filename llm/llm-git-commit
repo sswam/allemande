@@ -36,7 +36,24 @@ while getopts "4n3cCiIm:eh" opt; do
 done
 shift $((OPTIND-1))
 
-files=( "$@" )
+# add entries under directories
+files=()
+for ent; do
+	if [ -d "$ent" -a \! -L "$ent" ]; then
+		IFS_old=$IFS
+		IFS=$'\n'; files+=( $( find "$ent" \! -type d ) )
+		IFS=$IFS_old
+	else
+		files+=( "$ent" )
+	fi
+done
+
+# check if already staged; in which case, unstage, it works better that way
+for file in "${files[@]}"; do
+	if ! git diff --staged --quiet "${files[@]}"; then
+		v git restore --staged "${files[@]}"
+	fi
+done
 
 cleanup() {
 	# remove empty commit messages, that are not open
