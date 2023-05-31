@@ -115,14 +115,15 @@ int main(int argc, char **argv)
 	ssh_prog = getenv("ARCS_SSH");
 	if (!ssh_prog) { ssh_prog = getenv("SSH"); }
 	if (ssh_prog == NULL && tty) {
-		ssh_prog = "ssh -t";
+		ssh_prog = "ssh -q -t";
 #ifdef __MINGW32_MAJOR_VERSION
-	sshc_shell_init = "\". /etc/profile ; . ~/.bash_profile ; \"";
+		sshc_shell_init = "\". /etc/profile ; . ~/.bash_profile ; \"";
 #else
-	sshc_shell_init = "\"if [ -n \\\"\\$BASH\\\" ]; then . /etc/profile ; . ~/.bash_profile ; fi ; \"";
+		sshc_shell_init = "\"if [ -n \\\"\\$BASH\\\" ]; then . /etc/profile ; . ~/.bash_profile ; fi ; \"";
 #endif
-	} else if (ssh_prog == NULL)
-		ssh_prog = "ssh";
+	} else if (ssh_prog == NULL) {
+		ssh_prog = "ssh -q";
+	}
 
 	if (argc < 2) {
 		arcs_error("usage: sshc user@host:dir command arg1...");

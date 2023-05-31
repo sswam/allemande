@@ -19,7 +19,7 @@ import requests
 from bs4 import BeautifulSoup
 import tabulate
 from youtube_search import YoutubeSearch
-import tabulate
+from get_selenium import get_selenium
 
 
 from ucm import setup_logging, add_logging_options
@@ -205,6 +205,39 @@ def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_
 	return [{'title': result['title'], 'url': result['url'], 'thumbnail': result['thumbnail']} for result in search_results]
 
 
+def google_maps_image_search(query, max_results=12, safe="off", limit_max_results=False):
+	base_url = "https://www.google.com/maps"
+	search_url = base_url + "/search/"
+
+	params = {
+		'q': query,
+	}
+
+	html = get_selenium(search_url, params=params, time_limit=timeout, scroll_limit=None, scroll_wait=1, retry_each_scroll=3, script=None, exe=None, script_wait=1, retry_script=3, headless=True, facebook=False, output=None)
+
+#	response = requests.get(search_url, headers=headers, params=params, timeout=timeout)
+#	response.raise_for_status()
+
+#	soup = BeautifulSoup(response.text, 'html.parser')
+	soup = BeautifulSoup(html, 'html.parser')
+
+	print(soup)
+
+	image_results = []
+
+	image_tags = soup.find_all('img', class_='tactile-search-thumbnail-raster')
+
+	for img_tag in image_tags:
+		img_src = img_tag.get('src')
+		if img_src:
+			image_results.append({'image_url': img_src})
+
+	if image_results:
+		search_results = image_results[:max_results]
+
+	return image_results[:max_results]
+
+
 def pornhub_search(query, max_results=10, safe="off"):
 	site = 'https://www.pornhub.com'
 	url = site + '/video/search'
@@ -244,6 +277,7 @@ engines = {
 #	'DuckDuckGo': duckduckgo_search,
 #	'Bing': bing_search,
 	'YouTube': youtube_search,
+	'GoogleMapsImages': google_maps_image_search,
 	'PornHub': pornhub_search,
 }
 
@@ -254,6 +288,7 @@ agents = {
 #	'Bing': bing_search,
 	'UTube': youtube_search,
 	'Pr0nto': pornhub_search,
+	'Guma': google_maps_image_search,
 }
 
 
@@ -261,6 +296,7 @@ agent_engine = {
 	'goog': 'Google',
 	'utube': 'YouTube',
 	'pr0nto': 'PornHub',
+	'guma': 'GoogleMapsImages',
 }
 
 

@@ -13,6 +13,7 @@ import re
 import subprocess
 from types import SimpleNamespace
 
+import shlex
 import readline
 
 import yaml
@@ -842,8 +843,13 @@ def safe_shell(agent, query, file, args, history, history_start=0, command=None)
 	query = re.sub(r'^\s*[,;.]|\s*$', '', query).strip()
 	logger.debug("query 7: %r", query)
 
+	# shell escape in python
+	agent["command"]
+	cmd_str = ". ~/.profile ; "
+	cmd_str += " ".join(map(shlex.quote, agent["command"]))
 
-	command = ['sshc', 'allemande-nobody@localhost'] + agent["command"]
+	command = ['sshc', 'allemande-nobody@localhost', "bash", "-c", cmd_str]
+	agent["command"]
 
 	# echo the query to the subprocess
 	with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:

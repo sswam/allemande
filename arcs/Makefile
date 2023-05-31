@@ -6,7 +6,8 @@ CFLAGS  = -Wall -Wextra -Werror -g
 PREFIX  = /usr/local
 
 LDLIBS  = -lws2_32
-EXE     = .exe
+EXE     =
 
 sshc$(EXE): sshc.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o sshc$(EXE) sshc.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $<
+	hide-file $@

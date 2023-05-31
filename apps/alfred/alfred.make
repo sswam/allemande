@@ -61,8 +61,7 @@ w/%: input/%
 w/%.html.txt: w/%.html w/%.url
 	# lynx -dump -base "$$(< w/$*.url)" $< > $@
 	# w3m -dump $< > $@
-	lecho $$HTML_DUMP_FILTER
-	pandoc-dump "$<" $$(<w/$*.url) | $$HTML_DUMP_FILTER > "$@"
+	pandoc-dump "$<" $$(<w/$*.url) | $(HTML_DUMP_FILTER) > "$@"
 
 w/%.html: w/%.htm
 	ln $< $@

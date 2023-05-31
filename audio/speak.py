@@ -12,6 +12,7 @@ import torch
 import signal
 import atexit
 import alsaaudio
+import time
 
 from argh import arg, dispatch_command
 import sounddevice as sd
@@ -176,6 +177,11 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 	if echo:
 		print(text)
 
+#	if line.strip() == "":
+#		# sleep a bit
+#		time.sleep(0.5)
+#		return
+
 	# create a temporary file to store the audio output
 	out_is_temp = not out
 	if out_is_temp:
@@ -230,6 +236,11 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 				play_it()
 
 			
+	except AssertionError as e:
+		if "No text" in str(e):
+			time.sleep(0.5)
+		else:
+			raise(e)
 	except ZeroDivisionError as e:
 		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
 	finally:

@@ -3,11 +3,12 @@
 # giles: search on a topic, fetch webpages, and run alfred to perform a mission
 
 SHELL=/bin/bash
-IMAGE2TEXT_MODE=best  # not used
+IMAGE2TEXT_MODE=best
+# Note: IMAGE2TEXT_MODE is not not used by giles yet
 LLM_MODEL_LONG=c+
 LLM_MODEL=4
 OCR_MODEL=4
-# Note: OCR_MODEL is not used by giles
+# Note: OCR_MODEL is not used by giles yet
 LLM_MODEL_WORDS_MAX=1800
 
 MISSIONS_IN=$(wildcard mission.*.in.txt)
