@@ -10,7 +10,7 @@ PATH=$PATH:$PROG_DIR
 . wordpress-env.sh
 
 region=", Bass Coast, Victoria"
-PARALLEL_MAX=5
+PARALLEL_MAX=8
 
 . opts
 
