@@ -5,4 +5,4 @@ hobby, travel, fitness, language, gaming, culture, business, pet, food, parent, 
 
 Could have lots of separate domains but we can use rooms for that. Mainly we would need different domains only for very different purposes / safety reasons.
 
-twitter-like, but with a minimum of 100 and a maximum 150
+twitter-like, but with a minimum of 250 and a maximum 300
