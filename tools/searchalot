@@ -80,7 +80,7 @@ Thanks for being awesome!
 	
 	I=$[$I+1]
 
-	if [ $(( I % 10 )) = 0 ]; then
+	if [ $(( I % 1 )) = 0 ]; then
 		echo "Waiting for all jobs to finish..."
 		wait
 	fi
