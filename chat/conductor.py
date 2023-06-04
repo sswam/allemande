@@ -278,8 +278,9 @@ def get_roles_from_history(history, user, bot):
 	print("roles: ", roles)
 	if roles:
 		user = roles[0]
-	if len(roles) > 1 and random.random() < 0.5 and "Ally" in roles and user != "Ally":
-		return user, "Ally"
+#	What did this do?!
+#	if len(roles) > 1 and random.random() < 0.5 and "Ally" in roles and user != "Ally":
+#		return user, "Ally"
 	if len(roles) > 1:
 		# return a random out of the remaining roles
 		bot = random.choice(roles[1:])

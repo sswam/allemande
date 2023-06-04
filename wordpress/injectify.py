@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 site_url=os.environ["WORDPRESS_SITE_URL"]
 username=os.environ["WORDPRESS_USERNAME"]
 password=os.environ["WORDPRESS_APP_PASSWORD"]
-headers = {}
 
+headers = {
+	"Authorization": f"Basic {base64.b64encode(f'{username}:{password}'.encode()).decode()}"
+}
 
 def endpoint(type):
 	""" Return the endpoint for the given type """
@@ -31,7 +33,7 @@ def endpoint(type):
 
 def find_by_title(title_to_find, type="post", many=False):
 	""" Find a post or page by title """
-	global site_url, username, password
+	global site_url, username, password, headers
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
 	params = {
 		'search': title_to_find,
@@ -47,10 +49,9 @@ def find_by_title(title_to_find, type="post", many=False):
 		raise Exception(f"More than one {type} found with title, and many=False: {title_to_find}")
 	return items[0]
 
-
 def find_by_id(id_to_find, type="post"):
 	""" Find a post or page by ID """
-	global site_url, username, password
+	global site_url, username, password, headers
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}/{id_to_find}"
 	r = requests.get(url, headers=headers)
 	item = r.json()
@@ -59,7 +60,7 @@ def find_by_id(id_to_find, type="post"):
 
 def find_by_slug(slug_to_find, type="post"):
 	""" Find a post or page by slug """
-	global site_url, username, password
+	global site_url, username, password, headers
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
 	params = {
 	    'slug': slug_to_find,
@@ -72,7 +73,7 @@ def find_by_slug(slug_to_find, type="post"):
 
 def update_item(type, title, content, status):
 	""" Update a post """
-	global site_url, username, password
+	global site_url, username, password, headers
 	data = {
 		'content': content
 	}
@@ -88,7 +89,7 @@ def update_item(type, title, content, status):
 
 def create_item(type, title, content, status="draft", id=None, slug=None):
 	""" Create a post or page """
-	global site_url, username, password
+	global site_url, username, password, headers
 
 	# Set up the payload to send to WordPress
 
@@ -113,7 +114,7 @@ def create_item(type, title, content, status="draft", id=None, slug=None):
 
 def read_item(type, title, content, status, id, slug):
 	""" Read a post or page """
-	global site_url, username, password
+	global site_url, username, password, headers
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
 	r = requests.get(url, headers=headers)
 	item = r.json()
@@ -126,9 +127,9 @@ def read_item(type, title, content, status, id, slug):
 
 
 # TODO move up
-def setup(type, username, password):
+def setup(type, username, password, headers):
 	endpoint = endpoint(type)
-	auth = requests.auth.HTTPBasicAuth(username, password)
+	auth = requests.auth.HTTPBasicAuth(username, password, headers)
 	return endpoint, auth
 
 

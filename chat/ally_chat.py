@@ -56,7 +56,7 @@ DEFAULT_FILE_EXTENSION = "bb"
 AGENTS = {
 }
 
-AGENT_DEFAULT = "Ally"
+AGENT_DEFAULT = os.environ.get("bot", "Ally")
 
 AGENTS_LOCAL = {
 	"Ally": {
@@ -1097,14 +1097,14 @@ def main():
 	# load model (or don't, for testing purposes)
 	# create an empty object, so that we can add attributes to it
 	model = SimpleNamespace()
-	if args.model:
+	models_dir = Path(os.environ["ALLEMANDE_MODELS"])/"llm"
+	model_path = Path(models_dir) / args.model
+	if args.model and model_path.exists():
 		abbrev_models = [k for k, v in models.items() if v.get("abbrev") == args.model]
 		if len(abbrev_models) == 1:
 			args.model = abbrev_models[0]
 
-		models_dir = Path(os.environ["ALLEMANDE_MODELS"])/"llm"
 		# model_dirs = prog_dir()/".."/"models"/"llm"
-		model_path = Path(models_dir) / args.model
 		model.tokenizer = load_tokenizer(model_path)
 		TOKENIZERS[args.model] = model.tokenizer
 	else:
