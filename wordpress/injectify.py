@@ -7,7 +7,8 @@ import requests
 import argh
 import json
 import logging
-from slugify import slugify
+import base64
+from ucm_slugify import slugify
 
 
 # TODO look for an existing Python API to wordpress, I'm sure there is one!
