@@ -22,16 +22,22 @@ site_url=os.environ["WORDPRESS_SITE_URL"]
 username=os.environ["WORDPRESS_USERNAME"]
 password=os.environ["WORDPRESS_APP_PASSWORD"]
 
+headers = {
+	"Authorization": f"Basic {base64.b64encode(f'{username}:{password}'.encode()).decode()}"
+}
+
 def endpoint(type):
 	""" Return the endpoint for the given type """
 	return "pages" if type == "page" else "posts"
 
+
 def find_by_title(title_to_find, type="post", many=False):
 	""" Find a post or page by title """
+	global site_url, username, password, headers
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
 	params = {
-	    'search': title_to_find,
-	    'per_page': 1
+		'search': title_to_find,
+		'per_page': 1
 	}
 	r = requests.get(url, headers=headers, params=params)
 	items = r.json()
@@ -45,14 +51,16 @@ def find_by_title(title_to_find, type="post", many=False):
 
 def find_by_id(id_to_find, type="post"):
 	""" Find a post or page by ID """
+	global site_url, username, password, headers
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}/{id_to_find}"
 	r = requests.get(url, headers=headers)
 	item = r.json()
-	# TODO what if missing?
 	return item
+
 
 def find_by_slug(slug_to_find, type="post"):
 	""" Find a post or page by slug """
+	global site_url, username, password, headers
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
 	params = {
 	    'slug': slug_to_find,
@@ -60,30 +68,28 @@ def find_by_slug(slug_to_find, type="post"):
 	}
 	r = requests.get(url, headers=headers, params=params)
 	items = r.json()
-	# TODO what if missing?
 	return items
 
-def update_post(post_id, new_content):
 
-    # Update the existing post
-    new_content = "Your new content goes here"
-    data = {
-        'content': new_content
-    }
-    update_url = f"{url}/{post_id}"
-    update_r = requests.post(update_url, headers=headers, json=data)
+def update_item(type, title, content, status):
+	""" Update a post """
+	global site_url, username, password, headers
+	data = {
+		'content': content
+	}
+	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
+	update_url = f"{url}/{post_id}"
+	update_r = requests.post(update_url, headers=headers, json=data)
 
-    if update_r.status_code == 200:
-        print("Post updated successfully!")
-    else:
-        print("Could not update the post.")
-else:
-    print("No post found with that title.")
-
+	if update_r.status_code == 200:
+		logger.info(f"Updated {type} successfully!")
+	else:
+		raise Exception(f"Could not update {type}")
 
 
 def create_item(type, title, content, status="draft", id=None, slug=None):
 	""" Create a post or page """
+	global site_url, username, password, headers
 
 	# Set up the payload to send to WordPress
 
@@ -101,19 +107,29 @@ def create_item(type, title, content, status="draft", id=None, slug=None):
 
 	# Check if the request was successful
 	if response.status_code == 201:  # 201 is the status code for 'Created'
-		logger.info(f"{Create}d {type} successfully!")
+		logger.info(f"Created {type} successfully!")
 	else:
-		raise Exception(f"Could not {create} {type}")
+		raise Exception(f"Could not create {type}")
+
+
+def read_item(type, title, content, status, id, slug):
+	""" Read a post or page """
+	global site_url, username, password, headers
+	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
+	r = requests.get(url, headers=headers)
+	item = r.json()
+	return item
 
 
 # TODO CRUD boilerplate for any apppliation,
 # or use this as inspiration for a more generic CRUD tool
 # or for AI to create other CRUD tools.
 
+
 # TODO move up
-def setup(type, username, password):
+def setup(type, username, password, headers):
 	endpoint = endpoint(type)
-	auth = requests.auth.HTTPBasicAuth(username, password)
+	auth = requests.auth.HTTPBasicAuth(username, password, headers)
 	return endpoint, auth
 
 
@@ -134,7 +150,7 @@ def setup(type, username, password):
 @argh.arg("--force", "-F", help="Force the action")
 def crud(file=None, content=None, title=None, status="draft", post=False, page=False,
 		type=None, id=None, slug=None, auto=False,
-		create=False, read=False, update=False, delete=False):
+		create=False, read=False, update=False, force=False, delete=False):
 	""" Create, update or delete a wordpress page or post """
 
 	# type, post, and page
@@ -157,7 +173,6 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	else:
 		logger.warning("No type specified, assuming --post")
 		post = True
-
 
 	# other options
 
@@ -235,6 +250,10 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	}
 
 	# operations
+	# TODO 
+	# - list all pages
+	# - search for pages by title keyword
+	# TODO sync
 
 	if create:
 		return create_item(type, title, content, status, id, slug)
@@ -248,47 +267,5 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 		raise Exception("Internal error: no operation found")
 
 
-	# TODO sync
-
-
 if __name__ == "__main__":
 	argh.dispatch_command(crud)
-
-
-# q. can I call a function with the same name as a local variable?
-# a. yes, but it's confusing
-# q. it might be nice to have a create option and a create function
-# a. yes, but it's confusing
-# q. what would you recommend?
-# a. I would recommend using a different name for the function
-# q. crud_create is not great
-# a. create is not great either
-# q. create_post is not great either
-# a. create_post is better than create
-# q. but there are also pages
-# a. create_page is better than create
-# q. but there are also other types
-# a. create_item is better than create
-# q. ok, create_item sounds good
-# a. but it's not clear what kind of item
-# q. we have a type argument
-# a. create_item sounds good
-# q. I might set up aliases create = create_item for external use
-# a. that sounds good
-# q. do you like argh?
-# a. yes, it's great
-# q. is crud a good name for the main function?
-# a. yes, it's short and clear
-
-
-# q. is there a slugify library or lib function?
-# a. yes, https://pypi.org/project/python-slugify/
-# q. ok I wrote a simple one too, I guess I should use the upstream one
-# a. yes,
-# q. is there a python library for wordpress?
-# a. yes, https://pypi.org/project/wordpress-api/
-# q. I think this one might end up being more useful,
-#    https://pypi.org/project/python-wordpress-xmlrpc/
-# a. yes, it looks like it has more features, but it's not as simple
-# q. I like the idea to implement upsert and such
-# a. yes, that's a good idea
