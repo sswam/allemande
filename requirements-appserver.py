@@ -4,6 +4,7 @@ fire
 openai
 async-openai
 transformers
+# torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
 sentencepiece
 tokenizers==0.12.1
 #wandb
@@ -62,4 +63,7 @@ markdown-katex
 segment-anything
 
 tiktoken
-# torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
+
+pyalsaaudio
+wordpress_api
+selenium
