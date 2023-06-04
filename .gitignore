@@ -22,3 +22,7 @@ venv
 js/mousetrap
 pix/banner?.*
 config2.sh
+apps/alfred/mission.txt
+commit-message.*
+adm/nginx/banned_ips.conf
+tracks

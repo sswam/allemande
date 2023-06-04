@@ -59,7 +59,7 @@ a.button {
 	padding: 10px 25px;
 	border-radius: 5px;
 	font-weight: 500;
-	margin: 20px 7px 0px 7px;
+	margin: 7px;
 }
 
 .button:hover {
@@ -73,6 +73,15 @@ a.button {
 
 .button.red:hover {
 	background-color: #633;
+}
+
+.button.orange {
+	background-color: #642;
+	color: #ffc;
+}
+
+.button.orange:hover {
+	background-color: #852;
 }
 
 .button.yellow {
@@ -93,6 +102,33 @@ a.button {
 	background-color: #363;
 }
 
+.button.cyan {
+	background-color: #255;
+	color: #cff;
+}
+
+.button.cyan:hover {
+	background-color: #377;
+}
+
+.button.blue {
+	background-color: #226;
+	color: #ccf;
+}
+
+.button.blue:hover {
+	background-color: #338;
+}
+
+.button.violet {
+	background-color: #424;
+	color: #fcf;
+}
+
+.button.violet:hover {
+	background-color: #636;
+}
+
 @media (max-width: 600px) {
 	.info {
 		padding: 10px 15px;
@@ -102,6 +138,6 @@ a.button {
 	}
 	a.button {
 		padding: 10px 15px;
-		margin: 20px 5px 0px 5px;
+		margin: 5px;
 	}
 }

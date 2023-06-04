@@ -1,0 +1,29 @@
+chedule 1: Specification
+
+[Detailed description of the GPT-4 LLM and associated services, including any updates or enhancements to be provided during the Term]
+
+Schedule 2: Subscription Fee and Payment Terms
+
+(a) The Subscription Fee for the Initial Term shall be [AMOUNT] per month, payable monthly in advance.
+
+(b) The Subscription Fee for any Renewal Term shall be the then-current fee, as updated from time to time by the Provider, and communicated to the Client in advance of each Renewal Term.
+
+(c) Any additional fees or charges for optional services, upgrades or support beyond the standard GPT-4 LLM offering shall be set forth separately and agreed upon in writing between the parties.
+
+(d) All fees and amounts payable under this Agreement are exclusive of any taxes, levies, or similar governmental charges, which the Client shall be responsible for in addition to the Subscription Fee.
+
+Schedule 3: Prohibited Activities
+
+The Client and its Users are prohibited from using the GPT-4 LLM and related services for any activities that:
+
+(a) infringe, misappropriate, or otherwise violate any Intellectual Property Rights, or rights of privacy or publicity, of any third party;
+
+(b) promote or incite hatred, discrimination, violence, or any illegal activities;
+
+(c) create, promote, or distribute any false, misleading, or deceptive information, including, but not limited to, fake news or deepfake content, or be used to manipulate public opinion or interfere with any election or referendum;
+
+(d) endanger, harass, threaten, defame or abuse any person or group;
+
+(e) compromise or circumvent any security or authentication measures of any system, network, or account; or
+
+(f) are otherwise in violation of any applicable laws, regulations, or ethical standards.

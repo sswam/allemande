@@ -5,8 +5,8 @@
 
 mode() {
 	mode=$1 ; shift
-	chown $SUDO_USER:www-data "$@"
-	chmod $mode "$@"
+	chown $SUDO_USER:www-data -- "$@"
+	chmod $mode -- "$@"
 }
 
 # install the allemande.ai website -------------------------------------------
@@ -25,15 +25,23 @@ fi
 cd "$ALLEMANDE_HOME/webchat"
 
 mkdir -p files
+
 mode 771 rooms files
-mode 660 rooms/*.bb rooms/*.html
-mode 440 rooms/-.bb rooms/-.html
+
 if [ ! -e .htpasswd ]; then
 	touch .htpasswd
 fi
+
 mode 640 .htpasswd static/logout/.htpasswd
 
 ln -sfT $PWD /var/www/allychat
+
+# set up the rooms -----------------------------------------------------------
+
+cd rooms
+
+mode 660 *.bb *.html
+mode 440 -.bb -.html demo.bb demo.html adult/demo.bb adult/demo.html
 
 # install the nginx config and sites -----------------------------------------
 

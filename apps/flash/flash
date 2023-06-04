@@ -1,0 +1,15 @@
+#!/bin/bash -eu
+# video to flashcards
+BASENAME=$(basename "$0")
+PROG_DIR=$(dirname "$(readlink -f "$0")")
+PATH=$PATH:$PROG_DIR
+
+dir=$1
+url=$2
+
+mkdir -p "$dir"
+cd "$dir"
+rm-empty-files
+"$BASENAME.make" url="$url"
+
+cat post.txt

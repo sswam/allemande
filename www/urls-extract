@@ -1,0 +1,1 @@
+grep -o '[a-z]*:*//[^"]*' | grep '^\(http\|https\|//[a-z]\)' | relurl https://

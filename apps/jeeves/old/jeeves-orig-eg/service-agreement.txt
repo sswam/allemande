@@ -1,0 +1,126 @@
+
+Dated: [DATE]
+
+PARTIES
+
+(1) [CLIENT FULL NAME/COMPANY NAME], a [NATIONALITY/TYPE OF COMPANY] located at [REGISTERED ADDRESS] (the "Client");
+
+(2) [AI PROVIDER FULL NAME/COMPANY NAME], a [NATIONALITY/TYPE OF COMPANY] located at [REGISTERED ADDRESS] (the "Provider");
+
+RECITALS
+
+(A) The Provider has developed and owns the proprietary GPT-4 Artificial Intelligence-based language model ("GPT-4 LLM") and associated services as set forth in the Specification (defined below);
+
+(B) The Client wishes to utilize the GPT-4 LLM and associated services for its business operations, and the Provider is willing to grant the Client access to the GPT-4 LLM subject to the terms and conditions of this Agreement;
+
+(C) It is the intention of the parties that this Agreement sets forth the terms and conditions governing the sale, license, use and onselling of GPT-4 LLM by the Client;
+
+IT IS AGREED as follows:
+
+1. DEFINITIONS AND INTERPRETATION
+
+1.1 In this Agreement, the following terms have the following meanings:
+
+"Agreement" means this service agreement, including any schedules and annexures;
+
+"Confidential Information" means all information of a confidential nature (whether oral, written or electronic form) concerning the business, technology, products, affairs, finances, customers, or suppliers of a party, the terms of this Agreement, and any information which a party's representative is advised or ought reasonably to be aware is of a confidential nature;
+
+"Intellectual Property Rights" or "IPR" means all patents, copyrighted material, database rights, design rights, trade secrets, trademarks, service marks, domain names, and any other intellectual property rights, whether registered or unregistered, and all rights in the nature of the foregoing;
+
+"Specification" means the technical description and operating conditions of GPT-4 LLM and related services as further described in Schedule 1;
+
+"Subscription Fee" means the fee payable by the Client pursuant to clause 3.1(a), as calculated in accordance with Schedule 2;
+
+"Term" means the term of this Agreement as set forth in clause 2;
+
+"Users" means the end users of the GPT-4 LLM who are authorized by the Client under a sublicense to access and use such services;
+
+2. TERM
+
+2.1 This Agreement commences on the date it is entered into by the parties and, unless terminated earlier in accordance with its terms, continues in force for an initial period of [NUMBER] months (the "Initial Term").
+
+2.2 Upon expiry of the Initial Term, this Agreement will automatically renew for additional successive periods of [NUMBER] months each (each a "Renewal Term") at the then-current Subscription Fee set forth in Schedule 2, unless either party provides written notice of non-renewal at least [NUMBER] days before the end of the then-current Term.
+
+3. CONSIDERATION
+
+3.1 In consideration of the rights granted under this Agreement, the Client will pay the Provider:
+
+(a) The Subscription Fee invoiced monthly in advance by the Provider;
+
+(b) Any other fees and charges specified in Schedule 2, as applicable;
+
+3.2 The Client will pay all amounts due under the Agreement within [NUMBER] days of the date of invoice standing instruction from the Client in a manner approved by the Provider.
+
+3.3 All sums payable under this Agreement are exclusive of VAT (or other applicable sales tax) which will be added to such sums, if applicable.
+
+3.4 Any amounts not paid when due under this Agreement shall accrue interest at a rate of [PERCENTAGE]% per month (or, if less, the maximum rate permitted by law) from the due date until the date on which payment is made.
+
+4. SERVICES
+
+4.1 The Provider grants the Client a non-exclusive, non-transferable, non-sublicensable (except as expressly permitted herein) license during the Term to:
+(a) access, use and sublicense the GPT-4 LLM and other Services, all as set forth in and subject to the terms and conditions of this Agreement;
+
+(b) sublicense the GPT-4 LLM solely to Users, on terms substantially the same as and no less restrictive than the terms of this Agreement, and subject to any sublicense limitations set forth in Schedule 1; and
+
+4.2 The Provider will provide the Client with access to the GPT-4 LLM via a secure online Application Programming Interface ("API") or other agreed access method.
+
+5. CLIENT OBLIGATIONS
+
+5.1 The Client will ensure that it and its Users comply with all relevant laws and regulations and do not engage in any Prohibited Activities as described in Schedule 3. The Client shall be liable for any breach by its Users of this Agreement, as if committed by the Client itself.
+
+5.2 The Client agrees to indemnify and hold the Provider harmless, on demand, against any and all claims, losses, damages, costs or other liabilities resulting from claims brought by Users relating to the use of GPT-4 LLM.
+
+6. INTELLECTUAL PROPERTY AND CONFIDENTIALITY
+
+6.1 The Provider shall retain all IPR in the GPT-4 LLM and associated services, and grant no implied licenses or rights beyond the access and sublicensing rights expressly set forth herein.
+
+6.2 Each party agrees to maintain the Confidential Information received from the other party in confidence, and to use such information solely for the purpose of fulfilling its obligations under this Agreement.
+
+6.3 The Confidential Information obligations shall survive termination or expiration of this Agreement for a period of [NUMBER] years.
+
+7. WARRANTIES AND LIABILITY
+
+7.1 The Provider warrants that the GPT-4 LLM and related services will conform in all material respects to the Specification. The Client's sole and exclusive remedy, and the Provider's sole and entire liability, for any breach of this warranty shall be for the Provider to use reasonable efforts to rectify any non-conformities in the GPT-4 LLM or related services.
+
+7.2 EXCEPT AS EXPRESSLY PROVIDED IN THIS AGREEMENT, THE PROVIDER MAKES NO WARRANTIES, REPRESENTATIONS OR CONDITIONS OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY OR OTHERWISE, AND SPECIFICALLY DISCLAIMS ALL IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
+
+7.3 Neither party shall be liable to the other party for any indirect, consequential, special or incidental damages, even if informed of the possibility of such damages.
+
+8. TERMINATION
+
+8.1 Either party may terminate this Agreement upon written notice to the other party if the other party:
+(a) commits a material breach of this Agreement and fails to remedy such breach within [NUMBER] days after receipt of written notice thereof; or
+(b) becomes insolvent or is subject to a receiving, winding-up or similar order.
+
+8.2 Upon termination or expiration of this Agreement, the Client shall cease all use of the GPT-4 LLM and related services, and shall promptly and irretrievably delete and destroy any copies of GPT-4 LLM software, documentation, and Confidential Information in its possession or control.
+
+8.3 Termination or expiration of this Agreement shall not affect any accrued rights, indemnities, liabilities, or obligations of either party, which shall survive termination or expiration.
+
+9. GENERAL
+
+9.1 This Agreement, including its Schedules, forms the entire understanding between the parties and supersedes any prior agreements or understandings, whether written or oral.
+
+9.2 This Agreement may be amended only by a written instrument signed by authorized representatives of both parties.
+
+9.3 This Agreement, and any non-contractual rights or obligations arising out of or in connection with it, shall be governed by and construed in accordance with the laws of [JURISDICTION], and the parties submit to the exclusive jurisdiction of the courts of [JURISDICTION] to settle any dispute or claim arising out of or in connection with this Agreement.
+
+SIGNED by
+For and on behalf of
+[CLIENT FULL NAME/COMPANY NAME]
+
+______________________________
+[PRINT NAME]
+[POSITION]
+
+SIGNED by
+For and on behalf of
+[AI PROVIDER FULL NAME/COMPANY NAME]
+
+______________________________
+[PRINT NAME]
+[POSITION]
+
+Schedule 1: Specification
+Schedule 2: Subscription Fee and Payment Terms
+Schedule 3: Prohibited Activities
+S

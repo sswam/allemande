@@ -11,10 +11,13 @@ import re
 from typing import Optional, IO, List
 from math import inf
 import argparse
+import time
+import random
 
 import argh
 
 import openai
+import tiktoken
 
 import tab
 import claude
@@ -25,6 +28,9 @@ from bard import Bard
 logger = logging.getLogger(__name__)
 
 # settngs
+
+RETRIES = 10
+BAD_ERRORS_NO_RETRY = "maximum context length", "context_length_exceeded"
 
 models = {
 	"gpt-3.5-turbo": {
@@ -111,6 +117,8 @@ models = {
 
 first_model = next(iter(models.keys()))
 default_model = os.environ.get("LLM_MODEL", first_model)
+if default_model not in models:
+	default_model = first_model
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
 
@@ -306,13 +314,30 @@ def messages_to_lines(messages):
 	return lines
 
 
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
+def read_utf_replace(inp):
+	""" Read input, replacing invalid UTF-8 with the replacement character. """
+	try:
+		input_data = inp.buffer.read()
+		input_text = input_data.decode("utf-8", errors="replace")
+	except Exception as ex:
+		logger.warning("error reading input: %s", ex)
+		input_text = inp.read()
+	return input_text
+
+
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
 	prompt = " ".join(prompt)
 	prompt = prompt.rstrip()
-	input_text = inp.read().rstrip()
+
+	input_text = read_utf_replace(inp)
+	input_text = input_text.rstrip()
+
+	if not input_text and not empty_ok:
+		raise ValueError("no input")
+
 	if prompt2:
 		prompt2 = prompt2.rstrip()
 
@@ -328,12 +353,12 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file)
 
 
-def query(*prompt, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=3, state_file=None):
+def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None):
 	set_opts(vars())
 	return retry(query2, retries, *prompt, out=out)
 
 
-def query2(*prompt, out: IO[str]=stdout):
+def query2(*prompt, out: Optional[IO[str]]=stdout):
 	""" Ask the LLM a question. """
 	prompt = " ".join(prompt)
 
@@ -351,18 +376,26 @@ def query2(*prompt, out: IO[str]=stdout):
 		lines = tab.fix_indentation_list(lines, opts.indent)
 		content = "".join(lines)
 
-	out.write(content)
+	if out:
+		out.write(content)
+	else:
+		return content
 
 
-def retry(fn, n_tries, *args, **kwargs):
+def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 	""" Retry a function n_tries times. """
 	for i in range(n_tries):
 		try:
 			return fn(*args, **kwargs)
 		except Exception as ex:
 			logger.warning("retry: exception: %s", ex)
-			if i == n_tries - 1:
+			msg = str(ex)
+			bad = any(bad_error in msg for bad_error in BAD_ERRORS_NO_RETRY)
+			if bad or i == n_tries - 1:
 				raise
+			time.sleep(random.uniform(sleep_min, sleep_max))
+			sleep_min *= 2
+			sleep_max *= 2
 
 
 #def dict_to_namespace(d):
@@ -373,18 +406,35 @@ def retry(fn, n_tries, *args, **kwargs):
 #	return ns
 
 
-def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=3, state_file=None, auto_save=None):
+def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, state_file=None, auto_save=None):
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
 	set_opts(vars())
 	return retry(chat2, retries, inp=inp, out=out)
 
 
 def chat2(inp=stdin, out=stdout):
-	input_lines = inp.readlines()
+	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
+	input_lines = read_utf_replace(inp).splitlines()
 	input_messages = lines_to_messages(input_lines)
 	response_message = llm_chat(input_messages)
 	output_lines = messages_to_lines([response_message])
 	out.writelines(output_lines)
+
+
+def count(inp=stdin, model=default_model):
+	""" count tokens in a file """
+	set_opts(vars())
+	text = read_utf_replace(inp)
+	model = opts.model
+	if model.startswith("gpt"):
+		enc = tiktoken.get_encoding("cl100k_base")
+		tokens = enc.encode(text)
+		count = len(tokens)
+	elif model.startswith("claude"):
+		return claude.count(text)
+	else:
+		raise ValueError(f"unknown model: {model}")
+	return count
 
 
 def list_models():
@@ -394,4 +444,4 @@ def list_models():
 
 
 if __name__ == "__main__":
-	argh.dispatch_commands([chat, query, process, list_models])
+	argh.dispatch_commands([chat, query, process, count, list_models])

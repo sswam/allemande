@@ -1,0 +1,8 @@
+# from 1s -m=i "I am thinking of different ides for social networking / chat domains, so far I came up with: kids, teens, edu, safe, work, make, fun, date, adult, anon. Can you suggest some more different types of social networks / chat app domains?"
+niche, hobby, faith, local, health, language, cause, music, tvshow, food, news, travel, business, fashion, finance, crypto
+# from 1s -m=4
+hobby, travel, fitness, language, gaming, culture, business, pet, food, parent, faith, literature, fashion, eco, charity, LGBTQ+, local, DIY, tech, film.
+
+Could have lots of separate domains but we can use rooms for that. Mainly we would need different domains only for very different purposes / safety reasons.
+
+twitter-like, but with a minimum of 250 and a maximum 300

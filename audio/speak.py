@@ -9,6 +9,10 @@ import logging
 from functools import partial
 import multiprocessing
 import torch
+import signal
+import atexit
+import alsaaudio
+import time
 
 from argh import arg, dispatch_command
 import sounddevice as sd
@@ -22,19 +26,22 @@ from gtts import gTTS
 
 from sh import amixer, soundstretch
 
-from ucm import FileMutex
+# from ucm import FileMutex
+import ucm_main
+
+opts = None
 
 logger = logging.getLogger(__name__)
 logger_fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
-logging.basicConfig(level=logging.INFO, format=logger_fmt)
+logging.basicConfig(level=logging.WARNING, format=logger_fmt)
 
 DEFAULT_MODELS = {
 	'coqui': 'tts_models/en/ek1/tacotron2',
 	'gtts': 'en:co.uk',
 }
 
-DEFAULT_MODEL = "coqui:" + DEFAULT_MODELS['coqui']
-# DEFAULT_MODEL = "gtts:" + DEFAULT_MODELS['gtts']
+# DEFAULT_MODEL = "coqui:" + DEFAULT_MODELS['coqui']
+DEFAULT_MODEL = "gtts:" + DEFAULT_MODELS['gtts']
 
 
 use_cuda = torch.cuda.is_available()
@@ -158,13 +165,22 @@ def get_synth(model=DEFAULT_MODEL):
 		raise ValueError(f'Unknown engine: {model_type}') from e
 	return engine(model)
 
-def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None):
+def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True, loud_while_speaking=None):
 	""" Speak a line of text """
+
+	logger.warning("speak_line: text: %r, out: %r, model: %r, play: %r, wait: %r, synth: %r, deafen: %r, postproc: %r, echo: %r, loud_while_speaking: %r", text, out, model, play, wait, synth, deafen, postproc, echo, loud_while_speaking)
 
 	if not synth:
 		synth = get_synth(model)
 
-	logger.info("speak_line: text: %r", text)
+	logger.debug("speak_line: text: %r", text)
+	if echo:
+		print(text)
+
+#	if line.strip() == "":
+#		# sleep a bit
+#		time.sleep(0.5)
+#		return
 
 	# create a temporary file to store the audio output
 	out_is_temp = not out
@@ -182,26 +198,63 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 		if deafen:
 			sd.wait()
 			amixer.sset("Capture", "nocap")
-			logger.info("Mic off")
+			logger.debug("Mic off")
 
 		# play the audio
 		if play:
 			sd.wait()
-			sd.play(audio, samplerate=rate_pp)
+
+			def play_it():
+				sd.play(audio, samplerate=rate_pp)
+		
+			if loud_while_speaking is not None:
+				# TODO put this in a lib, generic and audio control
+				# TODO process / thread safety?
+				# get the current volume
+				vol = alsaaudio.Mixer().getvolume()[0]
+				logger.warning("speak_line: volume %r -> %r", vol, loud_while_speaking)
+				# set the volume to quiet
+				alsaaudio.Mixer().setvolume(loud_while_speaking)
+		
+				# set a handler to reset the volume
+				def reset_volume(*args, exit=True):
+					alsaaudio.Mixer().setvolume(vol)
+					if exit:
+						sys.exit(0)
+		
+				# signal handlers
+				signal.signal(signal.SIGINT, reset_volume)
+				signal.signal(signal.SIGTERM, reset_volume)
+		
+				# on exit
+				atexit.register(reset_volume, exit=False)
+		
+				play_it()
+
+				reset_volume(exit=False)
+			else:
+				play_it()
+
+			
+	except AssertionError as e:
+		if "No text" in str(e):
+			time.sleep(0.5)
+		else:
+			raise(e)
 	except ZeroDivisionError as e:
 		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
 	finally:
 		if deafen:
 			sd.wait()
 			amixer.sset("Capture", "cap")
-			logger.info("Mic on")
+			logger.debug("Mic on")
 		if out_is_temp:
 			os.remove(out)
 
 	if play and wait:
 		sd.wait()
 
-def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None):
+def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True, loud_while_speaking=None):
 	""" Speak lines of text """
 	if not synth:
 		synth = get_synth(model)
@@ -209,10 +262,10 @@ def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, 
 		stem, ext = os.path.splitext(out)
 
 	for i, line in enumerate(inp):
-		logger.info("speak_lines: line: %r", line)
+		logger.debug("speak_lines: line: %r", line)
 		if out:
 			out = f'{stem}_{i:06d}{ext}'
-		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
+		speak_line(text=line, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo, loud_while_speaking=loud_while_speaking)
 
 	if play and wait:
 		sd.wait()
@@ -251,7 +304,7 @@ def do_list_models():
 		print("\t".join([k, lang, tld, accent]))
 
 @arg('--model', '-m')
-def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, debug=False, cuda=False, download_all_models=False):
+def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play=True, wait=True, deafen=False, tempo=1.0, pitch=0.0, list_models=False, cuda=False, download_all_models=False, echo=True, loud_while_speaking=100):
 	""" Speak text """
 	global use_cuda
 
@@ -272,7 +325,6 @@ def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play
 
 	# TODO put various options into a dict or something so we can pass them around more easily
 
-
 	# Play an optional short silence to wake up the speakers
 	if silence > 0 and play:
 		sd.wait()
@@ -286,12 +338,13 @@ def speak(inp=stdin, out=None, text=None, model=DEFAULT_MODEL, silence=0.1, play
 		postproc = partial(postproc_soundstretch, tempo=tempo, pitch=pitch)
 
 	if text:
-		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
+		speak_line(text=text, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo, loud_while_speaking=loud_while_speaking)
 	else:
-		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc)
+		speak_lines(inp=inp, out=out, model=model, play=play, wait=wait, synth=synth, deafen=deafen, postproc=postproc, echo=echo, loud_while_speaking=loud_while_speaking)
 
-if __name__ == "__main__":
-	dispatch_command(speak)
+
+if __name__ == '__main__':
+	ucm_main.run(speak, globals())
 	sd.wait()
 
 

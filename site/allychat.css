@@ -1,0 +1,111 @@
+* {
+	box-sizing: border-box;
+	font-family: helvetica, arial, sans-serif;
+}
+body, html {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+/* themeable elements */
+
+*, input, textarea, button {
+	color: var(--text);
+}
+
+body#app {
+	background: var(--frame);
+}
+
+body#messages {
+	background: var(--background);
+}
+
+input, textarea, button, iframe {
+	background: var(--input);
+	border: 1px solid var(--border);
+}
+
+input:focus, textarea:focus, iframe:focus {
+	background: var(--focus);
+}
+
+button {
+	background: var(--button);
+}
+
+button:hover, button:focus {
+	background: var(--button-focus);
+}
+
+/* scrollbars */
+
+* {
+	scrollbar-color: var(--scrollbar) var(--scrollbar-background);
+}
+
+::-webkit-scrollbar {
+	height: 6px;
+	width: 6px;
+	background: var(--scrollbar-background);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--scrollbar);
+	-webkit-border-radius: 1ex;
+	-webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+}
+
+::-webkit-scrollbar-corner {
+	/* TODO what even is this? */
+	background: var(--background);
+}
+
+/* light mode / dark mode default colours, avoid flash of white or black */
+
+@media (prefers-color-scheme: light) {
+	:root {
+		/* gradient.py --css 1 .5 8 */
+		--col0: #ff0000;
+		--col1: #ededed;
+		--col2: #dbdbdb;
+		--col3: #c9c9c9;
+		--col4: #b6b6b6;
+		--col5: #a4a4a4;
+		--col6: #929292;
+		--col7: #808080;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		/* gradient.py --css 0 .5 8 */
+		--col0: #00ff00;
+		--col1: #121212;
+		--col2: #242424;
+		--col3: #363636;
+		--col4: #494949;
+		--col5: #5b5b5b;
+		--col6: #6d6d6d;
+		--col7: #808080;
+	}
+}
+
+/* default color mappings for a gradient theme */
+
+:root {
+	--background: var(--col0);
+	--focus: var(--col1);
+	--input: var(--col2);
+	--button-focus: var(--col2);
+	--button: var(--col3);
+	--frame: var(--col5);
+	--border: var(--col6);
+	--text: var(--col7);
+
+	--scrollbar-background: var(--background);
+	--scrollbar: var(--frame);
+	--link: midnightblue;
+}

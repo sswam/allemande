@@ -10,6 +10,8 @@ ALLYCHAT_THEMES="$ALLYCHAT_HOME/static/themes"
 ALLEMANDE_MODELS="$ALLEMANDE_HOME/models"
 
 ALLEMANDE_USER="allemande"
+ALLEMANDE_UID="777"
+ALLEMANDE_GID="$ALLEMANDE_UID"
 ALLEMANDE_PORTS="/var/spool/allemande"
 ALLEMANDE_MODULES="llm_llama stt_whisper"
 ALLEMANDE_BOXES="prep todo doing done error history"
@@ -26,18 +28,32 @@ fi
 
 PYTHON=$(which python3)
 
-for dir in py text www chat anthropic google; do
+for dir in python text www chat anthropic google llm scrape tools; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code llm openai anthropic web chat voice-chat eg www html table i3 git gradio apps; do
+for dir in perl; do
+	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
+done
+
+for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio wordpress python perl scrape; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
+done
+
+for appdir in "$ALLEMANDE_HOME/apps"/*; do
+	if [ ! -d "$appdir" ]; then
+		continue
+	fi
+	app=$(basename "$appdir")
+	PATH=$PATH:$ALLEMANDE_HOME/apps/$app
 done
 
 : ${CONFIG:=$ALLEMANDE_HOME/config.sh}
 
 if [ ! -e "$CONFIG" ]; then
-	ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
+	echo "Creating config.sh: $CONFIG"
+
+	v ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
 fi
 
 . "$CONFIG"

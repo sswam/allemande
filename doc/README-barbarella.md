@@ -4,18 +4,139 @@
 
 ## What is this?
 
-This is a work-in-progress AI toolkit and chat app.
+We are [Allemande AI](https://allemande.ai), a growing AI consultancy in Melbourne, Australia.
 
-See the [Point Alpaca](https://github.com/pointnetwork/point-alpaca) page for info on obtaining the LLM.
+Our flagship product is an innovative multi-player chat app called <A href="https://chat.allemande.ai">Ally Chat</A>, based on a powerful open-source AI toolkit.
+
+## Ally Chat
+
+Ally Chat is a chat system of many multiples:
+
+- multi-user: many people can chat in one chat room, or you chat one-on-one; or just to yourself!
+- multi-place: anyone can create a new chat room instantly, just by setting its name
+- multi-AI: we have six different AI large language models, and you chat to any or all of them in each room
+- multi-agent: we have ten different programming tools for seven important languages
+- multi-search: we have at least two web search tools
+
+### Electric People
+
+- Ally, a human-like model based on Point Alpaca, uncensored, and the star of our show.
+- Barbie, a human-like model similar to Ally, configured identically at the moment.
+- Callam, Ally's male counterpart, configured identically at the moment.
+- Dav, OpenAI's ChatGPT 3.5, with a default context of twenty messages.
+- Emmy, OpenAI's GPT-4, with a default context of ten messages.
+- Claud, Claude from Anthropic, with a default context of fifty messages.
+- Clia, Claude Instant from Anthropic, with a default context of one hundred messages.
+- Jaski, Google Bard, currently limited to a single message of context, and AWOL due to an API change.
+
+### Programming Agents
+
+- Dogu, the bash shell
+- Gid, the Python programming language
+- Lary, the Perl programming language
+- Matz, the Ruby programming language
+- Luah, the Lua programming language
+- Jyan, the node JS programming system
+- Jahl, the deno JS programming system
+- Faby, the tiny C compiler
+- Qell, the quick JS programming system
+- Bilda, run GNU Make
+- Palc, a calculator using Python
+
+### Search Agents
+
+- Goog, the Google search engine
+- UTube, find videos on YouTube
+- Pr0nto, find adult videos on PornHub
+
+### Applications
+
+These applications are currently stand-alone tools; they are not yet integrated into Ally Chat.
+
+- Flash, automatically create study flashcards from online videos
+- Alfred, an anything-processor, taking any sort of input and producing a document.
+- Ikigai, a resume assistant, and chat agent to help you find your ikigai, work in progress
+- Sherlock, a research agent, work in progress
+
+### Future Plans
+
+- Integrate Cophelia, GitHub Copilot
+- Integrate existing apps and tools to Ally Chat: 
+	- alfred
+	- bestov
+	- flash
+	- giles
+	- ikigai
+	- jeeves
+	- sherlock
+- Missions
+- User-definable AI Personas, based on Point Alpaca or other models
+- Files
+- Dev Mode, with ssh / vim / vscode
+- Admin Mode
+- Editable chat history
+	- Admins
+	- Users
+- Separate domains for kids, teens, edu, safe, work, make, fun, date, adult, anon, LGQBTQIA+, etc.
+
+## Our Names
+
+### The Company
+
+Allemande is a dance style originating in Germany, characterized by intricate handholds, turns, and moderate pace, often featured in Baroque-era court dances and instrumental suites. The lead developer loves the music of Johann Sebastian Bach. Bach wrote Allemandes for keyboard, violin, cello, lute, and flute.
+
+Allemand is the French word for the German language.
+
+The word Allemande contains the letters LLM in that order.
+
+We have named our main protagonist Ally, short for Allemanda, and evoking a sincere helper.
+
+### Electric People
+
+- Ally, short for Allemanda (after Allemande, a slow dance), with the letters LLM, and evoking a sincere helper (ally).
+- Barbie, short for Barbarella (after the famous movie, and Electric Barbarella by Duran Duran), suggesting a lack of inhibitions; also contains LL.
+- Callam, a male name variant of Callum, with the letters LLM
+- Dav, after Leonardo da Vinci; the code name for GPT 3 is "davinci"
+- Emmy, after Emmy Noether, a famous scientist, and continuing OpenAI's naming convention: Ada, Babbage, Curie, DaVinci, Emmy
+- Claud, short for Claude, the official name of Anthropic's large language model
+- Clia, short for Claudia, a female variant of Claude
+- Jaski, after Jaskier, the bard from the Witcher series
+
+### Programming Agents
+
+- Dogu, after Doug McIlroy, the leader Bell labs when UNIX was developed, and inventor of pipes
+- Gud, after Guido van Rossum, the creator of Python
+- Lary, after Larry Wall, the creator of Perl
+- Matz, after Yukihiro Matsumoto, the creator of Ruby
+- Luah, after Lua, meaning moon
+- Jyan, after JavaScript and Ryan Dahl, the creator of Node JS
+- Jahl, after JavaScript and Ryan Dahl, the creator of Deno
+- Faby, after Fabrice Bellard, the creator of the tiny C compiler
+- Qell, after Quick and Fabrice Bellard, the creator of QuickJS
+- Palc, for Python Calculator
+
+### Search Agents
+
+- Serry, after Sergey Brin and Larry Page, the founders of Google
+- Jadev, after Jawed Karim, and Chad Hurley, and Steve Chen, the founders of YouTube
+- Pr0nto, for pr0n pronto!
+
+### Applications
+
+- Flash, for spaced repetition flash-cards
+- Alfred, after Alfred Pennyworth, Batman's fictional butler
+- Ikigai, a Japanese word combining "iki" (life) and "gai" (value): find what you love, are good at, can be paid for, and the world needs.
+- Sherlock, after Sherlock Holmes, the famous fictional detective
 
 ## Screenshots
 
+### Embedded Math
+
+![Emmy is a smarty-pants](pix/math.png)
+
 ### Launch Video
 
-<video controls="" width="640" height="480">
-	<source src="https://chat.allemande.ai/src/pix/launch.webm" type="video/webm">
-	Your browser does not support the video tag.
-</video>
+[![Launch Video](pix/launch.jpg)](https://chat.allemande.ai/src/pix/launch.mp4)
 
 ### Roadmap
 

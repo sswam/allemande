@@ -1,0 +1,4 @@
+Please make a numbered list of just individual landmarks and links from the search results, tab-separated as is the input. Do not include directories, businesses or other sites, only individual landmarks websites or pages. Just filter the list of names and links, do not add or infer extra info. The output should be exact lines from the input, but only the landmarks, not other websites. Example row for output:
+1. Eagles Nest (Inverloch): All You Need to Know BEFORE You Go	https://www.tripadvisor.com.au/Attraction_Review-g552187-d10100802-Reviews-Eagles_Nest-Inverloch_Gippsland_Victoria.html
+
+Thanks for always doing a good job!

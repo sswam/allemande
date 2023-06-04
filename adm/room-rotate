@@ -2,6 +2,7 @@
 # room-rotate: rotate a chat room file
 
 room=${1:-Ally Chat}
+room=${room#$ALLEMANDE_HOME/rooms/}
 
 room=${room%.bb}
 room=${room%.html}
@@ -12,6 +13,11 @@ from_html="$ALLEMANDE_HOME/rooms/$room.html"
 if [ ! -f "$from" ]; then
 	echo "No such file: $from" >&2
 	exit 1
+fi
+
+if [ ! -s "$from" ]; then
+	echo "Empty file: $from" >&2
+	exit 0
 fi
 
 dir="$ALLEMANDE_HOME/rooms/$room/"

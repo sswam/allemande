@@ -1,0 +1,19 @@
+#!/bin/bash
+# conflicts: find and grep for conflicts in git repos.
+find_notdot() {
+	where="$1"
+	shift
+	find "$where" -path '*/.*' -prune -or "$@" -print0
+}
+grrep() {
+	dir="$1" ; shift
+	find_notdot "$dir" -type f | tr -d '\r\n' | xargs -0 -r grep "$@"
+}
+
+status=0
+for d in "${@:-.}"; do
+	find_notdot "$d" -name '*?~?*' | tr '\0' '\n'
+#	echo  # what the fuck is this needed for?
+	grrep "$d" -l -e '^<<<<<<< ' && status=1 # -e '^=======$' -e '^>>>>>>> '
+done
+exit $status

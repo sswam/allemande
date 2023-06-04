@@ -1,0 +1,232 @@
+#!/bin/bash -eu
+
+# jeeves.sh:	generate multiple documents, with multiple drafts, and multiple parts
+
+m0=4	# LLM model for planning the list of documents to generate
+m1=4	# LLM model for generating each document
+m=c	# LLM model for revising each draft of each document
+m2=4	# LLM model for the final copy of each document
+c="Allemande"	# company / business / project name
+t="an AI consulting startup company, open-source research and development shop, and SaaS services business"	# business type
+hq="in Melbourne, Australia"	# headquarters
+cl="serving individual and corporate clients, including children"	# clients
+l="in Australia, NZ, USA, EU, Japan, Philippines, China, and international / all countries"	# locations
+s="providing AI consulting, AI software tools as open-source and SaaS, messaging and multi-user chat, and social media services for adults (nsfw), teens and adults (sfw), children (under 13, supervised) and professionals (like linked-in)"	# services
+w="as if written by a top queens counsel"	# who writes it
+x="all the legal documents required for"	# what to write
+p=8	# max number of parts to generate
+n=3	# number of drafts to generate
+d=	# description of the context, will be filled from -c -t -hq -cl -l -s -w, if not provided
+a=	# description of the task for all outputs, will be filled from -x and -d, if not provided
+f1=1	# ask user for feedback on the first draft
+f=	# ask user for feedback on each and every draft
+f2=1	# ask user for feedback before the fair copy
+C=1	# confirm the list of documents to generate
+v=	# view each final document after generating it
+E="__END_OUTPUT__"	# end of output marker
+S="__SPLIT_POINT__"	# split point marker, between parts; need to check and fix at that point
+V="vi"	# tool to use for viewing or editing documents, could also use ghostwriter for example
+
+. opts
+
+# The initial application for this tool is to generate a set of legal documents for a new business.
+# But, it should be able to be used for any other purpose,
+# such as generating a set of design documents for a new project, or generating a website.
+
+# TODO document dependencies, so that we can refer to one finished document when generating another
+#      and tsort the list of documents to generate, so that we can generate them in the right order
+
+# TODO automatically fix the writing around the split points
+
+# TODO get it to write a written plan for what to change with each revision
+
+# nice names for the options
+
+model_plan="$m0"
+model_gen="$m1"
+model_revise="$m"
+model_final="$m2"
+name="$c"
+type="$t"
+headquarters="$hq"
+clients="$cl"
+locations="$l"
+services="$s"
+writer="$w"
+what="$x"
+max_parts="$p"
+num_drafts_and_final="$n"
+description="$d"
+description_all="$a"
+ask_feedback_first_draft="$f1"
+ask_feedback_every_draft="$f"
+ask_feedback_final_draft="$f2"
+confirm_plan="$C"
+end_output="$E"
+split_point="$S"
+view_or_edit="$V"
+
+# if no description provided, fill it in from other options
+if [ -z "$description" ]; then
+	description="'$name', $type, $headquarters; $clients, $locations; $services; $writer"
+fi
+
+# if no description for all outputs provided, fill it in from other options
+if [ -z "$description_all" ]; then
+	description_all="$what $description"
+fi
+
+# ask the AI for a list of outputs to generate
+llm query -m=$model_plan "Please produce a markdown list: $description_all. Only return the list. Thanks for all you do!" | tee documents.md
+
+# ask the user to confirm the list of documents to generate
+if [ "$confirm_plan" = 1 ]; then
+	$view_or_edit documents.md
+	read -p "Please review and confirm the list of documents in documents.md, and press enter to continue, or ^C to stop:" _
+fi
+
+
+feedback=
+
+# for each document
+< documents.md perl -pe 's/\s*-\s*//;' |
+while read doc; do
+	printf "%s\n\n" "---- STARTING DOCUMENT $doc --------"
+
+	# prompt for the document
+	query="$doc for $description. Only return the requested output. End the output with $end_output on a line by itself; PLEASE do NOT forget to do that! Note also, that $split_point markers should not be included in the output. Thanks for always being awesome and doing a great job!"
+	# for each draft
+	for draft in `seq "$num_drafts_and_final"`; do
+		printf "%s\n\n" "---- STARTING $doc DRAFT $draft / $num_drafts_and_final --------"
+
+		# in the user presses ^C, stop generating this document (i.e. it is good enough already)
+		# it should exit the loop at this level, and continue with the next document
+		trap 'break' INT
+
+		# for each part
+		part=1
+		while true; do
+			printf "%s\n\n" "---- GENERATING $doc DRAFT $draft / $num_drafts_and_final PART $part / $max_parts --------"
+
+			# prompt for the part
+			if [ $draft = 1 ]; then
+				if [ $part = 1 ]; then
+					q2="Please write a $query"
+				else
+					q2="Please continue writing this $query"
+				fi
+				model_to_use="$model_gen"
+			elif [ $draft -lt $num_drafts_and_final ]; then
+				if [ $part = 1 ]; then
+					q2="Please revise this draft of a $query. $feedback"
+				else
+					q2="Please continue revising this draft of a $query. $feedback"
+				fi
+				model_to_use="$model_revise"
+			else
+				if [ $part = 1 ]; then
+					q2="Please write the final fair copy of this $query based on the previous draft. $feedback"
+				else
+					q2="Please continue writing the final fair copy of this $query based on the previous draft. $feedback"
+				fi
+				model_to_use="$model_final"
+			fi
+
+			# provide the relevant prior drafts and parts,
+			# and ask the AI to generate the next part
+			{
+				# secondary draft?
+				if [ $draft -gt 1 ]; then
+					printf "%s\n\n" "# PRIOR DRAFT"
+					catpg -break="$split_point" "$doc.$[$draft-1].md"
+					printf "\n\n"
+				fi
+
+				# secondary part?
+				if [ $part -gt 1 ]; then
+					printf "%s\n\n" "# THIS DRAFT (INCOMPLETE)"
+					for prev_part in `seq $[$part-1]`; do
+						cat "$doc.$draft.$prev_part.md"
+					done
+					printf "\n\n"
+				fi
+			} |
+			llm process -m "$model_to_use" "$q2" |
+			tee "$doc.$draft.$part.md"
+
+			# if the AI has finished, stop
+			if fgrep -q "$end_output" "$doc.$part.md"; then
+				break
+			fi
+
+			# increment the part number
+			part=$((part+1))
+			if [ $part -gt $max_parts ]; then
+				printf "\n%s\n\n" "Too many parts $part > $max_parts, stopping the draft."
+				break
+			fi
+
+			printf "\n%s\n\n" "---- FINISHED $doc DRAFT $draft / $num_drafts_and_final PART $part / $max_parts --------"
+
+			# next part
+		done
+
+		# combine the parts into a single document
+		catpg -break="$split_point" "$doc.$draft."*.md > "$doc.$draft.md"
+
+		# get feedback
+		if [
+			"$ask_feedback_every_draft" = 1 -a $draft -lt $num_drafts_and_final
+			-o "$ask_feedback_first_draft" = 1 -a $draft = 1
+			-o "$ask_feedback_final_draft" = 1 -a $draft = $[ "$num_drafts_and_final" - 1 ]
+		]; then
+			$view_or_edit "$doc.$draft.md"
+
+			# warn if final draft
+			if [ $draft == $["$num_drafts_and_final" - 1] ]; then
+				printf "\n%s\n\n" "** WARNING ** ---- REVIEWING THE FINAL DRAFT $draft / $num_drafts_and_final OF $doc ; PLEASE PROVIDE GOOD FEEDBACK! --------"
+			fi
+
+			# ask for feedback
+			read -i "$feedback" -p "Please review draft $draft / $num_drafts_and_final in $doc.$draft.md, and give feedback here, or ^C to stop generating this document. You may also edit the document:" feedback
+		fi
+
+		printf "\n%s\n\n" "---- FINISHED $doc DRAFT $draft / $num_drafts_and_final --------"
+
+		# next draft
+	done
+
+	# remove the trap for ^C
+	trap - INT
+
+	# symlink the final draft to $doc.md
+	if [ -s "$doc.$num_drafts_and_final.md" ]; then
+		ln -s "$doc.$num_drafts_and_final.md" "$doc.md"
+	elif [ -s "$doc.$draft.md" ]; then
+		printf "\n%s\n\n" "WARNING: $doc.$num_drafts_and_final.md is empty or non-existent, using $doc.$draft.md instead."
+		ln -s "$doc.$draft.md" "$doc.md"
+	elif [ -s "$doc.$[$draft-1].md" ]; then
+		printf "\n%s\n\n" "WARNING: $doc.$num_drafts_and_final.md and $doc.$draft.md are empty or non-existent, using $doc.$[$draft-1].md instead."
+		ln -s "$doc.$[$draft-1].md" "$doc.md"
+	else
+		printf "\n%s\n\n" "WARNING: $doc.$num_drafts_and_final.md, $doc.$draft.md, and $doc.$[$draft-1].md are empty or non-existent, could not symlink $doc.md."
+	fi
+
+	# warn if the document is empty or missing
+	if [ -s "$doc.md" ]; then
+		printf "\n%s\n\n" "---- FINISHED DOCUMENT: $doc --------"
+	else
+		printf "\n%s\n\n" "WARNING: $doc.md is not found or empty, please check the above output."
+	fi
+
+	# view the document
+	if [ -s "$doc.md" -a "$v" = 1 ]; then
+		$view_or_edit "$doc.md"
+	fi
+
+	# next document
+done
+
+# celebrate!
+
+printf "\n%s\n\n" "---- FINISHED ALL DOCUMENTS --------"

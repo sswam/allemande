@@ -10,6 +10,9 @@ import logging
 from contextlib import contextmanager
 from pathlib import Path
 import argparse
+import alsaaudio
+import signal
+import atexit
 
 import argh
 from pydub import AudioSegment
@@ -18,15 +21,16 @@ import yaml
 
 import ucm
 import ports
+import ucm_main
 
-from ucm import FileMutex
+opts = None
+
+# from ucm import FileMutex
 
 logger = logging.getLogger(__name__)
 
 server = "stt_whisper"
 default_port = ports.get_default_port(server)
-
-opts = None
 
 
 @contextmanager
@@ -139,8 +143,40 @@ def do_list_devices():
 		print(f'{index}\t{name}')
 
 
-def mike(lang="en", energy=1500, dynamic_energy=False, pause=2.0, non_speaking_duration=0.5, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.90):
+@argh.arg("--lang", "-l", default="en", help="Language")
+@argh.arg("--energy", "-e", default=700, help="Energy threshold")
+@argh.arg("--dynamic-energy", "-E", default=False, help="Dynamic energy threshold")
+@argh.arg("--pause", "-p", default=1, help="Pause threshold")
+@argh.arg("--non-speaking-duration", "-n", default=1, help="Non-speaking duration")
+@argh.arg("--device-index", "-i", default=None, help="Device index")
+@argh.arg("--list-devices", "-L", default=False, help="List devices")
+@argh.arg("--adjust-for-ambient-noise", "-a", default=False, help="Adjust for ambient noise")
+@argh.arg("--port", "-P", default=default_port, help="Allemande core port for speech recognition")
+@argh.arg("--confidence-threshold", "-c", default=0.6, help="Confidence threshold")
+@argh.arg("--quiet-while-listening", "-m", default=40, help="Quiet or mute speakers while listening, volume level")
+def mike(lang="en", energy=700, dynamic_energy=False, pause=1, non_speaking_duration=1, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.6, quiet_while_listening=40):
 	""" Transcribe speech to text using microphone input """
+
+	if quiet_while_listening is not None:
+		# TODO put this in a lib, generic and audio control
+		# TODO process / thread safety?
+		# get the current volume
+		vol = alsaaudio.Mixer().getvolume()[0]
+		# set the volume to quiet
+		alsaaudio.Mixer().setvolume(quiet_while_listening)
+
+		# set a handler to reset the volume
+		def reset_volume(*args, exit=True):
+			alsaaudio.Mixer().setvolume(vol)
+			if exit:
+				sys.exit(0)
+
+		# signal handlers
+		signal.signal(signal.SIGINT, reset_volume)
+		signal.signal(signal.SIGTERM, reset_volume)
+
+		# on exit
+		atexit.register(reset_volume, exit=False)
 
 	if list_devices:
 		do_list_devices()
@@ -176,10 +212,4 @@ def mike(lang="en", energy=1500, dynamic_energy=False, pause=2.0, non_speaking_d
 # TODO factor out this main biolerplate stuff
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	argh.add_commands(parser, [mike])
-	argh.set_default_command(parser, mike)
-	ucm.add_logging_options(parser)
-	opts = parser.parse_args()
-	ucm.setup_logging(opts)
-	argh.dispatch(parser)
+	ucm_main.run(mike, globals())

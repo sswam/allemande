@@ -67,6 +67,7 @@ function clear() {
 
 function message_keypress(ev) {
         if (ev.keyCode == 13 && !ev.shiftKey) {
+		ev.preventDefault();
 		send(ev);
         }
 }
@@ -228,6 +229,7 @@ function change_room() {
 		leave_room();
 	} else {
 		$room.focus();
+		$room.select();
 	}
 	return false;
 }

@@ -428,6 +428,48 @@
                        "y": 0
                     },
                     "marks": [],
+                    "name": "flash",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^flash$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
+                    "name": "alfred",
+                    "percent": 0.0909090909090909,
+                    "swallows": [
+                       {
+                       "instance": "^xterm$",
+                       "title": "^alfred$"
+                       }
+                    ],
+                    "type": "con"
+                },
+                {
+                    "border": "normal",
+                    "current_border_width": 2,
+                    "floating": "auto_off",
+                    "geometry": {
+                       "height": 316,
+                       "width": 484,
+                       "x": 0,
+                       "y": 0
+                    },
+                    "marks": [],
                     "name": "logs",
                     "percent": 0.0909090909090909,
                     "swallows": [

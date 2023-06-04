@@ -2,6 +2,7 @@ numpy
 rouge_score
 fire
 openai
+async-openai
 transformers
 torch
 sentencepiece
@@ -57,3 +58,12 @@ python-multipart
 
 pyjwt
 supabase_py
+markdown-katex
+
+segment-anything
+
+tiktoken
+
+pyalsaaudio
+wordpress_api
+selenium

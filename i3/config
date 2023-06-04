@@ -1,0 +1,97 @@
+# Mic and Speaker control
+bindsym $mod+m exec --no-startup-id mic
+bindsym $mod+q exec --no-startup-id speaker
+
+# Ally Chat
+bindsym $mod+a exec firefox -P sam https://chat.allemande.ai
+
+# Helposaurus
+bindsym $mod+i exec bash -c 'xterm-screen-run.sh "helposaurus" "default-$RANDOM" helposaurus'
+bindsym $mod+j exec bash -c 'xterm-screen-run.sh "helposaurus" "sentence-$RANDOM" helposaurus -1'
+bindsym $mod+k exec bash -c 'xterm-screen-run.sh "helposaurus" "brief-$RANDOM" helposaurus -b'
+
+
+# workspaces
+
+# main monitor (left)
+set $ws0 "0:allemande"
+set $ws1 "1:sherlock"
+set $ws2 "2:chloe"
+set $ws3 "3:items"
+set $ws4 "4:whisper"
+set $ws5 "5:jaskier"
+set $ws6 "6:fun"
+set $ws7 "7:nika"
+set $ws8 "8:sean"
+set $ws9 "9:thalia"
+
+# second monitor (right)
+set $ws0r "10:allemande"
+set $ws1r "11:sherlock"
+set $ws2r "12:chloe"
+set $ws3r "13:items"
+set $ws4r "14:whisper"
+set $ws5r "15:jaskier"
+set $ws6r "16:fun"
+set $ws7r "17:nika"
+set $ws8r "18:sean"
+set $ws9r "19:thalia"
+
+
+workspace $ws0 output HDMI-0
+workspace $ws1 output HDMI-0
+workspace $ws2 output HDMI-0
+workspace $ws3 output HDMI-0
+workspace $ws4 output HDMI-0
+workspace $ws5 output HDMI-0
+workspace $ws6 output HDMI-0
+workspace $ws7 output HDMI-0
+workspace $ws8 output HDMI-0
+workspace $ws9 output HDMI-0
+
+workspace $ws0r output DP-2
+workspace $ws1r output DP-2
+workspace $ws2r output DP-2
+workspace $ws3r output DP-2
+workspace $ws4r output DP-2
+workspace $ws5r output DP-2
+workspace $ws6r output DP-2
+workspace $ws7r output DP-2
+workspace $ws8r output DP-2
+workspace $ws9r output DP-2
+
+# switch to workspace
+bindsym $mod+0 workspace number $ws0 ; workspace number $ws0r
+bindsym $mod+1 workspace number $ws1 ; workspace number $ws1r
+bindsym $mod+2 workspace number $ws2 ; workspace number $ws2r
+bindsym $mod+3 workspace number $ws3 ; workspace number $ws3r
+bindsym $mod+4 workspace number $ws4 ; workspace number $ws4r
+bindsym $mod+5 workspace number $ws5 ; workspace number $ws5r
+bindsym $mod+6 workspace number $ws6 ; workspace number $ws6r
+bindsym $mod+7 workspace number $ws7 ; workspace number $ws7r
+bindsym $mod+8 workspace number $ws8 ; workspace number $ws8r
+bindsym $mod+9 workspace number $ws9 ; workspace number $ws9r
+
+# move focused container to workspace
+bindsym $mod+Shift+0 move container to workspace number $ws0r
+bindsym $mod+Shift+1 move container to workspace number $ws1r
+bindsym $mod+Shift+2 move container to workspace number $ws2r
+bindsym $mod+Shift+3 move container to workspace number $ws3r
+bindsym $mod+Shift+4 move container to workspace number $ws4r
+bindsym $mod+Shift+5 move container to workspace number $ws5r
+bindsym $mod+Shift+6 move container to workspace number $ws6r
+bindsym $mod+Shift+7 move container to workspace number $ws7r
+bindsym $mod+Shift+8 move container to workspace number $ws8r
+bindsym $mod+Shift+9 move container to workspace number $ws9r
+
+bindsym $mod+Ctrl+Shift+0 move container to workspace number $ws0
+bindsym $mod+Ctrl+Shift+1 move container to workspace number $ws1
+bindsym $mod+Ctrl+Shift+2 move container to workspace number $ws2
+bindsym $mod+Ctrl+Shift+3 move container to workspace number $ws3
+bindsym $mod+Ctrl+Shift+4 move container to workspace number $ws4
+bindsym $mod+Ctrl+Shift+5 move container to workspace number $ws5
+bindsym $mod+Ctrl+Shift+6 move container to workspace number $ws6
+bindsym $mod+Ctrl+Shift+7 move container to workspace number $ws7
+bindsym $mod+Ctrl+Shift+8 move container to workspace number $ws8
+bindsym $mod+Ctrl+Shift+9 move container to workspace number $ws9
+

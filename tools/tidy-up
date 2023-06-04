@@ -1,0 +1,4 @@
+#!/bin/bash -eu
+m=4
+. opts
+process -m=$m 'Please tidy up this text into paragraphs and correct any mistakes without rewriting it.'

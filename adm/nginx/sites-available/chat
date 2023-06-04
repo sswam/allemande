@@ -36,6 +36,7 @@ server {
 #		access_log off;
 #		error_log /dev/null;
 		add_header Cache-Control "no-cache";
+		add_header Access-Control-Allow-Origin 'https://rooms.allemande.ai' always;
 	}
 
 	location /users {

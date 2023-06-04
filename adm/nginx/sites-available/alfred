@@ -1,0 +1,79 @@
+server {
+	server_name alfred.allemande.ai;
+
+	charset UTF-8;
+
+	# SSL configuration
+
+	listen 127.0.0.1:440 ssl http2 proxy_protocol;
+#	listen [::1]:440 ssl http2 proxy_protocol;
+
+	set_real_ip_from 127.0.0.1;
+	real_ip_header proxy_protocol;
+
+	# Note: You should disable gzip for SSL traffic.
+	# See: https://bugs.debian.org/773332
+
+	# Read up on ssl_ciphers to ensure a secure configuration.
+	# See: https://bugs.debian.org/765782
+
+	ssl_certificate /etc/letsencrypt/live/allemande.ai/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/allemande.ai/privkey.pem;
+
+	root /opt/allemande/apps/alfred;
+	index index.html;
+
+	location / {
+		if ($is_banned) {
+			return 302 https://allemande.ai/ban.html;
+		}
+		auth_basic "Auth";
+		auth_basic_user_file /var/www/allychat/.htpasswd;
+		proxy_pass http://localhost:8081;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto https;
+		proxy_set_header Authorization "";
+		proxy_set_header X-Forwarded-User $remote_user;
+
+		# settings for streaming response
+		gzip off;
+		proxy_http_version 1.1;
+		proxy_buffering off;
+		proxy_set_header Connection "";
+		proxy_read_timeout 3600s;
+		proxy_bind $host:$server_port;
+	}
+
+	location /logout {
+		if ($is_banned) {
+			return 302 https://allemande.ai/ban.html;
+		}
+		auth_basic "Auth";
+		auth_basic_user_file /var/www/allychat/.htpasswd;
+#		autoindex on;
+#		try_files $uri $uri/ =404;
+		try_files $uri $uri/ @redirect;
+# TODO if we want strong privacy
+#		access_log off;
+#		error_log /dev/null;
+		add_header Cache-Control "no-cache";
+	}
+
+	location @redirect {
+		if ($request_uri ~* (^/(favicon\.ico|styles\.css|room\.css|util\.js|room\.js|mousetrap\.min.js)$|^/users/)) {
+			return 302 $scheme://$redirect_host$request_uri;
+		}
+		return 404;
+	}
+
+	location /logout/logout {
+		auth_basic "Auth";
+		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
+		autoindex on;
+		try_files $uri $uri/ =404;
+#		access_log off;
+#		error_log /dev/null;
+	}
+}

@@ -25,11 +25,12 @@ server_start:
 server_stop:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
 
-beorn: mount run-i3-screen
+beorn: clean mount run-i3-screen
 i3: connect-i3-screen
 
 server:: stop
-server:: webchat pro
+server:: clean
+server:: webchat pro brain.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -38,12 +39,12 @@ run-i3-screen:: run
 connect-i3-screen:: i3-layout
 connect-i3-screen:: connect
 
-run: frontend backend dev pro-dev
-connect: frontend backend.xtc dev.xtc pro-dev.xtc
+run: frontend backend dev pro-dev flash.xt alfred.xt vi.xt
+connect: frontend backend.xtc dev.xtc pro-dev.xtc flash.xtc alfred.xtc vi.xtc
 disconnect:
 	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
-frontend: vi.xt vscode firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online chrome-webchat-local
+frontend: vscode firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online chrome-webchat-local
 
 backend: core voice webchat
 backend.xtc: core.xtc voice.xtc webchat.xtc
@@ -67,7 +68,7 @@ uninstall:
 
 core: llm.xt whisper.xt
 
-voice: brain.xt mike.xt speak.xt
+voice: mike.xt speak.xt  # brain.xt
 
 webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 
@@ -81,9 +82,17 @@ svelte:
 svelte-dev:
 	cd $(ALLEMANDE_HOME)/pro && npm run dev
 
+flash:
+	cd $(ALLEMANDE_HOME)/apps/flash && \
+	./flash-webui.py
+
+alfred:
+	cd $(ALLEMANDE_HOME)/apps/alfred && \
+	./alfred-webui.py
+
 core.xtc: llm.xtc whisper.xtc
 
-voice.xtc: brain.xtc mike.xtc speak.xtc
+voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
 webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc
 
@@ -96,7 +105,7 @@ clean:
 	> watch.log
 
 llm:
-	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py -m $(LLM_MODEL) -d
+	while true; do sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py -m $(LLM_MODEL) -d; done
 
 whisper:
 	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
@@ -166,12 +175,23 @@ stop:
 
 mount:
 	mkdir -p $(ALLEMANDE_ROOMS_SERVER)
-	sshfs $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) -o cache=no || true
+	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) || true
+	sudo -u allemande rmdir /var/spool/allemande/stt_whisper/www-data/* || true
+	sudo -u allemande sshfs -o cache=no -o allow_root -o allow_other -o idmap=none ucm.dev:/var/spool/allemande/stt_whisper/www-data /var/spool/allemande/stt_whisper/www-data -o cache=no || true
 
 umount:
 	fusermount -u $(ALLEMANDE_ROOMS_SERVER) || true
+	sudo -u allemande fusermount -u /var/spool/allemande/stt_whisper/www-data || true
+	sudo -u allemande rmdir /var/spool/allemande/stt_whisper/www-data/* || true
 
-fresh:
+fresh::	stop
+fresh::	rotate
+fresh::	server
+
+rotate:
+	room-rotate "$$file"
+
+fresh-old:: 
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
 	if [ -s "$(file)" ]; then mv -v "$(file)" "$(file).$$time"; fi ; \
 	if [ -s "$$html" ]; then mv "$$html" "$$html.$$time"; fi ; \

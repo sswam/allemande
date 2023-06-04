@@ -34,12 +34,16 @@ def find_name_in_content(content, name, ignore_case=True):
 	return (len(content), None)
 
 
-def who_is_named(content, user, agents, include_self=False):
+def who_is_named(content, user, agents, include_self=True):
 	""" check who is named first in the message """
 #	matches = [find_name_in_content(content, agent) for agent in agents + EVERYONE_WORDS]
+	logger.warning("content %r", content)
 	matches = [find_name_in_content(content, agent) for agent in agents]
-	if not include_self:
-		matches = [m for m in matches if m[1] != user]
+	if not include_self and user:
+		matches = [m for m in matches if m[1] and m[1].lower() != user.lower()]
+	if not matches:
+		return []
+	logger.warning("who_is_named, matches: %r", matches)
 	_pos, agent = min(matches)
 	if agent is None:
 		invoked = []
@@ -54,32 +58,84 @@ def who_is_named(content, user, agents, include_self=False):
 
 def who_spoke_last(history, user, agents, include_self=False):
 	""" check who else spoke in recent history """
+	user_lc = user.lower() if user is not None else None
 	for i in range(len(history)-1, -1, -1):
-		user2 = history[i]["user"]
-		if user2 in agents and (include_self or user2 != user):
+		user2 = history[i].get("user")
+		if user2 is None:
+			continue
+		user2_lc = user2.lower() if user2 is not None else None
+		if user2_lc in agents and (include_self or user2_lc != user_lc) and agents[user2_lc]["type"] != "tool":
 			return [user2]
 	return []
 
 
-def who_should_respond(message, agents=None, history=None, default=None, include_self=False):
+def participants(history):
+	agents = list(set(x.get("user") for x in history if x.get("user")))
+	return agents
+
+
+def who_should_respond(message, agents=None, history=None, default=None, include_self=True):
 	""" who should respond to a message """
 	if not history:
 		history = []
 	if not agents:
-		agents = set(x["user"] for x in history)
+		agents = []
+
+	agents = agents.copy()
+
+	all_people = participants(history)
+	for person in all_people:
+		person_lc = person.lower()
+		if person_lc not in agents:
+			agents[person_lc] = {
+				"name": person,
+				"type": "person",
+			}
+
+	agent_names = list(agents.keys())
+
+	agents_lc = list(map(str.lower, agent_names))
+
+	agents_lc_to_agents = dict(zip(agents_lc, agents))
 
 	user = message.get("user")
+	if user:
+		user_lc = user.lower()
+	else:
+		user_lc = None
+
+	logger.warning("user, user_lc: %r %r", user, user_lc)
+
+	if user_lc in agents_lc:
+		user_agent = agents[user_lc]
+		logger.warning('user_agent["type"]: %r', user_agent["type"])
+		if user_agent["type"] == "tool":
+			invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self)
+			return invoked
+
+	is_person = user_lc in agents_lc and agents[user_lc]["type"] == "person"
+
+	if not is_person:
+		include_self = False
+
 	content = message["content"]
 
-	agents_with_at = [f"@{agent}" for agent in agents]
+	agents_with_at = [f"@{agent}" for agent in agent_names]
 
 	invoked = who_is_named(content, f"@{user}", agents_with_at, include_self=include_self)
+	logger.warning("who_is_named @: %r", invoked)
 	if not invoked:
-		invoked = who_is_named(content, user, agents, include_self=include_self)
+		invoked = who_is_named(content, user, agent_names, include_self=include_self)
+		logger.warning("who_is_named 2: %r", invoked)
 	if not invoked:
-		invoked = who_spoke_last(history, user, agents, include_self=include_self)
-	if not invoked and default:
+		invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self)
+		logger.warning("who_spoke_last 2: %r", invoked)
+	if not invoked and default and user_lc != default.lower() and agents[user_lc]["type"] == "person":
 		invoked = [default]
+		logger.warning("default %r", invoked)
+
+	invoked = [agents_lc_to_agents.get(agent_lc, agent_lc) for agent_lc in invoked]
+
 	return invoked
 
 
@@ -222,8 +278,9 @@ def get_roles_from_history(history, user, bot):
 	print("roles: ", roles)
 	if roles:
 		user = roles[0]
-	if len(roles) > 1 and random.random() < 0.5 and "Ally" in roles and user != "Ally":
-		return user, "Ally"
+#	What did this do?!
+#	if len(roles) > 1 and random.random() < 0.5 and "Ally" in roles and user != "Ally":
+#		return user, "Ally"
 	if len(roles) > 1:
 		# return a random out of the remaining roles
 		bot = random.choice(roles[1:])

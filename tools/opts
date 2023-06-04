@@ -20,15 +20,16 @@ usage() {
 		;;
 	esac
 
-	# use perl to strip out the shebang and the opts section
-	< "$0" perl -pe '
-		$_ = "" if m{^#!/};
-		$_ = "", $after=1, next if /^\. opts$/;
-		last if $after && /^$/;
-
-		s/=/\t/ unless /^#/;
-		s/(^|\t)#\s*/$1/;
-	' | kut 1 3 2 4 5 6 | tsv2txt
+	# use perl to parse the script itself and write help / usage to stdout
+	< "$0" perl -pe "$(cat <<'EOF'
+		$_ = "" if m{^#!/};	# Clear line if it is a shebang (script interpreter directive)
+		$_ = "", $after=1, next if /^\. opts$/;	# Clear line and set flag if it is the `. opts` directive
+		last if $after && /^$/;	# Stop processing if an empty line is encountered after the flag is set
+		s/opt_([^a-zA-Z])/$1/;	# Remove `opt_` prefix from option names that are not valid bash variable names
+		s/(.*?)=/-$1\t/ unless /^#/;	# Replace the first `=` with a tab, unless the line starts with `#`
+		s/(^|\t)#\s*/$1/;	# Remove `#` and any following whitespace, if it is preceded by the beginning of the line or a tab
+EOF
+	)" | kut 1 3 2 4 5 6 | tsv2txt	# Reorder columns and convert tab-separated values to text
 
 	exit $exit
 }
@@ -111,7 +112,7 @@ while true; do
 		OPT="opt_$OPT"
 	fi
 
-	OPTS_DECLARATION=`declare -p "$OPT" 2>/dev/null`
+	OPTS_DECLARATION=`declare -p "$OPT" 2>/dev/null || true`
 
 	case "$OPTS_DECLARATION" in
 	declare\ -a*)

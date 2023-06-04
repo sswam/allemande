@@ -22,8 +22,8 @@ if [ -n "$s" ]; then
 	s=" of $s"
 fi
 
-if [ ! -e "$input.ocr.txt" ]; then
-	$v tesseract $tesseract_opts "$input" "$input.ocr"
+if [ ! -e "$input.ocr.raw.txt" ]; then
+	$v tesseract $tesseract_opts "$input" "$input.ocr.raw"
 fi
 
 #prompt1=`cat <<EOF
@@ -35,7 +35,9 @@ fi
 
 prompt1=`cat <<EOF
 Please correct the OCR errors in this $t$s.
-Please remove any spurious characters and blank lines that appear in the input.
+Please remove any spurious characters that appear in the input, and make sure it is correctly formatted, e.g. no missing spaces.
+Only return the corrected text, do not add any other commentary.
+Be sure to include all the valid text, do not cut any out.
 EOF
 `
 
@@ -54,4 +56,4 @@ $prompt1
 EOF
 `
 
-< "$input.ocr.txt" $v llm process -m"$m" "$prompt1" --prompt2 "$prompt2" > "$output"
+< "$input.ocr.raw.txt" $v llm process -m"$m" "$prompt1" --prompt2 "$prompt2" > "$output"

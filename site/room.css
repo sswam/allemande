@@ -1,0 +1,96 @@
+div.messages {
+/*	margin: 1em 1em 0 1em; */
+	padding: 0.5em 1em;
+}
+.label {
+	margin-right: 1em;
+	font-weight: bold;
+	float: left;
+}
+.message {
+	clear: both;
+}
+.message.me > .label { color: blue; }
+.message > .content {
+	margin: 0 1em 0 1em;
+}
+#allemande_status {
+	position: fixed;
+	top: 0.5em;
+	right: 0.5em;
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
+	margin-top: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+.message img, .message video, .message audio, .message iframe {
+	vertical-align: top;
+	margin: 4px;
+	max-width: 75vw;
+	max-height: 75vh;
+}
+
+/* borders for markdown tables */
+
+table {
+	border-collapse: collapse;
+}
+table, th, td {
+	border: 1px solid var(--col4);
+	padding: 4px;
+}
+
+.caption {
+	width: 280px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	position: relative;
+	background: var(--background);
+}
+
+.caption:hover {
+	overflow: visible;
+	white-space: normal;
+	z-index: 100;
+}
+
+.thumb {
+	width: 280px;
+	margin: 0 0 4px 0 !important;
+}
+
+.embed {
+	width: 280px;
+	height: 177px;
+	float: left;
+	margin: 10px;
+	padding: 0;
+}
+
+a {
+	text-decoration: none;
+	color: var(--link);
+}
+a:hover {
+	text-decoration: underline;
+}
+
+@font-face {
+	font-family: "fixed";
+	src: url("https://allemande.ai/MISCFS__.TTF");
+	font-style: normal;
+	font-weight: 400;
+}
+
+code {
+	font: 12px fixed;
+	white-space: pre-wrap;
+	display: inline-block;
+}
+
+pre {
+	white-space: pre-wrap;
+}

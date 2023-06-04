@@ -1,0 +1,21 @@
+ServerAliveInterval 15
+ServerAliveCountMax 3
+ForwardAgent no
+ControlMaster auto
+ControlPath ~/.ssh/socks/%C
+PreferredAuthentications "publickey,keyboard-interactive,password"
+VerifyHostKeyDNS ask
+
+Host pi pi.ucm.dev
+Hostname pi.ucm.dev
+User sam
+LocalForward 3128 127.0.0.1:3128
+#RemoteForward 2222 localhost:22
+
+Host opal ucm.dev
+Hostname ucm.dev
+User sam
+LocalForward 3129 127.0.0.1:3128
+RemoteForward 2222 localhost:22
+RemoteForward 8080 localhost:8080
+RemoteForward 8081 localhost:8081
