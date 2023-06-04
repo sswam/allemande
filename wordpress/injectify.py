@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 
 
-""" wp.py: Create, read, update or delete a wordpress page or post """
+""" injectify.py: Create, read, update or delete a wordpress page or post """
 
 import os
 import requests
@@ -19,119 +19,172 @@ import slugify  # mine, not the broken old unmaintained one in PyPI
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-site_url=os.environ["WORDPRESS_SITE_URL"]
-username=os.environ["WORDPRESS_USERNAME"]
-password=os.environ["WORDPRESS_APP_PASSWORD"]
+site_url = os.environ["WORDPRESS_SITE_URL"]
+username = os.environ["WORDPRESS_USERNAME"]
+password = os.environ["WORDPRESS_APP_PASSWORD"]
+auth = requests.auth.HTTPBasicAuth(username, password)
 
-headers = {
-	"Authorization": f"Basic {base64.b64encode(f'{username}:{password}'.encode()).decode()}"
-}
-
-def endpoint(type):
-	""" Return the endpoint for the given type """
-	return "pages" if type == "page" else "posts"
+api_url = f"{site_url}/wp-json/wp/v2"
 
 
-def find_by_title(title_to_find, type="post", many=False):
+def endpoint(item_type):
+	""" Return the endpoint for the given item_type """
+	return "pages" if item_type == "page" else "posts"
+
+
+def get_api_url(item_type, path=""):
+	""" Return the API URL for the given item_type """
+	if path and not path.startswith("/"):
+		path = f"/{path}"
+	return f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}{path}"
+
+def find_by_title(title_to_find, item_type="post", many=False):
 	""" Find a post or page by title """
-	global site_url, username, password, headers
-	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
+	global api_url, username, password, auth
+	url = get_api_url(item_type)
 	params = {
 		'search': title_to_find,
 		'per_page': 1
 	}
-	r = requests.get(url, headers=headers, params=params)
-	items = r.json()
+	response = requests.get(url, auth=auth, params=params)
+	items = response.json()
 	if many:
 		return items
 	if not items:
 		return None
 	if len(items) > 1:
-		raise Exception(f"More than one {type} found with title, and many=False: {title_to_find}")
+		raise Exception(f"More than one {item_type} found with title, and many=False: {title_to_find}")
 	return items[0]
 
-def find_by_id(id_to_find, type="post"):
+def find_by_id(id_to_find, item_type="post"):
 	""" Find a post or page by ID """
-	global site_url, username, password, headers
-	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}/{id_to_find}"
-	r = requests.get(url, headers=headers)
-	item = r.json()
+	global api_url, username, password, auth
+	url = get_api_url(item_type, id_to_find)
+	response = requests.get(url, auth=auth)
+	item = response.json()
 	return item
 
 
-def find_by_slug(slug_to_find, type="post"):
+def find_by_slug(slug_to_find, item_type="post"):
 	""" Find a post or page by slug """
-	global site_url, username, password, headers
-	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
+	global api_url, username, password, auth
+	url = get_api_url(item_type)
 	params = {
-	    'slug': slug_to_find,
-	    'per_page': 1
+		'slug': slug_to_find,
+		'per_page': 1
 	}
-	r = requests.get(url, headers=headers, params=params)
-	items = r.json()
+	reponse = requests.get(url, auth=auth, params=params)
+	items = reponse.json()
 	return items
 
 
-def update_item(type, title, content, status):
+def get_item_key(item):
+	key = {
+		"id": item["id"],
+		"slug": item["slug"],
+		"title": item["title"],
+		"status": item["status"],
+	}
+	return key
+
+
+def create_item(item_type, item, content, status="draft"):
+	""" Create a post or page """
+	global api_url, username, password, auth
+	url = get_api_url(item_type)
+	data = {
+		"content": content,
+		"slug": item["slug"],
+		"title": item["title"],
+		"status": status,
+	}
+	response = requests.post(url, auth=auth, json=data)
+	if response.status_code == 201:  # 201 is the status code for 'Created'
+		logger.info(f"Created {item_type} successfully!")
+	else:
+		raise Exception(f"Could not create {item_type}")
+	item = response.json()
+	return get_item_key(item)
+
+
+def read_item(item_type, item, meta=False):
+	""" Read a post or page """
+	global api_url, username, password, auth
+	id = item["id"]
+	url = f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}/{id}"
+	response = requests.get(url, auth=auth)
+	if response.status_code == 404:
+		logger.error(f"Could not find {item_type} with id {id}")
+		return None
+	item = response.json()
+	if not meta:
+		item = item["content"]["rendered"]
+	return item
+
+
+def update_item(item_type, item, content, status):
 	""" Update a post """
-	global site_url, username, password, headers
+	global api_url, username, password, auth
+	url = get_api_url(item_type, item["id"])
 	data = {
 		'content': content
 	}
-	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
-	update_url = f"{url}/{post_id}"
-	update_r = requests.post(update_url, headers=headers, json=data)
-
-	if update_r.status_code == 200:
-		logger.info(f"Updated {type} successfully!")
+	response = requests.post(url, auth=auth, json=data)
+	if response.status_code == 200:
+		logger.info(f"Updated {item_type} successfully!")
 	else:
-		raise Exception(f"Could not update {type}")
+		raise Exception(f"Could not update {item_type}")
+	item = response.json()
+	return get_item_key(item)
 
 
-def create_item(type, title, content, status="draft", id=None, slug=None):
-	""" Create a post or page """
-	global site_url, username, password, headers
-
-	# Set up the payload to send to WordPress
-
-	payload = {
-		"content": html_content,
-		"title": title,
-		"status": status,
-		"id": id,
-		"slug": slug,
-	}
-
-	# Send the post request to create a new page, passing the payload and authorization
-
-	response = requests.post(api_url, json=payload, auth=auth)
-
-	# Check if the request was successful
-	if response.status_code == 201:  # 201 is the status code for 'Created'
-		logger.info(f"Created {type} successfully!")
+def delete_item(item_type, item):
+	""" Delete a post or page """
+	global api_url, username, password, auth
+	id = item["id"]
+	url = f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}/{id}"
+	response = requests.delete(url, auth=auth)
+	if response.status_code == 200:
+		logger.info(f"Deleted {item_type} successfully!")
 	else:
-		raise Exception(f"Could not create {type}")
+		raise Exception(f"Could not delete {item_type}")
+	item = response.json()
+	return get_item_key(item)
 
 
-def read_item(type, title, content, status, id, slug):
-	""" Read a post or page """
-	global site_url, username, password, headers
-	url = f"{site_url}/wp-json/wp/v2/{endpoint(type)}"
-	r = requests.get(url, headers=headers)
-	item = r.json()
-	return item
+def list_items(item_type, status="draft"):
+	""" List posts or pages """
+	global api_url, username, password, auth
+	url = get_api_url(item_type)
+	items = []
+	page = 1
+	while True:
+		params = {
+			'per_page': 100,
+			'orderby': 'date',
+			'order': 'asc',
+			'page': page,
+			'_fields': 'id,slug,title,status'
+		}
+		if status is not None:
+			params["status"] = status
+		response = requests.get(url, auth=auth, params=params)
+		try:
+			page_items = response.json()
+		except json.decoder.JSONDecodeError:
+			break
+		items += page_items
+		if len(page_items) < 100:
+			break
+	keys = []
+	for item in items:
+		keys.append(get_item_key(item))
+	return keys
 
 
 # TODO CRUD boilerplate for any apppliation,
 # or use this as inspiration for a more generic CRUD tool
 # or for AI to create other CRUD tools.
-
-
-# TODO move up
-def setup(type, username, password, headers):
-	endpoint = endpoint(type)
-	auth = requests.auth.HTTPBasicAuth(username, password, headers)
-	return endpoint, auth
 
 
 @argh.arg("--file", "-f", help="file to upload")
@@ -140,7 +193,7 @@ def setup(type, username, password, headers):
 @argh.arg("--status", "-s", help="Status (draft, publish, private)")
 @argh.arg("--post", "-p", help="Item is a post (default)")
 @argh.arg("--page", "-P", help="Item is a page")
-@argh.arg("--type", "-T", help="Type of the item (post, page)")
+@argh.arg("--item_type", "-T", help="item_type of the item (post, page)")
 @argh.arg("--id", "-I", help="ID of the item")
 @argh.arg("--slug", "-S", help="Slug of the item")
 @argh.arg("--auto", "-a", help="Auto-detect the mode (add, update, delete)")
@@ -148,37 +201,39 @@ def setup(type, username, password, headers):
 @argh.arg("--read", "-r", help="Read the item")
 @argh.arg("--update", "-u", help="Update the item")
 @argh.arg("--delete", "-d", help="Delete the item")
+@argh.arg("--list", "-l", help="List items")
+@argh.arg("--meta", "-m", help="When reading the item, include metadata")
 @argh.arg("--force", "-F", help="Force the action")
 def crud(file=None, content=None, title=None, status="draft", post=False, page=False,
-		type=None, id=None, slug=None, auto=False,
-		create=False, read=False, update=False, force=False, delete=False):
+		item_type=None, id=None, slug=None, auto=False,
+		create=False, read=False, update=False, delete=False, list=False, meta=False, force=False):
 	""" Create, update or delete a wordpress page or post """
 
-	# type, post, and page
+	# item_type, post, and page
 
-	if type and type not in ["post", "page"]:
-		raise Exception("Specify a type (post or page)")
+	if item_type and item_type not in ["post", "page"]:
+		raise Exception("Specify a item_type (post or page)")
 
-	if type == "post":
+	if item_type == "post":
 		post = True
-	if type == "page":
+	if item_type == "page":
 		page = True
 
 	if post + page > 1:
 		raise Exception("Specify only one of --post or --page")
 
 	if post:
-		type = "post"
+		item_type = "post"
 	elif page:
-		type = "page"
+		item_type = "page"
 	else:
-		logger.warning("No type specified, assuming --post")
+		logger.warning("No item_type specified, assuming --post")
 		post = True
 
 	# other options
 
-	if auto + create + read + update + delete != 1:
-		raise Exception("Specify one of --auto, --create, --read, --update, --delete")
+	if auto + create + read + update + delete + list != 1:
+		raise Exception("Specify one of --auto, --create, --read, --update, --delete, --list")
 
 	if file and content:
 		raise Exception("You may not specify both --file and --content")
@@ -186,18 +241,23 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	if file:
 		content = open(file, encoding="utf-8").read()
 
-	if (content and read) and not force:
-		raise Exception("You may not specify both --content and --read")
+	if (content and (read or list or delete)) and not force:
+		raise Exception("You may not specify --content with this command")
+
+	if meta and not read:
+		raise Exception("You may not specify --meta without --read")
 
 
 	# look for an existing item, by id, slug, or title
 
 	if id:
-		item = find_by_id(id, type)
+		item = find_by_id(id, item_type)
 	elif slug:
-		item = find_by_slug(slug, type)
+		item = find_by_slug(slug, item_type)
 	elif title:
-		item = find_by_title(title, type)
+		item = find_by_title(title, item_type)
+	elif list:
+		item = None
 	else:
 		raise Exception("You must specify an id, slug or title")
 
@@ -234,20 +294,20 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 
 	# Get title from first line, if not provided
 
-	if not title:
-		title = html_content.split("\n")[0]
+	if title is None and content:
+		title = content.split("\n")[0]
 		title = re.sub("<.*?>", "", title)
 		title = re.sub("Title: ", "")
 
 	# Get slug from title, if not provided
 
-	if not slug:
+	if not slug and title:
 		slug = slugify.slugify(title)
 
-	key = {
-		"title": title,
+	item = item or {
 		"id": id,
 		"slug": slug,
+		"title": title,
 	}
 
 	# operations
@@ -256,14 +316,22 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	# - search for pages by title keyword
 	# TODO sync
 
+	if title is not None:
+		item["title"] = title
+
 	if create:
-		return create_item(type, title, content, status, id, slug)
+		return create_item(item_type, item, content, status)
 	elif read:
-		return read_item(type, title, content, status, id, slug)
+		rv = read_item(item_type, item, meta=meta)
+		if isinstance(rv, dict):
+			rv = json.dumps(rv, indent=4)
+		return rv
 	elif update:
-		return update_item(type, title, content, status, type)
+		return update_item(item_type, item, content, status)
 	elif delete:
-		return delete_item(item, content, title, status, type, endpoint, auth)
+		return delete_item(item_type, item)
+	elif list:
+		return list_items(item_type, status)
 	else:
 		raise Exception("Internal error: no operation found")
 
