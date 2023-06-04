@@ -28,7 +28,7 @@ fi
 
 PYTHON=$(which python3)
 
-for dir in python text www chat anthropic google llm scrape; do
+for dir in python text www chat anthropic google llm scrape tools; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 

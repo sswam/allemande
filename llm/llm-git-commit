@@ -48,6 +48,12 @@ for ent; do
 	fi
 done
 
+# chdir to somewhere in the repo, from files[0]
+if [ -n "${files[0]}" ]; then
+	cd "$(dirname "${files[0]}")"
+	cd "$(git rev-parse --show-toplevel)"
+fi
+
 # check if already staged; in which case, unstage, it works better that way
 for file in "${files[@]}"; do
 	if ! git diff --staged --quiet "${files[@]}"; then
