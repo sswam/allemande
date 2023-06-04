@@ -7,7 +7,8 @@ import requests
 import argh
 import json
 import logging
-from slugify import slugify
+import base64
+import slugify  # mine, not the broken old unmaintained one in PyPI
 
 
 # TODO look for an existing Python API to wordpress, I'm sure there is one!
@@ -241,7 +242,7 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	# Get slug from title, if not provided
 
 	if not slug:
-		slug = slugify(title)
+		slug = slugify.slugify(title)
 
 	key = {
 		"title": title,
