@@ -9,16 +9,17 @@ PATH=$PATH:$PROG_DIR
 
 . wordpress-env.sh
 
-region=", Bass Coast, Victoria"
+region=", Bass Coast & South Gippsland, Victoria"
 PARALLEL_MAX=8
 
 . opts
 
-run_giles_for_industry() {
+run_giles_for_tourism() {
+	local name=$1
 	printf "\n\n----------------------------------------\n\n"
 	printf "*** $name ***\n\n"
 	mkdir -p "$name"
-	for mission in mission.*.in.txt; do
+	for mission in missions/industry/mission.*.in.txt; do
 		if [ ! -f "$mission" ]; then
 			continue
 		fi
@@ -32,9 +33,10 @@ run_giles_for_industry() {
 }
 
 while read name; do
-	. parallel run_giles_for_industry
+	. parallel run_giles_for_industry "$name"
+	names+=("$name")
 	sleep .$RANDOM
 done
 wait
 
-# ./add_all_to_wordpress
+# ./add_all_to_wordpress "${names[@]}"
