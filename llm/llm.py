@@ -380,12 +380,11 @@ def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 		lines = tab.fix_indentation_list(lines, opts.indent)
 		content = "".join(lines)
 	if log:
-		# mkdir -p LOGDIR
 		LOGDIR.mkdir(parents=True, exist_ok=True)
-		logfile = base = LOGDIR/slugify(prompt)[:LOGFILE_NAME_MAX_LEN]
+		logfile = base = LOGDIR/(slugify(prompt)[:LOGFILE_NAME_MAX_LEN])
 		while logfile.exists():
-			time_s = time.strftime("%Y-%M-%DT%H:%M:%S")
-			logfile = f"{base}.{time_s}"
+			time_s = time.strftime("%Y-%m-%dT%H:%M:%S")
+			logfile = Path(f"{base}.{time_s}")
 		logfile.write_text(content, encoding="utf-8")
 
 	if out:
