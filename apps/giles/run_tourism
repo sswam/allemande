@@ -1,5 +1,5 @@
 #!/bin/bash -eua
-# landmarks_runner:	run giles on a list of landmarks
+# run_tourism:	run giles on a list of tourist traps
 
 # TODO when ^C kill all child processes
 # also for giles and alfred
@@ -14,11 +14,11 @@ PARALLEL_MAX=8
 
 . opts
 
-run_giles_for_landmarks() {
+run_giles_for_tourism() {
 	printf "\n\n----------------------------------------\n\n"
 	printf "*** $name ***\n\n"
 	mkdir -p "$name"
-	for mission in mission.*.in.txt; do
+	for mission in tourism-missions/mission.*.in.txt; do
 		if [ ! -f "$mission" ]; then
 			continue
 		fi
@@ -27,12 +27,12 @@ run_giles_for_landmarks() {
 	query="$name$region"
 	(
 		cd "$name"
-		giles query="$query" HTML_DUMP_FILTER="landmarks_html_dump_filter" summary_prompt="Please summarize this info in detail, as relating to $query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Stay focused on the topic, do not gives details of other areas. Be factual."
-	) 2>&1 | tee -a "$name/runner.log"
+		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" summary_prompt="Please summarize this info in detail, as relating to $query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Stay focused on the topic, do not give details of other areas. Be factual."
+	) 2>&1 | tee -a "$name/run_tourism.log"
 }
 
 while read name; do
-	. parallel run_giles_for_landmarks
+	. parallel run_giles_for_tourism
 done
 wait
 
