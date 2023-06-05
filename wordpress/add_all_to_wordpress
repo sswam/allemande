@@ -17,9 +17,8 @@ for D; do
 	echo "*** PROCESSING $D"
 
 	ln -sf "$D/output.1.md" "$D.md"
-	ln -sf "$D/output.1.md" "$D.meta"
-	v ./place_md_to_wordpress.py -a "$D, Bass Coast, Victoria" -t template/tourism.txt -c "$D/output.1.md" -m "$D/output.2.md" > "$D.wordpress"
-#	v ./place_md_to_wordpress -a "$D, Bass Coast, Victoria" < "$D.md" > "$D.wordpress"
+	ln -sf "$D/output.2.md" "$D.meta"
+	v ./prettify.py -a "$D, Bass Coast, Victoria" -t template/tourism.txt -c "$D.md" -m "$D.meta" > "$D.wordpress"
 done
 
 mkdir -p DONE
@@ -33,8 +32,7 @@ for D; do
 
 	echo "*** PUSHING TO WORDPRESS $D"
 
-	wordpress_put.py --type $item_type --title "$D" "$D.wordpress"
+	v ./injectify.py --auto --$item_type --title "$D" --file "$D.wordpress"
 
-	# move to done folder
-	mv "$D" "DONE/"
+	mvlnback "$D" "DONE/"
 done
