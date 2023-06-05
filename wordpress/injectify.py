@@ -290,6 +290,10 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 
 	if auto and not content:
 		delete = True
+	elif auto and item:
+		update = True
+	elif auto:
+		create = True
 
 
 	# Get title from first line, if not provided
