@@ -19,6 +19,7 @@ opts = None
 
 logger = logging.getLogger(__name__)
 
+
 def fetch_url(title: str, url: str, number: int, format: str = "%03d_%s") -> None:
 	""" fetch a URL and save it in a file """
 
@@ -31,8 +32,6 @@ def fetch_url(title: str, url: str, number: int, format: str = "%03d_%s") -> Non
 		title_clean = re.sub(r'[^\w._-]', '_', title_clean)
 
 		logger.info(f'Cleaned title: {title_clean}')
-
-		# TODO check mime type for extension
 
 		# fetch the URL, save in a file
 		file = f'{title_clean}.html'
@@ -56,10 +55,10 @@ def fetch_url(title: str, url: str, number: int, format: str = "%03d_%s") -> Non
 		# run command
 		subprocess.run(command, check=True)
 
-		# TODO check file type and rename if needed
-
 	except Exception as e:
 		logger.error(f'Error fetching {title} from {url}: {e}')
+
+	return file
 
 
 def giles_get(parallel: int = MAX_PARALLEL_DEFAULT, number: bool = True, start: int = 1) -> None:
@@ -73,13 +72,34 @@ def giles_get(parallel: int = MAX_PARALLEL_DEFAULT, number: bool = True, start: 
 	else:
 		logger.info("No header line found")
 
+	files = []
+
 	# run several in parallel using ThreadPoolExecutor
 	with ThreadPoolExecutor(max_workers=parallel) as executor:
 		number = start
 		for line in lines:
 			title, url = line.strip().split('\t')
-			executor.submit(fetch_url, title, url, number)
+			# collect output files returned from fetch_url
+			# executor.submit(fetch_url, title, url, number)
+			file = executor.submit(fetch_url, title, url, number)
+			files.append(file)
 			number += 1
+
+	# check file type and rename if needed using the extension-fix tool
+	command = ['extension-fix', *files]
+	logger.info(f'Running {" ".join(command)}')
+
+	# get the output in fixed_tsv
+	fixed_tsv = subprocess.run(command, check=True, capture_output=True).stdout.decode('utf-8')
+
+	files = []
+
+	# write the final file names to stdout
+	for line in fixed_tsv.split('\n'):
+		_old_name, filename = line.split('\t')
+		files.append(filename)
+
+	return files
 
 
 # TODO factor out this main biolerplate stuff
