@@ -14,7 +14,7 @@ WORK_FILES=$(addprefix w/,$(notdir $(TEXT_FILES)))
 
 SUMMARY_FILES=$(addprefix summary/,$(notdir $(WORK_FILES)))
 
-WHISPER=whisp  # speech recognition engine
+WHISPER=whisp
 
 IMAGE2TEXT_MODE=best
 
