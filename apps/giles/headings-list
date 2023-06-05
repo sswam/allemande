@@ -1,0 +1,3 @@
+#!/bin/bash
+# headings-list: show level 2 headings from markdown
+grep '^##' | sed 's/^## //' | tr '\n' ',' | sed 's/,/, /g'
