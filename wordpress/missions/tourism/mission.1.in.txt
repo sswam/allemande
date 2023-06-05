@@ -36,7 +36,7 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [continuing with the introduction, please write 3 paragraphs for this section, it should be the longest section.]
 
-## See
+## See  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -46,7 +46,7 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Do
+## Do  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -56,7 +56,7 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Learn
+## Learn  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -66,7 +66,7 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Getting There
+## Getting There  <-  use this exact heading!
 
 ### [descriptive subheading; always include all sections even if not much info]
 
@@ -75,7 +75,7 @@ driving, and walking; 2 paragraphs]
 
 [continuing to get there (travel); 2 paragraphs]
 
-## Stay
+## Stay  <-  use this exact heading!
 
 ### [descriptive subheading; always include all sections even if not much info]
 
@@ -83,13 +83,13 @@ driving, and walking; 2 paragraphs]
 
 [continuing to stay (accommodation); 2 paragraphs]
 
-## Warnings
+## Warnings  <-  use this exact heading!
 
 ### [descriptive subheading; always include all sections even if not much info]
 
 [things to watch out for (dangers)]
 
-## In the area
+## In the area  <-  use the exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -97,7 +97,7 @@ driving, and walking; 2 paragraphs]
 
 [continuing what's around? (attractions); 2 paragraphs]
 
-## Events
+## Events  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -107,7 +107,7 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Local groups
+## Local groups  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -117,7 +117,7 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Eat and Drink
+## Eat and Drink  <- use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -127,7 +127,7 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Accessibility
+## Accessibility  <- use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -135,7 +135,7 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Recap
+## Recap  <- use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 

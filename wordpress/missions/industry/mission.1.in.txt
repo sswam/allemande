@@ -40,38 +40,38 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [continuing with the introduction, please write 3 paragraphs for this section, it should be the longest section.]
 
-## See Their Work
+## See Their Work  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
 [see their work (business photographs / portfolio); 2 paragraphs]
 
-## Getting There
+## Getting There  <-  use this exact heading!
 
 ### [descriptive subheading; always include all sections even if not much info]
 
 [to get there (travel), including public transport,
 driving, and walking; 1 paragraphs]
 
-## Eat and Drink
+## Eat and Drink  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
 [what to eat at this business, or nearby if not an eating-place; 2 paragraphs, maybe a bullet list]
 
-## Amenities
+## Amenities  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
 [what's available (amenities); 1 paragraph]
 
-## Accessibility
+## Accessibility  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
 [access and services for people with disabilities (amenities); 1 paragraph]
 
-## Events
+## Events  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -81,13 +81,13 @@ driving, and walking; 1 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Connected Experiences
+## Connected Experiences  <-  use this exact heading!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
 [tours, packages, and other connected experiences; combination packages offered with other businesses in the Bass Coat / South Gippland region; the tours connect together one "eat", one "stay", and one "play"-type business, ideally this business is one of the three, or find three that fit this business; 2 paragraphs]
 
-## Stay
+## Stay  <-  use this exact heading!
 
 ### [descriptive subheading; always include all sections even if not much info]
 
@@ -95,7 +95,7 @@ driving, and walking; 1 paragraphs]
 
 [continuing to stay (accommodation); 2 paragraphs]
 
-## Play
+## Play  <-  use this exact heading!
 
 ### [descriptive subheading; always include all sections even if not much info]
 
