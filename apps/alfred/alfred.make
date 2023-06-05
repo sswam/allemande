@@ -49,8 +49,8 @@ OUTPUTS_DOCX=$(patsubst mission.%.txt,output.%.docx,$(MISSIONS))
 OUTPUTS:=$(OUTPUTS_MD)
 
 ifeq ($(HTML),1)
-	OUTPUTS:=$(OUTPUTS)
-$(OUTPUTS_HTML) endif
+	OUTPUTS:=$(OUTPUTS) $(OUTPUTS_HTML)
+endif
 ifeq ($(PDF),1)
 	OUTPUTS:=$(OUTPUTS) $(OUTPUTS_PDF)
 endif
