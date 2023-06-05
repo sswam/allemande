@@ -27,8 +27,9 @@ LLM_MODEL_TOKENS_MAX=8192
 LLM_MODEL_TOKENS_FOR_RESPONSE=2048
 LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $$[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODEL_TOKENS_FOR_RESPONSE) ])
 TOPIC=
+SUMMARY_GUIDE=
 
-summary_prompt=Please summarize this info regarding the topic: $(TOPIC), using markdown dot-point form. Be as comprehensive and factual as possible, but fairly concise without omiting anything relevant. Avoid repetition. Only Include info relevant to the topic: $(TOPIC). There may be a lot of other crap in the input document such as website boilerplate links and stuff. Please include relevant links (only) in [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown\#Hyperlinks) format.
+SUMMARY_PROMPT=Please summarize this info regarding the topic: $(TOPIC), using markdown dot-point form. Be as comprehensive and factual as possible, and do not omit anything relevant. Avoid repetition. Only Include info relevant to the topic: $(TOPIC). There may be a lot of other crap in the input document such as website boilerplate links and stuff. Please include relevant links (only) in [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown\#Hyperlinks) format. $(SUMMARY_GUIDE)
 
 MISSIONS_IN=$(wildcard mission.*.in.txt)
 MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
@@ -147,7 +148,7 @@ summary/%.txt: w/%.txt
 	if [ $$tokens = 0 ]; then echo >&2 "empty input: $<"; > $@; \
 	elif [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY); fi; \
 	echo >&2 "model: $$model"; \
-	if [ -n "$$model" ]; then llm process -m $$model "$(summary_prompt)" < $< > $@ ; fi
+	if [ -n "$$model" ]; then llm process -m $$model "$(SUMMARY_PROMPT)" < $< > $@ ; fi
 
 summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
@@ -158,7 +159,7 @@ summary-condensed.txt: summary.txt
 	echo >&2 "tokens: $$tokens"; \
 	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY_MEGA); fi; \
 	echo >&2 "model: $$model"; \
-	llm process -m $$model "$(summary_prompt)" < $< > $@
+	llm process -m $$model "$(SUMMARY_PROMPT)" < $< > $@
 
 #mission.txt:
 #	if [ -z "$(mission)" ]; then \

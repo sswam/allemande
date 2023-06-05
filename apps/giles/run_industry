@@ -9,7 +9,7 @@ PATH=$PATH:$PROG_DIR
 
 . wordpress-env.sh
 
-region=", Bass Coast & South Gippsland, Victoria"
+region=", South Gippland, Victoria"
 PARALLEL_MAX=8
 
 . opts
