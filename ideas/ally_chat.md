@@ -47,3 +47,14 @@
 # - try it with llama.cpp
 # - run it on my webservers?
 
+
+- missions
+- personas
+- breakout rooms
+- augmentations
+	- raise temperature / avoid repetition
+	- general vector DB
+	- personal vector DB
+	- LoRA
+	- multi predict & choose
+	- self-assessment and refinement
