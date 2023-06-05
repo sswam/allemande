@@ -19,7 +19,7 @@ for D; do
 
 	ln -sf "$D/output.1.md" "$D.md"
 	ln -sf "$D/output.2.md" "$D.meta"
-	v ./prettify.py -a "$D, Bass Coast, Victoria" -t template/tourism.txt -c "$D.md" -m "$D.meta" > "$D.wordpress"
+	v ./prettify.py -a "$D, Bass Coast & South Gippsland, Victoria" -t template/tourism.txt -c "$D.md" -m "$D.meta" > "$D.wordpress"
 done
 
 mkdir -p DONE
