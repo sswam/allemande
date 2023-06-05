@@ -29,7 +29,7 @@ LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $$[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODE
 TOPIC=
 SUMMARY_GUIDE=
 
-SUMMARY_PROMPT=Please summarize this info regarding the topic: $(TOPIC), using markdown dot-point form. Be as comprehensive and factual as possible, and do not omit anything relevant. Avoid repetition. Only Include info relevant to the topic: $(TOPIC). There may be a lot of other crap in the input document such as website boilerplate links and stuff. Please include relevant links (only) in [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown\#Hyperlinks) format. $(SUMMARY_GUIDE)
+SUMMARY_PROMPT=Please summarize this info in detail, relating to the topic: $(TOPIC), using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Focus on info relevant to $(TOPIC). Please include relevant links (only) in [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown\#Hyperlinks) format. $(SUMMARY_GUIDE)
 
 MISSIONS_IN=$(wildcard mission.*.in.txt)
 MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
