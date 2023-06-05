@@ -15,6 +15,7 @@ PARALLEL_MAX=8
 . opts
 
 run_giles_for_tourism() {
+	local name=$1
 	printf "\n\n----------------------------------------\n\n"
 	printf "*** $name ***\n\n"
 	mkdir -p "$name"
@@ -34,7 +35,7 @@ run_giles_for_tourism() {
 names=()
 
 while read name; do
-	. parallel run_giles_for_tourism
+	. parallel run_giles_for_tourism "$name"
 	names+=("$name")
 done
 wait
