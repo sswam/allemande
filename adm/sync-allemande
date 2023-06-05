@@ -1,4 +1,6 @@
 #!/bin/bash -eu
+trap "git branch" EXIT INT
+
 set -o pipefail
 
 PULL="git pull --commit --no-edit"
