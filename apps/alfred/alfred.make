@@ -19,7 +19,7 @@ WHISPER=whisp
 IMAGE2TEXT_MODE=best
 
 LLM_MODEL_LONG=c+
-LLM_MODEL_SUMMARY=4
+LLM_MODEL_SUMMARY=c+
 LLM_MODEL_SUMMARY_MEGA=4
 LLM_MODEL_BRAINY=4
 OCR_MODEL=4
@@ -85,8 +85,16 @@ w/%.html: w/%.htm
 w/%.pdf.txt: w/%.pdf
 	pdftotext $< $@
 
-w/%.txt: w/%.office
-	antiword $< > $@
+w/%.doc.txt: w/%.doc
+	pandoc $< -s -o $@
+w/%.docx.txt: w/%.docx
+	pandoc $< -s -o $@
+w/%.ppt.txt: w/%.ppt
+	pandoc $< -s -o $@
+w/%.pptx.txt: w/%.pptx
+	pandoc $< -s -o $@
+w/%.odt.txt: w/%.odt
+	pandoc $< -s -o $@
 
 w/%.xls.txt: w/%.xls
 	xlsx2csv $< > $@
@@ -161,7 +169,7 @@ summary-condensed.txt: summary.txt
 output.%.md: summary-condensed.txt mission.%.txt
 	echo >&2 "mission: $$mission"
 	sleep .$$RANDOM
-	< summary-condensed.txt llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
+	llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
 
 output.%.html: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@
@@ -175,15 +183,15 @@ output.zip: $(MISSIONS) $(OUTPUTS) summary.txt summary-condensed.txt input w sum
 
 .PRECIOUS: %
 
-w/%.doc.office: w/%.doc
+w/%.doc.: w/%.doc
 	same -s $< $@
-w/%.docx.office: w/%.docx
+w/%.docx: w/%.docx
 	same -s $< $@
-w/%.ppt.office: w/%.ppt
+w/%.ppt: w/%.ppt
 	same -s $< $@
-w/%.pptx.office: w/%.pptx
+w/%.pptx: w/%.pptx
 	same -s $< $@
-w/%.odt.office: w/%.odt
+w/%.odt: w/%.odt
 	same -s $< $@
 
 w/%.txt.txt: w/%.txt
