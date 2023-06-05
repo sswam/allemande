@@ -29,7 +29,8 @@ query=
 
 default: output.zip
 models: 4 3+ c i
-summary_prompt="Please summarize this info in detail, as relating to $$query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Stay focused on the topic. Be factual."
+SUMMARY_GUIDE=
+SUMMARY_PROMPT="Please summarize this info in detail, as relating to $$query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Stay focused on the topic. Be factual."
 
 results.txt:
 	if [ -z "$(query)" ]; then echo "ERROR: query is empty"; exit 1; fi

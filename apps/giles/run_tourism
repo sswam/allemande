@@ -32,7 +32,7 @@ run_giles_for_tourism() {
 	query="$name$region"
 	(
 		cd "$name"
-		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" SUMMARY_GUIDE="Cover a comprehensive scope of Things to See, Things to Do, History / Learning, How to Get There, What's Around, Warnings / Things to be Careful Of, Where to Stay, What's in the Area, Events, Local Groups, what to Eat and Drink, and Accessibility; and whatever else seems interesting."
+		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" SUMMARY_GUIDE="Using ## section headers, cover a comprehensive scope of 1. Things to See, 2. Things to Do, 3. Learning and History, 4. How to Get There, 5. What's Around, 6. Warnings (Things to be Careful Of), 7. Where to Stay, 8. What's in the Area, 9. Events, 10. Local Groups, 11. What to Eat and Drink, and 12. Accessibility; and whatever else seems interesting. Try to include ALL sections, please, if there is any info at all, or you can add something from your knowledge."
 	) 2>&1 | tee -a "$name/run_tourism.log"
 }
 
