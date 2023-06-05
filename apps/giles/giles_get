@@ -95,6 +95,8 @@ def giles_get(parallel: int = MAX_PARALLEL_DEFAULT, number: bool = True, start: 
 
 	# write the final file names to stdout
 	for line in fixed_tsv.split('\n'):
+		if not line:
+			continue
 		_old_name, filename = line.split('\t')
 		files.append(filename)
 
