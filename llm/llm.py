@@ -22,6 +22,8 @@ import tiktoken
 import tab
 import claude
 from bard import Bard
+from pathlib import Path
+from slugify import slugify
 
 # import json
 
@@ -29,6 +31,8 @@ logger = logging.getLogger(__name__)
 
 # settngs
 
+LOGDIR = Path(os.environ["HOME"])/"llm.log"
+LOGFILE_NAME_MAX_LEN = 100
 RETRIES = 10
 BAD_ERRORS_NO_RETRY = "maximum context length", "context_length_exceeded"
 
@@ -325,7 +329,7 @@ def read_utf_replace(inp):
 	return input_text
 
 
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, log=True):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -350,15 +354,15 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	if prompt2:
 		full_input += "\n" + prompt2 + "\n"
 
-	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file)
+	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=True)
 
 
-def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None):
+def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):
 	set_opts(vars())
-	return retry(query2, retries, *prompt, out=out)
+	return retry(query2, retries, *prompt, out=out, log=True)
 
 
-def query2(*prompt, out: Optional[IO[str]]=stdout):
+def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 	""" Ask the LLM a question. """
 	prompt = " ".join(prompt)
 
@@ -375,6 +379,13 @@ def query2(*prompt, out: Optional[IO[str]]=stdout):
 		lines = content.splitlines()
 		lines = tab.fix_indentation_list(lines, opts.indent)
 		content = "".join(lines)
+	if log:
+		LOGDIR.mkdir(parents=True, exist_ok=True)
+		logfile = base = LOGDIR/(slugify(prompt)[:LOGFILE_NAME_MAX_LEN])
+		while logfile.exists():
+			time_s = time.strftime("%Y-%m-%dT%H:%M:%S")
+			logfile = Path(f"{base}.{time_s}")
+		logfile.write_text(content, encoding="utf-8")
 
 	if out:
 		out.write(content)
