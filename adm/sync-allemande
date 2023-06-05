@@ -15,7 +15,9 @@ $PULL sam@pi.ucm.dev:allemande
 $PUSH sam@ucm.dev:allemande main
 $PUSH sam@pi.ucm.dev:allemande main
 
-llm-git-commit -n
+if [ -n "`git-ls-untracked`" -o -n "`git-ls-unstaged`" -o -n "`git-ls-staged`" ]; then
+	llm-git-commit -n || true
+fi
 
 $PULL $ALLEMANDE_GITHUB main
 $PUSH $ALLEMANDE_GITHUB main
