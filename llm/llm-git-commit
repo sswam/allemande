@@ -247,5 +247,3 @@ if [ "${#files[@]}" -gt 0 ]; then
 fi
 
 git commit -F "$commit_message"
-
-cleanup-and-exit "$?"
