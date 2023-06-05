@@ -9,7 +9,7 @@ min=$m
 too_low=$[ $min - 1 ]
 
 cleanup() {
-	grep -e '-' -e 'https:' | sed 's/- */- /; s/  */ /g'
+	grep -e '^ *-' -e 'https*:' | sed 's/ *- */- /; s/  */ /g' | sed 's/- The /- /; s/ ([^\t]*//;'
 }
 
 minimum_reps() {
