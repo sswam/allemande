@@ -80,8 +80,7 @@ def giles_get(parallel: int = MAX_PARALLEL_DEFAULT, number: bool = True, start: 
 			title, url = line.strip().split('\t')
 			# collect output files returned from fetch_url
 			# executor.submit(fetch_url, title, url, number)
-			future = executor.submit(fetch_url, title, url, number)
-			file = 
+			file = executor.submit(fetch_url, title, url, number).result()
 			files.append(file)
 			number += 1
 
