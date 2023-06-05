@@ -31,9 +31,12 @@ run_giles_for_tourism() {
 	) 2>&1 | tee -a "$name/run_tourism.log"
 }
 
+names=()
+
 while read name; do
 	. parallel run_giles_for_tourism
+	names+=("$name")
 done
 wait
 
-# ./add_all_to_wordpress
+./add_all_to_wordpress "${names[@]}"

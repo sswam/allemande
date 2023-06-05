@@ -46,11 +46,17 @@ OUTPUTS_HTML=$(patsubst mission.%.txt,output.%.html,$(MISSIONS))
 OUTPUTS_PDF=$(patsubst mission.%.txt,output.%.pdf,$(MISSIONS))
 OUTPUTS_DOCX=$(patsubst mission.%.txt,output.%.docx,$(MISSIONS))
 
-OUTPUTS=$(OUTPUTS_MD)
+OUTPUTS:=$(OUTPUTS_MD)
 
-ifeq ($(HTML),1) OUTPUTS=$(OUTPUTS) $(OUTPUTS_HTML) endif
-ifeq ($(PDF),1)  OUTPUTS=$(OUTPUTS) $(OUTPUTS_PDF)  endif
-ifeq ($(DOCX),1) OUTPUTS=$(OUTPUTS) $(OUTPUTS_DOCX) endif
+ifeq ($(HTML),1)
+	OUTPUTS:=$(OUTPUTS)
+$(OUTPUTS_HTML) endif
+ifeq ($(PDF),1)
+	OUTPUTS:=$(OUTPUTS) $(OUTPUTS_PDF)
+endif
+ifeq ($(DOCX),1)
+	OUTPUTS:=$(OUTPUTS) $(OUTPUTS_DOCX)
+endif
 
 HTML_DUMP_FILTER=cat
 
@@ -155,7 +161,7 @@ summary-condensed.txt: summary.txt
 output.%.md: summary-condensed.txt mission.%.txt
 	echo >&2 "mission: $$mission"
 	sleep .$$RANDOM
-	< mission.$*.txt llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
+	< summary-condensed.txt llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
 
 output.%.html: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@
@@ -163,9 +169,6 @@ output.%.pdf: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@
 output.%.docx: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@
-
-outputs: $(OUTPUTS)
-.PHONY: outputs
 
 output.zip: $(MISSIONS) $(OUTPUTS) summary.txt summary-condensed.txt input w summary
 	zip -r $@ $^
