@@ -5,6 +5,8 @@ import sys
 
 import argh
 
+# TODO convert & to _and_
+
 def slugify(text):
 	text = re.sub(r'[^a-zA-Z0-9]', '_', text)
 	text = re.sub(r'_+', '_', text)
@@ -12,7 +14,7 @@ def slugify(text):
 	return text
 
 def slugify_main(*text):
-	if text is not None:
+	if len(text):
 		print(slugify(" ".join(text)))
 	else:
 		for line in sys.stdin:

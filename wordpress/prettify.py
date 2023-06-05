@@ -331,6 +331,13 @@ def fill_template(data1, template, address):
 	while True:
 		line = next(line_iter, None)
 
+		if line is None:
+			break
+
+		if line.startswith("<!--"):
+			# skip comment
+			continue
+
 		if line == "{":
 			acc = ""
 			while True:
@@ -343,9 +350,6 @@ def fill_template(data1, template, address):
 				if acc:
 					acc += "\n"
 				acc += line
-
-		if line is None:
-			break
 
 		tags = re.findall(r'\{([A-Z0-9_]+)\}', line)
 		# any multi tags?
