@@ -32,7 +32,7 @@ run_giles_for_tourism() {
 	query="$name$region"
 	(
 		cd "$name"
-		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" SUMMARY_GUIDE="Cover a comprehensive scope of Things to See, Things to Do, History / Learning, How to Get There, What's Around, Things to be Careful Of, Where to Stay, What's in the Area, Events, Local Groups, what to Eat and Drink, and Accessibility; and whatever else seems interesting."
+		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" SUMMARY_GUIDE="Cover a comprehensive scope of Things to See, Things to Do, History / Learning, How to Get There, What's Around, Warnings / Things to be Careful Of, Where to Stay, What's in the Area, Events, Local Groups, what to Eat and Drink, and Accessibility; and whatever else seems interesting."
 	) 2>&1 | tee -a "$name/run_tourism.log"
 }
 
