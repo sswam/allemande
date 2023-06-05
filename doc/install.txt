@@ -52,6 +52,7 @@ sudo chfn -f "$fullname" $USER
 
 # -------- install essential tools -------------------------------------------
 
+sudo apt update
 sudo apt install ssh rsync screen build-essential devscripts python3-dev python3.10-dev
 
 # -------- set up ssh --------------------------------------------------------
@@ -89,8 +90,9 @@ sudo make devinst
 
 # -------- clone everything else with arcs -----------------------------------
 
+cd ~/code
 for repo in a2b allemande ansible brace c cz edict f3db profile ucm-packages ucm-tools Xtools; do
-	arcs -c $CODE/$repo
+	arcs -c $code/$repo
 done
 
 # -------- apt distribution upgrade, to bookworm (testing) -------------------
@@ -101,7 +103,7 @@ sudo apt dist-upgrade
 # -------- cz: a dialect of C that looks like Python -------------------------
 
 cd ~/code/brace
-sudo apt install libio-string-perl libx11-dev libxext-dev libpng-dev libsdl-mixer1.2-dev libgl1-mesa-dev libsdl2-{dev,image,mixer,ttf}
+sudo apt install libio-string-perl libx11-dev libxext-dev libpng-dev libsdl-mixer1.2-dev libgl1-mesa-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
 ./configure
 make
 sudo make install
@@ -116,6 +118,11 @@ sudo ldconfig
 cd ~/code/ucm-tools
 ./configure 
 make devinst
+
+# -------- user tmp dir ------------------------------------------------------
+
+mkdir /tmp/sam
+ln -s /tmp/sam ~/tmp
 
 # -------- profile: portable conf files --------------------------------------
 
