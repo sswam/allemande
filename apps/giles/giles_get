@@ -24,7 +24,6 @@ def fetch_url(title: str, url: str, number: int, format: str = "%03d_%s") -> Non
 	""" fetch a URL and save it in a file """
 
 	try:
-
 		logger.info(f'Fetching {title} from {url}')
 
 		# title remove bad chars
@@ -81,7 +80,8 @@ def giles_get(parallel: int = MAX_PARALLEL_DEFAULT, number: bool = True, start: 
 			title, url = line.strip().split('\t')
 			# collect output files returned from fetch_url
 			# executor.submit(fetch_url, title, url, number)
-			file = executor.submit(fetch_url, title, url, number)
+			future = executor.submit(fetch_url, title, url, number)
+			file = 
 			files.append(file)
 			number += 1
 

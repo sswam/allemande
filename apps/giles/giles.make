@@ -14,6 +14,10 @@ OCR_MODEL=4
 # Note: OCR_MODEL is not used by giles yet
 LLM_MODEL_WORDS_MAX=1800
 
+HTML=0
+PDF=0
+DOCX=0
+
 MISSIONS_IN=$(wildcard mission.*.in.txt)
 MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
 
@@ -32,16 +36,17 @@ results.txt:
 	if [ -z "$(query)" ]; then echo "ERROR: query is empty"; exit 1; fi
 	search -l -m "$(n_results)" "$(query)" > $@
 
-input: results.txt
+input.ls: results.txt
 	mkdir -p input
 	(cd input && giles_get) < $<
+	ls input > $@
 
 mission.%.txt: mission.%.in.txt
 	if [ -z "$(query)" ]; then echo "ERROR: query is empty"; exit 1; fi
 	perl -pe 's/\$$query\b/$$ENV{query}/g' < $< > $@
 
-output.zip: input $(MISSIONS)
-	alfred IMAGE2TEXT_MODE="$(IMAGE2TEXT_MODE)" LLM_MODEL_SUMMARY="$(LLM_MODEL_SUMMARY)" LLM_MODEL_SUMMARY_MEGA="$(LLM_MODEL_SUMMARY_MEGA)" LLM_MODEL_BRAINY=$(LLM_MODEL_BRAINY) LLM_MODEL_LONG="$(LLM_MODEL_LONG)" \
+output.zip: input.ls $(MISSIONS)
+	alfred HTML=$(HTML) PDF=$(PDF) DOCX=$(DOCX) IMAGE2TEXT_MODE="$(IMAGE2TEXT_MODE)" LLM_MODEL_SUMMARY="$(LLM_MODEL_SUMMARY)" LLM_MODEL_SUMMARY_MEGA="$(LLM_MODEL_SUMMARY_MEGA)" LLM_MODEL_BRAINY=$(LLM_MODEL_BRAINY) LLM_MODEL_LONG="$(LLM_MODEL_LONG)" \
 		LLM_MODEL_WORDS_MAX="$(LLM_MODEL_WORDS_MAX)" OCR_MODEL="$(OCR_MODEL)" \
 		TOPIC="$(query)" HTML_DUMP_FILTER="$(HTML_DUMP_FILTER)"
 
