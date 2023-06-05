@@ -33,10 +33,6 @@ $PUSH $ALLEMANDE_GITHUB allemande
 $PULL $ALLEMANDE_GITHUB allemande
 
 $CO barbarella
-$PULL sam@ucm.dev:barbarella barbarella
-$PULL sam@pi.ucm.dev:barbarella barbarella
-$PUSH sam@ucm.dev:allemande allemande
-$PUSH sam@pi.ucm.dev:allemande allemande
 $PULL $BARBARELLA_GITHUB barbarella
 $MERGE main
 $PUSH $BARBARELLA_GITHUB barbarella
