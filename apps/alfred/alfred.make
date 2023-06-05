@@ -119,11 +119,13 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 
 summary/%.txt: w/%.txt
 	sleep .$$RANDOM
+	model= ; \
 	tokens=`llm count -m $(LLM_MODEL_SUMMARY) < $<`; \
 	echo >&2 "tokens: $$tokens"; \
-	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY); fi; \
+	if [ $$tokens = 0 ]; then echo >&2 "empty input: $<"; > $@; \
+	elif [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY); fi; \
 	echo >&2 "model: $$model"; \
-	llm process -m $$model "$(summary_prompt)" < $< > $@
+	if [ -n "$$model" ]; then llm process -m $$model "$(summary_prompt)" < $< > $@ ; fi
 
 summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
