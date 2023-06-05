@@ -329,7 +329,7 @@ def read_utf_replace(inp):
 	return input_text
 
 
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, log=True):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -339,6 +339,8 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	input_text = read_utf_replace(inp)
 	input_text = input_text.rstrip()
 
+	if not input_text and empty_to_empty:
+		return ""
 	if not input_text and not empty_ok:
 		raise ValueError("no input")
 
