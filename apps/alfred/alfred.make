@@ -37,12 +37,20 @@ MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
 # output_md files are like output.1.md
 # so we need to replace mission -> output at the start of the filename
 
+HTML=1
+PDF=1
+DOCX=1
+
 OUTPUTS_MD=$(patsubst mission.%.txt,output.%.md,$(MISSIONS))
 OUTPUTS_HTML=$(patsubst mission.%.txt,output.%.html,$(MISSIONS))
 OUTPUTS_PDF=$(patsubst mission.%.txt,output.%.pdf,$(MISSIONS))
 OUTPUTS_DOCX=$(patsubst mission.%.txt,output.%.docx,$(MISSIONS))
 
-OUTPUTS=$(OUTPUTS_MD) $(OUTPUTS_HTML) $(OUTPUTS_PDF) $(OUTPUTS_DOCX)
+OUTPUTS=$(OUTPUTS_MD)
+
+ifeq ($(HTML),1) OUTPUTS=$(OUTPUTS) $(OUTPUTS_HTML) endif
+ifeq ($(PDF),1)  OUTPUTS=$(OUTPUTS) $(OUTPUTS_PDF)  endif
+ifeq ($(DOCX),1) OUTPUTS=$(OUTPUTS) $(OUTPUTS_DOCX) endif
 
 HTML_DUMP_FILTER=cat
 
