@@ -167,6 +167,7 @@ ucm-dev-core
 ucm-amd64
 ucm-desktop
 END
+fi
 
 # -------- ucm-packages: necessary and useful packages -----------------------
 
@@ -190,3 +191,6 @@ pip install torch
 pip install -r requirements-appserver.txt 
 pip install -r requirements.txt 
 
+# ----------------------------------------------------------------------------
+
+# TODO more
