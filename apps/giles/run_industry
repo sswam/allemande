@@ -33,6 +33,7 @@ run_giles_for_industry() {
 
 while read name; do
 	. parallel run_giles_for_industry
+	sleep .$RANDOM
 done
 wait
 
