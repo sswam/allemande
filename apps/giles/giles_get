@@ -55,6 +55,9 @@ def fetch_url(title: str, url: str, number: int, format: str = "%03d_%s") -> Non
 
 		# run command
 		subprocess.run(command, check=True)
+
+		# TODO check file type and rename if needed
+
 	except Exception as e:
 		logger.error(f'Error fetching {title} from {url}: {e}')
 
