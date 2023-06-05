@@ -1,29 +1,35 @@
 #!/bin/bash -eu
 set -o pipefail
 
+PULL="git pull --commit --no-edit"
+MERGE="git merge --no-edit"
+PUSH="git push"
+CO="git checkout"
+
 cd "$ALLEMANDE_HOME"
 
-git checkout main
+$CO main
 
-git pull --commit --no-edit sam@ucm.dev:allemande
-git pull --commit --no-edit sam@pi.ucm.dev:allemande
-git push sam@ucm.dev:allemande main
-git push sam@pi.ucm.dev:allemande main
+$PULL sam@ucm.dev:allemande
+$PULL sam@pi.ucm.dev:allemande
+$PUSH sam@ucm.dev:allemande main
+$PUSH sam@pi.ucm.dev:allemande main
 
 git-add-commit
 
-git push $ALLEMANDE_GITHUB ; git pull $ALLEMANDE_GITHUB
+$PUSH $ALLEMANDE_GITHUB
+$PULL $ALLEMANDE_GITHUB
 
-git checkout allemande
-git pull $ALLEMANDE_GITHUB allemande
-git merge --no-edit main
-git push $ALLEMANDE_GITHUB allemande
-git pull $ALLEMANDE_GITHUB allemande
+$CO allemande
+$PULL $ALLEMANDE_GITHUB allemande
+$MERGE main
+$PUSH $ALLEMANDE_GITHUB allemande
+$PULL $ALLEMANDE_GITHUB allemande
 
-git checkout barbarella
-git pull $BARBARELLA_GITHUB barbarella
-git merge --no-edit main
-git push $BARBARELLA_GITHUB barbarella
-git pull $BARBARELLA_GITHUB barbarella
+$CO barbarella
+$PULL $BARBARELLA_GITHUB barbarella
+$MERGE main
+$PUSH $BARBARELLA_GITHUB barbarella
+$PULL $BARBARELLA_GITHUB barbarella
 
-git checkout main
+$CO main
