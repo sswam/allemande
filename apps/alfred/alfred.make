@@ -19,7 +19,9 @@ WHISPER=whisp  # speech recognition engine
 IMAGE2TEXT_MODE=best
 
 LLM_MODEL_LONG=c+
-LLM_MODEL=4
+LLM_MODEL_SUMMARY=4
+LLM_MODEL_SUMMARY_MEGA=4
+LLM_MODEL_BRAINY=4
 OCR_MODEL=4
 LLM_MODEL_TOKENS_MAX=8192
 LLM_MODEL_TOKENS_FOR_RESPONSE=2048
@@ -117,9 +119,9 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 
 summary/%.txt: w/%.txt
 	sleep .$$RANDOM
-	tokens=`llm count -m $(LLM_MODEL) < $<`; \
+	tokens=`llm count -m $(LLM_MODEL_SUMMARY) < $<`; \
 	echo >&2 "tokens: $$tokens"; \
-	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
+	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY); fi; \
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$(summary_prompt)" < $< > $@
 
@@ -128,9 +130,9 @@ summary.txt: $(SUMMARY_FILES)
 
 summary-condensed.txt: summary.txt
 	sleep .$$RANDOM
-	tokens=`llm count -m $(LLM_MODEL) < $<`; \
+	tokens=`llm count -m $(LLM_MODEL_SUMMARY_MEGA) < $<`; \
 	echo >&2 "tokens: $$tokens"; \
-	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
+	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY_MEGA); fi; \
 	echo >&2 "model: $$model"; \
 	llm process -m $$model "$(summary_prompt)" < $< > $@
 
@@ -143,7 +145,7 @@ summary-condensed.txt: summary.txt
 output.%.md: summary-condensed.txt mission.%.txt
 	echo >&2 "mission: $$mission"
 	sleep .$$RANDOM
-	< mission.$*.txt llm process -m $(LLM_MODEL) "$$(< mission.$*.txt)" < $< > $@
+	< mission.$*.txt llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
 
 output.%.html: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@
