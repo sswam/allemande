@@ -2,6 +2,8 @@
 
 set -a
 
+ALLEMANDE_GITHUB=git@github.com:sswam/allemande.git
+BARBARELLA_GITHUB=git@github.com:sswam/barbarella.git
 ALLEMANDE_ENV=$(realpath "${BASH_SOURCE[0]}")
 ALLEMANDE_HOME=$(dirname "$ALLEMANDE_ENV")
 ALLYCHAT_HOME="$ALLEMANDE_HOME/webchat"
