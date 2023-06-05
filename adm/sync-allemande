@@ -17,8 +17,8 @@ $PUSH sam@pi.ucm.dev:allemande main
 
 git-add-commit
 
-$PUSH $ALLEMANDE_GITHUB
-$PULL $ALLEMANDE_GITHUB
+$PULL $ALLEMANDE_GITHUB main
+$PUSH $ALLEMANDE_GITHUB main
 
 $CO allemande
 $PULL $ALLEMANDE_GITHUB allemande
