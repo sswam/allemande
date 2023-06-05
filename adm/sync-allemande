@@ -7,18 +7,23 @@ git checkout main
 
 git pull --commit --no-edit sam@ucm.dev:allemande
 git pull --commit --no-edit sam@pi.ucm.dev:allemande
-git push sam@ucm.dev:allemande
-git push sam@pi.ucm.dev:allemande
+git push sam@ucm.dev:allemande main
+git push sam@pi.ucm.dev:allemande main
 
 git-add-commit
 
-git push; git pull
+git push $ALLEMANDE_GITHUB ; git pull $ALLEMANDE_GITHUB
 
-for branch in allemande barbarella; do
-	git checkout $branch
-	git pull
-	git merge --no-edit main
-	git push ; git pull
-done
+git checkout allemande
+git pull $ALLEMANDE_GITHUB allemande
+git merge --no-edit main
+git push $ALLEMANDE_GITHUB allemande
+git pull $ALLEMANDE_GITHUB allemande
+
+git checkout barbarella
+git pull $BARBARELLA_GITHUB barbarella
+git merge --no-edit main
+git push $BARBARELLA_GITHUB barbarella
+git pull $BARBARELLA_GITHUB barbarella
 
 git checkout main
