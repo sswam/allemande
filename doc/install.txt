@@ -53,7 +53,7 @@ sudo chfn -f "$fullname" $USER
 # -------- install essential tools -------------------------------------------
 
 sudo apt update
-sudo apt install ssh rsync screen build-essential devscripts python3-dev python3.10-dev
+sudo apt install ssh rsync screen build-essential devscripts python3-dev python3.10-dev vim
 
 # -------- set up ssh --------------------------------------------------------
 
@@ -127,7 +127,7 @@ ln -s /tmp/sam ~/tmp
 # -------- profile: portable conf files --------------------------------------
 
 cp -aT ~/code/profile/sam ~/code/profile/$user || true
-ln -s ~/code/profile/$user conf
+ln -s ~/code/profile/$user ~/conf
 setup_conf
 
 # -------- symlink /mnt/* to / -----------------------------------------------
