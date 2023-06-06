@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 LOGDIR = Path(os.environ["HOME"])/"llm.log"
 LOGFILE_NAME_MAX_LEN = 100
-RETRIES = 10
+RETRIES = 20
 BAD_ERRORS_NO_RETRY = "maximum context length", "context_length_exceeded"
 
 models = {
@@ -329,7 +329,7 @@ def read_utf_replace(inp):
 	return input_text
 
 
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, log=True):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -339,6 +339,8 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	input_text = read_utf_replace(inp)
 	input_text = input_text.rstrip()
 
+	if not input_text and empty_to_empty:
+		return ""
 	if not input_text and not empty_ok:
 		raise ValueError("no input")
 
@@ -399,12 +401,13 @@ def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 		try:
 			return fn(*args, **kwargs)
 		except Exception as ex:
-			logger.warning("retry: exception: %s", ex)
+			delay = random.uniform(sleep_min, sleep_max)
+			logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
 			msg = str(ex)
 			bad = any(bad_error in msg for bad_error in BAD_ERRORS_NO_RETRY)
 			if bad or i == n_tries - 1:
 				raise
-			time.sleep(random.uniform(sleep_min, sleep_max))
+			time.sleep(delay)
 			sleep_min *= 2
 			sleep_max *= 2
 

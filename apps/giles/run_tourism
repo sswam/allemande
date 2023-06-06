@@ -9,17 +9,21 @@ PATH=$PATH:$PROG_DIR
 
 . wordpress-env.sh
 
-region=", Bass Coast, Victoria"
+region=", South Gippland, Victoria"
 PARALLEL_MAX=8
 
 . opts
 
 run_giles_for_tourism() {
 	local name=$1
+	if [ -L "$name" ]; then
+		printf "*** $name is already done ***\n\n"
+		return
+	fi
 	printf "\n\n----------------------------------------\n\n"
 	printf "*** $name ***\n\n"
 	mkdir -p "$name"
-	for mission in tourism-missions/mission.*.in.txt; do
+	for mission in missions/tourism/mission.*.in.txt; do
 		if [ ! -f "$mission" ]; then
 			continue
 		fi
@@ -28,7 +32,7 @@ run_giles_for_tourism() {
 	query="$name$region"
 	(
 		cd "$name"
-		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" summary_prompt="Please summarize this info in detail, as relating to $query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Stay focused on the topic, do not give details of other areas. Be factual."
+		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" SUMMARY_GUIDE="Using ## section headers, cover a comprehensive scope of 1. Things to See, 2. Things to Do, 3. Learning and History, 4. How to Get There, 5. What's Around, 6. Warnings (Things to be Careful Of), 7. Where to Stay, 8. What's in the Area, 9. Events, 10. Local Groups, 11. What to Eat and Drink, and 12. Accessibility; and whatever else seems interesting. Try to include ALL sections, please, if there is any info at all, or you can add something from your knowledge."
 	) 2>&1 | tee -a "$name/run_tourism.log"
 }
 
@@ -37,6 +41,7 @@ names=()
 while read name; do
 	. parallel run_giles_for_tourism "$name"
 	names+=("$name")
+	sleep .$RANDOM
 done
 wait
 

@@ -6,8 +6,7 @@ SHELL=/bin/bash
 IMAGE2TEXT_MODE=best
 # Note: IMAGE2TEXT_MODE is not not used by giles yet
 LLM_MODEL_LONG=c+
-LLM_MODEL=4
-LLM_MODEL_SUMMARY=4
+LLM_MODEL_SUMMARY=c+
 LLM_MODEL_SUMMARY_MEGA=4
 LLM_MODEL_BRAINY=4
 OCR_MODEL=4
@@ -30,7 +29,8 @@ query=
 
 default: output.zip
 models: 4 3+ c i
-summary_prompt="Please summarize this info in detail, as relating to $$query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Stay focused on the topic. Be factual."
+SUMMARY_GUIDE=
+SUMMARY_PROMPT="Please summarize this info in detail, as relating to $$query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Stay focused on the topic. Be factual."
 
 results.txt:
 	if [ -z "$(query)" ]; then echo "ERROR: query is empty"; exit 1; fi
@@ -50,5 +50,6 @@ output.zip: input.ls $(MISSIONS)
 		LLM_MODEL_WORDS_MAX="$(LLM_MODEL_WORDS_MAX)" OCR_MODEL="$(OCR_MODEL)" \
 		TOPIC="$(query)" HTML_DUMP_FILTER="$(HTML_DUMP_FILTER)"
 
+.PRECIOUS: %
 
 .PHONY: default

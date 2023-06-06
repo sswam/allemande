@@ -1,0 +1,148 @@
+Please write a detailed, interesting, engaging and fun blog post for $query. Use the following exact sections and headings. Write prose, not dot-point lists, please.
+Please also include as much factual information as you can about $query. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Do not mention other areas. If sufficient info was not provided, please fill in the sections based on your knowledge if possible. Very Important: Please DO NOT omit any sections.
+
+Use the following instructions to guide you:
+
+Purpose of piece: To introduce visitors to the region's unique locations, landmarks, and attractions.
+Type of publication: Web page content, interactive maps, photo galleries, travel guides, articles.
+Style of language: Informative, engaging, and inviting. Use descriptive language to paint a picture of each location.
+Exclusions: inappropriate language, inacurate information
+
+Write the article in the style of: Anthony Bourdain
+Do not mention Anthony Bourdain.
+Do not mention food, unless relevant to $query.
+
+Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown#Hyperlinks), including links to major pages such as:
+- official social media pages
+- wikipedia pages
+- www.visitgippsland.com.au (pages under this domain, preferably not just the main site)
+- www.visitphillipisland.com.au (specific pages)
+- www.visitvictoria.com (specific pages)
+- www.australia.com/en (specific pages)
+- www.visitbasscoast.com.au (specific pages)
+- www.visitpromcountry.com.au (specific pages)
+- www.pibn.com.au (specific pages)
+- www.visitgrantville.com.au (specific pages)
+
+- NB: make sure to include all sections, even if information is not available, except for subsections marked "optional" and "if needed" which may be omitted.
+
+Pleaes use at least one sub-heading / sub-section in each section, and no more than three.
+
+# Main heading for the article
+
+[a long multi-paragraph stylish introduction to $query; unique, evocative, and candid; use Anthony Bourdain's style]
+
+[continuing with the second paragraph of the introduction]
+
+[continuing with the introduction, please write 3 paragraphs for this section, it should be the longest section.]
+
+## See  <-  use this exact heading! please, do not leave out this section!
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[things to see (sightseeing and photography); 2 paragraphs]
+
+[continuing things to see (sightseeing and photography); 2 paragraphs]
+
+[optional: more subheadings and content if needed]
+
+## Do  <-  use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[things to do (activities); 2 paragraphs]
+
+[continuing things to do (activities); long, 2 paragraphs]
+
+[optional: more subheadings and content if needed]
+
+## Learn  <-  use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[things to know (history); 2 paragraphs]
+
+[continuing things to know (history); 2 paragraphs]
+
+[optional: more subheadings and content if needed]
+
+## Getting There  <-  use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading; always include all sections even if not much info]
+
+[to get there (travel), including public transport,
+driving, and walking; 2 paragraphs]
+
+[continuing to get there (travel); 2 paragraphs]
+
+## Stay  <-  use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading; always include all sections even if not much info]
+
+[to stay (accommodation); 2 paragraphs]
+
+[continuing to stay (accommodation); 2 paragraphs]
+
+## Warnings  <-  use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading; always include all sections even if not much info]
+
+[things to watch out for (dangers)]
+
+## In the area  <-  use the exact heading!
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[what's around? (attractions); 2 paragraphs]
+
+[continuing what's around? (attractions); 2 paragraphs]
+
+## Events  <-  use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[what's on? (events); 2 paragraphs]
+
+[continuing what's on? (events); 2 paragraphs]
+
+[optional: more subheadings and content if needed]
+
+## Local groups  <-  use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[who's around? (resident clubs and associations); 2 paragraphs]
+
+[continuing who's around? (resident clubs and associations); 2 paragraphs]
+
+[optional: more subheadings and content if needed]
+
+## Eat and Drink  <- use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[what is there around to eat and drink (restaurants and bars); 2 paragraphs]
+
+[continuing what is there around to eat and drink (restaurants and bars); 2 paragraphs]
+
+[optional: more subheadings and content if needed]
+
+## Accessibility  <- use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[bathroom facilities, access and services for people with disabilities (amenities); 1 paragraph]
+
+[optional: more subheadings and content if needed]
+
+## Recap  <- use this exact heading!  please, do not leave out this section
+
+### [descriptive subheading 1; always include all sections even if not much info]
+
+[a lengthy stylish recap summary of the place; unique, evocative, and candid; use Anthony Bourdain's style]
+
+[continuing with the second paragraph of the recap]
+
+[continuing with the third paragraph of the recap]
+
+[optional: more content if needed]

@@ -7,7 +7,6 @@
 
 {INTRO_TITLE}
 
-
 [/fusion_title]
 
 <!-- SOCIALS --------------------------------------------------------------------------- -->
@@ -16,7 +15,6 @@
 [fusion_text columns="" column_min_width="" column_spacing="" rule_style="" rule_size="" rule_color="" hue="" saturation="" lightness="" alpha="" content_alignment_medium="" content_alignment_small="" content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="intro-text" margin_top="4vh" margin_right="" margin_bottom="4vh" margin_left="" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_type="" animation_direction="left" animation_color="" animation_speed="0.3" animation_delay="0" animation_offset=""]
 
 {INTRO}
-
 
 [/fusion_text]
 
@@ -42,12 +40,10 @@ See
 
 {SEE_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-title-text" id="see-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {SEE_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -61,12 +57,10 @@ See
 
 {SEE_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-title-text" id="see-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {SEE_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -77,12 +71,10 @@ See
 
 {SEE_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-title-text" id="see-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {SEE_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -100,12 +92,10 @@ See
 
 {SEE_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-title-text" id="see-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {SEE_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -122,7 +112,6 @@ See
 
 Do
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="do-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -130,12 +119,10 @@ Do
 
 {DO_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="do-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {DO_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -148,12 +135,10 @@ Do
 
 {DO_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="do-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {DO_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -164,12 +149,10 @@ Do
 
 {DO_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="do-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {DO_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -187,12 +170,10 @@ Do
 
 {DO_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="do-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {DO_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -209,7 +190,6 @@ Do
 
 Learn
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="learn-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -217,12 +197,10 @@ Learn
 
 {LEARN_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="learn-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {LEARN_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -232,12 +210,10 @@ Learn
 
 {LEARN_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="learn-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {LEARN_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -248,12 +224,10 @@ Learn
 
 {LEARN_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="learn-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {LEARN_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -264,12 +238,10 @@ Learn
 
 {LEARN_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="learn-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {LEARN_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -286,7 +258,6 @@ Learn
 
 Eat &amp; Drink
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="eat-and-drink-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -294,12 +265,10 @@ Eat &amp; Drink
 
 {EAT_AND_DRINK_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="eat-and-drink-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {EAT_AND_DRINK_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -312,12 +281,10 @@ Eat &amp; Drink
 
 {EAT_AND_DRINK_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="eat-and-drink-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {EAT_AND_DRINK_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -327,7 +294,6 @@ Eat &amp; Drink
 [fusion_title title_type="text" rotation_effect="bounceIn" display_time="1200" highlight_effect="circle" loop_animation="off" highlight_width="9" highlight_top_margin="0" title_link="off" link_target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-title-sub" id="eat-and-drink-title-sub-2" content_align="left" size="3" fusion_font_family_title_font="var(--awb-custom_typography_17-font-family)" fusion_font_variant_title_font="var(--awb-custom_typography_17)" font_size="var(--awb-custom_typography_17-font-size)" line_height="var(--awb-custom_typography_17-line-height)" letter_spacing="var(--awb-custom_typography_17-letter-spacing)" text_transform="var(--awb-custom_typography_17-text-transform)" text_color="var(--awb-color8)" text_shadow="no" text_shadow_blur="0" gradient_font="no" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" style_type="default" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {EAT_AND_DRINK_SUBHEADING_3}
-
 
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="eat-and-drink-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
@@ -350,12 +316,10 @@ Eat &amp; Drink
 
 {EAT_AND_DRINK_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="eat-and-drink-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {EAT_AND_DRINK_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -372,7 +336,6 @@ Eat &amp; Drink
 
 Getting There
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="getting-there-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -380,12 +343,10 @@ Getting There
 
 {GETTING_THERE_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="getting-there-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {GETTING_THERE_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -398,12 +359,10 @@ Getting There
 
 {GETTING_THERE_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="getting-there-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {GETTING_THERE_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -414,12 +373,10 @@ Getting There
 
 {GETTING_THERE_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="getting-there-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {GETTING_THERE_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -430,12 +387,10 @@ Getting There
 
 {GETTING_THERE_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="getting-there-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {GETTING_THERE_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -452,7 +407,6 @@ Getting There
 
 Stay
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="stay-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -460,12 +414,10 @@ Stay
 
 {STAY_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="stay-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {STAY_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -478,12 +430,10 @@ Stay
 
 {STAY_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="stay-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {STAY_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -494,12 +444,10 @@ Stay
 
 {STAY_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="stay-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {STAY_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -517,12 +465,10 @@ Stay
 
 {STAY_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="stay-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {STAY_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -539,7 +485,6 @@ Stay
 
 In the area
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="in-the-area-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -547,12 +492,10 @@ In the area
 
 {IN_THE_AREA_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="in-the-area-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {IN_THE_AREA_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -565,12 +508,10 @@ In the area
 
 {IN_THE_AREA_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="in-the-area-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {IN_THE_AREA_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -581,12 +522,10 @@ In the area
 
 {IN_THE_AREA_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="in-the-area-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {IN_THE_AREA_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -597,12 +536,10 @@ In the area
 
 {IN_THE_AREA_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="in-the-area-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {IN_THE_AREA_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -619,7 +556,6 @@ In the area
 
 Events
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="events-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -627,12 +563,10 @@ Events
 
 {EVENTS_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="events-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {EVENTS_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -642,12 +576,10 @@ Events
 
 {EVENTS_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="events-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {EVENTS_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -658,12 +590,10 @@ Events
 
 {EVENTS_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="events-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {EVENTS_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -674,12 +604,10 @@ Events
 
 {EVENTS_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="events-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {EVENTS_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -699,7 +627,6 @@ Events
 
 Accessibility
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="accessibility-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="false" min_height="" link=""]
@@ -707,12 +634,10 @@ Accessibility
 
 {ACCESSIBILITY_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="accessibility-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {ACCESSIBILITY_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -725,12 +650,10 @@ Accessibility
 
 {ACCESSIBILITY_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="accessibility-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {ACCESSIBILITY_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -741,12 +664,10 @@ Accessibility
 
 {ACCESSIBILITY_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="accessibility-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {ACCESSIBILITY_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -757,12 +678,10 @@ Accessibility
 
 {ACCESSIBILITY_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="accessibility-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {ACCESSIBILITY_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -779,7 +698,6 @@ Accessibility
 
 Local Groups
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="local-groups-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -787,12 +705,10 @@ Local Groups
 
 {LOCAL_GROUPS_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="local-groups-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {LOCAL_GROUPS_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -805,12 +721,10 @@ Local Groups
 
 {LOCAL_GROUPS_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="local-group-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {LOCAL_GROUPS_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -821,12 +735,10 @@ Local Groups
 
 {LOCAL_GROUPS_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="local-group-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {LOCAL_GROUPS_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -837,12 +749,10 @@ Local Groups
 
 {LOCAL_GROUPS_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="local-group-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {LOCAL_GROUPS_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -859,7 +769,6 @@ Local Groups
 
 Warnings
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="warnings-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -867,12 +776,10 @@ Warnings
 
 {WARNINGS_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="warnings-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {WARNINGS_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -885,12 +792,10 @@ Warnings
 
 {WARNINGS_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="warnings-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {WARNINGS_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -901,12 +806,10 @@ Warnings
 
 {WARNINGS_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="warnings-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {WARNINGS_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -917,12 +820,10 @@ Warnings
 
 {WARNINGS_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="warnings-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {WARNINGS_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -939,7 +840,6 @@ Warnings
 
 Recap
 
-
 [/fusion_title]
 [/fusion_builder_column]
 [fusion_builder_column type="2_3" layout="2_3" align_self="auto" content_layout="column" align_content="flex-start" valign_content="flex-start" content_wrap="wrap" center_content="no" column_tag="div" target="_self" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text-col" id="recap-text-col" elegant_backgrounds="gradient" ee_gradient_type="vertical" gradient_direction="0deg" gradient_force="yes" animation_mode="normal" enable_background_slider="no" elegant_transition_effect="fade" elegant_background_scale="cover" elegant_transition_delay="3" elegant_transition_duration="750" order_medium="0" order_small="0" hover_type="none" border_style="solid" box_shadow="no" box_shadow_blur="0" box_shadow_spread="0" background_type="single" gradient_start_position="0" gradient_end_position="100" gradient_type="linear" radial_direction="center center" linear_angle="180" lazy_load="avada" background_position="left top" background_repeat="no-repeat" background_blend_mode="none" sticky="off" sticky_devices="small-visibility,medium-visibility,large-visibility" absolute="off" filter_type="regular" filter_hover_element="self" filter_hue="0" filter_saturation="100" filter_brightness="100" filter_contrast="100" filter_invert="0" filter_sepia="0" filter_opacity="100" filter_blur="0" filter_hue_hover="0" filter_saturation_hover="100" filter_brightness_hover="100" filter_contrast_hover="100" filter_invert_hover="0" filter_sepia_hover="0" filter_opacity_hover="100" filter_blur_hover="0" transform_type="regular" transform_hover_element="self" transform_scale_x="1" transform_scale_y="1" transform_translate_x="0" transform_translate_y="0" transform_rotate="0" transform_skew_x="0" transform_skew_y="0" transform_scale_x_hover="1" transform_scale_y_hover="1" transform_translate_x_hover="0" transform_translate_y_hover="0" transform_rotate_hover="0" transform_skew_x_hover="0" transform_skew_y_hover="0" transition_duration="300" transition_easing="ease" motion_effects="W3sidHlwZSI6IiIsInNjcm9sbF90eXBlIjoidHJhbnNpdGlvbiIsInNjcm9sbF9kaXJlY3Rpb24iOiJ1cCIsInRyYW5zaXRpb25fc3BlZWQiOiIxIiwiZmFkZV90eXBlIjoiaW4iLCJzY2FsZV90eXBlIjoidXAiLCJpbml0aWFsX3NjYWxlIjoiMSIsIm1heF9zY2FsZSI6IjEuNSIsIm1pbl9zY2FsZSI6IjAuNSIsImluaXRpYWxfcm90YXRlIjoiMCIsImVuZF9yb3RhdGUiOiIzMCIsImluaXRpYWxfYmx1ciI6IjAiLCJlbmRfYmx1ciI6IjMiLCJzdGFydF9lbGVtZW50IjoidG9wIiwic3RhcnRfdmlld3BvcnQiOiJib3R0b20iLCJlbmRfZWxlbWVudCI6ImJvdHRvbSIsImVuZF92aWV3cG9ydCI6InRvcCIsIm1vdXNlX2VmZmVjdCI6InRyYWNrIiwibW91c2VfZWZmZWN0X2RpcmVjdGlvbiI6Im9wcG9zaXRlIiwibW91c2VfZWZmZWN0X3NwZWVkIjoiMiIsImluZmluaXRlX2FuaW1hdGlvbiI6ImZsb2F0IiwiaW5maW5pdGVfYW5pbWF0aW9uX3NwZWVkIjoiMiJ9XQ==" scroll_motion_devices="small-visibility,medium-visibility,large-visibility" animation_direction="left" animation_speed="0.3" animation_delay="0" last="true" border_position="all" first="true" min_height="" link=""]
@@ -947,12 +847,10 @@ Recap
 
 {RECAP_SUBHEADING}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="recap-text" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {RECAP_TEXT}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -962,12 +860,10 @@ Recap
 
 {RECAP_SUBHEADING_2}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="recap-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {RECAP_TEXT_2}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -978,12 +874,10 @@ Recap
 
 {RECAP_SUBHEADING_3}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="recap-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {RECAP_TEXT_3}
-
 
 [/fusion_text]
 [/fusion_builder_column]
@@ -994,12 +888,10 @@ Recap
 
 {RECAP_SUBHEADING_4}
 
-
 [/fusion_title]
 [fusion_text content_alignment="justify" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="tourism-text" id="recap-text-2" fusion_font_family_text_font="var(--awb-custom_typography_20-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_20)" font_size="var(--awb-custom_typography_20-font-size)" line_height="var(--awb-custom_typography_20-line-height)" letter_spacing="var(--awb-custom_typography_20-letter-spacing)" text_transform="var(--awb-custom_typography_20-text-transform)" text_color="var(--awb-color8)" animation_direction="left" animation_speed="0.3" animation_delay="0"]
 
 {RECAP_TEXT_4}
-
 
 [/fusion_text]
 [/fusion_builder_column]

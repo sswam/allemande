@@ -25,10 +25,10 @@ $PULL $ALLEMANDE_GITHUB main
 $PUSH $ALLEMANDE_GITHUB main
 
 $CO allemande
-$PULL sam@ucm.dev:allemande allemande
-$PULL sam@pi.ucm.dev:allemande allemande
-$PUSH sam@ucm.dev:allemande allemande
-$PUSH sam@pi.ucm.dev:allemande allemande
+#$PULL sam@ucm.dev:allemande allemande
+#$PULL sam@pi.ucm.dev:allemande allemande
+#$PUSH sam@ucm.dev:allemande allemande
+#$PUSH sam@pi.ucm.dev:allemande allemande
 $PULL $ALLEMANDE_GITHUB allemande
 $MERGE main
 $PUSH $ALLEMANDE_GITHUB allemande

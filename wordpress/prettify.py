@@ -9,6 +9,7 @@ import re
 import argh
 import logging
 import json
+import markdown
 
 logger = logging.getLogger(__name__)
 
@@ -145,8 +146,13 @@ def replace_tags(text, data, map_contact_tags):
 		text = text.strip()
 		if quoted:
 			return f'"{text}"'
-		return text
-
+		try:
+			html_content = markdown.markdown(text)
+		except Exception as e:
+			logger.error("markdown error: %r", e)
+			html_content = text
+		return html_content
+	
 	def replace_tag(match):
 		matched = match.group(0)
 		quoted = matched.startswith('"') and matched.endswith('"')

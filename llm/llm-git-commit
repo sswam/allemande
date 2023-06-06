@@ -23,7 +23,7 @@ model="4"
 if type move-rubbish >/dev/null 2>&1; then
 	MR=move-rubbish
 else
-	MR=rm
+	MR=rm -f
 fi
 
 cleanup() {
@@ -36,8 +36,8 @@ cleanup() {
 	done
 }
 
-#trap 'cleanup; exit' EXIT
-#trap 'cleanup; exit 1' INT
+trap 'cleanup-and-exit 0' EXIT
+trap 'cleanup-and-exit 1' INT
 
 while getopts "4n3cCiIm:exh" opt; do
 	case "$opt" in
@@ -247,5 +247,3 @@ if [ "${#files[@]}" -gt 0 ]; then
 fi
 
 git commit -F "$commit_message"
-
-cleanup-and-exit "$?"
