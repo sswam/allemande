@@ -1,5 +1,5 @@
 Please write a detailed, interesting, engaging and fun blog post for $query. Use the following exact sections and headings. Write prose, not dot-point lists, please.
-Please also include as much factual information as you can about $query. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Do not mention other areas. Be factual.
+Please also include as much factual information as you can about $query. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Do not mention other areas. If sufficient info was not provided, please fill in the sections based on your knowledge if possible. Very Important: Please DO NOT omit any sections.
 
 Use the following instructions to guide you:
 
@@ -36,7 +36,7 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [continuing with the introduction, please write 3 paragraphs for this section, it should be the longest section.]
 
-## See  <-  use this exact heading!
+## See  <-  use this exact heading! please, do not leave out this section!
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -46,7 +46,7 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Do  <-  use this exact heading!
+## Do  <-  use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -56,7 +56,7 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Learn  <-  use this exact heading!
+## Learn  <-  use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -66,7 +66,7 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Getting There  <-  use this exact heading!
+## Getting There  <-  use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading; always include all sections even if not much info]
 
@@ -75,7 +75,7 @@ driving, and walking; 2 paragraphs]
 
 [continuing to get there (travel); 2 paragraphs]
 
-## Stay  <-  use this exact heading!
+## Stay  <-  use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading; always include all sections even if not much info]
 
@@ -83,7 +83,7 @@ driving, and walking; 2 paragraphs]
 
 [continuing to stay (accommodation); 2 paragraphs]
 
-## Warnings  <-  use this exact heading!
+## Warnings  <-  use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading; always include all sections even if not much info]
 
@@ -97,7 +97,7 @@ driving, and walking; 2 paragraphs]
 
 [continuing what's around? (attractions); 2 paragraphs]
 
-## Events  <-  use this exact heading!
+## Events  <-  use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -107,7 +107,7 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Local groups  <-  use this exact heading!
+## Local groups  <-  use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -117,7 +117,7 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Eat and Drink  <- use this exact heading!
+## Eat and Drink  <- use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -127,7 +127,7 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Accessibility  <- use this exact heading!
+## Accessibility  <- use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -135,7 +135,7 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Recap  <- use this exact heading!
+## Recap  <- use this exact heading!  please, do not leave out this section
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
