@@ -2,10 +2,18 @@
 # add all output.md to wordpress
 
 t=post
+m=
 
 . opts
 
 item_type=$t
+media=$m
+
+if [ -n "$media" ]; then
+	media_opts="--media $media"
+else
+	media_opts=
+fi
 
 for D; do
 	D=$(basename "$D")
@@ -33,7 +41,9 @@ for D; do
 
 	echo "*** PUSHING TO WORDPRESS $D"
 
-	v ./injectify.py --auto --$item_type --title "$D" --file "$D.wordpress"
+	v ./injectify.py --auto --$item_type --title "$D" --file "$D.wordpress" $media_opts
 
-	mvlnback "$D" "DONE/"
+	if [ ! -L "$D" -a ! -e "DONE/$D" ]; then
+		mvlnback "$D" "DONE/"
+	fi
 done
