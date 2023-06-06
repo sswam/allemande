@@ -1,22 +1,26 @@
 #!/bin/bash -eua
 # searchalot:	Search for a lot of things, in a lot of places, using a lot of search engines
-dir=results	# directory to store results in
-context="Vic, AU"	# context to add to each search
-stagger="0.2"	# seconds to wait between each search, plus a random suffix
+s="0.05"	# seconds to sleep between each search, plus a random suffix
 p="places.txt"	# file containing places to search in
 t="types.txt"	# file containing types of things to search for
-sleep=0	# set to sleep to sleep between each search
+r="results"	# directory for results
+c="Vic, AU"	# context to add to each search
+S=	# don't sleep between searches
 
 . opts
 
 places=$p
 types=$t
+results=$r
+sleep=$s
+no_sleep=$S
+context=$c
 
 places=$(readlink -f "$places")
 types=$(readlink -f "$types")
 
-mkdir -p "$dir"
-cd "$dir"
+mkdir -p "$results"
+cd "$results"
 
 # WARNING: runs `wc -l places.txt` jobs in parallel, each with 6 processes, i.e. 132 jobs in parallel at the moment!
 
@@ -72,15 +76,15 @@ Thanks for being awesome!
 		fi
 		echo "$n"
 		if [ "$n" != "0" ]; then
-			if [ "$sleep" = "1" ]; then
-				v sleep "$stagger$RANDOM"
+			if [ "$no_sleep" != "1" ]; then
+				v sleep "$sleep$RANDOM"
 			fi
 		fi
 	done < "$places"
-	
+
 	I=$[$I+1]
 
-	if [ $(( I % 4 )) = 0 ]; then
+	if [ $(( I % 1 )) = 0 ]; then
 		echo "Waiting for all jobs to finish..."
 		wait
 	fi
