@@ -44,7 +44,7 @@ def read_markdown(text):
 		detail = ""
 
 		if ':' in heading:
-			heading, detail = heading.split(':')
+			heading, detail = heading.split(':', 2)
 			detail = detail.strip()
 
 		heading_lc = heading.lower()
@@ -230,8 +230,8 @@ def replace_tags(text, data, map_contact_tags):
 	def replace_tag_debug(match):
 		matched = match.group(0)
 		rv = replace_tag(match)
-		if "YOUTUBE" in matched:
-			logger.warning(f"replace_tag: matched={matched} rv={rv}")
+		#if "YOUTUBE" in matched:
+		#	logger.debug(f"replace_tag: matched={matched} rv={rv}")
 #		logger.debug("replace_tag_debug match: %r, rv: %r", match, rv)
 		return rv
 
@@ -240,7 +240,7 @@ def replace_tags(text, data, map_contact_tags):
 #	logger.debug("replace_tags text: %r, %r %r", r'\{([A-Z0-9_]+)\}|"#([A-Z0-9_]+)"', replace_tag_debug, text)
 	text = re.sub(r'"\{([A-Z0-9_]+)\}"|\{([A-Z0-9_]+)\}|"#([a-z0-9-]+)"', replace_tag_debug, text)
 	if "KILL" in text:
-		logger.warning("killing line: %s", text)
+		logger.debug("killing line: %s", text)
 		text = ""
 	return text
 
