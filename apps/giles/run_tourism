@@ -4,6 +4,8 @@
 # TODO when ^C kill all child processes
 # also for giles and alfred
 
+. v
+
 PROG_DIR=$(dirname "$(readlink -f "$0")")
 PATH=$PATH:$PROG_DIR
 push_interval=8
@@ -12,6 +14,7 @@ push_interval=8
 
 region=", South Gippland, Victoria"
 PARALLEL_MAX=8
+media_id=1347
 
 . opts
 
@@ -38,28 +41,27 @@ run_giles_for_tourism() {
 }
 
 add_all() {
-	local names="$@"
-	./add_all_to_wordpress -m=1347 "${names[@]}"
+	local names=("$@")
+	v ./add_all_to_wordpress -m="$media_id" "${names[@]}"
 }
 
 names=()
 names_new=()
 
-sed 's/^- //' | (
-	i=0
-	while read name; do
-		. parallel run_giles_for_tourism "$name"
-		names+=("$name")
-		names_new+=("$name")
-		i=$[$i+1]
-		if [ $[ $i % $push_interval ] = 0 ]; then
-			wait
-			add_all "${names_new[@]}"
-			names_new=()
-		fi
-		sleep .$RANDOM
-	done
-	wait
-)
+i=0
+while read name; do
+	name=${name#- }
+	. parallel run_giles_for_tourism "$name"
+	names+=("$name")
+	names_new+=("$name")
+	i=$[$i+1]
+	if [ $[ $i % $push_interval ] = 0 ]; then
+		wait
+		v add_all "${names_new[@]}"
+		names_new=()
+	fi
+	sleep .$RANDOM
+done
+wait
 
-add_all "${names[@]}"
+v add_all "${names[@]}"

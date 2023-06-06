@@ -19,6 +19,7 @@ for D; do
 	D=$(basename "$D")
 
 	if [ -L "$D" ]; then
+		echo >&2 "___ SKIPPING SYMLINK $D"
 		continue
 	fi
 
@@ -40,6 +41,7 @@ for D; do
 	D=$(basename "$D")
 
 	if [ -L "$D" ]; then
+		echo >&2 "___ SKIPPING SYMLINK $D"
 		continue
 	fi
 

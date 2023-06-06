@@ -1,5 +1,10 @@
+MISSION:
+
 Please write a detailed, interesting, engaging and fun blog post for $query. Use the following exact sections and headings. Write prose, not dot-point lists, please.
-Please also include as much factual information as you can about $query. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Do not mention other areas. If sufficient info was not provided, please fill in the sections based on your knowledge if possible. Very Important: Please DO NOT omit any sections.
+
+Please also include as much factual information as you can about $query. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Do not mention other areas. If sufficient info was not provided, please fill in the sections based on your knowledge if possible.
+
+Very Important: Please include ALL sections: 1. See, 2. Do, 3. Learn, 4. Getting There, 5. Stay, 6. Warnings, 7. In the Area, 8. Events, 9. Local Groups, 10. Eat and Drink, 11. Accessibility, 12. Recap.
 
 Use the following instructions to guide you:
 
@@ -24,19 +29,20 @@ Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdo
 - www.pibn.com.au (specific pages)
 - www.visitgrantville.com.au (specific pages)
 
-- NB: make sure to include all sections, even if information is not available, except for subsections marked "optional" and "if needed" which may be omitted.
+NB: make sure to include all sections, with exactly the headings given, even if information is not available
+Please use at least one sub-heading / sub-section in each section. Follow the template below exactly.
 
-Pleaes use at least one sub-heading / sub-section in each section, and no more than three.
+--- start template ---
 
-# Main heading for the article [as a markdown level-1 heading]
+# Main heading for the article [a markdown level-1 heading]
 
 [a long multi-paragraph stylish introduction to $query; unique, evocative, and candid; use Anthony Bourdain's style]
 
 [continuing with the second paragraph of the introduction]
 
-[continuing with the introduction, please write 3 paragraphs for this section, it should be the longest section.]
+[continuing with the introduction, please write 3 or 4 paragraphs for this section, it should be the longest section.]
 
-## See  <-  use this exact heading! please, do not leave out this section, include at least one subheading and some text, even if it only says "there's nothing to see here"!
+## See  [<-  use the exact headings, please!]
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -46,9 +52,9 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Do  <-  use this exact heading! please, do not leave out this section, do not leave out this section, include at least one subheading and some text, even if it only says "there's nothing to do here"!
+## Do
 
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1]
 
 [things to do (activities); 2 paragraphs]
 
@@ -56,9 +62,9 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Learn  <-  use this exact heading!  please, do not leave out this section, do not leave out this section, include at least one subheading and some text, even if it only says "there's nothing to learn here"!
+## Learn
 
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1]
 
 [things to know (history); 2 paragraphs]
 
@@ -66,40 +72,40 @@ Pleaes use at least one sub-heading / sub-section in each section, and no more t
 
 [optional: more subheadings and content if needed]
 
-## Getting There  <-  use this exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## Getting There
 
-### [descriptive subheading; always include all sections even if not much info]
+### [descriptive subheading]
 
 [to get there (travel), including public transport,
 driving, and walking; 2 paragraphs]
 
 [continuing to get there (travel); 2 paragraphs]
 
-## Stay  <-  use this exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## Stay
 
-### [descriptive subheading; always include all sections even if not much info]
+### [descriptive subheading]
 
 [to stay (accommodation); 2 paragraphs]
 
 [continuing to stay (accommodation); 2 paragraphs]
 
-## Warnings  <-  use this exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## Warnings
 
-### [descriptive subheading; always include all sections even if not much info]
+### [descriptive subheading]
 
 [things to watch out for (dangers)]
 
-## In the area  <-  use the exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## In the Area
 
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1]
 
 [what's around? (attractions); 2 paragraphs]
 
 [continuing what's around? (attractions); 2 paragraphs]
 
-## Events  <-  use this exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## Events
 
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1]
 
 [what's on? (events); 2 paragraphs]
 
@@ -107,9 +113,9 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Local groups  <-  use this exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## Local Groups
 
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1]
 
 [who's around? (resident clubs and associations); 2 paragraphs]
 
@@ -117,9 +123,9 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Eat and Drink  <- use this exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## Eat and Drink
 
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1]
 
 [what is there around to eat and drink (restaurants and bars); 2 paragraphs]
 
@@ -127,17 +133,17 @@ driving, and walking; 2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Accessibility  <- use this exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## Accessibility
 
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1]
 
 [bathroom facilities, access and services for people with disabilities (amenities); 1 paragraph]
 
 [optional: more subheadings and content if needed]
 
-## Recap  <- use this exact heading!  please, do not leave out this section, include at least one subheading and some text!
+## Recap
 
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1]
 
 [a lengthy stylish recap summary of the place; unique, evocative, and candid; use Anthony Bourdain's style]
 
@@ -146,3 +152,30 @@ driving, and walking; 2 paragraphs]
 [continuing with the third paragraph of the recap]
 
 [optional: more content if needed]
+
+--- end template ---
+
+Here is an example of one section, please make sure that each section is in this form; but there can be addition paragraphs and sub-heading sections:
+
+--- start section example ---
+
+## Eat and Drink
+
+### Savor the Local Flavors
+
+There's no shortage of delicious dining options nearby. Try the refined Asian cuisine of Pearl, the refreshing delicacies of Vaughan's Cafe Deli, or indulge in the local pub fare at Inlet Hotel. Japanese fare at Tomo, the trendy café vibes at The Local. Inverloch, and the delectable offerings of Dirty Three Wines will undoubtedly satisfy your palate.
+
+--- end section example ---
+
+MISSION:
+
+Please write a detailed, interesting, engaging and fun blog post for $query based on the exact template above. Use all of the exact sections and headings listed. Write prose, not dot-point lists, please.
+
+Please also include as much factual information as you can about $query. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Do not mention other areas. If sufficient info was not provided, please fill in the sections based on your knowledge if possible.
+
+Very Important: Please include ALL sections: 1. See, 2. Do, 3. Learn, 4. Getting There, 5. Stay, 6. Warnings, 7. In the Area, 8. Events, 9. Local Groups, 10. Eat and Drink, 11. Accessibility, 12. Recap.
+
+NB: make sure to include all sections, with exactly the headings given, even if little or no information is available.
+Please use at least one sub-heading / sub-section in each section. Follow the template above exactly.
+
+Thanks for being awesome!
