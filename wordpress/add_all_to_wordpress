@@ -18,6 +18,10 @@ fi
 for D; do
 	D=$(basename "$D")
 
+	if [ -L "$D" ]; then
+		continue
+	fi
+
 	if [ ! -s "$D/output.1.md" ] || [ ! -s "$D/output.2.md" ]; then
 		echo >&2 "___ SKIPPING BUILD $D"
 		continue
@@ -33,7 +37,12 @@ done
 mkdir -p DONE
 
 for D; do
-	D=${D%/}
+	D=$(basename "$D")
+
+	if [ -L "$D" ]; then
+		continue
+	fi
+
 	if [ ! -s "$D/output.1.md" ] || [ ! -s "$D/output.2.md" ]; then
 		echo >&2 "___ SKIPPING PUSH $D"
 		continue
