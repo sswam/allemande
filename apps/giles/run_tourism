@@ -45,4 +45,4 @@ while read name; do
 done
 wait
 
-./add_all_to_wordpress "${names[@]}"
+./add_all_to_wordpress -m=1347 "${names[@]}"
