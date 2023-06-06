@@ -142,8 +142,8 @@ def replace_tags(text, data, map_contact_tags):
 		logger.debug("quote text: %r, quoted: %r", text, quoted)
 		if isinstance(text, dict):
 			text = text["TEXT"]
-		test = text or "KILL"
 		text = text.strip()
+		text = text or "KILL"
 		if quoted:
 			return f'"{text}"'
 		try:
@@ -157,7 +157,8 @@ def replace_tags(text, data, map_contact_tags):
 		matched = match.group(0)
 		quoted = matched.startswith('"') and matched.endswith('"')
 		logger.debug("replace_tag matched: %r, quoted: %r", matched, quoted)
-		tag = match.group(1) or match.group(2)
+		tag = match.group(1) or match.group(2) or match.group(3)
+		keep_unknown = bool(match.group(3))
 		tag = tag.upper()
 		logger.debug("looking for tag %r", tag)
 
@@ -217,22 +218,29 @@ def replace_tags(text, data, map_contact_tags):
 					link = ""
 				return quote(link, quoted)
 			return quote("", quoted)
+		elif keep_unknown:
+			logger.debug("Tag not found: %s, maybe it's a color?", tag)
+			return match.group()
 		else:
-			logger.debug("Tag not found: %s", tag)
+			logger.debug("Tag not found: %s, removing line", tag)
 			# logger.debug("replace_tags data: %s", json.dumps(data, indent=4)) # list(data.keys()), indent=4))
 			# logger.debug("replace_tags map_contact_tags: %s", json.dumps(map_contact_tags, indent=4))
 			return quote("", quoted)
 
 	def replace_tag_debug(match):
+		matched = match.group(0)
 		rv = replace_tag(match)
+		if "YOUTUBE" in matched:
+			logger.warning(f"replace_tag: matched={matched} rv={rv}")
 #		logger.debug("replace_tag_debug match: %r, rv: %r", match, rv)
 		return rv
 
 	text = re.sub(r'https://www\.facebook\.com/insert-fb-page', '#social-facebook', text)
 
 #	logger.debug("replace_tags text: %r, %r %r", r'\{([A-Z0-9_]+)\}|"#([A-Z0-9_]+)"', replace_tag_debug, text)
-	text = re.sub(r'\{([A-Z0-9_]+)\}|"#([a-z0-9-]+)"', replace_tag_debug, text)
+	text = re.sub(r'"\{([A-Z0-9_]+)\}"|\{([A-Z0-9_]+)\}|"#([a-z0-9-]+)"', replace_tag_debug, text)
 	if "KILL" in text:
+		logger.warning("killing line: %s", text)
 		text = ""
 	return text
 
