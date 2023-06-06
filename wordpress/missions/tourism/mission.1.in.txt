@@ -28,7 +28,7 @@ Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdo
 
 Pleaes use at least one sub-heading / sub-section in each section, and no more than three.
 
-# Main heading for the article
+# Main heading for the article [as a markdown level-1 heading]
 
 [a long multi-paragraph stylish introduction to $query; unique, evocative, and candid; use Anthony Bourdain's style]
 
