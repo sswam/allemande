@@ -67,3 +67,5 @@ tiktoken
 pyalsaaudio
 wordpress_api
 selenium
+
+gradio
