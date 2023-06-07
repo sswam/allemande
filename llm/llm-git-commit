@@ -206,7 +206,7 @@ while true; do
 			generate-commit-message i
 			;;
 		I)
-			generate-commit-message i
+			generate-commit-message I
 			;;
 		d)
 			run-git-diff
