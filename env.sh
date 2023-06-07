@@ -38,7 +38,7 @@ for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio wordpress python perl scrape; do
+for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio wordpress python perl scrape misc; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
