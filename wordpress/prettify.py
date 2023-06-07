@@ -44,7 +44,7 @@ def read_markdown(text):
 		detail = ""
 
 		if ':' in heading:
-			heading, detail = heading.split(':', 2)
+			heading, detail = heading.split(':', 1)
 			detail = detail.strip()
 
 		heading_lc = heading.lower()
