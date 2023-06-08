@@ -9,6 +9,7 @@ import re
 import argh
 import logging
 import json
+import markdown
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ def read_markdown(text):
 		detail = ""
 
 		if ':' in heading:
-			heading, detail = heading.split(':')
+			heading, detail = heading.split(':', 1)
 			detail = detail.strip()
 
 		heading_lc = heading.lower()
@@ -135,29 +136,35 @@ Inverloch was once a bustling port...'''
 
 def replace_tags(text, data, map_contact_tags):
 	""" Replace tags in text with data. """
-#	logger.warning("replace_tags data: %s", json.dumps(list(data.keys()), indent=4))
-#	logger.warning("replace_tags map_contact_tags: %s", json.dumps(list(map_contact_tags.keys()), indent=4))
+#	logger.debug("replace_tags data: %s", json.dumps(list(data.keys()), indent=4))
+#	logger.debug("replace_tags map_contact_tags: %s", json.dumps(list(map_contact_tags.keys()), indent=4))
 	def quote(text, quoted):
-		logger.warning("quote text: %r, quoted: %r", text, quoted)
+		logger.debug("quote text: %r, quoted: %r", text, quoted)
 		if isinstance(text, dict):
 			text = text["TEXT"]
-		test = text or "KILL"
 		text = text.strip()
+		text = text or "KILL"
 		if quoted:
 			return f'"{text}"'
-		return text
-
+		try:
+			html_content = markdown.markdown(text)
+		except Exception as e:
+			logger.error("markdown error: %r", e)
+			html_content = text
+		return html_content
+	
 	def replace_tag(match):
 		matched = match.group(0)
 		quoted = matched.startswith('"') and matched.endswith('"')
-		logger.warning("replace_tag matched: %r, quoted: %r", matched, quoted)
-		tag = match.group(1) or match.group(2)
+		logger.debug("replace_tag matched: %r, quoted: %r", matched, quoted)
+		tag = match.group(1) or match.group(2) or match.group(3)
+		keep_unknown = bool(match.group(3))
 		tag = tag.upper()
-		logger.warning("looking for tag %r", tag)
+		logger.debug("looking for tag %r", tag)
 
 		detail = False
 		index = 0
-		logger.warning("tag: %r", tag)
+		logger.debug("tag: %r", tag)
 		if tag.endswith(("_SUBHEADING", "_TEXT")):
 			detail = True
 		else:
@@ -167,7 +174,7 @@ def replace_tags(text, data, map_contact_tags):
 				tag = re.sub(r"_(\d+)$", "", tag)
 				detail = True
 
-		logger.warning("tag: %r, index: %r, detail: %r", tag, index, detail)
+		logger.debug("tag: %r, index: %r, detail: %r", tag, index, detail)
 
 #		if tag not in ("SEE_SUBHEADING", "SEE_TEXT", "SEE_SUBHEADING_2", "SEE_TEXT_2"):
 #			return quote("", quoted)
@@ -177,11 +184,11 @@ def replace_tags(text, data, map_contact_tags):
 			for suffix in "SUBHEADING", "TEXT", "SUBHEADING_2", "TEXT_2":
 				if not tag.endswith("_"+suffix):
 					continue
-				logger.warning("tag ends with %r", suffix)
+				logger.debug("tag ends with %r", suffix)
 				section = tag[:-len(suffix)-1]
 				sections = data.get(section)
 				if not sections:
-					logger.warning("section not found: %r", section)
+					logger.debug("section not found: %r", section)
 					return quote("", quoted)
 				if index < len(sections):
 					sec = sections[index]
@@ -193,46 +200,53 @@ def replace_tags(text, data, map_contact_tags):
 					return guote(EMPTY_TEXT.get(section, "KILL"))
 
 		if tag in data:
-			logger.warning("tag in data: %r, data: %r", tag, data)
+			logger.debug("tag in data: %r, data: %r", tag, data)
 			if isinstance(data[tag], list):
 				return quote(data[tag][0], quoted)
 			return quote(data[tag], quoted)
 		elif tag in map_contact_tags:
 			tag2 = map_contact_tags[tag]
-			logger.warning("tag in map_contact_tags tag: %r, data: %r, tag2: %r", tag, data, tag2)
+			logger.debug("tag in map_contact_tags tag: %r, data: %r, tag2: %r", tag, data, tag2)
 			if tag2 in data:
 				markdown_link = data[tag2][0]["TEXT"]
 				link = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\2', markdown_link)
 				if re.search(r'[][]', link):
-					logger.warning("link has square brackets: %r", link)
+					logger.debug("link has square brackets: %r", link)
 					link = re.sub(r'[][]', '', link)
 				link = link.strip()
 				if not link or link == "Unknown" or link == "N/A":
 					link = ""
 				return quote(link, quoted)
 			return quote("", quoted)
+		elif keep_unknown:
+			logger.debug("Tag not found: %s, maybe it's a color?", tag)
+			return match.group()
 		else:
-			logger.warning("Tag not found: %s", tag)
-			logger.warning("replace_tags data: %s", json.dumps(data, indent=4)) # list(data.keys()), indent=4))
-			logger.warning("replace_tags map_contact_tags: %s", json.dumps(map_contact_tags, indent=4))
+			logger.debug("Tag not found: %s, removing line", tag)
+			# logger.debug("replace_tags data: %s", json.dumps(data, indent=4)) # list(data.keys()), indent=4))
+			# logger.debug("replace_tags map_contact_tags: %s", json.dumps(map_contact_tags, indent=4))
 			return quote("", quoted)
 
 	def replace_tag_debug(match):
+		matched = match.group(0)
 		rv = replace_tag(match)
-#		logger.warning("replace_tag_debug match: %r, rv: %r", match, rv)
+		#if "YOUTUBE" in matched:
+		#	logger.debug(f"replace_tag: matched={matched} rv={rv}")
+#		logger.debug("replace_tag_debug match: %r, rv: %r", match, rv)
 		return rv
 
 	text = re.sub(r'https://www\.facebook\.com/insert-fb-page', '#social-facebook', text)
 
-#	logger.warning("replace_tags text: %r, %r %r", r'\{([A-Z0-9_]+)\}|"#([A-Z0-9_]+)"', replace_tag_debug, text)
-	text = re.sub(r'\{([A-Z0-9_]+)\}|"#([a-z0-9-]+)"', replace_tag_debug, text)
+#	logger.debug("replace_tags text: %r, %r %r", r'\{([A-Z0-9_]+)\}|"#([A-Z0-9_]+)"', replace_tag_debug, text)
+	text = re.sub(r'"\{([A-Z0-9_]+)\}"|\{([A-Z0-9_]+)\}|"#([a-z0-9-]+)"', replace_tag_debug, text)
 	if "KILL" in text:
+		logger.debug("killing line: %s", text)
 		text = ""
 	return text
 
 def replace_tags_debug(text, data, map_contact_tags):
     rv = replace_tags(text, data, map_contact_tags)
-#    logger.warning("replace_tags_debug text: %r, data: %r, map_contact_tags: %r, rv: %r", text, data, map_contact_tags, rv)
+#    logger.debug("replace_tags_debug text: %r, data: %r, map_contact_tags: %r, rv: %r", text, data, map_contact_tags, rv)
     return rv
 
 def fill_template(data1, template, address):

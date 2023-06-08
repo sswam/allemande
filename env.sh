@@ -2,6 +2,8 @@
 
 set -a
 
+ALLEMANDE_GITHUB=git@github.com:sswam/allemande.git
+BARBARELLA_GITHUB=git@github.com:sswam/barbarella.git
 ALLEMANDE_ENV=$(realpath "${BASH_SOURCE[0]}")
 ALLEMANDE_HOME=$(dirname "$ALLEMANDE_ENV")
 ALLYCHAT_HOME="$ALLEMANDE_HOME/webchat"
@@ -36,7 +38,7 @@ for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio wordpress python perl scrape; do
+for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html i3 git gradio wordpress python perl scrape misc; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 

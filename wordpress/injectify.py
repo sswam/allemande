@@ -34,6 +34,7 @@ def endpoint(item_type):
 
 def get_api_url(item_type, path=""):
 	""" Return the API URL for the given item_type """
+	path = str(path)
 	if path and not path.startswith("/"):
 		path = f"/{path}"
 	return f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}{path}"
@@ -88,7 +89,7 @@ def get_item_key(item):
 	return key
 
 
-def create_item(item_type, item, content, status="draft"):
+def create_item(item_type, item, content, status="draft", media=None):
 	""" Create a post or page """
 	global api_url, username, password, auth
 	url = get_api_url(item_type)
@@ -104,6 +105,7 @@ def create_item(item_type, item, content, status="draft"):
 	else:
 		raise Exception(f"Could not create {item_type}")
 	item = response.json()
+	set_featured_media(item_type, item, media)
 	return get_item_key(item)
 
 
@@ -122,7 +124,7 @@ def read_item(item_type, item, meta=False):
 	return item
 
 
-def update_item(item_type, item, content, status):
+def update_item(item_type, item, content, status, media=None):
 	""" Update a post """
 	global api_url, username, password, auth
 	url = get_api_url(item_type, item["id"])
@@ -135,6 +137,7 @@ def update_item(item_type, item, content, status):
 	else:
 		raise Exception(f"Could not update {item_type}")
 	item = response.json()
+	set_featured_media(item_type, item, media)
 	return get_item_key(item)
 
 
@@ -182,6 +185,25 @@ def list_items(item_type, status="draft"):
 	return keys
 
 
+def set_featured_media(item_type, item, media):
+	""" Set featured media """
+	global api_url, username, password, auth
+	if media is None:
+		return
+	url = get_api_url(item_type, item["id"])
+	data = {
+		'featured_media': int(media),
+	}
+	response = requests.post(url, auth=auth, json=data)
+	if response.status_code == 200:
+		logger.info(f"Set featured media to {media}")
+	else:
+		raise Exception(f"Could not set featured media {media}: {response}")
+	# item = response.json()
+	# return get_item_key(item)
+	return response
+
+
 # TODO CRUD boilerplate for any apppliation,
 # or use this as inspiration for a more generic CRUD tool
 # or for AI to create other CRUD tools.
@@ -204,9 +226,10 @@ def list_items(item_type, status="draft"):
 @argh.arg("--list", "-l", help="List items")
 @argh.arg("--meta", "-m", help="When reading the item, include metadata")
 @argh.arg("--force", "-F", help="Force the action")
+@argh.arg("--media", "-M", help="Set featured media ID")
 def crud(file=None, content=None, title=None, status="draft", post=False, page=False,
 		item_type=None, id=None, slug=None, auto=False,
-		create=False, read=False, update=False, delete=False, list=False, meta=False, force=False):
+		create=False, read=False, update=False, delete=False, list=False, meta=False, force=False, media=None):
 	""" Create, update or delete a wordpress page or post """
 
 	# item_type, post, and page
@@ -232,8 +255,10 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 
 	# other options
 
-	if auto + create + read + update + delete + list != 1:
-		raise Exception("Specify one of --auto, --create, --read, --update, --delete, --list")
+	if media:
+		pass
+	elif auto + create + read + update + delete + list != 1:
+		raise Exception("Specify one of --auto, --create, --read, --update, --delete, --list, --media")
 
 	if file and content:
 		raise Exception("You may not specify both --file and --content")
@@ -290,6 +315,10 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 
 	if auto and not content:
 		delete = True
+	elif auto and item:
+		update = True
+	elif auto:
+		create = True
 
 
 	# Get title from first line, if not provided
@@ -320,18 +349,21 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 		item["title"] = title
 
 	if create:
-		return create_item(item_type, item, content, status)
+		return create_item(item_type, item, content, status, media=media)
 	elif read:
 		rv = read_item(item_type, item, meta=meta)
+		# it might be nice if argh returned JSON by default
 		if isinstance(rv, dict):
 			rv = json.dumps(rv, indent=4)
 		return rv
 	elif update:
-		return update_item(item_type, item, content, status)
+		return update_item(item_type, item, content, status, media=media)
 	elif delete:
 		return delete_item(item_type, item)
 	elif list:
 		return list_items(item_type, status)
+	elif media:
+		set_featured_media(item_type, item, media)
 	else:
 		raise Exception("Internal error: no operation found")
 

@@ -14,19 +14,22 @@ WORK_FILES=$(addprefix w/,$(notdir $(TEXT_FILES)))
 
 SUMMARY_FILES=$(addprefix summary/,$(notdir $(WORK_FILES)))
 
-WHISPER=whisp  # speech recognition engine
+WHISPER=whisp
 
 IMAGE2TEXT_MODE=best
 
 LLM_MODEL_LONG=c+
-LLM_MODEL=4
+LLM_MODEL_SUMMARY=c+
+LLM_MODEL_SUMMARY_MEGA=4
+LLM_MODEL_BRAINY=4
 OCR_MODEL=4
 LLM_MODEL_TOKENS_MAX=8192
 LLM_MODEL_TOKENS_FOR_RESPONSE=2048
 LLM_MODEL_TOKENS_MAX_QUERY=$(shell echo $$[ $(LLM_MODEL_TOKENS_MAX) - $(LLM_MODEL_TOKENS_FOR_RESPONSE) ])
 TOPIC=
+SUMMARY_GUIDE=
 
-summary_prompt=Please summarize this info regarding the topic: $(TOPIC), using markdown dot-point form. Be as comprehensive and factual as possible, but fairly concise without omiting anything relevant. Avoid repetition. Only Include info relevant to the topic: $(TOPIC). There may be a lot of other crap in the input document such as website boilerplate links and stuff. Please include relevant links (only) in [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown\#Hyperlinks) format.
+SUMMARY_PROMPT=Please summarize this info in detail, relating to the topic: $(TOPIC), using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Focus on info relevant to $(TOPIC). Please include relevant links in [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown\#Hyperlinks) format. $(SUMMARY_GUIDE)
 
 MISSIONS_IN=$(wildcard mission.*.in.txt)
 MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
@@ -35,12 +38,26 @@ MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
 # output_md files are like output.1.md
 # so we need to replace mission -> output at the start of the filename
 
+HTML=1
+PDF=1
+DOCX=1
+
 OUTPUTS_MD=$(patsubst mission.%.txt,output.%.md,$(MISSIONS))
 OUTPUTS_HTML=$(patsubst mission.%.txt,output.%.html,$(MISSIONS))
 OUTPUTS_PDF=$(patsubst mission.%.txt,output.%.pdf,$(MISSIONS))
 OUTPUTS_DOCX=$(patsubst mission.%.txt,output.%.docx,$(MISSIONS))
 
-OUTPUTS=$(OUTPUTS_MD) $(OUTPUTS_HTML) $(OUTPUTS_PDF) $(OUTPUTS_DOCX)
+OUTPUTS:=$(OUTPUTS_MD)
+
+ifeq ($(HTML),1)
+	OUTPUTS:=$(OUTPUTS) $(OUTPUTS_HTML)
+endif
+ifeq ($(PDF),1)
+	OUTPUTS:=$(OUTPUTS) $(OUTPUTS_PDF)
+endif
+ifeq ($(DOCX),1)
+	OUTPUTS:=$(OUTPUTS) $(OUTPUTS_DOCX)
+endif
 
 HTML_DUMP_FILTER=cat
 
@@ -69,8 +86,16 @@ w/%.html: w/%.htm
 w/%.pdf.txt: w/%.pdf
 	pdftotext $< $@
 
-w/%.txt: w/%.office
-	antiword $< > $@
+w/%.doc.txt: w/%.doc
+	pandoc $< -s -o $@
+w/%.docx.txt: w/%.docx
+	pandoc $< -s -o $@
+w/%.ppt.txt: w/%.ppt
+	pandoc $< -s -o $@
+w/%.pptx.txt: w/%.pptx
+	pandoc $< -s -o $@
+w/%.odt.txt: w/%.odt
+	pandoc $< -s -o $@
 
 w/%.xls.txt: w/%.xls
 	xlsx2csv $< > $@
@@ -117,22 +142,24 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 
 summary/%.txt: w/%.txt
 	sleep .$$RANDOM
-	tokens=`llm count -m $(LLM_MODEL) < $<`; \
+	model= ; \
+	tokens=`llm count -m $(LLM_MODEL_SUMMARY) < $<`; \
 	echo >&2 "tokens: $$tokens"; \
-	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
+	if [ $$tokens = 0 ]; then echo >&2 "empty input: $<"; > $@; \
+	elif [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY); fi; \
 	echo >&2 "model: $$model"; \
-	llm process -m $$model "$(summary_prompt)" < $< > $@
+	if [ -n "$$model" ]; then llm process -m $$model "$(SUMMARY_PROMPT)" < $< > $@ ; fi
 
 summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
 
 summary-condensed.txt: summary.txt
 	sleep .$$RANDOM
-	tokens=`llm count -m $(LLM_MODEL) < $<`; \
+	tokens=`llm count -m $(LLM_MODEL_SUMMARY_MEGA) < $<`; \
 	echo >&2 "tokens: $$tokens"; \
-	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL); fi; \
+	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY_MEGA); fi; \
 	echo >&2 "model: $$model"; \
-	llm process -m $$model "$(summary_prompt)" < $< > $@
+	llm process -m $$model "$(SUMMARY_PROMPT)" < $< > $@
 
 #mission.txt:
 #	if [ -z "$(mission)" ]; then \
@@ -143,7 +170,7 @@ summary-condensed.txt: summary.txt
 output.%.md: summary-condensed.txt mission.%.txt
 	echo >&2 "mission: $$mission"
 	sleep .$$RANDOM
-	< mission.$*.txt llm process -m $(LLM_MODEL) "$$(< mission.$*.txt)" < $< > $@
+	llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
 
 output.%.html: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@
@@ -152,23 +179,20 @@ output.%.pdf: output.%.md
 output.%.docx: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@
 
-outputs: $(OUTPUTS)
-.PHONY: outputs
-
 output.zip: $(MISSIONS) $(OUTPUTS) summary.txt summary-condensed.txt input w summary
 	zip -r $@ $^
 
 .PRECIOUS: %
 
-w/%.doc.office: w/%.doc
+w/%.doc.: w/%.doc
 	same -s $< $@
-w/%.docx.office: w/%.docx
+w/%.docx: w/%.docx
 	same -s $< $@
-w/%.ppt.office: w/%.ppt
+w/%.ppt: w/%.ppt
 	same -s $< $@
-w/%.pptx.office: w/%.pptx
+w/%.pptx: w/%.pptx
 	same -s $< $@
-w/%.odt.office: w/%.odt
+w/%.odt: w/%.odt
 	same -s $< $@
 
 w/%.txt.txt: w/%.txt

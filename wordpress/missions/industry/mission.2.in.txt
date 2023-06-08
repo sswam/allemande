@@ -1,0 +1,280 @@
+Please write some metadata for a detailed, interesting, engaging and fun blog post for $query. Use the following exact sections and headings.
+Please include as much factual information and detail as you can about $query. Cover a comprehensive scope of See Their Work, Getting There, Eat & Drink, Amenities, Events, Connected Experiences, Stay, Play. Do not mention other businesses unless relevant, e.g. eating nearby (if this is not an eatery) or connected experiences. Be factual.
+
+Use the following instructions to guide you:
+
+Purpose of piece: To introduce visitors to the region's unique businesses and industries.
+Type of publication: Web page content, interactive maps, photo galleries, travel guides, articles.
+Style of language: Informative, engaging, and inviting. Use descriptive language to paint a picture of each location.
+Exclusions: inappropriate language, inacurate information
+
+Regarding images and videos, we are especially interested in the following sources:
+- official social media pages
+- wikipedia pages
+- www.visitgippsland.com.au/destination-gippsland (pages under this domain, preferably not just the main site)
+- www.visitphillipisland.com.au/destination-gippsland (specific pages)
+- business.vic.gov.au (specific pages)
+- business.gov.au (specific pages)
+- www.visitgrantville.com.au (specific pages)
+- www.pibn.com.au (specific pages)
+- wonthaggibusinesses.com.au (specific pages)
+- www.australia.com/en (specific pages)
+- www.visitbasscoast.com.au (specific pages)
+- www.visitpromcountry.com.au (specific pages)
+- www.pibn.com.au (specific pages)
+- youtube (search terms, we will find the videos separately)
+
+- NB: make sure to include all sections, even if information is not available for some sections.
+
+## Page Metadata: Description
+
+[description for page metadata and search results, around 150 chars]
+
+## Page Metadata: Tags
+
+[suggested tags for page metadata and search results, around 10 tags]
+
+## Business Name
+
+[official name of $query, or N/A, or Unknown]
+
+## Trading As
+
+[trading name of $query, or N/A, or Unknown]
+
+## ABN
+
+[ABN of $query, or N/A, or Unknown]
+
+## ACN
+
+[ACN of $query, or N/A, or Unknown]
+
+## Industry/Category
+
+[The specific industry or official category the business falls under (e.g., restaurant, retail, healthcare, etc.)]
+
+## Products/Services
+
+[A brief overview of the products or services offered by the business]
+
+## Address
+
+[e.g. Unit 4
+234 Cow St
+Inverloch
+VIC 3056]
+
+## Operating Hours
+
+[The hours during which the business is open for operation, e.g.
+MON 	CLOSED
+TUE 	CLOSED
+WED 	12:00 - 17:30 (Summer Holidays)
+THU 	12:00 - 17:30 (Summer Holidays)
+FRI 	12:00 - 17:30
+SAT 	12:00 - 17:30
+SUN 	12:00 - 17:30]
+
+## Location(s)
+
+[Where the business operates. This could include multiple locations if applicable.
+
+- Inverloch
+- Australia-wide
+- Online]
+
+## Description/About Us
+
+[A detailed description of the business, its mission, and its history, up to 10 to 12 paragraphs, and including dot-point lists as necessary.]
+
+## Certifications/Licenses
+
+[Any relevant certifications, licenses, or accreditations the business holds.]
+
+## Awards
+
+[Any awards the business has won.]
+
+## Owner/Management
+
+[Information about the owner(s) or the management team of the business.]
+
+## Year Established
+
+[When the business was founded.]
+
+## Reviews and Ratings
+
+[Customer reviews and ratings of the business, on
+Google, Facebook, Yelp, TripAdvisor, etc.]
+
+## Payment Methods
+
+[What types of payment the business accepts.
+- Cash y/n
+- Visa y/n
+- Mastercard y/n
+- Amex y/n
+- Diners Club y/n
+- EFTPOS y/n
+- JCB y/n
+- PayPal y/n
+- Afterpay y/n
+- ZipPay y/n
+- Apple Pay y/n
+- Google Pay y/n
+- Samsung Pay y/n
+
+## Accessibility Information
+
+[Details about the accessibility of the location (e.g., wheelchair accessible, parking facilities, accessible toilets, change rooms, parental rooms, etc.)
+
+## Pricing
+
+[Information about the business's pricing structure, if applicable.]
+
+## Special Offers/Promotions
+
+[Any current special offers or promotions the business is running.]
+
+## Delivery/Shipping Information
+
+[Information about delivery options and shipping policies, if applicable.]
+
+## Return/Refund Policy
+
+[The business's policy on returns and refunds, if applicable.]
+
+## COVID-19 Measures
+
+[Any safety measures or operational changes due to COVID-19, if relevant.]
+
+## Photos
+
+[Images of the business, its products or services.]
+
+## Business Associations/Affiliations
+
+[Any associations or affiliations the business is a part of.]
+
+## Phone Number
+
+[phone number of $query, or N/A, or Unknown,
+e.g. +61 412 345 678]
+
+## Email
+
+[email address of $query, N/A, or Unknown]
+
+## Website
+
+[official website of $query as a markdown link, or Unknown]
+
+## Official Facebook Page
+
+[facebook page of $query as a markdown link, or Unknown]
+
+## Official LinkedIn Page
+
+[linkedin page of $query as a markdown link, or Unknown]
+
+## Official Instagram Page
+
+[instragram page of $query as a markdown link, or Unknown]
+
+## Official YouTube Channel
+
+[YouTube channel of $query as a markdown link, or Unknown]
+
+## Official Vimeo Channel
+
+[vimeo channel of $query as a markdown link, or Unknown]
+
+## Official Twitter Page
+
+[twitter page of $query as a markdown link, or Unknown]
+
+## Wikipedia Page
+
+[wikipedia page of $query as a markdown link, or Unknown]
+
+## Featured Image for Page Header
+
+[image search terms, to find an appriate page header image for '$query', on unsplash or similar using a search engine]
+
+## Featured Images for 'See Their Work' Section
+
+[image search terms to find appriate images for the 'See Their Work' (portfolio) section '$query', on unsplash or similar using a search engine]
+
+## Featured Image for 'Getting There' Section
+
+[image search terms to find an appriate image for the 'Getting There' (how to get there - transport) section '$query', on unsplash or similar using a search engine]
+
+## Featured Image for 'Eat & Drink' Section
+
+[image search terms to find an appriate image for the 'Eat & Drink' (what to eat at this business, or nearby if not an eating-place) section '$query'; give a search query not an actual video link]
+
+## Featured Image for 'Amenities' Section
+
+[image search terms to find an appriate image for the 'Amenities' (toilets, change rooms, etc) section '$query', on unsplash or similar using a search engine]
+
+## Featured Image for 'Accessibility' Section
+
+[image search terms to find an appriate image for the 'Accessibility' (disability support - accessibility) section '$query', on unsplash or similar using a search engine]
+
+## Featured Image for 'Events' Section
+
+[image search terms to find an appriate image for the 'Events' (what's on - events) section '$query', on unsplash or similar using a search engine]
+
+## Featured Image for 'Connected Experiences' Section
+
+[image search terms to find an appriate image for the 'Connected Experiences' (connected experiences - tours, etc.) section '$query', on unsplash or similar using a search engine]
+
+## Featured Image for 'Stay' Section
+
+[image search terms to find an appriate image for the 'Stay' (where to stay - accommodation) section '$query', on unsplash or similar using a search engine]
+
+## Featured Image for 'Play' Section
+
+[image search terms to find an appriate image for the 'Play' (what to do - activities) section '$query', on unsplash or similar using a search engine]
+
+## YouTube Video for the Whole Page
+
+[YouTube search terms to find an appriate video for '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'See Their Work' Section
+
+[YouTube search terms to find an appriate video for the 'See Their Work' (portfolio) section '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'Getting There' Section
+
+[YouTube search terms to find an appriate video for the 'Getting There' (how to get there - transport) section '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'Eat & Drink' Section
+
+[YouTube search terms to find an appriate video for the 'Eat & Drink' (what to eat at this business, or nearby if not an eating-place) section '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'Amenities' Section
+
+[YouTube search terms to find an appriate video for the 'Amenities' (toilets, change rooms, etc) section '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'Accessibility' Section
+
+[YouTube search terms to find an appriate video for the 'Accessibility' (disability support - accessibility) section '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'Events' Section
+
+[YouTube search terms to find an appriate video for the 'Events' (what's on - events) section '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'Connected Experiences' Section
+
+[YouTube search terms to find an appriate video for the 'Connected Experiences' (connected experiences - tours, etc.) section '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'Stay' Section
+
+[YouTube search terms to find an appriate video for the 'Stay' (where to stay - accommodation) section '$query'; give a search query not an actual video link]
+
+## YouTube Video for the 'Play' Section
+
+[YouTube search terms to find an appriate video for the 'Play' (what to do - activities) section '$query'; give a search query not an actual video link]

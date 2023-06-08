@@ -45,7 +45,7 @@ $ref
 "
 fi
 
-llm process -m $m "$prompt1" --prompt2 "$prompt2"
+v llm process -m $m "$prompt1" --prompt2 "$prompt2"
 
 #PromptImage: a search query that should return relevant images for the prompt; include this only if the flashcard needs an image on the prompt side
 #AnswerImage: a search query that should return relevant images for the answer; include this only if the flashcard needs an image on the answer side

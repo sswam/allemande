@@ -17,6 +17,5 @@ slugify() {
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
-	exec=exec
-	v "$@"
+	slugify "$@"
 fi

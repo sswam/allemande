@@ -22,6 +22,8 @@ import tiktoken
 import tab
 import claude
 from bard import Bard
+from pathlib import Path
+from slugify import slugify
 
 # import json
 
@@ -29,7 +31,9 @@ logger = logging.getLogger(__name__)
 
 # settngs
 
-RETRIES = 10
+LOGDIR = Path(os.environ["HOME"])/"llm.log"
+LOGFILE_NAME_MAX_LEN = 100
+RETRIES = 20
 BAD_ERRORS_NO_RETRY = "maximum context length", "context_length_exceeded"
 
 models = {
@@ -325,7 +329,7 @@ def read_utf_replace(inp):
 	return input_text
 
 
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -335,6 +339,8 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	input_text = read_utf_replace(inp)
 	input_text = input_text.rstrip()
 
+	if not input_text and empty_to_empty:
+		return ""
 	if not input_text and not empty_ok:
 		raise ValueError("no input")
 
@@ -350,15 +356,15 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	if prompt2:
 		full_input += "\n" + prompt2 + "\n"
 
-	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file)
+	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=True)
 
 
-def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None):
+def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):
 	set_opts(vars())
-	return retry(query2, retries, *prompt, out=out)
+	return retry(query2, retries, *prompt, out=out, log=True)
 
 
-def query2(*prompt, out: Optional[IO[str]]=stdout):
+def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 	""" Ask the LLM a question. """
 	prompt = " ".join(prompt)
 
@@ -375,6 +381,13 @@ def query2(*prompt, out: Optional[IO[str]]=stdout):
 		lines = content.splitlines()
 		lines = tab.fix_indentation_list(lines, opts.indent)
 		content = "".join(lines)
+	if log:
+		LOGDIR.mkdir(parents=True, exist_ok=True)
+		logfile = base = LOGDIR/(slugify(prompt)[:LOGFILE_NAME_MAX_LEN])
+		while logfile.exists():
+			time_s = time.strftime("%Y-%m-%dT%H:%M:%S")
+			logfile = Path(f"{base}.{time_s}")
+		logfile.write_text(content, encoding="utf-8")
 
 	if out:
 		out.write(content)
@@ -388,12 +401,13 @@ def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 		try:
 			return fn(*args, **kwargs)
 		except Exception as ex:
-			logger.warning("retry: exception: %s", ex)
+			delay = random.uniform(sleep_min, sleep_max)
+			logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
 			msg = str(ex)
 			bad = any(bad_error in msg for bad_error in BAD_ERRORS_NO_RETRY)
 			if bad or i == n_tries - 1:
 				raise
-			time.sleep(random.uniform(sleep_min, sleep_max))
+			time.sleep(delay)
 			sleep_min *= 2
 			sleep_max *= 2
 

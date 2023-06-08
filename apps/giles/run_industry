@@ -1,0 +1,42 @@
+#!/bin/bash -eua
+# run_industry	run giles on a list of industry thingies
+
+# TODO when ^C kill all child processes
+# also for giles and alfred
+
+PROG_DIR=$(dirname "$(readlink -f "$0")")
+PATH=$PATH:$PROG_DIR
+
+. wordpress-env.sh
+
+region=", South Gippland, Victoria"
+PARALLEL_MAX=8
+
+. opts
+
+run_giles_for_tourism() {
+	local name=$1
+	printf "\n\n----------------------------------------\n\n"
+	printf "*** $name ***\n\n"
+	mkdir -p "$name"
+	for mission in missions/industry/mission.*.in.txt; do
+		if [ ! -f "$mission" ]; then
+			continue
+		fi
+		cp "$mission" "$name"
+	done
+	query="$name$region"
+	(
+		cd "$name"
+		giles query="$query" HTML_DUMP_FILTER="industry_html_dump_filter" SUMMARY_PROMPT="Please summarize this info in detail, as relating to $query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible, including Business Name, Trading As, ABN, ACN, Industry/Category, Products/Services, Address, Operating Hours, Location(s), Description/About Us, Certifications/Licenses, Awards, Owner/Management, Year Established, Reviews and Ratings, Payment Methods, Accessibility Information, Pricing, Special Offers/Promotions, Delivery/Shipping Information, Return/Refund Policy, COVID-19 Measures, Photos, Business Associations/Affiliations, Phone Number, Email, Website, Official Facebook Page, Official LinkedIn Page, Official Instagram Page, Official YouTube Channel, Official Vimeo Channel, Official Twitter Page, Wikipedia Page. Cover a comprehensive scope of their work, getting there, eat and drink (prefereably at this business if possible; or nearby), amenities, accessibility, events, connected experiences, accomodation, activities. Stay focused on the topic, do not give details of other businesses unless relevant, e.g. eating nearby or connected experiences. Be factual."
+	) 2>&1 | tee -a "$name/run_industry.log"
+}
+
+while read name; do
+	. parallel run_giles_for_industry "$name"
+	names+=("$name")
+	sleep .$RANDOM
+done
+wait
+
+# ./add_all_to_wordpress "${names[@]}"
