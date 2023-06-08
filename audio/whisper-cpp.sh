@@ -71,7 +71,9 @@ done
 
 input_file=""
 
-if [[ "${#args[@]}" -gt 0 ]]; then
+# doesn't start with a dash
+last_arg=${args[-1]}
+if [ "${#args[@]}" -gt 0 -a "${last_arg#-}" = "$last_arg" ]; then
 	input_file="${args[-1]}"
 	input_file_name="$(basename "$input_file")"
 	input_file_dir="$(dirname "$input_file")"
