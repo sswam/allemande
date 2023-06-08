@@ -71,7 +71,9 @@ done
 
 input_file=""
 
-if [[ "${#args[@]}" -gt 0 ]]; then
+# doesn't start with a dash
+last_arg=${args[-1]}
+if [ "${#args[@]}" -gt 0 -a "${last_arg#-}" = "$last_arg" ]; then
 	input_file="${args[-1]}"
 	input_file_name="$(basename "$input_file")"
 	input_file_dir="$(dirname "$input_file")"
@@ -79,15 +81,15 @@ if [[ "${#args[@]}" -gt 0 ]]; then
 	# use sox or ffmpeg to convert to 16 kHz wav
 	input_file_16k="$output_dir/${input_file_name%.*}-16k.tmp.wav"
 
-	trap "v rm -vf '$input_file_16k'" EXIT
-
-	if command -v sox >/dev/null 2>&1; then
-		sox "$input_file" -r 16000 -c 1 "$input_file_16k"
-	elif command -v ffmpeg >/dev/null 2>&1; then
-		ffmpeg -i "$input_file" -ar 16000 -ac 1 "$input_file_16k"
-	else
-		echo "error: whisper.cpp wrapper requires sox or ffmpeg to convert audio to 16 kHz wav" >&2
-		exit 1
+	if [ ! -e "$input_file_16k" ]; then
+		if command -v sox >/dev/null 2>&1; then
+			sox "$input_file" -r 16000 -c 1 -b 16 "$input_file_16k"
+		elif command -v ffmpeg >/dev/null 2>&1; then
+			ffmpeg -i "$input_file" -ar 16000 -ac 1 "$input_file_16k"
+		else
+			echo "error: whisper.cpp wrapper requires sox or ffmpeg to convert audio to 16 kHz wav" >&2
+			exit 1
+		fi
 	fi
 
 	# Get the full path to the input file.
@@ -136,3 +138,6 @@ if [[ -n "$input_file_16k" ]]; then
 		fi
 	done
 fi
+
+# remove the temporary file on success
+v rm -vf '$input_file_16k'
