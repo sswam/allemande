@@ -82,7 +82,7 @@ if [[ "${#args[@]}" -gt 0 ]]; then
 	trap "v rm -vf '$input_file_16k'" EXIT
 
 	if command -v sox >/dev/null 2>&1; then
-		sox "$input_file" -r 16000 -c 1 "$input_file_16k"
+		sox "$input_file" -r 16000 -c 1 -b 16 "$input_file_16k"
 	elif command -v ffmpeg >/dev/null 2>&1; then
 		ffmpeg -i "$input_file" -ar 16000 -ac 1 "$input_file_16k"
 	else
