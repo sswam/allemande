@@ -30,7 +30,7 @@ i3: connect-i3-screen
 
 server:: stop
 server:: clean
-server:: webchat pro
+server:: webchat pro brain.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -69,7 +69,7 @@ uninstall:
 
 core: llm.xt whisper.xt
 
-voice: brain.xt mike.xt speak.xt
+voice: mike.xt speak.xt  # brain.xt
 
 webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 
@@ -93,7 +93,7 @@ alfred:
 
 core.xtc: llm.xtc whisper.xtc
 
-voice.xtc: brain.xtc mike.xtc speak.xtc
+voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
 webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc
 
@@ -194,7 +194,14 @@ umount:
 	sudo -u allemande fusermount -u /var/spool/allemande/stt_whisper/www-data || true
 	sudo -u allemande rmdir /var/spool/allemande/stt_whisper/www-data/* || true
 
-fresh:
+fresh::	stop
+fresh::	rotate
+fresh::	server
+
+rotate:
+	room-rotate "$$file"
+
+fresh-old:: 
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
 	if [ -s "$(file)" ]; then mv -v "$(file)" "$(file).$$time"; fi ; \
 	if [ -s "$$html" ]; then mv "$$html" "$$html.$$time"; fi ; \

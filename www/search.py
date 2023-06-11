@@ -2,11 +2,11 @@
 
 """ search: Search the web from the command line """
 
+import sys
 import argparse
 import logging
-
+from collections import namedtuple
 from typing import List, Dict
-
 import io
 import pprint
 import csv
@@ -20,6 +20,7 @@ from bs4 import BeautifulSoup
 import tabulate
 from youtube_search import YoutubeSearch
 from get_selenium import get_selenium
+import argh
 
 
 from ucm import setup_logging, add_logging_options
@@ -352,18 +353,6 @@ def list_to_markdown_table(items, engine):
 	return tabulate.tabulate(items, tablefmt="pipe", headers="keys")
 
 
-def search(query, engine='duckduckgo', max_results=8, safe="off", markdown=False, limit=False):
-	""" Search `query` using `engine` and return a list of results """
-	lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
-	key = lc_keys_to_keys[engine.lower()]
-	eng = engines.get(key, agents.get(key))
-	results = eng(query, max_results=max_results, safe=safe)
-	results2 = results[:max_results]
-	if markdown:
-		return list_to_markdown_table(results2, engine)
-	return results2
-
-
 # output formatters
 
 
@@ -413,42 +402,41 @@ def dict_first(d):
 	""" Return the first key in a dictionary """
 	return next(iter(d))
 
-
-def parse_args():
-	""" Parse command line arguments """
-	parser = argparse.ArgumentParser()
-	add_logging_options(parser)
-	parser.add_argument('queries', nargs='*', help='Search queries')
-	parser.add_argument('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
-	parser.add_argument('-format', '-f', help='Output format', default=dict_first(formatters), choices=formatters.keys())
-	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=12)
-	parser.add_argument('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
-	parser.add_argument('-limit', '-l', help='Limit to specified max results', action='store_true')
+@argh.arg('queries', nargs='*', help='Search queries')
+@argh.arg('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
+@argh.arg('-format', '-f', help='Output formatter', default=dict_first(formatters), choices=formatters.keys())
+@argh.arg('-max-results', '-m', help='Maximum number of results to return', type=int, default=12)
+@argh.arg('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
+@argh.arg('-limit', '-l', help='Limit to specified max results', action='store_true')
+@argh.arg('-markdown', help='Output as Markdown', action='store_true')
+@argh.arg('-out', help='Output file', type=argparse.FileType('w'), default=sys.stdout)
+def search(*queries, engine=dict_first(engines), format=dict_first(formatters), max_results=12, safe="off", markdown=False, limit=False, out=sys.stdout):
+	""" Search `query` using `engine` and return a list of results """
+	parser = argh.ArghParser()
 	args = parser.parse_args()
-	return args
-
-
-def main():
-	""" Main function """
-	args = parse_args()
 	setup_logging(args)
-
-	# search_queries = ['newest adafruit microcontroller boards', 'newest teensy microcontroller boards']
-	# search_queries = ['newest adafruit microcontroller boards']
-
-	for query in args.queries:
-		results = search(query, engine=args.engine, max_results=args.max_results, safe=args.safe, limit=args.limit)
-
+	all = []
+	for query in queries:
+		lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
+		key = lc_keys_to_keys[engine.lower()]
+		eng = engines.get(key, agents.get(key))
+		results = eng(query, max_results=max_results, safe=safe)
+		results2 = results[:max_results]
+		if markdown:
+			return list_to_markdown_table(results2, engine)
 		# output using the specified formatter
-		formatter = formatters[args.format]
-		formatted_results = formatter(results).rstrip()
-		print(formatted_results)
-
-#		for result in results:
-#			print(result.get('title'))
-#			print(result['url'])
-#			print()
+		if out:
+			formatter = formatters[args.format]
+			formatted_results = formatter(results).rstrip()
+			print(formatted_results, file=out)
+		else:
+			all.append(results)
+	if not out:
+		return all
 
 
 if __name__ == '__main__':
-	main()
+	parser = argh.ArghParser()
+	add_logging_options(parser)
+	argh.set_default_command(parser, search)
+	parser.dispatch()
