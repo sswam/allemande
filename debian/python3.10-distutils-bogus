@@ -1,0 +1,9 @@
+Section: python
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: python3.10-distutils-bogus
+Version: 1.0
+Maintainer: Sam Watkins <sam@ucm.dev>
+Provides: python3.10-distutils
+Description: Dummy package to satisfy python3.10-distutils
