@@ -49,30 +49,32 @@ def find_by_id(id, item_type="post"):
 	return item
 
 
-def find_by_title(title, item_type="post", many=False):
-	""" Find a post or page by title """
-	global api_url, username, password, auth
-	url = get_api_url(item_type)
-	params = {
-		'search': title,
-		'per_page': 1
-	}
-	response = requests.get(url, auth=auth, params=params)
-	items = response.json()
-	return items_check_number(items, "title", title, many=many)
-
-
-def find_by_slug(slug, item_type="post", many=False):
+def find_by_slug(slug, item_type="post", status="draft", many=False):
 	""" Find a post or page by slug """
 	global api_url, username, password, auth
 	url = get_api_url(item_type)
 	params = {
 		'slug': slug,
-		'per_page': 1
+		'per_page': 1,
+		'status': status,
 	}
 	reponse = requests.get(url, auth=auth, params=params)
 	items = reponse.json()
 	return items_check_number(items, "slug", slug, many=many)
+
+
+def find_by_title(title, item_type="post", status="draft", many=False):
+	""" Find a post or page by title """
+	global api_url, username, password, auth
+	url = get_api_url(item_type)
+	params = {
+		'search': title,
+		'per_page': 1,
+		'status': status,
+	}
+	response = requests.get(url, auth=auth, params=params)
+	items = response.json()
+	return items_check_number(items, "title", title, many=many)
 
 
 def items_check_number(items, key, value, many=False):
@@ -284,9 +286,9 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	if id:
 		item = find_by_id(id, item_type)
 	elif slug:
-		item = find_by_slug(slug, item_type)
+		item = find_by_slug(slug, item_type, status)
 	elif title:
-		item = find_by_title(title, item_type)
+		item = find_by_title(title, item_type, status)
 	elif list:
 		item = None
 	else:
