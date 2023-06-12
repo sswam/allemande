@@ -10,10 +10,10 @@ SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 TEMPLATES := $(WEBCHAT)/templates
 
 JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
-	run core vi vscode voice webchat llm whisper chat-api stream auth watch \
+	run core vi-online vi-local vscode-online vscode-local voice webchat llm whisper chat-api stream auth watch \
 	bb2html nginx logs perms brain mike speak \
 	firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online \
-	chrome-webchat-local \
+	chrome-webchat-online chrome-webchat-local \
 	stop mount umount fresh \
 	install install-dev uninstall clean i3-layout
 
@@ -39,12 +39,13 @@ run-i3-screen:: run
 connect-i3-screen:: i3-layout
 connect-i3-screen:: connect
 
-run: frontend backend dev pro-dev flash.xt alfred.xt vi.xt
-connect: frontend backend.xtc dev.xtc pro-dev.xtc flash.xtc alfred.xtc vi.xtc
+run: frontend backend dev pro-dev flash.xt alfred.xt vi-online.xt
+connect: frontend backend.xtc dev.xtc pro-dev.xtc flash.xtc alfred.xtc vi-online.xtc
 disconnect:
 	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
-frontend: vscode firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online chrome-webchat-local
+frontend: vscode-online firefox-webchat-online firefox-pro-online chrome-webchat-online
+frontend-local: vscode-local firefox-webchat-local firefox-pro-local chrome-webchat-local
 
 backend: core voice webchat
 backend.xtc: core.xtc voice.xtc webchat.xtc
@@ -119,11 +120,17 @@ mike:
 speak:
 	cd voice-chat && ./speak.sh
 
-vi:
-	vi -p "$$file" "$$file_server"
+vi-online:
+	vi -p "$$file_server"
 
-vscode:
-	code "$$file" "$$file_server" & disown
+vi-local:
+	vi -p "$$file"
+
+vscode-online:
+	code "$$file_server" & disown
+
+vscode-local:
+	code "$$file" & disown
 
 chat-api:
 	uvicorn chat-api:app --app-dir $(WEBCHAT) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
@@ -160,6 +167,9 @@ firefox-pro-online:
 
 chrome-webchat-local:
 	(sleep 1; chrome "https://chat-local.allemande.ai/#$$room") & disown
+
+chrome-webchat-online:
+	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
 
 %.xt:
 	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"; sleep 0.1

@@ -1,0 +1,35 @@
+# Windows Installation
+
+This is an install guide and suggested settings for Windows with WSL.
+After following this guide, continue with the linux.txt install notes.
+
+# Basic Setup
+
+- add windows user
+- set user type admin
+- set password and pin
+- time, time zone, auto update
+- install windows terminal for MS Store
+
+# Essential WSL Setup
+
+- open terminal, type:  wsl --install -d debian
+- enter username: first name in lower-case
+- enter password twice
+- restart Windows
+
+# Suggested
+
+- enable dark mode for windows and apps
+- set background to a nice free HD image
+- set a custom highlight colour
+- install font MiscFixedSC13.ttf from allemande/fonts
+- set terminal default font: MiscFixedSC13 9 point
+- set terminal block cursor
+- set terminal preferences to default to Debian
+- set terminal no scrollbar
+- install and pin Chrome and Firefox, remove Edge shortcuts
+- change brightness automatically
+- night light
+- barrier (doesn't seem to work on surface pro)
+- add barrier to start folder
