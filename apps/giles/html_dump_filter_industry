@@ -1,0 +1,3 @@
+#!/bin/bash -eu
+# landsmarks_html_dump_filter: filter out unwanted lines from the HTML dump
+grep -v '^Choose a suburb, town or city' || true

@@ -260,7 +260,7 @@ def fill_template(data1, template, address):
 		f.write(json.dumps(data1, indent=4))
 
 	single_tags = ["INTRO_TITLE", "INTRO_TEXT", "ADDRESS"]
-	main_sections = [ "SEE", "DO", "LEARN", "EAT_AND_DRINK", "GETTING_THERE", "STAY", "IN_THE_AREA", "EVENTS", "ACCESSIBILITY", "LOCAL_GROUPS", "WARNINGS", "RECAP" ]
+	main_sections = [ "SEE", "DO", "LEARN", "EAT_AND_DRINK", "GETTING_THERE", "STAY", "IN_THE_AREA", "EVENTS", "ACCESSIBILITY", "LOCAL_GROUPS", "WARNINGS", "RECAP", "SEE_THEIR_WORK", "GETTING_THERE", "EAT_AND_DRINK", "AMENITIES", "ACCESSIBILITY", "EVENTS", "CONNECTED_EXPERIENCES", ]
 	multi_tags_all = [f"{section}_SUBHEADING_2" for section in main_sections] + [f"{section}_TEXT_2" for section in main_sections]
 
 	main_sections_map = {
@@ -276,7 +276,15 @@ def fill_template(data1, template, address):
 		"ACCESSIBILITY": "Accessibility",
 		"WARNINGS": "Warnings",
 		"RECAP": "Recap",
+		"SEE_THEIR_WORK": "See Their Work",
+		"GETTING_THERE": "Getting There",
+		"EAT_AND_DRINK": "Eat and Drink",
+		"AMENITIES": "Amenities",
+		"ACCESSIBILITY": "Accessibility",
+		"EVENTS": "Events",
+		"CONNECTED_EXPERIENCES": "Connected Experiences",
 	}
+
 
 	map_contact_tags = {
 		"SOCIAL-FACEBOOK": "OFFICIAL_FACEBOOK_PAGE",
@@ -419,19 +427,17 @@ def slurp(pathname, errors="ignore"):
 		return f.read()
 
 
-@argh.arg("--content_file", "-c", help="Markdown file to process.")
-@argh.arg("--metadata_file", "-m", help="Metadata file to process.")
 @argh.arg("--template_file", "-t", help="Template file to process.")
 @argh.arg("--address", "-a", help="Address to use.")
-def place_md_to_wordpress(content_file="content.md", metadata_file="metadata.md", template_file="template/tourism.txt", address=""):
+def place_md_to_wordpress(*input_files, template_file="template/tourism.txt", address=""):
 	""" Place markdown text into Wordpress template. """
 	# read content and metadata, from named files content_file and metadata_file
-	content = read_markdown(slurp(content_file))
-	metadata = read_markdown(slurp(metadata_file))
-	template = slurp(template_file)
 	data = {}
-	data.update(content)
-	data.update(metadata)
+	logger.warning(input_files)
+	for file in input_files:
+		content = read_markdown(slurp(file))
+		data.update(content)
+	template = slurp(template_file)
 	page = fill_template(data, template, address=address)
 	return page
 
