@@ -18,30 +18,11 @@ else
 	media_opts=
 fi
 
-check_skip() {
-	local D=$1
-	if [ -s "$D/wordpress.txt" ]; then
-		echo >&2 "___ SKIPPING FINISHED $D"
-		return 0
-	fi
-	if [ ! -s "$D/output.1.md" ] || [ ! -s "$D/output.2.md" ]; then
-		echo >&2 "___ SKIPPING BUILD $D"
-		return 0
-	fi
-	return 1
-}
-
 for D; do
 	N=$(basename "$D")
 
-	if check_skip "$D"; then
-		continue
-	fi
-
 	echo "*** PROCESSING $N"
 
-#	ln -sf "$D/output.1.md" "$D.md"
-#	ln -sf "$D/output.2.md" "$D.meta"
 	v prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D/output.1.md" "$D/output.2.md" "$D/youtube.md" > "$D/wordpress.txt"
 done
 
@@ -49,15 +30,10 @@ mkdir -p DONE
 
 for D; do
 	N=$(basename "$D")
-#	S=`slugify "$N"`
-
-#	if check_skip "$D"; then
-#		continue
-#	fi
+	S=$(slugify -l "$N")
 
 	echo "*** PUSHING TO WORDPRESS $D"
 
-	. parallel v injectify.py --auto --$item_type --title "$N" --file "$D/wordpress.txt" $media_opts
-#	. parallel v injectify.py --auto --$item_type --title "$N" --slug "$S" --file "$D/wordpress.txt" $media_opts
+	. parallel v injectify.py --auto --$item_type --title "$N" --slug "$S" --file "$D/wordpress.txt" $media_opts
 done
 wait

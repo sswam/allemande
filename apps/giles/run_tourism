@@ -62,6 +62,10 @@ while read name; do
 	if [ "$skip_ai" != 1 ]; then
 		. parallel run_giles_for_tourism "$name" "$dir"
 	fi
+	if [ ! -d "$dir" ]; then
+		echo >&2 "*** $name directory is not found, skipping ***"
+		continue
+	fi
 	names+=("$name")
 	names_new+=("$name")
 	dirs+=("$dir")

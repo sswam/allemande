@@ -11,13 +11,14 @@ our @place_words;
 our @all_cats;
 our @okay_random_cats;
 our %map_title_to_url;
+our $match_threshold = 0.5;
 
 BEGIN {
 	($place) = @ARGV;
 	@ARGV = ();
 	@place_words = split /\s+/, $place;
-	@all_cats = qw(SEE DO LEARN EAT_AND_DRINK GETTING_THERE STAY IN_THE_AREA EVENTS ACCESSIBILITY LOCAL_GROUPS WARNINGS);
-	@okay_random_cats = qw(SEE DO LEARN IN_THE_AREA EVENTS LOCAL_GROUPS WARNINGS);
+	@all_cats = qw(INTRO SEE DO LEARN EAT_AND_DRINK GETTING_THERE STAY IN_THE_AREA EVENTS ACCESSIBILITY LOCAL_GROUPS WARNINGS);
+	@okay_random_cats = qw(INTRO SEE DO LEARN IN_THE_AREA EVENTS LOCAL_GROUPS WARNINGS);
 	open(my $fh, "<", "YOUTUBE/SELECT_YOUTUBE.txt");
 	while (<$fh>) {
 		chomp;
@@ -41,6 +42,8 @@ my ($num, $title, $cats, $loc) = @cols;
 $title =~ s/\s*[|].*//;
 my @cats = split /,\s*/, $cats;
 
+# warn "title: $title\n";
+
 my $cat = undef;
 
 my $url = $map_title_to_url{$title};
@@ -51,19 +54,22 @@ if (!defined $url) {
 }
 
 if ($url !~ m{^https://www\.youtube\.com/watch\?v=}) {
+	warn "Skipping non-youtube URL: $url\n";
 	next;
 }
 
 my $irrelevant = 0;
+my $matches = 0;
+my $n = @place_words;
 for my $word (@place_words) {
 	# TODO stemming?
-	if ($title !~ /\Q$word\E/) {
-		warn "Skipping seemingly irrelevant video: $title  vs  @place_words\n";
-		$irrelevant = 1;
-		last;
+	if ($title =~ /\Q$word\E/i) {
+		$matches ++;
 	}
 }
-if ($irrelevant) {
+
+if ($matches / $n < 0.5) {
+	warn "Skipping seemingly irrelevant video: $title  vs  @place_words\n";
 	next;
 }
 
