@@ -39,44 +39,50 @@ def get_api_url(item_type, path=""):
 		path = f"/{path}"
 	return f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}{path}"
 
-def find_by_title(title_to_find, item_type="post", many=False):
-	""" Find a post or page by title """
-	global api_url, username, password, auth
-	url = get_api_url(item_type)
-	params = {
-		'search': title_to_find,
-		'per_page': 1
-	}
-	response = requests.get(url, auth=auth, params=params)
-	items = response.json()
-	if many:
-		return items
-	if not items:
-		return None
-	if len(items) > 1:
-		raise Exception(f"More than one {item_type} found with title, and many=False: {title_to_find}")
-	return items[0]
 
-def find_by_id(id_to_find, item_type="post"):
+def find_by_id(id, item_type="post"):
 	""" Find a post or page by ID """
 	global api_url, username, password, auth
-	url = get_api_url(item_type, id_to_find)
+	url = get_api_url(item_type, id)
 	response = requests.get(url, auth=auth)
 	item = response.json()
 	return item
 
 
-def find_by_slug(slug_to_find, item_type="post"):
+def find_by_title(title, item_type="post", many=False):
+	""" Find a post or page by title """
+	global api_url, username, password, auth
+	url = get_api_url(item_type)
+	params = {
+		'search': title,
+		'per_page': 1
+	}
+	response = requests.get(url, auth=auth, params=params)
+	items = response.json()
+	return items_check_number(items, "title", title, many=many)
+
+
+def find_by_slug(slug, item_type="post", many=False):
 	""" Find a post or page by slug """
 	global api_url, username, password, auth
 	url = get_api_url(item_type)
 	params = {
-		'slug': slug_to_find,
+		'slug': slug,
 		'per_page': 1
 	}
 	reponse = requests.get(url, auth=auth, params=params)
 	items = reponse.json()
-	return items
+	return items_check_number(items, "slug", slug, many=many)
+
+
+def items_check_number(items, key, value, many=False):
+	if many:
+		return items
+	if not items:
+		return None
+	if len(items) > 1:
+		raise Exception(f"More than one {item_type} found with {key}, and many=False: {value}")
+	return items[0]
 
 
 def get_item_key(item):
