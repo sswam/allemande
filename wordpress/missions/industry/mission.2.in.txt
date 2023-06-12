@@ -34,38 +34,53 @@ Regarding images and videos, we are especially interested in the following sourc
 
 [suggested tags for page metadata and search results, around 10 tags]
 
+## Business Website URL
+
+[the url of the official business website of $query, or leave blank if unknown]
+
+## Business Logo alttext
+
+[official name of $query]
+
+## Website
+
+[official website of $query as a url, or leave blank if Unknown]
+
 ## Business Name
 
-[official name of $query, or N/A, or Unknown]
+[official name of $query, do not append any location information, only list the exact business name, or leave blank if unknown]
 
 ## Trading As
 
-[trading name of $query, or N/A, or Unknown]
+[trading name of $query, or leave blank if unknown]
 
 ## ABN
 
-[ABN of $query, or N/A, or Unknown]
+[ABN of $query, or leave blank if unknown]
 
 ## ACN
 
-[ACN of $query, or N/A, or Unknown]
+[ACN of $query, or leave blank if Unknown]
 
-## Industry/Category
+## Industry Category
 
 [The specific industry or official category the business falls under (e.g., restaurant, retail, healthcare, etc.)]
 
-## Products/Services
+## Business Description
 
-[A brief overview of the products or services offered by the business]
+[An overview of the services or products offered by the business or organisation. ~150 words]
 
 ## Address
 
-[e.g. Unit 4
+[Use multiple lines, separating Unit/lot number, property number and street, suburb, state and postcode.
+
+e.g. 
+Unit 4
 234 Cow St
 Inverloch
 VIC 3056]
 
-## Operating Hours
+## BizHours
 
 [The hours during which the business is open for operation, e.g.
 MON 	CLOSED
@@ -76,7 +91,35 @@ FRI 	12:00 - 17:30
 SAT 	12:00 - 17:30
 SUN 	12:00 - 17:30]
 
-## Location(s)
+### BIZHOURS MONDAY HOURS
+
+[The hours the business is open on a Monday, in 24 hour time AEST]
+
+### BIZHOURS TUESDAY HOURS
+
+[The hours the business is open on a Tuesday, in 24 hour time AEST]
+
+### BIZHOURS WEDNESDAY HOURS
+
+[The hours the business is open on a Wednesday, in 24 hour time AEST]
+
+### BIZHOURS THURSDAY HOURS
+
+[The hours the business is open on a Thursday, in 24 hour time AEST]
+
+### BIZHOURS FRIDAY HOURS
+
+[The hours the business is open on a Friday, in 24 hour time AEST]
+
+### BIZHOURS SATURDAY HOURS
+
+[The hours the business is open on a Saturday, in 24 hour time AEST]
+
+### BIZHOURS SUNDAY HOURS
+
+[The hours the business is open on a Sunday, in 24 hour time AEST]
+
+## Service Areas
 
 [Where the business operates. This could include multiple locations if applicable.
 
@@ -84,17 +127,33 @@ SUN 	12:00 - 17:30]
 - Australia-wide
 - Online]
 
-## Description/About Us
+## BIZACCESSIBILITY
+
+[Information about the Accessibility of the business. Wheelchair access, ramps, disabled/accessible changerooms, etc.]
+
+## ABOUT
 
 [A detailed description of the business, its mission, and its history, up to 10 to 12 paragraphs, and including dot-point lists as necessary.]
+
+## BIZAFFILIATIONS TEXT
+
+[A list of the industry governing bodies and peak industry bodies that the business is a member of]
+
+## BIZREVIEWS
+
+[A selection of the highest ranking reviews of the business, from Google Business Reviews, Facebook Business Reviews, Tripadvisor, and so on]
+
+## BIZRATINGS
+
+[A selection of the highest ratings of the business, from Google Business Reviews, Facebook Business Reviews, Tripadvisor, and so on]
+
+## BIZAWARDS
+
+[Listing any awards the business has received]
 
 ## Certifications/Licenses
 
 [Any relevant certifications, licenses, or accreditations the business holds.]
-
-## Awards
-
-[Any awards the business has won.]
 
 ## Owner/Management
 
@@ -102,12 +161,7 @@ SUN 	12:00 - 17:30]
 
 ## Year Established
 
-[When the business was founded.]
-
-## Reviews and Ratings
-
-[Customer reviews and ratings of the business, on
-Google, Facebook, Yelp, TripAdvisor, etc.]
+[The year the business was established or opened.]
 
 ## Payment Methods
 
@@ -166,10 +220,6 @@ e.g. +61 412 345 678]
 ## Email
 
 [email address of $query, N/A, or Unknown]
-
-## Website
-
-[official website of $query as a markdown link, or Unknown]
 
 ## Official Facebook Page
 

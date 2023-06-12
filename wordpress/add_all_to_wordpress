@@ -1,13 +1,15 @@
 #!/bin/bash -eu
 # add all output.md to wordpress
 
-t=post
-m=
+t=post	# post or page
+m=	# which image to use
+T=template/tourism.txt	# template
 
 . opts
 
 item_type=$t
 media=$m
+template=$T
 
 if [ -n "$media" ]; then
 	media_opts="--media $media"
@@ -32,7 +34,7 @@ for D; do
 
 	ln -sf "$D/output.1.md" "$D.md"
 	ln -sf "$D/output.2.md" "$D.meta"
-	v ./prettify.py -a "$D, South Gippland, Victoria" -t template/tourism.txt -c "$D.md" -m "$D.meta" > "$D.wordpress"
+	v ./prettify.py -a "$D, South Gippland, Victoria" -t "$template" "$D.md" "$D.meta" "yt/$D.md" > "$D.wordpress"
 done
 
 mkdir -p DONE
