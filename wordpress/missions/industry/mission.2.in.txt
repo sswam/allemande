@@ -123,9 +123,10 @@ SUN 	12:00 - 17:30]
 
 [Where the business operates. This could include multiple locations if applicable.
 
-- Inverloch
-- Australia-wide
-- Online]
+eg.
+Inverloch
+Australia-wide
+Online]
 
 ## BIZACCESSIBILITY
 

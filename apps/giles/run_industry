@@ -12,6 +12,7 @@ push_interval=8
 
 . wordpress-env.sh
 
+gen="generated/industry"
 region=", South Gippland, Victoria"
 PARALLEL_MAX=8
 media_id=1347
@@ -20,48 +21,55 @@ media_id=1347
 
 run_giles_for_industry() {
 	local name=$1
+	local dir=$2
 	if [ -L "$name" ]; then
 	        printf "*** $name is already done ***\n\n"
 		return
 	fi
 	printf "\n\n----------------------------------------\n\n"
 	printf "*** $name ***\n\n"
-	mkdir -p -- "$name"
+	mkdir -p -- "$dir"
 	for mission in missions/industry/mission.*.in.txt; do
 		if [ ! -f "$mission" ]; then
 			continue
 		fi
-		cp -- "$mission" "$name"
+		cp -- "$mission" "$dir/"
 	done
 	query="$name$region"
 	(
-		cd -- "$name"
+		cd -- "$dir/"
 		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_industry" SUMMARY_GUIDE="Using ## section headers, please summarize this info in detail, as relating to $query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible, including Business Name, Trading As, ABN, ACN, Industry/Category, Products/Services, Address, Operating Hours, Location(s), Description/About Us, Certifications/Licenses, Awards, Owner/Management, Year Established, Reviews and Ratings, Payment Methods, Accessibility Information, Pricing, Special Offers/Promotions, Delivery/Shipping Information, Return/Refund Policy, COVID-19 Measures, Photos, Business Associations/Affiliations, Phone Number, Email, Website, Official Facebook Page, Official LinkedIn Page, Official Instagram Page, Official YouTube Channel, Official Vimeo Channel, Official Twitter Page, Wikipedia Page. Cover a comprehensive scope of their work, getting there, eat and drink (prefereably at this business if possible; or nearby), amenities, accessibility, events, connected experiences, accomodation, activities. Stay focused on the topic, do not give details of other businesses unless relevant, e.g. eating nearby or connected experiences. Be factual."
-	) 2>&1 | tee -a -- "$name/run_industry.log"
+	) 2>&1 | tee -a -- "$dir/run_industry.log"
 }
 
 add_all() {
-	local names=("$@")
-	v ./add_all_to_wordpress -m="$media_id" -T=template/industry.txt "${names[@]}"
+	local dirs=("$@")
+	v ./add_all_to_wordpress -t=post -T=template/industry.txt -m="$media_id" "${dirs[@]}"
 }
 
 names=()
 names_new=()
+dirs=()
+dirs_new=()
 
 i=0
 while read name; do
 	name=${name#- }
-	. parallel run_giles_for_industry "$name"
+	dir="$gen/$name"
+	. parallel run_giles_for_industry "$name" "$dir"
 	names+=("$name")
 	names_new+=("$name")
+	dirs+=("$dir")
+	dirs_new+=("$dir")
 	i=$[$i+1]
 	if [ $[ $i % $push_interval ] = 0 ]; then
 		wait
-		v add_all "${names_new[@]}"
+		v add_all "${dirs_new[@]}"
 		names_new=()	
+		dirs_new=()
 	fi
 	sleep .$RANDOM
 done
 wait
 
-v add_all "${names[@]}"
+v add_all "${dirs[@]}"
