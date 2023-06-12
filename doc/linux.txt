@@ -15,7 +15,7 @@ host=$HOSTNAME
 server=ucm.dev
 code=$server:/home/sam/code
 
-read -p "Setting are user=$user, host=$host, server=$server, code=$code, okay? " yn
+read -p "Settings are user=$user, host=$host, server=$server, code=$code, okay? " yn
 if [ "$yn" != y ]; then
 	echo >&2 "Please fix your settings, then re-run $(basename $0)"
 	exit 1
@@ -68,12 +68,12 @@ ssh-keygen -t rsa
 ssh-copy-id $server
 ssh -T -f -oServerAliveInterval=15 -oServerAliveCountMax=3 -N $server
 ssh $server hostname
-cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+cat ~/.ssh/id_rsa.pub >>~/.ssh/authorized_keys
 
 
 
 # - apt update
-# - apt install git ssh rsync screen neovim build-essential devscripts python-is-python3 barrier
+# - apt install git ssh rsync screen neovim build-essential devscripts python-is-python3
 # - ssh-keygen
 # - ssh-copy-id ucm.dev
 # - ssh-copy-id pi.ucm.dev
@@ -85,8 +85,8 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 # - clone allemande
 # - git config --global user.email who@where
 # - git config --global user.name "User Name"
-# - git config --global pull.rebase falsudo 
-# - install python3.10-distutils bogus package or whatever it is
+# - git config --global pull.rebase false 
+# - install python3.10-distutils-bogus_1.0_all.deb
 # - apt install python3.10
 # - apt install allemande deps
 # - pip install allemande deps
@@ -108,3 +108,13 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 # - arcs
 # - ucm-tools
 # - remote access via sshd port forward
+# - ~/.vimrc: set mouse=a
+# - nvim rc load ~/.vimrc:
+
+mkdir -p ~/.config/nvim
+
+cat <<END >>~/.config/nvim/init.vim
+set runtimepath^=~/.vim runtimepath+=~/.vim/after
+let &packpath=&runtimepath
+source ~/.vimrc
+END

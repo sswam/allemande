@@ -27,8 +27,9 @@ After following this guide, continue with the linux.txt install notes.
 - set terminal default font: MiscFixedSC13 9 point
 - set terminal block cursor
 - set terminal preferences to default to Debian
+- set terminal no scrollbar
 - install and pin Chrome and Firefox, remove Edge shortcuts
 - change brightness automatically
 - night light
-- barrier
+- barrier (doesn't seem to work on surface pro)
 - add barrier to start folder
