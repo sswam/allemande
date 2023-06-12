@@ -2,14 +2,14 @@
 # add all output.md to wordpress
 
 t=post	# post or page
-m=	# which image to use
 T=template/tourism.txt	# template
+m=1347	# which image to use
 
 . opts
 
 item_type=$t
-media=$m
 template=$T
+media=$m
 
 if [ -n "$media" ]; then
 	media_opts="--media $media"
@@ -17,46 +17,42 @@ else
 	media_opts=
 fi
 
-for D; do
-	D=$(basename "$D")
-
-	if [ -L "$D" ]; then
-		echo >&2 "___ SKIPPING SYMLINK $D"
-		continue
+check_skip() {
+	local D=$1
+	if [ -s "$D/wordpress.txt" ]; then
+		echo >&2 "___ SKIPPING FINISHED $D"
+		return 0
 	fi
-
 	if [ ! -s "$D/output.1.md" ] || [ ! -s "$D/output.2.md" ]; then
 		echo >&2 "___ SKIPPING BUILD $D"
+		return 0
+	fi
+}
+
+for D; do
+	N=$(basename "$D")
+
+	if check_skip "$D"; then
 		continue
 	fi
 
-	echo "*** PROCESSING $D"
+	echo "*** PROCESSING $N"
 
-	ln -sf "$D/output.1.md" "$D.md"
-	ln -sf "$D/output.2.md" "$D.meta"
-	v ./prettify.py -a "$D, South Gippland, Victoria" -t "$template" "$D.md" "$D.meta" "yt/$D.md" > "$D.wordpress"
+#	ln -sf "$D/output.1.md" "$D.md"
+#	ln -sf "$D/output.2.md" "$D.meta"
+	v ./prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D/output.1.md" "$D/output.2.md" "yt/$D.md" > "$D/wordpress.txt"
 done
 
 mkdir -p DONE
 
 for D; do
-	D=$(basename "$D")
+	N=$(basename "$D")
 
-	if [ -L "$D" ]; then
-		echo >&2 "___ SKIPPING SYMLINK $D"
-		continue
-	fi
-
-	if [ ! -s "$D/output.1.md" ] || [ ! -s "$D/output.2.md" ]; then
-		echo >&2 "___ SKIPPING PUSH $D"
+	if check_skip "$D"; then
 		continue
 	fi
 
 	echo "*** PUSHING TO WORDPRESS $D"
 
-	v ./injectify.py --auto --$item_type --title "$D" --file "$D.wordpress" $media_opts
-
-	if [ ! -L "$D" -a ! -e "DONE/$D" ]; then
-		mvlnback "$D" "DONE/"
-	fi
+	v ./injectify.py --auto --$item_type --title "$N" --file "$D/wordpress.txt" $media_opts
 done
