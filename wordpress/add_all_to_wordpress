@@ -1,6 +1,7 @@
 #!/bin/bash -eu
 # add all output.md to wordpress
 
+PARALLEL_MAX=10
 t=post	# post or page
 T=template/tourism.txt	# template
 m=1347	# which image to use
@@ -27,6 +28,7 @@ check_skip() {
 		echo >&2 "___ SKIPPING BUILD $D"
 		return 0
 	fi
+	return 1
 }
 
 for D; do
@@ -40,19 +42,22 @@ for D; do
 
 #	ln -sf "$D/output.1.md" "$D.md"
 #	ln -sf "$D/output.2.md" "$D.meta"
-	v ./prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D/output.1.md" "$D/output.2.md" "yt/$D.md" > "$D/wordpress.txt"
+	v prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D/output.1.md" "$D/output.2.md" "$D/youtube.md" > "$D/wordpress.txt"
 done
 
 mkdir -p DONE
 
 for D; do
 	N=$(basename "$D")
+#	S=`slugify "$N"`
 
-	if check_skip "$D"; then
-		continue
-	fi
+#	if check_skip "$D"; then
+#		continue
+#	fi
 
 	echo "*** PUSHING TO WORDPRESS $D"
 
-	v ./injectify.py --auto --$item_type --title "$N" --file "$D/wordpress.txt" $media_opts
+	. parallel v injectify.py --auto --$item_type --title "$N" --file "$D/wordpress.txt" $media_opts
+#	. parallel v injectify.py --auto --$item_type --title "$N" --slug "$S" --file "$D/wordpress.txt" $media_opts
 done
+wait
