@@ -16,8 +16,11 @@ gen="generated/industry"
 region=", South Gippland, Victoria"
 PARALLEL_MAX=8
 media_id=1347
+s=
 
 . opts
+
+skip_ai=$s
 
 run_giles_for_industry() {
 	local name=$1
@@ -44,7 +47,7 @@ run_giles_for_industry() {
 
 add_all() {
 	local dirs=("$@")
-	v ./add_all_to_wordpress -t=post -T=template/industry.txt -m="$media_id" "${dirs[@]}"
+	v add_all_to_wordpress -t=post -T=template/industry.txt -m="$media_id" "${dirs[@]}"
 }
 
 names=()
@@ -56,7 +59,9 @@ i=0
 while read name; do
 	name=${name#- }
 	dir="$gen/$name"
-	. parallel run_giles_for_industry "$name" "$dir"
+	if [ "$skip_ai" != 1 ]; then
+		. parallel run_giles_for_industry "$name" "$dir"
+	fi
 	names+=("$name")
 	names_new+=("$name")
 	dirs+=("$dir")
