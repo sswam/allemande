@@ -16,6 +16,18 @@ if [ "$yn" != y ]; then
 	exit 1
 fi
 
+# -------- set up sudo with staff group --------------------------------------
+
+sudo sh -c "
+cat <<END >/etc/sudoers.d/local
+%staff ALL = (ALL) NOPASSWD: ALL
+END
+
+sudo adduser $USER staff
+"
+
+newgrp staff
+
 # -------- setup apt sources.list --------------------------------------------
 
 sudo sh -c "
@@ -28,33 +40,15 @@ deb http://ftp.debian.org/debian bookworm-backports main contrib non-free non-fr
 deb http://ftp.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
 deb http://ftp.debian.org/debian experimental main contrib non-free non-free-firmware
 END
-
-# -------- set up sudoers.d/local --------------------------------------------
-
-cat <<END >/etc/sudoers.d/local
-%staff ALL = (ALL) NOPASSWD: ALL
-END
-
-# -------- add user to group staff -------------------------------------------
-
-adduser $USER staff
 "
-
-# ======== }}} no more root! ==================================================
-
-
-
-# -------- use the staff group without exiting the terminal ------------------
-
-newgrp staff
 
 # -------- allow staff to install programs without sudo ----------------------
 
 cd /usr/local
 dirs="bin sbin man man/man1 lib/site_perl"
-mkdir -p $dirs
-chgrp staff $dirs
-chmod g+w $dirs
+sudo mkdir -p $dirs
+sudo chgrp staff $dirs
+sudo chmod g+w $dirs
 
 # -------- set user full name ------------------------------------------------
 

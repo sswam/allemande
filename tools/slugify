@@ -4,16 +4,25 @@
 # It turns out that there is a slugify in PyPI also; I should probably use that instead.
 # But I need this one for a project at the moment. I'll rename it to sl_gify for now.
 
+# TODO kebab case, etc.
+# TODO efficient proc, i.e. don't use cat
+
 slugify_filter() {
 	sed 's/[^a-zA-Z0-9]/_/g; s/__*/_/g; s/^_//; s/_$//'
 }
 
 slugify() {
+	local proc=cat
+	case "$1" in
+	-l) proc=lc ; shift ;;
+	-u) proc=uc ; shift ;;
+	esac
+
 	if [ -n "$*" ]; then
 		printf "%s\n" "$*" | slugify_filter
 	else
 		slugify_filter
-	fi
+	fi | $proc
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then

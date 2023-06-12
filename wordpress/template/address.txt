@@ -1,0 +1,29 @@
+[fusion_text columns="" column_min_width="" column_spacing="" rule_style="" rule_size="" rule_color="" hue="" saturation="" lightness="" alpha="" content_alignment_medium="" content_alignment_small="" content_alignment="" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="industry-bizdeets-address" id="bizdeets-address-number-text" margin_top="" margin_right="" margin_bottom="0px" margin_left="" fusion_font_family_text_font="var(--awb-custom_typography_31-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_31)" font_size="var(--awb-custom_typography_31-font-size)" line_height="var(--awb-custom_typography_31-line-height)" letter_spacing="var(--awb-custom_typography_31-letter-spacing)" text_transform="var(--awb-custom_typography_31-text-transform)" text_color="var(--awb-color8)" animation_type="" animation_direction="left" animation_color="" animation_speed="0.3" animation_delay="0" animation_offset=""]
+
+<!-- BIZADDRESS_UNIT --------------------------------------------------------------------------- -->
+
+{BUSINESS_ADDRESS_NUMBER}
+
+[/fusion_text]
+[fusion_text columns="" column_min_width="" column_spacing="" rule_style="" rule_size="" rule_color="" hue="" saturation="" lightness="" alpha="" content_alignment_medium="" content_alignment_small="" content_alignment="" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="industry-bizdeets-address" id="bizdeets-address-street-text" margin_top="0px" margin_right="" margin_bottom="0px" margin_left="" fusion_font_family_text_font="var(--awb-custom_typography_31-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_31)" font_size="var(--awb-custom_typography_31-font-size)" line_height="var(--awb-custom_typography_31-line-height)" letter_spacing="var(--awb-custom_typography_31-letter-spacing)" text_transform="var(--awb-custom_typography_31-text-transform)" text_color="var(--awb-color8)" animation_type="" animation_direction="left" animation_color="" animation_speed="0.3" animation_delay="0" animation_offset=""]
+
+<!-- BIZADDRESS_STREET -------------------------------------------------------------------------- -->
+
+{BUSINESS_ADDRESS_STREET}
+
+[/fusion_text]
+[fusion_text columns="" column_min_width="" column_spacing="" rule_style="" rule_size="" rule_color="" hue="" saturation="" lightness="" alpha="" content_alignment_medium="" content_alignment_small="" content_alignment="" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="industry-bizdeets-address" id="bizdeets-address-suburb-text" margin_top="0px" margin_right="" margin_bottom="0px" margin_left="" fusion_font_family_text_font="var(--awb-custom_typography_31-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_31)" font_size="var(--awb-custom_typography_31-font-size)" line_height="var(--awb-custom_typography_31-line-height)" letter_spacing="var(--awb-custom_typography_31-letter-spacing)" text_transform="var(--awb-custom_typography_31-text-transform)" text_color="var(--awb-color8)" animation_type="" animation_direction="left" animation_color="" animation_speed="0.3" animation_delay="0" animation_offset=""]
+
+<!-- BIZADDRESS_SUBURB -------------------------------------------------------------------------- -->
+
+{BUSINESS_ADDRESS_SUBURB}
+
+[/fusion_text]
+[fusion_text columns="" column_min_width="" column_spacing="" rule_style="" rule_size="" rule_color="" hue="" saturation="" lightness="" alpha="" content_alignment_medium="" content_alignment_small="" content_alignment="" hide_on_mobile="small-visibility,medium-visibility,large-visibility" sticky_display="normal,sticky" class="industry-bizdeets-address" id="bizdeets-address-state_and_postcode-text" margin_top="0px" margin_right="" margin_bottom="" margin_left="" fusion_font_family_text_font="var(--awb-custom_typography_31-font-family)" fusion_font_variant_text_font="var(--awb-custom_typography_31)" font_size="var(--awb-custom_typography_31-font-size)" line_height="var(--awb-custom_typography_31-line-height)" letter_spacing="var(--awb-custom_typography_31-letter-spacing)" text_transform="var(--awb-custom_typography_31-text-transform)" text_color="var(--awb-color8)" animation_type="" animation_direction="left" animation_color="" animation_speed="0.3" animation_delay="0" animation_offset=""]
+
+<!-- BIZADDRESS_STATE_AND_POSTCODE -------------------------------------------------------------- -->
+
+{BUSINESS_ADDRESS_STATE_AND_POSTCODE}
+
+[/fusion_text]
+
