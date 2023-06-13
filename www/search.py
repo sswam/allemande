@@ -22,8 +22,8 @@ from youtube_search import YoutubeSearch
 from get_selenium import get_selenium
 import argh
 
+# import ucm_main
 
-from ucm import setup_logging, add_logging_options
 
 logger = logging.getLogger(__name__)
 
@@ -402,41 +402,49 @@ def dict_first(d):
 	""" Return the first key in a dictionary """
 	return next(iter(d))
 
-@argh.arg('queries', nargs='*', help='Search queries')
-@argh.arg('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
-@argh.arg('-format', '-f', help='Output formatter', default=dict_first(formatters), choices=formatters.keys())
-@argh.arg('-max-results', '-m', help='Maximum number of results to return', type=int, default=12)
-@argh.arg('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
-@argh.arg('-limit', '-l', help='Limit to specified max results', action='store_true')
-@argh.arg('-markdown', help='Output as Markdown', action='store_true')
-@argh.arg('-out', help='Output file', type=argparse.FileType('w'), default=sys.stdout)
-def search(*queries, engine=dict_first(engines), format=dict_first(formatters), max_results=12, safe="off", markdown=False, limit=False, out=sys.stdout):
-	""" Search `query` using `engine` and return a list of results """
-	parser = argh.ArghParser()
-	args = parser.parse_args()
-	setup_logging(args)
+
+def search(args, *queries):
 	all = []
 	for query in queries:
 		lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
-		key = lc_keys_to_keys[engine.lower()]
+		key = lc_keys_to_keys[args.engine.lower()]
 		eng = engines.get(key, agents.get(key))
-		results = eng(query, max_results=max_results, safe=safe)
-		results2 = results[:max_results]
-		if markdown:
-			return list_to_markdown_table(results2, engine)
+		results = eng(query, max_results=args.max_results, safe=args.safe)
+		results2 = results[:args.max_results]
+		if args.markdown:
+			return list_to_markdown_table(results2, args.engine)
 		# output using the specified formatter
-		if out:
+		if args.out:
 			formatter = formatters[args.format]
 			formatted_results = formatter(results).rstrip()
-			print(formatted_results, file=out)
+			print(formatted_results, file=args.out)
 		else:
 			all.append(results)
-	if not out:
+	if not args.out:
 		return all
 
 
+def main():
+	parser = argparse.ArgumentParser(description="Search `query` using `engine` and return a list of results")
+	parser.add_argument('-e', '--engine', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
+	parser.add_argument('-f', '--format', help='Output formatter', default=dict_first(formatters), choices=formatters.keys())
+	parser.add_argument('-m', '--max-results', help='Maximum number of results to return', type=int, default=12)
+	parser.add_argument('-s', '--safe', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
+	parser.add_argument('-l', '--limit', help='Limit to specified max results', action='store_true')
+	parser.add_argument('--markdown', help='Output as Markdown', action='store_true')
+	parser.add_argument('--out', help='Output file', type=argparse.FileType('w'), default=sys.stdout)
+	parser.add_argument('queries', nargs='*', help='Search queries')
+
+	logging_group = parser.add_mutually_exclusive_group()
+	logging_group.add_argument('-d', '--debug', dest='log_level', action='store_const', const=logging.DEBUG, help="show debug messages")
+	logging_group.add_argument('-v', '--verbose', dest='log_level', action='store_const', const=logging.INFO, help="show verbose messages")
+	logging_group.add_argument('-q', '--quiet', dest='log_level', action='store_const', const=logging.ERROR, help="show only errors")
+	logging_group.add_argument('-Q', '--silent', dest='log_level', action='store_const', const=logging.CRITICAL, help="show nothing")
+	logging_group.add_argument('--log', default=None, help="log file")
+
+	args = parser.parse_args()
+	search(args, *args.queries)
+
+
 if __name__ == '__main__':
-	parser = argh.ArghParser()
-	add_logging_options(parser)
-	argh.set_default_command(parser, search)
-	parser.dispatch()
+	main()
