@@ -8,6 +8,7 @@ import argh
 import logging
 import urllib.parse
 import sh
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -39,12 +40,13 @@ def search_location(query, api_key="$GOOGLE_MAPS_API_KEY", timeout=10, browse=Fa
 	data = response.json()
 
 	if not data["results"]:
-		return None, None, None
+		return query, None, None, None
 
 	result = data["results"][0]
 	loc = result["geometry"]["location"]
 	lat, lon = (loc["lat"], loc["lng"])
 	address = result["formatted_address"]
+#	logger.warning("%s", json.dumps(result, indent=4))
 	# urlencode properly
 	query_enc = urllib.parse.quote_plus(query)
 	url = f"https://www.google.com/maps/search/?api=1&query={query_enc}&center={lat},{lon}"
@@ -54,7 +56,7 @@ def search_location(query, api_key="$GOOGLE_MAPS_API_KEY", timeout=10, browse=Fa
 		if fork:
 			sys.exit(0)
 
-	return lat, lon, address, url
+	return query, lat, lon, address, url
 
 if __name__ == "__main__":
 	argh.dispatch_command(search_location)

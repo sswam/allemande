@@ -1,20 +1,39 @@
 #!/bin/bash -eu
 # add all output.md to wordpress
 
-for D in */; do
-	D=${D%/}
-	if [ ! -e "$D/output.md" ]; then
-		echo >&2 "No output.md in $D, skipping"
-		continue
-	fi
-	ln -sf "$D/output.md" "$D.md"
-	v ./place_md_to_wordpress -a "$D, Bass Coast, Victoria" < "$D.md" > "$D.wordpress"
+PARALLEL_MAX=10
+t=post	# post or page
+T=template/tourism.txt	# template
+m=1347	# which image to use
+
+. opts
+
+item_type=$t
+template=$T
+media=$m
+
+if [ -n "$media" ]; then
+	media_opts="--media $media"
+else
+	media_opts=
+fi
+
+for D; do
+	N=$(basename "$D")
+
+	echo "*** PROCESSING $N"
+
+	v prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D/output.1.md" "$D/output.2.md" "$D/youtube.md" > "$D/wordpress.txt"
 done
 
-for D in */; do
-	D=${D%/}
-	if [ ! -e "$D/output.md" ]; then
-		continue
-	fi
-	wordpress_add.py --type post --title "$D" "$D.wordpress"
+mkdir -p DONE
+
+for D; do
+	N=$(basename "$D")
+	S=$(slugify -l "$N")
+
+	echo "*** PUSHING TO WORDPRESS $D"
+
+	. parallel v injectify.py --auto --$item_type --title "$N" --slug "$S" --file "$D/wordpress.txt" $media_opts
 done
+wait

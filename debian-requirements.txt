@@ -1,4 +1,5 @@
 python3.10-dev
+python3.10-venv
 perl
 bash
 make

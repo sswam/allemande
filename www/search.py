@@ -2,11 +2,11 @@
 
 """ search: Search the web from the command line """
 
+import sys
 import argparse
 import logging
-
+from collections import namedtuple
 from typing import List, Dict
-
 import io
 import pprint
 import csv
@@ -20,9 +20,10 @@ from bs4 import BeautifulSoup
 import tabulate
 from youtube_search import YoutubeSearch
 from get_selenium import get_selenium
+import argh
 
+# import ucm_main
 
-from ucm import setup_logging, add_logging_options
 
 logger = logging.getLogger(__name__)
 
@@ -352,18 +353,6 @@ def list_to_markdown_table(items, engine):
 	return tabulate.tabulate(items, tablefmt="pipe", headers="keys")
 
 
-def search(query, engine='duckduckgo', max_results=8, safe="off", markdown=False, limit=False):
-	""" Search `query` using `engine` and return a list of results """
-	lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
-	key = lc_keys_to_keys[engine.lower()]
-	eng = engines.get(key, agents.get(key))
-	results = eng(query, max_results=max_results, safe=safe)
-	results2 = results[:max_results]
-	if markdown:
-		return list_to_markdown_table(results2, engine)
-	return results2
-
-
 # output formatters
 
 
@@ -414,32 +403,47 @@ def dict_first(d):
 	return next(iter(d))
 
 
-def parse_args():
-	""" Parse command line arguments """
-	parser = argparse.ArgumentParser()
-	add_logging_options(parser)
-	parser.add_argument('queries', nargs='*', help='Search queries')
-	parser.add_argument('-engine', '-e', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
-	parser.add_argument('-format', '-f', help='Output format', default=dict_first(formatters), choices=formatters.keys())
-	parser.add_argument('-max-results', '-m', help='Maximum number of results to return', type=int, default=12)
-	parser.add_argument('-safe', '-s', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
-	parser.add_argument('-limit', '-l', help='Limit to specified max results', action='store_true')
-	args = parser.parse_args()
-	return args
+def search(args, *queries):
+	all = []
+	for query in queries:
+		lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
+		key = lc_keys_to_keys[args.engine.lower()]
+		eng = engines.get(key, agents.get(key))
+		results = eng(query, max_results=args.max_results, safe=args.safe)
+		results2 = results[:args.max_results]
+		if args.markdown:
+			return list_to_markdown_table(results2, args.engine)
+		# output using the specified formatter
+		if args.out:
+			formatter = formatters[args.format]
+			formatted_results = formatter(results).rstrip()
+			print(formatted_results, file=args.out)
+		else:
+			all.append(results)
+	if not args.out:
+		return all
 
 
 def main():
-	""" Main function """
-	args = parse_args()
-	setup_logging(args)
+	parser = argparse.ArgumentParser(description="Search `query` using `engine` and return a list of results")
+	parser.add_argument('-e', '--engine', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
+	parser.add_argument('-f', '--format', help='Output formatter', default=dict_first(formatters), choices=formatters.keys())
+	parser.add_argument('-m', '--max-results', help='Maximum number of results to return', type=int, default=12)
+	parser.add_argument('-s', '--safe', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
+	parser.add_argument('-l', '--limit', help='Limit to specified max results', action='store_true')
+	parser.add_argument('--markdown', help='Output as Markdown', action='store_true')
+	parser.add_argument('--out', help='Output file', type=argparse.FileType('w'), default=sys.stdout)
+	parser.add_argument('queries', nargs='*', help='Search queries')
 
-	for query in args.queries:
-		results = search(query, engine=args.engine, max_results=args.max_results, safe=args.safe, limit=args.limit)
+	logging_group = parser.add_mutually_exclusive_group()
+	logging_group.add_argument('-d', '--debug', dest='log_level', action='store_const', const=logging.DEBUG, help="show debug messages")
+	logging_group.add_argument('-v', '--verbose', dest='log_level', action='store_const', const=logging.INFO, help="show verbose messages")
+	logging_group.add_argument('-q', '--quiet', dest='log_level', action='store_const', const=logging.ERROR, help="show only errors")
+	logging_group.add_argument('-Q', '--silent', dest='log_level', action='store_const', const=logging.CRITICAL, help="show nothing")
+	logging_group.add_argument('--log', default=None, help="log file")
 
-		# output using the specified formatter
-		formatter = formatters[args.format]
-		formatted_results = formatter(results).rstrip()
-		print(formatted_results)
+	args = parser.parse_args()
+	search(args, *args.queries)
 
 
 if __name__ == '__main__':
