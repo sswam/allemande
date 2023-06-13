@@ -433,9 +433,6 @@ def main():
 	args = parse_args()
 	setup_logging(args)
 
-	# search_queries = ['newest adafruit microcontroller boards', 'newest teensy microcontroller boards']
-	# search_queries = ['newest adafruit microcontroller boards']
-
 	for query in args.queries:
 		results = search(query, engine=args.engine, max_results=args.max_results, safe=args.safe, limit=args.limit)
 
@@ -443,11 +440,6 @@ def main():
 		formatter = formatters[args.format]
 		formatted_results = formatter(results).rstrip()
 		print(formatted_results)
-
-#		for result in results:
-#			print(result.get('title'))
-#			print(result['url'])
-#			print()
 
 
 if __name__ == '__main__':
