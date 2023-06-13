@@ -1,12 +1,15 @@
 #!/bin/bash -eu
 # add all output.md to wordpress
 
-t=post
-m=
+PARALLEL_MAX=10
+t=post	# post or page
+T=template/tourism.txt	# template
+m=1347	# which image to use
 
 . opts
 
 item_type=$t
+template=$T
 media=$m
 
 if [ -n "$media" ]; then
@@ -16,45 +19,21 @@ else
 fi
 
 for D; do
-	D=$(basename "$D")
+	N=$(basename "$D")
 
-	if [ -L "$D" ]; then
-		echo >&2 "___ SKIPPING SYMLINK $D"
-		continue
-	fi
+	echo "*** PROCESSING $N"
 
-	if [ ! -s "$D/output.1.md" ] || [ ! -s "$D/output.2.md" ]; then
-		echo >&2 "___ SKIPPING BUILD $D"
-		continue
-	fi
-
-	echo "*** PROCESSING $D"
-
-	ln -sf "$D/output.1.md" "$D.md"
-	ln -sf "$D/output.2.md" "$D.meta"
-	v ./prettify.py -a "$D, South Gippland, Victoria" -t template/tourism.txt -c "$D.md" -m "$D.meta" > "$D.wordpress"
+	v prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D/output.1.md" "$D/output.2.md" "$D/youtube.md" > "$D/wordpress.txt"
 done
 
 mkdir -p DONE
 
 for D; do
-	D=$(basename "$D")
-
-	if [ -L "$D" ]; then
-		echo >&2 "___ SKIPPING SYMLINK $D"
-		continue
-	fi
-
-	if [ ! -s "$D/output.1.md" ] || [ ! -s "$D/output.2.md" ]; then
-		echo >&2 "___ SKIPPING PUSH $D"
-		continue
-	fi
+	N=$(basename "$D")
+	S=$(slugify -l "$N")
 
 	echo "*** PUSHING TO WORDPRESS $D"
 
-	v ./injectify.py --auto --$item_type --title "$D" --file "$D.wordpress" $media_opts
-
-	if [ ! -L "$D" -a ! -e "DONE/$D" ]; then
-		mvlnback "$D" "DONE/"
-	fi
+	. parallel v injectify.py --auto --$item_type --title "$N" --slug "$S" --file "$D/wordpress.txt" $media_opts
 done
+wait

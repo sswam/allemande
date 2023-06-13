@@ -27,3 +27,4 @@ commit-message.*
 adm/nginx/banned_ips.conf
 tracks
 __pycache__
+*.log
