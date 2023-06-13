@@ -30,7 +30,7 @@ i3: connect-i3-screen
 
 server:: stop
 server:: clean
-server:: webchat pro brain.xt
+server:: webchat pro # brain.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -67,9 +67,9 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt whisper.xt
+core: llm.xt whisper.xt brain.xt
 
-voice: mike.xt speak.xt  # brain.xt
+voice: mike.xt speak.xt
 
 webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 
