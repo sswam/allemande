@@ -1,0 +1,92 @@
+#!/bin/bash -eua
+# searchalot:	Search for a lot of things, over a two dimension cross product, using a lot of search engines and LLMs
+s="0.05"	# seconds to sleep between each search, plus a random suffix
+a="a.txt"	# file containing values for the first dimension to search in
+b="b.txt"	# file containing values for the second dimension to search in
+r="results"	# directory for results
+c="The World's Great Books"	# context to add to each search
+t="%s, %s"	# template for each search
+S=	# don't sleep between searches
+
+. opts
+
+dima=$a
+dimb=$b
+results=$r
+sleep=$s
+no_sleep=$S
+context=$c
+query_template=$t
+
+dima=$(readlink -f "$dima")
+dimb=$(readlink -f "$dimb")
+
+mkdir -p "$results"
+cd "$results"
+
+I=0
+
+while read A; do
+	echo >&2 "searchalot for: $A"
+	while read B; do
+		query=`printf "$query_template" "$A" "$B"`
+		echo >&2 "searchalot for: $query"
+		llm_query="Please list $query, as many as possible, in a markdown list i.e. this format:
+- Foo Bar
+- Baz Quokka
+- ...
+Thanks for being awesome!
+"""
+		query_esc=$(echo "$query" | sed 's/[^a-zA-Z0-9]/_/g; s/__*/_/g; s/^_//; s/_$//')
+		n=0
+		if [ ! -s "google.$query_esc.txt" ]; then
+			echo >&2 "RUN   google: $query"
+			search -e google "$query" | tee google.$query_esc.txt &
+			n=$[$n+1]
+		else
+			echo >&2 "-     google: $query"
+		fi
+		if [ ! -s "youtube.$query_esc.txt" ]; then
+			echo >&2 "RUN   youtube: $query"
+			search -e youtube "$query" | tee youtube.$query_esc.txt &
+			n=$[$n+1]
+		else
+			echo >&2 "-     youtube: $query"
+		fi
+		if [ ! -s "claude.$query_esc.txt" ]; then
+			echo >&2 "RUN   claude: $query"
+			llm query -m c "$llm_query" | tee claude.$query_esc.txt &
+			n=$[$n+1]
+		else
+			echo >&2 "-     claude: $query"
+		fi
+		if [ ! -s "gpt4.$query_esc.txt" ]; then
+			echo >&2 "RUN   gpt4: $query"
+			llm query -m 4 "$llm_query" | tee gpt4.$query_esc.txt &
+			n=$[$n+1]
+		else
+			echo >&2 "-     gpt4: $query"
+		fi
+#		if [ ! -s "tripadvisor.$query_esc.txt" ]; then
+#			echo >&2 "RUN   tripadvisor: $query"
+#			search -e google "site:tripadvisor.com $query" | tee tripadvisor.$query_esc.txt &
+#			n=$[$n+1]
+#		else
+#			echo >&2 "-     tripadvisor: $query"
+#		fi
+		echo "$n"
+		if [ "$n" != "0" ]; then
+			if [ "$no_sleep" != "1" ]; then
+				v sleep "$sleep$RANDOM"
+			fi
+		fi
+	done < "$dimb"
+
+	I=$[$I+1]
+
+	if [ $(( I % 1 )) = 0 ]; then
+		echo "Waiting for all jobs to finish..."
+		wait
+	fi
+done < "$dima"
+wait
