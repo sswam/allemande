@@ -332,7 +332,7 @@ def read_utf_replace(inp):
 
 
 @argh.arg("prompt", nargs="+", help="prompt text")
-@argh.arg("--prompt2", help="second prompt text")
+@argh.arg("-P", "--prompt2", help="second prompt text")
 @argh.arg("-i", "--inp", default=stdin, help="input file")
 @argh.arg("-o", "--out", default=stdout, help="output file")
 @argh.arg("-m", "--model", default=default_model, help="model name")
@@ -345,7 +345,8 @@ def read_utf_replace(inp):
 @argh.arg("-E", "--empty-ok", action="store_true", help="allow empty input")
 @argh.arg("-L", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @argh.arg("-p", "--lines", action="store_true", help="process each line separately, like perl -p")
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False):
+@argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -362,6 +363,8 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 
 	if prompt2:
 		prompt2 = prompt2.rstrip()
+	if repeat:
+		prompt2 = re.sub(r"\bbelow\b", "above", prompt)
 
 	if not lines:
 		return process2(prompt, prompt2, input_text, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
