@@ -4,7 +4,8 @@
 PARALLEL_MAX=10
 t=post	# post or page
 T=template/tourism.txt	# template
-m=1347	# which image to use
+# m=1347	# which image to use
+m=
 
 . opts
 
