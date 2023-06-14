@@ -160,14 +160,15 @@ def get_model_by_abbrev(model):
 	return model
 
 
-class AutoInit:
+class AutoInit:  # pylint: disable=too-few-public-methods
+	""" Automatically set attributes from kwargs. """
 	def __init__(self, **kwargs):
 		for k, v in kwargs.items():
 			if hasattr(self, k):
 				setattr(self, k, v)
 
-# simple namespace
-class Options(AutoInit):
+class Options(AutoInit):  # pylint: disable=too-few-public-methods
+	""" Options for the chat function. """
 	model: str = default_model
 	fake: bool = False
 	temperature: Optional[float] = None
@@ -187,11 +188,13 @@ opts: Options = Options()
 
 
 def set_opts(_opts):
-	global opts
+	""" Set the global options. """
+	global opts  # pylint: disable=global-statement
 	opts = Options(**_opts)
 
 
 def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
+	""" Chat with OpenAI ChatGPT models. """
 	temperature = opts.temperature
 	token_limit = opts.token_limit
 	if temperature is None:
@@ -211,6 +214,7 @@ def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, p
 
 
 def chat_claude(messages):
+	""" Chat with Anthropic Claude models. """
 	model = opts.model
 	temperature = opts.temperature
 	token_limit = opts.token_limit
@@ -221,6 +225,7 @@ def chat_claude(messages):
 
 
 def chat_bard(messages):
+	""" Chat with Google Bard models. """
 	# We can only pass in the last user message; let's hope we have the right state file!
 	# We can't run all the user messages again; Bard will likely not do the same thing so it would be a mess.
 	# Perhaps we should save state in chat metadata.
@@ -240,17 +245,14 @@ def llm_chat(messages):
 	model = opts.model
 
 	if opts.fake:
-		completion = fake_completion
-	elif model.startswith("claude"):
+		return fake_completion
+	if model.startswith("claude"):
 		return chat_claude(messages)
-	elif model.startswith("gpt"):
+	if model.startswith("gpt"):
 		return chat_gpt(messages)
-	elif model.startswith("bard"):
+	if model.startswith("bard"):
 		return chat_bard(messages)
-	else:
-		raise ValueError(f"unknown model: {model}")
-
-	logger.debug("llm_chat: output message: %s", output_message)
+	raise ValueError(f"unknown model: {model}")
 
 
 def split_message_line(message, allowed_roles=None):
@@ -323,13 +325,27 @@ def read_utf_replace(inp):
 	try:
 		input_data = inp.buffer.read()
 		input_text = input_data.decode("utf-8", errors="replace")
-	except Exception as ex:
+	except UnicodeDecodeError as ex:
 		logger.warning("error reading input: %s", ex)
 		input_text = inp.read()
 	return input_text
 
 
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True):
+@argh.arg("prompt", nargs="+", help="prompt text")
+@argh.arg("--prompt2", help="second prompt text")
+@argh.arg("-i", "--inp", default=stdin, help="input file")
+@argh.arg("-o", "--out", default=stdout, help="output file")
+@argh.arg("-m", "--model", default=default_model, help="model name")
+@argh.arg("-I", "--indent", default="\t", help="indentation string")
+@argh.arg("-t", "--temperature", type=float, help="temperature")
+@argh.arg("-l", "--token-limit", type=int, help="token limit")
+@argh.arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
+@argh.arg("-s", "--state-file", help="state file for Google Bard")
+@argh.arg("-e", "--empty-to-empty", action="store_true", help="return empty string for empty input")
+@argh.arg("-E", "--empty-ok", action="store_true", help="allow empty input")
+@argh.arg("-L", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
+@argh.arg("-p", "--lines", action="store_true", help="process each line separately, like perl -p")
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -347,6 +363,26 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 	if prompt2:
 		prompt2 = prompt2.rstrip()
 
+	if not lines:
+		return process2(prompt, prompt2, input_text, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
+
+	# split the input into lines
+	lines = input_text.splitlines()
+	output = []
+
+	for line in lines:
+		line = line.rstrip()
+		if not line:
+			continue
+		output1 = process2(prompt, prompt2, line, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
+		output.append(output1)
+
+	output_s = "\n".join(output)
+
+	return output_s
+
+
+def process2(prompt, prompt2, input_text, out, model, indent, temperature, token_limit, retries, state_file, log):
 	full_input = f"""
 {prompt}
 
