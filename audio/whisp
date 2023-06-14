@@ -13,7 +13,7 @@ c=
 cpu=$c
 
 if command -v whisper &> /dev/null && [ "$c" != 1 ]; then
-	v whisper "$@" || v whisper-cpp.sh "$@"
+	v whisper "${OPTS_UNKNOWN[@]}" "$@" || v whisper-cpp.sh "$@"
 else
-	v whisper-cpp.sh "$@"
+	v whisper-cpp.sh "${OPTS_UNKNOWN[@]}" "$@"
 fi
