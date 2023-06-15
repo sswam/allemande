@@ -37,7 +37,7 @@ Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdo
 
 --- start template --- 
 
-## About
+## 1. About
 
 [a long multi-paragraph stylish introduction to $query; unique, evocative, and candid; use Anthony Bourdain's style]
 
@@ -45,38 +45,38 @@ Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdo
 
 [continuing with the introduction, please write 3 or 4 paragraphs for this section, it should be the longest section.]
 
-## See Their Work  [<-  use this exact heading!]
+## 2. See Their Work  [<-  use this exact heading!]
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
 [see their work (business photographs / portfolio); 2 paragraphs]
 
-## Getting There  [<-  use this exact heading!]
+## 3. Getting There  [<-  use this exact heading!]
 
 ### [descriptive subheading]
 
 [to get there (travel), including public transport,
 driving, and walking; 1-2 paragraphs]
 
-## Eat and Drink
+## 4. Eat and Drink
 
 ### [descriptive subheading 1]
 
 [what to eat at THIS business, or nearby if not an eating-place; 2 paragraphs, maybe a bullet list with links to a menu or the other businesses websites if a valid url is available]
 
-## Amenities
+## 5. Amenities
 
 ### [descriptive subheading 1]
 
 [what amenities are available: are there showers, changerooms, parents rooms, feeding rooms, a kitchen, swimming pool, tennis courts, basketball stadium, gym facilities, art studio, off-street parking,  etc.; 1 paragraph]
 
-## Accessibility
+## 6. Accessibility
 
 ### [descriptive subheading 1]
 
 [access and services for people with disabilities (amenities); 1 paragraph]
 
-## Events
+## 7. Events
 
 [what regular events are on at this venue/business or organised by this business/venue]
 
@@ -88,7 +88,7 @@ driving, and walking; 1-2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Connected Experiences
+## 8. Connected Experiences
 
 ### [descriptive subheading 1]
 

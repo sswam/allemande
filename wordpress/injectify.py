@@ -339,7 +339,7 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	# Get slug from title, if not provided
 
 	if not slug and title:
-		slug = slugify.slugify(title)
+		slug = slugify.slugify(title, lower=True, hyphen=True)
 
 	item = item or {
 		"id": id,
