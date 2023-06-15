@@ -117,18 +117,25 @@ def create_item(item_type, item, content, status="draft", media=None):
 	return get_item_key(item)
 
 
-def read_item(item_type, item, meta=False):
+def read_item(item_type, item, meta=False, raw=True):
 	""" Read a post or page """
 	global api_url, username, password, auth
 	id = item["id"]
+	data = {
+		"context": "edit" if raw else "display",
+	}
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}/{id}"
-	response = requests.get(url, auth=auth)
+	response = requests.get(url, auth=auth, params=data)
 	if response.status_code == 404:
 		logger.error(f"Could not find {item_type} with id {id}")
 		return None
 	item = response.json()
 	if not meta:
-		item = item["content"]["rendered"]
+		item = item["content"]
+		if raw:
+			item = item["raw"]
+		else:
+			item = item["rendered"]
 	return item
 
 
