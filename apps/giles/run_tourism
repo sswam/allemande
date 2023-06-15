@@ -17,7 +17,7 @@ region=", South Gippland, Victoria"
 PARALLEL_MAX=8
 # media_id=1347
 media_id=
-s=
+s=	# skip the AI
 
 . opts
 
