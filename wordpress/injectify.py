@@ -49,10 +49,12 @@ def find_by_id(id, item_type="post"):
 	return item
 
 
-def find_by_slug(slug, item_type="post", status="draft", many=False):
+def find_by_slug(slug, item_type="post", status="draft", many=False, underscore_to_hyphen=False):
 	""" Find a post or page by slug """
 	global api_url, username, password, auth
 	url = get_api_url(item_type)
+	if underscore_to_hyphen:
+		slug = slugify.slugify(slug, lower=True)
 	params = {
 		'slug': slug,
 		'per_page': 1,
@@ -146,6 +148,8 @@ def update_item(item_type, item, content, status, media=None):
 	data = {
 		'content': content
 	}
+	if "slug" in item:
+		data["slug"] = item["slug"]
 	response = requests.post(url, auth=auth, json=data)
 	if response.status_code == 200:
 		logger.info(f"Updated {item_type} successfully!")
@@ -242,9 +246,10 @@ def set_featured_media(item_type, item, media):
 @argh.arg("--meta", "-m", help="When reading the item, include metadata")
 @argh.arg("--force", "-F", help="Force the action")
 @argh.arg("--media", "-M", help="Set featured media ID")
+@argh.arg("--underscore-to-hyphen", "-U", help="Search for slugs with underscore and convert to the given slug")
 def crud(file=None, content=None, title=None, status="draft", post=False, page=False,
 		item_type=None, id=None, slug=None, auto=False,
-		create=False, read=False, update=False, delete=False, list=False, meta=False, force=False, media=None):
+		create=False, read=False, update=False, delete=False, list=False, meta=False, force=False, media=None, underscore_to_hyphen=False):
 	""" Create, update or delete a wordpress page or post """
 
 	# item_type, post, and page
@@ -293,7 +298,7 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	if id:
 		item = find_by_id(id, item_type)
 	elif slug:
-		item = find_by_slug(slug, item_type, status)
+		item = find_by_slug(slug, item_type, status, underscore_to_hyphen=underscore_to_hyphen)
 	elif title:
 		item = find_by_title(title, item_type, status)
 	elif list:
@@ -372,6 +377,8 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 			rv = json.dumps(rv, indent=4)
 		return rv
 	elif update:
+		if slug:
+			item["slug"] = slug
 		return update_item(item_type, item, content, status, media=media)
 	elif delete:
 		return delete_item(item_type, item)
