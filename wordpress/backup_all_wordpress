@@ -15,7 +15,7 @@ mkdir "$bak"
 while read D; do
 	N=$(basename -- "$D")
 	N=${N#- }
-	S=$(slugify -l "$N")
+	S=$(slugify -H -l "$N")
 
 	echo "*** BACKING UP WORDPRESS `echo "$t" | uc` $D"
 
