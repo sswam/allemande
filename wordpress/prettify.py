@@ -181,7 +181,7 @@ def replace_tags(text, data, map_contact_tags):
 
 		# NOTE: HACK
 		if detail:
-			for suffix in "SUBHEADING", "TEXT", "SUBHEADING_2", "TEXT_2":
+			for suffix in "SUBHEADING", "TEXT":  # , "SUBHEADING_2", "TEXT_2":
 				if not tag.endswith("_"+suffix):
 					continue
 				logger.debug("tag ends with %r", suffix)
@@ -190,14 +190,16 @@ def replace_tags(text, data, map_contact_tags):
 				if not sections:
 					logger.debug("section not found: %r", section)
 					return quote("", quoted)
+#				if not isinstance(section, list):
+#					logger.warning("section is not a list: %r", section)
+#					return quote("", quoted)
 				if index < len(sections):
 					sec = sections[index]
 					value = sec[suffix]
 					return quote(value, quoted)
-				elif index > 0:
+				if index > 0:
 					return quote("KILL", quoted)
-				else:
-					return guote(EMPTY_TEXT.get(section, "KILL"))
+				return guote(EMPTY_TEXT.get(section, "KILL"))
 
 		if tag in data:
 			logger.debug("tag in data: %r, data: %r", tag, data)
@@ -427,6 +429,28 @@ def slurp(pathname, errors="ignore"):
 		return f.read()
 
 
+URL_ITEMS = ["BUSINESS_WEBSITE_URL"]
+
+
+def correct_data(data):
+	# remove any numbers from the start:
+	data2 = {}
+	for item in data:
+		mat = re.match(r"^([0-9]+)\. (.*)", item)
+		if mat:
+			new_name = mat.group(2)
+			data2[new_name] = data[item]
+		else:
+			data2[item] = data[item]
+	data = data2
+	for item in URL_ITEMS:
+		item = item.lower().replace('_', ' ')
+		if item not in data:
+			continue
+		data[item]["sections"][0]["content"] = re.sub(r"^(http://|https://)?", "https://", data[item]["sections"][0]["content"])
+	return data
+
+
 @argh.arg("--template_file", "-t", help="Template file to process.")
 @argh.arg("--address", "-a", help="Address to use.")
 def place_md_to_wordpress(*input_files, template_file="template/tourism.txt", address=""):
@@ -438,6 +462,7 @@ def place_md_to_wordpress(*input_files, template_file="template/tourism.txt", ad
 		content = read_markdown(slurp(file))
 		data.update(content)
 	template = slurp(template_file)
+	data = correct_data(data)
 	page = fill_template(data, template, address=address)
 	return page
 
