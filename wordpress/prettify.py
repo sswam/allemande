@@ -447,7 +447,11 @@ def correct_data(data):
 		item = item.lower().replace('_', ' ')
 		if item not in data:
 			continue
-		data[item]["sections"][0]["content"] = re.sub(r"^(http://|https://)?", "https://", data[item]["sections"][0]["content"])
+		url = data[item]["sections"][0]["content"]
+		url = re.sub(r"(https?://)", "", url)
+		url = re.sub(r"/.*", "", url)   # XXX TODO this is a temporary hack for Inverloch stuff, strip off anything after the main domain
+		url = "https://" + url
+		data[item]["sections"][0]["content"] = url
 	return data
 
 
