@@ -39,11 +39,7 @@ Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdo
 
 ## 1. About
 
-[a long multi-paragraph stylish introduction to $query; unique, evocative, and candid; use Anthony Bourdain's style]
-
-[continuing with the second paragraph of the introduction]
-
-[continuing with the introduction, please write 3 or 4 paragraphs for this section, it should be the longest section.]
+[A comprehensive stylish detailed description of $query, its mission, and its history, up to 10 to 12 paragraphs, and including dot-point lists as necessary. Unique, evocative, and candid; use Anthony Bourdain's travel style. Do not mention Anthony Bourdain.]
 
 ## 2. See Their Work  [<-  use this exact heading!]
 
