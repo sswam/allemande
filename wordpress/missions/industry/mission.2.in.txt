@@ -64,7 +64,7 @@ Regarding images and videos, we are especially interested in the following sourc
 
 ## 10. Industry Category
 
-[The specific industry or official category the business falls under (e.g., restaurant, retail, healthcare, etc.)]
+[The specific industry or official category $query falls under (e.g., restaurant, retail, healthcare, etc.)]
 
 ## 11. Business Description
 
@@ -93,35 +93,35 @@ SUN 	12:00 - 17:30]
 
 ### BIZHOURS MONDAY HOURS
 
-[The hours the business is open on a Monday, in 24 hour time AEST]
+[The hours $query is open for operation on a Monday, in 24 hour time AEST]
 
 ### BIZHOURS TUESDAY HOURS
 
-[The hours the business is open on a Tuesday, in 24 hour time AEST]
+[The hours $query is open for operation on a Tuesday, in 24 hour time AEST]
 
 ### BIZHOURS WEDNESDAY HOURS
 
-[The hours the business is open on a Wednesday, in 24 hour time AEST]
+[The hours $query is open for operation on a Wednesday, in 24 hour time AEST]
 
 ### BIZHOURS THURSDAY HOURS
 
-[The hours the business is open on a Thursday, in 24 hour time AEST]
+[The hours $query is open for operation on a Thursday, in 24 hour time AEST]
 
 ### BIZHOURS FRIDAY HOURS
 
-[The hours the business is open on a Friday, in 24 hour time AEST]
+[The hours $query is open for operation on a Friday, in 24 hour time AEST]
 
 ### BIZHOURS SATURDAY HOURS
 
-[The hours the business is open on a Saturday, in 24 hour time AEST]
+[The hours $query is open for operation on a Saturday, in 24 hour time AEST]
 
 ### BIZHOURS SUNDAY HOURS
 
-[The hours the business is open on a Sunday, in 24 hour time AEST]
+[The hours $query is open for operation on a Sunday, in 24 hour time AEST]
 
 ## 13. Service Areas
 
-[Where the business operates. This could include multiple locations if applicable.
+[Where the business $query operates. This could include multiple locations if applicable.
 
 eg.
 Inverloch
@@ -130,31 +130,31 @@ Online]
 
 ## 14. BIZACCESSIBILITY
 
-[Information about the Accessibility of the business. Wheelchair access, ramps, disabled/accessible changerooms, etc.]
+[Information about the Accessibility the business $query. Does $query have wheelchair access, ramps, disabled/accessible changerooms, etc.]
 
-## 15. ABOUT
+## 15. BIZAFFILIATIONS TEXT
 
-[A detailed description of the business, its mission, and its history, up to 10 to 12 paragraphs, and including dot-point lists as necessary.]
+[Find the industry that $query belongs to and list the governing bodies for that industry in Australia. If the website or sourced information for $query lists any peak bodies, list these here. Be factual. If no information exists, list nothing.]
 
-## 16. BIZAFFILIATIONS TEXT
+## 16. BIZREVIEWS
 
-[A list of the industry governing bodies and peak industry bodies that the business is a member of]
+[A selection of the highest ranking reviews of $query, from Google Reviews of $query, Facebook Reviews of the official Facebook Page of $query, Tripadvisor of $query on the official TripadVisor page for $query. If the business is a food-related business, use reviews of $query from Yelp, OpenTable, and so on.]
 
-## 17. BIZREVIEWS
+## 17. BIZRATINGS
 
-[A selection of the highest ranking reviews of the business, from Google Business Reviews, Facebook Business Reviews, Tripadvisor, and so on]
+[Search Google and other search enginges for Ratings of $query. Search "Google Business $query rating", "Facebook business page $query rating", Google Maps $query rating, Tripadvisor $query rating, and so on. If found, separately list ratings from each of these sources. Be factual, do not create any false information.]
 
-## 18. BIZRATINGS
+## 18. Business Tripadvisor URL
 
-[A selection of the highest ratings of the business, from Google Business Reviews, Facebook Business Reviews, Tripadvisor, and so on]
+[e.g. https://www.tripadvisor.com/Restaurant_Review-g261657-d12345678-Reviews-Example_Restaurant-Inverloch_Gippsland_Victoria.html]
 
 ## 19. BIZAWARDS
 
-[Listing any awards the business has received]
+[Any business awards $query may have earned. Search for $queary business awards. Search the website of $query, and Google $query awards. Be factual, do not create any false information.]
 
 ## 20. Certifications/Licenses
 
-[Any relevant certifications, licenses, or accreditations the business holds.]
+[Search the website of $query for any relevant certifications, licenses, or accreditations $query holds. Also search Google $query certifications and Google $query licenses.]
 
 ## 21. Owner/Management
 
@@ -183,11 +183,11 @@ Online]
 
 ## 24. Accessibility Information
 
-[Details about the accessibility of the location (e.g., wheelchair accessible, parking facilities, accessible toilets, change rooms, parental rooms, etc.)
+[Details about the accessibility of $query business location. Do the facilities or location of $query have wheelchair accessible, parking facilities, accessible toilets, change rooms, parental rooms, etc.]
 
 ## 25. Pricing
 
-[Information about the business's pricing structure, if applicable.]
+[Information about the pricing structure of $query, if applicable. Use $ for average cost of service less than $10 AUD, Use $$ for average cost of service between $10 to $99 AUD, $$$ for average cost of service between $100 to $999 AUD, $$$$ for average cost of service between $1000 and $9999 AUD, and $$$$$ for average cost of service greater than $10000 AUD]
 
 ## 26. Special Offers/Promotions
 
@@ -195,28 +195,27 @@ Online]
 
 ## 27. Delivery/Shipping Information
 
-[Information about delivery options and shipping policies, if applicable.]
+[Information about delivery options and shipping policies, if applicable. This may be post, air, expected timeframe, carrier used eg. AustPost or DHL...]
 
 ## 28. Return/Refund Policy
 
 [The business's policy on returns and refunds, if applicable.]
-
 ## 29. COVID-19 Measures
 
-[Any safety measures or operational changes due to COVID-19, if relevant.]
+[Any safety measures or operational changes $query has implemented due to COVID-19, if relevant.]
 
 ## 30. Photos
 
-[Images of the business, its products or services.]
+[URL links to amy Images of $query, or the products or services of $query. List the highest-rated or most-viewed photos higher on the list.]
 
 ## 31. Business Associations/Affiliations
 
-[Any associations or affiliations the business is a part of.]
+[Any associations or affiliations $query is a part of.]
 
 ## 32. Phone Number
 
 [phone number of $query, or N/A, or Unknown,
-e.g. +61 412 345 678]
+e.g. +61 412 345 678 for mobiles or +61 03 9877 2354 for landlines]
 
 ## 33. Email
 
