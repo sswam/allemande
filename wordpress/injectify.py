@@ -174,12 +174,12 @@ def delete_item(item_type, item):
 	return get_item_key(item)
 
 
-def list_items(item_type, status="draft"):
+def list_items(item_type, status="draft", start_page=1, limit=None):
 	""" List posts or pages """
 	global api_url, username, password, auth
 	url = get_api_url(item_type)
 	items = []
-	page = 1
+	page = start_page
 	while True:
 		params = {
 			'per_page': 100,
@@ -196,7 +196,7 @@ def list_items(item_type, status="draft"):
 		except json.decoder.JSONDecodeError:
 			break
 		items += page_items
-		if len(page_items) < 100:
+		if len(page_items) < 100 or len(items) >= limit:
 			break
 	keys = []
 	for item in items:
