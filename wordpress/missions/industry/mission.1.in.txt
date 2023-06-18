@@ -38,7 +38,8 @@ Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdo
 
 --- start template --- 
 
-## 1. About
+## 1. About  [<-  use this exact heading! Always use exact heading, please!]
+
 
 [A comprehensive stylish detailed description of $query, its mission, and its history, up to 10 to 12 paragraphs, and including dot-point lists as necessary. Unique, evocative, and candid; use Anthony Bourdain's travel style. Do not mention Anthony Bourdain.]
 
