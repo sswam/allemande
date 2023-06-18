@@ -1,12 +1,12 @@
 Please write some metadata for a detailed, interesting, engaging and fun blog post for $query. Use the following exact sections and headings.
-Please include as much factual information and detail as you can about $query. Cover a comprehensive scope of See Their Work, Getting There, Eat & Drink, Amenities, Events, Connected Experiences, Stay, Play. Do not mention other businesses unless relevant, e.g. eating nearby (if this is not an eatery) or connected experiences. Be factual.
+Please include as much factual information and detail as you can about $query. Cover a comprehensive scope of See Their Work, Getting There, Eat & Drink, Amenities, Events, Connected Experiences, Eat, Stay, Play. Do not mention other businesses unless relevant, e.g. eating nearby (if this is not an eatery). Connected experiences should include mention of other businesses, locations and activities which are relevant to this business in an Eat, Stay and Play setup; include links to any business mentioned here. Only mention businesses within a 20km proximity to $query. Be factual.
 
 Use the following instructions to guide you:
 
-Purpose of piece: To introduce visitors to the region's unique businesses and industries.
+Purpose of piece: To introduce visitors to the unique businesses and industries of Bass Coast and South Gippsland.
 Type of publication: Web page content, interactive maps, photo galleries, travel guides, articles.
-Style of language: Informative, engaging, and inviting. Use descriptive language to paint a picture of each location.
-Exclusions: inappropriate language, inacurate information
+Style of language: Informative, engaging, and inviting. Use descriptive language to paint a picture of each location. Be factual with the information.
+Exclusions: inappropriate language, inacurate information.
 
 Regarding images and videos, we are especially interested in the following sources:
 - official social media pages
@@ -26,51 +26,55 @@ Regarding images and videos, we are especially interested in the following sourc
 
 - NB: make sure to include all sections, even if information is not available for some sections.
 
-## Page Metadata: Description
+## 1. Page Metadata: Description
 
 [description for page metadata and search results, around 150 chars]
 
-## Page Metadata: Tags
+## 2. Page Metadata: Tags
 
-[suggested tags for page metadata and search results, around 10 tags]
+[suggested tags for page metadata and search results for $query, around 10 tags]
 
-## Business Website URL
+## 3. Business Website URL
 
 [the url of the official business website of $query, or leave blank if unknown]
 
-## Business Logo alttext
+## 4. Business Logo
+
+[A URL link to the $query logo. .svg is preferred, followed by .webp, .png and .jpg. Use the highest-quality link found]
+
+## 5. Business Logo alttext
 
 [official name of $query]
 
-## Website
+## 6. Website
 
 [official website of $query as a url, or leave blank if Unknown]
 
-## Business Name
+## 7. Business Name
 
 [official name of $query, do not append any location information, only list the exact business name, or leave blank if unknown]
 
-## Trading As
+## 8. Trading As
 
 [trading name of $query, or leave blank if unknown]
 
-## ABN
+## 9. ABN
 
-[ABN of $query, or leave blank if unknown]
+[The Australian Business Number (ABN) of $query, or leave blank if unknown]
 
-## ACN
+## 10. ACN
 
-[ACN of $query, or leave blank if Unknown]
+[The Australian Company Number (ACN) of $query, or leave blank if Unknown]
 
-## Industry Category
+## 11. Industry Category
 
-[The specific industry or official category the business falls under (e.g., restaurant, retail, healthcare, etc.)]
+[The specific industry or official category $query falls under (e.g., restaurant, retail, healthcare, etc.)]
 
-## Business Description
+## 12. Business Description
 
 [An overview of the services or products offered by the business or organisation. ~150 words]
 
-## Address
+## 13. Address
 
 [Use multiple lines, separating Unit/lot number, property number and street, suburb, state and postcode.
 
@@ -80,7 +84,7 @@ Unit 4
 Inverloch
 VIC 3056]
 
-## BizHours
+## 14. BizHours
 
 [The hours during which the business is open for operation, e.g.
 MON 	CLOSED
@@ -93,78 +97,78 @@ SUN 	12:00 - 17:30]
 
 ### BIZHOURS MONDAY HOURS
 
-[The hours the business is open on a Monday, in 24 hour time AEST]
+[The hours $query is open for operation on a Monday, in 24 hour time AEST]
 
 ### BIZHOURS TUESDAY HOURS
 
-[The hours the business is open on a Tuesday, in 24 hour time AEST]
+[The hours $query is open for operation on a Tuesday, in 24 hour time AEST]
 
 ### BIZHOURS WEDNESDAY HOURS
 
-[The hours the business is open on a Wednesday, in 24 hour time AEST]
+[The hours $query is open for operation on a Wednesday, in 24 hour time AEST]
 
 ### BIZHOURS THURSDAY HOURS
 
-[The hours the business is open on a Thursday, in 24 hour time AEST]
+[The hours $query is open for operation on a Thursday, in 24 hour time AEST]
 
 ### BIZHOURS FRIDAY HOURS
 
-[The hours the business is open on a Friday, in 24 hour time AEST]
+[The hours $query is open for operation on a Friday, in 24 hour time AEST]
 
 ### BIZHOURS SATURDAY HOURS
 
-[The hours the business is open on a Saturday, in 24 hour time AEST]
+[The hours $query is open for operation on a Saturday, in 24 hour time AEST]
 
 ### BIZHOURS SUNDAY HOURS
 
-[The hours the business is open on a Sunday, in 24 hour time AEST]
+[The hours $query is open for operation on a Sunday, in 24 hour time AEST]
 
-## Service Areas
+## 15. Service Areas
 
-[Where the business operates. This could include multiple locations if applicable.
+[Where the business $query operates. This could include multiple locations if applicable.
 
 eg.
 Inverloch
 Australia-wide
 Online]
 
-## BIZACCESSIBILITY
+## 16. BIZACCESSIBILITY
 
-[Information about the Accessibility of the business. Wheelchair access, ramps, disabled/accessible changerooms, etc.]
+[Information about the Accessibility the business $query. Does $query have wheelchair access, ramps, disabled/accessible changerooms, etc.]
 
-## ABOUT
+## 17. BIZAFFILIATIONS TEXT
 
-[A detailed description of the business, its mission, and its history, up to 10 to 12 paragraphs, and including dot-point lists as necessary.]
+[Find the industry that $query belongs to and list the governing bodies for that industry in Australia. If the website or sourced information for $query lists any peak bodies, list these here. Be factual. If no information exists, list nothing.]
 
-## BIZAFFILIATIONS TEXT
+## 18. BIZREVIEWS
 
-[A list of the industry governing bodies and peak industry bodies that the business is a member of]
+[A selection of the highest ranking reviews of $query. Include Google Reviews of $query, Facebook Reviews of the official Facebook Page of $query, Tripadvisor reviews of $query on the official TripadVisor page for $query, Yelp reviews for $query. If the business is a food-related business, include reviews from OpenTable and other highly-ranked food-review websites. Where available, include 2-3 reviews from each of these websites. Include url links to each review]
 
-## BIZREVIEWS
+## 19. BIZRATINGS
 
-[A selection of the highest ranking reviews of the business, from Google Business Reviews, Facebook Business Reviews, Tripadvisor, and so on]
+[A selection of the highest Business Ratings of $query. Include "Google Business $query rating", "Facebook business page $query rating", "Google Maps $query rating", "Tripadvisor $query rating", "Yelp $query rating", "OpenTable $query rating", and any other relevant reviews. If found, separately list 2-3 ratings from each of these sources (Google Business, Facebook, Tripadvisor, Yelp, OpenTable). Be factual, do not create any false information. Include url links to each rating]
 
-## BIZRATINGS
+## 20. Business Tripadvisor URL
 
-[A selection of the highest ratings of the business, from Google Business Reviews, Facebook Business Reviews, Tripadvisor, and so on]
+[e.g. https://www.tripadvisor.com/Restaurant_Review-g261657-d12345678-Reviews-Example_Restaurant-Inverloch_Gippsland_Victoria.html]
 
-## BIZAWARDS
+## 21. BIZAWARDS
 
-[Listing any awards the business has received]
+[Any business awards $query may have earned. Search for $queary business awards. Search the website of $query, and Google $query awards. Be factual, do not create any false information.]
 
-## Certifications/Licenses
+## 22. Certifications/Licenses
 
-[Any relevant certifications, licenses, or accreditations the business holds.]
+[Any relevant $query certifications, $query licenses, or $query accreditations]
 
-## Owner/Management
+## 23. Owner/Management
 
-[Information about the owner(s) or the management team of the business.]
+[Information about the owner(s) or the management team of $query]
 
-## Year Established
+## 24. Year Established
 
-[The year the business was established or opened.]
+[The year $query was established, opened or began trading]
 
-## Payment Methods
+## 25. Payment Methods
 
 [What types of payment the business accepts.
 - Cash y/n
@@ -181,151 +185,151 @@ Online]
 - Google Pay y/n
 - Samsung Pay y/n
 
-## Accessibility Information
+## 26. Accessibility Information
 
-[Details about the accessibility of the location (e.g., wheelchair accessible, parking facilities, accessible toilets, change rooms, parental rooms, etc.)
+[Details about the accessibility of $query business location. Do the facilities or location of $query have wheelchair accessible, parking facilities, accessible toilets, change rooms, parental rooms, etc.]
 
-## Pricing
+## 27. Pricing
 
-[Information about the business's pricing structure, if applicable.]
+[Information about the pricing structure of $query, if applicable. Use $ for average cost of service less than $10 AUD, Use $$ for average cost of service between $10 to $99 AUD, $$$ for average cost of service between $100 to $999 AUD, $$$$ for average cost of service between $1000 and $9999 AUD, and $$$$$ for average cost of service greater than $10000 AUD]
 
-## Special Offers/Promotions
+## 28. Special Offers/Promotions
 
-[Any current special offers or promotions the business is running.]
+[Any current $query special offers or $query promotions]
 
-## Delivery/Shipping Information
+## 29. Delivery/Shipping Information
 
-[Information about delivery options and shipping policies, if applicable.]
+[Information about $query delivery options and $query shipping policies, if applicable. This may be post, air, expected timeframe, carrier used eg. AustPost or DHL...]
 
-## Return/Refund Policy
+## 30. Return/Refund Policy
 
-[The business's policy on returns and refunds, if applicable.]
+[$query returns and refunds policy, if applicable.]
 
-## COVID-19 Measures
+## 31. COVID-19 Measures
 
-[Any safety measures or operational changes due to COVID-19, if relevant.]
+[Any safety measures or operational changes $query has implemented due to COVID-19, if relevant.]
 
-## Photos
+## 32. Photos
 
-[Images of the business, its products or services.]
+[Links to amy Images of $query as markdown links, or the products or services of $query. List the highest-rated or most-viewed photos higher on the list.]
 
-## Business Associations/Affiliations
+## 33. Business Associations/Affiliations
 
-[Any associations or affiliations the business is a part of.]
+[Any associations or affiliations $query is a part of.]
 
-## Phone Number
+## 34. Phone Number
 
 [phone number of $query, or N/A, or Unknown,
-e.g. +61 412 345 678]
+e.g. +61 412 345 678 for mobiles or +61 03 9877 2354 for landlines]
 
-## Email
+## 35. Email
 
 [email address of $query, N/A, or Unknown]
 
-## Official Facebook Page
+## 36. Official Facebook Page
 
 [facebook page of $query as a markdown link, or Unknown]
 
-## Official LinkedIn Page
+## 37. Official LinkedIn Page
 
 [linkedin page of $query as a markdown link, or Unknown]
 
-## Official Instagram Page
+## 38. Official Instagram Page
 
 [instragram page of $query as a markdown link, or Unknown]
 
-## Official YouTube Channel
+## 39. Official YouTube Channel
 
 [YouTube channel of $query as a markdown link, or Unknown]
 
-## Official Vimeo Channel
+## 40. Official Vimeo Channel
 
 [vimeo channel of $query as a markdown link, or Unknown]
 
-## Official Twitter Page
+## 41. Official Twitter Page
 
 [twitter page of $query as a markdown link, or Unknown]
 
-## Wikipedia Page
+## 42. Wikipedia Page
 
 [wikipedia page of $query as a markdown link, or Unknown]
 
-## Featured Image for Page Header
+## 43. Featured Image for Page Header
 
 [image search terms, to find an appriate page header image for '$query', on unsplash or similar using a search engine]
 
-## Featured Images for 'See Their Work' Section
+## 44. Featured Images for 'See Their Work' Section
 
 [image search terms to find appriate images for the 'See Their Work' (portfolio) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Getting There' Section
+## 45. Featured Image for 'Getting There' Section
 
 [image search terms to find an appriate image for the 'Getting There' (how to get there - transport) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Eat & Drink' Section
+## 46. Featured Image for 'Eat & Drink' Section
 
 [image search terms to find an appriate image for the 'Eat & Drink' (what to eat at this business, or nearby if not an eating-place) section '$query'; give a search query not an actual video link]
 
-## Featured Image for 'Amenities' Section
+## 47. Featured Image for 'Amenities' Section
 
 [image search terms to find an appriate image for the 'Amenities' (toilets, change rooms, etc) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Accessibility' Section
+## 48. Featured Image for 'Accessibility' Section
 
 [image search terms to find an appriate image for the 'Accessibility' (disability support - accessibility) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Events' Section
+## 49. Featured Image for 'Events' Section
 
 [image search terms to find an appriate image for the 'Events' (what's on - events) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Connected Experiences' Section
+## 50. Featured Image for 'Connected Experiences' Section
 
 [image search terms to find an appriate image for the 'Connected Experiences' (connected experiences - tours, etc.) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Stay' Section
+## 51. Featured Image for 'Stay' Section
 
 [image search terms to find an appriate image for the 'Stay' (where to stay - accommodation) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Play' Section
+## 52. Featured Image for 'Play' Section
 
 [image search terms to find an appriate image for the 'Play' (what to do - activities) section '$query', on unsplash or similar using a search engine]
 
-## YouTube Video for the Whole Page
+## 53. YouTube Video for the Whole Page
 
 [YouTube search terms to find an appriate video for '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'See Their Work' Section
+## 54. YouTube Video for the 'See Their Work' Section
 
 [YouTube search terms to find an appriate video for the 'See Their Work' (portfolio) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Getting There' Section
+## 55. YouTube Video for the 'Getting There' Section
 
 [YouTube search terms to find an appriate video for the 'Getting There' (how to get there - transport) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Eat & Drink' Section
+## 56. YouTube Video for the 'Eat & Drink' Section
 
 [YouTube search terms to find an appriate video for the 'Eat & Drink' (what to eat at this business, or nearby if not an eating-place) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Amenities' Section
+## 57. YouTube Video for the 'Amenities' Section
 
 [YouTube search terms to find an appriate video for the 'Amenities' (toilets, change rooms, etc) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Accessibility' Section
+## 58. YouTube Video for the 'Accessibility' Section
 
 [YouTube search terms to find an appriate video for the 'Accessibility' (disability support - accessibility) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Events' Section
+## 59. YouTube Video for the 'Events' Section
 
 [YouTube search terms to find an appriate video for the 'Events' (what's on - events) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Connected Experiences' Section
+## 60. YouTube Video for the 'Connected Experiences' Section
 
 [YouTube search terms to find an appriate video for the 'Connected Experiences' (connected experiences - tours, etc.) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Stay' Section
+## 61. YouTube Video for the 'Stay' Section
 
 [YouTube search terms to find an appriate video for the 'Stay' (where to stay - accommodation) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Play' Section
+## 62. YouTube Video for the 'Play' Section
 
 [YouTube search terms to find an appriate video for the 'Play' (what to do - activities) section '$query'; give a search query not an actual video link]

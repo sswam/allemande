@@ -8,11 +8,12 @@ from sys import stdin, stdout
 import os
 import logging
 import re
-from typing import Optional, IO, List
+from typing import Optional, IO
 from math import inf
-import argparse
+# import argparse
 import time
 import random
+from pathlib import Path
 
 import argh
 
@@ -22,7 +23,6 @@ import tiktoken
 import tab
 import claude
 from bard import Bard
-from pathlib import Path
 from slugify import slugify
 
 # import json
@@ -332,7 +332,7 @@ def read_utf_replace(inp):
 
 
 @argh.arg("prompt", nargs="+", help="prompt text")
-@argh.arg("--prompt2", help="second prompt text")
+@argh.arg("-P", "--prompt2", help="second prompt text")
 @argh.arg("-i", "--inp", default=stdin, help="input file")
 @argh.arg("-o", "--out", default=stdout, help="output file")
 @argh.arg("-m", "--model", default=default_model, help="model name")
@@ -345,7 +345,8 @@ def read_utf_replace(inp):
 @argh.arg("-E", "--empty-ok", action="store_true", help="allow empty input")
 @argh.arg("-L", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @argh.arg("-p", "--lines", action="store_true", help="process each line separately, like perl -p")
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False):
+@argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -362,6 +363,8 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 
 	if prompt2:
 		prompt2 = prompt2.rstrip()
+	if repeat:
+		prompt2 = re.sub(r"\bbelow\b", "above", prompt)
 
 	if not lines:
 		return process2(prompt, prompt2, input_text, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
@@ -383,21 +386,21 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[st
 
 
 def process2(prompt, prompt2, input_text, out, model, indent, temperature, token_limit, retries, state_file, log):
+	""" Process some text through the LLM with a prompt. """
 	full_input = f"""
 {prompt}
 
 {input_text}
 """
-
 	if prompt2:
 		full_input += "\n" + prompt2 + "\n"
+	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
 
-	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=True)
 
-
-def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):
+def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):  # pylint: disable=unused-argument
+	""" Ask the LLM a question. """
 	set_opts(vars())
-	return retry(query2, retries, *prompt, out=out, log=True)
+	return retry(query2, retries, *prompt, out=out, log=log)
 
 
 def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
@@ -427,8 +430,9 @@ def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 
 	if out:
 		out.write(content)
-	else:
-		return content
+		return ""
+
+	return content
 
 
 def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
@@ -436,7 +440,7 @@ def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 	for i in range(n_tries):
 		try:
 			return fn(*args, **kwargs)
-		except Exception as ex:
+		except Exception as ex:  # pylint: disable=broad-except
 			delay = random.uniform(sleep_min, sleep_max)
 			logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
 			msg = str(ex)
@@ -446,6 +450,7 @@ def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 			time.sleep(delay)
 			sleep_min *= 2
 			sleep_max *= 2
+	return None
 
 
 #def dict_to_namespace(d):
@@ -456,7 +461,7 @@ def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 #	return ns
 
 
-def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, state_file=None, auto_save=None):
+def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, state_file=None, auto_save=None):  # pylint: disable=unused-argument
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
 	set_opts(vars())
 	return retry(chat2, retries, inp=inp, out=out)
@@ -479,12 +484,10 @@ def count(inp=stdin, model=default_model):
 	if model.startswith("gpt"):
 		enc = tiktoken.get_encoding("cl100k_base")
 		tokens = enc.encode(text)
-		count = len(tokens)
-	elif model.startswith("claude"):
+		return len(tokens)
+	if model.startswith("claude"):
 		return claude.count(text)
-	else:
-		raise ValueError(f"unknown model: {model}")
-	return count
+	raise ValueError(f"unknown model: {model}")
 
 
 def list_models():

@@ -1,13 +1,13 @@
 MISSION:
 
-Please write a detailed, interesting, engaging blog post for $query. Use the following exact sections and headings. Write prose, not dot-point lists, please.
+Please write a detailed, interesting, factual and engaging blog post for $query. Use the following exact sections and headings. Write prose, not dot-point lists, please. Do not repeat reference to Bass Coast and South Gippsland too often, use only where relevant and where the reference will have the greatest impact.
 
 Please include as much factual information and detail as you can about $query. Cover a comprehensive scope of See Their Work, Getting There, Eat & Drink, Amenities, Events, Connected Experiences, Stay, Play. Do not mention other businesses. Be factual.
 
 
 Use the following instructions to guide you:
 
-Purpose of piece: To introduce visitors to the region's unique businesses and industries.
+Purpose of piece: To introduce visitors to the unique businesses and industries of the Bass Coast and South Gippsland.
 Type of publication: Web page content, interactive maps, photo galleries, travel guides, articles.
 Style of language: Informative, engaging, and inviting. Use descriptive language to paint a picture of each location.
 Exclusions: inappropriate language, inacurate information
@@ -17,68 +17,65 @@ Do not mention Anthony Bourdain.
 Do not mention gems.
 Do not mention food, unless relevant to $query.
 
-Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown#Hyperlinks), including links to major pages such as:
+Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown#Hyperlinks), ensuring the links exist, including links to major pages such as:
 - official social media pages
 - wikipedia pages
 - www.visitgippsland.com.au/destination-gippsland (pages under this domain, preferably not just the main site)
+- www.visitsouthgippsland.com.au
 - www.visitphillipisland.com.au/destination-gippsland (specific pages)
-- business.vic.gov.au (specific pages)
-- business.gov.au (specific pages)
+- www.business.vic.gov.au (specific pages)
+- www.business.gov.au (specific pages)
 - www.visitgrantville.com.au (specific pages)
 - www.pibn.com.au (specific pages)
-- wonthaggibusinesses.com.au (specific pages)
+- www.wonthaggibusinesses.com.au (specific pages)
 - www.australia.com/en (specific pages)
 - www.visitbasscoast.com.au (specific pages)
 - www.visitpromcountry.com.au (specific pages)
 - www.pibn.com.au (specific pages)
-- youtube (search terms, we will find the videos separately)
+- www.youtube (search terms, we will find the videos separately)
 
 - NB: make sure to include all sections, even if information is not available, except for subsections marked "optional" and "if needed" which may be omitted.
 
 --- start template --- 
 
-## About
+## 1. About  [<-  use this exact heading! Always use exact heading, please!]
 
-[a long multi-paragraph stylish introduction to $query; unique, evocative, and candid; use Anthony Bourdain's style]
 
-[continuing with the second paragraph of the introduction]
+[A comprehensive stylish detailed description of $query, its mission, and its history, up to 10 to 12 paragraphs, and including dot-point lists as necessary. Unique, evocative, and candid; use Anthony Bourdain's travel style. Do not mention Anthony Bourdain.]
 
-[continuing with the introduction, please write 3 or 4 paragraphs for this section, it should be the longest section.]
+## 2. See Their Work  [<-  use this exact heading!]
 
-## See Their Work  [<-  use this exact heading!]
-
-### [descriptive subheading 1; always include all sections even if not much info]
+### [descriptive subheading 1; always include all sections even if not much info, however, do not make up information, ensure any information is factual and relevant]
 
 [see their work (business photographs / portfolio); 2 paragraphs]
 
-## Getting There  [<-  use this exact heading!]
+## 3. Getting There  [<-  use this exact heading!]
 
 ### [descriptive subheading]
 
-[to get there (travel), including public transport,
-driving, and walking; 1-2 paragraphs]
+[how to get to $query (travel), including public transport, driving, cycling and walking; 1-2 paragraphs]
 
-## Eat and Drink
-
-### [descriptive subheading 1]
-
-[what to eat at THIS business, or nearby if not an eating-place; 2 paragraphs, maybe a bullet list with links to a menu or the other businesses websites if a valid url is available]
-
-## Amenities
+## 4. Eat and Drink
 
 ### [descriptive subheading 1]
 
-[what amenities are available: are there showers, changerooms, parents rooms, feeding rooms, a kitchen, swimming pool, tennis courts, basketball stadium, gym facilities, art studio, off-street parking,  etc.; 1 paragraph]
+[what to eat and/or drink at $query, or nearby if $query is not an eating-place or drinking-place; 2 paragraphs, maybe a bullet list with links to a menu or the other businesses websites if a valid url is available]
 
-## Accessibility
+## 5. Amenities
 
 ### [descriptive subheading 1]
 
-[access and services for people with disabilities (amenities); 1 paragraph]
+[what amenities are available at $query: does $query have showers, changerooms, parents rooms, feeding rooms, a kitchen, swimming pool, tennis courts, basketball stadium, gym facilities, art studio, off-street parking,  etc.; 1 paragraph]
 
-## Events
+## 6. Accessibility
 
-[what regular events are on at this venue/business or organised by this business/venue]
+### [descriptive subheading 1]
+
+[access and services for people with disabilities (amenities) at $query; 1 paragraph]
+
+## 7. Events
+
+[what regular events are on at $query or are organised by $query business/venue]
 
 ### [descriptive subheading 1]
 
@@ -88,15 +85,15 @@ driving, and walking; 1-2 paragraphs]
 
 [optional: more subheadings and content if needed]
 
-## Connected Experiences
+## 8. Connected Experiences
 
 ### [descriptive subheading 1]
 
-[tours, packages, and other connected experiences; combination packages offered with other businesses in the Bass Coat / South Gippland region; the tours connect together one "eat", one "stay", and one "play"-type business, ideally this business is one of the three, or find three that fit this business; 2 paragraphs]
+[tours, packages, and other connected experiences; combination packages offered between $query and other businesses in the Bass Coast and South Gippland region; these connecitons should be relevant in an Eat, Stay, Play experience where $query is one of these or where all three experiences complement the services of $query. The tours connect together one "eat", one "stay", and one "play"-type business, ideally $query is one of the three or is closely tied to one of the three, for example if a winery may be chosen for the Eat option if $query is a restaraunt, or vice-versa. Otherwise, find three experiences that fit this business; 2 paragraphs]
 
 ### Eat
 
-[if this is a food business, what types of food are available, menu, amenities, typical rates, types of seating, etc. If it is not an food business, what food is available from other food businesses in the area.]
+[if $query is a food business, what types of food are available, menu, amenities, typical rates, types of seating, etc. If it is not an food business, what food is available from other food businesses in the area.]
 
 #### [descriptive subheading]
 
@@ -104,7 +101,7 @@ driving, and walking; 1-2 paragraphs]
 
 ### Stay
 
-[if this is an accommodation business, what types of accommodation are available, number of rooms, amenities, typical rates, etc. If it is not an accommodation business, what accommodation is available from other accommodiation businesses in the area.]
+[if $query is an accommodation business, what types of accommodation are available, number of rooms, amenities, typical rates, etc. If it is not an accommodation business, what accommodation is available from other accommodiation businesses in the area.]
 
 #### [descriptive subheading]
 

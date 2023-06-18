@@ -10,6 +10,7 @@ import argh
 import logging
 import json
 import markdown
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -181,7 +182,7 @@ def replace_tags(text, data, map_contact_tags):
 
 		# NOTE: HACK
 		if detail:
-			for suffix in "SUBHEADING", "TEXT", "SUBHEADING_2", "TEXT_2":
+			for suffix in "SUBHEADING", "TEXT":  # , "SUBHEADING_2", "TEXT_2":
 				if not tag.endswith("_"+suffix):
 					continue
 				logger.debug("tag ends with %r", suffix)
@@ -190,14 +191,16 @@ def replace_tags(text, data, map_contact_tags):
 				if not sections:
 					logger.debug("section not found: %r", section)
 					return quote("", quoted)
+#				if not isinstance(section, list):
+#					logger.warning("section is not a list: %r", section)
+#					return quote("", quoted)
 				if index < len(sections):
 					sec = sections[index]
 					value = sec[suffix]
 					return quote(value, quoted)
-				elif index > 0:
+				if index > 0:
 					return quote("KILL", quoted)
-				else:
-					return guote(EMPTY_TEXT.get(section, "KILL"))
+				return guote(EMPTY_TEXT.get(section, "KILL"))
 
 		if tag in data:
 			logger.debug("tag in data: %r, data: %r", tag, data)
@@ -255,8 +258,10 @@ def fill_template(data1, template, address):
 	headings = list(data1.keys())
 	first_heading = headings[0]
 
+	dttm = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
 	# pretty print data1 for debugging into a file data1.json
-	with open("data1.json", "w") as f:
+	with open(f"data1.{dttm}.json", "w") as f:
 		f.write(json.dumps(data1, indent=4))
 
 	single_tags = ["INTRO_TITLE", "INTRO_TEXT", "ADDRESS"]
@@ -339,10 +344,14 @@ def fill_template(data1, template, address):
 			}
 			data[heading_uc].append(section_data)
 
-	# pretty print data for debugging
+	if "ADDRESS" not in data or not data["ADDRESS"]:
+		data["ADDRESS"] = ""
+	if "WEBSITE" not in data or not data["WEBSITE"]:
+		data["WEBSITE"] = ""
+	data["ADDRESS2"] = re.sub(r'\n', ' ', str(data.get("ADDRESS", "")))
 
-	# pretty print data1 for debugging into a file data1.json
-	with open("data2.json", "w") as f:
+	# pretty print data2 for debugging into a file data2.json
+	with open(f"data2.{dttm}.json", "w") as f:
 		f.write(json.dumps(data, indent=4))
 
 	# process template one line at a time
@@ -427,6 +436,32 @@ def slurp(pathname, errors="ignore"):
 		return f.read()
 
 
+URL_ITEMS = ["BUSINESS_WEBSITE_URL"]
+
+
+def correct_data(data):
+	# remove any numbers from the start:
+	data2 = {}
+	for item in data:
+		mat = re.match(r"^([0-9]+)\. (.*)", item)
+		if mat:
+			new_name = mat.group(2)
+			data2[new_name] = data[item]
+		else:
+			data2[item] = data[item]
+	data = data2
+	for item in URL_ITEMS:
+		item = item.lower().replace('_', ' ')
+		if item not in data:
+			continue
+		url = data[item]["sections"][0]["content"]
+		url = re.sub(r"(https?://)", "", url)
+		url = re.sub(r"/.*", "", url)   # XXX TODO this is a temporary hack for Inverloch stuff, strip off anything after the main domain
+		url = "https://" + url
+		data[item]["sections"][0]["content"] = url
+	return data
+
+
 @argh.arg("--template_file", "-t", help="Template file to process.")
 @argh.arg("--address", "-a", help="Address to use.")
 def place_md_to_wordpress(*input_files, template_file="template/tourism.txt", address=""):
@@ -438,6 +473,7 @@ def place_md_to_wordpress(*input_files, template_file="template/tourism.txt", ad
 		content = read_markdown(slurp(file))
 		data.update(content)
 	template = slurp(template_file)
+	data = correct_data(data)
 	page = fill_template(data, template, address=address)
 	return page
 

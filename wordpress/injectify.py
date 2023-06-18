@@ -49,10 +49,12 @@ def find_by_id(id, item_type="post"):
 	return item
 
 
-def find_by_slug(slug, item_type="post", status="draft", many=False):
+def find_by_slug(slug, item_type="post", status="draft", many=False, underscore_to_hyphen=False):
 	""" Find a post or page by slug """
 	global api_url, username, password, auth
 	url = get_api_url(item_type)
+	if underscore_to_hyphen:
+		slug = slugify.slugify(slug, lower=True)
 	params = {
 		'slug': slug,
 		'per_page': 1,
@@ -117,18 +119,25 @@ def create_item(item_type, item, content, status="draft", media=None):
 	return get_item_key(item)
 
 
-def read_item(item_type, item, meta=False):
+def read_item(item_type, item, meta=False, raw=True):
 	""" Read a post or page """
 	global api_url, username, password, auth
 	id = item["id"]
+	data = {
+		"context": "edit" if raw else "display",
+	}
 	url = f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}/{id}"
-	response = requests.get(url, auth=auth)
+	response = requests.get(url, auth=auth, params=data)
 	if response.status_code == 404:
 		logger.error(f"Could not find {item_type} with id {id}")
 		return None
 	item = response.json()
 	if not meta:
-		item = item["content"]["rendered"]
+		item = item["content"]
+		if raw:
+			item = item["raw"]
+		else:
+			item = item["rendered"]
 	return item
 
 
@@ -139,6 +148,8 @@ def update_item(item_type, item, content, status, media=None):
 	data = {
 		'content': content
 	}
+	if "slug" in item:
+		data["slug"] = item["slug"]
 	response = requests.post(url, auth=auth, json=data)
 	if response.status_code == 200:
 		logger.info(f"Updated {item_type} successfully!")
@@ -163,12 +174,12 @@ def delete_item(item_type, item):
 	return get_item_key(item)
 
 
-def list_items(item_type, status="draft"):
+def list_items(item_type, status="draft", start_page=1, limit=None):
 	""" List posts or pages """
 	global api_url, username, password, auth
 	url = get_api_url(item_type)
 	items = []
-	page = 1
+	page = start_page
 	while True:
 		params = {
 			'per_page': 100,
@@ -185,7 +196,7 @@ def list_items(item_type, status="draft"):
 		except json.decoder.JSONDecodeError:
 			break
 		items += page_items
-		if len(page_items) < 100:
+		if len(page_items) < 100 or len(items) >= limit:
 			break
 	keys = []
 	for item in items:
@@ -235,9 +246,10 @@ def set_featured_media(item_type, item, media):
 @argh.arg("--meta", "-m", help="When reading the item, include metadata")
 @argh.arg("--force", "-F", help="Force the action")
 @argh.arg("--media", "-M", help="Set featured media ID")
+@argh.arg("--underscore-to-hyphen", "-U", help="Search for slugs with underscore and convert to the given slug")
 def crud(file=None, content=None, title=None, status="draft", post=False, page=False,
 		item_type=None, id=None, slug=None, auto=False,
-		create=False, read=False, update=False, delete=False, list=False, meta=False, force=False, media=None):
+		create=False, read=False, update=False, delete=False, list=False, meta=False, force=False, media=None, underscore_to_hyphen=False):
 	""" Create, update or delete a wordpress page or post """
 
 	# item_type, post, and page
@@ -286,7 +298,7 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	if id:
 		item = find_by_id(id, item_type)
 	elif slug:
-		item = find_by_slug(slug, item_type, status)
+		item = find_by_slug(slug, item_type, status, underscore_to_hyphen=underscore_to_hyphen)
 	elif title:
 		item = find_by_title(title, item_type, status)
 	elif list:
@@ -339,7 +351,7 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	# Get slug from title, if not provided
 
 	if not slug and title:
-		slug = slugify.slugify(title)
+		slug = slugify.slugify(title, lower=True, hyphen=True)
 
 	item = item or {
 		"id": id,
@@ -365,6 +377,8 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 			rv = json.dumps(rv, indent=4)
 		return rv
 	elif update:
+		if slug:
+			item["slug"] = slug
 		return update_item(item_type, item, content, status, media=media)
 	elif delete:
 		return delete_item(item_type, item)
