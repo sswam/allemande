@@ -10,6 +10,7 @@ import argh
 import logging
 import json
 import markdown
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -257,8 +258,10 @@ def fill_template(data1, template, address):
 	headings = list(data1.keys())
 	first_heading = headings[0]
 
+	dttm = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
 	# pretty print data1 for debugging into a file data1.json
-	with open("data1.json", "w") as f:
+	with open(f"data1.{dttm}.json", "w") as f:
 		f.write(json.dumps(data1, indent=4))
 
 	single_tags = ["INTRO_TITLE", "INTRO_TEXT", "ADDRESS"]
@@ -341,10 +344,14 @@ def fill_template(data1, template, address):
 			}
 			data[heading_uc].append(section_data)
 
-	# pretty print data for debugging
+	if "ADDRESS" not in data or not data["ADDRESS"]:
+		data["ADDRESS"] = ""
+	if "WEBSITE" not in data or not data["WEBSITE"]:
+		data["WEBSITE"] = ""
+	data["ADDRESS2"] = re.sub(r'\n', ' ', str(data.get("ADDRESS", "")))
 
-	# pretty print data1 for debugging into a file data1.json
-	with open("data2.json", "w") as f:
+	# pretty print data2 for debugging into a file data2.json
+	with open(f"data2.{dttm}.json", "w") as f:
 		f.write(json.dumps(data, indent=4))
 
 	# process template one line at a time
