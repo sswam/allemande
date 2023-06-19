@@ -559,6 +559,8 @@ def interactive(model, args):
 
 def run_search(agent, query, file, args, history, history_start, limit=True):
 	""" Run a search agent. """
+	if args.local:
+		raise ValueError("run_search called with --local option, not an error, just avoiding to run it on the home PC")
 	name = agent["name"]
 	logger.debug("history: %r", history)
 	history_messages = list(chat.lines_to_messages(history))
@@ -656,6 +658,8 @@ def run_agent(agent, query, file, args, history, history_start=0):
 
 def local_agent(agent, _query, file, args, history, history_start=0):
 	""" Run a local agent. """
+	if args.remote:
+		raise ValueError("local_agent called with --remote option, not an error, just avoiding to try to run it on the server")
 	# print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 	invitation = args.delim + agent["name"] + ":" if args.bot else ""
 	human_invitation = args.delim + args.user + ":" if args.user else ""
@@ -735,6 +739,8 @@ def apply_maps(mapping, mapping_cs, context):
 
 def remote_agent(agent, query, file, args, history, history_start=0):
 	""" Run a remote agent. """
+	if args.local:
+		raise ValueError("remote_agent called with --local option, not an error, just avoiding to run it on the home PC")
 	# for now do just query, not the full chat
 	if agent["default_context"] == 1:
 		logger.debug("history: %r", history)
@@ -821,6 +827,8 @@ def remote_agent(agent, query, file, args, history, history_start=0):
 
 def safe_shell(agent, query, file, args, history, history_start=0, command=None):
 	""" Run a shell agent. """
+	if args.local:
+		raise ValueError("safe_shell called with --local option, not an error, just avoiding to run it on the home PC")
 	name = agent["name"]
 	logger.debug("history: %r", history)
 	history_messages = list(chat.lines_to_messages(history))
@@ -1030,6 +1038,8 @@ def get_opts():  # pylint: disable=too-many-statements
 	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
 	model_group.add_argument("--bytes", "-8", action="store_true", help="Load in 8-bit mode, to save GPU memory")
 	model_group.add_argument("--max-tokens", "-n", type=int, help="Maximum number of new tokens to generate")
+	model_group.add_argument("--remote", "-R", action="store_true", help="Use remote models only, not local (for server working with a home PC)")
+	model_group.add_argument("--local", "-L", action="store_true", help="Use local models only, not online (for home PC working with a server)")
 
 	agent_group = parser.add_argument_group("Agent options")
 	agent_group.add_argument("--agents", "-a", default=["all"], nargs="*", help="Enable listed or all agents")
