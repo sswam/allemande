@@ -30,7 +30,7 @@ i3: connect-i3-screen
 
 server:: stop
 server:: clean
-server:: webchat pro # brain.xt
+server:: webchat pro brain-remote # brain.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -67,7 +67,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt whisper.xt brain.xt
+core: llm.xt whisper.xt brain-local.xt
 
 voice: mike.xt speak.xt
 
@@ -111,8 +111,11 @@ llm:
 whisper:
 	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
 
-brain:
-	cd chat && ./brain.sh
+brain-remote:
+	cd chat && ./brain.sh --remote
+
+brain-local:
+	cd chat && ./brain.sh --local
 
 mike:
 	cd voice-chat && ./mike.sh

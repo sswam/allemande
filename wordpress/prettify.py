@@ -205,7 +205,9 @@ def replace_tags(text, data, map_contact_tags):
 		if tag in data:
 			logger.debug("tag in data: %r, data: %r", tag, data)
 			if isinstance(data[tag], list):
-				return quote(data[tag][0], quoted)
+				l = data[tag]
+				li = data[tag][0] if l else ""
+				return quote(li, quoted)
 			return quote(data[tag], quoted)
 		elif tag in map_contact_tags:
 			tag2 = map_contact_tags[tag]
@@ -260,8 +262,11 @@ def fill_template(data1, template, address):
 
 	dttm = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
+	# mkdir prettify-data
+	os.makedirs("prettify-data", exist_ok=True)
+
 	# pretty print data1 for debugging into a file data1.json
-	with open(f"data1.{dttm}.json", "w") as f:
+	with open(f"prettify-data/data1.{dttm}.json", "w") as f:
 		f.write(json.dumps(data1, indent=4))
 
 	single_tags = ["INTRO_TITLE", "INTRO_TEXT", "ADDRESS"]
@@ -344,14 +349,16 @@ def fill_template(data1, template, address):
 			}
 			data[heading_uc].append(section_data)
 
-	if "ADDRESS" not in data or not data["ADDRESS"]:
-		data["ADDRESS"] = ""
-	if "WEBSITE" not in data or not data["WEBSITE"]:
-		data["WEBSITE"] = ""
-	data["ADDRESS2"] = re.sub(r'\n', ' ', str(data.get("ADDRESS", "")))
+	if not data.get("ADDRESS"):
+		data["ADDRESS"] = "Inverloch, Victoria"
+	if not data.get("WEBSITE"):
+		data["WEBSITE"] = "#"
+	if not data.get("BUSINESS_WEBSITE_URL"):
+		data["BUSINESS_WEBSITE_URL"] = "#"
+	data["ADDRESS2"] = re.sub(r'\n', ' ', str(data["ADDRESS"]))
 
 	# pretty print data2 for debugging into a file data2.json
-	with open(f"data2.{dttm}.json", "w") as f:
+	with open(f"prettify-data/data2.{dttm}.json", "w") as f:
 		f.write(json.dumps(data, indent=4))
 
 	# process template one line at a time
@@ -454,11 +461,14 @@ def correct_data(data):
 		item = item.lower().replace('_', ' ')
 		if item not in data:
 			continue
-		url = data[item]["sections"][0]["content"]
-		url = re.sub(r"(https?://)", "", url)
-		url = re.sub(r"/.*", "", url)   # XXX TODO this is a temporary hack for Inverloch stuff, strip off anything after the main domain
-		url = "https://" + url
-		data[item]["sections"][0]["content"] = url
+		try:
+			url = data[item]["sections"][0]["content"]
+			url = re.sub(r"(https?://)", "", url)
+			url = re.sub(r"/.*", "", url)   # XXX TODO this is a temporary hack for Inverloch stuff, strip off anything after the main domain
+			url = "https://" + url
+			data[item]["sections"][0]["content"] = url
+		except (KeyError, IndexError) as ex:
+			logger.error("URL adjustment, ignoring %r", ex)
 	return data
 
 
