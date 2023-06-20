@@ -4,6 +4,7 @@ markdown_to_structure.py: Read markdown text and convert it into a sensible
 data structure with keys like title, introduction, see_subheading, see, etc.
 """
 
+import os
 import sys
 import re
 import argh
