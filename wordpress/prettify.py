@@ -4,6 +4,7 @@ markdown_to_structure.py: Read markdown text and convert it into a sensible
 data structure with keys like title, introduction, see_subheading, see, etc.
 """
 
+import os
 import sys
 import re
 import argh
@@ -140,11 +141,11 @@ def replace_tags(text, data, map_contact_tags):
 #	logger.debug("replace_tags data: %s", json.dumps(list(data.keys()), indent=4))
 #	logger.debug("replace_tags map_contact_tags: %s", json.dumps(list(map_contact_tags.keys()), indent=4))
 	def quote(text, quoted):
-		logger.debug("quote text: %r, quoted: %r", text, quoted)
+		logger.warning("quote text: %r, quoted: %r", text, quoted)
 		if isinstance(text, dict):
 			text = text["TEXT"]
 		text = text.strip()
-		text = text or "KILL"
+		text = text or "KILL1"
 		if quoted:
 			return f'"{text}"'
 		try:
@@ -199,8 +200,8 @@ def replace_tags(text, data, map_contact_tags):
 					value = sec[suffix]
 					return quote(value, quoted)
 				if index > 0:
-					return quote("KILL", quoted)
-				return guote(EMPTY_TEXT.get(section, "KILL"))
+					return quote("KILL2", quoted)
+				return guote(EMPTY_TEXT.get(section, "KILL3"))
 
 		if tag in data:
 			logger.debug("tag in data: %r, data: %r", tag, data)
@@ -235,8 +236,8 @@ def replace_tags(text, data, map_contact_tags):
 	def replace_tag_debug(match):
 		matched = match.group(0)
 		rv = replace_tag(match)
-		#if "YOUTUBE" in matched:
-		#	logger.debug(f"replace_tag: matched={matched} rv={rv}")
+		if "#social" in matched and "KILL" in rv:
+			rv = '""'
 #		logger.debug("replace_tag_debug match: %r, rv: %r", match, rv)
 		return rv
 
@@ -349,8 +350,22 @@ def fill_template(data1, template, address):
 			}
 			data[heading_uc].append(section_data)
 
-	if not data.get("ADDRESS"):
-		data["ADDRESS"] = "Inverloch, Victoria"
+
+	ADDRESS_DEFAULT = "Inverloch, Victoria"
+
+	address = data.get("ADDRESS")
+	if not address:
+		data["ADDRESS"] = ADDRESS_DEFAULT
+	elif isinstance(address, list) and len(address) == 1 and isinstance(address[0], dict):
+		data["ADDRESS"] = address[0].get("TEXT", ADDRESS_DEFAULT)
+		logger.error("unexpected data structure for ADDRESS: %r", address)
+	elif isinstance(address, list):
+		data["ADDRESS"] = ADDRESS_DEFAULT
+		logger.error("unexpected data structure for ADDRESS: %r", address)
+	else:
+		data["ADDRESS"] = ADDRESS_DEFAULT
+
+
 	if not data.get("WEBSITE"):
 		data["WEBSITE"] = "#"
 	if not data.get("BUSINESS_WEBSITE_URL"):
@@ -486,6 +501,7 @@ def place_md_to_wordpress(*input_files, template_file="template/tourism.txt", ad
 	data = correct_data(data)
 	page = fill_template(data, template, address=address)
 	return page
+
 
 if __name__ == "__main__":
 	argh.dispatch_command(place_md_to_wordpress)
