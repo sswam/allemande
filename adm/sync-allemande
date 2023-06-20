@@ -1,4 +1,8 @@
 #!/bin/bash -eu
+
+echo >&2 "obsolete; do not use"
+exit 1
+
 trap "git branch" EXIT INT
 
 set -o pipefail
