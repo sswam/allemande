@@ -1,0 +1,2 @@
+The sherlock app appears to be designed for extracting and organizing information about businesses, directories, and landmarks from online search results. The app takes user queries and returns filtered search results in categorized and sorted lists, such as individual businesses, business directories, and landmarks. Additionally, it suggests improvements, and these can include more advanced filtering mechanisms, integration with APIs of popular business directory services, and options for users to modify search queries and output formats.
+
