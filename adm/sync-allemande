@@ -1,8 +1,5 @@
 #!/bin/bash -eu
 
-echo >&2 "obsolete; do not use"
-exit 1
-
 trap "git branch" EXIT INT
 
 set -o pipefail
@@ -16,8 +13,8 @@ cd "$ALLEMANDE_HOME"
 
 $CO main
 
-$PULL sam@ucm.dev:allemande
-$PULL sam@pi.ucm.dev:allemande
+$PULL sam@ucm.dev:allemande main
+$PULL sam@pi.ucm.dev:allemande main
 $PUSH sam@ucm.dev:allemande main
 $PUSH sam@pi.ucm.dev:allemande main
 
@@ -28,20 +25,20 @@ fi
 $PULL $ALLEMANDE_GITHUB main
 $PUSH $ALLEMANDE_GITHUB main
 
-$CO allemande
-#$PULL sam@ucm.dev:allemande allemande
-#$PULL sam@pi.ucm.dev:allemande allemande
-#$PUSH sam@ucm.dev:allemande allemande
-#$PUSH sam@pi.ucm.dev:allemande allemande
-$PULL $ALLEMANDE_GITHUB allemande
-$MERGE main
-$PUSH $ALLEMANDE_GITHUB allemande
-$PULL $ALLEMANDE_GITHUB allemande
-
-$CO barbarella
-$PULL $BARBARELLA_GITHUB barbarella
-$MERGE main
-$PUSH $BARBARELLA_GITHUB barbarella
-$PULL $BARBARELLA_GITHUB barbarella
-
-$CO main
+#$CO allemande
+##$PULL sam@ucm.dev:allemande allemande
+##$PULL sam@pi.ucm.dev:allemande allemande
+##$PUSH sam@ucm.dev:allemande allemande
+##$PUSH sam@pi.ucm.dev:allemande allemande
+#$PULL $ALLEMANDE_GITHUB allemande
+#$MERGE main
+#$PUSH $ALLEMANDE_GITHUB allemande
+#$PULL $ALLEMANDE_GITHUB allemande
+#
+#$CO barbarella
+#$PULL $BARBARELLA_GITHUB barbarella
+#$MERGE main
+#$PUSH $BARBARELLA_GITHUB barbarella
+#$PULL $BARBARELLA_GITHUB barbarella
+#
+#$CO main
