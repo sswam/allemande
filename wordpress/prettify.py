@@ -66,7 +66,8 @@ def read_markdown(text):
 		nonlocal key, sub_heading, sub_heading_lc, data, heading_lc
 		sub_heading = section[3:].strip()
 		sub_heading_lc = sub_heading.lower()
-		data[key or heading_lc]["sections"].append({ "sub_heading": sub_heading, "content": "" })
+		if key or heading_lc:
+			data[key or heading_lc]["sections"].append({ "sub_heading": sub_heading, "content": "" })
 
 	sub_heading = ""
 	key = ""
@@ -141,7 +142,7 @@ def replace_tags(text, data, map_contact_tags):
 #	logger.debug("replace_tags data: %s", json.dumps(list(data.keys()), indent=4))
 #	logger.debug("replace_tags map_contact_tags: %s", json.dumps(list(map_contact_tags.keys()), indent=4))
 	def quote(text, quoted):
-		logger.warning("quote text: %r, quoted: %r", text, quoted)
+		logger.debug("quote text: %r, quoted: %r", text, quoted)
 		if isinstance(text, dict):
 			text = text["TEXT"]
 		text = text.strip()
@@ -213,7 +214,7 @@ def replace_tags(text, data, map_contact_tags):
 		elif tag in map_contact_tags:
 			tag2 = map_contact_tags[tag]
 			logger.debug("tag in map_contact_tags tag: %r, data: %r, tag2: %r", tag, data, tag2)
-			if tag2 in data:
+			if tag2 in data and len(data[tag2]) > 0 and "TEXT" in data[tag2][0]:
 				markdown_link = data[tag2][0]["TEXT"]
 				link = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', r'\2', markdown_link)
 				if re.search(r'[][]', link):
@@ -333,9 +334,11 @@ def fill_template(data1, template, address):
 
 	single_tags += map_contact_tags.values()
 
+	intro_sections = data1[first_heading]['sections']
+
 	data = {
 		"INTRO_TITLE": data1[first_heading]['heading'] + (": " + data1[first_heading]['detail'] if 'detail' in data1[first_heading] else ""),
-		"INTRO": data1[first_heading]['sections'][0]['content'],
+		"INTRO": intro_sections[0]['content'] if len(intro_sections) > 0 else "...",
 		"ADDRESS": address,
 	}
 
@@ -358,7 +361,6 @@ def fill_template(data1, template, address):
 		data["ADDRESS"] = ADDRESS_DEFAULT
 	elif isinstance(address, list) and len(address) == 1 and isinstance(address[0], dict):
 		data["ADDRESS"] = address[0].get("TEXT", ADDRESS_DEFAULT)
-		logger.error("unexpected data structure for ADDRESS: %r", address)
 	elif isinstance(address, list):
 		data["ADDRESS"] = ADDRESS_DEFAULT
 		logger.error("unexpected data structure for ADDRESS: %r", address)
