@@ -25,7 +25,7 @@ server_start:
 server_stop:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
 
-beorn: clean mount run-i3-screen
+beorn: clean mount opal-loop.xt run-i3-screen
 i3: connect-i3-screen
 
 server:: stop
@@ -187,15 +187,13 @@ stop:
 	screen -S "$(SCREEN)" -X quit || true
 
 mount:
-	mkdir -p $(ALLEMANDE_ROOMS_SERVER)
-	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none $(SERVER_ROOMS_SSH) $(ALLEMANDE_ROOMS_SERVER) || true
-	sudo -u allemande rmdir /var/spool/allemande/stt_whisper/www-data/* || true
-	sudo -u allemande sshfs -o cache=no -o allow_root -o allow_other -o idmap=none ucm.dev:/var/spool/allemande/stt_whisper/www-data /var/spool/allemande/stt_whisper/www-data -o cache=no || true
+	ally_mount
 
 umount:
-	fusermount -u $(ALLEMANDE_ROOMS_SERVER) || true
-	sudo -u allemande fusermount -u /var/spool/allemande/stt_whisper/www-data || true
-	sudo -u allemande rmdir /var/spool/allemande/stt_whisper/www-data/* || true
+	ally_mount -u
+
+opal-loop:
+	opal-loop
 
 fresh::	stop
 fresh::	rotate
