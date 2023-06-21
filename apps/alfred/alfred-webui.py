@@ -45,6 +45,11 @@ urls_placeholder = """Enter URLs of webpages and media here..."""
 def process_files(topic, mission, document_files, urls_text, turbo): # pylint: disable=too-many-locals
 	""" run a file processing command in a web interface """
 
+	if not topic:
+		raise ValueError("Topic is required")
+	if not mission:
+		raise ValueError("Mission is required")
+
 	# show PATH
 	logger.debug("PATH: %r", os.environ["PATH"].split(":"))
 
@@ -85,6 +90,8 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 	# download URLs
 	urls = re.split(r'\s+', urls_text.strip())
 	for url in urls:
+		if not url:
+			continue
 		if not re.match(r'^https?://', url):
 			url = "https://" + url
 		status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("yt-dlp", "-i", "-f", "251/bestaudio/best", "-o", "%(title)s.%(ext)s", url)
