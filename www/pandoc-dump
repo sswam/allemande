@@ -1,4 +1,4 @@
-#!/bin/bash -eux
+#!/bin/bash -eu
 # pandoc-dump:	Convert HTML to Markdown, as cleanly as possible.
 
 c=1	# clean
