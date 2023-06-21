@@ -31,8 +31,7 @@ SUMMARY_GUIDE=
 
 SUMMARY_PROMPT=Please summarize this info in detail, relating to the topic: $(TOPIC), using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible. Focus on info relevant to $(TOPIC). Please include relevant links in [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown\#Hyperlinks) format. $(SUMMARY_GUIDE)
 
-MISSIONS_IN=$(wildcard mission.*.in.txt)
-MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
+MISSIONS=$(wildcard mission.*.txt)
 
 # missions are like mission.1.txt
 # output_md files are like output.1.md
@@ -168,7 +167,6 @@ summary-condensed.txt: summary.txt
 #	printf "%s\n" "$$mission" > $@
 
 output.%.md: summary-condensed.txt mission.%.txt
-	echo >&2 "mission: $$mission"
 	sleep .$$RANDOM
 	llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
 
