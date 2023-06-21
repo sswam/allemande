@@ -50,6 +50,9 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 	if not mission:
 		raise ValueError("Mission is required")
 
+	if not document_files:
+		document_files = []
+
 	# show PATH
 	logger.debug("PATH: %r", os.environ["PATH"].split(":"))
 
@@ -60,14 +63,14 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 
 	# TODO how to delete the tmpdir
 
-	tmpdir = tempfile.mkdtemp()
+	tmpdir = tempfile.mkdtemp(prefix="alfred_")
 	input_dir = Path(tmpdir) / "input"
 	os.mkdir(input_dir)
 
 	docs = []
 
 	# write mission text into tmpdir/mission.txt
-	mission_file = Path(tmpdir) / "mission.txt"
+	mission_file = Path(tmpdir) / "mission.1.in.txt"
 	mission_file.write_text(mission, encoding="utf-8")
 
 	# put all the document files into the tempdir
@@ -94,11 +97,33 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 			continue
 		if not re.match(r'^https?://', url):
 			url = "https://" + url
+
+		# get a sorted list of files in the current directory
+		files_before = sorted(os.listdir("."))
+
 		status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("yt-dlp", "-i", "-f", "251/bestaudio/best", "-o", "%(title)s.%(ext)s", url)
 		all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
 		if status != 0:
 			status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("wget", "--trust-server-names", url)
 			all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
+
+		files_after = sorted(os.listdir("."))
+		new_files = list(set(files_after) - set(files_before))
+
+		if len(new_files) != 1:
+			logger.warning("Expected 1 new file, got %d: %r", len(new_files), new_files)
+
+		# run extension-fix on the new file/s
+		status, _stdout_lines, _stderr_lines, all_lines = run_subprocess("extension-fix", "-a", "-v", *new_files)
+		all_text += "".join(map(lambda d: f"{d['label']}: {d['line']}" if d['label'] else d['line'], all_lines))
+
+		files_ext_fixed = sorted(os.listdir("."))
+		new_files = list(set(files_ext_fixed) - set(files_before))
+
+		for filename in new_files:
+			# add a .url file next to it
+			url_file = Path(filename + ".url")
+			url_file.write_text(url, encoding="utf-8")
 
 	# rename downloaded files
 	for filename in os.listdir("."):
@@ -159,6 +184,7 @@ demo = gr.Interface(
 		gr.outputs.File(label="Output File (DOCX)"),
 	],
 	title=title,
+
 	description=desc,
 	allow_flagging='never',
 )
