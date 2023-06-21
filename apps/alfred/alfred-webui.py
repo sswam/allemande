@@ -58,8 +58,10 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 
 	my_opts = opts.copy()
 
+	my_opts += [f"TOPIC={topic}"]
+
 	if turbo:
-		my_opts += ["LLM_MODEL=i", "LLM_MODEL_LONG=i+", "OCR_MODEL=i", "IMAGE2TEXT_MODE=fast", f"TOPIC={topic}"]
+		my_opts += ["LLM_MODEL=i", "LLM_MODEL_LONG=i+", "OCR_MODEL=i", "IMAGE2TEXT_MODE=fast"]
 
 	# TODO how to delete the tmpdir
 
@@ -70,7 +72,7 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 	docs = []
 
 	# write mission text into tmpdir/mission.txt
-	mission_file = Path(tmpdir) / "mission.1.in.txt"
+	mission_file = Path(tmpdir) / "mission.1.txt"
 	mission_file.write_text(mission, encoding="utf-8")
 
 	# put all the document files into the tempdir
@@ -83,6 +85,11 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 		shutil.copy(src_path, str(path))
 		src_file.close()
 		docs.append(path)
+		# if its an .htm* file
+		if re.match(r'.*\.(htm|html)$', basename_no_stupid_chars, re.IGNORECASE):
+			# create a .html.url file next to it
+			url_file = input_dir / (basename_no_stupid_chars + ".url")
+			url_file.write_text(str(path), encoding="utf-8")
 
 	# chdir to the input dir
 	os.chdir(tmpdir)
@@ -144,9 +151,9 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 	# chdir to /
 	os.chdir("/")
 
-	output_files = list(Path(tmpdir) / f"output.{ext}" for ext in ["zip", "md", "html", "pdf", "docx"])
+	output_files = list(Path(tmpdir) / f"output.1.{ext}" for ext in ["md", "html", "pdf", "docx"])
 
-	output_file_md = Path(tmpdir) / "output.md"
+	output_file_md = Path(tmpdir) / "output.1.md"
 
 
 	if output_file_md.exists():
