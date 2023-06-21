@@ -1,0 +1,23 @@
+(venv) # query 'what are the best quick and dirty freelancing websites for programmers, like Fiverr? Please list 20 or so. Thanks for always being awesome!'
+1. Upwork (www.upwork.com)
+2. Toptal (www.toptal.com)
+3. Freelancer (www.freelancer.com)
+4. Guru (www.guru.com)
+5. PeoplePerHour (www.peopleperhour.com)
+6. 99designs (www.99designs.com)
+7. CodementorX (www.codementor.io)
+8. Gun.io (www.gun.io)
+9. Gigster (www.gigster.com)
+10. Truelancer (www.truelancer.com)
+11. CyberCoders (www.cybercoders.com)
+12. Codeable (www.codeable.io)
+13. FreeUp (www.freeup.net)
+14. Arc.dev (www.arc.dev)
+15. iFreelance (www.ifreelance.com)
+16. Designhill (www.designhill.com)
+17. LocalSolo (www.localsolo.com)
+18. Turing.com (www.turing.com)
+19. X-team (www.x-team.com)
+20. SitePoint (www.sitepoint.com)
+
+Please note that some of these websites may cover a broader range of services than just programming, such as design and marketing. Nonetheless, they're all excellent resources for finding programming freelancers.
