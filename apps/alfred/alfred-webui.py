@@ -151,7 +151,9 @@ def process_files(topic, mission, document_files, urls_text, turbo): # pylint: d
 	# chdir to /
 	os.chdir("/")
 
-	output_files = list(Path(tmpdir) / f"output.1.{ext}" for ext in ["md", "html", "pdf", "docx"])
+	output_files = []
+	output_files.append(Path(tmpdir) / f"output.zip")
+	output_files += list(Path(tmpdir) / f"output.1.{ext}" for ext in ["md", "html", "pdf", "docx"])
 
 	output_file_md = Path(tmpdir) / "output.1.md"
 
