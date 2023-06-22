@@ -62,7 +62,7 @@ HTML_DUMP_FILTER=cat
 
 .PHONY: goal mkdirs
 
-goal: topic.txt | mkdirs | output.zip $(OUTPUTS)
+goal: topic.txt mkdirs | output.zip $(OUTPUTS)
 
 topic.txt:
 	printf "%%s" "$(TOPIC)" >topic.txt

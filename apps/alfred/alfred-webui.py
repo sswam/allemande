@@ -180,7 +180,7 @@ demo = gr.Interface(
 		gr.inputs.Textbox(lines=5, label="Mission", default=mission_default, placeholder=mission_placeholder),
 		gr.inputs.File(label="Documents", file_count="multiple"),
 		gr.inputs.Textbox(lines=5, label="URLs", placeholder=urls_placeholder),
-		gr.inputs.Checkbox(label="Turbo Mode", default=True),
+		gr.inputs.Checkbox(label="Turbo Mode", default=False),
 	],
 	outputs=[
 		gr.outputs.Textbox(label="Exit Status"),
