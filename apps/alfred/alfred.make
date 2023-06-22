@@ -62,7 +62,10 @@ HTML_DUMP_FILTER=cat
 
 .PHONY: goal mkdirs
 
-goal: mkdirs | output.zip $(OUTPUTS)
+goal: topic.txt | mkdirs | output.zip $(OUTPUTS)
+
+topic.txt:
+	printf "%%s" "$(TOPIC)" >topic.txt
 
 mkdirs:
 	mkdir -p input w summary
@@ -171,13 +174,13 @@ output.%.md: summary-condensed.txt mission.%.txt
 	llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
 
 output.%.html: output.%.md
-	pandoc $< --pdf-engine=xelatex -o $@
+	pandoc $< --pdf-engine=xelatex -o $@ || true
 output.%.pdf: output.%.md
-	pandoc $< --pdf-engine=xelatex -o $@
+	pandoc $< --pdf-engine=xelatex -o $@ || true
 output.%.docx: output.%.md
-	pandoc $< --pdf-engine=xelatex -o $@
+	pandoc $< --pdf-engine=xelatex -o $@ || true
 
-output.zip: $(MISSIONS) $(OUTPUTS) summary.txt summary-condensed.txt input w summary
+output.zip: topic.txt $(MISSIONS) $(OUTPUTS) summary.txt summary-condensed.txt input w summary
 	zip -r $@ $^
 
 .PRECIOUS: %
