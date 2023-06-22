@@ -65,7 +65,7 @@ HTML_DUMP_FILTER=cat
 goal: topic.txt mkdirs | output.zip $(OUTPUTS)
 
 topic.txt:
-	printf "%%s" "$(TOPIC)" >topic.txt
+	printf "%s" "$(TOPIC)" >topic.txt
 
 mkdirs:
 	mkdir -p input w summary
