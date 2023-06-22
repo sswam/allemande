@@ -43,7 +43,10 @@ tail -n +2 | (
 	IFS=$'\t'
 	while read file mimetype; do
 		ext_old=${file##*.}
-		entry=`look "$mimetype"$'\t' "$mime_types" || grep "^$mimetype" "$mime_types" || true`
+		entry=`look "$mimetype"$'\t' "$mime_types" || grep "^$mimetype" "$mime_types" | head -n 1 || true`
+		if [ "$entry" == "text/xml" ]; then
+			entry="xml"
+		fi
 		ext=`echo "$entry" | sed 's/.*\t//' | cut -f1 -d ' '`
 		if [ -n "$ext" -a "$ext" != "$ext_old" ]; then
 			if [ "$a" = 1 ]; then
