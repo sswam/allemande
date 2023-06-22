@@ -171,7 +171,7 @@ summary-condensed.txt: summary.txt
 
 output.%.md: summary-condensed.txt mission.%.txt
 	sleep .$$RANDOM
-	llm process -m $(LLM_MODEL_BRAINY) "$$(< mission.$*.txt)" < $< > $@
+	llm process -m $(LLM_MODEL_BRAINY) --repeat "$$(< mission.$*.txt)" < $< > $@
 
 output.%.html: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@ || true
