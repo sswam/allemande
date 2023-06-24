@@ -12,7 +12,7 @@ TEMPLATES := $(WEBCHAT)/templates
 JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
 	run core vi-online vi-local vscode-online vscode-local voice webchat llm whisper chat-api stream auth watch \
 	bb2html nginx logs perms brain mike speak \
-	firefox-webchat-local firefox-webchat-online firefox-pro-local firefox-pro-online \
+	firefox-webchat-online firefox-webchat-local firefox-pro-local firefox-pro-online \
 	chrome-webchat-online chrome-webchat-local \
 	stop mount umount fresh \
 	install install-dev uninstall clean i3-layout
@@ -39,16 +39,21 @@ run-i3-screen:: run
 connect-i3-screen:: i3-layout
 connect-i3-screen:: connect
 
-run: frontend backend dev pro-dev flash.xt alfred.xt vi-online.xt
+run: frontend backend dev flash.xt alfred.xt
+# vi-online.xt
+# pro-dev 
 connect: frontend backend.xtc dev.xtc pro-dev.xtc flash.xtc alfred.xtc vi-online.xtc
 disconnect:
 	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
-frontend: vscode-online firefox-webchat-online firefox-pro-online chrome-webchat-online
+frontend: vscode-online firefox-webchat-online
+# firefox-pro-online chrome-webchat-online
 frontend-local: vscode-local firefox-webchat-local firefox-pro-local chrome-webchat-local
 
-backend: core voice webchat
-backend.xtc: core.xtc voice.xtc webchat.xtc
+backend: core webchat
+# voice
+backend.xtc: core.xtc webchat.xtc
+# voice.xtc 
 
 dev: clean nginx.xt logs.xt
 dev.xtc: clean nginx.xtc logs.xtc
@@ -67,9 +72,9 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt whisper.xt brain.xt  # brain-local.xt
+core: llm.xt brain.xt  # brain-local.xt
 
-voice: mike.xt speak.xt
+voice: mike.xt speak.xt whisper.xt
 
 webchat: chat-api.xt stream.xt watch.xt bb2html.xt
 
