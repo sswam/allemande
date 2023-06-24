@@ -46,7 +46,7 @@ connect: frontend backend.xtc dev.xtc pro-dev.xtc flash.xtc alfred.xtc vi-online
 disconnect:
 	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
-frontend: vscode-online firefox-webchat-online
+frontend: firefox-webchat-online vi-online
 # firefox-pro-online chrome-webchat-online
 frontend-local: vscode-local firefox-webchat-local firefox-pro-local chrome-webchat-local
 
@@ -132,7 +132,7 @@ speak:
 	cd voice-chat && ./speak.sh
 
 vi-online:
-	vi -p "$$file_server"
+	ssh -t $(SERVER_SSH) 'cd $(ALLEMANDE_HOME) && vi -p "$$file"'
 
 vi-local:
 	vi -p "$$file"
