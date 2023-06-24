@@ -30,7 +30,7 @@ i3: connect-i3-screen
 
 server:: stop
 server:: clean
-server:: webchat pro brain-remote.xt
+server:: webchat pro # brain-remote.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -67,7 +67,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt whisper.xt brain-local.xt
+core: llm.xt whisper.xt brain.xt  # brain-local.xt
 
 voice: mike.xt speak.xt
 
@@ -113,6 +113,9 @@ whisper:
 
 brain-remote:
 	cd chat && ./brain.sh --remote
+
+brain:
+	cd chat && ./brain.sh
 
 brain-local:
 	cd chat && ./brain.sh --local
