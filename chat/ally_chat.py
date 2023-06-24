@@ -191,7 +191,7 @@ def register_agents_search():
 		agent_base = { "name": agent_name }
 		AGENTS[agent_lc] = make_agent(agent_base)
 	if not ADULT:
-		del AGENTS["pornhub"]
+		del AGENTS["Pr0nto"]
 #	AGENTS["duck"] = AGENTS["duckduckgo"]
 
 
