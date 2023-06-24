@@ -1,0 +1,2 @@
+Remote and local bots if running on different servers may chat with eachother forever.
+For now, I'll avoid by running everything locally again, not on the server.
