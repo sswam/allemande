@@ -3,7 +3,7 @@
 u=	# unmount
 . opts
 
-unmount=$u
+umount=$u
 
 ally_mount() {
 	mkdir -p $ALLEMANDE_ROOMS_SERVER
@@ -13,7 +13,6 @@ ally_mount() {
 }
 
 ally_umount() {
-	ally_mount -u
 	fusermount -u $ALLEMANDE_ROOMS_SERVER || true
 	sudo -u allemande fusermount -u /var/spool/allemande/stt_whisper/www-data || true
 	sudo -u allemande qe rmdir /var/spool/allemande/stt_whisper/www-data/* || true
@@ -21,9 +20,9 @@ ally_umount() {
 
 
 if [ "$0" = "$BASH_SOURCE" ]; then
-	if [ "$unmount" != 1 ]; then
-		ally_mount
-	else
+	if [ "$umount" = 1 ]; then
 		ally_umount
+	else
+		ally_mount
 	fi
 fi
