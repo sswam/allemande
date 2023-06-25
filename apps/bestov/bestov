@@ -2,12 +2,11 @@
 
 # bestov	a script to make an album of the best of a given artist
 
-a="The Chemical Brothers"	# artist
 q=	# query
 n=20	# number of items to ask from each LLM
 t="Please list the %s best and most famous tracks / songs / pieces of '%s' in dot-point markdown, each line starting with '- '. Only return the markdown list, no other output please. Do not quote the titles. Thanks for being awesome and always doing a great job!"	# query prompt template
 d="Please deduplicate these lists, and count how many times each item occurs. Output line like: - 4x 'Hey Jude' by The Beatles. Only return the markdown list, no other output please. Do not quote the titles. Thanks for being awesome and always doing a great job!"	# dedup prompt
-m="4 3+ c i b"	# list of models
+m="4 3+ c i"	# list of models  # b bard disabled for now
 md=4	# dedup model
 w="${a:-$q}"	# work directory
 x="official music video"	# extra search terms
@@ -16,7 +15,6 @@ o=--no-mtime	# don't set mtime from the video
 
 . opts
 
-artist="$a"
 query="$q"
 number="$n"
 template="$t"
@@ -26,6 +24,8 @@ dedup_model="$md"
 work="$w"
 extra="$x"
 yt_dlp_opts="$o"
+
+artist="${*:-The Chemical Brothers}"
 
 # verbose
 if [ "$v" = 1 ]; then
@@ -39,7 +39,7 @@ fi
 
 # if no work directory specified, create one
 if [ -z "$work" ]; then
-	work="`mktemp -p ./`"
+	work="`mktemp -d -p ./`"
 fi
 
 # mkdir and chdir
