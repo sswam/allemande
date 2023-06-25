@@ -37,9 +37,12 @@ if [ -n "$extra" ]; then
 	extra=" - $extra"
 fi
 
-# if no work directory specified, create one
-if [ -z "$work" ]; then
-	work="`mktemp -d -p ./`"
+artist_slug=`slugify.py "$artist"`
+
+if [ -z "$work" -a ! -e "$artist_slug" ]; then
+	work="$artist_slug"
+elif [ -z "$work" ]; then
+	work="`mktemp -d -p ./$artist_slug`"
 fi
 
 # mkdir and chdir
