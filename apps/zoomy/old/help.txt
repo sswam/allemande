@@ -1,0 +1,4 @@
+My script is not working, please help me debug it...
+
+# convert forest.png -define distort:viewport=400x400+100+100 -filter point -distort SRT "%[fx:W/sx],%[fx:H/sy]" output.jpg
+convert-im6.q16: undefined variable 'sx' @ error/fx.c/FxGetSymbol/1135.
