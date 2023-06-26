@@ -1,4 +1,5 @@
 Please write some metadata for a detailed, interesting, engaging and fun blog post for $query. Use the following exact sections and headings.
+
 Please include as much factual information and detail as you can about $query. Cover a comprehensive scope of See Their Work, Getting There, Eat & Drink, Amenities, Events, Connected Experiences, Eat, Stay, Play. Do not mention other businesses unless relevant, e.g. eating nearby (if this is not an eatery). Connected experiences should include mention of other businesses, locations and activities which are relevant to this business in an Eat, Stay and Play setup; include links to any business mentioned here. Only mention businesses within a 20km proximity to $query. Be factual.
 
 Use the following instructions to guide you:
