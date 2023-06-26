@@ -3,6 +3,7 @@
 
 # TODO create compatible libraries for other APIs in future
 # TODO consider splitting off the OpenAI specific stuff into a separate library
+# TODO use cached responses if possible
 
 from sys import stdin, stdout
 import os
