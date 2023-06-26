@@ -43,7 +43,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [continuing with the introduction, please write 3 or 4 paragraphs for this section, it should be the longest section.]
 
-## See  [<-  use the exact headings, please!]
+## 1. See  [<-  use the exact headings, please!]
 
 ### [descriptive subheading 1; always include all sections even if not much info]
 
@@ -53,7 +53,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [optional: more subheadings and content if needed]
 
-## Do
+## 2. Do
 
 ### [descriptive subheading 1]
 
@@ -63,7 +63,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [optional: more subheadings and content if needed]
 
-## Learn
+## 3. Learn
 
 ### [descriptive subheading 1]
 
@@ -73,7 +73,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [optional: more subheadings and content if needed]
 
-## Getting There
+## 4. Getting There
 
 ### [descriptive subheading]
 
@@ -81,7 +81,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [continuing How To Get to $query (travel); 2 paragraphs]
 
-## Stay
+## 5. Stay
 
 ### [descriptive subheading]
 
@@ -89,13 +89,13 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [continuing Where To Stay at $query or immediately near $query (accommodation); 2 paragraphs]
 
-## Warnings
+## 6. Warnings
 
 ### [descriptive subheading]
 
 [Things To Watch Out For (dangers) at $query. Be factual, accurate and relevant. For example, only mention bushfires or floods if they pose a real risk to most visitors.]
 
-## In the Area
+## 7. In the Area
 
 ### [descriptive subheading 1]
 
@@ -103,7 +103,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [continuing What's Around or In The Area of $query?; 2 paragraphs]
 
-## Events
+## 8. Events
 
 ### [descriptive subheading 1]
 
@@ -113,7 +113,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [optional: more subheadings and content if needed]
 
-## Local Groups
+## 9. Local Groups
 
 ### [descriptive subheading 1]
 
@@ -123,7 +123,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [optional: more subheadings and content if needed]
 
-## Eat and Drink
+## 10. Eat and Drink
 
 ### [descriptive subheading 1]
 
@@ -133,7 +133,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [optional: more subheadings and content if needed]
 
-## Accessibility
+## 11. Accessibility
 
 ### [descriptive subheading 1]
 
@@ -141,7 +141,7 @@ Please use at least one sub-heading / sub-section in each section. Follow the te
 
 [optional: more subheadings and content if needed]
 
-## Recap
+## 12. Recap
 
 ### [descriptive subheading 1]
 
@@ -159,7 +159,7 @@ Here is an example of one section, please make sure that each section is in this
 
 --- start section example ---
 
-## Eat and Drink
+## 10. Eat and Drink
 
 ### Savor the Local Flavors
 
