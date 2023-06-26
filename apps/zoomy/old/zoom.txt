@@ -1,0 +1,46 @@
+To solve this problem, you can use the OpenCV library in Python. First, you need to install it by running:
+
+```
+pip install opencv-python opencv-python-headless
+```
+
+Here's a sample script that demonstrates how to load an image, perform the zooming, and save the result:
+
+```python
+import cv2
+
+# Load the image
+input_image_path = "input_image.jpg"
+output_image_path = "output_image.jpg"
+image = cv2.imread(input_image_path)
+
+# Set the zoom parameters
+zoom_point = (image.shape[1] // 2, image.shape[0] // 2)  # (x, y) coordinates, in this case the center of the image
+zoom_factor = 2  # Zoom scale factor
+
+# Calculate the new dimensions after zooming
+new_width = int(image.shape[1] * zoom_factor)
+new_height = int(image.shape[0] * zoom_factor)
+
+# Resize the image
+resized = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_CUBIC)
+
+# Calculate the new position of the zoom point after the resize
+new_zoom_point = (zoom_point[0] * zoom_factor, zoom_point[1] * zoom_factor)
+
+# Crop the image around the new zoom point so that the output image has the same size as the input image
+half_width = image.shape[1] // 2
+half_height = image.shape[0] // 2
+left = new_zoom_point[0] - half_width
+right = new_zoom_point[0] + half_width
+top = new_zoom_point[1] - half_height
+bottom = new_zoom_point[1] + half_height
+
+cropped = resized[top:bottom, left:right]
+
+# Save the output image
+cv2.imwrite(output_image_path, cropped)
+```
+
+This script loads an input image, resizes it according to the zoom factor, and then crops the image to keep the same size as the input. Make sure to replace "input_image.jpg" with your actual input image path and "output_image.jpg" to your desired output image path.
+

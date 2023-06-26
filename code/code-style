@@ -1,0 +1,16 @@
+#!/bin/bash -eu
+# code-style:	rewrite a script using my code style
+r=`which map-find-google.py`
+p="Please rewrite the second program '%s' using the style of the first '%s', include argh, logging, and stdio if possible. Thanks for always doing a great job!"
+. opts
+reference=$r
+prompt=$p
+
+input="$1"
+
+input_basename=`basename "$input"`
+reference_basename=`basename "$reference"`
+
+prompt2=`printf "$prompt" "$input_basename" "$reference_basename"`
+
+cat-sections "$reference" "$input" | process "$prompt2"
