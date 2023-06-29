@@ -57,7 +57,7 @@ END
 # -------- set up 99dontbreakdebian for safety with other sources ------------
 
 sudo sh -c "
-cat <<END >/etc/apt/sources.list
+cat <<END >/etc/apt/preferences.d/99dontbreakdebian
 Package: *
 Pin: release o=Debian,a=experimental
 Pin-Priority: 1
