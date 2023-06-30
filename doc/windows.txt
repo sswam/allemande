@@ -42,6 +42,4 @@ After following this guide, continue with the debian.txt install notes.
 - install firefox
 - install chrome
 - remove edge shortcuts
-- misc fixed font
-- terminal use misc fixed
 - windows search -> use firefox or chrome
