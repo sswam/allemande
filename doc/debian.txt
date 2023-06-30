@@ -129,8 +129,8 @@ git config --global pull.rebase false
 
 # -------- clone allemande ---------------------------------------------------
 
-git clone ucm.dev:allemande
-# git clone git@github.com:sswam/allemande.git  # alternative
+git clone git@github.com:sswam/allemande.git main
+# git clone ucm.dev:allemande  # alternative
 cd allemande
 
 # -------- install python3.10-distutils-bogus --------------------------------
