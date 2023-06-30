@@ -16,6 +16,8 @@ import slugify  # mine, not the broken old unmaintained one in PyPI
 # - https://pypi.org/project/wordpress-api/
 # - https://github.com/d3v-null/wp-api-python
 
+# XXX deleting by title does not work
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -49,31 +51,36 @@ def find_by_id(id, item_type="post"):
 	return item
 
 
-def find_by_slug(slug, item_type="post", status="draft", many=False, underscore_to_hyphen=False):
+def find_by_slug(slug, item_type="post", status=None, many=False, underscore_to_hyphen=False):
 	""" Find a post or page by slug """
 	global api_url, username, password, auth
+	if status is None:
+		return find_by_slug(slug, item_type, "publish", many=many, underscore_to_hyphen=underscore_to_hyphen) or \
+			find_by_slug(slug, item_type, "draft", many=many, underscore_to_hyphen=underscore_to_hyphen)
 	url = get_api_url(item_type)
 	if underscore_to_hyphen:
 		slug = slugify.slugify(slug, lower=True)
 	params = {
 		'slug': slug,
 		'per_page': 1,
-		'status': status,
 	}
+	if status:
+		params['status'] = status
 	reponse = requests.get(url, auth=auth, params=params)
 	items = reponse.json()
 	return items_check_number(items, "slug", slug, many=many)
 
 
-def find_by_title(title, item_type="post", status="draft", many=False):
+def find_by_title(title, item_type="post", status=None, many=False):
 	""" Find a post or page by title """
 	global api_url, username, password, auth
 	url = get_api_url(item_type)
 	params = {
 		'search': title,
 		'per_page': 1,
-		'status': status,
 	}
+	if status:
+		params['status'] = status
 	response = requests.get(url, auth=auth, params=params)
 	items = response.json()
 	return items_check_number(items, "title", title, many=many)
@@ -107,7 +114,7 @@ def create_item(item_type, item, content, status="draft", media=None):
 		"content": content,
 		"slug": item["slug"],
 		"title": item["title"],
-		"status": status,
+		"status": status or "draft",
 	}
 	response = requests.post(url, auth=auth, json=data)
 	if response.status_code == 201:  # 201 is the status code for 'Created'
@@ -141,7 +148,7 @@ def read_item(item_type, item, meta=False, raw=True):
 	return item
 
 
-def update_item(item_type, item, content, status, media=None):
+def update_item(item_type, item, content, status=None, media=None):
 	""" Update a post """
 	global api_url, username, password, auth
 	url = get_api_url(item_type, item["id"])
@@ -150,6 +157,8 @@ def update_item(item_type, item, content, status, media=None):
 	}
 	if "slug" in item:
 		data["slug"] = item["slug"]
+	if status:
+		data['status'] = status
 	response = requests.post(url, auth=auth, json=data)
 	if response.status_code == 200:
 		logger.info(f"Updated {item_type} successfully!")
@@ -174,6 +183,31 @@ def delete_item(item_type, item):
 	return get_item_key(item)
 
 
+def undelete_item(item_type, item_id):
+	""" Undelete a post or page """
+	raise Exception("Not implemented")  # TODO
+	global api_url, username, password, auth
+	url = f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}/{item_id}/revisions"
+	response = requests.get(url, auth=auth)
+
+	if response.status_code != 200:
+		raise Exception(f"Could not retrieve revisions for {item_type}")
+
+	revisions = response.json()
+	if not revisions:
+		raise Exception(f"No revisions found for {item_type} with id {item_id}")
+
+	restore_revision_url = f"{site_url}/wp-json/wp/v2/{endpoint(item_type)}/{item_id}/revisions/{revisions[0]['id']}"
+	restore_response = requests.post(restore_revision_url, auth=auth)
+
+	if restore_response.status_code != 200:
+		raise Exception(f"Could not undelete {item_type}")
+
+	logger.info(f"Undeleted {item_type} successfully!")
+	item = restore_response.json()
+	return get_item_key(item)
+
+
 def list_items(item_type, status="draft", start_page=1, limit=None):
 	""" List posts or pages """
 	global api_url, username, password, auth
@@ -186,7 +220,7 @@ def list_items(item_type, status="draft", start_page=1, limit=None):
 			'orderby': 'date',
 			'order': 'asc',
 			'page': page,
-			'_fields': 'id,slug,title,status'
+			'_fields': 'id,slug,title,status',
 		}
 		if status is not None:
 			params["status"] = status
@@ -223,6 +257,23 @@ def set_featured_media(item_type, item, media):
 	return response
 
 
+def get_featured_media(item_type, item):
+	""" Get featured media """
+	global api_url, username, password, auth
+	url = get_api_url(item_type, item["id"])
+	params = {
+		'_fields': 'featured_media',
+	}
+	response = requests.get(url, auth=auth, params=params)
+	if response.status_code == 200:
+		logger.info(f"Get featured media")
+	else:
+		raise Exception(f"Could not get featured media {media}: {response}")
+	item = response.json()
+	media = item.get("featured_media")
+	return media
+
+
 # TODO CRUD boilerplate for any apppliation,
 # or use this as inspiration for a more generic CRUD tool
 # or for AI to create other CRUD tools.
@@ -242,14 +293,17 @@ def set_featured_media(item_type, item, media):
 @argh.arg("--read", "-r", help="Read the item")
 @argh.arg("--update", "-u", help="Update the item")
 @argh.arg("--delete", "-d", help="Delete the item")
+@argh.arg("--undelete", "-U", help="Undelete the item")
 @argh.arg("--list", "-l", help="List items")
 @argh.arg("--meta", "-m", help="When reading the item, include metadata")
 @argh.arg("--force", "-F", help="Force the action")
 @argh.arg("--media", "-M", help="Set featured media ID")
-@argh.arg("--underscore-to-hyphen", "-U", help="Search for slugs with underscore and convert to the given slug")
-def crud(file=None, content=None, title=None, status="draft", post=False, page=False,
+@argh.arg("--media-default", "-D", help="Set default featured media ID")
+@argh.arg("--underscore-to-hyphen", "-H", help="Search for slugs with underscore and convert to the given slug")
+def crud(file=None, content=None, title=None, status=None, post=False, page=False,
 		item_type=None, id=None, slug=None, auto=False,
-		create=False, read=False, update=False, delete=False, list=False, meta=False, force=False, media=None, underscore_to_hyphen=False):
+		create=False, read=False, update=False, delete=False, undelete=False,
+		list=False, meta=False, force=False, media=None, media_default=None, underscore_to_hyphen=False):
 	""" Create, update or delete a wordpress page or post """
 
 	# item_type, post, and page
@@ -271,14 +325,15 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 		item_type = "page"
 	else:
 		logger.warning("No item_type specified, assuming --post")
+		item_type = "post"
 		post = True
 
 	# other options
 
 	if media:
 		pass
-	elif auto + create + read + update + delete + list != 1:
-		raise Exception("Specify one of --auto, --create, --read, --update, --delete, --list, --media")
+	elif auto + create + read + update + delete + undelete + list != 1:
+		raise Exception("Specify one of --auto, --create, --read, --update, --delete, --undelete, --list, --media")
 
 	if file and content:
 		raise Exception("You may not specify both --file and --content")
@@ -286,7 +341,7 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	if file:
 		content = open(file, encoding="utf-8").read()
 
-	if (content and (read or list or delete)) and not force:
+	if (content and (read or list or delete or undelete)) and not force:
 		raise Exception("You may not specify --content with this command")
 
 	if meta and not read:
@@ -298,13 +353,21 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	if id:
 		item = find_by_id(id, item_type)
 	elif slug:
-		item = find_by_slug(slug, item_type, status, underscore_to_hyphen=underscore_to_hyphen)
+		item = find_by_slug(slug, item_type, status=status, underscore_to_hyphen=underscore_to_hyphen)  # status
 	elif title:
-		item = find_by_title(title, item_type, status)
+		item = find_by_title(title, item_type, status=status)
 	elif list:
 		item = None
 	else:
 		raise Exception("You must specify an id, slug or title")
+
+
+	# get featured media for existing item
+	if item and not media:
+		media = get_featured_media("post", item)
+		print("media ID old:", media)
+	if item and not media:
+		media = media_default
 
 
 	# check for conflicts with the item
@@ -335,11 +398,17 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 
 	if auto and not content:
 		delete = True
+		logger.error("No content, but will not delete.")
+		return
 	elif auto and item:
 		update = True
 	elif auto:
 		create = True
 
+
+	# Get status from item if possible TODO
+	if item:
+		status = item.get("status") or "draft"
 
 	# Get title from first line, if not provided
 
@@ -352,6 +421,7 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 
 	if not slug and title:
 		slug = slugify.slugify(title, lower=True, hyphen=True)
+
 
 	item = item or {
 		"id": id,
@@ -379,9 +449,11 @@ def crud(file=None, content=None, title=None, status="draft", post=False, page=F
 	elif update:
 		if slug:
 			item["slug"] = slug
-		return update_item(item_type, item, content, status, media=media)
+		return update_item(item_type, item, content, media=media, status=status)
 	elif delete:
 		return delete_item(item_type, item)
+	elif undelete:
+		return undelete_item(item_type, item)
 	elif list:
 		return list_items(item_type, status)
 	elif media:
