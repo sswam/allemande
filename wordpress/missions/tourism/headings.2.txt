@@ -1,0 +1,38 @@
+## 1. Page Metadata: Description
+## 2. Page Metadata: Tags
+## 3. Address
+## 4. Phone Number
+## 5. Email
+## 6. Website
+## 7. Opening Hours
+## 8. Cost
+## 9. Accessibility
+## 10. Official Facebook Page
+## 11. Official LinkedIn Page
+## 12. Official Instagram Page
+## 13. Official YouTube Channel
+## 14. Official Vimeo Channel
+## 15. Official Twitter Page
+## 16. Wikipedia Page
+## 17. Featured Image for Page Header
+## 18. Featured Image for 'See' Section
+## 19. Featured Image for 'Do' Section
+## 20. Featured Image for 'Learn' Section
+## 21. Featured Image for 'Getting There' Section
+## 22. Featured Image for 'Stay' Section
+## 23. Featured Image for 'Warnings' Section
+## 24. Featured Image for 'In the Area' Section
+## 25. Featured Image for 'Events' Section
+## 26. Featured Image for 'Local Groups' Section
+## 27. Featured Image for 'Eat and Drink' Section
+## 28. Featured Image for 'Accessibility' Section
+## 29. Featured Image for 'Recap' Section
+## 30. YouTube Video for the Whole Page
+## 31. YouTube Video for the 'See' Section
+## 32. YouTube Video for the 'Do' Section
+## 33. YouTube Video for the 'Learn' Section
+## 34. YouTube Video for the 'Travel' Section
+## 35. YouTube Video for the 'In the Area' Section
+## 36. YouTube Video for the 'Local Groups' Section
+## 37. YouTube Video for the 'Eat and Drink' Section
+## 38. YouTube Video for the 'Recap' Section
