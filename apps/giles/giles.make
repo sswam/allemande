@@ -17,8 +17,8 @@ HTML=0
 PDF=0
 DOCX=0
 
-MISSIONS_IN=$(wildcard mission.*.in.txt)
-MISSIONS=$(patsubst %.in.txt,%.txt,$(MISSIONS_IN))
+MISSIONS_IN=$(wildcard mission.*.txt.in)
+MISSIONS=$(patsubst %.txt.in,%.txt,$(MISSIONS_IN))
 
 HTML_DUMP_FILTER=
 
@@ -41,7 +41,7 @@ input.ls: results.txt
 	(cd input && giles_get) < $<
 	ls input > $@
 
-mission.%.txt: mission.%.in.txt
+mission.%.txt: mission.%.txt.in
 	if [ -z "$(query)" ]; then echo "ERROR: query is empty"; exit 1; fi
 	perl -pe 's/\$$query\b/$$ENV{query}/g' < $< > $@
 
