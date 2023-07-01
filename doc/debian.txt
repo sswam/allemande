@@ -135,13 +135,17 @@ cd allemande
 
 # -------- install python3.10-distutils-bogus --------------------------------
 
-sudo apt install debian/python3.10-distutils-bogus_1.0_all.deb
+sudo apt install ./debian/python3.10-distutils-bogus_1.0_all.deb
 
 # -------- install allemande dependencies
 
-apt install `< debian/apt-requirements.txt`
+sudo apt install `< debian-requirements.txt`
 # pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if no GPU
 # pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if AMD GPU
+
+python3.10 -m venv venv
+. venv/bin/activate
+
 pip install -r requirements.txt
 # pip install -r requirements-appserver.txt  # alternative
 # - pip install allemande deps
