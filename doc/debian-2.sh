@@ -137,7 +137,16 @@ END
 pip install -r requirements-core.txt
 pip install -r requirements.txt
 
-# -------- install allemande Python dependencies -----------------------------
+# -------- install clip-interrogator -----------------------------------------
+
+mkdir ~/soft-ai
+cd ~/soft-ai
+git clone https://github.com/pharmapsychotic/BLIP
+git clone https://github.com/pharmapsychotic/clip-interrogator
+pip install -e BLIP
+pip install -e clip-interrogator
+
+# -------- nvim settings for vim compatibility -------------------------------
 
 mkdir -p ~/.config/nvim
 
@@ -160,5 +169,4 @@ scp sam@ucm.dev:my/ai.env
 # -------- TODO: install other allemande deps that are tricky ----------------
 
 #   - whisper.cpp
-#   - clip-interrogator
 #   - automatic1111 stable diffusion webui

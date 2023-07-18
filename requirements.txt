@@ -39,7 +39,8 @@ sounddevice
 soundfile
 gTTS
 TTS
-clip-interrogator
+# BLIP
+# clip-interrogator
 
 watchdog
 
