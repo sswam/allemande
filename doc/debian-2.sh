@@ -137,10 +137,7 @@ END
 pip install -r requirements.txt
 # pip install -r requirements-appserver.txt  # alternative
 
-# - TODO install other allemande deps, eg. whisper.cpp
-# - TODO test allemande
-
-
+# -------- install allemande Python dependencies -----------------------------
 
 mkdir -p ~/.config/nvim
 
@@ -149,3 +146,19 @@ set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath=&runtimepath
 source ~/.vimrc
 END
+
+# -------- copy ai.env secrets file from another staff member ----------------
+
+mkdir ~/my
+chmod go-rwx ~/my
+scp sam@ucm.dev:my/ai.env
+
+# -------- test allemande tools ----------------------------------------------
+
+1sf 'What is the most famous tower in the world?'
+
+# -------- TODO: install other allemande deps that are tricky ----------------
+
+#   - whisper.cpp
+#   - clip-interrogator
+#   - automatic1111 stable diffusion webui
