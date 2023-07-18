@@ -134,8 +134,8 @@ END
 
 # -------- install allemande Python dependencies -----------------------------
 
+pip install -r requirements-appserver.txt
 pip install -r requirements.txt
-# pip install -r requirements-appserver.txt  # alternative
 
 # -------- install allemande Python dependencies -----------------------------
 
