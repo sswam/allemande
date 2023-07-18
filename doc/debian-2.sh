@@ -126,7 +126,11 @@ sudo apt-get -y clean
 
 python3.10 -m venv venv
 . venv/bin/activate
-echo $'\n''. ~/allemande/venv/bin/activate' >> ~/.bashrc
+cat <<END >>~/.bashrc
+
+. ~/allemande/venv/bin/activate
+. ~/allemande/env.sh
+END
 
 # -------- install allemande Python dependencies -----------------------------
 
