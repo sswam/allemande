@@ -136,8 +136,9 @@ END
 # -------- install allemande Python dependencies -----------------------------
 
 pip install -r requirements-core.txt
-pip install gradio
 pip install -r requirements.txt
+pip install gradio
+pip install gTTS
 
 rm -rf ~/.cache/pip
 
