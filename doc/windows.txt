@@ -15,7 +15,7 @@ After following this guide, continue with the debian.txt install notes.
 ## Essential WSL2 Setup
 
 - open Windows store and install Windows Terminal
-- open Terminal, (optional: pin to taskbar) 
+- open Terminal, pin to taskbar
 - type:  wsl --install -d debian
 - enter username: first name in lower-case
 - enter password twice
@@ -29,17 +29,18 @@ After following this guide, continue with the debian.txt install notes.
 - install font MiscFixedSC13.ttf from allemande/fonts
 - set Terminal default font: MiscFixedSC13 9 point
 - set Terminal block cursor
-- # TODO [instructions]
 - set Terminal preferences to default to Debian
-- # TODO [instructions]
 - set Terminal no scrollbar
 - install and pin Chrome and Firefox, remove Edge shortcuts
 - change brightness automatically
 - night light
-- barrier (doesn't seem to work on surface pro)
-- add barrier to start folder
-- install Zoom
+- barrier (doesn't seem to work on surface pro), add to start folder
 - install firefox
 - install chrome
+- install gimp
+- install zoom
 - remove edge shortcuts
-- windows search -> use firefox or chrome
+
+## How to do it?
+
+- windows search -> use firefox or chrome, not edge
