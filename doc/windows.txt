@@ -23,6 +23,8 @@ After following this guide, continue with the debian.txt install notes.
 
 ## Suggested
 
+- disable Windows Defender Anti-Virus in group policy editor:
+  - https://www.windowscentral.com/how-permanently-disable-windows-defender-windows-10
 - enable dark mode for windows and apps
 - set background to a nice free HD image
 - set a custom highlight colour
