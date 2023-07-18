@@ -23,7 +23,7 @@ fullname=`awk -F: -v user=$user '$1==user {print $5}' /etc/passwd | sed 's/,.*//
 read -i "$fullname" -p "Your full name: " fullname
 sudo chfn -f "$fullname" $USER
 
-read -p "Settings are user=$user, host=$host, servers=$servers, code=$code, okay? " yn
+read -p "Settings are user=$user, host=$host, servers=${servers[*]}, code=$code, okay? " yn
 if [ "$yn" != y ]; then
 	echo >&2 "Please fix your settings, then re-run $(basename $0)"
 	exit 1

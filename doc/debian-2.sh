@@ -4,6 +4,21 @@
 
 # Part 2 of 2
 
+# ======== settings ==========================================================
+
+user=$USER
+host=$HOSTNAME
+servers=(ucm.dev pi.ucm.dev)
+server0=${servers[0]}
+code=$server0:/home/sam/code
+fullname=`awk -F: -v user=$user '$1==user {print $5}' /etc/passwd | sed 's/,.*//'`
+
+read -p "Settings are user=$user, host=$host, servers=${servers[*]}, code=$code, okay? " yn
+if [ "$yn" != y ]; then
+	echo >&2 "Please fix your settings, then re-run $(basename $0)"
+	exit 1
+fi
+
 # -------- set up apt sources.list -------------------------------------------
 
 sudo sh -c "
@@ -74,12 +89,12 @@ sudo apt-get -y dist-upgrade
 
 mkdir -p ~/.ssh
 chmod go-rwx ~/.ssh
-ssh-keygen -t rsa
+ssh-keygen -t rsa -b 4096 -C $user@$server0 -f ~/.ssh/id_rsa -N ""
 cat ~/.ssh/id_rsa.pub >>~/.ssh/authorized_keys
 
 # -------- copy ssh keys to servers and connect ------------------------------
 
-for server in $servers; do
+for server in "${servers[@]}"; do
 	ssh-copy-id $server
 	ssh -T -f -oServerAliveInterval=15 -oServerAliveCountMax=3 -N $server
 	echo "ln -s -f -t ~ ~sam/allemande" | ssh $server
@@ -93,7 +108,8 @@ git config --global pull.rebase false
 
 # -------- clone allemande ---------------------------------------------------
 
-git clone ucm.dev:allemande
+git clone https://github.com/sswam/allemande
+# git clone ucm.dev:allemande  # alternative
 # git clone git@github.com:sswam/allemande.git  # alternative
 cd allemande
 
@@ -103,7 +119,7 @@ sudo apt-get -y install ./debian/python3.10-distutils-bogus_1.0_all.deb
 
 # -------- install allemande dependencies
 
-sudo apt-get -y install `< debian/apt-requirements.txt`
+sudo apt-get -y install `< debian-requirements.txt`
 sudo apt-get -y clean
 # pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if no GPU
 # pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if AMD GPU
