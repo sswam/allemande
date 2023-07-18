@@ -108,7 +108,7 @@ git config --global pull.rebase false
 
 # -------- clone allemande ---------------------------------------------------
 
-git clone https://github.com/sswam/allemande
+git clone https://github.com/sswam/allemande.git
 # git clone ucm.dev:allemande  # alternative
 # git clone git@github.com:sswam/allemande.git  # alternative
 cd allemande
@@ -137,12 +137,21 @@ END
 pip install -r requirements-core.txt
 pip install -r requirements.txt
 
+# -------- install whisper.cpp -----------------------------------------------
+
+cd ~/soft-ai
+git clone https://github.com/ggerganov/whisper.cpp.git
+cd whisper.cpp
+make -j8
+
+# TODO install scripts so we can run it conveniently
+
 # -------- install clip-interrogator -----------------------------------------
 
 mkdir ~/soft-ai
 cd ~/soft-ai
-git clone https://github.com/pharmapsychotic/BLIP
-git clone https://github.com/pharmapsychotic/clip-interrogator
+git clone https://github.com/pharmapsychotic/BLIP.git
+git clone https://github.com/pharmapsychotic/clip-interrogator.git
 pip install -e BLIP
 pip install -e clip-interrogator
 
