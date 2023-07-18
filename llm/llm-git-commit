@@ -69,11 +69,22 @@ for ent; do
 	fi
 done
 
-# chdir to somewhere in the repo, from files[0]
+# absolute paths
+for i in "${!files[@]}"; do
+	files[$i]=$(realpath "${files[$i]}")
+done
+
+# chdir to top level of git repo
 if [ -n "${files[0]}" ]; then
 	cd "$(dirname "${files[0]}")"
-	cd "$(git rev-parse --show-toplevel)"
 fi
+git_root=$(git rev-parse --show-toplevel)
+cd "$git_root"
+
+# relative to git_root
+for i in "${!files[@]}"; do
+	files[$i]=$(realpath --relative-to="$git_root" "${files[$i]}")
+done
 
 # check if already staged; in which case, unstage, it works better that way
 for file in "${files[@]}"; do
