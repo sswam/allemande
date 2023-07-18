@@ -66,9 +66,9 @@ sudo chmod g+w $dirs
 
 # -------- install essential tools and upgrade to Debian bookworm ------------
 
-sudo apt update
-sudo apt install ssh rsync screen build-essential devscripts python3-dev python3.10-dev neovim
-sudo apt dist-upgrade
+sudo apt-get update
+sudo apt-get -y install ssh rsync screen build-essential devscripts python3-dev python3.10-dev neovim
+sudo apt-get -y dist-upgrade
 
 # -------- set up ssh --------------------------------------------------------
 
@@ -99,11 +99,12 @@ cd allemande
 
 # -------- install python3.10-distutils-bogus --------------------------------
 
-sudo apt install debian/python3.10-distutils-bogus_1.0_all.deb
+sudo apt-get -y install ./debian/python3.10-distutils-bogus_1.0_all.deb
 
 # -------- install allemande dependencies
 
-apt install `< debian/apt-requirements.txt`
+sudo apt-get -y install `< debian/apt-requirements.txt`
+sudo apt-get -y clean
 # pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if no GPU
 # pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if AMD GPU
 pip install -r requirements.txt
