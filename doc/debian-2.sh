@@ -2,43 +2,7 @@
 
 # Debian GNU/Linux Installation
 
-# These install notes are fairly minimal with a few suggested extras.
-# You can also consider installing the developer's preferred setup
-# instead, see setup-with-extras.txt for that.
-
-# The developer recommends to use Debian.
-
-# It's recommended to step through this script rather than running it;
-# running it as a whole has not yet been tested!
-
-# ======== run some things as root {{{ =======================================
-
-user=$USER
-host=$HOSTNAME
-servers=(ucm.dev pi.ucm.dev)
-server0=${servers[0]}
-code=$server0:/home/sam/code
-fullname=`awk -F: -v user=$user '$1==user {print $5}' /etc/passwd | sed 's/,.*//'`
-read -i "$fullname" -p "Your full name: " fullname
-sudo chfn -f "$fullname" $USER
-
-read -p "Settings are user=$user, host=$host, servers=$servers, code=$code, okay? " yn
-if [ "$yn" != y ]; then
-	echo >&2 "Please fix your settings, then re-run $(basename $0)"
-	exit 1
-fi
-
-# -------- set up sudo with staff group --------------------------------------
-
-sudo sh -c "
-cat <<END >/etc/sudoers.d/local
-%staff ALL = (ALL) NOPASSWD: ALL
-END
-
-sudo adduser $USER staff
-"
-
-newgrp staff
+# Part 2 of 2
 
 # -------- set up apt sources.list -------------------------------------------
 
@@ -129,23 +93,19 @@ git config --global pull.rebase false
 
 # -------- clone allemande ---------------------------------------------------
 
-git clone git@github.com:sswam/allemande.git main
-# git clone ucm.dev:allemande  # alternative
+git clone ucm.dev:allemande
+# git clone git@github.com:sswam/allemande.git  # alternative
 cd allemande
 
 # -------- install python3.10-distutils-bogus --------------------------------
 
-sudo apt install ./debian/python3.10-distutils-bogus_1.0_all.deb
+sudo apt install debian/python3.10-distutils-bogus_1.0_all.deb
 
 # -------- install allemande dependencies
 
-sudo apt install `< debian-requirements.txt`
+apt install `< debian/apt-requirements.txt`
 # pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if no GPU
 # pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if AMD GPU
-
-python3.10 -m venv venv
-. venv/bin/activate
-
 pip install -r requirements.txt
 # pip install -r requirements-appserver.txt  # alternative
 # - pip install allemande deps
