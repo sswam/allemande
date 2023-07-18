@@ -136,10 +136,12 @@ END
 # -------- install allemande Python dependencies -----------------------------
 
 pip install -r requirements-core.txt
+pip install gradio
 pip install -r requirements.txt
 
 # -------- install whisper.cpp -----------------------------------------------
 
+mkdir ~/soft-ai
 cd ~/soft-ai
 git clone https://github.com/ggerganov/whisper.cpp.git
 cd whisper.cpp
@@ -149,7 +151,6 @@ make -j8
 
 # -------- install clip-interrogator -----------------------------------------
 
-mkdir ~/soft-ai
 cd ~/soft-ai
 git clone https://github.com/pharmapsychotic/BLIP.git
 git clone https://github.com/pharmapsychotic/clip-interrogator.git
