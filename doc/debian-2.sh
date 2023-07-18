@@ -139,6 +139,8 @@ pip install -r requirements-core.txt
 pip install gradio
 pip install -r requirements.txt
 
+rm -rf ~/.cache/pip
+
 # -------- install whisper.cpp -----------------------------------------------
 
 mkdir ~/soft-ai
