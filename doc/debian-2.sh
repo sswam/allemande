@@ -141,6 +141,8 @@ if [ -n "$PS1" ]; then
 	prompt_status() { if [ $? = 0 ]; then echo '# '; else echo -e '#!'; fi; }
 	export PS1='$(prompt_status)'
 	export PS2='#;'
+	stty stop ''
+	stty -ixon
 fi
 END
 
@@ -200,6 +202,8 @@ web-install
 # -------- test allemande tools ----------------------------------------------
 
 1sf 'What is the most famous tower in the world?'
+
+rm -r ~/llm.log
 
 # -------- TODO: install other allemande deps that are tricky ----------------
 
