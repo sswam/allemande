@@ -106,12 +106,13 @@ git config --global user.email $user@$server0
 git config --global user.name "$fullname"
 git config --global pull.rebase false 
 
-# -------- clone allemande ---------------------------------------------------
+# -------- clone allemande and use the main branch ---------------------------
 
 git clone https://github.com/sswam/allemande.git
 # git clone ucm.dev:allemande  # alternative
 # git clone git@github.com:sswam/allemande.git  # alternative
 cd allemande
+git checkout main
 
 # -------- install python3.10-distutils-bogus --------------------------------
 
@@ -170,6 +171,14 @@ END
 mkdir ~/my
 chmod go-rwx ~/my
 scp sam@ucm.dev:my/ai.env
+
+# -------- run setup scripts -------------------------------------------------
+
+cd ~/allemande
+. ./env.sh
+
+allemande-install
+web-install
 
 # -------- test allemande tools ----------------------------------------------
 
