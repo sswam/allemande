@@ -127,10 +127,21 @@ sudo apt-get -y clean
 
 python3.10 -m venv venv
 . venv/bin/activate
+
+# -------- bashrc additions --------------------------------------------------
+
 cat <<END >>~/.bashrc
 
+set -a
 . ~/allemande/venv/bin/activate
 . ~/allemande/env.sh
+. ~/my/ai.env
+
+if [ -n "$PS1" ]; then
+	prompt_status() { if [ $? = 0 ]; then echo '# '; else echo -e '#!'; fi; }
+	export PS1='$(prompt_status)'
+	export PS2='#;'
+fi
 END
 
 # -------- install allemande Python dependencies -----------------------------
@@ -175,6 +186,8 @@ END
 mkdir ~/my
 chmod go-rwx ~/my
 scp sam@ucm.dev:my/ai.env
+set -a
+. ~/my/ai.env
 
 # -------- run setup scripts -------------------------------------------------
 
