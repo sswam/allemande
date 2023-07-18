@@ -117,35 +117,26 @@ cd allemande
 
 sudo apt-get -y install ./debian/python3.10-distutils-bogus_1.0_all.deb
 
-# -------- install allemande dependencies
+# -------- install allemande Debian dependencies -----------------------------
 
 sudo apt-get -y install `< debian-requirements.txt`
 sudo apt-get -y clean
-# pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if no GPU
-# pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if AMD GPU
+
+# -------- set up a Python3.10 virtual environment ---------------------------
+
+python3.10 -m venv venv
+. venv/bin/activate
+echo $'\n''. ~/allemande/venv/bin/activate' >> ~/.bashrc
+
+# -------- install allemande Python dependencies -----------------------------
+
 pip install -r requirements.txt
 # pip install -r requirements-appserver.txt  # alternative
-# - pip install allemande deps
-# - install other allemande deps, eg. whisper.cpp
-# - test allemande
 
-## Windows suggested
+# - TODO install other allemande deps, eg. whisper.cpp
+# - TODO test allemande
 
-# - remove edge shortcuts
-# - chrome
-# - firefox
-# - misc fixed font
-# - terminal use misc fixed
-# - windows search -> chrome or firefox
 
-## Debian suggested
-
-# - install ucm-* packages
-# - arcs
-# - ucm-tools
-# - remote access via sshd port forward
-# - ~/.vimrc: set mouse=a
-# - nvim rc load ~/.vimrc:
 
 mkdir -p ~/.config/nvim
 
