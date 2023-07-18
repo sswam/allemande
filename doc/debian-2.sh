@@ -177,5 +177,4 @@ scp sam@ucm.dev:my/ai.env
 
 # -------- TODO: install other allemande deps that are tricky ----------------
 
-#   - whisper.cpp
 #   - automatic1111 stable diffusion webui
