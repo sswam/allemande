@@ -1,0 +1,72 @@
+# lex - use AI to help conduct interviews
+
+- named after Lex Fridman of the AI podcast
+
+## example applications
+
+- elders: help to interview elders to assist with writing a book about their lives (biography)
+- meetings: meeting facilitator / conductor
+- ikigai: ikigai assistant, help people explore their interests and find their ikigai
+- personal: provide a user with friendship / counselling / personal development
+- project: assist to plan and develop a project
+
+## features
+
+- stand alone AI interviewer (option)
+- collaborative interviewing with a human interviewer, can offer ideas
+	- potentially fully multi-user, like facilitating a meeting
+- mission: the AI is aware of a mission or purpose of the directed interview
+- agenda: the AI is aware of the plan for the interview (or meeting agenda)
+	- scope of what is to be covered, topics, etc
+	- for each topic, an estimate of how much raw interview text is required for that topic
+	- AI can optionally help draft such a plan, as a pre-interview task
+		- the plan for large projects can be broken into several session plans, i.e. multiple interviews / sessions, AI can help with this
+	- variable: the plan isn't fixed in stone
+		- unplanned new topics can arise during the interview, and be added to the plan / agenda
+		- i.e. the scope can change, plan / agenda can be added to or revised
+	- agenda might be a better word to use than plan?
+- voice chat
+	- the system can record and transcribe audio from human participants into the chat
+		- should be able to identify who is speaking
+			- basic spectral analysis
+				- basic averaging to give a voice profile / voice print
+				- time series, as an image
+			- classifier
+				- nearest match / vector similarity
+				- AI-based classifier if needed (probably not)
+			- how is it normally done, e.g. the OK Google stuff
+			- will maybe need an intro phase
+			- simpler / baseline alternatives
+				- human or an LLM can tag the chat with who is speaking later
+	- the AI could optionally speak
+		- that's not needed for the interview assistant role (for elders)
+			- the human interviewer can just read the AI suggestions
+- background
+	- the system can optionally use background information provided in documents
+	- overview and summary of this info in the context of each LLM request
+	- index the info into a vector database, for reference as needed during the discussion
+		- e.g. a codebase, papers, a reference book
+	- the system could perform a web search and fetch documents to get additional info as needed (for some applications), this would be similar to a vector DB indexing the whole web
+- context
+	- record the whole discussion (of course), including audio and plain text
+	- summarize the discussion so that the LLM (and humans) can know what has been covered already
+		- needed because the full text will become too large for the LLM to handle in one gulp, and for efficiency / economy
+	- 2nd-level summary, with just the topics / areas covered not the details
+	- link the summaries to the source material
+	- each summary point should also include a measure of how much text was collected on that topic, so we can know if that topic is "finished" or needs more content
+
+
+## notes
+
+- query AIs rather than just chat
+	- LLMs seem to do a better job when presented with all the necessary info in each query, rather than referring back to a series of messages in the chat history
+		- measure and confirm this somehow?
+		- this can also be more efficient (fewer tokens needed)
+
+
+## other ideas
+
+- we could use speech synthesis based on the elder's own voice to produce an audio-book version of their biography read in their own voice
+- this present tool is focused on the interviewing phase, but we could also ask the LLM to write the biography in the style of the elder's own speech, to some extent
+	- this would work well together with the speech synthesis
+	- some compromise between the elder's style of speech and making it readable with good grammar
