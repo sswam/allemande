@@ -86,7 +86,7 @@ AGENTS_REMOTE = {
 		"map": {
 			"Claud": "Claude",
 		},
-		"model": "claude-v1-100k",
+		"model": "claude-2",
 		"default_context": 100,
 	},
 	"Claude Instant": {
@@ -94,7 +94,7 @@ AGENTS_REMOTE = {
 		"map": {
 			"Clia": "Claude",
 		},
-		"model": "claude-instant-v1-100k",
+		"model": "claude-instant-1",
 		"default_context": 1000,
 	},
 	"Bard": {
