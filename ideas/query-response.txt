@@ -130,3 +130,13 @@ We need an event queue (or mutex) to make sure things happen in some order.
 			- we'd probably stream audio to the server, and do speech recognition on the server using whisper or something like the mike tool  (rename to mik)
 
 I should try using AI to organize this chaotic mess of thoughts.
+
+
+Files / file uploads:
+
+I see that Claude now supports uploading textual attachments (files) into the chat,
+e.g. https://youtu.be/oVsHikXgK9Y?si=PQ06i-m3ygVM7E7l&t=25
+
+We could offer similar, and we can potentially analyse and summarize files using Claude and other tools (for images, etc), as with Alfred / Giles. We can also generate images and documents. We can edit or process / revise image and document files. The idea of a editable / mutable file is good, but in that case we also need a way to look back into its history, based on git I guess.
+
+Program files are an important type of document. For web dev, we often need to work on several files together (HTML, CSS, JS, server-side scripts / functions, etc).
