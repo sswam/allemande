@@ -1,0 +1,132 @@
+Confidence:
+
+# llm query "At what temperature Kelvin will water's molecular bonds break down, i.e. the H20 splits into separate atoms or H2 and O2 molecules, etc? Please reply in a single sentence, but some extra info is welcome. If you don't know for sure, please say so. Please review your answer at the end, and add a final confidence score e.g. 80% if you are 80% sure that your answer is correct. I would prefer that you underestimate the confidence score."
+I am not certain what temperature in Kelvin water's molecular bonds break down, but it typically requires temperatures above 2500°C (2773K) for water molecules to dissociate into separate atoms of hydrogen and oxygen due to thermal decomposition, although the precise temperature can vary depending on various factors. Final confidence score: 65%
+
+Thought process:
+
+We can ask the LLM to spell out its thought process step by step (also "take a deep breath"!). The thought process might be hidden by default in the output.
+
+Staying in character:
+
+We can ask the LLM to stay in character, and if it needs to break character, to do so in [square brackets]  (or some unambiguous syntax); perhaps a separate section like # Notes (Breaking Character), and the main reply could be # Message from Emmy (In Character)
+
+Extra inputs and outputs:
+
+- mission (what we are working on or talking about)
+- summary (of discussion / progress so far)
+- characters (info on each chat participant)
+	- the AI could also write info it has learned about each character (especially human users) to a supplementary character file; this is to the character file as the summary is to the mission, I guess.
+
+The form of a query / response might be something like this:
+
+
+# Mission
+
+...
+
+# Person: Sam
+
+...
+
+# Person: Emmy
+
+...
+
+# Summary
+
+...
+
+# Latest Chat
+
+...
+
+# Task
+
+Please respond as Emmy using markdown, in one or more sections with level 1 headings: "Thought Process (step by step)", "Message from Emmy", "Add to Summary", "Add to [Person or Topic] File"
+
+
+
+Other ideas:
+
+- Bot can take other actions, such as using a clock / scheduler, sending a private message, ...
+- Check actions from Auto-GPT too: https://github.com/Significant-Gravitas/Auto-GPT
+
+
+Problems:
+
+Perhaps the chat will not flow so naturally if we use this method. It should be optional not mandatory. It's so different the we had better use a completely separate implementation, don't just add it to chat/ally_chat.py
+
+An alternative, we could do the chat as normal, prepend mission and other input info, and run a separate AI process afterwards to make summaries and such (perhaps using a cheaper faster model such as Clia).
+
+Pros and cons:
+
+- pro: simpler to implement
+- pro: flow of previous chat and response
+- pro: more modular
+- con: requires two separate AI requests
+- pro: secondary tasks such as updating thesummary could be done in the background
+- pro: can use a cheaper, faster model such as Clia for secondary tasks
+
+
+Preparing input:
+
+Another idea, we could run a cheap, fast AI to filter or otherwise select input info for the main AI, or some other sort of input-preprocessing...?
+Even a multi-step process.
+
+Ideas for preparing input:
+
+- search online (google, wikipedia, etc), fetch page/s, clean, summarize (like giles) with the given topic or query in mind; do refer to or use giles and giles_get for this
+- query a vector DB, again perhaps summarize and fiter the output
+- query a hierarchical document set, e.g. given a list of files (and folders), choose which files to read, then read the major headings, choose which sections to read, etc.
+	- concepts from books: use table of contents, use index
+	- concepts from internet: use search engine, use site map
+
+
+
+- rather than incorporating these tools into a character, we could
+	1. provide tools for the characters to use; and an option to use a "break out room" and use the tools before coming back with a response in the main chat, or
+	2. run the tools alongside the main chat, this could work for summary and for research tools, they could be separate agents. They could output into the main chat, but be displayed off to one side.
+	- run in forground or maybe background
+	- I think it might be better to run these agents explicitly.
+		- commands, i.e. invoking agents by name
+		- user-friendly UI for this?  I quite like the named-agents approach though.
+	3. conductor
+		- enhance it so it can decide when to invoke different agents
+			- can we do it without AI?  as now
+			- or using a very cheap embedding or model
+			- or using Clia
+	- After this is working well and we have experience using it, we can maybe make a character which automatically does these things.
+		- Ideally for each request, it would use a cheap model to determine which actions are needed (research, think/reply, summarise). It would need to decide whether to append to the summary after the reply. Maybe don't do this immediately, rather at the start of the next request, for efficiency.  Or, don't prematurely optimise.  Research might be somewhat time-consuming, so we shouldn't do it if not necessary.
+
+
+Idea for the summary, summarize older messages, whatever has gone back past the "Latest Chat" context window. (But this varies by model at the moment) Intended to be 10 messages for GPT-4 but it's actually only 10 lines at the moment!
+
+Give the user the ability to specify how many messages the AI should look back on. I feel that humans don't look back very far in conversation. Perhaps we keep a small "stack" or set of topics to revisit, though. Short term memory. The summary file can achieve this.
+
+The summary file should maybe index into the chat. If we allow to edit chat history, and remove and add lines, this means we need to number the messages in the chat history files (explicit numbering). If inserting lines how would we number them? This is complex, perhaps the summary file should not index into the chat. A disadvantage of using human-readable text files. But there are also advantages.
+	- a solution, keep the chat history append-only, and if we do need to edit it, consider that to be a whole separate chat. Summary files would be copied and renumbered.
+	* or, if a human is messing with the chat history, they should also be responsible for updating the summary   *** this is easy, and we should do it this way for a start
+		- if it goes wrong, no big deal
+	- or, a tool to help update the summary, it's not too difficult, could do it based on a diff file I guess
+	- commit chat history and other files to git at every change, and especially before and after "revising history", so we can figure out what happened if necessary
+
+
+Scheduler:
+
+The clock / scheduler is related to the conductor module, I guess.
+
+
+We need an event queue (or mutex) to make sure things happen in some order.
+	- current bug (feature?), users can send another message while AI is thinking.
+		- this would be okay but we need to indicate somehow that the AI didn't see that message before its response, maybe grey it out or something
+		- another possibility, we could cancel the AI's response and redo it, but that's wasteful
+		- we could disable this, or allow such "talking over eachother", it's pretty harmless in text chat
+		- if we stream the AI's response or even show a placeholder, that could help to avoid the problem
+			- but I kind of like the instant-message behavior rather than streaming response; it could be a user option
+			- if we do AI voice chat at some point we will want to stream the response so that it can start talking promptly
+			- we would have lots of small writes to the chat files; not a problem with buffer-cache, and utterly insignificant compared to AI processing of course!  there would be more packats / data going to the clients too, which is potentially more of a problem, but still minor; again, it could be a user-level option
+		- with speech recognition from users, we could stream the user's speech (as audio and/or text) to the server immediately, similar to AI reponse streaming
+			- we'd probably stream audio to the server, and do speech recognition on the server using whisper or something like the mike tool  (rename to mik)
+
+I should try using AI to organize this chaotic mess of thoughts.
