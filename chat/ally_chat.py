@@ -530,6 +530,21 @@ def history_write(file, history, delim="\n", mode="a", invitation=""):
 		f.write(text)
 
 
+def summary_read(file, args):
+	""" Read summary from a file. """
+	text = ""
+	if file and os.path.exists(file):
+		with open(file, encoding="utf-8") as f:
+			text = f.read()
+	# Indent it all and put Summary: at the start
+	if text:
+		text = "Summary:" + re.sub(r'^', '\t', text, flags=re.MULTILINE)
+		lines = text.split(args.delim)
+	else:
+		lines = []
+	return lines
+
+
 def interactive(model, args):
 	""" Interactive chat with the model. """
 	history = history_read(args.file, args)
@@ -557,7 +572,7 @@ def interactive(model, args):
 		pass
 
 
-def run_search(agent, query, file, args, history, history_start, limit=True, mission=None):
+def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None):
 	""" Run a search agent. """
 	if args.local:
 		raise ValueError("run_search called with --local option, not an error, just avoiding to run it on the home PC")
@@ -608,11 +623,14 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 
 	# Load mission file, if present
 	mission_file = re.sub(r'\.bb$', '.m', file)
-	logger.warning("remote_agent, mission_file = %r", mission_file)
 
 	mission = history_read(mission_file, args)
 	while mission and mission[-1] == "":
 		mission.pop()
+
+	# Load summary file, if present
+	summary_file = re.sub(r'\.bb$', '.s', file)
+	summary = summary_read(summary_file, args)
 
 #	logger.warning("loaded mission: %r", mission)
 #	logger.warning("loaded history: %r", history)
@@ -645,7 +663,7 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 		query = list(chat.lines_to_messages([query1]))[-1]["content"] if query1 else ""
 		logger.debug("query: %r", query)
 		agent = AGENTS[args.bot.lower()]
-		response = run_agent(agent, query, file, args, history, history_start=history_start, mission=mission)
+		response = run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
 		history.append(response)
 		history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
 
@@ -663,14 +681,14 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 	process_file(model, file, args, history_start=history_start, count=count, max_count=max_count)
 
 
-def run_agent(agent, query, file, args, history, history_start=0, mission=None):
+def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
 	""" Run an agent. """
 	fn = agent["fn"]
 	logger.debug("query: %r", query)
-	return fn(query, file, args, history, history_start=history_start, mission=mission)
+	return fn(query, file, args, history, history_start=history_start, mission=mission, summary=summary)
 
 
-def local_agent(agent, _query, file, args, history, history_start=0, mission=None):
+def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None):
 	""" Run a local agent. """
 	if args.remote:
 		raise ValueError("local_agent called with --remote option, not an error, just avoiding to try to run it on the server")
@@ -751,7 +769,7 @@ def apply_maps(mapping, mapping_cs, context):
 			logger.warning("map: %r -> %r", old, context[i])
 
 
-def remote_agent(agent, query, file, args, history, history_start=0, mission=None):
+def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
 	""" Run a remote agent. """
 	if args.local:
 		raise ValueError("remote_agent called with --local option, not an error, just avoiding to run it on the home PC")
@@ -774,12 +792,16 @@ def remote_agent(agent, query, file, args, history, history_start=0, mission=Non
 			context.pop(0)
 		# prepend mission / info / context
 		# TODO try mission as a "system" message?
+		context2 = []
 		if mission:
-			context = mission + context
+			context2 += mission
+		if summary:
+			context2 += summary
+		context2 += context
 		# put remote_messages[-1] through the input_maps
-		apply_maps(agent["input_map"], agent["input_map_cs"], context)
+		apply_maps(agent["input_map"], agent["input_map_cs"], context2)
 
-		context_messages = list(chat.lines_to_messages(context))
+		context_messages = list(chat.lines_to_messages(context2))
 
 		logger.warning("DEBUG RM: context_messages: %r", context_messages)
 
@@ -848,7 +870,7 @@ def remote_agent(agent, query, file, args, history, history_start=0, mission=Non
 	return response.rstrip()
 
 
-def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None):
+def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None):
 	""" Run a shell agent. """
 	if args.local:
 		raise ValueError("safe_shell called with --local option, not an error, just avoiding to run it on the home PC")
