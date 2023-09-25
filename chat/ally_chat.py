@@ -781,7 +781,7 @@ def remote_agent(agent, query, file, args, history, history_start=0, mission=Non
 	else:
 		query = query.rstrip() + "\n"  # XXX not used
 
-		# todo use a system message?
+		# TODO Use a system message?
 
 		n_context = agent["default_context"]
 		context = history[-n_context:]
