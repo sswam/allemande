@@ -1,0 +1,4 @@
+A health monitor app to detect severe sudden illness such heart attack, stroke,
+fall, by listening to someone while they sleep (or maybe also while awake),
+and if app suspects a problem and the user does not respond, it alerts next of
+kin with an alarm that would wake them, and/or alerts emergency services.
