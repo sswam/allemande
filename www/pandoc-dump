@@ -29,7 +29,7 @@ prepare_input() {
 }
 
 if [ "$clean" = 1 ]; then
-	prepare_input | pandoc_convert | clean | single-blank-lines.pl
+	prepare_input | pandoc_convert | clean
 else
 	prepare_input | pandoc_convert
 fi
