@@ -12,9 +12,10 @@ s{(\bAll reactions:|### \d+ comments\b|\bSee more\b)}{}g;
 s/^-? *:::.*//;	# remove pandoc divs
 s/<.*?>//g;	# remove html tags
 s/!(\[.*?\])?\(.*?\)//g;	# remove images
-s{(https://\S+?)\?[^\s\)"']*}{$1}g;	# remove query strings from urls
+s{(https?://\S+?)\?[^\s\)"']*}{$1}g;	# remove query strings from urls
 s{(\(/\S+?)\?[^\s\)"']*}{\($1}g;	# remove query strings from relative urls
 s{\((https://www.facebook.com)?/photo/|https://l.facebook.com/l.php\)}{}g;	# remove facebook photos
+s{\[([^]]+?)\]\(([^)]+?) "([^"]*?)"\)}{[$1]($2)}g;	# remove markdown link titles
 
 1 while s/\[+[\s\d]*\]+//g;	# remove empty square brackets
 s/[\[\(\{\(\<]+$//g;	# remove broken brackets
