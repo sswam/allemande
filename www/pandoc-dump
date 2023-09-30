@@ -18,6 +18,7 @@ pandoc_convert() {
 clean() {
 	pandoc-dump-clean |
 	single-blank-lines.pl
+#	pandoc-dump-clean-2
 }
 
 prepare_input() {
@@ -29,7 +30,7 @@ prepare_input() {
 }
 
 if [ "$clean" = 1 ]; then
-	prepare_input | pandoc_convert | clean
+	prepare_input | pandoc-dump-clean-html | pandoc_convert | clean
 else
 	prepare_input | pandoc_convert
 fi
