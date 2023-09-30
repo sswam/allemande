@@ -22,6 +22,11 @@ s/[\[\(\{\(\<]+$//g;	# remove broken brackets
 s/^[\]\)\}\>]+//g;	# remove broken brackets
 s/\s+/ /g;	# remove extra whitespace
 s/^\s+$//;	# remove empty lines
+s/-{4,}/---/g;	# shorten lines of dashes, e.g. table row lines
+s/_{4,}/___/g;	# shorten lines of underscores
+s/={4,}/===/g;	# shorten lines of equals signs
+s/^[-_=+:| ]+$//;	# clear lines that are only drawing horizontal lines and such
+s{\^(\[\\\[\d+\\\]\]\(#cite_note[^)]*?\))+\^}{}g;	# remove wikipedia cite notes
 
 my $ok = 1;
 $ok &&= !/\bdata:iamge\b/;
