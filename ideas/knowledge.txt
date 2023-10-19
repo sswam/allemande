@@ -1,0 +1,17 @@
+I wonder if we trained an LLM in such a way that it would not remember so much general knowledge, perhaps that could free up more mind-space for reasoning and problem solving, or we could get by with using smaller models.
+
+Simple knowledge lookup is not really an AI problem, we can already look up knowledge efficiently by much simpler means. There's not much point in getting the model to memorize a whole bunch of facts that we can easily provide to it as input.
+
+These models certainly tend to remember more general knowledge than most if not all humans. For example, I know that LLaMA 1 knows a whole lot of details about tourist attractions in various cities around the world! I think that this is not really necessary, as we can do a web search or index into a vector DB to provide them with the background knowledge that they might need to answer any particular question.
+
+We would need to train it using examples where any requisite knowledge is provided in the context. It would still need to understand the basic language and have some general knowledge though.
+
+AI summary:
+
+The idea is to train LLMs (Large Language Models) in a way that they do not have to remember excessive general knowledge. This would free up mental capacities for reasoning and problem-solving. While it's not an AI problem to look up knowledge, LLMs tend to remember more general knowledge than humans, even though it's unnecessary as we can easily provide the information as input. Training LLMs with a focus on contextual knowledge and understanding basic language would still be necessary.
+
+
+Here is a short summary:
+
+Training LLMs to utilize contextual knowledge rather than retain excessive general knowledge could improve reasoning and problem-solving, while relying on external knowledge sources as needed rather than extensive memorization within the models.
+
