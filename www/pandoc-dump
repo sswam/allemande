@@ -2,6 +2,7 @@
 # pandoc-dump:	Convert HTML to Markdown, as cleanly as possible.
 
 c=1	# clean
+m=1	# metadata
 
 . opts
 
@@ -9,7 +10,7 @@ html="$1"
 url="${2:-}"
 
 clean=$c
-title=`html-title < "$html"`
+metadata=$m
 
 pandoc_convert() {
 	pandoc --wrap=none -f html -t markdown
@@ -21,16 +22,29 @@ clean() {
 #	pandoc-dump-clean-2
 }
 
-prepare_input() {
-	printf "<h1>title: %s</h1>\n" "$title"
+show_metadata() {
+	local title=`html-title < "$html"`
+	printf "title: %s\n" "$title"
 	if [ -n "$url" ]; then
-		printf "<h2>From: %s</h2>\n" "$url"
+		printf "From: %s\n" "$url"
 	fi
+	echo
+}
+
+prepare_input() {
+#	printf "<h1>title: %s</h1>\n" "$title"
+#	if [ -n "$url" ]; then
+#		printf "<h2>From: %s</h2>\n" "$url"
+#	fi
 	cat "$html"
 }
 
+if [ "$metadata" = 1 ]; then
+	show_metadata
+fi
+
 if [ "$clean" = 1 ]; then
-	prepare_input | pandoc-dump-clean-html | pandoc_convert | clean
+	< "$html" pandoc-dump-clean-html | pandoc_convert | clean
 else
-	prepare_input | pandoc_convert
+	< "$html" prepare_input | pandoc_convert
 fi
