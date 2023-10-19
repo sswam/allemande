@@ -29,6 +29,6 @@ s/^[-_=+:| ]+$//;	# clear lines that are only drawing horizontal lines and such
 s{\^(\[\\\[\d+\\\]\]\(#cite_note[^)]*?\))+\^}{}g;	# remove wikipedia cite notes
 
 my $ok = 1;
-$ok &&= !/\bdata:iamge\b/;
+# $ok &&= !/\bdata:iamge\b/;    # TODO This has a typo, so I guess it never worked. What was the intention? We could just remove such images instead of cancelling the whole page?
 
 print "$_\n" if $ok;
