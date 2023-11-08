@@ -17,10 +17,10 @@ if (/<meta name="generator" content="MediaWiki/) {
 	s{<h2><span class="mw-headline" id="See_also">.*}{}s;
 	s{<h2><span class="mw-headline" id="References">.*}{}s;
 } else {
-	if (m{<main\b[^>]*>\s*(.*)\s*</main>}si) {
+	if (m{<main\b[^>]*>\s*(.*?)\s*</main>}si) {
 		$_ = "$1\n";
 	}
-	if (m{<article\b[^>]*>\s*(.*)\s*</article>}si) {
+	if (m{<article\b[^>]*>\s*(.*?)\s*</article>}si) {
 		$_ = "$1\n";
 	}
 }
