@@ -74,7 +74,7 @@ AGENTS_REMOTE = {
 	"GPT-4": {
 		"name": "Emmy",
 		"model": "gpt-4",
-		"default_context": 10,
+		"default_context": 20,
 	},
 	"GPT-3.5": {
 		"name": "Dav",
