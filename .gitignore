@@ -28,3 +28,4 @@ adm/nginx/banned_ips.conf
 tracks
 __pycache__
 *.log
+sparkjoy

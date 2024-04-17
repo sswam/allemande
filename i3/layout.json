@@ -189,12 +189,12 @@
                        "y": 0
                     },
                     "marks": [],
-                    "name": "brain-local",
+                    "name": "brain",
                     "percent": 0.0909090909090909,
                     "swallows": [
                        {
                        "instance": "^xterm$",
-                       "title": "^brain-local$"
+                       "title": "^brain$"
                        }
                     ],
                     "type": "con"

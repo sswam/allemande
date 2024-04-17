@@ -25,7 +25,7 @@ server_start:
 server_stop:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
 
-beorn: clean mount opal-loop.xt run-i3-screen
+beorn: clean mount run-i3-screen
 i3: connect-i3-screen
 
 server:: stop
@@ -39,14 +39,14 @@ run-i3-screen:: run
 connect-i3-screen:: i3-layout
 connect-i3-screen:: connect
 
-run: frontend backend dev flash.xt alfred.xt
+run: frontend backend dev flash.xt alfred.xt opal-loop.xt
 # vi-online.xt
 # pro-dev 
 connect: frontend backend.xtc dev.xtc pro-dev.xtc flash.xtc alfred.xtc vi-online.xtc
 disconnect:
 	psgrep 'xterm -e screen -x [a]llemande -p ' | k 2 | xa kill
 
-frontend: firefox-webchat-online vi-online
+frontend: firefox-webchat-online vi-online.xt
 # firefox-pro-online chrome-webchat-online
 frontend-local: vscode-local firefox-webchat-local firefox-pro-local chrome-webchat-local
 
