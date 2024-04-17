@@ -1,0 +1,104 @@
+MISSION:
+
+Please write a detailed, interesting, factual and engaging blog post for $query. Use the following exact sections and headings. Write prose, not dot-point lists, please. Do not repeat reference to Bass Coast and South Gippsland too often, use only where relevant and where the reference will have the greatest impact.
+
+Please include as much factual information and detail as you can about $query. Cover a comprehensive scope of In The Area (What's Around near $query, keep this to within 10 km radius, include and focus on attractions, other relevant and connected tourism and sightseeing locations, towns, markets, etc. anything relevant to tourists and visitors, major drawcards, etc. Keep this as close as possible and do not go further than 10km radius away), Events (relevant to $query and other major drawcards in the immediate vicinity of $query), Local Groups near $query (including Community Groups, Emergency Services, Sporting Clubs and Groups), Eat and Drink (What to eat and drink or immediately near $query. Try to be as relevant as possible to $query, or create a relevant Connected Experience), Accessibility at $query (cover as comprehensive a list as possible for Accessible Parking, Accessible Access (Ramps, Doorways), Accessible Payment Methods (check-out lanes, EFTPOS within reach, etc.), Accessible Lift Access, Accessible Bathrooms, Accessible Changerooms, Accessible Shower Facilities, Accessible Pool Entry and Exit, Audio Loops for people with Hearing Impairment, Appropriate Signage, Braille, Tactile Paving, WCAG-2 Compliance, etc.). Do not mention other areas or locations. If insufficient info was found, please fill in the sections based on your knowledge if and only if you have factual and relevant knowledge and if you can remain factual and stay relevant.
+
+Very Important: Please include ALL sections: 7. In the Area, 8. Events, 9. Local Groups, 10. Eat and Drink, 11. Accessibility, 12. Recap.
+
+Use the following instructions to guide you:
+
+Purpose of piece: To introduce tourists and visitors to the unique environmeny,  locations, landmarks, attractions and culture of $query and the region immediately around $query. Do not mention locations further away than about 20km.
+
+Type of publication: A peak body regional tourism website. The content includes this copy, photo galleries, videos, interactive maps, etc. This is essentially an advertisement and travel guide to the region around $query.
+
+Style of language: Informative, engaging, and inviting. Use descriptive language to paint a picture of $query, while remaining factual. Try not to be too repetitive between sections.
+
+Exclusions: inappropriate language, inacurate information
+
+Write the article in the style of: Anthony Bourdain
+
+Do not mention Anthony Bourdain.
+
+Do not mention food, unless relevant to $query.
+
+Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown#Hyperlinks), including links to major pages such as:
+- official social media pages
+- wikipedia pages
+- www.visitgippsland.com.au (specific page under this domain relevant to $query, preferably not just the main site. Links must be valid. If uncertain about their validity, default to the main site url)
+- www.visitsouthgippsland.com.au (specific page relevant to $query)
+- www.visitphillipisland.com.au (specific page relevant to $query)
+- www.visitvictoria.com (specific page)
+- www.australia.com/en (specific page)
+- www.visitbasscoast.com.au (specific page relevant to $query)
+- www.visitpromcountry.com.au (specific page relevant to $query)
+- www.pibn.com.au (specific page)
+- www.visitgrantville.com.au (specific page relevant to $query)
+
+NB: make sure to include all sections, with exactly the headings given, even if information is not available
+
+Please use at least one sub-heading / sub-section in each section. Use additional sub-headings as appropriate. Follow the template below exactly.
+
+--- start template ---
+
+## 7. In the Area
+
+### [descriptive subheading 1]
+
+[What's Around near $query and the immediate vicinity of $query. Keep this very close and local and relevant. Cover a wide range of options such as Attractions, other tourist destinations, major/significant nature and environmental locations, Events, Cultural Experiences, markets, etc. This is to promote the area to tourists and visitors. Be factual and be very accurate); 2 paragraphs]
+
+[continuing What's Around or In The Area of $query?; 2-4 paragraphs. Sub-headings where beneficial]
+
+## 8. Events
+
+### [descriptive subheading 1]
+
+[What's Events are on at $query or at locations in the immediate vicinity of $query? (events) Be accurate, factual, comprehensive and specific with any events listed. Include embedded links if valid and relevant; 2-4 paragraphs]
+
+[continuing What's On at $query?; 2-4 paragraphs. Sub-heading where beneficial]
+
+[optional: more subheadings and content if needed]
+
+## 9. Local Groups
+
+### [descriptive subheading 1]
+
+[Who's Around $query? Mention relevant Community Groups, Local Associations, Sports Clubs, etc. at or in the immediate vicinity of $query. Be accurate and factual. Include embedded links if valid and relevant; 2-4 paragraphs. Sub-headings where beneficial]
+
+[continuing who's around? (resident clubs and associations); 2-4 paragraphs]
+
+[optional: more subheadings and content if needed]
+
+## 10. Eat and Drink
+
+### [descriptive subheading 1]
+
+[What is there to Eat and Drink at $query or the immediate vicinity around $query. Mention specific menu items if at $query. Otherwise, list relevant local Restaurants, Bars, Pubs, Cafes, fast-food and takeaway locations, etc.). Be accurate and factual. Include embedded links if valid and relevant; 2-4 paragraphs]
+
+[continuing What is there to Eat and Drink at $query or in the immediate vicinity of $query; 2-4 paragraphs. Sub-headings where beneficial]
+
+[optional: more subheadings and content if needed]
+
+## 11. Accessibility
+
+### [descriptive subheading 1]
+
+[What Accessibility features are available at $query or in the immediate vicinity of $query. Be as comprehensive and factual as possible, lease include Accessible Parking, Accessible Access (Ramps, Doorways), Accessible Payment Methods (check-out lanes, EFTPOS within reach, etc.), Accessible Lift Access, Accessible Bathrooms, Accessible Changerooms, Accessible Shower Facilities, Accessible Pool Entry and Exit, Audio Loop for people with a Hearing Impairment, Appropriate Signage, Braille, Tactile Paving, Audio alerts, etc. for people with disabilities; 1 to 4 paragraphs]
+
+[optional: more subheadings and content if needed]
+
+## 12. Recap
+
+### [descriptive subheading 1]
+
+[a lengthy stylish recap summary of $query; unique, evocative, and candid; use Anthony Bourdain's style without overmentioning gems]
+
+[continuing with the second paragraph of the recap]
+
+[continuing with the third paragraph of the recap]
+
+[optional: more content if needed]
+
+--- end template ---
+
+Thanks for being awesome!

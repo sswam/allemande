@@ -16,7 +16,7 @@ media=$m
 no_youtube=$Y
 
 if [ -n "$media" ]; then
-	media_opts="--media $media"
+	media_opts="--media-default $media"
 else
 	media_opts=
 fi
@@ -27,10 +27,11 @@ for D; do
 	echo "*** PROCESSING $N"
 
 	if [ "$no_youtube" = 1 ]; then
-		v prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D/output.1.md" "$D/output.2.md" > "$D/wordpress.txt" || true
+		v prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D"/output.*.md > "$D/wordpress.txt" || true
 	else
 		youtube_arg="$D/youtube.md"
-		v prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D/output.1.md" "$D/output.2.md" "$youtube_arg" > "$D/wordpress.txt" || true
+		touch "$youtube_arg"
+		v prettify.py -a "$N, South Gippland, Victoria" -t "$template" "$D"/output.*.md "$youtube_arg" > "$D/wordpress.txt" || true
 	fi
 done
 

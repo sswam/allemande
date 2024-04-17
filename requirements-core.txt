@@ -32,15 +32,6 @@ lxml
 pytest
 spacy
 
-pydub
-SpeechRecognition
-openai-whisper
-sounddevice
-soundfile
-gTTS
-TTS
-# clip-interrogator
-
 watchdog
 
 anthropic
@@ -53,7 +44,6 @@ watchfiles
 inotify
 
 websockets
-pyaudio
 
 markdown
 aiofiles
@@ -64,10 +54,4 @@ pyjwt
 supabase_py
 markdown-katex
 
-segment-anything
-
 tiktoken
-
-pyalsaaudio
-wordpress_api
-selenium

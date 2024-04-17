@@ -1,0 +1,6 @@
+email integration
+
+- enable AIs to send and receive email
+- enable AIs to perform secretarial services for a user, given access to their mailbox
+- possible integration with other communications services, such as other chat apps
+	- it would be awesome if Ally Chat can bring in messages from other apps, perhaps using libpurple

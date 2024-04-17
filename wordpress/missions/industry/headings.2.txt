@@ -1,0 +1,62 @@
+## 1. Page Metadata: Description
+## 2. Page Metadata: Tags
+## 3. Business Website URL
+## 4. Business Logo
+## 5. Business Logo alttext
+## 6. Website
+## 7. Business Name
+## 8. Trading As
+## 9. ABN
+## 10. ACN
+## 11. Industry Category
+## 12. Business Description
+## 13. Address
+## 14. BizHours
+## 15. Service Areas
+## 16. BIZACCESSIBILITY
+## 17. BIZAFFILIATIONS TEXT
+## 18. BIZREVIEWS
+## 19. BIZRATINGS
+## 20. Business Tripadvisor URL
+## 21. BIZAWARDS
+## 22. Certifications/Licenses
+## 23. Owner/Management
+## 24. Year Established
+## 25. Payment Methods
+## 26. Accessibility Information
+## 27. Pricing
+## 28. Special Offers/Promotions
+## 29. Delivery/Shipping Information
+## 30. Return/Refund Policy
+## 31. COVID-19 Measures
+## 32. Photos
+## 33. Business Associations/Affiliations
+## 34. Phone Number
+## 35. Email
+## 36. Official Facebook Page
+## 37. Official LinkedIn Page
+## 38. Official Instagram Page
+## 39. Official YouTube Channel
+## 40. Official Vimeo Channel
+## 41. Official Twitter Page
+## 42. Wikipedia Page
+## 43. Featured Image for Page Header
+## 44. Featured Images for 'See Their Work' Section
+## 45. Featured Image for 'Getting There' Section
+## 46. Featured Image for 'Eat & Drink' Section
+## 47. Featured Image for 'Amenities' Section
+## 48. Featured Image for 'Accessibility' Section
+## 49. Featured Image for 'Events' Section
+## 50. Featured Image for 'Connected Experiences' Section
+## 51. Featured Image for 'Stay' Section
+## 52. Featured Image for 'Play' Section
+## 53. YouTube Video for the Whole Page
+## 54. YouTube Video for the 'See Their Work' Section
+## 55. YouTube Video for the 'Getting There' Section
+## 56. YouTube Video for the 'Eat & Drink' Section
+## 57. YouTube Video for the 'Amenities' Section
+## 58. YouTube Video for the 'Accessibility' Section
+## 59. YouTube Video for the 'Events' Section
+## 60. YouTube Video for the 'Connected Experiences' Section
+## 61. YouTube Video for the 'Stay' Section
+## 62. YouTube Video for the 'Play' Section

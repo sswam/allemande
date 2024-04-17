@@ -69,5 +69,7 @@ fi
  
 ln -sf "$PWD/haproxy/haproxy.cfg" -t /etc/haproxy/
 
-systemctl restart nginx
-systemctl restart haproxy
+service nginx stop
+service haproxy stop
+service nginx start
+service haproxy start

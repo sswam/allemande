@@ -12,32 +12,38 @@ After following this guide, continue with the debian.txt install notes.
 - install windows terminal for MS Store
 - disable accessibility shortcuts unless needed (press shift repeatedly)
 
-## Essential WSL Setup
+## Essential WSL2 Setup
 
-- open terminal, type:  wsl --install -d debian
+- open Windows store and install Windows Terminal
+- open Terminal, pin to taskbar
+- type:  wsl --install -d debian
 - enter username: first name in lower-case
 - enter password twice
 - restart Windows
 
 ## Suggested
 
+- disable Windows Defender Anti-Virus in group policy editor:
+  - https://www.windowscentral.com/how-permanently-disable-windows-defender-windows-10
 - enable dark mode for windows and apps
 - set background to a nice free HD image
 - set a custom highlight colour
 - install font MiscFixedSC13.ttf from allemande/fonts
-- set terminal default font: MiscFixedSC13 9 point
-- set terminal block cursor
-- set terminal preferences to default to Debian
-- set terminal no scrollbar
+- set Terminal default font: MiscFixedSC13 9 point
+- set Terminal block cursor
+- set Terminal preferences to default to Debian
+- set Terminal no scrollbar
 - install and pin Chrome and Firefox, remove Edge shortcuts
 - change brightness automatically
 - night light
-- barrier (doesn't seem to work on surface pro)
-- add barrier to start folder
-- install Zoom
+- barrier (doesn't seem to work on surface pro), add to start folder
 - install firefox
 - install chrome
+- install gimp
+- install zoom
+- install windirstat
 - remove edge shortcuts
-- misc fixed font
-- terminal use misc fixed
-- windows search -> use firefox or chrome
+
+## How to do it?
+
+- windows search -> use firefox or chrome, not edge

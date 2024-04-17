@@ -15,8 +15,8 @@ push_interval=8
 gen="generated/tourism"
 region=", South Gippland, Victoria"
 PARALLEL_MAX=8
-# media_id=1347
-media_id=
+media_id=1347
+# media_id=
 s=	# skip the AI
 
 . opts
@@ -33,7 +33,7 @@ run_giles_for_tourism() {
 	printf "\n\n----------------------------------------\n\n"
 	printf "*** $name ***\n\n"
 	mkdir -p -- "$dir"
-	for mission in missions/tourism/mission.*.in.txt; do
+	for mission in missions/tourism/mission.*.txt.in; do
 		if [ ! -f "$mission" ]; then
 			continue
 		fi
@@ -42,7 +42,7 @@ run_giles_for_tourism() {
 	query="$name$region"
 	(
 		cd -- "$dir/"
-		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" SUMMARY_GUIDE="Using ## section headers,please summarize this info in detail, as relating to $query, using markdown dot-point form. Be as comprehensive and factual as possible. Please include as much factual information as possible, cover a comprehensive scope of 1. Things to See, 2. Things to Do, 3. Learning and History, 4. How to Get There, 5. What's Around, 6. Warnings (Things to be Careful Of), 7. Where to Stay, 8. What's in the Area, 9. Events, 10. Local Groups, 11. What to Eat and Drink, and 12. Accessibility; and whatever else seems interesting. Try to include ALL sections, please, if there is any info at all, or you can add something from your knowledge."
+		giles query="$query" HTML_DUMP_FILTER="html_dump_filter_tourism" SUMMARY_GUIDE="Using ## section headers, please comprehensively summarise this info about $query in detail, taking care to be factual and accurate, using markdown dot-point form. Please include as much factual information about $query as possible, covering a comprehensive scope of Things To See at $query, Things To Do at $query, Things to Learn about $query (History), How To Get to $query (including vehicle, public transport, cycling, and by foot), Things to Be Careful Of at $query (Warnings specifically relevant to $query. keep these realistic and relevant), In The Area (What's Around near $query, keep this to within 10 km radius, include and focus on attractions, other relevant and connected tourism and sightseeing locations, towns, markets, etc. anything relevant to tourists and visitors, major drawcards, etc. Keep this as close as possible and do not go further than 10km radius away), Events (relevant to $query and other major drawcards in the immediate vicinity of $query), Local Groups near $query (including Community Groups, Emergency Services, Sporting Clubs and Groups), Eat and Drink (What to eat and drink or immediately near $query. Try to be as relevant as possible to $query, or create a relevant Connected Experience), Accessibility at $query (cover as comprehensive a list as possible for Accessible Parking, Accessible Access (Ramps, Doorways), Accessible Payment Methods (check-out lanes, EFTPOS within reach, etc.), Accessible Lift Access, Accessible Bathrooms, Accessible Changerooms, Accessible Shower Facilities, Accessible Pool Entry and Exit, Audio Loops for people with Hearing Impairment, Appropriate Signage, Braille, Tactile Paving, WCAG-2 Compliance, etc.). Do not mention other areas or locations unless relevant. If insufficient info was found, please fill in the sections based on your knowledge if and only if you have factual and relevant knowledge and if you can remain factual and stay relevant."
 	) 2>&1 | tee -a -- "$dir/run_tourism.log"
 }
 

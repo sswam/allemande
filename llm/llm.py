@@ -3,6 +3,7 @@
 
 # TODO create compatible libraries for other APIs in future
 # TODO consider splitting off the OpenAI specific stuff into a separate library
+# TODO use cached responses if possible
 
 from sys import stdin, stdout
 import os
@@ -44,11 +45,22 @@ models = {
 	},
 	"gpt-4": {
 		"abbrev": "4",
+		"id": "gpt-4-1106-preview", # gpt-4-turbo
 		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
 		"cost": 0.03,
 	},
-	"claude-v1": {
+	"gpt-4-orig": {
+		"abbrev": "4o",
+		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
+		"cost": 0.03,
+	},
+	"claude-2": {
 		"abbrev": "c",
+		"description": "Anthropic's Claude 2 is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
+		"cost": 0.0,  # at least for now!
+	},
+	"claude-v1": {
+		"abbrev": "c1",
 		"description": "Anthropic's Claude is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
 		"cost": 0.0,  # at least for now!
 	},
@@ -195,14 +207,19 @@ def set_opts(_opts):
 
 def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
 	""" Chat with OpenAI ChatGPT models. """
+	model = opts.model
+	if "id" in models[model]:
+		model = models[model]["id"]
+
 	temperature = opts.temperature
 	token_limit = opts.token_limit
+
 	if temperature is None:
 		temperature = DEFAULT_TEMPERATURE
 	if token_limit is None:
 		token_limit = TOKEN_LIMIT
 	completion = openai.ChatCompletion.create(
-		model=opts.model,
+		model=model,
 		messages=messages
 	)
 
@@ -216,6 +233,9 @@ def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, p
 def chat_claude(messages):
 	""" Chat with Anthropic Claude models. """
 	model = opts.model
+	if "id" in models[model]:
+		model = models[model]["id"]
+
 	temperature = opts.temperature
 	token_limit = opts.token_limit
 	response = claude.chat_claude(messages, model=model, temperature=temperature, token_limit=token_limit)

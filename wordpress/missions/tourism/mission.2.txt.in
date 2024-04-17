@@ -1,173 +1,186 @@
 Please write some metadata for a detailed, interesting, engaging and fun blog post for $query. Use the following exact sections and headings.
+
 Please include as much factual information and detail as you can about $query. Cover a comprehensive scope of things to see, do, history, how to get there, what's around, and things to be careful of. Do not mention other areas. Be factual.
+
+Very Important: Please include ALL sections: 1. Description, 2. Tags, 3. Address, 4. Phone Number, 5. Email, 6. Website, 7. Opening Hours, 8. Cost, 9. Accessibility, 10. Official Facebook Page, 11. Official LinkedIn Page, 12. Official Instagram Page, 13. Official YouTube Channel, 14. Official Vimeo Channel, 15. Official Twitter Page, 16. Wikipedia Page, also 17 through 29 featured image query, and 30 through 38 YouTube Video queries
 
 Use the following instructions to guide you:
 
-Purpose of piece: To introduce visitors to the region's unique locations, landmarks, and attractions.
-Type of publication: Web page content, interactive maps, photo galleries, travel guides, articles.
-Style of language: Informative, engaging, and inviting. Use descriptive language to paint a picture of each location.
+Purpose of piece: To introduce tourists and visitors to the unique environmeny,  locations, landmarks, attractions and culture of $query and the region immediately around $query. Do not mention locations further away than about 20km.
+Type of publication: A peak body regional tourism website. The content includes this copy, photo galleries, videos, interactive maps, etc. This is essentially an advertisement and travel guide to the region around $query.
+Style of language: Informative, engaging, and inviting. Use descriptive language to paint a picture of $query, while remaining factual. Try not to be too repetitive between sections.
 Exclusions: inappropriate language, inacurate information
 
-Regarding images and videos, we are especially interested in the following sources:
+Write the article in the style of: Anthony Bourdain
+Do not mention Anthony Bourdain.
+Do not mention food, unless relevant to $query.
+
+Please include helpful [Markdown Hyperlink](https://en.wikipedia.org/wiki/Markdown#Hyperlinks), including links to major pages such as:
 - official social media pages
 - wikipedia pages
-- www.visitgippsland.com.au (pages under this domain, preferably not just the main site)
-- www.visitphillipisland.com.au (specific pages)
-- www.visitvictoria.com (specific pages)
-- www.australia.com/en (specific pages)
-- www.visitbasscoast.com.au (specific pages)
-- www.visitpromcountry.com.au (specific pages)
-- www.pibn.com.au (specific pages)
-- www.visitgrantville.com.au (specific pages)
-- youtube (search terms, we will find the videos separately)
-- unsplash (search terms, we will find the images separately)
+- www.visitgippsland.com.au (specific page under this domain relevant to $query, preferably not just the main site. Links must be valid. If uncertain about their validity, default to the main site url)
+- www.visitsouthgippsland.com.au (specific page relevant to $query)
+- www.visitphillipisland.com.au (specific page relevant to $query)
+- www.visitvictoria.com (specific page)
+- www.australia.com/en (specific page)
+- www.visitbasscoast.com.au (specific page relevant to $query)
+- www.visitpromcountry.com.au (specific page relevant to $query)
+- www.pibn.com.au (specific page)
+- www.visitgrantville.com.au (specific page relevant to $query)
+
+NB: make sure to include all sections, with exactly the headings given, even if information is not available
+Please use at least one sub-heading / sub-section in each section. Follow the template below exactly.
 
 - NB: make sure to include all sections, even if information is not available for some sections.
 
-## Page Metadata: Description
+## 1. Page Metadata: Description
 
-[description for page metadata and search results, around 150 chars]
+[description of $query for page metadata and search results, around 150 chars]
 
-## Page Metadata: Tags
+## 2. Page Metadata: Tags
 
-[suggested tags for page metadata and search results, around 10 tags]
+[suggested tags for $query page metadata and search results, around 10 tags]
 
-## Address
+## 3. Address
 
 [address of $query, can be vague if not known, e.g. "Point Cook, Victoria, Australia"]
 
-## Phone Number
+## 4. Phone Number
 
-[phone number of $query, or N/A, or Unknown]
+[phone number of official tourism organisation for $query, or N/A, or Unknown]
 
-## Email
+## 5. Email
 
-[email address of $query, N/A, or Unknown]
+[email address of official tourism organisation for $query, N/A, or Unknown]
 
-## Website
+## 6. Website
 
 [official website of $query as a markdown link, or Unknown]
 
-## Opening Hours
+## 7. Opening Hours
 
 [opening hours of $query, or N/A, or Unknown]
 
-## Cost
+## 8. Cost
 
 [cost of visiting $query, or N/A, or Unknown]
 
-## Official Facebook Page
+## 9. Accessibility Meta
+
+[Accessibility at $query, cover as comprehensive a list as possible for Accessible Parking, Accessible Access (Ramps, Doorways), Accessible Payment Methods (check-out lanes, EFTPOS within reach, etc.), Accessible Lift Access, Accessible Bathrooms, Accessible Changerooms, Accessible Shower Facilities, Accessible Pool Entry and Exit, Audio Loops for people with Hearing Impairment, Appropriate Signage, Braille, Tactile Paving, WCAG-2 Compliance, etc.]
+
+## 10. Official Facebook Page
 
 [facebook page of $query as a markdown link, or Unknown]
 
-## Official LinkedIn Page
+## 11. Official LinkedIn Page
 
 [linkedin page of $query as a markdown link, or Unknown]
 
-## Official Instagram Page
+## 12. Official Instagram Page
 
 [instragram page of $query as a markdown link, or Unknown]
 
-## Official YouTube Channel
+## 13. Official YouTube Channel
 
 [YouTube channel of $query as a markdown link, or Unknown]
 
-## Official Vimeo Channel
+## 14. Official Vimeo Channel
 
 [vimeo channel of $query as a markdown link, or Unknown]
 
-## Official Twitter Page
+## 15. Official Twitter Page
 
 [twitter page of $query as a markdown link, or Unknown]
 
-## Wikipedia Page
+## 16. Wikipedia Page
 
 [wikipedia page of $query as a markdown link, or Unknown]
 
-## Featured Image for Page Header
+## 17. Featured Image for Page Header
 
 [image search terms, to find an appriate page header image for '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'See' Section
+## 18. Featured Image for 'See' Section
 
 [image search terms to find an appriate image for the 'See' (things to see - sightseeing and photography) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Do' Section
+## 19. Featured Image for 'Do' Section
 
 [image search terms to find an appriate image for the 'Do' (things to do - activities) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Learn' Section
+## 20. Featured Image for 'Learn' Section
 
 [image search terms to find an appriate image for the 'Learn' (things to know - history) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Getting There' Section
+## 21. Featured Image for 'Getting There' Section
 
 [image search terms to find an appriate image for the 'Getting There' (how to get there - transport) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Stay' Section
+## 22. Featured Image for 'Stay' Section
 
 [image search terms to find an appriate image for the 'Stay' (where to stay - accommodation) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Warnings' Section
+## 23. Featured Image for 'Warnings' Section
 
 [image search terms to find an appriate image for the 'Warnings' (what to be careful of) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'In the Area' Section
+## 24. Featured Image for 'In the Area' Section
 
 [image search terms to find an appriate image for the 'In the Area' (what is around - nearby attractions) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Events' Section
+## 25. Featured Image for 'Events' Section
 
 [image search terms to find an appriate image for the 'Events' (what's on - events) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Local Groups' Section
+## 26. Featured Image for 'Local Groups' Section
 
 [image search terms to find an appriate image for the 'Local Groups' (who's around - resident clubs and associations) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Eat and Drink' Section
+## 27. Featured Image for 'Eat and Drink' Section
 
 [image search terms to find an appriate image for the 'Eat and Drink' (what is there around to eat and drink - restaurants and bars) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Accessibility' Section
+## 28. Featured Image for 'Accessibility' Section
 
 [image search terms to find an appriate image for the 'Accessibility' (how to get there) section '$query', on unsplash or similar using a search engine]
 
-## Featured Image for 'Recap' Section
+## 29. Featured Image for 'Recap' Section
 
 [image search terms to find an appriate image for the 'Recap' (summary) section '$query', on unsplash or similar using a search engine]
 
-## YouTube Video for the Whole Page
+## 30. YouTube Video for the Whole Page
 
 [YouTube search terms to find an appriate video for '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'See' Section
+## 31. YouTube Video for the 'See' Section
 
 [YouTube search terms to find an appriate video for the 'See' (things to see - sightseeing and photography) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Do' Section
+## 32. YouTube Video for the 'Do' Section
 
 [YouTube search terms to find an appriate video for the 'Do' (things to do - activities) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Learn' Section
+## 33. YouTube Video for the 'Learn' Section
 
 [YouTube search terms to find an appriate video for the 'Learn' (things to know - history) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Travel' Section
+## 34. YouTube Video for the 'Travel' Section
 
 [YouTube search terms to find an appriate video for the 'Travel' (how to get there) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'In the Area' Section
+## 35. YouTube Video for the 'In the Area' Section
 
 [YouTube search terms to find an appriate video for the 'In the Area' (what's on - events) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Local Groups' Section
+## 36. YouTube Video for the 'Local Groups' Section
 
 [YouTube search terms to find an appriate video for the 'Local Groups' (who's around - resident clubs and associations) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Eat and Drink' Section
+## 37. YouTube Video for the 'Eat and Drink' Section
 
 [YouTube search terms to find an appriate video for the 'Eat and Drink' (what is there around to eat and drink - restaurants and bars) section '$query'; give a search query not an actual video link]
 
-## YouTube Video for the 'Recap' Section
+## 38. YouTube Video for the 'Recap' Section
 
 [YouTube search terms to find an appriate video for the 'Recap' (a lengthy stylish recap summary of the place) section '$query'; give a search query not an actual video link]

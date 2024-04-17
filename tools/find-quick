@@ -55,6 +55,7 @@ do_find() {
 		-o -name 'tmp' \
 		-o -name 'rubbish' \
 		-o -name '__pycache__' \
+		-o -name 'venv' \
 		-o -name 'soft-ai' \
 		-o -name 'Z' \
 		-o -name 'ff' \

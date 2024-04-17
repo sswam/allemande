@@ -1,0 +1,2 @@
+echo >&2 "usage: `basename $0` $*"
+exit 2

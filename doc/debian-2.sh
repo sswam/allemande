@@ -2,16 +2,9 @@
 
 # Debian GNU/Linux Installation
 
-# These install notes are fairly minimal with a few suggested extras.
-# You can also consider installing the developer's preferred setup
-# instead, see setup-with-extras.txt for that.
+# Part 2 of 2
 
-# The developer recommends to use Debian.
-
-# It's recommended to step through this script rather than running it;
-# running it as a whole has not yet been tested!
-
-# ======== run some things as root {{{ =======================================
+# ======== settings ==========================================================
 
 user=$USER
 host=$HOSTNAME
@@ -19,26 +12,12 @@ servers=(ucm.dev pi.ucm.dev)
 server0=${servers[0]}
 code=$server0:/home/sam/code
 fullname=`awk -F: -v user=$user '$1==user {print $5}' /etc/passwd | sed 's/,.*//'`
-read -i "$fullname" -p "Your full name: " fullname
-sudo chfn -f "$fullname" $USER
 
-read -p "Settings are user=$user, host=$host, servers=$servers, code=$code, okay? " yn
+read -p "Settings are user=$user, host=$host, servers=${servers[*]}, code=$code, okay? " yn
 if [ "$yn" != y ]; then
 	echo >&2 "Please fix your settings, then re-run $(basename $0)"
 	exit 1
 fi
-
-# -------- set up sudo with staff group --------------------------------------
-
-sudo sh -c "
-cat <<END >/etc/sudoers.d/local
-%staff ALL = (ALL) NOPASSWD: ALL
-END
-
-sudo adduser $USER staff
-"
-
-newgrp staff
 
 # -------- set up apt sources.list -------------------------------------------
 
@@ -57,7 +36,7 @@ END
 # -------- set up 99dontbreakdebian for safety with other sources ------------
 
 sudo sh -c "
-cat <<END >/etc/apt/sources.list
+cat <<END >/etc/apt/preferences.d/99dontbreakdebian
 Package: *
 Pin: release o=Debian,a=experimental
 Pin-Priority: 1
@@ -102,20 +81,20 @@ sudo chmod g+w $dirs
 
 # -------- install essential tools and upgrade to Debian bookworm ------------
 
-sudo apt update
-sudo apt install ssh rsync screen build-essential devscripts python3-dev python3.10-dev neovim
-sudo apt dist-upgrade
+sudo apt-get update
+sudo apt-get -y install ssh rsync screen build-essential devscripts python3-dev python3.10-dev neovim
+sudo apt-get -y dist-upgrade
 
 # -------- set up ssh --------------------------------------------------------
 
 mkdir -p ~/.ssh
 chmod go-rwx ~/.ssh
-ssh-keygen -t rsa
+ssh-keygen -t rsa -b 4096 -C $user@$server0 -f ~/.ssh/id_rsa -N ""
 cat ~/.ssh/id_rsa.pub >>~/.ssh/authorized_keys
 
 # -------- copy ssh keys to servers and connect ------------------------------
 
-for server in $servers; do
+for server in "${servers[@]}"; do
 	ssh-copy-id $server
 	ssh -T -f -oServerAliveInterval=15 -oServerAliveCountMax=3 -N $server
 	echo "ln -s -f -t ~ ~sam/allemande" | ssh $server
@@ -127,44 +106,74 @@ git config --global user.email $user@$server0
 git config --global user.name "$fullname"
 git config --global pull.rebase false 
 
-# -------- clone allemande ---------------------------------------------------
+# -------- clone allemande and use the main branch ---------------------------
 
-git clone ucm.dev:allemande
+git clone https://github.com/sswam/allemande.git
+# git clone ucm.dev:allemande  # alternative
 # git clone git@github.com:sswam/allemande.git  # alternative
 cd allemande
+git checkout main
 
 # -------- install python3.10-distutils-bogus --------------------------------
 
-sudo apt install debian/python3.10-distutils-bogus_1.0_all.deb
+sudo apt-get -y install ./debian/python3.10-distutils-bogus_1.0_all.deb
 
-# -------- install allemande dependencies
+# -------- install allemande Debian dependencies -----------------------------
 
-apt install `< debian/apt-requirements.txt`
-# pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if no GPU
-# pip install torch==1.8.1+cpu,torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # if AMD GPU
+sudo apt-get -y install `< debian-requirements.txt`
+sudo apt-get -y clean
+
+# -------- set up a Python3.10 virtual environment ---------------------------
+
+python3.10 -m venv venv
+. venv/bin/activate
+
+# -------- bashrc additions --------------------------------------------------
+
+cat <<END >>~/.bashrc
+
+set -a
+. ~/allemande/venv/bin/activate
+. ~/allemande/env.sh
+. ~/my/ai.env
+
+if [ -n "$PS1" ]; then
+	prompt_status() { if [ $? = 0 ]; then echo '# '; else echo -e '#!'; fi; }
+	export PS1='$(prompt_status)'
+	export PS2='#;'
+	stty stop ''
+	stty -ixon
+fi
+END
+
+# -------- install allemande Python dependencies -----------------------------
+
+pip install -r requirements-core.txt
 pip install -r requirements.txt
-# pip install -r requirements-appserver.txt  # alternative
-# - pip install allemande deps
-# - install other allemande deps, eg. whisper.cpp
-# - test allemande
+pip install gradio
+pip install gTTS
 
-## Windows suggested
+rm -rf ~/.cache/pip
 
-# - remove edge shortcuts
-# - chrome
-# - firefox
-# - misc fixed font
-# - terminal use misc fixed
-# - windows search -> chrome or firefox
+# -------- install whisper.cpp -----------------------------------------------
 
-## Debian suggested
+mkdir ~/soft-ai
+cd ~/soft-ai
+git clone https://github.com/ggerganov/whisper.cpp.git
+cd whisper.cpp
+make -j8
 
-# - install ucm-* packages
-# - arcs
-# - ucm-tools
-# - remote access via sshd port forward
-# - ~/.vimrc: set mouse=a
-# - nvim rc load ~/.vimrc:
+# TODO install scripts so we can run it conveniently
+
+# -------- install clip-interrogator -----------------------------------------
+
+cd ~/soft-ai
+git clone https://github.com/pharmapsychotic/BLIP.git
+git clone https://github.com/pharmapsychotic/clip-interrogator.git
+pip install -e BLIP
+pip install -e clip-interrogator
+
+# -------- nvim settings for vim compatibility -------------------------------
 
 mkdir -p ~/.config/nvim
 
@@ -173,3 +182,29 @@ set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath=&runtimepath
 source ~/.vimrc
 END
+
+# -------- copy ai.env secrets file from another staff member ----------------
+
+mkdir ~/my
+chmod go-rwx ~/my
+scp sam@ucm.dev:my/ai.env
+set -a
+. ~/my/ai.env
+
+# -------- run setup scripts -------------------------------------------------
+
+cd ~/allemande
+. ./env.sh
+
+allemande-install
+web-install
+
+# -------- test allemande tools ----------------------------------------------
+
+1sf 'What is the most famous tower in the world?'
+
+rm -r ~/llm.log
+
+# -------- TODO: install other allemande deps that are tricky ----------------
+
+#   - automatic1111 stable diffusion webui

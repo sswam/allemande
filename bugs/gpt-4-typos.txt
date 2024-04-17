@@ -1,0 +1,21 @@
+Surprisingly, GPT-4 made three mistakes in generating this commit message.
+I haven't seen it make any such error before.
+
+Generating commit message using GPT-4 ...
+feat(www): add web-summary-test.sh script for web page analysis
+- The script accepts a web page name and URL as arguments
+- It creates a directory with the given name and downloads the URL content to
+the directory
+- The content is summarised in various ways and moeled using llm process. The
+outputs are saved as text files
+- Detailed stats about the content and summaries (e.g., char, word, token
+counts) are calculated and reported
+- The output is structured in an organised format with a report.txt and a
+row.tsv file containing the stats wiretten to the directory
+- The script mainly uses bash commands, Perl and lc tool.
+
+Typos:
+
+- moeled
+- wiretten
+- lc (it meant wc, I guess)

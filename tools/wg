@@ -1,19 +1,24 @@
 #!/bin/bash
 # this is a wget that pretends to be a browser
-# set REFERER to the url of the previous page
-timeout=10
-tries=10
+
+# You can set $REFERER to "self", or the url of the previous page, if needed.
+
+t=5
+r=5
 C=	# no content-disposition
 O=	# output file
 v=	# verbose
 
 . opts
 
+timeout=$t
+tries=$r
+
 if [ -n "$O" ]; then
 	C=1
 	O="-O$O"
 else
-	O=
+	O="-Oindex.html"
 fi
 
 if [ "$v" = 1 ]; then

@@ -58,6 +58,7 @@ function! Allemande(format)
 	set shiftwidth=0
 	set noexpandtab
 	let &showbreak='                '
+	set syntax=markdown
 endfunction
 
 

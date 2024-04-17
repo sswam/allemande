@@ -39,7 +39,7 @@ def fetch_url(title: str, url: str, number: int, format: str = "%03d_%s") -> Non
 			file = format % (number, file)
 
 		# save the URL in a file
-		url_file = format % (number, f'{title_clean}.url')
+		url_file = format % (number, f'{title_clean}.html.url')
 		with open(url_file, 'w') as f:
 			f.write(f"{url}\n")
 
