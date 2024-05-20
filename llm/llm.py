@@ -30,6 +30,7 @@ from slugify import slugify
 
 logger = logging.getLogger(__name__)
 
+
 # settngs
 
 LOGDIR = Path(os.environ["HOME"])/"llm.log"
@@ -45,9 +46,10 @@ models = {
 	},
 	"gpt-4": {
 		"abbrev": "4",
-		"id": "gpt-4-1106-preview", # gpt-4-turbo
+		"id": "gpt-4o",
+#		"id": "gpt-4-1106-preview", # gpt-4-turbo
 		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
-		"cost": 0.03,
+		"cost": 0.03,  # ???
 	},
 	"gpt-4-orig": {
 		"abbrev": "4o",
@@ -210,6 +212,8 @@ def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, p
 	model = opts.model
 	if "id" in models[model]:
 		model = models[model]["id"]
+
+	logger.debug("model: %s", model)
 
 	temperature = opts.temperature
 	token_limit = opts.token_limit
