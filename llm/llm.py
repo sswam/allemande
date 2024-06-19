@@ -368,7 +368,7 @@ def read_utf_replace(inp):
 @argh.arg("-e", "--empty-to-empty", action="store_true", help="return empty string for empty input")
 @argh.arg("-E", "--empty-ok", action="store_true", help="allow empty input")
 @argh.arg("-L", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
-@argh.arg("-p", "--lines", action="store_true", help="process each line separately, like perl -p")
+@argh.arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
 @argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
 def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
 	""" Process some text through the LLM with a prompt. """
