@@ -18,7 +18,9 @@ from pathlib import Path
 
 import argh
 
-import openai
+from openai import OpenAI
+
+openai_client = OpenAI()
 import tiktoken
 
 import tab
@@ -222,14 +224,15 @@ def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, p
 		temperature = DEFAULT_TEMPERATURE
 	if token_limit is None:
 		token_limit = TOKEN_LIMIT
-	completion = openai.ChatCompletion.create(
-		model=model,
-		messages=messages
-	)
+	response = openai_client.chat.completions.create(model=model, messages=messages)
 
-	logger.debug("llm: completion: %s", completion)
+	logger.debug("llm: response: %s", response)
 
-	output_message = completion['choices'][0]['message']
+	message = response.choices[0].message
+	output_message = {
+		"role": message.role,
+		"content": message.content,
+	}
 
 	return output_message
 
