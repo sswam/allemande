@@ -76,17 +76,22 @@ AGENTS_REMOTE = {
 		"model": "gpt-4",
 		"default_context": 20,
 	},
-	"GPT-3.5": {
+	"GPT-4o-mini": {
 		"name": "Dav",
-		"model": "gpt-3.5-turbo",
+		"model": "gpt-4o-mini",
 		"default_context": 20,
 	},
+#	"GPT-3.5": {
+#		"name": "Dav",
+#		"model": "gpt-3.5-turbo",
+#		"default_context": 20,
+#	},
 	"Claude": {
 		"name": "Claud",
 		"map": {
 			"Claud": "Claude",
 		},
-		"model": "claude-2",
+		"model": "claude",
 		"default_context": 100,
 	},
 	"Claude Instant": {
@@ -94,7 +99,7 @@ AGENTS_REMOTE = {
 		"map": {
 			"Clia": "Claude",
 		},
-		"model": "claude-instant-1",
+		"model": "claude-haiku",
 		"default_context": 1000,
 	},
 	"Bard": {
