@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+m=4
+. opts
+process -m=$m "$@
+Please reply as concise as possible, with no boilerplate or unnecessary explanation. If code, just the code without \`\`\` or anything. Do not remove existing comments or abbreviate text unrelated to the request."
