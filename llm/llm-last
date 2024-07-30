@@ -1,0 +1,4 @@
+#!/bin/bash -eu
+# llm-last:	show the most recent llm generation from ~/llm.log
+cd ~/llm.log
+ls1 -n=${1:-1} | xa cat
