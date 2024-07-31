@@ -451,10 +451,14 @@ def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 		content = "".join(lines)
 	if log:
 		LOGDIR.mkdir(parents=True, exist_ok=True)
-		logfile = base = LOGDIR/(slugify(prompt)[:LOGFILE_NAME_MAX_LEN])
+		basename = slugify(prompt)[:LOGFILE_NAME_MAX_LEN]
+		logfile = LOGDIR/(f"answer.{basename}")
+		logfile_prompt = LOGDIR/(f"prompt.{basename}")
 		while logfile.exists():
 			time_s = time.strftime("%Y-%m-%dT%H:%M:%S")
-			logfile = Path(f"{base}.{time_s}")
+			logfile = LOGDIR/f"answer.{basename}.{time_s}"
+			logfile_prompt = LOGDIR/Path(f"prompt.{basename}.{time_s}")
+		logfile_prompt.write_text(prompt, encoding="utf-8")
 		logfile.write_text(content, encoding="utf-8")
 
 	if out:
