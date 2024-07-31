@@ -1,4 +1,20 @@
 #!/bin/bash -eu
 # llm-last:	show the most recent llm generation from ~/llm.log
+
+f=0	# output filenames, not content
+. opts
+
 cd ~/llm.log
-ls1 -n=${1:-1} | xa cat
+
+for i in "${@:-1}"; do
+	case "$f" in
+	0)
+		ls1 -n="$i" | xa cat
+		echo
+		echo
+		;;
+	1)
+		ls1 -n="$i"
+		;;
+	esac
+done
