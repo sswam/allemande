@@ -24,6 +24,8 @@ fi
 
 $PULL $ALLEMANDE_GITHUB main
 $PUSH $ALLEMANDE_GITHUB main
+$PULL $BARBARELLA_GITHUB main
+$PUSH $BARBARELLA_GITHUB main
 
 #$CO allemande
 ##$PULL sam@ucm.dev:allemande allemande
