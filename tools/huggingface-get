@@ -53,7 +53,7 @@ while read file; do
 		rm -v "$file" >&2   # WTF rm, write messages on stdout?!
 		echo
 	fi
-	printf "%q " wget -c "$file_url"
+	printf "%q " wget --header="Authorization: Bearer $HUGGINGFACE_API_TOKEN" -c "$file_url"
 	echo
 done |
 $run
