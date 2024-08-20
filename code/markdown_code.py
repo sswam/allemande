@@ -21,7 +21,6 @@ The script handles:
 
 import sys
 import re
-import fileinput
 
 import argh
 
@@ -101,7 +100,7 @@ def main(comment_prefix=None):
         comment_prefix (str, optional): Prefix to add to each extracted code line as a comment. Defaults to None.
     """
     try:
-        markdown_text = ''.join(fileinput.input()).strip()
+        markdown_text = ''.join(sys.stdin.read()).strip()
         result = extract_code_from_markdown(markdown_text, comment_prefix=comment_prefix)
         print(result)
     except Exception as e:
