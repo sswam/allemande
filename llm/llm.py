@@ -191,7 +191,7 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
 	fake: bool = False
 	temperature: Optional[float] = None
 	token_limit: Optional[int] = None
-	indent: str = "\t"
+	indent: Optional[str] = None
 	state_file: Optional[str] = None
 	auto_save: bool = False
 	def __init__(self, **kwargs):
@@ -365,7 +365,7 @@ def read_utf_replace(inp):
 @argh.arg("-i", "--inp", default=stdin, help="input file")
 @argh.arg("-o", "--out", default=stdout, help="output file")
 @argh.arg("-m", "--model", default=default_model, help="model name")
-@argh.arg("-I", "--indent", default="\t", help="indentation string")
+@argh.arg("-I", "--indent", default=None, help="indentation string")
 @argh.arg("-t", "--temperature", type=float, help="temperature")
 @argh.arg("-l", "--token-limit", type=int, help="token limit")
 @argh.arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
@@ -375,7 +375,7 @@ def read_utf_replace(inp):
 @argh.arg("-L", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @argh.arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
 @argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
 	""" Process some text through the LLM with a prompt. """
 	set_opts(vars())
 
@@ -426,7 +426,7 @@ def process2(prompt, prompt2, input_text, out, model, indent, temperature, token
 	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
 
 
-def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent="\t", temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):  # pylint: disable=unused-argument
+def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):  # pylint: disable=unused-argument
 	""" Ask the LLM a question. """
 	set_opts(vars())
 	return retry(query2, retries, *prompt, out=out, log=log)
@@ -446,6 +446,7 @@ def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 
 	# fix indentation for code
 	if opts.indent:
+		logger.warning("fix indentation for code")
 		lines = content.splitlines()
 		lines = tab.fix_indentation_list(lines, opts.indent)
 		content = "".join(lines)
