@@ -222,7 +222,7 @@ def google_maps_image_search(query, max_results=12, safe="off", limit_max_result
 #	soup = BeautifulSoup(response.text, 'html.parser')
 	soup = BeautifulSoup(html, 'html.parser')
 
-	print(soup)
+#	print(soup)
 
 	image_results = []
 
@@ -293,11 +293,15 @@ agents = {
 }
 
 
-agent_engine = {
+engine_caps = {
 	'goog': 'Google',
 	'utube': 'YouTube',
 	'pr0nto': 'PornHub',
 	'guma': 'GoogleMapsImages',
+	'google': 'Google',
+	'youtube': 'YouTube',
+	'pornhub': 'PornHub',
+	'googlemapsimages': 'GoogleMapsImages',
 }
 
 
@@ -309,7 +313,7 @@ def esc(s):
 
 
 def list_to_markdown_table(items, engine):
-	engine = agent_engine.get(engine.lower(), engine)
+	engine = engine_caps.get(engine.lower(), engine)
 	i = 1
 	for item in items:
 		item['#'] = i
@@ -356,37 +360,39 @@ def list_to_markdown_table(items, engine):
 # output formatters
 
 
-def format_csv(obj: List[Dict[str, str]], delimiter=',') -> str:
+def format_csv(obj: List[Dict[str, str]], delimiter=',', header: bool=False) -> str:
 	""" Format `obj` as CSV """
 	if not obj:
 		return ""
 	output = io.StringIO()
 	writer = csv.DictWriter(output, fieldnames=obj[0].keys(), delimiter=delimiter, dialect='unix', quoting=csv.QUOTE_MINIMAL)
-	writer.writeheader()
+	if header:
+		writer.writeheader()
 	writer.writerows(obj)
 	return output.getvalue()
 
 
-def format_tsv(obj: List[Dict[str, str]]) -> str:
+def format_tsv(obj: List[Dict[str, str]], header: bool=False) -> str:
 	""" Format `obj` as TSV """
-	return format_csv(obj, delimiter='\t')
+	return format_csv(obj, delimiter='\t', header=header)
 
 
-def format_json(obj) -> str:
+def format_json(obj, header: bool=False) -> str:
 	""" Format `obj` as JSON """
 	return json.dumps(obj, indent=4)
 
 
-def format_python(obj) -> str:
+def format_python(obj, header: bool=False) -> str:
 	""" Format `obj` as Python code """
 	return pprint.pformat(obj, indent=4)
 
 
-def format_tabulate(obj: List[Dict[str, str]]) -> str:
+def format_tabulate(obj: List[Dict[str, str]], header: bool=False) -> str:
 	""" Format `obj` as a table """
 	if not obj:
 		return ""
-	return tabulate.tabulate(obj, headers='keys')
+	kwargs = {'headers': 'keys'} if header else {}
+	return tabulate.tabulate(obj, **kwargs)
 
 
 formatters = {
@@ -409,14 +415,15 @@ def search(args, *queries):
 		lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
 		key = lc_keys_to_keys[args.engine.lower()]
 		eng = engines.get(key, agents.get(key))
-		results = eng(query, max_results=args.max_results, safe=args.safe)
+		results = eng(query, max_results=args.max_results, safe=args.safe, limit_max_results=args.limit)
 		results2 = results[:args.max_results]
-		if args.markdown:
-			return list_to_markdown_table(results2, args.engine)
 		# output using the specified formatter
-		if args.out:
+		if args.out and args.markdown:
+			formatted_results = list_to_markdown_table(results2, args.engine)
+		elif args.out:
 			formatter = formatters[args.format]
-			formatted_results = formatter(results).rstrip()
+			formatted_results = formatter(results, header=args.header).rstrip()
+		if args.out:
 			print(formatted_results, file=args.out)
 		else:
 			all.append(results)
@@ -428,9 +435,10 @@ def main():
 	parser = argparse.ArgumentParser(description="Search `query` using `engine` and return a list of results")
 	parser.add_argument('-e', '--engine', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
 	parser.add_argument('-f', '--format', help='Output formatter', default=dict_first(formatters), choices=formatters.keys())
-	parser.add_argument('-m', '--max-results', help='Maximum number of results to return', type=int, default=12)
+	parser.add_argument('-m', '--max-results', help='Maximum number of results to return', type=int, default=10)
 	parser.add_argument('-s', '--safe', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
 	parser.add_argument('-l', '--limit', help='Limit to specified max results', action='store_true')
+	parser.add_argument('-H', '--header', help='Show the table header', action='store_true')
 	parser.add_argument('--markdown', help='Output as Markdown', action='store_true')
 	parser.add_argument('--out', help='Output file', type=argparse.FileType('w'), default=sys.stdout)
 	parser.add_argument('queries', nargs='*', help='Search queries')
