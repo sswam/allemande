@@ -8,21 +8,21 @@ import argh
 logger = logging.getLogger(__name__)
 
 """
-fetch_images.py - A Python module/script to fetch image URLs from the Civitai images API.
+civitai_images.py - A Python module/script to fetch image URLs from the Civitai images API.
 
 This script can be used as a module:
-    from fetch_images import fetch_images
+    from civitai_images import fetch_images
 """
 
 # API Endpoint
 API_URL = "https://civitai.com/api/v1/images"
 
-def fetch_images(limit=100, postId=None, modelId=None, modelVersionId=None, username=None, nsfw=None, sort=None, period=None, page=None):
+def fetch_images(limit=100, postId=None, modelId=None, modelVersionId=None, username=None, nsfw=None, sort=None, period=None, page=1):
     """
     Fetches image URLs from the Civitai images API.
 
     Args:
-        limit (int): The number of results to be returned per page. Default is 100.
+        limit (int): The number of results to be returned per request (0-200, default 100).
         postId (int): The ID of a post to get images from.
         modelId (int): The ID of a model to get images from.
         modelVersionId (int): The ID of a model version to get images from.
@@ -49,6 +49,9 @@ def fetch_images(limit=100, postId=None, modelId=None, modelVersionId=None, user
         "page": page
     }
 
+    # Remove None values from params
+    params = {k: v for k, v in params.items() if v is not None}
+
     # Make the request
     response = requests.get(API_URL, params=params)
 
@@ -61,7 +64,7 @@ def fetch_images(limit=100, postId=None, modelId=None, modelVersionId=None, user
     return image_urls
 
 
-@argh.arg('--limit', help='number of results to be returned per page, defaults to 100')
+@argh.arg('--limit', help='total number of results to be fetched (default 100)')
 @argh.arg('--postId', help='ID of a post to get images from')
 @argh.arg('--modelId', help='ID of a model to get images from')
 @argh.arg('--modelVersionId', help='ID of a model version to get images from')
@@ -70,23 +73,42 @@ def fetch_images(limit=100, postId=None, modelId=None, modelVersionId=None, user
 @argh.arg('--sort', help='order to sort the results')
 @argh.arg('--period', help='time frame in which to sort the images')
 @argh.arg('--page', help='page to start fetching from')
-def main(limit=100, postId=None, modelId=None, modelVersionId=None, username=None, nsfw=None, sort=None, period=None, page=None):
+@argh.arg('--pageSize', help='page size (1 to 200)')
+def main(limit=100, postId=None, modelId=None, modelVersionId=None, username=None, nsfw=None, sort=None, period=None, page=None, pageSize=100):
     """
-    fetch_images.py - A Python module/script to fetch image URLs from the Civitai images API.
+    civitai_images.py - A Python module/script to fetch image URLs from the Civitai images API.
 
     Usage:
-        python3 fetch_images.py [--limit LIMIT] [--postId POSTID] [--modelId MODELID] [--modelVersionId MODELVERSIONID] [--username USERNAME] [--nsfw NSFW] [--sort SORT] [--period PERIOD] [--page PAGE]
+        civitai_images.py [OPTIONS]
     """
-    image_urls = fetch_images(limit, postId, modelId, modelVersionId, username, nsfw, sort, period, page)
+    total_images = limit
+    current_page = page if page else 1
+    page_size = pageSize
 
-    for url in image_urls:
-        print(url)
+    while limit > 0:
+        current_page_size = min(page_size, limit)
+        image_urls = fetch_images(
+            limit=current_page_size,
+            postId=postId,
+            modelId=modelId,
+            modelVersionId=modelVersionId,
+            username=username,
+            nsfw=nsfw,
+            sort=sort,
+            period=period,
+            page=current_page
+        )
+        if not image_urls:
+            break
+        for url in image_urls:
+            print(url)
+        limit -= len(image_urls)
+        current_page += 1
 
 
 if __name__ == '__main__':
-    argh.dispatch_command(main)
     try:
-        pass
+        argh.dispatch_command(main)
     except Exception as e:
         logger.error(e)
         sys.exit(1)
