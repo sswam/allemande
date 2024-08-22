@@ -89,7 +89,8 @@ def extract_code_from_markdown(markdown_text, comment_prefix=None):
         output.extend([f"{comment_prefix} {line}" for line in remaining_text.split('\n')])
         output.append('')
 
-    return code_lines_to_string(output)
+    lines = [line for block in output for line in block.split('\n')]
+    return code_lines_to_string(lines)
 
 
 def main(comment_prefix=None):
