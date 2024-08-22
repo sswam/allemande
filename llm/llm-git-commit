@@ -138,7 +138,7 @@ generate-commit-message() {
 		llm process -m $model 'Please describe this diff, for a git commit message, following the Conventional Commits spec.
 Do not invent anything that is not in the diff!
 Only describe the actual changes, lines starting with + and -, not the surrounding context.
-The required format resembles markdown, and is as follows:
+The required format is as follows:
 
 feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
 
