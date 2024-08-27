@@ -10,7 +10,8 @@ torch
 torchvision
 torchaudio
 sentencepiece
-tokenizers==0.12.1
+tokenizers
+# tokenizers==0.12.1
 #wandb
 #accelerate
 
@@ -51,7 +52,7 @@ jinja2
 python-multipart
 
 pyjwt
-supabase_py
+# supabase_py
 markdown-katex
 
 tiktoken

@@ -1,5 +1,7 @@
 argh
 sh
+aionotify
+
 starlette
 uvicorn
 watchfiles
@@ -7,7 +9,6 @@ inotify
 websockets
 markdown
 aiofiles
-aionotify
 jinja2
 python-multipart
 

@@ -6,11 +6,12 @@ async-openai
 transformers
 # torch==1.8.1+cpu,torchvision,torchaudio==0.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html  # CPU only
 # torch,torchvision,torchaudio -f https://download.pytorch.org/whl/rocm5.2  # AMD GPU
-torch
-torchvision
-torchaudio
+#torch
+#torchvision
+#torchaudio
 sentencepiece
-tokenizers==0.12.1
+tokenizers
+# tokenizers==0.12.1
 #wandb
 #accelerate
 
@@ -34,11 +35,10 @@ spacy
 
 pydub
 SpeechRecognition
-openai-whisper
 sounddevice
 soundfile
 # gTTS
-TTS
+# TTS
 # BLIP
 # clip-interrogator
 
@@ -62,7 +62,7 @@ jinja2
 python-multipart
 
 pyjwt
-supabase_py
+# supabase_py
 markdown-katex
 
 segment-anything
