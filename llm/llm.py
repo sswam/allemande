@@ -453,12 +453,12 @@ def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 	if log:
 		LOGDIR.mkdir(parents=True, exist_ok=True)
 		basename = slugify(prompt)[:LOGFILE_NAME_MAX_LEN]
-		logfile = LOGDIR/(f"answer.{basename}")
-		logfile_prompt = LOGDIR/(f"prompt.{basename}")
+		logfile = LOGDIR/(f"answer.{basename}.md")
+		logfile_prompt = LOGDIR/(f"prompt.{basename}.md")
 		while logfile.exists():
 			time_s = time.strftime("%Y-%m-%dT%H:%M:%S")
-			logfile = LOGDIR/f"answer.{basename}.{time_s}"
-			logfile_prompt = LOGDIR/Path(f"prompt.{basename}.{time_s}")
+			logfile = LOGDIR/f"answer.{basename}.{time_s}.md"
+			logfile_prompt = LOGDIR/Path(f"prompt.{basename}.{time_s}.md")
 		logfile_prompt.write_text(prompt, encoding="utf-8")
 		logfile.write_text(content, encoding="utf-8")
 
