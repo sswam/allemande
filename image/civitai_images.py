@@ -17,15 +17,16 @@ This script can be used as a module:
 # API Endpoint
 API_URL = "https://civitai.com/api/v1/images"
 
-def fetch_images(limit=100, postId=None, modelId=None, modelVersionId=None, username=None, nsfw=None, sort=None, period=None, page=1):
+
+def fetch_images(limit=100, post_id=None, model_id=None, model_version_id=None, username=None, nsfw=None, sort=None, period=None, page=1):
     """
     Fetches image URLs from the Civitai images API.
 
     Args:
         limit (int): The number of results to be returned per request (0-200, default 100).
-        postId (int): The ID of a post to get images from.
-        modelId (int): The ID of a model to get images from.
-        modelVersionId (int): The ID of a model version to get images from.
+        post_id (int): The ID of a post to get images from.
+        model_id (int): The ID of a model to get images from.
+        model_version_id (int): The ID of a model version to get images from.
         username (str): Filter to images from a specific user.
         nsfw (str): Filter to images that contain mature content flags or not.
         sort (str): The order to sort the results.
@@ -39,9 +40,9 @@ def fetch_images(limit=100, postId=None, modelId=None, modelVersionId=None, user
     # Define the query parameters
     params = {
         "limit": limit,
-        "postId": postId,
-        "modelId": modelId,
-        "modelVersionId": modelVersionId,
+        "postId": post_id,
+        "modelId": model_id,
+        "modelVersionId": model_version_id,
         "username": username,
         "nsfw": nsfw,
         "sort": sort,
@@ -64,34 +65,43 @@ def fetch_images(limit=100, postId=None, modelId=None, modelVersionId=None, user
     return image_urls
 
 
-@argh.arg('--limit', help='total number of results to be fetched (default 100)')
-@argh.arg('--postId', help='ID of a post to get images from')
-@argh.arg('--modelId', help='ID of a model to get images from')
-@argh.arg('--modelVersionId', help='ID of a model version to get images from')
+@argh.arg('--limit', help='total number of results to be fetched (default 100)', type=int)
+@argh.arg('--post-id', help='ID of a post to get images from', type=int)
+@argh.arg('--model-id', help='ID of a model to get images from', type=int)
+@argh.arg('--model-version-id', help='ID of a model version to get images from', type=int)
 @argh.arg('--username', help='filter to images from a specific user')
-@argh.arg('--nsfw', help='filter to images that contain mature content')
-@argh.arg('--sort', help='order to sort the results')
-@argh.arg('--period', help='time frame in which to sort the images')
-@argh.arg('--page', help='page to start fetching from')
-@argh.arg('--pageSize', help='page size (1 to 200)')
-def main(limit=100, postId=None, modelId=None, modelVersionId=None, username=None, nsfw=None, sort=None, period=None, page=None, pageSize=100):
+@argh.arg('--nsfw', help='filter to images that contain mature content (None|Soft|Mature|X)')
+@argh.arg('--sort', help='order to sort the results (Most Reactions|Most Comments|Comments|Newest)')
+@argh.arg('--period', help='time frame in which to sort the images (|AllTime|Year|Month|Week|Day)')
+@argh.arg('--page', help='page to start fetching from', type=int)
+@argh.arg('--page-length', help='page length (1 to 200)', type=int)
+def main(
+    limit = 100,
+    post_id = None,
+    model_id = None,
+    model_version_id = None,
+    username = None,
+    nsfw = None,
+    sort = None,
+    period = None,
+    page = 1,
+    page_length = 100
+):
     """
     civitai_images.py - A Python module/script to fetch image URLs from the Civitai images API.
 
     Usage:
         civitai_images.py [OPTIONS]
     """
-    total_images = limit
     current_page = page if page else 1
-    page_size = pageSize
 
     while limit > 0:
-        current_page_size = min(page_size, limit)
+        current_page_length = min(page_length, limit)
         image_urls = fetch_images(
-            limit=current_page_size,
-            postId=postId,
-            modelId=modelId,
-            modelVersionId=modelVersionId,
+            limit=current_page_length,
+            post_id=post_id,
+            model_id=model_id,
+            model_version_id=model_version_id,
             username=username,
             nsfw=nsfw,
             sort=sort,
