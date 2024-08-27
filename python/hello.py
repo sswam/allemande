@@ -59,3 +59,4 @@ if __name__ == '__main__':
         argh.dispatch_command(main)
     except Exception as e:
         logger.error(e)
+        sys.exit(1)
