@@ -26,11 +26,11 @@ def subtract_times(time1: str, time2: str) -> str:
         t2 = datetime.strptime(time2, format_str)
     except ValueError as ve:
         raise InvalidTimeFormatError(f"Invalid time format: {ve}")
-
+    
     tdelta = timedelta(hours=t1.hour, minutes=t1.minute) - timedelta(hours=t2.hour, minutes=t2.minute)
     
-    if tdelta.days < 0:
-        tdelta = abs(timedelta(hours=24) + tdelta)
+    if tdelta.total_seconds() < 0:
+        raise ValueError("Time difference is negative")
     
     hours, remainder = divmod(tdelta.seconds, 3600)
     minutes = remainder // 60
