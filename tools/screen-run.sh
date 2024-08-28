@@ -123,7 +123,7 @@ screen-run() {
 	if [ -n "$kill" ]; then
 		screen-window-kill "$screen" "$window"
 	fi
-	screen-run-lines "$screen" "$window" "${line% }"
+	screen-run-lines "$screen" "$window" ". $ALLEMANDE_HOME/env.sh" "${line% }"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then

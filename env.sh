@@ -24,11 +24,14 @@ ALLEMANDE_ROOMS="$ALLEMANDE_HOME/rooms"
 
 ALLEMANDE_AUDIO_LOCK="/var/lock/allemande-audio.lock"
 
+ALLEMANDE_VENV=
 if [ -e "$ALLEMANDE_HOME/venv" ]; then
-	. "$ALLEMANDE_HOME/venv/bin/activate"
+	ALLEMANDE_VENV="$ALLEMANDE_HOME/venv"
+	. "$ALLEMANDE_VENV/bin/activate"
 fi
 
 PYTHON=$(which python3)
+PYTHONPATH=
 
 for dir in python text www chat anthropic google llm scrape tools; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir

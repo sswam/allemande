@@ -16,10 +16,13 @@ ln -sfT "$home" /opt/allemande
 cp -T "$home/adm/crontab" /etc/cron.d/allemande
 
 groupadd -g "$ALLEMANDE_GID" "$user" || true
-useradd -d "$ports" -s "$(which bash)" -u "$ALLEMANDE_UID" -g "$ALLEMANDE_GID" "$user" || true
+useradd -m -d "$ports" -s "$(which bash)" -u "$ALLEMANDE_UID" -g "$ALLEMANDE_GID" "$user" || true
 
-mkdir -p "$ports"
 chown $user:$user "$ports"
+chmod g+rx "$ports"
+
+sudo -u allemande ssh-keygen
+sudo -u allemande ssh-copy-id ucm.dev
 
 cat <<END >"$ports/.profile"
 set -a
@@ -44,3 +47,6 @@ for module in $ALLEMANDE_MODULES; do
 
 	chown $user:$user "$module_dir"
 done
+
+"$ALLEMANDE_HOME/adm/allemande-user-add" www-data
+"$ALLEMANDE_HOME/adm/allemande-user-add" sam
