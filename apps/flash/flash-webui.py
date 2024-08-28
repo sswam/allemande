@@ -59,20 +59,19 @@ def process_text(video_url):
 
 	return status, error_text, output_text, str(output_file)
 
-
 demo = gr.Interface(
 	fn=process_text,
 	inputs=[
-		gr.inputs.Textbox(label="Video URL",
+		gr.Textbox(label="Video URL",
 		lines=1,
 		placeholder="https://www.youtube.com/watch?v=",
-		default=""),
+		value=""),
 	],
 	outputs=[
-		gr.outputs.Textbox(label="Exit Status"),
-		gr.outputs.Textbox(label="Messages"),
-		gr.outputs.Textbox(label="Output Text"),
-		gr.outputs.File(label="Download Output Text"),
+		gr.Textbox(label="Exit Status"),
+		gr.Textbox(label="Messages"),
+		gr.Textbox(label="Output Text"),
+		gr.File(label="Download Output Text"),
 	],
 	title=title,
 	description=desc,
