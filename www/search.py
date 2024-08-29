@@ -409,7 +409,7 @@ def dict_first(d):
 	return next(iter(d))
 
 
-def search(args, *queries):
+def search(*queries, **args):
 	all = []
 	for query in queries:
 		lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
@@ -451,7 +451,7 @@ def main():
 	logging_group.add_argument('--log', default=None, help="log file")
 
 	args = parser.parse_args()
-	search(args, *args.queries)
+	search(*args.queries, **args)
 
 
 if __name__ == '__main__':
