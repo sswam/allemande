@@ -77,7 +77,6 @@ def fetch_emails(folder="INBOX", mark_as_read=False, metadata_only=False):
             fetched_emails.append({"subject": subject, "from": from_, "file": filepath})
 
         if mark_as_read:
-            print("marking as read")
             server.add_flags([msg_id], ['\\Seen'])
     server.logout()
     return fetched_emails
