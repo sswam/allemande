@@ -17,10 +17,11 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logging.basicConfig(level=logging.INFO)
 
-DEFAULT_TEMPERATURE = 1.0
+DEFAULT_TEMPERATURE = 0.3
 # TOKEN_LIMIT = 9216
 # TOKEN_LIMIT = 100000  # exactly?
 TOKEN_LIMIT = 8192
+TOKEN_LIMIT_HAIKU = 4096
 MODEL_DEFAULT = "claude-3-5-sonnet-20240620"
 MODEL_INSTANT = "claude-3-haiku-20240307"
 # previous model names: "claude-v1" "claude-v1-100k" "claude-instant-v1-100k"
@@ -72,12 +73,14 @@ def message_to_string(message):
 def chat_claude(messages, model=None, token_limit: int = None, temperature=None, stream=False, _async=False):
 	""" Chat with claude """
 	# TODO clean up this code, if indeed all models are 100K now; test with claude-1 also I guess
-	real_token_limit = TOKEN_LIMIT   # TOKEN_LIMIT_100K if "100k" in model else TOKEN_LIMIT
+	real_token_limit = TOKEN_LIMIT_HAIKU if model == MODEL_INSTANT else TOKEN_LIMIT
 	logger.debug("model: %s", model)
 	logger.debug("real_token_limit: %s", real_token_limit)
 	if model is None:
 		model = MODEL_DEFAULT
 	if token_limit is None:
+		token_limit = real_token_limit
+	if token_limit > real_token_limit:
 		token_limit = real_token_limit
 	if temperature is None:
 		temperature = DEFAULT_TEMPERATURE
@@ -148,16 +151,10 @@ async def async_stream(message, out=sys.stdout, debug=False, **kwargs):
 			first = False
 	print("", file=out, flush=True)
 
-def default_token_limit_for_model(model: str):
-	# TODO clean up this code, if indeed all models are 100K now; test with claude-1 also I guess
-	# or leave it; they might possibly increase token limit in future again
-	return TOKEN_LIMIT  # TOKEN_LIMIT_100K if "100k" in model else TOKEN_LIMIT
-
 def query(message, model=MODEL_DEFAULT, debug=False, token_limit: Optional[int] = None, temperature=DEFAULT_TEMPERATURE):
 	""" Syncronous access to the anthropic API """
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
-	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	response = complete(message, model=model, token_limit=token_limit, temperature=temperature)
 	return response_completion(response)
 
@@ -165,7 +162,6 @@ def stream(message, model=MODEL_DEFAULT, out=sys.stdout, debug=False, token_limi
 	""" Streaming access to the anthropic API """
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
-	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	stream = complete(message, model=model, token_limit=token_limit, stream=True, temperature=temperature)
 	first = True
 	with stream as s:
@@ -178,7 +174,6 @@ def aquery(message, model=MODEL_DEFAULT, debug=False, token_limit: Optional[int]
 	""" Asyncronous access to the anthropic API """
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
-	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	response = asyncio.run(async_query(message, model=model, debug=debug, token_limit=token_limit, temperature=temperature))
 	return response
 
@@ -186,7 +181,6 @@ def astream(message, model=MODEL_DEFAULT, out=sys.stdout, debug=False, token_lim
 	""" Asyncronous streaming access to the anthropic API """
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
-	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	asyncio.run(async_stream(message, model=model, out=out, debug=debug, token_limit=token_limit, temperature=temperature))
 
 if __name__ == "__main__":
