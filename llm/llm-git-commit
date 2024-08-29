@@ -166,7 +166,7 @@ check-for-bugs() {
 		$MR "$review"
 	fi
 	run-git-diff |
-		proc -m=$model 'Please review this patch. Answer LGTM if bug-free, or list bugs still present in the patched code. Do NOT list bugs in the original code that are fixed by the patch. Expected format:
+		proc -m=$model 'Please carefully review this patch with a fine-tooth comb! Answer LGTM if bug-free, or list bugs still present in the patched code. Do NOT list bugs in the original code that are fixed by the patch. Expected format:
 ```
 1. bug
 2. another bug
