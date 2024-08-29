@@ -46,11 +46,11 @@ models = {
 		"description": "Our affordable and intelligent small model for fast, lightweight tasks",
 		"cost": 0.002,
 	},
-	"gpt-3.5-turbo": {
-		"abbrev": "3+",
-		"description": "Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration.",
-		"cost": 0.002,
-	},
+#	"gpt-3.5-turbo": {
+#		"abbrev": "3+",
+#		"description": "Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration.",
+#		"cost": 0.002,
+#	},
 	"gpt-4": {
 		"abbrev": "4",
 		"id": "gpt-4o",
@@ -58,11 +58,11 @@ models = {
 		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
 		"cost": 0.03,  # ???
 	},
-	"gpt-4-orig": {
-		"abbrev": "4o",
-		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
-		"cost": 0.03,
-	},
+#	"gpt-4-orig": {
+#		"abbrev": "4o",
+#		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
+#		"cost": 0.03,
+#	},
 	"claude": {
 		"abbrev": "c",
 		"id": "claude-3-5-sonnet-20240620",
@@ -75,21 +75,21 @@ models = {
 		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
 		"cost": 0.0,  # at least for now!
 	},
-	"claude-v1-100k": {
-		"abbrev": "c+",
-		"description": "Anthropic's Claude with an 100k token window.",
-		"cost": 0.0,  # at least for now!
-	},
-	"claude-instant-v1-100k": {
-		"abbrev": "i+",
-		"description": "Anthropic's Claude Instant with an 100k token window.",
-		"cost": 0.0,  # at least for now!
-	},
-	"gpt-4-32k": {
-		"abbrev": "4+",
-		"description": "Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with our latest model iteration.",
-		"cost": 0.06,
-	},
+#	"claude-v1-100k": {
+#		"abbrev": "c+",
+#		"description": "Anthropic's Claude with an 100k token window.",
+#		"cost": 0.0,  # at least for now!
+#	},
+#	"claude-instant-v1-100k": {
+#		"abbrev": "i+",
+#		"description": "Anthropic's Claude Instant with an 100k token window.",
+#		"cost": 0.0,  # at least for now!
+#	},
+#	"gpt-4-32k": {
+#		"abbrev": "4+",
+#		"description": "Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with our latest model iteration.",
+#		"cost": 0.06,
+#	},
 	"bard": {
 		"abbrev": "b",
 		"description": "Google Bard is a large language model (LLM) chatbot developed by Google AI. It is trained on a massive dataset of text and code, and can generate text, translate languages, write different kinds of creative content, and answer your questions in an informative way.",
