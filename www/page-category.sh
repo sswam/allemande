@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 # page-categories.sh:	use an LLM to get the categories for a page
 
-m=4
+m=$ALLEMANDE_LLM_DEFAULT
 
 . opts
 

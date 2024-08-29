@@ -5,7 +5,7 @@ user=""
 adj=""
 topic=""
 types="concepts, terms, and other topics"
-m=4
+m=$ALLEMANDE_LLM_DEFAULT
 noref=	# no reference text
 
 . opts

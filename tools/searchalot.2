@@ -49,7 +49,7 @@ s_claude() {
 
 s_gpt4() {
 	local query_llm=$2
-	llm query -m 4 "$query_llm"
+	llm query -m $ALLEMANDE_LLM_DEFAULT "$query_llm"
 }
 
 s_tripadvisor() {

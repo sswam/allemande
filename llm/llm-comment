@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 # llm-comment:	use an LLM to add comments to the code
-m=4
+m=$ALLEMANDE_LLM_DEFAULT
 p="Please add short comments to explain the code, only when its not clear to an advanced programmer."
 . opts
 model=$m

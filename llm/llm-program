@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 # llm-program:	Write a program based on an example, a spec, and possible other documents
 
-m=4	# LLM model
+m=$ALLEMANDE_LLM_DEFAULT	# LLM model
 e=	# example
 E=	# no example
 x=	# extension

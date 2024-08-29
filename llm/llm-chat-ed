@@ -4,7 +4,7 @@
 p=	# prompt
 P=	# prompt, preformatted
 	# with system: user: assistant:
-m=4	# model
+m=$ALLEMANDE_LLM_DEFAULT	# model
 f=	# prompt file
 q=	# don't warn
 

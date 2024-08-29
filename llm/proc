@@ -1,5 +1,5 @@
 #!/bin/bash -eu
-m=4
+m=$ALLEMANDE_LLM_DEFAULT
 . opts
 process -m=$m "$@" "Please reply as concise as possible, with no boilerplate \
 or unnecessary explanation. Do not abbreviate text unrelated to the request. \

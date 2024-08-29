@@ -18,9 +18,9 @@ SEARCH := google
 
 
 #m0=3+
-m0=c+
+m0=$ALLEMANDE_LLM_DEFAULT_CHEAP
 # m0=4   # gives "Gateway timeout" for large inputs
-m=4
+m=$ALLEMANDE_LLM_DEFAULT
 
 
 default: goal

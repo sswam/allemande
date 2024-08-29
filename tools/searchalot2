@@ -62,7 +62,7 @@ Thanks for being awesome!
 		fi
 		if [ ! -s "gpt4.$query_esc.txt" ]; then
 			echo >&2 "RUN   gpt4: $query"
-			llm query -m 4 "$llm_query" | tee gpt4.$query_esc.txt &
+			llm query -m $ALLEMANDE_LLM_DEFAULT "$llm_query" | tee gpt4.$query_esc.txt &
 			n=$[$n+1]
 		else
 			echo >&2 "-     gpt4: $query"

@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 # helposaurus:	listen for the user's query, run the LLM, and speak the answer
 
-m=4	# model
+m=$ALLEMANDE_LLM_DEFAULT	# model
 y=0	# yes/no
 w=0	# single word
 opt_1=0	# single sentence

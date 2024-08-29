@@ -1,5 +1,5 @@
 #!/bin/bash -eu
-m=4
+m=$ALLEMANDE_LLM_DEFAULT
 . opts
 while read module; do
 	echo >&2 "Processing $module"

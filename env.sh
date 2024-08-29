@@ -24,6 +24,9 @@ ALLEMANDE_ROOMS="$ALLEMANDE_HOME/rooms"
 
 ALLEMANDE_AUDIO_LOCK="/var/lock/allemande-audio.lock"
 
+ALLEMANDE_LLM_DEFAULT="c"  # Claude
+ALLEMANDE_LLM_DEFAULT_CHEAP="i"  # Claude Haiku
+
 ALLEMANDE_VENV=
 if [ -e "$ALLEMANDE_HOME/venv" ]; then
 	ALLEMANDE_VENV="$ALLEMANDE_HOME/venv"

@@ -6,7 +6,7 @@ func=$2
 
 func_name=${func%.*}
 
-m=4
+m=$ALLEMANDE_LLM_DEFAULT
 
 . opts
 
