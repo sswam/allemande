@@ -151,6 +151,9 @@ There can be only one feat or fix line per commit, then a blank line, then the l
 If a commit is simple, you can omit the list. Do not add a list item that just repeats the main line.
 The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
 Do not belabour the obvious; we do not need too much detail, e.g. moving folders do not list every file that was moved.
+
+If and only if you see any bugs, add `BUG: ` lines to the commit message explaining very concisely.
+I do not want any sprurious BUG messages or other commentary.
 ' | grep -v '^```' |
 	fmt -s -w 78 -g 78 > "$commit_message"
 }
