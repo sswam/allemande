@@ -133,6 +133,5 @@ if __name__ == '__main__':
     try:
         argh.dispatch_command(main)
     except Exception as e:
-        raise(e)
-        logger.error(repr(e))
+        logger.error(e)
         sys.exit(1)
