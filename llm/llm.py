@@ -18,12 +18,14 @@ from pathlib import Path
 
 import argh
 
+import openai
 from openai import OpenAI
 
 openai_client = OpenAI()
 import tiktoken
 
 import tab
+import anthropic
 import claude
 from bard import Bard
 from slugify import slugify
@@ -38,7 +40,8 @@ logger = logging.getLogger(__name__)
 LOGDIR = Path(os.environ["HOME"])/"llm.log"
 LOGFILE_NAME_MAX_LEN = 100
 RETRIES = 20
-BAD_ERRORS_NO_RETRY = "maximum context length", "context_length_exceeded"
+exceptions_to_retry = (openai.RateLimitError, openai.APIConnectionError, openai.InternalServerError,
+	anthropic.RateLimitError, anthropic.APIConnectionError, anthropic.InternalServerError)
 
 models = {
 	"gpt-4o-mini": {
@@ -469,17 +472,17 @@ def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 	return content
 
 
+# TODO use backoff module?
 def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 	""" Retry a function n_tries times. """
 	for i in range(n_tries):
 		try:
 			return fn(*args, **kwargs)
-		except Exception as ex:  # pylint: disable=broad-except
+		except exceptions_to_retry as ex:
 			delay = random.uniform(sleep_min, sleep_max)
 			logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
 			msg = str(ex)
-			bad = any(bad_error in msg for bad_error in BAD_ERRORS_NO_RETRY)
-			if bad or i == n_tries - 1:
+			if i == n_tries - 1:
 				raise
 			time.sleep(delay)
 			sleep_min *= 2
