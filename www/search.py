@@ -409,32 +409,46 @@ def dict_first(d):
 	return next(iter(d))
 
 
-def search(*queries, **args):
+def search(*queries, engine=None, markdown=False, limit=None, max_results=10, safe='off', format='table', header=False, out=None):
 	all = []
+	lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
+	
+	if engine is None:
+		engine = dict_first(engines)
+	
+	key = lc_keys_to_keys[engine.lower()]
+	eng = engines.get(key, agents.get(key))
+	
 	for query in queries:
-		lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
-		key = lc_keys_to_keys[args.engine.lower()]
-		eng = engines.get(key, agents.get(key))
-		results = eng(query, max_results=args.max_results, safe=args.safe, limit_max_results=args.limit)
-		results2 = results[:args.max_results]
-		# output using the specified formatter
-		if args.out and args.markdown:
-			formatted_results = list_to_markdown_table(results2, args.engine)
-		elif args.out:
-			formatter = formatters[args.format]
-			formatted_results = formatter(results, header=args.header).rstrip()
-		if args.out:
-			print(formatted_results, file=args.out)
+		results = eng(query, max_results=max_results, safe=safe, limit_max_results=limit)
+		results2 = results[:max_results]
+		
+		if out:
+			if markdown:
+				formatted_results = list_to_markdown_table(results2, engine)
+			else:
+				formatter = formatters[format]
+				formatted_results = formatter(results2, header=header).rstrip()
+			
+			print(formatted_results, file=out)
 		else:
-			all.append(results)
-	if not args.out:
-		return all
+			all.append(results2)
+	
+	if not out:
+		if markdown:
+			out = []
+			for res in all:
+				formatted_results = list_to_markdown_table(results2, engine)
+				out.append(formatted_results)
+			return "\n".join(out)
+		else:
+			return all
 
 
 def main():
 	parser = argparse.ArgumentParser(description="Search `query` using `engine` and return a list of results")
 	parser.add_argument('-e', '--engine', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
-	parser.add_argument('-f', '--format', help='Output formatter', default=dict_first(formatters), choices=formatters.keys())
+	parser.add_argument('-f', '--format', help='Output formatter', default='table', choices=formatters.keys())
 	parser.add_argument('-m', '--max-results', help='Maximum number of results to return', type=int, default=10)
 	parser.add_argument('-s', '--safe', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
 	parser.add_argument('-l', '--limit', help='Limit to specified max results', action='store_true')
@@ -451,8 +465,17 @@ def main():
 	logging_group.add_argument('--log', default=None, help="log file")
 
 	args = parser.parse_args()
-	search(*args.queries, **args)
+	
+	search(*args.queries, 
+		   engine=args.engine, 
+		   markdown=args.markdown, 
+		   limit=args.limit, 
+		   max_results=args.max_results, 
+		   safe=args.safe, 
+		   format=args.format, 
+		   header=args.header, 
+		   out=args.out)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	main()
