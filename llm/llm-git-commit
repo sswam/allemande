@@ -136,17 +136,19 @@ generate-commit-message() {
 	fi
 
 	run-git-diff |
-	llm process -m $model 'Please describe this patch, for a git commit message, following the Conventional Commits spec.
+	llm process -m $model 'Please describe this entire patch, for a git commit message, following the Conventional Commits spec.
 Do not invent anything that is not in the patch!
-Only describe the actual changes, lines starting with +, not the surrounding context.
-The required format is as follows:
+Only describe the actual changes, lines starting with +, do not describe the surrounding patch context.
+The required format is as follows, do not return anything else:
 
+```
 feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
 
 - concise info about first change, if needed. If the line wraps
   the second line must be indented like this.
 - concise info about second change, if any.
 - and so on ...
+```
 
 There can be only one feat or fix line per commit, then a blank line, then the list.
 If a commit is simple, you can omit the list. Do not add a list item that just repeats the main line.
@@ -164,7 +166,14 @@ check-for-bugs() {
 		$MR "$review"
 	fi
 	run-git-diff |
-		proc -m=$model "Please review this patch. Answer LGTM if bug-free, or list bugs still present in the patched code. Do NOT list bugs in the original code that are fixed by the patch. Don't provide a corrected patch or additional commentary." |
+		proc -m=$model 'Please review this patch. Answer LGTM if bug-free, or list bugs still present in the patched code. Do NOT list bugs in the original code that are fixed by the patch. Expected format:
+```
+1. bug
+2. another bug
+```
+
+or just LGTM.
+' |
 		fmt -s -w 78 -g 78 |
 		tee "$review"
 #		llm process -m $model 'Please do a code review: check this diff carefully for bugs, and tell me in brief about any bugs, other issues, or suggestions to improve it.' |
