@@ -83,7 +83,7 @@ def fetch_emails(folder="INBOX", mark_as_read=False, metadata_only=False):
 
 def list_folders():
     """
-    Lists all folders with the count of unread emails.
+    Lists all folders with unread emails, and a count.
 
     Returns:
         list of tuple: List of (unread_count, folder_name) tuples.
@@ -96,7 +96,8 @@ def list_folders():
         server.select_folder(folder_name)
         messages = server.search(['UNSEEN'])
         unread_count = len(messages)
-        folder_list.append((unread_count, folder_name))
+        if unread_count:
+            folder_list.append((unread_count, folder_name))
 
     server.logout()
     return folder_list
