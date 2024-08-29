@@ -18,7 +18,7 @@ usage() {
 	echo "  -x: clean up commit-message.*.txt files"
 }
 
-model="4"
+model="c"
 
 if type move-rubbish >/dev/null 2>&1; then
 	MR=move-rubbish
@@ -134,10 +134,11 @@ generate-commit-message() {
 		echo >&2 "Commit message already exists: $commit_message, moving it to rubbish."
 		$MR "$commit_message"
 	fi
+
 	run-git-diff |
-		llm process -m $model 'Please describe this diff, for a git commit message, following the Conventional Commits spec.
-Do not invent anything that is not in the diff!
-Only describe the actual changes, lines starting with + and -, not the surrounding context.
+	llm process -m $model 'Please describe this patch, for a git commit message, following the Conventional Commits spec.
+Do not invent anything that is not in the patch!
+Only describe the actual changes, lines starting with +, not the surrounding context.
 The required format is as follows:
 
 feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
@@ -151,9 +152,6 @@ There can be only one feat or fix line per commit, then a blank line, then the l
 If a commit is simple, you can omit the list. Do not add a list item that just repeats the main line.
 The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
 Do not belabour the obvious; we do not need too much detail, e.g. moving folders do not list every file that was moved.
-
-If and only if you see any bugs, add `BUG: ` lines to the commit message explaining very concisely.
-I do not want any sprurious BUG messages or other commentary.
 ' | grep -v '^```' |
 	fmt -s -w 78 -g 78 > "$commit_message"
 }
@@ -166,13 +164,17 @@ check-for-bugs() {
 		$MR "$review"
 	fi
 	run-git-diff |
-		llm process -m $model 'Please do a code review: check this diff carefully for bugs, and tell me in brief about any bugs, other issues, or suggestions to improve it.' |
+		proc -m=$model "Please review this patch. Answer LGTM if bug-free, or list bugs still present in the patched code. Do NOT list bugs in the original code that are fixed by the patch. Don't provide a corrected patch or additional commentary." |
 		fmt -s -w 78 -g 78 |
 		tee "$review"
+#		llm process -m $model 'Please do a code review: check this diff carefully for bugs, and tell me in brief about any bugs, other issues, or suggestions to improve it.' |
 }
 
 if [ -n "$model" ]; then
-	generate-commit-message "$model"
+	check-for-bugs "$model"
+	if [ "`cat "$review"`" = "LGTM" ]; then
+		generate-commit-message "$model"
+	fi
 fi
 
 cleanup-and-exit() {
@@ -196,11 +198,11 @@ while true; do
 	else
 		prompt="Action?"
 	fi
-	read -p "$prompt [y/n/e/3/4/c/C/i/I/d/v/b/?] " -n 1 -r choice 2>&1
+	read -p "$prompt [y/n/q/e/3/4/c/C/i/I/d/v/b/?] " -n 1 -r choice 2>&1
 	echo
 	case "$choice" in
 		y) break;;
-		n)
+		n|q)
 			cleanup-and-exit 1
 			;;
 		e)
@@ -231,14 +233,14 @@ while true; do
 			run-git-vimdiff
 			;;
 		b)
-			check-for-bugs 4
+			check-for-bugs c
 			;;
 		x)
 			cleanup
 			;;
 		\?|h)
 			echo "y: commit with this message"
-			echo "n: abort"
+			echo "n|q: abort"
 			echo "e: edit the message"
 			echo "3: generate with ChatGPT-3.5"
 			echo "4: generate with GPT-4"
@@ -247,7 +249,7 @@ while true; do
 			echo "i: generate with Cluade Instant"
 			echo "d: diff the staged changes"
 			echo "v: vimdiff the staged changes"
-			echo "b: check for bugs with GPT-4"
+			echo "b: check for bugs with Claude"
 			echo "?: show this help message"
 			echo "x: clean up commit-message.*.txt files"
 			echo
