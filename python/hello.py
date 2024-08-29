@@ -8,7 +8,6 @@ import argh
 
 logger = logging.getLogger(__name__)
 
-
 """
 hello.py - An example Unix-style Python module / script to say hello and copy
 or reverse the input.
@@ -38,7 +37,9 @@ def hello(lines, name="World", reverse=False):
 
 @argh.arg('--name', help='name to be greeted')
 @argh.arg('--reverse', help='whether to reverse the lines or not')
-def main(name="World", reverse=False):
+@argh.arg('--debug', help='enable debug logging')
+@argh.arg('--verbose', help='enable verbose logging')
+def main(name="World", reverse=False, debug=False, verbose=False):
     """
     hello.py - An example Unix-style Python module / script to say hello and copy
     or reverse the input.
@@ -46,8 +47,15 @@ def main(name="World", reverse=False):
     This script reads lines from stdin and writes the output to stdout.
 
     Usage:
-        cat input.txt | python3 hello.py [--name NAME] [--reverse]
+        cat input.txt | python3 hello.py [--name NAME] [--reverse] [--debug] [--verbose]
     """
+    if debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+    elif verbose:
+        logging.getLogger().setLevel(logging.INFO)
+    else:
+        logging.getLogger().setLevel(logging.WARNING)
+
     input_lines = sys.stdin.readlines()
     output_lines = hello(input_lines, name=name, reverse=reverse)
     for line in output_lines:
