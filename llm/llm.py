@@ -44,6 +44,18 @@ exceptions_to_retry = (openai.RateLimitError, openai.APIConnectionError, openai.
 	anthropic.RateLimitError, anthropic.APIConnectionError, anthropic.InternalServerError)
 
 models = {
+	"claude": {
+		"abbrev": "c",
+		"id": "claude-3-5-sonnet-20240620",
+		"description": "Anthropic's Claude 2 is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
+		"cost": 0.0,  # at least for now!
+	},
+	"claude-haiku": {
+		"abbrev": "i",
+		"id": "claude-3-haiku-20240307",
+		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
+		"cost": 0.0,  # at least for now!
+	},
 	"gpt-4o-mini": {
 		"abbrev": "4m",
 		"description": "Our affordable and intelligent small model for fast, lightweight tasks",
@@ -66,18 +78,6 @@ models = {
 #		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
 #		"cost": 0.03,
 #	},
-	"claude": {
-		"abbrev": "c",
-		"id": "claude-3-5-sonnet-20240620",
-		"description": "Anthropic's Claude 2 is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
-		"cost": 0.0,  # at least for now!
-	},
-	"claude-haiku": {
-		"abbrev": "i",
-		"id": "claude-3-haiku-20240307",
-		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
-		"cost": 0.0,  # at least for now!
-	},
 #	"claude-v1-100k": {
 #		"abbrev": "c+",
 #		"description": "Anthropic's Claude with an 100k token window.",
@@ -519,7 +519,7 @@ def count(inp=stdin, model=default_model):
 	text = read_utf_replace(inp)
 	model = opts.model
 	if model.startswith("gpt"):
-		enc = tiktoken.get_encoding_for_model(model)
+		enc = tiktoken.encoding_for_model(model)
 		tokens = enc.encode(text)
 		return len(tokens)
 	if model.startswith("claude"):
