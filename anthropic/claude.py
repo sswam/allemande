@@ -7,6 +7,7 @@ import os
 import logging
 import asyncio
 import json
+import copy
 from typing import Optional
 import argh
 from anthropic import Anthropic, AsyncAnthropic, HUMAN_PROMPT, AI_PROMPT
@@ -18,9 +19,10 @@ logging.basicConfig(level=logging.INFO)
 
 DEFAULT_TEMPERATURE = 1.0
 # TOKEN_LIMIT = 9216
-TOKEN_LIMIT = 100000  # exactly?
-MODEL_DEFAULT = "claude-2"
-MODEL_INSTANT = "claude-instant-1"
+# TOKEN_LIMIT = 100000  # exactly?
+TOKEN_LIMIT = 8192
+MODEL_DEFAULT = "claude-3-5-sonnet-20240620"
+MODEL_INSTANT = "claude-3-haiku-20240307"
 # previous model names: "claude-v1" "claude-v1-100k" "claude-instant-v1-100k"
 # see also: https://console.anthropic.com/docs/api/reference
 
@@ -43,16 +45,16 @@ def count(message, add_prompts=True):
 
 def response_completion(response):
 	""" Extract the completion from a response """
-	logger.debug("Response: %s", json.dumps({"model":response.model, "stop_reason":response.stop_reason, "completion":response.completion}))
-	completion = response.completion
+	completion = response.content[0].text
+	logger.debug("Response: %s", json.dumps({"model":response.model, "stop_reason":response.stop_reason, "completion":completion}))
 	if completion.startswith(" "):
 		completion = completion[1:]
 	return completion
 
 def stream_completion(data, out, first=False):
 	""" Extract the completion from a stream response """
-	logger.debug("Response data: %s", json.dumps({"model":data.model, "stop_reason":data.stop_reason, "completion":data.completion}))
-	part = data.completion
+#	logger.debug("Response data: %s", json.dumps({"model":data.model, "stop_reason":data.stop_reason, "completion":data}))
+	part = data
 	if first and part.startswith(" "):
 		part = part[1:]
 	print(part, file=out, end="", flush=True)
@@ -79,18 +81,27 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 		token_limit = real_token_limit
 	if temperature is None:
 		temperature = DEFAULT_TEMPERATURE
-	message_strings = map(message_to_string, messages)
-	prompt = "".join(message_strings) + AI_PROMPT
-	prompt_tokens = client.count_tokens(prompt)
-	# max_possible_tokens_to_sample = min(real_token_limit - prompt_tokens, TOKEN_LIMIT)  # gen tokens is limited to 9216?
-	max_possible_tokens_to_sample = real_token_limit - prompt_tokens
-	if max_possible_tokens_to_sample <= 0:
-		raise ValueError(f"[context_length_exceeded] Prompt is too long: {prompt_tokens} tokens > {real_token_limit}")
-	if token_limit > max_possible_tokens_to_sample:
-		token_limit = max_possible_tokens_to_sample
-		logger.debug("Reducing token_limit to %d", token_limit)
+	# message_strings = map(message_to_string, messages)
+	messages = copy.deepcopy(messages)
+	for m in messages:
+		if not isinstance(m["content"], str):
+			continue
+		m["content"] = [
+			{
+				"type": "text",
+				"text": m["content"],
+			}
+		]
+#	prompt = "".join(message_strings) + AI_PROMPT
+#	prompt_tokens = client.count_tokens(prompt)
+#	# max_possible_tokens_to_sample = min(real_token_limit - prompt_tokens, TOKEN_LIMIT)  # gen tokens is limited to 9216?
+#	max_possible_tokens_to_sample = real_token_limit - prompt_tokens
+#	if max_possible_tokens_to_sample <= 0:
+#		raise ValueError(f"[context_length_exceeded] Prompt is too long: {prompt_tokens} tokens > {real_token_limit}")
+#	if token_limit > max_possible_tokens_to_sample:
+#		token_limit = max_possible_tokens_to_sample
+#		logger.debug("Reducing token_limit to %d", token_limit)
 	c = client_async if _async else client
-	fn = c.completions.create
 #	show_args(
 #		prompt=prompt,
 #		stop_sequences=[HUMAN_PROMPT],
@@ -99,12 +110,15 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 #		stream=stream,
 #		temperature=temperature,
 #	)
+	if stream:
+		fn = c.messages.stream
+	else:
+		fn = c.messages.create
 	response = fn(
-		prompt=prompt,
+		messages=messages,
 		stop_sequences=[HUMAN_PROMPT],
 		model=model,
-		max_tokens_to_sample=token_limit,
-		stream=stream,
+		max_tokens=token_limit,
 		temperature=temperature,
 	)
 	return response
@@ -126,11 +140,12 @@ async def async_stream(message, out=sys.stdout, debug=False, **kwargs):
 	# TODO output can block and it should be async too, but this is just a demo
 	if debug:
 		logging.basicConfig(level=logging.DEBUG)
-	stream = await complete(message, stream=True, _async=True, **kwargs)
+	stream = complete(message, stream=True, _async=True, **kwargs)
 	first = True
-	async for data in stream:
-		stream_completion(data, out, first=first)
-		first = False
+	async with stream as s:
+		async for data in s.text_stream:
+			stream_completion(data, out, first=first)
+			first = False
 	print("", file=out, flush=True)
 
 def default_token_limit_for_model(model: str):
@@ -153,9 +168,10 @@ def stream(message, model=MODEL_DEFAULT, out=sys.stdout, debug=False, token_limi
 	token_limit = default_token_limit_for_model(model) if token_limit is None else token_limit
 	stream = complete(message, model=model, token_limit=token_limit, stream=True, temperature=temperature)
 	first = True
-	for data in stream:
-		stream_completion(data, out, first=first)
-		first = False
+	with stream as s:
+		for data in s.text_stream:
+			stream_completion(data, out, first=first)
+			first = False
 	print("", file=out, flush=True)
 
 def aquery(message, model=MODEL_DEFAULT, debug=False, token_limit: Optional[int] = None, temperature=DEFAULT_TEMPERATURE):
