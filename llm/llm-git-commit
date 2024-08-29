@@ -139,7 +139,7 @@ generate-commit-message() {
 	llm process -m $model 'Please describe this entire patch, for a git commit message, following the Conventional Commits spec.
 Do not invent anything that is not in the patch!
 Only describe the actual changes, lines starting with +, do not describe the surrounding patch context.
-The required format is as follows, do not return anything else:
+The required format is as follows, return only the commit message like this without any prelude or concluding statement!
 
 ```
 feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
