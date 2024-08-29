@@ -44,7 +44,7 @@ if [ "$metadata" = 1 ]; then
 fi
 
 if [ "$clean" = 1 ]; then
-	< "$html" pandoc-dump-clean-html | pandoc_convert | clean
+	< "$html" htmlsplit | htmldebloater | pandoc-dump-clean-html | pandoc_convert | clean
 else
-	< "$html" prepare_input | pandoc_convert
+	< "$html" htmlsplit | htmldebloater | prepare_input | pandoc_convert
 fi
