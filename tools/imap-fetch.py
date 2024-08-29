@@ -11,7 +11,7 @@ from email.header import decode_header
 logger = logging.getLogger(__name__)
 
 """
-imap-fetch.py - A command-line tool to fetch unread emails from an IMAP server.
+imap_fetch.py - A command-line tool to fetch unread emails from an IMAP server.
 
 This script can be used as a module:
     from imap_fetch import fetch_emails
@@ -48,12 +48,15 @@ def fetch_emails(folder="INBOX", mark_as_read=False, metadata_only=False):
     fetched_emails = []
 
     if not metadata_only:
-        local_folder = os.path.join(os.getcwd(), folder)
-        os.makedirs(local_folder, exist_ok=True)
+        os.makedirs(folder, exist_ok=True)
 
     for msg_id in messages:
-        raw_message = server.fetch([msg_id], ['BODY[]', 'FLAGS'])
-        email_message = email.message_from_bytes(raw_message[msg_id][b'BODY[]'])
+        if metadata_only:
+            raw_message = server.fetch([msg_id], ['BODY.PEEK[HEADER]', 'FLAGS'])
+            email_message = email.message_from_bytes(raw_message[msg_id][b'BODY[HEADER]'])
+        else:
+            raw_message = server.fetch([msg_id], ['BODY.PEEK[]', 'FLAGS'])
+            email_message = email.message_from_bytes(raw_message[msg_id][b'BODY[]'])
 
         subject = decode_header(email_message['Subject'])[0][0]
         if isinstance(subject, bytes):
@@ -68,14 +71,14 @@ def fetch_emails(folder="INBOX", mark_as_read=False, metadata_only=False):
         else:
             # Save the raw email to a file
             filename = f"{msg_id}.eml"
-            filepath = os.path.join(local_folder, filename)
+            filepath = os.path.join(folder, filename)
             with open(filepath, 'wb') as f:
                 f.write(raw_message[msg_id][b'BODY[]'])
             fetched_emails.append({"subject": subject, "from": from_, "file": filepath})
 
         if mark_as_read:
+            print("marking as read")
             server.add_flags([msg_id], ['\\Seen'])
-
     server.logout()
     return fetched_emails
 
@@ -99,13 +102,13 @@ def list_folders():
     server.logout()
     return folder_list
 
-@argh.arg('--folder', help='IMAP folder to fetch emails from')
-@argh.arg('--mark-as-read', help='Mark fetched emails as read')
-@argh.arg('--list', help='List all folders with unread email count', action='store_true')
+@argh.arg('-l', '--list', help='List all folders with unread email count', action='store_true')
+@argh.arg('-f', '--folder', help='IMAP folder to fetch emails from')
+@argh.arg('-r', '--mark-as-read', help='Mark fetched emails as read', action='store_true')
 @argh.arg('-m', '--metadata', help='Fetch only metadata (subject and from)', action='store_true')
 def main(folder="INBOX", mark_as_read=False, list=False, metadata=False):
     """
-    imap-fetch.py - A command-line tool to fetch unread emails from an IMAP server.
+    imap_fetch.py - A command-line tool to fetch unread emails from an IMAP server.
 
     This script fetches unread emails from the specified IMAP folder and saves them locally or prints metadata.
 
@@ -113,7 +116,7 @@ def main(folder="INBOX", mark_as_read=False, list=False, metadata=False):
         export IMAP_HOST=imap.example.com
         export IMAP_USER=user@example.com
         export IMAP_PASSWORD=secret
-        python3 imap-fetch.py [--folder FOLDER] [--mark-as-read] [--list] [-m|--metadata]
+        python3 imap_fetch.py [--folder FOLDER] [--mark-as-read] [--list] [-m|--metadata]
     """
     if list:
         folder_list = list_folders()
@@ -125,8 +128,8 @@ def main(folder="INBOX", mark_as_read=False, list=False, metadata=False):
             print(f"Subject: {email['subject']}")
             print(f"From: {email['from']}")
             if not metadata:
-                print(f"Saved to: {email['file']}")
-            print("--------------------")
+                print(f"Saved-To: {email['file']}")
+            print()
 
 if __name__ == '__main__':
     try:
