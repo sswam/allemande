@@ -6,7 +6,6 @@ import email
 from email.parser import BytesParser
 from email.policy import default
 import email
-import quopri
 import html
 
 import argh
@@ -88,17 +87,17 @@ def convert_email_to_plain_text(email_content):
         if part.get_content_type() == 'text/plain':
             payload = part.get_payload(decode=True)
             charset = part.get_content_charset() or 'utf-8'
+
+            # Decode the payload using the correct charset
             decoded_text = payload.decode(charset, errors='replace')
+
             plain_text_parts.append(decoded_text)
 
     # Combine all plain text parts
     combined_text = '\n'.join(plain_text_parts)
 
-    # Decode quoted-printable encoding
-    decoded_text = quopri.decodestring(combined_text.encode('utf-8')).decode('utf-8', errors='replace')
-
     # Unescape HTML entities
-    unescaped_text = html.unescape(decoded_text)
+    unescaped_text = html.unescape(combined_text)
 
     # Combine headers and body
     result = '\n'.join(headers) + '\n\n' + unescaped_text.strip() + '\n'
