@@ -516,7 +516,7 @@ def count(inp=stdin, model=default_model):
 	text = read_utf_replace(inp)
 	model = opts.model
 	if model.startswith("gpt"):
-		enc = tiktoken.get_encoding("cl100k_base")
+		enc = tiktoken.get_encoding_for_model(model)
 		tokens = enc.encode(text)
 		return len(tokens)
 	if model.startswith("claude"):
