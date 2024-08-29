@@ -101,7 +101,7 @@ def convert_email_to_plain_text(email_content):
     unescaped_text = html.unescape(decoded_text)
 
     # Combine headers and body
-    result = '\n'.join(headers) + '\n\n' + unescaped_text.strip()
+    result = '\n'.join(headers) + '\n\n' + unescaped_text.strip() + '\n'
 
     return result
 
