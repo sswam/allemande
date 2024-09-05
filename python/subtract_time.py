@@ -2,7 +2,6 @@
 
 import sys
 import logging
-from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +11,7 @@ class InvalidTimeFormatError(Exception):
 def subtract_times(time1: str, time2: str) -> str:
     """
     Subtracts two 24-hour format times and returns the result in 24-hour format.
+    It can accept times greater than 23:59, e.g. 25:30.
 
     Args:
         time1 (str): The first time in "HH:MM" format.
@@ -19,22 +19,25 @@ def subtract_times(time1: str, time2: str) -> str:
 
     Returns:
         str: The difference in "HH:MM" format.
-    """
-    format_str = "%H:%M"
-    try:
-        t1 = datetime.strptime(time1, format_str)
-        t2 = datetime.strptime(time2, format_str)
-    except ValueError as ve:
-        raise InvalidTimeFormatError(f"Invalid time format: {ve}")
-    
-    tdelta = timedelta(hours=t1.hour, minutes=t1.minute) - timedelta(hours=t2.hour, minutes=t2.minute)
-    
-    if tdelta.total_seconds() < 0:
-        raise ValueError("Time difference is negative")
-    
-    hours, remainder = divmod(tdelta.seconds, 3600)
-    minutes = remainder // 60
 
+    Raises:
+        InvalidTimeFormatError: If any input time is not in HH:MM format.
+    """
+    try:
+        h1, m1 = map(int, time1.split(':'))
+        h2, m2 = map(int, time2.split(':'))
+    except ValueError:
+        raise InvalidTimeFormatError("Invalid time format")
+
+    t1 = h1 * 60 + m1
+    t2 = h2 * 60 + m2
+
+    diff = t1 - t2
+
+    if diff < 0:
+        raise ValueError("Time difference is negative")
+
+    hours, minutes = divmod(diff, 60)
     return f"{hours:02}:{minutes:02}"
 
 def main():
