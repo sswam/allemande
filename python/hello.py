@@ -66,5 +66,5 @@ if __name__ == '__main__':
     try:
         argh.dispatch_command(main)
     except Exception as e:
-        logger.error(e)
+        logger.error(f"Error: %s %s", type(e).__name__, str(e))
         sys.exit(1)
