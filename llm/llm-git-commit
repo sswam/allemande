@@ -168,10 +168,10 @@ check-for-bugs() {
 		$MR "$review"
 	fi
 	run-git-diff |
-		proc -m=$model 'Please carefully review this patch with a fine-tooth comb! Answer LGTM if bug-free, or list bugs still present in the patched code. Do NOT list bugs in the original code that are fixed by the patch. Expected format:
+		proc -m=$model 'Please carefully review this patch with a fine-tooth comb! Answer LGTM if bug-free, or list bugs still present in the patched code. Do NOT list bugs in the original code that are fixed by the patch. You may also list other issues or suggestions if they are important. Expected format:
 ```
-1. bug
-2. another bug
+1. bug or issue
+2. another bug or issue
 ```
 
 or just LGTM.
