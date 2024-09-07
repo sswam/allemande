@@ -81,32 +81,39 @@ def fetch_emails(folder="INBOX", mark_as_read=False, metadata_only=False):
     server.logout()
     return fetched_emails
 
-def list_folders():
+
+def list_folders(all=False):
     """
     Lists all folders with unread emails, and a count.
 
     Returns:
-        list of tuple: List of (unread_count, folder_name) tuples.
+        list of tuple: List of (folder_name, unread_count) tuples.
     """
     server = connect_to_imap()
-    folders = server.list_folders()
+    try:
+        folders = server.xlist()
+    except:
+        logger.info("server does not support xlist")
+        folders = server.list_folders()
     folder_list = []
 
     for flags, delimiter, folder_name in folders:
-        server.select_folder(folder_name)
-        messages = server.search(['UNSEEN'])
-        unread_count = len(messages)
-        if unread_count:
-            folder_list.append((unread_count, folder_name))
+        unread_count = server.folder_status(folder_name, ['UNSEEN'])[b'UNSEEN']
+        folder_list.append((folder_name, unread_count))
+
+    if not all:
+        folder_list = [item for item in folder_list if item[1] > 0]
 
     server.logout()
     return folder_list
 
+
 @argh.arg('-l', '--list', help='List all folders with unread email count', action='store_true')
+@argh.arg('-a', '--all', help='When listing folders, include folders with no unread emails', action='store_true')
 @argh.arg('-f', '--folder', help='IMAP folder to fetch emails from')
 @argh.arg('-r', '--mark-as-read', help='Mark fetched emails as read', action='store_true')
 @argh.arg('-m', '--metadata', help='Fetch only metadata (subject and from)', action='store_true')
-def main(folder="INBOX", mark_as_read=False, list=False, metadata=False):
+def main(folder="INBOX", mark_as_read=False, list=False, all=False, metadata=False):
     """
     imap_fetch.py - A command-line tool to fetch unread emails from an IMAP server.
 
@@ -119,8 +126,8 @@ def main(folder="INBOX", mark_as_read=False, list=False, metadata=False):
         python3 imap_fetch.py [--folder FOLDER] [--mark-as-read] [--list] [-m|--metadata]
     """
     if list:
-        folder_list = list_folders()
-        for unread_count, folder_name in folder_list:
+        folder_list = list_folders(all=all)
+        for folder_name, unread_count in folder_list:
             print(f"{unread_count}\t{folder_name}")
     else:
         emails = fetch_emails(folder, mark_as_read, metadata)
@@ -135,5 +142,5 @@ if __name__ == '__main__':
     try:
         argh.dispatch_command(main)
     except Exception as e:
-        logger.error(e)
+        logger.error(f"Error: %s %s", type(e).__name__, str(e))
         sys.exit(1)
