@@ -28,6 +28,10 @@ else
 	MR=rm -f
 fi
 
+timestamp=`date +%Y%m%d%H%M%S`
+commit_message="commit-message.$timestamp.txt"
+review="review.$timestamp.txt"
+
 cleanup() {
 	# remove empty commit messages, that are not open
 	f -type f -name 'commit-message.*.txt' -size 0 -- |
@@ -100,10 +104,6 @@ for file in "${files[@]}"; do
 	fi
 done
 
-timestamp=`date +%Y%m%d%H%M%S`
-commit_message="commit-message.$timestamp.txt"
-review="review.$timestamp.txt"
-
 model-name() {
 	model="$1"
 	case "$model" in
@@ -146,22 +146,30 @@ generate-commit-message() {
 	llm process -m $model 'Please describe this entire patch, for a git commit message, following the Conventional Commits spec.
 Do not invent anything that is not in the patch!
 Only describe the actual changes, lines starting with +, do not describe the surrounding patch context.
-The required format is as follows, return only the commit message like this without any prelude or concluding statement!
+The required format is as follows. Return only the commit message like this without any prelude or concluding statement!
 
-```
 feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
 
 - concise info about first change, if needed. If the line wraps
   the second line must be indented like this.
 - concise info about second change, if any.
 - and so on ...
-```
 
 There can be only one feat or fix line per commit, then a blank line, then the list.
 If a commit is simple, you can omit the list. Do not add a list item that just repeats the main line.
 The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
 Do not belabour the obvious; we do not need too much detail, e.g. moving folders do not list every file that was moved.
-' | grep -v '^```' |
+' | grep -v '^```' | perl -e '
+	@lines = <STDIN>;
+	if (@lines && $lines[0] =~ /:$/) {
+		warn "removing header: $lines[0]\n";
+		shift @lines;
+		if (@lines && $lines[0] =~ /^$/) {
+			shift @lines;
+		}
+	}
+	print join("", @lines);
+' |
 	fmt -s -w 78 -g 78 > "$commit_message"
 }
 
@@ -188,7 +196,7 @@ or just LGTM.
 
 if [ -n "$model" ]; then
 	confirm check-for-bugs "$model"
-	if [ "`cat "$review"`" = "LGTM" ]; then
+	if [ ! -e "$review" ] || [ "`cat "$review"`" = "LGTM" ]; then
 		generate-commit-message "$model"
 	fi
 fi
