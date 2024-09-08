@@ -13,7 +13,7 @@ done |
 echo -n "token count: "
 llm count -m=$m < "${folder}-text.txt"
 summarize() {
-	proc -m=$m "Please give an executive overview of these emails for $USER, combining info from several emails where appropriate." < "${folder}-text.txt" |
+	proc -m=$m "Please give an executive overview of these emails for me ($USER), combining info from several emails where appropriate." < "${folder}-text.txt" |
 		tee "$folder"-summary.txt
 }
 confirm summarize

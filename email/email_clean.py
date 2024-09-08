@@ -38,56 +38,67 @@ def email_clean(eml_content):
         str: Processed .eml content as a string.
     """
     msg = BytesParser(policy=policy.default).parsebytes(eml_content)
-
-    keep_html = True  # Default to True
+    keep_html = not has_non_empty_plain_text(msg)
     
-    # Detect if a text/plain part is present
-    if msg.is_multipart():
-        for part in msg.walk():
-            if part.get_content_type() == 'text/plain':
-                payload = part.get_payload(decode=True).decode('utf-8', errors='ignore')
-                if payload.strip():  # Check if the plain text part is not empty
-                    keep_html = False
-                    break
-    else:
-        if msg.get_content_type() == 'text/plain':
-            payload = msg.get_payload(decode=True).decode('utf-8', errors='ignore')
-            if payload.strip():  # Check if the plain text content is not empty
-                keep_html = False
+    new_msg = create_new_message_with_essential_headers(msg)
+    add_text_content_to_message(new_msg, msg, keep_html)
 
-    # Keep only essential headers
+    return convert_email_to_plain_text(new_msg.as_string())
+
+def has_non_empty_plain_text(msg):
+    if not msg.is_multipart():
+        return is_non_empty_plain_text(msg)
+    
+    for part in msg.walk():
+        if is_non_empty_plain_text(part):
+            return True
+    return False
+
+def is_non_empty_plain_text(part):
+    if part.get_content_type() == 'text/plain':
+        payload = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+        return bool(payload.strip())
+    return False
+
+def create_new_message_with_essential_headers(msg):
     essential_headers = ['From', 'To', 'Subject', 'Date']
     new_msg = EmailMessage()
     for header in essential_headers:
         if header in msg:
             new_msg[header] = msg[header]
+    return new_msg
 
-    # Remove all attachments except text parts
-    if msg.is_multipart():
-        new_msg.set_content("")  # Create an empty message
+def add_text_content_to_message(new_msg, msg, keep_html):
+    if not msg.is_multipart():
+        add_single_part_content(new_msg, msg, keep_html)
+    else:
+        new_msg.set_content("")
         for part in msg.walk():
             if part.get_content_maintype() == 'text':
-                if part.get_content_subtype() == 'plain':
-                    payload = part.get_payload(decode=True).decode('utf-8', errors='ignore')
-                    if not payload.strip().startswith('<html>'):
-                        new_msg.add_alternative(payload, subtype='plain')
-                elif part.get_content_subtype() == 'html' and keep_html and not new_msg.is_multipart():
-                    html_content = part.get_payload(decode=True).decode('utf-8', errors='ignore')
-                    plain_text = html_to_plain_text(html_content)
-                    new_msg.set_content(plain_text)
-    else:
-        # If the message is not multipart, copy the content
-        content_type = msg.get_content_type()
-        if content_type == 'text/plain':
-            payload = msg.get_payload(decode=True).decode('utf-8', errors='ignore')
-            if not payload.strip().startswith('<html>'):
-                new_msg.set_content(payload)
-        elif content_type == 'text/html' and keep_html:
-            html_content = msg.get_payload(decode=True).decode('utf-8', errors='ignore')
-            plain_text = html_to_plain_text(html_content)
-            new_msg.set_content(plain_text)
+                add_text_part(new_msg, part, keep_html)
 
-    return convert_email_to_plain_text(new_msg.as_string())
+def add_single_part_content(new_msg, msg, keep_html):
+    content_type = msg.get_content_type()
+    if content_type == 'text/plain':
+        add_plain_text(new_msg, msg)
+    elif content_type == 'text/html' and keep_html:
+        add_html_as_plain_text(new_msg, msg)
+
+def add_text_part(new_msg, part, keep_html):
+    if part.get_content_subtype() == 'plain':
+        add_plain_text(new_msg, part)
+    elif part.get_content_subtype() == 'html' and keep_html and not new_msg.is_multipart():
+        add_html_as_plain_text(new_msg, part)
+
+def add_plain_text(new_msg, part):
+    payload = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+    if not payload.strip().startswith('<html>'):
+        new_msg.add_alternative(payload, subtype='plain')
+
+def add_html_as_plain_text(new_msg, part):
+    html_content = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+    plain_text = html_to_plain_text(html_content)
+    new_msg.set_content(plain_text)
 
 
 def html_to_plain_text(html_content):
