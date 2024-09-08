@@ -38,6 +38,11 @@ cleanup() {
 	done
 }
 
+cleanup-and-exit() {
+	$MR "$commit_message" "$review" 2>/dev/null
+	exit "$1"
+}
+
 trap 'cleanup-and-exit 0' EXIT
 trap 'cleanup-and-exit 1' INT
 
@@ -187,11 +192,6 @@ if [ -n "$model" ]; then
 		generate-commit-message "$model"
 	fi
 fi
-
-cleanup-and-exit() {
-	$MR "$commit_message" "$review" 2>/dev/null
-	exit "$1"
-}
 
 run-git-vimdiff() {
 	if [ "${#files[@]}" -eq 0 ]; then
