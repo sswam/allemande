@@ -148,12 +148,14 @@ Do not invent anything that is not in the patch!
 Only describe the actual changes, lines starting with +, do not describe the surrounding patch context.
 The required format is as follows. Return only the commit message like this without any prelude or concluding statement!
 
+For a feature patch, focus on describing high-level features, without implementation details. For fixes and some other types, it makes sense to mention some details of the bug and fix.
+
 feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
 
 - concise info about first change, if needed. If the line wraps
   the second line must be indented like this.
 - concise info about second change, if any.
-- and so on ...
+- and so on ... but sometimes we do not need details, in which case just the header line is okay
 
 There can be only one feat or fix line per commit, then a blank line, then the list.
 If a commit is simple, you can omit the list. Do not add a list item that just repeats the main line.
