@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 history_file = None
 
 
-def is_terminal(stream, default=False):
+def is_terminal(stream):
     """
     Check if the given stream is connected to a terminal.
 
@@ -41,17 +41,16 @@ def is_terminal(stream, default=False):
         default (bool): The default value to return if the check fails.
 
     Returns:
-        bool: True if the stream is connected to a terminal, False otherwise.
+        bool: True if connected to a terminal, False if not, None if unknown.
     """
     try:
         return os.isatty(stream.fileno())
     except OSError:
-        return default
+        return None
 
 
 def setup_history(history_file_=None):
     global history_file
-
     if history_file:
         return
 
@@ -59,8 +58,6 @@ def setup_history(history_file_=None):
 
     if not history_file:
         history_file = Path.home() / f".{Path(sys.argv[0]).stem}_history"
-
-    print(history_file)
 
     try:
         readline.read_history_file(history_file)
@@ -120,13 +117,13 @@ def hello(istream=sys.stdin, ostream=sys.stdout, name="World", use_ai=False, mod
 @argh.arg('--verbose', help='enable verbose logging', action='store_const', const=logging.INFO, dest='log_level')
 def main(name=None, ai=False, model='clia', log_level=logging.WARNING):
     """
-    hello.py - An example Unix-style Python module / script to say hello,
+    An example Unix-style Python module / script to say hello,
     and ask the user how they are.
 
     This script reads from stdin and writes to stdout.
 
     Usage:
-        python hello.py [--name NAME] [--debug] [--verbose]
+        python hello.py [--name NAME] [--ai] [--model {emmy,claude,dav,clia}] [--debug] [--verbose]
     """
 
     if log_level == logging.DEBUG:
