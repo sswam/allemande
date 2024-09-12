@@ -5,6 +5,8 @@
 # TODO consider splitting off the OpenAI specific stuff into a separate library
 # TODO use cached responses if possible
 
+import sys
+
 from sys import stdin, stdout
 import os
 import logging
@@ -45,56 +47,56 @@ exceptions_to_retry = (openai.RateLimitError, openai.APIConnectionError, openai.
 
 models = {
 	"claude": {
-		"abbrev": "c",
+		"alias": ["c", "claud"],
 		"id": "claude-3-5-sonnet-20240620",
 		"description": "Anthropic's Claude 2 is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
 		"cost": 0.0,  # at least for now!
 	},
 	"claude-haiku": {
-		"abbrev": "i",
+		"alias": ["i", "clia"],
 		"id": "claude-3-haiku-20240307",
 		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
 		"cost": 0.0,  # at least for now!
 	},
 	"gpt-4o-mini": {
-		"abbrev": "4m",
+		"alias": ["4m", "dav"],
 		"description": "Our affordable and intelligent small model for fast, lightweight tasks",
 		"cost": 0.002,
 	},
 #	"gpt-3.5-turbo": {
-#		"abbrev": "3+",
+#		"alias": "3+",
 #		"description": "Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration.",
 #		"cost": 0.002,
 #	},
 	"gpt-4": {
-		"abbrev": "4",
+		"alias": ["4", "emmy"],
 		"id": "gpt-4o",
 #		"id": "gpt-4-1106-preview", # gpt-4-turbo
 		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
 		"cost": 0.03,  # ???
 	},
 #	"gpt-4-orig": {
-#		"abbrev": "4o",
+#		"alias": "4o",
 #		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
 #		"cost": 0.03,
 #	},
 #	"claude-v1-100k": {
-#		"abbrev": "c+",
+#		"alias": "c+",
 #		"description": "Anthropic's Claude with an 100k token window.",
 #		"cost": 0.0,  # at least for now!
 #	},
 #	"claude-instant-v1-100k": {
-#		"abbrev": "i+",
+#		"alias": "i+",
 #		"description": "Anthropic's Claude Instant with an 100k token window.",
 #		"cost": 0.0,  # at least for now!
 #	},
 #	"gpt-4-32k": {
-#		"abbrev": "4+",
+#		"alias": "4+",
 #		"description": "Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with our latest model iteration.",
 #		"cost": 0.06,
 #	},
 	"bard": {
-		"abbrev": "b",
+		"alias": ["b", "jaski"],
 		"description": "Google Bard is a large language model (LLM) chatbot developed by Google AI. It is trained on a massive dataset of text and code, and can generate text, translate languages, write different kinds of creative content, and answer your questions in an informative way.",
 	}
 #	"gpt-3.5-turbo-0301": {
@@ -128,12 +130,12 @@ models = {
 }
 
 #	"code-davinci-002": {
-#		"abbrev": "x2",
+#		"alias": "x2",
 #		"description": "Code completion model trained on 1.5 billion lines of code. Will be updated with our latest model iteration.",
 #		"cost": 0,
 #	},
 #	"code-cushman-001": {
-#		"abbrev": "x1",
+#		"alias": "x1",
 #		"description": "Almost as capable as Davinci Codex, but slightly faster. This speed advantage may make it preferable for real-time applications.",
 #		"cost": 0,
 #	},
@@ -173,9 +175,9 @@ fake_completion = {
 }
 
 
-def get_model_by_abbrev(model):
-	""" If the model is an abbreviation, expand it. """
-	abbrev_models = [k for k, v in models.items() if v.get("abbrev") == model]
+def get_model_by_alias(model):
+	""" If the model is an alias or abbreviation, expand it. """
+	abbrev_models = [k for k, v in models.items() if model in v.get("alias", [])]
 	if len(abbrev_models) == 1:
 		model = abbrev_models[0]
 	return model
@@ -199,7 +201,7 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
 	auto_save: bool = False
 	def __init__(self, **kwargs):
 		if kwargs.get("model"):
-			kwargs["model"] = get_model_by_abbrev(kwargs["model"])
+			kwargs["model"] = get_model_by_alias(kwargs["model"])
 		if kwargs.get("state_file") and kwargs.get("auto_save") is None:
 			kwargs["auto_save"] = True
 		super().__init__(**kwargs)
@@ -365,8 +367,8 @@ def read_utf_replace(inp):
 
 @argh.arg("prompt", nargs="+", help="prompt text")
 @argh.arg("-P", "--prompt2", help="second prompt text")
-@argh.arg("-i", "--inp", default=stdin, help="input file")
-@argh.arg("-o", "--out", default=stdout, help="output file")
+@argh.arg("-i", "--inp", default=None, help="input file")
+@argh.arg("-o", "--out", default=None, help="output file")
 @argh.arg("-m", "--model", default=default_model, help="model name")
 @argh.arg("-I", "--indent", default=None, help="indentation string")
 @argh.arg("-t", "--temperature", type=float, help="temperature")
@@ -378,8 +380,11 @@ def read_utf_replace(inp):
 @argh.arg("-L", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @argh.arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
 @argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=stdin, out: IO[str]=stdout, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
+def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=None, out: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
 	""" Process some text through the LLM with a prompt. """
+	if __name__ == "__main__":
+		inp = sys.stdin
+		out = sys.stdout
 	set_opts(vars())
 
 	prompt = " ".join(prompt)
@@ -429,13 +434,15 @@ def process2(prompt, prompt2, input_text, out, model, indent, temperature, token
 	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
 
 
-def query(*prompt, out: Optional[IO[str]]=stdout, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):  # pylint: disable=unused-argument
+def query(*prompt, out: Optional[IO[str]]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):  # pylint: disable=unused-argument
 	""" Ask the LLM a question. """
+	if __name__ == "__main__":
+		out = sys.stdout
 	set_opts(vars())
 	return retry(query2, retries, *prompt, out=out, log=log)
 
 
-def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
+def query2(*prompt, out: Optional[IO[str]]=None, log=True):
 	""" Ask the LLM a question. """
 	prompt = " ".join(prompt)
 
@@ -462,8 +469,8 @@ def query2(*prompt, out: Optional[IO[str]]=stdout, log=True):
 			time_s = time.strftime("%Y-%m-%dT%H:%M:%S")
 			logfile = LOGDIR/f"answer.{basename}.{time_s}.md"
 			logfile_prompt = LOGDIR/Path(f"prompt.{basename}.{time_s}.md")
-		logfile_prompt.write_text(prompt, encoding="utf-8")
-		logfile.write_text(content, encoding="utf-8")
+		logfile_prompt.write_text(prompt.rstrip()+"\n", encoding="utf-8")
+		logfile.write_text(content.rstrip()+"\n", encoding="utf-8")
 
 	if out:
 		out.write(content)
