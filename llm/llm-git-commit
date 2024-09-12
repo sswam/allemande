@@ -3,6 +3,8 @@
 
 . confirm
 
+diff_context=10   # lines of context for diffs
+
 model_code=""
 
 usage() {
@@ -119,9 +121,9 @@ model-name() {
 run-git-diff() {
 	local difftext
 	if [ "${#files[@]}" -eq 0 ]; then
-		git diff --staged
+		git diff -U$diff_context --staged
 	else
-		difftext=`git diff -- "${files[@]}"`
+		difftext=`git diff -U$diff_context -- "${files[@]}"`
 		if [ -n "$difftext" ]; then
 			printf "%s\n" "$difftext"
 		elif [ -z "$difftext" ]; then
