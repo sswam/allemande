@@ -47,7 +47,7 @@ def code_lines_to_string(lines):
     return '\n'.join(stripped + [''])
 
 
-def extract_code_from_markdown(markdown_text, comment_prefix=None):
+def extract_code_from_markdown(markdown_text, comment_prefix=None, blocks=None):
     """
     Finds and returns all code blocks within the given Markdown text,
     optionally commenting out non-code sections.
@@ -64,9 +64,10 @@ def extract_code_from_markdown(markdown_text, comment_prefix=None):
 
     # Pattern to capture code blocks starting with ```
     code_block_pattern = r'^```(?:\w*\n)?(.*?)^```'
-    code_blocks = re.findall(code_block_pattern, markdown_text, re.DOTALL | re.MULTILINE)
     output = []
     last_index = 0
+
+    count = 0
 
     # Find all code blocks with their starting positions.
     for match in re.finditer(code_block_pattern, markdown_text, re.DOTALL | re.MULTILINE):
@@ -79,10 +80,13 @@ def extract_code_from_markdown(markdown_text, comment_prefix=None):
             output.extend([f"{comment_prefix} {line}" for line in non_code.split('\n')])
             output.append('')
 
-        output.append(code)
-        output.append('')
+        if blocks is None or count in blocks:
+            output.append(code)
+            output.append('')
 
         last_index = match.end()
+
+        count += 1
 
     remaining_text = markdown_text[last_index:].strip()
     if remaining_text and comment_prefix is not None:
@@ -93,7 +97,7 @@ def extract_code_from_markdown(markdown_text, comment_prefix=None):
     return code_lines_to_string(lines)
 
 
-def main(comment_prefix=None):
+def main(*blocks, comment_prefix=None):
     """
     Main function to extract code from Markdown text.
 
@@ -101,8 +105,9 @@ def main(comment_prefix=None):
         comment_prefix (str, optional): Prefix to add to each extracted code line as a comment. Defaults to None.
     """
     try:
+        blocks = [int(b) for b in blocks] or None
         markdown_text = ''.join(sys.stdin.read()).strip()
-        result = extract_code_from_markdown(markdown_text, comment_prefix=comment_prefix)
+        result = extract_code_from_markdown(markdown_text, comment_prefix=comment_prefix, blocks=blocks)
         print(result)
     except Exception as e:
         print(e, file=sys.stderr)
