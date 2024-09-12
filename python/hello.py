@@ -1,77 +1,154 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import logging
+import getpass
+import textwrap
+import readline
+import select
+
+from pathlib import Path
 
 import argh
+import sh
 
-__version__ = "1.0.0"
 
-logger = logging.getLogger(__name__)
+import readline
+import atexit
+
 
 """
-hello.py - An example Unix-style Python module / script to say hello and copy
-or reverse the input.
+hello.py - An example Python module / script to say hello,
+and ask the user how they are.
 
 This script can be used as a module:
     from hello import hello
-
-Example:
-    >>> from hello import hello
-    >>> hello(["Line 1", "Line 2"], name="Alice", reverse=True)
-    ['Line 2', 'Line 1', 'Hello, Alice']
 """
 
-def hello(lines, name="World", reverse=False):
+
+logger = logging.getLogger(__name__)
+
+history_file = None
+
+
+def is_terminal(stream, default=False):
+    """
+    Check if the given stream is connected to a terminal.
+
+    Args:
+        stream: The stream to check.
+        default (bool): The default value to return if the check fails.
+
+    Returns:
+        bool: True if the stream is connected to a terminal, False otherwise.
+    """
+    try:
+        return os.isatty(stream.fileno())
+    except OSError:
+        return default
+
+
+def setup_history(history_file_=None):
+    global history_file
+
+    if history_file:
+        return
+
+    history_file = history_file_
+
+    if not history_file:
+        history_file = Path.home() / f".{Path(sys.argv[0]).stem}_history"
+
+    print(history_file)
+
+    try:
+        readline.read_history_file(history_file)
+    except FileNotFoundError:
+        pass
+
+    # Unlimited history length
+    readline.set_history_length(-1)
+
+    readline.set_auto_history(True)
+
+
+def readline_input(*args, **kwargs):
+    text = input(*args, *kwargs)
+    readline.append_history_file(1, history_file)
+    return text
+
+
+def hello(istream=sys.stdin, ostream=sys.stdout, name="World", use_ai=False, model=None):
     """
     Processes each line in the given list of lines.
 
     Args:
         lines (list of str): List of input lines to be processed.
-        name (str): Name to be greeted. Defaults to "World".
-        reverse (bool): Whether to reverse the lines or not. Defaults to False.
+        name (str): Name to be greeted.
 
     Returns:
         list of str: List of processed lines.
-
-    Example:
-        >>> hello(["How are you?", "Nice day!"], name="Bob", reverse=True)
-        ['Nice day!', 'How are you?', 'Hello, Bob']
     """
-    lines.insert(0, f"Hello, {name}\n")
-    if reverse:
-        lines.reverse()
-    return lines
+    print(f"Hello, {name}", file=ostream)
+    print(f"How are you feeling?", file=ostream)
+
+    if is_terminal(istream) and is_terminal(ostream):
+        setup_history()
+        feeling = readline_input(": ").strip()
+    else:
+        feeling = istream.readline().strip()
+
+    if feeling in ["", "lucky", "unlucky", "fortunate", "unfortunate"]:
+        response = sh.fortune()
+    elif use_ai:
+        import llm 
+        prompt = f"Scenario: Your character asked 'How are you feeling?' and {name} said '{feeling.rstrip()}'. Please reply directly without any prelude, disclaimers or explanation."
+        response = llm.query(prompt, model=model)
+        response = response.strip().strip('"')
+        response = textwrap.fill(response, width=80)
+    else:
+        response = "Well, I hope you have a great day!"
+
+    print(response, file=ostream)
 
 
 @argh.arg('--name', help='name to be greeted')
-@argh.arg('--reverse', help='whether to reverse the lines or not')
-@argh.arg('--debug', help='enable debug logging')
-@argh.arg('--verbose', help='enable verbose logging')
-def main(name="World", reverse=False, debug=False, verbose=False):
+@argh.arg('--ai', help='use AI to respond')
+@argh.arg('--model', help='specify which AI model', choices=['emmy', 'claude', 'dav', 'clia'])
+@argh.arg('--debug', help='enable debug logging', action='store_const', const=logging.DEBUG, dest='log_level')
+@argh.arg('--verbose', help='enable verbose logging', action='store_const', const=logging.INFO, dest='log_level')
+def main(name=None, ai=False, model='clia', log_level=logging.WARNING):
     """
-    hello.py - An example Unix-style Python module / script to say hello and copy
-    or reverse the input.
+    hello.py - An example Unix-style Python module / script to say hello,
+    and ask the user how they are.
 
-    This script reads lines from stdin and writes the output to stdout.
+    This script reads from stdin and writes to stdout.
 
     Usage:
-        cat input.txt | python3 hello.py [--name NAME] [--reverse] [--debug] [--verbose]
+        python hello.py [--name NAME] [--debug] [--verbose]
     """
-    if debug:
-        logging.getLogger().setLevel(logging.DEBUG)
-    elif verbose:
-        logging.getLogger().setLevel(logging.INFO)
-    else:
-        logging.getLogger().setLevel(logging.WARNING)
 
-    input_lines = sys.stdin.readlines()
-    output_lines = hello(input_lines, name=name, reverse=reverse)
-    sys.stdout.writelines(output_lines)
+    if log_level == logging.DEBUG:
+        fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
+    else:
+        fmt = "%(message)s"
+    logging.basicConfig(level=log_level, format=fmt)
+
+    if not name:
+        name = getpass.getuser().title()
+
+    return hello(name=name, use_ai=ai, model=model)
+
 
 if __name__ == '__main__':
     try:
         argh.dispatch_command(main)
     except Exception as e:
         logger.error(f"Error: %s %s", type(e).__name__, str(e))
+        if is_terminal(sys.stderr):
+            print("Do you want to see the full exception? (y/n)", end='', flush=True)
+            rlist, _, _ = select.select([sys.stdin], [], [], 5)
+            if rlist and sys.stdin.read(1).lower() == 'y':
+                raise
         sys.exit(1)
