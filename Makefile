@@ -25,7 +25,7 @@ server_start:
 server_stop:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
 
-beorn: clean mount run-i3-screen
+beorn: clean run-i3-screen # mount
 i3: connect-i3-screen
 
 server:: stop
