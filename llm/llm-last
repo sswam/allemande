@@ -1,27 +1,35 @@
 #!/bin/bash -eu
-# llm-last:	show the most recent llm generation from ~/llm.log
+
+# llm-last:		show recent llm generation/s from ~/llm.log
+# llm-last		shows the most recent
+# llm-last 3 1		shows 3rd most recent and most recent
+#	Even numbered are prompts, odd numbered are AI responses.
 
 f=0	# output filenames, not content
+c=0	# output code, using markdown_code -c '#' (or provided prefix)
 m=	# view markdown in Chrome with Markdown Viewer
+
 . opts
 
-if [ "$m" = 1 ]; then
-	view=chrome
-else
-	view=cat
+# default to # comments
+if [ "$c" = 1 ]; then
+	c='#'
 fi
 
 cd ~/llm.log
 
-for i in "${@:-1}"; do
-	case "$f" in
-	0)
-		ls1 -n="$i" | xa "$view"
-		echo
-		echo
-		;;
-	1)
+llm_last() {
+	for i in "${@:-1}"; do
 		ls1 -n="$i"
-		;;
-	esac
-done
+	done
+}
+
+if [ "$f" = 1 ]; then
+	llm_last "$@"
+elif [ "$m" = 1 ]; then
+	llm_last "$@" | xa chrome
+elif [ "$c" != 0 ]; then
+	llm_last "$@" | xa catpg | markdown_code.py -c "$c"
+else
+	llm_last "$@" | xa catpg
+fi
