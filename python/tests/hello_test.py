@@ -1,98 +1,65 @@
 import io
-import textwrap
 import pytest
-import subprocess
-import sys
+import sh
+from unittest.mock import patch
+from hello import hello, analyze_sentiment
 
-from hello import hello, __version__
+def test_analyze_sentiment():
+    assert analyze_sentiment("I'm happy") == 'Positive'
+    assert analyze_sentiment("I'm sad") == 'Negative'
+    assert analyze_sentiment("I'm so-so") == 'Neutral'
 
-def quote(multiline_string):
-    """
-    Remove any common leading whitespace from every line in the input string.
-
-    Args:
-        multiline_string (str): The input string containing multiple lines.
-
-    Returns:
-        str: The dedented string with common leading whitespace removed.
-    """
-    s = textwrap.dedent(multiline_string)
-    if s.startswith("\n"):
-        return s[1:]
-    return s
-
-
-def quote_list(multiline_string):
-    """
-    Convert a multiline string into a list of lines with common leading whitespace removed.
-
-    Args:
-        multiline_string (str): The input string containing multiple lines.
-
-    Returns:
-        list: A list of lines with common leading whitespace removed.
-    """
-    return quote(multiline_string).splitlines()
-
-qi = quote
-ql = quote_list
-
-@pytest.mark.parametrize("input_lines, name, reverse, expected", [
-    (["Line 1", "Line 2"], "World", False, ["Hello, World", "Line 1", "Line 2"]),
-    (["Line 1", "Line 2"], "Sam", True, ["Line 2", "Line 1", "Hello, Sam"]),
-    ([], "Alice", False, ["Hello, Alice"]),
-    (["Single line"], "Bob", True, ["Single line", "Hello, Bob"]),
+@pytest.mark.parametrize("feeling, expected_sentiment", [
+    ("I'm feeling great!", "I hope you have a great day!"),
+    ("I'm feeling terrible.", "I hope you feel better soon."),
+    ("I'm so-so baloney sandwich.", "Life has its ups and downs, hope yours swings up!"),
 ])
-def test_hello(input_lines, name, reverse, expected):
-    assert hello(input_lines, name=name, reverse=reverse) == expected
+def test_hello_sentiment_response(feeling, expected_sentiment):
+    input_stream = io.StringIO(feeling + "\n")
+    output_stream = io.StringIO()
 
-def test_hello_with_multiline_input():
-    input_lines = ql("""
-        How are you today?
-        Nice to meet you.
-        Have a great day!
-    """)
-    expected_response = ql("""
-        Have a great day!
-        Nice to meet you.
-        How are you today?
-        Hello, Sam
-    """)
+    hello(istream=input_stream, ostream=output_stream, name="Test")
 
-    response = hello(input_lines, name="Sam", reverse=True)
-    assert response == expected_response
+    output = output_stream.getvalue()
+    assert "Hello, Test" in output
+    assert "How are you feeling?" in output
+    assert expected_sentiment in output
 
-@pytest.fixture
-def mock_input(monkeypatch):
-    def mock_stdin(text):
-        monkeypatch.setattr('sys.stdin', text)
-    return mock_stdin
+@patch('sh.fortune')
+def test_hello_fortune_response(mock_fortune):
+    mock_fortune.return_value = "Your lucky numbers are 10, 20, 30."
 
-def test_main_cli(monkeypatch, capsys):
-    input_text = io.StringIO(qi("""
-        Line 1
-        Line 2
-    """))
-    monkeypatch.setattr('sys.stdin', input_text)
-    monkeypatch.setattr('sys.argv', ['hello.py', '--name', 'Alice', '--reverse'])
+    input_stream = io.StringIO("lucky\n")
+    output_stream = io.StringIO()
 
-    from hello import main
-    main(name="Alice", reverse=True)
+    hello(istream=input_stream, ostream=output_stream, name="Test")
 
-    captured = capsys.readouterr()
-    print(repr(captured))
-    expected_output = qi("""
-        Line 2
-        Line 1
-        Hello, Alice
-    """)
-    assert captured.out == expected_output
+    output = output_stream.getvalue()
+    assert "Hello, Test" in output
+    assert "How are you feeling?" in output
+    assert "Your lucky numbers are 10, 20, 30." in output
 
-def test_version():
-    assert __version__ == "1.0.0"
+def test_hello_empty_response():
+    input_stream = io.StringIO("\n")
+    output_stream = io.StringIO()
 
-def test_cli_error_handling():
-    result = subprocess.run(['python', 'hello.py', '--invalid-arg'], 
-                            capture_output=True, text=True)
-    assert result.returncode != 0
-    assert "error:" in result.stderr.lower()
+    with patch('sh.fortune', return_value="A journey of a thousand miles begins with a single step."):
+        hello(istream=input_stream, ostream=output_stream, name="Test")
+
+    output = output_stream.getvalue()
+    assert "Hello, Test" in output
+    assert "How are you feeling?" in output
+    assert "A journey of a thousand miles begins with a single step." in output
+
+@pytest.mark.parametrize("fortune_word", ["lucky", "unlucky", "fortunate", "unfortunate"])
+def test_hello_fortune_words(fortune_word):
+    input_stream = io.StringIO(f"{fortune_word}\n")
+    output_stream = io.StringIO()
+
+    with patch('sh.fortune', return_value="The future looks bright."):
+        hello(istream=input_stream, ostream=output_stream, name="Test")
+
+    output = output_stream.getvalue()
+    assert "Hello, Test" in output
+    assert "How are you feeling?" in output
+    assert "The future looks bright." in output
