@@ -50,95 +50,30 @@ models = {
 		"alias": ["c", "claud"],
 		"id": "claude-3-5-sonnet-20240620",
 		"description": "Anthropic's Claude 2 is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
-		"cost": 0.0,  # at least for now!
+		"cost": 0.0,  # not any longer!
 	},
 	"claude-haiku": {
 		"alias": ["i", "clia"],
 		"id": "claude-3-haiku-20240307",
 		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
-		"cost": 0.0,  # at least for now!
+		"cost": 0.0,  # not any longer!
 	},
 	"gpt-4o-mini": {
 		"alias": ["4m", "dav"],
 		"description": "Our affordable and intelligent small model for fast, lightweight tasks",
 		"cost": 0.002,
 	},
-#	"gpt-3.5-turbo": {
-#		"alias": "3+",
-#		"description": "Most capable GPT-3.5 model and optimized for chat at 1/10th the cost of text-davinci-003. Will be updated with our latest model iteration.",
-#		"cost": 0.002,
-#	},
 	"gpt-4": {
 		"alias": ["4", "emmy"],
 		"id": "gpt-4o",
-#		"id": "gpt-4-1106-preview", # gpt-4-turbo
 		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
 		"cost": 0.03,  # ???
 	},
-#	"gpt-4-orig": {
-#		"alias": "4o",
-#		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
-#		"cost": 0.03,
-#	},
-#	"claude-v1-100k": {
-#		"alias": "c+",
-#		"description": "Anthropic's Claude with an 100k token window.",
-#		"cost": 0.0,  # at least for now!
-#	},
-#	"claude-instant-v1-100k": {
-#		"alias": "i+",
-#		"description": "Anthropic's Claude Instant with an 100k token window.",
-#		"cost": 0.0,  # at least for now!
-#	},
-#	"gpt-4-32k": {
-#		"alias": "4+",
-#		"description": "Same capabilities as the base gpt-4 mode but with 4x the context length. Will be updated with our latest model iteration.",
-#		"cost": 0.06,
-#	},
 	"bard": {
 		"alias": ["b", "jaski"],
 		"description": "Google Bard is a large language model (LLM) chatbot developed by Google AI. It is trained on a massive dataset of text and code, and can generate text, translate languages, write different kinds of creative content, and answer your questions in an informative way.",
 	}
-#	"gpt-3.5-turbo-0301": {
-#		"description": "Snapshot of gpt-3.5-turbo from March 1st 2023. Unlike gpt-3.5-turbo, this model will not receive updates, and will only be supported for a three month period ending on June 1st 2023.",
-#		"cost": 0.002,
-#	},
-#	"gpt-4-0314": {
-#		"description": "Snapshot of gpt-4 from March 14th 2023. Unlike gpt-4, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
-#		"cost": 0.03,
-#	},
-#	"gpt-4-32k-0314": {
-#		"description": "Snapshot of gpt-4-32 from March 14th 2023. Unlike gpt-4-32k, this model will not receive updates, and will only be supported for a three month period ending on June 14th 2023.",
-#		"cost": 0.06,
-#	},
-#	"claude-v1.0": {
-#		"description": "An earlier version of claude-v1.",
-#		"cost": 0.0
-#	},
-#	"claude-v1.2": {
-#		"description": "An improved version of claude-v1. It is slightly improved at general helpfulness, instruction following, coding, and other tasks. It is also considerably better with non-English languages. This model also has the ability to role play (in harmless ways) more consistently, and it defaults to writing somewhat longer and more thorough responses.",
-#		"cost": 0.0
-#	},
-#	"claude-v1.3": {
-#		"description": "A significantly improved version of claude-v1. Compared to claude-v1.2, it's more robust against red-team inputs, better at precise instruction-following, better at code, and better and non-English dialogue and writing.",
-#		"cost": 0.0
-#	},
-#	"claude-instant-v1.0": {
-#		"description": "Current default for claude-instant-v1.",
-#		"cost": 0.0
-#	}
 }
-
-#	"code-davinci-002": {
-#		"alias": "x2",
-#		"description": "Code completion model trained on 1.5 billion lines of code. Will be updated with our latest model iteration.",
-#		"cost": 0,
-#	},
-#	"code-cushman-001": {
-#		"alias": "x1",
-#		"description": "Almost as capable as Davinci Codex, but slightly faster. This speed advantage may make it preferable for real-time applications.",
-#		"cost": 0,
-#	},
 
 # default is $LLM_MODEL or first model in the dict
 
@@ -189,6 +124,15 @@ class AutoInit:  # pylint: disable=too-few-public-methods
 		for k, v in kwargs.items():
 			if hasattr(self, k):
 				setattr(self, k, v)
+	def __str__(self):
+	    attributes = []
+	    for key, value in vars(self).items():
+	        if not key.startswith('_'):
+	            attributes.append(f"{key}={value!r}")
+	    class_name = self.__class__.__name__
+	    return f"{class_name}({', '.join(attributes)})"
+	
+
 
 class Options(AutoInit):  # pylint: disable=too-few-public-methods
 	""" Options for the chat function. """
@@ -354,21 +298,21 @@ def messages_to_lines(messages):
 	return lines
 
 
-def read_utf_replace(inp):
+def read_utf_replace(istream):
 	""" Read input, replacing invalid UTF-8 with the replacement character. """
 	try:
-		input_data = inp.buffer.read()
+		input_data = istream.buffer.read()
 		input_text = input_data.decode("utf-8", errors="replace")
 	except UnicodeDecodeError as ex:
 		logger.warning("error reading input: %s", ex)
-		input_text = inp.read()
+		input_text = istream.read()
 	return input_text
 
 
 @argh.arg("prompt", nargs="+", help="prompt text")
 @argh.arg("-P", "--prompt2", help="second prompt text")
-@argh.arg("-i", "--inp", default=None, help="input file")
-@argh.arg("-o", "--out", default=None, help="output file")
+@argh.arg("-i", "--input", dest="istream", default=None, help="input file")
+@argh.arg("-o", "--output", dest="ostream", default=None, help="output file")
 @argh.arg("-m", "--model", default=default_model, help="model name")
 @argh.arg("-I", "--indent", default=None, help="indentation string")
 @argh.arg("-t", "--temperature", type=float, help="temperature")
@@ -380,17 +324,18 @@ def read_utf_replace(inp):
 @argh.arg("-L", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @argh.arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
 @argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
-def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=None, out: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
+def process(*prompt, prompt2: Optional[str]=None, istream: IO[str]=None, ostream: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
 	""" Process some text through the LLM with a prompt. """
 	if __name__ == "__main__":
-		inp = sys.stdin
-		out = sys.stdout
+		istream = sys.stdin
+		ostream = sys.stdout
+
 	set_opts(vars())
 
 	prompt = " ".join(prompt)
 	prompt = prompt.rstrip()
 
-	input_text = read_utf_replace(inp)
+	input_text = read_utf_replace(istream)
 	input_text = input_text.rstrip()
 
 	if not input_text and empty_to_empty:
@@ -404,7 +349,7 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=None, out: IO[str
 		prompt2 = re.sub(r"\bbelow\b", "above", prompt)
 
 	if not lines:
-		return process2(prompt, prompt2, input_text, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
+		return process2(prompt, prompt2, input_text, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
 
 	# split the input into lines
 	lines = input_text.splitlines()
@@ -414,7 +359,7 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=None, out: IO[str
 		line = line.rstrip()
 		if not line:
 			continue
-		output1 = process2(prompt, prompt2, line, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
+		output1 = process2(prompt, prompt2, line, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
 		output.append(output1)
 
 	output_s = "\n".join(output)
@@ -422,7 +367,7 @@ def process(*prompt, prompt2: Optional[str]=None, inp: IO[str]=None, out: IO[str
 	return output_s
 
 
-def process2(prompt, prompt2, input_text, out, model, indent, temperature, token_limit, retries, state_file, log):
+def process2(prompt, prompt2, input_text, ostream, model, indent, temperature, token_limit, retries, state_file, log):
 	""" Process some text through the LLM with a prompt. """
 	full_input = f"""
 {prompt}
@@ -431,18 +376,18 @@ def process2(prompt, prompt2, input_text, out, model, indent, temperature, token
 """
 	if prompt2:
 		full_input += "\n" + prompt2 + "\n"
-	return query(full_input, out=out, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
+	return query(full_input, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
 
 
-def query(*prompt, out: Optional[IO[str]]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):  # pylint: disable=unused-argument
+def query(*prompt, ostream: Optional[IO[str]]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):  # pylint: disable=unused-argument
 	""" Ask the LLM a question. """
 	if __name__ == "__main__":
-		out = sys.stdout
+		ostream = sys.stdout
 	set_opts(vars())
-	return retry(query2, retries, *prompt, out=out, log=log)
+	return retry(query2, retries, *prompt, ostream=ostream, log=log)
 
 
-def query2(*prompt, out: Optional[IO[str]]=None, log=True):
+def query2(*prompt, ostream: Optional[IO[str]]=None, log=True):
 	""" Ask the LLM a question. """
 	prompt = " ".join(prompt)
 
@@ -472,8 +417,8 @@ def query2(*prompt, out: Optional[IO[str]]=None, log=True):
 		logfile_prompt.write_text(prompt.rstrip()+"\n", encoding="utf-8")
 		logfile.write_text(content.rstrip()+"\n", encoding="utf-8")
 
-	if out:
-		out.write(content)
+	if ostream:
+		print(content, file=ostream)
 		return ""
 
 	return content
@@ -497,33 +442,25 @@ def retry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 	return None
 
 
-#def dict_to_namespace(d):
-#	""" Convert a dict to an argparse namespace. """
-#	ns = argparse.Namespace()
-#	for k, v in d.items():
-#		setattr(ns, k, v)
-#	return ns
-
-
-def chat(inp=stdin, out=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, state_file=None, auto_save=None):  # pylint: disable=unused-argument
+def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, state_file=None, auto_save=None):  # pylint: disable=unused-argument
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
 	set_opts(vars())
-	return retry(chat2, retries, inp=inp, out=out)
+	return retry(chat2, retries, istream=istream, ostream=ostream)
 
 
-def chat2(inp=stdin, out=stdout):
+def chat2(istream=stdin, ostream=stdout):
 	""" Chat with the LLM, well it inputs a chat file and ouputs the new message to append. """
-	input_lines = read_utf_replace(inp).splitlines()
+	input_lines = read_utf_replace(istream).splitlines()
 	input_messages = lines_to_messages(input_lines)
 	response_message = llm_chat(input_messages)
 	output_lines = messages_to_lines([response_message])
-	out.writelines(output_lines)
+	ostream.writelines(output_lines)
 
 
-def count(inp=stdin, model=default_model):
+def count(istream=stdin, model=default_model):
 	""" count tokens in a file """
 	set_opts(vars())
-	text = read_utf_replace(inp)
+	text = read_utf_replace(istream)
 	model = opts.model
 	if model.startswith("gpt"):
 		enc = tiktoken.encoding_for_model(model)
@@ -534,10 +471,14 @@ def count(inp=stdin, model=default_model):
 	raise ValueError(f"unknown model: {model}")
 
 
-def list_models():
+def list_models(aliases=False):
 	""" List the available models. """
 	for model in models:
-		print(model)
+		print(model, end="")
+		if aliases:
+			alias_list = models[model].get("alias", [])
+			print("\t" + "\t".join(alias_list), end="")
+		print()
 
 
 if __name__ == "__main__":
