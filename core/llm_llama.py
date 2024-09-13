@@ -48,8 +48,37 @@ def load_model(model_path, device_map="auto"):
 		low_cpu_mem_usage=True,
 		cache_dir="cache"
 	).cuda()
-	model.tokenizer = transformers.LlamaTokenizer.from_pretrained(model_path)
+	model.tokenizer = transformers.LlamaTokenizer.from_pretrained(model_path, legacy=False)
+	model.stopping_criteria = TokenStoppingCriteria(model.tokenizer, ["\n"])
 	return model
+
+
+# You can use this class in the following ways:
+#
+# 1. For single newline stopping:
+# ```python
+# stopping_criteria = TokenStoppingCriteria(tokenizer, ["\n"])
+# ```
+#
+# 2. For double newline stopping (equivalent to your original implementation):
+# ```python
+# stopping_criteria = TokenStoppingCriteria(tokenizer, ["\n\n"])
+# ```
+#
+# 3. For stopping on multiple possible tokens:
+# ```python
+# stopping_criteria = TokenStoppingCriteria(tokenizer, ["\n", ".", "?", "!"])
+
+class TokenStoppingCriteria(transformers.StoppingCriteria):
+    def __init__(self, tokenizer, stop_tokens):
+        self.tokenizer = tokenizer
+        self.stop_tokens = [tokenizer.encode(token, add_special_tokens=False) for token in stop_tokens]
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+        for stop_token in self.stop_tokens:
+            if input_ids[0][-len(stop_token):].tolist() == stop_token:
+                return True
+        return False
 
 
 def gen(config, input_text, *_args, model=None, **_kwargs):
@@ -77,6 +106,7 @@ def gen(config, input_text, *_args, model=None, **_kwargs):
 	with torch.no_grad():
 		gen_tokens = model.generate(
 			in_tokens,
+			stopping_criteria = transformers.StoppingCriteriaList([model.stopping_criteria]),
 			**config,
 		)
 		if gen_tokens[0][-1] == tokenizer.eos_token_id:
