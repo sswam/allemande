@@ -1,0 +1,33 @@
+#!/bin/bash -eu
+# critique:	critique
+
+s=0
+p=
+
+. opts
+
+short=$s
+prompt=$p
+
+critique() {
+	if (( short )); then
+		prompt="Please provide a *very* short critique. $prompt"
+	else
+		prompt="Please review and critique. $prompt"
+	fi
+	cat-named "$@" |
+	v process "$prompt"
+}
+
+if [ "$0" = "$BASH_SOURCE" ]; then
+	critique "$@"
+fi
+
+
+
+# Prompting ideas to improve critique:
+# - look for code that should be split off into a reusable function library
+
+# Old long prompts, might need some ideas?
+#	process "Please critique this program code, like a code review. Let me know how you like it, and suggest ways that we can improve it, possibly including code style, clarity, simplicity, generality, comments, and functionality. You might suggest adding or removing features. Don't actually rewrite the code for me, but you can show some code snippets."
+#	process "Please review this program code as if conducting a code review. Provide both positive feedback and constructive criticism. Evaluate aspects such as code style, clarity, simplicity, generality, comments, and functionality. Suggest improvements or additional features, and identify any potential security or performance issues. Prioritize your suggestions. Don't rewrite the entire code, but you may include short code snippets to illustrate specific points. If relevant, consider adherence to [SPECIFIC CODING STANDARD]."
