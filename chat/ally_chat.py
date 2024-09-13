@@ -288,7 +288,7 @@ def register_agents():
 
 def load_tokenizer(model_path: Path):
 	""" Load the Llama tokenizer """
-	return transformers.LlamaTokenizer.from_pretrained(str(model_path))
+	return transformers.LlamaTokenizer.from_pretrained(str(model_path), legacy=False)
 
 
 def count_tokens_in_text(text, tokenizer):
