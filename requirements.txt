@@ -74,3 +74,5 @@ wordpress_api
 selenium
 
 # gradio
+
+colorama

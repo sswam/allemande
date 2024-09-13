@@ -1,0 +1,3 @@
+#!/bin/bash -eu
+# doc:	basic program generator
+cat-named "`wich hello.py`" | process "Please write a Python program in the style of hello.py: $@"
