@@ -12,10 +12,9 @@ from pathlib import Path
 
 import argh
 import sh
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
 
-
-import readline
-import atexit
 
 
 """
@@ -27,9 +26,29 @@ This script can be used as a module:
 """
 
 
+__version__ = "1.0.0"
+
 logger = logging.getLogger(__name__)
 
 history_file = None
+
+
+try:
+    nltk.data.find('sentiment/vader_lexicon.zip')
+except LookupError:
+    nltk.download('vader_lexicon')
+
+sia = SentimentIntensityAnalyzer()
+
+
+def analyze_sentiment(text):
+    sentiment = sia.polarity_scores(text)
+    if sentiment['compound'] > 0:
+        return 'Positive'
+    elif sentiment['compound'] < 0:
+        return 'Negative'
+    else:
+        return 'Neutral'
 
 
 def is_terminal(stream):
@@ -105,7 +124,13 @@ def hello(istream=sys.stdin, ostream=sys.stdout, name="World", use_ai=False, mod
         response = response.strip().strip('"')
         response = textwrap.fill(response, width=80)
     else:
-        response = "Well, I hope you have a great day!"
+        sentiment = analyze_sentiment(feeling)
+        if sentiment == "Positive":
+            response = "I hope you have a great day!"
+        elif sentiment == "Negative":
+            response = "I hope you feel better soon."
+        else:
+            response = "Life has its ups and downs, hope yours swings up!"
 
     print(response, file=ostream)
 
@@ -135,17 +160,14 @@ def main(name=None, ai=False, model='clia', log_level=logging.WARNING):
     if not name:
         name = getpass.getuser().title()
 
-    return hello(name=name, use_ai=ai, model=model)
+    try:
+        return hello(name=name, use_ai=ai, model=model)
+    except BaseException as e:
+        logger.error("Error: %s %s", type(e).__name__, str(e))
+        if log_level == logging.DEBUG:
+            raise
+        sys.exit(1)
 
 
 if __name__ == '__main__':
-    try:
-        argh.dispatch_command(main)
-    except Exception as e:
-        logger.error(f"Error: %s %s", type(e).__name__, str(e))
-        if is_terminal(sys.stderr):
-            print("Do you want to see the full exception? (y/n)", end='', flush=True)
-            rlist, _, _ = select.select([sys.stdin], [], [], 5)
-            if rlist and sys.stdin.read(1).lower() == 'y':
-                raise
-        sys.exit(1)
+    argh.dispatch_command(main)
