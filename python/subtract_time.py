@@ -34,11 +34,15 @@ def subtract_times(time1: str, time2: str) -> str:
 
     diff = t1 - t2
 
-    if diff < 0:
-        raise ValueError("Time difference is negative")
+    # Determine the sign of the result
+    sign = '-' if diff < 0 else ''
 
-    hours, minutes = divmod(diff, 60)
-    return f"{hours:02}:{minutes:02}"
+    # Use abs() to handle both positive and negative differences
+    abs_diff = abs(diff)
+
+    hours, minutes = divmod(abs_diff, 60)
+    return f"{sign}{hours:02}:{minutes:02}"
+
 
 def main():
     if len(sys.argv) != 3:
