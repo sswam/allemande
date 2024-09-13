@@ -99,7 +99,7 @@ def print_ephemeral(message, color=Fore.BLUE):
     last_message_length = len(message)
 
 
-def process_subtitles(script_file, look_ahead=1000, threshold=0.6, min_match_length=10, whole_lines=False):
+def process_subtitles(script_file, look_ahead=2000, threshold=0.6, min_match_length=10, whole_lines=False):
     """
     Process subtitles from stdin and sync with the script.
 
@@ -141,13 +141,13 @@ def process_subtitles(script_file, look_ahead=1000, threshold=0.6, min_match_len
 
 
 @argh.arg('script_file', help='Path to the script file')
-@argh.arg('--look-ahead', help='Number of characters to look ahead in the script', type=int, default=1000)
+@argh.arg('--look-ahead', help='Number of characters to look ahead in the script', type=int, default=2000)
 @argh.arg('--threshold', help='Similarity threshold for fuzzy matching', type=float, default=0.6)
 @argh.arg('--min-match-length', help='Minimum subtitle char-length to try to match the script', type=int, default=10)
 @argh.arg('--lines', help='Output the whole line in advance when matching', action='store_true')
 @argh.arg('--debug', help='Enable debug logging', action='store_const', const=logging.DEBUG, dest='log_level')
 @argh.arg('--verbose', help='Enable verbose logging', action='store_const', const=logging.INFO, dest='log_level')
-def main(script_file, look_ahead=1000, threshold=0.6, min_match_length=10, lines=False, log_level=logging.WARNING):
+def main(script_file, look_ahead=2000, threshold=0.6, min_match_length=10, lines=False, log_level=logging.WARNING):
     """
     Sync subtitles with a script file.
 

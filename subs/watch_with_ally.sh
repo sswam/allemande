@@ -11,5 +11,5 @@ fi
 
 > subtitles.txt
 tail -f subtitles.txt | script_sync.py "$script" |
-grep --line-buffered . | buflines.py 5 'TV:' '	' |
+grep --line-buffered . | buflines.py 5 10 'Movie on TV:' '	' |
 tee -a "$room"
