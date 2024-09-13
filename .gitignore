@@ -30,3 +30,4 @@ __pycache__
 *.log
 sparkjoy
 .*
+/geo/country_city_timezone.tsv
