@@ -1,6 +1,12 @@
 # opts: a simple option parser for bash
 # no dependencies, no magic, no bullshit
 
+
+# Note: the basic function of setting a flag or string-valued option works well.
+# There was an attempt to add the option to set arrays and associative arrays,
+# and even functions, but I don't know if that works or not!  Probably not.
+
+
 usage() {
 	# read the script itself to output usage:
 
@@ -20,16 +26,29 @@ usage() {
 		;;
 	esac
 
-	# use perl to parse the script itself and write help / usage to stdout
-	< "$0" perl -pe "$(cat <<'EOF'
-		$_ = "" if m{^#!/};	# Clear line if it is a shebang (script interpreter directive)
-		$_ = "", $after=1, next if /^\. opts$/;	# Clear line and set flag if it is the `. opts` directive
-		last if $after && /^$/;	# Stop processing if an empty line is encountered after the flag is set
-		s/opt_([^a-zA-Z])/$1/;	# Remove `opt_` prefix from option names that are not valid bash variable names
-		s/(.*?)=/-$1\t/ unless /^#/;	# Replace the first `=` with a tab, unless the line starts with `#`
-		s/(^|\t)#\s*/$1/;	# Remove `#` and any following whitespace, if it is preceded by the beginning of the line or a tab
-EOF
-	)" | kut 1 3 2 4 5 6 | tsv2txt	# Reorder columns and convert tab-separated values to text
+	# read the script itself and write help / usage to stdout
+	local script_name=`basename "$0"`
+	printf "%s: " "$script_name"
+	local line
+	while read -r line; do
+		# Skip shebang line
+		if [[ $line == \#\!* ]]; then
+			continue
+		fi
+
+		# Remove '# ' from start of lines
+		line="${line#\#}"
+		line="${line# }"
+
+		# Replace literal '$0' in lines with the value of $script_name
+		line="${line//\$0 /$script_name }"
+
+		# Stop at the ". opts" line
+		if [ "$line" = ". opts" ]; then
+			break
+		fi
+		echo "$line"
+	done < "$0"
 
 	exit $exit
 }
@@ -64,7 +83,7 @@ opts_set_array() {
 
 	# if OPTVAL is foo,a,b,c
 	# then set OPT as an array to (a b c)
-	
+
 	local IFS_OLD=$IFS
 	eval IFS=, $OPT=\(\$VAL\)
 	IFS=$IFS_OLD
@@ -73,7 +92,7 @@ opts_set_array() {
 opts_set_assoc() {
 	# TODO this doesn't work yet
 	local type=$1 OPT=$2 VAL=$3
-	
+
 	# check that $OPT is declared as an assoc
 	if [ "$type" != "assoc" ]; then
 		usage "error: not an associative array: $OPT"
@@ -134,11 +153,6 @@ while true; do
 	if declare -F "$OPT" >/dev/null 2>&1; then
 		function=1
 	fi
-
-	# q. are there any other types as opposed to attributes?
-	# a. yes, there are: -r, -x, -t, -n, -p, -f, -F, -C, -S, -T, -u, -r, -x, -t, -n, -p, -f, -F, -C, -S, -T, -u
-	#   but they are not relevant to opts
-	#
 
 	if [ -z "$type" ]; then
 		OPTS_UNKNOWN+=("$OPT")
