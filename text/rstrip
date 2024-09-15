@@ -1,0 +1,11 @@
+#!/bin/bash -eu
+# rstrip:	Remove trailing blank lines from a file, ensuring it ends with a single newline
+
+sed ':a; /^\n*$/ {$d; N; ba}'
+
+# 1. `:a` creates a label 'a' that we can jump back to.
+# 2. `/^\n*$/` matches lines that are either empty or contain only newlines.
+# 3. `{...}` groups the commands to be executed when the pattern matches.
+# 4. `$d` deletes the line if it's the last line of the input.
+# 5. `N` appends the next line to the pattern space.
+# 6. `ba` branches (jumps) back to label 'a'.

@@ -176,7 +176,7 @@ Do not belabour the obvious; we do not need too much detail, e.g. moving folders
 	}
 	print join("", @lines);
 ' |
-	fmt -s -w 78 -g 78 > "$commit_message"
+	fmt -s -w 78 -g 78 | rstrip > "$commit_message"
 }
 
 check-for-bugs() {
