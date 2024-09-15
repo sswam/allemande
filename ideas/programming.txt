@@ -1,0 +1,35 @@
+I have a programming dilemma. The two languages I use most are bash shell, and
+Python. Python is relatively clean, but shell can be very concise due to
+pipelines and light syntax for invoking commands. Shell syntax for certain
+other things such as string manipulation is horrendous. Certain boilerplate
+such as argument and option handling is problematic in both languages, and I
+find logging setup problematic in Python. I want to program in a language with
+the best of both worlds, where I can write very short readable functional
+scripts. Another language I have used is make (the build tool), with its
+dependency resolution, partial evaluation, and parallelism, strangely enough it
+is a higher paradigm than other languages.  Any suggestions?
+
+Consider:
+
+1. Nim: Python-like syntax, compiles to C, good for scripting and systems programming.
+2. Julia: Combines high-level syntax with performance, good for scientific computing.
+3. Elixir: Functional, concurrent, built on Erlang VM, good for distributed systems.
+4. Haskell: Pure functional, strong type system, concise syntax.
+5. Rust: Systems programming with safety guarantees, expressive and performant.
+
+These languages offer various combinations of conciseness, readability, and powerful features. Evaluate based on your specific needs and domain.
+
+
+Consider using **Nim**. Nim has:
+
+1. Clean syntax like Python.
+2. Efficiency and conciseness of shell for system tasks.
+3. Powerful metaprogramming, similar to Make.
+4. Easy logging and argument handling.
+
+Another choice is **Julia** for its:
+1. High-level syntax.
+2. Powerful string manipulation and shell-like capabilities.
+3. Robust package for argument parsing and logging.
+
+
