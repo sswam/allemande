@@ -34,24 +34,26 @@ CLI Usage:
 
 import sys
 import re
+from typing import List, Optional, Tuple
 
 import argh
 from argh import arg
 
+CODE_BLOCK_PATTERN = r'^```(?:\w*\n)?(.*?)^```'
 
-def code_lines_to_string(lines, strip):
+def code_lines_to_string(lines: List[str], strip: bool) -> str:
     """
     Convert a list of code lines to a single string, ensuring trailing newlines are handled properly.
 
     Args:
-        lines (list of str): A list of code lines.
+        lines (List[str]): A list of code lines.
+        strip (bool): If True, strip whitespace from end of lines and end of file.
 
     Returns:
         str: A single string representing the joined code lines.
     """
     if strip:
         lines = [line.rstrip() for line in lines]
-
         while lines and lines[-1] == '':
             lines.pop()
 
@@ -60,17 +62,49 @@ def code_lines_to_string(lines, strip):
 
     return '\n'.join(lines + [''])
 
+def comment_text(text: str, comment_prefix: str) -> List[str]:
+    """
+    Comment out each line of the given text with the specified prefix.
+
+    Args:
+        text (str): The text to comment out.
+        comment_prefix (str): The prefix to use for commenting.
+
+    Returns:
+        List[str]: A list of commented lines.
+    """
+    return [f"{comment_prefix} {line}" for line in text.split('\n')]
+
+def handle_shebang(code: str) -> Tuple[str, Optional[str]]:
+    """
+    Extract the shebang line from the code if present in the first 3 lines.
+
+    Args:
+        code (str): The code to process.
+
+    Returns:
+        Tuple[str, Optional[str]]: The code without the shebang and the shebang line if found.
+    """
+    code_lines = code.split('\n')
+    shebang_line = None
+    for i, line in enumerate(code_lines[:3]):
+        if line.startswith('#!'):
+            shebang_line = line
+            code_lines.pop(i)
+            break
+    return '\n'.join(code_lines), shebang_line
 
 @arg('--no-shebang-fix', dest='shebang_fix', action='store_false')
 @arg('--no-strip', dest='strip', action='store_false')
-def extract_code_from_markdown(*select, istream=sys.stdin, comment_prefix=None, strict_code=False, shebang_fix=True, strip=True):
+def extract_code_from_markdown(*select, input_source=sys.stdin, comment_prefix: Optional[str] = None,
+                               strict_code: bool = False, shebang_fix: bool = True, strip: bool = True) -> str:
     """
     Finds and returns all code blocks within the given Markdown text,
     optionally commenting out non-code sections and applying shebang fix.
 
     Args:
-        istream: The input stream of markdown text, or it can be a string.
-        *select Variable number of int: Indices of code blocks to extract. If none, all blocks are extracted.
+        input_source: The input stream of markdown text, or it can be a string.
+        *select: Variable number of int: Indices of code blocks to extract. If none, all blocks are extracted.
         comment_prefix (str, optional): Prefix to add to each extracted code line as a comment. Defaults to None.
         strict_code (bool): If False, output the original markdown when no code blocks are found.
         shebang_fix (bool): If True, move shebang line to the top if found in the first 3 lines.
@@ -78,43 +112,37 @@ def extract_code_from_markdown(*select, istream=sys.stdin, comment_prefix=None, 
 
     Returns:
         str: The processed text with code blocks and commented non-code sections.
-             Code blocks are returned as original, while non-code sections are optionally commented out.
     """
-
-    if isinstance(istream, str):
-        markdown_text = istream
-    else:
-        markdown_text = sys.stdin.read().strip()
+    try:
+        if isinstance(input_source, str):
+            markdown_text = input_source
+        else:
+            markdown_text = input_source.read().strip()
+    except Exception as e:
+        print(f"Error reading input: {e}", file=sys.stderr)
+        return ""
 
     select = [int(s) for s in select] or None
 
-    code_block_pattern = r'^```(?:\w*\n)?(.*?)^```'
     output = []
     last_index = 0
     count = 0
     code_blocks_found = False
     shebang_line = None
 
-    for match in re.finditer(code_block_pattern, markdown_text, re.DOTALL | re.MULTILINE):
+    for match in re.finditer(CODE_BLOCK_PATTERN, markdown_text, re.DOTALL | re.MULTILINE):
         code_blocks_found = True
-        full_block = match.group(0)
         code = match.group(1).rstrip()
         start_index = match.start()
         non_code = markdown_text[last_index:start_index].strip()
 
         if non_code and comment_prefix is not None:
-            output.extend([f"{comment_prefix} {line}" for line in non_code.split('\n')])
+            output.extend(comment_text(non_code, comment_prefix))
             output.append('')
 
         if select is None or count in select:
-            if shebang_fix and count == 0:
-                code_lines = code.split('\n')
-                for i, line in enumerate(code_lines[:3]):
-                    if line.startswith('#!'):
-                        shebang_line = line
-                        code_lines.pop(i)
-                        break
-                code = '\n'.join(code_lines)
+            if shebang_fix and count == 0 and not shebang_line:
+                code, shebang_line = handle_shebang(code)
             output.append(code)
             output.append('')
 
@@ -126,16 +154,16 @@ def extract_code_from_markdown(*select, istream=sys.stdin, comment_prefix=None, 
 
     remaining_text = markdown_text[last_index:].strip()
     if remaining_text and comment_prefix is not None:
-        output.extend([f"{comment_prefix} {line}" for line in remaining_text.split('\n')])
+        output.extend(comment_text(remaining_text, comment_prefix))
         output.append('')
 
     lines = [line for block in output for line in block.split('\n')]
 
     if shebang_line:
         lines.insert(0, shebang_line)
+        lines.insert(1, '')
 
     return code_lines_to_string(lines, strip)
-
 
 if __name__ == "__main__":
     argh.dispatch_command(extract_code_from_markdown, raw_output=True)
