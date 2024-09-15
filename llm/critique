@@ -16,7 +16,7 @@ critique() {
 		prompt="Please review and critique. $prompt"
 	fi
 	cat-named "$@" |
-	v process "$prompt"
+	process "$prompt"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
