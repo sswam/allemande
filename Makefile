@@ -153,7 +153,7 @@ auth:
 	uvicorn main:app --app-dir auth --reload --timeout-graceful-shutdown 5 --port 8002 # --reload-include *.csv
 
 watch:
-	awatch.py -x bb -p $(ROOMS) >> $(WATCH_LOG)
+	awatch.py -r -A -x bb -p $(ROOMS) >> $(WATCH_LOG)
 
 bb2html:
 	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
