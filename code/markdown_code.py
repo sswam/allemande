@@ -39,7 +39,8 @@ from typing import List, Optional, Tuple
 import argh
 from argh import arg
 
-CODE_BLOCK_PATTERN = r'^```(?:\w*\n)?(.*?)^```'
+CODE_BLOCK_PATTERN = r"^```(?:\w*\n)?(.*?)^```"
+
 
 def code_lines_to_string(lines: List[str], strip: bool) -> str:
     """
@@ -54,13 +55,14 @@ def code_lines_to_string(lines: List[str], strip: bool) -> str:
     """
     if strip:
         lines = [line.rstrip() for line in lines]
-        while lines and lines[-1] == '':
+        while lines and lines[-1] == "":
             lines.pop()
 
     if not lines:
-        return ''
+        return ""
 
-    return '\n'.join(lines + [''])
+    return "\n".join(lines + [""])
+
 
 def comment_text(text: str, comment_prefix: str) -> List[str]:
     """
@@ -73,7 +75,8 @@ def comment_text(text: str, comment_prefix: str) -> List[str]:
     Returns:
         List[str]: A list of commented lines.
     """
-    return [f"{comment_prefix} {line}" for line in text.split('\n')]
+    return [f"{comment_prefix} {line}" for line in text.split("\n")]
+
 
 def handle_shebang(code: str) -> Tuple[str, Optional[str]]:
     """
@@ -85,19 +88,26 @@ def handle_shebang(code: str) -> Tuple[str, Optional[str]]:
     Returns:
         Tuple[str, Optional[str]]: The code without the shebang and the shebang line if found.
     """
-    code_lines = code.split('\n')
+    code_lines = code.split("\n")
     shebang_line = None
     for i, line in enumerate(code_lines[:3]):
-        if line.startswith('#!'):
+        if line.startswith("#!"):
             shebang_line = line
             code_lines.pop(i)
             break
-    return '\n'.join(code_lines), shebang_line
+    return "\n".join(code_lines), shebang_line
 
-@arg('--no-shebang-fix', dest='shebang_fix', action='store_false')
-@arg('--no-strip', dest='strip', action='store_false')
-def extract_code_from_markdown(*select, input_source=sys.stdin, comment_prefix: Optional[str] = None,
-                               strict_code: bool = False, shebang_fix: bool = True, strip: bool = True) -> str:
+
+@arg("--no-shebang-fix", dest="shebang_fix", action="store_false")
+@arg("--no-strip", dest="strip", action="store_false")
+def extract_code_from_markdown(
+    *select,
+    input_source=sys.stdin,
+    comment_prefix: Optional[str] = None,
+    strict_code: bool = False,
+    shebang_fix: bool = True,
+    strip: bool = True,
+) -> str:
     """
     Finds and returns all code blocks within the given Markdown text,
     optionally commenting out non-code sections and applying shebang fix.
@@ -130,7 +140,9 @@ def extract_code_from_markdown(*select, input_source=sys.stdin, comment_prefix: 
     code_blocks_found = False
     shebang_line = None
 
-    for match in re.finditer(CODE_BLOCK_PATTERN, markdown_text, re.DOTALL | re.MULTILINE):
+    for match in re.finditer(
+        CODE_BLOCK_PATTERN, markdown_text, re.DOTALL | re.MULTILINE
+    ):
         code_blocks_found = True
         code = match.group(1).rstrip()
         start_index = match.start()
@@ -138,13 +150,13 @@ def extract_code_from_markdown(*select, input_source=sys.stdin, comment_prefix: 
 
         if non_code and comment_prefix is not None:
             output.extend(comment_text(non_code, comment_prefix))
-            output.append('')
+            output.append("")
 
         if select is None or count in select:
             if shebang_fix and count == 0 and not shebang_line:
                 code, shebang_line = handle_shebang(code)
             output.append(code)
-            output.append('')
+            output.append("")
 
         last_index = match.end()
         count += 1
@@ -155,15 +167,16 @@ def extract_code_from_markdown(*select, input_source=sys.stdin, comment_prefix: 
     remaining_text = markdown_text[last_index:].strip()
     if remaining_text and comment_prefix is not None:
         output.extend(comment_text(remaining_text, comment_prefix))
-        output.append('')
+        output.append("")
 
-    lines = [line for block in output for line in block.split('\n')]
+    lines = [line for block in output for line in block.split("\n")]
 
     if shebang_line:
         lines.insert(0, shebang_line)
-        lines.insert(1, '')
+        lines.insert(1, "")
 
     return code_lines_to_string(lines, strip)
+
 
 if __name__ == "__main__":
     argh.dispatch_command(extract_code_from_markdown, raw_output=True)
