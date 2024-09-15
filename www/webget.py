@@ -201,7 +201,7 @@ def wget_download(timeout=5, tries=5, content_disposition=False, output_file=Non
 @argh.arg('-r', '--referer', help='Referer URL')
 @argh.arg('-w', '--wget', help='Use wget')
 @argh.arg('urls', nargs='+', help='URLs to download')
-def main(timeout=5, tries=5, content_disposition=False, output_file=None, verbose=False, referer=None, wget=False, *urls):
+def webget(timeout=5, tries=5, content_disposition=False, output_file=None, verbose=False, referer=None, wget=False, *urls):
     """
     A wget wrapper that pretends to be a browser.
 
@@ -223,4 +223,4 @@ def main(timeout=5, tries=5, content_disposition=False, output_file=None, verbos
         sys.exit(1)
 
 if __name__ == '__main__':
-    argh.dispatch_command(main)
+    argh.dispatch_command(webget)
