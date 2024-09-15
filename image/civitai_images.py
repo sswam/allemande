@@ -71,7 +71,7 @@ def fetch_images(limit=100, post_id=None, model_id=None, model_version_id=None, 
 @argh.arg('--model-version-id', help='ID of a model version to get images from', type=int)
 @argh.arg('--username', help='filter to images from a specific user')
 @argh.arg('--nsfw', help='filter to images that contain mature content (None|Soft|Mature|X)')
-@argh.arg('--sort', help='order to sort the results (Most Reactions|Most Comments|Comments|Newest)')
+@argh.arg('--sort', help='order to sort the results (Most Reactions|Most Comments|Newest)')
 @argh.arg('--period', help='time frame in which to sort the images (|AllTime|Year|Month|Week|Day)')
 @argh.arg('--page', help='page to start fetching from', type=int)
 @argh.arg('--page-length', help='page length (1 to 200)', type=int)
