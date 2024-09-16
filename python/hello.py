@@ -9,13 +9,12 @@ This script can be used as a module:
     from hello import hello
 """
 
-
 import sys
 import logging
 import getpass
 import textwrap
+from typing import TextIO, Optional
 
-import argh
 from argh import arg
 import sh
 import nltk
@@ -23,11 +22,9 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 
 from ally import main, terminal
 
-
 __version__ = "1.0.0"
 
 logger = logging.getLogger(__name__)
-
 
 try:
     nltk.data.find("sentiment/vader_lexicon.zip")
@@ -37,14 +34,45 @@ except LookupError:
 sia = SentimentIntensityAnalyzer()
 
 
-def analyze_sentiment(text):
+def analyze_sentiment(text: str) -> str:
+    """Analyze the sentiment of the given text."""
     sentiment = sia.polarity_scores(text)
     if sentiment["compound"] > 0:
         return "Positive"
-    elif sentiment["compound"] < 0:
+    if sentiment["compound"] < 0:
         return "Negative"
-    else:
-        return "Neutral"
+    return "Neutral"
+
+
+def reply_fortune() -> str:
+    """Return a fortune cookie message."""
+    return sh.fortune().strip()
+
+
+def reply_ai(name: str, feeling: str, model: str) -> str:
+    """Generate an AI response based on the user's feeling."""
+    import llm  # slow to load, so don't load unless needed
+
+    prompt = (
+        f"Scenario: Your character asked 'How are you feeling?' "
+        f"and {name} said '{feeling.rstrip()}'. "
+        f"Please reply directly without any prelude, disclaimers or explanation."
+    )
+    response = llm.query(prompt, model=model)
+    response = response.strip().strip('"')
+    response = textwrap.fill(response, width=80)
+    return response
+
+
+def reply_sentiment(feeling: str) -> str:
+    """Generate a response based on sentiment analysis of the user's feeling."""
+    sentiment = analyze_sentiment(feeling)
+    logger.debug("sentiment=%s", sentiment)
+    if sentiment == "Positive":
+        return "I hope you have a great day!"
+    if sentiment == "Negative":
+        return "I hope you feel better soon."
+    return "Life has its ups and downs, hope yours swings up!"
 
 
 @arg("--name", help="name to be greeted")
@@ -56,34 +84,27 @@ def analyze_sentiment(text):
     "--log-level",
     default="WARNING",
     choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-    help="Set the logging level"
+    help="Set the logging level",
 )
 def hello(
-    istream=sys.stdin,
-    ostream=sys.stdout,
-    name="World",
-    ai=False,
-    model="clia",
-    log_level=None,
-):
+    istream: TextIO = sys.stdin,
+    ostream: TextIO = sys.stdout,
+    name: str = "World",
+    ai: bool = False,
+    model: str = "clia",
+    log_level: Optional[str] = None,
+) -> None:
     """
     An example Unix-style Python module / script to say hello,
     and ask the user how they are.
     """
-    main.setup_logging(log_level)
-
-
-    logger.debug("This is a debug message")
-    logger.info("This is an info message")
-    logger.warning("This is a warning message")
-    logger.error("This is an error message")
-    logger.critical("This is a critical message")
+    main.setup_logging(log_level, test=True)
 
     if not name:
         name = getpass.getuser().title()
 
     print(f"Hello, {name}", file=ostream)
-    print(f"How are you feeling?", file=ostream)
+    print("How are you feeling?", file=ostream)
 
     if terminal.is_terminal(istream) and terminal.is_terminal(ostream):
         logger.debug("It's a terminal!")
@@ -93,23 +114,11 @@ def hello(
         feeling = istream.readline().strip()
 
     if feeling in ["", "lucky", "unlucky", "fortunate", "unfortunate"]:
-        response = sh.fortune()
+        response = reply_fortune()
     elif ai:
-        import llm
-
-        prompt = f"Scenario: Your character asked 'How are you feeling?' and {name} said '{feeling.rstrip()}'. Please reply directly without any prelude, disclaimers or explanation."
-        response = llm.query(prompt, model=model)
-        response = response.strip().strip('"')
-        response = textwrap.fill(response, width=80)
+        response = reply_ai(name, feeling, model)
     else:
-        sentiment = analyze_sentiment(feeling)
-        logger.debug(f"{sentiment=}")
-        if sentiment == "Positive":
-            response = "I hope you have a great day!"
-        elif sentiment == "Negative":
-            response = "I hope you feel better soon."
-        else:
-            response = "Life has its ups and downs, hope yours swings up!"
+        response = reply_sentiment(feeling)
 
     print(response, file=ostream)
 
