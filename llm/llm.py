@@ -491,7 +491,7 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 	""" count tokens in a file """
 	set_opts(vars())
 	text = read_utf_replace(istream)
-	model = models[opts.model]
+	model = MODELS[opts.model]
 	vendor = model["vendor"]
 	if vendor == "openai":
 		try:
