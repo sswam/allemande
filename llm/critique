@@ -1,6 +1,7 @@
 #!/bin/bash -eu
 # critique:	critique
 
+m=c
 s=0
 p=
 
@@ -16,7 +17,7 @@ critique() {
 		prompt="Please review and critique. $prompt"
 	fi
 	cat-named "$@" |
-	process "$prompt"
+	process -m="$m" "$prompt"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
