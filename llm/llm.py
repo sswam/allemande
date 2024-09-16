@@ -17,6 +17,7 @@ from math import inf
 import time
 import random
 from pathlib import Path
+import textwrap
 
 import argh
 
@@ -45,42 +46,70 @@ RETRIES = 20
 exceptions_to_retry = (openai.RateLimitError, openai.APIConnectionError, openai.InternalServerError,
 	anthropic.RateLimitError, anthropic.APIConnectionError, anthropic.InternalServerError)
 
+default_model = 'claude'
+
 models = {
-	"claude": {
-		"alias": ["c", "claud"],
-		"id": "claude-3-5-sonnet-20240620",
-		"description": "Anthropic's Claude 2 is an AI assistant with a focus on safety and Constitutional AI. It is trained to be helpful, harmless, and honest. This is our largest model, ideal for a wide range of more complex tasks.",
-		"cost": 0.0,  # not any longer!
+	"o1-preview": {
+		"alias": ["op", "gertie"],
+		"vendor": "openai",
+		"description": "The o1 series of large language models are trained with reinforcement learning to perform complex reasoning. o1 models think before they answer, producing a long internal chain of thought before responding to the user.",
+		"cost_in": 15,
+		"cost_out": 60,
 	},
-	"claude-haiku": {
-		"alias": ["i", "clia"],
-		"id": "claude-3-haiku-20240307",
-		"description": "A smaller model with far lower latency, sampling at roughly 40 words/sec! Its output quality is somewhat lower than claude-v1 models, particularly for complex tasks. However, it is much less expensive and blazing fast. We believe that this model provides more than adequate performance on a range of tasks including text classification, summarization, and lightweight chat applications, as well as search result summarization. Using this model name will automatically switch you to newer versions of claude-instant-v1 as they are released.",
-		"cost": 0.0,  # not any longer!
-	},
-	"gpt-4o-mini": {
-		"alias": ["4m", "dav"],
-		"description": "Our affordable and intelligent small model for fast, lightweight tasks",
-		"cost": 0.002,
+	"o1-mini": {
+		"alias": ["om", "feyn"],
+		"vendor": "openai",
+		"description": "The o1 series of large language models are trained with reinforcement learning to perform complex reasoning. o1 models think before they answer, producing a long internal chain of thought before responding to the user.",
+		"cost_in": 3,
+		"cost_out": 12,
 	},
 	"gpt-4": {
 		"alias": ["4", "emmy"],
-		"id": "gpt-4o",
-		"description": "More capable than any GPT-3.5 model, able to do more complex tasks, and optimized for chat. Will be updated with our latest model iteration.",
-		"cost": 0.03,  # ???
+		"vendor": "openai",
+		"id": "gpt-4o-2024-08-06",
+		"description": "GPT-4o is our most advanced multimodal model that’s faster and cheaper than GPT-4 Turbo with stronger vision capabilities. The model has 128K context and an October 2023 knowledge cutoff.",
+		"cost_in": 2.5,
+		"cost_out": 10,
 	},
-	"bard": {
-		"alias": ["b", "jaski"],
-		"description": "Google Bard is a large language model (LLM) chatbot developed by Google AI. It is trained on a massive dataset of text and code, and can generate text, translate languages, write different kinds of creative content, and answer your questions in an informative way.",
-	}
+	"gpt-4o-mini": {
+		"alias": ["4m", "dav"],
+		"vendor": "openai",
+		"description": "GPT-4o mini is our most cost-efficient small model that’s smarter and cheaper than GPT-3.5 Turbo, and has vision capabilities. The model has 128K context and an October 2023 knowledge cutoff.",
+		"cost_in": 0.15,
+		"cost_out": 0.6,
+	},
+
+	"claude": {
+		"alias": ["c", "claud"],
+		"vendor": "anthropic",
+		"id": "claude-3-5-sonnet-20240620",
+		"description": "Claude 3.5 Sonnet is Anthropic's latest AI model, offering improved intelligence, speed, and cost-effectiveness compared to previous versions, with new capabilities in reasoning, coding, and vision.",
+		"cost_in": 3,
+		"cost_out": 15,
+	},
+	"claude-haiku": {
+		"alias": ["i", "clia"],
+		"vendor": "anthropic",
+		"id": "claude-3-haiku-20240307",
+		"description": "Claude 3 Haiku is Anthropic's fastest and most affordable large language model, offering high-speed processing, state-of-the-art vision capabilities, and strong benchmark performance for enterprise applications.",
+		"cost_in": 0.25,
+		"cost_out": 1.25,
+	},
+#	"bard": {
+#		"alias": ["b", "jaski"],
+#		"vendor": "google",
+#		"description": "Google Bard is a large language model (LLM) chatbot developed by Google AI. It is trained on a massive dataset of text and code, and can generate text, translate languages, write different kinds of creative content, and answer your questions in an informative way.",
+#	}
 }
 
-# default is $LLM_MODEL or first model in the dict
+# default is $LLM_MODEL or default_model as above
 
-first_model = next(iter(models.keys()))
-default_model = os.environ.get("LLM_MODEL", first_model)
-if default_model not in models:
-	default_model = first_model
+# first_model = next(iter(models.keys()))
+
+env_llm_model = os.environ.get("LLM_MODEL")
+
+if env_llm_model in models:
+	default_model = env_llm_model
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
 
@@ -221,14 +250,15 @@ def llm_chat(messages):
 	logger.debug("llm_chat: input: %r", messages)
 
 	model = opts.model
+	vendor = models[model]["vendor"]
 
 	if opts.fake:
 		return fake_completion
-	if model.startswith("claude"):
+	if vendor == "anthropic":
 		return chat_claude(messages)
-	if model.startswith("gpt"):
+	if vendor == "openai":
 		return chat_gpt(messages)
-	if model.startswith("bard"):
+	if vendor == "google":
 		return chat_bard(messages)
 	raise ValueError(f"unknown model: {model}")
 
@@ -457,28 +487,57 @@ def chat2(istream=stdin, ostream=stdout):
 	ostream.writelines(output_lines)
 
 
-def count(istream=stdin, model=default_model):
+def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 	""" count tokens in a file """
 	set_opts(vars())
 	text = read_utf_replace(istream)
-	model = opts.model
-	if model.startswith("gpt"):
-		enc = tiktoken.encoding_for_model(model)
+	model = models[opts.model]
+	vendor = model["vendor"]
+	if vendor == "openai":
+		try:
+			enc = tiktoken.encoding_for_model(opts.model)
+		except KeyError:
+			enc_name = "o200k_base"
+			logger.warning(f"model {opts.model} not known to tiktoken, assuming {enc_name}")
+			enc = tiktoken.get_encoding(enc_name)
 		tokens = enc.encode(text)
-		return len(tokens)
-	if model.startswith("claude"):
-		return claude.count(text)
-	raise ValueError(f"unknown model: {model}")
+		n_tokens = len(tokens)
+	elif vendor == "anthropic":
+		n_tokens = claude.count(text)
+	else:
+		raise ValueError(f"unknown model vendor: {vendor}")
+	rv = [n_tokens]
+	if in_cost:
+		rv.append(model["cost_in"] * n_tokens / 1e6)
+	if out_cost:
+		rv.append(model["cost_out"] * n_tokens / 1e6)
+	return tuple(rv)
 
 
-def list_models(aliases=False):
+#def cost(istream=stdin, model=default_model):
+#	""" count tokens in a file """
+#	set_opts(vars())
+#	text = read_utf_replace(istream)
+#	model = opts.model
+#	if model.startswith("gpt"):
+#		enc = tiktoken.encoding_for_model(model)
+#		tokens = enc.encode(text)
+#		return len(tokens)
+#	if model.startswith("claude"):
+#		return claude.count(text)
+#	raise ValueError(f"unknown model: {model}")
+
+
+def list_models(verbose=False):
 	""" List the available models. """
-	for model in models:
-		print(model, end="")
-		if aliases:
-			alias_list = models[model].get("alias", [])
-			print("\t" + "\t".join(alias_list), end="")
-		print()
+	for name, model in models.items():
+		print(name)
+		if not verbose:
+			continue
+		for k, v in model.items():
+			if k == "description":
+				v = textwrap.fill(v, width=80, subsequent_indent='\t\t')
+			print(f"\t{k}: {v}")
 
 
 if __name__ == "__main__":
