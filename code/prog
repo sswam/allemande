@@ -12,7 +12,7 @@ if [ "$#" = 0 ]; then
 	exit 1
 fi
 cat-named "`wich hello.py`" |
-	process -m="$c" "Please write a Python program in the style of hello.py: $*" |
+	process -m="$m" "Please write a Python program in the style of hello.py: $*" |
 	markdown_code.py -c '#' |
 	tee "$name"
 cx "$name"
