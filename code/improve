@@ -1,0 +1,26 @@
+#!/bin/bash -eu
+# improve:	improve a program using AI
+# usage: improve prog.py "instructions to improve it" [optional reference files]
+
+m=c
+
+. opts
+
+prog=`wich $1`
+shift
+
+dir=`dirname "$prog"`
+base=`basename "$prog"`
+
+cd "$dir"
+git add "$base"
+cp -a "$base" "$base~"
+
+prompt="Please improve $base: $1"
+shift
+
+cat_named.py -p -b "$base" "$@" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$base~"
+swapfiles "$base" "$base~"
+
+vimdiff "$base" "$base~"
+mr "$base~"
