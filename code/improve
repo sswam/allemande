@@ -21,7 +21,7 @@ base=`basename "$prog"`
 	cp -a "$base" "$base~"
 )
 
-prompt="Please improve $base: $1"
+prompt="Please improve $base: ${1-}"
 shift
 
 cat_named.py -p -b "$prog" "$@" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$prog~"
