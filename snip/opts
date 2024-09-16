@@ -1,0 +1,67 @@
+
+# use perl to parse the script itself and write help / usage to stdout
+< "$0" perl -pe "$(cat <<'EOF'
+
+		$_ = "" if m{^#!/};	# Clear line if it is a shebang (script interpreter directive)
+		$_ = "", $after=1, next if /^\. opts$/;	# Clear line and set flag if it is the `. opts` directive
+		$_ = "" if /^\. /;	# Clear line if it is a `. <command>` directive
+		last if $after && /^$/;	# Stop processing if an empty line is encountered after the flag is set
+		s/opt_([^a-zA-Z])/$1/;	# Remove `opt_` prefix from option names that are not valid bash variable names
+		s/(.*?)=/-$1\t/ unless /^#/;	# Replace the first `=` with a tab, unless the line starts with `#`
+		s/(^|\t)#\s*/$1/;	# Remove `#` and any following whitespace, if it is preceded by the beginning of the line or a tab
+EOF
+	)" | kut 1 3 2 4 5 6 | tsv2txt |	# Reorder columns and convert tab-separated values to text
+	
+		# squeeze spaces in first line (title)
+	sed '1s/  */ /'	# squeeze spaces in first line (title)
+
+
+
+
+	# q. are there any other types as opposed to attributes?
+	# a. yes, there are: -r, -x, -t, -n, -p, -f, -F, -C, -S, -T, -u, -r, -x, -t, -n, -p, -f, -F, -C, -S, -T, -u
+	#   but they are not relevant to opts
+	#
+
+
+
+
+# -foo[a=b,c=d]	set $foo to (a=b c=d)
+# -foo:"..."	set foo to () { ... }
+
+
+opts_set_assoc() {
+	local type=$1 OPT=$2 VAL=$3
+
+	# check that $OPT is declared as an assoc
+	if [ "$type" != "assoc" ]; then
+		usage "error: not an associative array: $OPT"
+	fi
+
+	local IFS=,
+	eval $OPT=\($VAL\)
+	local IFS_OLD=$IFS
+	eval IFS=, $OPT=\(\$VAL\)
+	IFS=$IFS_OLD
+}
+
+
+
+
+	# check if there's a function named $OPT, use declare -F
+	function=0
+	if declare -F "$OPT" >/dev/null 2>&1; then
+		function=1
+	fi
+
+
+
+	*\[*\])
+		VAL=${OPTVAL#*\[}
+		VAL=${VAL%]}
+		opts_set_assoc "$type" "$OPT" "$VAL"
+		;;
+	*:*)
+		VAR=${OPTVAL%:*}
+		opts_set_func "$function" "$OPT" "$VAR"
+		;;

@@ -1,11 +1,26 @@
+#!/bin/bash
+
 # opts: a simple option parser for bash
 # no dependencies, no magic, no bullshit
 
+# # usage from bash
+# # e.g. for a -debug switch and -mode=foo option:
+#
+# #!/bin/bash
+# # purpose of script
+#
+# debug=
+# mode=normal
+# . opts
+# if (( debug )); then echo "debug mode"; fi
+# echo "mode=$mode"
+# echo opts: "${OPTS[@]}"
+# echo args: "$@"
 
-# Note: the basic function of setting a flag or string-valued option works well.
-# There was an attempt to add the option to set arrays and associative arrays,
-# and even functions, but I don't know if that works or not!  Probably not.
-
+# There are three types of options:
+# -foo		switch: set foo to 1
+# -foo=bar	scalar: set foo to bar
+# -foo,a,b,c	array:  set foo to (a b c)
 
 usage() {
 	# read the script itself to output usage:
@@ -26,11 +41,10 @@ usage() {
 		;;
 	esac
 
-	# read the script itself and write help / usage to stdout
-	local script_name=`basename "$0"`
+	local script_name=$(basename "$0")
 	printf "%s: " "$script_name"
 	local line
-	while read -r line; do
+	while IFS= read -r line; do
 		# Skip shebang line
 		if [[ $line == \#\!* ]]; then
 			continue
@@ -60,9 +74,14 @@ OPTS_N=0
 opts_set_scalar() {
 	local type=$1 OPT=$2 VAL=$3
 
+	# check that $OPT is declared
+	if [ "$type" == "" ]; then
+		usage "error: not declared: $OPT"
+	fi
+
 	# check that $OPT is declared as a string or an int
 	if [ "$type" != "string" ] && [ "$type" != "int" ]; then
-		usage "error: not a string or an int: $OPT"
+		usage "error: not a scalar: $OPT"
 	fi
 
 	# check int
@@ -74,7 +93,7 @@ opts_set_scalar() {
 }
 
 opts_set_array() {
-	local type=$1 OPT=$2 VAL=$3
+	local type=$1 OPT=$2 VAL=$3 SEP=$4
 
 	# check that $OPT is declared as an array
 	if [ "$type" != "array" ]; then
@@ -84,27 +103,12 @@ opts_set_array() {
 	# if OPTVAL is foo,a,b,c
 	# then set OPT as an array to (a b c)
 
-	local IFS_OLD=$IFS
-	eval IFS=, $OPT=\(\$VAL\)
-	IFS=$IFS_OLD
+	local IFS=$SEP
+	eval $OPT=\($VAL\)
 }
 
-opts_set_assoc() {
-	# TODO this doesn't work yet
-	local type=$1 OPT=$2 VAL=$3
-
-	# check that $OPT is declared as an assoc
-	if [ "$type" != "assoc" ]; then
-		usage "error: not an associative array: $OPT"
-	fi
-
-	local IFS_OLD=$IFS
-	eval IFS=, $OPT=\(\$VAL\)
-	IFS=$IFS_OLD
-}
-
-while true; do
-	case "${1:-}" in
+while [ $# -gt 0 ]; do
+	case "$1" in
 	"")
 		break
 		;;
@@ -124,61 +128,53 @@ while true; do
 	OPTVAL="${1#-}"
 	OPTVAL="${OPTVAL#-}"
 
-	OPT=${OPTVAL%%[=,\[]*}
+	OPT=${OPTVAL%%[=, ]*}
 	OPT="${OPT//-/_}"
+
+	OP=${OPTVAL:${#OPT}:1}
+	VAL=${OPTVAL:$[${#OPT}+1]}
+
 	# if $OPT doesn't start with a letter, add opt_ prefix
 	if ! [[ $OPT =~ ^[a-zA-Z] ]]; then
 		OPT="opt_$OPT"
 	fi
 
-	OPTS_DECLARATION=`declare -p "$OPT" 2>/dev/null || true`
+	OPTS_DECLARATION=$(declare -p "$OPT" 2>/dev/null || true)
 
 	case "$OPTS_DECLARATION" in
 	declare\ -a*)
 		type=array
 		;;
-	declare\ -A*)
-		type=assoc
-		;;
 	declare\ -i*)
 		type=int
+		;;
+	"")
+		type=""
 		;;
 	*)
 		type=string
 		;;
 	esac
 
-	# check if there's a function named $OPT, use declare -F
-	function=0
-	if declare -F "$OPT" >/dev/null 2>&1; then
-		function=1
-	fi
-
 	if [ -z "$type" ]; then
 		OPTS_UNKNOWN+=("$OPT")
 	fi
 
-	case "$OPTVAL" in
-	*=*)
-		VAL=${OPTVAL#*=}
+	case "$OP" in
+	=)
 		opts_set_scalar "$type" "$OPT" "$VAL"
 		;;
-	*,*)
-		VAL=${OPTVAL#*,}
-		opts_set_array "$type" "$OPT" "$VAL"
+	,)
+		opts_set_array "$type" "$OPT" "$VAL" ","
 		;;
-	*\[*\])
-		VAL=${OPTVAL#*\[}
-		VAL=${VAL%]}
-		opts_set_assoc "$type" "$OPT" "$VAL"
+	" ")
+		opts_set_array "$type" "$OPT" "$VAL" " "
 		;;
-	*:*)
-		VAR=${OPTVAL%:*}
-		opts_set_func "$function" "$OPT" "$VAR"
+	"")
+		opts_set_scalar "$type" "$OPT" 1
 		;;
 	*)
-		opts_set_scalar "$type" "$OPT" 1
-		eval $OPT=1
+		usage "error: unknown operator: $OP"
 		;;
 	esac
 	shift
@@ -188,22 +184,3 @@ done
 if [ ${#OPTS_UNKNOWN[@]} -gt 0 ]; then
 	usage "error: unknown options: ${OPTS_UNKNOWN[*]}"
 fi
-
-
-# # usage from bash
-# # e.g. for a -debug switch and -mode=foo option:
-#
-# #!/bin/bash
-# debug=
-# mode=normal
-# . opts
-# if (( debug )); then echo "debug mode"; fi
-# echo "mode=$mode"
-# echo opts: "${OPTS[@]}"
-# echo args: "$@"
-
-# There are four syntaxes for options:
-# -foo		set $foo to 1
-# -foo=bar	set $foo to bar
-# -foo,a,b,c	set $foo to (a b c)
-# -foo[a=b,c=d]	set $foo to (a=b c=d)
