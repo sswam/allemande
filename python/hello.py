@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
 
+"""
+hello.py - An example Python module / script to say hello,
+and ask the user how they are. We should always include a module-level
+docstring to explain the purpose and basic usage of the program.
+
+This script can be used as a module:
+    from hello import hello
+"""
+
+
 import os
 import sys
 import logging
@@ -16,16 +26,6 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 
 
-
-"""
-hello.py - An example Python module / script to say hello,
-and ask the user how they are.
-
-This script can be used as a module:
-    from hello import hello
-"""
-
-
 __version__ = "1.0.0"
 
 logger = logging.getLogger(__name__)
@@ -34,21 +34,21 @@ history_file = None
 
 
 try:
-    nltk.data.find('sentiment/vader_lexicon.zip')
+    nltk.data.find("sentiment/vader_lexicon.zip")
 except LookupError:
-    nltk.download('vader_lexicon')
+    nltk.download("vader_lexicon")
 
 sia = SentimentIntensityAnalyzer()
 
 
 def analyze_sentiment(text):
     sentiment = sia.polarity_scores(text)
-    if sentiment['compound'] > 0:
-        return 'Positive'
-    elif sentiment['compound'] < 0:
-        return 'Negative'
+    if sentiment["compound"] > 0:
+        return "Positive"
+    elif sentiment["compound"] < 0:
+        return "Negative"
     else:
-        return 'Neutral'
+        return "Neutral"
 
 
 def is_terminal(stream):
@@ -95,7 +95,9 @@ def readline_input(*args, **kwargs):
     return text
 
 
-def hello(istream=sys.stdin, ostream=sys.stdout, name="World", use_ai=False, model=None):
+def hello(
+    istream=sys.stdin, ostream=sys.stdout, name="World", use_ai=False, model=None
+):
     """
     Processes each line in the given list of lines.
 
@@ -118,7 +120,8 @@ def hello(istream=sys.stdin, ostream=sys.stdout, name="World", use_ai=False, mod
     if feeling in ["", "lucky", "unlucky", "fortunate", "unfortunate"]:
         response = sh.fortune()
     elif use_ai:
-        import llm 
+        import llm
+
         prompt = f"Scenario: Your character asked 'How are you feeling?' and {name} said '{feeling.rstrip()}'. Please reply directly without any prelude, disclaimers or explanation."
         response = llm.query(prompt, model=model)
         response = response.strip().strip('"')
@@ -135,12 +138,26 @@ def hello(istream=sys.stdin, ostream=sys.stdout, name="World", use_ai=False, mod
     print(response, file=ostream)
 
 
-@argh.arg('--name', help='name to be greeted')
-@argh.arg('--ai', help='use AI to respond')
-@argh.arg('--model', help='specify which AI model', choices=['emmy', 'claude', 'dav', 'clia'])
-@argh.arg('--debug', help='enable debug logging', action='store_const', const=logging.DEBUG, dest='log_level')
-@argh.arg('--verbose', help='enable verbose logging', action='store_const', const=logging.INFO, dest='log_level')
-def main(name=None, ai=False, model='clia', log_level=logging.WARNING):
+@argh.arg("--name", help="name to be greeted")
+@argh.arg("--ai", help="use AI to respond")
+@argh.arg(
+    "--model", help="specify which AI model", choices=["emmy", "claude", "dav", "clia"]
+)
+@argh.arg(
+    "--debug",
+    help="enable debug logging",
+    action="store_const",
+    const=logging.DEBUG,
+    dest="log_level",
+)
+@argh.arg(
+    "--verbose",
+    help="enable verbose logging",
+    action="store_const",
+    const=logging.INFO,
+    dest="log_level",
+)
+def main(name=None, ai=False, model="clia", log_level=logging.WARNING):
     """
     An example Unix-style Python module / script to say hello,
     and ask the user how they are.
@@ -169,5 +186,5 @@ def main(name=None, ai=False, model='clia', log_level=logging.WARNING):
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     argh.dispatch_command(main)
