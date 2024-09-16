@@ -10,27 +10,23 @@ This script can be used as a module:
 """
 
 
-import os
 import sys
 import logging
 import getpass
 import textwrap
-import readline
-import select
-
-from pathlib import Path
 
 import argh
+from argh import arg
 import sh
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
+
+from ally import main, terminal
 
 
 __version__ = "1.0.0"
 
 logger = logging.getLogger(__name__)
-
-history_file = None
 
 
 try:
@@ -51,75 +47,54 @@ def analyze_sentiment(text):
         return "Neutral"
 
 
-def is_terminal(stream):
-    """
-    Check if the given stream is connected to a terminal.
-
-    Args:
-        stream: The stream to check.
-        default (bool): The default value to return if the check fails.
-
-    Returns:
-        bool: True if connected to a terminal, False if not, None if unknown.
-    """
-    try:
-        return os.isatty(stream.fileno())
-    except OSError:
-        return None
-
-
-def setup_history(history_file_=None):
-    global history_file
-    if history_file:
-        return
-
-    history_file = history_file_
-
-    if not history_file:
-        history_file = Path.home() / f".{Path(sys.argv[0]).stem}_history"
-
-    try:
-        readline.read_history_file(history_file)
-    except FileNotFoundError:
-        pass
-
-    # Unlimited history length
-    readline.set_history_length(-1)
-
-    readline.set_auto_history(True)
-
-
-def readline_input(*args, **kwargs):
-    text = input(*args, *kwargs)
-    readline.append_history_file(1, history_file)
-    return text
-
-
+@arg("--name", help="name to be greeted")
+@arg("--ai", help="use AI to respond")
+@arg(
+    "--model", help="specify which AI model", choices=["emmy", "claude", "dav", "clia"]
+)
+@arg(
+    "--log-level",
+    default="WARNING",
+    choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+    help="Set the logging level"
+)
 def hello(
-    istream=sys.stdin, ostream=sys.stdout, name="World", use_ai=False, model=None
+    istream=sys.stdin,
+    ostream=sys.stdout,
+    name="World",
+    ai=False,
+    model="clia",
+    log_level=None,
 ):
     """
-    Processes each line in the given list of lines.
-
-    Args:
-        lines (list of str): List of input lines to be processed.
-        name (str): Name to be greeted.
-
-    Returns:
-        list of str: List of processed lines.
+    An example Unix-style Python module / script to say hello,
+    and ask the user how they are.
     """
+    main.setup_logging(log_level)
+
+
+    logger.debug("This is a debug message")
+    logger.info("This is an info message")
+    logger.warning("This is a warning message")
+    logger.error("This is an error message")
+    logger.critical("This is a critical message")
+
+    if not name:
+        name = getpass.getuser().title()
+
     print(f"Hello, {name}", file=ostream)
     print(f"How are you feeling?", file=ostream)
 
-    if is_terminal(istream) and is_terminal(ostream):
-        setup_history()
-        feeling = readline_input(": ").strip()
+    if terminal.is_terminal(istream) and terminal.is_terminal(ostream):
+        logger.debug("It's a terminal!")
+        terminal.setup_history()
+        feeling = terminal.input(": ").strip()
     else:
         feeling = istream.readline().strip()
 
     if feeling in ["", "lucky", "unlucky", "fortunate", "unfortunate"]:
         response = sh.fortune()
-    elif use_ai:
+    elif ai:
         import llm
 
         prompt = f"Scenario: Your character asked 'How are you feeling?' and {name} said '{feeling.rstrip()}'. Please reply directly without any prelude, disclaimers or explanation."
@@ -128,6 +103,7 @@ def hello(
         response = textwrap.fill(response, width=80)
     else:
         sentiment = analyze_sentiment(feeling)
+        logger.debug(f"{sentiment=}")
         if sentiment == "Positive":
             response = "I hope you have a great day!"
         elif sentiment == "Negative":
@@ -138,53 +114,5 @@ def hello(
     print(response, file=ostream)
 
 
-@argh.arg("--name", help="name to be greeted")
-@argh.arg("--ai", help="use AI to respond")
-@argh.arg(
-    "--model", help="specify which AI model", choices=["emmy", "claude", "dav", "clia"]
-)
-@argh.arg(
-    "--debug",
-    help="enable debug logging",
-    action="store_const",
-    const=logging.DEBUG,
-    dest="log_level",
-)
-@argh.arg(
-    "--verbose",
-    help="enable verbose logging",
-    action="store_const",
-    const=logging.INFO,
-    dest="log_level",
-)
-def main(name=None, ai=False, model="clia", log_level=logging.WARNING):
-    """
-    An example Unix-style Python module / script to say hello,
-    and ask the user how they are.
-
-    This script reads from stdin and writes to stdout.
-
-    Usage:
-        python hello.py [--name NAME] [--ai] [--model {emmy,claude,dav,clia}] [--debug] [--verbose]
-    """
-
-    if log_level == logging.DEBUG:
-        fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
-    else:
-        fmt = "%(message)s"
-    logging.basicConfig(level=log_level, format=fmt)
-
-    if not name:
-        name = getpass.getuser().title()
-
-    try:
-        return hello(name=name, use_ai=ai, model=model)
-    except BaseException as e:
-        logger.error("Error: %s %s", type(e).__name__, str(e))
-        if log_level == logging.DEBUG:
-            raise
-        sys.exit(1)
-
-
 if __name__ == "__main__":
-    argh.dispatch_command(main)
+    main.run(hello)
