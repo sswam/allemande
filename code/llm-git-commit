@@ -109,10 +109,10 @@ done
 model-name() {
 	model="$1"
 	case "$model" in
-	3 ) echo "GPT-4o-mini";;
+	4m ) echo "GPT-4o-mini";;
 	4 ) echo "GPT-4";;
-	o ) echo "OpenAI o1";;
-	M ) echo "OpenAI o1-mini";;
+	op ) echo "OpenAI o1";;
+	om ) echo "OpenAI o1-mini";;
 	c ) echo "Claude";;
 	i ) echo "Claude Instant";;
 	esac
