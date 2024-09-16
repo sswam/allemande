@@ -69,7 +69,7 @@ def cat_named(files, header_pre='# ', header_post=':\n\n', footer='\n\n', number
         number = int(number)
     result = ""
     for file in files:
-        if path:
+        if path and not os.path.exists(file):
             file = find_in_path(file)
         file_path = Path(file)
         name = file_path.name if basename else str(file_path)
