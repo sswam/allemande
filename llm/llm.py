@@ -48,7 +48,7 @@ exceptions_to_retry = (openai.RateLimitError, openai.APIConnectionError, openai.
 
 default_model = 'claude'
 
-models = {
+MODELS = {
 	"o1-preview": {
 		"alias": ["op", "gertie"],
 		"vendor": "openai",
@@ -59,7 +59,7 @@ models = {
 	"o1-mini": {
 		"alias": ["om", "feyn"],
 		"vendor": "openai",
-		"description": "The o1 series of large language models are trained with reinforcement learning to perform complex reasoning. o1 models think before they answer, producing a long internal chain of thought before responding to the user.",
+		"description": "A faster, cheaper reasoning model particularly effective for coding. o1-mini is 80% cheaper than o1-preview, offering a cost-effective solution for applications requiring reasoning but not broad knowledge.",
 		"cost_in": 3,
 		"cost_out": 12,
 	},
@@ -104,11 +104,11 @@ models = {
 
 # default is $LLM_MODEL or default_model as above
 
-# first_model = next(iter(models.keys()))
+# first_model = next(iter(MODELS.keys()))
 
 env_llm_model = os.environ.get("LLM_MODEL")
 
-if env_llm_model in models:
+if env_llm_model in MODELS:
 	default_model = env_llm_model
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
@@ -141,7 +141,7 @@ fake_completion = {
 
 def get_model_by_alias(model):
 	""" If the model is an alias or abbreviation, expand it. """
-	abbrev_models = [k for k, v in models.items() if model in v.get("alias", [])]
+	abbrev_models = [k for k, v in MODELS.items() if model in v.get("alias", [])]
 	if len(abbrev_models) == 1:
 		model = abbrev_models[0]
 	return model
@@ -192,8 +192,8 @@ def set_opts(_opts):
 def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
 	""" Chat with OpenAI ChatGPT models. """
 	model = opts.model
-	if "id" in models[model]:
-		model = models[model]["id"]
+	if "id" in MODELS[model]:
+		model = MODELS[model]["id"]
 
 	logger.debug("model: %s", model)
 
@@ -220,8 +220,8 @@ def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, p
 def chat_claude(messages):
 	""" Chat with Anthropic Claude models. """
 	model = opts.model
-	if "id" in models[model]:
-		model = models[model]["id"]
+	if "id" in MODELS[model]:
+		model = MODELS[model]["id"]
 
 	temperature = opts.temperature
 	token_limit = opts.token_limit
@@ -250,7 +250,7 @@ def llm_chat(messages):
 	logger.debug("llm_chat: input: %r", messages)
 
 	model = opts.model
-	vendor = models[model]["vendor"]
+	vendor = MODELS[model]["vendor"]
 
 	if opts.fake:
 		return fake_completion
@@ -528,9 +528,9 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 #	raise ValueError(f"unknown model: {model}")
 
 
-def list_models(verbose=False):
+def models(verbose=False):
 	""" List the available models. """
-	for name, model in models.items():
+	for name, model in MODELS.items():
 		print(name)
 		if not verbose:
 			continue
@@ -541,4 +541,4 @@ def list_models(verbose=False):
 
 
 if __name__ == "__main__":
-	argh.dispatch_commands([chat, query, process, count, list_models])
+	argh.dispatch_commands([chat, query, process, count, models])
