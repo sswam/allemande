@@ -31,8 +31,6 @@ declare -A option_model_codes=(
     ["o"]="op"
 )
 
-choice_model_codes=("${option_model_codes[@]}")
-
 usage() {
     echo "Usage: llm-git-commit [-4|-n|-3|-c|-i|-o|-M] [-m message] [-e] [-h]"
     echo "  -n: start at menu, do not generate"
@@ -272,8 +270,8 @@ while true; do
             echo "  y: commit with this message"
             echo "  n/q: abort"
             echo "  e: edit the message"
-            for ch in "${!choice_model_codes[@]}"; do
-                model_code="${choice_model_codes["$ch"]}"
+            for ch in "${!option_model_codes[@]}"; do
+                model_code="${option_model_codes["$ch"]}"
                 model_name="${model_names["$model_code"]}"
                 echo "  $ch: generate with $model_name"
             done
@@ -285,8 +283,8 @@ while true; do
             echo
             ;;
         *)
-            if [[ -n "${choice_model_codes["$choice"]}" ]]; then
-                generate-commit-message "${choice_model_codes["$choice"]}"
+            if [[ -n "${option_model_codes["$choice"]}" ]]; then
+                generate-commit-message "${option_model_codes["$choice"]}"
             else
                 echo "Invalid choice"
             fi
