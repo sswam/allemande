@@ -1,0 +1,22 @@
+Here's a concise 10-line summary of the key points:
+
+1. Survey on typed Python received 730 responses as of August 17th.
+
+2. 91% of respondents use types "Always" or "Often".
+
+3. Top tools used: Mypy (66%), Pydantic (65%), Pyright (35%).
+
+4. Main reasons for not using types: Not required for project, type checking too hard to set up.
+
+5. Hardest parts of using types: Expressing complex/dynamic features, inconsistencies between tools.
+
+6. Most loved aspects: Improved code quality, enhanced readability, IDE support.
+
+7. Most requested missing features: Intersection types, runtime enforcement, better dynamic typing.
+
+8. Desire for faster type checkers and better IDE integration.
+
+9. Some want stricter/mandatory typing, others appreciate the flexibility.
+
+10. Suggestions for future surveys: Differentiate voluntary vs required typing use, reach non-typing users.
+

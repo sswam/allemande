@@ -1,0 +1,61 @@
+I am setting up a multi-user AI chat service. Users will create an account, providing their name and a password. Normally such services perform email verification. I would like to avoid mandatory collecting email or phone number. What issues will I encounter if we do not collect email or phone number? People can create anonymous / throwaway email accounts anyway.
+
+While it's commendable to prioritize user privacy by not collecting email addresses or phone numbers, there are several challenges and issues you might encounter with this approach. Here are some key considerations:
+
+1. Account recovery:
+   Without an email or phone number, users who forget their passwords will have no way to recover their accounts.
+      - encourage to register some means of contact
+
+2. User verification:
+   It becomes more difficult to verify that users are real people, potentially leading to an increase in spam and bot accounts.
+      - this will be an issue anyway; how can we detect and suspend spam and bot accounts?
+
+3. Communication:
+   You'll have limited means to communicate important updates, security alerts, or policy changes to your users.
+      - not a deal breaker
+
+4. Security notifications:
+   It's harder to alert users about suspicious activities on their accounts or potential security breaches.
+      - true, I think we need some means to contact; perhaps within the app
+
+5. Abuse prevention:
+   It's more challenging to prevent and manage abuse, as users can easily create multiple accounts without any verification.
+
+6. Legal compliance:
+   Depending on your jurisdiction, you might be required to have some form of user identification for legal purposes.
+      - I am running the service from Australia, and it will have international users. Is that an issue for me?
+
+7. Trust and credibility:
+   Some users might perceive the lack of verification as a security risk or sign of an untrustworthy service.
+
+8. Account uniqueness:
+   Without email verification, it's harder to ensure that each user has only one account.
+
+9. Marketing and user engagement:
+   You'll miss out on opportunities to re-engage users through email marketing or notifications.
+
+10. Support and troubleshooting:
+    It may be more difficult to provide support or troubleshoot issues without a way to contact users outside the platform.
+
+11. Revenue opportunities:
+    If you plan to monetize your service in the future, having user contact information can be valuable for targeted marketing or premium features.
+
+12. User accountability:
+    Users might feel less accountable for their actions without any form of identity verification.
+
+While it's true that users can create throwaway email accounts, having some form of verification still provides a minimal barrier to entry that can deter some forms of abuse and spam.
+
+Alternatives to consider:
+
+1. Optional email verification: Allow users to add an email address for account recovery and communications, but make it optional.
+
+2. Two-factor authentication: Offer this as an optional security feature for users who want additional protection.
+
+3. Social media authentication: Allow users to sign up using their social media accounts, which can provide some level of verification without directly collecting email addresses.
+
+4. Captcha or other human verification: Implement these to reduce bot signups without requiring personal information.
+
+5. Progressive profiling: Start with minimal information and allow users to add more details to their profile over time, incentivizing them with additional features or benefits.
+
+Ultimately, the decision depends on your specific use case, target audience, and the balance you want to strike between user privacy and platform security/functionality.
+
