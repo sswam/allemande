@@ -1,4 +1,4 @@
 #!/bin/bash -eu
 m=$ALLEMANDE_LLM_DEFAULT
 . opts
-llm process -m $m "${@:-""}"
+llm process -m $m "${@:-""}" | rstrip

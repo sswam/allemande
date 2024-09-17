@@ -2,4 +2,4 @@
 m=$ALLEMANDE_LLM_DEFAULT
 . opts
 query -m=$m "$@
-Please reply as concise as possible, with no boilerplate or unnecessary explanation."
+Please reply as concise as possible, with no boilerplate or unnecessary explanation." | rstrip
