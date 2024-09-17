@@ -1,5 +1,6 @@
 #!/bin/bash
 # mr - move to rubbish
+# suggest alias rm=mr
 # mr @files
 # moves each of @files to ~/rubbish/${basename}_`nano=1 dt0`
 if [ -z "$RUBBISH" ]; then
