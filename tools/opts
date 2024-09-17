@@ -42,7 +42,7 @@ usage() {
 	esac
 
 	local script_name=$(basename "$0")
-	printf "%s: " "$script_name"
+	printf "%s " "$script_name"
 	local line
 	while IFS= read -r line; do
 		# Skip shebang line
