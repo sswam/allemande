@@ -106,6 +106,8 @@ def hello(
 
     feeling = get()
 
+    print(f"{feeling=}")
+
     if feeling in ["", "lucky", "unlucky", "fortunate", "unfortunate"]:
         response = reply_fortune()
     elif ai:

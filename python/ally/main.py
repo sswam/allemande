@@ -157,6 +157,6 @@ def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout):
             terminal.setup_history()
             return terminal.input(prompt)
         else:
-            return istream.readline()
+            return istream.readline().rstrip("\n")
 
     return get, put

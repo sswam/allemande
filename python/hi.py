@@ -25,7 +25,12 @@ def hi(
     """
     A minimal example Python module / script to say hello,
     """
-    logger.debug(f"Greetings, {name}")
+
+    logger.debug("This is a DEBUG message")
+    logger.info("This is an INFO message")
+    logger.warning("This is a WARNING message")
+    logger.error("This is an ERROR message")
+    logger.critical("This is a CRITICAL message")
 
     print(f"Hello, {name}", file=ostream)
 
