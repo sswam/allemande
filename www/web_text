@@ -4,5 +4,5 @@
 url="$1"
 tmp=`mktemp`
 WG_OPTS=-nv wg -O=- "$url" | htmldebloater > "$tmp"
-pandoc-dump "$tmp"
+pandoc-dump "$tmp" "$url"
 rm "$tmp"
