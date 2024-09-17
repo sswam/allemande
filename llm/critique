@@ -1,9 +1,9 @@
 #!/bin/bash -eu
-# critique:	critique
+# [file ...]
 
-m=c
-s=0
-p=
+m=c	# model
+s=0	# short critique
+p=	# prompt
 
 . opts
 
