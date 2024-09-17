@@ -25,11 +25,11 @@ import sh
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 
-from ally import main, terminal
+from ally import main
 
 __version__ = "1.0.0"
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(main.get_script_name())
 
 try:
     nltk.data.find("sentiment/vader_lexicon.zip")
@@ -72,7 +72,7 @@ def reply_ai(name: str, feeling: str, model: str) -> str:
 def reply_sentiment(feeling: str) -> str:
     """Generate a response based on sentiment analysis of the user's feeling."""
     sentiment = analyze_sentiment(feeling)
-    logger.debug("sentiment=%s", sentiment)
+    logger.debug(f"{sentiment=}")
     if sentiment == "Positive":
         return "I hope you have a great day!"
     if sentiment == "Negative":
@@ -91,26 +91,20 @@ def hello(
     name: str = None,
     ai: bool = False,
     model: str = "clia",
-    log_level: Optional[str] = None,
 ) -> None:
     """
     An example module / script to say hello,
     and ask the user how they are.
     """
-    main.setup_logging(log_level)
-
     if not name:
         name = getpass.getuser().title()
 
-    print(f"Hello, {name}", file=ostream)
-    print("How are you feeling?", file=ostream)
+    get, put = main.io(istream, ostream)
 
-    if terminal.is_terminal(istream) and terminal.is_terminal(ostream):
-        logger.debug("It's a terminal!")
-        terminal.setup_history()
-        feeling = terminal.input(": ").strip()
-    else:
-        feeling = istream.readline().strip()
+    put(f"Hello, {name}")
+    put("How are you feeling?")
+
+    feeling = get()
 
     if feeling in ["", "lucky", "unlucky", "fortunate", "unfortunate"]:
         response = reply_fortune()
@@ -119,7 +113,7 @@ def hello(
     else:
         response = reply_sentiment(feeling)
 
-    print(response, file=ostream)
+    put(response)
 
 
 if __name__ == "__main__":
