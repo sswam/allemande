@@ -200,6 +200,7 @@ Do not belabour the obvious; we do not need too much detail, e.g. moving folders
     }
     print join("", @lines);
 ' | fmt -s -w 78 -g 78 | rstrip > "$commit_message"
+    echo
 }
 
 check-for-bugs() {
@@ -216,6 +217,7 @@ check-for-bugs() {
 
 or just LGTM.
 ' | fmt -s -w 78 -g 78 | tee "$review"
+    echo
 }
 
 if [ -n "$model" ]; then
@@ -290,6 +292,7 @@ while true; do
             fi
             ;;
     esac
+    echo
 done
 
 if [ "${#files[@]}" -gt 0 ]; then
