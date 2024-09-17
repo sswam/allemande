@@ -5,6 +5,11 @@ hello.py - An example Python module / script to say hello,
 and ask the user how they are. We should always include a module-level
 docstring to explain the purpose and basic usage of the program.
 
+We strive to avoid too much nesting / indentation.
+
+In most cases for error handling we just allow the script to exit by not
+catching the exception. This is a deliberate choice.
+
 This script can be used as a module:
     from hello import hello
 """
@@ -80,25 +85,19 @@ def reply_sentiment(feeling: str) -> str:
 @arg(
     "--model", help="specify which AI model", choices=["emmy", "claude", "dav", "clia"]
 )
-@arg(
-    "--log-level",
-    default="WARNING",
-    choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-    help="Set the logging level",
-)
 def hello(
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
-    name: str = "World",
+    name: str = None,
     ai: bool = False,
     model: str = "clia",
     log_level: Optional[str] = None,
 ) -> None:
     """
-    An example Unix-style Python module / script to say hello,
+    An example module / script to say hello,
     and ask the user how they are.
     """
-    main.setup_logging(log_level, test=True)
+    main.setup_logging(log_level)
 
     if not name:
         name = getpass.getuser().title()
