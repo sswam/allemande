@@ -31,3 +31,5 @@ __pycache__
 sparkjoy
 .*
 /geo/country_city_timezone.tsv
+/safety/nsfw_words
+/text/dictionaries.pkl
