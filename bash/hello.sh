@@ -2,8 +2,8 @@
 # [name]
 # Says Hello, world
 
-lang=en	# language [fr|de|jp|cn], defaults to English
-shopping=()	# array of items for shopping
+l=en	# language [fr|de|jp|cn], defaults to English
+s=()	# array of items for shopping
 
 . opts
 
@@ -11,7 +11,7 @@ who=${1:-world}
 
 greeting="Hello"
 
-case "$lang" in
+case "$l" in
 fr)	greeting="Bonjour" ;;
 de)	greeting="Hallo" ;;
 jp)	greeting="こんにちは" ;;
@@ -20,10 +20,10 @@ esac
 
 printf "%s, %s\n" "$greeting" "$who"
 
-if [ "${#shopping[@]}" -gt 0 ]; then
+if [ "${#s[@]}" -gt 0 ]; then
 	echo
 	echo "Shopping list:"
-	for item in "${shopping[@]}"; do
+	for item in "${s[@]}"; do
 		printf -- "- %s\n" "$item"
 	done
 fi
