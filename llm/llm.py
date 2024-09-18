@@ -187,6 +187,8 @@ def set_opts(_opts):
 	""" Set the global options. """
 	global opts  # pylint: disable=global-statement
 	opts = Options(**_opts)
+	if opts.model == "":
+		opts.model = default_model
 
 
 def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
