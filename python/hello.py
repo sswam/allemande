@@ -29,7 +29,7 @@ from ally import main
 
 __version__ = "1.0.0"
 
-logger = logging.getLogger(main.get_script_name())
+logger = main.get_logger()
 
 try:
     nltk.data.find("sentiment/vader_lexicon.zip")
