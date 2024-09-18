@@ -11,19 +11,22 @@ import os
 import re
 import csv
 import logging
-from typing import List
+from typing import List, Tuple
 from pathlib import Path
 from collections import Counter
+import time
+import pickle
 
 from spellchecker import SpellChecker
-from nltk.metrics.distance import edit_distance
 from argh import arg
 
 from ally import main
+from bk_tree import BKTree
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 logger = main.get_logger()
+
 
 class TextCorrector:
     def __init__(self):
@@ -31,18 +34,36 @@ class TextCorrector:
         self.leet_map = {'0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't'}
         self.word_list = set()
         self.word_freq = Counter()
+        self.word_case = {}
+        self.bk_tree = BKTree()
 
         self._load_dictionaries()
         self._load_word_frequencies()
 
     def _load_dictionaries(self):
+        pickle_file = main.path('text/dictionaries.pkl')
+        try:
+            with open(pickle_file, 'rb') as f:
+                self.word_list, self.bk_tree, self.word_case = pickle.load(f)
+            return
+        except FileNotFoundError:
+            pass
+
         for dict_file in ['/usr/share/dict/british-english', '/usr/share/dict/american-english']:
             with open(dict_file) as f:
                 self.word_list.update(f.read().splitlines())
-            self.word_list_lower = set(map(str.lower, self.word_list))
+
+        for word in self.word_list:
+            word_lc = word.lower()
+            self.bk_tree.add(word_lc)
+            if word_lc != word:
+                self.word_case[word_lc] = word
+
+        with open(pickle_file, 'wb') as f:
+            pickle.dump((self.word_list, self.bk_tree, self.word_case), f)
 
     def _load_word_frequencies(self):
-        freq_file = Path(os.environ.get("ALLEMANDE_HOME", "")) / 'text' / 'word_freq.tsv'
+        freq_file = main.path('text/word_freq.tsv')
         with open(freq_file, 'r', encoding='utf-8') as tsvfile:
             reader = csv.reader(tsvfile, delimiter='\t')
             for row in reader:
@@ -55,15 +76,15 @@ class TextCorrector:
 
     def get_closest_word(self, word: str, max_distance: int = 2) -> str:
         word = word.lower()
-        if word in self.word_list_lower:
+        if word in self.word_list or word in self.word_case:
             return word
 
-        for distance in range(1, max_distance + 1):
-            close_words = [w for w in self.word_list if edit_distance(word, w.lower()) == distance]
-            if close_words:
-                sorted_words = sorted(close_words, key=lambda x: self.word_freq.get(x.lower(), 0), reverse=True)
-                logger.debug(f"Frequencies: {[(w, self.word_freq[w]) for w in sorted_words]}")
-                return sorted_words[0]
+        close_words = self.bk_tree.search(word, max_distance)
+        if close_words:
+            sorted_words = sorted(close_words, key=lambda x: self.word_freq.get(x[0].lower(), 0), reverse=True)
+            logger.debug(f"Frequencies: {[(w, self.word_freq[w[0]]) for w in sorted_words]}")
+            closest = sorted_words[0][0]
+            return self.word_case.get(closest, closest)
 
         return f"[{word}]"
 
