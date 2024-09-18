@@ -1,0 +1,161 @@
+name: python
+extension: py
+shebang: #!/usr/bin/env python3
+compile: 
+run: python $src
+lint: pylint $src
+test: pytest $src
+version: python --version
+package_manager: pip
+docs: https://docs.python.org/3/
+website: https://www.python.org/
+repl: python
+project_structure: src/, tests/, requirements.txt
+frameworks: Django, Flask, FastAPI
+style_guide: https://peps.python.org/pep-0008/
+debugger: python -m pdb $src
+profiler: python -m cProfile $src
+formatter: black $src
+type_checker: mypy $src
+build_tool: setuptools
+dependency_file: requirements.txt
+container: python:3.9
+
+name: bash
+extension: sh
+shebang: #!/bin/bash
+compile: 
+run: bash $src
+lint: shellcheck $src
+test: bats $src
+version: bash --version
+package_manager: 
+docs: https://www.gnu.org/software/bash/manual/
+website: https://www.gnu.org/software/bash/
+repl: bash
+project_structure: scripts/, lib/, tests/
+frameworks: 
+style_guide: https://google.github.io/styleguide/shellguide.html
+debugger: bash -x $src
+profiler: 
+formatter: shfmt -w $src
+type_checker: 
+build_tool: 
+dependency_file: 
+container: bash:5.1
+
+name: c
+extension: c
+shebang: 
+compile: gcc -o output $src
+run: ./output
+lint: cppcheck $src
+test: 
+version: gcc --version
+package_manager: 
+docs: https://devdocs.io/c/
+website: https://www.iso.org/standard/74528.html
+repl: 
+project_structure: src/, include/, lib/, tests/
+frameworks: 
+style_guide: https://www.kernel.org/doc/html/v4.10/process/coding-style.html
+debugger: gdb ./output
+profiler: gprof ./output
+formatter: clang-format -i $src
+type_checker: 
+build_tool: make
+dependency_file: Makefile
+container: gcc:11.2
+
+name: go
+extension: go
+shebang: 
+compile: go build $src
+run: go run $src
+lint: golint $src
+test: go test
+version: go version
+package_manager: go mod
+docs: https://golang.org/doc/
+website: https://golang.org/
+repl: 
+project_structure: cmd/, pkg/, internal/, test/
+frameworks: Gin, Echo, Beego
+style_guide: https://golang.org/doc/effective_go
+debugger: dlv debug
+profiler: go tool pprof
+formatter: gofmt -w $src
+type_checker: 
+build_tool: go build
+dependency_file: go.mod
+container: golang:1.17
+
+name: node
+extension: js
+shebang: #!/usr/bin/env node
+compile: 
+run: node $src
+lint: eslint $src
+test: jest
+version: node --version
+package_manager: npm
+docs: https://nodejs.org/en/docs/
+website: https://nodejs.org/
+repl: node
+project_structure: src/, test/, node_modules/
+frameworks: Express, Koa, Nest.js
+style_guide: https://github.com/airbnb/javascript
+debugger: node --inspect-brk $src
+profiler: node --prof $src
+formatter: prettier --write $src
+type_checker: 
+build_tool: npm
+dependency_file: package.json
+container: node:16
+
+name: deno
+extension: ts
+shebang: #!/usr/bin/env -S deno run
+compile: 
+run: deno run $src
+lint: deno lint $src
+test: deno test
+version: deno --version
+package_manager: 
+docs: https://doc.deno.land/builtin/stable
+website: https://deno.land/
+repl: deno
+project_structure: src/, tests/
+frameworks: Oak, Alosaur
+style_guide: https://deno.land/manual/contributing/style_guide
+debugger: deno run --inspect-brk $src
+profiler: 
+formatter: deno fmt $src
+type_checker: 
+build_tool: deno
+dependency_file: deps.ts
+container: denoland/deno:1.19
+
+name: rust
+extension: rs
+shebang: 
+compile: rustc $src
+run: cargo run
+lint: clippy
+test: cargo test
+version: rustc --version
+package_manager: cargo
+docs: https://doc.rust-lang.org/std/
+website: https://www.rust-lang.org/
+repl: 
+project_structure: src/, tests/, Cargo.toml
+frameworks: Rocket, Actix, Tokio
+style_guide: https://doc.rust-lang.org/1.0.0/style/
+debugger: rust-gdb ./target/debug/myapp
+profiler: 
+formatter: rustfmt $src
+type_checker: 
+build_tool: cargo
+dependency_file: Cargo.toml
+container: rust:1.58
+
