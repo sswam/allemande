@@ -1,0 +1,2 @@
+# hello.sh -a Sam
+Greetings, Sam! May the sun shine brightly upon your path, and may the gentle breeze whisper words of encouragement in your ear. May your day be filled with moments of joy and laughter, and may your heart be as light as a feather. Wishing you a wonderful day!
