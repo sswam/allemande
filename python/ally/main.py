@@ -6,12 +6,14 @@ import os
 import sys
 import logging
 import traceback
-import argh
 import inspect
 from pathlib import Path
 from typing import TextIO, Callable
 
+import argh
+
 from ally import terminal
+
 
 def get_module_name(level: int = 1, ext: bool = False):
     """
@@ -193,7 +195,7 @@ def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Calla
     """
     is_tty = terminal.is_terminal(istream) and terminal.is_terminal(ostream)
 
-    def put(*args, **kwargs) -> None:
+    def put(*args, end="\n", **kwargs) -> None:
         """
         Print to the output stream.
 
@@ -201,9 +203,11 @@ def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Calla
             *args: Positional arguments to print.
             **kwargs: Keyword arguments for print function.
         """
-        print(*args, file=ostream, **kwargs)
+        if args and args[-1].endswith("\n"):
+            end = ""
+        print(*args, file=ostream, end=end, **kwargs)
 
-    def get(prompt: str = ": ") -> str:
+    def get(prompt: str = ": ", all=False) -> str:
         """
         Get input from the input stream.
 
@@ -213,6 +217,8 @@ def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Calla
         Returns:
             str: The input string.
         """
+        if all:
+            return istream.read()
         if is_tty:
             terminal.setup_history()
             return terminal.input(prompt)
