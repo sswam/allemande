@@ -60,17 +60,17 @@ points_tokens_claude=`llm count -m i < points.txt | tee points-tokens-claude`
 points_tokens_chatgpt=`llm count -m 4 < points.txt | tee points-tokens-chatgpt`
 
 for model in i c 4; do
-	time llm process -m $model "$summary_prompt" < points.txt | tee summary.$model.txt
+	time llm process -m "$model" "$summary_prompt" < points.txt | tee summary.$model.txt
 	wc -c < summary.$model.txt | tee summary-chars-$model
 	wc -w < summary.$model.txt | tee summary-words-$model
-	llm count -m $model < summary.$model.txt | tee summary-tokens-$model
+	llm count -m "$model" < summary.$model.txt | tee summary-tokens-$model
 done
 
 for model in i c; do
-	time llm process -m $model "$summary_prompt" < page.txt | tee summary-one-step.$model.txt
+	time llm process -m "$model" "$summary_prompt" < page.txt | tee summary-one-step.$model.txt
 	wc -c < summary-one-step.$model.txt | tee summary-one-step-chars-$model
 	wc -w < summary-one-step.$model.txt | tee summary-one-step-words-$model
-	llm count -m $model < summary-one-step.$model.txt | tee summary-one-step-tokens-$model
+	llm count -m "$model" < summary-one-step.$model.txt | tee summary-one-step-tokens-$model
 done
 
 header() {

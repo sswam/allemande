@@ -9,7 +9,7 @@ s="Please summarise everything relevant to %s"
 q=${*:-"When did GPT-3 come out; -ChatGPT"}
 s=`printf "$s" "$q"`
 . mdcd `slugify "$q"`
-search -m $n "$q" | kut 2 | tail -n +2 | wgall
+search -m "$n" "$q" | kut 2 | tail -n +2 | wgall
 for f in *; do
 	< "$f" pandoc -f html -t markdown |
 		process -m=c+ "$s"

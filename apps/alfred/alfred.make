@@ -135,7 +135,7 @@ w/%.aud: w/%.vid
 w/%.img.ocr.txt: w/%.img
 	ocr -m=$(OCR_MODEL) $< $@
 w/%.img.desc.txt: w/%.img
-	image2text.py -m $(IMAGE2TEXT_MODE) -i $< > $@
+	image2text.py -m "$(IMAGE2TEXT_MODE)" -i $< > $@
 w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 	( printf "## Image Text:\n\n" ; \
 	cat w/$*.img.ocr.txt ; \
@@ -145,23 +145,23 @@ w/%.txt: w/%.img.ocr.txt w/%.img.desc.txt
 summary/%.txt: w/%.txt
 	sleep .$$RANDOM
 	model= ; \
-	tokens=`llm count -m $(LLM_MODEL_SUMMARY) < $<`; \
+	tokens=`llm count -m "$(LLM_MODEL_SUMMARY)" < $<`; \
 	echo >&2 "tokens: $$tokens"; \
 	if [ $$tokens = 0 ]; then echo >&2 "empty input: $<"; > $@; \
 	elif [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY); fi; \
 	echo >&2 "model: $$model"; \
-	if [ -n "$$model" ]; then llm process -m $$model "$(SUMMARY_PROMPT)" < $< > $@ ; fi
+	if [ -n "$$model" ]; then llm process -m "$$model" "$(SUMMARY_PROMPT)" < $< > $@ ; fi
 
 summary.txt: $(SUMMARY_FILES)
 	cat-sections $^ > $@
 
 summary-condensed.txt: summary.txt
 	sleep .$$RANDOM
-	tokens=`llm count -m $(LLM_MODEL_SUMMARY_MEGA) < $<`; \
+	tokens=`llm count -m "$(LLM_MODEL_SUMMARY_MEGA)" < $<`; \
 	echo >&2 "tokens: $$tokens"; \
 	if [ $$tokens -gt $(LLM_MODEL_TOKENS_MAX_QUERY) ]; then model=$(LLM_MODEL_LONG); else model=$(LLM_MODEL_SUMMARY_MEGA); fi; \
 	echo >&2 "model: $$model"; \
-	llm process -m $$model "$(SUMMARY_PROMPT)" < $< > $@
+	llm process -m "$$model" "$(SUMMARY_PROMPT)" < $< > $@
 
 #mission.txt:
 #	if [ -z "$(mission)" ]; then \
@@ -171,7 +171,7 @@ summary-condensed.txt: summary.txt
 
 output.%.md: summary-condensed.txt mission.%.txt
 	sleep .$$RANDOM
-	llm process -m $(LLM_MODEL_BRAINY) --repeat "$$(< mission.$*.txt)" < $< > $@
+	llm process -m "$(LLM_MODEL_BRAINY)" --repeat "$$(< mission.$*.txt)" < $< > $@
 
 output.%.html: output.%.md
 	pandoc $< --pdf-engine=xelatex -o $@ || true

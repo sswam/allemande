@@ -74,7 +74,7 @@ while true; do
 				model="${base_model#*@}"
 			fi
 
-			<"$file" llm chat -m $model $o | tee -a "$file" &
+			<"$file" llm chat -m "$model" $o | tee -a "$file" &
 			printf "\n"
 			count=$[count+1]
 		done

@@ -1,4 +1,4 @@
-#	llm process -m $model 'Please describe this possibly broken unified diff patch for a git commit message following the Conventional Commits spec. Describe actual changes only (lines beginning with - and +, respecting the format:
+#	llm process -m "$model" 'Please describe this possibly broken unified diff patch for a git commit message following the Conventional Commits spec. Describe actual changes only (lines beginning with - and +, respecting the format:
 #
 #```
 #feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line around 50-70 chars

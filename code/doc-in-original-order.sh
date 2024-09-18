@@ -1,5 +1,5 @@
 #!/bin/bash -eu
-m=$ALLEMANDE_LLM_DEFAULT
+m=
 . opts
 while read module; do
 	echo >&2 "Processing $module"
@@ -12,7 +12,7 @@ while read module; do
 		done
 	) > "$module/all-ordered.md"
 	if [ ! -e "$module/summary.md" ]; then
-		< "$module/all-ordered.md" v llm process -m $m "Please give a short overview summary of this \`$module\` module:" > "$module/summary.md"
+		< "$module/all-ordered.md" v llm process -m "$m" "Please give a short overview summary of this \`$module\` module:" > "$module/summary.md"
 	fi
 	(
 		echo "## $module"

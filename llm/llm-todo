@@ -1,4 +1,4 @@
 #!/bin/bash
 m=3+
 . opts
-llm process -m $m "Please help me with the specific marked TODOs only, do not make other unnecessary changes. Reply with the changed code only, with any explanation or other commentary in comments and no other text."
+llm process -m "$m" "Please help me with the specific marked TODOs only, do not make other unnecessary changes. Reply with the changed code only, with any explanation or other commentary in comments and no other text."

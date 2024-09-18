@@ -6,7 +6,7 @@ func=$2
 
 func_name=${func%.*}
 
-m=$ALLEMANDE_LLM_DEFAULT
+m=
 
 . opts
 
@@ -21,6 +21,6 @@ Here is the function we are summarizing:
 Please give a summary of that function $func_name for the ODD, starting with a level-3 heading being just the function name, i.e. ### $func_name
 "
 
-echo "$input" | llm process -m $m "$prompt1"
+echo "$input" | llm process -m "$m" "$prompt1"
 echo
 echo

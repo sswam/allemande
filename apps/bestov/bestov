@@ -56,7 +56,7 @@ fi
 
 # run the query to solicit the lists
 for model in $models; do
-	llm query -m $model "$query" | tee results-$model.txt &
+	llm query -m "$model" "$query" | tee results-$model.txt &
 done
 wait
 
