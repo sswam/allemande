@@ -1,14 +1,9 @@
 #!/bin/bash -eu
-# Hello, world
+# [name]
+# Says Hello, world
 
-# usage:
-#	$0 [-lang=<cc>] <name>
-# example:
-#	$0 -lang=fr Sam
-#	$0 -lang=de -shopping,cake,milk,'jelly\ beans' $USER
-
-lang=en
-shopping=()
+lang=en	# language [fr|de|jp|cn], defaults to English
+shopping=()	# array of items for shopping
 
 . opts
 
