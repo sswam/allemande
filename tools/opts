@@ -22,6 +22,11 @@
 # -foo=bar	scalar: set foo to bar
 # -foo,a,b,c	array:  set foo to (a b c)
 
+# Note that `-foo bar` is not allowed, use `-foo=bar`.
+
+# To pass an array safely:
+#     tool.sh -foo,"${array[*]@Q}"
+
 usage() {
 	# read the script itself to output usage:
 
@@ -43,24 +48,47 @@ usage() {
 
 	local script_name=$(basename "$0")
 	printf "%s " "$script_name"
-	local line
+	local line in_func=0 blanks=0
 	while IFS= read -r line; do
 		# Skip shebang line
 		if [[ $line == \#\!* ]]; then
 			continue
 		fi
 
-		# Remove '# ' from start of lines
+		# Skip unindented function declaration, like:  hello() {
+		if [[ "$line" =~ ^[[:alnum:]_]+\(\)[[:space:]]*\{ ]]; then
+			continue
+		fi
+
+		# Remove indent
+		line=${line#*[[:space:]]}
+
+		# Remove 'local ' from start of line
+		line=${line#local }
+
+		# Remove '# ' from start of line
 		line="${line#\#}"
 		line="${line# }"
 
 		# Replace literal '$0' in lines with the value of $script_name
 		line="${line//\$0 /$script_name }"
 
-		# Stop at the ". opts" line
-		if [ "$line" = ". opts" ]; then
+		# Stop before the ". opts" line
+		if [[ "$line" =~ ^\.\ opts ]]; then
 			break
 		fi
+
+		# avoid trailing blank lines
+		if [ "$line" = "" ]; then
+			blanks=$((blanks+1))
+			continue
+		fi
+		for ((i=1; i<=blanks; i++)); do
+		    echo
+		done
+		blanks=0
+
+		# echo the cleaned-up line, for usage
 		echo "$line"
 	done < "$0"
 
