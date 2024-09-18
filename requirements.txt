@@ -76,3 +76,12 @@ selenium
 # gradio
 
 colorama
+
+black
+
+nltk
+# jellyfish
+# astor
+# metaphone
+pyspellchecker
+python-Levenshtein
