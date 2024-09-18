@@ -8,12 +8,22 @@ import logging
 import traceback
 import argh
 import inspect
-from typing import TextIO, Optional
+from pathlib import Path
+from typing import TextIO, Callable
 
 from ally import terminal
 
-
 def get_module_name(level: int = 1, ext: bool = False):
+    """
+    Get the name of the calling module.
+
+    Args:
+        level (int): Stack level to inspect. Default is 1.
+        ext (bool): Include file extension if True. Default is False.
+
+    Returns:
+        str: Name of the calling module.
+    """
     caller_frame = inspect.stack()[level]
     caller_module = inspect.getmodule(caller_frame[0])
     module_name = os.path.basename(caller_module.__file__)
@@ -23,17 +33,32 @@ def get_module_name(level: int = 1, ext: bool = False):
 
 
 def get_script_name(ext: bool = False):
+    """
+    Get the name of the current script.
+
+    Args:
+        ext (bool): Include file extension if True. Default is False.
+
+    Returns:
+        str: Name of the current script.
+    """
     script_name = os.path.basename(sys.argv[0])
     if ext:
         return script_name
     return os.path.splitext(script_name)[0]
 
 
-def get_logger():
+def get_logger() -> logging.Logger:
+    """
+    Get a logger for the calling module.
+
+    Returns:
+        logging.Logger: Logger instance for the calling module.
+    """
     return logging.getLogger(get_module_name(2))
 
 
-def setup_logging(module_name: str, log_level: Optional[str] = None):
+def setup_logging(module_name: str, log_level: str | None = None):
     """
     Set up logging configuration based on the specified log level.
     Also logs to a file at DEBUG level.
@@ -126,7 +151,16 @@ def setup_logging_args(module_name):
     return parser
 
 
-def run(command):
+def run(command: Callable) -> None:
+    """
+    Set up logging, parse arguments, and run the specified command.
+
+    Args:
+        command (Callable): The command function to be executed.
+
+    Raises:
+        Exception: Any exception that occurs during command execution.
+    """
     module_name = get_module_name(2)
     parser = setup_logging_args(module_name)
     argh.set_default_command(parser, command)
@@ -146,13 +180,39 @@ def run(command):
         logger.debug("Full traceback:\n%s", tb)
 
 
-def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout):
+def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Callable, Callable]:
+    """
+    Create input and output functions for handling I/O operations.
+
+    Args:
+        istream (TextIO, optional): Input stream. Defaults to sys.stdin.
+        ostream (TextIO, optional): Output stream. Defaults to sys.stdout.
+
+    Returns:
+        tuple[Callable, Callable]: A tuple of get and put functions.
+    """
     is_tty = terminal.is_terminal(istream) and terminal.is_terminal(ostream)
 
-    def put(*args, **kwargs):
+    def put(*args, **kwargs) -> None:
+        """
+        Print to the output stream.
+
+        Args:
+            *args: Positional arguments to print.
+            **kwargs: Keyword arguments for print function.
+        """
         print(*args, file=ostream, **kwargs)
 
-    def get(prompt=": "):
+    def get(prompt: str = ": ") -> str:
+        """
+        Get input from the input stream.
+
+        Args:
+            prompt (str, optional): Prompt to display. Defaults to ": ".
+
+        Returns:
+            str: The input string.
+        """
         if is_tty:
             terminal.setup_history()
             return terminal.input(prompt)
@@ -160,3 +220,17 @@ def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout):
             return istream.readline().rstrip("\n")
 
     return get, put
+
+
+def path(path: str) -> Path:
+    """
+    Construct a Path object relative to the ALLEMANDE_HOME environment variable.
+
+    Args:
+        path (str): The relative path.
+
+    Returns:
+        Path: The constructed Path object.
+    """
+    parts = path.replace('/', os.sep).split(os.sep)
+    return Path(os.environ["ALLEMANDE_HOME"], *parts)
