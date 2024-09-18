@@ -50,3 +50,5 @@ done
 
 "$ALLEMANDE_HOME/adm/allemande-user-add" www-data
 "$ALLEMANDE_HOME/adm/allemande-user-add" sam
+
+"$ALLEMANDE_HOME/safety/setup"
