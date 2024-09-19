@@ -1,0 +1,76 @@
+/* Hide table header */
+thead {
+    visibility: hidden;
+}
+
+/* Remove table borders */
+table, th, td {
+    border: none;
+    border-collapse: collapse;
+}
+
+/* Top-align cell content */
+td {
+    vertical-align: top;
+}
+
+/* Style person names */
+td:first-child {
+    font-weight: bold;
+    padding-right: 1em;
+    background-color: #eee;
+}
+
+/* Style message content */
+td:nth-child(2) {
+    background-color: #f8f8f8;
+}
+
+/* Other styling ideas */
+
+/* Add some spacing between rows */
+td {
+    padding: 0.5em;
+}
+
+/* Style alternating rows for better readability */
+tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+/* Add a subtle left border to messages for a chat-like appearance */
+td:last-child {
+    border-left: 2px dotted white;
+    padding-left: 1em;
+}
+
+/* Style links within messages */
+a {
+    color: #0066cc;
+    text-decoration: none;
+}
+
+/* Add hover effect to links */
+a:hover {
+    text-decoration: underline;
+}
+
+/* Limit the width of the chat for better readability on wide screens */
+table {
+    max-width: 800px;
+    margin: 1em auto;
+}
+
+/* user-specific styling */
+tr.sam > td:first-child {
+    background-color: #cfc;
+}
+tr.rowan > td:first-child {
+    background-color: #fcc;
+}
+tr.sam > td:nth-child(2) {
+    background-color: #efe;
+}
+tr.rowan > td:nth-child(2) {
+    background-color: #fee;
+}

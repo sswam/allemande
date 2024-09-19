@@ -1,0 +1,14 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // add the person's name as a class to each row
+    const person_tds = document.querySelectorAll('td:first-child');
+    for (const cell of person_tds) {
+        cell.closest('tr').classList.add(cell.textContent.toLowerCase());
+    }
+
+    // kill all colgroup elements because pandoc sets bogus column widths
+    for (const colgroup of document.querySelectorAll('colgroup')) {
+        colgroup.remove();
+    }
+});
+</script>
