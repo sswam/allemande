@@ -6,7 +6,8 @@
 
 calculate_output_rows() {
 	local text="$1"
-	echo "$text" |
+	text=${text%$'\n'}
+	printf "%s\n" "$text" |
 	expand -t 8 |
 	tr -dc '[:print:]\n' |
 	(
@@ -23,7 +24,6 @@ calculate_output_rows() {
 				outrows=1
 			fi
 			rows=$(( rows + outrows ))
-			# echo "$rows : $line" >> log.txt
 		done
 		echo "$rows"
 	)
