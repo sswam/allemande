@@ -17,6 +17,9 @@ if [ -e "$prog" ]; then
 	exit 1
 fi
 
+dir=`dirname "$prog"`
+base=`basename "$prog"`
+
 ext=.${prog##*.}
 if [ "$ext" == ".$base" ]; then
 	ext=""
@@ -26,9 +29,6 @@ if [ "$s" = 1 ]; then
 	refs+=("hello$ext")
 	prompt="in the style of \`hello$ext\`, $prompt"
 fi
-
-dir=`dirname "$prog"`
-base=`basename "$prog"`
 
 mkdir -p "$dir"
 
