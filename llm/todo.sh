@@ -5,9 +5,10 @@
 process_todos() {
 	local v=0	# verbosity level
 	local m=	# model
-	local p=	# extra prompt
 
 	. opts
+
+	local p="$*"
 
 	local proc="proc"
 	if [ "$v" = 1 ]; then
