@@ -61,7 +61,7 @@ usage() {
 		fi
 
 		# Remove indent
-		line=${line#*[[:space:]]}
+		line=${line#[[:space:]]*}
 
 		# Remove 'local ' from start of line
 		line=${line#local }
@@ -74,7 +74,7 @@ usage() {
 		line="${line//\$0 /$script_name }"
 
 		# Stop before the ". opts" line
-		if [[ "$line" =~ ^\.\ opts ]]; then
+		if [[ "$line" =~ ^[:space:]*\.\ opts ]]; then
 			break
 		fi
 
