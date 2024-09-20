@@ -62,6 +62,16 @@
 	- deploy a live-learning model on Ally Chat
 
 
+- random choice
+    - LLM's aren't good at "choose a random letter" for example
+    - I should fix that for my LLMs somehow.
+        - needs a different type of assessment, based on the distribution of multiple responses
+        - related to creativity, variety
+
+
 - other ideas
 	- plain text / markdown notebook system, with editor UI
 	- how to run a cell?  hotkeys in editor?
+
+
+- visual / textual planner tool

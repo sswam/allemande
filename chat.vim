@@ -5,26 +5,52 @@
 " Do indentation properly!
 
 function! Indent()
-	if &expandtab
-		let spaces = repeat(' ', &shiftwidth)
-		s/^/\=spaces/
-	else
-		s/^/\t/
-	endif
-	noh
+	let indent = &expandtab ? repeat(' ', &shiftwidth) : '\t'
+	execute 'silent! s/^..*/' . indent . '&/'
 endfun
 
 function! Dedent()
-	if &expandtab
-		let spaces = repeat(' ', &shiftwidth)
-		execute 's/^\(' . spaces . '\)\?//'
-		noh
+	let indent = &expandtab ? repeat(' ', &shiftwidth) : '\t'
+	let lines = visualmode() !=# '' ? [getline('.')] : getline("'<", "'>")
+	let can_dedent = match(lines, '^' . indent) >= 0
+	execute 'silent! ' . (can_dedent ? 's/^' . indent . '//' : 's/^\s*//')
+	noh
+endfun
+
+" Comment and Uncomment
+function! Comment()
+	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='java' || &ft=='javascript' ||
+		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
+		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
+		s,^,// ,
+	elseif &ft=='vim'
+		s,^," ,
+	elseif &ft=='scheme' || &ft=='lisp'
+		s,^,; ,
+	elseif &ft=='lua' || &ft=='sql'
+		s,^,-- ,
 	else
-		s/^\t\?//
+		s,^,# ,
 	endif
 	noh
 endfun
 
+function! Uncomment()
+	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='java' || &ft=='javascript' ||
+		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
+		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
+		silent! s,^// \?,,
+	elseif &ft=='vim'
+		silent! s,^" \?,,
+	elseif &ft=='scheme' || &ft=='lisp'
+		silent! s,^; \?,,
+	elseif &ft=='lua' || &ft=='sql'
+		silent! s,^-- \?,,
+	else
+		silent! s,^# \?,,
+	endif
+	noh
+endfun
 
 function! AllemandeRaw()
 	set binary
@@ -51,6 +77,11 @@ function! Allemande(format)
 	nnoremap <silent> < :call Dedent()<CR>
 	vnoremap <silent> > :call Indent()<CR>gv
 	vnoremap <silent> < :call Dedent()<CR>gv
+
+	nnoremap <F2> :call Uncomment()<CR>
+	nnoremap <F3> :call Comment()<CR>
+	vnoremap <F2> :call Uncomment()<CR>gv
+	vnoremap <F3> :call Comment()<CR>gv
 
 	" Set up the tabbing
 	set tabstop=8

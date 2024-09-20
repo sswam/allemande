@@ -1,56 +1,61 @@
 #!/bin/bash -eu
-
 # [prog.py] "instructions to improve it" [reference files ...]
-# improve a program using AI
+# Improve a program using AI
 
-m=c	# model
-s=0	# refer to hello.<ext> for code style
+improve() {
+	local m=c	# model
+	local s=0	# refer to hello.<ext> for code style
 
-. opts
+	. opts
 
-prog=$1
-prompt=${2-}
-shift 2 || true
-refs=("$@")
+	local prog=$1
+	local prompt=${2-}
+	shift 2 || true
+	local refs=("$@")
 
-if [ ! -e "$prog" ]; then
-	prog2=`wich $prog`
-	if [ ! -e "$prog2" ]; then
-		echo >&2 "not found: $prog"
-		exit 1
+	# Check if program exists
+	if [ ! -e "$prog" ]; then
+		local prog2=`wich $prog`
+		if [ ! -e "$prog2" ]; then
+			echo >&2 "not found: $prog"
+			exit 1
+		fi
+		prog=$prog2
 	fi
-	prog=$prog2
-fi
 
-dir=$(dirname "$prog")
-base=$(basename "$prog")
-ext=.${base##*.}
-if [ "$ext" == ".$base" ]; then
-	ext=""
-fi
+	# resolve symlinks
+	prog=$(readlink -f "$prog")
 
-# Code style reference and prompt for -s options
-if [ "$s" = 1 ]; then
-	refs+=("hello$ext")
-	prompt="in the style of \`hello$ext\`, $prompt"
-fi
-
-prompt="Please improve \`$base\`, $prompt"
-
-input=$(cat_named.py -p -b "$prog" "${refs[@]}")
-
-(
-	cd "$dir"
-	if [ -e "$base~" ]; then
-		move-rubbish "$base~"
+	local base=$(basename "$prog")
+	local ext=.${base##*.}
+	if [ "$ext" == ".$base" ]; then
+		ext=""
 	fi
-	yes n | cp -i -a "$base" "$base~"   # WTF, there's no proper no-clobber option?!
-)
 
-printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$prog~"
+	# Code style reference and prompt for -s option
+	if [ "$s" = 1 ]; then
+		refs+=("hello$ext")
+		prompt="in the style of \`hello$ext\`, $prompt"
+	fi
 
-(
-	cd "$dir"
-	swapfiles "$base" "$base~"
-	vimdiff "$base" "$base~"
-)
+	prompt="Please improve \`$base\`, $prompt"
+
+	local input=$(cat_named.py -p -b "$prog" "${refs[@]}")
+
+	# Backup original file
+	if [ -e "$prog~" ]; then
+		move-rubbish "$prog~"
+	fi
+	yes n | cp -i -a "$prog" "$prog~"   # WTF, there's no proper no-clobber option?!
+
+	# Process input and save result
+	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$prog~"
+	swapfiles "$prog" "$prog~"
+
+	# Compare original and improved versions
+	vimdiff "$prog" "$prog~"
+}
+
+if [ "$BASH_SOURCE" = "$0" ]; then
+	improve "$@"
+fi

@@ -80,10 +80,10 @@ while getopts "4n3cioMm:exh" opt; do
         model=""
         ;;
     m)
-        exec git commit -m "$OPTARG"
+        exec git commit -m "$OPTARG" "${files[@]:-.}"
         ;;
     e)
-        exec git commit
+        exec git commit "${files[@]:-.}"
         ;;
     x)
         cleanup
@@ -144,20 +144,19 @@ model-name() {
 }
 
 run-git-diff() {
+    local opts=("$@")
     local difftext
     if [ "${#files[@]}" -eq 0 ]; then
-        git diff -U$diff_context --staged
+        git diff -U$diff_context --staged "${opts[@]}"
     else
-        difftext=$(git diff -U$diff_context -- "${files[@]}")
-        if [ -n "$difftext" ]; then
-            printf "%s\n" "$difftext"
-        else
-            for file in "${files[@]}"; do
-                if [ -e "$file" ] && [ -n "$(git ls-files --exclude-standard --others --directory --no-empty-directory --error-unmatch "$file" 2>/dev/null)" ]; then
-                    cat-sections.py -k "$file"
-                fi
-            done
-        fi
+        for file in "${files[@]}"; do
+            difftext=$(git diff -U$diff_context "${opts[@]}" -- "$file")
+            if [ -n "$difftext" ]; then
+                printf "%s\n" "$difftext"
+            elif [ -e "$file" ] && [ -n "$(git ls-files --exclude-standard --others --directory --no-empty-directory --error-unmatch "$file" 2>/dev/null)" ]; then
+                cat_named.py -k "$file"
+            fi
+        done
     fi
 }
 
@@ -258,7 +257,7 @@ while true; do
             ${EDITOR:-vi} "$commit_message"
             ;;
         d)
-            run-git-diff
+            run-git-diff --color
             ;;
         v)
             run-git-vimdiff
@@ -269,7 +268,7 @@ while true; do
         x)
             cleanup
             ;;
-        \?|h)
+        \?|h|"")
             echo "Available actions:"
             echo "  y: commit with this message"
             echo "  n/q: abort"
@@ -301,4 +300,4 @@ if [ "${#files[@]}" -gt 0 ]; then
     git add -- "${files[@]}"
 fi
 
-git commit -F "$commit_message"
+git commit -F "$commit_message" "${files[@]:-.}"

@@ -3,25 +3,27 @@
 # Processes fixes in the input
 
 apply_fixes() {
-    local v=0    # verbosity level
-    local m=     # model
-    local p=     # extra prompt
+	local v=0	# verbosity level
+	local m=	# model
 
-    . opts
+	. opts
 
-    local proc="proc"
-    if [ "$v" = 1 ]; then
-        proc="process"
-    fi
+	local p="$*"
 
-    local prompt="Please fix this"
-    if [ -n "$p" ]; then
-        prompt+=", $p"
-    fi
+	local proc="proc"
+	if [ "$v" = 1 ]; then
+		proc="process"
+	fi
 
-    $proc -m="$m" "$prompt"
+	local prompt="Please fix this"
+	if [ -n "$p" ]; then
+		prompt+=", $p"
+	fi
+	prompt+=". Don't strip comments. You can add comments with other suggestions."
+
+	v $proc -m="$m" "$prompt"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
-    apply_fixes "$@"
+	apply_fixes "$@"
 fi

@@ -32,11 +32,15 @@ fi
 
 mkdir -p "$dir"
 
-prompt="Please \`write\` $base, $prompt"
+prompt="Please write \`$base\`, $prompt"
 
-input=$(v cat_named.py -p -b "${refs[@]}")
+input=$(cat_named.py -p -b "${refs[@]}")
 
-printf "%s\n" "$input" | v process -m="$m" "$prompt" | markdown_code.py -c '#' > "$prog"
+if [ -z "$input" ]; then
+	input=":)"
+fi
+
+printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$prog"
 
 chmod +x "$prog"
 vi "$prog"

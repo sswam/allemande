@@ -1,16 +1,43 @@
 #!/bin/bash -eu
-# pandoc-dump:	Convert HTML to Markdown, as cleanly as possible.
+# [<input.html|-> [<url>]]
+# Convert HTML to Markdown, as cleanly as possible.
 
-c=1	# clean
-m=1	# metadata
+pandoc-dump() {
+	c=1	# clean
+	m=1	# metadata
 
-. opts
+	. opts
 
-html="$1"
-url="${2:-}"
+	local old_opts=$(set +o)
+	set -eu
 
-clean=$c
-metadata=$m
+	html="${1:--}"
+	url="${2:-}"
+
+	# if $html = -, save stdin to a temp file and use that
+	temp=
+	if [ "$html" = "-" ]; then
+		html=`mktemp`
+		cat > "$html"
+		temp=1
+	fi
+
+	if [ "$m" = 1 ]; then
+		show_metadata
+	fi
+
+	if [ "$c" = 1 ]; then
+		< "$html" htmlsplit | htmldebloater | pandoc-dump-clean-html | pandoc_convert | clean
+	else
+		< "$html" htmlsplit | htmldebloater | pandoc_convert
+	fi
+
+	if [ -n "$temp" ]; then
+		rm "$html"
+	fi
+
+	eval "$old_opts"
+}
 
 pandoc_convert() {
 	pandoc --wrap=none -f html -t markdown
@@ -31,20 +58,6 @@ show_metadata() {
 	echo
 }
 
-prepare_input() {
-#	printf "<h1>title: %s</h1>\n" "$title"
-#	if [ -n "$url" ]; then
-#		printf "<h2>From: %s</h2>\n" "$url"
-#	fi
-	cat "$html"
-}
-
-if [ "$metadata" = 1 ]; then
-	show_metadata
-fi
-
-if [ "$clean" = 1 ]; then
-	< "$html" htmlsplit | htmldebloater | pandoc-dump-clean-html | pandoc_convert | clean
-else
-	< "$html" htmlsplit | htmldebloater | prepare_input | pandoc_convert
+if [ "$BASH_SOURCE" = "$0" ]; then
+	pandoc-dump "$@"
 fi

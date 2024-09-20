@@ -14,7 +14,7 @@ process_what() {
 		proc="process"
 	fi
 
-	local prompt="What is this?"
+	local prompt="What is this? Please explain it."
 	if [ -n "$p" ]; then
 		prompt+=", $p"
 	fi

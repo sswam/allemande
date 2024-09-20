@@ -10,6 +10,12 @@ We strive to avoid too much nesting / indentation.
 In most cases for error handling we just allow the script to exit by not
 catching the exception. This is a deliberate choice.
 
+Double line breaks are used to separate top-level functions and classes.
+
+I know it's naughty to use 'input' as a variable name, but let's do it anyway.
+
+Our scripts default to stdio.  There is magic in ally.main to open files.
+
 This script can be used as a module:
     from hello import hello
 """
@@ -19,6 +25,7 @@ import logging
 import getpass
 import textwrap
 from typing import TextIO, Optional
+from random import random
 
 from argh import arg
 import sh
@@ -83,36 +90,40 @@ def reply_sentiment(feeling: str) -> str:
 @arg("--name", help="name to be greeted")
 @arg("--ai", help="use AI to respond")
 @arg(
-    "--model", help="specify which AI model", choices=["emmy", "claude", "dav", "clia"]
+    "--model",
+    choices=["emmy", "claude", "dav", "clia"],
+    metavar="MODEL",
+    help="specify which AI model {emma,claude,dav,clia}",
 )
 def hello(
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
-    name: str = None,
+    input: TextIO = sys.stdin,
+    output: TextIO = sys.stdout,
+    name: str = "",
     ai: bool = False,
-    model: str = "clia",
+    model: str = None,
 ) -> None:
     """
     An example module / script to say hello,
     and ask the user how they are.
     """
     if not name:
-        name = getpass.getuser().title()
+        name = getpass.getuser().title() if random() < 0.5 else "world"
 
-    get, put = main.io(istream, ostream)
+    get, put = main.io(input, output)
 
     put(f"Hello, {name}")
     put("How are you feeling?")
 
     feeling = get()
 
-    print(f"{feeling=}")
-
     if feeling in ["", "lucky", "unlucky", "fortunate", "unfortunate"]:
+        logger.info("using fortune(1)")
         response = reply_fortune()
     elif ai:
+        logger.info("using AI model")
         response = reply_ai(name, feeling, model)
     else:
+        logger.info("using sentiment analysis")
         response = reply_sentiment(feeling)
 
     put(response)

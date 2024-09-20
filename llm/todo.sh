@@ -15,10 +15,11 @@ process_todos() {
 		proc="process"
 	fi
 
-	local prompt="Please do the TODOs"
+	local prompt="Please do the TODOs (only)"
 	if [ -n "$p" ]; then
 		prompt+=", $p"
 	fi
+       	prompt+=". Don't strip comments. You can add comments with other suggestions."
 
 	$proc -m="$m" "$prompt"
 }

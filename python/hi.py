@@ -18,9 +18,11 @@ logger = main.get_logger()
 
 
 @arg("--name", help="name to be greeted")
+@arg("--nonce", help="name to be greeted")
 def hi(
     ostream: TextIO = sys.stdout,
     name: str = "World",
+    nonce: str = "nonce",
 ) -> None:
     """
     A minimal example Python module / script to say hello,

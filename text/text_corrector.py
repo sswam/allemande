@@ -41,7 +41,7 @@ class TextCorrector:
         self._load_word_frequencies()
 
     def _load_dictionaries(self):
-        pickle_file = main.path('text/dictionaries.pkl')
+        pickle_file = main.resource('text/dictionaries.pkl')
         try:
             with open(pickle_file, 'rb') as f:
                 self.word_list, self.bk_tree, self.word_case = pickle.load(f)
@@ -63,7 +63,7 @@ class TextCorrector:
             pickle.dump((self.word_list, self.bk_tree, self.word_case), f)
 
     def _load_word_frequencies(self):
-        freq_file = main.path('text/word_freq.tsv')
+        freq_file = main.resource('text/word_freq.tsv')
         with open(freq_file, 'r', encoding='utf-8') as tsvfile:
             reader = csv.reader(tsvfile, delimiter='\t')
             for row in reader:

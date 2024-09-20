@@ -187,7 +187,7 @@ def set_opts(_opts):
 	""" Set the global options. """
 	global opts  # pylint: disable=global-statement
 	opts = Options(**_opts)
-	if opts.model == "":
+	if opts.model in ("", None):
 		opts.model = default_model
 
 
@@ -348,12 +348,12 @@ def read_utf_replace(istream):
 @argh.arg("-m", "--model", default=default_model, help="model name")
 @argh.arg("-I", "--indent", default=None, help="indentation string")
 @argh.arg("-t", "--temperature", type=float, help="temperature")
-@argh.arg("-l", "--token-limit", type=int, help="token limit")
+@argh.arg("-n", "--token-limit", type=int, help="token limit")
 @argh.arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
 @argh.arg("-s", "--state-file", help="state file for Google Bard")
 @argh.arg("-e", "--empty-to-empty", action="store_true", help="return empty string for empty input")
 @argh.arg("-E", "--empty-ok", action="store_true", help="allow empty input")
-@argh.arg("-L", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
+@argh.arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @argh.arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
 @argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
 def process(*prompt, prompt2: Optional[str]=None, istream: IO[str]=None, ostream: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False):
@@ -411,6 +411,15 @@ def process2(prompt, prompt2, input_text, ostream, model, indent, temperature, t
 	return query(full_input, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, state_file=state_file, log=log)
 
 
+@argh.arg("prompt", nargs="+", help="prompt text")
+@argh.arg("-o", "--output", dest="ostream", default=None, help="output file")
+@argh.arg("-m", "--model", default=default_model, help="model name")
+@argh.arg("-I", "--indent", default=None, help="indentation string")
+@argh.arg("-t", "--temperature", type=float, help="temperature")
+@argh.arg("-n", "--token-limit", type=int, help="token limit")
+@argh.arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
+@argh.arg("-s", "--state-file", help="state file for Google Bard")
+@argh.arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 def query(*prompt, ostream: Optional[IO[str]]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, state_file=None, log=True):  # pylint: disable=unused-argument
 	""" Ask the LLM a question. """
 	if __name__ == "__main__":

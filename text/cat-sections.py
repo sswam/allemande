@@ -24,9 +24,11 @@ def cat_sections(files, out, sep="\n", keep_filenames=False, force=False):
 
 	for file in good:
 		path = Path(file)
-		name = path.stem
 
-		if not keep_filenames:
+		if keep_filenames:
+			name = str(path)
+		else:
+			name = path.stem
 			name = re.sub(r"[-_]+", " ", name)
 			name = name.title()
 

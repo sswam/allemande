@@ -1,5 +1,6 @@
 #!/bin/bash -eu
 # [file ...]
+# AI critique a program
 
 m=c	# model
 s=0	# short critique
@@ -12,12 +13,18 @@ prompt=$p
 
 critique() {
 	if (( short )); then
-		prompt="Please provide a *very* short critique. $prompt"
+		short=" *very* short"
 	else
-		prompt="Please review and critique. $prompt"
+		short=""
 	fi
-	cat-named "$@" |
-	process -m="$m" "$prompt"
+	prompt="Please provide a$short critique.
+Start with a paragraph of friendly and supportive praise if possible...
+the programmer needs to retain some self-esttem\!
+e.g. if it seems like a cool program that does something useful or novel...
+$prompt"
+	cat_named.py -b -p "$@" |
+	(process -m="$m" "$prompt"; echo) |
+	v tee -a "$1.crit"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then

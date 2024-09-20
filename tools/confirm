@@ -3,7 +3,7 @@
 # Usage: confirm [-y] [-n] [command]
 
 function confirm() {
-	local default= is_command= yes= yn
+	local default is_command yes yn
 
 	OPTIND=1
 	while getopts "yn" opt; do
@@ -23,7 +23,8 @@ function confirm() {
 
 	confirmed=
 	while true; do
-		read -p "$prompt " yn
+		read -n 1 -p "$prompt " yn
+		echo
 		case "${yn:-$default}" in
 		y*)
 			confirmed=1
