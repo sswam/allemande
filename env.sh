@@ -37,14 +37,14 @@ PYTHON=$(which python3)
 PYTHONPATH=
 
 for dir in python text www chat anthropic google llm scrape tools files tty; do
-	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
+	PYTHONPATH=$ALLEMANDE_HOME:${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
 for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
 done
 
-for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty; do
+for dir in adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
