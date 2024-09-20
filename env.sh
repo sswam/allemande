@@ -34,11 +34,13 @@ if [ -e "$ALLEMANDE_HOME/venv" ]; then
 fi
 
 PYTHON=$(which python3)
-PYTHONPATH=
+PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME
 
 for dir in python text www chat anthropic google llm scrape tools files tty; do
-	PYTHONPATH=$ALLEMANDE_HOME:${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
+	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
+
+PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME
 
 for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
