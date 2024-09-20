@@ -131,11 +131,12 @@ def setup_logging(module_name: str, log_level: str | None = None):
 
     logger.debug(f"Starting {module_name}")
 
-    logger.debug("This is a debug message")
-    logger.info("This is an info message")
-    logger.warning("This is a warning message")
-    logger.error("This is an error message")
-    logger.critical("This is a critical message")
+    if False:
+        logger.debug("This is a debug message")
+        logger.info("This is an info message")
+        logger.warning("This is a warning message")
+        logger.error("This is an error message")
+        logger.critical("This is a critical message")
 
     # Set file permissions to be owner read/write only
     os.chmod(log_file, 0o600)
