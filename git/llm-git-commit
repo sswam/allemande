@@ -72,8 +72,7 @@ cleanup-and-exit() {
 }
 
 git-commit() {
-    git status
-    confirm git commit "$@" "${files[@]:-.}"
+    git commit "$@" "${files[@]:-.}"
 }
 
 trap 'cleanup-and-exit 0' EXIT
@@ -112,24 +111,17 @@ while getopts "4n3cioMm:exh" opt; do
 done
 shift $((OPTIND-1))
 
+git-staged() {
+    git diff --cached --name-status | kut.pl -o 1 | tr '\t' '\n'
+}
+
 # handle the list of files
 
-files=()
-
-# Add entries under directories
-for ent; do
-    if [ -d "$ent" ] && [ ! -L "$ent" ]; then
-        IFS_old=$IFS
-        IFS=$'\n'; files+=( $(find "$ent" ! -type d) )
-        IFS=$IFS_old
-    else
-        files+=( "$ent" )
-    fi
-done
+files=( "$@" )
 
 # if no files were given, use staged
-if [ "$#" -eq 0 ]; then
-    readarray -t files < <(git diff --cached --name-status | kut.pl -o 1 | tr '\t' '\n')
+if [ "${#files[@]}" -eq 0 ]; then
+    readarray -t files < <(git-staged)
 fi
 
 # Add the files, or everything if none were given / found
@@ -139,7 +131,8 @@ else
     git add -A -- "${files[@]}"
 fi
 
-# add anything on the path, or everything
+# Update the list of files from what is now staged
+# readarray -t files < <(git-staged)
 
 # Absolute paths
 for i in "${!files[@]}"; do
@@ -157,11 +150,6 @@ cd "$git_root"
 for i in "${!files[@]}"; do
     files[$i]=$(realpath --no-symlinks --relative-to="$git_root" "${files[$i]}")
 done
-
-# # Unstage if already staged
-# if [ "${#files[@]}" -gt 0 ] && ! git diff --staged --quiet "${files[@]}"; then
-#     v git restore --staged "${files[@]}"
-# fi
 
 # Inform the user of the files to be committed
 echo "Files to commit:"
@@ -219,6 +207,7 @@ feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary
 
 The (short-module-name) part is useful, but optional. Commit type can be feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert etc.
 Do not belabour the obvious; we do not need too much detail, e.g. moving folders do not list every file that was moved.
+Be careful that you only comment on the [-+] changes in the diff, not the context lines.
 
 Please write the message in a down-to-earth tone, avoiding extravagant-sounding words like "enhance".
 ' | grep -v '^```' | perl -e '
