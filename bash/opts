@@ -152,9 +152,11 @@ while [ $# -gt 0 ]; do
 	"")
 		break
 		;;
-	-|--)
-		shift
+	-)
 		break
+		;;
+	--)
+		shift
 		;;
 	-h|-help|--help)
 		usage -h
