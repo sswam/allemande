@@ -215,11 +215,9 @@ feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary
 - concise info about first change, if needed. If the line wraps
   the second line must be indented like this.
 - concise info about second change, if any.
-- and so on ... but sometimes we do not need details, in which case just the header line is okay. *LESS IS MORE!*
+- and so on ... but LESS IS MORE!
 
-There can be only one feat or fix line per commit, then a blank line, then the list.
-If a commit is simple, you can omit the list. Do not add a list item that just repeats the main line.
-The (short-module-name) part is optional. Commit type can be feat|fix|chore etc.
+The (short-module-name) part is useful, but optional. Commit type can be feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert etc.
 Do not belabour the obvious; we do not need too much detail, e.g. moving folders do not list every file that was moved.
 
 Please write the message in a down-to-earth tone, avoiding extravagant-sounding words like "enhance".
