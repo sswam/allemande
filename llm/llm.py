@@ -47,6 +47,7 @@ exceptions_to_retry = (openai.RateLimitError, openai.APIConnectionError, openai.
 	anthropic.RateLimitError, anthropic.APIConnectionError, anthropic.InternalServerError)
 
 default_model = 'claude'
+default_model_small = 'gpt-4o-mini'
 
 MODELS = {
 	"o1-preview": {
@@ -106,10 +107,13 @@ MODELS = {
 
 # first_model = next(iter(MODELS.keys()))
 
-env_llm_model = os.environ.get("LLM_MODEL")
+env_llm_model = os.environ.get("ALLEMANDE_LLM_DEFAULT")
+env_llm_model_small = os.environ.get("ALLEMANDE_LLM_DEFAULT_SMALL")
 
 if env_llm_model in MODELS:
 	default_model = env_llm_model
+if env_llm_model_small in MODELS:
+	default_model_small = env_llm_model_small
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
 
@@ -189,6 +193,8 @@ def set_opts(_opts):
 	opts = Options(**_opts)
 	if opts.model in ("", None):
 		opts.model = default_model
+	if opts.model in ("s", "small"):
+		opts.model = default_model_small
 
 
 def chat_gpt(messages):  # 0.9, token_limit=150, top_p=1, frequency_penalty=0, presence_penalty=0, stop=["\n\n"]):
