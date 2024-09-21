@@ -1,5 +1,5 @@
 #!/bin/bash -eu
-m=$ALLEMANDE_LLM_DEFAULT
+m=
 I=	# don't fix indentation
 . opts
 process_main() {
