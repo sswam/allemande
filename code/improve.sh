@@ -1,6 +1,7 @@
-#!/bin/bash -eu
+#!/bin/bash
 # [prog.py] "instructions to improve it" [reference files ...]
 # Improve a program using AI
+set -e -u -o pipefail
 
 improve() {
 	local m=c	# model
@@ -9,7 +10,7 @@ improve() {
 	. opts
 
 	local prog=$1
-	local prompt=${2-}
+	local prompt=$2
 	shift 2 || true
 	local refs=("$@")
 
@@ -38,7 +39,7 @@ improve() {
 		prompt="in the style of \`hello$ext\`, $prompt"
 	fi
 
-	prompt="Please improve \`$base\`, $prompt"
+	prompt="Please improve \`$base\`, you can bump the patch version, $prompt"
 
 	local input=$(cat_named.py -p -b "$prog" "${refs[@]}")
 
@@ -46,7 +47,7 @@ improve() {
 	if [ -e "$prog~" ]; then
 		move-rubbish "$prog~"
 	fi
-	yes n | cp -i -a "$prog" "$prog~"   # WTF, there's no proper no-clobber option?!
+	echo n | cp -i -a "$prog" "$prog~"   # WTF, there's no proper no-clobber option?!
 
 	# Process input and save result
 	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$prog~"
