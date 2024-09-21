@@ -2,7 +2,7 @@
 # namer:	generate name ideas using an LLM
 
 v=	# verbose
-m=i	# which LLM model to use
+m=s	# which LLM model to use
 n=10	# number of names to generate
 q="Please come up with some interesting and unusual names, preferably spelled differently from any normal personal names. Single word human-like names, not compound words. Mostly short simple names please, not too long; but you can include some long fancy ones if they sound great. They do not have to be super-closely related to any prompt words; but not too crazy"	# query prompt
 f="Please list %d options in a markdown list"	# format string for formatting part of the prompt

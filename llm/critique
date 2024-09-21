@@ -2,7 +2,7 @@
 # [file ...]
 # AI critique a program
 
-m=c	# model
+m=	# model
 s=0	# short critique
 p=	# prompt
 

@@ -17,7 +17,7 @@ SEARCH := google
 # WHISPER_MODEL := models/ggml-large.bin
 
 
-m0=$ALLEMANDE_LLM_DEFAULT_CHEAP
+m0=$ALLEMANDE_LLM_DEFAULT_SMALL
 # m0=4   # gives "Gateway timeout" for large inputs
 m=$ALLEMANDE_LLM_DEFAULT
 file=

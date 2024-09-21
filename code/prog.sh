@@ -3,7 +3,7 @@
 # Write a program using AI
 
 prog() {
-	local m=c	# model
+	local m=	# model
 	local s=1	# refer to hello.<ext> for code style
 
 	. opts

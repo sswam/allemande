@@ -4,7 +4,7 @@
 set -e -u -o pipefail
 
 improve() {
-	local m=c	# model
+	local m=	# model
 	local s=0	# refer to hello.<ext> for code style
 
 	. opts

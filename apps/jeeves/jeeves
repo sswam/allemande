@@ -4,8 +4,8 @@
 
 m0=4	# LLM model for planning the list of documents to generate
 m1=4	# LLM model for generating each document
-m=c	# LLM model for revising each draft of each document
-m2=4	# LLM model for the final copy of each document
+m=	# LLM model for revising each draft of each document
+m2=	# LLM model for the final copy of each document
 c="Allemande"	# company / business / project name
 t="an AI consulting startup company, open-source research and development shop, and SaaS services business"	# business type
 hq="in Melbourne, Australia"	# headquarters

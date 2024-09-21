@@ -11,7 +11,7 @@ b=	        # backup
 #b="arcs -N -q"	# backup
 q=	        # quiet
 r=1	        # reload
-m=3+            # model
+m=s             # model
 d=              # depth
 
 # o="-d --log llm.log"

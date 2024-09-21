@@ -1,4 +1,4 @@
 #!/bin/bash
-m=i
+m=s
 . opts
 llm process -m "$m" "Please insanify the following, in the same tense and person as the original."

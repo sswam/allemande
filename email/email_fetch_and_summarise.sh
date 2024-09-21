@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 . confirm
-m=4
+m=
 folder=$1
 mkdir -p "$(dirname "$folder")"
 imap_fetch.py -r -f "$folder"  | tee "$folder".txt
