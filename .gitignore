@@ -47,7 +47,7 @@ go/atail
 tty/tty_cursor_pos
 
 # symlinks
-plan
+/plan
 
 # derived files
-code/lang.rec
+/code/lang.rec
