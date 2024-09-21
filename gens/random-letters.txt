@@ -1,0 +1,44 @@
+#!(for i in `seq 1 10`; do 1w -m=i "choose a random letter" & done; wait)
+A.
+A.
+A.
+A.
+A.
+A.
+A.
+A.
+A.
+A.
+# (for i in `seq 1 10`; do 1w -m=c "choose a random letter" & done; wait)
+K
+K
+K
+K
+K
+K
+K
+K
+K
+K
+# (for i in `seq 1 10`; do 1w -m=4 "choose a random letter" & done; wait)
+K
+T
+K
+K
+K
+G
+K
+G
+G
+G
+# (for i in `seq 1 10`; do 1w -m=4m "choose a random letter" & done; wait) 
+Q
+K
+Q
+Q
+Q
+M
+Q
+K
+K
+Q
