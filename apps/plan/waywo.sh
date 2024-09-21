@@ -17,7 +17,8 @@ elif [ -n "$q" ]; then
 	echo "Got quit signal" >&2
 else
 	while true; do
-		i3_popup_xterm -w -T="What are you working on?" note -t=waywo --timeout=60
+		last=$(note -t=waywo -n -A)
+		i3_popup_xterm -w -T="What are you working on?" note -t=waywo --timeout=60 -p="$last"
 		i3_update_message.sh $(note -t=waywo -n -A)
 		sleep "$i" || true
 	done

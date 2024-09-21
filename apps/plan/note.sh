@@ -29,6 +29,7 @@ d=	# show all notes from today
 s=	# AI summary for the day
 n=	# Show last n headings
 A=	# don't add a note
+p=	# initial text / placeholder
 timeout=  # time limit
 
 # shortcuts for common note types
@@ -208,7 +209,7 @@ if [ -z "$note" ] && [ -n "$details" ]; then
 
 # If no note or details, and not editing, read note and optional details from stdin
 elif [ -z "$A" ] && [ -z "$note" ] && [ -z "$details" ] && [ "$e" != 1 ]; then
-	read -e -p ": " $timeout note
+	read -e -p ": " -i "$p" $timeout note
 	if [ -t 0 -a -t 2 ]; then
 		while read -e -p ". " line; do
 			if [ "$line" = "." ]; then
