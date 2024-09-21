@@ -112,9 +112,6 @@ while getopts "4n3cioMm:exh" opt; do
 done
 shift $((OPTIND-1))
 
-# git add anything on the path, or everything
-git add -A -- "$@"
-
 # handle the list of files
 
 files=()
@@ -135,11 +132,18 @@ if [ "$#" -eq 0 ]; then
     readarray -t files < <(git diff --cached --name-status | kut.pl -o 1 | tr '\t' '\n')
 fi
 
-# if there were no staged files, it will commit all modified files
+# Add the files, or everything if none were given / found
+if [ "${#files[@]}" -eq 0 ]; then
+    git add -A .
+else
+    git add -A -- "${files[@]}"
+fi
+
+# add anything on the path, or everything
 
 # Absolute paths
 for i in "${!files[@]}"; do
-    files[$i]=$(realpath "${files[$i]}")
+    files[$i]=$(realpath --no-symlinks "${files[$i]}")
 done
 
 # Change directory to the top level of the git repository
@@ -151,7 +155,7 @@ cd "$git_root"
 
 # Relative paths to git_root
 for i in "${!files[@]}"; do
-    files[$i]=$(realpath --relative-to="$git_root" "${files[$i]}")
+    files[$i]=$(realpath --no-symlinks --relative-to="$git_root" "${files[$i]}")
 done
 
 # # Unstage if already staged
@@ -205,6 +209,8 @@ For a feature patch, focus on describing high-level features, without implementa
 Seriously, for a new feature *DO NOT* describe implementation details, variables, functions, etc. (Except for a library it would be appropriate to describe a new function; but not normally to get into how it works.)
 
 feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
+
+[IF ANY ONLY IF IT IS NECESSARY, continue with details as below]
 
 - concise info about first change, if needed. If the line wraps
   the second line must be indented like this.
