@@ -24,7 +24,14 @@ __version__ = "1.0.0"
 
 logger = main.get_logger()
 
-DEFAULT_INDENT = os.environ.get("INDENT", "t")
+# TODO use a config file for this?
+def default_indent():
+    ft = os.environ.get("FILETYPE")
+    if ft == "python":
+        return "4s"
+    return os.environ.get("INDENT", "t")
+
+DEFAULT_INDENT = default_indent()
 
 def detect_indent(text: str) -> Tuple[str, int]:
     """Detect the indentation type and minimum level of the input text."""
@@ -203,7 +210,10 @@ def process_indentation(
 
     if detect:
         # Detect and output the indentation of the input text
-        put(format_indent_code(*detect_indent(input_text)))
+        indent_code = format_indent_code(*detect_indent(input_text))
+        if indent_code.startswith("0"):
+            indent_code = DEFAULT_INDENT
+        put(indent_code)
     else:
         # Apply the specified or default indentation to the input text
         indent_code = apply or DEFAULT_INDENT
