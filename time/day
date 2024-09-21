@@ -1,0 +1,19 @@
+#!/bin/bash -eu
+# show date in a nice format, and optional time
+t=	# show time
+s=" "	# separator
+d="now"	# date
+
+. opts
+
+time=$t
+sep=$s
+when=$d
+
+# the format
+fmt="%Y-%m-%d$sep%a"
+if [ "$time" ]; then
+	fmt="$fmt$sep%H:%M:%S"
+fi
+
+date +"$fmt" -d "$when"
