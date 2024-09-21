@@ -2,6 +2,7 @@
 " we don't always want the file to end with a newline.
 " This enables the AI to continue a line rather than starting a new one.
 
+
 " Do indentation properly!
 
 function! Indent()
@@ -9,13 +10,14 @@ function! Indent()
 	execute 'silent! s/^..*/' . indent . '&/'
 endfun
 
-function! Dedent()
+function! Dedent() range
 	let indent = &expandtab ? repeat(' ', &shiftwidth) : '\t'
-	let lines = visualmode() !=# '' ? [getline('.')] : getline("'<", "'>")
+	let lines = getline(a:firstline, a:lastline)
 	let can_dedent = match(lines, '^' . indent) >= 0
-	execute 'silent! ' . (can_dedent ? 's/^' . indent . '//' : 's/^\s*//')
+	execute 'silent! ' . a:firstline . ',' . a:lastline . (can_dedent ? 's/^' . indent . '//' : 's/^\s*//')
 	noh
 endfun
+
 
 " Comment and Uncomment
 function! Comment()
@@ -120,3 +122,11 @@ function! AllemandeAutoread()
 endfunction
 
 command! -nargs=0 AllemandeAutoread call AllemandeAutoread()
+
+
+" Set FILETYPE env-var for tools to know what language we are working on
+
+augroup SetCodeLang
+	autocmd!
+	autocmd FileType * let $FILETYPE = expand('<amatch>')
+augroup END
