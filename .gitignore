@@ -10,7 +10,7 @@ venv
 node_modules
 __pycache__
 /c/perlxsi.c
-/ref
+ref
 /webchat/files
 /webchat/users
 /config*.sh
@@ -45,3 +45,9 @@ c/test_mozjs
 c/test_v8
 go/atail
 tty/tty_cursor_pos
+
+# symlinks
+plan
+
+# derived files
+code/lang.rec
