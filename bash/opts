@@ -65,6 +65,11 @@ usage() {
 		# Remove indent
 		line=${line#[[:space:]]*}
 
+		is_blank=0
+		if [ "$line" = "" ]; then
+			is_blank=1
+		fi
+
 		# Remove 'local ' from start of line
 		line=${line#local }
 
@@ -81,7 +86,7 @@ usage() {
 		fi
 
 		# avoid trailing blank lines
-		if [ "$line" = "" ]; then
+		if [ "$is_blank" = 1 ]; then
 			blanks=$((blanks+1))
 			continue
 		fi
