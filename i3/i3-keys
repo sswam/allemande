@@ -3,23 +3,24 @@
 # and output the unbound ones to stdout and unbound.txt
 
 # Exit on error, and don't overwrite files
-set -eu -o noclobber -o pipefail
+set -eu -o pipefail
 
 # Extract bound keys from i3 config
-grep "^bindsym\s" ~/.config/i3/config | sed -r 's/bindsym\s+//' > bindings.txt
-sed -r 's/ .*//' < bindings.txt > bound.txt
+grep "^bindsym\s" ~/.config/i3/config | sed -r 's/bindsym\s+//' > i3-keys-bindings.txt
+sed -r 's/ .*//' < i3-keys-bindings.txt > i3-keys-bound.txt
 
 # Define all possible keys and mods
-keys="a b c d e f g h i j k l m n o p q r s t u v w x y z 0 1 2 3 4 5 6 7 8 9 F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12"
-mods="\$mod \$mod+Shift \$mod+Control \$mod+Alt"
+
+keys=({a..z} {0..9} F{1..12})
+mods='$mod $mod+Shift $mod+Control $mod+Alt'
 
 # Generate all possible combinations
 combinations=""
 for mod in $mods; do
-	for key in $keys; do
+	for key in "${keys[@]}"; do
 		combinations+="$mod+$key"$'\n'
 	done
 done
 
 # Save unbound combinations to unbound.txt and output to stdout
-echo -n "$combinations" | grep -v -F -f bound.txt | tee unbound.txt
+echo -n "$combinations" | grep -v -F -f i3-keys-bound.txt | tee i3-keys-unbound.txt
