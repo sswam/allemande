@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 # [prompt]
-# Processes TODOs in the input
+# Processes TODOs, FIXMEs, and XXXs in the input.
 
 process_todos() {
 	local v=0	# verbosity level
@@ -15,7 +15,7 @@ process_todos() {
 		proc="process"
 	fi
 
-	local prompt="Please do the TODOs (only)"
+	local prompt="Please work on the TODO / FIXME / XXX (only)"
 	if [ -n "$p" ]; then
 		prompt+=", $p"
 	fi
