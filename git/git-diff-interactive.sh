@@ -41,7 +41,7 @@ setup_actions() {
 	v	view
 	e	edit
 	S	snip
-	x	exit
+	X	exit
 	?	help
 	"
 
