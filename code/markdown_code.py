@@ -16,20 +16,20 @@ Dependencies:
 - argh: Used for creating the command-line interface.
 
 CLI Usage:
-1. Provide a Markdown file as input:
-   markdown_code.py < file.md
+1.  Provide a Markdown file as input:
+    markdown_code.py < file.md
 
-2. Optionally, specify a comment prefix to comment out non-code sections:
-   markdown_code.py --comment-prefix="#"
+2.  Optionally, specify a comment prefix to comment out non-code sections:
+    markdown_code.py --comment-prefix="#"
 
-3. Optionally, select specific code blocks to extract:
-   markdown_code.py 0 2  # Extracts the first and third code blocks
+3.  Optionally, select specific code blocks to extract:
+    markdown_code.py 0 2  # Extracts the first and third code blocks
 
-4. Disable plain text output when no code blocks are found:
-   markdown_code.py --no-plain-text
+4.  Disable plain text output when no code blocks are found:
+    markdown_code.py --no-plain-text
 
-5. Enable shebang fix:
-   markdown_code.py --shebang-fix
+5.  Enable shebang fix:
+    markdown_code.py --shebang-fix
 """
 
 import sys
@@ -100,6 +100,7 @@ def handle_shebang(code: str) -> Tuple[str, Optional[str]]:
 
 @arg("--no-shebang-fix", dest="shebang_fix", action="store_false")
 @arg("--no-strip", dest="strip", action="store_false")
+@arg("--no-first", dest="first", action="store_false")
 def extract_code_from_markdown(
     *select,
     input_source=sys.stdin,
@@ -107,6 +108,7 @@ def extract_code_from_markdown(
     strict_code: bool = False,
     shebang_fix: bool = True,
     strip: bool = True,
+    first: bool = True,
 ) -> str:
     """
     Finds and returns all code blocks within the given Markdown text,
@@ -119,6 +121,7 @@ def extract_code_from_markdown(
         strict_code (bool): If False, output the original markdown when no code blocks are found.
         shebang_fix (bool): If True, move shebang line to the top if found in the first 3 lines.
         strip (bool): If True, strip whitespace from end of lines and end of file (leaving one newline before EOF).
+        keep (bool): Use with select. If True, output the selected blocks first, and keep the rest as comments.
 
     Returns:
         str: The processed text with code blocks and commented non-code sections.
@@ -134,11 +137,26 @@ def extract_code_from_markdown(
 
     select = [int(s) for s in select] or None
 
+    if first and not select:
+        select = [0]
+
     output = []
     last_index = 0
     count = 0
     code_blocks_found = False
     shebang_line = None
+    kept_blocks = []
+
+    def process_text(text):
+        if first:
+            kept_blocks.append(text)
+        else:
+            output.extend(comment_text(text, comment_prefix))
+            output.append("")
+
+    def process_code(code):
+        output.append(code)
+        output.append("")
 
     for match in re.finditer(
         CODE_BLOCK_PATTERN, markdown_text, re.DOTALL | re.MULTILINE
@@ -146,34 +164,39 @@ def extract_code_from_markdown(
         code_blocks_found = True
         code = match.group(1).rstrip()
         start_index = match.start()
-        non_code = markdown_text[last_index:start_index].strip()
+        text = markdown_text[last_index:start_index].strip()
 
-        if non_code and comment_prefix is not None:
-            output.extend(comment_text(non_code, comment_prefix))
-            output.append("")
+        if text and comment_prefix is not None:
+            process_text(text)
+
+        if shebang_fix and count == 0 and not shebang_line:
+            code, shebang_line = handle_shebang(code)
 
         if select is None or count in select:
-            if shebang_fix and count == 0 and not shebang_line:
-                code, shebang_line = handle_shebang(code)
-            output.append(code)
-            output.append("")
+            process_code(code)
+        elif first:
+            kept_blocks.append(code)
 
         last_index = match.end()
         count += 1
 
+    remaining_text = markdown_text[last_index:].strip()
+    if remaining_text and comment_prefix is not None:
+        process_text(remaining_text)
+
     if not code_blocks_found and strict_code:
         return markdown_text.strip()
 
-    remaining_text = markdown_text[last_index:].strip()
-    if remaining_text and comment_prefix is not None:
-        output.extend(comment_text(remaining_text, comment_prefix))
+    for block in kept_blocks:
+        output.extend(comment_text(block, comment_prefix))
         output.append("")
 
     lines = [line for block in output for line in block.split("\n")]
 
     if shebang_line:
         lines.insert(0, shebang_line)
-        lines.insert(1, "")
+        if not (len(lines) > 1 and lines[1] == ""):
+            lines.insert(1, "")
 
     return code_lines_to_string(lines, strip)
 
