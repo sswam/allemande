@@ -126,7 +126,7 @@ action_remove() {
 
 action_ignore() {
 	local file=$1
-	printf "%s\n" "$file" >> "$git_root/.gitignore"
+	printf "/%s\n" "$file" >> "$git_root/.gitignore"
 	return 0
 }
 
