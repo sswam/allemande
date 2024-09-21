@@ -1,0 +1,26 @@
+#!/bin/bash -eu
+# [file] ["extra prompt"]
+# Add comments to code, either streaming or modifying a file in-place
+
+. main.sh
+
+comment() {
+	local file=${1-}
+	local extra_prompt=${2-}
+	local prompt="Please add comments for chunks of code, describing how it works. Not too many. DO NOT CHANGE THE CODE ITSELF please. Do not remove docstring comments, but you can correct them. $extra_prompt"
+
+	if [ -z "$file" ]; then
+		process "$prompt" | markdown_code.py -c '#'
+	else
+		file=$(find_file "$file")
+		[ -n "$file" ] || return 1
+		backup "$file"
+		cat "$file" | process "$prompt" | markdown_code.py -c '#' > "$file~"
+		swapfiles "$file" "$file~"
+		vimdiff "$file" "$file~"
+	fi
+}
+
+if [ "$BASH_SOURCE" = "$0" ]; then
+	comment "$@"
+fi
