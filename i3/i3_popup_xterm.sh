@@ -9,7 +9,7 @@ i3_popup_xterm() {
 	local F=0        # flag to disable floating mode
 	local H=0        # flag to hold the terminal open
 	local T=         # title to set for the terminal window
-	local w=	 # wait for the terminal to close
+	local w=0	 # wait for the terminal to close
 
 	. opts
 
