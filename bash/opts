@@ -48,10 +48,12 @@ usage() {
 
 	local script_name=$(basename "$0")
 	printf "%s " "$script_name"
-	local line in_func=0 blanks=0
+
+	local line in_func=0 blanks=0 skip_blank_lines=0
 	while IFS= read -r line; do
 		# Skip shebang line
 		if [[ $line == \#\!* ]]; then
+			skip_blank_lines=1
 			continue
 		fi
 
@@ -83,10 +85,15 @@ usage() {
 			blanks=$((blanks+1))
 			continue
 		fi
-		for ((i=1; i<=blanks; i++)); do
-		    echo
-		done
+
+		# check if we have some blank lines to output
+		if [ $blanks -gt 0 ] && [ $skip_blank_lines -eq 0 ]; then
+			for ((i=1; i<=blanks; i++)); do
+				echo
+			done
+		fi
 		blanks=0
+		skip_blank_lines=0
 
 		# echo the cleaned-up line, for usage
 		echo "$line"
