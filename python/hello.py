@@ -2,22 +2,7 @@
 
 """
 hello.py - An example Python module / script to say hello,
-and ask the user how they are. We should always include a module-level
-docstring to explain the purpose and basic usage of the program.
-
-We strive to avoid too much nesting / indentation.
-
-In most cases for error handling we just allow the script to exit by not
-catching the exception. This is a deliberate choice.
-
-Double line breaks are used to separate top-level functions and classes.
-
-I know it's naughty to use 'input' as a variable name, but let's do it anyway.
-
-Our scripts default to stdio.  There is magic in ally.main to open files.
-
-This script can be used as a module:
-    from hello import hello
+and ask the user how they are.
 """
 
 import sys
@@ -34,7 +19,7 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 
 from ally import main
 
-__version__ = "1.0.0"
+__version__ = "0.1.0"
 
 logger = main.get_logger()
 
@@ -131,3 +116,36 @@ def hello(
 
 if __name__ == "__main__":
     main.run(hello)
+
+"""
+Important Notes for AI:
+
+AVOID DEEP INDENTATON OR NESTING, it's better to use if/elif or a function.
+If needed, we can use variables to avoid repeating parts of conditions.
+This is the number one rule!
+
+In most cases for error handling we just allow the script to exit by not
+catching the exception. This is a deliberate choice.
+
+We raise exceptions rather that printing to stderr then exiting. Never handle
+something that should be an exception as a warning.
+
+We should always include a module-level docstring to explain the program.
+Don't include the filename in that.
+
+If sensible and simple to do so, write tools that can process several files in one invocation.  # XXX not sure
+Zero is holy! It is not an error to pass zero files to process. Just naturally do nothing in that case.
+
+Double line breaks are used to separate top-level functions and classes.
+
+I know it's naughty to use 'input' as a variable name, but let's do it anyway.
+
+Our scripts default to stdio.
+
+There is magic in ally.main to open files and print exceptions nicely.
+
+Our scripts can also be used as modules, and vice-versa.
+    from hello import hello
+
+When writing other scripts based on this one, please do not include these notes!
+"""
