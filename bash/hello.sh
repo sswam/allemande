@@ -53,6 +53,7 @@ fi
 # Important Notes for AI:
 
 # AVOID DEEP INDENTATION OR NESTING, better to use if/elif or a function. This is the number one rule!
+# Test negative cases first, and use continue, break, or return to avoid deep nesting.
 #
 # We use the `-e` `-u` and `-o pipefail` options, so be careful to avoid accidentally exiting:
 # - Do not shorten if statements, for example not: `[ -n "$var" ] && do_something`
