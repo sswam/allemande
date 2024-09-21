@@ -142,6 +142,8 @@ I know it's naughty to use 'input' as a variable name, but let's do it anyway.
 
 Our scripts default to stdio.
 
+In modern Python, we can use types like list[str] rather than List[str], same for dict, set, etc.
+
 There is magic in ally.main to open files and print exceptions nicely.
 
 Our scripts can also be used as modules, and vice-versa.
