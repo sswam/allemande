@@ -9,7 +9,7 @@ prog() {
 	. opts
 
 	local prog=$1
-	local prompt=${2-}
+	local prompt=$2
 	shift 2 || true
 	local refs=("$@")
 
