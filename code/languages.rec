@@ -1,7 +1,7 @@
 name: python
 extension: py
 shebang: #!/usr/bin/env python3
-compile: 
+compile:
 run: python $src
 lint: pylint $src
 test: pytest $src
@@ -23,53 +23,76 @@ container: python:3.9
 
 name: bash
 extension: sh
-shebang: #!/bin/bash
-compile: 
+shebang: #!/usr/bin/env bash
+compile:
 run: bash $src
 lint: shellcheck $src
 test: bats $src
 version: bash --version
-package_manager: 
+package_manager:
 docs: https://www.gnu.org/software/bash/manual/
 website: https://www.gnu.org/software/bash/
 repl: bash
 project_structure: scripts/, lib/, tests/
-frameworks: 
+frameworks:
 style_guide: https://google.github.io/styleguide/shellguide.html
 debugger: bash -x $src
-profiler: 
+profiler:
 formatter: shfmt -w $src
-type_checker: 
-build_tool: 
-dependency_file: 
+type_checker:
+build_tool:
+dependency_file:
 container: bash:5.1
+
+name: perl
+extension: pl
+shebang: #!/usr/bin/env perl
+compile:
+run: perl $src
+lint: perlcritic $src
+test: prove $src
+version: perl -v
+package_manager: cpan
+docs: https://perldoc.perl.org/
+website: https://www.perl.org/
+repl: perl -de1
+project_structure: lib/, t/, cpanfile
+frameworks: Mojolicious, Catalyst, Dancer
+style_guide: https://perldoc.perl.org/perlstyle
+debugger: perl -d $src
+profiler: perl -d:NYTProf $src
+formatter: perltidy $src
+type_checker:
+build_tool: ExtUtils::MakeMaker
+dependency_file: cpanfile
+container: perl:5.32
 
 name: c
 extension: c
-shebang: 
+shebang:
 compile: gcc -o output $src
 run: ./output
 lint: cppcheck $src
-test: 
+test:
 version: gcc --version
-package_manager: 
+package_manager:
 docs: https://devdocs.io/c/
 website: https://www.iso.org/standard/74528.html
-repl: 
+repl:
 project_structure: src/, include/, lib/, tests/
-frameworks: 
+frameworks:
 style_guide: https://www.kernel.org/doc/html/v4.10/process/coding-style.html
 debugger: gdb ./output
 profiler: gprof ./output
 formatter: clang-format -i $src
-type_checker: 
+type_checker:
 build_tool: make
 dependency_file: Makefile
 container: gcc:11.2
 
 name: go
 extension: go
-shebang: 
+shebang:
 compile: go build $src
 run: go run $src
 lint: golint $src
@@ -78,22 +101,68 @@ version: go version
 package_manager: go mod
 docs: https://golang.org/doc/
 website: https://golang.org/
-repl: 
+repl:
 project_structure: cmd/, pkg/, internal/, test/
 frameworks: Gin, Echo, Beego
 style_guide: https://golang.org/doc/effective_go
 debugger: dlv debug
 profiler: go tool pprof
 formatter: gofmt -w $src
-type_checker: 
+type_checker:
 build_tool: go build
 dependency_file: go.mod
 container: golang:1.17
 
+name: javascript
+extension: js
+shebang:
+compile:
+run:
+lint: eslint $src
+test: jest
+version:
+package_manager: npm
+docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+website: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+repl:
+project_structure: src/, test/, dist/, node_modules/
+frameworks: React, Vue.js, Angular, Svelte
+style_guide: https://github.com/airbnb/javascript
+debugger:
+profiler:
+formatter: prettier --write $src
+type_checker:
+build_tool: vite, webpack, rollup, parcel
+dependency_file: package.json
+container:
+
+name: typescript
+extension: ts
+shebang:
+compile: tsc
+run: node
+lint: eslint $src
+test: jest
+version: tsc --version
+package_manager: npm
+docs: https://www.typescriptlang.org/docs/
+website: https://www.typescriptlang.org/
+repl: ts-node
+project_structure: src/, test/, dist/, node_modules/
+frameworks: React, Vue.js, Angular, Svelte
+style_guide: https://github.com/basarat/typescript-book/blob/master/docs/styleguide/styleguide.md
+debugger:
+profiler:
+formatter: prettier --write $src
+type_checker: tsc --noEmit
+build_tool: vite, webpack, rollup, parcel
+dependency_file: package.json
+container:
+
 name: node
 extension: js
 shebang: #!/usr/bin/env node
-compile: 
+compile:
 run: node $src
 lint: eslint $src
 test: jest
@@ -108,7 +177,7 @@ style_guide: https://github.com/airbnb/javascript
 debugger: node --inspect-brk $src
 profiler: node --prof $src
 formatter: prettier --write $src
-type_checker: 
+type_checker:
 build_tool: npm
 dependency_file: package.json
 container: node:16
@@ -116,12 +185,12 @@ container: node:16
 name: deno
 extension: ts
 shebang: #!/usr/bin/env -S deno run
-compile: 
+compile:
 run: deno run $src
 lint: deno lint $src
 test: deno test
 version: deno --version
-package_manager: 
+package_manager:
 docs: https://doc.deno.land/builtin/stable
 website: https://deno.land/
 repl: deno
@@ -129,16 +198,16 @@ project_structure: src/, tests/
 frameworks: Oak, Alosaur
 style_guide: https://deno.land/manual/contributing/style_guide
 debugger: deno run --inspect-brk $src
-profiler: 
+profiler:
 formatter: deno fmt $src
-type_checker: 
+type_checker:
 build_tool: deno
 dependency_file: deps.ts
 container: denoland/deno:1.19
 
 name: rust
 extension: rs
-shebang: 
+shebang:
 compile: rustc $src
 run: cargo run
 lint: clippy
@@ -147,14 +216,14 @@ version: rustc --version
 package_manager: cargo
 docs: https://doc.rust-lang.org/std/
 website: https://www.rust-lang.org/
-repl: 
+repl:
 project_structure: src/, tests/, Cargo.toml
 frameworks: Rocket, Actix, Tokio
 style_guide: https://doc.rust-lang.org/1.0.0/style/
 debugger: rust-gdb ./target/debug/myapp
-profiler: 
+profiler:
 formatter: rustfmt $src
-type_checker: 
+type_checker:
 build_tool: cargo
 dependency_file: Cargo.toml
 container: rust:1.58
