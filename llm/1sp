@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+m=$ALLEMANDE_LLM_DEFAULT
+. opts
+process -m=$m "$@
+Please reply with literally just one sentence, should fit in one line of a terminal, or absolutely as few lines as possible."
