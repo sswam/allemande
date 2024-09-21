@@ -21,7 +21,7 @@ apply_fixes() {
 	fi
 	prompt+=". Don't strip comments. You can add comments with other suggestions."
 
-	v $proc -m="$m" "$prompt"
+	$proc -m="$m" "$prompt"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
