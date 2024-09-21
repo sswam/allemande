@@ -30,6 +30,7 @@ s=	# AI summary for the day
 n=	# Show last n headings
 A=	# don't add a note
 p=	# initial text / placeholder
+H=	# don't add hour markers
 timeout=  # time limit
 
 # shortcuts for common note types
@@ -236,11 +237,22 @@ if [ -n "$note" ]; then
 
 	date=$(day)
 
-	if ! grep -q "^#* *$date$" "$note_file"; then
+	if ! grep -q "^#* *$date\$" "$note_file"; then
 		if [ -s "$note_file" ]; then
 			printf "\n" >> "$note_file"
 		fi
 		printf "## %s\n\n" "$date" >> "$note_file"
+	fi
+
+	# add hour to note file if not already there, optionally
+
+	if [ "$H" != 1 ]; then
+		hour=$(day -t)
+		hour=${hour%%:*}:00
+
+		if ! grep -q "^\*$hour\*\$" "$note_file"; then
+			printf "*%s*\n\n" "$hour" >> "$note_file"
+		fi
 	fi
 
 	# add the note to the note file
