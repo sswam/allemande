@@ -71,6 +71,11 @@ cleanup-and-exit() {
     exit "$1"
 }
 
+git-commit() {
+    git status
+    confirm git commit "$@" "${files[@]:-.}"
+}
+
 trap 'cleanup-and-exit 0' EXIT
 trap 'cleanup-and-exit 1' INT
 
@@ -80,10 +85,12 @@ while getopts "4n3cioMm:exh" opt; do
         model=""
         ;;
     m)
-        exec git commit -m "$OPTARG" "${files[@]:-.}"
+        git-commit -m "$OPTARG"
+        exit 0
         ;;
     e)
-        exec git commit "${files[@]:-.}"
+        git-commit
+        exit 0
         ;;
     x)
         cleanup
@@ -105,8 +112,14 @@ while getopts "4n3cioMm:exh" opt; do
 done
 shift $((OPTIND-1))
 
-# Add entries under directories
+# git add anything on the path, or everything
+git add -A -- "$@"
+
+# handle the list of files
+
 files=()
+
+# Add entries under directories
 for ent; do
     if [ -d "$ent" ] && [ ! -L "$ent" ]; then
         IFS_old=$IFS
@@ -116,6 +129,13 @@ for ent; do
         files+=( "$ent" )
     fi
 done
+
+# if no files were given, use staged
+if [ "$#" -eq 0 ]; then
+    readarray -t files < <(git diff --cached --name-status | kut.pl -o 1 | tr '\t' '\n')
+fi
+
+# if there were no staged files, it will commit all modified files
 
 # Absolute paths
 for i in "${!files[@]}"; do
@@ -134,10 +154,17 @@ for i in "${!files[@]}"; do
     files[$i]=$(realpath --relative-to="$git_root" "${files[$i]}")
 done
 
-# Unstage if already staged
-if [ "${#files[@]}" -gt 0 ] && ! git diff --staged --quiet "${files[@]}"; then
-    v git restore --staged "${files[@]}"
-fi
+# # Unstage if already staged
+# if [ "${#files[@]}" -gt 0 ] && ! git diff --staged --quiet "${files[@]}"; then
+#     v git restore --staged "${files[@]}"
+# fi
+
+# Inform the user of the files to be committed
+echo "Files to commit:"
+for file in "${files[@]}"; do
+    echo "  $file"
+done
+echo
 
 model-name() {
     echo "${model_names["$1"]}"
@@ -147,14 +174,14 @@ run-git-diff() {
     local opts=("$@")
     local difftext
     if [ "${#files[@]}" -eq 0 ]; then
-        git diff -U$diff_context --staged "${opts[@]}"
+        git diff --staged -U$diff_context "${opts[@]}"
     else
         for file in "${files[@]}"; do
-            difftext=$(git diff -U$diff_context "${opts[@]}" -- "$file")
+            difftext=$(git diff --staged -U$diff_context "${opts[@]}" -- "$file")
             if [ -n "$difftext" ]; then
                 printf "%s\n" "$difftext"
             elif [ -e "$file" ] && [ -n "$(git ls-files --exclude-standard --others --directory --no-empty-directory --error-unmatch "$file" 2>/dev/null)" ]; then
-                cat_named.py -k "$file"
+                cat_named.py "$file"
             fi
         done
     fi
@@ -257,7 +284,7 @@ while true; do
             ${EDITOR:-vi} "$commit_message"
             ;;
         d)
-            run-git-diff --color
+            run-git-diff --color | less -F -X -e -i -M -R -W -z-4
             ;;
         v)
             run-git-vimdiff
@@ -296,8 +323,8 @@ while true; do
     echo
 done
 
-if [ "${#files[@]}" -gt 0 ]; then
-    git add -- "${files[@]}"
-fi
+# if [ "${#files[@]}" -gt 0 ]; then
+#     git add -- "${files[@]}"
+# fi
 
-git commit -F "$commit_message" "${files[@]:-.}"
+git-commit -F "$commit_message"
