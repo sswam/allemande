@@ -20,3 +20,6 @@ pst-utils
 sox
 portaudio19-dev
 colordiff
+bats
+bats-support
+bats-assert
