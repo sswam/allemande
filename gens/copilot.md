@@ -1,0 +1,126 @@
+
+
+- AI for coding
+	- AI study the code-base
+		- document
+		- cheatsheets
+		- AI will have a better understanding of the code
+		- dependencies:  files, functions, classes, variables
+		- hierarchical summary and study
+	- AI for code completion
+	- AI for refactoring
+	- AI for writing code
+	- AI for debugging
+	- AI for testing
+	- AI for documentation
+
+- AI for writing
+	- interactive fiction / story writing / role-playing games
+
+- AI for learning and study
+	- flashcards / spaced repetition
+		- AI can help create flashcards
+		- AI can express flashcards in different ways each time they are shown
+			- different text
+			- images, audio, video
+		- for mathematical problems, AI can help write programs to generate variant problems
+
+	- AI for summarization
+	- AI dictation and transcription with correction
+	- AI assisted research
+	- AI for reading comprehension
+
+- AI for business and legal
+	- AI critique of writing, can help finish a document to a high standard
+
+- TODO let's list some more fields where our spicy combination of AI, toolkit programming and human intelligence can help
+	- music:  composition, performance, recording, production, distribution, consumption
+		- let's list some product ideas in this field
+			- AI music composition: AI can help with melody, harmony, rhythm, form, orchestration
+			- AI music performance: AI can help with instrument playing, electronic music performance, DJing
+			- AI music recording: AI can help with microphone placement, mixing, mastering
+	- radio
+	- television
+	- internet
+	- games
+	- sports
+	- sound
+	- theatre
+	- dance
+	- film
+	- art
+	- design
+	- architecture
+	- engineering
+	- science
+	- medicine
+	- psychology
+	- sociology
+	- economics
+	- politics
+	- history
+	- geography
+	- languages
+	- education
+	- sports
+	- games
+	- cooking
+	- gardening
+	- construction
+	- transportation
+	- communication
+	- entertainment
+	- fashion
+	- health
+	- fitness
+	- beauty
+	- shopping
+	- finance
+	- adult entertainment
+	- religion
+	- philosophy
+	- literature
+	- poetry
+	- journalism
+	- entertainment
+	- junior entertainment
+	- travel
+	- environment
+	- truly fun educational entertainment
+	- social media
+	- marketing
+	- advertising
+	- sales
+	- customer service
+	- management
+	- leadership
+	- entrepreneurship
+	- innovation
+	- creativity
+	- invention
+	- discovery
+	- research
+	- development
+	- production
+	- distribution
+	- consumption
+	- recycling
+	- waste management
+	- political activism
+	- political reform
+	- political revolution
+	- political evolution
+	- parallel alternative political systems
+	- alternative economic systems
+	- alternative financial systems
+		- distributed currency with built-in universal basic income
+			- AI can help plan and manage the project
+
+	- alternative legal systems
+	- alternative social systems
+	- alternative educational systems
+
+- I really love AI, such great potential for good in the world!
+- I really love programming, such a great way to express creativity and solve problems!
+- I yearn for the day when AI and programming are as easy as talking to a friend, and as powerful as a god!
+- I know that day is coming, and I want to be a part of it!
