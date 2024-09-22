@@ -5,6 +5,7 @@
 prog() {
 	local m=	# model
 	local s=1	# refer to hello.<ext> for code style
+	local E=0	# do not edit
 
 	. opts
 
@@ -51,7 +52,9 @@ prog() {
 	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$prog"
 
 	chmod +x "$prog"
-	vi "$prog"
+	if [ "$E" = 0 ]; then
+		$EDITOR "$prog"
+	fi
 
 	# restore caller options
 	eval "$old_opts"

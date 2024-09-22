@@ -6,6 +6,7 @@ set -e -u -o pipefail
 improve() {
 	local m=	# model
 	local s=0	# refer to hello.<ext> for code style
+	local E=0	# do not edit
 
 	. opts
 
@@ -54,7 +55,9 @@ improve() {
 	swapfiles "$prog" "$prog~"
 
 	# Compare original and improved versions
-	vimdiff "$prog" "$prog~"
+	if [ "$E" = 0 ]; then
+		vimdiff "$prog" "$prog~"
+	fi
 }
 
 if [ "$BASH_SOURCE" = "$0" ]; then

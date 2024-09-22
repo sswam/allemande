@@ -7,6 +7,7 @@
 
 comment() {
 	local m=	# LLM model
+	local E=0	# do not edit
 
 	. opts
 
@@ -17,7 +18,7 @@ comment() {
 
 	# If no file is provided, process input stream
 
-	code_modify "$file" process -m="$m" "$prompt"
+	code_modify -E="$E" "$file" process -m="$m" "$prompt"
 }
 
 # Run the comment function if the script is executed directly

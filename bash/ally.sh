@@ -21,6 +21,10 @@ locate_file() {
 }
 
 code_modify() {
+	local E=0	# do not edit
+
+	. opts
+
 	local file=${1-}
 	shift
 	local command=( "$@" )
@@ -43,5 +47,7 @@ code_modify() {
 	swapfiles "$file" "$file~"
 
 	# Open both files in vimdiff for comparison
-	vimdiff "$file" "$file~"
+	if [ "$E" = 0 ]; then
+		vimdiff "$file" "$file~"
+	fi
 }

@@ -6,6 +6,7 @@
 tests() {
 	local m=    # model
 	local s=1   # refer to test_hello.py for test style
+	local E=0	# do not edit
 
 	. opts
 
@@ -72,7 +73,9 @@ tests() {
 		chmod +x "$tests_path"
 	fi
 
-	vi -O "$tests_path" "$program"
+	if [ "$E" = 0 ]; then
+		$EDITOR -O "$tests_path" "$program"
+	fi
 
 	# restore caller options
 	eval "$old_opts"
