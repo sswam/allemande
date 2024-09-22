@@ -31,27 +31,33 @@ tests() {
 
 	tests_ext=$ext
 
+	executable=0
 	case "$ext" in
 	.sh)
 		tests_ext=.bats
-		;;
+		executable=1
+		if [ ! -e "$dir/tests/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
+			ln -s /usr/lib/bats "$dir/tests/test_helper"
+		fi
 	esac
 
-	local test_file="$dir/tests/test_{$stem}$tests_ext"
+	local tests_base="test_${stem}$tests_ext"
+	local tests_path="$dir/tests/$tests_base"
 
 	# Check if test file already exists
-	if [ -e "$test_file" ]; then
-		echo >&2 "already exists: $test_file"
+	if [ -e "$tests_path" ]; then
+		echo >&2 "already exists: $tests_path"
 		exit 1
 	fi
 
 	# Test style reference and prompt for -s option
 	if [ "$s" = 1 ]; then
-		refs+=("test_hello$ext")
-		prompt="in the style of \`test_hello$tests_ext\`, $prompt"
+		local example="test_hello$tests_ext"
+		refs+=("$example")
+		prompt="in the style of \`$example\`, $prompt"
 	fi
 
-	prompt="Please write \`test_$base\` to test \`$base\`, $prompt"
+	prompt="Please write \`$tests_base\` to test \`$base\`, $prompt"
 
 	local input=$(cat_named.py -p -b "$program" "${refs[@]}")
 
@@ -60,9 +66,13 @@ tests() {
 	fi
 
 	# Process input and save result
-	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$test_file"
+	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$tests_path"
 
-	vi -O "$test_file" "$program"
+	if [ "$executable" = 1 ]; then
+		chmod +x "$tests_path"
+	fi
+
+	vi -O "$tests_path" "$program"
 
 	# restore caller options
 	eval "$old_opts"
