@@ -1,15 +1,16 @@
-#!/bin/bash -eu
+#!/bin/bash
 # [file] ["extra prompt"]
 # Add comments to code, either streaming or modifying a file in-place
 
-# Source the ally bash library
-. ally.sh
+. ally
 
 comment() {
 	local m=	# LLM model
 	local E=0	# do not edit
 
 	. opts
+
+	local old_opts=$(set +o); set -e -u -o pipefail; trap 'eval "\$old_opts"' RETURN
 
 	local file=${1-}
 	shift
