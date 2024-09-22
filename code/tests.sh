@@ -6,7 +6,7 @@
 tests() {
 	local m=    # model
 	local s=1   # refer to test_hello.py for test style
-	local E=0	# do not edit
+	local E=0   # do not edit
 
 	. opts
 
@@ -18,6 +18,10 @@ tests() {
 	local prompt=$2
 	shift 2
 	local refs=("$@")
+
+	if [ ! -e "$program" ]; then
+		program=$(readlink -f "$(which "$program")")
+	fi
 
 	local dir=$(dirname "$program")
 	local base=$(basename "$program")
