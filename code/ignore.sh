@@ -17,7 +17,7 @@ ignore() {
 
 	for path in "$@"; do
 		# Convert path to be relative to git root
-		local rel_path=$(realpath --relative-to="$git_root" "$(realpath -s "$path")")
+		local rel_path=$(realpath --no-symlinks --relative-to="$git_root" "$path")
 
 		# Ensure the path starts with a slash
 		rel_path="/${rel_path#/}"
