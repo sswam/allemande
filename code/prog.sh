@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash
 # [prog.py] "instructions to create it" [reference files ...]
 # Write a program using AI
 
@@ -8,9 +8,13 @@ prog() {
 
 	. opts
 
+	# strict mode
+	local old_opts=$(set +o)
+	set -e -u -o pipefail
+
 	local prog=$1
 	local prompt=$2
-	shift 2 || true
+	shift 2
 	local refs=("$@")
 
 	# Check if program already exists
@@ -24,7 +28,7 @@ prog() {
 
 	local ext=.${prog##*.}
 	if [ "$ext" == ".$base" ]; then
-		ext=""
+		ext=".sh"
 	fi
 
 	# Code style reference and prompt for -s option
@@ -48,6 +52,9 @@ prog() {
 
 	chmod +x "$prog"
 	vi "$prog"
+
+	# restore caller options
+	eval "$old_opts"
 }
 
 if [ "$BASH_SOURCE" = "$0" ]; then
