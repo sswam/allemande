@@ -1,7 +1,8 @@
 #!/bin/bash
-
+# cmd [arg ...]
 # Run a command in a floating xterm window in i3
-set -e -u -o pipefail
+
+XTERM_OPEN_SLEEP=0.1
 
 i3_popup_xterm() {
 	local t="xterm"  # terminal emulator to use
@@ -12,6 +13,10 @@ i3_popup_xterm() {
 	local w=0	 # wait for the terminal to close
 
 	. opts
+
+	# strict mode
+	local old_opts=$(set +o)
+	set -e -u -o pipefail
 
 	local cmd=("$@")
 
@@ -37,7 +42,7 @@ i3_popup_xterm() {
 
 	# If floating mode is enabled, use i3-msg to make the window floating
 	if [[ $F -eq 0 ]]; then
-		sleep 0.05
+		sleep "$XTERM_OPEN_SLEEP"
 		i3-msg "floating enable" >/dev/null
 	fi
 
@@ -45,6 +50,9 @@ i3_popup_xterm() {
 	if [ "$w" -eq 1 ]; then
 		wait
 	fi
+
+	# restore caller options
+	eval "$old_opts"
 }
 
 if [ "$BASH_SOURCE" = "$0" ]; then
