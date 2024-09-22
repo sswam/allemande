@@ -119,34 +119,32 @@ git-staged() {
 
 files=( "$@" )
 
+# Find the top level of the git repository
+git_root=$(git rev-parse --show-toplevel)
+
 # if no files were given, use staged
 if [ "${#files[@]}" -eq 0 ]; then
     readarray -t files < <(git-staged)
-fi
-
-# Add the files, or everything if none were given / found
-if [ "${#files[@]}" -eq 0 ]; then
-    git add -A .
 else
     git add -A -- "${files[@]}"
 fi
+if [ "${#files[@]}" -eq 0 ]; then
+    git add -A .
+    readarray -t files < <(git-staged)
+fi
+if [ "${#files[@]}" -eq 0 ]; then
+    echo >&2 "No files to commit."
+    exit 1
+fi
 
-# Update the list of files from what is now staged
-# readarray -t files < <(git-staged)
+cd "$git_root"
 
 # Absolute paths
 for i in "${!files[@]}"; do
     files[$i]=$(realpath --no-symlinks "${files[$i]}")
 done
 
-# Change directory to the top level of the git repository
-if [ -n "${files[0]}" ]; then
-    cd "$(dirname "${files[0]}")"
-fi
-git_root=$(git rev-parse --show-toplevel)
-cd "$git_root"
-
-# Relative paths to git_root
+# Paths relative to git_root
 for i in "${!files[@]}"; do
     files[$i]=$(realpath --no-symlinks --relative-to="$git_root" "${files[$i]}")
 done
