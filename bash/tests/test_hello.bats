@@ -59,9 +59,11 @@ setup() {
 }
 
 # Important Notes for AI:
+
 # - With our `. opts` options parser, CLI options use =, like `-l=fr`. `-l fr` does not work.
 # - Pass lists through options, like -s,foo,bar or -s,"foo bar"
 # - If testing AI features with a model option, use `-m=s` for the 'small' model.
 # - Use tools carefully and precisely, with -- to avoid confusion between args and options,
 #   and use ^ $ for precise regexp matching where appropriate.
 # - AI tests are optional, to run them use: RUN_AI_TESTS=true ./tests/test_hello.bats
+# - When writing other scripts based on this one, please do not include these notes!
