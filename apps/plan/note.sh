@@ -32,6 +32,7 @@ A=	# don't add a note
 p=	# initial text / placeholder
 H=	# don't add hour markers
 timeout=  # time limit
+opt_1=	# only read first line, no details
 
 # shortcuts for common note types
 
@@ -210,16 +211,21 @@ if [ -z "$note" ] && [ -n "$details" ]; then
 
 # If no note or details, and not editing, read note and optional details from stdin
 elif [ -z "$A" ] && [ -z "$note" ] && [ -z "$details" ] && [ "$e" != 1 ]; then
+	# read first summary line
 	read -e -p ": " -i "$p" $timeout note
-	if [ -t 0 -a -t 2 ]; then
-		while read -e -p ". " $timeout line; do
-			if [ "$line" = "." ]; then
-				break
-			fi
-			details="$details$line"$'\n'
-		done
-	else
-		details=$(cat)
+
+	# read details unless option -1 was used
+	if [ "$opt_1" != 1 ]; then
+		if [ -t 0 -a -t 2 ]; then
+			while read -e -p ". " $timeout line; do
+				if [ "$line" = "." ]; then
+					break
+				fi
+				details="$details$line"$'\n'
+			done
+		else
+			details=$(cat)
+		fi
 	fi
 fi
 

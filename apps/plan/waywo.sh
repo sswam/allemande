@@ -2,7 +2,8 @@
 #
 # What are you working on?
 
-i=60	# interval
+i=5m	# interval
+t=60	# input timeout
 f=	# Run in the foreground
 q=	# Quit any running waywo
 e=	# Edit the waywo file
@@ -18,7 +19,7 @@ elif [ -n "$q" ]; then
 else
 	while true; do
 		last=$(note -t=waywo -n -A)
-		i3_popup_xterm -w -T="What are you working on?" note -t=waywo --timeout=60 -p="$last"
+		i3_popup_xterm -w -T="What are you working on?" note -t=waywo --timeout="$t" -p="$last" -1
 		i3_update_message.sh $(note -t=waywo -n -A)
 		sleep "$i" || true
 	done

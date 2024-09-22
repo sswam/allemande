@@ -43,7 +43,7 @@ fi
 # daemonize the script unless the user wants to run it in the foreground
 
 if [ -z "$f" ]; then
-	v daemonize "$0" -f "${OPTS[@]}" "$@" &
+	v daemonize "$(realpath "$0")" -f "${OPTS[@]}" "$@" &
 	exit 0
 fi
 
