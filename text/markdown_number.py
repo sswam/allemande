@@ -70,11 +70,16 @@ def process_markdown(
     (or all levels by default).
     """
 
+    all_levels = range(0, MAX_LEVEL)
+
     if not levels:
         levels = range(0, MAX_LEVEL)
 
-    counters = [0 for level in levels] + [0]
+    counters = [0 for level in all_levels] + [0]
+    real_levels = [0 for level in all_levels] + [0]
+
     current_level = 0
+    real_level = 0
 
     logger.debug(f"input: {input}, output: {output}, remove: {remove}, list_mode: {list_mode}")
 
@@ -88,12 +93,25 @@ def process_markdown(
         match = re.match(pattern, line)
         if match:
             level = len(match.group(1))
-            if level not in levels:
+            if level not in all_levels:
                 logger.warning(f"Level too high: {level}")
             else:
+                prev_level = current_level
                 counters, current_level = update_counters(counters, level, current_level)
                 logger.debug(f"Level: {level}, Counters: {counters}, will process line: {line}")
-                line = process_line(line, level, remove, list_mode, counters[level])
+                if list_mode:
+                    if current_level > prev_level:
+                        real_level += 1
+                    elif current_level < prev_level:
+                        for i in range(current_level + 1, prev_level + 1):
+                            real_levels[i] = 0
+                        real_level = real_levels[current_level]
+                else:
+                    real_level = level
+                real_levels[level] = real_level
+
+                if real_level in levels:
+                    line = process_line(line, level, remove, list_mode, counters[level])
         elif list_mode:
             # close list if not a list item
             indent = re.match(r'^( *)', line)
@@ -112,15 +130,3 @@ def process_markdown(
 
 if __name__ == "__main__":
     main.run(process_markdown)
-
-# To number all headings in a markdown file:
-
-#     < your_markdown.md ./markdown_number.py > numbered_markdown.md
-
-# To remove numbering:
-
-#     < numbered_markdown.md ./markdown_number.py -r > clean_markdown.md
-
-# To number lists instead of headings:
-
-#     < your_markdown.md ./markdown_number.py -l > numbered_lists.md
