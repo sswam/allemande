@@ -1,0 +1,8 @@
+Task: Technical Diary
+Based on the provided git log messages, please create a chronological technical diary of the project's development. This diary should:
+1. Be up to 10 pages or 6000 words long.
+2. Describe the evolution of the project over time.
+3. Mention and explain the different tools, apps, libraries, and tasks involved.
+4. Speculate on the reasons behind certain development decisions or feature implementations.
+5. Highlight any major milestones, challenges, or pivots in the project's direction.
+6. Include any patterns or trends you notice in the development process.
