@@ -121,15 +121,19 @@ files=( "$@" )
 
 # Find the top level of the git repository
 git_root=$(git rev-parse --show-toplevel)
+original_dir=$PWD
 
 # if no files were given, use staged
 if [ "${#files[@]}" -eq 0 ]; then
+    cd "$git_root"
     readarray -t files < <(git-staged)
 else
     git add -A -- "${files[@]}"
 fi
 if [ "${#files[@]}" -eq 0 ]; then
+    cd "$original_dir"
     git add -A .
+    cd "$git_root"
     readarray -t files < <(git-staged)
 fi
 if [ "${#files[@]}" -eq 0 ]; then
@@ -137,17 +141,12 @@ if [ "${#files[@]}" -eq 0 ]; then
     exit 1
 fi
 
-cd "$git_root"
-
-# Absolute paths
-for i in "${!files[@]}"; do
-    files[$i]=$(realpath --no-symlinks "${files[$i]}")
-done
-
 # Paths relative to git_root
 for i in "${!files[@]}"; do
     files[$i]=$(realpath --no-symlinks --relative-to="$git_root" "${files[$i]}")
 done
+
+cd "$git_root"
 
 # Inform the user of the files to be committed
 echo "Files to commit:"
