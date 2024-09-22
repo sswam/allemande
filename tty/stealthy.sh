@@ -5,28 +5,17 @@
 . tty_cursor_pos.sh
 
 calculate_output_rows() {
-	local text="$1"
-	text=${text%$'\n'}
-	printf "%s\n" "$text" |
-	expand -t 8 |
-	tr -dc '[:print:]\n' |
-	(
-		local lines=()
-		local line
-		while IFS= read -r line; do
-			lines+=("$line")
-		done
-		local rows=0
-		for line in "${lines[@]}"; do
-			local linewidth=$(<<<"$line" expand -t 8 | tr -dc '[:print:]' | wc -c)
-			local outrows=$(( linewidth / $COLUMNS + $( [ $((linewidth % $COLUMNS)) -eq 0 ] && echo 0 || echo 1 ) ))
-			if [ $outrows -eq 0 ]; then
-				outrows=1
-			fi
-			rows=$(( rows + outrows ))
-		done
-		echo "$rows"
-	)
+	local text="${1%$'\n'}"
+	local rows=0
+
+	while IFS= read -r line; do
+		local linewidth=${#line}
+		local outrows=$(( (linewidth + COLUMNS - 1) / COLUMNS ))
+		[ $outrows -le 0 ] && outrows=1
+		rows=$(( rows + outrows ))
+	done < <( printf '%s\n' "$text" | expand -t 8 | tr -dc '[:print:]\n' )
+
+	echo "$rows"
 }
 
 stealthy() {
