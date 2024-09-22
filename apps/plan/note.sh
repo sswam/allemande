@@ -212,7 +212,7 @@ if [ -z "$note" ] && [ -n "$details" ]; then
 elif [ -z "$A" ] && [ -z "$note" ] && [ -z "$details" ] && [ "$e" != 1 ]; then
 	read -e -p ": " -i "$p" $timeout note
 	if [ -t 0 -a -t 2 ]; then
-		while read -e -p ". " line; do
+		while read -e -p ". " $timeout line; do
 			if [ "$line" = "." ]; then
 				break
 			fi
