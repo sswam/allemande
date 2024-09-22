@@ -30,7 +30,7 @@ improve() {
 	local base=$(basename "$prog")
 	local ext=.${base##*.}
 	if [ "$ext" == ".$base" ]; then
-		ext=""
+		ext=".sh"
 	fi
 
 	# Code style reference and prompt for -s option
