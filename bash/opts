@@ -2,6 +2,8 @@
 
 # opts: a simple option parser for bash
 # no dependencies, no magic, no bullshit
+# )c( Sam Watkins 2009 - 2024
+# public domain / MIT
 
 # # usage from bash
 # # e.g. for a -debug switch and -mode=foo option:
@@ -71,11 +73,10 @@ usage() {
 		fi
 
 		# Remove 'local ' from start of line
-		line=${line#local }
+		line=${line/#local /'  '}
 
 		# Remove '# ' from start of line
-		line="${line#\#}"
-		line="${line# }"
+		line="${line#\# }"
 
 		# Replace literal '$0' in lines with the value of $script_name
 		line="${line//\$0 /$script_name }"
