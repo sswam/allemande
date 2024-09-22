@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
 """
-env-detective.py - A script to search for possible sources of an environment variable.
+env-detective.py - A script to search for possible sources of environment variables.
 
 This script investigates various configuration files and system settings
-to determine where an environment variable might have been set.
+to determine where environment variables might have been set.
 """
 
 import os
 import sys
 import logging
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Set, Tuple
 from shutil import which
 import re
 import glob
@@ -21,7 +21,7 @@ import sh
 
 from ally import main
 
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 
 
 logger = main.get_logger(indent=True, indent_str=4 * " ")
@@ -49,7 +49,7 @@ def expand_complex_vars(path):
     return os.path.expandvars(expanded)
 
 
-def check_source_command(line: str, expanded_path: Path, var_name: str, checked_files: List[str], level: int) -> Optional[str]:
+def check_source_command(line: str, expanded_path: Path, var_names: List[str], checked_files: Set[str], level: int, all_files: Set[str]) -> Optional[Tuple[str, str, int, str]]:
     if not re.match(r'^\s*(source|\.) ', line):
         return None
 
@@ -74,15 +74,15 @@ def check_source_command(line: str, expanded_path: Path, var_name: str, checked_
         logger.warning(f"Sourced file not found: {sourced_file}")
         return None
 
-    result = check_config_file(str(sourced_path), var_name, checked_files, level)
+    result = check_config_file(str(sourced_path), var_names, checked_files, level, all_files)
     if result:
-        logger.info(f"Found {var_name} in sourced file: {sourced_path}")
+        logger.info(f"Found variable in sourced file: {sourced_path}")
         return result
 
     return None
 
 
-def check_config_file(file_path: str, var_name: str, checked_files: List[str], level: int) -> Optional[str]:
+def check_config_file(file_path: str, var_names: List[str], checked_files: Set[str], level: int, all_files: Set[str]) -> Optional[Tuple[str, str, int, str]]:
     expanded_path = Path(file_path).expanduser().resolve()
 
     if expanded_path.as_posix() in checked_files:
@@ -94,7 +94,8 @@ def check_config_file(file_path: str, var_name: str, checked_files: List[str], l
         level += 1
         logger.indent(1)
 
-        checked_files.append(expanded_path.as_posix())
+        checked_files.add(expanded_path.as_posix())
+        all_files.add(expanded_path.as_posix())
 
         if not expanded_path.exists():
             logger.warning(f"File does not exist: {expanded_path}")
@@ -105,11 +106,12 @@ def check_config_file(file_path: str, var_name: str, checked_files: List[str], l
             for line_number, line in enumerate(content.splitlines(), 1):
                 line = line.strip()
 
-                if var_name in line and not line.startswith("#"):
-                    logger.info(f"Found {var_name} in {expanded_path} at line {line_number}")
-                    return str(expanded_path), line_number, line
+                for var_name in var_names:
+                    if var_name in line and not line.startswith("#"):
+                        logger.info(f"Found {var_name} in {expanded_path} at line {line_number}")
+                        return str(expanded_path), var_name, line_number, line
 
-                result = check_source_command(line, expanded_path, var_name, checked_files, level)
+                result = check_source_command(line, expanded_path, var_names, checked_files, level, all_files)
                 if result:
                     return result
         except Exception as e:
@@ -121,52 +123,60 @@ def check_config_file(file_path: str, var_name: str, checked_files: List[str], l
     return None
 
 
-def check_config_files(var_name: str) -> Dict[str, Optional[str]]:
+def check_config_files(var_names: List[str]) -> Tuple[Dict[str, Optional[Tuple[str, str, int, str]]], Set[str]]:
     results = {}
-    checked_files = []
+    checked_files = set()
+    all_files = set()
     for file_path in COMMON_CONFIG_FILES:
         if "*" in file_path:
             files = glob.glob(file_path)
         else:
             files = [file_path]
         for file_path in files:
-            result = check_config_file(file_path, var_name, checked_files, 0)
+            result = check_config_file(file_path, var_names, checked_files, 0, all_files)
             results[file_path] = result
-    return results
+    return results, all_files
 
 
-@arg("var_name", help="Name of the environment variable to investigate")
-def investigate_env_var(var_name: str) -> None:
+@arg("var_names", nargs="*", help="The environment variables to investigate")
+@arg("-a", "--all", help="List all rc / environment files (including sourced)", action="store_true")
+def investigate_env_var(var_names: List[str], all: bool = False) -> None:
     global logger
 
-    logger.info(f"Investigating sources of {var_name} environment variable")
+    logger.info(f"Investigating sources of environment variables: {' '.join(var_names)}")
 
     if main.get_log_level() not in ["DEBUG", "INFO"]:
         logger.indent_str = ""
 
-    current_value = os.environ.get(var_name)
+    for var_name in var_names:
+        current_value = os.environ.get(var_name)
 
-    if current_value is None:
-        logger.warning(f"{var_name} not found in current environment")
-    else:
-        logger.info(f"Current {var_name} value: {repr(current_value)}")
+        if current_value is None:
+            logger.warning(f"{var_name} not found in current environment")
+        else:
+            logger.info(f"Current {var_name} value: {repr(current_value)}")
 
-    config_results = check_config_files(var_name)
+    config_results, all_files = check_config_files(var_names)
 
     output = []
 
-    for file_path, result in config_results.items():
-        if not result:
-            continue
-        file, line_number, line = result
-        logger.info(f"Found from {file_path} in {file} at line {line_number}: {line}")
-        output.append("\t".join([file_path, file, str(line_number), line]))
+    if all:
+        logger.info("Listing all rc / environment files (including sourced):")
+        for file in sorted(all_files):
+            print(file)
+    else:
+        for file_path, result in config_results.items():
+            if not result:
+                continue
+            file, var_name, line_number, line = result
+            logger.info(f"Found {var_name} from {file_path} in {file} at line {line_number}: {line}")
+            output.append("\t".join([file_path, file, var_name, str(line_number), line]))
 
-    if not current_value and not any(config_results.values()):
-        logger.info(f"{var_name} not found in any checked locations")
+        if not any(config_results.values()):
+            logger.info(f"No variables found in any checked locations")
 
-    for line in output:
-        print(line)
+        for line in output:
+            print(line)
 
 if __name__ == "__main__":
     main.run(investigate_env_var)
