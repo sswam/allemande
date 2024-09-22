@@ -86,17 +86,20 @@ usage() {
 			break
 		fi
 
+		# Skip other ". " lines
+		if [[ "$line" =~ ^[:space:]*\.\  ]]; then
+			continue
+		fi
+
 		# avoid trailing blank lines
 		if [ "$is_blank" = 1 ]; then
 			blanks=$((blanks+1))
 			continue
 		fi
 
-		# check if we have some blank lines to output
+		# check if we have some blank lines, and squeeze them
 		if [ $blanks -gt 0 ] && [ $skip_blank_lines -eq 0 ]; then
-			for ((i=1; i<=blanks; i++)); do
-				echo
-			done
+			echo
 		fi
 		blanks=0
 		skip_blank_lines=0
