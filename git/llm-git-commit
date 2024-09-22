@@ -45,7 +45,7 @@ usage() {
     echo "  -x: clean up commit-message.*.txt files"
 }
 
-model="$ALLEMANDE_LLM_DEFAULT"
+model="d"
 
 if type move-rubbish >/dev/null 2>&1; then
     MR=move-rubbish
@@ -121,6 +121,11 @@ files=( "$@" )
 
 # Find the top level of the git repository
 git_root=$(git rev-parse --show-toplevel)
+
+if [ -z "$git_root" ]; then
+    exit 1
+fi
+
 original_dir=$PWD
 
 # if no files were given, use staged
@@ -156,7 +161,15 @@ done
 echo
 
 model-name() {
-    echo "${model_names["$1"]}"
+    local name="${model_names["$1"]}"
+    if [ -z "$name" ]; then
+        case "$1" in
+            d) name="$ALLEMANDE_LLM_DEFAULT" ;;
+            s) name="$ALLEMANDE_LLM_DEFAULT_SMALL" ;;
+            *) name="[unknown model: $1]" ;;
+        esac
+    fi
+    echo "$name"
 }
 
 run-git-diff() {
@@ -228,13 +241,21 @@ check-for-bugs() {
         echo >&2 "Code review already exists: $review, moving it to rubbish."
         $MR "$review"
     fi
-    run-git-diff | proc -m="$model" 'Please carefully review this patch with a fine-tooth comb! Answer LGTM if bug-free, or list bugs still present in the patched code. Do NOT list bugs in the original code that are fixed by the patch. You may also list other issues or suggestions if they are important. Expected format:
+    run-git-diff | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
+Answer LGTM if bug-free, or list bugs still present in the patched code.
+Do NOT list bugs in the original code that are fixed by the patch.
+Also list other issues or suggestions if they are important.
+Especially, check for sensitive information such as private keys or email addresses
+that should not be committed to git. Deliberate author's email is okay.
+Also note any grossly bad code or gross inefficiencies.
+
+Expected format:
 
 1. bug or issue
 2. another bug or issue
 
-or just LGTM.
-' | fmt -s -w 78 -g 78 | tee "$review"
+or if nothing is wrong, please just wrte 'LGTM'.
+" | fmt -s -w 78 -g 78 | tee "$review"
     echo
 }
 
@@ -280,7 +301,7 @@ while true; do
             run-git-vimdiff
             ;;
         b)
-            check-for-bugs "c"
+            check-for-bugs ""
             ;;
         x)
             cleanup
@@ -297,16 +318,16 @@ while true; do
             done
             echo "  d: diff the staged changes"
             echo "  v: vimdiff the staged changes"
-            echo "  b: check for bugs with Claude"
+            echo "  b: check for bugs"
             echo "  ?: show this help message"
             echo "  x: clean up commit-message.*.txt files"
             echo
             ;;
         *)
             if [[ -n "${option_model_codes["$choice"]}" ]]; then
-                generate-commit-message "${option_model_codes["$choice"]}"
+                generate-commit-message "$choice"
             else
-                echo "Invalid choice"
+                echo >&2 "Invalid choice"
             fi
             ;;
     esac
