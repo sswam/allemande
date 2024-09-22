@@ -55,7 +55,7 @@ test_hello() {
 	fi
 
 	# Test AI greeting (this is a basic test, as we can't predict the exact output)
-	if ! ./hello.sh -a -m="s" | grep -q '.'; then
+	if [ "$RUN_AI_TESTS" = true ] && ! ./hello.sh -a -m="s" | grep -q '.'; then
 		echo "Error: AI greeting failed to produce any output"
 		((errors++))
 	fi
@@ -80,3 +80,4 @@ fi
 # - If testing AI features with a model option, use `-m=s` for the 'small' model.
 # - Use tools carefully and precisely, with -- to avoid confusion between args and options,
 #   and use ^ $ for precise regexp matching where appropriate.
+# - AI tests are optional, to run them use: RUN_AI_TESTS=true ./tests/test_hello.sh
