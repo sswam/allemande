@@ -103,6 +103,9 @@ MODELS = {
 #	}
 }
 
+MODELS[default_model]["alias"].append("d")
+MODELS[default_model_small]["alias"].append("s")
+
 # default is $LLM_MODEL or default_model as above
 
 # first_model = next(iter(MODELS.keys()))
