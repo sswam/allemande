@@ -40,6 +40,7 @@ setup_actions() {
 	d	diff
 	v	view
 	e	edit
+	E	vimdiff
 	S	snip
 	X	exit
 	?	help
@@ -178,6 +179,12 @@ action_view() {
 action_edit() {
 	local file=$1
 	$EDITOR "$file"
+	return 1
+}
+
+action_vimdiff() {
+	local file=$1
+	git-vimdiff "$file"
 	return 1
 }
 
