@@ -260,7 +260,7 @@ or if nothing is wrong, please just wrte 'LGTM'.
 }
 
 if [ -n "$model" ]; then
-    confirm check-for-bugs "$model"
+    # confirm check-for-bugs "$model"
     if [ ! -e "$review" ] || [ "$(cat "$review")" = "LGTM" ]; then
         generate-commit-message "$model"
     fi
