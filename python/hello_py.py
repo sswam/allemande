@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-hello.py - An example Python module / script to say hello,
+An example Python module / script to say hello,
 and ask the user how they are.
 """
 
@@ -80,7 +80,7 @@ def reply_sentiment(feeling: str) -> str:
     metavar="MODEL",
     help="specify which AI model {emma,claude,dav,clia}",
 )
-def hello(
+def hello_py(
     input: TextIO = sys.stdin,
     output: TextIO = sys.stdout,
     name: str = "",
@@ -115,7 +115,7 @@ def hello(
 
 
 if __name__ == "__main__":
-    main.run(hello)
+    main.run(hello_py)
 
 """
 Important Notes for AI:

@@ -48,6 +48,7 @@ tty/tty_cursor_pos
 
 # symlinks
 /plan
+/canon
 
 # derived files
 /code/lang.rec

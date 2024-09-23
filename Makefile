@@ -126,10 +126,10 @@ brain-local:
 	cd chat && ./brain.sh --local
 
 mike:
-	cd voice-chat && ./mike.sh
+	cd voice-chat && ./bb_mike.sh
 
 speak:
-	cd voice-chat && ./speak.sh
+	cd voice-chat && ./bb_speak.sh
 
 vi-online:
 	ssh -t $(SERVER_SSH) 'cd $(ALLEMANDE_HOME) && vi -p "$$file"'
@@ -210,10 +210,13 @@ fresh::	server
 rotate:
 	room-rotate "$$file"
 
+canon:
+	$$ALLEMANDE_HOME/files/canon.py $$ALLEMANDE_PATH
+
 fresh-old:: 
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
 	if [ -s "$(file)" ]; then mv -v "$(file)" "$(file).$$time"; fi ; \
 	if [ -s "$$html" ]; then mv "$$html" "$$html.$$time"; fi ; \
 	touch "$(file)" "$$html"
 
-.PHONY: all default $(JOBS) %.xt
+.PHONY: all default $(JOBS) %.xt canon

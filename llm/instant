@@ -1,2 +1,0 @@
-#!/bin/bash -eu
-exec llm -m i "$@"

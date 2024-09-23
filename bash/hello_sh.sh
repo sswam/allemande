@@ -3,7 +3,7 @@
 # [name]
 # Says Hello, world
 
-hello() {
+hello_sh() {
 	local l=en	# language [fr|de|jp|cn], defaults to English
 	local s=()	# array of items for shopping
 	local a=	# greet using AI
@@ -47,7 +47,7 @@ hello() {
 }
 
 if [ "$BASH_SOURCE" = "$0" ]; then
-	hello "$@"
+	hello_sh "$@"
 fi
 
 # Important Notes for AI:

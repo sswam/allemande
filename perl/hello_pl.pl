@@ -32,11 +32,11 @@ GetOptions(
 pod2usage(1) if $opts{help};
 
 # Set up logging
-setup_logging('hello');
+setup_logging('hello_pl');
 my $logger = get_logger();
 
 # Main function
-sub hello {
+sub hello_pl {
     my ($input, $output) = @_;
 
     my ($get, $put) = io($input, $output);
@@ -92,7 +92,7 @@ sub reply_sentiment {
 }
 
 # Run the main function
-hello(\*STDIN, \*STDOUT);
+hello_pl(\*STDIN, \*STDOUT);
 
 __END__
 
