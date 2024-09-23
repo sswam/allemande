@@ -15,7 +15,7 @@ from io import IOBase, TextIOWrapper
 
 import argh
 
-from ally import terminal
+from ally import tty
 
 main = sys.modules[__name__]
 
@@ -323,7 +323,7 @@ def io(input: TextIO = sys.stdin, output: TextIO = sys.stdout) -> tuple[Callable
     Returns:
         tuple[Callable, Callable]: A tuple of get and put functions.
     """
-    is_tty = terminal.is_terminal(input) and terminal.is_terminal(output)
+    is_tty = tty.is_tty(input) and tty.is_tty(output)
 
     def put(*args, end="\n", **kwargs) -> None:
         """
@@ -350,8 +350,8 @@ def io(input: TextIO = sys.stdin, output: TextIO = sys.stdout) -> tuple[Callable
         if all:
             return input.read()
         if is_tty:
-            terminal.setup_history()
-            return terminal.input(prompt)
+            tty.setup_history()
+            return tty.input(prompt)
         else:
             return input.readline().rstrip("\n")
 
