@@ -2,8 +2,8 @@
 #
 # What are you working on?
 
-i=5m	# interval
-t=60	# input timeout
+i=300	# interval
+t=300	# input timeout
 f=	# Run in the foreground
 q=	# Quit any running waywo
 e=	# Edit the waywo file
