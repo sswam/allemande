@@ -113,7 +113,8 @@ def detect_indent(text: str) -> Tuple[str, int]:
             find_common_factor(indent_size, indent_size_2), common_indent_length
         )
         if indent_size == 1:
-            logger.warning("Indent detected is one space, sounds like a bad idea")
+            logger.debug("Indent detected is one space, sounds like a bad idea")
+            indent_size = 4
 
     # Calculate the minimum indentation level
     min_level = common_indent_length // indent_size if indent_size else 0
