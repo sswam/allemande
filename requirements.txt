@@ -85,3 +85,9 @@ nltk
 # metaphone
 pyspellchecker
 python-Levenshtein
+
+diffusers
+librosa
+
+jax[cuda12]
+flax[all]
