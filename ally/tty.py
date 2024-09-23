@@ -6,12 +6,17 @@ import os
 import sys
 import readline
 from pathlib import Path
+import termios
+import tty
+import select
+from typing import Tuple, Optional
+
 
 history_file = None
 sys_input = input  # Store the original input function
 
 
-def is_terminal(stream):
+def is_tty(stream):
     """
     Check if the given stream is connected to a terminal.
 
@@ -75,3 +80,48 @@ def custom_input(*args, **kwargs):
 
 # Replace the built-in input function with our custom one
 input = custom_input
+
+
+TTY_CURSOR_POS_TIMEOUT_MS = 100
+
+
+def _read_with_timeout(fd: int, count: int, timeout_ms: int) -> Optional[bytes]:
+    """Read from a file descriptor with a timeout."""
+    ready, _, _ = select.select([fd], [], [], timeout_ms / 1000)
+    if ready:
+        return os.read(fd, count)
+    return None
+
+
+def get_pos() -> Tuple[int, int]:
+    """Get the current cursor position in the terminal."""
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+
+    try:
+        tty.setraw(fd)
+
+        # Send the cursor position request
+        sys.stdout.write("\033[6n")
+        sys.stdout.flush()
+
+        # Read the response
+        buf = b""
+        while True:
+            char = read_with_timeout(fd, 1, TIMEOUT_MS)
+            if char is None:
+                raise TimeoutError("Timeout while reading terminal response")
+            buf += char
+            if char == b'R':
+                break
+
+        # Parse the response
+        response = buf.decode()
+        if not response.startswith("\033[") or not response.endswith("R"):
+            raise ValueError(f"Invalid response: {response}")
+
+        row, col = map(int, response[2:-1].split(';'))
+        return row, col
+
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
