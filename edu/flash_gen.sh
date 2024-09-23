@@ -6,11 +6,11 @@
 flash_gen() {
 	local m=     # LLM model
 	local n=10   # number of flashcards to generate
-	local aud="programmers"
-	local adj="illuminating"
-	local topic="deep learning"
-	local types="concepts, terms, and other topics"
-	local extra=""
+	local aud="programmers"	# audience
+	local topic="deep learning"	# topic
+	local adj="illuminating"	# adjective for the notes
+	local types="concepts, terms, and other topics"	# types of terms to cover
+	local extra=""	# extra guidance
 
 	. opts
 
