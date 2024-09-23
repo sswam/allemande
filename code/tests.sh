@@ -27,9 +27,9 @@ tests() {
 	local base=$(basename "$program")
 	local stem=${base%.*}
 
-	local ext=.${program##*.}
-	if [ "$ext" == ".$base" ]; then
-		ext=".sh"
+	local ext=${base##*.}
+	if [ "$ext" == "$base" ]; then
+		ext="sh"
 	fi
 
 	mkdir -p "$dir/tests"
@@ -39,14 +39,14 @@ tests() {
 	executable=0
 	case "$ext" in
 	.sh)
-		tests_ext=.bats
+		tests_ext=bats
 		executable=1
 		if [ ! -e "$dir/tests/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
 			ln -s /usr/lib/bats "$dir/tests/test_helper"
 		fi
 	esac
 
-	local tests_base="test_${stem}$tests_ext"
+	local tests_base="test_${stem}.$tests_ext"
 	local tests_path="$dir/tests/$tests_base"
 
 	# Check if test file already exists
@@ -57,7 +57,7 @@ tests() {
 
 	# Test style reference and prompt for -s option
 	if [ "$s" = 1 ]; then
-		local example="test_hello$tests_ext"
+		local example="test_hello_$ext.$tests_ext"
 		refs+=("$example")
 		prompt="in the style of \`$example\`, $prompt"
 	fi

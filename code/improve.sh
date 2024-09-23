@@ -30,15 +30,15 @@ improve() {
 	prog=$(readlink -f "$prog")
 
 	local base=$(basename "$prog")
-	local ext=.${base##*.}
-	if [ "$ext" == ".$base" ]; then
-		ext=".sh"
+	local ext=${base##*.}
+	if [ "$ext" == "$base" ]; then
+		ext="sh"
 	fi
 
 	# Code style reference and prompt for -s option
 	if [ "$s" = 1 ]; then
-		refs+=("hello$ext")
-		prompt="in the style of \`hello$ext\`, $prompt"
+		refs+=("hello_$ext.$ext")
+		prompt="in the style of \`hello_$ext.$ext\`, $prompt"
 	fi
 
 	prompt="Please improve \`$base\`, you can bump the patch version, $prompt"

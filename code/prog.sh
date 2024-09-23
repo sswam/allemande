@@ -27,15 +27,15 @@ prog() {
 	local dir=$(dirname "$prog")
 	local base=$(basename "$prog")
 
-	local ext=.${prog##*.}
-	if [ "$ext" == ".$base" ]; then
-		ext=".sh"
+	local ext=${base##*.}
+	if [ "$ext" == "$base" ]; then
+		ext="sh"
 	fi
 
 	# Code style reference and prompt for -s option
 	if [ "$s" = 1 ]; then
-		refs+=("hello$ext")
-		prompt="in the style of \`hello$ext\`, $prompt"
+		refs+=("hello_$ext.$ext")
+		prompt="in the style of \`hello_$ext.$ext\`, $prompt"
 	fi
 
 	mkdir -p "$dir"
