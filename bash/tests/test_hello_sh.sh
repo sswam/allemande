@@ -3,44 +3,46 @@
 # [test_hello]
 # Tests the hello.sh script
 
+program=./hello_sh.sh
+
 test_hello() {
 	local errors=0
 
 	# Test default behavior
-	if [ "$(./hello.sh)" != "Hello, world" ]; then
+	if [ "$($program)" != "Hello, world" ]; then
 		echo "Error: Default greeting failed"
 		((errors++))
 	fi
 
 	# Test with a name
-	if [ "$(./hello.sh John)" != "Hello, John" ]; then
+	if [ "$($program John)" != "Hello, John" ]; then
 		echo "Error: Greeting with name failed"
 		((errors++))
 	fi
 
 	# Test different languages
-	if [ "$(./hello.sh -l=fr)" != "Bonjour, world" ]; then
+	if [ "$($program -l=fr)" != "Bonjour, world" ]; then
 		echo "Error: French greeting failed"
 		((errors++))
 	fi
 
-	if [ "$(./hello.sh -l=de)" != "Hallo, world" ]; then
+	if [ "$($program -l=de)" != "Hallo, world" ]; then
 		echo "Error: German greeting failed"
 		((errors++))
 	fi
 
-	if [ "$(./hello.sh -l=jp)" != "こんにちは, world" ]; then
+	if [ "$($program -l=jp)" != "こんにちは, world" ]; then
 		echo "Error: Japanese greeting failed"
 		((errors++))
 	fi
 
-	if [ "$(./hello.sh -l=cn)" != "你好, world" ]; then
+	if [ "$($program -l=cn)" != "你好, world" ]; then
 		echo "Error: Chinese greeting failed"
 		((errors++))
 	fi
 
 	# Test shopping list
-	output=$(./hello.sh -s,apple,banana)
+	output=$($program -s,apple,banana)
 	if ! echo "$output" | grep -q '^Shopping list:$'; then
 		echo "Error: Shopping list header missing"
 		((errors++))
@@ -55,7 +57,7 @@ test_hello() {
 	fi
 
 	# Test AI greeting (this is a basic test, as we can't predict the exact output)
-	if [ "$RUN_AI_TESTS" = true ] && ! ./hello.sh -a -m="s" | grep -q '.'; then
+	if [ "$RUN_AI_TESTS" = true ] && ! $program -a -m="s" | grep -q '.'; then
 		echo "Error: AI greeting failed to produce any output"
 		((errors++))
 	fi
@@ -80,4 +82,4 @@ fi
 # - If testing AI features with a model option, use `-m=s` for the 'small' model.
 # - Use tools carefully and precisely, with -- to avoid confusion between args and options,
 #   and use ^ $ for precise regexp matching where appropriate.
-# - AI tests are optional, to run them use: RUN_AI_TESTS=true ./tests/test_hello.sh
+# - AI tests are optional, to run them use: RUN_AI_TESTS=true ./tests/test_hello_sh.sh

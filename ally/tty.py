@@ -13,7 +13,6 @@ from typing import Tuple, Optional
 
 
 history_file = None
-sys_input = input  # Store the original input function
 
 
 def is_tty(stream):
@@ -62,7 +61,7 @@ def setup_history(history_file_path=None):
     readline.set_auto_history(True)
 
 
-def custom_input(*args, **kwargs):
+def get(*args, **kwargs):
     """
     Custom input function that saves input to history.
 
@@ -72,14 +71,10 @@ def custom_input(*args, **kwargs):
     Returns:
         str: The user's input.
     """
-    text = sys_input(*args, **kwargs)
+    text = input(*args, **kwargs)
     if history_file:
         readline.append_history_file(1, history_file)
     return text
-
-
-# Replace the built-in input function with our custom one
-input = custom_input
 
 
 TTY_CURSOR_POS_TIMEOUT_MS = 100

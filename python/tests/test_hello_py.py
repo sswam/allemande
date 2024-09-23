@@ -6,7 +6,7 @@ os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
 import io
 import pytest
 from unittest.mock import patch, MagicMock
-from hello import hello, analyze_sentiment, reply_ai, reply_sentiment
+from hello_py import hello_py, analyze_sentiment, reply_ai, reply_sentiment
 
 def test_analyze_sentiment():
     assert analyze_sentiment("I'm happy") == 'Positive'
@@ -33,12 +33,12 @@ def test_reply_ai(mock_query):
     ("I'm so-so", False, "Life has its ups and downs, hope yours swings up!"),
     ("I'm feeling great", True, "I'm glad you're feeling great!"),
 ])
-def test_hello(feeling, ai, expected_response):
+def test_hello_py(feeling, ai, expected_response):
     input_stream = io.StringIO(feeling + "\n")
     output_stream = io.StringIO()
 
     with patch('llm.query', return_value="I'm glad you're feeling great!"):
-        hello(istream=input_stream, ostream=output_stream, name="Test", ai=ai)
+        hello_py(istream=input_stream, ostream=output_stream, name="Test", ai=ai)
 
     output = output_stream.getvalue()
     assert "Hello, Test" in output
@@ -46,11 +46,11 @@ def test_hello(feeling, ai, expected_response):
     assert expected_response in output
 
 @pytest.mark.parametrize("fortune_word", ["", "lucky", "unlucky", "fortunate", "unfortunate"])
-def test_hello_fortune_words(fortune_word):
+def test_hello_py_fortune_words(fortune_word):
     input_stream = io.StringIO(f"{fortune_word}\n")
     output_stream = io.StringIO()
 
-    hello(istream=input_stream, ostream=output_stream, name="Test")
+    hello_py(istream=input_stream, ostream=output_stream, name="Test")
 
     output = output_stream.getvalue()
     assert "Hello, Test" in output

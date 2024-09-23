@@ -81,8 +81,8 @@ def reply_sentiment(feeling: str) -> str:
     help="specify which AI model {emma,claude,dav,clia}",
 )
 def hello_py(
-    input: TextIO = sys.stdin,
-    output: TextIO = sys.stdout,
+    istream: TextIO = sys.stdin,
+    ostream: TextIO = sys.stdout,
     name: str = "",
     ai: bool = False,
     model: str = None,
@@ -94,7 +94,7 @@ def hello_py(
     if not name:
         name = getpass.getuser().title() if random() < 0.5 else "world"
 
-    get, put = main.io(input, output)
+    get, put = main.io(istream, ostream)
 
     put(f"Hello, {name}")
     put("How are you feeling?")
@@ -137,8 +137,6 @@ If sensible and simple to do so, write tools that can process several files in o
 Zero is holy! It is not an error to pass zero files to process. Just naturally do nothing in that case.
 
 Double line breaks are used to separate top-level functions and classes.
-
-I know it's naughty to use 'input' as a variable name, but let's do it anyway.
 
 Our scripts default to stdio.
 

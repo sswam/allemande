@@ -98,4 +98,4 @@ def test_log_file_creation():
 
     # Check that the log entry is one of the last entries based on PID
     relevant_lines = [line for line in log_lines if f"PID:{pid}" in line]
-    assert any("DEBUG hi This is a DEBUG message" in line for line in relevant_lines)
+    assert any("DEBUG     hi  This is a DEBUG message" in line for line in relevant_lines)

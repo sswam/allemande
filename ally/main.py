@@ -183,7 +183,7 @@ class CustomHelpFormatter(
         return string
 
     def _format_args(self, action, default_metavar):
-        if action.dest in ['input', 'output']:
+        if action.dest in ['istream', 'ostream']:
             return 'FILE'
         return super()._format_args(action, default_metavar)
 
@@ -257,12 +257,12 @@ def _open_files(args: argparse.Namespace, parser: argparse.ArgumentParser):
         file_obj = open(arg_value, mode)
         setattr(args, arg_name, file_obj)
 
-    process_stream_arg('input', mode='r')
-    process_stream_arg('output', mode='w', append=append, no_clobber=no_clobber)
+    process_stream_arg('istream', mode='r')
+    process_stream_arg('ostream', mode='w', append=append, no_clobber=no_clobber)
 
 
 def _fix_io_arguments(parser: argparse.ArgumentParser):
-    for arg in ['--input', '--output']:
+    for arg in ['--istream', '--ostream']:
         if arg in parser._option_string_actions:
             action = parser._option_string_actions[arg]
             if action.default == sys.stdin:
@@ -312,18 +312,18 @@ def run(command: Callable) -> None:
         logger.debug("Full traceback:\n%s", tb)
 
 
-def io(input: TextIO = sys.stdin, output: TextIO = sys.stdout) -> tuple[Callable, Callable]:
+def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Callable, Callable]:
     """
     Create input and output functions for handling I/O operations.
 
     Args:
-        input (TextIO, optional): Input stream. Defaults to sys.stdin.
-        output (TextIO, optional): Output stream. Defaults to sys.stdout.
+        istream (TextIO, optional): istream stream. Defaults to sys.stdin.
+        ostream (TextIO, optional): Output stream. Defaults to sys.stdout.
 
     Returns:
         tuple[Callable, Callable]: A tuple of get and put functions.
     """
-    is_tty = tty.is_tty(input) and tty.is_tty(output)
+    is_tty = tty.is_tty(istream) and tty.is_tty(ostream)
 
     def put(*args, end="\n", **kwargs) -> None:
         """
@@ -335,7 +335,7 @@ def io(input: TextIO = sys.stdin, output: TextIO = sys.stdout) -> tuple[Callable
         """
         if args and args[-1].endswith("\n"):
             end = ""
-        print(*args, file=output, end=end, **kwargs)
+        print(*args, file=ostream, end=end, **kwargs)
 
     def get(prompt: str = ": ", all=False) -> str:
         """
@@ -348,12 +348,12 @@ def io(input: TextIO = sys.stdin, output: TextIO = sys.stdout) -> tuple[Callable
             str: The input string.
         """
         if all:
-            return input.read()
+            return istream.read()
         if is_tty:
             tty.setup_history()
-            return tty.input(prompt)
+            return tty.get(prompt)
         else:
-            return input.readline().rstrip("\n")
+            return istream.readline().rstrip("\n")
 
     return get, put
 
