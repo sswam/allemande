@@ -112,7 +112,7 @@ done
 shift $((OPTIND-1))
 
 git-staged() {
-    git diff --cached --name-status | kut.pl -o 1 | tr '\t' '\n'
+    git diff --cached --name-status | kut_perl.pl -o 1 | tr '\t' '\n'
 }
 
 # handle the list of files
