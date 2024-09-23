@@ -12,6 +12,7 @@ import sys
 import argparse
 from pathlib import Path
 from typing import List, TextIO
+import re
 
 from ally import main
 
@@ -24,17 +25,27 @@ def _check_file(file: Path) -> None:
     filename = file.name
     ext = file.suffix
 
-    shebang = open(file).readline().strip()
+    try:
+        shebang = open(file).readline().strip()
+    except UnicodeDecodeError:
+        logger.warning(f"not a text file? {file}")
+        return
 
     if not ext and shebang.startswith("#!"):
-        if "python" in shebang:
+        if re.search(r"\b(python|python3)\b", shebang):
             ext = ".py"
-        elif "bash" in shebang:
+        elif re.search(r"\b(bash|sh)\b", shebang):
             ext = ".sh"
-        elif "perl" in shebang:
+        elif re.search(r"\bperl\b", shebang):
             ext = ".pl"
+        elif re.search(r"\bcz\b", shebang):
+            ext = ".cz"
         else:
             logger.warning(f"unknown shebang: {shebang}")
+
+    if not ext and not shebang:
+        logger.warning(f"assuming shell script: {file}")
+        ext = ".sh"
 
     good_name = file.stem.replace('-', '_') + ext
 
