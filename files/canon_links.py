@@ -17,7 +17,7 @@ __version__ = "0.1.0"
 logger = main.get_logger()
 
 
-def create_symlink(file: Path, target_dir: Path) -> None:
+def _create_symlink(file: Path, target_dir: Path) -> None:
     filename = file.name
     stem = file.stem
     symlink_name = stem.replace('_', '-')
@@ -37,7 +37,7 @@ def create_symlink(file: Path, target_dir: Path) -> None:
         symlink_path.symlink_to(relative_path)
 
 
-def canon_process_path(source: Path, target_dir: Path) -> None:
+def _process_path(source: Path, target_dir: Path) -> None:
     if source.is_file():
         files = [source]
     else:
@@ -48,10 +48,10 @@ def canon_process_path(source: Path, target_dir: Path) -> None:
             continue
         is_executable = os.access(file, os.X_OK)
         if file.is_file() and (is_executable or file.suffix == '.sh'):
-            create_symlink(file, target_dir)
+            _create_symlink(file, target_dir)
 
 
-def canon(*sources: List[str], target_dir: str = "canon") -> None:
+def canon_links(*sources: List[str], target_dir: str = "canon") -> None:
 
     """
     Create symlinks in the canon directory for executable files and .sh files.
@@ -60,8 +60,8 @@ def canon(*sources: List[str], target_dir: str = "canon") -> None:
     target_path.mkdir(parents=True, exist_ok=True)
 
     for source in sources:
-        canon_process_path(Path(source), target_path)
+        _process_path(Path(source), target_path)
 
 
 if __name__ == "__main__":
-    main.run(canon)
+    main.run(canon_links)

@@ -211,7 +211,7 @@ rotate:
 	room-rotate "$$file"
 
 canon:
-	$$ALLEMANDE_HOME/files/canon.py $$ALLEMANDE_PATH
+	$$ALLEMANDE_HOME/files/canon_links.py $$ALLEMANDE_PATH
 
 fresh-old:: 
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
