@@ -2,7 +2,7 @@
 # [command...] [-t seconds]
 # Runs a command stealthily, erasing output after user input or time limit
 
-. tty_cursor_pos.sh
+. tty_cursor_pos_bash.sh
 
 calculate_output_rows() {
 	local text="${1%$'\n'}"
@@ -42,7 +42,7 @@ stealthy() {
 	else
 		# Check cursor positioning
 		if [ "$c" = 1 ]; then
-			tty_cursor_pos -suffix=_before
+			tty_cursor_pos_bash -suffix=_before
 		fi
 
 		# Run the command and capture output
@@ -80,7 +80,7 @@ stealthy() {
 
 		# Check cursor positioning
 		if [ "$c" = 1 ]; then
-			tty_cursor_pos -suffix=_after
+			tty_cursor_pos_bash -suffix=_after
 			row_target=$(( $row_before - 1 ))
 			if [ $row_after -ne $row_target ] || [ $col_after -ne 1 ]; then
 				echo >&2 "Error: Final cursor position does not match target position"

@@ -2,7 +2,7 @@
 #
 # Gets the current cursor position in the terminal
 
-tty_cursor_pos() {
+tty_cursor_pos_bash() {
 	local timeout=0.1  # Timeout in seconds
 	local suffix=""
 
@@ -49,5 +49,5 @@ tty_cursor_pos() {
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
-	get_terminal_position "$@"
+	tty_cursor_pos_bash "$@"
 fi
