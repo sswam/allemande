@@ -7,6 +7,7 @@ improve() {
 	local m=	# model
 	local s=0	# refer to hello.<ext> for code style
 	local E=0	# do not edit
+	local c=0	# concise
 
 	. opts
 
@@ -41,6 +42,10 @@ improve() {
 	fi
 
 	prompt="Please improve \`$base\`, you can bump the patch version, $prompt"
+
+	if [ "$c" = 1 ]; then
+		prompt="$prompt, Please reply concisely with only the changed code, not the whole program."
+	fi
 
 	local input=$(cat_named.py -p -b "$prog" "${refs[@]}")
 
