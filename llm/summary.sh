@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# [-m model] [prompt ...]
+# [prompt ...]
 # Summarizes text using an AI model
 
 summary() {
-	local m="4m"  # Default model
-	local prompt=""
+	local m="4m"	# Default model
 
 	. opts
 
@@ -13,15 +12,15 @@ summary() {
 	local old_opts=$(set +o)
 	set -e -u -o pipefail
 
+	p="$*"
+
 	# Construct the prompt
-	if [ $# -gt 0 ]; then
-		prompt="Please summarize, $*"
-	else
-		prompt="Please summarize"
-	fi
+	p="Please summarize.
+$p
+Only give the summary."
 
 	# Process the input using llm
-	llm process -m "$m" "$prompt. Only give the summary."
+	llm process -m "$m" "$p"
 
 	# restore caller options
 	eval "$old_opts"
