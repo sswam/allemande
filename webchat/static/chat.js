@@ -106,6 +106,10 @@ function set_room(r) {
 	$messages.src = room_stream_url;
 }
 
+function set_room_user() {
+	set_room(user);
+}
+
 
 // user info and settings ----------------------------------------------------
 
@@ -337,6 +341,7 @@ function main() {
 	// scroll_to_bottom();
 	keyboard_shortcuts();
 	$on(window, 'message', handle_message);
+	$on($id('user'), 'click', set_room_user);
 }
 
 main();
