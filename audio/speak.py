@@ -165,6 +165,32 @@ def get_synth(model=DEFAULT_MODEL):
 		raise ValueError(f'Unknown engine: {model_type}') from e
 	return engine(model)
 
+
+class SpeakContext:
+	def __init__(self, deafen=False, loud_while_speaking=None):
+		self.deafen = deafen
+		self.loud_while_speaking = loud_while_speaking
+		self.vol = None
+	def __enter__(self):
+		if self.deafen:
+			sd.wait()
+			amixer.sset("Capture", "nocap")
+			logger.debug("Mic off")
+		if self.loud_while_speaking is not None:
+			self.vol = alsaaudio.Mixer().getvolume()[0]
+			alsaaudio.Mixer().setvolume(self.loud_while_speaking)
+			logger.info("speak_line: volume %r -> %r", self.vol, self.loud_while_speaking)
+		return self
+	def __exit__(self, exc_type, exc_value, traceback):
+		if self.deafen:
+			sd.wait()
+			amixer.sset("Capture", "cap")
+			logger.debug("Mic on")
+		if self.loud_while_speaking:
+			alsaaudio.Mixer().setvolume(self.vol)
+			logger.info("speak_line: volume %r <- %r", self.vol, self.loud_while_speaking)
+
+
 def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True, loud_while_speaking=None):
 	""" Speak a line of text """
 
@@ -182,77 +208,49 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 #		time.sleep(0.5)
 #		return
 
-	# create a temporary file to store the audio output
-	out_is_temp = not out
-	if out_is_temp:
-		with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as f:
-			out = f.name
-	try:
-		# generate speech from the input text
-		file, audio, rate = synth(text, out=out)
-
-		rate_pp = rate
-		if postproc:
-			audio, rate_pp = postproc(file, audio, rate)
-
-		if deafen:
-			sd.wait()
-			amixer.sset("Capture", "nocap")
-			logger.debug("Mic off")
-
-		# play the audio
-		if play:
-			sd.wait()
-
-			def play_it():
-				sd.play(audio, samplerate=rate_pp)
-		
-			if loud_while_speaking is not None:
-				# TODO put this in a lib, generic and audio control
-				# TODO process / thread safety?
-				# get the current volume
-				vol = alsaaudio.Mixer().getvolume()[0]
-				logger.info("speak_line: volume %r -> %r", vol, loud_while_speaking)
-				# set the volume to quiet
-				alsaaudio.Mixer().setvolume(loud_while_speaking)
-		
-				# set a handler to reset the volume
-				def reset_volume(*args, exit=True):
-					alsaaudio.Mixer().setvolume(vol)
-					if exit:
-						sys.exit(0)
-		
-				# signal handlers
-				signal.signal(signal.SIGINT, reset_volume)
-				signal.signal(signal.SIGTERM, reset_volume)
-		
-				# on exit
-				atexit.register(reset_volume, exit=False)
-		
-				play_it()
-
-				reset_volume(exit=False)
-			else:
-				play_it()
-
-			
-	except AssertionError as e:
-		if "No text" in str(e):
-			time.sleep(0.5)
-		else:
-			raise(e)
-	except ZeroDivisionError as e:
-		logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
-	finally:
-		if deafen:
-			sd.wait()
-			amixer.sset("Capture", "cap")
-			logger.debug("Mic on")
+	with SpeakContext(deafen=deafen, loud_while_speaking=loud_while_speaking):
+		# create a temporary file to store the audio output
+		out_is_temp = not out
 		if out_is_temp:
-			os.remove(out)
+			with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as f:
+				out = f.name
+		try:
+			# generate speech from the input text
+			file, audio, rate = synth(text, out=out)
 
-	if play and wait:
-		sd.wait()
+			rate_pp = rate
+			if postproc:
+				audio, rate_pp = postproc(file, audio, rate)
+
+			if deafen:
+				sd.wait()
+				amixer.sset("Capture", "nocap")
+				logger.debug("Mic off")
+
+			# play the audio
+			if play:
+				sd.wait()
+
+				sd.play(audio, samplerate=rate_pp)
+				
+		except AssertionError as e:
+			if "No text" in str(e):
+				time.sleep(0.5)
+			else:
+				raise(e)
+		except ZeroDivisionError as e:
+			logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
+		finally:
+			if deafen:
+				sd.wait()
+				amixer.sset("Capture", "cap")
+				logger.debug("Mic on")
+			if out_is_temp:
+				os.remove(out)
+
+		if play and wait:
+			sd.wait()
+
 
 def speak_lines(inp=stdin, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True, loud_while_speaking=None):
 	""" Speak lines of text """

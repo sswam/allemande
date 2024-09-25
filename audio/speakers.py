@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 """
-A script to speak lines with two different voices using text-to-speech.
+A script to speak lines with several different voices using text-to-speech.
 """
 
+import sys
 import os
 import re
 import logging
 from functools import partial
-from typing import List
 import time
 
 import sounddevice as sd
@@ -25,15 +25,15 @@ __version__ = "0.1.1"
 logger = main.get_logger()
 
 
-def two_speakers_speak_line(males: List[str], line: str, synth, model: str) -> None:
-    text = re.sub(r"[^\s]*:\s*", "", line)
-
-    for char in males:
-        if line.startswith(f"{char}:"):
-            tempo, pitch = 0.8, -9
-            break
+def speakers_speak_line(characters_dict: list[str, tuple], text: str, synth, model: str) -> None:
+    """Speak a line with different voices"""
+    character = "default"
+    if m := re.match(r"^([^\s]+):\s*(.*)", text):
+        character, text = m.groups()
     else:
-        tempo, pitch = 1.2, 4
+        character = "default"
+
+    tempo, pitch, loudness = characters_dict.get(character, characters_dict["default"])
 
     postproc = partial(speak.postproc_soundstretch, tempo=tempo, pitch=pitch)
     speak.speak_line(
@@ -42,22 +42,24 @@ def two_speakers_speak_line(males: List[str], line: str, synth, model: str) -> N
         wait=True,
         synth=synth,
         postproc=postproc,
-        loud_while_speaking=100,
+        loud_while_speaking=loudness,
         echo=False,
     )
 
 
-@arg("males", nargs="*", help="List of male character names")
+@arg("characters", nargs="*", help="List of name1,name2:tempo:pitch:loud, one name can be 'default'")
 @arg("--model", help="TTS model to use")
 @arg("--silence", help="Silence duration between lines")
 @arg("--start-text", help="Text to start with")
-def speak_two_voices(
-    *males: List[str],
+def speakers(
+    *characters: list[str],
     model: str = "coqui:tts_models/en/ek1/tacotron2",
     silence: float = 0.1,
     start_text: str | None = None,
 ) -> None:
     """Speak lines with two different voices using text-to-speech"""
+    get, put = main.io()
+
     speak.add_coqui_models()
     synth = speak.get_synth(model)
 
@@ -68,7 +70,13 @@ def speak_two_voices(
         silent_audio = np.zeros(silence_samples)
         sd.play(silent_audio, samplerate=rate)
 
-    get, put = main.io()
+    characters_dict = {}
+
+    for i in range(len(characters)):
+        names, tempo, pitch, loudness = characters[i].split(":")
+        tempo = float(tempo) ; pitch = float(pitch) ; loudness = int(loudness)
+        for name in names.split(","):
+            characters_dict[name] = (tempo, pitch, loudness)
 
     while True:
         line = get()
@@ -84,12 +92,12 @@ def speak_two_voices(
             start_text = None
         try:
             put(line)
-            with unix.redirect(stdout=None, stderr=None):
-                two_speakers_speak_line(males, line, synth, model)
+#            with unix.redirect(stdout=None, stderr=None):
+            speakers_speak_line(characters_dict, line, synth, model)
         except (KeyboardInterrupt, SystemExit):
-            logger.warning("Interrupted, continuing with the next line in 2 seconds")
-            time.sleep(2)
+            logger.warning("Interrupted, continuing with the next line in 1 second")
+            time.sleep(1)
 
 
 if __name__ == "__main__":
-    main.run(speak_two_voices)
+    main.run(speakers)
