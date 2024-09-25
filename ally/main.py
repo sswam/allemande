@@ -353,7 +353,10 @@ def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Calla
             tty.setup_history()
             return tty.get(prompt)
         else:
-            return istream.readline().rstrip("\n")
+            line = istream.readline()
+            if line == "":
+                return None
+            return line.rstrip("\n")
 
     return get, put
 
