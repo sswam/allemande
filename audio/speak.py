@@ -168,7 +168,7 @@ def get_synth(model=DEFAULT_MODEL):
 def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=None, deafen=False, postproc=None, echo=True, loud_while_speaking=None):
 	""" Speak a line of text """
 
-	logger.warning("speak_line: text: %r, out: %r, model: %r, play: %r, wait: %r, synth: %r, deafen: %r, postproc: %r, echo: %r, loud_while_speaking: %r", text, out, model, play, wait, synth, deafen, postproc, echo, loud_while_speaking)
+	logger.info("speak_line: text: %r, out: %r, model: %r, play: %r, wait: %r, synth: %r, deafen: %r, postproc: %r, echo: %r, loud_while_speaking: %r", text, out, model, play, wait, synth, deafen, postproc, echo, loud_while_speaking)
 
 	if not synth:
 		synth = get_synth(model)
@@ -212,7 +212,7 @@ def speak_line(text, out=None, model=DEFAULT_MODEL, play=True, wait=True, synth=
 				# TODO process / thread safety?
 				# get the current volume
 				vol = alsaaudio.Mixer().getvolume()[0]
-				logger.warning("speak_line: volume %r -> %r", vol, loud_while_speaking)
+				logger.info("speak_line: volume %r -> %r", vol, loud_while_speaking)
 				# set the volume to quiet
 				alsaaudio.Mixer().setvolume(loud_while_speaking)
 		
