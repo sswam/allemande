@@ -125,7 +125,7 @@ models = {}
 
 def add_coqui_models():
 	""" Add Coqui TTS models to the models dict """
-	for mid in TTS.list_models():
+	for mid in TTS().list_models():
 		full_id = "coqui:" + mid
 		lang = mid.split("/")[1]
 		models[full_id] = {
