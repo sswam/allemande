@@ -91,3 +91,5 @@ librosa
 
 jax[cuda12]
 flax[all]
+
+google-generativeai
