@@ -344,6 +344,8 @@ def read_utf_replace(istream):
 	try:
 		input_data = istream.buffer.read()
 		input_text = input_data.decode("utf-8", errors="replace")
+	except AttributeError:
+		input_text = istream.read()
 	except UnicodeDecodeError as ex:
 		logger.warning("error reading input: %s", ex)
 		input_text = istream.read()
