@@ -8,8 +8,15 @@
 f=0	# output filenames, not content
 c=0	# output code, using markdown_code -c '#' (or provided prefix)
 m=	# view markdown in Chrome with Markdown Viewer
+e=0	# edit
 
 . opts
+
+# no editing and chroming together
+if [ "$e" = 1 -a "$m" = 1 ]; then
+	echo >&2 "Can't edit and view in Chrome at the same time."
+	exit 1
+fi
 
 # default to # comments
 if [ "$c" = 1 ]; then
@@ -32,4 +39,8 @@ elif [ "$c" != 0 ]; then
 	llm_last "$@" | xa catpg | markdown_code.py -c "$c"
 else
 	llm_last "$@" | xa catpg
+fi | if [ "$e" = 1 ]; then
+	vipe
+else
+	cat
 fi
