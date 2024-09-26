@@ -1,0 +1,85 @@
+#!/usr/bin/perl -w
+
+#TODO:  don't buffer if it's coming from a file, read it twice...
+#	otherwise, use temp file instead of buffering in memory?
+
+# TODO make it work with indented code (i.e. don't screw up the indent level)
+
+use strict;
+
+#$|=1;
+
+my $gap = @ARGV ? shift : 2;
+my @options = @ARGV;
+
+my $opt;
+for $opt (@options) {
+	$opt ||= "-";
+	$opt =~ /[a-z]$/ or $opt .= $opt =~ /\./ ? "f" : "s";
+	$opt = "%$opt";
+}
+
+# print "@options\n";
+
+my @width;
+my @rows;
+
+my $rx_split;
+my $tsv_format = $ENV{TSV_FORMAT} || '';
+if ($tsv_format eq "spaces_ok") {
+	$rx_split = qr{\s{2,}|\t};
+} elsif ($tsv_format eq "strict") {
+	$rx_split = qr{\t};
+} else {
+	$rx_split = qr{ *\t};
+}
+
+my $line;
+my $length;
+my $i;
+while (defined ($line = <STDIN>)) {
+	my @row;
+	chomp $line;
+	@row = split m{$rx_split}, $line, -1;
+	$i = 0;
+	for (@row) {
+		if ($_ eq "\0") {
+			$_ = "[NULL]";
+		} else {
+#			s/([^\\]|^)((?:\\\\)*)\\0/$1$2\0/g;
+#			s/([^\\]|^)((?:\\\\)*)\\n/$1$2\n/g;
+#			s/([^\\]|^)((?:\\\\)*)\\t/$1$2\t/g;
+#			s/\\\\/\\/g;
+		}
+		$length = length sprintf $options[$i]||="%-s", $_;
+		$length > ($width[$i]||-1) and $width[$i] = $length;
+		++$i;
+	}
+	push @rows, \@row;
+}
+
+$i = 0;
+for $opt (@options) {
+	$opt =~ /(%|[^\.0-9])([1-9])/ or $opt =~ s/(\.|.$)/$width[$i].$1/e;
+	++$i;
+}
+
+my $format = join " "x$gap, @options;
+
+# print "$format\n";
+use Data::Dumper;
+
+my @empty = ("")x@options;
+
+# XXX this is broken 
+for (@rows) {
+	my $line = sprintf "$format", ((@$_, @empty)[0..@options-1]);
+        if (@$_ == 0) {
+            $line = "";
+        } elsif ($line =~ /^ +$/) {
+            $line = " ";
+        } else {
+            $line =~ s/ +$//;
+        }
+        print "$line\n";
+}
