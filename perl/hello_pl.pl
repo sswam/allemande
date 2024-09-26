@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use autodie;
 use v5.30;
 use utf8;
 use open qw(:std :utf8);
@@ -29,7 +30,7 @@ GetOptions(
     'help|h'  => \$opts{help},
 ) or pod2usage(2);
 
-pod2usage(1) if $opts{help};
+pod2usage(-verbose => 2) if $opts{help};
 
 # Set up logging
 setup_logging('hello_pl');
@@ -117,3 +118,20 @@ methods to generate a response, including fortune cookies, AI, or simple
 sentiment analysis.
 
 =cut
+
+
+Important Notes for AI:
+
+AVOID DEEP INDENTATON OR NESTING, it's better to use if/elif or a function.
+If needed, we can use variables to avoid repeating parts of conditions.
+This is the number one rule!
+
+We use autodie, so be careful to avoid accidentally exiting.
+Generally, if things go wrong, die rather than continuing.
+
+If sensible and simple to do so, write tools that can process several files in one invocation.  # XXX not sure
+Zero is holy! It is not an error to pass zero files to process. Just naturally do nothing in that case.
+
+Stdout is only for normal output. Use logging for info, warning or error messages.
+
+When writing other scripts based on this one, please do not include these notes!
