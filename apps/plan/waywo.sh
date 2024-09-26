@@ -2,7 +2,7 @@
 #
 # What are you working on?
 
-i=300	# interval
+i=1800	# interval
 t=300	# input timeout
 f=	# Run in the foreground
 q=	# Quit any running waywo
