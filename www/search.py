@@ -448,7 +448,7 @@ def search(*queries, engine=None, markdown=False, limit=None, max_results=10, sa
 def main():
 	parser = argparse.ArgumentParser(description="Search `query` using `engine` and return a list of results")
 	parser.add_argument('-e', '--engine', help='Search engine to use', default=dict_first(engines), choices=list(map(str.lower, engines.keys())))
-	parser.add_argument('-f', '--format', help='Output formatter', default='table', choices=formatters.keys())
+	parser.add_argument('-f', '--format', help='Output formatter', default='tsv', choices=formatters.keys())
 	parser.add_argument('-m', '--max-results', help='Maximum number of results to return', type=int, default=10)
 	parser.add_argument('-s', '--safe', help='Safe search', default='off', choices=['off', 'moderate', 'strict'])
 	parser.add_argument('-l', '--limit', help='Limit to specified max results', action='store_true')
