@@ -39,7 +39,12 @@ hello_sh() {
 		echo "Shopping list:"
 		for item in "${s[@]}"; do
 			printf -- "- %s\n" "$item"
-		done
+		done | 
+		if [ "$a" = 1 ]; then
+			process -m="$m" "Please echo the input and add any extra items we might need."
+		else
+			cat
+		fi
 	fi
 
 	# restore caller options
@@ -61,7 +66,7 @@ fi
 # The `. opts` call gets options and prints usage automatically. No need to do that in the script.
 #
 # The first lines 1. shebang, 2. arguments without program name, 3. short description of the program.
-# This header format should be followed exactly, so that `. opts` can print usage.
+# This header format must be followed exactly, so that `. opts` can print usage.
 #
 # These scripts can be used as CLI tools or as a bash library thanks to the BASH_SOURCE stuff.
 #
@@ -72,6 +77,8 @@ fi
 # - `wich`, a better `which` that also finds non-execuable shell libs XXX maybe I should rename it
 #
 # Our functions might be used from other scripts, so on error return 1, do not exit 1.
-# We assume the client script is using `-e`, so `return 1` should end up as `exit 1` normally.
+# We assume the client script is using `-e`, so `return 1` normally becomes `exit 1`.
+#
+# Error and other commentary must be printed to stderr: echo >&2 "Error: something went wrong"
 #
 # When writing other scripts based on this one, please do not include these notes!
