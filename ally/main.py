@@ -272,12 +272,12 @@ def _fix_io_arguments(parser: argparse.ArgumentParser):
             action.type = str
 
 
-def run(command: Callable) -> None:
+def run(commands: Callable|list[Callable]) -> None:
     """
-    Set up logging, parse arguments, and run the specified command.
+    Set up logging, parse arguments, and run the specified command(s).
 
     Args:
-        command (Callable): The command function to be executed.
+        commands (Union[Callable, List[Callable]]): The command function(s) to be executed.
 
     Raises:
         Exception: Any exception that occurs during command execution.
@@ -286,7 +286,10 @@ def run(command: Callable) -> None:
 
     parser = argh.ArghParser(formatter_class=lambda prog: main.CustomHelpFormatter(prog, max_help_position=40), allow_abbrev=False)
 
-    argh.set_default_command(parser, command)
+    if isinstance(commands, list):
+        argh.add_commands(parser, commands)
+    else:
+        argh.set_default_command(parser, commands)
 
     main.setup_logging_args(module_name, parser)
 
@@ -304,7 +307,10 @@ def run(command: Callable) -> None:
 
     # dispatch, and show errors nicely
     try:
-        argh.dispatching.run_endpoint_function(command, args)
+        if isinstance(commands, list):
+            argh.dispatch(parser)
+        else:
+            argh.dispatching.run_endpoint_function(commands, args)
     except Exception as e:
         logger = main.get_logger(1)
         logger.error(f"Error: %s %s", type(e).__name__, str(e))
