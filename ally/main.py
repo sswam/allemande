@@ -11,7 +11,7 @@ import inspect
 from pathlib import Path
 from typing import TextIO, Callable
 import argparse
-from io import IOBase, TextIOWrapper
+from io import IOBase, TextIOWrapper, StringIO
 
 import argh
 
@@ -417,27 +417,51 @@ def find_in_path(file, resolve=True):
     raise FileNotFoundError(f"{file} (in $PATH)")
 
 
-class TextInput(TextIOWrapper):
+class TextInput:
     """
-    A text input manager that can read from files or stdin.
+    A text input manager that can read from files, stdin, or StringIO.
     """
     def __init__(self, file=None, mode='r', encoding='utf-8', errors='strict', newline=None, search=False, basename=False, stdin_name='input'):
         if mode not in ('r', 'rb', 'rt'):
-             raise ValueError("Mode must be 'r', 'rb', or 'rt'")
+            raise ValueError("Mode must be 'r', 'rb', or 'rt'")
+
+        self.encoding = encoding
+        self.errors = errors
+        self.newline = newline
+
         if file in (None, '-', sys.stdin):
             self.display = stdin_name
-            super().__init__(sys.stdin.buffer, encoding=encoding, errors=errors, newline=newline)
+            self.file = sys.stdin
         elif isinstance(file, str):
             if search and not os.path.exists(file):
                 file = find_in_path(file)
             self.display = os.path.basename(file) if basename else file
-            super().__init__(open(file, 'rb'), encoding=encoding, errors=errors, newline=newline)
+            self.file = open(file, mode, encoding=encoding, errors=errors, newline=newline)
+        elif isinstance(file, StringIO):
+            self.display = "StringIO"
+            self.file = file
         else:
-            super().__init__(file, encoding=encoding, errors=errors, newline=newline)
+            self.display = getattr(file, 'name', 'file-like object')
+            self.file = file
+
+        if not isinstance(self.file, TextIOWrapper) and hasattr(self.file, 'read'):
+            self.file = TextIOWrapper(self.file, encoding=encoding, errors=errors, newline=newline)
+
+    def read(self, size=-1):
+        return self.file.read(size)
+
+    def readline(self, size=-1):
+        return self.file.readline(size)
+
+    def readlines(self, hint=-1):
+        return self.file.readlines(hint)
+
+    def __iter__(self):
+        return iter(self.file)
 
     def close(self):
-        if self.buffer is not sys.stdin.buffer:
-            super().close()
+        if self.file is not sys.stdin:
+            self.file.close()
 
     def __enter__(self):
         return self
