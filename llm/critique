@@ -24,7 +24,7 @@ e.g. if it seems like a cool program that does something useful or novel...
 $prompt"
 	cat_named.py -b -p "$@" |
 	(process -m="$m" "$prompt"; echo) |
-	v tee -a "$1.crit"
+	tee -a "$1.crit"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
