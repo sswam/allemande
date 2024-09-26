@@ -156,4 +156,6 @@ Stdout is only for normal output. Use logging for info, warning or error message
 None is different from 0. Don't "simplify" `if foo is None: foo = default` to `foo = foo or default`.
 
 The original coder was probably not an idiot. Be careful when "fixing" things.
+
+Do not remove comments or blank lines.
 """
