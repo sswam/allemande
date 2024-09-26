@@ -22,7 +22,7 @@ def reverse_lines(lines):
     Returns:
         list of str: List of reversed lines.
     """
-    return [line[::-1] for line in lines]
+    return [line.rstrip("\n")[::-1]+"\n" for line in lines]
 
 
 def main():

@@ -26,7 +26,7 @@ def quote(multiline_string):
 
 def quote_list(multiline_string):
     """
-    Convert a multiline string into a list of lines with common leading whitespace removed.
+    Convert a multiline string into a list of lines with common leading whitespace removed and no trailing newline.
 
     Args:
         multiline_string (str): The input string containing multiple lines.
@@ -40,19 +40,34 @@ def quote_list(multiline_string):
     return output
 
 
+def quote_lines(multiline_string):
+    """
+    Convert a multiline string into a list of lines with common leading whitespace removed.
+
+    Args:
+        multiline_string (str): The input string containing multiple lines.
+
+    Returns:
+        list: A list of lines with common leading whitespace removed.
+    """
+    output = quote_list(multiline_string)
+    return [x+"\n" for x in output]
+
+
 qi = quote
 ql = quote_list
+qL = quote_lines
 
 
 def test_reverse_lines():
     """
     Test the reverse_lines function in the reverse_lines module.
     """
-    input_lines = ql("""
+    input_lines = qL("""
         asdf
         qwer
     """)
-    expected_response = ql("""
+    expected_response = qL("""
         fdsa
         rewq
     """)
