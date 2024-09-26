@@ -71,8 +71,11 @@ def get(*args, **kwargs):
     Returns:
         str: The user's input.
     """
-    text = input(*args, **kwargs)
-    if history_file:
+    try:
+        text = input(*args, **kwargs)
+    except EOFError:
+        text = None
+    if text is not None:
         readline.append_history_file(1, history_file)
     return text
 
