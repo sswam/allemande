@@ -2,7 +2,7 @@
 # cmd [arg ...]
 # Run a command in a floating xterm window in i3
 
-XTERM_OPEN_SLEEP=0.1
+XTERM_OPEN_SLEEP=0.2
 
 i3_popup_xterm() {
 	local t="xterm"  # terminal emulator to use
