@@ -11,6 +11,11 @@ fi
 . confirm
 
 diff_context=10   # lines of context for diffs
+model="d"
+
+timestamp=$(date +%Y%m%d%H%M%S)
+commit_message="commit-message.$timestamp.$$.txt"
+review="review.$timestamp.$$.txt"
 
 # Associative arrays mapping model codes to names and options
 declare -A model_names=(
@@ -45,17 +50,28 @@ usage() {
     echo "  -x: clean up commit-message.*.txt files"
 }
 
-model="d"
-
 if type move-rubbish >/dev/null 2>&1; then
     MR=move-rubbish
 else
     MR="rm -f"
 fi
 
-timestamp=$(date +%Y%m%d%H%M%S)
-commit_message="commit-message.$timestamp.txt"
-review="review.$timestamp.txt"
+# Run git with retries to handle index.lock errors
+git() {
+    stderr=$(mktemp)
+    for i in {1..5}; do
+        command git "$@" 2> "$stderr"
+        if [ $? -eq 0 ]; then
+            break
+        fi
+        # look for Unable to create .* index.lock
+        if ! grep -q 'Unable to create .* index.lock' "$stderr"; then
+            break
+        fi
+        sleep .$RANDOM
+    done
+    rm -f "$stderr"
+}
 
 cleanup() {
     # Remove empty commit messages that are not open
@@ -66,13 +82,35 @@ cleanup() {
     done
 }
 
+# Find the top level of the git repository
+git_root=$(git rev-parse --show-toplevel)
+
+if [ -z "$git_root" ]; then
+    exit 1
+fi
+
+get_lock() {
+    while ! mkdir "$git_root/.git/llm_git_commit.lock" 2>/dev/null; do
+        echo >&2 "Waiting for llm_git_commit.lock to be released..."
+        sleep .$RANDOM
+    done
+}
+
+release_lock() {
+    rmdir "$git_root/.git/llm_git_commit.lock" 2>/dev/null || true
+}
+
 cleanup-and-exit() {
+    release_lock
     $MR "$commit_message" "$review" 2>/dev/null
     exit "$1"
 }
 
 git-commit() {
+    get_lock
+    git add -A -- "${files[@]:-.}"
     git commit "$@" "${files[@]:-.}"
+    release_lock
 }
 
 trap 'cleanup-and-exit 0' EXIT
@@ -119,16 +157,10 @@ git-staged() {
 
 files=( "$@" )
 
-# Find the top level of the git repository
-git_root=$(git rev-parse --show-toplevel)
-
-if [ -z "$git_root" ]; then
-    exit 1
-fi
-
 original_dir=$PWD
 
 # if no files were given, use staged
+get_lock
 if [ "${#files[@]}" -eq 0 ]; then
     cd "$git_root"
     readarray -t files < <(git-staged)
@@ -141,6 +173,7 @@ if [ "${#files[@]}" -eq 0 ]; then
     cd "$git_root"
     readarray -t files < <(git-staged)
 fi
+release_lock
 if [ "${#files[@]}" -eq 0 ]; then
     echo >&2 "No files to commit."
     exit 1
@@ -173,11 +206,13 @@ model-name() {
 }
 
 run-git-diff() {
+    get_lock
     local opts=("$@")
     local difftext
     if [ "${#files[@]}" -eq 0 ]; then
         git diff --staged -U$diff_context "${opts[@]}"
     else
+        git add -A -- "${files[@]}"
         for file in "${files[@]}"; do
             difftext=$(git diff --staged -U$diff_context "${opts[@]}" -- "$file")
             if [ -n "$difftext" ]; then
@@ -187,6 +222,7 @@ run-git-diff() {
             fi
         done
     fi
+    release_lock
 }
 
 generate-commit-message() {
