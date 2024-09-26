@@ -65,3 +65,24 @@
 #		"description": "Almost as capable as Davinci Codex, but slightly faster. This speed advantage may make it preferable for real-time applications.",
 #		"cost": 0,
 #	},
+
+	if vendor == "bard":
+		return await achat_bard(messages)
+
+@argh.arg("-s", "--state-file", help="state file for Google Bard")
+
+# def chat_bard(messages):
+# 	""" Chat with Google Bard models """
+# 	# We can only pass in the last user message; let's hope we have the right state file!
+# 	# We can't run all the user messages again; Bard will likely not do the same thing so it would be a mess.
+# 	# Perhaps we should save state in chat metadata.
+# 	if not messages or messages[-1]["role"] == "assistant":
+# 		raise ValueError("Bard requires a conversation ending with a user message.")
+# 	bard = Bard(state_file=opts.state_file, auto_save=opts.auto_save)
+# 	response = bard.aget_answer(messages[-1]["content"])
+# 	completion = response["content"]
+# 	message = { "role": "assistant", "content": completion }
+# 	return message
+
+		if kwargs.get("state_file") and kwargs.get("auto_save") is None:
+			kwargs["auto_save"] = True
