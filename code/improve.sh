@@ -44,7 +44,7 @@ improve() {
 	prompt="Please improve \`$base\`, you can bump the patch version, $prompt"
 
 	if [ "$c" = 1 ]; then
-		prompt="$prompt, Please reply concisely with only the changed code, not the whole program."
+		prompt="$prompt, Please reply concisely with only the changed code, not the whole program. Never remove comments unless they are incorrect and should be removed."
 	fi
 
 	local input=$(cat_named.py -p -b "$prog" "${refs[@]}")
@@ -55,14 +55,29 @@ improve() {
 	fi
 	echo n | cp -i -a "$prog" "$prog~"   # WTF, there's no proper no-clobber option?!
 
+	comment_char="#"
+	case "$ext" in
+		c|cpp|java|js|ts|php|cs|go|rs) comment_char="//" ;;
+		sh|py|pl|rb)
+			comment_char="#" ;;
+	esac
+
 	# Process input and save result
 	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$prog~"
-	swapfiles "$prog" "$prog~"
+
+	# check not empty
+	if [ ! -s "$prog~" ]; then
+		echo >&2 "empty output"
+		rm "$prog~"
+		exit 1
+	fi
 
 	# Compare original and improved versions
 	if [ "$E" = 0 ]; then
-		vimdiff "$prog" "$prog~"
+		vimdiff "$prog~" "$prog"
 	fi
+
+	swapfiles "$prog" "$prog~"
 }
 
 if [ "$BASH_SOURCE" = "$0" ]; then
