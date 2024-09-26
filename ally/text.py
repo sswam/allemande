@@ -35,3 +35,8 @@ def read_lines(
                 all_lines.append(line)
 
     return all_lines
+
+
+def squeeze(text: str) -> str:
+    """ Squeeze whitespace in the text. """
+    return " ".join(text.strip().split())
