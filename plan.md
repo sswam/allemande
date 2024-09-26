@@ -13,6 +13,8 @@
 			- do we need it?  Claude thinks so.
 		- need username, password, email, fullname, default display name
 
+	- proper access control, encryption if possible
+
 	- custom display names per room
 
 
