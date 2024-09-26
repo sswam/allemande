@@ -16,9 +16,9 @@ tries=$r
 
 if [ -n "$O" ]; then
 	C=1
-	O="-O$O"
+	O=("-O$O")
 else
-	O=""
+	O=()
 fi
 
 if [ "$v" = 1 ]; then
@@ -64,9 +64,9 @@ if [ "$C" != 1 ]; then
 fi
 
 if [ -n "$REFERER" ]; then
-	exec $v wget -e robots=off --no-check-certificate $content_disposition -T "$timeout" --load-cookies="$CF" -U"$AGENT" --referer="$REFERER" --tries $tries $WG_OPTS "${OPTS_UNKNOWN[@]}" "$O" -- "$@"
+	exec $v wget -e robots=off --no-check-certificate $content_disposition -T "$timeout" --load-cookies="$CF" -U"$AGENT" --referer="$REFERER" --tries $tries $WG_OPTS "${OPTS_UNKNOWN[@]}" "${O[@]}" -- "$@"
 #	wget "$HEADER" -U"$AGENT" --referer="$REFERER" "$@"
 else
-	exec $v wget -e robots=off --no-check-certificate $content_disposition -T "$timeout" --load-cookies="$CF" -U"$AGENT" --tries $tries $WG_OPTS "${OPTS_UNKNOWN[@]}" "$O" -- "$@"
+	exec $v wget -e robots=off --no-check-certificate $content_disposition -T "$timeout" --load-cookies="$CF" -U"$AGENT" --tries $tries $WG_OPTS "${OPTS_UNKNOWN[@]}" "${O[@]}" -- "$@"
 #	wget "$HEADER" -U"$AGENT" "$@"
 fi
