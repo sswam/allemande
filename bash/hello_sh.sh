@@ -55,6 +55,8 @@ if [ "$BASH_SOURCE" = "$0" ]; then
 	hello_sh "$@"
 fi
 
+# version: 0.1.0
+
 # Important Notes for AI:
 
 # AVOID DEEP INDENTATION OR NESTING, better to use if/elif or a function. This is the number one rule!
