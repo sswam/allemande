@@ -58,10 +58,12 @@ fi
 # Important Notes for AI:
 
 # AVOID DEEP INDENTATION OR NESTING, better to use if/elif or a function. This is the number one rule!
+# If needed, we can use variables to avoid repeating parts of conditions.
 # Test negative cases first, and use continue, break, or return to avoid deep nesting.
 #
 # We use the `-e` `-u` and `-o pipefail` options, so be careful to avoid accidentally exiting:
 # - Do not shorten if statements, for example not: `[ -n "$var" ] && do_something`
+# Generally, if things go wrong, return 1 rather than continuing.
 #
 # The `. opts` call gets options and prints usage automatically. No need to do that in the script.
 #
