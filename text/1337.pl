@@ -23,7 +23,14 @@ my %opts = (
     leet_prob => 1,
     star_prob => 0,
     extra => 0,
+    light => 0,
     help => 0,
+);
+
+# Leet speak mapping
+my %leet_map = (
+    'a' => '4', 'b' => '8', 'e' => '3', 'g' => '6', 'i' => '1',
+    'o' => '0', 's' => '5', 't' => '7', 'z' => '2',
 );
 
 sub all_options {
@@ -43,6 +50,7 @@ GetOptions(
     'star=f'    => \$opts{star_prob},
     'extra|x'   => \$opts{extra},
     'all|a'     => \&all_options,
+    'light|l'   => \$opts{light},
     'help|h'    => \$opts{help},
 ) or pod2usage(2);
 
@@ -52,26 +60,14 @@ pod2usage(1) if $opts{help};
 setup_logging('1337');
 my $logger = get_logger();
 
-# Leet speak mapping
-my %leet_map = (
-    'a' => '4', 'b' => '8', 'e' => '3', 'g' => '6', 'i' => '1',
-    'l' => '1', 'o' => '0', 's' => '5', 't' => '7', 'z' => '2',
-);
+if ($opts{light}) {
+    %leet_map = (
+        'a' => '4', 'e' => '3', 'i' => '/',
+        'o' => '0', 'u' => 'v',
+    );
+};
 
 if ($opts{extra}) {
-#     $leet_map{c} = '(';
-#     $leet_map{d} = '|)';
-#     $leet_map{f} = '|=';
-#     $leet_map{j} = '_|';
-#     $leet_map{k} = '|<';
-#     $leet_map{n} = '|\\|';
-#     $leet_map{q} = '9';
-#     $leet_map{r} = '|2';
-#     $leet_map{u} = '|_|';
-#     $leet_map{v} = '\\/';
-#     $leet_map{w} = '\\/\\/';
-#     $leet_map{x} = '><';
-#     $leet_map{y} = '`/';
     %leet_map = (
         %leet_map,
         'c' => '(', 'd' => '|)', 'f' => '|=', 'j' => '_|', 'k' => '|<',
@@ -79,6 +75,8 @@ if ($opts{extra}) {
         'w' => '\\/\\/', 'x' => '><', 'y' => '`/',
     );
 }
+
+our %reverse_map = reverse %leet_map;
 
 # Main function
 sub leet_convert {
@@ -112,10 +110,8 @@ sub encode {
 sub decode {
     my ($text) = @_;
     $logger->info("Decoding: $text");
-
-    my %reverse_map = reverse %leet_map;
-    $text =~ s/([0-9])/$reverse_map{$1} || $1/ge;
-
+    my $pattern = join '|', map quotemeta, sort { length($b) <=> length($a) } keys %reverse_map;
+    $text =~ s/($pattern)/$reverse_map{$1}/g;
     return $text;
 }
 
@@ -159,6 +155,7 @@ __END__
    --leet PROB       Probability of applying leetspeak (0-1)
    --star PROB       Probability of replacing vowels with asterisks (0-1)
    --extra, -x       Enable extra leetspeak characters (encodes only)
+   --light, -l       Use a lighter set of leetspeak characters
    --help            Show this help message
 
 =head1 DESCRIPTION
