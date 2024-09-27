@@ -30,6 +30,7 @@ s=	# AI summary for the day
 n=	# Show last n headings
 A=	# don't add a note
 p=	# initial text / placeholder
+L=	# initial text from last line of file
 H=	# don't add hour markers
 timeout=  # time limit
 opt_1=	# only read first line, no details
@@ -179,8 +180,12 @@ find_or_create_note_files
 
 
 # Show last n headings?
+show_last_n_headings() {
+	< "$note_file" grep '^### ' | tail -n "$1" | cut -c5-
+}
+
 if [ -n "$n" ]; then
-	< "$note_file" grep '^### ' | tail -n "$n" | cut -c5-
+	show_last_n_headings "$n"
 fi
 
 
@@ -220,9 +225,15 @@ if [ -z "$note" ] && [ -n "$details" ]; then
 
 # If no note or details, and not editing, read note and optional details from stdin
 elif [ -z "$A" ] && [ -z "$note" ] && [ -z "$details" ] && [ "$e" != 1 ]; then
+	# get prompt from the the file?
+	if [ -n "$L" -a -e "$note_file" ]; then
+		p=`show_last_n_headings 1`
+	fi
+
 	# read first summary line
 	read -e -p ": " -i "$p" $timeout note
 
+	# if blank, offer to use a different note file
 	if [ -z "$note" ]; then
 		select_from_list
 		find_or_create_note_files

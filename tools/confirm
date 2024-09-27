@@ -25,7 +25,7 @@ function confirm() {
 	while true; do
 		read -n 1 -p "$prompt " yn
 		echo
-		case "${yn:-$default}" in
+		case "${yn:-${default:-}}" in
 		y*)
 			confirmed=1
 			break
