@@ -33,4 +33,5 @@ for I; do
 
 	echo
 	echo
-done
+done |
+highlight.py '<[^>]*>' red || true

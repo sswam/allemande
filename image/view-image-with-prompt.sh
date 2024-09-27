@@ -38,8 +38,7 @@ while read I; do
 	clear
 	echo "$I"
 	echo
-	image-params "$I" |
-	highlight.py '<[^>]*>' red || true
+	image-params "$I"
 
 	if [ "$small" = 0 ]; then
 		qiv --fullscreen --scale_down --xineramascreen ${x_screen:-0} "$I"
