@@ -99,7 +99,7 @@ trap 'warn_int' INT
 
 
 # List the note files?
-if [ -n "$l" ]; then
+select_from_list() {
 	readarray -t files < <(find "$D" -follow \( -name '.*' -o -name 'summary' \) -prune -o -type f -printf '%P\n' | sort)
 	for i in "${!files[@]}"; do
 		printf "%3s. %s\n" "$i" "${files[$i]%.*}"
@@ -114,8 +114,11 @@ if [ -n "$l" ]; then
 	else
 		exit 1
 	fi
-fi
+}
 
+if [ -n "$l" ]; then
+	select_from_list
+fi
 
 show_all_notes() {
 	readarray -t files < <(find "$D" -follow -name '.*' -prune -o -type f -printf '%P\n' | sort)
@@ -126,12 +129,12 @@ show_all_notes() {
 		printf "\n\n"
 	done
 	echo
-	exit
 }
 
 # Show all notes from today?
 if [ -n "$d" ]; then
 	show_all_notes
+	exit
 fi
 
 
@@ -151,22 +154,28 @@ fi
 mkdir -p "$D"
 
 
-# find the note file
-# look for no extension (or given extension), .md, .txt in order
+find_or_create_note_files() {
+	# find the note file
+	# look for no extension (or given extension), .md, .txt in order
+	for ext in '' .md .txt; do
+		note_file=$D/$t$ext
+		if [ -e "$note_file" ]; then
+			break
+		fi
+	done
 
-for ext in '' .md .txt; do
-	note_file=$D/$t$ext
-	if [ -e "$note_file" ]; then
-		break
+
+	# confirm to create new markdown note file if not found
+	if [ ! -e "$note_file" ]; then
+		create() {
+			>> "$1"
+		}
+		note_file=$D/$t.md
+		confirm create "$note_file" || exit
 	fi
-done
+}
 
-
-# create new markdown note file if not found
-if [ ! -e "$note_file" ]; then
-	note_file=$D/$t.md
-	>> "$note_file"
-fi
+find_or_create_note_files
 
 
 # Show last n headings?
@@ -213,6 +222,12 @@ if [ -z "$note" ] && [ -n "$details" ]; then
 elif [ -z "$A" ] && [ -z "$note" ] && [ -z "$details" ] && [ "$e" != 1 ]; then
 	# read first summary line
 	read -e -p ": " -i "$p" $timeout note
+
+	if [ -z "$note" ]; then
+		select_from_list
+		find_or_create_note_files
+		read -e -p ": " -i "$p" $timeout note
+	fi
 
 	# read details unless option -1 was used
 	if [ "$opt_1" != 1 ]; then
