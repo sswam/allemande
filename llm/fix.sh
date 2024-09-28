@@ -19,7 +19,7 @@ apply_fixes() {
 	if [ -n "$p" ]; then
 		prompt+=", $p"
 	fi
-	prompt+=". Don't strip comments. You can add comments with other suggestions."
+	prompt+=". Don't strip code comments."
 
 	$proc -m="$m" "$prompt"
 }
