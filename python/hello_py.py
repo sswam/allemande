@@ -117,7 +117,7 @@ if __name__ == "__main__":
     main.run(hello_py)
 
 """
-Important Notes for AI:
+Important Notes for AI [do not copy them!]:
 
 Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
 Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
@@ -150,8 +150,6 @@ There is magic in ally.main to open files and print exceptions nicely.
 
 Our scripts can also be used as modules, and vice-versa.
     from hello import hello
-
-When writing other scripts based on this one, please do not include these notes!
 
 Stdout is only for normal output. Use logging for info, warning or error messages.
 
