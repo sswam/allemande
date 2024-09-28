@@ -44,7 +44,7 @@ def _process_path(source: Path, target_dir: Path) -> None:
         files = source.iterdir()
 
     for file in files:
-        if file.name.startswith('.') or file.name.count('.') > 1:
+        if file.name.startswith('.') or file.name.count('.') > 1 or file.name.endswith('~'):
             continue
         is_executable = os.access(file, os.X_OK)
         if file.is_file() and (is_executable or file.suffix == '.sh'):
