@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 
 """
-An example Python module / script to say hello,
-and ask the user how they are.
+This module says hello, and asks the user how they are.
 """
 
 import sys
 import logging
 import getpass
 import textwrap
-from typing import TextIO, Optional
+from typing import TextIO
 from random import random
 
 from argh import arg
@@ -158,4 +157,7 @@ Stdout is only for normal output. Use logging for info, warning or error message
 None is different from 0. Don't "simplify" `if foo is None: foo = default` to `foo = foo or default`.
 
 The original coder was probably not an idiot. Be careful when "fixing" things.
+
+We use at least Python 3.10, normally 3.12 or the latest stable version. Please use new features as needed.
+For example, use modern type hints such as list[str]|None rather than Optional[List[str]]
 """
