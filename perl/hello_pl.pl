@@ -122,6 +122,10 @@ sentiment analysis.
 
 Important Notes for AI:
 
+Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
+Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
+comment it out rather than removing it.
+
 AVOID DEEP INDENTATON OR NESTING, it's better to use if/elif or a function.
 If needed, we can use variables to avoid repeating parts of conditions.
 This is the number one rule!
