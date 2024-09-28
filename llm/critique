@@ -21,6 +21,7 @@ critique() {
 Start with a paragraph of friendly and supportive praise if possible...
 the programmer needs to retain some self-esttem\!
 e.g. if it seems like a cool program that does something useful or novel...
+It's most important to find errors, other suggestions are welcome too.
 $prompt"
 	cat_named.py -b -p "$@" |
 	(process -m="$m" "$prompt"; echo) |
