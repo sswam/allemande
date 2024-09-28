@@ -48,65 +48,7 @@ usage() {
 		;;
 	esac
 
-	local script_name=$(basename "$0")
-	printf "%s " "$script_name"
-
-	local line in_func=0 blanks=0 skip_blank_lines=0
-	while IFS= read -r line; do
-		# Skip shebang line
-		if [[ $line == \#\!* ]]; then
-			skip_blank_lines=1
-			continue
-		fi
-
-		# Skip unindented function declaration, like:  hello() {
-		if [[ "$line" =~ ^[[:alnum:]_]+\(\)[[:space:]]*\{ ]]; then
-			continue
-		fi
-
-		# Remove indent
-		line=${line#[[:space:]]*}
-
-		is_blank=0
-		if [ "$line" = "" ]; then
-			is_blank=1
-		fi
-
-		# Remove 'local ' from start of line
-		line=${line/#local /'  '}
-
-		# Remove '# ' from start of line
-		line="${line#\# }"
-
-		# Replace literal '$0' in lines with the value of $script_name
-		line="${line//\$0 /$script_name }"
-
-		# Stop before the ". opts" line
-		if [[ "$line" =~ ^[:space:]*\.\ opts ]]; then
-			break
-		fi
-
-		# Skip other ". " lines
-		if [[ "$line" =~ ^[:space:]*\.\  ]]; then
-			continue
-		fi
-
-		# avoid trailing blank lines
-		if [ "$is_blank" = 1 ]; then
-			blanks=$((blanks+1))
-			continue
-		fi
-
-		# check if we have some blank lines, and squeeze them
-		if [ $blanks -gt 0 ] && [ $skip_blank_lines -eq 0 ]; then
-			echo
-		fi
-		blanks=0
-		skip_blank_lines=0
-
-		# echo the cleaned-up line, for usage
-		echo "$line"
-	done < "$0"
+	opts_help.py "$0" < "$0"
 
 	exit $exit
 }
