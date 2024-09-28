@@ -10,7 +10,7 @@ fi
 
 . confirm
 
-diff_context=10   # lines of context for diffs
+diff_context=5   # lines of context for diffs
 model="d"
 
 timestamp=$(date +%Y%m%d%H%M%S)
@@ -221,8 +221,10 @@ done
 cd "$git_root"
 
 # Check git status for renamed files, we add the previous name too
-git rm $(git ls-files --deleted)
+tmp_stage=(git ls-files --deleted)
+git rm $("${tmp_stage[@]}")
 for file in "${files[@]}"; do
+    tmp_stage+=("$file")
 	git add "$file"
 done
 git_status=$(git status --porcelain)
@@ -233,6 +235,7 @@ for file in "${files[@]}"; do
 		files+=("$renamed_from")
 	fi
 done
+git restore --staged -- "${tmp_stage[@]}"
 
 # Inform the user of the files to be committed
 echo "Files to commit:"
@@ -417,9 +420,5 @@ while true; do
     esac
     echo
 done
-
-# if [ "${#files[@]}" -gt 0 ]; then
-#     git add -- "${files[@]}"
-# fi
 
 git-commit -F "$commit_message"
