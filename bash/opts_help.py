@@ -106,6 +106,7 @@ def opts_help(script_name, istream: TextIO = sys.stdin, ostream: TextIO = sys.st
     text = "".join(lines)
 
     try:
+        # TODO use tsv2txt module directly
         text = sh.tsv2txt("-m", _in=text)
     except sh.CommandNotFound:
         pass  # tsv2txt not available, keep lines unchanged
