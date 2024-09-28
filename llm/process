@@ -9,6 +9,6 @@ if [ "$I" ]; then
 	process_main "$@"
 else
 	input=$(cat)
-	indent=$(printf "%s\n" "$input" | indenter --detect)
-	printf "%s\n" "$input" | process_main "$@" | indenter --apply "$indent"
+	indent=$(printf "%s\n" "$input" | aligno --detect)
+	printf "%s\n" "$input" | process_main "$@" | aligno --apply "$indent"
 fi
