@@ -9,7 +9,7 @@ import logging.config
 import traceback
 import inspect
 from pathlib import Path
-from typing import TextIO, Callable
+from typing import TextIO, Callable, Any
 import argparse
 from io import IOBase, TextIOWrapper, StringIO
 
@@ -474,3 +474,25 @@ class TextInput:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
+
+def upset(name: str, value: Any, level: int = 2) -> None:
+    """
+    Set a variable in the caller's caller's namespace.
+    Claude does not approve of this function, in fact it kind of upsets him.
+    """
+    frame = sys._getframe(level)
+    caller_locals = frame.f_locals
+    caller_globals = frame.f_globals
+    code = frame.f_code
+
+    if name in code.co_names and name not in caller_globals:
+        # Symbol is likely declared as nonlocal
+        nonlocal_scope = sys._getframe(level + 1).f_locals
+        nonlocal_scope[name] = value
+    elif name in code.co_names and name in caller_globals:
+        # Symbol is likely declared as global
+        caller_globals[name] = value
+    else:
+        # Regular local variable
+        caller_locals[name] = value
