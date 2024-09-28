@@ -1,12 +1,14 @@
-#!/bin/bash -e
+#!/bin/bash -eu
 # file1 file2
 copy= c=	# copy to preserve hard links
 . opts
 
-if [ "$c" = 1 ]; then
+copy="${copy:-$c}"
+
+if [ "$copy" = 1 ]; then
 	cp -i "$1" "$1.tmp.$$"
-	cp -a "$2" "$1"
-	cp -a "$1.tmp.$$" "$2"
+	cp "$2" "$1"
+	cp "$1.tmp.$$" "$2"
 	rm "$1.tmp.$$"
 else
 	mv -i "$1" "$1.tmp.$$"
