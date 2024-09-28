@@ -1,5 +1,5 @@
 #!/bin/bash
-prog.sh learn.py "$(cat <<'END'
+create.sh learn.py "$(cat <<'END'
 Given a markdown flashcards file like deep-learning.md, double blank line between cards,
 and numbered headings for card sections, implement spaced repetition learning
 for the user.
