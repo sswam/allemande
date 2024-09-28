@@ -4,13 +4,13 @@
 from sys import stdin, stdout
 import re
 import logging
-import ucm
 import argparse
 from typing import IO
-
 from os.path import commonprefix
 
 import argh
+
+from ally import main
 
 logger = logging.getLogger(__name__)
 
@@ -106,14 +106,5 @@ def fix_indentation(inp: IO[str]=stdin, out: IO[str]=stdout, n=1, c='\t', tab=No
 	fixed_lines = list(fix_indentation_list(inp, tab))
 	out.writelines(fixed_lines)
 
-#if __name__ == "__main__":
-#	dispatch_command(fix_indentation)
-
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	argh.add_commands(parser, [fix_indentation])
-	argh.set_default_command(parser, fix_indentation)
-	ucm.add_logging_options(parser)
-	opts = parser.parse_args()
-	ucm.setup_logging(opts)
-	argh.dispatch(parser)
+	main.run(fix_indentation)
