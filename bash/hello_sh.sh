@@ -98,7 +98,7 @@ fi
 
 # version: 0.1.0
 
-# Important Notes for AI:
+# Important Notes for AI [do not copy them!]:
 
 # Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
 # Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
@@ -129,5 +129,3 @@ fi
 # We assume the client script is using `-e`, so `return 1` normally becomes `exit 1`.
 #
 # Error and other commentary must be printed to stderr: echo >&2 "Error: something went wrong"
-#
-# When writing other scripts based on this one, please do not include these notes!
