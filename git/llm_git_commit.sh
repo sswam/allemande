@@ -293,17 +293,17 @@ generate-commit-message() {
         $MR "$commit_message"
     fi
 
-    run-git-diff-two-stage | llm process -m "$model" 'Please describe this diff, for a high-level commit message following the Conventional Commits spec.
+    run-git-diff-two-stage | llm process -m "$model" "Please describe this diff, for a high-level commit message following the Conventional Commits spec.
 *** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
 Return only the commit message, no prelude or conclusion.
 Format:
 
 feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
-[- descriptions of each change, ONLY if not already covered by the summary]
+- descriptions of each change, as few as possible, ONLY if not already covered by the summary
 
-Write in a down-to-earth tone, avoiding extravagant works like "enhance".
-' | grep -v '^```' | perl -e '
+Write in a down-to-earth tone, avoiding extravagant works like 'enhance'. We don't want lots of detail, short and sweet is best.
+" | grep -v '^```' | perl -e '
     @lines = <STDIN>;
     if (@lines && $lines[0] =~ /:$/) {
         warn "removing header: $lines[0]\n";
