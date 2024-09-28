@@ -1,9 +1,11 @@
-#!/bin/bash -eu
+#!/bin/bash
 
 x=0
 s=0
 
 . opts
+
+set -e -u -o pipefail
 
 x_screen=$x
 small=$s
