@@ -10,7 +10,6 @@ Anthropic's Claude, Perplexity, and Google models.
 # TODO use cached responses if possible
 
 import sys
-
 from sys import stdin, stdout
 import os
 import logging
@@ -23,6 +22,7 @@ from pathlib import Path
 import textwrap
 import asyncio
 import json
+import importlib
 
 import argh
 import tab
@@ -30,20 +30,10 @@ import tiktoken
 from slugify import slugify
 
 from ally import main
+# from ally.lazy import lazy
 
-# TODO slow modules, to load dynamically in future
-import openai
-from openai import AsyncOpenAI
-import anthropic
-import claude
-import google.generativeai as genai
-from transformers import AutoTokenizer
 
-def load_module(module_name):
-    import importlib
-    globals()[module_name] = importlib.import_module(module_name)
-
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +43,7 @@ logger = logging.getLogger(__name__)
 LOGDIR = Path(os.environ["HOME"])/"llm.log"
 LOGFILE_NAME_MAX_LEN = 100
 RETRIES = 20
-exceptions_to_retry = (openai.RateLimitError, openai.APIConnectionError, openai.InternalServerError,
-	anthropic.RateLimitError, anthropic.APIConnectionError, anthropic.InternalServerError)
+exceptions_to_retry = ("RateLimitError", "APIConnectionError", "InternalServerError")
 
 default_model = 'claude'
 default_model_small = 'gpt-4o-mini'
@@ -189,33 +178,103 @@ DEFAULT_TEMPERATURE = 1
 TOKEN_LIMIT = inf
 
 
-# Initialize clients
+# Dynamic module loading functions
+
+
+# lazy('openai')
+
+openai = AsyncOpenAI = openai_async_client = perplexity_async_client = None
+anthropic = claude = None
+genai = None
+transformers = AutoTokenizer = llama3_tokenizer = None
+
+
+def load_openai():
+	global openai, AsyncOpenAI, openai_async_client, perplexity_async_client
+	if openai_async_client and perplexity_async_client:
+		return
+	import openai
+	from openai import AsyncOpenAI
+	openai_async_client = AsyncOpenAI()
+	perplexity_async_client = AsyncOpenAI(
+		base_url="https://api.perplexity.ai",
+		api_key=os.environ.get("PERPLEXITY_API_KEY"),
+	)
+
+
+def load_perplexity():
+	load_openai()
+
+
+def load_anthropic():
+	global anthropic, claude
+	if claude:
+		return
+	import anthropic
+	import claude
+
+
+def load_google():
+	global genai
+	if genai:
+		return
+	import google.generativeai as genai
+	genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+
+
+def load_transformers():
+	global transformers, AutoTokenizer
+	if transformers:
+		return
+	import transformers
+	from transformers import AutoTokenizer
+
+
+async def load_all_modules():
+	await load_openai()
+	await asyncio.sleep(0)
+	await load_anthropic()
+	await asyncio.sleep(0)
+	await load_google()
+	await asyncio.sleep(0)
+	await load_transformers()
+	logger.debug("all modules loaded")
+
+
+async def background_job(async_func, after=0):
+	await asyncio.sleep(after)
+	await async_func()
+
+
+# Modify the existing functions to use dynamic loading
 
 os.environ["HF_HUB_OFFLINE"] = "1"
 
-openai_async_client = openai.AsyncOpenAI()
-perplexity_async_client = openai.AsyncOpenAI(
-	base_url="https://api.perplexity.ai",
-	api_key=os.environ.get("PERPLEXITY_API_KEY"),
-)
-genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-
-llama3_tokenizer = None
-
+def load_huggingface_by_plan(what, plan, loader):
+	saved_hf_hub_offline = os.environ.get("HF_HUB_OFFLINE", "1")
+	for online, model_name in plan:
+		try:
+			logger.debug(f"Trying to load {what} from {model_name}, online={online}")
+			os.environ["HF_HUB_OFFLINE"] = str(int(not online))
+			resource = AutoTokenizer.from_pretrained(model_name)
+			break
+		except IOError as ex:
+			logger.debug(f"  Failed to load {what} from {model_name}, online={online}: {ex}")
+			pass
+	else:
+		raise IOError(f"Failed to load {what} from huggingface")
+	os.environ["HF_HUB_OFFLINE"] = saved_hf_hub_offline
 
 def get_llama3_tokenizer():
-	global llama3_tokenizer
+	global AutoTokenizer, llama3_tokenizer
 	if not llama3_tokenizer:
-		try:
-		#	llama3_tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
-			llama3_tokenizer = AutoTokenizer.from_pretrained("baseten/Meta-Llama-3-tokenizer")
-		except Exception as e:
-			logger.warning("Trying to download llama3_tokenizer.")
-			del os.environ["HF_HUB_OFFLINE"]
-			try:
-				llama3_tokenizer = AutoTokenizer.from_pretrained("baseten/Meta-Llama-3-tokenizer")
-			except OSError as ex:
-				raise IOError(f"failed to load llama3 tokenizer: {ex}")
+		if AutoTokenizer is None:
+			load_transformers()
+
+		# The offiical model is gated, need to register; seems a bit much for a tokenizer.
+		plan = [(0, "meta-llama/Meta-Llama-3-8B"), (0, "baseten/Meta-Llama-3-tokenizer"),
+			 (1, "meta-llama/Meta-Llama-3-8B"), (1, "baseten/Meta-Llama-3-tokenizer")]
+		llama3_tokenizer = load_huggingface_by_plan("llama3_tokenizer", plan, lambda x: AutoTokenizer.from_pretrained(x))
 	return llama3_tokenizer
 
 
@@ -291,8 +350,12 @@ def set_opts(_opts):
 		opts.model = default_model_small
 
 
-async def achat_openai(messages, client=openai_async_client):
+async def achat_openai(messages, client=None):
 	""" Chat with OpenAI ChatGPT models asynchronously. """
+	load_openai()
+
+	if client is None:
+		client = openai_async_client
 	model = opts.model
 	if "id" in MODELS[model]:
 		model = MODELS[model]["id"]
@@ -333,11 +396,14 @@ async def achat_openai(messages, client=openai_async_client):
 
 async def achat_perplexity(messages):
 	""" Chat with Perplexity models asynchronously. """
+	load_perplexity()
 	return await achat_openai(messages, client=perplexity_async_client)
 
 
 async def achat_claude(messages):
 	""" Chat with Anthropic Claude models asynchronously. """
+	load_anthropic()
+
 	model = opts.model
 	if "id" in MODELS[model]:
 		model = MODELS[model]["id"]
@@ -366,6 +432,8 @@ async def achat_claude(messages):
 
 async def achat_google(messages):
 	""" Chat with Google models asynchronously. """
+	load_google()
+
 	model = opts.model
 	if "id" in MODELS[model]:
 		model = MODELS[model]["id"]
@@ -619,12 +687,14 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 	for i in range(n_tries):
 		try:
 			return await fn(*args, **kwargs)
-		except exceptions_to_retry as ex:
+		except Exception as ex:
+			if str(type(ex)) not in exceptions_to_retry:
+				raise ex
 			delay = random.uniform(sleep_min, sleep_max)
 			logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
 			msg = str(ex)
 			if i == n_tries - 1:
-				raise
+				raise ex
 			await asyncio.sleep(delay)
 			sleep_min *= 2
 			sleep_max *= 2
@@ -701,6 +771,7 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 		tokens = enc.encode(text)
 		n_tokens = len(tokens)
 	elif vendor == "anthropic":
+		load_anthropic()
 		n_tokens = claude.count(text)
 	elif vendor == "perplexity":
 		llama3_tokenizer = get_llama3_tokenizer()
@@ -736,3 +807,7 @@ def models(detail=False, alias=False):
 
 if __name__ == "__main__":
 	main.run([chat, query, process, count, models])
+else:
+	# Load all modules in the background after a short delay
+	loop = asyncio.get_event_loop()
+	loop.call_later(0.1, lambda: asyncio.run_coroutine_threadsafe(load_all_modules(), loop))
