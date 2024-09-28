@@ -120,10 +120,12 @@ if __name__ == "__main__":
 """
 Important Notes for AI:
 
+Do not remove comments, logging or blank lines. Do not remove ANYTHING unnecessarily.
+If something looks wrong, and you are 1000% sure, comment it out rather than removing it.
+
 AVOID DEEP INDENTATON OR NESTING, it's better to use if/elif or a function.
 If needed, we can use variables to avoid repeating parts of conditions.
 Test negative cases first, and use continue, break, or return to avoid deep nesting.
-This is the number one rule!
 
 In most cases for error handling we just allow the script to exit by not
 catching the exception. This is a deliberate choice.
@@ -156,6 +158,4 @@ Stdout is only for normal output. Use logging for info, warning or error message
 None is different from 0. Don't "simplify" `if foo is None: foo = default` to `foo = foo or default`.
 
 The original coder was probably not an idiot. Be careful when "fixing" things.
-
-Do not remove comments or blank lines.
 """
