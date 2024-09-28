@@ -8,6 +8,7 @@ improve() {
 	local s=0	# refer to hello.<ext> for code style
 	local E=0	# do not edit
 	local c=0	# concise
+	local b=0	# use basenames
 
 	. opts
 
@@ -15,6 +16,10 @@ improve() {
 	local prompt=$2
 	shift 2 || true
 	local refs=("$@")
+
+	if [ "$b" = 1 ]; then
+		opt_b=("-b")
+	fi
 
 	# Check if program exists
 	if [ ! -e "$prog" ]; then
@@ -47,7 +52,7 @@ improve() {
 		prompt="$prompt, Please reply concisely with only the changed code, not the whole program. Never remove comments unless they are incorrect and should be removed."
 	fi
 
-	local input=$(cat_named.py -p -b "$prog" "${refs[@]}")
+	local input=$(cat_named.py -p "${opt_b[@]}" "$prog" "${refs[@]}")
 
 	# Backup original file
 	if [ -e "$prog~" ]; then
