@@ -1,23 +1,27 @@
 #!/bin/bash
-# pomodoro:	Pomodoro timer
 
-work=$[50*60]	# Set the working time
-grace=$[4*60]	# Set the grace time
-fade=$[1*60]	# Set the fade time, or 0 to 'annoy'
-rest=$[5*60]	# Set the rest time
+# pomodoro: Pomodoro timer
+# Version: 0.2.1
+
+work=$[50*60]	# Set the working time (in seconds)
+grace=$[4*60]	# Set the grace time (in seconds)
+fade=$[1*60]	# Set the fade time, or 0 to 'annoy' (in seconds)
+rest=$[5*60]	# Set the rest time (in seconds)
 g=	# More grace (or start with rest / grace period)
 q=	# Quit any running pomodoro
 N=	# Take a break now, then continue with next pomodoro
 
-ban="It's time to take a break!"	# Set the banner message
+ban="Take a break!"	# Set the banner message
 xd1="0.20 0.75"	# Set the 1st annoy screen brightness
 xd2="0.30 0.50"	# Set the 2nd annoy screen brightness
-xd0="0.00 0.10"	# Set the rest screen brightness
+xd0="0.00 0.01"	# Set the rest screen brightness
 annoy=0.1	# Set the annoy interval, to switch the screen brightness
 bother=1	# Allow notifications to bother the user during pomodoro; FIXME 0 breaks sleep-log
 n="-n"	# Notify the user of the time remaining, sleep-log opts
 test=	# Use shorter times for testing
 f=	# Run in the foreground
+A=	# do not align the work start to the hour
+
 . opts
 
 # ----------------------------------------------
@@ -75,6 +79,22 @@ fi
 
 # ----------------------------------------------
 
+# Align the work start to the hour
+
+adjusted_work_time=$work
+if [ -z "$A" ] || [ "$A" -eq 0 ]; then
+	current_second=$(( 60 * $(date +%M) + $(date +%S) ))
+	seconds_to_hour=$((3600 - current_second))
+	if [ $seconds_to_hour -lt $(( rest + fade + grace )) ]; then
+		seconds_to_hour=$((minutes_to_hour + 3600))
+	fi
+	if [ $seconds_to_hour -lt $(( work + grace + fade + rest )) ]; then
+		adjusted_work_time=$(( seconds_to_hour - grace - fade - rest ))
+	fi
+fi
+
+# ----------------------------------------------
+
 # pomodoro - sleep for the pomodoro time
 
 if [ -z "$bother" ]; then
@@ -83,7 +103,7 @@ fi
 
 if [ -z "$g" -a -z "$N" ]; then
 	log pomodoro
-	sleep-log $n $work 60
+	sleep-log $n $adjusted_work_time 60
 fi
 
 # ----------------------------------------------
@@ -123,7 +143,6 @@ while ! q pidof i3lock; do
 		# TODO the fade function might be useful for something else
 		read from1 from2 <<< "$xd_save"
 		read to1 to2 <<< "$xd0"
-		# Gradual fade out
 		now1=$(echo "scale=6; $from1 + ($to1 - $from1) * $step / $fade" | bc)
 		now2=$(echo "scale=6; $from2 + ($to2 - $from2) * $step / $fade" | bc)
 		xdark $now1 $now2
