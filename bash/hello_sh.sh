@@ -1,57 +1,98 @@
 #!/bin/bash
 
-# [name]
+# [user's name]
 # Says Hello, world
 
 hello_sh() {
-	local l=en	# language [fr|de|jp|cn], defaults to English
-	local s=()	# array of items for shopping
-	local a=	# greet using AI
-	local m=	# LLM model
+	local language= l=en	# language [fr|de|jp|cn], defaults to English
+	local shopping=() s=(milk)	# array of items for shopping
+	local use_ai= a=	# greet using AI
+	local model= m=	# LLM model
 
-	. opts
+	. opts	# Note to AI: This magically loads options into the above vars
+
+	# Note to AI: The following supports the short options above
+	# TODO can we do this in the opts script?
+	language=${language:-$l}
+	shopping=("${shopping[@]}" "${s[@]}")
+	use_ai=${use_ai:-$a}
+	model=${model:-$m}
 
 	# strict mode
 	local old_opts=$(set +o)
 	set -e -u -o pipefail
 
-	local who=${1:-}	# Set 'who' to the first argument
-	local greeting="Hello"	# Default greeting in English
+	# non-option arguments
+	local user_name=${1:-world}	# Set 'who' to the first argument
 
 	# Set greeting based on selected language
-	case "$l" in
-		fr) greeting="Bonjour" ;;
-		de) greeting="Hallo" ;;
-		jp) greeting="こんにちは" ;;
-		cn) greeting="你好" ;;
+	local greeting="Hello"	# Default greeting in English
+	case "$language" in
+	fr)
+		greeting="Bonjour"
+		;;
+	de)
+		greeting="Hallo"
+		;;
+	jp)
+		greeting="こんにちは"
+		;;
+	cn)
+		greeting="你好"
+		;;
+	en)
+		;;
+	*)
+		echo >&2 "unknown language: $language"
+		exit 1
+		;;
 	esac
 
 	# Generate greeting using AI or print simple greeting
-	if [ "$a" = 1 ]; then
-		query -m="$m" "Please greet ${who:-the world} in '$l' language. Be creative, but not more than 50 words.\n"
+	if [ "$use_ai" = 1 ]; then
+		query -m="$model" \
+			"Please greet ${who:-the world} in lang='$language'."\
+			"Be creative, but not more than 50 words."
 	else
-		printf "%s, %s\n" "$greeting" "${who:-world}"
+		printf "%s, %s\n" "$greeting" "$user_name"
 	fi
 
 	# Print shopping list if items are provided
-	if [ "${#s[@]}" -gt 0 ]; then
-		echo
-		echo "Shopping list:"
-		for item in "${s[@]}"; do
-			printf -- "- %s\n" "$item"
-		done | 
-		if [ "$a" = 1 ]; then
-			process -m="$m" "Please echo the input and add any extra items we might need."
-		else
-			cat
-		fi
+	if [ "${#shopping[@]}" -gt 0 ]; then
+		shopping_list --use-ai="$use_ai" --model="$model" "${shopping[@]}"
 	fi
 
 	# restore caller options
 	eval "$old_opts"
 }
 
-if [ "$BASH_SOURCE" = "$0" ]; then
+shopping_list() {
+	local use_ai= a=	# greet using AI
+	local model= m=	# LLM model
+
+	. opts
+
+	# Support long and short options
+	use_ai=${use_ai:-$a}
+	model=${model:-$m}
+
+	local shopping=("$@")
+
+	echo
+	echo "Shopping list:"
+	for item in "${shopping[@]}"; do
+		printf -- "- %s\n" "$item"
+	done | 
+	if [ "$use_ai" = 1 ]; then
+		process -m="$model" \
+			"Please echo the input and add any extra "\
+			"items we might need."
+	else
+		cat
+	fi
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	hello_sh "$@"
 fi
 
@@ -59,6 +100,10 @@ fi
 
 # Important Notes for AI:
 
+# Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
+# Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
+# comment it out rather than removing it.
+# 
 # AVOID DEEP INDENTATION OR NESTING, better to use if/elif or a function. This is the number one rule!
 # If needed, we can use variables to avoid repeating parts of conditions.
 # Test negative cases first, and use continue, break, or return to avoid deep nesting.

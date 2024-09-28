@@ -9,34 +9,34 @@ test_hello() {
 	local errors=0
 
 	# Test default behavior
-	if [ "$($program)" != "Hello, world" ]; then
+	if [ "$($program -s,)" != "Hello, world" ]; then
 		echo "Error: Default greeting failed"
 		((errors++))
 	fi
 
 	# Test with a name
-	if [ "$($program John)" != "Hello, John" ]; then
+	if [ "$($program -s, John)" != "Hello, John" ]; then
 		echo "Error: Greeting with name failed"
 		((errors++))
 	fi
 
 	# Test different languages
-	if [ "$($program -l=fr)" != "Bonjour, world" ]; then
+	if [ "$($program -s, -l=fr)" != "Bonjour, world" ]; then
 		echo "Error: French greeting failed"
 		((errors++))
 	fi
 
-	if [ "$($program -l=de)" != "Hallo, world" ]; then
+	if [ "$($program -s, -l=de)" != "Hallo, world" ]; then
 		echo "Error: German greeting failed"
 		((errors++))
 	fi
 
-	if [ "$($program -l=jp)" != "こんにちは, world" ]; then
+	if [ "$($program -s, -l=jp)" != "こんにちは, world" ]; then
 		echo "Error: Japanese greeting failed"
 		((errors++))
 	fi
 
-	if [ "$($program -l=cn)" != "你好, world" ]; then
+	if [ "$($program -s, -l=cn)" != "你好, world" ]; then
 		echo "Error: Chinese greeting failed"
 		((errors++))
 	fi

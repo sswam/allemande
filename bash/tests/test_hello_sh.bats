@@ -14,32 +14,32 @@ setup() {
 }
 
 @test "Default greeting" {
-	run $program
+	run $program -s,
 	assert_output "Hello, world"
 }
 
 @test "Greeting with name" {
-	run $program John
+	run $program -s, John
 	assert_output "Hello, John"
 }
 
 @test "French greeting" {
-	run $program -l=fr
+	run $program -s, -l=fr
 	assert_output "Bonjour, world"
 }
 
 @test "German greeting" {
-	run $program -l=de
+	run $program -s, -l=de
 	assert_output "Hallo, world"
 }
 
 @test "Japanese greeting" {
-	run $program -l=jp
+	run $program -s, -l=jp
 	assert_output "こんにちは, world"
 }
 
 @test "Chinese greeting" {
-	run $program -l=cn
+	run $program -s, -l=cn
 	assert_output "你好, world"
 }
 
