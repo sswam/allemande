@@ -51,7 +51,7 @@ hello_sh() {
 	# Generate greeting using AI or print simple greeting
 	if [ "$use_ai" = 1 ]; then
 		query -m="$model" \
-			"Please greet ${who:-the world} in lang='$language'."\
+			"Please greet ${user_name:-the world} in $language."\
 			"Be creative, but not more than 50 words."
 	else
 		printf "%s, %s\n" "$greeting" "$user_name"
@@ -86,7 +86,7 @@ shopping_list() {
 	if [ "$use_ai" = 1 ]; then
 		process -m="$model" \
 			"Please echo the input and add any extra "\
-			"items we might need."
+			"items we might need, in $language."
 	else
 		cat
 	fi
