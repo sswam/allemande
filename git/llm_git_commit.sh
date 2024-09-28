@@ -276,6 +276,15 @@ run-git-diff() {
     release_lock
 }
 
+run-git-diff-two-stage() {
+    echo "## ACTUAL CHANGES; ONLY DESCRIBE THESE"
+    run-git-diff | grep '^[-+]'
+    echo
+    echo "## CONTEXT; DO NOT DESCRIBE THIS"
+    run-git-diff
+    echo
+}
+
 generate-commit-message() {
     model="$1"
     echo "Generating commit message using $(model-name "$model") ..."
@@ -284,29 +293,16 @@ generate-commit-message() {
         $MR "$commit_message"
     fi
 
-    run-git-diff | llm process -m "$model" 'Please describe this entire patch, for a git commit message, following the Conventional Commits spec.
-Do not invent anything that is not in the patch!
-Only describe the actual changes, lines starting with +, do not describe the surrounding patch context.
-The required format is as follows. Return only the commit message like this without any prelude or concluding statement!
+    run-git-diff-two-stage | llm process -m "$model" 'Please describe this diff, for a high-level commit message following the Conventional Commits spec.
+*** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
+Return only the commit message, no prelude or conclusion.
+Format:
 
-For a feature patch, focus on describing high-level features, without implementation details. For fixes and some other types, it makes sense to mention some details of the bug and fix.
+feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
-Seriously, for a new feature *DO NOT* describe implementation details, variables, functions, etc. (Except for a library it would be appropriate to describe a new function; but not normally to get into how it works.)
+[- descriptions of each change, ONLY if not already covered by the summary]
 
-feat|fix|docs|style|refactor|test|chore|perf(short-module-name): a short summary line, preferably around 50 chars, not more than 70 chars
-
-[IF ANY ONLY IF IT IS NECESSARY, continue with details as below]
-
-- concise info about first change, if needed. If the line wraps
-  the second line must be indented like this.
-- concise info about second change, if any.
-- and so on ... but LESS IS MORE!
-
-The (short-module-name) part is useful, but optional. Commit type can be feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert etc.
-Do not belabour the obvious; we do not need too much detail, e.g. moving folders do not list every file that was moved.
-Be careful that you only comment on the [-+] changes in the diff, not the context lines.
-
-Please write the message in a down-to-earth tone, avoiding extravagant-sounding words like "enhance".
+Write in a down-to-earth tone, avoiding extravagant works like "enhance".
 ' | grep -v '^```' | perl -e '
     @lines = <STDIN>;
     if (@lines && $lines[0] =~ /:$/) {
