@@ -93,3 +93,6 @@ jax[cuda12]
 flax[all]
 
 google-generativeai
+
+cmake
+ninja
