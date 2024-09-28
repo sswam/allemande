@@ -5,8 +5,8 @@ from io import StringIO
 
 import pytest
 
-import indenter
-from indenter import detect_indent, apply_indent, process_indentation, parse_indent_code, format_indent_code
+import aligno as subject
+from aligno import aligno as subject_main
 
 # Test data
 SPACE_INDENTED = """
@@ -48,7 +48,7 @@ COMMON_INDENTED = """
     (COMMON_INDENTED, (4, "s", 1)),
 ])
 def test_detect_indent(input_text, expected):
-    assert detect_indent(input_text) == expected
+    assert subject.detect_indent(input_text) == expected
 
 # Test apply_indent function
 @pytest.mark.parametrize("input_text, indent_size, indent_type, min_level, expected", [
@@ -58,19 +58,19 @@ def test_detect_indent(input_text, expected):
     (COMMON_INDENTED, 2, "s", 0, SPACE_INDENTED.replace("    ", "  ")),
 ])
 def test_apply_indent(input_text, indent_size, indent_type, min_level, expected):
-    assert apply_indent(input_text, indent_size, indent_type, min_level).strip() == expected.strip()
+    assert subject.apply_indent(input_text, indent_size, indent_type, min_level).strip() == expected.strip()
 
-# Test process_indentation function
-def test_process_indentation_detect():
+# Test main function
+def test_main_detect():
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    process_indentation(input_stream, output_stream, detect=True)
+    subject_main(istream=input_stream, ostream=output_stream, detect=True)
     assert output_stream.getvalue().strip() == "4s"
 
-def test_process_indentation_apply():
+def test_main_apply():
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    process_indentation(input_stream, output_stream, apply="t")
+    subject_main("t", istream=input_stream, ostream=output_stream)
     assert output_stream.getvalue().strip() == TAB_INDENTED.strip()
 
 @pytest.mark.parametrize("input_text", [
@@ -79,41 +79,40 @@ def test_process_indentation_apply():
     UNINDENTED,
     COMMON_INDENTED,
 ])
-def test_process_indentation_default(input_text):
-    format = indenter.DEFAULT_INDENT
+def test_main_default(input_text):
     input_stream = StringIO(input_text)
     output_stream = StringIO()
-    expected = apply_indent(input_text, *parse_indent_code(format)).strip()
-    process_indentation(input_stream, output_stream)
+    expected = subject.apply_indent(input_text, *subject.parse_indent_code(subject.DEFAULT_INDENT)).strip()
+    subject_main(istream=input_stream, ostream=output_stream, apply=True)
     assert output_stream.getvalue().strip() == expected
 
 # Test edge cases
 def test_empty_input():
-    assert detect_indent("") == (0, "", 0)
-    assert apply_indent("", 4, "s", 2) == "\n"
+    assert subject.detect_indent("") == (0, "", 0)
+    assert subject.apply_indent("", 4, "s", 2) == "\n"
 
 def test_single_line():
-    assert detect_indent("print('Hello')") == (0, "", 0)
-    assert apply_indent("print('Hello')", 2, "s", 1) == "  print('Hello')\n"
+    assert subject.detect_indent("print('Hello')") == (0, "", 0)
+    assert subject.apply_indent("print('Hello')", 2, "s", 1) == "  print('Hello')\n"
 
 def test_mixed_indentation():
     mixed = "def foo():\n    print('bar')\n\tprint('baz')"
-    assert detect_indent(mixed) == (4, "s", 0)
-    assert apply_indent(mixed, 1, "t", 0) == "def foo():\n\tprint('bar')\nprint('baz')\n"
+    assert subject.detect_indent(mixed) == (4, "s", 0)
+    assert subject.apply_indent(mixed, 1, "t", 0) == "def foo():\n\tprint('bar')\nprint('baz')\n"
 
 def test_large_indentation():
     large_indent = "def foo():\n        print('bar')"
-    assert detect_indent(large_indent) == (8, "s", 0)
-    assert apply_indent(large_indent, 2, "s", 1) == "  def foo():\n    print('bar')\n"
+    assert subject.detect_indent(large_indent) == (8, "s", 0)
+    assert subject.apply_indent(large_indent, 2, "s", 1) == "  def foo():\n    print('bar')\n"
 
 # Test invalid inputs
 def test_invalid_indent_type():
     with pytest.raises(ValueError):
-        parse_indent_code("x4")
+        subject.parse_indent_code("x4")
 
 def test_negative_min_level():
     with pytest.raises(ValueError):
-        parse_indent_code("4s-1")
+        subject.parse_indent_code("4s-1")
 
 # Test parse_indent_code and format_indent_code
 @pytest.mark.parametrize("indent_code, expected", [
@@ -123,7 +122,7 @@ def test_negative_min_level():
     ("t2", (1, "t", 2)),
 ])
 def test_parse_indent_code(indent_code, expected):
-    assert parse_indent_code(indent_code) == expected
+    assert subject.parse_indent_code(indent_code) == expected
 
 @pytest.mark.parametrize("indent_size, indent_type, min_level, expected", [
     (1, "t", 0, "t"),
@@ -132,27 +131,28 @@ def test_parse_indent_code(indent_code, expected):
     (1, "t", 2, "t2"),
 ])
 def test_format_indent_code(indent_size, indent_type, min_level, expected):
-    assert format_indent_code(indent_size, indent_type, min_level) == expected
+    assert subject.format_indent_code(indent_size, indent_type, min_level) == expected
 
 # Test command-line interface
 def test_cli_detect():
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    process_indentation(input_stream, output_stream, detect=True)
+    subject_main(istream=input_stream, ostream=output_stream, detect=True)
     assert output_stream.getvalue().strip() == "4s"
 
 def test_cli_apply():
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    process_indentation(input_stream, output_stream, apply="t")
+    subject_main("t", istream=input_stream, ostream=output_stream, apply=True)
     assert output_stream.getvalue().strip() == TAB_INDENTED.strip()
 
 def test_cli_default():
-    input_stream = StringIO(UNINDENTED)
+    os.environ.pop("FILETYPE", None)
+    os.environ.pop("INDENT", None)
+    input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    process_indentation(input_stream, output_stream, apply="4s")
-    expected_output = "def hello():\nprint('Hello, world!')\n"
-    assert output_stream.getvalue().strip() == expected_output.strip()
+    subject_main(istream=input_stream, ostream=output_stream, apply=True)
+    assert output_stream.getvalue() == TAB_INDENTED
 
 if __name__ == "__main__":
     pytest.main([__file__])

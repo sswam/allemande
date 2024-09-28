@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 
 """
-indent_tool.py - detect and apply indentation styles
+Detect and apply indentation styles
 
-This script can detect the indentation type and level of input text,
+This module can detect the indentation type and level of input text,
 and can also reindent the input according to specified parameters.
-
-Usage as a module:
-    from indent_tool import process_indentation
 """
 
 import os
 import sys
 import re
-from typing import TextIO, Tuple, Optional
+from typing import TextIO
 from collections import Counter
 
 from argh import arg
@@ -24,16 +21,24 @@ __version__ = "1.0.0"
 
 logger = main.get_logger()
 
+
 # TODO use a config file for this?
 def default_indent():
     ft = os.environ.get("FILETYPE")
     if ft == "python":
         return "4s"
+    elif ft == "c":
+        return "t"
+# vim captures stderr
+#     elif ft:
+#         logger.warning(f"Standard indentation not known for filetype: {ft}")
     return os.environ.get("INDENT", "t")
+
 
 DEFAULT_INDENT = default_indent()
 
-def detect_indent(text: str) -> Tuple[str, int]:
+
+def detect_indent(text: str) -> tuple[str, int]:
     """Detect the indentation type and minimum level of the input text."""
     # Remove empty lines and get non-empty lines
     lines = text.splitlines()
@@ -172,40 +177,63 @@ def format_indent_code(indent_size: int, indent_type: str, min_level: int) -> st
     return f"{indent_size}s{min_level}"
 
 
-def parse_indent_code(indent_code: str) -> Tuple[str, int, int]:
+def parse_indent_code(indent_code: str) -> tuple[str, int, int]:
     """Parse the indent code into its components."""
     # Extract indent size, type, and minimum level from the indent code string
-    match = re.match(r"([1-8])?(t|s)(\d*)$", indent_code)
+    match = re.match(r"(\d*)(t|s)(\d*)$", indent_code)
     if not match:
         raise ValueError(f"Invalid indent code: {indent_code}")
     indent_size, indent_type, min_level = match.groups()
     if not indent_size:
         indent_size = 4 if indent_type == "s" else 1
-    return int(indent_size), indent_type, int(min_level or 0)
+    indent_size = int(indent_size)
+    if indent_type == "t" and indent_size != 1:
+        raise ValueError(f"Invalid indent size for tab: {indent_size}")
+    if indent_type == "s" and indent_size > 8:
+        raise ValueError(f"Invalid indent size for spaces: {indent_size}")
+    if indent_type == 's' and indent_size not in {1, 2, 4}:
+        logger.warning(f"Inadvisable indent size for spaces: {indent_size}")
+    return indent_size, indent_type, int(min_level or 0)
 
 
 @arg("--detect", "-D", help="detect indent type and minimum level")
-@arg("--apply", help="apply specified indent type and minimum level (e.g., '1t', '4s2')")
-def process_indentation(
-    input: TextIO = sys.stdin,
-    output: TextIO = sys.stdout,
+@arg("--apply", "-a", help="apply specified indent type and minimum level (e.g., '1t', '4s2')")
+def aligno(
+    *format: list[str],
+    istream: TextIO = sys.stdin,
+    ostream: TextIO = sys.stdout,
     detect: bool = False,
-    apply: Optional[str] = DEFAULT_INDENT,
+    apply: bool = False,
 ) -> None:
     """
     Detect or apply indentation to the input text.
 
     Environment:
         INDENT: default indent to use when not specified
+        FILETYPE: use standard indentation for this language (python or c)
 
     Examples:
-        indenter.py --detect < input.txt
-        indenter.py --apply 4s2 < input.py > output.py
-        indenter.py --apply t < input.c > output.c
-        indenter.py < input.sh > output.sh  # uses default indent
+        aligno < input.txt
+        aligno --apply < input.c > output.c
+        aligno 4s2 --apply < input.py > output.py
     """
+
+    # Determine whether to detect or apply indentation
+    indent_code = DEFAULT_INDENT
+    if len(format) > 1:
+        raise ValueError("Only one format argument is allowed")
+    if format:
+        indent_code = format[0]
+        apply = True
+    if apply and detect:
+        raise ValueError("Cannot detect and apply indent at the same time")
+    if not apply and not detect:
+        detect = True
+    if apply and not indent_code:
+        raise ValueError("Format argument required for applying indent")
+
     # Set up input and output streams
-    get, put = main.io(input, output)
+    get, put = main.io(istream, ostream)
 
     input_text = get(all=True)
 
@@ -217,10 +245,9 @@ def process_indentation(
         put(indent_code)
     else:
         # Apply the specified or default indentation to the input text
-        indent_code = apply or DEFAULT_INDENT
         output_text = apply_indent(input_text, *parse_indent_code(indent_code))
         put(output_text)
 
 
 if __name__ == "__main__":
-    main.run(process_indentation)
+    main.run(aligno)
