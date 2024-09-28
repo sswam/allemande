@@ -8,7 +8,7 @@ import sys
 import logging
 import getpass
 import textwrap
-from typing import TextIO
+from typing import TextIO  # Note to AI: don't import List, Dict, Optional or or Tuple, they are obsolete
 from random import random
 
 from argh import arg
@@ -93,7 +93,7 @@ def hello_py(
     if not name:
         name = getpass.getuser().title() if random() < 0.5 else "world"
 
-    get, put = main.io(istream, ostream)
+    get, put = main.io(istream, ostream)  # TODO do this in main and call with get / put functions
 
     put(f"Hello, {name}")
     put("How are you feeling?")
@@ -119,8 +119,9 @@ if __name__ == "__main__":
 """
 Important Notes for AI:
 
-Do not remove comments, logging or blank lines. Do not remove ANYTHING unnecessarily.
-If something looks wrong, and you are 1000% sure, comment it out rather than removing it.
+Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
+Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
+comment it out rather than removing it.
 
 AVOID DEEP INDENTATON OR NESTING, it's better to use if/elif or a function.
 If needed, we can use variables to avoid repeating parts of conditions.
@@ -160,4 +161,7 @@ The original coder was probably not an idiot. Be careful when "fixing" things.
 
 We use at least Python 3.10, normally 3.12 or the latest stable version. Please use new features as needed.
 For example, use modern type hints such as list[str]|None rather than Optional[List[str]]
+
+We use @arg from argh for argument parsing, via main.run(). Don't use argparse or anything else.
+We should not need a separate 'cli' function, just run the main function.
 """
