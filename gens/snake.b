@@ -1,0 +1,106 @@
+#!/usr/local/bin/cz --
+
+use b
+
+def WINDOW_WIDTH 800
+def WINDOW_HEIGHT 600
+def GRID_SIZE 20
+def SNAKE_INITIAL_LENGTH 3
+
+struct Point
+	num x
+	num y
+
+Point snake[100]
+int snake_length = SNAKE_INITIAL_LENGTH
+Point food
+enum Direction { UP, DOWN, LEFT, RIGHT }
+enum Direction direction = RIGHT
+
+boolean running = true
+
+init_game()
+	for int i = 0; i < snake_length; ++i
+		snake[i].x = (WINDOW_WIDTH / 2) - (i * GRID_SIZE)
+		snake[i].y = WINDOW_HEIGHT / 2
+
+	srand(time(NULL))
+	spawn_food()
+
+spawn_food()
+	food.x = (rand() % (WINDOW_WIDTH / GRID_SIZE)) * GRID_SIZE
+	food.y = (rand() % (WINDOW_HEIGHT / GRID_SIZE)) * GRID_SIZE
+
+draw_square(num x, num y)
+	rect_fill(x, y, GRID_SIZE, GRID_SIZE)
+
+draw_game()
+	clear(black)
+
+	# Draw snake
+	col(green)
+	for int i = 0; i < snake_length; ++i
+		draw_square(snake[i].x, snake[i].y)
+
+	# Draw food
+	col(red)
+	draw_square(food.x, food.y)
+
+move_snake()
+	for int i = snake_length - 1; i > 0; --i
+		snake[i] = snake[i - 1]
+
+	which direction
+	UP	snake[0].y -= GRID_SIZE
+	DOWN	snake[0].y += GRID_SIZE
+	LEFT	snake[0].x -= GRID_SIZE
+	RIGHT	snake[0].x += GRID_SIZE
+
+	# Check for collision with food
+	if snake[0].x == food.x && snake[0].y == food.y
+		++snake_length
+		spawn_food()
+
+	# Check for collision with walls
+	if snake[0].x < 0 || snake[0].x >= WINDOW_WIDTH || snake[0].y < 0 || snake[0].y >= WINDOW_HEIGHT
+		running = false
+
+	# Check for collision with self
+	for int i = 1; i < snake_length; ++i
+		if snake[0].x == snake[i].x && snake[0].y == snake[i].y
+			running = false
+
+handle_key(int key)
+	which key
+	XK_Up	if direction != DOWN
+			direction = UP
+	XK_Down	if direction != UP
+			direction = DOWN
+	XK_Left	if direction != RIGHT
+			direction = LEFT
+	XK_Right	if direction != LEFT
+				direction = RIGHT
+	XK_Escape	running = false
+
+void *key_handler(void *obj, void *a0, void *event)
+	use(obj, a0)
+	gr_event *e = event
+	if e->type == KeyPress
+		handle_key(XKeycodeToKeysym(display, e->which, 0))
+	return thunk_yes
+
+Main()
+	paper(WINDOW_WIDTH, WINDOW_HEIGHT)
+	init_game()
+
+	key_handler_default = thunk(key_handler)
+
+	while running
+		move_snake()
+		draw_game()
+		Paint()
+		Rsleep(0.1)  # Sleep for 100ms
+
+		handle_events(0)
+
+	Sayf("Game Over! Your score: %d", snake_length - SNAKE_INITIAL_LENGTH)
