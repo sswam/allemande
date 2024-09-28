@@ -2,7 +2,8 @@
 # pomodoro:	Pomodoro timer
 
 work=$[50*60]	# Set the working time
-grace=$[5*60]	# Set the grace time
+grace=$[4*60]	# Set the grace time
+fade=$[1*60]	# Set the fade time, or 0 to 'annoy'
 rest=$[5*60]	# Set the rest time
 g=	# More grace (or start with rest / grace period)
 q=	# Quit any running pomodoro
@@ -112,12 +113,30 @@ fi
 
 log annoy
 xd_save=$(xdark)
+step=0
+
 while ! q pidof i3lock; do
-	xdark $xd1
-	sleep $annoy
-	if q pidof i3lock; then break; fi
-	xdark $xd2
-	sleep $annoy
+	if [ "$fade" != "0" ]; then
+		if [ "$step" -gt "$fade" ]; then
+			continue
+		fi
+		# TODO the fade function might be useful for something else
+		read from1 from2 <<< "$xd_save"
+		read to1 to2 <<< "$xd0"
+		# Gradual fade out
+		now1=$(echo "scale=6; $from1 + ($to1 - $from1) * $step / $fade" | bc)
+		now2=$(echo "scale=6; $from2 + ($to2 - $from2) * $step / $fade" | bc)
+		xdark $now1 $now2
+		sleep 1
+		step=$((step + 1))
+	else
+		# Annoying behavior
+		xdark $xd1
+		sleep $annoy
+		if q pidof i3lock; then break; fi
+		xdark $xd2
+		sleep $annoy
+	fi
 done
 
 # ----------------------------------------------
