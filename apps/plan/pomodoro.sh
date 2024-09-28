@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eu
 
 # pomodoro: Pomodoro timer
 # Version: 0.2.1
@@ -85,12 +85,10 @@ adjusted_work_time=$work
 if [ -z "$A" ] || [ "$A" -eq 0 ]; then
 	current_second=$(( 60 * $(date +%M) + $(date +%S) ))
 	seconds_to_hour=$((3600 - current_second))
-	if [ $seconds_to_hour -lt $(( rest + fade + grace )) ]; then
-		seconds_to_hour=$((minutes_to_hour + 3600))
+	if [ $seconds_to_hour -lt $(( rest + fade + grace + work / 2)) ]; then
+		seconds_to_hour=$((seconds_to_hour + 3600))
 	fi
-	if [ $seconds_to_hour -lt $(( work + grace + fade + rest )) ]; then
-		adjusted_work_time=$(( seconds_to_hour - grace - fade - rest ))
-	fi
+	adjusted_work_time=$(( seconds_to_hour - grace - fade - rest ))
 fi
 
 # ----------------------------------------------
