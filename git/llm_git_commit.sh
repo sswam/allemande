@@ -82,13 +82,6 @@ cleanup() {
     done
 }
 
-# Find the top level of the git repository
-git_root=$(git rev-parse --show-toplevel)
-
-if [ -z "$git_root" ]; then
-    exit 1
-fi
-
 get_lock() {
     while ! mkdir "$git_root/.git/llm_git_commit.lock" 2>/dev/null; do
         echo >&2 "Waiting for llm_git_commit.lock to be released..."
@@ -159,6 +152,37 @@ files=( "$@" )
 
 original_dir=$PWD
 
+# Try to find the repo containing the first file
+
+resolve_symlinks=0
+
+file0=${files[0]}
+
+if [ -n "$file0" -a ! -e "$file0" ]; then
+    file0=$(wich "$file0")
+fi
+
+# Find the repo containing the first file
+if [ -n "$file0" ]; then
+    git_root=$(cd "$(dirname "$file0")"; git rev-parse --show-toplevel)
+fi
+
+# If that fails, try to resolve the first file as a symlink to find the repo
+if [ -n "$file0" -a -z "$git_root" ]; then
+    resolve_symlinks=1
+    file0=$(realpath "$file0")
+    git_root=$(cd "$(dirname "$file0")"; git rev-parse --show-toplevel)
+fi
+
+# If that fails, use the current directory, e.g. if no files were given
+if [ -z "$git_root" ]; then
+    git_root=$(git rev-parse --show-toplevel)
+fi
+
+if [ -z "$git_root" ]; then
+    exit 1
+fi
+
 # if no files were given, use staged
 get_lock
 if [ "${#files[@]}" -eq 0 ]; then
@@ -179,12 +203,36 @@ if [ "${#files[@]}" -eq 0 ]; then
     exit 1
 fi
 
+# Find any missing files
+for i in "${!files[@]}"; do
+    if [ ! -e "${files[$i]}" ]; then
+        files[$i]=$(wich "${files[$i]}")
+        if [ "$resolve_symlinks" -eq 1 ]; then
+            files[$i]=$(realpath "${files[$i]}")
+        fi
+    fi
+done
+
 # Paths relative to git_root
 for i in "${!files[@]}"; do
     files[$i]=$(realpath --no-symlinks --relative-to="$git_root" "${files[$i]}")
 done
 
 cd "$git_root"
+
+# Check git status for renamed files, we add the previous name too
+git rm $(git ls-files --deleted)
+for file in "${files[@]}"; do
+	git add "$file"
+done
+git_status=$(git status --porcelain)
+for file in "${files[@]}"; do
+	# Check for renames
+	renamed_from=$(echo "$git_status" | grep "R. .*-> $file$" | awk '{print $2}')
+	if [ -n "$renamed_from" ]; then
+		files+=("$renamed_from")
+	fi
+done
 
 # Inform the user of the files to be committed
 echo "Files to commit:"
