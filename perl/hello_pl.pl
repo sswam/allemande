@@ -120,7 +120,7 @@ sentiment analysis.
 =cut
 
 
-Important Notes for AI:
+Important Notes for AI [do not copy them!]:
 
 Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
 Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
