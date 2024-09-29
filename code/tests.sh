@@ -20,7 +20,7 @@ tests() {
 	local refs=("$@")
 
 	if [ ! -e "$program" ]; then
-		program=$(readlink -f "$(which "$program")")
+		program=$(readlink -f "$(wich "$program")")
 	fi
 
 	local dir=$(dirname "$program")
@@ -57,9 +57,14 @@ tests() {
 
 	# Test style reference and prompt for -s option
 	if [ "$s" = 1 ]; then
-		local example="test_hello_$ext.$tests_ext"
-		refs+=("$example")
-		prompt="in the style of \`$example\`, $prompt"
+		local hello="hello_$ext.$tests_ext"
+		hello=$(wich "$hello")
+		if [ -n "$hello" ]; then
+			dir=$(dirname "$hello")
+			example="$dir/tests/test_hello_$ext.$tests_ext"
+			refs+=("$example")
+			prompt="in the style of \`$example\`, $prompt"
+		fi
 	fi
 
 	prompt="Please write \`$tests_base\` to test \`$base\`, $prompt"
