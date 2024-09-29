@@ -23,8 +23,8 @@ __version__ = "0.2.0"
 logger = main.get_logger()
 
 CHECK_INTERVAL = 60  # 1 minute
-DEFAULT_SLEEP_THRESHOLD = 21600  # 6 hours
-DEFAULT_AWAKE_WARNING = 72000  # 16 hours
+DEFAULT_SLEEP_THRESHOLD = 6 * 3600  # 6 hours
+DEFAULT_AWAKE_WARNING = 12 * 3600  # 12 hours
 WARN_INTERVAL = 3600  # 1 hour
 LOG_FILE = "~/.awake.log"
 
@@ -43,10 +43,10 @@ def get_idle_time():
     return float(sh.xprintidle()) / 1000
 
 
-def log_activity(timestamp: float, log_file: str):
+def log_activity(log_file: str, status: str, timestamp: float):
     """Log the current activity."""
     with open(log_file, "a") as f:
-        f.write(f"{timestamp.isoformat()} - Active\n")
+        f.write(f"{timestamp.isoformat()} - {status.title()}\n")
 
 
 def estimate_sleep(log_file: str, sleep_threshold: int):
@@ -56,6 +56,8 @@ def estimate_sleep(log_file: str, sleep_threshold: int):
 
     if not lines:
         return None, None, None
+
+    # TODO need to check Active vs Away
 
     last_activity = datetime.fromisoformat(lines[-1].split(" - ")[0])
     sleep_start = None
@@ -104,6 +106,7 @@ def awake_py(
     Track user activity on X11 and log when awake.
     Estimate sleep duration and provide warnings for extended awake periods.
     """
+
     check_xprintidle()
 
     log_file = os.path.expanduser(log_file)
@@ -113,31 +116,42 @@ def awake_py(
     logger.info(f"Starting X11 activity tracking. Logging to {log_file}")
     logger.info("Press Ctrl+C to stop.")
 
+    first = True
+
     while True:
-        time.sleep(CHECK_INTERVAL)
+        if not first:
+            time.sleep(CHECK_INTERVAL)
+        first = False
 
         now = datetime.now()
         idle_time = get_idle_time()
 
         if idle_time > CHECK_INTERVAL + 0.5:
-            logger.debug("User seems to be idle.")
+            status = "away"
+            status_time = now
+        else:
+            status = "active"
+            status_time = now - timedelta(seconds=idle_time)
+
+        logger.debug(f"User seems to be {status}")
+
+        log_status(log_file, status_time, status)
+
+        if status == "away"
             continue
 
-        logger.debug("User seems to be active.")
-
-        last_active = now - timedelta(seconds=idle_time)
-        log_activity(last_active, log_file)
-
+        # TODO estimate_sleep is inefficient, we should keep the DB in memory and assume no one
+        # is messing with it, better still check if it was edited since we last loaded it
         sleep_start, sleep_end, sleep_duration = estimate_sleep(log_file, sleep_threshold)
         if not sleep_start:
             logger.debug("No sleep data available.")
             continue
-        
+
         logger.info(f"Last sleep: {sleep_start}, Duration: {sleep_duration}")
 
-        awake_time = last_active - sleep_end
+        awake_time = status_time - sleep_end
 
-        logger.info(f"Awake from: {awake_start}, Duration: {awake_time}")
+        logger.info(f"Awake from: {sleep_end}, Duration: {awake_time}")
 
         if no_warn or awake_time.total_seconds() < awake_warning:
             continue
