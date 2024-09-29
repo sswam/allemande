@@ -71,6 +71,8 @@ __version__ = "0.1.12"  # Bumped patch version
 
 logger = logging.getLogger(__name__)
 
+
+module_proxies = {}
 maybe_unloaded_proxies = []
 
 
@@ -162,24 +164,26 @@ def lazy(
             logger.error(f"Error initializing variable: {e}")
             raise e
 
-    proxy = caller_namespace[_as or module_name] = LazyProxy(load_module)
+    proxy = module_proxies.get(module_name)
+    if not proxy:
+        proxy = LazyProxy(load_module)
+        module_proxies[module_name] = proxy
+    caller_namespace[_as or module_name] = proxy
     rv = [proxy]
 
     for symbol_name in symbol_names:
-        proxy = caller_namespace[symbol_name] = LazyProxy(
-            lambda: load_symbol(symbol_name)
-        )
+        proxy = LazyProxy(lambda: load_symbol(symbol_name))
+        caller_namespace[symbol_name] = proxy
         rv.append(proxy)
 
     for symbol_name, target in kwargs.items():
         if isinstance(target, str):
-            proxy = caller_namespace[symbol_name] = LazyProxy(
-                lambda: load_symbol(target, _as=symbol_name)
-            )
-        else:  # if callable
-            proxy = caller_namespace[symbol_name] = LazyProxy(
-                lambda: load_and_initialize(symbol_name, target)
-            )
+            proxy = LazyProxy(lambda: load_symbol(target, _as=symbol_name))
+        elif callable(target):
+            proxy = LazyProxy(lambda: load_and_initialize(symbol_name, target))
+        else:
+            raise ValueError(f"Invalid target for symbol '{symbol_name}'")
+        caller_namespace[symbol_name] = proxy
         rv.append(proxy)
 
     return rv

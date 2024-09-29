@@ -68,12 +68,12 @@ def test_lazy_load_all_modules(mock_import_module):
     subject.lazy('xml.etree.ElementTree')
     subject.lazy('xml.dom')
 
-    assert len(subject.maybe_unloaded_proxies) == 2
+    assert len(subject.maybe_unloaded_proxies) == 1
 
     subject.load_all_modules()
 
     assert len(subject.maybe_unloaded_proxies) == 0
-    assert mock_import_module.call_count == 2
+    assert mock_import_module.call_count == 1
 
 def test_lazy_load():
     result = subject.lazy_load('xml.etree.ElementTree', 'Element')
