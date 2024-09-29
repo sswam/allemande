@@ -30,7 +30,22 @@ import tiktoken
 from slugify import slugify
 
 from ally import main
-# from ally.lazy import lazy
+from ally.lazy import lazy
+
+lazy("openai", "AsyncOpenAI")
+lazy("openai", openai_async_client=lambda openai: openai.AsyncOpenAI())
+lazy("openai", perplexity_async_client=lambda openai: openai.AsyncOpenAI(
+	base_url="https://api.perplexity.ai",
+	api_key=os.environ.get("PERPLEXITY_API_KEY"),
+))
+
+lazy("anthropic")
+lazy("claude")
+lazy("google.generativeai", _as="google_genai")
+lazy("vertexai.preview.tokenization", _as="google_tokenization")
+
+lazy("transformers", "AutoTokenizer")
+llama3_tokenizer = None
 
 
 __version__ = "0.1.3"
@@ -178,76 +193,6 @@ DEFAULT_TEMPERATURE = 1
 TOKEN_LIMIT = inf
 
 
-# Dynamic module loading functions
-
-
-# lazy('openai')
-
-openai = AsyncOpenAI = openai_async_client = perplexity_async_client = None
-anthropic = claude = None
-genai = None
-transformers = AutoTokenizer = llama3_tokenizer = None
-
-
-def load_openai():
-	global openai, AsyncOpenAI, openai_async_client, perplexity_async_client
-	if openai_async_client and perplexity_async_client:
-		return
-	import openai
-	from openai import AsyncOpenAI
-	openai_async_client = AsyncOpenAI()
-	perplexity_async_client = AsyncOpenAI(
-		base_url="https://api.perplexity.ai",
-		api_key=os.environ.get("PERPLEXITY_API_KEY"),
-	)
-
-
-def load_perplexity():
-	load_openai()
-
-
-def load_anthropic():
-	global anthropic, claude
-	if claude:
-		return
-	import anthropic
-	import claude
-
-
-def load_google():
-	global genai
-	if genai:
-		return
-	import google.generativeai as genai
-	genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-
-
-def load_transformers():
-	global transformers, AutoTokenizer
-	if transformers:
-		return
-	import transformers
-	from transformers import AutoTokenizer
-
-
-async def load_all_modules():
-	await load_openai()
-	await asyncio.sleep(0)
-	await load_anthropic()
-	await asyncio.sleep(0)
-	await load_google()
-	await asyncio.sleep(0)
-	await load_transformers()
-	logger.debug("all modules loaded")
-
-
-async def background_job(async_func, after=0):
-	await asyncio.sleep(after)
-	await async_func()
-
-
-# Modify the existing functions to use dynamic loading
-
 os.environ["HF_HUB_OFFLINE"] = "1"
 
 def load_huggingface_by_plan(what, plan, loader):
@@ -264,13 +209,12 @@ def load_huggingface_by_plan(what, plan, loader):
 	else:
 		raise IOError(f"Failed to load {what} from huggingface")
 	os.environ["HF_HUB_OFFLINE"] = saved_hf_hub_offline
+	return resource
+
 
 def get_llama3_tokenizer():
 	global AutoTokenizer, llama3_tokenizer
 	if not llama3_tokenizer:
-		if AutoTokenizer is None:
-			load_transformers()
-
 		# The offiical model is gated, need to register; seems a bit much for a tokenizer.
 		plan = [(0, "meta-llama/Meta-Llama-3-8B"), (0, "baseten/Meta-Llama-3-tokenizer"),
 			 (1, "meta-llama/Meta-Llama-3-8B"), (1, "baseten/Meta-Llama-3-tokenizer")]
@@ -352,8 +296,6 @@ def set_opts(_opts):
 
 async def achat_openai(messages, client=None):
 	""" Chat with OpenAI ChatGPT models asynchronously. """
-	load_openai()
-
 	if client is None:
 		client = openai_async_client
 	model = opts.model
@@ -396,14 +338,11 @@ async def achat_openai(messages, client=None):
 
 async def achat_perplexity(messages):
 	""" Chat with Perplexity models asynchronously. """
-	load_perplexity()
 	return await achat_openai(messages, client=perplexity_async_client)
 
 
 async def achat_claude(messages):
 	""" Chat with Anthropic Claude models asynchronously. """
-	load_anthropic()
-
 	model = opts.model
 	if "id" in MODELS[model]:
 		model = MODELS[model]["id"]
@@ -432,8 +371,6 @@ async def achat_claude(messages):
 
 async def achat_google(messages):
 	""" Chat with Google models asynchronously. """
-	load_google()
-
 	model = opts.model
 	if "id" in MODELS[model]:
 		model = MODELS[model]["id"]
@@ -454,11 +391,11 @@ async def achat_google(messages):
 	if token_limit != inf:
 		options["max_output_tokens"] = token_limit
 
-	model_obj = genai.GenerativeModel(model)
+	model_obj = google_genai.GenerativeModel(model)
 
 	history = []
 	for msg in messages[:-1]:
-		history.append(genai.ChatMessage(
+		history.append(google_genai.ChatMessage(
 			author="user" if msg["role"] == "user" else "model",
 			content=msg["content"],
 		))
@@ -771,12 +708,21 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 		tokens = enc.encode(text)
 		n_tokens = len(tokens)
 	elif vendor == "anthropic":
-		load_anthropic()
 		n_tokens = claude.count(text)
 	elif vendor == "perplexity":
 		llama3_tokenizer = get_llama3_tokenizer()
 		tokens = llama3_tokenizer.tokenize(text)
 		n_tokens = len(tokens)
+	elif vendor == "google":
+		try:
+			tokenizer = google_tokenization.get_tokenizer_for_model(opts.model)
+		except ValueError as ex:
+			if 'latest' in opts.model:
+				model = opts.model.replace('-latest', '-001')
+				tokenizer = google_tokenization.get_tokenizer_for_model(model)
+			else:
+				raise ex
+		n_tokens = tokenizer.count_tokens(text).total_tokens
 	else:
 		raise ValueError(f"unknown model vendor: {vendor}")
 	rv = [n_tokens]
@@ -809,5 +755,4 @@ if __name__ == "__main__":
 	main.run([chat, query, process, count, models])
 else:
 	# Load all modules in the background after a short delay
-	loop = asyncio.get_event_loop()
-	loop.call_later(0.1, lambda: asyncio.run_coroutine_threadsafe(load_all_modules(), loop))
+	lazy(0.1)
