@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Fullscreen Slideshow v1.0.5</title>
+	<style>
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			border: 0;
+		}
+		body, html {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			background-color: black;
+		}
+		#slideshow {
+			height: 100vh;
+			width: 100vw;
+			overflow: auto;
+			cursor: grab;
+			scrollbar-width: none;
+			-ms-overflow-style: none;
+
+			user-select: none;
+			-webkit-user-drag: none;
+			-khtml-user-drag: none;
+			-moz-user-drag: none;
+			-o-user-drag: none;
+		}
+		#slideshow::-webkit-scrollbar {
+			display: none;
+		}
+		#canvas {
+			background-color: black;
+			width: 10000px;
+			height: 10000px;
+		}
+		#image {
+			display: block;
+
+			object-fit: cover;
+			min-width: 100%;
+			min-height: 100%;
+			width: auto;
+			height: auto;
+			max-width: none;
+			max-height: none;
+
+			user-select: none;
+			-webkit-user-drag: none;
+			-khtml-user-drag: none;
+			-moz-user-drag: none;
+			-o-user-drag: none;
+			pointer-events: none;
+		}
+	</style>
+</head>
+<body>
+	<div id="slideshow">
+		<img id="image" src="" alt="Slide">
+	</div>
+
+	<script>
+		let images = [];
+		let currentIndex = 0;
+		let slideshow;
+		let image;
+		let intervalId;
+		const imagesToPreload = 10;
+		const delay = 0;  // 10
+		let triedFullscreen = false;
+		let list_url = 'list.txt';
+		let scale = 0;
+
+		async function slideshowMain() {
+			getListUrl();
+			console.log('list_url', list_url);
+			await fetchImageList();
+			initSlideshow();
+		}
+
+		function getListUrl() {
+			if (window.location.hash) {
+				// split the hash into list_url and currentIndex
+				const hashParts = window.location.hash.substr(1).split('#');
+				list_url = hashParts[0];
+				currentIndex = parseInt(hashParts[1]);
+			}
+		}
+
+		async function fetchImageList() {
+			const response = await fetch(list_url);
+			const text = await response.text();
+			console.log('text', text);
+			images = text.split('\n').filter(url => url.trim() !== '');
+			console.log('images', images);
+		}
+
+		function initSlideshow() {
+			slideshow = document.getElementById('slideshow');
+			image = document.getElementById('image');
+
+			showSlide(currentIndex);
+
+			slideshow.addEventListener('click', handleClick);
+			window.addEventListener('resize', centerImage);
+			document.addEventListener('keydown', handleKeydown);
+			image.addEventListener('load', centerImage);
+			slideshow.addEventListener('wheel', handleWheel);
+
+			startAutoSlide();
+		}
+
+		let logScale = 0;
+		let translateX = 0;
+		let translateY = 0;
+
+		function handleWheel(e) {
+			e.preventDefault();
+			const delta = e.deltaY > 0 ? -1 : 1;
+			const newLogScale = logScale + delta;
+			setScale(newLogScale, e);
+		}
+
+		function setScale(newLogScale, e) {
+			logScale = newLogScale;
+			const scale = 2 ** (newLogScale/20);
+			if (e) {
+				/* this zoom is semi-functional */
+				let rect = image.getBoundingClientRect();
+				let x = (e.clientX - rect.left) / rect.width;
+				let y = (e.clientY - rect.top) / rect.height;
+				image.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+			} else {
+				image.style.transformOrigin = 'center';
+			}
+			image.style.transform = `scale(${scale})`;
+		}
+
+		function handleKeydown(e) {
+			if (e.key === ' ') {
+				nextSlide();
+			} else if (e.key === 'Backspace') {
+				nextSlide(-1);
+			} else if (e.key === 'PageDown') {
+				nextSlide(10);
+			} else if (e.key === 'PageUp') {
+				nextSlide(-10);
+			} else if (e.key === 'Escape') {
+				if (isFullscreen()) {
+					exitFullscreen();
+				} else {
+					window.location.href = 'about:blank';
+				}
+			} else if (e.key === 'f') {
+				toggleFullscreen();
+			} else if (e.key === '1') {
+				setScale(0);
+			} else {
+				return;
+			}
+			e.preventDefault();
+			e.stopPropagation();
+		}
+
+		function showSlide(index) {
+			image.src = images[index].trim();
+			window.history.replaceState(null, null, '#' + list_url + '#' + index);
+			preloadImages(currentIndex);
+		}
+
+		function nextSlide(offset = 1) {
+			currentIndex = (currentIndex + offset + images.length) % images.length;
+			showSlide(currentIndex);
+		}
+
+		function startAutoSlide() {
+			if (delay == 0) {
+				return;
+			}
+			clearInterval(intervalId);
+			intervalId = setInterval(nextSlide, 1000 * delay);
+		}
+
+		function requestFullscreen() {
+			if (document.documentElement.requestFullscreen) {
+				document.documentElement.requestFullscreen();
+			} else if (document.documentElement.webkitRequestFullscreen) {
+				document.documentElement.webkitRequestFullscreen();
+			}
+		}
+
+		function isFullscreen() {
+			return document.fullscreenElement || document.webkitFullscreenElement;
+		}
+
+		function exitFullscreen() {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			}
+		}
+
+		function toggleFullscreen() {
+			if (isFullscreen()) {
+				exitFullscreen();
+			} else {
+				requestFullscreen();
+			}
+		}
+
+		function handleClick(e) {
+			if (!triedFullscreen) {
+				triedFullscreen = true;
+				requestFullscreen();
+				setupDragToScroll();
+				return;
+			}
+			if (e.target.closest('.dragging')) {
+				return;
+			}
+			const halfWidth = window.innerWidth / 2;
+			if (e.clientX > halfWidth) {
+				nextSlide();
+			} else {
+				nextSlide(-1);
+			}
+			startAutoSlide();
+		}
+
+		function preloadImages(startIndex) {
+			for (let i = 1; i <= imagesToPreload/2; i++) {
+				preloadImage(startIndex + i);
+				preloadImage(startIndex - i);
+			}
+		}
+
+		function preloadImage(i) {
+			const index = (i + images.length) % images.length;
+			const img = new Image();
+			img.src = images[index].trim();
+		}
+
+		function centerImage() {
+			const scrollLeft = (image.offsetWidth - slideshow.clientWidth) / 2;
+			slideshow.scrollLeft = scrollLeft;
+
+			// const scrollTop = (image.offsetHeight - slideshow.clientHeight) / 2;
+			// slideshow.scrollTop = scrollTop;
+
+			// It feels more natural to start at the top of the image
+			slideshow.scrollTop = 0;
+		}
+
+		/* drag to scroll on desktop */
+
+		let isDown = false;
+		let startX, startY, scrollLeft, scrollTop;
+
+		function setupDragToScroll() {
+			function stopDrag() {
+				isDown = false;
+				slideshow.style.cursor = 'grab';
+				let moved = Math.abs(slideshow.scrollLeft - scrollLeft) > 10 || Math.abs(slideshow.scrollTop - scrollTop) > 10;
+				if (moved) {
+					setTimeout(() => {
+						slideshow.classList.remove('dragging');
+					}, 0);
+				} else {
+					slideshow.classList.remove('dragging');
+				}
+			}
+			slideshow.addEventListener('mousedown', (e) => {
+				isDown = true;
+				slideshow.style.cursor = 'grabbing';
+				startX = e.pageX - slideshow.offsetLeft;
+				startY = e.pageY - slideshow.offsetTop;
+				scrollLeft = slideshow.scrollLeft;
+				scrollTop = slideshow.scrollTop;
+				slideshow.classList.add('dragging');
+			});
+
+			slideshow.addEventListener('mouseleave', () => {
+				stopDrag();
+			});
+
+			slideshow.addEventListener('mouseup', () => {
+				stopDrag();
+			});
+
+			slideshow.addEventListener('mousemove', (e) => {
+				if (!isDown) return;
+				e.preventDefault();
+				const x = e.pageX - slideshow.offsetLeft;
+				const y = e.pageY - slideshow.offsetTop;
+				const walkX = (x - startX) * 2;
+				const walkY = (y - startY) * 2;
+				slideshow.scrollLeft = scrollLeft - walkX;
+				slideshow.scrollTop = scrollTop - walkY;
+			});
+		}
+
+		slideshowMain();
+	</script>
+</body>
+</html>
