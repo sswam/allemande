@@ -66,14 +66,14 @@
 
 	<script>
 		let images = [];
-		let currentIndex = 0;
+		let currentIndex;
 		let slideshow;
 		let image;
 		let intervalId;
 		const imagesToPreload = 10;
 		const delay = 0;  // 10
 		let triedFullscreen = false;
-		let list_url = 'list.txt';
+		let list_url;
 		let scale = 0;
 
 		async function slideshowMain() {
@@ -88,8 +88,20 @@
 				// split the hash into list_url and currentIndex
 				const hashParts = window.location.hash.substr(1).split('#');
 				list_url = hashParts[0];
-				currentIndex = parseInt(hashParts[1]);
+				currentIndex = parseInt(hashParts[1] || 0);
+			} else {
+				list_url = 'list.txt';
+				currentIndex = 0;
 			}
+		}
+
+		async function handleHashChange() {
+			const oldListUrl = list_url;
+			getListUrl();
+			if (list_url !== oldListUrl) {
+				await fetchImageList();
+			}
+			showSlide(currentIndex);
 		}
 
 		async function fetchImageList() {
@@ -111,6 +123,8 @@
 			document.addEventListener('keydown', handleKeydown);
 			image.addEventListener('load', centerImage);
 			slideshow.addEventListener('wheel', handleWheel);
+			// on hash change
+			window.addEventListener('hashchange', handleHashChange);
 
 			startAutoSlide();
 		}
@@ -129,7 +143,7 @@
 		function setScale(newLogScale, e) {
 			logScale = newLogScale;
 			const scale = 2 ** (newLogScale/20);
-			if (e) {
+			if (e && scale > 1) {
 				/* this zoom is semi-functional */
 				let rect = image.getBoundingClientRect();
 				let x = (e.clientX - rect.left) / rect.width;
@@ -263,10 +277,11 @@
 		let startX, startY, scrollLeft, scrollTop;
 
 		function setupDragToScroll() {
-			function stopDrag() {
+
+			function stopDrag(endX, endY) {
 				isDown = false;
 				slideshow.style.cursor = 'grab';
-				let moved = Math.abs(slideshow.scrollLeft - scrollLeft) > 10 || Math.abs(slideshow.scrollTop - scrollTop) > 10;
+				let moved = Math.abs(endX - startX) > 10 || Math.abs(endY - startY) > 10;
 				if (moved) {
 					setTimeout(() => {
 						slideshow.classList.remove('dragging');
@@ -275,6 +290,7 @@
 					slideshow.classList.remove('dragging');
 				}
 			}
+
 			slideshow.addEventListener('mousedown', (e) => {
 				isDown = true;
 				slideshow.style.cursor = 'grabbing';
@@ -285,12 +301,13 @@
 				slideshow.classList.add('dragging');
 			});
 
+
 			slideshow.addEventListener('mouseleave', () => {
 				stopDrag();
 			});
 
-			slideshow.addEventListener('mouseup', () => {
-				stopDrag();
+			slideshow.addEventListener('mouseup', (e) => {
+				stopDrag(e.pageX - slideshow.offsetLeft, e.pageY - slideshow.offsetTop);
 			});
 
 			slideshow.addEventListener('mousemove', (e) => {
