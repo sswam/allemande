@@ -1,0 +1,51 @@
+		let logScale = 0;
+		let translateX = 0;
+		let translateY = 0;
+
+		function handleWheel(e) {
+			e.preventDefault();
+			const delta = e.deltaY > 0 ? -1 : 1;
+			const newLogScale = logScale + delta;
+			setScale(newLogScale, e);
+		}
+
+		function setScale(newLogScale, e) {
+			const oldScale = 2 ** (logScale/20);
+			const scale = 2 ** (newLogScale/20);
+			logScale = newLogScale;
+
+			if (e) {
+				const rect = image.getBoundingClientRect();
+				const xm = e.clientX - rect.left;
+				const ym = e.clientY - rect.top;
+
+				translateX = xm - (scale / oldScale) * (xm - translateX);
+				translateY = ym - (scale / oldScale) * (ym - translateY);
+
+				image.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+				console.log(translateX, translateY, scale);
+				console.log(image.style.transform);
+			} else {
+				image.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+			}
+		}
+
+		let logScale = 0;
+		let translateX = 0;
+		let translateY = 0;
+
+		function handleWheel(e) {
+			e.preventDefault();
+			const delta = e.deltaY > 0 ? -1 : 1;
+			const newLogScale = logScale + delta;
+			setScale(newLogScale, e);
+		}
+
+		function setScale(newLogScale, e) {
+			const oldScale = 2 ** (logScale/20);
+			const scale = 2 ** (newLogScale/20);
+			logScale = newLogScale;
+
+			image.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+		}
+
