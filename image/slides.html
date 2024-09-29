@@ -55,7 +55,6 @@
 			-khtml-user-drag: none;
 			-moz-user-drag: none;
 			-o-user-drag: none;
-			pointer-events: none;
 		}
 	</style>
 </head>
@@ -101,7 +100,7 @@
 			if (list_url !== oldListUrl) {
 				await fetchImageList();
 			}
-			showSlide(currentIndex);
+			showSlide();
 		}
 
 		async function fetchImageList() {
@@ -116,7 +115,7 @@
 			slideshow = document.getElementById('slideshow');
 			image = document.getElementById('image');
 
-			showSlide(currentIndex);
+			showSlide();
 
 			slideshow.addEventListener('click', handleClick);
 			window.addEventListener('resize', centerImage);
@@ -174,6 +173,9 @@
 				toggleFullscreen();
 			} else if (e.key === '1') {
 				setScale(0);
+			} else if (e.key === 'Home') {
+				currentIndex = 0;
+				showSlide();
 			} else {
 				return;
 			}
@@ -181,15 +183,15 @@
 			e.stopPropagation();
 		}
 
-		function showSlide(index) {
-			image.src = images[index].trim();
-			window.history.replaceState(null, null, '#' + list_url + '#' + index);
+		function showSlide() {
+			image.src = images[currentIndex].trim();
+			window.history.replaceState(null, null, '#' + list_url + '#' + currentIndex);
 			preloadImages(currentIndex);
 		}
 
 		function nextSlide(offset = 1) {
 			currentIndex = (currentIndex + offset + images.length) % images.length;
-			showSlide(currentIndex);
+			showSlide();
 		}
 
 		function startAutoSlide() {
