@@ -77,7 +77,6 @@
 
 		async function slideshowMain() {
 			getListUrl();
-			console.log('list_url', list_url);
 			await fetchImageList();
 			initSlideshow();
 		}
@@ -106,9 +105,7 @@
 		async function fetchImageList() {
 			const response = await fetch(list_url);
 			const text = await response.text();
-			console.log('text', text);
 			images = text.split('\n').filter(url => url.trim() !== '');
-			console.log('images', images);
 		}
 
 		function initSlideshow() {
