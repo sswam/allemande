@@ -20,6 +20,13 @@ else
 	while true; do
 		i3_popup_xterm -w -T="What are you working on?" note -t=waywo --timeout="$t" -L -1
 		i3_update_message.sh $(note -t=waywo -n -A)
-		sleep "$i" || true
+
+		# try to sync with the clock
+		second_of_the_day=$(( $(date +%s) - $(date -d "00:00" +%s) ))
+		delay=$(( i - second_of_the_day % i ))
+		if [ $delay -le $(( i / 2 )) ]; then
+			delay=$(( delay + i ))
+		fi
+		sleep "$delay" || true
 	done
 fi
