@@ -51,6 +51,7 @@ llama3_tokenizer = None
 __version__ = "0.1.3"
 
 logger = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.INFO)
 
 
 # Settings
@@ -275,6 +276,7 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
 	temperature: float|None = None
 	token_limit: int|None = None
 	indent: str|None = None
+	timeit: bool = False
 	def __init__(self, **kwargs):
 		if kwargs.get("model"):
 			kwargs["model"] = get_model_by_alias(kwargs["model"])
@@ -321,9 +323,15 @@ async def achat_openai(messages, client=None):
 	if token_limit != inf:
 		options["max_tokens"] = token_limit
 
+	if opts.timeit:
+		start_time = time.time()
+
 	response = await client.chat.completions.create(
 		**options
 	)
+
+	if opts.timeit:
+		print(f"time: {time.time() - start_time:.3f}", file=stderr)
 
 	logger.debug("llm: response: %s", response)
 
@@ -363,7 +371,14 @@ async def achat_claude(messages):
 	if token_limit != inf:
 		options["token_limit"] = token_limit
 
+	if opts.timeit:
+		start_time = time.time()
+
 	response = await claude.chat_claude(messages, _async=True, **options)
+
+	if opts.timeit:
+		print(f"time: {time.time() - start_time:.3f}", file=stderr)
+
 	completion = claude.response_completion(response)
 	message = { "role": "assistant", "content": completion }
 	return message
@@ -402,7 +417,13 @@ async def achat_google(messages):
 
 	chat = model_obj.start_chat(history=history)
 
+	if opts.timeit:
+		start_time = time.time()
+
 	response = await chat.send_message_async(messages[-1]["content"])
+
+	if opts.timeit:
+		print(f"time: {time.time() - start_time:.3f}", file=stderr)
 
 	output_message = {
 		"role": "assistant",
@@ -508,7 +529,7 @@ def read_utf_replace(istream):
 	return input_text
 
 
-async def aprocess(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostream: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False, json=False):
+async def aprocess(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostream: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False, json=False, timeit=False):
 	"""Process some text through the LLM with a prompt asynchronously."""
 	if __name__ == "__main__":
 		istream = stdin
@@ -563,7 +584,7 @@ async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, tempera
 	return await aquery(full_input, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, log=log, json=json)
 
 
-async def aquery(*prompt, ostream: IO[str]|None=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, log=True, json=False):
+async def aquery(*prompt, ostream: IO[str]|None=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, log=True, json=False, timeit=False):
 	""" Ask the LLM a question asynchronously. """
 	if __name__ == "__main__":
 		ostream = stdout
@@ -667,9 +688,10 @@ def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, tempera
 @argh.arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
 @argh.arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @argh.arg("-j", "--json", action="store_true", help="output JSON")
-def query(*prompt, ostream: IO[str]|None=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, log=True, json=False):
+@argh.arg("-T", "--timeit", action="store_true", help="time the actual request")
+def query(*prompt, ostream: IO[str]|None=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, log=True, json=False, timeit=False):
 	""" Synchronous wrapper for aquery. """
-	return asyncio.run(aquery(*prompt, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, log=log, json=json))
+	return asyncio.run(aquery(*prompt, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, log=log, json=json, timeit=timeit))
 
 
 @argh.arg("prompt", nargs="+", help="prompt text")
@@ -687,9 +709,10 @@ def query(*prompt, ostream: IO[str]|None=None, model: str=default_model, indent=
 @argh.arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
 @argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
 @argh.arg("-j", "--json", action="store_true", help="output JSON")
-def process(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostream: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False, json=False):
+@argh.arg("-T", "--timeit", action="store_true", help="time the actual request")
+def process(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostream: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False, json=False, timeit=False):
 	""" Synchronous wrapper for aprocess. """
-	return asyncio.run(aprocess(*prompt, prompt2=prompt2, istream=istream, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, empty_ok=empty_ok, empty_to_empty=empty_to_empty, log=log, lines=lines, repeat=repeat, json=json))
+	return asyncio.run(aprocess(*prompt, prompt2=prompt2, istream=istream, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, empty_ok=empty_ok, empty_to_empty=empty_to_empty, log=log, lines=lines, repeat=repeat, json=json, timeit=timeit))
 
 
 def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
@@ -752,6 +775,7 @@ def models(detail=False, alias=False):
 
 
 if __name__ == "__main__":
+	logger.info("hello")
 	main.run([chat, query, process, count, models])
 else:
 	# Load all modules in the background after a short delay
