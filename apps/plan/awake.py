@@ -23,13 +23,6 @@ __version__ = "0.2.1"
 
 logger = main.get_logger()
 
-DEFAULT_CHECK_INTERVAL = 60  # 1 minute
-DEFAULT_SLEEP_THRESHOLD = 6 * 3600  # 6 hours
-DEFAULT_AWAKE_WARNING = 12 * 3600  # 12 hours
-DEFAULT_WARN_INTERVAL = 3600  # 1 hour
-LOG_FILE = "~/.awake.log"
-DEFAULT_AWAY_THRESHOLD = 300  # 5 minutes
-
 
 def check_xprintidle():
     """Check if xprintidle is installed."""
@@ -155,26 +148,24 @@ def send_notification(message: str):
         logger.error(f"Failed to send notification: {e}")
 
 
-@arg("--log-file", help="Path to the log file", default="~/.awake.log")
-@arg("--sleep-threshold", help="Sleep threshold in seconds", type=int, default=DEFAULT_SLEEP_THRESHOLD)
+@arg("--log-file", help="Path to the log file")
+@arg("--sleep-threshold", help="Sleep threshold in seconds", type=int)
 @arg("--no-warn", help="Disable awake warnings", action="store_true")
-@arg("--awake-warning", help="Awake warning threshold in seconds", type=int, default=DEFAULT_AWAKE_WARNING)
-@arg("--away-threshold", help="Away threshold in seconds", type=int, default=DEFAULT_AWAY_THRESHOLD)
-@arg("--check-interval", help="Check interval in seconds", type=int, default=DEFAULT_CHECK_INTERVAL)
-@arg("--warn-interval", help="Awake warning interval in seconds", type=int, default=DEFAULT_WARN_INTERVAL)
-@arg("--dots", "-d", help="Print a dot for each check", action="store_true")
+@arg("--awake-warning", help="Awake warning threshold in seconds", type=int)
+@arg("--away-threshold", help="Away threshold in seconds", type=int)
+@arg("--check-interval", help="Check interval in seconds", type=int)
+@arg("--warn-interval", help="Awake warning interval in seconds", type=int)
 @arg("--test", help="Run in test mode, with a very compressed time scale", action="store_true")
 def awake(
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
-    log_file: str = LOG_FILE,
-    sleep_threshold: int = DEFAULT_SLEEP_THRESHOLD,
+    log_file: str = "~/.awake.log",
+    sleep_threshold: int = 6 * 3600,
     no_warn: bool = False,
-    awake_warning: int = DEFAULT_AWAKE_WARNING,
-    away_threshold: int = DEFAULT_AWAY_THRESHOLD,
-    check_interval: int = DEFAULT_CHECK_INTERVAL,
-    warn_interval: int = DEFAULT_WARN_INTERVAL,
-    dots: bool = True,
+    awake_warning: int = 12 * 3600,
+    away_threshold: int = 300,
+    check_interval: int = 60,
+    warn_interval: int = 3600,
     test: bool = False,
 ):
     """
@@ -192,7 +183,6 @@ def awake(
         awake_warning = 120
         away_threshold = 20
         log_file = "/tmp/awake.log"
-        dots = False
 
     check_interval = timedelta(seconds=check_interval)
     warn_interval = timedelta(seconds=warn_interval)
@@ -239,15 +229,7 @@ def awake(
         # always log the status, so we can see when the script is not running
         activity_log.add_activity(status_time, status)
 
-        if status == last_status:
-            if dots:
-                print(".", file=sys.stderr, end="")
-            continue
-
         last_status = status
-
-        if dots:
-            print("\n", file=sys.stderr)
 
         logger.info(f"User is {status}")
 
@@ -271,9 +253,10 @@ def awake(
 
         work_duration = activity_log.total_active_since(awake_start)
 
-        logger.info(f"Last sleep: {sleep_start}, Duration: {humanize.naturaldelta(sleep_duration)}")
-        logger.info(f"Awake from: {awake_start}, Duration: {humanize.naturaldelta(awake_duration)}")
-        logger.info(f"Work duration: {humanize.naturaldelta(work_duration)}")
+        logger.info(f"Slept for {humanize.naturaldelta(sleep_duration)}")
+        logger.info(f"Awake for {humanize.naturaldelta(awake_duration)}")
+        logger.info(f"Working for {humanize.naturaldelta(work_duration)}")
+        logger.info("")
 
         if no_warn or not awake_duration or awake_duration < awake_warning:
             continue
