@@ -337,7 +337,7 @@ line:
 - Describe each change very concisely, if not already covered in the header;
   as few list items as possible. Continuing lines are indented with two spaces.
 
-Write very concisely in a down-to-earth tone, avoiding extravagant works like 'enhance'.
+Write very concisely in a down-to-earth tone. DO NOT use words like 'Enhance'.
 We don't want lots of detail or flowery language, short and sweet is best.
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;
