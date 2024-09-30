@@ -117,7 +117,7 @@ def hello_py(
 
     put(response)
 
-    if files:
+    if filenames:
         put()
         put("I see you also offered me some files, but I'm not interested in them.")
         put("This is just a simple hello script!")
