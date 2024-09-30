@@ -13,21 +13,26 @@ from random import random
 
 from argh import arg
 import sh
-import nltk
-from nltk.sentiment import SentimentIntensityAnalyzer
 
 from ally import main
+from ally.lazy import lazy
+import llm
 
 __version__ = "0.1.0"
 
 logger = main.get_logger()
 
-try:
-    nltk.data.find("sentiment/vader_lexicon.zip")
-except LookupError:
-    nltk.download("vader_lexicon")
 
-sia = SentimentIntensityAnalyzer()
+def get_sentiment_analyzer(nltk):
+    import nltk.sentiment
+    try:
+        nltk.data.find("sentiment/vader_lexicon.zip")
+    except LookupError:
+        nltk.download("vader_lexicon")
+    return nltk.sentiment.SentimentIntensityAnalyzer()
+
+
+lazy('nltk', sia=get_sentiment_analyzer)
 
 
 def analyze_sentiment(text: str) -> str:
@@ -47,7 +52,6 @@ def reply_fortune() -> str:
 
 def reply_ai(name: str, feeling: str, model: str) -> str:
     """Generate an AI response based on the user's feeling."""
-    import llm  # slow to load, so don't load unless needed
 
     prompt = (
         f"Scenario: Your character asked 'How are you feeling?' "
@@ -80,6 +84,7 @@ def reply_sentiment(feeling: str) -> str:
     help="specify which AI model {emma,claude,dav,clia}",
 )
 def hello_py(
+    *files: list[str],  # Note to AI: this is how we accept arguments: before the options
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
     name: str = "",
@@ -112,12 +117,17 @@ def hello_py(
 
     put(response)
 
+    if files:
+        put()
+        put("I see you also offered me some files, but I'm not interested in them.")
+        put("This is just a simple hello script!")
+
 
 if __name__ == "__main__":
     main.run(hello_py)
 
 """
-Important Notes for AI [do not copy them!]:
+Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
 
 Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
 Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
@@ -161,5 +171,6 @@ We use at least Python 3.10, normally 3.12 or the latest stable version. Please 
 For example, use modern type hints such as list[str]|None rather than Optional[List[str]]
 
 We use @arg from argh for argument parsing, via main.run(). Don't use argparse or anything else.
-We should not need a separate 'cli' function, just run the main function.
+We should not need a separate 'CLI-only' function to wrap the main library
+function. Just run the main function with argh. This might be tricky, but please try to make it work.
 """
