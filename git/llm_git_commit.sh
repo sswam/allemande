@@ -10,8 +10,9 @@ fi
 
 . confirm
 
-diff_context=5   # lines of context for diffs
-model="d"
+diff_context=5  # lines of context for diffs
+model="d"       # default model
+initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
 commit_message="commit-message.$timestamp.$$.txt"
@@ -37,14 +38,18 @@ declare -A option_model_codes=(
 )
 
 usage() {
-    echo "Usage: llm-git-commit [-4|-n|-3|-c|-i|-o|-M] [-m message] [-e] [-h]"
+    echo "Usage: `basename "$0"` [-4|-3|-c|-i|-o|-M] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-h]"
     echo "  -n: start at menu, do not generate"
     for opt in "${!option_model_codes[@]}"; do
         model_code="${option_model_codes[$opt]}"
         model_name="${model_names[$model_code]}"
         echo "  -$opt: generate with $model_name"
     done
+    echo "  -n: start at menu, do not generate"
+    echo "  -C: set the number of lines of context for diffs"
+    echo "  -B: skip initial bug check"
     echo "  -m: use the given message instead of generating one"
+    echo "  -F: use the given message in a file"
     echo "  -e: normal git commit using the editor"
     echo "  -h: show this help message"
     echo "  -x: clean up commit-message.*.txt files"
@@ -99,6 +104,15 @@ cleanup-and-exit() {
     exit "$1"
 }
 
+message-and-exit() {
+    release_lock
+    echo >&2
+    echo >&2 "Messages:"
+    echo >&2 "  $commit_message"
+    echo >&2 "  $review"
+    exit "$1"
+}
+
 git-commit() {
     get_lock
     git add -A -- "${files[@]:-.}"
@@ -107,16 +121,26 @@ git-commit() {
 }
 
 trap 'cleanup-and-exit 0' EXIT
-trap 'cleanup-and-exit 1' INT
+trap 'message-and-exit 1' INT
 
-while getopts "4n3cioMm:exh" opt; do
+while getopts "nC:B43cioMm:F:exh" opt; do
     case "$opt" in
     n)
         model=""
         ;;
+    C)
+        diff_context="$OPTARG"
+        ;;
+    B)
+        initial_bug_check=0
+        ;;
     m)
-        git-commit -m "$OPTARG"
-        exit 0
+        echo "$OPTARG" > "$commit_message"
+        model=""
+        ;;
+    F)
+        cp "$OPTARG" "$commit_message"
+        model=""
         ;;
     e)
         git-commit
@@ -124,7 +148,7 @@ while getopts "4n3cioMm:exh" opt; do
         ;;
     x)
         cleanup
-        exit
+        exit 0
         ;;
     h)
         usage
@@ -225,15 +249,15 @@ tmp_stage=(git ls-files --deleted)
 git rm $("${tmp_stage[@]}")
 for file in "${files[@]}"; do
     tmp_stage+=("$file")
-	git add "$file"
+    git add "$file"
 done
 git_status=$(git status --porcelain)
 for file in "${files[@]}"; do
-	# Check for renames
-	renamed_from=$(echo "$git_status" | grep "R. .*-> $file$" | awk '{print $2}')
-	if [ -n "$renamed_from" ]; then
-		files+=("$renamed_from")
-	fi
+    # Check for renames
+    renamed_from=$(echo "$git_status" | grep "R. .*-> $file$" | awk '{print $2}')
+    if [ -n "$renamed_from" ]; then
+        files+=("$renamed_from")
+    fi
 done
 git restore --staged -- "${tmp_stage[@]}"
 
@@ -277,10 +301,12 @@ run-git-diff() {
 }
 
 run-git-diff-two-stage() {
-    echo "## ACTUAL CHANGES; ONLY DESCRIBE THESE"
-    run-git-diff | grep '^[-+]'
-    echo
-    echo "## CONTEXT; DO NOT DESCRIBE THIS"
+# TODO maybe this was a good idea, but we don't want to send whole files twice
+#   when adding new files.
+#     echo "## ACTUAL CHANGES; ONLY DESCRIBE THESE"
+#     run-git-diff | grep '^[-+]'
+#     echo
+#     echo "## CONTEXT; DO NOT DESCRIBE THIS"
     run-git-diff
     echo
 }
@@ -293,16 +319,26 @@ generate-commit-message() {
         $MR "$commit_message"
     fi
 
-    run-git-diff-two-stage | llm process -m "$model" "Please describe this diff, for a high-level commit message following the Conventional Commits spec.
+    run-git-diff-two-stage | llm process -m "$model" "Please describe this diff, for a high-level Conventional Commits message.
 *** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
-Return only the commit message, no prelude or conclusion.
-Format:
+Return only the git commit message, no prelude or conclusion.
+
+Format of the header line:
 
 feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
-- descriptions of each change, as few as possible, ONLY if not already covered by the summary
+Files in the 'snip' directory, are obsolete rubbish that's been removed from something else.
+Files in the 'gens' directory, are interesting AI generated content, but it is not important.
 
-Write in a down-to-earth tone, avoiding extravagant works like 'enhance'. We don't want lots of detail, short and sweet is best.
+After the header line you may list more details, but ONLY if it's really
+needed. NEVER add redundant details that are already covered in the header
+line:
+
+- Describe each change very concisely, if not already covered in the header;
+  as few list items as possible. Continuing lines are indented with two spaces.
+
+Write very concisely in a down-to-earth tone, avoiding extravagant works like 'enhance'.
+We don't want lots of detail or flowery language, short and sweet is best.
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;
     if (@lines && $lines[0] =~ /:$/) {
@@ -325,12 +361,12 @@ check-for-bugs() {
         $MR "$review"
     fi
     run-git-diff | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
-Answer LGTM if bug-free, or list bugs still present in the patched code.
-Do NOT list bugs in the original code that are fixed by the patch.
-Also list other issues or suggestions if they are important.
-Especially, check for sensitive information such as private keys or email addresses
-that should not be committed to git. Deliberate author's email is okay.
-Also note any grossly bad code or gross inefficiencies.
+Answer LGTM if it is bug-free and you see no issues, or list bugs still present
+in the patched code. Do NOT list bugs in the original code that are fixed by
+the patch. Also list other issues or suggestions if they seem worthwhile.
+Especially, check for sensitive information such as private keys or email
+addresses that should not be committed to git. Adding the author's email
+deliberately is okay. Also note any grossly bad code or gross inefficiencies.
 
 Expected format:
 
@@ -343,7 +379,9 @@ or if nothing is wrong, please just wrte 'LGTM'.
 }
 
 if [ -n "$model" ]; then
-    # confirm check-for-bugs "$model"
+    if [ "$initial_bug_check" -eq 1 ]; then
+        check-for-bugs "$model"
+    fi
     if [ ! -e "$review" ] || [ "$(cat "$review")" = "LGTM" ]; then
         generate-commit-message "$model"
     fi
