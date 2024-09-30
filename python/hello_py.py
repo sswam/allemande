@@ -84,7 +84,7 @@ def reply_sentiment(feeling: str) -> str:
     help="specify which AI model {emma,claude,dav,clia}",
 )
 def hello_py(
-    *files: list[str],  # Note to AI: this is how we accept arguments: before the options
+    *filenames: list[str],  # Note to AI: this is how we accept arguments: before the options
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
     name: str = "",
