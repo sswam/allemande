@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from argh import arg
 from ally import main
 
-__version__ = "1.1.7"
+__version__ = "1.1.9"
 
 logger = main.get_logger()
 
@@ -49,6 +49,10 @@ def process_row(row: list[str], width: list[int], options: list[str]) -> None:
         except (ValueError, IndexError, KeyError):
             formatted_cell = str(cell)
         length = len(formatted_cell)
+        if i == 0:
+            # Count leading tabs as 8 spaces for layout purposes
+            leading_tabs = len(cell) - len(cell.lstrip('\t'))
+            length += leading_tabs * 7  # 7 because the tab itself counts as 1
         if i < len(width):
             width[i] = max(width[i], length)
         else:
@@ -70,24 +74,36 @@ def print_formatted_rows(rows: list[list[str]], format_str: str, option_count: i
     """Print formatted rows."""
     empty = [""] * option_count
     for row in rows:
-        line = format_str.format(*(row + empty)[:option_count])
-        if not row:
+        if row:
+            # Preserve leading tabs in the first column
+            dedented = row[0].lstrip('\t')
+            leading_tabs = len(row[0]) - len(dedented)
+            # add back equivalent spaces for layout purposes
+            row[0] = " " * (leading_tabs * 8) + dedented
+            line = format_str.format(*(row + empty)[:option_count])
+            # put back leading tabs
+            line = '\t' * leading_tabs + line[leading_tabs * 8:]
+        else:
             line = ""
-        elif line.strip() == "":
+        if line.strip() == "":
             line = " "
         else:
             line = line.rstrip()
         print(line, file=ostream)
 
 
-def process_chunk(chunk: list[str], gap: int, format_options: list[str], ostream: TextIO) -> None:
-    """Process a chunk of TSV data."""
+def process_table(table: list[str], gap: int, format_options: list[str], ostream: TextIO) -> None:
+    """Process a table of TSV data."""
     width = []
     rows = []
     options = format_options.copy()
 
-    for line in chunk:
-        row = re.split(get_tsv_format(), line.strip())
+    for line in table:
+        dedented = line.lstrip('\t')
+        leading_tabs = len(line) - len(dedented)
+        row = re.split(get_tsv_format(), dedented)
+        if row:
+            row[0] = '\t' * leading_tabs + row[0]
         process_row(row, width, options)
         rows.append(row)
 
@@ -100,25 +116,25 @@ def process_chunk(chunk: list[str], gap: int, format_options: list[str], ostream
     print_formatted_rows(rows, format_str, len(options), ostream)
 
 
-def split_into_chunks(istream: TextIO, multi_table: bool) -> list[list[str]]:
-    """Split input stream into chunks based on multi-table option."""
+def split_into_tables(istream: TextIO, multi_table: bool) -> list[list[str]]:
+    """Split input stream into tables based on multi-table option."""
     rx_split = get_tsv_format()
-    chunks = []
-    current_chunk = []
+    tables = []
+    current_table = []
 
     for line in istream:
         if multi_table and not rx_split.search(line):
-            if current_chunk:
-                chunks.append(current_chunk)
-                current_chunk = []
-            chunks.append([line.strip()])
+            if current_table:
+                tables.append(current_table)
+                current_table = []
+            tables.append([line])
         else:
-            current_chunk.append(line.strip())
+            current_table.append(line)
 
-    if current_chunk:
-        chunks.append(current_chunk)
+    if current_table:
+        tables.append(current_table)
 
-    return chunks
+    return tables
 
 
 @arg('-m', '--multi-table', help='Support multiple tables in input')
@@ -144,9 +160,9 @@ def tsv2txt(
             opt += "f" if "." in opt else "s"
         options.format_options[i] = f"{{:{opt}}}"
 
-    chunks = split_into_chunks(istream, options.multi_table)
-    for chunk in chunks:
-        process_chunk(chunk, options.gap, options.format_options, ostream)
+    tables = split_into_tables(istream, options.multi_table)
+    for table in tables:
+        process_table(table, options.gap, options.format_options, ostream)
 
 
 if __name__ == "__main__":
