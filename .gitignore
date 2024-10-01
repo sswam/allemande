@@ -53,3 +53,7 @@ tty/tty_cursor_pos
 # derived files
 /code/lang.rec
 /package-lock.json
+/prompt/prompts.txt
+/prompt/prompts2.txt
+/audio/speech-models-en.txt
+/c/glxgears
