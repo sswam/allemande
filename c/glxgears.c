@@ -1,5 +1,28 @@
 // 2>/dev/null; gcc -g -o glxgears glxgears.c -lGL -lGLU -lX11 -lm && exec ./glxgears "$@" ; exit 1
+/*
+* GLX Gears v1.0.4
+*
+* This program displays animated 3D gears using OpenGL and X11.
+*
+* It includes mouse interaction for rotating the view and zooming,
+* and key handling to quit the program with q or Esc.
+*
+* Usage: ./glxgears [options]
+* Options:
+*   -d <displayname>  Set the display to run on
+*   -s                Run in sRGB mode
+*   -S                Run in stereo mode
+*   -m N              Run in multisample mode with at least N samples
+*   -I N              Set swap interval to N frames (default 1)
+*   -f                Run in fullscreen mode
+*   -g WxH+X+Y        Window geometry
+*   -i                Display OpenGL renderer info
+*   -h                Display help and exit
+*
+* Example: ./glxgears -f -I 2
+*/
 
+// Include necessary headers
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 #include <GL/glx.h>
@@ -13,6 +36,7 @@
 #include <getopt.h>
 #include <X11/keysym.h>
 
+// Macro for defining gear vertices
 #define GEAR_VERTEX(v, x, y, z) do { \
 GLfloat v[3]; \
 v[0] = x; v[1] = y; v[2] = z; \
@@ -20,6 +44,7 @@ glNormal3fv(v); \
 glVertex3f(x, y, z); \
 } while(0)
 
+// Global variables for view rotation, zoom, and mouse interaction
 static GLfloat view_rotx = 20.0, view_roty = 30.0, view_rotz = 0.0;
 static GLint gear1, gear2, gear3;
 static GLfloat angle = 0.0;
@@ -27,6 +52,7 @@ static GLfloat zoom = -20.0;
 static int mouse_x = 0, mouse_y = 0;
 static int mouse_left_down = 0;
 
+// Function to create a gear
 static void
 gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
 	GLint teeth, GLfloat tooth_depth)
@@ -154,11 +180,12 @@ gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
 	glEnd();
 }
 
+// Function to draw the scene
 static void
 draw(void)
 {
+	// Clear the buffer and set up the view
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	glPushMatrix();
 	glRotatef(view_rotx, 1.0, 0.0, 0.0);
 	glRotatef(view_roty, 0.0, 1.0, 0.0);
@@ -185,6 +212,7 @@ draw(void)
 	glPopMatrix();
 }
 
+// Function to initialize OpenGL settings and create gears
 static void
 init(void)
 {
@@ -221,9 +249,11 @@ init(void)
 	glEnable(GL_NORMALIZE);
 }
 
+// Function to handle mouse button events
 static void
 handle_mouse_button(XButtonEvent *event)
 {
+	// Handle left mouse button for rotation and scroll wheel for zoom
 	if (event->button == Button1) {
 		if (event->type == ButtonPress) {
 			mouse_left_down = 1;
@@ -241,9 +271,11 @@ handle_mouse_button(XButtonEvent *event)
 	}
 }
 
+// Function to handle mouse motion events
 static void
 handle_mouse_motion(XMotionEvent *event)
 {
+	// Update view rotation based on mouse movement
 	if (mouse_left_down) {
 		int dx = event->x - mouse_x;
 		int dy = event->y - mouse_y;
@@ -254,6 +286,7 @@ handle_mouse_motion(XMotionEvent *event)
 	}
 }
 
+// Function to display usage information
 static void
 usage(char *argv0)
 {
@@ -273,6 +306,7 @@ usage(char *argv0)
 int
 main(int argc, char *argv[])
 {
+	// Initialize X11 display and window
 	Display *dpy;
 	Window win;
 	GLXContext ctx;
@@ -358,6 +392,8 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
+	// Set up GLX context and window
+
 	vi = glXGetVisualFromFBConfig(dpy, fbc[0]);
 
 	cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen), vi->visual, AllocNone);
@@ -402,7 +438,6 @@ main(int argc, char *argv[])
 		printf("GL_VERSION    = %s\n", (char *) glGetString(GL_VERSION));
 		printf("GL_VENDOR     = %s\n", (char *) glGetString(GL_VENDOR));
 	}
-
 	XGetWindowAttributes(dpy, win, &xwa);
 	glViewport(0, 0, xwa.width, xwa.height);
 	glMatrixMode(GL_PROJECTION);
@@ -412,17 +447,21 @@ main(int argc, char *argv[])
 	glLoadIdentity();
 	glTranslatef(0.0, 0.0, zoom);
 
+	// Main event loop
 	while (1) {
 		clock_gettime(CLOCK_MONOTONIC, &start);
 
+		// Handle X11 events
 		while (XPending(dpy)) {
 			XEvent xev;
 			XNextEvent(dpy, &xev);
+			// close the window
 			if (xev.type == ClientMessage) {
 				if (xev.xclient.data.l[0] == wmDeleteMessage) {
 					goto cleanup;
 				}
 			}
+			// expose or resize
 			else if (xev.type == Expose || xev.type == ConfigureNotify) {
 				XGetWindowAttributes(dpy, win, &xwa);
 				glViewport(0, 0, xwa.width, xwa.height);
@@ -431,6 +470,7 @@ main(int argc, char *argv[])
 				gluPerspective(45.0, (float)xwa.width / (float)xwa.height, 0.1, 100.0);
 				glMatrixMode(GL_MODELVIEW);
 			}
+			// key press, q or Esc to exit
 			else if (xev.type == KeyPress) {
 				KeySym key;
 				char buffer[1];
@@ -439,6 +479,7 @@ main(int argc, char *argv[])
 					goto cleanup;
 				}
 			}
+			// drag to rotate, scroll wheel to zoom
 			else if (xev.type == ButtonPress || xev.type == ButtonRelease) {
 				handle_mouse_button(&xev.xbutton);
 			}
@@ -447,12 +488,14 @@ main(int argc, char *argv[])
 			}
 		}
 
+		// Update animation and draw scene
 		angle += 0.5;
 		glLoadIdentity();
 		glTranslatef(0.0, 0.0, zoom);
 		draw();
 		glXSwapBuffers(dpy, win);
 
+		// Limit frame rate to 60 FPS
 		clock_gettime(CLOCK_MONOTONIC, &end);
 		elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
 		if (elapsed < 1.0/60.0) {
@@ -461,10 +504,12 @@ main(int argc, char *argv[])
 	}
 
 cleanup:
+	// Cleanup and exit
 	glXMakeCurrent(dpy, None, NULL);
 	glXDestroyContext(dpy, ctx);
 	XDestroyWindow(dpy, win);
 	XCloseDisplay(dpy);
+
 
 	return 0;
 }
