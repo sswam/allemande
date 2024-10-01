@@ -1,75 +1,151 @@
 #!/usr/bin/env python3
 
 """
-func.py - A script to extract selected functions or methods from a Python source code file,
-given a list of function names or class.method names.
-
-Usage:
-    python func.py [-b] <source_file> <func1> [<func2> ...]
-
-Options:
-    -b    Use Black formatting (optional, off by default)
+A script to extract and analyze functions, methods, and classes from source code files.
 """
 
+import os
 import sys
 import ast
+import logging
+from typing import TextIO, Callable
+import subprocess
+import json
+
+from argh import arg
 import black
 
-def extract_functions(source_file, func_names, use_black=False):
+from ally import main
+from reformat import reformat
+
+__version__ = "0.1.5"
+
+logger = main.get_logger()
+
+
+def run(cmd, source):
+    return subprocess.run(cmd, input=source.encode(), capture_output=True).stdout.decode()
+
+
+def parse_source(source: str, language: str):
+    if language == "py":
+        tree = ast.parse(source)
+    elif language == "sh":
+        # Use "shfmt" to parse Bash scripts
+        text = run(["shfmt", "-tojson"], source)
+        tree = json.loads(text)
+    elif language == "pl":
+        # Use "perl -MO=Deparse" to parse Perl scripts
+        text = run(["perl", "-MO=Deparse"], source)
+        tree = text.split("\n")  # TODO
+    elif language == "c":
+        # Use "clang -Xclang -tree-dump" to parse C code
+        text = run(["clang", "-Xclang", "-tree-dump", "-fsyntax-only", "-"], source)
+        tree = text.split("\n")  # TODO
+    else:
+        raise ValueError(f"Unsupported language: {language}")
+    return tree
+
+
+def extract_items(tree, language: str):
+    items = []
+    if language == 'py':
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                items.append(node)
+    # TODO Add parsing logic for other languages here
+    return items
+
+
+def format_item(item, types: bool, params: bool, decorators: bool, docstring: bool, language: str):
+    if language == "py":
+        name = item.name
+        if types:
+            name = f"{'class' if isinstance(item, ast.ClassDef) else 'def'} {name}"
+        if params:
+            name += f"({ast.unparse(item.args)})"
+        if decorators:
+            name = "\n".join([f"@{ast.unparse(d)}" for d in item.decorator_list] + [name])
+        if docstring and ast.get_docstring(item):
+            name += f"\n    \"\"\"{ast.get_docstring(item)}\"\"\""
+    # Add formatting logic for other languages here
+    return name
+
+
+@arg("source_file", help="Path to the source file")
+@arg("func_names", nargs="*", help="Names of functions, methods, or classes to extract")
+@arg("-f", "--reformat", help="Reformat code", action="store_true", dest="reformat")
+@arg("-a", "--all", help="Process all functions, methods, and classes", action="store_true", dest="process_all")
+@arg("-A", "--all-info", help="Show all info except code", action="store_true", dest="show_all_info")
+@arg("-n", "--names", help="Show only names", action="store_true", dest="show_names")
+@arg("-t", "--types", help="Show types (def vs class, etc)", action="store_true", dest="show_types")
+@arg("-p", "--params", help="Include full formal parameters", action="store_true", dest="show_params")
+@arg("-d", "--decorators", help="Include decorators", action="store_true", dest="show_decorators")
+@arg("-s", "--docstrings", help="Include docstrings", action="store_true", dest="show_docstrings")
+@arg("-l", "--list", help="Alias for -a -n (list all names)", action="store_true", dest="list_mode")
+@arg("--language", help="Language of the source file")
+def process_source(
+    source_file: str,
+    func_names: list[str],
+    reformat: bool = False,
+    process_all: bool = False,
+    show_all_info: bool = False,
+    show_names: bool = False,
+    show_types: bool = False,
+    show_params: bool = False,
+    show_decorators: bool = False,
+    show_docstrings: bool = False,
+    list_mode: bool = False,
+    language: str = None,
+    istream: TextIO = sys.stdin,
+    ostream: TextIO = sys.stdout,
+) -> None:
     """
-    Extract specified functions or methods from the given source file.
+    Process and analyze source code file.
     """
-    with open(source_file, "r") as file:
-        source_lines = file.readlines()
-        source = "".join(source_lines)
+    get, put = main.io(istream, ostream)
 
-    tree = ast.parse(source)
-    extracted_funcs = []
+    # What are we gonna show?
+    show_code = True
+    if list_mode:
+        process_all = True
+        show_names = True
+    if show_all_info:
+        show_names = show_types = show_params = show_decorators = show_docstrings = True
+    if show_names or show_types or show_params or show_decorators or show_docstrings:
+        show_code = False
 
-    for node in ast.walk(tree):
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            if node.name in func_names:
-                extracted_funcs.append((node, source_lines))
-        elif isinstance(node, ast.ClassDef):
-            for item in node.body:
-                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    if f"{node.name}.{item.name}" in func_names:
-                        extracted_funcs.append((item, source_lines))
+    # Where's the source code?
+    if source_file == "-":
+        source = get(all=True)
+    else:
+        with open(source_file) as f:
+            source = f.read()
 
-    return extracted_funcs
+    # What language are we dealing with?
+    if not language:
+        language = os.path.splitext(source_file)[1][1:]
+        if language not in ["py", "sh", "pl", "c"]:
+            language = "py"
 
-def print_functions(functions, use_black=False):
-    """
-    Print the extracted functions with a blank line between each, optionally formatted using black.
-    """
-    mode = black.Mode() if use_black else None
-    for func, source_lines in functions:
-        original_source = "".join(source_lines[func.lineno-1:func.end_lineno])
-        if use_black:
-            try:
-                formatted_source = black.format_str(original_source, mode=mode)
-                print(formatted_source)
-            except black.InvalidInput:
-                print(original_source)  # Fallback to unformatted source if black fails
-        else:
-            print(original_source)
-        print()  # Add a blank line between functions
+    tree = parse_source(source, language)
+    items = extract_items(tree, language)
 
-def main():
-    if len(sys.argv) < 3:
-        print("Usage: python func.py [-b] <source_file> <func1> [<func2> ...]")
-        sys.exit(1)
+    if process_all:
+        func_names = [item.name for item in items]
 
-    use_black = False
-    if sys.argv[1] == "-b":
-        use_black = True
-        sys.argv.pop(1)
+    for item in items:
+        if item.name in func_names or f"{item.__class__.__name__}.{item.name}" in func_names:
+            if show_code:
+                source_code = ast.unparse(item) if language == "py" else source[item.start:item.end]
 
-    source_file = sys.argv[1]
-    func_names = sys.argv[2:]
-
-    extracted_funcs = extract_functions(source_file, func_names)
-    print_functions(extracted_funcs, use_black)
+                # Reformatting is out of scope for this script, we should move it to a separate script.
+                if reformat:
+                    source_code = reformat(source_code, language)
+                put(source_code)
+            else:
+                put(format_item(item, show_types, show_params, show_decorators, show_docstrings, language))
+            put()
 
 if __name__ == "__main__":
-    main()
+    main.run(process_source)
