@@ -52,3 +52,4 @@ tty/tty_cursor_pos
 
 # derived files
 /code/lang.rec
+/package-lock.json
