@@ -23,6 +23,8 @@ logs() {
 
 	local arg=${1:-}
 
+	local log_dir="$HOME/.logs"
+
 	# If list option is set, display all log files
 	if [ "$list" = 1 ]; then
 		ls -tcr "$log_dir"/*.log | less -G
@@ -30,7 +32,7 @@ logs() {
 	fi
 
 	local number=1
-	local prog
+	local prog=
 
 	# Determine if argument is a number or program name
 	if [[ $arg =~ ^[0-9]+$ ]]; then
@@ -39,12 +41,18 @@ logs() {
 		prog=$arg
 	fi
 
-	local log_dir="$HOME/.logs"
 	local log_file
 
 	# Set log file based on input
 	if [ -n "$prog" ]; then
 		log_file="$log_dir/$prog.log"
+		# glob if not exists
+		if [ ! -f "$log_file" ]; then
+			log_file=$(
+				ls -tcr "$log_dir/$prog"*.log 2>/dev/null |
+				head -n 1
+			)
+		fi
 	else
 		# Get nth most recent log file
 		log_file=$(
