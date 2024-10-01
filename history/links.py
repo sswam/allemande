@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 """
-This module extracts links from the table of contents of an HTML or Markdown input,
-filtering them based on the provided base URL.
+This module extracts links from the an HTML or Markdown input,
+optionally filtering them based on the provided base URL.
 """
 
 import sys
@@ -59,7 +59,7 @@ def filter_links(links: list[str], base_url: str, external: bool) -> list[str]:
 @arg("base_url", help="Base URL for filtering internal links")
 @arg("--external", help="Output only external links", action="store_true")
 @arg("--all", help="Output all links without filtering", action="store_true")
-def content_links(
+def links(
     base_url: str,
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
@@ -72,7 +72,7 @@ def content_links(
     """
     get, put = main.io(istream, ostream)
 
-    content = get()
+    content = get(all=True)
 
     if content.strip().startswith('<!DOCTYPE html>') or content.strip().startswith('<html'):
         links = extract_links_from_html(content, base_url)
@@ -92,4 +92,4 @@ def content_links(
 
 
 if __name__ == "__main__":
-    main.run(content_links)
+    main.run(links)

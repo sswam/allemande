@@ -73,6 +73,7 @@ tiktoken
 pyalsaaudio
 wordpress_api
 selenium
+webdriver_manager
 
 # gradio
 
@@ -99,3 +100,4 @@ cmake
 ninja
 
 google-cloud-aiplatform[tokenization]
+cssselect
