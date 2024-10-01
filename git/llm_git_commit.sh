@@ -349,7 +349,7 @@ We don't want lots of detail or flowery language, short and sweet is best.
         }
     }
     print join("", @lines);
-' | fmt -s -w 78 -g 78 | rstrip > "$commit_message"
+' | fmt -s -w 78 -g 78 | fmt-commit > "$commit_message"
     echo
 }
 
@@ -426,6 +426,9 @@ while true; do
             ;;
         x)
             cleanup
+            ;;
+        $'\x0c')
+            clear
             ;;
         \?|h|"")
             echo "Available actions:"
