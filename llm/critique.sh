@@ -23,9 +23,11 @@ the programmer needs to retain some self-esttem\!
 e.g. if it seems like a cool program that does something useful or novel...
 It's most important to find errors, other suggestions are welcome too.
 $prompt"
-	cat_named.py -b -p "$@" |
+	main_file="${1:--}"
+	shift || true
+	cat_named.py -b -p "$main_file" "$@" |
 	(process -m="$m" "$prompt"; echo) |
-	tee -a "$1.crit"
+	tee -a -- "$main_file.crit"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
