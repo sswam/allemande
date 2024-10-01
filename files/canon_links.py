@@ -60,6 +60,7 @@ def canon_links(*sources: List[str], target_dir: str = "canon") -> None:
     target_path.mkdir(parents=True, exist_ok=True)
 
     for source in sources:
+        Path(source).mkdir(parents=True, exist_ok=True)
         _process_path(Path(source), target_path)
 
 
