@@ -20,7 +20,7 @@ if (typeof window === "undefined" && import.meta.url === `file://${process.argv[
 }
 
 // Important Notes for AI:
-// - always use for (const varname of list) { ... } instead of list.forEach
+// - perfer for (const varname of list) { ... } over list.forEach
 // - always use async / await not promises with .then and .catch and not callbacks
 // - don't use IIFEs, use ECMAScript modules
 // - don't use ==, use ===
