@@ -6,13 +6,14 @@ Create symlinks in the canon directory for executable files and .sh files.
 
 import os
 import sys
-import argparse
+import shutil
 from pathlib import Path
-from typing import List, TextIO
+from typing import TextIO
 
+from argh import arg
 from ally import main
 
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 
 logger = main.get_logger()
 
@@ -51,16 +52,37 @@ def _process_path(source: Path, target_dir: Path) -> None:
             _create_symlink(file, target_dir)
 
 
-def canon_links(*sources: List[str], target_dir: str = "canon") -> None:
+def _remove_dead_links(target_dir: Path) -> None:
+    for symlink in target_dir.iterdir():
+        if symlink.is_symlink() and not symlink.resolve().exists():
+            logger.info(f"Removing dead link: {symlink}")
+            symlink.unlink()
 
+
+@arg("--target-dir", default="canon", help="Target directory for symlinks")
+@arg("--clean", action="store_true", help="Clean out the target directory before creating new symlinks")
+def canon_links(
+    *sources: list[str],
+    istream: TextIO = sys.stdin,
+    ostream: TextIO = sys.stdout,
+    target_dir: str = "canon",
+    clean: bool = False,
+) -> None:
     """
     Create symlinks in the canon directory for executable files and .sh files.
     """
     target_path = Path(target_dir)
+
+    if clean:
+        logger.info(f"Cleaning out {target_path}")
+        shutil.rmtree(target_path, ignore_errors=True)
+
     target_path.mkdir(parents=True, exist_ok=True)
 
     for source in sources:
         _process_path(Path(source), target_path)
+
+    _remove_dead_links(target_path)
 
 
 if __name__ == "__main__":
