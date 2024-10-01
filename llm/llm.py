@@ -25,7 +25,7 @@ import json
 import importlib
 import io
 
-import argh
+from argh import arg
 import tab
 import tiktoken
 from slugify import slugify
@@ -695,37 +695,37 @@ def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, tempera
 	return asyncio.run(achat(istream, ostream, model, fake, temperature, token_limit, retries))
 
 
-@argh.arg("prompt", nargs="+", help="prompt text")
-@argh.arg("-o", "--output", dest="ostream", default=None, help="output file")
-@argh.arg("-m", "--model", default=default_model, help="model name")
-@argh.arg("-I", "--indent", default=None, help="indentation string")
-@argh.arg("-t", "--temperature", type=float, help="temperature")
-@argh.arg("-n", "--token-limit", type=int, help="token limit")
-@argh.arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
-@argh.arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
-@argh.arg("-j", "--json", action="store_true", help="output JSON")
-@argh.arg("-T", "--timeit", action="store_true", help="time the actual request")
+@arg("prompt", nargs="+", help="prompt text")
+@arg("-o", "--output", dest="ostream", default=None, help="output file")
+@arg("-m", "--model", default=default_model, help="model name")
+@arg("-I", "--indent", default=None, help="indentation string")
+@arg("-t", "--temperature", type=float, help="temperature")
+@arg("-n", "--token-limit", type=int, help="token limit")
+@arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
+@arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
+@arg("-j", "--json", action="store_true", help="output JSON")
+@arg("-T", "--timeit", action="store_true", help="time the actual request")
 def query(*prompt, ostream: IO[str]|None=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, log=True, json=False, timeit=False):
 	""" Synchronous wrapper for aquery. """
 	return asyncio.run(aquery(*prompt, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, log=log, json=json, timeit=timeit))
 
 
-@argh.arg("prompt", nargs="+", help="prompt text")
-@argh.arg("-P", "--prompt2", help="second prompt text")
-@argh.arg("-i", "--input", dest="istream", default=None, help="input file")
-@argh.arg("-o", "--output", dest="ostream", default=None, help="output file")
-@argh.arg("-m", "--model", default=default_model, help="model name")
-@argh.arg("-I", "--indent", default=None, help="indentation string")
-@argh.arg("-t", "--temperature", type=float, help="temperature")
-@argh.arg("-n", "--token-limit", type=int, help="token limit")
-@argh.arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
-@argh.arg("-e", "--empty-to-empty", action="store_true", help="return empty string for empty input")
-@argh.arg("-E", "--empty-ok", action="store_true", help="allow empty input")
-@argh.arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
-@argh.arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
-@argh.arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
-@argh.arg("-j", "--json", action="store_true", help="output JSON")
-@argh.arg("-T", "--timeit", action="store_true", help="time the actual request")
+@arg("prompt", nargs="+", help="prompt text")
+@arg("-P", "--prompt2", help="second prompt text")
+@arg("-i", "--input", dest="istream", default=None, help="input file")
+@arg("-o", "--output", dest="ostream", default=None, help="output file")
+@arg("-m", "--model", default=default_model, help="model name")
+@arg("-I", "--indent", default=None, help="indentation string")
+@arg("-t", "--temperature", type=float, help="temperature")
+@arg("-n", "--token-limit", type=int, help="token limit")
+@arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
+@arg("-e", "--empty-to-empty", action="store_true", help="return empty string for empty input")
+@arg("-E", "--empty-ok", action="store_true", help="allow empty input")
+@arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
+@arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
+@arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
+@arg("-j", "--json", action="store_true", help="output JSON")
+@arg("-T", "--timeit", action="store_true", help="time the actual request")
 def process(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostream: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False, json=False, timeit=False):
 	""" Synchronous wrapper for aprocess. """
 	return asyncio.run(aprocess(*prompt, prompt2=prompt2, istream=istream, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, empty_ok=empty_ok, empty_to_empty=empty_to_empty, log=log, lines=lines, repeat=repeat, json=json, timeit=timeit))
@@ -774,7 +774,8 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 	return tuple(rv)
 
 
-def models(detail=False, aliases=False):
+@arg("-A", "--no-aliases", dest="aliases", action="store_false", help="show aliases")
+def models(detail=False, aliases=True):
 	""" List the available models. """
 	output = io.StringIO()
 
