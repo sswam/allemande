@@ -138,6 +138,56 @@ def google_search(query, max_results=12, safe="off", limit_max_results=False):
 	return search_results
 
 
+def uspto_tess_search(query, max_results=100, safe="off", limit_max_results=False):
+	url = 'https://tmsearch.uspto.gov/bin/gate.exe'
+	params = {
+		'f': 'toc',
+		'state': 'extr',
+		'p_search': 'searchss',
+		'p_L': '50',
+		'BackReference': '&p_plural=yes&p_s_PARA1=&p_tagrepl~:=PARA1$LD&expr=PARA1 AND PARA2&p_s_PARA2=',
+		'p_s_PARA1': query,
+		'p_operator': 'AND',
+		'p_s_PARA2': '',
+		'p_tagrepl': 'PARA1$COMB',
+		'p_op_ALL': 'AND',
+		'a_default': 'search',
+		'a_search': 'Submit Query',
+		'a_search': 'Submit Query',
+	}
+	headers = {'User-Agent': user_agent}
+
+	search_results = []
+	response = None
+	soup = None
+
+	while len(search_results) < max_results:
+		response = requests.get(url, headers=headers, params=params, timeout=timeout)
+		response.raise_for_status()
+		soup = BeautifulSoup(response.text, 'html.parser')
+
+		results = soup.find_all('tr', class_='tr-main')
+		for res in results:
+			serial_num = res.find('td', class_='wd').text.strip()
+			mark = res.find('a', class_='trademark-title').text.strip()
+			result = {'serial_number': serial_num, 'mark': mark}
+			if result not in search_results:
+				search_results.append(result)
+
+		next_page = soup.find('a', string='NEXT LIST')
+		if not next_page:
+			break
+
+		params['f'] = 'toc'
+		params['state'] = 'GETPAGE'
+		params['page'] = next_page['href'].split('page=')[1]
+
+	if limit_max_results:
+		search_results = search_results[:max_results]
+
+	return search_results
+
+
 def bing_search(query, max_results=12, safe="off", limit_max_results=False):
 	""" Search Bing for `query` and return a list of results """
 	url = 'https://www.bing.com/search'
@@ -280,6 +330,7 @@ engines = {
 	'YouTube': youtube_search,
 	'GoogleMapsImages': google_maps_image_search,
 	'PornHub': pornhub_search,
+	'TESS': uspto_tess_search,
 }
 
 
@@ -290,6 +341,7 @@ agents = {
 	'UTube': youtube_search,
 	'Pr0nto': pornhub_search,
 	'Guma': google_maps_image_search,
+	'Tessa': uspto_tess_search,
 }
 
 
@@ -302,6 +354,8 @@ engine_caps = {
 	'youtube': 'YouTube',
 	'pornhub': 'PornHub',
 	'googlemapsimages': 'GoogleMapsImages',
+	'tess': 'TESS',
+	'tessa': 'TESS',
 }
 
 
