@@ -171,7 +171,7 @@ def register_agents(agent_type, agents_dict, async_func):
 
 	def make_agent(agent_base, agent_name):
 		agent = agent_base.copy()
-		agent["fn"] = agent_wrapper
+		agent["fn"] = lambda *args, **kwargs: agent_wrapper(agent, *args, **kwargs)
 		agent["type"] = agent_type
 		if "name" not in agent:
 			agent["name"] = agent_name
