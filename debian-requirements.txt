@@ -23,3 +23,5 @@ colordiff
 bats
 bats-support
 bats-assert
+perltidy
+clang-format

@@ -1,5 +1,0 @@
-#!/bin/bash -eu
-# [url]
-. opts
-url=$1
-web_text "$url" | proc "Please give a summary without any prelude, but with a heading reflecting the document."

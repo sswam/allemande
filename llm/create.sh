@@ -14,8 +14,8 @@ create() {
 	set -e -u -o pipefail
 
 	local file=$1
-	local prompt=$2
-	shift 2
+	local prompt=${2:-}
+	shift 2 || true
 	local refs=("$@")
 
 	# Check if file already exists
@@ -51,19 +51,28 @@ create() {
 
 	comment_char="#"
 	case "$ext" in
-	c|cpp|java|js|ts|php|cs|go|rs)
+	c|cpp|java|js|ts|php|cs|go|rs|swift|kt|scala|groovy|dart|fs|v|nim|zig|vala|cr|wren|d|odin|jai|pony|haxe)
 		comment_char="//"
 		;;
-	sh|py|pl|rb)
+	sh|py|pl|rb|lua|tcl|awk|sed|bash|zsh|fish|ps1|psm1|psd1|r|jl|crystal|elixir|ex|exs|ml|mli|coffee|haskell|hs|nim)
 		comment_char="#"
 		;;
-	md|txt)
+	md|txt|html|xml|json|yaml|yml|toml|ini|conf|cfg|properties|env|csv|tsv|rec|log|sql)
 		comment_char=""
+		;;
+	lisp|clj|scm|rkt)
+		comment_char=";"
+		;;
+	f|f90|f95|f03|f08)
+		comment_char="!"
+		;;
+	vim)
+		comment_char='"'
 		;;
 	esac
 
 	# Process input and save result
-	printf "%s\n" "$input" | process -m="$m" "$prompt" |
+	printf "%s\n" -- "$input" | process -m="$m" "$prompt" |
 	if [ -n "$comment_char" ]; then
 		markdown_code.py -c "$comment_char"
 	else

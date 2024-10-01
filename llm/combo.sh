@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# [input files] [custom prompt]
+# [input files]
 # Combines similar inputs to get the best results
 
 combine() {
@@ -23,7 +23,7 @@ combine() {
 	local prompt="Combine the following inputs to create \
 		a comprehensive and coherent result. $extra_prompt"
 
-	cat_named.py "${input_files[@]}" |
+	cat_named.py -p -b "${input_files[@]}" |
 	process -m="$model" "$prompt"
 
 	# restore caller options

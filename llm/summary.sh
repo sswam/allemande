@@ -4,7 +4,7 @@
 # Summarizes text using an AI model
 
 summary() {
-	local m="4m"	# Default model
+	local m="s"	# default model
 
 	. opts
 
@@ -15,9 +15,7 @@ summary() {
 	p="$*"
 
 	# Construct the prompt
-	p="Please summarize.
-$p
-Only give the summary."
+	p="Please summarize. $p. Only give the summary."
 
 	# Process the input using llm
 	llm process -m "$m" "$p"

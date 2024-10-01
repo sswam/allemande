@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Electromagnetic Spectrum</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			line-height: 1.6;
+			margin: 0 auto;
+			padding: 20px;
+			background-color: #f0f0f0;
+			max-width: 800px;
+		}
+		h1 {
+			text-align: center;
+			color: #333;
+		}
+		h2 {
+			margin: 0;
+		}
+		.spectrum {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			margin-top: 20px;
+		}
+		.band {
+			padding: 10px;
+			border-radius: 5px;
+		}
+		.description {
+			background-color: rgba(255, 255, 255, 0.7);
+			padding: 10px;
+			border-radius: 5px;
+			margin: 0;
+		}
+		p {
+			margin: 5px 0;
+		}
+		p:first-child, p:last-child {
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	<h1>Electromagnetic Spectrum</h1>
+
+	<p>
+		This HTML file creates a visual representation of the
+		electromagnetic spectrum. It shows different types of radiation
+		as colored sections, with descriptions of their properties and
+		uses. The visible light part is shown as a rainbow gradient.
+		Other sections use colors to represent their position in the
+		spectrum. You can view this file in a web browser to see the
+		colorful display of the electromagnetic spectrum.
+	</p>
+
+	<div class="spectrum">
+		<div class="band" style="background-color: #FFD700;">
+			<h2>Radio Waves</h2>
+			<div class="description">
+				<p><strong>Wavelength:</strong> 1 meter to 100,000 kilometers</p>
+				<p><strong>Properties:</strong> Longest wavelength, lowest energy</p>
+				<p><strong>Uses:</strong> Broadcasting, communications, navigation</p>
+			</div>
+		</div>
+		<div class="band" style="background-color: #FF8C00;">
+			<h2>Microwaves</h2>
+			<div class="description">
+				<p><strong>Wavelength:</strong> 1 millimeter to 1 meter</p>
+				<p><strong>Properties:</strong> Can penetrate clouds, fog, and some materials</p>
+				<p><strong>Uses:</strong> Communications, radar, cooking</p>
+			</div>
+		</div>
+		<div class="band" style="background-color: #FF4500;">
+			<h2>Infrared (IR)</h2>
+			<div class="description">
+				<p><strong>Wavelength:</strong> 700 nanometers to 1 millimeter</p>
+				<p><strong>Properties:</strong> Thermal radiation</p>
+				<p><strong>Uses:</strong> Thermal imaging, remote controls, heating</p>
+			</div>
+		</div>
+		<div class="band" style="background: linear-gradient(to right, #FF0000, #FF7F00, #FFFF00, #00FF00, #0000FF, #8B00FF);">
+			<h2>Visible Light</h2>
+			<div class="description">
+				<p><strong>Wavelength:</strong> 380 to 700 nanometers</p>
+				<p><strong>Properties:</strong> Detectable by human eye, rainbow colors</p>
+				<p><strong>Uses:</strong> Vision, photography, photosynthesis</p>
+			</div>
+		</div>
+		<div class="band" style="background-color: #4B0082;">
+			<h2>Ultraviolet (UV)</h2>
+			<div class="description">
+				<p><strong>Wavelength:</strong> 10 to 380 nanometers</p>
+				<p><strong>Properties:</strong> Ionizing radiation, invisible to human eye</p>
+				<p><strong>Uses:</strong> Sterilization, tanning, detecting forged documents</p>
+			</div>
+		</div>
+		<div class="band" style="background-color: #9400D3;">
+			<h2>X-Rays</h2>
+			<div class="description">
+				<p><strong>Wavelength:</strong> 0.01 to 10 nanometers</p>
+				<p><strong>Properties:</strong> High energy, penetrating</p>
+				<p><strong>Uses:</strong> Medical imaging, security scanners, astronomy</p>
+			</div>
+		</div>
+		<div class="band" style="background-color: #800080;">
+			<h2>Gamma Rays</h2>
+			<div class="description">
+				<p><strong>Wavelength:</strong> Less than 0.01 nanometers</p>
+				<p><strong>Properties:</strong> Highest energy, shortest wavelength</p>
+				<p><strong>Uses:</strong> Medical imaging, cancer treatment, sterilization</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

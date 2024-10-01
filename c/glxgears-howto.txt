@@ -1,0 +1,24 @@
+339828  2024-10-01 00:44:51 glxgears
+339829  2024-10-01 00:45:08 create glxgears.c "code me a glx gears if you can..."
+339833  2024-10-01 00:49:09 gcc -o glxgears glxgears.c -lGL -lGLU -lX11 -lm 2>&1 | tee errors.txt
+339835  2024-10-01 00:49:18 improve glxgears.c "" errors.txt 
+339837  2024-10-01 00:51:04 improve glxgears.c "" errors.txt 
+339838  2024-10-01 00:53:05 gcc -o glxgears glxgears.c -lGL -lGLU -lX11 -lm 2>&1 | tee errors.txt
+339840  2024-10-01 00:53:08 ./glxgears
+339842  2024-10-01 00:53:51 improve glxgears.c "It runs but seems too zoomed in or something, also way too fast, it's a blur\!"
+339845  2024-10-01 00:55:53 improve glxgears.c "Can we zoom in and out with the mouse wheel, and rotate the model with mouse movement?"
+339848  2024-10-01 00:58:36 improve glxgears.c "It works good, but there is some buffering issue where the mouse actions may be delayed I guess due to queued frames or too many events or something..."
+339854  2024-10-01 01:01:04 glxgears --help | improve glxgears.c "The 'real' glxgears has these options, can we add them please?" -
+339876  2024-10-01 01:06:21 improve glxgears.c
+339882  2024-10-01 01:09:26 last 7 > changes.md
+339886  2024-10-01 01:09:48 improve glxgears.c 'please apply the suggeseted changes if not already done' glxgears.c changes.md
+339904  2024-10-01 01:22:55 improve glxgears.c "I'm getting a SEGV now, it was working perfectly a little while ago but maybe I lost the code."
+339968  2024-10-01 02:07:31 web_summary_api.sh https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glXChooseFBConfig.xml
+339973  2024-10-01 02:08:39 last | improve glxgears.c "Please fix the SEGV with glXChooseFBConfig and the attributes... I provided some doc." -
+340012  2024-10-01 02:15:53 improve wrong.c 'Please fix the SEGV in this code wrt the doc' ../api/glxchoosefbconfig.md 
+340017  2024-10-01 02:17:25 improve -m=op wrong.c 'Please fix the SEGV in this code wrt the doc' ../api/glxchoosefbconfig.md 
+340021  2024-10-01 02:22:32 web_text.sh https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glXChooseFBConfig.xml | tee glXChooseFBConfig.md
+340023  2024-10-01 02:23:08 improve glXChooseFBConfig.md "tidy up the markdown please, no fancy stuff just a plain clear markdown file"
+340030  2024-10-01 02:27:12 improve -m=s glXChooseFBConfig.md "Please tidy up the markdown, get rid of the : at the start of some lines IDK what that is, and fix the numbering, no \\. and numbers should be followed directly by the content I guess not on a new line / paragraph afterwards."
+340047  2024-10-01 02:33:25 improve -m=op wrong.c "Please fix the SEGV that this code is causing, with reference to the full documentation for glXChooseFBConfig." ../api/glXChooseFBConfig.md 
+340163  2024-10-01 02:55:51 vi glxgears.c

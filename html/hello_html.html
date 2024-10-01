@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Allemande AI - Hello World</title>
+	<meta name="description" content="Welcome to Allemande AI - Innovating the future of artificial intelligence">
+	<link rel="stylesheet" href="hello_css.css">
+	<link rel="icon" href="favicon.ico" sizes="any">
+	<link rel="icon" href="icon.svg" type="image/svg+xml">
+	<link rel="apple-touch-icon" href="apple-touch-icon.png">
+	<link rel="manifest" href="manifest.json">
+	<script src="hello_js.js" defer></script>
+</head>
+<body>
+	<header>
+		<h1>Welcome to Allemande AI</h1>
+		<nav>
+			<ul>
+				<li><a href="#about">About</a></li>
+				<li><a href="#services">Services</a></li>
+				<li><a href="#contact">Contact</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main>
+		<section id="about">
+			<h2>About Us</h2>
+			<p>Allemande AI is at the forefront of artificial intelligence innovation.</p>
+			<img src="placeholder.jpg" alt="Allemande AI team collaborating on cutting-edge AI projects" width="600" height="400">
+		</section>
+
+		<section id="services">
+			<h2>Our Services</h2>
+			<ul>
+				<li>Machine Learning Solutions</li>
+				<li>Natural Language Processing</li>
+				<li>Computer Vision</li>
+			</ul>
+			<img src="placeholder.jpg" alt="Visual representation of Allemande AI's service offerings" width="600" height="400">
+		</section>
+
+		<section id="contact">
+			<h2>Contact Us</h2>
+			<form id="contact-form">
+				<label for="name">Name:</label>
+				<input type="text" id="name" name="name" required>
+
+				<label for="email">Email:</label>
+				<input type="email" id="email" name="email" required>
+
+				<label for="message">Message:</label>
+				<textarea id="message" name="message" required></textarea>
+
+				<button type="submit">Send</button>
+			</form>
+		</section>
+	</main>
+
+	<footer>
+		<p>&copy; 2024 Allemande AI. All rights reserved.</p>
+	</footer>
+
+	<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/sw.js')
+				.then(registration => console.log('ServiceWorker registered'))
+				.catch(error => console.log('ServiceWorker registration failed:', error));
+		}
+	</script>
+</body>
+</html>

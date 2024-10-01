@@ -14,7 +14,7 @@ Example usage:
 class Point:
     def __init__(self, x, y):
         self.x, self.y = x, y
-    
+
     def __format__(self, format_spec):
         if format_spec == 'p':
             return f'({self.x}, {self.y})'

@@ -5,12 +5,12 @@
 
 " Do indentation properly!
 
-function! Indent()
+fun! Indent()
 	let indent = &expandtab ? repeat(' ', &shiftwidth) : '\t'
 	execute 'silent! s/^..*/' . indent . '&/'
 endfun
 
-function! Dedent() range
+fun! Dedent() range
 	let indent = &expandtab ? repeat(' ', &shiftwidth) : '\t'
 	let lines = getline(a:firstline, a:lastline)
 	let can_dedent = match(lines, '^' . indent) >= 0
@@ -20,7 +20,7 @@ endfun
 
 
 " Comment and Uncomment
-function! Comment()
+fun! Comment()
 	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='java' || &ft=='javascript' ||
 		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
 		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
@@ -37,7 +37,7 @@ function! Comment()
 	noh
 endfun
 
-function! Uncomment()
+fun! Uncomment()
 	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='java' || &ft=='javascript' ||
 		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
 		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
@@ -48,27 +48,28 @@ function! Uncomment()
 		silent! s,^; \?,,
 	elseif &ft=='lua' || &ft=='sql'
 		silent! s,^-- \?,,
-	else
-		silent! s,^# \?,,
 	endif
+	" always try to remove a # comment, because my scripts add them
+	" to the wrong types of files pretty often
+	silent! s,^# \?,,
 	noh
 endfun
 
-function! AllemandeRaw()
+fun! AllemandeRaw()
 	set binary
 	set noeol
 	echo "Allemande raw"
-endfunction
+endfun
 
 
-function! AllemandeChat()
+fun! AllemandeChat()
 	set nobinary
 	set eol
 	echo "Allemande chat"
-endfunction
+endfun
 
 
-function! Allemande(format)
+fun! Allemande(format)
 	if a:format == "raw"
 		call AllemandeRaw()
 	else
@@ -92,7 +93,7 @@ function! Allemande(format)
 	set noexpandtab
 	let &showbreak='                '
 	set syntax=markdown
-endfunction
+endfun
 
 
 " a command Allemande to call Allemande
@@ -110,7 +111,7 @@ augroup END
 
 " Enable autoread for all files
 
-function! AllemandeAutoread()
+fun! AllemandeAutoread()
 	call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
 	Plug 'djoshea/vim-autoread'
 	call plug#end()
@@ -119,7 +120,7 @@ function! AllemandeAutoread()
 
 	source ~/.local/share/nvim/plugged/vim-autoread/plugin/autoread.vim
 	execute WatchForChanges('*', {'autoread': 1})
-endfunction
+endfun
 
 command! -nargs=0 AllemandeAutoread call AllemandeAutoread()
 

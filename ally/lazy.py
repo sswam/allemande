@@ -107,6 +107,9 @@ class LazyProxy:
     def __repr__(self):
         return repr(self._LazyProxy_load())
 
+    def __call__(self, *args, **kwargs):
+        return self._LazyProxy_load()(*args, **kwargs)
+
     # TODO add more magic methods if and when needed
 
 

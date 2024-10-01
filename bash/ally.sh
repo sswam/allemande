@@ -1,9 +1,11 @@
+# TODO put these in separate scripts?
+
 backup() {
 	local file=$1
 	if [ -e "$file~" ]; then
 		move-rubbish "$file~"
 	fi
-	yes n | cp -i -a "$file" "$file~"
+	yes n | cp -i -a "$file" "$file~" || true
 }
 
 locate_file() {
@@ -25,12 +27,12 @@ code_modify() {
 
 	. opts
 
-	local file=${1-}
+	local file=$1
 	shift
 	local command=( "$@" )
 
 	# If no file is provided, process input stream
-	if [ -z "$file" ]; then
+	if [ -z "$file" -o "$file" = "-" ]; then
 		"${command[@]}" | markdown_code.py -c '#'
 		return
 	fi

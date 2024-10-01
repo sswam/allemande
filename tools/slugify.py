@@ -3,14 +3,26 @@
 import re
 import sys
 
-import argh
+from ally import main
+from argh import arg
 
-# TODO convert & to _and_
-
-def slugify(text, lower=False, upper=False, hyphen=False):
+@arg("-u", "--underscore", help="use underscores", dest="hyphen", action="store_false")
+@arg("-B", "--no-boolean", help="do not replace & and |", dest="boolean", action="store_false")
+def slugify(*text, lower=False, upper=False, hyphen=True, boolean=True) -> str|list[str]:
+	if len(text):
+		text = " ".join(text)
+	else:
+		for line in sys.stdin:
+			print(slugify(line.rstrip("\n"), lower=lower, upper=upper, hyphen=hyphen))
+		return
+	if boolean:
+		text = re.sub(r'&', '_and_', text)
+		text = re.sub(r'\|', '_or_', text)
 	text = re.sub(r'[^a-zA-Z0-9]', '_', text)
 	text = re.sub(r'_+', '_', text)
 	text = re.sub(r'^_|_$', '', text)
+	if not text:
+		text = "_"
 	if lower:
 		text = text.lower()
 	elif upper:
@@ -19,13 +31,5 @@ def slugify(text, lower=False, upper=False, hyphen=False):
 		text = re.sub(r'_', '-', text)
 	return text
 
-@argh.arg("-H", "--hyphen", help="convert underscores to hyphens", action="store_true")
-def slugify_main(*text, lower=False, upper=False, hyphen=False):
-	if len(text):
-		print(slugify(" ".join(text), lower=lower, upper=upper, hyphen=hyphen))
-	else:
-		for line in sys.stdin:
-			print(slugify(line.rstrip("\n"), lower=lower, upper=upper, hyphen=hyphen))
-
 if __name__ == "__main__":
-	argh.dispatch_command(slugify_main)
+	main.run(slugify)

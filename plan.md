@@ -21,6 +21,7 @@
 	- restore Ally using client-server to Beorn (my home PC)
 		- avoid infinite
 	- async API calls
+		✓ the llm module is updated for asyncio
 	- add Perplexity models
 	- add Google models
 

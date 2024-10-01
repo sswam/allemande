@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # [user's name]
 # Says Hello, world
@@ -11,6 +11,11 @@ hello_sh() {
 
 	. opts	# Note to AI: This magically loads options into the above vars
 
+	# strict mode
+	local old_opts=$(set +o)
+	set -e -u -o pipefail
+	trap 'eval "$old_opts"' RETURN
+
 	# Note to AI: The following supports the short options above
 	# TODO can we do this in the opts script?
 	language=${language:-$l}
@@ -18,30 +23,19 @@ hello_sh() {
 	use_ai=${use_ai:-$a}
 	model=${model:-$m}
 
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
-
 	# non-option arguments
 	local user_name=${1:-world}	# Set 'who' to the first argument
+	[ -n "$user_name" ] || usage "User's name is required"  # demo, never happens
 
 	# Set greeting based on selected language
 	local greeting="Hello"	# Default greeting in English
 	case "$language" in
-	fr)
-		greeting="Bonjour"
-		;;
-	de)
-		greeting="Hallo"
-		;;
-	jp)
-		greeting="こんにちは"
-		;;
-	cn)
-		greeting="你好"
-		;;
-	en)
-		;;
+	fr)	greeting="Bonjour" ;;
+	es)	greeting="Hola" ;;
+	de)	greeting="Hallo" ;;
+	jp)	greeting="こんにちは" ;;
+	cn)	 greeting="你好" ;;
+	en)	;;
 	*)
 		echo >&2 "unknown language: $language"
 		exit 1
@@ -54,16 +48,13 @@ hello_sh() {
 			"Please greet ${user_name:-the world} in $language."\
 			"Be creative, but not more than 50 words."
 	else
-		printf "%s, %s\n" "$greeting" "$user_name"
+		printf -- "%s, %s\n" "$greeting" "$user_name"
 	fi
 
 	# Print shopping list if items are provided
 	if [ "${#shopping[@]}" -gt 0 ]; then
 		shopping_list --use-ai="$use_ai" --model="$model" "${shopping[@]}"
 	fi
-
-	# restore caller options
-	eval "$old_opts"
 }
 
 shopping_list() {
@@ -98,8 +89,10 @@ fi
 
 # version: 0.1.0
 
-# Important Notes for AI [do not copy them!]:
+# Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
 
+# We indent shell code with tabs.
+#
 # Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
 # Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
 # comment it out rather than removing it.
@@ -109,10 +102,12 @@ fi
 # Test negative cases first, and use continue, break, or return to avoid deep nesting.
 #
 # We use the `-e` `-u` and `-o pipefail` options, so be careful to avoid accidentally exiting:
-# - Do not shorten if statements, for example not: `[ -n "$var" ] && do_something`
+# *** RED ALERT! Do not shorten if statements, for example not: `[ -n "$var" ] && do_something`
 # Generally, if things go wrong, return 1 rather than continuing.
 #
 # The `. opts` call gets options and prints usage automatically. No need to do that in the script.
+# The options like `local language= l=en are followed by a *tab*, then a comment. Use tabs here.
+# The `usage` function is provided by opts; it exits. Use `usage "Some message"` for fatal errors.
 #
 # The first lines 1. shebang, 2. arguments without program name, 3. short description of the program.
 # This header format must be followed exactly, so that `. opts` can print usage.
@@ -128,4 +123,7 @@ fi
 # Our functions might be used from other scripts, so on error return 1, do not exit 1.
 # We assume the client script is using `-e`, so `return 1` normally becomes `exit 1`.
 #
-# Error and other commentary must be printed to stderr: echo >&2 "Error: something went wrong"
+# Warnings and other commentary must be printed to stderr: echo >&2 "Something went wrong".
+# No unnecessary "success" or info messages, no "Error: " or "Warning: " prefixes; THIS IS UNIX!
+#
+# The use_ai option is for this demo only, most scripts are either written to use AI or not.
