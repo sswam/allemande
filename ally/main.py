@@ -340,12 +340,13 @@ def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Calla
             **kwargs: Keyword arguments for print function.
         """
         if lines or chunks:
-            for line in args:
-                if rstrip:
-                    line = line.rstrip()
-                elif not chunks:
-                    line = line.rstrip("\n")
-                print(line, file=ostream, end=end, **kwargs)
+            for arg in args:
+                for line in arg:
+                    if rstrip:
+                        line = line.rstrip()
+                    elif not chunks:
+                        line = line.rstrip("\n")
+                    print(line, file=ostream, end=end, **kwargs)
             return
         if args and args[-1].endswith("\n"):
             end = ""
