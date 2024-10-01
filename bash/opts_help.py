@@ -4,6 +4,7 @@
 This module generates a help message for command-line options based on the script's content.
 """
 
+import os
 import sys
 import re
 import textwrap
@@ -53,11 +54,13 @@ def process_array(array_content: str) -> str:
     return array_content.replace(' ', ',')
 
 
-def opts_help(script_name, istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> None:
+def opts_help(script, istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> None:
     """
     Generate a help message for command-line options based on the script's content.
     """
-    get, put = main.io(istream, ostream)
+    _get, put = main.io(istream, ostream)
+
+    script_name = os.path.basename(script)
 
     lines = []
     lines.append(f"{script_name} ")
@@ -66,42 +69,43 @@ def opts_help(script_name, istream: TextIO = sys.stdin, ostream: TextIO = sys.st
     blanks = 0
     skip_blank_lines = False
 
-    for line in istream:
-        line = line.rstrip()
+    with open(script, "r") as istream:
+        for line in istream:
+            line = line.rstrip()
 
-        # Skip shebang line
-        if line.startswith('#!'):
-            skip_blank_lines = True
-            continue
+            # Skip shebang line
+            if line.startswith('#!'):
+                skip_blank_lines = True
+                continue
 
-        # Skip unindented function declaration
-        if re.match(r'^[a-zA-Z0-9_]+\(\)\s*\{', line):
-            continue
+            # Skip unindented function declaration
+            if re.match(r'^[a-zA-Z0-9_]+\(\)\s*\{', line):
+                continue
 
-        is_blank = len(line.strip()) == 0
+            is_blank = len(line.strip()) == 0
 
-        # Stop before the ". opts" line
-        if re.match(r'\s*\.\s+opts', line):
-            break
+            # Stop before the ". opts" line
+            if re.match(r'\s*\.\s+opts', line):
+                break
 
-        # Skip other ". " lines
-        if re.match(r'\s*\.\s', line):
-            continue
+            # Skip other ". " lines
+            if re.match(r'\s*\.\s', line):
+                continue
 
-        # Handle blank lines
-        if is_blank:
-            blanks += 1
-            continue
+            # Handle blank lines
+            if is_blank:
+                blanks += 1
+                continue
 
-        # Output a single blank line if needed
-        if blanks > 0 and not skip_blank_lines:
-            lines.append("\n")
-        blanks = 0
-        skip_blank_lines = False
+            # Output a single blank line if needed
+            if blanks > 0 and not skip_blank_lines:
+                lines.append("\n")
+            blanks = 0
+            skip_blank_lines = False
 
-        # Process and output the line
-        processed_line = process_line(line, script_name)
-        lines.append(processed_line + "\n")
+            # Process and output the line
+            processed_line = process_line(line, script_name)
+            lines.append(processed_line + "\n")
 
     text = "".join(lines)
 

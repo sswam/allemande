@@ -26,29 +26,25 @@
 
 # Note that `-foo bar` is not allowed, use `-foo=bar`.
 
-# To pass an array safely:
+# To pass any array safely:
 #     tool.sh -foo,"${array[*]@Q}"
 
 usage() {
-	# read the script itself to output usage:
-
-	case "$*" in
-	-h|-help|--help)
-		# if -h was passed, not an error: output usage to stdout
+	if [ "$1" == "-h" ]; then
+		# help: output usage to stdout
 		exit=0
-		;;
-	*)
+	else
 		# error: if a message was passed, output it to stderr
-		exit=1
 		exec >&2
 		if [ -n "$*" ]; then
 			echo "$*"
 			echo
 		fi
-		;;
-	esac
+		exit=1
+	fi
 
-	opts_help.py "$0" < "$0"
+	# read the script itself to output usage:
+	opts_help.py "$0"
 
 	exit $exit
 }
