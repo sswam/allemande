@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" Ally Chat / Electric Barbarella v5 - multi-user LLM chat app """
+""" Ally Chat / Electric Barbarella v6 - multi-user LLM chat app """
 
 import os
 import time
@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import subprocess
 from types import SimpleNamespace
+import asyncio
 
 import shlex
 import readline
@@ -34,7 +35,8 @@ import transformers  # pylint: disable=wrong-import-position, wrong-import-order
 logger = logging.getLogger(__name__)
 
 SERVER = "llm_llama"
-DEFAULT_PORT = ports.get_default_port(SERVER)
+DEFAULT_PORT_PATH = ports.get_default_port_name(SERVER)
+port = None
 
 
 # TODO can't select model from here now
@@ -163,74 +165,21 @@ ADULT = True
 UNSAFE = True
 
 
-def register_agents_local():
-	""" Register LLM local agents """
-	def make_agent(agent_base):
+def register_agents(agent_type, agents_dict, async_func):
+	async def agent_wrapper(agent, *args, **kwargs):
+		return await async_func(agent, *args, **kwargs)
+
+	def make_agent(agent_base, agent_name):
 		agent = agent_base.copy()
-		agent["fn"] = lambda *args, **kwargs: local_agent(agent, *args, **kwargs)
-		agent["type"] = "local"
+		agent["fn"] = agent_wrapper
+		agent["type"] = agent_type
 		if "name" not in agent:
 			agent["name"] = agent_name
 		return agent
 
-	for agent_name, agent_base in AGENTS_LOCAL.items():
+	for agent_name, agent_base in agents_dict.items():
 		agent_lc = agent_name.lower()
-		agent = AGENTS[agent_lc] = make_agent(agent_base)
-		name_lc = agent["name"].lower()
-		if name_lc != agent_lc:
-			AGENTS[name_lc] = agent
-
-
-def register_agents_search():
-	""" Register search engines """
-	def make_agent(agent_base):
-		agent = agent_base.copy()
-		agent["fn"] = lambda *args, **kwargs: run_search(agent, *args, **kwargs)
-		agent["type"] = "tool"
-		if "name" not in agent:
-			agent["name"] = agent_name
-		return agent
-
-	for agent_name in search.agents:
-		agent_lc = agent_name.lower()
-		agent_base = { "name": agent_name }
-		AGENTS[agent_lc] = make_agent(agent_base)
-	if not ADULT:
-		del AGENTS["Pr0nto"]
-#	AGENTS["duck"] = AGENTS["duckduckgo"]
-
-
-def register_agents_remote():
-	""" Register LLM API agents """
-	def make_agent(agent_base):
-		agent = agent_base.copy()
-		agent["fn"] = lambda *args, **kwargs: remote_agent(agent, *args, **kwargs)
-		agent["type"] = "remote"
-		if "name" not in agent:
-			agent["name"] = agent_name
-		return agent
-
-	for agent_name, agent_base in AGENTS_REMOTE.items():
-		agent_lc = agent_name.lower()
-		agent = AGENTS[agent_lc] = make_agent(agent_base)
-		name_lc = agent["name"].lower()
-		if name_lc != agent_lc:
-			AGENTS[name_lc] = agent
-
-
-def register_agents_programming():
-	""" Register programming language agents """
-	def make_agent(agent_base):
-		agent = agent_base.copy()
-		agent["fn"] = lambda *args, **kwargs: safe_shell(agent, *args, **kwargs)
-		agent["type"] = "tool"
-		if "name" not in agent:
-			agent["name"] = agent_name
-		return agent
-
-	for agent_name, agent_base in AGENTS_PROGRAMMING.items():
-		agent_lc = agent_name.lower()
-		agent = AGENTS[agent_lc] = make_agent(agent_base)
+		agent = AGENTS[agent_lc] = make_agent(agent_base, agent_name)
 		name_lc = agent["name"].lower()
 		if name_lc != agent_lc:
 			AGENTS[name_lc] = agent
@@ -273,16 +222,20 @@ def setup_maps_for_agent(agent):
 			agent["output_map_cs"][v] = k
 
 
-def register_agents():
+def register_all_agents():
 	""" Register agents """
-	register_agents_local()
-	register_agents_search()
-	register_agents_remote()
+	register_agents("local", AGENTS_LOCAL, local_agent)
+	register_agents("remote", AGENTS_REMOTE, remote_agent)
+
 	if UNSAFE:
-		register_agents_programming()
+		register_agents("tool", AGENTS_PROGRAMMING, safe_shell)
+
+	register_agents("tool", {agent: {"name": agent} for agent in search.agents}, run_search)
+	if not ADULT:
+		del AGENTS["Pr0nto"]
+
 	setup_agent_maps()
 	# TODO Moar!
-	# - calculator: Calc
 	# - translator: Poly
 
 
@@ -368,7 +321,7 @@ def fix_layout(response, _args):
 
 
 def input_with_prefill(prompt, text):
-	""" Input with a prefill. """
+	""" Readline input with a prefill. """
 	def hook():
 		readline.insert_text(text)
 		readline.redisplay()
@@ -380,6 +333,7 @@ def input_with_prefill(prompt, text):
 
 def get_fulltext(args, model_name, history, history_start, invitation, delim):
 	""" Get the full text from the history, and cut to the right length. """
+	# FIXME this sync function is potentially slow
 	tokenizer = TOKENIZERS[model_name]
 	fulltext = delim.join(history[history_start:]) + invitation
 	n_tokens = count_tokens_in_text(fulltext, tokenizer)
@@ -417,30 +371,30 @@ def get_fulltext(args, model_name, history, history_start, invitation, delim):
 	return fulltext, history_start
 
 
-def client_request(port, input_text, config=None):
+async def client_request(port, input_text, config=None):
 	""" Call the core server and get a response. """
 
-	req = ports.prepare_request(port, config=config)
+	req = await port.prepare_request(config)
 
 	req_input = req/"request.txt"
 	req_input.write_text(input_text, encoding="utf-8")
 
-	ports.send_request(port, req)
+	await port.send_request(req)
 
-	resp, status = ports.wait_for_response(port, req)
+	resp, status = await port.wait_for_response(req)
 
 	if status == "error":
-		ports.response_error(resp)
+		await port.response_error(resp)  # raises RuntimeError?!
 
 	new_text = (resp/"new.txt").read_text(encoding="utf-8")
 	generated_text = (resp/"full.txt").read_text(encoding="utf-8")
 
-	ports.remove_response(port, resp)
+	await port.remove_response(resp)
 
 	return new_text, generated_text
 
 
-def chat_to_user(_model, args, history, history_start=0):
+async def chat_to_user(_model, args, history, history_start=0):
 	""" Chat with the model. """
 	invitation = args.bot + ":" if args.bot else ""
 	human_invitation = args.user + ":" if args.user else ""
@@ -491,7 +445,7 @@ def chat_to_user(_model, args, history, history_start=0):
 #	logger.debug("invitation2: %r", invitation2)
 #	logger.debug("delim: %r", delim)
 
-	response, _fulltext2 = client_request(args.port, fulltext, config=args.gen_config)
+	response, _fulltext2 = await client_request(args.port, fulltext, config=args.gen_config)
 
 	if args.trim:
 		response = trim_response(response, args)
@@ -505,10 +459,10 @@ def chat_to_user(_model, args, history, history_start=0):
 	return history_start
 
 
-def chat_loop(model, args, history, history_start=0):
+async def chat_loop(model, args, history, history_start=0):
 	""" Chat with the model in a loop. """
 	while True:
-		history_start = chat_to_user(model, args, history, history_start=history_start)
+		history_start = await chat_to_user(model, args, history, history_start=history_start)
 
 
 def history_read(file, args):
@@ -550,7 +504,7 @@ def summary_read(file, args):
 	return lines
 
 
-def interactive(model, args):
+async def interactive(model, args):
 	""" Interactive chat with the model. """
 	history = history_read(args.file, args)
 
@@ -572,12 +526,12 @@ def interactive(model, args):
 		pass
 
 	try:
-		chat_loop(model, args, history)
+		await chat_loop(model, args, history)
 	except EOFError:
 		pass
 
 
-def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None):
+async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None):
 	""" Run a search agent. """
 	if args.local:
 		raise ValueError("run_search called with --local option, not an error, just avoiding to run it on the home PC")
@@ -602,6 +556,10 @@ def run_search(agent, query, file, args, history, history_start, limit=True, mis
 	logger.debug("query 6: %r", query)
 	query = re.sub(r'^\s*[,;.]|[,;.]\s*$', '', query).strip()
 	logger.warning("query: %r %r", name, query)
+	# TODO make the search library async too
+	async def async_search(query, name, limit):
+		return await asyncio.to_thread(search.search, query, engine=name, markdown=True, limit=limit)
+	response = await async_search(query, name, limit)
 	response = search.search(query, engine=name, markdown=True, limit=limit)
 	response2 = f"{name}:\t{response}"
 	response3 = fix_layout(response2, args)
@@ -609,9 +567,9 @@ def run_search(agent, query, file, args, history, history_start, limit=True, mis
 	return response3
 
 
-def process_file(model, file, args, history_start=0, count=0, max_count=4):
+async def process_file(model, file, args, history_start=0, count=0, max_count=4):
 	""" Process a file. """
-	# TODO don't need model any longer
+	# TODO don't need model parameter any longer
 	logger.info("Processing %s", file)
 
 	history = history_read(file, args)
@@ -668,7 +626,7 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 		query = list(chat.lines_to_messages([query1]))[-1]["content"] if query1 else ""
 		logger.debug("query: %r", query)
 		agent = AGENTS[args.bot.lower()]
-		response = run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
+		response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
 		history.append(response)
 		history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
 
@@ -683,17 +641,17 @@ def process_file(model, file, args, history_start=0, count=0, max_count=4):
 	logger.debug("history[-1]: %r", history[-1])
 	logger.debug("running process_file again")
 
-	process_file(model, file, args, history_start=history_start, count=count, max_count=max_count)
+	await process_file(model, file, args, history_start=history_start, count=count, max_count=max_count)
 
 
-def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
+async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
 	""" Run an agent. """
-	fn = agent["fn"]
+	function = agent["fn"]
 	logger.debug("query: %r", query)
-	return fn(query, file, args, history, history_start=history_start, mission=mission, summary=summary)
+	return await function(query, file, args, history, history_start=history_start, mission=mission, summary=summary)
 
 
-def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None):
+async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None):
 	""" Run a local agent. """
 	if args.remote:
 		raise ValueError("local_agent called with --remote option, not an error, just avoiding to try to run it on the server")
@@ -721,7 +679,7 @@ def local_agent(agent, _query, file, args, history, history_start=0, mission=Non
 	logger.debug("config: %r", args.gen_config)
 	logger.debug("port: %r", args.port)
 
-	response, _fulltext2 = client_request(args.port, fulltext, config=args.gen_config)
+	response, _fulltext2 = await client_request(port, fulltext, config=args.gen_config)
 	apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
 	logger.debug("response: %r", response)
@@ -774,15 +732,16 @@ def apply_maps(mapping, mapping_cs, context):
 			logger.warning("map: %r -> %r", old, context[i])
 
 
-def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
+async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
 	""" Run a remote agent. """
+	# FIXME this function is too long
 	if args.local:
 		raise ValueError("remote_agent called with --local option, not an error, just avoiding to run it on the home PC")
 	# for now do just query, not the full chat
 	if agent["default_context"] == 1:
 		logger.debug("history: %r", history)
 		logger.debug("query: %r", query)
-		response = llm.query(query, out=None, model=agent["model"])
+		response = await llm.aquery(query, out=None, model=agent["model"])
 	else:
 		query = query.rstrip() + "\n"  # XXX not used
 
@@ -845,7 +804,7 @@ def remote_agent(agent, query, file, args, history, history_start=0, mission=Non
 		llm.set_opts(opts)
 
 		logger.warning("querying %r = %r", agent['name'], agent["model"])
-		output_message = llm.retry(llm.llm_chat, REMOTE_AGENT_RETRIES, remote_messages)
+		output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, remote_messages)
 
 		response = output_message["content"]
 		box = [response]
@@ -875,7 +834,31 @@ def remote_agent(agent, query, file, args, history, history_start=0, mission=Non
 	return response.rstrip()
 
 
-def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None):
+async def run_subprocess(command, query):
+	""" Run a subprocess asynchronously. """
+	# Create the subprocess
+	proc = await asyncio.create_subprocess_exec(
+		*command,
+		stdin=asyncio.subprocess.PIPE,
+		stdout=asyncio.subprocess.PIPE,
+		stderr=asyncio.subprocess.PIPE
+	)
+
+	# Write to stdin
+	proc.stdin.write(query.encode("utf-8"))
+	await proc.stdin.drain()
+	proc.stdin.close()
+
+	# Read stdout and stderr
+	stdout, stderr = await proc.communicate()
+
+	# Get the return code
+	return_code = await proc.wait()
+
+	return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
+
+
+async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None):
 	""" Run a shell agent. """
 	if args.local:
 		raise ValueError("safe_shell called with --local option, not an error, just avoiding to run it on the home PC")
@@ -910,14 +893,10 @@ def safe_shell(agent, query, file, args, history, history_start=0, command=None,
 	agent["command"]
 
 	# echo the query to the subprocess
-	with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
-		proc.stdin.write(query.encode("utf-8"))
-		proc.stdin.close()
-		# read the output and stderr
-		response = ""
-		output = proc.stdout.read().decode("utf-8")
-		errors = proc.stderr.read().decode("utf-8")
-		status = proc.wait()
+	output, errors, status = await run_subprocess(command, query)
+
+	# format the response
+	response = ""
 	if errors or status:
 		response += "\n## status:\n" + str(status) + "\n\n"
 		response += "## errors:\n```\n" + errors + "\n```\n\n"
@@ -930,32 +909,43 @@ def safe_shell(agent, query, file, args, history, history_start=0, command=None,
 	return response3
 
 
-def find_files(folder, ext=None, maxdepth=inf):
-	""" Find chat files under a directory. """
+async def find_files(folder, ext=None, maxdepth=inf):
+	""" Find chat files under a directory asynchronously. """
 	if not os.path.isdir(folder):
 		print("?", file=sys.stderr, end="", flush=True)
 		return
+
 	try:
-		for subdir in os.scandir(folder):
-			if subdir.is_dir():
-				if subdir.name.startswith("."):
+		for entry in os.scandir(folder):
+			if entry.is_dir():
+				if entry.name.startswith("."):
 					continue
 				if maxdepth > 0:
-					yield from find_files(subdir.path, ext, maxdepth - 1)
-			elif subdir.is_file():
-				if not ext or subdir.name.endswith(ext):
-					yield subdir.path
+					async for file_path in find_files(entry.path, ext, maxdepth - 1):
+						yield file_path
+			elif entry.is_file():
+				if not ext or entry.name.endswith(ext):
+					yield entry.path
+
+			# I suspect we don't need the following asyncio.sleep(0), so I commented it out.
+			# The async for loop on subdirectories should be enough to allow other coroutines to run.
+			# I would rather yield once per directory, not once per file.
+
+			# Allow other coroutines to run
+			# await asyncio.sleep(0)
+
 	except (PermissionError, FileNotFoundError) as e:
 		logger.warning("find_files: %r", e)
 
 
-def watch_step(model, args, stats):
+async def watch_step(model, args, stats):
 	""" Watch a directory for changes, one step. """
+	# TODO use a proper async file watcher not this polling
 	files = []
 	dirs = args.watch.split(":")
 	dirs = list(set(dirs))
 	for folder in dirs:
-		files += find_files(folder, ext=args.ext, maxdepth=args.depth)
+		files += [x async for x in find_files(folder, ext=args.ext, maxdepth=args.depth)]
 
 	first = False
 
@@ -984,7 +974,7 @@ def watch_step(model, args, stats):
 			elif args.ignore_shrink and stats1.st_size < stats0.st_size:
 				pass
 			elif stats1.st_size > 0:
-				process_file(model, file, args)
+				await process_file(model, file, args)
 				stats1 = os.stat(file)
 		except Exception as e:  # pylint: disable=broad-except
 			logger.exception("watch_step: %r", e)
@@ -998,14 +988,14 @@ def watch_step(model, args, stats):
 	return stats
 
 
-def watch_loop(model, args):
+async def watch_loop(model, args):
 	""" Watch a directory for changes, and process files as they change. """
 	logger.info("Watching %r for files with extension %r and depth %r", args.watch, args.ext, args.depth)
 
 	stats = None
 	while True:
-		stats = watch_step(model, args, stats)
-		time.sleep(args.interval)
+		stats = await watch_step(model, args, stats)
+		await asyncio.sleep(args.interval)
 		print(".", file=sys.stderr, end="", flush=True)
 
 
@@ -1082,7 +1072,7 @@ def get_opts():  # pylint: disable=too-many-statements
 	format_group.add_argument("--narrative", type=bool, default=False, help="Allow non-indented narrative text")
 
 	model_group = parser.add_argument_group("Model options")
-	model_group.add_argument("--port", "-p", default=DEFAULT_PORT, help="Path to port directory")
+	model_group.add_argument("--port", "-p", default=DEFAULT_PORT_PATH, help="Path to port directory")
 	model_group.add_argument("--model", "-m", default="default", help="Model name or path")
 	model_group.add_argument("--config", "-c", default=None, help="Model config file, in YAML format")
 	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
@@ -1135,9 +1125,9 @@ def get_opts():  # pylint: disable=too-many-statements
 	return args
 
 
-def main():
+async def main():
 	""" Main function. """
-	register_agents()
+	register_all_agents()
 
 	args = get_opts()
 
@@ -1165,6 +1155,7 @@ def main():
 			args.model = abbrev_models[0]
 
 		# model_dirs = prog_dir()/".."/"models"/"llm"
+		# This will block, but it doesn't matter because this is the init for the program.
 		model.tokenizer = load_tokenizer(model_path)
 		TOKENIZERS[args.model] = model.tokenizer
 	else:
@@ -1180,16 +1171,20 @@ def main():
 		logger.error("Interactive mode is not compatible with --watch or --stream")
 		sys.exit(1)
 
+	# set up ports
+	global port
+	port = ports.PortClient(args.port)
+
 	# run in the requested mode
 	if args.interactive or not any(mode_options):
 		logger.info("Interactive mode")
-		interactive(model, args)
+		await interactive(model, args)
 	elif args.watch:
 		logger.info("Watch mode")
-		watch_loop(model, args)
+		await watch_loop(model, args)
 	elif args.file:
 		logger.info("File mode")
-		process_file(model, args.file, args)
+		await process_file(model, args.file, args)
 	elif args.stream:
 		logger.error("Stream mode, not implemented yet")
 		# stream(model, args)
@@ -1197,7 +1192,7 @@ def main():
 
 if __name__ == "__main__":
 	try:
-		main()
+		asyncio.run(main())
 	except KeyboardInterrupt:
 		logger.info("interrupted")
 		sys.exit(0)
