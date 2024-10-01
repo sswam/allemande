@@ -105,6 +105,8 @@ def get_css_path(element: Tag) -> str:
         element = element.parent
     return ' > '.join(reversed(path))
 
+# TODO filter by same-site, under parent dir, external
+
 @arg("base_url", help="Base URL for resolving relative links")
 @arg("--css-selector", help="CSS selector to scope the search for resources")
 @arg("--same-site", help="Restrict to same site", action="store_true")
