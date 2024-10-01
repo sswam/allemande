@@ -1,0 +1,6 @@
+0	wow factor
+1	perfect but not amazing
+2	good but flawed
+3	poor
+4	hideous
+5	garbage noise

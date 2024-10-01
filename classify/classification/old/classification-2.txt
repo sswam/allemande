@@ -1,0 +1,6 @@
+0 - Stunning
+1 - Excellent
+2 - Decent
+3 - Subpar
+4 - Unappealing
+5 - Indiscernible

@@ -1,0 +1,11 @@
+0	excellent	excellent quality without any flaws
+1	very good	very good quality with minimal flaws
+2	good	good quality with minor flaws
+3	fair	fair quality with noticeable flaws
+4	poor	poor quality with significant flaws
+5	very poor	very poor quality with major flaws
+6	extremely poor	extremely poor quality with severe degradation
+7	unusable	unusable content with only noise or artifacts
+8	blank	blank content with no information
+9	invalid	invalid or corrupted unreadable file
+x	inappropriate	inappropriate or offensive content

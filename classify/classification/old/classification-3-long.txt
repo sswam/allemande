@@ -1,0 +1,29 @@
+0 - Stunning / Wow Factor
+   - Exceptional quality, visually striking
+   - Perfect composition and execution
+   - Evokes a strong positive emotional response
+
+1 - Excellent / Nearly Perfect
+   - Very high quality with minor room for improvement
+   - Well-executed in most aspects
+   - Visually appealing but may lack the "wow factor"
+
+2 - Decent / Good but Flawed
+   - Generally good quality with noticeable imperfections
+   - Some aspects well-executed, others need improvement
+   - Overall positive impression despite flaws
+
+3 - Subpar / Poor
+   - Below average quality
+   - Multiple noticeable issues or flaws
+   - May have some redeeming qualities but overall unsatisfactory
+
+4 - Unappealing / Hideous
+   - Very low quality
+   - Major flaws in execution or concept
+   - Visually unpleasant or off-putting
+
+5 - Indiscernible / Garbage Noise
+   - Extremely poor quality or completely nonsensical
+   - Lacks any recognizable elements or coherence
+   - May appear as random noise or severe distortions

@@ -1,0 +1,6 @@
+0	0		wow factor -> excellent quality without any flaws
+1	1		perfect but not amazing -> very good quality with minimal flaws
+2	2,3		good but flawed -> good or fair quality, depending on severity of flaws
+3	4		poor -> poor quality with significant flaws
+4	5,6		hideous -> very poor or extremely poor quality, depending on severity
+5	7,8,9		garbage noise -> unusable content or invalid/corrupted file, depending on content

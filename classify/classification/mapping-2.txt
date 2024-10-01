@@ -1,0 +1,6 @@
+0	0..1	Stunning -> exceptional/excellent
+1	1..3	Excellent -> excellent/very good/good
+2	3..5	Decent -> good/average/poor
+3	5..7	Subpar -> poor/very poor/extremely poor
+4	7..9	Unappealing -> extremely poor/abysmal/unusable
+5	9..10	Indiscernible -> unusable/blank
