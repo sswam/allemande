@@ -59,7 +59,7 @@ def scroll_to_bottom(wd, time_limit=30, scroll_limit=100000, scroll_wait=1, retr
 			logger.warning("Reached time limit, elapsed time: %d", elapsed_time)
 			break
 
-def selenium_get(wd: webdriver.Chrome, url: str, sleep: int = 0, out: TextIO = sys.stdout,
+def get_selenium(wd: webdriver.Chrome, url: str, sleep: int = 0, out: TextIO = sys.stdout,
 				time_limit=30, scroll_limit=None, scroll_wait=1, retry_each_scroll=3,
 				exe=None, script_wait=1, retry_script=3) -> None:
 	"""Fetch a web page using Selenium and write the output to the specified stream."""
@@ -105,7 +105,7 @@ def selenium_get(wd: webdriver.Chrome, url: str, sleep: int = 0, out: TextIO = s
 @arg('--facebook', '-f', help='Download from Facebook', action='store_true')
 @arg('--output', '-o', help='Output file')
 @arg('--params', '-p', help='URL parameters', nargs='+')
-def selenium_get_cli(
+def get_selenium_cli(
 	url: str,
 	sleep: int = 0,
 	images: bool = False,
@@ -151,7 +151,7 @@ def selenium_get_cli(
 	with webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts) as wd:
 		try:
 			out = open(output, 'w') if output else ostream
-			selenium_get(wd, url, sleep=sleep, out=out, time_limit=time_limit,
+			get_selenium(wd, url, sleep=sleep, out=out, time_limit=time_limit,
 						scroll_limit=scroll_limit, scroll_wait=scroll_wait,
 						retry_each_scroll=retry_each_scroll, exe=exe,
 						script_wait=script_wait, retry_script=retry_script)
@@ -163,4 +163,4 @@ def selenium_get_cli(
 			wd.save_screenshot(screenshot)
 
 if __name__ == "__main__":
-	main.run(selenium_get_cli)
+	main.run(get_selenium_cli)
