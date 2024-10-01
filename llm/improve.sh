@@ -14,7 +14,7 @@ improve() {
 	. opts
 
 	local file=$1
-	local prompt=$2
+	local prompt=${2:-}
 	shift 2 || true
 	local refs=("$@")
 
@@ -50,7 +50,7 @@ improve() {
 		prompt="in the style of \`$style\`, $prompt"
 	fi
 
-	prompt="Please improve \`$base\`, and bump the patch version if present, $prompt"
+	prompt="Please improve \`$base\`, and bump the patch version if present, $prompt. Comment on your changes at the end, not inline."
 
 	if [ "$c" = 1 ]; then
 		prompt="$prompt, Please reply concisely with only the changes."
