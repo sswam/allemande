@@ -1,4 +1,4 @@
-// 2>/dev/null; gcc -g -o glxgears glxgears.c -lGL -lGLU -lX11 -lm && exec ./glxgears "$@" ; exit 1
+// 2>/dev/null; cd "${0%/*}" && gcc -g -o glxgears glxgears.c -lGL -lGLU -lX11 -lm && exec ./glxgears "$@" ; exit 1
 /*
 * GLX Gears v1.0.4
 *

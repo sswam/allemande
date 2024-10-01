@@ -7,5 +7,8 @@ all: $(exes)
 %: %.cc
 	$(MAKE) -f $(patsubst test_%,Makefile_%,$@)
 
+glxgears: glxgears.c
+	gcc -o $@ $< -lGL -lGLU -lX11 -lm
+
 clean:
-	rm -f $(exes) *.o
+	rm -f $(exes) glxgears *.o
