@@ -80,6 +80,7 @@ def canon_links(
     target_path.mkdir(parents=True, exist_ok=True)
 
     for source in sources:
+        Path(source).mkdir(parents=True, exist_ok=True)
         _process_path(Path(source), target_path)
 
     _remove_dead_links(target_path)
