@@ -15,11 +15,33 @@ from argh import arg
 
 from ally import main
 from ally.lazy import lazy
-import aligno
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 logger = main.get_logger()
+
+
+def find_break_point(section: List[str]) -> int:
+    """Find the least indented line within the range, preferring later lines for equal indentation."""
+    min_indent = min(len(line) - len(line.lstrip()) for line in section)
+    for i in range(len(section) - 1, -1, -1):
+        if len(section[i]) - len(section[i].lstrip()) == min_indent:
+            return i
+    return len(section) - 1
+
+
+def get_context_lines(content: List[str], index: int) -> List[str]:
+    """Get context lines for the given index."""
+    context = []
+    current_indent = None
+    for line in reversed(content[:index]):
+        indent = len(line) - len(line.lstrip())
+        if current_indent is None or indent < current_indent:
+            context.insert(0, line)
+            current_indent = indent
+        if indent == 0:
+            break
+    return context
 
 
 def split_content(content: List[str], max_count: int, min_count: int, use_chars: bool) -> List[List[str]]:
@@ -27,31 +49,20 @@ def split_content(content: List[str], max_count: int, min_count: int, use_chars:
     sections = []
     current_section = []
     current_count = 0
-    context_lines = []
 
-    indent_size, _, _ = aligno.detect_indent(content)
-
-    for line in content:
+    for i, line in enumerate(content):
         line_count = len(line) if use_chars else 1
-        if current_count + line_count > max_count and (current_count >= min_count or not current_section):
-            sections.append(current_section)
-            current_section = [*context_lines]
-            current_count = 0
+        if current_count + line_count > max_count and current_count >= min_count:
+            break_point = find_break_point(current_section)
+            sections.append(get_context_lines(content, i - len(current_section)) + current_section[:break_point + 1])
+            current_section = current_section[break_point + 1:]
+            current_count = sum(len(l) if use_chars else 1 for l in current_section)
 
         current_section.append(line)
         current_count += line_count
 
-        # Calculate the indentation level of the current line
-        indent = len(line) - len(line.lstrip()) // indent_length
-
-        # Trim the context_lines to match the current indentation level
-        context_lines = context_lines[:indent - 1]
-
-        # Pad the context_lines with empty strings if needed and add the current line
-        context_lines += [""] * (indent - len(context_lines)) + [line]
-
     if current_section:
-        sections.append(current_section)
+        sections.append(get_context_lines(content, len(content) - len(current_section)) + current_section)
 
     return sections
 
@@ -60,6 +71,8 @@ def split_content(content: List[str], max_count: int, min_count: int, use_chars:
 @arg("-n", "--min", dest="min_count", type=int, help="minimum character/line count (default: 50% of max)")
 @arg("-c", "--chars", help="use character count instead of line count")
 @arg("-f", "--force", help="overwrite existing files")
+@arg("-e", "--equal", help="recalculate max for equal-sized chunks")
+@arg("-n", "--number", type=int, help="specify the number of output files")
 def indent_split(
     out_path: str = 'split.txt',
     max_count: int = None,
@@ -68,19 +81,32 @@ def indent_split(
     ostream: TextIO = sys.stdout,
     chars: bool = False,
     force: bool = False,
+    equal: bool = False,
+    number: int = None,
 ) -> None:
     """
     Split a tree-indented file such as YAML or Python into sections based on character or line count.
     """
     get, _put = main.io(istream, ostream)
 
-    if max_count is None:
+    content = get(chunks=True)
+    total_count = sum(len(line) if chars else 1 for line in content)
+
+    if number:
+        max_count = total_count // number
+    elif equal:
+        max_count = total_count // (total_count // (max_count or (50000 if chars else 800)))
+    elif max_count is None:
         max_count = 50000 if chars else 800
+
     if min_count is None:
         min_count = max_count // 2
 
-    content = get(chunks=True)
     sections = split_content(content, max_count, min_count, chars)
+
+    if any(sum(len(line) if chars else 1 for line in section) < min_count for section in sections[:-1]):
+        logger.error("Failed to meet minimum count requirement for all sections.")
+        sys.exit(1)
 
     out_dir = Path(out_path).parent
     out_dir.mkdir(parents=True, exist_ok=True)
