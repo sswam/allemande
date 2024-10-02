@@ -1,4 +1,34 @@
-# TODO put these in separate scripts?
+# Eval this script: eval "$(<$(W ally))"
+# It's hacky but magickal!
+
+# strict mode
+local old_opts=$(set +o)
+set -e -u -o pipefail
+trap 'eval "$old_opts"' RETURN
+
+shopt -s expand_aliases
+
+. opts
+eval "$(opts_long.py "$0")"
+. each
+
+quote_command() {
+	local cmd=$(printf "%q " "$@")
+	cmd=${cmd% }
+	printf "%s\n" "$cmd"
+}
+
+alias qc=quote_command
+alias X=eval
+
+ret() {
+	qc "$@"
+	echo 'return $?'
+}
+
+tryit() {
+	X $(ret ls /)
+}
 
 backup() {
 	local file=$1

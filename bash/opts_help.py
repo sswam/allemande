@@ -88,6 +88,12 @@ def opts_help(script, istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout)
             if re.match(r'\s*\.\s+opts', line):
                 break
 
+            # Stop before an eval line,
+            # such as: eval "$(<$(W ally))"
+            # which calls: . opts
+            if re.match(r'\s*eval\s', line):
+                break
+
             # Skip other ". " lines
             if re.match(r'\s*\.\s', line):
                 continue

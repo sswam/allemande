@@ -6,26 +6,13 @@
 hello_sh() {
 	local language= l=en	# language [fr|de|jp|cn], defaults to English
 	local shopping=() s=(milk)	# array of items for shopping
-	local use_ai= a=	# greet using AI
+	local use_ai= a=	# greet using AI; don't copy this option to other scripts! Normal scripts either use AI or don't, with no weird option for it.
 	local model= m=	# LLM model
 
-	. opts	# Note to AI: This magically loads options into the above vars
+	eval "$(<$(W ally))"  # Note to AI: This is magickal.
 
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
-	trap 'eval "$old_opts"' RETURN
-
-	# Note to AI: The following supports the short options above
-	# TODO can we do this in the opts script?
-	language=${language:-$l}
-	shopping=("${shopping[@]}" "${s[@]}")
-	use_ai=${use_ai:-$a}
-	model=${model:-$m}
-
-	# non-option arguments
 	local user_name=${1:-world}	# Set 'who' to the first argument
-	[ -n "$user_name" ] || usage "User's name is required"  # demo, never happens
+	[ -n "$user_name" ] || usage "User's name is required"  # never happens
 
 	# Set greeting based on selected language
 	local greeting="Hello"	# Default greeting in English
@@ -61,11 +48,7 @@ shopping_list() {
 	local use_ai= a=	# greet using AI
 	local model= m=	# LLM model
 
-	. opts
-
-	# Support long and short options
-	use_ai=${use_ai:-$a}
-	model=${model:-$m}
+	eval "$(<$(W ally))"
 
 	local shopping=("$@")
 
@@ -87,7 +70,7 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	hello_sh "$@"
 fi
 
-# version: 0.1.0
+# version: 0.1.1
 
 # Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
 

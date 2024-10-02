@@ -25,10 +25,13 @@ def process_line(line: str) -> str:
     line = re.sub(r'^local\s+', '', line)
 
     # Extract variable name, short option, and default value
-    match = re.match(r'(\w+)=\s+(\w+)=(\S*)\s+#\s*(.*)', line)
+    match = re.match(r'(\w+)=(\S*)\s+(\w+)=(\S*)\s+#\s*(.*)', line)
     if match:
-        long_opt, short_opt, default_value, description = match.groups()
-        return f'{long_opt}=${{{long_opt}:-${short_opt}}}'
+        long_opt, _default_1, short_opt, _default_2, description = match.groups()
+        if _default_2.startswith("("):
+            return f'{long_opt}=(${{{long_opt}[@]}} ${{{short_opt}[@]}})'
+        else:
+            return f'{long_opt}=${{{long_opt}:-${short_opt}}}'
 
     return None
 
