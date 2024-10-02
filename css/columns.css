@@ -1,0 +1,49 @@
+/* columns.css */
+
+/* Two-column layout */
+.two-columns {
+	column-count: 2;
+	column-gap: 20px;
+}
+
+/* Three-column layout */
+.three-columns {
+	column-count: 3;
+	column-gap: 20px;
+}
+
+/* Four-column layout */
+.four-columns {
+	column-count: 4;
+	column-gap: 20px;
+}
+
+/* Ensure content doesn't break across columns */
+.two-columns > *,
+.three-columns > *,
+.four-columns > * {
+	break-inside: avoid-column;
+	margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+	.four-columns {
+		column-count: 3;
+	}
+}
+
+@media (max-width: 900px) {
+	.three-columns,
+	.four-columns {
+		column-count: 2;
+	}
+}
+
+@media (max-width: 600px) {
+	.two-columns,
+	.three-columns,
+	.four-columns {
+		column-count: 1;
+	}
+}
