@@ -78,3 +78,7 @@
 
 
 - visual / textual planner tool
+
+
+- kind behaviour
+	- For our API, if the client drops the connection before we send the response, we don't charge them anything. That should be rare and feasible, barring abuse or client bugs which we can detect.
