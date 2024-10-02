@@ -54,10 +54,10 @@ def get_web_content(url):
     action="store_true",
 )
 @arg("-n", "--stdin-name", help="Use this name for stdin")
-@arg("--missing-ok", help="Skip missing files without error", action="store_true")
+@arg("-f", "--missing-ok", help="Skip missing files without error", action="store_true")
 def cat_named(
     sources,
-    header_pre="## File: ",
+    header_pre="#File: ",
     header_post="\n\n",
     footer="\n\n",
     number=None,
@@ -111,7 +111,7 @@ def cat_named(
             result.append(f"{header}{header_post}")
             result.append(content)
             result.append(footer)
-        except FileNotFoundError:
+        except (FileNotFoundError, IsADirectoryError):
             if missing_ok:
                 header = get_header(display_name)
 
