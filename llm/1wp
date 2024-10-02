@@ -1,5 +1,5 @@
 #!/bin/bash -eu
-m=$ALLEMANDE_LLM_DEFAULT
+m=
 . opts
-process -m=$m "$@
+process -m="$m" "$@
 Please reply with literally just a single word, or absolutely as few words as possible."
