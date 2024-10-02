@@ -556,6 +556,8 @@ async def aprocess(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostre
 	input_text = read_utf_replace(istream)
 	input_text = input_text.rstrip()
 
+	if empty_ok:
+		empty_to_empty = False
 	if not input_text and empty_to_empty:
 		return ""
 	if not input_text and not empty_ok:
