@@ -46,11 +46,11 @@ for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
 done
 
-ALLEMANDE_PATH="adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time bash/tests python/tests perl/tests c"
+ALLEMANDE_PATH="adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time bash/tests python/tests perl/tests c markdown x11"
 
 # TODO only use canon and alias
 # for dir in canon alias; do
-for dir in canon alias adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time c; do
+for dir in canon alias adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time c markdown x11; do
 	PATH=$PATH:$ALLEMANDE_HOME/$dir
 done
 
