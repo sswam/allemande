@@ -15,8 +15,8 @@ tests() {
 	set -e -u -o pipefail
 
 	local program=$1
-	local prompt=$2
-	shift 2
+	local prompt=${2:-}
+	shift 2 || shift 1 || true
 	local refs=("$@")
 
 	if [ ! -e "$program" ]; then

@@ -21,7 +21,7 @@ audio_control() {
 
 	local device=${1:-}
 	local cmd=${2:-$default}
-	shift 2 || true
+	shift 2 || shift 1 || true
 
 	case "$device" in
 	mic)
