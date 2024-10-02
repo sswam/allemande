@@ -16,9 +16,9 @@ def test_analyze_sentiment():
     assert subject.analyze_sentiment("I'm so-so") == 'Neutral'
 
 @pytest.mark.parametrize("feeling, expected_sentiment", [
-    ("I'm feeling great!", "I hope you have a great day!"),
-    ("I'm feeling terrible.", "I hope you feel better soon."),
-    ("I'm so-so baloney sandwich.", "Life has its ups and downs, hope yours swings up!"),
+    ("I'm feeling great!", "I'm glad to hear that! I hope your day continues to be great!"),
+    ("I'm feeling terrible.", "I'm sorry to hear that. Remember, things can always get better."),
+    ("I'm so-so baloney sandwich.", "I see. Life has its ups and downs, I hope things improve for you soon!"),
 ])
 def test_reply_sentiment(feeling, expected_sentiment):
     assert subject.reply_sentiment(feeling) == expected_sentiment
@@ -30,9 +30,9 @@ def test_reply_ai(mock_query):
     assert "I'm glad you're feeling good, John!" in response
 
 @pytest.mark.parametrize("feeling, ai, expected_response", [
-    ("I'm happy", False, "I hope you have a great day!"),
-    ("I'm sad", False, "I hope you feel better soon."),
-    ("I'm so-so", False, "Life has its ups and downs, hope yours swings up!"),
+    ("I'm happy", False, "I'm glad to hear that! I hope your day continues to be great!"),
+    ("I'm sad", False, "I'm sorry to hear that. Remember, things can always get better."),
+    ("I'm so-so", False, "I see. Life has its ups and downs, I hope things improve for you soon!"),
     ("I'm feeling great", True, "I'm glad you're feeling great!"),
 ])
 def test_hello_py(feeling, ai, expected_response):
@@ -43,8 +43,8 @@ def test_hello_py(feeling, ai, expected_response):
         subject_main(istream=input_stream, ostream=output_stream, name="Test", ai=ai)
 
     output = output_stream.getvalue()
-    assert "Hello, Test" in output
-    assert "How are you feeling?" in output
+    assert "Hello, Test!" in output
+    assert "How are you feeling today?" in output
     assert expected_response in output
 
 @pytest.mark.parametrize("fortune_word", ["", "lucky", "unlucky", "fortunate", "unfortunate"])
@@ -55,19 +55,19 @@ def test_hello_py_fortune_words(fortune_word):
     subject_main(istream=input_stream, ostream=output_stream, name="Test")
 
     output = output_stream.getvalue()
-    assert "Hello, Test" in output
-    assert "How are you feeling?" in output
+    assert "Hello, Test!" in output
+    assert "How are you feeling today?" in output
 
     print(output)
 
-    # can't test fortune, and can't see to mock it either
+    # can't test fortune, and can't seem to mock it either
     assert "I hope you have a great day!" not in output
     assert "I hope you feel better soon." not in output
     assert "Life has its ups and downs, hope yours swings up!" not in output
 
 
 """
-Important Notes for AI:
+Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
 
 We are using subject and subject_main to refer to the module, to make the test
 code more generic and so we won't need to change much if we rename the module.

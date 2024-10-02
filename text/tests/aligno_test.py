@@ -86,6 +86,15 @@ def test_main_default(input_text):
     subject_main(istream=input_stream, ostream=output_stream, apply=True)
     assert output_stream.getvalue().strip() == expected
 
+def test_detect_indent_list():
+    input_lines = [
+        "def hello():",
+        "    print('Hello, world!')",
+        "    if True:",
+        "        print('Nested block')"
+    ]
+    assert subject.detect_indent(input_lines) == (4, "s", 0)
+
 # Test edge cases
 def test_empty_input():
     assert subject.detect_indent("") == (0, "", 0)
