@@ -5,17 +5,18 @@
 create() {
 	local m=	# model
 	local s=1	# refer to hello.<ext> for style
-	local E=0	# do not edit
+	local e=1	# edit
 
 	. opts
 
 	# strict mode
 	local old_opts=$(set +o)
 	set -e -u -o pipefail
+	trap 'eval "$old_opts"' RETURN
 
 	local file=$1
 	local prompt=${2:-}
-	shift 2 || true
+	shift 2 || shift 1 || true
 	local refs=("$@")
 
 	# Check if file already exists
@@ -83,12 +84,9 @@ create() {
 		chmod +x "$file"
 	fi
 
-	if [ "$E" = 0 ]; then
+	if (( "$e" )); then
 		$EDITOR "$file"
 	fi
-
-	# restore caller options
-	eval "$old_opts"
 }
 
 if [ "$BASH_SOURCE" = "$0" ]; then
