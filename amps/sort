@@ -1,21 +1,16 @@
 sort	sorted	unsorted
 
-=		unsorted
-=		sorted
+=		...unsorted
+=		...sorted
 
-=	a	unsorted
-=	a	sorted
+=	...unsorted	a
+=	...sorted	a
 
-=	a b	unsorted
+=	...unsorted	a b
 <	a	b
-=	a b	sorted
+==	...sorted	a b
 
-=	a b	unsorted
-<	b	a
-=	b a	sorted
-
-=	unsorted	a b c ...rest
-=	unsorted	...u1 ...u2
+=	...unsorted	...u1 ...u2
 sort	s1	u1
 sort	s2	u2
 merge	sorted	s1 s2
