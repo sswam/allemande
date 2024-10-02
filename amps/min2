@@ -1,0 +1,7 @@
+min2	m2	a	b
+
+<=	a	b
+=	m2	a
+
+<	b	a
+=	m2	b

@@ -1,0 +1,3 @@
+rest	r	list
+
+=	list	f ...rest

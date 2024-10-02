@@ -1,0 +1,36 @@
+merge	output	lists
+
+empty	output
+empty lists
+
+=	l	...lists
+==	l	output
+
+=	...a ...b	...lists
+!empty	a
+!empty	b
+merge	m1	...a
+merge	m2	...b
+merge	output	...m1	...m2
+
+=	a b	...lists
+merge2	output	a	b
+
+
+merge2	output	two...
+=	a b	two
+
+empty	a
+==	b	output
+
+merge2b	output	a	b
+
+
+merge2b	output	two...
+=	a b	two
+==	a	fa ...resta
+==	b	fb ...restb
+
+<	fa	fb
+==	output	fa ...merged
+merge2	merged	resta	fb ...restb

@@ -1,0 +1,18 @@
+merge	list	lists
+
+empty	list
+all	empty	lists
+
+=	lists	l ...r
+==	l	a ...as
+first<a	better	a
+all	!better	r
+==	list	a ...rest
+merge	rest	as ...r
+
+
+first<a	rel	a
+rel	list
+
+==	list	f ...
+<	f	a

@@ -1,0 +1,8 @@
+length	n	l
+
+=	l	
+=	n	0
+
+=	l	first ...rest
+++	n	m
+length	m	rest

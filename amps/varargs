@@ -1,0 +1,11 @@
+varadd	sum	list...
+
+empty	list
+=	sum	0
+
+=	list	...l1	...l2
+!empty	l1
+!empty	l2
+varadd	sum1	l1...
+varadd	sum2	l2...
++	sum	sum1	sum2

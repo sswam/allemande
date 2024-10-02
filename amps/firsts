@@ -1,0 +1,9 @@
+firsts	f	lists
+
+=		lists
+=		f
+
+=	lists	l ...rest
+=	l	a ...
+=	f	a ...more
+firsts	more	rest

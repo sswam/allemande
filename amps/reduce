@@ -1,0 +1,9 @@
+reduce	assoc3	result	list	init
+
+=		list
+=	result	init
+
+=	list	...part1 ...part2
+reduce	assoc3	r1	part1
+reduce	assoc3	r2	part2
+assoc3	result	r1	r2

@@ -1,0 +1,18 @@
+merge	output	lists
+
+empty	output
+all	empty	lists
+
+=	lists	best ...rest
+==	best	first ...best_tail
+make_better	better	first
+all	!better	rest
+==	output	first ...merged_tail
+merge	merged_tail	best_tail ...rest
+
+
+make_better	best
+better	list
+
+==	list	first ...
+<	first	best

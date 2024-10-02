@@ -1,0 +1,11 @@
+length	n	l
+
+=		l	
+=	n	0
+
+=	l	...part1 ...part2
+++	n	a b
+length	a	part1
+length	b	part2
+!=		part1
+!=		part2

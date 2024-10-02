@@ -1,0 +1,18 @@
+merge	output_list	lists_to_merge
+
+empty	output_list
+all	empty	lists_to_merge
+
+=	lists_to_merge	best_list ...remaining_lists
+==	best_list	first_element ...rest_of_best
+make_better	better	first_element
+all	!better	remaining_lists
+==	output_list	first_element ...merged_rest
+merge	merged_rest	rest_of_best ...remaining_lists
+
+
+make_better	best_element
+better	list
+
+==	list	first ...
+<	first	best_element

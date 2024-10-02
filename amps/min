@@ -1,0 +1,9 @@
+min	m	set
+=	set	a ...rest
+
+=	set	a
+=	m	a
+
+=	set	a b ...rest
+min2	m2	a	b
+min	m	m2 ...rest

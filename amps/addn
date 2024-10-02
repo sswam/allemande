@@ -1,0 +1,4 @@
+addn	adder	n
+
+adder	result	arg
++	result	arg n
