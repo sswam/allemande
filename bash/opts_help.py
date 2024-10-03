@@ -27,8 +27,8 @@ def process_line(line: str, script_name: str) -> str:
     # Remove 'local ' from start of line
     line = re.sub(r'^local\s+', '', line)
 
-    # Remove '# ' from the line
-    line = line.replace('# ', '')
+    # Remove '#' from the line
+    line = re.sub(r'^#\s*', '', line)
 
     # Replace literal '$0' in lines with the value of script_name
     line = line.replace('$0 ', f'{script_name} ')
@@ -40,7 +40,7 @@ def process_line(line: str, script_name: str) -> str:
     line = re.sub(r'\b(\w\w+)=', r'--\1=', line)
 
     # Long and short options in separate columns
-    line = re.sub(r'( |^)(-\w)', r'\t\2', line)
+    line = re.sub(r' (-\w)', r'\t\1', line)
     if not re.search(r'\t.*?\t', line):
         line = re.sub(r'\t', r'\t\t', line)
 
@@ -96,6 +96,10 @@ def opts_help(script, istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout)
 
             # Skip other ". " lines
             if re.match(r'\s*\.\s', line):
+                continue
+
+            # Skip shellcheck disable lines
+            if re.match(r'\s*# shellcheck disable=', line):
                 continue
 
             # Handle blank lines
