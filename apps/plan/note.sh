@@ -19,6 +19,8 @@
 # - note format like: ### some note
 # - blank line then details if given
 
+note() {
+
 t=note	# type of note (file stem or path)
 l=	# choose from a list of note files
 f=	# load note from file
@@ -33,6 +35,7 @@ p=	# initial text / placeholder
 L=	# initial text from last line of file
 H=	# don't add hour markers
 timeout=  # time limit
+warn_timeout=10	# warn when timeout is running low
 opt_1=	# only read first line, no details
 
 # shortcuts for common note types
@@ -46,8 +49,6 @@ C=	# crazy
 Z=	# naughty
 W=	# waywo
 
-D=${NOTE:-$HOME/note}	# notes dir
-
 # bash aliases:
 
 # alias idea='note -I'
@@ -58,15 +59,26 @@ D=${NOTE:-$HOME/note}	# notes dir
 # alias crazy='note -C'
 # alias naughty='note -Z'
 
-. opts
+eval "$(ally)"
+
 . confirm
+
+D=${NOTE:-$HOME/note}	# notes dir
 
 note=$*
 details=
 
+timeout_opt=
 if [ -n "$timeout" ]; then
-	timeout="-t $timeout"
+	timeout_opt="-t $timeout"
 fi
+
+count() {
+	countdown_wrap "$timeout" "$warn_timeout" "$@"
+	ret=$?
+	echo returning "$ret"
+	return "$ret"
+}
 
 # shortcuts for common note types
 # maybe these should be configurable
@@ -80,7 +92,7 @@ elif [ -n "$X" ]; then
 	t=bug
 elif [ -n "$P" ]; then
 	t=pdev
-elif [ -n "$B" ]; then	# not sure if I will use this, need to think about a good boomark system
+elif [ -n "$B" ]; then	# not sure if I will use this, need to think about a good bookmark system
 	t=bookmark
 elif [ -n "$C" ]; then
 	t=crazy
@@ -108,7 +120,9 @@ select_from_list() {
 	echo
 
 	# prompt for a note file
-	read -e -p "? " num
+	num=
+	count read -e -p "? " $timeout_opt num
+	echo "num: $num"
 	if [ -n "$num" ]; then
 		t=${files[$num]}
 		t=${t%.md}
@@ -165,7 +179,6 @@ find_or_create_note_files() {
 		fi
 	done
 
-
 	# confirm to create new markdown note file if not found
 	if [ ! -e "$note_file" ]; then
 		create() {
@@ -217,7 +230,6 @@ if [ -n "$f" ]; then
 	details=$(<"$f")
 fi
 
-
 # If details from a file, note defaults to the filename stem
 if [ -z "$note" ] && [ -n "$details" ]; then
 	note=$(basename "$f")
@@ -231,19 +243,19 @@ elif [ -z "$A" ] && [ -z "$note" ] && [ -z "$details" ] && [ "$e" != 1 ]; then
 	fi
 
 	# read first summary line
-	read -e -p ": " -i "$p" $timeout note
+	count read -e -p ": " -i "$p" $timeout_opt note
 
 	# if blank, offer to use a different note file
 	if [ -z "$note" ]; then
 		select_from_list
 		find_or_create_note_files
-		read -e -p ": " -i "$p" $timeout note
+		count read -e -p ": " -i "$p" $timeout_opt note
 	fi
 
 	# read details unless option -1 was used
 	if [ "$opt_1" != 1 ]; then
 		if [ -t 0 -a -t 2 ]; then
-			while read -e -p ". " $timeout line; do
+			while count read -e -p ". " $timeout_opt line; do
 				if [ "$line" = "." ]; then
 					break
 				fi
@@ -308,6 +320,11 @@ if [ "$e" = 1 ]; then
 	$EDITOR "$note_file"
 fi
 
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	note "$@"
+fi
 
 # Idea, use Jewish idea that day starts at sunset, might work better than midnight
 # as I often work late. Dinnertime is a good break point.
