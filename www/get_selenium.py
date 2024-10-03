@@ -37,24 +37,30 @@ def scroll_to_bottom(wd, time_limit=30, scroll_limit=100000, scroll_wait=1, retr
 	start_time = time.time()
 	last_height = wd.execute_script("return document.body.scrollHeight")
 	scrolled = 0
+	logger.info(f"Starting scroll, initial height: {last_height}")
 
 	while True:
 		# Scroll down
-		for _ in range(retry_each_scroll):
+		for attempt in range(retry_each_scroll):
+			logger.debug(f"Scroll attempt {attempt + 1}")
 			ActionChains(wd).key_down(Keys.PAGE_DOWN).perform()
 			time.sleep(scroll_wait)
 			if scroll_limit and scrolled >= scroll_limit:
+				logger.info(f"Reached scroll limit: {scroll_limit}")
 				return
 			# get scroll offset from page
 			scrolled = wd.execute_script("return window.pageYOffset;")
+			logger.debug(f"Current scroll position: {scrolled}")
 
 		new_height = wd.execute_script("return document.body.scrollHeight")
+		logger.debug(f"New page height: {new_height}")
 		if new_height == last_height:
 			logger.warning("Reached bottom of page, height: %d", new_height)
 			break
 
 		last_height = new_height
 		elapsed_time = time.time() - start_time
+		logger.debug(f"Elapsed time: {elapsed_time:.2f} seconds")
 		if elapsed_time > time_limit:
 			logger.warning("Reached time limit, elapsed time: %d", elapsed_time)
 			break
@@ -63,32 +69,41 @@ def get_selenium(wd: webdriver.Chrome, url: str, sleep: int = 0, out: TextIO = s
 				time_limit=30, scroll_limit=None, scroll_wait=1, retry_each_scroll=3,
 				exe=None, script_wait=1, retry_script=3) -> None:
 	"""Fetch a web page using Selenium and write the output to the specified stream."""
-	logger.info("Loading page")
+	logger.info(f"Loading page: {url}")
 	wd.get(url)
-	logger.info("Page loaded")
+	logger.info("Page loaded successfully")
 
 	if sleep:
-		logger.info(f"Sleeping for {sleep} seconds")
+		logger.debug(f"Sleeping for {sleep} seconds")
 		time.sleep(sleep)
-		logger.info("Sleep completed")
+		logger.debug("Sleep completed")
 
 	if exe:
-		for _ in range(retry_script):
-			if script_wait:
-				time.sleep(script_wait)
+		logger.info(f"Executing script: {exe}")
+		for attempt in range(retry_script):
+			logger.debug(f"Script execution attempt {attempt + 1}")
 			status = wd.execute_script(exe)
+			if script_wait:
+				logger.debug(f"Waiting for {script_wait} seconds after script execution")
+				time.sleep(script_wait)
 			if status:
 				logger.warning("Script returned status: %s", status)
 				continue
+			logger.info("Script executed successfully")
 			break
 		else:
 			logger.warning("Script failed after %d retries", retry_script)
 
 	if scroll_limit:
+		logger.info(f"Starting scroll to bottom with limit: {scroll_limit}")
 		scroll_to_bottom(wd, time_limit, scroll_limit, scroll_wait, retry_each_scroll)
+		logger.info("Scroll to bottom completed")
 
+	logger.info("Retrieving page HTML")
 	html = wd.execute_script("return document.getElementsByTagName('html')[0].innerHTML")
+	logger.debug(f"Writing HTML to output (length: {len(html)})")
 	print(html, file=out)
+	logger.info("HTML written to output")
 
 @arg('url', help='URL of page to load')
 @arg('--sleep', '-s', type=int, default=0, help='seconds to sleep before dumping DOM as HTML')
