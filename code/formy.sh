@@ -2,17 +2,35 @@
 # [file ...]
 # format source code files
 
+. each
+
 formy() {
+	local verbose= v=0	# verbose mode, output results when all tests pass
+
 	eval "$(ally)"
 
-	[ "$#" = 1 ] || each formy : "$@"
-
-	local prog="$1"
-	local ext=${prog##*.}
-	if [[ $prog != *.* ]]; then
-		ext="sh"
+	if (( $# != 1 )); then
+		each formy : "$@"
+		return $?
 	fi
-	"format_$ext" "$prog"  # beware of the hdd extension!
+
+	(
+		local prog="$(finder "$1")"
+		cd "$(dirname "$prog")"
+		local ext=${prog##*.}
+		if [[ $prog != *.* ]]; then
+			ext="sh"
+		fi
+		"format_$ext" "$prog"  # beware of the hdd extension!
+	)
+}
+
+run() {
+	if (( verbose )); then
+		v "$@"
+	else
+		v quiet "$@" 2>/dev/null
+	fi
 }
 
 format_sh() {
@@ -47,6 +65,6 @@ format_ts() {
 	format_js "$@"
 }
 
-if [ "$BASH_SOURCE" == "$0" ]; then
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	formy "$@"
 fi
