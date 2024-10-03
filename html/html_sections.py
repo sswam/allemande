@@ -4,7 +4,7 @@
 This module adds <section> tags around headings and their content in HTML files.
 
 Usage:
-    python3 html_sections.py < input.html > output.html
+  python3 html_sections.py < input.html > output.html
 
 The script reads HTML from stdin and writes the processed HTML to stdout.
 """
@@ -19,61 +19,76 @@ from bs4 import BeautifulSoup, Tag
 
 from ally import main
 
-__version__ = "0.1.8"
+__version__ = "0.1.14"
 
 logger = main.get_logger()
 
 def html_sections(
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
+  istream: TextIO = sys.stdin,
+  ostream: TextIO = sys.stdout,
 ) -> None:
-    """
-    Add <section> tags around headings and their content in HTML files.
+  """
+  Add <section> tags around headings and their content in HTML files.
 
-    Args:
-        istream (TextIO): Input stream to read HTML content from.
-        ostream (TextIO): Output stream to write processed HTML content to.
-    """
-    # Set up input and output streams
-    get, put = main.io(istream, ostream)
+  Args:
+    istream (TextIO): Input stream to read HTML content from.
+    ostream (TextIO): Output stream to write processed HTML content to.
+  """
+  # Set up input and output streams
+  get, put = main.io(istream, ostream)
 
-    # Read all content from input stream
-    content = get(all=True)
+  # Read all content from input stream
+  content = get(all=True)
 
-    # Parse HTML content
-    soup = BeautifulSoup(content, 'html.parser')
-    body = soup.body if soup.body else soup
+  # Parse HTML content
+  soup = BeautifulSoup(content, 'html.parser')
+  body = soup.body if soup.body else soup
 
-    # Find all heading tags (h1 to h6)
-    headings = body.find_all(re.compile(r'^h[1-6]$'))
-    stack = []
+  # Get a copy of the contents of body
+  contents = body.contents[:]
+  new_contents = []
+  index = 0
+  stack = []
 
-    # Process each heading
-    for heading in headings:
-        level = int(heading.name[1])
+  while index < len(contents):
+    element = contents[index]
 
-        # Remove sections from stack if they're at the same or higher level
-        while stack and stack[-1]['level'] >= level:
-            stack.pop()
+    if isinstance(element, Tag) and re.match(r'^h[1-6]$', element.name):
+      level = int(element.name[1])
 
-        # Create a new section tag and wrap the heading
-        section = soup.new_tag('section', attrs={'class': f'h{level}'})
-        heading.wrap(section)
+      # Close sections of higher or same level
+      while stack and stack[-1]['level'] >= level:
+        stack.pop()
 
-        # Add the new section to the stack
-        stack.append({'level': level, 'section': section})
+      # Create new section
+      new_section = soup.new_tag('section', attrs={'class': f'h{level}'})
 
-    # Process content after each heading
-    for section_info in stack:
-        section = section_info['section']
-        next_element = section.next_sibling
-        while next_element and not (isinstance(next_element, Tag) and re.match(r'^h[1-6]$', next_element.name)):
-            following_element = next_element.next_sibling
-            section.append(next_element)
-            next_element = following_element
+      # Move heading into new_section
+      new_section.append(element)
 
-    # Write the processed HTML to the output stream
-    put(str(soup))
+      # Append new_section
+      if stack:
+        stack[-1]['section'].append(new_section)
+      else:
+        new_contents.append(new_section)
+
+      # Push to stack
+      stack.append({'level': level, 'section': new_section})
+
+    else:
+      # Append to current section or to new_contents
+      if stack:
+        stack[-1]['section'].append(element)
+      else:
+        new_contents.append(element)
+
+    index += 1
+
+  # After processing, update body.contents
+  body.contents = new_contents
+
+  # Write the processed HTML to the output stream
+  put(str(soup))
 
 if __name__ == "__main__":
-    main.run(html_sections)
+  main.run(html_sections)
