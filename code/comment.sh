@@ -3,17 +3,11 @@
 # [file] ["extra prompt"]
 # Add comments to code, either streaming or modifying a file in-place
 
-. ally
-
 comment() {
 	local m=    # LLM model
 	local E=0   # do not edit
 
-	. opts
-
-	local old_opts=$(set +o)
-	set -euo pipefail
-	trap 'eval "$old_opts"' RETURN
+	eval "$(<$(W ally))"
 
 	local file=${1:--}
 	shift || true
