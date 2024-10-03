@@ -27,22 +27,23 @@ def process_line(line: str, script_name: str) -> str:
     # Remove 'local ' from start of line
     line = re.sub(r'^local\s+', '', line)
 
-    # Remove '#' from the line
-    line = re.sub(r'^#\s*', '', line)
-
     # Replace literal '$0' in lines with the value of script_name
     line = line.replace('$0 ', f'{script_name} ')
 
-    # Add dashes for -f or --foo and , for arrays
-    line = re.sub(r'\b(\w)=\((.*?)\)', lambda m: f"-{m.group(1)},{process_array(m.group(2))}", line)
-    line = re.sub(r'\b(\w)=', r'-\1=', line)
-    line = re.sub(r'\b(\w\w+)=\((.*?)\)', lambda m: f"--{m.group(1)},{process_array(m.group(2))}", line)
-    line = re.sub(r'\b(\w\w+)=', r'--\1=', line)
+    if re.match(r'#\s*', line):
+        # Remove '#' from the line
+        line = re.sub(r'^#\s*', '', line)
+    else:
+        # Add dashes for -f or --foo and , for arrays
+        line = re.sub(r'\b(\w)=\((.*?)\)', lambda m: f"-{m.group(1)},{process_array(m.group(2))}", line)
+        line = re.sub(r'\b(\w)=', r'-\1=', line)
+        line = re.sub(r'\b(\w\w+)=\((.*?)\)', lambda m: f"--{m.group(1)},{process_array(m.group(2))}", line)
+        line = re.sub(r'\b(\w\w+)=', r'--\1=', line)
 
-    # Long and short options in separate columns
-    line = re.sub(r' (-\w)', r'\t\1', line)
-    if not re.search(r'\t.*?\t', line):
-        line = re.sub(r'\t', r'\t\t', line)
+        # Long and short options in separate columns
+        line = re.sub(r' (-\w)', r'\t\1', line)
+        if not re.search(r'\t.*?\t', line):
+            line = re.sub(r'\t', r'\t\t', line)
 
     return line
 
@@ -89,7 +90,7 @@ def opts_help(script, istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout)
                 break
 
             # Stop before an eval line,
-            # such as: eval "$(<$(W ally))"
+            # such as: eval "$(ally)"
             # which calls: . opts
             if re.match(r'\s*eval\s', line):
                 break
