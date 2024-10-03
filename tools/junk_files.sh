@@ -21,7 +21,8 @@ junk_files() {
             -name '*~' -o \
             -name '*.results.txt' -o \
             -name '*.tmp.*' -o \
-            -empty \
+            -empty -o \
+            -size 1c \
         \) -type f |
         case "$sort_order" in
             name) sort ;;
