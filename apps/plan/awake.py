@@ -107,7 +107,7 @@ class ActivityLog:
             i -= 1
         return None, None
 
-    def total_active_since(self, since: datetime|None) -> timedelta:
+    def total_active_since(self, since: datetime | None) -> timedelta:
         """Calculate the total active time since the given timestamp."""
         # looking for spans of active ... inactive ... active
         # or inactive ... active at the start
@@ -136,14 +136,20 @@ class ActivityLog:
 def send_notification(message: str):
     """Send a notification using notify-send."""
     try:
-        subprocess.run([
-            "notify-send",
-            "-u", "critical",
-            "-t", "10000",
-            "-i", "/usr/share/icons/gnome/48x48/status/appointment-soon.png",
-            "Awake Warning",
-            message
-        ], check=True)
+        subprocess.run(
+            [
+                "notify-send",
+                "-u",
+                "critical",
+                "-t",
+                "10000",
+                "-i",
+                "/usr/share/icons/gnome/48x48/status/appointment-soon.png",
+                "Awake Warning",
+                message,
+            ],
+            check=True,
+        )
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to send notification: {e}")
 
@@ -155,7 +161,11 @@ def send_notification(message: str):
 @arg("--away-threshold", help="Away threshold in seconds", type=int)
 @arg("--check-interval", help="Check interval in seconds", type=int)
 @arg("--warn-interval", help="Awake warning interval in seconds", type=int)
-@arg("--test", help="Run in test mode, with a very compressed time scale", action="store_true")
+@arg(
+    "--test",
+    help="Run in test mode, with a very compressed time scale",
+    action="store_true",
+)
 def awake(
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
@@ -204,7 +214,9 @@ def awake(
         if not first:
             delay = check_interval.total_seconds()
             # sync with the clock
-            seconds_of_day = datetime.now().second + datetime.now().microsecond / 1_000_000
+            seconds_of_day = (
+                datetime.now().second + datetime.now().microsecond / 1_000_000
+            )
             delay -= seconds_of_day % delay
             if delay <= delay / 2:
                 delay += check_interval.total_seconds()
