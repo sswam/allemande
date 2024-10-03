@@ -1,0 +1,3 @@
+cat sh/hello.sh | nl | process "Please explain this code in a literate programming style in markdown, making sure to cover all the code. Write in a logical order for the explanation, not from top to bottom. E.g. in this case I would cover the basic echo 'hello world' concept first. You can show additional code for examples. When you quote a chunk of code from the program, include the start and end line numbers in some way (outside the code block) so we could reassemble the original program from the document. Or we could just number the lines of code in the quoted code, that might be better." | tee hello_lit.md
+
+# TODO generalise
