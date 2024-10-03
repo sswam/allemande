@@ -7,7 +7,7 @@ comment() {
 	local m=    # LLM model
 	local E=0   # do not edit
 
-	eval "$(<$(W ally))"
+	eval "$(ally)"
 
 	local file=${1:--}
 	shift || true

@@ -9,7 +9,7 @@ hello_sh() {
 	local use_ai= a=	# greet using AI; don't copy this option to other scripts! Normal scripts either use AI or don't, with no weird option for it.
 	local model= m=	# LLM model
 
-	eval "$(<$(W ally))"  # Note to AI: This is magickal.
+	eval "$(ally)"	# Note to AI: This is magickal.
 
 	local user_name=${1:-world}	# Set 'who' to the first argument
 	[ -n "$user_name" ] || usage "User's name is required"  # never happens
@@ -48,7 +48,7 @@ shopping_list() {
 	local use_ai= a=	# greet using AI
 	local model= m=	# LLM model
 
-	eval "$(<$(W ally))"
+	eval "$(ally)"
 
 	local shopping=("$@")
 

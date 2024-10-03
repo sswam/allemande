@@ -7,7 +7,7 @@
 testy() {
 	local verbose= v=0	# verbose mode, output results when all tests pass
 
-	eval "$(<$(W ally))"
+	eval "$(ally)"
 
 	if (( $# != 1 )); then
 		each testy : "$@"

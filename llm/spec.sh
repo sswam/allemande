@@ -10,7 +10,7 @@ spec() {
 	local format= f=	# Output format [md|txt|html|json]
 	local edit= e=1	# do not edit
 
-	eval "$(<$(W ally))"
+	eval "$(ally)"
 
 	local file=$1
 	local prompt=${2:-}

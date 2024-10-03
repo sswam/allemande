@@ -3,7 +3,7 @@
 # format source code files
 
 formy() {
-	eval "$(<$(W ally))"
+	eval "$(ally)"
 
 	[ "$#" = 1 ] || each formy : "$@"
 

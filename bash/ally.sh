@@ -1,8 +1,12 @@
-# Eval this script: eval "$(<$(W ally))"
-# It's hacky but magickal!
+#/usr/bin/env bash
+# Eval this script: eval "$(ally)"
+
+# output the contents of the script after this
+exec < "$BASH_SOURCE" tail -n +7 || exit 1
 
 # strict mode
-local old_opts=$(set +o)
+local old_opts 2>/dev/null
+old_opts=$(set +o)
 set -e -u -o pipefail
 trap 'eval "$old_opts"' RETURN
 
@@ -87,4 +91,45 @@ code_modify() {
 die() {
 	printf >&2 "%s: fatal: %s\n" "${0##*/}" "$*"
 	exit 1
+}
+
+notify() {
+	local name="${0##*/}"
+	name=${name%.*}
+	notify-send -u critical -t 10000 \
+		-i /usr/share/icons/gnome/48x48/status/appointment-soon.png \
+		"$name" "$1"
+}
+
+countdown() {
+	local remaining=$1 warn=$2
+	shift 2
+	while [ $remaining -gt 0 ]; do
+		if [ $remaining -le $warn ]; then
+			notify "$remaining seconds"
+		fi
+		sleep 1
+		remaining=$((remaining - 1))
+	done
+}
+
+countdown_wrap() {
+	local timeout=$1 warn=$2
+	shift 2
+	if (( timeout )); then
+		countdown $timeout $warn &
+		countdown_pid=$!
+		old_opts=$(set +o)
+		ret=1
+		set +e
+		"$@"
+		ret=$?
+		kill $countdown_pid 2>/dev/null
+		eval "$old_opts"
+		return $ret
+	else
+		"$@"
+	fi
+	stty sane
+	return "$ret"
 }
