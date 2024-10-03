@@ -56,4 +56,4 @@ $prompt1
 EOF
 `
 
-< "$input.ocr.raw.txt" $v llm process -m"$m" "$prompt1" --prompt2 "$prompt2" > "$output"
+< "$input.ocr.raw.txt" $v llm process -m"$m" "$prompt1" --prompt2 "$prompt2" | tee "$output"
