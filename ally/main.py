@@ -446,7 +446,9 @@ class TextInput:
     """
     A text input manager that can read from files, stdin, or StringIO.
     """
-    def __init__(self, file=None, mode='r', encoding='utf-8', errors='strict', newline=None, search=False, basename=False, stdin_name='input'):
+    def __init__(self, file=None, mode='r', encoding='utf-8', errors='strict', newline=None, search=False, basename=False, stdin_name=None):
+        stdin_name = stdin_name or 'input'
+
         if mode not in ('r', 'rb', 'rt'):
             raise ValueError("Mode must be 'r', 'rb', or 'rt'")
 
