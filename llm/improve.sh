@@ -5,19 +5,21 @@
 set -e -u -o pipefail
 
 improve() {
-	local m=  # model
-	local s=0 # refer to hello.<ext> for style
-	local E=0 # do not edit
-	local c=0 # concise
-	local b=0 # use basenames
-	local t=1 # run tests if found (default: on)
-	local T=0 # tests are perfect
-	local C=0 # code is perfect
-	local S=0 # strictly no changes to existing functionality or API changes
-	local F=0 # strictly no new features
-	local L=1 # run linters and type checkers if possible
-	local F=1 # format code
-	local w=1 # write tests if none found
+	local model= m=	# model
+	local style= s=0	# refer to hello.<ext> for style
+	local edit= e=1	# do not edit
+	local use_ai= a=1	# use AI, can turn off for testing with -a=0
+	local concise= c=0	# concise
+	local basename= b=0	# use basenames
+	local test= t=1	# run tests if found (default: on)
+	local testok= T=0	# tests are okay, don't change
+	local codeok= C=0	# code is okay, don't change
+	local changes= S=1	# allow changes to existing functionality or API changes
+	local features= F=1	# allow new features
+	local lint= L=1	# run linters and type checkers if possible
+	local format= F=1	# format code
+	local writetest= w=1	# write tests if none found
+	local numline= n=1	# number lines
 
 	eval "$(ally)"
 
@@ -26,15 +28,15 @@ improve() {
 	shift 2 || shift 1 || true
 	local refs=("$@")
 
-	if [ "$b" = 1 ]; then
+	if (( "$basename" )); then
 		opt_b=("-b")
 	else
 		opt_b=()
 	fi
 
 	# -C or -T options imply -t
-	if [ "$C" = 1 -o "$T" = 1 ]; then
-		t=1
+	if (( "$codeok" )) || (( "$testok" )); then
+		test=1
 	fi
 
 	# Check if the file exists
@@ -68,12 +70,12 @@ improve() {
 	checks_prompt=""
 
 	# Reformat code
-	if [ "$F" = 1 ]; then
+	if (( "$format" )); then
 		{ formy "$file" || true; } | tee -a "$results_file"
 	fi
 
 	# Lint and type check
-	if [ "$L" = 1 ]; then
+	if (( "$lint" )); then
 		{ linty "$file" || true; } | tee -a "$results_file"
 	fi
 
@@ -82,7 +84,7 @@ improve() {
 	local test_results=""
 	local test_ext="bats"
 
-	if [ "$t" = 1 ]; then
+	if (( "$test" )); then
 		tests_results=$(testy "$file" || true)
 		tests_file=$(printf "%s" "$tests_results" | head -n 1)
 		printf "%s" "$tests_results" | tail -n +2 | tee -a "$results_file"
@@ -94,9 +96,9 @@ improve() {
 			refs+=("$tests_file")
 		fi
 		refs+=("$results_file")
-		if [ "$T" = 1 ]; then
+		if (( "testok" )); then
 			checks_prompt="Some checks failed. The tests are correct, so don't change them; please fix the main program code."
-		elif [ "$C" = 1 ]; then
+		elif (( "codeok" )); then
 			checks_prompt="Some checks failed. The main program code is correct, so don't change it; please fix the tests."
 		else
 			checks_prompt="Some checks failed. Please fix the program and/or the tests. If the code looks correct as it is, please update the tests to match the code, or add comments to disable certain linting behaviour, etc."
@@ -105,22 +107,22 @@ improve() {
 		echo >&2 "Checks passed"
 		checks_prompt="Our checks passed."
 		rm "$results_file"
-		t=""
-	elif [ "$t" = 1 ]; then
+		test=""
+	elif (( "$test" )); then
 		echo >&2 "No tests found"
-		if [ -n "$w" ]; then
+		if (( "$writetest" )); then
 			# tests "$file"
 			checks_prompt="No tests found. Please write some tests."
 		fi
-		t=""
+		test=""
 	fi
 
-	# style reference and prompt for -s option
-	style="hello_$ext.$ext"
-	if [ "$s" = 1 -a -n "$(which "$style")" ]; then
-		echo >&2 "Using style reference: $style"
-		refs+=("$style")
-		prompt="in the style of \`$style\`, $prompt"
+	# style reference and prompt for - option
+	style_ref="hello_$ext.$ext"
+	if (( "$style" = 1 )) && [ "$(which "$style_ref")" ]; then
+		echo >&2 "Using style reference: $style_ref"
+		refs+=("$style_ref")
+		prompt="in the style of \`$style_ref\`, $prompt"
 	fi
 
 	tests_name_clause=""
@@ -130,15 +132,15 @@ improve() {
 
 	prompt="Please improve \`$base\`$tests_name_clause, and bump the patch version if present, $prompt. Add a header line \`#File: filename\` before each file's code. Comment on your changes at the end, not inline. $checks_prompt"
 
-	if [ "$S" = 1 ]; then
+	if (( "$changes" = 0 )); then
 		prompt="$prompt. Strictly no changes to existing functionality or APIs."
 	fi
 
-	if [ "$F" = 1 ]; then
+	if (( "$features" = 0 )); then
 		prompt="$prompt. Strictly no new features."
 	fi
 
-	if [ "$c" = 1 ]; then
+	if (( "$concise" )); then
 		prompt="$prompt, Please reply concisely with only the changes."
 	fi
 
@@ -173,8 +175,12 @@ improve() {
 		output_file="$tests_file~"
 	fi
 
+	if ((!"$use_ai")); then
+		function process() { nl; }
+	fi
+
 	# Process input and save result
-	printf "%s\n" "$input" | process -m="$m" "$prompt" |
+	printf "%s\n" "$input" | v process -m="$model" "$prompt" |
 		if [ -n "$comment_char" ]; then
 			markdown_code.py -c "$comment_char"
 		else
@@ -189,7 +195,7 @@ improve() {
 	fi
 
 	# Compare original and improved versions
-	if [ "$E" = 0 ]; then
+	if (( "$edit" )); then
 		if [ -n "$tests_file" ]; then
 			vim -d "$file~" "$file" -c "botright vnew $tests_file"
 		else
@@ -199,7 +205,7 @@ improve() {
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
 	confirm=""
-	if [ "$t" = 1 -a "$C" = 0 -a "$T" = 0 ]; then
+	if (( "$tests" )) && (( "$codeok" = 0 )) && (( "$testok" = 0 )); then
 		confirm="confirm" # means it might have edited either or both files
 	fi
 
