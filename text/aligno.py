@@ -38,10 +38,14 @@ def default_indent():
 DEFAULT_INDENT = default_indent()
 
 
-def detect_indent(text: str) -> tuple[str, int]:
+def detect_indent(text: str|list[str]) -> tuple[str, int]:
     """Detect the indentation type and minimum level of the input text."""
+    if isinstance(text, list):
+        lines = text
+    else:
+        lines = text.splitlines()
+
     # Remove empty lines and get non-empty lines
-    lines = text.splitlines()
     lines = [line for line in lines if line.strip()]
 
     # Find the common indentation among all lines
