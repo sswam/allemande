@@ -5,10 +5,10 @@ use warnings;
 use autodie;
 use v5.30;
 use utf8;
-use open qw(:std :utf8);
+use open         qw(:std :utf8);
 use Getopt::Long qw(GetOptions);
-use Pod::Usage qw(pod2usage);
-use FindBin qw($RealBin);
+use Pod::Usage   qw(pod2usage);
+use FindBin      qw($RealBin);
 use IPC::Run3;
 use lib "$RealBin/lib";
 use ally::main qw(setup_logging get_logger io);
@@ -17,10 +17,10 @@ our $VERSION = '1.0.0';
 
 # Set up command-line options
 my %opts = (
-    name => '',
-    ai   => 0,
+    name  => '',
+    ai    => 0,
     model => '',
-    help => 0,
+    help  => 0,
 );
 
 GetOptions(
@@ -30,7 +30,7 @@ GetOptions(
     'help|h'  => \$opts{help},
 ) or pod2usage(2);
 
-pod2usage(-verbose => 2) if $opts{help};
+pod2usage( -verbose => 2 ) if $opts{help};
 
 # Set up logging
 setup_logging('hello_pl');
@@ -38,9 +38,9 @@ my $logger = get_logger();
 
 # Main function
 sub hello_pl {
-    my ($input, $output) = @_;
+    my ( $input, $output ) = @_;
 
-    my ($get, $put) = io($input, $output);
+    my ( $get, $put ) = io( $input, $output );
 
     my $name = $opts{name} || 'world';
 
@@ -50,13 +50,17 @@ sub hello_pl {
     my $feeling = $get->();
 
     my $response;
-    if ($feeling =~ /^(lucky|unlucky|fortunate|unfortunate)$/ || $feeling eq '') {
+    if (   $feeling =~ /^(lucky|unlucky|fortunate|unfortunate)$/
+        || $feeling eq '' )
+    {
         $logger->info("Using fortune(1)");
         $response = `fortune`;
-    } elsif ($opts{ai}) {
+    }
+    elsif ( $opts{ai} ) {
         $logger->info("Using AI model");
-        $response = reply_ai($name, $feeling, $opts{model});
-    } else {
+        $response = reply_ai( $name, $feeling, $opts{model} );
+    }
+    else {
         $logger->info("Using sentiment analysis");
         $response = reply_sentiment($feeling);
     }
@@ -65,35 +69,39 @@ sub hello_pl {
 }
 
 sub reply_ai {
-    my ($name, $feeling, $model) = @_;
-    my $prompt = "Scenario: Your character asked 'How are you feeling?' " .
-                 "and $name said '$feeling'. " .
-                 "Please reply directly without any prelude, disclaimers or explanation.";
+    my ( $name, $feeling, $model ) = @_;
+    my $prompt =
+        "Scenario: Your character asked 'How are you feeling?' "
+      . "and $name said '$feeling'. "
+      . "Please reply directly without any prelude, disclaimers or explanation.";
 
     my $output;
-    run3 ['llm', 'query', '-m', $model, $prompt], \undef, \$output, \undef;
+    run3 [ 'llm', 'query', '-m', $model, $prompt ], \undef, \$output, \undef;
     my $response = $output;
 
-    $response =~ s/^\s+|\s+$//g;  # Trim whitespace
-    $response =~ s/^"(.*)"$/$1/;  # Remove surrounding quotes if present
+    $response =~ s/^\s+|\s+$//g;    # Trim whitespace
+    $response =~ s/^"(.*)"$/$1/;    # Remove surrounding quotes if present
 
     return $response;
 }
 
 sub reply_sentiment {
     my ($feeling) = @_;
+
     # This is a very simplistic sentiment analysis
-    if ($feeling =~ /good|great|happy|excellent/i) {
+    if ( $feeling =~ /good|great|happy|excellent/i ) {
         return "I hope you have a great day!";
-    } elsif ($feeling =~ /bad|sad|terrible|awful/i) {
+    }
+    elsif ( $feeling =~ /bad|sad|terrible|awful/i ) {
         return "I hope you feel better soon.";
-    } else {
+    }
+    else {
         return "Life has its ups and downs, hope yours swings up!";
     }
 }
 
 # Run the main function
-hello_pl(\*STDIN, \*STDOUT);
+hello_pl( \*STDIN, \*STDOUT );
 
 __END__
 
