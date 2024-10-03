@@ -75,9 +75,6 @@ fi
 
 count() {
 	countdown_wrap "$timeout" "$warn_timeout" "$@"
-	ret=$?
-	echo returning "$ret"
-	return "$ret"
 }
 
 # shortcuts for common note types
@@ -122,7 +119,6 @@ select_from_list() {
 	# prompt for a note file
 	num=
 	count read -e -p "? " $timeout_opt num
-	echo "num: $num"
 	if [ -n "$num" ]; then
 		t=${files[$num]}
 		t=${t%.md}
