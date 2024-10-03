@@ -8,7 +8,9 @@ import sys
 import logging
 import getpass
 import textwrap
-from typing import TextIO  # Note to AI: don't import List, Dict, Optional or or Tuple, they are obsolete
+from typing import (
+    TextIO,
+)  # Note to AI: don't import List, Dict, Optional or or Tuple, they are obsolete
 from random import random
 
 from argh import arg
@@ -18,13 +20,14 @@ from ally import main
 from ally.lazy import lazy
 import llm
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 logger = main.get_logger()
 
 
 def get_sentiment_analyzer(nltk):
     import nltk.sentiment
+
     try:
         nltk.data.find("sentiment/vader_lexicon.zip")
     except LookupError:
@@ -32,7 +35,7 @@ def get_sentiment_analyzer(nltk):
     return nltk.sentiment.SentimentIntensityAnalyzer()
 
 
-lazy('nltk', sia=get_sentiment_analyzer)
+lazy("nltk", sia=get_sentiment_analyzer)
 
 
 def analyze_sentiment(text: str) -> str:
@@ -52,7 +55,6 @@ def reply_fortune() -> str:
 
 def reply_ai(name: str, feeling: str, model: str) -> str:
     """Generate an AI response based on the user's feeling."""
-
     prompt = (
         f"Scenario: Your character asked 'How are you feeling?' "
         f"and {name} said '{feeling.rstrip()}'. "
@@ -69,10 +71,10 @@ def reply_sentiment(feeling: str) -> str:
     sentiment = analyze_sentiment(feeling)
     logger.debug(f"{sentiment=}")
     if sentiment == "Positive":
-        return "I hope you have a great day!"
+        return "I'm glad to hear that! I hope your day continues to be great!"
     if sentiment == "Negative":
-        return "I hope you feel better soon."
-    return "Life has its ups and downs, hope yours swings up!"
+        return "I'm sorry to hear that. Remember, things can always get better."
+    return "I see. Life has its ups and downs, I hope things improve for you soon!"
 
 
 @arg("--name", help="name to be greeted")
@@ -84,12 +86,12 @@ def reply_sentiment(feeling: str) -> str:
     help="specify which AI model {emma,claude,dav,clia}",
 )
 def hello_py(
-    *filenames: list[str],  # Note to AI: this is how we accept arguments: before the options
+    *filenames: str,
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
     name: str = "",
     ai: bool = False,
-    model: str = None,
+    model: str | None = None,
 ) -> None:
     """
     An example module / script to say hello,
@@ -98,18 +100,25 @@ def hello_py(
     if not name:
         name = getpass.getuser().title() if random() < 0.5 else "world"
 
-    get, put = main.io(istream, ostream)  # TODO do this in main and call with get / put functions
+    get, put = main.io(
+        istream, ostream
+    )  # TODO do this in main and call with get / put functions
 
-    put(f"Hello, {name}")
-    put("How are you feeling?")
+    put(f"Hello, {name}!")
+    put("How are you feeling today?")
 
     feeling = get()
 
-    if feeling in ["", "lucky", "unlucky", "fortunate", "unfortunate"]:
+    if not feeling or feeling.lower() in [
+        "lucky",
+        "unlucky",
+        "fortunate",
+        "unfortunate",
+    ]:
         logger.info("using fortune(1)")
         response = reply_fortune()
     elif ai:
-        logger.info("using AI model")
+        logger.info(f"using AI model: {model}")
         response = reply_ai(name, feeling, model)
     else:
         logger.info("using sentiment analysis")
@@ -166,7 +175,6 @@ Stdout is only for normal output. Use logging for info, warning or error message
 None is different from 0. Don't "simplify" `if foo is None: foo = default` to `foo = foo or default`.
 
 The original coder was probably not an idiot. Be careful when "fixing" things.
-
 We use at least Python 3.10, normally 3.12 or the latest stable version. Please use new features as needed.
 For example, use modern type hints such as list[str]|None rather than Optional[List[str]]
 
