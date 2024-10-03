@@ -101,3 +101,5 @@ ninja
 
 google-cloud-aiplatform[tokenization]
 cssselect
+jq
+yq
