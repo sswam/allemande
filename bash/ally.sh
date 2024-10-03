@@ -1,8 +1,8 @@
-#/usr/bin/env bash
+#!/usr/bin/env bash
 # Eval this script: eval "$(ally)"
 
 # output the contents of the script after this
-exec < "$BASH_SOURCE" tail -n +7 || exit 1
+exec <"$BASH_SOURCE" tail -n +7 || exit 1
 
 # strict mode
 local old_opts 2>/dev/null
@@ -45,7 +45,7 @@ backup() {
 locate_file() {
 	local file=$1
 	if [ ! -e "$file" ]; then
-		local file2=`wich $file`
+		local file2=$(wich $file)
 		if [ ! -e "$file2" ]; then
 			echo >&2 "not found: $file"
 			return 1
@@ -57,13 +57,13 @@ locate_file() {
 }
 
 code_modify() {
-	local E=0	# do not edit
+	local E=0 # do not edit
 
 	. opts
 
 	local file=$1
 	shift
-	local command=( "$@" )
+	local command=("$@")
 
 	# If no file is provided, process input stream
 	if [ -z "$file" -o "$file" = "-" ]; then
@@ -77,7 +77,7 @@ code_modify() {
 	backup "$file"
 
 	# Process the file content and save to a temporary file
-	< "$file" "${command[@]}" | markdown_code.py -c '#' > "$file~"
+	<"$file" "${command[@]}" | markdown_code.py -c '#' >"$file~"
 
 	# Swap the original and processed files
 	swapfiles "$file" "$file~"
@@ -91,6 +91,10 @@ code_modify() {
 die() {
 	printf >&2 "%s: fatal: %s\n" "${0##*/}" "$*"
 	exit 1
+}
+
+log() {
+        printf >&2 "%s\n" "$*"
 }
 
 notify() {
@@ -116,7 +120,7 @@ countdown() {
 countdown_wrap() {
 	local timeout=$1 warn=$2
 	shift 2
-	if (( timeout )); then
+	if ((timeout)); then
 		countdown $timeout $warn &
 		countdown_pid=$!
 		old_opts=$(set +o)
@@ -129,7 +133,15 @@ countdown_wrap() {
 		return $ret
 	else
 		"$@"
+		return
 	fi
-	stty sane
-	return "$ret"
+}
+
+finder() {
+	local file=$1
+	if [ ! -f "$file" ]; then
+		file=$(wich "$file")
+	fi
+	file=$(readlink -f "$file")
+	printf "%s\n" "$file"
 }
