@@ -8,17 +8,14 @@ duplicating context lines when it can't split at the top level.
 import os
 import sys
 import logging
+import argparse
 from typing import TextIO, List
 from pathlib import Path
 
-from argh import arg
+__version__ = "0.1.4"
 
-from ally import main
-from ally.lazy import lazy
-
-__version__ = "0.1.3"
-
-logger = main.get_logger()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def find_break_point(section: List[str]) -> int:
@@ -44,7 +41,9 @@ def get_context_lines(content: List[str], index: int) -> List[str]:
     return context
 
 
-def split_content(content: List[str], max_count: int, min_count: int, use_chars: bool) -> List[List[str]]:
+def split_content(
+    content: List[str], max_count: int, min_count: int, use_chars: bool
+) -> List[List[str]]:
     """Split the content into sections based on character or line count."""
     sections = []
     current_section = []
@@ -54,27 +53,27 @@ def split_content(content: List[str], max_count: int, min_count: int, use_chars:
         line_count = len(line) if use_chars else 1
         if current_count + line_count > max_count and current_count >= min_count:
             break_point = find_break_point(current_section)
-            sections.append(get_context_lines(content, i - len(current_section)) + current_section[:break_point + 1])
-            current_section = current_section[break_point + 1:]
+            sections.append(
+                get_context_lines(content, i - len(current_section))
+                + current_section[: break_point + 1]
+            )
+            current_section = current_section[break_point + 1 :]
             current_count = sum(len(l) if use_chars else 1 for l in current_section)
 
         current_section.append(line)
         current_count += line_count
 
     if current_section:
-        sections.append(get_context_lines(content, len(content) - len(current_section)) + current_section)
+        sections.append(
+            get_context_lines(content, len(content) - len(current_section))
+            + current_section
+        )
 
     return sections
 
 
-@arg("-m", "--max", dest="max_count", type=int, help="maximum character/line count (default: 50000 chars or 800 lines)")
-@arg("-n", "--min", dest="min_count", type=int, help="minimum character/line count (default: 50% of max)")
-@arg("-c", "--chars", help="use character count instead of line count")
-@arg("-f", "--force", help="overwrite existing files")
-@arg("-e", "--equal", help="recalculate max for equal-sized chunks")
-@arg("-n", "--number", type=int, help="specify the number of output files")
 def indent_split(
-    out_path: str = 'split.txt',
+    out_path: str = "split.txt",
     max_count: int = None,
     min_count: int = None,
     istream: TextIO = sys.stdin,
@@ -87,15 +86,15 @@ def indent_split(
     """
     Split a tree-indented file such as YAML or Python into sections based on character or line count.
     """
-    get, _put = main.io(istream, ostream)
-
-    content = get(chunks=True)
+    content = istream.readlines()
     total_count = sum(len(line) if chars else 1 for line in content)
 
     if number:
         max_count = total_count // number
     elif equal:
-        max_count = total_count // (total_count // (max_count or (50000 if chars else 800)))
+        max_count = total_count // (
+            total_count // (max_count or (50000 if chars else 800))
+        )
     elif max_count is None:
         max_count = 50000 if chars else 800
 
@@ -104,7 +103,10 @@ def indent_split(
 
     sections = split_content(content, max_count, min_count, chars)
 
-    if any(sum(len(line) if chars else 1 for line in section) < min_count for section in sections[:-1]):
+    if any(
+        sum(len(line) if chars else 1 for line in section) < min_count
+        for section in sections[:-1]
+    ):
         logger.error("Failed to meet minimum count requirement for all sections.")
         sys.exit(1)
 
@@ -115,17 +117,40 @@ def indent_split(
     for i, section in enumerate(sections, 1):
         file_path = f"{out_stem}_{i:06d}{out_ext}"
 
-        mode = 'w' if force else 'x'
+        mode = "w" if force else "x"
 
         try:
             with open(file_path, mode) as f:
                 f.write("".join(section))
             logger.info(f"Wrote section {i} to {file_path}")
         except FileExistsError:
-            logger.warning(f"File {file_path} already exists. Use --force to overwrite.")
+            logger.warning(
+                f"File {file_path} already exists. Use --force to overwrite."
+            )
 
     logger.info(f"Split into {len(sections)} sections")
 
+def main():
+    parser = argparse.ArgumentParser(description="Split a tree-indented file into sections.")
+    parser.add_argument("out_path", nargs="?", default="split.txt", help="Output path")
+    parser.add_argument("-m", "--max", dest="max_count", type=int, help="Maximum character/line count")
+    parser.add_argument("-n", "--min", dest="min_count", type=int, help="Minimum character/line count")
+    parser.add_argument("-c", "--chars", action="store_true", help="Use character count instead of line count")
+    parser.add_argument("-f", "--force", action="store_true", help="Overwrite existing files")
+    parser.add_argument("-e", "--equal", action="store_true", help="Recalculate max for equal-sized chunks")
+    parser.add_argument("-N", "--number", type=int, help="Specify the number of output files")
+
+    args = parser.parse_args()
+
+    indent_split(
+        out_path=args.out_path,
+        max_count=args.max_count,
+        min_count=args.min_count,
+        chars=args.chars,
+        force=args.force,
+        equal=args.equal,
+        number=args.number
+    )
 
 if __name__ == "__main__":
-    main.run(indent_split)
+    main()
