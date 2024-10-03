@@ -2,8 +2,9 @@
 #
 # What are you working on?
 
-i=1800	# interval
+i=600	# interval
 t=300	# input timeout
+T=60	# warn when timeout is running low
 f=	# Run in the foreground
 q=	# Quit any running waywo
 e=	# Edit the waywo file
@@ -18,7 +19,7 @@ elif [ -n "$q" ]; then
 	echo "Got quit signal" >&2
 else
 	while true; do
-		i3_popup_xterm -w -T="What are you working on?" note -t=waywo --timeout="$t" -L -1
+		i3_popup_xterm -w -T="What are you working on?" note -t=waywo --timeout="$t" --warn-timeout="$T" -L -1
 		i3_update_message.sh $(note -t=waywo -n -A)
 
 		# try to sync with the clock
