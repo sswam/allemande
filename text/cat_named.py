@@ -102,9 +102,9 @@ def cat_named(
             else:
                 with main.TextInput(
                     source, search=path, basename=basename, stdin_name=stdin_name
-                ) as input:
-                    content = input.read()
-                    display_name = input.display
+                ) as istream:
+                    content = istream.read()
+                    display_name = istream.display
 
             header = get_header(display_name)
 
