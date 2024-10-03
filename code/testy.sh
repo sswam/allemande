@@ -14,22 +14,25 @@ testy() {
 		return $?
 	fi
 
-	local prog="$1"
-	local ext="${prog##*.}"
-	if [[ $prog != *.* ]]; then
-		ext="sh"
-	fi
-	local test_ext="$ext"
-	if [ "$ext" == "sh" ]; then
-		test_ext="bats"
-	fi
-	local tests_file="$(dirname "$prog")/tests/$(basename "$prog" ".$ext")_test.$test_ext"
-	if [ ! -f "$tests_file" ]; then
-		echo >&2 "Tests file not found: $tests_file"
-		return 1
-	fi
-	printf "%s\n" "$tests_file"
-	"test_$ext" "$tests_file"
+	(
+		local prog="$(finder "$1")"
+		cd "$(dirname "$prog")"
+		local ext="${prog##*.}"
+		if [[ $prog != *.* ]]; then
+			ext="sh"
+		fi
+		local test_ext="$ext"
+		if [ "$ext" == "sh" ]; then
+			test_ext="bats"
+		fi
+		local tests_file="$(dirname "$prog")/tests/$(basename "$prog" ".$ext")_test.$test_ext"
+		if [ ! -f "$tests_file" ]; then
+			echo >&2 "Tests file not found: $tests_file"
+			return 1
+		fi
+		printf "%s\n" "$tests_file"
+		"test_$ext" "$tests_file"
+	)
 }
 
 run() {
