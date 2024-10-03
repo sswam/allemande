@@ -83,3 +83,8 @@ code_modify() {
 		vimdiff "$file" "$file~"
 	fi
 }
+
+die() {
+	printf >&2 "%s: fatal: %s\n" "${0##*/}" "$*"
+	exit 1
+}
