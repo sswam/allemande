@@ -95,11 +95,11 @@ improve() {
 		fi
 		refs+=("$results_file")
 		if [ "$T" = 1 ]; then
-			checks_prompt="Some checks failed. The tests are correct, so please fix the code."
+			checks_prompt="Some checks failed. The tests are correct, so don't change them; please fix the main program code."
 		elif [ "$C" = 1 ]; then
-			checks_prompt="Some checks failed. The code is correct, so please fix the tests."
+			checks_prompt="Some checks failed. The main program code is correct, so don't change it; please fix the tests."
 		else
-			checks_prompt="Some checks failed. Please fix the code and/or the tests. If the code looks better as it is, please update the tests to match the code, or add comments to disable certain linting behaviour, etc."
+			checks_prompt="Some checks failed. Please fix the program and/or the tests. If the code looks correct as it is, please update the tests to match the code, or add comments to disable certain linting behaviour, etc."
 		fi
 	elif [ "$tests_file" ]; then
 		echo >&2 "Checks passed"
@@ -123,7 +123,12 @@ improve() {
 		prompt="in the style of \`$style\`, $prompt"
 	fi
 
-	prompt="Please improve \`$base\`, and bump the patch version if present, $prompt. Comment on your changes at the end, not inline. $checks_prompt"
+	tests_name_clause=""
+	if [ -f "$tests_file" ] && [ -s "$tests_file" ]; then
+		tests_name_clause=" and/or \`$tests_file\`"
+	fi
+
+	prompt="Please improve \`$base\`$tests_name_clause, and bump the patch version if present, $prompt. Add a header line \`#File: filename\` before each file's code. Comment on your changes at the end, not inline. $checks_prompt"
 
 	if [ "$S" = 1 ]; then
 		prompt="$prompt. Strictly no changes to existing functionality or APIs."
