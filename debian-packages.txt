@@ -1,3 +1,6 @@
+python3
+python3-pip
+python3-venv
 python3.10-dev
 python3.10-venv
 perl
@@ -25,3 +28,25 @@ bats-support
 bats-assert
 perltidy
 clang-format
+clang-tidy
+
+splint
+flawfinder
+cppcheck
+# valgrind
+# gdb
+
+shfmt
+shellcheck
+pylint
+mypy
+gcc
+clang
+clang-tidy
+cppcheck
+splint
+flawfinder
+perlcritic
+golint
+
+perltidy
