@@ -52,7 +52,8 @@ comment_style() {
 		block_end=""
 		;;
 	md)
-		comment_char="[//]: #"
+# 		comment_char="[//]: #"
+		comment_char=""
 		block_start="<!--"
 		block_end="-->"
 		;;
