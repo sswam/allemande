@@ -8,6 +8,7 @@ import os
 import sys
 import re
 from typing import TextIO
+import mimetypes
 
 from argh import arg
 
@@ -47,22 +48,25 @@ def opts_long(
     """
     get, put = main.io(istream, ostream)
 
-    with open(script, "r") as istream:
-        for line in istream:
-            line = line.strip()
+    try:
+        with open(script, "r") as istream:
+            for line in istream:
+                line = line.strip()
 
-            # Stop before the ". opts" line
-            if re.match(r'\s*\.\s+opts', line):
-                break
+                # Stop before the ". opts" line
+                if re.match(r'\s*\.\s+opts', line):
+                    break
 
-            # Stop before an eval line
-            if re.match(r'\s*eval\s', line):
-                break
+                # Stop before an eval line
+                if re.match(r'\s*eval\s', line):
+                    break
 
-            # Process and output the line
-            processed_line = process_line(line)
-            if processed_line:
-                put(processed_line + "\n")
+                # Process and output the line
+                processed_line = process_line(line)
+                if processed_line:
+                    put(processed_line + "\n")
+    except (FileNotFoundError, IsADirectoryError, UnicodeDecodeError) as e:
+        logger.info(f"File not found: {script}")
 
 
 if __name__ == "__main__":
