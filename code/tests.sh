@@ -38,7 +38,7 @@ tests() {
 
 	executable=0
 	case "$ext" in
-	.sh)
+	sh)
 		tests_ext=bats
 		executable=1
 		if [ ! -e "$dir/tests/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
@@ -46,7 +46,7 @@ tests() {
 		fi
 	esac
 
-	local tests_base="test_${stem}.$tests_ext"
+	local tests_base="${stem}_test.$tests_ext"
 	local tests_path="$dir/tests/$tests_base"
 
 	# Check if test file already exists
@@ -61,7 +61,7 @@ tests() {
 		hello=$(wich "$hello")
 		if [ -n "$hello" ]; then
 			dir=$(dirname "$hello")
-			example="$dir/tests/test_hello_$ext.$tests_ext"
+			example="$dir/tests/hello_${ext}_test.$tests_ext"
 			refs+=("$example")
 			prompt="in the style of \`$example\`, $prompt"
 		fi
