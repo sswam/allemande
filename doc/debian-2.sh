@@ -120,7 +120,7 @@ sudo apt-get -y install ./debian/python3.10-distutils-bogus_1.0_all.deb
 
 # -------- install allemande Debian dependencies -----------------------------
 
-sudo apt-get -y install `< debian-requirements.txt`
+sudo apt-get -y install `< debian-packages.txt`
 sudo apt-get -y clean
 
 # -------- set up a Python3.10 virtual environment ---------------------------
