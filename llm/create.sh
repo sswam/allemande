@@ -1,32 +1,28 @@
-#!/bin/bash
-# [file] "instructions to create it" [reference files ...]
+#!/usr/bin/env bash
+#
+# [ofile] "instructions to create it" [reference files ...]
 # Write something using AI
 
 create() {
-	local m=	# model
-	local s=1	# refer to hello.<ext> for style
-	local e=1	# edit
+	local model= m=	# LLM model
+	local style= s=1	# refer to hello.<ext> for style
+	local edit= e=1	# edit
 
-	. opts
+	eval "$(ally)"
 
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
-	trap 'eval "$old_opts"' RETURN
-
-	local file=$1
-	local prompt=${2:-}
-	shift 2 || shift 1 || true
+	local ofile=${1:-}
+	shift || true
 	local refs=("$@")
 
-	# Check if file already exists
-	if [ -e "$file" ]; then
-		echo >&2 "already exists: $file"
-		exit 1
+	[ -n "$ofile" ] || usage "Output file name is required"
+
+	# Check if output file already exists
+	if [ -e "$ofile" ]; then
+		die "Output file already exists: $ofile"
 	fi
 
-	local dir=$(dirname "$file")
-	local base=$(basename "$file")
+	local dir=$(dirname "$ofile")
+	local base=$(basename "$ofile")
 
 	local ext=${base##*.}
 	if [ "$ext" == "$base" ]; then
@@ -34,10 +30,10 @@ create() {
 	fi
 
 	# style reference and prompt for -s option
-	style="hello_$ext.$ext"
-	if [ "$s" = 1 -a -n "$(wich "$style")" ]; then
-		refs+=("$style")
-		prompt="in the style of \`$style\`, $prompt"
+	style_ref="hello_$ext.$ext"
+	if (( "$style" )) && -a [ "$(wich "$style_ref")" ]; then
+		refs+=("$style_ref")
+		prompt="in the style of \`$style_ref\`, $prompt"
 	fi
 
 	mkdir -p "$dir"
@@ -50,45 +46,27 @@ create() {
 		input=":)"
 	fi
 
-	comment_char="#"
-	case "$ext" in
-	c|cpp|java|js|ts|php|cs|go|rs|swift|kt|scala|groovy|dart|fs|v|nim|zig|vala|cr|wren|d|odin|jai|pony|haxe)
-		comment_char="//"
-		;;
-	sh|py|pl|rb|lua|tcl|awk|sed|bash|zsh|fish|ps1|psm1|psd1|r|jl|crystal|elixir|ex|exs|ml|mli|coffee|haskell|hs|nim)
-		comment_char="#"
-		;;
-	md|txt|html|xml|json|yaml|yml|toml|ini|conf|cfg|properties|env|csv|tsv|rec|log|sql)
-		comment_char=""
-		;;
-	lisp|clj|scm|rkt)
-		comment_char=";"
-		;;
-	f|f90|f95|f03|f08)
-		comment_char="!"
-		;;
-	vim)
-		comment_char='"'
-		;;
-	esac
+	local comment_char=$(comment-style "$ext")
 
 	# Process input and save result
-	printf "%s\n" -- "$input" | process -m="$m" "$prompt" |
+	printf "%s\n" -- "$input" | process -m="$model" "$prompt" |
 	if [ -n "$comment_char" ]; then
 		markdown_code.py -c "$comment_char"
 	else
 		cat
-	fi > "$file"
+	fi > "$ofile"
 
-	if [ -n "$comment_char" ]; then
-		chmod +x "$file"
+	# make the file executable if it is code
+	if [ -n "$comment_char" ] && [ "$ext" -ne "md" ]; then
+		chmod +x "$ofile"
 	fi
 
-	if (( "$e" )); then
-		$EDITOR "$file"
+	# Edit the file if requested
+	if (( "$edit" )); then
+		$EDITOR "$ofile"
 	fi
 }
 
-if [ "$BASH_SOURCE" = "$0" ]; then
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	create "$@"
 fi
