@@ -46,7 +46,6 @@ clang-tidy
 cppcheck
 splint
 flawfinder
-perlcritic
-golint
 
 perltidy
+libperl-critic-perl
