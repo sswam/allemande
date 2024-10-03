@@ -4,30 +4,19 @@
 # Combines similar inputs to get the best results
 
 combine() {
-	local model= m=	# LLM model
-	local extra_prompt= p=	# Custom prompt
+	local model= m=  # LLM model
+	local prompt= p= # Custom prompt
 
-	. opts
-
-	# Support long and short options
-	model=${model:-$m}
-	extra_prompt=${extra_prompt:-$p}
-
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
+	eval "$(ally)"
 
 	# Collect input files
 	local input_files=("$@")
 
 	local prompt="Combine the following inputs to create \
-		a comprehensive and coherent result. $extra_prompt"
+		a comprehensive and coherent result. $prompt"
 
 	cat_named.py -p -b "${input_files[@]}" |
-	process -m="$model" "$prompt"
-
-	# restore caller options
-	eval "$old_opts"
+		process -m="$model" "$prompt"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then

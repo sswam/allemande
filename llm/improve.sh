@@ -5,21 +5,21 @@
 set -e -u -o pipefail
 
 improve() {
-	local m=    # model
-	local s=0   # refer to hello.<ext> for style
-	local E=0   # do not edit
-	local c=0   # concise
-	local b=0   # use basenames
-	local t=1   # run tests if found (default: on)
-	local T=0   # tests are perfect
-	local C=0   # code is perfect
-	local S=0   # strictly no changes to existing functionality or API changes
-	local F=0   # strictly no new features
-	local L=1   # run linters and type checkers if possible
-	local F=1   # format code
-	local w=1   # write tests if none found
+	local m=  # model
+	local s=0 # refer to hello.<ext> for style
+	local E=0 # do not edit
+	local c=0 # concise
+	local b=0 # use basenames
+	local t=1 # run tests if found (default: on)
+	local T=0 # tests are perfect
+	local C=0 # code is perfect
+	local S=0 # strictly no changes to existing functionality or API changes
+	local F=0 # strictly no new features
+	local L=1 # run linters and type checkers if possible
+	local F=1 # format code
+	local w=1 # write tests if none found
 
-	. opts
+	eval "$(ally)"
 
 	local file=$1
 	local prompt=${2:-}
@@ -53,7 +53,7 @@ improve() {
 	# files and directories
 	local dir=$(dirname "$file")
 	local base=$(basename "$file")
-#	local name=${base%.*}
+	#	local name=${base%.*}
 	local ext=${file##*.}
 	if [ "$ext" == "$base" ]; then
 		ext="sh"
@@ -143,17 +143,17 @@ improve() {
 	if [ -e "$file~" ]; then
 		move-rubbish "$file~"
 	fi
-	echo n | cp -i -a "$file" "$file~"   # WTF, there's no proper no-clobber option?!
+	echo n | cp -i -a "$file" "$file~" # WTF, there's no proper no-clobber option?!
 
 	comment_char="#"
 	case "$ext" in
-	c|cpp|java|js|ts|php|cs|go|rs)
+	c | cpp | java | js | ts | php | cs | go | rs)
 		comment_char="//"
 		;;
-	sh|py|pl|rb)
+	sh | py | pl | rb)
 		comment_char="#"
 		;;
-	md|txt)
+	md | txt)
 		comment_char=""
 		;;
 	esac
@@ -170,11 +170,11 @@ improve() {
 
 	# Process input and save result
 	printf "%s\n" "$input" | process -m="$m" "$prompt" |
-	if [ -n "$comment_char" ]; then
-		markdown_code.py -c "$comment_char"
-	else
-		cat
-	fi > "$file~"
+		if [ -n "$comment_char" ]; then
+			markdown_code.py -c "$comment_char"
+		else
+			cat
+		fi >"$file~"
 
 	# check not empty
 	if [ ! -s "$file~" ]; then
@@ -195,7 +195,7 @@ improve() {
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
 	confirm=""
 	if [ "$t" = 1 -a "$C" = 0 -a "$T" = 0 ]; then
-		confirm="confirm"  # means it might have edited either or both files
+		confirm="confirm" # means it might have edited either or both files
 	fi
 
 	# Swap in the hopefully improved version

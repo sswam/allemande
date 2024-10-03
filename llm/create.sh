@@ -4,14 +4,16 @@
 # Write something using AI
 
 create() {
-	local model= m=	# LLM model
-	local style= s=1	# refer to hello.<ext> for style
-	local edit= e=1	# edit
+	local model= m=   # LLM model
+	local style= s=1  # refer to hello.<ext> for style
+	local edit= e=1   # edit
+	local use_ai= a=1 # use AI, can turn off for testing with -a=0
 
 	eval "$(ally)"
 
 	local ofile=${1:-}
-	shift || true
+	local prompt=${2:-}
+	shift 2 || shift 1 || true
 	local refs=("$@")
 
 	[ -n "$ofile" ] || usage "Output file name is required"
@@ -31,7 +33,7 @@ create() {
 
 	# style reference and prompt for -s option
 	style_ref="hello_$ext.$ext"
-	if (( "$style" )) && -a [ "$(wich "$style_ref")" ]; then
+	if (("$style")) && [ "$(wich "$style_ref")" ]; then
 		refs+=("$style_ref")
 		prompt="in the style of \`$style_ref\`, $prompt"
 	fi
@@ -40,7 +42,7 @@ create() {
 
 	prompt="Please write \`$base\`, $prompt"
 
-	local input=$(cat_named.py -p -b "${refs[@]}")
+	local input=$(v cat_named.py -p -b "${refs[@]}")
 
 	if [ -z "$input" ]; then
 		input=":)"
@@ -48,21 +50,25 @@ create() {
 
 	local comment_char=$(comment-style "$ext")
 
+	if ((!"$use_ai")); then
+		function process() { nl; }
+	fi
+
 	# Process input and save result
 	printf "%s\n" -- "$input" | process -m="$model" "$prompt" |
-	if [ -n "$comment_char" ]; then
-		markdown_code.py -c "$comment_char"
-	else
-		cat
-	fi > "$ofile"
+		if [ -n "$comment_char" ]; then
+			markdown_code.py -c "$comment_char"
+		else
+			cat
+		fi >"$ofile"
 
 	# make the file executable if it is code
-	if [ -n "$comment_char" ] && [ "$ext" -ne "md" ]; then
+	if [ -n "$comment_char" ] && [ "$ext" != "md" ]; then
 		chmod +x "$ofile"
 	fi
 
 	# Edit the file if requested
-	if (( "$edit" )); then
+	if (("$edit")); then
 		$EDITOR "$ofile"
 	fi
 }
