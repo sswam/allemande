@@ -40,10 +40,14 @@ def process_line(line: str, script_name: str) -> str:
         line = re.sub(r'\b(\w\w+)=\((.*?)\)', lambda m: f"--{m.group(1)},{process_array(m.group(2))}", line)
         line = re.sub(r'\b(\w\w+)=', r'--\1=', line)
 
+        # tab before comment
+        line = re.sub(r'(\S)(\s+)#', r'\1\t#', line)
+
         # Long and short options in separate columns
         line = re.sub(r' (-\w)', r'\t\1', line)
         if not re.search(r'\t.*?\t', line):
             line = re.sub(r'\t', r'\t\t', line)
+
 
     return line
 
