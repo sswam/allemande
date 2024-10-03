@@ -54,7 +54,7 @@ def test_log_level_option_verbose():
     assert "INFO" in result.stderr
 
 def test_get_module_name():
-    assert main.get_module_name() == "test_hi"
+    assert main.get_module_name() == "hi_test"
 
 def test_get_script_name():
     with patch('sys.argv', ['test_script.py']):
@@ -63,7 +63,7 @@ def test_get_script_name():
 def test_get_logger():
     logger = main.get_logger()
     assert isinstance(logger, logging.Logger)
-    assert logger.name == "test_hi"
+    assert logger.name == "hi_test"
 
 def get_last_n_lines(file_path, n):
     with open(file_path, 'rb') as f:
