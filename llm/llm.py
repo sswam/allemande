@@ -68,14 +68,14 @@ default_model_small = 'gpt-4o-mini'
 
 MODELS = {
 	"o1-preview": {
-		"aliases": ["op", "gertie"],
+		"aliases": ["op", "grace"],
 		"vendor": "openai",
 		"description": "OpenAI's strongest reasoning model, trained with reinforcement learning to perform complex reasoning. o1 models think before they answer, producing a long internal chain of thought before responding to the user.",
 		"cost_in": 15,
 		"cost_out": 60,
 	},
 	"o1-mini": {
-		"aliases": ["om", "feyn"],
+		"aliases": ["om", "fermi"],
 		"vendor": "openai",
 		"description": "OpenAI's faster, cheaper reasoning model particularly effective for coding. o1-mini is 80% cheaper than o1-preview, offering a cost-effective solution for applications requiring reasoning but not broad knowledge.",
 		"cost_in": 3,
@@ -90,7 +90,7 @@ MODELS = {
 		"cost_out": 10,
 	},
 	"gpt-4o-mini": {
-		"aliases": ["4m", "dav"],
+		"aliases": ["4m", "dav", "davinci"],
 		"vendor": "openai",
 		"description": "OpenAI's GPT-4o mini is a cost-efficient small model that's smarter and cheaper than GPT-3.5 Turbo, and has vision capabilities. The model has 128K context and an October 2023 knowledge cutoff.",
 		"cost_in": 0.15,
