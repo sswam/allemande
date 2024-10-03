@@ -4,47 +4,16 @@
 
 . each
 
-test_sh() {
-	local tests_file="$1"
-	quiet bats -t "$tests_file" | { grep -v '^ok ' || true; }
-	return ${PIPESTATUS[0]}
-}
-
-test_py() {
-	local tests_file="$1"
-	quiet pytest -q --tb=short --disable-warnings --show-capture=no --no-header "$tests_file" 2>/dev/null || return 1
-}
-
-test_c() {
-	local tests_file="$1"
-	quiet googletest "$tests_file" || return 1
-}
-
-test_pl() {
-	local tests_file="$1"
-	quiet prove -v "$tests_file" || return 1
-}
-
-test_go() {
-	local tests_file="$1"
-	quiet go test "$tests_file" || return 1
-}
-
-test_rs() {
-	local tests_file="$1"
-	quiet cargo test --manifest-path "$tests_file" || return 1
-}
-
-test_js() {
-	local tests_file="$1"
-	quiet jest "$tests_file" || return 1
-}
-
-test_ts() {
-	test_js "$@" || return 1
-}
-
 testy() {
+	local verbose= v=0	# verbose mode, output results when all tests pass
+
+	eval "$(<$(W ally))"
+
+	if (( $# != 1 )); then
+		each testy : "$@"
+		return $?
+	fi
+
 	local prog="$1"
 	local ext="${prog##*.}"
 	if [[ $prog != *.* ]]; then
@@ -59,9 +28,58 @@ testy() {
 		echo >&2 "Tests file not found: $tests_file"
 		return 1
 	fi
+	printf "%s\n" "$tests_file"
 	"test_$ext" "$tests_file"
 }
 
-if [ "$BASH_SOURCE" == "$0" ]; then
-	each testy : "$@"
+run() {
+	if (( verbose )); then
+		v "$@"
+	else
+		v quiet "$@" 2>/dev/null
+	fi
+}
+
+test_sh() {
+	local tests_file="$1"
+	run bats -t --print-output-on-failure "$tests_file" | { grep -v '^ok ' || true; }
+	return ${PIPESTATUS[0]}
+}
+
+test_py() {
+	local tests_file="$1"
+	run pytest -q --tb=short --disable-warnings --no-header "$tests_file" 2>/dev/null || return 1
+}
+
+test_c() {
+	local tests_file="$1"
+	run googletest "$tests_file" || return 1
+}
+
+test_pl() {
+	local tests_file="$1"
+	run prove -v "$tests_file" || return 1
+}
+
+test_go() {
+	local tests_file="$1"
+	run go test "$tests_file" || return 1
+}
+
+test_rs() {
+	local tests_file="$1"
+	run cargo test --manifest-path "$tests_file" || return 1
+}
+
+test_js() {
+	local tests_file="$1"
+	run jest "$tests_file" || return 1
+}
+
+test_ts() {
+	test_js "$@" || return 1
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	testy "$@"
 fi
