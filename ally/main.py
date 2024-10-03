@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import TextIO, Callable, Any
 import argparse
 from io import IOBase, TextIOWrapper, StringIO
+import mimetypes
 
 import argh
 
@@ -514,3 +515,8 @@ def upset(name: str, value: Any, level: int = 2) -> None:
     else:
         # Regular local variable
         caller_locals[name] = value
+
+
+def is_binary(file_path):
+    mime_type, _ = mimetypes.guess_type(file_path)
+    return mime_type and not mime_type.startswith('text')
