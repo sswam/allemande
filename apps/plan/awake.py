@@ -10,16 +10,16 @@ import sys
 import logging
 import time
 from datetime import datetime, timedelta
-from typing import TextIO, List, Tuple
+from typing import TextIO
 import subprocess
 import humanize
 
 from argh import arg
-import sh
+import sh  # type: ignore
 
-from ally import main
+from ally import main  # type: ignore
 
-__version__ = "0.2.1"
+__version__ = "0.2.3"
 
 logger = main.get_logger()
 
@@ -35,7 +35,7 @@ def check_xprintidle():
 
 def get_idle_time() -> timedelta:
     """Get the current idle time."""
-    return timedelta(seconds=float(sh.xprintidle()) / 1000)
+    return timedelta(milliseconds=int(sh.xprintidle()))
 
 
 class ActivityLog:
@@ -44,8 +44,8 @@ class ActivityLog:
     def __init__(self, log_file: str):
         """Initialize the activity log."""
         self.log_file = log_file
-        self.activities: List[Tuple[datetime, str]] = []
-        self.last_modified = 0
+        self.activities: list[tuple[datetime, str]] = []
+        self.last_modified = 0.0
         self.load_log()
 
     def clear(self):
@@ -92,7 +92,9 @@ class ActivityLog:
             f.write(f"{timestamp.isoformat()} - {status}\n")
         self.last_modified = os.path.getmtime(self.log_file)
 
-    def find_sleep(self, sleep_threshold: timedelta) -> Tuple[datetime, datetime]:
+    def find_sleep(
+        self, sleep_threshold: timedelta
+    ) -> tuple[datetime|None, datetime|None]:
         """Find the last sleep period."""
         if not self.activities:
             return None, None
@@ -107,7 +109,7 @@ class ActivityLog:
             i -= 1
         return None, None
 
-    def total_active_since(self, since: datetime | None) -> timedelta:
+    def total_active_since(self, since: datetime|None) -> timedelta:
         """Calculate the total active time since the given timestamp."""
         # looking for spans of active ... inactive ... active
         # or inactive ... active at the start
@@ -118,7 +120,7 @@ class ActivityLog:
             too_old = i == -1
             if not too_old:
                 timestamp, status = self.activities[i]
-                too_old = since and timestamp < since
+                too_old = since is not None and timestamp < since
             if (too_old or status == "away") and active_end:
                 total_active += active_end - active_start
                 active_start = active_end = None
@@ -128,8 +130,8 @@ class ActivityLog:
                 active_end = timestamp
             if status == "active":
                 active_start = timestamp
-        if status == "active" and active_end:
-            total_active += active_end - timestamp
+        if status == "active" and active_end and active_start:
+            total_active += active_end - active_start
         return total_active
 
 
@@ -194,15 +196,15 @@ def awake(
         away_threshold = 20
         log_file = "/tmp/awake.log"
 
-    check_interval = timedelta(seconds=check_interval)
-    warn_interval = timedelta(seconds=warn_interval)
-    sleep_threshold = timedelta(seconds=sleep_threshold)
-    awake_warning = timedelta(seconds=awake_warning)
-    away_threshold = timedelta(seconds=away_threshold)
+    check_interval_td = timedelta(seconds=check_interval)
+    warn_interval_td = timedelta(seconds=warn_interval)
+    sleep_threshold_td = timedelta(seconds=sleep_threshold)
+    awake_warning_td = timedelta(seconds=awake_warning)
+    away_threshold_td = timedelta(seconds=away_threshold)
 
     log_file = os.path.expanduser(log_file)
     activity_log = ActivityLog(log_file)
-    last_warning = datetime.now() - warn_interval
+    last_warning = datetime.now() - warn_interval_td
     last_status = None
 
     logger.info(f"Starting X11 activity tracking. Logging to {log_file}")
@@ -212,14 +214,14 @@ def awake(
 
     while True:
         if not first:
-            delay = check_interval.total_seconds()
+            delay = check_interval_td.total_seconds()
             # sync with the clock
             seconds_of_day = (
                 datetime.now().second + datetime.now().microsecond / 1_000_000
             )
             delay -= seconds_of_day % delay
             if delay <= delay / 2:
-                delay += check_interval.total_seconds()
+                delay += check_interval_td.total_seconds()
             logger.debug(f"Sleeping for {delay} seconds")
             time.sleep(delay)
         first = False
@@ -230,10 +232,10 @@ def awake(
 
         status_time = now
 
-        if idle_time < check_interval + timedelta(seconds=1):
+        if idle_time < check_interval_td + timedelta(seconds=1):
             status = "active"
             status_time = now - idle_time
-        elif idle_time < away_threshold:
+        elif idle_time < away_threshold_td:
             status = "inactive"
         else:
             status = "away"
@@ -255,25 +257,28 @@ def awake(
         # 2. current awake duration
         # 3. current work duration (at the computer) since sleep
 
-        sleep_start, sleep_end = activity_log.find_sleep(sleep_threshold)
-        sleep_duration = sleep_end - sleep_start if sleep_end else None
+        sleep_start, sleep_end = activity_log.find_sleep(sleep_threshold_td)
+        sleep_duration = sleep_end - sleep_start if sleep_end and sleep_start else None
 
-        awake_start, awake_end = sleep_end, now
-        if not awake_start:
-            awake_start = activity_log.activities[0][0]
+        awake_start = sleep_end if sleep_end else activity_log.activities[0][0]
+        awake_end = now
         awake_duration = awake_end - awake_start if awake_start else None
 
         work_duration = activity_log.total_active_since(awake_start)
 
-        logger.info(f"Slept for {humanize.naturaldelta(sleep_duration)}")
-        logger.info(f"Awake for {humanize.naturaldelta(awake_duration)}")
+        logger.info(
+            f"Slept for {humanize.naturaldelta(sleep_duration) if sleep_duration else 'unknown'}"
+        )
+        logger.info(
+            f"Awake for {humanize.naturaldelta(awake_duration) if awake_duration else 'unknown'}"
+        )
         logger.info(f"Working for {humanize.naturaldelta(work_duration)}")
         logger.info("")
 
-        if no_warn or not awake_duration or awake_duration < awake_warning:
+        if no_warn or not awake_duration or awake_duration < awake_warning_td:
             continue
 
-        if now - last_warning >= warn_interval:
+        if now - last_warning >= warn_interval_td:
             message = f"You've been awake for {humanize.naturaldelta(awake_duration)}!"
             logger.warning(message)
             send_notification(message)
