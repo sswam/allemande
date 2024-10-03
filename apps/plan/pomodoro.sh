@@ -3,7 +3,7 @@
 # pomodoro: Pomodoro timer
 # Version: 0.2.1
 
-work=$[50*60]	# Set the working time (in seconds)
+work=$[170*60]	# Set the working time (in seconds), should be lower but I like working!
 grace=$[4*60]	# Set the grace time (in seconds)
 fade=$[1*60]	# Set the fade time, or 0 to 'annoy' (in seconds)
 rest=$[5*60]	# Set the rest time (in seconds)
@@ -78,17 +78,24 @@ if [ -n "$q" ]; then
 fi
 
 # ----------------------------------------------
-
+#
 # Align the work start to the hour
 
 adjusted_work_time=$work
 if [ -z "$A" ] || [ "$A" -eq 0 ]; then
 	current_second=$(( 60 * $(date +%M) + $(date +%S) ))
 	seconds_to_hour=$((3600 - current_second))
-	if [ $seconds_to_hour -lt $(( rest + fade + grace + work / 2)) ]; then
-		seconds_to_hour=$((seconds_to_hour + 3600))
+
+	# Calculate how many full hours are needed
+	hours_needed=$(( (work + rest + fade + grace) / 3600 ))
+
+	# Check if we need to add more time to reach the next appropriate hour
+	if [ $seconds_to_hour -lt $(( rest + fade + grace + work % 3600 )) ]; then
+		hours_needed=$((hours_needed + 1))
 	fi
-	adjusted_work_time=$(( seconds_to_hour - grace - fade - rest ))
+
+	total_seconds_to_wait=$((hours_needed * 3600 - current_second))
+	adjusted_work_time=$(( total_seconds_to_wait - grace - fade - rest ))
 fi
 
 # ----------------------------------------------
