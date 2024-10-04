@@ -1,0 +1,11 @@
+Supported dimensions are:
+- 1024x1024 (1:1 square)
+- 1152x896 (9:7)
+- 896x1152 (7:9)
+- 1216x832 (19:13)
+- 832x1216 (13:19)
+- 1344x768 (7:4 horizontal)
+- 768x1344 (4:7 vertical)
+- 1536x640 (12:5 horizontal)
+- 640x1536 (5:12 vertical).
+Only the aspect ratio is important, not the exact dimensions."
