@@ -16,7 +16,7 @@ import sh
 from ally import main
 from ally.lazy import lazy
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = main.get_logger()
 
@@ -32,8 +32,8 @@ def illustrate(
     model: str = None,
     width: int = 1024,
     height: int = 1024,
-#     istream: TextIO = sys.stdin,
-#     ostream: TextIO = sys.stdout,
+    #     istream: TextIO = sys.stdin,
+    #     ostream: TextIO = sys.stdout,
 ) -> None:
     """
     Create images for a document using an AI image generator.
@@ -52,29 +52,31 @@ def illustrate(
 
 # TODO get title info too?
 
-
-def check_markdown_image(line: str) -> tuple[str, str] | None:
+def check_markdown_image(line: str, default_width: int, default_height: int) -> tuple[str, str, int, int] | None:
+    logger.debug(f"Checking markdown image: {line}")
     pattern = r"!\[(.+?)\]\((.+?)\)(?:{.*?\bwidth=(\d+).*?\bheight=(\d+).*?})?"
     match = re.search(pattern, line)
     if match:
-        alt_text, filename = match.groups()
-        width = int(width) if width else None
-        height = int(height) if height else None
+        alt_text, filename, width, height = match.groups()
+        width = int(width) if width else default_width
+        height = int(height) if height else default_height
+        logger.debug(f"Found markdown image: alt={alt_text}, file={filename}, width={width}, height={height}")
         return str(alt_text), str(filename), width, height
     return None
 
 
 # TODO get title info too?
 
-
-def check_html_image(line: str) -> tuple[str, str] | None:
+def check_html_image(line: str, default_width: int, default_height: int) -> tuple[str, str, int, int] | None:
     # TODO use an HTML parser or something, at a higher level?  later
+    logger.debug(f"Checking HTML image: {line}")
     pattern = r'<img.*?alt="(.+?)".*?src="(.+?)".*?(?:\bwidth="(\d+)".*?\bheight="(\d+)")?.*?>'
     match = re.search(pattern, line, re.DOTALL)
     if match:
-        alt_text, filename = match.groups()
-        width = int(width) if width else None
-        height = int(height) if height else None
+        alt_text, filename, width, height = match.groups()
+        width = int(width) if width else default_width
+        height = int(height) if height else default_height
+        logger.debug(f"Found HTML image: alt={alt_text}, file={filename}, width={width}, height={height}")
         return str(alt_text), str(filename), width, height
     return None
 
@@ -100,7 +102,9 @@ def process_file(
 
             alt_text, filename, width, height = image_info
 
-            width, height = adjust_dimensions(width, height, default_width, default_height)
+            width, height = adjust_dimensions(
+                width, height, default_width, default_height
+            )
 
             generate_image(alt_text, filename, output_dir, model, width, height)
 
@@ -128,7 +132,9 @@ def adjust_dimensions(width, height, default_width, default_height):
     # To be mathematical, we take the log of the ratio between the aspect ratios,
     # e.g. log2 2/1 would be 1, and log2 1/2 would be -1.
     aspect = width / height
-    best_dimensions = min(sdxl_preferred_dimensions, key=lambda d: abs(math.log((d[0] / d[1]) / aspect)))
+    best_dimensions = min(
+        sdxl_preferred_dimensions, key=lambda d: abs(math.log((d[0] / d[1]) / aspect))
+    )
 
     return best_dimensions
 
@@ -138,22 +144,55 @@ def generate_image(
 ) -> None:
     output_path = os.path.join(output_dir, filename)
 
-    logger.info(f"Generating image for: {alt_text}")
+    logger.info(f"Generating image: prompt='{alt_text}', dimensions={width}x{height}")
     try:
         sh.imagen(
-            "-o", output_path,
-            "-p", alt_text,
-            "--width", str(width),
-            "--height", str(height),
-            "--sampler-name", "DPM++ 2M",
-            "--scheduler", "Karras",
-            "--steps", "30",
-            "--cfg-scale", "7",
-            "--count", "1",
-            "--model", model,
+            "-o",
+            output_path,
+            "-p",
+            alt_text,
+            "--width",
+            str(width),
+            "--height",
+            str(height),
+            "--sampler-name",
+            "DPM++ 2M",
+            "--scheduler",
+            "Karras",
+            "--steps",
+            "30",
+            "--cfg-scale",
+            "7",
+            "--count",
+            "1",
+            "--model",
+            model,
         )
         logger.info(f"Image saved as: {output_path}")
     except sh.ErrorReturnCode as e:
         logger.error(f"Failed to generate image for: {alt_text}")
         logger.error(f"Error: {e}")
         raise
+
+# import pytest
+# from illustrate import check_markdown_image, check_html_image
+#
+# def test_check_markdown_image():
+#     line = '![Alt text](image.jpg){width=100 height=200}'
+#     result = check_markdown_image(line, 300, 400)
+#     assert result == ('Alt text', 'image.jpg', 100, 200)
+#
+# def test_check_markdown_image_default_size():
+#     line = '![Alt text](image.jpg)'
+#     result = check_markdown_image(line, 300, 400)
+#     assert result == ('Alt text', 'image.jpg', 300, 400)
+#
+# def test_check_html_image():
+#     line = '<img alt="alt text" src="image.jpg" width="100" height="200">'
+#     result = check_html_image(line, 300, 400)
+#     assert result == ('alt text', 'image.jpg', 100, 200)
+#
+# def test_check_html_image_default_size():
+#     line = '<img alt="alt text" src="image.jpg">'
+#     result = check_html_image(line, 300, 400)
+#     assert result == ('alt text', 'image.jpg', 300, 400)
