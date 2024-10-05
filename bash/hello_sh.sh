@@ -3,7 +3,7 @@
 # [user's name]
 # Says Hello, world
 
-hello_sh() {
+hello() {
 	local language= l=en	# language [fr|de|jp|cn], defaults to English
 	local shopping=() s=(milk)	# array of items for shopping
 	local use_ai= a=	# greet using AI; don't copy this option to other scripts! Normal scripts either use AI or don't, with no weird option for it.
@@ -24,8 +24,7 @@ hello_sh() {
 	cn)	 greeting="你好" ;;
 	en)	;;
 	*)
-		echo >&2 "unknown language: $language"
-		exit 1
+		die "unknown language: $language"
 		;;
 	esac
 
@@ -67,7 +66,7 @@ shopping_list() {
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-	hello_sh "$@"
+	hello "$@"
 fi
 
 # version: 0.1.1
@@ -90,7 +89,7 @@ fi
 #
 # The `. opts` call gets options and prints usage automatically. No need to do that in the script.
 # The options like `local language= l=en are followed by a *tab*, then a comment. Use tabs here.
-# The `usage` function is provided by opts; it exits. Use `usage "Some message"` for fatal errors.
+# The `usage` and `die` functions are provided by opts; use them for fatal errors.
 #
 # The first lines 1. shebang, 2. arguments without program name, 3. short description of the program.
 # This header format must be followed exactly, so that `. opts` can print usage.
