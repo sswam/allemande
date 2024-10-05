@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Sections
 // @namespace    https://allemande.ai
-// @version      0.1.2
+// @version      0.1.3
 // @description  Wrap content in sections and prevent page breaks
 // @match        *://*/*
 // @match        file:///*
@@ -43,10 +43,10 @@
             wrapInSection(heading);
         });
 
-        // Add CSS to prevent page breaks within sections and paragraphs
+        // Add CSS to prevent page breaks within sections (except the first) and paragraphs
         const style = document.createElement('style');
         style.textContent = `
-            section, p {
+            section:not(:first-child), p {
                 page-break-inside: avoid;
             }
         `;
