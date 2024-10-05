@@ -16,7 +16,7 @@ linty() {
 
 	(
 		local prog="$(finder "$1")"
-		cd "$(dirname "$prog")"
+#		cd "$(dirname "$prog")"
 		local ext="${prog##*.}"
 		if [[ $prog != *.* ]]; then
 			ext="sh"
