@@ -7,7 +7,7 @@ diffy() {
 	local output_format= f=unified # Output format [unified|side-by-side|context]
 	local context_lines= c=3       # Number of context lines
 	local ignore_case= i=          # Ignore case differences
-	local ignore_whitespace= w=    # Ignore whitespace differences
+	local ignore_whitespace= w=1   # Ignore whitespace differences
 	local use_color= C=            # Use color output
 	local model= m=                # LLM model for AI-enhanced diff
 	local use_ai= a=1              # use AI or not?
