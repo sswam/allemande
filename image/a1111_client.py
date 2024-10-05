@@ -46,6 +46,8 @@ async def a1111_client_async(
     width: int = 1024,
     height: int = 1024,
     count: int = 1,
+    clobber: bool = False,
+    pony: bool = False,
 ) -> None:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -61,6 +63,9 @@ async def a1111_client_async(
 
     prompt = text.squeeze(prompt)
     negative_prompt = text.squeeze(negative_prompt)
+
+    if pony:
+        prompt, negative_prompt = pony_biolerplate(prompt, negative_prompt)
 
     params = {
         "prompt": prompt,
@@ -82,9 +87,14 @@ async def a1111_client_async(
 
     try:
         signal.signal(signal.SIGINT, signal_handler)
+        logger.debug(f"Generating {count} images to {outdir}")
         async with aiohttp.ClientSession() as session:
             for i in tqdm(range(count), desc="Generating images"):
                 image_file = f"{outdir}/{stem}_{i:05}.png"
+                if not clobber and os.path.exists(image_file):
+                    logger.debug(f"Skipping existing file {image_file}")
+                    continue
+                logger.debug(f"Generating image {i+1}/{count}")
                 params["seed"] = (seed + i) % 2**32
                 response = await generate_image(session, params)
                 image = base64.b64decode(response["images"][0])
@@ -94,8 +104,20 @@ async def a1111_client_async(
                 if interrupt_flag:
                     logger.info(f"Interrupted at {i+1} images")
                     break
+            logger.debug(f"Generated {i+1} images to {outdir}")
     finally:
+        logger.debug("Exiting")
         signal.signal(signal.SIGINT, signal.SIG_DFL)
+    logger.debug("Done")
+
+
+def pony_biolerplate(prompt, negative_prompt):
+    """Add pony boilerplate to the prompt and negative prompt."""
+    pony1p = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, "
+    prompt = f"{pony1p} {prompt}"
+    pony1n = "score_6, score_5, score_4, "
+    negative_prompt = f"{pony1n} {negative_prompt}"
+    return prompt, negative_prompt
 
 
 @arg("--prompt", help="prompt for image generation")
@@ -108,6 +130,8 @@ async def a1111_client_async(
 @arg("--width", type=int, help="image width")
 @arg("--height", type=int, help="image height")
 @arg("--count", type=int, help="number of images to generate")
+@arg("--clobber", help="overwrite existing files")
+@arg("--pony", help="add pony boilerplate")
 def a1111_client(
     output_file: str = "",
     prompt: str = "",
@@ -120,6 +144,8 @@ def a1111_client(
     width: int = 1024,
     height: int = 1024,
     count: int = 1,
+    clobber: bool = False,
+    pony: bool = False,
 ) -> None:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -137,6 +163,8 @@ def a1111_client(
             width=width,
             height=height,
             count=count,
+            clobber=clobber,
+            pony=pony,
         )
     )
 
