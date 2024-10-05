@@ -13,6 +13,7 @@ import re
 import math
 import dataclasses
 from dataclasses import dataclass
+import importlib.util
 
 from argh import arg
 # pylint: disable=no-member
@@ -40,6 +41,7 @@ class Options:
     prompt0: str
     prompt1: str
     negative: str
+    module: str
     count: int
     fix_dimensions: bool
     pony: bool
@@ -67,6 +69,7 @@ def illustrate(
     prompt0: str = "",
     prompt1: str = "",
     negative: str = "",
+    module: str = "",
     count: int = 1,
     fix_dimensions: bool = True,
     pony: bool = False,
@@ -81,6 +84,10 @@ def illustrate(
 
     os.makedirs(output_dir, exist_ok=True)
 
+    mod = None
+    if module:
+        mod = import_module_from_file(module)
+
     options = Options(
         input_file=input_file,
         output_dir=output_dir,
@@ -90,6 +97,7 @@ def illustrate(
         prompt0=prompt0,
         prompt1=prompt1,
         negative=negative,
+        module=mod,
         count=count,
         fix_dimensions=fix_dimensions,
         pony=pony,
@@ -100,7 +108,6 @@ def illustrate(
 
 def check_markdown_image(line: str) -> list[tuple[str, str, int | None, int | None]]:
     """ Check for markdown images in a line of text. """
-    logger.debug(f"Checking markdown images: {line}")
     pattern = r'!\[(.+?)\]\((.+?)(?: "(.*?)")?\)(?:(?:<!--)?{.*?\bwidth=(\d+).*?\bheight=(\d+).*?})?'
     matches = re.finditer(pattern, line)
     results = []
@@ -117,7 +124,6 @@ def check_markdown_image(line: str) -> list[tuple[str, str, int | None, int | No
 
 def check_html_image(line: str) -> list[tuple[str, str, int | None, int | None]]:
     """ Check for HTML images in a line of text. """
-    logger.debug(f"Checking HTML images: {line}")
     soup = BeautifulSoup(line, "html.parser")
     images = soup.find_all("img")
     results = []
@@ -140,6 +146,20 @@ def check_html_image(line: str) -> list[tuple[str, str, int | None, int | None]]
         )
         results.append((str(alt_text or title), str(filename), width, height))
     return results
+
+
+def import_module_from_file(file_path):
+    spec = importlib.util.spec_from_file_location("module_name", file_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def squeeze_prompt(text: str) -> str:
+    text = re.sub(r"\s*,[, ]*", ", ", text).strip()
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
 
 def process_file(options: Options) -> None:
     """ Process the input file, generating images for each image found. """
@@ -167,6 +187,14 @@ def process_file(options: Options) -> None:
                     )
 
                 prompt = f"{options.prompt0} {alt_text} {options.prompt1}".strip()
+                negative = options.negative
+
+                # allow modifying the prompt and negative prompt with Python code
+                if options.module:
+                    logger.debug(f"Before: {prompt=}, {negative=}")
+                    prompt, negative = options.module.prompts(prompt, negative)
+                    prompt, negative = squeeze_prompt(prompt), squeeze_prompt(negative)
+                    logger.debug(f"After: {prompt=}, {negative=}")
 
                 # actually options and update some things
                 image_options = dataclasses.replace(
@@ -177,6 +205,7 @@ def process_file(options: Options) -> None:
 
                 generate_image(
                     prompt,
+                    negative,
                     filename,
                     image_options,
                 )
@@ -218,6 +247,7 @@ def adjust_dimensions(
 
 def generate_image(
     prompt: str,
+    negative: str,
     filename: str,
     options: Options,
 ) -> None:
@@ -227,7 +257,7 @@ def generate_image(
     images_txt = p.plural("image", options.count)
 
     logger.info(
-        f"Generating {options.count} {images_txt} for {filename}: {prompt=}, dimensions={options.width}x{options.height}"
+        f"Generating {options.count} {images_txt} for {filename}: {prompt=}, {negative=}, dimensions={options.width}x{options.height}"
     )
 
     try:
@@ -241,7 +271,7 @@ def generate_image(
             "steps": 15,
             "cfg-scale": 5,
             "count": options.count,
-            "negative-prompt": options.negative,
+            "negative-prompt": negative,
         }
         if options.model is not None:
             kwargs["model"] = options.model
