@@ -41,6 +41,12 @@ def get_web_content(url):
         raise FileNotFoundError(f"Failed to fetch content from {url}: {e}")
 
 
+def number_the_lines(text):
+    """Number the lines in the text, just number, tab, and line."""
+    lines = text.splitlines()
+    return "\n".join(f"{i+1}\t{line}" for i, line in enumerate(lines))
+
+
 @arg("sources", nargs="*", help="Files or URLs to concatenate and display")
 @arg("--header-pre", help="Prefix for the header line")
 @arg("--header-post", help="Suffix for the header line")
@@ -55,6 +61,7 @@ def get_web_content(url):
 )
 @arg("-n", "--stdin-name", help="Use this name for stdin")
 @arg("-f", "--missing-ok", help="Skip missing files without error", action="store_true")
+@arg("-N", "--number-lines", help='Number the lines in the output', action='store_true')
 def cat_named(
     sources,
     header_pre="#File: ",
@@ -66,6 +73,7 @@ def cat_named(
     basename=False,
     stdin_name=None,
     missing_ok=False,
+    number_lines=False,
 ):
     """
     Concatenate and return file or URL contents with customizable headers.
@@ -109,6 +117,8 @@ def cat_named(
             header = get_header(display_name)
 
             result.append(f"{header}{header_post}")
+            if number_lines:
+                content = number_the_lines(content)
             result.append(content)
             result.append(footer)
         except (FileNotFoundError, IsADirectoryError):
