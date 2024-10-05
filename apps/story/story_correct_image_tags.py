@@ -34,7 +34,7 @@ def correct_image_tags(input_text):
         return corrected_tag
 
     # Regular expression to match the image tag pattern
-    pattern = r'`?!\[(.*?)\]\((.*?)\)(\s*<!--\s*\{.*?\}\s*-->)?`?'
+    pattern = r'`?!\[(.*?)\]\s*\((.*?)\)(\s*<!--\s*\{.*?\}\s*-->)?\.?`?\.?'
 
     # Apply the fixes using re.sub with the fix_tag function
     corrected_text = re.sub(pattern, fix_tag, input_text)
@@ -48,7 +48,7 @@ def correct_image_tags_stdio():
 
 def test_correct_image_tags():
     # Test the function
-    test_input = '`![description of the file (1200x800)](file name.png)<!--{width=1200 height=800}-->`'
+    test_input = '`![description of the file (1200x800)] (file name.png) <!--{width=1200 height=800}-->`'
     result = correct_image_tags(test_input)
     print(result)
 
