@@ -86,6 +86,8 @@ tests() {
 		$EDITOR -O "$tests_path" "$program"
 	fi
 
+	testy "$program"
+
 	# restore caller options
 	eval "$old_opts"
 }
