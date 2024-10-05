@@ -1,0 +1,8 @@
+- case-insensitive option
+- the current --exclude option should be accessed by --mode "other"
+- the new --exclude option should be used with to_end or from_start, or between, to exclude the actual matched line/s
+- add modes "last_to_end" and "start_to_first", maybe we need shorter names for these, or aliases
+- in addition to --start and --end add a --whole option, to match only entire lines, I guess it's short for --start --end
+- add a --regexp option to use Python re regexps
+- add a --wild option to use wildcard chars, namely * and ?, like shell filenames; incompatible with --regexp; probably implemented by translating into a regexp
+- let me know if you have any other suggestions!  thanks

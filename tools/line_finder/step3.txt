@@ -1,0 +1,129 @@
+# line_finder
+
+I decided we need a different API for this.
+
+## Arguments
+
+Firstly, we can accept any number of pattern arguments, zero, one, two, or more.
+
+## Patterns
+
+Each pattern has two parts, the pattern string, and type, separated by a colon.
+
+### Line number patterns
+
+0:n	# first line
+-1:n	# last line
+123:n	# line 123
+
+### Fixed, wildcard, and regexp patterns
+
+fixedstring:f
+wildcards_pattern:w
+regexp:r
+
+### Start of line, end of line and whole line
+
+Can append modifiers like `f^` `f$` or `f*` meaning to match at start, at end
+and whole line. That doesn't make sense for line-number patterns, it would be ignored.
+
+### Special patterns
+
+start	# means 0:n
+end	# means -1:n
+blank	# means :f*
+
+
+## Offsets
+
+We can add or subtract an integer from the found line number:
+
+foo:f-1	# line before matching foo
+foo:f-2	# 2 lines before matching foo
+foo:f+2	# line after matching foo
+foo:f+5	# 5 lines after matching foo
+
+It is an error if the line does not exist.
+
+## Ranges
+
+Normally we return any matching line.
+
+For a range, we use '-' as an argument between the patterns for the endpoints:
+
+foo:f - end:-	# everything from 'foo' to the end of the file, except not the last line
+
+## Shorthands
+
+### Offsets
+
+Plain - and + are short for -1 and +1:
+
+foo:f-	# line before matching foo
+
+### Fixed strings
+
+The default match type is fixed string
+
+foo:-	# short for foo:f-1
+
+foo:	# short for foo:f
+
+The colon can be excluded for f matches:
+
+foo-	# line before 'foo'
+
+### Line numbers
+
+Plain numbers are interpreted as line numbers:
+
+123	# line 123
+
+## Being precise
+
+To unambiguously match any fixed string 'foo':
+
+foo:f
+
+This is important when the pattern is a variable.
+
+## Other options
+
+The -v or --inverse option gives all lines other than those matched, like grep.
+
+The -i or --ignore-case option makes the match case-insensitive.
+
+The -n or --number option returns linenumber, tab, line text.
+
+The -N or --numbers-only returns only line numbers, one per line.
+
+### TSV columns
+
+foo:f:1	match only in TSV column #1 (numbered from 0, so the second column)
+foo:f:-2	match only in the second last TSV column
+foo:f:quantity	match only in a TSV column with header "quantity", implies the --header option
+
+--csv option to use CSV instead
+-h --header option, will not match in the first row
+-H --with-header option, implies -h, and outputs the header at the top of the output
+
+The `^` `$` and `*` modifiers apply within the column, in this case.
+
+### Cutting columns
+
+-c --coloumns option, can take numeric or string column indicators, comma separated, and slices like 1:3 or 1: or 1:-2. Unlike Python it includes the final one. Support full Python slice syntax including the step option, reversing, etc. We can use the slice() function I guess, after converting the string column names
+to numbers, and adding 1 to the end or whatever.
+
+To exclude a column or range of columns, use !3 or !name. If the first in the comma separated starts with !, we start with all columns, then exclude it.
+
+Column names may contain the wildcard `*` to match all columns with that sort of name, e.g. `address*` or `*name`. Without a `*` they match the whole string, so `*name` matches `first name` and `surname` but not `my names and places`. This can only be used with ranges if there is a single matching column name.
+
+Columns are output in the order specified, not the original order, unless `--column-order-original` (or a better option name!).
+
+Prefix `<` or `>` to a column indicator, to move those column/s to the left or right in the output.
+
+This likely should be a separate tool, but hey, SQL select does a lot!
+
+### Epilogue
+
+That will do for now, it's already got horrific featuritis.
