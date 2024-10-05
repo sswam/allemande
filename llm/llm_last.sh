@@ -42,5 +42,5 @@ else
 fi | if [ "$e" = 1 ]; then
 	vipe
 else
-	less
+	less -F
 fi
