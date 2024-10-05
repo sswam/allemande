@@ -1,0 +1,12 @@
+: ${H0:=}
+: ${H1:=":
+
+"}
+: ${F:="
+
+"}
+for A; do
+    printf -- "%s" "$H0$A$H1"
+    cat -- "$A"
+    printf -- "%s" "$F"
+done
