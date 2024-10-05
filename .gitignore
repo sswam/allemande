@@ -3,6 +3,8 @@ xor-c
 .DS_Store
 /models
 .*
+*.bak
+*~
 venv
 node_modules
 __pycache__
