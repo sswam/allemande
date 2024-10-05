@@ -1,1 +1,3 @@
+tensorrt tensorrt-lean tensorrt-dispatch
+tensorflow[and-cuda]
 jax[cuda12]
