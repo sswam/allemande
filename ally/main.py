@@ -13,6 +13,8 @@ from typing import TextIO, Callable, Any
 import argparse
 from io import IOBase, TextIOWrapper, StringIO
 import mimetypes
+import asyncio
+import functools
 
 import argh
 
@@ -88,7 +90,7 @@ def setup_logging(module_name: str, log_level: str | None = None):
         module_name (str): The name of the module for which logging is being set up.
         log_level (str): The desired logging level (DEBUG, INFO, ERROR, or None).
     """
-    
+
     logging_config_file = Path(__file__).parent / "logging.ini"
 
     if log_level is None:
@@ -184,8 +186,8 @@ class CustomHelpFormatter(
         return string
 
     def _format_args(self, action, default_metavar):
-        if action.dest in ['istream', 'ostream']:
-            return 'FILE'
+        if action.dest in ["istream", "ostream"]:
+            return "FILE"
         return super()._format_args(action, default_metavar)
 
 
@@ -216,7 +218,7 @@ def setup_logging_args(module_name, parser):
         "--log-level",
         default=default_log_level,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        metavar='LEVEL',
+        metavar="LEVEL",
         help="Set the logging level {DEBUG,INFO,WARNING,ERROR,CRITICAL}",
     )
     try_add_argument(
@@ -246,34 +248,64 @@ def setup_logging_args(module_name, parser):
 
 
 def _open_files(args: argparse.Namespace, parser: argparse.ArgumentParser):
-    no_clobber = getattr(args, 'no_clobber', False)
-    append = getattr(args, 'append', False)
+    no_clobber = getattr(args, "no_clobber", False)
+    append = getattr(args, "append", False)
 
-    def process_stream_arg(arg_name, mode='r', append=False, no_clobber=False):
+    def process_stream_arg(arg_name, mode="r", append=False, no_clobber=False):
         arg_value = getattr(args, arg_name, None)
         if not isinstance(arg_value, str):
             return
-        if mode == 'w':
-            mode = 'a' if append else 'x' if no_clobber else 'w'
+        if mode == "w":
+            mode = "a" if append else "x" if no_clobber else "w"
         file_obj = open(arg_value, mode)
         setattr(args, arg_name, file_obj)
 
-    process_stream_arg('istream', mode='r')
-    process_stream_arg('ostream', mode='w', append=append, no_clobber=no_clobber)
+    process_stream_arg("istream", mode="r")
+    process_stream_arg("ostream", mode="w", append=append, no_clobber=no_clobber)
 
 
 def _fix_io_arguments(parser: argparse.ArgumentParser):
-    for arg in ['--istream', '--ostream']:
+    for arg in ["--istream", "--ostream"]:
         if arg in parser._option_string_actions:
             action = parser._option_string_actions[arg]
             if action.default == sys.stdin:
-                action.help = 'input file'
+                action.help = "input file"
             elif action.default == sys.stdout:
-                action.help = 'stdout'
+                action.help = "stdout"
             action.type = str
 
 
-def run(commands: Callable|list[Callable]) -> None:
+def async_to_sync_wrapper(async_func: Callable) -> Callable:
+    @functools.wraps(async_func)
+    def wrapper(*args, **kwargs):
+        return asyncio.run(async_func(*args, **kwargs))
+
+    # Copy the signature from the async function
+    wrapper.__signature__ = inspect.signature(async_func)
+
+    # TODO I don't think the following is needed:
+    #     # Copy the argh-specific attributes
+    #     for attr in dir(async_func):
+    #         if attr.startswith('argh_'):
+    #             setattr(wrapper, attr, getattr(async_func, attr))
+
+    return wrapper
+
+
+def create_argh_compatible_wrapper(func: Callable) -> Callable:
+    if not asyncio.iscoroutinefunction(func):
+        return func
+
+    wrapped_func = async_to_sync_wrapper(func)
+
+    # Copy all decorators from the async function
+    for decorator in getattr(func, "__decorators__", []):
+        wrapped_func = decorator(wrapped_func)
+
+    return wrapped_func
+
+
+def run(commands: Callable | list[Callable]) -> None:
     """
     Set up logging, parse arguments, and run the specified command(s).
 
@@ -285,11 +317,18 @@ def run(commands: Callable|list[Callable]) -> None:
     """
     module_name = main.get_module_name(2)
 
-    parser = argh.ArghParser(formatter_class=lambda prog: main.CustomHelpFormatter(prog, max_help_position=40), allow_abbrev=False)
+    parser = argh.ArghParser(
+        formatter_class=lambda prog: main.CustomHelpFormatter(
+            prog, max_help_position=40
+        ),
+        allow_abbrev=False,
+    )
 
     if isinstance(commands, list):
+        commands = [create_argh_compatible_wrapper(fn) for fn in commands]
         argh.add_commands(parser, commands)
     else:
+        commands = create_argh_compatible_wrapper(commands)
         argh.set_default_command(parser, commands)
 
     main.setup_logging_args(module_name, parser)
@@ -319,7 +358,9 @@ def run(commands: Callable|list[Callable]) -> None:
         logger.debug("Full traceback:\n%s", tb)
 
 
-def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Callable, Callable]:
+def io(
+    istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout
+) -> tuple[Callable, Callable]:
     """
     Create input and output functions for handling I/O operations.
 
@@ -353,7 +394,9 @@ def io(istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> tuple[Calla
             end = ""
         print(*args, file=ostream, end=end, **kwargs)
 
-    def get(prompt: str = ": ", all=False, lines=False, chunks=False, rstrip=True) -> str:
+    def get(
+        prompt: str = ": ", all=False, lines=False, chunks=False, rstrip=True
+    ) -> str:
         """
         Get input from the input stream.
 
@@ -396,7 +439,7 @@ def resource(path: str) -> Path:
     Returns:
         Path: The constructed Path object.
     """
-    parts = path.replace('/', os.sep).split(os.sep)
+    parts = path.replace("/", os.sep).split(os.sep)
     return Path(os.environ["ALLEMANDE_HOME"], *parts)
 
 
@@ -414,7 +457,7 @@ class IndentLogger:
         getattr(self.logger, level)(indented_msg, *args, **kwargs)
 
     def __getattr__(self, name):
-        if name in ['debug', 'info', 'warning', 'error', 'critical']:
+        if name in ["debug", "info", "warning", "error", "critical"]:
             return lambda msg, *args, **kwargs: self._log(name, msg, *args, **kwargs)
         return getattr(self.logger, name)
 
@@ -433,7 +476,7 @@ def find_in_path(file, resolve=True):
     Raises:
         FileNotFoundError: If the file is not found in PATH.
     """
-    for dir in os.environ['PATH'].split(os.pathsep):
+    for dir in os.environ["PATH"].split(os.pathsep):
         full_path = Path(dir) / file
         if resolve:
             full_path = full_path.resolve()
@@ -446,33 +489,48 @@ class TextInput:
     """
     A text input manager that can read from files, stdin, or StringIO.
     """
-    def __init__(self, file=None, mode='r', encoding='utf-8', errors='strict', newline=None, search=False, basename=False, stdin_name=None):
-        stdin_name = stdin_name or 'input'
 
-        if mode not in ('r', 'rb', 'rt'):
+    def __init__(
+        self,
+        file=None,
+        mode="r",
+        encoding="utf-8",
+        errors="strict",
+        newline=None,
+        search=False,
+        basename=False,
+        stdin_name=None,
+    ):
+        stdin_name = stdin_name or "input"
+
+        if mode not in ("r", "rb", "rt"):
             raise ValueError("Mode must be 'r', 'rb', or 'rt'")
 
         self.encoding = encoding
         self.errors = errors
         self.newline = newline
 
-        if file in (None, '-', sys.stdin):
+        if file in (None, "-", sys.stdin):
             self.display = stdin_name
             self.file = sys.stdin
         elif isinstance(file, str):
             if search and not os.path.exists(file):
                 file = find_in_path(file)
             self.display = os.path.basename(file) if basename else file
-            self.file = open(file, mode, encoding=encoding, errors=errors, newline=newline)
+            self.file = open(
+                file, mode, encoding=encoding, errors=errors, newline=newline
+            )
         elif isinstance(file, StringIO):
             self.display = "StringIO"
             self.file = file
         else:
-            self.display = getattr(file, 'name', 'file-like object')
+            self.display = getattr(file, "name", "file-like object")
             self.file = file
 
-        if not isinstance(self.file, TextIOWrapper) and hasattr(self.file, 'read'):
-            self.file = TextIOWrapper(self.file, encoding=encoding, errors=errors, newline=newline)
+        if not isinstance(self.file, TextIOWrapper) and hasattr(self.file, "read"):
+            self.file = TextIOWrapper(
+                self.file, encoding=encoding, errors=errors, newline=newline
+            )
 
     def read(self, size=-1):
         return self.file.read(size)
@@ -521,4 +579,4 @@ def upset(name: str, value: Any, level: int = 2) -> None:
 
 def is_binary(file_path):
     mime_type, _ = mimetypes.guess_type(file_path)
-    return mime_type and not mime_type.startswith('text')
+    return mime_type and not mime_type.startswith("text")
