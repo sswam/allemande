@@ -1,0 +1,128 @@
+<section class="h1"><h1 id="bash-test-quoting-and-evaluation-syntaxes-v1.0.1">Bash Test,
+Quoting, and Evaluation Syntaxes v1.0.1</h1>
+<p>This document explains various Bash syntaxes for testing, quoting,
+and evaluation, with examples and detailed explanations.</p>
+<section class="h2"><h2 id="test-constructs">Test Constructs</h2></section>
+<section class="h3"><h3 id="test-command">test command</h3></section>
+<p>The <code>test</code> command evaluates conditional expressions. It’s
+often used in scripts to check file attributes, compare strings, or
+evaluate other conditions.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a aria-hidden="true" href="#cb1-1" tabindex="-1"></a><span class="cf">if</span> <span class="bu">test</span> <span class="at">-f</span> file.txt<span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb1-2"><a aria-hidden="true" href="#cb1-2" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"file.txt exists and is a regular file"</span></span>
+<span id="cb1-3"><a aria-hidden="true" href="#cb1-3" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<p>In this example, <code>-f</code> checks if the file exists and is a
+regular file (not a directory or device file).</p>
+<section class="h3"><h3 id="square-brackets">[ ] (square brackets)</h3></section>
+<p>Square brackets are synonymous with the <code>test</code> command.
+They’re more commonly used due to their readability.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a aria-hidden="true" href="#cb2-1" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">"/path/to/directory"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb2-2"><a aria-hidden="true" href="#cb2-2" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Directory exists"</span></span>
+<span id="cb2-3"><a aria-hidden="true" href="#cb2-3" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<p>Here, <code>-d</code> tests if the specified path is a directory.
+Always leave spaces after [ and before ].</p>
+<section class="h3"><h3 id="double-square-brackets">[[ ]] (double square brackets)</h3></section>
+<p>Double square brackets offer extended functionality compared to
+single brackets. They’re bash-specific and not POSIX-compliant, but
+provide more features and are less error-prone.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a aria-hidden="true" href="#cb3-1" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> <span class="st">"</span><span class="va">$string</span><span class="st">"</span> <span class="ot">==</span> <span class="pp">*</span><span class="st">"substring"</span><span class="pp">*</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb3-2"><a aria-hidden="true" href="#cb3-2" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"String contains substring"</span></span>
+<span id="cb3-3"><a aria-hidden="true" href="#cb3-3" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<p>This example uses pattern matching, which is not possible with single
+brackets. Double brackets also prevent word splitting and pathname
+expansion.</p>
+<section class="h3"><h3 id="arithmetic-evaluation">(( )) (arithmetic evaluation)</h3></section>
+<p>Double parentheses are used for arithmetic operations and
+comparisons. They allow you to use C-style syntax for mathematical
+expressions.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a aria-hidden="true" href="#cb4-1" tabindex="-1"></a><span class="cf">if</span> <span class="kw">((</span> <span class="dv">5</span> <span class="op">&gt;</span> <span class="dv">3</span> <span class="kw">&amp;&amp;</span> <span class="dv">10</span> <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span> <span class="kw">));</span> <span class="cf">then</span></span>
+<span id="cb4-2"><a aria-hidden="true" href="#cb4-2" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"5 is greater than 3 and 10 is even"</span></span>
+<span id="cb4-3"><a aria-hidden="true" href="#cb4-3" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<p>This construct doesn’t require $ for variable names and supports
+complex arithmetic operations.</p>
+<section class="h2"><h2 id="quoting">Quoting</h2></section>
+<section class="h3"><h3 id="single-quotes">Single Quotes (’’)</h3></section>
+<p>Single quotes preserve the literal value of each character within the
+quotes. This is useful when you want to prevent any interpretation or
+expansion.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a aria-hidden="true" href="#cb5-1" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'The variable $HOME is not expanded here'</span></span></code></pre></div>
+<p>Output: The variable $HOME is not expanded here</p>
+<section class="h3"><h3 id="double-quotes">Double Quotes (““)</h3></section>
+<p>Double quotes preserve the literal value of all characters except $,
+`, , and sometimes !. Variables and command substitutions are expanded
+inside double quotes.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a aria-hidden="true" href="#cb6-1" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Your home directory is </span><span class="va">$HOME</span><span class="st">"</span></span></code></pre></div>
+<p>Output: Your home directory is /home/username</p>
+<section class="h3"><h3 id="escaping">Escaping</h3></section>
+<p>Use backslash () to escape special characters, giving them a literal
+meaning.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a aria-hidden="true" href="#cb7-1" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"This is a </span><span class="dt">\"</span><span class="st">quoted</span><span class="dt">\"</span><span class="st"> word."</span></span>
+<span id="cb7-2"><a aria-hidden="true" href="#cb7-2" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"The price is </span><span class="dt">\$</span><span class="st">10."</span></span></code></pre></div>
+<p>Output: This is a “quoted” word. The price is $10.</p>
+<section class="h2"><h2 id="command-substitution">Command Substitution</h2></section>
+<section class="h3"><h3 id="backticks">Backticks (`)</h3></section>
+<p>Backticks are the older syntax for command substitution. They allow
+you to use the output of a command as part of another command.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a aria-hidden="true" href="#cb8-1" tabindex="-1"></a><span class="va">current_date</span><span class="op">=</span><span class="kw">`</span><span class="fu">date</span> +%Y-%m-%d<span class="kw">`</span></span>
+<span id="cb8-2"><a aria-hidden="true" href="#cb8-2" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Today's date is </span><span class="va">$current_date</span><span class="st">"</span></span></code></pre></div>
+<section class="h3"><h3 id="recommended">$( ) (recommended)</h3></section>
+<p>The $( ) syntax is the modern and recommended way for command
+substitution. It’s easier to nest and more readable.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a aria-hidden="true" href="#cb9-1" tabindex="-1"></a><span class="va">current_time</span><span class="op">=</span><span class="va">$(</span><span class="fu">date</span> +%H:%M:%S<span class="va">)</span></span>
+<span id="cb9-2"><a aria-hidden="true" href="#cb9-2" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"The current time is </span><span class="va">$current_time</span><span class="st">"</span></span></code></pre></div>
+<section class="h2"><h2 id="here-documents">Here Documents</h2></section>
+<p>Here documents allow you to pass multiple lines of input to a
+command. They’re useful for creating multi-line strings or passing
+multi-line input to commands.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a aria-hidden="true" href="#cb10-1" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&lt;&lt; EOF</span> <span class="op">&gt;</span> output.txt</span>
+<span id="cb10-2"><a aria-hidden="true" href="#cb10-2" tabindex="-1"></a><span class="st">This is line 1</span></span>
+<span id="cb10-3"><a aria-hidden="true" href="#cb10-3" tabindex="-1"></a><span class="st">This is line 2</span></span>
+<span id="cb10-4"><a aria-hidden="true" href="#cb10-4" tabindex="-1"></a><span class="st">Variables like </span><span class="va">$HOME</span><span class="st"> are expanded</span></span>
+<span id="cb10-5"><a aria-hidden="true" href="#cb10-5" tabindex="-1"></a><span class="op">EOF</span></span></code></pre></div>
+<p>This creates a file named output.txt with the specified content.</p>
+<section class="h2"><h2 id="continued-lines">Continued Lines</h2></section>
+<p>Use backslash () to continue long commands over multiple lines. This
+improves readability in scripts.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a aria-hidden="true" href="#cb11-1" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"This is a very long </span><span class="dt">\</span></span>
+<span id="cb11-2"><a aria-hidden="true" href="#cb11-2" tabindex="-1"></a><span class="st">command that spans </span><span class="dt">\</span></span>
+<span id="cb11-3"><a aria-hidden="true" href="#cb11-3" tabindex="-1"></a><span class="st">multiple lines"</span></span></code></pre></div>
+<section class="h2"><h2 id="input-redirection">Input Redirection</h2></section>
+<section class="h3"><h3 id="from-a-string">From a String</h3></section>
+<p>The &lt;&lt;&lt; operator allows you to pass a string directly to a
+command’s standard input.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a aria-hidden="true" href="#cb12-1" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"pattern"</span> <span class="op">&lt;&lt;&lt;</span> <span class="st">"This is the input string"</span></span></code></pre></div>
+<section class="h3"><h3 id="from-a-command">From a Command</h3></section>
+<p>Use process substitution &lt;( ) to redirect input from a command.
+This is useful for commands that expect file inputs.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a aria-hidden="true" href="#cb13-1" tabindex="-1"></a><span class="fu">diff</span> <span class="op">&lt;(</span><span class="fu">ls</span> dir1<span class="op">)</span> <span class="op">&lt;(</span><span class="fu">ls</span> dir2<span class="op">)</span></span></code></pre></div>
+<p>This compares the contents of two directories.</p>
+<section class="h2"><h2 id="file-content-as-command-arguments">File Content as Command
+Arguments</h2></section>
+<section class="h3"><h3 id="using-cat">Using cat</h3></section>
+<p>You can use <code>cat</code> to read file contents, but this spawns a
+new process.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a aria-hidden="true" href="#cb14-1" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$(</span><span class="fu">cat</span> file.txt<span class="va">)</span></span></code></pre></div>
+<section class="h3"><h3 id="using-more-efficient">Using &lt; (more efficient)</h3></section>
+<p>This method is more efficient as it doesn’t create a new process.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a aria-hidden="true" href="#cb15-1" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$(</span><span class="op">&lt;</span>file.txt<span class="va">)</span></span></code></pre></div>
+<section class="h2"><h2 id="parameter-expansion">Parameter Expansion</h2></section>
+<p>Use ${} for parameter expansion, which is especially useful for
+manipulating variables.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a aria-hidden="true" href="#cb16-1" tabindex="-1"></a><span class="va">name</span><span class="op">=</span><span class="st">"John"</span></span>
+<span id="cb16-2"><a aria-hidden="true" href="#cb16-2" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${name}</span><span class="st">'s Files"</span></span>
+<span id="cb16-3"><a aria-hidden="true" href="#cb16-3" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">${name</span><span class="op">^^</span><span class="va">}</span><span class="st">"</span>  <span class="co"># Uppercase conversion</span></span></code></pre></div>
+<section class="h2"><h2 id="arithmetic-expansion">Arithmetic Expansion</h2>
+<p>Use $(( )) for arithmetic expansion. This allows you to perform
+calculations directly in your scripts.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a aria-hidden="true" href="#cb17-1" tabindex="-1"></a><span class="va">result</span><span class="op">=</span><span class="va">$((</span><span class="dv">5</span> <span class="op">+</span> <span class="dv">3</span><span class="va">))</span></span>
+<span id="cb17-2"><a aria-hidden="true" href="#cb17-2" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"5 + 3 = </span><span class="va">$result</span><span class="st">"</span></span>
+<span id="cb17-3"><a aria-hidden="true" href="#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a aria-hidden="true" href="#cb17-4" tabindex="-1"></a><span class="co"># More complex example</span></span>
+<span id="cb17-5"><a aria-hidden="true" href="#cb17-5" tabindex="-1"></a><span class="va">a</span><span class="op">=</span>5</span>
+<span id="cb17-6"><a aria-hidden="true" href="#cb17-6" tabindex="-1"></a><span class="va">b</span><span class="op">=</span>3</span>
+<span id="cb17-7"><a aria-hidden="true" href="#cb17-7" tabindex="-1"></a><span class="va">result</span><span class="op">=</span><span class="va">$((a</span> <span class="op">*</span> <span class="va">b</span> <span class="op">+</span> <span class="dv">2</span><span class="va">))</span></span>
+<span id="cb17-8"><a aria-hidden="true" href="#cb17-8" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"</span><span class="va">$a</span><span class="st"> * </span><span class="va">$b</span><span class="st"> + 2 = </span><span class="va">$result</span><span class="st">"</span></span></code></pre></div>
+<p>These examples cover a wide range of Bash syntaxes for testing,
+quoting, and evaluation. Remember to consult the Bash manual
+(<code>man bash</code>) for more detailed information on each
+feature.</p>
+</section></section>
