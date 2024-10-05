@@ -7,7 +7,7 @@ translate() {
 	local s=1	# refer to hello.<ext> for style
 	local p=	# extra prompt
 	local m=	# model
-	local E=0	# do not edit
+	local e=1	# edit
 
 	. opts
 
@@ -24,7 +24,7 @@ translate() {
 	local prompt="Please translate $source to $target as exactly as possible. $p"
 
 	# Call create.sh to perform the translation
-	create.sh -s="$s" -m="$m" -E="$E" "$target" "$prompt" "$source" "${refs[@]}"
+	create.sh -s="$s" -m="$m" -e="$e" "$target" "$prompt" "$source" "${refs[@]}"
 
 	# restore caller options
 	eval "$old_opts"
