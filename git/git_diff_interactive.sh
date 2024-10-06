@@ -1,5 +1,5 @@
 #!/bin/bash -eu
-# 
+#
 # Interactive git add with diffs, and llm-git-commit
 
 git_diff_interactive() {
@@ -141,7 +141,7 @@ action_commit_previous() {
 		llm-git-commit "${added[@]}"
 	else
 		setsid xterm -title "ci ${added[*]}" -e llm-git-commit "${added[@]}" &
-	fi 
+	fi
 	added=()
 	return 1
 }
