@@ -219,6 +219,9 @@ improve() {
 		exit 1
 	fi
 
+	# make the file executable if appropriate
+	cx-shebang "$file"
+
 	# Compare original and improved versions
 	if (( edit )); then
 		if [ -n "$tests_file" ]; then
@@ -227,6 +230,9 @@ improve() {
 			vimdiff "$file~" "$file"
 		fi
 	fi
+
+	# make the file executable if appropriate
+	cx-shebang "$file"
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
 	confirm=""

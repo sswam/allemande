@@ -62,10 +62,8 @@ create() {
 			cat
 		fi >"$ofile"
 
-	# make the file executable if it is code
-	if [ -n "$comment_char" ] && [ "$ext" != "md" ]; then
-		chmod +x "$ofile"
-	fi
+	# make the file executable if appropriate
+	cx-shebang "$ofile"
 
 	# Edit the file if requested
 	if (("$edit")); then
