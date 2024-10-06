@@ -35,9 +35,9 @@ def process_line(line: str, factor: float) -> str:
     return re.sub(r'#[0-9A-Fa-f]{6}', replace_color, line)
 
 
-@arg("--factor", "-f", help="factor to adjust colors by", type=float, default=0.5)
+@arg("percent", help="percentage to adjust colors by", type=float)
 def hex_adjust(
-    factor: float = 0.5,
+    percent: float,
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
 ) -> None:
@@ -46,9 +46,12 @@ def hex_adjust(
     """
     get, put = main.io(istream, ostream)
 
-    if factor <= 0:
-        logger.warning("Factor should be positive. Using absolute value.")
-        factor = abs(factor)
+    if percent < 0:
+        raise ValueError("percent must be non-negative")
+    if percent > 100:
+        raise ValueError("percent must be at most 100")
+
+    factor = percent / 100
 
     while (line := get()) is not None:
         adjusted_line = process_line(line, factor)
