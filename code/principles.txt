@@ -1,0 +1,18 @@
+Key principles from "The Practice of Programming" by Brian W. Kernighan and Rob Pike:
+
+1. Simplicity: Write clear, simple code
+2. Clarity: Make code easy to read and understand
+3. Generality: Write flexible, reusable code
+4. Automation: Automate repetitive tasks
+5. Anticipate change: Design for future modifications
+6. Consistency: Follow consistent coding styles and conventions
+7. Modularity: Break code into manageable, independent parts
+8. Incremental development: Build and test in small steps
+9. Planning: Think before coding
+10. Documentation: Comment code and write clear documentation
+11. Testing: Test early, often, and thoroughly
+12. Debugging: Use effective debugging techniques
+13. Portability: Write code that works across different platforms
+14. Efficiency: Optimize code when necessary
+15. Tools: Use appropriate tools to improve productivity
+
