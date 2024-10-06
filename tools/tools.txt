@@ -10,3 +10,4 @@ join-files
 improve
 create
 crosspy
+diffy

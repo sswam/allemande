@@ -8,7 +8,7 @@ SHELL := /bin/bash
 all: tools_help.txt
 
 tools_help.txt: tools.txt
-	while read A; do "$$A" --help ; echo; echo; done < $< > $@
+	while read tool; do v "$$tool" --help ; echo; echo; done < $< > $@ 2>&1 | less -F
 
 clean:
 	rm -f tools_help.txt
