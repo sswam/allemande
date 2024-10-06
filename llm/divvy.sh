@@ -41,33 +41,9 @@ content
 ..."
 
 	process -m="$model" "$prompt" |
-	awk '
-		/^#File: / {
-			if (file) close(file)
-			file = substr($0, 7)
-			next
-		}
-		{ if (file) print > file }
-	'
+	split-files
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	divvy "$@"
 fi
-
-# version: 0.1.0
-
-# Here's the `divvy.sh` script, written in the style of `hello_sh.sh`, to separate stdin into several files based on the provided arguments:
-
-# This script, `divvy.sh`, allows you to separate stdin into several files based on the provided arguments. It supports both a simple splitting method and an AI-powered intelligent splitting method. Here's a breakdown of its functionality:
-#
-# 1. It uses the `opts` script to handle options and generate usage information.
-# 2. It supports both long and short options for various parameters.
-# 3. The main `divvy` function checks if at least one output file is specified.
-# 4. Depending on whether AI is used or not, it calls either `ai_divvy` or `simple_divvy`.
-# 5. The `simple_divvy` function uses the `split` command to divide the input, either by line count or evenly across the specified number of files.
-# 6. The `ai_divvy` function uses an AI model to intelligently split the content based on context.
-# 7. The script can be used both as a standalone command and as a bash library.
-#
-# This script follows the style and conventions of `hello_sh.sh`, including error handling, option processing, and the ability to be used as a library or standalone tool.
-
