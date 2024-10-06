@@ -5,6 +5,7 @@ use warnings;
 use Test::More;
 use File::Temp qw/ tempdir /;
 use File::Spec;
+use File::Basename qw(basename);
 
 # Path to the script being tested
 my $script = './join_files.pl';
@@ -65,6 +66,9 @@ for my $test (@tests) {
     open my $fh, '<', $output_file or die "Could not open file '$output_file': $!";
     my $output = do { local $/; <$fh> };
     close $fh;
+
+    # Replace full paths with basenames in the output
+    $output =~ s/#File: \Q$temp_dir\E\/(.*?)(\n|$)/#File: $1$2/g;
 
     # Check the result
     is($output, $test->{expected}, $test->{name});
