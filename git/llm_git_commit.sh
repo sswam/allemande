@@ -290,7 +290,8 @@ run-git-diff() {
     local opts=("$@")
     local difftext
     v git add -A -- "${files[@]}"
-    v git diff --staged -U$diff_context --find-renames "${opts[@]}" -- "${files[@]}"
+    v git diff --staged -U$diff_context --find-renames "${opts[@]}" -- "${files[@]}" |
+    grep -v -e '^\\ No newline at end of file$' -e '^index '
 #
 #     if [ "${#files[@]}" -eq 0 ]; then
 #         git diff --staged -U$diff_context --find-renames -- "${opts[@]}"
