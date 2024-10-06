@@ -253,6 +253,7 @@ def log_message(filename: str, message: Message):
 @arg("--context", help="Number of previous messages to include for context")
 @arg("--ai_name", help="Name of the AI assistant")
 @arg("--user_name", help="Name of the user", default=None)
+@arg("--first", help="AI speaks first", default=False)
 async def chat_with_ai(
     chat_file: str,
     istream: TextIO = sys.stdin,
@@ -262,6 +263,7 @@ async def chat_with_ai(
     context: int = 1000,
     ai_name: str = "Ally",
     user_name: str | None = None,
+    first: bool = False,
 ) -> None:
     """
     Chat with a local LLM model.
@@ -285,41 +287,51 @@ async def chat_with_ai(
         message_history = read_chat_history(chat_file)
         display_chat_history(message_history, put)
 
-    while True:
-        message = Message(user_name, get(f"{user_name}: "))
+    async def user_turn():
+        message = Message(user_name, await get(f"{user_name}: "))
+        await put()
         if message.text is None:
-            break
-
-        put()
-
+            raise EOFError()
+        # TODO a Messages class could handle this
+        response.text = response.text.strip()
         if chat_file:
             log_message(chat_file, message)
-
         message_history.append(message)
-        context_prompt = "\n\n".join(map(message_to_string, message_history[-context:])) + "\n\n" + f"{ai_name}:"
+        return message
 
+    async def ai_turn():
+        context_prompt = "\n\n".join(map(message_to_string, message_history[-context:])) + f"\n\n{ai_name}:"
         put(f"{ai_name}:", end="")
-        response = Message(ai_name, "")
+        message = Message(ai_name, "")
         async for chunk in generate_response(pipeline, context_prompt, stream=stream):
-            text2 = response.text + chunk
+            text2 = message.text + chunk
             if not any(text2.endswith(stopper) for stopper in stop_texts):
-                response.text = text2
+                message.text = text2
                 put(chunk, end="", flush=True)
-
-        if not response.text.endswith("\n"):
+        # TODO give the AI the ability to stop the conversation
+        if not message.text.endswith("\n"):
             put()
-        if not response.text.endswith("\n\n"):
+        if not message.text.endswith("\n\n"):
             put()
-
-        # TODO With username stop texts, we can tell who the AI expects to reply, which could be useful!
-        # It could even call out to someone who isn't in the chat yet, or an imaginary friend, or whatever.
-
-        response.text = response.text.strip()
-
-        message_history.append(response)
-
+        # TODO dup code, see Messages class idea above
+        message.text = message.text.strip()
         if chat_file:
-            log_message(chat_file, response)
+            log_message(chat_file, message)
+        message_history.append(message)
+        return message
+
+    # Main loop
+    if first:
+        await ai_turn()
+    try:
+        while True:
+            await user_turn()
+            await ai_turn()
+    except EOFError:
+        pass
+
+    # TODO With username stop texts, we can tell who the AI expects to reply, which could be useful!
+    # It could even call out to someone who isn't in the chat yet, or an imaginary friend, or whatever.
 
 
 if __name__ == "__main__":
