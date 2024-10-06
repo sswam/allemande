@@ -123,10 +123,12 @@ git-commit() {
 trap 'cleanup-and-exit 0' EXIT
 trap 'message-and-exit 1' INT
 
+run_initial_gens=1
+
 while getopts "nC:B43cioMm:F:exh" opt; do
     case "$opt" in
     n)
-        model=""
+        run_initial_gens=0
         ;;
     C)
         diff_context="$OPTARG"
@@ -165,10 +167,6 @@ while getopts "nC:B43cioMm:F:exh" opt; do
     esac
 done
 shift $((OPTIND-1))
-
-git-staged() {
-    git diff --cached --name-status | kut_perl.pl -o 1 | tr '\t' '\n'
-}
 
 # handle the list of files
 
@@ -215,13 +213,17 @@ if [ "${#files[@]}" -eq 0 ]; then
 else
     git add -A -- "${files[@]}"
 fi
+
+# if still no files, use all
 if [ "${#files[@]}" -eq 0 ]; then
     cd "$original_dir"
     git add -A .
     cd "$git_root"
     readarray -t files < <(git-staged)
 fi
+
 release_lock
+
 if [ "${#files[@]}" -eq 0 ]; then
     echo >&2 "No files to commit."
     exit 1
@@ -229,7 +231,10 @@ fi
 
 # Find any missing files
 for i in "${!files[@]}"; do
-    if [ ! -e "${files[$i]}" ]; then
+    if [ ! -L "${files[$i]}" ] && [ ! -e "${files[$i]}" ]; then
+        if [ -n "$(git status --porcelain -- "${files[$i]}")" ]; then
+            continue
+        fi
         files[$i]=$(wich "${files[$i]}")
         if [ "$resolve_symlinks" -eq 1 ]; then
             files[$i]=$(realpath "${files[$i]}")
@@ -240,7 +245,13 @@ done
 # Paths relative to git_root
 for i in "${!files[@]}"; do
     files[$i]=$(realpath --no-symlinks --relative-to="$git_root" "${files[$i]}")
+    # if outside the repo, remove it from the list
+    if [ "${files[$i]:0:3}" = "../" ]; then
+        echo >&2 "Skipping file outside repo: ${files[$i]}"
+        unset files[$i]
+    fi
 done
+files=("${files[@]}")
 
 cd "$git_root"
 
@@ -251,14 +262,8 @@ for file in "${files[@]}"; do
     tmp_stage+=("$file")
     git add "$file"
 done
-git_status=$(git status --porcelain)
-for file in "${files[@]}"; do
-    # Check for renames
-    renamed_from=$(echo "$git_status" | grep "R. .*-> $file$" | awk '{print $2}')
-    if [ -n "$renamed_from" ]; then
-        files+=("$renamed_from")
-    fi
-done
+IFS=$'\n' read -r -d '' -a renamed_from <<< "$renamed_from"
+files+=("${renamed_from[@]}")
 git restore --staged -- "${tmp_stage[@]}"
 
 # Inform the user of the files to be committed
@@ -284,19 +289,22 @@ run-git-diff() {
     get_lock
     local opts=("$@")
     local difftext
-    if [ "${#files[@]}" -eq 0 ]; then
-        git diff --staged -U$diff_context "${opts[@]}"
-    else
-        git add -A -- "${files[@]}"
-        for file in "${files[@]}"; do
-            difftext=$(git diff --staged -U$diff_context "${opts[@]}" -- "$file")
-            if [ -n "$difftext" ]; then
-                printf "%s\n" "$difftext"
-            elif [ -e "$file" ] && [ -n "$(git ls-files --exclude-standard --others --directory --no-empty-directory --error-unmatch "$file" 2>/dev/null)" ]; then
-                cat_named.py "$file"
-            fi
-        done
-    fi
+    v git add -A -- "${files[@]}"
+    v git diff --staged -U$diff_context --find-renames "${opts[@]}" -- "${files[@]}"
+#
+#     if [ "${#files[@]}" -eq 0 ]; then
+#         git diff --staged -U$diff_context --find-renames -- "${opts[@]}"
+#     else
+#         git add -A -- "${files[@]}"
+#         for file in "${files[@]}"; do
+#             difftext=$(git diff --staged -U$diff_context --find-renames "${opts[@]}" -- "$file")
+#             if [ -n "$difftext" ]; then
+#                 printf "%s\n" "$difftext"
+#             elif [ -e "$file" ] && [ -n "$(git ls-files --exclude-standard --others --directory --no-empty-directory --error-unmatch "$file" 2>/dev/null)" ]; then
+#                 cat_named.py "$file"
+#             fi
+#         done
+#     fi
     release_lock
 }
 
@@ -319,7 +327,7 @@ generate-commit-message() {
         $MR "$commit_message"
     fi
 
-    run-git-diff-two-stage | llm process -m "$model" "Please describe this diff, for a high-level Conventional Commits message.
+    run-git-diff | tee /dev/stderr | llm process -m "$model" "Please describe this diff, for a high-level Conventional Commits message.
 *** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
 Return only the git commit message, no prelude or conclusion.
 
@@ -360,7 +368,7 @@ check-for-bugs() {
         echo >&2 "Code review already exists: $review, moving it to rubbish."
         $MR "$review"
     fi
-    run-git-diff | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
+    run-git-diff | tee /dev/stderr | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
 Answer LGTM if it is bug-free and you see no issues, or list bugs still present
 in the patched code. Do NOT list bugs in the original code that are fixed by
 the patch. Also list other issues or suggestions if they seem worthwhile.
@@ -378,7 +386,7 @@ or if nothing is wrong, please just wrte 'LGTM'.
     echo
 }
 
-if [ -n "$model" ]; then
+if (( run_initial_gens )); then
     if [ "$initial_bug_check" -eq 1 ]; then
         check-for-bugs "$model"
     fi
@@ -422,7 +430,7 @@ while true; do
             run-git-vimdiff
             ;;
         b)
-            check-for-bugs ""
+            check-for-bugs "${model:-d}"
             ;;
         x)
             cleanup
