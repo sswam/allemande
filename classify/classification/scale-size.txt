@@ -1,0 +1,21 @@
+-1	the smallest possible
+-0.9	extremely small
+-0.8	exceptionally small
+-0.7	very small
+-0.6	rather small
+-0.5	small
+-0.4	quite small
+-0.3	moderately small
+-0.2	somewhat small
+-0.1	slightly small
+0	normal size
+0.1	slightly large
+0.2	somewhat large
+0.3	moderately large
+0.4	quite large
+0.5	large
+0.6	rather large
+0.7	very large
+0.8	exceptionally large
+0.9	extremely large
+1	the largest possible
