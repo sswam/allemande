@@ -6,6 +6,7 @@
 improve() {
 	local model= m=	# model
 	local style= s=0	# refer to hello.<ext> for style
+	local prompt= p=	# extra prompt
 	local edit= e=1	# open an editor after the AI does it's work
 	local use_ai= a=1	# use AI, can turn off for testing with -a=0
 	local concise= c=0	# concise
@@ -24,9 +25,11 @@ improve() {
 	eval "$(ally)"
 
 	local file=$1
-	local prompt=${2:-}
+	local prompt2=${2:-}
 	shift 2 || shift 1 || true
 	local refs=("$@")
+
+	prompt="${prompt:+$prompt }${prompt2}"
 
 	if (( basename )); then
 		opt_b=("-b")
@@ -97,7 +100,12 @@ improve() {
 		printf "%s" "$tests_results" | tail -n +2 | tee -a "$results_file"
 	fi
 
-	if [ -s "$results_file" ]; then
+	# remove empty results file
+	if [ -e "$results_file" ] && [ ! -s "$results_file" ]; then
+		rm "$results_file"
+	fi
+
+	if [ -e "$results_file" ]; then
 		echo >&2 "Checks failed: $results_file"
 		if [ -n "$tests_file" ]; then
 			refs+=("$tests_file")
