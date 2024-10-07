@@ -3,8 +3,9 @@
 # [files...]
 # Make files executable if they start with a valid shebang
 
-cx_shebang() {
+cx-shebang() {
 	local verbose= v=	# print more information
+	local quiet= q=		# print less information
 
 	eval "$(ally)"
 
@@ -25,12 +26,22 @@ cx_shebang() {
 			interpreter=${first_line#\#!}
 			interpreter=${interpreter%% *}
 
-			if [ ! -f "$interpreter" ]; then
-				echo >&2 "Warning: Interpreter not found: $interpreter"
-			elif [ ! -r "$interpreter" ]; then
-				echo >&2 "Warning: Interpreter not readable: $interpreter"
-			elif [ ! -x "$interpreter" ]; then
-				echo >&2 "Warning: Interpreter not executable: $interpreter"
+			if [ "$interpreter" = "/usr/bin/env" ] || [ "$interpreter" = "/bin/env " ]; then
+				if [ -x "$interpreter" ]; then
+					interpreter=${first_line#* }
+					interpreter=${interpreter%% *}
+					interpreter=$(which "$interpreter")
+				fi
+			fi
+
+			if [ "$quiet" != 1 ]; then
+				if [ ! -f "$interpreter" ]; then
+					echo >&2 "Interpreter not found: $first_line"
+				elif [ ! -r "$interpreter" ]; then
+					echo >&2 "Interpreter not readable: $first_line"
+				elif [ ! -x "$interpreter" ]; then
+					echo >&2 "Interpreter not executable: $first_line"
+				fi
 			fi
 		else
 			mode="-x"
@@ -39,23 +50,33 @@ cx_shebang() {
 		# Check if the mode is already correct
 		if [ -x "$file" ]; then
 			if [ "$mode" = "+x" ]; then
-				mode="  "
+				mode=""
 			fi
 		else
 			if [ "$mode" = "-x" ]; then
-				mode="  "
+				mode=""
 			fi
 		fi
 
-		if [ "$mode" != "  " ]; then
+		if [ -n "$mode" ]; then
 			chmod "$mode" "$file"
 		fi
-		if [ "$verbose" = 1 ]; then
- 		       	echo >&2 "$mode"$'\t'"$file"
+
+		case "$mode" in
+		"+x") char="x" ;;
+		"-x") char="-" ;;
+		"") char=" " ;;
+		esac
+
+
+		if [ "$quiet" != 1 ]; then
+			if [ "$verbose" = 1 ] || [ -n "$mode" ]; then
+				printf "%s %s\n" "$char" "$file"
+			fi
 		fi
 	done
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-	cx_shebang "$@"
+	cx-shebang "$@"
 fi
