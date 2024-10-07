@@ -1,0 +1,13 @@
+-6	<-18	point / fermion	-4
+-5	-14	atomic nucleus	-4
+-4	-10	atom	-4	(middle-sized atom)
+-3	-6	microbe	-3
+-2	-3	mesofauna	-3
+-1	0	human	
+0	3	neighborhood	+3
+1	6	country	+3
+2	9	planet-moon system	+3	(jupiter -> callisto)
+3	12	solar-system	+3	(neptune orbit)
+4	15	inter-stellar	+3
+5	20	galaxy	+5
+6	>26	universe	+6
