@@ -1,0 +1,21 @@
+-10	13.0	55.4	certain death extreme hypothermia, no known case of survival
+-9	22.0	71.6	extremely likely death profound hypothermia
+-8	24.0	75.2	very high risk of death severe hypothermia
+-7	26.0	78.8	severe risk of death hypothermia
+-6	28.0	82.4	likely death severe hypothermia
+-5	30.0	86.0	severe hypothermia
+-4	32.0	89.6	moderate hypothermia
+-3	34.0	93.2	mild hypothermia
+-2	35.0	95.0	cold borderline hypothermia
+-1	36.1	97.0	low normal
+0	37.0	98.6	average normal body temperature
+1	37.8	100.0	high normal
+2	38.3	100.9	mild fever
+3	39.4	102.9	moderate fever
+4	40.6	105.1	high fever
+5	41.5	106.7	severe fever
+6	42.0	107.6	likely death hyperthermia
+7	43.0	109.4	severe risk of death hyperthermia
+8	44.0	111.2	very high risk of death severe hyperthermia
+9	45.0	113.0	extremely likely death profound hyperthermia
+10	47.0	116.6	certain death extreme hyperthermia, no known case of survival

@@ -1,0 +1,21 @@
+-10	the Y-est possible
+-9	extremely Y
+-8	exceptionally Y
+-7	very Y
+-6	rather Y
+-5	Y
+-4	quite Y
+-3	moderately Y
+-2	somewhat Y
+-1	slightly Y
+0	normal
+1	slightly X
+2	somewhat X
+3	moderately X
+4	quite X
+5	X
+6	rather X
+7	very X
+8	exceptionally X
+9	extremely X
+10	the X-est possible
