@@ -61,7 +61,7 @@ while read name; do
 	name=${name#- }
 	dir="$gen/$name"
 	if [ "$skip_ai" != 1 ]; then
-		. parallel run_giles_for_tourism "$name" "$dir"
+		. para run_giles_for_tourism "$name" "$dir"
 	fi
 	if [ ! -d "$dir" ]; then
 		echo >&2 "*** $name directory is not found, skipping ***"

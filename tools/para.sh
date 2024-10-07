@@ -1,6 +1,6 @@
 # use this from bash, like:
 # PARALLEL_MAX=10
-# . parallel command args
+# . para command args
 
 # This unfortunately has gotten ugly because I wanted to make it always run
 # $PARALLEL_MAX jobs instead of run $PARALLEL_MAX then wait for all to finish,
@@ -38,7 +38,7 @@ main() {
 
 	PARALLEL_MAX="${PARALLEL_MAX:-12}"
 
-	PARALLEL_FILE="/tmp/.parallel.$$"
+	PARALLEL_FILE="/tmp/.para.$$"
 
 	if [ ! -e "$PARALLEL_FILE" -a ! -e "$PARALLEL_FILE.my" ]; then
 		for A in `seq 1 $PARALLEL_MAX`; do

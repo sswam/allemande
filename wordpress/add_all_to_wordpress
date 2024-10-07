@@ -43,6 +43,6 @@ for D; do
 
 	echo "*** PUSHING TO WORDPRESS $D"
 
-	. parallel v injectify.py --auto --$item_type --title "$N" --slug "$S" --file "$D/wordpress.txt" $media_opts || true
+	. para v injectify.py --auto --$item_type --title "$N" --slug "$S" --file "$D/wordpress.txt" $media_opts || true
 done
 wait

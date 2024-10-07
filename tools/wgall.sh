@@ -3,6 +3,6 @@
 while read A
 do
 	B=`basename $A`
-	. parallel wg "$@" "$A"
+	. para wg "$@" "$A"
 done
 wait

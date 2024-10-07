@@ -3,7 +3,7 @@ Here's a combined script that incorporates the best practices and ideas from the
 ```bash
 #!/usr/bin/env bash
 
-# File: ai_assistant.sh
+# ai_assistant.sh
 
 # AI Assistant: Combines, improves, and critiques code
 # Usage: ai_assistant.sh <command> [options] <file(s)>

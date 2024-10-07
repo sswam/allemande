@@ -83,7 +83,7 @@ mkdir -p tracks
 cd tracks
 < ../dedup-sorted.txt kut 2 |
 while read track; do
-	. parallel yt_search_and_get "$track - $artist$extra"
+	. para yt_search_and_get "$track - $artist$extra"
 	sleep 1
 done
 wait

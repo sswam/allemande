@@ -19,6 +19,6 @@ while read D; do
 
 	echo "*** BACKING UP WORDPRESS `echo "$t" | uc` $D"
 
-	. parallel v injectify.py --read --$item_type --title "$N" --slug "$S" > "$bak/$N.json"
+	. para v injectify.py --read --$item_type --title "$N" --slug "$S" > "$bak/$N.json"
 done
 wait

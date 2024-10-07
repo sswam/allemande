@@ -79,7 +79,7 @@ searchalot_searches() {
 			continue
 		fi
 		echo >&2 "RUN   $engine: $query"
-		. parallel searchalot_search "$engine" "$query" "$out"
+		. para searchalot_search "$engine" "$query" "$out"
 		n=$[$n+1]
 	done
 	echo "$n"
