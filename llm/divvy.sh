@@ -41,7 +41,9 @@ content
 ..."
 
 	process -m="$model" "$prompt" |
-	split-files
+	split-files - | tee /dev/stderr |
+	grep '^> ' | cut -c3- |
+	xa cx-shebang
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
