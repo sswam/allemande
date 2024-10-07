@@ -213,7 +213,7 @@ fi
 get_lock
 if [ "${#files[@]}" -eq 0 ]; then
     cd "$git_root"
-    readarray -t files < <(git-staged)
+    readarray -t files < <(git-mod staged)
 else
     git add -A -- "${files[@]}"
 fi
@@ -223,7 +223,7 @@ if [ "${#files[@]}" -eq 0 ]; then
     cd "$original_dir"
     git add -A .
     cd "$git_root"
-    readarray -t files < <(git-staged)
+    readarray -t files < <(git-mod staged)
 fi
 
 release_lock
