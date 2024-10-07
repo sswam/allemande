@@ -17,7 +17,7 @@ JOBS := server_start server_stop beorn server default run-i3 run frontend backen
 	stop mount umount fresh \
 	install install-dev uninstall clean i3-layout
 
-all: server_start beorn
+all: server_start beorn api_doc
 
 server_start:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make server"
@@ -219,4 +219,9 @@ fresh-old::
 	if [ -s "$$html" ]; then mv "$$html" "$$html.$$time"; fi ; \
 	touch "$(file)" "$$html"
 
-.PHONY: all default $(JOBS) %.xt canon
+api_doc: llm/llm.api
+
+%.api: %.py
+	func.py -a -A "$<" > "$@"
+
+.PHONY: all default $(JOBS) %.xt canon api_doc
