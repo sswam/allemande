@@ -150,9 +150,6 @@ something that should be an exception as a warning.
 We should always include a module-level docstring to explain the program.
 Don't include the filename in that.
 
-If sensible and simple to do so, write tools that can process several files in one invocation.  # XXX not sure
-Zero is holy! It is not an error to pass zero files to process. Just naturally do nothing in that case.
-
 Double line breaks are used to separate top-level functions and classes.
 
 Our scripts default to stdio.
