@@ -1,0 +1,84 @@
+:root {
+	--primary-color: #3498db;
+	--secondary-color: #2c3e50;
+	--text-color: #333;
+	--background-color: #ecf0f1;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: Arial, sans-serif;
+	line-height: 1.6;
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+
+header {
+	background-color: var(--primary-color);
+	color: white;
+	text-align: center;
+	padding: 1rem;
+}
+
+nav ul {
+	list-style-type: none;
+}
+
+nav ul li {
+	display: inline;
+	margin-right: 1rem;
+}
+
+nav a {
+	color: white;
+	text-decoration: none;
+}
+
+main {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+section {
+	margin-bottom: 2rem;
+}
+
+h1, h2 {
+	color: var(--secondary-color);
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+}
+
+form {
+	display: grid;
+	gap: 1rem;
+}
+
+input, textarea {
+	width: 100%;
+	padding: 0.5rem;
+}
+
+button {
+	background-color: var(--primary-color);
+	color: white;
+	border: none;
+	padding: 0.5rem 1rem;
+	cursor: pointer;
+}
+
+footer {
+	text-align: center;
+	padding: 1rem;
+	background-color: var(--secondary-color);
+	color: white;
+}
