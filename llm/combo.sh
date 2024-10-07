@@ -12,8 +12,7 @@ combine() {
 	# Collect input files
 	local input_files=("$@")
 
-	local prompt="Combine the following inputs to create \
-		a comprehensive and coherent result. $prompt"
+	local prompt="Combine and synthesize the following inputs to create a comprehensive and coherent result, choosing and refining the best elements to produce the best possible output, maintaining a style and format as close as possible to the originals. $prompt"
 
 	cat_named.py -p -b "${input_files[@]}" |
 		process -m="$model" "$prompt"
