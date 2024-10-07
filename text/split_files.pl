@@ -18,13 +18,14 @@ my %opts = (
 
 GetOptions(
     'help|h' => \$opts{help},
+    'test|n' => \$opts{test},
 ) or pod2usage(2);
 
 pod2usage(-verbose => 2) if $opts{help};
 
 my $sep = $ENV{JF_SEP} || '#File:';
 
-my $src = shift or pod2usage("usage: $0 all.txt\nsee: jf\n");
+my $src = shift or pod2usage("usage: $0 all.txt\nsee: join-files\n");
 
 my $srcfh = IO::File->new($src) or die "cannot open $src\n";
 
@@ -74,7 +75,13 @@ foreach my $dest (@dests) {
     }
     else {
         print "> $dest\n";
-        if (-e "$dest~") {
+        if ($opts{test}) {
+            unlink $dest;
+            if (-e "$dest~") {
+                rename "$dest~", $dest;
+            }
+        }
+        elsif (-e "$dest~") {
             system "chmod", "--reference=$dest~", $dest;
         }
     }
@@ -91,6 +98,7 @@ split-files - Split joined files into separate files
 split-files [options] all.txt
 
  Options:
+   --test, -n     Test mode, do not modify files
    --help         Show this help message
 
 =head1 DESCRIPTION
