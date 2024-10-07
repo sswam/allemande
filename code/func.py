@@ -53,16 +53,21 @@ def extract_items(tree, language: str):
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 items.append(node)
-    # TODO Add parsing logic for other languages here
+            for child in ast.iter_child_nodes(node):
+                child.parent = node
     return items
+    # TODO Add parsing logic for other languages here
 
 
 def format_item(item, types: bool, params: bool, decorators: bool, docstring: bool, language: str):
     if language == "py":
         name = item.name
+        if isinstance(item, ast.FunctionDef) and isinstance(item.parent, ast.ClassDef):
+            name = f"{item.parent.name}.{name}"
+        is_class = isinstance(item, ast.ClassDef)
         if types:
-            name = f"{'class' if isinstance(item, ast.ClassDef) else 'def'} {name}"
-        if params:
+            name = f"{'class' if is_class else 'def'} {name}"
+        if params and not is_class:
             name += f"({ast.unparse(item.args)})"
         if decorators:
             name = "\n".join([f"@{ast.unparse(d)}" for d in item.decorator_list] + [name])
