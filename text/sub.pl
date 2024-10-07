@@ -105,14 +105,15 @@ sub.pl - A script for text substitution with various options
 sub.pl [options] [key value ...]
 
 Options:
--w             Match whole words only
--e             Use environment variables as mapping
--d             Debug mode (print regex)
--q CHARS       Specify quote characters for keys
--m FILE        Read mapping from file
--r             Reverse key-value pairs
--f             Treat key-value pairs as filenames and read their contents
---help|-h      Show this help message
+
+    -w             Match whole words only
+    -e             Use environment variables as mapping
+    -d             Debug mode (print regex)
+    -q CHARS       Specify quote characters for keys
+    -m FILE        Read mapping from file
+    -r             Reverse key-value pairs
+    -f             Treat key-value pairs as filenames and read their contents
+    --help|-h      Show this help message
 
 =head1 DESCRIPTION
 
