@@ -1,13 +1,15 @@
-0	exceptional	exceptional quality; a masterpiece
-1	excellent	excellent quality with no flaws
+-6	blank	blank content; no information present
+-5	unusable	unusable content with only noise or artifacts
+-4	abysmal	abysmal quality; extremely distorted or barely discernible content
+-3	extremely poor	extremely poor quality; severely flawed
+-2	very poor	very poor quality with severe flaws
+-1	poor	poor quality with major flaws
+0	average	average quality with noticeable flaws
+1	good	good quality with minor flaws
 2	very good	very good quality with minimal flaws
-3	good		good quality with minor flaws
-4	average		average quality with noticeable flaws
-5	poor		poor quality with major flaws
-6	very poor	very poor quality with severe flaws
-7	extremely poor	extremely poor quality; severely flawed
-8	abysmal		abysmal quality; extremely distorted or barely discernible content
-9	unusable	unusable content with only noise or artifacts
-10	blank		blank content; no information present
-?	invalid		invalid or corrupted; unreadable file
-x	inappropriate	inappropriate or offensive content
+3	excellent	excellent quality with no flaws
+4	exceptional	exceptional quality; a masterpiece
+5	stellar	transcendent
+6	ultimate	the supreme ultimate
+?	invalid	invalid or corrupted; unreadable file; this is a different scale
+x	inappropriate	inappropriate or offensive content; this is a different scale
