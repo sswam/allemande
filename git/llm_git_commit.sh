@@ -26,6 +26,8 @@ declare -A model_names=(
     ["om"]="OpenAI o1-mini"
     ["c"]="Claude"
     ["i"]="Claude Instant"
+    ["g"]="Gemini 1.5 Pro"
+    ["f"]="Gemini 1.5 Flash"
 )
 
 declare -A option_model_codes=(
@@ -35,10 +37,12 @@ declare -A option_model_codes=(
     ["i"]="i"
     ["M"]="om"
     ["o"]="op"
+    ["g"]="gp"
+    ["f"]="gf"
 )
 
 usage() {
-    echo "Usage: `basename "$0"` [-4|-3|-c|-i|-o|-M] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-h]"
+    echo "Usage: `basename "$0"` [-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-h]"
     echo "  -n: start at menu, do not generate"
     for opt in "${!option_model_codes[@]}"; do
         model_code="${option_model_codes[$opt]}"
@@ -412,7 +416,7 @@ while true; do
     else
         prompt="Action?"
     fi
-    read -p "$prompt [y/n/q/e/3/4/c/i/o/M/d/v/b/?] " -n 1 -r choice
+    read -p "$prompt [y/n/q/e/3/4/c/i/o/M/g/f/d/v/b/?] " -n 1 -r choice
     echo
     case "$choice" in
         y)
