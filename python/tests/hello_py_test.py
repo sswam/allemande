@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 import hello_py as subject
-subject_main = subject.hello_py
+subject_main = subject.hello
 
 def test_analyze_sentiment():
     assert subject.analyze_sentiment("I'm happy") == 'Positive'
@@ -35,7 +35,7 @@ def test_reply_ai(mock_query):
     ("I'm so-so", False, "I see. Life has its ups and downs, I hope things improve for you soon!"),
     ("I'm feeling great", True, "I'm glad you're feeling great!"),
 ])
-def test_hello_py(feeling, ai, expected_response):
+def test_hello(feeling, ai, expected_response):
     input_stream = io.StringIO(feeling + "\n")
     output_stream = io.StringIO()
 
@@ -48,7 +48,7 @@ def test_hello_py(feeling, ai, expected_response):
     assert expected_response in output
 
 @pytest.mark.parametrize("fortune_word", ["", "lucky", "unlucky", "fortunate", "unfortunate"])
-def test_hello_py_fortune_words(fortune_word):
+def test_hello_fortune_words(fortune_word):
     input_stream = io.StringIO(f"{fortune_word}\n")
     output_stream = io.StringIO()
 

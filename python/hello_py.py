@@ -85,7 +85,7 @@ def reply_sentiment(feeling: str) -> str:
     metavar="MODEL",
     help="specify which AI model {emma,claude,dav,clia}",
 )
-def hello_py(
+def hello(
     *filenames: str,
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
@@ -133,7 +133,7 @@ def hello_py(
 
 
 if __name__ == "__main__":
-    main.run(hello_py)
+    main.run(hello)
 
 """
 Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
