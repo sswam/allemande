@@ -3,12 +3,15 @@
 """
 llm.py: A simple wrapper for various language model APIs including OpenAI ChatGPT,
 Anthropic's Claude, Perplexity, and Google models.
+
+This module implements a wrapper for various language model APIs, providing a
+unified interface for interacting with different models. It includes functions
+for chatting, querying, processing text, and counting tokens. The code uses
+async programming for efficient API calls and includes error handling and
+retrying mechanisms.
 """
 
-# TODO create compatible libraries for other APIs in future
-# TODO consider splitting off the OpenAI specific stuff into a separate library
-# TODO use cached responses if possible
-
+# Import necessary modules
 import sys
 from sys import stdin, stdout
 import os
@@ -34,6 +37,7 @@ from ally import main
 from ally.lazy import lazy
 import tsv2txt
 
+# Lazy imports for API clients
 lazy("openai", "AsyncOpenAI")
 lazy("openai", openai_async_client=lambda openai: openai.AsyncOpenAI())
 lazy("openai", perplexity_async_client=lambda openai: openai.AsyncOpenAI(
@@ -52,20 +56,19 @@ llama3_tokenizer = None
 
 __version__ = "0.1.3"
 
+# Set up logging
 logger = logging.getLogger(__name__)
-# logging.basicConfig(level=logging.INFO)
 
-
-# Settings
-
+# Define settings and constants
 LOGDIR = Path(os.environ["HOME"])/"llm.log"
 LOGFILE_NAME_MAX_LEN = 255
 RETRIES = 20
 exceptions_to_retry = ("RateLimitError", "APIConnectionError", "InternalServerError")
 
-default_model = 'claude'
-default_model_small = 'gpt-4o-mini'
+default_model = 'gemini-1.5-pro-latest'
+default_model_small = 'gemini-1.5-flash-latest'
 
+# Define available models and their properties
 MODELS = {
 	"o1-preview": {
 		"aliases": ["op", "grace"],
@@ -183,12 +186,7 @@ MODELS = {
 	},
 }
 
-MODELS[default_model]["aliases"].append("d")
-MODELS[default_model_small]["aliases"].append("s")
-
-
-# The default model is $LLM_MODEL or default_model as above.
-
+# Set default models from environment variables if available
 env_llm_model = os.environ.get("ALLEMANDE_LLM_DEFAULT")
 env_llm_model_small = os.environ.get("ALLEMANDE_LLM_DEFAULT_SMALL")
 
@@ -197,15 +195,19 @@ if env_llm_model in MODELS:
 if env_llm_model_small in MODELS:
 	default_model_small = env_llm_model_small
 
+MODELS[default_model]["aliases"].append("d")
+MODELS[default_model_small]["aliases"].append("s")
+
+
 ALLOWED_ROLES = ["user", "assistant", "system"]
 
 DEFAULT_TEMPERATURE = 1
 TOKEN_LIMIT = inf
 
-
 os.environ["HF_HUB_OFFLINE"] = "1"
 
 def load_huggingface_by_plan(what, plan, loader):
+	""" Try to load gated Hugging Face models, like Llama, from alternative sources """
 	saved_hf_hub_offline = os.environ.get("HF_HUB_OFFLINE", "1")
 	for online, model_name in plan:
 		try:
@@ -223,15 +225,17 @@ def load_huggingface_by_plan(what, plan, loader):
 
 
 def get_llama3_tokenizer():
+	""" Get the Llama3 tokenizer ... somehow """
 	global AutoTokenizer, llama3_tokenizer
 	if not llama3_tokenizer:
 		# The offiical model is gated, need to register; seems a bit much for a tokenizer.
 		plan = [(0, "meta-llama/Meta-Llama-3-8B"), (0, "baseten/Meta-Llama-3-tokenizer"),
-			 (1, "meta-llama/Meta-Llama-3-8B"), (1, "baseten/Meta-Llama-3-tokenizer")]
+			(1, "meta-llama/Meta-Llama-3-8B"), (1, "baseten/Meta-Llama-3-tokenizer")]
 		llama3_tokenizer = load_huggingface_by_plan("llama3_tokenizer", plan, lambda x: AutoTokenizer.from_pretrained(x))
 	return llama3_tokenizer
 
 
+# Mock completion for testing
 fake_completion = {
 	"choices": [
 		{
@@ -254,9 +258,8 @@ fake_completion = {
 	}
 }
 
-
 def get_model_by_alias(model):
-	""" If the model is an alias or abbreviation, expand it. """
+	""" Get the full model name from an alias """
 	abbrev_models = [k for k, v in MODELS.items() if model in v.get("aliases", [])]
 	if len(abbrev_models) == 1:
 		return abbrev_models[0]
@@ -266,9 +269,8 @@ def get_model_by_alias(model):
 		sys.exit(1)
 	return model
 
-
 class AutoInit:  # pylint: disable=too-few-public-methods
-	""" Automatically set attributes from kwargs. """
+	""" Classes for handling options, automatically setting attributes from kwargs """
 	def __init__(self, **kwargs):
 		for k, v in kwargs.items():
 			if hasattr(self, k):
@@ -302,12 +304,13 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
 
 opts: Options = Options()
 
-
 def set_opts(_opts):
 	""" Set the global options from a dictionary. """
 	global opts
 	opts = Options(**_opts)
 
+
+# Async functions for different API clients
 
 async def achat_openai(messages, client=None):
 	""" Chat with OpenAI ChatGPT models asynchronously. """
@@ -542,6 +545,8 @@ def read_utf_replace(istream):
 	return input_text
 
 
+# Async functions for processing and querying
+
 async def aprocess(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostream: IO[str]=None, model: str=default_model, indent=None, temperature=None, token_limit=None, retries=RETRIES, empty_ok=False, empty_to_empty=True, log=True, lines=False, repeat=False, json=False, timeit=False):
 	"""Process some text through the LLM with a prompt asynchronously."""
 	if __name__ == "__main__":
@@ -692,6 +697,8 @@ async def achat2(istream=stdin, ostream=stdout):
 	ostream.writelines(output_lines)
 
 
+# Synchronous wrappers for async functions
+# TODO we can just use async functions directly with ally.main.run now
 def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES):
 	""" Synchronous wrapper for achat. """
 	return asyncio.run(achat(istream, ostream, model, fake, temperature, token_limit, retries))
@@ -734,7 +741,7 @@ def process(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostream: IO[
 
 
 def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
-	""" count tokens in a file """
+	""" count tokens in input """
 	set_opts(vars())
 	text = read_utf_replace(istream)
 	model = MODELS[opts.model]
@@ -806,8 +813,12 @@ def models(detail=False, aliases=True):
 
 
 if __name__ == "__main__":
-	logger.info("hello")
-	main.run([chat, query, process, count, models])
+    logger.info("hello")
+    main.run([chat, query, process, count, models])
 else:
-	# Load all modules in the background after a short delay
-	lazy(0.1)
+    # Load all modules in the background after a short delay
+    lazy(0.1)
+
+# TODO create compatible libraries for other APIs in future
+# TODO consider splitting off the OpenAI specific stuff into a separate library
+# IDEA use cached responses if possible?
