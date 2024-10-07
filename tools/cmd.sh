@@ -6,6 +6,14 @@ dir=$(dirname "$0")
 base=$(basename "$0")
 subdir=$dir/${base%.*}.d
 
+case "${1:-}" in
+""|-h|--help|help)
+	ls -1 "$subdir"
+	[ -n "${1:-}" ]
+	exit 0
+	;;
+esac
+
 sub=$1
 shift
 
