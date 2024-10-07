@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribution Grapher</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #controls { margin-bottom: 20px; }
+        label { display: inline-block; width: 100px; }
+    </style>
+</head>
+<body>
+    <h1>Distribution Grapher</h1>
+    <div id="controls">
+        <label for="distributionSelect">Distribution:</label>
+        <select id="distributionSelect">
+            <option value="normal">Normal</option>
+            <option value="exponential">Exponential</option>
+            <option value="gamma">Gamma</option>
+            <option value="lognormal">Log-Normal</option>
+            <option value="weibull">Weibull</option>
+            <option value="chisquared">Chi-Squared</option>
+            <option value="skewed">Skewed Normal</option>
+        </select><br>
+        <label for="meanSlider">Mean:</label>
+        <input type="range" id="meanSlider" min="-5" max="5" step="0.1" value="0"><br>
+        <label for="stdDevSlider">Std Dev:</label>
+        <input type="range" id="stdDevSlider" min="0.1" max="5" step="0.1" value="1"><br>
+        <label for="rateSlider">Rate:</label>
+        <input type="range" id="rateSlider" min="0.1" max="5" step="0.1" value="1"><br>
+        <label for="shapeSlider">Shape:</label>
+        <input type="range" id="shapeSlider" min="0.1" max="10" step="0.1" value="2"><br>
+        <label for="scaleSlider">Scale:</label>
+        <input type="range" id="scaleSlider" min="0.1" max="5" step="0.1" value="1"><br>
+        <label for="skewSlider">Skew:</label>
+        <input type="range" id="skewSlider" min="-5" max="5" step="0.1" value="0">
+    </div>
+    <canvas id="distributionCanvas" width="800" height="400"></canvas>
+    <script src="distributions.js"></script>
+</body>
+</html>
