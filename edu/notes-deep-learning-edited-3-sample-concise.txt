@@ -1,0 +1,55 @@
+# 1. Front
+**Neural Network**
+
+# 1. Back
+A computational model inspired by the human brain, consisting of interconnected nodes organized in layers
+
+# 1. Extra
+Neural networks are the foundation of deep learning. They consist of:
+- **Input layer**: Receives initial data
+- **Hidden layer(s)**: Processes information
+- **Output layer**: Produces final results
+
+Key features:
+- **Nodes** (neurons): Basic computational units
+- **Weights**: Strength of connections between nodes
+- **Bias**: Additional parameter to adjust the output
+
+
+# 2. Front
+**Deep Learning**
+
+# 2. Back
+The subset of machine learning using multi-layered neural networks to learn hierarchical representations of data
+
+# 2. Extra
+Deep Learning is characterized by:
+- Multiple layers of neural networks (typically more than 3)
+- Automatic feature extraction
+- Ability to handle large amounts of unstructured data
+
+Key concepts:
+- **Backpropagation**: Algorithm for training neural networks
+- **Gradient descent**: Optimization technique for adjusting weights
+- **Overfitting**: When a model learns noise in training data
+
+
+# 3. Front
+**Perceptron**
+
+# 3. Back
+The simplest form of a neural network, consisting of a single artificial neuron with weighted inputs and an activation function.
+
+# 3. Extra
+The perceptron is a fundamental building block of neural networks, introduced by Frank Rosenblatt in 1958.
+
+Key components:
+1. **Inputs**: $x_1, x_2, ..., x_n$
+2. **Weights**: $w_1, w_2, ..., w_n$
+3. **Bias**: $b$
+4. **Activation function**: $f$
+
+Mathematical representation:
+$y = f(\sum_{i=1}^n w_i x_i + b)$
+
+

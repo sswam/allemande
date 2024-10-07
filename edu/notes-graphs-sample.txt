@@ -1,0 +1,1109 @@
+# 1. Front: What is a **Graph**?
+
+# 1. Back: A mathematical structure consisting of a set of vertices (nodes) and a set of edges connecting pairs of vertices.
+
+# 1. Extra:
+Graphs are fundamental in computer science and are used to model various relationships and networks. They can be represented in several ways:
+
+1. Adjacency Matrix:
+   A 2D array where element [i][j] indicates if there's an edge between vertices i and j.
+
+2. Adjacency List:
+   A collection of lists, where each list contains the neighbors of a vertex.
+
+3. Edge List:
+   A list of pairs representing the edges in the graph.
+
+Example in Python:
+```python
+# Adjacency List representation
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+```
+
+Graphs can be visualized using tools like NetworkX in Python:
+
+```python
+import networkx as nx
+import matplotlib.pyplot as plt
+
+G = nx.Graph(graph)
+nx.draw(G, with_labels=True)
+plt.show()
+```
+
+Applications of graphs include:
+- Social networks
+- Transportation systems
+- Computer networks
+- Recommendation systems
+- Dependency analysis in software
+
+Key graph algorithms:
+- Depth-First Search (DFS)
+- Breadth-First Search (BFS)
+- Dijkstra's Shortest Path
+- Minimum Spanning Tree (Kruskal's, Prim's)
+
+Graph properties:
+- Connectivity
+- Cyclicity
+- Planarity
+- Bipartiteness
+
+
+# 2. Front: Define **Vertex** in graph theory.
+
+# 2. Back: A fundamental unit in a graph, also known as a node, representing a point or object in the structure.
+
+# 2. Extra:
+Properties of vertices:
+
+1. **Degree**: The number of edges connected to a vertex.
+   - In-degree: Number of incoming edges (for directed graphs)
+   - Out-degree: Number of outgoing edges (for directed graphs)
+
+2. **Neighbors**: Vertices directly connected by an edge.
+
+3. **Isolated vertex**: A vertex with no incident edges (degree 0).
+
+4. **Pendant vertex**: A vertex with only one incident edge (degree 1).
+
+Vertices can have additional attributes, such as:
+- Labels
+- Weights
+- Colors (used in graph coloring problems)
+
+In programming, vertices are often represented by:
+- Integers
+- Strings
+- Custom objects
+
+Example in Python:
+```python
+class Vertex:
+    def __init__(self, key):
+        self.id = key
+        self.connected_to = {}
+
+    def add_neighbor(self, nbr, weight=0):
+        self.connected_to[nbr] = weight
+
+    def get_connections(self):
+        return self.connected_to.keys()
+
+    def get_id(self):
+        return self.id
+
+    def get_weight(self, nbr):
+        return self.connected_to[nbr]
+```
+
+Visualization of a vertex in a graph:
+
+```mermaid
+graph TD
+    A((A))
+```
+
+Important concepts related to vertices:
+- **Centrality**: Measures the importance of a vertex in a graph.
+- **Articulation point**: A vertex whose removal increases the number of connected components.
+- **Dominating set**: A subset of vertices such that every vertex in the graph is either in the set or adjacent to a vertex in the set.
+
+Algorithms often start their traversal or analysis from a specific vertex, called the **source** or **root** vertex.
+
+
+# 3. Front: What is an **Edge** in a graph?
+
+# 3. Back: A connection between two vertices in a graph, representing a relationship or link between them.
+
+# 3. Extra:
+Types of edges:
+
+1. **Directed edge**: Points from one vertex to another (used in directed graphs).
+2. **Undirected edge**: Connects two vertices without a specific direction (used in undirected graphs).
+3. **Weighted edge**: Has a numerical value associated with it, representing cost, distance, etc.
+4. **Self-loop**: An edge that connects a vertex to itself.
+5. **Multiple edges**: Two or more edges connecting the same pair of vertices.
+
+Edge properties:
+- Weight (for weighted graphs)
+- Capacity (in flow networks)
+- Label or type
+
+Representation in code:
+```python
+class Edge:
+    def __init__(self, src, dest, weight=1):
+        self.src = src
+        self.dest = dest
+        self.weight = weight
+```
+
+Visualization of different edge types:
+
+```mermaid
+graph LR
+    A((A)) --- B((B))
+    C((C)) --> D((D))
+    E((E)) -.- |5| F((F))
+    G((G)) --> G
+```
+
+Edge operations:
+- Adding an edge
+- Removing an edge
+- Checking if an edge exists
+- Getting edge weight or properties
+
+Important concepts related to edges:
+- **Bridge**: An edge whose removal would disconnect the graph.
+- **Minimum Spanning Tree**: A subset of edges that connects all vertices with minimum total edge weight.
+- **Euler path**: A path that uses every edge exactly once.
+- **Hamilton path**: A path that visits every vertex exactly once.
+
+Algorithms that focus on edges:
+- Kruskal's algorithm (for minimum spanning trees)
+- Ford-Fulkerson algorithm (for maximum flow)
+- Edmonds-Karp algorithm (for maximum flow)
+
+In graph databases like Neo4j, edges are called **relationships** and can have properties and directions.
+
+
+# 4. Front: Explain **Directed Graph** (Digraph).
+
+# 4. Back: A graph where edges have a direction, pointing from one vertex to another.
+
+# 4. Extra:
+Properties of directed graphs:
+
+1. **Asymmetric relationships**: A→B doesn't imply B→A.
+2. **In-degree and out-degree**: Vertices have separate counts for incoming and outgoing edges.
+3. **Strongly connected components**: Subgraphs where there's a path between every pair of vertices.
+4. **Directed acyclic graphs (DAGs)**: Directed graphs with no cycles.
+
+Representation in code:
+```python
+class DiGraph:
+    def __init__(self):
+        self.graph = {}
+
+    def add_edge(self, u, v):
+        if u not in self.graph:
+            self.graph[u] = []
+        self.graph[u].append(v)
+
+    def has_edge(self, u, v):
+        return u in self.graph and v in self.graph[u]
+```
+
+Visualization of a directed graph:
+
+```mermaid
+graph LR
+    A((A)) --> B((B))
+    B --> C((C))
+    C --> A
+    B --> D((D))
+```
+
+Applications of directed graphs:
+- Web page links
+- Social media follows
+- Dependency graphs in software
+- Flow networks (e.g., traffic flow, electrical circuits)
+
+Important algorithms for directed graphs:
+- Topological sorting (for DAGs)
+- Kosaraju's algorithm (for finding strongly connected components)
+- PageRank (for ranking web pages)
+
+Concepts specific to directed graphs:
+- **Transitive closure**: A graph that shows reachability between all pairs of vertices.
+- **Feedback vertex set**: A set of vertices whose removal makes the graph acyclic.
+- **Condensation graph**: A graph formed by contracting strongly connected components into single vertices.
+
+Directed graphs can be weighted or unweighted. In weighted directed graphs, edges can have different weights in different directions between the same pair of vertices.
+
+Directed graphs are often used in:
+- State machines
+- Control flow graphs in compilers
+- Causal inference
+- Markov chains
+
+
+# 5. Front: What is an **Undirected Graph**?
+
+# 5. Back: A graph where edges have no direction, representing symmetric relationships between vertices.
+
+# 5. Extra:
+Properties of undirected graphs:
+
+1. **Symmetric relationships**: If there's an edge between A and B, it's the same as having an edge between B and A.
+2. **Degree**: Each vertex has a single degree count (no distinction between in-degree and out-degree).
+3. **Connected components**: Subgraphs where there's a path between every pair of vertices.
+4. **Trees**: Connected undirected graphs with no cycles.
+
+Representation in code:
+```python
+class UndirectedGraph:
+    def __init__(self):
+        self.graph = {}
+
+    def add_edge(self, u, v):
+        if u not in self.graph:
+            self.graph[u] = set()
+        if v not in self.graph:
+            self.graph[v] = set()
+        self.graph[u].add(v)
+        self.graph[v].add(u)
+
+    def has_edge(self, u, v):
+        return u in self.graph and v in self.graph[u]
+```
+
+Visualization of an undirected graph:
+
+```mermaid
+graph TD
+    A((A)) --- B((B))
+    B --- C((C))
+    C --- A
+    B --- D((D))
+```
+
+Applications of undirected graphs:
+- Social networks (friendship relationships)
+- Computer networks
+- Molecular structures
+- Collaboration networks
+
+Important algorithms for undirected graphs:
+- Breadth-First Search (BFS)
+- Depth-First Search (DFS)
+- Minimum Spanning Tree algorithms (Kruskal's, Prim's)
+- Max-flow Min-cut theorem
+
+Concepts specific to undirected graphs:
+- **Cut**: A partition of vertices into two disjoint subsets.
+- **Bridge**: An edge whose removal would disconnect the graph.
+- **Articulation point**: A vertex whose removal would disconnect the graph.
+- **Matching**: A set of edges without common vertices.
+
+Undirected graphs can be:
+- Simple: No self-loops or multiple edges
+- Multigraphs: Allow multiple edges between the same pair of vertices
+
+Properties of undirected graphs:
+- **Connectivity**: A graph is connected if there's a path between every pair of vertices.
+- **Bipartiteness**: A graph is bipartite if its vertices can be divided into two disjoint sets such that every edge connects vertices in different sets.
+- **Planarity**: A graph is planar if it can be drawn on a plane without edge crossings.
+
+Undirected graphs are often used in:
+- Clustering algorithms
+- Community detection in social networks
+- Infrastructure planning (e.g., road networks, utility grids)
+
+Here are the flashcard notes for the given graph theory concepts, formatted as requested:
+
+# 6. Front
+Define **Weighted Graph**.
+
+# 6. Back
+A graph where each edge is assigned a numerical value, representing cost, distance, or other metrics.
+
+# 6. Extra
+Weighted graphs are crucial in many real-world applications, such as:
+- Network routing (finding shortest paths)
+- Minimum spanning tree problems
+- Resource allocation
+
+Example representation in Python:
+```python
+weighted_graph = {
+    'A': {'B': 4, 'C': 2},
+    'B': {'A': 4, 'C': 1, 'D': 5},
+    'C': {'A': 2, 'B': 1, 'D': 8},
+    'D': {'B': 5, 'C': 8}
+}
+```
+
+Visualization:
+```mermaid
+graph LR
+    A -- 4 --- B
+    A -- 2 --- C
+    B -- 1 --- C
+    B -- 5 --- D
+    C -- 8 --- D
+```
+
+Weighted graphs can be directed or undirected. They are often used in algorithms like Dijkstra's shortest path or Prim's minimum spanning tree.
+
+
+# 7. Front
+What is a **Simple Graph**?
+
+# 7. Back
+A graph with no self-loops or multiple edges between the same pair of vertices.
+
+# 7. Extra
+Characteristics of simple graphs:
+1. No self-loops (edges connecting a vertex to itself)
+2. No multiple edges (at most one edge between any pair of vertices)
+3. Can be directed or undirected
+
+Example in Python:
+```python
+simple_graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'C', 'D'],
+    'C': ['A', 'B', 'D'],
+    'D': ['B', 'C']
+}
+```
+
+Visualization:
+```mermaid
+graph TB
+    A --- B
+    A --- C
+    B --- C
+    B --- D
+    C --- D
+```
+
+Simple graphs are often used in basic graph theory problems and are the foundation for more complex graph structures. They are easier to analyze and manipulate compared to multigraphs or hypergraphs.
+
+
+# 8. Front
+Explain **Multigraph**.
+
+# 8. Back
+A graph that allows multiple edges between the same pair of vertices.
+
+# 8. Extra
+Key features of multigraphs:
+1. Can have multiple edges (parallel edges) between the same pair of vertices
+2. May or may not allow self-loops, depending on the specific definition
+3. Can be directed or undirected
+
+Example representation in Python:
+```python
+multigraph = {
+    'A': [('B', 1), ('B', 2), ('C', 1)],
+    'B': [('A', 1), ('A', 2), ('C', 1), ('D', 1)],
+    'C': [('A', 1), ('B', 1), ('D', 1), ('D', 2)],
+    'D': [('B', 1), ('C', 1), ('C', 2)]
+}
+```
+
+Visualization:
+```mermaid
+graph TB
+    A --1--- B
+    A --2--- B
+    A --- C
+    B --- C
+    B --- D
+    C --1--- D
+    C --2--- D
+```
+
+Multigraphs are useful in modeling real-world scenarios where multiple connections between entities are possible, such as:
+- Transportation networks (multiple routes between cities)
+- Social networks (multiple types of relationships between people)
+- Communication networks (multiple channels between devices)
+
+Algorithms for multigraphs often need to be adapted from their simple graph counterparts to handle the presence of parallel edges.
+
+
+# 9. Front
+What is a **Hypergraph**?
+
+# 9. Back
+A graph where edges can connect any number of vertices, not just pairs.
+
+# 9. Extra
+Key characteristics of hypergraphs:
+1. Edges (called hyperedges) can connect any number of vertices (0, 1, 2, or more)
+2. Generalizes the concept of a graph
+3. Can represent more complex relationships than traditional graphs
+
+Example representation in Python:
+```python
+hypergraph = {
+    'vertices': {'A', 'B', 'C', 'D', 'E'},
+    'hyperedges': [
+        {'A', 'B', 'C'},
+        {'B', 'D'},
+        {'C', 'D', 'E'},
+        {'A', 'E'}
+    ]
+}
+```
+
+Visualization (not standard, as hypergraphs are difficult to represent in 2D):
+```
+    A-----\
+    |      \
+    |       \
+B---+--------+
+    |        |
+C---+--------+
+    |        |
+D---+        |
+    |        |
+    E--------/
+```
+
+Applications of hypergraphs:
+- Modeling complex systems in biology, chemistry, and social sciences
+- Representing higher-order relationships in data
+- Analyzing collaborative networks
+
+Hypergraphs provide a more flexible structure for representing complex relationships but can be more challenging to analyze and visualize compared to traditional graphs.
+
+
+# 10. Front
+Define **Adjacency** in graphs.
+
+# 10. Back
+The relationship between two vertices that are directly connected by an edge.
+
+# 10. Extra
+Key points about adjacency:
+1. Two vertices are adjacent if there is an edge connecting them
+2. Adjacency is symmetric in undirected graphs, but may not be in directed graphs
+3. Self-loops create self-adjacency
+
+Representation methods:
+1. Adjacency Matrix:
+   ```
+     A B C D
+   A 0 1 1 0
+   B 1 0 1 1
+   C 1 1 0 1
+   D 0 1 1 0
+   ```
+
+2. Adjacency List:
+   ```python
+   graph = {
+       'A': ['B', 'C'],
+       'B': ['A', 'C', 'D'],
+       'C': ['A', 'B', 'D'],
+       'D': ['B', 'C']
+   }
+   ```
+
+3. Edge List:
+   ```python
+   edges = [('A', 'B'), ('A', 'C'), ('B', 'C'), ('B', 'D'), ('C', 'D')]
+   ```
+
+Adjacency is a fundamental concept in graph theory and is used in many graph algorithms, such as:
+- Breadth-First Search (BFS)
+- Depth-First Search (DFS)
+- Shortest path algorithms
+- Graph coloring
+
+The choice of adjacency representation can significantly impact the efficiency of graph algorithms, with trade-offs between memory usage and access speed.
+
+Here are the flashcard notes based on the provided input, formatted as requested:
+
+# 11. Front
+What is the **Degree** of a vertex?
+
+# 11. Back
+The number of edges connected to a vertex in an undirected graph.
+
+# 11. Extra
+- In an undirected graph, the degree of a vertex is also equal to the number of adjacent vertices.
+- The sum of degrees of all vertices in an undirected graph is always equal to twice the number of edges.
+- For a directed graph, we use in-degree and out-degree instead of just degree.
+- Mathematically, for a vertex v in an undirected graph G(V,E): degree(v) = |{e ∈ E : v ∈ e}|
+- A vertex with degree 0 is called an isolated vertex.
+- The maximum degree of a graph is denoted as Δ(G), while the minimum degree is δ(G).
+
+<div style="text-align:center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/6n-graf.svg/250px-6n-graf.svg.png" alt="Graph with vertex degrees" width="200"/>
+</div>
+
+In this image, vertex degrees are: 2, 3, 3, 3, 3, 2
+
+
+# 12. Front
+Explain **In-degree** and **Out-degree**.
+
+# 12. Back
+In a directed graph, in-degree is the number of incoming edges, and out-degree is the number of outgoing edges for a vertex.
+
+# 12. Extra
+- In-degree is denoted as deg⁻(v) or d⁻(v)
+- Out-degree is denoted as deg⁺(v) or d⁺(v)
+- The total degree of a vertex in a directed graph is the sum of its in-degree and out-degree
+- A vertex with in-degree 0 is called a source
+- A vertex with out-degree 0 is called a sink
+- The sum of all in-degrees equals the sum of all out-degrees in a directed graph
+- Mathematically:
+  - In-degree: deg⁻(v) = |{(u,v) ∈ E}|
+  - Out-degree: deg⁺(v) = |{(v,u) ∈ E}|
+
+```mermaid
+graph LR
+    A((A)) --> B((B))
+    A --> C((C))
+    B --> D((D))
+    C --> D
+    D --> A
+```
+
+In this directed graph:
+- A: in-degree = 1, out-degree = 2
+- B: in-degree = 1, out-degree = 1
+- C: in-degree = 1, out-degree = 1
+- D: in-degree = 2, out-degree = 1
+
+
+# 13. Front
+What is a **Path** in a graph?
+
+# 13. Back
+A sequence of vertices connected by edges, with no repeated edges.
+
+# 13. Extra
+- A path can be represented as a sequence of vertices: v₁, v₂, ..., vₖ
+- Or as a sequence of edges: (v₁,v₂), (v₂,v₃), ..., (vₖ₋₁,vₖ)
+- The length of a path is the number of edges in the path
+- A simple path has no repeated vertices (except possibly the first and last)
+- A cycle is a special type of path where the first and last vertices are the same
+- In a weighted graph, the weight of a path is the sum of the weights of its edges
+- The shortest path between two vertices is called the geodesic path
+- Dijkstra's algorithm and the Bellman-Ford algorithm are used to find shortest paths
+
+Example:
+```
+A -- B -- C -- D -- E
+     |         |
+     +----F----+
+```
+In this graph, A-B-C-D-E is a path of length 4.
+A-B-F-D-E is another path between A and E, also of length 4.
+
+
+# 14. Front
+Define **Cycle** in graph theory.
+
+# 14. Back
+A path that starts and ends at the same vertex, with at least one edge.
+
+# 14. Extra
+- A cycle must have at least 3 vertices in a simple graph (no self-loops or multiple edges)
+- The length of a cycle is the number of edges (or vertices) in it
+- A graph with no cycles is called acyclic
+- A cycle that visits every vertex exactly once is called a Hamiltonian cycle
+- A cycle that uses every edge exactly once is called an Eulerian cycle
+- Cycles are important in many graph algorithms, such as cycle detection and finding strongly connected components
+- In directed graphs, we distinguish between directed cycles and undirected cycles
+
+Types of cycles:
+1. Simple cycle: No repeated vertices except the start/end
+2. Directed cycle: All edges point in the same direction
+3. Negative cycle: In weighted graphs, a cycle where the sum of edge weights is negative
+
+```mermaid
+graph TD
+    A((A)) --> B((B))
+    B --> C((C))
+    C --> D((D))
+    D --> A
+```
+This diagram shows a simple cycle A-B-C-D-A in a directed graph.
+
+
+# 15. Front
+What is a **Tree** in graph theory?
+
+# 15. Back
+A connected, acyclic graph where any two vertices are connected by exactly one path.
+
+# 15. Extra
+Properties of trees:
+1. Has n-1 edges, where n is the number of vertices
+2. Adding any edge creates exactly one cycle
+3. Removing any edge disconnects the graph
+4. All trees with n vertices are isomorphic
+
+Types of trees:
+- Rooted tree: A tree with a designated root vertex
+- Binary tree: A rooted tree where each vertex has at most two children
+- Spanning tree: A subgraph that is a tree and includes all vertices of the original graph
+
+Applications:
+- File systems
+- Organization hierarchies
+- Syntax trees in compilers
+- Decision trees in machine learning
+
+Mathematical representation:
+A tree T is a graph G(V,E) such that:
+1. G is connected
+2. |E| = |V| - 1
+3. G has no cycles
+
+```mermaid
+graph TD
+    A((A)) --> B((B))
+    A --> C((C))
+    B --> D((D))
+    B --> E((E))
+    C --> F((F))
+```
+This diagram shows a rooted tree with A as the root.
+
+Here are the flashcard notes based on the given input, formatted as requested:
+
+# 16. Front
+What is a **Spanning Tree**?
+
+# 16. Back
+A subgraph that includes all vertices of the original graph and forms a tree structure.
+
+# 16. Extra
+- Properties:
+  1. Contains all vertices of the original graph
+  2. Is acyclic (no cycles)
+  3. Is connected
+  4. Has exactly n-1 edges, where n is the number of vertices
+- Applications:
+  - Network design
+  - Cluster analysis
+  - Circuit analysis
+- Algorithms to find spanning trees:
+  - Depth-First Search (DFS)
+  - Breadth-First Search (BFS)
+
+Visualization:
+```mermaid
+graph TD
+    A((A)) --- B((B))
+    A --- C((C))
+    B --- D((D))
+    C --- D
+    style A fill:#f9f,stroke:#333,stroke-width:4px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+```
+
+# 17. Front
+What is a **Minimum Spanning Tree** (MST)?
+
+# 17. Back
+A spanning tree with the lowest total edge weight in a weighted graph.
+
+# 17. Extra
+- Properties:
+  1. Connects all vertices
+  2. Has the minimum total edge weight
+  3. Contains n-1 edges (n = number of vertices)
+- Applications:
+  - Network design (e.g., telecommunications, transportation)
+  - Clustering algorithms
+  - Image segmentation
+- Algorithms to find MST:
+  1. Kruskal's Algorithm
+     - Time complexity: O(E log E) or O(E log V)
+  2. Prim's Algorithm
+     - Time complexity: O((V + E) log V) with binary heap
+     - O(E + V log V) with Fibonacci heap
+- Example:
+```mermaid
+graph TD
+    A((A)) --4--- B((B))
+    A --2--- C((C))
+    B --1--- D((D))
+    C --3--- D
+    style A fill:#f9f,stroke:#333,stroke-width:4px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+```
+MST: A-C (2), B-D (1), C-D (3)
+
+# 18. Front
+What is a **Forest** in graph theory?
+
+# 18. Back
+A graph consisting of one or more disjoint trees.
+
+# 18. Extra
+- Properties:
+  1. Acyclic
+  2. May be disconnected
+  3. Each connected component is a tree
+- Types:
+  1. Spanning forest: Includes all vertices of the original graph
+  2. Induced forest: A subgraph that is a forest
+- Applications:
+  - Representing hierarchical structures
+  - Disjoint set data structures
+  - Parallel and distributed algorithms
+- Example:
+```mermaid
+graph TD
+    A((A)) --- B((B))
+    C((C)) --- D((D))
+    E((E)) --- F((F))
+    G((G))
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style D fill:#bbf,stroke:#333,stroke-width:2px
+    style E fill:#bfb,stroke:#333,stroke-width:2px
+    style F fill:#bfb,stroke:#333,stroke-width:2px
+    style G fill:#fbb,stroke:#333,stroke-width:2px
+```
+
+# 19. Front
+What is a **Bipartite Graph**?
+
+# 19. Back
+A graph whose vertices can be divided into two disjoint sets, with every edge connecting vertices from different sets.
+
+# 19. Extra
+- Properties:
+  1. Two-colorable (vertices can be colored using two colors)
+  2. Contains no odd-length cycles
+  3. Can be represented as G = (U, V, E), where U and V are disjoint vertex sets
+- Applications:
+  - Matching problems (e.g., job assignments)
+  - Social network analysis
+  - Recommender systems
+- Algorithms:
+  1. Bipartite checking: Use BFS or DFS with two-coloring
+  2. Maximum bipartite matching: Hungarian algorithm, Hopcroft-Karp algorithm
+- Example:
+```mermaid
+graph TD
+    A((A)) --- X((X))
+    A --- Y((Y))
+    B((B)) --- X
+    B --- Z((Z))
+    C((C)) --- Y
+    C --- Z
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#f9f,stroke:#333,stroke-width:2px
+    style X fill:#bbf,stroke:#333,stroke-width:2px
+    style Y fill:#bbf,stroke:#333,stroke-width:2px
+    style Z fill:#bbf,stroke:#333,stroke-width:2px
+```
+
+# 20. Front
+What is a **Complete Graph**?
+
+# 20. Back
+A graph where every pair of distinct vertices is connected by a unique edge.
+
+# 20. Extra
+- Properties:
+  1. Has n(n-1)/2 edges, where n is the number of vertices
+  2. Diameter is 1 (any vertex can reach any other vertex in one step)
+  3. Chromatic number is n
+  4. Every vertex has degree n-1
+- Notation: K_n (complete graph with n vertices)
+- Applications:
+  - Worst-case analysis in graph algorithms
+  - Network topology design
+  - Social network modeling
+- Example:
+```mermaid
+graph TD
+    A((A)) --- B((B))
+    A --- C((C))
+    A --- D((D))
+    B --- C
+    B --- D
+    C --- D
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#bfb,stroke:#333,stroke-width:2px
+    style D fill:#fbb,stroke:#333,stroke-width:2px
+```
+This is K_4 (complete graph with 4 vertices)
+
+- Interesting facts:
+  1. The complement of a complete graph is an empty graph
+  2. Any two complete graphs with the same number of vertices are isomorphic
+
+# 21. Front
+What is graph **Connectivity**?
+
+# 21. Back
+A property indicating whether there exists a path between every pair of vertices in the graph.
+
+# 21. Extra
+- In a connected graph, there is at least one path between any two vertices.
+- Connectivity is crucial for analyzing network structures and information flow.
+- Types of connectivity:
+  1. Strong connectivity (for directed graphs): A path exists in both directions between any pair of vertices.
+  2. Weak connectivity (for directed graphs): The graph would be connected if all edges were made undirected.
+- Algorithms to check connectivity:
+  - Depth-First Search (DFS)
+  - Breadth-First Search (BFS)
+- Applications:
+  - Network reliability analysis
+  - Social network analysis
+  - Transportation network planning
+
+```python
+def is_connected(graph):
+    visited = set()
+    def dfs(node):
+        visited.add(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                dfs(neighbor)
+    
+    start_node = next(iter(graph))
+    dfs(start_node)
+    return len(visited) == len(graph)
+```
+
+<div class="mermaid">
+graph TD
+    A((A)) --- B((B))
+    A --- C((C))
+    B --- D((D))
+    C --- D
+    E((E))
+</div>
+
+In this graph, nodes A, B, C, and D form a connected component, while E is disconnected.
+
+
+# 22. Front
+Define **Connected Component**.
+
+# 22. Back
+A maximal connected subgraph of an undirected graph.
+
+# 22. Extra
+- Properties of connected components:
+  1. Every vertex in the component is reachable from every other vertex in the same component.
+  2. No additional vertices from the original graph can be added without breaking the connectivity property.
+- The number of connected components in a graph is an important graph invariant.
+- A graph is connected if and only if it has exactly one connected component.
+- Algorithms to find connected components:
+  1. Depth-First Search (DFS)
+  2. Breadth-First Search (BFS)
+  3. Union-Find data structure
+
+```python
+def find_connected_components(graph):
+    visited = set()
+    components = []
+    
+    def dfs(node, component):
+        visited.add(node)
+        component.append(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                dfs(neighbor, component)
+    
+    for node in graph:
+        if node not in visited:
+            component = []
+            dfs(node, component)
+            components.append(component)
+    
+    return components
+```
+
+<div class="mermaid">
+graph TD
+    A((A)) --- B((B))
+    A --- C((C))
+    D((D)) --- E((E))
+    F((F))
+</div>
+
+This graph has three connected components: {A, B, C}, {D, E}, and {F}.
+
+
+# 23. Front
+What is a **Bridge** in a graph?
+
+# 23. Back
+An edge whose removal would disconnect the graph or increase the number of connected components.
+
+# 23. Extra
+- Also known as a cut-edge or isthmus.
+- Properties of bridges:
+  1. They are not part of any cycle in the graph.
+  2. They are critical for maintaining connectivity.
+- Bridges are important in network analysis for identifying vulnerable points.
+- Algorithm to find bridges:
+  1. Use Depth-First Search (DFS) with low-link values (Tarjan's algorithm).
+  2. Time complexity: O(V + E), where V is the number of vertices and E is the number of edges.
+
+```python
+def find_bridges(graph):
+    n = len(graph)
+    disc = [-1] * n
+    low = [-1] * n
+    parent = [-1] * n
+    bridges = []
+    time = [0]
+
+    def dfs(u):
+        disc[u] = low[u] = time[0]
+        time[0] += 1
+        
+        for v in graph[u]:
+            if disc[v] == -1:
+                parent[v] = u
+                dfs(v)
+                low[u] = min(low[u], low[v])
+                if low[v] > disc[u]:
+                    bridges.append((u, v))
+            elif v != parent[u]:
+                low[u] = min(low[u], disc[v])
+
+    for i in range(n):
+        if disc[i] == -1:
+            dfs(i)
+    
+    return bridges
+```
+
+<div class="mermaid">
+graph TD
+    A((A)) --- B((B))
+    B --- C((C))
+    C --- A
+    C --- D((D))
+    D --- E((E))
+</div>
+
+In this graph, the edge (C, D) is a bridge. Removing it would disconnect the graph into two components.
+
+
+# 24. Front
+Explain **Articulation Point** (Cut Vertex).
+
+# 24. Back
+A vertex whose removal would disconnect the graph or increase the number of connected components.
+
+# 24. Extra
+- Properties of articulation points:
+  1. They are critical for maintaining connectivity in the graph.
+  2. Removing an articulation point increases the number of connected components.
+- Articulation points are important in network analysis for identifying critical nodes.
+- They can represent vulnerabilities in network structures.
+- Algorithm to find articulation points:
+  1. Use Depth-First Search (DFS) with low-link values (Tarjan's algorithm).
+  2. Time complexity: O(V + E), where V is the number of vertices and E is the number of edges.
+
+```python
+def find_articulation_points(graph):
+    n = len(graph)
+    disc = [-1] * n
+    low = [-1] * n
+    parent = [-1] * n
+    ap = [False] * n
+    time = [0]
+
+    def dfs(u):
+        children = 0
+        disc[u] = low[u] = time[0]
+        time[0] += 1
+        
+        for v in graph[u]:
+            if disc[v] == -1:
+                children += 1
+                parent[v] = u
+                dfs(v)
+                low[u] = min(low[u], low[v])
+                if parent[u] == -1 and children > 1:
+                    ap[u] = True
+                if parent[u] != -1 and low[v] >= disc[u]:
+                    ap[u] = True
+            elif v != parent[u]:
+                low[u] = min(low[u], disc[v])
+
+    for i in range(n):
+        if disc[i] == -1:
+            dfs(i)
+    
+    return [i for i in range(n) if ap[i]]
+```
+
+<div class="mermaid">
+graph TD
+    A((A)) --- B((B))
+    B --- C((C))
+    C --- A
+    C --- D((D))
+    D --- E((E))
+    D --- F((F))
+</div>
+
+In this graph, vertex C is an articulation point. Removing it would disconnect the graph into two components.
+
+
+# 25. Front
+What is **Graph Coloring**?
+
+# 25. Back
+Assigning colors to graph elements (usually vertices or edges) subject to certain constraints.
+
+# 25. Extra
+- Types of graph coloring:
+  1. Vertex coloring: Assigning colors to vertices such that no adjacent vertices have the same color.
+  2. Edge coloring: Assigning colors to edges such that no adjacent edges have the same color.
+  3. Face coloring: Assigning colors to faces of a planar graph such that no adjacent faces have the same color.
+- The minimum number of colors needed for vertex coloring is called the chromatic number of the graph.
+- Applications:
+  1. Map coloring
+  2. Scheduling problems
+  3. Register allocation in compilers
+  4. Frequency assignment in wireless networks
+- NP-complete problem: Finding the chromatic number or an optimal coloring is NP-complete for general graphs.
+- Heuristic algorithms:
+  1. Greedy coloring
+  2. Welsh-Powell algorithm
+  3. DSatur algorithm
+
+```python
+def greedy_coloring(graph):
+    colors = {}
+    for node in graph:
+        used_colors = set(colors.get(neighbor) for neighbor in graph[node] if neighbor in colors)
+        colors[node] = next(color for color in range(len(graph)) if color not in used_colors)
+    return colors
+```
+
+<div class="mermaid">
+graph TD
+    A((A)) --- B((B))
+    B --- C((C))
+    C --- D((D))
+    D --- A
+    style A fill:#ff0000
+    style B fill:#00ff00
+    style C fill:#ff0000
+    style D fill:#00ff00
+</div>
+
+This graph shows a proper vertex coloring using two colors (red and green).
+

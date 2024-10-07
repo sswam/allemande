@@ -1,0 +1,32 @@
+Prompt: Argh
+Answer: Package for argparse
+
+Prompt: assemble
+Answer: Add functions as commands to a parser
+
+Prompt: ArghParser
+Answer: Subclass of argparse.ArgumentParser with support for adding commands
+
+Prompt: ArghNamespace
+Answer: Namespace object that collects a stack of functions
+
+Prompt: CommandError
+Answer: Exception raised from within a command
+
+Prompt: DispatchingError
+Answer: Exception raised if dispatching cannot be completed
+
+Prompt: set_default_command()
+Answer: Sets default command for a given parser
+
+Prompt: dispatch()
+Answer: Parses arguments, calls function, and prints the result
+
+Prompt: wrap_errors()
+Answer: Decorator that wraps given exceptions into CommandError
+
+Prompt: named()
+Answer: Sets command name instead of function name
+
+Prompt: aliases()
+Answer: Defines alternative command names for a function

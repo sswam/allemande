@@ -1,0 +1,302 @@
+Here are 100 illuminating flashcard topics for programmers about deep learning, with main terms in bold and numbered for easy reference:
+
+# 1. Neural Network
+A computational model inspired by the human brain, consisting of interconnected **nodes** (neurons) organized in layers.
+
+# 2. Deep Learning
+A subset of machine learning that uses **multi-layered neural networks** to learn hierarchical representations of data.
+
+# 3. Perceptron
+The simplest form of a neural network, consisting of a single **artificial neuron** with weighted inputs and an activation function.
+
+# 4. Activation Function
+A mathematical function that determines the **output** of a neural network node based on its input.
+
+# 5. Sigmoid Function
+An **S-shaped activation function** that maps input values to a range between 0 and 1.
+
+# 6. ReLU (Rectified Linear Unit)
+An activation function that outputs the input directly if positive, otherwise it outputs zero. Helps mitigate the **vanishing gradient problem**.
+
+# 7. Backpropagation
+An algorithm used to **calculate gradients** in neural networks by propagating errors backward through the network.
+
+# 8. Gradient Descent
+An optimization algorithm used to **minimize the loss function** by iteratively adjusting the network's parameters.
+
+# 9. Stochastic Gradient Descent (SGD)
+A variant of gradient descent that uses a **random subset of data** (mini-batch) in each iteration to update parameters.
+
+# 10. Learning Rate
+A hyperparameter that controls the **step size** at each iteration of the optimization algorithm.
+
+# 11. Epoch
+One complete pass through the entire **training dataset** during the learning process.
+
+# 12. Batch Size
+The number of **training examples** used in one iteration of model training.
+
+# 13. Overfitting
+When a model learns the training data too well, including noise, leading to **poor generalization** on new data.
+
+# 14. Underfitting
+When a model is too simple to capture the underlying structure of the data, resulting in **poor performance** on both training and new data.
+
+# 15. Regularization
+Techniques used to **prevent overfitting** by adding a penalty term to the loss function or modifying the model architecture.
+
+# 16. Dropout
+A regularization technique that randomly **"drops out"** (sets to zero) a proportion of neurons during training to prevent overfitting.
+
+# 17. L1 Regularization
+A regularization technique that adds the **absolute value** of weights to the loss function, promoting sparsity.
+
+# 18. L2 Regularization
+A regularization technique that adds the **squared value** of weights to the loss function, preventing large weight values.
+
+# 19. Convolutional Neural Network (CNN)
+A type of neural network designed for processing **grid-like data**, such as images, using convolutional layers.
+
+# 20. Convolution
+The operation of applying a **filter** (kernel) to an input, typically used in CNNs for feature extraction.
+
+# 21. Pooling
+A downsampling operation in CNNs that **reduces the spatial dimensions** of the feature maps.
+
+# 22. Max Pooling
+A type of pooling that selects the **maximum value** within a defined region of the feature map.
+
+# 23. Recurrent Neural Network (RNN)
+A type of neural network designed to process **sequential data** by maintaining an internal state (memory).
+
+# 24. Long Short-Term Memory (LSTM)
+A type of RNN architecture designed to **capture long-term dependencies** in sequential data.
+
+# 25. Gated Recurrent Unit (GRU)
+A simplified version of LSTM with **fewer parameters**, often used for sequential data processing.
+
+# 26. Attention Mechanism
+A technique that allows a model to **focus on specific parts** of the input when producing an output.
+
+# 27. Transformer
+A neural network architecture that relies entirely on **self-attention mechanisms** to process sequential data.
+
+# 28. Transfer Learning
+A technique that uses knowledge gained from training on one task to improve performance on a **related task**.
+
+# 29. Fine-tuning
+The process of **adjusting pre-trained model parameters** on a new, related task.
+
+# 30. Generative Adversarial Network (GAN)
+A framework consisting of two neural networks (**generator and discriminator**) that compete against each other to generate realistic data.
+
+# 31. Autoencoder
+A type of neural network that learns to **encode and decode** data, often used for dimensionality reduction or feature learning.
+
+# 32. Variational Autoencoder (VAE)
+A type of autoencoder that learns a **probabilistic latent representation** of the input data.
+
+# 33. One-Hot Encoding
+A technique for representing **categorical variables** as binary vectors.
+
+# 34. Word Embedding
+A technique for representing words as **dense vectors** in a continuous vector space.
+
+# 35. Word2Vec
+A popular method for learning **word embeddings** from large text corpora.
+
+# 36. BERT (Bidirectional Encoder Representations from Transformers)
+A transformer-based model for **natural language processing** tasks that considers context from both directions.
+
+# 37. GPT (Generative Pre-trained Transformer)
+A transformer-based model designed for **natural language generation** tasks.
+
+# 38. Reinforcement Learning
+A type of machine learning where an agent learns to make decisions by **interacting with an environment**.
+
+# 39. Q-Learning
+A model-free reinforcement learning algorithm that learns the **value of actions** in different states.
+
+# 40. Deep Q-Network (DQN)
+A combination of Q-learning with deep neural networks for **reinforcement learning** in high-dimensional state spaces.
+
+# 41. Policy Gradient
+A class of reinforcement learning algorithms that directly **optimize the policy** without using a value function.
+
+# 42. Actor-Critic
+A reinforcement learning architecture that combines **policy-based** and **value-based** methods.
+
+# 43. Batch Normalization
+A technique that normalizes the inputs of each layer to **improve training stability** and speed.
+
+# 44. Layer Normalization
+Similar to batch normalization, but normalizes across the **features** instead of the batch dimension.
+
+# 45. Residual Connection (Skip Connection)
+A connection that **skips one or more layers** in a neural network, helping to mitigate the vanishing gradient problem.
+
+# 46. Inception Module
+A network-in-network architecture that uses **parallel convolutional filters** of different sizes.
+
+# 47. Depthwise Separable Convolution
+A type of convolution that **separates spatial and depth-wise** feature learning, reducing computational cost.
+
+# 48. Dilated Convolution
+A convolution with **expanded receptive fields** without increasing the number of parameters.
+
+# 49. Capsule Networks
+A neural network architecture that uses **groups of neurons** (capsules) to represent entity relationships.
+
+# 50. Federated Learning
+A machine learning technique where a model is trained across **multiple decentralized devices** without exchanging raw data.
+
+# 51. Few-Shot Learning
+A machine learning paradigm where a model learns to recognize new classes from only a **few examples**.
+
+# 52. Zero-Shot Learning
+The ability to classify objects or solve tasks that were not seen during training, based on **auxiliary information**.
+
+# 53. Meta-Learning
+A learning paradigm where a model learns how to **learn efficiently** on new tasks.
+
+# 54. Curriculum Learning
+A training strategy where the model is presented with **progressively more difficult examples** over time.
+
+# 55. Adversarial Training
+A technique to improve model robustness by training on **adversarial examples**.
+
+# 56. Explainable AI (XAI)
+Techniques and methods to make AI systems' decisions **interpretable and understandable** to humans.
+
+# 57. SHAP (SHapley Additive exPlanations)
+A game theoretic approach to **explain the output** of any machine learning model.
+
+# 58. LIME (Local Interpretable Model-agnostic Explanations)
+A technique to explain the predictions of any classifier by **approximating it locally** with an interpretable model.
+
+# 59. Gradient-weighted Class Activation Mapping (Grad-CAM)
+A technique for **producing visual explanations** for decisions made by CNNs.
+
+# 60. Ensemble Learning
+A method that combines multiple models to **improve overall performance** and robustness.
+
+# 61. Bagging (Bootstrap Aggregating)
+An ensemble method that trains multiple models on **random subsets** of the training data.
+
+# 62. Boosting
+An ensemble method that **sequentially trains weak learners**, with each new model focusing on the mistakes of the previous ones.
+
+# 63. Random Forest
+An ensemble learning method that constructs multiple **decision trees** and merges their predictions.
+
+# 64. XGBoost (eXtreme Gradient Boosting)
+An efficient implementation of **gradient boosting** that is widely used in machine learning competitions.
+
+# 65. Hyperparameter Tuning
+The process of **optimizing the configuration** of a machine learning algorithm.
+
+# 66. Grid Search
+A hyperparameter tuning technique that **exhaustively searches** through a predefined set of hyperparameter combinations.
+
+# 67. Random Search
+A hyperparameter tuning technique that **randomly samples** from a predefined range of hyperparameter values.
+
+# 68. Bayesian Optimization
+A hyperparameter tuning technique that uses **probabilistic models** to guide the search for optimal hyperparameters.
+
+# 69. Cross-Validation
+A resampling procedure used to **evaluate machine learning models** on a limited data sample.
+
+# 70. K-Fold Cross-Validation
+A cross-validation technique that **splits the data into K subsets**, using each subset as a test set once.
+
+# 71. Stratified K-Fold Cross-Validation
+A variation of K-Fold that **maintains the percentage of samples** for each class in the splits.
+
+# 72. Early Stopping
+A regularization technique that **stops training** when the model's performance on a validation set stops improving.
+
+# 73. Learning Rate Decay
+A technique that **reduces the learning rate** over time during training to fine-tune the model.
+
+# 74. Momentum
+An optimization technique that **accelerates gradient descent** in the relevant direction and dampens oscillations.
+
+# 75. Adam Optimizer
+An optimization algorithm that **combines ideas from RMSprop and momentum** for efficient parameter updates.
+
+# 76. Cosine Annealing
+A learning rate schedule that **varies the learning rate** following a cosine function.
+
+# 77. Cyclical Learning Rates
+A technique that **cycles the learning rate** between reasonable boundary values.
+
+# 78. Weight Initialization
+The process of **setting initial values** for a neural network's weights before training.
+
+# 79. Xavier/Glorot Initialization
+A weight initialization technique that helps maintain the **same variance** of activations and gradients across layers.
+
+# 80. He Initialization
+A weight initialization technique designed for **ReLU activations** to maintain the variance of activations across layers.
+
+# 81. Bias-Variance Tradeoff
+The relationship between a model's ability to **minimize bias** and **minimize variance** in its predictions.
+
+# 82. Confusion Matrix
+A table used to describe the **performance of a classification model** on a set of test data.
+
+# 83. Precision
+The ratio of **true positives** to the total number of predicted positives in a classification task.
+
+# 84. Recall
+The ratio of **true positives** to the total number of actual positives in a classification task.
+
+# 85. F1 Score
+The **harmonic mean** of precision and recall, providing a single score that balances both metrics.
+
+# 86. ROC Curve
+A graphical plot that illustrates the **diagnostic ability** of a binary classifier system as its discrimination threshold is varied.
+
+# 87. AUC (Area Under the Curve)
+A metric that represents the **area under the ROC curve**, used to evaluate the performance of a classification model.
+
+# 88. Mean Squared Error (MSE)
+A common **loss function** for regression problems, measuring the average squared difference between predicted and actual values.
+
+# 89. Cross-Entropy Loss
+A **loss function** commonly used in classification problems, measuring the dissimilarity between predicted and true probability distributions.
+
+# 90. Focal Loss
+A modified version of cross-entropy loss that **down-weights well-classified examples**, useful for dealing with class imbalance.
+
+# 91. Huber Loss
+A loss function that combines the **best properties** of MSE and Mean Absolute Error, being less sensitive to outliers.
+
+# 92. Data Augmentation
+Techniques used to **increase the amount of training data** by applying transformations to existing samples.
+
+# 93. Mixup
+A data augmentation technique that **creates new training examples** by linearly interpolating between existing ones.
+
+# 94. CutMix
+A data augmentation technique that **creates new training examples** by replacing part of one image with a patch from another.
+
+# 95. Knowledge Distillation
+A technique for **transferring knowledge** from a large model (teacher) to a smaller model (student).
+
+# 96. Pruning
+A technique for **reducing the size** of neural networks by removing unnecessary connections or neurons.
+
+# 97. Quantization
+The process of **reducing the precision** of the weights and activations in a neural network to decrease memory usage and computation time.
+
+# 98. Neural Architecture Search (NAS)
+An automated process for **designing optimal neural network architectures** for a given task.
+
+# 99. AutoML
+The process of **automating the end-to-end process** of applying machine learning to real-world problems.
+
+# 100. Continual Learning
+The ability of a model to **learn continuously** from a stream of data, retaining knowledge of previously learned tasks.
+

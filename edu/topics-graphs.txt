@@ -1,0 +1,302 @@
+Here are 100 flashcard topics on graph theory, graph-based symbolic relational mathematics, and related programming concepts:
+
+# 1. Front: What is a **Graph**?
+Back: A mathematical structure consisting of a set of vertices (nodes) and a set of edges connecting pairs of vertices.
+
+# 2. Front: Define **Vertex** in graph theory.
+Back: A fundamental unit in a graph, also known as a node, representing a point or object in the structure.
+
+# 3. Front: What is an **Edge** in a graph?
+Back: A connection between two vertices in a graph, representing a relationship or link between them.
+
+# 4. Front: Explain **Directed Graph** (Digraph).
+Back: A graph where edges have a direction, pointing from one vertex to another.
+
+# 5. Front: What is an **Undirected Graph**?
+Back: A graph where edges have no direction, representing symmetric relationships between vertices.
+
+# 6. Front: Define **Weighted Graph**.
+Back: A graph where each edge is assigned a numerical value (weight), representing cost, distance, or other metrics.
+
+# 7. Front: What is a **Simple Graph**?
+Back: A graph with no self-loops or multiple edges between the same pair of vertices.
+
+# 8. Front: Explain **Multigraph**.
+Back: A graph that allows multiple edges between the same pair of vertices.
+
+# 9. Front: What is a **Hypergraph**?
+Back: A graph where edges can connect any number of vertices, not just pairs.
+
+# 10. Front: Define **Adjacency** in graphs.
+Back: The relationship between two vertices that are directly connected by an edge.
+
+# 11. Front: What is the **Degree** of a vertex?
+Back: The number of edges incident to a vertex in an undirected graph.
+
+# 12. Front: Explain **In-degree** and **Out-degree**.
+Back: In a directed graph, in-degree is the number of incoming edges, and out-degree is the number of outgoing edges for a vertex.
+
+# 13. Front: What is a **Path** in a graph?
+Back: A sequence of vertices connected by edges, with no repeated edges.
+
+# 14. Front: Define **Cycle** in graph theory.
+Back: A path that starts and ends at the same vertex, with at least one edge.
+
+# 15. Front: What is a **Tree** in graph theory?
+Back: A connected, acyclic graph where any two vertices are connected by exactly one path.
+
+# 16. Front: Explain **Spanning Tree**.
+Back: A subgraph that is a tree and includes all vertices of the original graph.
+
+# 17. Front: What is a **Minimum Spanning Tree** (MST)?
+Back: A spanning tree with the minimum total edge weight in a weighted graph.
+
+# 18. Front: Define **Forest** in graph theory.
+Back: A graph consisting of one or more disjoint trees.
+
+# 19. Front: What is a **Bipartite Graph**?
+Back: A graph whose vertices can be divided into two disjoint sets such that every edge connects vertices in different sets.
+
+# 20. Front: Explain **Complete Graph**.
+Back: A graph where every pair of vertices is connected by an edge.
+
+# 21. Front: What is graph **Connectivity**?
+Back: A property indicating whether there is a path between every pair of vertices in the graph.
+
+# 22. Front: Define **Connected Component**.
+Back: A maximal connected subgraph of an undirected graph.
+
+# 23. Front: What is a **Bridge** in a graph?
+Back: An edge whose removal would disconnect the graph or increase the number of connected components.
+
+# 24. Front: Explain **Articulation Point** (Cut Vertex).
+Back: A vertex whose removal would disconnect the graph or increase the number of connected components.
+
+# 25. Front: What is **Graph Coloring**?
+Back: Assigning colors to graph elements (usually vertices or edges) subject to certain constraints.
+
+# 26. Front: Define **Chromatic Number**.
+Back: The minimum number of colors needed to color the vertices of a graph such that no adjacent vertices have the same color.
+
+# 27. Front: What is a **Planar Graph**?
+Back: A graph that can be drawn on a plane without any edge crossings.
+
+# 28. Front: Explain **Graph Isomorphism**.
+Back: A bijective mapping between the vertices of two graphs that preserves the edge structure.
+
+# 29. Front: What is **Graph Traversal**?
+Back: The process of visiting all the vertices in a graph in a systematic way.
+
+# 30. Front: Define **Breadth-First Search** (BFS).
+Back: A graph traversal algorithm that explores all vertices at the present depth before moving to vertices at the next depth level.
+
+# 31. Front: What is **Depth-First Search** (DFS)?
+Back: A graph traversal algorithm that explores as far as possible along each branch before backtracking.
+
+# 32. Front: Explain **Topological Sorting**.
+Back: A linear ordering of vertices in a directed acyclic graph (DAG) such that for every edge (u, v), u comes before v in the ordering.
+
+# 33. Front: What is **Dijkstra's Algorithm**?
+Back: An algorithm for finding the shortest paths between nodes in a weighted graph.
+
+# 34. Front: Define **Bellman-Ford Algorithm**.
+Back: An algorithm that computes shortest paths from a single source vertex to all other vertices in a weighted graph, allowing for negative edge weights.
+
+# 35. Front: What is **Floyd-Warshall Algorithm**?
+Back: An algorithm for finding shortest paths between all pairs of vertices in a weighted graph.
+
+# 36. Front: Explain **Prim's Algorithm**.
+Back: A greedy algorithm that finds a minimum spanning tree for a weighted undirected graph.
+
+# 37. Front: What is **Kruskal's Algorithm**?
+Back: Another greedy algorithm for finding a minimum spanning tree in a weighted undirected graph.
+
+# 38. Front: Define **Graph Database**.
+Back: A database that uses graph structures for semantic queries with nodes, edges, and properties to represent and store data.
+
+# 39. Front: What is **Neo4j**?
+Back: A popular graph database management system that uses a property graph model.
+
+# 40. Front: Explain **Cypher Query Language**.
+Back: A declarative graph query language used for querying graph databases like Neo4j.
+
+# 41. Front: What is **GraphQL**?
+Back: A query language and runtime for APIs that prioritizes giving clients exactly the data they request.
+
+# 42. Front: Define **Adjacency Matrix**.
+Back: A square matrix used to represent a finite graph, where elements indicate whether pairs of vertices are adjacent or not.
+
+# 43. Front: What is an **Adjacency List**?
+Back: A collection of unordered lists used to represent a finite graph, where each list describes the set of neighbors of a vertex.
+
+# 44. Front: Explain **Incidence Matrix**.
+Back: A matrix that shows the relationship between two classes of objects, typically vertices and edges in a graph.
+
+# 45. Front: What is **Graph Partitioning**?
+Back: The task of dividing a graph into smaller components with specific properties while minimizing edge cuts.
+
+# 46. Front: Define **Clique** in graph theory.
+Back: A subset of vertices in an undirected graph such that every two distinct vertices are adjacent.
+
+# 47. Front: What is the **Maximum Flow Problem**?
+Back: A optimization problem seeking the maximum flow in a flow network from a source to a sink.
+
+# 48. Front: Explain **Ford-Fulkerson Algorithm**.
+Back: A method for computing the maximum flow in a flow network.
+
+# 49. Front: What is a **Biconnected Component**?
+Back: A maximal biconnected subgraph of a graph, where a graph is biconnected if it remains connected after removing any single vertex.
+
+# 50. Front: Define **Strongly Connected Component**.
+Back: A maximal strongly connected subgraph of a directed graph, where every vertex is reachable from every other vertex.
+
+# 51. Front: What is **Tarjan's Algorithm**?
+Back: An algorithm for finding strongly connected components of a directed graph.
+
+# 52. Front: Explain **Hamiltonian Path**.
+Back: A path in a graph that visits each vertex exactly once.
+
+# 53. Front: What is a **Hamiltonian Cycle**?
+Back: A cycle in a graph that visits each vertex exactly once and returns to the starting vertex.
+
+# 54. Front: Define **Eulerian Path**.
+Back: A path in a graph that visits every edge exactly once.
+
+# 55. Front: What is an **Eulerian Circuit**?
+Back: A cycle in a graph that visits every edge exactly once and returns to the starting vertex.
+
+# 56. Front: Explain **Graph Matching**.
+Back: A set of edges in a graph where no two edges share a common vertex.
+
+# 57. Front: What is **Maximum Matching**?
+Back: A matching that contains the largest possible number of edges.
+
+# 58. Front: Define **Perfect Matching**.
+Back: A matching that covers all vertices of the graph.
+
+# 59. Front: What is the **Traveling Salesman Problem** (TSP)?
+Back: An optimization problem seeking the shortest possible route that visits each city exactly once and returns to the origin city.
+
+# 60. Front: Explain **Vertex Cover**.
+Back: A set of vertices such that each edge of the graph is incident to at least one vertex of the set.
+
+# 61. Front: What is **Independent Set**?
+Back: A set of vertices in a graph, no two of which are adjacent.
+
+# 62. Front: Define **Dominating Set**.
+Back: A subset of vertices such that every vertex not in the subset is adjacent to at least one vertex in the subset.
+
+# 63. Front: What is **Graph Embedding**?
+Back: The process of representing graph data in a lower-dimensional space while preserving structural information.
+
+# 64. Front: Explain **Spectral Graph Theory**.
+Back: The study of the properties of a graph in relationship to the characteristic polynomial, eigenvalues, and eigenvectors of matrices associated with the graph.
+
+# 65. Front: What is a **Flow Network**?
+Back: A directed graph where each edge has a capacity and receives a flow, used to model transportation networks.
+
+# 66. Front: Define **Cut** in graph theory.
+Back: A partition of the vertices of a graph into two disjoint subsets.
+
+# 67. Front: What is the **Max-Flow Min-Cut Theorem**?
+Back: A theorem stating that the maximum flow through a network is equal to the minimum capacity of any cut in the network.
+
+# 68. Front: Explain **Graph Compression**.
+Back: Techniques for reducing the space required to store a graph while maintaining its essential properties.
+
+# 69. Front: What is **Graph Clustering**?
+Back: The task of grouping vertices in a graph into clusters, with many edges within clusters and few between clusters.
+
+# 70. Front: Define **Centrality** in graph theory.
+Back: A measure of the importance of a vertex within a graph.
+
+# 71. Front: What is **Betweenness Centrality**?
+Back: A measure of centrality based on shortest paths, quantifying the number of times a node acts as a bridge along the shortest path between two other nodes.
+
+# 72. Front: Explain **Eigenvector Centrality**.
+Back: A measure of the influence of a node in a network based on the concept that connections to high-scoring nodes contribute more to the score of the node than connections to low-scoring nodes.
+
+# 73. Front: What is **PageRank**?
+Back: An algorithm used by Google Search to rank web pages in their search engine results, based on the structure of links between pages.
+
+# 74. Front: Define **Graph Convolutional Network** (GCN).
+Back: A type of neural network designed to work directly on graphs and leverage their structural information.
+
+# 75. Front: What is **Graph Attention Network** (GAT)?
+Back: A type of graph neural network that leverages masked self-attentional layers to address shortcomings of prior graph-based approaches.
+
+# 76. Front: Explain **Knowledge Graph**.
+Back: A graph-structured knowledge base that integrates various information and represents it in a graph format to enhance semantic searches.
+
+# 77. Front: What is **Ontology** in the context of graphs?
+Back: A formal representation of a set of concepts within a domain and the relationships between them, often represented as a graph.
+
+# 78. Front: Define **Resource Description Framework** (RDF).
+Back: A standard model for data interchange on the Web, representing information in the form of subject-predicate-object expressions (triples).
+
+# 79. Front: What is **SPARQL**?
+Back: A semantic query language for databases, able to retrieve and manipulate data stored in RDF format.
+
+# 80. Front: Explain **Graph Rewriting**.
+Back: A technique for creating, manipulating, and analyzing graphs based on rule-based transformations.
+
+# 81. Front: What is a **Hyperedge**?
+Back: An edge in a hypergraph that can connect any number of vertices.
+
+# 82. Front: Define **Tensor Network**.
+Back: A network of tensors connected by contractions, often represented as a graph where vertices are tensors and edges represent contractions.
+
+# 83. Front: What is **Graph Signal Processing**?
+Back: The study of signals defined on the vertices of a graph and the development of appropriate techniques for their analysis and processing.
+
+# 84. Front: Explain **Graph Fourier Transform**.
+Back: A transformation that decomposes a graph signal into different frequency components, analogous to the classical Fourier transform.
+
+# 85. Front: What is **Spectral Clustering**?
+Back: A technique for clustering that uses the spectrum (eigenvalues) of the similarity matrix of the data to perform dimensionality reduction before clustering in fewer dimensions.
+
+# 86. Front: Define **Graph Laplacian**.
+Back: A matrix representation of a graph, useful in spectral graph theory and various graph algorithms.
+
+# 87. Front: What is **Community Detection** in graphs?
+Back: The task of identifying groups of vertices in a network that are more densely connected internally than with the rest of the network.
+
+# 88. Front: Explain **Louvain Method**.
+Back: A method to extract communities from large networks based on modularity optimization.
+
+# 89. Front: What is **Graph Coarsening**?
+Back: The process of creating a smaller graph that maintains the essential properties of a larger graph.
+
+# 90. Front: Define **Graph Sparsification**.
+Back: The process of removing edges or vertices from a graph while maintaining its essential properties, often to reduce computational complexity.
+
+# 91. Front: What is a **Minimum Cut**?
+Back: A cut in a graph that has the smallest possible sum of weights of edges crossing the cut.
+
+# 92. Front: Explain **Karger's Algorithm**.
+Back: A randomized algorithm to compute a minimum cut of a connected graph.
+
+# 93. Front: What is **Graph Entropy**?
+Back: A measure of the structural information content of a graph.
+
+# 94. Front: Define **Graph Edit Distance**.
+Back: The minimum number of operations required to transform one graph into another.
+
+# 95. Front: What is **Graph Kernel**?
+Back: A function that computes the similarity between pairs of graphs.
+
+# 96. Front: Explain **Weisfeiler-Lehman Test**.
+Back: An algorithm for testing graph isomorphism and generating graph features.
+
+# 97. Front: What is **Graph Neural Network** (GNN)?
+Back: A class of deep learning methods designed to perform inference on data described by graphs.
+
+# 98. Front: Define **Message Passing Neural Network** (MPNN).
+Back: A type of graph neural network that uses message passing between nodes to update their representations.
+
+# 99. Front: What is **Graph Pooling**?
+Back: The process of reducing the size of graph representations in graph neural networks, analogous to pooling in convolutional neural networks.
+
+# 100. Front: Explain **Graph Attention**.
+Back: A mechanism in graph neural networks that allows nodes to attend differently to their neighbors, improving the model's ability to focus on important parts of the graph.
+

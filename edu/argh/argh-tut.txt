@@ -1,0 +1,133 @@
+# Argh: A Fun and Easy Command-Line Argument Parsing Library 🏴‍☠️
+
+In this tutorial, we're going to explore **Argh**, a powerful yet user-friendly command-line argument parsing library for Python. We'll cover the basics, and then dive into some more advanced usage examples!
+
+## A Quick Introduction
+
+Argh builds upon Python's built-in `argparse` module to provide a more convenient and intuitive API for organizing and dispatching command-line commands. The library is built around a few core classes, decorators, and functions:
+
+- `'ArghParser'`: A subclass of `argparse.ArgumentParser` with support for adding commands and managing tab-completion.
+- `'arg'` decorator: Declares an argument for a given function.
+- `'add_commands'`: Adds functions as commands to a given parser.
+- `'dispatch'`: Parses a list of arguments and calls the relevant function.
+- `'dispatch_command'`: A wrapper for `dispatch` that creates a one-command parser.
+
+Let's start by exploring how to create a simple command-line app using Argh!
+
+## Creating a Basic Argh App
+
+Consider the following example, where we create a command-line app with two commands: `ls` and `greet`.
+
+```python
+from argh import EntryPoint
+
+app = EntryPoint('main', dict(description='This is a cool app'))
+
+@app
+def ls():
+	for i in range(10):
+		print(i)
+
+@app
+def greet():
+	print('hello')
+
+if __name__ == '__main__':
+	app()
+```
+
+Here's what each part of the code does:
+
+1. We import the `EntryPoint` class from the `argh` module.
+2. We create an `EntryPoint` instance called `app`, providing a name and a description for our app.
+3. We define two functions, `ls` and `greet`, and then use the `@app` decorator to register them as commands.
+4. Finally, we call our `app` instance to start the command-line interface.
+
+Now, if we were to run this script with the command `python my_app.py ls`, it would print the numbers 0 to 9, and if we ran it with `python my_app.py greet`, it would say "hello".
+
+## Defining Command Arguments and Options
+
+Now let's extend our example by adding command arguments and options. We'll update the `greet` command to accept a `--name` option, and if it's provided, our message will include the given name.
+
+```python
+from argh import EntryPoint, arg
+
+app = EntryPoint('main', dict(description='This is a cool app'))
+
+@app
+def ls():
+	for i in range(10):
+		print(i)
+
+@app
+@arg('--name', help='name to include in the greeting')
+def greet(name=None):
+	if name:
+		print(f'Hello, {name}!')
+	else:
+		print('Hello!')
+
+if __name__ == '__main__':
+	app()
+```
+
+In this example, we import the `arg` decorator from the `argh` module and use it to define the `--name` option for our `greet` command. We then update our `greet` function to take an optional `name` argument and produce a customized message if the `--name` option is provided.
+
+Now, if we run our script with the command `python my_app.py greet --name Alice`, it would say "Hello, Alice!".
+
+## Adding Command Aliases and Descriptions
+
+Let's further extend our example by adding aliases and descriptions for our commands. We'll add a new `goodbye` command, which will have an alias `bye`, and we'll include descriptions for all commands.
+
+```python
+from argh import EntryPoint, arg, aliases
+
+app = EntryPoint('main', dict(description='This is a cool app'))
+
+@app
+@arg('count', help='number of lines to print', type=int)
+def ls(count=10):
+	"""
+	List numbers from 0 to COUNT - 1.
+	"""
+	for i in range(count):
+		print(i)
+
+@app
+@arg('--name', help='name to include in the greeting')
+def greet(name=None):
+	"""
+	Provide a friendly greeting.
+	"""
+	if name:
+		print(f'Hello, {name}!')
+	else:
+		print('Hello!')
+
+@app
+@aliases("bye")
+@arg('--name', help='name to include in the farewell')
+def goodbye(name=None):
+	"""
+	Say a heartfelt goodbye.
+	"""
+	if name:
+		print(f'Goodbye, {name}!')
+	else:
+		print('Goodbye!')
+
+if __name__ == '__main__':
+	app()
+```
+
+In this version, we:
+
+1. Add aliases for the `goodbye` command using the `@aliases` decorator.
+2. Define descriptions for our commands as docstrings, which Argh will use as help text in the command-line interface.
+3. Update the `ls` command to accept an optional argument for the number of lines to print.
+
+Now, with these improvements, our app is more user-friendly and informative!
+
+## Conclusion
+
+That

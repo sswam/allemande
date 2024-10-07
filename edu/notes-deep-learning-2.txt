@@ -1,0 +1,890 @@
+Here are 20 illuminating flashcard notes about deep learning for programmers:
+
+# 1. Front
+**Neural Network**
+
+# 1. Back
+A computational model inspired by biological neural networks, consisting of interconnected nodes (neurons) organized in layers, capable of learning complex patterns from data.
+
+# 1. Extra
+Neural networks are the foundation of deep learning. They consist of:
+- Input layer: Receives initial data
+- Hidden layer(s): Processes information
+- Output layer: Produces final results
+
+The strength of connections between neurons is represented by weights, which are adjusted during training.
+
+Basic structure:
+```mermaid
+graph LR
+    A[Input Layer] --> B[Hidden Layer]
+    B --> C[Output Layer]
+```
+
+Key concepts:
+- Activation functions (e.g., ReLU, sigmoid, tanh)
+- Backpropagation
+- Gradient descent
+
+Example in Python using TensorFlow:
+```python
+import tensorflow as tf
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(64, activation='relu', input_shape=(10,)),
+    tf.keras.layers.Dense(32, activation='relu'),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+```
+
+# 2. Front
+**Convolutional Neural Network (CNN)**
+
+# 2. Back
+A specialized type of neural network designed for processing grid-like data, particularly effective for image and video analysis tasks.
+
+# 2. Extra
+CNNs are composed of:
+1. Convolutional layers: Apply filters to detect features
+2. Pooling layers: Reduce spatial dimensions
+3. Fully connected layers: Perform classification
+
+Key operations:
+- Convolution: Sliding a filter over the input
+- Max pooling: Selecting maximum values in regions
+- Flattening: Converting 2D feature maps to 1D vector
+
+Architecture diagram:
+```mermaid
+graph LR
+    A[Input] --> B[Conv]
+    B --> C[Pool]
+    C --> D[Conv]
+    D --> E[Pool]
+    E --> F[Flatten]
+    F --> G[FC]
+    G --> H[Output]
+```
+
+Example in Python using Keras:
+```python
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+
+model = Sequential([
+    Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+    MaxPooling2D((2, 2)),
+    Conv2D(64, (3, 3), activation='relu'),
+    MaxPooling2D((2, 2)),
+    Flatten(),
+    Dense(64, activation='relu'),
+    Dense(10, activation='softmax')
+])
+```
+
+CNNs are widely used in:
+- Image classification
+- Object detection
+- Face recognition
+- Medical image analysis
+
+# 3. Front
+**Recurrent Neural Network (RNN)**
+
+# 3. Back
+A type of neural network designed to process sequential data by maintaining an internal state (memory) that captures information from previous inputs.
+
+# 3. Extra
+RNNs are particularly useful for:
+- Natural language processing
+- Time series analysis
+- Speech recognition
+
+Key concepts:
+- Hidden state: Internal memory that's updated at each time step
+- Backpropagation through time (BPTT): Algorithm for training RNNs
+
+Basic RNN structure:
+```mermaid
+graph LR
+    A[Input] --> B[RNN Cell]
+    B --> C[Output]
+    B -->|Hidden State| B
+```
+
+Variants:
+1. Long Short-Term Memory (LSTM)
+2. Gated Recurrent Unit (GRU)
+
+LSTM architecture:
+```
+┌───────────────────────────────────────────────────┐
+│                   LSTM Cell                       │
+│   ┌─────┐    ┌─────┐    ┌─────┐    ┌─────┐        │
+│   │  ×  │    │  +  │    │tanh │    │  ×  │        │
+│   └──┬──┘    └──┬──┘    └──┬──┘    └──┬──┘        │
+│      │          │          │          │           │
+│   ┌──▼──┐    ┌──▼──┐    ┌──▼──┐    ┌──▼──┐        │
+│   │ σ   │    │ σ   │    │ σ   │    │tanh │        │
+│   └─────┘    └─────┘    └─────┘    └─────┘        │
+│                                                   │
+└───────────────────────────────────────────────────┘
+```
+
+Example in Python using Keras:
+```python
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import SimpleRNN, LSTM, Dense
+
+model = Sequential([
+    LSTM(64, input_shape=(sequence_length, features)),
+    Dense(1)
+])
+```
+
+RNNs suffer from the vanishing gradient problem, which LSTMs and GRUs address through gating mechanisms.
+
+# 4. Front
+**Backpropagation**
+
+# 4. Back
+An algorithm for training neural networks by calculating gradients of the loss function with respect to the network's weights, propagating the error backwards through the network.
+
+# 4. Extra
+Backpropagation is a crucial component of the learning process in neural networks. It consists of two main phases:
+
+1. Forward pass: Input data is fed through the network to generate predictions
+2. Backward pass: Error is calculated and propagated backwards to update weights
+
+Key concepts:
+- Chain rule of calculus
+- Gradient descent optimization
+- Learning rate
+
+Mathematical representation:
+For a weight $w_{ij}$ connecting neurons $i$ and $j$, the update rule is:
+
+$w_{ij} = w_{ij} - \eta \frac{\partial E}{\partial w_{ij}}$
+
+Where:
+- $\eta$ is the learning rate
+- $E$ is the error (loss) function
+- $\frac{\partial E}{\partial w_{ij}}$ is the partial derivative of the error with respect to the weight
+
+Pseudocode for backpropagation:
+```
+1. Initialize network weights randomly
+2. For each training example:
+   a. Perform forward pass
+   b. Compute error at the output
+   c. For each layer from output to input:
+      - Compute local gradient
+      - Update weights and biases
+3. Repeat steps 2-3 for multiple epochs
+```
+
+Challenges:
+- Vanishing/exploding gradients
+- Choosing appropriate learning rates
+- Overfitting
+
+Variants:
+- Stochastic Gradient Descent (SGD)
+- Mini-batch Gradient Descent
+- Adam optimizer
+
+# 5. Front
+**Activation Function**
+
+# 5. Back
+A mathematical function applied to the output of a neuron in a neural network, introducing non-linearity and enabling the network to learn complex patterns.
+
+# 5. Extra
+Activation functions are crucial for neural networks to learn non-linear relationships in data. They determine whether a neuron should be activated or not based on the weighted sum of its inputs.
+
+Common activation functions:
+
+1. Rectified Linear Unit (ReLU):
+   $f(x) = \max(0, x)$
+   ```python
+   def relu(x):
+       return max(0, x)
+   ```
+
+2. Sigmoid:
+   $f(x) = \frac{1}{1 + e^{-x}}$
+   ```python
+   import numpy as np
+   def sigmoid(x):
+       return 1 / (1 + np.exp(-x))
+   ```
+
+3. Hyperbolic Tangent (tanh):
+   $f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$
+   ```python
+   import numpy as np
+   def tanh(x):
+       return np.tanh(x)
+   ```
+
+4. Leaky ReLU:
+   $f(x) = \max(0.01x, x)$
+   ```python
+   def leaky_relu(x, alpha=0.01):
+       return max(alpha * x, x)
+   ```
+
+5. Softmax (for multi-class classification):
+   $f(x_i) = \frac{e^{x_i}}{\sum_{j} e^{x_j}}$
+   ```python
+   import numpy as np
+   def softmax(x):
+       exp_x = np.exp(x - np.max(x))
+       return exp_x / exp_x.sum()
+   ```
+
+Comparison of activation functions:
+![Activation Functions](https://miro.medium.com/max/1400/1*p_hyqAtyI8pbt2kEl6siOQ.png)
+
+Choosing the right activation function depends on the task and network architecture. For example:
+- ReLU is commonly used in hidden layers
+- Sigmoid is often used for binary classification output
+- Softmax is used for multi-class classification output
+
+In TensorFlow/Keras, you can specify activation functions as follows:
+```python
+from tensorflow.keras.layers import Dense
+
+dense_layer = Dense(64, activation='relu')
+```
+
+# 6. Front
+**Gradient Descent**
+
+# 6. Back
+An optimization algorithm used to minimize the loss function by iteratively adjusting the model's parameters in the direction of steepest descent of the gradient.
+
+# 6. Extra
+Gradient descent is fundamental to training neural networks. It works by calculating the gradient of the loss function with respect to each parameter and updating the parameters in the opposite direction of the gradient.
+
+Types of gradient descent:
+1. Batch Gradient Descent: Uses entire dataset for each update
+2. Stochastic Gradient Descent (SGD): Uses a single sample for each update
+3. Mini-batch Gradient Descent: Uses a small batch of samples for each update
+
+Mathematical representation:
+$\theta = \theta - \eta \nabla_\theta J(\theta)$
+
+Where:
+- $\theta$ represents the model parameters
+- $\eta$ is the learning rate
+- $\nabla_\theta J(\theta)$ is the gradient of the loss function with respect to the parameters
+
+Visualization of gradient descent:
+```
+    Loss
+     ^
+     |
+     |    *
+     |   / \
+     |  /   \
+     | /     \
+     |/       \
+     |         \
+     |          \
+     |           \
+     |            *
+     |             \
+     |              \
+     |               *
+     +------------------>
+               Parameters
+```
+
+Challenges:
+- Choosing an appropriate learning rate
+- Avoiding local minima
+- Slow convergence for ill-conditioned problems
+
+Variants and improvements:
+- Momentum
+- AdaGrad
+- RMSprop
+- Adam (combines concepts from RMSprop and momentum)
+
+Example implementation in Python:
+```python
+def gradient_descent(X, y, theta, alpha, num_iters):
+    m = len(y)
+    for _ in range(num_iters):
+        h = np.dot(X, theta)
+        gradient = np.dot(X.T, (h - y)) / m
+        theta -= alpha * gradient
+    return theta
+```
+
+In deep learning frameworks like TensorFlow, optimizers are built-in:
+```python
+from tensorflow.keras.optimizers import SGD, Adam
+
+model.compile(optimizer=SGD(learning_rate=0.01), loss='mse')
+# or
+model.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
+```
+
+# 7. Front
+**Overfitting**
+
+# 7. Back
+A phenomenon in machine learning where a model performs well on training data but poorly on unseen data, indicating that it has learned noise or specific patterns in the training set rather than generalizing well.
+
+# 7. Extra
+Overfitting is a common problem in deep learning, especially with complex models and limited data. It occurs when a model captures noise or fluctuations in the training data that don't represent the underlying pattern.
+
+Signs of overfitting:
+- High accuracy on training data, low accuracy on validation/test data
+- Increasing validation loss while training loss continues to decrease
+
+Visualization of overfitting:
+```
+    Error
+     ^
+     |
+     |        Validation Error
+     |      /
+     |    /
+     |  /
+     |/
+     |
+     |\
+     | \
+     |  \     Training Error
+     |   \
+     |    \
+     +-----\---------------------->
+            \       Epochs
+```
+
+Techniques to prevent overfitting:
+
+1. Regularization:
+   - L1 (Lasso): Adds absolute value of weights to loss function
+   - L2 (Ridge): Adds squared value of weights to loss function
+   ```python
+   from tensorflow.keras.regularizers import l1, l2
+   Dense(64, activation='relu', kernel_regularizer=l2(0.01))
+   ```
+
+2. Dropout: Randomly "drops out" a proportion of neurons during training
+   ```python
+   from tensorflow.keras.layers import Dropout
+   model.add(Dropout(0.5))
+   ```
+
+3. Early Stopping: Stops training when validation performance starts to degrade
+   ```python
+   from tensorflow.keras.callbacks import EarlyStopping
+   early_stop = EarlyStopping(monitor='val_loss', patience=10)
+   model.fit(X, y, validation_split=0.2, callbacks=[early_stop])
+   ```
+
+4. Data Augmentation: Artificially increases the size of the training set
+   ```python
+   from tensorflow.keras.preprocessing.image import ImageDataGenerator
+   datagen = ImageDataGenerator(rotation_range=20, width_shift_range=0.2)
+   ```
+
+5. Cross-validation: Assesses model performance on multiple subsets of data
+
+6. Ensemble Methods: Combines predictions from multiple models
+
+7. Simplifying the Model: Reducing the number of layers or neurons
+
+Balancing model complexity:
+- Too simple: Underfitting (high bias)
+- Too complex: Overfitting (high variance)
+- Optimal: Good generalization
+
+# 8. Front
+**Transfer Learning**
+
+# 8. Back
+A machine learning technique where a model developed for one task is reused as the starting point for a model on a second, related task, leveraging pre-learned features to improve generalization and reduce training time.
+
+# 8. Extra
+Transfer learning is particularly useful when you have limited data for your target task or want to speed up the training process. It's widely used in computer vision and natural language processing.
+
+Types of transfer learning:
+1. Feature Extraction: Use pre-trained model as fixed feature extractor
+2. Fine-Tuning: Adapt pre-trained model by updating some or all layers
+
+Common pre-trained models:
+- Computer Vision: VGG, ResNet, Inception, EfficientNet
+- NLP: BERT, GPT, T5
+
+Workflow for transfer learning:
+1. Select a pre-trained model
+2. Freeze some layers (usually early layers)
+3. Add new layers for your specific task
+4. Train the model on your dataset
+
+Example using TensorFlow and Keras:
+```python
+import tensorflow as tf
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+
+# Load pre-trained ResNet50 model
+base_model = ResNet50(weights='imagenet', include_top=False)
+
+# Freeze base model layers
+for layer in base_model.layers:
+    layer.trainable = False
+
+# Add new layers
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dense(1024, activation='relu')(x)
+output = Dense(num_classes, activation='softmax')(x)
+
+# Create new model
+model = tf.keras.Model(inputs=base_model.input, outputs=output)
+
+# Compile and train
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val))
+```
+
+Benefits of transfer learning:
+- Faster training
+- Better performance with limited data
+- Leverages knowledge from large datasets
+
+Challenges:
+- Choosing the right pre-trained model
+- Deciding how many layers to freeze/fine-tune
+- Potential negative transfer if source and target tasks are too dissimilar
+
+Transfer learning is not limited to neural networks; it can be applied to other machine learning algorithms as well.
+
+# 9. Front
+**Batch Normalization**
+
+# 9. Back
+A technique used to normalize the inputs of each layer in a neural network, aiming to reduce internal covariate shift and accelerate training.
+
+# 9. Extra
+Batch Normalization (BatchNorm) was introduced by Sergey Ioffe and Christian Szegedy in 2015. It addresses the problem of internal covariate shift, where the distribution of each layer's inputs changes during training, slowing down the training process.
+
+How BatchNorm works:
+1. Normalize the inputs: $\hat{x}_i = \frac{x_i - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}}$
+2. Scale and shift: $y_i = \gamma \hat{x}_i + \beta$
+
+Where:
+- $\mu_B$ is the mini-batch mean
+- $\sigma_B^2$ is the mini-batch variance
+- $\epsilon$ is a small constant for numerical stability
+- $\gamma$ and $\beta$ are learnable parameters
+
+Benefits:
+- Faster convergence
+- Allows higher learning rates
+- Reduces the importance of careful initialization
+- Acts as a regularizer, in some cases eliminating the need for Dropout
+
+Implementation in TensorFlow/Keras:
+```python
+from tensorflow.keras.layers import BatchNormalization
+
+model = Sequential([
+    Dense(64, activation='relu'),
+    BatchNormalization(),
+    Dense(32, activation='relu'),
+    BatchNormalization(),
+    Dense(1, activation='sigmoid')
+])
+```
+
+BatchNorm during inference:
+- Uses running averages of mean and variance computed during training
+
+Variants:
+- Layer Normalization
+- Instance Normalization
+- Group Normalization
+
+Considerations:
+- Can be less effective for small batch sizes
+- May require adjustments to learning rate decay schedules
+- Can interact with weight decay in unexpected ways
+
+Visualization of BatchNorm effect:
+```
+Without BatchNorm:     With BatchNorm:
+   Layer 1                Layer 1
+     |                      |
+     v                      v
+   Layer 2                BatchNorm
+     |                      |
+     v                      v
+   Layer 3                Layer 2
+     |                      |
+     v                      v
+   Output                 BatchNorm
+                            |
+                            v
+                          Layer 3
+                            |
+                            v
+                          Output
+```
+
+BatchNorm has become a standard component in many deep learning architectures, contributing significantly to the training of very deep networks.
+
+# 10. Front
+**Generative Adversarial Network (GAN)**
+
+# 10. Back
+A class of machine learning frameworks where two neural networks, a generator and a discriminator, are trained simultaneously through adversarial training to generate new, synthetic instances of data.
+
+# 10. Extra
+GANs, introduced by Ian Goodfellow in 2014, have revolutionized the field of generative models. They consist of two main components:
+
+1. Generator (G): Creates synthetic data samples
+2. Discriminator (D): Distinguishes between real and synthetic samples
+
+Training process:
+- G tries to create realistic samples to fool D
+- D tries to correctly classify real and fake samples
+- This adversarial process continues until G produces highly realistic samples
+
+GAN architecture:
+```mermaid
+graph LR
+    A[Random Noise] --> B[Generator]
+    B --> C[Fake Samples]
+    C --> D[Discriminator]
+    E[Real Samples] --> D
+    D --> F[Real/Fake Classification]
+```
+
+Loss functions:
+- Discriminator: $\max_D V(D,G) = \mathbb{E}_{x\sim p_{data}(x)}[\log D(x)] + \mathbb{E}_{z\sim p_z(z)}[\log(1-D(G(z)))]$
+- Generator: $\min_G V(D,G) = \mathbb{E}_{z\sim p_z(z)}[\log(1-D(G(z)))]$
+
+Where:
+- $D(x)$ is the discriminator's estimate of the probability that real data instance x is real
+- $G(z)$ is the generator's output given noise z
+
+Example implementation in TensorFlow/Keras:
+```python
+import tensorflow as tf
+
+def make_generator():
+    model = tf.keras.Sequential([
+        tf.keras.layers.Dense(256, input_shape=(100,), activation='relu'),
+        tf.keras.layers.Dense(512, activation='relu'),
+        tf.keras.layers.Dense(784, activation='tanh')
+    ])
+    return model
+
+def make_discriminator():
+    model = tf.keras.Sequential([
+        tf.keras.layers.Dense(512, input_shape=(784,), activation='relu'),
+        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+    return model
+
+generator = make_generator()
+discriminator = make_discriminator()
+
+cross_entropy = tf.keras.losses.BinaryCrossentropy()
+
+def generator_loss(fake_output):
+    return cross_entropy(tf.ones_like(fake_output), fake_output)
+
+def discriminator_loss(real_output, fake_output):
+    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+    total_loss = real_loss + fake_loss
+    return total_loss
+```
+
+Applications of GANs:
+- Image generation
+- Text-to-image synthesis
+- Style transfer
+- Data augmentation
+- Super-resolution
+- Anomaly detection
+
+Variants:
+- DCGAN (Deep Convolutional GAN)
+- WGAN (Wasserstein GAN)
+- CycleGAN
+- StyleGAN
+
+Challenges:
+- Mode collapse
+- Training instability
+- Evaluation metrics
+
+GANs have opened up new possibilities in generative AI and continue to be an active area of research and development.
+
+# 11. Front
+**Long Short-Term Memory (LSTM)**
+
+# 11. Back
+A type of recurrent neural network architecture designed to learn long-term dependencies in sequential data by using gating mechanisms to control information flow.
+
+# 11. Extra
+LSTMs were introduced by Hochreiter & Schmidhuber in 1997 to address the vanishing gradient problem in traditional RNNs. They are particularly effective for tasks involving long sequences.
+
+LSTM cell structure:
+1. Forget gate: Decides what information to discard
+2. Input gate: Decides which values to update
+3. Output gate: Determines the output based on the cell state
+
+LSTM equations:
+1. Forget gate: $f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)$
+2. Input gate: $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$
+3. Candidate values: $\tilde{C}_t = \tanh(W_C \cdot [h_{t-1}, x_t] + b_C)$
+4. Cell state update: $C_t = f_t * C_{t-1} + i_t * \tilde{C}_t$
+5. Output gate: $o_t = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o)$
+6. Hidden state: $h_t = o_t * \tanh(C_t)$
+
+Where:
+- $\sigma$ is the sigmoid function
+- $*$ denotes element-wise multiplication
+
+LSTM cell diagram:
+```
+┌─────────────────────────────────────────────────────────────┐
+│                         LSTM Cell                           │
+│                                                             │
+│    ┌───────┐   ┌───────┐   ┌───────┐   ┌───────┐            │
+│    │   ×   │   │   +   │   │  tanh │   │   ×   │            │
+│    └───┬───┘   └───┬───┘   └───┬───┘   └───┬───┘            │
+│        │           │           │           │                │
+│    ┌───▼───┐   ┌───▼───┐   ┌───▼───┐   ┌───▼───┐            │
+│    │   σ   │   │   σ   │   │   σ   │   │  tanh │            │
+│    └───────┘   └───────┘   └───────┘   └───────┘            │
+│     Forget      Input      Output      Candidate            │
+│      Gate        Gate       Gate         Value              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+Implementation in TensorFlow/Keras:
+```python
+from tensorflow.keras.layers import LSTM
+
+model = tf.keras.Sequential([
+    LSTM(64, return_sequences=True, input_shape=(sequence_length, features)),
+    LSTM(32),
+    Dense(1)
+])
+```
+
+Applications:
+- Natural language processing
+- Speech recognition
+- Time series forecasting
+- Sentiment analysis
+- Machine translation
+
+Variants:
+- Peephole LSTM
+- GRU (Gated Recurrent Unit)
+- Bidirectional LSTM
+
+Advantages:
+- Can learn long-term dependencies
+- Mitigates vanishing/exploding gradient problem
+- Effective for various sequence modeling tasks
+
+Challenges:
+- Computational complexity
+- Potential overfitting on small datasets
+
+LSTMs have been widely successful in handling sequential data and remain a popular choice for many time-series and NLP tasks.
+
+# 12. Front
+**Attention Mechanism**
+
+# 12. Back
+A technique in neural networks that allows the model to focus on specific parts of the input when producing an output, improving performance on tasks with long-range dependencies.
+
+# 12. Extra
+Attention mechanisms were introduced to address limitations of sequence-to-sequence models, particularly in machine translation. They have since become a fundamental component in many state-of-the-art models.
+
+Types of attention:
+1. Additive (Bahdanau) attention
+2. Multiplicative (Luong) attention
+3. Self-attention
+
+Self-attention equation:
+$\text{Attention}(Q, K, V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V$
+
+Where:
+- Q: Query matrix
+- K: Key matrix
+- V: Value matrix
+- $d_k$: Dimension of the key vectors
+
+Visualization of attention:
+```
+Input Sequence
+    |  |  |  |
+    v  v  v  v
+┌───────────────┐
+│   Attention   │
+│   Weights     │
+└───────────────┘
+    |  |  |  |
+    v  v  v  v
+  Output State
+```
+
+Implementation in TensorFlow/Keras:
+```python
+class AttentionLayer(tf.keras.layers.Layer):
+    def __init__(self, units):
+        super(AttentionLayer, self).__init__()
+        self.W1 = tf.keras.layers.Dense(units)
+        self.W2 = tf.keras.layers.Dense(units)
+        self.V = tf.keras.layers.Dense(1)
+
+    def call(self, query, values):
+        query_with_time_axis = tf.expand_dims(query, 1)
+        score = self.V(tf.nn.tanh(self.W1(query_with_time_axis) + self.W2(values)))
+        attention_weights = tf.nn.softmax(score, axis=1)
+        context_vector = attention_weights * values
+        context_vector = tf.reduce_sum(context_vector, axis=1)
+        return context_vector, attention_weights
+```
+
+Applications:
+- Machine translation
+- Image captioning
+- Speech recognition
+- Question answering
+- Summarization
+
+Key concepts:
+- Query, Key, Value triplets
+- Attention weights
+- Context vector
+
+Advantages:
+- Improves handling of long-range dependencies
+- Provides interpretability through attention weights
+- Enables parallel processing (self-attention)
+
+Variants:
+- Multi-head attention
+- Scaled dot-product attention
+- Local attention
+
+Attention mechanisms have led to significant improvements in various NLP tasks and have become a cornerstone of transformer architectures, which power models like BERT and GPT.
+
+# 13. Front
+**Transformer Architecture**
+
+# 13. Back
+A neural network architecture that relies entirely on self-attention mechanisms to compute representations of its input and output without using recurrent or convolutional layers.
+
+# 13. Extra
+Introduced in the paper "Attention Is All You Need" by Vaswani et al. in 2017, Transformers have revolutionized natural language processing and are now being applied to various domains.
+
+Key components:
+1. Multi-head attention
+2. Positional encoding
+3. Feed-forward neural networks
+4. Layer normalization
+5. Residual connections
+
+Transformer architecture:
+```mermaid
+graph TD
+    A[Input] --> B[Embedding + Positional Encoding]
+    B --> C[Multi-Head Attention]
+    C --> D[Add & Norm]
+    D --> E[Feed Forward]
+    E --> F[Add & Norm]
+    F --> G[Output]
+```
+
+Multi-head attention:
+- Allows the model to jointly attend to information from different representation subspaces
+- Equation: $\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O$
+
+Positional encoding:
+- Adds information about the position of tokens in the sequence
+- Often uses sine and cosine functions of different frequencies
+
+Implementation in TensorFlow/Keras:
+```python
+import tensorflow as tf
+
+class MultiHeadAttention(tf.keras.layers.Layer):
+    def __init__(self, d_model, num_heads):
+        super(MultiHeadAttention, self).__init__()
+        self.num_heads = num_heads
+        self.d_model = d_model
+        
+        assert d_model % self.num_heads == 0
+        
+        self.depth = d_model // self.num_heads
+        
+        self.wq = tf.keras.layers.Dense(d_model)
+        self.wk = tf.keras.layers.Dense(d_model)
+        self.wv = tf.keras.layers.Dense(d_model)
+        
+        self.dense = tf.keras.layers.Dense(d_model)
+        
+    def split_heads(self, x, batch_size):
+        x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))
+        return tf.transpose(x, perm=[0, 2, 1, 3])
+    
+    def call(self, v, k, q, mask):
+        batch_size = tf.shape(q)[0]
+        
+        q = self.wq(q)
+        k = self.wk(k)
+        v = self.wv(v)
+        
+        q = self.split_heads(q, batch_size)
+        k = self.split_heads(k, batch_size)
+        v = self.split_heads(v, batch_size)
+        
+        scaled_attention, attention_weights = scaled_dot_product_attention(
+            q, k, v, mask)
+        
+        scaled_attention = tf.transpose(scaled_attention, perm=[0, 2, 1, 3])
+        concat_attention = tf.reshape(scaled_attention, 
+                                      (batch_size, -1, self.d_model))
+        
+        output = self.dense(concat_attention)
+        
+        return output, attention_weights
+```
+
+Applications:
+- Machine translation
+- Text summarization
+- Question answering
+- Language modeling (e.g., GPT models)
+- Image processing (Vision Transformer)
+
+Advantages:
+- Parallelizable (unlike RNNs)
+- Captures long-range dependencies effectively
+- Scalable to very large models and datasets
+
+Variants:
+- BERT (Bidirectional Encoder Representations from Transformers)
+- GPT (Generative Pre-trained Transformer)
+- T5 (Text-to-Text Transfer Transformer)
+
+Transformers have become the foundation for many state-of-the-art models in NLP and are increasingly being applied to other domains like computer vision and speech processing.

@@ -1,0 +1,780 @@
+Here are 20 illuminating flashcard notes about deep learning for programmers:
+
+# Front
+**Neural Network**
+
+# Back
+A computational model inspired by biological neural networks, consisting of interconnected nodes (neurons) organized in layers
+
+# Extra
+- Input layer receives data
+- Hidden layers process information
+- Output layer produces results
+- Connections between neurons have weights
+- Activation functions introduce non-linearity
+- Backpropagation algorithm used for training
+- Can approximate complex functions
+
+Example architecture:
+```
+Input -> [Hidden Layer 1] -> [Hidden Layer 2] -> Output
+```
+
+---
+
+# Front
+**Deep Learning**
+
+# Back
+A subset of machine learning that uses neural networks with multiple layers to learn hierarchical representations of data
+
+# Extra
+- Capable of automatic feature extraction
+- Excels at tasks like image and speech recognition
+- Requires large amounts of data and computational power
+- Popular architectures: CNNs, RNNs, Transformers
+- Key frameworks: TensorFlow, PyTorch, Keras
+- Applications: computer vision, natural language processing, robotics
+- Challenges: interpretability, data requirements, computational cost
+
+---
+
+# Front
+**Activation Function**
+
+# Back
+A mathematical function applied to the output of a neuron to introduce non-linearity into the network
+
+# Extra
+Common activation functions:
+1. ReLU (Rectified Linear Unit): $f(x) = max(0, x)$
+2. Sigmoid: $f(x) = \frac{1}{1 + e^{-x}}$
+3. Tanh: $f(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}}$
+4. Leaky ReLU: $f(x) = max(0.01x, x)$
+5. Softmax (for multi-class classification): $f(x_i) = \frac{e^{x_i}}{\sum_j e^{x_j}}$
+
+Choosing the right activation function can impact model performance and training dynamics.
+
+---
+
+# Front
+**Backpropagation**
+
+# Back
+An algorithm for training neural networks by computing gradients of the loss function with respect to the network's parameters
+
+# Extra
+- Uses chain rule to propagate error gradients backwards through the network
+- Enables efficient computation of gradients for all parameters
+- Key to training deep neural networks
+- Steps:
+1. Forward pass: compute predictions
+2. Compute loss
+3. Backward pass: compute gradients
+4. Update parameters using an optimization algorithm (e.g., SGD)
+
+Mathematical representation:
+$\frac{\partial L}{\partial w} = \frac{\partial L}{\partial y} \cdot \frac{\partial y}{\partial w}$
+
+Where L is the loss, y is the output, and w is a weight.
+
+---
+
+# Front
+**Convolutional Neural Network (CNN)**
+
+# Back
+A type of neural network architecture designed for processing grid-like data, particularly effective for image analysis tasks
+
+# Extra
+Key components:
+1. Convolutional layers: apply filters to detect features
+2. Pooling layers: reduce spatial dimensions
+3. Fully connected layers: final classification/regression
+
+Features:
+- Parameter sharing
+- Local connectivity
+- Translation invariance
+
+Popular CNN architectures:
+- LeNet
+- AlexNet
+- VGGNet
+- ResNet
+- Inception
+
+Example use in Python with Keras:
+```python
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
+
+model = Sequential([
+	Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+	MaxPooling2D((2, 2)),
+	Flatten(),
+	Dense(10, activation='softmax')
+])
+```
+
+---
+
+# Front
+**Recurrent Neural Network (RNN)**
+
+# Back
+A type of neural network designed to process sequential data by maintaining an internal state (memory)
+
+# Extra
+- Suitable for tasks involving time series, natural language, and other sequential data
+- Can handle variable-length input sequences
+- Suffers from vanishing/exploding gradient problem in long sequences
+
+Variants:
+1. LSTM (Long Short-Term Memory)
+2. GRU (Gated Recurrent Unit)
+
+Basic RNN equation:
+$h_t = f(W_{hh}h_{t-1} + W_{xh}x_t + b_h)$
+
+Where:
+- $h_t$ is the hidden state at time t
+- $x_t$ is the input at time t
+- $W_{hh}$, $W_{xh}$, and $b_h$ are learnable parameters
+
+Example use in Python with PyTorch:
+```python
+import torch.nn as nn
+
+class SimpleRNN(nn.Module):
+	def __init__(self, input_size, hidden_size, output_size):
+		super(SimpleRNN, self).__init__()
+		self.rnn = nn.RNN(input_size, hidden_size, batch_first=True)
+		self.fc = nn.Linear(hidden_size, output_size)
+
+	def forward(self, x):
+		_, hn = self.rnn(x)
+		return self.fc(hn[-1])
+```
+
+---
+
+# Front
+**Gradient Descent**
+
+# Back
+An optimization algorithm used to minimize the loss function by iteratively adjusting parameters in the direction of steepest descent
+
+# Extra
+Types:
+1. Batch Gradient Descent: uses entire dataset
+2. Stochastic Gradient Descent (SGD): uses single sample
+3. Mini-batch Gradient Descent: uses small batch of samples
+
+Update rule:
+$\theta = \theta - \alpha \nabla_\theta J(\theta)$
+
+Where:
+- $\theta$ are the parameters
+- $\alpha$ is the learning rate
+- $\nabla_\theta J(\theta)$ is the gradient of the loss function
+
+Variants:
+- Momentum
+- RMSprop
+- Adam (combines momentum and RMSprop)
+
+Example implementation in NumPy:
+```python
+def gradient_descent(X, y, theta, alpha, num_iters):
+	m = len(y)
+	for _ in range(num_iters):
+		h = X.dot(theta)
+		gradient = (1/m) * X.T.dot(h - y)
+		theta -= alpha * gradient
+	return theta
+```
+
+---
+
+# Front
+**Overfitting**
+
+# Back
+A phenomenon where a model performs well on training data but poorly on unseen data, indicating that it has learned noise in the training set rather than generalizing
+
+# Extra
+Causes:
+- Model complexity exceeds data complexity
+- Insufficient training data
+- Noisy data
+
+Prevention techniques:
+1. Regularization (L1, L2)
+2. Dropout
+3. Early stopping
+4. Data augmentation
+5. Cross-validation
+6. Ensemble methods
+
+Visual representation:
+![Overfitting vs Underfitting](https://scikit-learn.org/stable/_images/sphx_glr_plot_underfitting_overfitting_001.png)
+
+Detecting overfitting:
+- Monitor training and validation loss
+- Use learning curves
+
+---
+
+# Front
+**Transfer Learning**
+
+# Back
+A technique that leverages knowledge gained from solving one problem to improve performance on a related but different problem
+
+# Extra
+Benefits:
+- Reduces training time
+- Requires less labeled data
+- Improves generalization
+
+Common approaches:
+1. Feature extraction: Use pre-trained model as fixed feature extractor
+2. Fine-tuning: Adapt pre-trained model to new task by updating some or all layers
+
+Popular pre-trained models:
+- ImageNet models (ResNet, VGG, Inception) for computer vision
+- BERT, GPT for natural language processing
+
+Example in Keras:
+```python
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
+
+base_model = ResNet50(weights='imagenet', include_top=False)
+x = GlobalAveragePooling2D()(base_model.output)
+output = Dense(num_classes, activation='softmax')(x)
+model = Model(inputs=base_model.input, outputs=output)
+
+# Freeze base model layers
+for layer in base_model.layers:
+	layer.trainable = False
+
+model.compile(optimizer='adam', loss='categorical_crossentropy')
+```
+
+---
+
+# Front
+**Batch Normalization**
+
+# Back
+A technique that normalizes the inputs of each layer to reduce internal covariate shift and accelerate training
+
+# Extra
+Benefits:
+- Faster convergence
+- Allows higher learning rates
+- Reduces overfitting (slight regularization effect)
+
+Formula:
+$y = \gamma \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}} + \beta$
+
+Where:
+- $\mu_B$ is the mini-batch mean
+- $\sigma_B^2$ is the mini-batch variance
+- $\gamma$ and $\beta$ are learnable parameters
+- $\epsilon$ is a small constant for numerical stability
+
+Implementation in PyTorch:
+```python
+import torch.nn as nn
+
+class Net(nn.Module):
+	def __init__(self):
+		super(Net, self).__init__()
+		self.fc1 = nn.Linear(784, 256)
+		self.bn1 = nn.BatchNorm1d(256)
+		self.fc2 = nn.Linear(256, 10)
+
+	def forward(self, x):
+		x = self.fc1(x)
+		x = self.bn1(x)
+		x = F.relu(x)
+		x = self.fc2(x)
+		return x
+```
+
+---
+
+# Front
+**Dropout**
+
+# Back
+A regularization technique that randomly deactivates a fraction of neurons during training to prevent overfitting
+
+# Extra
+- Typically used in fully connected layers
+- Helps create an ensemble effect
+- Improves generalization
+
+Implementation:
+- During training: randomly set activations to zero with probability p
+- During inference: scale activations by 1-p
+
+Visualization:
+![Dropout](https://miro.medium.com/max/1400/1*iWQzxhVlvadk6VAJjsgXgg.png)
+
+Example in TensorFlow:
+```python
+import tensorflow as tf
+
+model = tf.keras.models.Sequential([
+	tf.keras.layers.Dense(128, activation='relu'),
+	tf.keras.layers.Dropout(0.5),
+	tf.keras.layers.Dense(64, activation='relu'),
+	tf.keras.layers.Dropout(0.5),
+	tf.keras.layers.Dense(10, activation='softmax')
+])
+```
+
+---
+
+# Front
+**Long Short-Term Memory (LSTM)**
+
+# Back
+A type of recurrent neural network architecture designed to capture long-term dependencies in sequential data
+
+# Extra
+Key components:
+1. Forget gate: decides what information to discard
+2. Input gate: decides what new information to store
+3. Output gate: decides what to output based on cell state
+
+Advantages over simple RNNs:
+- Mitigates vanishing gradient problem
+- Better at capturing long-range dependencies
+
+LSTM cell equations:
+1. $f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)$
+2. $i_t = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i)$
+3. $\tilde{C}_t = tanh(W_C \cdot [h_{t-1}, x_t] + b_C)$
+4. $C_t = f_t * C_{t-1} + i_t * \tilde{C}_t$
+5. $o_t = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o)$
+6. $h_t = o_t * tanh(C_t)$
+
+Example implementation in Keras:
+```python
+from tensorflow.keras.layers import LSTM
+
+model = tf.keras.Sequential([
+	LSTM(64, return_sequences=True, input_shape=(sequence_length, features)),
+	LSTM(32),
+	Dense(10, activation='softmax')
+])
+```
+
+---
+
+# Front
+**Generative Adversarial Network (GAN)**
+
+# Back
+A deep learning architecture consisting of two neural networks (generator and discriminator) that compete against each other to generate realistic synthetic data
+
+# Extra
+Components:
+1. Generator: creates synthetic samples
+2. Discriminator: distinguishes between real and synthetic samples
+
+Training process:
+- Generator tries to fool the discriminator
+- Discriminator tries to correctly classify real and fake samples
+- Networks improve through competition
+
+Applications:
+- Image generation
+- Style transfer
+- Data augmentation
+- Super-resolution
+
+Challenges:
+- Mode collapse
+- Training instability
+- Evaluation metrics
+
+Basic GAN loss functions:
+- Discriminator: $\max_D \mathbb{E}_{x \sim p_{data}}[\log D(x)] + \mathbb{E}_{z \sim p_z}[\log(1 - D(G(z)))]$
+- Generator: $\min_G \mathbb{E}_{z \sim p_z}[\log(1 - D(G(z)))]$
+
+Example GAN implementation in PyTorch:
+```python
+import torch.nn as nn
+
+class Generator(nn.Module):
+	def __init__(self):
+		super(Generator, self).__init__()
+		self.model = nn.Sequential(
+			nn.Linear(100, 256),
+			nn.ReLU(),
+			nn.Linear(256, 784),
+			nn.Tanh()
+		)
+
+	def forward(self, z):
+		return self.model(z)
+
+class Discriminator(nn.Module):
+	def __init__(self):
+		super(Discriminator, self).__init__()
+		self.model = nn.Sequential(
+			nn.Linear(784, 256),
+			nn.ReLU(),
+			nn.Linear(256, 1),
+			nn.Sigmoid()
+		)
+
+	def forward(self, x):
+		return self.model(x)
+```
+
+---
+
+# Front
+**Attention Mechanism**
+
+# Back
+A technique that allows neural networks to focus on specific parts of the input when processing sequential data, improving performance on tasks like machine translation and image captioning
+
+# Extra
+Key concepts:
+- Query, Key, Value triplets
+- Attention weights
+- Context vector
+
+Types of attention:
+1. Additive (Bahdanau) attention
+2. Multiplicative (Luong) attention
+3. Self-attention
+
+Transformer architecture:
+- Uses multi-head self-attention
+- Replaced RNNs in many NLP tasks
+
+Attention formula:
+$Attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{d_k}})V$
+
+Where Q, K, and V are query, key, and value matrices, and $d_k$ is the dimension of the keys.
+
+Visualization:
+![Attention Mechanism](https://miro.medium.com/max/1400/1*Yk4SfvV5X3R3FIlrF3kA0g.png)
+
+Example implementation in PyTorch:
+```python
+import torch.nn as nn
+import torch.nn.functional as F
+
+class Attention(nn.Module):
+	def __init__(self, hidden_size):
+		super(Attention, self).__init__()
+		self.hidden_size = hidden_size
+		self.attn = nn.Linear(hidden_size * 2, hidden_size)
+		self.v = nn.Parameter(torch.rand(hidden_size))
+
+	def forward(self, hidden, encoder_outputs):
+		batch_size = encoder_outputs.size(0)
+		seq_len = encoder_outputs.size(1)
+
+		hidden = hidden.repeat(seq_len, 1, 1).transpose(0, 1)
+		encoder_outputs = encoder_outputs.transpose(1, 2)
+
+		energy = torch.tanh(self.attn(torch.cat((hidden, encoder_outputs), dim=2)))
+		attention = torch.sum(self.v * energy, dim=2)
+
+		return F.softmax(attention, dim=1)
+```
+
+---
+
+# Front
+**Reinforcement Learning**
+
+# Back
+A type of machine learning where an agent learns to make decisions by interacting with an environment to maximize a cumulative reward
+
+# Extra
+Key components:
+1. Agent: the learner or decision-maker
+2. Environment: what the agent interacts with
+3. State: current situation of the agent
+4. Action: a move the agent can make
+5. Reward: feedback from the environment
+6. Policy: strategy the agent employs to determine next action
+
+Common algorithms:
+- Q-Learning
+- SARSA
+- Policy Gradient methods
+- Deep Q-Network (DQN)
+- Proximal Policy Optimization (PPO)
+
+Applications:
+- Game playing (e.g., AlphaGo)
+- Robotics
+- Autonomous vehicles
+- Resource management
+
+Bellman equation:
+$V(s) = \max_a(R(s, a) + \gamma \sum_{s'} P(s'|s,a)V(s'))$
+
+Where V(s) is the value function, R(s,a) is the reward, and γ is the discount factor.
+
+Example Q-learning implementation:
+```python
+import numpy as np
+
+def q_learning(env, num_episodes, alpha=0.1, gamma=0.99, epsilon=0.1):
+	Q = np.zeros((env.observation_space.n, env.action_space.n))
+
+	for _ in range(num_episodes):
+		state = env.reset()
+		done = False
+
+		while not done:
+			if np.random.random() < epsilon:
+				action = env.action_space.sample()
+			else:
+				action = np.argmax(Q[state, :])
+
+			next_state, reward, done, _ = env.step(action)
+
+			Q[state, action] = Q[state, action] + alpha * (reward + gamma * np.max(Q[next_state, :]) - Q[state, action])
+
+			state = next_state
+
+	return Q
+```
+
+---
+
+# Front
+**Autoencoder**
+
+# Back
+An unsupervised learning architecture that aims to learn efficient data representations by encoding the input into a lower-dimensional space and then reconstructing it
+
+# Extra
+Components:
+1. Encoder: compresses input to latent representation
+2. Decoder: reconstructs input from latent representation
+
+Types:
+- Vanilla Autoencoder
+- Denoising Autoencoder
+- Variational Autoencoder (VAE)
+- Sparse Autoencoder
+
+Applications:
+- Dimensionality reduction
+- Feature learning
+- Anomaly detection
+- Image denoising
+
+Architecture:
+```
+Input -> [Encoder] -> Latent Space -> [Decoder] -> Output
+```
+
+Loss function: typically mean squared error between input and reconstruction
+
+Example implementation in Keras:
+```python
+from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras.models import Model
+
+input_dim = 784  # for MNIST
+encoding_dim = 32
+
+input_img = Input(shape=(input_dim,))
+encoded = Dense(128, activation='relu')(input_img)
+encoded = Dense(64, activation='relu')(encoded)
+encoded = Dense(encoding_dim, activation='relu')(encoded)
+
+decoded = Dense(64, activation='relu')(encoded)
+decoded = Dense(128, activation='relu')(decoded)
+decoded = Dense(input_dim, activation='sigmoid')(decoded)
+
+autoencoder = Model(input_img, decoded)
+autoencoder.compile(optimizer='adam', loss='mse')
+```
+
+---
+
+# Front
+**Word Embeddings**
+
+# Back
+Dense vector representations of words that capture semantic relationships and can be used as input for various natural language processing tasks
+
+# Extra
+Popular embedding techniques:
+1. Word2Vec (CBOW and Skip-gram models)
+2. GloVe (Global Vectors)
+3. FastText
+
+Properties:
+- Similar words have similar vector representations
+- Support arithmetic operations (e.g., king - man + woman ≈ queen)
+
+Dimensionality: typically 50-300
+
+Applications:
+- Text classification
+- Named Entity Recognition
+- Machine Translation
+- Sentiment Analysis
+
+Example using Gensim library:
+```python
+from gensim.models import Word2Vec
+
+sentences = [['cat', 'say', 'meow'], ['dog', 'say', 'woof']]
+model = Word2Vec(sentences, vector_size=100, window=5, min_count=1, workers=4)
+
+# Get vector for a word
+vector = model.wv['cat']
+
+# Find similar words
+similar_words = model.wv.most_similar('dog')
+```
+
+Visualization of word embeddings:
+![Word Embeddings](https://miro.medium.com/max/1400/1*sXNXYfAqfLUeiDXPCo130w.png)
+
+---
+
+# Front
+**Transformer Architecture**
+
+# Back
+A neural network architecture that relies entirely on self-attention mechanisms to process sequential data, replacing recurrent layers in many NLP tasks
+
+# Extra
+Key components:
+1. Multi-head attention
+2. Positional encoding
+3. Feed-forward neural networks
+4. Layer normalization
+5. Residual connections
+
+Advantages:
+- Parallelizable (no sequential computation)
+- Captures long-range dependencies effectively
+- Achieves state-of-the-art performance on many NLP tasks
+
+Popular models based on Transformers:
+- BERT
+- GPT (1, 2, 3)
+- T5
+- XLNet
+
+Architecture diagram:
+![Transformer Architecture](https://miro.medium.com/max/1400/1*BHzGVskWGS_3jEcYYi6miQ.png)
+
+Example implementation of self-attention in PyTorch:
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class SelfAttention(nn.Module):
+	def __init__(self, embed_size, heads):
+		super(SelfAttention, self).__init__()
+		self.embed_size = embed_size
+		self.heads = heads
+		self.head_dim = embed_size // heads
+
+		self.values = nn.Linear(self.head_dim, self.head_dim, bias=False)
+		self.keys = nn.Linear(self.head_dim, self.head_dim, bias=False)
+		self.queries = nn.Linear(self.head_dim, self.head_dim, bias=False)
+		self.fc_out = nn.Linear(heads * self.head_dim, embed_size)
+
+	def forward(self, values, keys, query, mask):
+		N = query.shape[0]
+		value_len, key_len, query_len = values.shape[1], keys.shape[1], query.shape[1]
+
+		values = values.reshape(N, value_len, self.heads, self.head_dim)
+		keys = keys.reshape(N, key_len, self.heads, self.head_dim)
+		queries = query.reshape(N, query_len, self.heads, self.head_dim)
+
+		values = self.values(values)
+		keys = self.keys(keys)
+		queries = self.queries(queries)
+
+		energy = torch.einsum("nqhd,nkhd->nhqk", [queries, keys])
+
+		if mask is not None:
+			energy = energy.masked_fill(mask == 0, float("-1e20"))
+
+		attention = F.softmax(energy / (self.embed_size ** (1/2)), dim=3)
+
+		out = torch.einsum("nhql,nlhd->nqhd", [attention, values]).reshape(
+			N, query_len, self.heads * self.head_dim
+		)
+
+		out = self.fc_out(out)
+		return out
+```
+
+---
+
+# Front
+**Explainable AI (XAI)**
+
+# Back
+A set of techniques and approaches aimed at making artificial intelligence systems more interpretable and understandable to humans
+
+# Extra
+Importance:
+- Builds trust in AI systems
+- Helps identify and mitigate biases
+- Enables debugging and improvement of models
+- Necessary for regulatory compliance in some domains
+
+Common XAI techniques:
+1. LIME (Local Interpretable Model-agnostic Explanations)
+2. SHAP (SHapley Additive exPlanations)
+3. Integrated Gradients
+4. Grad-CAM (Gradient-weighted Class Activation Mapping)
+5. Feature importance
+6. Decision trees as surrogate models
+
+Challenges:
+- Trade-off between model complexity and interpretability
+- Explaining deep learning models
+- Ensuring explanations are faithful to the model's decision process
+
+Example using LIME for image classification:
+```python
+import lime
+from lime import lime_image
+from skimage.segmentation import mark_boundaries
+
+explainer = lime_image.LimeImageExplainer()
+explanation = explainer.explain_instance(image,
+										classifier_fn,
+										top_labels=5,
+										hide_color=0,
+										num_samples=1000)
+
+temp, mask = explanation.get_image_and_mask(explanation.top_labels[0],
+											positive_only=True,
+											num_features=5,
+											hide_rest=True)
+plt.imshow(mark_boundaries(temp / 2 + 0.5, mask))
+```
+
+Visualization of feature importance:
+![Feature Importance](https://miro.medium.com/max/1400/1*3C8tUwT7BX4XwuFOXgHxvg.png)

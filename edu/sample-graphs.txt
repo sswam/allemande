@@ -1,0 +1,76 @@
+Here are 100 flashcard topics on graph theory, graph-based symbolic relational mathematics, and related programming concepts:
+
+# 1. Front: What is a **Graph**?
+Back: A mathematical structure consisting of a set of vertices (nodes) and a set of edges connecting pairs of vertices.
+
+# 2. Front: Define **Vertex** in graph theory.
+Back: A fundamental unit in a graph, also known as a node, representing a point or object in the structure.
+
+# 3. Front: What is an **Edge** in a graph?
+Back: A connection between two vertices in a graph, representing a relationship or link between them.
+
+# 4. Front: Explain **Directed Graph** (Digraph).
+Back: A graph where edges have a direction, pointing from one vertex to another.
+
+# 5. Front: What is an **Undirected Graph**?
+Back: A graph where edges have no direction, representing symmetric relationships between vertices.
+
+# 6. Front: Define **Weighted Graph**.
+Back: A graph where each edge is assigned a numerical value (weight), representing cost, distance, or other metrics.
+
+# 7. Front: What is a **Simple Graph**?
+Back: A graph with no self-loops or multiple edges between the same pair of vertices.
+
+# 8. Front: Explain **Multigraph**.
+Back: A graph that allows multiple edges between the same pair of vertices.
+
+# 9. Front: What is a **Hypergraph**?
+Back: A graph where edges can connect any number of vertices, not just pairs.
+
+# 10. Front: Define **Adjacency** in graphs.
+Back: The relationship between two vertices that are directly connected by an edge.
+
+# 11. Front: What is the **Degree** of a vertex?
+Back: The number of edges incident to a vertex in an undirected graph.
+
+# 12. Front: Explain **In-degree** and **Out-degree**.
+Back: In a directed graph, in-degree is the number of incoming edges, and out-degree is the number of outgoing edges for a vertex.
+
+# 13. Front: What is a **Path** in a graph?
+Back: A sequence of vertices connected by edges, with no repeated edges.
+
+# 14. Front: Define **Cycle** in graph theory.
+Back: A path that starts and ends at the same vertex, with at least one edge.
+
+# 15. Front: What is a **Tree** in graph theory?
+Back: A connected, acyclic graph where any two vertices are connected by exactly one path.
+
+# 16. Front: Explain **Spanning Tree**.
+Back: A subgraph that is a tree and includes all vertices of the original graph.
+
+# 17. Front: What is a **Minimum Spanning Tree** (MST)?
+Back: A spanning tree with the minimum total edge weight in a weighted graph.
+
+# 18. Front: Define **Forest** in graph theory.
+Back: A graph consisting of one or more disjoint trees.
+
+# 19. Front: What is a **Bipartite Graph**?
+Back: A graph whose vertices can be divided into two disjoint sets such that every edge connects vertices in different sets.
+
+# 20. Front: Explain **Complete Graph**.
+Back: A graph where every pair of vertices is connected by an edge.
+
+# 21. Front: What is graph **Connectivity**?
+Back: A property indicating whether there is a path between every pair of vertices in the graph.
+
+# 22. Front: Define **Connected Component**.
+Back: A maximal connected subgraph of an undirected graph.
+
+# 23. Front: What is a **Bridge** in a graph?
+Back: An edge whose removal would disconnect the graph or increase the number of connected components.
+
+# 24. Front: Explain **Articulation Point** (Cut Vertex).
+Back: A vertex whose removal would disconnect the graph or increase the number of connected components.
+
+# 25. Front: What is **Graph Coloring**?
+Back: Assigning colors to graph elements (usually vertices or edges) subject to certain constraints.

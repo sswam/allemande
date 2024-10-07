@@ -1,0 +1,148 @@
+Here are 5 educational flashcard notes on biology and anatomy for bright 12-year-olds:
+
+# 1. Front
+**Skeletal System**
+
+# 1. Back
+The body's framework of bones that provides support, protection, and enables movement
+
+# 1. Extra
+- Consists of 206 bones in adults
+- Protects vital organs (e.g. skull protects brain, ribs protect heart and lungs) 
+- Stores minerals like calcium and phosphorus
+- Works with muscles to enable movement
+- Contains different types of joints:
+  - Hinge joints (e.g. knees, elbows)
+  - Ball-and-socket joints (e.g. hips, shoulders)
+  - Pivot joints (e.g. neck)
+
+Diagram of major bones:
+```mermaid
+graph TD
+  A[Skull] --> B[Spine]
+  B --> C[Ribs]
+  B --> D[Pelvis]
+  D --> E[Leg Bones]
+  B --> F[Arm Bones]
+```
+
+
+# 2. Front
+**Circulatory System**
+
+# 2. Back
+The body system that transports blood, oxygen, and nutrients throughout the body
+
+# 2. Extra
+- Main components:
+  - Heart: Muscular organ that pumps blood
+  - Blood vessels: Arteries, veins, and capillaries
+  - Blood: Liquid that carries oxygen, nutrients, and waste
+- Functions:
+  - Delivers oxygen and nutrients to cells
+  - Removes waste products
+  - Helps regulate body temperature
+  - Aids in fighting infections
+- The heart beats about 100,000 times per day
+- Blood makes a complete circuit through the body in about 1 minute
+
+Simplified blood flow diagram:
+```mermaid
+graph LR
+  A[Right Atrium] --> B[Right Ventricle]
+  B --> C[Lungs]
+  C --> D[Left Atrium]
+  D --> E[Left Ventricle]
+  E --> F[Body]
+  F --> A
+```
+
+
+# 3. Front
+**Digestive System**
+
+# 3. Back
+The body system that breaks down food into nutrients that can be used by cells
+
+# 3. Extra
+- Main organs:
+  - Mouth: Chewing and initial digestion
+  - Esophagus: Moves food to stomach
+  - Stomach: Breaks down food with acids and enzymes
+  - Small intestine: Absorbs nutrients
+  - Large intestine: Absorbs water and forms waste
+  - Liver: Produces bile for fat digestion
+  - Pancreas: Produces enzymes for digestion
+- Process of digestion takes about 24-72 hours
+- The small intestine is about 20 feet long!
+- Produces about 1.5 liters of saliva per day
+
+Diagram of digestive tract:
+```mermaid
+graph TD
+  A[Mouth] --> B[Esophagus]
+  B --> C[Stomach]
+  C --> D[Small Intestine]
+  D --> E[Large Intestine]
+  E --> F[Rectum]
+```
+
+
+# 4. Front
+**Respiratory System**
+
+# 4. Back
+The body system responsible for taking in oxygen and expelling carbon dioxide
+
+# 4. Extra
+- Main components:
+  - Nose and mouth: Entry points for air
+  - Trachea: Airway to lungs
+  - Lungs: Main organs for gas exchange
+  - Diaphragm: Muscle that helps with breathing
+- Process:
+  1. Inhale oxygen-rich air
+  2. Oxygen enters bloodstream through alveoli in lungs
+  3. Carbon dioxide from cells enters alveoli
+  4. Exhale carbon dioxide-rich air
+- We breathe about 12-20 times per minute
+- Lungs contain about 300 million alveoli
+- Left lung is slightly smaller to make room for the heart
+
+Diagram of gas exchange in alveoli:
+```mermaid
+graph LR
+  A[Oxygen] --> B[Alveolus]
+  B --> C[Bloodstream]
+  D[Carbon Dioxide] --> B
+  B --> E[Exhaled Air]
+```
+
+
+# 5. Front
+**Nervous System**
+
+# 5. Back
+The body's communication network that processes information and controls body functions
+
+# 5. Extra
+- Two main parts:
+  1. Central Nervous System: Brain and spinal cord
+  2. Peripheral Nervous System: Nerves throughout the body
+- Functions:
+  - Processes sensory information
+  - Controls voluntary movements
+  - Regulates involuntary functions (e.g. heartbeat, breathing)
+  - Enables thinking, learning, and memory
+- The brain contains about 86 billion neurons
+- Neurons can transmit signals at speeds up to 268 mph
+- The spinal cord is about 18 inches long in adults
+
+Diagram of a neuron:
+```mermaid
+graph LR
+  A[Dendrites] --> B[Cell Body]
+  B --> C[Axon]
+  C --> D[Axon Terminal]
+```
+
