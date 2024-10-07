@@ -1,0 +1,35 @@
+core_temperature	t	subject
+
+between	t	36	37
+normal_temperature	subject
+
+between t	35	36
+mild_hypothermia	subject
+
+between	t	32	35
+moderate_hypothermia	subject
+
+<	t	32
+severe_hypothermia	subject
+
+between	t	37	38
+mild_fever	subject
+
+between	t	38	39
+high_fever	subject
+
+>	t	39
+very_high_fever	subject
+
+
+between	t	35	36
+
+Normal: 36-37 degrees Celsius
+Mild hypothermia: 35-36 degrees Celsius
+Moderate hypothermia: 32-35 degrees Celsius
+Severe hypothermia: 32 degrees Celsius or below
+
+Normal: 36-37 degrees Celsius
+Mild fever: 37.1-38 degrees Celsius
+High fever: 38.1-39 degrees Celsius
+Very high fever: 39.1+ degrees Celsius

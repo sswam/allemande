@@ -1,0 +1,12 @@
+high_fever	subject
+dizzy	subject
+
+very_sick	subject
+
+
+severe_rash	subject
+fever	subject
+
+
+nausea	subject
+vomit	subject

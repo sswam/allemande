@@ -1,0 +1,6 @@
+fever	symptom
+pain	symptom
+rash	symptom
+dizzy	symptom
+nausea	symptom
+vomit	symptom

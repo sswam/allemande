@@ -1,0 +1,4 @@
+fever
+pain
+rash
+dizzy
