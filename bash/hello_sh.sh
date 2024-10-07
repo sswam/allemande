@@ -39,11 +39,11 @@ hello() {
 
 	# Print shopping list if items are provided
 	if [ "${#shopping[@]}" -gt 0 ]; then
-		shopping_list --use-ai="$use_ai" --model="$model" "${shopping[@]}"
+		shopping-list --use-ai="$use_ai" --model="$model" "${shopping[@]}"
 	fi
 }
 
-shopping_list() {
+shopping-list() {
 	local use_ai= a=	# greet using AI
 	local model= m=	# LLM model
 
