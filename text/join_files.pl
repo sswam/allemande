@@ -36,7 +36,7 @@ my $destfh = IO::File->new(">$dest") or die "Cannot open $dest: $!\n";
 while (my $src = shift @ARGV) {
     chomp $src;
     if (-T $src) {
-        warn "Processing textfile $src\n";
+        warn "Processing textfile $src\n" if $verbose;
         my $srcfh = IO::File->new($src) or die "Cannot open $src: $!\n";
         print $destfh $sep, ' ', basename($src), "\n";
         while (my $line = <$srcfh>) {
@@ -45,18 +45,18 @@ while (my $src = shift @ARGV) {
             }
             unless ( substr( $line, length($line) - 1 ) eq "\n" ) {
                 # oh no, doesn't end in a newline
-                warn "\tAdding newline at EOF: $src\n";
+                warn "\tAdding newline at EOF: $src\n" if $verbose;
                 $line .= "\n";
             }
             print $destfh $line;
         }
     } elsif (-d $src) {
-        warn "Reading directory $src\n";
+        warn "Reading directory $src\n" if $verbose;
         opendir my $dh, $src or die "Error: Cannot open directory $src: $!\n";
         push @ARGV, map { "$src/$_" } grep { !/^\.\.?$/ } readdir $dh;
         closedir $dh;
     } else {
-        warn "Ignoring $src\n";
+        warn "Ignoring $src\n" if $verbose;
     }
 }
 
