@@ -34,22 +34,37 @@ def _create_symlink(file: Path, target_dir: Path) -> None:
         logger.warning(f"replacing symlink: {symlink_path.readlink()} -> {relative_path}")
 
     if not symlink_path.is_symlink() or different_symlink:
+        target_dir.mkdir(parents=True, exist_ok=True)
         symlink_path.unlink(missing_ok=True)
         symlink_path.symlink_to(relative_path)
 
 
 def _process_path(source: Path, target_dir: Path) -> None:
     if source.is_file():
-        files = [source]
+        _process_file(source, target_dir)
     else:
-        files = source.iterdir()
+        _process_directory(source, target_dir)
 
-    for file in files:
-        if file.name.startswith('.') or file.name.count('.') > 1 or file.name.endswith('~'):
+
+def _process_directory(source_dir: Path, target_dir: Path) -> None:
+    for item in source_dir.iterdir():
+        if item.name.startswith('.') or item.name.count('.') > 1 or item.name.endswith('~'):
             continue
-        is_executable = os.access(file, os.X_OK)
-        if file.is_file() and (is_executable or file.suffix == '.sh'):
-            _create_symlink(file, target_dir)
+
+        relative_path = item.relative_to(source_dir)
+        new_relative_path = str(relative_path).replace('_', '-') + ".d"
+        new_target = target_dir / new_relative_path
+
+        if item.is_dir():
+            _process_directory(item, new_target)
+        else:
+            _process_file(item, new_target.parent)
+
+
+def _process_file(file: Path, target_dir: Path) -> None:
+    is_executable = os.access(file, os.X_OK)
+    if is_executable or file.suffix == '.sh':
+        _create_symlink(file, target_dir)
 
 
 def _remove_dead_links(target_dir: Path) -> None:
