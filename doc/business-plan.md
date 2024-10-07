@@ -38,7 +38,7 @@ Ally Chat, our flagship user-facing product, delivers an unparalleled AI chat ex
 #### Planned Enhancements:
 
 1. Full voice chat capabilities for more natural interactions.
-2. AI-generated images and audio to support creative projects and immersive role-playing games.
+2. AI-generated images and audio to support interactive fiction and multi-user role-playing games.
 3. Segregated domain environments tailored to distinct user categories and purposes.
 4. Summary, agenda, and planning features for productive meetings and efficient task management.
 5. Licensed access to partner resources and services by in-app purchase.
