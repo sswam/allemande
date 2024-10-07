@@ -60,3 +60,8 @@ tty/tty_cursor_pos
 /audio/speech-models-en.txt
 /apps/story/stories
 /project/log.txt
+
+# 3rd-party content
+/code/pop.pdf
+/code/pop.txt
+/code/rules.txt
