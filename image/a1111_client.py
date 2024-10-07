@@ -105,6 +105,8 @@ async def a1111_client_async(
                     logger.info(f"Interrupted at {i+1} images")
                     break
             logger.debug(f"Generated {i+1} images to {outdir}")
+    except Exception as e:
+        logger.error(f"Error: {e}")
     finally:
         logger.debug("Exiting")
         signal.signal(signal.SIGINT, signal.SIG_DFL)
