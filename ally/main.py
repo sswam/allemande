@@ -430,17 +430,18 @@ def io(
 
 
 def resource(path: str) -> Path:
-    """
-    Construct a Path object relative to the ALLEMANDE_HOME environment variable.
+    """Get a Path object relative to ALLEMANDE_HOME"""
+    return Path(os.environ["ALLEMANDE_HOME"], path)
 
-    Args:
-        path (str): The relative path.
 
-    Returns:
-        Path: The constructed Path object.
-    """
-    parts = path.replace("/", os.sep).split(os.sep)
-    return Path(os.environ["ALLEMANDE_HOME"], *parts)
+def load(path: str, comments=False, blanks=False) -> list[str]:
+    """Load a list of strings from a file"""
+    with open(resource(path), "r", encoding="utf-8") as f:
+        return [
+            line
+            for line in f.read().splitlines()
+            if (blanks or line) and (comments or not line.startswith("#"))
+        ]
 
 
 class IndentLogger:
@@ -553,28 +554,6 @@ class TextInput:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
-
-
-def upset(name: str, value: Any, level: int = 2) -> None:
-    """
-    Set a variable in the caller's caller's namespace.
-    Claude does not approve of this function, in fact it kind of upsets him.
-    """
-    frame = sys._getframe(level)
-    caller_locals = frame.f_locals
-    caller_globals = frame.f_globals
-    code = frame.f_code
-
-    if name in code.co_names and name not in caller_globals:
-        # Symbol is likely declared as nonlocal
-        nonlocal_scope = sys._getframe(level + 1).f_locals
-        nonlocal_scope[name] = value
-    elif name in code.co_names and name in caller_globals:
-        # Symbol is likely declared as global
-        caller_globals[name] = value
-    else:
-        # Regular local variable
-        caller_locals[name] = value
 
 
 def is_binary(file_path):
