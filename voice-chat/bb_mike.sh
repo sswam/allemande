@@ -15,7 +15,7 @@ fi
 trap "amixer sset Capture $mic_state; pkill -P $$" EXIT
 
 mike.py -v | tee /dev/stderr |
-filter-mike.pl |
+filter-mike |
 (
 while read line; do
 	if [ ! -s "$file" -a -n "$mission" ]; then

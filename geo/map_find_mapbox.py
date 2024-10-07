@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" map-find-mapbox.py:	Search for a location using Mapbox API """
+""" map-find-mapbox:	Search for a location using Mapbox API """
 
 import os
 import requests

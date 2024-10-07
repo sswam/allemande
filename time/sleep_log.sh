@@ -29,7 +29,7 @@ sleep-log() {
 	while [ "$d" -gt 0 ]; do
 		echo -n "$d " >&2
 		if [ "$notify" = 1 ]; then
-			local desc=$(describe-interval.py "$d")
+			local desc=$(describe-interval "$d")
 			notify-send -u "$urgency" -t "$hold_ms" "$desc"
 		fi
 		sleep "$step"

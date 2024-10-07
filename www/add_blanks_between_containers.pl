@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# add_blanks_between_containers.pl
+# add-blanks-between-containers.pl
 
 # Emmy: I have made changes to the code to ensure it adds a blank line between containers. Here it is:
 

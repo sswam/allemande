@@ -1,7 +1,7 @@
 (for A in YOUTUBE/yt/*.txt; do
 	N=`basename "$A"`
 	N=${N%.txt}
-	youtube-select-category.pl "$N" < "$A" |
+	youtube-select-category "$N" < "$A" |
 		tee "${A%.txt}.md"
 done)
 

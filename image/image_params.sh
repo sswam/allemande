@@ -14,7 +14,7 @@ for I; do
 	if [ "$s" = 1 ]; then
 		cat
 	else
-		split-prompt.py
+		split-prompt
 #		sed 's/, */,\n/g' | grep -v '^,$'
 	fi
 
@@ -27,7 +27,7 @@ for I; do
 	if [ "$s" = 1 ]; then
 		cat
 	else
-		split-prompt.py
+		split-prompt
 #		sed 's/, */,\n/g' | grep -v '^,$'
 	fi
 

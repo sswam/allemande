@@ -48,7 +48,7 @@ run_giles_for_industry() {
 
 add_all() {
 	local dirs=("$@")
-	v add_all_to_wordpress -t=post -T=template/industry.txt -m="$media_id" -Y "${dirs[@]}"
+	v add-all-to-wordpress -t=post -T=template/industry.txt -m="$media_id" -Y "${dirs[@]}"
 }
 
 names=()

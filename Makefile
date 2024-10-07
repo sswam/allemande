@@ -159,7 +159,7 @@ bb2html:
 	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 nginx:
-	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx.sh; echo ... done; done
+	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx; echo ... done; done
 
 logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
@@ -195,10 +195,10 @@ stop:
 	screen -S "$(SCREEN)" -X quit || true
 
 mount:
-	ally_mount
+	ally-mount
 
 umount:
-	ally_mount -u
+	ally-mount -u
 
 opal-loop:
 	opal-loop

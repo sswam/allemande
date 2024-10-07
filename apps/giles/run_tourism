@@ -48,7 +48,7 @@ run_giles_for_tourism() {
 
 add_all() {
 	local dirs=("$@")
-	v add_all_to_wordpress -t=post -T=template/tourism.txt -m="$media_id" "${dirs[@]}"
+	v add-all-to-wordpress -t=post -T=template/tourism.txt -m="$media_id" "${dirs[@]}"
 }
 
 names=()

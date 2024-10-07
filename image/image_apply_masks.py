@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" image-apply-masks.py: Apply masks to an image and save the masked images to a folder. """
+""" image-apply-masks: Apply masks to an image and save the masked images to a folder. """
 
 import os
 import argh

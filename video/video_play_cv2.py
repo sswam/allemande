@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" video-play-cv2.py: A Python script to play a video file using OpenCV. """
+""" video-play-cv2: A Python script to play a video file using OpenCV. """
 
 import numpy as np
 import cv2
