@@ -287,13 +287,16 @@ async def chat_with_ai(
         message_history = read_chat_history(chat_file)
         display_chat_history(message_history, put)
 
+    # NOTE: get and put are not async, yet
+    # No big deal for this app.
+
     async def user_turn():
-        message = Message(user_name, await get(f"{user_name}: "))
-        await put()
+        message = Message(user_name, get(f"{user_name}: "))
+        put()
         if message.text is None:
             raise EOFError()
         # TODO a Messages class could handle this
-        response.text = response.text.strip()
+        message.text = message.text.strip()
         if chat_file:
             log_message(chat_file, message)
         message_history.append(message)
