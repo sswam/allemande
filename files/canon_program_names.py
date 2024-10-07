@@ -50,7 +50,7 @@ def _check_file(file: Path) -> None:
     good_name = file.stem.replace('-', '_') + ext
 
     if good_name != filename:
-        print(f"{filename}\t{good_name}")
+        print(f"{file.parent}\t{filename}\t{good_name}")
 
 
 def _process_path(source: Path) -> None:
