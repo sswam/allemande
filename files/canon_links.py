@@ -52,11 +52,12 @@ def _process_directory(source_dir: Path, target_dir: Path) -> None:
             continue
 
         relative_path = item.relative_to(source_dir)
-        new_relative_path = str(relative_path).replace('_', '-') + ".d"
+        new_relative_path = str(relative_path).replace('_', '-')
         new_target = target_dir / new_relative_path
 
         if item.is_dir():
-            _process_directory(item, new_target)
+            if item.name.endswith(".d"):
+                _process_directory(item, new_target)
         else:
             _process_file(item, new_target.parent)
 
