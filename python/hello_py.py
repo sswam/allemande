@@ -86,7 +86,6 @@ def reply_sentiment(feeling: str) -> str:
     help="specify which AI model {emma,claude,dav,clia}",
 )
 def hello(
-    *filenames: str,
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
     name: str = "",
@@ -125,11 +124,6 @@ def hello(
         response = reply_sentiment(feeling)
 
     put(response)
-
-    if filenames:
-        put()
-        put("I see you also offered me some files, but I'm not interested in them.")
-        put("This is just a simple hello script!")
 
 
 if __name__ == "__main__":
