@@ -111,12 +111,13 @@ improve() {
 			refs+=("$tests_file")
 		fi
 		refs+=("$results_file")
+		check_msg="With check issues, please either fix the issue, or disable the warning with a comment."
 		if (( testok )); then
-			checks_prompt="Some checks failed. The tests are correct, so don't change them; please fix the main program code."
+			checks_prompt="Some checks failed. The tests are correct, so don't change them; please fix the main program code. $check_msg"
 		elif (( codeok )); then
 			checks_prompt="Some checks failed. The main program code is correct, so don't change it; please fix the tests."
 		else
-			checks_prompt="Some checks failed. Please fix the program and/or the tests. If the code looks correct as it is, please update the tests to match the code, or add comments to disable certain linting behaviour, etc."
+			checks_prompt="Some checks failed. Please fix the program and/or the tests. If the code looks correct as it is, please update the tests to match the code, or add comments to disable certain linting behaviour, etc. $check_msg"
 		fi
 	elif [ "$tests_file" ]; then
 		echo >&2 "Checks passed"
