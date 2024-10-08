@@ -135,6 +135,28 @@ class ActivityLog:
         return total_active
 
 
+def format_duration(duration):
+    """
+    Format a duration to a string with days, hours, and minutes.
+    """
+    days, remainder = divmod(duration.total_seconds(), 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, _ = divmod(remainder, 60)
+
+    parts = []
+    if days > 0:
+        parts.append(f"{int(days)} day{'s' if days != 1 else ''}")
+    if hours > 0:
+        parts.append(f"{int(hours)} hour{'s' if hours != 1 else ''}")
+    if minutes > 0:
+        parts.append(f"{int(minutes)} minute{'s' if minutes != 1 else ''}")
+
+    if not parts:
+        return "less than a minute"
+
+    return ", ".join(parts)
+
+
 def send_notification(message: str):
     """Send a notification using notify-send."""
     try:
@@ -279,7 +301,7 @@ def awake(
             continue
 
         if now - last_warning >= warn_interval_td:
-            message = f"You've been awake for {humanize.naturaldelta(awake_duration)}!"
+            message = f"You've been awake for {format_duration(awake_duration)}!"
             logger.warning(message)
             send_notification(message)
             last_warning = now
