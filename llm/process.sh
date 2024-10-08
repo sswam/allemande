@@ -20,7 +20,7 @@ process() {
 }
 
 process_main() {
-	llm process -m "$m" "${@:-""}" | rstrip
+	llm process -m "$model" "${@:-""}" | rstrip
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
