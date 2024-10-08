@@ -332,7 +332,7 @@ generate-commit-message() {
         $MR "$commit_message"
     fi
 
-    run-git-diff | tee /dev/stderr | llm process -m "$model" "Please describe this diff, for a high-level Conventional Commits message.
+    run-git-diff | llm process -m "$model" "Please describe this diff, for a high-level Conventional Commits message.
 I know you know hwo to read a diff. Stuff that isn't preceded with + or - is just CONTEXT.
 We won't commit on the context as if it was newly added, right?! :)
 
@@ -378,7 +378,8 @@ check-for-bugs() {
         echo >&2 "Code review already exists: $review, moving it to rubbish."
         $MR "$review"
     fi
-    run-git-diff | tee /dev/stderr | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
+    run-git-diff --color
+    run-git-diff | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
 Answer LGTM if it is bug-free and you see no issues, or list bugs still present
 in the patched code. Do NOT list bugs in the original code that are fixed by
 the patch. Also list other issues or suggestions if they seem worthwhile.
