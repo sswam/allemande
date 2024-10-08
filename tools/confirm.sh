@@ -1,55 +1,63 @@
-#!/bin/bash
-# confirm: ask a yes/no question, and optionally execute a command
-# Usage: confirm [-y] [-n] [-o] [command]
+#!/usr/bin/env bash
 
-#   -y  default to yes
-#   -n  default to no
-#   -o  do not return failure if the user cancels
+# [yes/no question] [command]
+# Ask a yes/no question, and optionally execute a command
 
-function confirm() {
-	local default is_command yes yn
+confirm() {
+	local default= d=	# default answer [y|n]
+	local optional= o=	# do not return failure if the user cancels
+	local tty= t=		# force tty input
 
-	OPTIND=1
-	cancel=1
-	while getopts "yno" opt; do
-		case "$opt" in
-		y) default=y ;;
-		n) default=n ;;
-		o) cancel=0 ;;
-		esac
-	done
-	shift $((OPTIND-1))
+	eval "$(ally)"
 
-	is_command=
-	prompt="$*"
+	local prompt="$*"
+	local is_command=
 	if [[ $prompt != *\? ]]; then
 		prompt="$prompt ?"
 		is_command=1
 	fi
 
-	confirmed=
-	while true; do
-		read -n 1 -p "$prompt " yn
+	local confirmed=
+
+	ask_them() {
+		read -r -n 1 -p "$prompt " yn
 		echo
-		case "${yn:-${default:-}}" in
-		y*)
+	}
+
+	while true; do
+		if [ -n "$tty" ]; then
+			ask_them < /dev/tty > /dev/tty 2>&1
+		else
+			ask_them
+		fi
+		case "${yn:-${default}}" in
+		y*|Y*)
 			confirmed=1
 			break
 			;;
-		n*)
+		n*|N*)
 			break
 			;;
+		'')
+			if [ -n "$default" ]; then
+				confirmed=${default,,}
+				break
+			fi
+			;;
+		*)
+			echo -n "! [yn] "
+			;;
 		esac
-		echo -n "! [yn] "
 	done
 
 	if [ -n "$confirmed" ]; then
 		if [ -n "$is_command" ]; then "$@"; fi
+		return 0
 	else
-		return "$cancel"
+		return "${optional:-1}"
 	fi
 }
 
-if [ "$0" = "$BASH_SOURCE" ]; then
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	confirm "$@"
 fi
