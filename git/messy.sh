@@ -143,10 +143,12 @@ while getopts "nC:B43cioMm:F:exh" opt; do
     m)
         echo "$OPTARG" > "$commit_message"
         model=""
+        run_initial_gens=0
         ;;
     F)
         cp "$OPTARG" "$commit_message"
         model=""
+        run_initial_gens=0
         ;;
     e)
         git-commit
