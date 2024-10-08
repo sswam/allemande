@@ -1,11 +1,31 @@
-#!/bin/bash -eu
+#!/usr/bin/env bash
 
-# screen-run: run a command using GNU screen, in a given screen and window
+# [options] screen window command [arg ...]
+# Run a command using GNU screen, in a given screen and window
 
-SCREEN_NEW_DELAY_1="0.0001"
-SCREEN_NEW_DELAY_2="1"
-SCREEN_NEW_OPTS=""
-FLOCK_WAIT=5
+screen-run() {
+	local k= kill=	# Kill the existing window before running the command
+	local c= config=	# Use a different screenrc file
+
+	eval "$(ally)"	# magic options parser and more
+
+	local SCREEN_NEW_DELAY_1="0.0001"
+	local SCREEN_NEW_DELAY_2="1"
+	local SCREEN_NEW_OPTS=""
+	local FLOCK_WAIT=5
+
+	if [ -n "$config" ]; then
+		SCREEN_NEW_OPTS="$SCREEN_NEW_OPTS -c $config"
+	fi
+
+	local screen=$1 window=$2
+	shift 2
+	line=$(printf '%q ' "$@")
+	if [ -n "$kill" ]; then
+		screen-window-kill "$screen" "$window"
+	fi
+	screen-run-lines "$screen" "$window" ". $ALLEMANDE_HOME/env.sh" "${line% }"
+}
 
 locked() {
 	{
@@ -17,12 +37,13 @@ locked() {
 screen-new() {
 	local screen=$1
 	(
-		sleep $SCREEN_NEW_DELAY_1
+		sleep "$SCREEN_NEW_DELAY_1"
 		if ! screen -S "$screen" -X detach; then
-			sleep $SCREEN_NEW_DELAY_2
+			sleep "$SCREEN_NEW_DELAY_2"
 			screen -S "$screen" -X detach
 		fi
 	) &
+       	# shellcheck disable=SC2086
 	screen $SCREEN_NEW_OPTS -U -dRR "$screen"
 	wait
 }
@@ -56,7 +77,7 @@ screen-window-new() {
 # this is not used by the main script
 screen-window-select() {
 	local screen=$1 window=$2
-	screen -S "$screen" -X \select "$window"
+	screen -S "$screen" -X select "$window"
 }
 
 screen-window-kill() {
@@ -102,30 +123,8 @@ screen-attach() {
 	fi
 }
 
-screen-run() {
-	kill=
-	config=
-	while getopts 'bkc:' opt; do
-		case "$opt" in
-		k)
-			kill=1
-			;;
-		c)
-			SCREEN_NEW_OPTS="$SCREEN_NEW_OPTS -c $OPTARG"
-			;;
-		esac
-	done
-	shift $((OPTIND - 1))
-
-	local screen=$1 window=$2
-	shift 2
-	line=`printf '%q ' "$@"`
-	if [ -n "$kill" ]; then
-		screen-window-kill "$screen" "$window"
-	fi
-	screen-run-lines "$screen" "$window" ". $ALLEMANDE_HOME/env.sh" "${line% }"
-}
-
-if [ "$0" = "$BASH_SOURCE" ]; then
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	screen-run "$@"
 fi
+
+# version: 0.1.1
