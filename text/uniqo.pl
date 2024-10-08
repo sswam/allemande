@@ -24,7 +24,7 @@ BEGIN {
 # Process blank lines if -b option is set
 if ($opt_B && /^$/) {
 } elsif ($opt_b && /^$/) {
-	if (!($opt_s && !$prev_blank)) {
+	if (!($opt_s && $prev_blank)) {
 		print;
 		$prev_blank = 1;
 	}
