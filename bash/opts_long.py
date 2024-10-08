@@ -30,9 +30,9 @@ def process_line(line: str) -> str:
     if match:
         long_opt, _default_1, short_opt, _default_2, description = match.groups()
         if _default_2.startswith("("):
-            return f'{long_opt}=(${{{long_opt}[@]}} ${{{short_opt}[@]}})'
+            return f'{long_opt}=(${{{long_opt}[@]}} ${{{short_opt}[@]}}); unset {short_opt}'
         else:
-            return f'{long_opt}=${{{long_opt}:-${short_opt}}}'
+            return f'{long_opt}=${{{long_opt}:-${short_opt}}}; unset {short_opt}'
 
     return None
 
