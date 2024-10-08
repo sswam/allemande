@@ -343,17 +343,19 @@ Format of the header line:
 
 feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
+Anything that changes functionality in any way is a feature, not a refactor.
+
 Files in the 'snip' directory, are obsolete rubbish that's been removed from something else.
 Files in the 'gens' directory, are interesting AI generated content, but it is not important.
 
 After the header line you may list more details, but ONLY if it's really
 needed. NEVER add redundant details that are already covered in the header
-line:
+line, and don't explain what you did, just give the message.
 
 - Describe each change very concisely, if not already covered in the header;
   as few list items as possible. Continuing lines are indented with two spaces.
 
-Write very concisely in a down-to-earth tone. DO NOT use words like 'Enhance'.
+Write very concisely in a down-to-earth tone. *** DO NOT use words like 'Enhance'. ***
 We don't want lots of detail or flowery language, short and sweet is best.
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;
