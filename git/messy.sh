@@ -259,13 +259,18 @@ files=("${files[@]}")
 
 cd "$git_root"
 
+# Make sure all files are added
+for file in "${files[@]}"; do
+    git add -- "$file"
+done
+
 
 # Add former names of renamed files
 # i.e. for every file in "${files[@}",
 # I need to add its former name to that files array.
 deleted_files=($(git ls-files --deleted))
 if [ ${#deleted_files[@]} -gt 0 ]; then
-    git rm "${deleted_files[@]}"
+    git rm -- "${deleted_files[@]}"
 fi
 readarray -t renamed_from < <(git diff --staged --name-status | grep '^R' | cut -f2)
 files+=("${renamed_from[@]}")
