@@ -41,7 +41,7 @@ async def a1111_client_async(
     seed: int = -1,
     sampler_name: str = "DPM++ 2M",
     scheduler: str = "Karras",
-    steps: int = 30,
+    steps: int = 15,
     cfg_scale: float = 7,
     width: int = 1024,
     height: int = 1024,
