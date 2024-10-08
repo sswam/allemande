@@ -253,7 +253,7 @@ improve() {
 	# Use swapfiles with -c option to preserve hardlinks
 	$confirm swapfiles -c "$target_file" "$output_file" ||
 		# maybe the new version is an improved tests file
-		if [ $confirm ] && [ "$target_file" = "$file" ]; then
+		if [ $confirm ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ]; then
 			$confirm swapfiles -c "$tests_file" "$output_file"
 		fi
 
