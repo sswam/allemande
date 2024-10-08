@@ -103,3 +103,5 @@ google-cloud-aiplatform[tokenization]
 cssselect
 jq
 yq
+
+html5lib
