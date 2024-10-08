@@ -1,40 +1,30 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-: ${see:=see}
-: ${dirs:=}
+# [file or directory]
+# Curate files or directories
 
-exec </dev/tty
-
-for V; do
-	if [ ! -e "$V" -o \( ! -n "$dirs" -a -d "$V" \) ]; then continue; fi
+curate_process_file() {
+	local V=$1
 	echo
-	echo "  >>>>>>  $V"
+	echo "Where to put $V?"
+	echo "  h      - leave here"
+	echo "  x      - move to rubbish"
+	echo "  X      - remove permanently"
+	echo "  r      - rename with initial text & change extension"
+	echo "  R      - rename (old)"
+	echo "  m      - move to a folder"
+	echo "  s      - move to folder 'seen'"
+	echo "  a      - see again"
+	echo "  0-9    - put in a directory (a single char) - suggest 1-5; 1 means best, 3 average, 5 worst"
+	echo "  ^C     - exit"
+	IFS= read -r -n1 -p "  ? " C < /dev/tty
 	echo
-	$see "$V"
-	done=0
-	while [ "$done" = 0 ]; do
-		echo
-		echo "Where to put $V?"
-		echo "  h      - leave here"
-		echo "  x      - move to rubbish"
-		echo "  X      - remove permanently"
-		echo "  r      - rename with initial text & change extension"
-		echo "  R      - rename (old)"
-		echo "  m      - move to a folder"
-		echo "  s      - move to folder 'seen'"
-		echo "  a      - see again"
-		echo "  0-9    - put in a directory (a single char) - suggest 1-5; 1 means best, 3 average, 5 worst"
-		echo "  ^C     - exit"
-		IFS= read -r -n1 -p "  ? " C
-		echo
-		done=0
-		case "$C" in
-		"h")
+	case "$C" in
+		h)
 			done=1
 			;;
-		"a")
-			$see "$V"
-			done=0
+		a)
+			"$see" "$V"
 			;;
 		x)
 			move-rubbish "$V"
@@ -45,17 +35,17 @@ for V; do
 			done=1
 			;;
 		r|R)
-			V0=$V
-			VI=$V
+			local V0=$V
+			local VI=$V
 			if [ "$C" = R ]; then
-				ext=${V##*.}
+				local ext=${V##*.}
 				ext=${ext%%\?*}
 				V=${V%.*}
 				VI=
 			fi
-			read -p 'rename: ' -e -i "$VI" V1
+			read -r -p 'rename: ' -e -i "$VI" V1 </dev/tty
 			if [ -n "$V1" ]; then
-				if [ $C = R ]; then
+				if [ "$C" = R ]; then
 					V1=${V1// /_}.$ext
 				fi
 				mv -iv -- "$V0" "$V1"
@@ -63,7 +53,6 @@ for V; do
 					V=$V1
 				fi
 			fi
-			done=0
 			;;
 		[0-9])
 			mkdir -p ./"$C"
@@ -71,21 +60,47 @@ for V; do
 			done=1
 			;;
 		m)
-			read -p 'move to: ' -e D
+			read -r -p 'move to: ' -e D </dev/tty
 			mkdir -p ./"$D"
 			mv -iv -- "$V" ./"$D"/
 			done=1
 			;;
 		s)
-		        D=`dirname "$V"`
-		        mkdir -p "$D/seen"
-		        mv -iv -- "$V" "$D/seen"
+			local D
+			D=$(dirname "$V")
+			mkdir -p "$D/seen"
+			mv -iv -- "$V" "$D/seen"
 			done=1
 			;;
 		*)
-			done=0
-		esac
-	done
-	echo
-done
+			;;
+	esac
+}
 
+curate() {
+	local see= s=see	# Command to view files
+	local dirs= d=	# Include directories
+
+	eval "$(ally)"
+
+	for V; do
+		if [ ! -e "$V" ] || { [ -z "$dirs" ] && [ -d "$V" ]; }; then
+			continue
+		fi
+		echo
+		echo "  >>>>>>  $V"
+		echo
+		"$see" "$V"
+		local done=0
+		while [ "$done" = 0 ]; do
+			curate_process_file "$V"
+		done
+		echo
+	done
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	curate "$@"
+fi
+
+# version: 0.1.1
