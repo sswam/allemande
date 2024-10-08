@@ -109,3 +109,5 @@ fi
 # No unnecessary "success" or info messages, no "Error: " or "Warning: " prefixes; THIS IS UNIX!
 #
 # The use_ai option is for this demo only, most scripts are either written to use AI or not.
+#
+# Please use ally-style options handling. Longs options must be declared first, then short, on the same line.
