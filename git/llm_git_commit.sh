@@ -333,6 +333,9 @@ generate-commit-message() {
     fi
 
     run-git-diff | tee /dev/stderr | llm process -m "$model" "Please describe this diff, for a high-level Conventional Commits message.
+I know you know hwo to read a diff. Stuff that isn't preceded with + or - is just CONTEXT.
+We won't commit on the context as if it was newly added, right?! :)
+
 *** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
 Return only the git commit message, no prelude or conclusion.
 
