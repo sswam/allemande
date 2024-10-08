@@ -2,7 +2,7 @@
 #
 # What are you working on?
 
-i=600	# interval
+i=1800	# interval
 t=300	# input timeout
 T=60	# warn when timeout is running low
 f=	# Run in the foreground
