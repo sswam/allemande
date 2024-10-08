@@ -168,3 +168,5 @@ done
 if [ ${#OPTS_UNKNOWN[@]} -gt 0 ]; then
 	usage "error: unknown options: ${OPTS_UNKNOWN[*]}"
 fi
+
+eval "$(opts_long.py "$0")"
