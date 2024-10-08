@@ -1,2 +1,2 @@
 #!/bin/sh
-v git ls-files --others --exclude-standard -- "$@"
+git ls-files --others --exclude-standard -- "$@"
