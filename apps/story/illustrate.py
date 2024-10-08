@@ -45,6 +45,7 @@ class Options:
     count: int
     fix_dimensions: bool
     pony: bool
+    steps: int
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -60,6 +61,7 @@ class Options:
 @arg("-f", "--fix-dimensions", help="Use the closest happy SDXL dimensions")
 @arg("-F", "--no-fix-dimensions", dest="fix_dimensions", action="store_false")
 @arg("-P", "--pony", help="Add prompting boilerplate for Pony and Pony-derived models")
+@arg("-S", "--steps", help="Number of steps to run the model")
 def illustrate(
     input_file: str,
     output_dir: str = ".",
@@ -73,6 +75,7 @@ def illustrate(
     count: int = 1,
     fix_dimensions: bool = True,
     pony: bool = False,
+    steps: int = 15,
 ) -> None:
     """
     Create images for a document using an AI image generator.
@@ -101,6 +104,7 @@ def illustrate(
         count=count,
         fix_dimensions=fix_dimensions,
         pony=pony,
+        steps=steps,
     )
 
     process_file(options)
@@ -268,10 +272,10 @@ def generate_image(
             "height": options.height,
             "sampler-name": "DPM++ 2M",
             "scheduler": "Karras",
-            "steps": 15,
             "cfg-scale": 5,
             "count": options.count,
             "negative-prompt": negative,
+            "steps": options.steps,
         }
         if options.model is not None:
             kwargs["model"] = options.model
