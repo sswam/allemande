@@ -106,10 +106,10 @@ notify() {
 }
 
 countdown() {
-	local remaining=$1 warn=$2
+	local remaining=$1 warn=$2 warn_interval=${3:-10}
 	shift 2
 	while [ $remaining -gt 0 ]; do
-		if [ $remaining -le $warn ]; then
+		if [ $remaining -le $warn ] && (( remaining % warn_interval == 0 || remaining  < warn_interval )); then
 			notify "$remaining seconds"
 		fi
 		sleep 1
