@@ -155,7 +155,7 @@ improve() {
 
 	strict_part=""
 	if (( strict )); then
-		strict_part="Please make the *** changes *** requested above. Do not make any other proactive changes this time."
+		strict_part="Please make the *** changes *** requested above, and fix definite bugs or check issues. Do not make any other proactive changes at this time."
 	fi
 
 	# TODO "Add a header line \`#File: filename\` before each file's code."
