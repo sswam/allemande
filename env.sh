@@ -50,8 +50,11 @@ ALLEMANDE_PATH="adm core sys tools text data image audio video code llm anthropi
 
 # TODO only use canon and alias
 # for dir in canon alias; do
+
+PATHS=""
+
 for dir in canon alias adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time c markdown x11; do
-	PATH=$PATH:$ALLEMANDE_HOME/$dir
+	PATHS=$PATHS:$ALLEMANDE_HOME/$dir
 done
 
 for appdir in "$ALLEMANDE_HOME/apps"/*; do
@@ -59,8 +62,10 @@ for appdir in "$ALLEMANDE_HOME/apps"/*; do
 		continue
 	fi
 	app=$(basename "$appdir")
-	PATH=$PATH:$ALLEMANDE_HOME/apps/$app
+	PATHS=$PATHS:$ALLEMANDE_HOME/apps/$app
 done
+
+PATH="$PATHS:$PATH"
 
 : ${CONFIG:=$ALLEMANDE_HOME/config.sh}
 
