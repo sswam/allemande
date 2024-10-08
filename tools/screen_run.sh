@@ -4,8 +4,8 @@
 # Run a command using GNU screen, in a given screen and window
 
 screen-run() {
-	local k= kill=	# Kill the existing window before running the command
-	local c= config=	# Use a different screenrc file
+	local kill= k=	# Kill the existing window before running the command
+	local config= c=	# Use a different screenrc file
 
 	eval "$(ally)"	# magic options parser and more
 
