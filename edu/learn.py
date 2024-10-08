@@ -197,7 +197,7 @@ def learn(
 
             for i, card in enumerate(cards):
                 card_file = os.path.join(LEARN_DIR, f"{file_name}-{i:05d}.md")
-                if os.path.exists(card_file):
+                if main.file_not_empty(card_file):
                     put(f"Warning: {card_file} already exists. Skipping.")
                     continue
 

@@ -19,7 +19,7 @@ $PULL $ALLEMANDE_GITHUB main
 $PULL $BARBARELLA_GITHUB main
 
 #if [ -n "`git-ls-untracked`" -o -n "`git-ls-unstaged`" -o -n "`git-ls-staged`" ]; then
-#	llm-git-commit -n || true
+#	messy -n || true
 #fi
 
 $PUSH sam@ucm.dev:allemande main

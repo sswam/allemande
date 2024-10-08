@@ -50,7 +50,7 @@ tests() {
 	local tests_path="$dir/tests/$tests_base"
 
 	# Check if test file already exists
-	if [ -e "$tests_path" ]; then
+	if [ -s "$tests_path" ]; then
 		echo >&2 "already exists: $tests_path"
 		exit 1
 	fi

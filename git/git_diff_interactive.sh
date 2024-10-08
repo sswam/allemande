@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 #
-# Interactive git add with diffs, and llm-git-commit
+# Interactive git add with diffs, and messy
 
 git_diff_interactive() {
 	local X=0	# no xterm
@@ -138,9 +138,9 @@ action_next() {
 action_commit_previous() {
 	local IFS=$'\n'
 	if ((X)); then
-		llm-git-commit "${added[@]}"
+		messy "${added[@]}"
 	else
-		setsid xterm -title "ci ${added[*]}" -e llm-git-commit "${added[@]}" &
+		setsid xterm -title "ci ${added[*]}" -e messy "${added[@]}" &
 	fi
 	added=()
 	return 1

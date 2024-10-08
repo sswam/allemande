@@ -559,3 +559,9 @@ class TextInput:
 def is_binary(file_path):
     mime_type, _ = mimetypes.guess_type(file_path)
     return mime_type and not mime_type.startswith("text")
+
+def file_not_empty(file):
+    try:
+        return os.path.getsize(filepath) > 0
+    except FileNotFoundError:
+        return False

@@ -21,7 +21,7 @@ logger = main.get_logger()
 def create_prompt_file(answer_file: str) -> None:
     """Create a prompt file based on the answer file name, copy its mtime and atime."""
     prompt_file = answer_file.replace(".answer.", ".prompt.")
-    if os.path.exists(prompt_file):
+    if main.file_not_empty(prompt_file):
         logger.info(f"Prompt file already exists: {prompt_file}")
         return
 

@@ -19,7 +19,7 @@ create() {
 	[ -n "$ofile" ] || usage "Output file name is required"
 
 	# Check if output file already exists
-	if [ -e "$ofile" ]; then
+	if [ -s "$ofile" ]; then
 		die "Output file already exists: $ofile"
 	fi
 

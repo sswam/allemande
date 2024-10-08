@@ -79,7 +79,7 @@ def alla(
     if not ofile:
         raise ValueError("Output file name is required")
 
-    if os.path.exists(ofile):
+    if main.file_not_empty(ofile):
         raise FileExistsError(f"Output file already exists: {ofile}")
 
     ext = ofile.split('.')[-1] if '.' in ofile else "sh"
