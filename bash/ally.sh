@@ -1,20 +1,36 @@
 #!/usr/bin/env bash
-# Eval this script: eval "$(ally)"
+# usage: eval "$(ally)"
+# Sets strict mode, gets options with opts, enables aliases,
+# defines some functions and aliases.
+# ENDDOC
 
-# output the contents of the script after this
-exec <"$BASH_SOURCE" tail -n +7 || exit 1
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	case "${1:-}" in
+	-h|--help)
+		exec <"$BASH_SOURCE" sed -n '/^#!/d; /^# ENDDOC$/q; s/# //; p'; exit 1
+	esac
+	exec <"$BASH_SOURCE" sed -n '/^# START$/,$p'; exit 1
+fi
 
-# strict mode
-local old_opts 2>/dev/null
-old_opts=$(set +o)
-set -e -u -o pipefail
-trap 'eval "$old_opts"' RETURN
+# START
 
-shopt -s expand_aliases
-
-. opts
-eval "$(opts_long.py "$0")"
 . each
+
+if [[ $- == *i* ]]; then
+	:
+else
+	shopt -s expand_aliases
+
+	. opts
+
+	eval "$(opts_long.py "$0")"
+
+	# strict mode
+	local old_opts 2>/dev/null
+	old_opts=$(set +o)
+	set -e -u -o pipefail
+	trap 'trap - RETURN; eval "$old_opts"' RETURN
+fi
 
 quote_command() {
 	local cmd=$(printf "%q " "$@")
@@ -109,7 +125,7 @@ countdown() {
 	local remaining=$1 warn=$2 warn_interval=${3:-10}
 	shift 2
 	while [ $remaining -gt 0 ]; do
-		if [ $remaining -le $warn ] && (( remaining % warn_interval == 0 || remaining  < warn_interval )); then
+		if [ $remaining -le $warn ] && (( remaining % warn_interval == 0 || remaining < warn_interval )); then
 			notify "$remaining seconds"
 		fi
 		sleep 1
