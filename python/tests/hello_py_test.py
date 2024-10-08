@@ -67,8 +67,23 @@ def test_hello_fortune_words(fortune_word):
 
 
 """
-Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
+## Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
 
-We are using subject and subject_main to refer to the module, to make the test
-code more generic and so we won't need to change much if we rename the module.
+- We are using subject and subject_main to refer to the module, to make the
+  code more generic and so we can rename the module easily.
+
+- Include tests for small and degenerate cases: empty string, empty list,
+  single element list, None (if appropriate), etc.
+
+- When working with numbers, remember to test 0 and 1, we might get / by zero.
+
+- You can see the code to be tested, so test anything that looks like it might break it.
+
+## Ideas for future, might need helper functions (go ahead and write some if you need them!)
+
+- performance test / benchmark code that might be slow, or must be fast
+
+- for async code, if it should not block much, test that it does not
+
+- use the ally.quote library for quoting blocks of text
 """
