@@ -6,14 +6,7 @@
 comment_style() {
 	local show_block= b=  # show block comments
 
-	. opts
-
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
-
-	# Support long and short options
-	show_block=${show_block:-$b}
+	eval "$(ally)"
 
 	# Check if a filename is provided
 	if [ $# -eq 0 ]; then
