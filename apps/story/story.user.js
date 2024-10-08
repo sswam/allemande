@@ -18,10 +18,10 @@ function cycleImage(img) {
     const [basePath, extension] = src.split(/\.(?=[^.]+$)/);
 
     // Remove any existing numeric suffix
-    const basePathWithoutSuffix = basePath.replace(/_\d+$/, '');
+    const basePathWithoutSuffix = basePath.replace(/_\d{5}$/, '');
 
     // Extract current index or start at 0
-    const currentIndex = parseInt((basePath.match(/_(\d+)$/) || [,'0'])[1]);
+    const currentIndex = parseInt((basePath.match(/_(\d{5})$/) || [,'0'])[1]);
 
     // Try next index
     const nextIndex = currentIndex + 1;
