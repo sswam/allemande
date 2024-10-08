@@ -1,4 +1,4 @@
 #!/bin/bash
 for file in "$@"; do
-	xterm -e llm-git-commit "$file" & disown
+	xterm-screen-run ci "$file" llm-git-commit "$file"
 done
