@@ -14,7 +14,7 @@ e=	# Edit the waywo file
 if [ -n "$e" ]; then
 	note -e -t=waywo
 elif [ -z "$f" ]; then
-	v daemonize "$0" -f "${OPTS[@]}" "$@" &
+	daemonize "$0" -f "${OPTS[@]}" "$@" &
 elif [ -n "$q" ]; then
 	echo "Got quit signal" >&2
 else
