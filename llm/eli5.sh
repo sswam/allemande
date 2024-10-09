@@ -1,25 +1,24 @@
-#!/bin/bash -eu
+#!/bin/bash
 # [prompt]
 # Explain like I'm five.
 
 eli5() {
-	local v=1	# verbosity level
-	local m=	# model
-	local p=	# extra prompt
+	local verbose= v=1	# use 'process' not 'proc', to be verbose
+	local model= m=	# model
+	local prompt= p=	# extra prompt
 
-	. opts
+	eval "$(ally)"
+
+	prompt="$prompt $*"
 
 	local proc="proc"
-	if [ "$v" = 1 ]; then
+	if [ "$verbose" = 1 ]; then
 		proc="process"
 	fi
 
-	local prompt="What is this? Please ELI5 every detail, espeically the parts that are not very obvious. Don't omit to explain anything even if it's 'advanced' or whatever. I'm not really five, after all."
-	if [ -n "$p" ]; then
-		prompt+=", $p"
-	fi
+	local prompt="What is this? Please ELI5 every detail, especially the parts that are not very obvious. Don't omit to explain anything even if it's 'advanced' or whatever. I'm not really five, after all. $prompt"
 
-	$proc -m="$m" "$prompt $*"
+	$proc -m="$model" --empty-ok "$prompt"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
