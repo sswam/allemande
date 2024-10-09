@@ -61,7 +61,7 @@ def setup_history(history_file_path=None):
     readline.set_auto_history(True)
 
 
-def get(*args, **kwargs):
+def get(*args, placeholder="", **kwargs):
     """
     Custom input function that saves input to history.
 
@@ -71,10 +71,15 @@ def get(*args, **kwargs):
     Returns:
         str: The user's input.
     """
+    if placeholder:
+        readline.set_startup_hook(lambda: readline.insert_text(placeholder))
     try:
         text = input(*args, **kwargs)
     except EOFError:
         text = None
+    finally:
+        if placeholder:
+            readline.set_startup_hook()
     if text is not None:
         readline.append_history_file(1, history_file)
     return text
