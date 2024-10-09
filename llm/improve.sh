@@ -21,7 +21,7 @@ improve() {
 	local writetest= w=1	# write tests if none found
 	local numline= n=1	# number lines
 	local strict= X=1	# only do what is requested
-	local ed=1	# provide changes as an ed script
+	local ed= E=0	# provide changes as an ed script
 
 	eval "$(ally)"
 
@@ -185,15 +185,16 @@ improve() {
 
 	if (( ed )); then
 		prompt="$prompt
-	Please provide the changes as minimal ed scripts per file, for example:
+	Please provide the changes as minimal ed scripts, one per file, for example:
 	\`\`\`ed filename
 	3,5c
 	hello world
 	.
 	\`\`\`
 	Include the \`\`\` around the ed commands. Try not to include many unchanged lines.
-	I will sort the changes in reverse order by line number before applying them, so you don't have to worry about earlier changes affecting later line numbers.
-	Be super careful that the line numbers with the c command match the chunk of code you want to replace exactly. I numbered the lines for you, so there's no excuse!
+	You can use the a c i d s commands with single lines or ranges.
+	Return the changes in order from top to bottom if possible. I will sort the changes in reverse order before applying them, so you don't have to worry about earlier changes affecting later line numbers.
+	Be super careful that your line numbers match the original code you want to replace. I numbered the lines for you, so there's no excuse! :)
 	"
 	fi
 
