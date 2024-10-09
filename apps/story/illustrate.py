@@ -23,7 +23,7 @@ import inflect
 
 from ally import main  # type: ignore
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 logger = main.get_logger()
 p = inflect.engine()
@@ -41,11 +41,12 @@ class Options:
     prompt0: str
     prompt1: str
     negative: str
-    module: str
+    module: str|None
     count: int
     fix_dimensions: bool
     pony: bool
     steps: int
+    cfg_scale: float
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
@@ -62,6 +63,7 @@ class Options:
 @arg("-F", "--no-fix-dimensions", dest="fix_dimensions", action="store_false")
 @arg("-P", "--pony", help="Add prompting boilerplate for Pony and Pony-derived models")
 @arg("-S", "--steps", help="Number of steps to run the model")
+@arg("-cs", "--cfg-scale", help="CFG scale")
 def illustrate(
     input_file: str,
     output_dir: str = ".",
@@ -76,6 +78,7 @@ def illustrate(
     fix_dimensions: bool = True,
     pony: bool = False,
     steps: int = 15,
+    cfg_scale: float = 7.0,
 ) -> None:
     """
     Create images for a document using an AI image generator.
@@ -105,6 +108,7 @@ def illustrate(
         fix_dimensions=fix_dimensions,
         pony=pony,
         steps=steps,
+        cfg_scale=cfg_scale,
     )
 
     process_file(options)
@@ -196,7 +200,7 @@ def process_file(options: Options) -> None:
                 # allow modifying the prompt and negative prompt with Python code
                 if options.module:
                     logger.debug(f"Before: {prompt=}, {negative=}")
-                    prompt, negative = options.module.prompts(prompt, negative)
+                    prompt, negative = options.module.prompts(prompt, negative)  # type: ignore
                     prompt, negative = squeeze_prompt(prompt), squeeze_prompt(negative)
                     logger.debug(f"After: {prompt=}, {negative=}")
 
@@ -272,7 +276,7 @@ def generate_image(
             "height": options.height,
             "sampler-name": "DPM++ 2M",
             "scheduler": "Karras",
-            "cfg-scale": 5,
+            "cfg-scale": options.cfg_scale,
             "count": options.count,
             "negative-prompt": negative,
             "steps": options.steps,
@@ -283,8 +287,8 @@ def generate_image(
             kwargs["pony"] = True
 
         # run the a1111 stable diffusion webui client
-        sh.a1111_client("-d", **kwargs)
-    except sh.ErrorReturnCode as e:
+        sh.a1111_client("-d", **kwargs)  # type: ignore
+    except sh.ErrorReturnCode as e:  # type: ignore
         logger.error(f"Failed to generate image for {filename}: {prompt}")
         logger.error(f"Error: {e}")
         raise
