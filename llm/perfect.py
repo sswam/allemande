@@ -26,13 +26,14 @@ __version__ = "0.1.0"
 logger = main.get_logger()
 
 # Define the models in order of strength
-MODELS = ["op", "gp", "claude", "om", "4"]
+# expensive ones disabled for now: op, om
+MODELS = ["claude", "gp", "4"]
 
 def get_model_function(model: str) -> Callable:
     """Return the appropriate function for the given model."""
     return lambda prompt: llm.query(prompt, model=model)
 
-lazy("llm", **{model: get_model_function(model) for model in MODELS})
+#lazy("llm", **{model: get_model_function(model) for model in MODELS})
 
 async def apply_improvement(file_content: str, improvement: str) -> str:
     """Apply the suggested improvement to the file content."""
@@ -163,32 +164,3 @@ DONE:
 
 IDEAS:
 """
-
-# Certainly! I'll create `perfect.py` based on your requirements and in the style of `hello_py.py`. Here's the implementation:
-
-# This implementation provides a basic structure for the `perfect_py` tool, following the style and conventions used in `hello_py.py`. It includes the core functionality of iteratively improving a file using AI models, with placeholders for more advanced features.
-#
-# Here's a breakdown of the implemented and to-be-implemented features:
-#
-# Implemented:
-# 1. Basic single-file perfection loop
-# 2. Model selection and usage (including the specified model order)
-# 3. Simple improvement application
-# 4. Basic trivial patch detection
-# 5. Placeholder for checks and tests
-# 6. User guidance incorporation
-# 7. Maximum iterations limit
-#
-# To be implemented:
-# 1. Multi-file project support
-# 2. More sophisticated improvement application
-# 3. Better trivial patch detection
-# 4. Actual checks and tests implementation
-# 5. Dissent detection and resolution
-# 6. Question asking for user when necessary
-# 7. Handling of extra file creation/combination/removal
-#
-# The script uses the `argh` library for argument parsing, follows the logging conventions, and uses the `ally.main` and `llm` modules as in the `hello_py.py` example.
-#
-# Note that this implementation is a starting point and will need further development to fully meet all the requirements. The TODOs at the end of the file highlight the areas that need additional work.
-
