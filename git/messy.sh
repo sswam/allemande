@@ -274,8 +274,15 @@ deleted_files=($(git ls-files --deleted))
 if [ ${#deleted_files[@]} -gt 0 ]; then
     git rm -- "${deleted_files[@]}"
 fi
-readarray -t renamed_from < <(git diff --staged --name-status | grep '^R' | cut -f2)
-files+=("${renamed_from[@]}")
+while IFS=$'\t' read -r status from to; do
+    # check if from is in files array, the long way
+    for i in "${!files[@]}"; do
+        if [ "${files[$i]}" = "$to" ]; then
+            files+=("$from")
+            break
+        fi
+    done
+done < <(git diff --staged --name-status | grep '^R')
 if [ ${#deleted_files[@]} -gt 0 ]; then
     git restore --staged -- "${deleted_files[@]}"
 fi
@@ -397,6 +404,7 @@ the patch. Also list other issues or suggestions if they seem worthwhile.
 Especially, check for sensitive information such as private keys or email
 addresses that should not be committed to git. Adding the author's email
 deliberately is okay. Also note any grossly bad code or gross inefficiencies.
+If you don't find anything wrong, just say 'LGTM' only, so as not to waste both of our time. Thanks!
 
 Expected format:
 
@@ -425,6 +433,11 @@ run-git-vimdiff() {
     fi
 }
 
+edit-files() {
+    $EDITOR ${EDITOR_SPLIT_OPTS:--O} "${files[@]}"
+}
+
+
 while true; do
     if [ -e "$commit_message" ]; then
         cat "$commit_message"
@@ -433,7 +446,7 @@ while true; do
     else
         prompt="Action?"
     fi
-    read -p "$prompt [y/n/q/e/3/4/c/i/o/M/g/f/d/v/b/?] " -n 1 -r choice
+    read -p "$prompt [y/n/q/e/3/4/c/i/o/M/g/f/d/v/b/E/x/?] " -n 1 -r choice
     echo
     case "$choice" in
         y)
@@ -454,6 +467,9 @@ while true; do
         b)
             check-for-bugs "${model:-d}"
             ;;
+        E)
+            edit-files
+            ;;
         x)
             cleanup
             ;;
@@ -473,6 +489,7 @@ while true; do
             echo "  d: diff the staged changes"
             echo "  v: vimdiff the staged changes"
             echo "  b: check for bugs"
+            echo "  E: edit the files"
             echo "  ?: show this help message"
             echo "  x: clean up commit-message.*.txt files"
             echo
