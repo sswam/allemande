@@ -15,6 +15,9 @@ from io import IOBase, TextIOWrapper, StringIO
 import mimetypes
 import asyncio
 import functools
+import shutil
+import time
+import stat
 
 import argh
 
@@ -395,7 +398,7 @@ def io(
         print(*args, file=ostream, end=end, **kwargs)
 
     def get(
-        prompt: str = ": ", all=False, lines=False, chunks=False, rstrip=True
+        prompt: str = ": ", all=False, lines=False, chunks=False, rstrip=True, placeholder=""
     ) -> str:
         """
         Get input from the input stream.
@@ -419,7 +422,7 @@ def io(
             return all_lines
         if is_tty:
             tty.setup_history()
-            return tty.get(prompt)
+            return tty.get(prompt, placeholder=placeholder)
         else:
             line = istream.readline()
             if line == "":
@@ -565,3 +568,77 @@ def file_not_empty(file):
         return os.path.getsize(filepath) > 0
     except FileNotFoundError:
         return False
+
+def backup(file):
+    backup_file = file + "~"
+
+    # Check if backup file exists, and move it to rubbish if it does
+    if os.path.exists(backup_file):
+        move_to_rubbish(backup_file)
+
+    # Copy the file to create a backup, overwriting if it exists
+    shutil.copy2(file, backup_file)
+
+def mount_point(path='.'):
+    path = os.path.abspath(path)
+    while not os.path.ismount(path):
+        path = os.path.dirname(path)
+    return path
+
+def get_rubbish_dir(first_arg):
+    home = os.path.expanduser('~')
+    m = mount_point(first_arg)
+    if m == mount_point(home) or m == '/':
+        return os.path.join(home, '.rubbish')
+    else:
+        return os.path.join(m, '.rubbish')
+
+def create_rubbish_dir(rubbish_dir):
+    old_umask = os.umask(0o077)
+    os.makedirs(rubbish_dir, exist_ok=True)
+    os.chmod(rubbish_dir, 0o700)
+    os.umask(old_umask)
+
+def generate_unique_name(rubbish_dir, basename):
+    while True:
+        timestamp = int(time.time() * 1e9)
+        new_name = f"{basename}_{timestamp}_{os.getpid()}"
+        full_path = os.path.join(rubbish_dir, new_name)
+        if not os.path.exists(full_path):
+            return full_path
+
+def move_to_rubbish(files, copy=False):
+    if not files:
+        return 0
+
+    if isinstance(files, str):
+        files = [files]
+
+    rubbish_dir = os.environ.get('RUBBISH') or get_rubbish_dir(files[0])
+    create_rubbish_dir(rubbish_dir)
+
+    status = 0
+    for file in files:
+        basename = os.path.basename(file)
+        dest = generate_unique_name(rubbish_dir, basename)
+
+        try:
+            if copy:
+                shutil.copy2(file, dest, follow_symlinks=False)
+                print(f"copied '{file}' -> '{dest}'")
+            else:
+                shutil.move(file, dest)
+                print(f"moved '{file}' -> '{dest}'")
+        except Exception as e:
+            print(f"Error {"copying" if copy else "moving"} {file}: {e}")
+            status = 1
+
+    return status
+
+def copy_to_rubbish(files):
+    return move_to_rubbish(files, copy=True)
+
+# TODO make this a standalone / library script
+# if __name__ == "__main__":
+#     exit_status = move_to_rubbish(sys.argv[1:])
+#     sys.exit(exit_status)
