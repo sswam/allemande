@@ -25,7 +25,7 @@ from argh import arg
 
 from ally import main
 
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
 logger = main.get_logger()
 
@@ -111,7 +111,7 @@ def debug_tokens(pipeline: transformers.pipeline, text: str):
         logger.debug(f"{token.item()}: {tokenizer.decode([token.item()])}")
 
 
-def get_pipeline(model: str, stop_texts: list[str] = ["\n", "\n\n"]) -> transformers.pipeline:
+def get_pipeline(model: str, stop_texts: list[str] = ["\n", "\n\n"], repetition_penalty: float = 1.0) -> transformers.pipeline:
     """Get the pipeline for the given model."""
     tokenizer = transformers.AutoTokenizer.from_pretrained(model)
     stopping_criteria = TokenStoppingCriteria(tokenizer, stop_texts)
@@ -127,6 +127,8 @@ def get_pipeline(model: str, stop_texts: list[str] = ["\n", "\n\n"]) -> transfor
         max_new_tokens=500,
         truncation=True,
         stopping_criteria=stopping_criteria_list,
+        repetition_penalty=repetition_penalty,
+        temperature=1.4,
         # temperature=0.7,
         # top_k=50,
         # top_p=0.9,
@@ -234,17 +236,31 @@ def read_chat_history(filename: str) -> list[Message]:
 def display_chat_history(history: list[Message], put_func):
     """Display the chat history."""
     for message in history:
-        put_func(f"{message.name}: {message.text}\n\n")
+        put_func(message_to_string(message) + "\n\n")
 
 
-def log_message(filename: str, message: Message):
-    """Append a message to the log file."""
+def write_message(f: TextIO, message: Message):
+    """Write a message to the file."""
     # prepend a tab to each line of the message
     text = message.text
     if message.name:
         text = re.sub(r"^", "\t", text, flags=re.MULTILINE)
+    f.write(f"{message.name or ''}\t{message.text}\n\n")
+
+
+def log_message(filename: str, message: Message):
+    """Append a message to the log file."""
     with open(filename, "a") as f:
-        f.write(f"{message.name or ''}{text}\n\n")
+        write_message(f, message)
+
+
+def write_chat_history(filename: str, history: list[Message], mode: str = "w"):
+    """Write the chat history to the given file."""
+    if mode == "w":
+        main.backup(filename)
+    with open(filename, mode) as f:
+        for message in history:
+            write_message(f, message)
 
 
 @arg("chat_file", help="File to save chat history")
@@ -254,6 +270,7 @@ def log_message(filename: str, message: Message):
 @arg("--ai_name", help="Name of the AI assistant")
 @arg("--user_name", help="Name of the user", default=None)
 @arg("--first", help="AI speaks first", default=False)
+@arg("--repetition_penalty", help="Repetition penalty for text generation")
 async def chat_with_ai(
     chat_file: str,
     istream: TextIO = sys.stdin,
@@ -264,6 +281,7 @@ async def chat_with_ai(
     ai_name: str = "Ally",
     user_name: str | None = None,
     first: bool = False,
+    repetition_penalty: float = 1.0,
 ) -> None:
     """
     Chat with a local LLM model.
@@ -276,8 +294,11 @@ async def chat_with_ai(
 
     get, put = main.io(istream, ostream)
 
-#    stop_texts = ["\n", "\n\n", f"\n{ai_name}:", f"\n{user_name}:"]
     stop_texts = [f"\n{ai_name}:", f"\n{user_name}:"]
+
+    pipeline = get_pipeline(model, stop_texts, repetition_penalty)
+
+    message_history: list[Message] = []
 
     pipeline = get_pipeline(model, stop_texts)
 
@@ -290,6 +311,20 @@ async def chat_with_ai(
     # NOTE: get and put are not async, yet
     # No big deal for this app.
 
+    def erase_messages(count: int):
+        del message_history[-count:]
+        write_chat_history(chat_file, message_history)
+        logger.info(f"erased {count} messages")
+
+    def edit_previous_message():
+        if not message_history:
+            logger.info("no previous message to edit")
+            return
+        message = message_history[-1]
+        message = Message(ai_name, get(f"{ai_name}: ", placeholder=message.text))
+        erase_messages(1)
+        log_message(chat_file, message)
+
     async def user_turn():
         message = Message(user_name, get(f"{user_name}: "))
         put()
@@ -297,6 +332,20 @@ async def chat_with_ai(
             raise EOFError()
         # TODO a Messages class could handle this
         message.text = message.text.strip()
+        if re.match(r"\x08+$", message.text):   # C-V C-H: erase (can do multiple)
+            erase_messages(len(message.text))
+            return await user_turn()
+        if re.match(r"\x0d$", message.text):    # C-V enter: skip
+            logger.info("skipping turn")
+            return None
+        if re.match(r"\x05$", message.text):    # C-V C-E: edit
+            logger.info("editing previous message")
+            edit_previous_message()
+            return await user_turn()
+        if re.match(r"\x01$", message.text):    # C-V C-A: again
+            logger.info("again")
+            erase_messages(1)
+            return None
         if chat_file:
             log_message(chat_file, message)
         message_history.append(message)
@@ -306,11 +355,14 @@ async def chat_with_ai(
         context_prompt = "\n\n".join(map(message_to_string, message_history[-context:])) + f"\n\n{ai_name}:"
         put(f"{ai_name}:", end="")
         message = Message(ai_name, "")
-        async for chunk in generate_response(pipeline, context_prompt, stream=stream):
-            text2 = message.text + chunk
-            if not any(text2.endswith(stopper) for stopper in stop_texts):
-                message.text = text2
-                put(chunk, end="", flush=True)
+        try:
+            async for chunk in generate_response(pipeline, context_prompt, stream=stream):
+                text2 = message.text + chunk
+                if not any(text2.endswith(stopper) for stopper in stop_texts):
+                    message.text = text2
+                    put(chunk, end="", flush=True)
+        except KeyboardInterrupt:
+            logger.warning("Interrupted")
         # TODO give the AI the ability to stop the conversation
         if not message.text.endswith("\n"):
             put()
