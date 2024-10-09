@@ -108,6 +108,12 @@ if [ -z "$bother" ]; then
 	dunstctl set-paused true
 fi
 
+bright=$(xdark)
+bright=${bright#* }
+if (( $(echo "$bright < 0.5" | bc -l) )); then
+	xdark 0.5
+fi
+
 if [ -z "$g" -a -z "$N" ]; then
 	log pomodoro
 	sleep-log $n $adjusted_work_time 60
