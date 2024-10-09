@@ -23,13 +23,15 @@ junk_files() {
             -name '*.tmp.*' -o \
             -empty -o \
             -size 1c \
-        \) -type f |
-        case "$sort_order" in
-            name) sort ;;
-            size) xargs -r ls -S ;;
-            time) xargs -r ls -t ;;
-            *) cat ;;
-        esac
+        \) -type f -printf "%P\n" |
+    sort |
+    comm -3 -2 - <(git ls-files | sort) |
+    case "$sort_order" in
+        name) sort ;;
+        size) xa -r ls -1 -S ;;
+        time) xa -r ls -1 -t ;;
+        *) cat ;;
+    esac
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
