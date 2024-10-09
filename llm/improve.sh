@@ -266,7 +266,7 @@ improve() {
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
 	confirm=""
 	if (( test )) && (( codeok == 0 )) && (( testok == 0 )); then
-		confirm="confirm" # means it might have edited either or both files
+		confirm="confirm -t" # means it might have edited either or both files
 	fi
 
 	# Swap in the hopefully improved version
