@@ -7,6 +7,7 @@ work=$[7*60]	# Set the working time (in seconds), should be lower but I like wor
 grace=$[1*60]	# Set the grace time (in seconds)
 fade=$[1*60]	# Set the fade time, or 0 to 'annoy' (in seconds)
 rest=$[1*60]	# Set the rest time (in seconds)
+work_min_percent=80	# Minimum work percent, to align with the clock
 g=	# More grace (or start with rest / grace period)
 q=	# Quit any running pomodoro
 N=	# Take a break now, then continue with next pomodoro
@@ -84,18 +85,19 @@ fi
 adjusted_work_time=$work
 if [ -z "$A" ] || [ "$A" -eq 0 ]; then
 	current_second=$(( 60 * $(date +%M) + $(date +%S) ))
-	seconds_to_hour=$((3600 - current_second))
 
-	# Calculate how many full hours are needed
-	hours_needed=$(( (work + rest + fade + grace) / 3600 ))
+	period=$(( work + rest + fade + grace ))
 
-	# Check if we need to add more time to reach the next appropriate hour
-	if [ $seconds_to_hour -lt $(( rest + fade + grace + work % 3600 )) ]; then
-		hours_needed=$((hours_needed + 1))
+	seconds_mod_period=$(( current_second % period ))
+	seconds_remain=$(( period - seconds_mod_period ))
+	adjusted_work_time=$(( seconds_remain - rest - fade - grace ))
+
+	# echovar current_second period seconds_mod_period seconds_remain adjusted_work_time
+
+	if (( adjusted_work_time < work * work_min_percent / 100 )); then
+		(( adjusted_work_time+=$period ))
 	fi
-
-	total_seconds_to_wait=$((hours_needed * 3600 - current_second))
-	adjusted_work_time=$(( total_seconds_to_wait - grace - fade - rest ))
+	echo "$adjusted_work_time"
 fi
 
 # ----------------------------------------------
