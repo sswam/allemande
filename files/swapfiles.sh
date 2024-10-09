@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash
 # file1 file2
 
 copy= c=	# copy to preserve hard links
