@@ -2,11 +2,11 @@
 # cr - copy to rubbish
 # this is exactly `mr' but copying instead of moving
 if [ -z "$RUBBISH" ]; then
-	M=`mntpoint "$1"`
-	if [ "$M" = "$(mntpoint "$HOME")" ]; then
-		RUBBISH="$HOME/rubbish"
+	M=`mount-point "$1"`
+	if [ "$M" = "$(mount-point "$HOME")" ]; then
+		RUBBISH="$HOME/.rubbish"
 	else
-		RUBBISH="$(mntpoint "$1")/rubbish"
+		RUBBISH="$M/.rubbish"
 	fi
 fi
 (umask 0700; mkdir -p "$RUBBISH"; chmod 0700 "$RUBBISH")
