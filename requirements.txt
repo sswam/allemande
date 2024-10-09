@@ -105,3 +105,9 @@ jq
 yq
 
 html5lib
+
+jsbeautifier
+cssbeautifier
+
+mypy
+pylint
