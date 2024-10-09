@@ -20,21 +20,6 @@ def create_symlink(resource_path):
     return symlink_name
 
 
-# tags_not_to_indent=('b', 'i', 'u', 'span', 'a', 'em', 'strong', 'code', 'sup', 'sub', 'mark', 'abbr', 'cite', 'dfn', 'small', 'time', 'var', 'samp', 'kbd', 'del', 'ins')
-# 
-# 
-# class CustomFormatter(HTMLFormatter):
-#     def __init__(self, exclude_tags=tags_not_to_indent, *args, indent="\t", **kwargs):
-#         self.exclude_tags = exclude_tags
-#         super().__init__(*args, indent=indent, **kwargs)
-# 
-#     def attributes(self, tag):
-#         return sorted(tag.attrs.items())
-# 
-# 
-# formatter = CustomFormatter(exclude_tags=('b', 'span', 'a'))
-
-
 def remove_timestamp_from_filename(filename):
     return re.sub(r'(@\d+)', '', filename)
 
@@ -65,6 +50,8 @@ def update_html_files(html_files, resource_files):
                 resource_path = Path(original_name)
                 if resource_path in resource_files:
                     new_symlink = resource_files[resource_path]
+                    element[attribute] = str(new_symlink)
+
 
         with open(html_file, 'w', encoding='utf-8') as file:
             file.write(str(soup))

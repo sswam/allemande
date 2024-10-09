@@ -14,6 +14,7 @@ body {
 	justify-content: center;
 	background-color: #224;
 	align-items: center;
+	padding: 0;
 }
 
 #banner {
@@ -31,7 +32,7 @@ body {
 	text-align: left;
 	padding: 20px 40px;
 	display: inline-block;
-	white-space: nowrap;
+/*	white-space: nowrap; */
 	background-color: #112;
 	color: #aab;
 	border-radius: 20px;
@@ -39,6 +40,7 @@ body {
 	font-size: 18px;
 	font-weight: 300;
 	box-shadow: 0 0 20px 2px rgba(0, 255, 127, 0.25);
+	max-width: 800px;
 }
 
 .info a, .info a:visited {

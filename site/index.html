@@ -4,8 +4,8 @@
 	<meta charset="utf-8" />
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
 	<title> Allemande AI </title>
-	<link href="style@1728371943.css" rel="stylesheet" />
-	<script src="animate@1728374004.js" type="text/javascript"></script>
+	<link href="style@1728451977.css" rel="stylesheet" />
+	<script src="animate@1728445940.js" type="text/javascript"></script>
 	<!-- For iOS - 180x180px, apple-touch-icon -->
 	<link href="/favicon/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
 	<!-- For Android/Chrome - 192x192px,  -->
@@ -24,34 +24,31 @@
 	<meta content="#ffffff" name="theme-color" />
 	<meta content="#ffffff" name="msapplication-navbutton-color" />
 	<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style" />
-	<style>
-		/* just testing! */
-		img {
-			margin: 10px;
-		}
-	</style>
 </head>
 <body>
 	<img alt="Allemande" id="banner" src="allemande@1683146134.jpg" />
-	<div class="space" style="flex-grow: 1; max-height: 3em;">
+	<div class="space" style="flex-grow: 1; max-height: 3.5em;">
 	</div>
 	<div class="info" id="info">
-		<p> G'day, we're <i class="fire">Allemande</i>, an AI business from Melbourne. </p>
-		<p> We build AI tools for learning, fun, work, and daily life. </p>
-		<p> Contact us to try <i class="fame"> Ally Chat </i> , our multi-user AI chat service. </p>
-		<p> Schedule a free meeting today, and learn how to use AI. </p>
+		<p>G'day, we're <i class="fire">Allemande</i>, an AI business from Melbourne.</p>
+		<p>We build AI tools for learning, fun, work, and daily life.</p>
+		<p>Contact us to try <i class="fame">Ally Chat</i>, our multi-user AI chat service.</p>
+		<p>Schedule a free meeting today, and learn how to use AI.</p>
 		<div style="text-align:center">
-		<a class="button red" href="https://chat.allemande.ai" id="chatlink"><span class="fire"> Ally Chat α </span></a><a class="button orange" href="/epic.html"> Example </a><a class="button yellow" href="https://flash.allemande.ai"> Flash </a><a class="button green" href="https://alfred.allemande.ai"> Alfred </a>
+		<a class="button red" href="https://chat.allemande.ai" id="chatlink"><span class="fire">Ally Chat α</span></a><a class="button orange" href="/epic.html">Example</a><a class="button yellow" href="https://flash.allemande.ai">Flash</a><a class="button green" href="https://alfred.allemande.ai">Alfred</a>
 		</div>
-		<div class="space" style="flex-grow: 3;">
-		<a class="button cyan" href="/pricing.html"> Pricing </a><a class="button blue" href="https://forms.gle/LEnaHJBurcKbBkGH6"> Contact Us </a><a class="button violet" href="https://github.com/sswam/allemande"><span class="fame"> Source Code </span></a>
+		<div style="text-align:center">
+		<a class="button cyan" href="/pricing.html">Pricing</a><a class="button blue" href="https://forms.gle/LEnaHJBurcKbBkGH6">Contact Us</a><a class="button violet" href="https://github.com/sswam/allemande"><span class="fame">Source Code</span></a>
 		</div>
+	</div>
+	<div class="space" style="flex-grow: 3;">
 	</div>
 	<script>
 		if (location.href.indexOf("local.") > -1) {
 			document.getElementById("chatlink").href = "https://chat-local.allemande.ai";
 		}
-		animate() for (const [index, p] of document.querySelectorAll("#info > p").entries()) {
+		animate();
+		for (const [index, p] of document.querySelectorAll("#info > p").entries()) {
 			p.style.textIndent = `${index}em`;
 		}
 	</script>
