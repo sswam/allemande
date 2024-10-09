@@ -34,6 +34,7 @@ story() {
 	local adult= X=	# generate adult content
 	local pony= P=	# add prompting boilerplate for Pony models
 	local steps= S=15	# number of steps for image generation
+	local cfg_scale= cs=7.0	# CFG scale for image generation
 
 	eval "$(ally)"
 
@@ -388,7 +389,7 @@ illustrate_the_story() {
 		pony_args=(--pony)
 	fi
 
-	illustrate.py --debug --prompt0 "${illustrate#1} ${positive0}" --prompt1 "${positive1}" --negative "$negative" --module "$module" --count "$count" --steps "$steps" "${pony_args[@]}" "$filename"
+	illustrate --debug --prompt0 "${illustrate#1} ${positive0}" --prompt1 "${positive1}" --negative "$negative" --module "$module" --count "$count" --steps "$steps" --cfg-scale "$cfg_scale" "${pony_args[@]}" "$filename"
 }
 
 view_the_result() {
