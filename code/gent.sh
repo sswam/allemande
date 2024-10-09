@@ -52,6 +52,7 @@ tests() {
 	# Check if test file already exists
 	if [ -s "$tests_path" ]; then
 		echo >&2 "already exists: $tests_path"
+		exec improve "$tests_path" "Please improve the tests, fixing and adding test cases as needed." "$program" "${refs[@]}"
 		exit 1
 	fi
 
