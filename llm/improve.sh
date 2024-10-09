@@ -21,6 +21,7 @@ improve() {
 	local writetest= w=1	# write tests if none found
 	local numline= n=1	# number lines
 	local strict= X=1	# only do what is requested
+	local ed=1	# provide changes as an ed script
 
 	eval "$(ally)"
 
@@ -178,12 +179,31 @@ improve() {
 		prompt="$prompt, Please reply concisely with only the changes."
 	fi
 
+	if (( numline )); then
+		prompt="$prompt, Lines are numbered for your convenience, but please do not number lines in your output."
+	fi
+
+	if (( ed )); then
+		prompt="$prompt
+	Please provide the changes as minimal ed scripts per file, for example:
+	\`\`\`ed filename
+	3,5c
+	hello world
+	.
+	\`\`\`
+	Include the \`\`\` around the ed commands. Try not to include many unchanged lines.
+	I will sort the changes in reverse order by line number before applying them, so you don't have to worry about earlier changes affecting later line numbers.
+	Be super careful that the line numbers with the c command match the chunk of code you want to replace exactly. I numbered the lines for you, so there's no excuse!
+	"
+	fi
+
 	local input=$(v cat-named -p "${opt_b[@]}" "${opt_n[@]}" "$file" "${refs[@]}")
 
 	# Backup original file
 	if [ -e "$file~" ]; then
 		move-rubbish "$file~"
 	fi
+	# shellcheck disable=SC2216
 	echo n | cp -i -a "$file" "$file~" # WTF, there's no proper no-clobber option?!
 
 	comment_char="#"
