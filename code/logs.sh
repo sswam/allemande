@@ -12,14 +12,7 @@
 logs() {
 	local list= l=  # Variables for listing all log files
 
-	. opts  # Source the 'opts' file (likely contains option parsing)
-
-	# Enable strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
-	trap 'eval "$old_opts"' RETURN
-
-	list=${list:-$l}
+	eval "$(ally)"
 
 	local arg=${1:-}
 
