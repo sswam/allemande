@@ -212,6 +212,8 @@ rotate:
 
 canon:
 	$(ALLEMANDE_HOME)/files/canon_links.py $(ALLEMANDE_PATH)
+	ln -sf $(ALLEMANDE_PATH)/alias/ulb /usr/local/bin
+	cd canon ; ulb v confirm uniqo lecho
 
 fresh-old:: 
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
