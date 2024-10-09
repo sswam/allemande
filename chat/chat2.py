@@ -111,7 +111,7 @@ def debug_tokens(pipeline: transformers.pipeline, text: str):
         logger.debug(f"{token.item()}: {tokenizer.decode([token.item()])}")
 
 
-def get_pipeline(model: str, stop_texts: list[str] = ["\n", "\n\n"], repetition_penalty: float = 1.0) -> transformers.pipeline:
+def get_pipeline(model: str, stop_texts: list[str] = ["\n", "\n\n"]) -> transformers.pipeline:
     """Get the pipeline for the given model."""
     tokenizer = transformers.AutoTokenizer.from_pretrained(model)
     stopping_criteria = TokenStoppingCriteria(tokenizer, stop_texts)
@@ -126,24 +126,18 @@ def get_pipeline(model: str, stop_texts: list[str] = ["\n", "\n\n"], repetition_
         # max_length=100,
         max_new_tokens=500,
         truncation=True,
-        stopping_criteria=stopping_criteria_list,
-        repetition_penalty=repetition_penalty,
-        temperature=1.4,
-        # temperature=0.7,
-        # top_k=50,
-        # top_p=0.9,
     )
 
 
 async def generate_response(
-    pipeline, prompt: str, stream: bool = True
+    pipeline, prompt: str, generation_kwargs: dict = {}, stream: bool = True
 ) -> AsyncIterator[str]:
     """Generate a response to the given prompt."""
     if stream:
         async for chunk in stream_pipeline_output(pipeline, prompt):
             yield chunk
     else:
-        result = await asyncio.to_thread(pipeline, prompt)
+        result = await asyncio.to_thread(pipeline, prompt, generation_kwargs)
         yield result[0]["generated_text"]
 
 
@@ -270,6 +264,9 @@ def write_chat_history(filename: str, history: list[Message], mode: str = "w"):
 @arg("--ai_name", help="Name of the AI assistant")
 @arg("--user_name", help="Name of the user", default=None)
 @arg("--first", help="AI speaks first", default=False)
+@arg("--temperature", help="Temperature for text generation")
+@arg("--top_k", help="Top k for text generation")
+@arg("--top_p", help="Top p for text generation")
 @arg("--repetition_penalty", help="Repetition penalty for text generation")
 async def chat_with_ai(
     chat_file: str,
@@ -281,6 +278,9 @@ async def chat_with_ai(
     ai_name: str = "Ally",
     user_name: str | None = None,
     first: bool = False,
+    temperature: float = 1.0,
+    top_k: int|None = None,
+    top_p: float|None = None.
     repetition_penalty: float = 1.0,
 ) -> None:
     """
@@ -294,9 +294,9 @@ async def chat_with_ai(
 
     get, put = main.io(istream, ostream)
 
-    stop_texts = [f"\n{ai_name}:", f"\n{user_name}:"]
+    stop_texts = [f"\n{ai_name}:", f"\n{user_name}:", "\n\n", "\n"]
 
-    pipeline = get_pipeline(model, stop_texts, repetition_penalty)
+    pipeline = get_pipeline(model, stop_texts, temperature, top_k, top_p, repetition_penalty)
 
     message_history: list[Message] = []
 
@@ -351,12 +351,14 @@ async def chat_with_ai(
         message_history.append(message)
         return message
 
+    generation_kwargs = dict(temperature=temperature, top_k=top_k, top_p=top_p, repetition_penalty=repetition_penalty)
+
     async def ai_turn():
         context_prompt = "\n\n".join(map(message_to_string, message_history[-context:])) + f"\n\n{ai_name}:"
         put(f"{ai_name}:", end="")
         message = Message(ai_name, "")
         try:
-            async for chunk in generate_response(pipeline, context_prompt, stream=stream):
+            async for chunk in generate_response(pipeline, context_prompt, generation_kwargs=generation_kwargs, stream=stream):
                 text2 = message.text + chunk
                 if not any(text2.endswith(stopper) for stopper in stop_texts):
                     message.text = text2
