@@ -630,7 +630,7 @@ def move_to_rubbish(files, copy=False):
                 shutil.move(file, dest)
                 print(f"moved '{file}' -> '{dest}'")
         except Exception as e:
-            print(f"Error {"copying" if copy else "moving"} {file}: {e}")
+            print(f"Error {'copying' if copy else 'moving'} {file}: {e}")
             status = 1
 
     return status
