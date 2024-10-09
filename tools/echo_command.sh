@@ -1,7 +1,8 @@
 #!/bin/bash
-# v-: echo a command to stderr
+# [cmd args ...]
+# echo a command to stderr
 
-v-() {
+echo-command() {
 	if [ "$#" -eq 0 ]; then
 		return 0
 	fi
@@ -12,6 +13,8 @@ v-() {
 	printf "%s\n" "${out% }" >&2
 }
 
+alias v-=echo-command
+
 if [ "$0" = "$BASH_SOURCE" ]; then
-	v- "$@"
+	echo-command "$@"
 fi
