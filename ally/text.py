@@ -1,5 +1,6 @@
 from typing import List, Union
 import os
+import re
 
 
 def read_lines(
@@ -39,4 +40,10 @@ def read_lines(
 
 def squeeze(text: str) -> str:
     """ Squeeze whitespace in the text. """
-    return " ".join(text.strip().split())
+    return re.sub(r"\s\s+", " ", text)
+
+
+def stripper(text):
+    match = re.match(r"(\s*)(.*\S|)(\s*)$", text, re.DOTALL)
+    leading_spaces, text, final_spaces = match.groups()
+    return leading_spaces, text, final_spaces
