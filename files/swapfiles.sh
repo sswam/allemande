@@ -1,9 +1,9 @@
 #!/bin/bash -eu
 # file1 file2
-copy= c=	# copy to preserve hard links
-. opts
 
-copy="${copy:-$c}"
+copy= c=	# copy to preserve hard links
+
+eval "$(ally)"
 
 if [ "$copy" = 1 ]; then
 	cp -i "$1" "$1.tmp.$$"
