@@ -161,3 +161,11 @@ finder() {
 	file=$(readlink -f "$file")
 	printf "%s\n" "$file"
 }
+
+debug() {
+	local _echovar_var
+	for _echovar_var; do
+		eval "echo -n \"$_echovar_var=\$$_echovar_var \"" >&2
+	done
+	echo
+}
