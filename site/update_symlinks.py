@@ -66,17 +66,10 @@ def update_html_files(html_files, resource_files):
                 if resource_path in resource_files:
                     new_symlink = resource_files[resource_path]
 
-#         # indent nicely I hope
-# 
-#         formatter = CustomFormatter()
-# #        formatter = HTMLFormatter(indent="\t")
-#         formatted_html = soup.prettify(formatter=formatter)
-# 
-#         with open(html_file, 'w', encoding='utf-8') as file:
-#             file.write(formatted_html)
-
         with open(html_file, 'w', encoding='utf-8') as file:
             file.write(str(soup))
+
+        # TODO use html_indent.py as a library to format nicely
 
 
 def update_symlinks():
