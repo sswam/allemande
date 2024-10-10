@@ -45,7 +45,7 @@ pandoc_convert() {
 
 clean() {
 	pandoc-dump-clean |
-	single-blank-lines.pl
+	single-blank-lines
 #	pandoc-dump-clean-2
 }
 
