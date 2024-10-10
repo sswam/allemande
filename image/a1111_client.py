@@ -122,18 +122,18 @@ def pony_biolerplate(prompt, negative_prompt):
     return prompt, negative_prompt
 
 
-@arg("--prompt", help="prompt for image generation")
-@arg("--negative-prompt", help="negative prompt for image generation")
-@arg("--seed", type=int, help="seed for image generation")
+@arg("-p", "--prompt", help="prompt for image generation")
+@arg("-n", "--negative-prompt", help="negative prompt for image generation")
+@arg("-s", "--seed", type=int, help="seed for image generation")
 @arg("--sampler-name", help="sampler name")
 @arg("--scheduler", help="scheduler")
-@arg("--steps", type=int, help="number of steps")
-@arg("--cfg-scale", type=float, help="cfg scale")
-@arg("--width", type=int, help="image width")
-@arg("--height", type=int, help="image height")
-@arg("--count", type=int, help="number of images to generate")
-@arg("--clobber", help="overwrite existing files")
-@arg("--pony", help="add pony boilerplate")
+@arg("-i", "--steps", type=int, help="number of steps")
+@arg("-C", "--cfg-scale", type=float, help="cfg scale")
+@arg("-w", "--width", type=int, help="image width")
+@arg("-h", "--height", type=int, help="image height")
+@arg("-c", "--count", type=int, help="number of images to generate")
+@arg("-X", "--clobber", help="overwrite existing files")
+@arg("-P", "--pony", help="add pony boilerplate")
 def a1111_client(
     output_file: str = "",
     prompt: str = "",
