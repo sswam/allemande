@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash
 # [prompt]
 # Processes fixes in the input
 
@@ -6,10 +6,7 @@ apply_fixes() {
 	local verbose= v=0	# verbosity level
 	local model= m=	# model
 
-	. opts
-
-	verbose=${verbose:-$v}
-	model=${model:-$m}
+	eval "$(ally)"
 
 	local prompt="${1:-}"
 	shift || true
@@ -26,7 +23,7 @@ apply_fixes() {
 		prompt+=" Refer to ${references[*]}."
 	fi
 
-	cat_named.py - "${references[@]}" | $proc -m="$m" "$prompt"
+	cat_named.py - "${references[@]}" | $proc -m="$model" "$prompt"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
