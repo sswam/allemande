@@ -25,7 +25,7 @@ def setup_history(history_file_=None):
     try:
         readline.read_history_file(history_file)
     except FileNotFoundError:
-        pass
+        open(history_file, 'a').close()
 
     readline.set_history_length(-1)
     readline.set_auto_history(True)
