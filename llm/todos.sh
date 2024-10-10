@@ -3,25 +3,25 @@
 # Processes TODOs, FIXMEs, and XXXs in the input.
 
 process_todos() {
-	local v=0	# verbosity level
-	local m=	# model
+	local verbose= v=0	# verbosity level
+	local model= m=	# model
 
-	. opts
+	eval "$(ally)"
 
-	local p="$*"
+	local prompt="$*"
 
 	local proc="proc"
-	if [ "$v" = 1 ]; then
+	if [ "$verbose" = 1 ]; then
 		proc="process"
 	fi
 
 	local prompt="Please work on the TODO / FIXME / XXX (only)"
-	if [ -n "$p" ]; then
-		prompt+=", $p"
+	if [ -n "$prompt" ]; then
+		prompt+=", $prompt"
 	fi
        	prompt+=". Don't strip comments. You can add comments with other suggestions."
 
-	$proc -m="$m" "$prompt"
+	$proc -m="$model" "$prompt"
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
