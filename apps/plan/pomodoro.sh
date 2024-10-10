@@ -110,8 +110,8 @@ fi
 
 bright=$(xdark)
 bright=${bright#* }
-if (( $(echo "$bright < 0.5" | bc -l) )); then
-	xdark 0.5
+if (( $(echo "$bright < 1" | bc -l) )); then
+	xdark 1
 fi
 
 if [ -z "$g" -a -z "$N" ]; then
