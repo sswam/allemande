@@ -12,7 +12,7 @@ messy-xterm() {
 		exit
 	fi
 	for file in "$@"; do
-		xterm-screen-run ci "$file" messy "$file"
+		xterm-screen-run ci "$file" exec messy "$file"
 	done
 }
 
