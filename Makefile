@@ -183,10 +183,10 @@ chrome-webchat-online:
 	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
 
 %.xt:
-	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"; sleep 0.1
+	xterm-screen-run "$(SCREEN)" "$*" nt-make "$*"; sleep 0.1
 
 %.xtc:
-	xterm-screen-connect.sh "$(SCREEN)" "$*"
+	xterm-screen-connect "$(SCREEN)" "$*"
 
 i3-layout:
 	if [ -n "$$DISPLAY" ] && which i3-msg; then i3-msg "append_layout $(ALLEMANDE_HOME)/i3/layout.json"; fi
