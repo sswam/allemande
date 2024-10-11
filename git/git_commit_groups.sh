@@ -57,7 +57,8 @@ git_group_files() {
 
 	${PAGER:-pager} "$llm_input_file"
 
-	echo "Token count and cost: $(llm count --in-cost -m="$model" <"$llm_input_file")"
+	echo "Token count and cost:"
+	llm count --in-cost -m="$model" <"$llm_input_file"
 
 	confirm "continue?"
 
