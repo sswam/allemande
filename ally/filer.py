@@ -8,6 +8,8 @@ from pathlib import Path
 
 from ally import logs
 
+__version__ = '0.1.3'
+
 
 def resource(path: str) -> Path:
     """Get a Path object relative to ALLEMANDE_HOME"""

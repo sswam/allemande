@@ -11,6 +11,8 @@ import tty
 import select
 from typing import Tuple, Optional
 
+__version__ = "0.1.3"
+
 
 history_file = None
 

@@ -11,6 +11,8 @@ from ally import logs
 
 meta = sys.modules[__name__]
 
+__version__ = "0.1.3"
+
 
 def get_script_name(canon: bool = True):
     """
@@ -95,3 +97,14 @@ def kwargs_parameter(func):
         if param.kind == inspect.Parameter.VAR_KEYWORD:
             return name
     return None
+
+
+def call_gently(func, *args, **kwargs):
+    """Call a function with *args and only the kwargs it can accept."""
+    if kwargs_parameter(func) is None:
+        valid_kwargs = {
+            name: value
+            for name, value in kwargs.items()
+            if name in inspect.signature(func).parameters
+        }
+    return func(*args, **valid_kwargs)

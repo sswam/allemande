@@ -2,6 +2,8 @@ import os
 import sys
 from enum import Enum, auto
 
+__version__ = "0.1.3"
+
 class redirect:
     class KEEP:
         pass

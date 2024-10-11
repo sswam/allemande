@@ -2,6 +2,8 @@ from typing import List, Union
 import os
 import re
 
+__version__ = "0.1.3"
+
 
 def read_lines(
     files: Union[str, List[str]], strip: bool = True, lower: bool = False
