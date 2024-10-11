@@ -50,6 +50,7 @@ logs() {
 		# Get nth most recent log file
 		log_file=$(
 			ls -tcr "$log_dir"/*.log 2>/dev/null |
+			grep -v opts-long |
 			tail -n "$number" | head -n 1
 		)
 	fi
