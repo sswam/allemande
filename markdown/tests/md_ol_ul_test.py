@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 
 # disable DeprecationWarning https://github.com/jupyter/jupyter_core/issues/398
@@ -83,8 +81,3 @@ def test_main_invalid_name():
         exec(open('md_ol_ul.py').read())
         mock_error.assert_called_once_with("Invalid script name, should contain 'ul' or 'ol' but not both.")
         mock_exit.assert_called_once_with(1)
-
-# Based on the provided information and the style of the test file for `hello_py.py`, here's a test file for `md_ol_ul.py`:
-
-# This test file, `test_md_ol_ul.py`, follows the structure and style of the provided `test_hello_py.py`. It includes tests for both the `ol` and `ul` functions, as well as tests for mixed input and the main script execution logic. The tests use parametrized inputs to cover various scenarios and mock the necessary components to test the main script execution.
-
