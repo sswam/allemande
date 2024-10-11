@@ -27,14 +27,14 @@ def process_line(line: str, script_name: str) -> str:
     # line = line.lstrip()
 
     # Remove 'local ' from start of line
-    line = re.sub(r'^local\s+', '', line)
+    line = re.sub(r'^\s*local\s+', '', line)
 
     # Replace literal '$0' in lines with the value of script_name
     line = line.replace('$0 ', f'{script_name} ')
 
-    if re.match(r'#\s?', line):
+    if re.match(r'\s*#\s?', line):
         # Remove '#' from the line
-        line = re.sub(r'^#\s?', '', line)
+        line = re.sub(r'^\s*#\s?', '', line)
     else:
         # Add dashes for -f or --foo and , for arrays
         line = re.sub(r'\b(\w)=\((.*?)\)', lambda m: f"-{m.group(1)},{process_array(m.group(2))}", line)
