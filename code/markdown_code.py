@@ -6,23 +6,22 @@ comment out non-code sections based on provided comment prefixes.
 The extracted code along with commented non-code sections is then printed.
 
 Features:
-- Extracts code blocks enclosed in triple backticks (```) from Markdown.
-- Optionally comments out non-code sections with specified start and end comments.
-- Can select specific code blocks to extract.
-- Outputs plain text as-is if no code blocks are found.
-- Implements shebang fix: moves #! line to the top if found in the first 3 lines.
+  - Extracts code blocks enclosed in triple backticks (```) from Markdown.
+  - Optionally comments out non-code sections with specified start and end comments.
+  - Can select specific code blocks to extract.
+  - Outputs plain text as-is if no code blocks are found.
+  - Implements shebang fix: moves #! line to the top if found in the first 3 lines.
 """
 
 import sys
 import re
 import logging
 from typing import TextIO
-
-from argh import arg
+import argparse
 
 from ally import main
 
-__version__ = "1.0.2"  # Bumped patch version
+__version__ = "1.0.4"
 
 logger = main.get_logger()
 
@@ -81,14 +80,9 @@ def handle_shebang(code: str) -> tuple[str, str | None]:
     return "\n".join(code_lines), shebang_line
 
 
-@arg("--no-shebang-fix", dest="shebang_fix", action="store_false")
-@arg("--no-strip", dest="strip", action="store_false")
-@arg("--no-first", dest="first", action="store_false")
-@arg("--start-comment", "-c", default=None)
-@arg("--end-comment", "-e", default=None)
 def extract_code_from_markdown(
-    *select,
-    input_source: TextIO = sys.stdin,
+    *select: int,
+    input_source: TextIO | str = sys.stdin,
     start_comment: str | None = None,
     end_comment: str | None = None,
     strict_code: bool = False,
@@ -109,10 +103,10 @@ def extract_code_from_markdown(
         logger.error(f"Error reading input: {e}")
         return ""
 
-    select = [int(s) for s in select] or None
+    select_list = list(select) or None
 
-    if first and not select:
-        select = [0]
+    if first and not select_list:
+        select_list = [0]
 
     # be clever with block comments
     if end_comment is None:
@@ -120,6 +114,8 @@ def extract_code_from_markdown(
             end_comment = "*/"
         elif start_comment == "<!--":
             end_comment = "-->"
+        else:
+            end_comment = ""
 
     output = []
     last_index = 0
@@ -151,7 +147,7 @@ def extract_code_from_markdown(
         if shebang_fix and count == 0 and not shebang_line:
             code, shebang_line = handle_shebang(code)
 
-        if select is None or count in select:
+        if select_list is None or count in select_list:
             process_code(code)
         elif first:
             kept_blocks.append(code)
@@ -181,5 +177,15 @@ def extract_code_from_markdown(
     return code_lines_to_string(lines, strip)
 
 
+def setup_args(arg):
+    """Set up the command-line arguments."""
+    arg("select", nargs="*", type=int, help="Select specific code blocks to extract")
+    arg("--start-comment", "-c", default=None, help="Comment prefix to add to non-code sections")
+    arg("--end-comment", "-e", default=None, help="Comment suffix to add to non-code sections")
+    arg("--no-shebang-fix", "-H", dest="shebang_fix", action="store_false", help="Shebang fix")
+    arg("--no-strip", "-S", dest="strip", action="store_false", help="Strip trailing whitespace")
+    arg("--no-first", "-F", dest="first", action="store_false", help="Extract first code block only")
+    arg("--strict-code", "-s", action="store_true", help="Output plain text if no code blocks are found")
+
 if __name__ == "__main__":
-    main.run(extract_code_from_markdown)
+    main.go(setup_args, extract_code_from_markdown)
