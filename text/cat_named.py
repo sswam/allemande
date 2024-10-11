@@ -27,9 +27,7 @@ logger = main.get_logger()
 def get_web_content(url: str) -> str:
     """Fetch content from a URL using web_text tool."""
     try:
-        result = subprocess.run(
-            ["web_text", url], capture_output=True, text=True, check=True
-        )
+        result = subprocess.run(["web_text", url], capture_output=True, text=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
         raise FileNotFoundError(f"Failed to fetch content from {url}: {e}")
@@ -42,19 +40,19 @@ def number_the_lines(text: str) -> str:
 
 
 def cat_named(
-    put: Callable[str, None],
-    sources: List[str],
-    header_prefix: str = "#File: ",
-    header_suffix: str = "\n\n",
-    footer: str = "\n\n",
+    put: Callable[[str], None],
+    *sources: str,
     number: int | None = None,
     number_suffix: str = ". ",
     path: bool = False,
     basename: bool = False,
-    stdin_name: str | None = "input",
     missing_ok: bool = False,
     number_lines: bool = False,
-) -> str:
+    header_prefix: str = "#File: ",
+    header_suffix: str = "\n\n",
+    footer: str = "\n\n",
+    stdin_name: str | None = "input",
+) -> None:
     """
     Concatenate and return file or URL contents with customizable headers.
     """
@@ -85,7 +83,11 @@ def cat_named(
                 content = get_web_content(source)
             else:
                 with main.TextInput(
-                    source, search=path, basename=basename, stdin_name=stdin_name
+                    source,
+                    search=path,
+                    basename=basename,
+                    stdin_name=stdin_name,
+                    warn_deprecated=False,
                 ) as istream:
                     content = istream.read()
                     display_name = istream.display
@@ -108,18 +110,19 @@ def cat_named(
 
 def setup_args(parser: argparse.ArgumentParser) -> None:
     """Set up the command-line arguments."""
+    add = parser.add_argument
     parser.description = "Concatenate and display file contents with customizable headers."
-    parser.add_argument("sources", nargs="*", help="Files or URLs to concatenate and display")
-    parser.add_argument("-n", "--number", type=int, help="Number the files starting from this value")
-    parser.add_argument("-p", "--path", action="store_true", help="Search for files in PATH")
-    parser.add_argument("-b", "--basename", action="store_true", help="Use only the basename of the file in the header")
-    parser.add_argument("-f", "--missing-ok", action="store_true", help="Skip missing files without error")
-    parser.add_argument("-N", "--number-lines", action="store_true", help="Number the lines in the output")
-    parser.add_argument("-P", "--header-prefix", help="Prefix for the header line")
-    parser.add_argument("-S", "--header-suffix", help="Suffix for the header line")
-    parser.add_argument("-F", "--footer", help="String to append after each file's content")
-    parser.add_argument("--stdin-name", help="Use this name for stdin")
-    parser.add_argument("--number-suffix", help="String to append after the number in the header")
+    add("sources", nargs="*", help="Files or URLs to concatenate and display")
+    add("-n", "--number", type=int, help="Number files starting from this value")
+    add("-p", "--path", action="store_true", help="Search for files in PATH")
+    add("-b", "--basename", action="store_true", help="Use the file basename in the header")
+    add("-f", "--missing-ok", action="store_true", help="Skip missing files without error")
+    add("-N", "--number-lines", action="store_true", help="Number the lines in the output")
+    add("-P", "--header-prefix", help="Prefix for the header line")
+    add("-S", "--header-suffix", help="Suffix for the header line")
+    add("-F", "--footer", help="String to append after each file's content")
+    add("--stdin-name", help="Use this name for stdin")
+    add("--number-suffix", help="String to append after the number in the header")
 
 
 if __name__ == "__main__":
