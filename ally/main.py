@@ -81,10 +81,13 @@ def get_log_level() -> str:
     Returns:
         str: The current log level.
     """
-    return logging.getLevelName(main.get_logger(1).handlers[0].level)
+    logger = main.get_logger(1)
+    if not logger.handlers:
+        return "WARNING"  # Default log level if no handlers
+    return logging.getLevelName(logger.handlers[0].level)
 
 
-def setup_logging(module_name: str, log_level: str | None = None):
+def setup_logging(module_name: str, log_level: str | None = None, test=False):
     """
     Set up logging configuration based on the specified log level.
     Also logs to a file at DEBUG level.
@@ -135,9 +138,9 @@ def setup_logging(module_name: str, log_level: str | None = None):
     logger.addHandler(ch)
     logger.addHandler(fh)
 
-    logger.debug(f"Starting {module_name}")
+#    logger.debug(f"Starting {module_name}")
 
-    if False:
+    if test:
         logger.debug("This is a debug message")
         logger.info("This is an info message")
         logger.warning("This is a warning message")
@@ -207,47 +210,81 @@ def setup_logging_args(module_name, parser):
     log_level_var_name = f"{module_name.upper()}_LOG_LEVEL"
     default_log_level = os.environ.get(log_level_var_name, "WARNING")
 
-    def try_add_argument(*args, **kwargs):
-        try:
-            parser.add_argument(*args, **kwargs)
-        except argparse.ArgumentError as e:
-            args = args[1:]
-            if not args[0]:
-                raise e
-            parser.add_argument(*args, **kwargs)
-
     try_add_argument(
+        parser,
         "-l",
         "--log-level",
         default=default_log_level,
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        metavar="LEVEL",
         help="Set the logging level {DEBUG,INFO,WARNING,ERROR,CRITICAL}",
     )
     try_add_argument(
+        parser,
         "-d",
         "--debug",
         action="store_const",
-        const=logging.DEBUG,
+        const="DEBUG",
         dest="log_level",
         help="Set logging level to DEBUG",
     )
     try_add_argument(
+        parser,
         "-q",
         "--quiet",
         action="store_const",
-        const=logging.ERROR,
+        const="ERROR",
         dest="log_level",
         help="Set logging level to ERROR",
     )
     try_add_argument(
+        parser,
         "-v",
         "--verbose",
         action="store_const",
-        const=logging.INFO,
+        const="INFO",
         dest="log_level",
         help="Set logging level to INFO",
     )
+
+
+def try_add_argument(parser, *args, **kwargs):
+    args = [arg for arg in args if arg not in parser._option_string_actions]
+    if not args:
+        raise argparse.ArgumentError(f"Argument already exists: {' '.join(args)}")
+    parser.add_argument(*args, **kwargs)
+
+
+def setup_io_args(parser: argparse.ArgumentParser, wants_input=True, wants_output=True):
+    """Set up command-line argument parsing for input/output options."""
+    if wants_input:
+        try_add_argument(
+            parser,
+            "-i",
+            "--in",
+            "--input",
+            dest="istream",
+            type=argparse.FileType("r"),
+            default=sys.stdin,
+            help="input file",
+        )
+    if wants_output:
+        try_add_argument(
+            parser,
+            "-o",
+            "--out",
+            "--output",
+            dest="ostream",
+            type=argparse.FileType("w"),
+            default=sys.stdout,
+            help="output file",
+        )
+        try_add_argument(
+            parser,
+            "-a",
+            "--append",
+            action="store_true",
+            help="append to output file",
+        )
 
 
 def _open_files(args: argparse.Namespace, parser: argparse.ArgumentParser):
@@ -308,16 +345,30 @@ def create_argh_compatible_wrapper(func: Callable) -> Callable:
     return wrapped_func
 
 
-def run(commands: Callable | list[Callable]) -> None:
+def deprecated(func_name: str, replacement: str):
+    logger = main.get_logger(1)
+    caller = main.get_module_name(3)
+    logger.warning(
+        "%s: %s is deprecated, use %s instead",
+        caller,
+        func_name,
+        replacement,
+    )
+
+
+def run(commands: Callable | list[Callable], deprecation_warning=True) -> None:
     """
     Set up logging, parse arguments, and run the specified command(s).
 
     Args:
-        commands (Union[Callable, List[Callable]]): The command function(s) to be executed.
+        commands (Callable|list[Callable]]): The command function(s) to be executed.
 
     Raises:
         Exception: Any exception that occurs during command execution.
     """
+    if deprecation_warning:
+        deprecated("main.run", "main.go")
+
     module_name = main.get_module_name(2)
 
     parser = argh.ArghParser(
@@ -361,9 +412,118 @@ def run(commands: Callable | list[Callable]) -> None:
         logger.debug("Full traceback:\n%s", tb)
 
 
+def has_args_parameter(func):
+    """Check if a function has an *args catch-all parameter."""
+    return any(
+        param.kind == inspect.Parameter.VAR_POSITIONAL
+        for param in inspect.signature(func).parameters.values()
+    )
+
+
+def has_kwargs_parameter(func):
+    """Check if a function has a **kwargs catch-all parameter."""
+    return any(
+        param.kind == inspect.Parameter.VAR_KEYWORD
+        for param in inspect.signature(func).parameters.values()
+    )
+
+
+def setup_arg_defaults(parser: argparse.ArgumentParser, main_function: callable) -> None:
+    """
+    Set default values in the ArgumentParser based on the main function's signature.
+    """
+    for param in inspect.signature(main_function).parameters.values():
+        if param.default != inspect.Parameter.empty:
+            # warn if a different default is already set
+            if param.name in parser._defaults:
+                logging.warning(
+                    f"Default value set in args for {param.name}: {parser._defaults[param.name]}"
+                )
+            parser.set_defaults(**{param.name: param.default})
+
+def go(
+    setup_args: Callable[[argparse.ArgumentParser], None],
+    main_function: Callable[..., Any],
+):
+    """
+    Main launcher function that sets up arguments, logging, and runs the main function.
+
+    :param setup_args: Function to set up command-line arguments
+    :param main: Main function to run
+    """
+
+    # check if main function has get/put or istream/ostream parameters
+    wants_get = "get" in inspect.signature(main_function).parameters
+    wants_put = "put" in inspect.signature(main_function).parameters
+    wants_istream = "istream" in inspect.signature(main_function).parameters
+    wants_ostream = "ostream" in inspect.signature(main_function).parameters
+    wants_input = wants_get or wants_istream
+    wants_output = wants_put or wants_ostream
+
+    # get the module name of the calling module
+    module_name = main.get_module_name(2)
+
+    # create an argument parser
+    parser = argparse.ArgumentParser()
+
+    # set up command-line arguments
+    setup_args(parser)
+    setup_arg_defaults(parser, main_function)
+    main.setup_io_args(parser, wants_input=wants_input, wants_output=wants_output)
+    main.setup_logging_args(module_name, parser)
+
+    # parse arguments
+    args = parser.parse_args()
+
+    # open files
+    main._open_files(args, parser)
+
+    # setup logging based on parsed arguments
+    setup_logging(module_name, args.log_level)
+
+    # setup get/put functions if needed
+    if wants_get and not hasattr(args, "get"):
+        args.get = setup_get(args.istream)
+    if wants_put and not hasattr(args, "put"):
+        args.put = setup_put(args.ostream)
+    kwargs = vars(args)
+    kwargs["args"] = kwargs["opts"] = args
+
+    optional = ["log_level", "args", "opts", "istream", "ostream", "append"]
+
+    # remove optional args the main_function doesn't accept
+    if not has_kwargs_parameter(main_function):
+        kwargs = {
+            k: v
+            for k, v in kwargs.items()
+            if k not in optional or k in inspect.signature(main_function).parameters
+        }
+
+    # extract positional args if the names match
+    positional_names = [
+        p.name
+        for p in inspect.signature(main_function).parameters.values()
+        if p.default == inspect.Parameter.empty
+    ]
+
+    # pass positional args in the order they are defined in the main function
+    positional_args = [
+        kwargs.pop(name) for name in positional_names if name in kwargs
+    ]
+
+    # run the main function, catching any exceptions
+    try:
+        main_function(*positional_args, **kwargs)
+    except Exception as e:
+        logger = main.get_logger(1)
+        logging.error(f"Error: {type(e).__name__} - {str(e)}")
+        logging.debug("Full traceback:", exc_info=True)
+        sys.exit(1)
+
+
 def io(
-    istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout
-) -> tuple[Callable, Callable]:
+    istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout, deprecation_warning=True
+) -> tuple[Callable[[], str], Callable[[str], None]]:
     """
     Create input and output functions for handling I/O operations.
 
@@ -374,31 +534,24 @@ def io(
     Returns:
         tuple[Callable, Callable]: A tuple of get and put functions.
     """
-    is_tty = tty.is_tty(istream) and tty.is_tty(ostream)
+    if deprecation_warning:
+        deprecated("main.io", "main.go")
 
-    def put(*args, end="\n", lines=False, chunks=False, rstrip=True, **kwargs) -> None:
-        """
-        Print to the output stream.
+    return main.setup_get(istream), main.setup_put(ostream)
 
-        Args:
-            *args: Positional arguments to print.
-            **kwargs: Keyword arguments for print function.
-        """
-        if lines or chunks:
-            for arg in args:
-                for line in arg:
-                    if rstrip:
-                        line = line.rstrip()
-                    elif not chunks:
-                        line = line.rstrip("\n")
-                    print(line, file=ostream, end=end, **kwargs)
-            return
-        if args and args[-1].endswith("\n"):
-            end = ""
-        print(*args, file=ostream, end=end, **kwargs)
+
+def setup_get(istream: TextIO) -> Callable[[], str]:
+    """Create a get function for reading input from a stream."""
+
+    is_tty = tty.is_tty(istream)
 
     def get(
-        prompt: str = ": ", all=False, lines=False, chunks=False, rstrip=True, placeholder=""
+        prompt: str = ": ",
+        all=False,
+        lines=False,
+        chunks=False,
+        rstrip=True,
+        placeholder="",
     ) -> str:
         """
         Get input from the input stream.
@@ -421,7 +574,7 @@ def io(
                 all_lines = [line.rstrip("\n") for line in all_lines]
             return all_lines
         if is_tty:
-            tty.setup_history()
+            tty.setup_readline()
             return tty.get(prompt, placeholder=placeholder)
         else:
             line = istream.readline()
@@ -429,7 +582,34 @@ def io(
                 return None
             return line.rstrip("\n")
 
-    return get, put
+    return get
+
+
+def setup_put(ostream: TextIO) -> Callable[[str], None]:
+    """Create a put function for writing output to a stream."""
+
+    def put(*args, end="\n", lines=False, chunks=False, rstrip=True, **kwargs) -> None:
+        """
+        Print to the output stream.
+
+        Args:
+            *args: Positional arguments to print.
+            **kwargs: Keyword arguments for print function.
+        """
+        if lines or chunks:
+            for arg in args:
+                for line in arg:
+                    if rstrip:
+                        line = line.rstrip()
+                    elif not chunks:
+                        line = line.rstrip("\n")
+                    print(line, file=ostream, end=end, **kwargs)
+            return
+        if args and args[-1].endswith("\n"):
+            end = ""
+        print(*args, file=ostream, end=end, **kwargs)
+
+    return put
 
 
 def resource(path: str) -> Path:
@@ -563,11 +743,13 @@ def is_binary(file_path):
     mime_type, _ = mimetypes.guess_type(file_path)
     return mime_type and not mime_type.startswith("text")
 
-def file_not_empty(file):
+
+def file_not_empty(filepath):
     try:
         return os.path.getsize(filepath) > 0
     except FileNotFoundError:
         return False
+
 
 def backup(file):
     backup_file = file + "~"
@@ -579,25 +761,29 @@ def backup(file):
     # Copy the file to create a backup, overwriting if it exists
     shutil.copy2(file, backup_file)
 
-def mount_point(path='.'):
+
+def mount_point(path="."):
     path = os.path.abspath(path)
     while not os.path.ismount(path):
         path = os.path.dirname(path)
     return path
 
+
 def get_rubbish_dir(first_arg):
-    home = os.path.expanduser('~')
+    home = os.path.expanduser("~")
     m = mount_point(first_arg)
-    if m == mount_point(home) or m == '/':
-        return os.path.join(home, '.rubbish')
+    if m == mount_point(home) or m == "/":
+        return os.path.join(home, ".rubbish")
     else:
-        return os.path.join(m, '.rubbish')
+        return os.path.join(m, ".rubbish")
+
 
 def create_rubbish_dir(rubbish_dir):
     old_umask = os.umask(0o077)
     os.makedirs(rubbish_dir, exist_ok=True)
     os.chmod(rubbish_dir, 0o700)
     os.umask(old_umask)
+
 
 def generate_unique_name(rubbish_dir, basename):
     while True:
@@ -607,14 +793,17 @@ def generate_unique_name(rubbish_dir, basename):
         if not os.path.exists(full_path):
             return full_path
 
+
 def move_to_rubbish(files, copy=False):
     if not files:
         return 0
 
+    logger = main.get_logger(1)
+
     if isinstance(files, str):
         files = [files]
 
-    rubbish_dir = os.environ.get('RUBBISH') or get_rubbish_dir(files[0])
+    rubbish_dir = os.environ.get("RUBBISH") or get_rubbish_dir(files[0])
     create_rubbish_dir(rubbish_dir)
 
     status = 0
@@ -625,18 +814,20 @@ def move_to_rubbish(files, copy=False):
         try:
             if copy:
                 shutil.copy2(file, dest, follow_symlinks=False)
-                print(f"copied '{file}' -> '{dest}'")
+                logger.info(f"copied '{file}' -> '{dest}'")
             else:
                 shutil.move(file, dest)
-                print(f"moved '{file}' -> '{dest}'")
+                logger.info(f"moved '{file}' -> '{dest}'")
         except Exception as e:
-            print(f"Error {'copying' if copy else 'moving'} {file}: {e}")
+            logger.error(f"Error {'copying' if copy else 'moving'} {file}: {e}")
             status = 1
 
     return status
 
+
 def copy_to_rubbish(files):
     return move_to_rubbish(files, copy=True)
+
 
 # TODO make this a standalone / library script
 # if __name__ == "__main__":

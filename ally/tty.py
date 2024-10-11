@@ -31,7 +31,7 @@ def is_tty(stream):
         return None
 
 
-def setup_history(history_file_path=None):
+def setup_readline(history_file_path=None, history=True):
     """
     Set up command history management.
 
@@ -43,10 +43,16 @@ def setup_history(history_file_path=None):
     if history_file:
         return
 
+    readline.parse_and_bind('"C-s": forward-search-history')
+
     if not history_file_path:
         history_file_path = Path.home() / f".{Path(sys.argv[0]).stem}_history"
 
     history_file = str(history_file_path)
+
+    if not history:
+        # still using history_file to avoid running this function again
+        return
 
     try:
         readline.read_history_file(history_file)
