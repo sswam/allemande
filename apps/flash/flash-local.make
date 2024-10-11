@@ -100,7 +100,7 @@ flashcards.tsv: flashcards.txt
 	< $< recs2tsv.pl | grep '\S' > $@
 
 correct.prompt:
-	ln -s `wich correct.prompt` .
+	ln -s `which-file correct.prompt` .
 
 prompt-transcript.txt: audio-clean.txt correct.prompt
 	CONTENT=`< $<` shell-template.sh correct.prompt > $@
@@ -132,7 +132,7 @@ lyrics-page.txt: lyrics.html
 	w3m -dump $< > $@ || true
 
 extract.prompt:
-	ln -s `wich extract.prompt`
+	ln -s `which-file extract.prompt`
 
 prompt-lyrics.txt: lyrics-page.txt extract.prompt
 	if [ ! -s $< ]; then \
