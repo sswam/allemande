@@ -7,6 +7,7 @@ slugify.py: Convert text into URL-friendly slugs.
 import re
 import sys
 from typing import Union, List, TextIO
+import argparse
 
 from ally import main
 from argh import arg
@@ -22,16 +23,6 @@ def process_stream(stream: TextIO):
         yield line.rstrip("\n")
 
 
-@arg("-u", "--underscore", help="use underscores", dest="hyphen", action="store_false")
-@arg(
-    "-B",
-    "--no-boolean",
-    help="do not replace & and |",
-    dest="boolean",
-    action="store_false",
-)
-@arg("-l", "--lower", help="convert to lowercase", action="store_true")
-@arg("-U", "--upper", help="convert to uppercase", action="store_true")
 def slugify(
     *text: str,
     istream: TextIO = sys.stdin,
@@ -76,11 +67,32 @@ def slugify(
         return
 
 
+def setup_args(parser: argparse.ArgumentParser) -> None:
+    """Set up the command-line arguments."""
+    parser.add_argument(
+        "text",
+        nargs="*",
+        help="text to be slugified",
+    )
+    parser.add_argument(
+        "-u", "--underscore", help="use underscores", action="store_true"
+    )
+    parser.add_argument(
+        "-B", "--no-boolean", help="do not replace & and |", action="store_true"
+    )
+    parser.add_argument(
+        "-l", "--lower", help="convert to lowercase", action="store_true"
+    )
+    parser.add_argument(
+        "-U", "--upper", help="convert to uppercase", action="store_true"
+    )
+
+
 if __name__ == "__main__":
-    main.run(slugify)
+    main.go(setup_args, slugify)
+
 
 """
-TODO: Add support for custom replacement characters
 FIXME: Improve handling of non-ASCII characters
-XXX: Consider adding option to preserve case of input text
+TODO: Consider adding option to preserve case of input text
 """
