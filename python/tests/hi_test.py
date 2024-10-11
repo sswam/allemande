@@ -58,7 +58,8 @@ def test_get_module_name():
 
 def test_get_script_name():
     with patch('sys.argv', ['test_script.py']):
-        assert main.get_script_name() == "test_script"
+        assert main.get_script_name() == "test-script"
+        assert main.get_script_name(canon=False) == "test_script.py"
 
 def test_get_logger():
     logger = main.get_logger()

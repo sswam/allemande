@@ -22,8 +22,8 @@ def test_get_module_name():
 
 
 def test_get_script_name():
-    assert ally.main.get_script_name() == Path(sys.argv[0]).stem
-    assert ally.main.get_script_name(ext=True) == Path(sys.argv[0]).name
+    assert ally.main.get_script_name() == Path(sys.argv[0]).stem.replace("_", "-")
+    assert ally.main.get_script_name(canon=False) == Path(sys.argv[0]).name
 
 
 def test_get_logger():
