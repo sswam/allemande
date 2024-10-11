@@ -13,7 +13,7 @@ for O in "${OPTS[@]}"; do
 done
 
 not_in_path() {
-	if [ -e "$F" -o -n "$CREATE" ]; then
+	if [ -e "$F" -o -n "${CREATE:-}" ]; then
 		echo "$F"
 	fi
 }
