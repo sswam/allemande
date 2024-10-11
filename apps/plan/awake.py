@@ -12,30 +12,31 @@ import time
 from datetime import datetime, timedelta
 from typing import TextIO
 import subprocess
-import humanize
 
-from argh import arg
-import sh  # type: ignore
+from ally import main, logs, Get, Put
 
-from ally import main  # type: ignore
+__version__ = "0.2.4"
 
-__version__ = "0.2.3"
-
-logger = main.get_logger()
+logger = logs.get_logger()
 
 
 def check_xprintidle():
     """Check if xprintidle is installed."""
     try:
-        sh.which("xprintidle")
-    except sh.ErrorReturnCode:
+        subprocess.run(["which", "xprintidle"], check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError:
         logger.error("Error: xprintidle is not installed. Please install it first.")
         sys.exit(1)
 
 
 def get_idle_time() -> timedelta:
     """Get the current idle time."""
-    return timedelta(milliseconds=int(sh.xprintidle()))
+    try:
+        result = subprocess.run(["xprintidle"], check=True, capture_output=True, text=True)
+        return timedelta(milliseconds=int(result.stdout.strip()))
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error running xprintidle: {e}")
+        sys.exit(1)
 
 
 class ActivityLog:
@@ -178,21 +179,9 @@ def send_notification(message: str):
         logger.error(f"Failed to send notification: {e}")
 
 
-@arg("--log-file", help="Path to the log file")
-@arg("--sleep-threshold", help="Sleep threshold in seconds", type=int)
-@arg("--no-warn", help="Disable awake warnings", action="store_true")
-@arg("--awake-warning", help="Awake warning threshold in seconds", type=int)
-@arg("--away-threshold", help="Away threshold in seconds", type=int)
-@arg("--check-interval", help="Check interval in seconds", type=int)
-@arg("--warn-interval", help="Awake warning interval in seconds", type=int)
-@arg(
-    "--test",
-    help="Run in test mode, with a very compressed time scale",
-    action="store_true",
-)
 def awake(
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
+    get: Get,
+    put: Put,
     log_file: str = "~/.awake.log",
     sleep_threshold: int = 6 * 3600,
     no_warn: bool = False,
@@ -250,7 +239,7 @@ def awake(
 
         now = datetime.now()
         idle_time = get_idle_time()
-        logger.debug(f"Now: {now}, Idle time: {humanize.naturaldelta(idle_time)}")
+        logger.debug(f"Now: {now}, Idle time: {format_duration(idle_time)}")
 
         status_time = now
 
@@ -289,12 +278,12 @@ def awake(
         work_duration = activity_log.total_active_since(awake_start)
 
         logger.info(
-            f"Slept for {humanize.naturaldelta(sleep_duration) if sleep_duration else 'unknown'}"
+            f"Slept for {format_duration(sleep_duration) if sleep_duration else 'unknown'}"
         )
         logger.info(
-            f"Awake for {humanize.naturaldelta(awake_duration) if awake_duration else 'unknown'}"
+            f"Awake for {format_duration(awake_duration) if awake_duration else 'unknown'}"
         )
-        logger.info(f"Working for {humanize.naturaldelta(work_duration)}")
+        logger.info(f"Working for {format_duration(work_duration)}")
         logger.info("")
 
         if no_warn or not awake_duration or awake_duration < awake_warning_td:
@@ -307,5 +296,17 @@ def awake(
             last_warning = now
 
 
+def setup_args(arg):
+    """Set up the command-line arguments."""
+    arg("--log-file", help="Path to the log file")
+    arg("--sleep-threshold", help="Sleep threshold in seconds", type=int)
+    arg("--no-warn", help="Disable awake warnings", action="store_true")
+    arg("--awake-warning", help="Awake warning threshold in seconds", type=int)
+    arg("--away-threshold", help="Away threshold in seconds", type=int)
+    arg("--check-interval", help="Check interval in seconds", type=int)
+    arg("--warn-interval", help="Awake warning interval in seconds", type=int)
+    arg("--test", help="Run in test mode, with a very compressed time scale", action="store_true")
+
+
 if __name__ == "__main__":
-    main.run(awake)
+    main.go(setup_args, awake)
