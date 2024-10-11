@@ -19,6 +19,7 @@ git_group_files() {
 	rundown_file=$(mktemp /tmp/git_group_files_rundown.XXXXXX)
 	bad_file=$(mktemp /tmp/git_group_files_bad.XXXXXX)
 	llm_input_file=$(mktemp /tmp/git_group_files_llm_input.XXXXXX)
+	commit_plan=$(mktemp /tmp/git_group_files_commit_plan.XXXXXX)
 
 	git-mod | rundown 2>"$bad_file" | tee "$rundown_file"
 
@@ -74,7 +75,13 @@ code/prog2.py	code/tests/prog2_test.py
 code/untested.py
 code/foo
 # code/foo is new and sounds like a junk file
-"
+" | tee "$commit_plan"
+
+	$EDITOR "$commit_plan"
+
+	confirm "commit using xci?"
+
+	< "$commit_plan" grep -v -e '^\s*$' -e '^#' | xci
 
 	rm -f "$rundown_file" "$bad_file" "$llm_input_file"
 }
