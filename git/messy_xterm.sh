@@ -8,12 +8,11 @@ messy-xterm() {
 	eval "$(ally)"
 
 	if [ "$#" = 0 ]; then
-		git-mod | xa confirm -t messy-xterm
+		xargs-tsv messy-xterm
+#		git-mod | xa confirm -t messy-xterm
 		exit
 	fi
-	for file in "$@"; do
-		xterm-screen-run ci "$file" exec messy "$file"
-	done
+	xterm-screen-run ci "$*" exec messy "$@"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
