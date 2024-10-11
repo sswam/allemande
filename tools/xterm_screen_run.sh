@@ -11,7 +11,7 @@ xterm-screen-run() {
 	shift 2
 
 	screen-run "$screen" "$window" "$@" </dev/tty
-	if [ -n "$DISPLAY" ]; then
+	if [ -n "${DISPLAY:-}" ]; then
 		xterm -e screen -x "$screen" -p "$window" & disown
 	fi
 }
