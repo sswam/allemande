@@ -5,9 +5,10 @@
 
 create() {
 	local model= m=   # LLM model
-	local style= s=1  # refer to hello.<ext> for style
+	local style= s=1  # refer to hello-<ext> for style
 	local edit= e=1   # edit
 	local use_ai= a=1 # use AI, can turn off for testing with -a=0
+	local quiet= q=0  # use only the user prompt
 
 	eval "$(ally)"
 
@@ -28,21 +29,25 @@ create() {
 
 	local ext=${base##*.}
 	if [ "$ext" == "$base" ]; then
-		ext="sh"
+		ext=""
 	fi
 
 	# style reference and prompt for -s option
-	style_ref="hello_$ext.$ext"
-	if (("$style")) && [ "$(wich "$style_ref")" ]; then
-		refs+=("$style_ref")
-		prompt="in the style of \`$style_ref\`, $prompt"
+	if [ -n "$ext" ]; then
+		style_ref="hello-$ext"
+		if (("$style")) && [ "$(which-file "$style_ref")" ]; then
+			refs+=("$style_ref")
+			prompt="in the style of \`$style_ref\`, $prompt"
+		fi
 	fi
 
 	mkdir -p "$dir"
 
-	prompt="Please write \`$base\`, $prompt"
+	if [ "$quiet" = 0 ]; then
+		prompt="Please write \`$base\`, $prompt"
+	fi
 
-	local input=$(v cat_named.py -p -b "${refs[@]}")
+	local input=$(v cat-named -p -b "${refs[@]}")
 
 	if [ -z "$input" ]; then
 		input=":)"
@@ -57,13 +62,13 @@ create() {
 	# Process input and save result
 	printf "%s\n" -- "$input" | process -m="$model" "$prompt" |
 		if [ -n "$comment_char" ]; then
-			markdown_code.py -c "$comment_char"
+			markdown-code -c "$comment_char"
 		else
 			cat
 		fi >"$ofile"
 
 	# make the file executable if appropriate
-	cx-shebang "$ofile"
+	chmod-x-shebang "$ofile"
 
 	# Edit the file if requested
 	if (("$edit")); then

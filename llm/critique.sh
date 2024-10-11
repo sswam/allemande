@@ -25,7 +25,7 @@ It's most important to find errors, other suggestions are welcome too.
 $prompt"
 	main_file="${1:--}"
 	shift || true
-	cat_named.py -b -p "$main_file" "$@" |
+	cat-named -b -p "$main_file" "$@" |
 	(process -m="$m" "$prompt"; echo) |
 	tee -a -- "$main_file.crit"
 }

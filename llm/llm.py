@@ -33,7 +33,7 @@ import tab
 import tiktoken
 from slugify import slugify
 
-from ally import main
+from ally import main, tty
 from ally.lazy import lazy
 import tsv2txt
 
@@ -778,43 +778,42 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 		rv.append(model["cost_in"] * n_tokens / 1e6)
 	if out_cost:
 		rv.append(model["cost_out"] * n_tokens / 1e6)
-	if in_cost or out_cost and "cost_req" in model:
+	if (in_cost or out_cost) and "cost_req" in model:
 		rv.append(model["cost_req"] / 1e3)
 	return tuple(rv)
 
 
 @arg("-A", "--no-aliases", dest="aliases", action="store_false", help="show aliases")
 def models(detail=False, aliases=True):
-	""" List the available models. """
-	output = io.StringIO()
+    """ List the available models. """
+    with io.StringIO() as buffer:
+        for name, model in MODELS.items():
+            print(name, end="", file=buffer)
+            if aliases:
+                print("\t" + "\t".join(model.get("aliases", [])), end="", file=buffer)
+            print(file=buffer)
 
-	with io.StringIO() as buffer:
-		for name, model in MODELS.items():
-			print(name, end="", file=buffer)
-			if aliases:
-				for a in model.get("aliases", []):
-					print(f"\t{a}", end="", file=buffer)
-			print(file=buffer)
-			if not detail:
-				continue
-			for k, v in model.items():
-				if k == "description":
-					v = textwrap.fill(v, width=80)
-					v = re.sub(r'(.)^', r'\1\t \t', v, flags=re.MULTILINE|re.DOTALL)
-				if k == 'aliases':
-					v = ', '.join(v)
-				print(f"\t{k}:\t{v}", file=buffer)
-			print(file=buffer)
+            if detail:
+                for k, v in model.items():
+                    if k == "description":
+                        v = textwrap.fill(v, width=80)
+                        v = "\t \t".join(v.splitlines())
+                    elif k == 'aliases':
+                        v = ', '.join(v)
+                    print(f"\t{k}:\t{v}", file=buffer)
+                print(file=buffer)
 
-		buffer.seek(0)
-		tsv2txt.tsv2txt(istream=buffer, ostream=output, multi_table=True)
-
-	print(output.getvalue(), end="")
+        if tty.is_tty(sys.stdout):
+            buffer.seek(0)
+            with io.StringIO() as output:
+                tsv2txt.tsv2txt(istream=buffer, ostream=output, multi_table=True)
+                print(output.getvalue(), end="")
+        else:
+            print(buffer.getvalue(), end="")
 
 
 if __name__ == "__main__":
-    logger.info("hello")
-    main.run([chat, query, process, count, models])
+    main.run([chat, query, process, count, models], deprecation_warning=False)
 else:
     # Load all modules in the background after a short delay
     lazy(0.1)

@@ -36,7 +36,7 @@ if [ "$f" = 1 ]; then
 elif [ "$m" = 1 ]; then
 	llm_last "$@" | xa chrome
 elif [ "$c" != 0 ]; then
-	llm_last "$@" | xa catpg | markdown_code.py -c "$c"
+	llm_last "$@" | xa catpg | markdown-code -c "$c"
 else
 	llm_last "$@" | xa catpg
 fi | if [ "$e" = 1 ]; then

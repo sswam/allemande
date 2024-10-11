@@ -16,17 +16,17 @@ proc() {
 		opts="--empty-ok"
 	fi
 
-	process -m="$model" $opts "$prompt" "Please reply as concise as possible, with no boilerplate \
-	or unnecessary explanation. Do not abbreviate text unrelated to the request. \
+	process -m="$model" $opts "$prompt Please reply as concise as possible, with no boilerplate \
+	or explanation. Do not abbreviate text unrelated to the request. \
 	If editing, do not make edits that are not requested (e.g. removing comments \
 	or blank lines). If the input has code but does not include code quoting with \
 	\`\`\`, the output should not include \`\`\` either. If writing code, be \
-	concise but clear, not obscure.
+	concise but clear, not obscure. No intro or concluding text. Thanks\!
 	$*" | rstrip
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-	process "$@"
+	proc "$@"
 fi
 
 # version: 1.0.1

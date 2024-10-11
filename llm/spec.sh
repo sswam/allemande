@@ -43,8 +43,8 @@ spec() {
 	esac
 
 	# style reference and prompt for -s option
-	style="hello_$ext.$ext"
-	if [ "$s" = 1 -a -n "$(wich "$style")" ]; then
+	style="hello-$ext"
+	if [ "$s" = 1 -a -n "$(which-file "$style")" ]; then
 		refs+=("$style")
 		prompt="In the style of \`$style\`, $prompt"
 	fi
@@ -56,7 +56,7 @@ spec() {
 		prompt="$prompt Include sections for ${sections[*]}."
 	fi
 
-	local input=$(cat_named.py -p -b "${refs[@]}")
+	local input=$(cat-named -p -b "${refs[@]}")
 
 	if [ -z "$input" ]; then
 		input=":)"

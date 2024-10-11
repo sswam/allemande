@@ -23,7 +23,7 @@ apply_fixes() {
 		prompt+=" Refer to ${references[*]}."
 	fi
 
-	cat_named.py - "${references[@]}" | $proc -m="$model" "$prompt"
+	cat-named - "${references[@]}" | $proc -m="$model" "$prompt"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then

@@ -5,7 +5,7 @@
 
 improve() {
 	local model= m=	# model
-	local style= s=0	# refer to hello.<ext> for style
+	local style= s=0	# refer to hello-<ext> for style
 	local prompt= p=	# extra prompt
 	local edit= e=1	# open an editor after the AI does it's work
 	local use_ai= a=1	# use AI, can turn off for testing with -a=0
@@ -22,6 +22,7 @@ improve() {
 	local numline= n=1	# number lines
 	local strict= X=1	# only do what is requested
 	local ed= E=0	# provide changes as an ed script
+	local diff= d=0	# provide changes as a unified diff
 
 	eval "$(ally)"
 
@@ -103,7 +104,7 @@ improve() {
 
 	# remove empty results file
 	if [ -e "$results_file" ] && [ ! -s "$results_file" ]; then
-		rm "$results_file"
+		rm -f "$results_file"
 	fi
 
 	if [ -e "$results_file" ]; then
@@ -123,7 +124,7 @@ improve() {
 	elif [ "$tests_file" ]; then
 		echo >&2 "Checks passed"
 		checks_prompt="Our checks passed."
-		rm "$results_file"
+		rm -f "$results_file"
 		test=""
 	elif (( test )); then
 		echo >&2 "No tests found"
@@ -136,7 +137,7 @@ improve() {
 	fi
 
 	# style reference and prompt for - option
-	style_ref="hello_$ext.$ext"
+	style_ref="hello-$ext"
 	if (( style )) && [ "$(which "$style_ref")" ]; then
 		echo >&2 "Using style reference: $style_ref"
 		refs+=("$style_ref")
@@ -163,7 +164,7 @@ improve() {
 	# TODO "Add a header line \`#File: filename\` before each file's code."
 	prompt="Please edit \`$base\`$tests_name_clause. $prompt.
 	$strict_part
-	You may comment on other issues you see.
+	You may comment on other issues you see, or ideas you have.
 	$checks_prompt.
 	Bump the patch version if present."
 
@@ -181,6 +182,21 @@ improve() {
 
 	if (( numline )); then
 		prompt="$prompt, Lines are numbered for your convenience, but please do not number lines in your output."
+	fi
+
+	if (( diff )); then
+		prompt="$prompt
+	Please provide the changes as a unified diff patch. Use the following format:
+	\`\`\`diff
+	--- filename
+	+++ filename
+	@@ -start,count +start,count @@
+	 context line
+	-removed line
+	+added line
+	 context line
+	\`\`\`
+	Include the \`\`\` around the diff. Try to include minimal context (about 3 lines) around the changes."
 	fi
 
 	if (( ed )); then
@@ -237,7 +253,7 @@ improve() {
 	# Process input and save result
 	printf "%s\n" "$input" | v process -m="$model" "$prompt" |
 		if [ -n "$comment_char" ]; then
-			markdown_code.py -c "$comment_char"
+			markdown-code -c "$comment_char"
 		else
 			cat
 		fi >"$file~"
@@ -250,7 +266,7 @@ improve() {
 	fi
 
 	# make the file executable if appropriate
-	cx-shebang "$file"
+	chmod-x-shebang "$file"
 
 	# Compare original and improved versions
 	if (( edit )); then
@@ -262,7 +278,7 @@ improve() {
 	fi
 
 	# make the file executable if appropriate
-	cx-shebang "$file"
+	chmod-x-shebang "$file"
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
 	confirm=""
@@ -274,7 +290,7 @@ improve() {
 	# Use swapfiles with -c option to preserve hardlinks
 	$confirm swapfiles -c "$target_file" "$output_file" ||
 		# maybe the new version is an improved tests file
-		if [ $confirm ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ]; then
+		if [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ]; then
 			$confirm swapfiles -c "$tests_file" "$output_file"
 		fi
 
@@ -285,3 +301,5 @@ improve() {
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	improve "$@"
 fi
+
+# version: 3.0.0

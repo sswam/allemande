@@ -43,7 +43,7 @@ content
 	process -m="$model" "$prompt" |
 	split-files - | tee /dev/stderr |
 	grep '^> ' | cut -c3- |
-	xa cx-shebang
+	xa chmod-x-shebang
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then

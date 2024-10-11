@@ -18,8 +18,8 @@ alla() {
 
 	# Prepare file type style reference
 	# shellcheck disable=SC2154
-	style_ref="hello_$ext.$ext"
-	if ((style)) && [ "$(wich "$style_ref")" ]; then
+	style_ref="hello-$ext"
+	if ((style)) && [ "$(which-file "$style_ref")" ]; then
 		refs+=("$style_ref")
 	fi
 
@@ -42,7 +42,7 @@ alla() {
 	fi
 
 	local input
-	input=$(cat_named.py -p -b - "${refs[@]}")
+	input=$(cat-named -p -b - "${refs[@]}")
 	[ -z "$input" ] && input=":)"
 
 	printf "%s\n" -- "$input" | process -m="$model" "$prompt2"
