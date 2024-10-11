@@ -187,7 +187,7 @@ resolve_symlinks=0
 file0=${files[0]}
 
 if [ -n "$file0" -a ! -e "$file0" ]; then
-    file0=$(wich "$file0")
+    file0=$(which-file "$file0")
 fi
 
 # Find the repo containing the first file
@@ -241,7 +241,7 @@ for i in "${!files[@]}"; do
         if [ -n "$(git status --porcelain -- "${files[$i]}")" ]; then
             continue
         fi
-        files[$i]=$(wich "${files[$i]}")
+        files[$i]=$(which-file "${files[$i]}")
         if [ "$resolve_symlinks" -eq 1 ]; then
             files[$i]=$(realpath "${files[$i]}")
         fi
@@ -324,7 +324,7 @@ run-git-diff() {
 #             if [ -n "$difftext" ]; then
 #                 printf "%s\n" "$difftext"
 #             elif [ -e "$file" ] && [ -n "$(git ls-files --exclude-standard --others --directory --no-empty-directory --error-unmatch "$file" 2>/dev/null)" ]; then
-#                 cat_named.py "$file"
+#                 cat-named "$file"
 #             fi
 #         done
 #     fi
