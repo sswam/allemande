@@ -8,19 +8,17 @@ import sys
 import logging
 import getpass
 import textwrap
-from typing import (
-    TextIO,
-)  # Note to AI: don't import List, Dict, Optional or or Tuple, they are obsolete
+import argparse
+from typing import TextIO, Callable
 from random import random
 
-from argh import arg
 import sh
 
 from ally import main
 from ally.lazy import lazy
 import llm
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = main.get_logger()
 
@@ -35,12 +33,12 @@ def get_sentiment_analyzer(nltk):
     return nltk.sentiment.SentimentIntensityAnalyzer()
 
 
-lazy("nltk", sia=get_sentiment_analyzer)
+lazy("nltk", sia=get_sentiment_analyzer)    # don't make --help slow!
 
 
 def analyze_sentiment(text: str) -> str:
     """Analyze the sentiment of the given text."""
-    sentiment = sia.polarity_scores(text)
+    sentiment = sia.polarity_scores(text)  # type: ignore
     if sentiment["compound"] > 0:
         return "Positive"
     if sentiment["compound"] < 0:
@@ -77,17 +75,9 @@ def reply_sentiment(feeling: str) -> str:
     return "I see. Life has its ups and downs, I hope things improve for you soon!"
 
 
-@arg("--name", help="name to be greeted")
-@arg("--ai", help="use AI to respond")
-@arg(
-    "--model",
-    choices=["emmy", "claude", "dav", "clia"],
-    metavar="MODEL",
-    help="specify which AI model {emma,claude,dav,clia}",
-)
 def hello(
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
+    get: Callable[[], str],
+    put: Callable[[str], None],
     name: str = "",
     ai: bool = False,
     model: str | None = None,
@@ -98,10 +88,6 @@ def hello(
     """
     if not name:
         name = getpass.getuser().title() if random() < 0.5 else "world"
-
-    get, put = main.io(
-        istream, ostream
-    )  # TODO do this in main and call with get / put functions
 
     put(f"Hello, {name}!")
     put("How are you feeling today?")
@@ -118,7 +104,7 @@ def hello(
         response = reply_fortune()
     elif ai:
         logger.info(f"using AI model: {model}")
-        response = reply_ai(name, feeling, model)
+        response = reply_ai(name, feeling, model or "")
     else:
         logger.info("using sentiment analysis")
         response = reply_sentiment(feeling)
@@ -126,11 +112,24 @@ def hello(
     put(response)
 
 
+def setup_args(parser: argparse.ArgumentParser) -> None:
+    """Set up the command-line arguments."""
+    parser.description = "Say hello and ask how the user is feeling."
+    parser.add_argument("-n", "--name", help="name to be greeted")
+    parser.add_argument("--ai", action="store_true", help="use AI to respond")
+    parser.add_argument("-m", "--model", help="specify which AI model e.g. claude, emmy, clia, dav")
+
+
 if __name__ == "__main__":
-    main.run(hello)
+    main.go(setup_args, hello)
 
 """
 Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
+
+We can use as module like this from the CLI or as a Python module. We no longer
+use argh or ally.main.run, we use ally.main.go with a setup_args function.
+The main.go call adds logging and IO options, and sets them up.
+The main function, `hello` in this case, likely has the same name as the module.
 
 Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
 Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
@@ -156,8 +155,6 @@ Our scripts default to stdio.
 
 In modern Python, we can use types like list[str] rather than List[str], same for dict, set, etc.
 
-There is magic in ally.main to open files and print exceptions nicely.
-
 Our scripts can also be used as modules, and vice-versa.
     from hello import hello
 
@@ -168,8 +165,4 @@ None is different from 0. Don't "simplify" `if foo is None: foo = default` to `f
 The original coder was probably not an idiot. Be careful when "fixing" things.
 We use at least Python 3.10, normally 3.12 or the latest stable version. Please use new features as needed.
 For example, use modern type hints such as list[str]|None rather than Optional[List[str]]
-
-We use @arg from argh for argument parsing, via main.run(). Don't use argparse or anything else.
-We should not need a separate 'CLI-only' function to wrap the main library
-function. Just run the main function with argh. This might be tricky, but please try to make it work.
 """

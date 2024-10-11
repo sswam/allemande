@@ -7,13 +7,12 @@ import io
 import pytest
 from unittest.mock import patch, MagicMock
 
-import hello_py as subject
-subject_main = subject.hello
+from hello_py import hello, analyze_sentiment, reply_sentiment, reply_ai
 
 def test_analyze_sentiment():
-    assert subject.analyze_sentiment("I'm happy") == 'Positive'
-    assert subject.analyze_sentiment("I'm sad") == 'Negative'
-    assert subject.analyze_sentiment("I'm so-so") == 'Neutral'
+    assert analyze_sentiment("I'm happy") == 'Positive'
+    assert analyze_sentiment("I'm sad") == 'Negative'
+    assert analyze_sentiment("I'm so-so") == 'Neutral'
 
 @pytest.mark.parametrize("feeling, expected_sentiment", [
     ("I'm feeling great!", "I'm glad to hear that! I hope your day continues to be great!"),
@@ -21,12 +20,12 @@ def test_analyze_sentiment():
     ("I'm so-so baloney sandwich.", "I see. Life has its ups and downs, I hope things improve for you soon!"),
 ])
 def test_reply_sentiment(feeling, expected_sentiment):
-    assert subject.reply_sentiment(feeling) == expected_sentiment
+    assert reply_sentiment(feeling) == expected_sentiment
 
 @patch('llm.query')
 def test_reply_ai(mock_query):
     mock_query.return_value = "I'm glad you're feeling good, John!"
-    response = subject.reply_ai("John", "I'm feeling good", "clia")
+    response = reply_ai("John", "I'm feeling good", "clia")
     assert "I'm glad you're feeling good, John!" in response
 
 @pytest.mark.parametrize("feeling, ai, expected_response", [
@@ -39,8 +38,14 @@ def test_hello(feeling, ai, expected_response):
     input_stream = io.StringIO(feeling + "\n")
     output_stream = io.StringIO()
 
+    def mock_get():
+        return input_stream.readline().strip()
+
+    def mock_put(text):
+        output_stream.write(text + "\n")
+
     with patch('llm.query', return_value="I'm glad you're feeling great!"):
-        subject_main(istream=input_stream, ostream=output_stream, name="Test", ai=ai)
+        hello(get=mock_get, put=mock_put, name="Test", ai=ai)
 
     output = output_stream.getvalue()
     assert "Hello, Test!" in output
@@ -52,7 +57,13 @@ def test_hello_fortune_words(fortune_word):
     input_stream = io.StringIO(f"{fortune_word}\n")
     output_stream = io.StringIO()
 
-    subject_main(istream=input_stream, ostream=output_stream, name="Test")
+    def mock_get():
+        return input_stream.readline().strip()
+
+    def mock_put(text):
+        output_stream.write(text + "\n")
+
+    hello(get=mock_get, put=mock_put, name="Test")
 
     output = output_stream.getvalue()
     assert "Hello, Test!" in output
@@ -60,7 +71,6 @@ def test_hello_fortune_words(fortune_word):
 
     print(output)
 
-    # can't test fortune, and can't seem to mock it either
     assert "I hope you have a great day!" not in output
     assert "I hope you feel better soon." not in output
     assert "Life has its ups and downs, hope yours swings up!" not in output
