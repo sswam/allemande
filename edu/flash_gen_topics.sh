@@ -58,7 +58,7 @@ END
 
 	local input=""
 	if [ ${#refs[@]} -gt 0 ]; then
-		input=$(cat_named.py -p -b "${refs[@]}")
+		input=$(cat-named -p -b "${refs[@]}")
 	fi
 
 	if [ -z "$input" ]; then
