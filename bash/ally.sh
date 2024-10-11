@@ -36,8 +36,6 @@ else
 
     . opts
 
-    eval "$(opts-long "$0")"
-
     # strict mode
     old_opts=$(set +o)
     set -e -u -o pipefail
