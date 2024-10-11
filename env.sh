@@ -27,6 +27,8 @@ ALLEMANDE_AUDIO_LOCK="/var/lock/allemande-audio.lock"
 ALLEMANDE_LLM_DEFAULT="claude"
 ALLEMANDE_LLM_DEFAULT_SMALL="4m"
 
+ALLY_DISABLE_DEPRECATION_WARNINGS="0"
+
 ALLEMANDE_VENV=
 if [ -e "$ALLEMANDE_HOME/venv" ]; then
 	ALLEMANDE_VENV="$ALLEMANDE_HOME/venv"
@@ -40,7 +42,7 @@ for dir in python text www chat audio anthropic google llm scrape tools files tt
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
-PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME
+PERL5LIB=${PERL5LIB:+$PERL5LIB}:$ALLEMANDE_HOME
 
 for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
@@ -55,7 +57,7 @@ PATHS=""
 
 #	adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time c markdown x11; do
 
-for dir in canon alias; do
+for dir in ally canon alias; do
 	PATHS=$PATHS:$ALLEMANDE_HOME/$dir
 done
 
