@@ -7,6 +7,8 @@
 # example:
 # lecho "hello" "world" | ki wc
 
+eval "$(ally)"
+
 file=$(mktemp)
 trap "rm -f $file" EXIT
 cat > "$file"

@@ -3,7 +3,7 @@
 # [files...]
 # Make files executable if they start with a valid shebang
 
-cx-shebang() {
+chmod-x-shebang() {
 	local verbose= v=	# print more information
 	local quiet= q=		# print less information
 
@@ -78,5 +78,5 @@ cx-shebang() {
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-	cx-shebang "$@"
+	chmod-x-shebang "$@"
 fi

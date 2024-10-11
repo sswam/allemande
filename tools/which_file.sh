@@ -1,7 +1,9 @@
-#!/bin/bash
-# wich: find the full path of a command or file in PATH
+#!/usr/bin/env bash
+# [file ...]
+# find the full path of a command or file in PATH
 
-. opts
+eval "$(ally)"
+
 ALL=
 for O in "${OPTS[@]}"; do
 	case O in

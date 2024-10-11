@@ -1,7 +1,12 @@
 #!/bin/bash
+# [file ...]
+# cat files on path
+
+eval "$(ally)"
+
 X=0
 for A; do
-	W=`wich $A`
+	W=$(which-file "$A")
 	if [ -n "$W" ]; then
 		cat "$W"
 	else

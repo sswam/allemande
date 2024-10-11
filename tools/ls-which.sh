@@ -1,6 +1,9 @@
 #!/bin/bash
+# [file ...]
+# ls -l files on path
+eval "$(ally)"
 for A; do
-	W=`wich $A`
+	W=$(which-file "$A")
 	if [ -n "$W" ]; then
 		ls --color=auto -l "$W"
 	else
