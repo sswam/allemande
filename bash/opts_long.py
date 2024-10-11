@@ -7,19 +7,17 @@ This module generates code to support long and short options based on the script
 import os
 import sys
 import re
-from typing import TextIO
-import mimetypes
-
-from argh import arg
+import argparse
+from typing import TextIO, Callable
 
 from ally import main
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 logger = main.get_logger()
 
 
-def process_line(line: str) -> str:
+def process_line(line: str) -> str | None:
     """Process a single line of the script."""
     # Remove indent and 'local ' from start of line
     line = line.lstrip()
@@ -37,17 +35,14 @@ def process_line(line: str) -> str:
     return None
 
 
-@arg("script", help="Path to the script file to process")
 def opts_long(
     script: str,
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
+    get: Callable[[], str],
+    put: Callable[[str], None],
 ) -> None:
     """
     Generate code to support long and short options based on the script's content.
     """
-    get, put = main.io(istream, ostream)
-
     try:
         with open(script, "r") as istream:
             for line in istream:
@@ -64,10 +59,17 @@ def opts_long(
                 # Process and output the line
                 processed_line = process_line(line)
                 if processed_line:
-                    put(processed_line + "\n")
+                    put(processed_line)
     except (FileNotFoundError, IsADirectoryError, UnicodeDecodeError) as e:
         logger.info(f"File not found: {script}")
+        raise
+
+
+def setup_args(parser: argparse.ArgumentParser) -> None:
+    """Set up the command-line arguments."""
+    parser.description = "Generate code to support long and short options based on the script's content."
+    parser.add_argument("script", help="Path to the script file to process")
 
 
 if __name__ == "__main__":
-    main.run(opts_long)
+    main.go(setup_args, opts_long)

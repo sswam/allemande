@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # opts: a simple option parser for bash
 # no dependencies, no magic, no bullshit
 # )c( Sam Watkins 2009 - 2024
@@ -29,8 +27,10 @@
 # To pass any array safely:
 #     tool.sh -foo,"${array[*]@Q}"
 
+. need-bash
+
 usage() {
-	if [ "$1" == "-h" ]; then
+	if [ "${1:-}" == "-h" ]; then
 		# help: output usage to stdout
 		exit=0
 	else
@@ -44,7 +44,7 @@ usage() {
 	fi
 
 	# read the script itself to output usage:
-	opts_help.py "$0"
+	opts-help "$0"
 
 	exit $exit
 }
@@ -99,6 +99,7 @@ while [ $# -gt 0 ]; do
 		;;
 	--)
 		shift
+		break
 		;;
 	-h|-help|--help)
 		usage -h
@@ -169,4 +170,4 @@ if [ ${#OPTS_UNKNOWN[@]} -gt 0 ]; then
 	usage "error: unknown options: ${OPTS_UNKNOWN[*]}"
 fi
 
-eval "$(opts_long.py "$0")"
+eval "$(opts-long "$0")"

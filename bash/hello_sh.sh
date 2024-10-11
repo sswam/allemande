@@ -99,9 +99,6 @@ fi
 # If sensible and simple to do so, write tools that can process several files in one invocation.  # XXX not sure
 # Zero is holy! It is not an error to pass zero files to process. Just naturally do nothing in that case.
 #
-# Do not assume weird tool names are typos. I use many custom tools, including:
-# - `wich`, a better `which` that also finds non-execuable shell libs XXX maybe I should rename it
-#
 # Our functions might be used from other scripts, so on error return 1, do not exit 1.
 # We assume the client script is using `-e`, so `return 1` normally becomes `exit 1`.
 #
@@ -111,3 +108,7 @@ fi
 # The use_ai option is for this demo only, most scripts are either written to use AI or not.
 #
 # Please use ally-style options handling. Longs options must be declared first, then short, on the same line.
+#
+# Only use echo for fixed text. Echo "$foo" is unreliable due to its options; use printf with a format string.
+#
+# Don't use [ test ] || action, it's unsafe with -e, which we are using. Use if [ test]; then action; fi

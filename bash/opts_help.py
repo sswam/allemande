@@ -8,13 +8,15 @@ import os
 import sys
 import re
 import textwrap
-from typing import TextIO
+import argparse
+from typing import TextIO, Callable
+from pathlib import Path
 
 import sh
 
 from ally import main
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = main.get_logger()
 
@@ -22,7 +24,7 @@ logger = main.get_logger()
 def process_line(line: str, script_name: str) -> str:
     """Process a single line of the script."""
     # Remove indent
-    line = line.lstrip()
+    # line = line.lstrip()
 
     # Remove 'local ' from start of line
     line = re.sub(r'^local\s+', '', line)
@@ -30,9 +32,9 @@ def process_line(line: str, script_name: str) -> str:
     # Replace literal '$0' in lines with the value of script_name
     line = line.replace('$0 ', f'{script_name} ')
 
-    if re.match(r'#\s*', line):
+    if re.match(r'#\s?', line):
         # Remove '#' from the line
-        line = re.sub(r'^#\s*', '', line)
+        line = re.sub(r'^#\s?', '', line)
     else:
         # Add dashes for -f or --foo and , for arrays
         line = re.sub(r'\b(\w)=\((.*?)\)', lambda m: f"-{m.group(1)},{process_array(m.group(2))}", line)
@@ -48,7 +50,6 @@ def process_line(line: str, script_name: str) -> str:
         if not re.search(r'\t.*?\t', line):
             line = re.sub(r'\t', r'\t\t', line)
 
-
     return line
 
 
@@ -59,13 +60,26 @@ def process_array(array_content: str) -> str:
     return array_content.replace(' ', ',')
 
 
-def opts_help(script, istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout) -> None:
+def opts_help(
+    get: Callable[[], str],
+    put: Callable[[str], None],
+    script: str,
+) -> None:
     """
     Generate a help message for command-line options based on the script's content.
     """
-    _get, put = main.io(istream, ostream)
-
-    script_name = os.path.basename(script)
+    script = Path(script)
+    # while it's a symlink
+    detect_loop = 0
+    while script.is_symlink() and detect_loop < 10:
+        if script.parent.name == "canon":
+            break
+        target = script.readlink()
+        script = script.parent / target
+        detect_loop += 1
+    if detect_loop == 10:
+        logger.error("Too many symlinks")
+    script_name = script.name
 
     lines = []
     lines.append(f"{script_name} ")
@@ -84,7 +98,7 @@ def opts_help(script, istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout)
                 continue
 
             # Skip unindented function declaration
-            if re.match(r'^[a-zA-Z0-9_]+\(\)\s*\{', line):
+            if re.match(r'^[a-zA-Z0-9_-]+\(\)\s*\{', line):
                 continue
 
             is_blank = len(line.strip()) == 0
@@ -126,12 +140,18 @@ def opts_help(script, istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout)
 
     try:
         # TODO use tsv2txt module directly
-        text = sh.tsv2txt("-m", _in=text)
+        text = sh.Command("tsv2txt")("-m", _in=text)
     except sh.CommandNotFound:
-        pass  # tsv2txt not available, keep lines unchanged
+        logger.warning("tsv2txt not available, keeping lines unchanged")
 
     put(text)
 
 
+def setup_args(parser: argparse.ArgumentParser) -> None:
+    """Set up the command-line arguments."""
+    parser.description = "Generate a help message for command-line options based on the script's content."
+    parser.add_argument("script", help="Path to the script file")
+
+
 if __name__ == "__main__":
-    main.run(opts_help)
+    main.go(setup_args, opts_help)
