@@ -8,7 +8,7 @@ Here are a few suggestions and observations:
 
 2. Variable naming: While most variables are clear, `m` and `s` could be more descriptive (e.g., `model` and `short_critique`).
 
-3. Portability: The script uses `process` and `cat_named.py`, which may not be available on all systems. Consider adding checks for these dependencies or providing installation instructions.
+3. Portability: The script uses `process` and `cat-named`, which may not be available on all systems. Consider adding checks for these dependencies or providing installation instructions.
 
 4. Documentation: Adding a brief comment at the top explaining the script's purpose and usage would be helpful for users.
 
