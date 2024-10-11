@@ -27,9 +27,9 @@ linty() {
 
 run() {
 	if (( verbose )); then
-		v "$@"
+		v+ "$@"
 	else
-		v quiet "$@" 2>/dev/null
+		quiet v+ "$@" 2>/dev/null
 	fi
 }
 
