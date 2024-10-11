@@ -6,11 +6,9 @@ import io
 from unittest.mock import patch, MagicMock
 import logging
 
-# Add the parent directory to sys.path to import hi and main
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import hi as subject
 
-import hi
-from ally import main
+subject_name = subject.__name__
 
 @pytest.fixture
 def mock_environ():
@@ -19,52 +17,44 @@ def mock_environ():
 
 def test_hi_function():
     output = io.StringIO()
-    hi.hi(ostream=output, name="Test")
+    subject.hi(put=output.write, name="Test")
     assert output.getvalue().strip() == "Hello, Test"
 
 def test_hi_default_name():
     output = io.StringIO()
-    hi.hi(ostream=output)
+    subject.hi(put=output.write)
     assert output.getvalue().strip() == "Hello, World"
 
 def test_command_line_invocation():
-    result = subprocess.run(["python", "hi.py"], capture_output=True, text=True)
+    result = subprocess.run(["python", f"{subject_name}.py"], capture_output=True, text=True)
     assert result.stdout.strip() == "Hello, World"
 
 def test_command_line_with_name():
-    result = subprocess.run(["python", "hi.py", "--name", "CLI"], capture_output=True, text=True)
+    result = subprocess.run(["python", f"{subject_name}.py", "--name", "CLI"], capture_output=True, text=True)
     assert result.stdout.strip() == "Hello, CLI"
 
 def test_module_invocation():
     fake_out = io.StringIO()
-    hi.hi(ostream=fake_out)
+    subject.hi(put=fake_out.write)
     assert fake_out.getvalue().strip() == "Hello, World"
 
 @pytest.mark.parametrize("log_level", ["DEBUG", "INFO", "WARNING"])
 def test_log_level_option(log_level):
-    result = subprocess.run(["python", "hi.py", "--log-level", log_level], capture_output=True, text=True)
+    result = subprocess.run(["python", f"{subject_name}.py", "--log-level", log_level], capture_output=True, text=True)
     assert log_level in result.stderr
 
 def test_log_level_option_quiet():
-    result = subprocess.run(["python", "hi.py", "-q"], capture_output=True, text=True)
-    assert result.stderr == "This is an ERROR message\nThis is a CRITICAL message\n"
+    result = subprocess.run(["python", f"{subject_name}.py", "-q"], capture_output=True, text=True)
+    assert result.stderr.strip() == "This is an ERROR message\nThis is a CRITICAL message"
 
 def test_log_level_option_verbose():
-    result = subprocess.run(["python", "hi.py", "-v"], capture_output=True, text=True)
+    result = subprocess.run(["python", f"{subject_name}.py", "-v"], capture_output=True, text=True)
     assert "INFO" in result.stderr
 
-def test_get_module_name():
-    assert main.get_module_name() == "hi_test"
-
-def test_get_script_name():
-    with patch('sys.argv', ['test_script.py']):
-        assert main.get_script_name() == "test-script"
-        assert main.get_script_name(canon=False) == "test_script.py"
-
 def test_get_logger():
-    logger = main.get_logger()
+    logger = logs.get_logger()
     assert isinstance(logger, logging.Logger)
-    assert logger.name == "hi_test"
+    assert logger.name == f"{subject_name}"
 
 def get_last_n_lines(file_path, n):
     with open(file_path, 'rb') as f:
@@ -85,11 +75,11 @@ def get_last_n_lines(file_path, n):
         return content.decode('utf-8').splitlines()[-n:]
 
 def test_log_file_creation():
-    log_file = os.path.expanduser("~/.logs/hi.log")
+    log_file = os.path.expanduser(f"~/.logs/{subject_name}.log")
     if os.path.exists(log_file):
         os.remove(log_file)
 
-    process = subprocess.Popen(["python", "hi.py", "--log-level", "DEBUG"])
+    process = subprocess.Popen(["python", f"{subject_name}.py", "--log-level", "DEBUG"])
     pid = process.pid
     process.wait()
 
@@ -99,4 +89,4 @@ def test_log_file_creation():
 
     # Check that the log entry is one of the last entries based on PID
     relevant_lines = [line for line in log_lines if f"PID:{pid}" in line]
-    assert any("DEBUG     hi  This is a DEBUG message" in line for line in relevant_lines)
+    assert any(f"DEBUG     {subject_name}  This is a DEBUG message" in line for line in relevant_lines)

@@ -1,18 +1,17 @@
 import os
-
-# disable DeprecationWarning https://github.com/jupyter/jupyter_core/issues/398
-os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
-
 import io
 import pytest
 from unittest.mock import patch, MagicMock
+from typing import Any
 
-from hello_py import hello, analyze_sentiment, reply_sentiment, reply_ai
+import hello_py as subject  # type: ignore
+
+subject_name = subject.__name__
 
 def test_analyze_sentiment():
-    assert analyze_sentiment("I'm happy") == 'Positive'
-    assert analyze_sentiment("I'm sad") == 'Negative'
-    assert analyze_sentiment("I'm so-so") == 'Neutral'
+    assert subject.analyze_sentiment("I'm happy") == 'Positive'
+    assert subject.analyze_sentiment("I'm sad") == 'Negative'
+    assert subject.analyze_sentiment("I'm so-so") == 'Neutral'
 
 @pytest.mark.parametrize("feeling, expected_sentiment", [
     ("I'm feeling great!", "I'm glad to hear that! I hope your day continues to be great!"),
@@ -20,12 +19,12 @@ def test_analyze_sentiment():
     ("I'm so-so baloney sandwich.", "I see. Life has its ups and downs, I hope things improve for you soon!"),
 ])
 def test_reply_sentiment(feeling, expected_sentiment):
-    assert reply_sentiment(feeling) == expected_sentiment
+    assert subject.reply_sentiment(feeling) == expected_sentiment
 
 @patch('llm.query')
 def test_reply_ai(mock_query):
     mock_query.return_value = "I'm glad you're feeling good, John!"
-    response = reply_ai("John", "I'm feeling good", "clia")
+    response = subject.reply_ai("John", "I'm feeling good", "clia")
     assert "I'm glad you're feeling good, John!" in response
 
 @pytest.mark.parametrize("feeling, ai, expected_response", [
@@ -45,7 +44,7 @@ def test_hello(feeling, ai, expected_response):
         output_stream.write(text + "\n")
 
     with patch('llm.query', return_value="I'm glad you're feeling great!"):
-        hello(get=mock_get, put=mock_put, name="Test", ai=ai)
+        subject.hello(get=mock_get, put=mock_put, name="Test", ai=ai)
 
     output = output_stream.getvalue()
     assert "Hello, Test!" in output
@@ -63,7 +62,7 @@ def test_hello_fortune_words(fortune_word):
     def mock_put(text):
         output_stream.write(text + "\n")
 
-    hello(get=mock_get, put=mock_put, name="Test")
+    subject.hello(get=mock_get, put=mock_put, name="Test")
 
     output = output_stream.getvalue()
     assert "Hello, Test!" in output
@@ -74,6 +73,27 @@ def test_hello_fortune_words(fortune_word):
     assert "I hope you have a great day!" not in output
     assert "I hope you feel better soon." not in output
     assert "Life has its ups and downs, hope yours swings up!" not in output
+
+@patch(f'{subject_name}.reply_fortune')
+def test_hello_with_fortune(mock_reply_fortune):
+    mock_reply_fortune.return_value = "A fortune cookie message"
+
+    input_stream = io.StringIO("lucky\n")
+    output_stream = io.StringIO()
+
+    def mock_get():
+        return input_stream.readline().strip()
+
+    def mock_put(text):
+        output_stream.write(text + "\n")
+
+    subject.hello(get=mock_get, put=mock_put, name="Test")
+
+    mock_reply_fortune.assert_called_once()
+    output = output_stream.getvalue()
+    assert "Hello, Test!" in output
+    assert "How are you feeling today?" in output
+    assert "A fortune cookie message" in output
 
 
 """

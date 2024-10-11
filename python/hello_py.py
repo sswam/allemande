@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
 
 """
-This module says hello, and asks the user how they are.
+This module says hello, and asks the user how they are feeling.
 """
 
 import sys
 import logging
 import getpass
 import textwrap
-import argparse
 from typing import TextIO, Callable
 from random import random
 
 import sh
 
-from ally import main
-from ally.lazy import lazy
+from ally import main, logs, lazy, Get, Put
 import llm
 
 __version__ = "0.1.2"
 
-logger = main.get_logger()
+logger = logs.get_logger()
 
 
 def get_sentiment_analyzer(nltk):
@@ -76,8 +74,8 @@ def reply_sentiment(feeling: str) -> str:
 
 
 def hello(
-    get: Callable[[], str],
-    put: Callable[[str], None],
+    get: Get,
+    put: Put,
     name: str = "",
     ai: bool = False,
     model: str | None = None,
@@ -112,12 +110,11 @@ def hello(
     put(response)
 
 
-def setup_args(parser: argparse.ArgumentParser) -> None:
+def setup_args(arg):
     """Set up the command-line arguments."""
-    parser.description = "Say hello and ask how the user is feeling."
-    parser.add_argument("-n", "--name", help="name to be greeted")
-    parser.add_argument("--ai", action="store_true", help="use AI to respond")
-    parser.add_argument("-m", "--model", help="specify which AI model e.g. claude, emmy, clia, dav")
+    arg("-n", "--name", help="name to be greeted")
+    arg("--ai", action="store_true", help="use AI to respond")
+    arg("-m", "--model", help="specify which AI model e.g. claude, emmy, clia, dav")
 
 
 if __name__ == "__main__":
