@@ -6,9 +6,9 @@ bindsym $mod+q exec --no-startup-id speaker
 bindsym $mod+a exec firefox -P sam https://chat.allemande.ai
 
 # Helposaurus
-bindsym $mod+i exec bash -c 'xterm-screen-run.sh "helposaurus" "default-$RANDOM" helposaurus'
-bindsym $mod+j exec bash -c 'xterm-screen-run.sh "helposaurus" "sentence-$RANDOM" helposaurus -1'
-bindsym $mod+k exec bash -c 'xterm-screen-run.sh "helposaurus" "brief-$RANDOM" helposaurus -b'
+bindsym $mod+i exec bash -c 'xterm-screen-run "helposaurus" "default-$RANDOM" helposaurus'
+bindsym $mod+j exec bash -c 'xterm-screen-run "helposaurus" "sentence-$RANDOM" helposaurus -1'
+bindsym $mod+k exec bash -c 'xterm-screen-run "helposaurus" "brief-$RANDOM" helposaurus -b'
 
 
 # workspaces

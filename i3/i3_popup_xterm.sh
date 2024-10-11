@@ -5,32 +5,27 @@
 XTERM_OPEN_SLEEP=0.2
 
 i3_popup_xterm() {
-	local t="xterm"  # terminal emulator to use
-	local g="80x24"  # geometry of the terminal window
-	local F=0        # flag to disable floating mode
-	local H=0        # flag to hold the terminal open
-	local T=         # title to set for the terminal window
-	local w=0	 # wait for the terminal to close
+	local term= t="xterm"  # terminal emulator to use
+	local geom= g="80x24"  # geometry of the terminal window
+	local float= F=0        # flag to disable floating mode
+	local hold= H=0        # flag to hold the terminal open
+	local title= T=         # title to set for the terminal window
+	local wait= w=0	 # wait for the terminal to close
 
-	. opts
-
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
+	eval "$(ally)"
 
 	local cmd=("$@")
 
 	# Build the command array
-	local run_cmd=("$t" "-geometry" "$g")
+	local run_cmd=("$term" "-geometry" "$geom")
 
 	if [[ ${#cmd[@]} -gt 0 ]]; then
 		# hold?
-		if [ "$H" -eq 1 ]; then
+		if [ "$hold" -eq 1 ]; then
 			run_cmd+=("-hold")
 		fi
-		if [ -n "$T" ]; then
-			run_cmd+=("-T")
-			run_cmd+=("$T")
+		if [ -n "$title" ]; then
+			run_cmd+=("-T" "$title")
 		fi
 		run_cmd+=("-e")
 		run_cmd+=("${cmd[@]}")
@@ -41,13 +36,13 @@ i3_popup_xterm() {
 	"${run_cmd[@]}" &
 
 	# If floating mode is enabled, use i3-msg to make the window floating
-	if [[ $F -eq 0 ]]; then
+	if [[ "$float" -eq 0 ]]; then
 		sleep "$XTERM_OPEN_SLEEP"
 		i3-msg "floating enable" >/dev/null
 	fi
 
 	# Wait for the terminal to close
-	if [ "$w" -eq 1 ]; then
+	if [ "$wait" -eq 1 ]; then
 		wait
 	fi
 
