@@ -17,7 +17,7 @@ import re
 import argparse
 from typing import List, Callable
 
-from ally import main
+from ally import main, old
 
 __version__ = "1.0.2"
 
@@ -82,7 +82,7 @@ def cat_named(
             if is_url:
                 content = get_web_content(source)
             else:
-                with main.TextInput(
+                with old.TextInput(
                     source,
                     search=path,
                     basename=basename,
