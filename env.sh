@@ -34,7 +34,7 @@ if [ -e "$ALLEMANDE_HOME/venv" ]; then
 fi
 
 PYTHON=$(which python3)
-PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME
+PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:}$ALLEMANDE_HOME
 
 for dir in python text www chat audio anthropic google llm scrape tools files tty data; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir

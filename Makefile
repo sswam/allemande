@@ -153,7 +153,7 @@ auth:
 	uvicorn main:app --app-dir auth --reload --timeout-graceful-shutdown 5 --port 8002 # --reload-include *.csv
 
 watch:
-	awatch.py -r -A -x bb -p $(ROOMS) >> $(WATCH_LOG)
+	awatch -r -A -x bb -p $(ROOMS) >> $(WATCH_LOG)
 
 bb2html:
 	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
@@ -183,10 +183,10 @@ chrome-webchat-online:
 	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
 
 %.xt:
-	xterm-screen-run.sh "$(SCREEN)" "$*" nt-make "$*"; sleep 0.1
+	xterm-screen-run "$(SCREEN)" "$*" nt-make "$*"; sleep 0.1
 
 %.xtc:
-	xterm-screen-connect.sh "$(SCREEN)" "$*"
+	xterm-screen-connect "$(SCREEN)" "$*"
 
 i3-layout:
 	if [ -n "$$DISPLAY" ] && which i3-msg; then i3-msg "append_layout $(ALLEMANDE_HOME)/i3/layout.json"; fi
@@ -212,8 +212,9 @@ rotate:
 
 canon:
 	$(ALLEMANDE_HOME)/files/canon_links.py $(ALLEMANDE_PATH)
-	ln -sf $(ALLEMANDE_PATH)/alias/ulb /usr/local/bin
-	cd canon ; ulb v confirm uniqo lecho
+	ln -sf $(ALLEMANDE_HOME)/canon/usr-local-bin /usr/local/bin
+	cd canon ; usr-local-bin confirm uniqo lecho i3-popup-xterm note waywo ally opts opts-long opts-help
+	cd alias ; usr-local-bin v
 
 fresh-old:: 
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
