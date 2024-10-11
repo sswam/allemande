@@ -31,7 +31,7 @@ combine() {
     local input_files=("$@")
     local prompt="Combine the following inputs to create a comprehensive and coherent result. $PROMPT"
 
-    cat_named.py -p -b "${input_files[@]}" | process_with_ai - "$prompt"
+    cat-named -p -b "${input_files[@]}" | process_with_ai - "$prompt"
 }
 
 # Command: improve
@@ -55,7 +55,7 @@ Start with a paragraph of friendly and supportive praise if possible.
 It's most important to find errors, other suggestions are welcome too.
 $PROMPT"
 
-    cat_named.py -b -p "$main_file" "$@" |
+    cat-named -b -p "$main_file" "$@" |
         process_with_ai - "$critique_prompt" |
         tee -a -- "$main_file.crit"
 }
@@ -103,7 +103,7 @@ This script combines the functionality of the provided inputs into a single, coh
 
 5. Reusability: Common functions like `process_with_ai` are defined to reduce code duplication.
 
-6. Use of external tools: The script leverages external tools like `ally` for argument parsing and `cat_named.py` for file handling.
+6. Use of external tools: The script leverages external tools like `ally` for argument parsing and `cat-named` for file handling.
 
 7. Documentation: A brief usage guide is included at the top of the script.
 

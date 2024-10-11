@@ -49,7 +49,7 @@ def prepare_prompt(ofile: str, prompt: str, refs: list[str]) -> str:
 
 def process_input(refs: list[str]) -> str:
     """Process input from stdin and reference files."""
-    # TODO: Implement cat_named.py functionality
+    # TODO: Implement cat-named functionality
     input_data = sys.stdin.read()
     for ref in refs:
         with open(ref, 'r') as f:
@@ -61,7 +61,7 @@ def process_input(refs: list[str]) -> str:
 @arg("refs", nargs="*", help="Reference files")
 @arg("--prompt", "-p", help="Extra prompt")
 @arg("--model", "-m", help="LLM model")
-@arg("--style", "-s", default=0, help="Also refer to hello_$ext.$ext for style")
+@arg("--style", "-s", default=0, help="Also refer to hello-$ext for style")
 @arg("--edit", "-e", default=1, help="Edit the output file")
 def alla(
     ofile: str,
@@ -85,6 +85,9 @@ def alla(
     ext = ofile.split('.')[-1] if '.' in ofile else "sh"
     comment_char = get_comment_style(ext)
 
+    # This is broken
+    raise NotImplementedError("This is broken")
+
     refs = list(refs)
     if style and os.path.exists(f"hello_{ext}.{ext}"):
         refs.append(f"hello_{ext}.{ext}")
@@ -96,7 +99,7 @@ def alla(
 
     with open(ofile, 'w') as f:
         if comment_char and ext != "md":
-            # TODO: Implement markdown_code.py functionality
+            # TODO: Implement markdown-code functionality
             f.write(f"{comment_char} {response}\n")
         else:
             f.write(response)
