@@ -20,7 +20,7 @@ tests() {
 	local refs=("$@")
 
 	if [ ! -e "$program" ]; then
-		program=$(readlink -f "$(wich "$program")")
+		program=$(readlink -f "$(which-file "$program")")
 	fi
 
 	local dir=$(dirname "$program")
@@ -59,7 +59,7 @@ tests() {
 	# Test style reference and prompt for -s option
 	if [ "$s" = 1 ]; then
 		local hello="hello_$ext.$tests_ext"
-		hello=$(wich "$hello")
+		hello=$(which-file "$hello")
 		if [ -n "$hello" ]; then
 			dir=$(dirname "$hello")
 			example="$dir/tests/hello_${ext}_test.$tests_ext"
@@ -70,14 +70,14 @@ tests() {
 
 	prompt="Please write \`$tests_base\` to test \`$base\`, $prompt"
 
-	local input=$(cat_named.py -p -b "$program" "${refs[@]}")
+	local input=$(cat-named -p -b "$program" "${refs[@]}")
 
 	if [ -z "$input" ]; then
 		input=":)"
 	fi
 
 	# Process input and save result
-	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown_code.py -c '#' > "$tests_path"
+	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown-code -c '#' > "$tests_path"
 
 	if [ "$executable" = 1 ]; then
 		chmod +x "$tests_path"

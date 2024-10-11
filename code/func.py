@@ -85,8 +85,8 @@ def format_item(item, types: bool, params: bool, decorators: bool, docstring: bo
 @arg("-n", "--names", help="Show only names", action="store_true", dest="show_names")
 @arg("-t", "--types", help="Show types (def vs class, etc)", action="store_true", dest="show_types")
 @arg("-p", "--params", help="Include full formal parameters", action="store_true", dest="show_params")
-@arg("-d", "--decorators", help="Include decorators", action="store_true", dest="show_decorators")
-@arg("-s", "--docstrings", help="Include docstrings", action="store_true", dest="show_docstrings")
+@arg("-d", "--docstrings", help="Include docstrings", action="store_true", dest="show_docstrings")
+@arg("-D", "--decorators", help="Include decorators", action="store_true", dest="show_decorators")
 @arg("-l", "--list", help="Alias for -a -n (list all names)", action="store_true", dest="list_mode")
 @arg("--language", help="Language of the source file")
 def process_source(

@@ -1,8 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # [program ...]
 # Test a program with its tests
-
-. each
 
 testy() {
 	local verbose= v=0	# verbose mode, output results when all tests pass

@@ -2,7 +2,7 @@ import pytest
 from markdown_code import extract_code_from_markdown
 import textwrap
 
-""" tests for markdown_code.py """
+""" tests for markdown-code """
 
 __version__ = "1.0.4"
 

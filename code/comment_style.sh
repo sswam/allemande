@@ -76,8 +76,7 @@ comment_style() {
 		block_end=""
 		;;
 	*)
-		echo >&2 "Unknown file type: $ext, defaulting to #."
-		comment_char="#"
+		comment_char=""
 		block_start=""
 		block_end=""
 		;;
