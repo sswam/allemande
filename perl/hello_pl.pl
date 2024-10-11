@@ -30,7 +30,7 @@ GetOptions(
     'help|h'  => \$opts{help},
 ) or pod2usage(2);
 
-pod2usage( -verbose => 2 ) if $opts{help};
+pod2usage(-exitval => 0, -output => \*STDOUT, -noperldoc => 1, -verbose => 2) if $opts{help};
 
 # Set up logging
 setup_logging('hello_pl');
