@@ -14,12 +14,11 @@ from pathlib import Path
 import subprocess
 import argparse
 import logging
-import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 from bs4 import BeautifulSoup
 
-import ally
+from ally import main
 
 __version__ = "1.0.10"
 
@@ -32,118 +31,140 @@ def process_text(command, text):
     return subprocess.run(command, input=text, text=True, stdout=subprocess.PIPE).stdout
 
 
-def process_docx(output_file: str, input_file: str, command: List[str], punct: bool, pool=None) -> None:
+def process_docx(
+    output_file: str, input_file: str, command: List[str], punct: bool, executor=None
+) -> None:
     """Process DOCX files."""
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
 
         # Unzip the DOCX file
-        with zipfile.ZipFile(input_file, 'r') as zip_ref:
+        with zipfile.ZipFile(input_file, "r") as zip_ref:
             zip_ref.extractall(temp_path)
 
         # Extract text from document.xml
-        xml_file = temp_path / 'word' / 'document.xml'
+        xml_file = temp_path / "word" / "document.xml"
         tree = ET.parse(xml_file)
         root = tree.getroot()
 
         # Prepare the jobs
-        jobs = [(elem, elem.text) for elem in root.iter('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t')
-                if elem.text and (punct or re.search(r'\w+', elem.text, re.UNICODE))]
+        jobs = [
+            (elem, elem.text)
+            for elem in root.iter("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t")
+            if elem.text and (punct or re.search(r"\w+", elem.text, re.UNICODE))
+        ]
 
-        # Process in parallel or sequentially
-        if pool:
-            with ProcessPoolExecutor(max_workers=pool) as executor:
-                future_to_elem = {executor.submit(process_text, command, text): (elem, text) for elem, text in jobs}
-                for future in as_completed(future_to_elem):
-                    elem, original_text = future_to_elem[future]
-                    try:
-                        elem.text = future.result()
-                        logger.debug(f"Processed: Original: {original_text}, New: {elem.text}")
-                    except Exception as exc:
-                        logger.error(f'Generated an exception: {exc}')
-        else:
-            for elem, text in jobs:
-                elem.text = process_text(command, text)
-                logger.debug(f"Processed: Original: {text}, New: {elem.text}")
+        # Process in parallel
+        future_to_elem = {
+            executor.submit(process_text, command, text): (elem, text) for elem, text in jobs
+        }
+        for future in as_completed(future_to_elem):
+            elem, original_text = future_to_elem[future]
+            try:
+                elem.text = future.result()
+                logger.debug(f"Processed: Original: {original_text}, New: {elem.text}")
+            except Exception as exc:
+                logger.error(f"Generated an exception: {exc}")
 
         logger.info(f"Total matching elements processed: {len(jobs)}")
 
         # Save the modified XML
-        tree.write(xml_file, encoding='UTF-8', xml_declaration=True)
+        tree.write(xml_file, encoding="UTF-8", xml_declaration=True)
 
         # Zip the modified files back into a DOCX
-        with zipfile.ZipFile(output_file, 'w') as zip_ref:
-            for file in temp_path.rglob('*'):
+        with zipfile.ZipFile(output_file, "w") as zip_ref:
+            for file in temp_path.rglob("*"):
                 zip_ref.write(file, file.relative_to(temp_path))
 
 
-def process_html(output_file: str, input_file: str, command: List[str], punct: bool, pool=None) -> None:
+def process_html(
+    output_file: str, input_file: str, command: List[str], punct: bool, executor=None
+) -> None:
     """Process HTML files."""
-    with open(input_file, 'r', encoding='utf-8') as f:
-        soup = BeautifulSoup(f, 'html.parser')
+    with open(input_file, "r", encoding="utf-8") as f:
+        soup = BeautifulSoup(f, "html.parser")
 
     text_nodes = soup.find_all(text=True)
 
     def process_text(text):
-        if punct or re.search(r'\w+', text, re.UNICODE):
+        if punct or re.search(r"\w+", text, re.UNICODE):
             if pool:
-                return pool.apply(subprocess.run, (command, ), {'input': text, 'text': True, 'stdout': subprocess.PIPE}).stdout
+                return pool.apply(
+                    subprocess.run,
+                    (command,),
+                    {"input": text, "text": True, "stdout": subprocess.PIPE},
+                ).stdout
             else:
                 return subprocess.run(command, input=text, text=True, stdout=subprocess.PIPE).stdout
         return text
 
     for node in text_nodes:
-        if node.parent.name not in ['script', 'style']:
+        if node.parent.name not in ["script", "style"]:
             new_text = process_text(node.string)
             node.string = new_text
 
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write(str(soup))
 
     logger.info(f"Processing complete. Output saved to {output_file}")
 
 
-def process_odt(output_file: str, input_file: str, command: List[str], punct: bool, pool=None) -> None:
+def process_odt(
+    output_file: str, input_file: str, command: List[str], punct: bool, executor=None
+) -> None:
     """Process ODT files."""
     with tempfile.TemporaryDirectory() as temp_dir:
         # Unzip the ODT file
-        with zipfile.ZipFile(input_file, 'r') as zip_ref:
+        with zipfile.ZipFile(input_file, "r") as zip_ref:
             zip_ref.extractall(temp_dir)
 
         # Extract text from content.xml
-        xml_file = Path(temp_dir) / 'content.xml'
+        xml_file = Path(temp_dir) / "content.xml"
         tree = ET.parse(xml_file)
         root = tree.getroot()
 
         # Process each text element separately
         matches = 0
-        for elem in root.iter('{urn:oasis:names:tc:opendocument:xmlns:text:1.0}p'):
+        for elem in root.iter("{urn:oasis:names:tc:opendocument:xmlns:text:1.0}p"):
             if not elem.text:
                 continue
-            if punct or re.search(r'\w+', elem.text, re.UNICODE):
+            if punct or re.search(r"\w+", elem.text, re.UNICODE):
                 matches += 1
                 logger.debug(f"Matching element found: {elem.tag}, Original text: {elem.text}")
                 # Process the text using the command
                 if pool:
-                    elem.text = pool.apply(subprocess.run, (command, ), {'input': elem.text, 'text': True, 'stdout': subprocess.PIPE}).stdout
+                    elem.text = pool.apply(
+                        subprocess.run,
+                        (command,),
+                        {"input": elem.text, "text": True, "stdout": subprocess.PIPE},
+                    ).stdout
                 else:
-                    elem.text = subprocess.run(command, input=elem.text, text=True, stdout=subprocess.PIPE).stdout
+                    elem.text = subprocess.run(
+                        command, input=elem.text, text=True, stdout=subprocess.PIPE
+                    ).stdout
                 logger.debug(f"Processed text: {elem.text}")
 
         logger.info(f"Total matching elements processed: {matches}")
 
         # Save the modified XML
-        tree.write(xml_file, encoding='UTF-8', xml_declaration=True)
+        tree.write(xml_file, encoding="UTF-8", xml_declaration=True)
 
         # Zip the modified files back into an ODT
-        with zipfile.ZipFile(output_file, 'w') as zip_ref:
-            for file in Path(temp_dir).rglob('*'):
+        with zipfile.ZipFile(output_file, "w") as zip_ref:
+            for file in Path(temp_dir).rglob("*"):
                 zip_ref.write(file, file.relative_to(temp_dir))
 
     logger.info(f"Processing complete. Output saved to {output_file}")
 
 
-def rich_text_process(output_file: str, input_file: str, command: List[str], force: bool = False, punct: bool = False, parallel:int|None=None, pool=None) -> None:
+def rich_text_process(
+    output_file: str,
+    input_file: str,
+    command: List[str],
+    force: bool = False,
+    punct: bool = False,
+    parallel: int | None = 1,
+) -> None:
     """
     Process rich text documents by applying a command to their text content.
 
@@ -156,10 +177,6 @@ def rich_text_process(output_file: str, input_file: str, command: List[str], for
         pool: Multiprocessing pool for parallel processing.
     """
 
-    if parallel and not pool:
-        with multiprocessing.Pool(processes=parallel) as pool:
-            return rich_text_process(output_file, input_file, command, force, punct, parallel, pool)
-
     # Check if input file exists
     if not Path(input_file).is_file():
         raise FileNotFoundError(f"Input file not found: {input_file}")
@@ -171,28 +188,28 @@ def rich_text_process(output_file: str, input_file: str, command: List[str], for
         else:
             logger.warning(f"Overwriting existing output file: {output_file}")
 
-    # Determine file type and process accordingly
-    file_extension = Path(input_file).suffix.lower()
-    if file_extension == '.docx':
-        process_docx(output_file, input_file, command, punct, pool)
-    elif file_extension == '.html':
-        process_html(output_file, input_file, command, punct, pool)
-    elif file_extension == '.odt':
-        process_odt(output_file, input_file, command, punct, pool)
-    else:
-        raise ValueError(f"Unsupported file type: {file_extension}")
+    with ProcessPoolExecutor(max_workers=parallel) as executor:
+        # Determine file type and process accordingly
+        file_extension = Path(input_file).suffix.lower()
+        if file_extension == ".docx":
+            process_docx(output_file, input_file, command, punct, executor)
+        elif file_extension == ".html":
+            process_html(output_file, input_file, command, punct, executor)
+        elif file_extension == ".odt":
+            process_odt(output_file, input_file, command, punct, executor)
+        else:
+            raise ValueError(f"Unsupported file type: {file_extension}")
 
 
-def setup_args(parser: argparse.ArgumentParser) -> None:
+def setup_args(arg) -> None:
     """Set up the command-line arguments."""
-    parser.description = "Process rich text documents by applying a command to their text content."
-    parser.add_argument("output_file", help="Path to the output file")
-    parser.add_argument("input_file", help="Path to the input file")
-    parser.add_argument("command", nargs='+', help="Command to apply to the text content")
-    parser.add_argument("-f", "--force", action="store_true", help="Force overwrite of existing output file")
-    parser.add_argument("--punct", action="store_true", help="Process text without any words in it")
-    parser.add_argument("-p", "--parallel", type=int, help="Number of parallel processes to use")
+    arg("output_file", help="Path to the output file")
+    arg("input_file", help="Path to the input file")
+    arg("command", nargs="+", help="Command to apply to the text content")
+    arg("-f", "--force", action="store_true", help="Force overwrite of existing output file")
+    arg("--punct", action="store_true", help="Process text without any words in it")
+    arg("-p", "--parallel", type=int, help="Number of parallel processes to use")
 
 
 if __name__ == "__main__":
-    ally.go(setup_args, rich_text_process)
+    main.go(setup_args, rich_text_process)
