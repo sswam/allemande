@@ -33,7 +33,7 @@ import tab
 import tiktoken
 from slugify import slugify
 
-from ally import main, tty
+from ally import main, titty
 from ally.lazy import lazy
 import tsv2txt
 
@@ -803,7 +803,7 @@ def models(detail=False, aliases=True):
                     print(f"\t{k}:\t{v}", file=buffer)
                 print(file=buffer)
 
-        if tty.is_tty(sys.stdout):
+        if titty.is_tty(sys.stdout):
             buffer.seek(0)
             with io.StringIO() as output:
                 tsv2txt.tsv2txt(istream=buffer, ostream=output, multi_table=True)
@@ -813,7 +813,7 @@ def models(detail=False, aliases=True):
 
 
 if __name__ == "__main__":
-    main.run([chat, query, process, count, models], deprecation_warning=False)
+    main.run([chat, query, process, count, models], warn_deprecated=False)
 else:
     # Load all modules in the background after a short delay
     lazy(0.1)
