@@ -1,0 +1,9 @@
+anthropic
+flax[all]
+google-cloud-aiplatform[tokenization]
+transformers
+sentencepiece
+spacy
+pyaudio
+pyalsaaudio
+librosa

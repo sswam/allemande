@@ -1,0 +1,29 @@
+pylint --disable=all --enable=fixme /home/sam/allemande/ally/logs.py
+************* Module ally.logs
+logs.py:53:5: W0511: TODO log all messages to console, file for the script, and file for the module (fixme)
+
+------------------------------------------------------------------
+Your code has been rated at 9.91/10 (previous run: 9.91/10, -0.00)
+
+
+mypy /home/sam/allemande/ally/meta.py
+meta.py:45: error: Item "None" of Module | None has no attribute "__file__"  [union-attr]
+meta.py:45: error: Argument 1 to "basename" has incompatible type "str | Any | None"; expected "PathLike[Any]"  [arg-type]
+meta.py:75: error: "_Wrapped[[VarArg(Any), KwArg(Any)], Any, [VarArg(Any), KwArg(Any)], Any]" has no attribute "__signature__"  [attr-defined]
+Found 3 errors in 1 file (checked 1 source file)
+
+mypy /home/sam/allemande/ally/opts.py
+opts.py:255: error: Name "has_args" is not defined  [name-defined]
+opts.py:257: error: Name "has_kwargs" is not defined  [name-defined]
+Found 2 errors in 1 file (checked 1 source file)
+
+mypy /home/sam/allemande/ally/quote.py
+quote.py:44: error: Skipping analyzing "nltk": module is installed, but missing library stubs or py.typed marker  [import-untyped]
+quote.py:46: error: Skipping analyzing "nltk.tokenize": module is installed, but missing library stubs or py.typed marker  [import-untyped]
+quote.py:46: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+Found 2 errors in 1 file (checked 1 source file)
+
+mypy /home/sam/allemande/ally/titty.py
+titty.py:120: error: Name "read_with_timeout" is not defined  [name-defined]
+titty.py:120: error: Name "TIMEOUT_MS" is not defined  [name-defined]
+Found 2 errors in 1 file (checked 1 source file)
