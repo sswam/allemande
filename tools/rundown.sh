@@ -14,7 +14,7 @@ rundown() {
 		echo
 		if [ -x "$file" ]; then
 			process_executable "$file"
-		elif [[ "$(file -b --mime-type rundown.sh)" == text/* ]]; then
+		elif [[ "$(file -b --mime-type "$file")" == text/* ]]; then
 			process_text "$file"
 		else
 			process_binary "$file"

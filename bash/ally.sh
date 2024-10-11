@@ -27,8 +27,6 @@ fi
 
 # START
 
-. each
-
 if [[ $- == *i* ]]; then
     :
 else

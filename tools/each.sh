@@ -1,8 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # command [arg ...] : [file ...]
 # run a command on each file in a list
 
 each() {
+	eval "$(ally)"
+
 	local command=()
 
 	while [ "$1" != : ] && [ "$#" -gt 0 ]; do
@@ -18,15 +20,15 @@ each() {
 	shift
 
 	fail=0
-# 	local old_options=$(set +o)
-# 	set +e
-
+ 	local old_options=$(set +o)
+ 	set +e
 	for file in "$@"; do
+		(
 		"${command[@]}" "$file"
+		)
 		fail=$((fail + $?))
 	done
-
-#	eval "$old_options"
+	eval "$old_options"
 	return $fail
 }
 
