@@ -9,10 +9,13 @@ import sys
 import warnings
 from typing import Any, Callable, get_args, get_origin
 import types
+from io import IOBase
 
 from ally import meta, geput, logs
 
 opts = sys.modules[__name__]
+
+__version__ = "0.1.3"
 
 
 def try_add_argument(parser, *args, **kwargs):
@@ -40,18 +43,21 @@ def parse(
     wants_put = "put" in sig.parameters
     wants_istream = "istream" in sig.parameters
     wants_ostream = "ostream" in sig.parameters
-    wants_input = wants_get or wants_istream
+    wants_input_source = "input_source" in sig.parameters  # ?!
+    wants_text = "text" in sig.parameters
+    wants_input = wants_get or wants_istream or wants_input_source
     wants_output = wants_put or wants_ostream
 
     # Get the module name of the calling module
     # module_name = meta.get_module_name(2)
-    module_name = main_function.__module__
+    module_name = meta.get_module_name(level=3)
 
     # Create an argument parser
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=CustomHelpFormatter)
 
     # Set up command-line arguments
-    setup_args(parser)
+    parser.description = inspect.getmodule(main_function).__doc__
+    meta.call_gently(setup_args, parser=parser, arg=parser.add_argument)
     opts._setup_arg_defaults_and_types(parser, main_function)
     opts._setup_io_args(parser, wants_input=wants_input, wants_output=wants_output)
     opts._setup_logging_args(module_name, parser)
@@ -66,13 +72,20 @@ def parse(
     opts._open_files(args, parser)
 
     # setup logging based on parsed arguments, maybe doesn't belong here
-    logs.setup_logging(module_name, args.log_level)
+    logs.set_log_level(args.log_level, root=True)
+    logs.set_log_level(args.log_level, name=module_name)
+
+    put = None
 
     # setup get/put functions if needed
     if wants_get and not hasattr(args, "get"):
         args.get = geput.setup_get(args.istream)
     if wants_put and not hasattr(args, "put"):
-        args.put = geput.setup_put(args.ostream)
+        put = args.put = geput.setup_put(args.ostream)
+    if wants_input_source and not hasattr(args, "input_source"):
+        args.input_source = args.istream
+    if wants_text and not hasattr(args, "text"):
+        args.text = args.istream.read()
     kwargs = vars(args)
 
     kwargs["args"] = kwargs["opts"] = args
@@ -103,7 +116,7 @@ def parse(
     if args_name:
         positional_args += kwargs.pop(args_name, [])
 
-    return positional_args, kwargs
+    return positional_args, kwargs, put
 
 
 def _setup_arg_defaults_and_types(
@@ -360,4 +373,53 @@ def _open_files(args: argparse.Namespace, parser: argparse.ArgumentParser):
 
     process_stream_arg("istream", mode="r")
     process_stream_arg("ostream", mode="w", append=append, no_clobber=no_clobber)
+
+
+class CustomHelpFormatter(
+    argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter
+):
+    """
+    - show repr for default values
+    - don't show defaults if the defaults is None
+    - show .name not repr for stdin and stdout
+    - show class name for other IOBase objects
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def _expand_help(self, action):
+        """
+        Based on ArgumentDefaultsHelpFormatter
+        with refernce to argh.constants.CustomFormatter
+        """
+        params = dict(vars(action), prog=self._prog)
+        for name in list(params):
+            if params[name] is argparse.SUPPRESS:
+                del params[name]
+        for name in list(params):
+            if hasattr(params[name], "__name__"):
+                params[name] = params[name].__name__
+        if params.get("choices") is not None:
+            choices_str = ", ".join([str(c) for c in params["choices"]])
+            params["choices"] = choices_str
+
+        if "default" in params:
+            if params["default"] in [None, False]:
+                action.default = argparse.SUPPRESS
+            elif isinstance(params["default"], IOBase):
+                if hasattr(params["default"], "name"):
+                    params["default"] = params["default"].name
+                else:
+                    params["default"] = f"<{params['default'].__class__.__name__}>"
+            else:
+                params["default"] = repr(params["default"])
+
+        string = self._get_help_string(action) % params
+        return string
+
+    def _format_args(self, action, default_metavar):
+        if action.dest in ["istream", "ostream"]:
+            return "FILE"
+        return super()._format_args(action, default_metavar)
 

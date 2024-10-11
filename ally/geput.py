@@ -6,8 +6,17 @@ from typing import TextIO, Callable
 
 from ally import titty
 
+__version__ = '0.1.3'
 
-def setup_get(istream: TextIO) -> Callable[[], str]:
+
+Get = Callable[[str], [str|None]]
+Put = Callable[[str], None]
+
+
+# TODO simplify these to fit their types, and add wrappers for TSV, etc.
+
+
+def setup_get(istream: TextIO) -> Get:
     """Create a get function for reading input from a stream."""
 
     is_tty = titty.is_tty(istream)
@@ -19,7 +28,7 @@ def setup_get(istream: TextIO) -> Callable[[], str]:
         chunks=False,
         rstrip=True,
         placeholder="",
-    ) -> str:
+    ) -> str|None:
         """
         Get input from the input stream.
 
@@ -33,6 +42,7 @@ def setup_get(istream: TextIO) -> Callable[[], str]:
         """
         if all:
             return istream.read()
+        # remove these options?
         if lines or chunks:
             all_lines = istream.readlines()
             if lines and rstrip:
@@ -52,7 +62,7 @@ def setup_get(istream: TextIO) -> Callable[[], str]:
     return get
 
 
-def setup_put(ostream: TextIO) -> Callable[[str], None]:
+def setup_put(ostream: TextIO) -> Put:
     """Create a put function for writing output to a stream."""
 
     def put(*args, end="\n", lines=False, chunks=False, rstrip=True, **kwargs) -> None:

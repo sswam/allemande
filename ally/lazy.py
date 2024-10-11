@@ -67,13 +67,9 @@ from types import ModuleType
 from typing import Callable, Any
 import asyncio
 
-__version__ = "0.1.12"  # Bumped patch version
+__version__ = "0.1.12"
 
 logger = logging.getLogger(__name__)
-
-
-module_proxies = {}
-maybe_unloaded_proxies = []
 
 
 class LazyProxy:
@@ -110,7 +106,11 @@ class LazyProxy:
     def __call__(self, *args, **kwargs):
         return self._LazyProxy_load()(*args, **kwargs)
 
-    # TODO add more magic methods if and when needed
+    # add more magic methods if and when needed
+
+
+module_proxies: dict[str, LazyProxy] = {}
+maybe_unloaded_proxies: list[LazyProxy] = []
 
 
 def load_all_modules():
@@ -121,7 +121,7 @@ def load_all_modules():
 
 
 def lazy(
-    arg0: str | int | float = None,
+    arg0: str | int | float | None = None,
     *symbol_names,
     _as=None,
     mess_with_namespace=True,

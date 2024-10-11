@@ -9,7 +9,9 @@ from typing import Callable, TextIO
 import argh
 import traceback
 
-from ally import main, meta, opts, logs, geput
+from ally import main, meta, opts, logs, geput, filer
+
+__version__ = "0.1.3"
 
 old = sys.modules[__name__]
 
@@ -24,15 +26,16 @@ def run(commands: Callable | list[Callable], warn_deprecated=True) -> None:
     Raises:
         Exception: Any exception that occurs during command execution.
     """
+    logs.setup_logging()
+
     if warn_deprecated:
         meta.deprecated("old.run", "main.go")
 
     module_name = meta.get_module_name(2)
 
     parser = argh.ArghParser(
-        formatter_class=lambda prog: old.CustomHelpFormatter(
+        formatter_class=lambda prog: opts.CustomHelpFormatter(
             prog, max_help_position=40,
-            warn_deprecated=False,
         ),
         allow_abbrev=False,
     )
@@ -56,7 +59,7 @@ def run(commands: Callable | list[Callable], warn_deprecated=True) -> None:
     opts._open_files(args, parser)
 
     # Setup logging based on parsed arguments
-    logs.setup_logging(module_name, args.log_level)
+    logs.set_log_level(args.log_level, root=True)
 
     # dispatch, and show errors nicely
     try:
@@ -69,57 +72,6 @@ def run(commands: Callable | list[Callable], warn_deprecated=True) -> None:
         logger.error(f"Error: %s %s", type(e).__name__, str(e))
         tb = traceback.format_exc()
         logger.debug("Full traceback:\n%s", tb)
-
-
-class CustomHelpFormatter(
-    argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter
-):
-    """
-    - show repr for default values
-    - don't show defaults if the defaults is None
-    - show .name not repr for stdin and stdout
-    - show class name for other IOBase objects
-    """
-
-    def __init__(self, *args, warn_deprecated=True, **kwargs):
-        if warn_deprecated:
-            meta.deprecated("old.CustomHelpFormatter", "main.go")
-        super().__init__(*args, **kwargs)
-
-    def _expand_help(self, action):
-        """
-        Based on ArgumentDefaultsHelpFormatter
-        with refernce to argh.constants.CustomFormatter
-        """
-        params = dict(vars(action), prog=self._prog)
-        for name in list(params):
-            if params[name] is argparse.SUPPRESS:
-                del params[name]
-        for name in list(params):
-            if hasattr(params[name], "__name__"):
-                params[name] = params[name].__name__
-        if params.get("choices") is not None:
-            choices_str = ", ".join([str(c) for c in params["choices"]])
-            params["choices"] = choices_str
-
-        if "default" in params:
-            if params["default"] in [None, False]:
-                action.default = argparse.SUPPRESS
-            elif isinstance(params["default"], IOBase):
-                if hasattr(params["default"], "name"):
-                    params["default"] = params["default"].name
-                else:
-                    params["default"] = f"<{params['default'].__class__.__name__}>"
-            else:
-                params["default"] = repr(params["default"])
-
-        string = self._get_help_string(action) % params
-        return string
-
-    def _format_args(self, action, default_metavar):
-        if action.dest in ["istream", "ostream"]:
-            return "FILE"
-        return super()._format_args(action, default_metavar)
 
 
 def _fix_io_arguments(parser: argparse.ArgumentParser):
@@ -135,7 +87,7 @@ def _fix_io_arguments(parser: argparse.ArgumentParser):
 
 def io(
     istream: TextIO = sys.stdin, ostream: TextIO = sys.stdout, warn_deprecated=True
-) -> tuple[Callable[[], str], Callable[[str], None]]:
+) -> tuple[Callable[[], str|list[str]|None], Callable[[str], None]]:
     """
     Create input and output functions for handling I/O operations.
 
@@ -185,7 +137,7 @@ class TextInput:
             self.file = sys.stdin
         elif isinstance(file, str):
             if search and not os.path.exists(file):
-                file = find_in_path(file)
+                file = filer.find_in_path(file)
             self.display = os.path.basename(file) if basename else file
             self.file = open(
                 file, mode, encoding=encoding, errors=errors, newline=newline
@@ -227,7 +179,7 @@ class TextInput:
 
 def load(path: str, comments=False, blanks=False) -> list[str]:
     """Load a list of strings from a file"""
-    with open(resource(path), "r", encoding="utf-8") as f:
+    with open(filer.resource(path), "r", encoding="utf-8") as f:
         return [
             line
             for line in f.read().splitlines()

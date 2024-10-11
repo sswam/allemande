@@ -3,58 +3,129 @@
 import os
 import sys
 import logging
+from logging import Formatter
 import logging.config
 import argparse
 from pathlib import Path
 from collections import deque
+from typing import Callable
 
 from ally import meta
+
+__version__ = "0.1.3"
 
 logs = sys.modules[__name__]
 
 
-def get_logger(level=0, indent=False, **kwargs) -> logging.Logger:
-    """
-    Get a logger for the calling module.
+console_formatter_normal = logging.Formatter("%(message)s")
 
-    Returns:
-        logging.Logger: Logger instance for the calling module.
-    """
-    logger = logging.getLogger(meta.get_module_name(level + 2))
+console_formatter_debug = logging.Formatter("%(asctime)s  %(levelname)-8s  %(name)s  %(message)s")
+
+file_formatter = logging.Formatter("%(asctime)s  PID:%(process)d  %(levelname)-8s  %(name)s  %(message)s")
+
+
+def setup_logging():
+    """Set up logging, before parsing CLI arguments."""
+    script_name = meta.get_script_name()
+
+    # Check for a logging.ini file in the script's directory
+    logging_config_file = Path(script_name).parent / "logging.ini"
+    if logging_config_file.exists():
+        logging.config.fileConfig(logging_config_file)
+        return
+
+    get_logger(root=True)
+
+
+def get_log_dir():
+    """Get the directory for log files, creating it if necessary."""
+    log_dir = os.path.expanduser("~/.logs")
+    os.makedirs(log_dir, exist_ok=True, mode=0o700)
+    return log_dir
+
+
+def get_logger(level=1, root=False, name=None, indent=False, log_level="WARNING", **kwargs) -> logging.Logger:
+    """Get a logger for the calling module, or named logger."""
+    script_name = meta.get_script_name()
+
+    if root:
+        logger = logging.getLogger()
+        name = None
+    else:
+        name = name or meta.get_module_name(level + 1)
+        logger = logging.getLogger(name)
+
+    if logger.handlers:
+        return logger
+
+    logger.propagate = False
+
+    # Wrap the logger in an IndentLogger if requested
     if indent:
         logger = logs.IndentLogger(logger, **kwargs)
+
+    # Set up the console handler
+    console_handler = logging.StreamHandler()
+    logger.addHandler(console_handler)
+
+    log_dir = get_log_dir()
+
+    # Modules log to the script file at a configurable log level, default WARNING
+    # For the root logger, this will be at DEBUG level
+    if script_name != name:
+        script_log_file = os.path.join(log_dir, f"{script_name}.log")
+        script_file_handler = logging.FileHandler(script_log_file)
+        script_file_handler.setFormatter(file_formatter)
+        logger.addHandler(script_file_handler)
+
+    # Create a module file handler, log level DEBUG
+    if name:
+        module_log_file = os.path.join(log_dir, f"{name}.log")
+        file_handler = logging.FileHandler(module_log_file)
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(file_formatter)
+        logger.addHandler(file_handler)
+
+    # Set the log level for the console handler and module file handler
+    _set_log_level(log_level, name=name)
+
+    # Log the start of the script, hopefully creating the log file
+    logger.debug(f"Starting {name or script_name}")
+
+    # Set file permissions to be owner read/write only
+    for handler in logger.handlers:
+        if not isinstance(handler, logging.FileHandler):
+            continue
+        os.chmod(handler.baseFilename, 0o600)
+
     return logger
 
 
-def get_log_level() -> str:
-    """
-    Get the current log level for the console handler.
-
-    Returns:
-        str: The current log level.
-    """
-    logger = logs.get_logger(1)
+def get_log_level(name=None, root=False) -> str:
+    """Get the current log level for the console handler."""
+    if root:
+        logger = logging.getLogger()
+    else:
+        logger = logs.get_logger(1, name=name)
     if not logger.handlers:
         return "WARNING"  # Default log level if no handlers
     return logging.getLevelName(logger.handlers[0].level)
 
 
-def setup_logging(module_name: str, log_level: str | None = None, test=False):
-    """
-    Set up logging configuration based on the specified log level.
-    Also logs to a file at DEBUG level.
+def set_log_level(log_level: str|int, name=None, root=False) -> None:
+    """Set the log level for the console handler and module file handler."""
+    logger = get_logger(1, name=name, root=root)
+    _set_log_level(log_level, name=logger.name)
 
-    Args:
-        module_name (str): The name of the module for which logging is being set up.
-        log_level (str): The desired logging level (DEBUG, INFO, ERROR, or None).
-    """
 
-    script_name = meta.get_script_name()
-    # TODO log all messages to console, file for the script, and file for the module
+def _set_log_level(log_level: str|int, name=None) -> None:
+    """Set the log level for the console handler and module file handler."""
+    if name:
+        logger = logging.getLogger(name)
+    else:
+        logger = logging.getLogger()
 
-    logging_config_file = Path(__file__).parent / "logging.ini"
-
-    if log_level is None:
+    if not logger.handlers:
         return
 
     if isinstance(log_level, str):
@@ -63,50 +134,24 @@ def setup_logging(module_name: str, log_level: str | None = None, test=False):
         log_level_int = log_level
         log_level = logging.getLevelName(log_level_int)
 
-    log_dir = os.path.expanduser("~/.logs")
-    os.makedirs(log_dir, exist_ok=True, mode=0o700)
-    log_file = os.path.join(log_dir, f"{module_name}.log")
+    logger.setLevel(0)
 
-    logger = logs.get_logger(2)
-    logger.setLevel(logging.DEBUG)
-
-    ch = logging.StreamHandler()
-    ch.setLevel(log_level_int)
-
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.DEBUG)
-
+    console_handler = logger.handlers[0]
+    console_handler.setLevel(log_level_int)
     if log_level_int == logging.DEBUG:
-        console_formatter = logging.Formatter(
-            "%(asctime)s  %(levelname)-8s  %(name)s  %(message)s"
-        )
+        console_formatter = console_formatter_debug
     else:
-        console_formatter = logging.Formatter("%(message)s")
+        console_formatter = console_formatter_normal
+    console_handler.setFormatter(console_formatter)
 
-    file_formatter = logging.Formatter(
-        "%(asctime)s  PID:%(process)d  %(levelname)-8s  %(name)s  %(message)s"
-    )
-
-    ch.setFormatter(console_formatter)
-    fh.setFormatter(file_formatter)
-
-    logger.addHandler(ch)
-    logger.addHandler(fh)
-
-#    logger.debug(f"Starting {module_name}")
-
-    if test:
-        logger.debug("This is a debug message")
-        logger.info("This is an info message")
-        logger.warning("This is a warning message")
-        logger.error("This is an error message")
-        logger.critical("This is a critical message")
-
-    # Set file permissions to be owner read/write only
-    os.chmod(log_file, 0o600)
+    # If we have 3 handlers, the second one is the script file handler ... hopefully! xD
+    if len(logger.handlers) >= 3:
+        script_file_handler = logger.handlers[1]
+        script_file_handler.setLevel(log_level_int)
 
 
 class IndentLogger:
+    """Logger that indents messages based on the current indent level."""
     def __init__(self, logger, indent_str="\t"):
         self.logger = logger
         self.indent_str = indent_str
@@ -125,73 +170,52 @@ class IndentLogger:
         return getattr(self.logger, name)
 
 
-class DeferredLogger(logging.LoggerAdapter):
-    def __init__(self, name):
-        super().__init__(logging.getLogger('dummy'), {})
-        self._name = name
-        self.dummy_logger = logging.getLogger('dummy')
-        self.real_logger = None
-        self.deferred_messages = deque()
-        self.is_real_logger_set = False
+def dump_logging_config(put: Callable = print):
+    """Dump the current logging configuration with detailed information"""
+    put("=== Logging Configuration ===")
 
-    @property
-    def name(self):
-        return self._name
+    # Root logger
+    root_logger = logging.getLogger()
+    put(f"Root Logger Level: {logging.getLevelName(root_logger.level)}")
 
-    def __getattr__(self, name):
-        if not self.is_real_logger_set and logging.getLogger(self.name) is not logging.root:
-            self.set_real_logger(logging.getLogger(self.name))
-        return getattr(self.real_logger or self.dummy_logger, name)
+    # All loggers (including root)
+    loggers = [root_logger] + [logging.getLogger(name) for name in logging.root.manager.loggerDict]
 
-    def set_real_logger(self, logger):
-        self.real_logger = logger
-        self.is_real_logger_set = True
-        self._forward_deferred_messages()
+    for logger in loggers:
+        name = logger.name if logger.name else "root"
+        put(f"\nLogger: {name}")
+        put(f"  Level: {logging.getLevelName(logger.level)}")
+        put(f"  Propagate: {logger.propagate}")
 
-    def _forward_deferred_messages(self):
-        while self.deferred_messages:
-            level, msg, args, kwargs = self.deferred_messages.popleft()
-            getattr(self.real_logger, level)(msg, *args, **kwargs)
-
-    def _log(self, level, msg, *args, **kwargs):
-        if self.is_real_logger_set:
-            getattr(self.real_logger, level)(msg, *args, **kwargs)
+        if not logger.handlers:
+            put("  No handlers")
         else:
-            logging.getLogger(self.name).debug(f"Deferred message: {msg}")
-            self.deferred_messages.append((level, msg, args, kwargs))
+            for idx, handler in enumerate(logger.handlers, 1):
+                put(f"  Handler {idx}: {type(handler).__name__}")
+                put(f"    Level: {logging.getLevelName(handler.level)}")
+                if hasattr(handler, 'baseFilename'):
+                    put(f"    File: {handler.baseFilename}")
+                if isinstance(handler, logging.StreamHandler):
+                    put(f"    Stream: {handler.stream.name}")
+                if handler.formatter:
+                    put(f"    Formatter: {handler.formatter._fmt}")
+                else:
+                    put("    No formatter set")
 
-    def debug(self, msg, *args, **kwargs):
-        self._log('debug', msg, *args, **kwargs)
+    put("\n=== Potential Issues ===")
+    if root_logger.level > logging.DEBUG:
+        put("- Root logger level is higher than DEBUG")
+    if not any(handler.level <= logging.DEBUG for handler in root_logger.handlers):
+        put("- No root handlers set to DEBUG or lower")
+    if not any(isinstance(h, logging.FileHandler) for h in root_logger.handlers):
+        put("- No FileHandler in root logger")
+    if not any(isinstance(h, logging.StreamHandler) for h in root_logger.handlers):
+        put("- No StreamHandler in root logger")
 
-    def info(self, msg, *args, **kwargs):
-        self._log('info', msg, *args, **kwargs)
+    put("\n=== Python Logging Levels ===")
+    for level, name in logging._levelToName.items():
+        put(f"{name}: {level}")
 
-    def warning(self, msg, *args, **kwargs):
-        self._log('warning', msg, *args, **kwargs)
-
-    def error(self, msg, *args, **kwargs):
-        self._log('error', msg, *args, **kwargs)
-
-    def critical(self, msg, *args, **kwargs):
-        self._log('critical', msg, *args, **kwargs)
-
-
-def deferred_logger_test():
-    # Usage
-    logger = DeferredLogger('my_logger')
-
-    # These messages will be stored
-    logger.info("This is an early info message")
-    logger.error("This is an early error message")
-
-    # Later, when you set up your logging
-    logging.basicConfig(level=logging.INFO)
-
-    # The real logger is now set, and deferred messages are forwarded
-    logger.warning("This is a new warning message")
-
-    # You can also manually set the real logger if needed
-    # custom_logger = logging.getLogger('custom')
-    # logger.set_real_logger(custom_logger)
-
-deferred_logger_test()
+    put("\n=== System Information ===")
+    put(f"Python Version: {sys.version}")
+    put(f"Platform: {sys.platform}")
