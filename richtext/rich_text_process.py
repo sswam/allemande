@@ -16,7 +16,10 @@ import argparse
 import logging
 import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, as_completed
+
 from bs4 import BeautifulSoup
+
+import ally
 
 __version__ = "1.0.10"
 
@@ -140,7 +143,7 @@ def process_odt(output_file: str, input_file: str, command: List[str], punct: bo
     logger.info(f"Processing complete. Output saved to {output_file}")
 
 
-def rich_text_process(output_file: str, input_file: str, command: List[str], force: bool = False, punct: bool = False, pool=None) -> None:
+def rich_text_process(output_file: str, input_file: str, command: List[str], force: bool = False, punct: bool = False, parallel:int|None=None, pool=None) -> None:
     """
     Process rich text documents by applying a command to their text content.
 
@@ -152,6 +155,11 @@ def rich_text_process(output_file: str, input_file: str, command: List[str], for
         punct (bool): Process text without any words in it.
         pool: Multiprocessing pool for parallel processing.
     """
+
+    if parallel and not pool:
+        with multiprocessing.Pool(processes=parallel) as pool:
+            return rich_text_process(output_file, input_file, command, force, punct, parallel, pool)
+
     # Check if input file exists
     if not Path(input_file).is_file():
         raise FileNotFoundError(f"Input file not found: {input_file}")
@@ -174,26 +182,17 @@ def rich_text_process(output_file: str, input_file: str, command: List[str], for
     else:
         raise ValueError(f"Unsupported file type: {file_extension}")
 
-def main():
-    parser = argparse.ArgumentParser(description="Process rich text documents by applying a command to their text content.")
+
+def setup_args(parser: argparse.ArgumentParser) -> None:
+    """Set up the command-line arguments."""
+    parser.description = "Process rich text documents by applying a command to their text content."
     parser.add_argument("output_file", help="Path to the output file")
     parser.add_argument("input_file", help="Path to the input file")
     parser.add_argument("command", nargs='+', help="Command to apply to the text content")
     parser.add_argument("-f", "--force", action="store_true", help="Force overwrite of existing output file")
     parser.add_argument("--punct", action="store_true", help="Process text without any words in it")
     parser.add_argument("-p", "--parallel", type=int, help="Number of parallel processes to use")
-    args = parser.parse_args()
-
-    try:
-        if args.parallel:
-            with multiprocessing.Pool(processes=args.parallel) as pool:
-                rich_text_process(args.output_file, args.input_file, args.command, args.force, args.punct, pool=pool)
-        else:
-            rich_text_process(args.output_file, args.input_file, args.command, args.force, args.punct)
-    except Exception as e:
-        logger.error(f"An error occurred: {str(e)}")
-        sys.exit(1)
 
 
 if __name__ == "__main__":
-    main()
+    ally.go(setup_args, rich_text_process)
