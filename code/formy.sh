@@ -38,7 +38,7 @@ format_sh() {
 }
 
 format_py() {
-	quiet black "$1"
+	quiet black --line-length 100 "$1"
 }
 
 format_c() {
