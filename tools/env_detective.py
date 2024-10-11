@@ -19,12 +19,12 @@ import glob
 from argh import arg
 import sh
 
-from ally import main
+from ally import main, logs
 
 __version__ = "1.0.2"
 
 
-logger = main.get_logger(indent=True, indent_str=4 * " ")
+logger = logs.get_logger(indent=True, indent_str=4 * " ")
 
 
 COMMON_CONFIG_FILES = [
@@ -145,7 +145,7 @@ def investigate_env_var(var_names: List[str], all: bool = False) -> None:
 
     logger.info(f"Investigating sources of environment variables: {' '.join(var_names)}")
 
-    if main.get_log_level() not in ["DEBUG", "INFO"]:
+    if logs.get_log_level() not in ["DEBUG", "INFO"]:
         logger.indent_str = ""
 
     for var_name in var_names:
