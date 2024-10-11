@@ -9,10 +9,8 @@ import logging
 from typing import List
 
 import black
-from argh import arg
 
-from ally import main, resource
-from ally.lazy import lazy
+from ally import main, resource, lazy, Get, Put
 
 __version__ = "0.1.1"
 
@@ -24,16 +22,14 @@ def run(cmd: List[str], input_str: str) -> str:
     return subprocess.run(cmd, input=input_str.encode(), capture_output=True).stdout.decode()
 
 
-@arg("--language", help="Source code language (default: py)")
 def reformat(
     *filenames: List[str],
-    istream=None,
-    ostream=None,
+    get: Get,
+    put: Put,
     language: str = "py",
     fatal: bool = False,
 ) -> None:
     """Reformat the source code using external tools"""
-    get, put = main.io(istream, ostream)
     source = get(all=True)
 
     try:
@@ -57,5 +53,9 @@ def reformat(
     put(source)
 
 
+def setup_args(arg):
+    arg("--language", help="Source code language (default: py)")
+
+
 if __name__ == "__main__":
-    main.run(reformat)
+    main.go(setup_args, reformat)
