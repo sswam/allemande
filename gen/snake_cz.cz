@@ -7,6 +7,19 @@ def WINDOW_HEIGHT 600
 def GRID_SIZE 20
 def SNAKE_INITIAL_LENGTH 3
 
+cstr version = "0.1.1"
+
+cstr description = "snake_cz - A simple Snake game"
+
+cstr usage[] =
+	"--help",
+	NULL
+
+cstr options[][3] =
+	{ NULL, NULL, NULL }
+
+opts *O
+
 struct Point
 	num x
 	num y
@@ -73,13 +86,13 @@ move_snake()
 handle_key(int key)
 	which key
 	XK_Up	if direction != DOWN
-			direction = UP
+				direction = UP
 	XK_Down	if direction != UP
-			direction = DOWN
+				direction = DOWN
 	XK_Left	if direction != RIGHT
-			direction = LEFT
+				direction = LEFT
 	XK_Right	if direction != LEFT
-				direction = RIGHT
+					direction = RIGHT
 	XK_Escape	running = false
 
 void *key_handler(void *obj, void *a0, void *event)
@@ -90,6 +103,8 @@ void *key_handler(void *obj, void *a0, void *event)
 	return thunk_yes
 
 Main()
+	O = get_options(options)
+
 	paper(WINDOW_WIDTH, WINDOW_HEIGHT)
 	init_game()
 
