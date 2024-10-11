@@ -9,7 +9,6 @@ import tempfile
 import zipfile
 import xml.etree.ElementTree as ET
 import re
-from typing import List
 from pathlib import Path
 import subprocess
 import argparse
@@ -26,13 +25,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def process_text(command, text):
+def process_text(command: list[str], text: str) -> str:
     # we do not want to capture stderr
     return subprocess.run(command, input=text, text=True, stdout=subprocess.PIPE).stdout
 
 
 def process_docx(
-    output_file: str, input_file: str, command: List[str], punct: bool, executor=None
+    output_file: str, input_file: str, command: list[str], punct: bool, executor=None
 ) -> None:
     """Process DOCX files."""
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -78,7 +77,7 @@ def process_docx(
 
 
 def process_html(
-    output_file: str, input_file: str, command: List[str], punct: bool, executor=None
+    output_file: str, input_file: str, command: list[str], punct: bool, executor=None
 ) -> None:
     """Process HTML files."""
     with open(input_file, "r", encoding="utf-8") as f:
@@ -86,22 +85,26 @@ def process_html(
 
     text_nodes = soup.find_all(text=True)
 
-    def process_text(text):
-        if punct or re.search(r"\w+", text, re.UNICODE):
-            if pool:
-                return pool.apply(
-                    subprocess.run,
-                    (command,),
-                    {"input": text, "text": True, "stdout": subprocess.PIPE},
-                ).stdout
-            else:
-                return subprocess.run(command, input=text, text=True, stdout=subprocess.PIPE).stdout
-        return text
+    # Prepare the jobs
+    jobs = [
+        (node, node.string)
+        for node in text_nodes
+        if node.parent.name not in ["script", "style"] and (punct or re.search(r"\w+", node.string, re.UNICODE))
+    ]
 
-    for node in text_nodes:
-        if node.parent.name not in ["script", "style"]:
-            new_text = process_text(node.string)
-            node.string = new_text
+    # Process in parallel
+    future_to_node = {
+        executor.submit(process_text, command, text): (node, text) for node, text in jobs
+    }
+    for future in as_completed(future_to_node):
+        node, original_text = future_to_node[future]
+        try:
+            node.string = future.result()
+            logger.debug(f"Processed: Original: {original_text}, New: {node.string}")
+        except Exception as exc:
+            logger.error(f"Generated an exception: {exc}")
+
+    logger.info(f"Total matching elements processed: {len(jobs)}")
 
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(str(soup))
@@ -110,7 +113,7 @@ def process_html(
 
 
 def process_odt(
-    output_file: str, input_file: str, command: List[str], punct: bool, executor=None
+    output_file: str, input_file: str, command: list[str], punct: bool, executor=None
 ) -> None:
     """Process ODT files."""
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -123,28 +126,26 @@ def process_odt(
         tree = ET.parse(xml_file)
         root = tree.getroot()
 
-        # Process each text element separately
-        matches = 0
-        for elem in root.iter("{urn:oasis:names:tc:opendocument:xmlns:text:1.0}p"):
-            if not elem.text:
-                continue
-            if punct or re.search(r"\w+", elem.text, re.UNICODE):
-                matches += 1
-                logger.debug(f"Matching element found: {elem.tag}, Original text: {elem.text}")
-                # Process the text using the command
-                if pool:
-                    elem.text = pool.apply(
-                        subprocess.run,
-                        (command,),
-                        {"input": elem.text, "text": True, "stdout": subprocess.PIPE},
-                    ).stdout
-                else:
-                    elem.text = subprocess.run(
-                        command, input=elem.text, text=True, stdout=subprocess.PIPE
-                    ).stdout
-                logger.debug(f"Processed text: {elem.text}")
+        # Prepare the jobs
+        jobs = [
+            (elem, elem.text)
+            for elem in root.iter("{urn:oasis:names:tc:opendocument:xmlns:text:1.0}p")
+            if elem.text and (punct or re.search(r"\w+", elem.text, re.UNICODE))
+        ]
 
-        logger.info(f"Total matching elements processed: {matches}")
+        # Process in parallel
+        future_to_elem = {
+            executor.submit(process_text, command, text): (elem, text) for elem, text in jobs
+        }
+        for future in as_completed(future_to_elem):
+            elem, original_text = future_to_elem[future]
+            try:
+                elem.text = future.result()
+                logger.debug(f"Processed: Original: {original_text}, New: {elem.text}")
+            except Exception as exc:
+                logger.error(f"Generated an exception: {exc}")
+
+        logger.info(f"Total matching elements processed: {len(jobs)}")
 
         # Save the modified XML
         tree.write(xml_file, encoding="UTF-8", xml_declaration=True)
@@ -160,22 +161,12 @@ def process_odt(
 def rich_text_process(
     output_file: str,
     input_file: str,
-    command: List[str],
+    *command: str,
     force: bool = False,
     punct: bool = False,
     parallel: int | None = 1,
 ) -> None:
-    """
-    Process rich text documents by applying a command to their text content.
-
-    Args:
-        output_file (str): Path to the output file.
-        input_file (str): Path to the input file.
-        command (List[str]): Command to apply to the text content.
-        force (bool): Force overwrite of existing output file.
-        punct (bool): Process text without any words in it.
-        pool: Multiprocessing pool for parallel processing.
-    """
+    """Process rich text documents by applying a command to their text content."""
 
     # Check if input file exists
     if not Path(input_file).is_file():
