@@ -8,17 +8,20 @@
 #   -s  squeeze blank lines (implies -b)
 # Example: uniqo -b input.txt > output.txt
 
+our $opt_b;
+our $opt_B;
+our $opt_s;
+our $prev_blank;
+our %already;
+
 BEGIN {
 	use Getopt::Std;
 	getopts('bBs');
-	our $opt_b;
-	our $opt_B;
-	our $opt_s;
 	if ($opt_s) {
 		$opt_b = 1;  # -s implies -b
 	}
 	@ARGV = ();  # Clear @ARGV to allow reading from STDIN if no files specified
-	our $prev_blank = 1;  # Initialize previous line as blank
+	$prev_blank = 1;  # Initialize previous line as blank
 }
 
 # Process blank lines if -b option is set
