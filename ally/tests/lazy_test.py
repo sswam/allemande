@@ -6,6 +6,8 @@ from types import ModuleType
 
 import lazy as subject
 
+__version__ = "0.1.3"
+
 def test_lazy_returns_quickly():
     start_time = time.time()
     result = subject.lazy('xml.etree.ElementTree')

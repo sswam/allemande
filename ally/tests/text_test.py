@@ -1,13 +1,13 @@
 import os
-
-# disable DeprecationWarning https://github.com/jupyter/jupyter_core/issues/398
-os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
-
 import io
 import pytest
 from unittest.mock import patch, mock_open
 
 import text as subject
+
+__version__ = "0.1.3"
+
+subject_name = subject.__name__
 
 def test_read_lines_single_file():
     mock_file_content = "Line 1\nLine 2\nLine 3"
