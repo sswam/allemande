@@ -21,7 +21,7 @@ GetOptions(
     'test|n' => \$opts{test},
 ) or pod2usage(2);
 
-pod2usage(-verbose => 2) if $opts{help};
+pod2usage(-exitval => 0, -output => \*STDOUT, -noperldoc => 1, -verbose => 2) if $opts{help};
 
 my $sep = $ENV{JF_SEP} || '#File:';
 
@@ -42,6 +42,10 @@ my @dests;
 do {
     my $dest;
     chomp($dest = substr $line, length($sep) + 1);
+
+    if ($dest eq $src) {
+        die "Error: Target file '$dest' cannot be the input files.\n";
+    }
 
     rename $dest, "$dest~" if -e $dest;
 

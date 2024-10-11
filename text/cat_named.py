@@ -1,36 +1,30 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
-cat_named.py - A Python script to concatenate and display file contents with customizable headers.
+This module concatenates and displays file contents with customizable headers.
 
-This script can be used to read and display the contents of multiple files or URLs,
+It can be used to read and display the contents of multiple files or URLs,
 with options to add headers, numbering, and customize the output format.
-
-Usage:
-    python cat_named.py [OPTIONS] FILE1 [FILE2 ...] [URL1 [URL2 ...]]
-
-This script can also be used as a module:
-    from cat_named import cat_named
 """
 
 import os
 import sys
+import logging
 from pathlib import Path
 import subprocess
 from urllib.parse import urlparse
 import re
-
-from argh import arg
+import argparse
+from typing import List, Callable
 
 from ally import main
 
-__version__ = "1.0.1"
-
+__version__ = "1.0.2"
 
 logger = main.get_logger()
 
 
-def get_web_content(url):
+def get_web_content(url: str) -> str:
     """Fetch content from a URL using web_text tool."""
     try:
         result = subprocess.run(
@@ -41,55 +35,37 @@ def get_web_content(url):
         raise FileNotFoundError(f"Failed to fetch content from {url}: {e}")
 
 
-def number_the_lines(text):
+def number_the_lines(text: str) -> str:
     """Number the lines in the text, just number, tab, and line."""
     lines = text.splitlines()
     return "\n".join(f"{i+1}\t{line}" for i, line in enumerate(lines))
 
 
-@arg("sources", nargs="*", help="Files or URLs to concatenate and display")
-@arg("--header-pre", help="Prefix for the header line")
-@arg("--header-post", help="Suffix for the header line")
-@arg("--footer", help="String to append after each file's content")
-@arg("--number", help="Number the files starting from this value")
-@arg("--number-post", help="String to append after the number in the header")
-@arg("--path", help="Search for files in PATH", action="store_true")
-@arg(
-    "--basename",
-    help="Use only the basename of the file in the header",
-    action="store_true",
-)
-@arg("-n", "--stdin-name", help="Use this name for stdin")
-@arg("-f", "--missing-ok", help="Skip missing files without error", action="store_true")
-@arg("-N", "--number-lines", help='Number the lines in the output', action='store_true')
 def cat_named(
-    sources,
-    header_pre="#File: ",
-    header_post="\n\n",
-    footer="\n\n",
-    number=None,
-    number_post=". ",
-    path=False,
-    basename=False,
-    stdin_name=None,
-    missing_ok=False,
-    number_lines=False,
-):
+    put: Callable[str, None],
+    sources: List[str],
+    header_prefix: str = "#File: ",
+    header_suffix: str = "\n\n",
+    footer: str = "\n\n",
+    number: int | None = None,
+    number_suffix: str = ". ",
+    path: bool = False,
+    basename: bool = False,
+    stdin_name: str | None = "input",
+    missing_ok: bool = False,
+    number_lines: bool = False,
+) -> str:
     """
     Concatenate and return file or URL contents with customizable headers.
     """
-    if number is not None:
-        number = int(number)
 
-    result = []
-
-    def get_header(source):
+    def get_header(source: str) -> str:
         nonlocal number
         if number is not None:
-            header = f"{header_pre}{number}{number_post}{source}"
+            header = f"{header_prefix}{number}{number_suffix}{source}"
             number += 1
         else:
-            header = f"{header_pre}{source}"
+            header = f"{header_suffix}{source}"
         return header
 
     for source in sources:
@@ -116,24 +92,35 @@ def cat_named(
 
             header = get_header(display_name)
 
-            result.append(f"{header}{header_post}")
+            put(f"{header}{header_suffix}")
             if number_lines:
                 content = number_the_lines(content)
-            result.append(content)
-            result.append(footer)
+            put(content)
+            put(footer)
         except (FileNotFoundError, IsADirectoryError):
             if missing_ok:
                 header = get_header(display_name)
-
-                result.append(f"{header} (content missing){header_post}")
-                result.append(footer)
+                put(f"{header} (content missing){header_suffix}")
+                put(footer)
             else:
                 raise
 
-    text = "".join(result)
 
-    return text
+def setup_args(parser: argparse.ArgumentParser) -> None:
+    """Set up the command-line arguments."""
+    parser.description = "Concatenate and display file contents with customizable headers."
+    parser.add_argument("sources", nargs="*", help="Files or URLs to concatenate and display")
+    parser.add_argument("-n", "--number", type=int, help="Number the files starting from this value")
+    parser.add_argument("-p", "--path", action="store_true", help="Search for files in PATH")
+    parser.add_argument("-b", "--basename", action="store_true", help="Use only the basename of the file in the header")
+    parser.add_argument("-f", "--missing-ok", action="store_true", help="Skip missing files without error")
+    parser.add_argument("-N", "--number-lines", action="store_true", help="Number the lines in the output")
+    parser.add_argument("-P", "--header-prefix", help="Prefix for the header line")
+    parser.add_argument("-S", "--header-suffix", help="Suffix for the header line")
+    parser.add_argument("-F", "--footer", help="String to append after each file's content")
+    parser.add_argument("--stdin-name", help="Use this name for stdin")
+    parser.add_argument("--number-suffix", help="String to append after the number in the header")
 
 
 if __name__ == "__main__":
-    main.run(cat_named)
+    main.go(setup_args, cat_named)

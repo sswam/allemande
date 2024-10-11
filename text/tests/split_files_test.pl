@@ -13,7 +13,7 @@ like($output, qr/Usage:/, 'Script shows usage when run without arguments');
 
 # Test 2: Check --help option
 $output = `$script --help`;
-like($output, qr/Usage:.*Options:/s, '--help option displays help message');
+like($output, qr/(Usage|SYNOPSIS).*Options:/s, '--help option displays help message');
 
 # Test 3: Test actual file splitting
 my $tempdir = tempdir( CLEANUP => 1 );

@@ -10,26 +10,25 @@ and can also reindent the input according to specified parameters.
 import os
 import sys
 import re
-from typing import TextIO
+import argparse
+from typing import TextIO, Callable
 from collections import Counter
-
-from argh import arg
 
 from ally import main
 
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 
 logger = main.get_logger()
 
 
 # TODO use a config file for this?
-def default_indent():
+def default_indent() -> str:
     ft = os.environ.get("FILETYPE")
     if ft == "python":
         return "4s"
     elif ft == "c":
         return "t"
-# vim captures stderr
+# TODO: vim captures stderr, so we can't log to stderr here
 #     elif ft:
 #         logger.warning(f"Standard indentation not known for filetype: {ft}")
     return os.environ.get("INDENT", "t")
@@ -38,7 +37,7 @@ def default_indent():
 DEFAULT_INDENT = default_indent()
 
 
-def detect_indent(text: str|list[str]) -> tuple[str, int]:
+def detect_indent(text: str | list[str]) -> tuple[int, str, int]:
     """Detect the indentation type and minimum level of the input text."""
     if isinstance(text, list):
         lines = text
@@ -173,15 +172,15 @@ def apply_indent(text: str, indent_size: int, indent_type: str, min_level: int) 
 def format_indent_code(indent_size: int, indent_type: str, min_level: int) -> str:
     """Format the indent code for display."""
     # Convert indentation parameters to a string representation
-    min_level = min_level or ""
+    min_level_str = str(min_level) if min_level else ""
     if indent_type == "t":
         if indent_size != 1:
             raise ValueError(f"Invalid indent size for tab: {indent_size}")
-        return f"t{min_level}"
-    return f"{indent_size}s{min_level}"
+        return f"t{min_level_str}"
+    return f"{indent_size}s{min_level_str}"
 
 
-def parse_indent_code(indent_code: str) -> tuple[str, int, int]:
+def parse_indent_code(indent_code: str) -> tuple[int, str, int]:
     """Parse the indent code into its components."""
     # Extract indent size, type, and minimum level from the indent code string
     match = re.match(r"(\d*)(t|s)(\d*)$", indent_code)
@@ -200,14 +199,12 @@ def parse_indent_code(indent_code: str) -> tuple[str, int, int]:
     return indent_size, indent_type, int(min_level or 0)
 
 
-@arg("--detect", "-D", help="detect indent type and minimum level")
-@arg("--apply", "-a", help="apply specified indent type and minimum level (e.g., '1t', '4s2')")
 def aligno(
-    *format: list[str],
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
+    get: Callable[[], str] = None,
+    put: Callable[[str], None] = None,
     detect: bool = False,
     apply: bool = False,
+    indent_code: str = DEFAULT_INDENT,
 ) -> None:
     """
     Detect or apply indentation to the input text.
@@ -219,16 +216,11 @@ def aligno(
     Examples:
         aligno < input.txt
         aligno --apply < input.c > output.c
-        aligno 4s2 --apply < input.py > output.py
+        aligno --apply 4s2 < input.py > output.py
     """
 
     # Determine whether to detect or apply indentation
     indent_code = DEFAULT_INDENT
-    if len(format) > 1:
-        raise ValueError("Only one format argument is allowed")
-    if format:
-        indent_code = format[0]
-        apply = True
     if apply and detect:
         raise ValueError("Cannot detect and apply indent at the same time")
     if not apply and not detect:
@@ -236,14 +228,12 @@ def aligno(
     if apply and not indent_code:
         raise ValueError("Format argument required for applying indent")
 
-    # Set up input and output streams
-    get, put = main.io(istream, ostream)
-
     input_text = get(all=True)
 
     if detect:
         # Detect and output the indentation of the input text
-        indent_code = format_indent_code(*detect_indent(input_text))
+        detected_indent = detect_indent(input_text)
+        indent_code = format_indent_code(*detected_indent)
         if indent_code.startswith("0"):
             indent_code = DEFAULT_INDENT
         put(indent_code)
@@ -253,5 +243,13 @@ def aligno(
         put(output_text)
 
 
+def setup_args(parser: argparse.ArgumentParser) -> None:
+    """Set up the command-line arguments."""
+    parser.description = "Detect or apply indentation to the input text."
+    parser.add_argument("--detect", "-D", action="store_true", help="detect indent type and minimum level")
+    parser.add_argument("--apply", "-a", action="store_true", help="apply specified indent type and minimum level")
+    parser.add_argument("indent_code", nargs="?", default=DEFAULT_INDENT, help="indent code (e.g., '1t', '4s2')")
+
+
 if __name__ == "__main__":
-    main.run(aligno)
+    main.go(setup_args, aligno)

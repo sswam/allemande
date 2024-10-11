@@ -11,7 +11,7 @@ use Pod::Usage qw(pod2usage);
 use IO::File;
 use File::Basename qw(basename);
 
-our $VERSION = '1.0.1';
+our $VERSION = '1.0.2';
 
 my %opts = (
     help => 0,
@@ -21,7 +21,7 @@ GetOptions(
     'help|h' => \$opts{help},
 ) or pod2usage(2);
 
-pod2usage(-verbose => 2) if $opts{help};
+pod2usage(-exitval => 0, -output => \*STDOUT, -noperldoc => 1, -verbose => 2) if $opts{help};
 
 my $sep = $ENV{JF_SEP} || '#File:';
 
@@ -33,8 +33,16 @@ if (-e $dest && (! -f $dest || -s $dest && index(IO::File->new($dest)->getline()
 
 my $destfh = IO::File->new(">$dest") or die "Cannot open $dest: $!\n";
 
+for my $src (@ARGV) {
+    if ($src eq $dest) {
+        die "Error: Target file '$dest' cannot be among the input files.\n";
+    }
+}
+
 while (my $src = shift @ARGV) {
-    chomp $src;
+    if ($src eq $dest) {
+        die "Error: Target file '$dest' cannot be among the input files.\n";
+    }
     if (-T $src) {
         my $srcfh = IO::File->new($src) or die "Cannot open $src: $!\n";
         print $destfh $sep, ' ', $src, "\n";
