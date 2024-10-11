@@ -1,2 +1,2 @@
 #!/bin/sh
-git diff --cached --name-status | kut_perl.pl -o 1 | tr '\t' '\n'
+git diff --cached --name-status | kut-perl -o 1 | tr '\t' '\n'
