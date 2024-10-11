@@ -114,7 +114,7 @@ def activity(
             headers.append("LOC")
         if count_added_changed:
             headers.append("Added/Changed")
-        fmt = "{:<10} " * (len(headers) - 1) + "{}"
+        fmt = "{:<10}\t" * (len(headers) - 1) + "{}"
         put(fmt.format(*headers))
         for date, count, loc, added_changed in activity_data:
             row = [date, str(count)]
