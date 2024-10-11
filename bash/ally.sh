@@ -36,7 +36,7 @@ else
 
     . opts
 
-    eval "$(opts_long.py "$0")"
+    eval "$(opts-long "$0")"
 
     # strict mode
     old_opts=$(set +o)
