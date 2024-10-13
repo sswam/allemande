@@ -111,3 +111,5 @@ cssbeautifier
 
 mypy
 pylint
+
+ttkthemes
