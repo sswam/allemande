@@ -52,10 +52,13 @@ def cat_named(
     header_suffix: str = "\n\n",
     footer: str = "\n\n",
     stdin_name: str | None = "input",
+    suppress_headings: str | None = None,
 ) -> None:
     """
     Concatenate and return file or URL contents with customizable headers.
     """
+
+    suppress_headings_list: list[str] = suppress_headings.split(",") if suppress_headings else []
 
     def get_header(source: str) -> str:
         nonlocal number
@@ -63,7 +66,7 @@ def cat_named(
             header = f"{header_prefix}{number}{number_suffix}{source}"
             number += 1
         else:
-            header = f"{header_suffix}{source}"
+            header = f"{header_prefix}{source}"
         return header
 
     for source in sources:
@@ -92,18 +95,21 @@ def cat_named(
                     content = istream.read()
                     display_name = istream.display
 
-            header = get_header(display_name)
 
-            put(f"{header}{header_suffix}")
+            if display_name not in suppress_headings_list:
+                header = get_header(display_name)
+                put(f"{header}{header_suffix}")
+
             if number_lines:
                 content = number_the_lines(content)
             put(content)
             put(footer)
         except (FileNotFoundError, IsADirectoryError):
             if missing_ok:
-                header = get_header(display_name)
-                put(f"{header} (content missing){header_suffix}")
-                put(footer)
+                if display_name not in suppress_headings_list:
+                    header = get_header(display_name)
+                    put(f"{header} (content missing){header_suffix}")
+                    put(footer)
             else:
                 raise
 
@@ -121,9 +127,10 @@ def setup_args(parser: argparse.ArgumentParser) -> None:
     add("-P", "--header-prefix", help="Prefix for the header line")
     add("-S", "--header-suffix", help="Suffix for the header line")
     add("-F", "--footer", help="String to append after each file's content")
+    add("-H", "--suppress-headings", help="Comma-separated headings to suppress, e.g. input")
     add("--stdin-name", help="Use this name for stdin")
     add("--number-suffix", help="String to append after the number in the header")
 
 
 if __name__ == "__main__":
-    main.go(setup_args, cat_named)
+    main.go(cat_named, setup_args)
