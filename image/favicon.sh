@@ -3,19 +3,11 @@
 # [source image]
 # Generates favicons from a source image
 
-favicon_sh() {
-	local source= s=
-	local sizes=(16 32 48 64 128 144 180 192 256)
-	local temp_dir=
+favicon() {
+	local source= s=	# source image
+	local sizes=() S=(16 32 48 64 128 144 180 192 256)	# sizes
 
-	. opts
-
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
-
-	# Support long and short options
-	source=${source:-$s}
+	eval "$(ally)"
 
 	# Check for required commands
 	check_command convert || return 1
@@ -42,8 +34,8 @@ favicon_sh() {
 	chmod -w "$source"
 
 	# Create temporary directory
-	temp_dir=$(mktemp -d)
-	trap 'rm -rf "$temp_dir"' EXIT
+	local temp_dir=$(mktemp -d)
+	trap 'rm -rf "$temp_dir"' RETURN
 
 	# Create temporary images
 	v convert "$source" -resize 512x512 -background white -gravity center -extent 512x512 "$temp_dir/tmp-512-white.png"
@@ -97,5 +89,5 @@ process_png_files() {
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-	favicon_sh "$@"
+	favicon "$@"
 fi

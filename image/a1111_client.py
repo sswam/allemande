@@ -35,7 +35,7 @@ async def generate_image(session, params):
 
 
 async def a1111_client_async(
-    output_file: str = "",
+    output: str = "",
     prompt: str = "",
     negative_prompt: str = "",
     seed: int = -1,
@@ -52,11 +52,11 @@ async def a1111_client_async(
     """
     Generate images using the Stable Diffusion WebUI API.
     """
-    if not output_file:
+    if not output:
         now = datetime.datetime.now()
-        output_file = f"output_{now.strftime('%Y%m%d_%H%M%S')}.png"
-    outdir = Path(output_file).parent
-    stem = Path(output_file).stem
+        output = f"output_{now.strftime('%Y%m%d_%H%M%S')}.png"
+    outdir = Path(output).parent
+    stem = Path(output).stem
 
     if seed == -1:
         seed = random.randint(0, 2**32 - 1)
@@ -122,20 +122,8 @@ def pony_biolerplate(prompt, negative_prompt):
     return prompt, negative_prompt
 
 
-@arg("-p", "--prompt", help="prompt for image generation")
-@arg("-n", "--negative-prompt", help="negative prompt for image generation")
-@arg("-s", "--seed", type=int, help="seed for image generation")
-@arg("--sampler-name", help="sampler name")
-@arg("--scheduler", help="scheduler")
-@arg("-i", "--steps", type=int, help="number of steps")
-@arg("-C", "--cfg-scale", type=float, help="cfg scale")
-@arg("-w", "--width", type=int, help="image width")
-@arg("-h", "--height", type=int, help="image height")
-@arg("-c", "--count", type=int, help="number of images to generate")
-@arg("-X", "--clobber", help="overwrite existing files")
-@arg("-P", "--pony", help="add pony boilerplate")
 def a1111_client(
-    output_file: str = "",
+    output: str = "",
     prompt: str = "",
     negative_prompt: str = "",
     seed: int = -1,
@@ -154,7 +142,7 @@ def a1111_client(
     """
     asyncio.run(
         a1111_client_async(
-            output_file=output_file,
+            output=output,
             prompt=prompt,
             negative_prompt=negative_prompt,
             seed=seed,
@@ -170,5 +158,22 @@ def a1111_client(
         )
     )
 
+
+def setup_args(arg):
+    arg("-o", "--output", help="output file (png)")
+    arg("-p", "--prompt", help="prompt for image generation")
+    arg("-n", "--negative-prompt", help="negative prompt for image generation")
+    arg("-s", "--seed", type=int, help="seed for image generation")
+    arg("--sampler-name", help="sampler name")
+    arg("--scheduler", help="scheduler")
+    arg("-i", "--steps", type=int, help="number of steps")
+    arg("-C", "--cfg-scale", type=float, help="cfg scale")
+    arg("-W", "--width", type=int, help="image width")
+    arg("-H", "--height", type=int, help="image height")
+    arg("-c", "--count", type=int, help="number of images to generate")
+    arg("-X", "--clobber", help="overwrite existing files")
+    arg("-P", "--pony", help="add pony boilerplate")
+
+
 if __name__ == "__main__":
-    main.run(a1111_client)
+    main.go(a1111_client, setup_args)
