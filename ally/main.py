@@ -22,14 +22,14 @@ __version__ = '0.1.3'
 
 
 def go(
-    setup_args: Callable[[argparse.ArgumentParser], None],
     main_function: Callable[..., Any],
+    setup_args: Callable[[argparse.ArgumentParser], None] | None = None,
 ):
     """
     Main launcher function that sets up arguments, logging, and runs the main function.
 
-    :param setup_args: Function to set up command-line arguments
     :param main_function: Main function to run
+    :param setup_args: Function to set up command-line arguments
     """
 
     logs.setup_logging()

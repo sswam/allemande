@@ -28,7 +28,7 @@ def try_add_argument(parser, *args, **kwargs):
 
 def parse(
     main_function: Callable[..., Any],
-    setup_args: Callable[[argparse.ArgumentParser], None],
+    setup_args: Callable[[argparse.ArgumentParser], None] | None = None,
 ):
     """Parse command-line arguments for the main function."""
     # Get the signature of the main_function
@@ -57,7 +57,8 @@ def parse(
 
     # Set up command-line arguments
     parser.description = inspect.getmodule(main_function).__doc__
-    meta.call_gently(setup_args, parser=parser, arg=parser.add_argument)
+    if setup_args:
+        meta.call_gently(setup_args, parser=parser, arg=parser.add_argument)
     opts._setup_arg_defaults_and_types(parser, main_function)
     opts._setup_io_args(parser, wants_input=wants_input, wants_output=wants_output)
     opts._setup_logging_args(module_name, parser)

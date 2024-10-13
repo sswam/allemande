@@ -7,6 +7,8 @@ use Exporter qw(import);
 use Log::Log4perl; # qw(:easy);
 use IO::Handle;
 
+our $VERSION = "0.1.3";
+
 our @EXPORT_OK = qw(setup_logging get_logger io);
 
 sub setup_logging {
@@ -66,5 +68,3 @@ sub io {
 }
 
 1;
-
-__version__ = "0.1.3"
