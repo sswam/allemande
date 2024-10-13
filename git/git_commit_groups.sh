@@ -80,9 +80,9 @@ code/foo
 
 	$EDITOR "$commit_plan"
 
-	confirm "commit using xci?"
+	confirm "commit using messy-xterm?"
 
-	< "$commit_plan" grep -v -e '^\s*$' -e '^#' | sed 's/\s*#.*//' | xci
+	< "$commit_plan" grep -v -e '^\s*$' -e '^#' | sed 's/\s*#.*//' | messy-xterm
 
 	rm -f "$rundown_file" "$bad_file" "$llm_input_file"
 }
