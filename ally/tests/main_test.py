@@ -41,7 +41,7 @@ def test_go(mock_parse_args, mock_setup_get, mock_setup_put, mock_open_files, mo
     mock_setup_put.return_value = MagicMock()
 
     with patch('sys.exit') as mock_exit:
-        subject.go(mock_setup_args, mock_main_function)
+        subject.go(mock_main_function, mock_setup_args)
 
     mock_setup_args.assert_called_once()
     mock_parse_args.assert_called_once()

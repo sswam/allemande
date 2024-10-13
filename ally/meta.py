@@ -102,9 +102,9 @@ def kwargs_parameter(func):
 def call_gently(func, *args, **kwargs):
     """Call a function with *args and only the kwargs it can accept."""
     if kwargs_parameter(func) is None:
-        valid_kwargs = {
+        kwargs = {
             name: value
             for name, value in kwargs.items()
             if name in inspect.signature(func).parameters
         }
-    return func(*args, **valid_kwargs)
+    return func(*args, **kwargs)
