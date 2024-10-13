@@ -12,7 +12,7 @@ messy-xterm() {
 #		git-mod | xa confirm -t messy-xterm
 		exit
 	fi
-	xterm-screen-run ci "$*" exec messy "$@"
+	xterm-screen-run ci "$*" messy "$@"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
