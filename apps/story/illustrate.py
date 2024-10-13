@@ -50,20 +50,6 @@ class Options:
 
 
 # pylint: disable=too-many-arguments,too-many-positional-arguments
-@arg("input_file", help="Input file name")
-@arg("-o", "--output-dir", help="Output directory for images")
-@arg("-m", "--model", help="AI model to use")
-@arg("-w", "--width", help="Default image width")
-@arg("-h", "--height", help="Default image height")
-@arg("-p", "--prompt0", help="Extra prompt guidance added at the start")
-@arg("-q", "--prompt1", help="Extra prompt guidance added at the end")
-@arg("-n", "--negative", help="Negative prompt")
-@arg("-c", "--count", help="Number of images to generate for each prompt")
-@arg("-f", "--fix-dimensions", help="Use the closest happy SDXL dimensions")
-@arg("-F", "--no-fix-dimensions", dest="fix_dimensions", action="store_false")
-@arg("-P", "--pony", help="Add prompting boilerplate for Pony and Pony-derived models")
-@arg("-S", "--steps", help="Number of steps to run the model")
-@arg("-cs", "--cfg-scale", help="CFG scale")
 def illustrate(
     input_file: str,
     output_dir: str = ".",
@@ -308,8 +294,25 @@ def numbered_image_name(filename: str, index: int = 0) -> str:
     return f"{stem}_{index:05d}{ext}"
 
 
+def setup_args(arg):
+    arg("input_file", help="Input file name")
+    arg("-o", "--output-dir", help="Output directory for images")
+    arg("-m", "--model", help="AI model to use")
+    arg("-W", "--width", help="Default image width")
+    arg("-H", "--height", help="Default image height")
+    arg("-p", "--prompt0", help="Extra prompt guidance added at the start")
+    arg("-q", "--prompt1", help="Extra prompt guidance added at the end")
+    arg("-n", "--negative", help="Negative prompt")
+    arg("-c", "--count", help="Number of images to generate for each prompt")
+    arg("-f", "--fix-dimensions", help="Use the closest happy SDXL dimensions")
+    arg("-F", "--no-fix-dimensions", dest="fix_dimensions", action="store_false")
+    arg("-P", "--pony", help="Add prompting boilerplate for Pony and Pony-derived models")
+    arg("-S", "--steps", help="Number of steps to run the model")
+    arg("-cs", "--cfg-scale", help="CFG scale")
+
+
 if __name__ == "__main__":
-    main.run(illustrate)
+    main.go(illustrate, setup_args)
 
 
 # TODO:
