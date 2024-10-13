@@ -1,14 +1,11 @@
 #!/bin/bash
+# image ...
+# View images along with their diffusion prompts
 
-x=0
-s=0
+xscreen= x=0	# X screen
+small= s=0	# small view
 
-. opts
-
-set -e -u -o pipefail
-
-x_screen=$x
-small=$s
+eval "$(ally)"
 
 if [ -d "${1:-}" ]; then
 	find "$@" -mindepth 1 -maxdepth 1 -name '*.png' | sort | "$0" "${OPTS[@]}"
