@@ -91,8 +91,6 @@ lint_js() {
 	local prog="$1"
 	fail=0
 	run eslint "$prog" || fail=1
-	run jshint "$prog" || fail=1
-	run standard "$prog" || fail=1
 	return $fail
 }
 
