@@ -69,7 +69,7 @@ for appdir in "$ALLEMANDE_HOME/apps"/*; do
 	PATHS=$PATHS:$ALLEMANDE_HOME/apps/$app
 done
 
-PATH="$PATHS:$PATH"
+PATH="$PATHS:$PATH:$ALLEMANDE_HOME/node_modules/.bin"
 
 : ${CONFIG:=$ALLEMANDE_HOME/config.sh}
 
