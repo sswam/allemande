@@ -203,4 +203,4 @@ def setup_args(arg) -> None:
 
 
 if __name__ == "__main__":
-    main.go(setup_args, rich_text_process)
+    main.go(rich_text_process, setup_args)
