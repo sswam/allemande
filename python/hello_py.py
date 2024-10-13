@@ -118,7 +118,7 @@ def setup_args(arg):
 
 
 if __name__ == "__main__":
-    main.go(setup_args, hello)
+    main.go(hello, setup_args)
 
 """
 Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:

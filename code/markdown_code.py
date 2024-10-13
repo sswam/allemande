@@ -188,4 +188,4 @@ def setup_args(arg):
     arg("--strict-code", "-s", action="store_true", help="Output plain text if no code blocks are found")
 
 if __name__ == "__main__":
-    main.go(setup_args, extract_code_from_markdown)
+    main.go(extract_code_from_markdown, setup_args)

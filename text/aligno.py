@@ -252,4 +252,4 @@ def setup_args(parser: argparse.ArgumentParser) -> None:
 
 
 if __name__ == "__main__":
-    main.go(setup_args, aligno)
+    main.go(aligno, setup_args)

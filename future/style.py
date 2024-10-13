@@ -51,4 +51,4 @@ def setup_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("files", nargs="+", help="Files to process")
 
 if __name__ == "__main__":
-    main.go(setup_args, apply_style)
+    main.go(apply_style, setup_args)

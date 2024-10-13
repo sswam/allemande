@@ -41,4 +41,4 @@ def setup_args(arg):
 
 
 if __name__ == "__main__":
-    main.go(setup_args, hi)
+    main.go(hi, setup_args)

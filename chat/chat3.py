@@ -193,4 +193,4 @@ def setup_args(parser):
 
 
 if __name__ == "__main__":
-    main.go(setup_args, chat_interface)
+    main.go(chat_interface, setup_args)

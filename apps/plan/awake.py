@@ -309,4 +309,4 @@ def setup_args(arg):
 
 
 if __name__ == "__main__":
-    main.go(setup_args, awake)
+    main.go(awake, setup_args)

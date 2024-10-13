@@ -5,8 +5,7 @@
 import os
 import shutil
 
-import ally
-from ally import logs, filer
+from ally import main, logs, filer
 
 
 def get_rubbish_dir(first_arg):
@@ -72,4 +71,4 @@ def setup_args(parser):
 
 
 if __name__ == "__main__":
-    ally.go(setup_args, rubbish)
+    main.go(rubbish, setup_args)

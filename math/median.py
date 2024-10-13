@@ -49,4 +49,4 @@ def setup_args(arg):
 
 
 if __name__ == "__main__":
-    main.go(setup_args, calculate_median)
+    main.go(calculate_median, setup_args)

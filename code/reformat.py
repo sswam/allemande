@@ -58,4 +58,4 @@ def setup_args(arg):
 
 
 if __name__ == "__main__":
-    main.go(setup_args, reformat)
+    main.go(reformat, setup_args)

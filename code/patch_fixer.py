@@ -80,4 +80,4 @@ def setup_args(parser: argparse.ArgumentParser) -> None:
 
 
 if __name__ == "__main__":
-    main.go(setup_args, patch_fixer)
+    main.go(patch_fixer, setup_args)
