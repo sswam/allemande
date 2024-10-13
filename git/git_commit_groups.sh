@@ -82,7 +82,7 @@ code/foo
 
 	confirm "commit using xci?"
 
-	< "$commit_plan" grep -v -e '^\s*$' -e '^#' | xci
+	< "$commit_plan" grep -v -e '^\s*$' -e '^#' | sed 's/\s*#.*//' | xci
 
 	rm -f "$rundown_file" "$bad_file" "$llm_input_file"
 }
