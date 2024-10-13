@@ -47,7 +47,7 @@ create() {
 		prompt="Please write \`$base\`, $prompt"
 	fi
 
-	local input=$(v cat-named -p -b "${refs[@]}")
+	local input=$(v cat-named --suppress-headings input -p -b "${refs[@]}")
 
 	if [ -z "$input" ]; then
 		input=":)"
@@ -60,7 +60,7 @@ create() {
 	fi
 
 	# Process input and save result
-	printf "%s\n" -- "$input" | process -m="$model" "$prompt" |
+	printf "%s\n" "$input" | process -m="$model" "$prompt" |
 		if [ -n "$comment_char" ]; then
 			markdown-code -c "$comment_char"
 		else

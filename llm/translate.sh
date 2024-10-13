@@ -44,7 +44,7 @@ translate() {
 	# Prepare the prompt
 	local strict_prompt=""
 	if [ "$strict" -eq 1 ]; then
-		strict_prompt=", with no prelude, commentary or #File header, just the translation"
+		strict_prompt=", with no prelude, commentary or header, just the translation"
 	fi
 	prompt="Please translate$from_to_prompt as exactly as possible$strict_prompt: $prompt"
 
