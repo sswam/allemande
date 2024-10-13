@@ -6,10 +6,10 @@ slugify.py: Convert text into URL-friendly slugs.
 
 import re
 import sys
-from typing import Union, List, TextIO
+from typing import TextIO
 import argparse
 
-from ally import main
+from ally import main, Get, Put
 from argh import arg
 
 __version__ = "0.1.1"
@@ -17,24 +17,16 @@ __version__ = "0.1.1"
 logger = main.get_logger()
 
 
-def process_stream(stream: TextIO):
-    """Process input stream line by line."""
-    for line in stream:
-        yield line.rstrip("\n")
-
-
 def slugify(
     *text: str,
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
-    hyphen: bool = True,
+    get: Get = None,
+    put: Put = None,
+    underscore: bool = False,
     boolean: bool = True,
     lower: bool = False,
     upper: bool = False,
-) -> Union[str, List[str]]:
+) -> list[str]|None:
     """Convert text into URL-friendly slugs."""
-    get, put = main.io(istream, ostream)
-
     def process_text(input_text: str) -> str:
         if boolean:
             input_text = re.sub(r"&", "_and_", input_text)
@@ -52,7 +44,7 @@ def slugify(
         elif upper:
             input_text = input_text.upper()
 
-        if hyphen:
+        if not underscore:
             input_text = re.sub(r"_", "-", input_text)
 
         return input_text
@@ -67,29 +59,17 @@ def slugify(
         return
 
 
-def setup_args(parser: argparse.ArgumentParser) -> None:
+def setup_args(arg) -> None:
     """Set up the command-line arguments."""
-    parser.add_argument(
-        "text",
-        nargs="*",
-        help="text to be slugified",
-    )
-    parser.add_argument(
-        "-u", "--underscore", help="use underscores", action="store_true"
-    )
-    parser.add_argument(
-        "-B", "--no-boolean", help="do not replace & and |", action="store_true"
-    )
-    parser.add_argument(
-        "-l", "--lower", help="convert to lowercase", action="store_true"
-    )
-    parser.add_argument(
-        "-U", "--upper", help="convert to uppercase", action="store_true"
-    )
+    arg("text", nargs="*", help="text to be slugified")
+    arg("-u", "--underscore", help="use underscores", action="store_true")
+    arg("-B", "--no-boolean", help="do not replace & and |", dest="boolean", action="store_false")
+    arg("-l", "--lower", help="convert to lowercase", action="store_true")
+    arg("-U", "--upper", help="convert to uppercase", action="store_true")
 
 
 if __name__ == "__main__":
-    main.go(setup_args, slugify)
+    main.go(slugify, setup_args)
 
 
 """
