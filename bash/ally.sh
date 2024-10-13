@@ -130,7 +130,7 @@ notify() {
 }
 
 countdown() {
-    local remaining=$1 warn=$2 warn_interval=${3:-10}
+    local remaining=$1 warn=$2 warn_interval=${3:-5}
     shift 2
     while [ "$remaining" -gt 0 ]; do
         if [ "$remaining" -le "$warn" ] && (( remaining % warn_interval == 0 || remaining < warn_interval )); then
