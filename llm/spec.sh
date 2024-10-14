@@ -7,6 +7,7 @@ spec() {
 	local model= m=	# LLM model
 	local sample= s=1	# refer to hello.<ext> for style (e.g. hello.md)
 	local sections= S=(summary features requirements)	# Sections to include
+	local sections_file= F=$ALLEMANDE_HOME/llm/spec-sections.md	# Refer to sections file, or blank for none; trumps --sections
 	local format= f=	# Output format [md|txt|html|json]
 	local edit= e=1	# do not edit
 
@@ -44,7 +45,7 @@ spec() {
 
 	# style reference and prompt for -s option
 	style="hello-$ext"
-	if [ "$s" = 1 -a -n "$(which-file "$style")" ]; then
+	if [ "$sample" = 1 -a -n "$(which-file "$style")" ]; then
 		refs+=("$style")
 		prompt="In the style of \`$style\`, $prompt"
 	fi
@@ -52,7 +53,11 @@ spec() {
 	prompt="Please write a specfication \`$base\`, $prompt."
 
 	# add prompting for sections, if any
-	if [ "${#sections[@]}" -gt 0 ]; then
+	if [ -n "$sections_file" ]; then
+		sections_file_basename=$(basename "$sections_file")
+		prompt="$prompt Include sections as per $sections_file_basename."
+		refs+=("$sections_file")
+	elif [ "${#sections[@]}" -gt 0 ]; then
 		prompt="$prompt Include sections for ${sections[*]}."
 	fi
 
