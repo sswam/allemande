@@ -14,7 +14,7 @@ import argh
 
 from ally import main
 
-__version__ = "1.0.2"  # Bumped patch version
+__version__ = "1.0.2"
 
 logger = main.get_logger()
 
@@ -85,7 +85,7 @@ def highlight_main(
     Examples:
     highlight.py 'blo*d' red 'pla*nts' green 'colou?r' magenta
     highlight.py --word-regexp 'blood' red 'plants' green
-    highlight.py -c 'error' red | less -R
+    highlight.py 'error' red | less -R
     """
     if len(patterns) % 2 != 0:
         raise ValueError("Each pattern must have a corresponding color")
