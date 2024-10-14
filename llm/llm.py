@@ -740,6 +740,14 @@ def process(*prompt, prompt2: str|None=None, istream: IO[str]=None, ostream: IO[
 	return asyncio.run(aprocess(*prompt, prompt2=prompt2, istream=istream, ostream=ostream, model=model, indent=indent, temperature=temperature, token_limit=token_limit, retries=retries, empty_ok=empty_ok, empty_to_empty=empty_to_empty, log=log, lines=lines, repeat=repeat, json=json, timeit=timeit))
 
 
+def decimal_string(num: float, places=6) -> str:
+    """Convert a float to a string without scientific notation."""
+    return f"{num:.{places}f}".rstrip("0").rstrip(".")
+
+
+@arg("-m", "--model", default=default_model, help="model name")
+@arg("-I", "--in-cost", action="store_true", help="show input cost")
+@arg("-O", "--out-cost", action="store_true", help="show output cost")
 def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 	""" count tokens in input """
 	set_opts(vars())
@@ -775,11 +783,11 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 		raise ValueError(f"unknown model vendor: {vendor}")
 	rv = [n_tokens]
 	if in_cost:
-		rv.append(model["cost_in"] * n_tokens / 1e6)
+		rv.append(decimal_string(model["cost_in"] * n_tokens / 1e6))
 	if out_cost:
-		rv.append(model["cost_out"] * n_tokens / 1e6)
+		rv.append(decimal_string(model["cost_out"] * n_tokens / 1e6))
 	if (in_cost or out_cost) and "cost_req" in model:
-		rv.append(model["cost_req"] / 1e3)
+		rv.append(decimal_string(model["cost_req"] / 1e3))
 	return tuple(rv)
 
 
