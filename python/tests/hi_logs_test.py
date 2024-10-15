@@ -6,7 +6,9 @@ import io
 from unittest.mock import patch, MagicMock
 import logging
 
-import hi as subject
+from ally.text import get_last_n_lines
+
+import hi_logs as subject
 
 subject_name = subject.__name__
 
@@ -52,27 +54,9 @@ def test_log_level_option_verbose():
     assert "INFO" in result.stderr
 
 def test_get_logger():
-    logger = logs.get_logger()
+    logger = subject.logger
     assert isinstance(logger, logging.Logger)
     assert logger.name == f"{subject_name}"
-
-def get_last_n_lines(file_path, n):
-    with open(file_path, 'rb') as f:
-        f.seek(0, os.SEEK_END)
-        size = f.tell()
-        block = 1024
-        data = []
-        remaining_lines = n
-        while remaining_lines > 0 and size > 0:
-            if size - block < 0:
-                block = size
-            size -= block
-            f.seek(size, os.SEEK_SET)
-            buffer = f.read(block)
-            data.insert(0, buffer)
-            remaining_lines -= buffer.count(b'\n')
-        content = b''.join(data)
-        return content.decode('utf-8').splitlines()[-n:]
 
 def test_log_file_creation():
     log_file = os.path.expanduser(f"~/.logs/{subject_name}.log")
@@ -89,4 +73,5 @@ def test_log_file_creation():
 
     # Check that the log entry is one of the last entries based on PID
     relevant_lines = [line for line in log_lines if f"PID:{pid}" in line]
+    print(relevant_lines)
     assert any(f"DEBUG     {subject_name}  This is a DEBUG message" in line for line in relevant_lines)

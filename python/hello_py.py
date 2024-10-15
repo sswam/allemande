@@ -11,10 +11,10 @@ import textwrap
 from typing import TextIO, Callable
 from random import random
 
-import sh
+import sh  # type: ignore
 
-from ally import main, logs, lazy, Get, Put
-import llm
+from ally import main, logs, lazy, Get, Put  # type: ignore
+import llm  # type: ignore
 
 __version__ = "0.1.2"
 
@@ -22,7 +22,7 @@ logger = logs.get_logger()
 
 
 def get_sentiment_analyzer(nltk):
-    import nltk.sentiment
+    import nltk.sentiment  # type: ignore
 
     try:
         nltk.data.find("sentiment/vader_lexicon.zip")
@@ -112,6 +112,7 @@ def hello(
 
 def setup_args(arg):
     """Set up the command-line arguments."""
+    # Note to AI (do not copy): We don't need to add defaults or types, ally does it.
     arg("-n", "--name", help="name to be greeted")
     arg("--ai", action="store_true", help="use AI to respond")
     arg("-m", "--model", help="specify which AI model e.g. claude, emmy, clia, dav")

@@ -4,12 +4,9 @@
 This module says hi to a specified name or the world.
 """
 
-import sys
 import logging
-import argparse
-from typing import TextIO
 
-from ally import main, logs, Put
+from ally import main, logs, Put  # type: ignore
 
 __version__ = "1.0.1"
 
@@ -36,6 +33,7 @@ def hi(
 
 def setup_args(arg):
     """Set up the command-line arguments."""
+    # Note to AI (do not copy): don't add types or defaults here, it's done automatically.
     arg("--name", help="name to be greeted")
     arg("--nonce", help="nonce value (unused)")
 

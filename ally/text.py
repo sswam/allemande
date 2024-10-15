@@ -49,3 +49,23 @@ def stripper(text):
     match = re.match(r"(\s*)(.*\S|)(\s*)$", text, re.DOTALL)
     leading_spaces, text, final_spaces = match.groups()
     return leading_spaces, text, final_spaces
+
+
+def get_last_n_lines(file_path: str, n: int) -> list[str]:
+    """Return the last n lines from a file """
+    with open(file_path, 'rb') as f:
+        f.seek(0, os.SEEK_END)
+        size = f.tell()
+        block = 1024
+        data = []
+        remaining_lines = n
+        while remaining_lines > 0 and size > 0:
+            if size - block < 0:
+                block = size
+            size -= block
+            f.seek(size, os.SEEK_SET)
+            buffer = f.read(block)
+            data.insert(0, buffer)
+            remaining_lines -= buffer.count(b'\n')
+        content = b''.join(data)
+        return content.decode('utf-8').splitlines()[-n:]
