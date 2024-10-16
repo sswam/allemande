@@ -9,7 +9,7 @@ from ally import titty
 __version__ = '0.1.3'
 
 
-Get = Callable[[str], [str|None]]
+Get = Callable[[str], str|None]
 Put = Callable[[str], None]
 
 
