@@ -10,7 +10,7 @@ import re
 import argparse
 from typing import TextIO, Callable
 
-from ally import main
+from ally import main, geput
 
 __version__ = "0.1.1"
 
@@ -24,7 +24,7 @@ def process_line(line: str) -> str | None:
     line = re.sub(r'^local\s+', '', line)
 
     # Extract variable name, short option, and default value
-    match = re.match(r'(\w+)=(\S*)\s+(\w+)=(\S*)\s+#\s*(.*)', line)
+    match = re.match(r'(\w+)=(\S*)\s+(\w+)=(\S*)(?:\s+#\s*(.*))?', line)
     if match:
         long_opt, _default_1, short_opt, _default_2, description = match.groups()
         if _default_2.startswith("("):
@@ -37,12 +37,12 @@ def process_line(line: str) -> str | None:
 
 def opts_long(
     script: str,
-    get: Callable[[], str],
-    put: Callable[[str], None],
+    put: geput.Put,
 ) -> None:
     """
     Generate code to support long and short options based on the script's content.
     """
+    print = geput.print(put)
     try:
         with open(script, "r") as istream:
             for line in istream:
@@ -59,7 +59,7 @@ def opts_long(
                 # Process and output the line
                 processed_line = process_line(line)
                 if processed_line:
-                    put(processed_line)
+                    print(processed_line)
     except (FileNotFoundError, IsADirectoryError, UnicodeDecodeError) as e:
         logger.info(f"File not found: {script}")
         raise

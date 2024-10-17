@@ -14,7 +14,7 @@ from pathlib import Path
 
 import sh
 
-from ally import main
+from ally import main, geput
 
 __version__ = "0.1.2"
 
@@ -25,6 +25,8 @@ def process_line(line: str, script_name: str) -> str:
     """Process a single line of the script."""
     # Remove indent
     # line = line.lstrip()
+
+    logger.debug("Processing line: %s", line)
 
     # Remove 'local ' from start of line
     line = re.sub(r'^\s*local\s+', '', line)
@@ -46,9 +48,12 @@ def process_line(line: str, script_name: str) -> str:
         line = re.sub(r'(\S)(\s+)#', r'\1\t#', line)
 
         # Long and short options in separate columns
-        line = re.sub(r' (-\w)', r'\t\1', line)
-        if not re.search(r'\t.*?\t', line):
+        if re.search(r'\s(-\w)', line):
+            line = re.sub(r'\s(-\w)', r'\t\1', line)
+        else:
             line = re.sub(r'\t', r'\t\t', line)
+
+    logger.debug("  Processed line: %s", line)
 
     return line
 
@@ -61,13 +66,13 @@ def process_array(array_content: str) -> str:
 
 
 def opts_help(
-    get: Callable[[], str],
-    put: Callable[[str], None],
+    put: geput.Put,
     script: str,
 ) -> None:
     """
     Generate a help message for command-line options based on the script's content.
     """
+
     script = Path(script)
     # while it's a symlink
     detect_loop = 0
@@ -81,12 +86,16 @@ def opts_help(
         logger.error("Too many symlinks")
     script_name = script.name
 
-    lines = []
-    lines.append(f"{script_name} ")
-
     in_func = False
     blanks = 0
     skip_blank_lines = False
+
+    lines = []
+
+    def out(line=""):
+        lines.append(line)
+
+    out(f"{script_name} ")
 
     with open(script, "r") as istream:
         for line in istream:
@@ -128,23 +137,23 @@ def opts_help(
 
             # Output a single blank line if needed
             if blanks > 0 and not skip_blank_lines:
-                lines.append("\n")
+                out("\n")
             blanks = 0
             skip_blank_lines = False
 
             # Process and output the line
             processed_line = process_line(line, script_name)
-            lines.append(processed_line + "\n")
+            out(processed_line + "\n")
 
-    text = "".join(lines)
+    output = "".join(lines)
 
     try:
         # TODO use tsv2txt module directly
-        text = sh.Command("tsv2txt")("-m", _in=text)
+        output = sh.Command("tsv2txt")("-m", _in=output)
     except sh.CommandNotFound:
         logger.warning("tsv2txt not available, keeping lines unchanged")
 
-    put(text)
+    put(output)
 
 
 def setup_args(parser: argparse.ArgumentParser) -> None:
