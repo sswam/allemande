@@ -6,16 +6,17 @@ This module formats git commit messages by adding two spaces before continued li
 
 import sys
 import logging
-from typing import TextIO
+from typing import TextIO, Iterable
 
-from ally import main, logs, Get, Put  # type: ignore
+from ally import main, logs, geput  # type: ignore
+from ally.geput import Get, Put, inputs, prints
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = logs.get_logger()
 
 
-def format_commit_message(lines: list[str]) -> list[str]:
+def format_commit_message(lines: Iterable[str]) -> list[str]:
 	"""Format the commit message by adding two spaces before continued lines."""
 	formatted_lines: list[str] = []
 	for line in lines:
@@ -32,9 +33,9 @@ def fmt_commit(
 	"""
 	Format git commit messages by adding two spaces before continued lines.
 	"""
-	lines = get(lines=True)
+	lines = inputs(get)
 	formatted_lines = format_commit_message(lines)
-	put(formatted_lines, lines=True)
+	prints(put, formatted_lines)
 
 
 if __name__ == "__main__":
