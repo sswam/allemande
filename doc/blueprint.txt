@@ -1,0 +1,4 @@
+A product blueprint is a document encompassing information needed by
+stakeholders to build and use the product. It includes product vision, roadmap,
+development strategy, requirements, tech stack, timelines, team structure, user
+personas, and use case flowcharts.
