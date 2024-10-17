@@ -77,7 +77,7 @@ improve() {
 	fi
 
 	# Results file for checks and tests
-	local results_file="$dir/$base.results.txt"
+	local results_file="$dir/.$base.results.txt"
 	if [ -e "$results_file" ]; then
 		move-rubbish "$results_file"
 	fi
@@ -118,11 +118,11 @@ improve() {
 		refs+=("$results_file")
 		check_msg="With check issues, please either fix the issue, or disable the warning with a comment."
 		if (( testok )); then
-			checks_prompt="Some checks failed. The tests are correct, so don't change them; please fix the main program code. $check_msg"
+			checks_prompt="Some checks failed. The tests are CORRECT, you MUST NOT CHANGE THEM; please fix the main program code. $check_msg"
 		elif (( codeok )); then
-			checks_prompt="Some checks failed. The main program code is correct, so don't change it; please fix the tests."
+			checks_prompt="Some checks failed. The main program code is CORRECT, you MUST NOT CHANGE IT; please fix the tests."
 		else
-			checks_prompt="Some checks failed. Please fix the program and/or the tests. If the code looks correct as it is, please update the tests to match the code, or add comments to disable certain linting behaviour, etc. $check_msg"
+			checks_prompt="Some checks failed. Please fix the program and/or the tests. If the code looks correct as it is, please update the tests to match the code, or vice versa. $check_msg"
 		fi
 	elif [ "$tests_file" ]; then
 		echo >&2 "Checks passed"
@@ -147,29 +147,36 @@ improve() {
 		prompt="use the style of \`$style_ref\`, $prompt"
 	fi
 
-	tests_name_clause=""
+	files_to_edit="\`$base\`"
 	if [ -f "$tests_file" ] && [ -s "$tests_file" ]; then
-		tests_name_clause=" and/or \`$(basename "$tests_file")\`"
+		if (( codeok )); then
+			files_to_edit="\`$(basename "$tests_file")\`"
+		elif (( ! testok )); then
+			files_to_edit+="and/or \`$(basename "$tests_file")\`"
+		fi
 	fi
 
-	if [ -z "$prompt" ]; then
+	strict_part=""
+	if [ -z "$prompt" ] && [ -z "$checks_prompt" ]; then
 		prompt="Please improve"
 		strict=0
+	elif (( strict )) && [ -n "$prompt" ]; then
+		prompt="*** TASK: $prompt ***"
+		strict_part="Please perform the *** TASK *** requested above. This is the main task to be done. Secondarily please fix any certain bugs or issues. Do not make other proactive changes at this time."
+	elif (( strict )); then
+		prompt=""
+		strict_part="Please fix any certain bugs or issues. Do not make other proactive changes at this time."
 	else
 		prompt="*** TASK: $prompt ***"
 	fi
 
-	strict_part=""
-	if (( strict )); then
-		strict_part="Please perform the *** TASK *** requested above. This is the main task to be done. Secondarily please fix any certain bugs or issues. Do not make other proactive changes at this time."
-	fi
-
 	# TODO "Add a header line \`#File: filename\` before each file's code."
-	prompt="Please edit \`$base\`$tests_name_clause. $prompt.
+
+	prompt="Please edit $files_to_edit. $prompt
 	$strict_part
 	You may comment on other issues you see, or ideas you have.
 	$checks_prompt.
-	Bump the patch version if present."
+	Bump the patch version if present. Don't add comments to mark your changes, only if a comment is needed going forward."
 
 	if (( changes == 0 )); then
 		prompt="$prompt. Strictly no changes to existing functionality or APIs."
@@ -259,29 +266,26 @@ improve() {
 			markdown-code -c "$comment_char"
 		else
 			cat
-		fi >"$file~"
+		fi >"$output_file"
 
 	# check not empty
-	if [ ! -s "$file~" ]; then
+	if [ ! -s "$output_file" ]; then
 		echo >&2 "empty output"
-		rm "$file~"
+		rm "$output_file"
 		exit 1
 	fi
 
 	# make the file executable if appropriate
-	chmod-x-shebang "$file"
+	chmod-x-shebang "$output_file"
 
 	# Compare original and improved versions
 	if (( edit )); then
-		if [ -n "$tests_file" ]; then
-			vim -d "$file~" "$file" -c "botright vnew $tests_file"
+		if [ -n "$tests_file" ] && (( ! codeok )); then
+			vim -d "$output_file" "$target_file" -c "botright vnew $tests_file"
 		else
-			vimdiff "$file~" "$file"
+			vimdiff "$output_file" "$target_file"
 		fi
 	fi
-
-	# make the file executable if appropriate
-	chmod-x-shebang "$file"
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
 	confirm=""
@@ -293,7 +297,7 @@ improve() {
 	# Use swapfiles with -c option to preserve hardlinks
 	$confirm swapfiles -c "$target_file" "$output_file" ||
 		# maybe the new version is an improved tests file
-		if [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ]; then
+		if [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ] && (( ! codeok )); then
 			$confirm swapfiles -c "$tests_file" "$output_file"
 		fi
 
