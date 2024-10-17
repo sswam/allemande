@@ -9,7 +9,8 @@ import sys
 from typing import TextIO
 import argparse
 
-from ally import main, Get, Put
+from ally import main
+from ally.geput import Get, Put
 from argh import arg
 
 __version__ = "0.1.1"
@@ -18,7 +19,7 @@ logger = main.get_logger()
 
 
 def slugify(
-    *text: str,
+    text: str,
     get: Get = None,
     put: Put = None,
     underscore: bool = False,
@@ -50,7 +51,7 @@ def slugify(
         return input_text
 
     if text:
-        result = process_text(" ".join(text))
+        result = process_text(text)
         return result
     else:
         while (line := get()) is not None:
@@ -61,7 +62,7 @@ def slugify(
 
 def setup_args(arg) -> None:
     """Set up the command-line arguments."""
-    arg("text", nargs="*", help="text to be slugified")
+    arg("text", help="text to be slugified")
     arg("-u", "--underscore", help="use underscores", action="store_true")
     arg("-B", "--no-boolean", help="do not replace & and |", dest="boolean", action="store_false")
     arg("-l", "--lower", help="convert to lowercase", action="store_true")
