@@ -12,10 +12,10 @@ case "$cmd" in
 	mv -n "$file" "$dir"/
 	;;
 D)
-	i3-popup-xterm -g=160x80 lessit image-debug "$file"
+	i3-xterm-floating -g=160x80 lessit image-debug "$file"
 	;;
 P)
-	i3-popup-xterm -g=160x80 lessit image-params "$file"
+	i3-xterm-floating -g=160x80 lessit image-params "$file"
 	;;
 O)
 	mv "$file" ~/outputs/
