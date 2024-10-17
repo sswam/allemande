@@ -14,7 +14,7 @@ import argparse
 from typing import TextIO, Callable
 from collections import Counter
 
-from ally import main
+from ally import main, geput
 
 __version__ = "1.0.2"
 
@@ -200,8 +200,8 @@ def parse_indent_code(indent_code: str) -> tuple[int, str, int]:
 
 
 def aligno(
-    get: Callable[[], str] = None,
-    put: Callable[[str], None] = None,
+    get: geput.Get,
+    put: geput.Put,
     detect: bool = False,
     apply: bool = False,
     indent_code: str = DEFAULT_INDENT,
@@ -219,16 +219,16 @@ def aligno(
         aligno --apply 4s2 < input.py > output.py
     """
 
+    print = geput.print(put)
+
     # Determine whether to detect or apply indentation
-    indent_code = DEFAULT_INDENT
+    indent_code = indent_code or DEFAULT_INDENT
     if apply and detect:
         raise ValueError("Cannot detect and apply indent at the same time")
     if not apply and not detect:
         detect = True
-    if apply and not indent_code:
-        raise ValueError("Format argument required for applying indent")
 
-    input_text = get(all=True)
+    input_text = geput.whole(get)
 
     if detect:
         # Detect and output the indentation of the input text
@@ -236,11 +236,11 @@ def aligno(
         indent_code = format_indent_code(*detected_indent)
         if indent_code.startswith("0"):
             indent_code = DEFAULT_INDENT
-        put(indent_code)
+        print(indent_code)
     else:
         # Apply the specified or default indentation to the input text
         output_text = apply_indent(input_text, *parse_indent_code(indent_code))
-        put(output_text)
+        print(output_text)
 
 
 def setup_args(parser: argparse.ArgumentParser) -> None:
@@ -248,7 +248,7 @@ def setup_args(parser: argparse.ArgumentParser) -> None:
     parser.description = "Detect or apply indentation to the input text."
     parser.add_argument("--detect", "-D", action="store_true", help="detect indent type and minimum level")
     parser.add_argument("--apply", "-a", action="store_true", help="apply specified indent type and minimum level")
-    parser.add_argument("indent_code", nargs="?", default=DEFAULT_INDENT, help="indent code (e.g., '1t', '4s2')")
+    parser.add_argument("indent_code", nargs="?", help="indent code (e.g., '1t', '4s2')")
 
 
 if __name__ == "__main__":
