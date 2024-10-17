@@ -49,7 +49,7 @@ test_sh() {
 
 test_py() {
 	local tests_file="$1"
-	run pytest --asyncio-mode=auto -vv --tb=short --disable-warnings --no-header "$tests_file" 2>/dev/null || return 1
+	run pytest --asyncio-mode=auto -vv --capture=no --tb=short --disable-warnings --no-header "$tests_file" 2>/dev/null || return 1
 }
 
 test_c() {
