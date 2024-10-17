@@ -5,8 +5,9 @@
 import os
 
 os.environ["HF_HUB_OFFLINE"] = "1"
-os.environ["USE_TF"] = "1"  # startup warnings, breaks?
-os.environ["USE_TORCH"] = "0"   # use more VRAM, leaks VRAM, breaks
+# os.environ["USE_TF"] = "1"  # startup warnings
+# os.environ["USE_TORCH"] = "0"   # use more VRAM, leaks VRAM, breaks
+# Need LRScheduler from torch?!
 
 import sys
 import logging
@@ -21,18 +22,16 @@ from threading import Thread
 import torch
 import transformers  # type: ignore
 from transformers import BitsAndBytesConfig
-from argh import arg
 
+from ally import main, filer
 
-from ally import main
-
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 logger = main.get_logger()
 
 
 default_local_model: str = "default"
-default_model: str = str(main.resource(f"models/llm/{default_local_model}"))
+default_model: str = str(filer.resource(f"models/llm/{default_local_model}"))
 
 
 def debug_tokens(pipeline: transformers.pipeline, text: str):
@@ -65,7 +64,7 @@ def get_pipeline(model: str) -> transformers.pipeline:
 #        torch_dtype=torch.bfloat16,
         device_map="auto",
         # max_length=100,
-        max_new_tokens=50,
+        # max_new_tokens=50,
         truncation=True,
 #        do_sample=False,  # avoid crashes
     )
@@ -201,17 +200,6 @@ def write_chat_history(filename: str, history: list[Message], mode: str = "w"):
             write_message(f, message)
 
 
-@arg("chat_file", help="File to save chat history")
-@arg("--model", help="model")
-@arg("--stream", help="Enable streaming output")
-@arg("--context", help="Number of previous messages to include for context")
-@arg("--ai_name", help="Name of the AI assistant")
-@arg("--user_name", help="Name of the user", default=None)
-@arg("--first", help="AI speaks first", default=False)
-@arg("--temperature", help="Temperature for text generation")
-@arg("--top_k", help="Top k for text generation")
-@arg("--top_p", help="Top p for text generation")
-@arg("--repetition_penalty", help="Repetition penalty for text generation")
 async def chat_with_ai(
     chat_file: str,
     istream: TextIO = sys.stdin,
@@ -226,6 +214,7 @@ async def chat_with_ai(
     top_k: int|None = None,
     top_p: float|None = None,
     repetition_penalty: float = 1.0,
+    length: int = 50,
 ) -> None:
     """
     Chat with a local LLM model.
@@ -292,7 +281,13 @@ async def chat_with_ai(
         message_history.append(message)
         return message
 
-    generation_kwargs = dict(temperature=temperature, top_k=top_k, top_p=top_p, repetition_penalty=repetition_penalty)
+    generation_kwargs = dict(
+        temperature=temperature,
+        top_k=top_k,
+        top_p=top_p,
+        repetition_penalty=repetition_penalty,
+        max_new_tokens=length
+    )
 
     async def ai_turn():
         context_prompt = "\n\n".join(map(message_to_string, message_history[-context:])) + f"\n\n{ai_name}:"
@@ -341,5 +336,22 @@ async def chat_with_ai(
     # It could even call out to someone who isn't in the chat yet, or an imaginary friend, or whatever.
 
 
+def setup_args(arg):
+    """Set up the command-line arguments."""
+    # Important Note to AI: DO NOT add `type` or `default` in setup_args functions like this one, it is not needed.
+    arg("chat_file", help="File to save chat history")
+    arg("--model", help="model")
+    arg("--stream", help="Enable streaming output")
+    arg("--context", help="Number of previous messages to include for context")
+    arg("--ai_name", help="Name of the AI assistant")
+    arg("--user_name", help="Name of the user")
+    arg("--first", help="AI speaks first")
+    arg("--temperature", help="Temperature for text generation")
+    arg("--top_k", help="Top k for text generation")
+    arg("--top_p", help="Top p for text generation")
+    arg("--repetition_penalty", help="Repetition penalty for text generation")
+    arg("--length", "-l", help="Maximum number of new tokens to generate")
+
+
 if __name__ == "__main__":
-    main.run(chat_with_ai)
+    main.go(chat_with_ai, setup_args)
