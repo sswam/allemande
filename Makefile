@@ -213,7 +213,7 @@ rotate:
 canon:
 	$(ALLEMANDE_HOME)/files/canon_links.py $(ALLEMANDE_PATH)
 	ln -sf $(ALLEMANDE_HOME)/canon/usr-local-bin /usr/local/bin
-	cd canon ; usr-local-bin confirm uniqo lecho i3-popup-xterm note waywo ally opts opts-long opts-help path-uniq
+	cd canon ; usr-local-bin confirm uniqo lecho i3-xterm-floating note waywo ally opts opts-long opts-help path-uniq day
 	cd alias ; usr-local-bin v
 
 fresh-old:: 
