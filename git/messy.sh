@@ -362,6 +362,7 @@ Format of the header line:
 feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
 Anything that changes functionality in any way is a feature, not a refactor.
+Please mark fixes as fix, not feat. I make a lot of fixes.
 
 Files in the 'snip' directory, are obsolete rubbish that's been removed from something else.
 Files in the 'gens' directory, are interesting AI generated content, but it is not important.
