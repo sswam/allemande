@@ -80,9 +80,9 @@ def parse(
 
     # setup get/put functions if needed
     if wants_get and not hasattr(args, "get"):
-        args.get = geput.setup_get(args.istream)
+        args.get = geput.get_istream(args.istream)
     if wants_put and not hasattr(args, "put"):
-        put = args.put = geput.setup_put(args.ostream)
+        put = args.put = geput.put_ostream(args.ostream)
     if wants_input_source and not hasattr(args, "input_source"):
         args.input_source = args.istream
     if wants_text and not hasattr(args, "text"):
@@ -208,7 +208,8 @@ def _get_argparse_type(annotation):
         return non_none_types[0] if non_none_types else str
     else:
         # Default to str with a warning
-        warnings.warn(f"Warning: Unsupported annotation {annotation} or {origin!r}, defaulting to str.")
+        logger = logs.get_logger()
+        logger.debug(f"Warning: Unsupported annotation {annotation} or {origin!r}, defaulting to str.")
         return str
 
 

@@ -7,6 +7,7 @@ import mimetypes
 from pathlib import Path
 
 from ally import logs
+import rubbish
 
 __version__ = '0.1.3'
 
@@ -62,7 +63,7 @@ def backup(file):
 
     # Check if backup file exists, and move it to rubbish if it does
     if os.path.exists(backup_file):
-        move_to_rubbish(backup_file)
+        rubbish.rubbish(backup_file)
 
     # Copy the file to create a backup, overwriting if it exists
     shutil.copy2(file, backup_file)

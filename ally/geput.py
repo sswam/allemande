@@ -1,89 +1,129 @@
-""" Input/output utilities. """
+"""
+Input/output utilities.
 
-import argparse
+Important: These get and put functions are supposed to be very simple and very
+easy to implement for different types of IO. Any functionality added should be
+cosmetic, not providing essential functionality, so that another implementation
+can just collect them in **kwargs and ignore them.
+
+Wrappers should pass **kwargs along unless they use them directly.
+
+The prompt, placeholder and flush features are examples of largely cosmetic
+functionality which is okay to have in these functions. Adding an option to
+strip lines or add line-endings would not be okay.
+"""
+
 import sys
+import asyncio
 from typing import TextIO, Callable
 
 from ally import titty
 
-__version__ = '0.1.3'
+__version__ = "0.1.4"
 
 
-Get = Callable[[str], str|None]
+Get = Callable[[str], str | None]
 Put = Callable[[str], None]
 
+# AsyncGet = AsyncCallable[[str], str|None]
+# AsyncPut = AsyncCallable[[str], None]
 
-# TODO simplify these to fit their types, and add wrappers for TSV, etc.
+
+def put_ostream(ostream: TextIO, flush=None) -> Put:
+    """Create a put function for writing output."""
+
+    if flush is None:
+        flush = titty.is_tty(ostream)
+
+    def put(line, flush=flush, **_kwargs) -> None:
+        """
+        Put output to an ouptput stream, BYO newlines.
+
+        Supports flushing, which is a non-essential feature.
+        """
+        __builtins__["print"](line, file=ostream, end="", flush=flush)
+
+    return put
 
 
-def setup_get(istream: TextIO) -> Get:
-    """Create a get function for reading input from a stream."""
+def print(put: Put, sep=" ", end="\n") -> Put:
+    """A print-like wrapper for a put function."""
+
+    def print_fn(*args, sep=sep, end=end, **kwargs) -> None:
+        """Print to a put function."""
+        line = sep.join([str(arg) for arg in args]) + end
+        put(line, **kwargs)
+
+    return print_fn
+
+
+def get_istream(istream: TextIO, prompt: str = ": ", placeholder: str = "") -> Get:
+    """Create a get function for reading input."""
 
     is_tty = titty.is_tty(istream)
 
     def get(
-        prompt: str = ": ",
-        all=False,
-        lines=False,
-        chunks=False,
-        rstrip=True,
-        placeholder="",
-    ) -> str|None:
+        prompt: str = prompt,
+        placeholder: str = placeholder,
+        **_kwargs,
+    ) -> str | None:
         """
-        Get input from the input stream.
+        Get a line of input from an input stream, including the newline.
 
-        Args:
-            prompt (str, optional): Prompt to display. Defaults to ": ".
-            all (bool, optional): Read all input. Defaults to False.
-            lines (bool, optional): Read all lines to a list. Defaults to False.
-
-        Returns:
-            str: The input string.
+        Supports prompt and placeholder for TTY line-by-line input,
+        which are non-essential features.
         """
-        if all:
-            return istream.read()
-        # remove these options?
-        if lines or chunks:
-            all_lines = istream.readlines()
-            if lines and rstrip:
-                all_lines = [line.rstrip() for line in all_lines]
-            elif not chunks:
-                all_lines = [line.rstrip("\n") for line in all_lines]
-            return all_lines
+
         if is_tty:
             titty.setup_readline()
-            return titty.get(prompt, placeholder=placeholder)
-        else:
-            line = istream.readline()
-            if line == "":
-                return None
-            return line.rstrip("\n")
+            return titty.get(prompt=prompt, placeholder=placeholder)
+
+        line = istream.readline()
+        if line == "":
+            return None
+        return line
 
     return get
 
 
-def setup_put(ostream: TextIO) -> Put:
-    """Create a put function for writing output to a stream."""
+def input(get: Get) -> Get:
+    """Get a line of input without the newline."""
 
-    def put(*args, end="\n", lines=False, chunks=False, rstrip=True, **kwargs) -> None:
-        """
-        Print to the output stream.
+    def get_fn(**kwargs) -> str | None:
+        line = get(**kwargs)
+        if line is None:
+            return None
+        return line.rstrip("\r\n")
 
-        Args:
-            *args: Positional arguments to print.
-            **kwargs: Keyword arguments for print function.
-        """
-        if lines or chunks:
-            for arg in args:
-                for line in arg:
-                    if rstrip:
-                        line = line.rstrip()
-                    elif not chunks:
-                        line = line.rstrip("\n")
-                    print(line, file=ostream, end=end, **kwargs)
-            return
-        if args and args[-1].endswith("\n"):
-            end = ""
-        print(*args, file=ostream, end=end, **kwargs)
+    return get_fn
 
-    return put
+
+def each(get: Get, **kwargs) -> str:
+    """A generator that yields chunks from get."""
+    while True:
+        line = get(**kwargs)
+        if line is None:
+            break
+        yield line
+
+
+def lines(get: Get, **kwargs) -> str:
+    """A generator that yields lines from a chunky get."""
+    return each(line(get, **kwargs), **kwargs)
+
+
+def whole(get: Get, **kwargs) -> str:
+    """Get all input from get."""
+    # TODO option to prompt if on terminal?
+    return "".join(each(get, **kwargs))
+
+
+# TODO maybe passing flush through is important to support.
+
+# TODO async functions; arguably we should always use async.
+#      Not using async is an optimization.
+#      But I can't handle changing this to async while I'm making other changes.
+
+# TODO streaming CSVReader, JSONLReader, etc.
+
+# TODO maybe a get that reads a file, or a get that reads a URL.

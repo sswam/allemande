@@ -9,6 +9,9 @@ import argparse
 from pathlib import Path
 from collections import deque
 from typing import Callable
+from contextlib import contextmanager
+import functools
+import inspect
 
 from ally import meta
 
@@ -219,3 +222,57 @@ def dump_logging_config(put: Callable = print):
     put("\n=== System Information ===")
     put(f"Python Version: {sys.version}")
     put(f"Platform: {sys.platform}")
+
+
+def format_args_kwargs(args, kwargs, long=False):
+    """Format function arguments and keyword arguments for logging."""
+    if long:
+        text = "\n".join(f"{arg}" for arg in args) + "\n"
+        text += "\n".join(f"{k}: {v}" for k, v in kwargs.items()) + "\n"
+    else:
+        text = ", ".join(f"{arg}" for arg in args)
+        if args and kwargs:
+            text += ", "
+        text += ", ".join(f"{k}={v}" for k, v in kwargs.items())
+    return text
+
+
+@contextmanager
+def add_context(*args, **kwargs):
+    """Context manager to add context to an exception."""
+    try:
+        yield
+    except Exception as e:
+        context = format_args_kwargs(args, kwargs, long=True)
+        e.args = (f"{e.args[0]}\n{context}",) + e.args[1:]
+        raise
+
+
+def context(*dec_args, **dec_kwargs):
+    """Function decorator to add context to an exception."""
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            arg_names = inspect.getfullargspec(func).args
+            func_args = format_args_kwargs(args, kwargs, arg_names, long=True)
+            with add_context(func.__name__, func_args, *dec_args, **dec_kwargs):
+                return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def format_args_kwargs(args, kwargs, arg_names=None, long=False):
+    """Format function arguments and keyword arguments for logging."""
+    if long:
+        sep, end, equ = "\n", "\n", ": "
+    else:
+        sep, end, equ = ", ", "", "="
+    if arg_names:
+        formatted_args = [f"{name}{equ}{arg}" for name, arg in zip(arg_names, args)]
+    else:
+        formatted_args = [f"{arg}" for arg in args]
+    formatted_kwargs = [f"{k}{equ}{v}" for k, v in kwargs.items()]
+    text = sep.join(formatted_args + formatted_kwargs)
+    if text:
+        text += end
+    return text

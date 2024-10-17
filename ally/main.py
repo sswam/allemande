@@ -7,7 +7,8 @@ import logging
 import logging.config
 import sys
 from typing import Any, Callable
-
+import asyncio
+import inspect
 
 from ally import logs, opts
 
@@ -41,7 +42,10 @@ def go(
 
     # run the main function, catching any exceptions
     try:
-        rv = main_function(*args, **kwargs)
+        if inspect.iscoroutinefunction(main_function):
+            rv = asyncio.run(main_function(*args, **kwargs))
+        else:
+            rv = main_function(*args, **kwargs)
         if isinstance(rv, int):
             sys.exit(rv)
         elif rv is not None:

@@ -60,3 +60,27 @@ def test_IndentLogger():
     indent_logger.indent(1)
     indent_logger.debug("Indented message")
     mock_logger.debug.assert_called_with("\tIndented message")
+
+
+def test_add_context():
+    try:
+        with subject.add_context("wizerd 831"):
+            raise ValueError("Your values are questionable.")
+    except ValueError as e:
+        text = str(e)
+        assert "Your values are questionable." in text
+        assert "wizerd 831" in text
+
+
+def test_context():
+    @subject.context("wizerd 831")
+    def test_function(a, b=1):
+        raise ValueError("Your values are questionable.")
+
+    try:
+        test_function(1, b=2)
+    except ValueError as e:
+        text = str(e)
+        assert "Your values are questionable." in text
+        assert "wizerd 831" in text
+        assert "1, b=2" in text
