@@ -15,7 +15,7 @@ strip lines or add line-endings would not be okay.
 
 import sys
 import asyncio
-from typing import TextIO, Callable
+from typing import TextIO, Callable, Iterable
 
 from ally import titty
 
@@ -98,24 +98,34 @@ def input(get: Get) -> Get:
     return get_fn
 
 
-def each(get: Get, **kwargs) -> str:
+def each(get: Get) -> str:
     """A generator that yields chunks from get."""
     while True:
-        line = get(**kwargs)
+        line = get()
         if line is None:
             break
         yield line
 
 
-def lines(get: Get, **kwargs) -> str:
-    """A generator that yields lines from a chunky get."""
-    return each(line(get, **kwargs), **kwargs)
+def foreach(func: Callable, items: Iterable) -> None:
+    for item in items:
+        func(item)
 
 
-def whole(get: Get, **kwargs) -> str:
+def inputs(get: Get) -> str:
+    """A generator that yields lines from get."""
+    return each(input(get))
+
+
+def prints(put: Put, lines: Iterable[str]) -> None:
+    """Print lines to a put function."""
+    foreach(print(put), lines)
+
+
+def whole(get: Get) -> str:
     """Get all input from get."""
     # TODO option to prompt if on terminal?
-    return "".join(each(get, **kwargs))
+    return "".join(each(get))
 
 
 # TODO maybe passing flush through is important to support.

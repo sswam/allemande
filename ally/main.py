@@ -49,7 +49,7 @@ def go(
         if isinstance(rv, int):
             sys.exit(rv)
         elif rv is not None:
-            put(rv)
+            put(str(rv).rstrip("\n") + "\n")
     except Exception as e:
         logger = logs.get_logger(1)
         logging.error(f"Error: {type(e).__name__} - {str(e)}")

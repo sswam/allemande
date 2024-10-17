@@ -90,7 +90,8 @@ def get(prompt="", placeholder="", **kwargs):
             readline.set_startup_hook()
     if text is not None:
         readline.append_history_file(1, history_file)
-    return text + "\n"
+        text += "\n"
+    return text
 
 
 TTY_CURSOR_POS_TIMEOUT_MS = 100
