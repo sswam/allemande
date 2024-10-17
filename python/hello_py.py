@@ -13,7 +13,7 @@ from random import random
 
 import sh  # type: ignore
 
-from ally import main, logs, lazy, Get, Put  # type: ignore
+from ally import main, logs, lazy, geput  # type: ignore
 import llm  # type: ignore
 
 __version__ = "0.1.2"
@@ -74,8 +74,8 @@ def reply_sentiment(feeling: str) -> str:
 
 
 def hello(
-    get: Get,
-    put: Put,
+    get: geput.Get,
+    put: geput.Put,
     name: str = "",
     ai: bool = False,
     model: str | None = None,
@@ -84,11 +84,14 @@ def hello(
     An example module / script to say hello,
     and ask the user how they are.
     """
+    print = geput.print(put)
+    input = geput.input(get)
+
     if not name:
         name = getpass.getuser().title() if random() < 0.5 else "world"
 
-    put(f"Hello, {name}!")
-    put("How are you feeling today?")
+    print(f"Hello, {name}!")
+    print("How are you feeling today?")
 
     feeling = get()
 
@@ -107,7 +110,7 @@ def hello(
         logger.info("using sentiment analysis")
         response = reply_sentiment(feeling)
 
-    put(response)
+    print(response)
 
 
 def setup_args(arg):
