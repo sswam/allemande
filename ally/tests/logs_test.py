@@ -12,13 +12,35 @@ import ally.logs as subject
 
 subject_name = subject.__name__
 
-__version__ = "0.1.4"
+__version__ = "0.1.6"
 
+
+def test_setup_logging():
+    """
+    Test the setup_logging function to ensure it configures logging correctly.
+    """
+    with patch(f'{subject_name}.get_logger') as mock_get_logger:
+        subject.setup_logging()
+
+    mock_get_logger.assert_called_once_with(root=True)
 
 def test_get_logger():
     logger = subject.get_logger()
     assert logger.name == 'logs_test'
+    assert len(logger.handlers) > 0
+    assert isinstance(logger.handlers[0], logging.StreamHandler)
 
+    # Check if file handlers are created
+    file_handlers = [h for h in logger.handlers if isinstance(h, logging.FileHandler)]
+    assert len(file_handlers) > 0
+
+    # Check log directory creation
+    log_dir = os.path.expanduser("~/.logs")
+    assert os.path.exists(log_dir)
+
+    # Check file permissions
+    for handler in file_handlers:
+        assert os.stat(handler.baseFilename).st_mode & 0o777 == 0o600
 
 def test_get_log_level():
     with patch(f'{subject_name}.get_logger') as mock_get_logger:
@@ -29,26 +51,6 @@ def test_get_log_level():
         mock_get_logger.return_value = mock_logger
 
         assert subject.get_log_level() == 'INFO'
-
-
-@patch('os.makedirs')
-@patch('logging.FileHandler')
-@patch('logging.StreamHandler')
-@patch('os.chmod')
-def test_setup_logging(mock_chmod, mock_stream_handler, mock_file_handler, mock_makedirs):
-    """
-    Test the setup_logging function to ensure it configures logging correctly.
-    """
-    mock_logger = MagicMock()
-    with patch(f'{subject_name}.get_logger', return_value=mock_logger):
-        subject.setup_logging('test_module', 'DEBUG')
-
-    mock_makedirs.assert_called_once_with(os.path.expanduser("~/.logs"), exist_ok=True, mode=0o700)
-    mock_file_handler.assert_called_once()
-    mock_stream_handler.assert_called_once()
-    mock_logger.debug.assert_called_with("Starting test_module")
-    mock_chmod.assert_called_once()
-
 
 def test_IndentLogger():
     mock_logger = MagicMock()
@@ -61,7 +63,6 @@ def test_IndentLogger():
     indent_logger.debug("Indented message")
     mock_logger.debug.assert_called_with("\tIndented message")
 
-
 def test_add_context():
     try:
         with subject.add_context("wizerd 831"):
@@ -70,7 +71,6 @@ def test_add_context():
         text = str(e)
         assert "Your values are questionable." in text
         assert "wizerd 831" in text
-
 
 def test_context():
     @subject.context("wizerd 831")
@@ -83,4 +83,18 @@ def test_context():
         text = str(e)
         assert "Your values are questionable." in text
         assert "wizerd 831" in text
-        assert "1, b=2" in text
+        assert "a: 1" in text
+        assert "b: 2" in text
+
+def test_format_args_kwargs():
+    args = (1, 2, 3)
+    kwargs = {'a': 'x', 'b': 'y'}
+    result = subject.format_args_kwargs(args, kwargs)
+    assert result == "1, 2, 3, a=x, b=y"
+
+    result_long = subject.format_args_kwargs(args, kwargs, long=True)
+    assert result_long == "1\n2\n3\na: x\nb: y\n"
+
+    arg_names = ['x', 'y', 'z']
+    result_named = subject.format_args_kwargs(args, kwargs, arg_names=arg_names)
+    assert result_named == "x=1, y=2, z=3, a=x, b=y"

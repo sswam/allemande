@@ -224,19 +224,6 @@ def dump_logging_config(put: Callable = print):
     put(f"Platform: {sys.platform}")
 
 
-def format_args_kwargs(args, kwargs, long=False):
-    """Format function arguments and keyword arguments for logging."""
-    if long:
-        text = "\n".join(f"{arg}" for arg in args) + "\n"
-        text += "\n".join(f"{k}: {v}" for k, v in kwargs.items()) + "\n"
-    else:
-        text = ", ".join(f"{arg}" for arg in args)
-        if args and kwargs:
-            text += ", "
-        text += ", ".join(f"{k}={v}" for k, v in kwargs.items())
-    return text
-
-
 @contextmanager
 def add_context(*args, **kwargs):
     """Context manager to add context to an exception."""
