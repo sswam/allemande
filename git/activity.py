@@ -9,11 +9,12 @@ import os
 import subprocess
 import datetime
 from typing import TextIO
+import re
 
 from argh import arg
-from ally import main
+from ally import main  # type: ignore
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 
 logger = main.get_logger()
 
@@ -42,7 +43,7 @@ def get_commit_activity(days: int, count_loc: bool, count_added_changed: bool) -
     start_date = end_date - datetime.timedelta(days=days-1)
 
     for date in (start_date + datetime.timedelta(days=d) for d in range(days)):
-        date_str = date.isoformat()
+        date_str = date.isoformat() + ' ' + date.strftime('%a')
         count = len(run_git_command(["log", "--all", "--format=%cd", "--date=short", f"--before={date_str} 23:59:59", f"--after={date_str} 00:00:00"]).splitlines())
 
         loc = ""
@@ -64,15 +65,15 @@ def get_commit_activity(days: int, count_loc: bool, count_added_changed: bool) -
 
 @arg("days", help="number of days to show", type=int)
 @arg("-r", "--repo-path", help="path to git repository")
-@arg("-f", "--format", help="output format [short|long]", choices=["short", "long"], default="short")
 @arg("-l", "--count-loc", help="count lines of code", action="store_true")
 @arg("-a", "--count-added-changed", help="count only added/changed lines", action="store_true")
+@arg("-s", "--summary", help="summarize git log for each day", action="store_true")
 def activity(
     days: int,
     repo_path: str = "",
-    format: str = "short",
     count_loc: bool = False,
     count_added_changed: bool = False,
+    summary: bool = False,
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
 ) -> None:
@@ -98,31 +99,29 @@ def activity(
     # Get commit activity
     activity_data = get_commit_activity(days, count_loc, count_added_changed)
 
-    # Display activity based on format
-    if format == "long":
-        put(f"Commit activity for the last {days} days:")
-        for date, count, loc, added_changed in activity_data:
-            output = f"{date}: {count} commit(s)"
-            if loc:
-                output += f", {loc} lines of code"
-            if added_changed:
-                output += f", {added_changed} added/changed lines"
-            put(output)
-    else:
-        headers = ["Date", "Commits"]
+    headers = ["Date", "Commits"]
+    if count_loc:
+        headers.append("LOC")
+    if count_added_changed:
+        headers.append("Added/Changed")
+    if summary:
+        headers.append("Summary")
+    fmt = "{:<10}\t" * (len(headers) - 1) + "{}"
+    put(fmt.format(*headers))
+    for date, count, loc, added_changed in activity_data:
+        row = [date, str(count)]
         if count_loc:
-            headers.append("LOC")
+            row.append(loc)
         if count_added_changed:
-            headers.append("Added/Changed")
-        fmt = "{:<10}\t" * (len(headers) - 1) + "{}"
-        put(fmt.format(*headers))
-        for date, count, loc, added_changed in activity_data:
-            row = [date, str(count)]
-            if count_loc:
-                row.append(loc)
-            if count_added_changed:
-                row.append(added_changed)
-            put(fmt.format(*row))
+            row.append(added_changed)
+        if summary:
+#            git_log = run_git_command(["log", "--all", f"--before={date} 23:59:59", f"--after={date} 00:00:00"])
+#            git_log = "\n".join([line.strip() for line in git_log.splitlines() if line.startswith(" ") or line == ""])
+            git_log = run_git_command(["log", "--all", f"--before={date} 23:59:59", f"--after={date} 00:00:00", "--oneline"])
+            git_log = "\n".join([re.sub(r'^\S+ ', '', line) for line in git_log.splitlines()])
+            summary_output = subprocess.check_output(["summary", "-m=", "List all projects worked on in order of importance or scale of changes. Include tasks if psosible. Absolutely as compact as possible, no wasted words, does not need to be grammatical. All in one line / paragraph, but it may be as long as necessary."], input=git_log, universal_newlines=True, text=True).strip()
+            row.append(summary_output)
+        put(fmt.format(*row), flush=True)
 
 
 if __name__ == "__main__":

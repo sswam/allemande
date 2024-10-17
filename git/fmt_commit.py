@@ -8,38 +8,35 @@ import sys
 import logging
 from typing import TextIO
 
-from argh import arg
+from ally import main, logs, Get, Put  # type: ignore
 
-from ally import main
+__version__ = "0.1.1"
 
-__version__ = "0.1.0"
-
-logger = main.get_logger()
+logger = logs.get_logger()
 
 
 def format_commit_message(lines: list[str]) -> list[str]:
-    """Format the commit message by adding two spaces before continued lines."""
-    formatted_lines = []
-    for line in lines:
-        if not line.startswith("- ") and formatted_lines and formatted_lines[-1].startswith("- "):
-            line = "  " + line
-        formatted_lines.append(line)
-    return formatted_lines
+	"""Format the commit message by adding two spaces before continued lines."""
+	formatted_lines: list[str] = []
+	for line in lines:
+		if not line.startswith("- ") and formatted_lines and formatted_lines[-1].startswith("- "):
+			line = "  " + line
+		formatted_lines.append(line)
+	return formatted_lines
 
 
 def fmt_commit(
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
+	get: Get,
+	put: Put,
 ) -> None:
-    """
-    Format git commit messages by adding two spaces before continued lines.
-    """
-    get, put = main.io(istream, ostream)
-
-    lines = get(lines=True)
-    formatted_lines = format_commit_message(lines)
-    put(formatted_lines, lines=True)
+	"""
+	Format git commit messages by adding two spaces before continued lines.
+	"""
+	lines = get(lines=True)
+	formatted_lines = format_commit_message(lines)
+	put(formatted_lines, lines=True)
 
 
 if __name__ == "__main__":
-    main.run(fmt_commit)
+	main.go(fmt_commit)
+
