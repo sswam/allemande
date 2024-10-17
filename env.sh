@@ -66,7 +66,7 @@ for appdir in "$ALLEMANDE_HOME/apps"/*; do
 		continue
 	fi
 	app=$(basename "$appdir")
-	PATHS=$PATHS:$ALLEMANDE_HOME/apps/$app
+	PATHS=${PATHS#:}:$ALLEMANDE_HOME/apps/$app
 done
 
 PATH="$PATHS:$PATH:$ALLEMANDE_HOME/node_modules/.bin"
