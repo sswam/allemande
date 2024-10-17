@@ -9,7 +9,7 @@ import sys
 from typing import TextIO
 import argparse
 
-from ally import main
+from ally import main, geput
 from ally.geput import Get, Put
 from argh import arg
 
@@ -19,7 +19,7 @@ logger = main.get_logger()
 
 
 def slugify(
-    text: str,
+    text: str = None,
     get: Get = None,
     put: Put = None,
     underscore: bool = False,
@@ -50,13 +50,15 @@ def slugify(
 
         return input_text
 
+    print = geput.print(put)
+
     if text:
         result = process_text(text)
         return result
     else:
         while (line := get()) is not None:
             slug = process_text(line)
-            put(slug)
+            print(slug)
         return
 
 
