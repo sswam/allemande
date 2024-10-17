@@ -19,7 +19,7 @@ improve() {
 	local lint= L=1	# run linters and type checkers if possible
 	local format= F=1	# format code
 	local writetest= w=1	# write tests if none found
-	local numline= n=1	# number lines
+	local numline= n=	# number lines
 	local strict= X=1	# only do what is requested
 	local ed= E=0	# provide changes as an ed script
 	local diff= d=0	# provide changes as a unified diff
@@ -39,12 +39,15 @@ improve() {
 		opt_b=()
 	fi
 
+	if (( diff || ed )) && [ "$numline" = "" ]; then
+		numline=1
+	fi
+
 	if (( numline )); then
 		opt_n=("--number-lines")
 	else
 		opt_n=()
 	fi
-
 
 	# -C or -T options imply -t
 	if (( codeok )) || (( testok )); then
@@ -153,12 +156,12 @@ improve() {
 		prompt="Please improve"
 		strict=0
 	else
-		prompt="*** $prompt ***"
+		prompt="*** TASK: $prompt ***"
 	fi
 
 	strict_part=""
 	if (( strict )); then
-		strict_part="Please make the *** changes *** requested above, and fix definite bugs or check issues. Do not make any other proactive changes at this time."
+		strict_part="Please perform the *** TASK *** requested above. This is the main task to be done. Secondarily please fix any certain bugs or issues. Do not make other proactive changes at this time."
 	fi
 
 	# TODO "Add a header line \`#File: filename\` before each file's code."

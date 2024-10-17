@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# [options] [prompt ...]
+# [prompt [reference files ...]]
 # Process input text using an LLM, optionally preserving indentation
 
 process() {
@@ -10,20 +10,24 @@ process() {
 
 	eval "$(ally)"
 
-	local prompt="$*"
+	local prompt="${1:-}"
+	shift || true
+
+	local refs=("$@")
 
 	opts=""
 	if [ "$empty_ok" = 1 ]; then
 		opts="--empty-ok"
 	fi
 
+	cat-named -p -b --suppress-headings input - "${refs[@]}" |
 	if [ "$indent" ]; then
-		process_main "$prompt"
-	else
-		local input indent
+		local indent
 		input=$(cat)
 		indent=$(printf "%s\n" "$input" | aligno --detect)
-		printf "%s\n" "$input" | process_main "$prompt" | aligno --apply "$indent"
+		process_main "$prompt" <<< "$input" | aligno --apply "$indent" | rstrip
+	else
+		process_main "$prompt"
 	fi
 }
 
@@ -36,4 +40,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	process "$@"
 fi
 
-# version: 0.1.2
+# version: 0.1.3

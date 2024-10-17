@@ -13,7 +13,7 @@ retrying mechanisms.
 
 # Import necessary modules
 import sys
-from sys import stdin, stdout
+from sys import stdin, stdout, stderr
 import os
 import logging
 import re
@@ -195,8 +195,8 @@ if env_llm_model in MODELS:
 if env_llm_model_small in MODELS:
 	default_model_small = env_llm_model_small
 
-MODELS[default_model]["aliases"].append("d")
-MODELS[default_model_small]["aliases"].append("s")
+MODELS[default_model]["aliases"] += ["default", "d"]
+MODELS[default_model_small]["aliases"] += ["small", "s"]
 
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
@@ -264,8 +264,8 @@ def get_model_by_alias(model):
 	if len(abbrev_models) == 1:
 		return abbrev_models[0]
 	if model not in MODELS:
-		logger.error("Model not found. Available models and aliases:")
-		models(aliases=True)
+		logger.error(f"Model not found: {model}\n\nAvailable models and aliases:")
+		models(aliases=True, file=stderr)
 		sys.exit(1)
 	return model
 
@@ -792,32 +792,34 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 
 
 @arg("-A", "--no-aliases", dest="aliases", action="store_false", help="show aliases")
-def models(detail=False, aliases=True):
-    """ List the available models. """
-    with io.StringIO() as buffer:
-        for name, model in MODELS.items():
-            print(name, end="", file=buffer)
-            if aliases:
-                print("\t" + "\t".join(model.get("aliases", [])), end="", file=buffer)
-            print(file=buffer)
+def models(detail=False, aliases=True, file=stdout):
+	""" List the available models. """
+	def print(*args, **kwargs):
+		__builtins__["print"](*args, **kwargs, file=file)
+	with io.StringIO() as buffer:
+		for name, model in MODELS.items():
+			print(name, end="", file=buffer)
+			if aliases:
+				print("\t" + "\t".join(model.get("aliases", [])), end="", file=buffer)
+			print(file=buffer)
 
-            if detail:
-                for k, v in model.items():
-                    if k == "description":
-                        v = textwrap.fill(v, width=80)
-                        v = "\t \t".join(v.splitlines())
-                    elif k == 'aliases':
-                        v = ', '.join(v)
-                    print(f"\t{k}:\t{v}", file=buffer)
-                print(file=buffer)
+			if detail:
+				for k, v in model.items():
+					if k == "description":
+						v = textwrap.fill(v, width=80)
+						v = "\t \t".join(v.splitlines())
+					elif k == 'aliases':
+						v = ', '.join(v)
+					print(f"\t{k}:\t{v}", file=buffer)
+				print(file=buffer)
 
-        if titty.is_tty(sys.stdout):
-            buffer.seek(0)
-            with io.StringIO() as output:
-                tsv2txt.tsv2txt(istream=buffer, ostream=output, multi_table=True)
-                print(output.getvalue(), end="")
-        else:
-            print(buffer.getvalue(), end="")
+		if titty.is_tty(sys.stdout):
+			buffer.seek(0)
+			with io.StringIO() as output:
+				tsv2txt.tsv2txt(istream=buffer, ostream=output, multi_table=True)
+				print(output.getvalue(), end="")
+		else:
+			print(buffer.getvalue(), end="")
 
 
 if __name__ == "__main__":
