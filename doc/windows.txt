@@ -9,7 +9,6 @@ After following this guide, continue with the debian.txt install notes.
 - set user type admin
 - set password and pin
 - time, time zone, auto update
-- install windows terminal for MS Store
 - disable accessibility shortcuts unless needed (press shift repeatedly)
 
 ## Essential WSL2 Setup
@@ -23,6 +22,7 @@ After following this guide, continue with the debian.txt install notes.
 
 ## Suggested
 
+- set the computer name
 - disable Windows Defender Anti-Virus in group policy editor:
   - https://www.windowscentral.com/how-permanently-disable-windows-defender-windows-10
 - enable dark mode for windows and apps
