@@ -17,7 +17,7 @@ improve() {
 	local changes= S=1	# allow changes to existing functionality or API changes
 	local features= F=1	# allow new features
 	local lint= L=1	# run linters and type checkers if possible
-	local format= F=1	# format code
+	local format= f=1	# format code
 	local writetest= w=1	# write tests if none found
 	local numline= n=	# number lines
 	local strict= X=1	# only do what is requested
@@ -96,15 +96,15 @@ improve() {
 
 	# Find and run tests
 	local tests_file=""
-	local test_results=""
 	local test_ext="bats"
+	local temp_results_file=$(mktemp)
 
 	if (( test )); then
-		tests_results=$(testy "$file" || true)
-		tests_file=$(printf "%s" "$tests_results" | head -n 1)
-		printf "%s" "$tests_results" | tail -n +2 | tee -a "$results_file"
+		testy "$file" > "$temp_results_file" || true
+		tests_file=$(head -n 1 "$temp_results_file")
+		tail -n +2 "$temp_results_file" >> "$results_file"
+		rm "$temp_results_file"
 	fi
-
 	# remove empty results file
 	if [ -e "$results_file" ] && [ ! -s "$results_file" ]; then
 		rm -f "$results_file"
@@ -251,7 +251,7 @@ improve() {
 
 	# By default, it should edit the main code.
 	# if using -C option, it must edit the tests, so the output file is the tests file plus a tilde
-	if (( codeok )); then
+	if (( codeok )) && [ -n "$tests_file" ]; then
 		target_file="$tests_file"
 		output_file="$tests_file~"
 	fi
