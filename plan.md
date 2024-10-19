@@ -82,3 +82,5 @@
 
 - kind behaviour
 	- For our API, if the client drops the connection before we send the response, we don't charge them anything. That should be rare and feasible, barring abuse or client bugs which we can detect.
+	- Also, we don't charge a client any fee if they don't use the service in a particular month. Unlike your typical gym membership!
+		- Can be either PAYG, or flat rate per month (with some limits), but never change if they didn't use the service.
