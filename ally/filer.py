@@ -6,8 +6,7 @@ import time
 import mimetypes
 from pathlib import Path
 
-from ally import logs
-import rubbish
+from ally import logs, rubbish
 
 __version__ = '0.1.3'
 
