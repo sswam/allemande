@@ -13,7 +13,7 @@ git_group_files() {
 	if [ -n "$junk" ]; then
 		echo "Likely junk files detected:"
 		echo "$junk"
-		confirm -o move-rubbish $junk
+		confirm -o move-rubbish $junk || true
 	fi
 
 	rundown_file=$(mktemp /tmp/git_group_files_rundown.XXXXXX)
