@@ -4,6 +4,7 @@ from io import StringIO
 import pytest
 
 import aligno
+from ally import geput
 
 # Test data
 SPACE_INDENTED = """
@@ -60,13 +61,13 @@ def test_apply_indent(input_text, indent_size, indent_type, min_level, expected)
 def test_main_detect():
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    aligno.aligno(get=input_stream.read, put=output_stream.write, detect=True)
+    aligno.aligno(get=geput.read(input_stream), put=output_stream.write, detect=True)
     assert output_stream.getvalue().strip() == "4s"
 
 def test_main_apply():
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    aligno.aligno(get=input_stream.read, put=output_stream.write, indent_code="t", apply=True)
+    aligno.aligno(get=geput.read(input_stream), put=output_stream.write, indent_code="t", apply=True)
     assert output_stream.getvalue().strip() == TAB_INDENTED.strip()
 
 @pytest.mark.parametrize("input_text", [
@@ -79,7 +80,7 @@ def test_main_default(input_text):
     input_stream = StringIO(input_text)
     output_stream = StringIO()
     expected = aligno.apply_indent(input_text, *aligno.parse_indent_code(aligno.DEFAULT_INDENT)).strip()
-    aligno.aligno(get=input_stream.read, put=output_stream.write, apply=True)
+    aligno.aligno(get=geput.read(input_stream), put=output_stream.write, apply=True)
     assert output_stream.getvalue().strip() == expected
 
 def test_detect_indent_list():
@@ -141,13 +142,13 @@ def test_format_indent_code(indent_size, indent_type, min_level, expected):
 def test_cli_detect():
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    subject_main(get=input_stream.read, put=output_stream.write, detect=True)
+    aligno.aligno(get=geput.read(input_stream), put=output_stream.write, detect=True)
     assert output_stream.getvalue().strip() == "4s"
 
 def test_cli_apply():
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    subject_main("t", get=input_stream.read, put=output_stream.write, apply=True)
+    aligno.aligno(get=geput.read(input_stream), put=output_stream.write, apply=True, indent_code="t")
     assert output_stream.getvalue().strip() == TAB_INDENTED.strip()
 
 def test_cli_default():
@@ -155,5 +156,5 @@ def test_cli_default():
     os.environ.pop("INDENT", None)
     input_stream = StringIO(SPACE_INDENTED)
     output_stream = StringIO()
-    subject_main(get=input_stream.read, put=output_stream.write, apply=True)
+    aligno.aligno(get=geput.read(input_stream), put=output_stream.write, apply=True)
     assert output_stream.getvalue().strip() == TAB_INDENTED.strip()

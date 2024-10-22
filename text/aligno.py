@@ -13,6 +13,7 @@ import re
 import argparse
 from typing import TextIO, Callable
 from collections import Counter
+from functools import reduce
 
 from ally import main, geput
 
@@ -89,10 +90,20 @@ def detect_indent(text: str | list[str]) -> tuple[int, str, int]:
     total_tabs = sum(tab_counts)
 
     # Helper function to find the greatest common divisor
-    def find_common_factor(a, b):
+    def find_common_factor_two(a, b):
         while b:
             a, b = b, a % b
         return a
+
+    def find_common_factor(args):
+        return reduce(find_common_factor_two, args)
+
+    def not_none(list):
+        return [x for x in list if x is not None]
+
+    indent_size_freq = Counter(
+        count for count in space_counts if count > 0 and count <= 8
+    ).most_common(2)
 
     # Determine indentation type and size based on counts and common indentation
     if not common_indent and total_spaces == total_tabs == 0:
@@ -101,7 +112,7 @@ def detect_indent(text: str | list[str]) -> tuple[int, str, int]:
     elif "\t" in common_indent or total_tabs * 2 > total_spaces:
         indent_type = "t"
         indent_size = 1
-    elif not total_spaces:
+    elif not indent_size_freq:
         indent_type = "s"
         if common_indent_length % 4 == 0:
             indent_size = 4
@@ -110,16 +121,11 @@ def detect_indent(text: str | list[str]) -> tuple[int, str, int]:
         else:
             indent_size = 1
     else:
+        # This isn't 100% because they can have 'continued lines' indented weirdly.
         indent_type = "s"
-        # Find the most common indent size
-        indent_size_freq = Counter(
-            count for count in space_counts if count > 0 and count <= 8
-        ).most_common(2)
         indent_size = indent_size_freq[0][0]
         indent_size_2 = indent_size_freq[1][0] if len(indent_size_freq) > 1 else None
-        indent_size = find_common_factor(
-            find_common_factor(indent_size, indent_size_2), common_indent_length
-        )
+        indent_size = find_common_factor(not_none([indent_size, indent_size_2, common_indent_length]))
         if indent_size == 1:
             logger.debug("Indent detected is one space, sounds like a bad idea")
             indent_size = 4
@@ -129,7 +135,7 @@ def detect_indent(text: str | list[str]) -> tuple[int, str, int]:
 
     assert (
         indent_type != "t" or indent_size == 1
-    ), f"Indent type is tab but indent size is nott 1: {indent_size}"
+    ), f"Indent type is tab but indent size is not 1: {indent_size}"
 
     logger.debug(f">> {indent_size=}, {indent_type=}, {min_level=}")
 
@@ -240,7 +246,7 @@ def aligno(
     else:
         # Apply the specified or default indentation to the input text
         output_text = apply_indent(input_text, *parse_indent_code(indent_code))
-        print(output_text)
+        put(output_text)
 
 
 def setup_args(parser: argparse.ArgumentParser) -> None:
