@@ -18,10 +18,10 @@ import math
 
 import cv2
 import numpy as np
-from scipy import stats
+from scipy import stats  # type: ignore
 import pytesseract  # type: ignore
 import cairo
-import gi
+import gi  # type: ignore
 gi.require_version('Pango', '1.0')
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import Pango, PangoCairo  # type: ignore
@@ -51,14 +51,13 @@ def enhance_image(image: np.ndarray) -> np.ndarray:
     return enhanced
 
 
-def ocr_image(image: np.ndarray) -> tuple[list[str], list[dict[str, Any]]]:
-    """Perform OCR on the image and return lines with bounding boxes."""
+def ocr_image(image: np.ndarray) -> list[list[dict[str, Any]]]:
+    """Perform OCR on the image and return words with bounding boxes and line information."""
     data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT)
 
     lines = []
-    boxes: list[dict[str, Any]] = []
     current_line = []
-    current_box: dict[str, Any] = {}
+#    current_line_box = {}
 
     n_boxes = len(data["level"])
     for i in range(n_boxes):
@@ -66,80 +65,148 @@ def ocr_image(image: np.ndarray) -> tuple[list[str], list[dict[str, Any]]]:
         text = data["text"][i].strip()
 
         if level == 5 and text:  # Word-level data
-            current_line.append(text)
-            if not current_box:
-                current_box = {
-                    "left": data["left"][i],
-                    "top": data["top"][i],
-                    "width": data["width"][i],
-                    "height": data["height"][i],
-                }
-            else:
-                current_box["left"] = min(current_box["left"], data["left"][i])
-                current_box["top"] = min(current_box["top"], data["top"][i])
-                current_box["width"] = max(
-                    current_box["left"] + current_box["width"], data["left"][i] + data["width"][i]
-                ) - current_box["left"]
-                current_box["height"] = max(
-                    current_box["top"] + current_box["height"], data["top"][i] + data["height"][i]
-                ) - current_box["top"]
+            word_box = {
+                "text": text,
+                "left": data["left"][i],
+                "top": data["top"][i],
+                "width": data["width"][i],
+                "height": data["height"][i],
+            }
+            current_line.append(word_box)
+
+#             if not current_line_box:
+#                 current_line_box = word_box.copy()
+#             else:
+#                 current_line_box["left"] = min(current_line_box["left"], word_box["left"])
+#                 current_line_box["top"] = min(current_line_box["top"], word_box["top"])
+#                 current_line_box["width"] = max(
+#                     current_line_box["left"] + current_line_box["width"],
+#                     word_box["left"] + word_box["width"]
+#                 ) - current_line_box["left"]
+#                 current_line_box["height"] = max(
+#                     current_line_box["top"] + current_line_box["height"],
+#                     word_box["top"] + word_box["height"]
+#                 ) - current_line_box["top"]
 
         elif level == 4 and current_line:  # End of line
-            lines.append(" ".join(current_line))
-            current_box["text"] = " ".join(current_line)
-            boxes.append(current_box)
+            lines.append(current_line)
+#             current_line_box["text"] = " ".join(word["text"] for word in current_line)
+#             lines.append(current_line_box)
             current_line = []
-            current_box = {}
+#             current_line_box = {}
 
     if current_line:  # Handle last line if exists
-        lines.append(" ".join(current_line))
-        current_box["text"] = " ".join(current_line)
-        boxes.append(current_box)
+        lines.append(current_line)
+#         current_line_box["text"] = " ".join(word["text"] for word in current_line)
+#         lines.append(current_line_box)
 
-    return lines, boxes
+    return lines
 
 
-def correct_text(model: str, lines: list[str], vocab: str | None = None) -> list[str]:
+def prepare_ocr_results(words: list[list[dict[str, Any]]]) -> str:
+    """Prepare OCR results for LLM processing."""
+    result = ""
+    for line_num, line in enumerate(words, 1):
+        result += f"## Line {line_num}:\n\n"
+        for word_num, word in enumerate(line, 1):
+            result += f"{word_num}. {word['text']}\n"
+        result += "\n"
+    return result.strip()
+
+
+def correct_text(model: str, ocr_results: str, vocab: str | None = None) -> str:
     """Correct OCR errors using an LLM."""
-    # Build a numbered list of lines
-    numbered_lines = "\n".join(f"{i+1}. {line}" for i, line in enumerate(lines))
-
     custom_vocab_prompt = f"Custom vocabulary context: {vocab}\n" if vocab else ""
 
     prompt = f"""
-Please correct the OCR errors in this list of lines.
+Please correct the OCR errors in this list of words.
 Remove any spurious characters and ensure correct formatting.
-Only return the corrected lines in a numbered list, matching the original numbering.
-The corrected lines may contain multiple words or be empty if needed.
+Only return the corrected words, maintaining the original structure and numbering.
+Some words may map to nothing (empty string), and some may map to multiple words if incorrectly concatenated.
 {custom_vocab_prompt}
 
 --- START LIST ---
-{numbered_lines}
+{ocr_results}
 --- END LIST ---
 """
-    corrected = llm.query(prompt, model=model)
-
-    # Parse the corrected list back into a list of lines
-    corrected_lines = []
-
-    # Pattern to match lines starting with a number and dot
-    pattern = r"^\s*(\d+)[\).]?\s*(.*)$"
-    lines = corrected.strip().splitlines()
-    idx_to_line = {}
-    for line in lines:
-        match = re.match(pattern, line)
-        if match:
-            idx = int(match.group(1)) - 1  # zero-based indexing
-            line = match.group(2).strip()
-            idx_to_line[idx] = line
-
-    # Build the corrected lines list based on the original indices
-    corrected_lines = [idx_to_line.get(i, "") for i in range(len(lines))]
-
-    return corrected_lines
+    return llm.query(prompt, model=model)
 
 
-def get_font_size(text: str, max_width: int, max_height: int, font_path: str) -> int:
+def set_list_at(the_list, index, value, item_name, default=None):
+    """Set a value at a specific index in a list, filling in any gaps with a default value."""
+    if index != len(the_list):
+        logger.warning(f"Unexpected {item_name} number: {index+1}, expected: {len(the_list)+1}")
+    if index < len(the_list):
+        raise ValueError(f"{item_name.title()} numbers must be strictly increasing")
+    the_list.extend([default] * (index - len(the_list) + 1))
+    the_list[index] = value
+
+
+def parse_corrected_text(corrected: str) -> list[list[tuple[int, str]]]:
+    """Parse the corrected text from the LLM back into a structured format."""
+    lines: list[list[tuple[int, str]]] = []
+    current_line: list[tuple[int, str]] = []
+    line_pattern = r"^#*\s*Line (\d+):?$"
+    word_pattern = r"^\s*(\d+)\.\s*(.*)$"
+
+    for line in corrected.strip().splitlines():
+        if line_match := re.match(line_pattern, line):
+            if current_line:
+                current_line = []
+            line_num = int(line_match.group(1)) - 1  # 0-based index
+            set_list_at(lines, line_num, current_line, "line", [])
+        elif word_match := re.match(word_pattern, line):
+            index, word = word_match.groups()
+            index = int(index) - 1  # 0-based index
+            set_list_at(current_line, index, (index, word), "word", (-1, ""))
+
+    if current_line:
+        lines.append(current_line)
+
+    return lines
+
+
+def filter_lines(lines: list[list[dict[str, Any]]], corrected_lines: list[list[tuple[int, str]]]) -> list[str]:
+    """Filter out mistaken 'words' from the OCR results."""
+    filtered_lines = []
+    for ocr_line, corrected_line in zip(lines, corrected_lines):
+        filtered_line = []
+        for ocr_word, (_index, corrected_word) in zip(ocr_line, corrected_line):
+            if corrected_word:
+                filtered_line.append(corrected_word)
+
+        if not filtered_line:
+            continue
+
+        filtered_lines.append(" ".join(filtered_line))
+    return filtered_lines
+
+
+def get_line_boxes(lines: list[list[dict[str, Any]]], corrected_lines: list[list[tuple[int, str]]]) -> list[dict[str, int]]:
+    """Get bounding boxes for each corrected line."""
+    boxes = []
+    for ocr_line, corrected_line in zip(lines, corrected_lines):
+        filtered_words = [word for word, corrected_word in zip(ocr_line, corrected_line) if corrected_word[1]]
+
+        if not filtered_words:
+            continue
+
+        left = min(word["left"] for word in filtered_words)
+        top = min(word["top"] for word in filtered_words)
+        right = max(word["left"] + word["width"] for word in filtered_words)
+        bottom = max(word["top"] + word["height"] for word in filtered_words)
+
+        boxes.append({
+            "left": left,
+            "top": top,
+            "width": right - left,
+            "height": bottom - top,
+        })
+
+    return boxes
+
+
+def get_font_size(text: str, max_width: int, max_height: int, font_path: str, max_compression: float = 0.85) -> int:
     """Calculate the maximum font size that fits within the given dimensions."""
     logger.debug(f"Calculating font size for text: {text}, width={max_width}, height={max_height}")
 
@@ -147,16 +214,16 @@ def get_font_size(text: str, max_width: int, max_height: int, font_path: str) ->
     context = cairo.Context(surface)
 
     layout = PangoCairo.create_layout(context)
-    font_size = max_height
+    font_size = max_height * 2  # should be less, but whatever for the moment
 
     while font_size > 1:
         font = Pango.FontDescription(f"{font_path} {font_size}")
         layout.set_font_description(font)
         layout.set_text(text)
 
-        width, height = layout.get_pixel_size()
+        width, height = layout.get_pixel_extents()[0].width, layout.get_pixel_extents()[0].height
 
-        if width <= max_width * 1.2 and height <= max_height:
+        if width <= max_width / max_compression and height <= max_height:
             break
 
         font_size -= 1
@@ -178,8 +245,10 @@ def render_text_in_box(text: str, width: int, height: int, font_size: int, font_
     font = Pango.FontDescription(f"{font_path} {font_size}")
     layout.set_font_description(font)
     layout.set_width(-1)  # No wrapping
-#     layout.set_justify(True)
-#     layout.set_justify_last_line(True)
+
+    # Justify the text, probably obliviates the need for letter spacing
+    layout.set_justify(True)
+    layout.set_justify_last_line(True)
 
     layout.set_text(text)
 
@@ -188,8 +257,6 @@ def render_text_in_box(text: str, width: int, height: int, font_size: int, font_
     attrs.insert(Pango.attr_foreground_new(0, 0, 0))
 
     # Adjust letter spacing to fit width if necessary
-    # TODO this is not working, it is changing the spacing,
-    # but sometimes it is too narrow, and sometimes too wide.
     ink_rect, logical_rect = layout.get_pixel_extents()
     text_width = ink_rect.width
     if text_width != width and len(text) > 1:
@@ -199,6 +266,7 @@ def render_text_in_box(text: str, width: int, height: int, font_size: int, font_
 
     layout.set_attributes(attrs)
 
+    context.translate(-ink_rect.x, -ink_rect.y)
     PangoCairo.show_layout(context, layout)
 
     buf = surface.get_data()
@@ -223,7 +291,10 @@ def solve_quadratic(a, b, c):
     return sol1, sol2
 
 
-def make_dark_and_light_areas_transparent(image, box, std_dev_factor=0.5, grow=0.1):
+def make_dark_and_light_areas_transparent(image, box, std_dev_factor=0.25, grow=0.1):
+    """Make dark and light areas of the image transparent within the box, i.e. the previous text."""
+    # TODO handle foreground and background colors of similar brightness
+
     # Grow the box slightly to include surrounding areas, for better stats
     # Need to solve (width + d) * (height + d) = (width * height * (1 + grow))
     # It's a quadratic equation, solve for d
@@ -317,27 +388,27 @@ def invert_alpha_channel(image: np.ndarray):
     """Invert the alpha channel of an image, for my convention where 0 is opaque and 255 is transparent."""
     image[:, :, 3] = 255 - image[:, :, 3]
 
+
 def replace_text_in_image(
-    image: np.ndarray, boxes: list[dict[str, Any]], corrected_lines: list[str], font_path: str
+    image: np.ndarray, boxes: list[dict[str, Any]], lines: list[str], font_path: str
 ) -> np.ndarray:
     """Replace the original text in the image with corrected text using Pango/Cairo."""
     result_image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
 
     invert_alpha_channel(result_image)
 
-    # Erase the original text areas to transparent
-    for box, line in zip(boxes, corrected_lines):
+    # Erase the original text to transparent
+    for box, line in zip(boxes, lines):
         if not line:
             continue
 
         result_image = make_dark_and_light_areas_transparent(result_image, box)
 
-#         # Calculate position to center the text within the box
-#         x = box["left"]
-#         y = box["top"]
+    # Inpaint the erased parts of the background
+    result_image = inpaint(result_image)
 
     # Overlay the corrected text on the image
-    for box, line in zip(boxes, corrected_lines):
+    for box, line in zip(boxes, lines):
         if not line:
             continue
 
@@ -347,37 +418,43 @@ def replace_text_in_image(
         font_size = get_font_size(line, box["width"], box["height"], font_path)
         rendered_text = render_text_in_box(line, box["width"], box["height"], font_size, font_path)
 
-        show_image(rendered_text, title=f"Rendered Text for {line}")
+        # show_image(rendered_text, title=f"Rendered Text for {line}")
 
         # Set alpha channel based on blue channel and make the image black
         rendered_text[:, :, 3] = rendered_text[:, :, 0]  # Set alpha channel based on blue channel
         rendered_text[:, :, :3] = 0   # Set RGB channels to black
-        # XXX This is not working and I don't know why.
 
-        show_image(rendered_text, title=f"Transparent Text for {line}")
+        # show_image(rendered_text, title=f"Transparent Text for {line}")
 
         # Get the coordinates of the box
         x, y = int(box["left"]), int(box["top"])
         w, h = int(box["width"]), int(box["height"])
 
-        logger.debug(f"Resizing text to fit box, from {rendered_text.shape[:2]} to {(h, w)}")
-
         # Ensure the rendered text matches the box size
+        # This probably is not necessary, could be useful if we want to stretch the text
+        logger.debug(f"Resizing text to fit box, from {rendered_text.shape[:2]} to {(h, w)}")
         rendered_text = cv2.resize(rendered_text, (w, h), interpolation=cv2.INTER_LANCZOS4)
 
-        show_image(rendered_text, title=f"Resized Text for {line}")
+        # show_image(rendered_text, title=f"Resized Text for {line}")
 
         # Overlay the rendered text on the specific area of the image
         result_image[y:y+h, x:x+w] = overlay_images(result_image[y:y+h, x:x+w], rendered_text)
 
-        show_image(result_image, title=f"Image with Text for {line}")
+        # show_image(result_image, title=f"Image with Text for {line}")
 
     return result_image
 
 
+def inpaint(image: np.ndarray) -> np.ndarray:
+    """Inpaint the erased parts of the background."""
+    mask = image[:, :, 3] == 255
+    image = image[:, :, :3]
+    inpainted_image = cv2.inpaint(image, mask.astype(np.uint8), inpaintRadius=3, flags=cv2.INPAINT_TELEA)
+    inpainted_image = np.dstack((inpainted_image, np.full(inpainted_image.shape[:2], 0, dtype=np.uint8)))
+    return inpainted_image
+
+
 def image_fix_text(
-    get: geput.Get,
-    put: geput.Put,
     input_path: str,
     output_path: str,
     model: str = "default",
@@ -389,27 +466,35 @@ def image_fix_text(
     using OCR, correcting transcription errors, and
     replacing the original text in the image.
     """
-    print = geput.print(put)
-
     # Read and enhance the image
     image = cv2.imread(input_path)
     enhanced_image = enhance_image(image)
 
     # Perform OCR
-    lines, boxes = ocr_image(enhanced_image)
-    print(f"OCR Result:\n{'\n'.join(lines)}\n")
+    ocr_lines = ocr_image(enhanced_image)
+    ocr_lines_str = "\n".join(" ".join(word["text"] for word in line) for line in ocr_lines)
+    logger.info(f"OCR Result:\n{ocr_lines_str}\n")
 
     # Correct text using LLM
-    corrected_lines = correct_text(model, lines, vocab)
-    print(f"Corrected Text:\n{'\n'.join(corrected_lines)}\n")
+    ocr_results = prepare_ocr_results(ocr_lines)
+    response = correct_text(model, ocr_results, vocab)
+    corrected_lines = parse_corrected_text(response)
+    logger.debug(f"Corrected Lines: {corrected_lines}")
+    corrected_lines_str = "\n".join(" ".join(word[1] for word in line) for line in corrected_lines)
+    logger.info(f"Corrected Text:\n{corrected_lines_str}\n")
+
+    # Filter out mistaken 'words', and set line bounding boxes
+    filtered_lines = filter_lines(ocr_lines, corrected_lines)
+    boxes = get_line_boxes(ocr_lines, corrected_lines)
+    logger.info(f"Filtered Lines:\n{'\n'.join(filtered_lines)}\n")
 
     # Replace text in the image
-    result_image = replace_text_in_image(image, boxes, corrected_lines, font)
+    result_image = replace_text_in_image(image, boxes, filtered_lines, font)
     invert_alpha_channel(result_image)
 
     # Save the result
     cv2.imwrite(output_path, result_image)
-    print(f"Enhanced image saved to: {output_path}")
+    logger.info(f"Enhanced image saved to: {output_path}")
 
 
 def setup_args(arg):
@@ -423,3 +508,6 @@ def setup_args(arg):
 
 if __name__ == "__main__":
     main.go(image_fix_text, setup_args)
+
+
+# TODO could choose fonts from candidates based on metrics
