@@ -128,6 +128,26 @@ def whole(get: Get) -> str:
     return "".join(each(get))
 
 
+def readline(istream: TextIO) -> Get:
+    """Create a get function for reading lines from a file."""
+    def get_fn(**kwargs) -> str | None:
+        text = istream.readline(**kwargs)
+        if text == "":
+            return None
+        return text
+    return get_fn
+
+
+def read(istream: TextIO) -> Get:
+    """Create a get function for reading chunks from a file."""
+    def get_fn(**kwargs) -> str | None:
+        text = istream.read(**kwargs)
+        if text == "":
+            return None
+        return text
+    return get_fn
+
+
 # TODO maybe passing flush through is important to support.
 
 # TODO async functions; arguably we should always use async.

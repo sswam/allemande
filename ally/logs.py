@@ -235,6 +235,7 @@ def add_context(*args, **kwargs):
         raise
 
 
+# TODO often we only want to show one argument, or part of an argument
 def context(*dec_args, **dec_kwargs):
     """Function decorator to add context to an exception."""
     def decorator(func):
