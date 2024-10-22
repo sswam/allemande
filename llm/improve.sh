@@ -4,25 +4,25 @@
 # Improve something using AI
 
 improve() {
-	local model= m=	# model
-	local style= s=0	# refer to hello-<ext> for style
-	local prompt= p=	# extra prompt
-	local edit= e=1	# open an editor after the AI does it's work
-	local use_ai= a=1	# use AI, can turn off for testing with -a=0
-	local concise= c=0	# concise
-	local basename= b=0	# use basenames
-	local test= t=1	# run tests if found (default: on)
-	local testok= T=0	# tests are okay, don't change
-	local codeok= C=0	# code is okay, don't change
-	local changes= S=1	# allow changes to existing functionality or API changes
-	local features= F=1	# allow new features
-	local lint= L=1	# run linters and type checkers if possible
-	local format= f=1	# format code
-	local writetest= w=1	# write tests if none found
-	local numline= n=	# number lines
-	local strict= X=1	# only do what is requested
-	local ed= E=0	# provide changes as an ed script
-	local diff= d=0	# provide changes as a unified diff
+	local model= m=      # model
+	local style= s=0     # refer to hello-<ext> for style
+	local prompt= p=     # extra prompt
+	local edit= e=1      # open an editor after the AI does it's work
+	local use_ai= a=1    # use AI, can turn off for testing with -a=0
+	local concise= c=0   # concise
+	local basename= b=0  # use basenames
+	local test= t=1      # run tests if found (default: on)
+	local testok= T=0    # tests are okay, don't change
+	local codeok= C=0    # code is okay, don't change
+	local changes= S=1   # allow changes to existing functionality or API changes
+	local features= F=1  # allow new features
+	local lint= L=1      # run linters and type checkers if possible
+	local format= f=1    # format code
+	local writetest= w=1 # write tests if none found
+	local numline= n=    # number lines
+	local strict= X=1    # only do what is requested
+	local ed= E=0        # provide changes as an ed script
+	local diff= d=0      # provide changes as a unified diff
 
 	eval "$(ally)"
 
@@ -33,24 +33,24 @@ improve() {
 
 	prompt="${prompt:+$prompt }${prompt2}"
 
-	if (( basename )); then
+	if ((basename)); then
 		opt_b=("-b")
 	else
 		opt_b=()
 	fi
 
-	if (( diff || ed )) && [ "$numline" = "" ]; then
+	if ((diff || ed)) && [ "$numline" = "" ]; then
 		numline=1
 	fi
 
-	if (( numline )); then
+	if ((numline)); then
 		opt_n=("--number-lines")
 	else
 		opt_n=()
 	fi
 
 	# -C or -T options imply -t
-	if (( codeok )) || (( testok )); then
+	if ((codeok)) || ((testok)); then
 		test=1
 	fi
 
@@ -85,12 +85,12 @@ improve() {
 	checks_prompt=""
 
 	# Reformat code
-	if (( format )); then
+	if ((format)); then
 		{ formy "$file" || true; } | tee -a "$results_file"
 	fi
 
 	# Lint and type check
-	if (( lint )); then
+	if ((lint)); then
 		{ linty "$file" || true; } | tee -a "$results_file"
 	fi
 
@@ -99,10 +99,10 @@ improve() {
 	local test_ext="bats"
 	local temp_results_file=$(mktemp)
 
-	if (( test )); then
-		testy "$file" > "$temp_results_file" || true
+	if ((test)); then
+		testy "$file" >"$temp_results_file" || true
 		tests_file=$(head -n 1 "$temp_results_file")
-		tail -n +2 "$temp_results_file" >> "$results_file"
+		tail -n +2 "$temp_results_file" >>"$results_file"
 		rm "$temp_results_file"
 	fi
 	# remove empty results file
@@ -117,9 +117,9 @@ improve() {
 		fi
 		refs+=("$results_file")
 		check_msg="With check issues, please either fix the issue, or disable the warning with a comment."
-		if (( testok )); then
+		if ((testok)); then
 			checks_prompt="Some checks failed. The tests are CORRECT, you MUST NOT CHANGE THEM; please fix the main program code. $check_msg"
-		elif (( codeok )); then
+		elif ((codeok)); then
 			checks_prompt="Some checks failed. The main program code is CORRECT, you MUST NOT CHANGE IT; please fix the tests."
 		else
 			checks_prompt="Some checks failed. Please fix the program and/or the tests. If the code looks correct as it is, please update the tests to match the code, or vice versa. $check_msg"
@@ -129,9 +129,9 @@ improve() {
 		checks_prompt="Our checks passed."
 		rm -f "$results_file"
 		test=""
-	elif (( test )); then
+	elif ((test)); then
 		echo >&2 "No tests found"
-		if (( writetest )); then
+		if ((writetest)); then
 			# tests "$file"
 			# checks_prompt="No tests found. Please write some tests."
 			checks_prompt=""
@@ -141,7 +141,7 @@ improve() {
 
 	# style reference and prompt for - option
 	style_ref="hello-$ext"
-	if (( style )) && [ "$(which "$style_ref")" ]; then
+	if ((style)) && [ "$(which "$style_ref")" ]; then
 		echo >&2 "Using style reference: $style_ref"
 		refs+=("$style_ref")
 		prompt="use the style of \`$style_ref\`, $prompt"
@@ -149,9 +149,9 @@ improve() {
 
 	files_to_edit="\`$base\`"
 	if [ -f "$tests_file" ] && [ -s "$tests_file" ]; then
-		if (( codeok )); then
+		if ((codeok)); then
 			files_to_edit="\`$(basename "$tests_file")\`"
-		elif (( ! testok )); then
+		elif ((!testok)); then
 			files_to_edit+="and/or \`$(basename "$tests_file")\`"
 		fi
 	fi
@@ -160,10 +160,10 @@ improve() {
 	if [ -z "$prompt" ] && [ -z "$checks_prompt" ]; then
 		prompt="Please improve"
 		strict=0
-	elif (( strict )) && [ -n "$prompt" ]; then
+	elif ((strict)) && [ -n "$prompt" ]; then
 		prompt="*** TASK: $prompt ***"
 		strict_part="Please perform the *** TASK *** requested above. This is the main task to be done. Secondarily please fix any certain bugs or issues. Do not make other proactive changes at this time."
-	elif (( strict )); then
+	elif ((strict)); then
 		prompt=""
 		strict_part="Please fix any certain bugs or issues. Do not make other proactive changes at this time."
 	else
@@ -178,23 +178,23 @@ improve() {
 	$checks_prompt.
 	Bump the patch version if present. Don't add comments to mark your changes, only if a comment is needed going forward."
 
-	if (( changes == 0 )); then
+	if ((changes == 0)); then
 		prompt="$prompt. Strictly no changes to existing functionality or APIs."
 	fi
 
-	if (( features == 0 )); then
+	if ((features == 0)); then
 		prompt="$prompt. Strictly no new features."
 	fi
 
-	if (( concise )); then
+	if ((concise)); then
 		prompt="$prompt, Please reply concisely with only the changes."
 	fi
 
-	if (( numline )); then
+	if ((numline)); then
 		prompt="$prompt, Lines are numbered for your convenience, but please do not number lines in your output."
 	fi
 
-	if (( diff )); then
+	if ((diff)); then
 		prompt="$prompt
 	Please provide the changes as a unified diff patch. Use the following format:
 	\`\`\`diff
@@ -209,7 +209,7 @@ improve() {
 	Include the \`\`\` around the diff. Try to include minimal context (about 3 lines) around the changes."
 	fi
 
-	if (( ed )); then
+	if ((ed)); then
 		prompt="$prompt
 	Please provide the changes as minimal ed scripts, one per file, for example:
 	\`\`\`ed filename
@@ -231,7 +231,7 @@ improve() {
 		move-rubbish "$file~"
 	fi
 	# shellcheck disable=SC2216
-	echo n | cp -i -a "$file" "$file~" # WTF, there's no proper no-clobber option?!
+	echo n | cp-a-ignore-time-errors -i "$file" "$file~" # WTF, there's no proper no-clobber option?!
 
 	comment_char="#"
 	case "$ext" in
@@ -251,12 +251,12 @@ improve() {
 
 	# By default, it should edit the main code.
 	# if using -C option, it must edit the tests, so the output file is the tests file plus a tilde
-	if (( codeok )) && [ -n "$tests_file" ]; then
+	if ((codeok)) && [ -n "$tests_file" ]; then
 		target_file="$tests_file"
 		output_file="$tests_file~"
 	fi
 
-	if (( use_ai == 0 )); then
+	if ((use_ai == 0)); then
 		function process() { nl; }
 	fi
 
@@ -279,8 +279,8 @@ improve() {
 	chmod-x-shebang "$output_file"
 
 	# Compare original and improved versions
-	if (( edit )); then
-		if [ -n "$tests_file" ] && (( ! codeok )); then
+	if ((edit)); then
+		if [ -n "$tests_file" ] && ((!codeok)); then
 			vim -d "$output_file" "$target_file" -c "botright vnew $tests_file"
 		else
 			vimdiff "$output_file" "$target_file"
@@ -289,7 +289,7 @@ improve() {
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
 	confirm=""
-	if (( test )) && (( codeok == 0 )) && (( testok == 0 )); then
+	if ((test)) && ((codeok == 0)) && ((testok == 0)); then
 		confirm="confirm -t" # means it might have edited either or both files
 	fi
 
@@ -297,7 +297,7 @@ improve() {
 	# Use swapfiles with -c option to preserve hardlinks
 	$confirm swapfiles -c "$target_file" "$output_file" ||
 		# maybe the new version is an improved tests file
-		if [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ] && (( ! codeok )); then
+		if [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ] && ((!codeok)); then
 			$confirm swapfiles -c "$tests_file" "$output_file"
 		fi
 
