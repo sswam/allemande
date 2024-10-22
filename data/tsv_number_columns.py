@@ -8,7 +8,7 @@ import sys
 import logging
 from typing import TextIO, Callable
 
-from ally import main, logs, Get, Put
+from ally import main, logs, geput
 
 __version__ = "0.1.0"
 
@@ -16,15 +16,16 @@ logger = logs.get_logger()
 
 
 def tsv_number_columns(
-    get: Get,
-    put: Put,
+    get: geput.Get,
+    put: geput.Put,
     start: int = 1,
 ) -> None:
     """
     Read a TSV file, add column numbers, and output the result.
     """
     # Read all lines from input
-    lines = get(all=True).splitlines()
+    lines = list(geput.each(get))
+    print = geput.print(put)
 
     if not lines:
         logger.warning("Input is empty")
@@ -38,7 +39,7 @@ def tsv_number_columns(
     numbers_row = '\t'.join(str(i) for i in range(start, start + max_columns))
 
     # Output the column numbers row
-    put(numbers_row)
+    print(numbers_row)
 
     # Output the rest of the file
     for line in lines:
