@@ -63,7 +63,7 @@ git_group_files() {
 	confirm "continue?"
 
 	< "$llm_input_file" process -m="$model" "Please group these changed or new files into batches for committing together.
-We should commit changes to closely related files together, I guess.
+We should commit changes to closely related files together, I guess; e.g. tests and data with the associated programs.
 
 The output should be file names grouped together in batches on each line, separated by tabs.
 The order of the lines is not important. You can also add comments after a # character if necessary.

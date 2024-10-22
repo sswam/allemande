@@ -212,7 +212,9 @@ if [ -z "$git_root" ]; then
 fi
 
 # if no files were given, use staged
+
 get_lock
+
 if [ "${#files[@]}" -eq 0 ]; then
     cd "$git_root"
     readarray -t files < <(git-mod staged)
@@ -241,7 +243,12 @@ for i in "${!files[@]}"; do
         if [ -n "$(git status --porcelain -- "${files[$i]}")" ]; then
             continue
         fi
-        files[$i]=$(which-file "${files[$i]}")
+        found=$(which-file "${files[$i]}")
+        if [ -z "$found" ]; then
+            echo >&2 "File not found: ${files[$i]}"
+            exit 1
+        fi
+        files[$i]=$found
         if [ "$resolve_symlinks" -eq 1 ]; then
             files[$i]=$(realpath "${files[$i]}")
         fi
@@ -257,6 +264,7 @@ for i in "${!files[@]}"; do
         unset files[$i]
     fi
 done
+
 files=("${files[@]}")
 
 cd "$git_root"
