@@ -142,6 +142,10 @@ while [ $# -gt 0 ]; do
 	esac
 
 	if [ -z "$type" ]; then
+		if ((OPTS_ALLOW_UNKNOWN)); then
+			# an unknown option means we stop parsing here
+			break
+		fi
 		OPTS_UNKNOWN+=("$OPT")
 	fi
 
