@@ -42,7 +42,8 @@ format_py() {
 }
 
 format_c() {
-	quiet clang-format -i "$1"
+	local style_file=$ALLEMANDE_HOME/c/clang-format-style
+	quiet clang-format -i -style=file:"$style_file" "$1"
 }
 
 format_pl() {

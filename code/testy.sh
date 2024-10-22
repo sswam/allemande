@@ -4,6 +4,7 @@
 
 testy() {
 	local verbose= v=0	# verbose mode, output results when all tests pass
+	local timeout= t=10	# timeout (per test, Python only at the moment)
 
 	eval "$(ally)"
 
@@ -49,7 +50,19 @@ test_sh() {
 
 test_py() {
 	local tests_file="$1"
-	run pytest --asyncio-mode=auto -vv --capture=no --tb=short --disable-warnings --no-header "$tests_file" 2>/dev/null || return 1
+	results=$(mktemp)
+	if COLUMNS=80 run pytest --timeout=$timeout --asyncio-mode=auto -vv --capture=no --tb=short --disable-warnings --no-header "$tests_file" >"$results" 2>&1; then
+		rm "$results"
+		return 0
+	fi
+	if grep "=== ERRORS ===" "$results"; then
+		cat "$results"
+	else
+		# Just keep the important part of the output
+		<"$results" sed -e '/===.*test session starts/,/===/{/===.*test session starts/d; /===/!d;}' -e '/===.*short test summary info/,$d'
+		rm "$results"
+	fi
+	return 1
 }
 
 test_c() {
