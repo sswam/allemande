@@ -113,3 +113,10 @@ mypy
 pylint
 
 ttkthemes
+
+pytesseract
+
+PyGObject
+pycairo
+
+pytest-timeout
