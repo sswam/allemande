@@ -3,10 +3,11 @@
 """
 This module enhances text in an image by cleaning up the input,
 using OCR, correcting transcription errors with an LLM,
-and replacing the original text in the image.
+erasing and inpainting the original text,
+and replacing the text in the image.
 
 This version uses Pango/Cairo for text rendering.
-Note: The normal way to do alpha channels is wrong,
+Note: The normal way to do alpha channels feels wrong to me,
 so I am using 0 for opaque and 255 for transparent.
 """
 
@@ -57,7 +58,6 @@ def ocr_image(image: np.ndarray) -> list[list[dict[str, Any]]]:
 
     lines = []
     current_line = []
-#    current_line_box = {}
 
     n_boxes = len(data["level"])
     for i in range(n_boxes):
@@ -73,32 +73,12 @@ def ocr_image(image: np.ndarray) -> list[list[dict[str, Any]]]:
                 "height": data["height"][i],
             }
             current_line.append(word_box)
-
-#             if not current_line_box:
-#                 current_line_box = word_box.copy()
-#             else:
-#                 current_line_box["left"] = min(current_line_box["left"], word_box["left"])
-#                 current_line_box["top"] = min(current_line_box["top"], word_box["top"])
-#                 current_line_box["width"] = max(
-#                     current_line_box["left"] + current_line_box["width"],
-#                     word_box["left"] + word_box["width"]
-#                 ) - current_line_box["left"]
-#                 current_line_box["height"] = max(
-#                     current_line_box["top"] + current_line_box["height"],
-#                     word_box["top"] + word_box["height"]
-#                 ) - current_line_box["top"]
-
         elif level == 4 and current_line:  # End of line
             lines.append(current_line)
-#             current_line_box["text"] = " ".join(word["text"] for word in current_line)
-#             lines.append(current_line_box)
             current_line = []
-#             current_line_box = {}
 
     if current_line:  # Handle last line if exists
         lines.append(current_line)
-#         current_line_box["text"] = " ".join(word["text"] for word in current_line)
-#         lines.append(current_line_box)
 
     return lines
 
@@ -239,7 +219,6 @@ def render_text_in_box(text: str, width: int, height: int, font_size: int, font_
     # paint white background
     context.set_source_rgb(1, 1, 1)
     context.paint()
-#    context.set_source_rgb(0, 0, 0)
 
     layout = PangoCairo.create_layout(context)
     font = Pango.FontDescription(f"{font_path} {font_size}")
@@ -378,7 +357,6 @@ def show_image(image: np.ndarray, background_rgba=(255, 196, 0, 0), title="Rende
     # invert_alpha_channel(image)
 
     # Show the rendered_text in a window
-    # Let's just destroy this window specifically
     cv2.imshow(title, image)
     cv2.waitKey(0)
     cv2.destroyWindow(title)
@@ -450,7 +428,8 @@ def inpaint(image: np.ndarray) -> np.ndarray:
     mask = image[:, :, 3] == 255
     image = image[:, :, :3]
     inpainted_image = cv2.inpaint(image, mask.astype(np.uint8), inpaintRadius=3, flags=cv2.INPAINT_TELEA)
-    inpainted_image = np.dstack((inpainted_image, np.full(inpainted_image.shape[:2], 0, dtype=np.uint8)))
+    alpha = np.full(image.shape[:2], 0, dtype=np.uint8)
+    inpainted_image = np.dstack((inpainted_image, alpha))
     return inpainted_image
 
 
