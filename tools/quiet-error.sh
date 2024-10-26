@@ -1,13 +1,15 @@
 #!/bin/bash
-# qe: quiet stderr
+# quiet error: suppress errors
 
 exec=
 
-qe() {
+quiet-error() {
 	$exec "$@" 2>/dev/null
 }
 
+alias qe=quiet-error
+
 if [ "$0" = "$BASH_SOURCE" ]; then
 	exec=exec
-	qe "$@"
+	quiet-error "$@"
 fi
