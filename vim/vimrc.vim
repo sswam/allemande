@@ -21,7 +21,7 @@ endfun
 
 " Comment and Uncomment
 fun! Comment()
-	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='java' || &ft=='javascript' ||
+	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='rust' || &ft=='java' || &ft=='javascript' ||
 		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
 		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
 		s,^,// ,
@@ -38,10 +38,10 @@ fun! Comment()
 endfun
 
 fun! Uncomment()
-	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='java' || &ft=='javascript' ||
+	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='rust' || &ft=='java' || &ft=='javascript' ||
 		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
 		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
-		silent! s,^\(\s*\)/\, \?,\1,
+		silent! s,^\(\s*\)// \?,\1,
 	elseif &ft=='vim'
 		silent! s,^\(\s*\)" \?,\1,
 	elseif &ft=='scheme' || &ft=='lisp'
@@ -51,7 +51,8 @@ fun! Uncomment()
 	endif
 	" always try to remove a # comment, because my scripts add them
 	" to the wrong types of files pretty often
-	silent! s,^\(\s*\)# \?,\1,
+	silent! s,^\(\s*\)# ,\1,
+	silent! s,^\(\s*\)#$,\1,
 	noh
 endfun
 
