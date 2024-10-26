@@ -38,7 +38,7 @@ fi
 PYTHON=$(which python3)
 PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:}$ALLEMANDE_HOME
 
-for dir in python text www chat audio anthropic google llm scrape tools files tty data; do
+for dir in python text www chat audio speech anthropic google llm scrape tools files tty data; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
@@ -48,14 +48,12 @@ for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
 done
 
-ALLEMANDE_PATH="adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time bash/tests python/tests perl/tests c markdown x11 apps/story debian richtext refactor math"
+ALLEMANDE_PATH="adm core sys tools text data image audio speech video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time bash/tests python/tests perl/tests c markdown x11 apps/story debian richtext refactor math"
 
 # TODO only use canon and alias
 # for dir in canon alias; do
 
 PATHS=""
-
-#	adm core sys tools text data image audio video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally plan time c markdown x11; do
 
 for dir in ally canon alias; do
 	PATHS=$PATHS:$ALLEMANDE_HOME/$dir
