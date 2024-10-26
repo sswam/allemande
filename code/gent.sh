@@ -3,16 +3,13 @@
 # <program to test> "instructions to create tests" [reference files ...]
 # Generate tests for a program using AI
 
-tests() {
-	local m=    # model
-	local s=1   # refer to test_hello.py for test style
-	local E=0   # do not edit
+gent() {
+	local model= m=   # model
+	local style= s=1  # refer to test_hello.py for test style
+	local edit= e=1   # do not edit
+	local test= t=1	  # run tests after generating
 
-	. opts
-
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
+	eval "$(ally)"
 
 	local program=$1
 	local prompt=${2:-}
@@ -57,15 +54,10 @@ tests() {
 	fi
 
 	# Test style reference and prompt for -s option
-	if [ "$s" = 1 ]; then
-		local hello="hello_$ext.$tests_ext"
-		hello=$(which-file "$hello")
-		if [ -n "$hello" ]; then
-			dir=$(dirname "$hello")
-			example="$dir/tests/hello_${ext}_test.$tests_ext"
-			refs+=("$example")
-			prompt="in the style of \`$example\`, $prompt"
-		fi
+	style_ref="$ALLEMANDE_HOME/$ext/tests/hello_${ext}_test.$tests_ext"
+	if ((style)) && [ -e "$style_ref" ]; then
+		refs+=("$style_ref")
+		prompt="in the style of \`$style_ref\`, $prompt"
 	fi
 
 	prompt="Please write \`$tests_base\` to test \`$base\`, $prompt"
@@ -77,22 +69,21 @@ tests() {
 	fi
 
 	# Process input and save result
-	printf "%s\n" "$input" | process -m="$m" "$prompt" | markdown-code -c '#' > "$tests_path"
+	printf "%s\n" "$input" | process -m="$model" "$prompt" | markdown-code -c '#' > "$tests_path"
 
 	if [ "$executable" = 1 ]; then
 		chmod +x "$tests_path"
 	fi
 
-	if [ "$E" = 0 ]; then
+	if ((edit)); then
 		$EDITOR -O "$tests_path" "$program"
 	fi
 
-	testy "$program"
-
-	# restore caller options
-	eval "$old_opts"
+	if ((test)); then
+		testy "$program"
+	fi
 }
 
-if [ "$BASH_SOURCE" = "$0" ]; then
-	tests "$@"
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	gent "$@"
 fi
