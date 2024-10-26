@@ -1,0 +1,9 @@
+age_estimate_lisanneh	LisanneH/AgeEstimation	https://huggingface.co/LisanneH/AgeEstimation
+age_estimate_nateraw	nateraw/vit-age-classifier	https://huggingface.co/nateraw/vit-age-classifier
+age_estimate_dima806	dima806/facial_age_image_detection	https://huggingface.co/dima806/facial_age_image_detection
+age_estimate_ageless_faces	Ageless Faces: Using Vision Transformer for Human Age ...	https://medium.com/data-and-beyond/ageless-faces-using-vision-transformer-for-human-age-detection-from-facial-images-9a82e172db98
+live_face_detection	Dhrumit1314/Live_Face_Detection	https://huggingface.co/Dhrumit1314/Live_Face_Detection
+ajay_sharma_gender_detection	AjaySharma/genderDetection	https://huggingface.co/AjaySharma/genderDetection
+age_estimate_civitai	Civitai/age-vit	https://huggingface.co/Civitai/age-vit
+age_and_gender_mivolo	MiVOLO: Multi-input Transformer for Age and Gender ...	https://huggingface.co/papers/2307.04616
+age_estimation_bsif_lbp	Paper page - Facial age estimation using BSIF and LBP	https://huggingface.co/papers/1601.01876
