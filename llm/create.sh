@@ -4,11 +4,12 @@
 # Write something using AI
 
 create() {
-	local model= m=   # LLM model
-	local style= s=1  # refer to hello-<ext> for style
-	local edit= e=1   # edit
-	local use_ai= a=1 # use AI, can turn off for testing with -a=0
-	local quiet= q=0  # use only the user prompt
+	local model= m=     # LLM model
+	local style= s=1    # refer to hello-<ext> for style
+	local guidance= g=1 # refer to lang/guidance.md for style
+	local edit= e=1     # edit
+	local use_ai= a=1   # use AI, can turn off for testing with -a=0
+	local quiet= q=0    # use only the user prompt
 
 	eval "$(ally)"
 
@@ -32,10 +33,18 @@ create() {
 		ext=""
 	fi
 
+	# guidance reference and prompt for -g --guidance option
+	guidance_ref="guidance-$ext.md"
+	if ((guidance)) && [ "$(which-file "$guidance_ref")" ]; then
+		echo >&2 "Using guidance reference: $guidance_ref"
+		refs+=("$guidance_ref")
+		prompt="refer to \`$guidance_ref\`, $prompt"
+	fi
+
 	# style reference and prompt for -s option
 	if [ -n "$ext" ]; then
-		style_ref="hello-$ext"
-		if (("$style")) && [ "$(which-file "$style_ref")" ]; then
+		style_ref="$ALLEMANDE_HOME/$ext/hello_$ext.$ext"
+		if ((style)) && [ -e "$style_ref" ]; then
 			refs+=("$style_ref")
 			prompt="in the style of \`$style_ref\`, $prompt"
 		fi

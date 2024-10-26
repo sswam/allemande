@@ -6,6 +6,7 @@
 improve() {
 	local model= m=      # model
 	local style= s=0     # refer to hello-<ext> for style
+	local guidance= g=1  # refer to lang/guidance.md for style
 	local prompt= p=     # extra prompt
 	local edit= e=1      # open an editor after the AI does it's work
 	local use_ai= a=1    # use AI, can turn off for testing with -a=0
@@ -100,7 +101,7 @@ improve() {
 	local temp_results_file=$(mktemp)
 
 	if ((test)); then
-		testy "$file" >"$temp_results_file" || true
+		testy "$file" | tee "$temp_results_file" || true
 		tests_file=$(head -n 1 "$temp_results_file")
 		tail -n +2 "$temp_results_file" >>"$results_file"
 		rm "$temp_results_file"
@@ -139,12 +140,22 @@ improve() {
 		test=""
 	fi
 
-	# style reference and prompt for - option
-	style_ref="hello-$ext"
-	if ((style)) && [ "$(which "$style_ref")" ]; then
-		echo >&2 "Using style reference: $style_ref"
-		refs+=("$style_ref")
-		prompt="use the style of \`$style_ref\`, $prompt"
+	# guidance reference and prompt for -g --guidance option
+	guidance_ref="guidance-$ext.md"
+	if ((guidance)) && [ "$(which-file "$guidance_ref")" ]; then
+		echo >&2 "Using guidance reference: $guidance_ref"
+		refs+=("$guidance_ref")
+		prompt="refer to \`$guidance_ref\`, $prompt"
+	fi
+
+	# style reference and prompt for -s --style option
+	if [ -n "$ext" ]; then
+		style_ref="$ALLEMANDE_HOME/$ext/hello_$ext.$ext"
+		if ((style)) && [ -e "$style_ref" ]; then
+			echo >&2 "Using style reference: $style_ref"
+			refs+=("$style_ref")
+			prompt="use the style of \`$style_ref\`, $prompt"
+		fi
 	fi
 
 	files_to_edit="\`$base\`"
@@ -161,8 +172,8 @@ improve() {
 		prompt="Please improve"
 		strict=0
 	elif ((strict)) && [ -n "$prompt" ]; then
-		prompt="*** TASK: $prompt ***"
-		strict_part="Please perform the *** TASK *** requested above. This is the main task to be done. Secondarily please fix any certain bugs or issues. Do not make other proactive changes at this time."
+		prompt="*** MAIN TASK: $prompt ***"
+		strict_part="Please perform the *** MAIN TASK *** requested above. Secondarily, please fix any certain bugs or issues. Do not make other proactive changes at this time."
 	elif ((strict)); then
 		prompt=""
 		strict_part="Please fix any certain bugs or issues. Do not make other proactive changes at this time."
@@ -261,7 +272,7 @@ improve() {
 	fi
 
 	# Process input and save result
-	printf "%s\n" "$input" | v process -m="$model" "$prompt" |
+	printf "%s\n" "$input" | process -m="$model" "$prompt" |
 		if [ -n "$comment_char" ]; then
 			markdown-code -c "$comment_char"
 		else
