@@ -22,6 +22,7 @@ junk_files() {
             -name '*~' -o \
             -name '.*.results.txt' -o \
             -name '*.tmp.*' -o \
+            -name 'subtitle.txt' -o \
             -empty -o \
             -size 1c \
         \) -type f -printf "%P\n" |

@@ -17,6 +17,9 @@ repo=${1:-.}
 
 clone=1
 
+repo=${repo%/tree/main}
+repo=${repo%/}
+
 if [[ $repo == https:* ]]; then
 	url="$repo"
 	repo="${url#https://huggingface.co/}"
