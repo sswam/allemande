@@ -623,14 +623,7 @@ async def aquery2(*prompt, ostream: IO[str]|None=None, log=True, json=False):
 	output_message = await allm_chat([input_message])
 	content = output_message["content"]
 
-	# fix indentation for code
-	if opts.indent:
-		logger.warning("fix indentation for code")
-		lines = content.splitlines()
-		lines = tab.fix_indentation_list(lines, opts.indent)
-		content = "".join(lines)
-
-	# log the input and output
+	# log the input and empty output file
 	if log:
 		LOGDIR.mkdir(parents=True, exist_ok=True)
 		assert len("answer") == len("prompt")  # better be sure!
@@ -644,6 +637,17 @@ async def aquery2(*prompt, ostream: IO[str]|None=None, log=True, json=False):
 				break
 			time.sleep(0.1)
 		logfile_prompt.write_text(prompt.rstrip()+"\n", encoding="utf-8")
+		logfile.write_text("", encoding="utf-8")
+
+	# fix indentation for code
+	if opts.indent:
+		logger.warning("fix indentation for code")
+		lines = content.splitlines()
+		lines = tab.fix_indentation_list(lines, opts.indent)
+		content = "".join(lines)
+
+	# log the output
+	if log:
 		logfile.write_text(content.rstrip()+"\n", encoding="utf-8")
 
 	if json:
@@ -794,8 +798,8 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 @arg("-A", "--no-aliases", dest="aliases", action="store_false", help="show aliases")
 def models(detail=False, aliases=True, file=stdout):
 	""" List the available models. """
-	def print(*args, **kwargs):
-		__builtins__["print"](*args, **kwargs, file=file)
+	def print(*args, file=file, **kwargs):
+		__builtins__.print(*args, **kwargs, file=file)
 	with io.StringIO() as buffer:
 		for name, model in MODELS.items():
 			print(name, end="", file=buffer)
