@@ -7,6 +7,6 @@ new=$file.new.$$
 if [ -e "$file" ]; then
 	cat "$file"
 fi
-find-elf . | grep -v '/\.' | sed 's,^./,,'
+find-elf . | grep -v '/\.' | sed 's,^./,/,'
 ) | uniqo >"$new"
 mv "$new" "$file"

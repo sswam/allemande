@@ -44,7 +44,7 @@ git_group_files() {
 				printf "File \`%s\` was removed.\n\n" "$file"
 				continue
 			fi
-			diff=$(git diff "$file")
+			diff=$(git diff HEAD -- "$file")
 			lines=$(printf "%s\n" "$diff" | wc -l)
 			if [ "$lines" -le "$max_diff_lines" ]; then
 				printf "File \`%s\` was changed:\n\n" "$file"
