@@ -1,70 +1,73 @@
-#!/bin/bash -eu
-# huggingface-get: download a model from huggingface.co without eating double disk
+#!/usr/bin/env bash
 
-. confirm
+# [repo]
+# Download a model from huggingface.co without duplicating disk usage
+# This script clones a Hugging Face repository and downloads LFS files efficiently
 
-n=
+huggingface-get() {
+	local n= # dry run mode
+	local repo=${1:-.}
 
-. opts
+	eval "$(ally)"
 
-if [ -n "$n" ]; then
-	run=cat
-else
-	run="sh -v"
-fi
-
-repo=${1:-.}
-
-clone=1
-
-repo=${repo%/tree/main}
-repo=${repo%/}
-
-if [[ $repo == https:* ]]; then
-	url="$repo"
-	repo="${url#https://huggingface.co/}"
-fi
-
-#echo "url: $url"
-#echo "repo: $repo"
-
-if [ -d "$repo" ]; then
-	cd "$repo"
-	url=`git remote get-url origin`
-	clone=0
-else
-	url="https://huggingface.co/$repo"
-fi
-
-base=$(basename "$repo")
-dir=$(dirname "${repo#/}")
-
-nt "$base"
-
-if [ "$repo" = "$url" ]; then
-	echo >&2 "error: not a huggingface.co url: $url"
-	exit 1
-fi
-
-if [ "$clone" = 1 ]; then
-	mkdir -p "$dir"
-	cd "$dir"
-	GIT_LFS_SKIP_SMUDGE=1 v git clone "$url"
-	cd "$base"
-fi
-
-git lfs ls-files | cut -d' ' -f3- |
-while read file; do
-	file_url="https://huggingface.co/$repo/resolve/main/$file"
-	dir=$(dirname "$file")
-	# if "$file" is small, then remove it; it's likely the git lfs pointer, not the model file
-	if [ -e "$file" ] && [ $(stat -c%s "$file") -lt 1000 ]; then
-		rm -v "$file" >&2   # WTF rm, write messages on stdout?!
-		echo
+	local run="sh -v"
+	if [ -n "$n" ]; then
+ 	        run="cat"
 	fi
-	printf "%q " wget --header="Authorization: Bearer $HUGGINGFACE_API_TOKEN" -P "$dir" -c "$file_url"
-	echo
-done |
-$run
 
-#ls | grep -v '2\.7B' | while read M; do (cd "$M"; git lfs ls-files | k 3 | while read file; do url="https://huggingface.co/cerebras/$(basename `git-root`)/resolve/main/$file"; echo "wget -c $url"; done | sh ); done
+	repo=${repo%/tree/main}
+	repo=${repo%/}
+
+	local url="$repo"
+
+	if [[ $repo == https:* ]]; then
+		url="$repo"
+		repo="${url#https://huggingface.co/}"
+	fi
+
+	local base dir clone=1
+	base=$(basename "$repo")
+	dir=$(dirname "${repo#/}")
+
+	nt "$base"
+
+	if [ -d "$repo" ]; then
+		cd "$repo" || die "Failed to change directory to $repo"
+		url=$(git remote get-url origin)
+		clone=0
+	else
+		url="https://huggingface.co/$repo"
+	fi
+
+	if [ "$repo" = "$url" ]; then
+		echo >&2 "error: not a huggingface.co url: $url"
+		exit 1
+	fi
+
+	if [ "$clone" = 1 ]; then
+		mkdir -p "$dir"
+		cd "$dir" || die "Failed to change directory to $dir"
+		GIT_LFS_SKIP_SMUDGE=1 v git clone "$url"
+		cd "$base" || die "Failed to change directory to $base"
+	fi
+
+	git lfs ls-files | cut -d' ' -f3- | while IFS= read -r file; do
+		file_url="https://huggingface.co/$repo/resolve/main/$file"
+		file_dir=$(dirname "$file")
+
+		# if "$file" is small, then remove it; it's likely the git lfs pointer, not the model file
+		if [ -e "$file" ] && [ "$(stat -c%s "$file")" -lt 1000 ]; then
+			rm -v "$file" >&2
+			echo
+		fi
+		printf "%s " wget --header="Authorization: Bearer $HUGGINGFACE_API_TOKEN" -P "$file_dir" -c "$file_url"
+		echo
+	done |
+	$run
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	huggingface-get "$@"
+fi
+
+# version: 0.1.1
