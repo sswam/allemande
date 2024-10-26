@@ -13,10 +13,6 @@ translate() {
 
 	eval "$(ally)"
 
-	# strict mode
-	local old_opts=$(set +o)
-	set -e -u -o pipefail
-
 	local source target
 	local from_to_prompt=""
 
@@ -56,9 +52,6 @@ translate() {
 		cat "$target"
 		rm -r "$temp_dir"
 	fi
-
-	# restore caller options
-	eval "$old_opts"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then

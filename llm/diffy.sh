@@ -76,13 +76,16 @@ diff_them() {
 
 ai_enhanced_diff() {
 	local files=("$@")
-	local prompt
+	local prompt=""
 
-	(
-		if [ "$economy" = 1 ]; then
-			prompt="Please highlight the differences between the files. $prompt"
-		else
-			prompt="Please compare the files: highlight similarities and differences. $prompt"
+	if [ "$economy" = 1 ]; then
+		prompt="Please highlight the differences between the files."
+	else
+		prompt="Please compare the files: highlight similarities and differences."
+	fi
+
+	{
+		if [ "$economy" != 1 ]; then
 			cat-named "${files[@]}"
 		fi
 
@@ -92,8 +95,7 @@ ai_enhanced_diff() {
 			echo
 			diff_them "${files[@]}"
 		fi
-	) |
-	process -m="$model" "$prompt"
+	} | process -m="$model" "$prompt"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then

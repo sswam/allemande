@@ -1,6 +1,7 @@
 #!/bin/bash -eu
 
-# llm-last:		show recent llm generation/s from ~/llm.log
+# show recent llm generation/s from ~/llm.log
+
 # llm-last		shows the most recent
 # llm-last 3 1		shows 3rd most recent and most recent
 #	Even numbered are prompts, odd numbered are AI responses.
