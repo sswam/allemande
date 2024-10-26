@@ -6,26 +6,26 @@ This module reformats source code using external tools.
 
 import subprocess
 import logging
-from typing import List
+from typing import TextIO
 
 import black
 
-from ally import main, resource, lazy, Get, Put
+from ally import main, resource, lazy, geput
 
 __version__ = "0.1.1"
 
 logger = main.get_logger()
 
 
-def run(cmd: List[str], input_str: str) -> str:
+def run(cmd: list[str], input_str: str) -> str:
     """Run a command with input and return its output."""
     return subprocess.run(cmd, input=input_str.encode(), capture_output=True).stdout.decode()
 
 
 def reformat(
-    *filenames: List[str],
-    get: Get,
-    put: Put,
+    *filenames: list[str],
+    istream: TextIO,
+    put: geput.Put,
     language: str = "py",
     fatal: bool = False,
 ) -> None:
