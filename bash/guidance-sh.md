@@ -21,6 +21,11 @@ no "Error: " or "Warning: " prefixes; THIS IS UNIX!
 Only use echo for fixed text. Echo "$foo" is unreliable due to its options;
 use printf with a format string.
 
+The original coder was probably not an idiot. Be careful when "fixing"
+things. For example, never replace the use of a custom tool or library you
+don't know and can't see with new code that you think might be better than that
+unknown tool.
+
 We don't care about compatibility with older versions of bash, or other shells.
 
 Follow the principles from The Practice of Programming by Kernighan and Pike,

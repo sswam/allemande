@@ -30,7 +30,9 @@ None is different from 0. Don't "simplify" `if foo is None: foo = default` to
 `foo = foo or default`.
 
 The original coder was probably not an idiot. Be careful when "fixing"
-things.
+things. For example, never replace the use of a custom tool or library you
+don't know and can't see with new code that you think might be better than that
+unknown.
 
 We use at least Python 3.10, normally 3.12 or the latest stable version.
 Please use new features. Always use modern type hints such as

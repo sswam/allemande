@@ -25,7 +25,8 @@ hello-sh() {
 		de) hello="Hallo" ;;
 		jp) hello="こんにちは" ;;
 		cn) hello="你好" ;;
-		*) die "unknown language: $language"
+		*)
+			die "unknown language: $language"
 			;;
 		esac
 
