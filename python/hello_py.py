@@ -16,7 +16,7 @@ import sh  # type: ignore
 from ally import main, logs, lazy, geput  # type: ignore
 import llm  # type: ignore
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 logger = logs.get_logger()
 
@@ -80,10 +80,7 @@ def hello(
     ai: bool = False,
     model: str | None = None,
 ) -> None:
-    """
-    An example module / script to say hello,
-    and ask the user how they are.
-    """
+    """An example program to say hello, and ask the user how they are."""
     print = geput.print(put)
     input = geput.input(get)
 
@@ -115,7 +112,7 @@ def hello(
 
 def setup_args(arg):
     """Set up the command-line arguments."""
-    # Note to AI (do not copy): We don't need to add defaults or types, ally does it.
+    # Note to AI: We don't need to add defaults or types, ally does it.
     arg("-n", "--name", help="name to be greeted")
     arg("--ai", action="store_true", help="use AI to respond")
     arg("-m", "--model", help="specify which AI model e.g. claude, emmy, clia, dav")
@@ -124,46 +121,22 @@ def setup_args(arg):
 if __name__ == "__main__":
     main.go(hello, setup_args)
 
-"""
-Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
+# Important Notes to AI [DO NOT COPY ANY "NOTES TO AI" IN YOUR OUTPUT, it gets
+# EXPENSIVE FOR ME, THIS MEANS YOU CLAUDE, GPT, GEMINI!]:
 
-We can use as module like this from the CLI or as a Python module. We no longer
-use argh or ally.main.run, we use ally.main.go with a setup_args function.
-The main.go call adds logging and IO options, and sets them up.
-The main function, `hello` in this case, likely has the same name as the module.
+# We can use as module like this from the CLI or as a Python module. We no
+# longer use argh or ally.main.run, we use ally.main.go with a setup_args
+# function. The main.go call adds logging and IO options, and sets them up. The
+# main function, `hello` in this case, likely has the same name as the module.
 
-Do not remove comments, logging or blank lines, especially not TODO, FIXME, XXX.
-Do not remove ANYTHING unnecessarily. If you are 1000% sure something is wrong,
-comment it out rather than removing it.
+# We include a module-level docstring to explain the program. Don't include the
+# filename or like "This module / script / program" in that.
 
-AVOID DEEP INDENTATON OR NESTING, it's better to use if/elif or a function.
-If needed, we can use variables to avoid repeating parts of conditions.
-Test negative cases first, and use continue, break, or return to avoid deep nesting.
+# Our Python programs can also be used as modules, and vice-versa, e.g.:
+# from hello_py import hello
 
-In most cases for error handling we just allow the script to exit by not
-catching the exception. This is a deliberate choice.
-Generally, if things go wrong, raise an exception rather than continuing.
+# We prefer to use stdio over file arguments, where possible.
 
-We raise exceptions rather that printing to stderr then exiting. Never handle
-something that should be an exception as a warning.
-
-We should always include a module-level docstring to explain the program.
-Don't include the filename in that.
-
-Double line breaks are used to separate top-level functions and classes.
-
-Our scripts default to stdio.
-
-In modern Python, we can use types like list[str] rather than List[str], same for dict, set, etc.
-
-Our scripts can also be used as modules, and vice-versa.
-    from hello import hello
-
-Stdout is only for normal output. Use logging for info, warning or error messages.
-
-None is different from 0. Don't "simplify" `if foo is None: foo = default` to `foo = foo or default`.
-
-The original coder was probably not an idiot. Be careful when "fixing" things.
-We use at least Python 3.10, normally 3.12 or the latest stable version. Please use new features as needed.
-For example, use modern type hints such as list[str]|None rather than Optional[List[str]]
-"""
+# If it is simple to do so, write tools that can process several files in one
+# invocation. Zero is holy! It is not an error to pass zero args. It is harmful
+# to die in that case.
