@@ -51,7 +51,7 @@ def go(
         elif rv is not None:
             put(str(rv).rstrip("\n") + "\n")
     except Exception as e:
-        logger = logs.get_logger(1)
+        logger = logs.get_logger(2)
         logging.error(f"Error: {type(e).__name__} - {str(e)}")
         logging.debug("Full traceback:", exc_info=True)
         sys.exit(1)

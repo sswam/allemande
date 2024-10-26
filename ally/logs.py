@@ -117,7 +117,7 @@ def get_log_level(name=None, root=False) -> str:
 
 def set_log_level(log_level: str|int, name=None, root=False) -> None:
     """Set the log level for the console handler and module file handler."""
-    logger = get_logger(1, name=name, root=root)
+    logger = get_logger(2, name=name, root=root)
     _set_log_level(log_level, name=logger.name)
 
 

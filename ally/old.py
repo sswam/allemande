@@ -56,7 +56,7 @@ def run(commands: Callable | list[Callable], warn_deprecated=True) -> None:
     args = parser.parse_args()
 
     # Open files
-    opts._open_files(args, parser)
+    opts._open_files(args, parser, False, False)
 
     # Setup logging based on parsed arguments
     logs.set_log_level(args.log_level, root=True)
