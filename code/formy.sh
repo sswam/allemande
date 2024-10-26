@@ -4,6 +4,8 @@
 
 . each
 
+alias qs=quiet-on-success
+
 formy() {
 	local verbose= v=0	# verbose mode, output results when all tests pass
 
@@ -27,39 +29,39 @@ formy() {
 
 run() {
 	if (( verbose )); then
-		v "$@"
+		verbose "$@"
 	else
-		v quiet "$@" 2>/dev/null
+		qs verbose "$@" 2>/dev/null
 	fi
 }
 
 format_sh() {
-	quiet shfmt -w "$1"
+	qs shfmt -w "$1"
 }
 
 format_py() {
-	quiet black --line-length 100 "$1"
+	qs black --line-length 100 "$1"
 }
 
 format_c() {
 	local style_file=$ALLEMANDE_HOME/c/clang-format-style
-	quiet clang-format -i -style=file:"$style_file" "$1"
+	qs clang-format -i -style=file:"$style_file" "$1"
 }
 
 format_pl() {
-	quiet perltidy -b "$1"
+	qs perltidy -b "$1"
 }
 
 format_go() {
-	quiet gofmt -w "$1"
+	qs gofmt -w "$1"
 }
 
 format_rs() {
-	quiet rustfmt "$1"
+	qs rustfmt "$1"
 }
 
 format_js() {
-	quiet prettier --write "$1"
+	qs prettier --write "$1"
 }
 
 format_ts() {
