@@ -1,5 +1,7 @@
+arch=$(shell gcc -dumpmachine)
+
 CFLAGS = -Wall -I/usr/include/quickjs
-LDLIBS = -L/usr/lib/quickjs -lquickjs -lm
+LDLIBS = -L/usr/lib/$(arch)/quickjs -lquickjs -lm
 
 test_quickjs: test_quickjs.o
 
