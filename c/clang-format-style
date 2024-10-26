@@ -5,4 +5,4 @@ BreakBeforeBraces: Linux
 AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: false
 IndentCaseLabels: false
-ColumnLimit: 80
+ColumnLimit: 100
