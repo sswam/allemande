@@ -24,7 +24,11 @@ testy() {
 		if [ "$ext" == "sh" ]; then
 			test_ext="bats"
 		fi
-		local tests_file="$(dirname "$prog")/tests/$(basename "$prog" ".$ext")_test.$test_ext"
+		if [ "$test_ext" = rs ]; then
+			local tests_file="$prog"
+		else
+			local tests_file="$(dirname "$prog")/tests/$(basename "$prog" ".$ext")_test.$test_ext"
+		fi
 		if [ ! -f "$tests_file" ]; then
 			echo >&2 "Tests file not found: $tests_file"
 			return 1
@@ -38,7 +42,7 @@ run() {
 	if (( verbose )); then
 		v "$@"
 	else
-		v quiet "$@" 2>/dev/null
+		v quiet-on-success "$@" 2>/dev/null
 	fi
 }
 
@@ -67,7 +71,7 @@ test_py() {
 
 test_c() {
 	local tests_file="$1"
-	run googletest "$tests_file" || return 1
+	run make "${tests_file%.c}" && run "${tests_file%.c}" || return 1
 }
 
 test_pl() {
@@ -82,7 +86,8 @@ test_go() {
 
 test_rs() {
 	local tests_file="$1"
-	run cargo test --manifest-path "$tests_file" || return 1
+	# run cargo test --manifest-path "$tests_file" || return 1
+	run cargo test --bin "$(basename -s .rs "$tests_file")" || return 1
 }
 
 test_js() {
