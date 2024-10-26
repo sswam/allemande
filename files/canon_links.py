@@ -10,7 +10,6 @@ import shutil
 from pathlib import Path
 from typing import TextIO
 
-from argh import arg
 from ally import main
 
 __version__ = "0.1.2"
@@ -75,12 +74,8 @@ def _remove_dead_links(target_dir: Path) -> None:
             symlink.unlink()
 
 
-@arg("--target-dir", default="canon", help="Target directory for symlinks")
-@arg("--clean", action="store_true", help="Clean out the target directory before creating new symlinks")
 def canon_links(
-    *sources: list[str],
-    istream: TextIO = sys.stdin,
-    ostream: TextIO = sys.stdout,
+    *sources: str,
     target_dir: str = "canon",
     clean: bool = False,
 ) -> None:
@@ -102,5 +97,11 @@ def canon_links(
     _remove_dead_links(target_path)
 
 
+def setup_args(arg):
+    arg("sources", nargs="*", help="Source directories to scan for executables and .sh files")
+    arg("--target-dir", help="Target directory for symlinks")
+    arg("--clean", action="store_true", help="Clean out the target directory before creating new symlinks")
+
+
 if __name__ == "__main__":
-    main.run(canon_links)
+    main.go(canon_links, setup_args)
