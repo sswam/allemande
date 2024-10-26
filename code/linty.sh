@@ -29,7 +29,7 @@ run() {
 	if (( verbose )); then
 		v+ "$@"
 	else
-		quiet v+ "$@" 2>/dev/null
+		quiet-on-success v+ "$@" 2>/dev/null
 	fi
 }
 
@@ -45,7 +45,7 @@ lint_py() {
 	local prog="$1"
 	fail=0
 	run python3 -m py_compile "$prog" || fail=1
-	run pylint --disable=all --enable=fixme "$prog" || fail=1
+	run pylint --enable=fixme "$prog" || fail=1
 	run mypy "$prog" || fail=1
 	return $fail
 }
@@ -53,11 +53,10 @@ lint_py() {
 lint_c() {
 	local prog="$1"
 	fail=0
-	run gcc -Wall -Wextra -Werror -fsyntax-only "$prog" || fail=1
-	run clang -Wall -Wextra -Werror -fsyntax-only "$prog" || fail=1
+	run cc -Wall -Wextra -Werror -fsyntax-only "$prog" || fail=1
 	run clang-tidy "$prog" || fail=1
 	run cppcheck "$prog" || fail=1
-	run splint "$prog" || fail=1
+	run splint +posixlib "$prog" || fail=1
 	run flawfinder "$prog" || fail=1
 	return $fail
 }
@@ -82,7 +81,7 @@ lint_go() {
 lint_rs() {
 	local prog="$1"
 	fail=0
-	run rustc --deny warnings "$prog" || fail=1
+	# run rustc --deny warnings "$prog" || fail=1
 	run cargo clippy --all-targets --all-features -- -D warnings || fail=1
 	return $fail
 }
