@@ -1,6 +1,7 @@
-// 2>/dev/null; cd "${0%/*}" && gcc -g -o .glxgears glxgears.c -lGL -lGLU -lX11 -lm && exec ./.glxgears "$@" ; exit 1
+// 2>/dev/null; . shebang-c
+
 /*
-* GLX Gears v1.0.4
+* GLX Gears v1.0.5
 *
 * This program displays animated 3D gears using OpenGL and X11.
 *
@@ -38,11 +39,11 @@
 
 // Macro for defining gear vertices
 #define GEAR_VERTEX(v, x, y, z) do { \
-GLfloat v[3]; \
-v[0] = x; v[1] = y; v[2] = z; \
-glNormal3fv(v); \
-glVertex3f(x, y, z); \
-} while(0)
+	GLfloat v[3]; \
+	v[0] = x; v[1] = y; v[2] = z; \
+	glNormal3fv(v); \
+	glVertex3f(x, y, z); \
+	} while(0)
 
 // Global variables for view rotation, zoom, and mouse interaction
 static GLfloat view_rotx = 20.0, view_roty = 30.0, view_rotz = 0.0;
@@ -53,8 +54,7 @@ static int mouse_x = 0, mouse_y = 0;
 static int mouse_left_down = 0;
 
 // Function to create a gear
-static void
-gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
+static void gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
 	GLint teeth, GLfloat tooth_depth)
 {
 	GLint i;
@@ -181,8 +181,7 @@ gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
 }
 
 // Function to draw the scene
-static void
-draw(void)
+static void draw(void)
 {
 	// Clear the buffer and set up the view
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -213,8 +212,7 @@ draw(void)
 }
 
 // Function to initialize OpenGL settings and create gears
-static void
-init(void)
+static void init(void)
 {
 	static GLfloat pos[4] = {5.0, 5.0, 10.0, 0.0};
 	static GLfloat red[4] = {0.8, 0.1, 0.0, 1.0};
@@ -250,8 +248,7 @@ init(void)
 }
 
 // Function to handle mouse button events
-static void
-handle_mouse_button(XButtonEvent *event)
+static void handle_mouse_button(XButtonEvent *event)
 {
 	// Handle left mouse button for rotation and scroll wheel for zoom
 	if (event->button == Button1) {
@@ -272,8 +269,7 @@ handle_mouse_button(XButtonEvent *event)
 }
 
 // Function to handle mouse motion events
-static void
-handle_mouse_motion(XMotionEvent *event)
+static void handle_mouse_motion(XMotionEvent *event)
 {
 	// Update view rotation based on mouse movement
 	if (mouse_left_down) {
@@ -287,8 +283,7 @@ handle_mouse_motion(XMotionEvent *event)
 }
 
 // Function to display usage information
-static void
-usage(char *argv0)
+static void usage(char *argv0)
 {
 	fprintf(stderr, "Usage: %s [options]\n"
 		"Options:\n"
@@ -303,10 +298,228 @@ usage(char *argv0)
 		"  -h                display this help and exit\n", argv0);
 }
 
-int
-main(int argc, char *argv[])
+// Parse command line options
+void parse_command_line_options(int argc, char *argv[], char **displayName, int *srgb, int *stereo, int *samples, int *swapInterval, int *fullscreen, char **geometry, int *showInfo)
 {
-	// Initialize X11 display and window
+	int opt;
+	if (argc > 1 && strcmp(argv[1], "--help") == 0) {
+		argv[1] = "-h";
+	}
+	while ((opt = getopt(argc, argv, "d:sSm:I:fg:ih")) != -1) {
+		switch (opt) {
+			case 'd': *displayName = optarg; break;
+			case 's': *srgb = 1; break;
+			case 'S': *stereo = 1; break;
+			case 'm': *samples = atoi(optarg); break;
+			case 'I': *swapInterval = atoi(optarg); break;
+			case 'f': *fullscreen = 1; break;
+			case 'g': *geometry = optarg; break;
+			case 'i': *showInfo = 1; break;
+			case 'h':
+			default:
+				usage(argv[0]);
+				exit(opt == 'h' ? 0 : 1);
+		}
+	}
+}
+
+// Open the X11 display
+Display* open_display(char *displayName)
+{
+	Display *dpy = XOpenDisplay(displayName);
+	if (dpy == NULL) {
+		printf("Failed to open display\n");
+		exit(1);
+	}
+	return dpy;
+}
+
+// Set up GLX attributes based on command line options
+void setup_glx_attributes(int *glx_attribs, int *index, int srgb, int stereo, int samples)
+{
+	*index = 0;
+	glx_attribs[(*index)++] = GLX_RENDER_TYPE;
+	glx_attribs[(*index)++] = GLX_RGBA_BIT;
+	glx_attribs[(*index)++] = GLX_DOUBLEBUFFER;
+	glx_attribs[(*index)++] = True;
+	glx_attribs[(*index)++] = GLX_DEPTH_SIZE;
+	glx_attribs[(*index)++] = 24;
+
+	if (srgb) {
+		glx_attribs[(*index)++] = GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB;
+		glx_attribs[(*index)++] = True;
+	}
+
+	if (stereo) {
+		glx_attribs[(*index)++] = GLX_STEREO;
+		glx_attribs[(*index)++] = True;
+	}
+
+	if (samples) {
+		glx_attribs[(*index)++] = GLX_SAMPLE_BUFFERS;
+		glx_attribs[(*index)++] = 1;
+		glx_attribs[(*index)++] = GLX_SAMPLES;
+		glx_attribs[(*index)++] = samples;
+	}
+
+	glx_attribs[*index] = None;
+}
+
+// Choose a framebuffer configuration
+GLXFBConfig* choose_framebuffer_config(Display *dpy, int *glx_attribs, int *num_fbc)
+{
+	GLXFBConfig *fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), glx_attribs, num_fbc);
+	if (fbc == NULL) {
+		printf("Failed to find a suitable framebuffer config\n");
+		exit(1);
+	}
+	return fbc;
+}
+
+// Set up the window and display
+void setup_window(Window *win, Display *dpy, GLXFBConfig fbc, XVisualInfo **vi, Colormap *cmap, XSetWindowAttributes *swa, Atom *wmDeleteMessage, int fullscreen, char *geometry)
+{
+	int width, height, x, y;
+
+	*vi = glXGetVisualFromFBConfig(dpy, fbc);
+	*cmap = XCreateColormap(dpy, RootWindow(dpy, (*vi)->screen), (*vi)->visual, AllocNone);
+
+	swa->colormap = *cmap;
+	swa->border_pixel = 0;
+	swa->event_mask = StructureNotifyMask | ExposureMask | KeyPressMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask;
+
+	width = 600, height = 600, x = 0, y = 0;
+	if (geometry) {
+		sscanf(geometry, "%dx%d+%d+%d", &width, &height, &x, &y);
+	}
+
+	if (fullscreen) {
+		width = DisplayWidth(dpy, DefaultScreen(dpy));
+		height = DisplayHeight(dpy, DefaultScreen(dpy));
+		x = y = 0;
+	}
+
+	*win = XCreateWindow(dpy, RootWindow(dpy, (*vi)->screen), x, y, width, height, 0, (*vi)->depth, InputOutput, (*vi)->visual, CWBorderPixel | CWColormap | CWEventMask, swa);
+
+	*wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+	XSetWMProtocols(dpy, *win, wmDeleteMessage, 1);
+
+	XMapWindow(dpy, *win);
+	XStoreName(dpy, *win, "GLX Gears v1.0.4");
+}
+
+// Set up GLX context
+void setup_glx_context(GLXContext *ctx, Display *dpy, GLXFBConfig fbc, Window win)
+{
+	*ctx = glXCreateNewContext(dpy, fbc, GLX_RGBA_TYPE, 0, True);
+	glXMakeCurrent(dpy, win, *ctx);
+}
+
+// Set the swap interval
+void set_swap_interval(Display *dpy, Window win, int swapInterval)
+{
+	typedef void (*PFNGLXSWAPINTERVALEXTPROC)(Display*, GLXDrawable, int);
+	PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddress((const GLubyte*)"glXSwapIntervalEXT");
+	if (glXSwapIntervalEXT) {
+		glXSwapIntervalEXT(dpy, win, swapInterval);
+	}
+}
+
+// Display OpenGL renderer information
+void display_info(int showInfo)
+{
+	if (showInfo) {
+		printf("GL_RENDERER   = %s\n", (char *) glGetString(GL_RENDERER));
+		printf("GL_VERSION    = %s\n", (char *) glGetString(GL_VERSION));
+		printf("GL_VENDOR     = %s\n", (char *) glGetString(GL_VENDOR));
+	}
+}
+
+// Set up the viewport
+void setup_viewport(Display *dpy, Window win, XWindowAttributes *xwa)
+{
+	XGetWindowAttributes(dpy, win, xwa);
+	glViewport(0, 0, xwa->width, xwa->height);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45.0, (float)xwa->width / (float)xwa->height, 0.1, 100.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glTranslatef(0.0, 0.0, zoom);
+}
+
+// Process a single X event
+void process_single_event(XEvent *xev, Display *dpy, Window win, XWindowAttributes *xwa, Atom wmDeleteMessage, char *keybuffer, int *should_exit)
+{
+	if (xev->type == ClientMessage) {
+		if (xev->xclient.data.l[0] == wmDeleteMessage) {
+			*should_exit = 1;
+		}
+	}
+	else if (xev->type == Expose || xev->type == ConfigureNotify) {
+		setup_viewport(dpy, win, xwa);
+	}
+	else if (xev->type == KeyPress) {
+		KeySym key;
+		XLookupString(&xev->xkey, keybuffer, 1, &key, NULL);
+		if (key == XK_q || key == XK_Escape) {
+			*should_exit = 1;
+		}
+	}
+	else if (xev->type == ButtonPress || xev->type == ButtonRelease) {
+		handle_mouse_button(&xev->xbutton);
+	}
+	else if (xev->type == MotionNotify) {
+		handle_mouse_motion(&xev->xmotion);
+	}
+}
+
+// Main event loop
+void main_event_loop(Display *dpy, Window win, XWindowAttributes *xwa, Atom wmDeleteMessage)
+{
+	XEvent xev;
+	char keybuffer;
+	struct timespec start, end;
+	double elapsed;
+	int should_exit = 0;
+
+	while (!should_exit) {
+		clock_gettime(CLOCK_MONOTONIC, &start);
+
+		while (XPending(dpy)) {
+			XNextEvent(dpy, &xev);
+			process_single_event(&xev, dpy, win, xwa, wmDeleteMessage, &keybuffer, &should_exit);
+			if (should_exit) {
+				return;
+			}
+		}
+
+		angle += 0.5;
+		glLoadIdentity();
+		glTranslatef(0.0, 0.0, zoom);
+		draw();
+		glXSwapBuffers(dpy, win);
+
+		clock_gettime(CLOCK_MONOTONIC, &end);
+		elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+		if (elapsed < 1.0/60.0) {
+			usleep((1.0/60.0 - elapsed) * 1e6);
+		}
+	}
+}
+
+// Clean up for exit
+void cleanup(Display *dpy, GLXContext ctx, Window win)
+{
+	glXMakeCurrent(dpy, None, NULL);
+	glXDestroyContext(dpy, ctx);
+	XDestroyWindow(dpy, win);
+	XCloseDisplay(dpy);
+}
+
+// Main function
+int main(int argc, char *argv[])
+{
 	Display *dpy;
 	Window win;
 	GLXContext ctx;
@@ -319,8 +532,14 @@ main(int argc, char *argv[])
 	XWindowAttributes xwa;
 	struct timespec start, end;
 	double elapsed;
+	int glx_attribs[16];
+	int index;
+	int width, height, x, y;
+	XEvent xev;
+	char keybuffer;
 
-	// New variables for command line options
+	// Variables for command line options
+	int opt;
 	char *displayName = NULL;
 	int srgb = 0;
 	int stereo = 0;
@@ -330,186 +549,24 @@ main(int argc, char *argv[])
 	int showInfo = 0;
 	char *geometry = NULL;
 
-	// Parse command line options
-	int opt;
-	while ((opt = getopt(argc, argv, "d:sSm:I:fg:ih")) != -1) {
-		switch (opt) {
-			case 'd': displayName = optarg; break;
-			case 's': srgb = 1; break;
-			case 'S': stereo = 1; break;
-			case 'm': samples = atoi(optarg); break;
-			case 'I': swapInterval = atoi(optarg); break;
-			case 'f': fullscreen = 1; break;
-			case 'g': geometry = optarg; break;
-			case 'i': showInfo = 1; break;
-			case 'h':
-			default:
-				usage(argv[0]);
-				exit(opt == 'h' ? 0 : 1);
-		}
-	}
+	parse_command_line_options(argc, argv, &displayName, &srgb, &stereo, &samples, &swapInterval, &fullscreen, &geometry, &showInfo);
 
-	dpy = XOpenDisplay(displayName);
-	if (dpy == NULL) {
-		printf("Failed to open display\n");
-		exit(1);
-	}
+	dpy = open_display(displayName);
+	setup_glx_attributes(glx_attribs, &index, srgb, stereo, samples);
+	fbc = choose_framebuffer_config(dpy, glx_attribs, &num_fbc);
 
-	// Set up GLX attributes based on command line options
-	int glx_attribs[16];  // Increased size to prevent overflow
-	int index = 0;
-
-	glx_attribs[index++] = GLX_RENDER_TYPE;
-	glx_attribs[index++] = GLX_RGBA_BIT;
- 	glx_attribs[index++] = GLX_DOUBLEBUFFER;
-	glx_attribs[index++] = True;
- 	glx_attribs[index++] = GLX_DEPTH_SIZE;
- 	glx_attribs[index++] = 24;
-
-	if (srgb) {
-	    glx_attribs[index++] = GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB;
-	    glx_attribs[index++] = True;
-	}
-
-	if (stereo) {
-	    glx_attribs[index++] = GLX_STEREO;
-	    glx_attribs[index++] = True;
-	}
-
-	if (samples) {
-	    glx_attribs[index++] = GLX_SAMPLE_BUFFERS;
-	    glx_attribs[index++] = 1;
-	    glx_attribs[index++] = GLX_SAMPLES;
-	    glx_attribs[index++] = samples;
-	}
-
-	// Terminate the attribute list with None
-	glx_attribs[index] = None;
-
-	fbc = glXChooseFBConfig(dpy, DefaultScreen(dpy), glx_attribs, &num_fbc);
-	if (fbc == NULL) {
-		printf("Failed to find a suitable framebuffer config\n");
-		exit(1);
-	}
-
-	// Set up GLX context and window
-
-	vi = glXGetVisualFromFBConfig(dpy, fbc[0]);
-
-	cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen), vi->visual, AllocNone);
-
-	swa.colormap = cmap;
-	swa.border_pixel = 0;
-	swa.event_mask = StructureNotifyMask | ExposureMask | KeyPressMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask;
-
-	int width = 600, height = 600, x = 0, y = 0;
-	if (geometry) {
-		sscanf(geometry, "%dx%d+%d+%d", &width, &height, &x, &y);
-	}
-
-	if (fullscreen) {
-		width = DisplayWidth(dpy, DefaultScreen(dpy));
-		height = DisplayHeight(dpy, DefaultScreen(dpy));
-		x = y = 0;
-	}
-
-	win = XCreateWindow(dpy, RootWindow(dpy, vi->screen), x, y, width, height, 0, vi->depth, InputOutput, vi->visual, CWBorderPixel | CWColormap | CWEventMask, &swa);
-
-	wmDeleteMessage = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
-	XSetWMProtocols(dpy, win, &wmDeleteMessage, 1);
-
-	XMapWindow(dpy, win);
-	XStoreName(dpy, win, "GLX Gears v1.0.4");
-
-	ctx = glXCreateNewContext(dpy, fbc[0], GLX_RGBA_TYPE, 0, True);
-	glXMakeCurrent(dpy, win, ctx);
-
-	// Set swap interval
-	typedef void (*PFNGLXSWAPINTERVALEXTPROC)(Display*, GLXDrawable, int);
-	PFNGLXSWAPINTERVALEXTPROC glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddress((const GLubyte*)"glXSwapIntervalEXT");
-	if (glXSwapIntervalEXT) {
-		glXSwapIntervalEXT(dpy, win, swapInterval);
-	}
+	setup_window(&win, dpy, fbc[0], &vi, &cmap, &swa, &wmDeleteMessage, fullscreen, geometry);
+	setup_glx_context(&ctx, dpy, fbc[0], win);
+	set_swap_interval(dpy, win, swapInterval);
 
 	init();
+	display_info(showInfo);
 
-	if (showInfo) {
-		printf("GL_RENDERER   = %s\n", (char *) glGetString(GL_RENDERER));
-		printf("GL_VERSION    = %s\n", (char *) glGetString(GL_VERSION));
-		printf("GL_VENDOR     = %s\n", (char *) glGetString(GL_VENDOR));
-	}
-	XGetWindowAttributes(dpy, win, &xwa);
-	glViewport(0, 0, xwa.width, xwa.height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45.0, (float)xwa.width / (float)xwa.height, 0.1, 100.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glTranslatef(0.0, 0.0, zoom);
+	setup_viewport(dpy, win, &xwa);
 
-	// Main event loop
-	while (1) {
-		clock_gettime(CLOCK_MONOTONIC, &start);
+	main_event_loop(dpy, win, &xwa, wmDeleteMessage);
 
-		// Handle X11 events
-		while (XPending(dpy)) {
-			XEvent xev;
-			XNextEvent(dpy, &xev);
-			// close the window
-			if (xev.type == ClientMessage) {
-				if (xev.xclient.data.l[0] == wmDeleteMessage) {
-					goto cleanup;
-				}
-			}
-			// expose or resize
-			else if (xev.type == Expose || xev.type == ConfigureNotify) {
-				XGetWindowAttributes(dpy, win, &xwa);
-				glViewport(0, 0, xwa.width, xwa.height);
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
-				gluPerspective(45.0, (float)xwa.width / (float)xwa.height, 0.1, 100.0);
-				glMatrixMode(GL_MODELVIEW);
-			}
-			// key press, q or Esc to exit
-			else if (xev.type == KeyPress) {
-				KeySym key;
-				char buffer[1];
-				XLookupString(&xev.xkey, buffer, 1, &key, NULL);
-				if (key == XK_q || key == XK_Escape) {
-					goto cleanup;
-				}
-			}
-			// drag to rotate, scroll wheel to zoom
-			else if (xev.type == ButtonPress || xev.type == ButtonRelease) {
-				handle_mouse_button(&xev.xbutton);
-			}
-			else if (xev.type == MotionNotify) {
-				handle_mouse_motion(&xev.xmotion);
-			}
-		}
-
-		// Update animation and draw scene
-		angle += 0.5;
-		glLoadIdentity();
-		glTranslatef(0.0, 0.0, zoom);
-		draw();
-		glXSwapBuffers(dpy, win);
-
-		// Limit frame rate to 60 FPS
-		clock_gettime(CLOCK_MONOTONIC, &end);
-		elapsed = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
-		if (elapsed < 1.0/60.0) {
-			usleep((1.0/60.0 - elapsed) * 1e6);
-		}
-	}
-
-cleanup:
-	// Cleanup and exit
-	glXMakeCurrent(dpy, None, NULL);
-	glXDestroyContext(dpy, ctx);
-	XDestroyWindow(dpy, win);
-	XCloseDisplay(dpy);
-
+	cleanup(dpy, ctx, win);
 
 	return 0;
 }
