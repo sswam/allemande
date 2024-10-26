@@ -1,13 +1,13 @@
 #!/bin/bash
-# qo: quiet stdout
+# no-input: no input
 
 exec=
 
-qo() {
-	$exec "$@" >/dev/null
+no-input() {
+	$exec "$@" </dev/null
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then
 	exec=exec
-	qo "$@"
+	no-input "$@"
 fi
