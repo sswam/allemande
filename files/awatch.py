@@ -54,10 +54,11 @@ class Watcher:
 	async def run(self):
 		""" Watch the files and directories """
 
-		if self.opts.inital_state:
+		if self.opts.initial_state:
 			for path in self.paths:
 				async for row in self.handle_change(Change.added, path):
 					yield row
+			yield self.flush
 
 		watcher = awatch(*self.paths, watch_filter=self.watch_filter, recursive=self.opts.recursive)
 
@@ -180,7 +181,7 @@ def get_opts():
 	parser.add_argument('-a', '--all-files', action='store_true', help="watch all files")
 	parser.add_argument('-H', '--hidden', action='store_true', help="watch hidden files")
 	parser.add_argument('-D', '--dirs', action='store_true', help="report changes to directories")
-	parser.add_argument('-i', '--inital-state', action='store_true', help="report the initial state of the files and directories")
+	parser.add_argument('-i', '--initial-state', action='store_true', help="report the initial state of the files and directories")
 	parser.add_argument('-L', '--follow', action='store_true', help="follow symlinks")
 	parser.add_argument('-A', '--absolute', action='store_true', help="return absolute paths")
 	ucm.add_logging_options(parser)
