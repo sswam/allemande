@@ -120,3 +120,6 @@ PyGObject
 pycairo
 
 pytest-timeout
+
+pyannote.audio
+speechbrain

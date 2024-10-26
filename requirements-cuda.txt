@@ -3,3 +3,4 @@ tensorrt-lean
 tensorrt-dispatch
 tensorflow[and-cuda]
 jax[cuda12]
+natten==0.17.1+torch240cu124

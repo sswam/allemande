@@ -49,3 +49,6 @@ flawfinder
 
 perltidy
 libperl-critic-perl
+
+check
+cproto
