@@ -32,7 +32,7 @@ my $srcfh = IO::File->new($src) or die "cannot open $src\n";
 my $line;
 while (1) {
     $line = <$srcfh>;
-    last if index($line, "$sep ") == 0;
+    last if !defined $line || index($line, "$sep ") == 0;
     chomp $line;
     warn "skipping line: $line\n";
 }
