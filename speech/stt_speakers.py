@@ -1,25 +1,24 @@
 #!/usr/bin/env python3
 
 """
-This module analyzes an audio file to identify different speakers and outputs
-the results in a three-column TSV format using Pyannote Audio.
+Analyze an audio file to identify different speakers and output results in TSV format.
 """
 
+import sys
 from typing import TextIO
 
 from pyannote.audio import Pipeline  # type: ignore
 
 from ally import main, logs  # type: ignore
 
-__version__ = "0.1.21"
+__version__ = "0.1.22"
 
 logger = logs.get_logger()
 
 
 def load_pyannote_pipeline() -> Pipeline:
     """Load the Pyannote Audio pipeline."""
-    pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization")
-    return pipeline
+    return Pipeline.from_pretrained("pyannote/speaker-diarization")
 
 
 def analyze_audio(

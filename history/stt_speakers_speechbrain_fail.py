@@ -1,31 +1,26 @@
 #!/usr/bin/env python3
 
 """
-This module analyzes an audio file to identify different speakers and outputs
-the results in a three-column TSV format using Pyannote Audio or SpeechBrain.
+Analyze an audio file to identify different speakers and output results in TSV format.
+Uses either Pyannote Audio or SpeechBrain for speaker diarization.
 """
 
 from typing import TextIO
 
-import numpy as np
 from pyannote.audio import Pipeline  # type: ignore
 from speechbrain.processing import diarization as sb_diarization  # type: ignore
 from speechbrain.inference import EncoderClassifier  # type: ignore
 
-# lazy('pyannote.audio', 'Pipeline')
-# lazy('speechbrain.inference', 'EncoderClassifier')
-
 from ally import main, logs  # type: ignore
 
-__version__ = "0.1.20"
+__version__ = "0.1.21"
 
 logger = logs.get_logger()
 
 
 def load_pyannote_pipeline() -> Pipeline:
     """Load the Pyannote Audio pipeline."""
-    pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization")
-    return pipeline
+    return Pipeline.from_pretrained("pyannote/speaker-diarization")
 
 
 def load_speechbrain_pipeline() -> tuple[EncoderClassifier, sb_diarization.Spec_Cluster]:
@@ -47,20 +42,16 @@ def analyze_audio(
     """Analyze the audio file and return speaker segments."""
     if speechbrain:
         encoder, clusterer = pipeline
-        # Extract embeddings
         signal = encoder.load_audio(file_path)
         embeds = encoder.encode_batch(signal)
 
-        # Reshape embeddings if necessary
         if embeds.ndim == 3:
-            embeds = embeds.squeeze(0)  # Remove batch dimension if present
+            embeds = embeds.squeeze(0)
         if embeds.ndim == 3:
-            embeds = embeds.mean(axis=1)  # Average over time dimension
+            embeds = embeds.mean(axis=1)
 
-        # Perform spectral clustering
         labels = clusterer.perform_sc(embeds, n_neighbors=speakers - 1)
 
-        # Convert labels to segments
         segment_duration = len(signal) / encoder.sample_rate / len(labels)
         results = [
             (i * segment_duration, (i + 1) * segment_duration, f"SPEAKER_{label}")
@@ -100,7 +91,11 @@ def stt_speakers(
 
     logger.info("Analyzing file: %s", file_path)
 
-    pipeline = load_speechbrain_pipeline() if speechbrain else load_pyannote_pipeline()
+    if speechbrain:
+        pipeline = load_speechbrain_pipeline()
+    else:
+        pipeline = load_pyannote_pipeline()
+
     results = analyze_audio(file_path, pipeline, speechbrain, speakers)
     output_results(results, ostream)
     logger.info("Analysis complete. Generated %d segments.", len(results))
@@ -109,8 +104,8 @@ def stt_speakers(
 def setup_args(arg):
     """Set up the command-line arguments."""
     arg("file_path", help="path to the input audio file")
-    arg("-b", "--speechbrain", action="store_true", help="use SpeechBrain not Pyannote Audio")
-    arg("-n", "--speakers", help="Number of speakers")
+    arg("-b", "--speechbrain", action="store_true", help="use SpeechBrain instead of Pyannote Audio")
+    arg("-n", "--speakers", type=int, default=2, help="Number of speakers (default: 2)")
 
 
 if __name__ == "__main__":
