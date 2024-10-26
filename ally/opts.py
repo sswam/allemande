@@ -9,7 +9,7 @@ import sys
 import warnings
 from typing import Any, Callable, get_args, get_origin
 import types
-from io import IOBase
+from io import IOBase, BufferedIOBase, BufferedReader, BufferedWriter, TextIOWrapper
 
 from ally import meta, geput, logs
 
@@ -48,12 +48,25 @@ def parse(
     wants_input = wants_get or wants_istream or wants_input_source
     wants_output = wants_put or wants_ostream
 
+    # Add vars for binary I/O detection
+    is_binary_input = False
+    is_binary_output = False
+
+    # Detect if istream/ostream are BufferedIOBase or descendants
+    if wants_istream:
+        istream_param = sig.parameters['istream']
+        is_binary_input = issubclass(istream_param.annotation, BufferedIOBase)
+
+    if wants_ostream:
+        ostream_param = sig.parameters['ostream']
+        is_binary_output = issubclass(ostream_param.annotation, BufferedIOBase)
+
     # Get the module name of the calling module
     # module_name = meta.get_module_name(2)
     module_name = meta.get_module_name(level=3)
 
     # Create an argument parser
-    parser = argparse.ArgumentParser(formatter_class=CustomHelpFormatter)
+    parser = argparse.ArgumentParser(formatter_class=CustomHelpFormatter, add_help=False)
 
     # Set up command-line arguments
     parser.description = inspect.getmodule(main_function).__doc__
@@ -62,6 +75,7 @@ def parse(
     opts._setup_arg_defaults_and_types(parser, main_function)
     opts._setup_io_args(parser, wants_input=wants_input, wants_output=wants_output)
     opts._setup_logging_args(module_name, parser)
+    opts._setup_help_args(module_name, parser)
 
     # Parse arguments, handling unknown arguments if **kwargs is present
     if args_name or kwargs_name:
@@ -70,7 +84,7 @@ def parse(
         args = parser.parse_args()
 
     # open files, maybe doesn't belong here
-    opts._open_files(args, parser)
+    opts._open_files(args, parser, is_binary_input, is_binary_output)
 
     # setup logging based on parsed arguments, maybe doesn't belong here
     logs.set_log_level(args.log_level, root=True)
@@ -359,22 +373,39 @@ def _setup_logging_args(module_name: str, parser: argparse.ArgumentParser):
     )
 
 
-def _open_files(args: argparse.Namespace, parser: argparse.ArgumentParser):
+def _setup_help_args(module_name: str, parser: argparse.ArgumentParser):
+    try_add_argument(parser, '-h', '--help', action='help', default=argparse.SUPPRESS, help="show this help message and exit")
+
+
+def _open_files(args: argparse.Namespace, parser: argparse.ArgumentParser, is_binary_input: bool, is_binary_output: bool):
     """Open input/output files if specified in the arguments."""
     no_clobber = getattr(args, "no_clobber", False)
     append = getattr(args, "append", False)
 
-    def process_stream_arg(arg_name, mode="r", append=False, no_clobber=False):
+    def process_stream_arg(arg_name, mode, binary, append=False, no_clobber=False):
         arg_value = getattr(args, arg_name, None)
+        if isinstance(arg_value, TextIOWrapper):
+            if mode == "r" and is_binary_input:
+                binary_reader = BufferedReader(arg_value.buffer)
+                setattr(args, arg_name, binary_reader)
+            elif mode in ["w", "a"] and is_binary_output:
+                binary_writer = BufferedWriter(arg_value.buffer)
+                setattr(args, arg_name, binary_writer)
+            return
         if not isinstance(arg_value, str):
             return
         if mode == "w":
-            mode = "a" if append else "x" if no_clobber else "w"
-        file_obj = open(arg_value, mode)
+            main_mode = "a" if append else "x" if no_clobber else "w"
+            binary_mode = "b" if binary else ""
+            mode = main_mode + binary_mode
+            file_obj = open(arg_value, mode)
+            print(f"Opening {arg_name} file: {arg_value!r} with mode: {mode!r}")
+        elif mode == "r":
+            file_obj = open(arg_value, mode)
         setattr(args, arg_name, file_obj)
 
-    process_stream_arg("istream", mode="r")
-    process_stream_arg("ostream", mode="w", append=append, no_clobber=no_clobber)
+    process_stream_arg("istream", mode="r", binary=is_binary_input)
+    process_stream_arg("ostream", mode="w", binary=is_binary_output, append=append, no_clobber=no_clobber)
 
 
 class CustomHelpFormatter(
