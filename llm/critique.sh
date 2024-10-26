@@ -19,9 +19,11 @@ critique() {
 	fi
 	prompt="Please provide a$short critique.
 Start with a paragraph of friendly and supportive praise if possible...
-the programmer needs to retain some self-esttem\!
-e.g. if it seems like a cool program that does something useful or novel...
-It's most important to find errors, other suggestions are welcome too.
+the author needs to retain some self-esttem\!
+It's important to find errors.
+Please also suggest creative ideas,
+including unusual or 'our of the box' ones.
+Other suggestions are welcome too.
 $prompt"
 	main_file="${1:--}"
 	shift || true
