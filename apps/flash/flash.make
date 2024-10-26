@@ -18,9 +18,9 @@ SEARCH := google
 
 
 #m0=3+
-m0=$ALLEMANDE_LLM_DEFAULT_SMALL
+m0=$(ALLEMANDE_LLM_DEFAULT_SMALL)
 # m0=4   # gives "Gateway timeout" for large inputs
-m=$ALLEMANDE_LLM_DEFAULT
+m=$(ALLEMANDE_LLM_DEFAULT)
 
 
 default: goal
@@ -34,10 +34,10 @@ cleanish:
 	mv web-address.txt.bak web-address.txt || true
 
 transcript.sent.txt: transcript.txt
-	< $< split_sentences > $@
+	< $< split-sentences > $@
 
 transcript.sent2.txt: transcript.sent.txt
-	< $< ai_split_long_sentences.py > $@
+	< $< ai-split-long-sentences > $@
 
 web-address.txt:
 	if [ -n "$(url)" ]; then \
@@ -81,7 +81,7 @@ audio.txt: audio.wav
 	$(WHISPER) --language en --model $(WHISPER_MODEL) --output_format txt $$PWD/$<
 
 audio-clean.txt: audio.txt
-	< $< perl -pe 's/\[Music\]/ /g; s/♪//g; s/(\w){8,}/$$1 x 8/ge;' | strip-lines.py | squeeze-blank-lines.pl 1 > $@
+	< $< perl -pe 's/\[Music\]/ /g; s/♪//g; s/(\w){8,}/$$1 x 8/ge;' | strip-lines | squeeze-blank-lines 1 > $@
 
 summary.txt: transcript.txt
 	< $< llm-summary -m="$m" > $@
@@ -100,16 +100,16 @@ flashcards-1.txt: transcript.txt
 	< $< llm-flashcards -m="$m" > $@
 
 flashcards.txt: flashcards-1.txt
-	(< $< grep -v '^$$' | sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | single-blank-lines.pl > $@
+	(< $< grep -v '^$$' | sed 's/^Prompt:/\n&/' | sed '1{/^$$/d}'; echo) | squeeze-blank-lines > $@
 
 flashcards.tsv: flashcards.txt
-	< $< recs2tsv.pl | grep '\S' > $@
+	< $< recs2tsv | grep '\S' > $@
 
 correct.prompt:
 	ln -s `which-file correct.prompt` .
 
 prompt-transcript.txt: audio-clean.txt correct.prompt
-	CONTENT=`< $<` shell-template.sh correct.prompt > $@
+	CONTENT=`< $<` shell-template correct.prompt > $@
 
 transcript.txt: prompt-transcript.txt title-clean.txt
 	< $< llm process -m "$(m0)" "Please reply with just the corrected transcript. The proper title of the video is `<title-clean.txt`" > $@
@@ -121,7 +121,7 @@ transcript.txt: prompt-transcript.txt title-clean.txt
 	fi
 
 transcript.md: transcript.txt
-	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown.sh >$@
+	< $< nl | (echo "| n | line |"; sed 's/^ *//') | tsv2markdown >$@
 
 
 # We could also search to find the title or canonical page.
@@ -148,7 +148,7 @@ prompt-lyrics.txt: lyrics-page.txt extract.prompt
 	if [ ! -s $< ]; then \
 		echo "No lyrics found." ; > $@ ; \
 	else \
-		CONTENT=`< $<` shell-template.sh extract.prompt > $@ ; \
+		CONTENT=`< $<` shell-template extract.prompt > $@ ; \
 	fi
 
 lyrics.txt: prompt-lyrics.txt name.txt
@@ -159,10 +159,10 @@ lyrics.txt: prompt-lyrics.txt name.txt
 	fi
 
 post.txt: title.txt web-address.txt name.txt topic.txt summary.txt flashcards.txt transcript.txt # lyrics.txt
-	cat-sections.py $^ > $@
+	cat-sections $^ > $@
 
 %.words.txt: %.txt
-	< $< words-split.py > $@
+	< $< words-split > $@
 
 diff: transcript.words.txt audio-clean.words.txt lyrics.words.txt 
 	vimdiff $^
