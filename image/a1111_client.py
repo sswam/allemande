@@ -46,6 +46,7 @@ async def a1111_client_async(
     width: int = 1024,
     height: int = 1024,
     count: int = 1,
+    sleep: float = 0.0,
     clobber: bool = False,
     pony: bool = False,
 ) -> None:
@@ -104,6 +105,8 @@ async def a1111_client_async(
                 if interrupt_flag:
                     logger.info(f"Interrupted at {i+1} images")
                     break
+                if sleep:
+                    await asyncio.sleep(sleep)
             logger.debug(f"Generated {i+1} images to {outdir}")
     except Exception as e:
         logger.error(f"Error: {e}")
@@ -134,6 +137,7 @@ def a1111_client(
     width: int = 1024,
     height: int = 1024,
     count: int = 1,
+    sleep: float = 0.0,
     clobber: bool = False,
     pony: bool = False,
 ) -> None:
@@ -153,6 +157,7 @@ def a1111_client(
             width=width,
             height=height,
             count=count,
+            sleep=sleep,
             clobber=clobber,
             pony=pony,
         )
@@ -171,9 +176,10 @@ def setup_args(arg):
     arg("-W", "--width", type=int, help="image width")
     arg("-H", "--height", type=int, help="image height")
     arg("-c", "--count", type=int, help="number of images to generate")
+    arg("-S", "--sleep", type=float, help="sleep between generations")
     arg("-X", "--clobber", help="overwrite existing files")
     arg("-P", "--pony", help="add pony boilerplate")
-
+ 
 
 if __name__ == "__main__":
     main.go(a1111_client, setup_args)
