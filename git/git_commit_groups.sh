@@ -21,7 +21,7 @@ git_group_files() {
 	llm_input_file=$(mktemp /tmp/git_group_files_llm_input.XXXXXX)
 	commit_plan=$(mktemp /tmp/git_group_files_commit_plan.XXXXXX)
 
-	git-mod | rundown 2>"$bad_file" | tee "$rundown_file"
+	git-mod | rundown --number-headers 2>"$bad_file" | tee "$rundown_file"
 
 	if [ -s "$bad_file" ]; then
 		echo "Bad files detected:"
@@ -68,6 +68,7 @@ We should commit changes to closely related files together, I guess; e.g. tests 
 The output should be file names grouped together in batches on each line, separated by tabs.
 The order of the lines is not important. You can also add comments after a # character if necessary.
 Do not add any prelude or comments unless you use the # character.
+List the numbers of files you have included in a leftmost column, comma separated.
 
 For example:
 
