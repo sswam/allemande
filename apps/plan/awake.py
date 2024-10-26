@@ -1,23 +1,37 @@
 #!/usr/bin/env python3
 
 """
-This module tracks user activity on X11 and logs when the user is awake.
+Tracks user activity on X11 and logs when the user is awake.
 It also provides estimates for sleep duration and wake time.
 """
 
 import os
 import sys
-import logging
 import time
 from datetime import datetime, timedelta
-from typing import TextIO
 import subprocess
+from dataclasses import dataclass
 
-from ally import main, logs, Get, Put
+from ally import main, logs
 
-__version__ = "0.2.4"
+__version__ = "0.2.8"
 
 logger = logs.get_logger()
+
+
+# pylint: disable=too-many-instance-attributes
+@dataclass
+class Config:
+    """Configuration for awake tracking."""
+
+    log_file: str
+    sleep_threshold: timedelta
+    no_warn: bool
+    awake_warning: timedelta
+    away_threshold: timedelta
+    check_interval: timedelta
+    warn_interval: timedelta
+    test: bool
 
 
 def check_xprintidle():
@@ -35,7 +49,7 @@ def get_idle_time() -> timedelta:
         result = subprocess.run(["xprintidle"], check=True, capture_output=True, text=True)
         return timedelta(milliseconds=int(result.stdout.strip()))
     except subprocess.CalledProcessError as e:
-        logger.error(f"Error running xprintidle: {e}")
+        logger.error("Error running xprintidle: %s", e)
         sys.exit(1)
 
 
@@ -66,9 +80,9 @@ class ActivityLog:
 
     def _load_log(self):
         """Load the activity log from the log file."""
-        logger.debug(f"Loading log from {self.log_file}")
+        logger.debug("Loading log from %s", self.log_file)
         self.clear()
-        with open(self.log_file, "r") as f:
+        with open(self.log_file, "r", encoding="utf-8") as f:
             for line in f.readlines():
                 line = line.strip()
                 if not line:
@@ -77,7 +91,7 @@ class ActivityLog:
                 status_time = datetime.fromisoformat(status_time_str)
                 self._add_activity(status_time, status)
 
-    def _add_activity(self, timestamp: datetime, status: str, log=True):
+    def _add_activity(self, timestamp: datetime, status: str):
         """Add an activity to the internal log."""
         self.activities.append((timestamp, status))
 
@@ -89,13 +103,11 @@ class ActivityLog:
     def _log_activity(self, timestamp: datetime, status: str):
         """Log the current activity."""
         self.load_log()
-        with open(self.log_file, "a") as f:
+        with open(self.log_file, "a", encoding="utf-8") as f:
             f.write(f"{timestamp.isoformat()} - {status}\n")
         self.last_modified = os.path.getmtime(self.log_file)
 
-    def find_sleep(
-        self, sleep_threshold: timedelta
-    ) -> tuple[datetime|None, datetime|None]:
+    def find_sleep(self, sleep_threshold: timedelta) -> tuple[datetime | None, datetime | None]:
         """Find the last sleep period."""
         if not self.activities:
             return None, None
@@ -110,7 +122,7 @@ class ActivityLog:
             i -= 1
         return None, None
 
-    def total_active_since(self, since: datetime|None) -> timedelta:
+    def total_active_since(self, since: datetime | None) -> timedelta:
         """Calculate the total active time since the given timestamp."""
         # looking for spans of active ... inactive ... active
         # or inactive ... active at the start
@@ -140,6 +152,9 @@ def format_duration(duration):
     """
     Format a duration to a string with days, hours, and minutes.
     """
+    if duration is None:
+        return "unknown"
+
     days, remainder = divmod(duration.total_seconds(), 86400)
     hours, remainder = divmod(remainder, 3600)
     minutes, _ = divmod(remainder, 60)
@@ -176,12 +191,89 @@ def send_notification(message: str):
             check=True,
         )
     except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to send notification: {e}")
+        logger.error("Failed to send notification: %s", e)
 
 
+def process_activity(
+    config: Config, activity_log: ActivityLog, now: datetime, idle_time: timedelta
+):
+    """Process the current activity and log it."""
+    status_time = now
+    if idle_time < config.check_interval + timedelta(seconds=1):
+        status = "active"
+        status_time = now - idle_time
+    elif idle_time < config.away_threshold:
+        status = "inactive"
+    else:
+        status = "away"
+
+    activity_log.add_activity(status_time, status)
+    logger.info("User is %s", status)
+    return status
+
+
+def analyze_activity(config: Config, activity_log: ActivityLog, now: datetime):
+    """Analyze the activity log and return sleep and awake durations."""
+    sleep_start, sleep_end = activity_log.find_sleep(config.sleep_threshold)
+    sleep_duration = sleep_end - sleep_start if sleep_end and sleep_start else None
+
+    awake_start = sleep_end if sleep_end else activity_log.activities[0][0]
+    awake_duration = now - awake_start if awake_start else None
+
+    work_duration = activity_log.total_active_since(awake_start)
+
+    return sleep_duration, awake_duration, work_duration
+
+
+def log_activity_info(sleep_duration, awake_duration, work_duration):
+    """Log information about sleep and awake durations."""
+    logger.info("Slept for %s", format_duration(sleep_duration))
+    logger.info("Awake for %s", format_duration(awake_duration))
+
+
+def check_and_send_warning(
+    config: Config, awake_duration: timedelta, last_warning: datetime, now: datetime
+):
+    """Check if a warning should be sent and send it if necessary."""
+    if config.no_warn or not awake_duration or awake_duration < config.awake_warning:
+        return last_warning
+
+    if now - last_warning >= config.warn_interval:
+        message = f"You've been awake for {format_duration(awake_duration)}!"
+        logger.warning(message)
+        send_notification(message)
+        return now
+
+    return last_warning
+
+
+def awake_step(config: Config, activity_log: ActivityLog, last_warning: datetime) -> datetime:
+    """Perform a single awake tracking step."""
+    now = datetime.now()
+    idle_time = get_idle_time()
+    logger.debug("Now: %s, Idle time: %s", now, format_duration(idle_time))
+
+    status = process_activity(config, activity_log, now, idle_time)
+
+    if status == "active":
+        sleep_duration, awake_duration, work_duration = analyze_activity(config, activity_log, now)
+        log_activity_info(sleep_duration, awake_duration, work_duration)
+        last_warning = check_and_send_warning(config, awake_duration, last_warning, now)
+
+    return last_warning
+
+
+def show_current_status(config: Config):
+    """Show the current sleep and awake time based on the tail of the logs."""
+    activity_log = ActivityLog(config.log_file)
+    now = datetime.now()
+    sleep_duration, awake_duration, _ = analyze_activity(config, activity_log, now)
+    logs.set_log_level("INFO")
+    log_activity_info(sleep_duration, awake_duration, None)
+
+
+# pylint: disable=too-many-arguments, too-many-positional-arguments
 def awake(
-    get: Get,
-    put: Put,
     log_file: str = "~/.awake.log",
     sleep_threshold: int = 6 * 3600,
     no_warn: bool = False,
@@ -190,110 +282,58 @@ def awake(
     check_interval: int = 60,
     warn_interval: int = 3600,
     test: bool = False,
+    show_status: bool = False,
 ):
     """
     Track user activity on X11 and log when awake.
     Estimate sleep duration and provide warnings for extended awake periods.
     """
-
     check_xprintidle()
+
+    config = Config(
+        log_file=os.path.expanduser(log_file),
+        sleep_threshold=timedelta(seconds=sleep_threshold),
+        no_warn=no_warn,
+        awake_warning=timedelta(seconds=awake_warning),
+        away_threshold=timedelta(seconds=away_threshold),
+        check_interval=timedelta(seconds=check_interval),
+        warn_interval=timedelta(seconds=warn_interval),
+        test=test,
+    )
+
+    if show_status:
+        show_current_status(config)
+        return
 
     if test:
         logger.info("Running in test mode")
-        check_interval = 10
-        warn_interval = 30
-        sleep_threshold = 60
-        awake_warning = 120
-        away_threshold = 20
-        log_file = "/tmp/awake.log"
+        config.check_interval = timedelta(seconds=10)
+        config.warn_interval = timedelta(seconds=30)
+        config.sleep_threshold = timedelta(seconds=60)
+        config.awake_warning = timedelta(seconds=120)
+        config.away_threshold = timedelta(seconds=20)
+        config.log_file = "/tmp/awake.log"
 
-    check_interval_td = timedelta(seconds=check_interval)
-    warn_interval_td = timedelta(seconds=warn_interval)
-    sleep_threshold_td = timedelta(seconds=sleep_threshold)
-    awake_warning_td = timedelta(seconds=awake_warning)
-    away_threshold_td = timedelta(seconds=away_threshold)
+    activity_log = ActivityLog(config.log_file)
+    last_warning = datetime.now() - config.warn_interval
 
-    log_file = os.path.expanduser(log_file)
-    activity_log = ActivityLog(log_file)
-    last_warning = datetime.now() - warn_interval_td
-    last_status = None
-
-    logger.info(f"Starting X11 activity tracking. Logging to {log_file}")
+    logger.info("Starting X11 activity tracking. Logging to %s", config.log_file)
     logger.info("Press Ctrl+C to stop.")
 
     first = True
 
     while True:
         if not first:
-            delay = check_interval_td.total_seconds()
-            # sync with the clock
-            seconds_of_day = (
-                datetime.now().second + datetime.now().microsecond / 1_000_000
-            )
+            delay = config.check_interval.total_seconds()
+            seconds_of_day = datetime.now().second + datetime.now().microsecond / 1_000_000
             delay -= seconds_of_day % delay
             if delay <= delay / 2:
-                delay += check_interval_td.total_seconds()
-            logger.debug(f"Sleeping for {delay} seconds")
+                delay += config.check_interval.total_seconds()
+            logger.debug("Sleeping for %s seconds", delay)
             time.sleep(delay)
         first = False
 
-        now = datetime.now()
-        idle_time = get_idle_time()
-        logger.debug(f"Now: {now}, Idle time: {format_duration(idle_time)}")
-
-        status_time = now
-
-        if idle_time < check_interval_td + timedelta(seconds=1):
-            status = "active"
-            status_time = now - idle_time
-        elif idle_time < away_threshold_td:
-            status = "inactive"
-        else:
-            status = "away"
-
-        # always log the status, so we can see when the script is not running
-        activity_log.add_activity(status_time, status)
-
-        last_status = status
-
-        logger.info(f"User is {status}")
-
-        if status != "active":
-            continue
-
-        # Main functionality:
-        # 1. find previous sleep period
-        #   - awake start
-        #   - sleep duration
-        # 2. current awake duration
-        # 3. current work duration (at the computer) since sleep
-
-        sleep_start, sleep_end = activity_log.find_sleep(sleep_threshold_td)
-        sleep_duration = sleep_end - sleep_start if sleep_end and sleep_start else None
-
-        awake_start = sleep_end if sleep_end else activity_log.activities[0][0]
-        awake_end = now
-        awake_duration = awake_end - awake_start if awake_start else None
-
-        work_duration = activity_log.total_active_since(awake_start)
-
-        logger.info(
-            f"Slept for {format_duration(sleep_duration) if sleep_duration else 'unknown'}"
-        )
-        logger.info(
-            f"Awake for {format_duration(awake_duration) if awake_duration else 'unknown'}"
-        )
-        logger.info(f"Working for {format_duration(work_duration)}")
-        logger.info("")
-
-        if no_warn or not awake_duration or awake_duration < awake_warning_td:
-            continue
-
-        if now - last_warning >= warn_interval_td:
-            message = f"You've been awake for {format_duration(awake_duration)}!"
-            logger.warning(message)
-            send_notification(message)
-            last_warning = now
+        last_warning = awake_step(config, activity_log, last_warning)
 
 
 def setup_args(arg):
@@ -306,6 +346,7 @@ def setup_args(arg):
     arg("--check-interval", help="Check interval in seconds", type=int)
     arg("--warn-interval", help="Awake warning interval in seconds", type=int)
     arg("--test", help="Run in test mode, with a very compressed time scale", action="store_true")
+    arg("-s", "--show-status", help="Show current sleep and awake time", action="store_true")
 
 
 if __name__ == "__main__":
