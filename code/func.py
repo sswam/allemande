@@ -14,7 +14,7 @@ import json
 
 import black
 
-from ally import main, logs, Get, Put  # type: ignore
+from ally import main, logs, geput  # type: ignore
 from reformat import reformat
 
 __version__ = "0.1.7"
@@ -61,27 +61,28 @@ def extract_items(tree, language: str):
 
 def format_item(item, types: bool, params: bool, decorators: bool, docstring: bool, language: str):
     if language == "py":
-        name = item.name
         if isinstance(item, ast.FunctionDef) and hasattr(item, 'parent') and isinstance(item.parent, ast.ClassDef):
-            name = f"{item.parent.name}.{name}"
+            text = f"{item.parent.name}.{name}"
+        else:
+            text = item.name
         is_class = isinstance(item, ast.ClassDef)
         if types:
-            name = f"{'class' if is_class else 'def'} {name}"
+            text = f"{'class' if is_class else 'def'} {text}"
         if params and not is_class:
-            name += f"({ast.unparse(item.args)})"
+            text += f"({ast.unparse(item.args)})"
         if decorators:
-            name = "\n".join([f"@{ast.unparse(d)}" for d in item.decorator_list] + [name])
+            text = "\n".join([f"@{ast.unparse(d)}" for d in item.decorator_list] + [text])
         if docstring:
-            name += ":"
+            text += ":"
             if ast.get_docstring(item):
-                name += f"\n    \"\"\"{ast.get_docstring(item)}\"\"\""
-    # Add formatting logic for other languages here
-    return name
+                text += f"\n    \"\"\"{ast.get_docstring(item)}\"\"\""
+    # TODO Add formatting logic for other languages
+    return text + "\n"
 
 
 def func(
-    get: Get,
-    put: Put,
+    istream: TextIO,
+    put: geput.Put,
     source_file: str,
     *func_names: str,
     reformat: bool = False,
@@ -112,7 +113,7 @@ def func(
 
     # Where's the source code?
     if source_file == "-":
-        source = get(all=True)
+        source = istream.read()
     else:
         with open(source_file) as f:
             source = f.read()
@@ -145,7 +146,7 @@ def func(
             else:
                 put(format_item(item, show_types, show_params, show_decorators, show_docstrings, language))
             if gap:
-                put()
+                put("\n")
 
 
 def setup_args(arg):
