@@ -12,7 +12,7 @@ fi
 
 diff_context=5  # lines of context for diffs
 model="d"       # default model
-initial_bug_check=1  # check for bugs before generating commit message
+# initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
 commit_message="commit-message.$timestamp.$$.txt"
@@ -104,7 +104,7 @@ release_lock() {
 
 cleanup-and-exit() {
     release_lock
-    $MR "$commit_message" "$review" 2>/dev/null
+    $MR "$review" "$commit_message" 2>/dev/null
     exit "$1"
 }
 
@@ -137,9 +137,9 @@ while getopts "nC:B43cioMm:F:exh" opt; do
     C)
         diff_context="$OPTARG"
         ;;
-    B)
-        initial_bug_check=0
-        ;;
+#     B)
+#         initial_bug_check=0
+#         ;;
     m)
         echo "$OPTARG" > "$commit_message"
         model=""
@@ -358,7 +358,9 @@ generate-commit-message() {
         $MR "$commit_message"
     fi
 
-    run-git-diff | llm process -m "$model" "Please describe this diff, for a high-level Conventional Commits message.
+    run-git-diff | llm process -m "$model" "## First Task
+
+Please describe this diff, for a high-level Conventional Commits message.
 I know you know hwo to read a diff. Stuff that isn't preceded with + or - is just CONTEXT.
 We won't commit on the context as if it was newly added, right?! :)
 
@@ -384,6 +386,26 @@ line, and don't explain what you did, just give the message.
 
 Write very concisely in a down-to-earth tone. *** DO NOT use words like 'enhance', 'streamline'. ***
 We don't want lots of detail or flowery language, short and sweet is best.
+
+## Second Task
+
+Please carefully review this patch with a fine-tooth comb.
+Don't write anything if it is bug-free and you see no issues, or list bugs
+still present in the patched code. Do NOT list bugs in the original code that
+are fixed by the patch. Also list other issues or suggestions if they seem
+worthwhile. Especially, check for sensitive information such as private keys or
+email addresses that should not be committed to git. Adding the author's email
+deliberately is okay. Also note any grossly bad code or gross inefficiencies.
+If you don't find anything wrong, don't write anything for this task
+so as not to waste both of our time. Thanks!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+
+Expected format:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+
+1. bug or issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+2. another bug or issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+
+or if nothing is wrong, please don't write anything, just the commit message
+for the first task. Thanks for being awesome!
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;
     if (@lines && $lines[0] =~ /:$/) {
@@ -398,37 +420,37 @@ We don't want lots of detail or flowery language, short and sweet is best.
     echo
 }
 
-check-for-bugs() {
-    model="$1"
-    echo "Checking for bugs using $(model-name "$model") ..."
-    if [ -e "$review" ]; then
-        echo >&2 "Code review already exists: $review, moving it to rubbish."
-        $MR "$review"
-    fi
-    run-git-diff --color
-    run-git-diff | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
-Answer LGTM if it is bug-free and you see no issues, or list bugs still present
-in the patched code. Do NOT list bugs in the original code that are fixed by
-the patch. Also list other issues or suggestions if they seem worthwhile.
-Especially, check for sensitive information such as private keys or email
-addresses that should not be committed to git. Adding the author's email
-deliberately is okay. Also note any grossly bad code or gross inefficiencies.
-If you don't find anything wrong, just say 'LGTM' only, so as not to waste both of our time. Thanks!
-
-Expected format:
-
-1. bug or issue
-2. another bug or issue
-
-or if nothing is wrong, please just wrte 'LGTM'.
-" | fmt -s -w 78 -g 78 | tee "$review"
-    echo
-}
+# check-for-bugs() {
+#     model="$1"
+#     echo "Checking for bugs using $(model-name "$model") ..."
+#     if [ -e "$review" ]; then
+#         echo >&2 "Code review already exists: $review, moving it to rubbish."
+#         $MR "$review"
+#     fi
+#     run-git-diff --color
+#     run-git-diff | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
+# Answer LGTM if it is bug-free and you see no issues, or list bugs still present
+# in the patched code. Do NOT list bugs in the original code that are fixed by
+# the patch. Also list other issues or suggestions if they seem worthwhile.
+# Especially, check for sensitive information such as private keys or email
+# addresses that should not be committed to git. Adding the author's email
+# deliberately is okay. Also note any grossly bad code or gross inefficiencies.
+# If you don't find anything wrong, just say 'LGTM' only, so as not to waste both of our time. Thanks!
+# 
+# Expected format:
+# 
+# 1. bug or issue
+# 2. another bug or issue
+# 
+# or if nothing is wrong, please just wrte 'LGTM'.
+# " | fmt -s -w 78 -g 78 | tee "$review"
+#     echo
+# }
 
 if (( run_initial_gens )); then
-    if [ "$initial_bug_check" -eq 1 ]; then
-        check-for-bugs "$model"
-    fi
+#     if [ "$initial_bug_check" -eq 1 ]; then
+#         check-for-bugs "$model"
+#     fi
     if [ ! -e "$review" ] || [ "$(cat "$review")" = "LGTM" ]; then
         generate-commit-message "$model"
     fi
@@ -473,9 +495,9 @@ while true; do
         v)
             run-git-vimdiff
             ;;
-        b)
-            check-for-bugs "${model:-d}"
-            ;;
+#         b)
+#             check-for-bugs "${model:-d}"
+#             ;;
         E)
             edit-files
             ;;
@@ -497,7 +519,7 @@ while true; do
             done
             echo "  d: diff the staged changes"
             echo "  v: vimdiff the staged changes"
-            echo "  b: check for bugs"
+#            echo "  b: check for bugs"
             echo "  E: edit the files"
             echo "  ?: show this help message"
             echo "  x: clean up commit-message.*.txt files"
