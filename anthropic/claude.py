@@ -22,7 +22,7 @@ DEFAULT_TEMPERATURE = 0.3
 # TOKEN_LIMIT = 100000  # exactly?
 TOKEN_LIMIT = 8192
 TOKEN_LIMIT_HAIKU = 4096
-MODEL_DEFAULT = "claude-3-5-sonnet-20240620"
+MODEL_DEFAULT = "claude-3-5-sonnet-latest"
 MODEL_INSTANT = "claude-3-haiku-20240307"
 # previous model names: "claude-v1" "claude-v1-100k" "claude-instant-v1-100k"
 # see also: https://console.anthropic.com/docs/api/reference

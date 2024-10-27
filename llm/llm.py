@@ -103,7 +103,7 @@ MODELS = {
 	"claude": {
 		"aliases": ["c", "claud"],
 		"vendor": "anthropic",
-		"id": "claude-3-5-sonnet-20240620",
+		"id": "claude-3-5-sonnet-latest",
 		"description": "Claude 3.5 Sonnet is Anthropic's latest AI model, offering improved intelligence, speed, and cost-effectiveness compared to previous versions, with new capabilities in reasoning, coding, and vision.",
 		"cost_in": 3,
 		"cost_out": 15,
