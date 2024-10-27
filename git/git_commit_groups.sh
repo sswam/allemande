@@ -68,22 +68,21 @@ We should commit changes to closely related files together, I guess; e.g. tests 
 The output should be file names grouped together in batches on each line, separated by tabs.
 The order of the lines is not important. You can also add comments after a # character if necessary.
 Do not add any prelude or comments unless you use the # character.
-List the numbers of files you have included in a leftmost column, comma separated.
+Please list the numbers of the files you have included in a leftmost column, comma separated.
 
 For example:
 
-code/prog.py	code/tests/prog_test.py
-code/prog2.py	code/tests/prog2_test.py
-code/untested.py
-code/foo
-# code/foo is new and sounds like a junk file
+1,2	code/prog.py	code/tests/prog_test.py	# prog and its tests
+3,4	code/prog2.py	code/tests/prog2_test.py	# prog2 and its tests
+5	code/untested.py	# untested
+6	code/foo	# code/foo is new, sounds like a junk file
 " | tee "$commit_plan"
 
 	$EDITOR "$commit_plan"
 
 	confirm "commit using messy-xterm?"
 
-	< "$commit_plan" grep -v -e '^\s*$' -e '^#' | sed 's/\s*#.*//' | messy-xterm
+	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-xterm
 
 	rm -f "$rundown_file" "$bad_file" "$llm_input_file"
 }
