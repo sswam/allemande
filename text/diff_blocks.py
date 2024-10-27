@@ -11,7 +11,7 @@ from typing import List, Optional
 
 from ally import main, logs, geput  # type: ignore
 
-__version__ = "0.1.8"
+__version__ = "0.1.11"
 
 logger = logs.get_logger()
 
@@ -35,7 +35,7 @@ def extract_blocks(lines: List[str]) -> List[Block]:
     blocks: List[Block] = []
     block_stack: List[Block] = []
 
-    for lineno, line in enumerate(lines):
+    for lineno, line in enumerate(lines, start=1):
         stripped_line = line.rstrip("\n")
         if not stripped_line.strip():
             continue  # Skip empty lines
@@ -64,7 +64,7 @@ def extract_blocks(lines: List[str]) -> List[Block]:
     # Finish remaining blocks
     while block_stack:
         finished_block = block_stack.pop()
-        finished_block.end = len(lines) - 1
+        finished_block.end = len(lines)
         blocks.append(finished_block)
 
     return blocks
@@ -104,18 +104,11 @@ def process_replace(blocks1: List[Block], blocks2: List[Block]) -> List[str]:
     """Process a replace operation."""
     diff = []
     for block1, block2 in zip(blocks1, blocks2):
-        block_diff = list(
-            difflib.unified_diff(
-                block1.lines,
-                block2.lines,
-                fromfile="file1",
-                tofile="file2",
-                lineterm="",
-            )
+        diff.append(
+            f"@@ -{block1.start},{len(block1.lines)} +{block2.start},{len(block2.lines)} @@"
         )
-        if block_diff:
-            diff.extend(block_diff)
-            diff.append("")  # Add a newline after each block diff
+        diff.extend(f"-{line.rstrip()}" for line in block1.lines)
+        diff.extend(f"+{line.rstrip()}" for line in block2.lines)
 
     # Handle any extra unmatched blocks
     diff.extend(process_delete(blocks1[len(blocks2) :]))
@@ -127,10 +120,8 @@ def process_delete(blocks: List[Block]) -> List[str]:
     """Process a delete operation."""
     diff = []
     for block in blocks:
-        diff.append("--- file1")
-        diff.append("+++ file2")
-        diff.extend(f"-{line}" for line in block.lines)
-        diff.append("")  # Add a newline after each block
+        diff.append(f"@@ -{block.start},{len(block.lines)} +{block.start},0 @@")
+        diff.extend(f"-{line.rstrip()}" for line in block.lines)
     return diff
 
 
@@ -138,46 +129,48 @@ def process_insert(blocks: List[Block]) -> List[str]:
     """Process an insert operation."""
     diff = []
     for block in blocks:
-        diff.append("--- file1")
-        diff.append("+++ file2")
-        diff.extend(f"+{line}" for line in block.lines)
-        diff.append("")  # Add a newline after each block
+        diff.append(f"@@ -{block.start},0 +{block.start},{len(block.lines)} @@")
+        diff.extend(f"+{line.rstrip()}" for line in block.lines)
     return diff
 
 
-def diff_blocks(file1: str, file2: str) -> List[str]:
+def diff_blocks(file1_path: str, file2_path: str) -> List[str]:
     """
     Generate an indent-aware unified diff between two files.
     """
-    with open(file1, "r", encoding="utf-8") as f1, open(file2, "r", encoding="utf-8") as f2:
-        lines1 = [l.rstrip() for l in f1.readlines()]
-        lines2 = [l.rstrip() for l in f2.readlines()]
+    with (
+        open(file1_path, "r", encoding="utf-8") as f1,
+        open(file2_path, "r", encoding="utf-8") as f2,
+    ):
+        lines1 = f1.readlines()
+        lines2 = f2.readlines()
 
     blocks1 = extract_blocks(lines1)
     blocks2 = extract_blocks(lines2)
 
-    diff = compare_blocks(blocks1, blocks2)
+    diff = [f"--- {file1_path}", f"+++ {file2_path}"]
+    diff.extend(compare_blocks(blocks1, blocks2))
 
     return diff
 
 
 def print_diff(diff: List[str], put: geput.Put) -> None:
     """Print the generated diff."""
-    print = geput.print(put)
+    print_func = geput.print(put)
     for line in diff:
-        print(line)
+        print_func(line)
 
 
-def main_diff(put: geput.Put, file1: str, file2: str) -> None:
+def main_diff(put: geput.Put, file1_path: str, file2_path: str) -> None:
     """Main function to generate and print the indent-aware diff."""
-    diff = diff_blocks(file1, file2)
+    diff = diff_blocks(file1_path, file2_path)
     print_diff(diff, put)
 
 
 def setup_args(arg):
     """Set up the command-line arguments."""
-    arg("file1", help="first file for comparison")
-    arg("file2", help="second file for comparison")
+    arg("file1_path", help="path to the first file for comparison")
+    arg("file2_path", help="path to the second file for comparison")
 
 
 if __name__ == "__main__":
