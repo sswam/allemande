@@ -20,10 +20,10 @@ __version__ = "0.1.3"
 
 def try_add_argument(parser, *args, **kwargs):
     """Add an argument to the parser if it does not already exist."""
-    args = [arg for arg in args if arg not in parser._option_string_actions]
-    if not args:
-        raise argparse.ArgumentError(f"Argument already exists: {' '.join(args)}")
-    parser.add_argument(*args, **kwargs)
+    filtered_args = [arg for arg in args if arg not in parser._option_string_actions]
+    if not filtered_args:
+        raise argparse.ArgumentError(None, f"Argument already exists: {' '.join(args)}")
+    parser.add_argument(*filtered_args, **kwargs)
 
 
 def parse(
