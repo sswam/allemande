@@ -25,9 +25,9 @@ logger = main.get_logger()
 
 
 def get_web_content(url: str) -> str:
-    """Fetch content from a URL using web_text tool."""
+    """Fetch content from a URL using web-text tool."""
     try:
-        result = subprocess.run(["web_text", url], capture_output=True, text=True, check=True)
+        result = subprocess.run(["web-text", url], capture_output=True, text=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
         raise FileNotFoundError(f"Failed to fetch content from {url}: {e}")
