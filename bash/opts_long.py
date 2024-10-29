@@ -53,7 +53,7 @@ def opts_long(
                     break
 
                 # Stop before an eval line
-                if re.match(r'\s*eval\s', line):
+                if re.search(r'\s+eval\s', line):
                     break
 
                 # Process and output the line
