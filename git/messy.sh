@@ -377,14 +377,16 @@ Please mark fixes as fix, not feat. I make a lot of fixes.
 Files in the 'snip' directory, are obsolete rubbish that's been removed from something else.
 Files in the 'gens' directory, are interesting AI generated content, but it is not important.
 
-After the header line you may list more details, but ONLY if it's really
-needed. NEVER add redundant details that are already covered in the header
-line, and don't explain what you did, just give the message.
+After the header line you may list more details, starting each with a dash, but
+ONLY if it's really needed. NEVER add redundant details that are already
+covered in the header line, and don't explain what you did:
 
 - Describe each change very concisely, if not already covered in the header;
-  as few list items as possible. Continuing lines are indented with two spaces.
+  as few list items as possible.
+- Continuing lines are indented with two spaces, as shown.
 
-Write very concisely in a down-to-earth tone. *** DO NOT use words like 'enhance', 'streamline'. ***
+Write very concisely, for programmers, in a down-to-earth tone.
+*** DO NOT use market-speak words like 'enhance', 'streamline'. ***
 We don't want lots of detail or flowery language, short and sweet is best.
 
 ## Second Task
@@ -397,15 +399,14 @@ worthwhile. Especially, check for sensitive information such as private keys or
 email addresses that should not be committed to git. Adding the author's email
 deliberately is okay. Also note any grossly bad code or gross inefficiencies.
 If you don't find anything wrong, don't write anything for this task
-so as not to waste both of our time. Thanks!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+so as not to waste both of our time. Thanks!
+Expected format:
 
-Expected format:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+1. bug or issue
+2. another bug or issue
 
-1. bug or issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-2. another bug or issue                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-
-or if nothing is wrong, please don't write anything, just the commit message
-for the first task. Thanks for being awesome!
+Or if nothing is wrong, please don't write anything for the second task, just
+the commit message for the first task. Thanks for being awesome!
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;
     if (@lines && $lines[0] =~ /:$/) {
