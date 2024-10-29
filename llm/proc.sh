@@ -23,8 +23,7 @@ or explanation. Do not abbreviate text unrelated to the request. \
 If editing, do not make edits that are not requested (e.g. removing comments \
 or blank lines). If the input has code but does not include code quoting with \
 \`\`\`, the output should not include \`\`\` either. If writing code, be \
-concise but clear, not obscure. No intro or concluding text. Thanks\!
-	$prompt"
+concise but clear, not obscure. No intro or concluding text. Thanks\!"
 
 	process -m="$model" $opts "$prompt" "${refs[@]}" | rstrip
 }
@@ -33,4 +32,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	proc "$@"
 fi
 
-# version: 1.0.2
+# version: 1.0.3
