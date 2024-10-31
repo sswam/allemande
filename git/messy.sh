@@ -361,7 +361,7 @@ generate-commit-message() {
     run-git-diff | llm process -m "$model" "## First Task
 
 Please describe this diff, for a high-level Conventional Commits message.
-I know you know hwo to read a diff. Stuff that isn't preceded with + or - is just CONTEXT.
+You know how to read a diff. Lines that are not preceded with + or - is just CONTEXT.
 We won't commit on the context as if it was newly added, right?! :)
 
 *** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
@@ -385,9 +385,9 @@ covered in the header line, and don't explain what you did:
   as few list items as possible.
 - Continuing lines are indented with two spaces, as shown.
 
-Write very concisely, for programmers, in a down-to-earth tone.
+Write very concisely in a down-to-earth tone.
 *** DO NOT use market-speak words like 'enhance', 'streamline'. ***
-We don't want lots of detail or flowery language, short and sweet is best.
+We don't want too much detail or flowery language, short and sweet is best.
 
 ## Second Task
 
