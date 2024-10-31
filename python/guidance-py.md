@@ -35,9 +35,11 @@ don't know and can't see with new code that you think might be better than that
 unknown.
 
 We use at least Python 3.10, normally 3.12 or the latest stable version.
-Please use new features. Always use modern type hints such as
-list[str] | None, not Optional[List[str]]
+Please use new features.
+
+Always use modern type hints such as list[str] | None, not Optional[List[str]]
 We don't care about compatibility with older versions of Python.
+i.e. please DO NOT from typing import List, Dict, Set, Tuple or similar.
 
 Follow the principles from The Practice of Programming by Kernighan and Pike,
 e.g. "simplicity, clarity, generality". As Linus advises, "Good taste" in
