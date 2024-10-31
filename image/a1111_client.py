@@ -177,8 +177,8 @@ def setup_args(arg):
     arg("-H", "--height", type=int, help="image height")
     arg("-c", "--count", type=int, help="number of images to generate")
     arg("-S", "--sleep", type=float, help="sleep between generations")
-    arg("-X", "--clobber", help="overwrite existing files")
-    arg("-P", "--pony", help="add pony boilerplate")
+    arg("-X", "--clobber", help="overwrite existing files", action="store_true")
+    arg("-P", "--pony", help="add pony boilerplate", action="store_true")
  
 
 if __name__ == "__main__":

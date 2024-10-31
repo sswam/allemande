@@ -256,7 +256,7 @@ def generate_image(
 
     try:
         kwargs = {
-            "output-file": output_path,
+            "output": output_path,
             "prompt": prompt,
             "width": options.width,
             "height": options.height,
@@ -306,7 +306,7 @@ def setup_args(arg):
     arg("-c", "--count", help="Number of images to generate for each prompt")
     arg("-f", "--fix-dimensions", help="Use the closest happy SDXL dimensions")
     arg("-F", "--no-fix-dimensions", dest="fix_dimensions", action="store_false")
-    arg("-P", "--pony", help="Add prompting boilerplate for Pony and Pony-derived models")
+    arg("-P", "--pony", help="Add prompting boilerplate for Pony and Pony-derived models", action="store_true")
     arg("-S", "--steps", help="Number of steps to run the model")
     arg("-cs", "--cfg-scale", help="CFG scale")
 
