@@ -13,7 +13,7 @@ import inspect
 from ally import logs, opts
 
 # compatibility with old usage
-from ally.logs import get_logger
+from ally.logs import get_logger, meta
 from ally.old import run, io
 
 
@@ -37,12 +37,16 @@ def go(
 
     # Parse command-line arguments, and finish setting up logging
     args, kwargs, put = opts.parse(main_function, setup_args)
+    sig = inspect.signature(main_function)
 
     put = put or print
 
     # run the main function, catching any exceptions
     try:
-        if inspect.iscoroutinefunction(main_function):
+        main_function_real = main_function
+        if "opts" in sig.parameters:
+            main_function = lambda *args, **kwargs: meta.call_gently(main_function_real, *args, **kwargs)
+        if inspect.iscoroutinefunction(main_function_real):
             rv = asyncio.run(main_function(*args, **kwargs))
         else:
             rv = main_function(*args, **kwargs)

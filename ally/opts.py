@@ -39,6 +39,7 @@ def parse(
     kwargs_name = meta.kwargs_parameter(main_function)
 
     # Check for specific parameters
+    wants_opts = "opts" in sig.parameters
     wants_get = "get" in sig.parameters
     wants_put = "put" in sig.parameters
     wants_istream = "istream" in sig.parameters
@@ -103,7 +104,11 @@ def parse(
         args.text = args.istream.read()
     kwargs = vars(args)
 
-    kwargs["args"] = kwargs["opts"] = args
+    if wants_opts and sig.parameters["opts"].annotation is dict:
+        kwargs["opts"] = kwargs
+    elif wants_opts:
+        # use the type as a constructor
+        kwargs["opts"] = sig.parameters["opts"].annotation(**kwargs)
 
     optional = ["log_level", "args", "opts", "istream", "ostream", "append"]
 
