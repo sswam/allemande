@@ -34,6 +34,7 @@ fun! Comment()
 	else
 		s,^,# ,
 	endif
+	silent! s,  *$,, " remove trailing spaces
 	noh
 endfun
 
