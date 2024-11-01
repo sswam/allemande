@@ -1,3 +1,7 @@
+/* This program is a simple example program that greets the user and optionally
+ * builds a shopping list. The program can optionally use AI.
+ */ 
+
 #define _GNU_SOURCE
 #include <errno.h>
 #include <getopt.h>
@@ -230,10 +234,6 @@ free_shopping_items:
 done:
 	return status;
 }
-
-// Note that you'll need to update the function signatures and implementations of `get_options()`,
-// `ai_get_greeting()`, and `build_shopping_list_simple()` to accept and use the `struct options*`
-// instead of individual parameters, if they use any of the options.
 
 /*
 Important Notes to AI [DO NOT COPY ANY "NOTES TO AI" IN YOUR OUTPUT, it gets
