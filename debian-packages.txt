@@ -65,3 +65,5 @@ wbritish
 wbritish-small
 wbritish-large
 wbritish-huge
+
+wget

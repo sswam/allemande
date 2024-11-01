@@ -3,7 +3,7 @@
 # setup the allemande ports for a user
 # usage: allemande-user-add [user [module ...]]
 
-. get_root
+. get-root
 
 user=${1:-$SUDO_USER}
 if [ "$#" -gt 0 ]; then shift; fi
