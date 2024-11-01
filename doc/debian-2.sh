@@ -152,7 +152,7 @@ END
 # -------- install allemande Python dependencies -----------------------------
 
 pip install -r requirements-core.txt
-pip install -r requirements.txt
+pip install -r requirements.txt  # there may be issues!
 pip install gradio
 pip install gTTS
 
