@@ -18,7 +18,7 @@
 
 #define MAX_BUFFER 1024
 
-#define GET_GREETING_TEMPLATE "Please greet %s in LANG=%s. Be creative, but not more than 50 words."
+#define GET_GREETING_TEMPLATE "Please greet %s in LANG=%s. Be creative, but not more than 50 words. Don't translate back to English."
 
 /* Options structure */
 struct options {
@@ -88,7 +88,7 @@ static void usage(FILE *stream, char *argv0)
 	fprintf(stream, "  -a, --use-ai          Use AI to help with the shopping list\n");
 }
 
-#define SHOPPING_LIST_TEMPLATE "Please echo the input and add any extra items we might need, in %s."
+#define SHOPPING_LIST_TEMPLATE "Please echo the input and add any extra items we might need, in LANG=%s. Don't translate back to English."
 
 /* Get options from the command line */
 int get_options(int argc, char *argv[], struct options *opts)

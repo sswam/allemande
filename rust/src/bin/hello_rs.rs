@@ -15,7 +15,7 @@ struct Options {
 /// Generates a greeting using AI based on the given options
 fn ai_get_greeting(opts: &Options) -> io::Result<String> {
     let query = format!(
-        "Please greet {} in {}. Be creative, but not more than 50 words.",
+        "Please greet {} in LANG={}. Be creative, but not more than 50 words. Don't translate back to English.",
         opts.name, opts.language
     );
     llm_query(&query)
@@ -130,7 +130,7 @@ fn main() -> io::Result<()> {
         let mut shopping_list = build_shopping_list_simple(&opts);
         if opts.use_ai {
             let prompt = format!(
-                "Please echo the input and add any extra items we might need, in {}",
+                "Please echo the input and add any extra items we might need, in LANG={}. Don't translate back to English.",
                 opts.language
             );
             shopping_list = llm_process(&prompt, &shopping_list)?;

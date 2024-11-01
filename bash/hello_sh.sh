@@ -14,7 +14,7 @@ hello-sh() {
 	# Generate greeting using AI or print simple greeting
 	if [ "$use_ai" = 1 ]; then
 		query -m="$model" \
-			"Please greet ${user_name:-the world} in LANG=$language." \
+			"Please greet ${user_name:-the world} in LANG=$language. Don't translate back to English." \
 			"Be creative, but not more than 50 words."
 	else
 		# Set greeting based on selected language
@@ -54,7 +54,7 @@ shopping-list() {
 		shopping-list-format "${shopping[@]}" |
 			process -m="$model" \
 				"Please echo the input and add any extra " \
-				"items we might need, in $language."
+				"items we might need, in LANG=$language. Don't translate back to English."
 	else
 		shopping-list-format "${shopping[@]}"
 	fi
