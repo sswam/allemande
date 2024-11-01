@@ -218,9 +218,9 @@ def _get_argparse_type(annotation):
     elif origin is list:
         # Handle List types
         elem_type = args[0] if args else str
-        def parse_list(s):
-            return [elem_type(item) for item in s.split(',')]
-        return parse_list
+#         def parse_list(s):
+#             return [elem_type(item) for item in s.split(',')]
+        return elem_type
     elif origin is types.UnionType and type(None) in args:
         # Handle Optional types
         non_none_types = [arg for arg in args if arg is not type(None)]

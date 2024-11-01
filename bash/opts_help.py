@@ -122,7 +122,7 @@ def opts_help(
             # Stop before an eval line,
             # such as: eval "$(ally)"
             # which calls: . opts
-            if re.search(r'\s+eval\s', line):
+            if re.search(r'\beval\s', line):
                 break
 
             # Skip other ". " lines
