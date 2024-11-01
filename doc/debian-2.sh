@@ -85,6 +85,10 @@ sudo apt-get update
 sudo apt-get -y install ssh rsync screen build-essential devscripts python3-dev neovim
 sudo apt-get -y dist-upgrade
 
+# -------- configure preferred editor ----------------------------------------
+
+sudo update-alternatives --config editor
+
 # -------- set up ssh --------------------------------------------------------
 
 mkdir -p ~/.ssh
