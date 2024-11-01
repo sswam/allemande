@@ -5,21 +5,17 @@ A Python module / script to generate images using the Stable Diffusion WebUI API
 """
 
 import os
-import sys
-import json
-import logging
 import datetime
 import base64
 import random
 from pathlib import Path
 import signal
+import asyncio
 
 import aiohttp
-import asyncio
-from argh import arg
-from tqdm import tqdm
+from tqdm import tqdm  # type: ignore
 
-from ally import main, text
+from ally import main, text  # type: ignore
 
 __version__ = "0.1.0"
 
@@ -34,7 +30,7 @@ async def generate_image(session, params):
         return await response.json()
 
 
-async def a1111_client_async(
+async def a1111_client(
     output: str = "",
     prompt: str = "",
     negative_prompt: str = "",
@@ -49,6 +45,9 @@ async def a1111_client_async(
     sleep: float = 0.0,
     clobber: bool = False,
     pony: bool = False,
+    adetailer: list[str] = None,
+    pag: bool = False,
+    hires: float = 0.0,
 ) -> None:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -80,36 +79,46 @@ async def a1111_client_async(
         "do_not_save_grid": True,
     }
 
+    if hires:
+        hires_fix_add_params(params, hires)
+
+    if adetailer:
+        adetailer_add_params(params, adetailer)
+
+    if pag:
+        perturbed_attention_guidance_add_params(params)
+
     interrupt_flag = False
 
-    def signal_handler(signum, frame):
+    def signal_handler(_signum, _frame):
         nonlocal interrupt_flag
         interrupt_flag = True
 
     try:
         signal.signal(signal.SIGINT, signal_handler)
-        logger.debug(f"Generating {count} images to {outdir}")
+        logger.debug("Generating %s images to %s", count, outdir)
         async with aiohttp.ClientSession() as session:
+            i = None
             for i in tqdm(range(count), desc="Generating images"):
                 image_file = f"{outdir}/{stem}_{i:05}.png"
                 if not clobber and os.path.exists(image_file):
-                    logger.debug(f"Skipping existing file {image_file}")
+                    logger.debug("Skipping existing file %s", image_file)
                     continue
-                logger.debug(f"Generating image {i+1}/{count}")
+                logger.debug("Generating image %s/%s", i + 1, count)
                 params["seed"] = (seed + i) % 2**32
                 response = await generate_image(session, params)
                 image = base64.b64decode(response["images"][0])
                 with open(image_file, "wb") as f:
                     f.write(image)
-                logger.info(f"{image_file}")
+                logger.info("Generated %s", image_file)
                 if interrupt_flag:
-                    logger.info(f"Interrupted at {i+1} images")
+                    logger.info("Interrupted at %s images", i + 1)
                     break
                 if sleep:
                     await asyncio.sleep(sleep)
-            logger.debug(f"Generated {i+1} images to {outdir}")
+            logger.debug("Generated %s images to %s", i + 1, outdir)
     except Exception as e:
-        logger.error(f"Error: {e}")
+        logger.error("Error: %s", e)
     finally:
         logger.debug("Exiting")
         signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -125,46 +134,137 @@ def pony_biolerplate(prompt, negative_prompt):
     return prompt, negative_prompt
 
 
-def a1111_client(
-    output: str = "",
-    prompt: str = "",
-    negative_prompt: str = "",
-    seed: int = -1,
-    sampler_name: str = "DPM++ 2M",
-    scheduler: str = "Karras",
-    steps: int = 30,
-    cfg_scale: float = 7,
-    width: int = 1024,
-    height: int = 1024,
-    count: int = 1,
-    sleep: float = 0.0,
-    clobber: bool = False,
-    pony: bool = False,
-) -> None:
-    """
-    Generate images using the Stable Diffusion WebUI API.
-    """
-    asyncio.run(
-        a1111_client_async(
-            output=output,
-            prompt=prompt,
-            negative_prompt=negative_prompt,
-            seed=seed,
-            sampler_name=sampler_name,
-            scheduler=scheduler,
-            steps=steps,
-            cfg_scale=cfg_scale,
-            width=width,
-            height=height,
-            count=count,
-            sleep=sleep,
-            clobber=clobber,
-            pony=pony,
+def hires_fix_add_params(params, scale, denoising_strength=0.3, steps=None):
+    if steps is None:
+        steps = max(1, round(denoising_strength * params["steps"] + 0.5 - 1e-6))
+    params.update(
+        {
+            "enable_hr": True,
+            "hr_scale": scale,
+            "hr_upscaler": "Lanczos",
+            "denoising_strength": denoising_strength,
+            "hr_scheduler": params["scheduler"],
+            "hr_second_pass_steps": steps,
+        }
+    )
+
+
+def adetailer_add_params(params, adetailer):
+    """Add adetailer parameters to the params."""
+    if not "alwayson_scripts" in params:
+        params["alwayson_scripts"] = {}
+
+    # I copied these parameters from the API payload extension.
+    # Most of them are defaults, and we could likely remove them.
+    # It might be good if ad_denoising_strength and
+    # ad_inpaint_only_masked_padding can vary, but for now they are fixed.
+
+    args = [True, False]
+    params["alwayson_scripts"]["ADetailer"] = {"args": args}
+    for model in adetailer:
+        args.append(
+            {
+                "ad_denoising_strength": 0.3,
+                "ad_cfg_scale": 7,
+                "ad_checkpoint": "Use same checkpoint",
+                "ad_clip_skip": 1,
+                "ad_confidence": 0.3,
+                "ad_controlnet_guidance_end": 1,
+                "ad_controlnet_guidance_start": 0,
+                "ad_controlnet_model": "None",
+                "ad_controlnet_module": "None",
+                "ad_controlnet_weight": 1,
+                "ad_dilate_erode": 4,
+                "ad_inpaint_height": 1024,
+                "ad_inpaint_only_masked": True,
+                "ad_inpaint_only_masked_padding": 64 * params.get("hr_scale", 1),
+                "ad_inpaint_width": 1024,
+                "ad_mask_blur": 16 * params.get("hr_scale", 1),
+                "ad_mask_k_largest": 0,
+                "ad_mask_max_ratio": 1,
+                "ad_mask_merge_invert": "None",
+                "ad_mask_min_ratio": 0,
+                "ad_model": model,
+                "ad_model_classes": "",
+                "ad_negative_prompt": "",
+                "ad_noise_multiplier": 1,
+                "ad_prompt": "",
+                "ad_restore_face": False,
+                "ad_sampler": "DPM++ 2M",
+                "ad_scheduler": "Use same scheduler",
+                "ad_steps": 28,
+                "ad_tab_enable": True,
+                "ad_use_cfg_scale": False,
+                "ad_use_checkpoint": False,
+                "ad_use_clip_skip": False,
+                "ad_use_inpaint_width_height": False,
+                "ad_use_noise_multiplier": False,
+                "ad_use_sampler": False,
+                "ad_use_steps": False,
+                "ad_use_vae": False,
+                "ad_vae": "Use same VAE",
+                "ad_x_offset": 0,
+                "ad_y_offset": 0,
+                "is_api": [],
+            }
         )
+
+
+def perturbed_attention_guidance_add_params(params):
+    """Add perturbed attention guidance parameters to the params."""
+    if not "alwayson_scripts" in params:
+        params["alwayson_scripts"] = {}
+
+    # This is a bit unintelligible as the extension does not name its parameters.
+    # I just copied them from the API payload extension.
+    params["alwayson_scripts"]["Incantations"] = (
+        {
+            "args": [
+                False,
+                11,
+                0,
+                150,
+                False,
+                1,
+                0.8,
+                3,
+                0,
+                0,
+                150,
+                4,
+                True,
+                5,
+                0,
+                150,
+                False,
+                "Constant",
+                0,
+                100,
+                True,
+                False,
+                False,
+                2,
+                0.1,
+                0.5,
+                0,
+                "",
+                0,
+                25,
+                1,
+                False,
+                False,
+                False,
+                "BREAK",
+                "-",
+                0.2,
+                10,
+            ]
+        },
     )
 
 
 def setup_args(arg):
+    """Setup the command line arguments."""
     arg("-o", "--output", help="output file (png)")
     arg("-p", "--prompt", help="prompt for image generation")
     arg("-n", "--negative-prompt", help="negative prompt for image generation")
@@ -179,7 +279,10 @@ def setup_args(arg):
     arg("-S", "--sleep", type=float, help="sleep between generations")
     arg("-X", "--clobber", help="overwrite existing files", action="store_true")
     arg("-P", "--pony", help="add pony boilerplate", action="store_true")
- 
+    arg("-D", "--adetailer", nargs="*", help="use adetailer with specified models")
+    arg("-g", "--pag", help="use perturbed attention guidance", action="store_true")
+    arg("-u", "--hires", help="hires fix / upscale by factor")
+
 
 if __name__ == "__main__":
     main.go(a1111_client, setup_args)

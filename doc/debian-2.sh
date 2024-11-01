@@ -82,7 +82,7 @@ sudo chmod g+w $dirs
 # -------- install essential tools and upgrade to Debian bookworm ------------
 
 sudo apt-get update
-sudo apt-get -y install ssh rsync screen build-essential devscripts python3-dev python3.10-dev neovim
+sudo apt-get -y install ssh rsync screen build-essential devscripts python3-dev neovim
 sudo apt-get -y dist-upgrade
 
 # -------- set up ssh --------------------------------------------------------
@@ -112,25 +112,28 @@ git clone https://github.com/sswam/allemande.git
 # git clone ucm.dev:allemande  # alternative
 # git clone git@github.com:sswam/allemande.git  # alternative
 cd allemande
-git checkout main
 
-# -------- install python3.10-distutils-bogus --------------------------------
+# -------- install python3.11-distutils-bogus --------------------------------
 
-sudo apt-get -y install ./debian/python3.10-distutils-bogus_1.0_all.deb
+sudo apt-get -y install ./debian/python3.11-distutils-bogus_1.0_all.deb
 
 # -------- install allemande Debian dependencies -----------------------------
 
-sudo apt-get -y install `< debian-packages.txt`
+sudo apt-get -y install `< debian-packages.txt grep -v '^#'`
 sudo apt-get -y clean
 
 # -------- set up a Python3.10 virtual environment ---------------------------
 
-python3.10 -m venv venv
+python3.11 -m venv venv
 . venv/bin/activate
 
 # -------- bashrc additions --------------------------------------------------
 
-cat <<END >>~/.bashrc
+mkdir -p ~/my
+chmod go-rwx ~/my
+touch ~/my/ai.env
+
+cat <<'END' >>~/.bashrc
 
 set -a
 . ~/allemande/venv/bin/activate
@@ -175,6 +178,7 @@ pip install -e clip-interrogator
 
 # -------- nvim settings for vim compatibility -------------------------------
 
+touch ~/.vimrc
 mkdir -p ~/.config/nvim
 
 cat <<END >>~/.config/nvim/init.vim
@@ -185,9 +189,7 @@ END
 
 # -------- copy ai.env secrets file from another staff member ----------------
 
-mkdir ~/my
-chmod go-rwx ~/my
-scp sam@ucm.dev:my/ai.env
+scp sam@ucm.dev:my/ai.env ~/my/
 set -a
 . ~/my/ai.env
 
@@ -198,6 +200,7 @@ cd ~/allemande
 
 allemande-install
 web-install
+make canon
 
 # -------- test allemande tools ----------------------------------------------
 
@@ -207,4 +210,4 @@ rm -r ~/llm.log
 
 # -------- TODO: install other allemande deps that are tricky ----------------
 
-#   - automatic1111 stable diffusion webui
+#   - stable diffusion / flux
