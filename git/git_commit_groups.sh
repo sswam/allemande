@@ -8,6 +8,8 @@ git_group_files() {
 
 	eval "$(ally)"
 
+	cd "$(git-root)"
+
 	junk=$(junk-files)
 
 	if [ -n "$junk" ]; then
