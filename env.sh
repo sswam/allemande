@@ -74,7 +74,7 @@ PATH="$PATHS:$PATH:$ALLEMANDE_HOME/node_modules/.bin"
 if [ ! -e "$CONFIG" ]; then
 	echo "Creating config.sh: $CONFIG"
 
-	v ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
+	ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
 fi
 
 . "$CONFIG"
