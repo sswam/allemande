@@ -1,3 +1,6 @@
+// This program is a simple example program that greets the user and optionally
+// builds a shopping list. The program can optionally use AI.
+
 use std::env;
 use std::io::{self, Write};
 use std::process::{Command, Stdio};
