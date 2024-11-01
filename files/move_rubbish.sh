@@ -2,7 +2,7 @@
 # [file ...]
 # move to rubbish
 # suggested: alias rm=move-rubbish
-# moves each file to ~/rubbish/${basename}_$(nano=1 dt0`
+# moves each file to ~/rubbish/${basename}_$(nano=1 dt0)
 # undo with unrubbish
 
 eval "$(ally)"
