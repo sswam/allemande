@@ -56,3 +56,12 @@ cmake
 
 libcairo2-dev
 libgirepository1.0-dev
+
+wamerican
+wamerican-small
+wamerican-large
+wamerican-huge
+wbritish
+wbritish-small
+wbritish-large
+wbritish-huge
