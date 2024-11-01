@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 # web-install: set permissions for the web app and install nginx config
 
-. get_root
+. get-root
 
 mode() {
 	mode=$1 ; shift
@@ -20,12 +20,20 @@ if [ ! -e mousetrap ]; then
 	git clone https://github.com/ccampbell/mousetrap
 fi
 
+# copy rooms.dict to rooms
+
+cd "$ALLEMANDE_HOME"
+
+if [ ! -d "rooms" ]; then
+	cp -a rooms.dist rooms
+fi
+
 # install the webchat web app ------------------------------------------------
 
 cd "$ALLEMANDE_HOME/webchat"
 
+mkdir -p "$ALLEMANDE_HOME/rooms"
 mkdir -p files
-
 mode 771 rooms files
 
 if [ ! -e .htpasswd ]; then

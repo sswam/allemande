@@ -5,7 +5,7 @@
 
 python_dir="${1:-$(dirname "$(which python)")}"
 
-. get_root
+. get-root
 
 home="$ALLEMANDE_HOME"
 user="$ALLEMANDE_USER"
@@ -48,7 +48,7 @@ for module in $ALLEMANDE_MODULES; do
 	chown $user:$user "$module_dir"
 done
 
-"$ALLEMANDE_HOME/adm/allemande-user-add" www-data
-"$ALLEMANDE_HOME/adm/allemande-user-add" sam
+"$ALLEMANDE_HOME/canon/allemande-user-add" www-data
+"$ALLEMANDE_HOME/canon/allemande-user-add" sam
 
 "$ALLEMANDE_HOME/safety/setup"
