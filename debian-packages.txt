@@ -1,8 +1,8 @@
 python3
 python3-pip
 python3-venv
-python3.10-dev
-python3.10-venv
+python3.11-dev
+python3.11-venv
 perl
 bash
 make
@@ -52,3 +52,7 @@ libperl-critic-perl
 
 check
 cproto
+cmake
+
+libcairo2-dev
+libgirepository1.0-dev
