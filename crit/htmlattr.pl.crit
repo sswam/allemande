@@ -1,0 +1,9 @@
+1. The regex pattern in htmlattr.pl `/ $attr=(.*?)[ >]/` can match beyond the
+intended attribute value if there's no space or > character immediately after
+it. It should be made more strict to avoid potential parsing errors.
+
+2. The htmlattr.pl script doesn't handle HTML attributes without values
+(boolean attributes), which could be considered a limitation.
+
+3. The script doesn't properly handle attributes containing spaces that
+aren't properly quoted, which could lead to incorrect parsing in some cases.
