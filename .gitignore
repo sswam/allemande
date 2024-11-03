@@ -91,3 +91,5 @@ sparkjoy
 /files/touch_ctime
 /files/tests/touch_ctime_test
 /x11/glxgears
+/html/htmlsplit
+/html/tests/htmlsplit_test
