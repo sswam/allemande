@@ -4,17 +4,29 @@ use strict;
 use warnings;
 use v5.30;
 use Exporter qw(import);
-use Log::Log4perl; # qw(:easy);
+use Log::Log4perl;
 use IO::Handle;
+use Term::ReadLine;
+use IO::Interactive qw(is_interactive);
+use File::Basename  qw(basename);
+use File::Spec;
 
-our $VERSION = "0.1.3";
+our $VERSION = "0.1.8";
 
 our @EXPORT_OK = qw(setup_logging get_logger io);
+
+# Shared variables for the io function
+our $TERM;
+our $HISTORY_FILE;
 
 sub setup_logging {
     my ($module_name) = @_;
 
-    my $log_level = $ENV{uc($module_name) . '_LOG_LEVEL'} // 'WARN';
+    die "Module name is required" unless defined $module_name;
+
+    my $log_level = $ENV{ uc($module_name) . '_LOG_LEVEL' } // 'WARN';
+    my $log_dir   = "$ENV{HOME}/.logs";
+    mkdir $log_dir unless -d $log_dir;
 
     my $log_config = qq{
         log4perl.rootLogger              = $log_level, Screen, File
@@ -25,13 +37,13 @@ sub setup_logging {
         log4perl.appender.Screen.layout.ConversionPattern = %m%n
 
         log4perl.appender.File           = Log::Log4perl::Appender::File
-        log4perl.appender.File.filename  = $ENV{HOME}/.logs/$module_name.log
+        log4perl.appender.File.filename  = $log_dir/$module_name.log
         log4perl.appender.File.mode      = append
         log4perl.appender.File.layout    = PatternLayout
         log4perl.appender.File.layout.ConversionPattern = %d %p %m%n
     };
 
-    Log::Log4perl->init(\$log_config);
+    Log::Log4perl->init( \$log_config );
 }
 
 sub get_logger {
@@ -39,32 +51,47 @@ sub get_logger {
 }
 
 sub io {
-    my ($input, $output) = @_;
+    my ( $input, $output ) = @_;
 
     $input  //= \*STDIN;
     $output //= \*STDOUT;
 
-    my $is_tty = -t $input && -t $output;
+    my $is_interactive = is_interactive();
 
-    my $put = sub {
-        my ($message, %opts) = @_;
-        my $end = $opts{end} // "\n";
-        print $output $message . $end;
-    };
+    if ($is_interactive) {
+        $TERM = Term::ReadLine->new('ally');
+        $HISTORY_FILE = File::Spec->catfile( $ENV{HOME}, "." . basename($0) . "_history" );
 
-    my $get = sub {
-        my ($prompt) = @_;
-        $prompt //= ': ';
-        if ($is_tty) {
-            print $output $prompt;
-            $output->flush();
-            return scalar <$input>;
-        } else {
-            return scalar <$input>;
+        if ( $TERM->can('ReadHistory') && -f $HISTORY_FILE ) {
+            $TERM->ReadHistory($HISTORY_FILE);
         }
-    };
 
-    return ($get, $put);
+        if ( $TERM->can('StifleHistory') ) {
+            $TERM->StifleHistory(-1);
+        }
+
+        END {
+            if ( $TERM && $TERM->can('WriteHistory') ) {
+                $TERM->WriteHistory($HISTORY_FILE);
+            }
+        }
+    }
+
+    return (
+        sub {    # get
+            my ($prompt) = @_;
+            return $is_interactive
+            ? do {
+                my $line = $TERM->readline( $prompt // ': ' );
+                $TERM->addhistory($line) if defined($line) && length($line);
+                $line;
+            }
+            : scalar <$input>;
+        },
+        sub {    # put
+            print $output $_[0];
+        }
+    );
 }
 
 1;
