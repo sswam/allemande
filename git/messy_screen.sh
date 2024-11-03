@@ -14,7 +14,7 @@ messy-screen() {
 		screen -c xi </dev/tty
 		exit 120
 	fi
-	screen-run ci "$*" messy "$@" </dev/tty
+	screen-run ci "$*" exec messy "$@" </dev/tty
 	if ! ((no_connect)); then
 		screen -x ci </dev/tty
 	fi
