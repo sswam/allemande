@@ -82,9 +82,10 @@ For example:
 
 	$EDITOR "$commit_plan"
 
-	confirm "commit using messy-xterm?"
+	confirm "commit using messy-screen?"
 
-	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-xterm
+	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-screen
+	screen -x ci
 
 	rm -f "$rundown_file" "$bad_file" "$llm_input_file"
 }

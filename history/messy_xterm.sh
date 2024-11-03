@@ -8,9 +8,8 @@ messy-xterm() {
 	eval "$(ally)"
 
 	if [ "$#" = 0 ]; then
-		xargs-tsv messy-xterm
-#		git-mod | xa confirm -t messy-xterm
-		exit
+		exec xargs-tsv messy-xterm
+		exit 120
 	fi
 	xterm-screen-run ci "$*" messy "$@"
 }

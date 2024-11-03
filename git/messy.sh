@@ -391,21 +391,22 @@ We don't want too much detail or flowery language, short and sweet is best.
 
 ## Second Task
 
-Please carefully review this patch with a fine-tooth comb.
-Don't write anything if it is bug-free and you see no issues, or list bugs
-still present in the patched code. Do NOT list bugs in the original code that
-are fixed by the patch. Also list other issues or suggestions if they seem
+Please carefully review this patch with a fine-tooth comb. Important: DON'T
+WRITE ANYTHING if it is bug-free and you see no issues, or list bugs still
+present in the patched code. Do NOT list bugs in the original code that are
+fixed by the patch. Also list other issues or suggestions if they seem
 worthwhile. Especially, check for sensitive information such as private keys or
 email addresses that should not be committed to git. Adding the author's email
 deliberately is okay. Also note any grossly bad code or gross inefficiencies.
-If you don't find anything wrong, don't write anything for this task
-so as not to waste both of our time. Thanks!
+If you don't find anything wrong, don't write anything for this task so as not
+    to waste both of our time. Thanks!
+
 Expected format:
 
 1. bug or issue
 2. another bug or issue
 
-Or if nothing is wrong, please don't write anything for the second task, just
+Or if nothing is wrong, please DON'T WRITE ANYTHING for the second task, just
 the commit message for the first task. Thanks for being awesome!
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;

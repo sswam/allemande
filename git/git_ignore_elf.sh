@@ -4,27 +4,25 @@
 # Updates .gitignore with ELF files in the git repository
 
 git-ignore-elf() {
-	local file=.gitignore
 	local verbose= v=
 
 	eval "$(ally)"
 
-	cd "$(git-root)" || die "Not in a git repository"
+	local root="$(git-root)"
+	local cwd_relpath="$(realpath --relative-to="$root" .)"
+	local file="$root/.gitignore"
 
-	local new="$file.new.$$"
+	touch "$file"
 
-	{
-		if [ -e "$file" ]; then
-			cat "$file"
-		fi
-		find-elf . | grep -v '/\.' | sed 's,^./,/,'
-	} | uniqo >"$new"
+	# Find all ELF files under the current directory,
+	# and add them to the .gitignore file if they are not already present.
+	# Using slurp to avoid the possibility of re-reading our own output.
+	find-elf . | grep -v '/\.' | sed 's,^./,/,' | prepend "/$cwd_relpath" | sort |
+	comm -23 - <(< "$file" slurp | sort) | tee -a "$file"
 
 	if [ "$verbose" = 1 ]; then
 		printf >&2 "Updating %s\n" "$file"
 	fi
-
-	mv "$new" "$file"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
