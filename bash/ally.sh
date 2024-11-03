@@ -177,3 +177,12 @@ debug() {
     done
     echo
 }
+
+call() {
+    if declare -F "$1" >/dev/null; then
+        "$@"
+    else
+        printf 'Error: %s is not a function\n' "$1" >&2
+        return 120
+    fi
+}

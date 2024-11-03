@@ -102,7 +102,7 @@ def opts_help(
 
     with open(script, "r") as istream:
         for line in istream:
-            line = line.rstrip()
+            line = line.strip()
 
             # Skip shebang line
             if line.startswith('#!'):
