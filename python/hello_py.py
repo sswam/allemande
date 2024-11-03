@@ -90,7 +90,7 @@ def hello(
     print(f"Hello, {name}!")
     print("How are you feeling today?")
 
-    feeling = get()
+    feeling = input()
 
     if not feeling or feeling.lower() in [
         "lucky",
