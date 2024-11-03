@@ -11,7 +11,7 @@ use IO::Interactive qw(is_interactive);
 use File::Basename  qw(basename);
 use File::Spec;
 
-our $VERSION = "0.1.8";
+our $VERSION = "0.1.9";
 
 our @EXPORT_OK = qw(setup_logging get_logger io);
 
@@ -60,20 +60,13 @@ sub io {
 
     if ($is_interactive) {
         $TERM = Term::ReadLine->new('ally');
-        $HISTORY_FILE = File::Spec->catfile( $ENV{HOME}, "." . basename($0) . "_history" );
+        $HISTORY_FILE =
+        File::Spec->catfile( $ENV{HOME}, "." . basename($0) . "_history" );
 
-        if ( $TERM->can('ReadHistory') && -f $HISTORY_FILE ) {
-            $TERM->ReadHistory($HISTORY_FILE);
-        }
-
-        if ( $TERM->can('StifleHistory') ) {
-            $TERM->StifleHistory(-1);
-        }
+        $TERM->ReadHistory($HISTORY_FILE) if -f $HISTORY_FILE;
 
         END {
-            if ( $TERM && $TERM->can('WriteHistory') ) {
-                $TERM->WriteHistory($HISTORY_FILE);
-            }
+            $TERM->WriteHistory($HISTORY_FILE) if defined $TERM;
         }
     }
 
@@ -83,7 +76,7 @@ sub io {
             return $is_interactive
             ? do {
                 my $line = $TERM->readline( $prompt // ': ' );
-                $TERM->addhistory($line) if defined($line) && length($line);
+                $TERM->add_history($line) if defined($line) && length($line);
                 $line;
             }
             : scalar <$input>;

@@ -54,6 +54,8 @@ sub hello_pl {
 
     my $feeling = $get->();
 
+    exit if !defined $feeling;
+
     my $response;
     if (   $feeling =~ /^(lucky|unlucky|fortunate|unfortunate)$/
         || $feeling eq '' )
