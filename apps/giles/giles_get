@@ -44,7 +44,7 @@ def fetch_url(title: str, url: str, number: int, format: str = "%03d_%s") -> Non
 			f.write(f"{url}\n")
 
 		if re.match(r"https?://(www.facebook.com|www.instagram.com)/", url):
-			command = ['get_selenium.py', "-f", "-o", file, url]
+			command = ['selenium-get', "-f", "-o", file, url]
 			logger.warning(f'Using Selenium to fetch {url}')
 		else:
 			command = ['wg', f"-O={file}", url]

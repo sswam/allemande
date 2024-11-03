@@ -19,7 +19,7 @@ import requests
 from bs4 import BeautifulSoup
 import tabulate
 from youtube_search import YoutubeSearch
-from get_selenium import get_selenium
+from selenium_get import selenium_get
 import argh
 
 # import ucm_main
@@ -264,7 +264,7 @@ def google_maps_image_search(query, max_results=12, safe="off", limit_max_result
 		'q': query,
 	}
 
-	html = get_selenium(search_url, params=params, time_limit=timeout, scroll_limit=None, scroll_wait=1, retry_each_scroll=3, script=None, exe=None, script_wait=1, retry_script=3, headless=True, facebook=False, output=None)
+	html = selenium_get(search_url, params=params, time_limit=timeout, scroll_limit=None, scroll_wait=1, retry_each_scroll=3, script=None, exe=None, script_wait=1, retry_script=3, headless=True, facebook=False, output=None)
 
 #	response = requests.get(search_url, headers=headers, params=params, timeout=timeout)
 #	response.raise_for_status()

@@ -7,6 +7,8 @@ and writes the output to stdout or a file.
 
 import sys
 import time
+import json
+import os
 from typing import TextIO
 from pathlib import Path
 from urllib.parse import urlencode
@@ -20,7 +22,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from ally import main, logs
 
-__version__ = "0.3.4"
+__version__ = "0.3.5"
 
 logger = logs.get_logger()
 
@@ -29,6 +31,43 @@ user_agent = (
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/58.0.3029.110 Safari/537.3"
 )
+
+DEFAULT_COOKIE_DIR = Path.home() / ".local/share/selenium"
+DEFAULT_COOKIE_FILE = DEFAULT_COOKIE_DIR / "cookies.json"
+
+
+def load_cookies(wd: webdriver.Chrome, cookie_file: Path | None = None) -> None:
+    """Load cookies from file into the browser session."""
+    if not cookie_file:
+        return
+
+    if not cookie_file.exists():
+        logger.info("No cookie file found at %s", cookie_file)
+        return
+
+    try:
+        with cookie_file.open() as f:
+            cookies = json.load(f)
+            for cookie in cookies:
+                wd.add_cookie(cookie)
+        logger.info("Loaded cookies from %s", cookie_file)
+    except Exception as e:
+        logger.error("Failed to load cookies from %s: %s", cookie_file, e)
+
+
+def save_cookies(wd: webdriver.Chrome, cookie_file: Path | None = None) -> None:
+    """Save cookies from the browser session to file."""
+    if not cookie_file:
+        return
+
+    cookie_file.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        cookies = wd.get_cookies()
+        with cookie_file.open('w') as f:
+            json.dump(cookies, f)
+        logger.info("Saved cookies to %s", cookie_file)
+    except Exception as e:
+        logger.error("Failed to save cookies to %s: %s", cookie_file, e)
 
 
 def scroll_page(
@@ -61,8 +100,8 @@ def scroll_page(
         if element_info is None:
             logger.warning("Element with selector '%s' not found", selector)
             return
-        max_scroll_top = element_info['scrollHeight'] - element_info['clientHeight']
-        scrolled = element_info['scrollTop']
+        max_scroll_top = element_info["scrollHeight"] - element_info["clientHeight"]
+        scrolled = element_info["scrollTop"]
         logger.info("Starting scroll for element '%s', max scrollTop: %s", selector, max_scroll_top)
         scroll_script = f"""
             const el = document.querySelector('{selector}');
@@ -97,7 +136,7 @@ def scroll_page(
             return
 
 
-def get_selenium(
+def selenium_get(
     wd: webdriver.Chrome,
     url: str,
     sleep: int = 0,
@@ -140,7 +179,7 @@ def get_selenium(
     print(wd.page_source, file=ostream)
 
 
-def selenium_get(
+def selenium_get_cli(
     ostream: TextIO,
     url: str,
     sleep: int = 0,
@@ -157,13 +196,16 @@ def selenium_get(
     facebook: bool = False,
     params: list[str] | None = None,
     scroll_selector: str | None = None,
+    headless: bool = True,
+    wait_for_user: bool = False,
+    cookie_file: str | None = None,
 ) -> None:
     """
     Fetch a web page, run the JavaScript, and write the output to stdout or a file.
     """
-    # pylint: disable=too-many-arguments,too-many-locals
     opts = Options()
-    opts.add_argument("--headless")
+    if headless:
+        opts.add_argument("--headless")
     opts.add_argument(f"user-agent={user_agent}")
 
     if not images:
@@ -171,6 +213,7 @@ def selenium_get(
 
     program = Path(sys.argv[0])
     prog_dir = program.parent
+    cookie_path = Path(cookie_file) if cookie_file else DEFAULT_COOKIE_FILE
 
     exe_text = exe or ""
 
@@ -184,7 +227,8 @@ def selenium_get(
         url += "?" + urlencode(dict(param.split("=") for param in params))
 
     with webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts) as wd:
-        get_selenium(
+        load_cookies(wd, cookie_path)
+        selenium_get(
             wd,
             url,
             sleep=sleep,
@@ -202,6 +246,11 @@ def selenium_get(
         if screenshot:
             wd.save_screenshot(screenshot)
 
+        save_cookies(wd, cookie_path)
+
+        if wait_for_user and not headless:
+            input("Press Enter to close the browser...")
+
 
 def setup_args(arg):
     """Set up command-line arguments."""
@@ -213,14 +262,17 @@ def setup_args(arg):
     arg("-l", "--scroll-limit", help="Maximum number of pixels to scroll down")
     arg("-w", "--scroll-wait", help="Time to wait after each scroll, in seconds")
     arg("-r", "--retry-each-scroll", help="Number of times to retry each scroll")
-    arg("-c", "--script", help="JavaScript file to run before scrolling")
+    arg("-j", "--script", help="JavaScript file to run before scrolling")
     arg("-e", "--exe", help="JavaScript to run before scrolling")
     arg("-T", "--script-wait", help="Time to wait after running script, in seconds")
     arg("-R", "--retry-script", help="Number of times to retry running script")
     arg("-f", "--facebook", help="Download from Facebook", action="store_true")
     arg("-p", "--params", help="URL parameters", nargs="+")
     arg("-E", "--scroll-selector", help="CSS selector for element to scroll")
+    arg("-H", "--head", help="Run browser in non-headless mode with a visible window", action="store_false", dest="headless", default=True)
+    arg("-W", "--wait-for-user", help="Wait for user input before closing browser (implies --head)", action="store_true")
+    arg("-C", "--cookie-file", help="Path to cookie file (default: ~/.local/share/selenium/cookies.json)")
 
 
 if __name__ == "__main__":
-    main.go(selenium_get, setup_args)
+    main.go(selenium_get_cli, setup_args)
