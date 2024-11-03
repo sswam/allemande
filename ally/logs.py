@@ -12,6 +12,7 @@ from typing import Callable
 from contextlib import contextmanager
 import functools
 import inspect
+import pwd
 
 from ally import meta
 
@@ -21,9 +22,7 @@ logs = sys.modules[__name__]
 
 
 console_formatter_normal = logging.Formatter("%(message)s")
-
 console_formatter_debug = logging.Formatter("%(asctime)s  %(levelname)-8s  %(name)s  %(message)s")
-
 file_formatter = logging.Formatter("%(asctime)s  PID:%(process)d  %(levelname)-8s  %(name)s  %(message)s")
 
 
@@ -42,7 +41,10 @@ def setup_logging():
 
 def get_log_dir():
     """Get the directory for log files, creating it if necessary."""
-    log_dir = os.path.expanduser("~/.logs")
+    # HOME is the original user's with get_root, and we can't necessarily write to the logs,
+    # so use real home/.logs
+    home = pwd.getpwuid(os.geteuid()).pw_dir
+    log_dir = str(Path(home)/".logs")
     os.makedirs(log_dir, exist_ok=True, mode=0o700)
     return log_dir
 
