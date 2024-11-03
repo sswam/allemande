@@ -67,3 +67,5 @@ wbritish-large
 wbritish-huge
 
 wget
+
+libterm-readline-gnu-perl
