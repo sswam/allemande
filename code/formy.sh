@@ -18,12 +18,25 @@ formy() {
 
 	(
 		local prog="$(finder "$1")"
-		cd "$(dirname "$prog")"
+#		cd "$(dirname "$prog")"
 		local ext=${prog##*.}
 		if [[ $prog != *.* ]]; then
 			ext="sh"
 		fi
-		"format_$ext" "$prog"  # beware of the hdd extension!
+
+		# handle Perl modules
+		if [ "$ext" = pm ]; then
+			ext=pl
+		fi
+
+		# avoid binary files
+		if [[ $(file --mime-encoding -b "$prog") == "binary" ]]; then
+			echo >&2 "Binary file, not linting."
+			return 0
+		fi
+
+		# call calls a function, but won't run a tool
+		call "format_$ext" "$prog"
 	)
 }
 

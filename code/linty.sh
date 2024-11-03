@@ -21,7 +21,20 @@ linty() {
 		if [[ $prog != *.* ]]; then
 			ext="sh"
 		fi
-		"lint_$ext" "$prog"
+
+		# handle Perl modules
+		if [ "$ext" = pm ]; then
+			ext=pl
+		fi
+
+		# avoid binary files
+		if [[ $(file --mime-encoding -b "$prog") == "binary" ]]; then
+			echo >&2 "Binary file, not linting."
+			return 0
+		fi
+
+		# call calls a function, but won't run a tool
+		call "lint_$ext" "$prog" 2>&1
 	)
 }
 
@@ -61,10 +74,14 @@ lint_c() {
 	return $fail
 }
 
+perl_c_fail_on_output() {
+	! "$@" 2>&1 | grep -v ' syntax OK$'
+}
+
 lint_pl() {
 	local prog="$1"
 	fail=0
-	run perl -Mstrict -cw "$prog" || fail=1
+	perl_c_fail_on_output perl -Mstrict -cw "$prog" || fail=1
 	run perlcritic "$prog" || fail=1
 	return $fail
 }
