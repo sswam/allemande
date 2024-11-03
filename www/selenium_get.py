@@ -281,6 +281,7 @@ def selenium_get_cli(
         exe += "\n" + (prog_dir / "facebook_scroller.js").read_text(encoding="utf-8") + "\n"
         incremental = True
     if facebook and not post_scroll_script:
+        # TODO I was trying to get the post timestamps to show up, but they still don't
         post_scroll_script = prog_dir / "svg_realiser.js"
 
     scroll_exe = ""
