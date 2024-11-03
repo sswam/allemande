@@ -42,10 +42,15 @@ sub hello_pl {
 
     my ( $get, $put ) = io( $input, $output );
 
+    my $say = sub {
+        my ($message) = @_;
+        $put->($message . "\n");
+    };
+
     my $name = $opts{name} || 'world';
 
-    $put->("Hello, $name");
-    $put->("How are you feeling?");
+    $say->("Hello, $name");
+    $say->("How are you feeling?");
 
     my $feeling = $get->();
 
@@ -65,7 +70,7 @@ sub hello_pl {
         $response = reply_sentiment($feeling);
     }
 
-    $put->($response);
+    $say->($response);
 }
 
 sub reply_ai {
