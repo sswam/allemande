@@ -31,7 +31,7 @@ formy() {
 
 		# avoid binary files
 		if [[ $(file --mime-encoding -b "$prog") == "binary" ]]; then
-			echo >&2 "Binary file, not linting."
+			echo >&2 "Binary file, not formatting."
 			return 0
 		fi
 
