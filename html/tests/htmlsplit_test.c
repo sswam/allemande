@@ -134,6 +134,28 @@ START_TEST(test_process_complete_tags)
 }
 END_TEST
 
+START_TEST(test_process_html_tag_with_newline)
+{
+	char *out_buf = NULL;
+	size_t out_size = 0;
+	const char *input_str = "<h1\nclass=foo>Hello</h1>";
+	const char *expected = "<h1 class=foo>\nHello\n</h1>\n";
+
+	FILE *input = fmemopen((void*)input_str, strlen(input_str), "r");
+	FILE *output = open_memstream(&out_buf, &out_size);
+	ck_assert_ptr_nonnull(input);
+	ck_assert_ptr_nonnull(output);
+
+	int result = process_html(input, output, DEFAULT_CHUNK_SIZE);
+	fclose(input);
+	fclose(output);
+
+	ck_assert_int_eq(result, 0);
+	ck_assert_str_eq(out_buf, expected);
+	free(out_buf);
+}
+END_TEST
+
 Suite *htmlsplit_suite(void)
 {
 	Suite *s;
@@ -150,6 +172,7 @@ Suite *htmlsplit_suite(void)
  	tcase_add_test(tc_core, test_process_html_empty);
 	tcase_add_test(tc_core, test_ensure_buffer_space);
 	tcase_add_test(tc_core, test_process_complete_tags);
+	tcase_add_test(tc_core, test_process_html_tag_with_newline);
 	suite_add_tcase(s, tc_core);
 
 	return s;

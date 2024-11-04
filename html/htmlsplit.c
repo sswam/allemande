@@ -100,7 +100,6 @@ static int process_complete_tags(char **buffer, size_t *content_size, FILE *outp
 
 	// Process each tag found in the buffer
 	while ((tag_start = strchr(current, '<')) != NULL) {
-		// If there's text before the tag, output it
 		if (tag_start > current) {
 			char saved = *tag_start;
 			*tag_start = '\0';
@@ -111,10 +110,8 @@ static int process_complete_tags(char **buffer, size_t *content_size, FILE *outp
 			*tag_start = saved;
 		}
 
-		// Find the end of this tag
 		tag_end = strchr(tag_start, '>');
 		if (!tag_end) {
-			// Incomplete tag, move remaining content to start
 			if (tag_start > *buffer) {
 				*content_size = strlen(tag_start);
 				memmove(*buffer, tag_start, *content_size + 1);
@@ -122,7 +119,13 @@ static int process_complete_tags(char **buffer, size_t *content_size, FILE *outp
 			return 0;
 		}
 
-		// Output the complete tag
+		// Replace newlines with spaces in the tag
+		for (char *p = tag_start; p <= tag_end; p++) {
+			if (*p == '\n') {
+				*p = ' ';
+			}
+		}
+
 		char saved = tag_end[1];
 		tag_end[1] = '\0';
 		if (fprintf(output, "%s\n", tag_start) < 0) {
@@ -133,7 +136,6 @@ static int process_complete_tags(char **buffer, size_t *content_size, FILE *outp
 		current = tag_end + 1;
 	}
 
-	// Handle remaining content
 	if (*current != '\0') {
 		*content_size = strlen(current);
 		memmove(*buffer, current, *content_size + 1);
