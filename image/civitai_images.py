@@ -1,43 +1,35 @@
 #!/usr/bin/env python3
 
+"""
+Fetch image URLs from the Civitai images API.
+"""
+
 import sys
 import logging
+import json
+
 import requests
-import argh
+from ally import main  # type: ignore
+
+__version__ = "0.1.1"
 
 logger = logging.getLogger(__name__)
 
-"""
-civitai_images.py - A Python module/script to fetch image URLs from the Civitai images API.
-
-This script can be used as a module:
-    from civitai_images import fetch_images
-"""
-
-# API Endpoint
 API_URL = "https://civitai.com/api/v1/images"
 
 
-def fetch_images(limit=100, post_id=None, model_id=None, model_version_id=None, username=None, nsfw=None, sort=None, period=None, page=1):
-    """
-    Fetches image URLs from the Civitai images API.
-
-    Args:
-        limit (int): The number of results to be returned per request (0-200, default 100).
-        post_id (int): The ID of a post to get images from.
-        model_id (int): The ID of a model to get images from.
-        model_version_id (int): The ID of a model version to get images from.
-        username (str): Filter to images from a specific user.
-        nsfw (str): Filter to images that contain mature content flags or not.
-        sort (str): The order to sort the results.
-        period (str): The time frame in which to sort the images.
-        page (int): The page to start fetching from.
-
-    Returns:
-        list: List of image URLs.
-    """
-
-    # Define the query parameters
+def fetch_images(
+    limit: int,
+    post_id: int | None = None,
+    model_id: int | None = None,
+    model_version_id: int | None = None,
+    username: str | None = None,
+    nsfw: str | None = None,
+    sort: str | None = None,
+    period: str | None = None,
+    cursor: str | None = None,
+) -> tuple[list[dict], list[str], bool]:
+    """Fetch image URLs from the Civitai images API."""
     params = {
         "limit": limit,
         "postId": post_id,
@@ -47,58 +39,46 @@ def fetch_images(limit=100, post_id=None, model_id=None, model_version_id=None, 
         "nsfw": nsfw,
         "sort": sort,
         "period": period,
-        "page": page
+        "cursor": cursor,
     }
-
-    # Remove None values from params
     params = {k: v for k, v in params.items() if v is not None}
 
-    # Make the request
-    response = requests.get(API_URL, params=params)
-
-    if response.status_code != 200:
-        raise Exception(f"Failed to fetch images: {response.status_code} {response.text}")
+    try:
+        response = requests.get(API_URL, params=params, timeout=30)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"Failed to fetch images: {e}") from e
 
     data = response.json()
-    image_urls = [item['url'] for item in data.get('items', [])]
+    logger.debug("Data: %s", json.dumps(data))
+    items = data.get("items", [])
+    urls = [item["url"] for item in items]
+    cursor = data["metadata"].get("nextCursor")
 
-    return image_urls
+    return items, urls, cursor
 
 
-@argh.arg('--limit', help='total number of results to be fetched (default 100)', type=int)
-@argh.arg('--post-id', help='ID of a post to get images from', type=int)
-@argh.arg('--model-id', help='ID of a model to get images from', type=int)
-@argh.arg('--model-version-id', help='ID of a model version to get images from', type=int)
-@argh.arg('--username', help='filter to images from a specific user')
-@argh.arg('--nsfw', help='filter to images that contain mature content (None|Soft|Mature|X)')
-@argh.arg('--sort', help='order to sort the results (Most Reactions|Most Comments|Newest)')
-@argh.arg('--period', help='time frame in which to sort the images (|AllTime|Year|Month|Week|Day)')
-@argh.arg('--page', help='page to start fetching from', type=int)
-@argh.arg('--page-length', help='page length (1 to 200)', type=int)
-def main(
-    limit = 100,
-    post_id = None,
-    model_id = None,
-    model_version_id = None,
-    username = None,
-    nsfw = None,
-    sort = None,
-    period = None,
-    page = 1,
-    page_length = 100
-):
-    """
-    civitai_images.py - A Python module/script to fetch image URLs from the Civitai images API.
+def civitai_images(
+    limit: int = 100,
+    post_id: int | None = None,
+    model_id: int | None = None,
+    model_version_id: int | None = None,
+    username: str | None = None,
+    nsfw: str | None = None,
+    sort: str | None = None,
+    period: str | None = None,
+    page_length: int = 100,
+    metadata: bool = False,
+) -> None:
+    """Fetch and print image URLs from Civitai."""
+    remaining = limit
 
-    Usage:
-        civitai_images.py [OPTIONS]
-    """
-    current_page = page if page else 1
+    cursor = None
 
-    while limit > 0:
-        current_page_length = min(page_length, limit)
-        image_urls = fetch_images(
-            limit=current_page_length,
+    while remaining > 0:
+        current_length = min(page_length, remaining)
+        items, urls, cursor = fetch_images(
+            limit=current_length,
             post_id=post_id,
             model_id=model_id,
             model_version_id=model_version_id,
@@ -106,19 +86,37 @@ def main(
             nsfw=nsfw,
             sort=sort,
             period=period,
-            page=current_page
+            cursor=cursor,
         )
-        if not image_urls:
+        if not urls:
             break
-        for url in image_urls:
-            print(url)
-        limit -= len(image_urls)
-        current_page += 1
+
+        if metadata:
+            for item in items:
+                print(json.dumps(item))
+        else:
+            for url in urls:
+                print(url)
+
+        remaining -= len(urls)
+
+        if not cursor:
+            break
 
 
-if __name__ == '__main__':
-    try:
-        argh.dispatch_command(main)
-    except Exception as e:
-        logger.error(e)
-        sys.exit(1)
+def setup_args(arg):
+    """Set up command-line arguments."""
+    arg("-l", "--limit", help="total number of results to fetch", type=int)
+    arg("-p", "--post-id", help="ID of post to get images from", type=int)
+    arg("-m", "--model-id", help="ID of model to get images from", type=int)
+    arg("-V", "--model-version-id", help="ID of model version", type=int)
+    arg("-u", "--username", help="filter to specific user's images")
+    arg("-n", "--nsfw", help="filter mature content (None|Soft|Mature|X)")
+    arg("-s", "--sort", help="sort order (Most Reactions|Most Comments|Newest)")
+    arg("-P", "--period", help="time frame (AllTime|Year|Month|Week|Day)")
+    arg("-c", "--page-length", help="results per page (1-200)", type=int)
+    arg("-M", "--metadata", help="display metadata", action="store_true")
+
+
+if __name__ == "__main__":
+    main.go(civitai_images, setup_args)
