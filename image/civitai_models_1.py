@@ -112,6 +112,7 @@ def parse_civitai_url(url: str) -> tuple[int, int | None]:
 
     raise ValueError(f"Input must be a CivitAI URL or numeric ID: {url}")
 
+
 def download_models(
     *model_ids: str | int,
     all_versions: bool = False,
