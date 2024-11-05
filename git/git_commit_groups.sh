@@ -2,7 +2,7 @@
 #
 # Group files for committing together, with AI help.
 
-git_group_files() {
+git_commit_groups() {
 	local model= m=	# LLM model
 	local max_diff_lines= M=40	# maximum number of lines in a diff to show
 
@@ -18,10 +18,10 @@ git_group_files() {
 		confirm -o move-rubbish $junk || true
 	fi
 
-	rundown_file=$(mktemp /tmp/git_group_files_rundown.XXXXXX)
-	bad_file=$(mktemp /tmp/git_group_files_bad.XXXXXX)
-	llm_input_file=$(mktemp /tmp/git_group_files_llm_input.XXXXXX)
-	commit_plan=$(mktemp /tmp/git_group_files_commit_plan.XXXXXX)
+	rundown_file=$(mktemp /tmp/git_commit_groups_rundown.XXXXXX)
+	bad_file=$(mktemp /tmp/git_commit_groups_bad.XXXXXX)
+	llm_input_file=$(mktemp /tmp/git_commit_groups_llm_input.XXXXXX)
+	commit_plan=$(mktemp /tmp/git_commit_groups_commit_plan.XXXXXX)
 
 	git-mod | rundown --number-headers 2>"$bad_file" | tee "$rundown_file"
 
@@ -80,6 +80,8 @@ For example:
 6	code/foo	# code/foo is new, sounds like a junk file
 " | tee "$commit_plan"
 
+	rm -f "$rundown_file" "$bad_file" "$llm_input_file"
+
 	$EDITOR "$commit_plan"
 
 	confirm "commit using messy-screen?"
@@ -87,11 +89,11 @@ For example:
 	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-screen
 	screen -x ci
 
-	rm -f "$rundown_file" "$bad_file" "$llm_input_file"
+	rm -f "$commit_plan"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-	git_group_files "$@"
+	git_commit_groups "$@"
 fi
 
 # version: 0.1.1
