@@ -18,6 +18,10 @@ formy() {
 
 	(
 		local prog="$(finder "$1")"
+		if [ ! -f "$prog" ]; then
+			echo >&2 "File not found: $1"
+			return 1
+		fi
 #		cd "$(dirname "$prog")"
 		local ext=${prog##*.}
 		if [[ $prog != *.* ]]; then
