@@ -16,7 +16,6 @@ from shutil import which
 import re
 import glob
 
-from argh import arg
 import sh
 
 from ally import main, logs
@@ -105,9 +104,10 @@ def check_config_file(file_path: str, var_names: List[str], checked_files: Set[s
             content = expanded_path.read_text()
             for line_number, line in enumerate(content.splitlines(), 1):
                 line = line.strip()
+                line_no_comment = re.sub(r'#.*', '', line)  # good enough
 
                 for var_name in var_names:
-                    if var_name in line and not line.startswith("#"):
+                    if re.search(r'\b' + re.escape(var_name) + r'\b', line_no_comment):
                         logger.info(f"Found {var_name} in {expanded_path} at line {line_number}")
                         return str(expanded_path), var_name, line_number, line
 
@@ -138,8 +138,6 @@ def check_config_files(var_names: List[str]) -> Tuple[Dict[str, Optional[Tuple[s
     return results, all_files
 
 
-@arg("var_names", nargs="*", help="The environment variables to investigate")
-@arg("-a", "--all", help="List all rc / environment files (including sourced)", action="store_true")
 def investigate_env_var(var_names: List[str], all: bool = False) -> None:
     global logger
 
@@ -178,5 +176,12 @@ def investigate_env_var(var_names: List[str], all: bool = False) -> None:
         for line in output:
             print(line)
 
+
+def setup_args(arg):
+    """Set up command-line arguments."""
+    arg("var_names", nargs="*", help="The environment variables to investigate")
+    arg("-a", "--all", help="List all rc / environment files (including sourced)", action="store_true")
+
+
 if __name__ == "__main__":
-    main.run(investigate_env_var)
+    main.go(investigate_env_var, setup_args)
