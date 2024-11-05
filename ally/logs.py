@@ -106,15 +106,20 @@ def get_logger(level=1, root=False, name=None, indent=False, log_level="WARNING"
     return logger
 
 
-def get_log_level(name=None, root=False) -> str:
+def get_log_level_numeric(level=1, name=None, root=False) -> int:
     """Get the current log level for the console handler."""
     if root:
         logger = logging.getLogger()
     else:
-        logger = logs.get_logger(1, name=name)
+        logger = logs.get_logger(level+1, name=name)
     if not logger.handlers:
         return "WARNING"  # Default log level if no handlers
-    return logging.getLevelName(logger.handlers[0].level)
+    return logger.handlers[0].level
+
+
+def get_log_level(level=1, name=None, root=False) -> str:
+    log_level = get_log_level_numeric(level=level+1, name=name, root=root)
+    return logging.getLevelName(log_level)
 
 
 def set_log_level(log_level: str|int, name=None, root=False) -> None:
