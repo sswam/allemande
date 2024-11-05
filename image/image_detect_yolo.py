@@ -113,6 +113,8 @@ def image_detect_yolo(
     empty_array: bool = False,
     window: bool = False,
     confidence: float = 0.25,
+    output_float: bool = False,
+    output_filename: bool = False,
 ) -> None:
     """Detect objects in images and output bounding box coordinates."""
     input = geput.input(get)
@@ -124,8 +126,13 @@ def image_detect_yolo(
     while (image_path := input()) is not None:
         try:
             boxes = process_image(detector, image_path, center, bbox, window, confidence=confidence)
+            obj = boxes
+            if not output_float:
+                obj = [[int(x) for x in box] for box in obj]
+            if output_filename:
+                obj = {"filename": image_path, "boxes": obj}
             if boxes or empty_array:
-                print(json.dumps(boxes))
+                print(json.dumps(obj))
             else:
                 print()
         except KeyboardInterrupt:  # pylint: disable=try-except-raise
@@ -145,6 +152,8 @@ def setup_args(arg):
     arg("-e", "--empty-array", action="store_true", help="output empty array if no detection")
     arg("-w", "--window", action="store_true", help="display each prediction in a window")
     arg("-C", "--confidence", help="confidence threshold")
+    arg("-f", "--output-float", action="store_true", help="output coordinates as floats")
+    arg("-n", "--output-filename", action="store_true", help="output filenames with detections")
 
 
 if __name__ == "__main__":
