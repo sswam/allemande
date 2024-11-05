@@ -4,8 +4,6 @@ import os
 import sys
 import tempfile
 import pytest
-from unittest.mock import patch, MagicMock
-from typing import Any
 
 
 import ally.unix as subject  # type: ignore
@@ -22,7 +20,7 @@ def test_redirect_null():
 
 def test_redirect_file():
     """Test redirecting to a file"""
-    with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as tmp:
         test_message = "This should be in the file"
 
         with subject.redirect(stdout=tmp.name):
@@ -31,8 +29,6 @@ def test_redirect_file():
         tmp.seek(0)
         content = tmp.read().strip()
         assert content == test_message
-
-    os.unlink(tmp.name)
 
 
 def test_redirect_keep():
@@ -44,9 +40,10 @@ def test_redirect_keep():
 
 def test_redirect_multiple_streams():
     """Test redirecting multiple streams simultaneously"""
-    with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False) as out_tmp, \
-        tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False) as err_tmp:
-
+    with (
+        tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as out_tmp,
+        tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as err_tmp,
+    ):
         with subject.redirect(stdout=out_tmp.name, stderr=err_tmp.name):
             print("stdout message")
             print("stderr message", file=sys.stderr)
@@ -56,15 +53,13 @@ def test_redirect_multiple_streams():
         assert out_tmp.read().strip() == "stdout message"
         assert err_tmp.read().strip() == "stderr message"
 
-    os.unlink(out_tmp.name)
-    os.unlink(err_tmp.name)
-
 
 def test_redirect_nested():
     """Test nested redirections"""
-    with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False) as outer_tmp, \
-        tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False) as inner_tmp:
-
+    with (
+        tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as outer_tmp,
+        tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as inner_tmp,
+    ):
         with subject.redirect(stdout=outer_tmp.name):
             print("outer message")
             with subject.redirect(stdout=inner_tmp.name):
@@ -79,9 +74,6 @@ def test_redirect_nested():
         assert "inner message" in inner_content
         assert "outer message" in outer_content
         assert "outer message again" in outer_content
-
-    os.unlink(outer_tmp.name)
-    os.unlink(inner_tmp.name)
 
 
 def test_redirect_error_handling():
@@ -110,15 +102,13 @@ def test_version():
 )
 def test_redirect_parametrized(stream, target):
     """Test various stream and target combinations"""
-    with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8") as tmp:
         redirect_args = {stream: target or tmp.name}
         with subject.redirect(**redirect_args):
             if stream == "stdout":
                 print("test message")
             elif stream == "stderr":
                 print("test message", file=sys.stderr)
-
-    os.unlink(tmp.name)
 
 
 def test_redirect_cleanup():
