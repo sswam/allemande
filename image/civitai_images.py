@@ -5,15 +5,14 @@ Fetch image URLs from the Civitai images API.
 """
 
 import sys
-import logging
 import json
 
 import requests
-from ally import main  # type: ignore
+from ally import main, logs  # type: ignore
 
 __version__ = "0.1.1"
 
-logger = logging.getLogger(__name__)
+logger = logs.get_logger()
 
 API_URL = "https://civitai.com/api/v1/images"
 
@@ -43,6 +42,7 @@ def fetch_images(
     }
     params = {k: v for k, v in params.items() if v is not None}
 
+    logger.debug("Params: %s", json.dumps(params))
     try:
         response = requests.get(API_URL, params=params, timeout=30)
         response.raise_for_status()
