@@ -73,6 +73,9 @@ sparkjoy
 /text/test2a.py
 /text/test2b.py
 
+# data files for dev
+/image/model.json
+
 # binary executables
 /arcs/sshc
 /c/test_lua
