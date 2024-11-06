@@ -5,7 +5,6 @@ import sys
 import argparse
 import inspect
 import logging
-import sys
 import warnings
 from typing import Any, Callable, get_args, get_origin
 import types
@@ -55,11 +54,11 @@ def parse(
 
     # Detect if istream/ostream are BufferedIOBase or descendants
     if wants_istream:
-        istream_param = sig.parameters['istream']
+        istream_param = sig.parameters["istream"]
         is_binary_input = issubclass(istream_param.annotation, BufferedIOBase)
 
     if wants_ostream:
-        ostream_param = sig.parameters['ostream']
+        ostream_param = sig.parameters["ostream"]
         is_binary_output = issubclass(ostream_param.annotation, BufferedIOBase)
 
     # Get the module name of the calling module
@@ -114,11 +113,7 @@ def parse(
 
     # remove optional args the main_function doesn't accept
     if not kwargs_name:
-        kwargs = {
-            k: v
-            for k, v in kwargs.items()
-            if k not in optional or k in sig.parameters
-        }
+        kwargs = {k: v for k, v in kwargs.items() if k not in optional or k in sig.parameters}
 
     # extract positional args if the names match
     positional_names = [
@@ -128,9 +123,7 @@ def parse(
     ]
 
     # pass positional args in the order they are defined in the main function
-    positional_args = [
-        kwargs.pop(name) for name in positional_names if name in kwargs
-    ]
+    positional_args = [kwargs.pop(name) for name in positional_names if name in kwargs]
 
     # add positional args for the *args parameter, if present
     if args_name:
@@ -140,9 +133,7 @@ def parse(
 
 
 def _setup_arg_defaults_and_types(
-    parser: argparse.ArgumentParser,
-    main_function: Callable[..., Any],
-    add_options: bool = False
+    parser: argparse.ArgumentParser, main_function: Callable[..., Any], add_options: bool = False
 ) -> None:
     """
     Synchronize the parser's arguments with the parameters of the main function.
@@ -158,78 +149,119 @@ def _setup_arg_defaults_and_types(
     """
     sig = inspect.signature(main_function)
     params = sig.parameters
-
-    # Create a set to keep track of handled parameters
     handled_params = set()
 
     # Update existing arguments
     for action in parser._actions:  # Note: Private attribute
-        if action.dest in params:
-            param = params[action.dest]
-            handled_params.add(action.dest)
+        if action.dest not in params:
+            continue
+        param = params[action.dest]
+        handled_params.add(action.dest)
 
-            # Update type if annotation is provided
-            argparse_type = opts._get_argparse_type(param.annotation)
-            if argparse_type:
-                action.type = argparse_type
+        # check the argument's nargs to determine if it should be a list
+        # is_list = action.nargs in ('*', '+', argparse.REMAINDER)
 
-            # Update default if provided
-            if param.default != inspect.Parameter.empty:
-                action.default = param.default
-                action.required = False
+        # Update type if annotation is provided
+        argparse_type, nargs = opts._get_argparse_type(param.annotation)  # , is_list=is_list)
+
+        # Set the type
+        if argparse_type and not action.type:
+            action.type = argparse_type
+
+        # Set nargs
+        if nargs and not action.nargs:
+            action.nargs = nargs
+
+        # Set default
+        if param.default != inspect.Parameter.empty:
+            action.default = param.default
+            action.required = False
+
+    if not add_options:
+        return
 
     # Add new options if requested
-    if add_options:
-        for name, param in params.items():
-            if name in handled_params:
-                continue
+    for name, param in params.items():
+        if name in handled_params:
+            continue
 
-            if param.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
-                warnings.warn(f"Variadic parameter '{name}' is not supported by argparse.")
-                continue
+        if param.kind == inspect.Parameter.VAR_POSITIONAL:
+            parser.add_argument(name, nargs="*", default=[])
+            continue
+        elif param.kind == inspect.Parameter.VAR_KEYWORD:
+            continue
 
-            kwargs = {}
-            argparse_type = _get_argparse_type(param.annotation)
-            if argparse_type:
-                kwargs['type'] = argparse_type
+        #             if param.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
+        #                 warnings.warn(f"Variadic parameter '{name}' is not supported by argparse.")
+        #                 continue
 
-            if param.default != inspect.Parameter.empty:
-                kwargs['default'] = param.default
-                is_positional = False
-            else:
-                is_positional = True
+        kwargs = {}
+        argparse_type, nargs = _get_argparse_type(param.annotation)
 
-            # Determine if it should be a positional argument or an option
-            if is_positional and param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD):
-                parser.add_argument(name, **kwargs)
-            else:
-                option_name = f'--{name.replace("_", "-")}'
-                kwargs['required'] = param.default == inspect.Parameter.empty
-                parser.add_argument(option_name, dest=name, **kwargs)
+        # Boolean options, use action="store_true"
+        if argparse_type == bool:
+            kwargs["action"] = "store_true"
+        # Otherwise, set the type
+        elif argparse_type:
+            kwargs["type"] = argparse_type
+
+        # Set nargs
+        if nargs:
+            kwargs["nargs"] = nargs
+
+        # Set default
+        if param.default != inspect.Parameter.empty:
+            kwargs["default"] = param.default
+            is_positional = False
+        else:
+            is_positional = True
+
+        # Determine if it should be a positional argument or an option
+        if is_positional and param.kind in (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        ):
+            parser.add_argument(name, **kwargs)
+        else:
+            option_name = f'--{name.replace("_", "-")}'
+            kwargs["required"] = param.default == inspect.Parameter.empty
+            # parser.add_argument(option_name, dest=name, **kwargs)
+            parser.add_argument(option_name, dest=name, **kwargs)
 
 
-def _get_argparse_type(annotation):
+def _get_argparse_type(annotation: Any) -> tuple[type | None, str | None]:
+    """Get the argparse type and nargs for a given function parameter annotation."""
     if annotation == inspect.Parameter.empty:
-        return None
+        return None, None
+
+    # If it's a simple type, return the type
+    if isinstance(annotation, type):
+        return annotation, None
+
     origin = get_origin(annotation)
     args = get_args(annotation)
-    if isinstance(annotation, type):
-        return annotation
-    elif origin is list:
-        # Handle List types
+
+    # Handle list types
+    if origin is list:
         elem_type = args[0] if args else str
-#         def parse_list(s):
-#             return [elem_type(item) for item in s.split(',')]
-        return elem_type
-    elif origin is types.UnionType and type(None) in args:
-        # Handle Optional types
+        return elem_type, "*"
+    elif origin is types.UnionType:
+        # Handle union types (including Optional)
         non_none_types = [arg for arg in args if arg is not type(None)]
-        return non_none_types[0] if non_none_types else str
+        if not non_none_types:
+            return str, None
+        first_type = non_none_types[0]
+        if get_origin(first_type) is list:
+            elem_type = get_args(first_type)[0]
+            return elem_type, "*"
+        return first_type, None
     else:
         # Default to str with a warning
         logger = logs.get_logger()
-        logger.debug(f"Warning: Unsupported annotation {annotation} or {origin!r}, defaulting to str.")
-        return str
+        logger.debug(
+            f"Warning: Unsupported annotation {annotation} or origin {origin!r}, defaulting to str."
+        )
+        return str, None
 
 
 def _parse_unknown_args(parser, main_function, args_name: str | None, kwargs_name: str | None):
@@ -240,6 +272,9 @@ def _parse_unknown_args(parser, main_function, args_name: str | None, kwargs_nam
     # If main_function has **kwargs, use parse_known_args()
     known_args, unknown_args = parser.parse_known_args()
 
+    has_args = args_name is not None
+    has_kwargs = kwargs_name is not None
+
     kwargs = {}
     positional_args = []
 
@@ -247,29 +282,29 @@ def _parse_unknown_args(parser, main_function, args_name: str | None, kwargs_nam
     while i < len(unknown_args):
         arg = unknown_args[i]
 
-        if arg == '--':
+        if arg == "--":
             # Treat everything after '--' as positional arguments
-            positional_args.extend(unknown_args[i + 1:])
+            positional_args.extend(unknown_args[i + 1 :])
             break
-        elif arg.startswith('--'):
+        elif arg.startswith("--"):
             # Handle long options
-            key = arg.lstrip('-')
-            if '=' in key:
+            key = arg.lstrip("-")
+            if "=" in key:
                 # Format: --key=value
-                key, value = key.split('=', 1)
+                key, value = key.split("=", 1)
             else:
                 # Format: --key value
-                if i + 1 < len(unknown_args) and not unknown_args[i + 1].startswith('-'):
+                if i + 1 < len(unknown_args) and not unknown_args[i + 1].startswith("-"):
                     value = unknown_args[i + 1]
                     i += 1
                 else:
                     # Options without values are considered as flags with value True
                     value = True
             kwargs[key] = value
-        elif arg.startswith('-') and len(arg) > 1:
+        elif arg.startswith("-") and len(arg) > 1:
             # Handle short options
-            key = arg.lstrip('-')
-            if i + 1 < len(unknown_args) and not unknown_args[i + 1].startswith('-'):
+            key = arg.lstrip("-")
+            if i + 1 < len(unknown_args) and not unknown_args[i + 1].startswith("-"):
                 value = unknown_args[i + 1]
                 i += 1
             else:
@@ -379,10 +414,22 @@ def _setup_logging_args(module_name: str, parser: argparse.ArgumentParser):
 
 
 def _setup_help_args(module_name: str, parser: argparse.ArgumentParser):
-    try_add_argument(parser, '-h', '--help', action='help', default=argparse.SUPPRESS, help="show this help message and exit")
+    try_add_argument(
+        parser,
+        "-h",
+        "--help",
+        action="help",
+        default=argparse.SUPPRESS,
+        help="show this help message and exit",
+    )
 
 
-def _open_files(args: argparse.Namespace, parser: argparse.ArgumentParser, is_binary_input: bool, is_binary_output: bool):
+def _open_files(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+    is_binary_input: bool,
+    is_binary_output: bool,
+):
     """Open input/output files if specified in the arguments."""
     no_clobber = getattr(args, "no_clobber", False)
     append = getattr(args, "append", False)
@@ -410,7 +457,9 @@ def _open_files(args: argparse.Namespace, parser: argparse.ArgumentParser, is_bi
         setattr(args, arg_name, file_obj)
 
     process_stream_arg("istream", mode="r", binary=is_binary_input)
-    process_stream_arg("ostream", mode="w", binary=is_binary_output, append=append, no_clobber=no_clobber)
+    process_stream_arg(
+        "ostream", mode="w", binary=is_binary_output, append=append, no_clobber=no_clobber
+    )
 
 
 class CustomHelpFormatter(
@@ -460,4 +509,3 @@ class CustomHelpFormatter(
         if action.dest in ["istream", "ostream"]:
             return "FILE"
         return super()._format_args(action, default_metavar)
-
