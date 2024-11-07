@@ -8,7 +8,6 @@ import sys
 import os
 import json
 from pathlib import Path
-import logging
 
 import cv2
 from ultralytics import YOLO  # type: ignore
@@ -55,7 +54,7 @@ def find_model(model_path: str, huggingface: bool = False) -> str:
 def detect_objects(model: YOLO, image: np.ndarray, confidence: float = 0.25) -> tuple[list[list[float]], YOLO]:
     """Detect objects in an image and return bounding boxes."""
     messages = None
-    if logs.get_log_level_numeric() <= logging.INFO:
+    if logs.level() <= logs.INFO:
         messages = sys.stderr
     with unix.redirect(stdout=messages):
         results = model.predict(image, conf=confidence)

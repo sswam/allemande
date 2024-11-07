@@ -13,6 +13,7 @@ from contextlib import contextmanager
 import functools
 import inspect
 import pwd
+from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 from ally import meta
 
@@ -115,6 +116,9 @@ def get_log_level_numeric(level=1, name=None, root=False) -> int:
     if not logger.handlers:
         return "WARNING"  # Default log level if no handlers
     return logger.handlers[0].level
+
+
+level = get_log_level_numeric
 
 
 def get_log_level(level=1, name=None, root=False) -> str:
