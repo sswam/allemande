@@ -111,10 +111,12 @@ def civitai_models(
                 model_name = model.get("name", "")
                 for version in model.get("modelVersions", []):
                     version_name = version.get("name", "")
+                    version_base = version.get("baseModel", "")
+                    version_words = ",  ".join(version.get("trainedWords", []))
                     for file in version.get("files", []):
                         file_name = file.get("name", "")
                         download_url = file.get("downloadUrl", "")
-                        print(f"{model_name}\t{version_name}\t{file_name}\t{download_url}")
+                        print(f"{model_name}\t{version_name}\t{file_name}\t{download_url}\t{version_base}\t{version_words}")
 
         remaining -= len(models)
 
