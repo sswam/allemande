@@ -3,16 +3,20 @@
 
 # You can set $REFERER to "self", or the url of the previous page, if needed.
 
+. unset-option-vars
+
 t=5
 r=5
 C=	# no content-disposition
 O=	# output file
 v=	# verbose
 
-. opts
+OPTS_COLLECT_UNKNOWN=1 eval "$(ally)"  # TODO this is error prone as opts already in the environment won't be passed through
 
 timeout=$t
 tries=$r
+
+: ${CF:=} ${CF_SQLITE:=} ${REFERER:=} ${WG_OPTS:=}
 
 if [ -n "$O" ]; then
 	C=1
