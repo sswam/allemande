@@ -146,7 +146,9 @@ while [ $# -gt 0 ]; do
 			# an unknown option means we stop parsing here
 			break
 		fi
-		OPTS_UNKNOWN+=("$OPT")
+		OPTS_UNKNOWN+=("$1")
+		shift
+		continue
 	fi
 
 	case "$OP" in
@@ -170,7 +172,7 @@ while [ $# -gt 0 ]; do
 	OPTS_N=$[$OPTS_N + 1]
 done
 
-if [ ${#OPTS_UNKNOWN[@]} -gt 0 ]; then
+if [ ${#OPTS_UNKNOWN[@]} -gt 0 ] && [ "${OPTS_COLLECT_UNKNOWN:-}" != 1 ]; then
 	usage "error: unknown options: ${OPTS_UNKNOWN[*]}"
 fi
 
