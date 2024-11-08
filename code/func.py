@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 A script to extract and analyze functions, methods, and classes from source code files.

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Convert between pounds (lbs) and kilograms (kg).

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Makes HTTP GET/POST/PUT/HEAD requests with bearer token authentication from environment.

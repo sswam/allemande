@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Download LoRAs and other models from CivitAI, optionally getting all versions.

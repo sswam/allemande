@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 safetensors-convert.py: Convert a transformers model to safetensors format and shard it.

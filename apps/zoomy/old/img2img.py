@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ img2img.py: Convert an image to another image using the img2img API """
 
 import sys

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 This module extracts dependencies from bash or sh scripts, including sourced scripts,

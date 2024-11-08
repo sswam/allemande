@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 This module generates a graph of computer activity based on an 'awake' log file.

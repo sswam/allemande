@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ image-apply-masks: Apply masks to an image and save the masked images to a folder. """
 
 import os

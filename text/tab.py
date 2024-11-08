@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ tab: Convert spaces to tabs """
 
 from sys import stdin, stdout

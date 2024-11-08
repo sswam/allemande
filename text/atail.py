@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """ atail: a program like tail(1), that doesn't rewind to the beginning if the file size shrinks """
 

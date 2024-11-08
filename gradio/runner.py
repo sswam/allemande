@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ run a text processing command in a web interface """
 
 # TODO other data types:

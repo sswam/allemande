@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ run flash in a web interface """
 
 # TODO other data types:

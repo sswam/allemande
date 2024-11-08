@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 import multiprocessing
 from concurrent.futures import ProcessPoolExecutor, as_completed

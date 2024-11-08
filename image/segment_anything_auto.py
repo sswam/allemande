@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 # All rights reserved.

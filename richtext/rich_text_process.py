@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 This module processes rich text documents (DOCX, HTML, ODT) by applying a command to their text content.

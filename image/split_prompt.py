@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Split a stable diffusion prompt into multiple lines, to be more readable.

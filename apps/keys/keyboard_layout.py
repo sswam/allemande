@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 keyboard_layout.py - Generate SVG or HTML keyboard layout diagrams with key bindings.

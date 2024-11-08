@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 # catpg: concatenate files, with paragraph breaks and section headers
 import argparse
 import sys

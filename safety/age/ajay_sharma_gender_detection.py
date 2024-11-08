@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Detects gender and age of individuals in images using AjaySharma/genderDetection.

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 import os
 os.environ["GRADIO_ANALYTICS"] = "False"

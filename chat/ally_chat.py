@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """ Ally Chat / Electric Barbarella v6 - multi-user LLM chat app """
 

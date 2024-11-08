@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # Here's a simple Python program that determines the language of a file based on its extension, following the style of the provided hello.py:
 

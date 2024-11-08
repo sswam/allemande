@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # add-hashbang.py: add hashbangs lines to files that don't have them.
 

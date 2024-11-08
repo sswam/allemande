@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """ conductor.py: decide which agent/s should respond to a message and invoke them """
 

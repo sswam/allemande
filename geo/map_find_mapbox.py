@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ map-find-mapbox:	Search for a location using Mapbox API """
 
 import os

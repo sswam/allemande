@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 text_corrector.py - A CLI tool to correct spelling and remove obfuscation from text.

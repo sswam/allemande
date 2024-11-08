@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 llm_git_commit.py: Git commit wrapper that generates commit messages using Language Models (LLMs).

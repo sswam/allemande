@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # Here's a Python program that reads lines in groups of 'n' from stdin, outputs each group to stdout with flushing, and handles EOF as requested:
 # 'd' is a sleep delay, and 'p1' and 'p2' are prefixes it adds to the first and all lines.

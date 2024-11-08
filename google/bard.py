@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # bard.py: A Python wrapper for Google's BARD chatbot API.
 

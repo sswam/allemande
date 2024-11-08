@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ Uses Selenium to fetch the content of a web page. """
 
 import sys

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 A Python module / script to generate images using the Stable Diffusion WebUI API.

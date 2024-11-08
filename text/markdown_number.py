@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 A tool to add or remove numbering from markdown headings or lists at given level/s

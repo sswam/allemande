@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 bb2markdown.py - convert chat.bb format to markdown with tables

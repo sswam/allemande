@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ html2selectors.py - Convert HTML to CSS selectors """
 
 from lxml import html

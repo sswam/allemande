@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 # words: Losslessly split and join words.
 # words -s: Losslessly split a text file into words and other stuff, for diffing, etc.
 # words -j: Join the split text back together again.

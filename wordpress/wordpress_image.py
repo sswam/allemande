@@ -1,5 +1,5 @@
 ```python
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ wp_images.py: """
 
 import sys

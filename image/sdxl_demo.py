@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 A simple demo script for Stable Diffusion XL (SDXL) text-to-image generation using a local model.

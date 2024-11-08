@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 # ts2markdown.py - Convert a TSV file to a Markdown table
 
 import sys

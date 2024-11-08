@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """ wg.py: A simple script to download files from the web using cookies.txt """
 

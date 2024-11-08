@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ Transcribe speech to text using microphone input and whisper """
 
 import sys

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """
 markdown_to_structure.py: Read markdown text and convert it into a sensible
 data structure with keys like title, introduction, see_subheading, see, etc.

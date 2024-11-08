@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 typing-simulator.py: Simulate typing by reading from stdin and using xdotool to type each character.

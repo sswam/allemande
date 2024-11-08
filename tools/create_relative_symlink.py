@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 # create-relative-symlink.py: create a relative symlink
 
 import os

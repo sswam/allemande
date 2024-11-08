@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # llm-pp: preprocess LLM conversations, to clean them up
 

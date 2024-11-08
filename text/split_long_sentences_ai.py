@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ ai_split_long_sentences.py: split long sentences into shorter ones using an LLM """
 
 from sys import stdin, stdout

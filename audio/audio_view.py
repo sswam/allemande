@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 This module visualizes an audio file waveform as a log mel spectrogram in a wide window.

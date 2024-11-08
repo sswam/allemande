@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 llm.py: A simple wrapper for various language model APIs including OpenAI ChatGPT,

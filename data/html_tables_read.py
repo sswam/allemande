@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 # read_html_tables.py: read html tables and output as tab-separated text
 # this read_html_tables script is in the public domain
 # Sam Watkins, 2012

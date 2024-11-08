@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ akeepalive: Async Keepalive Generator """
 
 import sys

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ json2csv: convert an array of objects to a CSV file """
 
 import sys

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 # pyq: process python object notation like jq, using jq
 # also supports json, xml, and yaml
 

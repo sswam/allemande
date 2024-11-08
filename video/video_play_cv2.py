@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """ video-play-cv2: A Python script to play a video file using OpenCV. """
 

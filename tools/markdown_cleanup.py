@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # markdown-cleanup: A script to clean up markdown text, adding blank lines around lists
 

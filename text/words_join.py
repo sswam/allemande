@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 # words-join: Join words and non-word characters back together from a split text file
 import sys
 

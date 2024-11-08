@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 # adjust-blank-lines: Adjust blank lines in a text file
 
 # This tool takes an input file or standard input, removes extra blank lines, and corrects the indentation for consecutive non-empty lines.

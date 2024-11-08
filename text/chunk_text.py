@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Split textual input on sensible boundaries so that the count is under a given limit,

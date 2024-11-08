@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Estimates the age of individuals in images using the dima806/facial_age_image_detection model.

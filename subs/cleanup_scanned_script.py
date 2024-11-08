@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # Certainly! Here's a Python script that reads messy text from stdin, cleans it up, and outputs the result to stdout. This script is inspired by the structure of hello.py and incorporates some of its features:
 

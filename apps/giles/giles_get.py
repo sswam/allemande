@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """ giles-get: fetch URLs from a Giles TSV file """
 

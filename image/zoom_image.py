@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ zoom_image.py: Zoom in on a specific point in an image """
 
 import sys

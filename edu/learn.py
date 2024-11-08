@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 learn.py - A spaced repetition learning system for markdown flashcards.

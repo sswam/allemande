@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Detect objects in images using a YOLO model and output bounding box coordinates.

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 """ user-set-theme.py: set the user's theme for Ally Chat """
 
 import os

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 Analyze an audio file to identify different speakers and output results in TSV format.

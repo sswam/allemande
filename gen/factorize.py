@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 # Here's a Python program that prompts for a number and factorizes it, written in a style similar to hello.py:
 

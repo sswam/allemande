@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """ stream.py: Watch a file and stream it to the browser like tail -f """
 

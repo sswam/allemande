@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3-allemande
 
 """
 A basic implementation of ed in Python, including commands a, c, i, d, s, w, q, and p.
