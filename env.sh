@@ -32,7 +32,9 @@ ALLY_DISABLE_DEPRECATION_WARNINGS="0"
 ALLEMANDE_VENV=
 if [ -e "$ALLEMANDE_HOME/venv" ]; then
 	ALLEMANDE_VENV="$ALLEMANDE_HOME/venv"
-	. "$ALLEMANDE_VENV/bin/activate"
+	if [ -z "$VIRTUAL_ENV" ]; then
+		. "$ALLEMANDE_VENV/bin/activate"
+	fi
 fi
 
 PYTHON=$(which python3)
