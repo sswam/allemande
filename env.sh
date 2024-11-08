@@ -2,10 +2,10 @@
 
 set -a
 
-ALLEMANDE_GITHUB=git@github.com:sswam/allemande.git
-BARBARELLA_GITHUB=git@github.com:sswam/barbarella.git
 ALLEMANDE_ENV=$(realpath "${BASH_SOURCE[0]}")
 ALLEMANDE_HOME=$(dirname "$ALLEMANDE_ENV")
+ALLEMANDE_GITHUB=git@github.com:sswam/allemande.git
+BARBARELLA_GITHUB=git@github.com:sswam/barbarella.git
 ALLYCHAT_HOME="$ALLEMANDE_HOME/webchat"
 ALLYCHAT_THEMES="$ALLYCHAT_HOME/static/themes"
 
@@ -32,7 +32,7 @@ ALLY_DISABLE_DEPRECATION_WARNINGS="0"
 ALLEMANDE_VENV=
 if [ -e "$ALLEMANDE_HOME/venv" ]; then
 	ALLEMANDE_VENV="$ALLEMANDE_HOME/venv"
-	if [ -z "$VIRTUAL_ENV" ]; then
+	if [ -z "${VIRTUAL_ENV:-}" ]; then
 		. "$ALLEMANDE_VENV/bin/activate"
 	fi
 fi
