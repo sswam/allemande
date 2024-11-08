@@ -38,7 +38,7 @@ results.txt:
 
 input.ls: results.txt
 	mkdir -p input
-	(cd input && giles_get) < $<
+	(cd input && giles_get.py) < $<
 	ls input > $@
 
 mission.%.txt: mission.%.txt.in
