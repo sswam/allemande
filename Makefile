@@ -211,6 +211,7 @@ rotate:
 	room-rotate "$$file"
 
 canon:
+	ln -sf ../tools/python3_allemande.sh canon/python3-allemande
 	$(ALLEMANDE_HOME)/files/canon_links.py $(ALLEMANDE_PATH)
 	(cd canon ; rm -f guidance-*.md ; ln -sf ../*/guidance-*.md .)
 	ln -sf $(ALLEMANDE_HOME)/canon/usr-local-bin /usr/local/bin
