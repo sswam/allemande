@@ -2,4 +2,4 @@
 m=
 . opts
 query -m="$m" "$@
-Please reply as concise as possible, with no boilerplate or unnecessary explanation." | rstrip
+Please reply as concise as possible, with no boilerplate or unnecessary explanation." | text-strip

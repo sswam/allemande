@@ -25,7 +25,7 @@ or blank lines). If the input has code but does not include code quoting with \
 \`\`\`, the output should not include \`\`\` either. If writing code, be \
 concise but clear, not obscure. No intro or concluding text. Thanks\!"
 
-	process -m="$model" $opts "$prompt" "${refs[@]}" | rstrip
+	process -m="$model" $opts "$prompt" "${refs[@]}" | text-strip
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then

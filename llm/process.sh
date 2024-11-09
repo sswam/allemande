@@ -25,7 +25,7 @@ process() {
 		local indent
 		input=$(cat)
 		indent=$(printf "%s\n" "$input" | aligno --detect)
-		process_main "$prompt" <<< "$input" | aligno --apply "$indent" | rstrip
+		process_main "$prompt" <<< "$input" | aligno --apply "$indent" | text-strip
 	else
 		process_main "$prompt"
 	fi
@@ -33,7 +33,7 @@ process() {
 
 process_main() {
 	local prompt="$1"
-	llm process -m "$model" $opts "$prompt" | rstrip
+	llm process -m "$model" $opts "$prompt" | text-strip
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then

@@ -8,7 +8,7 @@ query() {
 
 	eval "$(ally)"
 
-	llm query -m "$model" "$@" | rstrip
+	llm query -m "$model" "$@" | text-strip
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
