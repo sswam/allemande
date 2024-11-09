@@ -85,10 +85,13 @@ def print_formatted_rows(rows: list[list[str]], format_str: str, option_count: i
 			line = '\t' * leading_tabs + line[leading_tabs * 8:]
 		else:
 			line = ""
-		if line.strip() == "":
-			line = " "
-		else:
-			line = line.rstrip()
+		# IDK what this code was for, but it's now annoying me so I'll comment it out!
+		# Why replace an empty line with a single space?!
+# 		if line.strip() == "":
+# 			line = " "
+# 		else:
+# 			line = line.rstrip()
+		line = line.rstrip()
 		print(line, file=ostream)
 
 
