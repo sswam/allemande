@@ -1,0 +1,9 @@
+polynomial	y	x	coefficients
+
+=		...coefficients
+=	y	0
+
+=	c0 ...cr	...coefficients
+polynomial	y1	x	cr
+*	y1x	y1	x
++	y	y1x	c0

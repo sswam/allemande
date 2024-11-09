@@ -1,0 +1,29 @@
+hello
+
+print_sqrt2_in_C
+solve_cubic_in_python
+count_users_with_commands
+
+
+print_sqrt2_in_C
+
+printf	n	"sqrt(2): %.4f\n"	s
+>	n	0
+sqrt	s	2.0
+
+
+solve_cubic_in_python
+
+print 0	"x**3 - 6*x**2 + 11*x - 6 = 0  ⇒  x ∈ {"	xs	"}"
+symbols	x	"x"
+polynomial	y	x	-6 11 -6 1
+solve	xs	y
+
+
+count_users_with_commands
+
+printf	n	"User count: %ld\n"	user_count
+>	n	0
+awk	>real_users	</etc/passwd	-F:	"$3 >= 1000 && $3 < 60000 {print}"
+wc	<real_users	>user_count_str	-l
+atol	user_count	user_count_str
