@@ -21,12 +21,18 @@ def text_strip(get: geput.Get, put: geput.Put) -> None:
     input = geput.input(get)
     print = geput.print(put)
 
+    first_line = True
     found_content = False
 
     blank_count = 0
 
     while (line := input()) is not None:
         line = line.rstrip()
+
+        # remove UTF-8 BOM from first line
+        if first_line:
+            line = line.lstrip("\ufeff")
+            first_line = False
 
         if not found_content and not line:
             continue
