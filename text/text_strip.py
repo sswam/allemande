@@ -8,7 +8,7 @@ import sys
 from typing import TextIO
 from ally import main, logs, geput  # type: ignore
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = logs.get_logger()
 
@@ -44,7 +44,7 @@ def text_strip(get: geput.Get, put: geput.Put) -> None:
         found_content = True
 
         for _ in range(blank_count):
-            print("\n")
+            print("")
         blank_count = 0
 
         print(line)
