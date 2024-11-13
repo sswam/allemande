@@ -1,5 +1,6 @@
-#!/bin/bash -eu
+#!/usr/bin/env bash
 # Run Python 3 with the Allemande environment.
+set -e -u
 if [ -z "${ALLEMANDE_HOME:-}" ]; then
 	if [ -d "/opt/allemande" ]; then
 		ALLEMANDE_HOME="/opt/allemande"
