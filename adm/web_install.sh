@@ -71,13 +71,9 @@ done
 
 cd "$ALLEMANDE_HOME/adm"
 
-if [ ! -L /etc/haproxy/haproxy.cfg ]; then
-	mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.dist
-fi
+./update_haproxy.sh
 
-rm -f /etc/haproxy/haproxy.cfg
- 
-include < haproxy/haproxy.cfg > /etc/haproxy/haproxy.cfg
+# restart services -----------------------------------------------------------
 
 service nginx stop
 service haproxy stop
