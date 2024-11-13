@@ -43,13 +43,13 @@ def setup_templates():
 
 async def startup_event():
 	""" Startup event """
-	print("Starting up...")
+	logger.info("Starting up...")
 	setup_templates()
 
 
 async def shutdown_event():
 	""" Shutdown event """
-	print("Shutting down...")
+	logger.info("Shutting down...")
 
 
 app = Starlette(
