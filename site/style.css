@@ -28,7 +28,7 @@ body {
 	opacity: 0.5;
 }
 
-.info {
+.box {
 	text-align: left;
 	padding: 20px 40px;
 	display: inline-block;
@@ -145,4 +145,31 @@ a.button {
 		padding: 10px 15px;
 		margin: 5px;
 	}
+}
+
+.auth {
+	display: flex;
+	flex-direction: column;
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 100px;
+	display: none;
+}
+.auth input {
+	background-color: #112;
+	color: #aab;
+	width: 100%;
+	border: 0;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+input:-internal-autofill-selected,
+input:-internal-autofill-previewed {
+    color: #aab !important;
+    background-color: #224 !important;
+    -webkit-box-shadow: 0 0 0 30px #224 inset !important;
 }
