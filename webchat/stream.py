@@ -1,6 +1,6 @@
 #!/usr/bin/env python3-allemande
 
-""" stream.py: Watch a file and stream it to the browser like tail -f """
+""" stream.py: Watch a chat file and stream it to the browser like tail -f """
 
 import os
 import logging
@@ -14,6 +14,9 @@ import uvicorn
 import chat
 import atail
 import akeepalive
+
+
+os.chdir(os.environ["ROOMS"])
 
 
 logging.basicConfig(level=logging.INFO)
