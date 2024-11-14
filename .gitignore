@@ -25,6 +25,9 @@ tracks
 *.log
 sparkjoy
 
+# secrets
+/secrets.sh
+
 # data files
 /geo/country_city_timezone.tsv
 /safety/nsfw_words
