@@ -30,7 +30,7 @@ i3: connect-i3-screen
 
 server:: stop
 server:: clean
-server:: webchat pro # brain-remote.xt
+server:: webchat brain-remote.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -76,7 +76,7 @@ core: llm.xt brain.xt  # brain-local.xt
 
 voice: mike.xt speak.xt whisper.xt
 
-webchat: chat-api.xt stream.xt watch.xt bb2html.xt
+webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt
 
 pro: svelte.xt
 pro-dev: svelte-dev.xt
@@ -100,7 +100,7 @@ core.xtc: llm.xtc whisper.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
-webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc
+webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc auth.xtc
 
 pro.xtc: svelte.xtc
 pro-dev.xtc: svelte-dev.xtc
@@ -144,13 +144,13 @@ vscode-local:
 	code "$$file" & disown
 
 chat-api:
-	uvicorn chat-api:app --app-dir $(WEBCHAT) --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
+	cd $(WEBCHAT) && uvicorn chat-api:app --reload --timeout-graceful-shutdown 5 # --reload-include *.csv
 
 stream:
-	cd $(ROOMS) && uvicorn stream:app --app-dir $(WEBCHAT) --reload  --reload-dir $(WEBCHAT) --port 8001 --timeout-graceful-shutdown 1
+	cd $(WEBCHAT) && uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
 
 auth:
-	uvicorn main:app --app-dir auth --reload --timeout-graceful-shutdown 5 --port 8002 # --reload-include *.csv
+	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002
 
 watch:
 	awatch -r -A -x bb -p $(ROOMS) >> $(WATCH_LOG)

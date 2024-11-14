@@ -7,6 +7,7 @@ ALLEMANDE_HOME=$(dirname "$ALLEMANDE_ENV")
 ALLEMANDE_GITHUB=git@github.com:sswam/allemande.git
 BARBARELLA_GITHUB=git@github.com:sswam/barbarella.git
 ALLYCHAT_HOME="$ALLEMANDE_HOME/webchat"
+ALLYCHAT_PASSWD="$ALLYCHAT_HOME/.htpasswd"
 ALLYCHAT_THEMES="$ALLYCHAT_HOME/static/themes"
 
 ALLEMANDE_MODELS="$ALLEMANDE_HOME/models"
@@ -83,3 +84,5 @@ fi
 
 GRADIO_ANALYTICS_ENABLED=False
 JUPYTER_PLATFORM_DIRS=1	# get rid of spurious warnings in pytest
+
+. "$ALLEMANDE_HOME/secrets.sh"
