@@ -125,3 +125,5 @@ pyannote.audio
 speechbrain
 
 ultralytics
+
+passlib
