@@ -20,7 +20,7 @@ body {
 #banner {
 	width: 100%;
 	height: auto;
-	max-width: 800px;
+	max-width: min(800px, calc(100vw - 20px));
 	margin: 0 auto;
 	border-radius: 0 0 20px 20px;
 	display: block;
@@ -30,7 +30,7 @@ body {
 
 .box {
 	text-align: left;
-	padding: 20px 40px;
+	padding: 20px 30px;
 	display: inline-block;
 /*	white-space: nowrap; */
 	background-color: #112;
@@ -56,7 +56,7 @@ body {
 	text-decoration: underline;
 }
 
-a.button {
+.button {
 	display: inline-block;
 	background-color: #333;
 	color: #aab;
@@ -65,6 +65,7 @@ a.button {
 	border-radius: 5px;
 	font-weight: 500;
 	margin: 7px;
+	border: none;
 }
 
 .button:hover {
@@ -134,11 +135,29 @@ a.button {
 	background-color: #636;
 }
 
+.auth_box {
+	display: flex;
+	flex-direction: row;
+}
+
+.auth_box input {
+	background-color: #224;
+	color: #aab;
+	border: 1px solid #000;
+	border-radius: 5px;
+	outline: none;
+	padding: 5px 10px;
+}
+.auth_box * {
+	font-size: 18px;
+	margin: 7px;
+}
+
 @media (max-width: 600px) {
-	.info {
+	.info, .auth_box {
 		padding: 10px 15px;
 	}
-	* {
+	*, .auth_box * {
 		font-size: 15px;
 	}
 	a.button {
@@ -147,29 +166,10 @@ a.button {
 	}
 }
 
-.auth {
-	display: flex;
-	flex-direction: column;
-	position: fixed;
-	top: 0;
-	right: 0;
-	width: 100px;
-	display: none;
-}
-.auth input {
-	background-color: #112;
-	color: #aab;
-	width: 100%;
-	border: 0;
+.hidden {
+	display: none !important;
 }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active,
-input:-internal-autofill-selected,
-input:-internal-autofill-previewed {
-    color: #aab !important;
-    background-color: #224 !important;
-    -webkit-box-shadow: 0 0 0 30px #224 inset !important;
+.error {
+	background-color: #422 !important;
 }

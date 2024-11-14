@@ -2,7 +2,7 @@
 
 ## What is this?
 
-We are [Allemande AI](https://allemande.ai), a growing AI consultancy in Melbourne, Australia.
+We are [Allemande AI](https://allemande.ai), an AI consultancy in Melbourne, Australia.
 
 Our flagship product is an innovative multi-player chat app called <A href="https://chat.allemande.ai">Ally Chat</A>, based on a powerful open-source AI toolkit.
 
@@ -14,7 +14,7 @@ Ally Chat is a chat system of many multiples:
 - multi-place: anyone can create a new chat room instantly, just by setting its name
 - multi-AI: we have six different AI large language models, and you chat to any or all of them in each room
 - multi-agent: we have ten different programming tools for seven important languages
-- multi-search: we have at least two web search tools
+- multi-search: we have several web search tools
 
 ### Electric People
 

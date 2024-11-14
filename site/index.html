@@ -26,7 +26,8 @@
 </head>
 <body>
 	<img alt="Allemande" id="banner" src="allemande@1683146134.jpg" />
-	<div class="space" style="flex-grow: 1; max-height: 3.5em;">
+
+	<div class="space" style="flex-grow: 1; max-height: 3.5em; min-height: 2em;">
 	</div>
 	<div class="box" id="info">
 		<p>G'day, we're <i>Allemande</i>, from Melbourne, Australia.</p>
@@ -34,21 +35,34 @@
 		<p>Log in to try <i>Ally Chat</i>, our multi-user AI chat app.</p>
 		<p>Contact us for a free meeting to learn about AI.</p>
 		<div style="text-align:center">
-		<a class="button red" href="https://chat.allemande.ai" id="chatlink">Ally Chat</a><a class="button orange" href="/epic.html">Example</a><a class="button yellow" href="https://flash.allemande.ai">Flash</a><a class="button green" href="https://alfred.allemande.ai">Alfred</a>
+			<a class="button red" href="https://chat.allemande.ai" id="chatlink">Ally Chat
+			</a><a class="button orange" href="/epic.html">Example
+			</a><a class="button yellow" href="https://flash.allemande.ai">Flash
+			</a><a class="button green" href="https://alfred.allemande.ai">Alfred</a>
 		</div>
 		<div style="text-align:center">
-		<a class="button cyan" href="/pricing.html">Pricing</a>
-		<a class="button blue" href="mailto:sam@allemande.ai?subject=Allemande AI">Contact Us</a>
-		<a class="button violet" href="https://github.com/sswam/allemande">Source Code</a>
+			<a class="button cyan" href="/pricing.html">Pricing
+			</a><a class="button blue" href="mailto:sam@allemande.ai?subject=Allemande AI">Contact Us
+			</a><a class="button violet" href="https://github.com/sswam/allemande">Source Code</a>
 		</div>
 	</div>
-	<div class="space" style="flex-grow: 3;">
+
+	<div class="space" style="flex-grow: 3; min-height: 40px;">
 	</div>
-	<div class="auth">
-		<input id="username" placeholder="Username">
-		<input id="password" type="password" placeholder="Password">
-		<input id="login" type="submit" value="Continue">
+
+	<div class="box login hidden auth_box" id="login_box">
+		<input id="email" type="text" placeholder="Email" size="14">
+		<input id="password" type="password" placeholder="Password" size="7">
+		<button id="login" class="button green">Continue</button>
 	</div>
+	<div class="box session hidden auth_box" id="session_box">
+		<input id="session_email" type="text" readonly size="14">
+		<button id="logout" class="button red">Log out</button>
+	</div>
+
+	<div class="space" style="height: 40px;">
+	</div>
+
 	<script>
 		if (location.href.indexOf("local.") > -1) {
 			document.getElementById("chatlink").href = "https://chat-local.allemande.ai";
@@ -57,5 +71,8 @@
 			p.style.textIndent = `${index}em`;
 		}
 	</script>
+
+	<script src="util.js"></script>
+	<script src="auth.js"></script>
 </body>
 </html>
