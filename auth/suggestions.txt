@@ -1,0 +1,10 @@
+1. The `user_data` cookie content may be sensitive and should not be logged
+to the console.
+2. The commented-out lines with `userData.preferences.theme` and
+`userData.numbers` suggest incomplete or outdated code that should be cleaned
+up.
+3. Consider rate limiting login attempts to prevent brute force attacks.
+4. Password should be securely hashed before sending to server (though this
+could be handled server-side).
+5. The `hidden` class toggling logic could be simplified to avoid repetition.
+
