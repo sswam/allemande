@@ -69,3 +69,6 @@ wbritish-huge
 wget
 
 libterm-readline-gnu-perl
+
+libemail-simple-perl
+liblog-log4perl-perl
