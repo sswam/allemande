@@ -74,6 +74,5 @@ server {
 		proxy_set_header X-Forwarded-Proto https;
 		proxy_set_header Authorization "";
 		proxy_set_header X-Forwarded-User $remote_user;
-		proxy_bind $host:$server_port;
 	}
 }

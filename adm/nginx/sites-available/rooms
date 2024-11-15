@@ -70,7 +70,6 @@ server {
 		proxy_buffering off;
 		proxy_set_header Connection "";
 		proxy_read_timeout 120s;
-		proxy_bind $host:$server_port;
 	}
 
 	location /logout/logout {
