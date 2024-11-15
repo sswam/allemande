@@ -28,20 +28,20 @@ async function loginFailed() {
 
 async function login(e) {
 	e.preventDefault();
-	const email = $('#email').value;
+	const username = $('#username').value;
 	const password = $('#password').value;
-	if (!email || !password) {
-		console.error('Email and password are required');
+	if (!username || !password) {
+		console.error('Username and password are required');
 		await loginFailed();
 		return;
 	}
-	console.log('Logging in:', email);
+	console.log('Logging in:', username);
 	const response = await fetch('/x/login', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
 		},
-		body: JSON.stringify({ email, password })
+		body: JSON.stringify({ username, password })
 	});
 	if (!response.ok) {
 		console.error('Login failed:', response.status);
@@ -73,10 +73,8 @@ async function logout(e) {
 let userData;
 
 function setupLoggedIn() {
-	console.log('Email:', userData.email);
-// 	console.log('Theme:', userData.preferences.theme);
-// 	console.log('Numbers:', userData.numbers);
-	$('#session_email').value = userData.email;
+	console.log('username:', userData.username);
+	$('#session_username').value = userData.username;
 	for (const e of $$('.login'))
 		e.classList.add('hidden');
 	for (const e of $$('.session.hidden'))

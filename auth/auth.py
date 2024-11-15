@@ -22,7 +22,7 @@ JWT_ALGORITHM = "HS256"
 JWT_SECRET = os.environ["ALLYCHAT_JWT_SECRET"]
 HTPASSWD = os.environ["ALLYCHAT_PASSWD"]
 
-ht = HtpasswdFile(HTPASSWD)
+htpasswd = HtpasswdFile(HTPASSWD)
 
 
 async def http_exception(_request: Request, exc: HTTPException):
@@ -38,17 +38,19 @@ exception_handlers = {
 app = Starlette(exception_handlers=exception_handlers)
 
 
-def create_jwt_token(email: str) -> str:
-	"""Create a JWT token with the user's email"""
+def create_jwt_token(username: str) -> str:
+	"""Create a JWT token with the username"""
 	payload = {
-		"sub": email,
+		"sub": username,
 		"exp": datetime.utcnow() + timedelta(seconds=SESSION_MAX_AGE),
 		"iat": datetime.utcnow(),
 	}
 	return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-def set_cookies(response, jwt_token, user_data_value, max_age):
+def set_cookies(response, jwt_token, user_data, max_age):
+	"""Set JWT auth and user data cookies"""
+	user_data_value = urllib.parse.quote(json.dumps(user_data))
 	# Set JWT auth cookie
 	response.set_cookie(
 		key="auth",
@@ -71,30 +73,44 @@ def set_cookies(response, jwt_token, user_data_value, max_age):
 		samesite="lax"
 	)
 
+
 @app.route("/x/login", methods=["POST"])
 async def login(request):
+	"""Login with username and password"""
 	data = await request.json()
-	email, password = data['email'], data['password']
-	ht.load_if_changed()
-	is_valid = ht.check_password(email, password)
+	username, password = data['username'], data['password']
+	htpasswd.load_if_changed()
+	is_valid = htpasswd.check_password(username, password)
 	if not is_valid:
-		raise HTTPException(401, "Invalid email or password")
+		raise HTTPException(401, "Invalid username or password")
 
 	# Create JWT token
-	jwt_token = create_jwt_token(email)
+	jwt_token = create_jwt_token(username)
 
 	# Create response with both cookies
 	user_data = {
-		"email": email,
+		"username": username,
 	}
 	response = JSONResponse({})
-	user_data_value = urllib.parse.quote(json.dumps(user_data))
-	set_cookies(response, jwt_token, user_data_value, SESSION_MAX_AGE)
+	set_cookies(response, jwt_token, user_data, SESSION_MAX_AGE)
 
 	return response
 
 
-def verify_jwt_token(token: str) -> dict:
+@app.route("/x/logout", methods=["POST"])
+async def logout(request):
+	"""Logout by clearing cookies"""
+	# TODO: get username from session cookie if we need to know who is logging out
+	response = JSONResponse({})
+	# kill the auth cookie and the user_data cookie.
+	set_cookies(response, "", {}, 0)
+	return response
+
+
+def verify_jwt_token(token: str|None) -> dict:
+	"""Verify the JWT token and return the payload"""
+	if not token:
+		raise HTTPException(401, "Not authenticated")
 	try:
 		payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
 		return payload
@@ -104,62 +120,32 @@ def verify_jwt_token(token: str) -> dict:
 		raise HTTPException(401, "Invalid token")
 
 
-# Key features of this implementation:
-#
-# 1. The JWT token includes:
-# - Subject (`sub`): user's email
-# - Expiration time (`exp`): when the token expires
-# - Issued at time (`iat`): when the token was created
-#
-# 2. Security features:
-# - `httponly=True` for the auth cookie prevents JavaScript access
-# - `secure=True` ensures cookies are only sent over HTTPS
-# - Domain is set to `.allemande.ai` for subdomain access
-# - `samesite="lax"` helps prevent CSRF attacks
-# - JWT token is signed with a secret key
-#
-# 3. The `user_data` cookie is URL-encoded JSON and accessible to JavaScript
-#
-# To use this in your application:
-#
-# 1. Install the required package:
-# ```bash
-# pip install pyjwt
-# ```
-#
-# 2. Store the `JWT_SECRET` in environment variables rather than hardcoding it.
-#
-# 3. To verify the token in protected routes:
-#
-# ```python
-# @app.route("/protected", methods=["GET"])
-# async def protected_route(request):
-# 	auth_cookie = request.cookies.get("auth")
-# 	if not auth_cookie:
-# 		raise HTTPException(401, "Not authenticated")
-#
-# 	payload = verify_jwt_token(auth_cookie)
-# 	email = payload["sub"]
-# 	# Continue with the protected route logic
-# ```
-#
-# Remember to:
-# - Use a strong, secure secret key
-# - Store sensitive values in environment variables
-# - Regularly rotate the JWT secret key
-# - Consider implementing refresh tokens for longer sessions
-# - Add rate limiting to the login endpoint
-# - Add logging for security events
-
-
-@app.route("/x/logout", methods=["POST"])
-async def logout(request):
-	# TODO: get email from session cookie if we need to know who is logging out
-	response = JSONResponse({})
-	# kill the cookies
-	set_cookies(response, "", "", 0)
-	return response
+@app.route("/x/protected", methods=["GET"])
+async def protected_route(request):
+	auth_cookie = request.cookies.get("auth")
+	payload = verify_jwt_token(auth_cookie)
+	username = payload["sub"]
+	# Continue with the protected route logic
+	return JSONResponse({"username": username})
 
 
 if __name__ == "__main__":
 	uvicorn.run(app, host="127.0.0.1", port=8002)
+
+
+# nginx JWT auth
+#   - build module from source
+#   - configure nginx
+#   - test
+# TODO: join for new accounts
+#   - need email in addition to username
+#   - add to htpasswd
+#   - add to Linux system account, with no shell
+#   - check username format
+#   - check email format
+#   - check password strength
+#   - send confirmation email
+#   - create user home directory and files
+#   - log in after confirmation
+# - Set no-cache / no-store headers for all responses when logged in
+# - Consider using refresh tokens, will complicate serving static files
