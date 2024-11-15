@@ -186,6 +186,10 @@ MODELS = {
 	},
 }
 
+for name, model in MODELS.items():
+	if "id" not in model:
+		model["id"] = name
+
 # Set default models from environment variables if available
 env_llm_model = os.environ.get("ALLEMANDE_LLM_DEFAULT")
 env_llm_model_small = os.environ.get("ALLEMANDE_LLM_DEFAULT_SMALL")
@@ -317,8 +321,7 @@ async def achat_openai(messages, client=None):
 	if client is None:
 		client = openai_async_client
 	model = opts.model
-	if "id" in MODELS[model]:
-		model = MODELS[model]["id"]
+	model = MODELS[model]["id"]
 
 	logger.debug("model: %s", model)
 
@@ -368,8 +371,7 @@ async def achat_perplexity(messages):
 async def achat_claude(messages):
 	""" Chat with Anthropic Claude models asynchronously. """
 	model = opts.model
-	if "id" in MODELS[model]:
-		model = MODELS[model]["id"]
+	model = MODELS[model]["id"]
 
 	temperature = opts.temperature
 	token_limit = opts.token_limit
@@ -403,8 +405,7 @@ async def achat_claude(messages):
 async def achat_google(messages):
 	""" Chat with Google models asynchronously. """
 	model = opts.model
-	if "id" in MODELS[model]:
-		model = MODELS[model]["id"]
+	model = MODELS[model]["id"]
 
 	temperature = opts.temperature
 	token_limit = opts.token_limit
@@ -768,7 +769,7 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 		tokens = enc.encode(text)
 		n_tokens = len(tokens)
 	elif vendor == "anthropic":
-		n_tokens = claude.count(text)
+		n_tokens = claude.count(text, model=model["id"])
 	elif vendor == "perplexity":
 		llama3_tokenizer = get_llama3_tokenizer()
 		tokens = llama3_tokenizer.tokenize(text)

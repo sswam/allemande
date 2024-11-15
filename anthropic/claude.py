@@ -37,12 +37,18 @@ def show_args(*args, **kwargs):
 	logger.warning("args:\n%s", yaml.dump(args))
 	logger.warning("kwargs:\n%s", yaml.dump(kwargs))
 
-def count(message, add_prompts=True):
+def count(text, model=MODEL_DEFAULT) -> int:
 	""" Count the number of tokens in a message """
-	if add_prompts:
-		message=f"{HUMAN_PROMPT} {message}{AI_PROMPT}"
-	num_tokens = client.count_tokens(message)
-	return num_tokens
+	# Unfortunately this is an API request now, not available offline.
+	# https://github.com/anthropics/anthropic-sdk-python/pull/726
+	# num_tokens = client.count_tokens(message)
+	obj = client.beta.messages.count_tokens(
+	    model=model,
+	    messages=[
+	        {"role": "user", "content": text}
+	    ]
+	)
+	return obj.input_tokens
 
 def response_completion(response):
 	""" Extract the completion from a response """
