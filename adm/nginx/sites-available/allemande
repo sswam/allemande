@@ -26,6 +26,8 @@ server {
 	root /var/www/allemande/;
 	index index.html;
 
+	absolute_redirect off;
+
 	location = /ban.html {
 		if ($is_banned = 0) {
 			return 302 https://allemande.ai/;
@@ -48,13 +50,27 @@ server {
 		proxy_set_header X-Forwarded-Proto https;
 	}
 
+	auth_jwt_key "REDACTED";
+	auth_jwt_loginurl "https://allemande.ai/";
+	auth_jwt_enabled off;
+	auth_jwt_redirect on;
+
+	location /auth/ {
+ 		auth_jwt_enabled on;
+		auth_jwt_location COOKIE=auth;
+ 		auth_jwt_algorithm HS256;
+		autoindex on;
+		try_files $uri $uri/ =404;
+		add_header Cache-Control "no-store";
+	}
+
 	location / {
 		autoindex on;
 		try_files $uri $uri/ =404;
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
-		add_header Cache-Control "no-cache";
+#		add_header Cache-Control "no-cache";
 		if ($cors_header != "") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 		}
