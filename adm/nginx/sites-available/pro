@@ -26,6 +26,8 @@ server {
 	root /var/www/allychat-pro/static;
 	index index.html;
 
+	absolute_redirect off;
+
 #	location / {
 ##		autoindex on;
 #		try_files $uri $uri/ =404;

@@ -26,6 +26,8 @@ server {
 	root /var/www/allychat/static/;
 	index index.html;
 
+	absolute_redirect off;
+
 	location / {
 		if ($is_banned) {
 			return 302 https://allemande.ai/ban.html;
