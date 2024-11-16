@@ -28,6 +28,14 @@ server {
 
 	absolute_redirect off;
 
+	auth_jwt_key "REDACTED";
+	auth_jwt_loginurl "https://allemande.ai/";
+	auth_jwt_enabled off;
+	auth_jwt_redirect on;
+	auth_jwt_location COOKIE=auth;
+	auth_jwt_algorithm HS256;
+
+
 #	location / {
 ##		autoindex on;
 #		try_files $uri $uri/ =404;
@@ -47,12 +55,13 @@ server {
 		if ($is_banned) {
 			return 302 https://allemande.ai/ban.html;
 		}
+ 		auth_jwt_enabled on;
 		proxy_pass http://localhost:3000;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded-Proto https;
-		proxy_set_header Authorization "";
+#		proxy_set_header Authorization "";
 		proxy_set_header X-Forwarded-User $remote_user;
 
 		# settings for streaming response
