@@ -11,10 +11,14 @@ set -e -u
 
 cd "$ALLEMANDE_HOME/adm"
 
-rm -f /etc/nginx/sites-available/allemande
+cd nginx/sites-available
 
 umask 0077
-sed 's/^\([[:space:]]*auth_jwt_key \)".*";$/\1"'"$ALLYCHAT_JWT_SECRET_BINHEX"'";/' \
-	< nginx/sites-available/allemande > /etc/nginx/sites-available/allemande
+
+for site in *; do
+	rm -f "/etc/nginx/sites-available/$site"
+	sed 's/^\([[:space:]]*auth_jwt_key \)".*";$/\1"'"$ALLYCHAT_JWT_SECRET_BINHEX"'";/' \
+		< "$site" > /etc/nginx/sites-available/"$site"
+done
 
 service nginx reload
