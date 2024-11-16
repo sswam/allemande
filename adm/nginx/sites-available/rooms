@@ -36,7 +36,7 @@ server {
 	auth_jwt_key "REDACTED";
 	auth_jwt_loginurl "https://allemande.ai/";
 	auth_jwt_enabled off;
-	auth_jwt_redirect on;
+	auth_jwt_redirect off;
 	auth_jwt_location COOKIE=auth;
 	auth_jwt_algorithm HS256;
 
@@ -75,8 +75,10 @@ server {
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded-Proto https;
-		proxy_set_header Authorization "";
-		proxy_set_header X-Forwarded-User $remote_user;
+#		proxy_set_header Authorization "";
+#		proxy_set_header X-Forwarded-User $remote_user;
+		auth_jwt_extract_request_claims sub;
+		proxy_set_header X-Forwarded-User $http_jwt_sub;
 
 		# settings for streaming response
 		gzip off;

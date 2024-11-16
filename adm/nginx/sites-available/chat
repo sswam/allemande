@@ -57,6 +57,7 @@ server {
 			return 302 https://allemande.ai/ban.html;
 		}
  		auth_jwt_enabled on;
+		auth_jwt_redirect off;
 		root /var/www/allychat/;
 		autoindex on;
 #		try_files $uri $uri/ =404;
@@ -83,6 +84,7 @@ server {
 
 	location /x {
  		auth_jwt_enabled on;
+		auth_jwt_redirect off;
 # 		auth_basic "Auth";
 # 		auth_basic_user_file /var/www/allychat/.htpasswd;
 		proxy_pass http://127.0.0.1:8000;
@@ -90,7 +92,9 @@ server {
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded-Proto https;
-		proxy_set_header Authorization "";
+#		proxy_set_header Authorization "";
 		proxy_set_header X-Forwarded-User $remote_user;
+		auth_jwt_extract_request_claims sub;
+		proxy_set_header X-Forwarded-User $http_jwt_sub;
 	}
 }
