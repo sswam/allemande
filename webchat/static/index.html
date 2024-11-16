@@ -18,7 +18,7 @@
 		<input id="room" name="room" class="flex mousetrap">
 <!--		<button id="subscribe"></button> -->
 		<button id="user">?</button>
-		<button id="logout" onclick="location.href = '/logout/'; return false;">logout</button>
+		<button id="logout">log out</button>
 	</div>
 
 	<iframe id="messages" class="messages flex" src="about:blank" allowFullScreen></iframe>
@@ -43,7 +43,11 @@
 </form>
 <script src="mousetrap.min.js"></script>
 <script src="util.js"></script>
+<script src="https://allemande.ai/auth.js"></script>
 <script src="chat.js"></script>
+<script>
+authChat();
+</script>
 <!-- TODO voice chat!
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.7/dist/bundle.min.js"></script>

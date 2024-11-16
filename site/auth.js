@@ -54,11 +54,20 @@ async function login(e) {
 	checkLogin();
 }
 
+function mainDomainURL() {
+	const { protocol, hostname } = window.location;
+	return `${protocol}//${hostname.split('.').slice(-2).join('.')}`;
+}
+
 async function logout(e) {
 	e.preventDefault();
 	console.log('Logging out');
-	const response = await fetch('/x/logout', {
-		method: 'POST'
+	// We need to strip the subdomain off the current URL proto and host
+	// because the logout endpoint is on the main domain.
+	const logoutURL = mainDomainURL() + '/x/logout';
+	const response = await fetch(logoutURL, {
+		method: 'POST',
+		credentials: 'include',
 	});
 	if (!response.ok) {
 		console.error('Logout failed:', response.status);
@@ -67,7 +76,17 @@ async function logout(e) {
 	const data = await response.json();
 	// we don't need the response data
 	console.log("Logout successful:", data);
+}
+
+async function logoutHome(e) {
+	await logout(e);
 	checkLogin();
+}
+
+async function logoutChat(e) {
+	await logout(e);
+	const homeURL = mainDomainURL();
+	window.location = homeURL;
 }
 
 let userData;
@@ -96,7 +115,13 @@ function checkLogin() {
 		setupLoggedOut();
 }
 
-$('#login').addEventListener('click', login);
-$('#logout').addEventListener('click', logout);
+function authHomepage() {
+	$on($id('login'), 'click', login);
+	$on($id('logout'), 'click', logoutHome);
 
-checkLogin();
+	checkLogin();
+}
+
+function authChat() {
+	$on($id('logout'), 'click', logoutChat);
+}

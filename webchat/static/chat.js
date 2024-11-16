@@ -342,6 +342,7 @@ function main() {
 	keyboard_shortcuts();
 	$on(window, 'message', handle_message);
 	$on($id('user'), 'click', set_room_user);
+//	$on($id('logout'), 'click', logoutChat);
 }
 
 main();

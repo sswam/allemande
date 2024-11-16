@@ -36,14 +36,12 @@
 		<p>Contact us for a free meeting to learn about AI.</p>
 		<div style="text-align:center">
 			<a class="button red" href="https://chat.allemande.ai" id="chatlink">Ally Chat
-			</a><a class="button orange" href="/epic.html">Example
-			</a><a class="button yellow" href="https://flash.allemande.ai">Flash
-			</a><a class="button green" href="https://alfred.allemande.ai">Alfred</a>
-		</div>
-		<div style="text-align:center">
-			<a class="button cyan" href="/pricing.html">Pricing
-			</a><a class="button blue" href="mailto:sam@allemande.ai?subject=Allemande AI">Contact Us
-			</a><a class="button violet" href="https://github.com/sswam/allemande">Source Code</a>
+			<!-- <a class="button orange" href="/epic.html">Example</a> -->
+			<!-- </a><a class="button yellow" href="https://flash.allemande.ai">Flash -->
+			<!-- </a><a class="button green" href="https://alfred.allemande.ai">Alfred</a> -->
+			</a><a class="button yellow" href="/pricing.html">Plans
+			</a><a class="button green" href="mailto:sam@allemande.ai?subject=Allemande AI">Contact
+			</a><a class="button blue" href="https://github.com/sswam/allemande">Code</a>
 		</div>
 	</div>
 
@@ -63,6 +61,9 @@
 	<div class="space" style="height: 40px;">
 	</div>
 
+	<script src="util.js"></script>
+	<script src="auth.js"></script>
+
 	<script>
 		if (location.href.indexOf("local.") > -1) {
 			document.getElementById("chatlink").href = "https://chat-local.allemande.ai";
@@ -70,9 +71,7 @@
 		for (const [index, p] of document.querySelectorAll("#info > p").entries()) {
 			p.style.textIndent = `${index}em`;
 		}
+		authHomepage();
 	</script>
-
-	<script src="util.js"></script>
-	<script src="auth.js"></script>
 </body>
 </html>

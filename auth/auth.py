@@ -6,6 +6,7 @@ import os
 import urllib
 import json
 from datetime import datetime, timedelta
+import logging
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -14,6 +15,10 @@ from starlette.exceptions import HTTPException
 import uvicorn
 import jwt
 from passlib.apache import HtpasswdFile
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 SESSION_MAX_AGE = 30 * 24 * 3600  # 30 days
@@ -100,8 +105,12 @@ async def login(request):
 @app.route("/x/logout", methods=["POST"])
 async def logout(request):
 	"""Logout by clearing cookies"""
+	auth_cookie = request.cookies.get("auth")
+	payload = verify_jwt_token(auth_cookie)
+	username = payload["sub"]
+	logger.info(f"Logging out user {username}")
 	# TODO: get username from session cookie if we need to know who is logging out
-	response = JSONResponse({})
+	response = JSONResponse({username: username})
 	# kill the auth cookie and the user_data cookie.
 	set_cookies(response, "", {}, 0)
 	return response
