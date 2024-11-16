@@ -28,20 +28,35 @@ server {
 
 	absolute_redirect off;
 
+	auth_jwt_key "REDACTED";
+	auth_jwt_loginurl "https://allemande.ai/";
+	auth_jwt_enabled off;
+	auth_jwt_redirect on;
+	auth_jwt_location COOKIE=auth;
+	auth_jwt_algorithm HS256;
+
 	location / {
 		if ($is_banned) {
 			return 302 https://allemande.ai/ban.html;
 		}
+ 		auth_jwt_enabled on;
 #		autoindex on;
 		try_files $uri $uri/ =404;
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
-		add_header Cache-Control "no-cache";
-		add_header Access-Control-Allow-Origin 'https://rooms.allemande.ai' always;
+		add_header Cache-Control "no-store";
+		if ($cors_header = "https://rooms.allemande.ai") {
+			add_header Access-Control-Allow-Origin $cors_header always;
+			add_header Access-Control-Allow-Credentials true;
+		}
 	}
 
 	location /users {
+		if ($is_banned) {
+			return 302 https://allemande.ai/ban.html;
+		}
+ 		auth_jwt_enabled on;
 		root /var/www/allychat/;
 		autoindex on;
 #		try_files $uri $uri/ =404;
@@ -49,7 +64,7 @@ server {
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
-		add_header Cache-Control "no-cache";
+		add_header Cache-Control "no-store";
 	}
 
 	location @redirect {
@@ -59,16 +74,17 @@ server {
 		return 404;
 	}
 
-	location /logout/logout {
-		auth_basic "Auth";
-		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
-		autoindex on;
-		try_files $uri $uri/ =404;
-	}
+# 	location /logout/logout {
+# 		auth_basic "Auth";
+# 		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
+# 		autoindex on;
+# 		try_files $uri $uri/ =404;
+# 	}
 
 	location /x {
-		auth_basic "Auth";
-		auth_basic_user_file /var/www/allychat/.htpasswd;
+ 		auth_jwt_enabled on;
+# 		auth_basic "Auth";
+# 		auth_basic_user_file /var/www/allychat/.htpasswd;
 		proxy_pass http://127.0.0.1:8000;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;

@@ -48,17 +48,24 @@ server {
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded-Proto https;
+# 		if ($cors_header = "https://rooms.allemande.ai") {
+# 			add_header Access-Control-Allow-Origin $cors_header always;
+# 		}
+		if ($cors_header = "https://chat.allemande.ai") {
+			add_header Access-Control-Allow-Origin $cors_header always;
+			add_header Access-Control-Allow-Credentials true;
+		}
 	}
 
 	auth_jwt_key "REDACTED";
 	auth_jwt_loginurl "https://allemande.ai/";
 	auth_jwt_enabled off;
 	auth_jwt_redirect on;
+	auth_jwt_location COOKIE=auth;
+	auth_jwt_algorithm HS256;
 
 	location /auth/ {
  		auth_jwt_enabled on;
-		auth_jwt_location COOKIE=auth;
- 		auth_jwt_algorithm HS256;
 		autoindex on;
 		try_files $uri $uri/ =404;
 		add_header Cache-Control "no-store";
