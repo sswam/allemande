@@ -4,7 +4,7 @@
 	<meta charset="utf-8" />
 	<meta content="width=device-width, initial-scale=1" name="viewport" />
 	<title> Allemande AI </title>
-	<link href="style@1728451977.css" rel="stylesheet" />
+	<link href="style@1731538402.css" rel="stylesheet" />
 	<!-- For iOS - 180x180px, apple-touch-icon -->
 	<link href="/favicon/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
 	<!-- For Android/Chrome - 192x192px,  -->
@@ -26,7 +26,6 @@
 </head>
 <body>
 	<img alt="Allemande" id="banner" src="allemande@1683146134.jpg" />
-
 	<div class="space" style="flex-grow: 1; max-height: 3.5em; min-height: 2em;">
 	</div>
 	<div class="box" id="info">
@@ -35,35 +34,24 @@
 		<p>Log in to try <i>Ally Chat</i>, our multi-user AI chat app.</p>
 		<p>Contact us for a free meeting to learn about AI.</p>
 		<div style="text-align:center">
-			<a class="button red" href="https://chat.allemande.ai" id="chatlink">Ally Chat
 			<!-- <a class="button orange" href="/epic.html">Example</a> -->
 			<!-- </a><a class="button yellow" href="https://flash.allemande.ai">Flash -->
 			<!-- </a><a class="button green" href="https://alfred.allemande.ai">Alfred</a> -->
-			</a><a class="button yellow" href="/pricing.html">Plans
-			</a><a class="button green" href="mailto:sam@allemande.ai?subject=Allemande AI">Contact
-			</a><a class="button blue" href="https://github.com/sswam/allemande">Code</a>
+		<a class="button red" href="https://chat.allemande.ai" id="chatlink">Ally Chat </a><a class="button yellow" href="/pricing.html">Plans </a><a class="button green" href="mailto:sam@allemande.ai?subject=Allemande AI">Contact </a><a class="button blue" href="https://github.com/sswam/allemande">Code</a>
 		</div>
 	</div>
-
 	<div class="space" style="flex-grow: 3; min-height: 40px;">
 	</div>
-
 	<div class="box login hidden auth_box" id="login_box">
-		<input id="username" type="text" placeholder="User" size="14">
-		<input id="password" type="password" placeholder="Password" size="7">
-		<button id="login" class="button green">Continue</button>
+	<input id="username" placeholder="User" size="14" type="text" /><input id="password" placeholder="Password" size="7" type="password" /><button class="button green" id="login">Continue</button>
 	</div>
 	<div class="box session hidden auth_box" id="session_box">
-		<input id="session_username" type="text" readonly size="14">
-		<button id="logout" class="button red">Log out</button>
+	<input id="session_username" readonly="" size="14" type="text" /><button class="button red" id="logout">Log out</button>
 	</div>
-
 	<div class="space" style="height: 40px;">
 	</div>
-
-	<script src="util.js"></script>
-	<script src="auth.js"></script>
-
+	<script src="util@1682080032.js"></script>
+	<script src="auth@1731721074.js"></script>
 	<script>
 		if (location.href.indexOf("local.") > -1) {
 			document.getElementById("chatlink").href = "https://chat-local.allemande.ai";
