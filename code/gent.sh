@@ -29,9 +29,8 @@ gent() {
 		ext="sh"
 	fi
 
-	mkdir -p "$dir/tests"
-
 	tests_ext=$ext
+	tests_dir=$dir/tests
 
 	executable=0
 	case "$ext" in
@@ -41,10 +40,16 @@ gent() {
 		if [ ! -e "$dir/tests/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
 			ln -s /usr/lib/bats "$dir/tests/test_helper"
 		fi
+		;;
+	go)
+		tests_dir=$dir
+		;;
 	esac
 
 	local tests_base="${stem}_test.$tests_ext"
-	local tests_path="$dir/tests/$tests_base"
+	local tests_path="$tests_dir/$tests_base"
+
+	mkdir -p "$(dirname "$tests_path")"
 
 	# Check if test file already exists
 	if [ -s "$tests_path" ]; then

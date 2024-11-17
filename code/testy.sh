@@ -40,8 +40,10 @@ testy() {
 		if [ "$ext" == "sh" ]; then
 			test_ext="bats"
 		fi
-		if [ "$test_ext" = rs ]; then
+		if [ "$ext" = rs ]; then
 			local tests_file="$prog"
+		elif [ "$ext" = go ]; then
+			local tests_file="$(basename "$prog" ".$ext")_test.$test_ext"
 		else
 			local tests_file="$(dirname "$prog")/tests/$(basename "$prog" ".$ext")_test.$test_ext"
 		fi
@@ -99,7 +101,7 @@ test_pl() {
 
 test_go() {
 	local tests_file="$1"
-	run go test "$tests_file" || return 1
+	run go test || return 1
 }
 
 test_rs() {
