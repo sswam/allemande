@@ -62,13 +62,13 @@ for dir in ally canon alias; do
 	PATHS=$PATHS:$ALLEMANDE_HOME/$dir
 done
 
-for appdir in "$ALLEMANDE_HOME/apps"/*; do
-	if [ ! -d "$appdir" ]; then
-		continue
-	fi
-	app=$(basename "$appdir")
-	PATHS=${PATHS#:}:$ALLEMANDE_HOME/apps/$app
-done
+# for appdir in "$ALLEMANDE_HOME/apps"/*; do
+# 	if [ ! -d "$appdir" ]; then
+# 		continue
+# 	fi
+# 	app=$(basename "$appdir")
+# 	PATHS=${PATHS#:}:$ALLEMANDE_HOME/apps/$app
+# done
 
 PATH="$PATHS:$PATH:$ALLEMANDE_HOME/node_modules/.bin"
 
