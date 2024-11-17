@@ -21,16 +21,16 @@ def process_line(line: str) -> str | None:
     """Process a single line of the script."""
     # Remove indent and 'local ' from start of line
     line = line.lstrip()
-    line = re.sub(r'^local\s+', '', line)
+    line = re.sub(r"^local\s+", "", line)
 
     # Extract variable name, short option, and default value
-    match = re.match(r'(\w+)=(\S*)\s+(\w+)=(\S*)(?:\s+#\s*(.*))?', line)
+    match = re.match(r"(\w+)=(\S*)\s+(\w+)=(\S*)(?:\s+#\s*(.*))?", line)
     if match:
         long_opt, _default_1, short_opt, _default_2, description = match.groups()
         if _default_2.startswith("("):
-            return f'{long_opt}=(${{{long_opt}[@]}} ${{{short_opt}[@]}}); unset {short_opt}'
+            return f"{long_opt}=(${{{long_opt}[@]}} ${{{short_opt}[@]}}); unset {short_opt}"
         else:
-            return f'{long_opt}=${{{long_opt}:-${short_opt}}}; unset {short_opt}'
+            return f"{long_opt}=${{{long_opt}:-${short_opt}}}; unset {short_opt}"
 
     return None
 
@@ -49,11 +49,11 @@ def opts_long(
                 line = line.strip()
 
                 # Stop before the ". opts" line
-                if re.match(r'\s*\.\s+opts', line):
+                if re.match(r"\s*\.\s+opts", line):
                     break
 
                 # Stop before an eval line
-                if re.search(r'\beval\s', line):
+                if re.search(r"\beval\s", line):
                     break
 
                 # Process and output the line
@@ -67,7 +67,9 @@ def opts_long(
 
 def setup_args(parser: argparse.ArgumentParser) -> None:
     """Set up the command-line arguments."""
-    parser.description = "Generate code to support long and short options based on the script's content."
+    parser.description = (
+        "Generate code to support long and short options based on the script's content."
+    )
     parser.add_argument("script", help="Path to the script file to process")
 
 
