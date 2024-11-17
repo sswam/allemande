@@ -44,9 +44,9 @@ sparkjoy
 /prompt/prompts.txt
 /prompt/prompts2.txt
 /speech/speech-models-en.txt
-/apps/story/stories
 /project/log.txt
 /allemande.egg-info
+/tools/tools_help.txt
 
 # derived header files
 /c/sea.h
@@ -67,6 +67,7 @@ sparkjoy
 
 # private files
 /apps/story/family
+/apps/story/stories
 
 # test files
 /text/files.md
@@ -78,7 +79,10 @@ sparkjoy
 # data files for dev
 /image/model.json
 
-# binary executables
+# generated program files
+/apps/plan/hello.js
+
+# binary code
 /arcs/sshc
 /c/test_lua
 /c/test_perl
@@ -98,3 +102,7 @@ sparkjoy
 /x11/glxgears
 /html/htmlsplit
 /html/tests/htmlsplit_test
+/bash/opts_long
+/bash/opts_help
+/data/tsv2txt
+/apps/plan/hello.wasm
