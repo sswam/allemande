@@ -6,8 +6,14 @@
 metadeb() {
 	local maintainer= m=  # package maintainer
 	local version= v=0.1  # package version
+	local name= n=  # override package name (only with a single package)
 
 	eval "$(ally)"
+
+	# Check --name option is used only with a single package
+	if [ -n "$name" ] && [ $# != 1 ]; then
+		die "option --name can be used only with a single package"
+	fi
 
 	# Get maintainer info
 	if [ -z "$maintainer" ]; then
@@ -25,12 +31,19 @@ metadeb() {
 	debs=()
 
 	# Process each package
-	for pkg in "$@"; do
-		printf "Processing %s...\n" "$pkg"
+	for pkgfile in "$@"; do
+		printf "Processing %s...\n" "$pkgfile"
 
 		# check pkg file exists	
-		if [ ! -f "$pkg" ]; then
-			die "package file not found: $pkg"
+		if [ ! -f "$pkgfile" ]; then
+			die "package file not found: $pkgfile"
+		fi
+
+		# Get package name either from --name, or from the file without the extension
+		if [ -n "$name" ]; then
+			pkg="$name"
+		else
+			pkg=${pkgfile%.*}
 		fi
 
 		# Clean old packages
@@ -41,7 +54,7 @@ metadeb() {
 		mkdir -p "$pkg_dir"
 
 		# Create dependency list
-		sed 's/#.*$//' "$pkg" | tr -s ' \n' ',' | sed 's/,$//' > "$pkg_dir/deps.list"
+		< "$pkgfile" sed 's/#.*$//' | tr -s ' \n' ',' | sed 's/,$//' > "$pkg_dir/deps.list"
 
 		# Generate control file
 		cat << EOT > "$pkg_dir/control"
@@ -75,7 +88,7 @@ EOT
 		arch=$(dpkg --print-architecture)
 		rm -f "${pkg}_${version}_${arch}.buildinfo" "${pkg}_${version}_${arch}.changes"
 
-		# Collect package files
+		# Collect deb files
 		debs+=(./"$deb_file")
 	done
 
