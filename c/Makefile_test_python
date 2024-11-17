@@ -1,5 +1,5 @@
-CFLAGS = -Wall $(shell python3.10-config --cflags)
-LDLIBS = $(shell python3.10-config --ldflags) -lpython3.10
+CFLAGS = -Wall $(shell python3-config --cflags)
+LDLIBS = $(shell python3-config --embed --ldflags)
 
 test_python: test_python.o
 

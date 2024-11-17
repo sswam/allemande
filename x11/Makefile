@@ -5,4 +5,4 @@ LDLIBS=-lGL -lGLU -lX11 -lm
 glxgears: glxgears.c
 
 clean:
-	rm -f glxgears *.o
+	rm -f glxgears

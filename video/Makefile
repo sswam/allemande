@@ -1,5 +1,8 @@
+CC=gcc
+CFLAGS=-Wall -Wextra -pedantic -std=gnu11
+LDLIBS=-lGL -lGLU -lX11 -lm
+
 mp4_fast_start: mp4_fast_start.c
-	gcc -ggdb -Wall -Wextra -o $@ $<
 
 clean:
 	rm -f mp4_fast_start

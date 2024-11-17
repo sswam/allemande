@@ -1,4 +1,3 @@
-
 exes = htmlsplit
 tests = tests/htmlsplit_test
 

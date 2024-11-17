@@ -8,6 +8,8 @@ WATCH_LOG := $(ALLEMANDE_HOME)/watch.log
 SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 TEMPLATES := $(WEBCHAT)/templates
+MAKEFILES := $(wildcard */Makefile)
+SUBDIRS := $(dir $(MAKEFILES))
 
 JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
 	run core vi-online vi-local vscode-online vscode-local voice webchat llm whisper chat-api stream auth watch \
@@ -17,7 +19,10 @@ JOBS := server_start server_stop beorn server default run-i3 run frontend backen
 	stop mount umount fresh \
 	install install-dev uninstall clean i3-layout
 
-all: server_start beorn api_doc
+all: api_doc $(SUBDIRS) canon
+
+$(SUBDIRS):
+	$(MAKE) -C $@
 
 server_start:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make server"
@@ -227,6 +232,6 @@ fresh-old::
 api_doc: llm/llm.api
 
 %.api: %.py
-	func.py -a -A "$<" > "$@"
+	func -a -I "$<" > "$@"
 
-.PHONY: all default $(JOBS) %.xt canon api_doc
+.PHONY: all default $(JOBS) %.xt canon api_doc $(SUBDIRS)

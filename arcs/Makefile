@@ -1,5 +1,3 @@
-#!/usr/bin/make -f
-
 CC      = gcc -std=gnu99
 CFLAGS  = -Wall -Wextra -Werror -g
 
