@@ -7,10 +7,16 @@ junk_files() {
     local directory= d=.     # directory to search, defaults to current
     local sort_order= s=name # sort order [name|size|time]
     local remove= r=0    # remove files flag
+    local empty= e=0    # list empty and single byte files
 
     eval "$(ally)" # Note to AI: This is magickal, processes long and short options, etc.
 
     [ -d "$directory" ] || usage "Directory '$directory' does not exist"
+
+    local empty_opts=()
+    if (( empty )); then
+        empty_opts=(-o -empty -o -size 1c)
+    fi
 
     # Find junk files and empty files
     found_files=$(find "$directory" \
@@ -22,9 +28,8 @@ junk_files() {
             -name '*~' -o \
             -name '.*.results.txt' -o \
             -name '*.tmp.*' -o \
-            -name 'subtitle.txt' -o \
-            -empty -o \
-            -size 1c \
+            -name 'subtitle.txt' \
+            "${empty_opts[@]}" \
         \) -type f -printf "%P\n" |
     sort |
     comm -3 -2 - <(git ls-files | sort))

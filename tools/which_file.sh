@@ -2,15 +2,9 @@
 # [file ...]
 # find the full path of a command or file in PATH
 
-eval "$(ally)"
+all= a=	# show all files in PATH, not only the first
 
-ALL=
-for O in "${OPTS[@]}"; do
-	case O in
-	-a|--all) ALL=1 ;;
-	*) . usage [-a] filename ...
-	esac
-done
+eval "$(ally)"
 
 not_in_path() {
 	if [ -e "$F" -o -n "${CREATE:-}" ]; then
@@ -29,7 +23,7 @@ for F; do
 		if [ -f "$f" ]; then
 			echo "$f"
 			found=1
-			[ -n "$ALL" ] || break
+			[ -n "$all" ] || break
 		fi
 	done
 	if [ -z "$found" ]; then
