@@ -83,14 +83,15 @@ static ssize_t pread_all(int fd, void *buf, size_t count, off_t offset)
 {
 	ssize_t total_nread = 0;
 	ssize_t nread;
+	char *p = buf;
 
 	while ((size_t)total_nread < count) {
-		nread = pread(fd, buf, count - total_nread, offset);
+		nread = pread(fd, p, count - total_nread, offset);
 		if (nread == -1)
 			return -1;
 		if (nread == 0)
 			break;
-		buf += nread;
+		p += nread;
 		offset += nread;
 		total_nread += nread;
 	}
@@ -101,12 +102,13 @@ static ssize_t pwrite_all(int fd, const void *buf, size_t count, off_t offset)
 {
 	ssize_t total_nwritten = 0;
 	ssize_t nwritten;
+	const char *p = buf;
 
 	while ((size_t)total_nwritten < count) {
-		nwritten = pwrite(fd, buf, count - total_nwritten, offset);
+		nwritten = pwrite(fd, p, count - total_nwritten, offset);
 		if (nwritten == -1)
 			return -1;
-		buf += nwritten;
+		p += nwritten;
 		offset += nwritten;
 		total_nwritten += nwritten;
 	}
