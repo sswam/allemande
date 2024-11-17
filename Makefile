@@ -23,12 +23,15 @@ all: api_doc $(SUBDIRS) canon
 
 deps: deb-deps venv
 
-deb-deps:
-	metadeb -n=deps-allemande debian-packages.txt
+deb-deps: deps-allemande_0.1_all.deb
 
-venv:
+deps-allemande_0.1_all.deb: debian-packages.txt
+	env -i PATH=$$PATH HOME=$$HOME metadeb -n=deps-allemande debian-packages.txt
+
+venv: requirements.txt
 	[ -e venv ] || python -m venv venv
 	. venv/bin/activate; pip install -r requirements.txt
+	touch venv
 
 $(SUBDIRS):
 	$(MAKE) -C $@

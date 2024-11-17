@@ -16,16 +16,16 @@ metadeb() {
 	fi
 
 	# Get maintainer info
-	if [ -z "$maintainer" ]; then
+	if [ -z "$maintainer" ] && [ -s "${USER_NAME:-}" ] && [ -s "${USER_EMAIL}" ]; then
 		maintainer="$USER_NAME <$USER_EMAIL>"
-		if [ -z "$maintainer" ]; then
-			maintainer="$(git config --get user.name) <$(git config --get user.email)>"
-		fi
-		if [ -z "$maintainer" ] || [[ "$maintainer" = " <>" ]]; then
-			read -r -p "Enter maintainer name: " name
-			read -r -p "Enter maintainer email: " email
-			maintainer="$name <$email>"
-		fi
+	fi
+	if [ -z "$maintainer" ] && command -v git &>/dev/null; then
+		maintainer="$(git config --get user.name) <$(git config --get user.email)>"
+	fi
+	if [ -z "$maintainer" ] || [[ "$maintainer" = " <>" ]]; then
+		read -r -p "Enter maintainer name: " name
+		read -r -p "Enter maintainer email: " email
+		maintainer="$name <$email>"
 	fi
 
 	debs=()

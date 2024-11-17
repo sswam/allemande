@@ -73,6 +73,7 @@ libterm-readline-gnu-perl
 libemail-simple-perl
 liblog-log4perl-perl
 
+libperl-dev
 liblua5.4-dev
 ruby-dev
 
