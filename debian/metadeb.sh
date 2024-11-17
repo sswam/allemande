@@ -60,13 +60,23 @@ EOT
 		# Build package
 		equivs-build "$pkg_dir/control"
 
+		deb_file="${pkg}_${version}_all.deb"
+
 		# Check that deb file was created
-		if [ ! -f "$pkg"_"$version"_all.deb ]; then
+		if [ ! -f "$deb_file" ]; then
 			die "package build failed"
 		fi
 
+		# Hide the deb file
+		mv "$deb_file" ".$deb_file"
+		ln -s ".$deb_file" "$deb_file"
+
+		# Remove unneeded buildinfo and changes files
+		arch=$(dpkg --print-architecture)
+		rm -f "${pkg}_${version}_${arch}.buildinfo" "${pkg}_${version}_${arch}.changes"
+
 		# Collect package files
-		debs+=(./"$pkg"_"$version"_all.deb)
+		debs+=(./"$deb_file")
 	done
 
 	# Install packages
