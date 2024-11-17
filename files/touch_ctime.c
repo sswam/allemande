@@ -57,10 +57,8 @@ int MAIN_FUNCTION(int argc, char *argv[])
 {
 	int opt;
 	int exit_status = EXIT_SUCCESS;
-	static struct option long_options[] = {
-		{"help", no_argument, NULL, 'h'},
-		{NULL, 0, NULL, 0}
-	};
+	static struct option long_options[] = {{"help", no_argument, NULL, 'h'},
+					       {NULL, 0, NULL, 0}};
 
 	while ((opt = getopt_long(argc, argv, "h", long_options, NULL)) != -1) {
 		switch (opt) {

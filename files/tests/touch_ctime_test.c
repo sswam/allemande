@@ -1,3 +1,18 @@
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <linux/stat.h>
+#include <check.h>
+
+#define TEST 1
+
+#include "../touch_ctime.c"
+
+#define TEST_FILE "touch_ctime_test_file"
+
 START_TEST(test_touch_ctime)
 {
 	int fd;
@@ -36,4 +51,34 @@ START_TEST(test_touch_ctime)
 
 	// Clean up
 	unlink(TEST_FILE);
+}
+
+Suite *touch_ctime_suite(void)
+{
+	Suite *s;
+	TCase *tc_core;
+
+	s = suite_create("TouchCtime");
+	tc_core = tcase_create("Core");
+
+	tcase_add_test(tc_core, test_touch_ctime);
+	suite_add_tcase(s, tc_core);
+
+	return s;
+}
+
+int main(void)
+{
+	int number_failed;
+	Suite *s;
+	SRunner *sr;
+
+	s = touch_ctime_suite();
+	sr = srunner_create(s);
+
+	srunner_run_all(sr, CK_NORMAL);
+	number_failed = srunner_ntests_failed(sr);
+	srunner_free(sr);
+
+	return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
