@@ -72,3 +72,10 @@ libterm-readline-gnu-perl
 
 libemail-simple-perl
 liblog-log4perl-perl
+
+liblua5.4-dev
+ruby-dev
+
+libquickjs
+libnode-dev
+libmozjs-102-dev
