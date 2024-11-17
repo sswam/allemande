@@ -23,7 +23,7 @@ unrubbish() {
 	fi
 
 	# Extract the original filename by removing the timestamp suffix
-	local original_name=$(printf "%s" "$last_file" | sed -E 's/_[0-9]{8}_[0-9]{15}\+[0-9]{4}_[a-z]{3}_[0-9]+$//')
+	local original_name=$(printf "%s" "$last_file" | sed -E 's/_[0-9]{8}_[0-9]{15}\+[0-9]{4}_[A-Za-z]{3}_[0-9]+$//')
 
 	# Move the file back to the current working directory
 	v mv -i "$rubbish_dir/$last_file" "$original_name"

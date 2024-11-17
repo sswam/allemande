@@ -2,10 +2,14 @@
 # [file ...]
 # move to rubbish
 # suggested: alias rm=move-rubbish
-# moves each file to ~/rubbish/${basename}_$(nano=1 dt0)
+# moves each file to ~/rubbish/${basename}_${timestamp}
 # undo with unrubbish
 
 eval "$(ally)"
+
+timestamp() {
+	date +%Y%m%d_%H%M%S%N%z_%a
+}
 
 if [ -z "${RUBBISH:-}" ]; then
 	M=$(mount-point "${1:-}")
@@ -20,7 +24,7 @@ status=0
 for A; do
 	N=$(basename -- "$A")
 	while true; do
-		B="$RUBBISH/${N}_`nano=1 dt0`_$$"
+		B="$RUBBISH/${N}_$(timestamp)_$$"
 		[ -e "$B" ] || break  # XXX not entirely secure, should use >| to creat or something?
 	done
 	mv -v -i -- "$A" "$B" || status=1
