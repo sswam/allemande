@@ -81,3 +81,8 @@ libquickjs
 libnode-dev
 libmozjs-102-dev
 python3-tk
+
+libjwt-dev
+libjansson-dev
+
+xprintidle
