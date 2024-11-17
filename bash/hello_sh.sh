@@ -51,10 +51,13 @@ shopping-list() {
 	echo "Shopping list:"
 
 	if [ "$use_ai" = 1 ]; then
+		local tlt_prompt=""
+		if [ "$language" != en ]; then
+			tlt_prompt=" Don't translate back to English."
+		fi
 		shopping-list-format "${shopping[@]}" |
 			process -m="$model" \
-				"Please echo the input and add any extra " \
-				"items we might need, in LANG=$language. Don't translate back to English."
+				"Please echo the input and add any extra items we might need, in LANG=$language.$tlt_prompt"
 	else
 		shopping-list-format "${shopping[@]}"
 	fi

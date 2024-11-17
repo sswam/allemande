@@ -18,7 +18,8 @@
 
 #define MAX_BUFFER 1024
 
-#define GET_GREETING_TEMPLATE "Please greet %s in LANG=%s. Be creative, but not more than 50 words. Don't translate back to English."
+#define GET_GREETING_TEMPLATE "Please greet %s in LANG=%s. Be creative, but not more than 50 words.%s"
+const char *no_translate = "Don't translate back to English.";
 
 /* Options structure */
 struct options {
@@ -34,8 +35,11 @@ struct options {
 {
 	char query[MAX_BUFFER];
 	char *greeting = NULL;
+	const char *tlt_prompt = "";
+	if (strcmp(opts->language, "en") == 0)
+		tlt_prompt = no_translate;
 
-	if ((snprintf(query, sizeof(query), GET_GREETING_TEMPLATE, opts->name, opts->language)) < 0)
+	if ((snprintf(query, sizeof(query), GET_GREETING_TEMPLATE, opts->name, opts->language, tlt_prompt)) < 0)
 		goto done;
 
 	if ((greeting = llm_query(query)) == NULL) {

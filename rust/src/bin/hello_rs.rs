@@ -14,9 +14,13 @@ struct Options {
 
 /// Generates a greeting using AI based on the given options
 fn ai_get_greeting(opts: &Options) -> io::Result<String> {
+    let mut tlt_prompt = "";
+    if opts.language != "en" {
+        tlt_prompt = " Don't translate back to English."
+    }
     let query = format!(
-        "Please greet {} in LANG={}. Be creative, but not more than 50 words. Don't translate back to English.",
-        opts.name, opts.language
+        "Please greet {} in LANG={}. Be creative, but not more than 50 words.{}",
+        opts.name, opts.language, tlt_prompt
     );
     llm_query(&query)
 }

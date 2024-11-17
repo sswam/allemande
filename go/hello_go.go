@@ -33,9 +33,13 @@ func printUsage(w io.Writer, programName string) {
 
 // getGreeting returns a greeting based on the language
 func getGreeting(opts *Options) (string, error) {
+	tlt_prompt := ""
+	if opts.language != "en" {
+		tlt_prompt = " Don't translate back to English."
+	}
 	if opts.useAI {
-		query := fmt.Sprintf("Please greet %s in LANG=%s. Be creative, but not more than 50 words. Don't translate back to English.",
-			opts.name, opts.language)
+		query := fmt.Sprintf("Please greet %s in LANG=%s. Be creative, but not more than 50 words.%s",
+			opts.name, opts.language, tlt_prompt)
 		return llmQuery(query)
 	}
 

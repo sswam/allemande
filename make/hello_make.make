@@ -60,7 +60,7 @@ prompt/hello.txt:
 	@echo "Please greet $(name) in $(language). Be creative, but not more than 50 words." > $@
 
 prompt/shopping.txt:
-	@echo "Please echo the input, and add a few extra items we might need, in $(language)." > $@
+	@echo "Please echo the input, and add a few extra items we might need, in LANG=$(language)." > $@
 
 prompt/news.txt:
 	@echo "Summarize the latest news from Hacker News in 3-5 bullet points." > $@
