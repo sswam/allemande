@@ -57,7 +57,7 @@ format_sh() {
 }
 
 format_py() {
-	qs black --line-length 100 "$1"
+	qs black --line-length 132 "$1"
 }
 
 format_c() {
