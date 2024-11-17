@@ -79,3 +79,4 @@ ruby-dev
 libquickjs
 libnode-dev
 libmozjs-102-dev
+python3-tk

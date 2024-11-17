@@ -21,6 +21,15 @@ JOBS := server_start server_stop beorn server default run-i3 run frontend backen
 
 all: api_doc $(SUBDIRS) canon
 
+deps: deb-deps venv
+
+deb-deps:
+	metadeb -n=deps-allemande debian-packages.txt
+
+venv:
+	[ -e venv ] || python -m venv venv
+	. venv/bin/activate; pip install -r requirements.txt
+
 $(SUBDIRS):
 	$(MAKE) -C $@
 
@@ -234,4 +243,4 @@ api_doc: llm/llm.api
 %.api: %.py
 	func -a -I "$<" > "$@"
 
-.PHONY: all default $(JOBS) %.xt canon api_doc $(SUBDIRS)
+.PHONY: all default $(JOBS) %.xt canon api_doc $(SUBDIRS) deps deb-deps venv

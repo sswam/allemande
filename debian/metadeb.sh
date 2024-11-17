@@ -32,7 +32,7 @@ metadeb() {
 
 	# Process each package
 	for pkgfile in "$@"; do
-		printf "Processing %s...\n" "$pkgfile"
+		printf >&2 "Processing %s...\n" "$pkgfile"
 
 		# check pkg file exists	
 		if [ ! -f "$pkgfile" ]; then
@@ -46,8 +46,17 @@ metadeb() {
 			pkg=${pkgfile%.*}
 		fi
 
+		# deb file name
+		deb_file="${pkg}_${version}_all.deb"
+
+		# check newer?
+		if ! [ "$pkgfile" -nt "$deb_file" ]; then
+			echo >&2 "Package file is older than the deb file, skipping."
+			continue
+		fi
+
 		# Clean old packages
-		rm -f "${pkg}_"*.deb
+		rm -f "${pkg}_"*.deb ".${pkg}_"*.deb
 
 		# Create package directory
 		pkg_dir="./.metadeb_$pkg"
@@ -73,8 +82,6 @@ EOT
 		# Build package
 		equivs-build "$pkg_dir/control"
 
-		deb_file="${pkg}_${version}_all.deb"
-
 		# Check that deb file was created
 		if [ ! -f "$deb_file" ]; then
 			die "package build failed"
@@ -92,8 +99,10 @@ EOT
 		debs+=(./"$deb_file")
 	done
 
-	# Install packages
-	sudo apt-get -y reinstall "${debs[@]}"
+	# Install packages, if any
+	if [ ${#debs[@]} -gt 0 ]; then
+		sudo apt-get -y reinstall "${debs[@]}"
+	fi
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
