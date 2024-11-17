@@ -35,7 +35,7 @@ from slugify import slugify
 
 from ally import main, titty
 from ally.lazy import lazy
-import tsv2txt
+import tsv2txt_py as tsv2txt
 
 # Lazy imports for API clients
 lazy("openai", "AsyncOpenAI")
