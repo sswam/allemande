@@ -48,21 +48,21 @@ def parse_source(source: str, language: str):
 
 def extract_items(tree, language: str):
     items = []
-    if language == 'py':
+    if language == "py":
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 items.append(node)
             for child in ast.iter_child_nodes(node):
-                if not hasattr(child, 'parent'):
-                    setattr(child, 'parent', node)
+                if not hasattr(child, "parent"):
+                    setattr(child, "parent", node)
     # TODO: Add parsing logic for other languages here
     return items
 
 
 def format_item(item, types: bool, params: bool, decorators: bool, docstring: bool, language: str):
     if language == "py":
-        if isinstance(item, ast.FunctionDef) and hasattr(item, 'parent') and isinstance(item.parent, ast.ClassDef):
-            text = f"{item.parent.name}.{name}"
+        if isinstance(item, ast.FunctionDef) and hasattr(item, "parent") and isinstance(item.parent, ast.ClassDef):
+            text = f"{item.parent.name}.{item.name}"
         else:
             text = item.name
         is_class = isinstance(item, ast.ClassDef)
@@ -75,7 +75,7 @@ def format_item(item, types: bool, params: bool, decorators: bool, docstring: bo
         if docstring:
             text += ":"
             if ast.get_docstring(item):
-                text += f"\n    \"\"\"{ast.get_docstring(item)}\"\"\""
+                text += f'\n    """{ast.get_docstring(item)}"""'
     # TODO Add formatting logic for other languages
     return text + "\n"
 
@@ -136,7 +136,7 @@ def func(
         if item.name in func_names or f"{item.__class__.__name__}.{item.name}" in func_names:
             if show_code:
                 # source_code = ast.unparse(item) if language == "py" else source[item.start:item.end]
-                source_code = "\n".join(source_lines[item.lineno:item.end_lineno+1] + [""])
+                source_code = "\n".join(source_lines[item.lineno : item.end_lineno + 1] + [""])
 
                 # Reformatting should be out of scope for this script, we should move it to a separate script.
                 if reformat:
