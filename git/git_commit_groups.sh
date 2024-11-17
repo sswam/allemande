@@ -65,7 +65,9 @@ git_commit_groups() {
 	confirm "continue?"
 
 	< "$llm_input_file" process -m="$model" "Please group these changed or new files into batches for committing together.
-We should commit changes to closely related files together, I guess; e.g. tests and data with the associated programs.
+We usually commit different programs separately, even if they are in the same folder.
+If the changes are similar or serve a common purpose across several programs or files, we commit them together.
+Do not use any globbing or abbreviations in the output, we need to include each filename exactly.
 
 The output should be file names grouped together in batches on each line, separated by tabs.
 The order of the lines is not important. You can also add comments after a # character if necessary.
@@ -80,7 +82,7 @@ For example:
 6	code/foo	# code/foo is new, sounds like a junk file
 " | tee "$commit_plan"
 
-	rm -f "$rundown_file" "$bad_file" "$llm_input_file"
+	move-rubbish "$rundown_file" "$bad_file" "$llm_input_file"
 
 	$EDITOR "$commit_plan"
 
@@ -89,7 +91,7 @@ For example:
 	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-screen
 	screen -x ci
 
-	rm -f "$commit_plan"
+	move-rubbish "$commit_plan"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
