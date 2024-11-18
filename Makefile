@@ -8,8 +8,7 @@ WATCH_LOG := $(ALLEMANDE_HOME)/watch.log
 SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
 TEMPLATES := $(WEBCHAT)/templates
-MAKEFILES := $(wildcard */Makefile)
-SUBDIRS := $(dir $(MAKEFILES))
+SUBDIRS := $(dir $(wildcard */Makefile))
 
 JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
 	run core vi-online vi-local vscode-online vscode-local voice webchat llm whisper chat-api stream auth watch \
@@ -19,9 +18,10 @@ JOBS := server_start server_stop beorn server default run-i3 run frontend backen
 	stop mount umount fresh \
 	install install-dev uninstall clean i3-layout
 
-all: api_doc $(SUBDIRS) canon
+all: api_doc subdirs canon
 
-deps: deb-deps venv
+deps:: deb-deps
+deps:: venv
 
 deb-deps: deps-allemande_0.1_all.deb
 
@@ -33,6 +33,8 @@ venv: requirements.txt
 	. venv/bin/activate; pip install -r requirements.txt
 	touch venv
 
+subdirs: $(SUBDIRS)
+
 $(SUBDIRS):
 	$(MAKE) -C $@
 
@@ -42,7 +44,7 @@ server_start:
 server_stop:
 	ssh -t $(SERVER_SSH) "cd $(ALLEMANDE_HOME) && . ./env.sh && make stop"
 
-beorn: clean run-i3-screen # mount
+beorn: clean run-i3-screen mount
 i3: connect-i3-screen
 
 server:: stop
@@ -128,7 +130,7 @@ clean:
 	> watch.log
 
 llm:
-	while true; do sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/llm_llama.py -m "$(LLM_MODEL)" -d; done
+	while true; do $(PYTHON) core/llm_llama.py -m "$(LLM_MODEL)" -d; done
 
 whisper:
 	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
@@ -246,4 +248,4 @@ api_doc: llm/llm.api
 %.api: %.py
 	func -a -I "$<" > "$@"
 
-.PHONY: all default $(JOBS) %.xt canon api_doc $(SUBDIRS) deps deb-deps venv
+.PHONY: all default $(JOBS) %.xt canon api_doc subdirs $(SUBDIRS) deps deb-deps venv
