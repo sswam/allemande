@@ -185,7 +185,7 @@ def setup_args(arg):
     """Set up the command-line arguments."""
     arg("-p", "--paths", nargs="*", default=".", help="files and directories to watch")
     arg("-r", "--recursive", help="watch recursively under the folders", action="store_true")
-    arg("-x", "--extension", nargs="*", help="file extensions to watch")
+    arg("-x", "--extension", nargs="*", default=[], help="file extensions to watch")
     arg("-a", "--all-files", help="watch all files", action="store_true")
     arg("-H", "--hidden", help="watch hidden files", action="store_true")
     arg("-D", "--dirs", help="report changes to directories", action="store_true")
