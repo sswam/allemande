@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://allemande.ai/chat.css">
 <style id="style_user_name"></style>
 <link rel="icon" type="image/png" href="icon.png">
+<link rel="manifest" href="manifest.json">
 </head>
 <body id="app">
 <form id="form" class="fill" onsubmit="return false;">
@@ -16,7 +17,7 @@
 <div class="col pad o fill">
 	<div class="row">
 		<input id="room" name="room" class="flex mousetrap">
-<!--		<button id="subscribe"></button> -->
+		<button id="notify" disabled>notify</button>
 		<button id="user">?</button>
 		<button id="logout">log out</button>
 	</div>
@@ -27,7 +28,6 @@
 	<textarea id="content" name="content" class="content_input mousetrap grow"></textarea>
 	<button id="send">send</button>
 	</div>
-
 <!--
 	<div class="row">
 		<div style="flex-grow: 1"></div>
@@ -44,14 +44,7 @@
 <script src="mousetrap.min.js"></script>
 <script src="util.js"></script>
 <script src="https://allemande.ai/auth.js"></script>
+<script src="service-worker.js"></script>
 <script src="chat.js"></script>
-<script>
-authChat();
-</script>
-<!-- TODO voice chat!
-<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.14.0/dist/ort.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.7/dist/bundle.min.js"></script>
-<script src="voice.js"></script>
--->
 </body>
 </html>

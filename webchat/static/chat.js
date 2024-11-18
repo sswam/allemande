@@ -35,8 +35,6 @@ async function send(ev) {
 //		$('#files').replaceWith($(old_files));
 	};
 
-	// use DOM fetch instead of jquery
-
 	const response = await fetch('/x/post', {
 		method: 'POST',
 		body: formData,
@@ -133,6 +131,7 @@ function logged_out() {
 }
 
 async function who() {
+	// TODO use user info from cookie instead of asking the server
 	const response = await fetch('/x/whoami', {
 		method: 'POST',
 		headers: {
@@ -295,6 +294,7 @@ function room_prev() {
 // use mousetrap.js   -- Copilot suggestion <3
 
 function keyboard_shortcuts() {
+	// TODO: some way to access these features from mobile?  maybe swipe gestures?
 	Mousetrap.bind("esc", change_room);
 	Mousetrap.bind("ctrl+.", room_next);
 	Mousetrap.bind("ctrl+,", room_prev);
@@ -323,6 +323,48 @@ function handle_message(ev) {
 	}
 }
 
+// Register service worker ---------------------------------------------------
+
+async function register_service_worker() {
+	if (!'serviceWorker' in navigator)
+		return;
+	try {
+		const registration = await navigator.serviceWorker.register('/service-worker.js');
+		console.log('ServiceWorker registration successful');
+	} catch (err) {
+		console.error('ServiceWorker registration failed: ', err);
+	}
+}
+
+// Handle notification permissions -------------------------------------------
+
+async function notify_clicked() {
+	if (!('Notification' in window)) {
+		console.error('This browser does not support notifications');
+		return;
+	}
+
+	const permission = await Notification.requestPermission();
+	if (permission === 'granted') {
+		const registration = await navigator.serviceWorker.ready;
+		const subscription = await registration.pushManager.subscribe({
+			userVisibleOnly: true,
+			applicationServerKey: 'YOUR_VAPID_PUBLIC_KEY' // You'll need to replace this
+		});
+
+		// Send subscription to server
+		await fetch('/x/subscribe', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(subscription)
+		});
+
+		document.getElementById('notify').textContent = 'notifications on';
+	}
+}
+
 // main ----------------------------------------------------------------------
 
 function main() {
@@ -343,6 +385,9 @@ function main() {
 	$on(window, 'message', handle_message);
 	$on($id('user'), 'click', set_room_user);
 //	$on($id('logout'), 'click', logoutChat);
+	$on($id('notify'), 'click', notify_clicked);
+	authChat();
+	register_service_worker();
 }
 
 main();

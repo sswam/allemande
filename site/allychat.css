@@ -40,6 +40,11 @@ button:hover, button:focus {
 	background: var(--button-focus);
 }
 
+button:disabled, button:disabled:hover, button:disabled:focus {
+	color: var(--col7);
+	background: var(--col3);
+}
+
 /* scrollbars */
 
 * {
