@@ -9,6 +9,7 @@ from pathlib import Path
 from functools import partial
 from types import SimpleNamespace
 import re
+import time
 
 import argh
 import inotify.adapters
@@ -68,6 +69,9 @@ def load_model(model_path, device_map="auto"):
 # 3. For stopping on multiple possible tokens:
 # ```python
 # stopping_criteria = TokenStoppingCriteria(tokenizer, ["\n", ".", "?", "!"])
+
+# TODO stream the response and check the end of generated text; stopping criteria are complex, unreliable and can corrupt the generation
+# refer to chat/chat2.py
 
 class TokenStoppingCriteria(transformers.StoppingCriteria):
     def __init__(self, tokenizer, stop_tokens):
@@ -144,6 +148,7 @@ def load(ports, d, filename):
 		return f.read_text(encoding="utf-8")
 	raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
+
 def process_request(ports, port, req, fn, *args, **kwargs):
 	""" Process a request on a port """
 
@@ -190,7 +195,7 @@ def process_request(ports, port, req, fn, *args, **kwargs):
 #		(port/box).mkdir(exist_ok=True)
 
 
-def serve_requests(ports, fn):
+def serve_requests_inotify(ports, fn):
 	""" Serve requests from a directory of directories """
 	logger.info("serving requests from %s", ports)
 	i = inotify.adapters.Inotify()
@@ -216,6 +221,54 @@ def serve_requests(ports, fn):
 		process_request(ports, port, filename, fn)
 
 
+def serve_requests_poll(ports, fn, poll_interval=1.0):
+	""" Serve requests from a directory of directories using polling """
+	logger.info("serving requests from %s", ports)
+
+	# Keep track of known requests across all ports
+	known_requests = set()
+
+	# Initial scan of existing requests
+	for port in Path(ports).iterdir():
+		if not port.is_dir():
+			continue
+		todo = port/"todo"
+		logger.info("monitoring %s", todo)
+
+		# Process existing requests
+		for req in todo.iterdir():
+			if not req.is_dir():
+				continue
+			known_requests.add((port, req.name))
+			process_request(ports, port, req.name, fn)
+
+	# Continuous polling loop
+	while True:
+		new_requests = set()
+
+		# Scan all ports for new requests
+		for port in Path(ports).iterdir():
+			if not port.is_dir():
+				continue
+			todo = port/"todo"
+
+			for req in todo.iterdir():
+				if not req.is_dir():
+					continue
+				new_requests.add((port, req.name))
+
+		# Process any new requests that weren't known before
+		for port, req_name in new_requests - known_requests:
+			logger.debug("New request detected: %s in %s", req_name, port)
+			process_request(ports, port, req_name, fn)
+
+		# Update known requests
+		known_requests = new_requests
+
+		# Wait before next poll
+		time.sleep(poll_interval)
+
+
 def setup_logging(verbose, debug):
 	""" Setup logging """
 	log_level = logging.WARNING
@@ -228,12 +281,15 @@ def setup_logging(verbose, debug):
 	logging.basicConfig(level=log_level, format=fmt)
 
 
-def main(ports=str(ports_dir), model="default", verbose=False, debug=False):
+def main(ports=str(ports_dir), model="default", verbose=False, debug=False, inotify=False):
 	""" main function """
 	setup_logging(verbose, debug)
 	the_model = load_model(models_dir/model) if model else None
 	fn = partial(gen, model=the_model)
-	serve_requests(ports, fn)
+	if inotify:
+		serve_requests_inotify(ports, fn)
+	else:
+		serve_requests_poll(ports, fn)
 
 
 if __name__ == "__main__":
