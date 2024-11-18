@@ -162,9 +162,9 @@ REMOTE_AGENT_RETRIES = 3
 
 MAX_REPLIES = 1
 
-ADULT = True
+ADULT = False
 
-UNSAFE = True
+UNSAFE = False
 
 
 def register_agents(agent_type, agents_dict, async_func):
