@@ -4,24 +4,19 @@
 This module describes an interval in seconds.
 
 See also python lib: humanize
-e.g. desc = humanize.precisedelta(seconds)
-e.g. desc = humanize.precisedelta(datetime.timedelta(seconds=seconds))
-This script is kept because it works as a bash function and should be lighter than running python.
 """
 
 import sys
 from typing import TextIO
 from argh import arg
 
-from ally import main
+from ally import main, logs
 
 __version__ = "0.1.2"
 
-logger = main.get_logger()
+logger = logs.get_logger()
 
 
-@arg("seconds", type=int, help="Interval in seconds")
-@arg("-s", "--short", help="Use short output format")
 def describe_interval(seconds: int, short: bool = False) -> str:
     """Describe an interval in seconds."""
     if seconds >= 86400:
@@ -44,5 +39,10 @@ def describe_interval(seconds: int, short: bool = False) -> str:
     return f"{n} {unit}"
 
 
+def setup_args(arg):
+    arg("seconds", type=int, help="Interval in seconds")
+    arg("-s", "--short", action='store_true', help="Use short output format")
+
+
 if __name__ == "__main__":
-    main.run(describe_interval)
+    main.go(describe_interval, setup_args)
