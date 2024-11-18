@@ -47,7 +47,7 @@ i3: connect-i3-screen
 
 server:: stop
 server:: clean
-server:: webchat brain-remote.xt
+server:: webchat brain.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
