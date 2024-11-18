@@ -16,7 +16,7 @@ add_prompts=1   # 1
 rewind=2
 
 TOKEN_LIMIT=100000
-LLM_MODEL="point-alpaca"
+LLM_MODEL="point-alpaca-7B"
 # LLM_MODEL="WizardLM-7B-Uncensored"
 
 DEAFEN="--deafen"
