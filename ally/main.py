@@ -39,7 +39,8 @@ def go(
     args, kwargs, put = opts.parse(main_function, setup_args)
     sig = inspect.signature(main_function)
 
-    put = put or print
+    if not put:
+        put = lambda s: print(s, end="")
 
     # run the main function, catching any exceptions
     try:
