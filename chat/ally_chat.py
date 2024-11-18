@@ -160,6 +160,8 @@ TOKENIZERS = {}
 
 REMOTE_AGENT_RETRIES = 3
 
+MAX_REPLIES = 1
+
 ADULT = True
 
 UNSAFE = True
@@ -567,7 +569,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 	return response3
 
 
-async def process_file(model, file, args, history_start=0, count=0, max_count=4):
+async def process_file(model, file, args, history_start=0, count=0, max_count=MAX_REPLIES):
 	""" Process a file. """
 	# TODO don't need model parameter any longer
 	logger.info("Processing %s", file)
