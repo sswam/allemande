@@ -16,6 +16,7 @@ our %already;
 
 BEGIN {
 	use Getopt::Std;
+	$Getopt::Std::STANDARD_HELP_VERSION = 1;
 	getopts('bBs');
 	if ($opt_s) {
 		$opt_b = 1;  # -s implies -b
