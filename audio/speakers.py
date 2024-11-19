@@ -15,12 +15,11 @@ import sounddevice as sd
 import numpy as np
 import soundfile
 from sh import soundstretch
-from argh import arg
 
 import speak
-from ally import main, unix
+from ally import main, unix, geput
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = main.get_logger()
 
@@ -47,18 +46,15 @@ def speakers_speak_line(characters_dict: list[str, tuple], text: str, synth, mod
     )
 
 
-@arg("characters", nargs="*", help="List of name1,name2:tempo:pitch:loud, one name can be 'default'")
-@arg("--model", help="TTS model to use")
-@arg("--silence", help="Silence duration between lines")
-@arg("--start-text", help="Text to start with")
 def speakers(
-    *characters: list[str],
+    *characters: str,
+    get: geput.Get = None,
+    put: geput.Put = None,
     model: str = "coqui:tts_models/en/ek1/tacotron2",
     silence: float = 0.1,
     start_text: str | None = None,
 ) -> None:
     """Speak lines with two different voices using text-to-speech"""
-    get, put = main.io()
 
     speak.add_coqui_models()
     synth = speak.get_synth(model)
@@ -99,5 +95,12 @@ def speakers(
             time.sleep(1)
 
 
+def setup_args(arg):
+    arg("--model", help="TTS model to use")
+    arg("--silence", help="Silence duration between lines")
+    arg("--start-text", help="Text to start with")
+    arg("characters", nargs="*", help="List of name1,name2:tempo:pitch:loud, one name can be 'default'")
+
+
 if __name__ == "__main__":
-    main.run(speakers)
+    main.go(speakers, setup_args)
