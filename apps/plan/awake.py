@@ -275,7 +275,7 @@ def show_current_status(config: Config):
 # pylint: disable=too-many-arguments, too-many-positional-arguments
 def awake(
     log_file: str = "~/.awake.log",
-    sleep_threshold: int = 6 * 3600,
+    sleep_threshold: int = 4 * 3600,
     no_warn: bool = False,
     awake_warning: int = 12 * 3600,
     away_threshold: int = 300,
@@ -351,3 +351,8 @@ def setup_args(arg):
 
 if __name__ == "__main__":
     main.go(awake, setup_args)
+
+# TODO, re sleep_threshold: I want to detect sleep but not taking a break
+# from the PC; should use PC and phone for detection, or computer could ask
+# me whether I had any sleep / just woke up after I log in after a longish
+# break
