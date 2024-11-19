@@ -18,6 +18,7 @@ import jq
 from io import StringIO
 
 from rec import read_records, write_records
+import csv_tidy
 
 
 which_jq = "system"  # "system" or "python"
@@ -68,7 +69,10 @@ def pyq_streams(in_file, out_file, jq_program, opts):
         return
 
     jqout = pyq(data, jq_program, jq_opts)
-    print(formatter(jqout, opts), file=out_file)
+    output = formatter(jqout, opts)
+    if output[-1] != "\n":
+        output += "\n"
+    print(output, end="", file=out_file)
 
 
 def load_json(in_file, opts) -> object:
@@ -115,7 +119,7 @@ def format_yaml(obj, opts) -> str:
 
 
 def load_csv(in_file, opts) -> object:
-    reader = csv.reader(in_file, delimiter=opts.delimiter)
+    reader = csv_tidy.reader(in_file, delimiter=opts.delimiter)
     headers = next(reader)
     return [dict(zip(headers, row)) for row in reader]
 
