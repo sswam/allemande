@@ -26,7 +26,7 @@ from sh import amixer, soundstretch
 import ucm_main
 from ally import main, logs, lazy, geput  # type: ignore
 
-__version__ = "0.1.1"
+__version__ = "0.1.3"
 
 logger = logs.get_logger()
 
@@ -226,7 +226,7 @@ def speak_line(
     if not synth:
         synth = get_synth(model)
 
-    logger.debug("speak_line: text: %r", text)
+    logger.info("speak_line: text: %r", text)
     if echo:
         print(text)
 
@@ -239,7 +239,7 @@ def speak_line(
         # create a temporary file to store the audio output
         out_is_temp = not out
         if out_is_temp:
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+            with tempfile.NamedTemporaryFile(prefix="speak_", suffix=".wav", delete=False) as f:
                 out = f.name
         try:
             # generate speech from the input text
@@ -280,7 +280,7 @@ def speak_line(
 
 
 def speak_lines(
-    inp=sys.stdin,
+    istream=sys.stdin,
     out=None,
     model=DEFAULT_MODEL,
     play=True,
@@ -297,7 +297,9 @@ def speak_lines(
     if out:
         stem, ext = os.path.splitext(out)
 
-    for i, line in enumerate(inp):
+    logger.info("ready to speak lines")
+
+    for i, line in enumerate(istream):
         logger.debug("speak_lines: line: %r", line)
         if out:
             out = f"{stem}_{i:06d}{ext}"
@@ -330,16 +332,16 @@ def postproc_soundstretch(file, audio, rate, tempo=1, pitch=0):
         file = stem + ".wav"
         soundfile.write(file, audio, rate, subtype="PCM_16")
 
-    pp_out = stem + "_pp.wav"
-    tempo_percent = round((tempo - 1) * 100)
+    with tempfile.NamedTemporaryFile(prefix="speak_", suffix="_pp.wav") as pp:
+        pp_out = pp.name
+        tempo_percent = round((tempo - 1) * 100)
+        soundstretch(file, pp_out, f"-tempo={tempo_percent}", f"-pitch={pitch}", "-speech")
+        audio, rate = soundfile.read(pp_out)
 
-    soundstretch(file, pp_out, f"-tempo={tempo_percent}", f"-pitch={pitch}", "-speech")
-
-    # 	# move the processed audio to the original output file
-    # 	os.rename(pp_out, out)
+    if ext != ".wav":
+        os.remove(file)
 
     # load the audio data from the wav file
-    audio, rate = soundfile.read(pp_out)
     return audio, rate
 
 
@@ -354,8 +356,6 @@ def do_list_models():
 
 
 def speak(
-    get: geput.Get,
-    put: geput.Put,
     istream: TextIO = sys.stdin,
     out: str | None = None,
     text: str | None = None,
@@ -405,6 +405,7 @@ def speak(
         postproc = partial(postproc_soundstretch, tempo=tempo, pitch=pitch)
 
     if text:
+        logger.info("speak: text: %r", text)
         speak_line(
             text=text,
             out=out,
@@ -418,8 +419,9 @@ def speak(
             loud_while_speaking=loud_while_speaking,
         )
     else:
+        logger.info("speak: reading from stdin")
         speak_lines(
-            inp=inp,
+            istream=istream,
             out=out,
             model=model,
             play=play,
@@ -430,6 +432,7 @@ def speak(
             echo=echo,
             loud_while_speaking=loud_while_speaking,
         )
+
 
 def setup_args(arg):
     """Set up the command-line arguments."""
@@ -445,6 +448,8 @@ def setup_args(arg):
     arg("--download-all-models", action="store_true", help="Download all Coqui TTS models")
     arg("--no-echo", dest="echo", action="store_false", help="Don't echo text to stdout")
     arg("--loud-while-speaking", type=int, help="Volume level while speaking")
+    arg("text", nargs="?", help="Text to speak")
+
 
 if __name__ == "__main__":
     main.go(speak, setup_args)
