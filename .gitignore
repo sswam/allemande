@@ -107,3 +107,7 @@ sparkjoy
 /data/tsv2txt
 /apps/plan/hello.wasm
 /tools/pipechat
+/chat/llama-cpp-python-api-reference-high-level.md
+/chat/llama-cpp-python-api-reference-low-level.md
+/chat/llama-cpp-python-api-reference.md
+/chat/llama-cpp-python.md
