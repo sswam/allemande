@@ -19,7 +19,12 @@ testy() {
 			echo >&2 "File not found: $1"
 			return 1
 		fi
-#		cd "$(dirname "$prog")"
+
+		# Some tests assume we are in the program directory
+		# TODO I think there was some problem with doing this, I should have noted what it was...
+		cd "$(dirname "$prog")"
+
+		# Get the extension of the program
 		local ext="${prog##*.}"
 		if [[ $prog != *.* ]]; then
 			ext="sh"
