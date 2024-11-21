@@ -11,7 +11,7 @@ ignore() {
 
 	# Get the git root directory
 	local git_root=$(git rev-parse --show-toplevel 2>/dev/null)
-	if [ $? -ne 0 ]; then
+	if [ -z "$git_root" ]; then
 	    echo "Error: Not in a git repository."
 	    exit 1
 	fi
