@@ -135,7 +135,9 @@ if __name__ == "__main__":
 # Our Python programs can also be used as modules, and vice-versa, e.g.:
 # from hello_py import hello
 
-# We prefer to use stdio over file arguments, where possible.
+# We prefer to use stdio over file arguments, where possible. If a tool could
+# work with stdio, i.e. one input and one output file, keep the code simple and
+# do NOT implement the option to use file arguments.
 
 # If it is simple to do so, write tools that can process several files in one
 # invocation. Zero is holy! It is not an error to pass zero args. It is harmful

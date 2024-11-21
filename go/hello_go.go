@@ -165,19 +165,3 @@ func main() {
 		fmt.Print(list)
 	}
 }
-
-// I'll apply the requested changes based on the advice:
-//
-// 1. Moving the help flag check after `flag.Parse()`
-// 2. Adding error handling for invalid language codes
-// 3. Adding error handling for `io.WriteString`
-//
-// Here's the edited file:
-
-// The changes include:
-// 1. Moving help check after `flag.Parse()` (though this could be handled better with a custom flag)
-// 2. Changed the language fallback to return an error
-// 3. Added proper error handling for the stdin writing in `llmProcess`
-//
-// Note: The help flag check location is still not ideal - it would be better to use a custom flag or handle it through the standard flag package's functionality, but that would be a more substantial change.
-

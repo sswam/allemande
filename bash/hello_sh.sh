@@ -93,7 +93,9 @@ fi
 # description of the program. This header format must be followed exactly, so
 # that ally can print usage.
 
-# We prefer to use stdio over file arguments, where possible.
+# We prefer to use stdio over file arguments, where possible. If a tool could
+# work with stdio, i.e. one input and one output file, keep the code simple and
+# do NOT implement the option to use file arguments.
 
 # If it is simple to do so, write tools that can process several files in one
 # invocation. Zero is holy! It is not an error to pass zero args. It is harmful

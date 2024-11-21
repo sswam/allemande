@@ -259,5 +259,7 @@ case.
 Each tool should function as a library, and each library should include a
 command-line interface. We can use -fno-builtin-main when linking as a library.
 
-We prefer to use stdio over file arguments, where possible.
+We prefer to use stdio over file arguments, where possible. If a tool could
+work with stdio, i.e. one input and one output file, keep the code simple and
+do NOT implement the option to use file arguments.
 */
