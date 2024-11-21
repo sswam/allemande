@@ -127,3 +127,6 @@ speechbrain
 ultralytics
 
 passlib
+uv
+
+imageio-ffmpeg

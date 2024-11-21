@@ -27,3 +27,25 @@ git clone https://github.com/nklb/remove-blank-pages
 
 # Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+
+# automatic1111 webui
+# TODO
+
+
+# ComfyUI
+# TODO
+
+
+# genmoai mochi1 video generation
+cd ~/soft-ai
+mkdir genmoai
+cd genmoai
+uv pip install -e . --no-build-isolation
+uv pip install -e ".[flash]" --no-build-isolation
+mkdir -p /opt/models/video/mochi1
+python3 ./scripts/download_weights.py /opt/models/video/mochi1
+
+
+# llama-cpp-python
+pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
