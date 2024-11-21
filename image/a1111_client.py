@@ -11,6 +11,7 @@ import random
 from pathlib import Path
 import signal
 import asyncio
+import json
 
 import aiohttp
 from tqdm import tqdm  # type: ignore
@@ -107,6 +108,8 @@ async def a1111_client(
                 logger.debug("Generating image %s/%s", i + 1, count)
                 params["seed"] = (seed + i) % 2**32
                 response = await generate_image(session, params)
+                if "images" not in response:
+                    raise ValueError(f"Got no images in response: {json.dumps(response)}")
                 image = base64.b64decode(response["images"][0])
                 with open(image_file, "wb") as f:
                     f.write(image)
