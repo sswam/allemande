@@ -1,0 +1,104 @@
+Here are several methods to amend a non-latest commit that hasn't been pushed yet:
+
+1. Using `git rebase -i` with automated editor:
+```bash
+# Create a script to modify the rebase todo file
+echo "pick $(git rev-parse HEAD~2)" > /tmp/rebase-script
+echo "edit $(git rev-parse HEAD~1)" >> /tmp/rebase-script
+echo "pick $(git rev-parse HEAD)" >> /tmp/rebase-script
+
+# Set editor to cat to avoid interactive editor
+GIT_SEQUENCE_EDITOR="cat /tmp/rebase-script >" git rebase -i HEAD~3
+
+# Make your changes
+git add <files>
+# or: git rm <files>
+
+# Amend the commit
+git commit --amend --no-edit
+# or with new message: git commit --amend -m "New message"
+
+# Continue rebase
+git rebase --continue
+```
+
+2. Using `git reset` approach:
+```bash
+# Store current and target commit hashes
+CURRENT=$(git rev-parse HEAD)
+TARGET=$(git rev-parse HEAD~1)
+PARENT=$(git rev-parse HEAD~2)
+
+# Reset to the parent of the commit we want to modify
+git reset --mixed $PARENT
+
+# Add files as needed
+git add <files>
+# or: git rm <files>
+
+# Create new commit with old or new message
+git commit -C $TARGET
+# or with new message: git commit -m "New message"
+
+# Cherry-pick the remaining commits
+git cherry-pick $TARGET..$CURRENT
+```
+
+3. Function to make it reusable:
+```bash
+amend_old_commit() {
+    local n=$1  # number of commits back
+    local msg=$2  # optional new message
+    
+    CURRENT=$(git rev-parse HEAD)
+    TARGET=$(git rev-parse HEAD~$n)
+    PARENT=$(git rev-parse HEAD~$((n+1)))
+    
+    # Reset to parent
+    git reset --mixed $PARENT
+    
+    # Add files as specified
+    git add "${@:3}"  # all remaining arguments are files to add
+    
+    # Create new commit
+    if [ -z "$msg" ]; then
+        git commit -C $TARGET
+    else
+        git commit -m "$msg"
+    fi
+    
+    # Cherry-pick remaining commits
+    git cherry-pick $TARGET..$CURRENT
+}
+
+# Usage:
+# amend_old_commit 1 "New message" file1 file2  # 1 commit back, new message
+# amend_old_commit 2 "" file1 file2            # 2 commits back, keep old message
+```
+
+4. Using `git filter-branch` (for simple file modifications):
+```bash
+git filter-branch --index-filter '
+    git rm --cached --ignore-unmatch file_to_remove
+    git add file_to_add
+' HEAD~2..HEAD
+```
+
+5. One-liner using temporary script:
+```bash
+echo "edit $(git rev-parse HEAD~1)" | GIT_SEQUENCE_EDITOR='cat >' git rebase -i HEAD~2 && git add <files> && git commit --amend --no-edit && git rebase --continue
+```
+
+Choose the method based on your specific needs:
+- Method 1 is good for automation but requires temporary files
+- Method 2 is more straightforward but involves more steps
+- Method 3 is most reusable and flexible
+- Method 4 is good for simple file operations
+- Method 5 is compact but less flexible
+
+Important notes:
+1. Always ensure you have a clean working directory before starting
+2. These methods modify history, so only use on unpushed commits
+3. Make sure to backup or have a reference to the original commit hash
+4. Test the operation on a branch first if unsure
+

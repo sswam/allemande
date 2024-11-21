@@ -1,0 +1,20 @@
+It needs to be entirely automatic, aside from editing the commit message for
+the amended commit (can also be provided as an option, or left unchanged via an
+option), or resolving conflicts. It should behave exactly like
+`git commit --amend`, but for a previous commit.
+
+I'm thinking:
+
+  1. user stashes irrelevant files and changes (the script does not do this)
+  2. user stages changes to be added to the commit
+  3. User runs the script specifying the commit to be amended and an
+     optional message.
+  4. script stashes changes.
+  5. script runs rebase from the commit BEFORE the selected commit (foo~1),
+     using a sed command in EDITOR to marks that we need the edit or amend the commit.
+  6. script pops changes from the stash, these will be added to the commit
+. 7. if conflicts, script shows a warning on steerr and opens an interactive shell for user to fix them
+  8. script runs rebase --continue, with the --message if given (otherwise git will open an editor)
+  9. should be done
+
+The harder part is the sed command for the editor.
