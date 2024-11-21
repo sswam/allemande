@@ -37,9 +37,6 @@ gent() {
 	sh)
 		tests_ext=bats
 		executable=1
-		if [ ! -e "$dir/tests/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
-			ln -s /usr/lib/bats "$dir/tests/test_helper"
-		fi
 		;;
 	go)
 		tests_dir=$dir
@@ -49,7 +46,11 @@ gent() {
 	local tests_base="${stem}_test.$tests_ext"
 	local tests_path="$tests_dir/$tests_base"
 
-	mkdir -p "$(dirname "$tests_path")"
+	mkdir -p "$tests_dir"
+
+	if [ ! -e "$tests_dir/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
+		ln -s /usr/lib/bats "$tests_dir/test_helper"
+	fi
 
 	# Check if test file already exists
 	if [ -s "$tests_path" ]; then
