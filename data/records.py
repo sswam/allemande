@@ -1,13 +1,13 @@
 #!/usr/bin/env python3-allemande
 
 """
-rec.py - A module to read, write, and append records in a specific file format.
+A module to read, write, and append records in a specific file format.
 
 This module provides functions to handle a record file format with key-value pairs,
 supporting multi-line strings and optional field order preservation.
 
 Usage as a module:
-    from rec import read_records, write_records, append_records
+    from records import read_records, write_records, append_records
 """
 
 import sys

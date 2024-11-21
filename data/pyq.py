@@ -17,7 +17,7 @@ import yaml
 import jq
 from io import StringIO
 
-from rec import read_records, write_records
+from records import read_records, write_records
 import csv_tidy
 
 
