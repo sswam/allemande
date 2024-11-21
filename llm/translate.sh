@@ -29,8 +29,8 @@ translate() {
 		if [ "$#" -lt 2 ]; then
 			usage
 		fi
-		target="$1"
-		source="$2"
+		source="$1"
+		target="$2"
 		from_to_prompt=" \`$source\` to \`$target\`"
 		shift 2
 	fi
