@@ -20,7 +20,7 @@ elif [ -n "$q" ]; then
 else
 	while true; do
 		i3-xterm-floating -w -T="What are you working on?" note -t=waywo --timeout="$t" --warn-timeout="$T" -L -1
-		# i3-update-message $(note -t=waywo -n -A)
+		status-update $(note -t=waywo -n -A)
 
 		# try to sync with the clock
 		second_of_the_day=$(( $(date +%s) - $(date -d "00:00" +%s) ))

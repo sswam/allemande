@@ -3,10 +3,10 @@
 # pomodoro: Pomodoro timer
 # Version: 0.2.1
 
-grace=$[1*60]      # Set the grace time (in seconds)
+grace=$[5*60]      # Set the grace time (in seconds)
 fade=$[1*60]       # Set the fade time, or 0 to 'annoy' (in seconds)
-work=$[25*60]      # Set the working time (in seconds)
-rest=$[3*60]       # Set the rest time (in seconds)
+work=$[20*60]      # Set the working time (in seconds)
+rest=$[4*60]       # Set the rest time (in seconds)
 # grace=50             # Set the grace time (in seconds)
 # fade=10              # Set the fade time, or 0 to 'annoy' (in seconds)
 # work=$[8*60]         # Set the working time (in seconds)
