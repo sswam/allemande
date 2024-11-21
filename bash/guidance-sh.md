@@ -21,6 +21,8 @@ no "Error: " or "Warning: " prefixes; THIS IS UNIX!
 Only use echo for fixed text. Echo "$foo" is unreliable due to its options;
 use printf with a format string.
 
+Temp files must be created with mktemp, never create like /tmp/somefile
+
 The original coder was probably not an idiot. Be careful when "fixing"
 things. For example, never replace the use of a custom tool or library you
 don't know and can't see with new code that you think might be better than that
