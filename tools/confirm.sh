@@ -24,31 +24,35 @@ confirm() {
 		echo
 	}
 
-	while true; do
-		if [ -n "$tty" ]; then
-			ask_them < /dev/tty > /dev/tty 2>&1
-		else
+	confirm_loop() {
+		while true; do
 			ask_them
-		fi
-		case "${yn:-${default}}" in
-		y*|Y*)
-			confirmed=1
-			break
-			;;
-		n*|N*)
-			break
-			;;
-		'')
-			if [ -n "$default" ]; then
-				confirmed=${default,,}
+			case "${yn:-${default}}" in
+			y*|Y*)
+				confirmed=1
 				break
-			fi
-			;;
-		*)
-			echo -n "! [yn] "
-			;;
-		esac
-	done
+				;;
+			n*|N*)
+				break
+				;;
+			'')
+				if [ -n "$default" ]; then
+					confirmed=${default,,}
+					break
+				fi
+				;;
+			*)
+				echo -n "! [yn] "
+				;;
+			esac
+		done
+	}
+
+	if [ -n "$tty" ]; then
+		confirm_loop < /dev/tty > /dev/tty 2>&1
+	else
+		confirm_loop
+	fi
 
 	if [ -n "$confirmed" ]; then
 		if [ -n "$is_command" ]; then "$@"; fi
