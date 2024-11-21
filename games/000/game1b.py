@@ -28,7 +28,7 @@ while engine.running:
     engine.handle_basic_events()
 
     # Update game state
-    engine.handle_movement(player, pygame.key.get_pressed())
+    engine.move_with_keyboard(player, pygame.key.get_pressed())
     if engine.keep_in_bounds(player):
         engine.play_sound("bump")
 

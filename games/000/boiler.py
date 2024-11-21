@@ -6,7 +6,6 @@ Boilerplate and utilities for simple pygame-based games.
 
 import os
 import sys
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -15,8 +14,6 @@ import pygame
 import pygame.mixer as mixer
 
 __version__ = "0.1.0"
-
-logger = logs.get_logger()
 
 
 @dataclass
@@ -51,15 +48,20 @@ class GameEngine:
         self.config = config
         self.sounds: dict[str, mixer.Sound] = {}
         self.running = True
+        self.dragging = False
+        self.drag_offset = (0, 0)
+        self.playing_sounds = {}
 
     def load_sound(self, name: str, path: str) -> None:
         """Load a sound effect."""
         self.sounds[name] = mixer.Sound(path)
 
-    def play_sound(self, name: str, volume=1.0) -> None:
+    def play_sound(self, name: str, volume=1.0, overlap=False) -> None:
         """Play a loaded sound effect."""
-        if name in self.sounds:
-            sound = self.sounds[name]
+        if name not in self.sounds:
+            raise ValueError(f"Sound '{name}' not loaded.")
+        sound = self.sounds[name]
+        if overlap or not pygame.mixer.get_busy():
             sound.set_volume(volume)
             sound.play()
 
@@ -89,7 +91,7 @@ class GameEngine:
         else:
             mixer.music.unpause()
 
-    def handle_movement(self, obj: GameObject, keys) -> None:
+    def move_with_keyboard(self, obj: GameObject, keys) -> None:
         """Handle WASD movement for an object."""
         if keys[pygame.K_a] or keys[pygame.K_LEFT]:
             obj.x -= obj.speed
@@ -99,6 +101,36 @@ class GameEngine:
             obj.y -= obj.speed
         if keys[pygame.K_s] or keys[pygame.K_DOWN]:
             obj.y += obj.speed
+
+    def move_with_mouse(self, obj: GameObject) -> None:
+        """Handle mouse interactions with an object."""
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()[0]  # Left button
+
+        # Check if mouse is over object
+        obj_rect = pygame.Rect(
+            obj.x - obj.size // 2,
+            obj.y - obj.size // 2,
+            obj.size,
+            obj.size
+        )
+
+        if mouse_pressed and not self.dragging and obj_rect.collidepoint(mouse_pos):
+            # Start dragging
+            self.dragging = True
+            self.drag_offset = (
+                obj.x - mouse_pos[0],
+                obj.y - mouse_pos[1]
+            )
+
+        if mouse_pressed and self.dragging:
+            # Update object position while dragging
+            obj.x = mouse_pos[0] + self.drag_offset[0]
+            obj.y = mouse_pos[1] + self.drag_offset[1]
+
+        if not mouse_pressed:
+            # Stop dragging
+            self.dragging = False
 
     def keep_in_bounds(self, obj: GameObject) -> bool:
         """Keep object within screen boundaries."""
