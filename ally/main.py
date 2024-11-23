@@ -9,6 +9,8 @@ import sys
 from typing import Any, Callable
 import asyncio
 import inspect
+from types import SimpleNamespace
+from pathlib import Path
 
 from ally import logs, opts
 
@@ -60,3 +62,14 @@ def go(
         logging.error(f"Error: {type(e).__name__} - {str(e)}")
         logging.debug("Full traceback:", exc_info=True)
         sys.exit(1)
+
+
+def prog_info():
+    """Get info about the program"""
+    # TODO maybe module name, check logs code has something similar
+    prog = SimpleNamespace()
+    prog.path = Path(sys.argv[0]).resolve()
+    prog.dir = prog.path.parent
+    prog.filename = prog.path.name
+    prog.name = prog.path.stem
+    return prog
