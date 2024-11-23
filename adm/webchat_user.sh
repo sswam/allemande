@@ -18,7 +18,11 @@ Here's the info to access the alpha webchat when you get a chance:
 
 $user $pass
 ^user ^password
-https://allemande.ai <- click "Ally Chat" then log in twice (!), then reload the page and tell the browser to save the login.
+https://allemande.ai
+
+Log in, then click "Ally Chat". You can change the room name at the top
+to something obscure for a more private chat. To talk with a bot, you need
+to mention their name, e.g. Emmy, Dav, Claud, Clia, Ally.
 END
 	done
 }
