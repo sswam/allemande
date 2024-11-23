@@ -20,7 +20,6 @@ from bs4 import BeautifulSoup
 import tabulate
 from youtube_search import YoutubeSearch
 from selenium_get import selenium_get
-import argh
 
 # import ucm_main
 
@@ -33,7 +32,7 @@ user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 timeout = 30
 
 
-def duckduckgo_search(query, max_results=12, safe="off", limit_max_results=False):
+def duckduckgo_search(query, max_results=12, detailed=False, safe="off", limit_max_results=False):
 	""" Search DuckDuckGo for `query` and return a list of results """
 	url = 'https://html.duckduckgo.com/html/'
 	kp = {
@@ -74,7 +73,7 @@ def duckduckgo_search(query, max_results=12, safe="off", limit_max_results=False
 	return search_results
 
 
-def google_search(query, max_results=12, safe="off", limit_max_results=False):
+def google_search(query, max_results=12, detailed=False, safe="off", limit_max_results=False):
 	""" Search Google for `query` and return a list of results """
 	url = 'https://www.google.com/search'
 	params = {
@@ -138,7 +137,7 @@ def google_search(query, max_results=12, safe="off", limit_max_results=False):
 	return search_results
 
 
-def uspto_tess_search(query, max_results=100, safe="off", limit_max_results=False):
+def uspto_tess_search(query, max_results=100, detailed=False, safe="off", limit_max_results=False):
 	url = 'https://tmsearch.uspto.gov/bin/gate.exe'
 	params = {
 		'f': 'toc',
@@ -188,7 +187,7 @@ def uspto_tess_search(query, max_results=100, safe="off", limit_max_results=Fals
 	return search_results
 
 
-def bing_search(query, max_results=12, safe="off", limit_max_results=False):
+def bing_search(query, max_results=12, detailed=False, safe="off", limit_max_results=False):
 	""" Search Bing for `query` and return a list of results """
 	url = 'https://www.bing.com/search'
 	params = {
@@ -253,7 +252,7 @@ def youtube_search(query, max_results=12, detailed=False, safe="off", limit_max_
 	if detailed:
 		return search_results
 
-	return [{'title': result['title'], 'url': result['url'], 'thumbnail': result['thumbnail']} for result in search_results]
+	return [{'title': result['title'], 'url': result['url'], 'thumbnail': result['thumbnail'], 'channel': result['channel'], 'duration': result['duration']} for result in search_results]
 
 
 def google_maps_image_search(query, max_results=12, safe="off", limit_max_results=False):
@@ -289,7 +288,7 @@ def google_maps_image_search(query, max_results=12, safe="off", limit_max_result
 	return image_results[:max_results]
 
 
-def pornhub_search(query, max_results=10, safe="off"):
+def pornhub_search(query, max_results=10, detailed=False, safe="off", limit_max_results=False):
 	site = 'https://www.pornhub.com'
 	url = site + '/video/search'
 
@@ -328,9 +327,9 @@ engines = {
 #	'DuckDuckGo': duckduckgo_search,
 #	'Bing': bing_search,
 	'YouTube': youtube_search,
-	'GoogleMapsImages': google_maps_image_search,
+#	'GoogleMapsImages': google_maps_image_search,
 	'PornHub': pornhub_search,
-	'TESS': uspto_tess_search,
+#	'TESS': uspto_tess_search,
 }
 
 
@@ -340,10 +339,12 @@ agents = {
 #	'Bing': bing_search,
 	'UTube': youtube_search,
 	'Pr0nto': pornhub_search,
-	'Guma': google_maps_image_search,
-	'Tessa': uspto_tess_search,
+#	'Guma': google_maps_image_search,
+#	'Tessa': uspto_tess_search,
 }
 
+
+# TODO add google images, if I can get it to work
 
 engine_caps = {
 	'goog': 'Google',
@@ -373,7 +374,10 @@ def list_to_markdown_table(items, engine):
 		item['#'] = i
 		i += 1
 		url_enc = esc(item['url'])
-		title_enc = esc(item['title'])
+		title = item['title']
+		if engine == 'YouTube':
+			title = f"{title} - {item['channel']} - {item['duration']}"
+		title_enc = esc(title)
 		item['page'] = f"""<a href="{url_enc}" target="_blank">{title_enc}</a>"""
 		f"[{item['title']}]({item['url']})"
 		if engine not in ('YouTube', 'PornHub'):
@@ -463,31 +467,31 @@ def dict_first(d):
 	return next(iter(d))
 
 
-def search(*queries, engine=None, markdown=False, limit=None, max_results=10, safe='off', format='table', header=False, out=None):
+def search(*queries, engine=None, markdown=False, limit=None, max_results=10, safe='off', format='table', header=False, out=None, details=False):
 	all = []
 	lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
-	
+
 	if engine is None:
 		engine = dict_first(engines)
-	
+
 	key = lc_keys_to_keys[engine.lower()]
 	eng = engines.get(key, agents.get(key))
-	
+
 	for query in queries:
-		results = eng(query, max_results=max_results, safe=safe, limit_max_results=limit)
+		results = eng(query, max_results=max_results, safe=safe, limit_max_results=limit, detailed=details)
 		results2 = results[:max_results]
-		
+
 		if out:
 			if markdown:
 				formatted_results = list_to_markdown_table(results2, engine)
 			else:
 				formatter = formatters[format]
 				formatted_results = formatter(results2, header=header).rstrip()
-			
+
 			print(formatted_results, file=out)
 		else:
 			all.append(results2)
-	
+
 	if not out:
 		if markdown:
 			out = []
@@ -510,7 +514,9 @@ def main():
 	parser.add_argument('--markdown', help='Output as Markdown', action='store_true')
 	parser.add_argument('--out', help='Output file', type=argparse.FileType('w'), default=sys.stdout)
 	parser.add_argument('queries', nargs='*', help='Search queries')
+	parser.add_argument('-D', '--details', help='Show detailed results', action='store_true')
 
+	parser.set_defaults(log_level=logging.WARNING)
 	logging_group = parser.add_mutually_exclusive_group()
 	logging_group.add_argument('-d', '--debug', dest='log_level', action='store_const', const=logging.DEBUG, help="show debug messages")
 	logging_group.add_argument('-v', '--verbose', dest='log_level', action='store_const', const=logging.INFO, help="show verbose messages")
@@ -519,16 +525,17 @@ def main():
 	logging_group.add_argument('--log', default=None, help="log file")
 
 	args = parser.parse_args()
-	
-	search(*args.queries, 
-		   engine=args.engine, 
-		   markdown=args.markdown, 
-		   limit=args.limit, 
-		   max_results=args.max_results, 
-		   safe=args.safe, 
-		   format=args.format, 
-		   header=args.header, 
-		   out=args.out)
+
+	search(*args.queries,
+		   engine=args.engine,
+		   markdown=args.markdown,
+		   limit=args.limit,
+		   max_results=args.max_results,
+		   safe=args.safe,
+		   format=args.format,
+		   header=args.header,
+		   out=args.out,
+		   details=args.details)
 
 
 if __name__ == "__main__":
