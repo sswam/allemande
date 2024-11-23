@@ -19,20 +19,14 @@ os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 import transformers
 
-logger = logging.getLogger(__name__)
+from ally import main, filer, logs, unix, util
 
-def prog_info():
-	""" Get info about the program """
-	prog = SimpleNamespace()
-	prog.path = Path(__file__)
-	prog.dir = prog.path.parent
-	prog.filename = prog.path.name
-	prog.name = prog.path.stem
-	return prog
+logger = logs.getLogger()
 
-prog = prog_info()
 
-ports_dir = Path(os.environ["ALLEMANDE_PORTS"])/prog.name
+prog = main.prog_info()
+
+ports_dir = Path(os.environ["ALLEMANDE_PORTALS"])/prog.name
 
 def gen(config, audio_file, *_args, model=None, **_kwargs):
 	""" Transcribe text from an audio file. """
