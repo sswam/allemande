@@ -76,12 +76,12 @@ AGENTS_REMOTE = {
 	"GPT-4": {
 		"name": "Emmy",
 		"model": "gpt-4",
-		"default_context": 20,
+		"default_context": 100,
 	},
 	"GPT-4o-mini": {
 		"name": "Dav",
 		"model": "gpt-4o-mini",
-		"default_context": 20,
+		"default_context": 1000,
 	},
 #	"GPT-3.5": {
 #		"name": "Dav",
@@ -234,7 +234,7 @@ def register_all_agents():
 
 	register_agents("tool", {agent: {"name": agent} for agent in search.agents}, run_search)
 	if not ADULT:
-		del AGENTS["Pr0nto"]
+		del AGENTS["pr0nto"]
 
 	setup_agent_maps()
 	# TODO Moar!
@@ -562,7 +562,6 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 	async def async_search(query, name, limit):
 		return await asyncio.to_thread(search.search, query, engine=name, markdown=True, limit=limit)
 	response = await async_search(query, name, limit)
-	response = search.search(query, engine=name, markdown=True, limit=limit)
 	response2 = f"{name}:\t{response}"
 	response3 = fix_layout(response2, args)
 	logger.debug("response3:\n%s", response3)
