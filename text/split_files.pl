@@ -47,6 +47,9 @@ do {
         die "Error: Target file '$dest' cannot be the input files.\n";
     }
 
+    if (-e "$dest~") {
+        system "move-rubbish", "$dest~" or die "Could not move $dest~ to rubbish\n";
+    }
     rename $dest, "$dest~" if -e $dest;
 
     my $i = -1;
