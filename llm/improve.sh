@@ -238,11 +238,11 @@ improve() {
 	local input=$(v cat-named -p "${opt_b[@]}" "${opt_n[@]}" "$file" "${refs[@]}")
 
 	# Backup original file
-	if [ -e "$file~" ]; then
-		move-rubbish "$file~"
+	if [ -e "$file.new" ]; then
+		move-rubbish "$file.new"
 	fi
 	# shellcheck disable=SC2216
-	echo n | cp-a-ignore-time-errors -i "$file" "$file~" # WTF, there's no proper no-clobber option?!
+	echo n | cp-a-ignore-time-errors -i "$file" "$file.new" # WTF, there's no proper no-clobber option?!
 
 	comment_char="#"
 	case "$ext" in
@@ -258,13 +258,13 @@ improve() {
 	esac
 
 	target_file="$file"
-	output_file="$file~"
+	output_file="$file.new"
 
 	# By default, it should edit the main code.
 	# if using -C option, it must edit the tests, so the output file is the tests file plus a tilde
 	if ((codeok)) && [ -n "$tests_file" ]; then
 		target_file="$tests_file"
-		output_file="$tests_file~"
+		output_file="$tests_file.new"
 	fi
 
 	if ((use_ai == 0)); then
@@ -299,18 +299,28 @@ improve() {
 	fi
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
-	confirm=""
+	confirm="true"
 	if ((test)) && ((codeok == 0)) && ((testok == 0)); then
 		confirm="confirm -t" # means it might have edited either or both files
 	fi
 
-	# Swap in the hopefully improved version
-	# Use swapfiles with -c option to preserve hardlinks
-	$confirm swapfiles -c "$target_file" "$output_file" ||
-		# maybe the new version is an improved tests file
-		if [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ] && ((!codeok)); then
-			$confirm swapfiles -c "$tests_file" "$output_file"
+	cycle_3_files() {
+		local a=$1 b=$2 c=$3
+		if ! $confirm "Update $a -> $b -> $c ?"; then
+			return
 		fi
+		move-rubbish "$target_file.old" 2>/dev/null || true
+		cp -a "$target_file" "$target_file.old"
+		cp -a "$output_file" "$target_file"
+		move-rubbish "$output_file"
+	}
+
+	# Swap in the hopefully improved version
+	if $confirm "Update $output_file -> $target_file -> $target_file.old ?"; then
+		cycle_3_files "$output_file" "$target_file" "$target_file.old"
+	elif [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ] && ((!codeok)); then
+		cycle_3_files "$output_file" "$tests_file" "$tests_file.old"
+	fi
 
 	# In the case that it edited both files, the user should have figured it out in their editor,
 	# we can't handle that automatically yet.
