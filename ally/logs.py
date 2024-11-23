@@ -100,9 +100,8 @@ def get_logger(level=1, root=False, name=None, indent=False, log_level="WARNING"
 
     # Set file permissions to be owner read/write only
     for handler in logger.handlers:
-        if not isinstance(handler, logging.FileHandler):
-            continue
-        os.chmod(handler.baseFilename, 0o600)
+        if isinstance(handler, logging.FileHandler):
+            os.chmod(handler.baseFilename, 0o600)
 
     return logger
 
@@ -162,6 +161,14 @@ def _set_log_level(log_level: str|int, name=None) -> None:
     if len(logger.handlers) >= 3:
         script_file_handler = logger.handlers[1]
         script_file_handler.setLevel(log_level_int)
+
+
+def get_log_file(level=1, name=None) -> str:
+    """Get the log file for the calling module, or named logger."""
+    logger = get_logger(level+1, name=name)
+    for handler in logger.handlers:
+        if isinstance(handler, logging.FileHandler):
+            return handler.baseFilename
 
 
 class IndentLogger:
