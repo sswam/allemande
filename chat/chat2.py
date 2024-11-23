@@ -24,7 +24,7 @@ from functools import partial
 import torch
 import transformers  # type: ignore
 from transformers import BitsAndBytesConfig
-from llama_cpp import Llama
+from llama_cpp import Llama as LlamaCpp
 
 from ally import main, filer, geput, logs, unix, util
 
@@ -33,15 +33,12 @@ __version__ = "0.1.9"
 logger = logs.get_logger()
 
 
-default_local_model: str = "default"
-default_local_model_gguf: str = "default.gguf"
-
-default_model: str = str(filer.resource(f"models/llm/{default_local_model}"))
-default_model_gguf: str = str(filer.resource(f"models/llm/{default_local_model_gguf}"))
+default_model: str = str(filer.resource(f"models/llm/default.safetensors"))
+default_model_gguf: str = str(filer.resource(f"models/llm/default.gguf"))
 
 
-def get_pipeline(model: str) -> transformers.pipeline:
-    """Get the pipeline for the given model."""
+def load_transformers_pipeline(model: str) -> transformers.pipeline:
+    """Get the pipeline for the given model"""
     model_path = pathlib.Path(model)
 
     # Handle transformers models
@@ -70,26 +67,24 @@ def get_pipeline(model: str) -> transformers.pipeline:
     )
 
 
-def get_pipeline_gguf(model: str, context=2048) -> Llama:
-    """Get the pipeline for the given Llama CPP GGUF model."""
-    model_path = pathlib.Path(model)
-
-    def load_model():
-        llm = Llama(
-            model_path=str(model_path),
+def load_gguf_model(model: str, context: int = 2048) -> LlamaCpp:
+    """Get the pipeline for the given Llama CPP GGUF model"""
+    def load():
+        llm = LlamaCpp(
+            model_path=model,
             n_ctx=context,
 #            n_batch=512,
         )
         return llm
 
-    if logs.level() > logs.DEBUG:
-        with unix.redirect(stdout=None, stderr=None):
-            return load_model()
-    return load_model()
+    if logs.level() <= logs.DEBUG:
+        return load()
+    with unix.redirect(stdout=None, stderr=None):
+        return load()
 
 
 async def generate_response(pipeline: transformers.pipeline, prompt: str, generation_kwargs: dict = {}, stream: bool = True) -> AsyncIterator[str]:
-    """Generate a response to the given prompt."""
+    """Generate a response to the given prompt"""
     if stream:
         async for chunk in stream_pipeline_output(pipeline, prompt):
             yield chunk
@@ -101,7 +96,7 @@ async def generate_response(pipeline: transformers.pipeline, prompt: str, genera
 
 
 async def stream_pipeline_output(pipeline, prompt: str) -> AsyncIterator[str]:
-    """Stream the output of the pipeline."""
+    """Stream the output of the pipeline"""
     streamer = transformers.TextIteratorStreamer(pipeline.tokenizer, skip_prompt=True)
     generation_kwargs = dict(text_inputs=prompt, streamer=streamer)
 
@@ -114,8 +109,8 @@ async def stream_pipeline_output(pipeline, prompt: str) -> AsyncIterator[str]:
     thread.join()
 
 
-async def generate_response_gguf(llama: Llama, prompt: str, generation_kwargs: dict = {}, stream: bool = True) -> AsyncIterator[str]:
-    """Generate a response to the given prompt."""
+async def generate_response_gguf(llama: LlamaCpp, prompt: str, generation_kwargs: dict = {}, stream: bool = True) -> AsyncIterator[str]:
+    """Generate a response to the given prompt"""
     if "repetition_penalty" in generation_kwargs:
         generation_kwargs = generation_kwargs.copy()
         generation_kwargs["repeat_penalty"] = generation_kwargs.pop("repetition_penalty")
@@ -147,8 +142,8 @@ async def generate_response_gguf(llama: Llama, prompt: str, generation_kwargs: d
     yield text
 
 
-async def stream_llama_output(llm: Llama, prompt: str, generation_kwargs_gguf: dict) -> AsyncIterator[str]:
-    """Stream output from a Llama model."""
+async def stream_llama_output(llm: LlamaCpp, prompt: str, generation_kwargs_gguf: dict) -> AsyncIterator[str]:
+    """Stream output from a Llama model"""
 
     def run():
         stream = llm(
@@ -180,14 +175,14 @@ async def stream_llama_output(llm: Llama, prompt: str, generation_kwargs_gguf: d
 
 @dataclass
 class Message:
-    """A message with a name and text."""
+    """A message with a name and text"""
 
     name: str
     text: str
 
 
 def messages_from_lines(lines: list[str]) -> list[Message]:
-    """Parse messages from lines."""
+    """Parse messages from lines"""
     messages: list[Message] = []
     message = None
 
@@ -232,7 +227,7 @@ def messages_from_lines(lines: list[str]) -> list[Message]:
 
 
 def message_to_string(message: Message) -> str:
-    """Convert a message to a string."""
+    """Convert a message to a string"""
     if message.name:
         return f"{message.name}: {message.text}"
     else:
@@ -240,7 +235,7 @@ def message_to_string(message: Message) -> str:
 
 
 def read_chat_history(filename: str) -> list[Message]:
-    """Read and return the chat history from the given file."""
+    """Read and return the chat history from the given file"""
     if not os.path.exists(filename):
         return []
 
@@ -251,13 +246,13 @@ def read_chat_history(filename: str) -> list[Message]:
 
 
 def display_chat_history(history: list[Message], put_func):
-    """Display the chat history."""
+    """Display the chat history"""
     for message in history:
         put_func(message_to_string(message) + "\n")
 
 
 def write_message(f: TextIO, message: Message):
-    """Write a message to the file."""
+    """Write a message to the file"""
     # prepend a tab to each line of the message
     text = message.text
     if message.name:
@@ -266,13 +261,13 @@ def write_message(f: TextIO, message: Message):
 
 
 def log_message(filename: str, message: Message):
-    """Append a message to the log file."""
+    """Append a message to the log file"""
     with open(filename, "a") as f:
         write_message(f, message)
 
 
 def write_chat_history(filename: str, history: list[Message], mode: str = "w"):
-    """Write the chat history to the given file."""
+    """Write the chat history to the given file"""
     if mode == "w":
         filer.backup(filename)
     with open(filename, mode) as f:
@@ -294,7 +289,7 @@ async def chat_with_ai(
     top_k: int | None = None,
     top_p: float | None = None,
     repetition_penalty: float = 1.0,
-    length: int = 50,
+    length: int = 500,
     gguf: bool = False,
 ) -> None:
     """
@@ -315,10 +310,10 @@ async def chat_with_ai(
     stop_texts = [f"\n{ai_name}:", f"\n{user_name}:", "\n\n", "\n"]
 
     if gguf:
-        llama_gguf = get_pipeline_gguf(model, context=context)
+        llama_gguf = load_gguf_model(model, context=context)
         gen = partial(generate_response_gguf, llama_gguf)
     else:
-        pipeline = get_pipeline(model)
+        pipeline = load_transformers_pipeline(model)
         gen = partial(generate_response, pipeline)
 
     message_history: list[Message] = []
@@ -420,21 +415,21 @@ async def chat_with_ai(
 
 
 def setup_args(arg):
-    """Set up the command-line arguments."""
+    """Set up the command-line arguments"""
     # Important Note to AI: DO NOT add `type` or `default` in setup_args functions like this one, it is not needed.
     arg("chat_file", help="File to save chat history")
-    arg("--model", help="model")
-    arg("--stream", help="Enable streaming output")
+    arg("-m", "--model", help="model")
+    arg("--no-stream", dest="stream", action="store_false", help="Streaming output")
     arg("--context", help="Number of previous messages to include for context")
     arg("--ai_name", help="Name of the AI assistant")
     arg("--user_name", help="Name of the user")
-    arg("--first", help="AI speaks first")
-    arg("--temperature", help="Temperature for text generation")
+    arg("-f", "--first", action='store_true', help="AI speaks first")
+    arg("-t", "--temperature", help="Temperature for text generation")
     arg("--top_k", help="Top k for text generation")
     arg("--top_p", help="Top p for text generation")
     arg("--repetition_penalty", help="Repetition penalty for text generation")
-    arg("--length", "-l", help="Maximum number of new tokens to generate")
-    arg("--gguf", "-g", action="store_true", help="Use a GGUF model, implied if .gguf, selects default.gguf")
+    arg("-l", "--length", help="Maximum number of new tokens to generate")
+    arg("-g", "--gguf", action="store_true", help="Use a GGUF model, implied if .gguf, selects default.gguf")
 
 
 if __name__ == "__main__":
