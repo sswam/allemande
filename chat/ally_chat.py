@@ -21,12 +21,12 @@ import yaml
 # import regex
 
 import ucm
-import ports
 import conductor
 import search
 import tab
 import chat
 import llm
+from ally import portals
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # pylint: disable=wrong-import-position, wrong-import-order
@@ -34,9 +34,9 @@ import transformers  # pylint: disable=wrong-import-position, wrong-import-order
 
 logger = logging.getLogger(__name__)
 
-SERVER = "llm_llama"
-DEFAULT_PORT_PATH = ports.get_default_port_name(SERVER)
-port = None
+SERVICE = "llm_llama"
+DEFAULT_PORTAL_PATH = portals.get_default_portal_name(SERVICE)
+portal = None
 
 
 # TODO can't select model from here now
@@ -373,25 +373,25 @@ def get_fulltext(args, model_name, history, history_start, invitation, delim):
 	return fulltext, history_start
 
 
-async def client_request(port, input_text, config=None):
+async def client_request(portal, input_text, config=None):
 	""" Call the core server and get a response. """
 
-	req = await port.prepare_request(config)
+	req = await portal.prepare_request(config)
 
 	req_input = req/"request.txt"
 	req_input.write_text(input_text, encoding="utf-8")
 
-	await port.send_request(req)
+	await portal.send_request(req)
 
-	resp, status = await port.wait_for_response(req)
+	resp, status = await portal.wait_for_response(req)
 
 	if status == "error":
-		await port.response_error(resp)  # raises RuntimeError?!
+		await portal.response_error(resp)  # raises RuntimeError?!
 
 	new_text = (resp/"new.txt").read_text(encoding="utf-8")
 	generated_text = (resp/"full.txt").read_text(encoding="utf-8")
 
-	await port.remove_response(resp)
+	await portal.remove_response(resp)
 
 	return new_text, generated_text
 
@@ -447,7 +447,7 @@ async def chat_to_user(_model, args, history, history_start=0):
 #	logger.debug("invitation2: %r", invitation2)
 #	logger.debug("delim: %r", delim)
 
-	response, _fulltext2 = await client_request(args.port, fulltext, config=args.gen_config)
+	response, _fulltext2 = await client_request(args.portal, fulltext, config=args.gen_config)
 
 	if args.trim:
 		response = trim_response(response, args)
@@ -678,9 +678,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
 	logger.debug("fulltext: %r", fulltext)
 	logger.debug("config: %r", args.gen_config)
-	logger.debug("port: %r", args.port)
+	logger.debug("portal: %r", args.portal)
 
-	response, _fulltext2 = await client_request(port, fulltext, config=args.gen_config)
+	response, _fulltext2 = await client_request(portal, fulltext, config=args.gen_config)
 	apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
 	logger.debug("response: %r", response)
@@ -1073,7 +1073,7 @@ def get_opts():  # pylint: disable=too-many-statements
 	format_group.add_argument("--narrative", type=bool, default=False, help="Allow non-indented narrative text")
 
 	model_group = parser.add_argument_group("Model options")
-	model_group.add_argument("--port", "-p", default=DEFAULT_PORT_PATH, help="Path to port directory")
+	model_group.add_argument("--portal", "-p", default=DEFAULT_PORTAL_PATH, help="Path to portal directory")
 	model_group.add_argument("--model", "-m", default="default", help="Model name or path")
 	model_group.add_argument("--config", "-c", default=None, help="Model config file, in YAML format")
 	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
@@ -1112,8 +1112,8 @@ def get_opts():  # pylint: disable=too-many-statements
 		args.user = ""
 		args.bot = ""
 
-	if isinstance(args.port, str):
-		args.port = Path(args.port)
+	if isinstance(args.portal, str):
+		args.portal = Path(args.portal)
 
 	# check agents are valid
 	if args.agents == ["all"]:
@@ -1172,9 +1172,9 @@ async def main():
 		logger.error("Interactive mode is not compatible with --watch or --stream")
 		sys.exit(1)
 
-	# set up ports
-	global port
-	port = ports.PortClient(args.port)
+	# set up portals
+	global portal
+	portal = portals.PortalClient(args.portal)
 
 	# run in the requested mode
 	if args.interactive or not any(mode_options):

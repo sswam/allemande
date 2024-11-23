@@ -1,4 +1,4 @@
-""" Allemande ports API, client library. """
+""" Allemande portals API, client library. """
 
 import os
 import time
@@ -14,25 +14,25 @@ __version__ = "0.1.1"
 logger = logging.getLogger(__name__)
 
 
-def get_default_port_name(server):
-    """ Get the default port for a server. """
+def get_default_portal_name(server):
+    """ Get the default portal for a server. """
     user_id = os.environ["USER"]
-    default_ports_dir = Path(os.environ["ALLEMANDE_PORTS"])/server
-    #default_port_id = f'{user_id}-{os.getpid()}'   # TODO?
-    default_port_id = f'{user_id}'
-    default_port = str(default_ports_dir/default_port_id)
-    return default_port
+    default_portals_dir = Path(os.environ["ALLEMANDE_PORTALS"])/server
+    #default_portal_id = f'{user_id}-{os.getpid()}'   # TODO?
+    default_portal_id = f'{user_id}'
+    default_portal = str(default_portals_dir/default_portal_id)
+    return default_portal
 
 
-class PortClient:
+class PortalClient:
     """ Client for making requests to the core server. """
-    def __init__(self, port):
-        self.port = Path(port)
+    def __init__(self, portal):
+        self.portal = Path(portal)
         self.req_id = 0
 
     async def prepare_request(self, config=None):
         """ Make a request to the core server. """
-        prep = self.port/"prep"
+        prep = self.portal/"prep"
         req = prep/f"req-{self.req_id:06d}"
         self.req_id += 1
 
@@ -51,14 +51,14 @@ class PortClient:
 
     async def send_request(self, req):
         """ Send a request to the core server. """
-        todo = self.port/"todo"
+        todo = self.portal/"todo"
         # we could do this as async IO, seems unnecessary
         req.rename(todo/req.name)
 
     async def wait_for_response(self, req):
         """ Wait for a response from the core server. """
-        done = self.port/"done"
-        error = self.port/"error"
+        done = self.portal/"done"
+        error = self.portal/"error"
 
         async for changes in awatch(done, error, recursive=False):
             for change_type, path in changes:
@@ -83,7 +83,7 @@ class PortClient:
 
     async def remove_response(self, resp):
         """ Move a response to the history directory. """
-        history = self.port/"history"
+        history = self.portal/"history"
         while True:
             history_name = f"{time.time():.2f}-{resp.name}"
             try:

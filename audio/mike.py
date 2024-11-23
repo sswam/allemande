@@ -20,8 +20,8 @@ import speech_recognition as sr
 import yaml
 
 import ucm
-import ports
 import ucm_main
+from ally import portals
 
 opts = None
 
@@ -30,7 +30,7 @@ opts = None
 logger = logging.getLogger(__name__)
 
 server = "stt_whisper"
-default_port = ports.get_default_port(server)
+default_portal = portals.get_default_portal(server)
 
 
 @contextmanager
@@ -78,10 +78,10 @@ def record_speech(run_event, q_audio, energy, pause, non_speaking_duration, dyna
 	q_audio.put_nowait(None)
 
 
-def client_request(port, audio, config=None):
+def client_request(portal, audio, config=None):
 	""" Call the core server and get a response. """
 
-	req = ports.prepare_request(port, config=config)
+	req = portals.prepare_request(portal, config=config)
 
 	req_audio = req/"request.aud"
 
@@ -89,24 +89,24 @@ def client_request(port, audio, config=None):
 	audio_clip = AudioSegment.from_file(data)
 	audio_clip.export(str(req_audio), format="flac")
 
-	ports.send_request(port, req)
+	portals.send_request(portal, req)
 
-	resp, status = ports.wait_for_response(port, req)
+	resp, status = portals.wait_for_response(portal, req)
 
 	if status == "error":
-		ports.response_error(resp)
+		portals.response_error(resp)
 
 	text = (resp/"text.txt").read_text(encoding="utf-8")
 	result = yaml.safe_load((resp/"result.yaml").read_text(encoding="utf-8"))
 
 	logger.info("%r", result)
 
-	ports.remove_response(port, resp)
+	portals.remove_response(portal, resp)
 
 	return text, result
 
 
-def speech_to_text(port, run_event, q_audio, q_text, lang, confidence_threshold=0.8):
+def speech_to_text(portal, run_event, q_audio, q_text, lang, confidence_threshold=0.8):
 	""" Transcribe from the audio queue to the text queue """
 
 	config = {
@@ -123,7 +123,7 @@ def speech_to_text(port, run_event, q_audio, q_text, lang, confidence_threshold=
 #		np_audio = np_audio.flatten().astype(np.float32) / 32768.0
 #		torch_audio = torch.from_numpy(np_audio)
 
-		text, result = client_request(port, audio, config=config)
+		text, result = client_request(portal, audio, config=config)
 
 #		result = whisp.transcribe(torch_audio, language=lang)
 
@@ -151,10 +151,10 @@ def do_list_devices():
 @argh.arg("--device-index", "-i", default=None, help="Device index")
 @argh.arg("--list-devices", "-L", default=False, help="List devices")
 @argh.arg("--adjust-for-ambient-noise", "-a", default=False, help="Adjust for ambient noise")
-@argh.arg("--port", "-P", default=default_port, help="Allemande core port for speech recognition")
+@argh.arg("--portal", "-P", default=default_portal, help="Allemande core portal for speech recognition")
 @argh.arg("--confidence-threshold", "-c", default=0.6, help="Confidence threshold")
 @argh.arg("--quiet-while-listening", "-m", default=40, help="Quiet or mute speakers while listening, volume level")
-def mike(lang="en", energy=700, dynamic_energy=False, pause=1, non_speaking_duration=1, device_index=None, list_devices=False, adjust_for_ambient_noise=False, port=default_port, confidence_threshold=0.6, quiet_while_listening=40):
+def mike(lang="en", energy=700, dynamic_energy=False, pause=1, non_speaking_duration=1, device_index=None, list_devices=False, adjust_for_ambient_noise=False, portal=default_portal, confidence_threshold=0.6, quiet_while_listening=40):
 	""" Transcribe speech to text using microphone input """
 
 	if quiet_while_listening is not None:
@@ -182,7 +182,7 @@ def mike(lang="en", energy=700, dynamic_energy=False, pause=1, non_speaking_dura
 		do_list_devices()
 		sys.exit(0)
 
-	port = Path(port)
+	portal = Path(portal)
 
 	run_event = Event()
 	run_event.set()
@@ -196,7 +196,7 @@ def mike(lang="en", energy=700, dynamic_energy=False, pause=1, non_speaking_dura
 			).start()
 		Thread(
 			target=speech_to_text,
-			args=(port, run_event, q_audio, q_text, lang, confidence_threshold)
+			args=(portal, run_event, q_audio, q_text, lang, confidence_threshold)
 			).start()
 		while True:
 			text = q_text.get()

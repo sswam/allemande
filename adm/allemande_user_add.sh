@@ -8,7 +8,7 @@
 user=${1:-$SUDO_USER}
 if [ "$#" -gt 0 ]; then shift; fi
 modules=(${@:-$ALLEMANDE_MODULES})
-ports="$ALLEMANDE_PORTS"
+ports="$ALLEMANDE_PORTALS"
 
 for module in "${modules[@]}"; do
 	module_dir="$ports/$module"

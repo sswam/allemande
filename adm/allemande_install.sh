@@ -9,7 +9,7 @@ python_dir="${1:-$(dirname "$(which python)")}"
 
 home="$ALLEMANDE_HOME"
 user="$ALLEMANDE_USER"
-ports="$ALLEMANDE_PORTS"
+ports="$ALLEMANDE_PORTALS"
 
 ln -sfT "$home" /opt/allemande
 
