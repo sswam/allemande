@@ -389,11 +389,11 @@ async def client_request(portal, input_text, config=None):
 		await portal.response_error(resp)  # raises RuntimeError?!
 
 	new_text = (resp/"new.txt").read_text(encoding="utf-8")
-	generated_text = (resp/"full.txt").read_text(encoding="utf-8")
+	# generated_text = (resp/"full.txt").read_text(encoding="utf-8")
 
 	await portal.remove_response(resp)
 
-	return new_text, generated_text
+	return new_text #, generated_text
 
 
 async def chat_to_user(_model, args, history, history_start=0):
@@ -447,7 +447,7 @@ async def chat_to_user(_model, args, history, history_start=0):
 #	logger.debug("invitation2: %r", invitation2)
 #	logger.debug("delim: %r", delim)
 
-	response, _fulltext2 = await client_request(args.portal, fulltext, config=args.gen_config)
+	response = await client_request(args.portal, fulltext, config=args.gen_config)
 
 	if args.trim:
 		response = trim_response(response, args)
@@ -680,13 +680,10 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	logger.debug("config: %r", args.gen_config)
 	logger.debug("portal: %r", args.portal)
 
-	response, _fulltext2 = await client_request(portal, fulltext, config=args.gen_config)
+	response = await client_request(portal, fulltext, config=args.gen_config)
 	apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
 	logger.debug("response: %r", response)
-
-	logger.debug("response: %r", response)
-	logger.debug("_fulltext2: %r", _fulltext2)
 
 	agent_names = list(AGENTS.keys())
 	history_messages = list(chat.lines_to_messages(history))
