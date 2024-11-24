@@ -10,7 +10,7 @@ from typing import Any, Callable, get_args, get_origin
 import types
 from io import IOBase, BufferedIOBase, BufferedReader, BufferedWriter, TextIOWrapper
 
-from ally import meta, geput, logs
+from ally import meta, geput, logs, util
 
 opts = sys.modules[__name__]
 
@@ -107,7 +107,7 @@ def parse(
         kwargs["opts"] = kwargs
     elif wants_opts:
         # use the type as a constructor
-        kwargs["opts"] = sig.parameters["opts"].annotation(**kwargs)
+        kwargs["opts"] = sig.parameters["opts"].annotation(**util.dict_not_none(kwargs))
 
     optional = ["log_level", "args", "opts", "istream", "ostream", "append"]
 
