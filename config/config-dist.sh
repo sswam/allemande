@@ -15,7 +15,7 @@ mission=$'system:\tYou are friends and co-workers talking face to face and worki
 add_prompts=1   # 1
 rewind=2
 
-TOKEN_LIMIT=131072  # 2000  100
+TOKEN_LIMIT=32768  # 131072
 LLM_MODEL="default.gguf"
 
 DEAFEN="--deafen"
