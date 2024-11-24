@@ -28,7 +28,9 @@ import spacy
 
 from ally import main, logs  # type: ignore
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 logger = logs.get_logger()
@@ -230,9 +232,9 @@ def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # py
     # split the prompt from the text
     if opts.read_prompts and "\t" in text:
         prompt, text = text.split("\t", 1)
-    elif text.strip() != "":
-        logger.warning("speak_line: no prompt in text: %r", text)
-        prompt = opts.prompt
+    elif opts.read_prompts and text.strip() != "":
+        logger.warning("speak_line: no tab in text: %r", text)
+        prompt, text = text, None
     else:
         prompt = opts.prompt
 
@@ -241,9 +243,12 @@ def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # py
         sentences = [sent.text.strip() for sent in opts.nlp(text).sents]
         opts = opts.copy()
         opts.split_sentences = False
-        opts.echo_prompt = False
+        opts.read_prompts = False
         opts.prompt = prompt
-        return speak_lines(istream=sentences, out=out, synth=synth, postproc=postproc, opts=opts)
+        speak_lines(istream=sentences, out=out, synth=synth, postproc=postproc, opts=opts)
+        if opts.echo:
+            print()
+        return
 
     if not synth:
         synth = get_synth(opts.model, opts)
