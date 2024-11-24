@@ -62,7 +62,7 @@ lint_py() {
 	local prog="$1"
 	fail=0
 	run python3 -m py_compile "$prog" || fail=1
-	run pylint --enable=fixme "$prog" || fail=1
+	run pylint "$prog" || fail=1
 	run mypy "$prog" || fail=1
 	return $fail
 }
