@@ -1,4 +1,4 @@
-""" Allemande portals API, client library. """
+""" Allemande portals library. """
 
 import os
 import time
@@ -22,6 +22,12 @@ def get_default_portal_name(server):
     default_portal_id = f'{user_id}'
     default_portal = str(default_portals_dir/default_portal_id)
     return default_portal
+
+
+# def portal_setup(portal):
+# 	""" Set up a portal """
+# 	for box in ("prep", "todo", "doing", "done", "error", "history"):
+# 		(portal/box).mkdir(exist_ok=True)
 
 
 class PortalClient:
@@ -105,6 +111,7 @@ class PortalClient:
         # client would get response content
         await self.remove_response(resp)   # TODO we probably don't want to remove it here
         return resp, status
+
 
 # Note: Although some methods do not make any async calls,
 # we made them all async for consistency and future-proofing.
