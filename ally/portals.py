@@ -61,20 +61,23 @@ class PortalClient:
         # we could do this as async IO, seems unnecessary
         req.rename(todo/req.name)
 
-    async def wait_for_response(self, req):
-        """ Wait for a response from the core server. """
+    async def wait_for_response(self, req, timeout=None):
+        """ Wait for a response from the core server with timeout. """
         done = self.portal/"done"
         error = self.portal/"error"
 
-        async for changes in awatch(done, error, recursive=False):
+        if timeout is not None:
+            timeout = timeout * 1000
+
+        async for changes in awatch(done, error, recursive=False, rust_timeout=timeout, yield_on_timeout=True):
+            if not changes:
+                raise TimeoutError("Timed out waiting for response")
             for change_type, path in changes:
                 if change_type == Change.added:
                     resp = Path(path)
                     if resp.is_dir() and resp.name == req.name:
                         status = resp.parent.name
                         return resp, status
-
-        raise RuntimeError("no response")  # TODO better error handling
 
     async def response_error(self, resp, raise_exception=True):
         """ Show the logs from a failed request. """
