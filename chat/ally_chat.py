@@ -37,6 +37,7 @@ logger = logging.getLogger(__name__)
 SERVICE = "llm_llama"
 DEFAULT_PORTAL_PATH = portals.get_default_portal_name(SERVICE)
 portal = None
+LOCAL_AGENT_TIMEOUT=60
 
 
 # TODO can't select model from here now
@@ -76,7 +77,7 @@ AGENTS_REMOTE = {
 	"GPT-4": {
 		"name": "Emmy",
 		"model": "gpt-4",
-		"default_context": 100,
+		"default_context": 200,
 	},
 	"GPT-4o-mini": {
 		"name": "Dav",
@@ -94,7 +95,7 @@ AGENTS_REMOTE = {
 			"Claud": "Claude",
 		},
 		"model": "claude",
-		"default_context": 100,
+		"default_context": 200,
 	},
 	"Claude Instant": {
 		"name": "Clia",
@@ -285,7 +286,7 @@ def trim_response(response, args, people_lc = None):
 
 def fix_layout(response, _args):
 	""" Fix the layout and indentation of the response. """
-	lines = response.split("\n")
+	lines = response.strip().split("\n")
 	out = []
 	in_table = False
 	for i, line in enumerate(lines):
@@ -373,7 +374,7 @@ def get_fulltext(args, model_name, history, history_start, invitation, delim):
 	return fulltext, history_start
 
 
-async def client_request(portal, input_text, config=None):
+async def client_request(portal, input_text, config=None, timeout=None):
 	""" Call the core server and get a response. """
 
 	req = await portal.prepare_request(config)
@@ -383,7 +384,7 @@ async def client_request(portal, input_text, config=None):
 
 	await portal.send_request(req)
 
-	resp, status = await portal.wait_for_response(req)
+	resp, status = await portal.wait_for_response(req, timeout=timeout)
 
 	if status == "error":
 		await portal.response_error(resp)  # raises RuntimeError?!
@@ -680,7 +681,8 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	logger.debug("config: %r", args.gen_config)
 	logger.debug("portal: %r", args.portal)
 
-	response = await client_request(portal, fulltext, config=args.gen_config)
+	response = await client_request(portal, fulltext, config=args.gen_config, timeout=LOCAL_AGENT_TIMEOUT)
+
 	apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
 	logger.debug("response: %r", response)
@@ -1064,7 +1066,7 @@ def get_opts():  # pylint: disable=too-many-statements
 	format_group.add_argument("--delim", default="\n\n", help="Delimiter between messages")
 	format_group.add_argument("--trim", action="store_true", default=True, help="Trim the bot's response (enabled by default)")
 	format_group.add_argument("--no-trim", action="store_false", dest="trim", help="Don't trim the bot's response, i.e let it predict the user's speech")
-	format_group.add_argument("--memory", "-x", type=int, default=512, help="Max number of tokens to keep in history, before we drop old messages")
+	format_group.add_argument("--memory", "-x", type=int, default=100000, help="Max number of tokens to keep in history, before we drop old messages")  # default for llama 3.1
 	format_group.add_argument("--strip-final-newline", type=bool, default=True, help="Strip final newline from input, allows to continue lines")
 	format_group.add_argument("--emo", type=bool, default=False, help="End the bot invitation with a space, which causes the bot to respond with an emoji first!")
 	format_group.add_argument("--narrative", type=bool, default=False, help="Allow non-indented narrative text")

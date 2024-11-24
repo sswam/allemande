@@ -237,7 +237,7 @@ def message_to_text(message):
 		text = "".join(lines2)
 	else:
 		text = content
-	return text.rstrip("\n")+"\n"
+	return text.rstrip("\n")+"\n\n"
 
 
 def preprocess(content):
@@ -246,11 +246,15 @@ def preprocess(content):
 	# replace $foo$ with $`foo`$
 	# replace $$\n...\n$$ with ```math\n...\n```
 
+	has_math = False
+
 	def quote_math_inline(pre, d1, math, d2, post):
 		# check if it looks like math...
+		nonlocal has_math
 		is_math = True
 		if math.startswith("`") and math.endswith("`"):
 			# already processed
+			has_math = True
 			is_math = False
 #		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
 #			is_math = False
@@ -261,6 +265,7 @@ def preprocess(content):
 		elif re.match(r'\w$', pre):
 			is_math = False
 		if is_math:
+			has_math = True
 			return f"$`{math}`$"
 		return f"{d1}{math}{d2}"
 
@@ -279,6 +284,7 @@ def preprocess(content):
 		if is_math_delim and not in_math:
 			out.append("```math")
 			in_math = True
+			has_math = True
 			in_code = True
 		elif is_math_delim and in_math:
 			out.append("```")
@@ -311,18 +317,26 @@ def preprocess(content):
 
 	content = "\n".join(out)+"\n"
 	logger.debug("preprocess content: %r", content)
-	return content
+	return content, has_math
 
+
+math_cache = {}
 
 def message_to_html(message):
 	""" Convert a chat message to HTML. """
+	global math_cache
 	logger.debug("converting message to html: %r", message["content"])
-	content = preprocess(message["content"])
-	try:
-		html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
-	except Exception as e:
-		logger.error("markdown error: %r", e)
-		html_content = f"<pre>{html.escape(content)}</pre>"
+	content, has_math = preprocess(message["content"])
+	if content in math_cache:
+		html_content = math_cache[content]
+	else:
+		try:
+			html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
+		except Exception as e:
+			logger.error("markdown error: %r", e)
+			html_content = f"<pre>{html.escape(content)}</pre>"
+		if has_math:
+			math_cache[content] = html_content
 	logger.debug("html_content: %r", html_content)
 	if html_content == "":
 		html_content = "&nbsp;"
