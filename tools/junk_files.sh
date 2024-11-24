@@ -20,12 +20,15 @@ junk_files() {
 
     # Find junk files and empty files
     found_files=$(find "$directory" \
-        -not -path '*/\.*/*' \
-        -not -path '*/__pycache__/*' \
-        -not -path '*/venv/*' \
-        -not -path '*/node_modules/*' \
-        \( \
+        -path '*/\.*' -prune -o \
+        -path '*/__pycache__' -prune -o \
+        -path '*/venv' -prune -o \
+        -path '*/node_modules' -prune -o \
+        -path '*/rooms.server' -prune -o \
+        -type f \( \
             -name '*~' -o \
+            -name '*.new' -o \
+            -name '*.old' -o \
             -name '.*.results.txt' -o \
             -name '*.tmp.*' -o \
             -name 'subtitle.txt' \
