@@ -311,7 +311,7 @@ improve() {
 		fi
 		move-rubbish "$target_file.old" 2>/dev/null || true
 		cp -a "$target_file" "$target_file.old"
-		cp -a "$output_file" "$target_file"
+		cat "$output_file" >"$target_file"  # preserve inode and mode of target_file
 		move-rubbish "$output_file"
 	}
 
