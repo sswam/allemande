@@ -120,7 +120,7 @@ def get_pos() -> Tuple[int, int]:
         # Read the response
         buf = b""
         while True:
-            char = read_with_timeout(fd, 1, TIMEOUT_MS)
+            char = _read_with_timeout(fd, 1, TTY_CURSOR_POS_TIMEOUT_MS)
             if char is None:
                 raise TimeoutError("Timeout while reading terminal response")
             buf += char

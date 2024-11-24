@@ -101,7 +101,7 @@ def io(
     if warn_deprecated:
         meta.deprecated("old.io", "main.go")
 
-    return geput.setup_get(istream), geput.setup_put(ostream)
+    return geput.get_istream(istream), geput.put_istream(ostream)
 
 
 class TextInput:

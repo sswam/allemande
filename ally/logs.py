@@ -113,7 +113,7 @@ def get_log_level_numeric(level=1, name=None, root=False) -> int:
     else:
         logger = logs.get_logger(level+1, name=name)
     if not logger.handlers:
-        return "WARNING"  # Default log level if no handlers
+        return logging.WARNING  # Default log level if no handlers
     return logger.handlers[0].level
 
 
@@ -169,6 +169,7 @@ def get_log_file(level=1, name=None) -> str:
     for handler in logger.handlers:
         if isinstance(handler, logging.FileHandler):
             return handler.baseFilename
+    raise ValueError("No file handler found")
 
 
 class IndentLogger:

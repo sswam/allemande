@@ -44,7 +44,10 @@ def get_module_name(level: int = 1, ext: bool = False):
     """
     caller_frame = inspect.stack()[level]
     caller_module = inspect.getmodule(caller_frame[0])
-    module_name = os.path.basename(caller_module.__file__)
+    if caller_module is None:
+        module_name = "NONE"
+    else:
+        module_name = os.path.basename(caller_module.__file__)
     if ext:
         return module_name
     return os.path.splitext(module_name)[0]
