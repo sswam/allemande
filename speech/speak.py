@@ -20,26 +20,58 @@ from gtts import gTTS  # type: ignore
 from TTS.api import TTS  # type: ignore
 from TTS.utils.manage import ModelManager  # type: ignore
 from TTS.utils.synthesizer import Synthesizer  # type: ignore
-from sh import amixer, soundstretch  # pylint disable=no-name-in-module
+from parler_tts import ParlerTTSForConditionalGeneration  # type: ignore
+from transformers import AutoTokenizer  # type: ignore
+from pydantic import BaseModel, ConfigDict
+from sh import amixer, soundstretch  # type: ignore # pylint: disable=no-name-in-module
+import spacy
 
 from ally import main, logs  # type: ignore
 
 __version__ = "0.1.4"
+
 
 logger = logs.get_logger()
 
 DEFAULT_MODELS = {
     "coqui": "tts_models/en/ek1/tacotron2",
     "gtts": "en:co.uk",
+    "parler": "mini",
 }
 
 # DEFAULT_MODEL = "coqui:" + DEFAULT_MODELS['coqui']
-DEFAULT_MODEL = "gtts:" + DEFAULT_MODELS["gtts"]
+# DEFAULT_MODEL = "gtts:" + DEFAULT_MODELS["gtts"]
+DEFAULT_MODEL = "parler:" + DEFAULT_MODELS["parler"]
 
-use_cuda = torch.cuda.is_available()
+DEFAULT_PARLER_PROMPT = "Laura, very clear audio."
 
 
-def get_synth_coqui(model=DEFAULT_MODELS["coqui"]):
+def get_synth_parler(model="mini", opts=None):
+    """Get a Parler TTS speak function for the given model variant"""
+    model_name = f"parler-tts/parler-tts-{model}-v1"
+    device = "cpu" if opts.cpu else "cuda:0"
+
+    model = ParlerTTSForConditionalGeneration.from_pretrained(model_name).to(device)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+    def speak_fn(text, out, prompt=opts.prompt, **_kwargs):
+        if prompt is None:
+            prompt = DEFAULT_PARLER_PROMPT
+        input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(device)
+        prompt_input_ids = tokenizer(text, return_tensors="pt").input_ids.to(device)
+
+        generation = model.generate(input_ids=input_ids, prompt_input_ids=prompt_input_ids)
+        audio = generation.cpu().numpy().squeeze()
+        rate = model.config.sampling_rate
+
+        if out:
+            soundfile.write(out, audio, rate)
+        return out, audio, rate
+
+    return speak_fn
+
+
+def get_synth_coqui(model=DEFAULT_MODELS["coqui"], opts=None):
     """Get a Coqui TTS speak function for the given model"""
     # download and load the TTS model
     model_manager = ModelManager()
@@ -50,7 +82,7 @@ def get_synth_coqui(model=DEFAULT_MODELS["coqui"]):
         tts_checkpoint=model_path,
         tts_config_path=config_path,
         vocoder_checkpoint=None,
-        use_cuda=use_cuda,
+        use_cuda=not opts.cpu,
     )
 
     def speak_fn(text, out, **_kwargs):
@@ -65,7 +97,7 @@ def get_synth_coqui(model=DEFAULT_MODELS["coqui"]):
     return speak_fn
 
 
-def get_synth_gtts(model=DEFAULT_MODELS["gtts"]):
+def get_synth_gtts(model=DEFAULT_MODELS["gtts"], opts=None):  # pylint: disable=unused-argument
     """Get a Google TTS speak function for the given model"""
     lang, *rest = model.split(":", 1)
     tld = rest[0] if rest else None
@@ -83,6 +115,7 @@ def get_synth_gtts(model=DEFAULT_MODELS["gtts"]):
         audio, rate = soundfile.read(outmp3)
         if ext == ".wav":
             soundfile.write(out, audio, rate, subtype="PCM_16")
+            os.remove(outmp3)
         else:
             out = outmp3
         return out, audio, rate
@@ -93,6 +126,7 @@ def get_synth_gtts(model=DEFAULT_MODELS["gtts"]):
 engines = {
     "coqui": get_synth_coqui,
     "gtts": get_synth_gtts,
+    "parler": get_synth_parler,
 }
 
 gtts_models = [
@@ -150,10 +184,7 @@ def download_all_coqui_models():
         _tts = TTS(model_name)
 
 
-# TODO coqui speaker selection
-
-
-def get_synth(model=DEFAULT_MODEL):
+def get_synth(model=DEFAULT_MODEL, opts=None):
     """Get a TTS speak function for the given model"""
     model_type, *rest = model.split(":", 1)
     model = rest[0] if rest else DEFAULT_MODELS[model_type]
@@ -161,11 +192,12 @@ def get_synth(model=DEFAULT_MODEL):
         engine = engines[model_type]
     except KeyError as e:
         raise ValueError(f"Unknown engine: {model_type}") from e
-    return engine(model)
+    return engine(model, opts)
 
 
 class SpeakContext:
     """Context manager for handling microphone and volume state during speech."""
+
     def __init__(self, deafen=False, loud_while_speaking=None):
         self.deafen = deafen
         self.loud_while_speaking = loud_while_speaking
@@ -177,8 +209,8 @@ class SpeakContext:
             amixer.sset("Capture", "nocap")
             logger.debug("Mic off")
         if self.loud_while_speaking is not None:
-            self.vol = alsaaudio.Mixer().getvolume()[0]
-            alsaaudio.Mixer().setvolume(self.loud_while_speaking)
+            self.vol = alsaaudio.Mixer().getvolume()[0]  # pylint: disable=c-extension-no-member
+            alsaaudio.Mixer().setvolume(self.loud_while_speaking)  # pylint: disable=c-extension-no-member
             logger.info("speak_line: volume %r -> %r", self.vol, self.loud_while_speaking)
         return self
 
@@ -188,51 +220,49 @@ class SpeakContext:
             amixer.sset("Capture", "cap")
             logger.debug("Mic on")
         if self.loud_while_speaking:
-            alsaaudio.Mixer().setvolume(self.vol)
+            alsaaudio.Mixer().setvolume(self.vol)  # pylint: disable=c-extension-no-member
             logger.info("speak_line: volume %r <- %r", self.vol, self.loud_while_speaking)
 
 
-def speak_line(
-    text,
-    out=None,
-    model=DEFAULT_MODEL,
-    play=True,
-    wait=True,
-    synth=None,
-    deafen=False,
-    postproc=None,
-    echo=True,
-    loud_while_speaking=None,
-):
+def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # pylint: disable=too-many-branches
     """Speak a line of text"""
 
-    logger.info(
-        "speak_line: text: %r, out: %r, model: %r, play: %r, wait: %r, synth: %r, deafen: %r, postproc: %r, echo: %r, loud_while_speaking: %r",
-        text,
-        out,
-        model,
-        play,
-        wait,
-        synth,
-        deafen,
-        postproc,
-        echo,
-        loud_while_speaking,
-    )
+    # split the prompt from the text
+    if opts.read_prompts and "\t" in text:
+        prompt, text = text.split("\t", 1)
+    elif text.strip() != "":
+        logger.warning("speak_line: no prompt in text: %r", text)
+        prompt = opts.prompt
+    else:
+        prompt = opts.prompt
+
+    # split the text into sentences
+    if opts.split_sentences:
+        sentences = [sent.text.strip() for sent in opts.nlp(text).sents]
+        opts = opts.copy()
+        opts.split_sentences = False
+        opts.echo_prompt = False
+        opts.prompt = prompt
+        return speak_lines(istream=sentences, out=out, synth=synth, postproc=postproc, opts=opts)
 
     if not synth:
-        synth = get_synth(model)
+        synth = get_synth(opts.model, opts)
 
-    logger.info("speak_line: text: %r", text)
-    if echo:
-        print(text)
+    # echo the prompt and text
+    if opts.echo_prompt:
+        print(prompt, end="\t")
+    if opts.echo:
+        print(text, end="")
+    if opts.echo_prompt or opts.echo:
+        print()
 
-    # 	if line.strip() == "":
-    # 		# sleep a bit
-    # 		time.sleep(0.5)
-    # 		return
+    out = opts.out
 
-    with SpeakContext(deafen=deafen, loud_while_speaking=loud_while_speaking):
+    with SpeakContext(deafen=opts.deafen, loud_while_speaking=opts.loud_while_speaking):
+        if text.strip() == "":
+            time.sleep(opts.blank_line_silence)
+            return
+
         # create a temporary file to store the audio output
         out_is_temp = not out
         if out_is_temp:
@@ -240,57 +270,48 @@ def speak_line(
                 out = f.name
         try:
             # generate speech from the input text
-            file, audio, rate = synth(text, out=out)
+            file, audio, rate = synth(text, out=out, prompt=prompt)
 
             rate_pp = rate
             if postproc:
                 audio, rate_pp = postproc(file, audio, rate)
 
-            if deafen:
+            if opts.deafen:
                 sd.wait()
                 amixer.sset("Capture", "nocap")
                 logger.debug("Mic off")
 
             # play the audio
-            if play:
+            if opts.play:
                 sd.wait()
 
                 sd.play(audio, samplerate=rate_pp)
 
         except AssertionError as e:
             if "No text" in str(e):
-                time.sleep(0.5)
+                time.sleep(opts.blank_line_silence)
             else:
                 raise e
         except ZeroDivisionError as e:
             logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
         finally:
-            if deafen:
+            # Re-enable the microphone and clean up any temporary file
+            if opts.deafen:
                 sd.wait()
                 amixer.sset("Capture", "cap")
                 logger.debug("Mic on")
             if out_is_temp:
                 os.remove(out)
 
-        if play and wait:
+        if opts.play and opts.wait:
             sd.wait()
 
 
-def speak_lines(
-    istream=sys.stdin,
-    out=None,
-    model=DEFAULT_MODEL,
-    play=True,
-    wait=True,
-    synth=None,
-    deafen=False,
-    postproc=None,
-    echo=True,
-    loud_while_speaking=None,
-):
+def speak_lines(istream=None, out=None, synth=None, postproc=None, opts=None):
     """Speak lines of text"""
     if not synth:
-        synth = get_synth(model)
+        synth = get_synth(opts.model, opts)
+
     if out:
         stem, ext = os.path.splitext(out)
 
@@ -303,17 +324,12 @@ def speak_lines(
         speak_line(
             text=line,
             out=out,
-            model=model,
-            play=play,
-            wait=wait,
             synth=synth,
-            deafen=deafen,
             postproc=postproc,
-            echo=echo,
-            loud_while_speaking=loud_while_speaking,
+            opts=opts,
         )
 
-    if play and wait:
+    if opts.play and opts.wait:
         sd.wait()
 
 
@@ -352,83 +368,83 @@ def do_list_models():
         print("\t".join([k, lang, tld, accent]))
 
 
+class SpeakOptions(BaseModel):
+    """SpeakOptions: a class that holds the options for the speak tool"""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    out: str | None = None
+    text: str | None = None
+    model: str = DEFAULT_MODEL
+    silence: float = 0.1
+    play: bool = True
+    wait: bool = True
+    deafen: bool = False
+    tempo: float = 1.0
+    pitch: float = 0.0
+    list_models: bool = False
+    cpu: bool = False
+    download_all_models: bool = False
+    echo: bool = True
+    loud_while_speaking: int = 100
+    prompt: str|None = None
+    blank_line_silence: float = 0.5
+    read_prompts: bool = False
+    echo_prompt: bool = False
+    split_sentences: bool = False
+    nlp: spacy.Language = None
+
+
+def spacy_load(model: str) -> spacy.Language:
+    """Load a spacy language model, downloading it if necessary."""
+    try:
+        return spacy.load(model)
+    except OSError:
+        spacy.cli.download(model)
+        return spacy.load(model)
+
+
 def speak(
-    istream: TextIO = sys.stdin,
-    out: str | None = None,
-    text: str | None = None,
-    model: str = DEFAULT_MODEL,
-    silence: float = 0.1,
-    play: bool = True,
-    wait: bool = True,
-    deafen: bool = False,
-    tempo: float = 1.0,
-    pitch: float = 0.0,
-    list_models: bool = False,
-    cuda: bool = False,
-    download_all_models: bool = False,
-    echo: bool = True,
-    loud_while_speaking: int = 100,
+    istream: TextIO,
+    opts: SpeakOptions,
 ) -> None:
     """Speak text using the specified TTS model and options."""
-    global use_cuda
+    if not opts.cpu and not torch.cuda.is_available():
+        opts.cpu = True
 
-    if not cuda:
-        use_cuda = False
-
-    if download_all_models:
+    if opts.download_all_models:
         download_all_coqui_models()
         sys.exit(0)
 
     add_gtts_models()
     add_coqui_models()
-    if list_models:
+    if opts.list_models:
         do_list_models()
         sys.exit(0)
 
-    synth = get_synth(model)
+    if opts.split_sentences:
+        opts.nlp = spacy_load("en_core_web_sm")
+
+    synth = get_synth(opts.model, opts)
 
     # TODO put various options into a dict or something so we can pass them around more easily
 
     # Play an optional short silence to wake up the speakers
-    if silence > 0 and play:
+    if opts.silence > 0 and opts.play:
         sd.wait()
         rate = 44100
-        silence_samples = int(silence * rate)
+        silence_samples = int(opts.silence * rate)
         silent_audio = np.zeros(silence_samples)
         sd.play(silent_audio, samplerate=rate)
 
     postproc = None
-    if tempo != 1 or pitch != 0:
-        postproc = partial(postproc_soundstretch, tempo=tempo, pitch=pitch)
+    if opts.tempo != 1 or opts.pitch != 0:
+        postproc = partial(postproc_soundstretch, tempo=opts.tempo, pitch=opts.pitch)
 
-    if text:
-        logger.info("speak: text: %r", text)
-        speak_line(
-            text=text,
-            out=out,
-            model=model,
-            play=play,
-            wait=wait,
-            synth=synth,
-            deafen=deafen,
-            postproc=postproc,
-            echo=echo,
-            loud_while_speaking=loud_while_speaking,
-        )
+    if opts.text:
+        logger.info("speak: text: %r", opts.text)
+        speak_line(text=opts.text, out=opts.out, synth=synth, postproc=postproc, opts=opts)
     else:
         logger.info("speak: reading from stdin")
-        speak_lines(
-            istream=istream,
-            out=out,
-            model=model,
-            play=play,
-            wait=wait,
-            synth=synth,
-            deafen=deafen,
-            postproc=postproc,
-            echo=echo,
-            loud_while_speaking=loud_while_speaking,
-        )
+        speak_lines(istream=istream, out=opts.out, synth=synth, postproc=postproc, opts=opts)
 
 
 def setup_args(arg):
@@ -441,10 +457,15 @@ def setup_args(arg):
     arg("--tempo", type=float, help="Adjust speaking tempo")
     arg("--pitch", type=float, help="Adjust pitch")
     arg("--list-models", action="store_true", help="List available models")
-    arg("--cuda", action="store_true", help="Use CUDA if available")
+    arg("--cpu", action="store_true", help="Use CPU rather than CUDA")
     arg("--download-all-models", action="store_true", help="Download all Coqui TTS models")
     arg("--no-echo", dest="echo", action="store_false", help="Don't echo text to stdout")
     arg("--loud-while-speaking", type=int, help="Volume level while speaking")
+    arg("--prompt", help="Prompt text for Parler TTS")
+    arg("--read-prompts", action="store_true", help="Read prompts from first column of TSV")
+    arg("--blank-line-silence", type=float, help="Duration of silence for blank lines")
+    arg("--echo-prompt", action="store_true", help="Echo the prompt for each line")
+    arg("--split-sentences", action="store_true", help="Split sentences into separate lines")
     arg("text", nargs="?", help="Text to speak")
 
 
@@ -455,11 +476,13 @@ if __name__ == "__main__":
 
 # TODO:
 
+# FIXME Parler large is not working for me
+
 # - check out https://github.com/nateshmbhat/pyttsx3
 # - try other Coqui TTS models and options
 # - maybe use an OO approach
 # - maybe port to Mac, Windows (mixer stuff)
-
+# - coqui speaker selection
 
 # alt idea for controlling the Linux mixer:
 #
