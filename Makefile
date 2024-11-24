@@ -130,7 +130,7 @@ clean:
 	> watch.log
 
 llm:
-	while true; do $(PYTHON) core/llm_llama.py -m "$(LLM_MODEL)" -d; done
+	while true; do $(PYTHON) core/llm_llama.py -m "$(LLM_MODEL)" -d; sleep 1; done
 
 whisper:
 	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
