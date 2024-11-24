@@ -69,7 +69,7 @@ def write_to_room(room, user, content):
 	user_tc = user_tc.replace(".", "_")
 	message = {"user": user_tc, "content": content}
 
-	text = chat.message_to_text(message)
+	text = chat.message_to_text(message) + "\n"
 
 	with markdown_file.open("a", encoding="utf-8") as f:
 		f.write(text)
