@@ -4,29 +4,27 @@
 This module provides text-to-speech functionality with various TTS engines and models.
 """
 
-import sys
 import os
+import sys
 import tempfile
-import logging
-from functools import partial
-from typing import TextIO, Callable
-
-import torch
-import alsaaudio
 import time
-import sounddevice as sd
+from functools import partial
+from typing import TextIO
+
+import alsaaudio  # type: ignore
 import numpy as np
-from TTS.api import TTS
-from TTS.utils.manage import ModelManager
-from TTS.utils.synthesizer import Synthesizer
-import soundfile
-from gtts import gTTS
+import sounddevice as sd  # type: ignore
+import soundfile  # type: ignore
+import torch
+from gtts import gTTS  # type: ignore
+from sh import amixer, soundstretch  # type: ignore
+from TTS.api import TTS  # type: ignore
+from TTS.utils.manage import ModelManager  # type: ignore
+from TTS.utils.synthesizer import Synthesizer  # type: ignore
 
-from sh import amixer, soundstretch
-import ucm_main
-from ally import main, logs, lazy, geput  # type: ignore
+from ally import main, logs  # type: ignore
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 logger = logs.get_logger()
 
@@ -169,6 +167,7 @@ def get_synth(model=DEFAULT_MODEL):
 
 
 class SpeakContext:
+    """Context manager for handling microphone and volume state during speech."""
     def __init__(self, deafen=False, loud_while_speaking=None):
         self.deafen = deafen
         self.loud_while_speaking = loud_while_speaking
@@ -264,7 +263,7 @@ def speak_line(
             if "No text" in str(e):
                 time.sleep(0.5)
             else:
-                raise (e)
+                raise e
         except ZeroDivisionError as e:
             logger.error("speak_line: ignoring ZeroDivisionError: %r", e)
         finally:
