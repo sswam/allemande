@@ -13,13 +13,13 @@ pygame.init()  # pylint: disable=no-member
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
-running = True
 
 # Initialize rectangle and speeds
 rect = pygame.Rect(100, 200, 50, 20)
 speed_x = 5
 speed_y = 7
 
+running = True
 while running:
     # Handle events
     for event in pygame.event.get():
@@ -37,7 +37,7 @@ while running:
 
     if rect.left < 0 or rect.right > WIDTH:
         speed_x *= -1
-    elif rect.top < 0 or rect.bottom > HEIGHT:
+    if rect.top < 0 or rect.bottom > HEIGHT:
         speed_y *= -1
 
     # Draw everything
