@@ -307,7 +307,7 @@ improve() {
 	cycle_3_files() {
 		local a=$1 b=$2 c=$3
 		if ! $confirm "Update $a -> $b -> $c ?"; then
-			return
+			return 1
 		fi
 		move-rubbish "$target_file.old" 2>/dev/null || true
 		cp -a "$target_file" "$target_file.old"
@@ -316,9 +316,8 @@ improve() {
 	}
 
 	# Swap in the hopefully improved version
-	if $confirm "Update $output_file -> $target_file -> $target_file.old ?"; then
-		cycle_3_files "$output_file" "$target_file" "$target_file.old"
-	elif [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ] && ((!codeok)); then
+	cycle_3_files "$output_file" "$target_file" "$target_file.old" ||
+	if [ "$confirm" ] && [ "$target_file" = "$file" ] && [ -n "$tests_file" ] && ((!codeok)); then
 		cycle_3_files "$output_file" "$tests_file" "$tests_file.old"
 	fi
 
