@@ -43,9 +43,9 @@ LOCAL_AGENT_TIMEOUT=60
 # TODO can't select model from here now
 
 models = {
-	"point-alpaca-7B": {
-		"abbrev": "alpaca",
-		"description": "The Point Networks recreation of weights from Stanford Alpaca, derived from fine-tuning LLaMA on a synthetic dataset.",
+	"default": {
+		"abbrev": "llama3",
+		"description": "Meta-Llama-3.1-8B-Instruct",
 		"cost": 0,
 	},
 }
@@ -63,13 +63,13 @@ AGENT_DEFAULT = os.environ.get("bot", "Ally")
 
 AGENTS_LOCAL = {
 	"Ally": {
-		"model": "point-alpaca-7B",
+		"model": "default",
 	},
 	"Barbie": {
-		"model": "point-alpaca-7B",
+		"model": "default",
 	},
 	"Callam": {
-		"model": "point-alpaca-7B",
+		"model": "default",
 	},
 }
 
@@ -244,7 +244,7 @@ def register_all_agents():
 
 def load_tokenizer(model_path: Path):
 	""" Load the Llama tokenizer """
-	return transformers.LlamaTokenizer.from_pretrained(str(model_path), legacy=False)
+	return transformers.AutoTokenizer.from_pretrained(str(model_path))
 
 
 def count_tokens_in_text(text, tokenizer):
@@ -474,7 +474,7 @@ def history_read(file, args):
 	if file and os.path.exists(file):
 		with open(file, encoding="utf-8") as f:
 			text = f.read()
-	history = text.split(args.delim) if text else []
+	history = re.split(r"\n+", text) if text else []
 
 	# remove up to one blank line from the end, allows to continue same line or not
 	# using a normal editor that always ends the file with a newline
@@ -625,6 +625,8 @@ async def process_file(model, file, args, history_start=0, count=0, max_count=MA
 		#     - in the web chat UI we don't normally submit multi-line messages, can do it with shift-enter on a computer
 		query1 = history[-1] if history else None
 		logger.debug("query1: %r", query1)
+		messages = chat.lines_to_messages([query1])
+		logger.warning("messages %r", messages)
 		query = list(chat.lines_to_messages([query1]))[-1]["content"] if query1 else ""
 		logger.debug("query: %r", query)
 		agent = AGENTS[args.bot.lower()]
@@ -666,9 +668,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	if human_invitation:
 		human_invitation += " "
 
-	if not args.raw and history and history[-1] != "":
-		history.append("")
-		history_write(file, ['', ''], delim=args.delim)
+# 	if not args.raw and history and history[-1] != "":
+# 		history.append("")
+# 		history_write(file, ['', ''], delim=args.delim)
 
 	model_name = agent["model"]
 	history2 = history.copy()
@@ -1066,7 +1068,7 @@ def get_opts():  # pylint: disable=too-many-statements
 	format_group.add_argument("--delim", default="\n\n", help="Delimiter between messages")
 	format_group.add_argument("--trim", action="store_true", default=True, help="Trim the bot's response (enabled by default)")
 	format_group.add_argument("--no-trim", action="store_false", dest="trim", help="Don't trim the bot's response, i.e let it predict the user's speech")
-	format_group.add_argument("--memory", "-x", type=int, default=100000, help="Max number of tokens to keep in history, before we drop old messages")  # default for llama 3.1
+	format_group.add_argument("--memory", "-x", type=int, default=32*1024 - 2048, help="Max number of tokens to keep in history, before we drop old messages")  # default for llama 3.1
 	format_group.add_argument("--strip-final-newline", type=bool, default=True, help="Strip final newline from input, allows to continue lines")
 	format_group.add_argument("--emo", type=bool, default=False, help="End the bot invitation with a space, which causes the bot to respond with an emoji first!")
 	format_group.add_argument("--narrative", type=bool, default=False, help="Allow non-indented narrative text")
@@ -1077,7 +1079,7 @@ def get_opts():  # pylint: disable=too-many-statements
 	model_group.add_argument("--config", "-c", default=None, help="Model config file, in YAML format")
 	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
 	model_group.add_argument("--bytes", "-8", action="store_true", help="Load in 8-bit mode, to save GPU memory")
-	model_group.add_argument("--max-tokens", "-n", type=int, help="Maximum number of new tokens to generate")
+	model_group.add_argument("--max-tokens", "-n", type=int, default=2048, help="Maximum number of new tokens to generate")
 	model_group.add_argument("--remote", "-R", action="store_true", help="Use remote models only, not local (for server working with a home PC)")
 	model_group.add_argument("--local", "-L", action="store_true", help="Use local models only, not online (for home PC working with a server)")
 

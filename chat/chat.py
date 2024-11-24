@@ -237,7 +237,7 @@ def message_to_text(message):
 		text = "".join(lines2)
 	else:
 		text = content
-	return text.rstrip("\n")+"\n\n"
+	return text.rstrip("\n")+"\n"
 
 
 def preprocess(content):
