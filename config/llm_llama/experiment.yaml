@@ -1,11 +1,8 @@
-max_new_tokens: 100000
-use_cache: true
-num_return_sequences: 1
-do_sample: true
+max_new_tokens: 2048
 repetition_penalty: 1.2
 penalty_alpha: 0.6  # 0.4
 temperature: 1 # 0.1 0.7
 top_k: 50
 top_p: 0.7
-early_stopping: false
+early_stopping: true
 
