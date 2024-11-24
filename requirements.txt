@@ -134,3 +134,4 @@ imageio-ffmpeg
 types-PyYAML
 
 git+https://github.com/huggingface/parler-tts.git
+titlecase
