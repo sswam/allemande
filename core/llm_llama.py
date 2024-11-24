@@ -2,28 +2,28 @@
 
 """ allemande - core llama module """
 
-import sys
 import os
 import logging
 from pathlib import Path
 from functools import partial
 import re
 import time
-from typing import AsyncIterator
-
-import inotify.adapters
-import torch
-import yaml
-from llama_cpp import Llama as LlamaCpp
+from typing import AsyncIterator, Iterator, cast
 from threading import Thread
 
-from ally import main, logs, filer, unix, util
+import inotify.adapters  # type: ignore
+import torch
+import yaml
 
+from ally import main, logs, unix, util
+
+os.environ["GGML_CUDA_ENABLE_UNIFIED_MEMORY"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
-import transformers  # pylint: disable=wrong-import-position
+import transformers  # type: ignore # pylint: disable=wrong-import-order, wrong-import-position
+from llama_cpp import Llama as LlamaCpp, CreateCompletionResponse # pylint: disable=wrong-import-order, wrong-import-position
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 
 logger = logs.get_logger()
@@ -40,6 +40,9 @@ default_model_gguf: str = str(models_dir/"default.gguf")
 stop_regexps = [
     re.compile(r"(?m)^[A-Z]\w*:\s*\Z"),
 ]
+
+transformers_prompt_cache = transformers.DynamicCache()
+
 
 def load_transformers_pipeline(model: str) -> transformers.pipeline:
     """Get the pipeline for the given model"""
@@ -66,24 +69,26 @@ def load_transformers_pipeline(model: str) -> transformers.pipeline:
         # max_length=100,
         # max_new_tokens=50,
         truncation=True,
+        use_cache=True,
         #        do_sample=False,  # avoid crashes
     )
 
 
-def load_gguf_model(model: str, context: int = 2048) -> LlamaCpp:
+def load_gguf_model(model: str, context: int = 131072, n_gpu_layers=-1) -> LlamaCpp:
     """Get the pipeline for the given Llama CPP GGUF model"""
     llm = LlamaCpp(
         model_path=model,
         n_ctx=context,
-#            n_batch=512,
+        n_gpu_layers=n_gpu_layers,
+        n_batch=512,
     )
     return llm
 
 
-async def stream_transformers(pipeline: transformers.Pipeline, prompt: str, generation_kwargs: dict = {}) -> AsyncIterator[str]:
+async def stream_transformers(pipeline: transformers.Pipeline, prompt: str, generation_kwargs: dict|None = None) -> AsyncIterator[str]:
     """Stream the output of the transformers pipeline"""
     streamer = transformers.TextIteratorStreamer(pipeline.tokenizer, skip_prompt=True)
-    generation_kwargs = dict(text_inputs=prompt, streamer=streamer, **generation_kwargs)
+    generation_kwargs = {"text_inputs": prompt, "streamer": streamer, **(generation_kwargs or {})}
 
     thread = Thread(target=pipeline, kwargs=generation_kwargs)
     thread.start()
@@ -97,18 +102,20 @@ async def stream_transformers(pipeline: transformers.Pipeline, prompt: str, gene
 async def stream_gguf(llm: LlamaCpp, prompt: str, generation_kwargs: dict) -> AsyncIterator[str]:
     """Stream output from a Llama model"""
 
-    if "repetition_penalty" in generation_kwargs:
-        generation_kwargs = generation_kwargs.copy()
-        generation_kwargs["repeat_penalty"] = generation_kwargs.pop("repetition_penalty")
-        generation_kwargs["max_tokens"] = generation_kwargs.pop("max_new_tokens")
+    generation_kwargs = generation_kwargs.copy()
+    generation_kwargs["repeat_penalty"] = generation_kwargs.pop("repetition_penalty", None)
+    generation_kwargs["max_tokens"] = generation_kwargs.pop("max_new_tokens", None)
+
+    for bad_arg in "early_stopping", "penalty_alpha":
+        generation_kwargs.pop(bad_arg, None)
 
     generation_kwargs = util.dict_not_none(generation_kwargs)
 
-    stream = llm(
+    stream = cast(Iterator[CreateCompletionResponse], llm(
         prompt,
         stream=True,
         **generation_kwargs,
-    )
+    ))
 
     while True:
         try:
@@ -138,7 +145,7 @@ async def collect_response(streamer, model, config, input_text, *_args, **_kwarg
         async for chunk in streamer(model, input_text, generation_kwargs=config):
             text2 = text + chunk
             for stopper in stop_regexps:
-                if match := re.search(text2, stopper):
+                if match := stopper.search(text2):
                     length = match.end() - match.start()
                     text2 = text2[: -length]
                     stop = True
@@ -177,7 +184,7 @@ def load(portals, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
-def process_request(portals, portal, req, gen, *args, **kwargs):
+async def process_request(portals, portal, req, gen, *args, **kwargs):
     """Process a request on a portal"""
 
     def try_rename(src, dst):
@@ -197,7 +204,7 @@ def process_request(portals, portal, req, gen, *args, **kwargs):
 
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         request = load(portals, d, "request.txt")
-        response = gen(config, request, *args, **kwargs)
+        response = await gen(config, request, *args, **kwargs)
         for k, v in response.items():
             (d / k).write_text(v, encoding="utf-8")
         os.rename(d, portal / "done" / req)
@@ -217,7 +224,7 @@ def process_request(portals, portal, req, gen, *args, **kwargs):
             logger.removeHandler(log_handler)
 
 
-def serve_requests_inotify(portals, gen):
+async def serve_requests_inotify(portals, gen):
     """Serve requests from a directory of directories"""
     logger.info("serving requests from %s", portals)
     i = inotify.adapters.Inotify()
@@ -235,15 +242,15 @@ def serve_requests_inotify(portals, gen):
         for req in todo.iterdir():
             if not req.is_dir():
                 continue
-            process_request(portals, portal, req.name, gen)
+            await process_request(portals, portal, req.name, gen)
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
         logger.debug("PATH=[%r] FILENAME=[%r] EVENT_TYPES=%r", path, filename, type_names)
         portal = Path(path).parent
-        process_request(portals, portal, filename, gen)
+        await process_request(portals, portal, filename, gen)
 
 
-def serve_requests_poll(portals, gen, poll_interval=1.0):
+async def serve_requests_poll(portals, gen, poll_interval=1.0):
     """Serve requests from a directory of directories using polling"""
     logger.info("serving requests from %s", portals)
 
@@ -262,7 +269,7 @@ def serve_requests_poll(portals, gen, poll_interval=1.0):
             if not req.is_dir():
                 continue
             known_requests.add((portal, req.name))
-            process_request(portals, portal, req.name, gen)
+            await process_request(portals, portal, req.name, gen)
 
     # Continuous polling loop
     while True:
@@ -282,7 +289,7 @@ def serve_requests_poll(portals, gen, poll_interval=1.0):
         # Process any new requests that weren't known before
         for portal, req_name in new_requests - known_requests:
             logger.debug("New request detected: %s in %s", req_name, portal)
-            process_request(portals, portal, req_name, gen)
+            await process_request(portals, portal, req_name, gen)
 
         # Update known requests
         known_requests = new_requests
@@ -291,20 +298,21 @@ def serve_requests_poll(portals, gen, poll_interval=1.0):
         time.sleep(poll_interval)
 
 
-def llm_llama(portals:str =str(portals_dir), model: str|None = None, inotify: bool=False, gguf: bool=False):
-    """main function"""
+async def llm_llama(portals:str =str(portals_dir), model: str|None = None, use_inotify: bool=False, gguf: bool=False, context: int=32*1024, n_gpu_layers: int=-1):
+    """main function wrapper to suppress output from llama_cpp"""
 
     # redirect stdout and stderr to /dev/null if not in debug mode
     # because llama_cpp prints a lot of debug info
     # TODO Ideally we would want to always keep it in the log file,
     # and show it also on the console in debug mode. Later.
     if logs.level() <= logs.DEBUG:
-        return llm_llama_main(portals, model, inotify, gguf)
+        await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
     with unix.redirect(stdout=None, stderr=None):
-        return llm_llama_main(portals, model, inotify, gguf)
+        await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
 
 
-def llm_llama_main(portals: str, model: str|None, inotify: bool, gguf: bool):
+async def llm_llama_main(portals: str, model: str|None, use_inotify: bool, gguf: bool, context=32*1024, n_gpu_layers=-1):
+    """main function"""
     if not model:
         model = default_model_gguf if gguf else default_model
     elif "/" not in model:
@@ -314,24 +322,26 @@ def llm_llama_main(portals: str, model: str|None, inotify: bool, gguf: bool):
         gguf = True
 
     if gguf:
-        llama_gguf = load_gguf_model(model, context=context)
+        llama_gguf = load_gguf_model(model, context=context, n_gpu_layers=n_gpu_layers)
         gen = partial(collect_response, stream_gguf, llama_gguf)
     else:
         pipeline = load_transformers_pipeline(model)
         gen = partial(collect_response, stream_transformers, pipeline)
 
-    if inotify:
-        serve_requests_inotify(portals, gen)
+    if use_inotify:
+        await serve_requests_inotify(portals, gen)
     else:
-        serve_requests_poll(portals, gen)
+        await serve_requests_poll(portals, gen)
 
 
 def setup_args(arg):
     """Set up the command-line arguments"""
     arg("-p", "--portals", help="Directory of portals")
     arg("-m", "--model", help="Model name or path")
-    arg("-i", "--inotify", action="store_true", help="Use inotify")
+    arg("-i", "--use-inotify", action="store_true", help="Use inotify")
     arg("-g", "--gguf", action="store_true", help="Use GGUF model")
+    arg("-c", "--context", help="Context size")
+    arg("-n", "--n-gpu-layers", help="Number of GPU layers to use for GGUF")
 
 
 if __name__ == "__main__":

@@ -80,6 +80,10 @@ if [ ! -e "$CONFIG" ]; then
 	ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
 fi
 
+NVCC_PREPEND_FLAGS="-ccbin /usr/bin/gcc-13"
+CUDACXX="/usr/local/cuda/bin/nvcc"
+PATH="$PATH:/usr/local/cuda/bin"
+
 . "$CONFIG"
 
 GRADIO_ANALYTICS_ENABLED=False

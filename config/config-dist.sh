@@ -15,9 +15,8 @@ mission=$'system:\tYou are friends and co-workers talking face to face and worki
 add_prompts=1   # 1
 rewind=2
 
-TOKEN_LIMIT=100000
-LLM_MODEL="point-alpaca-7B"
-# LLM_MODEL="WizardLM-7B-Uncensored"
+TOKEN_LIMIT=131072  # 2000  100
+LLM_MODEL="default.gguf"
 
 DEAFEN="--deafen"
 #speak="speak.py --model coqui:tts_models/en/ek1/tacotron2 --tempo 1.2 --pitch 4 $DEAFEN"
