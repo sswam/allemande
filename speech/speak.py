@@ -17,10 +17,10 @@ import sounddevice as sd  # type: ignore
 import soundfile  # type: ignore
 import torch
 from gtts import gTTS  # type: ignore
-from sh import amixer, soundstretch  # type: ignore
 from TTS.api import TTS  # type: ignore
 from TTS.utils.manage import ModelManager  # type: ignore
 from TTS.utils.synthesizer import Synthesizer  # type: ignore
+from sh import amixer, soundstretch  # pylint disable=no-name-in-module
 
 from ally import main, logs  # type: ignore
 
@@ -41,8 +41,6 @@ use_cuda = torch.cuda.is_available()
 
 def get_synth_coqui(model=DEFAULT_MODELS["coqui"]):
     """Get a Coqui TTS speak function for the given model"""
-    global use_cuda
-
     # download and load the TTS model
     model_manager = ModelManager()
     model_path, config_path, _model_item = model_manager.download_model(model)
