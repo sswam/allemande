@@ -38,7 +38,7 @@ logger = logs.get_logger()
 DEFAULT_MODELS = {
     "coqui": "tts_models/en/ek1/tacotron2",
     "gtts": "en:co.uk",
-    "parler": "mini",
+    "parler": "large-v1",
 }
 
 # DEFAULT_MODEL = "coqui:" + DEFAULT_MODELS['coqui']
@@ -48,18 +48,31 @@ DEFAULT_MODEL = "parler:" + DEFAULT_MODELS["parler"]
 DEFAULT_PARLER_PROMPT = "Laura, very clear audio."
 
 
-def get_synth_parler(model="mini", opts=None):
+def get_synth_parler(model: str=DEFAULT_MODELS["parler"], opts=None):
     """Get a Parler TTS speak function for the given model variant"""
-    model_name = f"parler-tts/parler-tts-{model}-v1"
+    info = models[f"parler:{model}"]
+    model_name = f"parler-tts/parler-tts-{model}"
+    sdk = info.get("sdk", "1")
+
     device = "cpu" if opts.cpu else "cuda:0"
 
     model = ParlerTTSForConditionalGeneration.from_pretrained(model_name).to(device)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
+    if sdk == "1":
+        logger.info("Using same tokenizer")
+        description_tokenizer = tokenizer
+    else:
+        logger.info("Using separate tokenizer: %s", tokenizer_name)
+        tokenizer_name = model.config.text_encoder._name_or_path
+        description_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 
     def speak_fn(text, out, prompt=opts.prompt, **_kwargs):
         if prompt is None:
             prompt = DEFAULT_PARLER_PROMPT
-        input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(device)
+
+        # This is a bit confusing, as I call the 'description' the prompt,
+        # but they call the input 'text' the prompt:
+        input_ids = description_tokenizer(prompt, return_tensors="pt").input_ids.to(device)
         prompt_input_ids = tokenizer(text, return_tensors="pt").input_ids.to(device)
 
         generation = model.generate(input_ids=input_ids, prompt_input_ids=prompt_input_ids)
@@ -131,6 +144,14 @@ engines = {
     "parler": get_synth_parler,
 }
 
+parler_models = [
+    {"id": "mini-v1", "lang": "en", "sdk": "1"},
+    {"id": "large-v1", "lang": "en", "sdk": "1"},
+    {"id": "mini-v1.1", "lang": "en", "sdk": "1.1"},
+    {"id": "mini-multilingual", "lang": "en,fr,es,pt,pl,de,it,nl", "sdk": "1.1"},
+    {"id": "mini-expresso", "lang": "en", "sdk": "1"},
+]
+
 gtts_models = [
     {"id": "en:com.au", "accent": "English (Australia)"},
     {"id": "en:co.uk", "accent": "English (United Kingdom)"},
@@ -151,6 +172,18 @@ gtts_models = [
 ]
 
 models = {}
+
+
+def add_parler_models():
+    """Add Parlert TTS models to the models dict"""
+    for model in parler_models:
+        mid = model["id"]
+        full_id = "parler:" + mid
+        models[full_id] = {
+            "engine": "parler",
+            "id": mid,
+            "lang": model["lang"],
+        }
 
 
 def add_coqui_models():
@@ -419,6 +452,7 @@ def speak(
         download_all_coqui_models()
         sys.exit(0)
 
+    add_parler_models()
     add_gtts_models()
     add_coqui_models()
     if opts.list_models:
@@ -481,7 +515,8 @@ if __name__ == "__main__":
 
 # TODO:
 
-# FIXME Parler large is not working for me
+# As of 2024-11-25, Parler large-v1 breaks on the latest version of parler-tts
+# and 1.1 models don't work on the older version. Hopefully they fix it soon.
 
 # - check out https://github.com/nateshmbhat/pyttsx3
 # - try other Coqui TTS models and options
