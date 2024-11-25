@@ -219,7 +219,10 @@ function push_notifications() {
 function leave_room() {
 	console.log("leaving room");
 	// the following doesn't work reliably, so we're going out out
-	set_room("-");
+	if (room == "-")
+		set_room("");
+	else
+		set_room("-");
 //	$room.focus();
 //	$room.value = "";
 //	room = "";
@@ -303,7 +306,7 @@ function keyboard_shortcuts() {
 	Mousetrap.bind("ctrl+;", change_room);
 }
 
-// handle messages -----------------------------------------------------------
+// handle messages from the messages iframe ----------------------------------
 
 function handle_message(ev) {
 	console.log("handle_message", ev);
@@ -314,12 +317,21 @@ function handle_message(ev) {
 //	if (ev.data.type == "change_room") {
 //		change_room();
 //	}
+
 	$content.focus();
+
+	// sending on the event cannot enter text in the input,
+	// but it's useful for other events we handle such as ctrl-.
+	ev.data.view = window;
+	ev.data.bubbles = true;
+	ev.data.cancelable = true;
+
 	console.log("dispatching", ev.data.type, "event");
 	if (ev.data.type == "keypress" || ev.data.type == "keydown") {
 		// can we simulate this same keypress on this document?
 		// ev.data.key, ev.data.ctrlKey, ev.data.altKey, ev.data.shiftKey;
-		document.dispatchEvent(new KeyboardEvent(ev.type, ev.data));
+		const okay = $content.dispatchEvent(new KeyboardEvent(ev.data.type, ev.data));
+		console.log("dispatched", ev.data.type, "event", okay);
 	}
 }
 

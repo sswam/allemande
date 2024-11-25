@@ -108,8 +108,15 @@ $on(window, 'scroll', messages_scrolled);
 //	return false;
 //}
 
+// Keep certain keys in the messages iframe, send others up to the chat window
+const keysToKeep = ["Control", "Shift", "Alt", "Meta", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
+const ctrlKeysToKeep = ["c", "a"];
+
 function relay_event(ev) {
-//	console.log("relay_event", ev);
+	// console.log("relay_event", ev);
+	if (keysToKeep.includes(ev.key) || (ev.ctrlKey && ctrlKeysToKeep.includes(ev.key))) {
+		return;
+	}
 	const copy = {
 		type: ev.type,
 		key: ev.key,
@@ -121,6 +128,7 @@ function relay_event(ev) {
 		metaKey: ev.metaKey,
 	};
 	window.parent.postMessage(copy, CHAT_URL);
+	ev.preventDefault();
 }
 
 function keyboard_shortcuts() {
