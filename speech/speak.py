@@ -23,12 +23,12 @@ from TTS.utils.synthesizer import Synthesizer  # type: ignore
 from parler_tts import ParlerTTSForConditionalGeneration  # type: ignore
 from transformers import AutoTokenizer  # type: ignore
 from pydantic import BaseModel, ConfigDict
-from sh import amixer, soundstretch  # type: ignore # pylint: disable=no-name-in-module
 import spacy
+from sh import amixer, soundstretch  # type: ignore # pylint: disable=no-name-in-module
 
 from ally import main, logs  # type: ignore
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -38,7 +38,7 @@ logger = logs.get_logger()
 DEFAULT_MODELS = {
     "coqui": "tts_models/en/ek1/tacotron2",
     "gtts": "en:co.uk",
-    "parler": "large-v1",
+    "parler": "mini-v1",
 }
 
 # DEFAULT_MODEL = "coqui:" + DEFAULT_MODELS['coqui']
@@ -48,23 +48,52 @@ DEFAULT_MODEL = "parler:" + DEFAULT_MODELS["parler"]
 DEFAULT_PARLER_PROMPT = "Laura, very clear audio."
 
 
-def get_synth_parler(model: str=DEFAULT_MODELS["parler"], opts=None):
+def parler_compile(parler, description_tokenizer, opts, device):
+    """Compile the Parler TTS model for speed"""
+    torch.set_float32_matmul_precision('high')  # XXX?
+
+    logger.info("Compiling model with mode: %s", opts.compile)
+    # Set cache implementation for compilation
+    parler.generation_config.cache_implementation = "static"
+    parler.forward = torch.compile(parler.forward, mode=opts.compile)
+
+    # Warmup compilation with dummy input
+    max_length = 50
+    dummy_text = "This is for compilation"
+    inputs = description_tokenizer(dummy_text, return_tensors="pt",
+                                padding="max_length", max_length=max_length).to(device)
+    model_kwargs = {
+        **inputs,
+        "prompt_input_ids": inputs.input_ids,
+        "prompt_attention_mask": inputs.attention_mask,
+    }
+
+    n_steps = 2 if opts.compile == "reduce_overhead" else 1
+    for _ in range(n_steps):
+        _ = parler.generate(**model_kwargs)
+
+
+def get_synth_parler(model: str = DEFAULT_MODELS["parler"], opts=None):
     """Get a Parler TTS speak function for the given model variant"""
     info = models[f"parler:{model}"]
     model_name = f"parler-tts/parler-tts-{model}"
     sdk = info.get("sdk", "1")
-
     device = "cpu" if opts.cpu else "cuda:0"
+#    torch_dtype = torch.bfloat16
 
-    model = ParlerTTSForConditionalGeneration.from_pretrained(model_name).to(device)
+    parler = ParlerTTSForConditionalGeneration.from_pretrained(model_name).to(device)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     if sdk == "1":
         logger.info("Using same tokenizer")
         description_tokenizer = tokenizer
     else:
+        tokenizer_name = parler.config.text_encoder._name_or_path  # pylint: disable=protected-access
         logger.info("Using separate tokenizer: %s", tokenizer_name)
-        tokenizer_name = model.config.text_encoder._name_or_path
         description_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+
+    # Compile if requested
+    if hasattr(opts, "compile") and opts.compile and opts.compile != "none":
+        parler_compile(parler, description_tokenizer, opts, device)
 
     def speak_fn(text, out, prompt=opts.prompt, **_kwargs):
         if prompt is None:
@@ -75,9 +104,9 @@ def get_synth_parler(model: str=DEFAULT_MODELS["parler"], opts=None):
         input_ids = description_tokenizer(prompt, return_tensors="pt").input_ids.to(device)
         prompt_input_ids = tokenizer(text, return_tensors="pt").input_ids.to(device)
 
-        generation = model.generate(input_ids=input_ids, prompt_input_ids=prompt_input_ids)
+        generation = parler.generate(input_ids=input_ids, prompt_input_ids=prompt_input_ids)
         audio = generation.cpu().numpy().squeeze()
-        rate = model.config.sampling_rate
+        rate = parler.config.sampling_rate
 
         if out:
             soundfile.write(out, audio, rate)
@@ -259,7 +288,7 @@ class SpeakContext:
             logger.info("speak_line: volume %r <- %r", self.vol, self.loud_while_speaking)
 
 
-def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # pylint: disable=too-many-branches
+def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # pylint: disable=too-many-branches, too-many-statements
     """Speak a line of text"""
 
     # split the prompt from the text
@@ -408,6 +437,7 @@ def do_list_models():
 
 class SpeakOptions(BaseModel):
     """SpeakOptions: a class that holds the options for the speak tool"""
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
     out: str | None = None
     text: str | None = None
@@ -423,12 +453,13 @@ class SpeakOptions(BaseModel):
     download_all_models: bool = False
     echo: bool = True
     loud_while_speaking: int = 100
-    prompt: str|None = None
+    prompt: str | None = None
     blank_line_silence: float = 0.5
     read_prompts: bool = False
     echo_prompt: bool = False
     split_sentences: bool = False
-    nlp: spacy.Language = None
+    nlp: spacy.Language|None = None
+    compile: str = "none"  # "reduce-overhead"
 
 
 def spacy_load(model: str) -> spacy.Language:
@@ -436,7 +467,7 @@ def spacy_load(model: str) -> spacy.Language:
     try:
         return spacy.load(model)
     except OSError:
-        spacy.cli.download(model)
+        spacy.cli.download(model)  # type: ignore
         return spacy.load(model)
 
 
@@ -461,6 +492,14 @@ def speak(
 
     if opts.split_sentences:
         opts.nlp = spacy_load("en_core_web_sm")
+
+    # parler compile options
+    if opts.compile == "0":
+        opts.compile = "none"
+    elif opts.compile == "1":
+        opts.compile = "default"
+    elif opts.compile == "2":
+        opts.compile = "reduce-overhead"
 
     synth = get_synth(opts.model, opts)
 
@@ -505,6 +544,7 @@ def setup_args(arg):
     arg("--blank-line-silence", type=float, help="Duration of silence for blank lines")
     arg("--echo-prompt", action="store_true", help="Echo the prompt for each line")
     arg("--split-sentences", action="store_true", help="Split sentences into separate lines")
+    arg("--compile", choices=["none", "default", "reduce-overhead", "0", "1", "2"], help="Compile model for speed")
     arg("text", nargs="?", help="Text to speak")
 
 
@@ -517,6 +557,7 @@ if __name__ == "__main__":
 
 # As of 2024-11-25, Parler large-v1 breaks on the latest version of parler-tts
 # and 1.1 models don't work on the older version. Hopefully they fix it soon.
+# Also, compilation seems to work, but makes things slower! It uses a lot of CPU.
 
 # - check out https://github.com/nateshmbhat/pyttsx3
 # - try other Coqui TTS models and options
