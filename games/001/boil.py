@@ -65,10 +65,10 @@ def playing() -> bool:
     return engine.running
 
 
-def init(title: str = "Game", music=None, volume=0.3) -> None:
+def init(title: str = "Game", music=None, volume=0.3, width=800, height=600) -> None:
     """Initialize the game with optional title."""
     global game, config, engine, player
-    config = GameConfig(title=title)
+    config = GameConfig(title=title, width=width, height=height)
     engine = GameEngine(config)
     player = GameObject()
     load_sounds()
