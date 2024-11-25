@@ -5,6 +5,8 @@ xor-c
 .*
 *.bak
 *~
+*.old
+*.new
 venv
 node_modules
 __pycache__
