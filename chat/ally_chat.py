@@ -96,6 +96,9 @@ AGENTS_REMOTE = {
 		},
 		"model": "claude",
 		"default_context": 200,
+		"system_bottom": "[system message: N.B. Dear assistant, you are Claude. You MUST ONLY reply as Claude, with a single message, and no `Claude: ` prefix. Do NOT reply as any other user.]",
+		"system_bottom_pos": 0,
+		"system_bottom_is_user": True,
 	},
 	"Claude Instant": {
 		"name": "Clia",
@@ -104,6 +107,9 @@ AGENTS_REMOTE = {
 		},
 		"model": "claude-haiku",
 		"default_context": 1000,
+		"system_bottom": "[system message: N.B. Dear assistant, you are Claude. You MUST ONLY reply as Claude, with a single message, and no `Claude: ` prefix. Do NOT reply as any other user.]",
+		"system_bottom_pos": 0,
+		"system_bottom_is_user": True,
 	},
 	"Bard": {
 		"name": "Jaski",
@@ -769,8 +775,6 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
 		context_messages = list(chat.lines_to_messages(context2))
 
-		logger.warning("DEBUG RM: context_messages: %r", context_messages)
-
 		remote_messages = []
 
 #		agent_names = list(AGENTS.keys())
@@ -798,12 +802,27 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 		while remote_messages and remote_messages[0]["role"] == "assistant" and "claude" in agent["model"]:
 			remote_messages.pop(0)
 
+		# add system messages
+		system_top = agent.get("system_top")
+		system_bottom = agent.get("system_bottom")
+		if system_bottom:
+			n_messages = len(remote_messages)
+			pos = agent.get("system_bottom_pos", 1)
+			if pos > n_messages:
+				pos = n_messages
+			system_bottom_role = "user" if agent.get("system_bottom_is_user") else "system"
+			remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom})
+		if system_top:
+			remote_messages.insert(0, {"role": "system", "content": system_top})
+
 		# TODO this is a bit dodgy and won't work with async
 		opts = {
 			"model": agent["model"],
 			"indent": "\t",
 		}
 		llm.set_opts(opts)
+
+		logger.warning("DEBUG: context_messages: %r", remote_messages)
 
 		logger.warning("querying %r = %r", agent['name'], agent["model"])
 		output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, remote_messages)
