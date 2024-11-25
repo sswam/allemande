@@ -4,13 +4,13 @@
 
 import sys
 import os
-import argparse
-import logging
 from pathlib import Path
 import re
-from types import SimpleNamespace
-from pydantic import BaseModel
+import subprocess
+import asyncio
+from typing import Callable
 
+from pydantic import BaseModel
 from watchfiles import awatch, Change, DefaultFilter
 from hidden import contains_hidden_component
 
@@ -31,10 +31,75 @@ class WatcherOptions(BaseModel):
     follow: bool = False
     recursive: bool = False
     absolute: bool = False
+    run: bool = False
+    service: bool = False
+    command: list[str] = []
+    debounce: float = 0.01
 
 
-class Watcher:
+class Debounce:  # pylint: disable=too-few-public-methods
+    """Generic debouncing class"""
+    # func is async
+    def __init__(self, func: Callable, *args, delay: float=0.01, **kwargs):
+        self.delay = delay
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+        self.pending_task: asyncio.Task|None = None
+
+    async def trigger(self):
+        """Schedule the function to be called after the delay"""
+        # Cancel any pending operation
+        if self.pending_task:
+            self.pending_task.cancel()
+
+        # Schedule new operation after delay
+        self.pending_task = asyncio.create_task(
+            self._delayed_execute()
+        )
+
+    async def _delayed_execute(self):
+        """Execute the operation after waiting for the delay"""
+        try:
+            await asyncio.sleep(self.delay)
+            logger.info("Executing debounced function")
+            await self.func(*self.args, **self.kwargs)
+        finally:
+            self.pending_task = None
+
+
+class ServiceManager:
+    """Manages service processes with throttled restarts"""
+    def __init__(self, service_command: list[str]):
+        self.service_command = service_command
+        self.current_process: subprocess.Popen|None = None
+
+    def term_or_kill(self):
+        """Wait for the current process to finish"""
+        if not self.current_process:
+            return
+        try:
+            self.current_process.terminate()
+            self.current_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            self.current_process.kill()
+            self.current_process.wait()
+
+    async def stop(self) -> None:
+        """Clean up the current process if it exists"""
+        if not self.current_process:
+            return
+        await asyncio.to_thread(self.term_or_kill)
+
+    async def start(self) -> None:
+        """Start or restart the service"""
+        await self.stop()
+        self.current_process = subprocess.Popen(self.service_command)  # pylint: disable=consider-using-with
+
+
+class Watcher:  # pylint: disable=too-many-instance-attributes
     """Watcher: a class that can watch files and directories for changes"""
+
     flush = object()
 
     def __init__(self, paths, opts: WatcherOptions):
@@ -45,8 +110,8 @@ class Watcher:
         self.file_sizes: dict[str, int] = {}
         self.dirs: set[str] = set()
         self.cwd = os.getcwd() + os.path.sep
-
-        logger.debug("opts: %r", opts)
+        self.service_manager = ServiceManager(opts.command)
+        self.restart_service_debounce = Debounce(self.service_manager.start, delay=opts.debounce)
 
     def resolve_path(self, path):
         """A path given with a trailing / means to follow any symlink"""
@@ -56,6 +121,32 @@ class Watcher:
             return str(Path(path).absolute())
         return path
 
+    async def run_command(self, changed_path):
+        """Handle running commands asynchronously"""
+        try:
+            process = await asyncio.create_subprocess_exec(
+                *self.opts.command,
+                changed_path,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+
+            stdout, stderr = await process.communicate()
+
+            if process.returncode != 0:
+                logger.error("Command failed with exit code %d", process.returncode)
+            logger.error(stderr.decode())
+            print(stdout.decode())
+        except Exception as e:  # pylint: disable=broad-except
+            logger.error("Failed to run command: %s", str(e))
+
+    async def changed_run_process(self, changed_path):
+        """Run the command or service when a file changes"""
+        if self.opts.run:
+            await self.run_command(changed_path)
+        elif self.opts.service:
+            await self.restart_service_debounce.trigger()
+
     async def run(self):
         """Watch the files and directories"""
 
@@ -63,19 +154,24 @@ class Watcher:
             for path in self.paths:
                 async for row in self.handle_change(Change.added, path, initial=True):
                     yield row
+                    await self.changed_run_process(path)
             yield self.flush
 
         watcher = awatch(*self.paths, watch_filter=self.watch_filter, recursive=self.opts.recursive)
 
-        async for changes in watcher:
-            for change_type, path in changes:
-                if not self.opts.absolute and path.startswith(self.cwd):
-                    path = path[len(self.cwd) :]
-                if not self.opts.absolute and path.startswith("." + os.path.sep):
-                    path = path[len("." + os.path.sep) :]
-                async for row in self.handle_change(change_type, path):
-                    yield row
-            yield self.flush
+        try:
+            async for changes in watcher:
+                for change_type, path in changes:
+                    if not self.opts.absolute and path.startswith(self.cwd):
+                        path = path[len(self.cwd) :]
+                    if not self.opts.absolute and path.startswith("." + os.path.sep):
+                        path = path[len("." + os.path.sep) :]
+                    async for row in self.handle_change(change_type, path):
+                        yield row
+                        await self.changed_run_process(path)
+                yield self.flush
+        finally:
+            await self.service_manager.stop()
 
     def watch_filter(self, change_type, path):
         """Filter out files and directories that we don't want to watch"""
@@ -171,7 +267,9 @@ def null_to(x, replacement):
 
 async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     """Main function for awatch"""
-    opts.exts = tuple(f".{ext}" for ext in opts.extension or ())
+    opts.exts = [f".{ext}" for ext in opts.extension]
+    if (opts.run or opts.service) and not opts.command:
+        raise ValueError("command is required when using --run or --service")
     w = Watcher(paths, opts)
     async for row in w.run():
         if row == Watcher.flush:
@@ -192,6 +290,10 @@ def setup_args(arg):
     arg("-i", "--initial-state", help="report initial state", action="store_true")
     arg("-L", "--follow", help="follow symlinks", action="store_true")
     arg("-A", "--absolute", help="return absolute paths", action="store_true")
+    arg("-R", "--run", help="run command when files change, with pathname as argument", action="store_true")
+    arg("-s", "--service", help="run and restart a service when files change", action="store_true")
+    arg("-d", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
+    arg("command", nargs="*", help="command or service to run when files change")
 
 
 if __name__ == "__main__":
