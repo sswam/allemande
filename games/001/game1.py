@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
+
 from boil import *
 from random import randint 
 from math import *
 
-game = init("Move the Square!", music="theme", volume=0.3, width=2560, height=1440)
+game = init("Sierpinski", music="theme", volume=0.3, width=2560, height=1440)
 
 def draw_lines():
     for i in range(1000):
