@@ -107,18 +107,29 @@ warn_int() {
 
 trap 'warn_int' INT
 
-
 # List the note files?
 select_from_list() {
 	readarray -t files < <(find "$D" -follow \( -name '.*' -o -name 'summary' \) -prune -o -type f -printf '%P\n' | sort)
+	i_default=""
+	i_notes=""
 	for i in "${!files[@]}"; do
 		printf "%3s. %s\n" "$i" "${files[$i]%.*}"
+		if [ "${files[$i]%.*}" = "$t" ]; then
+			i_default=$i
+		fi
+		if [ "${files[$i]%.*}" = "note" ]; then
+			i_notes=$i
+		fi
 	done
 	echo
 
+	if [ -z "$i_default" ]; then
+		i_default=$i_notes
+	fi
+
 	# prompt for a note file
 	num=
-	count read -e -p "? " $timeout_opt num
+	count read -e -p "? " -i "$i_default" $timeout_opt num
 	if [ -n "$num" ]; then
 		t=${files[$num]}
 		t=${t%.md}
