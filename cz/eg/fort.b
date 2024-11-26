@@ -1,4 +1,4 @@
-#!/usr/local/bin/cz --
+#!/usr/bin/env cz
 use b
 
 Main():

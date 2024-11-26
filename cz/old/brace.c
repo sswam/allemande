@@ -1,6 +1,4 @@
-// 2>/dev/null; set -e; X=${0%.c} ; [ "$X" -nt "$0" ] || cc -o "$X" -I$HOME/kisskit "$0" && hide "$X"; exec "$X" "$@"
-
-/* brace.c - Version 3.0.2
+/*
 * A C program that converts Python-like code without braces and semicolons into regular C code,
 * and also performs the reverse operation. Supports multiple languages.
 * Improved to handle punctuation correctly, especially within strings and comments.
@@ -13,7 +11,7 @@
 #include <ctype.h>
 #include <libgen.h>
 
-#define VERSION "1.0.2"
+#define VERSION "3.0.2"
 #define MAX_LINE_LENGTH 2000
 #define MAX_INDENT 100
 #define INDENT_SIZE 4  // Number of spaces per indent level
