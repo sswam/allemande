@@ -12,7 +12,6 @@ __version__ = "0.1.2"
 
 
 # Global state
-game = None
 config = None
 engine = None
 player = None
@@ -50,11 +49,6 @@ def draw_player() -> None:
     engine.draw_rect(player)
 
 
-class Game:
-    width = 800
-    height = 600
-
-
 def playing() -> bool:
     """Check if game is still running."""
     engine.update_display()
@@ -74,9 +68,7 @@ def init(title: str = "Game", music=None, volume=0.3, width=800, height=600) -> 
     load_sounds()
     if music is not None:
         play_music(music, volume=volume)
-    game = Game()
-    game.width, game.height = config.width, config.height
-    return game
+    return config
 
 
 def load_sound(name: str, path: str) -> None:
