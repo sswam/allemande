@@ -105,7 +105,10 @@ function set_room(r) {
 }
 
 function set_room_user() {
-	set_room(user);
+	if (room == user)
+		set_room("");
+	else
+		set_room(user);
 }
 
 
