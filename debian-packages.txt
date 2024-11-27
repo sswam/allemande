@@ -86,3 +86,8 @@ libjwt-dev
 libjansson-dev
 
 xprintidle
+
+abcmidi
+timidity
+lilypond
+lilypond-doc
