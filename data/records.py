@@ -84,8 +84,9 @@ def write_record(output: TextIO, record: Dict[str, str], field_order: Optional[L
     for key in field_order:
         if key in record:
             value = record[key]
-            output.write(f"{key}: {value.split('\n')[0]}\n")
-            for line in value.split('\n')[1:]:
+            lines = value.split('\n')
+            output.write(f"{key}: {lines[0]}\n")
+            for line in lines[1:]:
                 if use_dot and not line.strip():
                     output.write(".\n")
                 else:
