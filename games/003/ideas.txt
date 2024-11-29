@@ -1,0 +1,40 @@
+Temperature conversion C <-> F
+Currency conversion USD <-> AUD
+
+
+
+Write a step by step *plan* for implementing a cartesian mathematical function plotter in Python / pygame, using eval for the function I guess.
+
+1. Setup pygame window with coordinate system origin at center
+2. Define scale factors for x and y axes
+3. Create grid lines and axes
+4. Get function as string input
+5. Create x points list spanning viewport
+6. Calculate y values using eval(function)
+7. Transform coordinate pairs from mathematical to screen space
+8. Draw lines between consecutive points
+9. Add zoom/pan controls
+10. Main loop: clear, draw grid, draw function, handle events
+
+Write a step by step *plan* for implementing a 'scorched earth' turret vs turret game in Python / pygame, including linear functions and quadratics.
+
+
+
+1. Setup pygame window, clock, colors
+2. Create Turret class (position, angle, power)
+3. Create Terrain class (array of height values)
+4. Implement player input handlers (arrow keys = angle, space = power/fire)
+5. Add projectile physics:
+   - x = x0 + v0x * t
+   - y = y0 + v0y * t - 0.5 * g * t^2
+6. Create collision detection (projectile vs terrain/turret)
+7. Add terrain deformation (circular crater at impact)
+8. Implement turn system (player 1/2)
+9. Add win condition (turret destroyed)
+10. Optional: wind effect, power meter, trajectory preview
+
+Critical math:
+- Initial velocity: (v0x = power * cos(angle), v0y = power * sin(angle))
+- Time step: position = previous_position + velocity * dt
+- Collision: check if projectile.y <= terrain_height[int(projectile.x)]
+
