@@ -146,3 +146,8 @@ def triangle(p0, p1, p2, color=None, width=0) -> None:
     color = color or context.colour
     pygame.draw.polygon(engine.screen, color, (p0, p1, p2), width=width)
     context.p = p2
+
+def rect(p0, w, h, color=None) -> None:
+    """Draw a rectangle at (x0, y0) with width and height."""
+    color = color or context.colour
+    pygame.draw.rect(engine.screen, color, pygame.Rect(p0[0], p0[1], w, h))
