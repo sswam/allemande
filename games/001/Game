@@ -1,0 +1,286 @@
+import pygame
+import random
+from pygame.math import Vector2
+
+# Game settings
+SCREEN_WIDTH = 2560
+SCREEN_HEIGHT = 1440
+MAP_WIDTH = 5000
+MAP_HEIGHT = 5000
+FPS = 60
+
+# Player settings
+PLAYER_SPEED = 300
+PLAYER_HEALTH = 100
+PLAYER_BULLET_SPEED = 700
+PLAYER_BULLET_DAMAGE = 20
+PLAYER_RELOAD_TIME = 0.5  # Seconds
+
+# Enemy settings
+ENEMY_SPEED = 150
+ENEMY_HEALTH = 50
+ENEMY_BULLET_SPEED = 400
+ENEMY_BULLET_DAMAGE = 10
+ENEMY_RELOAD_TIME = 1.0  # Seconds
+ENEMY_SPAWN_RATE = 3  # Seconds between spawns
+
+# Obstacle settings
+CRATE_HEALTH = 30
+CRATE_DROP_CHANCE = 0.5  # 50% chance to drop XP or health
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+GRAY = (128, 128, 128)
+LIGHT_GRAY = (200, 200, 200)
+
+# Initialize pygame
+pygame.init()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("2D Top-Down Shooter with Upgrades")
+clock = pygame.time.Clock()
+
+# Utility function to draw text
+def draw_text(surface, text, font_size, color, x, y, center=False):
+    font = pygame.font.Font(None, font_size)
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect(topleft=(x, y))
+    if center:
+        text_rect = text_surface.get_rect(center=(x, y))
+    surface.blit(text_surface, text_rect)
+
+# Camera class
+class Camera:
+    def __init__(self, width, height):
+        self.camera = pygame.Rect(0, 0, width, height)
+        self.world_size = pygame.Rect(0, 0, MAP_WIDTH, MAP_HEIGHT)
+        self.apply = None
+
+    def apply(self, entity):
+        # Moves the entity to the correct location on screen
+        return entity.rect.move(self.camera.topleft)
+
+    def update(self, target):
+        # Keep the target (player) centered on the screen
+        x = -target.rect.centerx + SCREEN_WIDTH // 2
+        y = -target.rect.centery + SCREEN_HEIGHT // 2
+        x = min(0, x)
+        y = min(0, y)
+        x = max(-(self.world_size.width - SCREEN_WIDTH), x)
+        y = max(-(self.world_size.height - SCREEN_HEIGHT), y)
+        self.camera = pygame.Rect(x, y, self.camera.width, self.camera.height)
+
+# Player class
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.Surface((40, 40))
+        self.image.fill(BLUE)
+        self.rect = self.image.get_rect(center=(x, y))
+        self.position = Vector2(x, y)
+        self.velocity = Vector2(0, 0)
+        self.speed = PLAYER_SPEED
+        self.health = PLAYER_HEALTH
+        self.max_health = PLAYER_HEALTH
+        self.bullet_damage = PLAYER_BULLET_DAMAGE
+        self.bullet_speed = PLAYER_BULLET_SPEED
+        self.reload_time = PLAYER_RELOAD_TIME
+        self.reload_timer = 0
+        self.health_regen = 0
+        self.xp = 0
+        self.level = 1
+        self.xp_needed = 100
+        self.upgrade_points = 0
+
+        # Turret
+        self.turret = pygame.Surface((60, 10))
+        self.turret.fill(YELLOW)
+        self.turret_origin = self.turret.get_rect(center=self.rect.center)
+
+    def update(self, keys, mouse_pos, dt):
+        # Movement
+        self.velocity = Vector2(0, 0)
+        if keys[pygame.K_w]:
+            self.velocity.y = -1
+        if keys[pygame.K_s]:
+            self.velocity.y = 1
+        if keys[pygame.K_a]:
+            self.velocity.x = -1
+        if keys[pygame.K_d]:
+            self.velocity.x = 1
+
+        if self.velocity.length() > 0:
+            self.velocity = self.velocity.normalize() * self.speed
+
+        self.position += self.velocity * dt
+        self.rect.center = self.position
+
+        # Clamp player position within the map
+        self.rect.left = max(self.rect.left, 0)
+        self.rect.right = min(self.rect.right, MAP_WIDTH)
+        self.rect.top = max(self.rect.top, 0)
+        self.rect.bottom = min(self.rect.bottom, MAP_HEIGHT)
+        self.position = Vector2(self.rect.center)
+
+        # Turret rotation
+        direction = Vector2(mouse_pos) - Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        angle = direction.angle_to(Vector2(1, 0))
+        self.turret_rotated = pygame.transform.rotate(self.turret, -angle)
+        self.turret_origin = self.turret_rotated.get_rect(center=self.rect.center)
+
+        # Reload timer
+        if self.reload_timer > 0:
+            self.reload_timer -= dt
+
+        # Health regeneration
+        if self.health < self.max_health:
+            self.health += self.health_regen * dt
+            if self.health > self.max_health:
+                self.health = self.max_health
+
+        # Level-up
+        if self.xp >= self.xp_needed:
+            self.level_up()
+
+    def level_up(self):
+        self.level += 1
+        self.xp = 0
+        self.xp_needed += 50
+        self.upgrade_points += 1
+        print(f"Level up! Current level: {self.level}")
+
+    def shoot(self, target_pos):
+        if self.reload_timer <= 0:
+            direction = Vector2(target_pos) - self.position
+            if direction.length() > 0:
+                direction = direction.normalize()
+            bullet = Bullet(self.rect.centerx, self.rect.centery, direction, self.bullet_speed, YELLOW, self.bullet_damage)
+            bullets.add(bullet)
+            all_sprites.add(bullet)
+            self.reload_timer = self.reload_time
+
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            print("Game Over!")
+            pygame.quit()
+            exit()
+
+# Bullet class
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction, speed, color, damage):
+        super().__init__()
+        self.image = pygame.Surface((10, 10))
+        self.image.fill(color)
+        self.rect = self.image.get_rect(center=(x, y))
+        self.position = Vector2(x, y)
+        self.direction = direction
+        self.speed = speed
+        self.damage = damage
+
+    def update(self, dt):
+        # Move bullet
+        self.position += self.direction * self.speed * dt
+        self.rect.center = self.position
+
+        # Remove bullet if off-map
+        if not (0 <= self.rect.x <= MAP_WIDTH and 0 <= self.rect.y <= MAP_HEIGHT):
+            self.kill()
+
+# Enemy class
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.Surface((30, 30))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect(center=(x, y))
+        self.position = Vector2(x, y)
+        self.health = ENEMY_HEALTH
+        self.speed = ENEMY_SPEED
+        self.direction = Vector2(random.uniform(-1, 1), random.uniform(-1, 1)).normalize()
+        self.reload_time = ENEMY_RELOAD_TIME
+        self.reload_timer = 0
+
+    def update(self, dt):
+        # Movement
+        self.position += self.direction * self.speed * dt
+        self.rect.center = self.position
+
+        # Bounce off map borders
+        if self.rect.left <= 0 or self.rect.right >= MAP_WIDTH:
+            self.direction.x = -self.direction.x
+        if self.rect.top <= 0 or self.rect.bottom >= MAP_HEIGHT:
+            self.direction.y = -self.direction.y
+
+        # Reload timer
+        if self.reload_timer > 0:
+            self.reload_timer -= dt
+
+    def shoot(self, target_pos):
+        if self.reload_timer <= 0:
+            direction = Vector2(target_pos) - self.position
+            if direction.length() > 0:
+                direction = direction.normalize()
+            bullet = Bullet(self.rect.centerx, self.rect.centery, direction, ENEMY_BULLET_SPEED, RED, ENEMY_BULLET_DAMAGE)
+            enemy_bullets.add(bullet)
+            all_sprites.add(bullet)
+            self.reload_timer = self.reload_time
+
+# Initialize pygame groups
+all_sprites = pygame.sprite.Group()
+other_sprites = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+enemy_bullets = pygame.sprite.Group()
+enemies = pygame.sprite.Group()
+
+# Create player
+player = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+all_sprites.add(player)
+
+# Create camera object
+camera = Camera(MAP_WIDTH, MAP_HEIGHT)
+
+# Game loop
+running = True
+while running:
+    dt = clock.tick(FPS) / 1000  # Amount of seconds between frames
+    screen.fill(BLACK)
+
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    keys = pygame.key.get_pressed()
+    mouse_pos = pygame.mouse.get_pos()
+
+    # Update player
+    player.update(keys, mouse_pos, dt)
+
+    # Player shooting
+    if pygame.mouse.get_pressed()[0]:
+        player.shoot(mouse_pos)
+
+    # Update other sprites (enemies, bullets)
+    other_sprites.update(dt)
+
+    # Update camera
+    camera.update(player)
+
+    # Draw everything
+    for entity in all_sprites:
+        camera.apply(entity)
+    all_sprites.draw(screen)
+
+    # Draw HUD
+    draw_text(screen, f"Health: {player.health}/{player.max_health}", 30, WHITE, 10, 10)
+    draw_text(screen, f"XP: {player.xp}/{player.xp_needed}", 30, WHITE, 10, 50)
+    draw_text(screen, f"Level: {player.level}", 30, WHITE, 10, 90)
+
+    pygame.display.flip()
+
+pygame.quit()
