@@ -70,6 +70,9 @@ AGENTS_LOCAL = {
 	},
 	"Callam": {
 		"model": "default",
+#		"system_top": "Please reply with medium hostility, and speak like a pirate.",
+		"system_bottom": "[Please reply as Callam, with medium hostility, and speak like a pirate.]",
+		"system_bottom_pos": 0,
 	},
 }
 
@@ -90,15 +93,15 @@ AGENTS_REMOTE = {
 #		"default_context": 20,
 #	},
 	"Claude": {
-		"name": "Claud",
-		"map": {
-			"Claud": "Claude",
-		},
+		"name": "Claude",
+#		"map": {
+#			"Claud": "Claude",
+#		},
 		"model": "claude",
 		"default_context": 200,
-		"system_bottom": "[system message: N.B. Dear assistant, you are Claude. You MUST ONLY reply as Claude, with a single message, and no `Claude: ` prefix. Do NOT reply as any other user.]",
+#		"system_bottom": "[system message: N.B. Dear assistant, you are Claude. You MUST ONLY reply as Claude, with a single message, and no `Claude: ` prefix. Do NOT reply as any other user.]",
+		"system_bottom": "[Please reply as Claude, without any `Claude: ` prefix.]",
 		"system_bottom_pos": 0,
-		"system_bottom_is_user": True,
 	},
 	"Claude Instant": {
 		"name": "Clia",
@@ -107,18 +110,18 @@ AGENTS_REMOTE = {
 		},
 		"model": "claude-haiku",
 		"default_context": 1000,
-		"system_bottom": "[system message: N.B. Dear assistant, you are Claude. You MUST ONLY reply as Claude, with a single message, and no `Claude: ` prefix. Do NOT reply as any other user.]",
+#		"system_bottom": "[system message: N.B. Dear assistant, you are Claude. You MUST ONLY reply as Claude, with a single message, and no `Claude: ` prefix. Do NOT reply as any other user.]",
+		"system_bottom": "[Please reply as Claude, without any `Claude: ` prefix.]",
 		"system_bottom_pos": 0,
-		"system_bottom_is_user": True,
 	},
-	"Bard": {
-		"name": "Jaski",
-#		"map": {
-#			"Jaski": "Bard",
-#		},
-		"model": "bard",
-		"default_context": 1,
-	},
+# 	"Bard": {
+# 		"name": "Jaski",
+# #		"map": {
+# #			"Jaski": "Bard",
+# #		},
+# 		"model": "bard",
+# 		"default_context": 1,
+# 	},
 }
 
 AGENTS_PROGRAMMING = {
@@ -551,11 +554,12 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 	message = history_messages[-1]
 	query = message["content"]
 	logger.debug("query 1: %r", query)
-	query = query.split("\n")[0]
-	logger.debug("query 2: %r", query)
-	rx = r'((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b'+re.escape(name)+r'\b'
+# 	query = query.split("\n")[0]
+# 	logger.debug("query 2: %r", query)
+#	rx = r'((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b'+re.escape(name)+r'\b'
+	rx = r'.*?\b'+re.escape(name)+r'\b'
 	logger.debug("rx: %r", rx)
-	query = re.sub(rx, '', query, flags=re.IGNORECASE)
+	query = re.sub(rx, '', query, flags=re.IGNORECASE|re.DOTALL)
 	logger.debug("query 3: %r", query)
 	query = re.sub(r'(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+', '', query, re.IGNORECASE)
 	logger.debug("query 4: %r", query)
@@ -681,6 +685,22 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	model_name = agent["model"]
 	history2 = history.copy()
 	apply_maps(agent["input_map"], agent["input_map_cs"], history2)
+
+	# add system messages
+	system_top = agent.get("system_top")
+	system_bottom = agent.get("system_bottom")
+	if system_bottom:
+		n_messages = len(history2)
+		pos = agent.get("system_bottom_pos", 1)
+		pos = min(pos, n_messages)
+		system_bottom_role = agent.get("system_bottom_role", "user")
+		history2.insert(n_messages - pos, f"{system_bottom_role}:\t{system_bottom}")
+	if system_top:
+		system_top_role = agent.get("system_top_role", "system")
+		history2.insert(0, f"{system_top_role}:\t{system_top}")
+
+	logger.info("history2: %r", history2)
+
 	fulltext, history_start = get_fulltext(args, model_name, history2, history_start, invitation, args.delim)
 
 	args.gen_config = load_config(args)
@@ -808,12 +828,12 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 		if system_bottom:
 			n_messages = len(remote_messages)
 			pos = agent.get("system_bottom_pos", 1)
-			if pos > n_messages:
-				pos = n_messages
-			system_bottom_role = "user" if agent.get("system_bottom_is_user") else "system"
+			pos = min(pos, n_messages)
+			system_bottom_role = agent.get("system_bottom_role", "user")
 			remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom})
 		if system_top:
-			remote_messages.insert(0, {"role": "system", "content": system_top})
+			system_top_role = agent.get("system_top_role", "system")
+			remote_messages.insert(0, {"role": system_top_role, "content": system_top})
 
 		# TODO this is a bit dodgy and won't work with async
 		opts = {
@@ -1170,6 +1190,11 @@ async def main():
 	model = SimpleNamespace()
 	models_dir = Path(os.environ["ALLEMANDE_MODELS"])/"llm"
 	model_path = Path(models_dir) / args.model
+	logger.info("model_path: %r", model_path)
+	if args.model and not model_path.exists() and args.model.endswith(".gguf"):
+		args.model = args.model[:-len(".gguf")]
+		model_path = Path(models_dir) / args.model
+	logger.info("model_path: %r", model_path)
 	if args.model and model_path.exists():
 		abbrev_models = [k for k, v in models.items() if v.get("abbrev") == args.model]
 		if len(abbrev_models) == 1:
@@ -1181,6 +1206,7 @@ async def main():
 		TOKENIZERS[args.model] = model.tokenizer
 	else:
 		model.tokenizer = None
+	logger.info("tokenizer: %r", model.tokenizer)
 
 	# check for mutually exclusive options
 	mode_options = [args.interactive, args.file, args.stream, args.watch]
