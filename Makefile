@@ -135,14 +135,14 @@ llm:
 whisper:
 	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
 
-brain-remote:
-	cd chat && ./brain.sh --remote
+# brain-remote: clean
+# 	cd chat && ./brain.sh --remote
 
-brain:
+brain: clean
 	cd chat && ./brain.sh
 
-brain-local:
-	cd chat && ./brain.sh --local
+# brain-local: clean
+# 	cd chat && ./brain.sh --local
 
 mike:
 	cd voice-chat && ./bb_mike.sh
