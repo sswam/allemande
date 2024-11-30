@@ -13,16 +13,15 @@ function add_user() {
 	echo "`change_password "$@"`" |
 	while read x user pass; do
 		cat <<END
-Thanks for trying Ally Chat!
-Here's the info to access the alpha webchat when you get a chance:
+Here's the info to access Ally Chat:
 
 $user $pass
 ^user ^password
 https://allemande.ai
 
 Log in, then click "Ally Chat". You can change the room name at the top
-to something obscure for a more private chat. To talk with a bot, you need
-to mention their name, e.g. Emmy, Dav, Claud, Clia, Ally.
+to something obscure for a more private chat. To talk with a bot,
+you can mention their name, e.g. Emmy, Dav, Claud, Clia, Ally.
 END
 	done
 }
