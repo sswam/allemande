@@ -11,7 +11,7 @@ summary=$base.s
 summary2=$base.s.new
 summary3=$base.s.all
 model1=i	# Anthropic Claude Instant LLM, aka "Clia"; this model is fast, cheap, and seems to be adequate to maintain a good summary of chat.
-model2=c	# Anthropic Claude LLM, aka "Claud"
+model2=c	# Anthropic "Claude" LLM
 # model2=4	# GPT-4, aka "Emmy"
 
 (
