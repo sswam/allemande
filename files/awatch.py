@@ -22,7 +22,7 @@ logger = logs.get_logger()
 
 class WatcherOptions(BaseModel):
     """WatcherOptions: a class that holds the options for the Watcher class"""
-    exts: list[str] = []
+    exts: tuple[str] = []
     extension: list[str] = []
     all_files: bool = False
     hidden: bool = False
@@ -267,7 +267,7 @@ def null_to(x, replacement):
 
 async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     """Main function for awatch"""
-    opts.exts = [f".{ext}" for ext in opts.extension]
+    opts.exts = tuple(f".{ext}" for ext in opts.extension)
     if (opts.run or opts.service) and not opts.command:
         raise ValueError("command is required when using --run or --service")
     w = Watcher(paths, opts)
