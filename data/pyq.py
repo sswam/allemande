@@ -17,6 +17,9 @@ import yaml
 import jq
 from io import StringIO
 
+# for evaluating py data:
+import datetime
+
 from records import read_records, write_records
 import csv_tidy
 
@@ -25,6 +28,9 @@ which_jq = "system"  # "system" or "python"
 
 
 def pyq_subprocess(data, *args):
+    if args == (".",):
+        return data
+    print(args)
     proc = subprocess.Popen(["jq"] + list(args), stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     proc.stdin.write(json.dumps(data).encode("utf-8"))
     proc.stdin.close()
