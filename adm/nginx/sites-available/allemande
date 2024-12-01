@@ -78,9 +78,10 @@ server {
 #		access_log off;
 #		error_log /dev/null;
 #		add_header Cache-Control "no-cache";
-		if ($cors_header != "") {
-			add_header Access-Control-Allow-Origin $cors_header always;
-		}
+# 		if ($cors_header != "") {
+# 			add_header Access-Control-Allow-Origin $cors_header always;
+# 		}
+		add_header Access-Control-Allow-Origin *;
 	}
 }
 

@@ -48,20 +48,20 @@ server {
 #		auth_basic "Auth";
 #		auth_basic_user_file /var/www/allychat/.htpasswd;
 #		autoindex on;
-#		try_files $uri $uri/ =404;
-		try_files $uri $uri/ @redirect;
+		try_files $uri $uri/ =404;
+#		try_files $uri $uri/ @redirect;
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
 		add_header Cache-Control "no-store";
 	}
 
-	location @redirect {
-		if ($request_uri ~* (^/(favicon\.ico|styles\.css|room\.css|util\.js|room\.js|mousetrap\.min.js)$|^/users/)) {
-			return 302 $scheme://$redirect_host$request_uri;
-		}
-		return 404;
-	}
+# 	location @redirect {
+# 		if ($request_uri ~* (^/(favicon\.ico|styles\.css|room\.css|util\.js|room\.js|mousetrap\.min.js)$|^/users/)) {
+# 			return 302 $scheme://$redirect_host$request_uri;
+# 		}
+# 		return 404;
+# 	}
 
 	location /stream {
 		if ($is_banned) {

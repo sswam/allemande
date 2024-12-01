@@ -35,6 +35,10 @@ server {
 	auth_jwt_location COOKIE=auth;
 	auth_jwt_algorithm HS256;
 
+	location /service_worker.js {
+		try_files $uri $uri/ =404;
+	}
+
 	location / {
 		if ($is_banned) {
 			return 302 https://allemande.ai/ban.html;
@@ -45,7 +49,7 @@ server {
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
-		add_header Cache-Control "no-store";
+#		add_header Cache-Control "no-store";
 		if ($cors_header = "https://rooms.allemande.ai") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
