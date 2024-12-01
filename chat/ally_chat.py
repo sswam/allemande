@@ -72,7 +72,6 @@ AGENTS_LOCAL = {
 		"model": "default",
 #		"system_top": "Please reply with medium hostility, and speak like a pirate.",
 		"system_bottom": "[Please reply as Callam, with medium hostility, and speak like a pirate.]",
-		"system_bottom_pos": 0,
 	},
 }
 
@@ -81,17 +80,14 @@ AGENTS_REMOTE = {
 		"name": "Emmy",
 		"model": "gpt-4",
 		"default_context": 200,
+		"system_bottom": "[Please reply as Emmy, without any `Emmy: ` prefix.]",
 	},
 	"GPT-4o-mini": {
 		"name": "Dav",
 		"model": "gpt-4o-mini",
 		"default_context": 1000,
+		"system_bottom": "[Please reply as Dav, without any `Dav: ` prefix.]",
 	},
-#	"GPT-3.5": {
-#		"name": "Dav",
-#		"model": "gpt-3.5-turbo",
-#		"default_context": 20,
-#	},
 	"Claude": {
 		"name": "Claude",
 #		"map": {
@@ -99,9 +95,7 @@ AGENTS_REMOTE = {
 #		},
 		"model": "claude",
 		"default_context": 200,
-#		"system_bottom": "[system message: N.B. Dear assistant, you are Claude. You MUST ONLY reply as Claude, with a single message, and no `Claude: ` prefix. Do NOT reply as any other user.]",
 		"system_bottom": "[Please reply as Claude, without any `Claude: ` prefix.]",
-		"system_bottom_pos": 0,
 	},
 	"Claude Instant": {
 		"name": "Clia",
@@ -110,9 +104,7 @@ AGENTS_REMOTE = {
 		},
 		"model": "claude-haiku",
 		"default_context": 1000,
-#		"system_bottom": "[system message: N.B. Dear assistant, you are Claude. You MUST ONLY reply as Claude, with a single message, and no `Claude: ` prefix. Do NOT reply as any other user.]",
 		"system_bottom": "[Please reply as Claude, without any `Claude: ` prefix.]",
-		"system_bottom_pos": 0,
 	},
 # 	"Bard": {
 # 		"name": "Jaski",
@@ -691,12 +683,15 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	system_bottom = agent.get("system_bottom")
 	if system_bottom:
 		n_messages = len(history2)
-		pos = agent.get("system_bottom_pos", 1)
+		pos = agent.get("system_bottom_pos", 0)
 		pos = min(pos, n_messages)
-		system_bottom_role = agent.get("system_bottom_role", "user")
-		history2.insert(n_messages - pos, f"{system_bottom_role}:\t{system_bottom}")
+		system_bottom_role = agent.get("system_bottom_role", "System")
+		if system_bottom_role:
+			history2.insert(n_messages - pos, f"{system_bottom_role}:\t{system_bottom}")
+		else:
+			history2.insert(n_messages - pos, f"{system_bottom}")
 	if system_top:
-		system_top_role = agent.get("system_top_role", "system")
+		system_top_role = agent.get("system_top_role", None)
 		history2.insert(0, f"{system_top_role}:\t{system_top}")
 
 	logger.info("history2: %r", history2)
@@ -827,7 +822,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 		system_bottom = agent.get("system_bottom")
 		if system_bottom:
 			n_messages = len(remote_messages)
-			pos = agent.get("system_bottom_pos", 1)
+			pos = agent.get("system_bottom_pos", 0)
 			pos = min(pos, n_messages)
 			system_bottom_role = agent.get("system_bottom_role", "user")
 			remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom})
