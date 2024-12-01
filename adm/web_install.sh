@@ -60,12 +60,11 @@ while read conf; do
 	ln -sf "$PWD/$conf" -t /etc/nginx/$dir/
 done
 
-# enable the nginx sites -----------------------------------------------------
+# install the nginx sites properly -------------------------------------------
 
-cd "sites-available"
-for site in *; do
-	ln -sf "../sites-available/$site" /etc/nginx/sites-enabled/
-done
+cd "$ALLEMANDE_HOME/adm"
+
+./update_nginx.sh
 
 # install the haproxy config -------------------------------------------------
 
