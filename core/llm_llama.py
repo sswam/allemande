@@ -6,7 +6,7 @@ import os
 import logging
 from pathlib import Path
 from functools import partial
-import re
+import regex
 import time
 from typing import AsyncIterator, Iterator, cast
 from threading import Thread
@@ -36,10 +36,18 @@ models_dir = Path(os.environ["ALLEMANDE_MODELS"]) / "llm"
 default_model: str = str(models_dir/"default")
 default_model_gguf: str = str(models_dir/"default.gguf")
 
-# TODO: this should be a parameter
+# TODO: this should be a parameter in the request
 stop_regexps = [
-    re.compile(r"(?m)^[A-Z]\w*:\s*\Z"),
+    # A line starting with a name starting with any letter, colon and whitespace
+    regex.compile(r"^[\p{L}][\p{L}\p{N}_]*:\s*\Z", regex.MULTILINE | regex.UNICODE),
+    # A name beginning with upper-case letter followed by colon and TAB, anywhere in the line
+    regex.compile(r"[\p{Lu}][\p{L}\p{N}_]*:\t", regex.UNICODE),
 ]
+# Matches a line that starts with a unicode 'name':
+# 1. Starts with a letter
+# 2. Followed by letters, numbers, or underscores
+# 3. Ends with a colon
+# 4. Followed by optional whitespace and end of line
 
 transformers_prompt_cache = transformers.DynamicCache()
 
@@ -214,7 +222,7 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
 
         # in case of CUDA error, CUDA out of memory:
         # exit now and retry the request later
-        if re.search(r"\bCUDA\b", str(e)):
+        if regex.search(r"\bCUDA\b", str(e)):
             try_rename(d, portal / "todo" / req)
             raise e
 
