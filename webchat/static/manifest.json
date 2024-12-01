@@ -1,6 +1,7 @@
 {
     "name": "Ally Chat",
     "short_name": "Ally Chat",
+    "description": "A multi-player AI chat app from Allemande",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",

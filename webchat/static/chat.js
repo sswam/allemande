@@ -18,6 +18,7 @@ const DEFAULT_ROOM = 'Ally Chat';
 // send a message ------------------------------------------------------------
 
 async function send(ev) {
+	console.log("send");
 	ev.preventDefault();
 	// TODO upload attachments
 
@@ -323,6 +324,13 @@ function handle_message(ev) {
 
 	$content.focus();
 
+	// detect F5 or ctrl-R to reload the page
+	console.log(ev.data.type, ev.data.key, ev.data.ctrlKey);
+	if (ev.data.type == "keydown" && (ev.data.key == "F5" || ev.data.ctrlKey && ev.data.key.toLowerCase() == "r")) {
+		location.reload();
+		return;
+	}
+
 	// sending on the event cannot enter text in the input,
 	// but it's useful for other events we handle such as ctrl-.
 	ev.data.view = window;
@@ -346,6 +354,7 @@ async function register_service_worker() {
 	try {
 		const registration = await navigator.serviceWorker.register('/service_worker.js');
 		console.log('ServiceWorker registration successful');
+		registration.update(); // TODO remove?
 	} catch (err) {
 		console.error('ServiceWorker registration failed: ', err);
 	}
@@ -382,7 +391,7 @@ async function notify_clicked() {
 
 // main ----------------------------------------------------------------------
 
-function main() {
+function chat_main() {
 	$on($id('send'), 'click', send);
 //	$on($id('clear'), 'click', clear);
 	$on($content, 'keypress', message_keypress);
@@ -402,7 +411,7 @@ function main() {
 //	$on($id('logout'), 'click', logoutChat);
 	$on($id('notify'), 'click', notify_clicked);
 	authChat();
-//	register_service_worker();
+	register_service_worker();
 }
 
-main();
+console.log("chat.js loaded");

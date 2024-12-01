@@ -1,30 +1,51 @@
 "use strict";
 
-const CACHE_NAME = "allemande-ai-v1";
+const VERSION = 19;
+
+const DEBUG = false;
+console.log = DEBUG ? console.log : () => {};
+
+const CACHE_NAME = "allemande-ai-v4";
 const URLS_TO_CACHE = [
 	"/",
-	"/index.html",
 	"/chat.js",
 	"/util.js",
 	"/mousetrap.min.js",
-	"https://allemande.ai/allychat.css",
-	"https://allemande.ai/chat.css",
-	"/icon.png"
+	"/allychat.css",
+	"/chat.css",
+	"/icon.png",
+];
+
+const CORS_URLS_TO_CACHE = [
+	"https://allemande.ai/auth.js"
 ];
 
 // Install event - cache resources
-self.addEventListener("install", async (event) => {
+async function sw_install(event) {
 	try {
 		const cache = await caches.open(CACHE_NAME);
+		
+		// Cache local resources
 		await cache.addAll(URLS_TO_CACHE);
+
+		// Cache cross-origin resources with CORS mode
+		for (const url of CORS_URLS_TO_CACHE) {
+			console.log(`Caching CORS resource: ${url}`);
+			const response = await fetch(url, { mode: 'cors', credentials: 'omit' });
+			await cache.put(url, response);
+			console.log(`Cached CORS resource: ${url}`);
+		}
+
+		// Activate the new service worker immediately
 		await self.skipWaiting();
 	} catch (error) {
 		console.error(`Cache installation failed: ${error.message}`);
 	}
-});
+	console.log(`Service worker installed, version ${VERSION}`);
+}
 
 // Activate event - clean old caches
-self.addEventListener("activate", async (event) => {
+async function sw_activate(event) {
 	try {
 		const cacheKeys = await caches.keys();
 		for (const key of cacheKeys) {
@@ -36,24 +57,32 @@ self.addEventListener("activate", async (event) => {
 	} catch (error) {
 		console.error(`Cache activation failed: ${error.message}`);
 	}
-});
+}
 
-// Fetch event - serve cached content when offline
-self.addEventListener("fetch", async (event) => {
-	try {
-		const response = await fetch(event.request);
-		return response;
-	} catch (error) {
-		const cachedResponse = await caches.match(event.request);
-		if (cachedResponse) {
-			return cachedResponse;
-		}
-		console.error(`Fetch failed: ${error.message}`);
+// Fetch resource from cache or network
+async function sw_fetch_cached(req) {
+	const cached = await caches.match(req);
+	if (cached) {
+		console.log(`Cached resource: ${req.url}`);
+		return cached;
 	}
-});
+	console.log(`Fetching resource not found in cache: ${req.url}`);
+	return await fetch(req, { mode: "cors" });
+}
+
+// Fetch event - serve GET and HEAD requests from cache or network
+function sw_fetch(event) {
+	console.log(`Fetch event: ${event.request.method} ${event.request.url}`);
+	const req = event.request;
+	if (!["GET", "HEAD"].includes(req.method)) {
+		console.log(`Ignoring non-GET/HEAD request: ${req.method} ${req.url}`);
+		return;
+	}
+	event.respondWith(sw_fetch_cached(req));
+}
 
 // Push event - handle incoming notifications
-self.addEventListener("push", async (event) => {
+async function sw_push(event) {
 	try {
 		const data = event.data.json();
 		const options = {
@@ -69,10 +98,10 @@ self.addEventListener("push", async (event) => {
 	} catch (error) {
 		console.error(`Push notification failed: ${error.message}`);
 	}
-});
+}
 
 // Notification click event - handle user interaction
-self.addEventListener("notificationclick", async (event) => {
+async function sw_notificationclick(event) {
 	try {
 		event.notification.close();
 		const urlToOpen = event.notification.data.url || "/";
@@ -92,4 +121,10 @@ self.addEventListener("notificationclick", async (event) => {
 	} catch (error) {
 		console.error(`Notification click handling failed: ${error.message}`);
 	}
-});
+}
+
+self.addEventListener("install", sw_install);
+self.addEventListener("activate", sw_activate);
+self.addEventListener("fetch", sw_fetch);
+self.addEventListener("push", sw_push);
+self.addEventListener("notificationclick", sw_notificationclick);
