@@ -265,20 +265,26 @@ def trim_response(response, args, people_lc = None):
 	""" Trim the response to the first message. """
 	if people_lc is None:
 		people_lc = []
-	# TODO allow AI to use own name repeatdly in response
 	def check_person_remove(match):
 		""" Check if the message is from the person and remove it. """
 		if match.group(2).lower() in people_lc:
 			return ""
 		return match.group(1)
-
-	response = response.strip()
-	response = re.sub(r"(\n(\w+):.*)", check_person_remove, response, flags=re.DOTALL)
-	response_before = response
-	response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
-	if response != response_before:
-		logger.warning("Trimmed response: %r\nto: %r", response_before, response)
-	response = " " + response.strip()
+	if args.raw:
+		messages = response.split(args.delim)
+		if messages and not re.search(r'\S', messages[0]):
+			messages = messages[1:]
+		response = messages[0] if messages else ""
+	else:
+#		human_invitation = args.user + ":"
+#		response = response.split(human_invitation)[0]
+		response = response.strip()
+		response = re.sub(r"(\n(\w+):.*)", check_person_remove, response, flags=re.DOTALL)
+		response_before = response
+		response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
+		if response != response_before:
+			logger.warning("Trimmed response: %r\nto: %r", response_before, response)
+		response = " " + response.strip()
 	return response
 
 
@@ -305,6 +311,17 @@ def fix_layout(response, _args):
 	response = "\n".join(out) + "\n"
 
 	return response
+
+
+def input_with_prefill(prompt, text):
+	""" Readline input with a prefill. """
+	def hook():
+		readline.insert_text(text)
+		readline.redisplay()
+	readline.set_pre_input_hook(hook)
+	result = input(prompt)
+	readline.set_pre_input_hook()
+	return result
 
 
 def get_fulltext(args, model_name, history, history_start, invitation, delim):
@@ -370,6 +387,77 @@ async def client_request(portal, input_text, config=None, timeout=None):
 	return new_text #, generated_text
 
 
+async def chat_to_user(_model, args, history, history_start=0):
+	""" Chat with the model. """
+	invitation = args.bot + ":" if args.bot else ""
+	human_invitation = args.user + ":" if args.user else ""
+	if args.emo and invitation:
+		invitation += " "
+	# if args.emo and human_invitation:
+	if human_invitation:
+		human_invitation += " "
+	delim = args.delim
+
+	if args.edit:
+		msg = input_with_prefill("", human_invitation)
+	else:
+		msg = human_invitation + input(human_invitation)
+
+#	logger.debug(f"{history=}")
+#	logger.debug(f"{history_start=}")
+
+	if msg:
+		print("")
+
+		if ":" in msg:
+			args.user = msg.split(":")[0]
+
+		history.append(msg)
+		history_write(args.file, history[-1:], delim=delim, invitation=delim)
+
+#	logger.debug(f"{history=}")
+
+	if args.edit:
+		invitation2 = input_with_prefill("", invitation)
+	else:
+		invitation2 = invitation
+
+	if ":" in invitation2:
+		args.bot = invitation2.split(":")[0]
+
+	model_name = args.model
+	fulltext, history_start = get_fulltext(args, model_name, history, history_start, delim+invitation2, delim)
+
+	args.gen_config = load_config(args)
+
+#	logger.debug(f"{history=}")
+#	logger.debug(f"{history_start=}")
+#	logger.debug("fulltext: %r", fulltext)
+#	logger.debug("model: %r", model)
+#	logger.debug("invitation: %r", invitation)
+#	logger.debug("invitation2: %r", invitation2)
+#	logger.debug("delim: %r", delim)
+
+	response = await client_request(args.portal, fulltext, config=args.gen_config)
+
+	if args.trim:
+		response = trim_response(response, args)
+
+	print(invitation2 + response)
+	print("")
+
+	history.append(invitation2 + response)
+	history_write(args.file, history[-1:], delim=args.delim, invitation=delim)
+
+	return history_start
+
+
+async def chat_loop(model, args, history, history_start=0):
+	""" Chat with the model in a loop. """
+	while True:
+		history_start = await chat_to_user(model, args, history, history_start=history_start)
+
+
 def history_read(file, args):
 	""" Read the history from a file. """
 	text = ""
@@ -381,6 +469,11 @@ def history_read(file, args):
 
 	if history and not history[-1]:
 		history.pop()
+
+	# remove up to one blank line from the end, allows to continue same line or not
+	# using a normal editor that always ends the file with a newline
+#	if args.strip_final_newline and history and not history[-1]:
+#		history.pop()
 	return history
 
 
@@ -408,8 +501,34 @@ def summary_read(file, args):
 	return lines
 
 
+async def interactive(model, args):
+	""" Interactive chat with the model. """
+	history = history_read(args.file, args)
+
+	for message in history:
+		print(message + args.delim, end="")
+
+	# get latest user name and bot name from history
+	# XXX this is unreliable!
+	if args.raw:
+		pass
+	elif args.get_roles_from_history:
+		args.user, args.bot = conductor.get_roles_from_history(history, args.user, args.bot)
+	else:
+		# use conductor
+		# TODO !!!!!!!!
+		pass
+
+	try:
+		await chat_loop(model, args, history)
+	except EOFError:
+		pass
+
+
 async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None):
 	""" Run a search agent. """
+	if args.local:
+		raise ValueError("run_search called with --local option, not an error, just avoiding to run it on the home PC")
 	name = agent["name"]
 	logger.debug("history: %r", history)
 	history_messages = list(chat.lines_to_messages(history))
@@ -442,13 +561,19 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 	return response3
 
 
-async def process_file(file, args, history_start=0) -> bool:
+async def process_file(model, file, args, history_start=0) -> bool:
 	"""Process a file, return True if appended new content."""
+	# TODO don't need model parameter any longer
 	logger.info("Processing %s", file)
 
 	history = history_read(file, args)
 
 	history_count = len(history)
+
+	if args.ignore and history and history[-1].rstrip().endswith(args.ignore):
+		return False
+	if args.require and history and not history[-1].rstrip().endswith(args.require):
+		return False
 
 	# Load mission file, if present
 	mission_file = re.sub(r'\.bb$', '.m', file)
@@ -463,18 +588,24 @@ async def process_file(file, args, history_start=0) -> bool:
 #	logger.warning("loaded history: %r", history)
 
 	# get latest user name and bot name from history
-	bot = AGENT_DEFAULT
-	if history:
-		history_messages = list(chat.lines_to_messages(history))
+	# XXX this is unreliable!
+	if args.raw:
+		pass
+	elif args.get_roles_from_history:
+		args.user, args.bot = conductor.get_roles_from_history(history, args.user, args.bot)
+	else:
+		default = AGENT_DEFAULT
+		if history:
+			history_messages = list(chat.lines_to_messages(history))
 
-		who = conductor.who_should_respond(history_messages[-1], agents=AGENTS, history=history_messages, default=bot)
-		if who:
-			bot = who[0]
-		else:
-			bot = None
-		logger.warning("who should respond: %r", who)
+			who = conductor.who_should_respond(history_messages[-1], agents=AGENTS, history=history_messages, default=default)
+			if who:
+				args.bot = who[0]
+			else:
+				args.bot = None
+			logger.warning("who should respond: %r", who)
 
-	if bot and bot.lower() in AGENTS:
+	if args.bot and args.bot.lower() in AGENTS:
 		logger.debug("history: %r", history)
 		# XXX should use like history_messages[-1] not history[-1]?  history[-1] might be the second line of a two-line message
 		#     - query is not even used in remote_agent for models other than Bard, still it should be correct
@@ -485,7 +616,7 @@ async def process_file(file, args, history_start=0) -> bool:
 		logger.warning("messages %r", messages)
 		query = list(chat.lines_to_messages([query1]))[-1]["content"] if query1 else ""
 		logger.debug("query: %r", query)
-		agent = AGENTS[bot.lower()]
+		agent = AGENTS[args.bot.lower()]
 		response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
 		history.append(response)
 		history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
@@ -503,10 +634,20 @@ async def run_agent(agent, query, file, args, history, history_start=0, mission=
 
 async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None):
 	""" Run a local agent. """
+	if args.remote:
+		raise ValueError("local_agent called with --remote option, not an error, just avoiding to try to run it on the server")
 	# print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
+	invitation = args.delim + agent["name"] + ":" if args.bot else ""
+	human_invitation = args.delim + args.user + ":" if args.user else ""
+	if args.emo and invitation:
+		invitation += " "
+	# if args.emo and human_invitation:
+	if human_invitation:
+		human_invitation += " "
 
-	# Note: the invitation should not end with a space, or the model might use lots of emojis!
-	invitation = args.delim + agent["name"] + ":"
+# 	if not args.raw and history and history[-1] != "":
+# 		history.append("")
+# 		history_write(file, ['', ''], delim=args.delim)
 
 	model_name = agent["model"]
 	history2 = history.copy()
@@ -549,8 +690,10 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	all_people = conductor.participants(history_messages)
 	people_lc = list(map(str.lower, set(agent_names + all_people)))
 
-	response = trim_response(response, args, people_lc=people_lc)
-	response = fix_layout(response, args)
+	if args.trim:
+		response = trim_response(response, args, people_lc=people_lc)
+	if not args.narrative:
+		response = fix_layout(response, args)
 
 	if invitation:
 		tidy_response = invitation.strip() + "\t" + response.strip()
@@ -589,99 +732,116 @@ def apply_maps(mapping, mapping_cs, context):
 
 async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
 	""" Run a remote agent. """
-	n_context = agent["default_context"]
-	context = history[-n_context:]
-	# XXX history is a list of lines, not messages, so won't the context sometimes contain partial messages? Yuk. That will interact badly with missions, too.
-	# hacky temporary fix here for now, seems to work:
-	while context and context[0].startswith("\t"):
-		logger.warning("removing partial message at start of context: %r", context[0])
-		context.pop(0)
-	# prepend mission / info / context
-	# TODO try mission as a "system" message?
-	context2 = []
-	if mission:
-		context2 += mission
-	if summary:
-		context2 += summary
-	context2 += context
-	# put remote_messages[-1] through the input_maps
-	apply_maps(agent["input_map"], agent["input_map_cs"], context2)
+	# FIXME this function is too long
+	if args.local:
+		raise ValueError("remote_agent called with --local option, not an error, just avoiding to run it on the home PC")
+	# for now do just query, not the full chat
+	if agent["default_context"] == 1:
+		logger.debug("history: %r", history)
+		logger.debug("query: %r", query)
+		response = await llm.aquery(query, out=None, model=agent["model"])
+	else:
+		query = query.rstrip() + "\n"  # XXX not used
 
-	context_messages = list(chat.lines_to_messages(context2))
+		# TODO Use a system message?
 
-	remote_messages = []
+		n_context = agent["default_context"]
+		context = history[-n_context:]
+		# XXX history is a list of lines, not messages, so won't the context sometimes contain partial messages? Yuk. That will interact badly with missions, too.
+		# hacky temporary fix here for now, seems to work:
+		while context and context[0].startswith("\t"):
+			logger.warning("removing partial message at start of context: %r", context[0])
+			context.pop(0)
+		# prepend mission / info / context
+		# TODO try mission as a "system" message?
+		context2 = []
+		if mission:
+			context2 += mission
+		if summary:
+			context2 += summary
+		context2 += context
+		# put remote_messages[-1] through the input_maps
+		apply_maps(agent["input_map"], agent["input_map_cs"], context2)
+
+		context_messages = list(chat.lines_to_messages(context2))
+
+		remote_messages = []
 
 #		agent_names = list(AGENTS.keys())
 #		agents_lc = list(map(str.lower, agent_names))
 
-	for msg in context_messages:
-		logger.debug("msg1: %r", msg)
-		u = msg.get("user")
-		u_lc = u.lower() if u is not None else None
+		for msg in context_messages:
+			logger.debug("msg1: %r", msg)
+			u = msg.get("user")
+			u_lc = u.lower() if u is not None else None
 #			if u in agents_lc:
-		content = msg["content"]
-		if u_lc == agent['name'].lower():
-			role = "assistant"
-		else:
-			role = "user"
-			if u:
-				content = u + ": " + content
-		msg2 = {
-			"role": role,
-			"content": content,
+			content = msg["content"]
+			if u_lc == agent['name'].lower():
+				role = "assistant"
+			else:
+				role = "user"
+				if u:
+					content = u + ": " + content
+			msg2 = {
+				"role": role,
+				"content": content,
+			}
+			logger.debug("msg2: %r", msg2)
+			remote_messages.append(msg2)
+
+		while remote_messages and remote_messages[0]["role"] == "assistant" and "claude" in agent["model"]:
+			remote_messages.pop(0)
+
+		# add system messages
+		system_top = agent.get("system_top")
+		system_bottom = agent.get("system_bottom")
+		if system_bottom:
+			n_messages = len(remote_messages)
+			pos = agent.get("system_bottom_pos", 0)
+			pos = min(pos, n_messages)
+			system_bottom_role = agent.get("system_bottom_role", "user")
+			remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom})
+		if system_top:
+			system_top_role = agent.get("system_top_role", "system")
+			remote_messages.insert(0, {"role": system_top_role, "content": system_top})
+
+		# TODO this is a bit dodgy and won't work with async
+		opts = {
+			"model": agent["model"],
+			"indent": "\t",
 		}
-		logger.debug("msg2: %r", msg2)
-		remote_messages.append(msg2)
+		llm.set_opts(opts)
 
-	while remote_messages and remote_messages[0]["role"] == "assistant" and "claude" in agent["model"]:
-		remote_messages.pop(0)
+		logger.warning("DEBUG: context_messages: %r", remote_messages)
 
-	# add system messages
-	system_top = agent.get("system_top")
-	system_bottom = agent.get("system_bottom")
-	if system_bottom:
-		n_messages = len(remote_messages)
-		pos = agent.get("system_bottom_pos", 0)
-		pos = min(pos, n_messages)
-		system_bottom_role = agent.get("system_bottom_role", "user")
-		remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom})
-	if system_top:
-		system_top_role = agent.get("system_top_role", "system")
-		remote_messages.insert(0, {"role": system_top_role, "content": system_top})
+		logger.warning("querying %r = %r", agent['name'], agent["model"])
+		output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, remote_messages)
 
-	# TODO this is a bit dodgy and won't work with async
-	opts = {
-		"model": agent["model"],
-		"indent": "\t",
-	}
-	llm.set_opts(opts)
+		response = output_message["content"]
+		box = [response]
+		apply_maps(agent["output_map"], agent["output_map_cs"], box)
+		response = box[0]
 
-	logger.warning("DEBUG: context_messages: %r", remote_messages)
+		if response.startswith(agent['name']+": "):
+			logger.warning("stripping agent name from response")
+			response = response[len(agent['name'])+2:]
 
-	logger.warning("querying %r = %r", agent['name'], agent["model"])
-	output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, remote_messages)
-
-	response = output_message["content"]
-	box = [response]
-	apply_maps(agent["output_map"], agent["output_map_cs"], box)
-	response = box[0]
-
-	if response.startswith(agent['name']+": "):
-		logger.warning("stripping agent name from response")
-		response = response[len(agent['name'])+2:]
-
-	# fix indentation for code
-	if opts["indent"]:
-		lines = response.splitlines()
-		lines = tab.fix_indentation_list(lines, opts["indent"])
-		response = "".join(lines)
+		# fix indentation for code
+		if opts["indent"]:
+			lines = response.splitlines()
+			lines = tab.fix_indentation_list(lines, opts["indent"])
+			response = "".join(lines)
 
 
 	logger.debug("response 1: %r", response)
-	response = fix_layout(response, args)
+#	if args.trim:
+#		response = trim_response(response, args)
 	logger.debug("response 2: %r", response)
-	response = f"{agent['name']}:\t{response.strip()}"
+	if not args.narrative:
+		response = fix_layout(response, args)
 	logger.debug("response 3: %r", response)
+	response = f"{agent['name']}:\t{response.strip()}"
+	logger.debug("response 4: %r", response)
 	return response.rstrip()
 
 
@@ -711,6 +871,8 @@ async def run_subprocess(command, query):
 
 async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None):
 	""" Run a shell agent. """
+	if args.local:
+		raise ValueError("safe_shell called with --local option, not an error, just avoiding to run it on the home PC")
 	name = agent["name"]
 	logger.debug("history: %r", history)
 	history_messages = list(chat.lines_to_messages(history))
@@ -718,12 +880,20 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
 	message = history_messages[-1]
 	query = message["content"]
 	logger.debug("query 1: %r", query)
+#	query = query.split("\n")[0]
+#	logger.debug("query 2: %r", query)
 	rx = r'((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b'+re.escape(name)+r'\b'
 	logger.debug("rx: %r", rx)
 	query = re.sub(rx, '', query, flags=re.IGNORECASE)
-	logger.debug("query 2: %r", query)
-	query = re.sub(r'^\s*[,;.]|\s*$', '', query).strip()
 	logger.debug("query 3: %r", query)
+#	query = re.sub(r'(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+', '', query, re.IGNORECASE)
+#	logger.debug("query 4: %r", query)
+#	query = re.sub(r'#.*', '', query)
+#	logger.debug("query 5: %r", query)
+#	query = re.sub(r'[^\x00-~]', '', query)   # filter out emojis
+#	logger.debug("query 6: %r", query)
+	query = re.sub(r'^\s*[,;.]|\s*$', '', query).strip()
+	logger.debug("query 7: %r", query)
 
 	# shell escape in python
 	agent["command"]
@@ -750,13 +920,13 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
 	return response3
 
 
-async def file_changed(file_path, change_type, old_size, new_size, args, skip):
+async def file_changed(file_path, change_type, old_size, new_size, model, args, skip):
 	"""Process a file change."""
 	if args.ext and not file_path.endswith(args.ext):
 		return
 	if change_type == Change.deleted:
 		return
-	if not args.shrink and old_size and new_size < old_size:
+	if args.ignore_shrink and old_size and new_size < old_size:
 		return
 	if new_size == 0:
 		return
@@ -769,7 +939,7 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
 	response = False
 	try:
 		logger.info("Processing file: %r", file_path)
-		responded = await process_file(file_path, args)
+		responded = await process_file(model, file_path, args)
 	except Exception as e:
 		logger.warning("Processing file failed: %r", e)
 
@@ -779,7 +949,7 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
 		skip[file_path] = 1
 
 
-async def watch_loop(args):
+async def watch_loop(model, args):
 	"""Follow the watch log, and process files."""
 	tail = atail.AsyncTail(filename=args.watch, follow=True, rewind=True).run()
 
@@ -791,7 +961,18 @@ async def watch_loop(args):
 		old_size = int(old_size) if old_size != "" else None
 		new_size = int(new_size) if new_size != "" else None
 
-		await file_changed(file_path, change_type, old_size, new_size, args, skip)
+		await file_changed(file_path, change_type, old_size, new_size, model, args, skip)
+
+
+def default_user():
+	""" Try to get the user's name from $user in the environment, or fall back to $USER """
+	user_id = os.environ["USER"]
+	return os.environ.get("user", user_id).title()
+
+
+def default_bot():
+	""" Try to get the bot's name from the environment, or fall back to "Assistant" """
+	return os.environ.get("bot", "Assistant").title()
 
 
 def load_config(args):
@@ -802,44 +983,76 @@ def load_config(args):
 			settings = yaml.load(f, Loader=yaml.FullLoader)
 		for k, v in settings.items():
 			config[k] = v
+	if args.max_tokens:
+		config["max_new_tokens"] = args.max_tokens
 	if not config:
 		config = None
 	return config
 
 
-def load_model_tokenizer(args):
-	""" Load the model tokenizer. """
-	models_dir = Path(os.environ["ALLEMANDE_MODELS"])/"llm"
-	model_path = Path(models_dir) / args.model
-	if args.model and not model_path.exists() and args.model.endswith(".gguf"):
-		args.model = args.model[:-len(".gguf")]
-		model_path = Path(models_dir) / args.model
-	logger.info("model_path: %r", model_path)
-	if args.model and model_path.exists():
-		# This will block, but it doesn't matter because this is the init for the program.
-		return load_tokenizer(model_path)
-	return None
+def prog_dir():
+	""" Get the directory of the program. """
+	return Path(sys.argv[0]).resolve().parent
 
 
 def get_opts():  # pylint: disable=too-many-statements
 	""" Get the command line options. """
-	parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+	parser = argparse.ArgumentParser(description="Chat with a trained model, specifically Point Alpaca (fine-tuned LLaMA).", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 	modes_group = parser.add_argument_group("Modes of operation")
+	modes_group.add_argument("--interactive", "-i", action="store_true", help="Interactive mode, can use --file to load history")
+	modes_group.add_argument("--file", "-f", default=None, help="Process and append to a file")
+	modes_group.add_argument("--stream", "-s", action="store_true", help="Stream mode")
 	modes_group.add_argument("--watch", "-w", default=None, help="Watch mode, follow a watch log file")
+
+	interactive_group = parser.add_argument_group("Interactive mode options")
+	interactive_group.add_argument("--edit", "-e", action="store_true", help="Edit the names during the session")
 
 	watch_group = parser.add_argument_group("Watch mode options")
 	watch_group.add_argument("--ext", default=DEFAULT_FILE_EXTENSION, help="File extension to watch for")
-	watch_group.add_argument("--shrink", action="store_true", help="React if the file shrinks")
+	watch_group.add_argument("--interval", type=float, default=1.0, help="Interval between checks")
+	watch_group.add_argument("--ignore-shrink", action="store_true", help="Don't react if the file shrinks")
+	watch_group.add_argument("--ignore", default=None, help="Ignore if this string occurs at the end")
+	watch_group.add_argument("--require", default=None, help="Ignore unless this string occurs at the end")
+
+	names_group = parser.add_argument_group("User and bot names")
+	names_group.add_argument("--user", "-u", default=default_user(), help="User name")
+	names_group.add_argument("--bot", "-b", default=default_bot(), help="Bot name")
+	names_group.add_argument("--raw", "-r", action="store_true", help="Don't auto-add names, free-form mode")
+	names_group.add_argument("--get-roles-from-history", "-H", action="store_true", help="Get user and bot names from history file")
 
 	format_group = parser.add_argument_group("Format options")
 	format_group.add_argument("--delim", default="\n\n", help="Delimiter between messages")
-	format_group.add_argument("--memory", "-x", type=int, default=32*1024 - 2048, help="Max number of tokens to keep in history, before we drop old messages")
+	format_group.add_argument("--trim", action="store_true", default=True, help="Trim the bot's response (enabled by default)")
+	format_group.add_argument("--no-trim", action="store_false", dest="trim", help="Don't trim the bot's response, i.e let it predict the user's speech")
+	format_group.add_argument("--memory", "-x", type=int, default=32*1024 - 2048, help="Max number of tokens to keep in history, before we drop old messages")  # default for llama 3.1
+	format_group.add_argument("--strip-final-newline", type=bool, default=True, help="Strip final newline from input, allows to continue lines")
+	format_group.add_argument("--emo", type=bool, default=False, help="End the bot invitation with a space, which causes the bot to respond with an emoji first!")
+	format_group.add_argument("--narrative", type=bool, default=False, help="Allow non-indented narrative text")
 
 	model_group = parser.add_argument_group("Model options")
 	model_group.add_argument("--portal", "-p", default=DEFAULT_PORTAL_PATH, help="Path to portal directory")
 	model_group.add_argument("--model", "-m", default="default", help="Model name or path")
 	model_group.add_argument("--config", "-c", default=None, help="Model config file, in YAML format")
+	model_group.add_argument("--list-models", "-l", action="store_true", help="List available models")
+	model_group.add_argument("--bytes", "-8", action="store_true", help="Load in 8-bit mode, to save GPU memory")
+	model_group.add_argument("--max-tokens", "-n", type=int, default=2048, help="Maximum number of new tokens to generate")
+	model_group.add_argument("--remote", "-R", action="store_true", help="Use remote models only, not local (for server working with a home PC)")
+	model_group.add_argument("--local", "-L", action="store_true", help="Use local models only, not online (for home PC working with a server)")
+
+	agent_group = parser.add_argument_group("Agent options")
+	agent_group.add_argument("--agents", "-a", default=["all"], nargs="*", help="Enable listed or all agents")
+	agent_group.add_argument("--no-agents", "-A", dest="agents", action="store_const", const=[], help="Disable all agents")
+	agent_group.add_argument("--no-ai", action="store_true", help="Disable all AI agents")  # TODO
+	agent_group.add_argument("--no-tools", action="store_true", help="Disable all software tool agents")  # TODO
+
+#	model_group = parser.add_argument_group("Deluxe options")
+#	model_group.add_argument("--retry", default=3, help="Number of times to retry if the bot fails to respond")
+#	model_group.add_argument("--retry-temperature-boost", default=0.1, help="Temperature boost to apply when retrying")
+
+	dev_group = parser.add_argument_group("Developer options")
+	dev_group.add_argument("--no-model", "-M", action="store_false", dest="model", help="Don't load the model, for testing purposes")
+	dev_group.add_argument("--dump-config", "-C", action="store_true", help="Dump the model config in YAML format, and exit")
 
 	ucm.add_logging_options(parser)
 
@@ -849,33 +1062,93 @@ def get_opts():  # pylint: disable=too-many-statements
 
 	logger.debug("Options: %r", args)
 
+	if args.raw:
+		args.user = ""
+		args.bot = ""
+
 	if isinstance(args.portal, str):
 		args.portal = Path(args.portal)
+
+	# check agents are valid
+	if args.agents == ["all"]:
+		args.agents = AGENTS.keys()
+	else:
+		for a in set(args.agents) - set(AGENTS):
+			logger.warning("Unknown agent: %s", a)
+		args.agents = set(args.agents) & set(AGENTS)
 
 	return args
 
 
 async def main():
 	""" Main function. """
-	global portal
 	register_all_agents()
 
 	args = get_opts()
+
+	if args.list_models:
+		for model_name, model in models.items():
+			print(f"{model_name} ({model['abbrev']}): {model['description']}")
+		sys.exit(0)
 
 	args.gen_config = load_config(args)
 
 	logger.info("args.gen_config=%r", args.gen_config)
 
-	TOKENIZERS[args.model] = load_model_tokenizer(args)
+	if args.dump_config:
+		print(yaml.dump(args.gen_config, default_flow_style=False, sort_keys=False))
+		sys.exit(0)
+
+	# load model (or don't, for testing purposes)
+	# create an empty object, so that we can add attributes to it
+	model = SimpleNamespace()
+	models_dir = Path(os.environ["ALLEMANDE_MODELS"])/"llm"
+	model_path = Path(models_dir) / args.model
+	logger.info("model_path: %r", model_path)
+	if args.model and not model_path.exists() and args.model.endswith(".gguf"):
+		args.model = args.model[:-len(".gguf")]
+		model_path = Path(models_dir) / args.model
+	logger.info("model_path: %r", model_path)
+	if args.model and model_path.exists():
+		abbrev_models = [k for k, v in models.items() if v.get("abbrev") == args.model]
+		if len(abbrev_models) == 1:
+			args.model = abbrev_models[0]
+
+		# model_dirs = prog_dir()/".."/"models"/"llm"
+		# This will block, but it doesn't matter because this is the init for the program.
+		model.tokenizer = load_tokenizer(model_path)
+		TOKENIZERS[args.model] = model.tokenizer
+	else:
+		model.tokenizer = None
+	logger.info("tokenizer: %r", model.tokenizer)
+
+	# check for mutually exclusive options
+	mode_options = [args.interactive, args.file, args.stream, args.watch]
+	if [args.file, args.stream, args.watch].count(True) > 1:
+		logger.error("Only one of --file, --stream, --watch can be specified")
+		sys.exit(1)
+
+	if args.interactive and any([args.watch, args.stream]):
+		logger.error("Interactive mode is not compatible with --watch or --stream")
+		sys.exit(1)
 
 	# set up portals
+	global portal
 	portal = portals.PortalClient(args.portal)
 
-	if not args.watch:
-		raise ValueError("Watch file not specified")
-
-	logger.info("Watching")
-	await watch_loop(args)
+	# run in the requested mode
+	if args.interactive or not any(mode_options):
+		logger.info("Interactive mode")
+		await interactive(model, args)
+	elif args.watch:
+		logger.info("Watch mode")
+		await watch_loop(model, args)
+	elif args.file:
+		logger.info("File mode")
+		await process_file(model, args.file, args)
+	elif args.stream:
+		logger.error("Stream mode, not implemented yet")
+		# stream(model, args)
 
 
 if __name__ == "__main__":
