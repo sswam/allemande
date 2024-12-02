@@ -145,8 +145,7 @@ async def atail(
     async with AsyncTail(
         filename=filename, wait_for_create=wait_for_create, lines=lines, all_lines=all_lines, follow=follow, rewind=rewind
     ) as queue:
-        while True:
-            line = await queue.get()
+        while (line := await queue.get()) is not None:
             print(line, end="", file=output)
             output.flush()
             queue.task_done()

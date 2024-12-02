@@ -107,7 +107,6 @@ async def async_keepalive_demo(timeout, timeout_return):
             while True:
                 item = await queue.get()
                 if item is None:
-                    queue.task_done()
                     break
                 print(item, end="", flush=True)
                 queue.task_done()

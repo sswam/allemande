@@ -17,7 +17,7 @@ import chat
 logger = logging.getLogger(__name__)
 
 
-async def file_changed(self, bb_file, html_file, old_size, new_size):
+async def file_changed(bb_file, html_file, old_size, new_size):
 	""" convert a bb file to html """
 
 	# assume the file was appended to ...
@@ -45,28 +45,27 @@ async def bb2html(opts, watch_log, out=sys.stdout):
 	logger.debug("opts: %s", opts)
 
 	async with atail.AsyncTail(filename=watch_log, follow=True, rewind=True) as queue:
-		line = await queue.get()
-		try:
-
-			logger.debug("line from tail: %s", line)
-			bb_file, change_type, old_size, new_size = line.rstrip("\n").split("\t")
-			change_type = Change(int(change_type))
-			old_size = int(old_size) if old_size != "" else None
-			new_size = int(new_size) if new_size != "" else None
-			if not bb_file.endswith(opts.exts):
-				continue
-
-			html_file = str(Path(bb_file).with_suffix(".html"))
+		while (line := await queue.get()) is not None:
 			try:
-				if change_type == Change.deleted:
-					Path(html_file).unlink(missing_ok=True)
+				logger.debug("line from tail: %s", line)
+				bb_file, change_type, old_size, new_size = line.rstrip("\n").split("\t")
+				change_type = Change(int(change_type))
+				old_size = int(old_size) if old_size != "" else None
+				new_size = int(new_size) if new_size != "" else None
+				if not bb_file.endswith(opts.exts):
 					continue
-				row = file_changed(bb_file, html_file, old_size, new_size):
-				print(*row, sep="\t", file=out)
-			except PermissionError as exc:
-				logger.error("PermissionError: %s", exc)
-		finally:
-			queue.task_done()
+
+				html_file = str(Path(bb_file).with_suffix(".html"))
+				try:
+					if change_type == Change.deleted:
+						Path(html_file).unlink(missing_ok=True)
+						continue
+					row = await file_changed(bb_file, html_file, old_size, new_size)
+					print(*row, sep="\t", file=out)
+				except PermissionError as exc:
+					logger.error("PermissionError: %s", exc)
+			finally:
+				queue.task_done()
 
 
 def get_opts():
