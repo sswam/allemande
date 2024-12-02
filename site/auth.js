@@ -121,7 +121,3 @@ function authHomepage() {
 
 	checkLogin();
 }
-
-function authChat() {
-	$on($id('logout'), 'click', logoutChat);
-}

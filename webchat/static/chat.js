@@ -28,7 +28,7 @@ async function send(ev) {
 //      var filenames = $('#filenames').val();
 //	var attached = $('#attached').val();
 //	var old_files = clear_attachments();
-	
+
 	const restore = () => {
 		$content.value = message;
 //		$('#filenames').val(filenames);
@@ -99,18 +99,21 @@ function set_room(r) {
 	set_title_hash(room);  // okay above the if?
 	if (!room)
 		return;
-	who();
+//	who();
 	const room_stream_url = ROOMS_URL + "/stream/"+room+".html";
 	console.log("setting $messages.src to", room_stream_url);
 	$messages.src = room_stream_url;
+	setup_user_button();
 }
 
+/*
 function set_room_user() {
 	if (room == user)
 		set_room("");
 	else
 		set_room(user);
 }
+*/
 
 
 // user info and settings ----------------------------------------------------
@@ -134,6 +137,7 @@ function logged_out() {
 	if ($logout) { $logout.style.display = "none"; }
 }
 
+/*
 async function who() {
 	// TODO use user info from cookie instead of asking the server
 	const response = await fetch('/x/whoami', {
@@ -171,6 +175,7 @@ async function who() {
 	}
 	load_user_styles();
 }
+*/
 
 // hash change ---------------------------------------------------------------
 
@@ -181,9 +186,13 @@ function query_to_title(query) {
 	return query;
 }
 
+function query_to_hash(query) {
+	return '#'+query.replace(/ /g, '+');
+}
+
 function set_title_hash(query) {
 	console.log("setting title hash", query);
-	new_hash = '#'+query.replace(/ /g, '+');
+	new_hash = query_to_hash(query);
 	new_title = query_to_title(query);
 	location.hash = new_hash;
 	$title.innerText = new_title;
@@ -389,9 +398,36 @@ async function notify_clicked() {
 	}
 }
 
+// authentication ------------------------------------------------------------
+
+function authChat() {
+	$on($id('logout'), 'click', logoutChat);
+	userData = getJSONCookie('user_data');
+	if (!userData)
+		throw new Error('Setup error: Not logged in');
+	console.log('username:', userData.username);
+
+	return userData.username;
+}
+
+// set the user button text and href -----------------------------------------
+
+function setup_user_button() {
+	const $user = $id('user');
+	$user.innerText = user;
+	if (room == user)
+		$user.href = '/' + query_to_hash(DEFAULT_ROOM);
+	else
+		$user.href = '/' + query_to_hash(user);
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
+	user = authChat();
+	load_user_styles();
+	on_hash_change();
+
 	$on($id('send'), 'click', send);
 //	$on($id('clear'), 'click', clear);
 	$on($content, 'keypress', message_keypress);
@@ -399,7 +435,6 @@ function chat_main() {
 	$content.focus();
 	$on($room, 'change', () => set_room());
 	$on(window, 'hashchange', on_hash_change);
-	on_hash_change();
 //	$on($messages, 'scroll', messages_scrolled);
 	setup_file_input_label();
 //	$on($('label.attach > button'), 'click', attach_clicked);
@@ -407,10 +442,9 @@ function chat_main() {
 	// scroll_to_bottom();
 	keyboard_shortcuts();
 	$on(window, 'message', handle_message);
-	$on($id('user'), 'click', set_room_user);
+//	$on($id('user'), 'click', set_room_user);
 //	$on($id('logout'), 'click', logoutChat);
 	$on($id('notify'), 'click', notify_clicked);
-	authChat();
 	register_service_worker();
 }
 

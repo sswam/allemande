@@ -70,14 +70,14 @@ input, textarea {
 	padding: 4px;
 }
 
-input, textarea, button, iframe {
+input, textarea, button, iframe, .button {
 	border-radius: 6px;
 }
 
-button {
+button, .button {
 	font-size: 1.2rem;
 }
 
-input:focus, textarea:focus, iframe:focus, button:focus {
+input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
 	outline: none;
 }
