@@ -47,7 +47,7 @@ button:hover, button:focus, .button:hover, .button:focus {
 }
 
 button:disabled, button:disabled:hover, button:disabled:focus,
-.button:disabled, .button:disabled:hover, .button:disabled:focus,
+.button:disabled, .button:disabled:hover, .button:disabled:focus
 {
 	color: var(--col7);
 	background: var(--col3);
