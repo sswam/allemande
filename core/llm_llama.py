@@ -39,10 +39,12 @@ default_model_gguf: str = str(models_dir/"default.gguf")
 # TODO: this should be a parameter in the request
 stop_regexps = [
     # A line starting with a name starting with any letter, colon and whitespace
-    regex.compile(r"^[\p{L}][\p{L}\p{N}_]*:\s*\Z", regex.MULTILINE | regex.UNICODE),
+#    regex.compile(r"\n+\S.*"),
+    regex.compile(r"(?um)^[\p{L}][\p{L}\p{N}_]*:\s*\Z"),
     # A name beginning with upper-case letter followed by colon and TAB, anywhere in the line
-    regex.compile(r"[\p{Lu}][\p{L}\p{N}_]*:\t", regex.UNICODE),
+    regex.compile(r"(?u)[\p{Lu}][\p{L}\p{N}_]*:\t"),
 ]
+
 # Matches a line that starts with a unicode 'name':
 # 1. Starts with a letter
 # 2. Followed by letters, numbers, or underscores
@@ -147,20 +149,32 @@ async def collect_response(streamer, model, config, input_text, *_args, **_kwarg
     if _kwargs:
         logger.warning("gen: ignoring kwargs: %s", _kwargs)
 
+    log_level = logs.level()
+
     text = ""
     stop = False
     try:
         async for chunk in streamer(model, input_text, generation_kwargs=config):
             text2 = text + chunk
+
+            if log_level <= logs.DEBUG:
+                print(chunk, end="", flush=True)
+
             for stopper in stop_regexps:
                 if match := stopper.search(text2):
-                    length = match.end() - match.start()
-                    text2 = text2[: -length]
+                    if log_level <= logs.DEBUG:
+                        print()
+                    logger.info("Stopping at: %s", match.group())
+                    text2 = text2[:match.start()]
                     stop = True
                     break
             text = text2
+
             if stop:
                 break
+        else:
+            if log_level <= logs.DEBUG:
+                print()
     except KeyboardInterrupt:
         logger.warning("Interrupted")
     # torch.cuda.empty_cache()
