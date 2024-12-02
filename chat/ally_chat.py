@@ -1,6 +1,6 @@
 #!/usr/bin/env python3-allemande
 
-""" Ally Chat / Electric Barbarella v6 - multi-user LLM chat app """
+""" Ally Chat / Electric Barbarella v7 - multi-user LLM chat app """
 
 import os
 import time
@@ -16,7 +16,7 @@ import asyncio
 
 import shlex
 import readline
-
+from watchfiles import Change
 import yaml
 # import regex
 
@@ -27,6 +27,7 @@ import tab
 import chat
 import llm
 from ally import portals
+import atail
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # pylint: disable=wrong-import-position, wrong-import-order
@@ -67,11 +68,13 @@ AGENTS_LOCAL = {
 	},
 	"Barbie": {
 		"model": "default",
+		"system_top": "Your name is Barbie. You're fun, but but you're not a doll. You are very clever.",
+		"system_bottom": "Please reply playfully.",
 	},
 	"Callam": {
 		"model": "default",
 #		"system_top": "Please reply with medium hostility, and speak like a pirate.",
-		"system_bottom": "[Please reply as Callam, with medium hostility, and speak like a pirate.]",
+		"system_bottom": "Please reply as Callam, with medium hostility, and speak like a pirate.",
 	},
 }
 
@@ -297,27 +300,13 @@ def fix_layout(response, _args):
 				out.append("\t")
 			in_table = True
 
-		# ... and after them too, but we'll see what's needed later...
-		# TODO detect end of table somehow
+		if in_table and not line.strip():
+			in_table = False
 
-#		done = False
+		if i > 0 and not line.startswith("\t"):
+			line = "\t" + line
 
-		if i == 0:
-			out.append(line)
-		else:
-			line = "\t" + lines[i]
-			out.append(line)
-
-#			done = True
-
-#		if i > 0 and ":" in lines[i]:
-#			role = lines[i].split(":")[0]
-#			if role and regex.match(conductor.regex_name, role):
-#				line = re.sub(r':\s*', ':\t', lines[i])
-#				out.append(line)
-#				done = True
-#
-#		if not done:
+		out.append(line)
 
 	response = "\n".join(out) + "\n"
 
@@ -475,7 +464,11 @@ def history_read(file, args):
 	if file and os.path.exists(file):
 		with open(file, encoding="utf-8") as f:
 			text = f.read()
-	history = re.split(r"\n+", text) if text else []
+	# lookahead for non-space after newline
+	history = re.split(r"\n+(?=\S|$)", text) if text else []
+
+	if history and not history[-1]:
+		history.pop()
 
 	# remove up to one blank line from the end, allows to continue same line or not
 	# using a normal editor that always ends the file with a newline
@@ -511,9 +504,6 @@ def summary_read(file, args):
 async def interactive(model, args):
 	""" Interactive chat with the model. """
 	history = history_read(args.file, args)
-
-	if history and not history[-1]:
-		history.pop()
 
 	for message in history:
 		print(message + args.delim, end="")
@@ -571,29 +561,24 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 	return response3
 
 
-async def process_file(model, file, args, history_start=0, count=0, max_count=MAX_REPLIES):
-	""" Process a file. """
+async def process_file(model, file, args, history_start=0) -> bool:
+	"""Process a file, return True if appended new content."""
 	# TODO don't need model parameter any longer
 	logger.info("Processing %s", file)
 
 	history = history_read(file, args)
 
-	while history and history[-1] == "":
-		history.pop()
-
 	history_count = len(history)
 
 	if args.ignore and history and history[-1].rstrip().endswith(args.ignore):
-		return
+		return False
 	if args.require and history and not history[-1].rstrip().endswith(args.require):
-		return
+		return False
 
 	# Load mission file, if present
 	mission_file = re.sub(r'\.bb$', '.m', file)
 
 	mission = history_read(mission_file, args)
-	while mission and mission[-1] == "":
-		mission.pop()
 
 	# Load summary file, if present
 	summary_file = re.sub(r'\.bb$', '.s', file)
@@ -636,18 +621,8 @@ async def process_file(model, file, args, history_start=0, count=0, max_count=MA
 		history.append(response)
 		history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
 
-	count += 1
-	if count >= max_count:
-		return
-
-	if len(history) == history_count:
-		return
-
-	logger.debug("len(history), history_count: %r %r", len(history), history_count)
-	logger.debug("history[-1]: %r", history[-1])
-	logger.debug("running process_file again")
-
-	await process_file(model, file, args, history_start=history_start, count=count, max_count=max_count)
+		return True
+	return False
 
 
 async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
@@ -945,99 +920,48 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
 	return response3
 
 
-async def find_files(folder, ext=None, maxdepth=inf):
-	""" Find chat files under a directory asynchronously. """
-	if not os.path.isdir(folder):
-		print("?", file=sys.stderr, end="", flush=True)
+async def file_changed(file_path, change_type, old_size, new_size, model, args, skip):
+	"""Process a file change."""
+	if args.ext and not file_path.endswith(args.ext):
+		return
+	if change_type == Change.deleted:
+		return
+	if args.ignore_shrink and old_size and new_size < old_size:
+		return
+	if new_size == 0:
 		return
 
+	if skip.get(file_path):
+		logger.info("Won't react to AI response: %r", file_path)
+		del skip[file_path]
+		return
+
+	response = False
 	try:
-		for entry in os.scandir(folder):
-			if entry.is_dir():
-				if entry.name.startswith("."):
-					continue
-				if maxdepth > 0:
-					async for file_path in find_files(entry.path, ext, maxdepth - 1):
-						yield file_path
-			elif entry.is_file():
-				if not ext or entry.name.endswith(ext):
-					yield entry.path
+		logger.info("Processing file: %r", file_path)
+		responded = await process_file(model, file_path, args)
+	except Exception as e:
+		logger.warning("Processing file failed: %r", e)
 
-			# I suspect we don't need the following asyncio.sleep(0), so I commented it out.
-			# The async for loop on subdirectories should be enough to allow other coroutines to run.
-			# I would rather yield once per directory, not once per file.
-
-			# Allow other coroutines to run
-			# await asyncio.sleep(0)
-
-	except (PermissionError, FileNotFoundError) as e:
-		logger.warning("find_files: %r", e)
-
-
-async def watch_step(model, args, stats):
-	""" Watch a directory for changes, one step. """
-	# TODO use a proper async file watcher not this polling
-	files = []
-	dirs = args.watch.split(":")
-	dirs = list(set(dirs))
-	for folder in dirs:
-		files += [x async for x in find_files(folder, ext=args.ext, maxdepth=args.depth)]
-
-	first = False
-
-	if stats is None:
-		stats = {}
-		first = True
-
-	now = time.time()
-
-	# If a file is newly added, we want to respond if it's a newly created file, let's say newer than now - args.interval * 2
-	# but we don't want to respond if it's an old file that was renamed or moved in.
-	# This isn't 100% reliable, but it's better than nothing
-	stats_null = type("stats_null", (object,), {"st_mtime": now - args.interval * 5, "st_size": 0})
-
-	for file in files:
-		# check if modified since last time
-		try:
-			stats1 = os.stat(file)
-			stats0 = stats.get(file, stats_null)
-
-			if first:
-				stats[file] = stats1
-				continue
-			if stats1.st_mtime <= stats0.st_mtime:
-				pass
-			elif args.ignore_shrink and stats1.st_size < stats0.st_size:
-				pass
-			elif stats1.st_size > 0:
-				await process_file(model, file, args)
-				stats1 = os.stat(file)
-		except Exception as e:  # pylint: disable=broad-except
-			logger.exception("watch_step: %r", e)
-			try:
-				stats1 = os.stat(file)
-			except Exception as e2:
-				logger.exception("watch_step: %r", e)
-		finally:
-			stats[file] = stats1
-
-	return stats
+	# avoid re-processing in response to an AI response
+	if responded:
+		logger.info("Will skip processing after AI response: %r", file_path)
+		skip[file_path] = 1
 
 
 async def watch_loop(model, args):
-	""" Watch a directory for changes, and process files as they change. """
-	logger.info("Watching %r for files with extension %r and depth %r", args.watch, args.ext, args.depth)
+	"""Follow the watch log, and process files."""
+	tail = atail.AsyncTail(filename=args.watch, follow=True, rewind=True).run()
 
-	stats = None
-	while True:
-		stats = await watch_step(model, args, stats)
-		await asyncio.sleep(args.interval)
-		print(".", file=sys.stderr, end="", flush=True)
+	skip = {}
 
+	async for line in tail:
+		file_path, change_type, old_size, new_size = line.rstrip("\n").split("\t")
+		change_type = Change(int(change_type))
+		old_size = int(old_size) if old_size != "" else None
+		new_size = int(new_size) if new_size != "" else None
 
-#def stream(model, args):
-#	# TODO
-#	pass
+		await file_changed(file_path, change_type, old_size, new_size, model, args, skip)
 
 
 def default_user():
@@ -1079,14 +1003,13 @@ def get_opts():  # pylint: disable=too-many-statements
 	modes_group.add_argument("--interactive", "-i", action="store_true", help="Interactive mode, can use --file to load history")
 	modes_group.add_argument("--file", "-f", default=None, help="Process and append to a file")
 	modes_group.add_argument("--stream", "-s", action="store_true", help="Stream mode")
-	modes_group.add_argument("--watch", "-w", default=None, help="Watch mode, watch for changes in directories, colon separated")
+	modes_group.add_argument("--watch", "-w", default=None, help="Watch mode, follow a watch log file")
 
 	interactive_group = parser.add_argument_group("Interactive mode options")
 	interactive_group.add_argument("--edit", "-e", action="store_true", help="Edit the names during the session")
 
 	watch_group = parser.add_argument_group("Watch mode options")
 	watch_group.add_argument("--ext", default=DEFAULT_FILE_EXTENSION, help="File extension to watch for")
-	watch_group.add_argument("--depth", type=int, default=2, help="Maximum depth to search for and watch files")
 	watch_group.add_argument("--interval", type=float, default=1.0, help="Interval between checks")
 	watch_group.add_argument("--ignore-shrink", action="store_true", help="Don't react if the file shrinks")
 	watch_group.add_argument("--ignore", default=None, help="Ignore if this string occurs at the end")
@@ -1138,10 +1061,6 @@ def get_opts():  # pylint: disable=too-many-statements
 	ucm.setup_logging(args)
 
 	logger.debug("Options: %r", args)
-
-	# prepend . to args.ext
-	if not args.ext.startswith("."):
-		args.ext = "." + args.ext
 
 	if args.raw:
 		args.user = ""

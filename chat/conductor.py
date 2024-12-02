@@ -256,14 +256,24 @@ if __name__ == '__main__':
 
 
 
-# obsolescent get_roles_from_history function --------------------------------------
-
 regex_name = r"^[\p{L}\p{M}']+([\p{Zs}\-][\p{L}\p{M}']+)*$"
+
+# Matches names containing letters, diacritics, apostrophes, with optional spaces/hyphens between parts. Requires minimum 1 character. Disallows consecutive spaces/hyphens or spaces/hyphens at start/end.
+
+# \p{L} - letters
+# \p{M} - marks/diacritics
+# \p{Zs} - spaces
+# ' - apostrophes
+# \- - hyphens
+
 
 # TODO lib
 def uniqo(l):
 	# unique in order
 	return list(dict.fromkeys(l))
+
+
+# obsolescent get_roles_from_history function --------------------------------------
 
 def get_roles_from_history(history, user, bot):
 	""" Get the latest user and bot names from history """

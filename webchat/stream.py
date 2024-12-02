@@ -105,4 +105,4 @@ async def stream(request):
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8001)
 
-# TODO use watch.log?
+# TODO use watch.log?  maybe not as it will wake us up for any file, not only the file we want
