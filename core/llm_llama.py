@@ -36,14 +36,6 @@ models_dir = Path(os.environ["ALLEMANDE_MODELS"]) / "llm"
 default_model: str = str(models_dir/"default")
 default_model_gguf: str = str(models_dir/"default.gguf")
 
-# TODO: this should be a parameter in the request
-stop_regexps = [
-    # A line starting with a name starting with any letter, colon and whitespace
-#    regex.compile(r"\n+\S.*"),
-    regex.compile(r"(?um)^[\p{L}][\p{L}\p{N}_]*:\s*\Z"),
-    # A name beginning with upper-case letter followed by colon and TAB, anywhere in the line
-    regex.compile(r"(?u)[\p{Lu}][\p{L}\p{N}_]*:\t"),
-]
 
 # Matches a line that starts with a unicode 'name':
 # 1. Starts with a letter
@@ -144,6 +136,12 @@ async def collect_response(streamer, model, config, input_text, *_args, **_kwarg
     if config is None:
         config = {}
 
+    stop_regexs = config.pop("stop_regexs", [])
+    logger.info("stop_regexs:")
+    for i in range(len(stop_regexs)):
+        logger.info("`%s`", stop_regexs[i])
+        stop_regexs[i] = regex.compile(stop_regexs[i])
+
     if _args:
         logger.warning("gen: ignoring args: %s", _args)
     if _kwargs:
@@ -160,11 +158,12 @@ async def collect_response(streamer, model, config, input_text, *_args, **_kwarg
             if log_level <= logs.DEBUG:
                 print(chunk, end="", flush=True)
 
-            for stopper in stop_regexps:
+            for stopper in stop_regexs:
                 if match := stopper.search(text2):
                     if log_level <= logs.DEBUG:
                         print()
-                    logger.info("Stopping at: %s", match.group())
+                    logger.info("Stopping at: `%s`", match.group())
+                    logger.info("Stopping regex: %s", stopper)
                     text2 = text2[:match.start()]
                     stop = True
                     break
