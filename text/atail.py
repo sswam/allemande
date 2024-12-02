@@ -30,17 +30,41 @@ class AsyncTail:
         self.all_lines = all_lines
         self.follow = follow
         self.rewind = rewind
+        self.running = False
+        self.watcher = None
+        self.queue = None
+        self.task = None
         logger.debug("self dict: %r", self.__dict__)
 
-    async def run(self):
+    async def __aenter__(self):
+        self.queue = asyncio.Queue()
+        self.task = asyncio.create_task(self._run())
+        return self.queue
+
+    async def __aexit__(self, *args):
+        if self.task:
+            self.task.cancel()
+            try:
+                await self.task
+            except asyncio.CancelledError:
+                pass
+        self.task = None
+        self.queue = None
+
+    async def _run(self):
         """Tail the file"""
-        # this needs to be an async generator
-        while True:
-            async for line in self.run_until_removed():
-                yield line
-            logger.debug("File moved or removed: %s", self.filename)
-            if not self.rewind and self.wait_for_create:
-                break
+        if self.running:
+            raise RuntimeError("AsyncTail is already running")
+        self.running = True
+        try:
+            while True:
+                await self.run_until_removed()
+                logger.debug("File moved or removed: %s", self.filename)
+                if not self.rewind and self.wait_for_create:
+                    break
+        finally:
+            self.running = False
+            self.close_watcher()
 
     async def run_until_removed(self):
         if self.wait_for_create and not Path(self.filename).exists():
@@ -54,7 +78,7 @@ class AsyncTail:
                 if self.lines:
                     lines = lines[-self.lines :]
                 for line in lines:
-                    yield line
+                    await self.queue.put(line)
             else:
                 await self.seek_to_end(f)
 
@@ -62,8 +86,7 @@ class AsyncTail:
                 return
 
             # Follow the file, until it is removed
-            async for line in self.follow_changes(f):
-                yield line
+            await self.follow_changes(f)
 
     async def seek_to_end(self, f):
         try:
@@ -76,37 +99,41 @@ class AsyncTail:
         removed_flags = aionotify.Flags.DELETE_SELF | aionotify.Flags.MOVE_SELF | aionotify.Flags.ATTRIB
 
         try:
-            watcher = aionotify.Watcher()
-            watcher.watch(self.filename, aionotify.Flags.MODIFY | removed_flags)
-            await watcher.setup(asyncio.get_event_loop())
+            self.watcher = aionotify.Watcher()
+            self.watcher.watch(self.filename, aionotify.Flags.MODIFY | removed_flags)
+            await self.watcher.setup(asyncio.get_event_loop())
             while True:
                 count = 0
                 while line := await f.readline():
-                    yield line
+                    await self.queue.put(line)
                     count += 1
                 if self.rewind and not count:
                     await self.seek_to_end(f)
-                event = await watcher.get_event()
+                event = await self.watcher.get_event()
                 if event.flags & removed_flags and not Path(self.filename).exists():
                     break
         finally:
-            self.close_watcher(watcher)
+            self.close_watcher()
 
     async def wait_for_file_creation(self):
         """Wait for the file to be created"""
         folder = str(Path(self.filename).parent)
         try:
-            watcher = aionotify.Watcher()
-            watcher.watch(folder, aionotify.Flags.CREATE | aionotify.Flags.MOVED_TO)
-            await watcher.setup(asyncio.get_event_loop())
+            self.watcher = aionotify.Watcher()
+            self.watcher.watch(folder, aionotify.Flags.CREATE | aionotify.Flags.MOVED_TO)
+            await self.watcher.setup(asyncio.get_event_loop())
             while not Path(self.filename).exists():
-                await watcher.get_event()
+                await self.watcher.get_event()
         finally:
-            self.close_watcher(watcher)
+            self.close_watcher()
 
-    def close_watcher(self, watcher):
+    def close_watcher(self):
+        """Close the watcher"""
+        if not self.watcher:
+            return
         try:
-            watcher.close()
+            self.watcher.close()
+            self.watcher = None
         except Exception as e:
             logger.warning("Exception closing watcher: %r", e)
 
@@ -115,12 +142,14 @@ async def atail(
     output=sys.stdout, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False
 ):
     """Tail a file - for command-line tool, and an example of usage"""
-    tail = AsyncTail(
+    async with AsyncTail(
         filename=filename, wait_for_create=wait_for_create, lines=lines, all_lines=all_lines, follow=follow, rewind=rewind
-    ).run()
-    async for line in tail:
-        print(line, end="", file=output)
-        output.flush()
+    ) as queue:
+        while True:
+            line = await queue.get()
+            print(line, end="", file=output)
+            output.flush()
+            queue.task_done()
 
 
 def get_opts():

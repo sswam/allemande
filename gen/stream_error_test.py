@@ -1,8 +1,11 @@
-import asyncio
-import aiohttp
+import os
 import signal
 import sys
+import random
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+import asyncio
+import aiohttp
 
 async def connect_and_disconnect(url, disconnect_after=0.5):
     """Connect to stream and disconnect after specified time"""
@@ -12,7 +15,7 @@ async def connect_and_disconnect(url, disconnect_after=0.5):
                 # Start reading the stream
                 async for line in response.content:
                     print(f"Received: {line.decode().strip()}")
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(random.uniform(0.1, 0.2))
                     if disconnect_after <= 0:
                         # Simulate abrupt disconnection
                         return
@@ -25,7 +28,7 @@ async def chaos_test(base_url, num_clients=5):
     tasks = []
     for i in range(num_clients):
         # Vary disconnect times to create chaos
-        disconnect_time = 0.2 + (i * 0.3)
+        disconnect_time = 1.2 + random.uniform(0, 1)
         task = asyncio.create_task(
             connect_and_disconnect(f"{base_url}/stream/test.html", disconnect_time)
         )
@@ -43,8 +46,21 @@ def signal_handler(sig, frame):
     print("Ctrl+C detected, exiting...")
     sys.exit(0)
 
+async def file_updater(filename):
+    """Continuously update the test file"""
+    counter = 0
+    while True:
+        with open(filename, 'a') as f:
+            f.write(f"Line {counter}\n")
+            counter += 1
+        await asyncio.sleep(random.uniform(0.1, 0.2))
+
 async def main():
     base_url = "http://localhost:8001"  # Adjust to your server's address
+
+    # Add to main():
+    test_file = str(Path(os.environ["ALLEMANDE_ROOMS"])/'test.html')
+    asyncio.create_task(file_updater(test_file))
 
     while True:
         print("\nStarting chaos test...")
@@ -54,43 +70,3 @@ async def main():
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     asyncio.run(main())
-
-# Here's some test code that should help reliably trigger those exceptions. The key is to simulate clients connecting and disconnecting while streaming is in progress:
-
-# To use this test:
-#
-# 1. First make sure your streaming server is running
-# 2. Create a test.html file in your rooms directory
-# 3. Run this script
-#
-# This test code:
-# - Creates multiple clients that connect to your stream
-# - Has them disconnect at different times
-# - Some disconnect gracefully, others abruptly
-# - Repeats the process continuously
-#
-# You can tweak parameters like:
-# - `num_clients`: Number of simultaneous connections
-# - `disconnect_after`: How long before disconnecting
-# - The sleep times between operations
-#
-# You might also want to add a file writer that continuously updates test.html:
-
-# async def file_updater(filename):
-#     """Continuously update the test file"""
-#     counter = 0
-#     while True:
-#         with open(filename, 'a') as f:
-#             f.write(f"Line {counter}\n")
-#             counter += 1
-#         await asyncio.sleep(0.1)
-#
-# # Add to main():
-# asyncio.create_task(file_updater('test.html'))
-
-# This should reliably trigger the exceptions you're seeing because it:
-# 1. Creates multiple concurrent connections
-# 2. Has clients disconnect at different stages of streaming
-# 3. Includes both graceful and abrupt disconnections
-# 4. Maintains continuous file updates while streaming
-

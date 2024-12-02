@@ -5,9 +5,12 @@
 import os
 import logging
 from pathlib import Path
+import asyncio
 
 from starlette.applications import Starlette
-from starlette.responses import StreamingResponse
+from starlette.requests import Request
+from starlette.responses import StreamingResponse, Response
+from starlette.exceptions import HTTPException
 from starlette.templating import Jinja2Templates
 import uvicorn
 
@@ -55,7 +58,17 @@ async def shutdown_event():
     logger.info("Shutting down...")
 
 
-app = Starlette(on_startup=[startup_event], on_shutdown=[shutdown_event])
+async def http_exception(_request: Request, exc: HTTPException):
+    """ Handle exceptions. """
+    return Response(content=None, status_code=exc.status_code)
+
+
+exception_handlers = {
+    HTTPException: http_exception,
+}
+
+
+app = Starlette(on_startup=[startup_event], on_shutdown=[shutdown_event], exception_handlers=exception_handlers)
 
 
 async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n"):
@@ -64,13 +77,17 @@ async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n
     if head:
         yield head
 
-    tail = atail.AsyncTail(
-        filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True
-    ).run()
-    tail2 = akeepalive.AsyncKeepAlive(tail, keepalive, timeout_return=keepalive_string).run()
-
-    async for line in tail2:
-        yield line
+    async with atail.AsyncTail(filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True) as queue1:
+        async with akeepalive.AsyncKeepAlive(queue1, keepalive, timeout_return=keepalive_string) as queue2:
+            try:
+                while True:
+                    line = await queue2.get()
+                    if line is None:
+                        break
+                    yield line
+                    queue2.task_done()
+            except asyncio.CancelledError:
+                pass
 
 
 @app.route("/stream/{path:path}", methods=["GET"])

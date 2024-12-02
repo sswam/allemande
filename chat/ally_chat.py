@@ -804,17 +804,19 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
 
 async def watch_loop(args):
 	"""Follow the watch log, and process files."""
-	tail = atail.AsyncTail(filename=args.watch, follow=True, rewind=True).run()
 
 	skip = {}
 
-	async for line in tail:
-		file_path, change_type, old_size, new_size = line.rstrip("\n").split("\t")
-		change_type = Change(int(change_type))
-		old_size = int(old_size) if old_size != "" else None
-		new_size = int(new_size) if new_size != "" else None
+	async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
+		while True:
+			line = await queue.get()
+			file_path, change_type, old_size, new_size = line.rstrip("\n").split("\t")
+			change_type = Change(int(change_type))
+			old_size = int(old_size) if old_size != "" else None
+			new_size = int(new_size) if new_size != "" else None
 
-		await file_changed(file_path, change_type, old_size, new_size, args, skip)
+			await file_changed(file_path, change_type, old_size, new_size, args, skip)
+			queue.task_done()
 
 
 def load_config(args):
