@@ -18,7 +18,7 @@ import shlex
 import readline
 from watchfiles import Change
 import yaml
-# import regex
+import regex
 
 import ucm
 import conductor
@@ -68,13 +68,15 @@ AGENTS_LOCAL = {
 	},
 	"Barbie": {
 		"model": "default",
-		"system_top": "Your name is Barbie. You're fun, but but you're not a doll. You are very clever.",
-		"system_bottom": "Please reply playfully.",
+		"system_top": "Your name is Barbie. You're not a doll, but you're fun and clever.",
+		"system_bottom": "Please reply playfully, creatively, at length.",
+		"system_bottom_pos": 1,
 	},
 	"Callam": {
 		"model": "default",
 #		"system_top": "Please reply with medium hostility, and speak like a pirate.",
 		"system_bottom": "Please reply as Callam, with medium hostility, and speak like a pirate.",
+		"system_bottom_pos": 1,
 	},
 }
 
@@ -261,23 +263,32 @@ def leading_spaces(text):
 	return re.match(r"\s*", text).group(0)
 
 
-def trim_response(response, args, people_lc = None):
+def trim_response(response, args, agent_name, people_lc = None):
 	""" Trim the response to the first message. """
 	if people_lc is None:
 		people_lc = []
-	# TODO allow AI to use own name repeatdly in response
+
 	def check_person_remove(match):
-		""" Check if the message is from the person and remove it. """
+		"""Remove text starting with a known person's name."""
 		if match.group(2).lower() in people_lc:
 			return ""
 		return match.group(1)
 
 	response = response.strip()
-	response = re.sub(r"(\n(\w+):.*)", check_person_remove, response, flags=re.DOTALL)
+
 	response_before = response
+
+	# remove agent's own `name: ` from response
+	agent_name_esc = re.escape(agent_name)
+	response = re.sub(r"^" + agent_name_esc + r":\s(.*)", r"\1", response, flags=re.MULTILINE)
+
+	# remove lines starting with a known person's name
+	response = re.sub(r"(\n(\w+):\s*(.*))", check_person_remove, response, flags=re.DOTALL)
 	response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
+
 	if response != response_before:
 		logger.warning("Trimmed response: %r\nto: %r", response_before, response)
+
 	response = " " + response.strip()
 	return response
 
@@ -528,17 +539,29 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 		system_top_role = agent.get("system_top_role", None)
 		history2.insert(0, f"{system_top_role}:\t{system_top}")
 
-	logger.info("history2: %r", history2)
+	logger.debug("history2: %r", history2)
 
 	fulltext, history_start = get_fulltext(args, model_name, history2, history_start, invitation, args.delim)
 
-	args.gen_config = load_config(args)
+	# load the config each time, in case it has changed
+	gen_config = load_config(args)
+
+	agent_name_esc = regex.escape(agent["name"])
+
+	# TODO: These stop regexps don't yet handle names with spaces or punctuation.
+	gen_config["stop_regexs"] = [
+		# Allow the agent's own name (ignoring case) using a negative lookahead.
+		# A line starting with a name starting with any letter, colon and whitespace.
+		r"(?umi)^(?!"+agent_name_esc+r":)[\p{L}][\p{L}\p{N}_]*:\s*\Z",
+		# A name beginning with upper-case letter followed by colon and TAB, anywhere in the line
+		r"(?u)\b(?!"+agent_name_esc+r":)[\p{Lu}][\p{L}\p{N}_]*:\t",
+	]
 
 	logger.debug("fulltext: %r", fulltext)
-	logger.debug("config: %r", args.gen_config)
+	logger.debug("config: %r", gen_config)
 	logger.debug("portal: %r", args.portal)
 
-	response = await client_request(portal, fulltext, config=args.gen_config, timeout=LOCAL_AGENT_TIMEOUT)
+	response = await client_request(portal, fulltext, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 
 	apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
@@ -549,7 +572,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	all_people = conductor.participants(history_messages)
 	people_lc = list(map(str.lower, set(agent_names + all_people)))
 
-	response = trim_response(response, args, people_lc=people_lc)
+	response = trim_response(response, args, agent["name"], people_lc=people_lc)
 	response = fix_layout(response, args)
 
 	if invitation:
@@ -766,7 +789,7 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
 		del skip[file_path]
 		return
 
-	response = False
+	responded = False
 	try:
 		logger.info("Processing file: %r", file_path)
 		responded = await process_file(file_path, args)
@@ -861,10 +884,6 @@ async def main():
 	register_all_agents()
 
 	args = get_opts()
-
-	args.gen_config = load_config(args)
-
-	logger.info("args.gen_config=%r", args.gen_config)
 
 	TOKENIZERS[args.model] = load_model_tokenizer(args)
 
