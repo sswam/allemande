@@ -9,12 +9,38 @@
 	display: none;
 }
 #messages {
+	min-height: 64px;
+	position: relative;
+}
+#messages_overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: none;
 }
 #inputrow {
+	height: 64px;
+	cursor: ns-resize;
+	margin: 0;
+	flex-grow: 0;
+	flex-shrink: 0;
+	max-height: 80vh;
 }
 #content {
-	min-height: 64px;
-	height 100% !important;
+	min-height: 32px;
+	resize: none;
+}
+#resizer {
+	height: var(--pad);
+	min-height: var(--pad);
+	cursor: ns-resize;
+	margin: 0;
+}
+#debug {
+	display: none;
+	width: 64px;
 }
 .row {
 	display: flex;

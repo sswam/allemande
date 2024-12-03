@@ -1,19 +1,31 @@
-var $head = $('head');
-var $room = $id('room');
-var $content = $id('content');
-var $messages = $id('messages');
-var $form = $id('form');
-var $title = $('title');
+const $head = $('head');
+const $room = $id('room');
+const $content = $id('content');
+const $messages_iframe = $id('messages_iframe');
+const $form = $id('form');
+const $title = $('title');
+const $inputrow = $id("inputrow");
+const $messages_overlay = $id("messages_overlay");
 
-var room;
-var user;
-var admin;
-var data_raw = '';
+let VERSION;
+let DEBUG = false;
+
+let room;
+let user;
+let admin;
 
 const ROOMS_URL = location.protocol + "//" + location.host.replace(/^chat\b/, "rooms")
 const MAX_ROOM_NUMBER = 1e3; // 1e12;
 const DEFAULT_ROOM = 'Ally Chat';
 
+
+// utility functions ---------------------------------------------------------
+
+function set_debug(debug) {
+	DEBUG = debug;
+	console.log = DEBUG ? console.log : () => {};
+	$id("debug").style.display = DEBUG ? "block" : "none";
+}
 
 // send a message ------------------------------------------------------------
 
@@ -22,12 +34,12 @@ async function send(ev) {
 	ev.preventDefault();
 	// TODO upload attachments
 
-	var formData = new FormData($form);
-	var message = $content.value;
+	const formData = new FormData($form);
+	const message = $content.value;
 	$content.value = "";
-//      var filenames = $('#filenames').val();
-//	var attached = $('#attached').val();
-//	var old_files = clear_attachments();
+//      const filenames = $('#filenames').val();
+//	const attached = $('#attached').val();
+//	const old_files = clear_attachments();
 
 	const restore = () => {
 		$content.value = message;
@@ -81,10 +93,16 @@ function room_keypress(ev) {
 
 // change room ---------------------------------------------------------------
 
+function messages_iframe_set_src(url) {
+	$messages_iframe.contentWindow.location.replace(url);
+
+//	$messages_iframe.src = url;
+//	$messages_iframe.contentWindow.history.replaceState(null, '', url);
+}
+
 function clear_messages_box() {
 	console.log("clearing messages box");
-	$messages.src = "about:blank";  // This doesn't always work in Firefox
-	data_raw = '';
+	messages_iframe_set_src("about:blank");
 }
 
 function set_room(r) {
@@ -101,8 +119,8 @@ function set_room(r) {
 		return;
 //	who();
 	const room_stream_url = ROOMS_URL + "/stream/"+room+".html";
-	console.log("setting $messages.src to", room_stream_url);
-	$messages.src = room_stream_url;
+	console.log("setting $messages_iframe.src to", room_stream_url);
+	messages_iframe_set_src(room_stream_url);
 	setup_user_button();
 }
 
@@ -216,7 +234,7 @@ function on_hash_change() {
 }
 
 function hash_to_query(hash) {
-	var query = hash.replace(/\+|%20/g, ' ');
+	let query = hash.replace(/\+|%20/g, ' ');
 	if (query.length) {
 		query = query.substr(1);
 	}
@@ -319,6 +337,17 @@ function keyboard_shortcuts() {
 	Mousetrap.bind("ctrl+;", change_room);
 }
 
+// reload the page -----------------------------------------------------------
+
+let reloading = false;
+function reload_page() {
+	if (reloading)
+		return;
+	reloading = true;
+	console.log("reloading page");
+	location.reload();
+}
+
 // handle messages from the messages iframe ----------------------------------
 
 function handle_message(ev) {
@@ -336,7 +365,7 @@ function handle_message(ev) {
 	// detect F5 or ctrl-R to reload the page
 	console.log(ev.data.type, ev.data.key, ev.data.ctrlKey);
 	if (ev.data.type == "keydown" && (ev.data.key == "F5" || ev.data.ctrlKey && ev.data.key.toLowerCase() == "r")) {
-		location.reload();
+		reload_page();
 		return;
 	}
 
@@ -357,16 +386,51 @@ function handle_message(ev) {
 
 // Register service worker ---------------------------------------------------
 
+let sw_registration;
+let sw_message_channel;
+
+function handle_sw_message(event) {
+	if (event.data.type == 'APP_INFO') {
+		VERSION = event.data.version;
+		$id("debug").value = VERSION;
+	}
+}
+
+function sw_updatefound() {
+	const newWorker = sw_registration.installing;
+
+	// Listen for state changes on the new service worker
+	newWorker.addEventListener('statechange', sw_statechange);
+}
+
+function sw_statechange(ev) {
+	if (ev.target.state === 'activated')
+		reload_page();
+}
+
 async function register_service_worker() {
 	if (!'serviceWorker' in navigator)
 		return;
 	try {
-		const registration = await navigator.serviceWorker.register('/service_worker.js');
+		sw_registration = await navigator.serviceWorker.register('/service_worker.js');
 		console.log('ServiceWorker registration successful');
-		registration.update(); // TODO remove?
 	} catch (err) {
 		console.error('ServiceWorker registration failed: ', err);
+		return;
 	}
+
+	await navigator.serviceWorker.ready;
+
+	sw_registration.addEventListener('updatefound', sw_updatefound);
+	sw_registration.update();
+
+	// Request the app version from the service worker
+	sw_message_channel = new MessageChannel();
+	sw_registration.active.postMessage({type: 'PORT_INITIALIZATION'}, [
+		sw_message_channel.port2,
+	]);
+	sw_message_channel.port1.onmessage = handle_sw_message;
+	sw_message_channel.port1.postMessage('getAppInfo');
 }
 
 // Handle notification permissions -------------------------------------------
@@ -421,9 +485,42 @@ function setup_user_button() {
 		$user.href = '/' + query_to_hash(user);
 }
 
+// drag to resize the input row ----------------------------------------------
+
+let resizeStartY, resizeStartHeight;
+
+function initDrag(e) {
+	e.preventDefault();
+	console.log("initDrag");
+	resizeStartY = e.clientY || e.touches[0].clientY;
+	resizeStartHeight = $inputrow.offsetHeight;
+	document.addEventListener('mousemove', doDrag);
+	document.addEventListener('mouseup', stopDrag);
+	document.addEventListener('touchmove', doDrag);
+	document.addEventListener('touchend', stopDrag);
+	$messages_overlay.style.display = "block";
+}
+
+function doDrag(e) {
+	e.preventDefault();
+	const clientY = e.clientY || e.touches[0].clientY;
+	$inputrow.style.flexBasis = (resizeStartHeight + resizeStartY - clientY) + 'px';
+}
+
+function stopDrag(e) {
+	e.preventDefault();
+	console.log("stopDrag");
+	document.removeEventListener('mousemove', doDrag);
+	document.removeEventListener('mouseup', stopDrag);
+	document.removeEventListener('touchmove', doDrag);
+	document.removeEventListener('touchend', stopDrag);
+	$messages_overlay.style.removeProperty('display');
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
+	set_debug(DEBUG);
 	user = authChat();
 	load_user_styles();
 	on_hash_change();
@@ -445,7 +542,7 @@ function chat_main() {
 //	$on($id('user'), 'click', set_room_user);
 //	$on($id('logout'), 'click', logoutChat);
 	$on($id('notify'), 'click', notify_clicked);
+	$on($id('resizer'), 'mousedown', initDrag);
+	$on($id('resizer'), 'touchstart', initDrag);
 	register_service_worker();
 }
-
-console.log("chat.js loaded");

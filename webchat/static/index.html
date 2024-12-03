@@ -14,20 +14,27 @@
 <body id="app">
 <form id="form" class="fill" onsubmit="return false;">
 <input type="hidden" id="op" name="op" value="post">
-<div class="col pad o fill">
+<div class="col pad fill">
 	<div class="row">
 		<input id="room" name="room" class="flex mousetrap">
+		<input id="debug" disabled>
 		<button id="notify" disabled>notify</button>
 		<a class="button" href="" id="user">?</a>
 		<button id="logout">log out</button>
 	</div>
 
-	<iframe id="messages" class="messages flex" src="about:blank" allowFullScreen></iframe>
+	<div id="messages" class="messages grow">
+		<iframe id="messages_iframe" class="fill" src="about:blank" allowFullScreen></iframe>
+		<div id="messages_overlay"  class="fill"></div>
+	</div>
 
+	<div class="row" id="resizer">
+	</div>
 	<div class="row" id="inputrow">
 	<textarea id="content" name="content" class="content_input mousetrap grow"></textarea>
 	<button id="send">send</button>
 	</div>
+
 <!--
 	<div class="row">
 		<div style="flex-grow: 1"></div>

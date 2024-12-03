@@ -1,11 +1,11 @@
 "use strict";
 
-const VERSION = 22;
-
+const VERSION = "0.1.50";
 const DEBUG = false;
+
 console.log = DEBUG ? console.log : () => {};
 
-const CACHE_NAME = "allemande-ai-v4";
+const CACHE_NAME = "allemande-ai-" + VERSION;
 const URLS_TO_CACHE = [
 	"/",
 	"/chat.js",
@@ -123,8 +123,28 @@ async function sw_notificationclick(event) {
 	}
 }
 
+// Communicate with main app
+
+function sw_port_message(communicationPort, event) {
+	if (event.data === "getAppInfo") {
+		communicationPort.postMessage({
+			type: "APP_INFO",
+			version: VERSION,
+			debug: DEBUG,
+		});
+	}
+}
+
+function sw_message(event) {
+	if (event.data && event.data.type === 'PORT_INITIALIZATION') {
+		const communicationPort = event.ports[0];
+		communicationPort.onmessage = (event) => sw_port_message(communicationPort, event);
+	}
+}
+
 self.addEventListener("install", sw_install);
 self.addEventListener("activate", sw_activate);
 self.addEventListener("fetch", sw_fetch);
 self.addEventListener("push", sw_push);
 self.addEventListener("notificationclick", sw_notificationclick);
+self.addEventListener("message", sw_message);
