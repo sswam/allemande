@@ -49,7 +49,7 @@ server {
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
-#		add_header Cache-Control "no-store";
+		add_header Cache-Control "no-store";  // service worker caches
 		if ($cors_header = "https://rooms.allemande.ai") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;

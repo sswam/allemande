@@ -84,6 +84,9 @@ sparkjoy
 # generated program files
 /apps/plan/hello.js
 
+# build stamp files
+/webchat/build.stamp
+
 # binary code
 /arcs/sshc
 /c/test_lua
