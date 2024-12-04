@@ -10,6 +10,9 @@ ally-mount() {
 	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none $SERVER_ROOMS_SSH $ALLEMANDE_ROOMS_SERVER || true
 
 	for client in $ALLEMANDE_PORTAL_CLIENTS; do
+		if [ "$client" = "$HOSTNAME" ]; then
+			continue
+		fi
 		for service in $ALLEMANDE_MODULES; do
 			portal-mount $client $service/${client}_www-data
 			portal-mount $client $service/${client}_$USER
@@ -21,6 +24,9 @@ ally-umount() {
 	fusermount -u $ALLEMANDE_ROOMS_SERVER || true
 
 	for client in $ALLEMANDE_PORTAL_CLIENTS; do
+		if [ "$client" = "$HOSTNAME" ]; then
+			continue
+		fi
 		for service in $ALLEMANDE_MODULES; do
 			portal-umount $service/${client}_www-data
 			portal-umount $service/${client}_$USER
