@@ -91,3 +91,5 @@ abcmidi
 timidity
 lilypond
 lilypond-doc
+
+mediainfo
