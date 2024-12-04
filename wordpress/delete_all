@@ -1,1 +1,1 @@
-(PARALLEL_MAX=10; < tourism-final.txt grep 'Eagles Nest$' -v | sed 's/- //' | while read A; do B=`slugify -l -H "$A"`; echo . para v injectify.py --delete --slug "$B"; done)
+(PARALLEL_MAX=10; < tourism-final.txt grep 'Eagles Nest$' -v | sed 's/- //' | while read A; do B=`slug -l -H "$A"`; echo . para v injectify.py --delete --slug "$B"; done)

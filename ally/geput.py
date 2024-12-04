@@ -148,6 +148,27 @@ def read(istream: TextIO) -> Get:
     return get_fn
 
 
+def get_list(l: list[str]) -> Get:
+    """Create a get function for reading lines from a list."""
+    def get_fn(**kwargs) -> str | None:
+        if l:
+            return l.pop(0).rstrip("\n") + "\n"
+        return None
+    return get_fn
+
+
+def put_list(l: list[str]) -> Put:
+    """Create a put function for writing to a list."""
+    def put_fn(line: str, **kwargs) -> None:
+        l.append(line.rstrip("\n"))
+    return put_fn
+
+
+def make_get_put(input_lines: list[str], output_lines: list[str]) -> tuple[Get, Put]:
+    """Make get and put functions for testing."""
+    return get_list(input_lines), put_list(output_lines)
+
+
 # TODO maybe passing flush through is important to support.
 
 # TODO async functions; arguably we should always use async.

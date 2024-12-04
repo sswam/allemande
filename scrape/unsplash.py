@@ -2,7 +2,7 @@
 import requests
 import os
 import argh
-from slugify import slugify
+from slug import slug
 from pathlib import Path
 
 """ This script downloads images from Unsplash.com. It takes a search query as input and downloads the images in the current directory. The images are saved in a folder named after the search query. The script also fetches metadata such as ALT tag, description, title, author, and license. The metadata is saved in a tab-separated file named 'metadata.tsv' along with a header. """
@@ -16,7 +16,7 @@ class Unsplash:
 		self.per_page = per_page
 		self.pages = pages
 		self.quality = quality
-		self.download_dir = download_dir or slugify(self.query)
+		self.download_dir = download_dir or slug(self.query)
 		self.metadata_file = metadata_file or str(Path(self.download_dir)/"metadata.tsv")
 		self.headers ={"Accept": "*/*", "Accept-Encoding": "gzip, deflate, br", "Accept-Language": "en-US,en;q=0.5", "Connection": "keep-alive", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0"}
 		self.pad_width = len(str(self.per_page*self.pages))

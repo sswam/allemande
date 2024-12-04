@@ -39,7 +39,7 @@ mkdir -p DONE
 
 for D; do
 	N=$(basename "$D")
-	S=$(slugify -H -l "$N")
+	S=$(slug -H -l "$N")
 
 	echo "*** PUSHING TO WORDPRESS $D"
 

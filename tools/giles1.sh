@@ -9,7 +9,7 @@ m=
 
 q=${*:-"When did GPT-3 come out; -ChatGPT"}
 s=`printf "$s" "$q"`
-. mdcd `slugify "$q"`
+. mdcd `slug "$q"`
 search -m "$n" "$q" | kut 2 | tail -n +2 | wgall
 for f in *; do
 	< "$f" pandoc -f html -t markdown |

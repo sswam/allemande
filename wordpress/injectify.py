@@ -8,7 +8,7 @@ import argh
 import json
 import logging
 import base64
-import slugify  # mine, not the broken old unmaintained one in PyPI
+import slug
 
 
 # TODO look for an existing Python API to wordpress, I'm sure there is one!
@@ -59,7 +59,7 @@ def find_by_slug(slug, item_type="post", status=None, many=False, underscore_to_
 			find_by_slug(slug, item_type, "draft", many=many, underscore_to_hyphen=underscore_to_hyphen)
 	url = get_api_url(item_type)
 	if underscore_to_hyphen:
-		slug = slugify.slugify(slug, lower=True)
+		slug = slug.slug(slug, lower=True)
 	params = {
 		'slug': slug,
 		'per_page': 1,
@@ -420,7 +420,7 @@ def crud(file=None, content=None, title=None, status=None, post=False, page=Fals
 	# Get slug from title, if not provided
 
 	if not slug and title:
-		slug = slugify.slugify(title, lower=True, hyphen=True)
+		slug = slug.slug(title, lower=True, hyphen=True)
 
 
 	item = item or {

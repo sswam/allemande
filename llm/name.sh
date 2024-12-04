@@ -33,7 +33,7 @@ name_output() {
 		elif [ "$hyphen" = 1 ]; then
 			slugify_opts+=( "-H" )
 		fi
-		name_input | slugify "${slugify_opts[@]}"
+		name_input | slug "${slugify_opts[@]}"
 	fi
 }
 

@@ -31,7 +31,7 @@ import io
 from argh import arg
 import tab
 import tiktoken
-from slugify import slugify
+from slug import slug
 
 from ally import main, titty
 from ally.lazy import lazy
@@ -629,7 +629,7 @@ async def aquery2(*prompt, ostream: IO[str]|None=None, log=True, json=False):
 		LOGDIR.mkdir(parents=True, exist_ok=True)
 		assert len("answer") == len("prompt")  # better be sure!
 		max_len = LOGFILE_NAME_MAX_LEN - len("19760101-000000.answer..md")
-		basename = slugify(prompt)[:max_len]
+		basename = slug(prompt)[:max_len]
 		while True:
 			time_s = time.strftime("%Y%m%d-%H%M%S")
 			logfile = LOGDIR/f"{time_s}.answer.{basename}.md"

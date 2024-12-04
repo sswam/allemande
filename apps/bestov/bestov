@@ -37,7 +37,7 @@ if [ -n "$extra" ]; then
 	extra=" - $extra"
 fi
 
-artist_slug=`slugify.py "$artist"`
+artist_slug=`slug "$artist"`
 
 if [ -z "$work" -a ! -e "$artist_slug" ]; then
 	work="$artist_slug"

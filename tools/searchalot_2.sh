@@ -70,7 +70,7 @@ searchalot_searches() {
 	local query
 	query=$(eval 'printf %s "$template"')
 	echo >&2 "searchalot for: $query"
-	query_esc=$(slugify "$query")
+	query_esc=$(slug "$query")
 	n=0
 	for engine in $engines; do
 		out="$engine.$query_esc.txt"
