@@ -183,7 +183,7 @@ def adetailer_add_params(params, adetailer):
                 "ad_inpaint_only_masked_padding": 64 * params.get("hr_scale", 1),
                 "ad_inpaint_width": 1024,
                 "ad_mask_blur": 16 * params.get("hr_scale", 1),
-                "ad_mask_k_largest": 0,
+                "ad_mask_k_largest": params.get("ad_mask_k_largest", 0),
                 "ad_mask_max_ratio": 1,
                 "ad_mask_merge_invert": "None",
                 "ad_mask_min_ratio": 0,

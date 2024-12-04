@@ -72,6 +72,7 @@ async def process_request(portals, portal, req):
             pag=config.get("pag", False),
             hires=config.get("hires", 0.0),
             pony=config.get("pony", 0.0),
+            ad_mask_k_largest=config.get("ad_mask_k_largest", 0),
         )
 
         os.rename(d, portal / "done" / req)
