@@ -87,6 +87,7 @@ AGENTS_LOCAL = {
 		"clean_prompt": True,
 		"config": {
 			"steps": 15, # 30
+			"cfg_scale": 4.5,
 #			"pony": 1.0,
 			"pag": True,
 			"adetailer": ["face_yolov8n.pt"],
