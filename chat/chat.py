@@ -1,17 +1,26 @@
 #!/usr/bin/env python3-allemande
 
-""" chat.py: Allemande chat file format library """
+""" Allemande chat file format library """
 
+import os
 import sys
 import html
 from pathlib import Path
 import re
 import logging
 from typing import Dict, Optional
+import shutil
 
 import argh
 import markdown
 from starlette.exceptions import HTTPException
+import aiofiles
+
+import video_compatible
+
+
+EXTENSION = ".bb"
+ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +34,7 @@ class Symbol:  # pylint: disable=too-few-public-methods
 	def __repr__(self):
 		""" Return a string representation of the symbol """
 		return f"<{self.name}>"
+
 
 USER_NARRATIVE = Symbol("Narrative")
 USER_CONTINUED = Symbol("Continued")
@@ -60,12 +70,38 @@ MARKDOWN_EXTENSION_CONFIGS = {
 	},
 }
 
+
+class Room:
+	def __init__(self, name=None, path=None):
+		if path:
+			assert name is None
+			assert isinstance(path, Path)
+			self.path = path
+			self.name = path.relative_to(ROOMS_DIR).with_suffix("").as_posix()
+		else:
+			name = sanitize_pathname(name)
+			assert isinstance(name, str)
+			assert not name.startswith("/")
+			assert not name.endswith("/")
+			self.name = name
+			self.path = Path(ROOMS_DIR, name + EXTENSION)
+		self.parent = self.path.parent
+		self.parent.mkdir(parents=True, exist_ok=True)
+		self.parent_url = Path("/", self.name).parent
+	def touch(self):
+		self.path.touch()
+	def append(self, text):
+		with self.path.open("a", encoding="utf-8") as f:
+			f.write(text)
+
+
 def safe_join(base_dir: Path, path: Path) -> Path:
 	""" Return a safe path under base_dir, or raise ValueError if the path is unsafe. """
 	safe_path = base_dir.joinpath(path).resolve()
 	if base_dir in safe_path.parents:
 		return safe_path
 	raise ValueError(f"Invalid or unsafe path provided: {base_dir}, {path}")
+
 
 def sanitize_filename(filename):
 	""" Sanitize a filename, allowing most characters. """
@@ -320,7 +356,8 @@ def preprocess(content):
 	return content, has_math
 
 
-math_cache = {}
+math_cache: dict[str, str] = {}
+
 
 def message_to_html(message):
 	""" Convert a chat message to HTML. """
@@ -361,6 +398,90 @@ def chat_to_html():
 #		print(f"""<script src="{html.escape(src)}"></script>""")
 	for message in lines_to_messages(sys.stdin.buffer):
 		print(message_to_html(message))
+
+
+image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp']
+audio_extensions = ['mp3', 'ogg', 'wav', 'flac', 'aac', 'm4a']
+video_extensions = ['mp4', 'webm', 'ogv', 'avi', 'mov', 'flv', 'mkv']
+
+
+async def save_uploaded_file(from_path, to_path, file=None):
+	""" Save an uploaded file. """
+	if not file:
+		shutil.move(from_path, to_path)
+		return
+	chunk_size = 64 * 1024
+	async with aiofiles.open(to_path, 'wb') as ostream:
+		while chunk := await file.read(chunk_size):
+			await ostream.write(chunk)
+
+
+def av_element_html(tag, label, url):
+	def ee(s):
+		return html.escape(s, quote=True)
+	return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}" controls></{tag}>'
+
+
+async def upload_file(room_name, user, filename, file=None, alt=None):
+	""" Upload a file to a room. """
+	room = Room(name=room_name)
+
+	name = sanitize_filename(os.path.basename(filename))
+	stem, ext = os.path.splitext(name)
+
+	i = 1
+	suffix = ""
+	while True:
+		name = stem + suffix + ext
+		file_path = room.parent / name
+		if not file_path.exists():
+			break
+		i += 1
+		suffix = "_" + str(i)
+
+	# TODO track which user uploaded which files?
+
+	url = (room.parent_url / name).as_posix()
+
+	logger.info(f"Uploading {name} to {room} by {user}: {file_path=} {url=}")
+
+	await save_uploaded_file(filename, str(file_path), file=file)
+
+	task = None
+
+	ext = ext.lower().lstrip(".")
+
+	if ext in image_extensions:
+		medium = "image"
+	elif ext in audio_extensions:
+		medium = "audio"
+	elif ext in video_extensions:
+		# webm can be audio or video
+		result = await video_compatible.check(file_path)
+		if result["video_codecs"]:
+			medium = "video"
+		else:
+			medium = "audio"
+		task = lambda: video_compatible.recode_if_needed(file_path, result=result, replace=True)
+	else:
+		medium = "file"
+
+	if ext == "pdf":
+		url += "#toolbar=0&navpanes=0&scrollbar=0"
+
+	alt = alt or stem
+
+	# markdown to embed or link to the file
+	if medium == 'image':
+		markdown = f'![{alt}]({url})'
+	elif medium == 'audio':
+		markdown = av_element_html("audio", alt, url)
+	elif medium == 'video':
+		markdown = av_element_html("video", alt, url)
+	else:
+		markdown = f'[{alt}]({url})'
+
+	return name, url, medium, markdown, task
 
 
 if __name__ == '__main__':
