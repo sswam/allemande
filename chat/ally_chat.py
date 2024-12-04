@@ -83,6 +83,15 @@ AGENTS_LOCAL = {
 	"Illy": {
 		"service": "image_a1111",
 		"model": "default",
+		"default_context": 1,
+		"clean_prompt": True,
+		"config": {
+			"steps": 15, # 30
+			"pony": 1.0,
+			"pag": True,
+			"adetailer": ["face_yolov8n.pt"],
+			# "hires": 1.5,
+		}
 	},
 }
 
@@ -90,13 +99,13 @@ AGENTS_REMOTE = {
 	"GPT-4": {
 		"name": "Emmy",
 		"model": "gpt-4",
-		"default_context": 200,
+		"default_context": 20,
 		"system_bottom": "[Please reply as Emmy, without any `Emmy: ` prefix.]",
 	},
 	"GPT-4o-mini": {
 		"name": "Dav",
 		"model": "gpt-4o-mini",
-		"default_context": 1000,
+		"default_context": 100,
 		"system_bottom": "[Please reply as Dav, without any `Dav: ` prefix.]",
 	},
 	"Claude": {
@@ -105,7 +114,7 @@ AGENTS_REMOTE = {
 #			"Claud": "Claude",
 #		},
 		"model": "claude",
-		"default_context": 200,
+		"default_context": 20,
 		"system_bottom": "[Please reply as Claude, without any `Claude: ` prefix.]",
 	},
 	"Claude Instant": {
@@ -114,7 +123,7 @@ AGENTS_REMOTE = {
 			"Clia": "Claude",
 		},
 		"model": "claude-haiku",
-		"default_context": 1000,
+		"default_context": 100,
 		"system_bottom": "[Please reply as Claude, without any `Claude: ` prefix.]",
 	},
 # 	"Bard": {
@@ -389,12 +398,10 @@ async def client_request(portal, input_text, config=None, timeout=None):
 	if status == "error":
 		await portal.response_error(resp)  # raises RuntimeError?!
 
-	new_text = (resp/"new.txt").read_text(encoding="utf-8")
-	# generated_text = (resp/"full.txt").read_text(encoding="utf-8")
+	new = resp/"new.txt"
+	new_text = new.read_text(encoding="utf-8") if new.exists() else ""
 
-	await portal.remove_response(resp)
-
-	return new_text #, generated_text
+	return new_text, resp #, generated_text
 
 
 def history_read(file, args):
@@ -508,9 +515,8 @@ async def process_file(file, args, history_start=0) -> bool:
 		#     - in the web chat UI we don't normally submit multi-line messages, can do it with shift-enter on a computer
 		query1 = history[-1] if history else None
 		logger.debug("query1: %r", query1)
-		messages = chat.lines_to_messages([query1])
-		logger.warning("messages %r", messages)
-		query = list(chat.lines_to_messages([query1]))[-1]["content"] if query1 else ""
+		messages = list(chat.lines_to_messages([query1]))
+		query = messages[-1]["content"] if query1 else ""
 		logger.debug("query: %r", query)
 		agent = AGENTS[bot.lower()]
 		response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
@@ -533,36 +539,55 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	# print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 
 	# Note: the invitation should not end with a space, or the model might use lots of emojis!
-	invitation = args.delim + agent["name"] + ":"
+	name = agent["name"]
+	invitation = args.delim + name + ":"
 
 	model_name = agent["model"]
-	history2 = history.copy()
-	apply_maps(agent["input_map"], agent["input_map_cs"], history2)
+	n_context = agent.get("default_context")
+	if n_context is not None:
+		context = history[-n_context:]
+	else:
+		context = history.copy()
+	apply_maps(agent["input_map"], agent["input_map_cs"], context)
 
 	# add system messages
 	system_top = agent.get("system_top")
 	system_bottom = agent.get("system_bottom")
 	if system_bottom:
-		n_messages = len(history2)
+		n_messages = len(context)
 		pos = agent.get("system_bottom_pos", 0)
 		pos = min(pos, n_messages)
 		system_bottom_role = agent.get("system_bottom_role", "System")
 		if system_bottom_role:
-			history2.insert(n_messages - pos, f"{system_bottom_role}:\t{system_bottom}")
+			context.insert(n_messages - pos, f"{system_bottom_role}:\t{system_bottom}")
 		else:
-			history2.insert(n_messages - pos, f"{system_bottom}")
+			context.insert(n_messages - pos, f"{system_bottom}")
 	if system_top:
 		system_top_role = agent.get("system_top_role", None)
-		history2.insert(0, f"{system_top_role}:\t{system_top}")
+		context.insert(0, f"{system_top_role}:\t{system_top}")
 
-	logger.debug("history2: %r", history2)
+	logger.debug("context: %r", context)
 
-	fulltext, history_start = get_fulltext(args, model_name, history2, history_start, invitation, args.delim)
+	agent_name_esc = regex.escape(name)
 
-	# load the config each time, in case it has changed
-	gen_config = load_config(args)
+	def clean_prompt_line(line, agent_name_esc):
+		line = regex.sub(r".*?\t", r"", line)
+		line = regex.sub(r"\b" + agent_name_esc + r"\b[,;.]?", r"", line, flags=regex.IGNORECASE)
+		line = line.strip()
+		return line
 
-	agent_name_esc = regex.escape(agent["name"])
+	clean_prompt = agent.get("clean_prompt", False)
+	if clean_prompt:
+		fulltext = args.delim.join(clean_prompt_line(line, agent_name_esc) for line in context)
+	else:
+		fulltext, history_start = get_fulltext(args, model_name, context, history_start, invitation, args.delim)
+
+	if "config" in agent:
+		gen_config = agent["config"]
+	else:
+		# load the config each time, in case it has changed
+		# TODO the config should be per agent, not global
+		gen_config = load_config(args)
 
 	# TODO: These stop regexps don't yet handle names with spaces or punctuation.
 	gen_config["stop_regexs"] = [
@@ -581,9 +606,22 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	logger.debug("config: %r", gen_config)
 	logger.debug("portal: %r", str(portal.portal))
 
-	response = await client_request(portal, fulltext, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
+	response, resp = await client_request(portal, fulltext, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 
 	apply_maps(agent["output_map"], agent["output_map_cs"], [response])
+
+	room = chat.Room(path=Path(file))
+
+	# look for attachments, other files in resp/ in sorted order
+	for resp_file in sorted(resp.iterdir()):
+		if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt"]:
+			continue
+		name, url, medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=fulltext)
+		if response:
+			response += f"\n\n"
+		response += markdown
+
+	await portal.remove_response(resp)
 
 	logger.debug("response: %r", response)
 
@@ -599,6 +637,8 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 		tidy_response = invitation.strip() + "\t" + response.strip()
 	else:
 		tidy_response = response
+
+	# TODO accept attachments from model
 
 	logger.debug("tidy response: %r", tidy_response)
 
@@ -814,11 +854,11 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
 		logger.info("Processing file: %r", file_path)
 		responded = await process_file(file_path, args)
 	except Exception as e:
-		logger.warning("Processing file failed: %r", e)
+		logger.exception("Processing file failed", exc_info=True)
 
 	# avoid re-processing in response to an AI response
 	if responded:
-		logger.info("Will skip processing after AI response: %r", file_path)
+		logger.info("Will skip processing after agent response: %r", file_path)
 		skip[file_path] = 1
 
 
