@@ -45,7 +45,7 @@ async def a1111_client(
     count: int = 1,
     sleep: float = 0.0,
     clobber: bool = False,
-    pony: bool = False,
+    pony: float = 0.0,
     adetailer: list[str] = None,
     pag: bool = False,
     hires: float = 0.0,
@@ -66,7 +66,7 @@ async def a1111_client(
     negative_prompt = text.squeeze(negative_prompt)
 
     if pony:
-        prompt, negative_prompt = pony_biolerplate(prompt, negative_prompt)
+        prompt, negative_prompt = pony_biolerplate(pony, prompt, negative_prompt)
 
     params = {
         "prompt": prompt,
@@ -128,12 +128,12 @@ async def a1111_client(
     logger.debug("Done")
 
 
-def pony_biolerplate(prompt, negative_prompt):
+def pony_biolerplate(pony, prompt, negative_prompt):
     """Add pony boilerplate to the prompt and negative prompt."""
-    pony1p = "score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up, "
-    prompt = f"{pony1p} {prompt}"
-    pony1n = "score_6, score_5, score_4, "
-    negative_prompt = f"{pony1n} {negative_prompt}"
+    pony1p = f"(score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:{pony})\nBREAK\n"
+    prompt = f"{pony1p}{prompt}"
+    pony1n = f"(score_6, score_5, score_4:{pony})\nBREAK\n"
+    negative_prompt = f"{pony1n}{negative_prompt}"
     return prompt, negative_prompt
 
 
@@ -281,7 +281,7 @@ def setup_args(arg):
     arg("-c", "--count", type=int, help="number of images to generate")
     arg("-S", "--sleep", type=float, help="sleep between generations")
     arg("-X", "--clobber", help="overwrite existing files", action="store_true")
-    arg("-P", "--pony", help="add pony boilerplate", action="store_true")
+    arg("-P", "--pony", help="add pony boilerplate; strength")
     arg("-D", "--adetailer", nargs="*", help="use adetailer with specified models")
     arg("-g", "--pag", help="use perturbed attention guidance", action="store_true")
     arg("-u", "--hires", help="hires fix / upscale by factor")
