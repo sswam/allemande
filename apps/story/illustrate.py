@@ -270,7 +270,7 @@ def generate_image(
         if options.model is not None:
             kwargs["model"] = options.model
         if options.pony:
-            kwargs["pony"] = True
+            kwargs["pony"] = 1.0  # TODO stronger can be better
 
         # run the a1111 stable diffusion webui client
         sh.a1111_client("-d", **kwargs)  # type: ignore
