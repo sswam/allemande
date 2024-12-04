@@ -8,6 +8,7 @@ from pathlib import Path
 import yaml
 from typing import AsyncIterator
 import asyncio
+import re
 
 from ally import main, logs
 import a1111_client
@@ -56,10 +57,18 @@ async def process_request(portals, portal, req):
 
         output_stem = slug.slug(prompt)[:200]
 
+        negative_prompt=config.get("negative_prompt", "")
+
+        if negative_prompt == "":
+            try:
+                prompt, negative_prompt = re.split(r"\s+--\s+", prompt, 1)
+            except ValueError:
+                pass
+
         await a1111_client.a1111_client(
             output=str(d / output_stem),
             prompt=prompt,
-            negative_prompt=config.get("negative_prompt", ""),
+            negative_prompt=negative_prompt,
             seed=config.get("seed", -1),
             sampler_name=config.get("sampler_name", "DPM++ 2M"),
             scheduler=config.get("scheduler", "Karras"),
