@@ -22,7 +22,6 @@
 }
 #inputrow {
 	height: 64px;
-	cursor: ns-resize;
 	margin: 0;
 	flex-grow: 0;
 	flex-shrink: 0;
@@ -106,4 +105,8 @@ button, .button {
 
 input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
 	outline: none;
+}
+
+.error {
+	background-color: #422 !important;
 }

@@ -18,8 +18,8 @@
 	<div class="row">
 		<input id="room" name="room" class="flex mousetrap">
 		<input id="debug" disabled>
-		<button id="notify" disabled>notify</button>
 		<a class="button" href="" id="user">?</a>
+		<button id="notify" disabled>notify</button>
 		<button id="logout">log out</button>
 	</div>
 
@@ -30,22 +30,14 @@
 
 	<div class="row" id="resizer">
 	</div>
-	<div class="row" id="inputrow">
-	<textarea id="content" name="content" class="content_input mousetrap grow"></textarea>
-	<button id="send">send</button>
-	</div>
 
-<!--
-	<div class="row">
-		<div style="flex-grow: 1"></div>
+	<div class="row" id="inputrow">
+		<textarea id="content" name="content" class="content_input mousetrap grow"></textarea>
 		<button id="send">send</button>
+		<input id="files" name="files" type="file" class="inputfile hide" tabindex="-1" multiple/>
+		<label for="files" class="attach"><button id="attach" class="fill">attach</button></label>
 		<button id="clear" class="admin">clear</button>
-		<input id="files" name="files" type="file" class="inputfile hide" data-multiple-caption="{count} files: {filenames}" multiple/>
-		<label for="files" class="attach"><button class="fill">attach</button></label>
- 	 	<textarea id="attached" class="attached flex hidden" readonly rows=1></textarea>
-		<input id="filenames" name="filenames" type="hidden">
 	</div>
--->
 </div>
 </form>
 <script src="mousetrap.min.js"></script>

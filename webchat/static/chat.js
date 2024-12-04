@@ -27,25 +27,26 @@ function set_debug(debug) {
 	$id("debug").style.display = DEBUG ? "block" : "none";
 }
 
+async function flash($el, className) {
+	$('#attach').classList.add(className);
+	await $wait(300);
+	$('#attach').classList.remove(className);
+}
+
 // send a message ------------------------------------------------------------
 
 async function send(ev) {
 	console.log("send");
 	ev.preventDefault();
-	// TODO upload attachments
 
 	const formData = new FormData($form);
 	const message = $content.value;
 	$content.value = "";
-//      const filenames = $('#filenames').val();
-//	const attached = $('#attached').val();
-//	const old_files = clear_attachments();
 
-	const restore = () => {
+	const error = async (message) => {
+		console.error(message);
 		$content.value = message;
-//		$('#filenames').val(filenames);
-//		$('#attached').val(attached);
-//		$('#files').replaceWith($(old_files));
+		await flash($id('send'), 'error');
 	};
 
 	const response = await fetch('/x/post', {
@@ -54,16 +55,14 @@ async function send(ev) {
 	});
 
 	if (!response.ok) {
-		alert("failed: send");
-		restore();
+		await error("send failed");
 		return;
 	}
 
 	const data = await response.json();
 
 	if (data.error) {
-		alert(data.error);
-		restore();
+		await error(data.error);
 		return;
 	}
 }
@@ -95,9 +94,6 @@ function room_keypress(ev) {
 
 function messages_iframe_set_src(url) {
 	$messages_iframe.contentWindow.location.replace(url);
-
-//	$messages_iframe.src = url;
-//	$messages_iframe.contentWindow.history.replaceState(null, '', url);
 }
 
 function clear_messages_box() {
@@ -254,10 +250,6 @@ function leave_room() {
 		set_room("");
 	else
 		set_room("-");
-//	$room.focus();
-//	$room.value = "";
-//	room = "";
-//	clear_messages_box();
 }
 
 function change_room() {
@@ -356,9 +348,6 @@ function handle_message(ev) {
 		console.log("ignoring message from", ev.origin);
 		return;
 	}
-//	if (ev.data.type == "change_room") {
-//		change_room();
-//	}
 
 	$content.focus();
 
@@ -517,6 +506,91 @@ function stopDrag(e) {
 	$messages_overlay.style.removeProperty('display');
 }
 
+// file attachments ----------------------------------------------------------
+
+// plan:
+// 1. user clicks on the attach button
+// 2. user selects a file
+// 3. file is uploaded to the server
+// 4. server responds with a URL
+// 5. URL is inserted into the message box as markdown or HTML (link, image, audio, video)
+// 6. user sends the message
+// 7. server receives the message and the URL
+
+function attach_clicked() {
+	$id('files').click();
+}
+
+function files_changed(ev) {
+	const files = ev.target.files;
+	console.log("files_changed", files);
+	for (const file of files) {
+		console.log("file", file);
+		upload_file(file);  // async, we're not waiting for it
+	}
+	// clear the file input so we can upload the same file again
+	ev.target.value = '';
+}
+
+function stem_ext(filename) {
+	const match = filename.match(/^(.+?)(?:\.([^.]+))?$/);
+	return [match[1], match[2] || ''];
+}
+
+function av_element_html(tag, stem, url) {
+	const $el = $create(tag);
+	$el.ariaLabel = stem;
+	$el.src = url;
+	$el.controls = true;
+	return $el.outerHTML;
+}
+
+async function upload_file(file) {
+	// upload in the background using fetch
+	console.log("upload_file", file);
+
+	const formData = new FormData();
+	formData.append('room', room);
+	formData.append('file', file);
+
+	const response = await fetch('/x/upload', {
+		method: 'POST',
+		body: formData,
+	});
+
+	if (!response.ok) {
+		// flash the attach button red
+		await flash($id('attach'), 'error');
+		return;
+	}
+
+	const data = await response.json();
+	console.log("upload_file response", data);
+
+	const { name, url, medium } = data;
+
+	const [stem, ext] = stem_ext(name);
+
+	// make sure the message content ends with whitespace
+	if (!/\s$/.test($content.value)) {
+		$content.value += "\n";  // TODO this kills undo
+	}
+
+	if (medium === 'image') {
+		// insert the image into the message box as markdown
+		$content.value += `![${stem}](${url})`;
+	} else if (medium === 'audio') {
+		// insert the audio into the message box as an audio element
+		$content.value += av_element_html("audio", stem, url);
+	} else if (medium === 'video') {
+		// insert the video into the message box as a video element
+		$content.value += av_element_html("video", stem, url);
+	} else {
+		// insert the URL into the message box as a markdown link
+		$content.value += `[${stem}](${url})`;
+	}
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
@@ -534,7 +608,8 @@ function chat_main() {
 	$on(window, 'hashchange', on_hash_change);
 //	$on($messages, 'scroll', messages_scrolled);
 	setup_file_input_label();
-//	$on($('label.attach > button'), 'click', attach_clicked);
+	$on($('label.attach > button'), 'click', attach_clicked);
+	$on($id('files'), 'change', files_changed);
 	push_notifications();
 	// scroll_to_bottom();
 	keyboard_shortcuts();
