@@ -9,27 +9,39 @@ ally-mount() {
 	mkdir -p $ALLEMANDE_ROOMS_SERVER
 	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none $SERVER_ROOMS_SSH $ALLEMANDE_ROOMS_SERVER || true
 
-	portal-mount stt_whisper/www-data
-	portal-mount llm_llama/$USER
+	for client in $ALLEMANDE_PORTAL_CLIENTS; do
+		for service in $ALLEMANDE_MODULES; do
+			portal-mount $client $service/${client}_www-data
+			portal-mount $client $service/${client}_$USER
+		done
+	done
 }
 
 ally-umount() {
 	fusermount -u $ALLEMANDE_ROOMS_SERVER || true
 
-	portal-umount stt_whisper/www-data
-	portal-umount llm_llama/$USER
+	for client in $ALLEMANDE_PORTAL_CLIENTS; do
+		for service in $ALLEMANDE_MODULES; do
+			portal-umount $service/${client}_www-data
+			portal-umount $service/${client}_$USER
+		done
+	done
 }
 
 portal-mount() {
-	local portal=$1
-	qe rmdir /var/spool/allemande/$portal/* || true
-	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none ucm.dev:/var/spool/allemande/$portal /var/spool/allemande/$portal -o cache=no || true
+	local client=$1
+	local portal=$2
+	local portal_path=$ALLEMANDE_PORTALS/$portal
+	mkdir -p $portal_path
+	qe rmdir $portal_path/* || true
+	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none $client:$portal_path $portal_path -o cache=no || true
 }
 
 portal-umount() {
 	local portal=$1
-	fusermount -u /var/spool/allemande/$portal || true
-	qe rmdir /var/spool/allemande/$portal/* || true
+	local portal_path=$ALLEMANDE_PORTALS/$portal
+	fusermount -u $portal_path || true
+	qe rmdir $portal_path/* || true
 }
 
 if [ "$0" = "$BASH_SOURCE" ]; then

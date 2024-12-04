@@ -21,7 +21,7 @@ useradd -m -d "$portals" -s "$(which bash)" -u "$ALLEMANDE_UID" -g "$ALLEMANDE_G
 chown $user:$user "$portals"
 chmod g+rx "$portals"
 
-if [ ! -e "$portals/.ssh/id_rsa" ]; then
+if [ -z "$(ls "$portals"/.ssh/id_* 2>/dev/null)" ]; then
 	sudo -u allemande ssh-keygen
 	sudo -u allemande ssh-copy-id ucm.dev
 fi
