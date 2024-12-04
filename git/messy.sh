@@ -15,7 +15,8 @@ model="d"       # default model
 # initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
-commit_message="commit-message.$timestamp.$$.txt"
+original_dir=$PWD
+commit_message="$original_dir/commit-message.$timestamp.$$.txt"
 review="review.$timestamp.$$.txt"
 
 # Associative arrays mapping model codes to names and options
@@ -127,181 +128,180 @@ git-commit() {
 trap 'cleanup-and-exit 0' EXIT
 trap 'message-and-exit 1' INT
 
-run_initial_gens=1
+get_options() {
+    run_initial_gens=1
 
-while getopts "nC:B43cioMm:F:exh" opt; do
-    case "$opt" in
-    n)
-        run_initial_gens=0
-        ;;
-    C)
-        diff_context="$OPTARG"
-        ;;
-#     B)
-#         initial_bug_check=0
-#         ;;
-    m)
-        echo "$OPTARG" > "$commit_message"
-        model=""
-        run_initial_gens=0
-        ;;
-    F)
-        cp "$OPTARG" "$commit_message"
-        model=""
-        run_initial_gens=0
-        ;;
-    e)
-        git-commit
-        exit 0
-        ;;
-    x)
-        cleanup
-        exit 0
-        ;;
-    h)
-        usage
-        exit 0
-        ;;
-    *)
-        if [[ -n "${option_model_codes["$opt"]}" ]]; then
-            model="${option_model_codes["$opt"]}"
-        else
+    while getopts "nC:B43cioMm:F:exh" opt; do
+        case "$opt" in
+        n)
+            run_initial_gens=0
+            ;;
+        C)
+            diff_context="$OPTARG"
+            ;;
+    #     B)
+    #         initial_bug_check=0
+    #         ;;
+        m)
+            echo "$OPTARG" > "$commit_message"
+            model=""
+            run_initial_gens=0
+            ;;
+        F)
+            cp "$OPTARG" "$commit_message"
+            model=""
+            run_initial_gens=0
+            ;;
+        e)
+            git-commit
+            exit 0
+            ;;
+        x)
+            cleanup
+            exit 0
+            ;;
+        h)
             usage
-            exit 1
-        fi
-        ;;
-    esac
-done
-shift $((OPTIND-1))
+            exit 0
+            ;;
+        *)
+            if [[ -n "${option_model_codes["$opt"]}" ]]; then
+                model="${option_model_codes["$opt"]}"
+            else
+                usage
+                exit 1
+            fi
+            ;;
+        esac
+    done
+}
 
-# handle the list of files
+handle_list_of_files() {
+    files=( "$@" )
 
-files=( "$@" )
+    # Try to find the repo containing the first file
 
-original_dir=$PWD
+    resolve_symlinks=0
 
-# Try to find the repo containing the first file
+    file0=${files[0]}
 
-resolve_symlinks=0
-
-file0=${files[0]}
-
-if [ -n "$file0" -a ! -e "$file0" ]; then
-    file0=$(which-file "$file0")
-fi
-
-# Find the repo containing the first file
-if [ -n "$file0" ]; then
-    git_root=$(cd "$(dirname "$file0")"; git rev-parse --show-toplevel)
-fi
-
-# If that fails, try to resolve the first file as a symlink to find the repo
-if [ -n "$file0" -a -z "$git_root" ]; then
-    resolve_symlinks=1
-    file0=$(realpath "$file0")
-    git_root=$(cd "$(dirname "$file0")"; git rev-parse --show-toplevel)
-fi
-
-# If that fails, use the current directory, e.g. if no files were given
-if [ -z "$git_root" ]; then
-    git_root=$(git rev-parse --show-toplevel)
-fi
-
-if [ -z "$git_root" ]; then
-    exit 1
-fi
-
-# if no files were given, use staged
-
-get_lock
-
-if [ "${#files[@]}" -eq 0 ]; then
-    cd "$git_root"
-    readarray -t files < <(git-mod staged)
-else
-    git add -A -- "${files[@]}"
-fi
-
-# if still no files, use all
-if [ "${#files[@]}" -eq 0 ]; then
-    cd "$original_dir"
-    git add -A .
-    cd "$git_root"
-    readarray -t files < <(git-mod staged)
-fi
-
-release_lock
-
-if [ "${#files[@]}" -eq 0 ]; then
-    echo >&2 "No files to commit."
-    exit 1
-fi
-
-# Find any missing files
-for i in "${!files[@]}"; do
-    if [ ! -L "${files[$i]}" ] && [ ! -e "${files[$i]}" ]; then
-        if [ -n "$(git status --porcelain -- "${files[$i]}")" ]; then
-            continue
-        fi
-        found=$(which-file "${files[$i]}")
-        if [ -z "$found" ]; then
-            echo >&2 "File not found: ${files[$i]}"
-            exit 1
-        fi
-        files[$i]=$found
-        if [ "$resolve_symlinks" -eq 1 ]; then
-            files[$i]=$(realpath "${files[$i]}")
-        fi
+    if [ -n "$file0" -a ! -e "$file0" ]; then
+        file0=$(which-file "$file0")
     fi
-done
 
-# Paths relative to git_root
-for i in "${!files[@]}"; do
-    files[$i]=$(realpath --no-symlinks --relative-to="$git_root" "${files[$i]}")
-    # if outside the repo, remove it from the list
-    if [ "${files[$i]:0:3}" = "../" ]; then
-        echo >&2 "Skipping file outside repo: ${files[$i]}"
-        unset files[$i]
+    # Find the repo containing the first file
+    if [ -n "$file0" ]; then
+        git_root=$(cd "$(dirname "$file0")"; git rev-parse --show-toplevel)
     fi
-done
 
-files=("${files[@]}")
+    # If that fails, try to resolve the first file as a symlink to find the repo
+    if [ -n "$file0" -a -z "$git_root" ]; then
+        resolve_symlinks=1
+        file0=$(realpath "$file0")
+        git_root=$(cd "$(dirname "$file0")"; git rev-parse --show-toplevel)
+    fi
 
-cd "$git_root"
+    # If that fails, use the current directory, e.g. if no files were given
+    if [ -z "$git_root" ]; then
+        git_root=$(git rev-parse --show-toplevel)
+    fi
 
-# Make sure all files are added
-for file in "${files[@]}"; do
-    git add -- "$file"
-done
+    if [ -z "$git_root" ]; then
+        exit 1
+    fi
 
+    # if no files were given, use staged
 
-# Add former names of renamed files
-# i.e. for every file in "${files[@}",
-# I need to add its former name to that files array.
-deleted_files=($(git ls-files --deleted))
-if [ ${#deleted_files[@]} -gt 0 ]; then
-    git rm -- "${deleted_files[@]}"
-fi
-while IFS=$'\t' read -r status from to; do
-    # check if from is in files array, the long way
+    get_lock
+
+    if [ "${#files[@]}" -eq 0 ]; then
+        cd "$git_root"
+        readarray -t files < <(git-mod staged)
+    else
+        git add -A -- "${files[@]}"
+    fi
+
+    # if still no files, use all
+    if [ "${#files[@]}" -eq 0 ]; then
+        cd "$original_dir"
+        git add -A .
+        cd "$git_root"
+        readarray -t files < <(git-mod staged)
+    fi
+
+    release_lock
+
+    if [ "${#files[@]}" -eq 0 ]; then
+        echo >&2 "No files to commit."
+        exit 1
+    fi
+
+    # Find any missing files
     for i in "${!files[@]}"; do
-        if [ "${files[$i]}" = "$to" ]; then
-            files+=("$from")
-            break
+        if [ ! -L "${files[$i]}" ] && [ ! -e "${files[$i]}" ]; then
+            if [ -n "$(git status --porcelain -- "${files[$i]}")" ]; then
+                continue
+            fi
+            found=$(which-file "${files[$i]}")
+            if [ -z "$found" ]; then
+                echo >&2 "File not found: ${files[$i]}"
+                exit 1
+            fi
+            files[$i]=$found
+            if [ "$resolve_symlinks" -eq 1 ]; then
+                files[$i]=$(realpath "${files[$i]}")
+            fi
         fi
     done
-done < <(git diff --staged --name-status | grep '^R')
-if [ ${#deleted_files[@]} -gt 0 ]; then
-    git restore --staged -- "${deleted_files[@]}"
-fi
+
+    # Paths relative to git_root
+    for i in "${!files[@]}"; do
+        files[$i]=$(realpath --no-symlinks --relative-to="$git_root" "${files[$i]}")
+        # if outside the repo, remove it from the list
+        if [ "${files[$i]:0:3}" = "../" ]; then
+            echo >&2 "Skipping file outside repo: ${files[$i]}"
+            unset files[$i]
+        fi
+    done
+
+    files=("${files[@]}")
+
+    cd "$git_root"
+
+    # Make sure all files are added
+    for file in "${files[@]}"; do
+        git add -- "$file"
+    done
 
 
-# Inform the user of the files to be committed
-echo "Files to commit:"
-for file in "${files[@]}"; do
-    echo "  $file"
-done
-echo
+    # Add former names of renamed files
+    # i.e. for every file in "${files[@}",
+    # I need to add its former name to that files array.
+    deleted_files=($(git ls-files --deleted))
+    if [ ${#deleted_files[@]} -gt 0 ]; then
+        git rm -- "${deleted_files[@]}"
+    fi
+    while IFS=$'\t' read -r status from to; do
+        # check if from is in files array, the long way
+        for i in "${!files[@]}"; do
+            if [ "${files[$i]}" = "$to" ]; then
+                files+=("$from")
+                break
+            fi
+        done
+    done < <(git diff --staged --name-status | grep '^R')
+    if [ ${#deleted_files[@]} -gt 0 ]; then
+        git restore --staged -- "${deleted_files[@]}"
+    fi
+
+
+    # Inform the user of the files to be committed
+    echo "Files to commit:"
+    for file in "${files[@]}"; do
+        echo "  $file"
+    done
+    echo
+}
 
 model-name() {
     local name="${model_names["$1"]}"
@@ -422,42 +422,6 @@ the commit message for the first task. Thanks for being awesome!
     echo
 }
 
-# check-for-bugs() {
-#     model="$1"
-#     echo "Checking for bugs using $(model-name "$model") ..."
-#     if [ -e "$review" ]; then
-#         echo >&2 "Code review already exists: $review, moving it to rubbish."
-#         $MR "$review"
-#     fi
-#     run-git-diff --color
-#     run-git-diff | proc -m="$model" "Please carefully review this patch with a fine-tooth comb
-# Answer LGTM if it is bug-free and you see no issues, or list bugs still present
-# in the patched code. Do NOT list bugs in the original code that are fixed by
-# the patch. Also list other issues or suggestions if they seem worthwhile.
-# Especially, check for sensitive information such as private keys or email
-# addresses that should not be committed to git. Adding the author's email
-# deliberately is okay. Also note any grossly bad code or gross inefficiencies.
-# If you don't find anything wrong, just say 'LGTM' only, so as not to waste both of our time. Thanks!
-# 
-# Expected format:
-# 
-# 1. bug or issue
-# 2. another bug or issue
-# 
-# or if nothing is wrong, please just wrte 'LGTM'.
-# " | fmt -s -w 78 -g 78 | tee "$review"
-#     echo
-# }
-
-if (( run_initial_gens )); then
-#     if [ "$initial_bug_check" -eq 1 ]; then
-#         check-for-bugs "$model"
-#     fi
-    if [ ! -e "$review" ] || [ "$(cat "$review")" = "LGTM" ]; then
-        generate-commit-message "$model"
-    fi
-fi
-
 run-git-vimdiff() {
     if [ "${#files[@]}" -eq 0 ]; then
         git-vimdiff-staged
@@ -470,72 +434,86 @@ edit-files() {
     $EDITOR ${EDITOR_SPLIT_OPTS:--O} "${files[@]}"
 }
 
+messy() {
+    get_options "$@"
+    shift $((OPTIND-1))
 
-while true; do
-    if [ -e "$commit_message" ]; then
-        cat "$commit_message"
-        echo
-        prompt="Commit with this message?"
-    else
-        prompt="Action?"
+    handle_list_of_files "$@"
+
+    if (( run_initial_gens )); then
+        if [ ! -e "$review" ] || [ "$(cat "$review")" = "LGTM" ]; then
+            generate-commit-message "$model"
+        fi
     fi
-    read -p "$prompt [y/n/q/e/3/4/c/i/o/M/g/f/d/v/b/E/x/?] " -n 1 -r choice
-    echo
-    case "$choice" in
-        y)
-            break
-            ;;
-        n|q)
-            cleanup-and-exit 1
-            ;;
-        e)
-            ${EDITOR:-vi} "$commit_message"
-            ;;
-        d)
-            run-git-diff --color | less -F -X -e -i -M -R -W -z-4
-            ;;
-        v)
-            run-git-vimdiff
-            ;;
-#         b)
-#             check-for-bugs "${model:-d}"
-#             ;;
-        E)
-            edit-files
-            ;;
-        x)
-            cleanup
-            ;;
-        $'\x0c')
-            clear
-            ;;
-        \?|h|"")
-            echo "Available actions:"
-            echo "  y: commit with this message"
-            echo "  n/q: abort"
-            echo "  e: edit the message"
-            for ch in "${!option_model_codes[@]}"; do
-                model_code="${option_model_codes["$ch"]}"
-                model_name="${model_names["$model_code"]}"
-                echo "  $ch: generate with $model_name"
-            done
-            echo "  d: diff the staged changes"
-            echo "  v: vimdiff the staged changes"
-#            echo "  b: check for bugs"
-            echo "  E: edit the files"
-            echo "  ?: show this help message"
-            echo "  x: clean up commit-message.*.txt files"
-            echo
-            ;;
-        *)
-            if [[ -n "${option_model_codes["$choice"]}" ]]; then
-                generate-commit-message "$choice"
-            else
-                echo >&2 "Invalid choice"
-            fi
-            ;;
-    esac
-    echo
-done
 
-git-commit -F "$commit_message"
+    while true; do
+        if [ -e "$commit_message" ]; then
+            cat "$commit_message"
+            echo
+            prompt="Commit with this message?"
+        else
+            prompt="Action?"
+        fi
+        read -p "$prompt [y/n/q/e/3/4/c/i/o/M/g/f/d/v/b/E/x/?] " -n 1 -r choice
+        echo
+        case "$choice" in
+            y)
+                break
+                ;;
+            n|q)
+                cleanup-and-exit 1
+                ;;
+            e)
+                ${EDITOR:-vi} "$commit_message"
+                ;;
+            d)
+                run-git-diff --color | less -F -X -e -i -M -R -W -z-4
+                ;;
+            v)
+                run-git-vimdiff
+                ;;
+    #         b)
+    #             check-for-bugs "${model:-d}"
+    #             ;;
+            E)
+                edit-files
+                ;;
+            x)
+                cleanup
+                ;;
+            $'\x0c')
+                clear
+                ;;
+            \?|h|"")
+                echo "Available actions:"
+                echo "  y: commit with this message"
+                echo "  n/q: abort"
+                echo "  e: edit the message"
+                for ch in "${!option_model_codes[@]}"; do
+                    model_code="${option_model_codes["$ch"]}"
+                    model_name="${model_names["$model_code"]}"
+                    echo "  $ch: generate with $model_name"
+                done
+                echo "  d: diff the staged changes"
+                echo "  v: vimdiff the staged changes"
+    #            echo "  b: check for bugs"
+                echo "  E: edit the files"
+                echo "  ?: show this help message"
+                echo "  x: clean up commit-message.*.txt files"
+                echo
+                ;;
+            *)
+                if [[ -n "${option_model_codes["$choice"]}" ]]; then
+                    generate-commit-message "$choice"
+                else
+                    echo >&2 "Invalid choice"
+                fi
+                ;;
+        esac
+        echo
+    done
+
+    git-commit -F "$commit_message"
+}
+
+messy "$@"
