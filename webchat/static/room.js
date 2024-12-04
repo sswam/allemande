@@ -110,7 +110,7 @@ $on(window, 'scroll', messages_scrolled);
 
 // Keep certain keys in the messages iframe, send others up to the chat window
 const keysToKeep = ["Control", "Shift", "Alt", "Meta", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
-const ctrlKeysToKeep = ["c", "a"];
+const ctrlKeysToKeep = ["c", "a", "f"];
 
 function relay_event(ev) {
 	// console.log("relay_event", ev);
