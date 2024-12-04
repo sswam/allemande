@@ -37,8 +37,12 @@ sparkjoy
 # cache files
 /text/dictionaries.pkl
 
-# symlinks
+# canon symlinks
 /canon
+
+# symlinks for dev
+/cz/old
+/cz/src
 
 # derived files
 /code/lang.rec
