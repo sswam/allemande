@@ -43,7 +43,7 @@ fi
 PYTHON=$(which python3)
 PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:}$ALLEMANDE_HOME
 
-for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video; do
+for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video image; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
