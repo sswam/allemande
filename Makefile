@@ -91,7 +91,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt brain.xt  # brain-local.xt
+core: llm.xt a1111.xt # whisper.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -115,7 +115,7 @@ alfred:
 	cd $(ALLEMANDE_HOME)/apps/alfred && \
 	./alfred-webui.py
 
-core.xtc: llm.xtc whisper.xtc
+core.xtc: llm.xtc a1111.xtx # whisper.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
@@ -134,6 +134,9 @@ llm:
 
 whisper:
 	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
+
+a1111:
+	$(PYTHON) core/image_a1111.py -d
 
 # brain-remote: clean
 # 	cd chat && ./brain.sh --remote
