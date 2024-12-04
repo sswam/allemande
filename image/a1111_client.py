@@ -49,6 +49,7 @@ async def a1111_client(
     adetailer: list[str] = None,
     pag: bool = False,
     hires: float = 0.0,
+    ad_mask_k_largest = 0,
 ) -> None:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -84,7 +85,7 @@ async def a1111_client(
         hires_fix_add_params(params, hires)
 
     if adetailer:
-        adetailer_add_params(params, adetailer)
+        adetailer_add_params(params, adetailer, ad_mask_k_largest)
 
     if pag:
         perturbed_attention_guidance_add_params(params)
@@ -152,7 +153,7 @@ def hires_fix_add_params(params, scale, denoising_strength=0.3, steps=None):
     )
 
 
-def adetailer_add_params(params, adetailer):
+def adetailer_add_params(params, adetailer, ad_mask_k_largest):
     """Add adetailer parameters to the params."""
     if not "alwayson_scripts" in params:
         params["alwayson_scripts"] = {}
@@ -183,7 +184,7 @@ def adetailer_add_params(params, adetailer):
                 "ad_inpaint_only_masked_padding": 64 * params.get("hr_scale", 1),
                 "ad_inpaint_width": 1024,
                 "ad_mask_blur": 16 * params.get("hr_scale", 1),
-                "ad_mask_k_largest": params.get("ad_mask_k_largest", 0),
+                "ad_mask_k_largest": ad_mask_k_largest,
                 "ad_mask_max_ratio": 1,
                 "ad_mask_merge_invert": "None",
                 "ad_mask_min_ratio": 0,
@@ -285,6 +286,7 @@ def setup_args(arg):
     arg("-D", "--adetailer", nargs="*", help="use adetailer with specified models")
     arg("-g", "--pag", help="use perturbed attention guidance", action="store_true")
     arg("-u", "--hires", help="hires fix / upscale by factor")
+    arg("--ad-mask-k-largest", type=int, help="adetailer mask limit to k largest matches")
 
 
 if __name__ == "__main__":
