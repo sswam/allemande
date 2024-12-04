@@ -1,0 +1,37 @@
+Thank you for sharing this interesting code! It appears to be a thoughtful implementation of a source code transformer, likely converting a custom syntax into C/C++. The code shows good organization and careful handling of different syntactic cases. I particularly appreciate the attention to detail in handling edge cases like templates and extern "C" declarations.
+
+Here are some potential issues and suggestions:
+
+Issues:
+1. The MAXTABS constant (256) is arbitrary and could be exceeded - consider making this dynamic
+2. Several global variables (l, len, tabs, etc.) make the code harder to maintain and thread-unsafe
+3. Missing error handling in some string operations that could buffer overflow
+4. The comment "XXX do lastlabel and lastcase work?" suggests potential bugs that should be investigated
+5. Some functions like `classy()` could use more robust parsing
+
+Suggestions for improvement:
+
+Standard Compliance:
+- Add proper header guards
+- Add const qualifiers where appropriate
+- Consider using size_t instead of int for sizes
+- Add error handling for string operations
+
+Structural Improvements:
+- Consider creating a proper context struct instead of global variables
+- Split into smaller functions following the guidance about avoiding deep nesting
+- Add input validation for array bounds
+- Consider using enums with explicit values
+
+Creative "out of the box" ideas:
+1. Consider implementing a reverse transformation (C back to the custom syntax)
+2. Add source map generation for debugging
+3. Consider adding a validation pass before transformation
+4. Implement an interactive mode showing side-by-side preview
+5. Add support for custom transformation rules via configuration file
+6. Consider implementing syntax highlighting for the custom syntax
+
+The code generally follows the provided standards well, but could benefit from more consistent error handling and reduced global state.
+
+Would you like me to elaborate on any of these points?
+
