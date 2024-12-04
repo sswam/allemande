@@ -1,7 +1,7 @@
 #!/usr/bin/env python3-allemande
 
 """
-slugify.py: Convert text into URL-friendly slugs.
+Convert text into URL-friendly slugs.
 """
 
 import re
@@ -18,7 +18,7 @@ __version__ = "0.1.1"
 logger = main.get_logger()
 
 
-def slugify(
+def slug(
     text: str = None,
     get: Get = None,
     put: Put = None,
@@ -26,8 +26,9 @@ def slugify(
     boolean: bool = True,
     lower: bool = False,
     upper: bool = False,
-) -> list[str]|None:
+) -> list[str] | None:
     """Convert text into URL-friendly slugs."""
+
     def process_text(input_text: str) -> str:
         if boolean:
             input_text = re.sub(r"&", "_and_", input_text)
@@ -52,7 +53,7 @@ def slugify(
 
     print = geput.print(put)
 
-    if text:
+    if text is not None:
         result = process_text(text)
         return result
     else:
@@ -72,7 +73,7 @@ def setup_args(arg) -> None:
 
 
 if __name__ == "__main__":
-    main.go(slugify, setup_args)
+    main.go(slug, setup_args)
 
 
 """

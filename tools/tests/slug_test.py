@@ -3,12 +3,11 @@ import os
 # disable DeprecationWarning https://github.com/jupyter/jupyter_core/issues/398
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
 
-import io
 import pytest
-from unittest.mock import patch
+from ally.geput import make_get_put
 
-import slugify as subject
-subject_main = subject.slugify
+import slug as subject
+subject_main = subject.slug
 
 @pytest.mark.parametrize("input_text, expected_output", [
     ("Hello World", "Hello-World"),
@@ -19,45 +18,41 @@ subject_main = subject.slugify
     ("!@#$%^&*()_+", "and"),
     ("", "-"),
 ])
-def test_slugify_default(input_text, expected_output):
-    result = subject_main(input_text)
+def test_default(input_text, expected_output):
+    result = subject_main(text=input_text)
     assert result == expected_output
 
-
 @pytest.mark.parametrize("input_text, options, expected_output", [
-    ("Hello World", {"hyphen": False}, "Hello_World"),
+    ("Hello World", {"underscore": True}, "Hello_World"),
     ("This & That", {"boolean": False}, "This-That"),
     ("MiXeD CaSe", {"lower": True}, "mixed-case"),
     ("lower case", {"upper": True}, "LOWER-CASE"),
 ])
-def test_slugify_options(input_text, options, expected_output):
-    result = subject_main(input_text, **options)
+def test_options(input_text, options, expected_output):
+    result = subject_main(text=input_text, **options)
     assert result == expected_output
 
-def test_slugify_stream():
-    input_stream = io.StringIO("Line 1\nLine 2 & 3\nTest | Case\n")
-    output_stream = io.StringIO()
+def test_stream():
+    input_lines = ["Line 1", "Line 2 & 3", "Test | Case"]
+    output = []
+    get, put = make_get_put(input_lines, output)
 
-    subject_main(istream=input_stream, ostream=output_stream)
-
-    output = output_stream.getvalue().splitlines()
+    subject_main(get=get, put=put)
     assert output == ["Line-1", "Line-2-and-3", "Test-or-Case"]
 
 @pytest.mark.parametrize("input_lines, options, expected_output", [
-    (["Hello", "World"], {"hyphen": False}, ["Hello", "World"]),
+    (["Hello", "World"], {"underscore": True}, ["Hello", "World"]),
     (["Test & Case", "A | B"], {"boolean": False}, ["Test-Case", "A-B"]),
     (["MiXeD", "CaSe"], {"lower": True}, ["mixed", "case"]),
     (["lower", "case"], {"upper": True}, ["LOWER", "CASE"]),
 ])
-def test_slugify_stream_options(input_lines, options, expected_output):
-    input_stream = io.StringIO("\n".join(input_lines) + "\n")
-    output_stream = io.StringIO()
+def test_stream_options(input_lines, options, expected_output):
+    output = []
+    get, put = make_get_put(input_lines, output)
 
-    subject_main(istream=input_stream, ostream=output_stream, **options)
-
-    output = output_stream.getvalue().splitlines()
+    subject_main(get=get, put=put, **options)
     assert output == expected_output
 
-def test_slugify_multiple_arguments():
-    result = subject_main("Hello", "World", "Test")
-    assert result == "Hello-World-Test"
+def test_multiple_arguments():
+    result = subject_main(text="Hello World")
+    assert result == "Hello-World"
