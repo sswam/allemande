@@ -471,6 +471,8 @@ async def upload_file(room_name, user, filename, file=None, alt=None):
 
 	alt = alt or stem
 
+	alt = re.sub(r"\s+", " ", alt)
+
 	# markdown to embed or link to the file
 	if medium == 'image':
 		markdown = f'![{alt}]({url})'

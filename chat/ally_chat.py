@@ -87,9 +87,10 @@ AGENTS_LOCAL = {
 		"clean_prompt": True,
 		"config": {
 			"steps": 15, # 30
-			"pony": 1.0,
+#			"pony": 1.0,
 			"pag": True,
 			"adetailer": ["face_yolov8n.pt"],
+			"ad_mask_k_largest": 10,
 			# "hires": 1.5,
 		}
 	},
@@ -570,15 +571,15 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
 	agent_name_esc = regex.escape(name)
 
-	def clean_prompt_line(line, agent_name_esc):
-		line = regex.sub(r".*?\t", r"", line)
-		line = regex.sub(r"\b" + agent_name_esc + r"\b[,;.]?", r"", line, flags=regex.IGNORECASE)
-		line = line.strip()
-		return line
+	def clean_the_prompt(context, agent_name_esc):
+		context = [regex.sub(r".*?\t", r"", line).strip() for line in context]
+		text = args.delim.join(context)
+		text = regex.sub(r".*?\b" + agent_name_esc + r"\b[,;.]?", r"", text, flags=regex.DOTALL | regex.IGNORECASE)
+		return text.strip()
 
 	clean_prompt = agent.get("clean_prompt", False)
 	if clean_prompt:
-		fulltext = args.delim.join(clean_prompt_line(line, agent_name_esc) for line in context)
+		fulltext = clean_the_prompt(context, agent_name_esc)
 	else:
 		fulltext, history_start = get_fulltext(args, model_name, context, history_start, invitation, args.delim)
 
