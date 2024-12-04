@@ -3,6 +3,13 @@
 # setup the allemande portals for a user
 # usage: allemande-user-add [user [module ...]]
 
+case "$1" in
+-h|--help)
+	echo "usage: allemande-user-add [user [module ...]]"
+	exit 0
+	;;
+esac
+
 . get-root
 
 user=${1:-$SUDO_USER}
