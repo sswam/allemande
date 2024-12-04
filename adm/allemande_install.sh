@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 # symlink the allemande home directory to /opt/allemande
-# setup the allemande user and ports directory
+# setup the allemande user and portals directory
 
 python_dir="${1:-$(dirname "$(which python)")}"
 
@@ -9,35 +9,37 @@ python_dir="${1:-$(dirname "$(which python)")}"
 
 home="$ALLEMANDE_HOME"
 user="$ALLEMANDE_USER"
-ports="$ALLEMANDE_PORTALS"
+portals="$ALLEMANDE_PORTALS"
 
 ln -sfT "$home" /opt/allemande
 
 cp -T "$home/adm/crontab" /etc/cron.d/allemande
 
 groupadd -g "$ALLEMANDE_GID" "$user" || true
-useradd -m -d "$ports" -s "$(which bash)" -u "$ALLEMANDE_UID" -g "$ALLEMANDE_GID" "$user" || true
+useradd -m -d "$portals" -s "$(which bash)" -u "$ALLEMANDE_UID" -g "$ALLEMANDE_GID" "$user" || true
 
-chown $user:$user "$ports"
-chmod g+rx "$ports"
+chown $user:$user "$portals"
+chmod g+rx "$portals"
 
-sudo -u allemande ssh-keygen
-sudo -u allemande ssh-copy-id ucm.dev
+if [ ! -e "$portals/.ssh/id_rsa" ]; then
+	sudo -u allemande ssh-keygen
+	sudo -u allemande ssh-copy-id ucm.dev
+fi
 
-cat <<END >"$ports/.profile"
+cat <<END >"$portals/.profile"
 set -a
 . $ALLEMANDE_HOME/env.sh
 PATH="$python_dir:\$PATH"
 set +a
 END
 
-mkdir -p "$ports/.cache"
-rm -f "$ports/.cache/whisper"
-ln -sfT "$ALLEMANDE_MODELS/whisper" "$ports/.cache/whisper"
-chown -R "$user:$user" "$ports/.cache"
+mkdir -p "$portals/.cache"
+rm -f "$portals/.cache/whisper"
+ln -sfT "$ALLEMANDE_MODELS/whisper" "$portals/.cache/whisper"
+chown -R "$user:$user" "$portals/.cache"
 
 for module in $ALLEMANDE_MODULES; do
-	module_dir="$ports/$module"
+	module_dir="$portals/$module"
 
 	mkdir -p "$module_dir"
 	CONFIG="$ALLEMANDE_HOME/config/$module/default.yaml"

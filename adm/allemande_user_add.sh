@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-# setup the allemande ports for a user
+# setup the allemande portals for a user
 # usage: allemande-user-add [user [module ...]]
 
 . get-root
@@ -8,11 +8,12 @@
 user=${1:-$SUDO_USER}
 if [ "$#" -gt 0 ]; then shift; fi
 modules=(${@:-$ALLEMANDE_MODULES})
-ports="$ALLEMANDE_PORTALS"
+portals="$ALLEMANDE_PORTALS"
+host="$HOSTNAME"
 
 for module in "${modules[@]}"; do
-	module_dir="$ports/$module"
-	user_dir="$module_dir/$user"
+	module_dir="$portals/$module"
+	user_dir="$module_dir/${host}_${user}"
 
 	mkdir -p "$module_dir"
 	chown $ALLEMANDE_USER:$ALLEMANDE_USER "$module_dir"

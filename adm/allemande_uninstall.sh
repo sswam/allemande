@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-# remove allemande user and ports directory
+# remove allemande user and portals directory
 
 . get_root
 
