@@ -11,6 +11,7 @@ import asyncio
 
 from ally import main, logs
 import a1111_client
+import slug
 
 __version__ = "0.1.0"
 
@@ -53,8 +54,10 @@ async def process_request(portals, portal, req):
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         prompt = load(portals, d, "request.txt")
 
+        output_stem = slug.slug(prompt)[:200]
+
         await a1111_client.a1111_client(
-            output=str(d / "output"),
+            output=str(d / output_stem),
             prompt=prompt,
             negative_prompt=config.get("negative_prompt", ""),
             seed=config.get("seed", -1),
@@ -67,7 +70,8 @@ async def process_request(portals, portal, req):
             count=config.get("count", 1),
             adetailer=config.get("adetailer", None),
             pag=config.get("pag", False),
-            hires=config.get("hires", 0.0)
+            hires=config.get("hires", 0.0),
+            pony=config.get("pony", 0.0),
         )
 
         os.rename(d, portal / "done" / req)
