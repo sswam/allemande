@@ -10,6 +10,7 @@ import regex
 import time
 from typing import AsyncIterator, Iterator, cast
 from threading import Thread
+import asyncio
 
 import inotify.adapters  # type: ignore
 import torch
@@ -316,7 +317,7 @@ async def serve_requests_poll(portals, gen, poll_interval=1.0):
         known_requests = new_requests
 
         # Wait before next poll
-        time.sleep(poll_interval)
+        await asyncio.sleep(poll_interval)
 
 
 async def llm_llama(portals:str =str(portals_dir), model: str|None = None, use_inotify: bool=False, gguf: bool=False, context: int=32*1024, n_gpu_layers: int=-1):

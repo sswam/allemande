@@ -7,8 +7,9 @@ import logging
 from pathlib import Path
 import yaml
 from typing import AsyncIterator
+import asyncio
 
-from ally import main, logs, unix
+from ally import main, logs
 import a1111_client
 
 __version__ = "0.1.0"
@@ -113,7 +114,9 @@ async def serve_requests(portals: str = str(portals_dir), poll_interval: float =
             await process_request(portals, portal, req_name)
 
         known_requests = new_requests
-        await unix.sleep(poll_interval)
+
+        # Wait before next poll
+        await asyncio.sleep(poll_interval)
 
 
 def setup_args(arg):
