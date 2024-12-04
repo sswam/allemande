@@ -2,6 +2,8 @@
 
 set -a
 
+export HOSTNAME
+
 ALLEMANDE_ENV=$(realpath "${BASH_SOURCE[0]}")
 ALLEMANDE_HOME=$(dirname "$ALLEMANDE_ENV")
 ALLEMANDE_GITHUB=git@github.com:sswam/allemande.git
@@ -16,7 +18,7 @@ ALLEMANDE_USER="allemande"
 ALLEMANDE_UID="777"
 ALLEMANDE_GID="$ALLEMANDE_UID"
 ALLEMANDE_PORTALS="/var/spool/allemande"
-ALLEMANDE_MODULES="llm_llama stt_whisper"
+ALLEMANDE_MODULES="llm_llama stt_whisper image_a1111"
 ALLEMANDE_BOXES="prep todo doing done error history"
 
 ALLEMANDE_SCREEN="allemande"
@@ -41,7 +43,7 @@ fi
 PYTHON=$(which python3)
 PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:}$ALLEMANDE_HOME
 
-for dir in python text www chat audio speech anthropic google llm scrape tools files tty data; do
+for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
