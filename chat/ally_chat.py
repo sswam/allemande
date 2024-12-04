@@ -35,9 +35,8 @@ import transformers  # pylint: disable=wrong-import-position, wrong-import-order
 
 logger = logging.getLogger(__name__)
 
-SERVICE = "llm_llama"
-DEFAULT_PORTAL_PATH = portals.get_default_portal_name(SERVICE)
-portal = None
+portal_by_service = {}
+
 LOCAL_AGENT_TIMEOUT=60
 
 
@@ -64,19 +63,26 @@ AGENT_DEFAULT = os.environ.get("bot", "Ally")
 
 AGENTS_LOCAL = {
 	"Ally": {
+		"service": "llm_llama",
 		"model": "default",
 	},
 	"Barbie": {
+		"service": "llm_llama",
 		"model": "default",
 		"system_top": "Your name is Barbie. You're not a doll, but you're fun and clever.",
-		"system_bottom": "Please reply playfully, creatively, at length.",
-		"system_bottom_pos": 1,
+		"system_bottom": "Please reply creatively.",
+		"system_bottom_pos": 4,
 	},
 	"Callam": {
+		"service": "llm_llama",
 		"model": "default",
 #		"system_top": "Please reply with medium hostility, and speak like a pirate.",
 		"system_bottom": "Please reply as Callam, with medium hostility, and speak like a pirate.",
-		"system_bottom_pos": 1,
+		"system_bottom_pos": 4,
+	},
+	"Illy": {
+		"service": "image_a1111",
+		"model": "default",
 	},
 }
 
@@ -174,7 +180,17 @@ ADULT = False
 UNSAFE = False
 
 
+def get_service_portal(service: str) -> portals.PortalClient:
+	""" Get a portal for a service. """
+	portal = portal_by_service.get(service)
+	if not portal:
+		portal_path = portals.get_default_portal_name(service)
+		portal = portal_by_service[service] = portals.PortalClient(portal_path)
+	return portal
+
+
 def register_agents(agent_type, agents_dict, async_func):
+	""" Register agents """
 	async def agent_wrapper(agent, *args, **kwargs):
 		return await async_func(agent, *args, **kwargs)
 
@@ -557,9 +573,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 		r"(?u)\b(?!"+agent_name_esc+r":)[\p{Lu}][\p{L}\p{N}_]*:\t",
 	]
 
+	service = agent["service"]
+
+	portal = get_service_portal(service)
+
 	logger.debug("fulltext: %r", fulltext)
 	logger.debug("config: %r", gen_config)
-	logger.debug("portal: %r", args.portal)
+	logger.debug("portal: %r", str(portal.portal))
 
 	response = await client_request(portal, fulltext, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 
@@ -863,7 +883,6 @@ def get_opts():  # pylint: disable=too-many-statements
 	format_group.add_argument("--memory", "-x", type=int, default=32*1024 - 2048, help="Max number of tokens to keep in history, before we drop old messages")
 
 	model_group = parser.add_argument_group("Model options")
-	model_group.add_argument("--portal", "-p", default=DEFAULT_PORTAL_PATH, help="Path to portal directory")
 	model_group.add_argument("--model", "-m", default="default", help="Model name or path")
 	model_group.add_argument("--config", "-c", default=None, help="Model config file, in YAML format")
 
@@ -875,23 +894,16 @@ def get_opts():  # pylint: disable=too-many-statements
 
 	logger.debug("Options: %r", args)
 
-	if isinstance(args.portal, str):
-		args.portal = Path(args.portal)
-
 	return args
 
 
 async def main():
 	""" Main function. """
-	global portal
 	register_all_agents()
 
 	args = get_opts()
 
 	TOKENIZERS[args.model] = load_model_tokenizer(args)
-
-	# set up portals
-	portal = portals.PortalClient(args.portal)
 
 	if not args.watch:
 		raise ValueError("Watch file not specified")

@@ -14,12 +14,13 @@ __version__ = "0.1.1"
 logger = logging.getLogger(__name__)
 
 
-def get_default_portal_name(server):
+def get_default_portal_name(service):
     """ Get the default portal for a server. """
     user_id = os.environ["USER"]
-    default_portals_dir = Path(os.environ["ALLEMANDE_PORTALS"])/server
+    hostname = os.environ["HOSTNAME"]
+    default_portals_dir = Path(os.environ["ALLEMANDE_PORTALS"])/service
     #default_portal_id = f'{user_id}-{os.getpid()}'   # TODO?
-    default_portal_id = f'{user_id}'
+    default_portal_id = f'{hostname}_{user_id}'
     default_portal = str(default_portals_dir/default_portal_id)
     return default_portal
 
