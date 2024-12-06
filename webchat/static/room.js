@@ -167,6 +167,12 @@ function embed_click($thumb) {
 function click(ev) {
 	if (ev.target.classList.contains('thumb')) {
 		embed_click(ev.target);
+		return;
+	}
+	// check for img tag, and browse to the src in this window
+	if (ev.target.tagName == 'IMG') {
+		location.href = ev.target.src;
+		return;
 	}
 }
 
