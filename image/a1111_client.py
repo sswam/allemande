@@ -50,6 +50,7 @@ async def a1111_client(
     pag: bool = False,
     hires: float = 0.0,
     ad_mask_k_largest = 0,
+    model: str = "",
 ) -> None:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -79,7 +80,11 @@ async def a1111_client(
         "width": width,
         "height": height,
         "do_not_save_grid": True,
+        "override_settings": {},
     }
+
+    if model:
+        params["override_settings"]["sd_model_checkpoint"] = model
 
     if hires:
         hires_fix_add_params(params, hires)
@@ -287,6 +292,7 @@ def setup_args(arg):
     arg("-g", "--pag", help="use perturbed attention guidance", action="store_true")
     arg("-u", "--hires", help="hires fix / upscale by factor")
     arg("--ad-mask-k-largest", type=int, help="adetailer mask limit to k largest matches")
+    arg("-m", "--model", help="stable diffusion model checkpoint")
 
 
 if __name__ == "__main__":
