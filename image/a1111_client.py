@@ -107,7 +107,10 @@ async def a1111_client(
         async with aiohttp.ClientSession() as session:
             i = None
             for i in tqdm(range(count), desc="Generating images"):
-                image_file = f"{outdir}/{stem}_{i:05}.png"
+                if count == 1:
+                    image_file = str(outdir/f"{stem}.png")
+                else:
+                    image_file = str(outdir/f"{stem}_{i:05}.png")
                 if not clobber and os.path.exists(image_file):
                     logger.debug("Skipping existing file %s", image_file)
                     continue
