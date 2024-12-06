@@ -466,8 +466,14 @@ async def upload_file(room_name, user, filename, file=None, alt=None):
 	else:
 		medium = "file"
 
+	relurl = name
+
+	# view options for PDFs
+	append = ""
 	if ext == "pdf":
-		url += "#toolbar=0&navpanes=0&scrollbar=0"
+		append = "#toolbar=0&navpanes=0&scrollbar=0"
+	url += append
+	relurl += append
 
 	alt = alt or stem
 
@@ -475,13 +481,13 @@ async def upload_file(room_name, user, filename, file=None, alt=None):
 
 	# markdown to embed or link to the file
 	if medium == 'image':
-		markdown = f'![{alt}]({url})'
+		markdown = f'![{alt}]({relurl})'
 	elif medium == 'audio':
-		markdown = av_element_html("audio", alt, url)
+		markdown = av_element_html("audio", alt, relurl)
 	elif medium == 'video':
-		markdown = av_element_html("video", alt, url)
+		markdown = av_element_html("video", alt, relurl)
 	else:
-		markdown = f'[{alt}]({url})'
+		markdown = f'[{alt}]({relurl})'
 
 	return name, url, medium, markdown, task
 
