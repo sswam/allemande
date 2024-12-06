@@ -81,18 +81,30 @@ AGENTS_LOCAL = {
 		"system_bottom_pos": 4,
 	},
 	"Illy": {
+		"model": "juggernautXL_juggXIByRundiffusion",
 		"service": "image_a1111",
-		"model": "default",
 		"default_context": 1,
 		"clean_prompt": True,
 		"config": {
-			"steps": 15, # 30
+			"steps": 15,
 			"cfg_scale": 4.5,
-#			"pony": 1.0,
 			"pag": True,
 			"adetailer": ["face_yolov8n.pt"],
 			"ad_mask_k_largest": 10,
-			# "hires": 1.5,
+		}
+	},
+	"Yoni": {
+		"model": "erosUltima_hybrid_Pony",
+		"service": "image_a1111",
+		"default_context": 1,
+		"clean_prompt": True,
+		"config": {
+			"steps": 15,
+			"cfg_scale": 7,
+			"pony": 1.0,
+			"pag": True,
+			"adetailer": ["face_yolov8n.pt", "hand_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"ad_mask_k_largest": 10,
 		}
 	},
 }
@@ -186,7 +198,7 @@ REMOTE_AGENT_RETRIES = 3
 
 MAX_REPLIES = 1
 
-ADULT = False
+ADULT = True
 
 UNSAFE = False
 
@@ -269,6 +281,7 @@ def register_all_agents():
 	register_agents("tool", {agent: {"name": agent} for agent in search.agents}, run_search)
 	if not ADULT:
 		del AGENTS["pr0nto"]
+		del AGENTS["yoni"]
 
 	setup_agent_maps()
 	# TODO Moar!
@@ -585,7 +598,8 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 		fulltext, history_start = get_fulltext(args, model_name, context, history_start, invitation, args.delim)
 
 	if "config" in agent:
-		gen_config = agent["config"]
+		gen_config = agent["config"].copy()
+		gen_config["model"] = model_name
 	else:
 		# load the config each time, in case it has changed
 		# TODO the config should be per agent, not global
