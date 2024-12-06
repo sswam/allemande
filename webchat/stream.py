@@ -74,6 +74,10 @@ app = Starlette(on_startup=[startup_event], on_shutdown=[shutdown_event], except
 async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n"):
     """Follow a file and yield new lines as they are added."""
 
+    # TODO read watch.log, then we won't have to create directories
+    parent = Path(file).parent
+    parent.mkdir(parents=True, exist_ok=True)
+
     if head:
         yield head
 
@@ -121,5 +125,3 @@ async def stream(request):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8001)
-
-# TODO use watch.log?  maybe not as it will wake us up for any file, not only the file we want
