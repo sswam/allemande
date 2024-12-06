@@ -35,17 +35,22 @@ async function flash($el, className) {
 
 // send a message ------------------------------------------------------------
 
+function set_content(content) {
+	$content.value = content;
+	message_changed();
+}
+
 async function send(ev) {
 	console.log("send");
 	ev.preventDefault();
 
 	const formData = new FormData($form);
 	const message = $content.value;
-	$content.value = "";
+	set_content("");
 
 	const error = async (message) => {
 		console.error(message);
-		$content.value = message;
+		set_content(message);
 		await flash($id('send'), 'error');
 	};
 
@@ -75,11 +80,20 @@ function clear() {
 
 // handle enter key press ----------------------------------------------------
 
+/*
 function message_keypress(ev) {
         if (ev.keyCode == 13 && !ev.shiftKey) {
 		ev.preventDefault();
 		send(ev);
         }
+}
+*/
+
+function message_keydown(ev) {
+	if (ev.keyCode == 13 && ev.ctrlKey) {
+		ev.preventDefault();
+		send(ev);
+	}
 }
 
 function room_keypress(ev) {
@@ -88,6 +102,16 @@ function room_keypress(ev) {
 		$content.focus();
 		return false;
         }
+}
+
+// handle message change -----------------------------------------------------
+
+function message_changed(ev) {
+	if ($content.value == "") {
+		$id('send').textContent = "poke";
+	} else {
+		$id('send').textContent = "send";
+	}
 }
 
 // change room ---------------------------------------------------------------
@@ -114,7 +138,7 @@ function set_room(r) {
 	if (!room)
 		return;
 //	who();
-	const room_stream_url = ROOMS_URL + "/stream/"+room+".html";
+	const room_stream_url = ROOMS_URL + "/"+room+".html?stream=1";
 	console.log("setting $messages_iframe.src to", room_stream_url);
 	messages_iframe_set_src(room_stream_url);
 	setup_user_button();
@@ -574,7 +598,10 @@ function chat_main() {
 
 	$on($id('send'), 'click', send);
 //	$on($id('clear'), 'click', clear);
-	$on($content, 'keypress', message_keypress);
+//	$on($content, 'keypress', message_keypress);
+	$on($content, 'keydown', message_keydown);
+	$on($content, 'input', message_changed);
+	message_changed();
 	$on($room, 'keypress', room_keypress);
 	$content.focus();
 	$on($room, 'change', () => set_room());
