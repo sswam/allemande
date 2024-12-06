@@ -17,7 +17,7 @@
 <div class="col pad fill">
 	<div class="row">
 		<input id="room" name="room" class="flex mousetrap">
-		<input id="debug" disabled>
+		<input id="debug" readonly>
 		<a class="button" href="" id="user">?</a>
 		<button id="notify" disabled>notify</button>
 		<button id="logout">log out</button>
@@ -33,17 +33,37 @@
 
 	<div class="row" id="inputrow">
 		<textarea id="content" name="content" class="content_input mousetrap grow"></textarea>
-		<button id="send">send</button>
-		<input id="files" name="files" type="file" class="inputfile hide" tabindex="-1" multiple/>
-		<label for="files" class="attach"><button id="attach" class="fill">attach</button></label>
-		<button id="clear" class="admin">clear</button>
+		<div class="col_wrap buttons" id="input_main">
+			<button id="send">send</button>
+			<input id="files" name="files" type="file" class="inputfile hide" tabindex="-1" multiple/>
+			<button id="attach">attach</button>
+			<button id="record">audio</button>
+			<button id="record_video">video</button>
+			<button id="clear" class="admin">clear</button>
+			<button id="rotate" class="admin">rotate</button>
+		</div>
+		<div class="col_wrap buttons hidden" id="input_record">
+			<input id="rec_time" class="readonly">
+			<button id="rec_stop">stop</button>
+			<button id="rec_pause">pause</button>
+			<button id="rec_send">send</button>
+			<button id="rec_cancel">cancel</button>
+			<video id="rec_videoPreview" autoplay muted></video>
+		</div>
+		<div class="col_wrap buttons hidden" id="input_record_preview">
+			<video id="rec_preview_videoPreview" autoplay controls></video>
+			<audio id="rec_preview_audioPreview" autoplay controls></audio>
+			<button id="rec_preview_send">send</button>
+			<button id="rec_preview_cancel">cancel</button>
+		</div>
 	</div>
 </div>
 </form>
 <script src="mousetrap.min.js"></script>
 <script src="util.js"></script>
 <script src="https://allemande.ai/auth.js"></script>
+<script src="record.js"></script>
 <script src="chat.js"></script>
-<script>chat_main();</script>
+<script>chat_main(); record_main();</script>
 </body>
 </html>

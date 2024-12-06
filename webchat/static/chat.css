@@ -5,8 +5,11 @@
 .admin {
 	display: none;
 }
+body.admin, body.admin .admin {
+	display: block;
+}
 .hidden {
-	display: none;
+	display: none !important;
 }
 #messages {
 	min-height: 64px;
@@ -26,6 +29,14 @@
 	flex-grow: 0;
 	flex-shrink: 0;
 	max-height: 80vh;
+}
+#inputrow > .buttons > * {
+	flex-grow: 1;
+	min-height: 1.5em;
+	max-height: 3.5em;
+}
+#inputrow > .buttons > video {
+	max-height: 128px;
 }
 #content {
 	min-height: 32px;
@@ -48,6 +59,11 @@
 .col {
 	display: flex;
 	flex-direction: column;
+}
+.col_wrap {
+	display: flex;
+	flex-flow: column wrap;
+	gap: var(--pad);
 }
 
 /* define --pad */
@@ -109,4 +125,13 @@ input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
 
 .error {
 	background-color: #422 !important;
+}
+
+video {
+	min-height: 128px;
+}
+
+#rec_time {
+	text-align: center;
+	max-width: 64px;
 }

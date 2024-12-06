@@ -12,11 +12,12 @@ let DEBUG = false;
 
 let room;
 let user;
-let admin;
+let admin = false;
 
 const ROOMS_URL = location.protocol + "//" + location.host.replace(/^chat\b/, "rooms")
 const MAX_ROOM_NUMBER = 1e3; // 1e12;
 const DEFAULT_ROOM = 'Ally Chat';
+const global_admins = ['sam'];
 
 
 // utility functions ---------------------------------------------------------
@@ -72,12 +73,6 @@ async function send(ev) {
 	}
 }
 
-
-// clear messages (admin function) not implemented yet -----------------------
-
-function clear() {
-}
-
 // handle enter key press ----------------------------------------------------
 
 /*
@@ -107,17 +102,23 @@ function room_keypress(ev) {
 // handle message change -----------------------------------------------------
 
 function message_changed(ev) {
-	if ($content.value == "") {
+	if ($content.value == "")
 		$id('send').textContent = "poke";
-	} else {
+	else
 		$id('send').textContent = "send";
-	}
 }
 
 // change room ---------------------------------------------------------------
 
 function messages_iframe_set_src(url) {
 	$messages_iframe.contentWindow.location.replace(url);
+}
+
+function reload_messages() {
+	reload_page();
+	// because the following does not work reliably...
+	// clear_messages_box();
+	// setTimeout(() => set_room(), 1);
 }
 
 function clear_messages_box() {
@@ -142,6 +143,7 @@ function set_room(r) {
 	console.log("setting $messages_iframe.src to", room_stream_url);
 	messages_iframe_set_src(room_stream_url);
 	setup_user_button();
+	setup_admin();
 }
 
 /*
@@ -548,21 +550,25 @@ function attach_clicked() {
 function files_changed(ev) {
 	const files = ev.target.files;
 	console.log("files_changed", files);
-	for (const file of files) {
-		console.log("file", file);
-		upload_file(file);  // async, we're not waiting for it
-	}
+	upload_files(files);  // async, we're not waiting for it
 	// clear the file input so we can upload the same file again
 	ev.target.value = '';
 }
 
-async function upload_file(file) {
+async function upload_files(files) {
+	// upload one file at a time, in order
+	for (const file of files) {
+		await upload_file(file);
+	}
+}
+
+async function upload_file(file, filename) {
 	// upload in the background using fetch
 	console.log("upload_file", file);
 
 	const formData = new FormData();
 	formData.append('room', room);
-	formData.append('file', file);
+	formData.append('file', file, filename);
 
 	const response = await fetch('/x/upload', {
 		method: 'POST',
@@ -581,11 +587,78 @@ async function upload_file(file) {
 	const { name, url, medium, markdown } = data;
 
 	// make sure the message content ends with whitespace
-	if (!/\s$/.test($content.value)) {
+	if (/\S$/.test($content.value)) {
 		$content.value += "\n";  // TODO this kills undo
 	}
 
 	$content.value += markdown;
+	message_changed();
+}
+
+// admin functions -----------------------------------------------------------
+
+function setup_admin() {
+	// if first component of room path split on commas contains username,
+	// or user is a global admin, then user is an admin here
+	const components = room.split('/');
+	const top_dir = components[0];
+	admin = global_admins.includes(user) || top_dir.split(',').includes(user);
+	if (admin)
+		document.body.classList.add('admin');
+	else
+		document.body.classList.remove('admin');
+}
+
+async function clear(ev, op) {
+	if (!op)
+		op = "clear";
+
+	console.log("clear", op);
+
+	let confirm_message = "";
+	if (op === "clear")
+		confirm_message = "Clear the chat?\nThis cannot be undone.";
+	else if (op === "rotate")
+		confirm_message = "Save and clear the chat?";
+	else
+		throw new Error("invalid op: " + op);
+
+	if (!confirm(confirm_message))
+		return;
+
+	ev.preventDefault();
+	const formData = new FormData();
+	formData.append('room', room);
+	formData.append('op', op);
+
+	const error = async (message) => {
+		console.error(message);
+		await flash($id(op), 'error');
+	};
+
+	const response = await fetch('/x/clear', {
+		method: 'POST',
+		body: formData,
+	});
+
+	if (!response.ok) {
+		await error(`${op} failed`);
+		return;
+	}
+
+	const data = await response.json();
+
+	if (data.error) {
+		await error(data.error);
+		return;
+	}
+
+	// TODO should clear immediately for other users too, not just the current user
+	reload_messages();
+}
+
+async function rotate(ev) {
+	await clear(ev, "rotate");
 }
 
 // main ----------------------------------------------------------------------
@@ -597,7 +670,8 @@ function chat_main() {
 	on_hash_change();
 
 	$on($id('send'), 'click', send);
-//	$on($id('clear'), 'click', clear);
+	$on($id('clear'), 'click', clear);
+	$on($id('rotate'), 'click', rotate);
 //	$on($content, 'keypress', message_keypress);
 	$on($content, 'keydown', message_keydown);
 	$on($content, 'input', message_changed);
@@ -608,7 +682,7 @@ function chat_main() {
 	$on(window, 'hashchange', on_hash_change);
 //	$on($messages, 'scroll', messages_scrolled);
 	setup_file_input_label();
-	$on($('label.attach > button'), 'click', attach_clicked);
+	$on($id('attach'), 'click', attach_clicked);
 	$on($id('files'), 'change', files_changed);
 	push_notifications();
 	// scroll_to_bottom();
