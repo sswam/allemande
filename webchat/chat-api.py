@@ -105,5 +105,24 @@ async def upload(request):
 	return JSONResponse({"name": name, "url": url, "medium": medium, "markdown": markdown}, background=task)
 
 
+@app.route("/x/clear", methods=["POST"])
+async def clear(request):
+	""" Clear a room. """
+	form = await request.form()
+	room = form["room"]
+	op = form["op"]
+	user = request.headers['X-Forwarded-User']
+
+	if op not in ["clear", "rotate"]:
+		raise HTTPException(status_code=400, detail="Invalid operation.")
+
+	room = chat.Room(name=room)
+	admin = room.check_admin(user)
+	if not admin:
+		raise HTTPException(status_code=403, detail="You are not allowed to clear this room.")
+	room.clear(rotate = op == "rotate")
+	return JSONResponse({})
+
+
 if __name__ == "__main__":
 	uvicorn.run(app, host="127.0.0.1", port=8000)
