@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 portal_by_service = {}
 
-LOCAL_AGENT_TIMEOUT=60
+LOCAL_AGENT_TIMEOUT=90
 
 
 # TODO can't select model from here now
@@ -338,6 +338,13 @@ def fix_layout(response, _args):
 	lines = response.strip().split("\n")
 	out = []
 	in_table = False
+	add_tab = False
+
+	for line in lines:
+		if not line.startswith("\t"):
+			add_tab = True
+			break
+
 	for i, line in enumerate(lines):
 		# markdown tables must have a blank line before them ...
 		if not in_table and ("---" in line or re.search(r'\|.*\|', line)):
@@ -348,7 +355,7 @@ def fix_layout(response, _args):
 		if in_table and not line.strip():
 			in_table = False
 
-		if i > 0 and not line.startswith("\t"):
+		if i > 0 and add_tab:
 			line = "\t" + line
 
 		out.append(line)

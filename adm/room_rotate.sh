@@ -58,11 +58,11 @@ fi
 mkdir -p "$dir"
 
 # Move the source files to the destination
+mv -n "$from_html" "$to_html"
 mv -n "$from" "$to"
-mv -n "$from_html" "$to_html.orig"
-sleep 1
-mv -n "$to_html.orig" "$to_html"
-rm -f "$to_html.orig"
+# sleep 1
+# mv -n "$to_html.orig" "$to_html"
+# rm -f "$to_html.orig"
 
 # Create empty source files
 touch "$from"

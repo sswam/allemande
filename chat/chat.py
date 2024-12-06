@@ -10,6 +10,7 @@ import re
 import logging
 from typing import Dict, Optional
 import shutil
+import subprocess
 
 import argh
 import markdown
@@ -22,7 +23,10 @@ import video_compatible
 EXTENSION = ".bb"
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
 
+global_admins = ['sam']  # TODO from enviorment variable
 
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -93,6 +97,23 @@ class Room:
 	def append(self, text):
 		with self.path.open("a", encoding="utf-8") as f:
 			f.write(text)
+	def check_admin(self, user):
+		""" Check if a user is an admin. """
+		if user in global_admins:
+			return True
+		components = self.name.split('/')
+		top_dir = components[0]
+		return user in top_dir.split(',')
+	def clear(self, rotate=False):
+		""" Clear a room. """
+		if rotate:
+			# run room-rotate script with room name
+			# TODO in Python
+			subprocess.run(["room-rotate", self.name], check=True)
+		else:
+			# truncate the file
+			with self.path.open("w", encoding="utf-8"):
+				pass
 
 
 def safe_join(base_dir: Path, path: Path) -> Path:
