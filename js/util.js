@@ -20,7 +20,7 @@ const $animate = (element, animation, callback) => {
 		if (callback) callback();
 	});
 }
-const $wait = (time) => new Promise((resolve) => setTimeout(resolve, time));
+const $wait = (time) => new Promise((resolve) => setTimeout(resolve, time||0));
 const $waitUntil = (condition, time) => new Promise((resolve) => {
 	const interval = setInterval(() => {
 		if (condition()) {
