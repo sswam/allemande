@@ -59,14 +59,16 @@ table, th, td {
 
 .thumb {
 	width: 280px;
+	height: 177px;
 	margin: 0 0 4px 0 !important;
+	object-fit: cover;
 }
 
 .embed {
 	width: 280px;
 	height: 177px;
 	float: left;
-	margin: 10px;
+	margin: 0px 20px 40px 0px;
 	padding: 0;
 }
 
