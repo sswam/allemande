@@ -17,12 +17,13 @@ import ucm
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class AsyncTail:
     """AsyncTail: a class that can tail a file asynchronously"""
 
-    def __init__(self, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False):
+    def __init__(self, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False, rewind_string=None):
         """Initialize the AsyncTail object"""
         self.filename = filename
         self.wait_for_create = wait_for_create
@@ -30,6 +31,7 @@ class AsyncTail:
         self.all_lines = all_lines
         self.follow = follow
         self.rewind = rewind
+        self.rewind_string = rewind_string
         self.running = False
         self.watcher = None
         self.queue = None
@@ -60,8 +62,10 @@ class AsyncTail:
             while True:
                 await self.run_until_removed()
                 logger.debug("File moved or removed: %s", self.filename)
-                if not self.rewind and self.wait_for_create:
+                if not (self.rewind and self.wait_for_create):
                     break
+                if self.rewind_string:
+                    await self.queue.put(self.rewind_string)
         finally:
             self.running = False
             self.close_watcher()
@@ -98,6 +102,8 @@ class AsyncTail:
         """Follow the file, until it is removed"""
         removed_flags = aionotify.Flags.DELETE_SELF | aionotify.Flags.MOVE_SELF | aionotify.Flags.ATTRIB
 
+        pos = await f.tell()
+
         try:
             self.watcher = aionotify.Watcher()
             self.watcher.watch(self.filename, aionotify.Flags.MODIFY | removed_flags)
@@ -109,6 +115,13 @@ class AsyncTail:
                     count += 1
                 if self.rewind and not count:
                     await self.seek_to_end(f)
+                    pos2 = await f.tell()
+                    if pos2 < pos:
+                        # file has shrunk, so we will start again.
+                        return
+                    pos = pos2
+                else:
+                    pos = await f.tell()
                 event = await self.watcher.get_event()
                 if event.flags & removed_flags and not Path(self.filename).exists():
                     break
@@ -139,11 +152,11 @@ class AsyncTail:
 
 
 async def atail(
-    output=sys.stdout, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False
+    output=sys.stdout, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False, rewind_string=None
 ):
     """Tail a file - for command-line tool, and an example of usage"""
     async with AsyncTail(
-        filename=filename, wait_for_create=wait_for_create, lines=lines, all_lines=all_lines, follow=follow, rewind=rewind
+        filename=filename, wait_for_create=wait_for_create, lines=lines, all_lines=all_lines, follow=follow, rewind=rewind, rewind_string=rewind_string
     ) as queue:
         while (line := await queue.get()) is not None:
             print(line, end="", file=output)
@@ -159,7 +172,8 @@ def get_opts():
     parser.add_argument("-n", "--lines", type=int, default=0, help="output the last N lines")
     parser.add_argument("-a", "--all-lines", action="store_true", help="output all lines")
     parser.add_argument("-f", "--follow", action="store_true", help="follow the file")
-    parser.add_argument("-r", "--rewind", action="store_true", help="rewind to end if file shrinks or is recreated")
+    parser.add_argument("-r", "--rewind", action="store_true", help="rewind to start if file shrinks or is recreated")
+    parser.add_argument("-R", "--rewind-string", help="string to output on rewind")
     ucm.add_logging_options(parser)
     opts = parser.parse_args()
     return opts
@@ -177,6 +191,7 @@ def main():
             all_lines=opts.all_lines,
             follow=opts.follow,
             rewind=opts.rewind,
+            rewind_string=opts.rewind_string,
         )
     )
 

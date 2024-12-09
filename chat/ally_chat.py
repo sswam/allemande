@@ -320,10 +320,10 @@ def trim_response(response, args, agent_name, people_lc = None):
 
 	# remove agent's own `name: ` from response
 	agent_name_esc = re.escape(agent_name)
-	response = re.sub(r"^" + agent_name_esc + r":\s(.*)", r"\1", response, flags=re.MULTILINE)
+	response = re.sub(r"^" + agent_name_esc + r"\s*:\s(.*)", r"\1", response, flags=re.MULTILINE)
 
 	# remove lines starting with a known person's name
-	response = re.sub(r"(\n(\w+):\s*(.*))", check_person_remove, response, flags=re.DOTALL)
+	response = re.sub(r"(\n(\w+)\s*:\s*(.*))", check_person_remove, response, flags=re.DOTALL)
 	response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
 
 	if response != response_before:
@@ -340,7 +340,7 @@ def fix_layout(response, _args):
 	in_table = False
 	add_tab = False
 
-	for line in lines:
+	for line in lines[1:]:
 		if not line.startswith("\t"):
 			add_tab = True
 			break
@@ -360,7 +360,7 @@ def fix_layout(response, _args):
 
 		out.append(line)
 
-	response = "\n".join(out) + "\n"
+	response = ("\n".join(out)).rstrip()
 
 	return response
 
@@ -531,10 +531,7 @@ async def process_file(file, args, history_start=0) -> bool:
 		logger.warning("who should respond: %r", who)
 
 	if bot and bot.lower() in AGENTS:
-		logger.debug("history: %r", history)
-		# XXX should use like history_messages[-1] not history[-1]?  history[-1] might be the second line of a two-line message
-		#     - query is not even used in remote_agent for models other than Bard, still it should be correct
-		#     - in the web chat UI we don't normally submit multi-line messages, can do it with shift-enter on a computer
+		#     - query is not even used in remote_agent
 		query1 = history[-1] if history else None
 		logger.debug("query1: %r", query1)
 		messages = list(chat.lines_to_messages([query1]))
@@ -543,6 +540,7 @@ async def process_file(file, args, history_start=0) -> bool:
 		agent = AGENTS[bot.lower()]
 		response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
 		history.append(response)
+		logger.debug("history: %r", history)
 		history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
 
 		return True
@@ -616,7 +614,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	gen_config["stop_regexs"] = [
 		# Allow the agent's own name (ignoring case) using a negative lookahead.
 		# A line starting with a name starting with any letter, colon and whitespace.
-		r"(?umi)^(?!"+agent_name_esc+r":)[\p{L}][\p{L}\p{N}_]*:\s*\Z",
+		r"(?umi)^(?!"+agent_name_esc+r"\s*:)[\p{L}][\p{L}\p{N}_]*:\s*\Z",
 		# A name beginning with upper-case letter followed by colon and TAB, anywhere in the line
 		r"(?u)\b(?!"+agent_name_esc+r":)[\p{Lu}][\p{L}\p{N}_]*:\t",
 	]

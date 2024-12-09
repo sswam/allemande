@@ -26,7 +26,7 @@ ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
 global_admins = ['sam']  # TODO from enviorment variable
 
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -77,6 +77,7 @@ MARKDOWN_EXTENSION_CONFIGS = {
 
 class Room:
 	def __init__(self, name=None, path=None):
+		""" Create a room object. """
 		if path:
 			assert name is None
 			assert isinstance(path, Path)
@@ -92,11 +93,16 @@ class Room:
 		self.parent = self.path.parent
 		self.parent.mkdir(parents=True, exist_ok=True)
 		self.parent_url = Path("/", self.name).parent
+
 	def touch(self):
+		""" Touch / poke a room. """
 		self.path.touch()
+
 	def append(self, text):
+		""" Append text to a room. """
 		with self.path.open("a", encoding="utf-8") as f:
 			f.write(text)
+
 	def check_admin(self, user):
 		""" Check if a user is an admin. """
 		if user in global_admins:
@@ -104,16 +110,81 @@ class Room:
 		components = self.name.split('/')
 		top_dir = components[0]
 		return user in top_dir.split(',')
-	def clear(self, rotate=False):
+
+	def clear(self, op="clear"):
 		""" Clear a room. """
-		if rotate:
+		if op == "archive":
 			# run room-rotate script with room name
 			# TODO in Python
 			subprocess.run(["room-rotate", self.name], check=True)
+		elif op == "rotate":
+			# run room-rotate script with room name
+			# TODO in Python, archive half, keep half. Media?
+			subprocess.run(["room-rotate", self.name], check=True)
 		else:
-			# truncate the file
-			with self.path.open("w", encoding="utf-8"):
-				pass
+			# unlink the file
+			self.path.unlink()
+			# with self.path.open("w", encoding="utf-8"):
+			# 	pass
+
+	def undo(self, n=1):
+		""" Remove the last n messages from a room. """
+		# Messages are delimited by blank lines, and the file should end with a blank line.
+		if n <= 0:
+			return
+
+		count_bytes = 0
+		for line in tac(self.path, binary=True, keepends=True):
+			if line == b"\n":
+				n -= 1
+			if n < 0:
+				break
+			count_bytes += len(line)
+
+		with open(self.path, "a+b") as f:
+			logger.debug("undo truncating file %s", self.path)
+			logger.debug("undo truncate %d bytes", count_bytes)
+			logger.debug("current file size: %d", f.tell())
+			f.truncate(f.tell() - count_bytes)
+
+
+# TODO move to a separate module
+def tac(file, chunk_size=4096, binary=False, keepends=False):
+	""" Read a file in reverse, a line at a time. """
+	with open(file, 'rb') as f:
+		# Seek to end of file
+		f.seek(0, 2)
+		# Get total file size
+		total_size = remaining_size = f.tell()
+		pos = total_size
+		block = b''
+		while remaining_size > 0:
+			# Calculate size to read, limited by chunk_size
+			read_size = min(chunk_size, remaining_size)
+			# Move position back by read_size
+			pos -= read_size
+			f.seek(pos)
+			# Read chunk and combine with previous block
+			chunk = f.read(read_size)
+			current = chunk + block
+			# Split off any partial line at the start
+			parts = current.split(b'\n', 1)
+			if len(parts) > 1:
+				parts[0] += b'\n'
+				lines_text = parts[1]
+				if not binary:
+					lines_text = lines_text.decode()
+				lines = lines_text.splitlines(keepends=keepends)
+				# Yield complete lines in reverse
+				for line in reversed(lines):
+					yield line
+			block = parts[0]
+			remaining_size -= read_size
+		# Yield final remaining text
+		if block:
+			if not binary:
+				block = block.decode()
+			yield block
 
 
 def safe_join(base_dir: Path, path: Path) -> Path:
