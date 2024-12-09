@@ -49,7 +49,7 @@ ln -sfT $PWD /var/www/allychat
 cd rooms
 
 mode 660 *.bb *.html
-mode 440 -.bb -.html demo.bb demo.html adult/demo.bb adult/demo.html
+mode 440 -.bb -.html
 
 # install the nginx config and sites -----------------------------------------
 
