@@ -113,14 +113,32 @@ async def clear(request):
 	op = form["op"]
 	user = request.headers['X-Forwarded-User']
 
-	if op not in ["clear", "rotate"]:
+	if op not in ["clear", "archive", "rotate"]:
 		raise HTTPException(status_code=400, detail="Invalid operation.")
 
 	room = chat.Room(name=room)
 	admin = room.check_admin(user)
 	if not admin:
-		raise HTTPException(status_code=403, detail="You are not allowed to clear this room.")
-	room.clear(rotate = op == "rotate")
+		raise HTTPException(status_code=403, detail=f"You are not allowed to {op} this room.")
+
+	room.clear(op)
+
+	return JSONResponse({})
+
+
+@app.route("/x/undo", methods=["POST"])
+async def clear(request):
+	""" Erase the previous n messages from a room. """
+	form = await request.form()
+	room = form["room"]
+	n = form.get("n", "1")
+	user = request.headers['X-Forwarded-User']
+
+	room = chat.Room(name=room)
+	admin = room.check_admin(user)
+	if not admin:
+		raise HTTPException(status_code=403, detail="You are not allowed to undo messages in this room.")
+	room.undo(n=int(n))
 	return JSONResponse({})
 
 

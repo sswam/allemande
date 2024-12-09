@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 FOLLOW_KEEPALIVE = 50
 HTML_KEEPALIVE = "<script>online()</script>\n"
+REWIND_STRING = "<script>clear()</script>\n"
 
 
 BASE_DIR = Path(".").resolve()
@@ -71,7 +72,7 @@ exception_handlers = {
 app = Starlette(on_startup=[startup_event], on_shutdown=[shutdown_event], exception_handlers=exception_handlers)
 
 
-async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n"):
+async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n", rewind_string="\x0c\n"):
     """Follow a file and yield new lines as they are added."""
 
     # TODO read watch.log, then we won't have to create directories
@@ -81,7 +82,7 @@ async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n
     if head:
         yield head
 
-    async with atail.AsyncTail(filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True) as queue1:
+    async with atail.AsyncTail(filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True, rewind_string=rewind_string) as queue1:
         async with akeepalive.AsyncKeepAlive(queue1, keepalive, timeout_return=keepalive_string) as queue2:
             try:
                 while True:
@@ -107,6 +108,7 @@ async def stream(request):
     media_type = "text/plain"
     head = ""
     keepalive_string = "\n"
+    rewind_string = "\x0c\n"  # ^L / form feed / clear screen
 
     ext = safe_path.suffix
 
@@ -117,9 +119,10 @@ async def stream(request):
             context = {"request": request, "user": user}
             head = templates.get_template("room-head.html").render(context)
         keepalive_string = HTML_KEEPALIVE
+        rewind_string = REWIND_STRING
 
     logger.info("tail: %s", safe_path)
-    follower = follow(str(safe_path), head=head, keepalive_string=keepalive_string)
+    follower = follow(str(safe_path), head=head, keepalive_string=keepalive_string, rewind_string=rewind_string)
     return StreamingResponse(follower, media_type=media_type)
 
 
