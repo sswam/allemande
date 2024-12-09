@@ -29,9 +29,9 @@ function set_debug(debug) {
 }
 
 async function flash($el, className) {
-	$('#attach').classList.add(className);
+	$el.classList.add(className);
 	await $wait(300);
-	$('#attach').classList.remove(className);
+	$el.classList.remove(className);
 }
 
 // send a message ------------------------------------------------------------
@@ -543,16 +543,17 @@ function stopDrag(e) {
 // 6. user sends the message
 // 7. server receives the message and the URL
 
-function attach_clicked() {
+function file_clicked() {
 	$id('files').click();
 }
 
-function files_changed(ev) {
+async function files_changed(ev) {
 	const files = ev.target.files;
-	console.log("files_changed", files);
-	upload_files(files);  // async, we're not waiting for it
 	// clear the file input so we can upload the same file again
+	console.log("files_changed", files);
+	await upload_files(files);
 	ev.target.value = '';
+	set_controls();
 }
 
 async function upload_files(files) {
@@ -619,6 +620,8 @@ async function clear(ev, op) {
 	if (op === "clear")
 		confirm_message = "Clear the chat?\nThis cannot be undone.";
 	else if (op === "rotate")
+		confirm_message = "Save and clear the first have of the chat?";
+	else if (op === "archive")
 		confirm_message = "Save and clear the chat?";
 	else
 		throw new Error("invalid op: " + op);
@@ -653,12 +656,58 @@ async function clear(ev, op) {
 		return;
 	}
 
+	set_controls();
+
 	// TODO should clear immediately for other users too, not just the current user
-	reload_messages();
+	// reload_messages();
 }
 
 async function rotate(ev) {
 	await clear(ev, "rotate");
+}
+
+async function archive(ev) {
+	await clear(ev, "archive");
+}
+
+async function undo(ev) {
+	console.log("undo", op);
+
+	ev.preventDefault();
+	const formData = new FormData();
+	formData.append('room', room);
+
+	const error = async (message) => {
+		console.error(message);
+		await flash($id("undo"), 'error');
+	};
+
+	const response = await fetch('/x/undo', {
+		method: 'POST',
+		body: formData,
+	});
+
+	if (!response.ok) {
+		await error(`undo failed`);
+		return;
+	}
+
+	const data = await response.json();
+
+	if (data.error) {
+		await error(data.error);
+		return;
+	}
+
+	// TODO should clear immediately for other users too, not just the current user
+	// reload_messages();
+}
+
+// input controls ------------------------------------------------------------
+
+function set_controls(id) {
+	$('#inputrow > .controls:not(.hidden)').classList.add('hidden');
+	$id(id || "input_main").classList.remove('hidden');
 }
 
 // main ----------------------------------------------------------------------
@@ -670,8 +719,19 @@ function chat_main() {
 	on_hash_change();
 
 	$on($id('send'), 'click', send);
+	$on($id('add'), 'click', () => set_controls('input_add'));
+	$on($id('edit'), 'click', () => set_controls('input_edit'));
+
+	$on($id('undo'), 'click', undo);
 	$on($id('clear'), 'click', clear);
+	$on($id('archive'), 'click', archive);
 	$on($id('rotate'), 'click', rotate);
+	$on($id('edit_cancel'), 'click', () => set_controls());
+
+	$on($id('file'), 'click', file_clicked);
+	$on($id('files'), 'change', files_changed);
+	$on($id('add_cancel'), 'click', () => set_controls());
+
 //	$on($content, 'keypress', message_keypress);
 	$on($content, 'keydown', message_keydown);
 	$on($content, 'input', message_changed);
@@ -682,8 +742,6 @@ function chat_main() {
 	$on(window, 'hashchange', on_hash_change);
 //	$on($messages, 'scroll', messages_scrolled);
 	setup_file_input_label();
-	$on($id('attach'), 'click', attach_clicked);
-	$on($id('files'), 'change', files_changed);
 	push_notifications();
 	// scroll_to_bottom();
 	keyboard_shortcuts();

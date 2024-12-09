@@ -33,24 +33,34 @@
 
 	<div class="row" id="inputrow">
 		<textarea id="content" name="content" class="content_input mousetrap grow"></textarea>
-		<div class="col_wrap buttons" id="input_main">
+		<div class="controls col_wrap" id="input_main">
 			<button id="send">send</button>
-			<input id="files" name="files" type="file" class="inputfile hide" tabindex="-1" multiple/>
-			<button id="attach">attach</button>
-			<button id="record">audio</button>
-			<button id="record_video">video</button>
-			<button id="clear" class="admin">clear</button>
-			<button id="rotate" class="admin">rotate</button>
+			<button id="add">add</button>
+			<button id="edit" class="admin">edit</button>
 		</div>
-		<div class="col_wrap buttons hidden" id="input_record">
+		<div class="controls col_wrap hidden" id="input_edit">
+			<button id="undo">undo</button>
+			<button id="rotate" disabled>rotate</button>
+			<button id="archive">archive</button>
+			<button id="clear">clear</button>
+			<button id="edit_cancel">cancel</button>
+		</div>
+		<div class="controls col_wrap hidden" id="input_add">
+			<input id="files" name="files" type="file" class="inputfile hide" tabindex="-1" multiple/>
+			<button id="file">file</button>
+			<button id="record_audio">audio</button>
+			<button id="record_video">video</button>
+			<button id="add_cancel">cancel</button>
+		</div>
+		<div class="controls col_wrap hidden" id="input_record">
 			<input id="rec_time" class="readonly">
+			<video id="rec_videoPreview" autoplay muted></video>
 			<button id="rec_stop">stop</button>
 			<button id="rec_pause">pause</button>
 			<button id="rec_send">send</button>
 			<button id="rec_cancel">cancel</button>
-			<video id="rec_videoPreview" autoplay muted></video>
 		</div>
-		<div class="col_wrap buttons hidden" id="input_record_preview">
+		<div class="controls col_wrap hidden" id="input_record_preview">
 			<video id="rec_preview_videoPreview" autoplay controls></video>
 			<audio id="rec_preview_audioPreview" autoplay controls></audio>
 			<button id="rec_preview_send">send</button>

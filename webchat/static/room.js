@@ -34,6 +34,10 @@ function offline() {
 	document.body.addEventListener('mouseenter', reload, { once: true });
 }
 
+function clear() {
+	$("div.messages").innerHTML = '';
+}
+
 function ready_state_change() {
 	if (document.readyState !== 'loading') {
 		offline();

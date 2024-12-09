@@ -81,9 +81,10 @@ async function sendRecording(mediaBlob, includeVideo) {
 
 // Main recording function
 async function handleRecording(includeVideo = false) {
-    // hide the normal UI and show the recording UI
-    $id('input_main').classList.add('hidden');
-    $id('input_record').classList.remove('hidden');
+    const $timer = $id('rec_time');
+
+    set_controls('input_record');
+
     try {
         const {
             mediaRecorder,
@@ -103,7 +104,6 @@ async function handleRecording(includeVideo = false) {
         mediaRecorder.start();
 
         // Show timer
-        const $timer = $id('rec_time');
         let start = Date.now() / 1000;
         let seconds_before = 0;
         $timer.value = '0:00';
@@ -164,8 +164,7 @@ async function handleRecording(includeVideo = false) {
                 $id('rec_preview_videoPreview').classList.add('hidden');
             }
             preview.src = url;
-            $id('input_record').classList.add('hidden');
-            $id('input_record_preview').classList.remove('hidden');
+            set_controls('input_record_preview');
 
             // wait for one of the send / cancel buttons to be clicked,
             stop_action = await new Promise((resolve) => {
@@ -193,13 +192,11 @@ async function handleRecording(includeVideo = false) {
 
     $timer.value = '0:00';
 
-    $id('input_record').classList.add('hidden');
-    $id('input_record_preview').classList.add('hidden');
-    $id('input_main').classList.remove('hidden');
+    set_controls();
 }
 
 function record_main() {
-    $on($id('record'), 'click', () => handleRecording(false));
+    $on($id('record_audio'), 'click', () => handleRecording(false));
     $on($id('record_video'), 'click', () => handleRecording(true));
 }
 

@@ -30,12 +30,13 @@ body.admin, body.admin .admin {
 	flex-shrink: 0;
 	max-height: 80vh;
 }
-#inputrow > .buttons > * {
+#inputrow > .controls > * {
 	flex-grow: 1;
 	min-height: 1.5em;
 	max-height: 3.5em;
+	min-width: 3em;
 }
-#inputrow > .buttons > video {
+#inputrow > .controls > video {
 	max-height: 128px;
 }
 #content {
