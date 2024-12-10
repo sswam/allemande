@@ -30,18 +30,25 @@ body.admin, body.admin .admin {
 	flex-shrink: 0;
 	max-height: 80vh;
 }
+#inputrow > .controls {
+	flex-grow: 0;
+	flex-shrink: 1;
+}
 #inputrow > .controls > * {
 	flex-grow: 1;
 	min-height: 1.5em;
-	max-height: 3.5em;
 	min-width: 3em;
 }
 #inputrow > .controls > video {
+	flex-grow: 0;
+	flex-shrink: 1;
 	max-height: 128px;
 }
 #content {
 	min-height: 32px;
 	resize: none;
+	flex-grow: 1;
+	flex-shrink: 0;
 }
 #resizer {
 	height: var(--pad);
@@ -132,7 +139,10 @@ video {
 	min-height: 128px;
 }
 
-#rec_time {
-	text-align: center;
-	max-width: 64px;
+div.label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 6px;
+	font-size: 1.2rem;
 }

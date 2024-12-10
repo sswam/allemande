@@ -79,10 +79,14 @@ async function sendRecording(mediaBlob, includeVideo) {
 }
 */
 
+function set_timer(seconds) {
+    const m = Math.floor(seconds/60);
+    const s = (seconds%60).toString().padStart(2,'0');
+    $id('rec_time').textContent = `${m}:${s}`;
+}
+
 // Main recording function
 async function handleRecording(includeVideo = false) {
-    const $timer = $id('rec_time');
-
     set_controls('input_record');
 
     try {
@@ -106,14 +110,14 @@ async function handleRecording(includeVideo = false) {
         // Show timer
         let start = Date.now() / 1000;
         let seconds_before = 0;
-        $timer.value = '0:00';
+        set_timer(0);
         const timerInterval = setInterval(() => {
             const now = Date.now() / 1000;
             let seconds = seconds_before;
             if (start)
                 seconds += now - start;
             seconds = Math.floor(seconds);
-            $timer.value = `${Math.floor(seconds/60)}:${(seconds%60).toString().padStart(2,'0')}`;
+            set_timer(seconds);
         }, 1000);
 
         const $pause = $id('rec_pause');
@@ -190,7 +194,7 @@ async function handleRecording(includeVideo = false) {
         console.error('Recording error:', error);
     }
 
-    $timer.value = '0:00';
+    set_timer(0);
 
     set_controls();
 }

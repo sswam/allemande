@@ -11,7 +11,7 @@ body, html {
 
 /* themeable elements */
 
-*, input, textarea, button, .button {
+*, input, textarea, button, .button, .label {
 	color: var(--text);
 }
 
@@ -23,7 +23,7 @@ body#messages {
 	background: var(--background);
 }
 
-input, textarea, button, iframe, .button {
+input, textarea, button, iframe, .button, .label {
 	background: var(--input);
 	border: 1px solid var(--border);
 }
