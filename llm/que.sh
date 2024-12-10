@@ -1,5 +1,7 @@
 #!/bin/bash -eu
 m=
 . opts
-query -m="$m" "$@
-Please reply as concise as possible, with no boilerplate or unnecessary explanation." | text-strip
+prompt="${1:-}"
+shift || true
+query -m="$m" "$prompt
+Please reply as concise as possible, with no boilerplate or unnecessary explanation." "$@" | text-strip

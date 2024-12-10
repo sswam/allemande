@@ -95,7 +95,6 @@ def cat_named(
                     content = istream.read()
                     display_name = istream.display
 
-
             if display_name not in suppress_headings_list:
                 header = get_header(display_name)
                 put(f"{header}{header_suffix}")
