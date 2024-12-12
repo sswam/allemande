@@ -82,7 +82,9 @@ def get(prompt="", placeholder="", **kwargs):
     if placeholder:
         readline.set_startup_hook(lambda: readline.insert_text(placeholder))
     try:
-        text = input(prompt)
+        if prompt:
+            print(prompt, end="", flush=True, file=sys.stderr)
+        text = input()
     except EOFError:
         text = None
     finally:
