@@ -12,12 +12,6 @@ node_modules
 __pycache__
 /c/perlxsi.c
 ref
-/webchat/files
-/webchat/users
-/config*.sh
-rooms
-rooms.*
-!rooms.dist
 js/mousetrap
 /pix/banner?.*
 /apps/alfred/mission.txt
@@ -26,6 +20,18 @@ commit-message.*
 tracks
 *.log
 sparkjoy
+
+# state files
+rooms
+rooms.*
+!rooms.dist
+/schedule.tsv
+/webchat/static/push-docs
+/webchat/users
+
+# config files
+/webchat/static/config.js
+/config*.sh
 
 # secrets
 /secrets.sh
@@ -123,4 +129,3 @@ sparkjoy
 /games/001/game1
 /games/002/game2a
 /games/002/game2b
-/webchat/static/config.js
