@@ -49,8 +49,8 @@ async function send(ev) {
 	const message = $content.value;
 	set_content("");
 
-	const error = async (message) => {
-		console.error(message);
+	const error = async (error_message) => {
+		console.error(error_message);
 		set_content(message);
 		await flash($id('send'), 'error');
 	};
@@ -76,6 +76,8 @@ async function send(ev) {
 // handle enter key press ----------------------------------------------------
 
 /*
+// Old code where enter sends, and shift-enter for newline,
+// but it does not work on mobile. Maybe detect mobile vs PC.
 function message_keypress(ev) {
         if (ev.keyCode == 13 && !ev.shiftKey) {
 		ev.preventDefault();
@@ -146,16 +148,6 @@ function set_room(r) {
 	setup_admin();
 }
 
-/*
-function set_room_user() {
-	if (room == user)
-		set_room("");
-	else
-		set_room(user);
-}
-*/
-
-
 // user info and settings ----------------------------------------------------
 
 function load_user_styles() {
@@ -168,54 +160,6 @@ function load_user_styles() {
 	$link.href = '/users/'+user+'/theme.css';
 	$head.append($link);
 }
-
-function logged_out() {
-	// hide #logout button
-	// TODO show a different logged-out screen, or just go to https://allemande.ai
-
-	const $logout = $id('logout');
-	if ($logout) { $logout.style.display = "none"; }
-}
-
-/*
-async function who() {
-	// TODO use user info from cookie instead of asking the server
-	const response = await fetch('/x/whoami', {
-		method: 'POST',
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({
-			room: room,
-		}),
-	});
-
-	if (!response.ok) {
-		logged_out();
-		return;
-	}
-
-	const data = await response.json();
-
-	if (data.error) {
-		alert(data.error);
-		return;
-	}
-
-	user = data.user;
-	admin = data.admin;
-
-	const $user = $id('user');
-	$user.innerText = user;
-
-	if (admin) {
-		for (const $e of $$(".admin")) {
-			$e.style.display = "block";
-		}
-	}
-	load_user_styles();
-}
-*/
 
 // hash change ---------------------------------------------------------------
 
@@ -261,12 +205,6 @@ function hash_to_query(hash) {
 		query = query.substr(1);
 	}
 	return query;
-}
-
-function setup_file_input_label() {
-}
-
-function push_notifications() {
 }
 
 function leave_room() {
@@ -448,35 +386,6 @@ async function register_service_worker() {
 	sw_message_channel.port1.postMessage('getAppInfo');
 }
 
-// Handle notification permissions -------------------------------------------
-
-async function notify_clicked() {
-	if (!('Notification' in window)) {
-		console.error('This browser does not support notifications');
-		return;
-	}
-
-	const permission = await Notification.requestPermission();
-	if (permission === 'granted') {
-		const registration = await navigator.serviceWorker.ready;
-		const subscription = await registration.pushManager.subscribe({
-			userVisibleOnly: true,
-			applicationServerKey: 'YOUR_VAPID_PUBLIC_KEY' // You'll need to replace this
-		});
-
-		// Send subscription to server
-		await fetch('/x/subscribe', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(subscription)
-		});
-
-		document.getElementById('notify').textContent = 'notifications on';
-	}
-}
-
 // authentication ------------------------------------------------------------
 
 function authChat() {
@@ -587,9 +496,11 @@ async function upload_file(file, filename) {
 
 	const { name, url, medium, markdown } = data;
 
+	// TODO messing with the textarea value kills undo
+
 	// make sure the message content ends with whitespace
 	if (/\S$/.test($content.value)) {
-		$content.value += "\n";  // TODO this kills undo
+		$content.value += "\n";
 	}
 
 	$content.value += markdown;
@@ -634,8 +545,8 @@ async function clear(ev, op) {
 	formData.append('room', room);
 	formData.append('op', op);
 
-	const error = async (message) => {
-		console.error(message);
+	const error = async (error_message) => {
+		console.error(error_message);
 		await flash($id(op), 'error');
 	};
 
@@ -677,8 +588,8 @@ async function undo(ev) {
 	const formData = new FormData();
 	formData.append('room', room);
 
-	const error = async (message) => {
-		console.error(message);
+	const error = async (error_message) => {
+		console.error(error_message);
 		await flash($id("undo"), 'error');
 	};
 
@@ -732,7 +643,6 @@ function chat_main() {
 	$on($id('files'), 'change', files_changed);
 	$on($id('add_cancel'), 'click', () => set_controls());
 
-//	$on($content, 'keypress', message_keypress);
 	$on($content, 'keydown', message_keydown);
 	$on($content, 'input', message_changed);
 	message_changed();
@@ -740,16 +650,12 @@ function chat_main() {
 	$content.focus();
 	$on($room, 'change', () => set_room());
 	$on(window, 'hashchange', on_hash_change);
-//	$on($messages, 'scroll', messages_scrolled);
-	setup_file_input_label();
-	push_notifications();
-	// scroll_to_bottom();
 	keyboard_shortcuts();
 	$on(window, 'message', handle_message);
-//	$on($id('user'), 'click', set_room_user);
-//	$on($id('logout'), 'click', logoutChat);
-	$on($id('notify'), 'click', notify_clicked);
 	$on($id('resizer'), 'mousedown', initDrag);
 	$on($id('resizer'), 'touchstart', initDrag);
+
 	register_service_worker();
+	notify_main();
+	record_main();
 }
