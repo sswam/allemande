@@ -79,7 +79,7 @@ PATH="$PATHS:$PATH:$ALLEMANDE_HOME/node_modules/.bin"
 if [ ! -e "$CONFIG" ]; then
 	echo "Creating config.sh: $CONFIG"
 
-	ln -s "$ALLEMANDE_HOME/config/config-dist.sh" "$CONFIG"
+	cp "$ALLEMANDE_HOME/config/config.sh.dist" "$CONFIG"
 fi
 
 NVCC_PREPEND_FLAGS="-ccbin /usr/bin/gcc-13"
