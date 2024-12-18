@@ -16,7 +16,7 @@ import chat
 
 
 ADMINS = os.environ.get("ALLYCHAT_ADMINS", "").split()
-
+VAPID_PRIVATE_KEY = os.environ["ALLYCHAT_WEBPUSH_VAPID_PRIVATE_KEY"]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -51,8 +51,10 @@ async def whoami(request):
 
 
 def write_to_room(room_name, user, content):
-	""" Write a message to a room. """
-
+	"""
+	Write a message to a room.
+	We don't convert to HTML here, a follower process does that.
+	"""
 	room = chat.Room(name=room_name)
 
 	if content == "":
@@ -70,8 +72,6 @@ def write_to_room(room_name, user, content):
 	text = chat.message_to_text(message) + "\n"
 
 	room.append(text)
-
-	# We don't convert to HTML here, a follower process does that.
 
 
 @app.route("/x/post", methods=["POST"])
@@ -140,6 +140,55 @@ async def clear(request):
 		raise HTTPException(status_code=403, detail="You are not allowed to undo messages in this room.")
 	room.undo(n=int(n))
 	return JSONResponse({})
+
+
+@app.route("/x/subscribe", methods=["POST"])
+async def subscribe(request):
+	""" Subscribe to push notifications. """
+	data = await request.json()
+	user_id = request.user.id
+
+	# Store subscription in user settings file
+	# TODO where?  maybe in among the rooms
+	# It will be in a file used for other private settings too,
+	# and likely YAML format not JSON.
+	user_path = f"/var/allemande/users/{user_id}"
+	os.makedirs(user_path, exist_ok=True)
+
+	with open(f"{user_path}/push_subscription.json", "w") as f:
+		json.dump(data["subscription"], f)
+
+	return JSONResponse({"status": "success"})
+
+
+async def send_push(user_id, message):
+	""" Send a push notification to a user. """
+	# TODO fix the path, and extract the subscription from the user settings file
+	# Load user's subscription
+	with open(f"/var/allemande/users/{user_id}/push_subscription.json") as f:
+		subscription = json.load(f)
+
+	vapid_claims = {
+		"sub": "mailto:admin@allemande.ai",
+		"exp": int(time.time()) + 12 * 3600,  # 12 hours from now
+	}
+
+	# Send encrypted push notification
+	# Using webpush library for encryption handling
+	webpush(
+		subscription_info=subscription,
+		data=message,
+		vapid_private_key=VAPID_PRIVATE_KEY,
+		vapid_claims=vapid_claims,
+	)
+
+
+# TODO implement the actual notifications when:
+# - a message is posted to a watched room
+# - user is invoked in a message, in any room to which they have access
+#     - note that not every mention invokes a user
+# - avoid sending notifications if the user is active in the room, somehow
+#     - or delay them until we are sure the user didn't see the message
 
 
 if __name__ == "__main__":
