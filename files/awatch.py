@@ -235,7 +235,7 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
             row = [path + os.path.sep, int(Change.added), None, None]
             yield row
         p = Path(path)
-        for e in p.iterdir():
+        for e in sorted(p.iterdir(), key=lambda x: x.stat().st_ctime):
             logger.debug("e: %r", e)
             async for row in self.handle_change(Change.added, str(e)):
                 yield row
