@@ -103,7 +103,21 @@ AGENTS_LOCAL = {
 			"cfg_scale": 7,
 			"pony": 1.0,
 			"pag": True,
-			"adetailer": ["face_yolov8n.pt", "hand_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"ad_mask_k_largest": 10,
+		}
+	},
+	"Poni": {
+		"model": "autismmixSDXL_autismmixConfetti",
+		"service": "image_a1111",
+		"default_context": 1,
+		"clean_prompt": True,
+		"config": {
+			"steps": 15,
+			"cfg_scale": 7,
+			"pony": 1.0,
+			"pag": True,
+			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
 		}
 	},
