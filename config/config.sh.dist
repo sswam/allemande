@@ -6,6 +6,7 @@ ALLYCHAT_ADMINS="root"
 ALLEMANDE_ROOMS_SERVER="$ALLEMANDE_HOME/rooms.server"
 CHATPATH="$ALLEMANDE_ROOMS:$ALLEMANDE_ROOMS_SERVER"
 
+USER=${USER:-`whoami`}
 user=${USER^}
 bot=Ally
 room="Ally Chat"
