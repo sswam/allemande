@@ -14,6 +14,7 @@ import functools
 import inspect
 import pwd
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL
+import atexit
 
 from ally import meta
 
@@ -97,6 +98,10 @@ def get_logger(level=1, root=False, name=None, indent=False, log_level="WARNING"
 
     # Log the start of the script, hopefully creating the log file
     logger.debug(f"Starting {name or script_name}")
+
+    # Log at exit on root logger
+    if root:
+        atexit.register(logger.debug, f"Exiting {name or script_name}")
 
     # Set file permissions to be owner read/write only
     for handler in logger.handlers:
