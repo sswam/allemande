@@ -9,13 +9,13 @@ import sys
 from typing import TextIO
 import argparse
 
-from ally import main, geput
+from ally import main, geput, logs
 from ally.geput import Get, Put
 from argh import arg
 
 __version__ = "0.1.1"
 
-logger = main.get_logger()
+logger = logs.get_logger()
 
 
 def slug(
