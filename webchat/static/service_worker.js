@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.1.173";
+const VERSION = "0.1.175";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
@@ -8,7 +8,10 @@ console.log = DEBUG ? console.log : () => {};
 const CACHE_NAME = "allemande-ai-" + VERSION;
 const URLS_TO_CACHE = [
 	"/",
+	"/config.js",
 	"/chat.js",
+	"/record.js",
+	"/notify.js",
 	"/util.js",
 	"/mousetrap.min.js",
 	"/allychat.css",
@@ -83,44 +86,40 @@ function sw_fetch(event) {
 
 // Push event - handle incoming notifications
 async function sw_push(event) {
-	try {
-		const data = event.data.json();
-		const options = {
-			body: data.body,
-			icon: "/icon.png",
-			badge: "/icon.png",
-			data: {
-				url: data.url
-			}
-		};
+	const data = event.data.json();
+	const options = {
+		body: data.body,
+		icon: "https://allemande.ai/icon.png",
+		badge: "https://allemande.ai/icon.png",
+		data: {
+			room: data.room,
+			url: data.url  // not needed, just use room?
+			// TODO anchor to a specific message
+		}
+	};
 
-		await self.registration.showNotification("Allemande AI", options);
-	} catch (error) {
-		console.error(`Push notification failed: ${error.message}`);
-	}
+	event.waitUntil(self.registration.showNotification("Allemande AI", options));
 }
 
 // Notification click event - handle user interaction
 async function sw_notificationclick(event) {
-	try {
-		event.notification.close();
-		const urlToOpen = event.notification.data.url || "/";
-		const windowClients = await self.clients.matchAll({
-			type: "window",
-			includeUncontrolled: true
-		});
+	event.notification.close();
+//	const urlToOpen = event.notification.data.url || "/";
+	const urlToOpen = `/#${event.notification.data.room}`;
 
-		for (const client of windowClients) {
-			if (client.url === urlToOpen && "focus" in client) {
-				await client.focus();
-				return;
-			}
+	const windowClients = await self.clients.matchAll({
+		type: "window",
+		includeUncontrolled: true
+	});
+
+	for (const client of windowClients) {
+		if (client.url === urlToOpen && "focus" in client) {
+			await client.focus();
+			return;
 		}
-
-		await self.clients.openWindow(urlToOpen);
-	} catch (error) {
-		console.error(`Notification click handling failed: ${error.message}`);
 	}
+
+	event.waitUntil(self.clients.openWindow(urlToOpen));
 }
 
 // Communicate with main app
@@ -141,6 +140,8 @@ function sw_message(event) {
 		communicationPort.onmessage = (event) => sw_port_message(communicationPort, event);
 	}
 }
+
+// Event listeners
 
 self.addEventListener("install", sw_install);
 self.addEventListener("activate", sw_activate);
