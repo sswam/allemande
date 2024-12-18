@@ -14,7 +14,7 @@ for A; do
 	name_comment_python="\"\"\" $name:	\"\"\""
 	case "$A" in
 	*.py)
-		< ~/code/python/hello.py sed -e 's/hello.py/'"$name"'/' > "$A"
+		lecho "#!/usr/bin/env python" "$name_comment_python" > "$A"
 		;;
 	*.pl)
 		lecho "#!/usr/bin/perl -w" "$name_comment" "use strict;" "use warnings;" "" > "$A"
@@ -34,10 +34,10 @@ for A; do
 		lecho "#!/usr/bin/make -f" "$name_comment" > "$A"
 		;;
 	*.c)
-		< ~/code/c/hello.c sed -e 's/hello.c/'"$name"'/' > "$A"
+		lecho "#include <stdio.h>" "" "int main(int argc, char *argv[]) {" "	printf(\"Hello, world!\\n\");" "	return 0;" "}" > "$A"
 		;;
 	*.cpp)
-		< ~/code/c/hello.cpp sed -e 's/hello.cpp/'"$name"'/' > "$A"
+		lecho "#include <iostream>" "" "int main(int argc, char *argv[]) {" "	std::cout << \"Hello, world!\" << std::endl;" "	return 0;" "}" > "$A"
 		;;
 	*)
 		lecho "#!/bin/bash -eu" "$name_comment" > "$A"
