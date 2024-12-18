@@ -139,3 +139,6 @@ titlecase
 huggingface_hub[cli]
 
 insanely-fast-whisper
+
+py-vapid
+pywebpush

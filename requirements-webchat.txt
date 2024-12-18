@@ -11,6 +11,8 @@ markdown
 aiofiles
 jinja2
 python-multipart
+py-vapid
+pywebpush
 
 # TODO just inline needed things from ucm.py, shouldn't depend on libraries we don't need
 fastcore
