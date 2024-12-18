@@ -68,24 +68,6 @@ Here's a sentence with a footnote.[^1]
 
 [^1]: This is the footnote content.
 
-## Conclusion
-
-That's it! You've now seen various Markdown features in action. Happy writing!
-
-This markdown document includes:
-
-1. Various heading levels
-2. Text formatting (bold, italic, inline code)
-3. Unordered and ordered lists
-4. Links
-5. Images with descriptive alt text (to be populated later)
-6. Blockquotes
-7. Code blocks with syntax highlighting
-8. Tables
-9. Horizontal rule
-10. Task list
-11. Footnotes
-
 <!--
 Important Notes for AI [DO NOT COPY THEM IN YOUR OUTPUT, it gets EXPENSIVE FOR ME!]:
 
