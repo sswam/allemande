@@ -147,6 +147,29 @@ class Room:
 			logger.debug("current file size: %d", f.tell())
 			f.truncate(f.tell() - count_bytes)
 
+	def last(self, n=1):
+		""" Get the last n messages from a room. """
+		if n <= 0:
+			return []
+
+		messages = []
+		message = ""
+		for line in tac(self.path, binary=False, keepends=True):
+			if line == "\n" and message:
+				messages.append(message)
+				message = ""
+			if line == "\n":
+				n -= 1
+			else:
+				message = line + message
+			if n < 0:
+				break
+		else:
+			if message:
+				messages.append(message)
+
+		return list(reversed(messages))
+
 
 # TODO move to a separate module
 def tac(file, chunk_size=4096, binary=False, keepends=False):
