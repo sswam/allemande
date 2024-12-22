@@ -93,9 +93,16 @@ def initiative(
         time.sleep(delay)
 
     room_obj = Room(name=room)
-    last_messages = room_obj.last(2)
+    try:
+        last_messages = room_obj.last(2)
+    except FileNotFoundError:
+        logger.debug("Room file not found: %s", room_bb)
+        last_messages = []
     logger.debug("Last messages in %s: %s", room_bb, last_messages)
-    mtime = room_file.stat().st_mtime
+    try:
+        mtime = room_file.stat().st_mtime
+    except FileNotFoundError:
+        mtime = 0
     elapsed = time.time() - mtime
 
     if not should_prompt_for_initiative(last_messages, agent, user, elapsed, idle, repeat):
