@@ -636,7 +636,7 @@ function chat_main() {
 	$on($id('undo'), 'click', undo);
 	$on($id('clear'), 'click', clear);
 	$on($id('archive'), 'click', archive);
-	$on($id('rotate'), 'click', rotate);
+	// $on($id('rotate'), 'click', rotate);
 	$on($id('edit_cancel'), 'click', () => set_controls());
 
 	$on($id('file'), 'click', file_clicked);
