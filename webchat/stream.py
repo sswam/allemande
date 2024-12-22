@@ -82,7 +82,7 @@ async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n
     if head:
         yield head
 
-    async with atail.AsyncTail(filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True, rewind_string=rewind_string) as queue1:
+    async with atail.AsyncTail(filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True, rewind_string=rewind_string, restart=True) as queue1:
         async with akeepalive.AsyncKeepAlive(queue1, keepalive, timeout_return=keepalive_string) as queue2:
             try:
                 while True:

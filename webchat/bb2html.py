@@ -44,7 +44,7 @@ async def bb2html(opts, watch_log, out=sys.stdout):
     """Main function"""
     logger.debug("opts: %s", opts)
 
-    async with atail.AsyncTail(filename=watch_log, follow=True, rewind=True) as queue:
+    async with atail.AsyncTail(filename=watch_log, follow=True, rewind=True, restart=True) as queue:
         while (line := await queue.get()) is not None:
             try:
                 logger.debug("line from tail: %s", line)

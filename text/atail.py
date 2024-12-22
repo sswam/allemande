@@ -1,6 +1,6 @@
 #!/usr/bin/env python3-allemande
 
-""" atail: a program like tail(1), using inotify to follow file changes """
+""" atail: a program like tail(1), using async inotify or polling to follow changes """
 
 import sys
 import argparse
@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 import asyncio
 import io
-import os
+import time
 
 import aiofiles
 import aionotify
@@ -23,7 +23,10 @@ logger.setLevel(logging.DEBUG)
 class AsyncTail:
     """AsyncTail: a class that can tail a file asynchronously"""
 
-    def __init__(self, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False, rewind_string=None):
+    def __init__(
+        self, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False,
+        rewind=False, rewind_string=None, restart=False, poll_interval=None
+    ):
         """Initialize the AsyncTail object"""
         self.filename = filename
         self.wait_for_create = wait_for_create
@@ -32,11 +35,12 @@ class AsyncTail:
         self.follow = follow
         self.rewind = rewind
         self.rewind_string = rewind_string
+        self.restart = restart
+        self.poll_interval = poll_interval
         self.running = False
         self.watcher = None
         self.queue = None
         self.task = None
-        logger.debug("self dict: %r", self.__dict__)
 
     async def __aenter__(self):
         self.queue = asyncio.Queue()
@@ -62,35 +66,38 @@ class AsyncTail:
             while True:
                 await self.run_until_removed()
                 logger.debug("File moved or removed: %s", self.filename)
-                if not (self.rewind and self.wait_for_create):
+                if not (self.restart and self.wait_for_create):
                     break
                 if self.rewind_string:
                     await self.queue.put(self.rewind_string)
         finally:
             self.running = False
             self.close_watcher()
+            await self.queue.put(None)
 
     async def run_until_removed(self):
+        created = False
         if self.wait_for_create and not Path(self.filename).exists():
             await self.wait_for_file_creation()
+            created = True
+
+        all_lines = self.all_lines or (created and self.follow)
 
         async with aiofiles.open(self.filename, mode="r") as f:
             # Regular tail functionality
             # FIXME this is inefficient when using the n option on regular files
-            if self.all_lines or self.lines:
+            # TODO use the tac code, maybe add an option not to reverse the lines and call it tail
+            if all_lines or self.lines:
                 lines = await f.readlines()
-                if self.lines:
+                if not all_lines:
                     lines = lines[-self.lines :]
                 for line in lines:
                     await self.queue.put(line)
             else:
                 await self.seek_to_end(f)
 
-            if not self.follow:
-                return
-
-            # Follow the file, until it is removed
-            await self.follow_changes(f)
+            if self.follow:
+                await self.follow_changes(f)
 
     async def seek_to_end(self, f):
         try:
@@ -100,6 +107,11 @@ class AsyncTail:
 
     async def follow_changes(self, f):
         """Follow the file, until it is removed"""
+        logger.debug("Following changes to file: %s", self.filename)
+        if self.poll_interval is not None:
+            await self.follow_changes_poll(f)
+            return
+
         removed_flags = aionotify.Flags.DELETE_SELF | aionotify.Flags.MOVE_SELF | aionotify.Flags.ATTRIB
 
         pos = await f.tell()
@@ -128,8 +140,36 @@ class AsyncTail:
         finally:
             self.close_watcher()
 
+    async def follow_changes_poll(self, f):
+        """Follow the file using polling instead of inotify"""
+        pos = await f.tell()
+        while True:
+            if not Path(self.filename).exists():
+                break
+
+            count = 0
+            while line := await f.readline():
+                await self.queue.put(line)
+                count += 1
+
+            if self.rewind and not count:
+                await self.seek_to_end(f)
+                pos2 = await f.tell()
+                if pos2 < pos:
+                    return
+                pos = pos2
+            else:
+                pos = await f.tell()
+
+            await asyncio.sleep(self.poll_interval)
+
     async def wait_for_file_creation(self):
         """Wait for the file to be created"""
+        logger.debug("Waiting for file to be created: %s", self.filename)
+        if self.poll_interval is not None:
+            await self.wait_for_file_creation_poll()
+            return
+
         folder = str(Path(self.filename).parent)
         try:
             self.watcher = aionotify.Watcher()
@@ -139,6 +179,11 @@ class AsyncTail:
                 await self.watcher.get_event()
         finally:
             self.close_watcher()
+
+    async def wait_for_file_creation_poll(self):
+        """Wait for the file to be created"""
+        while not Path(self.filename).exists():
+            await asyncio.sleep(self.poll_interval)
 
     def close_watcher(self):
         """Close the watcher"""
@@ -152,11 +197,28 @@ class AsyncTail:
 
 
 async def atail(
-    output=sys.stdout, filename="/dev/stdin", wait_for_create=False, lines=0, all_lines=False, follow=False, rewind=False, rewind_string=None
+    output=sys.stdout,
+    filename="/dev/stdin",
+    wait_for_create=False,
+    lines=0,
+    all_lines=False,
+    follow=False,
+    rewind=False,
+    rewind_string=None,
+    restart=False,
+    poll_interval=None,
 ):
     """Tail a file - for command-line tool, and an example of usage"""
     async with AsyncTail(
-        filename=filename, wait_for_create=wait_for_create, lines=lines, all_lines=all_lines, follow=follow, rewind=rewind, rewind_string=rewind_string
+        filename=filename,
+        wait_for_create=wait_for_create,
+        lines=lines,
+        all_lines=all_lines,
+        follow=follow,
+        rewind=rewind,
+        rewind_string=rewind_string,
+        restart=restart,
+        poll_interval=poll_interval,
     ) as queue:
         while (line := await queue.get()) is not None:
             print(line, end="", file=output)
@@ -172,8 +234,10 @@ def get_opts():
     parser.add_argument("-n", "--lines", type=int, default=0, help="output the last N lines")
     parser.add_argument("-a", "--all-lines", action="store_true", help="output all lines")
     parser.add_argument("-f", "--follow", action="store_true", help="follow the file")
-    parser.add_argument("-r", "--rewind", action="store_true", help="rewind to start if file shrinks or is recreated")
+    parser.add_argument("-r", "--rewind", action="store_true", help="rewind to start if file shrinks")
     parser.add_argument("-R", "--rewind-string", help="string to output on rewind")
+    parser.add_argument("-s", "--restart", action="store_true", help="restart if file is removed")
+    parser.add_argument("-p", "--poll", type=float, help="poll interval in seconds (instead of using inotify)")
     ucm.add_logging_options(parser)
     opts = parser.parse_args()
     return opts
@@ -192,6 +256,8 @@ def main():
             follow=opts.follow,
             rewind=opts.rewind,
             rewind_string=opts.rewind_string,
+            restart=opts.restart,
+            poll_interval=opts.poll,
         )
     )
 
