@@ -2,7 +2,7 @@ var_uniq() {
 	local var=$1
 	local old_IFS=$IFS
 	IFS=$2
-	lecho ${!var} | uniqo | tr '\n' "$IFS" | sed "s/$IFS$//"
+	lecho ${!var} | uniqo | grep . | tr '\n' "$IFS" | sed "s/$IFS$//"
 	IFS=$old_IFS
 }
 
