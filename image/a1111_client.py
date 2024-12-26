@@ -12,6 +12,7 @@ from pathlib import Path
 import signal
 import asyncio
 import json
+import re
 
 import aiohttp
 from tqdm import tqdm  # type: ignore
@@ -29,6 +30,11 @@ async def generate_image(session, params):
     """Send a request to the API and return the response."""
     async with session.post(API_URL, json=params) as response:
         return await response.json()
+
+
+def remove_comments(text):
+    """Remove comments from the text."""
+    return re.sub(r"#.*", "", text, flags=re.MULTILINE)
 
 
 async def a1111_client(
@@ -64,8 +70,8 @@ async def a1111_client(
     if seed == -1:
         seed = random.randint(0, 2**32 - 1)
 
-    prompt = text.squeeze(prompt)
-    negative_prompt = text.squeeze(negative_prompt)
+    prompt = text.squeeze(remove_comments(prompt))
+    negative_prompt = text.squeeze(remove_comments(negative_prompt))
 
     if pony:
         prompt, negative_prompt = pony_biolerplate(pony, prompt, negative_prompt)
