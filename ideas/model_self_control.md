@@ -1,0 +1,5 @@
+- an LLM can emit tokens to adjust its own parameters
+	- increase or decrease temperature
+		- so when requested to be more creative, it can do so
+		- perhaps corresponds to hormones in humans
+- we could totally do function calls mid generation
