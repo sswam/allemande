@@ -127,7 +127,7 @@ pro-dev.xtc: svelte-dev.xtc
 clean:
 	spool-cleanup
 	spool-history-rm
-	> watch.log
+	> $(WATCH_LOG)
 
 llm:
 	while true; do $(PYTHON) core/llm_llama.py -m "$(LLM_MODEL)" -d; sleep 1; done
