@@ -15,12 +15,19 @@ logger = logging.getLogger(__name__)
 
 def find_name_in_content(content, name, ignore_case=True):
 	""" try to find a name in message content """
+	start_comma_word = r'^\s*' + re.escape(name) + r'\b\s*,'
+	comma_word_end = r',\s*' + re.escape(name) + r'\b\s*[\.!?]?\s*$'
+	word_start = r'^\s*' + re.escape(name) + r'\b'
+	word_end = r'\b' + re.escape(name) + r'\b\s*[\.!?]?\s*$'
 	whole_word = r'\b' + re.escape(name) + r'\b'
+
 	flags = re.IGNORECASE if ignore_case else 0
-	match = re.search(whole_word, content, flags)
-	if match:
-		return (match.start(), name)
-	return (len(content), None)
+
+	for i, regexp in enumerate([start_comma_word, comma_word_end, word_start, word_end, whole_word]):
+		if match := re.search(regexp, content, flags):
+			return (i, match.start(), name)
+
+	return (100, len(content), None)
 
 
 def who_is_named(content, user, agents, include_self=True):
@@ -29,11 +36,11 @@ def who_is_named(content, user, agents, include_self=True):
 	logger.warning("content %r", content)
 	matches = [find_name_in_content(content, agent) for agent in agents]
 	if not include_self and user:
-		matches = [m for m in matches if m[1] and m[1].lower() != user.lower()]
+		matches = [m for m in matches if m[2] and m[2].lower() != user.lower()]
 	if not matches:
 		return []
 	logger.warning("who_is_named, matches: %r", matches)
-	_pos, agent = min(matches)
+	_type, _pos, agent = min(matches)
 	if agent is None:
 		invoked = []
 #	elif agent in EVERYONE_WORDS and include_self:
