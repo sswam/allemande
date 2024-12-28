@@ -23,7 +23,7 @@ body#messages {
 	background: var(--background);
 }
 
-input, textarea, button, iframe, .button, .label {
+input, textarea, button, iframe, .button {
 	background: var(--input);
 	border: 1px solid var(--border);
 }

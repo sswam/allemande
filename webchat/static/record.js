@@ -120,7 +120,7 @@ async function handleRecording(includeVideo = false) {
             set_timer(seconds);
         }, 1000);
 
-        const $pause = $id('rec_pause');
+        const $pause = $id('rec_time');
         $on($pause, 'click', () => {
             if (mediaRecorder.state === 'recording') {
                 mediaRecorder.pause();
