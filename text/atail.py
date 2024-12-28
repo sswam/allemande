@@ -66,8 +66,9 @@ class AsyncTail:
             while True:
                 await self.run_until_removed()
                 logger.debug("File moved or removed: %s", self.filename)
-                if not (self.restart and self.wait_for_create):
+                if not self.restart:
                     break
+                self.wait_for_create = True
                 if self.rewind_string:
                     await self.queue.put(self.rewind_string)
         finally:
