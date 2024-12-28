@@ -1,0 +1,3 @@
+Story of Melchizedek
+
+The Story of Melchizedek is an anonymous apocryphal text written in Greek between the 1st-3rd centuries AD, likely by Jewish authors in Egypt or the Levant. The story follows Melchizedek, son of King Melchi of Salem, who rejects paganism after contemplating celestial bodies. When his father attempts to sacrifice him, his brother is killed instead. Melchizedek flees to Mount Tabor, where he lives as an ascetic for seven years until Abraham finds him. The text exists in multiple translations and versions, with two main Christian recensions - one falsely attributed to Athanasius and another incorporated into the Palaea historica. It achieved particular popularity in Slavonic traditions, where five distinct versions emerged.
