@@ -1,7 +1,8 @@
 max_new_tokens: 2048
 repetition_penalty: 1.1
-penalty_alpha: 0
-temperature: 0.7
-top_k: 40
-top_p: 0.95
+penalty_alpha: 0.4
+temperature: 0.5
+top_k: 50
+top_p: 1.0
 early_stopping: true
+
