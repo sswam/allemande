@@ -66,14 +66,14 @@ AGENTS_LOCAL = {
 		"service": "llm_llama",
 		"model": "default",
 #		"system_top": "Your name is Ally.",
-		"system_bottom": "You are Ally. Ally is creative and talkative, and you try not to repeat what you've said before. You always say something interesting, not just a few words.",
+		"system_bottom": "You are Ally. Ally is creative and talkative. You always say something interesting.",
 		"system_bottom_pos": 1,
 	},
 	"Barbie": {
 		"service": "llm_llama",
 		"model": "default",
 #		"system_top": "Your name is Barbie. You're not a doll! You're fun and clever.",
-		"system_bottom": "You are Barbie. Barbie is playful and talkative, and you try not to repeat what you've said before. You always say something interesting, not just a few words.",
+		"system_bottom": "You are Barbie. Barbie is playful and talkative. You always say something interesting.",
 		"system_bottom_pos": 1,
 	},
 	"Callam": {
@@ -611,6 +611,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 		context = [regex.sub(r".*?\t", r"", line).strip() for line in context]
 		text = args.delim.join(context)
 		text = regex.sub(r".*?\b" + agent_name_esc + r"\b[,;.]?", r"", text, flags=regex.DOTALL | regex.IGNORECASE)
+		text = re.sub(r"```(.*?)```", r"\1", text, flags=re.DOTALL)
 		return text.strip()
 
 	clean_prompt = agent.get("clean_prompt", False)
