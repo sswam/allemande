@@ -1,18 +1,22 @@
 max_new_tokens: 2048
 temperature: 1
 early_stopping: true
-dry_allowed_length: 1
-dry_multiplier: 3
-dry_base: 3
+dry_allowed_length: 2
+dry_multiplier: 0.8
+dry_base: 1.75
 # dry_multiplier: 0.8
 # dry_base: 1.75
-dry_range: 2048
-dry_seq_breakers: '["\n\n"]'
+# dry_range: 2048
+dry_seq_breakers: '["-----"]'
 # dry_seq_breakers: '["\n", ":\t", "\"", "*"]'
 repetition_penalty: 1.1
 min_p: 0.02
 top_p: 1
 top_k: 0
+# top_p: 1000000
+# top_k: 1000000
+# xtc_probability: 0.5
+# xtc_threshold: 0.1
 
 # min_p: 0.02
 # dry_seq_breakers: '["\n", ":", "\"", "*"]'
