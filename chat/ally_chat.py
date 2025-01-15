@@ -127,6 +127,36 @@ AGENTS_LOCAL = {
 			"hires": 1.5,
 		}
 	},
+	"Coni": {
+		"model": "cyberrealisticPony_v61",
+		"service": "image_a1111",
+		"default_context": 1,
+		"clean_prompt": True,
+		"config": {
+			"steps": 15,
+			"cfg_scale": 5,
+			"pony": 1.0,
+			"pag": True,
+			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"ad_mask_k_largest": 10,
+			"hires": 1.5,
+		}
+	},
+	"Boni": {
+		"model": "babesByStableYogi_ponyV4VAEFix",
+		"service": "image_a1111",
+		"default_context": 1,
+		"clean_prompt": True,
+		"config": {
+			"steps": 15,
+			"cfg_scale": 7,
+			"pony": 1.0,
+			"pag": True,
+			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"ad_mask_k_largest": 10,
+			"hires": 1.5,
+		}
+	},
 }
 
 AGENTS_REMOTE = {
