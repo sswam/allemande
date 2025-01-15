@@ -15,13 +15,13 @@ function add_user() {
 		cat <<END
 Here's the info to access Ally Chat:
 
-$user $pass
-^user ^password
+user: $user
+pass: $pass
 https://allemande.ai
 
-Log in, then click "Ally Chat". You can change the room name at the top
-to something obscure for a more private chat. To talk with a bot,
-you can mention their name, e.g. Emmy, Dav, Claud, Clia, Ally.
+Log in, then click "Ally Chat". The default room "Ally Chat" is a public room. You can change the room name at the top then press enter, e.g. change it to $user/yourtopic
+
+To talk with an AI character, mention their name, e.g. Ally, Emmy, Dav, Claude, Clia. The main image model is Illy. If an AI is talking to another AI or agent, you can press "poke" to allow the chat to continue.
 END
 	done
 }
