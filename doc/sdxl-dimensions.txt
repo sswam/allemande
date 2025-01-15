@@ -1,11 +1,24 @@
 Supported dimensions are:
-- 1024x1024 (1:1 square)
-- 1152x896 (9:7)
-- 896x1152 (7:9)
-- 1216x832 (19:13)
-- 832x1216 (13:19)
-- 1344x768 (7:4 horizontal)
-- 768x1344 (4:7 vertical)
-- 1536x640 (12:5 horizontal)
-- 640x1536 (5:12 vertical).
-Only the aspect ratio is important, not the exact dimensions."
+
+- 640x1536  [set width=640 height=1536]  (5:12 vertical)
+- 768x1344  [set width=768 height=1344]  (4:7 vertical)
+- 832x1216  [set width=832 height=1216]  (13:19 vertical)
+- 896x1152  [set width=896 height=1152]  (7:9 vertical)
+- 1024x1024 [set width=1024 height=1024] (1:1 square)
+- 1152x896  [set width=1152 height=896]  (9:7 horizontal)
+- 1216x832  [set width=1216 height=832]  (19:13 horizontal)
+- 1344x768  [set width=1344 height=768]  (7:4 horizontal)
+- 1536x640  [set width=1536 height=640]  (12:5 horizontal)
+
+[set width=640 height=1536]
+[set width=768 height=1344]
+[set width=832 height=1216]
+[set width=896 height=1152]
+[set width=1024 height=1024]
+[set width=1152 height=896]
+[set width=1216 height=832]
+[set width=1344 height=768]
+[set width=1536 height=640]
+
+
+Only the aspect ratio is important, not the exact dimensions.
