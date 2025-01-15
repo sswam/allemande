@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 portal_by_service = {}
 
-LOCAL_AGENT_TIMEOUT=90
+LOCAL_AGENT_TIMEOUT=180
 
 
 # TODO can't select model from here now
@@ -94,6 +94,7 @@ AGENTS_LOCAL = {
 			"pag": True,
 			"adetailer": ["face_yolov8n.pt"],
 			"ad_mask_k_largest": 10,
+			"hires": 1.5,
 		}
 	},
 	"Yoni": {
@@ -108,6 +109,7 @@ AGENTS_LOCAL = {
 			"pag": True,
 			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
+			"hires": 1.5,
 		}
 	},
 	"Poni": {
@@ -122,6 +124,7 @@ AGENTS_LOCAL = {
 			"pag": True,
 			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
+			"hires": 1.5,
 		}
 	},
 }
