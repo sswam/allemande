@@ -147,7 +147,8 @@ def pony_biolerplate(pony, prompt, negative_prompt):
     """Add pony boilerplate to the prompt and negative prompt."""
     pony1p = f"(score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:{pony})\nBREAK\n"
     prompt = f"{pony1p}{prompt}"
-    pony1n = f"(score_6, score_5, score_4:{pony})\nBREAK\n"
+#    pony1n = f"(score_6, score_5, score_4:{pony})\nBREAK\n"
+    pony1n = f"score_6, score_5, score_4\nBREAK\n"
     negative_prompt = f"{pony1n}{negative_prompt}"
     return prompt, negative_prompt
 
@@ -159,7 +160,8 @@ def hires_fix_add_params(params, scale, denoising_strength=0.3, steps=None):
         {
             "enable_hr": True,
             "hr_scale": scale,
-            "hr_upscaler": "Lanczos",
+#            "hr_upscaler": "Lanczos",
+            "hr_upscaler": "ESRGAN_4x",
             "denoising_strength": denoising_strength,
             "hr_scheduler": params["scheduler"],
             "hr_second_pass_steps": steps,
@@ -182,7 +184,8 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest):
     for model in adetailer:
         args.append(
             {
-                "ad_denoising_strength": 0.3,
+#                "ad_denoising_strength": 0.3,
+                "ad_denoising_strength": 0.4,
                 "ad_cfg_scale": 7,
                 "ad_checkpoint": "Use same checkpoint",
                 "ad_clip_skip": 1,
