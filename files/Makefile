@@ -1,4 +1,4 @@
-exes = touch_ctime
+exes = touch_ctime recover_non_zero
 tests = tests/touch_ctime_test
 
 CC=gcc
