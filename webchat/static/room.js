@@ -169,15 +169,23 @@ function embed_click($thumb) {
 }
 
 function click(ev) {
-	if (ev.target.classList.contains('thumb')) {
+	if (ev.target.classList.contains('thumb') && ev.button == 0) {
 		embed_click(ev.target);
 		return;
 	}
-	// check for img tag, and browse to the src in this window
+	console.log("ev.button", ev.button);
+	// check for img tag, and browse to the src
 	if (ev.target.tagName == 'IMG') {
-		location.href = ev.target.src;
+		if (ev.shiftKey) {
+			window.open(ev.target.src, '_blank');
+		} else if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
+			window.open(ev.target.src, '_blank').focus();
+		} else {
+			window.top.location.href = ev.target.src;
+		}
 		return;
 	}
 }
 
 $on(document, 'click', click);
+$on(document, 'auxclick', click);
