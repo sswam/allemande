@@ -10,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 )
 
 const Version = "1.1.13"
@@ -63,7 +64,7 @@ func processRow(row []string, widths []int, options []string) []int {
 			formattedCell = fmt.Sprintf(opt, cell)
 		}
 
-		length := len(formattedCell)
+		length := utf8.RuneCountInString(formattedCell)
 		if i == 0 {
 			leadingTabs := len(cell) - len(strings.TrimLeft(cell, "\t"))
 			length += leadingTabs * 7  // 7 because the tab itself counts as 1
