@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 # disabled "everyone" for now; keep it simple
 # EVERYONE_WORDS = ["everyone", "anyone", "all", "y'all"]
 
+EXCLUDE_PARTICIPANTS = set(["System"])
+
 
 def find_name_in_content(content, name, ignore_case=True):
 	""" try to find a name in message content """
@@ -66,7 +68,7 @@ def who_spoke_last(history, user, agents, include_self=False):
 
 
 def participants(history):
-	agents = list(set(x.get("user") for x in history if x.get("user")))
+	agents = list(set(x.get("user") for x in history if x.get("user")) - EXCLUDE_PARTICIPANTS)
 	return agents
 
 
