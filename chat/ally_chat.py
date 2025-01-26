@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 portal_by_service = {}
 
-LOCAL_AGENT_TIMEOUT=180
+LOCAL_AGENT_TIMEOUT = 5 * 60
 
 
 # TODO can't select model from here now
