@@ -92,7 +92,7 @@ AGENTS_LOCAL = {
 			"steps": 15,
 			"cfg_scale": 4.5,
 			"pag": True,
-			"adetailer": ["face_yolov8n.pt"],
+			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
 			"hires": 1.5,
 		}
