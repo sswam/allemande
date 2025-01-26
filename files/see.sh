@@ -12,6 +12,14 @@ if [ -d "$file" ]; then
 	exit
 fi
 
+mp() {
+	if [ -n "$(which mp)" ]; then
+		command mp "$@"
+	else
+		mpv "$@"
+	fi
+}
+
 case "$file" in
 *.txt|*.md|*.bb)
 	less "$file" ;;
@@ -24,9 +32,9 @@ case "$file" in
 	qiv "$file" ;;
 	# sxiv "$file" ;;
 *.mp4|*.mkv|*.avi|*.webm|*.mpg|*.mpeg|*.m4v|*.ts)
-	mpv -- "$file" ;;
+	mp "$file" ;;
 *.mp3|*.ogg|*.wav|*.aac)
-	mpv -- "$file" ;;
+	mp "$file" ;;
 *.zip)
 	mcomix -- "$file" ;;
 *)
