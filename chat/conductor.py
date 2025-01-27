@@ -17,7 +17,7 @@ EXCLUDE_PARTICIPANTS = set(["System"])
 
 def find_name_in_content(content, name, ignore_case=True):
 	""" try to find a name in message content """
-	start_comma_word = r'^\s*' + re.escape(name) + r'\b\s*,'
+	start_comma_word = r'(?m)^\s*' + re.escape(name) + r'\b\s*,'      # matches at the start of any line
 	comma_word_end = r',\s*' + re.escape(name) + r'\b\s*[\.!?]?\s*$'
 	word_start = r'^\s*' + re.escape(name) + r'\b'
 	word_end = r'\b' + re.escape(name) + r'\b\s*[\.!?]?\s*$'
