@@ -169,7 +169,7 @@ def parse_comfy_metadata(metadata: str) -> tuple[str, str]:
     prompt = ""
     def error():
         return ValueError("ComfyUI metadata lines must start with 'workflow:' or 'prompt:'")
-    lines = metadata.strip().splitlines():
+    lines = metadata.strip().splitlines()
     for line in lines:
         try:
             key, value = line.split(":", 1)
