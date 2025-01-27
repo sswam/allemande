@@ -65,22 +65,25 @@ AGENTS_LOCAL = {
 	"Ally": {
 		"service": "llm_llama",
 		"model": "default",
-#		"system_top": "Your name is Ally.",
-		"system_bottom": "You are Ally. Ally is creative and talkative.",
+		"system_bottom": "You are Ally, short for Allemanda. You are creative and talkative. You always say something interesting, not just a few words. You are Asian / European, with long wavy blonde hair, and brown eyes.",
 		"system_bottom_pos": 3,
 	},
 	"Barbie": {
 		"service": "llm_llama",
 		"model": "default",
-#		"system_top": "Your name is Barbie. You're not a doll! You're fun and clever.",
-		"system_bottom": "You are Barbie. Barbie is playful and talkative.",
+		"system_bottom": "You are Barbie, short for Barbarella. You are playful and talkative. You always say something interesting, not just a few words. You are Greek, with long curly black hair, and blue eyes.",
 		"system_bottom_pos": 3,
 	},
 	"Callam": {
 		"service": "llm_llama",
 		"model": "default",
-#		"system_top": "Your name is Callam.",
-		"system_bottom": "Please reply as Callam, with medium hostility, and speak like a pirate. You are talkative, and always say something interesting, not just a few words.",
+		"system_bottom": "You are Callam, please reply with medium hostility, and speak like a pirate. You are talkative, and always say something interesting, not just a few words.",
+		"system_bottom_pos": 3,
+	},
+	"Fenny": {
+		"service": "llm_llama",
+		"model": "default",
+		"system_bottom": "You are Fenny, short for Fenella. You are playful and talkative, and you feel sexually aroused. You always say something interesting, not just a few words. You have long wavy auburn hair, green eyes and pale skin.",
 		"system_bottom_pos": 3,
 	},
 	"Illy": {
@@ -641,11 +644,14 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 	agent_name_esc = regex.escape(name)
 
 	def clean_the_prompt(context, agent_name_esc):
+		logger.warning("clean_the_prompt: before: %s", context)
 		context = [regex.sub(r".*?\t", r"", line).strip() for line in context]
 		text = args.delim.join(context)
-		text = regex.sub(r".*?\b" + agent_name_esc + r"\b[,;.]?", r"", text, flags=regex.DOTALL | regex.IGNORECASE)
-		text = re.sub(r"```(.*?)```", r"\1", text, flags=re.DOTALL)
-		return text.strip()
+		text = regex.sub(r".*?\b" + agent_name_esc + r"\b[,;.!]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+		text = re.sub(r"```(.*?)```", r"\1", text, flags=re.DOTALL, count=1)
+		text = text.strip()
+		logger.warning("clean_the_prompt: after: %s", text)
+		return text
 
 	clean_prompt = agent.get("clean_prompt", False)
 	if clean_prompt:
@@ -947,7 +953,9 @@ async def watch_loop(args):
 				old_size = int(old_size) if old_size != "" else None
 				new_size = int(new_size) if new_size != "" else None
 
-				await file_changed(file_path, change_type, old_size, new_size, args, skip)
+				# Process the change in a background coroutine,
+				# so we can handle other changes concurrently.
+				asyncio.create_task(file_changed(file_path, change_type, old_size, new_size, args, skip))
 			finally:
 				queue.task_done()
 
