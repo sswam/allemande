@@ -5,14 +5,15 @@
 import os
 import logging
 from pathlib import Path
-import yaml
-from typing import AsyncIterator
 import asyncio
 import re
 
-from ally import main, logs
+import yaml
+
 import a1111_client
 import slug
+import stamp
+from ally import main, logs
 
 __version__ = "0.1.0"
 
@@ -65,6 +66,10 @@ async def process_request(portals, portal, req):
             except ValueError:
                 pass
 
+        fmt = config.get("format", "jpg")
+        if fmt not in ("jpg", "png"):
+            raise ValueError(f"unknown format: {fmt}")
+
         await a1111_client.a1111_client(
             output=str(d / output_stem),
             prompt=prompt,
@@ -85,6 +90,9 @@ async def process_request(portals, portal, req):
             model=config.get("model"),
         )
 
+        if fmt == "jpg":
+            convert_images_to_jpeg(d)
+
         os.rename(d, portal / "done" / req)
         logger.info("%s:%s - done", portal, req)
     except Exception as e:
@@ -93,6 +101,14 @@ async def process_request(portals, portal, req):
     finally:
         if log_handler:
             logger.removeHandler(log_handler)
+
+
+def convert_images_to_jpeg(d: Path, quality: int = 95):
+    """Convert all images in a directory to JPEG, deleting the original PNGs and preserving metadata"""
+    for img in d.iterdir():
+        if img.suffix.lower() == ".png":
+            stamp.convert_image(img, img.with_suffix(".jpg"), quality=quality)
+            img.unlink()
 
 
 async def serve_requests(portals: str = str(portals_dir), poll_interval: float = 1.0):
