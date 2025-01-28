@@ -100,7 +100,7 @@ AGENTS_LOCAL = {
 		"clean_prompt": True,
 		"config": {
 			"steps": 15,
-			"cfg_scale": 4.5,
+			"cfg_scale": 4.5
 			"pag": True,
 			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
@@ -144,7 +144,7 @@ AGENTS_LOCAL = {
 		"clean_prompt": True,
 		"config": {
 			"steps": 15,
-			"cfg_scale": 5,
+			"cfg_scale": 5
 			"pony": 1.0,
 			"pag": True,
 			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
