@@ -13,6 +13,7 @@ import re
 import subprocess
 from types import SimpleNamespace
 import asyncio
+from collections import defaultdict
 
 import shlex
 import readline
@@ -65,13 +66,13 @@ AGENTS_LOCAL = {
 	"Ally": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": "You are Ally, short for Allemanda. You are creative and talkative. You always say something interesting, not just a few words. You are Asian / European, with long wavy blonde hair, and brown eyes.",
+		"system_bottom": "You are Ally, short for Allemanda. You are creative and talkative. You always say something interesting, not just a few words. You have are Asian / European, with long wavy blonde hair, and brown eyes.",
 		"system_bottom_pos": 3,
 	},
 	"Barbie": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": "You are Barbie, short for Barbarella. You are playful and talkative. You always say something interesting, not just a few words. You are Greek, with long curly black hair, and blue eyes.",
+		"system_bottom": "You are Barbie, short for Barbarella. You are playful and talkative. You always say something interesting, not just a few words. You are Greek / Italian, with long, curly, black hair, and blue eyes.",
 		"system_bottom_pos": 3,
 	},
 	"Callam": {
@@ -80,10 +81,16 @@ AGENTS_LOCAL = {
 		"system_bottom": "You are Callam, please reply with medium hostility, and speak like a pirate. You are talkative, and always say something interesting, not just a few words.",
 		"system_bottom_pos": 3,
 	},
+	"Emmie": {
+		"service": "llm_llama",
+		"model": "default",
+		"system_bottom": "You are Emmie, short for Emmaline. You are creative, talkative, and very intelligent. You always say something interesting, not just a few words. You are Hispanic / Mediterranean, with long, wavy, brown hair, hazel eyes, and light tan skin.",
+		"system_bottom_pos": 3,
+	},
 	"Fenny": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": "You are Fenny, short for Fenella. You are playful and talkative, and you feel sexually aroused. You always say something interesting, not just a few words. You have long wavy auburn hair, green eyes and pale skin.",
+		"system_bottom": "You are Fenny, short for Fenella. You are playful and talkative, and you feel sexually aroused. You always say something interesting, not just a few words. You are from England. You have long, wavy, auburn hair, green eyes, and pale skin.",
 		"system_bottom_pos": 3,
 	},
 	"Illy": {
@@ -551,8 +558,8 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 	return response3
 
 
-async def process_file(file, args, history_start=0) -> bool:
-	"""Process a file, return True if appended new content."""
+async def process_file(file, args, history_start=0, skip=None) -> int:
+	""" Process a file, return True if appended new content. """
 	logger.info("Processing %s", file)
 
 	history = history_read(file, args)
@@ -572,32 +579,34 @@ async def process_file(file, args, history_start=0) -> bool:
 #	logger.warning("loaded history: %r", history)
 
 	# get latest user name and bot name from history
-	bot = AGENT_DEFAULT
+	bots = [AGENT_DEFAULT]
 	if history:
 		history_messages = list(chat.lines_to_messages(history))
 
-		who = conductor.who_should_respond(history_messages[-1], agents=AGENTS, history=history_messages, default=bot)
-		if who:
-			bot = who[0]
-		else:
-			bot = None
-		logger.warning("who should respond: %r", who)
+		bots = conductor.who_should_respond(history_messages[-1], agents=AGENTS, history=history_messages, default=AGENT_DEFAULT)
+		logger.warning("who should respond: %r", bots)
 
-	if bot and bot.lower() in AGENTS:
-		#     - query is not even used in remote_agent
-		query1 = history[-1] if history else None
-		logger.debug("query1: %r", query1)
-		messages = list(chat.lines_to_messages([query1]))
-		query = messages[-1]["content"] if query1 else ""
-		logger.debug("query: %r", query)
-		agent = AGENTS[bot.lower()]
-		response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
-		history.append(response)
-		logger.debug("history: %r", history)
-		history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
+	count = 0
+	for bot in bots:
+		if bot and bot.lower() in AGENTS:
+			#     - query is not even used in remote_agent
+			query1 = history[-1] if history else None
+			logger.debug("query1: %r", query1)
+			messages = list(chat.lines_to_messages([query1]))
+			query = messages[-1]["content"] if query1 else ""
+			logger.debug("query: %r", query)
+			agent = AGENTS[bot.lower()]
+			response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
+			history.append(response)
+			logger.debug("history: %r", history)
+			# avoid re-processing in response to an AI response
+			if skip is not None:
+				logger.info("Will skip processing after agent/s response: %r", file)
+				skip[file] += 1
+			history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
 
-		return True
-	return False
+			count += 1
+	return count
 
 
 async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
@@ -924,26 +933,21 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
 
 	if skip.get(file_path):
 		logger.info("Won't react to AI response: %r", file_path)
-		del skip[file_path]
+		skip[file_path] -= 1
 		return
 
-	responded = False
+	responded_count = 0
 	try:
 		logger.info("Processing file: %r", file_path)
-		responded = await process_file(file_path, args)
+		await process_file(file_path, args, skip=skip)
 	except Exception as e:
 		logger.exception("Processing file failed", exc_info=True)
-
-	# avoid re-processing in response to an AI response
-	if responded:
-		logger.info("Will skip processing after agent response: %r", file_path)
-		skip[file_path] = 1
 
 
 async def watch_loop(args):
 	"""Follow the watch log, and process files."""
 
-	skip = {}
+	skip = defaultdict(int)
 
 	async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
 		while (line := await queue.get()) is not None:
