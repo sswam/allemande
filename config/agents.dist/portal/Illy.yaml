@@ -1,0 +1,13 @@
+type: portal
+service: image_a1111
+model: juggernautXL_juggXIByRundiffusion
+default_context: 1
+clean_prompt: true
+config:
+    steps: 15
+    cfg_scale: 4.5
+    pag: true
+    hires: 1.5
+    adetailer:
+    - face_yolov8n.pt
+    ad_mask_k_largest: 10

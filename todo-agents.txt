@@ -1,0 +1,5 @@
+TODO:
+- remote agents, add key as name
+- remote models: need to limit context by tokens not messages
+- move config.sh and agents to ~/my/allemande/$hostname and symlink back
+- could keep agents under rooms?  makes sense...

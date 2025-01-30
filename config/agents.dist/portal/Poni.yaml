@@ -1,0 +1,14 @@
+type: portal
+service: image_a1111
+model: autismmixSDXL_autismmixConfetti
+default_context: 1
+clean_prompt: true
+config:
+    steps: 15
+    cfg_scale: 7
+    pag: true
+    hires: 1.5
+    pony: 1.0
+    adetailer:
+    - face_yolov8n.pt
+    ad_mask_k_largest: 10
