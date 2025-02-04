@@ -145,3 +145,4 @@ pywebpush
 types-PyYAML
 types-Markdown
 types-aiofiles
+types-regex
