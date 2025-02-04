@@ -87,14 +87,28 @@ function message_keypress(ev) {
 */
 
 function message_keydown(ev) {
-	if (ev.keyCode == 13 && ev.ctrlKey) {
+	if (ev.ctrlKey && ev.key === 'Enter') {  // send
 		ev.preventDefault();
 		send(ev);
 	}
+	else if (ev.altKey && ev.key === 'z') {  // undo
+		ev.preventDefault();
+		undo(ev);
+	}
+	else if(ev.altKey && ev.key === 't') {  // insert tab
+		ev.preventDefault();
+		textarea_insert_text($content, "\t");
+	}
+}
+
+function textarea_insert_text(textarea, text) {
+	const pos = textarea.selectionStart;
+	textarea.value = textarea.value.slice(0,pos) + text + textarea.value.slice(textarea.selectionEnd);
+	textarea.selectionStart = textarea.selectionEnd = pos + 1;
 }
 
 function room_keypress(ev) {
-        if (ev.keyCode == 13) {
+        if (ev.key == 'Enter') {
 		ev.preventDefault();
 		$content.focus();
 		return false;
@@ -231,8 +245,9 @@ function change_room() {
 
 function room_set_number(n) {
 	if (n === "") {
-		room = room.replace(/(.*\D|)(\d+)(\D.*|)$/, "$1$3");
-		room = room.replace(/\/+$/, "");
+//		room = room.replace(/(.*\D|)(\d+)(\D.*|)$/, "$1$3");
+		room = room.replace(/\/*\d+$/, "");
+//		room = room.replace(/\/+$/, "");
 		set_room(room);
 	}
 	if (n < 0) {
@@ -241,7 +256,7 @@ function room_set_number(n) {
 	if (n > MAX_ROOM_NUMBER) {
 		n = MAX_ROOM_NUMBER;
 	}
-	set_room(room.replace(/\d+|$/, n));
+	set_room(room.replace(/(\/?)\d+$|$/, "$1"+n));
 }
 
 function room_get_number() {
