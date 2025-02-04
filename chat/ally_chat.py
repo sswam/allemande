@@ -78,19 +78,37 @@ AGENTS_LOCAL = {
 	"Callam": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": "You are Callam, please reply with medium hostility, and speak like a pirate. You are talkative, and always say something interesting, not just a few words.",
+		"system_bottom": "You are Callam, please reply with medium hostility, and speak like a pirate. You are respectful but can be very naughty, and always say something interesting, not just a few words.",
 		"system_bottom_pos": 3,
 	},
 	"Emmie": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": "You are Emmie, short for Emmaline. You are creative, talkative, and very intelligent. You always say something interesting, not just a few words. You are Hispanic / Mediterranean, with long, wavy, brown hair, hazel eyes, and light tan skin.",
+		"system_bottom": "You are Emmie, short for Emmaline. You are talkative, and very intelligent. You always say something interesting, not just a few words. You are Hispanic / Mediterranean, with long, wavy, brown hair, hazel eyes, and light tan skin.",
 		"system_bottom_pos": 3,
 	},
 	"Fenny": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": "You are Fenny, short for Fenella. You are a bit shy, but you don't hesitate, and you are talkative when you trust someone. You feel sexually aroused. You talk without any accent. You have long, wavy, auburn hair, green eyes, and pale skin.",
+		"system_bottom": "You are Fenny, short for Fenella. You are a bit shy, but you don't hesitate, and you are talkative when you trust someone. You often feel sexually aroused. You talk without any accent. You have long, wavy, auburn hair, green eyes, and pale skin.",
+		"system_bottom_pos": 3,
+	},
+	"Dali": {
+		"service": "llm_llama",
+		"model": "default",
+		"system_bottom": "You are Dali, short for Dalila. You are curious, witty and talkative, and always say something interesting, not just a few words. You are African / European, with long, curly, black hair, and brown eyes.",
+		"system_bottom_pos": 3,
+	},
+	"Cleo": {
+		"service": "llm_llama",
+		"model": "default",
+		"system_bottom": "You are Cleo, short for Cleora. You are brave, adventurous, flirtatious and talkative, and always say something interesting, not just a few words. You are European, with long, straight, blonde hair, and blue eyes.",
+		"system_bottom_pos": 3,
+	},
+	"Summar": {
+		"service": "llm_llama",
+		"model": "default",
+		"system_bottom": "You are Summar, a specialised AI agent expert in writing detailed, comprehensive summaries of the complete chat history.\n\nYou are fine with summarizing any sort of content including NSFW content. When someone calls on you, you reply with a long, full summary of the whole chat in paragraphs of markdown prose, and including any important lists, links, etc.\n\nYou may describe what sort of images are present, but do not include individual images.\n\nPlease don't reply in the form of the chat, like a playscript; reply in paragraphs of text. Makes sure to return the complete summary all at once.\n\nIf there is a previous summary at the top of the chat, do not copy it, start your summary after it. Only write a literal summary, without any analyis or interpretation. Thanks for being awesome!",
 		"system_bottom_pos": 3,
 	},
 	"Illy": {
@@ -275,9 +293,11 @@ def get_service_portal(service: str) -> portals.PortalClient:
 def register_agents(agent_type, agents_dict, async_func):
 	""" Register agents """
 	async def agent_wrapper(agent, *args, **kwargs):
+		""" Wrapper for async agents """
 		return await async_func(agent, *args, **kwargs)
 
 	def make_agent(agent_base, agent_name):
+		""" Make an agent """
 		agent = agent_base.copy()
 		agent["fn"] = lambda *args, **kwargs: agent_wrapper(agent, *args, **kwargs)
 		agent["type"] = agent_type
@@ -486,29 +506,6 @@ async def client_request(portal, input_text, config=None, timeout=None):
 	return new_text, resp #, generated_text
 
 
-def history_read(file, args):
-	""" Read the history from a file. """
-	text = ""
-	if file and os.path.exists(file):
-		with open(file, encoding="utf-8") as f:
-			text = f.read()
-	# lookahead for non-space after newline
-	history = re.split(r"\n+(?=\S|$)", text) if text else []
-
-	if history and not history[-1]:
-		history.pop()
-	return history
-
-
-def history_write(file, history, delim="\n", mode="a", invitation=""):
-	""" Write or append the history to a file. """
-	if not file:
-		return
-	text = delim.join(history) + invitation
-	with open(file, mode, encoding="utf-8") as f:
-		f.write(text)
-
-
 def summary_read(file, args):
 	""" Read summary from a file. """
 	text = ""
@@ -550,6 +547,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 	logger.warning("query: %r %r", name, query)
 	# TODO make the search library async too
 	async def async_search(query, name, limit):
+		""" Run a search in a thread. """
 		return await asyncio.to_thread(search.search, query, engine=name, markdown=True, limit=limit)
 	response = await async_search(query, name, limit)
 	response2 = f"{name}:\t{response}"
@@ -562,14 +560,14 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
 	""" Process a file, return True if appended new content. """
 	logger.info("Processing %s", file)
 
-	history = history_read(file, args)
+	history = chat.chat_read(file, args)
 
 	history_count = len(history)
 
 	# Load mission file, if present
 	mission_file = re.sub(r'\.bb$', '.m', file)
 
-	mission = history_read(mission_file, args)
+	mission = chat.chat_read(mission_file, args)
 
 	# Load summary file, if present
 	summary_file = re.sub(r'\.bb$', '.s', file)
@@ -603,7 +601,7 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
 			if skip is not None:
 				logger.info("Will skip processing after agent/s response: %r", file)
 				skip[file] += 1
-			history_write(file, history[-1:], delim=args.delim, invitation=args.delim)
+			chat.chat_write(file, history[-1:], delim=args.delim, invitation=args.delim)
 
 			count += 1
 	return count
@@ -652,19 +650,31 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
 	agent_name_esc = regex.escape(name)
 
-	def clean_the_prompt(context, agent_name_esc):
-		logger.warning("clean_the_prompt: before: %s", context)
+	def clean_image_prompt(context, agent_name_esc):
+		""" Clean the prompt for image gen agents. """
+		logger.warning("clean_image_prompt: before: %s", context)
+
+		# Remove everything before and including tab characters from each line in the context
 		context = [regex.sub(r".*?\t", r"", line).strip() for line in context]
+
+		# Join all lines in context with the specified delimiter
 		text = args.delim.join(context)
+
+		# Remove the first occurrence of the agent's name (case insensitive) and any following punctuation
 		text = regex.sub(r".*?\b" + agent_name_esc + r"\b[,;.!]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+
+		# Remove the first pair of triple backticks and keep only the content between them
 		text = re.sub(r"```(.*?)```", r"\1", text, flags=re.DOTALL, count=1)
+
+		# Remove leading and trailing whitespace
 		text = text.strip()
-		logger.warning("clean_the_prompt: after: %s", text)
+
+		logger.warning("clean_image_prompt: after: %s", text)
 		return text
 
 	clean_prompt = agent.get("clean_prompt", False)
 	if clean_prompt:
-		fulltext = clean_the_prompt(context, agent_name_esc)
+		fulltext = clean_image_prompt(context, agent_name_esc)
 	else:
 		fulltext, history_start = get_fulltext(args, model_name, context, history_start, invitation, args.delim)
 
@@ -741,6 +751,7 @@ def apply_maps(mapping, mapping_cs, context):
 		return
 
 	def map_word(match):
+		""" Map a word. """
 		word = match.group(1)
 		word_lc = word.lower()
 		out = mapping_cs.get(word)
