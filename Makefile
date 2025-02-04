@@ -136,7 +136,7 @@ whisper:
 	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
 
 a1111:
-	$(PYTHON) core/image_a1111.py -d
+	while true; do $(PYTHON) core/image_a1111.py -d; sleep 1; done
 
 # brain-remote: clean
 # 	cd chat && ./brain.sh --remote
