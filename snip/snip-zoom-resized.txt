@@ -1,0 +1,17 @@
+function resized() {
+	console.log("resized", window.devicePixelRatio);
+	document.documentElement.style.setProperty('--zoom', window.devicePixelRatio);
+}
+
+$on(document, 'resize', resized);
+resized()
+
+
+:root { --zoom: 1; }
+
+.message img, .message video, .message audio, .message iframe {
+	vertical-align: top;
+	margin: 6px 4px;
+        max-width: calc(90vw * var(--zoom));
+        max-height: calc(90vh * var(--zoom));
+}
