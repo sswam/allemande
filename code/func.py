@@ -11,6 +11,7 @@ import logging
 from typing import TextIO
 import subprocess
 import json
+import re
 
 import black
 
@@ -75,7 +76,13 @@ def format_item(item, types: bool, params: bool, decorators: bool, docstring: bo
         if docstring:
             text += ":"
             if ast.get_docstring(item):
-                text += f'\n    """{ast.get_docstring(item)}"""'
+                docstring = ast.get_docstring(item)
+                multiline = "\n" in docstring
+                if multiline:
+                    indented = re.sub(r'(?m)^', '    ', docstring)
+                    text += f'\n    """\n{indented}\n    """'
+                else:
+                    text += f'\n    """{docstring}"""'
     # TODO Add formatting logic for other languages
     return text + "\n"
 
@@ -87,7 +94,7 @@ def func(
     *func_names: str,
     reformat: bool = False,
     process_all: bool = False,
-    show_all_info: bool = False,
+    show_info: bool = False,
     show_names: bool = False,
     show_types: bool = False,
     show_params: bool = False,
@@ -95,6 +102,7 @@ def func(
     show_docstrings: bool = False,
     list_mode: bool = False,
     language: str | None = None,
+    show_all_info: bool = False,
 ) -> None:
     """
     Process and analyze source code file.
@@ -105,6 +113,9 @@ def func(
         process_all = True
         show_names = True
     if show_all_info:
+        process_all = True
+        show_info = True
+    if show_info:
         show_names = show_types = show_params = show_decorators = show_docstrings = True
     if show_names or show_types or show_params or show_decorators or show_docstrings:
         show_code = False
@@ -155,13 +166,14 @@ def setup_args(arg):
     arg("func_names", nargs="*", help="Names of functions, methods, or classes to extract")
     arg("-f", "--reformat", help="Reformat code", action="store_true")
     arg("-a", "--all", help="Process all functions, methods, and classes", action="store_true", dest="process_all")
-    arg("-I", "--info", help="Show all info except code", action="store_true", dest="show_all_info")
+    arg("-I", "--info", help="Show all info except code", action="store_true", dest="show_info")
     arg("-n", "--names", help="Show only names", action="store_true", dest="show_names")
     arg("-t", "--types", help="Show types (def vs class, etc)", action="store_true", dest="show_types")
     arg("-p", "--params", help="Include full formal parameters", action="store_true", dest="show_params")
     arg("-d", "--docstrings", help="Include docstrings", action="store_true", dest="show_docstrings")
     arg("-D", "--decorators", help="Include decorators", action="store_true", dest="show_decorators")
     arg("-l", "--list", help="Alias for -a -n (list all names)", action="store_true", dest="list_mode")
+    arg("-A", "--all-info", help="Alias for -a -I (show all info)", action="store_true", dest="show_all_info")
     arg("--language", help="Language of the source file")
 
 
