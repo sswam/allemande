@@ -21,6 +21,8 @@ import re
 import time
 import random
 
+import pytz
+
 from ally import main, logs  # type: ignore
 from chat import Room
 
@@ -30,12 +32,7 @@ logger = logs.get_logger()
 
 
 def should_prompt_for_initiative(
-    last_messages: list[str],
-    agent: str,
-    user: str,
-    elapsed: float,
-    idle: int | None,
-    repeat: int | None
+    last_messages: list[str], agent: str, user: str, elapsed: float, idle: int | None, repeat: int | None
 ) -> bool:
     """Check if we should skip sending an initiative message."""
     if len(last_messages) != 2:
@@ -60,10 +57,7 @@ def should_prompt_for_initiative(
         and last_messages[1].startswith(f"{agent}:\t")
     )
     if was_initiative:
-        logger.info(
-            "The last messages were an initiative message and a response from %s. Not sending another message.",
-            agent
-        )
+        logger.info("The last messages were an initiative message and a response from %s. Not sending another message.", agent)
         return False
 
     return True
@@ -80,6 +74,7 @@ def initiative(
     message: str = "",
     prompt: bool = True,
     timestamp: bool = True,
+    timezone: str | None = None,
 ) -> None:
     """Write a system message to prompt an AI agent to talk with a user."""
     rooms_dir = Path(os.environ["ALLEMANDE_ROOMS"])
@@ -108,7 +103,10 @@ def initiative(
     if not should_prompt_for_initiative(last_messages, agent, user, elapsed, idle, repeat):
         return
 
-    now = datetime.now().strftime("%A %-I:%M %p")
+    tz = pytz.timezone(timezone) if timezone else None
+    dt = datetime.now(tz)
+    now = dt.strftime("%A %-I:%M %p")
+
     logger.info("Writing initiative message to %s, prompting %s to talk with %s", room_bb, agent, user)
 
     system_message = f"System:\t{agent}, "
@@ -134,6 +132,7 @@ def setup_args(arg):
     arg("-w", "--wait", help="wait for a random time up to this many seconds")
     arg("-i", "--idle", help="check that the agent and user have not been chatting recently (seconds)")
     arg("-m", "--message", help="message to write, can use {now} and {user}")
+    arg("-z", "--timezone", help="timezone for the displayed time (e.g. 'US/Pacific')")
     arg(
         "-T",
         "--no-timestamp",
