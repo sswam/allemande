@@ -33,25 +33,28 @@ ANYONE_WORDS = [
 ]
 
 
-EXCLUDE_PARTICIPANTS = set(["System", "Summar", "Emmy", "Claude", "Dav", "Clia"])
+EXCLUDE_PARTICIPANTS = set(["System", "Summar", "Stori", "Pixi"])
 
 USE_PLURALS = True
 
 
-def find_name_in_content(content, name, ignore_case=True):
+def find_name_in_content(content: str, name: str, ignore_case: bool = True) -> tuple[int, int, str | None]:
     """try to find a name in message content"""
+    logger.warning("find_name_in_content: %r %r %r", content, name, ignore_case)
     start_comma_word = r"(?m)^\s*" + re.escape(name) + r"\b\s*,"  # matches at the start of any line
-    comma_word_end = r",\s*" + re.escape(name) + r"\b\s*[\.!?]?\s*$"
+    comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*]?\s*$"
     word_start = r"^\s*" + re.escape(name) + r"\b"
-    word_end = r"\b" + re.escape(name) + r"\b\s*[\.!?]?\s*$"
-    whole_word = r"\b" + re.escape(name) + r"\b"
+    word_end = r"(\s|\b)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"
+    whole_word = r"(\s|\b)" + re.escape(name) + r"\b"
 
     flags = re.IGNORECASE if ignore_case else 0
 
     for i, regexp in enumerate([start_comma_word, comma_word_end, word_start, word_end, whole_word]):
         if match := re.search(regexp, content, flags):
+            logger.debug("find_name_in_content match: %r", (i, match.start(), name))
             return (i, match.start(), name)
 
+    logger.debug("find_name_in_content no match: %r", (100, len(content), None))
     return (100, len(content), None)
 
 
@@ -61,8 +64,15 @@ def uniqo(l: list[Any]) -> list[Any]:
 
 
 def who_is_named(
-    content, user, agents, include_self=True, chat_participants=None, everyone_words=None, anyone_words=None, get_all=False
-):
+    content: str,
+    user: str | None,
+    agents: list[str],
+    include_self: bool = True,
+    chat_participants: list[str] | None = None,
+    everyone_words: list[str] | None = None,
+    anyone_words: list[str] | None = None,
+    get_all: bool = False,
+) -> list[str]:
     """check who is named first in the message"""
     if chat_participants is None:
         chat_participants = []
@@ -70,7 +80,18 @@ def who_is_named(
         everyone_words = []
     if anyone_words is None:
         anyone_words = []
-    everyone_except_user = [a for a in chat_participants if a != user.lstrip("@")]
+
+    logger.warning(
+        "who_is_named: %r %r %r %r %r %r %r", content, user, agents, include_self, chat_participants, everyone_words, anyone_words
+    )
+
+    # Calculate everyone_except_user before using in function
+    if user:
+        user_clean = user.lstrip("@")
+        everyone_except_user = [a for a in chat_participants if a != user_clean]
+    else:
+        everyone_except_user = chat_participants
+
     agents_and_plurals = agents
     if USE_PLURALS:
         agents_and_plurals = agents + everyone_words + anyone_words
@@ -79,25 +100,44 @@ def who_is_named(
         matches = [m for m in matches if m[2] and m[2].lower() != user.lower()]
     if not matches:
         return []
+
+    logger.warning("matches: %r", matches)
+
+    # Sort matches by position and type, preserving only lowest indices
+    # sorted_matches = sorted(matches, key=lambda x: (x[0], x[1]))
     if not get_all:
         matches = [min(matches)]
     result = []
+
+    logger.warning("matches 2: %r", matches)
+
+    result: list[str] = []
     for _type, _pos, agent in matches:
         if agent is None:
             continue
-        elif agent in everyone_words:
+        if agent in everyone_words:
             random.shuffle(everyone_except_user)
-            result += everyone_except_user
-        elif agent in anyone_words:
+            result.extend(everyone_except_user)
+        elif agent in anyone_words and everyone_except_user:
             result.append(random.choice(everyone_except_user))
         else:
             result.append(agent)
+
     result = [x.lstrip("@") for x in result]
     result = uniqo(result)
+
+    logger.warning("who_is_named result: %r", result)
+
     return result
 
 
-def who_spoke_last(history, user, agents, include_self=False):
+def who_spoke_last(
+    history: list[dict[str, Any]],
+    user: str | None,
+    agents: dict[str, dict[str, Any]],
+    include_self: bool = False,
+    include_humans: bool = True,
+) -> list[str]:
     """check who else spoke in recent history"""
     user_lc = user.lower() if user is not None else None
     for i in range(len(history) - 1, -1, -1):
@@ -105,27 +145,56 @@ def who_spoke_last(history, user, agents, include_self=False):
         if user2 is None:
             continue
         user2_lc = user2.lower() if user2 is not None else None
-        if user2_lc in agents and (include_self or user2_lc != user_lc) and agents[user2_lc]["type"] != "tool":
+        if (
+            user2_lc in agents
+            and (include_self or user2_lc != user_lc)
+            and agents[user2_lc]["type"] != "tool"
+            and (include_humans or agents[user2_lc]["type"] != "person")
+        ):
             return [user2]
     return []
 
 
-def participants(history):
+def participants(history: list[dict[str, str]]) -> list[str]:
     """get all participants in the history"""
-    agents = list(set(x.get("user") for x in history if x.get("user")) - EXCLUDE_PARTICIPANTS)
+    agents = list(set(x["user"] for x in history if x.get("user")) - EXCLUDE_PARTICIPANTS)
     return agents
 
 
-def who_should_respond(message, agents=None, history=None, default=None, include_self=True):
+def agent_is_tool(agent: dict[str, Any]) -> bool:
+    """check if an agent is a tool"""
+    return agent.get("type") == "tool" or agent.get("service") == "image_a1111"
+
+
+def agent_is_human(agent: dict[str, Any]) -> bool:
+    """check if an agent is a human"""
+    return agent.get("type") == "person"
+
+
+def agent_is_ai(agent: dict[str, Any]) -> bool:
+    """check if an agent is an AI"""
+    return not agent_is_tool(agent) and not agent_is_person(agent)
+
+
+def who_should_respond(
+    message: dict[str, Any]|None,
+    agents: dict[str, dict[str, Any]] | None = None,
+    history: list[dict[str, Any]] | None = None,
+    default: list[str] | None = None,
+    include_self: bool = True,
+    include_humans: bool = True,
+) -> list[str]:
     """who should respond to a message"""
     if not history:
         history = []
     if not agents:
-        agents = []
+        agents = {}
 
     agents = agents.copy()
 
-    all_participants = participants(history)
+    all_participants: list[str] = participants(history)
+
+    logger.warning("all_participants: %r", all_participants)
 
     # Add agents for humans in the history
     for agent in all_participants:
@@ -137,16 +206,12 @@ def who_should_respond(message, agents=None, history=None, default=None, include
             }
 
     agent_names = list(agents.keys())
-
     agents_lc = list(map(str.lower, agent_names))
+    #    agents_lc_to_agents = dict(zip(agents_lc, agents))
+    agent_case_map = {k.lower(): agents[k]["name"] for k in agents}
 
-    agents_lc_to_agents = dict(zip(agents_lc, agents))
-
-    user = message.get("user")
-    if user:
-        user_lc = user.lower()
-    else:
-        user_lc = None
+    user = message.get("user") if message else None
+    user_lc = user.lower() if user else None
 
     logger.warning("user, user_lc: %r %r", user, user_lc)
 
@@ -154,46 +219,50 @@ def who_should_respond(message, agents=None, history=None, default=None, include
         user_agent = agents[user_lc]
         logger.warning('user_agent["type"]: %r', user_agent["type"])
         if user_agent["type"] == "tool":
-            invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self)
-            return invoked
+            invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self, include_humans=include_humans)
+            return [agent_case_map[i.lower()] for i in invoked]
 
     is_person = user_lc in agents_lc and agents[user_lc]["type"] == "person"
 
     if not is_person:
         include_self = False
 
-    # For the everyone and anybody cases, we need to know who is in the chat:
-    # get all the chat agents, including humans and LLM AIs, but excluding tools and image agents.
-    # We don't include people or agents that weren't in the chat.
+    # Filter chat participants based on include_humans setting
     chat_participants_names_lc = [
         agent
         for agent in all_participants
-        if agents[agent.lower()]["type"] != "tool" and agents[agent.lower()].get("service") != "image_a1111"
+        if agents[agent.lower()]["type"] != "tool"
+        and agents[agent.lower()].get("service") != "image_a1111"
+        and (include_humans or agents[agent.lower()]["type"] != "person")
     ]
 
-    content = message["content"]
+    logger.warning("chat_participants_names_lc: %r", chat_participants_names_lc)
 
-    agents_with_at = [f"@{agent}" for agent in agent_names]
+    content = message["content"] if message else ""
 
-    if USE_PLURALS:
-        everyone = EVERYONE_WORDS
-        anyone = ANYONE_WORDS
-        everyone_with_at = [f"@{agent}" for agent in EVERYONE_WORDS]
-        anyone_with_at = [f"@{agent}" for agent in ANYONE_WORDS]
-    else:
-        everyone = anyone = everyone_with_at = anyone_with_at = []
+    # Filter out human users if requested from agent_names
+    if not include_humans:
+        agent_names = [name for name in agent_names if agents[name]["type"] != "person"]
 
-    # for @mode, all mentioned agents should reply
+    agents_names_with_at = [f"@{name}" for name in agent_names]
+
+    everyone = EVERYONE_WORDS if USE_PLURALS else []
+    anyone = ANYONE_WORDS if USE_PLURALS else []
+    everyone_with_at = [f"@{agent}" for agent in everyone]
+    anyone_with_at = [f"@{agent}" for agent in anyone]
+
+    # For @mode, all mentioned agents should reply
     invoked = who_is_named(
         content,
         f"@{user}",
-        agents_with_at,
+        agents_names_with_at,
         include_self=include_self,
         chat_participants=chat_participants_names_lc,
         everyone_words=everyone_with_at,
         anyone_words=anyone_with_at,
         get_all=True,
     )
+
     logger.warning("who_is_named @: %r", invoked)
     if not invoked:
         invoked = who_is_named(
@@ -207,12 +276,18 @@ def who_should_respond(message, agents=None, history=None, default=None, include
         )
         logger.warning("who_is_named 2: %r", invoked)
     if not invoked:
-        invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self)
-        logger.warning("who_spoke_last 2: %r", invoked)
-    if not invoked and default and user_lc != default.lower() and agents[user_lc]["type"] == "person":
-        invoked = [default]
-        logger.warning("default %r", invoked)
+        invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self, include_humans=include_humans)
 
-    invoked = [agents_lc_to_agents.get(agent_lc, agent_lc) for agent_lc in invoked]
+    # If still no one to respond, default to last AI speaker or random AI
+    if not invoked:
+        ai_participants = [agent for agent in all_participants if agent_is_ai(agents[agent.lower()])]
+        last_ai = None
+        if ai_participants:
+            invoked = who_spoke_last(history[:-1], user, ai_participants, include_self=True, include_humans=False)
+        if not invoked and ai_participants:
+            invoked = [random.choice(list(ai_participants.keys()))]
+        if not invoked and default:
+            invoked = [random.choice(default)]
 
-    return invoked
+    # Filter out special words and only use actual agent names
+    return [agent_case_map[agent.lower()] for agent in invoked if agent.lower() in agent_case_map]
