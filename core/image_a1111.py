@@ -56,7 +56,7 @@ async def process_request(portals, portal, req):
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         prompt = load(portals, d, "request.txt")
 
-        output_stem = slug.slug(prompt)[:200]
+        output_stem = slug.slug(prompt)[:70]
 
         negative_prompt=config.get("negative_prompt", "")
 
