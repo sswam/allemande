@@ -272,49 +272,42 @@ async def serve_requests_inotify(portals, gen):
         await process_request(portals, portal, filename, gen)
 
 
-async def serve_requests_poll(portals, gen, poll_interval=1.0):
-    """Serve requests from a directory of directories using polling"""
-    logger.info("serving requests from %s", portals)
-
-    # Keep track of known requests across all portals
-    known_requests = set()
-
-    # Initial scan of existing requests
+def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]]:
+    """Find all requests in the todo directories"""
+    requests = []
     for portal in Path(portals).iterdir():
         if not portal.is_dir():
             continue
         todo = portal / "todo"
-        logger.info("monitoring %s", todo)
-
-        # Process existing requests
         for req in todo.iterdir():
             if not req.is_dir():
                 continue
-            known_requests.add((portal, req.name))
-            await process_request(portals, portal, req.name, gen)
+            requests.append((portal, req.name))
+    requests.sort(key=lambda x: (x[0].stat().st_mtime, x[1]))
+    return requests
 
-    # Continuous polling loop
+
+async def serve_requests_poll(portals, gen, poll_interval=1.0):
+    """Serve requests from a directory of directories using polling"""
+    logger.info("serving requests from %s", portals)
+
+    logger.info("serving requests from %s", portals)
+    known_requests = find_todo_requests(portals)
+    for portal, req in known_requests:
+        logger.debug("Initial request detected: %s in %s", req, portal)
+        await process_request(portals, portal, req, gen)
+
+    known_requests_set = set(known_requests)
+
     while True:
-        new_requests = set()
-
-        # Scan all portals for new requests
-        for portal in Path(portals).iterdir():
-            if not portal.is_dir():
+        new_requests = find_todo_requests(portals)
+        for portal, req_name in new_requests:
+            if (portal, req_name) in known_requests_set:
                 continue
-            todo = portal / "todo"
-
-            for req in todo.iterdir():
-                if not req.is_dir():
-                    continue
-                new_requests.add((portal, req.name))
-
-        # Process any new requests that weren't known before
-        for portal, req_name in new_requests - known_requests:
             logger.debug("New request detected: %s in %s", req_name, portal)
             await process_request(portals, portal, req_name, gen)
 
-        # Update known requests
-        known_requests = new_requests
+        known_requests_set = set(new_requests)
 
         # Wait before next poll
         await asyncio.sleep(poll_interval)
