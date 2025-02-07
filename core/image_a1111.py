@@ -14,14 +14,36 @@ import a1111_client
 import slug
 import stamp
 from ally import main, logs
+from unprompted.unprompted_macros import parse_macros
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 logger = logs.get_logger()
 
 prog = main.prog_info()
 
 portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / prog.name
+
+
+def process_hq_macro(prompt: str, config: dict) -> dict:
+    """Process hq macro in prompt and update config accordingly"""
+    macros = parse_macros(prompt)
+
+    sets = macros.get('sets', {})
+    hq = float(sets.get('hq', 0))
+
+    if hq == 0:
+        # hq not set - disable adetailer, no hires
+        config['adetailer'] = None
+        config['hires'] = 0.0
+    elif hq == 1:
+        # hq=1 - keep adetailer from config, no hires
+        config['hires'] = 0.0
+    else:
+        # hq != 1 - set hires to hq value
+        config['hires'] = hq
+
+    return config
 
 
 def load(portals, d, filename):
@@ -56,9 +78,12 @@ async def process_request(portals, portal, req):
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         prompt = load(portals, d, "request.txt")
 
+        # Process hq macro
+        config = process_hq_macro(prompt, config)
+
         output_stem = slug.slug(prompt)[:70]
 
-        negative_prompt=config.get("negative_prompt", "")
+        negative_prompt = config.get("negative_prompt", "")
 
         if negative_prompt == "":
             try:
@@ -95,7 +120,7 @@ async def process_request(portals, portal, req):
 
         os.rename(d, portal / "done" / req)
         logger.info("%s:%s - done", portal, req)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logger.exception("%s:%s - error: %s", portal, req, e)
         os.rename(d, portal / "error" / req)
     finally:
@@ -111,40 +136,40 @@ def convert_images_to_jpeg(d: Path, quality: int = 95):
             img.unlink()
 
 
-async def serve_requests(portals: str = str(portals_dir), poll_interval: float = 1.0):
-    """Serve image generation requests from portals directory"""
-    logger.info("serving requests from %s", portals)
-    known_requests = set()
-
+def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]]:
+    """Find all requests in the todo directories"""
+    requests = []
     for portal in Path(portals).iterdir():
         if not portal.is_dir():
             continue
         todo = portal / "todo"
-        logger.info("monitoring %s", todo)
-
         for req in todo.iterdir():
             if not req.is_dir():
                 continue
-            known_requests.add((portal, req.name))
-            await process_request(portals, portal, req.name)
+            requests.append((portal, req.name))
+    requests.sort(key=lambda x: (x[0].stat().st_mtime, x[1]))
+    return requests
+
+
+async def serve_requests(portals: str = str(portals_dir), poll_interval: float = 1.0):
+    """Serve image generation requests from portals directory"""
+    logger.info("serving requests from %s", portals)
+    known_requests = find_todo_requests(portals)
+    for portal, req in known_requests:
+        logger.debug("Initial request detected: %s in %s", req, portal)
+        await process_request(portals, portal, req)
+
+    known_requests_set = set(known_requests)
 
     while True:
-        new_requests = set()
-        for portal in Path(portals).iterdir():
-            if not portal.is_dir():
+        new_requests = find_todo_requests(portals)
+        for portal, req_name in new_requests:
+            if (portal, req_name) in known_requests_set:
                 continue
-            todo = portal / "todo"
-
-            for req in todo.iterdir():
-                if not req.is_dir():
-                    continue
-                new_requests.add((portal, req.name))
-
-        for portal, req_name in new_requests - known_requests:
             logger.debug("New request detected: %s in %s", req_name, portal)
             await process_request(portals, portal, req_name)
 
-        known_requests = new_requests
+        known_requests_set = set(new_requests)
 
         # Wait before next poll
         await asyncio.sleep(poll_interval)
