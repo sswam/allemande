@@ -5,7 +5,7 @@ netns=$1
 shift
 
 v() {
-	printf >&2 "netns_up: "
+	printf >&2 "netns-up: "
 	printf >&2 "%q " "$@"
 	echo >&2
 	"$@"
@@ -13,7 +13,7 @@ v() {
 
 show() {
 	local var=$1
-	echo >&2 "netns_up: $var: ${!var}"
+	echo >&2 "netns-up: $var: ${!var}"
 }
 
 setv() {
@@ -22,7 +22,7 @@ setv() {
 	show $var
 }
 
-echo >&2 "INFO: script_type=$script_type netns_up $netns $@"
+echo >&2 "INFO: script_type=$script_type netns-up $netns $@"
 case $script_type in
 up)
 	v ip netns add "$netns"

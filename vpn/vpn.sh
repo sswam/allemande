@@ -52,7 +52,7 @@ if [ -z "$host_ip" ]; then
 	exit 1
 fi
 
-netns_up=$(curry netns_up "$netns")
+netns_up=$(curry netns-up "$netns")
 v openvpn --config "$config" --ifconfig-noexec --route-noexec --up "$netns_up" --route-up "$netns_up" --down "$netns_up" >&2 &
 
 sleep 1
