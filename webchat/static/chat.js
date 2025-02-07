@@ -41,6 +41,25 @@ function set_content(content) {
 	message_changed();
 }
 
+async function send_form_data(formData) {
+	const response = await fetch('/x/post', {
+		method: 'POST',
+		body: formData,
+	});
+
+	if (!response.ok) {
+		throw new Error("send failed");
+	}
+
+	const data = await response.json();
+
+	if (data.error) {
+		throw new Error(data.error);
+	}
+
+	return data;
+}
+
 async function send(ev) {
 	console.log("send");
 	ev.preventDefault();
@@ -49,28 +68,24 @@ async function send(ev) {
 	const message = $content.value;
 	set_content("");
 
-	const error = async (error_message) => {
-		console.error(error_message);
+	try {
+		await send_form_data(formData);
+	} catch (error) {
+		console.error(error.message);
 		set_content(message);
 		await flash($id('send'), 'error');
-	};
-
-	const response = await fetch('/x/post', {
-		method: 'POST',
-		body: formData,
-	});
-
-	if (!response.ok) {
-		await error("send failed");
-		return;
 	}
+}
 
-	const data = await response.json();
+async function send_text(text) {
+	const formData = new FormData();
+	formData.append('room', $room.value);
+	formData.append('content', text);
+	await send_form_data(formData);
+}
 
-	if (data.error) {
-		await error(data.error);
-		return;
-	}
+async function poke() {
+	await send_text("");
 }
 
 // handle enter key press ----------------------------------------------------
@@ -94,6 +109,10 @@ function message_keydown(ev) {
 	else if (ev.altKey && ev.key === 'z') {  // undo
 		ev.preventDefault();
 		undo(ev);
+	}
+	else if (ev.altKey && ev.key === 'r') {  // undo
+		ev.preventDefault();
+		retry(ev);
 	}
 	else if(ev.altKey && ev.key === 't') {  // insert tab
 		ev.preventDefault();
@@ -596,17 +615,9 @@ async function archive(ev) {
 	await clear(ev, "archive");
 }
 
-async function undo(ev) {
-	console.log("undo", op);
-
-	ev.preventDefault();
+async function undo_last_message(room) {
 	const formData = new FormData();
 	formData.append('room', room);
-
-	const error = async (error_message) => {
-		console.error(error_message);
-		await flash($id("undo"), 'error');
-	};
 
 	const response = await fetch('/x/undo', {
 		method: 'POST',
@@ -614,19 +625,42 @@ async function undo(ev) {
 	});
 
 	if (!response.ok) {
-		await error(`undo failed`);
-		return;
+		throw new Error('Undo request failed');
 	}
 
 	const data = await response.json();
-
 	if (data.error) {
-		await error(data.error);
-		return;
+		throw new Error(data.error);
 	}
 
-	// TODO should clear immediately for other users too, not just the current user
-	// reload_messages();
+	return data;
+}
+
+async function undo(ev) {
+	console.log("undo");
+	ev.preventDefault();
+
+	try {
+		await undo_last_message(room);
+		// TODO should clear immediately for other users too, not just the current user
+		// reload_messages();
+	} catch (error) {
+		console.error(error.message);
+		await flash($id("undo"), 'error');
+	}
+}
+
+
+async function retry(ev) {
+	console.log("retry");
+	try {
+		await undo(ev);
+		await $wait(100);
+		await poke();
+	} catch (error) {
+		console.error(error.message);
+		await flash($id("retry"), 'error');
+	}
 }
 
 // input controls ------------------------------------------------------------
@@ -649,6 +683,7 @@ function chat_main() {
 	$on($id('edit'), 'click', () => set_controls('input_edit'));
 
 	$on($id('undo'), 'click', undo);
+	$on($id('retry'), 'click', retry);
 	$on($id('clear'), 'click', clear);
 	$on($id('archive'), 'click', archive);
 	// $on($id('rotate'), 'click', rotate);
