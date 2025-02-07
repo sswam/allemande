@@ -22,21 +22,21 @@ mp() {
 
 case "$file" in
 *.txt|*.md|*.bb)
-	less "$file" ;;
+	less -- "$file" ;;
 *.html|*.xhtml)
-	chrome "$file" ;;
+	chrome -- "$file" ;;
 *.pdf)
-	evince "$file" ;;
+	evince -- "$file" ;;
 	# zathura "$file" ;;
 *.png|*.jpg|*.jpeg|*.gif|*.bmp)
-	qiv "$file" ;;
+	qiv -- "$file" ;;
 	# sxiv "$file" ;;
-*.mp4|*.mkv|*.avi|*.webm|*.mpg|*.mpeg|*.m4v|*.ts)
-	mp "$file" ;;
+*.mp4|*.mkv|*.avi|*.webm|*.mpg|*.mpeg|*.m4v|*.ts|*.flv|*.wmv)
+	mp -- "$file" ;;
 *.mp3|*.ogg|*.wav|*.aac)
-	mp "$file" ;;
+	mp -- "$file" ;;
 *.zip)
 	mcomix -- "$file" ;;
 *)
-	ls -l "$file" ;;
+	ls -l -- "$file" ;;
 esac
