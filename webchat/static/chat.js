@@ -102,7 +102,7 @@ function message_keypress(ev) {
 */
 
 function message_keydown(ev) {
-	if (ev.ctrlKey && ev.key === 'Enter') {  // send
+	if (ev.ctrlKey && ev.key === 'Enter' || ev.altKey && ev.key === 's') {  // send
 		ev.preventDefault();
 		send(ev);
 	}
@@ -117,6 +117,14 @@ function message_keydown(ev) {
 	else if(ev.altKey && ev.key === 't') {  // insert tab
 		ev.preventDefault();
 		textarea_insert_text($content, "\t");
+	}
+	else if (ev.altKey && ev.key == 'x') {  // clear
+		ev.preventDefault();
+		clear(ev);
+	}
+	else if (ev.altKey && ev.key == 'a') {  // archive
+		ev.preventDefault();
+		archive(ev);
 	}
 }
 
