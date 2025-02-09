@@ -33,14 +33,15 @@ ANYONE_WORDS = [
 ]
 
 
-EXCLUDE_PARTICIPANTS = set(["System", "Summar", "Stori", "Pixi"])
+# TODO exclude based on an attribute or settings
+EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf"])
 
 USE_PLURALS = True
 
 
 def find_name_in_content(content: str, name: str, ignore_case: bool = True) -> tuple[int, int, str | None]:
     """try to find a name in message content"""
-    logger.warning("find_name_in_content: %r %r %r", content, name, ignore_case)
+    logger.debug("find_name_in_content: %r %r %r", content, name, ignore_case)
     start_comma_word = r"(?m)^\s*" + re.escape(name) + r"\b\s*,"  # matches at the start of any line
     comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*]?\s*$"
     word_start = r"^\s*" + re.escape(name) + r"\b"
@@ -137,6 +138,7 @@ def who_spoke_last(
     agents: dict[str, dict[str, Any]],
     include_self: bool = False,
     include_humans: bool = True,
+    include_tools: bool = False,
 ) -> list[str]:
     """check who else spoke in recent history"""
     user_lc = user.lower() if user is not None else None
@@ -148,8 +150,8 @@ def who_spoke_last(
         if (
             user2_lc in agents
             and (include_self or user2_lc != user_lc)
-            and agents[user2_lc]["type"] != "tool"
-            and (include_humans or agents[user2_lc]["type"] != "person")
+            and (include_tools or not agent_is_tool(agents[user2_lc]))
+            and (include_humans or not agent_is_human(agents[user2_lc]))
         ):
             return [user2]
     return []
@@ -173,7 +175,7 @@ def agent_is_human(agent: dict[str, Any]) -> bool:
 
 def agent_is_ai(agent: dict[str, Any]) -> bool:
     """check if an agent is an AI"""
-    return not agent_is_tool(agent) and not agent_is_person(agent)
+    return not agent_is_tool(agent) and not agent_is_human(agent)
 
 
 def who_should_respond(
@@ -277,6 +279,7 @@ def who_should_respond(
         logger.warning("who_is_named 2: %r", invoked)
     if not invoked:
         invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self, include_humans=include_humans)
+        logger.warning("who_spoke_last: %r", invoked)
 
     # If still no one to respond, default to last AI speaker or random AI
     if not invoked:
@@ -284,10 +287,13 @@ def who_should_respond(
         last_ai = None
         if ai_participants:
             invoked = who_spoke_last(history[:-1], user, ai_participants, include_self=True, include_humans=False)
+            logger.warning("who_spoke_last ai: %r", invoked)
         if not invoked and ai_participants:
-            invoked = [random.choice(list(ai_participants.keys()))]
+            invoked = [random.choice(ai_participants)]
+            logger.warning("random ai: %r", invoked)
         if not invoked and default:
             invoked = [random.choice(default)]
+            logger.warning("default: %r", invoked)
 
     # Filter out special words and only use actual agent names
     return [agent_case_map[agent.lower()] for agent in invoked if agent.lower() in agent_case_map]
