@@ -132,8 +132,15 @@ def convert_images_to_jpeg(d: Path, quality: int = 95):
     """Convert all images in a directory to JPEG, deleting the original PNGs and preserving metadata"""
     for img in d.iterdir():
         if img.suffix.lower() == ".png":
-            stamp.convert_image(img, img.with_suffix(".jpg"), quality=quality)
-            img.unlink()
+            dest = img.with_suffix(".jpg")
+            try:
+                stamp.convert_image(img, dest, quality=quality)
+                img.unlink()
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logger.exception("%s:%s - error converting images to JPEG: %s", portal, req, e)
+                unlink(dest)
+                # continue with PNG
+                # TODO ideally stamp would clean up
 
 
 def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]]:

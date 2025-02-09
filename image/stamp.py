@@ -29,24 +29,31 @@ def check_extention(file: Path, exts: set[str]) -> bool:
     return ext in exts
 
 
+def decode_with_fallback(data: bytes) -> str:
+    """Try UTF-8 first, fall back to Latin-1"""
+    try:
+        return data.decode('utf-8')
+    except UnicodeDecodeError:
+        return data.decode('latin-1')
+
 def extract_metadata(input_file: Path) -> str:
     """Extract metadata from an image."""
     if check_extention(input_file, USE_MAGICK_EXT):
         result = subprocess.run(
             ["magick", "identify", "-format", "%[Property:parameters]", str(input_file)],
             capture_output=True,
-            text=True,
+            text=False,
             check=True,
         )
-        return result.stdout.strip()
+        return decode_with_fallback(result.stdout).strip()
     elif check_extention(input_file, USE_EXIFTOOL_EXT):
         result = subprocess.run(
             ["exiftool", "-UserComment", "-b", str(input_file)],
             capture_output=True,
-            text=True,
+            text=False,
             check=True,
         )
-        return result.stdout.strip()
+        return decode_with_fallback(result.stdout).strip()
     else:
         raise ValueError("Unsupported file format")
 
