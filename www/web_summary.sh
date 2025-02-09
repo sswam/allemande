@@ -25,7 +25,7 @@ web_summary() {
 	fi
 
 	web-text "$url" |
-	proc "Please give a summary without any prelude, but with a heading reflecting the document. $prompt" |
+	proc -m="$model" "Please give a summary without any prelude, but with a heading reflecting the document. $prompt" |
 	v tee -a "$dir/$name"
 }
 
