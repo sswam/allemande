@@ -65,8 +65,8 @@ LOGFILE_NAME_MAX_LEN = 255
 RETRIES = 20
 exceptions_to_retry = ("RateLimitError", "APIConnectionError", "InternalServerError")
 
-default_model = 'gemini-1.5-pro-latest'
-default_model_small = 'gemini-1.5-flash-latest'
+default_model = 'claude'
+default_model_small = 'gpt-4o-mini'
 
 # Define available models and their properties
 MODELS = {
