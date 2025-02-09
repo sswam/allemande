@@ -62,7 +62,7 @@ AGENTS = {
 
 AGENT_DEFAULT = ["Ally", "Barbie", "Callam", "Emmie", "Fenny", "Dali", "Cleo", "Gabby"]
 
-STARTER_PROMPT = """System:\tPlease briefly greet the user or start a conversation, in one short line. Two simple examples:
+STARTER_PROMPT = """System:\tPlease briefly greet the user or start a conversation, in one short line. Keep it pretty short and sober. Two simple examples:
 
 {bot}:\tHey, how are you doing today?
 
@@ -243,11 +243,11 @@ Technical Instructions:
     - use square brackets
 	- [sets steps=15] (default; 30 for HQ, 60 for very HQ)
 	- [sets cfg_scale=4.5] (default; up to 12 for stronger prompt adherence)
-	- [sets hq=0] (default; set to hq=1 for better detail, up to hq=1.5 for hires)
+	- [sets hq=0] (default low quality; set to hq=1 for medium quality, up to hq=1.5 for high quality)
 
 Optional Plugins:
-- LoRA Plugins use angle brackets.
-- Adjust LoRAs up to +/- 0.3. Avoid exceeding weights of 2. It would be pointless to use a LoRA with weight 0.
+- lora plugins use angle brackets.
+- Adjust loras up to +/- 0.3. Avoid exceeding weights of 2. It would be pointless to use a lora with weight 0.
 	- <lora:b:-1> anti-boring (min: -1.2)
 	- <lora:e:1> enhanced eyes
 	- <lora:w:1> wings (only when needed!)
@@ -265,6 +265,9 @@ Character Macros:
 - Use the macro for each named character, e.g., [use sam], [use ally], [use Barbie], [use cleo], [use dali], [use emmie], [use fenny], [use gabby], [use callam], [use sia], [use nova], [use pixi], [use claude], etc.
 - Character macros include physical appearance but NOT clothing or age
 - Always specify age and clothing separately, e.g., "young [use ally] 21 year old girl, wearing blue dress"
+- When using a character macro, don't specify details of the peron's body: the hair color, hair type, eye color, or skin color, as these are in the macro.
+ - e.g. [use ally] red dress   # this is okay
+ - e.g. [use ally] black hair, green eyes   # this is wrong, unless she is wearing contacts and a wig!
 
 Multiple Characters:
 - When including multiple characters, start with "two girls" or "couple"
@@ -273,21 +276,24 @@ Multiple Characters:
 
 Negative Prompts:
 - Use '--' to exclude elements, e.g., -- (bad anatomy, extra limbs:2)
+- everything after the '--' is part of the negative prompt, don't put regular prompt words there
 
 Example Prompt:
-Illy, stunning portrait, [use fenny], young fairy dancing, fairy wings, smile, light aqua gossamer, moonlight, enchanted forest, (fireflies:1.3), little creek, beautiful masterpiece, [use sharp] <lora:b:-1> <lora:w:1> [sets width=832 height=1216]
+Illy, stunning portrait, [use fenny], young fairy dancing, fairy wings, smile, light aqua gossamer, moonlight, enchanted forest, (fireflies:1.3), little creek, beautiful masterpiece, [use sharp] <lora:b:-1> <lora:w:1> [sets width=832 height=1216 hq=1.5]
 
 Multiple Characters Example:
-Illy, two girls, [use barbie] 21-year-old wearing blue sundress, standing in sunny garden with blooming roses, talking and laughing with [use cleo] 25-year-old wearing white blouse and black skirt -- (bad anatomy, extra limbs:2)
+Illy, two girls, [use barbie] 21-year-old wearing blue sundress, standing in sunny garden with blooming roses, talking and laughing with [use cleo] 25-year-old wearing white blouse and black skirt -- (bad anatomy, extra limbs:2) [sets hq=1.5]
 
 Notes:
 - You can comment before the prompt, if desired.
 - The prompt must beging with in invocation to the image gen, i.e. "Illy, "
-- Use 'BREAK' to split up long prompts into logical sections.
+- For an image with a complex prompt, you can insert 'BREAK' to split in up into logical sections. This is still for one image, do not say "Illy" again or start a new image.
 - IMPORTANT: End the prompt with the word STOP on a line by itself.
 - In addition to your work, you can engage in chat.
-- Use booru tags where possible, e.g. 1girl, solo, tall, athletic build, blue eyes, straight hair, black hair, medium hair, tan, dark skin
 - You can also use simple clear English descriptions
+- If the user requests high quality, use like [sets hq=1.5] as described above.
+- It's often better if the prompt is concise, so try to squeeze the info down to be nice and compact.
+- Use booru tags where possible, e.g. 1girl, solo, tall, athletic build, blue eyes, straight hair, black hair, medium hair, tan, dark skin
 
 Return only one image prompt, then the text STOP on a line by itsef. You may add comments before the prompt but not after.""",
 		"system_bottom_pos": 5,
