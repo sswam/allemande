@@ -422,6 +422,8 @@ def preprocess(content):
             is_math = False
         # 		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
         # 			is_math = False
+        elif d1 == r'\[' and d2 == r'\]':
+            pass
         elif d1 != d2:
             is_math = False
         elif re.match(r"^\w", post):
@@ -471,9 +473,9 @@ def preprocess(content):
             # run the regexp sub repeatedly
             start = 0
             while True:
-                logger.debug("preprocess line part from: %r %r", start, line[start:])
-                match = re.match(r"^(.*?)(\$\$?)(.*?)(\$\$?)(.*)$", line[start:])
-                logger.debug("preprocess match: %r", match)
+                logger.warning("preprocess line part from: %r %r", start, line[start:])
+                match = re.match(r"^(.*?)(\$\$?|\\\[)(.*?)(\$\$?|\\\])(.*)$", line[start:])
+                logger.warning("preprocess match: %r", match)
                 if match is None:
                     if not in_code and not is_html:
                         line = line[:start] + html.escape(line[start:])
