@@ -395,6 +395,13 @@ def message_to_text(message):
     return text.rstrip("\n") + "\n"
 
 
+def fix_math_escape_percentages(math_content):
+    """Escape unescaped % symbols in math content"""
+    # FIXME: This approach assumes that a % symbol immediately preceded by a
+    # backslash is already escaped. This is not always the case.
+    return re.sub(r'(?<!\\)%', r'\%', math_content)
+
+
 def preprocess(content):
     """Preprocess chat message content, for markdown-katex"""
 
@@ -410,6 +417,7 @@ def preprocess(content):
         is_math = True
         if math.startswith("`") and math.endswith("`"):
             # already processed
+            logger.warning("already processed: %r", math)
             has_math = True
             is_math = False
         # 		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
@@ -422,6 +430,7 @@ def preprocess(content):
             is_math = False
         if is_math:
             has_math = True
+            math = fix_math_escape_percentages(math)
             return f"$`{math}`$"
         return f"{d1}{math}{d2}"
 
@@ -455,6 +464,9 @@ def preprocess(content):
         elif re.match(r"^```", line) and in_code:
             out.append(line)
             in_code = False
+        elif in_math:
+            line = fix_math_escape_percentages(line)
+            out.append(line)
         else:
             # run the regexp sub repeatedly
             start = 0
