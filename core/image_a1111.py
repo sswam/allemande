@@ -87,7 +87,7 @@ async def process_request(portals, portal, req):
 
         if negative_prompt == "":
             try:
-                prompt, negative_prompt = re.split(r"\s+--\s+", prompt, 1)
+                prompt, negative_prompt = re.split(r"\s+NEGATIVE\s+", prompt, 1)
             except ValueError:
                 pass
 
