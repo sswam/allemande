@@ -28,8 +28,8 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 .message img, .message video, .message audio, .message iframe {
 	vertical-align: top;
 	margin: 6px 4px;
-	max-width: 40vw;
-	max-height: 40vh;
+	max-width: min(40vw, 40vh);
+	max-height: min(40vw, 40vh);
 }
 
 /* borders for markdown tables */
@@ -95,4 +95,39 @@ code {
 
 pre {
 	white-space: pre-wrap;
+}
+
+body.overlay {
+	overflow: hidden;
+}
+
+body.overlay > div.messages {
+	visibility: hidden;
+}
+
+body:not(.overlay) > div.overlay {
+	display: none;
+}
+
+body.overlay > div.overlay {
+	position: fixed;
+	display: flex;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 1);
+	z-index: 100;
+	overflow: auto;
+}
+
+body.overlay > div.overlay > img {
+	margin: auto;
+	z-index: 101;
+}
+
+body.overlay > div.overlay.maxpect > img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 }

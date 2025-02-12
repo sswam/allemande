@@ -8,9 +8,6 @@
 body.admin, body.admin .admin {
 	display: block;
 }
-.hidden {
-	display: none !important;
-}
 #messages {
 	min-height: 64px;
 	position: relative;
@@ -123,6 +120,10 @@ input, textarea, button, iframe, .button {
 	border-radius: 6px;
 }
 
+iframe:fullscreen {
+	border-radius: 0;
+}
+
 a.button {
 	display: flex;
 	align-items: center;
@@ -140,6 +141,10 @@ input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
 	background-color: #422 !important;
 }
 
+.active {
+	background-color: #663 !important;
+}
+
 video {
 	min-height: 128px;
 }
@@ -150,4 +155,14 @@ div.label {
 	justify-content: center;
 	border-radius: 6px;
 	font-size: 1.2rem;
+}
+
+iframe#messages_iframe.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border: none;
+	border-radius: 0;
 }

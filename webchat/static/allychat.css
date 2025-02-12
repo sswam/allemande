@@ -9,6 +9,18 @@ body, html {
 	padding: 0;
 }
 
+.hidden {
+	display: none !important;
+}
+
+.invisible {
+	visibility: hidden !important;
+}
+
+.noscroll {
+	overflow: hidden;
+}
+
 /* themeable elements */
 
 *, input, textarea, button, .button, .label {
