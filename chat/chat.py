@@ -8,9 +8,11 @@ import html
 from pathlib import Path
 import re
 import logging
-from typing import Iterator, Any, TypeAlias, Protocol, TextIO
+from typing import Any, TextIO
+from dataclasses import dataclass
 import shutil
 import subprocess
+import random
 
 import argh
 import markdown
@@ -28,6 +30,13 @@ global_admins = ["sam"]  # TODO from enviorment variable
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ChatMessage:
+    """A single chat message with user (optional) and content."""
+    user: str | None
+    content: str
 
 
 class Symbol:  # pylint: disable=too-few-public-methods
@@ -67,6 +76,7 @@ MARKDOWN_EXTENSIONS = [
     "toc",
     "wikilinks",
     "markdown_katex",
+    "md_in_html",
 ]
 
 MARKDOWN_EXTENSION_CONFIGS = {
@@ -379,7 +389,7 @@ Sam:	How are you?
     assert messages[1]["content"] == "How are you?\n"
 
 
-def message_to_text(message):
+def message_to_text(message: dict[str, Any]) -> str:
     """Convert a chat message to text."""
     user = message.get("user")
     content = message["content"]
@@ -395,11 +405,16 @@ def message_to_text(message):
     return text.rstrip("\n") + "\n"
 
 
+def chat_message_to_text(message: ChatMessage) -> str:
+    """Convert a chat message to text."""
+    return message_to_text({"user": message.user, "content": message.content})
+
+
 def fix_math_escape_percentages(math_content):
     """Escape unescaped % symbols in math content"""
     # FIXME: This approach assumes that a % symbol immediately preceded by a
     # backslash is already escaped. This is not always the case.
-    return re.sub(r'(?<!\\)%', r'\%', math_content)
+    return re.sub(r"(?<!\\)%", r"\%", math_content)
 
 
 def preprocess(content):
@@ -422,7 +437,7 @@ def preprocess(content):
             is_math = False
         # 		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
         # 			is_math = False
-        elif d1 == r'\[' and d2 == r'\]':
+        elif d1 == r"\[" and d2 == r"\]":
             pass
         elif d1 != d2:
             is_math = False
@@ -473,9 +488,9 @@ def preprocess(content):
             # run the regexp sub repeatedly
             start = 0
             while True:
-                logger.warning("preprocess line part from: %r %r", start, line[start:])
+                logger.debug("preprocess line part from: %r %r", start, line[start:])
                 match = re.match(r"^(.*?)(\$\$?|\\\[)(.*?)(\$\$?|\\\])(.*)$", line[start:])
-                logger.warning("preprocess match: %r", match)
+                logger.debug("preprocess match: %r", match)
                 if match is None:
                     if not in_code and not is_html:
                         line = line[:start] + html.escape(line[start:])
@@ -656,5 +671,183 @@ def chat_write(file, history, delim="\n", mode="a", invitation=""):
         f.write(text)
 
 
+def load_chat_messages(source: str | Path | TextIO = sys.stdin) -> list[ChatMessage]:
+    """Parse chat messages from a file path or file-like object.
+
+    Args:
+        source: Path to input file, Path object, or file-like object (defaults to stdin)
+
+    Returns:
+        List of ChatMessage records
+    """
+    # Handle file-like objects directly
+    if hasattr(source, 'read'):
+        return [
+            ChatMessage(
+                content=msg['content'],
+                user=msg.get('user')
+            )
+            for msg in lines_to_messages(source)
+        ]
+
+    # Handle path inputs
+    path = Path(source) if isinstance(source, str) else source
+    if not path.exists():
+        return []
+
+    with path.open('r', encoding='utf-8') as f:
+        return load_chat_messages(f)
+
+
+def save_chat_messages(
+    messages: list[ChatMessage],
+    destination: str | Path | TextIO = sys.stdout,
+    mode: str = 'a'
+) -> None:
+    """Write chat messages to a file path or file-like object.
+
+    Args:
+        messages: List of ChatMessage objects to write
+        destination: Output file path, Path object, or file-like object (defaults to stdout)
+        mode: File open mode when writing to a path, defaults to 'a' for append
+    """
+    # Handle file-like objects directly
+    if hasattr(destination, 'write'):
+        for msg in messages:
+            destination.write(chat_message_to_text(msg) + '\n')
+        return
+
+    # Handle path inputs
+    path = Path(destination) if isinstance(destination, str) else destination
+    with path.open(mode, encoding='utf-8') as f:
+        save_chat_messages(messages, f)
+
+
+def process_chat(messages: list[ChatMessage], process_fn: callable) -> list[ChatMessage]:
+    """Process chat messages using the provided function.
+
+    Args:
+        messages: List of ChatMessage objects to process
+        process_fn: Function that takes a ChatMessage and returns a processed ChatMessage or None
+
+    Returns:
+        List of processed ChatMessage objects, excluding any that were filtered out
+    """
+    processed_messages = []
+
+    for msg in messages:
+        result = process_fn(msg)
+        if result is not None:
+            processed_messages.append(result)
+
+    return processed_messages
+
+
+def filter_stars(message: ChatMessage) -> ChatMessage | None:
+    """
+    Process a message by:
+    1. Removing text between * and * (shortest matches) including delimiters
+    2. Removing lines that begin or end with *
+    3. Testing if remainder is just whitespace - if so, skip message
+
+    Args:
+        message: ChatMessage to process
+
+    Returns:
+        Original message if content remains after filtering, None if only whitespace remains
+    """
+    # Make a working copy of the content
+    content = message.content
+
+    # 1. Remove text between * and * (non-greedy match)
+    content = re.sub(r'\*.*?\*', '', content)
+
+    # 2. Remove lines that begin or end with *
+    lines = content.split('\n')
+    lines = [line for line in lines if not (line.strip().startswith('*') or line.strip().endswith('*'))]
+    content = '\n'.join(lines)
+
+    # 3. Check if only whitespace remains
+    if not content.strip():
+        return None
+
+    # If we get here, there's non-whitespace content, so return original message
+    return message
+
+
+def filter_stars_prob(message: ChatMessage, prob: float = 0.5) -> ChatMessage | None:
+    """
+    Remove a certain proportion of stars / emotions / actions text from the message.
+    If nothing is left, return None.
+
+    Args:
+        message: ChatMessage to process
+        prob: Probability (0.0 to 1.0) of applying the filter to each starred section
+
+    Returns:
+        Processed message or None if only whitespace remains
+    """
+    if prob <= 0.0:
+        return message
+
+    # Make a working copy of the content
+    content = message.content
+
+    # 1. Fix malformed lines that begin or end with * but not both, by adding the missing *
+    lines = content.split('\n')
+    lines_out = []
+    for line in lines:
+        if line.strip().startswith('*') and not line.strip().endswith('*'):
+            line += '*'
+        if line.strip().endswith('*') and not line.strip().startswith('*'):
+            line = '*' + line
+        lines_out.append(line)
+    content = '\n'.join(lines_out)
+
+    # 2. Remove random selection of text between * and * (non-greedy match)
+    def random_replace(match):
+        return '' if random.random() < prob else match.group(0)
+
+    content = re.sub(r'\*.*?\*', random_replace, content)
+
+    # 3. squeeze whitespace and strip, preserving the format
+    content = re.sub(r'\s*\n\n+\s*', '\n\n', content)
+    content = re.sub(r' +', ' ', content)
+    content = content.strip()
+
+    # 4. Check if anything remains
+    if not content:
+        return None
+
+    # Create new message with filtered content
+    return ChatMessage(
+        user=message.user,
+        content=content,
+    )
+
+
+def process_chat_cli(code: str|None = None, func: str|None = None):
+    """Read a chat file from stdin, process it with a Python expression from the CLI, and write the result to stdout."""
+    messages = load_chat_messages()
+    if func:
+        globals()["process_fn"] = globals()[func]
+    else:
+        code = code.replace("\n", "\n    ")
+        code = f"""
+import re
+def process_fn(msg):
+    u = msg.user
+    c = msg.content
+    {code}
+    if not c:
+        return None
+    return ChatMessage(u, c)
+"""
+        exec(code, globals())
+
+    processed_messages = process_chat(messages, process_fn)
+    save_chat_messages(processed_messages)
+
+
 if __name__ == "__main__":
-    argh.dispatch_command(chat_to_html)
+    argh.dispatch_command(process_chat_cli)
