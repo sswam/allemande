@@ -1,0 +1,4 @@
+type: remote
+model: claude
+default_context: 20
+system_bottom: '[Please reply as Claude, without any `Claude: ` prefix.]'
