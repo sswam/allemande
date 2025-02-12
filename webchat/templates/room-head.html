@@ -4,9 +4,10 @@
 <script src="https://chat.allemande.ai/util.js"></script>
 <script src="https://chat.allemande.ai/room.js"></script>
 <script>var user = {{ user|tojson|safe }};</script>
-<script src="https://chat.allemande.ai/combine_messages.js"></script>
+<script src="https://chat.allemande.ai/process_messages.js"></script>
 <link rel="stylesheet" href="https://chat.allemande.ai/room.css">
 <link id="user_styles" rel="stylesheet" type="text/css" href="https://chat.allemande.ai/users/{{ user }}/theme.css">
+<base target="_top">
 <body id="messages">
 <div class="overlay maxpect"></div>
 <div class="messages">
