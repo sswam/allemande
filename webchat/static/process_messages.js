@@ -76,6 +76,14 @@ function handleNewMessage(newMessage) {
     return;
   }
 
+  // Set title attribute for images
+  const images = newMessage.querySelectorAll("img");
+  for (const img of images) {
+    if (!img.title && img.alt) {
+      img.title = img.alt;
+    }
+  }
+
   const newContent = newMessage.querySelector(".content");
   const newParagraph = getOnlyChildParagraph(newContent);
 
