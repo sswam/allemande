@@ -186,7 +186,8 @@ def who_should_respond(
     history: list[dict[str, Any]] | None = None,
     default: list[str] | None = None,
     include_self: bool = True,
-    include_humans: bool = True,
+    include_humans_for_ai_message: bool = True,
+    include_humans_for_human_message: bool = True,
 ) -> list[str]:
     """who should respond to a message"""
     if not history:
@@ -224,10 +225,12 @@ def who_should_respond(
         user_agent = agents[user_lc]
         logger.warning('user_agent["type"]: %r', user_agent["type"])
         if user_agent["type"] == "tool":
-            invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self, include_humans=include_humans)
+            invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self, include_humans=include_humans_for_ai_message)
             return [agent_case_map[i.lower()] for i in invoked]
 
     is_person = user_lc in agents_lc and agents[user_lc]["type"] == "person"
+
+    include_humans = (is_person and include_humans_for_human_message) or include_humans_for_ai_message
 
     if not is_person:
         include_self = False

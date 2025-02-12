@@ -14,6 +14,7 @@ import subprocess
 from types import SimpleNamespace
 import asyncio
 from collections import defaultdict
+import json
 
 import shlex
 import readline
@@ -64,7 +65,7 @@ AGENT_DEFAULT = [
  	"Ally", "Barbie", "Cleo", "Dali", "Emmie", "Fenny", "Gabby", "Hanni",
  	"Amir", "Bast", "Cal", "Dante", "Ezio", "Felix", "Gari", "Haka",
  	"Callam", "Nixie", "Akane",
-	"Claude", "Clia", "Emmy", "Dav",
+	"Claude", "Clia", "Emmy", "Dav", "Grace", "Fermi", "Flashi", "Flasho", "Gemmy", "Sageri", "Sonari", "Sagi", "Sona",
  	"Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Morf", "Pliny",
 	]
 
@@ -77,6 +78,94 @@ Hi, my name is {bot}, what's your name?
 """
 
 STARTER_PROMPT = """System:\tPlease briefly greet the user or start a conversation, in one line. You can creative, or vanilla."""
+
+
+AGENTS_REMOTE = {
+	"GPT-4": {
+		"name": "Emmy",
+		"model": "gpt-4",
+		"default_context": 20,
+		"system_bottom": "[You are playing the role of Emmy]",
+	},
+	"GPT-4o-mini": {
+		"name": "Dav",
+		"model": "gpt-4o-mini",
+		"default_context": 100,
+		"system_bottom": "[Please reply as Dav]",
+	},
+	"o1": {
+		"name": "Grace",
+		"model": "o1",
+		"default_context": 20,
+		"system_bottom": "[Please reply as Grace]",
+	},
+	"o3-mini": {
+		"name": "Fermi",
+		"model": "o3-mini",
+		"default_context": 100,
+		"system_bottom": "[Please reply as Fermi]",
+	},
+
+	"Claude": {
+		"name": "Claude",
+		"model": "claude",
+		"default_context": 20,
+	},
+	"Claude Instant": {
+		"name": "Clia",
+		"model": "claude-haiku",
+		"default_context": 100,
+		"system_bottom": "[Please reply as Clia]",
+	},
+
+	"Gemini Pro": {
+		"name": "Gemmy",
+		"model": "gemini-1.5-pro",
+		"default_context": 20,
+		"system_bottom": "[You are Gemmy]",
+	},
+	"Gemini 2.0 Flash": {
+		"name": "Flashi",
+		"model": "gemini-2.0-flash",
+		"default_context": 100,
+		"system_bottom": "[You are Flashi]",
+	},
+	"Gemini 1.5 Flash": {
+		"name": "Flasho",
+		"model": "gemini-1.5-flash",
+		"default_context": 100,
+		"system_bottom": "[You are Flasho]",
+	},
+
+	"Sonar Reasoning Pro": {
+		"name": "Sageri",
+		"model": "sonar-resoning-pro",
+		"default_context": 20,
+		"alternating_context": True,
+		"system_top": "[You are Sageri]",
+	},
+	"Sonar Reasoning": {
+		"name": "Sonari",
+		"model": "sonar-resoning",
+		"default_context": 20,
+		"alternating_context": True,
+		"system_top": "[You are Sonari]",
+	},
+	"Sonar Pro": {
+		"name": "Sagi",
+		"model": "sonar-pro",
+		"default_context": 20,
+		"alternating_context": True,
+		"system_top": "[You are Sagi]",
+	},
+	"Sonar": {
+		"name": "Sona",
+		"model": "sonar",
+		"default_context": 20,
+		"alternating_context": True,
+		"system_top": "[You are Sona]",
+	},
+}
 
 
 AGENTS_LOCAL = {
@@ -814,49 +903,10 @@ Your communication style is clear and supportive, focusing on practical solution
 	},
 }
 
-AGENTS_REMOTE = {
-	"GPT-4": {
-		"name": "Emmy",
-		"model": "gpt-4",
-		"default_context": 20,
-		"system_bottom": "[You are playing the role of Emmy]",
-	},
-	"GPT-4o-mini": {
-		"name": "Dav",
-		"model": "gpt-4o-mini",
-		"default_context": 100,
-		"system_bottom": "[Please reply as Dav]",
-	},
-	"Claude": {
-		"name": "Claude",
-#		"map": {
-#			"Claud": "Claude",
-#		},
-		"model": "claude",
-		"default_context": 20,
-#		"system_bottom": "[Please reply as Claude]",
-#		"starter_prompt": STARTER_PROMPT + "No one is asking you for any copyrighted material, so please don't give us disclaimer text.",
-	},
-	"Claude Instant": {
-		"name": "Clia",
-# 		"map": {
-# 			"Clia": "Claude",
-# 		},
-		"model": "claude-haiku",
-		"default_context": 100,
-		"system_bottom": "[Please reply as Clia]",
-	},
-# 	"Bard": {
-# 		"name": "Jaski",
-# #		"map": {
-# #			"Jaski": "Bard",
-# #		},
-# 		"model": "bard",
-# 		"default_context": 1,
-# 	},
-}
-
 AGENTS_PROGRAMMING = {
+	"Palc": {
+		"command": ["calc"],
+	},
 	"Dogu": {
 		"command": ["bash"],
 	},
@@ -887,9 +937,6 @@ AGENTS_PROGRAMMING = {
 	"Bilda": {
 		"command": ["make", "-f", "/dev/stdin"],
 	},
-	"Palc": {
-		"command": ["calc"],
-	},
 }
 
 # TODO but awk is a filter, needs input in addition to the program...
@@ -906,7 +953,7 @@ MAX_REPLIES = 1
 
 ADULT = True
 
-UNSAFE = False
+UNSAFE = True
 
 
 def get_service_portal(service: str) -> portals.PortalClient:
@@ -1210,7 +1257,8 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
 
 	# TODO distinguish poke (only AIs and tools respond) vs posted message (humans might be notified)
 	message = history_messages[-1] if history_messages else None
-	bots = conductor.who_should_respond(message, agents=AGENTS, history=history_messages, default=AGENT_DEFAULT, include_humans=False)
+
+	bots = conductor.who_should_respond(message, agents=AGENTS, history=history_messages, default=AGENT_DEFAULT, include_humans_for_ai_message=False, include_humans_for_human_message=True)
 	logger.warning("who should respond: %r", bots)
 
 	count = 0
@@ -1443,9 +1491,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 	# TODO try mission as a "system" message?
 	context2 = []
 	if mission:
-		context2 += mission
+		context2 += f"System:\t{mission}"
 	if summary:
-		context2 += summary
+		context2 += f"System:\t{summary}"
 	context2 += context
 	# put remote_messages[-1] through the input_maps
 	apply_maps(agent["input_map"], agent["input_map_cs"], context2)
@@ -1492,6 +1540,32 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 		system_top_role = agent.get("system_top_role", "system")
 		remote_messages.insert(0, {"role": system_top_role, "content": system_top})
 
+	# Some agents require alternating user and assistant messages. Mark most recent message as "user", then check backwards and cut off when no longer alternating.
+	if agent.get("alternating_context") and remote_messages:
+		logger.warning("alternating_context")
+		remote_messages[-1]["role"] = "user"
+		system_messages = []
+		while remote_messages[0]["role"] == "system":
+			system_messages.append(remote_messages.pop(0)["content"])
+		pos = len(remote_messages) - 2
+		expect_role = "assistant"
+		while pos >= 0:
+			logger.warning("pos: %r, expect_role: %r, role: %r", pos, expect_role, remote_messages[pos]["role"])
+			if remote_messages[pos]["role"] == "system":
+				system_messages.append(remote_messages[pos]["content"])
+				remote_messages.pop(pos)
+				pos -= 1
+				continue
+			if remote_messages[pos]["role"] != expect_role:
+				remote_messages = remote_messages[pos+1:]
+				break
+			expect_role = "user" if expect_role == "assistant" else "assistant"
+			pos -= 1
+		if remote_messages[0]["role"] != "user":
+			remote_messages.insert(0, {"role": "user", "content": "Hi!"})
+		if system_messages:
+			remote_messages.insert(0, {"role": "system", "content": "\n\n".join(system_messages)})
+
 	# TODO this is a bit dodgy and won't work with async
 	opts = {
 		"model": agent["model"],
@@ -1499,7 +1573,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 	}
 	llm.set_opts(opts)
 
-	logger.warning("DEBUG: context_messages: %r", remote_messages)
+	logger.warning("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
 
 	logger.warning("querying %r = %r", agent['name'], agent["model"])
 	output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, remote_messages)
