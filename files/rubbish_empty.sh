@@ -6,6 +6,6 @@ for BASE in "$HOME" $(qe df | tail -n +2 | awk '{print $6}'); do
 		continue
 	fi
 	cd "$RUBBISH"
-	find -mindepth 1 -maxdepth 1 -print0 | xargs --no-run-if-empty -0 rm -v -r --
+	find -mindepth 1 -maxdepth 1 -print0 | xargs --no-run-if-empty -0 rm -f -v -r --
 	# rmdir "$RUBBISH"
 done
