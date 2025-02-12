@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 
+"""
+Boulder Dash-inspired game with falling rocks, pushable boulders, and collectible diamonds.
+Use arrow keys to move. Collect all diamonds to unlock the exit.
+"""
+
 import pygame
 import numpy as np
-import sys
 
-# Initialize Pygame
-pygame.init()
+# ----- Game Settings ----- #
 CELL_SIZE = 32
-GRID_WIDTH = 20
-GRID_HEIGHT = 15
-screen = pygame.display.set_mode((GRID_WIDTH * CELL_SIZE, GRID_HEIGHT * CELL_SIZE))
-clock = pygame.time.Clock()
+FPS = 15
 
-# Game elements
+# Cell types
 EMPTY = 0
-WALL = 1
-DIRT = 2
-ROCK = 3
-DIAMOND = 4
-PLAYER = 5
+PLAYER = 1
+WALL = 2
+DIRT = 3
+ROCK = 4
+DIAMOND = 5
 EXIT = 6
 
 # Colors
@@ -28,12 +28,14 @@ COLORS = {
     DIRT: (139, 69, 19),
     ROCK: (169, 169, 169),
     DIAMOND: (0, 191, 255),
-    PLAYER: (255, 255, 0),
-    EXIT: (0, 255, 0)
+    EXIT: (255, 0, 0),  # Default red, changes to green when diamonds collected
 }
+PLAYER_COLOR = (0, 0, 255)
+EXIT_COLOR_LOCKED = (255, 0, 0)
+EXIT_COLOR_UNLOCKED = (0, 255, 0)
 
-# Initial level
-level = """
+# Level definition
+level_str = """
 WWWWWWWWWWWWWWWWWWWW
 W..................W
 W...R..D...........W
@@ -51,211 +53,314 @@ W..................W
 WWWWWWWWWWWWWWWWWWWW
 """
 
-# Convert level string to numpy array
-grid = np.zeros((GRID_HEIGHT, GRID_WIDTH), dtype=int)
-player_pos = [0, 0]
-total_diamonds = 0
+GRID_HEIGHT = len(level_str.strip().split("\n"))
+GRID_WIDTH = len(level_str.strip().split("\n")[0])
 
-for y, row in enumerate(level.strip().split('\n')):
-    for x, char in enumerate(row):
-        if char == 'W':
-            grid[y, x] = WALL
-        elif char == '.':
-            grid[y, x] = DIRT
-        elif char == 'R':
-            grid[y, x] = ROCK
-        elif char == 'D':
-            grid[y, x] = DIAMOND
-            total_diamonds += 1
-        elif char == 'P':
-            player_pos = [y, x]
-            grid[y, x] = EMPTY
-        elif char == 'E':
-            grid[y, x] = EXIT
 
-diamonds_collected = 0
-game_over = False
-game_won = False
+class GameState:
+    """Game state container"""
 
-def check_rock_fall_kill(grid, player_pos):
-    if (player_pos[0] > 0 and
-        grid[player_pos[0]-1, player_pos[1]] == EMPTY and
-        grid[player_pos[0]-2, player_pos[1]] == ROCK):
-        return True
-    return False
+    def __init__(self):
+        self.grid, self.player_pos, self.total_diamonds = create_grid_from_level(level_str)
+        self.diamonds_collected = 0
 
-def can_push_rock(grid, player_pos, direction):
-    rock_pos = [player_pos[0], player_pos[1] + direction]
-    target_pos = [player_pos[0], player_pos[1] + direction * 2]
 
-    # Check if target position is within grid and empty
-    if (0 <= target_pos[1] < GRID_WIDTH and
-        grid[target_pos[0], target_pos[1]] == EMPTY):
-        return True
-    return False
+def create_grid_from_level(level_definition: str) -> tuple[np.ndarray, list[int], int]:
+    """Convert level string to numpy grid and return player position and diamond count"""
+    level_lines = level_definition.strip().split("\n")
+    grid = np.zeros((GRID_HEIGHT, GRID_WIDTH), dtype=int)
+    player_pos = [0, 0]
+    total_diamonds = 0
 
-def draw_game(screen, grid, player_pos, CELL_SIZE):
-    screen.fill((0, 0, 0))
+    for y, line in enumerate(level_lines):
+        for x, char in enumerate(line):
+            if char == "W":
+                grid[y, x] = WALL
+            elif char == ".":
+                grid[y, x] = DIRT
+            elif char == "R":
+                grid[y, x] = ROCK
+            elif char == "D":
+                grid[y, x] = DIAMOND
+                total_diamonds += 1
+            elif char == "P":
+                player_pos = [y, x]
+                grid[y, x] = DIRT
+            elif char == "E":
+                grid[y, x] = EXIT
 
+    grid[player_pos[0], player_pos[1]] = PLAYER
+
+    return grid, player_pos, total_diamonds
+
+
+def draw_exit(screen, x, y, diamonds_collected, total_diamonds):
+    """Draw exit as 8-point star with color based on diamond collection status"""
+    cell_center = (x * CELL_SIZE + CELL_SIZE // 2, y * CELL_SIZE + CELL_SIZE // 2)
+    color = EXIT_COLOR_UNLOCKED if diamonds_collected == total_diamonds else EXIT_COLOR_LOCKED
+
+    # Calculate star points
+    size = int(CELL_SIZE * 0.707)  # sqrt(2)/2
+    # Diamond points
+    diamond_points = [
+        (cell_center[0], cell_center[1] - CELL_SIZE // 2),
+        (cell_center[0] + CELL_SIZE // 2, cell_center[1]),
+        (cell_center[0], cell_center[1] + CELL_SIZE // 2),
+        (cell_center[0] - CELL_SIZE // 2, cell_center[1]),
+    ]
+    # Square points
+    square_points = [
+        (cell_center[0] - size // 2, cell_center[1] - size // 2),
+        (cell_center[0] + size // 2, cell_center[1] - size // 2),
+        (cell_center[0] + size // 2, cell_center[1] + size // 2),
+        (cell_center[0] - size // 2, cell_center[1] + size // 2),
+    ]
+    pygame.draw.polygon(screen, color, diamond_points)
+    pygame.draw.polygon(screen, color, square_points)
+
+
+def draw_diamond(screen, x, y):
+    """Draw diamond as rotated square"""
+    cell_center = (x * CELL_SIZE + CELL_SIZE // 2, y * CELL_SIZE + CELL_SIZE // 2)
+    diamond_points = [
+        (cell_center[0], cell_center[1] - CELL_SIZE // 2),
+        (cell_center[0] + CELL_SIZE // 2, cell_center[1]),
+        (cell_center[0], cell_center[1] + CELL_SIZE // 2),
+        (cell_center[0] - CELL_SIZE // 2, cell_center[1]),
+    ]
+    pygame.draw.polygon(screen, COLORS[DIAMOND], diamond_points)
+
+
+def draw_cell(screen, cell_type, x, y, diamonds_collected, total_diamonds):
+    """Draw a single cell at grid position (x, y)"""
+    rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+    center = (x * CELL_SIZE + CELL_SIZE // 2, y * CELL_SIZE + CELL_SIZE // 2)
+
+    if cell_type in [WALL, DIRT]:
+        pygame.draw.rect(screen, COLORS[cell_type], rect)
+
+    elif cell_type == EXIT:
+        draw_exit(screen, x, y, diamonds_collected, total_diamonds)
+
+    elif cell_type == ROCK:
+        pygame.draw.circle(screen, COLORS[ROCK], center, CELL_SIZE // 2 - 2)
+
+    elif cell_type == DIAMOND:
+        diamond_points = [
+            (center[0], center[1] - CELL_SIZE // 2),
+            (center[0] + CELL_SIZE // 2, center[1]),
+            (center[0], center[1] + CELL_SIZE // 2),
+            (center[0] - CELL_SIZE // 2, center[1]),
+        ]
+        pygame.draw.polygon(screen, COLORS[DIAMOND], diamond_points)
+
+
+def draw_player(screen, player_pos):
+    """Draw the player character at the given grid position"""
+    player_center = (player_pos[1] * CELL_SIZE + CELL_SIZE // 2, player_pos[0] * CELL_SIZE + CELL_SIZE // 2)
+    pygame.draw.circle(screen, PLAYER_COLOR, player_center, CELL_SIZE // 3)
+
+
+def draw_game(screen, grid, player_pos, diamonds_collected, total_diamonds):
+    """Draw the entire game state"""
+    # Clear screen
+    screen.fill(COLORS[EMPTY])
+
+    # Draw grid
     for y in range(GRID_HEIGHT):
         for x in range(GRID_WIDTH):
-            cell_center = (x * CELL_SIZE + CELL_SIZE//2,
-                         y * CELL_SIZE + CELL_SIZE//2)
+            cell = grid[y, x]
+            if cell != EMPTY:
+                draw_cell(screen, cell, x, y, diamonds_collected, total_diamonds)
 
-            if grid[y, x] == WALL:
-                pygame.draw.rect(screen, COLORS[WALL],
-                               (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+    # Draw player
+    draw_player(screen, player_pos)
 
-            elif grid[y, x] == DIRT:
-                pygame.draw.rect(screen, COLORS[DIRT],
-                               (x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
-            elif grid[y, x] == ROCK:
-                pygame.draw.circle(screen, COLORS[ROCK],
-                                 cell_center, CELL_SIZE//2 - 2)
+def is_valid_move(grid, new_y, new_x):
+    """Check if a move to the given coordinates is valid"""
+    return 0 <= new_y < GRID_HEIGHT and 0 <= new_x < GRID_WIDTH and grid[new_y, new_x] != WALL
 
-            elif grid[y, x] == DIAMOND:
-                # Draw diamond shape
-                diamond_points = [
-                    (cell_center[0], cell_center[1] - CELL_SIZE//2),  # top
-                    (cell_center[0] + CELL_SIZE//2, cell_center[1]),  # right
-                    (cell_center[0], cell_center[1] + CELL_SIZE//2),  # bottom
-                    (cell_center[0] - CELL_SIZE//2, cell_center[1])   # left
-                ]
-                pygame.draw.polygon(screen, COLORS[DIAMOND], diamond_points)
 
-            elif grid[y, x] == EXIT:
-                # Draw 8-point star (diamond + square)
-                size = int(CELL_SIZE * 0.707)  # sqrt(2)/2
-                # Diamond points
-                diamond_points = [
-                    (cell_center[0], cell_center[1] - CELL_SIZE//2),
-                    (cell_center[0] + CELL_SIZE//2, cell_center[1]),
-                    (cell_center[0], cell_center[1] + CELL_SIZE//2),
-                    (cell_center[0] - CELL_SIZE//2, cell_center[1])
-                ]
-                # Square points
-                square_points = [
-                    (cell_center[0] - size//2, cell_center[1] - size//2),
-                    (cell_center[0] + size//2, cell_center[1] - size//2),
-                    (cell_center[0] + size//2, cell_center[1] + size//2),
-                    (cell_center[0] - size//2, cell_center[1] + size//2)
-                ]
-                pygame.draw.polygon(screen, COLORS[EXIT], diamond_points)
-                pygame.draw.polygon(screen, COLORS[EXIT], square_points)
+def attempt_push_rock(grid, pos, dx):
+    """Try to push a rock horizontally. Returns True if successful."""
+    y, x = pos
+    target_x = x + dx  # The cell where the rock is to be pushed
 
-    # Draw player (half-sized circle)
-    if not game_over:
-        player_center = (player_pos[1] * CELL_SIZE + CELL_SIZE//2,
-                        player_pos[0] * CELL_SIZE + CELL_SIZE//2)
-        pygame.draw.circle(screen, COLORS[PLAYER],
-                         player_center, CELL_SIZE//4)
+    # Check if the target cell is within bounds and empty
+    if 0 <= target_x < GRID_WIDTH and grid[y, target_x] == EMPTY:
+        grid[y, target_x] = ROCK  # Move the rock to the target cell
+        grid[y, x] = EMPTY  # Clear the original rock position
+        return True
+    return False
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
 
-        if event.type == pygame.KEYDOWN and not game_over and not game_won:
-            new_pos = player_pos.copy()
+def handle_player_move(grid, player_pos, dy, dx):
+    """Process player movement, including rock pushing and diamond collection"""
+    y, x = player_pos
+    new_y = y + dy
+    new_x = x + dx
 
-            if event.key == pygame.K_LEFT:
-                new_pos[1] -= 1
-                # Check if trying to push rock left
-                if (grid[new_pos[0], new_pos[1]] == ROCK and
-                    can_push_rock(grid, player_pos, -1)):
-                    grid[new_pos[0], new_pos[1] - 1] = ROCK
-                    grid[new_pos[0], new_pos[1]] = EMPTY
-            elif event.key == pygame.K_RIGHT:
-                new_pos[1] += 1
-                # Check if trying to push rock right
-                if (grid[new_pos[0], new_pos[1]] == ROCK and
-                    can_push_rock(grid, player_pos, 1)):
-                    grid[new_pos[0], new_pos[1] + 1] = ROCK
-                    grid[new_pos[0], new_pos[1]] = EMPTY
-            elif event.key == pygame.K_UP:
-                new_pos[0] -= 1
-            elif event.key == pygame.K_DOWN:
-                new_pos[0] += 1
+    if not is_valid_move(grid, new_y, new_x):
+        return player_pos, 0
 
-            # Check if move is valid
-            move_valid = False
-            if (0 <= new_pos[0] < GRID_HEIGHT and
-                0 <= new_pos[1] < GRID_WIDTH and
-                grid[new_pos[0], new_pos[1]] != WALL and
-                grid[new_pos[0], new_pos[1]] != ROCK):
+    cell = grid[new_y, new_x]
+    diamonds_gotten = 0
 
-                move_valid = True
+    # Handle different cell types
+    if cell == ROCK and dx != 0:
+        if not attempt_push_rock(grid, (new_y, new_x), dx):
+            return player_pos, 0
+    elif cell == DIAMOND:
+        diamonds_gotten = 1
+    elif cell == EXIT:
+        return player_pos, 0  # Added colon here.
+    elif cell not in [EMPTY, DIRT]:
+        return player_pos, 0
 
-                # Collect diamond
-                if grid[new_pos[0], new_pos[1]] == DIAMOND:
-                    diamonds_collected += 1
+    # Update grid with player's new position
+    move_object(grid, y, x, dy, dx)
 
-                # Check exit
-                if grid[new_pos[0], new_pos[1]] == EXIT:
-                    if diamonds_collected == total_diamonds:
-                        game_won = True
-                    else:
-                        move_valid = False
+    return (new_y, new_x), diamonds_gotten
 
-            if move_valid:
-                # Move player
-                grid[new_pos[0], new_pos[1]] = EMPTY
-                player_pos = new_pos
 
-    if not game_over and not game_won:
-        # Apply gravity to rocks
-        for y in range(GRID_HEIGHT-2, -1, -1):
-            for x in range(GRID_WIDTH):
-                if grid[y, x] == ROCK:
-                    # Check if space below is empty and not player position
-                    if grid[y+1, x] == EMPTY and [y+1, x] != player_pos:
-                        grid[y+1, x] = ROCK
-                        grid[y, x] = EMPTY
-                        # Check if rock killed player
-                        if [y+2, x] == player_pos:
-                            game_over = True
-                    # Check for sliding
-                    elif grid[y+1, x] in [ROCK, DIAMOND]:
-                        # Try slide left
-                        if (x > 0 and grid[y, x-1] == EMPTY and [y, x-1] != player_pos
-                            and grid[y+1, x-1] == EMPTY and [y+1, x-1] != player_pos):
-                            grid[y, x-1] = ROCK
-                            grid[y, x] = EMPTY
-                        # Try slide right
-                        elif (x < GRID_WIDTH-1 and grid[y, x+1] == EMPTY and [y, x+1] != player_pos
-                              and grid[y+1, x+1] == EMPTY and [y+1, x+1] != player_pos):
-                            grid[y, x+1] = ROCK
-                            grid[y, x] = EMPTY
+def move_object(grid, y, x, dy, dx):
+    """Move an object at (y, x) to (y+dy, x+dx)"""
+    grid[y + dy, x + dx] = grid[y, x]
+    grid[y, x] = EMPTY
 
-        # Check if player is crushed by falling rock
-        if check_rock_fall_kill(grid, player_pos):
-            game_over = True
 
-    # Draw game
-    draw_game(screen, grid, player_pos, CELL_SIZE)
+def process_single_rock(grid, y, x):
+    """Handle falling/sliding for a single rock. Returns True if player is crushed."""
 
-    # Draw game over or win message
-    if game_over:
-        font = pygame.font.Font(None, 74)
-        text = font.render('GAME OVER', True, (255, 0, 0))
-        screen.blit(text, (GRID_WIDTH * CELL_SIZE // 4, GRID_HEIGHT * CELL_SIZE // 2))
-    elif game_won:
-        font = pygame.font.Font(None, 74)
-        text = font.render('YOU WIN!', True, (0, 255, 0))
-        screen.blit(text, (GRID_WIDTH * CELL_SIZE // 4, GRID_HEIGHT * CELL_SIZE // 2))
+    # Try falling straight down
+    if grid[y + 1, x] == EMPTY:
+        move_object(grid, y, x, 1, 0)
+        return y < GRID_HEIGHT - 2 and grid[y + 2, x] == PLAYER
 
-    # Draw diamond count
+    # Check if rock can slide
+    if y < GRID_HEIGHT - 1 and grid[y + 1, x] not in [ROCK, DIAMOND]:
+        return False
+
+    # Try slide left
+    if x > 0:
+        if grid[y, x - 1] == EMPTY and grid[y + 1, x - 1] == EMPTY:
+            move_object(grid, y, x, 0, -1)
+            return False
+
+    # Try slide right
+    if x < GRID_WIDTH - 1:
+        if grid[y, x + 1] == EMPTY and grid[y + 1, x + 1] == EMPTY:
+            move_object(grid, y, x, 0, 1)
+            return False
+
+    return False
+
+
+def update_rocks(grid):
+    """Process falling and sliding rocks. Returns True if player is crushed."""
+    for y in range(GRID_HEIGHT - 2, -1, -1):
+        for x in range(GRID_WIDTH):
+            if grid[y, x] == ROCK:
+                if process_single_rock(grid, y, x):
+                    return True
+    return False
+
+
+def handle_game_event(event, grid, player_pos, diamonds_collected, total_diamonds):
+    """Process a single game event. Returns (new_pos, diamonds_added, game_state)"""
+    if event.type == pygame.QUIT:  # pylint: disable=no-member
+        return player_pos, 0, "quit"
+
+    if event.type != pygame.KEYDOWN:  # pylint: disable=no-member
+        return player_pos, 0, "playing"
+
+    # Handle ESC key to quit
+    if event.key == pygame.K_ESCAPE:  # pylint: disable=no-member
+        return player_pos, 0, "quit"
+
+    # Handle movement
+    dx = dy = 0
+    if event.key == pygame.K_LEFT:  # pylint: disable=no-member
+        dx = -1
+    elif event.key == pygame.K_RIGHT:  # pylint: disable=no-member
+        dx = 1
+    elif event.key == pygame.K_UP:  # pylint: disable=no-member
+        dy = -1
+    elif event.key == pygame.K_DOWN:  # pylint: disable=no-member
+        dy = 1
+    else:
+        return player_pos, 0, "playing"
+
+    # Process move
+    new_pos, diamonds = handle_player_move(grid, player_pos, dy, dx)
+
+    # Check win condition
+    if grid[new_pos[0], new_pos[1]] == EXIT and diamonds_collected + diamonds == total_diamonds:
+        return new_pos, diamonds, "won"
+
+    return new_pos, diamonds, "playing"
+
+
+def draw_hud(screen, diamonds_collected, total_diamonds):
+    """Draw the heads-up display (diamond count)"""
     font = pygame.font.Font(None, 36)
-    text = font.render(f'Diamonds: {diamonds_collected}/{total_diamonds}', True, (255, 255, 255))
+    text = font.render(f"Diamonds: {diamonds_collected}/{total_diamonds}", True, (255, 255, 255))
     screen.blit(text, (10, 10))
 
+
+def show_end_screen(screen, game_state):
+    """Show the final game over or victory screen"""
+    if game_state == "won":
+        color = (0, 255, 0)
+        message = "YOU WIN!"
+    elif game_state == "dead":
+        color = (255, 0, 0)
+        message = "GAME OVER"
+    else:
+        return
+
+    font = pygame.font.Font(None, 74)
+    text = font.render(message, True, color)
+    screen.blit(text, (GRID_WIDTH * CELL_SIZE // 4, GRID_HEIGHT * CELL_SIZE // 2))
     pygame.display.flip()
-    clock.tick(60)
-
-pygame.quit()
+    pygame.time.wait(2000)
 
 
-# TODO maybe mark the player in the grid to simplify sliding, etc
-# TODO more functions, less nesting / intentation
+def main():
+    """Main game loop."""
+    pygame.init()  # pylint: disable=no-member
+    screen = pygame.display.set_mode((GRID_WIDTH * CELL_SIZE, GRID_HEIGHT * CELL_SIZE))
+    pygame.display.set_caption("Boulder Dash")
+    clock = pygame.time.Clock()
+
+    # Initialize game state
+    state = GameState()
+    game_state = "playing"
+
+    while game_state == "playing":
+        clock.tick(FPS)
+
+        # Handle events
+        for event in pygame.event.get():
+            state.player_pos, new_diamonds, game_state = handle_game_event(
+                event, state.grid, state.player_pos, state.diamonds_collected, state.total_diamonds
+            )
+            state.diamonds_collected += new_diamonds
+
+        # Update rocks
+        if update_rocks(state.grid):
+            game_state = "dead"
+
+        # Draw current state
+        draw_game(screen, state.grid, state.player_pos, state.diamonds_collected, state.total_diamonds)
+        draw_hud(screen, state.diamonds_collected, state.total_diamonds)
+        pygame.display.flip()
+
+    # Show final screen
+    show_end_screen(screen, game_state)
+    pygame.quit()  # pylint: disable=no-member
+
+
+if __name__ == "__main__":
+    main()
