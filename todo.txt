@@ -1,0 +1,12 @@
+Nika:
+
+- search agents
+	- perplexity online models
+	- search and fetch agents
+	- (embedding search)
+
+
+Mike:
+
+- ... check messenger audio, or talk to him
+
