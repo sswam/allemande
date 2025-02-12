@@ -20,7 +20,7 @@ mp() {
 	fi
 }
 
-case "$file" in
+case "${file,,}" in
 *.txt|*.md|*.bb)
 	less -- "$file" ;;
 *.html|*.xhtml)

@@ -53,7 +53,7 @@ curate_process_file() {
 		done=1
 		;;
 	X)
-		rm -f "$V"
+		rm -f -- "$V"
 		done=1
 		;;
 	r|R)
