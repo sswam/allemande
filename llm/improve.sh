@@ -56,7 +56,7 @@ improve() {
 	fi
 
 	# Check if the file exists
-	if [ ! -e "$file" ]; then
+	if [ ! -e "$file" -o -d "$file" ]; then
 		local prog2=$(which "$file")
 		if [ ! -e "$prog2" ]; then
 			echo >&2 "not found: $file"
