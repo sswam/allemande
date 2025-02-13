@@ -131,3 +131,19 @@ body.overlay > div.overlay.maxpect > img {
 	height: 100%;
 	object-fit: contain;
 }
+
+details.up {
+	position: relative;
+	top: -18px;
+}
+
+.directory-listing {
+	list-style: none;
+	padding: 0;
+}
+.directory-listing li {
+	padding: 8px;
+}
+.icon {
+	margin-right: 10px;
+}

@@ -15,12 +15,16 @@ let DEBUG = false;
 let room;
 let user;
 let admin = false;
+let sent_message_count = 0;
 
 const ROOMS_URL =
   location.protocol + "//" + location.host.replace(/^chat\b/, "rooms");
 const MAX_ROOM_NUMBER = 1e3; // 1e12;
 const DEFAULT_ROOM = "Ally Chat";
-const global_admins = ["sam"];
+
+// TODO: no!
+const global_moderators = ["root", "sam"];
+// const global_moderators = ["root", "sam"];
 
 // utility functions ---------------------------------------------------------
 
@@ -72,6 +76,8 @@ async function send(ev) {
   const message = $content.value;
   set_content("");
 
+  set_sent_message_count(sent_message_count + 1);
+
   try {
     await send_form_data(formData);
   } catch (error) {
@@ -90,6 +96,33 @@ async function send_text(text) {
 
 async function poke() {
   await send_text("");
+}
+
+// sent message count --------------------------------------------------------
+
+function set_sent_message_count(count) {
+  if (sent_message_count != 0)
+    $id("send").classList.remove(`active-${Math.min(sent_message_count, 20)}`);
+
+  sent_message_count = count;
+
+  if (sent_message_count < 0) sent_message_count = 0;
+  if (sent_message_count == 0) {
+    $id("send").classList.remove("active");
+  } else {
+    $id("send").classList.add("active");
+    $id("send").classList.add(`active-${Math.min(sent_message_count, 20)}`);
+  }
+}
+
+// new chat message ----------------------------------------------------------
+
+function new_chat_message(message) {
+  console.log("new_chat_message", message);
+  auto_play_back_off();
+  if (message.user != user) {
+    set_sent_message_count(sent_message_count - 1);
+  }
 }
 
 // handle enter key press ----------------------------------------------------
@@ -187,11 +220,17 @@ function set_room(r) {
   set_title_hash(room); // okay above the if?
   if (!room) return;
   //	who();
-  const room_stream_url = ROOMS_URL + "/" + room + ".html?stream=1";
+  // check ends in slash
+  let room_stream_url = ROOMS_URL + "/" + room;
+  if (!room.match(/\/$/)) {
+    room_stream_url += ".html";
+  }
+  room_stream_url += "?stream=1";
   console.log("setting $messages_iframe.src to", room_stream_url);
   messages_iframe_set_src(room_stream_url);
   setup_user_button();
   setup_admin();
+  reset_controls();
 }
 
 // user info and settings ----------------------------------------------------
@@ -226,7 +265,8 @@ function set_title_hash(query) {
   console.log("setting title hash", query);
   new_hash = query_to_hash(query);
   new_title = query_to_title(query);
-  location.hash = new_hash;
+  if (location.hash != new_hash)
+    location.hash = new_hash;
   $title.innerText = new_title;
 }
 
@@ -359,6 +399,11 @@ function handle_message(ev) {
 
   if (ev.data.type == "overlay") {
     set_overlay(ev.data.overlay);
+    return;
+  }
+
+  if (ev.data.type == "new_message") {
+    new_chat_message(ev.data.message);
     return;
   }
 
@@ -575,7 +620,7 @@ function setup_admin() {
   // or user is a global admin, then user is an admin here
   const components = room.split("/");
   const top_dir = components[0];
-  admin = global_admins.includes(user) || top_dir.split(",").includes(user);
+  admin = global_moderators.includes(user) || top_dir.split(",").includes(user);
   if (admin) document.body.classList.add("admin");
   else document.body.classList.remove("admin");
 }
@@ -622,7 +667,7 @@ async function clear(ev, op) {
     return;
   }
 
-  set_controls();
+  reset_controls();
 
   // TODO should clear immediately for other users too, not just the current user
   // reload_messages();
@@ -690,6 +735,12 @@ async function retry(ev) {
 function set_controls(id) {
   $("#inputrow > .controls:not(.hidden)").classList.add("hidden");
   $id(id || "input_main").classList.remove("hidden");
+}
+
+function reset_controls() {
+  set_controls();
+  set_sent_message_count(0);
+  stop_auto_play();
 }
 
 // auto play -----------------------------------------------------------------

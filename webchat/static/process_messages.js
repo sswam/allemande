@@ -61,7 +61,7 @@ function findMatchingImageMessage(message) {
 
 function getOnlyChildParagraph(node) {
   const children = node.childNodes;
-  if (children.length !== 1) {
+  if (!children || children.length !== 1) {
     return null;
   }
   const child = children[0];
@@ -72,6 +72,10 @@ function getOnlyChildParagraph(node) {
 }
 
 function handleNewMessage(newMessage) {
+  const newContent = newMessage.querySelector(".content");
+  const newUser = newMessage.getAttribute("user");
+  notify_new_message({ user: newUser, content: newContent.innerHTML });
+
   if (!newMessage.previousElementSibling) {
     return;
   }
@@ -84,7 +88,6 @@ function handleNewMessage(newMessage) {
     }
   }
 
-  const newContent = newMessage.querySelector(".content");
   const newParagraph = getOnlyChildParagraph(newContent);
 
   // Handle image-only messages

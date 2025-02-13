@@ -368,6 +368,11 @@ function setup_ids() {
   $on($overlay, "click", overlay_close);
 }
 
+function notify_new_message(newMessage) {
+  // send a message to the parent window
+  window.parent.postMessage({ type: "new_message", message: newMessage }, CHAT_URL);
+}
+
 $on(document, "click", click);
 $on(document, "auxclick", click);
 

@@ -142,8 +142,28 @@ input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
 }
 
 .active {
-	background-color: #663 !important;
+	background-color: #606030 !important;
 }
+
+.active-2 { background-color: #707038 !important; color: white !important; }
+.active-3 { background-color: #808040 !important; color: white !important; }
+.active-4 { background-color: #909048 !important; color: white !important; }
+.active-5 { background-color: #a0a050 !important; color: white !important; }
+.active-6 { background-color: #b0b058 !important; color: black !important; }
+.active-7 { background-color: #c0c060 !important; color: black !important; }
+.active-8 { background-color: #d0d068 !important; color: black !important; }
+.active-9 { background-color: #e0e070 !important; color: black !important; }
+.active-10 { background-color: #f0f078 !important; color: black !important; }
+.active-11 { background-color: #ffff80 !important; color: black !important; }
+.active-12 { background-color: #ffff88 !important; color: black !important; }
+.active-13 { background-color: #ffff90 !important; color: black !important; }
+.active-14 { background-color: #ffff98 !important; color: black !important; }
+.active-15 { background-color: #ffffa0 !important; color: black !important; }
+.active-16 { background-color: #ffffa8 !important; color: black !important; }
+.active-17 { background-color: #ffffb0 !important; color: black !important; }
+.active-18 { background-color: #ffffb8 !important; color: black !important; }
+.active-19 { background-color: #ffffc0 !important; color: black !important; }
+.active-20 { background-color: #ffffc8 !important; color: black !important; }
 
 video {
 	min-height: 128px;
