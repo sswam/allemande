@@ -146,3 +146,5 @@ types-PyYAML
 types-Markdown
 types-aiofiles
 types-regex
+
+# python-magic
