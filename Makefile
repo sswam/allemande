@@ -125,8 +125,8 @@ pro.xtc: svelte.xtc
 pro-dev.xtc: svelte-dev.xtc
 
 clean:
-	spool-cleanup
-	spool-history-rm
+	spool-cleanup || true
+	spool-history-rm || true
 	> $(WATCH_LOG)
 
 llm:
