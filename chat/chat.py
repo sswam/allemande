@@ -13,6 +13,8 @@ from dataclasses import dataclass
 import shutil
 import subprocess
 import random
+import enum
+from stat import S_IFREG, S_IROTH, S_IWOTH
 
 import argh
 import markdown
@@ -20,12 +22,27 @@ from starlette.exceptions import HTTPException
 import aiofiles
 
 import video_compatible
+from agents import ALLOWED_AGENTS
+
+
+os.umask(0o007)
 
 
 EXTENSION = ".bb"
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
 
-global_admins = ["sam"]  # TODO from enviorment variable
+ADMINS = os.environ.get("ALLYCHAT_ADMINS", "").split()
+MODERATORS = os.environ.get("ALLYCHAT_MODERATORS", "").split()
+
+
+class Access(enum.Enum):
+    NONE = 0
+    READ = 1
+    WRITE = 2
+    READ_WRITE = 3
+    MODERATE = 4
+    MODERATE_READ_WRITE = 7
+    ADMIN = 15
 
 
 logging.basicConfig(level=logging.INFO)
@@ -117,35 +134,72 @@ class Room:
         with self.path.open("a", encoding="utf-8") as f:
             f.write(text)
 
-    def check_admin(self, user):
-        """Check if a user is an admin."""
-        if user in global_admins:
-            return True
-        components = self.name.split("/")
-        top_dir = components[0]
-        return user in top_dir.split(",")
+    def write(self, user, content):
+    	"""
+    	Write a message to a room.
+    	We don't convert to HTML here, a follower process does that.
+    	"""
+    	if not check_access(user, self.name, self.path).value & Access.WRITE.value:
+    		raise PermissionError("You are not allowed to post to this room.")
+
+    	if content == "":
+    		# touch the markdown_file, to poke some attention
+    		self.touch()
+    		return
+
+    	if user == user.lower() or user == user.upper():
+    		user_tc = user.title()
+    	else:
+    		user_tc = user
+    	user_tc = user_tc.replace(".", "_")
+    	message = {"user": user_tc, "content": content}
+
+    	text = message_to_text(message) + "\n"
+
+    	self.append(text)
+
+#     def check_admin(self, user):
+#         """Check if a user is an admin."""
+#         if user in ADMINS:
+#             return True
+#         components = self.name.split("/")
+#         top_dir = components[0]
+#         return user in top_dir.split(",")
 
     def clear(self, op="clear"):
         """Clear a room."""
+        access = check_access(user, self.name, self.path)
         if op == "archive":
+            if not access.value & Access.MODERATE.value:
+                raise PermissionError("You are not allowed to archive this room.")
             # run room-rotate script with room name
             # TODO in Python
             subprocess.run(["room-rotate", self.name], check=True)
         elif op == "rotate":
+            raise NotImplementedError("Room rotation is not implemented yet.")
             # run room-rotate script with room name
             # TODO in Python, archive half, keep half. Media?
-            subprocess.run(["room-rotate", self.name], check=True)
+            # subprocess.run(["room-rotate", self.name], check=True)
         else:
+            if not access.value & Access.ADMIN.value:
+                raise PermissionError("You are not allowed to clear this room.")
             # unlink the file
             self.path.unlink()
             # with self.path.open("w", encoding="utf-8"):
             # 	pass
 
-    def undo(self, n=1):
+    def undo(self, user, n=1):
         """Remove the last n messages from a room."""
         # Messages are delimited by blank lines, and the file should end with a blank line.
         if n <= 0:
             return
+
+        access = check_access(user, self.name, self.path)
+        if n > 1 and not access.value & Access.ADMIN.value:
+            raise PermissionError("You are not allowed to undo multiple messages in this room.")
+
+        if not access.value & Access.MODERATE.value:
+            raise PermissionError("You are not allowed to undo messages in this room.")
 
         count_bytes = 0
         for line in tac(self.path, binary=True, keepends=True):
@@ -227,7 +281,7 @@ def tac(file, chunk_size=4096, binary=False, keepends=False):
 def safe_join(base_dir: Path, path: Path) -> Path:
     """Return a safe path under base_dir, or raise ValueError if the path is unsafe."""
     safe_path = base_dir.joinpath(path).resolve()
-    if base_dir in safe_path.parents:
+    if base_dir in safe_path.parents or base_dir == safe_path:
         return safe_path
     raise ValueError(f"Invalid or unsafe path provided: {base_dir}, {path}")
 
@@ -254,6 +308,9 @@ def sanitize_filename(filename):
 
 def sanitize_pathname(room):
     """Sanitize a pathname, allowing most characters."""
+
+    if room in ("", "/"):
+        return room
 
     # split into parts
     parts = room.split("/")
@@ -582,6 +639,9 @@ async def upload_file(room_name, user, filename, file=None, alt=None):
     """Upload a file to a room."""
     room = Room(name=room_name)
 
+    if not check_access(user, room_name, room.path).value & Access.WRITE.value:
+        raise PermissionError("You are not allowed to upload files to this room.")
+
     name = sanitize_filename(os.path.basename(filename))
     stem, ext = os.path.splitext(name)
 
@@ -847,6 +907,68 @@ def process_fn(msg):
 
     processed_messages = process_chat(messages, process_fn)
     save_chat_messages(processed_messages)
+
+
+def check_access(user: str, pathname: str, path: Path) -> bool:
+    """Check if the user has access to the path"""
+    # TODO make this a method of the Room class
+    # user has access to the top-level dir, all files at the top-level
+    # their own directory (/username/), and all files in their own directory (/username/*)
+    # TODO detailed access control via files for exceptions
+
+    user = user.lower()
+
+    logger.warning("check_access: User: %s, Path: %s", user, pathname)
+
+    # Check if the path exists
+    if not path.exists():
+        return Access.NONE
+
+    # Allowed agents have access to everything
+    if user in ALLOWED_AGENTS:
+        return Access.READ_WRITE
+
+    # Admins have access to everything
+    if user in ADMINS:
+        return Access.ADMIN
+
+    # Moderators have moderation on the root
+    if user in MODERATORS and pathname == "":
+        return Access.MODERATE_READ_WRITE
+
+    # Users have access to the root
+    if pathname == "":
+        return Access.READ
+
+    # Users have admin on their own directory, and files in their own directory
+    if pathname == user or pathname.startswith(user + "/"):
+        return Access.ADMIN
+
+    stats = path.stat()
+
+    is_file = stats.st_mode & S_IFREG
+
+    # Moderators have moderation on all files in the root
+    if user in MODERATORS and not "/" in pathname and is_file:
+        return Access.MODERATE_READ_WRITE
+
+    # Users have access to files in the root, check is a file
+    if not "/" in pathname and is_file:
+        return Access.READ_WRITE
+
+    mode = stats.st_mode
+
+    access = 0
+
+    # Users have access to other-readable entries anywhere
+    if mode & S_IROTH:
+        access |= Access.READ.value
+    if mode & S_IWOTH:
+        access |= Access.WRITE.value
+
+    # TODO Users have access to group-readable entries if they are marked as a friend
+
+    return Access(access)
 
 
 if __name__ == "__main__":
