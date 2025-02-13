@@ -2,6 +2,7 @@
 
 """ bb2html: a program that converts bb files to html as they change """
 
+import os
 import sys
 import argparse
 import logging
@@ -12,6 +13,9 @@ from watchfiles import Change
 import ucm
 import atail
 import chat
+
+
+os.umask(0o007)
 
 
 logger = logging.getLogger(__name__)

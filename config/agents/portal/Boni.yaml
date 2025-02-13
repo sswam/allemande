@@ -1,0 +1,16 @@
+type: portal
+service: image_a1111
+model: babesByStableYogi_ponyV4VAEFix
+default_context: 1
+clean_prompt: true
+config:
+    steps: 15
+    cfg_scale: 7
+    pag: true
+    hires: 1.5
+    pony: 1.0
+    adetailer:
+    - face_yolov8n.pt
+    - female-breast-v4.7.pt
+    - pussyV2.pt
+    ad_mask_k_largest: 10

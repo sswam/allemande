@@ -146,6 +146,21 @@ def test_at_mention_with_anyone():
     )
 
 
+def test_excluded_participant_talking():
+    agents = {
+        "akane": {"name": "Akane", "type": "ai"},
+        "pixi": {"name": "Pixi", "type": "ai"},
+        "fenny": {"name": "Fenny", "type": "ai"},
+    }
+    history = [{"user": "Akane", "content": "Hello!"}, {"user": "Pixi", "content": "Hi there"}]
+    message = {"user": "Akane", "content": "What should we do next?"}
+
+    # When Akane talks and Pixi is excluded, Pixi should not respond
+    result = subject.who_should_respond(message, agents, history)
+    assert "Pixi" not in result  # Pixi is in EXCLUDE_PARTICIPANTS
+    assert len(result) > 0  # Someone else should respond
+
+
 # This test file includes tests for all the main functions in conductor.py, covering:
 # - Basic functionality
 # - Edge cases (empty inputs, single elements)

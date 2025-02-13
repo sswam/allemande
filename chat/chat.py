@@ -8,9 +8,13 @@ import html
 from pathlib import Path
 import re
 import logging
-from typing import Iterator, Any, TypeAlias, Protocol, TextIO
+from typing import Any, TextIO
+from dataclasses import dataclass
 import shutil
 import subprocess
+import random
+import enum
+from stat import S_IFREG, S_IROTH, S_IWOTH
 
 import argh
 import markdown
@@ -18,16 +22,38 @@ from starlette.exceptions import HTTPException
 import aiofiles
 
 import video_compatible
+from agents import ALLOWED_AGENTS
+
+
+os.umask(0o007)
 
 
 EXTENSION = ".bb"
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
 
-global_admins = ["sam"]  # TODO from enviorment variable
+ADMINS = os.environ.get("ALLYCHAT_ADMINS", "").split()
+MODERATORS = os.environ.get("ALLYCHAT_MODERATORS", "").split()
+
+
+class Access(enum.Enum):
+    NONE = 0
+    READ = 1
+    WRITE = 2
+    READ_WRITE = 3
+    MODERATE = 4
+    MODERATE_READ_WRITE = 7
+    ADMIN = 15
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ChatMessage:
+    """A single chat message with user (optional) and content."""
+    user: str | None
+    content: str
 
 
 class Symbol:  # pylint: disable=too-few-public-methods
@@ -67,6 +93,7 @@ MARKDOWN_EXTENSIONS = [
     "toc",
     "wikilinks",
     "markdown_katex",
+    "md_in_html",
 ]
 
 MARKDOWN_EXTENSION_CONFIGS = {
@@ -107,35 +134,72 @@ class Room:
         with self.path.open("a", encoding="utf-8") as f:
             f.write(text)
 
-    def check_admin(self, user):
-        """Check if a user is an admin."""
-        if user in global_admins:
-            return True
-        components = self.name.split("/")
-        top_dir = components[0]
-        return user in top_dir.split(",")
+    def write(self, user, content):
+    	"""
+    	Write a message to a room.
+    	We don't convert to HTML here, a follower process does that.
+    	"""
+    	if not check_access(user, self.name, self.path).value & Access.WRITE.value:
+    		raise PermissionError("You are not allowed to post to this room.")
+
+    	if content == "":
+    		# touch the markdown_file, to poke some attention
+    		self.touch()
+    		return
+
+    	if user == user.lower() or user == user.upper():
+    		user_tc = user.title()
+    	else:
+    		user_tc = user
+    	user_tc = user_tc.replace(".", "_")
+    	message = {"user": user_tc, "content": content}
+
+    	text = message_to_text(message) + "\n"
+
+    	self.append(text)
+
+#     def check_admin(self, user):
+#         """Check if a user is an admin."""
+#         if user in ADMINS:
+#             return True
+#         components = self.name.split("/")
+#         top_dir = components[0]
+#         return user in top_dir.split(",")
 
     def clear(self, op="clear"):
         """Clear a room."""
+        access = check_access(user, self.name, self.path)
         if op == "archive":
+            if not access.value & Access.MODERATE.value:
+                raise PermissionError("You are not allowed to archive this room.")
             # run room-rotate script with room name
             # TODO in Python
             subprocess.run(["room-rotate", self.name], check=True)
         elif op == "rotate":
+            raise NotImplementedError("Room rotation is not implemented yet.")
             # run room-rotate script with room name
             # TODO in Python, archive half, keep half. Media?
-            subprocess.run(["room-rotate", self.name], check=True)
+            # subprocess.run(["room-rotate", self.name], check=True)
         else:
+            if not access.value & Access.ADMIN.value:
+                raise PermissionError("You are not allowed to clear this room.")
             # unlink the file
             self.path.unlink()
             # with self.path.open("w", encoding="utf-8"):
             # 	pass
 
-    def undo(self, n=1):
+    def undo(self, user, n=1):
         """Remove the last n messages from a room."""
         # Messages are delimited by blank lines, and the file should end with a blank line.
         if n <= 0:
             return
+
+        access = check_access(user, self.name, self.path)
+        if n > 1 and not access.value & Access.ADMIN.value:
+            raise PermissionError("You are not allowed to undo multiple messages in this room.")
+
+        if not access.value & Access.MODERATE.value:
+            raise PermissionError("You are not allowed to undo messages in this room.")
 
         count_bytes = 0
         for line in tac(self.path, binary=True, keepends=True):
@@ -217,7 +281,7 @@ def tac(file, chunk_size=4096, binary=False, keepends=False):
 def safe_join(base_dir: Path, path: Path) -> Path:
     """Return a safe path under base_dir, or raise ValueError if the path is unsafe."""
     safe_path = base_dir.joinpath(path).resolve()
-    if base_dir in safe_path.parents:
+    if base_dir in safe_path.parents or base_dir == safe_path:
         return safe_path
     raise ValueError(f"Invalid or unsafe path provided: {base_dir}, {path}")
 
@@ -244,6 +308,9 @@ def sanitize_filename(filename):
 
 def sanitize_pathname(room):
     """Sanitize a pathname, allowing most characters."""
+
+    if room in ("", "/"):
+        return room
 
     # split into parts
     parts = room.split("/")
@@ -379,7 +446,7 @@ Sam:	How are you?
     assert messages[1]["content"] == "How are you?\n"
 
 
-def message_to_text(message):
+def message_to_text(message: dict[str, Any]) -> str:
     """Convert a chat message to text."""
     user = message.get("user")
     content = message["content"]
@@ -395,11 +462,16 @@ def message_to_text(message):
     return text.rstrip("\n") + "\n"
 
 
+def chat_message_to_text(message: ChatMessage) -> str:
+    """Convert a chat message to text."""
+    return message_to_text({"user": message.user, "content": message.content})
+
+
 def fix_math_escape_percentages(math_content):
     """Escape unescaped % symbols in math content"""
     # FIXME: This approach assumes that a % symbol immediately preceded by a
     # backslash is already escaped. This is not always the case.
-    return re.sub(r'(?<!\\)%', r'\%', math_content)
+    return re.sub(r"(?<!\\)%", r"\%", math_content)
 
 
 def preprocess(content):
@@ -422,6 +494,8 @@ def preprocess(content):
             is_math = False
         # 		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
         # 			is_math = False
+        elif d1 == r"\[" and d2 == r"\]":
+            pass
         elif d1 != d2:
             is_math = False
         elif re.match(r"^\w", post):
@@ -472,7 +546,7 @@ def preprocess(content):
             start = 0
             while True:
                 logger.debug("preprocess line part from: %r %r", start, line[start:])
-                match = re.match(r"^(.*?)(\$\$?)(.*?)(\$\$?)(.*)$", line[start:])
+                match = re.match(r"^(.*?)(\$\$?|\\\[)(.*?)(\$\$?|\\\])(.*)$", line[start:])
                 logger.debug("preprocess match: %r", match)
                 if match is None:
                     if not in_code and not is_html:
@@ -565,6 +639,9 @@ async def upload_file(room_name, user, filename, file=None, alt=None):
     """Upload a file to a room."""
     room = Room(name=room_name)
 
+    if not check_access(user, room_name, room.path).value & Access.WRITE.value:
+        raise PermissionError("You are not allowed to upload files to this room.")
+
     name = sanitize_filename(os.path.basename(filename))
     stem, ext = os.path.splitext(name)
 
@@ -654,5 +731,245 @@ def chat_write(file, history, delim="\n", mode="a", invitation=""):
         f.write(text)
 
 
+def load_chat_messages(source: str | Path | TextIO = sys.stdin) -> list[ChatMessage]:
+    """Parse chat messages from a file path or file-like object.
+
+    Args:
+        source: Path to input file, Path object, or file-like object (defaults to stdin)
+
+    Returns:
+        List of ChatMessage records
+    """
+    # Handle file-like objects directly
+    if hasattr(source, 'read'):
+        return [
+            ChatMessage(
+                content=msg['content'],
+                user=msg.get('user')
+            )
+            for msg in lines_to_messages(source)
+        ]
+
+    # Handle path inputs
+    path = Path(source) if isinstance(source, str) else source
+    if not path.exists():
+        return []
+
+    with path.open('r', encoding='utf-8') as f:
+        return load_chat_messages(f)
+
+
+def save_chat_messages(
+    messages: list[ChatMessage],
+    destination: str | Path | TextIO = sys.stdout,
+    mode: str = 'a'
+) -> None:
+    """Write chat messages to a file path or file-like object.
+
+    Args:
+        messages: List of ChatMessage objects to write
+        destination: Output file path, Path object, or file-like object (defaults to stdout)
+        mode: File open mode when writing to a path, defaults to 'a' for append
+    """
+    # Handle file-like objects directly
+    if hasattr(destination, 'write'):
+        for msg in messages:
+            destination.write(chat_message_to_text(msg) + '\n')
+        return
+
+    # Handle path inputs
+    path = Path(destination) if isinstance(destination, str) else destination
+    with path.open(mode, encoding='utf-8') as f:
+        save_chat_messages(messages, f)
+
+
+def process_chat(messages: list[ChatMessage], process_fn: callable) -> list[ChatMessage]:
+    """Process chat messages using the provided function.
+
+    Args:
+        messages: List of ChatMessage objects to process
+        process_fn: Function that takes a ChatMessage and returns a processed ChatMessage or None
+
+    Returns:
+        List of processed ChatMessage objects, excluding any that were filtered out
+    """
+    processed_messages = []
+
+    for msg in messages:
+        result = process_fn(msg)
+        if result is not None:
+            processed_messages.append(result)
+
+    return processed_messages
+
+
+def filter_stars(message: ChatMessage) -> ChatMessage | None:
+    """
+    Process a message by:
+    1. Removing text between * and * (shortest matches) including delimiters
+    2. Removing lines that begin or end with *
+    3. Testing if remainder is just whitespace - if so, skip message
+
+    Args:
+        message: ChatMessage to process
+
+    Returns:
+        Original message if content remains after filtering, None if only whitespace remains
+    """
+    # Make a working copy of the content
+    content = message.content
+
+    # 1. Remove text between * and * (non-greedy match)
+    content = re.sub(r'\*.*?\*', '', content)
+
+    # 2. Remove lines that begin or end with *
+    lines = content.split('\n')
+    lines = [line for line in lines if not (line.strip().startswith('*') or line.strip().endswith('*'))]
+    content = '\n'.join(lines)
+
+    # 3. Check if only whitespace remains
+    if not content.strip():
+        return None
+
+    # If we get here, there's non-whitespace content, so return original message
+    return message
+
+
+def filter_stars_prob(message: ChatMessage, prob: float = 0.5) -> ChatMessage | None:
+    """
+    Remove a certain proportion of stars / emotions / actions text from the message.
+    If nothing is left, return None.
+
+    Args:
+        message: ChatMessage to process
+        prob: Probability (0.0 to 1.0) of applying the filter to each starred section
+
+    Returns:
+        Processed message or None if only whitespace remains
+    """
+    if prob <= 0.0:
+        return message
+
+    # Make a working copy of the content
+    content = message.content
+
+    # 1. Fix malformed lines that begin or end with * but not both, by adding the missing *
+    lines = content.split('\n')
+    lines_out = []
+    for line in lines:
+        if line.strip().startswith('*') and not line.strip().endswith('*'):
+            line += '*'
+        if line.strip().endswith('*') and not line.strip().startswith('*'):
+            line = '*' + line
+        lines_out.append(line)
+    content = '\n'.join(lines_out)
+
+    # 2. Remove random selection of text between * and * (non-greedy match)
+    def random_replace(match):
+        return '' if random.random() < prob else match.group(0)
+
+    content = re.sub(r'\*.*?\*', random_replace, content)
+
+    # 3. squeeze whitespace and strip, preserving the format
+    content = re.sub(r'\s*\n\n+\s*', '\n\n', content)
+    content = re.sub(r' +', ' ', content)
+    content = content.strip()
+
+    # 4. Check if anything remains
+    if not content:
+        return None
+
+    # Create new message with filtered content
+    return ChatMessage(
+        user=message.user,
+        content=content,
+    )
+
+
+def process_chat_cli(code: str|None = None, func: str|None = None):
+    """Read a chat file from stdin, process it with a Python expression from the CLI, and write the result to stdout."""
+    messages = load_chat_messages()
+    if func:
+        globals()["process_fn"] = globals()[func]
+    else:
+        code = code.replace("\n", "\n    ")
+        code = f"""
+import re
+def process_fn(msg):
+    u = msg.user
+    c = msg.content
+    {code}
+    if not c:
+        return None
+    return ChatMessage(u, c)
+"""
+        exec(code, globals())
+
+    processed_messages = process_chat(messages, process_fn)
+    save_chat_messages(processed_messages)
+
+
+def check_access(user: str, pathname: str, path: Path) -> bool:
+    """Check if the user has access to the path"""
+    # TODO make this a method of the Room class
+    # user has access to the top-level dir, all files at the top-level
+    # their own directory (/username/), and all files in their own directory (/username/*)
+    # TODO detailed access control via files for exceptions
+
+    user = user.lower()
+
+    logger.warning("check_access: User: %s, Path: %s", user, pathname)
+
+    # Check if the path exists
+    if not path.exists():
+        return Access.NONE
+
+    # Allowed agents have access to everything
+    if user in ALLOWED_AGENTS:
+        return Access.READ_WRITE
+
+    # Admins have access to everything
+    if user in ADMINS:
+        return Access.ADMIN
+
+    # Moderators have moderation on the root
+    if user in MODERATORS and pathname == "":
+        return Access.MODERATE_READ_WRITE
+
+    # Users have access to the root
+    if pathname == "":
+        return Access.READ
+
+    # Users have admin on their own directory, and files in their own directory
+    if pathname == user or pathname.startswith(user + "/"):
+        return Access.ADMIN
+
+    stats = path.stat()
+
+    is_file = stats.st_mode & S_IFREG
+
+    # Moderators have moderation on all files in the root
+    if user in MODERATORS and not "/" in pathname and is_file:
+        return Access.MODERATE_READ_WRITE
+
+    # Users have access to files in the root, check is a file
+    if not "/" in pathname and is_file:
+        return Access.READ_WRITE
+
+    mode = stats.st_mode
+
+    access = 0
+
+    # Users have access to other-readable entries anywhere
+    if mode & S_IROTH:
+        access |= Access.READ.value
+    if mode & S_IWOTH:
+        access |= Access.WRITE.value
+
+    # TODO Users have access to group-readable entries if they are marked as a friend
+
+    return Access(access)
+
+
 if __name__ == "__main__":
-    argh.dispatch_command(chat_to_html)
+    argh.dispatch_command(process_chat_cli)

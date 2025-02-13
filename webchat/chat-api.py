@@ -15,7 +15,6 @@ import uvicorn
 import chat
 
 
-ADMINS = os.environ.get("ALLYCHAT_ADMINS", "").split()
 VAPID_PRIVATE_KEY = os.environ["ALLYCHAT_WEBPUSH_VAPID_PRIVATE_KEY"]
 
 logging.basicConfig(level=logging.INFO)
@@ -45,33 +44,9 @@ async def whoami(request):
 		room = chat.sanitize_pathname(room)
 	# TODO moderator status might depend on the room
 	user = request.headers.get('X-Forwarded-User', 'guest')
-	admin = user in ADMINS
+	admin = user in chat.ADMINS
 	mod = admin
 	return JSONResponse({"user": user, "room": room, "admin": admin, "mod": mod})
-
-
-def write_to_room(room_name, user, content):
-	"""
-	Write a message to a room.
-	We don't convert to HTML here, a follower process does that.
-	"""
-	room = chat.Room(name=room_name)
-
-	if content == "":
-		# touch the markdown_file, to poke some attention
-		room.touch()
-		return
-
-	if user == user.lower() or user == user.upper():
-		user_tc = user.title()
-	else:
-		user_tc = user
-	user_tc = user_tc.replace(".", "_")
-	message = {"user": user_tc, "content": content}
-
-	text = chat.message_to_text(message) + "\n"
-
-	room.append(text)
 
 
 @app.route("/x/post", methods=["POST"])
@@ -81,10 +56,13 @@ async def post(request):
 	room = form["room"]
 	content = form["content"]
 	user = request.headers['X-Forwarded-User']
+
+	room = chat.Room(name=room)
+
 	try:
-		write_to_room(room, user, content)
-	except PermissionError:
-		raise HTTPException(status_code=403, detail="You are not allowed to post to this room.")
+		room.write(user, content)
+	except PermissionError as e:
+		raise HTTPException(status_code=403, detail=e.args[0])
 	return JSONResponse({})
 
 
@@ -99,8 +77,8 @@ async def upload(request):
 
 	try:
 		name, url, medium, markdown, task = await chat.upload_file(room, user, file.filename, file=file)
-	except PermissionError:
-		raise HTTPException(status_code=403, detail="You are not allowed to upload files to this room.")
+	except PermissionError as e:
+		raise HTTPException(status_code=403, detail=e.args[0])
 
 	return JSONResponse({"name": name, "url": url, "medium": medium, "markdown": markdown}, background=task)
 
@@ -117,11 +95,8 @@ async def clear(request):
 		raise HTTPException(status_code=400, detail="Invalid operation.")
 
 	room = chat.Room(name=room)
-	admin = room.check_admin(user)
-	if not admin:
-		raise HTTPException(status_code=403, detail=f"You are not allowed to {op} this room.")
 
-	room.clear(op)
+	room.clear(user, op)
 
 	return JSONResponse({})
 
@@ -135,10 +110,7 @@ async def clear(request):
 	user = request.headers['X-Forwarded-User']
 
 	room = chat.Room(name=room)
-	admin = room.check_admin(user)
-	if not admin:
-		raise HTTPException(status_code=403, detail="You are not allowed to undo messages in this room.")
-	room.undo(n=int(n))
+	room.undo(user, n=int(n))
 	return JSONResponse({})
 
 
