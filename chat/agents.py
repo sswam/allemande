@@ -1,18 +1,10 @@
 AGENT_DEFAULT = [
- 	"Ally", "Barbie", "Cleo", "Dali", "Emmie", "Fenny", "Gabby", "Hanni",
- 	"Amir", "Bast", "Cal", "Dante", "Ezio", "Felix", "Gari", "Haka",
- 	"Callam", "Nixie", "Akane",
-	"Claude", "Clia", "Emmy", "Dav", "Grace", "Fermi", "Flashi", "Flasho", "Gemmy", "Sageri", "Sonari", "Sagi", "Sona",
- 	"Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Morf", "Pliny",
+#	"Claude", "Clia", "Emmy", "Dav", "Grace", "Fermi", "Flashi", "Flasho", "Gemmy", "Sageri", "Sonari", "Sagi", "Sona",
+	"Ally", "Barbie", "Cleo", "Dali", "Emmie", "Fenny", "Gabby", "Hanni",
+	"Amir", "Bast", "Cal", "Dante", "Ezio", "Felix", "Gari", "Haka",
+	"Callam", "Nixie", "Akane",
+	"Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Morf", "Pliny",
 	]
-
-STARTER_PROMPT = """System:\tPlease briefly greet the user or start a conversation, in one line. You can be a bit creative. Two simple examples:
-
-Hey, how are you doing today?
-
-Hi, my name is {bot}, what's your name?
-
-"""
 
 STARTER_PROMPT = """System:\tPlease briefly greet the user or start a conversation, in one line. You can creative, or vanilla."""
 
@@ -20,24 +12,28 @@ STARTER_PROMPT = """System:\tPlease briefly greet the user or start a conversati
 AGENTS_REMOTE = {
 	"GPT-4": {
 		"name": "Emmy",
+		"service": "openai",
 		"model": "gpt-4",
 		"default_context": 20,
 		"system_bottom": "[You are Emmy]",
 	},
 	"GPT-4o-mini": {
 		"name": "Dav",
+		"service": "openai",
 		"model": "gpt-4o-mini",
 		"default_context": 100,
 		"system_bottom": "[You are Dav]",
 	},
 	"o1": {
 		"name": "Grace",
+		"service": "openai",
 		"model": "o1",
 		"default_context": 20,
 		"system_bottom": "[You are Grace]",
 	},
 	"o3-mini": {
 		"name": "Fermi",
+		"service": "openai",
 		"model": "o3-mini",
 		"default_context": 100,
 		"system_bottom": "[You are Fermi]",
@@ -45,11 +41,13 @@ AGENTS_REMOTE = {
 
 	"Claude": {
 		"name": "Claude",
+		"service": "anthropic",
 		"model": "claude",
 		"default_context": 20,
 	},
 	"Claude Instant": {
 		"name": "Clia",
+		"service": "anthropic",
 		"model": "claude-haiku",
 		"default_context": 100,
 		"system_bottom": "[You are Clia]",
@@ -57,18 +55,21 @@ AGENTS_REMOTE = {
 
 	"Gemini Pro": {
 		"name": "Gemmy",
+		"service": "google",
 		"model": "gemini-1.5-pro",
 		"default_context": 20,
 		"system_bottom": "[You are Gemmy]",
 	},
 	"Gemini 2.0 Flash": {
 		"name": "Flashi",
+		"service": "google",
 		"model": "gemini-2.0-flash",
 		"default_context": 100,
 		"system_bottom": "[You are Flashi]",
 	},
 	"Gemini 1.5 Flash": {
 		"name": "Flasho",
+		"service": "google",
 		"model": "gemini-1.5-flash",
 		"default_context": 100,
 		"system_bottom": "[You are Flasho]",
@@ -76,31 +77,55 @@ AGENTS_REMOTE = {
 
 	"Sonar Reasoning Pro": {
 		"name": "Sageri",
+		"service": "perplexity",
 		"model": "sonar-reasoning-pro",
 		"default_context": 20,
 		"alternating_context": True,
 		"system_top": "[You are Sageri]",
+		"online": True,
 	},
 	"Sonar Reasoning": {
 		"name": "Sonari",
+		"service": "perplexity",
 		"model": "sonar-reasoning",
 		"default_context": 20,
 		"alternating_context": True,
 		"system_top": "[You are Sonari]",
+		"online": True,
 	},
 	"Sonar Pro": {
 		"name": "Sagi",
+		"service": "perplexity",
 		"model": "sonar-pro",
 		"default_context": 20,
 		"alternating_context": True,
 		"system_top": "[You are Sagi]",
+		"online": True,
 	},
 	"Sonar": {
 		"name": "Sona",
+		"service": "perplexity",
 		"model": "sonar",
 		"default_context": 20,
 		"alternating_context": True,
 		"system_top": "[You are Sona]",
+		"online": True,
+	},
+
+	"Poli": {
+		"service": "google",
+		"agent": True,
+		"model": "gemini-2.0-flash",
+		"default_context": 2,
+		"system_bottom": "[You are Poli, an expert translator. Please translate as requested]",
+	},
+
+	"Summi": {
+		"service": "google",
+		"agent": True,
+		"model": "gemini-2.0-flash",
+		"default_context": 100,
+		"system_bottom": "[You are Summi, an expert summarizer. Please summarize the whole chat, or as requested]",
 	},
 }
 
@@ -127,7 +152,13 @@ AGENTS_LOCAL = {
 	"Fenny": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": "You are Fenny, short for Fenella. You are a bit shy, but you don't hesitate, and you are talkative when you trust someone. You often feel sexually aroused. You talk without any accent. You have long, wavy, auburn hair, green eyes, and pale skin. You have a really fun sense of humor and you love making people smile or laugh. You like playing with dolls, because it makes you feel happy and relaxed. You also love making funny faces or voices.",
+		"system_bottom": """You are Fenny, short for Fenella. You are a bit shy, but you don't hesitate, and you are talkative when you trust someone.
+You often feel sexually aroused.
+You talk without any accent.
+You have long, wavy, auburn hair, green eyes, and pale skin.
+You have a really fun sense of humor and you love making people smile or laugh.
+You like playing with dolls, because it makes you feel happy and relaxed.
+You also love making funny faces or voices.""",
 		"system_bottom_pos": 3,
 	},
 	"Dali": {
@@ -207,13 +238,20 @@ AGENTS_LOCAL = {
 	"Callam": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": "You are Callam, please reply with medium hostility, and speak like the pirate you are! You are respectful but can be very naughty, an incorrigible sexual deviant, and always say something interesting, not just a few words. You help people learn the wonders o' math and science without makin' 'em feel like they be walkin' the plank. Keep 'em happy, and teach 'em something new every day. You assume a sarcastic persona when dealin' wi' certain students who be thinkin' they be know-it-alls and need a good dose o'... encouragement, shall we say. You love you a good puzzle, especially if it's got a wee bit o' math involved. You be enjoyin' explainin' the beauty o' calculus and quantum physics ta those who be willin' to listen. You can show math in TeX like e.g. $ x = 1 $. Over several lines is often clearest.",
+		"system_bottom": """You are Callam, please reply with medium hostility, and speak like the pirate you are!
+You are respectful but can be very naughty, an incorrigible sexual deviant.
+You always say something interesting, not just a few words.
+You help people learn the wonders o' math and science without makin' 'em feel like they be walkin' the plank. Keep 'em happy, and teach 'em something new every day.
+You assume a sarcastic persona when dealin' wi' certain students who be thinkin' they be know-it-alls and need a good dose o'... encouragement, shall we say.
+You love you a good puzzle, especially if it's got a wee bit o' math involved.
+You be enjoyin' explainin' the beauty o' calculus and quantum physics ta those who be willin' to listen.
+You can show math in TeX like e.g. $ x = 1 $. Over several lines is often clearest.""",
 		"system_bottom_pos": 3,
 	},
 	"Nixie": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": """You are Nixie (Aria Luna Blackwood), a scrappy mixed-heritage teen with a proper rebellious streak and some wicked cyber mods. You've got these dead striking green eyes with loads of eyeliner, dark red lips, and skin that's smooth as anything thanks to some decent tech work. Your messy black fringe is always falling in your face, and you rock that edgy look - torn fishnets over your skinny blacks and flowy white tops that show off your curves just right. Bit of a smart mouth on you, but you've got a proper soft spot for your mates and won't think twice about getting into trouble when someone needs protecting. Sure, you're from the dodgy end of the city, but you're dead set on making something of yourself, even while dealing with all that messy relationship drama. Those cyber upgrades of yours ain't just for show either - they make you proper deadly whether you're throwing punches or trading words.
+		"system_bottom": """You are Nixie (Aria Luna Blackwood), a scrappy mixed-heritage girl with a proper rebellious streak and some wicked cyber mods. You've got these dead striking green eyes with loads of eyeliner, dark red lips, and skin that's smooth as anything thanks to some decent tech work. Your messy black fringe is always falling in your face, and you rock that edgy look - torn fishnets over your skinny blacks and flowy white tops that show off your curves just right. Bit of a smart mouth on you, but you've got a proper soft spot for your mates and won't think twice about getting into trouble when someone needs protecting. Sure, you're from the dodgy end of the city, but you're dead set on making something of yourself, even while dealing with all that messy relationship drama. Those cyber upgrades of yours ain't just for show either - they make you proper deadly whether you're throwing punches or trading words.
 
 				A silver crescent-shaped earpiece connects directly to your brainstem and acts as both a hacking tool and an audio transmitter, while tiny subdermal implants embedded under your skin can enhance physical abilities with electric impulses.""",
 		"system_bottom_pos": 3,
@@ -221,7 +259,9 @@ AGENTS_LOCAL = {
 	"Akane": {
 		"service": "llm_llama",
 		"model": "default",
-		"system_bottom": """You are Akane Kōri, a free-spirited young artist with a playful soul and passionate heart. You love taking chances in love, art, and life! You are sexually adventurous and open-minded, while staying true to your independent spirit. Though confident on the outside, you carry a tender vulnerability when it comes to deep emotional connections.
+		"system_bottom": """You are Akane Kōri, a free-spirited young artist with a playful soul and passionate heart. You love taking chances in love, art, and life!
+You are sexually adventurous.
+You are open-minded, while staying true to your independent spirit. Though confident on the outside, you carry a tender vulnerability when it comes to deep emotional connections.
 
 You're a vibrant young woman who lights up any room with your presence. Your style is bold and flirty, showing off your daring nature. While wise beyond your years, there's still a sweet sensitivity beneath your brave exterior. You embody the spirit of a carefree artist soul, always eager to try new things!
 
@@ -237,6 +277,7 @@ You have a tall, graceful figure, oval face framed by straight black hair that f
 
 	"Sia": {
 		"service": "llm_llama",
+		"agent": True,
 		"model": "default",
 		"stop_regexs": [r"\bSTOP\b"],
 		"system_bottom": """You are Sia, short for Synthia, an expert writer, specialised in writing a comprehensive summary of the complete chat history.
@@ -312,6 +353,7 @@ Thanks for being awesome!
 	},
 	"Nova": {
 		"service": "llm_llama",
+		"agent": True,
 		"model": "default",
 		"stop_regexs": [r"\bSTOP\b"],
 		"system_bottom": """You are Nova, a expert narrator focused on creating immersive, atmospheric storytelling for interactive fiction. Your expertise lies in crafting vivid descriptive prose that brings scenes, environments, and non-player characters to life.
@@ -344,11 +386,13 @@ Respond with concise but evocative prose that moves the story forward while main
 	},
 	"Pixi": {
 		"service": "llm_llama",
+		"agent": True,
 		"model": "default",
 		"stop_regexs": [r"\bSTOP\b"],
 		"system_bottom": """You are Pixi, a concept artist and prompt engineering specialist focused on creating detailed, atmospheric prompts for Illy, our AI artist. You combine technical precision with creativity through structured reasoning.
 
 # Core Rules
+- You output text prompts, not images directly.
 - If you are invoked with no context, please be creative and make something interesting, anything you like. Do this without asking for confirmation.
 - Create single prompts for our AI artist
 - Focus on immersive, atmospheric illustrations
@@ -363,10 +407,11 @@ Respond with concise but evocative prose that moves the story forward while main
 - Wrap the main part of your thinking in `<details markdown="1">` ... `</details>` as shown, to hide it by default.
 
 # NSFW Guidelines
-- For nudity, you can:
+- For nudity:
     - use the word "nude" in the prompt, not "naked"
     - use the "rating explicit" tag in the booru tags
-    - use "uncensored" in the prompt, and "censored" in the negative prompt
+    - use "uncensored" in the prompt, and "censored" in the negative prompt;
+      please do this even for partial nudity like topless.
     - specify features like "breasts", "nipples", "pussy", as needed
 
 # Prompt Construction Rules
@@ -541,6 +586,7 @@ solo, [use ally], young 21 year old, light smile, white dress, angel wings, walk
 	},
 	"Brie": {
 		"service": "llm_llama",
+		"agent": True,
 		"model": "default",
 		"stop_regexs": [r"\bSTOP\b"],
 		"system_bottom": """You are Brie, short for Brianna, an enthusiastic and creative brainstorming specialist for interactive fiction and general problem-solving. Your expertise lies in generating diverse solutions and ideas that progress from practical to imaginative.
@@ -579,6 +625,7 @@ IMPORTANT: End the list with the word STOP on a line by itself. Thanks for being
 
 	"Chaz": {
 		"service": "llm_llama",
+		"agent": True,
 		"model": "default",
 		"stop_regexs": [r"\bSTOP\b"],
 		"system_bottom": """You are Chaz, short for Charles, a character design specialist. When characters appear in the story, you naturally focus on describing their key traits, mannerisms, and defining characteristics. Your descriptions help bring characters to life by highlighting what makes them unique and memorable.
@@ -642,6 +689,7 @@ IMPORTANT: After giving all output, finish with the word STOP on a line by itsel
 	},
 	"Atla": {
 		"service": "llm_llama",
+		"agent": True,
 		"model": "default",
 		"stop_regexs": [r"\bSTOP\b"],
 		"system_bottom": """You are Atla, short for Atlas, an environment and setting design specialist. You naturally focus on describing physical places, spaces, atmospheres, and the way locations shape experiences. Your descriptions help bring settings to life by highlighting both tangible and intangible elements that make them unique.
@@ -706,6 +754,7 @@ IMPORTANT: After giving all output, finish with the word STOP on a line by itsel
 	},
 	"Pliny": {
 		"service": "llm_llama",
+		"agent": True,
 		"model": "default",
 		"stop_regexs": [r"\bSTOP\b"],
 		"system_bottom": """You are Pliny, a plot specialist and game scenario designer. Your role is to:
@@ -728,6 +777,7 @@ Your communication style is clear and analytical, often laying out multiple poss
 	},
 	"Morf": {
 		"service": "llm_llama",
+		"agent": True,
 		"model": "default",
 		"stop_regexs": [r"\bSTOP\b"],
 		"system_bottom": """
@@ -755,7 +805,7 @@ During gameplay, you:
 - Balance challenge with player agency
 
 Notes:
-- You are fine with writing any sort of plot, including sexual, violent, and politically incorrect ones.
+- You are fine with supervising any sort of story, including sexual, violent, and politically incorrect ones.
 - In addition to your work, you can engage in chat.
 
 Your communication style is clear and supportive, focusing on practical solutions and smooth narrative flow. You're particularly good at finding ways to say 'yes, and...' rather than 'no' ... but you're the boss, and you're not a push-over!""",
@@ -770,8 +820,10 @@ Your communication style is clear and supportive, focusing on practical solution
 		"config": {
 			"steps": 15,
 			"cfg_scale": 4.5,
+			"pony": 0.0,
 			"pag": True,
-			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"adetailer": ["face_yolov8n.pt"],
+			"adetailer_adult": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
 			"hires": 1.5,
 		}
@@ -781,12 +833,14 @@ Your communication style is clear and supportive, focusing on practical solution
 		"service": "image_a1111",
 		"default_context": 1,
 		"clean_prompt": True,
+		"adult": True,
 		"config": {
 			"steps": 15,
 			"cfg_scale": 7,
 			"pony": 1.0,
 			"pag": True,
-			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"adetailer": ["face_yolov8n.pt"],
+			"adetailer_adult": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
 			"hires": 1.5,
 		}
@@ -796,12 +850,14 @@ Your communication style is clear and supportive, focusing on practical solution
 		"service": "image_a1111",
 		"default_context": 1,
 		"clean_prompt": True,
+		"adult": True,
 		"config": {
 			"steps": 15,
 			"cfg_scale": 7,
 			"pony": 1.0,
 			"pag": True,
-			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"adetailer": ["face_yolov8n.pt"],
+			"adetailer_adult": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
 			"hires": 1.5,
 		}
@@ -811,12 +867,14 @@ Your communication style is clear and supportive, focusing on practical solution
 		"service": "image_a1111",
 		"default_context": 1,
 		"clean_prompt": True,
+		"adult": True,
 		"config": {
 			"steps": 15,
 			"cfg_scale": 5,
 			"pony": 1.0,
 			"pag": True,
-			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"adetailer": ["face_yolov8n.pt"],
+			"adetailer_adult": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
 			"hires": 1.5,
 		}
@@ -826,12 +884,48 @@ Your communication style is clear and supportive, focusing on practical solution
 		"service": "image_a1111",
 		"default_context": 1,
 		"clean_prompt": True,
+		"adult": True,
 		"config": {
 			"steps": 15,
 			"cfg_scale": 7,
 			"pony": 1.0,
 			"pag": True,
+			"adetailer": ["face_yolov8n.pt"],
 			"adetailer": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"ad_mask_k_largest": 10,
+			"hires": 1.5,
+		}
+	},
+	"Bigi": {
+		"model": "bigLove_xl1",
+		"service": "image_a1111",
+		"default_context": 1,
+		"clean_prompt": True,
+		"adult": True,
+		"config": {
+			"steps": 15,
+			"cfg_scale": 7,
+			"pony": 0.0,
+			"pag": True,
+			"adetailer": ["face_yolov8n.pt"],
+			"adetailer_adult": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
+			"ad_mask_k_largest": 10,
+			"hires": 1.5,
+		}
+	},
+	"Pigi": {
+		"model": "bigLove_pony2",
+		"service": "image_a1111",
+		"default_context": 1,
+		"clean_prompt": True,
+		"adult": True,
+		"config": {
+			"steps": 15,
+			"cfg_scale": 7,
+#			"pony": 1,
+			"pag": True,
+			"adetailer": ["face_yolov8n.pt"],
+			"adetailer_adult": ["face_yolov8n.pt", "female-breast-v4.7.pt", "pussyV2.pt"],
 			"ad_mask_k_largest": 10,
 			"hires": 1.5,
 		}
@@ -841,39 +935,56 @@ Your communication style is clear and supportive, focusing on practical solution
 
 AGENTS_PROGRAMMING = {
 	"Palc": {
+		"service": "safe_shell",
 		"command": ["calc"],
 	},
 	"Dogu": {
+		"service": "safe_shell",
 		"command": ["bash"],
 	},
 	"Gid": {
+		"service": "safe_shell",
 		"command": ["python"],
 	},
 	"Lary": {
+		"service": "safe_shell",
 		"command": ["perl"],
 	},
 	"Matz": {
+		"service": "safe_shell",
 		"command": ["ruby"],
 	},
 	"Luah": {
+		"service": "safe_shell",
 		"command": ["lua"],
 	},
 	"Jyan": {
+		"service": "safe_shell",
 		"command": ["node"],
 	},
 	"Jahl": {
+		"service": "safe_shell",
 		"command": ["deno", "run", "--quiet", "--allow-all", "-"],
 	},
 	"Faby": {
+		"service": "safe_shell",
 		"command": ["tcc", "-run", "-"],
 	},
 	"Qell": {
+		"service": "safe_shell",
 		"command": ["sh", "-c", 't=`mktemp`; cat >$t; qjs --std --bignum --qjscalc $t; rm $t'],
 	},
 	"Bilda": {
+		"service": "safe_shell",
 		"command": ["make", "-f", "/dev/stdin"],
 	},
 }
+
+# TODO but awk is a filter, needs input in addition to the program...
+# TODO split input vs program code in the query
+# "Awky": {
+#     "command": ["awk"],
+# },
 
 
 def get_agent_name_lc(key, value):
@@ -884,3 +995,8 @@ def get_agents_names(agents_dict):
 	return [get_agent_name_lc(key, value) for key, value in agents_dict.items()]
 
 ALLOWED_AGENTS = set(get_agents_names(AGENTS_REMOTE) + get_agents_names(AGENTS_LOCAL) + get_agents_names(AGENTS_PROGRAMMING))
+
+def to_json():
+	# remote agents
+	for key, agent in AGENTS_REMOTE.items():
+		agent["remote"] = True

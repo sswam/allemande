@@ -104,6 +104,15 @@ MARKDOWN_EXTENSION_CONFIGS = {
 }
 
 
+def name_to_path(name):
+    """Convert a filename to a path."""
+    name = sanitize_pathname(name)
+    assert isinstance(name, str)
+    assert not name.startswith("/")
+    assert not name.endswith("/")
+    return Path(ROOMS_DIR, name)
+
+
 class Room:
     """A chat room object."""
 
@@ -115,12 +124,8 @@ class Room:
             self.path = path
             self.name = path.relative_to(ROOMS_DIR).with_suffix("").as_posix()
         else:
-            name = sanitize_pathname(name)
-            assert isinstance(name, str)
-            assert not name.startswith("/")
-            assert not name.endswith("/")
             self.name = name
-            self.path = Path(ROOMS_DIR, name + EXTENSION)
+            self.path = name_to_path(name + EXTENSION)
         self.parent = self.path.parent
         self.parent.mkdir(parents=True, exist_ok=True)
         self.parent_url = Path("/", self.name).parent
@@ -135,28 +140,28 @@ class Room:
             f.write(text)
 
     def write(self, user, content):
-    	"""
-    	Write a message to a room.
-    	We don't convert to HTML here, a follower process does that.
-    	"""
-    	if not check_access(user, self.name, self.path).value & Access.WRITE.value:
-    		raise PermissionError("You are not allowed to post to this room.")
+        """
+        Write a message to a room.
+        We don't convert to HTML here, a follower process does that.
+        """
+        if not check_access(user, self.name, self.path).value & Access.WRITE.value:
+            raise PermissionError("You are not allowed to post to this room.")
 
-    	if content == "":
-    		# touch the markdown_file, to poke some attention
-    		self.touch()
-    		return
+        if content == "":
+            # touch the markdown_file, to poke some attention
+            self.touch()
+            return
 
-    	if user == user.lower() or user == user.upper():
-    		user_tc = user.title()
-    	else:
-    		user_tc = user
-    	user_tc = user_tc.replace(".", "_")
-    	message = {"user": user_tc, "content": content}
+        if user == user.lower() or user == user.upper():
+            user_tc = user.title()
+        else:
+            user_tc = user
+        user_tc = user_tc.replace(".", "_")
+        message = {"user": user_tc, "content": content}
 
-    	text = message_to_text(message) + "\n"
+        text = message_to_text(message) + "\n"
 
-    	self.append(text)
+        self.append(text)
 
 #     def check_admin(self, user):
 #         """Check if a user is an admin."""
@@ -166,7 +171,7 @@ class Room:
 #         top_dir = components[0]
 #         return user in top_dir.split(",")
 
-    def clear(self, op="clear"):
+    def clear(self, user, op="clear"):
         """Clear a room."""
         access = check_access(user, self.name, self.path)
         if op == "archive":
@@ -186,7 +191,7 @@ class Room:
             # unlink the file
             self.path.unlink()
             # with self.path.open("w", encoding="utf-8"):
-            # 	pass
+            #     pass
 
     def undo(self, user, n=1):
         """Remove the last n messages from a room."""
@@ -492,8 +497,8 @@ def preprocess(content):
             logger.warning("already processed: %r", math)
             has_math = True
             is_math = False
-        # 		elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
-        # 			is_math = False
+        # elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
+        #     is_math = False
         elif d1 == r"\[" and d2 == r"\]":
             pass
         elif d1 != d2:
@@ -515,7 +520,7 @@ def preprocess(content):
     for line in content.splitlines():
         is_html = False
         # if first and re.search(r"\t<", line[0]):
-        # 	is_html = True
+        #     is_html = True
         if re.search(
             r"</?(html|base|head|link|meta|style|title|body|address|article|aside|footer|header|h1|h2|h3|h4|h5|h6|hgroup|main|nav|section|blockquote|dd|div|dl|dt|figcaption|figure|hr|li|main|ol|p|pre|ul|a|abbr|b|bdi|bdo|br|cite|code|data|dfn|em|i|kbd|mark|q|rb|rp|rt|rtc|ruby|s|samp|small|span|strong|sub|sup|time|u|var|wbr|area|audio|img|map|track|video|embed|iframe|object|param|picture|source|canvas|noscript|script|del|ins|caption|col|colgroup|table|tbody|td|tfoot|th|thead|tr|button|datalist|fieldset|form|input|label|legend|meter|optgroup|option|output|progress|select|textarea|details|dialog|menu|summary|slot|template|acronym|applet|basefont|bgsound|big|blink|center|command|content|dir|element|font|frame|frameset|image|isindex|keygen|listing|marquee|menuitem|multicol|nextid|nobr|noembed|noframes|plaintext|shadow|spacer|strike|tt|xmp)\b",
             line,
@@ -599,12 +604,12 @@ def message_to_html(message):
 # def chat_to_html(doctype="html", stylesheets=None, scripts=None):
 def chat_to_html():
     """Convert an Allemande chat file to HTML."""
-    # 	if doctype:
-    # 		print(f"""<!DOCTYPE {doctype}>""")
-    # 	for src in stylesheets:
-    # 		print(f"""<link rel="stylesheet" href="{html.escape(src)}">""")
-    # 	for src in scripts:
-    # 		print(f"""<script src="{html.escape(src)}"></script>""")
+    # if doctype:
+    #     print(f"""<!DOCTYPE {doctype}>""")
+    # for src in stylesheets:
+    #     print(f"""<link rel="stylesheet" href="{html.escape(src)}">""")
+    # for src in scripts:
+    #     print(f"""<script src="{html.escape(src)}"></script>""")
     for message in lines_to_messages(sys.stdin.buffer):
         print(message_to_html(message))
 
@@ -635,7 +640,7 @@ def av_element_html(tag, label, url):
     return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}" controls></{tag}>'
 
 
-async def upload_file(room_name, user, filename, file=None, alt=None):
+async def upload_file(room_name, user, filename, file=None, alt=None, to_text=false):
     """Upload a file to a room."""
     room = Room(name=room_name)
 
@@ -691,8 +696,14 @@ async def upload_file(room_name, user, filename, file=None, alt=None):
     url += append
     relurl += append
 
-    alt = alt or stem
+    # convert to text if wanted
+    if to_text and medium in ("audio", "video"):
+        alt = await speech_to_text.convert_audio_video_to_text(file_path, medium)
+    elif to_text and medium == "image":
+        alt = await image_to_text.convert_image_to_text(file_path)
 
+    # alt text
+    alt = alt or stem
     alt = re.sub(r"\s+", " ", alt)
 
     # markdown to embed or link to the file
@@ -916,13 +927,12 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
     # their own directory (/username/), and all files in their own directory (/username/*)
     # TODO detailed access control via files for exceptions
 
+    # TODO What's the difference between a moderator and an admin?
+    #      Do we need both?
+
     user = user.lower()
 
     logger.warning("check_access: User: %s, Path: %s", user, pathname)
-
-    # Check if the path exists
-    if not path.exists():
-        return Access.NONE
 
     # Allowed agents have access to everything
     if user in ALLOWED_AGENTS:
@@ -940,8 +950,8 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
     if pathname == "":
         return Access.READ
 
-    # Users have admin on their own directory, and files in their own directory
-    if pathname == user or pathname.startswith(user + "/"):
+    # Users have admin on their own directory, and files in their own directory, and their top-level room
+    if pathname == user + ".bb" or pathname == user or pathname.startswith(user + "/"):
         return Access.ADMIN
 
     stats = path.stat()
@@ -956,6 +966,12 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
     if not "/" in pathname and is_file:
         return Access.READ_WRITE
 
+    # TODO guests can create new files in a shared folder?
+
+    # Check if the path exists
+    if not path.exists():
+        return Access.NONE
+
     mode = stats.st_mode
 
     access = 0
@@ -969,6 +985,48 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
     # TODO Users have access to group-readable entries if they are marked as a friend
 
     return Access(access)
+
+
+def backup_file(path):
+    """Backup a file using git.
+
+    Args:
+        path: Path to the file to backup (can be relative or absolute)
+
+    Raises:
+        subprocess.CalledProcessError: If git commands fail
+        ValueError: If the file is not in a git repository
+    """
+    # Convert to absolute path
+    abs_path = os.path.abspath(path)
+
+    # Find the git repo root directory
+    try:
+        repo_root = subprocess.check_output(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=os.path.dirname(abs_path),
+            text=True
+        ).strip()
+    except subprocess.CalledProcessError:
+        raise ValueError(f"File {path} is not in a git repository")
+
+    # Get path relative to repo root
+    rel_path = os.path.relpath(abs_path, repo_root)
+
+    # Run git commands from repo root
+    subprocess.run(["git", "add", rel_path], check=True, cwd=repo_root)
+    subprocess.run(["git", "commit", "-m", f"Backup {rel_path}"], check=True, cwd=repo_root)
+
+
+def overwrite_file(user, file, content, backup=True):
+    """Overwrite a file with new content."""
+    path = name_to_path(file)
+    if not check_access(user, file, path).value & Access.WRITE.value:
+        raise PermissionError("You are not allowed to overwrite this file.")
+    if backup:
+        backup_file(str(path))
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
 
 
 if __name__ == "__main__":

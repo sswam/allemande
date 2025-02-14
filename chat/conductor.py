@@ -7,6 +7,7 @@ import re
 import random
 from typing import Any
 
+import agents
 
 logger = logging.getLogger(__name__)
 
@@ -103,14 +104,14 @@ def who_is_named(
     if not matches:
         return []
 
-    logger.warning("matches: %r", matches)
+#    logger.warning("matches: %r", matches)
 
     # Sort matches by position and type, preserving only lowest indices
     # sorted_matches = sorted(matches, key=lambda x: (x[0], x[1]))
     if not get_all:
         matches = [min(matches)]
 
-    logger.warning("matches 2: %r", matches)
+#    logger.warning("matches 2: %r", matches)
 
     result: list[str] = []
     for _type, _pos, agent in matches:
