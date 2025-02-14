@@ -14,6 +14,18 @@ __version__ = "0.1.1"
 logger = logging.getLogger(__name__)
 
 
+portal_by_service = {}
+
+
+def get_portal(service: str) -> portals.PortalClient:
+    """Get a portal for a service."""
+    portal = portal_by_service.get(service)
+    if not portal:
+        portal_path = portals.get_default_portal_name(service)
+        portal = portal_by_service[service] = portals.PortalClient(portal_path)
+    return portal
+
+
 def get_default_portal_name(service):
     """ Get the default portal for a server. """
     user_id = os.environ["USER"]
@@ -23,6 +35,14 @@ def get_default_portal_name(service):
     default_portal_id = f'{hostname}_{user_id}'
     default_portal = str(default_portals_dir/default_portal_id)
     return default_portal
+
+
+def link_or_copy(src: str, dst: str):
+    """ Hard link or copy a file. """
+    try:
+        os.link(src, dst)
+    except OSError:
+        shutil.copy2(src, dst)
 
 
 # def portal_setup(portal):
