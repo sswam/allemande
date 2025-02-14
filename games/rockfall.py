@@ -38,22 +38,22 @@ EXIT_COLOR_UNLOCKED = (0, 255, 0)
 level_str = """
 WWWWWWWWWWWWWWWWWWWW
 W..................W
-W...R..D...........W
-W..................W
-W..WWW.....D.R.....W
-W......WWW.........W
-W..D..P....R.......W
-W..................W
-W...R....WWW..D....W
-W..................W
-W.....D....R.......W
-W...WWW............W
-W.........D.....E..W
-W..................W
+W..WWW.....D....R..W
+W..W..W...WWW......W
+W..W..W...W..R..D..W
+W..W..WWW.D.W......W
+W..P....R..W..WWW..W
+W..W..W.D..W..W....W
+W..W..WWW..W..W.R..W
+W...........W..W...W
+W..R..D......D..W..W
+W..WWW..R..WWW..W..W
+W.......D.......W..W
+W.............E.W..W
 WWWWWWWWWWWWWWWWWWWW
 """
 
-# key:
+# Key:
 # W = wall
 # . = dirt
 # R = rock
