@@ -75,13 +75,13 @@ def mount_point(path="."):
     return path
 
 
-def generate_unique_name(parent, basename):
+def generate_unique_name(parent: str, basename: str, ext: str = "") -> str:
     """
     Generate a unique name for a file in the specified directory.
     """
     while True:
         timestamp = int(time.time() * 1e9)
-        new_name = f"{basename}_{timestamp}_{os.getpid()}"
+        new_name = f"{basename}_{timestamp}_{os.getpid()}{ext}"
         full_path = os.path.join(parent, new_name)
         if not os.path.exists(full_path):
             return full_path
