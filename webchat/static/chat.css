@@ -53,10 +53,6 @@ body.admin, body.admin .admin {
 	cursor: ns-resize;
 	margin: 0;
 }
-#debug {
-	display: none;
-	width: 64px;
-}
 .row {
 	display: flex;
 	flex-direction: row;

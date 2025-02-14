@@ -223,19 +223,19 @@ def get_mime_type_and_icon(path: str) -> str:
         main_type = mime_type.split('/')[0] + "/*"
         icon = MIME_TYPE_ICONS.get(main_type, MIME_TYPE_ICONS["application/octet-stream"])
 
-    logger.warning("Name: %s, MIME type: %s, icon: %s", path.name, mime_type, icon)
-
     return mime_type, icon
 
 
-def get_dir_listing(abs_path: Path, path: str, info: Info) -> list[dict[str, str]]:
+def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str]]:
     """Get directory listing for a path"""
-    items = [item for item in abs_path.iterdir() if not item.name.startswith('.')]
+    items = [item for item in path.iterdir() if not item.name.startswith('.')]
     item_names = [item.name for item in items]
 
     listing = []
 
-    path = path.lstrip("/")
+    pathname = pathname.strip("/")
+    if pathname:
+        pathname += "/"
 
     for item in items:
         mime_type, icon = get_mime_type_and_icon(item)
@@ -244,40 +244,43 @@ def get_dir_listing(abs_path: Path, path: str, info: Info) -> list[dict[str, str
             "icon": icon,
         }
         if item.is_dir():
-            record.update({
-                "name": item.name + "/",
-                "type": "folder",
-                "type_sort": 0,
-                "link": f"/#{path}/{item.name}/",
-            })
+            if chat.check_access(info.user, pathname + item.name, item).value & Access.READ.value:
+                record.update({
+                    "name": item.name + "/",
+                    "type": "folder",
+                    "type_sort": 0,
+                    "link": f"/#{pathname}{item.name}/",
+                })
+            else:
+                continue
         elif item.suffix == '.bb':
             record.update({
                 "name": item.stem,
                 "type": "bb",
                 "type_sort": 1,
-                "link": f"/#{path}/{item.stem}",
+                "link": f"/#{pathname}{item.stem}",
             })
         elif item.suffix == '.html' and item.stem + ".bb" in item_names:
             # We don't want to show the rendered HTML file for a BB chat file
             continue
         else:
-            logger.warning("Path: %s, Name: %s, Suffix: %s", path, item.name, item.suffix)
+            logger.warning("pathname: %s, rooms_base_url: %s, item.name: %s", pathname, info.rooms_base_url, item.name)
             record.update({
                 "name": item.name,
                 "type": "file",
                 "type_sort": 2,
-                "link": f"{info.rooms_base_url}/{path}/{item.name}",
+                "link": f"{info.rooms_base_url}/{pathname}{item.name}",
             })
         listing.append(record)
 
     return sorted(listing, key=lambda x: (x['type_sort'], x['name'].lower()))
 
 
-def get_dir_listing_response(safe_path: Path, path: str, info: Info, json: bool) -> Response:
+def get_dir_listing_response(path: Path, pathname: str, info: Info, json: bool) -> Response:
     """Get directory listing response, either JSON or HTML"""
     global templates  # pylint: disable=global-statement, global-variable-not-assigned
 
-    listing = get_dir_listing(safe_path, path, info)
+    listing = get_dir_listing(path, pathname, info)
 
     if json:
         return JSONResponse(listing)

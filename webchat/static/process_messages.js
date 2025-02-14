@@ -43,7 +43,7 @@ function findMatchingImageMessage(message) {
       continue;
     }
     if (current.getAttribute("user") !== user) {
-      console.log("image message with different user", current);
+      // console.log("image message with different user", current);
       return null;
     }
     const currentImg = current.querySelector("img");
@@ -51,11 +51,11 @@ function findMatchingImageMessage(message) {
       if (getAltText(currentImg) === imgAlt) {
         return current;
       }
-      console.log("image message with different alt text", current);
+      // console.log("image message with different alt text", current);
       return null;
     }
   }
-  console.log("no matching image message found");
+  // console.log("no matching image message found");
   return null;
 }
 
@@ -96,7 +96,7 @@ function handleNewMessage(newMessage) {
     if (!matchingMessage) {
       return;
     }
-    console.log("found matching", matchingMessage);
+    // console.log("found matching", matchingMessage);
     const prevContent = matchingMessage.querySelector(".content");
     const prevParagraph = getOnlyChildParagraph(prevContent);
     if (prevParagraph) {
@@ -118,7 +118,7 @@ function handleNewMessage(newMessage) {
   newMessage.remove();
 }
 
-function observeMessages(mutations) {
+function process_messages(mutations) {
   for (const mutation of mutations) {
     for (const node of mutation.addedNodes) {
       if (nodeIsMessage(node)) {
@@ -127,11 +127,3 @@ function observeMessages(mutations) {
     }
   }
 }
-
-function combineMessagesPlugin(container) {
-  const observer = new MutationObserver(observeMessages);
-  observer.observe(container, { childList: true, subtree: true });
-  return observer;
-}
-
-combineMessagesPlugin(document);

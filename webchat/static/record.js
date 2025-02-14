@@ -63,22 +63,6 @@ async function stopRecording(mediaRecorder, chunks, stream, includeVideo) {
     return mediaBlob;
 }
 
-/*
-// Send the recording to the server
-async function sendRecording(mediaBlob, includeVideo) {
-    const formData = new FormData();
-    const fileName = includeVideo ? 'video.webm' : 'audio.webm';
-    formData.append('media', mediaBlob, fileName);
-
-    const response = await fetch('/upload-media', {
-        method: 'POST',
-        body: formData
-    });
-
-    return response.json();
-}
-*/
-
 function set_timer(seconds) {
     const m = Math.floor(seconds/60);
     const s = (seconds%60).toString().padStart(2,'0');
@@ -99,10 +83,10 @@ async function handleRecording(includeVideo = false) {
         // Video preview
         const videoPreview = $id('rec_videoPreview');
         if (includeVideo) {
-            videoPreview.classList.remove('hidden');
+            show("rec_videoPreview");
             videoPreview.srcObject = stream;
         } else {
-            videoPreview.classList.add('hidden');
+            hide("rec_videoPreview");
         }
 
         mediaRecorder.start();
@@ -110,41 +94,54 @@ async function handleRecording(includeVideo = false) {
         // Show timer
         let start = Date.now() / 1000;
         let seconds_before = 0;
+        const $timer = $id('rec_time');
+        active_set("rec_time");
         set_timer(0);
-        const timerInterval = setInterval(() => {
+            
+        const update_timer = () => {
             const now = Date.now() / 1000;
             let seconds = seconds_before;
-            if (start)
-                seconds += now - start;
+            seconds += now - start;
             seconds = Math.floor(seconds);
             set_timer(seconds);
+        }
+
+        const timerInterval = setInterval(() => {
+            if (start)
+                update_timer();
         }, 1000);
 
-        const $pause = $id('rec_time');
-        $on($pause, 'click', () => {
+        $on($timer, 'click', () => {
             if (mediaRecorder.state === 'recording') {
                 mediaRecorder.pause();
-                $pause.innerText = 'resume';
+                $timer.innerText = 'resume';
                 seconds_before = Math.floor(seconds_before + Date.now() / 1000 - start);
                 start = null;
+                active_reset("rec_time");
             } else if (mediaRecorder.state === 'paused') {
                 mediaRecorder.resume();
-                $pause.innerText = 'pause';
                 start = Date.now() / 1000;
+                active_set("rec_time");
+                update_timer();
             }
         })
 
-        // wait for one of the stop / send / cancel buttons to be clicked,
+        let save_button;
+
+        // wait for one of the stop / save / cancel buttons to be clicked,
         let stop_action = await new Promise((resolve) => {
             const stopFn = (action) => {
                 resolve(action);
             };
+            save_button = 'rec_save';
             $on($id('rec_stop'), 'click', () => stopFn('stop'));
-            $on($id('rec_send'), 'click', () => stopFn('send'));
+            $on($id('rec_save'), 'click', () => stopFn('save'));
             $on($id('rec_cancel'), 'click', () => stopFn('cancel'));
         });
 
         clearInterval(timerInterval);
+        set_timer(0);
+        active_reset("rec_time");
 
         const mediaBlob = await stopRecording(mediaRecorder, chunks, stream, includeVideo);
         console.log('Recording complete:', mediaBlob);
@@ -160,20 +157,21 @@ async function handleRecording(includeVideo = false) {
             let preview;
             if (includeVideo) {
                 preview = $id('rec_preview_videoPreview');
-                preview.classList.remove('hidden');
-                $id('rec_preview_audioPreview').classList.add('hidden');
+                show("rec_preview_videoPreview");
+                hide("rec_preview_audioPreview");
             } else {
                 preview = $id('rec_preview_audioPreview');
-                preview.classList.remove('hidden');
-                $id('rec_preview_videoPreview').classList.add('hidden');
+                show("rec_preview_audioPreview");
+                hide("rec_preview_videoPreview");
             }
             preview.src = url;
             set_controls('input_record_preview');
 
-            // wait for one of the send / cancel buttons to be clicked,
+            // wait for one of the save / cancel buttons to be clicked,
             stop_action = await new Promise((resolve) => {
                 const stopFn2 = (action) => resolve(action);
-                $on($id('rec_preview_send'), 'click', () => stopFn2('send'));
+                save_button = 'rec_preview_save';
+                $on($id('rec_preview_save'), 'click', () => stopFn2('save'));
                 $on($id('rec_preview_cancel'), 'click', () => stopFn2('cancel'));
             });
 
@@ -184,10 +182,12 @@ async function handleRecording(includeVideo = false) {
             preview.removeAttribute('src');
         }
 
-        if (stop_action === 'send') {
+        if (stop_action === 'save') {
             // Send the recording to the server
             const fileName = includeVideo ? `${user}_video.webm` : `${user}_audio.webm`;
-            await upload_file(mediaBlob, fileName);
+            active_set(save_button);
+            await add_upload_file_link(upload_file(mediaBlob, fileName, true));
+            active_reset(save_button);
         }
 
     } catch (error) {
@@ -200,8 +200,8 @@ async function handleRecording(includeVideo = false) {
 }
 
 function record_main() {
-    $on($id('record_audio'), 'click', () => handleRecording(false));
-    $on($id('record_video'), 'click', () => handleRecording(true));
+    $on($id('add_record_audio'), 'click', () => handleRecording(false));
+    $on($id('add_record_video'), 'click', () => handleRecording(true));
 }
 
 /*

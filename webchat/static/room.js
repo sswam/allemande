@@ -63,9 +63,8 @@ let messages_at_bottom = true;
 let messages_height_at_last_scroll;
 
 function is_at_bottom($e) {
-  //	console.log($e.scrollHeight, $e.scrollTop, $e.offsetHeight);
-  //	console.log($e.scrollHeight - $e.scrollTop - $e.offsetHeight);
-  return Math.abs($e.scrollHeight - $e.scrollTop - $e.offsetHeight) < 1;
+  const bot = Math.abs($e.scrollHeight - $e.scrollTop - $e.offsetHeight) < 8;
+  return bot;
 }
 
 function scroll_to_bottom() {
@@ -109,6 +108,7 @@ function mutated(mutations) {
   if (check_for_new_content(mutations)) {
     online();
   }
+  process_messages(mutations);
   messages_scrolled();
 }
 
@@ -120,14 +120,7 @@ new MutationObserver(mutated).observe($("html"), {
 $on(window, "scroll", messages_scrolled);
 
 // keyboard shortcuts --------------------------------------------------------
-// use mousetrap.js   -- Copilot suggestion <3
 
-//function change_room() {
-//	window.parent.postMessage({ type: 'change_room' }, CHAT_URL);
-//	return false;
-//}
-
-// Keep certain keys in the messages iframe, send others up to the chat window
 const keysToKeep = [
   "Control",
   "Shift",
@@ -202,8 +195,6 @@ function key_event_overlay(ev) {
 }
 
 function setup_keyboard_shortcuts() {
-  // Mousetrap.bind('esc', change_room);
-  // handle any keypress
   $on(document, "keypress", key_event);
   $on(document, "keydown", key_event);
 }
@@ -350,8 +341,7 @@ function click(ev) {
     embed_click(ev.target);
     return;
   }
-  console.log("ev.button", ev.button);
-  // check for img tag, and browse to the src
+  // check for img tag, and view or browse to the src
   if (ev.target.tagName == "IMG") {
     image_click(ev.target, ev);
     return;

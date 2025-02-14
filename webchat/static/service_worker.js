@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.1.329";
+const VERSION = "0.1.383";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
@@ -13,7 +13,6 @@ const URLS_TO_CACHE = [
 	"/record.js",
 	"/notify.js",
 	"/util.js",
-	"/mousetrap.min.js",
 	"/allychat.css",
 	"/chat.css",
 	"/icon.png",

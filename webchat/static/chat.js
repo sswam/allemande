@@ -1,22 +1,3 @@
-const $head = $("head");
-const $room = $id("room");
-const $content = $id("content");
-const $messages_iframe = $id("messages_iframe");
-const $form = $id("form");
-const $title = $("title");
-const $inputrow = $id("inputrow");
-const $messages_overlay = $id("messages_overlay");
-let auto_play_interval = null;
-const auto_play_interval_default = 15; // seconds
-
-let VERSION;
-let DEBUG = false;
-
-let room;
-let user;
-let admin = false;
-let sent_message_count = 0;
-
 const ROOMS_URL =
   location.protocol + "//" + location.host.replace(/^chat\b/, "rooms");
 const MAX_ROOM_NUMBER = 1e3; // 1e12;
@@ -24,26 +5,104 @@ const DEFAULT_ROOM = "Ally Chat";
 
 // TODO: no!
 const global_moderators = ["root", "sam"];
-// const global_moderators = ["root", "sam"];
+const devs = ["root", "sam"];
 
-// utility functions ---------------------------------------------------------
+const $head = $("head");
+const $room = $id("room");
+const $content = $id("content");
+const $messages_iframe = $id("messages_iframe");
+const $form = $id("form");
+const $title = $("title");
+const $inputrow = $id("inputrow");
+const $edit = $id("view_edit");
+
+let VERSION;
+let DEBUG = true;
+
+let room;
+let user;
+let admin = false;
+let dev = false;
+
+// keyboard shortcuts --------------------------------------------------------
+
+const SHORTCUTS_GLOBAL = shortcuts_to_dict([
+  ['Escape', change_room, 'Change room'],
+  ['ctrl+;', change_room, 'Change room'],
+  ["ctrl+'", room_clear_number, "Clear room number"],
+  ['ctrl+.', room_next, 'Go to next room'],
+  ['ctrl+,', room_prev, 'Go to previous room'],
+  ['ctrl+/', room_random, 'Go to random room'],
+]);
+
+const SHORTCUTS_MESSAGE = shortcuts_to_dict([
+  ['ctrl+Enter', send, 'Send message'],
+  ['alt+s', send, 'Send message'],
+  ['alt+z', undo, 'Undo last action'],
+  ['alt+r', retry, 'Retry last action'],
+  ['alt+t', content_insert_tab, 'Insert tab'],
+  ['alt+x', clear_content, 'Clear content'],
+  ['alt+c', clear_chat, 'Clear messages'],
+  ['alt+a', archive_chat, 'Archive chat'],
+  ['alt+u', browse_up, 'Browse up'],
+]);
+
+const SHORTCUTS_ROOM = shortcuts_to_dict([
+  ['Enter', focus_content, 'Focus message input'],
+]);
+
+const SHORTCUTS_EDIT = shortcuts_to_dict([
+  ['alt+t', edit_insert_tab, 'Insert tab'],
+  ['Escape', edit_close, 'Close edit'],
+  ['ctrl+s', edit_save, 'Save edit'],
+  ['alt+Z', edit_reset, 'Reset edit'],
+  ['alt+X', edit_clear, 'Clear edit'],
+]);
+
+// DOM functions -------------------------------------------------------------
+
+function show($el, do_show) {
+  // if $el is a string, get the element
+  if (typeof $el === "string")
+    $el = $id($el);
+  if (do_show === undefined || do_show)
+    $el.classList.remove("hidden");
+  else
+    $el.classList.add("hidden");
+}
+
+function hide($el) {
+  show($el, false);
+}
+
+// developer functions -------------------------------------------------------
+
+const real_console_log = console.log;
 
 function set_debug(debug) {
   DEBUG = debug;
-  console.log = DEBUG ? console.log : () => {};
-  $id("debug").style.display = DEBUG ? "block" : "none";
+  console.log = DEBUG ? real_console_log : () => {};
+  active_set("debug", DEBUG);
 }
 
-async function flash($el, className) {
-  $el.classList.add(className);
-  await $wait(300);
-  $el.classList.remove(className);
+function setup_dev() {
+  dev = devs.includes(user);
+  if (dev) {
+    show($id("debug"));
+    $on($id("debug"), "click", () => set_debug(!DEBUG));
+  } else {
+    DEBUG = false;
+  }
 }
 
 // send a message ------------------------------------------------------------
 
-function set_content(content) {
-  $content.value = content;
+function set_content(content, allow_undo) {
+  if (allow_undo) {
+    $content.setRangeText(content, 0, $content.value.length, 'end');
+  } else {
+    $content.value = content;
+  }
   message_changed();
 }
 
@@ -67,7 +126,6 @@ async function send_form_data(formData) {
 }
 
 async function send(ev) {
-  console.log("send");
   ev.preventDefault();
 
   auto_play_back_off();
@@ -76,14 +134,14 @@ async function send(ev) {
   const message = $content.value;
   set_content("");
 
-  set_sent_message_count(sent_message_count + 1);
+  active_inc("send");
 
   try {
     await send_form_data(formData);
   } catch (error) {
     console.error(error.message);
     set_content(message);
-    await flash($id("send"), "error");
+    error("send");
   }
 }
 
@@ -98,73 +156,85 @@ async function poke() {
   await send_text("");
 }
 
-// sent message count --------------------------------------------------------
+function clear_content(ev) {
+  set_content("");
+}
 
-function set_sent_message_count(count) {
-  if (sent_message_count != 0)
-    $id("send").classList.remove(`active-${Math.min(sent_message_count, 20)}`);
+function focus_content() {
+  $content.focus();
+}
 
-  sent_message_count = count;
+// error indicator for buttons -----------------------------------------------
 
-  if (sent_message_count < 0) sent_message_count = 0;
-  if (sent_message_count == 0) {
-    $id("send").classList.remove("active");
-  } else {
-    $id("send").classList.add("active");
-    $id("send").classList.add(`active-${Math.min(sent_message_count, 20)}`);
+async function flash($el, className) {
+  $el.classList.add(className);
+  await $wait(300);
+  $el.classList.remove(className);
+}
+
+async function error(id) {
+  await flash($id(id), "error");
+}
+
+// active indicator for buttons ----------------------------------------------
+
+const active_counts = {};
+const active_max_class = 20;
+
+function active_get(id) {
+  return active_counts[id] || 0;
+}
+
+function active_set(id, new_count) {
+  if (new_count === undefined) {
+    new_count = 1;
   }
+  new_count = +new_count;
+  let count = active_get(id);
+  const $el = $id(id);
+  if (count > 0)
+    $el.classList.remove(`active-${Math.min(count, active_max_class)}`);
+  count = active_counts[id] = Math.max(new_count, 0);
+  if (count == 0) {
+    $el.classList.remove("active");
+  } else {
+    $el.classList.add("active");
+    $el.classList.add(`active-${Math.min(count, active_max_class)}`);
+  }
+}
+
+function active_add(id, delta, max) {
+  let count = active_get(id) + delta;
+  if (max !== undefined) {
+    count = Math.min(count, max);
+  }
+  active_set(id, count);
+}
+
+function active_inc(id, max) {
+  active_add(id, 1, max);
+}
+
+function active_dec(id) {
+  active_add(id, -1);
+}
+
+function active_reset(id) {
+  active_set(id, 0);
 }
 
 // new chat message ----------------------------------------------------------
 
 function new_chat_message(message) {
-  console.log("new_chat_message", message);
   auto_play_back_off();
-  if (message.user != user) {
-    set_sent_message_count(sent_message_count - 1);
+  const message_user_lc = message.user.toLowerCase();
+  console.log("new message user vs user", message_user_lc, user);
+  if (message_user_lc != user) {
+    active_dec("send");
   }
 }
 
-// handle enter key press ----------------------------------------------------
-
-/*
-// Old code where enter sends, and shift-enter for newline,
-// but it does not work on mobile. Maybe detect mobile vs PC.
-function message_keypress(ev) {
-        if (ev.keyCode == 13 && !ev.shiftKey) {
-		ev.preventDefault();
-		send(ev);
-        }
-}
-*/
-
-function message_keydown(ev) {
-  if ((ev.ctrlKey && ev.key === "Enter") || (ev.altKey && ev.key === "s")) {
-    // send
-    ev.preventDefault();
-    send(ev);
-  } else if (ev.altKey && ev.key === "z") {
-    // undo
-    ev.preventDefault();
-    undo(ev);
-  } else if (ev.altKey && ev.key === "r") {
-    // undo
-    ev.preventDefault();
-    retry(ev);
-  } else if (ev.altKey && ev.key === "t") {
-    // insert tab
-    ev.preventDefault();
-    textarea_insert_text($content, "\t");
-  } else if (ev.altKey && ev.key == "x") {
-    // clear
-    ev.preventDefault();
-    clear(ev);
-  } else if (ev.altKey && ev.key == "a") {
-    // archive
-    ev.preventDefault();
-    archive(ev);
-  }
-}
+// insert text into textarea -------------------------------------------------
 
 function textarea_insert_text(textarea, text) {
   const pos = textarea.selectionStart;
@@ -173,14 +243,6 @@ function textarea_insert_text(textarea, text) {
     text +
     textarea.value.slice(textarea.selectionEnd);
   textarea.selectionStart = textarea.selectionEnd = pos + 1;
-}
-
-function room_keypress(ev) {
-  if (ev.key == "Enter") {
-    ev.preventDefault();
-    $content.focus();
-    return false;
-  }
 }
 
 // handle message change -----------------------------------------------------
@@ -204,13 +266,11 @@ function reload_messages() {
 }
 
 function clear_messages_box() {
-  console.log("clearing messages box");
   messages_iframe_set_src("about:blank");
 }
 
 function set_room(r) {
   // check if r was passed
-  console.log("setting room");
   if (r === undefined) {
     r = $room.value;
   }
@@ -226,11 +286,20 @@ function set_room(r) {
     room_stream_url += ".html";
   }
   room_stream_url += "?stream=1";
-  console.log("setting $messages_iframe.src to", room_stream_url);
   messages_iframe_set_src(room_stream_url);
   setup_user_button();
   setup_admin();
   reset_controls();
+}
+
+function browse_up(ev) {
+  let new_room;
+  if (room.match(/\/$/)) {
+    new_room = room.replace(/\/$/, "");
+  } else {
+    new_room = room.replace(/[^\/]+$/, "") || "/";
+  }
+  set_room(new_room);
 }
 
 // user info and settings ----------------------------------------------------
@@ -250,8 +319,8 @@ function load_user_styles() {
 
 // hash change ---------------------------------------------------------------
 
-let new_hash;
-let new_title;
+let new_hash = "";
+let new_title = "";
 
 function query_to_title(query) {
   return query;
@@ -262,7 +331,6 @@ function query_to_hash(query) {
 }
 
 function set_title_hash(query) {
-  console.log("setting title hash", query);
   new_hash = query_to_hash(query);
   new_title = query_to_title(query);
   if (location.hash != new_hash)
@@ -273,11 +341,10 @@ function set_title_hash(query) {
 function on_hash_change() {
   $title.innerText = query_to_title(hash_to_query(location.hash));
   let h = location.hash;
-  console.log("hash change", h, location, location.url);
   if (h == "" || h == "#") {
     h = "#" + DEFAULT_ROOM;
   }
-  if (h != new_hash && h == "#-") {
+  if (h == "#-" && h != new_hash) {
     clear_messages_box();
   }
   if (h != new_hash) {
@@ -296,14 +363,12 @@ function hash_to_query(hash) {
 }
 
 function leave_room() {
-  console.log("leaving room");
   // the following doesn't work reliably, so we're going out out
   if (room == "-") set_room("");
   else set_room("-");
 }
 
 function change_room() {
-  console.log("changing room");
   if ($room === document.activeElement) {
     leave_room();
   } else {
@@ -363,28 +428,54 @@ function room_prev() {
   room_set_number(num);
 }
 
-// TODO use something like a Makefile to handle events and avoid loops
+function room_clear_number() {
+  room_set_number("");
+}
 
-// keyboard shortcuts --------------------------------------------------------
-// use mousetrap.js   -- Copilot suggestion <3
+// Keyboard shortcuts handling -----------------------------------------------
 
-function keyboard_shortcuts() {
-  // TODO: some way to access these features from mobile?  maybe swipe gestures?
-  Mousetrap.bind("esc", change_room);
-  Mousetrap.bind("ctrl+.", room_next);
-  Mousetrap.bind("ctrl+,", room_prev);
-  Mousetrap.bind("ctrl+/", room_random);
-  Mousetrap.bind("ctrl+'", () => room_set_number(""));
-  Mousetrap.bind("ctrl+;", change_room);
+function content_insert_tab() {
+  textarea_insert_text($content, "\t");
+}
+
+function edit_insert_tab() {
+  textarea_insert_text($edit, "\t");
+}
+
+function shortcuts_to_dict(shortcuts) {
+  const dict = {};
+  for (const [key, fn, desc] of shortcuts) {
+    dict[key] = { fn, desc };
+  }
+  return dict;
+}
+
+function dispatch_shortcut(ev, shortcuts) {
+  const key = [
+    ev.ctrlKey ? 'ctrl+' : '',
+    ev.shiftKey ? 'shift+' : '',
+    ev.altKey ? 'alt+' : '',
+    ev.metaKey ? 'meta+' : '',
+    ev.key
+  ].join('');
+
+  const shortcut = shortcuts[key] || shortcuts[ev.key];
+
+  if (shortcut) {
+    ev.preventDefault();
+    shortcut.fn(ev);
+    return true;
+  }
+  return false;
 }
 
 // reload the page -----------------------------------------------------------
 
 let reloading = false;
+
 function reload_page() {
   if (reloading) return;
   reloading = true;
-  console.log("reloading page");
   location.reload();
 }
 
@@ -410,7 +501,6 @@ function handle_message(ev) {
   $content.focus();
 
   // detect F5 or ctrl-R to reload the page
-  console.log(ev.data.type, ev.data.key, ev.data.ctrlKey);
   if (
     ev.data.type == "keydown" &&
     (ev.data.key == "F5" ||
@@ -426,14 +516,12 @@ function handle_message(ev) {
   ev.data.bubbles = true;
   ev.data.cancelable = true;
 
-  console.log("dispatching", ev.data.type, "event");
   if (ev.data.type == "keypress" || ev.data.type == "keydown") {
     // can we simulate this same keypress on this document?
     // ev.data.key, ev.data.ctrlKey, ev.data.altKey, ev.data.shiftKey;
     const okay = $content.dispatchEvent(
       new KeyboardEvent(ev.data.type, ev.data)
     );
-    console.log("dispatched", ev.data.type, "event", okay);
   }
 }
 
@@ -454,7 +542,7 @@ let sw_message_channel;
 function handle_sw_message(event) {
   if (event.data.type == "APP_INFO") {
     VERSION = event.data.version;
-    $id("debug").value = VERSION;
+    $id("debug").textContent = VERSION;
   }
 }
 
@@ -501,7 +589,6 @@ function authChat() {
   $on($id("logout"), "click", logoutChat);
   userData = getJSONCookie("user_data");
   if (!userData) throw new Error("Setup error: Not logged in");
-  console.log("username:", userData.username);
 
   return userData.username;
 }
@@ -517,11 +604,11 @@ function setup_user_button() {
 
 // drag to resize the input row ----------------------------------------------
 
+const $messages_overlay = $id("messages_overlay");
 let resizeStartY, resizeStartHeight;
 
 function initDrag(e) {
   e.preventDefault();
-  console.log("initDrag");
   resizeStartY = e.clientY || e.touches[0].clientY;
   resizeStartHeight = $inputrow.offsetHeight;
   document.addEventListener("mousemove", doDrag);
@@ -539,7 +626,6 @@ function doDrag(e) {
 
 function stopDrag(e) {
   e.preventDefault();
-  console.log("stopDrag");
   document.removeEventListener("mousemove", doDrag);
   document.removeEventListener("mouseup", stopDrag);
   document.removeEventListener("touchmove", doDrag);
@@ -565,42 +651,18 @@ function file_clicked() {
 async function files_changed(ev) {
   const files = ev.target.files;
   // clear the file input so we can upload the same file again
-  console.log("files_changed", files);
-  await upload_files(files);
+  await upload_files(files, true);
   ev.target.value = "";
   set_controls();
 }
 
-async function upload_files(files) {
-  // upload one file at a time, in order
+async function upload_files(files, to_text) {
+  // upload in parallel
+  active_add("add_file", files.length);
+  const promises = [];
   for (const file of files) {
-    await upload_file(file);
+    promises.push(upload_file(file, file.name, to_text));
   }
-}
-
-async function upload_file(file, filename) {
-  // upload in the background using fetch
-  console.log("upload_file", file);
-
-  const formData = new FormData();
-  formData.append("room", room);
-  formData.append("file", file, filename);
-
-  const response = await fetch("/x/upload", {
-    method: "POST",
-    body: formData,
-  });
-
-  if (!response.ok) {
-    // flash the attach button red
-    await flash($id("attach"), "error");
-    return;
-  }
-
-  const data = await response.json();
-  console.log("upload_file response", data);
-
-  const { name, url, medium, markdown } = data;
 
   // TODO messing with the textarea value kills undo
 
@@ -609,34 +671,71 @@ async function upload_file(file, filename) {
     $content.value += "\n";
   }
 
+  // but we insert the links in order
+  for (const promise of promises) {
+    await add_upload_file_link(promise);
+    active_dec("add_file");
+  }
+}
+
+async function add_upload_file_link(promise) {
+  const { name, url, medium, markdown } = await promise;
+
+  if (/\S$/.test($content.value)) {
+    $content.value += " ";
+  }
+
   $content.value += markdown;
   message_changed();
+}
+
+async function upload_file(file, filename, to_text) {
+  // upload in the background using fetch
+  const formData = new FormData();
+  formData.append("room", room);
+  formData.append("file", file, filename);
+  formData.append("to_text", to_text);
+
+  const response = await fetch("/x/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    // flash the attach button red
+    return await error("attach");
+  }
+
+  const data = await response.json();
+
+  return data;
 }
 
 // admin functions -----------------------------------------------------------
 
 function setup_admin() {
-  // if first component of room path split on commas contains username,
+  // if first component of room path is user's name
   // or user is a global admin, then user is an admin here
+  // this includes a top-level room being the user's name
   const components = room.split("/");
   const top_dir = components[0];
-  admin = global_moderators.includes(user) || top_dir.split(",").includes(user);
+  admin = global_moderators.includes(user) || top_dir == user;
   if (admin) document.body.classList.add("admin");
   else document.body.classList.remove("admin");
 }
 
-async function clear(ev, op) {
+async function clear_chat(ev, op) {
   if (!op) op = "clear";
-
-  console.log("clear", op);
 
   let confirm_message = "";
   if (op === "clear")
     confirm_message = "Clear the chat?\nThis cannot be undone.";
   else if (op === "rotate")
     confirm_message = "Save and clear the first have of the chat?";
-  else if (op === "archive") confirm_message = "Save and clear the chat?";
-  else throw new Error("invalid op: " + op);
+  else if (op === "archive")
+    confirm_message = "Save and clear the chat?";
+  else
+    throw new Error("invalid op: " + op);
 
   if (!confirm(confirm_message)) return;
 
@@ -645,9 +744,9 @@ async function clear(ev, op) {
   formData.append("room", room);
   formData.append("op", op);
 
-  const error = async (error_message) => {
+  const my_error = async (error_message) => {
     console.error(error_message);
-    await flash($id(op), "error");
+    await error(op);
   };
 
   const response = await fetch("/x/clear", {
@@ -656,29 +755,27 @@ async function clear(ev, op) {
   });
 
   if (!response.ok) {
-    await error(`${op} failed`);
-    return;
+    return await my_error(`${op} failed`);
   }
 
   const data = await response.json();
 
   if (data.error) {
-    await error(data.error);
-    return;
+    return await my_error(data.error);
   }
 
-  reset_controls();
+  reset_ui();
 
   // TODO should clear immediately for other users too, not just the current user
   // reload_messages();
 }
 
-async function rotate(ev) {
-  await clear(ev, "rotate");
+async function archive_chat(ev) {
+  await clear(ev, "archive");
 }
 
-async function archive(ev) {
-  await clear(ev, "archive");
+async function rotate_chat(ev) {
+  await clear(ev, "rotate");
 }
 
 async function undo_last_message(room) {
@@ -703,7 +800,6 @@ async function undo_last_message(room) {
 }
 
 async function undo(ev) {
-  console.log("undo");
   ev.preventDefault();
 
   auto_play_back_off();
@@ -714,56 +810,87 @@ async function undo(ev) {
     // reload_messages();
   } catch (error) {
     console.error(error.message);
-    await flash($id("undo"), "error");
+    await error("mod_undo");
   }
 }
 
 async function retry(ev) {
-  console.log("retry");
   try {
     await undo(ev);
     await $wait(100);
     await poke();
   } catch (error) {
     console.error(error.message);
-    await flash($id("retry"), "error");
+    await error("retry");
   }
 }
 
 // input controls ------------------------------------------------------------
 
 function set_controls(id) {
-  $("#inputrow > .controls:not(.hidden)").classList.add("hidden");
-  $id(id || "input_main").classList.remove("hidden");
+  const $el = $id(id || "input_main");
+  if ($el.classList.contains("hidden")) {
+    hide($("#inputrow > .controls:not(.hidden)"));
+    show($id(id || "input_main"));
+  }
 }
 
 function reset_controls() {
   set_controls();
-  set_sent_message_count(0);
+  set_view();
+  active_reset("send");
+  active_reset("add_file");
+  active_reset("edit_save");
   stop_auto_play();
+  // TODO stop any current recording
 }
 
 // auto play -----------------------------------------------------------------
 
-function start_auto_play() {
+let auto_play_interval_timer = null;
+let auto_play_interval = null;
+const auto_play_interval_options = [null, 5, 10, 15, 30, 60, 120, 300, 600, 1200, 1800, 3600];
+
+function fmt_duration(seconds) {
+  let s = seconds % 60;
+  let m = Math.floor(seconds / 60) % 60;
+  let h = Math.floor(seconds / 3600);
+
+  if (h) return `${h}h${m ? ` ${m}m` : ''}`;
+  if (m) return `${m}m${s ? ` ${s}s` : ''}`;
+  return `${s}s`;
+}
+
+function set_auto_play(delta) {
   stop_auto_play(); // Clear any existing timer first
-  $id("auto").classList.add("active");
-  auto_play_interval = setInterval(poke, auto_play_interval_default * 1000);
+  const max = auto_play_interval_options.length - 1;
+  active_add("mod_auto", delta, max);
+  auto_play_interval = auto_play_interval_options[active_get("mod_auto")];
+  if (!auto_play_interval)
+    return;
+  auto_play_interval_timer = setInterval(poke, auto_play_interval * 1000);
+  $auto.textContent = fmt_duration(auto_play_interval);
 }
 
 function stop_auto_play() {
   if (!auto_play_interval) return;
-  $id("auto").classList.remove("active");
-  clearInterval(auto_play_interval);
+  active_dec("mod_auto");
   auto_play_interval = null;
+  auto_play_interval_timer = null;
+  clearInterval(auto_play_interval_timer);
+  $auto.textContent = "auto";
 }
 
-function toggle_auto_play() {
-  if (auto_play_interval) {
+function auto_play(ev) {
+  if (auto_play_interval && ev.shiftKey) {
+    start_auto_play(1);
+  } else if (auto_play_interval && ev.ctrlKey) {
+    start_auto_play(-1);
+  } else if (auto_play_interval) {
     stop_auto_play();
   } else {
     poke();
-    start_auto_play();
+    start_auto_play(3);
   }
 }
 
@@ -774,43 +901,235 @@ function auto_play_back_off() {
   }
 }
 
+// edit file -----------------------------------------------------------------
+
+EDITABLE_EXTENSIONS = [
+  // plain text
+  "bb", "m", "txt", "md", "markdown",
+  // web files
+  "html", "htm", "css",
+  // textual data
+  "json", "xml", "yaml", "yml", "ini", "cfg", "conf", "log",
+  // program code
+  "js", "py", "sh", "c", "rb", "lua", "ts", "make", "sql",
+  // tabular data
+  "csv", "tsv",
+];
+
+DISALLOWED_EXTENSIONS = [
+  // images
+  "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico", "tiff", "tif", "psd", "xcf", "eps", "ai", "indd", "eps", "svg", "svgz", "wmf", "emf",
+  // audio
+  "mp3", "wav", "ogg", "flac",
+  // video
+  "mp4", "webm", "avi", "mov", "flv", "mkv", "wmv", "m4v", "mpg", "mpeg", "3gp", "3g2", "vob", "ogv", "qt", "divx", "xvid", "rm", "rmvb", "asf", "swf",
+  // non-text documents
+  "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "ods", "odp", "rtf",
+  // archives
+  "zip", "gz", "rar", "7z", "tar", "bz2", "xz", "lz", "cab", "iso", "tgz",
+  // binary executables
+  "exe", "msi", "dmg", "app", "apk", "jar", "deb", "rpm", "bin", "dll", "class",
+  // fonts
+  "ttf", "otf", "woff", "woff2", "eot", "svg", "svgz",
+  // other
+  "torrent",
+];
+
+async function check_mime_type(file) {
+  const response = await fetch(ROOMS_URL + "/" + file, {
+    method: "HEAD",
+  });
+  if (!response.ok) {
+    throw new Error("HEAD request failed: " + file);
+  }
+  const mime = response.headers.get("Content-Type");
+  return mime;
+}
+
+async function check_ok_to_edit(file) {
+  // don't edit folders, editing in /
+  if (file.match(/\/$/)) {
+    throw new Error("cannot edit folder: " + file);
+  }
+
+  const basename = file.replace(/^.*\//, "");
+  const ext = basename.replace(/^.*\.|.*/, "").toLowerCase();
+
+  if (DISALLOWED_EXTENSIONS.includes(ext)) {
+    throw new Error("disallowed extension: " + ext);
+  }
+
+  const check_mime = !EDITABLE_EXTENSIONS.includes(ext);
+
+  if (check_mime) {
+    console.log("checking mime type for file:", file);
+    const mime = await check_mime_type(file);
+    if (!mime.startsWith("text/")) {
+      throw new Error("disallowed mime type for file: " + file + " (" + mime + ")");
+    }
+  }
+}
+
+async function fetch_file(file) {
+  console.log("fetching file:", file);
+  const response = await fetch(ROOMS_URL + "/" + file, {
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    throw new Error("GET request failed: " + file);
+  }
+  const text = await response.text();
+
+  return text;
+}
+
+async function put_file(file, text) {
+  const response = await fetch("/x/put/" + file, {
+    method: "PUT",
+    body: text,
+  });
+  if (!response.ok) {
+    return await edit_save_error();
+  }
+  return true;
+}
+
+// TODO edit tabular data in a table, not as plain text
+
+function set_view(view) {
+  const $el = $id(view || "messages");
+  if ($el.classList.contains("hidden")) {
+    hide($(".view:not(.hidden)"));
+    show($id(view || "messages"))
+  }
+}
+
+let editor_file;
+let editor_text_orig;
+let editor_text;
+
+function edit_set_text(text) {
+  $edit.value = text;
+  editor_text = text;
+}
+
+function edit_get_text() {
+  editor_text = $edit.value;
+  return editor_text;
+}
+
+async function edit(file) {
+  if (file === undefined) {
+    file = room + ".bb";
+  }
+
+  try {
+    check_ok_to_edit(file);
+  } catch (error) {
+    console.error(error.message);
+    return await error("mod_edit");
+  }
+
+  editor_file = file;
+  try {
+    editor_text_orig = await fetch_file(file);
+  } catch (error) {
+    console.error(error.message);
+    return await error("mod_edit");
+  }
+
+  edit_set_text(editor_text_orig);
+  set_view("view_edit");
+  set_controls("input_edit");
+}
+
+// TODO show file name in room field, and allow changing it
+
+async function edit_save() {
+  if (edit_get_text() === editor_text_orig) {
+    error("edit_save");
+    return;
+  }
+
+  active_inc("edit_save");
+
+  await put_file(file, editor_text);
+  editor_text_orig = editor_text;
+
+  active_dec("edit_save");
+}
+
+function edit_reset() {
+  if (edit_get_text() !== editor_text_orig) {
+    if (!confirm("Discard changes?")) return;
+  }
+  edit_set_text(editor_text_orig);
+}
+
+function edit_clear() {
+  edit_set_text("");
+}
+
+function edit_close() {
+  if (edit_get_text() !== editor_text_orig) {
+    if (!confirm("Discard changes?")) return;
+  }
+  editor_text = editor_text_orig = null;
+  editor_file = null;
+  $edit.value = "";
+  set_view();
+  set_controls();
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
-  set_debug(DEBUG);
   user = authChat();
+  setup_dev();
+  set_debug(DEBUG);
   load_user_styles();
   on_hash_change();
 
   $on($id("send"), "click", send);
+  $on($id("up"), "click", browse_up);
+
   $on($id("add"), "click", () => set_controls("input_add"));
-  $on($id("edit"), "click", () => set_controls("input_edit"));
+  $on($id("mod"), "click", () => set_controls("input_mod"));
 
-  $on($id("undo"), "click", undo);
-  $on($id("retry"), "click", retry);
-  $on($id("clear"), "click", clear);
-  $on($id("archive"), "click", archive);
-  // $on($id('rotate'), 'click', rotate);
-  $on($id("edit_cancel"), "click", () => set_controls());
+  $on($id("mod_undo"), "click", undo);
+  $on($id("mod_retry"), "click", retry);
+  $on($id("mod_clear"), "click", clear_chat);
+  $on($id("mod_archive"), "click", archive_chat);
+  // $on($id('mod_rotate'), 'click', rotate_chat);
+  $on($id("mod_auto"), "click", auto_play);
+  $on($id("mod_edit"), "click", () => edit());
+  $on($id("mod_cancel"), "click", () => set_controls());
 
-  $on($id("file"), "click", file_clicked);
+  $on($id("add_file"), "click", file_clicked);
   $on($id("files"), "change", files_changed);
   $on($id("add_cancel"), "click", () => set_controls());
 
-  $on($content, "keydown", message_keydown);
+  $on($id("edit_save"), "click", edit_save);
+  $on($id("edit_reset"), "click", edit_reset);
+  $on($id("edit_clear"), "click", edit_clear);
+  $on($id("edit_close"), "click", edit_close);
+
+  $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
+  $on($content, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_MESSAGE));
+  $on($room, "keypress", (ev) => dispatch_shortcut(ev, SHORTCUTS_ROOM));
+  $on($edit, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_EDIT));
   $on($content, "input", message_changed);
-  message_changed();
-  $on($room, "keypress", room_keypress);
-  $content.focus();
+
   $on($room, "change", () => set_room());
   $on(window, "hashchange", on_hash_change);
-  keyboard_shortcuts();
   $on(window, "message", handle_message);
   $on($id("resizer"), "mousedown", initDrag);
   $on($id("resizer"), "touchstart", initDrag);
-  $on($id("auto"), "click", toggle_auto_play);
 
   register_service_worker();
   notify_main();
   record_main();
+
+  message_changed();
+  $content.focus();
 }
