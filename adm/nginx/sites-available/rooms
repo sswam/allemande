@@ -58,6 +58,10 @@ server {
 			rewrite ^ /stream$uri? last;
 		}
 
+		if ($cors_header = "https://chat.allemande.ai") {
+			add_header Access-Control-Allow-Origin $cors_header always;
+			add_header Access-Control-Allow-Credentials true;
+		}
 		try_files $uri $uri/ =404;
 	}
 
@@ -105,7 +109,7 @@ server {
 	include /etc/nginx/mime.types;
 
 	types {
-		text/plain                                   md markdown bb;
+		text/plain  md markdown bb m;
 		# should be text/markdown, but the browser won't show it (Firefox)
 	}
 }

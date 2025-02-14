@@ -1,3 +1,5 @@
+let userData;
+
 function getCookie(name) {
 	const value = `; ${document.cookie}`;
 	const parts = value.split(`; ${name}=`);
@@ -88,8 +90,6 @@ async function logoutChat(e) {
 	const homeURL = mainDomainURL();
 	window.location = homeURL;
 }
-
-let userData;
 
 function setupLoggedIn() {
 	console.log('username:', userData.username);
