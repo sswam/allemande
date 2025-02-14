@@ -9,7 +9,7 @@ dry_base: 1.75
 # dry_range: 2048
 dry_seq_breakers: '["-----"]'
 # dry_seq_breakers: '["\n", ":\t", "\"", "*"]'
-repetition_penalty: 1.1
+repetition_penalty: 1.08
 min_p: 0.02
 top_p: 100
 top_k: 1000
