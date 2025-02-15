@@ -10,9 +10,9 @@ import re
 
 import yaml
 
-import a1111_client
-import slug
-import stamp
+import a1111_client  # type: ignore
+import slug  # type: ignore
+import stamp  # type: ignore
 from ally import main, logs
 from unprompted.unprompted_macros import parse_macros
 
@@ -64,11 +64,13 @@ def load(portals, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
-async def process_request(portals, portal, req):
+async def process_request(portals: str, portal_str: Path, req: str):
     """Process a request on a portal"""
-    portal = Path(portal)
+    portal = Path(portal_str)
     logger.info("%s:%s - processing", portal, req)
     log_handler = None
+    seed = None
+
     try:
         d = portal / "doing" / req
         os.rename(portal / "todo" / req, d)
@@ -95,7 +97,7 @@ async def process_request(portals, portal, req):
         if fmt not in ("jpg", "png"):
             raise ValueError(f"unknown format: {fmt}")
 
-        await a1111_client.a1111_client(
+        seed = await a1111_client.a1111_client(
             output=str(d / output_stem),
             prompt=prompt,
             negative_prompt=negative_prompt,
@@ -116,7 +118,10 @@ async def process_request(portals, portal, req):
         )
 
         if fmt == "jpg":
-            convert_images_to_jpeg(d)
+            convert_images_to_jpeg(portal, req, d)
+
+        data = yaml.dump({"seed": seed})
+        (d/"result.yaml").write_text(data, encoding="utf-8")
 
         os.rename(d, portal / "done" / req)
         logger.info("%s:%s - done", portal, req)
@@ -128,7 +133,7 @@ async def process_request(portals, portal, req):
             logger.removeHandler(log_handler)
 
 
-def convert_images_to_jpeg(d: Path, quality: int = 95):
+def convert_images_to_jpeg(portal: Path, req: str, d: Path, quality: int = 95):
     """Convert all images in a directory to JPEG, deleting the original PNGs and preserving metadata"""
     for img in d.iterdir():
         if img.suffix.lower() == ".png":
@@ -138,7 +143,7 @@ def convert_images_to_jpeg(d: Path, quality: int = 95):
                 img.unlink()
             except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.exception("%s:%s - error converting images to JPEG: %s", portal, req, e)
-                unlink(dest)
+                dest.unlink()
                 # continue with PNG
                 # TODO ideally stamp would clean up
 
@@ -158,7 +163,7 @@ def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]
     return requests
 
 
-async def serve_requests(portals: str = str(portals_dir), poll_interval: float = 1.0):
+async def serve_requests(portals: str = str(portals_dir), poll_interval: float = 0.1):
     """Serve image generation requests from portals directory"""
     logger.info("serving requests from %s", portals)
     known_requests = find_todo_requests(portals)

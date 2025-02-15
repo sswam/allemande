@@ -287,7 +287,7 @@ def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]
     return requests
 
 
-async def serve_requests_poll(portals, gen, poll_interval=1.0):
+async def serve_requests_poll(portals, gen, poll_interval=0.1):
     """Serve requests from a directory of directories using polling"""
     logger.info("serving requests from %s", portals)
 

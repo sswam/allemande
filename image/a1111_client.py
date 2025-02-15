@@ -57,7 +57,7 @@ async def a1111_client(
     hires: float = 0.0,
     ad_mask_k_largest = 0,
     model: str = "",
-) -> None:
+) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
     """
@@ -141,6 +141,8 @@ async def a1111_client(
         logger.debug("Exiting")
         signal.signal(signal.SIGINT, signal.SIG_DFL)
     logger.debug("Done")
+
+    return seed
 
 
 def pony_biolerplate(pony, prompt, negative_prompt):
