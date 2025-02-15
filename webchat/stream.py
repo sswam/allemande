@@ -43,6 +43,9 @@ REWIND_STRING = "<script>clear()</script>\n"
 BASE_DIR = Path(".").resolve()
 TEMPLATES_DIR = os.environ.get("TEMPLATES")
 
+SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt"]
+MEDIA_FILE_EXTS = ["webm", "jpg"]
+
 
 templates = None
 
@@ -250,7 +253,7 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
                     "name": item.name + "/",
                     "type": "folder",
                     "type_sort": 0,
-                    "link": f"/#{pathname}{item.name}/",
+                    "link": f"/#{pathname}{item.name}/",  # view dir
                 })
             else:
                 continue
@@ -259,27 +262,30 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
                 "name": item.stem,
                 "type": "bb",
                 "type_sort": 1,
-                "link": f"/#{pathname}{item.stem}",
+                "link": f"/#{pathname}{item.stem}",  # enter room
             })
         elif ext == 'html' and item.stem + ".bb" in item_names:
             # We don't want to show the rendered HTML file for a BB chat file
             continue
-        else:
-            # sort order
-            type_sort = 100
-            try:
-                type_sort = 2 + ["m", "yml", "yaml"].index(ext)
-            except ValueError:
-                pass
-            try:
-                type_sort = 200 + ["webm", "jpg"].index(ext)
-            except ValueError:
-                pass
-            logger.warning("pathname: %s, rooms_base_url: %s, item.name: %s", pathname, info.rooms_base_url, item.name)
+        elif ext in SYSTEM_TEXT_FILE_EXTS:
             record.update({
                 "name": item.name,
                 "type": "file",
-                "type_sort": type_sort,
+                "type_sort": 10 + SYSTEM_TEXT_FILE_EXTS.index(ext),
+                "link": f"/#{pathname}{item.name}",  # edit file
+            })
+        elif ext in MEDIA_FILE_EXTS:
+            record.update({
+                "name": item.name,
+                "type": "file",
+                "type_sort": 100 + MEDIA_FILE_EXTS.index(ext),
+                "link": f"{info.rooms_base_url}/{pathname}{item.name}",
+            })
+        else:
+            record.update({
+                "name": item.name,
+                "type": "file",
+                "type_sort": 200,
                 "link": f"{info.rooms_base_url}/{pathname}{item.name}",
             })
         listing.append(record)

@@ -172,6 +172,12 @@ class Room:
         if not self.path.is_file():
             raise FileNotFoundError("Room not found.")
         empty = self.path.stat().st_size == 0
+
+        # A double clear will erase the file
+        if empty:
+            self.path.unlink()
+            return
+
         if op == "archive":
             if not access.value & Access.MODERATE.value:
                 raise PermissionError("You are not allowed to archive this room.")
@@ -186,16 +192,10 @@ class Room:
         else:
             if not access.value & Access.ADMIN.value:
                 raise PermissionError("You are not allowed to clear this room.")
-            # unlink the file
             if backup:
                 backup_file(str(self.path))
-            self.path.unlink()
-            # with self.path.open("w", encoding="utf-8"):
-            #     pass
-
-        # A double clear will erase the file
-        if not empty:
-            self.touch()
+            # truncate the file
+            self.path.write_text("")
 
     def undo(self, user, n=1):
         """Remove the last n messages from a room."""
@@ -1044,15 +1044,18 @@ def backup_file(path: str):
         logger.error("git error: %s", e)
 
 
-async def overwrite_file(user, file, content, backup=True, delay=0):
+async def overwrite_file(user, file, content, backup=True, delay=0, noclobber=False):
     """Overwrite a file with new content."""
     logger.warning("overwrite_file: %s", file)
     path = str(name_to_path(file))
     logger.warning("  path: %s", path)
     if not check_access(user, file, Path(path)).value & Access.WRITE.value:
         raise PermissionError("You are not allowed to overwrite this file.")
-    if Path(path).exists() and Path(path).is_dir():
+    exists = Path(path).exists()
+    if exists and Path(path).is_dir():
         raise ValueError("Cannot overwrite a directory.")
+    if exists and noclobber:
+        raise ValueError("File already exists, will not overwrite.")
     if backup:
         backup_file(path)
     if path.endswith(".bb"):

@@ -80,11 +80,13 @@ async def put_file(request, path=""):
         logger.warning("Invalid path: %s", exc)
         raise
 
+    noclobber = request.query_params.get("noclobber") == "1"
+
     content = await request.body()
     content = content.decode()
 
     try:
-        await chat.overwrite_file(user, path, content, delay=0.1)
+        await chat.overwrite_file(user, path, content, delay=0.1, noclobber=noclobber)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({"status": "success"})

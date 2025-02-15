@@ -277,33 +277,60 @@ function clear_messages_box() {
   messages_iframe_set_src("about:blank");
 }
 
+function get_file_type(name) {
+  if (name.match(/\/$/))             // ends with /
+    return "dir";
+  else if (name.match(/\.[^\/]*$/))  // has an extension
+    return "file";
+  else
+    return "room";                   // no extension
+}
+
 function set_room(r) {
   // check if r was passed
   if (r === undefined) {
     r = $room.value;
   }
-  $room.value = r;
 
-  // edit mode
-  if (view === "view_edit") {
-    editor_file = r + ".bb";
-    editor_text_orig = null;
+  const type = get_file_type(r);
+
+  if (view === "view_edit" && type == "dir" && !edit_close()) {
+    // reject changing to a directory if we have unsaved changes in the editor
+    $room.value = room;
+    error("room");
+    return;
   }
+
+  $room.value = r;
 
   clear_messages_box();
   room = r;
-  set_title_hash(room); // okay above the if?
+  set_title_hash(room);
   if (!room) return;
+
   //	who();
-  // check ends in slash
-  let room_stream_url = ROOMS_URL + "/" + room;
-  if (!room.match(/\/$/)) {
-    room_stream_url += ".html";
+
+  if (type == "room" || type == "dir") {
+    let stream_url = ROOMS_URL + "/" + room;
+    if (type == "room") {
+      stream_url += ".html";
+    }
+    stream_url += "?stream=1";
+    messages_iframe_set_src(stream_url);
   }
-  room_stream_url += "?stream=1";
-  messages_iframe_set_src(room_stream_url);
+
   setup_user_button();
   setup_admin();
+
+  if (view === "view_edit") {
+    editor_file = r;
+    if (type == "room")
+      editor_file += ".bb";
+    editor_text_orig = null;
+  } else if (type == "file") {
+    // start editing the file
+    edit(r);
+  }
 
   if (view !== "view_edit")
     reset_ui();
@@ -1026,8 +1053,12 @@ async function fetch_file(file) {
   return text;
 }
 
-async function put_file(file, text) {
-  const response = await fetch("/x/put/" + file, {
+async function put_file(file, text, noclobber) {
+  let url = "/x/put/" + file;
+  if (noclobber) {
+    url += "?noclobber=1";
+  }
+  const response = await fetch(url, {
     method: "PUT",
     body: text,
   });
@@ -1056,6 +1087,7 @@ function set_view(id) {
 let editor_file;
 let editor_text_orig;
 let editor_text;
+let editor_file_orig;
 
 function edit_set_text(text) {
   $edit.value = text;
@@ -1105,8 +1137,10 @@ async function edit_save() {
 
   active_inc("edit_save");
 
+  const noclobber = editor_file !== editor_file_orig;
+
   try {
-    await put_file(editor_file, editor_text);
+    await put_file(editor_file, editor_text, noclobber);
     editor_text_orig = editor_text;
   } catch (err) {
     console.error(err.message);
@@ -1136,13 +1170,19 @@ function edit_clear() {
 
 function edit_close() {
   if (edit_get_text() !== editor_text_orig) {
-    if (!confirm("Discard changes?")) return;
+    if (!confirm("Discard changes?")) return false;
   }
+  const type = get_file_type(editor_file);
+  const change_to_room = type == "file" && editor_file.replace(/\.[^\/]*$/, "");
   editor_text = editor_text_orig = null;
   editor_file = null;
   $edit.value = "";
   set_view();
   set_controls();
+  if (change_to_room) {
+    set_room(change_to_room);
+  }
+  return true;
 }
 
 // main ----------------------------------------------------------------------
