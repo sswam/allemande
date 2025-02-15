@@ -239,6 +239,7 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
 
     for item in items:
         mime_type, icon = get_mime_type_and_icon(item)
+        ext = item.suffix.lstrip('.').lower()
         record = {
             "mime_type": mime_type,
             "icon": icon,
@@ -253,22 +254,32 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
                 })
             else:
                 continue
-        elif item.suffix == '.bb':
+        elif ext == 'bb':
             record.update({
                 "name": item.stem,
                 "type": "bb",
                 "type_sort": 1,
                 "link": f"/#{pathname}{item.stem}",
             })
-        elif item.suffix == '.html' and item.stem + ".bb" in item_names:
+        elif ext == 'html' and item.stem + ".bb" in item_names:
             # We don't want to show the rendered HTML file for a BB chat file
             continue
         else:
+            # sort order
+            type_sort = 100
+            try:
+                type_sort = 2 + ["m", "yml", "yaml"].index(ext)
+            except ValueError:
+                pass
+            try:
+                type_sort = 200 + ["webm", "jpg"].index(ext)
+            except ValueError:
+                pass
             logger.warning("pathname: %s, rooms_base_url: %s, item.name: %s", pathname, info.rooms_base_url, item.name)
             record.update({
                 "name": item.name,
                 "type": "file",
-                "type_sort": 2,
+                "type_sort": type_sort,
                 "link": f"{info.rooms_base_url}/{pathname}{item.name}",
             })
         listing.append(record)
