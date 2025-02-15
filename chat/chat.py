@@ -15,6 +15,7 @@ import subprocess
 import random
 import enum
 from stat import S_IFREG, S_IROTH, S_IWOTH
+import asyncio
 
 import argh
 import markdown
@@ -110,7 +111,7 @@ def name_to_path(name):
     assert isinstance(name, str)
     assert not name.startswith("/")
     assert not name.endswith("/")
-    return Path(ROOMS_DIR, name)
+    return Path(ROOMS_DIR) / name
 
 
 class Room:
@@ -163,17 +164,14 @@ class Room:
 
         self.append(text)
 
-#     def check_admin(self, user):
-#         """Check if a user is an admin."""
-#         if user in ADMINS:
-#             return True
-#         components = self.name.split("/")
-#         top_dir = components[0]
-#         return user in top_dir.split(",")
-
-    def clear(self, user, op="clear"):
+    def clear(self, user, op="clear", backup=True):
         """Clear a room."""
         access = check_access(user, self.name, self.path)
+        if not self.path.exists():
+            return
+        if not self.path.is_file():
+            raise FileNotFoundError("Room not found.")
+        empty = self.path.stat().st_size == 0
         if op == "archive":
             if not access.value & Access.MODERATE.value:
                 raise PermissionError("You are not allowed to archive this room.")
@@ -189,9 +187,15 @@ class Room:
             if not access.value & Access.ADMIN.value:
                 raise PermissionError("You are not allowed to clear this room.")
             # unlink the file
+            if backup:
+                backup_file(str(self.path))
             self.path.unlink()
             # with self.path.open("w", encoding="utf-8"):
             #     pass
+
+        # A double clear will erase the file
+        if not empty:
+            self.touch()
 
     def undo(self, user, n=1):
         """Remove the last n messages from a room."""
@@ -640,7 +644,7 @@ def av_element_html(tag, label, url):
     return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}" controls></{tag}>'
 
 
-async def upload_file(room_name, user, filename, file=None, alt=None, to_text=false):
+async def upload_file(room_name, user, filename, file=None, alt=None, to_text=False):
     """Upload a file to a room."""
     room = Room(name=room_name)
 
@@ -950,13 +954,21 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
     if pathname == "":
         return Access.READ
 
-    # Users have admin on their own directory, and files in their own directory, and their top-level room
-    if pathname == user + ".bb" or pathname == user or pathname.startswith(user + "/"):
+    # Users have admin on their own directory, and files in their own directory
+    if re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE) or pathname == user or pathname.startswith(user + "/"):
         return Access.ADMIN
 
-    stats = path.stat()
+    # Users have admin on their top-level room, or a file with their name and any extension
+    if re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE):
+        return Access.ADMIN
 
-    is_file = stats.st_mode & S_IFREG
+    exists = True
+    try:
+        stats = path.stat()
+    except FileNotFoundError:
+        exists = False
+
+    is_file = not exists or stats.st_mode & S_IFREG
 
     # Moderators have moderation on all files in the root
     if user in MODERATORS and not "/" in pathname and is_file:
@@ -987,7 +999,7 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
     return Access(access)
 
 
-def backup_file(path):
+def backup_file(path: str):
     """Backup a file using git.
 
     Args:
@@ -1000,6 +1012,12 @@ def backup_file(path):
     # Convert to absolute path
     abs_path = os.path.abspath(path)
 
+    if not os.path.exists(abs_path):
+        return
+
+    logger.warning("backup_file: %s", path)
+    logger.warning("  abs_path: %s", abs_path)
+
     # Find the git repo root directory
     try:
         repo_root = subprocess.check_output(
@@ -1010,21 +1028,46 @@ def backup_file(path):
     except subprocess.CalledProcessError:
         raise ValueError(f"File {path} is not in a git repository")
 
+    logger.warning("  repo_root: %s", repo_root)
+
     # Get path relative to repo root
     rel_path = os.path.relpath(abs_path, repo_root)
 
+    logger.warning("  rel_path: %s", rel_path)
+
     # Run git commands from repo root
-    subprocess.run(["git", "add", rel_path], check=True, cwd=repo_root)
-    subprocess.run(["git", "commit", "-m", f"Backup {rel_path}"], check=True, cwd=repo_root)
+    try:
+        subprocess.run(["git", "add", rel_path], check=True, cwd=repo_root)
+        subprocess.run(["git", "commit", "-m", f"Backup {rel_path}"], check=True, cwd=repo_root)
+    except subprocess.CalledProcessError as e:
+        # This can happen if there are no changes to commit
+        logger.error("git error: %s", e)
 
 
-def overwrite_file(user, file, content, backup=True):
+async def overwrite_file(user, file, content, backup=True, delay=0):
     """Overwrite a file with new content."""
-    path = name_to_path(file)
-    if not check_access(user, file, path).value & Access.WRITE.value:
+    logger.warning("overwrite_file: %s", file)
+    path = str(name_to_path(file))
+    logger.warning("  path: %s", path)
+    if not check_access(user, file, Path(path)).value & Access.WRITE.value:
         raise PermissionError("You are not allowed to overwrite this file.")
+    if Path(path).exists() and Path(path).is_dir():
+        raise ValueError("Cannot overwrite a directory.")
     if backup:
-        backup_file(str(path))
+        backup_file(path)
+    if path.endswith(".bb"):
+        html_path = path[:-3] + ".html"
+        logger.warning("  html_file: %s", html_path)
+        if Path(html_path).exists():
+            # We unlink the HTML file to trigger a full rebuild of the HTML
+            os.unlink(html_path)
+        # We unlink the .bb file before writing, to avoid triggering an AI response to an edit
+        try:
+            os.unlink(path)
+        except FileNotFoundError:
+            pass
+        if delay:
+            await asyncio.sleep(delay)
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
 

@@ -17,40 +17,6 @@ logger = logging.getLogger(__name__)
 portal_by_service = {}
 
 
-def get_portal(service: str) -> portals.PortalClient:
-    """Get a portal for a service."""
-    portal = portal_by_service.get(service)
-    if not portal:
-        portal_path = portals.get_default_portal_name(service)
-        portal = portal_by_service[service] = portals.PortalClient(portal_path)
-    return portal
-
-
-def get_default_portal_name(service):
-    """ Get the default portal for a server. """
-    user_id = os.environ["USER"]
-    hostname = os.environ["HOSTNAME"]
-    default_portals_dir = Path(os.environ["ALLEMANDE_PORTALS"])/service
-    #default_portal_id = f'{user_id}-{os.getpid()}'   # TODO?
-    default_portal_id = f'{hostname}_{user_id}'
-    default_portal = str(default_portals_dir/default_portal_id)
-    return default_portal
-
-
-def link_or_copy(src: str, dst: str):
-    """ Hard link or copy a file. """
-    try:
-        os.link(src, dst)
-    except OSError:
-        shutil.copy2(src, dst)
-
-
-# def portal_setup(portal):
-# 	""" Set up a portal """
-# 	for box in ("prep", "todo", "doing", "done", "error", "history"):
-# 		(portal/box).mkdir(exist_ok=True)
-
-
 class PortalClient:
     """ Client for making requests to the core server. """
     def __init__(self, portal):
@@ -137,5 +103,39 @@ class PortalClient:
         return resp, status
 
 
-# Note: Although some methods do not make any async calls,
+def get_portal(service: str) -> PortalClient:
+    """Get a portal for a service."""
+    portal = portal_by_service.get(service)
+    if not portal:
+        portal_path = get_default_portal_name(service)
+        portal = portal_by_service[service] = PortalClient(portal_path)
+    return portal
+
+
+def get_default_portal_name(service):
+    """ Get the default portal for a server. """
+    user_id = os.environ["USER"]
+    hostname = os.environ["HOSTNAME"]
+    default_portals_dir = Path(os.environ["ALLEMANDE_PORTALS"])/service
+    #default_portal_id = f'{user_id}-{os.getpid()}'   # TODO?
+    default_portal_id = f'{hostname}_{user_id}'
+    default_portal = str(default_portals_dir/default_portal_id)
+    return default_portal
+
+
+def link_or_copy(src: str, dst: str):
+    """ Hard link or copy a file. """
+    try:
+        os.link(src, dst)
+    except OSError:
+        shutil.copy2(src, dst)
+
+
+# def portal_setup(portal):
+# 	""" Set up a portal """
+# 	for box in ("prep", "todo", "doing", "done", "error", "history"):
+# 		(portal/box).mkdir(exist_ok=True)
+
+
+# Note: Although some PortalClient methods do not make any async calls,
 # we made them all async for consistency and future-proofing.

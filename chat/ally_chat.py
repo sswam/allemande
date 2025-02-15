@@ -306,7 +306,7 @@ def get_fulltext(args, model_name, history, history_start, invitation, delim):
     tokenizer = TOKENIZERS[model_name]
     fulltext = delim.join(history[history_start:]) + invitation
     n_tokens = count_tokens_in_text(fulltext, tokenizer)
-    logger.info("n_tokens is %r", n_tokens)
+    logger.debug("n_tokens is %r", n_tokens)
     # dropped = False
     # TODO use a better search method
     last = False
@@ -331,12 +331,12 @@ def get_fulltext(args, model_name, history, history_start, invitation, delim):
         fulltext = delim.join(history[history_start:]) + invitation
         n_tokens = count_tokens_in_text(fulltext, tokenizer)
         # dropped = True
-        logger.info("dropped some history, history_start: %r, n_tokens: %r", history_start, n_tokens)
+        logger.debug("dropped some history, history_start: %r, n_tokens: %r", history_start, n_tokens)
         if last:
             break
     # if dropped:
     #     fulltext = delim.join(history[history_start:]) + invitation
-    logger.info("fulltext: %r", fulltext)
+    logger.debug("fulltext: %r", fulltext)
     return fulltext, history_start
 
 
@@ -376,7 +376,15 @@ def summary_read(file, args):
     return lines
 
 
-async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None):
+def config_read(file):
+    """Read a YAML config file."""
+    if file and os.path.exists(file):
+        with open(file, encoding="utf-8") as f:
+            return yaml.safe_load(f)
+    return {}
+
+
+async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None):
     """Run a search agent."""
     name = agent["name"]
     logger.debug("history: %r", history)
@@ -399,7 +407,8 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     query = re.sub(r"[^\x00-~]", "", query)  # filter out emojis
     logger.debug("query 6: %r", query)
     query = re.sub(r"^\s*[,;.]|[,;.]\s*$", "", query).strip()
-    logger.warning("query: %r %r", name, query)
+
+    logger.info("query: %r %r", name, query)
 
     # TODO make the search library async too
     async def async_search(query, name, limit):
@@ -439,6 +448,10 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
     summary_file = re.sub(r"\.bb$", ".s", file)
     summary = summary_read(summary_file, args)
 
+    # Load config file, if present
+    config_file = re.sub(r"\.bb$", ".yml", file)
+    config = config_read(config_file)
+
     # logger.warning("loaded mission: %r", mission)
     # logger.warning("loaded history: %r", history)
 
@@ -458,8 +471,18 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
         default=agents.AGENT_DEFAULT,
         include_humans_for_ai_message=False,
         include_humans_for_human_message=True,
+        mission=mission,
+        direct_reply_chance=config.get("direct_reply_chance", 1.0),
     )
-    logger.warning("who should respond: %r", bots)
+    logger.info("who should respond: %r", bots)
+
+    # Support "directed-poke" which removes itself, like -@Ally
+    # TODO this is a bit dodgy and has a race condition
+    if message and message["content"].startswith("-@"):
+        history_messages.pop()
+        room = chat.Room(path=Path(file))
+        room.undo("root")
+        message = history_messages[-1] if history_messages else None
 
     count = 0
     for bot in bots:
@@ -481,7 +504,7 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
 
         logger.debug("query: %r", query)
         logger.debug("history 1: %r", history)
-        response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary)
+        response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config)
         history.append(response)
         logger.debug("history 2: %r", history)
         # avoid re-processing in response to an AI response
@@ -494,14 +517,14 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
     return count
 
 
-async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
+async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None):
     """Run an agent."""
     function = agent["fn"]
     logger.debug("query: %r", query)
-    return await function(query, file, args, history, history_start=history_start, mission=mission, summary=summary)
+    return await function(query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config)
 
 
-async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None):
+async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None):
     """Run a local agent."""
     # print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 
@@ -517,7 +540,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         context = history.copy()
 
     # remove "thinking" sections from context
-    context_remove_thinking_sections(context)
+    context_remove_thinking_sections(context, agent["name"])
 
     # missions
     include_mission = agent.get("service") != "image_a1111"  # TODO clean this
@@ -526,11 +549,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         # prepend mission / info / context
         # TODO try mission as a "system" message?
         context2 = []
-        if mission:
-            context2 += mission
+        mission_pos = config.get("mission_pos", 0)
+        logger.debug("mission_pos: %r", mission_pos)
         if summary:
             context2 += summary
         context2 += context
+        if mission:
+            context2.insert(mission_pos, "\n".join(mission))
         # put remote_messages[-1] through the input_maps
         context = context2
 
@@ -552,7 +577,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         system_top_role = agent.get("system_top_role", None)
         context.insert(0, f"{system_top_role}:\t{system_top}")
 
-    logger.debug("context: %r", context)
+    logger.info("context: %s", args.delim.join(context[-6:]))
 
     agent_name_esc = regex.escape(name)
 
@@ -574,7 +599,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         # Remove leading and trailing whitespace
         text = text.strip()
 
-        logger.warning("clean_image_prompt: after: %s", text)
+        logger.info("clean_image_prompt: after: %s", text)
         return text
 
     clean_prompt = agent.get("clean_prompt", False)
@@ -602,7 +627,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     # If no history, stop after the first line always. It tends to run away otherwise.
     if not history or (len(history) == 1 and history[0].startswith("System:\t")):
-        logger.warning("No history, will stop after the first line.")
+        logger.debug("No history, will stop after the first line.")
         gen_config["stop_regexs"].append(r"\n")
 
     gen_config["stop_regexs"].extend(agent.get("stop_regexs", []))
@@ -654,17 +679,19 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     return tidy_response
 
 
-def context_remove_thinking_sections(context: list[str]):
+def context_remove_thinking_sections(context: list[str], agent_name: str):
     """Remove "thinking" sections from the context."""
     # Remove any "thinking" sections from the context
     # A "thinking" section is a <details> block
 
     for i, message in enumerate(context):
+        if message.startswith(agent_name + ":\t"):
+            continue
         modified = re.sub(
             r"""(?ix)
             <details\b[^>]*>
             .*?
-            </details>
+            (</details>|$)
             """,
             "",
             message,
@@ -672,7 +699,7 @@ def context_remove_thinking_sections(context: list[str]):
         )
         if modified != message:
             context[i] = modified
-            logger.warning("Removed 'thinking' section from context: %r", modified)
+            logger.info("Removed 'thinking' section/s from message: %r", modified)
 
 
 def apply_maps(mapping, mapping_cs, context):
@@ -701,7 +728,7 @@ def apply_maps(mapping, mapping_cs, context):
             logger.debug("map: %r -> %r", old, context[i])
 
 
-async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None):
+async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None):
     """Run a remote agent."""
     n_context = agent["default_context"]
     context = history[-n_context:]
@@ -712,16 +739,17 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         context.pop(0)
 
     # remove "thinking" sections from context
-    context_remove_thinking_sections(context)
+    context_remove_thinking_sections(context, agent["name"])
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?
     context2 = []
-    if mission:
-        context2 += f"System:\t{mission}"
+    mission_pos = config.get("mission_pos", 0)
     if summary:
         context2 += f"System:\t{summary}"
     context2 += context
+    if mission:
+        context2.insert(mission_pos, "\n".join(mission))
     # put remote_messages[-1] through the input_maps
     apply_maps(agent["input_map"], agent["input_map_cs"], context2)
 
@@ -849,7 +877,7 @@ async def run_subprocess(command, query):
     return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
 
 
-async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None):
+async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None):
     """Run a shell agent."""
     name = agent["name"]
     logger.debug("history: %r", history)
@@ -898,11 +926,13 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
         return
     if not args.shrink and old_size and new_size < old_size:
         return
-    if new_size == 0 and old_size != 0:
+    if old_size is None:
         return
+#     if new_size == 0 and old_size != 0:
+#         return
 
     if skip.get(file_path):
-        logger.info("Won't react to AI response: %r", file_path)
+        logger.debug("Won't react to AI response: %r", file_path)
         skip[file_path] -= 1
         return
 
