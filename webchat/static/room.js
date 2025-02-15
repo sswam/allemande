@@ -387,7 +387,7 @@ function touch_move(e) {
 
   // offset the image by the swipe distance
   const $img_clone = $overlay.querySelector("img");
-  $img_clone.style.transform = `translate(${differenceX}px, ${differenceY/4}px)`;
+  $img_clone.style.transform = `translate(${differenceX}px, ${differenceY}px)`;
 }
 
 function setup_swipe() {
