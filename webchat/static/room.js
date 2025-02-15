@@ -293,7 +293,19 @@ function overlay_click(ev) {
     lastSwipeDistance = 0;
     return;
   }
-  overlay_close(ev);
+  // detect left 25% and right 25% to go prev and next
+  // and top 25% and bottom 25% to toggle fullscreen and maxpect
+  if (ev.clientX < window.innerWidth / 4) {
+    image_go(-1);
+  } else if (ev.clientX > window.innerWidth * 3 / 4) {
+    image_go(1);
+  } else if (ev.clientY < window.innerHeight / 4) {
+    toggle_fullscreen();
+  } else if (ev.clientY > window.innerHeight * 3 / 4) {
+    toggle_maxpect();
+  } else {
+    overlay_close(ev);
+  }
 }
 
 function handleSwipe() {

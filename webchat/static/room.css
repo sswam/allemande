@@ -11,8 +11,11 @@ div.messages {
 	clear: both;
 }
 .message.me > .label { color: blue; }
-.message > .content, .narrative > .content {
+.message > .content {
 	margin: 0 1em 0 1em;
+}
+.narrative > .content {
+	margin: 0 1em 0 0;
 }
 #allemande_status {
 	position: fixed;

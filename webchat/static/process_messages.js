@@ -31,7 +31,10 @@ function nodeIsMessage(node) {
 }
 
 function getAltText(img) {
-  return img.getAttribute("alt") || "";
+  let alt = img.getAttribute("alt") || "";
+  // strip off prefixed seed like #1234
+  alt = alt.replace(/^#\d+\s*/, "");
+  return alt;
 }
 
 function findMatchingImageMessage(message) {
