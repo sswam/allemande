@@ -87,6 +87,7 @@ rooms.*
 /text/test1b.py
 /text/test2a.py
 /text/test2b.py
+/site/test
 
 # data files for dev
 /image/model.json
