@@ -21,7 +21,7 @@ from_html="$ALLEMANDE_HOME/rooms/$room.html"
 # Check if the source file exists
 if [ ! -f "$from" ]; then
 	echo "No such file: $from" >&2
-	exit 1
+	exit 0
 fi
 
 # Check if the source file is empty
@@ -65,11 +65,11 @@ mv -n "$from" "$to"
 # rm -f "$to_html.orig"
 
 # Create empty source files
-touch "$from"
-touch "$from_html"
+# touch "$from"
+# touch "$from_html"
 
 # Copy ownership and permissions from the rotated files to the new empty files
-chown --reference="$to" "$from"
-chmod --reference="$to" "$from"
-chown --reference="$to_html" "$from_html"
-chmod --reference="$to_html" "$from_html"
+# chown --reference="$to" "$from"
+# chmod --reference="$to" "$from"
+# chown --reference="$to_html" "$from_html"
+# chmod --reference="$to_html" "$from_html"

@@ -136,14 +136,16 @@ def apply_or_remove_adult_options(data: Any, adult: bool) -> Any:
                 del data[k]
 
             data[k] = apply_or_remove_adult_options(v, adult)
-
     elif isinstance(data, list):
         for i, v in enumerate(data):
             data[i] = apply_or_remove_adult_options(v, adult)
         data = [v for v in data if v]
-    elif isinstance(data, str) and not adult:
-        data = remove_nsfw_text(data)
-    elif not isinstance(data, (str, int, float, bool)):
+    elif isinstance(data, str):
+        if not adult:
+            data = remove_nsfw_text(data)
+    elif isinstance(data, (int, float, bool)) or callable(data):
+        pass
+    else:
         logger.warning("Unexpected data type, not checked: %s", type(data))
 
     return data
