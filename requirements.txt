@@ -148,3 +148,5 @@ types-aiofiles
 types-regex
 
 # python-magic
+
+pulsectl
