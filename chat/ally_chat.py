@@ -4,7 +4,6 @@
 
 import os
 import sys
-import time
 import argparse
 import logging
 from math import inf
@@ -23,19 +22,19 @@ from watchfiles import Change
 import yaml
 import regex
 
-import ucm
-import conductor
-import search
-import tab
-import chat
 import agents
+import atail  # type: ignore
+import ucm  # type: ignore
+import conductor
+import search  # type: ignore
+import tab  # type: ignore
+import chat
 import llm
 from ally import portals
-import atail
 from safety import safety
 
 # The last modification time of reloadable modules
-_last_modified = {}
+_last_modified: dict[str, float] = {}
 
 
 def reload_if_modified(module_name):
@@ -107,7 +106,7 @@ DEFAULT_FILE_EXTENSION = "bb"
 
 AGENTS = {}
 
-TOKENIZERS = {}
+TOKENIZERS: dict[str, transformers.AutoTokenizer] = {}
 
 REMOTE_AGENT_RETRIES = 3
 
@@ -646,11 +645,25 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     room = chat.Room(path=Path(file))
 
+    # try to get image seed from response
+    seed = None
+    try:
+        # read result.yaml
+        data = yaml.safe_load((resp / "result.yaml").read_text(encoding="utf-8"))
+        seed = data["seed"]
+    except Exception as e:
+        pass
+
     # look for attachments, other files in resp/ in sorted order
+    # service image_a1111 should return a file name in response
     for resp_file in sorted(resp.iterdir()):
-        if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt"]:
+        if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt", "result.yaml"]:
             continue
-        name, url, medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=fulltext)
+        if seed:
+            text = f"#{seed} {fulltext}"
+        else:
+            text = fulltext
+        name, url, medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=text)
         if response:
             response += f"\n\n"
         response += markdown
