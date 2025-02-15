@@ -292,7 +292,6 @@ function cycle_zoom() {
   } else {
     $overlay.classList.add("maxpect");
   }
-  console.log("cycle_zoom", $overlay.classList);
 }
 
 function setup_overlay_image_cover() {
@@ -312,15 +311,12 @@ function setup_overlay_image_cover() {
     $overlay.classList.add("fit_width");
     $overlay.classList.remove("fit_height");
   }
-  console.log("setup_overlay_image_cover", $currentImg);
-  console.log("classList", $currentImg.classList);
 }
 
 function clear_overlay_image_cover() {
   if (!$currentImg) {
     return;
   }
-  console.log("clear_overlay_image_cover");
   $overlay.classList.remove("fit_width");
   $overlay.classList.remove("fit_height");
 }
@@ -328,7 +324,6 @@ function clear_overlay_image_cover() {
 // image overlay -------------------------------------------------------------
 
 function image_overlay($img) {
-  console.log("image_overlay");
   setup_ids();
   const $img_clone = $img.cloneNode();
   $overlay.innerHTML = "";
@@ -355,7 +350,6 @@ function image_overlay($img) {
 
 function overlay_close(ev) {
   ev.preventDefault();
-  console.log("overlay_close");
   $body.classList.remove("overlay");
   clear_overlay_image_cover();
   $overlay.innerHTML = "";
@@ -372,7 +366,6 @@ function overlay_close(ev) {
 }
 
 function signal_overlay(overlay) {
-  console.log("signal_overlay", overlay);
   window.parent.postMessage({ type: "overlay", overlay: overlay }, CHAT_URL);
 }
 
@@ -430,7 +423,6 @@ function handleSwipe() {
   lastSwipeDistance = Math.hypot(touchEndX - touchStartX, touchEndY - touchStartY);
 	const swipeDistanceX = touchEndX - touchStartX;
   const swipeDistanceY = touchEndY - touchStartY;
-  console.log("handleSwipe", swipeDistanceX, swipeDistanceY);
 
 	// Check if the swipe distance is significant enough
   if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)) {
@@ -465,7 +457,6 @@ function touch_start(e) {
     return;
   }
   e.preventDefault();
-  console.log("touch_start");
   if (e.touches) {
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
@@ -481,7 +472,6 @@ function touch_end(e) {
     return;
   }
   e.preventDefault();
-  console.log("touch_end");
   if (e.changedTouches) {
     touchEndX = e.changedTouches[0].clientX;
     touchEndY = e.changedTouches[0].clientY;
@@ -499,7 +489,6 @@ function touch_move(e) {
     touchStartX = touchStartY = null;
     return;
   }
-  console.log("touchmove");
   e.preventDefault();
   if (touchStartX === null) {
     return;
@@ -522,7 +511,6 @@ function touch_move(e) {
 
 function setup_swipe() {
   // Add touch event listeners
-  console.log("setup_swipe");
   $overlay.addEventListener('touchstart', touch_start);
   $overlay.addEventListener('touchmove', touch_move, { passive: false });
   $overlay.addEventListener('touchend', touch_end);
