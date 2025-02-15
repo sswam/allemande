@@ -1,0 +1,22 @@
+I am developing Ally Chat, an innovative AI app.
+
+- multi-AI: chat rooms can include several different AI characters
+- multi-user: several users can chat in the same chat room
+- fast switching: create rooms and switch between rooms in a moment
+
+- I believe in open source and equity: all features are open source, all features are free to use
+- I believe in free-speech, and do not implement any censorship or monitoring
+- four strong models from Anthropic and Open AI: Claude 3.5 Sonnet & Haiku, GPT-4o & mini
+- a focus on illustrated interactive fiction and role playing games; also suitable for general use
+- a diverse set of 25 characters based on Llama 3.1 8B: 12 female, 12 male, 1 pirate!  all can be illustrated
+- image gen with SDXL and PonyXL-based models, including LoRAs, hi-res fix, adetailer, PAG
+- chat stored in text files, supports markdown, TeX math, and full HTML, including images, videos, etc
+- special agents for search, image gen, code execution, 
+- LLM agents for image prompts, summary, narrative, brainstorm, characters, scenery, plot, GM
+- I accept donations to cover expenses and help fund development, there are some minor perks
+
+Although the app is open-source, it's early days. There are many important features that are not complete yet. Installing on your own system would not be straightforward. I might be able to assist if you really want to do that. 
+
+I'm looking for people to help beta test the app on my server, i.e. try it, hopefully keep using it, suggest ideas, and tell me when it breaks. Please let me know if you're interested.
+
+Here's a small example of a chat, showing some features. Emmy is GPT 4o. Ally is a Llama-based character.

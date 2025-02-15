@@ -1,0 +1,13 @@
+**Seeking Beta Testers for Ally Chat - A New Open Source AI Chat App**
+
+- Multiple AI characters and users in shared chat rooms
+- Fast room creation and switching
+- Powered by Llama, Claude 3.5 and GPT-4
+- 25 custom AI characters and agents, with illustrations
+- Image generation with SDXL / Pony
+- Support for interactive fiction and RPGs
+- Completely free to use, with no censorship; donations accepted
+
+The app is in early development and hosted on my server. Looking for beta testers to try it out, provide feedback, and report issues.
+
+Would you like to help test Ally Chat? Comment below if interested.

@@ -1,0 +1,11 @@
+- Multiple AI characters and users in shared chat rooms
+- Fast room creation and switching
+- Powered by Llama 3.1 8B, Claude 3.5 and GPT-4o
+- 25 custom AI characters and agents, with illustrations
+- Image generation with SDXL / Pony
+- Interactive fiction and RPGs, markdown, full HTML, TeX math
+- Completely free to use, no censorship, donations and help welcome
+
+The app is in early development, hosted on my server. Looking for beta testers to try it out, provide feedback, and report issues.
+
+Would you like to help test Ally Chat? Comment below if interested.
