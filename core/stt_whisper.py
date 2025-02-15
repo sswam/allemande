@@ -9,7 +9,6 @@ from pathlib import Path
 from functools import partial
 from types import SimpleNamespace
 
-import argh
 import inotify.adapters
 import torch
 import yaml
@@ -21,32 +20,20 @@ import transformers
 
 from ally import main, filer, logs, unix, util
 
-logger = logs.getLogger()
+logger = logs.get_logger()
 
 
 prog = main.prog_info()
 
-ports_dir = Path(os.environ["ALLEMANDE_PORTALS"])/prog.name
+portals_dir = Path(os.environ["ALLEMANDE_PORTALS"])/prog.name
+
 
 def gen(config, audio_file, *_args, model=None, **_kwargs):
     """ Transcribe text from an audio file. """
 
-    language = config.get("language", "en")
-
-#    np_audio = np.frombuffer(audio.get_raw_data(), np.int16)
-#    np_audio = np_audio.flatten().astype(np.float32) / 32768.0
-#    torch_audio = torch.from_numpy(np_audio)
+    language = config.get("language", None)
 
     result = model.transcribe(str(audio_file), language=language)
-
-    text = text.strip()
-
-
-    # check confidence level
-    segs = result["segments"]
-    no_speech_prob = sum(x["no_speech_prob"] for x in segs) / (len(segs) or 1)
-    result["confidence"] = 1 - no_speech_prob
-    result["confident"] = result["confidence"] >= config.get("confidence_threshold", 0.8)
 
     response = {
         "text.txt": result["text"],
@@ -56,13 +43,13 @@ def gen(config, audio_file, *_args, model=None, **_kwargs):
     return response
 
 
-def load(ports, d, filename):
+def load(portals, d, filename):
     """ Load a file from a directory or above """
     while True:
         f = d/filename
         if f.exists():
             return f.read_text(encoding="utf-8")
-        if d == ports:
+        if d == portals:
             break
         p = d.parent
         if p == d:
@@ -74,7 +61,7 @@ def load(ports, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
-def process_request(ports, port, req, fn, *args, **kwargs):
+def process_request(portals, port, req, fn, *args, **kwargs):
     """ Process a request on a port """
     port = Path(port)
     logger.info("%s:%s - processing", port, req)
@@ -85,7 +72,7 @@ def process_request(ports, port, req, fn, *args, **kwargs):
         log_handler = logging.FileHandler(d/"log.txt")
         logger.addHandler(log_handler)
 
-        config = yaml.safe_load(load(ports, d, "config.yaml"))
+        config = yaml.safe_load(load(portals, d, "config.yaml"))
         request = d/"request.aud"
         response = fn(config, request, *args, **kwargs)
         for k, v in response.items():
@@ -105,61 +92,40 @@ def process_request(ports, port, req, fn, *args, **kwargs):
             logger.removeHandler(log_handler)
 
 
-#def port_setup(port):
-#    """ Set up a port """
-#    for box in ("prep", "todo", "doing", "done", "error", "history"):
-#        (port/box).mkdir(exist_ok=True)
-
-
-def serve_requests(ports, fn):
+def serve_requests(portals: str, model: str = "medium.en", poll_interval: float = 0.1):
     """ Serve requests from a directory of directories """
-    logger.info("serving requests from %s", ports)
-    i = inotify.adapters.Inotify()
-    for port in Path(ports).iterdir():
-        if not port.is_dir():
-            continue
-        # port_setup(port)
-        todo = port/"todo"
-        logger.info("watching %s", todo)
-        i.add_watch(str(todo), mask=inotify.constants.IN_CREATE | inotify.constants.IN_MOVED_TO)
-    for port in Path(ports).iterdir():
-        if not port.is_dir():
-            continue
-        todo = port/"todo"
-        for req in todo.iterdir():
-            if not req.is_dir():
-                continue
-            process_request(ports, port, req.name, fn)
-    for event in i.event_gen(yield_nones=False):
-        (_, type_names, path, filename) = event
-        logger.debug("PATH=[%r] FILENAME=[%r] EVENT_TYPES=%r", path, filename, type_names)
-        port = Path(path).parent
-        process_request(ports, port, filename, fn)
-
-
-def setup_logging(verbose, debug):
-    """ Setup logging """
-    log_level = logging.WARNING
-    fmt = "%(message)s"
-    if debug:
-        log_level = logging.DEBUG
-        fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
-    elif verbose:
-        log_level = logging.INFO
-    logging.basicConfig(level=log_level, format=fmt)
-
-
-def main(ports=str(ports_dir), model="medium.en", verbose=False, debug=False):
-    """ main function """
-    setup_logging(verbose, debug)
-    the_model = whisper.load_model(model) if model else None
+    the_model = whisper.load_model(model)
     fn = partial(gen, model=the_model)
-    serve_requests(ports, fn)
+
+    logger.info("serving requests from %s", portals)
+
+    known_requests = find_todo_requests(portals)
+    for portal, req in known_requests:
+        logger.debug("Initial request detected: %s in %s", req, portal)
+        await process_request(portals, portal, req, fn)
+
+    known_requests_set = set(known_requests)
+
+    while True:
+        new_requests = find_todo_requests(portals)
+        for portal, req_name in new_requests:
+            if (portal, req_name) in known_requests_set:
+                continue
+            logger.debug("New request detected: %s in %s", req_name, portal)
+            await process_request(portals, portal, req_name, fn)
+
+        known_requests_set = set(new_requests)
+
+        # Wait before next poll
+        await asyncio.sleep(poll_interval)
+
+
+def setup_args(arg):
+    """Set up the command-line arguments"""
+    arg("-p", "--portals", help="Directory of portals")
+    arg("-i", "--poll-interval", type=float, help="Polling interval in seconds")
+    arg("-m", "--model", help="Model to use")
 
 
 if __name__ == "__main__":
-    try:
-        argh.dispatch_command(main)
-    except KeyboardInterrupt:
-        logger.info("interrupted")
-        sys.exit(1)
+    main.go(serve_requests, setup_args)

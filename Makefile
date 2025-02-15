@@ -91,7 +91,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt a1111.xt # whisper.xt
+core: llm.xt a1111.xt whisper.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -115,7 +115,7 @@ alfred:
 	cd $(ALLEMANDE_HOME)/apps/alfred && \
 	./alfred-webui.py
 
-core.xtc: llm.xtc a1111.xtx # whisper.xtc
+core.xtc: llm.xtc a1111.xtx whisper.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
