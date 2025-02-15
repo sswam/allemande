@@ -1,0 +1,26 @@
+[choose]
+	red
+	orange
+	yellow
+	green
+	blue
+	violet
+	pink
+	aqua
+	white
+	black
+	grey
+	brown
+	gold
+	silver
+	copper
+	light orange
+	light yellow
+	light green
+	light blue
+	light violet
+	light pink
+	light aqua
+	light grey
+	light brown
+[/choose]

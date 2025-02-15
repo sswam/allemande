@@ -1,0 +1,16 @@
+[set n] [random _min=1 _max=6] [/set]
+[choose n]
+	red
+	orange
+	yellow
+	green
+	blue
+	violet
+	white
+	black
+	grey
+	brown
+	gold
+	silver
+	copper
+[/choose]
