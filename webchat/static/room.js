@@ -175,7 +175,7 @@ function key_event_overlay(ev) {
   } else if (ev.key == "f") {
     toggle_fullscreen();
   } else if (ev.key == "m") {
-    toggle_maxpect();
+    cycle_zoom();
   } else if (ev.key == "ArrowLeft" || ev.key == "Backspace") {
     image_go(-1);
   } else if (ev.key == "ArrowRight" || ev.key == " ") {
@@ -197,6 +197,31 @@ function key_event_overlay(ev) {
 function setup_keyboard_shortcuts() {
   $on(document, "keypress", key_event);
   $on(document, "keydown", key_event);
+}
+
+// hooks ---------------------------------------------------------------------
+
+let hooks = {};
+
+function add_hook(name, func) {
+  if (!hooks[name])
+    hooks[name] = [];
+  if (!hooks[name].includes(func))
+    hooks[name].push(func);
+}
+
+function remove_hook(name, func) {
+  if (!hooks[name])
+    return;
+  hooks[name] = hooks[name].filter((f) => f !== func);
+}
+
+function run_hook(name, ...args) {
+  if (!hooks[name])
+    return;
+  for (const func of hooks[name]) {
+    func(...args);
+  }
 }
 
 // embeds --------------------------------------------------------------------
@@ -222,6 +247,8 @@ function embed_click($thumb) {
   $embed.replaceChild($node.firstChild, $thumb);
   $node.remove();
 }
+
+// fullscreen ----------------------------------------------------------------
 
 function is_fullscreen() {
   return document.fullscreenElement;
@@ -251,12 +278,102 @@ function toggle_fullscreen() {
   }
 }
 
-function toggle_maxpect() {
+// image zoom ----------------------------------------------------------------
+
+function cycle_zoom() {
+  // fit -> cover -> maxpect
   if ($overlay.classList.contains("maxpect")) {
     $overlay.classList.remove("maxpect");
+    $overlay.classList.add("cover");
+    setup_overlay_image_cover();
+  } else if ($overlay.classList.contains("cover")) {
+    clear_overlay_image_cover();
+    $overlay.classList.remove("cover");
   } else {
     $overlay.classList.add("maxpect");
   }
+  console.log("cycle_zoom", $overlay.classList);
+}
+
+function setup_overlay_image_cover() {
+  if (!$currentImg) {
+    return;
+  }
+  if (!$overlay.classList.contains("cover")) {
+    return;
+  }
+  const container = $overlay.getBoundingClientRect();
+  const image_aspect = $currentImg.naturalWidth / $currentImg.naturalHeight;
+  const container_aspect = container.width / container.height;
+  if (image_aspect > container_aspect) {
+    $overlay.classList.add("fit_height");
+    $overlay.classList.remove("fit_width");
+  } else {
+    $overlay.classList.add("fit_width");
+    $overlay.classList.remove("fit_height");
+  }
+  console.log("setup_overlay_image_cover", $currentImg);
+  console.log("classList", $currentImg.classList);
+}
+
+function clear_overlay_image_cover() {
+  if (!$currentImg) {
+    return;
+  }
+  console.log("clear_overlay_image_cover");
+  $overlay.classList.remove("fit_width");
+  $overlay.classList.remove("fit_height");
+}
+
+// image overlay -------------------------------------------------------------
+
+function image_overlay($img) {
+  console.log("image_overlay");
+  setup_ids();
+  const $img_clone = $img.cloneNode();
+  $overlay.innerHTML = "";
+  $overlay.appendChild($img_clone);
+  $body.classList.add("overlay");
+  overlay_mode = true;
+  signal_overlay(true);
+
+  // Get all images and current image index
+  allImages = Array.from($messages.getElementsByTagName("IMG"));
+  $currentImg = $img;
+  currentImgIndex = allImages.indexOf($img);
+
+  // focus the overlay, for keyboard scrolling
+  $overlay.focus();
+
+  if (overlay_fullscreen) {
+    go_fullscreen();
+  }
+
+  add_hook("resize", setup_overlay_image_cover);
+  setup_overlay_image_cover();
+}
+
+function overlay_close(ev) {
+  ev.preventDefault();
+  console.log("overlay_close");
+  $body.classList.remove("overlay");
+  clear_overlay_image_cover();
+  $overlay.innerHTML = "";
+  exit_fullscreen();
+  overlay_mode = false;
+  signal_overlay(false);
+
+  // Reset current image index
+  allImages = null;
+  $currentImg = null;
+  $currentImgIndex = null;
+
+  remove_hook("resize", setup_overlay_image_cover);
+}
+
+function signal_overlay(overlay) {
+  console.log("signal_overlay", overlay);
+  window.parent.postMessage({ type: "overlay", overlay: overlay }, CHAT_URL);
 }
 
 function image_go(delta) {
@@ -276,7 +393,28 @@ function image_go_to(index) {
   $img.src = $currentImg.src;
 }
 
-// Swipe gesture handling
+function overlay_click(ev) {
+  if (lastSwipeDistance > maxClickDistance) {
+    lastSwipeDistance = 0;
+    return;
+  }
+  // detect left 25% and right 25% to go prev and next
+  // and top 25% and bottom 25% to toggle fullscreen and cycle zoom
+  const container = $overlay.getBoundingClientRect();
+  if (ev.clientX < container.width / 4) {
+    image_go(-1);
+  } else if (ev.clientX > container.width * 3 / 4) {
+    image_go(1);
+  } else if (ev.clientY < container.height / 4) {
+    toggle_fullscreen();
+  } else if (ev.clientY > container.height * 3 / 4) {
+    cycle_zoom();
+  } else {
+    overlay_close(ev);
+  }
+}
+
+// Swipe gesture handling ----------------------------------------------------
 
 let touchStartX = null;
 let touchEndX = null;
@@ -287,26 +425,6 @@ let maxClickDistance = 10;
 
 // Minimum distance for a swipe (in pixels)
 const minSwipeDistance = 50;
-
-function overlay_click(ev) {
-  if (lastSwipeDistance > maxClickDistance) {
-    lastSwipeDistance = 0;
-    return;
-  }
-  // detect left 25% and right 25% to go prev and next
-  // and top 25% and bottom 25% to toggle fullscreen and maxpect
-  if (ev.clientX < window.innerWidth / 4) {
-    image_go(-1);
-  } else if (ev.clientX > window.innerWidth * 3 / 4) {
-    image_go(1);
-  } else if (ev.clientY < window.innerHeight / 4) {
-    toggle_fullscreen();
-  } else if (ev.clientY > window.innerHeight * 3 / 4) {
-    toggle_maxpect();
-  } else {
-    overlay_close(ev);
-  }
-}
 
 function handleSwipe() {
   lastSwipeDistance = Math.hypot(touchEndX - touchStartX, touchEndY - touchStartY);
@@ -329,7 +447,7 @@ function handleSwipe() {
     if (Math.abs(swipeDistanceY) >= minSwipeDistance) {
       if (swipeDistanceY > 0) {
         // Down swipe
-        toggle_maxpect();
+        cycle_zoom();
       } else {
         // Up swipe
         toggle_fullscreen();
@@ -415,48 +533,7 @@ function setup_swipe() {
   $overlay.addEventListener('mouseleave', touch_end);
 }
 
-function image_overlay($img) {
-  console.log("image_overlay");
-  setup_ids();
-  const $img_clone = $img.cloneNode();
-  $overlay.innerHTML = "";
-  $overlay.appendChild($img_clone);
-  $body.classList.add("overlay");
-  overlay_mode = true;
-  signal_overlay(true);
-
-  // Get all images and current image index
-  allImages = Array.from($messages.getElementsByTagName("IMG"));
-  $currentImg = $img;
-  currentImgIndex = allImages.indexOf($img);
-
-  // focus the overlay, for keyboard scrolling
-  $overlay.focus();
-
-  if (overlay_fullscreen) {
-    go_fullscreen();
-  }
-}
-
-function overlay_close(ev) {
-  ev.preventDefault();
-  console.log("overlay_close");
-  $body.classList.remove("overlay");
-  $overlay.innerHTML = "";
-  exit_fullscreen();
-  overlay_mode = false;
-  signal_overlay(false);
-
-  // Reset current image index
-  allImages = null;
-  $currentImg = null;
-  $currentImgIndex = null;
-}
-
-function signal_overlay(overlay) {
-  console.log("signal_overlay", overlay);
-  window.parent.postMessage({ type: "overlay", overlay: overlay }, CHAT_URL);
-}
+// ---------------------------------------------------------------------------
 
 function image_click($img, ev) {
   // check if in overlay
@@ -505,5 +582,6 @@ function notify_new_message(newMessage) {
 
 $on(document, "click", click);
 $on(document, "auxclick", click);
+$on(window, "resize", () => run_hook("resize"));
 
 setup_keyboard_shortcuts();
