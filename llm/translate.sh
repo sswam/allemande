@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# [options] [target.ext1 source.ext2] [reference files ...]
+# [options] [source.ext1 target.ext2] [reference files ...]
 # Translates content from one format to another
 
 translate() {
