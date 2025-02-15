@@ -1,1 +1,1 @@
-new-characters/nixie_clothes.txt
+/home/sam/my/enc/prompts/templates/nixie_clothes.txt
