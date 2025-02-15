@@ -46,7 +46,7 @@ async def whoami(request):
     if room:
         room = chat.sanitize_pathname(room)
     # TODO moderator status might depend on the room
-    user = request.headers.get("X-Forwarded-User", "guest")
+    user = request.headers["X-Forwarded-User"]
     admin = user in chat.ADMINS
     mod = admin
     return JSONResponse({"user": user, "room": room, "admin": admin, "mod": mod})
@@ -69,16 +69,22 @@ async def post(request):
     return JSONResponse({})
 
 
-@app.route("/x/put", methods=["PUT"])
-async def put_file(request):
+@app.route("/x/put/{path:path}", methods=["PUT"])
+async def put_file(request, path=""):
     """Edit a file in the room if user has admin access."""
-    form = await request.form()
-    file = form["file"]
-    content = form["content"]
     user = request.headers["X-Forwarded-User"]
 
     try:
-        chat.overwrite_file(user, file, content)
+        path = request.path_params["path"]
+    except Exception as exc:
+        logger.warning("Invalid path: %s", exc)
+        raise
+
+    content = await request.body()
+    content = content.decode()
+
+    try:
+        await chat.overwrite_file(user, path, content, delay=0.1)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({"status": "success"})

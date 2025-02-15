@@ -314,7 +314,7 @@ async def stream(request, path=""):
     """Stream a file to the browser, like tail -f"""
     global templates  # pylint: disable=global-statement, global-variable-not-assigned
 
-    user = request.headers.get("X-Forwarded-User", "guest")
+    user = request.headers["X-Forwarded-User"]
 
     try:
         pathname = request.path_params["path"]
