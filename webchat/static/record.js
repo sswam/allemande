@@ -186,12 +186,13 @@ async function handleRecording(includeVideo = false) {
             // Send the recording to the server
             const fileName = includeVideo ? `${user}_video.webm` : `${user}_audio.webm`;
             active_set(save_button);
-            await add_upload_file_link(upload_file(mediaBlob, fileName, true));
+            if (!await add_upload_file_link(upload_file(mediaBlob, fileName, true)))
+                await error(save_button);
             active_reset(save_button);
         }
 
-    } catch (error) {
-        console.error('Recording error:', error);
+    } catch (err) {
+        console.error('Recording error:', err);
     }
 
     set_timer(0);

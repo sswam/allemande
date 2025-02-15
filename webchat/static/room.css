@@ -7,11 +7,11 @@ div.messages {
 	font-weight: bold;
 	float: left;
 }
-.message {
+.message, .narrative {
 	clear: both;
 }
 .message.me > .label { color: blue; }
-.message > .content {
+.message > .content, .narrative > .content {
 	margin: 0 1em 0 1em;
 }
 #allemande_status {
@@ -25,7 +25,8 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin-bottom: 0.75rem;
 }
 
-.message img, .message video, .message audio, .message iframe {
+.message img, .message video, .message audio, .message iframe,
+.narrative img, .narrative video, .narrative audio, .narrative iframe {
 	vertical-align: top;
 	margin: 6px 4px;
 	max-width: min(40vw, 40vh);

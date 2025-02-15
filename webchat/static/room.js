@@ -276,6 +276,133 @@ function image_go_to(index) {
   $img.src = $currentImg.src;
 }
 
+// Swipe gesture handling
+
+let touchStartX = null;
+let touchEndX = null;
+let touchStartY = null;
+let touchEndY = null;
+let lastSwipeDistance = 0;
+let maxClickDistance = 10;
+
+// Minimum distance for a swipe (in pixels)
+const minSwipeDistance = 50;
+
+function overlay_click(ev) {
+  if (lastSwipeDistance > maxClickDistance) {
+    lastSwipeDistance = 0;
+    return;
+  }
+  overlay_close(ev);
+}
+
+function handleSwipe() {
+  lastSwipeDistance = Math.hypot(touchEndX - touchStartX, touchEndY - touchStartY);
+	const swipeDistanceX = touchEndX - touchStartX;
+  const swipeDistanceY = touchEndY - touchStartY;
+  console.log("handleSwipe", swipeDistanceX, swipeDistanceY);
+
+	// Check if the swipe distance is significant enough
+  if (Math.abs(swipeDistanceX) > Math.abs(swipeDistanceY)) {
+  	if (Math.abs(swipeDistanceX) >= minSwipeDistance) {
+  		if (swipeDistanceX > 0) {
+  			// Right swipe
+  			image_go(-1);
+  		} else {
+  			// Left swipe
+  			image_go(1);
+  		}
+  	}
+  } else {
+    if (Math.abs(swipeDistanceY) >= minSwipeDistance) {
+      if (swipeDistanceY > 0) {
+        // Down swipe
+        toggle_maxpect();
+      } else {
+        // Up swipe
+        toggle_fullscreen();
+      }
+    }
+  }
+
+  const $img_clone = $overlay.querySelector("img");
+  $img_clone.style.transform = "";
+}
+
+function touch_start(e) {
+  if (e.touches && e.touches.length == 1) {
+    touchStartX = touchStartY = null;
+    return;
+  }
+  e.preventDefault();
+  console.log("touch_start");
+  if (e.touches) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  } else {
+    touchStartX = e.clientX;
+    touchStartY = e.clientY;
+  }
+}
+
+function touch_end(e) {
+  if (touchStartX === null) {
+    touchStartX = touchStartY = null;
+    return;
+  }
+  e.preventDefault();
+  console.log("touch_end");
+  if (e.changedTouches) {
+    touchEndX = e.changedTouches[0].clientX;
+    touchEndY = e.changedTouches[0].clientY;
+  } else {
+    touchEndX = e.clientX;
+    touchEndY = e.clientY;
+  }
+  handleSwipe();
+  touchStartX = touchStartY = null;
+  touchEndX = touchEndY = null;
+}
+
+function touch_move(e) {
+  if (touchStartX === null) {
+    touchStartX = touchStartY = null;
+    return;
+  }
+  console.log("touchmove");
+  e.preventDefault();
+  if (touchStartX === null) {
+    return;
+  }
+	let currentX, currentY;
+  if (e.touches) {
+    currentX = e.touches[0].clientX;
+    currentY = e.touches[0].clientY;
+  } else {
+    currentX = e.clientX;
+    currentY = e.clientY;
+  }
+	const differenceX = currentX - touchStartX;
+  const differenceY = currentY - touchStartY;
+
+  // offset the image by the swipe distance
+  const $img_clone = $overlay.querySelector("img");
+  $img_clone.style.transform = `translate(${differenceX}px, ${differenceY/4}px)`;
+}
+
+function setup_swipe() {
+  // Add touch event listeners
+  console.log("setup_swipe");
+  $overlay.addEventListener('touchstart', touch_start);
+  $overlay.addEventListener('touchmove', touch_move, { passive: false });
+  $overlay.addEventListener('touchend', touch_end);
+  // For desktop dragging also
+  $overlay.addEventListener('mousedown', touch_start);
+  $overlay.addEventListener('mousemove', touch_move);
+  $overlay.addEventListener('mouseup', touch_end);
+  $overlay.addEventListener('mouseleave', touch_end);
+}
+
 function image_overlay($img) {
   console.log("image_overlay");
   setup_ids();
@@ -355,7 +482,8 @@ function setup_ids() {
   $body = $("body");
   $messages = $("div.messages");
   $overlay = $("div.overlay");
-  $on($overlay, "click", overlay_close);
+  $on($overlay, "click", overlay_click);
+  setup_swipe();
 }
 
 function notify_new_message(newMessage) {

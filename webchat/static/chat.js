@@ -15,6 +15,7 @@ const $form = $id("form");
 const $title = $("title");
 const $inputrow = $id("inputrow");
 const $edit = $id("view_edit");
+const $auto = $id('mod_auto');
 
 let VERSION;
 let DEBUG = true;
@@ -23,11 +24,15 @@ let room;
 let user;
 let admin = false;
 let dev = false;
+let controls = "input_main";
+let view = "messages";
+
+const ADMIN = "admin";
 
 // keyboard shortcuts --------------------------------------------------------
 
 const SHORTCUTS_GLOBAL = shortcuts_to_dict([
-  ['Escape', change_room, 'Change room'],
+  ['Escape', escape, 'Go back, change or leave room'],
   ['ctrl+;', change_room, 'Change room'],
   ["ctrl+'", room_clear_number, "Clear room number"],
   ['ctrl+.', room_next, 'Go to next room'],
@@ -38,13 +43,15 @@ const SHORTCUTS_GLOBAL = shortcuts_to_dict([
 const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['ctrl+Enter', send, 'Send message'],
   ['alt+s', send, 'Send message'],
-  ['alt+z', undo, 'Undo last action'],
-  ['alt+r', retry, 'Retry last action'],
   ['alt+t', content_insert_tab, 'Insert tab'],
   ['alt+x', clear_content, 'Clear content'],
-  ['alt+c', clear_chat, 'Clear messages'],
-  ['alt+a', archive_chat, 'Archive chat'],
   ['alt+u', browse_up, 'Browse up'],
+
+  ['alt+z', undo, 'Undo last action', ADMIN],
+  ['alt+r', retry, 'Retry last action', ADMIN],
+  ['alt+c', clear_chat, 'Clear messages', ADMIN],
+  ['alt+a', archive_chat, 'Archive chat', ADMIN],
+  ['alt+e', () => edit(), 'Edit file', ADMIN],
 ]);
 
 const SHORTCUTS_ROOM = shortcuts_to_dict([
@@ -55,6 +62,7 @@ const SHORTCUTS_EDIT = shortcuts_to_dict([
   ['alt+t', edit_insert_tab, 'Insert tab'],
   ['Escape', edit_close, 'Close edit'],
   ['ctrl+s', edit_save, 'Save edit'],
+  ['ctrl+Enter', edit_save_and_close, 'Save edit and close'],
   ['alt+Z', edit_reset, 'Reset edit'],
   ['alt+X', edit_clear, 'Clear edit'],
 ]);
@@ -138,8 +146,8 @@ async function send(ev) {
 
   try {
     await send_form_data(formData);
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     set_content(message);
     error("send");
   }
@@ -275,6 +283,13 @@ function set_room(r) {
     r = $room.value;
   }
   $room.value = r;
+
+  // edit mode
+  if (view === "view_edit") {
+    editor_file = r + ".bb";
+    editor_text_orig = null;
+  }
+
   clear_messages_box();
   room = r;
   set_title_hash(room); // okay above the if?
@@ -289,7 +304,9 @@ function set_room(r) {
   messages_iframe_set_src(room_stream_url);
   setup_user_button();
   setup_admin();
-  reset_controls();
+
+  if (view !== "view_edit")
+    reset_ui();
 }
 
 function browse_up(ev) {
@@ -378,6 +395,15 @@ function change_room() {
   return false;
 }
 
+function escape() {
+  if (controls !== "input_main") {
+    set_controls();
+    set_view();
+  } else {
+    change_room();
+  }
+}
+
 // room numbers --------------------------------------------------------------
 
 function room_set_number(n) {
@@ -444,8 +470,8 @@ function edit_insert_tab() {
 
 function shortcuts_to_dict(shortcuts) {
   const dict = {};
-  for (const [key, fn, desc] of shortcuts) {
-    dict[key] = { fn, desc };
+  for (const [key, fn, desc, admin] of shortcuts) {
+    dict[key] = { fn, desc, admin };
   }
   return dict;
 }
@@ -460,6 +486,10 @@ function dispatch_shortcut(ev, shortcuts) {
   ].join('');
 
   const shortcut = shortcuts[key] || shortcuts[ev.key];
+
+  if (shortcut?.admin && !admin) {
+    return false;
+  }
 
   if (shortcut) {
     ev.preventDefault();
@@ -673,13 +703,18 @@ async function upload_files(files, to_text) {
 
   // but we insert the links in order
   for (const promise of promises) {
-    await add_upload_file_link(promise);
+    if (!await add_upload_file_link(promise)) {
+      await error("add_file");
+    }
     active_dec("add_file");
   }
 }
 
 async function add_upload_file_link(promise) {
-  const { name, url, medium, markdown } = await promise;
+  const data = await promise;
+  if (!data)
+    return false;
+  const { name, url, medium, markdown } = data;
 
   if (/\S$/.test($content.value)) {
     $content.value += " ";
@@ -687,6 +722,7 @@ async function add_upload_file_link(promise) {
 
   $content.value += markdown;
   message_changed();
+  return true;
 }
 
 async function upload_file(file, filename, to_text) {
@@ -702,8 +738,7 @@ async function upload_file(file, filename, to_text) {
   });
 
   if (!response.ok) {
-    // flash the attach button red
-    return await error("attach");
+    return null;
   }
 
   const data = await response.json();
@@ -729,9 +764,9 @@ async function clear_chat(ev, op) {
 
   let confirm_message = "";
   if (op === "clear")
-    confirm_message = "Clear the chat?\nThis cannot be undone.";
+    confirm_message = "Clear the chat?";
   else if (op === "rotate")
-    confirm_message = "Save and clear the first have of the chat?";
+    confirm_message = "Save and clear the first half of the chat?";
   else if (op === "archive")
     confirm_message = "Save and clear the chat?";
   else
@@ -746,7 +781,7 @@ async function clear_chat(ev, op) {
 
   const my_error = async (error_message) => {
     console.error(error_message);
-    await error(op);
+    await error(`mod_${op}`);
   };
 
   const response = await fetch("/x/clear", {
@@ -771,11 +806,11 @@ async function clear_chat(ev, op) {
 }
 
 async function archive_chat(ev) {
-  await clear(ev, "archive");
+  await clear_chat(ev, "archive");
 }
 
 async function rotate_chat(ev) {
-  await clear(ev, "rotate");
+  await clear_chat(ev, "rotate");
 }
 
 async function undo_last_message(room) {
@@ -808,8 +843,8 @@ async function undo(ev) {
     await undo_last_message(room);
     // TODO should clear immediately for other users too, not just the current user
     // reload_messages();
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     await error("mod_undo");
   }
 }
@@ -819,8 +854,8 @@ async function retry(ev) {
     await undo(ev);
     await $wait(100);
     await poke();
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     await error("retry");
   }
 }
@@ -828,14 +863,20 @@ async function retry(ev) {
 // input controls ------------------------------------------------------------
 
 function set_controls(id) {
-  const $el = $id(id || "input_main");
+  id = id || "input_main";
+  const $el = $id(id);
   if ($el.classList.contains("hidden")) {
     hide($("#inputrow > .controls:not(.hidden)"));
     show($id(id || "input_main"));
   }
+  console.log("set_controls", id);
+  if (id === "input_main") {
+    setTimeout(() => $content.focus(), 1);
+  }
+  controls = id;
 }
 
-function reset_controls() {
+function reset_ui() {
   set_controls();
   set_view();
   active_reset("send");
@@ -862,42 +903,44 @@ function fmt_duration(seconds) {
 }
 
 function set_auto_play(delta) {
-  stop_auto_play(); // Clear any existing timer first
+  if (auto_play_interval_timer)
+    clearInterval(auto_play_interval_timer);
   const max = auto_play_interval_options.length - 1;
   active_add("mod_auto", delta, max);
   auto_play_interval = auto_play_interval_options[active_get("mod_auto")];
-  if (!auto_play_interval)
-    return;
+  if (!auto_play_interval) {
+    return stop_auto_play();
+  }
   auto_play_interval_timer = setInterval(poke, auto_play_interval * 1000);
   $auto.textContent = fmt_duration(auto_play_interval);
 }
 
 function stop_auto_play() {
-  if (!auto_play_interval) return;
-  active_dec("mod_auto");
+  if (auto_play_interval_timer)
+    clearInterval(auto_play_interval_timer);
   auto_play_interval = null;
   auto_play_interval_timer = null;
-  clearInterval(auto_play_interval_timer);
   $auto.textContent = "auto";
+  active_set("mod_auto", 0);
 }
 
 function auto_play(ev) {
   if (auto_play_interval && ev.shiftKey) {
-    start_auto_play(1);
+    set_auto_play(1);
   } else if (auto_play_interval && ev.ctrlKey) {
-    start_auto_play(-1);
+    set_auto_play(-1);
   } else if (auto_play_interval) {
     stop_auto_play();
   } else {
     poke();
-    start_auto_play(3);
+    set_auto_play(3);
   }
 }
 
 function auto_play_back_off() {
   // If auto-play is active, reset its timer
   if (auto_play_interval) {
-    start_auto_play();
+    set_auto_play(0);
   }
 }
 
@@ -989,19 +1032,25 @@ async function put_file(file, text) {
     body: text,
   });
   if (!response.ok) {
-    return await edit_save_error();
+    throw new Error("PUT request failed: " + file);
   }
-  return true;
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(data.error);
+  }
+  return data;
 }
 
 // TODO edit tabular data in a table, not as plain text
 
-function set_view(view) {
-  const $el = $id(view || "messages");
+function set_view(id) {
+  id = id || "messages";
+  const $el = $id(id);
   if ($el.classList.contains("hidden")) {
     hide($(".view:not(.hidden)"));
-    show($id(view || "messages"))
+    show($id(id));
   }
+  view = id;
 }
 
 let editor_file;
@@ -1025,38 +1074,53 @@ async function edit(file) {
 
   try {
     check_ok_to_edit(file);
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    console.error(err.message);
     return await error("mod_edit");
   }
 
-  editor_file = file;
+  editor_file = editor_file_orig = file;
   try {
     editor_text_orig = await fetch_file(file);
-  } catch (error) {
-    console.error(error.message);
-    return await error("mod_edit");
+  } catch (err) {
+    editor_text_orig = "";
+    console.error(err.message);
+    await error("mod_edit");
   }
 
   edit_set_text(editor_text_orig);
   set_view("view_edit");
   set_controls("input_edit");
+  $edit.focus();
+  // set caret at end
+  $edit.selectionStart = $edit.selectionEnd = $edit.value.length;
 }
 
-// TODO show file name in room field, and allow changing it
-
 async function edit_save() {
-  if (edit_get_text() === editor_text_orig) {
+  // TODO get editor_file from room name
+  if (!editor_file || edit_get_text() === editor_text_orig) {
     error("edit_save");
-    return;
+    return false;
   }
 
   active_inc("edit_save");
 
-  await put_file(file, editor_text);
-  editor_text_orig = editor_text;
+  try {
+    await put_file(editor_file, editor_text);
+    editor_text_orig = editor_text;
+  } catch (err) {
+    console.error(err.message);
+    await error("edit_save");
+    return false;
+  }
 
   active_dec("edit_save");
+  return true;
+}
+
+async function edit_save_and_close() {
+  if (await edit_save())
+    edit_close();
 }
 
 function edit_reset() {

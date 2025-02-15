@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.1.383";
+const VERSION = "0.1.436";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
@@ -40,8 +40,8 @@ async function sw_install(event) {
 
 		// Activate the new service worker immediately
 		await self.skipWaiting();
-	} catch (error) {
-		console.error(`Cache installation failed: ${error.message}`);
+	} catch (err) {
+		console.error(`Cache installation failed: ${err.message}`);
 	}
 	console.log(`Service worker installed, version ${VERSION}`);
 }
@@ -56,8 +56,8 @@ async function sw_activate(event) {
 			}
 		}
 		await self.clients.claim();
-	} catch (error) {
-		console.error(`Cache activation failed: ${error.message}`);
+	} catch (err) {
+		console.error(`Cache activation failed: ${err.message}`);
 	}
 }
 

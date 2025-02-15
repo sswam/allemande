@@ -133,8 +133,26 @@ input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
 	outline: none;
 }
 
-.error {
-	background-color: #422 !important;
+video {
+	min-height: 128px;
+}
+
+div.label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 6px;
+	font-size: 1.2rem;
+}
+
+iframe#messages_iframe.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border: none;
+	border-radius: 0;
 }
 
 .active {
@@ -161,24 +179,6 @@ input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
 .active-19 { background-color: #ffffc0 !important; color: black !important; }
 .active-20 { background-color: #ffffc8 !important; color: black !important; }
 
-video {
-	min-height: 128px;
-}
-
-div.label {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 6px;
-	font-size: 1.2rem;
-}
-
-iframe#messages_iframe.overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	border: none;
-	border-radius: 0;
+.error {
+	background-color: #422 !important;
 }
