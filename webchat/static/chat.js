@@ -27,6 +27,8 @@ let dev = false;
 let controls = "input_main";
 let view = "messages";
 
+let room_ready = false;
+
 const ADMIN = "admin";
 
 // keyboard shortcuts --------------------------------------------------------
@@ -46,6 +48,7 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['alt+t', content_insert_tab, 'Insert tab'],
   ['alt+x', clear_content, 'Clear content'],
   ['alt+u', browse_up, 'Browse up'],
+  ['alt+i', view_images, 'View images'],
 
   ['alt+z', undo, 'Undo last action', ADMIN],
   ['alt+r', retry, 'Retry last action', ADMIN],
@@ -190,7 +193,11 @@ const active_counts = {};
 const active_max_class = 20;
 
 function active_get(id) {
-  return active_counts[id] || 0;
+  let count = active_counts[id] || 0;
+  if (!count && $id(id).classList.contains("active")) {
+    count = active_counts[id] = count = 1;
+  }
+  return count;
 }
 
 function active_set(id, new_count) {
@@ -231,12 +238,18 @@ function active_reset(id) {
   active_set(id, 0);
 }
 
+function active_toggle(id) {
+  const active = active_get(id) ? 0 : 1;
+  active_set(id, active);
+  return active;
+}
+
 // new chat message ----------------------------------------------------------
 
 function new_chat_message(message) {
   auto_play_back_off();
   const message_user_lc = message.user.toLowerCase();
-  console.log("new message user vs user", message_user_lc, user);
+  // console.log("new message user vs user", message_user_lc, user);
   if (message_user_lc != user) {
     active_dec("send");
   }
@@ -264,6 +277,7 @@ function message_changed(ev) {
 
 function messages_iframe_set_src(url) {
   $messages_iframe.contentWindow.location.replace(url);
+  room_ready = false;
 }
 
 function reload_messages() {
@@ -539,19 +553,25 @@ function reload_page() {
 // handle messages from the messages iframe ----------------------------------
 
 function handle_message(ev) {
-  console.log("handle_message", ev);
   if (ev.origin != ROOMS_URL) {
-    console.log("ignoring message from", ev.origin);
-    return;
-  }
-
-  if (ev.data.type == "overlay") {
-    set_overlay(ev.data.overlay);
+    console.error("ignoring message from", ev.origin);
     return;
   }
 
   if (ev.data.type == "new_message") {
     new_chat_message(ev.data.message);
+    return;
+  }
+
+  // console.log("chat handle_message", ev.data);
+
+  if (ev.data.type == "ready" && !room_ready) {
+    room_ready = true;
+    run_hooks("room_ready");
+  }
+
+  if (ev.data.type == "overlay") {
+    set_overlay(ev.data.overlay);
     return;
   }
 
@@ -620,7 +640,7 @@ async function register_service_worker() {
     sw_registration = await navigator.serviceWorker.register(
       "/service_worker.js"
     );
-    console.log("ServiceWorker registration successful");
+    // console.log("ServiceWorker registration successful");
   } catch (err) {
     console.error("ServiceWorker registration failed: ", err);
     return;
@@ -896,7 +916,6 @@ function set_controls(id) {
     hide($("#inputrow > .controls:not(.hidden)"));
     show($id(id || "input_main"));
   }
-  console.log("set_controls", id);
   if (id === "input_main") {
     setTimeout(() => $content.focus(), 1);
   }
@@ -1041,7 +1060,6 @@ async function check_ok_to_edit(file) {
 }
 
 async function fetch_file(file) {
-  console.log("fetching file:", file);
   const response = await fetch(ROOMS_URL + "/" + file, {
     credentials: 'include',
   });
@@ -1185,6 +1203,37 @@ function edit_close() {
   return true;
 }
 
+// view options --------------------------------------------------------------
+
+
+let view_options = {
+  images: true,
+};
+
+function setup_view_options() {
+  // persist from local storage JSON
+  // if not present, set to default
+  let view_options_str = localStorage.getItem("view_options");
+  if (view_options_str) {
+    view_options = JSON.parse(view_options_str);
+  }
+  add_hook("room_ready", view_options_apply);
+}
+
+function view_options_apply() {
+  // save to local storage
+  localStorage.setItem("view_options", JSON.stringify(view_options));
+  // update buttons
+  active_set("view_images", view_options.images);
+  // send message to the rooms iframe to apply view options
+  $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
+}
+
+function view_images() {
+  view_options.images = !view_options.images;
+  view_options_apply();
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
@@ -1199,6 +1248,7 @@ function chat_main() {
 
   $on($id("add"), "click", () => set_controls("input_add"));
   $on($id("mod"), "click", () => set_controls("input_mod"));
+  $on($id("view"), "click", () => set_controls("input_view"));
 
   $on($id("mod_undo"), "click", undo);
   $on($id("mod_retry"), "click", retry);
@@ -1218,6 +1268,9 @@ function chat_main() {
   $on($id("edit_clear"), "click", edit_clear);
   $on($id("edit_close"), "click", edit_close);
 
+  $on($id("view_images"), "click", view_images);
+  $on($id("view_cancel"), "click", () => set_controls());
+
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_MESSAGE));
   $on($room, "keypress", (ev) => dispatch_shortcut(ev, SHORTCUTS_ROOM));
@@ -1229,6 +1282,8 @@ function chat_main() {
   $on(window, "message", handle_message);
   $on($id("resizer"), "mousedown", initDrag);
   $on($id("resizer"), "touchstart", initDrag);
+
+  setup_view_options();
 
   register_service_worker();
   notify_main();

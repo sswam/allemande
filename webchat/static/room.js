@@ -199,31 +199,6 @@ function setup_keyboard_shortcuts() {
   $on(document, "keydown", key_event);
 }
 
-// hooks ---------------------------------------------------------------------
-
-let hooks = {};
-
-function add_hook(name, func) {
-  if (!hooks[name])
-    hooks[name] = [];
-  if (!hooks[name].includes(func))
-    hooks[name].push(func);
-}
-
-function remove_hook(name, func) {
-  if (!hooks[name])
-    return;
-  hooks[name] = hooks[name].filter((f) => f !== func);
-}
-
-function run_hook(name, ...args) {
-  if (!hooks[name])
-    return;
-  for (const func of hooks[name]) {
-    func(...args);
-  }
-}
-
 // embeds --------------------------------------------------------------------
 
 // when we click an image of class thumb, we convert it to an embed
@@ -258,14 +233,14 @@ function go_fullscreen() {
   if (is_fullscreen()) {
     return;
   }
-  document.documentElement.requestFullscreen().catch((err) => console.log(err));
+  document.documentElement.requestFullscreen().catch((err) => console.error(err));
 }
 
 function exit_fullscreen() {
   if (!is_fullscreen()) {
     return;
   }
-  document.exitFullscreen().catch((err) => console.log(err));
+  document.exitFullscreen().catch((err) => console.error(err));
 }
 
 function toggle_fullscreen() {
@@ -568,8 +543,29 @@ function notify_new_message(newMessage) {
   window.parent.postMessage({ type: "new_message", message: newMessage }, CHAT_URL);
 }
 
-$on(document, "click", click);
-$on(document, "auxclick", click);
-$on(window, "resize", () => run_hook("resize"));
+// view options --------------------------------------------------------------
 
-setup_keyboard_shortcuts();
+function handle_message(ev) {
+  // console.log("room handle_message", ev);
+  if (ev.origin !== CHAT_URL) {
+    console.error("ignoring message from", ev.origin);
+    return;
+  }
+  if (ev.data.type === "set_view_options") {
+    const view_images = ev.data.images;
+    document.body.classList.toggle("images", view_images);
+  }
+}
+
+// main ----------------------------------------------------------------------
+
+function room_main() {
+  $on(document, "click", click);
+  $on(document, "auxclick", click);
+  $on(window, "resize", () => run_hooks("resize"));
+  $on(window, "message", handle_message);
+  setup_keyboard_shortcuts();
+  window.parent.postMessage({ type: "ready" }, CHAT_URL);
+}
+
+room_main();

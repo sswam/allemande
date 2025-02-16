@@ -84,12 +84,18 @@ function handleNewMessage(newMessage) {
   }
 
   // Set title attribute for images
+  // and add a <div class="alt"> element for each image
   const images = newMessage.querySelectorAll("img");
   for (const img of images) {
     if (!img.title && img.alt) {
       img.title = img.alt;
     }
+    const altDiv = document.createElement("div");
+    altDiv.className = "alt";
+    altDiv.textContent = "[🖼️ " + img.alt + "]";
+    img.parentNode.insertBefore(altDiv, img.nextSibling);
   }
+
 
   const newParagraph = getOnlyChildParagraph(newContent);
 

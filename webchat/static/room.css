@@ -172,3 +172,10 @@ details.up {
 .icon {
 	margin-right: 10px;
 }
+
+body:not(.images) img {
+	display: none;
+}
+body.images .alt {
+	display: none;
+}
