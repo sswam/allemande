@@ -1,2 +1,1 @@
-[sets width=1152 height=768]
-
+1152x768.txt

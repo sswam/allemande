@@ -1,2 +1,1 @@
-[sets width=1344 height=768]
-
+7_4.txt

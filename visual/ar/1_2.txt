@@ -1,2 +1,1 @@
-[sets width=704 height=1408]
-
+704x1408.txt

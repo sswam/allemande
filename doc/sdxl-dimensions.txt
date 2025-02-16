@@ -1,4 +1,6 @@
-Supported dimensions are:
+# SDXL Image Dimensions
+
+## Officially recommended dimensions are:
 
 - 640x1536  [sets width=640 height=1536]  (5:12 vertical)
 - 768x1344  [sets width=768 height=1344]  (4:7 vertical)
@@ -10,16 +12,43 @@ Supported dimensions are:
 - 1344x768  [sets width=1344 height=768]  (7:4 horizontal)
 - 1536x640  [sets width=1536 height=640]  (12:5 horizontal)
 
-[sets width=640 height=1536]
-[sets width=768 height=1344]
-[sets width=832 height=1216]
-[sets width=896 height=1152]
-[sets width=1024 height=1024]
-[sets width=1152 height=896]
-[sets width=1216 height=832]
-[sets width=1344 height=768]
-[sets width=1536 height=640]
+## Recommended dimensions for Ally Chat:
 
-[sets width=640 height=1536] [sets width=768 height=1344] [sets width=832 height=1216] [sets width=896 height=1152] [sets width=1024 height=1024] [sets width=1152 height=896] [sets width=1216 height=832] [sets width=1344 height=768] [sets width=1536 height=640]
+Square:
+- [sets width=1024 height=1024] or [use square] (1:1)
 
-Only the aspect ratio is important, not the exact dimensions.
+Portrait:
+- [sets width=1024 height=1280] or [use portrait_subtle] (4:5)
+- [sets width=960 height=1280] or [use portrait] (3:4)
+- [sets width=896 height=1152] or [use portrait_narrow] (7:9)
+- [sets width=768 height=1152] or [use portrait_classic] (2:3)
+- [sets width=832 height=1216] or [use portrait_moderate] (13:19)
+- [sets width=768 height=1344] or [use portrait_plus] (4:7)
+- [sets width=704 height=1408] or [use portrait_tall] (1:2)
+- [sets width=540 height=960] or [use portrait_mobile] (9:16)
+- [sets width=640 height=1536] or [use ultra_tall] (5:12)
+
+Landscape:
+- [sets width=1280 height=1024] or [use landscape_subtle] (5:4)
+- [sets width=1280 height=960] or [use landscape] (4:3)
+- [sets width=1152 height=896] or [use landscape_narrow] (9:7)
+- [sets width=1152 height=768] or [use landscape_classic] (3:2)
+- [sets width=1216 height=832] or [use landscape_moderate] (19:13)
+- [sets width=1344 height=768] or [use landscape_plus] (7:4)
+- [sets width=1408 height=704] or [use landscape_wide] (2:1)
+- [sets width=960 height=540] or [use widescreen] (16:9)
+- [sets width=1536 height=640] or [use ultra_wide] (12:5)
+
+- For quick drafts:
+- [sets width=768 height=768] or [use small_square] (1:1)
+- [sets width=768 height=1024] or [use small_portrait] (3:4)
+- [sets width=1024 height=768] or [use small_landscape] (4:3)
+- [sets width=512 height=512] or [use tiny_square] (1:1)
+- [sets width=512 height=768] or [use tiny_portrait] (2:3)
+- [sets width=768 height=512] or [use tiny_landscape] (3:2)
+
+Note, other variations are possible, e.g. [sets width=640 height=512] or [sets width=512 height=2048], etc, but quality may suffer for extreme aspect ratios. Don't go smaller than 512x512 or larger than around 1024x1024 (1MP).
+
+## Quality settings
+
+- TODO

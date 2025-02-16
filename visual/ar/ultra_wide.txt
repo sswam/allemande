@@ -1,2 +1,1 @@
-[sets width=1536 height=640]
-
+12_5.txt
