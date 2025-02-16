@@ -59,9 +59,10 @@ Ally Chat is continuously evolving with new features and capabilities being adde
 - **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style.
 
 ### Specialists
-- **Sia**: Expert writer focused on summarizing entire chats in comprehensive markdown format.
+- **Pixi**: Crafts detailed AI art prompts, ensuring high-quality image generation.
+- **Sia**: Expert writer focused on summarizing entire chats.
+- **Sio**: Expert writer focused on summarizing entire chats in structured markdown format.
 - **Nova**: Master narrator for immersive storytelling in interactive fiction.
-- **Pixi**: Crafts detailed text prompts for AI artists, ensuring high-quality image generation.
 - **Brie**: Creative brainstorming specialist offering a range of diverse solutions.
 - **Chaz**: Expert character designer capturing unique traits and mannerisms.
 - **Atla**: Environment and setting design specialist rendering realistic and vibrant scenes.
@@ -82,8 +83,12 @@ Ally Chat is continuously evolving with new features and capabilities being adde
 - **Sonari** (Sonar Reasoning, Perplexity): Perplexity's base reasoning model.
 - **Sagi** (Sonar Pro, Perplexity): Perplexity's high-performance Sonar model.
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model.
-- **Poli** (Translator, Google): An expert translator agent based on Google's Flash AI.
-- **Summi** (Summarizer, Google): An expert summarizer agent based on Google's Flash AI.
+
+## Specialists based on Remote AI
+- **Illu** (Google): An expert with AI art prompts, ensuring high-quality image generation.
+- **Poli** (Google): An expert translator agent based on Google's Flash AI.
+- **Summi** (Google): An expert summarizer agent based on Google's Flash AI.
+- **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format.
 
 ### AI Artists
 - **Illy**: High-quality photorealistic and artistic image generation, able to draw every character.
