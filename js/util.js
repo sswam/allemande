@@ -35,3 +35,27 @@ const $waitUntilElementVisible = (selector, time) => $waitUntil(() => $(selector
 const $waitUntilElementHidden = (selector, time) => $waitUntil(() => $(selector).offsetWidth === 0 && $(selector).offsetHeight === 0, time);
 const $waitUntilElementText = (selector, text, time) => $waitUntil(() => $(selector).innerText === text, time);
 const $waitUntilElementAttribute = (selector, attribute, value, time) => $waitUntil(() => $(selector).getAttribute(attribute) === value, time);
+
+// Hook system
+
+const hooks = {};
+
+function add_hook(name, func) {
+  if (!hooks[name])
+    hooks[name] = [];
+  if (!hooks[name].includes(func))
+    hooks[name].push(func);
+}
+
+function remove_hook(name, func) {
+  if (!hooks[name])
+    return;
+  hooks[name] = hooks[name].filter((f) => f !== func);
+}
+
+function run_hooks(name, ...args) {
+  if (!hooks[name])
+    return;
+  for (const func of hooks[name])
+    func(...args);
+}
