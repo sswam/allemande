@@ -33,7 +33,7 @@ monitor() {
 }
 
 check_disk() {
-	df -h | grep -vE '^Filesystem|tmpfs|udev' | awk '{ print $5 " " $6 }' | while read -r percent mountpoint; do
+	df -h | grep -vE '^Filesystem|tmpfs|udev|snap' | awk '{ print $5 " " $6 }' | while read -r percent mountpoint; do
 		usage=${percent%%%}
 		if [ "$verbose" ]; then
 			printf "INFO: Filesystem mounted at %s is %s%% full\n" "$mountpoint" "$usage"
