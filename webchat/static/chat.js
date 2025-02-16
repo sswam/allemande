@@ -936,7 +936,8 @@ function reset_ui() {
 
 let auto_play_interval_timer = null;
 let auto_play_interval = null;
-const auto_play_interval_options = [null, 5, 10, 15, 30, 60, 120, 300, 600, 1200, 1800, 3600];
+const auto_play_interval_options = [null, 5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 300, 600, 1200, 1800, 3600];
+
 
 function fmt_duration(seconds) {
   let s = seconds % 60;
