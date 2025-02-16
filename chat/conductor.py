@@ -33,12 +33,14 @@ ANYONE_WORDS = [
     "who wants to",
 ]
 
-ALLOW_AI_EVERYONE = False
-
+# TODO configureable by room
 
 # TODO exclude based on an attribute or settings
 EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf"])
 EXCLUDE_PARTICIPANTS_SYSTEM = set(["System"])
+
+EVERYONE_MAX = 5
+AI_EVERYONE_MAX = 2
 
 USE_PLURALS = True
 
@@ -124,7 +126,7 @@ def who_is_named(
             continue
         if agent in everyone_words:
             random.shuffle(everyone_except_user)
-            result.extend(everyone_except_user)
+            result.extend(everyone_except_user[:EVERYONE_MAX])
         elif agent in anyone_words and everyone_except_user:
             result.append(random.choice(everyone_except_user))
         elif agent in anyone_words and everyone_except_user_all:
@@ -293,9 +295,9 @@ def who_should_respond(
     everyone_with_at = [f"@{agent}" for agent in everyone]
     anyone_with_at = [f"@{agent}" for agent in anyone]
 
-    if not is_person and not ALLOW_AI_EVERYONE:
-        everyone = []
-        everyone_with_at = []
+    if not is_person:
+        everyone = random.sample(everyone, AI_EVERYONE_MAX)
+        everyone_with_at = random.sample(everyone_with_at, AI_EVERYONE_MAX)
 
     # For @mode, all mentioned agents should reply
     invoked = who_is_named(

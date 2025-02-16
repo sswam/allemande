@@ -1,24 +1,21 @@
 #!/usr/bin/env python3-allemande
+# pylint: disable=unused-argument
 
-""" Ally Chat / Electric Barbarella v8 - multi-user LLM chat app """
+""" Ally Chat / Electric Barbarella v1.0.9 - multi-user LLM chat app """
 
 import os
 import sys
 import argparse
 import logging
-from math import inf
 from pathlib import Path
 import re
-import subprocess
-from types import SimpleNamespace
 import asyncio
 from collections import defaultdict
 import json
 import importlib
 
 import shlex
-import readline
-from watchfiles import Change
+from watchfiles import awatch, Change
 import yaml
 import regex
 
@@ -32,6 +29,24 @@ import chat
 import llm
 from ally import portals
 from safety import safety
+
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+import transformers  # type: ignore # pylint: disable=wrong-import-position, wrong-import-order
+
+
+CODE_FILES = [
+    "chat/ally_chat.py",
+    "text/atail.py",
+    "python/ucm.py",
+    "chat/conductor.py",
+    "www/search.py",
+    "text/tab.py",
+    "chat/chat.py",
+    "llm/llm.py",
+    "ally/portals.py",
+    "safety/safety.py",
+]
+
 
 # The last modification time of reloadable modules
 _last_modified: dict[str, float] = {}
@@ -69,37 +84,20 @@ def reload_if_modified(module_name):
             # Update the last modification time
             _last_modified[module_name] = current_mtime
 
-            logger.warning(f"Module {module_name} has been reloaded.")
+            logger.warning("Reloaded module %s", module_name)
             return True
 
         return False
 
-    except Exception as e:
-        logger.error(f"Error reloading module {module_name}: {str(e)}")
+    except Exception:  # pylint: disable=broad-except
+        logger.exception("Error reloading module %s: %s", exc_info=True)
         return False
-
-
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
-import transformers  # pylint: disable=wrong-import-position, wrong-import-order
 
 
 logger = logging.getLogger(__name__)
 
-LOCAL_AGENT_TIMEOUT = 5 * 60
+LOCAL_AGENT_TIMEOUT = 5 * 60  # 5 minutes
 
-
-# TODO can't select model from here now
-
-models = {
-    "default": {
-        "abbrev": "llama3",
-        "description": "Meta-Llama-3.1-8B-Instruct",
-        "cost": 0,
-    },
-}
-
-first_model = next(iter(models.keys()))
-default_model = os.environ.get("BB_MODEL", first_model)
 
 DEFAULT_FILE_EXTENSION = "bb"
 
@@ -186,7 +184,7 @@ def setup_maps_for_agent(agent):
 
 def register_all_agents():
     """Register agents"""
-    global AGENTS
+    global AGENTS  # pylint: disable=global-statement
     AGENTS.clear()
 
     register_agents("local", agents.AGENTS_LOCAL, local_agent)
@@ -417,7 +415,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     response = await async_search(query, name, limit)
     response2 = f"{name}:\t{response}"
     response3 = fix_layout(response2, args)
-    logger.debug("response3:\n%s", response3)
+    logger.info("response3:\n%s", response3)
 
     # wrap secondary divs in <details>
     response4 = re.sub(
@@ -427,6 +425,8 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
         flags=re.DOTALL,
     )
 
+    logger.info("response4:\n%s", response3)
+
     return response4
 
 
@@ -435,8 +435,6 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
     logger.info("Processing %s", file)
 
     history = chat.chat_read(file, args)
-
-    history_count = len(history)
 
     # Load mission file, if present
     mission_file = re.sub(r"\.bb$", ".m", file)
@@ -477,7 +475,7 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
 
     # Support "directed-poke" which removes itself, like -@Ally
     # TODO this is a bit dodgy and has a race condition
-    if message and message["content"].startswith("-@"):
+    if message and message["content"].startswith("-@"):  # pylint: disable=unsubscriptable-object
         history_messages.pop()
         room = chat.Room(path=Path(file))
         room.undo("root")
@@ -503,7 +501,9 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
 
         logger.debug("query: %r", query)
         logger.debug("history 1: %r", history)
-        response = await run_agent(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config)
+        response = await run_agent(
+            agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config
+        )
         history.append(response)
         logger.debug("history 2: %r", history)
         # avoid re-processing in response to an AI response
@@ -651,7 +651,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         # read result.yaml
         data = yaml.safe_load((resp / "result.yaml").read_text(encoding="utf-8"))
         seed = data["seed"]
-    except Exception as e:
+    except (FileNotFoundError, KeyError):
         pass
 
     # look for attachments, other files in resp/ in sorted order
@@ -663,9 +663,11 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
             text = f"#{seed} {fulltext}"
         else:
             text = fulltext
-        name, url, medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=text)
+        name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=text)
+        if task:
+            add_task(task)
         if response:
-            response += f"\n\n"
+            response += "\n\n"
         response += markdown
 
     await portal.remove_response(resp)
@@ -907,12 +909,10 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     logger.debug("query 3: %r", query)
 
     # shell escape in python
-    agent["command"]
     cmd_str = ". ~/.profile ; "
     cmd_str += " ".join(map(shlex.quote, agent["command"]))
 
     command = ["sshc", "allemande-nobody@localhost", "bash", "-c", cmd_str]
-    agent["command"]
 
     # echo the query to the subprocess
     output, errors, status = await run_subprocess(command, query)
@@ -941,28 +941,52 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
         return
     if old_size is None:
         return
-#     if new_size == 0 and old_size != 0:
-#         return
+    #     if new_size == 0 and old_size != 0:
+    #         return
 
     if skip.get(file_path):
         logger.debug("Won't react to AI response: %r", file_path)
         skip[file_path] -= 1
         return
 
-    responded_count = 0
     try:
         logger.info("Processing file: %r", file_path)
         await process_file(file_path, args, skip=skip)
-    except Exception as e:
+    except Exception:  # pylint: disable=broad-except
         logger.exception("Processing file failed", exc_info=True)
+
+
+active_tasks: set[asyncio.Task] = set()
+
+
+def add_task(task):
+    """Add a task to the active tasks."""
+    active_tasks.add(task)
+    task.add_done_callback(task_done_callback)
+
+
+def task_done_callback(task):
+    """Callback for when a task is done."""
+    active_tasks.remove(task)
+    try:
+        task.result()
+    except Exception:  # pylint: disable=broad-except
+        logger.exception("Task failed", exc_info=True)
+
+
+async def wait_for_tasks():
+    """Wait for all active tasks to complete."""
+    if active_tasks:
+        await asyncio.gather(*active_tasks)
+
 
 
 async def watch_loop(args):
     """Follow the watch log, and process files."""
-
     skip = defaultdict(int)
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
+        logger.info("Active tasks: %d", len(active_tasks))
         while (line := await queue.get()) is not None:
             # Load the agents, if modified
             load_agents()
@@ -973,11 +997,32 @@ async def watch_loop(args):
                 old_size = int(old_size) if old_size != "" else None
                 new_size = int(new_size) if new_size != "" else None
 
-                # Process the change in a background coroutine,
-                # so we can handle other changes concurrently.
-                asyncio.create_task(file_changed(file_path, change_type, old_size, new_size, args, skip))
+                # Create and track the task
+                task = asyncio.create_task(file_changed(file_path, change_type, old_size, new_size, args, skip))
+                add_task(task)
             finally:
                 queue.task_done()
+
+
+async def restart_service():
+    """Restart the service."""
+    await wait_for_tasks()
+    command_line = [sys.executable] + sys.argv
+    logger.info("Restarting service: %r", command_line)
+    os.execv(sys.executable, command_line)
+
+
+async def restart_if_code_changes():
+    """Watch for code changes and restart the service."""
+    home = os.environ["ALLEMANDE_HOME"]
+    code_files_abs = [Path(home) / f for f in CODE_FILES]
+    try:
+        async for changes in awatch(*code_files_abs, debounce=1000, debug=False):
+            logger.info("Code files changed: %r", [str(c) for c in changes])
+            await restart_service()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("Error watching code files", exc_info=e)
+        await restart_service()
 
 
 def load_config(args):
@@ -1046,6 +1091,8 @@ def get_opts():  # pylint: disable=too-many-statements
 async def main():
     """Main function."""
     args = get_opts()
+
+    asyncio.create_task(restart_if_code_changes())
 
     TOKENIZERS[args.model] = load_model_tokenizer(args)
 
