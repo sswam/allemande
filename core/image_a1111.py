@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 import asyncio
 import re
+import math
 
 import yaml
 
@@ -14,7 +15,7 @@ import a1111_client  # type: ignore
 import slug  # type: ignore
 import stamp  # type: ignore
 from ally import main, logs
-from unprompted.unprompted_macros import parse_macros
+from unprompted.unprompted_macros import parse_macros, update_macros
 
 __version__ = "0.1.1"
 
@@ -24,24 +25,73 @@ prog = main.prog_info()
 
 portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / prog.name
 
+MAX_PIXELS = 1280 * 1280
+MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 
-def process_hq_macro(prompt: str, config: dict) -> dict:
+
+def process_hq_macro(prompt: str, config: dict, macros: dict) -> dict:
     """Process hq macro in prompt and update config accordingly"""
-    macros = parse_macros(prompt)
-
     sets = macros.get('sets', {})
-    hq = float(sets.get('hq', 0))
+    hq = float(sets.get("hq", 1.5))
 
     if hq == 0:
-        # hq not set - disable adetailer, no hires
+        # hq=0 - disable adetailer, no hires
         config['adetailer'] = None
         config['hires'] = 0.0
     elif hq == 1:
-        # hq=1 - keep adetailer from config, no hires
+        # hq=1 - keep adetailer from config, no hires fix
         config['hires'] = 0.0
     else:
         # hq != 1 - set hires to hq value
         config['hires'] = hq
+
+    return config
+
+
+def limit_dimensions_and_hq(config: dict) -> dict:
+    """Limit dimensions and hires to prevent excessive resource usage and bad results"""
+    width = config.get("width", 1024)
+    height = config.get("height", 1024)
+
+    # don't allow zero or negative dimensions
+    width = max(width, 1)
+    height = max(height, 1)
+
+    # lower-limit dimensions, each dimension must be at least 512
+    if width < 512 or height < 512:
+        min_dim = min(width, height)
+        scale = 512 / min_dim
+        height = math.ceil(height * scale)
+        width = math.ceil(width * scale)
+
+    # upper-limit dimensions, total pixels must be less than MAX_PIXELS
+    if width * height > MAX_PIXELS:
+        scale = (MAX_PIXELS / (width * height)) ** 0.5
+        width = int(width * scale)
+        height = int(height * scale)
+
+    # width and height must be multiples of 64
+    width = width // 64 * 64
+    height = height // 64 * 64
+
+    # limit hires fix by pixels
+    hires = config.get("hires", 1.0)
+
+    if hires and hires < 1.0:
+        hires = 1.0
+
+    if width * height * hires * hires > MAX_HIRES_PIXELS:
+        hires = (MAX_HIRES_PIXELS / (width * height)) ** 0.5
+        hires = round(hires - 0.005, 2)
+
+    # update config and log
+    if width != config.get("width", 1024) or height != config.get("height", 1024):
+        logger.info("limiting dimensions to %dx%d", width, height)
+        config['width'] = width
+        config['height'] = height
+    if hires != config.get("hires", 1.0):
+        logger.info("limiting hires to %.2f", hires)
+        config['hires'] = hires
 
     return config
 
@@ -81,7 +131,34 @@ async def process_request(portals: str, portal_str: Path, req: str):
         prompt = load(portals, d, "request.txt")
 
         # Process hq macro
-        config = process_hq_macro(prompt, config)
+        macros = parse_macros(prompt)
+        sets = macros.get('sets', {})
+        need_update_macros = False
+        if 'width' in sets:
+            need_update_macros = True
+            config['width'] = int(sets['width'])
+        if 'height' in sets:
+            need_update_macros = True
+            config['height'] = int(sets['height'])
+        if 'hires' in sets:
+            need_update_macros = True
+            config['hires'] = float(sets['hires'])
+
+        config = process_hq_macro(prompt, config, macros)
+        config = limit_dimensions_and_hq(config)
+
+        # Update settings in prompt if needed
+        if need_update_macros:
+            sets['width'] = str(config['width'])
+            sets['height'] = str(config['height'])
+            sets['hires'] = str(config['hires'])
+            prompt = update_macros(prompt, macros)
+
+            logger.info("updated prompt: %s", prompt)
+
+        # We can update the count from the sets macro
+        if 'count' in sets:
+            config['count'] = int(sets['count'])
 
         output_stem = slug.slug(prompt)[:70]
 
