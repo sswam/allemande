@@ -12,23 +12,22 @@ import re
 import asyncio
 from collections import defaultdict
 import json
-import importlib
+from typing import Any
 
 import shlex
 from watchfiles import awatch, Change
 import yaml
 import regex
 
-import agents
 import atail  # type: ignore
 import ucm  # type: ignore
 import conductor
 import search  # type: ignore
 import tab  # type: ignore
 import chat
-import llm
-from ally import portals
-from safety import safety
+import llm  # type: ignore
+from ally import portals  # type: ignore
+from safety import safety  # type: ignore
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # type: ignore # pylint: disable=wrong-import-position, wrong-import-order
@@ -47,64 +46,20 @@ CODE_FILES = [
     "safety/safety.py",
 ]
 
+PATH_HOME   = Path(os.environ["ALLEMANDE_HOME"])
+PATH_ROOMS  = Path(os.environ["ALLEMANDE_ROOMS"])
+PATH_AGENTS = Path(os.environ["ALLEMANDE_AGENTS"])  # TODO put agents dir in rooms?
+PATH_MODELS = Path(os.environ["ALLEMANDE_MODELS"])
 
-# The last modification time of reloadable modules
-_last_modified: dict[str, float] = {}
-
-
-def reload_if_modified(module_name):
-    """
-    Checks if the specified module's source file has been modified,
-    and reloads it if it has changed.
-
-    Args:
-        module_name (str): Name of the module to check and potentially reload
-
-    Returns:
-        bool: True if module was reloaded, False otherwise
-    """
-    try:
-        # Get the module object
-        module = sys.modules[module_name]
-
-        # Get the path to the module's source file
-        module_file = module.__file__
-
-        # Get the current modification time
-        current_mtime = os.path.getmtime(module_file)
-
-        # Get the last recorded modification time, if any
-        last_mtime = _last_modified.get(module_name, 0)
-
-        # If the file has been modified since last check
-        if current_mtime > last_mtime:
-            # Reload the module
-            importlib.reload(module)
-
-            # Update the last modification time
-            _last_modified[module_name] = current_mtime
-
-            logger.warning("Reloaded module %s", module_name)
-            return True
-
-        return False
-
-    except Exception:  # pylint: disable=broad-except
-        logger.exception("Error reloading module %s: %s", exc_info=True)
-        return False
-
+# TODO put some of these settings in a global reloadable config files
+STARTER_PROMPT = """System:\tPlease briefly greet the user or start a conversation, in one line. You can creative, or vanilla."""
 
 logger = logging.getLogger(__name__)
+logging.getLogger('watchfiles').setLevel(logging.WARNING)
 
 LOCAL_AGENT_TIMEOUT = 5 * 60  # 5 minutes
 
-
 DEFAULT_FILE_EXTENSION = "bb"
-
-
-AGENTS = {}
-
-TOKENIZERS: dict[str, transformers.AutoTokenizer] = {}
 
 REMOTE_AGENT_RETRIES = 3
 
@@ -112,43 +67,9 @@ MAX_REPLIES = 1
 
 ADULT = True
 
-UNSAFE = True
+SAFE = False
 
-
-def load_agents():
-    """Load the agents, if modified."""
-    if reload_if_modified("agents"):
-        register_all_agents()
-
-
-def register_agents(agent_type, agents_dict, async_func):
-    """Register agents"""
-
-    async def agent_wrapper(agent, *args, **kwargs):
-        """Wrapper for async agents"""
-        return await async_func(agent, *args, **kwargs)
-
-    def make_agent(agent_base, agent_name):
-        """Make an agent"""
-        agent = agent_base.copy()
-        agent["fn"] = lambda *args, **kwargs: agent_wrapper(agent, *args, **kwargs)
-        agent["type"] = agent_type
-        if "name" not in agent:
-            agent["name"] = agent_name
-        return agent
-
-    for agent_name, agent_base in agents_dict.items():
-        agent_lc = agent_name.lower()
-        agent = AGENTS[agent_lc] = make_agent(agent_base, agent_name)
-        name_lc = agent["name"].lower()
-        if name_lc != agent_lc:
-            AGENTS[name_lc] = agent
-
-
-def setup_agent_maps():
-    """Setup maps for all agents"""
-    for _agent_name, agent in AGENTS.items():
-        setup_maps_for_agent(agent)
+TOKENIZERS: dict[str, transformers.AutoTokenizer] = {}
 
 
 def setup_maps_for_agent(agent):
@@ -182,26 +103,45 @@ def setup_maps_for_agent(agent):
             agent["output_map_cs"][v] = k
 
 
-def register_all_agents():
-    """Register agents"""
-    global AGENTS  # pylint: disable=global-statement
-    AGENTS.clear()
+Agent = dict[str, Any]
 
-    register_agents("local", agents.AGENTS_LOCAL, local_agent)
-    register_agents("remote", agents.AGENTS_REMOTE, remote_agent)
 
-    if UNSAFE:
-        register_agents("tool", agents.AGENTS_PROGRAMMING, safe_shell)
+def set_up_agent(agent: Agent) -> Agent:
+    """Set up an agent"""
+    service = services.get(agent["service"])
+    if service is None:
+        raise ValueError(f"Unknown service for agent: {agent['name']}, {agent['service']}")
+    if "safe" in service:
+        agent["safe"] = service["safe"]
 
-    register_agents("tool", {agent: {"name": agent} for agent in search.agents}, run_search)
+    if SAFE and not agent.get("safe", True):
+        raise ValueError(f"Unsafe agent {agent['name']} not allowed in safe mode")
 
-    if not ADULT:
-        # remove any agent with "adult" attribute true
-        AGENTS = {key: value for key, value in AGENTS.items() if not value.get("adult")}
+    if not ADULT and agent.get("adult"):
+        raise ValueError(f"Adult agent {agent['name']} only allowed in adult mode")
 
-    AGENTS = safety.apply_or_remove_adult_options(AGENTS, ADULT)
+    agent["type"] = service["type"]
+    agent["fn"] = service["fn"]
 
-    setup_agent_maps()
+    # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
+    for prompt_key in "system_top", "system_bottom":
+        prompt = agent.get(prompt_key)
+        if not prompt:
+            continue
+        name = agent["name"]
+        fullname = agent.get("fullname", name)
+        aliases = agent.get("aliases") or [name]
+        aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
+        prompt = re.sub(r"\$NAME\b", name, prompt)
+        prompt = re.sub(r"\$FULLNAME\b", fullname, prompt)
+        prompt = re.sub(r"\$ALIAS\b", aliases_or, prompt)
+        agent[prompt_key] = prompt
+
+    agent = safety.apply_or_remove_adult_options(agent, ADULT)
+
+    setup_maps_for_agent(agent)
+
+    return agent
 
 
 def load_tokenizer(model_path: Path):
@@ -250,12 +190,20 @@ def leading_spaces(text):
     return re.match(r"\s*", text).group(0)
 
 
-def fix_layout(response, _args):
+def fix_layout(response, _args, agent):
     """Fix the layout and indentation of the response."""
     lines = response.strip().split("\n")
     out = []
     in_table = False
     in_code = False
+
+    if agent.get("strip_triple_backticks"):
+        if lines and "```" in lines[0]:
+            lines[0] = re.sub(r"```\w*\s*", "", lines[0])
+            if lines[0].endswith("\t"):
+                lines[1] = lines[0] + lines[1].strip()
+                lines.pop(0)
+        lines = [line for line in lines if not re.match(r"\t?```\w*\s*$", line)]
 
     # clean up the lines
     for i, line in enumerate(lines):
@@ -288,7 +236,9 @@ def fix_layout(response, _args):
                 line = "\t" + line
         else:
             # For non-code, strip all leading tabs and trailing whitespace, to avoid issues
-            line = "\t" + line.lstrip("\t").rstrip()
+            line = line.lstrip("\t").rstrip()
+            if i > 0:
+                line = "\t" + line
 
         out.append(line)
 
@@ -381,7 +331,7 @@ def config_read(file):
     return {}
 
 
-async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None):
+async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None, max_results=10, agents=None):
     """Run a search agent."""
     name = agent["name"]
     logger.debug("history: %r", history)
@@ -408,19 +358,19 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     logger.info("query: %r %r", name, query)
 
     # TODO make the search library async too
-    async def async_search(query, name, limit):
+    async def async_search():
         """Run a search in a thread."""
-        return await asyncio.to_thread(search.search, query, engine=name, markdown=True, limit=limit)
+        return await asyncio.to_thread(search.search, query, engine=name, markdown=True, limit=limit, max_results=max_results)
 
-    response = await async_search(query, name, limit)
+    response = await async_search()
     response2 = f"{name}:\t{response}"
-    response3 = fix_layout(response2, args)
+    response3 = fix_layout(response2, args, agent)
     logger.info("response3:\n%s", response3)
 
     # wrap secondary divs in <details>
     response4 = re.sub(
         r"(</div>\n?\s*)(<div\b.*)",
-        r"""\1<details class="up"><summary>more</summary>\n\2</details>\n""",
+        r"""\1<details class="search"><summary>more</summary>\n\t\2</details>\n""",
         response3,
         flags=re.DOTALL,
     )
@@ -430,46 +380,56 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     return response4
 
 
-async def process_file(file, args, history_start=0, skip=None) -> int:
+def find_resource_file(file, ext, name=None):
+    """Find a resource file for the chat room."""
+    parent = Path(file).parent
+    stem = Path(file).stem
+    resource = parent / (stem + "." + ext)
+    if not resource.exists():
+        stem_no_num = re.sub(r"-\d+$", "", stem)
+        if stem_no_num != stem:
+            resource = parent / (stem_no_num + "." + ext)
+    if not resource.exists():
+        resource = parent / (name + "." + ext)
+    if not resource.exists():
+        resource = None
+    return str(resource) if resource else None
+
+
+async def process_file(file, args, history_start=0, skip=None, agents=None) -> int:
     """Process a file, return True if appended new content."""
     logger.info("Processing %s", file)
 
     history = chat.chat_read(file, args)
 
     # Load mission file, if present
-    mission_file = re.sub(r"\.bb$", ".m", file)
-
+    mission_file = find_resource_file(file, "m", "mission")
     mission = chat.chat_read(mission_file, args)
 
     # Load summary file, if present
-    summary_file = re.sub(r"\.bb$", ".s", file)
+    summary_file = find_resource_file(file, "s", "summary")
     summary = summary_read(summary_file, args)
 
     # Load config file, if present
-    config_file = re.sub(r"\.bb$", ".yml", file)
+    config_file = find_resource_file(file, "yml", "config")
     config = config_read(config_file)
-
-    # logger.warning("loaded mission: %r", mission)
-    # logger.warning("loaded history: %r", history)
-
-    # get latest user name and bot name from history
-    # bots = agents.AGENT_DEFAULT.copy()
-    # if history:
 
     history_messages = list(chat.lines_to_messages(history))
 
     # TODO distinguish poke (only AIs and tools respond) vs posted message (humans might be notified)
     message = history_messages[-1] if history_messages else None
 
+    welcome_agents = [name for name, agent in agents.items() if agent.get("welcome")]
+
     bots = conductor.who_should_respond(
         message,
-        agents=AGENTS,
+        agents_dict=agents,
         history=history_messages,
-        default=agents.AGENT_DEFAULT,
+        default=welcome_agents,
         include_humans_for_ai_message=False,
         include_humans_for_human_message=True,
         mission=mission,
-        direct_reply_chance=config.get("direct_reply_chance", 1.0),
+        config=config,
     )
     logger.info("who should respond: %r", bots)
 
@@ -483,16 +443,16 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
 
     count = 0
     for bot in bots:
-        if not (bot and bot.lower() in AGENTS):
+        if not (bot and bot.lower() in agents):
             continue
 
-        agent = AGENTS[bot.lower()]
+        agent = agents[bot.lower()]
 
         #     - query is not even used in remote_agent
         if history:
             query1 = history[-1]
         else:
-            query1 = agent.get("starter_prompt", agents.STARTER_PROMPT) or ""
+            query1 = agent.get("starter_prompt", STARTER_PROMPT) or ""
             query1 = query1.format(bot=bot) or None
             history = [query1]
         logger.debug("query1: %r", query1)
@@ -502,8 +462,12 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
         logger.debug("query: %r", query)
         logger.debug("history 1: %r", history)
         response = await run_agent(
-            agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config
+            agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents
         )
+        response = response.strip()
+        if agent.get("narrator"):
+            response = response.lstrip(f"{agent['name']}:\t")
+
         history.append(response)
         logger.debug("history 2: %r", history)
         # avoid re-processing in response to an AI response
@@ -516,14 +480,14 @@ async def process_file(file, args, history_start=0, skip=None) -> int:
     return count
 
 
-async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None):
+async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None):
     """Run an agent."""
     function = agent["fn"]
     logger.debug("query: %r", query)
-    return await function(query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config)
+    return await function(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents)
 
 
-async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None):
+async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None):
     """Run a local agent."""
     # print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 
@@ -539,10 +503,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         context = history.copy()
 
     # remove "thinking" sections from context
-    context_remove_thinking_sections(context, agent["name"])
+    context = chat.context_remove_thinking_sections(context, agent["name"])
 
     # missions
     include_mission = agent.get("service") != "image_a1111"  # TODO clean this
+
+    image_agent = agent.get("service", "").startswith("image_")
+    image_count = config.get("image_count", 1)
 
     if include_mission:
         # prepend mission / info / context
@@ -572,11 +539,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
             context.insert(n_messages - pos, f"{system_bottom_role}:\t{system_bottom}")
         else:
             context.insert(n_messages - pos, f"{system_bottom}")
+        logger.info("system_bottom: %r", system_bottom)
     if system_top:
         system_top_role = agent.get("system_top_role", None)
         context.insert(0, f"{system_top_role}:\t{system_top}")
+        logger.info("system_top: %r", system_top)
 
-    logger.info("context: %s", args.delim.join(context[-6:]))
+    logger.debug("context: %s", args.delim.join(context[-6:]))
 
     agent_name_esc = regex.escape(name)
 
@@ -598,7 +567,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         # Remove leading and trailing whitespace
         text = text.strip()
 
-        logger.info("clean_image_prompt: after: %s", text)
+        logger.debug("clean_image_prompt: after: %s", text)
         return text
 
     clean_prompt = agent.get("clean_prompt", False)
@@ -610,6 +579,8 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     if "config" in agent:
         gen_config = agent["config"].copy()
         gen_config["model"] = model_name
+        if image_agent:
+            gen_config["count"] = image_count
     else:
         # load the config each time, in case it has changed
         # TODO the config should be per agent, not global
@@ -631,15 +602,21 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     gen_config["stop_regexs"].extend(agent.get("stop_regexs", []))
 
+    if image_agent:
+        fulltext2 = add_configured_image_prompts(fulltext, [agent, config])
+        logger.info("fulltext after adding configured image prompts: %r", fulltext2)
+    else:
+        fulltext2 = fulltext
+
     service = agent["service"]
 
     portal = portals.get_portal(service)
 
-    logger.debug("fulltext: %r", fulltext)
+    logger.debug("fulltext: %r", fulltext2)
     logger.debug("config: %r", gen_config)
     logger.debug("portal: %r", str(portal.portal))
 
-    response, resp = await client_request(portal, fulltext, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
+    response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 
     apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
@@ -659,28 +636,31 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     for resp_file in sorted(resp.iterdir()):
         if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt", "result.yaml"]:
             continue
-        if seed:
+        if seed and Path(resp_file).suffix in [".png", ".jpg"]:
             text = f"#{seed} {fulltext}"
+            seed += 1
         else:
             text = fulltext
         name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=text)
         if task:
-            add_task(task)
+            add_task(task, f"upload post-processing: {name}")
         if response:
-            response += "\n\n"
+            response += " "
+        else:
+            response += "\n"
         response += markdown
 
     await portal.remove_response(resp)
 
     logger.debug("response: %r", response)
 
-    agent_names = list(AGENTS.keys())
+    agent_names = list(agents.keys())
     history_messages = list(chat.lines_to_messages(history))
     all_people = conductor.participants(history_messages)
     people_lc = list(map(str.lower, set(agent_names + all_people)))
 
     response = trim_response(response, args, agent["name"], people_lc=people_lc)
-    response = fix_layout(response, args)
+    response = fix_layout(response, args, agent)
 
     if invitation:
         tidy_response = invitation.strip() + "\t" + response.strip()
@@ -694,27 +674,32 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     return tidy_response
 
 
-def context_remove_thinking_sections(context: list[str], agent_name: str):
-    """Remove "thinking" sections from the context."""
-    # Remove any "thinking" sections from the context
-    # A "thinking" section is a <details> block
+def add_configured_image_prompts(fulltext, configs):
+    """Add configured prompts to the fulltext."""
+    splits = re.split(r"\s*\bNEGATIVE\b\s*", fulltext, maxsplit=1)
+    if len(splits) == 2:
+        positive, negative = splits
+    else:
+        positive = fulltext
+        negative = ""
+    for config in configs:
+        if "image_prompt_map" in config:
+            for k, v in config["image_prompt_map"].items():
+                positive = re.sub(str(k), str(v), positive)
+        if "image_prompt_negative_map" in config:
+            for k, v in config["image_prompt_negative_map"].items():
+                negative = re.sub(str(k), str(v), negative)
+        if "image_prompt_template" in config:
+            positive = str(config["image_prompt_template"]).replace("%s", positive)
+        if "image_prompt_negative_template" in config:
+            negative = str(config["image_prompt_negative_template"]).replace("%s", negative)
+    positive = re.sub(r'\s\s+', ' ', positive.strip())
+    negative = re.sub(r'\s\s+', ' ', negative.strip())
+    fulltext = positive
+    if negative:
+        fulltext += "\nNEGATIVE\n" + negative
 
-    for i, message in enumerate(context):
-        if message.startswith(agent_name + ":\t"):
-            continue
-        modified = re.sub(
-            r"""(?ix)
-            <details\b[^>]*>
-            .*?
-            (</details>|$)
-            """,
-            "",
-            message,
-            flags=re.DOTALL,
-        )
-        if modified != message:
-            context[i] = modified
-            logger.info("Removed 'thinking' section/s from message: %r", modified)
+    return fulltext
 
 
 def apply_maps(mapping, mapping_cs, context):
@@ -743,8 +728,10 @@ def apply_maps(mapping, mapping_cs, context):
             logger.debug("map: %r -> %r", old, context[i])
 
 
-async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None):
+async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None):
     """Run a remote agent."""
+    service = agent["service"]
+
     n_context = agent["default_context"]
     context = history[-n_context:]
     # XXX history is a list of lines, not messages, so won't the context sometimes contain partial messages? Yuk. That will interact badly with missions, too.
@@ -754,7 +741,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         context.pop(0)
 
     # remove "thinking" sections from context
-    context_remove_thinking_sections(context, agent["name"])
+    context = chat.context_remove_thinking_sections(context, agent["name"])
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?
@@ -800,14 +787,14 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     # add system messages
     system_top = agent.get("system_top")
     system_bottom = agent.get("system_bottom")
+    system_bottom_role = "user" if service == "google" else agent.get("system_bottom_role", "user")
+    system_top_role = "user" if service == "google" else agent.get("system_top_role", "system")
     if system_bottom:
         n_messages = len(remote_messages)
         pos = agent.get("system_bottom_pos", 0)
         pos = min(pos, n_messages)
-        system_bottom_role = agent.get("system_bottom_role", "user")
         remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom})
     if system_top:
-        system_top_role = agent.get("system_top_role", "system")
         remote_messages.insert(0, {"role": system_top_role, "content": system_top})
 
     # Some agents require alternating user and assistant messages. Mark most recent message as "user", then check backwards and cut off when no longer alternating.
@@ -864,7 +851,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         response = "".join(lines)
 
     logger.debug("response 1: %r", response)
-    response = fix_layout(response, args)
+    response = fix_layout(response, args, agent)
     logger.debug("response 2: %r", response)
     response = f"{agent['name']}:\t{response.strip()}"
     logger.debug("response 3: %r", response)
@@ -892,7 +879,7 @@ async def run_subprocess(command, query):
     return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
 
 
-async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None):
+async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None, agents=None):
     """Run a shell agent."""
     name = agent["name"]
     logger.debug("history: %r", history)
@@ -926,12 +913,12 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     response += "```\n" + output + "\n```\n"
 
     response2 = f"{name}:\t{response}"
-    response3 = fix_layout(response2, args)
+    response3 = fix_layout(response2, args, agent)
     logger.debug("response3:\n%s", response3)
     return response3
 
 
-async def file_changed(file_path, change_type, old_size, new_size, args, skip):
+async def file_changed(file_path, change_type, old_size, new_size, args, skip, agents):
     """Process a file change."""
     if args.ext and not file_path.endswith(args.ext):
         return
@@ -939,7 +926,7 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
         return
     if not args.shrink and old_size and new_size < old_size:
         return
-    if old_size is None:
+    if old_size is None and new_size == 0:
         return
     #     if new_size == 0 and old_size != 0:
     #         return
@@ -951,23 +938,25 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip):
 
     try:
         logger.info("Processing file: %r", file_path)
-        await process_file(file_path, args, skip=skip)
+        count = await process_file(file_path, args, skip=skip, agents=agents)
+        logger.info("Processed file: %r, %r agents responded", file_path, count)
     except Exception:  # pylint: disable=broad-except
         logger.exception("Processing file failed", exc_info=True)
 
 
-active_tasks: set[asyncio.Task] = set()
+active_tasks: dict[asyncio.Task, str] = {}
 
 
-def add_task(task):
+def add_task(task: asyncio.Task, description: str):
     """Add a task to the active tasks."""
-    active_tasks.add(task)
+    active_tasks[task] = description
     task.add_done_callback(task_done_callback)
 
 
 def task_done_callback(task):
     """Callback for when a task is done."""
-    active_tasks.remove(task)
+    logger.debug("Task done: %r", active_tasks[task])
+    del active_tasks[task]
     try:
         task.result()
     except Exception:  # pylint: disable=broad-except
@@ -976,20 +965,122 @@ def task_done_callback(task):
 
 async def wait_for_tasks():
     """Wait for all active tasks to complete."""
-    if active_tasks:
-        await asyncio.gather(*active_tasks)
+    logger.info("Waiting for %d active tasks", len(active_tasks))
+    while active_tasks:
+        await asyncio.gather(*active_tasks.keys())
 
+
+def list_active_tasks():
+    """List the active tasks."""
+    logger.info("Active tasks: %d", len(active_tasks))
+    for description in active_tasks.values():
+        logger.info("  - %s", description)
+
+
+def write_agents_list(agents):
+    """Write the list of agents to a file."""
+    agent_names = list(agents.keys())
+    path = PATH_ROOMS / "agents.yml"
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(agent_names, f)
+
+
+def agent_get_all_names(agent: Agent) -> list[str]:
+    """Get all the names for an agent."""
+    agent_names = [agent["name"]]
+    fullname = agent.get("fullname")
+    if fullname:
+        agent_names.append(fullname)
+        if " " in fullname:
+            agent_names.append(fullname.split(" ")[0])
+    agent_names.extend(agent.get("aliases", []))
+    return agent_names
+
+
+def load_agent(agents, agent_file):
+    """Load an agent from a file."""
+    name = Path(agent_file).stem
+    remove_agent(agents, name)
+
+    with open(agent_file, encoding="utf-8") as f:
+        agent = yaml.safe_load(f)
+
+    if "name" not in agent:
+        agent["name"] = name
+    elif agent["name"].lower() != name.lower():
+        raise ValueError(f"Agent name mismatch: {name} vs {agent['name']}")
+
+    agent = set_up_agent(agent)
+
+    agent_names = agent_get_all_names(agent)
+
+    for name_lc in map(str.lower, agent_names):
+        if name_lc in agents:
+            if agents[name_lc] != agent:
+                old_main_name = agents[name_lc]["name"]
+                logger.warning("Agent name conflict: %r vs %r for %r", old_main_name, agent["name"], name_lc)
+            continue
+        agents[name_lc] = agent
+
+
+def remove_agent(agents: dict[str, Agent], name: str):
+    """Remove an agent."""
+    agent = agents.get(name.lower())
+    if not agent:
+        return
+    agent_names = agent_get_all_names(agent)
+    for name_lc in map(str.lower, agent_names):
+        agents.pop(name_lc, None)
+
+
+def load_agents(base_dir=None, agents=None):
+    """Load all agents"""
+    if not agents:
+        agents = {}
+    if not base_dir:
+        base_dir = PATH_AGENTS
+
+    for agent_file in base_dir.glob("*.yml"):
+        try:
+            load_agent(agents, agent_file)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("Error loading agent", exc_info=True)
+
+    write_agents_list(agents)
+
+    return agents
+
+
+def agent_file_changed(agents: dict, file_path: str, change_type: Change):
+    """Process an agent file change."""
+    if change_type == Change.deleted:
+        name = Path(file_path).stem
+        logger.info("Removing agent: %r", name)
+        remove_agent(agents, name)
+    else:
+        logger.info("Loading agent: %r", file_path)
+        load_agent(agents, file_path)
+
+
+def check_file_type(path):
+    """Check the file type, either room or agent."""
+    ext = Path(path).suffix
+    if ext == ".bb" and path.startswith(str(PATH_ROOMS)+"/"):
+        return "room"
+    if ext == ".yml" and path.startswith(str(PATH_AGENTS)+"/"):
+        return "agent"
+    return None
 
 
 async def watch_loop(args):
     """Follow the watch log, and process files."""
     skip = defaultdict(int)
 
+    agents = load_agents()
+
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
-        logger.info("Active tasks: %d", len(active_tasks))
         while (line := await queue.get()) is not None:
-            # Load the agents, if modified
-            load_agents()
+            list_active_tasks()
 
             try:
                 file_path, change_type, old_size, new_size = line.rstrip("\n").split("\t")
@@ -997,9 +1088,18 @@ async def watch_loop(args):
                 old_size = int(old_size) if old_size != "" else None
                 new_size = int(new_size) if new_size != "" else None
 
-                # Create and track the task
-                task = asyncio.create_task(file_changed(file_path, change_type, old_size, new_size, args, skip))
-                add_task(task)
+                file_type = check_file_type(file_path)
+                if file_type == "room":
+                    # Create and track the task
+                    task = asyncio.create_task(file_changed(file_path, change_type, old_size, new_size, args, skip, agents))
+                    add_task(task, f"file changed: {file_path}")
+                elif file_type == "agent":
+                    agent_file_changed(agents, file_path, change_type)
+                    write_agents_list(agents)
+                else:
+                    logger.info("Ignoring change to file: %r", file_path)
+            except Exception:  # pylint: disable=broad-except
+                logger.exception("Error processing file change", exc_info=True)
             finally:
                 queue.task_done()
 
@@ -1008,17 +1108,19 @@ async def restart_service():
     """Restart the service."""
     await wait_for_tasks()
     command_line = [sys.executable] + sys.argv
-    logger.info("Restarting service: %r", command_line)
+    logger.debug("Restarting service: %r", command_line)
+    logger.info("Restarting service")
+    sys.stderr.write("\n")
     os.execv(sys.executable, command_line)
 
 
 async def restart_if_code_changes():
     """Watch for code changes and restart the service."""
-    home = os.environ["ALLEMANDE_HOME"]
-    code_files_abs = [Path(home) / f for f in CODE_FILES]
+    code_files_abs = [PATH_HOME / f for f in CODE_FILES]
     try:
         async for changes in awatch(*code_files_abs, debounce=1000, debug=False):
-            logger.info("Code files changed: %r", [str(c) for c in changes])
+            for _change, file in changes:
+                logger.info("Code file changed: %r", file)
             await restart_service()
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("Error watching code files", exc_info=e)
@@ -1040,7 +1142,7 @@ def load_config(args):
 
 def load_model_tokenizer(args):
     """Load the model tokenizer."""
-    models_dir = Path(os.environ["ALLEMANDE_MODELS"]) / "llm"
+    models_dir = PATH_MODELS / "llm"
     model_path = Path(models_dir) / args.model
     if args.model and not model_path.exists() and args.model.endswith(".gguf"):
         args.model = args.model[: -len(".gguf")]
@@ -1050,6 +1152,18 @@ def load_model_tokenizer(args):
         # This will block, but it doesn't matter because this is the init for the program.
         return load_tokenizer(model_path)
     return None
+
+
+services = {
+    "llm_llama":    {"type": "portal", "fn": local_agent},
+    "image_a1111":  {"type": "portal", "fn": local_agent},
+    "openai":       {"type": "remote", "fn": remote_agent},
+    "anthropic":    {"type": "remote", "fn": remote_agent},
+    "google":       {"type": "remote", "fn": remote_agent},
+    "perplexity":   {"type": "remote", "fn": remote_agent},
+    "safe_shell":   {"type": "tool", "fn": safe_shell, "safe": False},  # ironically
+    "search":       {"type": "tool", "fn": run_search},
+}
 
 
 def get_opts():  # pylint: disable=too-many-statements
@@ -1092,14 +1206,13 @@ async def main():
     """Main function."""
     args = get_opts()
 
-    asyncio.create_task(restart_if_code_changes())
-
-    TOKENIZERS[args.model] = load_model_tokenizer(args)
-
     if not args.watch:
         raise ValueError("Watch file not specified")
 
+    TOKENIZERS[args.model] = load_model_tokenizer(args)
+
     logger.info("Watching")
+    asyncio.create_task(restart_if_code_changes())
     await watch_loop(args)
 
 
