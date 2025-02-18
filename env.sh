@@ -24,6 +24,7 @@ ALLEMANDE_BOXES="prep todo doing done error history"
 ALLEMANDE_SCREEN="allemande"
 
 ALLEMANDE_ROOMS="$ALLEMANDE_HOME/rooms"
+ALLEMANDE_AGENTS="$ALLEMANDE_HOME/agents"
 
 ALLEMANDE_AUDIO_LOCK="/var/lock/allemande-audio.lock"
 

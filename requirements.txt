@@ -150,3 +150,5 @@ types-regex
 # python-magic
 
 pulsectl
+
+faiss-cpu sentence_transformers

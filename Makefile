@@ -4,6 +4,7 @@ SHELL := /bin/bash
 
 WEBCHAT := $(ALLYCHAT_HOME)
 ROOMS := $(ALLEMANDE_ROOMS)
+AGENTS := $(ALLEMANDE_AGENTS)
 WATCH_LOG := $(ALLEMANDE_HOME)/watch.log
 SCREEN := $(ALLEMANDE_SCREEN)
 SCREENRC := $(ALLEMANDE_HOME)/config/screenrc
@@ -12,7 +13,7 @@ SUBDIRS := $(dir $(wildcard */Makefile))
 
 JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
 	run core vi-online vi-local vscode-online vscode-local voice webchat llm whisper chat-api stream auth watch \
-	bb2html nginx logs perms brain mike speak \
+	bb2html build-ui nginx logs perms brain mike speak \
 	firefox-webchat-online firefox-webchat-local firefox-pro-local firefox-pro-online \
 	chrome-webchat-online chrome-webchat-local \
 	stop mount umount fresh \
@@ -95,7 +96,7 @@ core: llm.xt a1111.xt whisper.xt
 
 voice: mike.xt speak.xt whisper.xt
 
-webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt
+webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt build-ui.xt
 
 pro: svelte.xt
 pro-dev: svelte-dev.xt
@@ -119,7 +120,7 @@ core.xtc: llm.xtc a1111.xtx whisper.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
-webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc auth.xtc
+webchat.xtc: chat-api.xtc stream.xtc watch.xtc bb2html.xtc auth.xtc build-ui.xtc
 
 pro.xtc: svelte.xtc
 pro-dev.xtc: svelte-dev.xtc
@@ -175,10 +176,13 @@ auth:
 	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002
 
 watch:
-	awatch -r -A -x bb -p $(ROOMS) >> $(WATCH_LOG)
+	awatch -r -A -x bb yml -p $(ROOMS) $(AGENTS) >> $(WATCH_LOG)
 
 bb2html:
 	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
+
+build-ui:
+	cd $(WEBCHAT) && awatch -p ./static -a -J make
 
 nginx:
 	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx; echo ... done; done
