@@ -13,7 +13,7 @@ from random import random
 
 import sh  # type: ignore
 
-from ally import main, logs, lazy  # type: ignore
+from ally import main, logs, lazy, geput  # type: ignore
 import llm  # type: ignore
 
 __version__ = "0.1.3"
@@ -74,20 +74,23 @@ def reply_sentiment(feeling: str) -> str:
 
 
 def hello(
-    istream: TextIO,
-    ostream: TextIO,
+    get: geput.Get,
+    put: geput.Put,
     name: str = "",
     ai: bool = False,
     model: str | None = None,
 ) -> None:
     """An example program to say hello, and ask the user how they are."""
+    print = geput.print(put)
+    input = geput.input(get)
+
     if not name:
         name = getpass.getuser().title() if random() < 0.5 else "world"
 
-    ostream.write(f"Hello, {name}!\n")
-    ostream.write("How are you feeling today?\n")
+    print(f"Hello, {name}!")
+    print("How are you feeling today?")
 
-    feeling = istream.readline().strip()
+    feeling = input()
 
     if not feeling or feeling.lower() in [
         "lucky",
@@ -104,7 +107,7 @@ def hello(
         logger.info("using sentiment analysis")
         response = reply_sentiment(feeling)
 
-    ostream.write(f"{response}\n")
+    print(response)
 
 
 def setup_args(arg):
@@ -117,7 +120,6 @@ def setup_args(arg):
 
 if __name__ == "__main__":
     main.go(hello, setup_args)
-
 
 # Important Notes to AI [DO NOT COPY ANY "NOTES TO AI" IN YOUR OUTPUT, it gets
 # EXPENSIVE FOR ME, THIS MEANS YOU CLAUDE, GPT, GEMINI!]:
