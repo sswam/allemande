@@ -32,6 +32,7 @@ class WatcherOptions(BaseModel):
     recursive: bool = False
     absolute: bool = False
     run: bool = False
+    job: bool = False
     service: bool = False
     command: list[str] = []
     debounce: float = 0.01
@@ -121,12 +122,12 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
             return str(Path(path).absolute())
         return path
 
-    async def run_command(self, changed_path):
+    async def run_command(self, *args):
         """Handle running commands asynchronously"""
         try:
             process = await asyncio.create_subprocess_exec(
                 *self.opts.command,
-                changed_path,
+                *args,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )
@@ -144,6 +145,8 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
         """Run the command or service when a file changes"""
         if self.opts.run:
             await self.run_command(changed_path)
+        elif self.opts.job:
+            await self.run_command()
         elif self.opts.service:
             await self.restart_service_debounce.trigger()
 
@@ -268,8 +271,8 @@ def null_to(x, replacement):
 async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     """Main function for awatch"""
     opts.exts = tuple(f".{ext}" for ext in opts.extension)
-    if (opts.run or opts.service) and not opts.command:
-        raise ValueError("command is required when using --run or --service")
+    if (opts.run or opts.job or opts.service) and not opts.command:
+        raise ValueError("command is required when using --run, --job or --service")
     w = Watcher(paths, opts)
     async for row in w.run():
         if row == Watcher.flush:
@@ -291,6 +294,7 @@ def setup_args(arg):
     arg("-L", "--follow", help="follow symlinks", action="store_true")
     arg("-A", "--absolute", help="return absolute paths", action="store_true")
     arg("-R", "--run", help="run command when files change, with pathname as argument", action="store_true")
+    arg("-J", "--job", help="run command when files change, with no arguments", action="store_true")
     arg("-s", "--service", help="run and restart a service when files change", action="store_true")
     arg("-d", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
     arg("command", nargs="*", help="command or service to run when files change")
