@@ -36,7 +36,20 @@ const $waitUntilElementHidden = (selector, time) => $waitUntil(() => $(selector)
 const $waitUntilElementText = (selector, text, time) => $waitUntil(() => $(selector).innerText === text, time);
 const $waitUntilElementAttribute = (selector, attribute, value, time) => $waitUntil(() => $(selector).getAttribute(attribute) === value, time);
 
-// Hook system
+function show(element, do_show) {
+  if (typeof element === "string")
+    element = $id(element);
+  if (do_show === undefined || do_show)
+    element.classList.remove("hidden");
+  else
+    element.classList.add("hidden");
+}
+
+function hide(element) {
+  show(element, false);
+}
+
+// Hook system ---------------------------------------------------------------
 
 const hooks = {};
 
