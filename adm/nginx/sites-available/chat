@@ -102,4 +102,8 @@ server {
 		auth_jwt_extract_request_claims sub;
 		proxy_set_header X-Forwarded-User $http_jwt_sub;
 	}
+
+	types {
+		application/wasm wasm;
+	}
 }

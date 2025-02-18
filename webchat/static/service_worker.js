@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.1.623";
+const VERSION = "0.1.638";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
@@ -16,6 +16,14 @@ const URLS_TO_CACHE = [
 	"/allychat.css",
 	"/chat.css",
 	"/icon.png",
+	"/process_messages.js",
+	"/voice.js",
+	"/room.js",
+
+	"/d3.min.js",
+	"/wasm.min.js",
+	"/d3-graphviz.min.js",
+	"/graphvizlib.wasm",
 ];
 
 const CORS_URLS_TO_CACHE = [

@@ -136,3 +136,4 @@ rooms.*
 /webchat/static/d3-graphviz.min.js
 /webchat/static/wasm.min.js
 /webchat/static/d3.min.js
+/webchat/static/graphvizlib.wasm
