@@ -13,7 +13,7 @@ query() {
 
 	local refs=("$@")
 
-	cat-named -p -b --suppress-headings input "${refs[@]}" |
+	cat-named -p -S $'\n' --suppress-headings input "${refs[@]}" |
 		llm process -m "$model" --empty-ok "$prompt" | text-strip
 }
 

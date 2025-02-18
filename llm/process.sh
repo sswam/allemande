@@ -20,7 +20,7 @@ process() {
 		opts="--empty-ok"
 	fi
 
-	cat-named -p -b --suppress-headings input - "${refs[@]}" |
+	cat-named -p -S $'\n' --suppress-headings input - "${refs[@]}" |
 	if [ "$indent" ]; then
 		local indent
 		input=$(cat)

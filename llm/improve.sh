@@ -235,7 +235,7 @@ improve() {
 	"
 	fi
 
-	local input=$(v cat-named -p "${opt_b[@]}" "${opt_n[@]}" "$file" "${refs[@]}")
+	local input=$(v cat-named -p -S $'\n' "${opt_b[@]}" "${opt_n[@]}" "$file" "${refs[@]}")
 
 	# Backup original file
 	if [ -e "$file.new" ]; then
@@ -258,13 +258,13 @@ improve() {
 	esac
 
 	target_file="$file"
-	output_file="$file.new"
+	output_file="$file.changes"
 
 	# By default, it should edit the main code.
 	# if using -C option, it must edit the tests, so the output file is the tests file plus a tilde
 	if ((codeok)) && [ -n "$tests_file" ]; then
 		target_file="$tests_file"
-		output_file="$tests_file.new"
+		output_file="$tests_file.changes"
 	fi
 
 	if ((use_ai == 0)); then
@@ -274,7 +274,7 @@ improve() {
 	# Process input and save result
 	printf "%s\n" "$input" | process -m="$model" "$prompt" |
 		if [ -n "$comment_char" ]; then
-			markdown-code -c "$comment_char"
+			markdown-code -F -c "$comment_char"
 		else
 			cat
 		fi >"$output_file"
@@ -296,6 +296,23 @@ improve() {
 		else
 			vimdiff "$output_file" "$target_file"
 		fi
+	fi
+
+	# auto-apply
+
+	echo >&2 "test: $test codeok: $codeok testok: $testok"
+	echo >&2 "tests_file: $tests_file exists? $(test -e "$tests_file" && echo yes || echo no)"
+
+	if ((test)) && ((codeok == 0)) && ((testok == 0)) && [ -e "$tests_file" ]; then
+		confirm apply -c="$output_file" "$target_file" "$tests_file" && return
+	fi
+
+	if ((test)) && ((codeok == 0)); then
+		confirm apply -c="$output_file" "$target_file" && return
+	fi
+
+	if ((test)) && ((codeok == 1)) && ((testok == 0)) && [ -e "$tests_file" ]; then
+		confirm apply -c="$output_file" "$tests_file" && return
 	fi
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
