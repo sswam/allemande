@@ -143,6 +143,9 @@ async def process_request(portals: str, portal_str: Path, req: str):
         if 'hires' in sets:
             need_update_macros = True
             config['hires'] = float(sets['hires'])
+        if 'seed' in sets:
+            need_update_macros = True
+            config['seed'] = int(sets['seed'])
 
         config = process_hq_macro(prompt, config, macros)
         config = limit_dimensions_and_hq(config)
@@ -152,7 +155,9 @@ async def process_request(portals: str, portal_str: Path, req: str):
             sets['width'] = str(config['width'])
             sets['height'] = str(config['height'])
             sets['hires'] = str(config['hires'])
+            sets['seed'] = "---REMOVEME---"
             prompt = update_macros(prompt, macros)
+            prompt = re.sub(r"seed=---REMOVEME---", "", prompt)
 
             logger.info("updated prompt: %s", prompt)
 
