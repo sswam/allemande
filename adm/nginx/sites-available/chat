@@ -52,6 +52,7 @@ server {
 		if ($cors_header = "https://rooms.allemande.ai") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
+			add_header Cross-Origin-Resource-Policy: cross-origin
 		}
 		try_files $uri $uri/ =404;
 	}
