@@ -1,0 +1,4 @@
+service: safe_shell
+command:
+- calc
+name: Palc

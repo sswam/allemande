@@ -1,0 +1,19 @@
+model: babesByStableYogi_ponyV4VAEFix
+service: image_a1111
+default_context: 1
+clean_prompt: true
+adult: true
+config:
+  steps: 15
+  cfg_scale: 7
+  pony: 1.0
+  pag: true
+  adetailer:
+  - face_yolov8n.pt
+  adetailer_adult:
+  - face_yolov8n.pt
+  - female-breast-v4.7.pt
+  - pussyV2.pt
+  ad_mask_k_largest: 10
+  hires: 1.5
+name: Boni

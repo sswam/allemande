@@ -1,0 +1,7 @@
+name: Flashi
+service: google
+model: gemini-2.0-flash
+default_context: 100
+system_bottom: '[You are $NAME]'
+aliases:
+- Gemini 2.0 Flash

@@ -1,5 +1,0 @@
-type: remote
-name: Dav
-model: gpt-4o-mini
-default_context: 100
-system_bottom: '[Please reply as Dav, without any `Dav: ` prefix.]'

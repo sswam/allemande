@@ -1,0 +1,7 @@
+name: Grace
+service: openai
+model: o1
+default_context: 20
+system_bottom: '[You are $NAME]'
+aliases:
+- o1

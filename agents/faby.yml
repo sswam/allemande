@@ -1,0 +1,6 @@
+service: safe_shell
+command:
+- tcc
+- -run
+- '-'
+name: Faby

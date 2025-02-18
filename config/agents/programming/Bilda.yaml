@@ -1,2 +1,0 @@
-type: programming
-command: ["make", "-f", "/dev/stdin"]

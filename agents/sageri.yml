@@ -1,0 +1,9 @@
+name: Sageri
+service: perplexity
+model: sonar-reasoning-pro
+default_context: 20
+alternating_context: true
+system_top: '[You are $NAME]'
+online: true
+aliases:
+- Sonar Reasoning Pro

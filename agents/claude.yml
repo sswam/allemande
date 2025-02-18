@@ -1,0 +1,8 @@
+name: Claude
+service: anthropic
+model: claude
+default_context: 20
+visual:
+  person: 1boy, striking opalescent eyes shifting between blue and violet, tall and
+    willowy physique, angular features, high cheekbones, pale skin with ethereal quality,
+    long elegant fingers, shoulder-length hair, dark hair with iridescent sheen

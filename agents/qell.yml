@@ -1,0 +1,6 @@
+service: safe_shell
+command:
+- sh
+- -c
+- t=`mktemp`; cat >$t; qjs --std --bignum --qjscalc $t; rm $t
+name: Qell

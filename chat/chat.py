@@ -16,6 +16,7 @@ import random
 import enum
 from stat import S_IFREG, S_IROTH, S_IWOTH
 import asyncio
+import copy
 
 import argh
 import markdown
@@ -23,7 +24,7 @@ from starlette.exceptions import HTTPException
 import aiofiles
 
 import video_compatible
-from agents import ALLOWED_AGENTS
+from ally.cache import cache
 
 
 os.umask(0o007)
@@ -147,6 +148,8 @@ class Room:
         """
         if not check_access(user, self.name, self.path).value & Access.WRITE.value:
             raise PermissionError("You are not allowed to post to this room.")
+
+        content = "\n".join(line.rstrip() for line in content.rstrip().splitlines())
 
         if content == "":
             # touch the markdown_file, to poke some attention
@@ -901,27 +904,43 @@ def filter_stars_prob(message: ChatMessage, prob: float = 0.5) -> ChatMessage | 
     )
 
 
-def process_chat_cli(code: str|None = None, func: str|None = None):
-    """Read a chat file from stdin, process it with a Python expression from the CLI, and write the result to stdout."""
-    messages = load_chat_messages()
-    if func:
-        globals()["process_fn"] = globals()[func]
-    else:
-        code = code.replace("\n", "\n    ")
-        code = f"""
-import re
-def process_fn(msg):
-    u = msg.user
-    c = msg.content
-    {code}
-    if not c:
-        return None
-    return ChatMessage(u, c)
-"""
-        exec(code, globals())
+def load_config(path: Path, filename: str) -> dict[str, Any]:
+    """Load YAML configuration from files."""
+    # list of folders from path up to ROOMS_DIR
+    folders = list(path.relative_to(ROOMS_DIR).parents)
+    # Go top-down from ROOMS_DIR to the folder containing the file
+    config_all = {}
+    for folder in reversed(folders):
+        config_path = ROOMS_DIR / folder / filename
+        if not config_path.exists():
+            continue
+        with config_path.open("r", encoding="utf-8") as f:
+            config = cache.load(config_path)
+            if config.get("reset"):
+                config_all = config
+            else:
+                # We only merge at the top level
+                config_all.update(config)
+    return config_all
 
-    processed_messages = process_chat(messages, process_fn)
-    save_chat_messages(processed_messages)
+
+def write_agents_list(agents):
+    """Write the list of agents to a file."""
+    agent_names = list(agents.keys())
+    path = Path(os.environ["ALLEMANDE_ROOMS"]) / "agents.yml"
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(agent_names, f)
+
+
+def read_agents_list() -> list[str]:
+    """Read the list of agents from a file."""
+    path = Path(os.environ["ALLEMANDE_ROOMS"]) / "agents.yml"
+    if not path.exists():
+        return []
+    agent_names = cache.load(path)
+    if not isinstance(agent_names, list):
+        raise ValueError("Invalid agents list")
+    return agent_names
 
 
 def check_access(user: str, pathname: str, path: Path) -> bool:
@@ -934,12 +953,23 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
     # TODO What's the difference between a moderator and an admin?
     #      Do we need both?
 
+    access = load_config(path, "access.yml")
+    agent_names = read_agents_list()
+
     user = user.lower()
 
     logger.warning("check_access: User: %s, Path: %s", user, pathname)
 
-    # Allowed agents have access to everything
-    if user in ALLOWED_AGENTS:
+    # Denied users have no access
+    if user in access.get("deny", []):
+        return Access.NONE
+
+    # Allowed users have access
+    if user in access.get("allow", []):
+        return Access.READ_WRITE
+
+    # Agents have access if allowed
+    if access.get("allow_agents") and user in agent_names:
         return Access.READ_WRITE
 
     # Admins have access to everything
@@ -986,7 +1016,7 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
 
     mode = stats.st_mode
 
-    access = 0
+    access = Access.NONE
 
     # Users have access to other-readable entries anywhere
     if mode & S_IROTH:
@@ -1073,6 +1103,71 @@ async def overwrite_file(user, file, content, backup=True, delay=0, noclobber=Fa
             await asyncio.sleep(delay)
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
+
+
+def remove_thinking_sections(content: str, agent_name: str|None) -> str:
+    if agent_name and content.startswith(agent_name + ":\t"):
+        return content
+    modified = re.sub(
+        r"""(?ix)
+        <details\b[^>]*>
+        .*?
+        (</details>|$)
+        """,
+        "",
+        content,
+        flags=re.DOTALL,
+    )
+    if modified != content:
+        logger.debug("Removed 'thinking' section/s from message: %r", modified)
+        return modified
+    return content
+
+
+def context_remove_thinking_sections(context: list[str], agent_name: str|None):
+    """Remove "thinking" sections from the context."""
+    # Remove any "thinking" sections from the context
+    # A "thinking" section is a <details> block
+
+    for i, message in enumerate(context):
+        context[i] = remove_thinking_sections(message, agent_name)
+
+    return context
+
+def history_remove_thinking_sections(history: list[dict[str,Any]], agent_name: str|None):
+    """Remove "thinking" sections from the history."""
+    # Remove any "thinking" sections from the context
+    # A "thinking" section is a <details> block
+
+    history = copy.deepcopy(history)
+
+    for message in history:
+        message["content"] = remove_thinking_sections(message["content"], agent_name)
+
+    return history
+
+
+def process_chat_cli(code: str|None = None, func: str|None = None):
+    """Read a chat file from stdin, process it with a Python expression from the CLI, and write the result to stdout."""
+    messages = load_chat_messages()
+    if func:
+        globals()["process_fn"] = globals()[func]
+    else:
+        code = code.replace("\n", "\n    ")
+        code = f"""
+import re
+def process_fn(msg):
+    u = msg.user
+    c = msg.content
+    {code}
+    if not c:
+        return None
+    return ChatMessage(u, c)
+"""
+        exec(code, globals())
+
+    processed_messages = process_chat(messages, process_fn)
+    save_chat_messages(processed_messages)
 
 
 if __name__ == "__main__":

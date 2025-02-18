@@ -1,6 +1,0 @@
-type: remote
-model: claude-haiku
-default_context: 100
-system_bottom: '[Please reply as Claude, without any `Claude: ` prefix.]'
-map:
-    Clia: Claude
