@@ -3,9 +3,9 @@ import io
 import pytest
 from unittest.mock import patch, mock_open
 
-import text as subject
+from ally import text as subject
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 subject_name = subject.__name__
 
