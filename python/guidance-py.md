@@ -41,6 +41,14 @@ Always use modern type hints such as list[str] | None, not Optional[List[str]]
 We don't care about compatibility with older versions of Python.
 i.e. please DO NOT from typing import List, Dict, Set, Tuple or similar.
 
+When logging, use lazy evaluation, e.g. `logger.debug("foo %s", bar)`.
+
+Write imports in three sections: standard library, third-party, and local.
+
+We use pylint, so when we need to do naughty things please disable the check:
+- except Exception as e:  # pylint: disable=broad-except
+- def foo(a, b, c, d, e, f, g):  # pylint: disable=too-many-arguments, too-many-positional-arguments
+
 Follow the principles from The Practice of Programming by Kernighan and Pike,
 e.g. "simplicity, clarity, generality". As Linus advises, "Good taste" in
 programming often means preferring clear, simple solutions over clever ones.
