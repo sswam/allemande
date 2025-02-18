@@ -17,6 +17,35 @@ const $inputrow = $id("inputrow");
 const $edit = $id("view_edit");
 const $auto = $id('mod_auto');
 
+// simple messages to keep the conversation going
+const random_message = [
+  "ok",
+  "okay",
+  "sure",
+  "yes",
+  "Okay",
+  "I see",
+  "I understand",
+  "I agree",
+  "that's right",
+  "that's true",
+  "I know",
+  "that's interesting",
+  "I like that",
+  "I love that",
+  "what happened next?",
+  "I'm listening",
+  "tell me more",
+  "*listens*",
+  "*nods*",
+  "*smiles*",
+  "go on",
+  "and then?",
+  "what happened?",
+  "what's next?",
+  "wow",
+]
+
 let VERSION;
 let DEBUG = true;
 
@@ -43,8 +72,11 @@ const SHORTCUTS_GLOBAL = shortcuts_to_dict([
 ]);
 
 const SHORTCUTS_MESSAGE = shortcuts_to_dict([
-  ['ctrl+Enter', send, 'Send message'],
+  ['ctrl+Enter', () => send(), 'Send message'],
+  ['shift+Enter', send_random_message, 'Send a random message'],
+  ['alt+Enter', poke, 'Poke the chat'],
   ['alt+s', send, 'Send message'],
+  ['alt+p', poke, 'Poke the chat'],
   ['alt+t', content_insert_tab, 'Insert tab'],
   ['alt+x', clear_content, 'Clear content'],
   ['alt+u', browse_up, 'Browse up'],
@@ -69,22 +101,6 @@ const SHORTCUTS_EDIT = shortcuts_to_dict([
   ['alt+Z', edit_reset, 'Reset edit'],
   ['alt+X', edit_clear, 'Clear edit'],
 ]);
-
-// DOM functions -------------------------------------------------------------
-
-function show($el, do_show) {
-  // if $el is a string, get the element
-  if (typeof $el === "string")
-    $el = $id($el);
-  if (do_show === undefined || do_show)
-    $el.classList.remove("hidden");
-  else
-    $el.classList.add("hidden");
-}
-
-function hide($el) {
-  show($el, false);
-}
 
 // developer functions -------------------------------------------------------
 
@@ -118,6 +134,8 @@ function set_content(content, allow_undo) {
 }
 
 async function send_form_data(formData) {
+  active_inc("send");
+
   const response = await fetch("/x/post", {
     method: "POST",
     body: formData,
@@ -137,15 +155,24 @@ async function send_form_data(formData) {
 }
 
 async function send(ev) {
-  ev.preventDefault();
+  if (ev)
+    ev.preventDefault();
 
   auto_play_back_off();
+
+  // if shift or ctrl is pressed, change the active count
+  if (ev && ev.shiftKey)
+    return active_inc("send");
+  if (ev && ev.ctrlKey)
+    return active_dec("send");
+
+  // if alt is pressed, send an empty message (poke)
+  if (ev && ev.altKey)
+    return await poke();
 
   const formData = new FormData($form);
   const message = $content.value;
   set_content("");
-
-  active_inc("send");
 
   try {
     await send_form_data(formData);
@@ -163,16 +190,25 @@ async function send_text(text) {
   await send_form_data(formData);
 }
 
-async function poke() {
+async function poke(ev) {
+  if (ev)
+    ev.preventDefault();
   await send_text("");
 }
 
 function clear_content(ev) {
+  if (ev)
+    ev.preventDefault();
   set_content("");
 }
 
 function focus_content() {
   $content.focus();
+}
+
+function send_random_message() {
+  const message = random_message[Math.floor(Math.random() * random_message.length)];
+  send_text(message);
 }
 
 // error indicator for buttons -----------------------------------------------
@@ -271,6 +307,10 @@ function textarea_insert_text(textarea, text) {
 function message_changed(ev) {
   if ($content.value == "") $id("send").textContent = "poke";
   else $id("send").textContent = "send";
+}
+
+function content_keydown(ev) {
+  auto_play_back_off();
 }
 
 // change room ---------------------------------------------------------------
@@ -449,10 +489,9 @@ function escape() {
 
 function room_set_number(n) {
   if (n === "") {
-    //		room = room.replace(/(.*\D|)(\d+)(\D.*|)$/, "$1$3");
-    room = room.replace(/\/*\d+$/, "");
-    //		room = room.replace(/\/+$/, "");
+    room = room.replace(/-?\d+$/, "");
     set_room(room);
+    return;
   }
   if (n < 0) {
     n = 0;
@@ -460,11 +499,13 @@ function room_set_number(n) {
   if (n > MAX_ROOM_NUMBER) {
     n = MAX_ROOM_NUMBER;
   }
-  set_room(room.replace(/(\/?)\d+$|$/, "$1" + n));
+  room = room.replace(/-?\d+$|$/, "-" + n);
+  set_room(room);
 }
 
 function room_get_number() {
-  return room.match(/\d+$/);
+  const match = room.match(/(\d+)$/);
+  return match ? match[1] : null;
 }
 
 function room_random() {
@@ -473,8 +514,8 @@ function room_random() {
 
 function room_next() {
   let num = room_get_number();
-  if (num === null && !room.match(/\/$/)) {
-    num = "/0";
+  if (num === null) {
+    num = 0;
   } else {
     num = +num + 1;
   }
@@ -483,14 +524,12 @@ function room_next() {
 
 function room_prev() {
   let num = room_get_number();
-  if (num == 0 && room.match(/\/0+$/)) {
+  if (num === "0") {
     return room_set_number("");
   } else if (num === null) {
     return;
-  } else if (num == 0) {
-    num = "";
   } else {
-    num -= 1;
+    num = +num - 1;
   }
   room_set_number(num);
 }
@@ -936,7 +975,7 @@ function reset_ui() {
 
 let auto_play_interval_timer = null;
 let auto_play_interval = null;
-const auto_play_interval_options = [null, 5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 300, 600, 1200, 1800, 3600];
+const auto_play_interval_options = [null, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 300, 600, 1200, 1800, 3600];
 
 
 function fmt_duration(seconds) {
@@ -949,24 +988,31 @@ function fmt_duration(seconds) {
   return `${s}s`;
 }
 
+function auto_play_poke() {
+  // don't poke if we're already waiting for a response
+  if (!active_get("send"))
+    poke();
+}
+
 function set_auto_play(delta) {
-  if (auto_play_interval_timer)
+  if (auto_play_interval_timer) {
     clearInterval(auto_play_interval_timer);
+    auto_play_interval_timer = null;
+  }
   const max = auto_play_interval_options.length - 1;
   active_add("mod_auto", delta, max);
   auto_play_interval = auto_play_interval_options[active_get("mod_auto")];
-  if (!auto_play_interval) {
+  if (!auto_play_interval)
     return stop_auto_play();
-  }
-  auto_play_interval_timer = setInterval(poke, auto_play_interval * 1000);
+  auto_play_interval_timer = setInterval(auto_play_poke, auto_play_interval * 1000);
   $auto.textContent = fmt_duration(auto_play_interval);
 }
 
 function stop_auto_play() {
   if (auto_play_interval_timer)
     clearInterval(auto_play_interval_timer);
-  auto_play_interval = null;
   auto_play_interval_timer = null;
+  auto_play_interval = null;
   $auto.textContent = "auto";
   active_set("mod_auto", 0);
 }
@@ -979,8 +1025,8 @@ function auto_play(ev) {
   } else if (auto_play_interval) {
     stop_auto_play();
   } else {
-    poke();
-    set_auto_play(3);
+    auto_play_poke();
+    set_auto_play(auto_play_interval_options.indexOf(15));
   }
 }
 
@@ -1119,6 +1165,8 @@ function edit_get_text() {
 }
 
 async function edit(file) {
+  stop_auto_play();
+
   if (file === undefined) {
     file = room + ".bb";
   }
@@ -1208,7 +1256,7 @@ function edit_close() {
 
 
 let view_options = {
-  images: true,
+  images: 2,
 };
 
 function setup_view_options() {
@@ -1226,12 +1274,19 @@ function view_options_apply() {
   localStorage.setItem("view_options", JSON.stringify(view_options));
   // update buttons
   active_set("view_images", view_options.images);
+  active_set("view_source", view_options.source);
   // send message to the rooms iframe to apply view options
   $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
 }
 
 function view_images() {
-  view_options.images = !view_options.images;
+  // goes 2, 1, 0, 2 ...
+  view_options.images = (+view_options.images - 1 + 3) % 3;
+  view_options_apply();
+}
+
+function view_source() {
+  view_options.source = !view_options.source;
   view_options_apply();
 }
 
@@ -1270,10 +1325,12 @@ function chat_main() {
   $on($id("edit_close"), "click", edit_close);
 
   $on($id("view_images"), "click", view_images);
+  $on($id("view_source"), "click", view_source);
   $on($id("view_cancel"), "click", () => set_controls());
 
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_MESSAGE));
+  $on($content, "keydown", content_keydown);
   $on($room, "keypress", (ev) => dispatch_shortcut(ev, SHORTCUTS_ROOM));
   $on($edit, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_EDIT));
   $on($content, "input", message_changed);

@@ -104,6 +104,19 @@ function check_for_new_content(mutations) {
   return false;
 }
 
+// resize observer -----------------------------------------------------------
+
+function resized(entries) {
+  messages_scrolled();
+}
+
+async function setup_resize_observer() {
+  await wait_for_body();
+  new ResizeObserver(resized).observe(document.body);
+}
+
+// mutation observer ---------------------------------------------------------
+
 function mutated(mutations) {
   if (check_for_new_content(mutations)) {
     online();
@@ -112,10 +125,12 @@ function mutated(mutations) {
   messages_scrolled();
 }
 
-new MutationObserver(mutated).observe($("html"), {
-  childList: true,
-  subtree: true,
-});
+function setup_mutation_observer() {
+  new MutationObserver(mutated).observe($("html"), {
+    childList: true,
+    subtree: true,
+  });
+}
 
 $on(window, "scroll", messages_scrolled);
 
@@ -545,16 +560,54 @@ function notify_new_message(newMessage) {
 
 // view options --------------------------------------------------------------
 
-function handle_message(ev) {
+async function handle_message(ev) {
   // console.log("room handle_message", ev);
   if (ev.origin !== CHAT_URL) {
     console.error("ignoring message from", ev.origin);
     return;
   }
   if (ev.data.type === "set_view_options") {
+    await wait_for_body();
     const view_images = ev.data.images;
-    document.body.classList.toggle("images", view_images);
+    const cl = document.body.classList;
+    if (view_images == 2) {
+      cl.add("images");
+      cl.remove("images_alt");
+    } else if (view_images == 1) {
+      cl.add("images_alt");
+      cl.remove("images");
+    } else {
+      cl.remove("images");
+      cl.remove("images_alt");
+    }
+
+    const view_sources = ev.data.source;
+    if (view_sources == 1) {
+      cl.add("source");
+    } else {
+      cl.remove("source");
+    }
   }
+}
+
+// wait for body to be ready -------------------------------------------------
+
+function wait_for_body() {
+  return new Promise(resolve => {
+    if (document.body) {
+      resolve();
+      return;
+    }
+
+    const observer = new MutationObserver(mutations => {
+      if (document.body) {
+        observer.disconnect();
+        resolve();
+      }
+    });
+
+    observer.observe(document.documentElement, { childList: true });
+  });
 }
 
 // main ----------------------------------------------------------------------
@@ -566,6 +619,8 @@ function room_main() {
   $on(window, "message", handle_message);
   setup_keyboard_shortcuts();
   window.parent.postMessage({ type: "ready" }, CHAT_URL);
+  setup_resize_observer();
+  setup_mutation_observer();
 }
 
 room_main();

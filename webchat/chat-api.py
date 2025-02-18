@@ -86,7 +86,7 @@ async def put_file(request, path=""):
     content = content.decode()
 
     try:
-        await chat.overwrite_file(user, path, content, delay=0.1, noclobber=noclobber)
+        await chat.overwrite_file(user, path, content, delay=0.2, noclobber=noclobber)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({"status": "success"})

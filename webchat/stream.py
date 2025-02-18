@@ -115,12 +115,14 @@ MIME_TYPE_ICONS = {
     # Special icons
     "text/x-allychat": "💬",  # a speech bubble
     "text/x-allychat-mission": "📜",  # a scroll
+    "text/yaml": "⚙️",  # a gear
 }
 
 
 SPECIAL_TYPES = {
     "bb": "text/x-allychat",
     "m": "text/x-allychat-mission",
+    "yml": "text/yaml",
 }
 
 

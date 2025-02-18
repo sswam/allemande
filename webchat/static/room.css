@@ -9,6 +9,7 @@ div.messages {
 }
 .message, .narrative {
 	clear: both;
+	min-height: 1em;
 }
 .message.me > .label { color: blue; }
 .message > .content {
@@ -157,9 +158,13 @@ body.overlay > div.overlay.fit_height > img {
 	max-height: 100%;
 }
 
-details.up {
+details.search {
 	position: relative;
 	top: -18px;
+}
+
+details.search > div {
+	margin-bottom: 40px;
 }
 
 .directory-listing {
@@ -176,6 +181,13 @@ details.up {
 body:not(.images) img {
 	display: none;
 }
-body.images .alt {
+body:not(.images_alt) .alt {
+	display: none;
+}
+
+body:not(.source) .language-dot {
+	display: none;
+}
+body.source .graphviz {
 	display: none;
 }

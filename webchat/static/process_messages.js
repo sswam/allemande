@@ -74,14 +74,22 @@ function getOnlyChildParagraph(node) {
   return null;
 }
 
+function render_graphviz(node) {
+  const dot = node.querySelectorAll("code.language-dot");  
+  for (const elem of dot) {
+    const par = elem.parentElement;
+    d3.select(par)
+        .append("div")
+        .classed("graphviz", true)
+        .graphviz()
+        .renderDot(elem.innerText);
+  }
+}
+
 function handleNewMessage(newMessage) {
   const newContent = newMessage.querySelector(".content");
   const newUser = newMessage.getAttribute("user");
   notify_new_message({ user: newUser, content: newContent.innerHTML });
-
-  if (!newMessage.previousElementSibling) {
-    return;
-  }
 
   // Set title attribute for images
   // and add a <div class="alt"> element for each image
@@ -92,39 +100,40 @@ function handleNewMessage(newMessage) {
     }
     const altDiv = document.createElement("div");
     altDiv.className = "alt";
-    altDiv.textContent = "[🖼️ " + img.alt + "]";
+    altDiv.textContent = "🖼️ " + img.alt;
     img.parentNode.insertBefore(altDiv, img.nextSibling);
   }
 
+  // render graphviz diagrams
+  render_graphviz(newContent);
 
   const newParagraph = getOnlyChildParagraph(newContent);
 
-  // Handle image-only messages
+  // Move images from new message to previous message if they have
+  // the same user and same generation prompt in the alt text
   if (newParagraph && isNodeOnlyImages(newParagraph)) {
     const matchingMessage = findMatchingImageMessage(newMessage);
-    if (!matchingMessage) {
-      return;
+    if (matchingMessage) {
+      // console.log("found matching", matchingMessage);
+      const prevContent = matchingMessage.querySelector(".content");
+      const prevParagraph = getOnlyChildParagraph(prevContent);
+      if (prevParagraph) {
+        moveImages(newParagraph, prevParagraph);
+        newMessage.remove();
+        newMessage = null;
+      }
     }
-    // console.log("found matching", matchingMessage);
-    const prevContent = matchingMessage.querySelector(".content");
-    const prevParagraph = getOnlyChildParagraph(prevContent);
-    if (prevParagraph) {
-      moveImages(newParagraph, prevParagraph);
+  }
+
+  // Combine regular messages from the same user
+  if (newMessage) {
+    const previousMessage = newMessage.previousElementSibling;
+    if (previousMessage && nodeIsMessage(previousMessage) && previousMessage.getAttribute("user") === newMessage.getAttribute("user")) {
+      const prevContent = previousMessage.querySelector(".content");
+      moveContent(newContent, prevContent);
       newMessage.remove();
     }
-    return;
   }
-
-  // Handle regular messages
-  const previousMessage = newMessage.previousElementSibling;
-  if (!nodeIsMessage(previousMessage) ||
-      previousMessage.getAttribute("user") !== newMessage.getAttribute("user")) {
-    return;
-  }
-
-  const prevContent = previousMessage.querySelector(".content");
-  moveContent(newContent, prevContent);
-  newMessage.remove();
 }
 
 function process_messages(mutations) {

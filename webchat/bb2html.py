@@ -27,8 +27,8 @@ async def file_changed(bb_file, html_file, old_size, new_size):
     # assume the file was appended to ...
     html_file_mode = "ab"
 
-    # ... unless the file has shrunk
-    if old_size and new_size < old_size:
+    # ... unless the file seems to be new or has shrunk ...
+    if old_size is None or new_size < old_size:
         logger.warning("bb file was truncated: %s from %s to %s", bb_file, old_size, new_size)
         html_file_mode = "wb"
 
