@@ -1039,6 +1039,7 @@ def update_visual(agent: Agent):
             continue
         prompt = visual.get(key)
         if prompt:
+            prompt = prompt.strip() + "\n"
             (PATH_VISUAL/key).mkdir(parents=True, exist_ok=True)
             cache.save(str(PATH_VISUAL / key / name_lc) + ".txt", prompt, noclobber=False)
             # symlink the main file to the agent's other names
