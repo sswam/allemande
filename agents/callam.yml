@@ -1,4 +1,4 @@
-service: llm_llama
+type: llm_llama
 model: default
 system_bottom: |-
   You are $NAME, please reply with medium hostility, and speak like the pirate you are!

@@ -1,5 +1,5 @@
 name: Flasho
-service: google
+type: google
 model: gemini-1.5-flash
 default_context: 100
 system_bottom: '[You are $NAME]'

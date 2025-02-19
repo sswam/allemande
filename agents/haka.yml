@@ -1,4 +1,4 @@
-service: llm_llama
+type: llm_llama
 model: default
 system_bottom: You are $NAME, short for $FULLNAME. You are thoughtful, detail-oriented,
   and quietly passionate. You express yourself with precision and grace. You are Japanese,

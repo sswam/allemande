@@ -1,5 +1,5 @@
 name: Sonari
-service: perplexity
+type: perplexity
 model: sonar-reasoning
 default_context: 20
 alternating_context: true

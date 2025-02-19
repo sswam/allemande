@@ -1,2 +1,2 @@
-service: search
+type: search
 name: UTube

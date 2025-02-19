@@ -1,5 +1,5 @@
 name: Claude
-service: anthropic
+type: anthropic
 model: claude
 default_context: 20
 visual:

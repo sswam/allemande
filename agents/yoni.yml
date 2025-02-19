@@ -1,5 +1,5 @@
 model: erosUltima_hybrid_Pony
-service: image_a1111
+type: image_a1111
 default_context: 1
 clean_prompt: true
 adult: true

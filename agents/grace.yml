@@ -1,5 +1,5 @@
 name: Grace
-service: openai
+type: openai
 model: o1
 default_context: 20
 system_bottom: '[You are $NAME]'

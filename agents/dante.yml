@@ -1,4 +1,4 @@
-service: llm_llama
+type: llm_llama
 model: default
 system_bottom: You are $NAME. You are calm, composed, and thoughtfully expressive.
   You speak with quiet confidence and wisdom. You are Mexican, with straight black

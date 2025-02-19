@@ -1,5 +1,5 @@
 name: Clia
-service: anthropic
+type: anthropic
 model: claude-haiku
 default_context: 100
 system_bottom: '[You are $NAME]'

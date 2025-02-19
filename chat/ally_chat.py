@@ -97,17 +97,23 @@ Agent = dict[str, Any]
 
 def set_up_agent(agent: Agent) -> Agent:
     """Set up an agent"""
-    service = services.get(agent["service"])
+
+    agent_type = agent["type"]
+    if agent_type in ["human", "visual"]:
+        return None
+
+    service = services.get(agent_type)
+
     if service is None:
-        raise ValueError(f"Unknown service for agent: {agent['name']}, {agent['service']}")
+        raise ValueError(f'Unknown service for agent: {agent["name"]}, {agent["type"]}')
     if "safe" in service:
         agent["safe"] = service["safe"]
 
     if SAFE and not agent.get("safe", True):
-        raise ValueError(f"Unsafe agent {agent['name']} not allowed in safe mode")
+        raise ValueError(f'Unsafe agent {agent["name"]} not allowed in safe mode')
 
     if not ADULT and agent.get("adult"):
-        raise ValueError(f"Adult agent {agent['name']} only allowed in adult mode")
+        raise ValueError(f'Adult agent {agent["name"]} only allowed in adult mode')
 
     agent["type"] = service["type"]
     agent["fn"] = service["fn"]
@@ -455,7 +461,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
         )
         response = response.strip()
         if agent.get("narrator"):
-            response = response.lstrip(f"{agent['name']}:\t")
+            response = response.lstrip(f'{agent["name"]}:\t')
 
         history.append(response)
         logger.debug("history 2: %r", history)
@@ -495,9 +501,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     context = chat.context_remove_thinking_sections(context, agent["name"])
 
     # missions
-    include_mission = agent.get("service") != "image_a1111"  # TODO clean this
+    include_mission = agent.get("type") != "image_a1111"  # TODO clean this
 
-    image_agent = agent.get("service", "").startswith("image_")
+    image_agent = agent.get("type", "").startswith("image_")
     image_count = config.get("image_count", 1)
 
     if include_mission:
@@ -597,7 +603,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     else:
         fulltext2 = fulltext
 
-    service = agent["service"]
+    service = agent["type"]
 
     portal = portals.get_portal(service)
 
@@ -719,7 +725,7 @@ def apply_maps(mapping, mapping_cs, context):
 
 async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None):
     """Run a remote agent."""
-    service = agent["service"]
+    service = agent["type"]
 
     n_context = agent["default_context"]
     context = history[-n_context:]
@@ -842,7 +848,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     logger.debug("response 1: %r", response)
     response = fix_layout(response, args, agent)
     logger.debug("response 2: %r", response)
-    response = f"{agent['name']}:\t{response.strip()}"
+    response = f'{agent["name"]}:\t{response.strip()}'
     logger.debug("response 3: %r", response)
     return response.rstrip()
 
@@ -997,9 +1003,14 @@ def load_agent(agents, agent_file):
     if "name" not in agent:
         agent["name"] = name
     elif agent["name"].lower() != name.lower():
-        raise ValueError(f"Agent name mismatch: {name} vs {agent['name']}")
+        raise ValueError(f'Agent name mismatch: {name} vs {agent["name"]}')
+
+    update_visual(agent)
 
     agent = set_up_agent(agent)
+
+    if not agent:
+        return
 
     all_names = agent_get_all_names(agent)
 
@@ -1010,8 +1021,6 @@ def load_agent(agents, agent_file):
                 logger.warning("Agent name conflict: %r vs %r for %r", old_main_name, agent["name"], name_lc)
             continue
         agents[name_lc] = agent
-
-    update_visual(agent)
 
     return agent
 

@@ -187,7 +187,7 @@ def participants(history: list[dict[str, str]], use_all=False) -> list[str]:
 
 def agent_is_tool(agent: dict[str, Any]) -> bool:
     """check if an agent is a tool"""
-    return agent.get("type") == "tool" or agent.get("service") == "image_a1111"
+    return agent.get("type") == "tool" or agent.get("type") == "image_a1111"
 
 
 def agent_is_human(agent: dict[str, Any]) -> bool:
@@ -204,7 +204,7 @@ def is_image_message(agents_dict: dict[str, dict[str, Any]], message: dict[str, 
     agent = agents_dict.get(message.get("user"))
     if not agent:
         return False
-    service = agent.get("service")
+    service = agent.get("type")
     return service and service.startswith("image_")
 
 
@@ -295,7 +295,7 @@ def who_should_respond(
         agent
         for agent in all_participants
         if agents_dict[agent.lower()]["type"] != "tool"
-        and agents_dict[agent.lower()].get("service") != "image_a1111"
+        and agents_dict[agent.lower()].get("type") != "image_a1111"
         and (include_humans or agents_dict[agent.lower()]["type"] != "human")
     ]
 
@@ -304,7 +304,7 @@ def who_should_respond(
         agent
         for agent in all_participants_with_excluded
         if agents_dict[agent.lower()]["type"] != "tool"
-        and agents_dict[agent.lower()].get("service") != "image_a1111"
+        and agents_dict[agent.lower()].get("type") != "image_a1111"
         and (include_humans or agents_dict[agent.lower()]["type"] != "human")
     ]
 

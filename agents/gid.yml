@@ -1,4 +1,4 @@
-service: safe_shell
+type: safe_shell
 command:
 - python
 name: Gid

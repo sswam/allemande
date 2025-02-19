@@ -1,5 +1,5 @@
 name: Dav
-service: openai
+type: openai
 model: gpt-4o-mini
 default_context: 100
 system_bottom: '[You are $NAME]'

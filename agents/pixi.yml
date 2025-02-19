@@ -1,4 +1,4 @@
-service: llm_llama
+type: llm_llama
 specialist: true
 model: default
 stop_regexs:

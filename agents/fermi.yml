@@ -1,5 +1,5 @@
 name: Fermi
-service: openai
+type: openai
 model: o3-mini
 default_context: 100
 system_bottom: '[You are $NAME]'
