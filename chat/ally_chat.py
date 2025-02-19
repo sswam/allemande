@@ -28,28 +28,17 @@ import chat
 import llm  # type: ignore
 from ally import portals  # type: ignore
 from safety import safety  # type: ignore
+from ally.cache import cache  # type: ignore
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # type: ignore # pylint: disable=wrong-import-position, wrong-import-order
 
-
-CODE_FILES = [
-    "chat/ally_chat.py",
-    "text/atail.py",
-    "python/ucm.py",
-    "chat/conductor.py",
-    "www/search.py",
-    "text/tab.py",
-    "chat/chat.py",
-    "llm/llm.py",
-    "ally/portals.py",
-    "safety/safety.py",
-]
-
 PATH_HOME   = Path(os.environ["ALLEMANDE_HOME"])
 PATH_ROOMS  = Path(os.environ["ALLEMANDE_ROOMS"])
-PATH_AGENTS = Path(os.environ["ALLEMANDE_AGENTS"])  # TODO put agents dir in rooms?
+PATH_AGENTS = Path(os.environ["ALLEMANDE_AGENTS"])
+PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
 PATH_MODELS = Path(os.environ["ALLEMANDE_MODELS"])
+# TODO put agents dir in rooms?
 
 # TODO put some of these settings in a global reloadable config files
 STARTER_PROMPT = """System:\tPlease briefly greet the user or start a conversation, in one line. You can creative, or vanilla."""
@@ -1012,15 +1001,57 @@ def load_agent(agents, agent_file):
 
     agent = set_up_agent(agent)
 
-    agent_names = agent_get_all_names(agent)
+    all_names = agent_get_all_names(agent)
 
-    for name_lc in map(str.lower, agent_names):
+    for name_lc in map(str.lower, all_names):
         if name_lc in agents:
             if agents[name_lc] != agent:
                 old_main_name = agents[name_lc]["name"]
                 logger.warning("Agent name conflict: %r vs %r for %r", old_main_name, agent["name"], name_lc)
             continue
         agents[name_lc] = agent
+
+    update_visual(agent)
+
+    return agent
+
+
+def update_visual(agent: Agent):
+    """Update the visual prompts for an agent."""
+    visual = agent.get("visual")
+    if not visual:
+        return
+    name = agent["name"].lower()
+    name_lc = name.lower()
+    all_names = agent_get_all_names(agent)
+
+    for key in "person", "person/clothes":
+        if key not in visual:
+            continue
+        prompt = visual.get(key)
+        if prompt:
+            (PATH_VISUAL/key).mkdir(parents=True, exist_ok=True)
+            cache.save(str(PATH_VISUAL / key / name_lc) + ".txt", prompt, noclobber=False)
+            # symlink the main file to the agent's other names
+            for name in all_names:
+                for dest in name, name.lower():
+                    if dest == name_lc:
+                        continue
+                    cache.symlink(name_lc + ".txt", str(PATH_VISUAL / key / dest) + ".txt")
+
+def remove_visual(agent: Agent):
+    """Remove the visual prompts for an agent."""
+    name = agent["name"].lower()
+    name_lc = name.lower()
+    all_names = agent_get_all_names(agent)
+
+    for key in "person", "person/clothes":
+        for name in all_names:
+            for dest in name, name.lower():
+                try:
+                    os.remove(str(PATH_VISUAL / key / dest) + ".txt")
+                except FileNotFoundError:
+                    pass
 
 
 def remove_agent(agents: dict[str, Agent], name: str):
@@ -1031,6 +1062,8 @@ def remove_agent(agents: dict[str, Agent], name: str):
     agent_names = agent_get_all_names(agent)
     for name_lc in map(str.lower, agent_names):
         agents.pop(name_lc, None)
+
+    remove_visual(agent)
 
 
 def load_agents(base_dir=None, agents=None):
@@ -1114,11 +1147,24 @@ async def restart_service():
     os.execv(sys.executable, command_line)
 
 
+def get_code_files():
+    code_files = [os.path.realpath(__file__)]
+
+    # all module source files
+    for mod in sys.modules.values():
+        file = getattr(mod, "__file__", None)
+        if file and file.startswith(str(PATH_HOME)) and not "/venv/" in file and file.endswith(".py"):
+            code_files.append(mod.__file__)
+
+    return code_files
+
+
 async def restart_if_code_changes():
     """Watch for code changes and restart the service."""
-    code_files_abs = [PATH_HOME / f for f in CODE_FILES]
+    code_files = get_code_files()
+
     try:
-        async for changes in awatch(*code_files_abs, debounce=1000, debug=False):
+        async for changes in awatch(*code_files, debounce=1000, debug=False):
             for _change, file in changes:
                 logger.info("Code file changed: %r", file)
             await restart_service()

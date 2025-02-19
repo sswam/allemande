@@ -137,3 +137,4 @@ rooms.*
 /webchat/static/wasm.min.js
 /webchat/static/d3.min.js
 /webchat/static/graphvizlib.wasm
+/visual/person

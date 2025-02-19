@@ -42,7 +42,7 @@ class FileCache:
 
         if fmt is None:
             _, ext = os.path.splitext(path)
-            fmt = ext.lstrip(".").lower()
+            fmt = ext.lstrip(".").lower() or "txt"
 
         current_mtime = os.path.getmtime(path)
         if current_mtime <= self._last_modified.get(path, 0):
@@ -66,7 +66,7 @@ class FileCache:
         """
         if fmt is None:
             _, ext = os.path.splitext(path)
-            fmt = ext.lstrip(".").lower()
+            fmt = ext.lstrip(".").lower() or "txt"
 
         if os.path.exists(path):
             current_mtime = os.path.getmtime(path)
@@ -76,7 +76,8 @@ class FileCache:
         if path in self._cache and self._deep_compare(self._cache[path], content):
             return
 
-        self._save_file(path, content, fmt, **kwargs)
+        if not self._save_file(path, content, fmt, **kwargs):
+            return
         self._cache[path] = content
         self._last_modified[path] = os.path.getmtime(path)
         logger.info("Saved %s file: %s", fmt, path)
@@ -99,19 +100,42 @@ class FileCache:
 
     def _save_file(self, path: str, content: Any, fmt: str, **kwargs):
         """Save content to file based on format"""
+        # First format the content to string based on format
+        formatted_content = ""
+        if fmt == "txt":
+            formatted_content = str(content)
+        elif fmt == "json":
+            formatted_content = json.dumps(content, **kwargs)
+        elif fmt in ["yaml", "yml"]:
+            formatted_content = yaml.safe_dump(content, **kwargs)
+        elif fmt in ["csv", "tsv"]:
+            output = io.StringIO()
+            delimiter = "\t" if fmt == "tsv" else kwargs.get("delimiter", ",")
+            writer = csv.writer(output, delimiter=delimiter)
+            writer.writerows(content)
+            formatted_content = output.getvalue()
+            output.close()
+        else:
+            raise ValueError(f"Unsupported format: {fmt}")
+
+        # Remove existing symlink
+        if os.path.islink(path):
+            os.remove(path)
+
+        # Check if file exists and compare contents
+        try:
+            with open(path, "r", encoding="utf-8") as file:
+                current_content = file.read()
+                if current_content == formatted_content:
+                    return False  # Content is identical, no need to write
+        except FileNotFoundError:
+            current_content = None
+
+        # Write to file if content is different or file doesn't exist
         with open(path, "w", encoding="utf-8") as file:
-            if fmt == "txt":
-                file.write(str(content))
-            elif fmt == "json":
-                json.dump(content, file, **kwargs)
-            elif fmt in ["yaml", "yml"]:
-                yaml.safe_dump(content, file, **kwargs)
-            elif fmt in ["csv", "tsv"]:
-                delimiter = "\t" if fmt == "tsv" else kwargs.get("delimiter", ",")
-                writer = csv.writer(file, delimiter=delimiter)
-                writer.writerows(content)
-            else:
-                raise ValueError(f"Unsupported format: {fmt}")
+            file.write(formatted_content)
+
+        return True
 
     def _deep_compare(self, a: Any, b: Any) -> bool:
         """Compare two values recursively for equality"""
@@ -136,6 +160,22 @@ class FileCache:
             return
         self._cache.pop(path, None)
         self._last_modified.pop(path, None)
+
+    def symlink(self, src: str, dst: str):
+        """
+        Create a symbolic link from source to destination.
+        If destination exists and is a link to the source, do nothing.
+
+        Args:
+            src: Source path
+            dst: Destination path
+        """
+        if os.path.lexists(dst):
+            # read the link, check same
+            if os.path.islink(dst) and os.readlink(dst) == src:
+                return
+            os.remove(dst)
+        os.symlink(src, dst)
 
 
 cache = FileCache()
