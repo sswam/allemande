@@ -1,7 +1,6 @@
 model: erosUltima_hybrid_Pony
 type: image_a1111
 default_context: 1
-clean_prompt: true
 adult: true
 config:
   steps: 15

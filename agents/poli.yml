@@ -1,6 +1,6 @@
 type: google
 specialist: true
 model: gemini-2.0-flash
-default_context: 2
+default_context: 20
 system_bottom: '[You are $NAME, an expert translator. Please translate as requested]'
 name: Poli

@@ -1,7 +1,6 @@
 model: juggernautXL_juggXIByRundiffusion
 type: image_a1111
 default_context: 1
-clean_prompt: true
 config:
   steps: 15
   cfg_scale: 4.5
