@@ -134,6 +134,9 @@ augroup SetCodeLang
 	autocmd FileType * let $FILETYPE = expand('<amatch>')
 augroup END
 
+
+" Detect and set indentation settings using aligno
+
 function! DetectAndSetIndent()
 	" Save current cursor position
 	let l:save_cursor = getpos(".")
@@ -147,26 +150,29 @@ function! DetectAndSetIndent()
 	" Check first two characters of output
 	let l:indent_type = l:result[0:1]
 
+	" Echo the setting
+	" echo "Detected indent type: " . l:indent_type
+
 	if l:indent_type == '2s'
 		" 2 space indentation
-		set tabstop=2
-		set softtabstop=2
-		set shiftwidth=2
-		set expandtab
+		setlocal tabstop=2
+		setlocal softtabstop=2
+		setlocal shiftwidth=2
+		setlocal expandtab
 		let &showbreak='    '
 	elseif l:indent_type == '4s'
 		" 4 space indentation
-		set tabstop=4
-		set softtabstop=4
-		set shiftwidth=4
-		set expandtab
+		setlocal tabstop=4
+		setlocal softtabstop=4
+		setlocal shiftwidth=4
+		setlocal expandtab
 		let &showbreak='        '
 	else
 		" Tab indentation
-		set tabstop=8
-		set softtabstop=8
-		set shiftwidth=0
-		set noexpandtab
+		setlocal tabstop=8
+		setlocal softtabstop=8
+		setlocal shiftwidth=0
+		setlocal noexpandtab
 		let &showbreak='                '
 	endif
 
@@ -174,5 +180,5 @@ function! DetectAndSetIndent()
 	call setpos('.', l:save_cursor)
 endfunction
 
-" Run on file load
-autocmd BufRead * call DetectAndSetIndent()
+" Run on file load after everything else
+autocmd BufReadPost * call timer_start(0, {-> DetectAndSetIndent()})
