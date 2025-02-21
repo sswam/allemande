@@ -67,10 +67,16 @@ if [ "$C" != 1 ]; then
 	content_disposition=`wget --help | q grep 'content-disposition' && echo "--content-disposition"`
 fi
 
+if [ -e "$CF" ]; then
+	load_cookies=" --load-cookies=$CF"
+else
+	load_cookies=""
+fi
+
 if [ -n "$REFERER" ]; then
-	exec $v wget -e robots=off --no-check-certificate $content_disposition -T "$timeout" --load-cookies="$CF" -U"$AGENT" --referer="$REFERER" --tries $tries $WG_OPTS "${OPTS_UNKNOWN[@]}" "${O[@]}" -- "$@"
+	exec $v wget -e robots=off --no-check-certificate $content_disposition -T "$timeout" $load_cookies -U"$AGENT" --referer="$REFERER" --tries $tries $WG_OPTS "${OPTS_UNKNOWN[@]}" "${O[@]}" -- "$@"
 #	wget "$HEADER" -U"$AGENT" --referer="$REFERER" "$@"
 else
-	exec $v wget -e robots=off --no-check-certificate $content_disposition -T "$timeout" --load-cookies="$CF" -U"$AGENT" --tries $tries $WG_OPTS "${OPTS_UNKNOWN[@]}" "${O[@]}" -- "$@"
+	exec $v wget -e robots=off --no-check-certificate $content_disposition -T "$timeout" $load_cookies -U"$AGENT" --tries $tries $WG_OPTS "${OPTS_UNKNOWN[@]}" "${O[@]}" -- "$@"
 #	wget "$HEADER" -U"$AGENT" "$@"
 fi
