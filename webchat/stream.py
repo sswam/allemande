@@ -11,6 +11,7 @@ from pathlib import Path
 import asyncio
 from typing import Any
 import dataclasses
+import re
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -171,15 +172,15 @@ app = Starlette(
 )
 
 
-async def follow(file, head="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n", rewind_string="\x0c\n"):
+async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n", rewind_string="\x0c\n"):
     """Follow a file and yield new lines as they are added."""
 
     # TODO read watch.log, then we won't have to create directories
     parent = Path(file).parent
     parent.mkdir(parents=True, exist_ok=True)
 
-    if head:
-        yield head
+    if header:
+        yield header
 
     async with atail.AsyncTail(
         filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True, rewind_string=rewind_string, restart=True
@@ -327,6 +328,30 @@ def get_dir_listing_response(path: Path, pathname: str, info: Info, json: bool) 
     return HTMLResponse('\n'.join(html))
 
 
+def try_loading_extra_header(path, header):
+    extra_header_path = path.with_suffix(".h.html")
+
+    if extra_header_path.exists():
+        extra_header = extra_header_path.read_text()
+        extra_head, extra_body = re.match(r'''
+            (?:<head>(.*)</head>)?  # Optional head tag group with content
+            \s*                     # Optional whitespace
+            (?:<body>)?             # Optional opening body tag
+            (.*)                    # Main content
+            (?:</body>)?            # Optional closing body tag
+        ''', extra_header, re.VERBOSE | re.DOTALL).groups()
+        if extra_head and "</head>" in header:
+            header = header.replace("</head>", extra_head + "</head>")
+        else:
+            header += extra_head or ""
+        if extra_body and "<body>" in header:
+            header = header.replace("<body>", "<body>" + extra_body)
+        else:
+            header += extra_body
+
+    return header
+
+
 @app.route("/stream/", methods=["GET"])
 @app.route("/stream/{path:path}", methods=["GET"])
 async def stream(request, path=""):
@@ -355,22 +380,27 @@ async def stream(request, path=""):
         return get_dir_listing_response(path, pathname, info, json=want_json)
 
     media_type = "text/plain"
-    head = ""
+    header = ""
     keepalive_string = "\n"
     rewind_string = "\x0c\n"  # ^L / form feed / clear screen
 
     ext = path.suffix
 
+    # readlink $ALLEMANDE_USERS/$user/theme.css
+    theme_symlink = Path(os.environ["ALLEMANDE_USERS"], user, "theme.css")
+    theme = theme_symlink.readlink().stem if os.path.islink(theme_symlink) else "default"
+
     if ext == ".html":
         media_type = "text/html"
         if templates:
-            context = {"user": user, "chat_base_url": info.chat_base_url}
-            head = templates.get_template("room-head.html").render(context)
+            context = {"user": user, "chat_base_url": info.chat_base_url, "theme": theme}
+            header = templates.get_template("room-header.html").render(context)
+        header = try_loading_extra_header(path, header)
         keepalive_string = HTML_KEEPALIVE
         rewind_string = REWIND_STRING
 
     logger.info("tail: %s", path)
-    follower = follow(str(path), head=head, keepalive_string=keepalive_string, rewind_string=rewind_string)
+    follower = follow(str(path), header=header, keepalive_string=keepalive_string, rewind_string=rewind_string)
     return StreamingResponse(follower, media_type=media_type)
 
 
