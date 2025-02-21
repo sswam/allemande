@@ -13,11 +13,12 @@ import pprint
 import re
 import sys
 import urllib
+from typing import Callable
 
 from bs4 import BeautifulSoup
 import requests
 import tabulate
-from youtube_search import YoutubeSearch
+from youtube_search import YoutubeSearch  # type: ignore
 
 from google_images import google_images
 from google_search import google_search
@@ -35,20 +36,14 @@ def duckduckgo_search(
     query: str,
     num: int = 12,  # pylint: disable=unused-argument
     detailed: bool = False,  # pylint: disable=unused-argument
-    safe: str = "off",
+    safe: bool = False,
 ) -> list[dict[str, str]]:
     """Search DuckDuckGo for `query` and return a list of results"""
     url = "https://html.duckduckgo.com/html/"
-    kp = {
-        "off": -2,
-        "moderate": -1,
-        "strict": 1,
-        "on": 1,
-    }
     params = {
         "q": query,
         "kl": "us-en",
-        "kp": kp[safe],
+        "kp": 1 if safe else -2,
     }
     headers = {
         "User-Agent": user_agent,
@@ -73,7 +68,7 @@ def uspto_tess_search(  # pylint: disable=too-many-locals
     query: str,
     num: int = 100,
     detailed: bool = False,  # pylint: disable=unused-argument
-    safe: str = "off",  # pylint: disable=unused-argument
+    safe: bool = False,  # pylint: disable=unused-argument
 ) -> list[dict[str, str]]:
     """Search USPTO TESS database for trademarks matching query."""
     url = "https://tmsearch.uspto.gov/bin/gate.exe"
@@ -93,7 +88,7 @@ def uspto_tess_search(  # pylint: disable=too-many-locals
     }
     headers = {"User-Agent": user_agent}
 
-    search_results = []
+    search_results: list[dict[str, str]] = []
     response = None
     soup = None
 
@@ -110,13 +105,16 @@ def uspto_tess_search(  # pylint: disable=too-many-locals
             if result not in search_results:
                 search_results.append(result)
 
-        next_page = soup.find("a", string="NEXT LIST")
+        next_page = soup.select_one("a:contains('NEXT LIST')")
         if not next_page:
             break
-
-        params["f"] = "toc"
-        params["state"] = "GETPAGE"
-        params["page"] = next_page["href"].split("page=")[1]
+        href = next_page.get(
+            "href"
+        )  # FIXME lint error here: Item "NavigableString" of "Tag | NavigableString" has no attribute "get"  [union-attr]
+        if not isinstance(href, str):
+            break
+        # Use the last occurrence so that even if the URL format changes we get something.
+        params["page"] = href.split("page=")[-1]
 
     return search_results
 
@@ -125,14 +123,15 @@ def bing_search(
     query: str,
     num: int = 12,  # pylint: disable=unused-argument
     detailed: bool = False,  # pylint: disable=unused-argument
-    safe: str = "off",
+    safe: bool = False,
 ) -> list[dict[str, str]]:
     """Search Bing for `query` and return a list of results"""
     url = "https://www.bing.com/search"
     params = {
         "q": query,
-        "safeSearch": safe,
     }
+    if not safe:
+        params["safeSearch"] = "off"
     headers = {
         "User-Agent": user_agent,
     }
@@ -141,9 +140,10 @@ def bing_search(
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    search_results = []
-    search_results2 = soup.find_all("li", class_="b_algo")
-    search_results2 = [{"title": result.find("h2").text.strip(), "url": result.find("a").get("href")} for result in search_results2]
+    search_results: list[dict[str, str]] = []
+    # Explicitly cast the result list to avoid type issues.
+    results_list = list(soup.find_all("li", class_="b_algo"))
+    search_results2 = [{"title": result.find("h2").text.strip(), "url": result.find("a").get("href")} for result in results_list]
     search_results2 = [result for result in search_results2 if result["url"] is not None]
 
     for res in search_results2:
@@ -153,16 +153,16 @@ def bing_search(
     return search_results
 
 
-def youtube_search(query: str, num: int = 12, detailed: bool = False, safe: str = "off") -> list[dict[str, str]]:
+def youtube_search(query: str, num: int = 12, detailed: bool = False, safe: bool = False) -> list[dict[str, str]]:
     """Search YouTube for `query` and return a list of results"""
-    if safe != "off":
+    if safe:
         logger.warning("Safe search not implemented for YouTube")
     search_results2 = YoutubeSearch(query, max_results=num).to_dict()
 
     for result in search_results2:
         result["url"] = "https://www.youtube.com" + result["url_suffix"]
 
-    search_results = []
+    search_results: list[dict[str, str]] = []
 
     for res in search_results2:
         # remove junk from thumbnail URL
@@ -192,9 +192,7 @@ def youtube_search(query: str, num: int = 12, detailed: bool = False, safe: str 
 
 
 def google_maps_image_search(
-    query: str,
-    num: int = 12,  # pylint: disable=unused-argument
-    safe: str = "off"  # pylint: disable=unused-argument
+    query: str, num: int = 12, detailed: bool = False, safe: bool = False  # pylint: disable=unused-argument
 ) -> list[dict[str, str]]:
     """Search Google Maps for images matching query."""
     base_url = "https://www.google.com/maps"
@@ -209,13 +207,13 @@ def google_maps_image_search(
     selenium_get(
         ostream,
         search_url,
-        params=params,
+        params=params,  # type: ignore[arg-type]
         time_limit=timeout,
         scroll_limit=None,
         scroll_wait=1,
         retry_each_scroll=3,
         script=None,
-        exe=None,
+        exe="",  # provided empty string instead of None
         script_wait=1,
         retry_script=3,
         facebook=False,
@@ -228,23 +226,23 @@ def google_maps_image_search(
 
     soup = BeautifulSoup(content, "html.parser")
 
-    image_results = []
+    search_results: list[dict[str, str]] = []
     image_tags = soup.find_all("img", class_="tactile-search-thumbnail-raster")
 
     for img_tag in image_tags:
         img_src = img_tag.get("src")
         if img_src:
-            image_results.append({"image_url": img_src})
+            search_results.append({"image_url": img_src})
 
-    return image_results
+    return search_results
 
 
-def pornhub_search(
+def pornhub_search(  # pylint: disable=too-many-locals
     query: str,
     num: int = 10,  # pylint: disable=unused-argument
     detailed: bool = False,  # pylint: disable=unused-argument
-    safe: str = "off"  # pylint: disable=unused-argument
-) -> list[dict[str, str]]:
+    safe: bool = False,  # pylint: disable=unused-argument
+    ) -> list[dict[str, str]]:
     """Search PornHub for videos matching query."""
     site = "https://www.pornhub.com"
     url = site + "/video/search"
@@ -262,17 +260,27 @@ def pornhub_search(
     soup = BeautifulSoup(response.text, "html.parser")
 
     container = soup.find("ul", id="videoSearchResult")
+    if not container or not hasattr(container, "find_all"):
+        return []
 
-    search_results = container.find_all("a", class_="linkVideoThumb")
+    a_tags = container.find_all("a", class_="linkVideoThumb")
 
-    return [
-        {"title": result.text, "url": site + result["href"], "thumbnail": result.find("img")["src"]}
-        for result in search_results
-        if not result["href"].startswith("javascript:")
-    ]
+    search_results: list[dict[str, str]] = []
+
+    for a_tag in a_tags:
+        duration_element = a_tag.find("var", class_="duration")
+        duration = duration_element.text if duration_element else ""
+        search_results.append({
+            "title": a_tag.get("title"),
+            "url": a_tag.get("href"),
+            "thumbnail": a_tag.find("img")["src"],
+            "duration": duration,
+        })
+
+    return search_results
 
 
-engines = {
+engines: dict[str, Callable] = {
     "Google": google_search,
     "GoogleImages": google_images,
     # 	'DuckDuckGo': duckduckgo_search,
@@ -283,8 +291,7 @@ engines = {
     #    "TESS": uspto_tess_search,
 }
 
-
-agents = {
+agents: dict[str, Callable] = {
     "Goog": google_search,
     "Gimg": google_images,
     # 	'DuckDuckGo': duckduckgo_search,
@@ -295,20 +302,19 @@ agents = {
     # 	'Tessa': uspto_tess_search,
 }
 
-
 engine_caps = {
     "goog": "Google",
     "gimg": "GoogleImages",
     "utube": "YouTube",
     "pr0nto": "PornHub",
-#    "guma": "GoogleMapsImages",
+    #    "guma": "GoogleMapsImages",
     "google": "Google",
     "googleimages": "GoogleImages",
     "youtube": "YouTube",
     "pornhub": "PornHub",
-#    "googlemapsimages": "GoogleMapsImages",
-#    "tess": "TESS",
-#    "tessa": "TESS",
+    #    "googlemapsimages": "GoogleMapsImages",
+    #    "tess": "TESS",
+    #    "tessa": "TESS",
 }
 
 
@@ -320,64 +326,109 @@ def esc(s: str) -> str:
     return s
 
 
+def format_video_result_markdown(item: dict[str, str], engine: str) -> dict[str, str]:
+    """Format video search results for display."""
+    video_id = None
+    params_parsed = urllib.parse.parse_qs(urllib.parse.urlparse(item["url"]).query)
+    video_id = params_parsed.get("v", [None])[0]
+    if not video_id:
+        video_id = params_parsed.get("viewkey", [None])[0]
+    if not video_id:
+        # Try shorts URL format
+        # https://www.youtube.com/shorts/pbU5lUon9AU
+        if re.match(r"^/shorts/", urllib.parse.urlparse(item["url"]).path):
+            video_id = urllib.parse.urlparse(item["url"]).path.split("/")[-1]
+    if not video_id:
+        logger.warning("Could not parse YouTube video ID from URL %s", item["url"])
+    if video_id:
+        thumb = item["thumbnail"]
+        video = (
+            f"""<div class="embed" data-site="{engine.lower()}" data-videoid="{video_id}">"""
+            + thumb
+            + f"""<br><div class="caption">{item['page']}</div></div>"""
+        )
+        item["video"] = video
+        del item["thumbnail"]
+        del item["page"]
+    return item
+
+
+def format_image_result_markdown(item: dict[str, str], engine: str) -> dict[str, str]:
+    """Format image search results for display."""
+    thumb = item["thumbnail"]
+    image_url = item["image_url"]
+    image = (
+        f"""<div class="image" data-site="{engine.lower()}" data-image="{image_url}">"""
+        + thumb
+        + f"""<br><div class="caption">{item['page']}</div></div>"""
+    )
+    item["image"] = image
+    del item["thumbnail"]
+    del item["page"]
+    return item
+
+
+def format_search_result_markdown(i: int, item: dict[str, str], engine: str) -> dict[str, str]:
+    """Format search result for display."""
+    item["#"] = str(i)
+    i += 1
+    url_esc = esc(item["url"])
+    title = item["title"]
+    if engine == "YouTube":
+        title = f"{title} - {item['channel']} - {item['duration']}"
+    elif engine == "PornHub":
+        title = f"{title} - {item['duration']}"
+    item["title"] = title_esc = esc(title)
+    item["page"] = f"""<a href="{url_esc}">{title_esc}</a>"""
+    if engine not in ("YouTube", "PornHub"):
+        item["site"] = urllib.parse.urlparse(item["url"]).netloc
+    if "thumbnail" in item:
+        # convert to markdown image
+        if "thumb_width" in item and "thumb_height" in item:
+            width_height = f" width={item['thumb_width']} height={item['thumb_height']}"
+        else:
+            width_height = ""
+        image = f"""<img class="thumb" src="{esc(item['thumbnail'])}" alt="{title_esc}"{width_height}>"""
+        if "image_url" in item:
+            image_esc = esc(item["image_url"])
+            image = f"""<a href="{image_esc}">{image}</a>"""
+        item["thumbnail"] = image
+    if engine in ("YouTube", "PornHub"):
+        item = format_video_result_markdown(item, engine)
+    elif engine in ("GoogleImages", "GoogleMapsImages"):
+        item = format_image_result_markdown(item, engine)
+    for key in "url", "title", "width", "height", "thumb_width", "thumb_height":
+        if key in item:
+            del item[key]
+
+    # reorder the keys
+    item = (
+        {
+            "#": item["#"],
+        }
+        | ({"page": item["page"]} if "page" in item else {})
+        | ({"site": item["site"]} if "site" in item else {})
+        | item
+    )
+    return item
+
+
 def list_to_markdown_table(items: list[dict[str, str]], engine: str) -> str:  # pylint: disable=too-many-branches, too-many-locals
     """Convert search results to markdown table format."""
     engine = engine_caps.get(engine.lower(), engine)
-    i = 1
-    for item_in in items:
-        item = {"#": i}
-        item.update(item_in)
-        i += 1
-        url_enc = esc(item["url"])
-        title = item["title"]
-        if engine == "YouTube":
-            title = f"{title} - {item['channel']} - {item['duration']}"
-        title_enc = esc(title)
-        item["page"] = f"""<a href="{url_enc}">{title_enc}</a>"""
-        if engine not in ("YouTube", "PornHub"):
-            item["site"] = urllib.parse.urlparse(item["url"]).netloc
-        if "thumbnail" in item:
-            # convert to markdown image
-            if "thumb_width" in item and "thumb_height" in item:
-                width_height = f" width={item['thumb_width']} height={item['thumb_height']}"
-            else:
-                width_height = ""
-            image = f"""<img class="thumb" src="{esc(item['thumbnail'])}" alt="{title_enc}"{width_height}>"""
-            if "image" in item:
-                image_enc = esc(item["image"])
-                image = f"""<a href="{image_enc}">{image}</a>"""
-            item["thumbnail"] = image
-        if engine in ("YouTube", "PornHub"):
-            video_id = None
-            params = urllib.parse.parse_qs(urllib.parse.urlparse(item["url"]).query)
-            video_id = params.get("v", [None])[0]
-            if not video_id:
-                video_id = params.get("viewkey", [None])[0]
-            if not video_id:
-                # Try shorts URL format
-                # https://www.youtube.com/shorts/pbU5lUon9AU
-                if re.match(r"^/shorts/", urllib.parse.urlparse(item["url"]).path):
-                    video_id = urllib.parse.urlparse(item["url"]).path.split("/")[-1]
-            if not video_id:
-                logger.warning("Could not parse YouTube video ID from URL %s", item["url"])
-            if video_id:
-                img = item["thumbnail"]
-                video = (
-                    f"""<div class="embed" data-site="{engine.lower()}" data-videoid="{video_id}">"""
-                    + img
-                    + f"""<br><div class="caption">{item['page']}</div></div>"""
-                )
-                item["video"] = video
-                del item["thumbnail"]
-                del item["page"]
-        for key in "url", "title", "width", "height", "thumb_width", "thumb_height":
-            if key in item:
-                del item[key]
+
+    items = [format_search_result_markdown(i, item, engine) for i, item in enumerate(items, 1)]
+
+    logger.warning("items: %s", json.dumps(items, indent=4))
 
     # check all items have video
     if engine in ("YouTube", "PornHub") and all("video" in item for item in items):
-        return "<br><div>" + ("\n".join([item["video"] for item in items])) + "</div>"
-    return tabulate.tabulate(items, tablefmt="pipe", headers="keys")
+        return "<div>" + ("\n".join([item["video"] for item in items])) + "</div>"
+
+    if engine in ("GoogleImages", "GoogleMapsImages"):
+        return "<div>" + ("\n".join([item["image"] for item in items])) + "</div>"
+
+    return tabulate.tabulate(items, tablefmt="pipe", headers="keys")  # type: ignore[arg-type]
 
 
 # output formatters ----------------------------------------------------------
@@ -400,18 +451,12 @@ def format_tsv(obj: list[dict[str, str]], header: bool = False) -> str:
     return format_csv(obj, delimiter="\t", header=header)
 
 
-def format_json(
-    obj,
-    header: bool = False  # pylint: disable=unused-argument
-) -> str:
+def format_json(obj, header: bool = False) -> str:  # pylint: disable=unused-argument
     """Format `obj` as JSON"""
     return json.dumps(obj, indent=4)
 
 
-def format_python(
-    obj,
-    header: bool = False  # pylint: disable=unused-argument
-) -> str:
+def format_python(obj, header: bool = False) -> str:  # pylint: disable=unused-argument
     """Format `obj` as Python code"""
     return pprint.pformat(obj, indent=4)
 
@@ -421,10 +466,10 @@ def format_tabulate(obj: list[dict[str, str]], header: bool = False) -> str:
     if not obj:
         return ""
     kwargs = {"headers": "keys"} if header else {}
-    return tabulate.tabulate(obj, **kwargs)
+    return tabulate.tabulate(obj, **kwargs)  # type: ignore[arg-type]
 
 
-formatters = {
+formatters: dict[str, Callable] = {
     "tsv": format_tsv,
     "csv": format_csv,
     "json": format_json,
@@ -440,25 +485,28 @@ def dict_first(d: dict) -> str:
 
 async def search(
     *queries: str,
-    engine: str = None,
+    engine: str | None = None,
     markdown: bool = False,
-    limit: int = None,
     num: int = 10,
-    safe: str = "off",
+    limit: bool = False,
+    safe: bool = False,
     fmt: str = "table",
     header: bool = False,
-    out: str = None,
+    ostream: io.TextIOWrapper | None = None,
     details: bool = False,
 ):  # pylint: disable=too-many-arguments, too-many-locals, too-many-branches
     """Search for `query` using `engine` and return a list of results"""
+    if not engine:
+        raise ValueError("No search engine specified")
+
     all_results = []
     lc_keys_to_keys = {k.lower(): k for k in list(engines.keys()) + list(agents.keys())}
 
-    if engine is None:
-        engine = dict_first(engines)
-
     key = lc_keys_to_keys[engine.lower()]
     eng = engines.get(key, agents.get(key))
+
+    if eng is None:
+        raise ValueError(f"Unknown search engine: {engine}")
 
     for query in queries:
         # check if it's async
@@ -469,39 +517,39 @@ async def search(
             results = await asyncio.to_thread(eng, query, num=num, safe=safe, detailed=details)
 
         if limit:
-            results = results[:limit]
+            results = results[:num]
 
-        if out:
+        if ostream:
             if markdown:
                 formatted_results = list_to_markdown_table(results, engine)
             else:
                 formatter = formatters[fmt]
                 formatted_results = formatter(results, header=header).rstrip()
 
-            print(formatted_results, file=out)
+            print(formatted_results, file=ostream)
         else:
             all_results.append(results)
 
-    if not out:
+    if not ostream:
         if markdown:
-            out = []
+            rows = []
             for res in all_results:
                 formatted_results = list_to_markdown_table(res, engine)
-                out.append(formatted_results)
-            return "\n".join(out)
+                rows.append(formatted_results)
+            return "\n".join(rows)
         return all_results
 
 
 def search_sync(
     *queries: str,
-    engine: str = None,
+    engine: str | None = None,
     markdown: bool = False,
-    limit: int = None,
     num: int = 10,
-    safe: str = "off",
+    limit: bool = False,
+    safe: bool = False,
     fmt: str = "table",
     header: bool = False,
-    out: str = None,
+    ostream: io.TextIOWrapper | None = None,
     details: bool = False,
 ):  # pylint: disable=too-many-arguments
     """Search for `query` using `engine` and return a list of results"""
@@ -515,7 +563,7 @@ def search_sync(
             safe=safe,
             fmt=fmt,
             header=header,
-            out=out,
+            ostream=ostream,
             details=details,
         )
     )
@@ -529,7 +577,7 @@ def main():
     )
     parser.add_argument("-f", "--format", help="Output formatter", default="tsv", choices=formatters.keys(), dest="fmt")
     parser.add_argument("-n", "--num", help="Maximum number of results to return", type=int, default=10)
-    parser.add_argument("-s", "--safe", help="Safe search", default="off", choices=["off", "moderate", "strict"])
+    parser.add_argument("-s", "--safe", help="Safe search", action="store_true")
     parser.add_argument("-l", "--limit", help="Limit to specified max results", type=int)
     parser.add_argument("-H", "--header", help="Show the table header", action="store_true")
     parser.add_argument("--markdown", help="Output as Markdown", action="store_true")
@@ -564,9 +612,9 @@ def main():
         limit=args.limit,
         num=args.num,
         safe=args.safe,
-        format=args.format,
+        fmt=args.fmt,
         header=args.header,
-        out=args.out,
+        ostream=args.out,
         details=args.details,
     )
 
