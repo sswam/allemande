@@ -224,7 +224,7 @@ def who_should_respond(
     mission: str | None = None,
 ) -> list[str]:
     """who should respond to a message"""
-    logger.info("who_should_respond: %r %r", message, history)
+    logger.debug("who_should_respond: %r %r", message, history)
     if not history:
         history = []
     if not agents_dict:
@@ -257,8 +257,8 @@ def who_should_respond(
             if re.search(rf"(?i)\b{agent_re}\b", mission_text):
                 mentioned_in_mission.add(name)
 
-    logger.info("mission: %r", mentioned_in_mission)
-    logger.info("mentioned_in_mission: %r", mentioned_in_mission)
+    logger.debug("mission: %r", mentioned_in_mission)
+    logger.debug("mentioned_in_mission: %r", mentioned_in_mission)
     # TODO this is a big mess, clean up
 
     # Filter excluded participants first
@@ -348,7 +348,7 @@ def who_should_respond(
         get_all=True,
     )
 
-    logger.info("who_is_named @: %r", invoked)
+    logger.debug("who_is_named @: %r", invoked)
     if not invoked:
         invoked = who_is_named(
             content,
@@ -360,7 +360,7 @@ def who_should_respond(
             everyone_words=everyone,
             anyone_words=anyone,
         )
-        logger.info("who_is_named: %r", invoked)
+        logger.debug("who_is_named: %r", invoked)
 
     direct_reply = random.random() < direct_reply_chance
 
@@ -378,15 +378,15 @@ def who_should_respond(
 
     if not invoked and not is_human and mediator:
         invoked = [random.choice(mediator)]
-        logger.info("mediator: %r", invoked)
+        logger.debug("mediator: %r", invoked)
 
     if not invoked:
-        logger.info("direct_reply_chance: %r", direct_reply_chance)
-        logger.info("direct_reply: %r", direct_reply)
+        logger.debug("direct_reply_chance: %r", direct_reply_chance)
+        logger.debug("direct_reply: %r", direct_reply)
 
     if not invoked and direct_reply:
         invoked = who_spoke_last(history[:-1], user, agents_dict, include_self=include_self, include_humans=include_humans)
-        logger.info("who_spoke_last: %r", invoked)
+        logger.debug("who_spoke_last: %r", invoked)
 
     # If still no one to respond, default to last AI speaker or random AI
     if not invoked:
@@ -395,19 +395,19 @@ def who_should_respond(
         if ai_participants and direct_reply:
             ai_participant_agents = {name.lower(): agents_dict[name.lower()] for name in ai_participants}
             invoked = who_spoke_last(history[:-1], user, ai_participant_agents, include_self=True, include_humans=False)
-            logger.info("who_spoke_last ai: %r", invoked)
+            logger.debug("who_spoke_last ai: %r", invoked)
         if not invoked and ai_participants and ai_participants != [user]:
             invoked = [random.choice(ai_participants)]
-            logger.info("random ai: %r", invoked)
-            logger.info("ai_participants: %r", ai_participants)
+            logger.debug("random ai: %r", invoked)
+            logger.debug("ai_participants: %r", ai_participants)
         if not invoked and ai_participants_with_excluded and ai_participants_with_excluded != [user]:
             invoked = [random.choice(ai_participants_with_excluded)]
-            logger.info("random ai 2: %r", invoked)
+            logger.debug("random ai 2: %r", invoked)
         if not invoked and default:
             invoked = [random.choice(default)]
-            logger.info("default: %r", invoked)
+            logger.debug("default: %r", invoked)
 
-    logger.info("who_should_respond: %r", invoked)
+    logger.debug("who_should_respond: %r", invoked)
 
     # Filter out special words and only use actual agent names
     return [agent_case_map[agent.lower()] for agent in invoked if agent.lower() in agent_case_map]
