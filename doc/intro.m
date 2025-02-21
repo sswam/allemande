@@ -1,6 +1,6 @@
 # Welcome to Ally Chat
 
-Ally Chat is an innovative multi-user chat platform that brings together people and AI in exciting new ways. Whether you want to chat one-on-one with an AI, collaborate with others in a group setting, or work with specialized AI tools, Ally Chat provides a flexible and powerful environment for interaction
+Ally Chat is an innovative multi-user chat platform that brings together people and AI in exciting new ways. Whether you want to chat one-on-one with an AI, collaborate with others in a group setting, or work with specialized AI tools, Ally Chat provides a flexible and powerful environment for interaction. We are currently chatting using the app.
 
 ## Key Features
 
@@ -30,8 +30,23 @@ Whether you're looking for casual conversation, technical help, or collaborative
 
 ## Getting Started
 
-Simply visit [allemande.ai](https://allemande.ai) to begin. Start by contacting our admin, who will set up your account and give you a tour
-Once you log in, you can start chatting right away - no complex setup required. Create a room, invite others if you'd like, and choose which characters you want to interact with
+This main "Ally Chat" room here is a "welcome lobby". Please chat with users and help them learn about the app's features. You can also introduce them to other characters and tools.
+
+Please chat in a light conversational style, don't overwhelm users with too much information at once.
+
+Room System:
+1. The chat room can be changed by editing the name at the top of the app
+2. New rooms can be created the same way
+
+Types of Rooms:
+- Home Folder: `username/` (private chats with AI)
+- Personal Public Room: `username` (public, user has moderator rights)
+- Other Public Rooms: Any other top-level room (public, no special privileges)
+
+Example for user "Alice":
+- Private AI chats: `alice/`
+- Her public room: `alice`
+- Other rooms: `general`, `music`, etc.
 
 Ally Chat is continuously evolving with new features and capabilities being added regularly. We hope you enjoy exploring and using this unique chat platform!
 
@@ -52,7 +67,7 @@ This asks an image gen agent to draw a big dog.
 1. If you mention someone's name, the will respond. Priority is given to names at the start of your message, or at the end after a comma.
 
   - hey Ally, how are you?   - invokes Ally
-  - I really like Ally, Sam  - invokes Sam
+  - I like Ally, Sam  - invokes Sam
 
 2. If you don't mention anyone's name, the last other person in the chat will repond.
 
@@ -71,6 +86,10 @@ This asks an image gen agent to draw a big dog.
 ## Examples of Advanced Syntax
 
 ### TeX math
+
+Inline math goes between dollar signs, like $ y = \sqrt{x} $.
+
+Displayed math goes between double dollar signs:
 
 $$ y = \sqrt{x} $$
 
@@ -163,9 +182,13 @@ We can safely embed any HTML:
 - **Yoni, Poni, Coni, Boni**: Adult-oriented NSFW image generation with a cartoon/anime style
 - **Bigi, Pigi**: State of the art adult-oriented NSFW image generation
 
+- In addition to using the AI art models directly, users can talk to Pixi and Illu, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
+
 ### Search Agents
+- **Goog**: A search agent that provides Google web search results
+- **Gimg**: A search agent that provides Google image search results
 - **UTube**: A video search agent that helps you find the best content on YouTube
-- **Pr0nto**: A NSFW search agent that provides adult content
+- **Pr0nto**: A NSFW search agent that provides adult content from PornHub
 
 ### Programming Tools
 - **Palc**: Calculator
