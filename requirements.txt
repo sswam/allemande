@@ -152,3 +152,7 @@ types-regex
 pulsectl
 
 faiss-cpu sentence_transformers
+
+types-beautifulsoup4
+types-requests
+types-tabulate
