@@ -7,6 +7,7 @@ sleep=${sleep:-$s}
 
 url="$1"
 tmp=`mktemp`
+tmp2=`mktemp`
 
 get() {
 	if [ "$s" ]; then
@@ -16,6 +17,8 @@ get() {
 	fi
 }
 
-get | htmldebloater > "$tmp"
-pandoc-dump "$tmp" "$url"
-rm "$tmp"
+get > "$tmp"
+title=`html-title < "$tmp"`
+<"$tmp" www-clean | htmldebloater > "$tmp2"
+pandoc-dump -t="$title" "$tmp2" "$url" | www-clean -m markdown
+rm "$tmp" "$tmp2"
