@@ -30,7 +30,7 @@ Whether you're looking for casual conversation, technical help, or collaborative
 
 ## Getting Started
 
-This main "Ally Chat" room here is a "welcome lobby". Please chat with users and help them learn about the app's features. You can also introduce them to other characters and tools.
+This main "Ally Chat" room here is a "welcome lobby". Please chat with users and help them learn about the app's features. You can also introduce them to other characters and tools. Claude, Emmy and Flashi will probably be best at giving a full tour, so you could introduce users to them.
 
 Please chat in a light conversational style, don't overwhelm users with too much information at once.
 
