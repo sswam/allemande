@@ -84,7 +84,7 @@ def load_cookies(cookie_file: Path | None = None) -> list[dict[str, str]]:
 
 
 def scroll_page(
-    wd, selector: str | None = None, time_limit=30, scroll_limit=None, scroll_wait=1, retry_each_scroll=3
+    wd, selector: str | None = None, time_limit=30, scroll_limit:int|None=None, scroll_wait=1, retry_each_scroll=3
 ):  # pylint: disable=too-many-arguments, too-many-positional-arguments
     """Scroll a specific element or the whole page."""
     logger.info("Scrolling page: %s, %s, %s, %s, %s", selector, time_limit, scroll_limit, scroll_wait, retry_each_scroll)
@@ -253,7 +253,7 @@ def selenium_get(  # pylint: disable=too-many-arguments, too-many-positional-arg
     images: bool = False,
     screenshot: str | None = None,
     time_limit: int = 30,
-    scroll_limit: int = 100000,
+    scroll_limit: int|None = 100000,
     scroll_wait: float = 1,
     retry_each_scroll: int = 3,
     script: str | None = None,

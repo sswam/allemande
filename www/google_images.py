@@ -138,7 +138,7 @@ async def google_images(  # pylint: disable=too-many-arguments,too-many-position
         result = {
             "title": title,
             "url": link,
-            "image": item.get("imageUrl"),
+            "image_url": item.get("imageUrl"),
             "thumbnail": item.get("thumbnailUrl"),
             "width": item.get("imageWidth"),
             "height": item.get("imageHeight"),
@@ -152,7 +152,7 @@ async def google_images(  # pylint: disable=too-many-arguments,too-many-position
         # writer.writerow(["Title", "URL", "Image URL", "Thumbnail URL", "Width", "Height"])
         for result in results:
             writer.writerow([
-                result["title"], result["url"], result["image"],
+                result["title"], result["url"], result["image_url"],
                 result["thumbnail"], result["width"], result["height"], result["thumb_width"], result["thumb_height"]
             ])
 
