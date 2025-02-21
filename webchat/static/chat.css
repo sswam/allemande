@@ -117,7 +117,7 @@ iframe:fullscreen {
 a.button {
 	display: flex;
 	align-items: center;
-	font: inherit;
+	font-size: 1.2rem;
 }
 
 button, .button {
