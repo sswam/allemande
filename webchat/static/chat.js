@@ -1211,8 +1211,8 @@ async function check_ok_to_edit(file) {
 }
 
 async function fetch_file(file) {
-  const response = await fetch(ROOMS_URL + "/" + file, {
-    credentials: 'include',
+  const response = await fetch(`${ROOMS_URL}/${file}?nocache=${Math.random()}`, {
+    credentials: 'include'
   });
   if (!response.ok) {
     throw new Error("GET request failed: " + file);

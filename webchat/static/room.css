@@ -74,13 +74,13 @@ table, th, td {
 	background: var(--background);
 }
 
-.caption:hover {
+.embed:hover .caption {
 	overflow: visible;
 	white-space: normal;
 	z-index: 100;
 }
 
-.thumb {
+.embed .thumb {
 	width: 280px;
 	height: 177px;
 	margin: 0 0 4px 0 !important;
@@ -93,6 +93,45 @@ table, th, td {
 	float: left;
 	margin: 0px 20px 40px 0px;
 	padding: 0;
+}
+
+.image .thumb {
+	width: auto;
+	height: 177px;
+	margin: 0 0 4px 0 !important;
+}
+
+.image {
+	height: 201px;
+	float: left;
+	margin: 0px 20px 40px 0px;
+	padding: 0;
+	position: relative;
+	overflow: hidden;
+	padding-bottom: 128px;
+}
+
+.image > a {
+	display: block;
+}
+
+.image .caption {
+	width: auto;
+	position: absolute;
+	top: 177px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	background: var(--background);
+}
+
+.image:hover {
+	overflow: visible;
+}
+
+.image:hover .caption {
+	white-space: normal;
+	z-index: 100;
 }
 
 a {
