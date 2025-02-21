@@ -67,7 +67,7 @@ async def bb2html(opts, watch_log, out=sys.stdout):
                     row = await file_changed(bb_file, html_file, old_size, new_size)
                     print(*row, sep="\t", file=out)
                 except Exception as exc:
-                    logger.error("Error: %r", exc)
+                    logger.exception("error processing %s: %s", bb_file, exc)
             finally:
                 queue.task_done()
 
