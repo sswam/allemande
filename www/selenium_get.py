@@ -25,11 +25,13 @@ __version__ = "0.3.6"
 
 logger = logs.get_logger()
 
-user_agent = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/58.0.3029.110 Safari/537.3"
-)
+program = Path(sys.argv[0]).resolve()
+
+prog_dir = program.parent
+
+
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+
 
 DEFAULT_COOKIE_DIR = Path.home() / ".local/share/selenium"
 DEFAULT_COOKIE_FILE = DEFAULT_COOKIE_DIR / "cookies.json"
@@ -59,9 +61,7 @@ def get_cookies(driver: webdriver.Chrome) -> list[dict[str, str]]:
     return cookies
 
 
-def save_cookies(
-    cookie_file: Path | None = None, cookies: list[dict[str, str]] | None = None
-) -> None:
+def save_cookies(cookie_file: Path | None = None, cookies: list[dict[str, str]] | None = None) -> None:
     """Save cookies from the browser session to file."""
     if not cookie_file:
         return
@@ -84,17 +84,10 @@ def load_cookies(cookie_file: Path | None = None) -> list[dict[str, str]]:
 
 
 def scroll_page(
-    wd,
-    selector: str | None = None,
-    time_limit=30,
-    scroll_limit=None,
-    scroll_wait=1,
-    retry_each_scroll=3,
-):
+    wd, selector: str | None = None, time_limit=30, scroll_limit=None, scroll_wait=1, retry_each_scroll=3
+):  # pylint: disable=too-many-arguments, too-many-positional-arguments
     """Scroll a specific element or the whole page."""
-    logger.info(
-        f"Scrolling page: {selector=}, {time_limit=}, {scroll_limit=}, {scroll_wait=}, {retry_each_scroll=}"
-    )
+    logger.info("Scrolling page: %s, %s, %s, %s, %s", selector, time_limit, scroll_limit, scroll_wait, retry_each_scroll)
 
     # pylint: disable=too-many-arguments
     start_time = time.time()
@@ -154,6 +147,9 @@ def scroll_page(
 
 
 def run_script(wd, exe, retry_script=1, script_wait=1):
+    """Run a script in the browser."""
+    if not exe:
+        return
     logger.info("Executing script")
     for attempt in range(retry_script):
         logger.debug("Script execution attempt %d", attempt + 1)
@@ -167,7 +163,7 @@ def run_script(wd, exe, retry_script=1, script_wait=1):
         logger.warning("Script failed after %d retries", retry_script)
 
 
-def selenium_get(
+def selenium_get_2(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches
     wd: webdriver.Chrome,
     url: str,
     sleep: int = 0,
@@ -177,13 +173,33 @@ def selenium_get(
     scroll_wait: float = 1,
     retry_each_scroll: int = 3,
     exe: str | None = None,
+    script: str | None = None,
+    post_scroll_script: str | None = None,
+    facebook: bool = False,
+    params: list[str] | None = None,
     scroll_exe: str | None = None,
     script_wait: float = 1,
     retry_script: int = 3,
     scroll_selector: str | None = None,
-    save_incremental: bool = False,
+    incremental: bool = False,
 ) -> None:
     """Fetch a web page using Selenium and write the output to the specified stream."""
+    if script:
+        exe += "\n" + Path(script).read_text(encoding="utf-8") + "\n"
+
+    if facebook:
+        exe += "\n" + (prog_dir / "facebook_scroller.js").read_text(encoding="utf-8") + "\n"
+        incremental = True
+    if facebook and not post_scroll_script:
+        # TODO I was trying to get the post timestamps to show up, but they still don't
+        post_scroll_script = prog_dir / "svg_realiser.js"
+
+    if post_scroll_script:
+        scroll_exe = Path(post_scroll_script).read_text(encoding="utf-8") + "\n"
+
+    if params:
+        url += "?" + urlencode(dict(param.split("=") for param in params))
+
     logger.info("Loading page: %s", url)
     wd.get(url)
     logger.info("Page loaded successfully")
@@ -196,16 +212,16 @@ def selenium_get(
         run_script(wd, exe, retry_script=retry_script, script_wait=script_wait)
 
     seen_content = set()
-    scroll_params = dict(
-        wd=wd,
-        selector=scroll_selector,
-        scroll_wait=scroll_wait,
-        retry_each_scroll=retry_each_scroll,
-        time_limit=time_limit,
-        scroll_limit=scroll_limit,
-    )
+    scroll_params = {
+        "wd": wd,
+        "selector": scroll_selector,
+        "scroll_wait": scroll_wait,
+        "retry_each_scroll": retry_each_scroll,
+        "time_limit": time_limit,
+        "scroll_limit": scroll_limit,
+    }
 
-    if scroll_limit and save_incremental:
+    if scroll_limit and incremental:
         start_time = time.time()
         scrolled = 0
         while scrolled < scroll_limit:
@@ -213,8 +229,8 @@ def selenium_get(
             time_limit_remaining = max(0, time_limit - time_elapsed)
             if time_limit_remaining == 0:
                 break
-            scroll_params['time_limit'] = time_limit_remaining
-            scroll_params['scroll_limit'] = min(scrolled + 1000, scroll_limit)
+            scroll_params["time_limit"] = time_limit_remaining
+            scroll_params["scroll_limit"] = min(scrolled + 1000, scroll_limit)
             scroll_page(**scroll_params)
             run_script(wd, scroll_exe)
             content = wd.page_source
@@ -230,7 +246,7 @@ def selenium_get(
         print(wd.page_source, file=ostream)
 
 
-def selenium_get_cli(
+def selenium_get(  # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
     ostream: TextIO,
     url: str,
     sleep: int = 0,
@@ -267,36 +283,16 @@ def selenium_get_cli(
     if not images:
         opts.add_argument("--blink-settings=imagesEnabled=false")
 
-    program = Path(sys.argv[0]).resolve()
-    prog_dir = program.parent
-
     if cookie_file and cookie_file == "-":
         cookie_file = DEFAULT_COOKIE_FILE
     cookie_path = Path(cookie_file) if cookie_file else None
-
-    if script:
-        exe += "\n" + Path(script).read_text(encoding="utf-8") + "\n"
-
-    if facebook:
-        exe += "\n" + (prog_dir / "facebook_scroller.js").read_text(encoding="utf-8") + "\n"
-        incremental = True
-    if facebook and not post_scroll_script:
-        # TODO I was trying to get the post timestamps to show up, but they still don't
-        post_scroll_script = prog_dir / "svg_realiser.js"
-
-    scroll_exe = ""
-    if post_scroll_script:
-        scroll_exe = Path(post_scroll_script).read_text(encoding="utf-8") + "\n"
-
-    if params:
-        url += "?" + urlencode(dict(param.split("=") for param in params))
 
     with webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=opts) as wd:
         cookies = load_cookies(cookie_path)
         set_cookies(wd, cookies)
         cookies = get_cookies(wd)
 
-        selenium_get(
+        selenium_get_2(
             wd,
             url,
             sleep=sleep,
@@ -306,11 +302,14 @@ def selenium_get_cli(
             scroll_wait=scroll_wait,
             retry_each_scroll=retry_each_scroll,
             exe=exe,
-            scroll_exe=scroll_exe,
+            script=script,
+            post_scroll_script=post_scroll_script,
+            facebook=facebook,
+            params=params,
             script_wait=script_wait,
             retry_script=retry_script,
             scroll_selector=scroll_selector,
-            save_incremental=incremental,
+            incremental=incremental,
         )
 
         # Take a screenshot if requested
@@ -369,4 +368,4 @@ def setup_args(arg):
 
 
 if __name__ == "__main__":
-    main.go(selenium_get_cli, setup_args)
+    main.go(selenium_get, setup_args)
