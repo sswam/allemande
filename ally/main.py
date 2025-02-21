@@ -27,6 +27,8 @@ __version__ = '0.1.3'
 def go(
     main_function: Callable[..., Any],
     setup_args: Callable[[argparse.ArgumentParser], None] | None = None,
+    ally_output: bool = True,
+    **kwargs: Any,
 ):
     """
     Main launcher function that sets up arguments, logging, and runs the main function.
@@ -38,7 +40,8 @@ def go(
     logs.setup_logging()
 
     # Parse command-line arguments, and finish setting up logging
-    args, kwargs, put = opts.parse(main_function, setup_args)
+    args, kwargs1, put = opts.parse(main_function, setup_args)
+    kwargs.update(kwargs1)
     sig = inspect.signature(main_function)
 
     if not put:
@@ -55,7 +58,7 @@ def go(
             rv = main_function(*args, **kwargs)
         if isinstance(rv, int):
             sys.exit(rv)
-        elif rv is not None:
+        elif ally_output and rv is not None:
             put(str(rv).rstrip("\n") + "\n")
     except Exception as e:
         logger = logs.get_logger(2)
