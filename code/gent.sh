@@ -33,6 +33,8 @@ gent() {
   tests_ext=$ext
   tests_dir=$dir/tests
 
+  local tests_base="${stem}_test.$tests_ext"
+
   executable=0
   case "$ext" in
   sh)
@@ -44,7 +46,6 @@ gent() {
     ;;
   esac
 
-  local tests_base="${stem}_test.$tests_ext"
   local tests_path="$tests_dir/$tests_base"
 
   mkdir -p "$tests_dir"

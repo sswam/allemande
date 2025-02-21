@@ -26,7 +26,7 @@ apply-sh() {
 	done
 	cat-named -p "$changes" "$@" |
 	process -m="$model" \
-	"Please copy the input files $*, applying the changes from '$basename' carefully, and output the complete files in the same format with '#File: foo' headers (and no black line after the header). If a file is unchanged, no need to include it." |
+	"Please copy the input files $*, applying the changes from '$basename' carefully, and output the complete files in the same format with '#File: foo' headers (and no black line after the header). If a file is unchanged, no need to include it. Use consistent indentation." |
 		split-files -
 	modify text-strip : "$@"
 	if ((edit)); then

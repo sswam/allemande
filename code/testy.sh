@@ -48,7 +48,7 @@ testy() {
 		if [ "$ext" = rs ]; then
 			local tests_file="$prog"
 		elif [ "$ext" = go ]; then
-			local tests_file="$(basename "$prog" ".$ext")_test.$test_ext"
+			local tests_file="$(dirname "$prog")/$(basename "$prog" ".$ext")_test.$test_ext"
 		else
 			local tests_file="$(dirname "$prog")/tests/$(basename "$prog" ".$ext")_test.$test_ext"
 		fi
