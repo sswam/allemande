@@ -43,7 +43,7 @@ server {
 		if ($is_banned) {
 			return 302 https://allemande.ai/ban.html;
 		}
- 		auth_jwt_enabled on;
+		auth_jwt_enabled on;
 #		autoindex on;
 # TODO if we want strong privacy
 #		access_log off;
@@ -52,7 +52,7 @@ server {
 		if ($cors_header = "https://rooms.allemande.ai") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
-			add_header Cross-Origin-Resource-Policy: cross-origin
+#			add_header Cross-Origin-Resource-Policy cross-origin;
 		}
 		try_files $uri $uri/ =404;
 	}
@@ -61,9 +61,25 @@ server {
 		if ($is_banned) {
 			return 302 https://allemande.ai/ban.html;
 		}
- 		auth_jwt_enabled on;
+		auth_jwt_enabled on;
 		auth_jwt_redirect off;
 		root /var/www/allychat/;
+#		autoindex on;
+#		try_files $uri $uri/ =404;
+# TODO if we want strong privacy
+#		access_log off;
+#		error_log /dev/null;
+		add_header Cache-Control "no-store";
+		try_files $uri $uri/ @redirect;
+	}
+
+	location /themes {
+		if ($is_banned) {
+			return 302 https://allemande.ai/ban.html;
+		}
+		auth_jwt_enabled on;
+		auth_jwt_redirect off;
+		root /var/www/allychat/static;
 		autoindex on;
 #		try_files $uri $uri/ =404;
 # TODO if we want strong privacy
@@ -88,7 +104,7 @@ server {
 # 	}
 
 	location /x {
- 		auth_jwt_enabled on;
+		auth_jwt_enabled on;
 		auth_jwt_redirect off;
 # 		auth_basic "Auth";
 # 		auth_basic_user_file /var/www/allychat/.htpasswd;
@@ -103,7 +119,7 @@ server {
 		proxy_set_header X-Forwarded-User $http_jwt_sub;
 	}
 
-	types {
-		application/wasm wasm;
-	}
+# 	types {
+# 		application/wasm wasm;
+# 	}
 }

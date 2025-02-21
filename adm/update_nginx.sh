@@ -21,4 +21,5 @@ for site in *; do
 		< "$site" > /etc/nginx/sites-available/"$site"
 done
 
-service nginx reload
+service nginx reload || service nginx start
+service nginx status
