@@ -172,7 +172,7 @@ def trim_response(response, args, agent_name, people_lc=None):
     # response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
 
     if response != response_before:
-        logger.warning("Trimmed response: %r\nto: %r", response_before, response)
+        logger.debug("Trimmed response: %r\nto: %r", response_before, response)
 
     response = " " + response.strip()
     return response
@@ -185,7 +185,7 @@ def leading_spaces(text):
 
 def fix_layout(response, _args, agent):
     """Fix the layout and indentation of the response."""
-    logger.info("response before fix_layout: %s", response)
+    logger.debug("response before fix_layout: %s", response)
     lines = response.strip().split("\n")
     out = []
     in_table = False
@@ -200,10 +200,13 @@ def fix_layout(response, _args, agent):
         lines = [line for line in lines if not re.match(r"\t?```\w*\s*$", line)]
 
     # Remove agent's name, if present
-    logger.info("lines[0]: %r", lines[0])
+    logger.debug("lines[0]: %r", lines[0])
+    logger.debug("agent['name']: %r", agent["name"])
     name_part = None
-    if lines[0].startswith(f'agent["name"]:\t'):
+    if lines[0].startswith(agent["name"] + ":\t"):
         name_part, lines[0] = lines[0].split(":\t", 1)
+    logger.debug("lines[0] after: %r", lines[0])
+    logger.debug("name_part: %r", name_part)
 
     # First line may be indented differently
     lines[0] = lines[0].strip()
@@ -263,7 +266,7 @@ def fix_layout(response, _args, agent):
 
     response = ("\n".join(out)).rstrip()
 
-    logger.info("response after fix_layout: %s", response)
+    logger.debug("response after fix_layout: %s", response)
 
     return response
 
@@ -282,14 +285,14 @@ def get_fulltext(args, model_name, history, history_start, invitation, delim):
         if len(history) - history_start < 10:
             guess = 1
         else:
-            logger.info("guessing how many tokens to drop...")
-            logger.info("  args.memory: %r", args.memory)
-            logger.info("  n_tokens: %r", n_tokens)
-            logger.info("  len(history): %r", len(history))
-            logger.info("  history_start: %r", history_start)
+            logger.debug("guessing how many tokens to drop...")
+            logger.debug("  args.memory: %r", args.memory)
+            logger.debug("  n_tokens: %r", n_tokens)
+            logger.debug("  len(history): %r", len(history))
+            logger.debug("  history_start: %r", history_start)
             guess = ((n_tokens - args.memory) / n_tokens) * (len(history) - history_start)
             guess = int(guess * 0.7)
-            logger.info("  guess: %r", guess)
+            logger.debug("  guess: %r", guess)
             if guess <= 0:
                 guess = 1
             if guess >= len(history) - history_start:
@@ -352,7 +355,7 @@ def config_read(file):
     return {}
 
 
-async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None, max_results=10, agents=None):
+async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None, num=10, agents=None):
     """Run a search agent."""
     name = agent["name"]
     logger.debug("history: %r", history)
@@ -376,17 +379,13 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     logger.debug("query 6: %r", query)
     query = re.sub(r"^\s*[,;.]|[,;.]\s*$", "", query).strip()
 
-    logger.info("query: %r %r", name, query)
+    logger.debug("query: %r %r", name, query)
 
-    # TODO make the search library async too
-    async def async_search():
-        """Run a search in a thread."""
-        return await asyncio.to_thread(search.search, query, engine=name, markdown=True, limit=limit, max_results=max_results)
-
-    response = await async_search()
-    response2 = f"{name}:\t{response}"
+    response = await search.search(query, engine=name, markdown=True, num=num, limit=limit, safe=not ADULT)
+    response2 = f"{name}:\t\n{response}"
+    logger.debug("response:\n%s", response2)
     response3 = fix_layout(response2, args, agent)
-    logger.info("response3:\n%s", response3)
+    logger.debug("response3:\n%s", response3)
 
     # wrap secondary divs in <details>
     response4 = re.sub(
@@ -396,7 +395,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
         flags=re.DOTALL,
     )
 
-    logger.info("response4:\n%s", response3)
+    logger.debug("response4:\n%s", response3)
 
     return response4
 
@@ -481,8 +480,8 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
         messages = list(chat.lines_to_messages([query1]))
         query = messages[-1]["content"] if messages else None
 
-        logger.info("query: %r", query)
-        logger.info("history 1: %r", history)
+        logger.debug("query: %r", query)
+        logger.debug("history 1: %r", history)
         response = await run_agent(
             agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents
         )
@@ -565,11 +564,11 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
             context.insert(n_messages - pos, f"{system_bottom_role}:\t{system_bottom}")
         else:
             context.insert(n_messages - pos, f"{system_bottom}")
-        logger.info("system_bottom: %r", system_bottom)
+        logger.debug("system_bottom: %r", system_bottom)
     if system_top:
         system_top_role = agent.get("system_top_role", None)
         context.insert(0, f"{system_top_role}:\t{system_top}")
-        logger.info("system_top: %r", system_top)
+        logger.debug("system_top: %r", system_top)
 
     logger.debug("context: %s", args.delim.join(context[-6:]))
 
@@ -609,7 +608,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     if image_agent:
         fulltext2 = add_configured_image_prompts(fulltext, [agent, config])
-        logger.info("fulltext after adding configured image prompts: %r", fulltext2)
+        logger.debug("fulltext after adding configured image prompts: %r", fulltext2)
     else:
         fulltext2 = fulltext
 
@@ -833,7 +832,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     opts = llm.Options(model=agent["model"], indent="\t")
 
-    logger.info("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
+    logger.debug("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
 
     logger.debug("querying %r = %r", agent["name"], agent["model"])
     try:
@@ -905,7 +904,7 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
 #    logger.debug("query 3: %r", query)
 
     query = chat.clean_prompt([query], name, args.delim)
-    logger.info("query: %s", query)
+    logger.debug("query: %s", query)
 
     # shell escape in python
     cmd_str = ". ~/.profile ; "
@@ -949,9 +948,9 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip, a
         return
 
     try:
-        logger.info("Processing file: %r", file_path)
+        logger.debug("Processing file: %r", file_path)
         count = await process_file(file_path, args, skip=skip, agents=agents)
-        logger.info("Processed file: %r, %r agents responded", file_path, count)
+        logger.debug("Processed file: %r, %r agents responded", file_path, count)
     except Exception:  # pylint: disable=broad-except
         logger.exception("Processing file failed", exc_info=True)
 
@@ -1156,7 +1155,7 @@ async def watch_loop(args):
                     agent_file_changed(agents, file_path, change_type)
                     write_agents_list(agents)
                 else:
-                    logger.info("Ignoring change to file: %r", file_path)
+                    logger.debug("Ignoring change to file: %r", file_path)
             except Exception:  # pylint: disable=broad-except
                 logger.exception("Error processing file change", exc_info=True)
             finally:
@@ -1189,7 +1188,7 @@ def get_code_files():
 async def restart_if_code_changes():
     """Watch for code changes and restart the service."""
     code_files = get_code_files()
-    logger.info("watching code files: %r", code_files)
+    logger.debug("watching code files: %r", code_files)
 
     try:
         async for changes in awatch(*code_files, debounce=1000, debug=False):
@@ -1221,7 +1220,7 @@ def load_model_tokenizer(args):
     if args.model and not model_path.exists() and args.model.endswith(".gguf"):
         args.model = args.model[: -len(".gguf")]
         model_path = Path(models_dir) / args.model
-    logger.info("model_path: %r", model_path)
+    logger.debug("model_path: %r", model_path)
     if args.model and model_path.exists():
         # This will block, but it doesn't matter because this is the init for the program.
         return load_tokenizer(model_path)
@@ -1285,7 +1284,7 @@ async def main():
 
     TOKENIZERS[args.model] = load_model_tokenizer(args)
 
-    logger.info("Watching")
+    logger.info("Watching chat rooms")
     asyncio.create_task(restart_if_code_changes())
     await watch_loop(args)
 
