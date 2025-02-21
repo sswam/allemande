@@ -32,7 +32,7 @@ MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 def process_hq_macro(prompt: str, config: dict, macros: dict) -> dict:
     """Process hq macro in prompt and update config accordingly"""
     sets = macros.get('sets', {})
-    hq = float(sets.get("hq", 1.5))
+    hq = float(sets.get("hq", 0))
 
     if hq == 0:
         # hq=0 - disable adetailer, no hires
@@ -50,8 +50,8 @@ def process_hq_macro(prompt: str, config: dict, macros: dict) -> dict:
 
 def limit_dimensions_and_hq(config: dict) -> dict:
     """Limit dimensions and hires to prevent excessive resource usage and bad results"""
-    width = config.get("width", 1024)
-    height = config.get("height", 1024)
+    width = config.get("width", 768)
+    height = config.get("height", 768)
 
     # don't allow zero or negative dimensions
     width = max(width, 1)
