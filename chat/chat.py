@@ -7,6 +7,7 @@ import sys
 import html
 from pathlib import Path
 import re
+import regex
 import logging
 from typing import Any, TextIO
 from dataclasses import dataclass
@@ -17,6 +18,8 @@ import enum
 from stat import S_IFREG, S_IROTH, S_IWOTH
 import asyncio
 import copy
+import io
+import yaml
 
 import argh
 import markdown
@@ -141,6 +144,10 @@ class Room:
         with self.path.open("a", encoding="utf-8") as f:
             f.write(text)
 
+    def exists(self):
+        """Check if a room exists."""
+        return self.path.exists()
+
     def write(self, user, content):
         """
         Write a message to a room.
@@ -167,7 +174,7 @@ class Room:
 
         self.append(text)
 
-    def clear(self, user, op="clear", backup=True):
+    async def clear(self, user, op="clear", backup=True):
         """Clear a room."""
         access = check_access(user, self.name, self.path)
         if not self.path.exists():
@@ -192,13 +199,15 @@ class Room:
             # run room-rotate script with room name
             # TODO in Python, archive half, keep half. Media?
             # subprocess.run(["room-rotate", self.name], check=True)
-        else:
+        elif op == "clear":
             if not access.value & Access.ADMIN.value:
                 raise PermissionError("You are not allowed to clear this room.")
             if backup:
                 backup_file(str(self.path))
             # truncate the file
             self.path.write_text("")
+        elif op == "clean":
+            await self.clean(user)
 
     def undo(self, user, n=1):
         """Remove the last n messages from a room."""
@@ -249,6 +258,33 @@ class Room:
                 messages.append(message)
 
         return list(reversed(messages))
+
+    async def clean(self, user, backup=True):
+        """Clean up the room, removing specialist messages"""
+        access = check_access(user, self.name, self.path)
+        if not access.value & Access.MODERATE.value:
+            raise PermissionError("You are not allowed to clean this room.")
+        messages = load_chat_messages(self.path)
+        # TODO don't hard-code the agent names!!!
+        # TODO it would be better to do this as a view
+        exclude = ["Illu", "Pixi", "Atla", "Chaz", "Brie", "Morf", "Pliny", "Sia", "Sio", "Summar", "Summi"]
+        narrators = ["Nova", "Illy", "Yoni", "Poni", "Coni", "Boni", "Bigi", "Pigi"]
+
+        messages = [msg for msg in messages if msg.user not in exclude]
+
+        # remove player messages that start with invoking a specialist
+        specialists = set(exclude + narrators)
+        name_pattern = re.compile(f'^({"|".join(map(re.escape, specialists))})(,|$)')
+        messages = [msg for msg in messages if not name_pattern.match(msg.content)]
+
+        # convert narrator messages to narrative
+        for msg in messages:
+            if msg.user in narrators:
+                msg.user = None
+
+        output = io.StringIO()
+        save_chat_messages(messages, output, mode="w")
+        await overwrite_file(user, self.name + EXTENSION, output.getvalue(), backup=backup)
 
 
 # TODO move to a separate module
@@ -534,7 +570,7 @@ def preprocess(content):
         ):
             is_html = True
         logger.debug("check line: %r", line)
-        is_math_delim = re.match(r"\s*\$\$$", line)
+        is_math_delim = re.match(r"\s*(\$\$|```tex|```math)$", line)
         if is_math_delim and not in_math:
             out.append("```math")
             in_math = True
@@ -550,6 +586,12 @@ def preprocess(content):
         elif re.match(r"^```", line) and in_code:
             out.append(line)
             in_code = False
+        elif re.match(r"""^<script( type=["']?text/javascript["']?)?>$""", line) and not in_code:
+            out.append(line)
+            in_code = True
+        elif re.match(r"^</script>$", line) and in_code:
+            out.append(line)
+            in_code = False
         elif in_math:
             line = fix_math_escape_percentages(line)
             out.append(line)
@@ -562,12 +604,12 @@ def preprocess(content):
                 logger.debug("preprocess match: %r", match)
                 if match is None:
                     if not in_code and not is_html:
-                        line = line[:start] + html.escape(line[start:])
+                        line = line[:start] + html.escape(line[start:], quote=False)
                     break
                 pre, d1, math, d2, post = match.groups()
                 replace = quote_math_inline(pre, d1, math, d2, post)
                 if not in_code and not is_html:
-                    pre = html.escape(pre)
+                    pre = html.escape(pre, quote=False)
                 line = line[:start] + pre + replace + post
                 start += len(pre) + len(replace)
             out.append(line)
@@ -580,6 +622,52 @@ def preprocess(content):
 math_cache: dict[str, str] = {}
 
 
+# def wrap_indent(line):
+#     """Wrap the indentatioin in a span with appropriate width."""
+#     indent, content = re.match(r"^(\s*)(.*)", line).groups()
+#     if indent:
+#         indent = '<span class="indent">' + indent + "</span>"
+#     return indent + content
+
+
+SPACE_MARKER = "§SPACE§"
+TAB_MARKER = "§TAB§"
+
+
+def escape_indents(text):
+    """Escape leading whitespace in each line."""
+    global SPACE_MARKER, TAB_MARKER
+    while SPACE_MARKER in text or TAB_MARKER in text:
+        r = random.randint(0, 999999)
+        SPACE_MARKER = f"§SPACE{r}§"
+        TAB_MARKER = f"§TAB{r}§"
+
+    lines = text.splitlines()
+    processed_lines = []
+
+    for line in lines:
+        # Match leading whitespace
+        indent_match = re.match(r'^(\s+)', line)
+        if indent_match:
+            indent = indent_match.group(1)
+            # Replace spaces and tabs with markers
+            escaped_indent = indent.replace(' ', SPACE_MARKER).replace('\t', TAB_MARKER)
+            # Replace the original indent with the escaped version
+            processed_line = escaped_indent + line[len(indent):]
+        else:
+            processed_line = line
+        processed_lines.append(processed_line)
+
+    return '\n'.join(processed_lines)
+
+
+def restore_indents(text):
+    """Restore leading whitespace in each line."""
+    text = text.replace(SPACE_MARKER, ' ')
+    text = text.replace(TAB_MARKER, '\t')
+    return text
+
+
 def message_to_html(message):
     """Convert a chat message to HTML."""
     global math_cache
@@ -589,7 +677,13 @@ def message_to_html(message):
         html_content = math_cache[content]
     else:
         try:
+            content = escape_indents(content)
             html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
+            html_content = restore_indents(html_content)
+#            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
+#             html_content = html_content.replace("<br />", "")
+#             html_content = html_content.replace("<p>", "")
+#             html_content = html_content.replace("</p>", "\n")
         except Exception as e:
             logger.error("markdown error: %r", e)
             html_content = f"<pre>{html.escape(content)}</pre>"
@@ -704,10 +798,13 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
     relurl += append
 
     # convert to text if wanted
-    if to_text and medium in ("audio", "video"):
-        alt = await speech_to_text.convert_audio_video_to_text(file_path, medium)
-    elif to_text and medium == "image":
-        alt = await image_to_text.convert_image_to_text(file_path)
+    try:
+        if to_text and medium in ("audio", "video"):
+            alt = await speech_to_text.convert_audio_video_to_text(file_path, medium)
+        elif to_text and medium == "image":
+            alt = await image_to_text.convert_image_to_text(file_path)
+    except Exception as e:
+        logger.error("Error converting to text: %r, %r, %r", medium, file_path, e)
 
     # alt text
     alt = alt or stem
@@ -795,7 +892,7 @@ def save_chat_messages(
             destination.write(chat_message_to_text(msg) + '\n')
         return
 
-    # Handle path inputs
+    # Handle path outputs
     path = Path(destination) if isinstance(destination, str) else destination
     with path.open(mode, encoding='utf-8') as f:
         save_chat_messages(messages, f)
@@ -958,7 +1055,7 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
 
     user = user.lower()
 
-    logger.warning("check_access: User: %s, Path: %s", user, pathname)
+    logger.warning("check_access: User: %s, pathname: %s, Path: %s", user, pathname, path)
 
     # Denied users have no access
     if user in access.get("deny", []):
@@ -1016,7 +1113,7 @@ def check_access(user: str, pathname: str, path: Path) -> bool:
 
     mode = stats.st_mode
 
-    access = Access.NONE
+    access = Access.NONE.value
 
     # Users have access to other-readable entries anywhere
     if mode & S_IROTH:
@@ -1074,12 +1171,14 @@ def backup_file(path: str):
         logger.error("git error: %s", e)
 
 
-async def overwrite_file(user, file, content, backup=True, delay=0, noclobber=False):
+async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=False):
     """Overwrite a file with new content."""
     logger.warning("overwrite_file: %s", file)
     path = str(name_to_path(file))
     logger.warning("  path: %s", path)
     if not check_access(user, file, Path(path)).value & Access.WRITE.value:
+        logger.warning("  user: %s", user)
+        logger.warning("  access: %s", check_access(user, file, Path(path)))
         raise PermissionError("You are not allowed to overwrite this file.")
     exists = Path(path).exists()
     if exists and Path(path).is_dir():
@@ -1168,6 +1267,68 @@ def process_fn(msg):
 
     processed_messages = process_chat(messages, process_fn)
     save_chat_messages(processed_messages)
+
+
+def clean_prompt(context, name, delim):
+    """Clean the prompt for image gen agents and tools."""
+
+    logger.info("clean_prompt: before: %r", context)
+
+    agent_name_esc = regex.escape(name)
+
+    # Remove one initial tab from each line in the context
+    context = [regex.sub(r"(?m)^\t", "", line) for line in context]
+
+    # Join all lines in context with the specified delimiter
+    text = delim.join(context)
+
+    logger.info("clean_prompt: 1: %r", text)
+
+    # Remove up to the last occurrence of the agent's name (case insensitive) and any following punctuation, with triple backticks
+    text1 = regex.sub(r".*```\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)```", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+
+    logger.info("clean_prompt: 2: %r", text)
+
+    # Remove up to the last occurrence of the agent's name (case insensitive) and any following punctuation, with single backticks
+    if text1 == text:
+        text1 = regex.sub(r".*`\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)`", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+
+    logger.info("clean_prompt: 3: %r", text)
+
+    # Remove up to the last occurrence of the agent's name (case insensitive) and any following punctuation
+    if text1 == text:
+        text = regex.sub(r".*\b" + agent_name_esc + r"\b[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+
+    logger.info("clean_prompt: 4: %r", text)
+
+#     # Remove the last pair of triple backticks and keep only the content between them
+#     text = re.sub(r".*```(.*?)```.*", r"\1", text, flags=re.DOTALL, count=1)
+
+#     # Try single backticks too
+#     text = re.sub(r".*`(.*?)`.*", r"\1", text, flags=re.DOTALL, count=1)
+
+    # Remove anything after a blank line
+    if text1 == text:
+        text1 = re.sub(r"\n\n.*", r"", text, flags=re.DOTALL)
+
+    text = text1
+
+    # Remove leading and trailing whitespace
+    text = text.strip()
+
+    logger.info("clean_prompt: after: %s", text)
+    return text
+
+
+def set_user_theme(user, theme):
+    """Set the user's theme."""
+    if sanitize_filename(theme) != theme:
+        raise ValueError("Invalid theme name.")
+    path = Path(os.environ["ALLEMANDE_USERS"]) / user / "theme.css"
+    source = "../../static/themes/" + theme + ".css"
+    if not (Path(os.environ["ALLEMANDE_USERS"]) / user / source).exists:
+        raise ValueError("Theme not found.")
+    cache.symlink(source, path)
 
 
 if __name__ == "__main__":

@@ -29,6 +29,7 @@ import llm  # type: ignore
 from ally import portals  # type: ignore
 from safety import safety  # type: ignore
 from ally.cache import cache  # type: ignore
+import aligno_py as aligno  # type: ignore
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # type: ignore # pylint: disable=wrong-import-position, wrong-import-order
@@ -106,17 +107,14 @@ def set_up_agent(agent: Agent) -> Agent:
 
     if service is None:
         raise ValueError(f'Unknown service for agent: {agent["name"]}, {agent["type"]}')
-    if "safe" in service:
-        agent["safe"] = service["safe"]
+
+    agent.update(service)
 
     if SAFE and not agent.get("safe", True):
         raise ValueError(f'Unsafe agent {agent["name"]} not allowed in safe mode')
 
     if not ADULT and agent.get("adult"):
         raise ValueError(f'Adult agent {agent["name"]} only allowed in adult mode')
-
-    agent["type"] = service["type"]
-    agent["fn"] = service["fn"]
 
     # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
     for prompt_key in "system_top", "system_bottom":
@@ -166,10 +164,10 @@ def trim_response(response, args, agent_name, people_lc=None):
 
     # remove agent's own `name: ` from response
     agent_name_esc = re.escape(agent_name)
-    response = re.sub(r"^\s*" + agent_name_esc + r"\s*:\s(.*)", r"\1", response, flags=re.MULTILINE)
+    response = re.sub(r"^[ \t]*" + agent_name_esc + r"[ \t]*:[ \t]*(.*)", r"\1", response, flags=re.MULTILINE)
 
     # remove anything after a known person's name
-    response = re.sub(r"(\n\s*(\w+)\s*:\s*(.*))", check_person_remove, response, flags=re.DOTALL)
+    response = re.sub(r"(\n[ \t]*(\w+)[ \t]*:[ \t]*(.*))", check_person_remove, response, flags=re.DOTALL)
 
     # response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
 
@@ -187,6 +185,7 @@ def leading_spaces(text):
 
 def fix_layout(response, _args, agent):
     """Fix the layout and indentation of the response."""
+    logger.info("response before fix_layout: %s", response)
     lines = response.strip().split("\n")
     out = []
     in_table = False
@@ -200,44 +199,71 @@ def fix_layout(response, _args, agent):
                 lines.pop(0)
         lines = [line for line in lines if not re.match(r"\t?```\w*\s*$", line)]
 
+    # Remove agent's name, if present
+    logger.info("lines[0]: %r", lines[0])
+    name_part = None
+    if lines[0].startswith(f'agent["name"]:\t'):
+        name_part, lines[0] = lines[0].split(":\t", 1)
+
+    # First line may be indented differently
+    lines[0] = lines[0].strip()
+
+    # detect common indent
+    common_indent = aligno.find_common_indent(lines[1:])
+
     # clean up the lines
     for i, line in enumerate(lines):
+        # strip common indent
+        if line.startswith(common_indent):
+            line = line[len(common_indent) :]
+
+        line = line.rstrip()
+
         # markdown tables must have a blank line before them ...
         if not in_table and ("---" in line or re.search(r"\|.*\|", line)):
             if i > 0 and lines[i - 1].strip():
-                out.append("\t")
+                out.append("")
             in_table = True
 
         if in_table and not line.strip():
             in_table = False
 
-        # detect if in_code
-        if not in_code and re.search(r"```", line):
-            in_code = True
-            line1 = line
-            if i == 0:
-                line1 = re.sub(r"^[^\t]*", "", line1)
-            base_indent = leading_spaces(line1)
-        elif in_code and re.search(r"```", line):
-            in_code = False
+#         # detect if in_code
+#         if not in_code and (re.search(r"```", line) or re.search(r"<script\b", line)):
+#             in_code = True
+#             line1 = line
+#             if i == 0:
+#                 line1 = re.sub(r"^[^\t]*", "", line1)
+#             base_indent = leading_spaces(line1)
+#         elif in_code and (re.search(r"```", line) or re.search(r"</script>", line)):
+#             in_code = False
+#
+#         if in_code:
+#             # For code, try to remove base_indent from the start of the line
+#             if base_indent and line.startswith(base_indent):
+#                 line = line[len(base_indent) :]
+#             else:
+#                 base_indent = ""
+#             if i > 0:
+#                 line = "\t" + line
+#         else:
+# #            # For non-code, strip all leading tabs and trailing whitespace, to avoid issues
+# #            line = line.lstrip("\t").rstrip()
+#             line = line.rstrip()
+#             if i > 0:
+#                 line = "\t" + line
+#             elif "\t" not in line:
+#                 line = line + "\t"
 
-        if in_code:
-            # For code, try to remove base_indent from the start of the line
-            if base_indent and line.startswith(base_indent):
-                line = line[len(base_indent) :]
-            else:
-                base_indent = ""
-            if i > 0 and not base_indent:
-                line = "\t" + line
+        if i == 0 and name_part:
+            line = name_part + ":\t" + line
         else:
-            # For non-code, strip all leading tabs and trailing whitespace, to avoid issues
-            line = line.lstrip("\t").rstrip()
-            if i > 0:
-                line = "\t" + line
-
+            line = "\t" + line
         out.append(line)
 
     response = ("\n".join(out)).rstrip()
+
+    logger.info("response after fix_layout: %s", response)
 
     return response
 
@@ -432,6 +458,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
     # TODO this is a bit dodgy and has a race condition
     if message and message["content"].startswith("-@"):  # pylint: disable=unsubscriptable-object
         history_messages.pop()
+        history.pop()
         room = chat.Room(path=Path(file))
         room.undo("root")
         message = history_messages[-1] if history_messages else None
@@ -454,14 +481,17 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
         messages = list(chat.lines_to_messages([query1]))
         query = messages[-1]["content"] if messages else None
 
-        logger.debug("query: %r", query)
-        logger.debug("history 1: %r", history)
+        logger.info("query: %r", query)
+        logger.info("history 1: %r", history)
         response = await run_agent(
             agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents
         )
         response = response.strip()
+
         if agent.get("narrator"):
-            response = response.lstrip(f'{agent["name"]}:\t')
+            response = response.lstrip(f'{agent["name"]}:')
+            # remove 1 tab from start of each line
+            response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
 
         history.append(response)
         logger.debug("history 2: %r", history)
@@ -504,6 +534,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     include_mission = agent.get("type") != "image_a1111"  # TODO clean this
 
     image_agent = agent.get("type", "").startswith("image_")
+    dumb_agent = agent.get("dumb", False)
     image_count = config.get("image_count", 1)
 
     if include_mission:
@@ -544,30 +575,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     agent_name_esc = regex.escape(name)
 
-    def clean_image_prompt(context, agent_name_esc):
-        """Clean the prompt for image gen agents."""
-
-        # Remove everything before and including tab characters from each line in the context
-        context = [regex.sub(r".*?\t", r"", line).strip() for line in context]
-
-        # Join all lines in context with the specified delimiter
-        text = args.delim.join(context)
-
-        # Remove the first occurrence of the agent's name (case insensitive) and any following punctuation
-        text = regex.sub(r".*\b" + agent_name_esc + r"\b[,;.!]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
-
-        # Remove the first pair of triple backticks and keep only the content between them
-        text = re.sub(r"```(.*?)```", r"\1", text, flags=re.DOTALL, count=1)
-
-        # Remove leading and trailing whitespace
-        text = text.strip()
-
-        logger.debug("clean_image_prompt: after: %s", text)
-        return text
-
-    clean_prompt = agent.get("clean_prompt", False)
-    if clean_prompt:
-        fulltext = clean_image_prompt(context, agent_name_esc)
+    need_clean_prompt = agent.get("clean_prompt", dumb_agent)
+    if need_clean_prompt:
+        fulltext = chat.clean_prompt(context, name, args.delim)
     else:
         fulltext, history_start = get_fulltext(args, model_name, context, history_start, invitation, args.delim)
 
@@ -771,12 +781,12 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
                 content = u + ": " + content
         msg2 = {
             "role": role,
-            "content": content,
+            "content": content.rstrip(),
         }
         logger.debug("msg2: %r", msg2)
         remote_messages.append(msg2)
 
-    while remote_messages and remote_messages[0]["role"] == "assistant" and "claude" in agent["model"]:
+    while remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] == "anthropic":
         remote_messages.pop(0)
 
     # add system messages
@@ -788,9 +798,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         n_messages = len(remote_messages)
         pos = agent.get("system_bottom_pos", 0)
         pos = min(pos, n_messages)
-        remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom})
+        remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom.rstrip()})
     if system_top:
-        remote_messages.insert(0, {"role": system_top_role, "content": system_top})
+        remote_messages.insert(0, {"role": system_top_role, "content": system_top.rstrip()})
 
     # Some agents require alternating user and assistant messages. Mark most recent message as "user", then check backwards and cut off when no longer alternating.
     if agent.get("alternating_context") and remote_messages:
@@ -818,17 +828,20 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         if system_messages:
             remote_messages.insert(0, {"role": "system", "content": "\n\n".join(system_messages)})
 
-    # TODO this is a bit dodgy and won't work with async
-    opts = {
-        "model": agent["model"],
-        "indent": "\t",
-    }
-    llm.set_opts(opts)
+    if agent["type"] == "anthropic" and not remote_messages or remote_messages[-1]["role"] == "assistant":
+        remote_messages.append({"role": "user", "content": ""})
 
-    logger.debug("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
+    opts = llm.Options(model=agent["model"], indent="\t")
+
+    logger.info("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
 
     logger.debug("querying %r = %r", agent["name"], agent["model"])
-    output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, remote_messages)
+    try:
+        output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, opts, remote_messages)
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("Execption during generation: %r", e)
+        return f"{agent['name']}:\t{e}"
+    #google.generativeai.types.generation_types.StopCandidateException: finish_reason: PROHIBITED_CONTENT
 
     response = output_message["content"]
     box = [response]
@@ -840,9 +853,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         response = response[len(agent["name"]) + 2 :]
 
     # fix indentation for code
-    if opts["indent"]:
+    if opts.indent:
         lines = response.splitlines()
-        lines = tab.fix_indentation_list(lines, opts["indent"])
+        lines = tab.fix_indentation_list(lines, opts.indent)
         response = "".join(lines)
 
     logger.debug("response 1: %r", response)
@@ -882,13 +895,17 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     logger.debug("history_messages: %r", history_messages)
     message = history_messages[-1]
     query = message["content"]
-    logger.debug("query 1: %r", query)
-    rx = r"((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b" + re.escape(name) + r"\b"
-    logger.debug("rx: %r", rx)
-    query = re.sub(rx, "", query, flags=re.IGNORECASE)
-    logger.debug("query 2: %r", query)
-    query = re.sub(r"^\s*[,;.]|\s*$", "", query).strip()
-    logger.debug("query 3: %r", query)
+
+#    logger.debug("query 1: %r", query)
+#    rx = r"((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b" + re.escape(name) + r"\b"
+#    logger.debug("rx: %r", rx)
+#    query = re.sub(rx, "", query, flags=re.IGNORECASE)
+#    logger.debug("query 2: %r", query)
+#    query = re.sub(r"^\s*[,;.]|\s*$", "", query).strip()
+#    logger.debug("query 3: %r", query)
+
+    query = chat.clean_prompt([query], name, args.delim)
+    logger.info("query: %s", query)
 
     # shell escape in python
     cmd_str = ". ~/.profile ; "
@@ -902,7 +919,7 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     # format the response
     response = ""
     if errors or status:
-        response += "\n## status:\n" + str(status) + "\n\n"
+        response += f"status: {status}\n\n"
         response += "## errors:\n```\n" + errors + "\n```\n\n"
         response += "## output:\n"
     response += "```\n" + output + "\n```\n"
@@ -921,10 +938,10 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip, a
         return
     if not args.shrink and old_size and new_size < old_size:
         return
-    if old_size is None and new_size == 0:
+    if old_size is None:
         return
-    #     if new_size == 0 and old_size != 0:
-    #         return
+    if new_size == 0 and old_size != 0:
+        return
 
     if skip.get(file_path):
         logger.debug("Won't react to AI response: %r", file_path)
@@ -974,10 +991,9 @@ def list_active_tasks():
 
 def write_agents_list(agents):
     """Write the list of agents to a file."""
-    agent_names = list(agents.keys())
+    agent_names = sorted(agents.keys())
     path = PATH_ROOMS / "agents.yml"
-    with open(path, "w", encoding="utf-8") as f:
-        yaml.dump(agent_names, f)
+    cache.save(path, agent_names, noclobber=False)
 
 
 def agent_get_all_names(agent: Agent) -> list[str]:
@@ -1161,6 +1177,7 @@ def get_code_files():
     code_files = [os.path.realpath(__file__)]
 
     # all module source files
+    # TODO this is incomplete, it doesn't catch all modules
     for mod in sys.modules.values():
         file = getattr(mod, "__file__", None)
         if file and file.startswith(str(PATH_HOME)) and not "/venv/" in file and file.endswith(".py"):
@@ -1172,6 +1189,7 @@ def get_code_files():
 async def restart_if_code_changes():
     """Watch for code changes and restart the service."""
     code_files = get_code_files()
+    logger.info("watching code files: %r", code_files)
 
     try:
         async for changes in awatch(*code_files, debounce=1000, debug=False):
@@ -1211,14 +1229,14 @@ def load_model_tokenizer(args):
 
 
 services = {
-    "llm_llama":    {"type": "portal", "fn": local_agent},
-    "image_a1111":  {"type": "portal", "fn": local_agent},
-    "openai":       {"type": "remote", "fn": remote_agent},
-    "anthropic":    {"type": "remote", "fn": remote_agent},
-    "google":       {"type": "remote", "fn": remote_agent},
-    "perplexity":   {"type": "remote", "fn": remote_agent},
-    "safe_shell":   {"type": "tool", "fn": safe_shell, "safe": False},  # ironically
-    "search":       {"type": "tool", "fn": run_search},
+    "llm_llama":    {"link": "portal", "fn": local_agent},
+    "image_a1111":  {"link": "portal", "fn": local_agent, "dumb": True},
+    "openai":       {"link": "remote", "fn": remote_agent},
+    "anthropic":    {"link": "remote", "fn": remote_agent},
+    "google":       {"link": "remote", "fn": remote_agent},
+    "perplexity":   {"link": "remote", "fn": remote_agent},
+    "safe_shell":   {"link": "tool", "fn": safe_shell, "safe": False, "dumb": True},  # ironically
+    "search":       {"link": "tool", "fn": run_search, "dumb": True},
 }
 
 

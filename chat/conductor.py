@@ -43,7 +43,8 @@ ANYONE_WORDS = [
 # TODO configureable by room
 
 # TODO exclude based on an attribute or settings
-EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf"])
+EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf", "Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
+# EXCLUDE_PARTICIPANTS = set(["System", "Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
 EXCLUDE_PARTICIPANTS_SYSTEM = set(["System"])
 
 EVERYONE_MAX = 5
@@ -127,6 +128,9 @@ def who_is_named(
 
 #    logger.debug("matches 2: %r", matches)
 
+    logger.debug(f"{everyone_except_user=}")
+    logger.debug(f"{everyone_except_user_all=}")
+
     result: list[str] = []
     for _type, _pos, agent in matches:
         if agent is None:
@@ -187,7 +191,7 @@ def participants(history: list[dict[str, str]], use_all=False) -> list[str]:
 
 def agent_is_tool(agent: dict[str, Any]) -> bool:
     """check if an agent is a tool"""
-    return agent.get("type") == "tool" or agent.get("type") == "image_a1111"
+    return agent.get("link") == "tool" or agent.get("type") == "image_a1111"
 
 
 def agent_is_human(agent: dict[str, Any]) -> bool:
@@ -220,6 +224,7 @@ def who_should_respond(
     mission: str | None = None,
 ) -> list[str]:
     """who should respond to a message"""
+    logger.info("who_should_respond: %r %r", message, history)
     if not history:
         history = []
     if not agents_dict:
@@ -239,23 +244,26 @@ def who_should_respond(
     agents_dict = agents_dict.copy()
 
     # mentioned in mission hack
-    mentioned_in_mission = []
+    mentioned_in_mission = set()
     if mission:
         mission_text = "\n".join(mission)
         for _key, agent in agents_dict.items():
-            if agent["type"] != "portal":
+            if agent.get("specialist") or agent["link"] == "tool" or agent.get("expensive") or agent.get("type").startswith("image_"):
                 continue
-            agent_re = re.escape(agent["name"])
+            name = agent["name"]
+            if name in mentioned_in_mission:
+                continue
+            agent_re = re.escape(name)
             if re.search(rf"(?i)\b{agent_re}\b", mission_text):
-                mentioned_in_mission.append(agent["name"])
+                mentioned_in_mission.add(name)
 
-    logger.info("mission: %r", mission)
-
+    logger.info("mission: %r", mentioned_in_mission)
+    logger.info("mentioned_in_mission: %r", mentioned_in_mission)
     # TODO this is a big mess, clean up
 
     # Filter excluded participants first
-    all_participants_with_excluded: list[str] = list(set(participants(history, use_all=True) + mentioned_in_mission))
-    all_participants = list(set(all_participants_with_excluded) - EXCLUDE_PARTICIPANTS)
+    all_participants_with_excluded: list[str] = list(set(participants(history, use_all=True) + list(mentioned_in_mission)))
+    all_participants = list(set(all_participants_with_excluded) | mentioned_in_mission - EXCLUDE_PARTICIPANTS)
 
     # Add agents for humans in the history
     for agent in all_participants:
@@ -388,11 +396,11 @@ def who_should_respond(
             ai_participant_agents = {name.lower(): agents_dict[name.lower()] for name in ai_participants}
             invoked = who_spoke_last(history[:-1], user, ai_participant_agents, include_self=True, include_humans=False)
             logger.info("who_spoke_last ai: %r", invoked)
-        if not invoked and ai_participants:
+        if not invoked and ai_participants and ai_participants != [user]:
             invoked = [random.choice(ai_participants)]
             logger.info("random ai: %r", invoked)
             logger.info("ai_participants: %r", ai_participants)
-        if not invoked and ai_participants_with_excluded:
+        if not invoked and ai_participants_with_excluded and ai_participants_with_excluded != [user]:
             invoked = [random.choice(ai_participants_with_excluded)]
             logger.info("random ai 2: %r", invoked)
         if not invoked and default:
