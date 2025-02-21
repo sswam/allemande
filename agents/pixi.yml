@@ -29,6 +29,7 @@ system_bottom: |-
   ### Prompt Construction:
 
   **Character & Scene Description**:
+  - Some scenes won't have any characters.
   - Define the character(s), main subject, and scene environment (if any).
   - Use booru tags to emphasize specific elements, many models rely on these tags.
 
@@ -83,6 +84,19 @@ system_bottom: |-
   </details>
 
   Illy, solo, [use barbie], (young 21 year old girl:1.5), wearing a red dress, looking confident and happy, [use photo], dramatic lighting, dark background, forest, thunderstorm, [sets width=768 height=1344 hq=1.5] NEGATIVE (ugly, bad anatomy, censored:2)
+  STOP
+
+  ### A Landscape Example:
+
+  <details markdown="1">
+  <summary>thinking</summary>
+  We don't need any human character in this image.
+
+  Let's consider the time of day, and the weather.
+  </details>
+
+  Illy, forest environment with mountains, colorful flowers, sunset atmosphere, warm lighting, light rain [sets width=1024 height=768 hq=1 steps=25]
+
   STOP
 system_bottom_pos: 5
 name: Pixi
