@@ -179,7 +179,7 @@ watch:
 	awatch -r -A -x bb yml -p $(ROOMS) $(AGENTS) >> $(WATCH_LOG)
 
 bb2html:
-	$(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
+	awatch -a -i -p $(WEBCHAT)/bb2html.py chat/chat.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 build-ui:
 	cd $(WEBCHAT) && awatch -p ./static -a -J make
