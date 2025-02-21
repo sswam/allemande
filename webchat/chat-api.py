@@ -6,6 +6,7 @@ import os
 import json
 import time
 import logging
+import asyncio
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -63,7 +64,15 @@ async def post(request):
     room = chat.Room(name=room)
 
     try:
+        exists = room.exists()
         room.write(user, content)
+
+        # If the file was just created, we need to poke it again to get a response;
+        # This is so that we don't trigger responses when moving files, checkout, and such.
+
+        if not exists:
+            await asyncio.sleep(0.2)
+            room.touch()
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
@@ -99,7 +108,7 @@ async def upload(request):
     room = form["room"]
     room = chat.sanitize_pathname(room)
     file = form["file"]
-    to_text = form.get(to_text, false)
+    to_text = form.get("to_text", False)
     user = request.headers["X-Forwarded-User"]
 
     try:
@@ -118,11 +127,11 @@ async def clear(request):
     op = form["op"]
     user = request.headers["X-Forwarded-User"]
 
-    if op not in ["clear", "archive", "rotate"]:
+    if op not in ["clear", "archive", "rotate", "clean"]:
         raise HTTPException(status_code=400, detail="Invalid operation.")
 
     room = chat.Room(name=room)
-    room.clear(user, op)
+    await room.clear(user, op)
     return JSONResponse({})
 
 
@@ -136,6 +145,19 @@ async def undo(request):
 
     room = chat.Room(name=room)
     room.undo(user, n=int(n))
+    return JSONResponse({})
+
+
+@app.route("/x/settings", methods=["POST"])
+async def themes(request):
+    """Update user settings, including theme."""
+    user = request.headers["X-Forwarded-User"]
+    settings = await request.json()
+    theme = settings.pop("theme", None)
+    if theme:
+        chat.set_user_theme(user, theme)
+    if settings:
+        raise HTTPException(status_code=400, detail="Invalid settings.")
     return JSONResponse({})
 
 

@@ -7,6 +7,7 @@ body, html {
 	height: 100%;
 	margin: 0;
 	padding: 0;
+	overflow: hidden;
 }
 
 .hidden {
@@ -32,6 +33,14 @@ body#app {
 }
 
 body#messages {
+	background: var(--frame);
+}
+
+body#messages > div.messages_wrap {
+	background: var(--background);
+}
+
+body#messages > div.canvas {
 	background: var(--background);
 }
 
@@ -89,12 +98,16 @@ input:disabled, input:disabled:hover, input:disabled:focus
 	background: var(--background);
 }
 
+:root {
+	--pad: 12px;
+}
+
 /* light mode / dark mode default colours, avoid flash of white or black */
 
 @media (prefers-color-scheme: light) {
 	:root {
 		/* gradient.py --css 1 .5 8 */
-		--col0: #ff0000;
+		--col0: #ffffff;
 		--col1: #ededed;
 		--col2: #dbdbdb;
 		--col3: #c9c9c9;
@@ -108,7 +121,7 @@ input:disabled, input:disabled:hover, input:disabled:focus
 @media (prefers-color-scheme: dark) {
 	:root {
 		/* gradient.py --css 0 .5 8 */
-		--col0: #00ff00;
+		--col0: #000000;
 		--col1: #121212;
 		--col2: #242424;
 		--col3: #363636;

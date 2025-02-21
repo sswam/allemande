@@ -16,6 +16,11 @@ const $title = $("title");
 const $inputrow = $id("inputrow");
 const $edit = $id("view_edit");
 const $auto = $id('mod_auto');
+const $messages_overlay = $id("messages_overlay");
+
+const narrator = "Nova";
+const illustrator = "Pixi";
+
 
 // simple messages to keep the conversation going
 const random_message = [
@@ -44,6 +49,8 @@ const random_message = [
   "what happened?",
   "what's next?",
   "wow",
+  "please continue",
+  "tell me more",
 ]
 
 let VERSION;
@@ -57,13 +64,14 @@ let controls = "input_main";
 let view = "messages";
 
 let room_ready = false;
+let theme;
 
 const ADMIN = "admin";
 
 // keyboard shortcuts --------------------------------------------------------
 
 const SHORTCUTS_GLOBAL = shortcuts_to_dict([
-  ['Escape', escape, 'Go back, change or leave room'],
+  ['escape', escape, 'Go back, change or leave room'],
   ['ctrl+;', change_room, 'Change room'],
   ["ctrl+'", room_clear_number, "Clear room number"],
   ['ctrl+.', room_next, 'Go to next room'],
@@ -72,34 +80,43 @@ const SHORTCUTS_GLOBAL = shortcuts_to_dict([
 ]);
 
 const SHORTCUTS_MESSAGE = shortcuts_to_dict([
-  ['ctrl+Enter', () => send(), 'Send message'],
-  ['shift+Enter', send_random_message, 'Send a random message'],
-  ['alt+Enter', poke, 'Poke the chat'],
+  ['ctrl+enter', () => send(), 'Send message'],
+  ['shift+enter', send_random_message, 'Send a random message'],
+  ['alt+enter', poke, 'Poke the chat'],
   ['alt+s', send, 'Send message'],
   ['alt+p', poke, 'Poke the chat'],
   ['alt+t', content_insert_tab, 'Insert tab'],
-  ['alt+x', clear_content, 'Clear content'],
+  ['shift+alt+t', content_insert_tab, 'Insert tab'],
+  ['alt+backspace', clear_content, 'Clear content'],
   ['alt+u', browse_up, 'Browse up'],
   ['alt+i', view_images, 'View images'],
+  ['alt+c', view_clean, 'View clean'],
 
   ['alt+z', undo, 'Undo last action', ADMIN],
   ['alt+r', retry, 'Retry last action', ADMIN],
-  ['alt+c', clear_chat, 'Clear messages', ADMIN],
+  ['alt+x', clear_chat, 'Clear messages', ADMIN],
   ['alt+a', archive_chat, 'Archive chat', ADMIN],
+  ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
   ['alt+e', () => edit(), 'Edit file', ADMIN],
+
+  ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
+  ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
+  ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
+  ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
 ]);
 
 const SHORTCUTS_ROOM = shortcuts_to_dict([
-  ['Enter', focus_content, 'Focus message input'],
+  ['enter', focus_content, 'Focus message input'],
 ]);
 
 const SHORTCUTS_EDIT = shortcuts_to_dict([
   ['alt+t', edit_insert_tab, 'Insert tab'],
-  ['Escape', edit_close, 'Close edit'],
+  ['shift+alt+t', edit_insert_tab, 'Insert tab'],
+  ['escape', edit_close, 'Close edit'],
   ['ctrl+s', edit_save, 'Save edit'],
-  ['ctrl+Enter', edit_save_and_close, 'Save edit and close'],
-  ['alt+Z', edit_reset, 'Reset edit'],
-  ['alt+X', edit_clear, 'Clear edit'],
+  ['ctrl+enter', edit_save_and_close, 'Save edit and close'],
+  ['alt+z', edit_reset, 'Reset edit'],
+  ['alt+x', edit_clear, 'Clear edit'],
 ]);
 
 // developer functions -------------------------------------------------------
@@ -284,22 +301,105 @@ function active_toggle(id) {
 
 function new_chat_message(message) {
   auto_play_back_off();
-  const message_user_lc = message.user.toLowerCase();
+  const message_user_lc = message.user?.toLowerCase();
   // console.log("new message user vs user", message_user_lc, user);
   if (message_user_lc != user) {
     active_dec("send");
   }
 }
 
-// insert text into textarea -------------------------------------------------
+// insert tabs and indent ----------------------------------------------------
 
-function textarea_insert_text(textarea, text) {
-  const pos = textarea.selectionStart;
-  textarea.value =
-    textarea.value.slice(0, pos) +
-    text +
-    textarea.value.slice(textarea.selectionEnd);
-  textarea.selectionStart = textarea.selectionEnd = pos + 1;
+function textarea_indent(textarea, dedent = false) {
+  // If no selection, handle single tab insertion/removal
+  if (textarea.selectionStart === textarea.selectionEnd) {
+    if (dedent) {
+      // For shift-tab with no selection, remove previous tab if it exists
+      const pos = textarea.selectionStart;
+      if (pos > 0 && textarea.value[pos - 1] === '\t') {
+        setRangeText(textarea, '', pos - 1, pos);
+        textarea.selectionStart = textarea.selectionEnd = pos - 1;
+      } else {
+      }
+    } else {
+      // For tab with no selection, insert a tab at caret
+      setRangeText(textarea, '\t', textarea.selectionStart, textarea.selectionEnd);
+      const newPos = textarea.selectionStart + 1;
+      textarea.selectionStart = textarea.selectionEnd = newPos;
+    }
+    return;
+  }
+
+  // Save initial selection
+  const selStart = textarea.selectionStart;
+  const selEnd = textarea.selectionEnd;
+
+  // Get the text content
+  const text = textarea.value;
+
+  // Find start of first line
+  let blockStart = selStart;
+  while (blockStart > 0 && text[blockStart - 1] !== '\n') {
+    blockStart--;
+  }
+
+  // Find end of last line
+  let blockEnd = selEnd;
+  while (blockEnd < text.length && text[blockEnd] !== '\n') {
+    blockEnd++;
+  }
+
+  // Split the selected block into lines
+  const selectedText = text.slice(blockStart, blockEnd);
+  const lines = selectedText.split('\n');
+
+  // Process each line
+  const processedLines = lines.map(line => {
+    if (dedent) {
+      // Remove one tab if it exists at the start
+      return line.startsWith('\t') ? line.slice(1) : line;
+    } else {
+      // Add a tab
+      return '\t' + line;
+    }
+  });
+
+  // Join the lines back together
+  const newText = processedLines.join('\n');
+
+  // Calculate new selection positions
+  const deltaPerLine = dedent ? -1 : 1;
+  const newSelStart = selStart + (selStart > blockStart ? deltaPerLine : 0);
+  const newSelEnd = selEnd + deltaPerLine * lines.length - (selEnd === blockEnd ? deltaPerLine : 0);
+
+  setRangeText(textarea, newText, blockStart, blockEnd);
+
+  // Restore selection
+  textarea.setSelectionRange(newSelStart, newSelEnd);
+}
+
+function setRangeText(textarea, newText, blockStart, blockEnd) {
+  // Store original selection
+  const selStart = textarea.selectionStart;
+  const selEnd = textarea.selectionEnd;
+
+  // Make the replacement
+  textarea.setSelectionRange(blockStart, blockEnd);
+  document.execCommand('insertText', false, newText);
+
+  // Calculate how the replacement affected positions
+  const lengthDiff = newText.length - (blockEnd - blockStart);
+
+  // Restore selection, adjusting for text length changes
+  const adjustedStart = selStart < blockStart ? selStart :
+            selStart > blockEnd ? selStart + lengthDiff :
+            blockStart;
+
+  const adjustedEnd = selEnd < blockStart ? selEnd :
+            selEnd > blockEnd ? selEnd + lengthDiff :
+            blockEnd;
+
+  textarea.setSelectionRange(adjustedStart, adjustedEnd);
 }
 
 // handle message change -----------------------------------------------------
@@ -402,17 +502,20 @@ function browse_up(ev) {
 
 // user info and settings ----------------------------------------------------
 
-function load_user_styles() {
-  const $style = $id("user_styles");
-  if ($style) {
-    $remove($style);
+function load_theme() {
+  let $link = $id("user_styles");
+  if (!$link) {
+    $link = $create("link");
+    $link.id = "user_styles";
+    $link.rel = "stylesheet";
+    $link.type = "text/css";
+    $head.append($link);
   }
-  const $link = $create("link");
-  $link.id = "user_styles";
-  $link.rel = "stylesheet";
-  $link.type = "text/css";
-  $link.href = "/users/" + user + "/theme.css";
-  $head.append($link);
+  if (theme) {
+    $link.href = "/themes/" + theme + ".css";
+  } else {
+    $link.href = "/users/" + user + "/theme.css";
+  }
 }
 
 // hash change ---------------------------------------------------------------
@@ -540,12 +643,12 @@ function room_clear_number() {
 
 // Keyboard shortcuts handling -----------------------------------------------
 
-function content_insert_tab() {
-  textarea_insert_text($content, "\t");
+function content_insert_tab(ev) {
+  textarea_indent($content, ev.shiftKey);
 }
 
-function edit_insert_tab() {
-  textarea_insert_text($edit, "\t");
+function edit_insert_tab(ev) {
+  textarea_indent($edit, ev.shiftKey);
 }
 
 function shortcuts_to_dict(shortcuts) {
@@ -557,15 +660,16 @@ function shortcuts_to_dict(shortcuts) {
 }
 
 function dispatch_shortcut(ev, shortcuts) {
-  const key = [
+  const key = ev.key.toLowerCase();
+  const combo = [
     ev.ctrlKey ? 'ctrl+' : '',
     ev.shiftKey ? 'shift+' : '',
     ev.altKey ? 'alt+' : '',
     ev.metaKey ? 'meta+' : '',
-    ev.key
+    key,
   ].join('');
 
-  const shortcut = shortcuts[key] || shortcuts[ev.key];
+  const shortcut = shortcuts[combo];
 
   if (shortcut?.admin && !admin) {
     return false;
@@ -605,7 +709,9 @@ function handle_message(ev) {
   // console.log("chat handle_message", ev.data);
 
   if (ev.data.type == "ready" && !room_ready) {
+    // console.log("room ready");
     room_ready = true;
+    theme = ev.data.theme;
     run_hooks("room_ready");
   }
 
@@ -718,35 +824,16 @@ function setup_user_button() {
   else $user.href = "/" + query_to_hash(user);
 }
 
-// drag to resize the input row ----------------------------------------------
+// Wrapper function to initialize drag controls for the input row ------------
 
-const $messages_overlay = $id("messages_overlay");
-let resizeStartY, resizeStartHeight;
+function initDragControls() {
+  const resizer = new DragResizer({
+    element: $inputrow,
+    direction: 'up',
+    overlay: $messages_overlay,
+  });
 
-function initDrag(e) {
-  e.preventDefault();
-  resizeStartY = e.clientY || e.touches[0].clientY;
-  resizeStartHeight = $inputrow.offsetHeight;
-  document.addEventListener("mousemove", doDrag);
-  document.addEventListener("mouseup", stopDrag);
-  document.addEventListener("touchmove", doDrag);
-  document.addEventListener("touchend", stopDrag);
-  $messages_overlay.style.display = "block";
-}
-
-function doDrag(e) {
-  e.preventDefault();
-  const clientY = e.clientY || e.touches[0].clientY;
-  $inputrow.style.flexBasis = resizeStartHeight + resizeStartY - clientY + "px";
-}
-
-function stopDrag(e) {
-  e.preventDefault();
-  document.removeEventListener("mousemove", doDrag);
-  document.removeEventListener("mouseup", stopDrag);
-  document.removeEventListener("touchmove", doDrag);
-  document.removeEventListener("touchend", stopDrag);
-  $messages_overlay.style.removeProperty("display");
+  return (e) => resizer.initDrag(e);
 }
 
 // file attachments ----------------------------------------------------------
@@ -855,6 +942,9 @@ async function clear_chat(ev, op) {
     confirm_message = "Save and clear the first half of the chat?";
   else if (op === "archive")
     confirm_message = "Save and clear the chat?";
+  else if (op == "clean")
+    confirm_message = "Clean up the room?  Removes messages from specialists.";
+  // TODO it would be better to hide them from everyone, with a switch
   else
     throw new Error("invalid op: " + op);
 
@@ -897,6 +987,10 @@ async function archive_chat(ev) {
 
 async function rotate_chat(ev) {
   await clear_chat(ev, "rotate");
+}
+
+async function clean_chat(ev) {
+  await clear_chat(ev, "clean");
 }
 
 async function undo_last_message(room) {
@@ -948,6 +1042,8 @@ async function retry(ev) {
 
 // input controls ------------------------------------------------------------
 
+let view_theme_original_text;
+
 function set_controls(id) {
   id = id || "input_main";
   const $el = $id(id);
@@ -957,6 +1053,14 @@ function set_controls(id) {
   }
   if (id === "input_main") {
     setTimeout(() => $content.focus(), 1);
+  }
+  if (id === "input_view") {
+    if (view_theme_original_text) {
+      $id("view_theme").textContent = view_theme_original_text;
+    } else {
+      view_theme_original_text = $id("view_theme").textContent;
+    }
+    $on($id("view_theme"), "mouseover", show_theme);
   }
   controls = id;
 }
@@ -1257,6 +1361,7 @@ function edit_close() {
 
 let view_options = {
   images: 2,
+  source: 1,
 };
 
 function setup_view_options() {
@@ -1273,8 +1378,10 @@ function view_options_apply() {
   // save to local storage
   localStorage.setItem("view_options", JSON.stringify(view_options));
   // update buttons
-  active_set("view_images", view_options.images);
-  active_set("view_source", view_options.source);
+  active_set("view_images", view_options.images || 0);
+  active_set("view_source", view_options.source || 0);
+  active_set("view_canvas", view_options.canvas || 0);
+  active_set("view_clean", view_options.clean || 0);
   // send message to the rooms iframe to apply view options
   $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
 }
@@ -1290,13 +1397,91 @@ function view_source() {
   view_options_apply();
 }
 
+function view_canvas() {
+  view_options.canvas = !view_options.canvas;
+  view_options_apply();
+}
+
+function view_clean() {
+  view_options.clean = !view_options.clean;
+  view_options_apply();
+}
+
+// invoke someone ------------------------------------------------------------
+
+function invoke(who) {
+  send_text(`-@${who}`);
+}
+
+// themes --------------------------------------------------------------------
+
+async function fetch_themes_options() {
+  const response = await fetch("/themes");
+  if (!response.ok) {
+    throw new Error("GET themes request failed");
+  }
+  const data = await response.text();
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(data, 'text/html');
+  const links = [...doc.getElementsByTagName('a')];
+  links.shift();
+  const hrefs = links.map(link => link.getAttribute('href'));
+  const themes = hrefs.map(href => href.replace(/\.css$/, ''));
+  return themes;
+}
+
+async function set_settings(settings) {
+  const response = await fetch("/x/settings", {
+    method: "POST",
+    contentType: "application/json",
+    body: JSON.stringify(settings),
+  });
+
+  if (!response.ok) {
+    throw new Error("POST settings request failed");
+  }
+
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(data.error);
+  }
+
+  return data;
+}
+
+async function change_theme(ev) {
+  const themes = await fetch_themes_options();
+  if (!themes.length) {
+    return;
+  }
+  const index = themes.indexOf(theme);
+  const mode = ev.shiftKey ? "prev" : ev.ctrlKey ? "random" : "next";
+  if (mode === "next") {
+    theme = themes[(index + 1) % themes.length];
+  } else if (mode === "prev") {
+    theme = themes[(index - 1 + themes.length) % themes.length];
+  } else if (mode === "random") {
+    do {
+      theme = themes[Math.floor(Math.random() * themes.length)];
+    } while (theme === view_options.theme && themes.length > 1);
+  }
+  show_theme();
+  set_settings({ theme: theme });
+  load_theme();
+  $messages_iframe.contentWindow.postMessage({ type: "theme_changed", theme }, ROOMS_URL);
+}
+
+function show_theme() {
+  $id("view_theme").textContent = theme;
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
   user = authChat();
+  load_theme();
   setup_dev();
   set_debug(DEBUG);
-  load_user_styles();
   on_hash_change();
 
   $on($id("send"), "click", send);
@@ -1310,6 +1495,7 @@ function chat_main() {
   $on($id("mod_retry"), "click", retry);
   $on($id("mod_clear"), "click", clear_chat);
   $on($id("mod_archive"), "click", archive_chat);
+  $on($id("mod_clean"), "click", clean_chat);
   // $on($id('mod_rotate'), 'click', rotate_chat);
   $on($id("mod_auto"), "click", auto_play);
   $on($id("mod_edit"), "click", () => edit());
@@ -1324,8 +1510,11 @@ function chat_main() {
   $on($id("edit_clear"), "click", edit_clear);
   $on($id("edit_close"), "click", edit_close);
 
+  $on($id("view_theme"), "click", change_theme);
   $on($id("view_images"), "click", view_images);
   $on($id("view_source"), "click", view_source);
+  $on($id("view_canvas"), "click", view_canvas);
+  $on($id("view_clean"), "click", view_clean);
   $on($id("view_cancel"), "click", () => set_controls());
 
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
@@ -1338,8 +1527,9 @@ function chat_main() {
   $on($room, "change", () => set_room());
   $on(window, "hashchange", on_hash_change);
   $on(window, "message", handle_message);
-  $on($id("resizer"), "mousedown", initDrag);
-  $on($id("resizer"), "touchstart", initDrag);
+  const dragControls = initDragControls();
+  $on($id("resizer"), "mousedown", dragControls);
+  $on($id("resizer"), "touchstart", dragControls);
 
   setup_view_options();
 

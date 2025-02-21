@@ -87,6 +87,7 @@ function render_graphviz(node) {
 }
 
 function handleNewMessage(newMessage) {
+  // console.log("handling new message", newMessage);
   const newContent = newMessage.querySelector(".content");
   const newUser = newMessage.getAttribute("user");
   notify_new_message({ user: newUser, content: newContent.innerHTML });
@@ -96,6 +97,7 @@ function handleNewMessage(newMessage) {
   const images = newMessage.querySelectorAll("img");
   for (const img of images) {
     if (!img.title && img.alt) {
+      // console.log("setting title", img.alt);
       img.title = img.alt;
     }
     const altDiv = document.createElement("div");
@@ -103,6 +105,34 @@ function handleNewMessage(newMessage) {
     altDiv.textContent = "🖼️ " + img.alt;
     img.parentNode.insertBefore(altDiv, img.nextSibling);
   }
+
+  if (newUser) {
+    // add class="me" to messages from the current user
+    if (newUser.toLowerCase() === user) {
+      newMessage.classList.add("me");
+    }
+
+    // mark specialist messages
+    const specialists = ["pixi", "illu", "sia", "sio", "summi", "summar", "pliny", "atla", "chaz", "morf", "brie"];  // TODO: read from config, extend list
+    if (specialists.includes(newUser.toLowerCase())) {
+      newMessage.classList.add("specialist");
+    }
+
+    // mark narrative messages
+    const narrators = ["illy", "yoni", "coni", "poni", "boni", "bigi", "pigi", "nova"];  // TODO: read from config, extend list
+    if (narrators.includes(newUser.toLowerCase())) {
+      newMessage.classList.add("narrative");
+    }
+
+    // mark messages invoking or mentioning a specialist, match whole word case-insensitive
+
+    const pattern = new RegExp(`\\b(${specialists.join("|")})\\b`, "i");
+    if (newContent && pattern.test(newContent.textContent)) {
+      newMessage.classList.add("invoke-specialist");
+    }
+  }
+
+  // console.log(newMessage.outerHTML);
 
   // render graphviz diagrams
   render_graphviz(newContent);
@@ -136,12 +166,8 @@ function handleNewMessage(newMessage) {
   }
 }
 
-function process_messages(mutations) {
-  for (const mutation of mutations) {
-    for (const node of mutation.addedNodes) {
-      if (nodeIsMessage(node)) {
-        handleNewMessage(node);
-      }
-    }
+function process_messages(new_content) {
+  for (const newMessage of new_content) {
+    handleNewMessage(newMessage);
   }
 }

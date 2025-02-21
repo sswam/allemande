@@ -5,7 +5,7 @@ const timeout_seconds = 60;
 const CHAT_URL =
   location.protocol + "//" + location.host.replace(/^rooms\b/, "chat");
 
-let $body, $messages, $overlay;
+let $body, $messages, $overlay, $messages_wrap, $canvas_div;
 
 let timeout;
 
@@ -60,33 +60,87 @@ $on(document, "readystatechange", ready_state_change);
 // scrolling to the bottom ---------------------------------------------------
 
 let messages_at_bottom = true;
-let messages_height_at_last_scroll;
+let messages_height_last;
+let top_message;
 
 function is_at_bottom($e) {
-  const bot = Math.abs($e.scrollHeight - $e.scrollTop - $e.offsetHeight) < 8;
+  const bot = Math.abs($e.scrollHeight - $e.scrollTop - $e.clientHeight) < 8;
+  // console.log("is at bottom", $e, bot);
   return bot;
 }
 
-function scroll_to_bottom() {
-  var $e = $("html");
+function scroll_to_bottom($e) {
+  // console.log("scroll to bottom", $e);
   $e.scrollTop = $e.scrollHeight;
-  messages_height_at_last_scroll = $e.scrollHeight;
 }
 
 function messages_scrolled() {
-  var $e = $("html");
+  // console.log("messages scrolled");
+  var $e = $messages_wrap;
   if (messages_at_bottom) {
     var messages_height = $e.scrollHeight;
-    if (messages_height != messages_height_at_last_scroll) {
-      messages_height_at_last_scroll = messages_height;
+    if (messages_height != messages_height_last) {
+      messages_height_last = messages_height;
       scroll_to_bottom($e);
+      messages_height_last = $e.scrollHeight;
     }
   }
   messages_at_bottom = is_at_bottom($e);
+
+  top_message = getTopmostVisibleElement();
+  // console.log("top message", top_message);
 }
 
-function check_for_new_content(mutations) {
-  let new_content = false;
+function getTopmostVisibleElement() {
+  // If half visible, round to nearest element
+  const container = $messages_wrap;
+  const elements = container.querySelectorAll('.message, .narrative');
+
+  // Get container's top boundary
+  const containerTop = container.scrollTop;
+
+  // Find first element that's visible
+  for (const element of elements) {
+    const rect = element.getBoundingClientRect();
+    const elementTop = element.offsetTop - container.offsetTop;
+    const elementMiddle = elementTop + rect.height / 2;
+
+    if (elementMiddle >= containerTop) {
+      return element;
+    }
+  }
+
+  return null;
+}
+
+// wait for ------------------------------------------------------------------
+
+async function wait_for(predicate, timeout) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  let count = 0;
+
+  try {
+    while (!predicate()) {
+      if (controller.signal.aborted) {
+        throw new Error("timeout");
+      }
+      count++;
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  // console.log("wait_for", count);
+}
+
+function node_has_next_sibling(node) {
+  return node.nextSibling;
+}
+
+async function check_for_new_content(mutations) {
+  const new_content = [];
   for (const mutation of mutations) {
     if (mutation.type != "childList") {
       continue;
@@ -95,34 +149,29 @@ function check_for_new_content(mutations) {
       if (
         node.nodeType == Node.ELEMENT_NODE &&
         node.tagName == "DIV" &&
-        node.classList.contains("content")
+        (node.classList.contains("message") || node.classList.contains("narrative"))
       ) {
-        return true;
+        try {
+          await wait_for(() => node_has_next_sibling(node), 1000);
+        } catch (e) {
+          console.error("timeout waiting for next sibling (newline)", node, e);
+          // push it anyway
+        }
+        new_content.push(node);
       }
     }
   }
-  return false;
-}
-
-// resize observer -----------------------------------------------------------
-
-function resized(entries) {
-  messages_scrolled();
-}
-
-async function setup_resize_observer() {
-  await wait_for_body();
-  new ResizeObserver(resized).observe(document.body);
+  return new_content;
 }
 
 // mutation observer ---------------------------------------------------------
 
-function mutated(mutations) {
-  if (check_for_new_content(mutations)) {
+async function mutated(mutations) {
+  const new_content = await check_for_new_content(mutations);
+  if (new_content) {
     online();
   }
-  process_messages(mutations);
-  messages_scrolled();
+  process_messages(new_content);
 }
 
 function setup_mutation_observer() {
@@ -131,8 +180,6 @@ function setup_mutation_observer() {
     subtree: true,
   });
 }
-
-$on(window, "scroll", messages_scrolled);
 
 // keyboard shortcuts --------------------------------------------------------
 
@@ -149,14 +196,45 @@ const keysToKeep = [
   "End",
   "PageUp",
   "PageDown",
+  "F3", // find
+  "F5", // refresh
+  "F6", // focus address bar
+  "F7", // caret browsing
+  "F10", // menu bar
+  "F11", // full screen
+  "F12", // developer tools
 ];
-const ctrlKeysToKeep = ["c", "a", "f", "0"];
+const ctrlKeysToKeep = [
+  "c", // copy
+  "v", // paste
+  "x", // cut
+  "z", // undo
+  "y", // redo
+  "a", // select all
+  "f", // find
+  "h", // history
+  "0" // reset zoom
+];
+
+let grab_mode = false;
+
+function toggle_grab() {
+  grab_mode = !grab_mode;
+  $body.classList.toggle("grab", grab_mode);
+}
 
 function key_event(ev) {
-  setup_ids();
   // console.log("key_event", ev);
   if (overlay_mode) {
     return key_event_overlay(ev);
+  }
+  if (ev.altKey && ev.key == "g") {
+    ev.preventDefault();
+    toggle_grab();
+    return;
+  }
+  if (grab_mode) {
+    return;
   }
   if (ev.altKey && ev.key == "f") {
     ev.preventDefault();
@@ -314,7 +392,6 @@ function clear_overlay_image_cover() {
 // image overlay -------------------------------------------------------------
 
 function image_overlay($img) {
-  setup_ids();
   const $img_clone = $img.cloneNode();
   $overlay.innerHTML = "";
   $overlay.appendChild($img_clone);
@@ -334,7 +411,7 @@ function image_overlay($img) {
     go_fullscreen();
   }
 
-  add_hook("resize", setup_overlay_image_cover);
+  add_hook("window_resize", setup_overlay_image_cover);
   setup_overlay_image_cover();
 }
 
@@ -527,7 +604,6 @@ function image_click($img, ev) {
 }
 
 function click(ev) {
-  setup_ids();
   if (!$messages.contains(ev.target)) {
     return;
   }
@@ -540,17 +616,6 @@ function click(ev) {
     image_click(ev.target, ev);
     return;
   }
-}
-
-function setup_ids() {
-  if ($body) {
-    return;
-  }
-  $body = $("body");
-  $messages = $("div.messages");
-  $overlay = $("div.overlay");
-  $on($overlay, "click", overlay_click);
-  setup_swipe();
 }
 
 function notify_new_message(newMessage) {
@@ -567,32 +632,22 @@ async function handle_message(ev) {
     return;
   }
   if (ev.data.type === "set_view_options") {
-    await wait_for_body();
-    const view_images = ev.data.images;
+    await wait_for_load();
     const cl = document.body.classList;
-    if (view_images == 2) {
-      cl.add("images");
-      cl.remove("images_alt");
-    } else if (view_images == 1) {
-      cl.add("images_alt");
-      cl.remove("images");
-    } else {
-      cl.remove("images");
-      cl.remove("images_alt");
-    }
-
-    const view_sources = ev.data.source;
-    if (view_sources == 1) {
-      cl.add("source");
-    } else {
-      cl.remove("source");
-    }
+    cl.toggle("images", ev.data.images == 2);
+    cl.toggle("images_alt", ev.data.images == 1);
+    cl.toggle("source", ev.data.source == 1);
+    cl.toggle("canvas", ev.data.canvas == 1);
+    cl.toggle("clean", ev.data.clean == 1);
+  } else if (ev.data.type === "theme_changed") {
+    const $style = $id("user_styles");
+    $style.href = CHAT_URL + "/themes/" + ev.data.theme + ".css";
   }
 }
 
-// wait for body to be ready -------------------------------------------------
+// wait for the page to load the main elements -------------------------------
 
-function wait_for_body() {
+function wait_for_load() {
   return new Promise(resolve => {
     if (document.body) {
       resolve();
@@ -600,27 +655,94 @@ function wait_for_body() {
     }
 
     const observer = new MutationObserver(mutations => {
-      if (document.body) {
+      if ($("div.messages") && $("div.canvas canvas")) {
         observer.disconnect();
         resolve();
       }
     });
 
-    observer.observe(document.documentElement, { childList: true });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
   });
+}
+
+// resize handler ------------------------------------------------------------
+
+let canvas_at_bottom = true;
+let orientation;
+
+async function window_resized() {
+  // check width vs height for orientation
+  orientation = window.innerWidth > window.innerHeight ? "landscape" : "portrait";
+  // add orientation class to body
+  $body.classList.remove("landscape", "portrait");
+  $body.classList.add(orientation);
+  // console.log("orientation", orientation);
+}
+
+function messages_resized() {
+  if (!messages_at_bottom && top_message) {
+    top_message.scrollIntoView({ behavior: 'instant', block: 'start' });
+  }
+  messages_scrolled();
+}
+
+function canvas_resized() {
+  if (canvas_at_bottom) {
+    scroll_to_bottom($canvas_div);
+  }
+}
+
+function canvas_scrolled() {
+  canvas_at_bottom = is_at_bottom($canvas_div);
+}
+
+// Wrapper function to initialize drag controls for the resizer --------------
+
+function dragResizer(ev) {
+  const resizer = new DragResizer({
+    element: $canvas_div,
+    direction: orientation == "landscape" ? "left" : "down",
+//    overlay: $messages_overlay,
+  });
+
+  resizer.initDrag(ev);
 }
 
 // main ----------------------------------------------------------------------
 
-function room_main() {
+async function room_main() {
+  setup_mutation_observer();
+  await wait_for_load();
+  // console.log("room loaded");
+  $body = $("body");
+  $messages = $("div.messages");
+  $messages_wrap = $("div.messages_wrap");
+  $overlay = $("div.overlay");
+  $canvas_div = $("div.canvas");
+
+  $on($overlay, "click", overlay_click);
+  setup_swipe();
   $on(document, "click", click);
   $on(document, "auxclick", click);
-  $on(window, "resize", () => run_hooks("resize"));
+  $on(window, "resize", () => run_hooks("window_resize"));
   $on(window, "message", handle_message);
   setup_keyboard_shortcuts();
-  window.parent.postMessage({ type: "ready" }, CHAT_URL);
-  setup_resize_observer();
-  setup_mutation_observer();
+  window.parent.postMessage({ type: "ready", theme: theme }, CHAT_URL);
+  add_hook("window_resize", window_resized);
+
+  new ResizeObserver(canvas_resized).observe($canvas_div);
+  $on($messages_wrap, "scroll", messages_scrolled);
+  const resizeObserver = new ResizeObserver(entries => {
+    messages_resized();
+  });
+  resizeObserver.observe($messages);
+  $on($canvas_div, "scroll", canvas_scrolled);
+
+  window_resized();
+  messages_scrolled();
+
+  $on($("div.resizer"), "mousedown", dragResizer);
+  $on($("div.resizer"), "touchstart", dragResizer);
 }
 
 room_main();

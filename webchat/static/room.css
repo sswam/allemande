@@ -10,13 +10,20 @@ div.messages {
 .message, .narrative {
 	clear: both;
 	min-height: 1em;
+	scroll-margin-top: 12px;
 }
-.message.me > .label { color: blue; }
-.message > .content {
-	margin: 0 1em 0 1em;
+.message.me > .label { color: var(--me); }
+.content p {
+	white-space: pre-wrap;
+}
+.content br {
+	display: none;
 }
 .narrative > .content {
-	margin: 0 1em 0 0;
+	margin: 0 1em 0 1em;
+}
+.message > .content {
+	margin: 0 1em 0 1em;
 }
 #allemande_status {
 	position: fixed;
@@ -29,12 +36,23 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin-bottom: 0.75rem;
 }
 
-.message img, .message video, .message audio, .message iframe,
 .narrative img, .narrative video, .narrative audio, .narrative iframe {
+	vertical-align: top;
+	margin: 6px 4px;
+	max-width: min(90vw, 90vh);
+	max-height: min(90vw, 90vh);
+}
+
+.message img, .message video, .message audio, .message iframe {
 	vertical-align: top;
 	margin: 6px 4px;
 	max-width: min(40vw, 40vh);
 	max-height: min(40vw, 40vh);
+}
+
+body.clean .narrative img, body.clean .narrative video, body.clean .narrative audio, body.clean .narrative iframe {
+	max-width: min(90vw, 90vh);
+	max-height: min(90vw, 90vh);
 }
 
 /* borders for markdown tables */
@@ -178,6 +196,21 @@ details.search > div {
 	margin-right: 10px;
 }
 
+
+
+body {
+	display: flex;
+	overflow: hidden;
+}
+
+body > div.messages_wrap {
+	overflow: auto;
+	border-radius: 6px;
+	flex-basis: 128px;
+	flex-grow: 1;
+	flex-shrink: 0;
+}
+
 body:not(.images) img {
 	display: none;
 }
@@ -188,6 +221,100 @@ body:not(.images_alt) .alt {
 body:not(.source) .language-dot {
 	display: none;
 }
+/*
 body.source .graphviz {
 	display: none;
 }
+*/
+
+body.canvas > div.canvas {
+	display: block;
+/*	overflow: auto; */
+	overflow: hidden;
+	min-width: 64px;
+	min-height: 64px;
+	width: 100%;
+	height: 100%;
+	flex-grow: 0;
+	border-radius: 6px;
+	flex-basis: 128px;
+	flex-shrink: 0;
+}
+body:not(.canvas) div.canvas {
+	display: none;
+}
+body:not(.canvas) div.resizer {
+	display: none;
+}
+
+body.clean div.message.specialist {
+	display: none;
+}
+
+body.clean div.message.invoke-specialist {
+	display: none;
+}
+
+body.clean div.message.narrative div.label {
+	display: none;
+}
+
+body.grab > div.messages_wrap {
+	border: 1px solid #800000;
+}
+
+span.indent {
+	white-space: pre-wrap;
+}
+
+body.portrait {
+	flex-direction: column;
+}
+body.portrait > div.messages_wrap {
+	order: 30;
+}
+body.portrait > div.canvas {
+	order: 10;
+	max-height: calc(100vh - 64px);
+}
+
+body.landscape div.messages_wrap {
+	order: 10;
+}
+body.landscape > div.canvas {
+	order: 30;
+}
+
+.resizer {
+	order: 20;
+	min-height: var(--pad);
+	min-width: var(--pad);
+	margin: 0;
+}
+
+body.portrait .resizer {
+	cursor: ns-resize;
+}
+
+body.landscape .resizer {
+	cursor: ew-resize;
+}
+
+body.source .content script {
+	display: block;
+	clear: both;
+}
+
+.content script {
+	font: 12px fixed;
+	white-space: pre-wrap;
+}
+
+/*
+.content script::before {
+	content: "<script>";
+}
+.content script::after {
+	content: "</script>";
+}
+*/

@@ -25,7 +25,7 @@ body.admin, body.admin .admin {
 	margin: 0;
 	flex-grow: 0;
 	flex-shrink: 0;
-	max-height: 80vh;
+	max-height: calc(100vh - 64px);
 }
 #inputrow > .controls {
 	flex-grow: 0;
@@ -65,12 +65,6 @@ body.admin, body.admin .admin {
 	display: flex;
 	flex-flow: column wrap;
 	gap: var(--pad);
-}
-
-/* define --pad */
-
-:root {
-	--pad: 12px;
 }
 
 .col > * {
@@ -123,6 +117,7 @@ iframe:fullscreen {
 a.button {
 	display: flex;
 	align-items: center;
+	font: inherit;
 }
 
 button, .button {
