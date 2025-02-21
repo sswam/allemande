@@ -133,3 +133,46 @@ augroup SetCodeLang
 	autocmd!
 	autocmd FileType * let $FILETYPE = expand('<amatch>')
 augroup END
+
+function! DetectAndSetIndent()
+	" Save current cursor position
+	let l:save_cursor = getpos(".")
+
+	" Get entire buffer content
+	let l:content = join(getline(1, '$'), "\n")
+
+	" Run aligno with buffer content as stdin
+	let l:result = system('aligno', l:content)
+
+	" Check first two characters of output
+	let l:indent_type = l:result[0:1]
+
+	if l:indent_type == '2s'
+		" 2 space indentation
+		set tabstop=2
+		set softtabstop=2
+		set shiftwidth=2
+		set expandtab
+		let &showbreak='    '
+	elseif l:indent_type == '4s'
+		" 4 space indentation
+		set tabstop=4
+		set softtabstop=4
+		set shiftwidth=4
+		set expandtab
+		let &showbreak='        '
+	else
+		" Tab indentation
+		set tabstop=8
+		set softtabstop=8
+		set shiftwidth=0
+		set noexpandtab
+		let &showbreak='                '
+	endif
+
+	" Restore cursor position
+	call setpos('.', l:save_cursor)
+endfunction
+
+" Run on file load
+autocmd BufRead * call DetectAndSetIndent()
