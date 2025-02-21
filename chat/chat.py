@@ -515,11 +515,145 @@ def chat_message_to_text(message: ChatMessage) -> str:
     return message_to_text({"user": message.user, "content": message.content})
 
 
+def quote_inline_math(pre, d1, math, d2, post):
+    """Process potential inline math delimited by matching delimiters, wrapping math content in $`...`$"""
+    logger.debug("quote_inline_math")
+    logger.debug("  pre:  %r", pre)
+    logger.debug("  d1:   %r", d1)
+    logger.debug("  math: %r", math)
+    logger.debug("  d2:   %r", d2)
+    logger.debug("  post: %r", post)
+    # check if it looks like math...
+    has_math = False
+    is_math = True
+    if math.startswith("`") and math.endswith("`"):
+        # already processed
+        logger.warning("already processed: %r", math)
+        has_math = True
+        is_math = False
+    elif d1 == r"\(" and d2 == r"\)":
+        pass
+    elif d1 == r"\[" and d2 == r"\]":
+        pass
+    elif re.match(r"^\w", post):
+        is_math = False
+    elif re.match(r"\w$", pre):
+        is_math = False
+    if is_math:
+        has_math = True
+        math = fix_math_escape_percentages(math)
+        return f"$`{math}`$", has_math
+    return f"{d1}{math}{d2}", has_math
+
+
 def fix_math_escape_percentages(math_content):
     """Escape unescaped % symbols in math content"""
     # FIXME: This approach assumes that a % symbol immediately preceded by a
     # backslash is already escaped. This is not always the case.
     return re.sub(r"(?<!\\)%", r"\%", math_content)
+
+
+def find_and_fix_inline_math_part(part: str) -> str:
+    """Find and fix inline math in a part of a line, without quoted code."""
+    # run the regexpes repeatedly to work through the string
+
+    has_math = False
+    start = 0
+    while True:
+        match = re.match(
+            r"""
+            (.*?)          # Group 1: Any characters (non-greedy)
+            (
+                (          # Group 2: Inline math with $$...$$
+                    \$\$
+                    (.+?)  # Group 3: Math content
+                    \$\$
+                ) |
+                (          # Group 4: Inline math with $...$
+                    \$     
+                    (.+?)  # Group 5: Math content
+                    \$
+                ) |
+                (          # Group 6: Inline math with \[...\]
+                    \\\[
+                    (.+?)  # Group 7: Math content
+                    \\\]
+                ) |
+                (          # Group 8: Inline math with \(...\)
+                    \\\(
+                    (.+?)  # Group 9: Math content
+                    \\\)
+                )
+            )
+            (.*)           # Group 10: Any remaining characters
+            $
+            """,
+            part[start:],
+            re.VERBOSE
+        )
+        if match is None:
+            part = part[:start] + html.escape(part[start:], quote=False)
+            break
+        groups = match.groups()
+        pre, post = groups[0], groups[10]
+        if groups[2]:
+            d1, math, d2 = "$$", groups[3], "$$"
+        elif groups[4]:
+            d1, math, d2 = "$", groups[5], "$"
+        elif groups[6]:
+            d1, math, d2 = r"\[", groups[7], r"\]"
+        elif groups[8]:
+            d1, math, d2 = r"\(", groups[9], r"\)"
+        else:
+            raise ValueError("No math group matched")
+        replaced, has_math1 = quote_inline_math(pre, d1, math, d2, post)
+        has_math = has_math or has_math1
+        pre = html.escape(pre, quote=False)
+        part = part[:start] + pre + replaced + post
+        start += len(pre) + len(replaced)
+
+    return part, has_math
+
+
+def find_and_fix_inline_math(line: str) -> str:
+    """Find and fix inline math in a line."""
+    # run the regexpes repeatedly to work through the string
+
+    start = 0
+    has_math = False
+    while True:
+        logger.debug("preprocess line part from: %r %r", start, line[start:])
+        # 1. find quoted code, and skip those bits
+        match = re.match(
+            r"""
+            ^
+            (
+                 [^`]+       # Any characters except `
+                |`.*?`       # OR `...`
+                |```.*?```   # OR ```...```
+                |.+          # OR Any characters, if syntax is broken
+            )
+            """,
+            line[start:],
+            re.VERBOSE
+        )
+        if not match:
+            break
+        found = match.group(1)
+        if found.startswith("`"):
+            start += len(found)
+            continue
+
+        # 2. find inline math, and replace with $`...`$
+
+        fixed, has_math1 = find_and_fix_inline_math_part(found)
+        has_math = has_math or has_math1
+
+        # 3. replace the fixed part in the line
+        line = line[:start] + fixed + line[start + len(found):]
+        start += len(fixed)
+
+    return line, has_math
 
 
 def preprocess(content):
@@ -530,88 +664,59 @@ def preprocess(content):
 
     has_math = False
 
-    def quote_math_inline(pre, d1, math, d2, post):
-        """Process potential inline math delimited by matching delimiters, wrapping math content in $`...`$"""
-        # check if it looks like math...
-        nonlocal has_math
-        is_math = True
-        if math.startswith("`") and math.endswith("`"):
-            # already processed
-            logger.warning("already processed: %r", math)
-            has_math = True
-            is_math = False
-        # elif not (re.match(r'^\s.*\s$', math) or re.match(r'^\S.*\S$', math) or len(math) == 1):
-        #     is_math = False
-        elif d1 == r"\[" and d2 == r"\]":
-            pass
-        elif d1 != d2:
-            is_math = False
-        elif re.match(r"^\w", post):
-            is_math = False
-        elif re.match(r"\w$", pre):
-            is_math = False
-        if is_math:
-            has_math = True
-            math = fix_math_escape_percentages(math)
-            return f"$`{math}`$"
-        return f"{d1}{math}{d2}"
-
     out = []
 
     in_math = False
-    in_code = False
+    in_code = 0
+    in_script = False
     for line in content.splitlines():
         is_html = False
         # if first and re.search(r"\t<", line[0]):
         #     is_html = True
-        if re.search(
+        if not in_code and re.search(
             r"</?(html|base|head|link|meta|style|title|body|address|article|aside|footer|header|h1|h2|h3|h4|h5|h6|hgroup|main|nav|section|blockquote|dd|div|dl|dt|figcaption|figure|hr|li|main|ol|p|pre|ul|a|abbr|b|bdi|bdo|br|cite|code|data|dfn|em|i|kbd|mark|q|rb|rp|rt|rtc|ruby|s|samp|small|span|strong|sub|sup|time|u|var|wbr|area|audio|img|map|track|video|embed|iframe|object|param|picture|source|canvas|noscript|script|del|ins|caption|col|colgroup|table|tbody|td|tfoot|th|thead|tr|button|datalist|fieldset|form|input|label|legend|meter|optgroup|option|output|progress|select|textarea|details|dialog|menu|summary|slot|template|acronym|applet|basefont|bgsound|big|blink|center|command|content|dir|element|font|frame|frameset|image|isindex|keygen|listing|marquee|menuitem|multicol|nextid|nobr|noembed|noframes|plaintext|shadow|spacer|strike|tt|xmp)\b",
             line,
         ):
             is_html = True
         logger.debug("check line: %r", line)
-        is_math_delim = re.match(r"\s*(\$\$|```tex|```math)$", line)
-        if is_math_delim and not in_math:
+        is_math_start = re.match(r"\s*(\$\$|```tex|```math)$", line)
+        is_math_end = re.match(r"\s*(\$\$|```)$", line)
+        if re.match(r"""^<script( type=["']?text/javascript["']?)?>$""", line) and not in_code:
+            out.append(line)
+            in_code = 1
+            in_script = True
+        elif re.match(r"^</script>$", line) and in_script:
+            out.append(line)
+            in_code = 0
+            in_script = False
+        elif is_html:
+            out.append(line)
+        elif is_math_start and not in_code:
             out.append("```math")
             in_math = True
             has_math = True
-            in_code = True
-        elif is_math_delim and in_math:
+            in_code += 1
+        elif is_math_end and in_math:
             out.append("```")
             in_math = False
-            in_code = False
-        elif re.match(r"^```", line) and not in_code:
-            out.append(line)
-            in_code = True
-        elif re.match(r"^```", line) and in_code:
-            out.append(line)
-            in_code = False
-        elif re.match(r"""^<script( type=["']?text/javascript["']?)?>$""", line) and not in_code:
-            out.append(line)
-            in_code = True
-        elif re.match(r"^</script>$", line) and in_code:
-            out.append(line)
-            in_code = False
+            in_code = 0
         elif in_math:
             line = fix_math_escape_percentages(line)
             out.append(line)
+        elif re.match(r"^```", line) and not in_code:
+            out.append(line)
+            in_code = 1
+        elif re.match(r"^```\w", line) and not in_script:
+            out.append(line)
+            in_code += 1
+        elif re.match(r"^```", line) and in_code:
+            out.append(line)
+            in_code -= 1
+        elif in_code:
+            out.append(line)
         else:
-            # run the regexp sub repeatedly
-            start = 0
-            while True:
-                logger.debug("preprocess line part from: %r %r", start, line[start:])
-                match = re.match(r"^(.*?)(\$\$?|\\\[)(.*?)(\$\$?|\\\])(.*)$", line[start:])
-                logger.debug("preprocess match: %r", match)
-                if match is None:
-                    if not in_code and not is_html:
-                        line = line[:start] + html.escape(line[start:], quote=False)
-                    break
-                pre, d1, math, d2, post = match.groups()
-                replace = quote_math_inline(pre, d1, math, d2, post)
-                if not in_code and not is_html:
-                    pre = html.escape(pre, quote=False)
-                line = line[:start] + pre + replace + post
-                start += len(pre) + len(replace)
+            line, has_math1 = find_and_fix_inline_math(line)
+            has_math = has_math or has_math1
             out.append(line)
 
     content = "\n".join(out) + "\n"
@@ -622,16 +727,8 @@ def preprocess(content):
 math_cache: dict[str, str] = {}
 
 
-# def wrap_indent(line):
-#     """Wrap the indentatioin in a span with appropriate width."""
-#     indent, content = re.match(r"^(\s*)(.*)", line).groups()
-#     if indent:
-#         indent = '<span class="indent">' + indent + "</span>"
-#     return indent + content
-
-
-SPACE_MARKER = "§SPACE§"
-TAB_MARKER = "§TAB§"
+SPACE_MARKER = "§S§"
+TAB_MARKER = "§T§"
 
 
 def escape_indents(text):
@@ -639,8 +736,8 @@ def escape_indents(text):
     global SPACE_MARKER, TAB_MARKER
     while SPACE_MARKER in text or TAB_MARKER in text:
         r = random.randint(0, 999999)
-        SPACE_MARKER = f"§SPACE{r}§"
-        TAB_MARKER = f"§TAB{r}§"
+        SPACE_MARKER = f"§S{r}§"
+        TAB_MARKER = f"§T{r}§"
 
     lines = text.splitlines()
     processed_lines = []
@@ -677,9 +774,11 @@ def message_to_html(message):
         html_content = math_cache[content]
     else:
         try:
+            logger.debug("markdown content: %r", content)
             content = escape_indents(content)
             html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
             html_content = restore_indents(html_content)
+            logger.debug("html content: %r", html_content)
 #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
 #             html_content = html_content.replace("<br />", "")
 #             html_content = html_content.replace("<p>", "")
@@ -695,8 +794,8 @@ def message_to_html(message):
     user = message.get("user")
     if user:
         user_ee = html.escape(user)
-        return f"""<div class="message" user="{user_ee}"><div class="label">{user_ee}:</div><div class="content">{html_content}</div></div>\n"""
-    return f"""<div class="narrative"><div class="content">{html_content}</div></div>\n"""
+        return f"""<div class="message" user="{user_ee}"><div class="label">{user_ee}:</div><div class="content">{html_content}</div></div>\n\n"""
+    return f"""<div class="narrative"><div class="content">{html_content}</div></div>\n\n"""
 
 
 # @argh.arg('--doctype', nargs='?')
@@ -1040,7 +1139,7 @@ def read_agents_list() -> list[str]:
     return agent_names
 
 
-def check_access(user: str, pathname: str, path: Path) -> bool:
+def check_access(user: str, pathname: str, path: Path) -> Access:
     """Check if the user has access to the path"""
     # TODO make this a method of the Room class
     # user has access to the top-level dir, all files at the top-level
@@ -1272,7 +1371,7 @@ def process_fn(msg):
 def clean_prompt(context, name, delim):
     """Clean the prompt for image gen agents and tools."""
 
-    logger.info("clean_prompt: before: %r", context)
+    logger.debug("clean_prompt: before: %s", context)
 
     agent_name_esc = regex.escape(name)
 
@@ -1282,24 +1381,27 @@ def clean_prompt(context, name, delim):
     # Join all lines in context with the specified delimiter
     text = delim.join(context)
 
-    logger.info("clean_prompt: 1: %r", text)
+    logger.debug("clean_prompt: 1: %s", text)
 
-    # Remove up to the last occurrence of the agent's name (case insensitive) and any following punctuation, with triple backticks
-    text1 = regex.sub(r".*```\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)```", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+    # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with triple backticks
+    text1 = regex.sub(r".*?```\w*\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)```.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
 
-    logger.info("clean_prompt: 2: %r", text)
+    logger.debug("clean_prompt: 2: %s", text1)
 
-    # Remove up to the last occurrence of the agent's name (case insensitive) and any following punctuation, with single backticks
+    # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with single backticks
     if text1 == text:
-        text1 = regex.sub(r".*`\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)`", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+        text1 = regex.sub(r".*?`\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)`.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
 
-    logger.info("clean_prompt: 3: %r", text)
+    logger.debug("clean_prompt: 3: %s", text1)
 
     # Remove up to the last occurrence of the agent's name (case insensitive) and any following punctuation
     if text1 == text:
         text1 = regex.sub(r".*\b" + agent_name_esc + r"\b[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
 
-    logger.info("clean_prompt: 4: %r", text)
+        # Remove anything after a blank line in this case
+        text1 = re.sub(r"\n\n.*", r"", text1, flags=re.DOTALL)
+
+    logger.debug("clean_prompt: 4: %s", text1)
 
 #     # Remove the last pair of triple backticks and keep only the content between them
 #     text = re.sub(r".*```(.*?)```.*", r"\1", text, flags=re.DOTALL, count=1)
@@ -1307,16 +1409,12 @@ def clean_prompt(context, name, delim):
 #     # Try single backticks too
 #     text = re.sub(r".*`(.*?)`.*", r"\1", text, flags=re.DOTALL, count=1)
 
-    # Remove anything after a blank line
-    if text1 == text:
-        text1 = re.sub(r"\n\n.*", r"", text, flags=re.DOTALL)
-
     text = text1
 
     # Remove leading and trailing whitespace
     text = text.strip()
 
-    logger.info("clean_prompt: after: %s", text)
+    logger.debug("clean_prompt: after: %s", text)
     return text
 
 
