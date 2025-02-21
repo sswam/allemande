@@ -5,6 +5,7 @@
 pandoc-dump() {
 	c=1	# clean
 	m=1	# metadata
+	t=	# title
 
 	. opts
 
@@ -23,7 +24,7 @@ pandoc-dump() {
 	fi
 
 	if [ "$m" = 1 ]; then
-		show-metadata
+		show-metadata "$t"
 	fi
 
 	if [ "$c" = 1 ]; then
@@ -50,7 +51,10 @@ clean() {
 }
 
 show-metadata() {
-	local title=`html-title < "$html"`
+	local title=$1
+	if [ -z "$title" ]; then
+		title=`html-title < "$html"`
+	fi
 	printf "title: %s\n" "$title"
 	if [ -n "$url" ]; then
 		printf "From: %s\n" "$url"
