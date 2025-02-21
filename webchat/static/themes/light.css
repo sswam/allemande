@@ -1,11 +1,11 @@
 :root {
 	--text: black;
-	--border: #fff;
+	--border: white;
 	--frame: white;
-	--input: #eee;
-	--focus: #ddd;
-	--background: #aaa;
-	--button: #eee;
-	--button-focus: #888;
+	--input: #ddd;
+	--focus: #aaa;
+	--background: #ccc;
+	--button: #888;
+	--button-focus: #666;
 	--link: #003388;
 }
