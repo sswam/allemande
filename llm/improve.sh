@@ -19,7 +19,7 @@ improve() {
 	local features= F=1  # allow new features
 	local lint= L=1      # run linters and type checkers if possible
 	local format= f=1    # format code
-	local writetest= w=1 # write tests if none found
+#	local writetest= w=1 # write tests if none found
 	local numline= n=    # number lines
 	local strict= X=1    # only do what is requested
 	local ed= E=0        # provide changes as an ed script
@@ -129,14 +129,11 @@ improve() {
 		echo >&2 "Checks passed"
 		checks_prompt="Our checks passed."
 		rm -f "$results_file"
-		test=""
+		if [ -n "$tests_file" ]; then
+			refs+=("$tests_file")
+		fi
 	elif ((test)); then
 		echo >&2 "No tests found"
-		if ((writetest)); then
-			# tests "$file"
-			# checks_prompt="No tests found. Please write some tests."
-			checks_prompt=""
-		fi
 		test=""
 	fi
 
@@ -307,12 +304,12 @@ improve() {
 		confirm apply -c="$output_file" "$target_file" "$tests_file" && return
 	fi
 
-	if ((test)) && ((codeok == 0)); then
-		confirm apply -c="$output_file" "$target_file" && return
-	fi
-
 	if ((test)) && ((codeok == 1)) && ((testok == 0)) && [ -e "$tests_file" ]; then
 		confirm apply -c="$output_file" "$tests_file" && return
+	fi
+
+	if ((codeok == 0)); then
+		confirm apply -c="$output_file" "$target_file" && return
 	fi
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
