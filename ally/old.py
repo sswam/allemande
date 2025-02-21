@@ -60,6 +60,7 @@ def run(commands: Callable | list[Callable], warn_deprecated=True) -> None:
 
     # Setup logging based on parsed arguments
     logs.set_log_level(args.log_level, root=True)
+    logs.set_log_level(args.log_level, level=3)
 
     # dispatch, and show errors nicely
     try:
@@ -68,8 +69,8 @@ def run(commands: Callable | list[Callable], warn_deprecated=True) -> None:
         else:
             argh.dispatching.run_endpoint_function(commands, args)
     except Exception as e:
-        logger = logs.get_logger(1)
-        logger.error(f"Error: %s %s", type(e).__name__, str(e))
+        logger = logs.get_logger(2)
+        logger.error("Error: %s %s", type(e).__name__, str(e))
         tb = traceback.format_exc()
         logger.debug("Full traceback:\n%s", tb)
 
