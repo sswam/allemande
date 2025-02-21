@@ -25,7 +25,6 @@ from pathlib import Path
 import textwrap
 import asyncio
 import json
-import importlib
 import io
 
 from argh import arg
@@ -57,7 +56,7 @@ lazy("transformers", "AutoTokenizer")
 llama3_tokenizer = None
 
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -66,7 +65,14 @@ logger = logging.getLogger(__name__)
 LOGDIR = Path(os.environ["HOME"]) / "llm.log"
 LOGFILE_NAME_MAX_LEN = 255
 RETRIES = 20
-exceptions_to_retry = ("RateLimitError", "APIConnectionError", "InternalServerError")
+exceptions_to_retry = (
+    "RateLimitError",
+    "APIConnectionError",
+    "InternalServerError",
+    "ServiceUnavailableError",
+    "TimeoutError",
+    "APIError",
+)
 
 default_model = "claude"
 default_model_small = "gpt-4o-mini"
@@ -173,21 +179,28 @@ MODELS = {
     },
 }
 
-for name, model in MODELS.items():
-    if "id" not in model:
-        model["id"] = name
 
-# Set default models from environment variables if available
-env_llm_model = os.environ.get("ALLEMANDE_LLM_DEFAULT")
-env_llm_model_small = os.environ.get("ALLEMANDE_LLM_DEFAULT_SMALL")
+def setup_models():
+    """Set up the models and their aliases."""
+    global default_model, default_model_small  # pylint: disable=global-statement
+    for name, model in MODELS.items():
+        if "id" not in model:
+            model["id"] = name
 
-if env_llm_model in MODELS:
-    default_model = env_llm_model
-if env_llm_model_small in MODELS:
-    default_model_small = env_llm_model_small
+    # Set default models from environment variables if available
+    env_llm_model = os.environ.get("ALLEMANDE_LLM_DEFAULT")
+    env_llm_model_small = os.environ.get("ALLEMANDE_LLM_DEFAULT_SMALL")
 
-MODELS[default_model]["aliases"] += ["default", "d"]
-MODELS[default_model_small]["aliases"] += ["small", "s"]
+    if env_llm_model in MODELS:
+        default_model = env_llm_model
+    if env_llm_model_small in MODELS:
+        default_model_small = env_llm_model_small
+
+    MODELS[default_model]["aliases"] += ["default", "d"]
+    MODELS[default_model_small]["aliases"] += ["small", "s"]
+
+
+setup_models()
 
 
 ALLOWED_ROLES = ["user", "assistant", "system"]
@@ -198,18 +211,17 @@ TOKEN_LIMIT = inf
 os.environ["HF_HUB_OFFLINE"] = "1"
 
 
-def load_huggingface_by_plan(what, plan, loader):
+def load_huggingface_by_plan(what, plan, loader):  # pylint: disable=too-many-branches
     """Try to load gated Hugging Face models, like Llama, from alternative sources"""
     saved_hf_hub_offline = os.environ.get("HF_HUB_OFFLINE", "1")
     for online, model_name in plan:
         try:
-            logger.debug(f"Trying to load {what} from {model_name}, online={online}")
+            logger.debug("Trying to load %s from %s, online=%s", what, model_name, online)
             os.environ["HF_HUB_OFFLINE"] = str(int(not online))
-            resource = AutoTokenizer.from_pretrained(model_name)
+            resource = loader(model_name)
             break
         except IOError as ex:
-            logger.debug(f"  Failed to load {what} from {model_name}, online={online}: {ex}")
-            pass
+            logger.debug("  Failed to load %s from %s, online=%s: %s", what, model_name, online, ex)
     else:
         raise IOError(f"Failed to load {what} from huggingface")
     os.environ["HF_HUB_OFFLINE"] = saved_hf_hub_offline
@@ -218,7 +230,7 @@ def load_huggingface_by_plan(what, plan, loader):
 
 def get_llama3_tokenizer():
     """Get the Llama3 tokenizer ... somehow"""
-    global AutoTokenizer, llama3_tokenizer
+    global AutoTokenizer, llama3_tokenizer  # pylint: disable=global-statement
     if not llama3_tokenizer:
         # The offiical model is gated, need to register; seems a bit much for a tokenizer.
         plan = [
@@ -227,7 +239,7 @@ def get_llama3_tokenizer():
             (1, "meta-llama/Meta-Llama-3-8B"),
             (1, "baseten/Meta-Llama-3-tokenizer"),
         ]
-        llama3_tokenizer = load_huggingface_by_plan("llama3_tokenizer", plan, lambda x: AutoTokenizer.from_pretrained(x))
+        llama3_tokenizer = load_huggingface_by_plan("llama3_tokenizer", plan, AutoTokenizer.from_pretrained)
     return llama3_tokenizer
 
 
@@ -257,7 +269,7 @@ def get_model_by_alias(model):
     if len(abbrev_models) == 1:
         return abbrev_models[0]
     if model not in MODELS:
-        logger.error(f"Model not found: {model}\n\nAvailable models and aliases:")
+        logger.error("Model not found: %s\n\nAvailable models and aliases:", model)
         models(aliases=True, file=stderr)
         sys.exit(1)
     return model
@@ -300,24 +312,14 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
         super().__init__(**kwargs)
 
 
-opts: Options = Options()
-
-
-def set_opts(_opts):
-    """Set the global options from a dictionary."""
-    global opts
-    opts = Options(**_opts)
-
-
 # Async functions for different API clients
 
 
-async def achat_openai(messages, client=None, citations=False):
+async def achat_openai(opts: Options, messages, client=None, citations=False):
     """Chat with OpenAI ChatGPT models asynchronously."""
     if client is None:
         client = openai_async_client
-    model = opts.model
-    model = MODELS[model]["id"]
+    model = MODELS[opts.model]["id"]
 
     logger.debug("model: %s", model)
 
@@ -375,7 +377,6 @@ def replace_citations(content, cites):
     # Split content into code and non-code segments
     segments = []
     current_pos = 0
-    code_block = False
 
     # Find code blocks (```...```)
     code_block_matches = list(re.finditer(r"```.*?\n.*?```", content, re.DOTALL))
@@ -439,15 +440,14 @@ def replace_citations(content, cites):
     return content
 
 
-async def achat_perplexity(messages):
+async def achat_perplexity(opts: Options, messages):
     """Chat with Perplexity models asynchronously."""
-    return await achat_openai(messages, client=perplexity_async_client, citations=True)
+    return await achat_openai(opts, messages, client=perplexity_async_client, citations=True)
 
 
-async def achat_claude(messages):
+async def achat_claude(opts: Options, messages):
     """Chat with Anthropic Claude models asynchronously."""
-    model = opts.model
-    model = MODELS[model]["id"]
+    model = MODELS[opts.model]["id"]
 
     temperature = opts.temperature
     token_limit = opts.token_limit
@@ -478,10 +478,9 @@ async def achat_claude(messages):
     return message
 
 
-async def achat_google(messages):
+async def achat_google(opts: Options, messages):
     """Chat with Google models asynchronously."""
-    model = opts.model
-    model = MODELS[model]["id"]
+    model = MODELS[opts.model]["id"]
 
     temperature = opts.temperature
     token_limit = opts.token_limit
@@ -531,23 +530,22 @@ async def achat_google(messages):
     return output_message
 
 
-async def allm_chat(messages):
+async def allm_chat(opts: Options, messages):
     """Send a list of messages to the model, and return the response asynchronously."""
     logger.debug("llm_chat: input: %r", messages)
 
-    model = opts.model
-    vendor = MODELS[model]["vendor"]
+    vendor = MODELS[opts.model]["vendor"]
 
     if opts.fake:
         return fake_completion
     if vendor == "anthropic":
-        return await achat_claude(messages)
+        return await achat_claude(opts, messages)
     if vendor == "openai":
-        return await achat_openai(messages)
+        return await achat_openai(opts, messages)
     if vendor == "perplexity":
-        return await achat_perplexity(messages)
+        return await achat_perplexity(opts, messages)
     if vendor == "google":
-        return await achat_google(messages)
+        return await achat_google(opts, messages)
     raise ValueError(f"unknown model: {model}")
 
 
@@ -645,15 +643,13 @@ async def aprocess(
     log=True,
     lines=False,
     repeat=False,
-    json=False,
+    get_json=False,
     timeit=False,
 ):
     """Process some text through the LLM with a prompt asynchronously."""
     if __name__ == "__main__":
         istream = stdin
         ostream = stdout
-
-    set_opts(vars())
 
     prompt = " ".join(prompt)
     prompt = prompt.rstrip()
@@ -685,7 +681,7 @@ async def aprocess(
             token_limit=token_limit,
             retries=retries,
             log=log,
-            json=json,
+            get_json=get_json,
         )
 
     # split the input into lines
@@ -707,7 +703,7 @@ async def aprocess(
             token_limit=token_limit,
             retries=retries,
             log=log,
-            json=json,
+            get_json=get_json,
         )
         output.append(output1)
 
@@ -716,7 +712,7 @@ async def aprocess(
     return output_s
 
 
-async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, temperature, token_limit, retries, log, json):
+async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, temperature, token_limit, retries, log, get_json):
     """Process some text through the LLM with a prompt asynchronously."""
     full_input = f"""
 {prompt}
@@ -734,7 +730,7 @@ async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, tempera
         token_limit=token_limit,
         retries=retries,
         log=log,
-        json=json,
+        get_json=get_json,
     )
 
 
@@ -747,17 +743,17 @@ async def aquery(
     token_limit=None,
     retries=RETRIES,
     log=True,
-    json=False,
+    get_json=False,
     timeit=False,
 ):
     """Ask the LLM a question asynchronously."""
     if __name__ == "__main__":
         ostream = stdout
-    set_opts(vars())
-    return await aretry(aquery2, retries, *prompt, ostream=ostream, log=log, json=json)
+    opts = Options(**vars())
+    return await aretry(aquery2, retries, opts, *prompt, ostream=ostream, log=log, get_json=get_json)
 
 
-async def aquery2(*prompt, ostream: IO[str] | None = None, log=True, json=False):
+async def aquery2(opts: Options, *prompt, ostream: IO[str] | None = None, log=True, get_json=False):
     """Ask the LLM a question asynchronously."""
     prompt = " ".join(prompt)
     prompt = prompt.rstrip() + "\n"
@@ -765,7 +761,7 @@ async def aquery2(*prompt, ostream: IO[str] | None = None, log=True, json=False)
     # TODO use a system message?
 
     input_message = {"role": "user", "content": prompt}
-    output_message = await allm_chat([input_message])
+    output_message = await allm_chat(opts, [input_message])
     content = output_message["content"]
 
     # log the input and empty output file
@@ -795,7 +791,7 @@ async def aquery2(*prompt, ostream: IO[str] | None = None, log=True, json=False)
     if log:
         logfile.write_text(content.rstrip() + "\n", encoding="utf-8")
 
-    if json:
+    if get_json:
         try:
             content = json.loads(content)
         except json.JSONDecodeError:
@@ -817,7 +813,7 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
     for i in range(n_tries):
         try:
             return await fn(*args, **kwargs)
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-except
             if str(type(ex)) not in exceptions_to_retry:
                 raise ex
             delay = random.uniform(sleep_min, sleep_max)
@@ -835,15 +831,15 @@ async def achat(
     istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES
 ):
     """Chat with the LLM asynchronously."""
-    set_opts(vars())
-    return await aretry(achat2, retries, istream=istream, ostream=ostream)
+    opts = Options(**vars())
+    return await aretry(achat2, retries, opts, istream=istream, ostream=ostream)
 
 
-async def achat2(istream=stdin, ostream=stdout):
+async def achat2(opts: Options, istream=stdin, ostream=stdout):
     """Chat with the LLM asynchronously."""
     input_lines = read_utf_replace(istream).splitlines()
     input_messages = lines_to_messages(input_lines)
-    response_message = await allm_chat(input_messages)
+    response_message = await allm_chat(opts, input_messages)
     output_lines = messages_to_lines([response_message])
     ostream.writelines(output_lines)
 
@@ -863,7 +859,7 @@ def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, tempera
 @arg("-n", "--token-limit", type=int, help="token limit")
 @arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
 @arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
-@arg("-j", "--json", action="store_true", help="output JSON")
+@arg("-j", "--json", action="store_true", help="output JSON", dest="get_json")
 @arg("-T", "--timeit", action="store_true", help="time the actual request")
 def query(
     *prompt,
@@ -874,7 +870,7 @@ def query(
     token_limit=None,
     retries=RETRIES,
     log=True,
-    json=False,
+    get_json=False,
     timeit=False,
 ):
     """Synchronous wrapper for aquery."""
@@ -888,7 +884,7 @@ def query(
             token_limit=token_limit,
             retries=retries,
             log=log,
-            json=json,
+            get_json=get_json,
             timeit=timeit,
         )
     )
@@ -908,13 +904,13 @@ def query(
 @arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @arg("-x", "--lines", action="store_true", help="process each line separately, like perl -p")
 @arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
-@arg("-j", "--json", action="store_true", help="output JSON")
+@arg("-j", "--json", action="store_true", help="output JSON", dest="get_json")
 @arg("-T", "--timeit", action="store_true", help="time the actual request")
 def process(
     *prompt,
     prompt2: str | None = None,
-    istream: IO[str] = None,
-    ostream: IO[str] = None,
+    istream: IO[str]|None = None,
+    ostream: IO[str]|None = None,
     model: str = default_model,
     indent=None,
     temperature=None,
@@ -925,7 +921,7 @@ def process(
     log=True,
     lines=False,
     repeat=False,
-    json=False,
+    get_json=False,
     timeit=False,
 ):
     """Synchronous wrapper for aprocess."""
@@ -945,7 +941,7 @@ def process(
             log=log,
             lines=lines,
             repeat=repeat,
-            json=json,
+            get_json=get_json,
             timeit=timeit,
         )
     )
@@ -961,7 +957,7 @@ def decimal_string(num: float, places=6) -> str:
 @arg("-O", "--out-cost", action="store_true", help="show output cost")
 def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
     """count tokens in input"""
-    set_opts(vars())
+    opts = Options(**vars())
     text = read_utf_replace(istream)
     model = MODELS[opts.model]
     vendor = model["vendor"]
@@ -970,15 +966,14 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
             enc = tiktoken.encoding_for_model(opts.model)
         except KeyError:
             enc_name = "o200k_base"
-            logger.warning(f"model {opts.model} not known to tiktoken, assuming {enc_name}")
+            logger.warning("model %s not known to tiktoken, assuming %s", opts.model, enc_name)
             enc = tiktoken.get_encoding(enc_name)
         tokens = enc.encode(text)
         n_tokens = len(tokens)
     elif vendor == "anthropic":
         n_tokens = claude.count(text, model=model["id"])
     elif vendor == "perplexity":
-        llama3_tokenizer = get_llama3_tokenizer()
-        tokens = llama3_tokenizer.tokenize(text)
+        tokens = get_llama3_tokenizer().tokenize(text)
         n_tokens = len(tokens)
     elif vendor == "google":
         try:
@@ -1005,9 +1000,6 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
 @arg("-A", "--no-aliases", dest="aliases", action="store_false", help="show aliases")
 def models(detail=False, aliases=True, file=stdout):
     """List the available models."""
-
-    def print(*args, file=file, **kwargs):
-        __builtins__.print(*args, **kwargs, file=file)
 
     with io.StringIO() as buffer:
         for name, model in MODELS.items():
