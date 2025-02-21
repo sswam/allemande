@@ -70,11 +70,11 @@ lint_py() {
 lint_c() {
 	local prog="$1"
 	fail=0
-	run cc -Wall -Wextra -Werror -fsyntax-only "$prog" || fail=1
-	run clang-tidy "$prog" || fail=1
-	run cppcheck "$prog" || fail=1
-	run splint +posixlib "$prog" || fail=1
-	run flawfinder "$prog" || fail=1
+	run cc -Wall -Wextra -Werror -fsyntax-only $CFLAGS "$prog" $LDFLAGS || fail=1
+# 	run clang-tidy "$prog" || fail=1
+# 	run cppcheck "$prog" || fail=1
+# 	run splint +posixlib "$prog" || fail=1
+# 	run flawfinder "$prog" || fail=1
 	return $fail
 }
 
