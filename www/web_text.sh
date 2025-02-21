@@ -13,7 +13,7 @@ get() {
 	if [ "$s" ]; then
 		selenium-get -s "$s" "$url"
 	else
-		WG_OPTS=-nv wg -O=- "$url"
+		WG_OPTS=-q wg -O=- "$url"
 	fi
 }
 
