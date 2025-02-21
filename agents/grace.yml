@@ -1,7 +1,8 @@
 name: Grace
 type: openai
 model: o1
-default_context: 20
-system_bottom: '[You are $NAME]'
+default_context: 5
+system_bottom: '[You are $NAME. Please reply concisely, with no boilerplate or unncecessary explanation.]'
+expensive: true
 aliases:
 - o1
