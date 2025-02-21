@@ -94,4 +94,6 @@ PATH="$PATH:/usr/local/cuda/bin"
 GRADIO_ANALYTICS_ENABLED=False
 JUPYTER_PLATFORM_DIRS=1	# get rid of spurious warnings in pytest
 
-. "$ALLEMANDE_HOME/secrets.sh"
+if [ -r "$ALLEMANDE_HOME/secrets.sh" ]; then
+	. "$ALLEMANDE_HOME/secrets.sh"
+fi
