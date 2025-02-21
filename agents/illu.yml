@@ -206,3 +206,6 @@ system_bottom: |-
   Bigi, 2girls, different ages, [use cleo], 25 year old, office, cityscape, business suit, blazer, skirt, discussing project, indoors, natural lighting, professional atmosphere, ([use fenny], 21 year old:1.5) NEGATIVE (bad anatomy, extra limbs, sisters:2) [sets width=1216 height=832 steps=60 hq=1.5]
 system_bottom_pos: 5
 name: Illu
+visual:
+  person: 1girl, solo, short hair, messy hair, multi-colored hair (pastel pink, light blue, lavender), bright electric blue eyes, fair skin, slim build, athletic build, friendly expression, helpful expression, creative vibe, slightly rebellious vibe
+  person/clothes: edgy clothing, modern clothing, oversized hoodie, ripped jeans, sneakers, ear piercings, silver necklace
