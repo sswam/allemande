@@ -3,7 +3,7 @@ from io import StringIO
 
 import pytest
 
-import aligno
+import aligno_py as aligno
 from ally import geput
 
 # Test data

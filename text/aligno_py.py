@@ -38,6 +38,24 @@ def default_indent() -> str:
 DEFAULT_INDENT = default_indent()
 
 
+def find_common_indent(lines: list[str]) -> str:
+    """ Find the common indentation among all lines. """
+    common_indent = None
+    for line in lines:
+        if not line.strip():
+            continue
+        indent_size = len(line) - len(line.lstrip())
+        indent = line[:indent_size]
+        if common_indent is None:
+            common_indent = indent
+        else:
+            common_indent = common_indent[: len(os.path.commonprefix([common_indent, indent]))]
+
+    if common_indent is None:
+        common_indent = ""
+    return common_indent
+
+
 def detect_indent(text: str | list[str]) -> tuple[int, str, int]:
     """Detect the indentation type and minimum level of the input text."""
     if isinstance(text, list):
@@ -49,15 +67,7 @@ def detect_indent(text: str | list[str]) -> tuple[int, str, int]:
     lines = [line for line in lines if line.strip()]
 
     # Find the common indentation among all lines
-    common_indent = None
-    for line in lines:
-        indent_size = len(line) - len(line.lstrip())
-        indent = line[:indent_size]
-        if common_indent is None or indent_size < len(common_indent):
-            common_indent = indent
-
-    if common_indent is None:
-        common_indent = ""
+    common_indent = find_common_indent(lines)
 
     # Check for invalid indentation characters
     if re.search(r"[^\s\t]", common_indent):
