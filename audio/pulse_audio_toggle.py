@@ -4,9 +4,12 @@
 Switch between PulseAudio outputs.
 """
 
+import os
 import json
 from pathlib import Path
 import pulsectl  # type: ignore
+import shutil
+import sh
 
 from ally import main, logs  # type: ignore
 
@@ -61,6 +64,14 @@ def get_current_sink(pulse: pulsectl.Pulse) -> int:
     raise RuntimeError("Could not find current sink")
 
 
+def show_sink_info(pulse: pulsectl.Pulse, sink_set: int) -> None:
+    """Show sink info for the given sink index."""
+    info = get_sink_info(pulse, sink_set)
+    print(info)
+    _index, description = info.split("\t", 1)
+    if os.environ.get("DISPLAY") and shutil.which("notify-send"):
+        sh.notify_send("audio output device", description, t=1000)
+
 def pulse_audio_toggle(sink_set: int | None = None, list_: bool = False, info: bool = False) -> None:
     """Switch between PulseAudio outputs."""
     with pulsectl.Pulse("pulse_audio_toggle") as pulse:
@@ -89,7 +100,7 @@ def pulse_audio_toggle(sink_set: int | None = None, list_: bool = False, info: b
             prev_sink = curr_sink
             pulse.sink_default_set(target_sink.name)  # Use sink name instead of index
             save_state(prev_sink)
-            print(get_sink_info(pulse, sink_set))
+            show_sink_info(pulse, sink_set)
             return
 
         if prev_sink == curr_sink:
@@ -101,7 +112,7 @@ def pulse_audio_toggle(sink_set: int | None = None, list_: bool = False, info: b
         if target_sink is not None:
             pulse.sink_default_set(target_sink.name)  # Use sink name instead of index
             save_state(curr_sink)
-            print(get_sink_info(pulse, prev_sink))
+            show_sink_info(pulse, prev_sink)
 
 
 def setup_args(arg):
