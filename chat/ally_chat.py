@@ -1043,10 +1043,10 @@ def load_agent(agents, agent_file):
 def update_visual(agent: Agent):
     """Update the visual prompts for an agent."""
     visual = agent.get("visual")
+    logger.debug("update_visual: %r %r", agent["name"], visual)
     if not visual:
         return
-    name = agent["name"].lower()
-    name_lc = name.lower()
+    name_lc = agent["name"].lower()
     all_names = agent_get_all_names(agent)
 
     for key in "person", "person/clothes":
