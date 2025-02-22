@@ -53,24 +53,48 @@ AI_EVERYONE_MAX = 2
 USE_PLURALS = True
 
 
-def find_name_in_content(content: str, name: str, ignore_case: bool = True) -> tuple[int, int, str | None]:
-    """try to find a name in message content"""
-    logger.debug("find_name_in_content: %r %r %r", content, name, ignore_case)
-    start_comma_word = r"(?m)^\s*" + re.escape(name) + r"\b\s*,"  # matches at the start of any line
-    comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*]?\s*$"
-    word_start = r"^\s*" + re.escape(name) + r"\b"
-    word_end = r"(\s|\b)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"
-    whole_word = r"(\s|\b)" + re.escape(name) + r"\b"
+def find_name_in_content(content: str, name: str, ignore_case: bool = True) -> tuple[int, int, int, str | None]:
+    """
+    Try to find a name in message content, prioritizing later sentences
+    Returns tuple of (match_type, sentence_num_from_end, position, name)
+    match_type: 0-4 for different match types, 100 for no match
+    sentence_num_from_end: 0 for last sentence, counting up for earlier ones
 
+    The matching logic:
+    - Lower match_type numbers have higher priority (0-4)
+    - Within the same match_type, later sentences (lower sentence_num) have priority
+    - Within the same sentence, earlier positions have priority
+
+    Note: The sentence splitting is very simple and can be improved.
+    """
+    logger.debug("find_name_in_content: %r %r %r", content, name, ignore_case)
+
+    # Define match patterns
+    start_comma_word = r"^\s*" + re.escape(name) + r"\b\s*,"  # at start with comma
+    comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*$"  # at end with comma
+    word_start = r"^\s*" + re.escape(name) + r"\b"  # at start
+    word_end = r"(\s|\b)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"  # at end
+    whole_word = r"(\s|\b)" + re.escape(name) + r"\b"  # anywhere
+
+    patterns = [start_comma_word, comma_word_end, word_start, word_end, whole_word]
     flags = re.IGNORECASE if ignore_case else 0
 
-    for i, regexp in enumerate([start_comma_word, comma_word_end, word_start, word_end, whole_word]):
-        if match := re.search(regexp, content, flags):
-            logger.debug("find_name_in_content match: %r", (i, match.start(), name))
-            return (i, match.start(), name)
+    # Split into sentences
+    best_match = (100, -1, len(content), None)  # (match_type, sentence_num, position, name)
 
-    logger.debug("find_name_in_content no match: %r", (100, len(content), None))
-    return (100, len(content), None)
+    sentences = re.split(r'[.!?\n]+', content)
+    for sent_num, sentence in enumerate(reversed(sentences)):  # reverse to prioritize later sentences
+        for match_type, pattern in enumerate(patterns):
+            if match := re.search(pattern, sentence, flags):
+                # Calculate absolute position in original content
+                abs_pos = content.find(sentence) + match.start()
+                current_match = (match_type, sent_num, abs_pos, name)
+
+                # Update if this is a better match
+                if current_match < best_match:
+                    best_match = current_match
+
+    return best_match
 
 
 def uniqo(l: list[Any]) -> list[Any]:
@@ -115,7 +139,7 @@ def who_is_named(
         agents_and_plurals = agent_names + everyone_words + anyone_words
     matches = [find_name_in_content(content, agent) for agent in agents_and_plurals]
     if not include_self and user:
-        matches = [m for m in matches if m[2] and m[2].lower() != user.lower()]
+        matches = [m for m in matches if m[3] and m[3].lower() != user.lower()]
     if not matches:
         return []
 
@@ -132,7 +156,7 @@ def who_is_named(
     logger.debug(f"{everyone_except_user_all=}")
 
     result: list[str] = []
-    for _type, _pos, agent in matches:
+    for _type, _sentence, _pos, agent in matches:
         if agent is None:
             continue
         if agent in everyone_words:
