@@ -74,9 +74,11 @@ class FileCache:
                 raise FileExistsError(f"File {path} has been modified externally")
 
         if path in self._cache and self._deep_compare(self._cache[path], content):
+            logger.debug("Content is identical (1st check), skipping save")
             return
 
         if not self._save_file(path, content, fmt, **kwargs):
+            logger.debug("Content is identical (2nd check), skipping save")
             return
         self._cache[path] = content
         self._last_modified[path] = os.path.getmtime(path)
@@ -102,7 +104,7 @@ class FileCache:
         """Save content to file based on format"""
         # First format the content to string based on format
         formatted_content = ""
-        if fmt == "txt":
+        if fmt in ["txt", "md", "html"]:
             formatted_content = str(content)
         elif fmt == "json":
             formatted_content = json.dumps(content, **kwargs)
