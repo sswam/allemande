@@ -20,6 +20,7 @@ rooms-commit() {
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	. /opt/allemande/env.sh
 	rooms-commit "$@"
 fi
 
