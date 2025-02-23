@@ -520,7 +520,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     invitation = args.delim + name + ":"
 
     model_name = agent["model"]
-    n_context = agent.get("default_context")
+    n_context = agent.get("context")
     if n_context is not None:
         context = history[-n_context:]
     else:
@@ -690,9 +690,15 @@ def add_configured_image_prompts(fulltext, configs):
         if "image_prompt_map" in config:
             for k, v in config["image_prompt_map"].items():
                 positive = re.sub(str(k), str(v), positive)
+        if "image_prompt_map_1" in config:
+            for k, v in config["image_prompt_map_1"].items():
+                positive = re.sub(str(k), str(v), positive, count=1)
         if "image_prompt_negative_map" in config:
             for k, v in config["image_prompt_negative_map"].items():
                 negative = re.sub(str(k), str(v), negative)
+        if "image_prompt_negative_map_1" in config:
+            for k, v in config["image_prompt_negative_map_1"].items():
+                negative = re.sub(str(k), str(v), negative, count=1)
         if "image_prompt_template" in config:
             positive = str(config["image_prompt_template"]).replace("%s", positive)
         if "image_prompt_negative_template" in config:
@@ -736,7 +742,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     """Run a remote agent."""
     service = agent["type"]
 
-    n_context = agent["default_context"]
+    n_context = agent["context"]
     context = history[-n_context:]
     # XXX history is a list of lines, not messages, so won't the context sometimes contain partial messages? Yuk. That will interact badly with missions, too.
     # hacky temporary fix here for now, seems to work:
