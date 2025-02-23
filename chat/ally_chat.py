@@ -30,6 +30,7 @@ from ally import portals  # type: ignore
 from safety import safety  # type: ignore
 from ally.cache import cache  # type: ignore
 import aligno_py as aligno  # type: ignore
+from ally import re_map
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # type: ignore # pylint: disable=wrong-import-position, wrong-import-order
@@ -686,19 +687,23 @@ def add_configured_image_prompts(fulltext, configs):
     else:
         positive = fulltext
         negative = ""
+    mappings_1 = {}
+    mappings = {}
+    mappings_neg_1 = {}
+    mappings_neg = {}
     for config in configs:
-        if "image_prompt_map" in config:
-            for k, v in config["image_prompt_map"].items():
-                positive = re.sub(str(k), str(v), positive)
         if "image_prompt_map_1" in config:
-            for k, v in config["image_prompt_map_1"].items():
-                positive = re.sub(str(k), str(v), positive, count=1)
-        if "image_prompt_negative_map" in config:
-            for k, v in config["image_prompt_negative_map"].items():
-                negative = re.sub(str(k), str(v), negative)
+            mappings_1 |= config["image_prompt_map_1"]
+        if "image_prompt_map" in config:
+            mappings |= config["image_prompt_map"]
         if "image_prompt_negative_map_1" in config:
-            for k, v in config["image_prompt_negative_map_1"].items():
-                negative = re.sub(str(k), str(v), negative, count=1)
+            mappings_neg_1 |= config["image_prompt_negative_map_1"]
+        if "image_prompt_negative_map" in config:
+            mappings_neg |= config["image_prompt_negative_map"]
+    positive = re_map.apply_mappings(positive, mappings, mappings_1)
+    negative = re_map.apply_mappings(negative, mappings_neg, mappings_neg_1)
+
+    for config in configs:
         if "image_prompt_template" in config:
             positive = str(config["image_prompt_template"]).replace("%s", positive)
         if "image_prompt_negative_template" in config:
@@ -1144,8 +1149,6 @@ async def watch_loop(args):
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
         while (line := await queue.get()) is not None:
-            list_active_tasks()
-
             try:
                 file_path, change_type, old_size, new_size = line.rstrip("\n").split("\t")
                 change_type = Change(int(change_type))
@@ -1157,6 +1160,7 @@ async def watch_loop(args):
                     # Create and track the task
                     task = asyncio.create_task(file_changed(file_path, change_type, old_size, new_size, args, skip, agents))
                     add_task(task, f"file changed: {file_path}")
+                    list_active_tasks()
                 elif file_type == "agent":
                     agent_file_changed(agents, file_path, change_type)
                     write_agents_list(agents)

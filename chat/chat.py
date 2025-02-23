@@ -1154,7 +1154,7 @@ def check_access(user: str, pathname: str, path: Path) -> Access:
 
     user = user.lower()
 
-    logger.warning("check_access: User: %s, pathname: %s, Path: %s", user, pathname, path)
+    logger.debug("check_access: User: %s, pathname: %s, Path: %s", user, pathname, path)
 
     # Denied users have no access
     if user in access.get("deny", []):
