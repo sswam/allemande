@@ -191,9 +191,9 @@ class Room:
         if op == "archive":
             if not access.value & Access.MODERATE.value:
                 raise PermissionError("You are not allowed to archive this room.")
-            # run room-rotate script with room name
+            # run room-archive script with room name
             # TODO in Python
-            subprocess.run(["room-rotate", self.name], check=True)
+            subprocess.run(["room-archive", self.name], check=True)
         elif op == "rotate":
             raise NotImplementedError("Room rotation is not implemented yet.")
             # run room-rotate script with room name

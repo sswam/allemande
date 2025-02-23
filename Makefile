@@ -234,7 +234,7 @@ fresh::	rotate
 fresh::	server
 
 rotate:
-	room-rotate "$$file"
+	room-archive "$$file"
 
 canon:
 	ln -sf ../tools/python3_allemande.sh canon/python3-allemande
