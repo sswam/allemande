@@ -1300,8 +1300,19 @@ async function edit(file) {
 }
 
 async function edit_save() {
-  // TODO get editor_file from room name
-  if (!editor_file || edit_get_text() === editor_text_orig) {
+  // if it's a .bb file, and not empty, ensure it ends with a double newline
+  if (!editor_file) {
+    error("edit_save");
+    return false;
+  }
+
+  edit_get_text();
+
+  if (editor_file.match(/\.bb$/) && editor_text && !editor_text.match(/[^\n]\n\n$/)) {
+    edit_set_text(editor_text.replace(/\n*$/, "\n\n"));
+  }
+
+  if (editor_text === editor_text_orig) {
     error("edit_save");
     return false;
   }
