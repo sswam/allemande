@@ -2,66 +2,58 @@
 
 import re
 
+__VERSION__ = "0.1.2"
+
 
 def apply_mappings(text: str, mapping: dict[str, str], mapping_first: dict[str, str]) -> str:
     """Apply multiple regex mappings to a string in a single pass."""
     if not text or (not mapping and not mapping_first):
         return text
 
-    # Remove duplicates by prioritizing mapping_first patterns
-    unique_patterns: list[str] = []
-    pattern_to_index: dict[str, int] = {}
+    result = []
+    remaining = text
+    used_first_patterns = set()
 
-    # Add mapping_first patterns first (higher priority)
-    for pattern in mapping_first:
-        if pattern not in pattern_to_index:
-            pattern_to_index[pattern] = len(unique_patterns)
-            unique_patterns.append(pattern)
+    def try_match_pattern(pattern: str, repl: str, match_obj) -> str | None:
+        """Try to apply a single pattern and return the replacement if successful."""
+        if not match_obj:
+            return None
+        return re.sub(r"\\(.)", lambda m: match_obj.group(int(m.group(1))) if m.group(1)[0].isdigit() else m.group(1), repl)
 
-    # Add mapping patterns if not already present
-    for pattern in mapping:
-        if pattern not in pattern_to_index:
-            pattern_to_index[pattern] = len(unique_patterns)
-            unique_patterns.append(pattern)
+    while remaining:
+        match_found = False
 
-    # Combine unique patterns into a single pattern
-    combined_pattern = "|".join(f"({pattern})" for pattern in unique_patterns)
+        # Try mapping_first patterns first
+        for pattern, repl in mapping_first.items():
+            if pattern in used_first_patterns:
+                continue
+            match = re.match(pattern, remaining)
+            if match:
+                replacement = try_match_pattern(pattern, repl, match)
+                if replacement is not None:
+                    result.append(replacement)
+                    remaining = remaining[match.end():]
+                    match_found = True
+                    used_first_patterns.add(pattern)
+                    break
 
-    # Track which patterns from mapping_first have been used
-    first_match_used = {pattern: False for pattern in mapping_first}
+        if match_found:
+            continue
 
-    def replace_func(match):
-        # Find which pattern matched
-        for i, group in enumerate(match.groups(), 1):
-            if group is not None:
-                pattern = unique_patterns[i - 1]
+        # Try regular mapping patterns
+        for pattern, repl in mapping.items():
+            match = re.match(pattern, remaining)
+            if match:
+                replacement = try_match_pattern(pattern, repl, match)
+                if replacement is not None:
+                    result.append(replacement)
+                    remaining = remaining[match.end():]
+                    match_found = True
+                    break
 
-                # Store all groups for potential references in replacement
-                groups = match.groups()
+        if not match_found:
+            # No match found, move forward one character
+            result.append(remaining[0])
+            remaining = remaining[1:]
 
-                def repl(m, pattern_index=i, matched_groups=groups):
-                    # if not a digit, return as-is
-                    if not "0" <= m.group(1)[0] <= "9":
-                        return m.group(0)
-                    # Convert \1 style references to the actual captured group
-                    group_num = int(m.group(1))
-                    # Adjust group number based on which pattern matched
-                    adjusted_num = group_num + (pattern_index - 1)
-                    if 0 <= adjusted_num < len(matched_groups):
-                        return matched_groups[adjusted_num] or ""
-                    return m.group(0)
-
-                # Handle mapping_first patterns
-                if pattern in mapping_first:
-                    result = re.sub(r"\\(\d+|.)", repl, mapping_first[pattern])
-                    mapping_first.pop(pattern)  # Remove after first use
-                    return result
-
-                # Handle regular mapping patterns
-                if pattern in mapping:
-                    result = re.sub(r"\\(\d+|.)", repl, mapping[pattern])
-                    return result
-
-        return match.group(0)
-
-    return re.sub(combined_pattern, replace_func, text)
+    return "".join(result)
