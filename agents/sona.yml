@@ -1,7 +1,7 @@
 name: Sona
 type: perplexity
 model: sonar
-default_context: 20
+context: 20
 alternating_context: true
 system_top: '[You are $NAME]'
 online: true

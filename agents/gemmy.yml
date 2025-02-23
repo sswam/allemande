@@ -1,7 +1,7 @@
 name: Gemmy
 type: google
 model: gemini-1.5-pro
-default_context: 20
+context: 20
 system_bottom: '[You are $NAME]'
 aliases:
 - Gemini Pro

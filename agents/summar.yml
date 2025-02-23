@@ -1,7 +1,7 @@
 type: google
 specialist: true
 model: gemini-2.0-flash
-default_context: 100
+context: 100
 strip_triple_backticks: true
 system_top: |-
   You are $NAME, an expert writer, specialised in writing a comprehensive summary of the complete chat history.

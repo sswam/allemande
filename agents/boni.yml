@@ -1,6 +1,6 @@
 model: babesByStableYogi_ponyV4VAEFix
 type: image_a1111
-default_context: 1
+context: 1
 adult: true
 config:
   steps: 15

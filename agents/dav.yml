@@ -1,7 +1,7 @@
 name: Dav
 type: openai
 model: gpt-4o-mini
-default_context: 100
+context: 100
 system_bottom: '[You are $NAME]'
 aliases:
 - GPT-4o-mini

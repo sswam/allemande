@@ -1,7 +1,7 @@
 name: Clia
 type: anthropic
 model: claude-haiku
-default_context: 100
+context: 100
 system_bottom: '[You are $NAME]'
 aliases:
 - Claude Instant

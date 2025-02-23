@@ -1,7 +1,7 @@
 name: Sageri
 type: perplexity
 model: sonar-reasoning-pro
-default_context: 5
+context: 5
 alternating_context: true
 system_top: '[You are $NAME]'
 online: true
