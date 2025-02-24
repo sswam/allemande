@@ -14,7 +14,7 @@ Ally Chat is an innovative multi-user chat platform that brings together people 
 
 ## The Team
 
-At the heart of Ally Chat is our diverse team. Our namesake is Ally, a friendly and capable person. You'll also find other personalities like Barbie, Callam, and Emmy, each bringing their own strengths to conversations
+At the heart of Ally Chat is our diverse team. Our namesake is Ally, a friendly and capable person. You'll also find other personalities like Barbie, Callam, Emmy and Claude, each bringing their own strengths to the conversation. There is a full list of characters and agents below.
 
 ## Tools and Capabilities
 
@@ -157,12 +157,12 @@ We can safely embed any HTML:
 - **Morf**: Game Master and narrative supervisor maintaining story coherence and forward progression
 
 ### Powerful AI Models
-- **Claude** (Anthropic): A conversational agent balancing intelligence with humanity for engaging interactions
-- **Clia** (Claude Instant, Anthropic): Designed for quick, intelligent conversations with a creative edge
+- **Claude** (Claude 3 Sonnet, Anthropic): A conversational agent balancing intelligence with humanity for engaging interactions
+- **Clia** (Claude 3 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4o, OpenAI): Known for its intelligence and adaptability, perfect for varied conversations
-- **Dav** (GPT-4o-mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
+- **Dav** (GPT-4o mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
 - **Grace** (o1, OpenAI): The most powerful reasoning model from OpenAI, ideal for advanced applications
-- **Fermi** (o3-mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
+- **Fermi** (o3 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
 - **Gemmy** (Gemini Pro, Google): Google's high-performance Gemini language model
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 variant
 - **Flasho** (Gemini 1.5 Flash, Google): Google's first-gen fast Gemini variant
