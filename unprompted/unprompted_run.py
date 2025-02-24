@@ -4,9 +4,11 @@ import os
 import sys
 import logging
 import argh
+from pathlib import Path
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, script_dir)
+unprompted_dir = str((Path(__file__).resolve().parent/"unprompted").resolve())
+print(unprompted_dir)
+sys.path.insert(0, unprompted_dir)
 
 from lib_unprompted.shared import Unprompted
 
@@ -31,7 +33,7 @@ def main(*inp, debug=False, verbose=False):
         logging.getLogger().setLevel(logging.WARNING)
 
     cwd = os.getcwd()
-    os.chdir(script_dir)
+    os.chdir(unprompted_dir)
 
     try:
         if len(inp):
