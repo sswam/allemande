@@ -35,12 +35,12 @@ class Shortcode:
 
         # Construct the prompt
         prompt = f"[use {_name}]"
-        if _clothes:
-            prompt += f", {_clothes}"
-        if _emo:
-            prompt += f", {_emo}"
         if _age:
             prompt += f", {_age}"
+        if _emo:
+            prompt += f", {_emo}"
+        if _clothes:
+            prompt += f", {_clothes}"
 
         # Process and return the constructed prompt
         return self.Unprompted.process_string(prompt, context)
