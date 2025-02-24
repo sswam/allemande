@@ -156,7 +156,7 @@ We can safely embed any HTML:
 - **Pliny**: Plot specialist crafting cohesive narrative structures for gaming and storytelling
 - **Morf**: Game Master and narrative supervisor maintaining story coherence and forward progression
 
-### Powerful Remote AI Models
+### Powerful AI Models
 - **Claude** (Anthropic): A conversational agent balancing intelligence with humanity for engaging interactions
 - **Clia** (Claude Instant, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4o, OpenAI): Known for its intelligence and adaptability, perfect for varied conversations
@@ -166,6 +166,8 @@ We can safely embed any HTML:
 - **Gemmy** (Gemini Pro, Google): Google's high-performance Gemini language model
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 variant
 - **Flasho** (Gemini 1.5 Flash, Google): Google's first-gen fast Gemini variant
+
+### Online Models with Internet Access
 - **Sageri** (Sonar Reasoning Pro, Perplexity): Perplexity's advanced reasoning model
 - **Sonari** (Sonar Reasoning, Perplexity): Perplexity's base reasoning model
 - **Sagi** (Sonar Pro, Perplexity): Perplexity's high-performance Sonar model
