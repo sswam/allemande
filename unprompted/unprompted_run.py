@@ -7,7 +7,6 @@ import argh
 from pathlib import Path
 
 unprompted_dir = str((Path(__file__).resolve().parent/"unprompted").resolve())
-print(unprompted_dir)
 sys.path.insert(0, unprompted_dir)
 
 from lib_unprompted.shared import Unprompted
