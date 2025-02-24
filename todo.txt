@@ -9,4 +9,10 @@ Nika:
 Mike:
 
 - ... check messenger audio, or talk to him
+	- downloaded
 
+
+Room Config:
+
+- cascading configuration
+- override agent settings, e.g. context, image prompt template

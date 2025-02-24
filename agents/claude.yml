@@ -2,6 +2,7 @@ name: Claude
 type: anthropic
 model: claude
 context: 20
+system_bottom: '[You are $NAME]'
 visual:
   person: 1boy, striking opalescent eyes shifting between blue and violet, tall and
     willowy physique, angular features, high cheekbones, pale skin with ethereal quality,
