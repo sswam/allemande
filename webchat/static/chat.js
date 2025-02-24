@@ -571,10 +571,31 @@ function leave_room() {
 
 function change_room() {
   if ($room === document.activeElement) {
-    leave_room();
+    // check if selection covers entire input
+    if ($room.selectionStart === 0 && $room.selectionEnd === $room.value.length) {
+      leave_room();
+    } else {
+      // select the entire input
+      $room.select();
+    }
   } else {
     $room.focus();
-    $room.select();
+    const value = $room.value;
+    const lastSlashIndex = value.lastIndexOf('/');
+
+    let start = 0;
+    if (value.endsWith('/')) {
+      // If ends with /, find the previous slash
+      const previousSlashIndex = value.lastIndexOf('/', lastSlashIndex - 1);
+      if (previousSlashIndex !== -1) {
+        // If there's a previous slash, select from there to end
+        start = previousSlashIndex + 1;
+      }
+    } else if (lastSlashIndex !== -1) {
+      // If there's a slash (not at the end), select from after it to end
+      start = lastSlashIndex + 1;
+    }
+    $room.setSelectionRange(start, value.length);
   }
   return false;
 }
