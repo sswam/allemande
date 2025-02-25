@@ -148,4 +148,9 @@ input:disabled, input:disabled:hover, input:disabled:focus
 	--scrollbar-background: var(--background);
 	--scrollbar: var(--frame);
 	--link: midnightblue;
+
+	--image-width: 40vw;
+	--image-height: 40vh;
+	--image-width-narrative: 90vw;
+	--image-height-narrative: 90vh;
 }

@@ -1422,6 +1422,9 @@ function edit_close() {
 let view_options = {
   images: 2,
   source: 1,
+  canvas: 0,
+  clean: 0,
+  image_size: 4,
 };
 
 function setup_view_options() {
@@ -1429,7 +1432,10 @@ function setup_view_options() {
   // if not present, set to default
   let view_options_str = localStorage.getItem("view_options");
   if (view_options_str) {
-    view_options = JSON.parse(view_options_str);
+    const view_options_loaded = JSON.parse(view_options_str);
+    for (const key in view_options_loaded) {
+      view_options[key] = view_options_loaded[key];
+    }
   }
   add_hook("room_ready", view_options_apply);
 }
@@ -1438,10 +1444,11 @@ function view_options_apply() {
   // save to local storage
   localStorage.setItem("view_options", JSON.stringify(view_options));
   // update buttons
-  active_set("view_images", view_options.images || 0);
-  active_set("view_source", view_options.source || 0);
-  active_set("view_canvas", view_options.canvas || 0);
-  active_set("view_clean", view_options.clean || 0);
+  active_set("view_images", view_options.images);
+  active_set("view_source", view_options.source);
+  active_set("view_canvas", view_options.canvas);
+  active_set("view_clean", view_options.clean);
+  active_set("view_image_size", view_options.image_size);
   // send message to the rooms iframe to apply view options
   $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
 }
@@ -1464,6 +1471,13 @@ function view_canvas() {
 
 function view_clean() {
   view_options.clean = !view_options.clean;
+  view_options_apply();
+}
+
+function view_image_size(ev) {
+  // starts at 4, range from 1 to 10
+  delta = ev.shiftKey ? -1 : 1;
+  view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
   view_options_apply();
 }
 
@@ -1572,6 +1586,7 @@ function chat_main() {
 
   $on($id("view_theme"), "click", change_theme);
   $on($id("view_images"), "click", view_images);
+  $on($id("view_image_size"), "click", view_image_size);
   $on($id("view_source"), "click", view_source);
   $on($id("view_canvas"), "click", view_canvas);
   $on($id("view_clean"), "click", view_clean);

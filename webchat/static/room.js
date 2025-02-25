@@ -703,6 +703,11 @@ async function handle_message(ev) {
     cl.toggle("source", ev.data.source == 1);
     cl.toggle("canvas", ev.data.canvas == 1);
     cl.toggle("clean", ev.data.clean == 1);
+    document.documentElement.style.setProperty("--image-width", ev.data.image_size*10 + "vw");
+    document.documentElement.style.setProperty("--image-height", ev.data.image_size*10 + "vh");
+    const image_size_narrative = ev.data.image_size == 10 ? 100 : Math.min(ev.data.image_size*20, 90);
+    document.documentElement.style.setProperty("--image-width-narrative", image_size_narrative + "vw");
+    document.documentElement.style.setProperty("--image-height-narrative", image_size_narrative + "vh");
   } else if (ev.data.type === "theme_changed") {
     const $style = $id("theme");
     $style.href = CHAT_URL + "/themes/" + ev.data.theme + ".css";
