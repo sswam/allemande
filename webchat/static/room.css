@@ -36,7 +36,8 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin-bottom: 0.75rem;
 }
 
-.narrative img, .narrative video, .narrative audio, .narrative iframe {
+.narrative img, .narrative video, .narrative audio, .narrative iframe,
+body.clean .narrative img, body.clean .narrative video, body.clean .narrative audio, body.clean .narrative iframe {
 	vertical-align: top;
 	margin: 6px 4px;
 	max-width: min(90vw, 90vh);
@@ -48,11 +49,6 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin: 6px 4px;
 	max-width: min(40vw, 40vh);
 	max-height: min(40vw, 40vh);
-}
-
-body.clean .narrative img, body.clean .narrative video, body.clean .narrative audio, body.clean .narrative iframe {
-	max-width: min(90vw, 90vh);
-	max-height: min(90vw, 90vh);
 }
 
 /* borders for markdown tables */
@@ -366,3 +362,108 @@ pre:has(div.graphviz) {
 	content: "</script>";
 }
 */
+
+body.image_size_1 .narrative img,
+body.image_size_1 .narrative video,
+body.image_size_1 .narrative audio,
+body.image_size_1 .narrative iframe {
+	max-width: min(20vw, 20vh);
+	max-height: min(20vw, 20vh);
+}
+
+body.image_size_2 .narrative img,
+body.image_size_2 .narrative video,
+body.image_size_2 .narrative audio,
+body.image_size_2 .narrative iframe {
+	max-width: min(40vw, 40vh);
+	max-height: min(40vw, 40vh);
+}
+
+body.image_size_3 .narrative img,
+body.image_size_3 .narrative video,
+body.image_size_3 .narrative audio,
+body.image_size_3 .narrative iframe {
+	max-width: min(60vw, 60vh);
+	max-height: min(60vw, 60vh);
+}
+
+body.image_size_3 .narrative img,
+body.image_size_3 .narrative video,
+body.image_size_3 .narrative audio,
+body.image_size_3 .narrative iframe {
+	max-width: min(80vw, 80vh);
+	max-height: min(80vw, 80vh);
+}
+
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}
+
+body.image_size_1 .message img,
+body.image_size_1 .message video,
+body.image_size_1 .message audio,
+body.image_size_1 .message iframe {
+	max-width: min(10vw, 10vh);
+	max-height: min(10vw, 10vh);
+}

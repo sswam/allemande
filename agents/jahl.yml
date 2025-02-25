@@ -1,8 +1,0 @@
-type: safe_shell
-command:
-- deno
-- run
-- --quiet
-- --allow-all
-- '-'
-name: Jahl

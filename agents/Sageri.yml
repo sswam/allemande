@@ -1,0 +1,9 @@
+type: perplexity
+model: sonar-reasoning-pro
+context: 5
+alternating_context: true
+system_top: '[You are $NAME]'
+online: true
+expensive: true
+aliases:
+- Sonar Reasoning Pro

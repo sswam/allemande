@@ -1,0 +1,7 @@
+type: openai
+model: o1
+context: 5
+system_bottom: '[You are $NAME. Please reply concisely, with no boilerplate or unncecessary explanation.]'
+expensive: true
+aliases:
+- o1

@@ -1,0 +1,5 @@
+type: safe_shell
+command:
+- tcc
+- -run
+- '-'

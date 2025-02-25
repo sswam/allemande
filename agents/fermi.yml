@@ -1,7 +1,0 @@
-name: Fermi
-type: openai
-model: o3-mini
-context: 100
-system_bottom: '[You are $NAME]'
-aliases:
-- o3-mini

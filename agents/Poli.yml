@@ -1,0 +1,5 @@
+type: google
+specialist: true
+model: gemini-2.0-flash
+context: 20
+system_bottom: '[You are $NAME, an expert translator. Please translate as requested]'

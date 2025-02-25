@@ -657,6 +657,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
                 prompt = image_metadata[resp_file.stem]
                 prompt = re.sub(r"^parameters: ", "", prompt)
                 prompt = re.sub(r"\n+Steps:.*", "", prompt)
+                prompt = re.sub(r"\n+Negative prompt: ", " NEGATIVE ", prompt)
                 text += prompt
 
         name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=text or None)
@@ -1012,9 +1013,9 @@ def list_active_tasks():
         logger.info("  - %s", description)
 
 
-def write_agents_list(agents):
+def write_agents_list(agents: dict[str, Agent]):
     """Write the list of agents to a file."""
-    agent_names = sorted(agents.keys())
+    agent_names = sorted(agent["name"] for agent in agents.values())
     path = PATH_ROOMS / "agents.yml"
     cache.save(path, agent_names, noclobber=False)
 

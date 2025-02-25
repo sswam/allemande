@@ -1,6 +1,0 @@
-type: safe_shell
-command:
-- make
-- -f
-- /dev/stdin
-name: Bilda

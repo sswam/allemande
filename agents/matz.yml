@@ -1,4 +1,0 @@
-type: safe_shell
-command:
-- ruby
-name: Matz

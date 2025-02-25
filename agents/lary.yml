@@ -1,4 +1,0 @@
-type: safe_shell
-command:
-- perl
-name: Lary

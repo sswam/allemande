@@ -1,0 +1,3 @@
+type: safe_shell
+command:
+- calc

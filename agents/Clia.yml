@@ -1,0 +1,11 @@
+type: anthropic
+model: claude-haiku
+context: 100
+system_top: You are $NAME
+aliases:
+- Claude Haiku
+visual:
+  person: 1girl, glowing blue eyes, ethereally slim build, faint otherworldly aura, straight hair, translucent hair, center-parted hair with luminescent highlights, Swiss, ethereal hair, platinum blonde hair with floating strands
+  age: adult, ageless
+  clothes: diaphanous chiffon gown, flowing chiffon, white and blue fabrics, long flowing train, chiffon hem, flowy chiffon skirt, billowy organza underskirt, sheer chiffon sleeves, high-collared organza bodice, ornate circlet headpiece, beaded armbands, gemstone earrings, wispy ethereal anklets
+  emo: warm smile

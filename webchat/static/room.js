@@ -500,6 +500,7 @@ function image_go_to(index) {
   const $img = $overlay.querySelector("img");
   $img.src = $currentImg.src;
   $img.alt = $currentImg.alt;
+  $img.title = $currentImg.title;
 }
 
 function overlay_click(ev) {
