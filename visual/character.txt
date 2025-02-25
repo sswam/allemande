@@ -1,1 +1,1 @@
-[use character_name], [use "{get char}"]
+[use character_name], [person "{get char}"]
