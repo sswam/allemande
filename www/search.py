@@ -272,7 +272,7 @@ def pornhub_search(  # pylint: disable=too-many-locals
         duration = duration_element.text if duration_element else ""
         search_results.append({
             "title": a_tag.get("title"),
-            "url": a_tag.get("href"),
+            "url": "https://pornhub.com" + a_tag.get("href"),
             "thumbnail": a_tag.find("img")["src"],
             "duration": duration,
         })
