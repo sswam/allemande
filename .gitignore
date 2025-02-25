@@ -58,6 +58,8 @@ rooms.*
 /allemande.egg-info
 /tools/tools_help.txt
 /pix/banner?.*
+/visual/everyone_count.txt
+/visual/everyone.txt
 
 # derived header files
 /c/sea.h
