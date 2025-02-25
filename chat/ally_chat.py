@@ -609,7 +609,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     if image_agent:
         fulltext2 = add_configured_image_prompts(fulltext, [agent, config])
-        logger.debug("fulltext after adding configured image prompts: %r", fulltext2)
+        logger.info("fulltext after adding configured image prompts: %r", fulltext2)
     else:
         fulltext2 = fulltext
 
@@ -796,8 +796,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         logger.debug("msg2: %r", msg2)
         remote_messages.append(msg2)
 
-    while remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] == "anthropic":
-        remote_messages.pop(0)
+    if remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] == "anthropic":
+        remote_messages.insert(0, {"role": "user", "content": "?"})
 
     # add system messages
     system_top = agent.get("system_top")
@@ -1060,20 +1060,23 @@ def update_visual(agent: Agent):
     name_lc = agent["name"].lower()
     all_names = agent_get_all_names(agent)
 
-    for key in "person", "person/clothes":
+    # supporting arbitrary keys might be a security risk
+    for key in "person", "clothes", "age", "emo":
         if key not in visual:
             continue
         prompt = visual.get(key)
         if prompt:
-            prompt = prompt.strip() + "\n"
-            (PATH_VISUAL/key).mkdir(parents=True, exist_ok=True)
-            cache.save(str(PATH_VISUAL / key / name_lc) + ".txt", prompt, noclobber=False)
+            path = key if key == "person" else "person/" + key
+            prompt = str(prompt).strip() + "\n"
+            (PATH_VISUAL/path).mkdir(parents=True, exist_ok=True)
+            cache.save(str(PATH_VISUAL / path / name_lc) + ".txt", prompt, noclobber=False)
+            cache.chmod(str(PATH_VISUAL / path / name_lc) + ".txt", 0o664)
             # symlink the main file to the agent's other names
             for name in all_names:
                 for dest in name, name.lower():
                     if dest == name_lc:
                         continue
-                    cache.symlink(name_lc + ".txt", str(PATH_VISUAL / key / dest) + ".txt")
+                    cache.symlink(name_lc + ".txt", str(PATH_VISUAL / path / dest) + ".txt")
 
 def remove_visual(agent: Agent):
     """Remove the visual prompts for an agent."""
@@ -1085,7 +1088,7 @@ def remove_visual(agent: Agent):
         for name in all_names:
             for dest in name, name.lower():
                 try:
-                    os.remove(str(PATH_VISUAL / key / dest) + ".txt")
+                    cache.remove(str(PATH_VISUAL / key / dest) + ".txt")
                 except FileNotFoundError:
                     pass
 

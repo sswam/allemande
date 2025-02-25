@@ -714,6 +714,10 @@ def preprocess(content):
             in_code -= 1
         elif in_code:
             out.append(line)
+        elif re.match(r"^<think(ing)?>$", line):
+            out.append(r"""<details markdown="1" class="think"><summary>thinking</summary>""")
+        elif re.match(r"^</think(ing)?>$", line):
+            out.append(r"""</details>""")
         else:
             line, has_math1 = find_and_fix_inline_math(line)
             has_math = has_math or has_math1
@@ -1304,20 +1308,22 @@ async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=
 
 
 def remove_thinking_sections(content: str, agent_name: str|None) -> str:
-    if agent_name and content.startswith(agent_name + ":\t"):
-        return content
+    # Currently we don't show agents their own past thinking, it seems unnecessary.
+#     if agent_name and content.startswith(agent_name + ":\t"):
+#         return content
     modified = re.sub(
-        r"""(?ix)
-        <details\b[^>]*>
-        .*?
-        (</details>|$)
+        r"""(?mix)
+        ^<think(ing)?>$
+        (.*?)
+        (</think(ing)?>$|$)
         """,
         "",
         content,
         flags=re.DOTALL,
     )
     if modified != content:
-        logger.debug("Removed 'thinking' section/s from message: %r", modified)
+        logger.debug("Removed 'thinking' section/s from message: original: %s", content)
+        logger.debug("  modified: %s", modified)
         return modified
     return content
 
@@ -1325,7 +1331,7 @@ def remove_thinking_sections(content: str, agent_name: str|None) -> str:
 def context_remove_thinking_sections(context: list[str], agent_name: str|None):
     """Remove "thinking" sections from the context."""
     # Remove any "thinking" sections from the context
-    # A "thinking" section is a <details> block
+    # A "thinking" section is a <think> block
 
     for i, message in enumerate(context):
         context[i] = remove_thinking_sections(message, agent_name)
@@ -1335,7 +1341,7 @@ def context_remove_thinking_sections(context: list[str], agent_name: str|None):
 def history_remove_thinking_sections(history: list[dict[str,Any]], agent_name: str|None):
     """Remove "thinking" sections from the history."""
     # Remove any "thinking" sections from the context
-    # A "thinking" section is a <details> block
+    # A "thinking" section is a <think> block
 
     history = copy.deepcopy(history)
 
