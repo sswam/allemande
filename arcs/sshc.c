@@ -1,6 +1,6 @@
 /* sshc, ssh command
-			written by Sam Watkins, 2007 - 2009
-			this program is public domain
+written by Sam Watkins, 2007 - 2025
+this program is public domain
 */
 
 #include <limits.h>
@@ -39,8 +39,7 @@ static char *sh_quote(const char *from, char *to)
 		c = *from;
 		if (c == '\0')
 			break;
-		if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
-						strchr("-_./", c) != NULL) {
+		if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || strchr("-_./", c) != NULL) {
 			// doesn't need escaping
 			*to = c;
 			++to;
@@ -131,8 +130,7 @@ int main(int argc, char **argv)
 #ifdef __MINGW32_MAJOR_VERSION
 		sshc_shell_init = "\". /etc/profile ; . ~/.bash_profile ; \"";
 #else
-		sshc_shell_init = "\"if [ -n \\\"\\$BASH\\\" ]; then . /etc/profile ; . "
-						"~/.bash_profile ; fi ; \"";
+		sshc_shell_init = "\"if [ -n \\\"\\$BASH\\\" ]; then . /etc/profile ; . ~/.bash_profile ; fi ; \"";
 #endif
 	} else if (ssh_prog == NULL) {
 		ssh_prog = "ssh -q";
@@ -204,13 +202,13 @@ int main(int argc, char **argv)
 
 #ifdef __MINGW32_MAJOR_VERSION
 	count = snprintf(ssh_command, sizeof(ssh_command),
-				"%s %s-- %s %s\"umask %s ; mkdir -p %s ; cd %s || exit 124 ; %s\"",
-				ssh_prog, port_option, user_host, sshc_shell_init, umask, dir, dir, command);
+		"%s %s-- %s %s\"umask %s ; mkdir -p %s ; cd %s || exit 124 ; %s\"",
+		ssh_prog, port_option, user_host, sshc_shell_init, umask, dir, dir, command);
 #else
 	count = snprintf(ssh_command, sizeof(ssh_command),
-				"%s %s-- %s %sumask\\ %s\\ \\;\\ mkdir -p\\ %s\\ \\;\\ \\cd\\ %s\\ \\|\\| "
-				"exit 124 \\;\\ %s",
-				ssh_prog, port_option, user_host, sshc_shell_init, umask, dir_qq, dir_qq, command_q);
+		"%s %s-- %s %sumask\\ %s\\ \\;\\ mkdir -p\\ %s\\ \\;\\ \\cd\\ %s\\ \\|\\| "
+		"exit 124 \\;\\ %s",
+		ssh_prog, port_option, user_host, sshc_shell_init, umask, dir_qq, dir_qq, command_q);
 #endif
 	if (count >= (int)sizeof(ssh_command)) {
 		arcs_error("arguments too long");
