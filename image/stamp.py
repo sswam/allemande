@@ -159,7 +159,7 @@ def erase_comfy_metadata(input_file: Path, output_file: Path) -> None:
     )
 
 
-def convert_image(input_file: Path, output_file: Path, quality: int = 95) -> None:
+def convert_image(input_file: Path, output_file: Path, quality: int = 95) -> str:
     """Convert image format and copy metadata."""
     subprocess.run(
         ["magick", "convert", str(input_file), "-quality", str(quality), str(output_file)],
@@ -168,6 +168,7 @@ def convert_image(input_file: Path, output_file: Path, quality: int = 95) -> Non
     metadata = extract_metadata(input_file)
     if metadata:
         insert_metadata(output_file, metadata, output_file)
+    return metadata
 
 
 def parse_comfy_metadata(metadata: str) -> tuple[str, str]:
