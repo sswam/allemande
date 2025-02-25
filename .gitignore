@@ -60,6 +60,10 @@ rooms.*
 /pix/banner?.*
 /visual/everyone_count.txt
 /visual/everyone.txt
+/visual/girls_count.txt
+/visual/girls.txt
+/visual/boys_count.txt
+/visual/boys.txt
 
 # derived header files
 /c/sea.h
