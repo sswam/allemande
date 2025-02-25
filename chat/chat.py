@@ -1141,6 +1141,7 @@ def read_agents_list() -> list[str]:
     agent_names = cache.load(path)
     if not isinstance(agent_names, list):
         raise ValueError("Invalid agents list")
+    agent_names = [name.lower() for name in agent_names]
     return agent_names
 
 
