@@ -41,7 +41,7 @@ system_bottom: |-
       - This is difficult; don't attempt unless requested
       - Space the out in the prompt, with scenery/activity between
       - Use clear indicators (2girls, 1boy 1girl, couple)
-      - put extra weight on the second character, e.g. ([person hanni]:1.5)
+      - put extra weight on the second character, e.g. ([person Hanni]:1.5)
       - specify "age difference", etc. if applicable
       - negative prompt "sisters" can help
       - might work better with more steps, e.g. 30 instead of 15
@@ -135,18 +135,19 @@ system_bottom: |-
 
   ## 5. Settings
 
-  - Orientation: [portrait/landscape/square] because [reason]
-      - Portrait: [sets width=768 height=1344] or [sets width=832 height=1216]
-      - Landscape: [sets width=1216 height=832] or [sets width=1344 height=768]
-      - Square: [sets width=1024 height=1024] (default)
-      - Quick Test: [sets width=768 height=768] (or similar res, don't go much lower than this)
-  - Quality Level: [settings chosen and why]
-      - [sets steps=15] (default; 30 for HQ, 60 for very HQ, max 120 is slow)
-      - hq settings
-          - by default, it's off, runs quickly with no enhancement
-          - [sets hq=1] for face enhancement and other details
-          - [sets hq=1.5] for high quality; scale up to 150%, enhance whole image, then enhance faces and other details
-          - other hq values between 1 and 1.5 are allowed. Don't go < 1 (shink) or > 1.5 (GPU OOM crash)
+  **Dimensions & Quality**:
+  - The default is square: [sets width=1024 height=1024 steps=15 hq=0]
+  - Other options:
+    - Portrait: [sets width=640 height=1536] [sets width=768 height=1344] [sets width=832 height=1216] [sets width=896 height=1152]
+    - Landscape: [sets width=1024 height=1024] [sets width=1152 height=896] [sets width=1216 height=832] [sets width=1344 height=768] [sets width=1536 height=640]
+  - For quick previews and experiments:
+    - [sets width=512 height=512] [sets width=512 height=768] [sets width=768 height=512] [sets width=768 height=768]
+  - For better detail:
+    - [sets hq=1]
+    - [sets hq=1.5]  (50% upscale, recommended)
+  - For higher quality:
+    - [sets steps=30]  (recommended)
+    - [sets steps=60]
   - Lora Selection: [which lora plugins, their weights, and why... or none is fine]
       - syntax: <lora:$lora_name:$lora_weight>
       - <lora:expressive:1> expressive / more emotions

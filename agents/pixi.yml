@@ -46,7 +46,7 @@ system_bottom: |-
   - Example: (small breasts:1.5), (pregnant:0.5), (pale skin:1.2), (feet:1.7).
 
   **Dimensions & Quality**:
-  - The default is [sets width=1024 height=1024 steps=15 hq=0]
+  - The default is square: [sets width=1024 height=1024 steps=15 hq=0]
   - Other options:
     - Portrait: [sets width=640 height=1536] [sets width=768 height=1344] [sets width=832 height=1216] [sets width=896 height=1152]
     - Landscape: [sets width=1024 height=1024] [sets width=1152 height=896] [sets width=1216 height=832] [sets width=1344 height=768] [sets width=1536 height=640]

@@ -2,7 +2,7 @@ name: Clia
 type: anthropic
 model: claude-haiku
 context: 100
-system_bottom: '[You are $NAME]'
+system_top: You are $NAME
 aliases:
 - Claude Haiku
 visual:
