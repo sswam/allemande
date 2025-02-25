@@ -179,5 +179,21 @@ class FileCache:
             os.remove(dst)
         os.symlink(src, dst)
 
+    def chmod(self, path: str, mode: int):
+        """
+        Change the mode of a file.
+        If the file already has the specified mode, do nothing.
+        """
+        if os.path.exists(path) and os.stat(path).st_mode == mode:
+            return
+        os.chmod(path, mode)
+
+    def remove(self, path: str):
+        """
+        Remove a file or symlink.
+        Also remove it from the cache.
+        """
+        os.remove(path)
+        self.clear(path)
 
 cache = FileCache()

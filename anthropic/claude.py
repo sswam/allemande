@@ -76,7 +76,7 @@ def message_to_string(message):
 		raise ValueError(f"unknown role: {message['role']}")
 	return f"{prompt} {message['content']}"
 
-def chat_claude(messages, model=None, token_limit: int = None, temperature=None, stream=False, _async=False):
+def chat_claude(messages, model=None, token_limit: int = None, temperature=None, stream=False, _async=False, system=None):
 	""" Chat with claude """
 	# TODO clean up this code, if indeed all models are 100K now; test with claude-1 also I guess
 	real_token_limit = TOKEN_LIMIT_HAIKU if model == MODEL_INSTANT else TOKEN_LIMIT
@@ -123,12 +123,17 @@ def chat_claude(messages, model=None, token_limit: int = None, temperature=None,
 		fn = c.messages.stream
 	else:
 		fn = c.messages.create
+	kwargs = {
+	}
+	if system is not None:
+		kwargs["system"] = system
 	response = fn(
 		messages=messages,
 		stop_sequences=[HUMAN_PROMPT],
 		model=model,
 		max_tokens=token_limit,
 		temperature=temperature,
+		**kwargs,
 	)
 	return response
 
