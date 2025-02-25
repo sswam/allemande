@@ -81,8 +81,6 @@ const SHORTCUTS_GLOBAL = shortcuts_to_dict([
 
 const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['ctrl+enter', () => send(), 'Send message'],
-  ['shift+enter', send_random_message, 'Send a random message'],
-  ['alt+enter', poke, 'Poke the chat'],
   ['alt+s', send, 'Send message'],
   ['alt+p', poke, 'Poke the chat'],
   ['alt+t', content_insert_tab, 'Insert tab'],
@@ -503,10 +501,10 @@ function browse_up(ev) {
 // user info and settings ----------------------------------------------------
 
 function load_theme() {
-  let $link = $id("user_styles");
+  let $link = $id("theme");
   if (!$link) {
     $link = $create("link");
-    $link.id = "user_styles";
+    $link.id = "theme";
     $link.rel = "stylesheet";
     $link.type = "text/css";
     $head.append($link);
@@ -516,6 +514,36 @@ function load_theme() {
   } else {
     $link.href = "/users/" + user + "/theme.css";
   }
+}
+
+function user_script_loaded() {
+  // Check if chat_user_script function exists and call it if it does
+  if (typeof chat_user_script === 'function') {
+    chat_user_script();
+  }
+}
+
+function load_user_styles_and_script() {
+  let $link = $id("user_styles");
+  if (!$link) {
+    $link = $create("link");
+    $link.id = "user_styles";
+    $link.rel = "stylesheet";
+    $link.type = "text/css";
+    $head.append($link);
+  }
+  $link.href = "/users/" + user + "/styles.css";
+
+  let $script = $id("user_script");
+  if (!$script) {
+    $script = $create("script");
+    $script.id = "user_script";
+    $head.append($script);
+  }
+
+  $script.onload = user_script_loaded;
+
+  $script.src = "/users/" + user + "/script.js";
 }
 
 // hash change ---------------------------------------------------------------
@@ -1571,4 +1599,6 @@ function chat_main() {
 
   message_changed();
   $content.focus();
+
+  load_user_styles_and_script();
 }

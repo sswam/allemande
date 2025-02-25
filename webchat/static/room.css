@@ -215,6 +215,10 @@ body.overlay > div.overlay.fit_height > img {
 	max-height: 100%;
 }
 
+details.think, details.think * {
+	color: var(--think);
+}
+
 details.search {
 	position: relative;
 	top: -18px;
@@ -347,6 +351,11 @@ body.source .content script {
 .content script {
 	font: 12px fixed;
 	white-space: pre-wrap;
+}
+
+pre:has(div.graphviz) {
+	float: left;
+	margin: 0px 20px 40px 0px;
 }
 
 /*

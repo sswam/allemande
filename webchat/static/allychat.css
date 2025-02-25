@@ -143,6 +143,7 @@ input:disabled, input:disabled:hover, input:disabled:focus
 	--frame: var(--col5);
 	--border: var(--col6);
 	--text: var(--col7);
+	--think: var(--col6);
 
 	--scrollbar-background: var(--background);
 	--scrollbar: var(--frame);

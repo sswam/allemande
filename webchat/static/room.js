@@ -296,16 +296,34 @@ function setup_keyboard_shortcuts() {
 
 // when we click an image of class thumb, we convert it to an embed
 
-// embed = `<iframe width="280" height="157" src="https://www.youtube.com/embed/{video_id}" title="{title_enc}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
-
-function embed_click($thumb) {
+function embed_click(ev, $thumb) {
   const $embed = $thumb.parentNode;
+  const href = $embed.querySelector("a").href;
+  // if middle click or ctrl-click, open in new tab
+  // if shift-click, open in new window
+  // if alt-click, open in parent window
+  if (ev.button == 1 || ev.ctrlKey) {
+    window.open(href, "_blank");
+    return;
+  } else if (ev.shiftKey) {
+    window.open(href, "_blank").focus();
+    return;
+  } else if (ev.altKey) {
+    window.top.location.href = href;
+    return;
+  }
+
+  // otherwise, replace the thumb with the embed
+
   let iframe_html;
   if ($embed.dataset.site == "youtube") {
     iframe_html = `<iframe width="280" height="157" src="https://www.youtube.com/embed/${$embed.dataset.videoid}?autoplay=1" title="${$thumb.alt}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>`;
   } else if ($embed.dataset.site == "pornhub") {
     iframe_html = `<iframe src="https://www.pornhub.com/embed/${$embed.dataset.videoid}" frameborder="0" width="280" height="157" scrolling="no" allowfullscreen></iframe>`;
+  } else {
+    throw new Error("unknown embed site");
   }
+
   // replace $thumb element with iframe_html
   if (iframe_html == undefined) {
     return;
@@ -391,18 +409,48 @@ function clear_overlay_image_cover() {
 
 // image overlay -------------------------------------------------------------
 
-function image_overlay($img) {
-  const $img_clone = $img.cloneNode();
+function image_overlay($el) {
+  // check if it's an A
+  console.log("image_overlay", $el);
+  let $img;
+  if ($el.tagName === "A") {
+    $currentImg = $el.querySelector("img");
+  } else {
+    $currentImg = $el;
+  }
   $overlay.innerHTML = "";
-  $overlay.appendChild($img_clone);
+  $img = $create("img");
+  $overlay.appendChild($img);
   $body.classList.add("overlay");
   overlay_mode = true;
   signal_overlay(true);
 
-  // Get all images and current image index
-  allImages = Array.from($messages.getElementsByTagName("IMG"));
-  $currentImg = $img;
-  currentImgIndex = allImages.indexOf($img);
+  // Get all images and links containing images in document order
+  allImages = Array.from($messages.querySelectorAll("img"));
+  currentImgIndex = allImages.indexOf($currentImg);
+  console.log("currentImgIndex", currentImgIndex);
+  allImages = allImages.map(element => {
+      // If this is an image in a link
+      if (element.parentElement.tagName === "A") {
+        const clonedImg = element.cloneNode();
+        const thumbSrc = element.src;
+        clonedImg.removeAttribute("width");
+        clonedImg.removeAttribute("height");
+        clonedImg.src = element.parentElement.href;
+
+        const preloadImg = new Image();
+        preloadImg.onerror = function() {
+            console.warn("Preloading large image failed.");
+            clonedImg.src = thumbSrc; // Revert back to thumbnail
+        };
+        preloadImg.src = clonedImg.src;
+        return clonedImg;
+      }
+      // For regular images, return as is
+      return element;
+    });
+
+  image_go_to(currentImgIndex);
 
   // focus the overlay, for keyboard scrolling
   $overlay.focus();
@@ -451,6 +499,7 @@ function image_go_to(index) {
   $currentImg = allImages[currentImgIndex];
   const $img = $overlay.querySelector("img");
   $img.src = $currentImg.src;
+  $img.alt = $currentImg.alt;
 }
 
 function overlay_click(ev) {
@@ -590,16 +639,25 @@ function setup_swipe() {
 
 // ---------------------------------------------------------------------------
 
-function image_click($img, ev) {
-  // check if in overlay
+function image_click($el, ev) {
+  let src
+  if ($el.tagName === "IMG" && $el.parentNode.tagName === "A") {
+    src = $el.parentNode.href;
+  } else if ($el.tagName === "IMG") {
+    src = $el.tagName === "IMG";
+  } else if ($el.tagName === "A") {
+    src = $el.href;
+  } else {
+    return;
+  }
   if (ev.shiftKey) {
-    window.open($img.src, "_blank");
+    window.open(src, "_blank");
   } else if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
-    window.open($img.src, "_blank").focus();
+    window.open(src, "_blank").focus();
   } else if (ev.altKey) {
-    window.top.location.href = ev.target.src;
+    window.top.location.href = src;
   } else if (!overlay_mode) {
-    image_overlay($img);
+    image_overlay($el);
   }
 }
 
@@ -607,14 +665,19 @@ function click(ev) {
   if (!$messages.contains(ev.target)) {
     return;
   }
-  if (ev.target.classList.contains("thumb") && ev.button == 0) {
-    embed_click(ev.target);
-    return;
+  if (ev.target.classList.contains("thumb") && ev.target.parentNode.classList.contains("embed")) {
+    ev.preventDefault();
+    return embed_click(ev, ev.target);
   }
   // check for img tag, and view or browse to the src
   if (ev.target.tagName == "IMG") {
-    image_click(ev.target, ev);
-    return;
+    ev.preventDefault();
+    return image_click(ev.target, ev);
+  }
+  // check for A tag containing an image
+  if (ev.target.tagName === "A" && ev.target.querySelector("img")) {
+    ev.preventDefault();
+    return image_click(ev.target, ev);
   }
 }
 
@@ -640,7 +703,7 @@ async function handle_message(ev) {
     cl.toggle("canvas", ev.data.canvas == 1);
     cl.toggle("clean", ev.data.clean == 1);
   } else if (ev.data.type === "theme_changed") {
-    const $style = $id("user_styles");
+    const $style = $id("theme");
     $style.href = CHAT_URL + "/themes/" + ev.data.theme + ".css";
   }
 }
@@ -743,6 +806,10 @@ async function room_main() {
 
   $on($("div.resizer"), "mousedown", dragResizer);
   $on($("div.resizer"), "touchstart", dragResizer);
+
+  if (typeof room_user_script === 'function') {
+    room_user_script();
+  }
 }
 
 room_main();
