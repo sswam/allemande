@@ -934,7 +934,7 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     cmd_str = ". ~/.profile ; "
     cmd_str += " ".join(map(shlex.quote, agent["command"]))
 
-    command = ["sshc", "allemande-nobody@localhost", "bash", "-c", cmd_str]
+    command = ["sshc", "--", "allemande-nobody@localhost", "bash", "-c", cmd_str]
 
     # echo the query to the subprocess
     output, errors, status = await run_subprocess(command, query)
