@@ -1,1 +1,1 @@
-Illy, [use each_person], bust shot, clothes, [use photo] [sets count=38] NEGATIVE (nude:2)
+bust shot, [use each_person], [use photo]

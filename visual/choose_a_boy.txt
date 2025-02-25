@@ -1,0 +1,6 @@
+[set boys_count] [use boys_count] [/set]
+[set char]
+[choose _case="{get seed} % {get boys_count}"]
+[use boys]
+[/choose]
+[/set]

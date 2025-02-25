@@ -1,7 +1,2 @@
-[set everyone_count] [use everyone_count] [/set]
-[set char]
-[choose _case="{get seed} % {get everyone_count}"]
-[use everyone]
-[/choose]
-[/set]
+[use choose_a_person]
 [use character]
