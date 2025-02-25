@@ -165,16 +165,6 @@ async def process_request(portals: str, portal_str: Path, req: str):
         if 'count' in sets:
             config['count'] = int(sets['count'])
 
-#         # How to name the image files?
-#         image_filenames = config.get("image_filenames", "prompt")
-#         if image_filenames = "seed":
-#             filename = str(seed or 0)  # TODO change the name after the file is returned if seed is None
-#         elif image_filenames == "prompt":
-#             filename = prompt
-#         elif image_filenames == "real":
-#             filename = str(seed or 0)   # TODO change the name after the file is returned
-#         # TODO allow to prefix or append seed to prompt, etc.
-
         output_stem = slug.slug(prompt)[:70]
 
         negative_prompt = config.get("negative_prompt", "")
@@ -210,9 +200,14 @@ async def process_request(portals: str, portal_str: Path, req: str):
         )
 
         if fmt == "jpg":
-            convert_images_to_jpeg(portal, req, d)
+            metadata = convert_images_to_jpeg(portal, req, d)
+        else:
+            metadata = extract_metadata(portal, req, d)
 
-        data = yaml.dump({"seed": seed})
+        data = yaml.dump({
+            "seed": seed,
+            "metadata": metadata,
+        })
         (d/"result.yaml").write_text(data, encoding="utf-8")
 
         os.rename(d, portal / "done" / req)
@@ -227,17 +222,30 @@ async def process_request(portals: str, portal_str: Path, req: str):
 
 def convert_images_to_jpeg(portal: Path, req: str, d: Path, quality: int = 95):
     """Convert all images in a directory to JPEG, deleting the original PNGs and preserving metadata"""
+    metadata = {}
     for img in d.iterdir():
         if img.suffix.lower() == ".png":
             dest = img.with_suffix(".jpg")
             try:
-                stamp.convert_image(img, dest, quality=quality)
+                metadata[img.stem] = stamp.convert_image(img, dest, quality=quality)
                 img.unlink()
             except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.exception("%s:%s - error converting images to JPEG: %s", portal, req, e)
                 dest.unlink()
                 # continue with PNG
                 # TODO ideally stamp would clean up
+    return metadata
+
+
+def extract_metadata(portal: Path, req: str, d: Path):
+    """Extract metadata from all images in a directory"""
+    metadata = {}
+    for img in d.iterdir():
+        try:
+            metadata[img.name] = stamp.extract_metadata(img)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.exception("%s:%s - error extracting metadata: %s", portal, req, e)
+    return metadata
 
 
 def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]]:
