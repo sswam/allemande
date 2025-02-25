@@ -678,6 +678,7 @@ def preprocess(content):
             line,
         ):
             is_html = True
+        is_markdown_image = re.search(r"!\[.*\]\(.*\)", line)
         logger.debug("check line: %r", line)
         is_math_start = re.match(r"\s*(\$\$|```tex|```math)$", line)
         is_math_end = re.match(r"\s*(\$\$|```)$", line)
@@ -689,7 +690,7 @@ def preprocess(content):
             out.append(line)
             in_code = 0
             in_script = False
-        elif is_html:
+        elif is_html or is_markdown_image:
             out.append(line)
         elif is_math_start and not in_code:
             out.append("```math")
