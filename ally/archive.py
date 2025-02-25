@@ -44,6 +44,8 @@ def archive_file(path: Path) -> None:
     logger.info("Moving %s to %s", path, new_path)
     path.rename(new_path)
 
+    return new_path
+
 
 def archive_with(path: Path, derived_ext="html") -> None:
     """Archive a single file to the next available numbered version."""
@@ -62,6 +64,8 @@ def archive_with(path: Path, derived_ext="html") -> None:
         derived_old.rename(derived_new)
     path.rename(new_path)
 
+    return new_path
+
 
 def archive(files: list[str] | None = None, derived_ext: str = "html") -> None:
     """Archive the given files to numbered versions."""
@@ -71,7 +75,9 @@ def archive(files: list[str] | None = None, derived_ext: str = "html") -> None:
     for filename in files:
         try:
             if derived_ext:
-                archive_with(Path(filename), derived_ext)
+                print(archive_with(Path(filename), derived_ext))
+            else:
+                print(archive_file(Path(filename)))
         except (FileNotFoundError, ValueError) as e:
             logger.error("%s", e)
 

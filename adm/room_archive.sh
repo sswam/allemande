@@ -28,7 +28,7 @@ if [ ! -s "$from" ]; then
 	exit 0
 fi
 
-archive -D html "$from"
+to=$(archive -D html "$from")
 
 # Create empty source file
 touch "$from"
