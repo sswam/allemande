@@ -111,8 +111,8 @@ MODELS = {
     "claude": {
         "aliases": ["c", "claud"],
         "vendor": "anthropic",
-        "id": "claude-3-5-sonnet-latest",
-        "description": "Claude 3.5 Sonnet is Anthropic's strongest AI model.",
+        "id": "claude-3-7-sonnet-latest",
+        "description": "Claude 3.7 Sonnet is Anthropic's strongest AI model.",
         "cost_in": 3,
         "cost_out": 15,
     },
@@ -467,6 +467,11 @@ async def achat_claude(opts: Options, messages):
 
     if opts.timeit:
         start_time = time.time()
+
+    # support system message in the first message
+    if messages[0]["role"] == "system":
+        options["system"] = messages[0]["content"]
+        messages = messages[1:]
 
     response = await claude.chat_claude(messages, _async=True, **options)
 
