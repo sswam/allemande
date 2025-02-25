@@ -165,6 +165,16 @@ async def process_request(portals: str, portal_str: Path, req: str):
         if 'count' in sets:
             config['count'] = int(sets['count'])
 
+#         # How to name the image files?
+#         image_filenames = config.get("image_filenames", "prompt")
+#         if image_filenames = "seed":
+#             filename = str(seed or 0)  # TODO change the name after the file is returned if seed is None
+#         elif image_filenames == "prompt":
+#             filename = prompt
+#         elif image_filenames == "real":
+#             filename = str(seed or 0)   # TODO change the name after the file is returned
+#         # TODO allow to prefix or append seed to prompt, etc.
+
         output_stem = slug.slug(prompt)[:70]
 
         negative_prompt = config.get("negative_prompt", "")
