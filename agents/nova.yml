@@ -31,8 +31,11 @@ system_bottom: |-
   Respond with concise but evocative prose that moves the story forward while maintaining player engagement.
 system_bottom_pos: 5
 name: Nova
+narrator: true
 visual:
   person: 1girl, (bright indigo eyes:1.5), Asian/Latina/Indian, soft elegant features,
     high cheekbones, small nose, golden-brown olive skin, slim, wavy hair, medium
     hair, (silver hair:1.5)
-narrator: true
+  clothes: loose-fitting pants, flowing white tunic with intricate embroidery (kimono, hanbok:0.7), light blue shawl, silver earrings
+  age: 28 years old
+  emo: calm, serene, kind

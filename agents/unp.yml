@@ -1,0 +1,4 @@
+type: safe_shell
+command:
+- unprompted-run
+name: Unp

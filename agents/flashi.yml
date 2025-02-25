@@ -2,6 +2,6 @@ name: Flashi
 type: google
 model: gemini-2.0-flash
 context: 100
-system_bottom: '[You are $NAME]'
+system_top: 'You are $NAME'
 aliases:
 - Gemini 2.0 Flash

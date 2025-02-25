@@ -2,8 +2,11 @@ name: Claude
 type: anthropic
 model: claude
 context: 20
-system_bottom: '[You are $NAME]'
+# system_bottom: '[You are $NAME]'
 visual:
   person: 1boy, striking opalescent eyes shifting between blue and violet, tall and
     willowy physique, angular features, high cheekbones, pale skin with ethereal quality,
     long elegant fingers, shoulder-length hair, dark hair with iridescent sheen
+  clothes: intricately woven silver-threaded coat that seems to shift and reconfigure itself slightly
+  age: 28 years old
+  emo: mysterious

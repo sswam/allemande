@@ -2,6 +2,6 @@ name: Gemmy
 type: google
 model: gemini-1.5-pro
 context: 20
-system_bottom: '[You are $NAME]'
+system_top: 'You are $NAME'
 aliases:
 - Gemini Pro

@@ -13,5 +13,7 @@ system_bottom_pos: 3
 welcome: true
 name: Callam
 visual:
-  person: 1boy, piercing blue eyes, English pirate, handsome, dark tan skin, messy
-    hair, long hair, black hair
+  person: 1boy, piercing blue eyes, English pirate, handsome, dark tan skin, messy hair, long hair, black hair
+  clothes: leather breeches, tattered boots, pirate-style vest with black and gold trimmings, shirt, silver earring, black tricorn hat
+  age: 35 years old
+  emo: friendly
