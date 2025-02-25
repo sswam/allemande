@@ -18,6 +18,7 @@ apply-sh() {
 		basename=$(basename "$changes")
 	else
 		basename=input
+		changes=-
 	fi
 	for file; do
 		if [ -e "$file"~ ]; then
