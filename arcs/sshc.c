@@ -1,14 +1,15 @@
 /* sshc, ssh command
-   written by Sam Watkins, 2007 - 2009
-   this program is public domain
+			written by Sam Watkins, 2007 - 2009
+			this program is public domain
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <unistd.h>
 #include <limits.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <getopt.h>
 
 #ifdef __MINGW32_MAJOR_VERSION
 #define WIFEXITED(x) 1
@@ -38,9 +39,8 @@ static char *sh_quote(const char *from, char *to)
 		c = *from;
 		if (c == '\0')
 			break;
-		if ((c >= 'A' && c <= 'Z') ||
-		    (c >= 'a' && c <= 'z') ||
-		    (c >= '0' && c <= '9') || strchr("-_./", c) != NULL) {
+		if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') ||
+						strchr("-_./", c) != NULL) {
 			// doesn't need escaping
 			*to = c;
 			++to;
@@ -70,7 +70,9 @@ static char *sh_quote(const char *from, char *to)
 
 static char *sh_quote_malloc(const char *from)
 {
-	char *to = malloc(strlen(from)*2+3);
+	char *to = malloc(strlen(from) * 2 + 3);
+	if (!to)
+		arcs_error("memory allocation failed");
 	sh_quote(from, to);
 	return to;
 }
@@ -87,11 +89,17 @@ char *current_dir_home_relative(void)
 		if (buf[l] == '\0')
 			dir = ".";
 		else if (buf[l] == '/')
-			dir = buf+l+1;
+			dir = buf + l + 1;
 	}
 	if (!dir)
 		dir = buf;
 	return strdup(dir);
+}
+
+static void usage(void)
+{
+	fprintf(stderr, "usage: sshc [-p port] [--] user@host:dir command arg1...\n");
+	exit(EXIT_FAILURE);
 }
 
 /* -------------------------------------------------------- */
@@ -109,27 +117,42 @@ int main(int argc, char **argv)
 	char *ssh_prog;
 	int tty;
 	char *sshc_shell_init = "";
+	char *port = NULL;
+	int c;
 
 	tty = isatty(fileno(stdout));
 
 	ssh_prog = getenv("ARCS_SSH");
-	if (!ssh_prog) { ssh_prog = getenv("SSH"); }
+	if (!ssh_prog) {
+		ssh_prog = getenv("SSH");
+	}
 	if (ssh_prog == NULL && tty) {
 		ssh_prog = "ssh -q -t";
 #ifdef __MINGW32_MAJOR_VERSION
 		sshc_shell_init = "\". /etc/profile ; . ~/.bash_profile ; \"";
 #else
-		sshc_shell_init = "\"if [ -n \\\"\\$BASH\\\" ]; then . /etc/profile ; . ~/.bash_profile ; fi ; \"";
+		sshc_shell_init = "\"if [ -n \\\"\\$BASH\\\" ]; then . /etc/profile ; . "
+						"~/.bash_profile ; fi ; \"";
 #endif
 	} else if (ssh_prog == NULL) {
 		ssh_prog = "ssh -q";
 	}
 
-	if (argc < 2) {
-		arcs_error("usage: sshc user@host:dir command arg1...");
+	while ((c = getopt(argc, argv, "p:")) != -1) {
+		switch (c) {
+		case 'p':
+			port = optarg;
+			break;
+		default:
+			usage();
+		}
 	}
 
-	user_host_dir = argv[1];
+	if (optind >= argc) {
+		usage();
+	}
+
+	user_host_dir = argv[optind++];
 
 	user_host = user_host_dir;
 	delim = strchr(user_host_dir, ':');
@@ -143,17 +166,21 @@ int main(int argc, char **argv)
 		dir = ".";
 	}
 
-	argv += 2;
+	if (optind >= argc) {
+		usage();
+	}
 
 	out = command;
+	*out = '\0';
 
-	while (*argv != NULL) {
-		if (out - command + strlen(*argv)*2 + 4 > sizeof(command)) {
+	while (optind < argc) {
+		if (out - command + strlen(argv[optind]) * 2 + 4 > sizeof(command)) {
 			arcs_error("arguments too long");
 		}
-		out = sh_quote(*argv, out);
-		*out = ' '; ++out;
-		++argv;
+		out = sh_quote(argv[optind], out);
+		*out = ' ';
+		++out;
+		++optind;
 	}
 	if (out > command)
 		--out;
@@ -170,16 +197,26 @@ int main(int argc, char **argv)
 	int shared = shared_s && *shared_s == '1';
 	char *umask = shared ? "0002" : "0022";
 
+	char port_option[16] = "";
+	if (port) {
+		snprintf(port_option, sizeof(port_option), "-p %s ", port);
+	}
+
 #ifdef __MINGW32_MAJOR_VERSION
-	count = snprintf(ssh_command, sizeof(ssh_command), "%s -- %s %s\"umask %s ; mkdir -p %s ; cd %s || exit 124 ; %s\"", ssh_prog, user_host, sshc_shell_init, umask, dir, dir, command);
+	count = snprintf(ssh_command, sizeof(ssh_command),
+				"%s %s-- %s %s\"umask %s ; mkdir -p %s ; cd %s || exit 124 ; %s\"",
+				ssh_prog, port_option, user_host, sshc_shell_init, umask, dir, dir, command);
 #else
-	count = snprintf(ssh_command, sizeof(ssh_command), "%s -- %s %sumask\\ %s\\ \\;\\ mkdir -p\\ %s\\ \\;\\ \\cd\\ %s\\ \\|\\| exit 124 \\;\\ %s", ssh_prog, user_host, sshc_shell_init, umask, dir_qq, dir_qq, command_q);
+	count = snprintf(ssh_command, sizeof(ssh_command),
+				"%s %s-- %s %sumask\\ %s\\ \\;\\ mkdir -p\\ %s\\ \\;\\ \\cd\\ %s\\ \\|\\| "
+				"exit 124 \\;\\ %s",
+				ssh_prog, port_option, user_host, sshc_shell_init, umask, dir_qq, dir_qq, command_q);
 #endif
 	if (count >= (int)sizeof(ssh_command)) {
 		arcs_error("arguments too long");
 	}
 
-//	fprintf(stderr, "%s\n", ssh_command);
+	//	fprintf(stderr, "%s\n", ssh_command);
 
 	int status = system(ssh_command);
 	if (status == -1) {
