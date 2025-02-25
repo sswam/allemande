@@ -1,1 +1,10 @@
-bust shot, [use each_person], [use photo]
+solo, [use choose_a_person]
+[use character_name], [use "{get char}"],
+[set age_file] age/[get char] [/set]
+[use "{get age_file}"],
+[set emo_file] emo/[get char] [/set]
+[use "{get emo_file}"],
+[set clothes_file] clothes/[get char] [/set]
+[use "{get clothes_file}" 100 0.5],
+[use photo], ([use bust]:1.5), white background
+[set negative_prompt] [get negative_prompt] (nude, torso, legs:2) [/set]
