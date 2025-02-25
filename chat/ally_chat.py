@@ -628,25 +628,38 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     room = chat.Room(path=Path(file))
 
     # try to get image seed from response
-    seed = None
+    image_seed = None
+    image_metadata = {}
     try:
         # read result.yaml
         data = yaml.safe_load((resp / "result.yaml").read_text(encoding="utf-8"))
-        seed = data["seed"]
+        image_seed = data["seed"]
+        image_metadata = data["metadata"]
     except (FileNotFoundError, KeyError):
         pass
+
+    image_alt_type = config.get("image_alt")
 
     # look for attachments, other files in resp/ in sorted order
     # service image_a1111 should return a file name in response
     for resp_file in sorted(resp.iterdir()):
         if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt", "result.yaml"]:
             continue
-        if seed and Path(resp_file).suffix in [".png", ".jpg"]:
-            text = f"#{seed} {fulltext}"
-            seed += 1
-        else:
-            text = fulltext
-        name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=text)
+
+        text = ""
+        if Path(resp_file).suffix in [".png", ".jpg"]:
+            if image_seed is not None:
+                text = f"#{image_seed} "
+                image_seed += 1
+            if image_alt_type == "raw_prompt" or not resp_file.stem in image_metadata:
+                text += fulltext
+            else:
+                prompt = image_metadata[resp_file.stem]
+                prompt = re.sub(r"^parameters: ", "", prompt)
+                prompt = re.sub(r"\n+Steps:.*", "", prompt)
+                text += prompt
+
+        name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=text or None)
         if task:
             add_task(task, f"upload post-processing: {name}")
         if response:
