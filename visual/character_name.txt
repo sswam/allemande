@@ -1,0 +1,6 @@
+[if char="barbie"]
+       Barbarella
+[/if]
+[else]
+       [get char]
+[/else]
