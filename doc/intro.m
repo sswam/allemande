@@ -157,15 +157,14 @@ We can safely embed any HTML:
 - **Morf**: Game Master and narrative supervisor maintaining story coherence and forward progression
 
 ### Powerful AI Models
-- **Claude** (Claude 3 Sonnet, Anthropic): A conversational agent balancing intelligence with humanity for engaging interactions
-- **Clia** (Claude 3 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
-- **Emmy** (GPT-4o, OpenAI): Known for its intelligence and adaptability, perfect for varied conversations
+- **Claude** (Claude 3.7 Sonnet, Anthropic): The most powerful reasoning model from Anthropic, expert at coding.
+- **Clia** (Claude 3.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
+- **Emmy** (GPT-4o, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Dav** (GPT-4o mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
 - **Grace** (o1, OpenAI): The most powerful reasoning model from OpenAI, ideal for advanced applications
 - **Fermi** (o3 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
 - **Gemmy** (Gemini Pro, Google): Google's high-performance Gemini language model
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 variant
-- **Flasho** (Gemini 1.5 Flash, Google): Google's first-gen fast Gemini variant
 
 ### Online Models with Internet Access
 - **Sageri** (Sonar Reasoning Pro, Perplexity): Perplexity's advanced reasoning model
@@ -204,6 +203,7 @@ We can safely embed any HTML:
 - **Faby**: Tiny C Compiler
 - **Qell**: QuickJS
 - **Bilda**: Make
+- **Unp**: Unprompted
 
 Examples:
 
@@ -236,3 +236,31 @@ Qell, console.log("Hello, world");
 Bilda, count: /usr/share/dict/words
 	wc -l <$< >$@
 	cat $@
+
+Unp, [choose] [use sam] | [use ally] [/choose]
+
+### AI Model Details
+
+|--------------|---------------------|--------|----------------|-------------------|------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------|
+| Vendor       | Model               | Name   | Context Window | Max Output Tokens | Input Price / M Tokens | Output Price / M Tokens | Description                                                                                                      |
+|--------------|---------------------|--------|----------------|-------------------|------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------|
+| Anthropic    | Claude 3.7 Sonnet   | Claude | 200K           | 8192 / 128K [1]   | $3.00                  | $15.00                  | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Anthropic    | Claude 3.5 Haiku    | Clia   | 200K           | 8192              | $0.80                  | $4.00                   | Fast and affordable for quick, creative conversations.                                                           |
+| Google       | Gemini 2.0 Flash    | Flashi | 1M             | 8192              | $0.10                  | $0.40                   | Google's fastest Gemini model, optimized for speed and tool use.                                                 |
+| Google       | Gemini 1.5 Pro      | Gemmy  | 2M             | 8192              | $1.25 [2]              | $5.00 [2]               | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                    |
+| OpenAI       | GPT-4o              | Emmy   | 128K           | 16384             | $2.50                  | $10.00                  | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
+| OpenAI       | GPT-4o-mini         | Dav    | 128K           | 16384             | $0.15                  | $0.60                   | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
+| OpenAI       | o1                  | Grace  | 200K           | 100000            | $15.00                 | $60.00                  | OpenAI's most powerful reasoning model for advanced applications.                                                |
+| OpenAI       | o3-mini             | Fermi  | 200K           | 100000            | $1.10                  | $4.40                   | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
+| Perplexity   | Sonar Reasoning Pro | Sageri | 128K           | 8K                | $2 [3]                 | $8                      | Online model with live internet data, specializing in complex reasoning tasks.  $5/1000 search queries.          |
+| Perplexity   | Sonar Pro           | Sagi   | 200K           | 8K                | $3 [3]                 | $15                     | Online model with live internet data; Perplexity's high-performance option.  Includes search costs.              |
+| Perplexity   | Sonar Reasoning     | Sonari | 128K           | 8K                | $1 [3]                 | $5                      | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
+| Perplexity   | Sonar               | Sona   | 128K           | 8K                | $1                     | $1                      | Perplexity's fastest and most affordable online model with live internet data.                                   |
+| Meta/Local   | Llama 3.1 8B        | Ally   | 4096           | 4096              | N/A                    | N/A                     | A local model, prioritizing creativity and engaging conversations.                                               |
+| RunDiffusion | Juggernaut XL v9    | Illy   |                |                   | N/A                    | N/A                     | A local model based on Stability AI's Stable Diffusion XL, for high-quality, photorealistic and artistic images  |
+|--------------|---------------------|--------|----------------|-------------------|------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------|
+
+**Notes:**
+
+1. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K
+2. Perplexity models also incur search costs of $5 per 1000 searches.
