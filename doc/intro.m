@@ -93,9 +93,9 @@ Draw's Ally with her appearange, age, normal emotion / expression, and normal cl
 
 This does the same thing more concisely, for Barbie, making sure it's a solo picture.
 
-    Illy, [person cleo "green dress" . 30], ballroom  [use portrait_tall]
+    Illy, [person cleo "green dress" . 30], ballroom, (full body, heels:1.5)  [use portrait_tall]
 
-This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a tall image.
+This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a tall image. Try to get a full body shot by mentioning shoes or feet!
 
     Illy, [person bast "business suit" angry], office  [use portrait] [sets steps=30 hq=1.5]
 
