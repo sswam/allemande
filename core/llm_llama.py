@@ -231,7 +231,7 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
             (d / k).write_text(v, encoding="utf-8")
         os.rename(d, portal / "done" / req)
         logger.info("%s:%s - done", portal, req)
-    except Exception as e:  # pylint: disable=broad-except
+    except (Exception, KeyboardInterrupt, SystemExit) as e:  # pylint: disable=broad-except
         logger.exception("%s:%s - error: %s", portal, req, e)
 
         # in case of CUDA error, CUDA out of memory:

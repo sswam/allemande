@@ -212,7 +212,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
 
         os.rename(d, portal / "done" / req)
         logger.info("%s:%s - done", portal, req)
-    except Exception as e:  # pylint: disable=broad-exception-caught
+    except (Exception, KeyboardInterrupt) as e:  # pylint: disable=broad-exception-caught
         logger.exception("%s:%s - error: %s", portal, req, e)
         os.rename(d, portal / "error" / req)
     finally:
