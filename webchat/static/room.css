@@ -19,12 +19,11 @@ div.messages {
 .content br {
 	display: none;
 }
-.narrative > .content {
-	margin: 0 1em 0 1em;
-}
+.narrative > .content,
 .message > .content {
 	margin: 0 1em 0 1em;
 }
+
 #allemande_status {
 	position: fixed;
 	top: 0.5em;
@@ -365,4 +364,45 @@ pre:has(div.graphviz) {
 
 p:has(> img) {
 	clear: both;
+}
+
+.image_size_1 {
+	--image-width: 10vw;
+	--image-height: 10vh;
+}
+.image_size_2 {
+	--image-width: 20vw;
+	--image-height: 20vh;
+}
+.image_size_3 {
+	--image-width: 30vw;
+	--image-height: 30vh;
+}
+.image_size_4 {
+	--image-width: 40vw;
+	--image-height: 40vh;
+}
+.image_size_5 {
+	--image-width: 50vw;
+	--image-height: 50vh;
+}
+.image_size_6 {
+	--image-width: 60vw;
+	--image-height: 60vh;
+}
+.image_size_7 {
+	--image-width: 70vw;
+	--image-height: 70vh;
+}
+.image_size_8 {
+	--image-width: 80vw;
+	--image-height: 80vh;
+}
+.image_size_9 {
+	--image-width: 90vw;
+	--image-height: 90vh;
+}
+.image_size_10 {
+	--image-width: 100vw;
+	--image-height: 100vh;
 }
