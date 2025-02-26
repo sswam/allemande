@@ -50,18 +50,6 @@ Example for user "Alice":
 
 Ally Chat is continuously evolving with new features and capabilities being added regularly. We hope you enjoy exploring and using this unique chat platform!
 
-## How to use tool agents
-
-We have several agents which do not fully understand natural language, such as search engines, programming tools, and AI image generators. When talking to these agents, say their name, then exactly what you want. Don't say anything else afterwards. For example:
-
-Dogu, ls
-
-This asks the shell agent to list files.
-
-Illy, a big dog
-
-This asks an image gen agent to draw a big dog.
-
 ## The conductor
 
 1. If you mention someone's name, the will respond. Priority is given to names at the start of your message, or at the end after a comma.
@@ -82,6 +70,36 @@ This asks an image gen agent to draw a big dog.
 7. You can invoke someone without saying anything like -@Ally
 
 8. There are some other conductor features too.
+
+## How to use Tool Agents
+
+We have several agents which do not fully understand natural language, such as search engines, programming tools, and AI image generators. When talking to these agents, say their name, then exactly what you want. Don't say anything else afterwards. For example:
+
+    Dogu, ls
+
+This asks the shell agent to list files.
+
+## Basic intro to AI image gen
+
+    Illy, big dog  [use landscape]
+
+This asks Illy, an image gen AI, to draw a big dog, in a wider image.
+
+    Illy, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg]
+
+Draw's Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image, with a default "negative prompt" to help avoid bad images.
+
+    Illy, solo [person barbie] [use neg]
+
+This does the same thing more concisely, for Barbie, making sure it's a solo picture.
+
+    Illy, [person cleo "green dress" . 30], ballroom  [use portrait_tall]
+
+This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a tall image.
+
+    Illy, [person bast "business suit" angry], office  [use portrait] [sets steps=30 hq=1.5]
+
+This draws Bast in a business suit in the office, looking angry that he has to go to work, with a portrait image.
 
 ## Examples of Advanced Syntax
 
