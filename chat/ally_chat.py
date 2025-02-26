@@ -25,6 +25,7 @@ import conductor
 import search  # type: ignore
 import tab  # type: ignore
 import chat
+from chat import Agent
 import llm  # type: ignore
 from ally import portals  # type: ignore
 from safety import safety  # type: ignore
@@ -92,9 +93,6 @@ def setup_maps_for_agent(agent):
             agent["input_map_cs"][k] = v
         if v not in agent["output_map_cs"]:
             agent["output_map_cs"][v] = k
-
-
-Agent = dict[str, Any]
 
 
 def set_up_agent(agent: Agent) -> Agent:
@@ -528,7 +526,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         context = history.copy()
 
     # remove "thinking" sections from context
-    context = chat.context_remove_thinking_sections(context, agent["name"])
+    context = chat.context_remove_thinking_sections(context, agent)
 
     # missions
     include_mission = agent.get("type") != "image_a1111"  # TODO clean this
@@ -770,7 +768,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         context.pop(0)
 
     # remove "thinking" sections from context
-    context = chat.context_remove_thinking_sections(context, agent["name"])
+    context = chat.context_remove_thinking_sections(context, agent)
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?

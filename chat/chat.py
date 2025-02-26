@@ -54,6 +54,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+Agent = dict[str, Any]
+
+
 @dataclass
 class ChatMessage:
     """A single chat message with user (optional) and content."""
@@ -666,6 +669,9 @@ def preprocess(content):
 
     out = []
 
+    # make sure <think> tags are on their own lines...
+    content = re.sub(r"\s*(</?think(ing)?>)\s*", r"\n\1\n", content, flags=re.DOTALL)
+
     in_math = False
     in_code = 0
     in_script = False
@@ -682,11 +688,11 @@ def preprocess(content):
         logger.debug("check line: %r", line)
         is_math_start = re.match(r"\s*(\$\$|```tex|```math)$", line)
         is_math_end = re.match(r"\s*(\$\$|```)$", line)
-        if re.match(r"""^<script( type=["']?text/javascript["']?)?>$""", line) and not in_code:
+        if re.match(r"""^\s*<script( type=["']?text/javascript["']?)?>$""", line) and not in_code:
             out.append(line)
             in_code = 1
             in_script = True
-        elif re.match(r"^</script>$", line) and in_script:
+        elif re.match(r"^\s*</script>$", line) and in_script:
             out.append(line)
             in_code = 0
             in_script = False
@@ -715,9 +721,9 @@ def preprocess(content):
             in_code -= 1
         elif in_code:
             out.append(line)
-        elif re.match(r"^<think(ing)?>$", line):
+        elif re.match(r"^\s*<think(ing)?>$", line):
             out.append(r"""<details markdown="1" class="think"><summary>thinking</summary>""")
-        elif re.match(r"^</think(ing)?>$", line):
+        elif re.match(r"^\s*</think(ing)?>$", line):
             out.append(r"""</details>""")
         else:
             line, has_math1 = find_and_fix_inline_math(line)
@@ -1309,46 +1315,60 @@ async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=
         f.write(content)
 
 
-def remove_thinking_sections(content: str, agent_name: str|None) -> str:
-    # Currently we don't show agents their own past thinking, it seems unnecessary.
-#     if agent_name and content.startswith(agent_name + ":\t"):
-#         return content
+def remove_thinking_sections(content: str, agent: Agent|None, n_own_messages: int) -> tuple[str, int]:
+    remember_thoughts = agent.get("remember_thoughts", 1) if agent else 1
+    if agent:
+        logger.debug("Agent name %s, remember_thoughts %s, n_own_messages %s", agent["name"], remember_thoughts, n_own_messages)
+    agent_name = agent["name"] if agent else None
+    replace = ""
+    if agent_name and content.startswith(agent_name + ":\t"):
+        n_own_messages += 1
+        if n_own_messages <= remember_thoughts:
+            logger.debug("Remembering agent's thoughts: %s", content)
+            return content, n_own_messages
+        replace = "<think>\nI was thinking something ...\n</think>"
     modified = re.sub(
-        r"""(?mix)
-        ^<think(ing)?>$
+        r"""
+        <think(ing)?>$
         (.*?)
-        (</think(ing)?>$|$)
+        (</think(ing)?>$|\Z)
         """,
-        "",
+        replace,
         content,
-        flags=re.DOTALL,
+        flags=re.MULTILINE|re.IGNORECASE|re.VERBOSE|re.DOTALL
     )
     if modified != content:
         logger.debug("Removed 'thinking' section/s from message: original: %s", content)
         logger.debug("  modified: %s", modified)
-        return modified
-    return content
+        return modified, n_own_messages
+    logger.debug("No 'thinking' section/s found in message: %s", content)
+    return content, n_own_messages
 
 
-def context_remove_thinking_sections(context: list[str], agent_name: str|None):
+def context_remove_thinking_sections(context: list[str], agent: Agent|None) -> list[str]:
     """Remove "thinking" sections from the context."""
     # Remove any "thinking" sections from the context
     # A "thinking" section is a <think> block
 
-    for i, message in enumerate(context):
-        context[i] = remove_thinking_sections(message, agent_name)
+    n = len(context)
+    n_own_messages = 0
+    for i in range(n - 1, -1, -1):
+        context[i], n_own_messages = remove_thinking_sections(context[i], agent, n_own_messages)
 
     return context
 
-def history_remove_thinking_sections(history: list[dict[str,Any]], agent_name: str|None):
+def history_remove_thinking_sections(history: list[dict[str,Any]], agent: Agent|None):
     """Remove "thinking" sections from the history."""
     # Remove any "thinking" sections from the context
     # A "thinking" section is a <think> block
 
     history = copy.deepcopy(history)
 
-    for message in history:
-        message["content"] = remove_thinking_sections(message["content"], agent_name)
+    n = len(history)
+    n_own_messages = 0
+    for i in range(n - 1, -1, -1):
+        message = history[i]
+        message["content"], n_own_messages = remove_thinking_sections(message["content"], agent, n_own_messages)
 
     return history
 
