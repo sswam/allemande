@@ -24,9 +24,9 @@ EVERYONE_WORDS = [
 
 ANYONE_WORDS = [
     "anyone",
-    "anybody",
-    "someone",
-    "somebody",
+#    "anybody",
+#    "someone",
+#    "somebody",
     "one of you",
     "one of y'all",
     "who's next",

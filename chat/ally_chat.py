@@ -415,6 +415,22 @@ def find_resource_file(file, ext, name=None):
     return str(resource) if resource else None
 
 
+def find_agent_resource_file(file, ext, agent_name=None):
+    """Find a resource file for the agent and chat room."""
+    parent = Path(file).parent
+    stem = Path(file).stem
+    resource = parent / (stem + "." + agent_name + "." + ext)
+    if not resource.exists():
+        stem_no_num = re.sub(r"-\d+$", "", stem)
+        if stem_no_num != stem:
+            resource = parent / (stem_no_num + "." + agent_name + "." + ext)
+    if not resource.exists():
+        resource = parent / (agent_name + "." + ext)
+    if not resource.exists():
+        resource = None
+    return str(resource) if resource else None
+
+
 async def process_file(file, args, history_start=0, skip=None, agents=None) -> int:
     """Process a file, return True if appended new content."""
     logger.info("Processing %s", file)
@@ -468,6 +484,15 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
 
         agent = agents[bot.lower()]
 
+        # load agent's mission file, if present
+        my_mission = mission.copy()
+        agent_mission_file = find_agent_resource_file(file, "m", bot.lower())
+        mission2 = chat.chat_read(agent_mission_file, args)
+        logger.info("mission: %r", mission)
+        logger.info("mission2: %r", mission2)
+        if mission2:
+            my_mission += [""] + mission2
+
         #     - query is not even used in remote_agent
         if history:
             query1 = history[-1]
@@ -482,7 +507,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
         logger.debug("query: %r", query)
         logger.debug("history 1: %r", history)
         response = await run_agent(
-            agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents
+                agent, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents
         )
         response = response.strip()
 

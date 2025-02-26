@@ -933,7 +933,7 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
     return name, url, medium, markdown, task
 
 
-def chat_read(file, args):
+def chat_read(file, args) -> list[str]:
     """Read the chat history from a file."""
     text = ""
     if file and os.path.exists(file):
@@ -1326,7 +1326,8 @@ def remove_thinking_sections(content: str, agent: Agent|None, n_own_messages: in
         if n_own_messages <= remember_thoughts:
             logger.debug("Remembering agent's thoughts: %s", content)
             return content, n_own_messages
-        replace = "<think>\nI was thinking something ...\n</think>"
+#        replace = "<think>\nI was thinking something ...\n</think>"
+        replace = ""
     modified = re.sub(
         r"""
         <think(ing)?>$
