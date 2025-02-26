@@ -4,3 +4,4 @@
 [use boys]
 [/choose]
 [/set]
+[use char_extras]

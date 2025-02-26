@@ -1,0 +1,7 @@
+[set char_clothes] clothes/[get char][/set]
+[set char_emo] emo/[get char][/set]
+[set char_age] age/[get char][/set]
+[set person][use "{get char}"][/set]
+[set clothes][use "{get char_clothes}"][/set]
+[set emo][use "{get char_emo}"][/set]
+[set age][use "{get char_age}"][/set]

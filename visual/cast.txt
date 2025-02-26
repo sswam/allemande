@@ -1,12 +1,14 @@
-solo, bust shot, [use choose_a_person]
-[use character_name], [use "{get char}"],
-[set age_file] age/[get char] [/set]
-face, [use "{get age_file}"],
+(solo:1.5), bust shot, [use choose_a_person]
+[use character_name], [get person],
+face, [get age],
 bust shot, eyes, nose, mouth, ears, hair, face,
-[set emo_file] emo/[get char] [/set]
-face, [use "{get emo_file}"],
-[set clothes_file] clothes/[get char] [/set]
-face, [use "{get clothes_file}" 100 0.7],
+face, [get emo],
+face, ([get clothes]:0.7),
 face, bust shot,
 [use photo], ([use bust]:1.5), white background
+<lora:eyes:0.2>
+<lora:expressive:0.7>
+<lora:boring:-0.5>
+[sets cfg_scale=3.5]
+[use neg]
 [set negative_prompt] [get negative_prompt] (nude, torso, nipples, legs, topless:2) [/set]
