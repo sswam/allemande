@@ -6,7 +6,7 @@ bust shot, eyes, nose, mouth, ears, hair, face,
 [set emo_file] emo/[get char] [/set]
 face, [use "{get emo_file}"],
 [set clothes_file] clothes/[get char] [/set]
-face, [use "{get clothes_file}" 100 0.5],
+face, [use "{get clothes_file}" 100 0.7],
 face, bust shot,
 [use photo], ([use bust]:1.5), white background
-[set negative_prompt] [get negative_prompt] (nude, torso, nipples, legs:2) [/set]
+[set negative_prompt] [get negative_prompt] (nude, torso, nipples, legs, topless:2) [/set]
