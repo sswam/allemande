@@ -33,10 +33,14 @@ class Shortcode:
 
         # "" means nothing, omit the field
 
+        name = _name
+        if name.lower() == "barbie":
+            name = "Barbarella"
+
         # Construct the prompt
-        prompt = f"[use {_name}]"
+        prompt = f"{name}, [use {_name}]"
         if _age:
-            prompt += f", {_age}"
+            prompt += f", ({_age}:1.5)"
         if _emo:
             prompt += f", {_emo}"
         if _clothes:
