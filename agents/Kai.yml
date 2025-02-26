@@ -21,4 +21,6 @@ visual:
   accessories: binoculars around his neck
   emo: super enthusiastic, happy
   age: child 10 years old
-context: 101
+context: 21
+stop_regexs:
+- \n\s*?\n

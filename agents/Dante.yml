@@ -11,4 +11,6 @@ visual:
   winter: leather jacket
   age: adult 25 years old
   emo: calm, focused, thoughtful
-context: 101
+context: 21
+stop_regexs:
+- \n\s*?\n

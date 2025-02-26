@@ -11,4 +11,6 @@ visual:
   clothes: white shirt, short sleeves, button down, slim fit, dress pants, navy pants, brown belt, black loafers, black socks
   age: adult 24 years old
   emo: happy, positive, romantic
-context: 101
+context: 21
+stop_regexs:
+- \n\s*?\n

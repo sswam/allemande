@@ -12,6 +12,8 @@ fullname: Cleora
 visual:
   person: 1girl, blue eyes, slim, Swiss, straight hair, long hair, parted hair, light, blonde hair
   clothes: simple black dress with floral pattern in red and pink, white sandals
-  emo: light smile, lively, enthusiastic, bubbly, friendly, sassy
+  emo: light smile, lively, enthusiastic, friendly, sassy
   age: adult 22 years old
-context: 101
+context: 21
+stop_regexs:
+- \n\s*?\n

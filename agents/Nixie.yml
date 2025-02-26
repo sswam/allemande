@@ -27,4 +27,6 @@ visual:
   clothes: ripped fishnet stockings over tight black jeans, flowy white top
   emo: sassy, (aggressive:0.7)
   age: teenage 17 years old
-context: 101
+context: 21
+stop_regexs:
+- \n\s*?\n
