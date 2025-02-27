@@ -10,6 +10,7 @@ create() {
 	local edit= e=1     # edit
 	local use_ai= a=1   # use AI, can turn off for testing with -a=0
 	local quiet= q=0    # use only the user prompt
+	local think= t=1    # encourage thinking
 
 	eval "$(ally)"
 
@@ -54,6 +55,10 @@ create() {
 
 	if [ "$quiet" = 0 ]; then
 		prompt="Please write \`$base\`, $prompt"
+	fi
+
+	if [ "$think" = 1 ]; then
+		prompt="$prompt  If necessary, and only where necessary, please think before and during your response, using <think> containers. For simple things, or when you already know the answer, it won't be necessary to think, and it saves the user money if you don't! Don't think for too long unless it seems important, or the user asks you to. When thinking, focus on generating new insights rather than restating the obvious parts of the question."
 	fi
 
 	local input=$(v cat-named --suppress-headings input -p -b "${refs[@]}")

@@ -24,6 +24,7 @@ improve() {
 	local strict= X=1    # only do what is requested
 	local ed= E=0        # provide changes as an ed script
 	local diff= d=0      # provide changes as a unified diff
+	local think= t=1     # encourage thinking
 
 	eval "$(ally)"
 
@@ -176,6 +177,10 @@ improve() {
 		strict_part="Please fix any certain bugs or issues. Do not make other proactive changes at this time."
 	else
 		prompt="*** TASK: $prompt ***"
+	fi
+
+	if [ "$think" = 1 ]; then
+		prompt="$prompt  If necessary, and only where necessary, please think before and during your response, using <think> containers. For simple things, or when you already know the answer, it won't be necessary to think, and it saves the user money if you don't! Don't think for too long unless it seems important, or the user asks you to. When thinking, focus on generating new insights rather than restating the obvious parts of the question."
 	fi
 
 	# TODO "Add a header line \`#File: filename\` before each file's code."
