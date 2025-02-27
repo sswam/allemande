@@ -16,13 +16,16 @@ from hidden import contains_hidden_component
 
 from ally import main, logs
 
+__VERSION__ = "0.1.3"
+
 
 logger = logs.get_logger()
 
 
 class WatcherOptions(BaseModel):
     """WatcherOptions: a class that holds the options for the Watcher class"""
-    exts: tuple[str] = []
+
+    exts: list[str] = []
     extension: list[str] = []
     all_files: bool = False
     hidden: bool = False
@@ -36,17 +39,19 @@ class WatcherOptions(BaseModel):
     service: bool = False
     command: list[str] = []
     debounce: float = 0.01
+    exclude_paths: list[str] = []
 
 
 class Debounce:  # pylint: disable=too-few-public-methods
     """Generic debouncing class"""
+
     # func is async
-    def __init__(self, func: Callable, *args, delay: float=0.01, **kwargs):
+    def __init__(self, func: Callable, *args, delay: float = 0.01, **kwargs):
         self.delay = delay
         self.func = func
         self.args = args
         self.kwargs = kwargs
-        self.pending_task: asyncio.Task|None = None
+        self.pending_task: asyncio.Task | None = None
 
     async def trigger(self):
         """Schedule the function to be called after the delay"""
@@ -55,9 +60,7 @@ class Debounce:  # pylint: disable=too-few-public-methods
             self.pending_task.cancel()
 
         # Schedule new operation after delay
-        self.pending_task = asyncio.create_task(
-            self._delayed_execute()
-        )
+        self.pending_task = asyncio.create_task(self._delayed_execute())
 
     async def _delayed_execute(self):
         """Execute the operation after waiting for the delay"""
@@ -71,9 +74,10 @@ class Debounce:  # pylint: disable=too-few-public-methods
 
 class ServiceManager:
     """Manages service processes with throttled restarts"""
+
     def __init__(self, service_command: list[str]):
         self.service_command = service_command
-        self.current_process: subprocess.Popen|None = None
+        self.current_process: subprocess.Popen | None = None
 
     def term_or_kill(self):
         """Wait for the current process to finish"""
@@ -107,6 +111,7 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
         """Initialize the Watcher object"""
         self.opts = opts
         self.paths = [self.resolve_path(p) for p in paths]
+        self.exclude_paths = [self.resolve_path(p) for p in opts.exclude_paths]
         self.default_filter = DefaultFilter()
         self.file_sizes: dict[str, int] = {}
         self.dirs: set[str] = set()
@@ -126,10 +131,7 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
         """Handle running commands asynchronously"""
         try:
             process = await asyncio.create_subprocess_exec(
-                *self.opts.command,
-                *args,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                *self.opts.command, *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
             )
 
             stdout, stderr = await process.communicate()
@@ -176,17 +178,26 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
         finally:
             await self.service_manager.stop()
 
+    def is_excluded(self, path):
+        """Check if a path is in the exclude list"""
+        for exclude_path in self.exclude_paths:
+            if path == exclude_path or path.startswith(exclude_path + os.path.sep):
+                return True
+        return False
+
     def watch_filter(self, change_type, path):
         """Filter out files and directories that we don't want to watch"""
         if not self.default_filter(change_type, path):
             return False
         if not self.opts.hidden and contains_hidden_component(path):
             return False
+        if self.is_excluded(path):
+            return False
         p = Path(path)
         is_dir = p.is_dir()
         if is_dir or path in self.dirs:
             return True
-        return self.opts.all_files or path.endswith(self.opts.exts)
+        return self.opts.all_files or path.endswith(tuple(self.opts.exts))
 
     async def handle_change(self, change_type, path, initial=False):
         """Handle a change to a file or directory"""
@@ -270,7 +281,7 @@ def null_to(x, replacement):
 
 async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     """Main function for awatch"""
-    opts.exts = tuple(f".{ext}" for ext in opts.extension)
+    opts.exts = [f".{ext}" for ext in opts.extension]
     if (opts.run or opts.job or opts.service) and not opts.command:
         raise ValueError("command is required when using --run, --job or --service")
     w = Watcher(paths, opts)
@@ -297,6 +308,7 @@ def setup_args(arg):
     arg("-J", "--job", help="run command when files change, with no arguments", action="store_true")
     arg("-s", "--service", help="run and restart a service when files change", action="store_true")
     arg("-d", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
+    arg("-e", "--exclude", dest="exclude_paths", nargs="*", default=[], help="paths to exclude from watching")
     arg("command", nargs="*", help="command or service to run when files change")
 
 
