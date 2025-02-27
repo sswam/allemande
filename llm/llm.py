@@ -108,10 +108,18 @@ MODELS = {
         "cost_in": 0.15,
         "cost_out": 0.6,
     },
+    "claude-new": {
+        "aliases": ["cn"],
+        "vendor": "anthropic",
+        "id": "claude-3-7-sonnet-latest",
+        "description": "Claude 3.7 Sonnet is Anthropic's strongest AI model.",
+        "cost_in": 3,
+        "cost_out": 15,
+    },
     "claude": {
         "aliases": ["c", "claud"],
         "vendor": "anthropic",
-        "id": "claude-3-7-sonnet-latest",
+        "id": "claude-3-5-sonnet-latest",
         "description": "Claude 3.7 Sonnet is Anthropic's strongest AI model.",
         "cost_in": 3,
         "cost_out": 15,
@@ -176,6 +184,13 @@ MODELS = {
         "cost_req": 5,
         "cost_in": 1,
         "cost_out": 1,
+    },
+    "grok": {
+        "vendor": "xai",
+        "id": "grok-2-latest",
+        "description": "xAI's Grok 2 model, with 128K context and a sense of humour",
+        "cost_in": 2,
+        "cost_out": 10,
     },
 }
 
