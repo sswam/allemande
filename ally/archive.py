@@ -4,34 +4,36 @@
 Move files to numbered archive versions, finding the first unused number.
 """
 
-import os
-import sys
-import logging
 from pathlib import Path
 from typing import Callable
+import re
 
 from ally import main, logs, bsearch  # type: ignore
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 logger = logs.get_logger()
 
 
 def path_for_num(path: Path, num: int) -> Path:
-    return path.parent / f"{path.stem}-{num}{path.suffix}"
+    """Create a numbered path, preserving any existing number in the stem."""
+    stem = path.stem
+    stem = re.sub(r'-\d+$', '', stem)
+    return path.parent / f"{stem}-{num}{path.suffix}"
 
 
 def find_unused_numbered_path(path: Path, number_path: Callable[[Path, int], Path] = path_for_num) -> Path:
-	"""Find the first unused number for a numbered path."""
-	def is_unused(num: int) -> bool:
-		return not number_path(path, num).exists()
+    """Find the first unused number for a numbered path."""
 
-	# Find first unused number using doubling+binary search
-	first_unused = bsearch.find_lowest_int_true(is_unused, start=0)
-	return number_path(path, first_unused)
+    def is_unused(num: int) -> bool:
+        return not number_path(path, num).exists()
+
+    # Find first unused number using doubling+binary search
+    first_unused = bsearch.find_lowest_int_true(is_unused, start=0)
+    return number_path(path, first_unused)
 
 
-def archive_file(path: Path) -> None:
+def archive_file(path: Path) -> Path:
     """Archive a single file to the next available numbered version."""
     if not path.exists():
         raise FileNotFoundError(f"File not found: {path}")
@@ -47,7 +49,7 @@ def archive_file(path: Path) -> None:
     return new_path
 
 
-def archive_with(path: Path, derived_ext="html") -> None:
+def archive_with(path: Path, derived_ext: str = "html") -> Path:
     """Archive a single file to the next available numbered version."""
     if not path.exists():
         raise FileNotFoundError(f"File not found: {path}")
@@ -86,7 +88,8 @@ def setup_args(arg):
     """Set up the command-line arguments."""
     arg("files", nargs="*", help="files to archive")
     arg(
-        "--derived-ext", "-D",
+        "--derived-ext",
+        "-D",
         help="extension for derived files to archive",
     )
 
