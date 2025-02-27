@@ -1316,7 +1316,7 @@ async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=
 
 
 def remove_thinking_sections(content: str, agent: Agent|None, n_own_messages: int) -> tuple[str, int]:
-    remember_thoughts = agent.get("remember_thoughts", 1) if agent else 1
+    remember_thoughts = agent.get("remember_thoughts", 0) if agent else 0
     if agent:
         logger.debug("Agent name %s, remember_thoughts %s, n_own_messages %s", agent["name"], remember_thoughts, n_own_messages)
     agent_name = agent["name"] if agent else None
