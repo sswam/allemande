@@ -1361,10 +1361,13 @@ async function edit_save() {
     edit_set_text(editor_text.replace(/\n*$/, "\n\n"));
   }
 
+  // Allow to save unchanged to force a re-render */
+  /*
   if (editor_text === editor_text_orig) {
     error("edit_save");
     return false;
   }
+  */
 
   active_inc("edit_save");
 

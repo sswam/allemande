@@ -1,6 +1,6 @@
 div.messages {
 /*	margin: 1em 1em 0 1em; */
-	padding: 0.5em 1em;
+	padding: 0.5em 0.5em;
 }
 .label {
 	margin-right: 1em;
@@ -19,10 +19,14 @@ div.messages {
 .content br {
 	display: none;
 }
-.narrative > .content,
 .message > .content {
-	margin: 0 1em 0 1em;
+	margin: 0 0.5em 0 0.5em;
 }
+
+.narrative > .content {
+	margin: 0;
+}
+
 
 #allemande_status {
 	position: fixed;
@@ -362,7 +366,7 @@ pre:has(div.graphviz) {
 }
 */
 
-p:has(> img) {
+p:has(> img), div:has(> img) {
 	clear: both;
 }
 
