@@ -1,5 +1,7 @@
 all: install chmod
 
+local: install
+
 build: everyone.txt girls.txt boys.txt everyone_count.txt girls_count.txt boys_count.txt
 
 everyone.txt: person
