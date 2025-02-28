@@ -6,8 +6,9 @@ u=	# unmount
 umount=$u
 
 ally-mount() {
-	mkdir -p $ALLEMANDE_ROOMS_SERVER
+	mkdir -p $ALLEMANDE_ROOMS_SERVER $ALLEMANDE_VISUAL/person
 	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none $SERVER_ROOMS_SSH $ALLEMANDE_ROOMS_SERVER || true
+	sshfs -o cache=no -o allow_root -o allow_other -o idmap=none $SERVER_PERSON_SSH $ALLEMANDE_VISUAL/person || true
 
 	for client in $ALLEMANDE_PORTAL_CLIENTS; do
 		if [ "$client" = "$HOSTNAME" ]; then
@@ -22,6 +23,7 @@ ally-mount() {
 
 ally-umount() {
 	fusermount -u $ALLEMANDE_ROOMS_SERVER || true
+	fusermount -u $ALLEMANDE_VISUAL/person || true
 
 	for client in $ALLEMANDE_PORTAL_CLIENTS; do
 		if [ "$client" = "$HOSTNAME" ]; then
