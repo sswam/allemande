@@ -30,8 +30,12 @@ fi
 
 to=$(archive -D html "$from")
 
-# Create empty source file
-touch "$from"
+# Create empty source file, or from template
+if [ -e "$from.template" ]; then
+	cp "$from.template" "$from"
+else
+	touch "$from"
+fi
 
 # Copy ownership and permissions from the archived file to the new empty file
 chown --reference="$to" "$from"
