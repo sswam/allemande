@@ -17,7 +17,7 @@ boys.txt: person
 	<$< wc -l >$@
 
 install: build
-	ln -sf $$PWD/*.txt $$PWD/person/*.txt ../unprompted/unprompted/templates/
+	ln -sf $$PWD/*.txt $$PWD/ar/*.txt $$PWD/person/*/ $$PWD/person/*.txt ../unprompted/unprompted/templates/
 
 chmod:
 	chmod o+rx person/ person/*/
