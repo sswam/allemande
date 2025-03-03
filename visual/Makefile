@@ -20,6 +20,7 @@ install: build
 	ln -sf $$PWD/*.txt $$PWD/person/*.txt ../unprompted/unprompted/templates/
 
 chmod:
-	chmod o+rx person/ person/* person/*/*
+	chmod o+rx person/ person/*/
+	chmod o+r person/* person/*/*
 
 .PHONY: all build install chmod
