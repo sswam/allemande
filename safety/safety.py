@@ -127,7 +127,9 @@ def apply_or_remove_adult_options(data: Any, adult: bool) -> Any:
     adult_suffix = "_adult"
     adult_suffix_len = len(adult_suffix)
 
-    if isinstance(data, dict):
+    if data is None or isinstance(data, (int, float, bool)) or callable(data):
+        pass
+    elif isinstance(data, dict):
         for k, v in list(data.items()):
             if k.endswith(adult_suffix):
                 base_key = k[:-adult_suffix_len]
@@ -143,8 +145,6 @@ def apply_or_remove_adult_options(data: Any, adult: bool) -> Any:
     elif isinstance(data, str):
         if not adult:
             data = remove_nsfw_text(data)
-    elif isinstance(data, (int, float, bool)) or callable(data):
-        pass
     else:
         logger.warning("Unexpected data type, not checked: %s", type(data))
 
