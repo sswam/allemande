@@ -1,107 +1,169 @@
-#!/bin/bash -eu
-# webchat-user: manage users in the Allemande webchat
-cd ~/allemande
-. ./env.sh
-cd webchat
-. opts
+#!/usr/bin/env bash
 
-function add_user() {
-	if list_users | grep -q -F -w "$1"; then
-		echo "User $1 already exists"
-		exit 1
+# [add|passwd|rm|off|on|list]
+# Manage users in the Allemande webchat
+
+webchat-user() {
+	local nsfw= n=   # include nsfw intro text
+
+	eval "$(ally)"
+
+	local command=${1:-}
+	shift || true
+
+	echo "args: @_"
+
+	cd ~/allemande
+	. ./env.sh
+	cd webchat
+
+	case $command in
+	add)
+		add-user "$@"
+		;;
+	passwd)
+		change-password "$@"
+		;;
+	rm)
+		remove-user "$@"
+		;;
+	off)
+		disable-user "$@"
+		;;
+	on)
+		enable-user "$@"
+		;;
+	list)
+		list-users "$@"
+		;;
+	*)
+		die "Usage: webchat-user {add|passwd|rm|off|on|list} [args...]"
+		;;
+	esac
+}
+
+add-user() {
+	local user=${1-}
+	if [ -n "$user" ] && list-users | grep -q -F -w "$user"; then
+		die "User $user already exists"
 	fi
-	echo "`change_password "$@"`" |
-	while read x user pass; do
-		cat <<END
+
+	change-password "$@" |
+		while read -r _ user pass; do
+			cat <<END
 Here's the info to access Ally Chat:
 
 user: $user
 pass: $pass
 https://allemande.ai
 
-Log in, then click "Ally Chat". The default room "Ally Chat" is a public room. You can change the room name at the top then press enter, e.g. change it to $user/yourtopic
+Getting Started with Ally Chat:
 
-To talk with an AI character, mention their name, e.g. Ally, Emmy, Dav, Claude, Clia. The main image model is Illy. If an AI is talking to another AI or agent, you can press "poke" to allow the chat to continue.
+1. Log in and select "Ally Chat"
+- The default "Ally Chat" room is public
+- Here you can interact with AI helpers like Flashi, Emmy, and Claude to learn about the app
+
+2. Talking to AI Characters
+- Simply mention their name in your message
+- Available AIs: Flashi, Emmy, Claude, Ally, and others
+
+3. Creating Images
+- Illy is the main image generation model
+- Illu is an AI expert who can:
+	• Create images using Illy
+	• Guide you through the image creation process
+
+4. Continuing AI Conversations
+- When AIs are talking to each other
+- Leave the message box empty
+- Click "Poke" to let them continue
+- Example: When Illu writes a prompt for Illy, click "Poke" to generate the image
+- Alternatively, you could copy the prompt, edit it and send that message
+
+5. Switching Rooms
+- Click the room name at the top
+- Type a new room name (e.g. "$user/chat")
+- Press Enter to switch
 END
-	done
+		done
+	if ((nsfw)); then
+		echo "- $user" >> rooms/nsfw/access.yml
+		cat <<END
+
+6. NSFW Features
+- Ally Chat supports NSFW chat and image generation
+- To use NSFW features, please go to the "nsfw/nsfw" room.
+- In this room, Flashi can help you learn about the app, including NSFW features.
+- Talking to Illu, then pressing "poke", is the easiest way to generate high quality images.
+- There is a section for more extreme adult content, available on request.
+- You cannot talk to Anthropic, OpenAI, Perplexity or xAI models in the NSFW zone. Please do not chat with these models on NSFW topics.
+END
+	fi
+	mkdir -p rooms/"$user"
+	chmod o-rwx rooms/"$user"
+	mkdir -p users/"$user"
+	ln -s ../../static/themes/forest.css users/"$user"/theme.css
 }
 
-function change_password() {
+change-password() {
 	local user=${1:-} pass=${2:-}
 	if [ -z "$user" ]; then
-		read -p "Username: " user
+		read -r -p "Username: " user
+	fi
+	if [[ "$user" != "${user,,}" ]]; then
+		die "Username must be lower-case"
 	fi
 	if [ -z "$pass" ]; then
-		pass=`pwgen 6 -1 | head -n1 | tr -d '\n'`
+		pass=$(pwgen 6 -1 | head -n1 | tr -d '\n')
 	fi
 	htpasswd -b .htpasswd "$user" "$pass"
-	echo "+ $user $pass"
+	printf "+ %s %s\n" "$user" "$pass"
 }
 
-function remove_user() {
+remove-user() {
 	local user=${1:-}
 	if [ -z "$user" ]; then
-		read -p "Username: " user
+		read -r -p "Username: " user
 	fi
 	htpasswd -D .htpasswd "$user"
-	echo "- $user"
+
+	# remove from any access.yml lists
+	find rooms/ -name access.yml | xargs sed -i "/^- $user\$/d"
+
+	# remove style and user directory
+	move-rubbish users/"$user"
+
+	printf -- "- %s\n" "$user"
 }
 
-function disable_user() {
+disable-user() {
 	local user=${1:-} comment=${2:-}
 	if [ -z "$user" ]; then
-		read -p "Username: " user
+		read -r -p "Username: " user
 	fi
 	if [ -z "$comment" ]; then
-		read -p "Comment: " comment
+		read -r -p "Comment: " comment
 	fi
 	perl -pi -e "s/^\Q$user\E:(.*)\$/*$user:*\$1:$comment/" .htpasswd
-	echo "_ $user"
+	printf "_ %s\n" "$user"
 }
 
-function enable_user() {
+enable-user() {
 	local user=${1:-}
 	if [ -z "$user" ]; then
-		read -p "Username: " user
+		read -r -p "Username: " user
 	fi
 	perl -pi -e "s/^\*\Q$user\E:\*(.*?):?\$/$user:\$1/" .htpasswd
-	echo "+ $user"
+	printf "+ %s\n" "$user"
 }
 
-function list_users() {
+list-users() {
 	local filter=${1:-}
-	< .htpasswd cut -f1 -d":" | grep -i "$filter"
+	cut <.htpasswd -f1 -d":" | grep -i "$filter"
 }
 
-function main() {
-	cmd=${1:-}
-	shift || true
-	case $cmd in
-	"add")
-		add_user "$@"
-		;;
-	"passwd")
-		change_password "$@"
-		;;
-	"rm")
-		remove_user "$@"
-		;;
-	"off")
-		disable_user "$@"
-		;;
-	"on")
-		enable_user "$@"
-		;;
-	"list")
-		list_users "$@"
-		;;
-	*)
-		echo "Usage: $0 {add|passwd|rm|off|on|list} [args...]"
-		exit 1
-		;;
-	esac
-}
-
-if [[ "$0" == "$BASH_SOURCE" ]]; then
-	main "$@"
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	webchat-user "$@"
 fi
+
+# version: 0.1.0
