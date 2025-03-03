@@ -45,7 +45,7 @@ ANYONE_WORDS = [
 # TODO exclude based on an attribute or settings
 EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf", "Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
 # EXCLUDE_PARTICIPANTS = set(["System", "Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
-EXCLUDE_PARTICIPANTS_SYSTEM = set(["System"])
+EXCLUDE_PARTICIPANTS_SYSTEM = set(["System", "The Cast"])
 
 EVERYONE_MAX = 5
 AI_EVERYONE_MAX = 2
@@ -253,6 +253,9 @@ def who_should_respond(
         history = []
     if not agents_dict:
         agents_dict = {}
+
+    if config is None:
+        config = {}
 
     if config.get("skip_image_replies"):
         history = [m for m in history if not is_image_message(agents_dict, m)]

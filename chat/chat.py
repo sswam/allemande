@@ -156,8 +156,14 @@ class Room:
         Write a message to a room.
         We don't convert to HTML here, a follower process does that.
         """
-        if not check_access(user, self.name, self.path).value & Access.WRITE.value:
+        access = check_access(user, self.name, self.path).value
+        if not access & Access.WRITE.value:
             raise PermissionError("You are not allowed to post to this room.")
+
+        # support narration by moderators
+        if content.startswith("--") and access & Access.MODERATE.value:
+            user = None
+            content = content[2:]
 
         content = "\n".join(line.rstrip() for line in content.rstrip().splitlines())
 
@@ -166,11 +172,12 @@ class Room:
             self.touch()
             return
 
-        if user == user.lower() or user == user.upper():
+        if user and (user == user.lower() or user == user.upper()):
             user_tc = user.title()
         else:
             user_tc = user
-        user_tc = user_tc.replace(".", "_")
+        if user:
+            user_tc = user_tc.replace(".", "_")
         message = {"user": user_tc, "content": content}
 
         text = message_to_text(message) + "\n"
@@ -1455,6 +1462,8 @@ def set_user_theme(user, theme):
     source = "../../static/themes/" + theme + ".css"
     if not (Path(os.environ["ALLEMANDE_USERS"]) / user / source).exists:
         raise ValueError("Theme not found.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    cache.chmod(path.parent, 0o755)
     cache.symlink(source, path)
 
 

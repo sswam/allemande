@@ -488,8 +488,8 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
         my_mission = mission.copy()
         agent_mission_file = find_agent_resource_file(file, "m", bot.lower())
         mission2 = chat.chat_read(agent_mission_file, args)
-        logger.info("mission: %r", mission)
-        logger.info("mission2: %r", mission2)
+        logger.debug("mission: %r", mission)
+        logger.debug("mission2: %r", mission2)
         if mission2:
             my_mission += [""] + mission2
 
@@ -516,6 +516,16 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
             # remove 1 tab from start of each line
             response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
 
+        # If the previous message begins with - it was ephemeral, so remove it
+        # TODO this might not work well when multiple bots respond
+        if history and history[-1].startswith("-"):
+            history.pop()
+            history_messages.pop()
+            room = chat.Room(path=Path(file))
+            room.undo("root")
+            # sleep for a bit
+            await asyncio.sleep(0.1)
+
         history.append(response)
         logger.debug("history 2: %r", history)
         # avoid re-processing in response to an AI response
@@ -538,6 +548,9 @@ async def run_agent(agent, query, file, args, history, history_start=0, mission=
 async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None):
     """Run a local agent."""
     # print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
+
+    if config is None:
+        config = {}
 
     # Note: the invitation should not end with a space, or the model might use lots of emojis!
     name = agent["name"]
@@ -632,7 +645,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     if image_agent:
         fulltext2 = add_configured_image_prompts(fulltext, [agent, config])
-        logger.info("fulltext after adding configured image prompts: %r", fulltext2)
+        logger.debug("fulltext after adding configured image prompts: %r", fulltext2)
     else:
         fulltext2 = fulltext
 
@@ -784,6 +797,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     """Run a remote agent."""
     service = agent["type"]
 
+    if config is None:
+        config = {}
+
     n_context = agent["context"]
     context = history[-n_context:]
     # XXX history is a list of lines, not messages, so won't the context sometimes contain partial messages? Yuk. That will interact badly with missions, too.
@@ -833,7 +849,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         logger.debug("msg2: %r", msg2)
         remote_messages.append(msg2)
 
-    if remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] == "anthropic":
+    if remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] in "anthropic":
         remote_messages.insert(0, {"role": "user", "content": "?"})
 
     # add system messages
@@ -879,6 +895,10 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         remote_messages.append({"role": "user", "content": ""})
 
     opts = llm.Options(model=agent["model"], indent="\t")
+
+    # Some agents don't like empty content
+    if not remote_messages[-1]["content"]:
+        remote_messages[-1]["content"] = "?"
 
     logger.debug("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
 
@@ -979,6 +999,8 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
 
 async def file_changed(file_path, change_type, old_size, new_size, args, skip, agents):
     """Process a file change."""
+    logger.info("change, old_size, new_size: %r, %r, %r", change_type, old_size, new_size)
+
     if args.ext and not file_path.endswith(args.ext):
         return
     if change_type == Change.deleted:
@@ -1038,7 +1060,7 @@ def list_active_tasks():
 
 def write_agents_list(agents: dict[str, Agent]):
     """Write the list of agents to a file."""
-    agent_names = sorted(agent["name"] for agent in agents.values())
+    agent_names = sorted(set(agent["name"] for agent in agents.values()))
     path = PATH_ROOMS / "agents.yml"
     cache.save(path, agent_names, noclobber=False)
 
@@ -1284,6 +1306,7 @@ services = {
     "anthropic":    {"link": "remote", "fn": remote_agent},
     "google":       {"link": "remote", "fn": remote_agent},
     "perplexity":   {"link": "remote", "fn": remote_agent},
+    "xai":          {"link": "remote", "fn": remote_agent},
     "safe_shell":   {"link": "tool", "fn": safe_shell, "safe": False, "dumb": True},  # ironically
     "search":       {"link": "tool", "fn": run_search, "dumb": True},
 }
