@@ -18,11 +18,11 @@
 # */5 * * * * /path/to/monitor.sh
 
 monitor() {
-	local threshold_storage=  s=95       # storage usage threshold percentage
-	local threshold_load=     l=1        # load average threshold
-	local threshold_mem=      m=95       # memory usage threshold percentage
-	local ping_host=          p=8.8.8.8  # host to ping test
-	local verbose=            v=         # verbose
+	local threshold_storage= s=95 # storage usage threshold percentage
+	local threshold_load= l=1     # load average threshold
+	local threshold_mem= m=95     # memory usage threshold percentage
+	local ping_host= p=8.8.8.8    # host to ping test
+	local verbose= v=             # verbose
 
 	eval "$(ally)"
 
@@ -33,7 +33,9 @@ monitor() {
 }
 
 check_disk() {
-	df -h | grep -vE '^Filesystem|tmpfs|udev|snap' | awk '{ print $5 " " $6 }' | while read -r percent mountpoint; do
+	df -h | grep -E '/$|/media/|/mnt|/dev/mapper' | grep -v -E '^overlay|/docker/' |
+	awk '{ print $5 " " $6 }' |
+	while read -r percent mountpoint; do
 		usage=${percent%%%}
 		if [ "$verbose" ]; then
 			printf "INFO: Filesystem mounted at %s is %s%% full\n" "$mountpoint" "$usage"
@@ -71,7 +73,7 @@ check_memory() {
 }
 
 check_ping() {
-	local pink_fail=0
+	local ping_fail=0
 	ping -W 1 -c 1 "$ping_host" &>/dev/null
 	ping_fail=$?
 	if [ "$verbose" ]; then
@@ -90,4 +92,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	monitor "$@"
 fi
 
-# version: 0.1.0
+# version: 0.1.1
