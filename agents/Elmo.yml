@@ -7,5 +7,4 @@ visual:
   emo: happy, lively, smile
   age: 3.5 years old
 context: 101
-stop_regexs:
-- \n\s*?\n
+lines: 1

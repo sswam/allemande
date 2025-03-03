@@ -7,5 +7,4 @@ visual:
   emo: grouchy
   age: 43 years old
 context: 101
-stop_regexs:
-- \n\s*?\n
+lines: 1

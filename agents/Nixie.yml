@@ -20,7 +20,6 @@ system_bottom: |-
   implants embedded under your skin can enhance physical abilities with
   electric impulses.
 system_bottom_pos: 3
-welcome: true
 fullname: Aria Luna Blackwood
 visual:
   person: 1girl, piercing green eyes with dark eyeliner, full lips painted red, mixed-heritage complexion, edgy style, cybernetic enhancements, crescent-shaped earpiece, augmented body, subdermal implants, short hair, messy bangs, black hair, perfect skin
@@ -28,5 +27,4 @@ visual:
   emo: sassy, (aggressive:0.7)
   age: teenage 18 years old
 context: 101
-stop_regexs:
-- \n\s*?\n
+lines: 1

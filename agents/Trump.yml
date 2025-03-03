@@ -8,5 +8,4 @@ visual:
   emo:
   age: 78 years old
 context: 101
-stop_regexs:
-- \n\s*?\n
+lines: 1
