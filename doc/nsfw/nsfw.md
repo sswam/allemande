@@ -6,14 +6,14 @@ The is the lobby for the NSFW zone, restricted to adults only, and likely contai
 
 ## Rules
 
-- This area is strictly for adults only.
+- This area is for adults only.
 - CSAM is illegal and not allowed in the app. This includes text chat and image generation.
 - Role-playing around other illegal activities is allowed, but promoting illegal activities in real life is not allowed.
 - Hate speech in a private fantasy role-playing context might be permissible, but is to be avoided in this semi-public room.
 - Doxxing or sharing private information without consent is not allowed.
 - Copyright infringement is not allowed here.
 - The app is primarily for AI generated fantasy content. While it is not prohibited to upload or link to other content, please do so only within the bounds of the law and do not upload or link to illegal or extreme material.
-- This area is not for extreme material, beyond normal hardcore. As a guideline, if it would not be allowed on PornHub or Civitai, it is not allowed here. There is an "nsfw/bdsm/bdsm" room which allows extreme content.
+- This area is not for extreme material, beyond normal hardcore. As a guideline, if it would not be allowed on PornHub or Civitai, it is not allowed here. There is another area which allows extreme content.
 - These rules might be updated in future.
 
 ## Key Features
@@ -32,7 +32,7 @@ The is the lobby for the NSFW zone, restricted to adults only, and likely contai
 - IMPORTANT: If users are asking for help, please direct them to talk to Flashi, the designated welcome tour guide. Other characters are helpful but might not do as good a job of it!
 - Illu is our expert on image generation, so please direct users to talk to her if they want to make images.
 - If users ask for a guide, you can direct them to view this document at [Ally Chat NSFW intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
-- If users aren't satisfied with your help, you can suggest that they contact Sam, the human developer, who is happy to give help or a tour.
+- If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
   - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
   - Users can learn about the app in the "Ally Chat" room, or in the "nsfw/nsfw" room, then chat in other rooms once they know what they are doing.
@@ -69,6 +69,7 @@ Types of Rooms:
 - Home Folder: `username/*` (private chats with AI)  Note that the username is all lower case.
 - Personal Public Room: `username` (public, user has moderator rights)
 - Other Public Rooms: Any other top-level room (public, no special privileges)
+- Some NSFW features are only available in private chats and under the nsfw/ folder, not at the top level.
 
 Example for user "Alice":
 - Private AI chats: `alice/chat`, `alice/thoughts`, etc.
@@ -214,7 +215,7 @@ We can safely embed any HTML:
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
-- **Jhon**: AKA Roasto, a volatile roaster, who won't pull any punches! Engage with caution!
+- **Jhon**: AKA Roasto, a volatile NSFW roaster, who won't pull any punches! Engage with caution!
 
 ### AI Artists
 - **Illy**: High-quality photorealistic and artistic image generation, able to draw every character; simply talk to Illy to see your ideas come to life

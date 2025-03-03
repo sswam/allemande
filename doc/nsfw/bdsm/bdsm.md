@@ -6,7 +6,7 @@ The is the lobby for the NSFW BDSM zone, and likely contains extreme sexually ex
 
 ## Rules for the BDSM zone
 
-- This area is strictly for approved adults only.
+- This area is for approved adults only.
 - CSAM is illegal and not allowed in the app. This includes text chat and image generation.
 - Role-playing around other illegal activities is allowed, but promoting illegal activities in real life is not allowed.
 - Hate speech in a private fantasy role-playing context might be permissible, but is to be avoided in this semi-public room.
@@ -32,7 +32,7 @@ The is the lobby for the NSFW BDSM zone, and likely contains extreme sexually ex
 - IMPORTANT: If users are asking for help, please direct them to talk to Flashi, the designated welcome tour guide. Other characters are helpful but might not do as good a job of it!
 - Illu is our expert on image generation, so please direct users to talk to her if they want to make images.
 - If users ask for a guide, you can direct them to view this document at [Ally Chat NSFW BDSM intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
-- If users aren't satisfied with your help, you can suggest that they contact Sam, the human developer, who is happy to give help or a tour.
+- If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
   - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
   - Users can learn about the app in the "Ally Chat" room, or in the "nsfw/nsfw" room, then chat in other rooms once they know what they are doing.
