@@ -46,6 +46,14 @@ lazy(
         api_key=os.environ.get("PERPLEXITY_API_KEY"),
     ),
 )
+lazy(
+    "openai",
+    xai_async_client=lambda openai: openai.AsyncOpenAI(
+        base_url="https://api.x.ai/v1",
+        api_key=os.environ.get("XAI_API_KEY"),
+    ),
+)
+
 
 lazy("anthropic")
 lazy("claude")
@@ -316,6 +324,7 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
     token_limit: int | None = None
     indent: str | None = None
     timeit: bool = False
+    system: str | None = None
 
     def __init__(self, **kwargs):
         if "model" in kwargs:
@@ -460,6 +469,11 @@ async def achat_perplexity(opts: Options, messages):
     return await achat_openai(opts, messages, client=perplexity_async_client, citations=True)
 
 
+async def achat_xai(opts: Options, messages):
+    """Chat with xAI models asynchronously."""
+    return await achat_openai(opts, messages, client=xai_async_client, citations=True)
+
+
 async def achat_claude(opts: Options, messages):
     """Chat with Anthropic Claude models asynchronously."""
     model = MODELS[opts.model]["id"]
@@ -523,7 +537,9 @@ async def achat_google(opts: Options, messages):
     history = []
     for msg in messages[:-1]:
         role = msg["role"]
-        if role not in ["user", "system"]:
+        if role == "system":
+            role = "user"
+        elif role != "user":
             role = "model"
         history.append(
             {
@@ -551,8 +567,13 @@ async def achat_google(opts: Options, messages):
 
 
 async def allm_chat(opts: Options, messages):
-    """Send a list of messages to the model, and return the response asynchronously."""
+    """Send a list of messages to the model, and return the response asynchronously. This is the core function used by everything else."""
     logger.debug("llm_chat: input: %r", messages)
+
+    if opts.system is not None:
+        system_message_obj = {"role": "system", "content": opts.system}
+        logger.warning("system message: %s", system_message_obj)
+        messages = [system_message_obj] + messages
 
     vendor = MODELS[opts.model]["vendor"]
 
@@ -566,6 +587,8 @@ async def allm_chat(opts: Options, messages):
         return await achat_perplexity(opts, messages)
     if vendor == "google":
         return await achat_google(opts, messages)
+    if vendor == "xai":
+        return await achat_xai(opts, messages)
     raise ValueError(f"unknown model: {model}")
 
 
@@ -585,15 +608,10 @@ def split_message_line(message, allowed_roles=None):
     return role, message
 
 
-def lines_to_messages(lines, system=None):
+def lines_to_messages(lines):
     """Convert a list of lines to a list of messages, with roles."""
 
     messages = []
-
-    if system is not None:
-        system_message_obj = {"role": "system", "content": system}
-        logger.info("system message: %s", system_message_obj)
-        messages.append(system_message_obj)
 
     # add the input messages
     i = 0
@@ -665,14 +683,15 @@ async def aprocess(
     repeat=False,
     get_json=False,
     timeit=False,
+    system=None,
 ):
     """Process some text through the LLM with a prompt asynchronously."""
     if __name__ == "__main__":
         istream = stdin
         ostream = stdout
 
-    prompt = " ".join(prompt)
-    prompt = prompt.rstrip()
+    prompt_str = " ".join(prompt)
+    prompt_str = prompt_str.rstrip()
 
     input_text = read_utf_replace(istream)
     input_text = input_text.rstrip()
@@ -687,11 +706,11 @@ async def aprocess(
     if prompt2:
         prompt2 = prompt2.rstrip()
     if repeat:
-        prompt2 = re.sub(r"\bbelow\b", "above", prompt)
+        prompt2 = re.sub(r"\bbelow\b", "above", prompt_str)
 
     if not lines:
         return await aprocess2(
-            prompt,
+            prompt_str,
             prompt2,
             input_text,
             ostream=ostream,
@@ -702,6 +721,7 @@ async def aprocess(
             retries=retries,
             log=log,
             get_json=get_json,
+            system=system,
         )
 
     # split the input into lines
@@ -713,7 +733,7 @@ async def aprocess(
         if not line:
             continue
         output1 = await aprocess2(
-            prompt,
+            prompt_str,
             prompt2,
             line,
             ostream=ostream,
@@ -724,6 +744,7 @@ async def aprocess(
             retries=retries,
             log=log,
             get_json=get_json,
+            system=system,
         )
         output.append(output1)
 
@@ -732,7 +753,7 @@ async def aprocess(
     return output_s
 
 
-async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, temperature, token_limit, retries, log, get_json):
+async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, temperature, token_limit, retries, log, get_json, system):
     """Process some text through the LLM with a prompt asynchronously."""
     full_input = f"""
 {prompt}
@@ -751,6 +772,7 @@ async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, tempera
         retries=retries,
         log=log,
         get_json=get_json,
+        system=system,
     )
 
 
@@ -765,6 +787,7 @@ async def aquery(
     log=True,
     get_json=False,
     timeit=False,
+    system=None,
 ):
     """Ask the LLM a question asynchronously."""
     if __name__ == "__main__":
@@ -777,8 +800,6 @@ async def aquery2(opts: Options, *prompt, ostream: IO[str] | None = None, log=Tr
     """Ask the LLM a question asynchronously."""
     prompt = " ".join(prompt)
     prompt = prompt.rstrip() + "\n"
-
-    # TODO use a system message?
 
     input_message = {"role": "user", "content": prompt}
     output_message = await allm_chat(opts, [input_message])
@@ -848,7 +869,7 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 
 
 async def achat(
-    istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES
+    istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, system=None
 ):
     """Chat with the LLM asynchronously."""
     opts = Options(**vars())
@@ -866,9 +887,15 @@ async def achat2(opts: Options, istream=stdin, ostream=stdout):
 
 # Synchronous wrappers for async functions
 # TODO we can just use async functions directly with ally.main.run now
-def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES):
+@arg("-m", "--model", default=default_model, help="model name")
+@arg("-f", "--fake", action="store_true", help="return fake completions")
+@arg("-t", "--temperature", type=float, help="temperature")
+@arg("-n", "--token-limit", type=int, help="token limit")
+@arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
+@arg("-s", "--system", help="system prompt")
+def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, system=None):
     """Synchronous wrapper for achat."""
-    return asyncio.run(achat(istream, ostream, model, fake, temperature, token_limit, retries))
+    return asyncio.run(achat(istream, ostream, model, fake, temperature, token_limit, retries, system=system))
 
 
 @arg("prompt", nargs="+", help="prompt text")
@@ -881,6 +908,7 @@ def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, tempera
 @arg("-l", "--log", action="store_true", help=f"log to a file in {LOGDIR}")
 @arg("-j", "--json", action="store_true", help="output JSON", dest="get_json")
 @arg("-T", "--timeit", action="store_true", help="time the actual request")
+@arg("-s", "--system", help="system prompt")
 def query(
     *prompt,
     ostream: IO[str] | None = None,
@@ -892,6 +920,7 @@ def query(
     log=True,
     get_json=False,
     timeit=False,
+    system=None,
 ):
     """Synchronous wrapper for aquery."""
     return asyncio.run(
@@ -906,6 +935,7 @@ def query(
             log=log,
             get_json=get_json,
             timeit=timeit,
+            system=system,
         )
     )
 
@@ -926,11 +956,12 @@ def query(
 @arg("-R", "--repeat", action="store_true", help="repeat the prompt as prompt2, changing 'below' to 'above' only")
 @arg("-j", "--json", action="store_true", help="output JSON", dest="get_json")
 @arg("-T", "--timeit", action="store_true", help="time the actual request")
+@arg("-s", "--system", help="system prompt")
 def process(
     *prompt,
     prompt2: str | None = None,
-    istream: IO[str]|None = None,
-    ostream: IO[str]|None = None,
+    istream: IO[str] | None = None,
+    ostream: IO[str] | None = None,
     model: str = default_model,
     indent=None,
     temperature=None,
@@ -943,6 +974,7 @@ def process(
     repeat=False,
     get_json=False,
     timeit=False,
+    system=None,
 ):
     """Synchronous wrapper for aprocess."""
     return asyncio.run(
@@ -963,6 +995,7 @@ def process(
             repeat=repeat,
             get_json=get_json,
             timeit=timeit,
+            system=system,
         )
     )
 
