@@ -40,6 +40,7 @@ class WatcherOptions(BaseModel):
     command: list[str] = []
     debounce: float = 0.01
     exclude_paths: list[str] = []
+    metadata: bool = False
 
 
 class Debounce:  # pylint: disable=too-few-public-methods
@@ -197,6 +198,16 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
         is_dir = p.is_dir()
         if is_dir or path in self.dirs:
             return True
+
+        if not self.opts.metadata and change_type == Change.modified:
+            # don't trigger on metadata changes
+            try:
+                stat = os.stat(path)
+                if stat.st_mtime != stat.st_ctime:
+                    return False
+            except OSError:
+                pass
+
         return self.opts.all_files or path.endswith(tuple(self.opts.exts))
 
     async def handle_change(self, change_type, path, initial=False):
@@ -224,11 +235,12 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
         size = self.file_sizes.pop(path, None)
         size_new = None
 
-        is_file = p.exists() and not is_dir
-        if is_file and self.opts.follow:
-            size_new = p.stat().st_size
-        elif is_file:
-            size_new = p.lstat().st_size
+        if change_type != Change.deleted:
+            is_file = p.exists() and not is_dir
+            if is_file and self.opts.follow:
+                size_new = p.stat().st_size
+            elif is_file:
+                size_new = p.lstat().st_size
 
         if is_dir and change_type == Change.added and (self.opts.recursive or initial):
             async for row in self.added_directory(path):
@@ -309,6 +321,7 @@ def setup_args(arg):
     arg("-s", "--service", help="run and restart a service when files change", action="store_true")
     arg("-d", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
     arg("-e", "--exclude", dest="exclude_paths", nargs="*", default=[], help="paths to exclude from watching")
+    arg("-m", "--metadata", help="watch metadata changes", action="store_true")
     arg("command", nargs="*", help="command or service to run when files change")
 
 
