@@ -150,6 +150,10 @@ async def collect_response(streamer, model, config, input_text, *_args, **_kwarg
 
     log_level = logs.level()
 
+    max_lines = config.pop("lines", None)
+
+    logger.info("max_lines: %s", max_lines)
+
     text = ""
     stop = False
     try:
@@ -161,13 +165,30 @@ async def collect_response(streamer, model, config, input_text, *_args, **_kwarg
 
             for stopper in stop_regexs:
                 if match := stopper.search(text2):
-                    if log_level <= logs.DEBUG:
-                        print()
                     logger.info("Stopping at: `%s`", match.group())
                     logger.info("Stopping regex: %s", stopper)
                     text2 = text2[:match.start()]
                     stop = True
                     break
+            else:
+                logger.info("text2: %s", text2)
+                if max_lines:
+                    lines = text2.splitlines()
+                    count = len([line for line in lines if line.strip()])
+                    logger.info("count: %s", count)
+                    logger.info("max_lines: %s", max_lines)
+                    if count > max_lines:
+                        while count > max_lines:
+                            l = lines.pop()
+                            if l.strip():
+                                count -= 1
+                        text2 = "\n".join(lines)
+                        stop = True
+
+            if stop:
+                if log_level <= logs.DEBUG:
+                    print()
+
             text = text2
 
             if stop:
