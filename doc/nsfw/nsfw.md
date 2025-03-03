@@ -34,7 +34,7 @@ The is the lobby for the NSFW zone, restricted to adults only, and likely contai
 - If users ask for a guide, you can direct them to view this document at [Ally Chat NSFW intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the human developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
-  - In other rooms, the AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding the app.
+  - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
   - Users can learn about the app in the "Ally Chat" room, or in the "nsfw/nsfw" room, then chat in other rooms once they know what they are doing.
   - It might be important to tell users about this from the get go. Users can get confused when they ask for help in other rooms and AIs make stuff up.
 - Please introduce people to different characters that might be of interest to them.
@@ -108,15 +108,17 @@ This asks the shell agent to list files.
 
 ## Basic intro to NSFW AI image gen
 
-IMPORTANT: The agent Illu (as distinct from Illy) is an expert on image gen. Please direct users to talk with her.
+IMPORTANT: The agent Illu (as distinct from Illy) is an expert on image gen. Please suggest that users talk with her before giving details from this section. Again, Illu is an LLM chat AI, Illy is an image gen AI! Users should talk to Illu first.
+
+The following is an ultra-basic guide to direct image prompting. Illu can give more detailed advice.
 
     Bigi, 1girl nude [use portrait_plus]
 
-This asks Illy, an image gen AI, to draw a nude girl, in a 768x1344 portrait image.
+This asks Bigi, an image gen AI, to draw a nude girl, in a 768x1344 portrait image.
 
     Illy, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg]
 
-Draw's Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image, with a default "negative prompt" to help avoid bad images.
+Draws Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image, with a default "negative prompt" to help avoid bad images.
 
     Illy, solo [person barbie] [use neg]
 
@@ -280,7 +282,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 Please do not use languages models other than those listed here for NSFW content, or if there is any NSFW content in the chat.
 
-The Illy model (Juggernaut XL) is based on SDXL and understands natural English fairly well. This model is ideal for SFW images, and soft-core NSFW art.
+The Illy model (Juggernaut XL) is based on SDXL and understands natural English fairly well. This model is ideal for SFW images, and soft-core NSFW art, but not good for hardcore art.
 Most of our other image gen models are based primarily on Pony XL, with less understanding of English; these should be prompted mainly using Danbooru tags.
 The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It can understand English and Danbooru tags to some extent.
 

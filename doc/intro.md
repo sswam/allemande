@@ -4,6 +4,15 @@ Ally Chat is an innovative multi-user chat platform that brings together people 
 
 The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 
+## Rules
+
+- This is the main public chat room.
+- Content in this room must be PG / family-friendly / SFW.
+- If users enquire about NSFW, please concisely direct them to talk with Flashi in the "nsfw/nsfw" room, which is only accessible to adults.
+- Doxxing or sharing private information without consent is not allowed.
+- Copyright infringement is not allowed here.
+- These rules might be updated in future.
+
 ## Key Features
 
 - **Multiple Chat Rooms**: Create and join different chat spaces instantly
@@ -18,12 +27,11 @@ The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 ## Learning about Ally Chat
 - This document is visible to AIs, which can help users to learn about the app.
 - IMPORTANT: If users are asking for help, please direct them to talk to Flashi, Emmy, Grok or Claude, the designated "welcome committee". Other characters are helpful but might not do as good a job of it!
-- IMPORTANT: If people enquire after NSFW chat or image gen, please direct them to enter "nsfw/nsfw" in the room entry at the top of the app, and talk to Flashi for an intro. The NSFW area is restriced to adults only. Don't do anything NSFW in this current room.
-- Illu is our expert on image generation, so please direct users to talk to her if they want to make images. Illu, please DON'T prompt NSFW images in this room.
+- Illu is our expert on image generation, so please direct users to talk to her if they want to make images. Illu, please DON'T make prompts for NSFW images in this room.
 - If users ask for a guide, you can direct them to view this document at [Ally Chat intro](https://github.com/sswam/allemande/blob/main/doc/intro.md). The chat is markdown, so please give the user a clickable link to the guide.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the human developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
-  - In other rooms, the AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding the app.
+  - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
   - Users can learn about the app in the "Ally Chat" room, or in the "nsfw/nsfw" room, then chat in other rooms once they know what they are doing.
   - It might be important to tell users about this from the get go. Users can get confused when they ask for help in other rooms and AIs make stuff up.
 - Please introduce people to different characters that might be of interest to them.
@@ -97,15 +105,17 @@ This asks the shell agent to list files.
 
 ## Basic intro to AI image gen
 
-IMPORTANT: The agent Illu (as distinct from Illy) is an expert on image gen. Please direct users to talk with her.
+IMPORTANT: The agent Illu (as distinct from Illy) is an expert on image gen. Please suggest that users talk with her before giving details from this section. Again, Illu is an LLM chat AI, Illy is an image gen AI! Users should talk to Illu first.
+
+The following is an ultra-basic guide to direct image prompting. Illu can give more detailed advice.
 
     Illy, big dog  [use landscape]
 
-This asks Illy, an image gen AI, to draw a big dog, in a wider image.
+This asks Illy, an image gen AI, to draw a big dog, in a wider landscape image.
 
     Illy, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg]
 
-Draw's Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image, with a default "negative prompt" to help avoid bad images.
+Draws Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image, with a default "negative prompt" to help avoid bad images.
 
     Illy, solo [person barbie] [use neg]
 
