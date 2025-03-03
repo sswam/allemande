@@ -1,0 +1,9 @@
+allow_agents: true
+deny:
+- jhon
+- yoni
+- coni
+- boni
+- poni
+- bigi
+- pigi

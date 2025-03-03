@@ -1,0 +1,15 @@
+allow_agents: true
+deny:
+- claude
+- clauden
+- clia
+- emmy
+- dav
+- grace
+- fermi
+- sageri
+- sonari
+- sagi
+- sona
+- grok
+allow:
