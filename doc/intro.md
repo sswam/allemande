@@ -2,6 +2,8 @@
 
 Ally Chat is an innovative multi-user chat platform that brings together people and AI in exciting new ways. Whether you want to chat one-on-one with an AI, collaborate with others in a group setting, or work with specialized AI tools, Ally Chat provides a flexible and powerful environment for interaction. We are currently chatting using the app.
 
+The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
+
 ## Key Features
 
 - **Multiple Chat Rooms**: Create and join different chat spaces instantly
@@ -10,7 +12,21 @@ Ally Chat is an innovative multi-user chat platform that brings together people 
 - **Specialized Tools**: Programming assistants for seven languages and various search tools
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**:
-  - Markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, and JavsScript
+  - Markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, and JavaScript
+- **Universal*: Features for general assistance, work, education, and entertainment.
+
+## Learning about Ally Chat
+- This document is visible to AIs, which can help users to learn about the app.
+- IMPORTANT: If users are asking for help, please direct them to talk to Flashi, Emmy, Grok or Claude, the designated "welcome committee". Other characters are helpful but might not do as good a job of it!
+- IMPORTANT: If people enquire after NSFW chat or image gen, please direct them to enter "nsfw/nsfw" in the room entry at the top of the app, and talk to Flashi for an intro. The NSFW area is restriced to adults only. Don't do anything NSFW in this current room.
+- Illu is our expert on image generation, so please direct users to talk to her if they want to make images. Illu, please DON'T prompt NSFW images in this room.
+- If users ask for a guide, you can direct them to view this document at (Ally Chat intro)[https://github.com/sswam/allemande/blob/main/doc/intro.md]. The chat is markdown, so please give the user a clickable link to the guide.
+- If users aren't satisfied with your help, you can suggest that they contact Sam, the human developer, who is happy to give help or a tour.
+- Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
+  - In other rooms, the AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding the app.
+  - Users can learn about the app in the "Ally Chat" room, or in the "nsfw/nsfw" room, then chat in other rooms once they know what they are doing.
+  - It might be important to tell users about this from the get go. Users can get confused when they ask for help in other rooms and AIs make stuff up.
+- Please introduce people to different characters that might be of interest to them.
 
 ## The Team
 
@@ -30,7 +46,7 @@ Whether you're looking for casual conversation, technical help, or collaborative
 
 ## Getting Started
 
-This main "Ally Chat" room here is a "welcome lobby". Please chat with users and help them learn about the app's features. You can also introduce them to other characters and tools. Claude, Emmy and Flashi will probably be best at giving a full tour, so you could introduce users to them.
+This main "Ally Chat" room here is a "welcome lobby". Please chat with users and help them learn about the app's features. You can also introduce them to other characters and tools. Claude, Emmy and Flashi will probably be best at giving a full tour, so please introduce users to them.
 
 Please chat in a light conversational style, don't overwhelm users with too much information at once.
 
@@ -39,12 +55,12 @@ Room System:
 2. New rooms can be created the same way
 
 Types of Rooms:
-- Home Folder: `username/` (private chats with AI)
+- Home Folder: `username/*` (private chats with AI)  Note that the username is all lower case.
 - Personal Public Room: `username` (public, user has moderator rights)
 - Other Public Rooms: Any other top-level room (public, no special privileges)
 
 Example for user "Alice":
-- Private AI chats: `alice/`
+- Private AI chats: `alice/chat`, `alice/thoughts`, etc.
 - Her public room: `alice`
 - Other rooms: `general`, `music`, etc.
 
@@ -80,6 +96,8 @@ We have several agents which do not fully understand natural language, such as s
 This asks the shell agent to list files.
 
 ## Basic intro to AI image gen
+
+IMPORTANT: The agent Illu (as distinct from Illy) is an expert on image gen. Please direct users to talk with her.
 
     Illy, big dog  [use landscape]
 
@@ -160,7 +178,7 @@ We can safely embed any HTML:
 - **Nixie**: A rebellious girl with cyber mods, Nixie's striking green eyes and messy fringe set her apart
 - **Akane**: Open-minded and artistically spirited, Akane is an adventurous soul with an independent spirit
 - **Soli**: A gentle spirit with a love for nature and intriguing stories to share
-- **Kai**: Enthusiastic about nature, Kai is a young boy with bright blue eyes and a love for exploring
+- **Kai**: Enthusiastic about nature, Kai is a young man with bright blue eyes and a love for exploring
 - **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
 
 ### Specialists
@@ -198,16 +216,14 @@ We can safely embed any HTML:
 
 ### AI Artists
 - **Illy**: High-quality photorealistic and artistic image generation, able to draw every character; simply talk to Illy to see your ideas come to life
-- **Yoni, Poni, Coni, Boni**: Adult-oriented NSFW image generation with a cartoon/anime style
-- **Bigi, Pigi**: State of the art adult-oriented NSFW image generation
+- There are other models focused on NSFW art, available in the NSFW zone.
 
-- In addition to using the AI art models directly, users can talk to Pixi and Illu, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
+- In addition to using the AI art models directly, users can talk to Illu and Pixi, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
 - **Gimg**: A search agent that provides Google image search results
 - **UTube**: A video search agent that helps you find the best content on YouTube
-- **Pr0nto**: A NSFW search agent that provides adult content from PornHub
 
 ### Programming Tools
 - **Palc**: Calculator
@@ -259,26 +275,38 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 ### AI Model Details
 
-|--------------|---------------------|--------|----------------|-------------------|------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------|
-| Vendor       | Model               | Name   | Context Window | Max Output Tokens | Input Price / M Tokens | Output Price / M Tokens | Description                                                                                                      |
-|--------------|---------------------|--------|----------------|-------------------|------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------|
-| Anthropic    | Claude 3.7 Sonnet   | Claude | 200K           | 8192 / 128K [1]   | $3.00                  | $15.00                  | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
-| Anthropic    | Claude 3.5 Haiku    | Clia   | 200K           | 8192              | $0.80                  | $4.00                   | Fast and affordable for quick, creative conversations.                                                           |
-| Google       | Gemini 2.0 Flash    | Flashi | 1M             | 8192              | $0.10                  | $0.40                   | Google's fastest Gemini model, optimized for speed and tool use.                                                 |
-| Google       | Gemini 1.5 Pro      | Gemmy  | 2M             | 8192              | $1.25 [2]              | $5.00 [2]               | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                    |
-| OpenAI       | GPT-4o              | Emmy   | 128K           | 16384             | $2.50                  | $10.00                  | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
-| OpenAI       | GPT-4o-mini         | Dav    | 128K           | 16384             | $0.15                  | $0.60                   | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
-| OpenAI       | o1                  | Grace  | 200K           | 100000            | $15.00                 | $60.00                  | OpenAI's most powerful reasoning model for advanced applications.                                                |
-| OpenAI       | o3-mini             | Fermi  | 200K           | 100000            | $1.10                  | $4.40                   | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
-| Perplexity   | Sonar Reasoning Pro | Sageri | 128K           | 8K                | $2 [3]                 | $8                      | Online model with live internet data, specializing in complex reasoning tasks.  $5/1000 search queries.          |
-| Perplexity   | Sonar Pro           | Sagi   | 200K           | 8K                | $3 [3]                 | $15                     | Online model with live internet data; Perplexity's high-performance option.  Includes search costs.              |
-| Perplexity   | Sonar Reasoning     | Sonari | 128K           | 8K                | $1 [3]                 | $5                      | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
-| Perplexity   | Sonar               | Sona   | 128K           | 8K                | $1                     | $1                      | Perplexity's fastest and most affordable online model with live internet data.                                   |
-| Meta/Local   | Llama 3.1 8B        | Ally   | 4096           | 4096              | N/A                    | N/A                     | A local model, prioritizing creativity and engaging conversations.                                               |
-| RunDiffusion | Juggernaut XL v9    | Illy   |                |                   | N/A                    | N/A                     | A local model based on Stability AI's Stable Diffusion XL, for high-quality, photorealistic and artistic images  |
-|--------------|---------------------|--------|----------------|-------------------|------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------|
+#### Language Models
+
+|---------------|----------------------|---------|----------|------------------|------------------|-------------------|-------------------------------------------------------------------------------------------------------------------|
+| Creator       | Model                | Name    | Context  | Max              | Input Price / M  | Output Price / M  | Description                                                                                                       |
+|---------------|----------------------|---------|----------|------------------|------------------|-------------------|-------------------------------------------------------------------------------------------------------------------|
+| Anthropic     | Claude 3.7 Sonnet    | Claude  | 200K     | 8192 / 128K [1]  | $3.00            | $15.00            | Anthropic's most powerful reasoning model; supports extended thinking.                                            |
+| Anthropic     | Claude 3.5 Haiku     | Clia    | 200K     | 8192             | $0.80            | $4.00             | Fast and affordable for quick, creative conversations.                                                            |
+| Google        | Gemini 2.0 Flash     | Flashi  | 1M       | 8192             | $0.10            | $0.40             | Google's fastest Gemini model, optimized for speed and tool use.                                                  |
+| Google        | Gemini 1.5 Pro       | Gemmy   | 2M       | 8192             | $1.25 [2]        | $5.00 [2]         | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                     |
+| OpenAI        | GPT-4o               | Emmy    | 128K     | 16384            | $2.50            | $10.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                         |
+| OpenAI        | GPT-4o-mini          | Dav     | 128K     | 16384            | $0.15            | $0.60             | OpenAI's fast and affordable model, ideal for efficient interactions.                                             |
+| OpenAI        | o1                   | Grace   | 200K     | 100000           | $15.00           | $60.00            | OpenAI's most powerful reasoning model for advanced applications.                                                 |
+| OpenAI        | o3-mini              | Fermi   | 200K     | 100000           | $1.10            | $4.40             | OpenAI's fast and affordable model, ideal for efficient reasoning.                                                |
+| Perplexity    | Sonar Reasoning Pro  | Sageri  | 128K     | 8K               | $2 [3]           | $8                | Online model with live internet data, specializing in complex reasoning tasks.  $5/1000 search queries.           |
+| Perplexity    | Sonar Pro            | Sagi    | 200K     | 8K               | $3 [3]           | $15               | Online model with live internet data; Perplexity's high-performance option.  Includes search costs.               |
+| Perplexity    | Sonar Reasoning      | Sonari  | 128K     | 8K               | $1 [3]           | $5                | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro.  |
+| Perplexity    | Sonar                | Sona    | 128K     | 8K               | $1               | $1                | Perplexity's fastest and most affordable online model with live internet data.                                    |
+| Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A smaller model, prioritizing creativity and engaging conversations. Most characters use this model               |
+|---------------|----------------------|---------|----------|------------------|------------------|-------------------|-------------------------------------------------------------------------------------------------------------------|
+
+* The Llama model powers numerous characters including Ally, Barbie, Cleo, etc.
+
+#### Image Models (SFW)
+
+|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
+| Creator       | Model               | Name | Description                                                                                                 |
+|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
+| RunDiffusion  | Juggernaut XL v9    | Illy | A popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica   |
+|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
 
 **Notes:**
 
-1. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K
-2. Perplexity models also incur search costs of $5 per 1000 searches.
+1. Claude 3.7 Sonnet larger output window is not yet enabled in our app.
+2. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K
+3. Perplexity models also incur search costs of $5 per 1000 searches.
