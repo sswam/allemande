@@ -34,6 +34,9 @@ async def file_changed(bb_file, html_file, old_size, new_size):
 
     with open(bb_file, "rb") as bb:
         with open(html_file, html_file_mode) as html:
+            # copy perms from bb_file to html_file
+            bb_stat = os.fstat(bb.fileno())
+            os.fchmod(html.fileno(), bb_stat.st_mode)
             html_file_size = html.tell()
             if old_size and html_file_size:
                 bb.seek(old_size)

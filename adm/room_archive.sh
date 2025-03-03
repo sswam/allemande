@@ -30,7 +30,7 @@ fi
 
 to=$(archive -D html "$from")
 
-# Create empty source file, or from template
+# Create empty source file and html file, or from template
 if [ -e "$from.template" ]; then
 	cp "$from.template" "$from"
 else

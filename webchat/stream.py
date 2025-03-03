@@ -44,7 +44,7 @@ REWIND_STRING = "<script>clear()</script>\n"
 BASE_DIR = Path(".").resolve()
 TEMPLATES_DIR = os.environ.get("TEMPLATES")
 
-SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt"]
+SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js"]
 MEDIA_FILE_EXTS = ["webm", "jpg"]
 
 
