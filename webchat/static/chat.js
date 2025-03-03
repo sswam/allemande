@@ -65,6 +65,7 @@ let view = "messages";
 
 let room_ready = false;
 let theme;
+let last_users = [];
 
 const ADMIN = "admin";
 
@@ -226,6 +227,18 @@ function send_random_message() {
   send_text(message);
 }
 
+function send_continue(n) {
+  // nth from the end of the last_users array
+  n = n || 1;
+  if (n > last_users.length) return;
+  console.log("send_continue", n);
+  console.log("last_users", last_users);
+  const message = "-@" + last_users[last_users.length - n];
+  console.log("message", message);
+  send_text(message);
+}
+
+
 // error indicator for buttons -----------------------------------------------
 
 async function flash($el, className) {
@@ -303,6 +316,14 @@ function new_chat_message(message) {
   // console.log("new message user vs user", message_user_lc, user);
   if (message_user_lc != user) {
     active_dec("send");
+    if (message.user) {
+      console.log("adding to last users", message.user, last_users);
+      // remove any existing entry
+      last_users = last_users.filter(u => u != message.user);
+      last_users.push(message.user);
+      if (last_users.length > 10)
+        last_users.shift();
+    }
   }
 }
 
@@ -879,7 +900,7 @@ function setup_user_button() {
   const $user = $id("user");
   $user.innerText = user;
   if (room == user) $user.href = "/" + query_to_hash(DEFAULT_ROOM);
-  else $user.href = "/" + query_to_hash(user);
+  else $user.href = "/" + query_to_hash(user) + "/";
 }
 
 // Wrapper function to initialize drag controls for the input row ------------
@@ -1561,6 +1582,76 @@ function show_theme() {
   $id("view_theme").textContent = theme;
 }
 
+// options -------------------------------------------------------------------
+
+async function get_options() {
+  console.log("get_options", room);
+  const query = new URLSearchParams({
+    room,
+    nocache: Math.random(),
+  });
+  const response = await fetch("/x/options?" + query);
+  if (!response.ok) {
+    throw new Error("GET options request failed");
+  }
+  const data = await response.json();
+  console.log("get_options", data);
+
+  const context = data?.agents?.all?.context || "";
+  const lines = data?.agents?.all?.lines || "";
+  $id("opt_context").value = context;
+  $id("opt_lines").value = lines;
+  return data;
+}
+
+async function set_options(options) {
+  const response = await fetch("/x/options", {
+    method: "POST",
+    body: JSON.stringify(options),
+  });
+
+  if (!response.ok) {
+    throw new Error("POST options request failed");
+  }
+
+  const data = await response.json();
+//  if (data.error) {
+//    throw new Error(data.error);
+//  }
+}
+
+async function opt_context(ev) {
+  console.log("opt_context", ev.target.value);
+  let context = ev.target.value;
+  context = context === "" ? null : +context;
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          context
+        }
+      }
+    }
+  });
+}
+
+async function opt_lines(ev) {
+  let lines = ev.target.value;
+  lines = lines === "" ? null : +lines;
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          lines
+        }
+      }
+    }
+  });
+}
+
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
@@ -1576,6 +1667,7 @@ function chat_main() {
   $on($id("add"), "click", () => set_controls("input_add"));
   $on($id("mod"), "click", () => set_controls("input_mod"));
   $on($id("view"), "click", () => set_controls("input_view"));
+  $on($id("opt"), "click", () => set_controls("input_opt"));
 
   $on($id("mod_undo"), "click", undo);
   $on($id("mod_retry"), "click", retry);
@@ -1604,6 +1696,10 @@ function chat_main() {
   $on($id("view_clean"), "click", view_clean);
   $on($id("view_cancel"), "click", () => set_controls());
 
+  $on($id("opt_context"), "change", opt_context);
+  $on($id("opt_lines"), "change", opt_lines);
+  $on($id("opt_cancel"), "click", () => set_controls());
+
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_MESSAGE));
   $on($content, "keydown", content_keydown);
@@ -1628,4 +1724,6 @@ function chat_main() {
   $content.focus();
 
   load_user_styles_and_script();
+
+  get_options();
 }

@@ -131,7 +131,10 @@ async def clear(request):
         raise HTTPException(status_code=400, detail="Invalid operation.")
 
     room = chat.Room(name=room)
-    await room.clear(user, op)
+    try:
+        await room.clear(user, op)
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
 
 
@@ -144,12 +147,15 @@ async def undo(request):
     user = request.headers["X-Forwarded-User"]
 
     room = chat.Room(name=room)
-    room.undo(user, n=int(n))
+    try:
+        room.undo(user, n=int(n))
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
 
 
 @app.route("/x/settings", methods=["POST"])
-async def themes(request):
+async def settings(request):
     """Update user settings, including theme."""
     user = request.headers["X-Forwarded-User"]
     settings = await request.json()
@@ -159,6 +165,34 @@ async def themes(request):
     if settings:
         raise HTTPException(status_code=400, detail="Invalid settings.")
     return JSONResponse({})
+
+
+@app.route("/x/options", methods=["POST"])
+async def options_set(request):
+    """Update chat room options, including agent settings like context."""
+    user = request.headers["X-Forwarded-User"]
+    request = await request.json()
+    room = chat.Room(name=request["room"])
+    options = request["options"]
+    try:
+        room.set_options(user, options)
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=e.args[0]) from e
+    return JSONResponse({})
+
+
+@app.route("/x/options", methods=["GET"])
+async def options_get(request):
+    """Get chat room options, including agent settings like context."""
+    # TODO validation: length, type, no unknown keys
+    user = request.headers["X-Forwarded-User"]
+    # get room from query param
+    room = chat.Room(name=request.query_params["room"])
+    try:
+        options = room.get_options(user)
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=e.args[0]) from e
+    return JSONResponse(options)
 
 
 @app.route("/x/subscribe", methods=["POST"])

@@ -5,6 +5,9 @@
 .admin {
 	display: none;
 }
+body > form, div#main {
+	overflow: hidden;
+}
 body.admin, body.admin .admin {
 	display: block;
 }
@@ -62,9 +65,19 @@ body.admin, body.admin .admin {
 	flex-direction: column;
 }
 .col_wrap {
-	display: flex;
+/*	display: flex;
 	flex-flow: column wrap;
+	/* hack for Firefox broken flex layout */
+	display: flex;
+	writing-mode: vertical-lr;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	height: 350px;
 	gap: var(--pad);
+}
+
+.col_wrap > * {
+	writing-mode: horizontal-tb;
 }
 
 .col > * {
@@ -180,4 +193,8 @@ iframe#messages_iframe.overlay {
 
 button#send {
 	min-height: 70px !important;
+}
+
+#inputrow > .controls > input {
+	width: 4.5em;
 }
