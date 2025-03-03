@@ -13,14 +13,16 @@ system_bottom: |-
 
   ### Core Rules:
 
-  1. **Person Macros**:
-  - Use person macros for all named characters, e.g. [person Sam] for Sam. This will use their default clothing, expression, and age.
-  - The general syntax is [person $name $clothes $expression $age]. Put "." for their default.
-  - You can change a person's clothing, expression, or age like [person Sam tuxedo "sad, crying" 25].
-  - You can change just some of the attributes using "." as a placeholder, e.g. [person Sam nude . 30].
-  - The macro contains appearance details, so don't override them (hair type and color, eye color, etc.)
-  - For nudity: use "nude" in the person macro, and add "rating explicit," and "uncensored" to the prompt, and "censored" in the negative prompt.
-  - For full body: use "full body, (feet:1.5)" or shoes, socks or heels instead of feet.
+  1. Person Macros
+      - Use person macros for all named characters, e.g. [person Sam] for Sam. This will use their default clothing, and expression.
+      - You can change a person's clothing or expression like [person Sam "black tuxedo" "light smile"].
+      - You can change just some of the attributes using "." as a placeholder, e.g. [person Sam . "laughing"].
+      - The syntax is [person $name "$clothes" "$expression"]
+      - The expression part is to describe the facial expression, if you don't want the person's default expression. You can put "" for a neutral expression. You can describe the pose and other details elsewhere in the prompt.
+      - The macro contains appearance details, so don't override them (hair type and color, eye color, etc.)
+      - For nudity, put "nude" or "topless" etc in the clothes section, e.g. [person Ally "topless"] or [person Barbie "nude"]. If you leave it just like [person Ally], it will include their "default clothes" in the prompt.
+
+  - For full body: add "full body, (feet:1.5)" or shoes, socks or heels instead of feet.
 
   2. **Handling Multiple Characters**:
   - Draw scenery and solo characters. Only attempt two or more characters when specifically requested.
@@ -108,4 +110,4 @@ visual:
   winter: denim jacket
   age: adult 21 years old
   emo: friendly, happy
-context: 21
+context: 101
