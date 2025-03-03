@@ -7,11 +7,14 @@ import json
 import logging
 import os
 from typing import Any
+import time
+from copy import deepcopy
+import io
 
 import yaml
 
 
-__VERSION__ = "0.1.5"
+__VERSION__ = "0.1.6"
 
 
 logger = logging.getLogger(__name__)
@@ -22,20 +25,31 @@ class FileCache:
 
     def __init__(self):
         self._last_modified: dict[str, float] = {}
+        self._last_check_time: dict[str, float] = {}
         self._cache: dict[str, Any] = {}
 
-    def load(self, path: str, fmt: str | None = None, **kwargs) -> Any:
+    def load(self, path: str, fmt: str | None = None, no_stat_time_s: float | None = 1, **kwargs) -> Any:
         """
         Loads and caches content from a file, reloading only if modified.
 
         Args:
             path: Path to the file or module name
             fmt: Format type ('text', 'json', 'yaml', 'csv')
+            no_stat_time_s: If set, skip stat checks if last check was within this many seconds
             **kwargs: Additional arguments (e.g., delimiter for CSV)
 
         Returns:
             Loaded content
         """
+        current_time = time.time()
+
+        # If we have a recent check and no_stat_time_s is set, return cached content
+        if no_stat_time_s is not None and current_time - self._last_check_time.get(path, 0) < no_stat_time_s:
+            return deepcopy(self._cache.get(path))
+
+        # Store the check time
+        self._last_check_time[path] = current_time
+
         if not os.path.exists(path):
             logger.error("File not found: %s", path)
             return None
@@ -46,12 +60,13 @@ class FileCache:
 
         current_mtime = os.path.getmtime(path)
         if current_mtime <= self._last_modified.get(path, 0):
-            return self._cache[path]
+            content = self._cache[path]
+            return deepcopy(self._cache[path])
 
         content = self._load_file(path, fmt, **kwargs)
         self._cache[path] = content
         self._last_modified[path] = current_mtime
-        return content
+        return deepcopy(content)
 
     def save(self, path: str, content: Any, fmt: str | None = None, noclobber: bool = True, **kwargs):
         """
@@ -74,13 +89,13 @@ class FileCache:
                 raise FileExistsError(f"File {path} has been modified externally")
 
         if path in self._cache and self._deep_compare(self._cache[path], content):
-            logger.debug("Content is identical (1st check), skipping save")
+            logger.info("Content is identical (1st check), skipping save")
             return
 
         if not self._save_file(path, content, fmt, **kwargs):
-            logger.debug("Content is identical (2nd check), skipping save")
+            logger.info("Content is identical (2nd check), skipping save")
             return
-        self._cache[path] = content
+        self._cache[path] = deepcopy(content)
         self._last_modified[path] = os.path.getmtime(path)
         logger.info("Saved %s file: %s", fmt, path)
 
@@ -159,9 +174,11 @@ class FileCache:
         if path is None:
             self._cache.clear()
             self._last_modified.clear()
+            self._last_check_time.clear()
             return
         self._cache.pop(path, None)
         self._last_modified.pop(path, None)
+        self._last_check_time.pop(path, None)
 
     def symlink(self, src: str, dst: str):
         """
@@ -193,7 +210,10 @@ class FileCache:
         Remove a file or symlink.
         Also remove it from the cache.
         """
-        os.remove(path)
+        try:
+            os.remove(path)
+        except FileNotFoundError:
+            pass
         self.clear(path)
 
 cache = FileCache()

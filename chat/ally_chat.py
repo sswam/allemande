@@ -1,7 +1,7 @@
 #!/usr/bin/env python3-allemande
 # pylint: disable=unused-argument
 
-""" Ally Chat / Electric Barbarella v1.0.9 - multi-user LLM chat app """
+""" Ally Chat / Electric Barbarella v1.1.0 - multi-user AI chat app """
 
 import os
 import sys
@@ -171,7 +171,7 @@ def trim_response(response, args, agent_name, people_lc=None):
     # response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
 
     if response != response_before:
-        logger.debug("Trimmed response: %r\nto: %r", response_before, response)
+        logger.info("Trimmed response: %r\nto: %r", response_before, response)
 
     response = " " + response.strip()
     return response
@@ -399,54 +399,24 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     return response4
 
 
-def find_resource_file(file, ext, name=None):
-    """Find a resource file for the chat room."""
-    parent = Path(file).parent
-    stem = Path(file).stem
-    resource = parent / (stem + "." + ext)
-    if not resource.exists():
-        stem_no_num = re.sub(r"-\d+$", "", stem)
-        if stem_no_num != stem:
-            resource = parent / (stem_no_num + "." + ext)
-    if not resource.exists():
-        resource = parent / (name + "." + ext)
-    if not resource.exists():
-        resource = None
-    return str(resource) if resource else None
-
-
-def find_agent_resource_file(file, ext, agent_name=None):
-    """Find a resource file for the agent and chat room."""
-    parent = Path(file).parent
-    stem = Path(file).stem
-    resource = parent / (stem + "." + agent_name + "." + ext)
-    if not resource.exists():
-        stem_no_num = re.sub(r"-\d+$", "", stem)
-        if stem_no_num != stem:
-            resource = parent / (stem_no_num + "." + agent_name + "." + ext)
-    if not resource.exists():
-        resource = parent / (agent_name + "." + ext)
-    if not resource.exists():
-        resource = None
-    return str(resource) if resource else None
-
-
 async def process_file(file, args, history_start=0, skip=None, agents=None) -> int:
     """Process a file, return True if appended new content."""
     logger.info("Processing %s", file)
 
+    room = chat.Room(path=Path(file))
+
     history = chat.chat_read(file, args)
 
     # Load mission file, if present
-    mission_file = find_resource_file(file, "m", "mission")
+    mission_file = room.find_resource_file("m", "mission")
     mission = chat.chat_read(mission_file, args)
 
     # Load summary file, if present
-    summary_file = find_resource_file(file, "s", "summary")
+    summary_file = room.find_resource_file("s", "summary")
     summary = summary_read(summary_file, args)
 
     # Load config file, if present
-    config_file = find_resource_file(file, "yml", "config")
+    config_file = room.find_resource_file("yml", "options")
     config = config_read(config_file)
 
     history_messages = list(chat.lines_to_messages(history))
@@ -465,6 +435,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
         include_humans_for_human_message=True,
         mission=mission,
         config=config,
+        room=room,
     )
     logger.info("who should respond: %r", bots)
 
@@ -473,7 +444,6 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
     if message and message["content"].startswith("-@"):  # pylint: disable=unsubscriptable-object
         history_messages.pop()
         history.pop()
-        room = chat.Room(path=Path(file))
         room.undo("root")
         message = history_messages[-1] if history_messages else None
 
@@ -486,7 +456,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
 
         # load agent's mission file, if present
         my_mission = mission.copy()
-        agent_mission_file = find_agent_resource_file(file, "m", bot.lower())
+        agent_mission_file = room.find_agent_resource_file("m", bot.lower())
         mission2 = chat.chat_read(agent_mission_file, args)
         logger.debug("mission: %r", mission)
         logger.debug("mission2: %r", mission2)
@@ -521,7 +491,6 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
         if history and history[-1].startswith("-"):
             history.pop()
             history_messages.pop()
-            room = chat.Room(path=Path(file))
             room.undo("root")
             # sleep for a bit
             await asyncio.sleep(0.1)
@@ -554,12 +523,26 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     # Note: the invitation should not end with a space, or the model might use lots of emojis!
     name = agent["name"]
+    name_lc = name.lower()
+
+    # Allow to override agent settings in the config
+    agent = agent.copy()
+    if config and config.get("agents") and "all" in config["agents"]:
+        agent.update(config["agents"]["all"])
+    if config and config.get("agents") and name_lc in config["agents"]:
+        agent.update(config["agents"][name_lc])
+
+    logger.info("Running local agent %r", agent)
+
     invitation = args.delim + name + ":"
 
     model_name = agent["model"]
     n_context = agent.get("context")
     if n_context is not None:
-        context = history[-n_context:]
+        if n_context == 0:
+            context = []
+        else:
+            context = history[-n_context:]
     else:
         context = history.copy()
 
@@ -626,6 +609,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         # load the config each time, in case it has changed
         # TODO the config should be per agent, not global
         gen_config = load_config(args)
+
+    if "lines" in agent:
+        gen_config["lines"] = agent["lines"]
 
     # TODO: These stop regexps don't yet handle names with spaces or punctuation.
     gen_config["stop_regexs"] = [
@@ -800,8 +786,25 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if config is None:
         config = {}
 
+    name = agent["name"]
+    name_lc = name.lower()
+
+    # Allow to override agent settings in the config
+    agent = agent.copy()
+    if config and config.get("agents") and "all" in config["agents"]:
+        agent.update(config["agents"]["all"])
+    if config and config.get("agents") and name_lc in config["agents"]:
+        agent.update(config["agents"][name_lc])
+
     n_context = agent["context"]
-    context = history[-n_context:]
+    if n_context is not None:
+        if n_context == 0:
+            context = []
+        else:
+            context = history[-n_context:]
+    else:
+        context = history.copy()
+
     # XXX history is a list of lines, not messages, so won't the context sometimes contain partial messages? Yuk. That will interact badly with missions, too.
     # hacky temporary fix here for now, seems to work:
     while context and context[0].startswith("\t"):
@@ -896,13 +899,14 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     opts = llm.Options(model=agent["model"], indent="\t")
 
-    # Some agents don't like empty content
+    # Some agents don't like empty content, specifically google
     if not remote_messages[-1]["content"]:
         remote_messages[-1]["content"] = "?"
+    remote_messages = [m for m in remote_messages if m["content"]]
 
-    logger.debug("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
+    logger.info("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
 
-    logger.debug("querying %r = %r", agent["name"], agent["model"])
+    logger.info("querying %r = %r", agent["name"], agent["model"])
     try:
         output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, opts, remote_messages)
     except Exception as e:  # pylint: disable=broad-except
@@ -1122,7 +1126,10 @@ def update_visual(agent: Agent):
     # supporting arbitrary keys might be a security risk
     for key in "person", "clothes", "age", "emo":
         if key not in visual:
-            continue
+            cache.remove(str(PATH_VISUAL / key / name_lc) + ".txt")
+            for name in all_names:
+                for dest in name, name.lower():
+                    cache.remove(str(PATH_VISUAL / key / dest) + ".txt")
         prompt = visual.get(key)
         if prompt:
             path = key if key == "person" else "person/" + key

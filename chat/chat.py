@@ -25,6 +25,7 @@ import argh
 import markdown
 from starlette.exceptions import HTTPException
 import aiofiles
+from deepmerge import always_merger
 
 import video_compatible
 from ally.cache import cache
@@ -214,8 +215,14 @@ class Room:
                 raise PermissionError("You are not allowed to clear this room.")
             if backup:
                 backup_file(str(self.path))
-            # truncate the file
-            self.path.write_text("")
+            # If there is a template file, copy it to the room
+            # e.g. foo.bb => foo.bb.template
+            # else, truncate the file
+            template_file = self.path.with_suffix(".bb.template")
+            if template_file.exists():
+                shutil.copy(template_file, self.path)
+            else:
+                self.path.write_text("")
         elif op == "clean":
             await self.clean(user)
 
@@ -295,6 +302,77 @@ class Room:
         output = io.StringIO()
         save_chat_messages(messages, output, mode="w")
         await overwrite_file(user, self.name + EXTENSION, output.getvalue(), backup=backup)
+
+    def check_access(self, user: str) -> Access:
+        """Check access for a user."""
+        return check_access(user, self.name, self.path)
+
+    def find_resource_file(self, ext, name=None, create=False):
+        """Find a resource file for the chat room."""
+        parent = self.path.parent
+        stem = self.path.stem
+        resource = parent / (stem + "." + ext)
+        if not resource.exists():
+            stem_no_num = re.sub(r"-\d+$", "", stem)
+            if stem_no_num != stem:
+                resource = parent / (stem_no_num + "." + ext)
+        if not resource.exists():
+            resource = parent / (name + "." + ext)
+        if not resource.exists() and not create:
+            resource = None
+        return str(resource) if resource else None
+
+    def find_agent_resource_file(self, ext, agent_name=None):
+        """Find a resource file for the agent and chat room."""
+        parent = self.path.parent
+        stem = self.path.stem
+        resource = parent / (stem + "." + agent_name + "." + ext)
+        if not resource.exists():
+            stem_no_num = re.sub(r"-\d+$", "", stem)
+            if stem_no_num != stem:
+                resource = parent / (stem_no_num + "." + agent_name + "." + ext)
+        if not resource.exists():
+            resource = parent / (agent_name + "." + ext)
+        if not resource.exists():
+            resource = None
+        return str(resource) if resource else None
+
+    def get_options(self, user) -> dict:
+        """Get the options for a room."""
+        access = check_access(user, self.name, self.path)
+        if not access.value & Access.READ.value:
+            raise PermissionError("You are not allowed to get options for this room.")
+        options_file = self.find_resource_file("yml", "options")
+        if options_file:
+            options = cache.load(options_file)
+        else:
+            options = {}
+        return options
+
+    def set_options(self, user, options):
+        """Set the options for a room."""
+        access = check_access(user, self.name, self.path)
+        if not access.value & Access.MODERATE.value:
+            raise PermissionError("You are not allowed to set options for this room.")
+        options_file = self.find_resource_file("yml", "options", create=True)
+        if options_file:
+            old_options = cache.load(options_file)
+            logger.info("old options: %r", old_options)
+            new_options = always_merger.merge(old_options, options)
+            new_options = tree_prune(new_options)
+            logger.info("new options: %r", new_options)
+            cache.save(options_file, new_options)
+        else:
+            raise FileNotFoundError("Options file not found.")
+
+def tree_prune(tree: dict) -> dict:
+    """Prune a tree in-place, removing None values."""
+    for key, value in list(tree.items()):
+        if value is None:
+            del tree[key]
+        elif isinstance(value, dict):
+            tree_prune(value)
+    return tree
 
 
 # TODO move to a separate module
@@ -1159,8 +1237,15 @@ def read_agents_list() -> list[str]:
 
 
 def check_access(user: str, pathname: str, path: Path) -> Access:
+    """Check if the user has access to the path, and log the access."""
+    access, reason = _check_access_2(user, pathname, path)
+    logger.info("check_access: User: %s, pathname: %s, Path: %s, Access: %s, Reason: %s", user, pathname, path, access, reason)
+    return access
+
+
+def _check_access_2(user: str, pathname: str, path: Path) -> Access:
     """Check if the user has access to the path"""
-    # TODO make this a method of the Room class
+    # TODO make a wrapper method in the room class
     # user has access to the top-level dir, all files at the top-level
     # their own directory (/username/), and all files in their own directory (/username/*)
     # TODO detailed access control via files for exceptions
@@ -1175,37 +1260,22 @@ def check_access(user: str, pathname: str, path: Path) -> Access:
 
     logger.debug("check_access: User: %s, pathname: %s, Path: %s", user, pathname, path)
 
-    # Denied users have no access
-    if user in access.get("deny", []):
-        return Access.NONE
-
-    # Allowed users have access
-    if user in access.get("allow", []):
-        return Access.READ_WRITE
-
-    # Agents have access if allowed
-    if access.get("allow_agents") and user in agent_names:
-        return Access.READ_WRITE
-
     # Admins have access to everything
     if user in ADMINS:
-        return Access.ADMIN
+        return Access.ADMIN, "admin"
 
     # Moderators have moderation on the root
     if user in MODERATORS and pathname == "":
-        return Access.MODERATE_READ_WRITE
-
-    # Users have access to the root
-    if pathname == "":
-        return Access.READ
+        return Access.MODERATE_READ_WRITE, "moderator"
 
     # Users have admin on their own directory, and files in their own directory
     if re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE) or pathname == user or pathname.startswith(user + "/"):
-        return Access.ADMIN
+        return Access.ADMIN, "user_dir"
 
     # Users have admin on their top-level room, or a file with their name and any extension
     if re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE):
-        return Access.ADMIN
+        return Access.ADMIN, "user_top"
+
 
     exists = True
     try:
@@ -1215,25 +1285,44 @@ def check_access(user: str, pathname: str, path: Path) -> Access:
 
     is_file = not exists or stats.st_mode & S_IFREG
 
+
     # Moderators have moderation on all files in the root
     if user in MODERATORS and not "/" in pathname and is_file:
-        return Access.MODERATE_READ_WRITE
+        return Access.MODERATE_READ_WRITE, "moderator_top"
+
+
+    # Denied users have no access
+    if user in access.get("deny", []):
+        return Access.NONE, "deny"
+
+    # Allowed users have access
+    logger.info("access: %s", access)
+    if user in access.get("allow", []):
+        return Access.READ_WRITE, "allow"
+
+    # Agents have access if allowed
+    if access.get("allow_agents") and user in agent_names:
+        return Access.READ_WRITE, "allow_agents"
+
+    # Users have access to the root
+    if pathname == "":
+        return Access.READ, "root"
 
     # Users have access to files in the root, check is a file
     if not "/" in pathname and is_file:
-        return Access.READ_WRITE
+        return Access.READ_WRITE, "user_root_file"
 
     # TODO guests can create new files in a shared folder?
 
     # Check if the path exists
     if not path.exists():
-        return Access.NONE
+        return Access.NONE, "not_found"
 
     mode = stats.st_mode
 
     access = Access.NONE.value
 
-    # Users have access to other-readable entries anywhere
+    # Users have access to shared other-readable entries anywhere
     if mode & S_IROTH:
         access |= Access.READ.value
     if mode & S_IWOTH:
@@ -1241,7 +1330,7 @@ def check_access(user: str, pathname: str, path: Path) -> Access:
 
     # TODO Users have access to group-readable entries if they are marked as a friend
 
-    return Access(access)
+    return Access(access), "shared_public"
 
 
 def backup_file(path: str):

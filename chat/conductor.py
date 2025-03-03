@@ -5,7 +5,7 @@
 import logging
 import re
 import random
-from typing import Any
+from typing import Any, Iterable
 
 import chat
 
@@ -112,6 +112,8 @@ def who_is_named(
     everyone_words: list[str] | None = None,
     anyone_words: list[str] | None = None,
     get_all: bool = False,
+    room: chat.Room | None = None,
+    access_check_cache: dict[str, int] | None = None,
 ) -> list[str]:
     """check who is named first in the message"""
     if chat_participants is None:
@@ -161,13 +163,17 @@ def who_is_named(
             continue
         if agent in everyone_words:
             random.shuffle(everyone_except_user)
-            result.extend(everyone_except_user[:EVERYONE_MAX])
+            if EVERYONE_MAX is not None:
+                result.extend(everyone_except_user[:EVERYONE_MAX])
+            else:
+                result.extend(everyone_except_user)
         elif agent in anyone_words and everyone_except_user:
             result.append(random.choice(everyone_except_user))
         elif agent in anyone_words and everyone_except_user_all:
             result.append(random.choice(everyone_except_user_all))
         else:
-            result.append(agent)
+            if filter_access([agent], room, access_check_cache):
+                result.append(agent)
 
     result = [x.lstrip("@") for x in result]
     result = uniqo(result)
@@ -246,8 +252,12 @@ def who_should_respond(
     include_humans_for_human_message: bool = True,
     config: dict[str, Any] | None = None,
     mission: str | None = None,
+    room: chat.Room | None = None,
 ) -> list[str]:
     """who should respond to a message"""
+
+    access_check_cache = {}
+
     logger.debug("who_should_respond: %r %r", message, history)
     if not history:
         history = []
@@ -284,12 +294,15 @@ def who_should_respond(
             if re.search(rf"(?i)\b{agent_re}\b", mission_text):
                 mentioned_in_mission.add(name)
 
+    mentioned_in_mission = set(filter_access(mentioned_in_mission, room, access_check_cache))
+
     logger.debug("mission: %r", mentioned_in_mission)
     logger.debug("mentioned_in_mission: %r", mentioned_in_mission)
     # TODO this is a big mess, clean up
 
     # Filter excluded participants first
     all_participants_with_excluded: list[str] = list(set(participants(history, use_all=True) + list(mentioned_in_mission)))
+    all_participants_with_excluded = filter_access(all_participants_with_excluded, room, access_check_cache)
     all_participants = list(set(all_participants_with_excluded) | mentioned_in_mission - EXCLUDE_PARTICIPANTS)
 
     # Add agents for humans in the history
@@ -314,9 +327,12 @@ def who_should_respond(
     if user_lc in agents_lc:
         user_agent = agents_dict[user_lc]
         logger.debug('user_agent["type"]: %r', user_agent["type"])
-        if user_agent["type"] == "tool":
-            invoked = who_spoke_last(history[:-1], user, agents_dict, include_self=include_self, include_humans=include_humans_for_ai_message)
-            return [agent_case_map[i.lower()] for i in invoked]
+        # What does this do, exactly?
+        # It seems to be a hack to make tools reply to the last human speaker
+        # I'm disabling this temporarily to see if it breaks anything
+#         if user_agent["type"] == "tool":
+#             invoked = who_spoke_last(history[:-1], user, agents_dict, include_self=include_self, include_humans=include_humans_for_ai_message)
+#             return [agent_case_map[i.lower()] for i in invoked]
 
     is_human = user_lc in agents_lc and agents_dict[user_lc]["type"] == "human"
 
@@ -373,7 +389,10 @@ def who_should_respond(
         everyone_words=everyone_with_at,
         anyone_words=anyone_with_at,
         get_all=True,
+        room=room,
+        access_check_cache=access_check_cache,
     )
+    invoked = filter_access(invoked, room, access_check_cache)
 
     logger.debug("who_is_named @: %r", invoked)
     if not invoked:
@@ -386,7 +405,10 @@ def who_should_respond(
             chat_participants_all=chat_participants_names_all_lc,
             everyone_words=everyone,
             anyone_words=anyone,
+            room=room,
+            access_check_cache=access_check_cache,
         )
+        invoked = filter_access(invoked, room, access_check_cache)
         logger.debug("who_is_named: %r", invoked)
 
     direct_reply = random.random() < direct_reply_chance
@@ -397,6 +419,7 @@ def who_should_respond(
         mediator = []
     if not isinstance(mediator, list):
         mediator = [mediator]
+    mediator = filter_access(mediator, room, access_check_cache)
 #    mediator = [m for m in mediator if m != user]  # exclude user
     # We don't want mediators to reply to themselves or other mediators,
     # they need to be able to chat with users
@@ -413,15 +436,20 @@ def who_should_respond(
 
     if not invoked and direct_reply:
         invoked = who_spoke_last(history[:-1], user, agents_dict, include_self=include_self, include_humans=include_humans)
+        invoked = filter_access(invoked, room, access_check_cache)
         logger.debug("who_spoke_last: %r", invoked)
 
     # If still no one to respond, default to last AI speaker or random AI
     if not invoked:
         ai_participants = [agent for agent in all_participants if agent_is_ai(agents_dict[agent.lower()])]
+        ai_participants = filter_access(ai_participants, room, access_check_cache)
         ai_participants_with_excluded = [agent for agent in all_participants_with_excluded if agent_is_ai(agents_dict[agent.lower()])]
+        ai_participants_with_excluded = filter_access(ai_participants_with_excluded, room, access_check_cache)
+        default = filter_access(default, room, access_check_cache)
         if ai_participants and direct_reply:
             ai_participant_agents = {name.lower(): agents_dict[name.lower()] for name in ai_participants}
             invoked = who_spoke_last(history[:-1], user, ai_participant_agents, include_self=True, include_humans=False)
+            invoked = filter_access(invoked, room, access_check_cache)
             logger.debug("who_spoke_last ai: %r", invoked)
         if not invoked and ai_participants and ai_participants != [user]:
             invoked = [random.choice(ai_participants)]
@@ -438,3 +466,16 @@ def who_should_respond(
 
     # Filter out special words and only use actual agent names
     return [agent_case_map[agent.lower()] for agent in invoked if agent.lower() in agent_case_map]
+
+
+def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_cache: dict[str, int]) -> list[str]:
+    """filter out agents that don't have access"""
+    if not room:
+        return invoked
+    result = []
+    for agent in invoked:
+        if access_check_cache.get(agent) is None:
+            access_check_cache[agent] = room.check_access(agent).value
+        if access_check_cache[agent] & chat.Access.READ_WRITE.value:
+            result.append(agent)
+    return result
