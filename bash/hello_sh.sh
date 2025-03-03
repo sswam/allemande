@@ -83,12 +83,6 @@ fi
 
 # We indent shell code with tabs.
 
-# The `eval "$(ally)` call gets options and prints usage automatically. No need
-# to do that in the script. The options like `local language= l=en are followed
-# by an explanatory comment. Longs options must be declared first, then short,
-# on the same line. The `usage` and `die` functions are provided by ally; use
-# them for fatal errors.
-
 # The first lines 1. shebang, 2. arguments without program name, 3. short
 # description of the program. This header format must be followed exactly, so
 # that ally can print usage.
