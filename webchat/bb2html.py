@@ -37,7 +37,13 @@ async def file_changed(bb_file, html_file, old_size, new_size):
             html_file_size = html.tell()
             if old_size and html_file_size:
                 bb.seek(old_size)
-            for message in chat.lines_to_messages(bb):
+            # Load whole bb file into memory from here on,
+            # This avoids issues when new messages are appended while we are reading
+            # then we receive watch events for the new messages also, so they
+            # get double-processed
+            # TODO: This is still not working right yet.
+            chat_lines = bb.read().decode("utf-8").splitlines()
+            for message in chat.lines_to_messages(chat_lines):
                 html.write(chat.message_to_html(message).encode("utf-8"))
 
     row = [html_file]
