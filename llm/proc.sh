@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# [options] [prompt ...]
-# Process input text using an LLM, and reply concisely
+
+# [prompt [attachment...]]
+# Process input text with an LLM, for a concise answer
 
 proc() {
-	local model= m=
-	local empty_ok= e=	# empty input is okay
+	local model= m=     # LLM model
+	local empty_ok= e=  # empty input is okay
+	local system= s=    # system prompt
 
 	eval "$(ally)"
 
@@ -13,9 +15,12 @@ proc() {
 
 	local refs=("$@")
 
-	opts=""
+	opts=()
 	if [ "$empty_ok" = 1 ]; then
-		opts="--empty-ok"
+		opts+=("--empty-ok")
+	fi
+	if [ -n "$system" ]; then
+		opts+=("--system=$system")
 	fi
 
 	prompt="$prompt Please reply as concise as possible, with no boilerplate \
@@ -25,11 +30,11 @@ or blank lines). If the input has code but does not include code quoting with \
 \`\`\`, the output should not include \`\`\` either. If writing code, be \
 concise but clear, not obscure. No intro or concluding text. Thanks\!"
 
-	process -m="$model" $opts "$prompt" "${refs[@]}" | text-strip
+	process -m="$model" "${opts[@]}" "$prompt" "${refs[@]}" | text-strip
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	proc "$@"
 fi
 
-# version: 1.0.3
+# version: 1.0.4

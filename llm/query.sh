@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
+# I'll add the -s/--system option and fix the identified issues.
+#
+# Here's the updated `query.sh`:
+
+
 # [prompt [reference files ...]]
 # Query an LLM with the given prompt
 
 query() {
-	local model= m= # LLM model to use
+	local model= m=	  # LLM model to use
+	local system= s=  # system prompt
 
 	eval "$(ally)"
 
@@ -13,12 +19,18 @@ query() {
 
 	local refs=("$@")
 
+	local opts=()
+
+	if [ -n "$system" ]; then
+		opts+=("--system=$system")
+	fi
+
 	cat-named -p -S $'\n' --suppress-headings input "${refs[@]}" |
-		llm process -m "$model" --empty-ok "$prompt" | text-strip
+		llm process -m "$model" "${opts[@]}" --empty-ok "$prompt" | text-strip
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	query "$@"
 fi
 
-# version: 0.1.2
+# version: 0.1.3
