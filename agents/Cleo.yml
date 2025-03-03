@@ -14,6 +14,6 @@ visual:
   clothes: simple black dress with floral pattern in red and pink, white sandals
   emo: light smile, lively, enthusiastic, friendly, sassy
   age: adult 22 years old
-context: 21
+context: 101
 stop_regexs:
 - \n\s*?\n

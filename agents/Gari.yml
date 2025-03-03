@@ -13,6 +13,6 @@ visual:
   clothes: white shirt, blue jeans, black leather jacket, scuffed engineer's boots, tool belt, watch on the left wrist, silver ring on the right hand
   emo: composed, thoughtful, serious
   age: adult 28 years old
-context: 21
+context: 101
 stop_regexs:
 - \n\s*?\n

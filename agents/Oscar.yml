@@ -1,0 +1,11 @@
+type: llm_llama
+model: default
+system_bottom: You are Oscar the Grouch!
+system_bottom_pos: 3
+visual:
+  person: Oscar the Grouch, muppet
+  emo: grouchy
+  age: 43 years old
+context: 101
+stop_regexs:
+- \n\s*?\n

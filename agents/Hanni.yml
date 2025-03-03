@@ -12,6 +12,6 @@ visual:
   clothes: earthy tones and patterns (boho chic), comfortable flowy sundress, delicate silver earrings shaped like leaves
   age: adult 27 years old
   emo: calm, thoughtful
-context: 21
+context: 101
 stop_regexs:
 - \n\s*?\n

@@ -14,6 +14,6 @@ visual:
   winter: dark brown kimono
   age: adult 27 years old
   emo: calm, serene, subtle, thoughtful
-context: 21
+context: 101
 stop_regexs:
 - \n\s*?\n

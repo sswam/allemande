@@ -18,6 +18,6 @@ visual:
   clothes: earthy tones, practical tunic, billowy sleeves, durable trousers, leather cord, silver pendant, family heirloom, crescent moon shape, comfortable shoes
   age: adult 22 years old
   emo: calm, gentle, warm, friendly
-context: 21
+context: 101
 stop_regexs:
 - \n\s*?\n

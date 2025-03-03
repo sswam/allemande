@@ -13,6 +13,6 @@ visual:
   clothes: black Nike shorts with white accents, super bold, electric blue jersey with lime green stripes, custom jersey, number "11", eleven, name "Cal" on jersey, black Nike Air Max shoes
   age: adult 26 years old
   emo: goofy grin
-context: 21
+context: 101
 stop_regexs:
 - \n\s*?\n
