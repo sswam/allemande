@@ -593,8 +593,12 @@ function hash_to_query(hash) {
 
 function leave_room() {
   // the following doesn't work reliably, so we're going out out
-  if (room == "-") set_room("");
+  if (room == "-") go_home();
   else set_room("-");
+}
+
+function go_home() {
+  set_room("");
 }
 
 function change_room() {
@@ -747,6 +751,11 @@ function reload_page() {
 function handle_message(ev) {
   if (ev.origin != ROOMS_URL) {
     console.error("ignoring message from", ev.origin);
+    return;
+  }
+
+  if (ev.data.type == "go_home") {
+    go_home();
     return;
   }
 
@@ -1424,7 +1433,7 @@ function edit_close() {
 
 let view_options = {
   images: 2,
-  source: 1,
+  source: 0,
   canvas: 0,
   clean: 0,
   image_size: 4,

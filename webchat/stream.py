@@ -244,6 +244,8 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
         pathname += "/"
 
     for item in items:
+        if not chat.check_access(info.user, pathname + item.name, item).value & Access.READ.value:
+            continue
         mime_type, icon = get_mime_type_and_icon(item)
         ext = item.suffix.lstrip('.').lower()
         record = {
@@ -251,15 +253,12 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
             "icon": icon,
         }
         if item.is_dir():
-            if chat.check_access(info.user, pathname + item.name, item).value & Access.READ.value:
-                record.update({
-                    "name": item.name + "/",
-                    "type": "folder",
-                    "type_sort": 0,
-                    "link": f"/#{pathname}{item.name}/",  # view dir
-                })
-            else:
-                continue
+            record.update({
+                "name": item.name + "/",
+                "type": "folder",
+                "type_sort": 0,
+                "link": f"/#{pathname}{item.name}/",  # view dir
+            })
         elif ext == 'bb':
             record.update({
                 "name": item.stem,
@@ -278,6 +277,8 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
                 "link": f"/#{pathname}{item.name}",  # edit file
             })
         elif ext in MEDIA_FILE_EXTS:
+            # don't show media files at the moment
+            continue
             record.update({
                 "name": item.name,
                 "type": "file",
@@ -285,6 +286,8 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
                 "link": f"{info.rooms_base_url}/{pathname}{item.name}",
             })
         else:
+            # don't show random files at the moment
+            continue
             record.update({
                 "name": item.name,
                 "type": "file",

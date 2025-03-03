@@ -262,6 +262,11 @@ function key_event(ev) {
   ev.preventDefault();
 }
 
+function go_home() {
+  // tell the parent window to GTFO of here
+  window.parent.postMessage({ type: "go_home" }, CHAT_URL);
+}
+
 function key_event_overlay(ev) {
   if (ev.key == "Escape" || ev.key == "q") {
     overlay_close(ev);

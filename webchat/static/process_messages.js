@@ -160,7 +160,13 @@ function handleNewMessage(newMessage) {
     const previousMessage = newMessage.previousElementSibling;
     if (previousMessage && nodeIsMessage(previousMessage) && previousMessage.getAttribute("user") === newMessage.getAttribute("user")) {
       const prevContent = previousMessage.querySelector(".content");
-      moveContent(newContent, prevContent);
+      const prevParagraph = getOnlyChildParagraph(prevContent);
+      // If images, combine them into the same paragraph
+      if (newParagraph && isNodeOnlyImages(newParagraph) && prevParagraph && isNodeOnlyImages(prevParagraph)) {
+        moveImages(newParagraph, prevParagraph);
+      } else {
+        moveContent(newContent, prevContent);
+      }
       newMessage.remove();
     }
   }
