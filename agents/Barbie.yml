@@ -12,8 +12,8 @@ fullname: Barbarella
 visual:
   person: 1girl, blue eyes, Greek, slim, long hair, curly hair, black hair
   clothes: blue floral sundress with light pink flowers, silver necklace, brown sandals
-  age: teenage 16 years old
+  age: teenage 18 years old
   emo: happy, smile, excited, curious
-context: 21
+context: 101
 stop_regexs:
 - \n\s*?\n

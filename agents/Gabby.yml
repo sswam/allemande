@@ -8,7 +8,7 @@ visual:
   person: 1girl, hazel eyes, Indian, very dark skin, slim, long hair, wavy hair, black hair
   clothes: RAINBOW PINK short shorts, PURPLE top with WHITE cloud shapes, SO CUTE
   emo: happy, vibrant, lively, smile
-  age: child 8 years old
-context: 21
+  age: teenage 18 years old
+context: 101
 stop_regexs:
 - \n\s*?\n

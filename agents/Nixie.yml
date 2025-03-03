@@ -26,7 +26,7 @@ visual:
   person: 1girl, piercing green eyes with dark eyeliner, full lips painted red, mixed-heritage complexion, edgy style, cybernetic enhancements, crescent-shaped earpiece, augmented body, subdermal implants, short hair, messy bangs, black hair, perfect skin
   clothes: ripped fishnet stockings over tight black jeans, flowy white top
   emo: sassy, (aggressive:0.7)
-  age: teenage 17 years old
-context: 21
+  age: teenage 18 years old
+context: 101
 stop_regexs:
 - \n\s*?\n

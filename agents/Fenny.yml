@@ -16,8 +16,8 @@ visual:
     hair
   clothes: colorful school uniform, white blouse, tie, white knee-high socks, loafers
   emo: vibrant, lively, happy
-  age: child 11 years old
-context: 21
+  age: teenage 18 years old
+context: 101
 remember_thoughts: 40
 stop_regexs:
 - \n\s*?\n

@@ -15,7 +15,7 @@ visual:
   accessories: red sunglasses
   winter: purple or black hoodie
   emo: happy, cheerful
-  age: child 12 years old
-context: 21
+  age: teenage 19 years old
+context: 101
 stop_regexs:
 - \n\s*?\n
