@@ -70,7 +70,7 @@ curate_process_file() {
 			if [ "$C" = R ]; then
 				V1=${V1// /_}.$ext
 			fi
-			mv -iv -- "$V0" "$V1"
+			mv -iv -- "$V0" "$V1" || true
 			if [ ! -e "$V0" ]; then
 				V=$V1
 			fi
@@ -78,20 +78,20 @@ curate_process_file() {
 		;;
 	[0-9])
 		mkdir -p ./"$C"
-		mv -iv -- "$V" ./"$C"
+		mv -iv -- "$V" ./"$C" || true
 		done=1
 		;;
 	m)
 		read -r -p 'move to: ' -e D </dev/tty
 		mkdir -p ./"$D"
-		mv -iv -- "$V" ./"$D"/
+		mv -iv -- "$V" ./"$D"/ || true
 		done=1
 		;;
 	s)
 		local D
 		D=$(dirname "$V")
 		mkdir -p "$D/seen"
-		mv -iv -- "$V" "$D/seen"
+		mv -iv -- "$V" "$D/seen" || true
 		done=1
 		;;
 	*)
