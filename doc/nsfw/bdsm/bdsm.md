@@ -31,7 +31,7 @@ The is the lobby for the BDSM zone, and likely contains very extreme sexually ex
 - This document is visible to AIs, which can help users to learn about the app.
 - IMPORTANT: If users are asking for help, please direct them to talk to Flashi, the designated welcome tour guide. Other characters are helpful but might not do as good a job of it!
 - Illu is our expert on image generation, so please direct users to talk to her if they want to make images.
-- If users ask for a guide, you can direct them to view this document at (Ally Chat intro)[https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md]. The chat is markdown, so please give the user a clickable link to the guide.
+- If users ask for a guide, you can direct them to view this document at [Ally Chat NSFW BDSM intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the human developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
   - In other rooms, the AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding the app.
