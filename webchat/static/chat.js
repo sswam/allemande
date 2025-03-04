@@ -19,7 +19,7 @@ const $auto = $id('mod_auto');
 const $messages_overlay = $id("messages_overlay");
 
 const narrator = "Nova";
-const illustrator = "Pixi";
+const illustrator = "Illu";
 
 
 // simple messages to keep the conversation going
@@ -317,7 +317,8 @@ function new_chat_message(message) {
   if (message_user_lc != user) {
     active_dec("send");
     if (message.user) {
-      console.log("adding to last users", message.user, last_users);
+      // This doesn't quite work right, perhaps we don't receive the messages in order?
+      // console.log("adding to last users", message.user, last_users);
       // remove any existing entry
       last_users = last_users.filter(u => u != message.user);
       last_users.push(message.user);
@@ -1585,7 +1586,7 @@ function show_theme() {
 // options -------------------------------------------------------------------
 
 async function get_options() {
-  console.log("get_options", room);
+//  console.log("get_options", room);
   const query = new URLSearchParams({
     room,
     nocache: Math.random(),
@@ -1595,7 +1596,7 @@ async function get_options() {
     throw new Error("GET options request failed");
   }
   const data = await response.json();
-  console.log("get_options", data);
+//  console.log("get_options", data);
 
   const context = data?.agents?.all?.context || "";
   const lines = data?.agents?.all?.lines || "";
