@@ -904,9 +904,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         remote_messages[-1]["content"] = "?"
     remote_messages = [m for m in remote_messages if m["content"]]
 
-    logger.info("DEBUG: remote_messages: %s", json.dumps(remote_messages, indent=2))
+    logger.debug("remote_messages: %s", json.dumps(remote_messages, indent=2))
 
-    logger.info("querying %r = %r", agent["name"], agent["model"])
+    logger.debug("querying %r = %r", agent["name"], agent["model"])
     try:
         output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, opts, remote_messages)
     except Exception as e:  # pylint: disable=broad-except
