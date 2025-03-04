@@ -532,7 +532,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     if config and config.get("agents") and name_lc in config["agents"]:
         agent.update(config["agents"][name_lc])
 
-    logger.info("Running local agent %r", agent)
+    logger.debug("Running local agent %r", agent)
 
     invitation = args.delim + name + ":"
 

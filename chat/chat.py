@@ -357,10 +357,10 @@ class Room:
         options_file = self.find_resource_file("yml", "options", create=True)
         if options_file:
             old_options = cache.load(options_file)
-            logger.info("old options: %r", old_options)
+            logger.debug("old options: %r", old_options)
             new_options = always_merger.merge(old_options, options)
             new_options = tree_prune(new_options)
-            logger.info("new options: %r", new_options)
+            logger.debug("new options: %r", new_options)
             cache.save(options_file, new_options)
         else:
             raise FileNotFoundError("Options file not found.")
@@ -1239,7 +1239,7 @@ def read_agents_list() -> list[str]:
 def check_access(user: str, pathname: str, path: Path) -> Access:
     """Check if the user has access to the path, and log the access."""
     access, reason = _check_access_2(user, pathname, path)
-    logger.info("check_access: User: %s, pathname: %s, Path: %s, Access: %s, Reason: %s", user, pathname, path, access, reason)
+    logger.debug("check_access: User: %s, pathname: %s, Path: %s, Access: %s, Reason: %s", user, pathname, path, access, reason)
     return access
 
 
@@ -1296,7 +1296,7 @@ def _check_access_2(user: str, pathname: str, path: Path) -> Access:
         return Access.NONE, "deny"
 
     # Allowed users have access
-    logger.info("access: %s", access)
+    logger.debug("access: %s", access)
     if user in access.get("allow", []):
         return Access.READ_WRITE, "allow"
 
