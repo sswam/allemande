@@ -115,7 +115,7 @@ class AsyncTail:
 
         removed_flags = aionotify.Flags.DELETE_SELF | aionotify.Flags.MOVE_SELF | aionotify.Flags.ATTRIB
 
-        pos = await f.tell()
+        pos_previous = await f.tell()
 
         try:
             self.watcher = aionotify.Watcher()
@@ -127,12 +127,18 @@ class AsyncTail:
                     await self.queue.put(line)
                     count += 1
                 if self.rewind and not count:
+                    pos_before_seek = await f.tell()
                     await self.seek_to_end(f)
-                    pos2 = await f.tell()
-                    if pos2 < pos:
+                    pos_at_end = await f.tell()
+                    if pos_at_end < pos_previous:
                         # file has shrunk, so we will start again.
                         return
-                    pos = pos2
+                    elif pos_at_end > pos_before_seek:
+                        # Went forward due to race condition, undo that
+                        try:
+                            await f.seek(pos_before_seek, 0)
+                        except io.UnsupportedOperation:
+                            pass
                 else:
                     pos = await f.tell()
                 event = await self.watcher.get_event()
@@ -222,9 +228,9 @@ async def atail(
         poll_interval=poll_interval,
     ) as queue:
         while (line := await queue.get()) is not None:
+            queue.task_done()
             print(line, end="", file=output)
             output.flush()
-            queue.task_done()
 
 
 def get_opts():

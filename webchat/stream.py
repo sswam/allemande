@@ -189,10 +189,11 @@ async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="
             try:
                 while True:
                     line = await queue2.get()
+                    logger.info("line: %s", line)
+                    queue2.task_done()
                     if line is None:
                         break
                     yield line
-                    queue2.task_done()
             except asyncio.CancelledError:
                 pass
 
