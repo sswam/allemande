@@ -89,11 +89,11 @@ class FileCache:
                 raise FileExistsError(f"File {path} has been modified externally")
 
         if path in self._cache and self._deep_compare(self._cache[path], content):
-            logger.info("Content is identical (1st check), skipping save")
+            logger.debug("Content is identical (1st check), skipping save")
             return
 
         if not self._save_file(path, content, fmt, **kwargs):
-            logger.info("Content is identical (2nd check), skipping save")
+            logger.debug("Content is identical (2nd check), skipping save")
             return
         self._cache[path] = deepcopy(content)
         self._last_modified[path] = os.path.getmtime(path)
