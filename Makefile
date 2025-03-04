@@ -170,7 +170,7 @@ chat-api:
 	cd $(WEBCHAT) && awatch -a -i -p chat-api.py ../chat/chat.py -s -- uvicorn chat-api:app --reload --timeout-graceful-shutdown 5
 
 stream:
-	cd $(WEBCHAT) && awatch -a -i -p stream.py ../chat/chat.py -s -- uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
+	cd $(WEBCHAT) && awatch -a -i -p stream.py ../chat/chat.py ../text/atail.py -s -- uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
 
 auth:
 	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002
