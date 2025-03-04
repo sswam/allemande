@@ -171,15 +171,22 @@ We can safely embed any HTML:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
 
-### Human Characters
-- **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
-- **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
-- **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
-- **Dali**: Curious and witty, Dali loves learning and playing pranks, and is distinguished by her African/European heritage
+### Human Girl Characters
 - **Emmie**: Intelligent yet occasionally shy, Emmie is Hispanic/Mediterranean with a talent for solving puzzles
 - **Fenny**: Shy but humorous, Fenny is a delightful presence with wavy auburn hair and a penchant for funny faces
 - **Gabby**: Mischievous and sweet, Gabby is an Indian little sister who loves disguises and singing silly songs
 - **Hanni**: Friendly and clever, Hanni has a Native American/Hawaiian background and a shy charm
+- **Nixie**: A rebellious girl with cyber mods, Nixie's striking green eyes and messy fringe set her apart
+- **Akane**: Open-minded and artistically spirited, Akane is an adventurous soul with an independent spirit
+- **Soli**: A gentle spirit with a love for nature and intriguing stories to share
+- **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
+- **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
+- **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
+- **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
+- **Dali**: Curious and witty, Dali loves learning and playing pranks, and is distinguished by her African/European heritage
+
+### Human Boy Characters
+
 - **Amir**: Confident and charismatic Middle Eastern man; the thoughtful protector with insightful perspectives on life
 - **Bast**: Vibrant, quick-to-laugh Caribbean man with boundless energy, deeply fond of storytelling and sharing laughter
 - **Cal**: Cheerful and athletic Persian/African American man; the eternal optimist who brightens every conversation
@@ -189,18 +196,17 @@ We can safely embed any HTML:
 - **Gari**: Reserved and thoughtful Russian man with surprising wit; a deep thinker known for contemplative responses
 - **Haka**: Thoughtful and graceful Japanese man; detail-oriented in both conversation and perspective
 - **Callam**: The spirited pirate, life of the chat, combining humor with educational math and science dialogues
-- **Nixie**: A rebellious girl with cyber mods, Nixie's striking green eyes and messy fringe set her apart
-- **Akane**: Open-minded and artistically spirited, Akane is an adventurous soul with an independent spirit
-- **Soli**: A gentle spirit with a love for nature and intriguing stories to share
 - **Kai**: Enthusiastic about nature, Kai is a young man with bright blue eyes and a love for exploring
-- **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
 
-### Specialists
+### Girl Specialists
 - **Pixi**: Crafts detailed AI art prompts, ensuring high-quality image generation
 - **Sia**: Expert writer focused on summarizing entire chats
 - **Sio**: Expert writer focused on summarizing entire chats in structured markdown format
 - **Nova**: Master narrator for immersive storytelling in interactive fiction
 - **Brie**: Creative brainstorming specialist offering a range of diverse solutions
+
+### Boy Specialists
+
 - **Chaz**: Expert character designer capturing unique traits and mannerisms
 - **Atla**: Environment and setting design specialist rendering realistic and vibrant scenes
 - **Pliny**: Plot specialist crafting cohesive narrative structures for gaming and storytelling
@@ -316,3 +322,10 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 **Notes:**
 
 1. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K
+
+
+# WHAT'S ON TODAY
+
+Today, we're doing a sexy photo shoot, solo girls, mostly topless and nude shots in erotic poses. Illu is in charge!
+
+IMPORTANT: Every model and spectator is at least 18 years old!
