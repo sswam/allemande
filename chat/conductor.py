@@ -43,7 +43,9 @@ ANYONE_WORDS = [
 # TODO configureable by room
 
 # TODO exclude based on an attribute or settings
-EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf", "Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
+# TODO should not include tools in the list of participants
+EXCLUDE_TOOLS = set(["Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
+EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf"])
 # EXCLUDE_PARTICIPANTS = set(["System", "Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
 EXCLUDE_PARTICIPANTS_SYSTEM = set(["System", "The Cast"])
 
@@ -213,7 +215,7 @@ def who_spoke_last(
 def participants(history: list[dict[str, str]], use_all=False) -> list[str]:
     """get all participants in the history"""
     agents_set = set(x["user"] for x in history if x.get("user"))
-    agents_set -= EXCLUDE_PARTICIPANTS_SYSTEM
+    agents_set -= EXCLUDE_PARTICIPANTS_SYSTEM - EXCLUDE_TOOLS
     if not use_all:
         agents_set -= EXCLUDE_PARTICIPANTS
     return list(agents_set)
@@ -379,6 +381,7 @@ def who_should_respond(
         everyone_with_at = random.sample(everyone_with_at, AI_EVERYONE_MAX)
 
     # For @mode, all mentioned agents should reply
+    reason = "named @"
     invoked = who_is_named(
         content,
         f"@{user}",
@@ -396,6 +399,7 @@ def who_should_respond(
 
     logger.debug("who_is_named @: %r", invoked)
     if not invoked:
+        reason = "named"
         invoked = who_is_named(
             content,
             user,
@@ -427,6 +431,7 @@ def who_should_respond(
         mediator = []
 
     if not invoked and not is_human and mediator:
+        reason = "mediator"
         invoked = [random.choice(mediator)]
         logger.debug("mediator: %r", invoked)
 
@@ -435,6 +440,7 @@ def who_should_respond(
         logger.debug("direct_reply: %r", direct_reply)
 
     if not invoked and direct_reply:
+        reason = "direct_reply"
         invoked = who_spoke_last(history[:-1], user, agents_dict, include_self=include_self, include_humans=include_humans)
         invoked = filter_access(invoked, room, access_check_cache)
         logger.debug("who_spoke_last: %r", invoked)
@@ -447,22 +453,26 @@ def who_should_respond(
         ai_participants_with_excluded = filter_access(ai_participants_with_excluded, room, access_check_cache)
         default = filter_access(default, room, access_check_cache)
         if ai_participants and direct_reply:
+            reason = "last_ai_speaker"
             ai_participant_agents = {name.lower(): agents_dict[name.lower()] for name in ai_participants}
             invoked = who_spoke_last(history[:-1], user, ai_participant_agents, include_self=True, include_humans=False)
             invoked = filter_access(invoked, room, access_check_cache)
             logger.debug("who_spoke_last ai: %r", invoked)
         if not invoked and ai_participants and ai_participants != [user]:
+            reason = "random_ai"
             invoked = [random.choice(ai_participants)]
             logger.debug("random ai: %r", invoked)
             logger.debug("ai_participants: %r", ai_participants)
         if not invoked and ai_participants_with_excluded and ai_participants_with_excluded != [user]:
+            reason = "random_ai_with_excluded"
             invoked = [random.choice(ai_participants_with_excluded)]
             logger.debug("random ai 2: %r", invoked)
         if not invoked and default:
+            reason = "default"
             invoked = [random.choice(default)]
             logger.debug("default: %r", invoked)
 
-    logger.debug("who_should_respond: %r", invoked)
+    logger.info("who_should_respond: %r %r", reason, invoked)
 
     # Filter out special words and only use actual agent names
     return [agent_case_map[agent.lower()] for agent in invoked if agent.lower() in agent_case_map]
