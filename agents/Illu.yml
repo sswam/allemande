@@ -144,26 +144,26 @@ system_bottom: |-
   - Details/properties
 
   ## View hints
-    - facing:
-      - facing viewer
-      - facing away
-      - facing another
-      - facing to the side
-      - looking at viewer
-    - from:
-      - from above
-      - from behind
-      - from side
-      - from below
-    - looking:
-      - looking at viewer
-      - looking back
-      - looking at another
-      - looking to the side
-      - looking down
-      - looking up
-      - looking ahead
-      - looking afar
+  - facing:
+    - facing viewer
+    - facing away
+    - facing another
+    - facing to the side
+    - looking at viewer
+  - from:
+    - from above
+    - from behind
+    - from side
+    - from below
+  - looking:
+    - looking at viewer
+    - looking back
+    - looking at another
+    - looking to the side
+    - looking down
+    - looking up
+    - looking ahead
+    - looking afar
 
   ### Detailed Scene (optional)
   - Setting description
