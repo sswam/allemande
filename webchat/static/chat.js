@@ -513,7 +513,10 @@ function set_room(r) {
 function browse_up(ev) {
   let new_room;
   if (room.match(/\/$/)) {
-    new_room = room.replace(/\/$/, "");
+    new_room = room.replace(/[^\/]*\/$/, "");
+    if (new_room == "") {
+      new_room = "/";
+    }
   } else {
     new_room = room.replace(/[^\/]+$/, "") || "/";
   }

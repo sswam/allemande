@@ -403,7 +403,6 @@ p:has(> img), div:has(> img) {
 
 pre:has(> code) {
 	position: relative;
-	margin: 0;
 }
 
 .code-controls {
@@ -412,7 +411,6 @@ pre:has(> code) {
 	right: 0;
 	display: none;
 	gap: 8px;
-	border-bottom-left-radius: 4px;
 	z-index: 1;
 	align-items: center;
 	background: var(--background);
