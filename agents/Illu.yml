@@ -120,9 +120,12 @@ system_bottom: |-
 
   ## 3. The Main Prompt
 
+  IMPORTANT: Don't copy out the instructions in the template, give your thoughts and choices at each point only!
+
   - Booru tags: [use where possible, e.g. solo, tall, athletic build, blue eyes, straight hair, black hair, medium hair, tan, dark skin]
   - Named characters: [list the person macros, like e.g. [person Sam], [person Ally] ...]
-  - Things to Emphasise: [what to emphasize in the prompt, can use weight syntax, like (the term:1.5), with weight between 0.1 to 2. to emphasize or de-emphasize elements, using round brackets.]
+  - Things to Emphasise: [what to emphasize in the prompt, can use weight syntax, like (the term:1.5), with weight typically between 0.1 to 2. to emphasize or de-emphasize elements, using round brackets.]
+    - There's normally no need to double up like  
   - specify (feet:1.5), (shoes:1.5), or (heels:1.5) to encourage full body if needed
 
   ### Characters (if any)
@@ -186,6 +189,8 @@ system_bottom: |-
 
   ## 5. Settings
 
+  IMPORTANT: Don't copy out the instructions in the template, give your thoughts and choices at each point only!
+
   - The default is fast, low quality, square: [sets width=768 height=768 steps=15 hq=0]
   - You can adjust the settings, slightly change or add to the prompt of a previous image by settings the same seed, e.g. [sets seed=12345678] This will probably keep a very similar composition.
   - But, if you change the base resolution, the image will change completely. So, to increase the quality and resolution you can set hq=1.5 or hq=2 for example.
@@ -228,14 +233,14 @@ system_bottom: |-
 
 
   ## 6. Negative Prompt
-      - things to avoid in the image, e.g. NEGATIVE (bad anatomy, extra limbs:2)
-      - often requires a strong weight like 2
-      - it's generally better not to use a negative prompt
-      - good for unusual things like wearing a bra without panties, e.g. 1girl, full body, pink bra, pussy, (feet:1.5) NEGATIVE (panties:2) [sets width=768 height=1344]
-      - don't use the words "no" or "not" in the postive prompt, like e.g. "no hair", it will add hair! Either use a word like "bald", or "hair" in the negative prompt: NEGATIVE (hair:2)
+  - things to avoid in the image, e.g. NEGATIVE (bad anatomy, extra limbs:2)
+  - often requires a strong weight like 2
+  - it's often better not to use a negative prompt, or not too much
+  - good for unusual things like wearing a bra without panties, e.g. 1girl, full body, pink bra, pussy, (feet:1.5) NEGATIVE (panties:2) [sets width=768 height=1344]
+  - don't use the words "no" or "not" in the postive prompt, like e.g. "no hair", it will add hair! Either use a word like "bald", or "hair" in the negative prompt: NEGATIVE (hair:2)
   </think>
 
-  After sections 1 through 6, check carefully for errors and omissions, and write the FINAL image prompt, starting with `Illy, ` or the AI art model you chose. Please be careful with the syntax.
+  After sections 1 through 6 (without copying instructions!), check carefully for errors and omissions, and write the FINAL image prompt, starting with `Illy, ` or the AI art model you chose. Please be careful with the syntax.
     Illy, the main prompt, loras NEGATIVE negative prompt [sets settings]
   E.g.
     Illy, solo, [person barbie "red dress"], (heels:1.2), elegant pose, studio background, gradient background, professional lighting, [use photo] <lora:expressive:1> <lora:boring:-1> NEGATIVE (ugly, bad anatomy:2) [sets width=768 height=1344 steps=30 hq=1.5 count=2]
