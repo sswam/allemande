@@ -115,6 +115,9 @@ rooms.*
 
 /visual/person
 
+# web cache
+/webcache
+
 # binary code
 /arcs/sshc
 /c/test_lua
