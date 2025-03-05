@@ -897,7 +897,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if agent["type"] == "anthropic" and not remote_messages or remote_messages[-1]["role"] == "assistant":
         remote_messages.append({"role": "user", "content": ""})
 
-    opts = llm.Options(model=agent["model"], indent="\t")
+    opts = llm.Options(model=agent["model"])  # , indent="\t")
 
     # Some agents don't like empty content, specifically google
     if not remote_messages[-1]["content"]:

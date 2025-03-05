@@ -760,8 +760,10 @@ def preprocess(content):
     in_math = False
     in_code = 0
     in_script = False
+    was_blank = False
     for line in content.splitlines():
         is_html = False
+        was_code = bool(in_code)
         # if first and re.search(r"\t<", line[0]):
         #     is_html = True
         if not in_code and re.search(
@@ -795,13 +797,17 @@ def preprocess(content):
         elif in_math:
             line = fix_math_escape_percentages(line)
             out.append(line)
-        elif re.match(r"^```", line) and not in_code:
+        elif re.match(r"\s*```", line) and not in_code:
+            if not was_blank:
+                out.append("")
             out.append(line)
             in_code = 1
-        elif re.match(r"^```\w", line) and not in_script:
+        elif re.match(r"\s*```\w", line) and not in_script:
+            if not was_blank:
+                out.append("")
             out.append(line)
             in_code += 1
-        elif re.match(r"^```", line) and in_code:
+        elif re.match(r"\s*```", line) and in_code:
             out.append(line)
             in_code -= 1
         elif in_code:
@@ -815,9 +821,45 @@ def preprocess(content):
             has_math = has_math or has_math1
             out.append(line)
 
+    out = add_blanks_after_code_blocks(out)
+
     content = "\n".join(out) + "\n"
-    logger.debug("preprocess content: %r", content)
+    logger.info("preprocess content: %s", content)
     return content, has_math
+
+
+def add_blanks_after_code_blocks(lines: list[str]) -> list[str]:
+    out = []
+    in_code_block = False
+    code_block_indent = 0
+
+    for i, line in enumerate(lines):
+        out.append(line)
+
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        indent = len(line) - len(line.lstrip())
+
+        if stripped == '```' and in_code_block:
+            if indent <= code_block_indent:  # Close block if at same or less indent
+                in_code_block = False
+                # Add blank line if:
+                # 1. Next line exists and isn't blank
+                # 2. Next line isn't another code block
+                # 3. Next line isn't less indented
+                if (i + 1 < len(lines) and
+                    lines[i + 1].strip() and
+                    not lines[i + 1].strip().startswith('```') and
+                    len(lines[i + 1]) - len(lines[i + 1].lstrip()) <= indent):
+                    out.append('')
+
+        elif stripped.startswith('```') and not in_code_block:
+            in_code_block = True
+            code_block_indent = indent
+
+    return out
 
 
 math_cache: dict[str, str] = {}
@@ -871,10 +913,11 @@ def message_to_html(message):
     else:
         try:
             logger.debug("markdown content: %r", content)
-            content = escape_indents(content)
+            # content = escape_indents(content)
             html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
-            html_content = restore_indents(html_content)
+            # html_content = restore_indents(html_content)
             logger.debug("html content: %r", html_content)
+            html_content = disenfuckulate_nested_code_blocks(html_content)
 #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
 #             html_content = html_content.replace("<br />", "")
 #             html_content = html_content.replace("<p>", "")
@@ -892,6 +935,17 @@ def message_to_html(message):
         user_ee = html.escape(user)
         return f"""<div class="message" user="{user_ee}"><div class="label">{user_ee}:</div><div class="content">{html_content}</div></div>\n\n"""
     return f"""<div class="narrative"><div class="content">{html_content}</div></div>\n\n"""
+
+
+LANGUAGES = r'python|bash|sh|shell|console|html|xml|css|javascript|js|json|yaml|yml|toml|ini|sql|c|cpp|csharp|cs|java|kotlin|swift|php|perl|ruby|lua|rust|go|dart|scala|groovy|powershell|plaintext'
+
+
+def disenfuckulate_nested_code_blocks(html: str) -> str:
+    """Fix nested code blocks in HTML."""
+    def replace_nested_code_block(match):
+        class_attr = f' class="language-{match.group(1)}"' if match.group(1) else ""
+        return f"<pre><code{class_attr}>{match.group(2)}</code></pre>"
+    return re.sub(rf'<p><code>((?:{LANGUAGES})\n)?(.*?)</code></p>', replace_nested_code_block, html, flags=re.DOTALL)
 
 
 # @argh.arg('--doctype', nargs='?')
