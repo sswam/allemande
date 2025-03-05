@@ -171,7 +171,7 @@ improve() {
 		strict=0
 	elif ((strict)) && [ -n "$prompt" ]; then
 		prompt="*** MAIN TASK: $prompt ***"
-		strict_part="Please perform the *** MAIN TASK *** requested above. Secondarily, please fix any certain bugs or issues. Do not make other proactive changes at this time."
+		strict_part="Please perform the *** MAIN TASK *** requested above. Secondarily, please fix any certain bugs or issues. Do not make other proactive changes at this time. Do not remove any comments."
 	elif ((strict)); then
 		prompt=""
 		strict_part="Please fix any certain bugs or issues. Do not make other proactive changes at this time."
