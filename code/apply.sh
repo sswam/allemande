@@ -7,6 +7,7 @@ apply-sh() {
 	local model= m=gf   # LLM model to use, default Gemini Flash
 	local changes= c=   # changes file, or stdin
 	local edit= e=1     # open an editor after the AI does it's work
+	local prompt= p=1   # additional prompt for the AI
 
 	eval "$(ally)"
 
@@ -27,7 +28,7 @@ apply-sh() {
 	done
 	cat-named -p "$changes" "$@" |
 	process -m="$model" \
-	"Please copy the input files $*, applying the changes from '$basename' carefully, and output the complete files in the same format with '#File: foo' headers (and no black line after the header). If a file is unchanged, no need to include it. Use consistent indentation." |
+	"Please copy the input files $*, applying the changes from '$basename' carefully, and output the complete files in the same format with '#File: foo' headers (and no black line after the header). If a file is unchanged, no need to include it. Use consistent indentation. $prompt" |
 		split-files -
 	modify text-strip : "$@"
 	if ((edit)); then
