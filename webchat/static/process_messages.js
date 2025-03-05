@@ -155,6 +155,12 @@ function handleNewMessage(newMessage) {
     }
   }
 
+  // add language info and a copy button to code blocks on hover
+  const codeBlocks = newContent.querySelectorAll("pre code");
+  for (const codeBlock of codeBlocks) {
+    decorateCodeBlock(codeBlock);
+  }
+
   // Combine regular messages from the same user
   if (newMessage) {
     const previousMessage = newMessage.previousElementSibling;
@@ -170,6 +176,60 @@ function handleNewMessage(newMessage) {
       newMessage.remove();
     }
   }
+}
+
+function decorateCodeBlock(codeBlock) {
+  const lang = codeBlock.className.replace(/language-/, "");
+  const pre = codeBlock.parentNode;
+
+/*  // Create wrapper for the code block to help with positioning
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'relative';
+  codeBlock.parentNode.insertBefore(wrapper, codeBlock);
+  wrapper.appendChild(codeBlock);
+*/
+
+  // Create container for language label and copy button
+  const controls = document.createElement('div');
+  controls.className = 'code-controls';
+
+  // Add language label if language is specified
+  if (lang) {
+    controls.textContent = lang;
+  }
+
+  // Create copy button
+  const copyButton = document.createElement('button');
+  copyButton.id = 'copy_button';
+  copyButton.textContent = 'copy';
+  controls.appendChild(copyButton);
+
+  // Add click handler for copy button
+  copyButton.addEventListener('click', async () => {
+    // send text to parent window
+    window.parent.postMessage({"type": "copy", "text": codeBlock.textContent}, CHAT_URL);
+    flash(copyButton, 'active');
+  });
+
+  // Add controls to wrapper
+  pre.appendChild(controls);
+
+  // Show/hide controls on hover
+  pre.addEventListener('mouseenter', () => {
+    controls.style.display = 'flex';
+  });
+
+  pre.addEventListener('mouseleave', (e) => {
+    // Check if the mouse is not over the controls
+    if (!controls.contains(e.relatedTarget)) {
+      controls.style.display = 'none';
+    }
+  });
+
+  // Add additional listener to controls to prevent hiding when hovering over them
+  controls.addEventListener('mouseenter', () => {
+    controls.style.display = 'flex';
+  });
 }
 
 function process_messages(new_content) {

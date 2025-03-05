@@ -800,6 +800,18 @@ function handle_message(ev) {
     return;
   }
 
+  if (ev.data.type == "copy") {
+    // copy to clipboard
+    try {
+      navigator.clipboard.writeText(ev.data.text);
+    }
+    catch (err) {
+      console.error("copy failed", err);
+      // TODO ideally indicate to user via copy button in iframe
+    }
+    return;
+  }
+
   $content.focus();
 
   // detect F5 or ctrl-R to reload the page
@@ -900,8 +912,9 @@ function authChat() {
 function setup_user_button() {
   const $user = $id("user");
   $user.innerText = user;
-  if (room == user) $user.href = "/" + query_to_hash(DEFAULT_ROOM);
-  else $user.href = "/" + query_to_hash(user) + "/";
+  if (room == user + "/") $user.href = "/" + query_to_hash(DEFAULT_ROOM);
+  else if (room == user) $user.href = "/" + query_to_hash(user) + "/";
+  else $user.href = "/" + query_to_hash(user);
 }
 
 // Wrapper function to initialize drag controls for the input row ------------

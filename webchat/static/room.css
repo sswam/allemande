@@ -151,11 +151,6 @@ a:hover {
 code {
 	font: 12px fixed;
 	white-space: pre-wrap;
-	display: inline-block;
-}
-
-pre {
-	white-space: pre-wrap;
 }
 
 body.overlay {
@@ -340,12 +335,9 @@ body.landscape .resizer {
 	cursor: ew-resize;
 }
 
-body.source .content script {
+body.source .content script, body.source .content style {
 	display: block;
 	clear: both;
-}
-
-.content script {
 	font: 12px fixed;
 	white-space: pre-wrap;
 }
@@ -407,4 +399,26 @@ p:has(> img), div:has(> img) {
 .image_size_10 {
 	--image-width: 100vw;
 	--image-height: 100vh;
+}
+
+pre:has(> code) {
+	position: relative;
+	margin: 0;
+}
+
+.code-controls {
+	position: absolute;
+	top: 0;
+	right: 0;
+	display: none;
+	gap: 8px;
+	border-bottom-left-radius: 4px;
+	z-index: 1;
+	align-items: center;
+	background: var(--background);
+}
+
+.code-controls button {
+	border-radius: 6px;
+	font-size: 1.2rem;
 }

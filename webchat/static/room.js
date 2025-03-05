@@ -782,6 +782,22 @@ function dragResizer(ev) {
   resizer.initDrag(ev);
 }
 
+// flash ---------------------------------------------------------------------
+
+// TODO this is common, move to utils
+
+async function flash($el, className) {
+  $el.classList.add(className);
+  await $wait(300);
+  $el.classList.remove(className);
+}
+
+/*
+async function error(id) {
+  await flash($id(id), "error");
+}
+*/
+
 // main ----------------------------------------------------------------------
 
 async function room_main() {
