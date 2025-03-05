@@ -207,7 +207,6 @@ def format_image(image_source: str, vendor: str, detail: str = "auto") -> dict[s
         raise Exception(f"An unexpected error occurred while formatting the image: {e}") from e  # pylint: disable=broad-exception-raised
 
 
-
 def handle_text_content(message: dict, content: list) -> list[dict]:
     """Handle text content for OpenAI and Anthropic."""
     if "content" not in message:
@@ -255,6 +254,7 @@ def format_message_for_vision(message: dict, vendor: str, detail: str = "auto") 
         content = handle_text_content(message, content)
 
         processed_message["content"] = content
+        logger.info("Processed message: %s", processed_message)
         return processed_message
 
     except TypeError as exc:

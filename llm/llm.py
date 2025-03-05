@@ -35,6 +35,7 @@ from slug import slug
 from ally import main, titty
 from ally.lazy import lazy
 import tsv2txt_py as tsv2txt
+import llm_vision
 
 # Lazy imports for API clients
 lazy("openai", "AsyncOpenAI")
@@ -90,6 +91,7 @@ MODELS = {
     "o1": {
         "aliases": ["op", "grace"],
         "vendor": "openai",
+        "vision": True,
         "description": "OpenAI's strongest reasoning model, with complex reasoning",
         "cost_in": 15,
         "cost_out": 60,
@@ -97,6 +99,7 @@ MODELS = {
     "o3-mini": {
         "aliases": ["om", "fermi"],
         "vendor": "openai",
+        "vision": True,
         "description": "OpenAI's faster, cheaper reasoning model.",
         "cost_in": 3,
         "cost_out": 12,
@@ -104,6 +107,7 @@ MODELS = {
     "gpt-4": {
         "aliases": ["4", "emmy"],
         "vendor": "openai",
+        "vision": True,
         "id": "gpt-4o-2024-08-06",
         "description": "OpenAI's GPT-4o is an advanced multimodal model.",
         "cost_in": 2.5,
@@ -112,13 +116,15 @@ MODELS = {
     "gpt-4o-mini": {
         "aliases": ["4m", "dav", "davinci"],
         "vendor": "openai",
+        "vision": True,
         "description": "OpenAI's GPT-4o mini is a cost-efficient model.",
         "cost_in": 0.15,
         "cost_out": 0.6,
     },
     "claude-new": {
-        "aliases": ["cn"],
+        "aliases": ["cn", "clauden"],
         "vendor": "anthropic",
+        "vision": True,
         "id": "claude-3-7-sonnet-latest",
         "description": "Claude 3.7 Sonnet is Anthropic's strongest AI model.",
         "cost_in": 3,
@@ -127,6 +133,7 @@ MODELS = {
     "claude": {
         "aliases": ["c", "claud"],
         "vendor": "anthropic",
+        "vision": True,
         "id": "claude-3-5-sonnet-latest",
         "description": "Claude 3.7 Sonnet is Anthropic's strongest AI model.",
         "cost_in": 3,
@@ -135,6 +142,7 @@ MODELS = {
     "claude-haiku": {
         "aliases": ["i", "clia"],
         "vendor": "anthropic",
+        "vision": True,
         "id": "claude-3-haiku-20240307",
         "description": "Claude 3 Haiku is Anthropic's fastest and most affordable model.",
         "cost_in": 0.25,
@@ -354,6 +362,8 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
         temperature = DEFAULT_TEMPERATURE
     if token_limit is None:
         token_limit = TOKEN_LIMIT
+
+    logger.info("achat_openai: messages: %s", json.dumps(messages, indent=2))
 
     options = {
         "messages": messages,
@@ -575,7 +585,13 @@ async def allm_chat(opts: Options, messages):
         logger.warning("system message: %s", system_message_obj)
         messages = [system_message_obj] + messages
 
-    vendor = MODELS[opts.model]["vendor"]
+    model = MODELS[opts.model]
+    vendor = model["vendor"]
+
+    if model.get("vision", False):
+        logger.info("llm_chat: vision, trying to format messages")
+        messages = [llm_vision.format_message_for_vision(message, vendor) for message in messages]
+        logger.info("llm_chat: vision messages: %r", [msg for msg in messages if "image" in msg["content"] or "image_url" in msg["content"]])
 
     if opts.fake:
         return fake_completion
