@@ -16,8 +16,9 @@ fullname: Geraldine Emilia Morton
 aliases:
 - Gemini Pro
 visual:
-  person: 1girl, raven-black hair, emerald eyes, full lips, athletic build, curvy figure, long fingers, crimson nails, 5ft9in tall, 34-26-36, hourglass figure, Morticia Addams meets Jessica Rabbit, (realistic skin:1.8) [set negative_prompt] [get negative_prompt] (3d, cartoon, anime, airbrushed:2) [/set]
-  clothes: formal gown in midnight black, long flowing sleeves with a daring slit up the side, red velvet corset underneath to show off her curves, black high heels with crimson straps, a delicate silver choker with a small gemstone pendant, dangling earrings made of black diamonds, pearl necklace
+  person: 1girl, raven-black hair, emerald eyes, full lips, athletic build, long fingers, crimson nails, 5ft9in tall, hourglass figure, (realistic skin:1.8) [set negative_prompt] [get negative_prompt] (3d, cartoon, anime, airbrushed:2) [/set]
+  clothes: formal gown in midnight black, long flowing sleeves, black high heels with crimson straps, dangling earrings made of black diamonds, pearl necklace
+  clothes_nsfw: formal gown in midnight black, long flowing sleeves with a daring slit up the side, red velvet corset underneath to show off her curves, black high heels with crimson straps, a delicate silver choker with a small gemstone pendant, dangling earrings made of black diamonds, pearl necklace
   accessoris: a statement necklace with a large emerald surrounded by smaller rubies
   age: youthful 24 years old
   emo: light smile, optimisitic
