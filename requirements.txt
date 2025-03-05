@@ -159,3 +159,4 @@ types-requests
 types-tabulate
 
 deepmerge
+Pillow
