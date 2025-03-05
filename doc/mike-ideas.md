@@ -36,4 +36,10 @@ accounting:
 - transferring data message is annoying
 	- use a better method not HTTP streaming
 
+- image input
+
+Sam ideas tacked on:
+
 - fix chat / escape_indents restore_indents, use only during code blocks I guess maybe? But shouldn't be needed in code blocks!
+- also audio input, gpt-4o-audio-preview supports, clever Emmy!
+- Fix to allow multiple image prompts in a message, to be run sequentialy.
