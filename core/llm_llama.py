@@ -28,6 +28,7 @@ __version__ = "0.2.2"
 
 
 logger = logs.get_logger()
+logger.setLevel(logging.INFO)
 
 prog = main.prog_info()
 
@@ -267,7 +268,7 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
             logger.removeHandler(log_handler)
 
 
-async def serve_requests_inotify(portals, gen):
+async def serve_requests_inotify(portals: str, gen: callable):
     """Serve requests from a directory of directories"""
     logger.info("serving requests from %s", portals)
     i = inotify.adapters.Inotify()
@@ -285,11 +286,13 @@ async def serve_requests_inotify(portals, gen):
         for req in todo.iterdir():
             if not req.is_dir():
                 continue
+            logger.info("Initial request: %s in %s", req, portal)
             await process_request(portals, portal, req.name, gen)
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
         logger.debug("PATH=[%r] FILENAME=[%r] EVENT_TYPES=%r", path, filename, type_names)
         portal = Path(path).parent
+        logger.info("New request: %s in %s", filename, portal)
         await process_request(portals, portal, filename, gen)
 
 
@@ -308,14 +311,12 @@ def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]
     return requests
 
 
-async def serve_requests_poll(portals, gen, poll_interval=0.1):
+async def serve_requests_poll(portals: str, gen: callable, poll_interval: float = 0.1):
     """Serve requests from a directory of directories using polling"""
-    logger.info("serving requests from %s", portals)
-
     logger.info("serving requests from %s", portals)
     known_requests = find_todo_requests(portals)
     for portal, req in known_requests:
-        logger.debug("Initial request detected: %s in %s", req, portal)
+        logger.info("Initial request: %s in %s", req, portal)
         await process_request(portals, portal, req, gen)
 
     known_requests_set = set(known_requests)
@@ -325,7 +326,7 @@ async def serve_requests_poll(portals, gen, poll_interval=0.1):
         for portal, req_name in new_requests:
             if (portal, req_name) in known_requests_set:
                 continue
-            logger.debug("New request detected: %s in %s", req_name, portal)
+            logger.info("New request: %s in %s", req_name, portal)
             await process_request(portals, portal, req_name, gen)
 
         known_requests_set = set(new_requests)
