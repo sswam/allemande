@@ -157,7 +157,7 @@ class Room:
         Write a message to a room.
         We don't convert to HTML here, a follower process does that.
         """
-        access = check_access(user, self.name, self.path).value
+        access = self.check_access(user).value
         if not access & Access.WRITE.value:
             raise PermissionError("You are not allowed to post to this room.")
 
@@ -187,7 +187,7 @@ class Room:
 
     async def clear(self, user, op="clear", backup=True):
         """Clear a room."""
-        access = check_access(user, self.name, self.path)
+        access = self.check_access(user).value
         if not self.path.exists():
             return
         if not self.path.is_file():
@@ -200,7 +200,7 @@ class Room:
             return
 
         if op == "archive":
-            if not access.value & Access.MODERATE.value:
+            if not access & Access.MODERATE.value:
                 raise PermissionError("You are not allowed to archive this room.")
             # run room-archive script with room name
             # TODO in Python
@@ -211,7 +211,7 @@ class Room:
             # TODO in Python, archive half, keep half. Media?
             # subprocess.run(["room-rotate", self.name], check=True)
         elif op == "clear":
-            if not access.value & Access.ADMIN.value:
+            if not access & Access.ADMIN.value:
                 raise PermissionError("You are not allowed to clear this room.")
             if backup:
                 backup_file(str(self.path))
@@ -232,11 +232,11 @@ class Room:
         if n <= 0:
             return
 
-        access = check_access(user, self.name, self.path)
-        if n > 1 and not access.value & Access.ADMIN.value:
+        access = self.check_access(user).value
+        if n > 1 and not access & Access.ADMIN.value:
             raise PermissionError("You are not allowed to undo multiple messages in this room.")
 
-        if not access.value & Access.MODERATE.value:
+        if not access & Access.MODERATE.value:
             raise PermissionError("You are not allowed to undo messages in this room.")
 
         count_bytes = 0
@@ -278,8 +278,8 @@ class Room:
 
     async def clean(self, user, backup=True):
         """Clean up the room, removing specialist messages"""
-        access = check_access(user, self.name, self.path)
-        if not access.value & Access.MODERATE.value:
+        access = self.check_access(user).value
+        if not access & Access.MODERATE.value:
             raise PermissionError("You are not allowed to clean this room.")
         messages = load_chat_messages(self.path)
         # TODO don't hard-code the agent names!!!
@@ -305,7 +305,7 @@ class Room:
 
     def check_access(self, user: str) -> Access:
         """Check access for a user."""
-        return check_access(user, self.name, self.path)
+        return check_access(user, self.name)
 
     def find_resource_file(self, ext, name=None, create=False):
         """Find a resource file for the chat room."""
@@ -339,8 +339,8 @@ class Room:
 
     def get_options(self, user) -> dict:
         """Get the options for a room."""
-        access = check_access(user, self.name, self.path)
-        if not access.value & Access.READ.value:
+        access = check_access(user).value
+        if not access & Access.READ.value:
             raise PermissionError("You are not allowed to get options for this room.")
         options_file = self.find_resource_file("yml", "options")
         if options_file:
@@ -351,8 +351,8 @@ class Room:
 
     def set_options(self, user, options):
         """Set the options for a room."""
-        access = check_access(user, self.name, self.path)
-        if not access.value & Access.MODERATE.value:
+        access = self.check_access(user).value
+        if not access & Access.MODERATE.value:
             raise PermissionError("You are not allowed to set options for this room.")
         options_file = self.find_resource_file("yml", "options", create=True)
         if options_file:
@@ -414,12 +414,18 @@ def tac(file, chunk_size=4096, binary=False, keepends=False):
             yield block
 
 
-def safe_join(base_dir: Path, path: Path) -> Path:
+def safe_join(base_dir: Path, *paths: Path) -> Path:
     """Return a safe path under base_dir, or raise ValueError if the path is unsafe."""
-    safe_path = base_dir.joinpath(path).resolve()
+    # Resolve base_dir to absolute path
+    base_dir = base_dir.resolve()
+
+    # Join all paths together
+    safe_path = base_dir.joinpath(*paths).resolve()
+
+    # Check if the resulting path is under base_dir
     if base_dir in safe_path.parents or base_dir == safe_path:
         return safe_path
-    raise ValueError(f"Invalid or unsafe path provided: {base_dir}, {path}")
+    raise ValueError(f"Invalid or unsafe path provided: {base_dir}, {paths}")
 
 
 def sanitize_filename(filename):
@@ -994,7 +1000,7 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
     """Upload a file to a room."""
     room = Room(name=room_name)
 
-    if not check_access(user, room_name, room.path).value & Access.WRITE.value:
+    if not room.check_access(user).value & Access.WRITE.value:
         raise PermissionError("You are not allowed to upload files to this room.")
 
     name = sanitize_filename(os.path.basename(filename))
@@ -1290,14 +1296,14 @@ def read_agents_list() -> list[str]:
     return agent_names
 
 
-def check_access(user: str, pathname: str, path: Path) -> Access:
+def check_access(user: str, pathname: str) -> Access:
     """Check if the user has access to the path, and log the access."""
-    access, reason = _check_access_2(user, pathname, path)
-    logger.debug("check_access: User: %s, pathname: %s, Path: %s, Access: %s, Reason: %s", user, pathname, path, access, reason)
+    access, reason = _check_access_2(user, pathname)
+    logger.debug("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
     return access
 
 
-def _check_access_2(user: str, pathname: str, path: Path) -> Access:
+def _check_access_2(user: str, pathname: str) -> Access:
     """Check if the user has access to the path"""
     # TODO make a wrapper method in the room class
     # user has access to the top-level dir, all files at the top-level
@@ -1306,6 +1312,11 @@ def _check_access_2(user: str, pathname: str, path: Path) -> Access:
 
     # TODO What's the difference between a moderator and an admin?
     #      Do we need both?
+
+    if sanitize_pathname(pathname) != pathname:
+        raise ValueError("Invalid pathname, not sanitized")
+
+    path = safe_join(Path(ROOMS_DIR), Path(pathname))
 
     access = load_config(path, "access.yml")
     agent_names = read_agents_list()
@@ -1436,16 +1447,16 @@ async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=
     """Overwrite a file with new content."""
     logger.warning("overwrite_file: %s", file)
     path = str(name_to_path(file))
+    file = None  # be safe
     logger.warning("  path: %s", path)
-    if not check_access(user, file, Path(path)).value & Access.WRITE.value:
-        logger.warning("  user: %s", user)
-        logger.warning("  access: %s", check_access(user, file, Path(path)))
-        raise PermissionError("You are not allowed to overwrite this file.")
+    access = check_access(user, path).value
+    if not access & Access.WRITE.value:
+        raise PermissionError(f"You are not allowed to overwrite this file: user: {user}, path: {path}, access: {access}")
     exists = Path(path).exists()
     if exists and Path(path).is_dir():
-        raise ValueError("Cannot overwrite a directory.")
+        raise ValueError(f"Cannot overwrite a directory: {path}")
     if exists and noclobber:
-        raise ValueError("File already exists, will not overwrite.")
+        raise ValueError(f"File already exists, will not overwrite: {path}")
     if backup:
         backup_file(path)
     if path.endswith(".bb"):

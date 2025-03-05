@@ -13,6 +13,8 @@ import asyncio
 from collections import defaultdict
 import json
 from typing import Any
+import aiohttp
+from urllib.parse import urlparse, quote
 
 import shlex
 from watchfiles import awatch, Change
@@ -33,6 +35,8 @@ from ally.cache import cache  # type: ignore
 import aligno_py as aligno  # type: ignore
 from ally import re_map
 
+Message = dict[str, Any]
+
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 import transformers  # type: ignore # pylint: disable=wrong-import-position, wrong-import-order
 
@@ -41,6 +45,7 @@ PATH_ROOMS  = Path(os.environ["ALLEMANDE_ROOMS"])
 PATH_AGENTS = Path(os.environ["ALLEMANDE_AGENTS"])
 PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
 PATH_MODELS = Path(os.environ["ALLEMANDE_MODELS"])
+PATH_WEBCACHE  = Path(os.environ["ALLEMANDE_WEBCACHE"])
 # TODO put agents dir in rooms?
 
 # TODO put some of these settings in a global reloadable config files
@@ -50,6 +55,7 @@ logger = logging.getLogger(__name__)
 logging.getLogger('watchfiles').setLevel(logging.WARNING)
 
 LOCAL_AGENT_TIMEOUT = 5 * 60  # 5 minutes
+FETCH_TIMEOUT = 30  # 30 seconds
 
 DEFAULT_FILE_EXTENSION = "bb"
 
@@ -62,6 +68,8 @@ ADULT = True
 SAFE = False
 
 TOKENIZERS: dict[str, transformers.AutoTokenizer] = {}
+
+Messasge = dict[str, Any]
 
 
 def setup_maps_for_agent(agent):
@@ -796,6 +804,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if config and config.get("agents") and name_lc in config["agents"]:
         agent.update(config["agents"][name_lc])
 
+    logger.info("Running remote agent %r", agent)
+
     n_context = agent["context"]
     if n_context is not None:
         if n_context == 0:
@@ -833,6 +843,11 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     # agent_names = list(AGENTS.keys())
     # agents_lc = list(map(str.lower, agent_names))
 
+    # TODO images in system messages?
+    await add_images_to_messages(context_messages, agent.get("images", 0))
+
+    # convert context_messages to remote_messages, with only user and assistant roles
+
     for msg in context_messages:
         logger.debug("msg1: %r", msg)
         u = msg.get("user")
@@ -849,6 +864,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
             "role": role,
             "content": content.rstrip(),
         }
+        if "images" in msg:
+            msg2["images"] = msg["images"]
         logger.debug("msg2: %r", msg2)
         remote_messages.append(msg2)
 
@@ -904,13 +921,18 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         remote_messages[-1]["content"] = "?"
     remote_messages = [m for m in remote_messages if m["content"]]
 
+    # import python pretty printer:
+    from pprint import pformat
+
+    logger.debug("remote_messages: %s", pformat(remote_messages))
     logger.debug("remote_messages: %s", json.dumps(remote_messages, indent=2))
 
+    ###### the actual query ######
     logger.debug("querying %r = %r", agent["name"], agent["model"])
     try:
         output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, opts, remote_messages)
     except Exception as e:  # pylint: disable=broad-except
-        logger.error("Execption during generation: %r", e)
+        logger.exception("Exception during generation")
         return f"{agent['name']}:\t{e}"
     #google.generativeai.types.generation_types.StopCandidateException: finish_reason: PROHIBITED_CONTENT
 
@@ -935,6 +957,221 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     response = f'{agent["name"]}:\t{response.strip()}'
     logger.debug("response 3: %r", response)
     return response.rstrip()
+
+
+async def add_images_to_messages(messages: list[Message], image_message_count: int) -> None:
+    """Add images to a list of messages."""
+    if not image_message_count:
+        return messages
+
+    image_url_pattern = r'''
+        # First alternative: Markdown image syntax
+        !             # Literal exclamation mark
+        \[            # Opening square bracket
+        [^]]*         # Any characters except closing bracket
+        \]            # Closing square bracket
+        \(            # Opening parenthesis
+        (.*?)         # First capturing group: URL (non-greedy match)
+        \)            # Closing parenthesis
+
+        |             # OR
+
+        # Second alternative: HTML image tag
+        <img\s        # Opening img tag
+        [^>]*?        # Any attributes before src (non-greedy)
+        src="         # src attribute opening
+        ([^"<>]*?)    # Second capturing group: URL (non-greedy match)
+        "             # Closing quote
+    '''
+
+    logger.info("Checking messages for images")
+
+    count = 0
+    for msg in reversed(messages):
+        matches = re.findall(image_url_pattern, msg['content'], re.VERBOSE | re.DOTALL | re.IGNORECASE)
+        logger.info("Checking message: %s", msg['content'])
+        logger.info("Matches: %s", matches)
+        image_urls = [url for markdown_url, html_url in matches for url in (markdown_url, html_url) if url]
+
+        logger.info("Found image URLs: %s", image_urls)
+        if not image_urls:
+           continue
+
+        # count messages having images, not individual images
+        count += 1
+
+        msg['images'] = image_urls
+
+        # TODO could fetch in parallel, likely not necessary
+        # TODO could split text where images occur
+        msg['images'] = [
+            await resolve_image_path(url, msg['user'], throw=False)
+            for url
+            in msg['images']]
+
+        logger.info("Message contains images: %s", msg['images'])
+
+        if count >= image_message_count:
+            break
+
+    logger.info("Found %d messages with images", count)
+
+
+async def resolve_image_path(url: str, user: str, throw: bool = True, fetch: bool = False) -> str|None:
+    """
+    Resolve an image path, handling both local and remote URLs.
+
+    Args:
+        url: The image URL or local path
+        throw: Whether to raise exceptions on errors
+
+    Returns:
+        Resolved local filesystem path
+
+    Raises:
+        ValueError: If the path is invalid and throw=True
+        PermissionError: If access is denied and throw=True
+        IOError: If fetch fails and throw=True
+    """
+    try:
+        # Parse URL to determine if local or remote
+        parsed_url = urlparse(url)
+
+        # Remote URL - cache
+        if parsed_url.scheme in ('http', 'https'):
+            if fetch:
+                cached_path = await fetch_cached(url)
+                return cached_path
+            else:
+                return str(url)
+
+        if parsed_url.scheme:
+            raise ValueError(f"Unsupported URL scheme: {parsed_url.scheme}")
+
+        # Local path
+        safe_path = chat.sanitize_pathname(url)
+        full_path = PATH_ROOMS / safe_path
+
+        # Check access permissions
+        if not chat.check_access(user, safe_path):
+            raise PermissionError(f"Access denied to {safe_path}")
+
+        if not os.path.exists(full_path):
+            raise FileNotFoundError(f"Local image not found: {safe_path}")
+
+        return str(full_path)
+
+    except Exception as e:
+        logging.error(f"Error resolving image path {url}: {str(e)}")
+        if throw:
+            raise
+        return None
+
+
+async def fetch_cached(url: str) -> str:
+    """
+    Fetch and cache a remote image.
+
+    Args:
+        url: Remote image URL
+
+    Returns:
+        Path to cached local file
+
+    Raises:
+        IOError: If fetch fails
+    """
+    # TODOs:
+    # Add file type validation for security
+    # Add cache cleanup mechanism
+    # Add timeout and size limits for remote fetches
+    # Add proper mime-type checking
+    # Add retry logic for failed fetches
+    # Add proper file extension handling
+
+    os.makedirs(PATH_CACHE, exist_ok=True)
+
+    # Generate cache filename from URL
+    url_hash = hashlib.sha256(url.encode()).hexdigest()
+    cached_path = os.path.join(PATH_CACHE, f"{url_hash}")
+
+    # Return cached version if exists
+    if os.path.exists(cached_path):
+        return cached_path
+
+    # Fetch and cache if doesn't exist
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=FETCH_TIMEOUT) as response:
+                if response.status != 200:
+                    raise IOError(f"Failed to fetch {url}: HTTP {response.status}")
+
+                # Save to cache file
+                with open(cached_path, 'wb') as f:
+                    while True:
+                        chunk = await response.content.read(8192)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+
+        return cached_path
+
+    except Exception as e:
+        raise IOError(f"Failed to fetch {url}: {str(e)}")
+
+
+async def fetch_cached(url: str) -> str:
+    """Fetch a URL and cache it, returning the path to the cached file."""
+
+    # You might want to add:
+    # - File extension validation
+    # - Size limits for downloaded files
+    # - Cache expiration
+    # - Content type checking
+    # - Additional error handling
+    # depending on your specific needs.
+
+    # 1. Parse URL
+    parsed_url = urlparse(url)
+    protocol = parsed_url.scheme
+    hostname = parsed_url.netloc
+
+    # Split path into components and remove empty strings
+    path_components = [quote(p) for p in parsed_url.path.split('/') if p]
+
+    # Create filename, including query parameters if present
+    filename = quote(path_components[-1]) if path_components else 'index'
+    if parsed_url.query:
+        # Quote query string to make it filesystem-safe
+        filename = f"{filename}?{quote(parsed_url.query)}"
+
+    # 2. Create cache path
+    cache_path = chat.safe_join(PATH_WEBCACHE, protocol, quote(hostname), *path_components[:-1])
+
+    # Ensure cache directory exists
+    os.makedirs(cache_path, exist_ok=True)
+
+    # Full path to cached file
+    cached_file = Path(cache_path) / filename
+
+    # 4. Check if cached file exists
+    if cached_file.exists():
+        return str(cached_file)
+
+    # 5. Fetch with aiohttp if not cached
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.get(url) as response:
+                response.raise_for_status()
+                # 6. Save response to cache file
+                content = await response.read()
+                with open(cached_file, 'wb') as f:
+                    f.write(content)
+        except (aiohttp.ClientError, IOError) as e:
+            raise Exception(f"Failed to fetch or cache URL {url}: {str(e)}")
+
+    # 7. Return cached file path
+    return str(cached_file)
 
 
 async def run_subprocess(command, query):
