@@ -1426,9 +1426,9 @@ def remove_thinking_sections(content: str, agent: Agent|None, n_own_messages: in
         replace = ""
     modified = re.sub(
         r"""
-        <think(ing)?>$
+        <think(ing)?>
         (.*?)
-        (</think(ing)?>$|\Z)
+        (</think(ing)?>|\Z)
         """,
         replace,
         content,
