@@ -1616,8 +1616,10 @@ async function get_options() {
 
   const context = data?.agents?.all?.context || "";
   const lines = data?.agents?.all?.lines || "";
+  const images = data?.agents?.all?.images || "";
   $id("opt_context").value = context;
   $id("opt_lines").value = lines;
+  $id("opt_images").value = images;
   return data;
 }
 
@@ -1668,6 +1670,20 @@ async function opt_lines(ev) {
   });
 }
 
+async function opt_images(ev) {
+  let images = ev.target.value;
+  images = images === "" ? null : +images;
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          images
+        }
+      }
+    }
+  });
+}
 
 // main ----------------------------------------------------------------------
 
@@ -1715,6 +1731,7 @@ function chat_main() {
 
   $on($id("opt_context"), "change", opt_context);
   $on($id("opt_lines"), "change", opt_lines);
+  $on($id("opt_images"), "change", opt_images);
   $on($id("opt_cancel"), "click", () => set_controls());
 
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
