@@ -804,7 +804,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if config and config.get("agents") and name_lc in config["agents"]:
         agent.update(config["agents"][name_lc])
 
-    logger.info("Running remote agent %r", agent)
+    logger.debug("Running remote agent %r", agent)
 
     n_context = agent["context"]
     if n_context is not None:
@@ -959,9 +959,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     return response.rstrip()
 
 
-async def add_images_to_messages(messages: list[Message], image_message_count: int) -> None:
+async def add_images_to_messages(messages: list[Message], image_count_max: int) -> None:
     """Add images to a list of messages."""
-    if not image_message_count:
+    if not image_count_max:
         return messages
 
     image_url_pattern = r'''
@@ -984,21 +984,23 @@ async def add_images_to_messages(messages: list[Message], image_message_count: i
         "             # Closing quote
     '''
 
-    logger.info("Checking messages for images")
+    logger.debug("Checking messages for images")
 
-    count = 0
+    message_count = 0
+    image_count = 0
+
     for msg in reversed(messages):
         matches = re.findall(image_url_pattern, msg['content'], re.VERBOSE | re.DOTALL | re.IGNORECASE)
-        logger.info("Checking message: %s", msg['content'])
-        logger.info("Matches: %s", matches)
+        logger.debug("Checking message: %s", msg['content'])
+        logger.debug("Matches: %s", matches)
         image_urls = [url for markdown_url, html_url in matches for url in (markdown_url, html_url) if url]
 
-        logger.info("Found image URLs: %s", image_urls)
+        logger.debug("Found image URLs: %s", image_urls)
         if not image_urls:
            continue
 
-        # count messages having images, not individual images
-        count += 1
+        # count messages having images
+        message_count += 1
 
         msg['images'] = image_urls
 
@@ -1009,12 +1011,21 @@ async def add_images_to_messages(messages: list[Message], image_message_count: i
             for url
             in msg['images']]
 
-        logger.info("Message contains images: %s", msg['images'])
+        msg['images'] = [url for url in msg['images'] if url]
 
-        if count >= image_message_count:
+        # If we have too many images, take the first ones from the message
+        space_left = image_count_max - image_count
+        if len(msg['images']) > space_left:
+            msg['images'] = msg['images'][:space_left]
+
+        image_count += len(msg['images'])
+
+        logger.debug("Message contains images: %s", msg['images'])
+
+        if image_count >= image_count_max:
             break
 
-    logger.info("Found %d messages with images", count)
+    logger.info("Found %d messages with %d images", message_count, image_count)
 
 
 async def resolve_image_path(url: str, user: str, throw: bool = True, fetch: bool = False) -> str|None:

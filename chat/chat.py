@@ -61,6 +61,7 @@ Agent = dict[str, Any]
 @dataclass
 class ChatMessage:
     """A single chat message with user (optional) and content."""
+
     user: str | None
     content: str
 
@@ -339,7 +340,7 @@ class Room:
 
     def get_options(self, user) -> dict:
         """Get the options for a room."""
-        access = check_access(user).value
+        access = self.check_access(user).value
         if not access & Access.READ.value:
             raise PermissionError("You are not allowed to get options for this room.")
         options_file = self.find_resource_file("yml", "options")
@@ -364,6 +365,7 @@ class Room:
             cache.save(options_file, new_options)
         else:
             raise FileNotFoundError("Options file not found.")
+
 
 def tree_prune(tree: dict) -> dict:
     """Prune a tree in-place, removing None values."""
@@ -414,18 +416,48 @@ def tac(file, chunk_size=4096, binary=False, keepends=False):
             yield block
 
 
-def safe_join(base_dir: Path, *paths: Path) -> Path:
-    """Return a safe path under base_dir, or raise ValueError if the path is unsafe."""
-    # Resolve base_dir to absolute path
-    base_dir = base_dir.resolve()
+def safe_join(base_dir: Path | str, *paths: str | Path) -> Path:
+    """
+    Return a safe path under base_dir, or raise ValueError if the path is unsafe.
+    Preserves symlinks and only checks for path traversal attacks.
 
-    # Join all paths together
-    safe_path = base_dir.joinpath(*paths).resolve()
+    Args:
+        base_dir: Base directory path
+        *paths: Additional path components to join
 
-    # Check if the resulting path is under base_dir
-    if base_dir in safe_path.parents or base_dir == safe_path:
-        return safe_path
-    raise ValueError(f"Invalid or unsafe path provided: {base_dir}, {paths}")
+    Returns:
+        Path: Safe joined path
+
+    Raises:
+        ValueError: If resulting path would be outside base_dir
+    """
+    # Convert base_dir to Path if it's a string
+    base_dir = Path(base_dir).absolute()
+
+    # Convert all path components to strings and join them
+    path_parts = [str(p) for p in paths]
+    try:
+        # Create complete path without resolving
+        full_path = base_dir.joinpath(*path_parts)
+
+        # Normalize the path (remove . and .., but don't resolve symlinks)
+        normalized_path = Path(os.path.normpath(str(full_path)))
+        normalized_base = Path(os.path.normpath(str(base_dir)))
+
+        # Check if the normalized path starts with the normalized base path
+        normalized_path_s = str(normalized_path)
+        normalized_base_s = str(normalized_base)
+        if not (normalized_path_s == normalized_base_s or normalized_path_s.startswith(normalized_base_s + os.sep)):
+            raise ValueError(f"Path {full_path} is outside base directory {base_dir}")
+
+        # Make sure they share the same root
+        if normalized_path.root != normalized_base.root:
+            raise ValueError(f"Path {full_path} is outside base directory {base_dir}")
+
+        return full_path
+
+    except Exception as e:
+        raise ValueError(f"Error joining paths - base_dir: {base_dir}, paths: {paths}") from e
 
 
 def sanitize_filename(filename):
@@ -466,6 +498,7 @@ def sanitize_pathname(room):
     if not parts:
         raise HTTPException(status_code=400, detail="Please enter the name of a room.")
 
+    # Check max depth BEFORE joining
     if len(parts) > ROOM_MAX_DEPTH:
         raise HTTPException(status_code=400, detail=f"The room is too deeply nested, max {ROOM_MAX_DEPTH} parts.")
 
@@ -513,7 +546,7 @@ def split_message_line(line):
 def lines_to_messages(lines):
     """A generator to convert an iterable of lines to chat messages."""
 
-    message: Optional[Dict] = None
+    message: dict|None = None
 
     lines = iter(lines)
     skipped_blank = 0
@@ -577,7 +610,7 @@ def test_split_message_line():
 def test_lines_to_messages():
     """Test lines_to_messages."""
     lines = """Ally:	Hello
-	World
+World
 Sam:	How are you?
 """
     messages = list(lines_to_messages(lines.splitlines()))
@@ -647,7 +680,7 @@ def fix_math_escape_percentages(math_content):
     return re.sub(r"(?<!\\)%", r"\%", math_content)
 
 
-def find_and_fix_inline_math_part(part: str) -> str:
+def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
     """Find and fix inline math in a part of a line, without quoted code."""
     # run the regexpes repeatedly to work through the string
 
@@ -664,7 +697,7 @@ def find_and_fix_inline_math_part(part: str) -> str:
                     \$\$
                 ) |
                 (          # Group 4: Inline math with $...$
-                    \$     
+                    \$
                     (.+?)  # Group 5: Math content
                     \$
                 ) |
@@ -683,7 +716,7 @@ def find_and_fix_inline_math_part(part: str) -> str:
             $
             """,
             part[start:],
-            re.VERBOSE
+            re.VERBOSE,
         )
         if match is None:
             part = part[:start] + html.escape(part[start:], quote=False)
@@ -709,7 +742,7 @@ def find_and_fix_inline_math_part(part: str) -> str:
     return part, has_math
 
 
-def find_and_fix_inline_math(line: str) -> str:
+def find_and_fix_inline_math(line: str) -> tuple[str, bool]:
     """Find and fix inline math in a line."""
     # run the regexpes repeatedly to work through the string
 
@@ -722,14 +755,14 @@ def find_and_fix_inline_math(line: str) -> str:
             r"""
             ^
             (
-                 [^`]+       # Any characters except `
+                [^`]+       # Any characters except `
                 |`.*?`       # OR `...`
                 |```.*?```   # OR ```...```
                 |.+          # OR Any characters, if syntax is broken
             )
             """,
             line[start:],
-            re.VERBOSE
+            re.VERBOSE,
         )
         if not match:
             break
@@ -744,7 +777,7 @@ def find_and_fix_inline_math(line: str) -> str:
         has_math = has_math or has_math1
 
         # 3. replace the fixed part in the line
-        line = line[:start] + fixed + line[start + len(found):]
+        line = line[:start] + fixed + line[start + len(found) :]
         start += len(fixed)
 
     return line, has_math
@@ -830,7 +863,7 @@ def preprocess(content):
     out = add_blanks_after_code_blocks(out)
 
     content = "\n".join(out) + "\n"
-    logger.info("preprocess content: %s", content)
+    logger.debug("preprocess content: %s", content)
     return content, has_math
 
 
@@ -848,20 +881,22 @@ def add_blanks_after_code_blocks(lines: list[str]) -> list[str]:
 
         indent = len(line) - len(line.lstrip())
 
-        if stripped == '```' and in_code_block:
+        if stripped == "```" and in_code_block:
             if indent <= code_block_indent:  # Close block if at same or less indent
                 in_code_block = False
                 # Add blank line if:
                 # 1. Next line exists and isn't blank
                 # 2. Next line isn't another code block
                 # 3. Next line isn't less indented
-                if (i + 1 < len(lines) and
-                    lines[i + 1].strip() and
-                    not lines[i + 1].strip().startswith('```') and
-                    len(lines[i + 1]) - len(lines[i + 1].lstrip()) <= indent):
-                    out.append('')
+                if (
+                    i + 1 < len(lines)
+                    and lines[i + 1].strip()
+                    and not lines[i + 1].strip().startswith("```")
+                    and len(lines[i + 1]) - len(lines[i + 1].lstrip()) <= indent
+                ):
+                    out.append("")
 
-        elif stripped.startswith('```') and not in_code_block:
+        elif stripped.startswith("```") and not in_code_block:
             in_code_block = True
             code_block_indent = indent
 
@@ -888,24 +923,24 @@ def escape_indents(text):
 
     for line in lines:
         # Match leading whitespace
-        indent_match = re.match(r'^(\s+)', line)
+        indent_match = re.match(r"^(\s+)", line)
         if indent_match:
             indent = indent_match.group(1)
             # Replace spaces and tabs with markers
-            escaped_indent = indent.replace(' ', SPACE_MARKER).replace('\t', TAB_MARKER)
+            escaped_indent = indent.replace(" ", SPACE_MARKER).replace("\t", TAB_MARKER)
             # Replace the original indent with the escaped version
-            processed_line = escaped_indent + line[len(indent):]
+            processed_line = escaped_indent + line[len(indent) :]
         else:
             processed_line = line
         processed_lines.append(processed_line)
 
-    return '\n'.join(processed_lines)
+    return "\n".join(processed_lines)
 
 
 def restore_indents(text):
     """Restore leading whitespace in each line."""
-    text = text.replace(SPACE_MARKER, ' ')
-    text = text.replace(TAB_MARKER, '\t')
+    text = text.replace(SPACE_MARKER, " ")
+    text = text.replace(TAB_MARKER, "\t")
     return text
 
 
@@ -924,10 +959,10 @@ def message_to_html(message):
             # html_content = restore_indents(html_content)
             logger.debug("html content: %r", html_content)
             html_content = disenfuckulate_nested_code_blocks(html_content)
-#            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
-#             html_content = html_content.replace("<br />", "")
-#             html_content = html_content.replace("<p>", "")
-#             html_content = html_content.replace("</p>", "\n")
+        #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
+        #             html_content = html_content.replace("<br />", "")
+        #             html_content = html_content.replace("<p>", "")
+        #             html_content = html_content.replace("</p>", "\n")
         except Exception as e:
             logger.error("markdown error: %r", e)
             html_content = f"<pre>{html.escape(content)}</pre>"
@@ -943,15 +978,17 @@ def message_to_html(message):
     return f"""<div class="narrative"><div class="content">{html_content}</div></div>\n\n"""
 
 
-LANGUAGES = r'python|bash|sh|shell|console|html|xml|css|javascript|js|json|yaml|yml|toml|ini|sql|c|cpp|csharp|cs|java|kotlin|swift|php|perl|ruby|lua|rust|go|dart|scala|groovy|powershell|plaintext'
+LANGUAGES = r"python|bash|sh|shell|console|html|xml|css|javascript|js|json|yaml|yml|toml|ini|sql|c|cpp|csharp|cs|java|kotlin|swift|php|perl|ruby|lua|rust|go|dart|scala|groovy|powershell|plaintext"
 
 
 def disenfuckulate_nested_code_blocks(html: str) -> str:
     """Fix nested code blocks in HTML."""
+
     def replace_nested_code_block(match):
         class_attr = f' class="language-{match.group(1)}"' if match.group(1) else ""
         return f"<pre><code{class_attr}>{match.group(2)}</code></pre>"
-    return re.sub(rf'<p><code>((?:{LANGUAGES})\n)?(.*?)</code></p>', replace_nested_code_block, html, flags=re.DOTALL)
+
+    return re.sub(rf"<p><code>((?:{LANGUAGES})\n)?(.*?)</code></p>", replace_nested_code_block, html, flags=re.DOTALL)
 
 
 # @argh.arg('--doctype', nargs='?')
@@ -1111,29 +1148,19 @@ def load_chat_messages(source: str | Path | TextIO = sys.stdin) -> list[ChatMess
         List of ChatMessage records
     """
     # Handle file-like objects directly
-    if hasattr(source, 'read'):
-        return [
-            ChatMessage(
-                content=msg['content'],
-                user=msg.get('user')
-            )
-            for msg in lines_to_messages(source)
-        ]
+    if hasattr(source, "read"):
+        return [ChatMessage(content=msg["content"], user=msg.get("user")) for msg in lines_to_messages(source)]
 
     # Handle path inputs
     path = Path(source) if isinstance(source, str) else source
     if not path.exists():
         return []
 
-    with path.open('r', encoding='utf-8') as f:
+    with path.open("r", encoding="utf-8") as f:
         return load_chat_messages(f)
 
 
-def save_chat_messages(
-    messages: list[ChatMessage],
-    destination: str | Path | TextIO = sys.stdout,
-    mode: str = 'a'
-) -> None:
+def save_chat_messages(messages: list[ChatMessage], destination: str | Path | TextIO = sys.stdout, mode: str = "a") -> None:
     """Write chat messages to a file path or file-like object.
 
     Args:
@@ -1142,14 +1169,14 @@ def save_chat_messages(
         mode: File open mode when writing to a path, defaults to 'a' for append
     """
     # Handle file-like objects directly
-    if hasattr(destination, 'write'):
+    if hasattr(destination, "write"):
         for msg in messages:
-            destination.write(chat_message_to_text(msg) + '\n')
+            destination.write(chat_message_to_text(msg) + "\n")
         return
 
     # Handle path outputs
     path = Path(destination) if isinstance(destination, str) else destination
-    with path.open(mode, encoding='utf-8') as f:
+    with path.open(mode, encoding="utf-8") as f:
         save_chat_messages(messages, f)
 
 
@@ -1190,12 +1217,12 @@ def filter_stars(message: ChatMessage) -> ChatMessage | None:
     content = message.content
 
     # 1. Remove text between * and * (non-greedy match)
-    content = re.sub(r'\*.*?\*', '', content)
+    content = re.sub(r"\*.*?\*", "", content)
 
     # 2. Remove lines that begin or end with *
-    lines = content.split('\n')
-    lines = [line for line in lines if not (line.strip().startswith('*') or line.strip().endswith('*'))]
-    content = '\n'.join(lines)
+    lines = content.split("\n")
+    lines = [line for line in lines if not (line.strip().startswith("*") or line.strip().endswith("*"))]
+    content = "\n".join(lines)
 
     # 3. Check if only whitespace remains
     if not content.strip():
@@ -1224,25 +1251,25 @@ def filter_stars_prob(message: ChatMessage, prob: float = 0.5) -> ChatMessage | 
     content = message.content
 
     # 1. Fix malformed lines that begin or end with * but not both, by adding the missing *
-    lines = content.split('\n')
+    lines = content.split("\n")
     lines_out = []
     for line in lines:
-        if line.strip().startswith('*') and not line.strip().endswith('*'):
-            line += '*'
-        if line.strip().endswith('*') and not line.strip().startswith('*'):
-            line = '*' + line
+        if line.strip().startswith("*") and not line.strip().endswith("*"):
+            line += "*"
+        if line.strip().endswith("*") and not line.strip().startswith("*"):
+            line = "*" + line
         lines_out.append(line)
-    content = '\n'.join(lines_out)
+    content = "\n".join(lines_out)
 
     # 2. Remove random selection of text between * and * (non-greedy match)
     def random_replace(match):
-        return '' if random.random() < prob else match.group(0)
+        return "" if random.random() < prob else match.group(0)
 
-    content = re.sub(r'\*.*?\*', random_replace, content)
+    content = re.sub(r"\*.*?\*", random_replace, content)
 
     # 3. squeeze whitespace and strip, preserving the format
-    content = re.sub(r'\s*\n\n+\s*', '\n\n', content)
-    content = re.sub(r' +', ' ', content)
+    content = re.sub(r"\s*\n\n+\s*", "\n\n", content)
+    content = re.sub(r" +", " ", content)
     content = content.strip()
 
     # 4. Check if anything remains
@@ -1303,7 +1330,7 @@ def check_access(user: str, pathname: str) -> Access:
     return access
 
 
-def _check_access_2(user: str, pathname: str) -> Access:
+def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     """Check if the user has access to the path"""
     # TODO make a wrapper method in the room class
     # user has access to the top-level dir, all files at the top-level
@@ -1313,8 +1340,14 @@ def _check_access_2(user: str, pathname: str) -> Access:
     # TODO What's the difference between a moderator and an admin?
     #      Do we need both?
 
+    # handle absolute paths
+    if pathname == ROOMS_DIR:
+        pathname = ""
+    elif pathname.startswith(ROOMS_DIR + "/"):
+        pathname = pathname[len(ROOMS_DIR) + 1 :]
+
     if sanitize_pathname(pathname) != pathname:
-        raise ValueError("Invalid pathname, not sanitized")
+        raise ValueError(f"Invalid pathname, not sanitized: {pathname}, {sanitize_pathname(pathname)}")
 
     path = safe_join(Path(ROOMS_DIR), Path(pathname))
 
@@ -1341,7 +1374,6 @@ def _check_access_2(user: str, pathname: str) -> Access:
     if re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE):
         return Access.ADMIN, "user_top"
 
-
     exists = True
     try:
         stats = path.stat()
@@ -1350,11 +1382,9 @@ def _check_access_2(user: str, pathname: str) -> Access:
 
     is_file = not exists or stats.st_mode & S_IFREG
 
-
     # Moderators have moderation on all files in the root
     if user in MODERATORS and not "/" in pathname and is_file:
         return Access.MODERATE_READ_WRITE, "moderator_top"
-
 
     # Denied users have no access
     if user in access.get("deny", []):
@@ -1420,9 +1450,7 @@ def backup_file(path: str):
     # Find the git repo root directory
     try:
         repo_root = subprocess.check_output(
-            ["git", "rev-parse", "--show-toplevel"],
-            cwd=os.path.dirname(abs_path),
-            text=True
+            ["git", "rev-parse", "--show-toplevel"], cwd=os.path.dirname(abs_path), text=True
         ).strip()
     except subprocess.CalledProcessError:
         raise ValueError(f"File {path} is not in a git repository")
@@ -1476,7 +1504,7 @@ async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=
         f.write(content)
 
 
-def remove_thinking_sections(content: str, agent: Agent|None, n_own_messages: int) -> tuple[str, int]:
+def remove_thinking_sections(content: str, agent: Agent | None, n_own_messages: int) -> tuple[str, int]:
     remember_thoughts = agent.get("remember_thoughts", 0) if agent else 0
     if agent:
         logger.debug("Agent name %s, remember_thoughts %s, n_own_messages %s", agent["name"], remember_thoughts, n_own_messages)
@@ -1487,7 +1515,7 @@ def remove_thinking_sections(content: str, agent: Agent|None, n_own_messages: in
         if n_own_messages <= remember_thoughts:
             logger.debug("Remembering agent's thoughts: %s", content)
             return content, n_own_messages
-#        replace = "<think>\nI was thinking something ...\n</think>"
+        #        replace = "<think>\nI was thinking something ...\n</think>"
         replace = ""
     modified = re.sub(
         r"""
@@ -1497,7 +1525,7 @@ def remove_thinking_sections(content: str, agent: Agent|None, n_own_messages: in
         """,
         replace,
         content,
-        flags=re.MULTILINE|re.IGNORECASE|re.VERBOSE|re.DOTALL
+        flags=re.MULTILINE | re.IGNORECASE | re.VERBOSE | re.DOTALL,
     )
     if modified != content:
         logger.debug("Removed 'thinking' section/s from message: original: %s", content)
@@ -1507,7 +1535,7 @@ def remove_thinking_sections(content: str, agent: Agent|None, n_own_messages: in
     return content, n_own_messages
 
 
-def context_remove_thinking_sections(context: list[str], agent: Agent|None) -> list[str]:
+def context_remove_thinking_sections(context: list[str], agent: Agent | None) -> list[str]:
     """Remove "thinking" sections from the context."""
     # Remove any "thinking" sections from the context
     # A "thinking" section is a <think> block
@@ -1519,7 +1547,8 @@ def context_remove_thinking_sections(context: list[str], agent: Agent|None) -> l
 
     return context
 
-def history_remove_thinking_sections(history: list[dict[str,Any]], agent: Agent|None):
+
+def history_remove_thinking_sections(history: list[dict[str, Any]], agent: Agent | None):
     """Remove "thinking" sections from the history."""
     # Remove any "thinking" sections from the context
     # A "thinking" section is a <think> block
@@ -1535,7 +1564,7 @@ def history_remove_thinking_sections(history: list[dict[str,Any]], agent: Agent|
     return history
 
 
-def process_chat_cli(code: str|None = None, func: str|None = None):
+def process_chat_cli(code: str | None = None, func: str | None = None):
     """Read a chat file from stdin, process it with a Python expression from the CLI, and write the result to stdout."""
     messages = load_chat_messages()
     if func:
@@ -1574,13 +1603,17 @@ def clean_prompt(context, name, delim):
     logger.debug("clean_prompt: 1: %s", text)
 
     # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with triple backticks
-    text1 = regex.sub(r".*?```\w*\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)```.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+    text1 = regex.sub(
+        r".*?```\w*\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)```.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
+    )
 
     logger.debug("clean_prompt: 2: %s", text1)
 
     # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with single backticks
     if text1 == text:
-        text1 = regex.sub(r".*?`\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)`.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+        text1 = regex.sub(
+            r".*?`\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)`.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
+        )
 
     logger.debug("clean_prompt: 3: %s", text1)
 
@@ -1593,11 +1626,11 @@ def clean_prompt(context, name, delim):
 
     logger.debug("clean_prompt: 4: %s", text1)
 
-#     # Remove the last pair of triple backticks and keep only the content between them
-#     text = re.sub(r".*```(.*?)```.*", r"\1", text, flags=re.DOTALL, count=1)
+    #     # Remove the last pair of triple backticks and keep only the content between them
+    #     text = re.sub(r".*```(.*?)```.*", r"\1", text, flags=re.DOTALL, count=1)
 
-#     # Try single backticks too
-#     text = re.sub(r".*`(.*?)`.*", r"\1", text, flags=re.DOTALL, count=1)
+    #     # Try single backticks too
+    #     text = re.sub(r".*`(.*?)`.*", r"\1", text, flags=re.DOTALL, count=1)
 
     text = text1
 
