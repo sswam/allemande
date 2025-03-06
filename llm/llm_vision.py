@@ -170,7 +170,7 @@ def get_image_to_send(image_source: str, detail: str = "auto") -> tuple[Path, st
             mime_type, needs_conversion = get_supported_image_mime_type(img)
             processed_img = process_image_if_needed(img, detail)
 
-        if needs_conversion or processed_img != img:
+        if needs_conversion or processed_img is not img:
             # Save as JPEG alongside original
             processed_img.convert("RGB").save(converted_jpeg_path, "JPEG")
             return converted_jpeg_path, "image/jpeg"
@@ -225,7 +225,8 @@ def handle_text_content(message: dict, content: list) -> list[dict]:
 def format_message_for_vision(message: dict, vendor: str, detail: str = "auto") -> dict:
     """Base function for processing messages with images for LLMs."""
     # shortcut for messages with no images
-    if "images" not in message or not message["images"]:
+    if not message.get("images"):
+        message.pop("images", None)
         return message
 
     if vendor not in ["openai", "anthropic"]:
@@ -254,7 +255,7 @@ def format_message_for_vision(message: dict, vendor: str, detail: str = "auto") 
         content = handle_text_content(message, content)
 
         processed_message["content"] = content
-        logger.info("Processed message: %s", processed_message)
+        logger.debug("Processed message: %s", processed_message)
         return processed_message
 
     except TypeError as exc:

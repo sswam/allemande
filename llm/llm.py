@@ -363,7 +363,7 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
-    logger.info("achat_openai: messages: %s", json.dumps(messages, indent=2))
+    # logger.info("achat_openai: messages: %s", json.dumps(messages, indent=2))
 
     options = {
         "messages": messages,
@@ -589,9 +589,9 @@ async def allm_chat(opts: Options, messages):
     vendor = model["vendor"]
 
     if model.get("vision", False):
-        logger.info("llm_chat: vision, trying to format messages")
+        logger.debug("llm_chat: vision, trying to format messages")
         messages = [llm_vision.format_message_for_vision(message, vendor) for message in messages]
-        logger.info("llm_chat: vision messages: %r", [msg for msg in messages if "image" in msg["content"] or "image_url" in msg["content"]])
+        logger.debug("llm_chat: vision messages: %r", [msg for msg in messages if "image" in msg["content"] or "image_url" in msg["content"]])
 
     if opts.fake:
         return fake_completion
@@ -645,7 +645,7 @@ def lines_to_messages(lines):
             message += "\n" + line
 
         message_obj = {"role": role, "content": message}
-        logger.info("input message: %s", message_obj)
+        logger.debug("input message: %s", message_obj)
         messages.append(message_obj)
 
         # the role alternates by default

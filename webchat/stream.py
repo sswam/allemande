@@ -189,7 +189,7 @@ async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="
             try:
                 while True:
                     line = await queue2.get()
-                    logger.info("line: %s", line)
+                    logger.debug("line: %s", line)
                     queue2.task_done()
                     if line is None:
                         break
@@ -245,7 +245,7 @@ def get_dir_listing(path: Path, pathname: str, info: Info) -> list[dict[str, str
         pathname += "/"
 
     for item in items:
-        if not chat.check_access(info.user, pathname + item.name, item).value & Access.READ.value:
+        if not chat.check_access(info.user, pathname + item.name).value & Access.READ.value:
             continue
         mime_type, icon = get_mime_type_and_icon(item)
         ext = item.suffix.lstrip('.').lower()
@@ -376,7 +376,7 @@ async def stream(request, path=""):
     chat_base_url = rooms_base_url.replace("rooms", "chat")
     info = Info(user=user, chat_base_url=chat_base_url, rooms_base_url=rooms_base_url)
 
-    if not chat.check_access(user, pathname, path).value & Access.READ.value:
+    if not chat.check_access(user, pathname).value & Access.READ.value:
         raise HTTPException(status_code=404, detail="Not found")
 
     if path.is_dir():
@@ -403,7 +403,7 @@ async def stream(request, path=""):
         keepalive_string = HTML_KEEPALIVE
         rewind_string = REWIND_STRING
 
-    logger.info("tail: %s", path)
+    logger.debug("tail: %s", path)
     follower = follow(str(path), header=header, keepalive_string=keepalive_string, rewind_string=rewind_string)
     return StreamingResponse(follower, media_type=media_type)
 
