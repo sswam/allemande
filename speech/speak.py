@@ -26,7 +26,7 @@ from pydantic import BaseModel, ConfigDict
 import spacy
 from sh import amixer, soundstretch  # type: ignore # pylint: disable=no-name-in-module
 
-from ally import main, logs  # type: ignore
+from ally import main, logs, geput  # type: ignore
 
 __version__ = "0.1.6"
 
@@ -288,17 +288,25 @@ class SpeakContext:
             logger.info("speak_line: volume %r <- %r", self.vol, self.loud_while_speaking)
 
 
-def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # pylint: disable=too-many-branches, too-many-statements
+def speak_line(out=None, text=None, synth=None, postproc=None, opts=None):  # pylint: disable=too-many-branches, too-many-statements
     """Speak a line of text"""
 
-    # split the prompt from the text
     if opts.read_prompts and "\t" in text:
-        prompt, text = text.split("\t", 1)
+        prompt_2, text = text.split("\t", 1)
     elif opts.read_prompts and text.strip() != "":
-        logger.warning("speak_line: no tab in text: %r", text)
-        prompt, text = text, None
+        prompt_2 = "-"
+        logger.debug("speak_line: no tab in text: %r", text)
     else:
+        prompt_2 = ""
+
+    if opts.read_prompts_add and prompt_2:
+        prompt = opts.prompt + " " + prompt_2
+    elif opts.read_prompts_add:
         prompt = opts.prompt
+    elif prompt_2 == "-":
+        prompt = opts.prompt
+    else:
+        prompt = prompt_2
 
     # split the text into sentences
     if opts.split_sentences:
@@ -307,7 +315,8 @@ def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # py
         opts.split_sentences = False
         opts.read_prompts = False
         opts.prompt = prompt
-        speak_lines(istream=sentences, out=out, synth=synth, postproc=postproc, opts=opts)
+        get = geput.get_list(sentences)
+        speak_lines(get, out=out, synth=synth, postproc=postproc, opts=opts)
         if opts.echo:
             print()
         return
@@ -322,8 +331,6 @@ def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # py
         print(text, end="")
     if opts.echo_prompt or opts.echo:
         print()
-
-    out = opts.out
 
     with SpeakContext(deafen=opts.deafen, loud_while_speaking=opts.loud_while_speaking):
         if text.strip() == "":
@@ -374,7 +381,7 @@ def speak_line(text=None, out=None, synth=None, postproc=None, opts=None):  # py
             sd.wait()
 
 
-def speak_lines(istream=None, out=None, synth=None, postproc=None, opts=None):
+def speak_lines(get, out=None, synth=None, postproc=None, opts=None):
     """Speak lines of text"""
     if not synth:
         synth = get_synth(opts.model, opts)
@@ -384,17 +391,26 @@ def speak_lines(istream=None, out=None, synth=None, postproc=None, opts=None):
 
     logger.info("ready to speak lines")
 
-    for i, line in enumerate(istream):
+    inp = geput.input(get)
+
+    i = 0
+    while (line := inp()) is not None:
         logger.debug("speak_lines: line: %r", line)
+
         if out:
-            out = f"{stem}_{i:06d}{ext}"
+            output_file = f"{stem}_{i:06d}{ext}"
+        else:
+            output_file = None
+
         speak_line(
             text=line,
-            out=out,
+            out=output_file,
             synth=synth,
             postproc=postproc,
             opts=opts,
         )
+
+        i += 1
 
     if opts.play and opts.wait:
         sd.wait()
@@ -456,10 +472,12 @@ class SpeakOptions(BaseModel):
     prompt: str | None = None
     blank_line_silence: float = 0.5
     read_prompts: bool = False
+    read_prompts_add: bool = False
     echo_prompt: bool = False
     split_sentences: bool = False
     nlp: spacy.Language|None = None
     compile: str = "none"  # "reduce-overhead"
+    continue_: bool = False
 
 
 def spacy_load(model: str) -> spacy.Language:
@@ -472,8 +490,9 @@ def spacy_load(model: str) -> spacy.Language:
 
 
 def speak(
-    istream: TextIO,
+    get: geput.Get,
     opts: SpeakOptions,
+    out: TextIO|None = None,
 ) -> None:
     """Speak text using the specified TTS model and options."""
     if not opts.cpu and not torch.cuda.is_available():
@@ -519,10 +538,10 @@ def speak(
 
     if opts.text:
         logger.info("speak: text: %r", opts.text)
-        speak_line(text=opts.text, out=opts.out, synth=synth, postproc=postproc, opts=opts)
-    else:
+        speak_line(out, text=opts.text, synth=synth, postproc=postproc, opts=opts)
+    if not opts.text or opts.continue_:
         logger.info("speak: reading from stdin")
-        speak_lines(istream=istream, out=opts.out, synth=synth, postproc=postproc, opts=opts)
+        speak_lines(get, out, synth=synth, postproc=postproc, opts=opts)
 
 
 def setup_args(arg):
@@ -541,10 +560,12 @@ def setup_args(arg):
     arg("--loud-while-speaking", type=int, help="Volume level while speaking")
     arg("--prompt", help="Prompt text for Parler TTS")
     arg("--read-prompts", action="store_true", help="Read prompts from first column of TSV")
+    arg("--read-prompts-add", action="store_true", help="Read prompts from first column of TSV and add to the base prompt")
     arg("--blank-line-silence", type=float, help="Duration of silence for blank lines")
     arg("--echo-prompt", action="store_true", help="Echo the prompt for each line")
     arg("--split-sentences", action="store_true", help="Split sentences into separate lines")
     arg("--compile", choices=["none", "default", "reduce-overhead", "0", "1", "2"], help="Compile model for speed")
+    arg("--continue", dest="continue_", action="store_true", help="Continue speaking from stdin after saying the text")
     arg("text", nargs="?", help="Text to speak")
 
 
