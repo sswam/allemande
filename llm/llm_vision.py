@@ -188,7 +188,11 @@ def format_image(image_source: str, vendor: str, detail: str = "auto") -> dict[s
     if is_url(image_source):
         if not image_source.startswith(("http://", "https://")):
             raise ValueError("Invalid URL format. URL must start with http:// or https://")
-        return {"type": "image_url", "image_url": {"url": image_source, "detail": detail}}
+        if vendor == "openai":
+            return {"type": "image_url", "image_url": {"url": image_source, "detail": detail}}
+        if vendor == "anthropic":
+            return {"type": "image", "source": {"type": "url", "url": image_source}}
+        raise ValueError(f"Unsupported vendor: {vendor}")
 
     # For local files
     try:
@@ -214,9 +218,11 @@ def handle_text_content(message: dict, content: list) -> list[dict]:
 
     text_content = message["content"]
     if isinstance(text_content, list):
-        content = text_content + content
+        # content = text_content + content
+        content = content + text_content
     elif isinstance(text_content, str):
-        content.insert(0, {"type": "text", "text": text_content})
+        # content.insert(0, {"type": "text", "text": text_content})
+        content.append({"type": "text", "text": text_content})
     else:
         raise ValueError(f"Unsupported content type: {type(text_content)}")
     return content

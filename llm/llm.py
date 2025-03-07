@@ -512,6 +512,8 @@ async def achat_claude(opts: Options, messages):
         options["system"] = messages[0]["content"]
         messages = messages[1:]
 
+    logger.info("achat_claude: messages: %s", json.dumps(messages, indent=2))
+
     response = await claude.chat_claude(messages, _async=True, **options)
 
     if opts.timeit:
