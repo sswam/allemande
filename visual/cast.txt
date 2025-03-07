@@ -1,13 +1,15 @@
 (solo:1.5), bust shot, [use choose_a_person]
-[use character_name], [get person],
-face, [get age],
+[use character_name],
+[get age],
+[get person],
+face,
 bust shot, eyes, nose, mouth, ears, hair, face,
 face, [get emo],
 face, ([get clothes]:0.7),
 face, bust shot,
 [use photo], ([use bust]:1.5), white background
 <lora:eyes:0.2>
-<lora:expressive:0.7>
+[use expressive]
 <lora:boring:-0.5>
 [sets cfg_scale=3.5]
 [use neg]
