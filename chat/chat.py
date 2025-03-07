@@ -436,28 +436,25 @@ def safe_join(base_dir: Path | str, *paths: str | Path) -> Path:
 
     # Convert all path components to strings and join them
     path_parts = [str(p) for p in paths]
-    try:
-        # Create complete path without resolving
-        full_path = base_dir.joinpath(*path_parts)
 
-        # Normalize the path (remove . and .., but don't resolve symlinks)
-        normalized_path = Path(os.path.normpath(str(full_path)))
-        normalized_base = Path(os.path.normpath(str(base_dir)))
+    # Create complete path without resolving
+    full_path = base_dir.joinpath(*path_parts)
 
-        # Check if the normalized path starts with the normalized base path
-        normalized_path_s = str(normalized_path)
-        normalized_base_s = str(normalized_base)
-        if not (normalized_path_s == normalized_base_s or normalized_path_s.startswith(normalized_base_s + os.sep)):
-            raise ValueError(f"Path {full_path} is outside base directory {base_dir}")
+    # Normalize the path (remove . and .., but don't resolve symlinks)
+    normalized_path = Path(os.path.normpath(str(full_path)))
+    normalized_base = Path(os.path.normpath(str(base_dir)))
 
-        # Make sure they share the same root
-        if normalized_path.root != normalized_base.root:
-            raise ValueError(f"Path {full_path} is outside base directory {base_dir}")
+    # Check if the normalized path starts with the normalized base path
+    normalized_path_s = str(normalized_path)
+    normalized_base_s = str(normalized_base)
+    if not (normalized_path_s == normalized_base_s or normalized_path_s.startswith(normalized_base_s + os.sep)):
+        raise ValueError(f"Path {full_path} is outside base directory {base_dir}")
 
-        return full_path
+    # Make sure they share the same root
+    if normalized_path.root != normalized_base.root:
+        raise ValueError(f"Path {full_path} is outside base directory {base_dir}")
 
-    except Exception as e:
-        raise ValueError(f"Error joining paths - base_dir: {base_dir}, paths: {paths}") from e
+    return full_path
 
 
 def sanitize_filename(filename):
@@ -1327,7 +1324,10 @@ def read_agents_lists(path) -> list[str]:
     top_dir = Path(os.environ["ALLEMANDE_ROOMS"])
     agent_names = []
 
-    room_dir = path.parent
+    room_dir = path
+    # if not a dir, go to parent
+    if not room_dir.is_dir():
+        room_dir = room_dir.parent
     if top_dir != room_dir and top_dir not in room_dir.parents:
         raise ValueError(f"Invalid room directory: {room_dir}")
 
@@ -1357,6 +1357,9 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     # TODO What's the difference between a moderator and an admin?
     #      Do we need both?
 
+    if pathname == "/":
+        pathname = ""
+
     # handle absolute paths
     if pathname == ROOMS_DIR:
         pathname = ""
@@ -1366,7 +1369,10 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     if sanitize_pathname(pathname) != pathname:
         raise ValueError(f"Invalid pathname, not sanitized: {pathname}, {sanitize_pathname(pathname)}")
 
-    path = safe_join(Path(ROOMS_DIR), Path(pathname))
+    try:
+        path = safe_join(Path(ROOMS_DIR), Path(pathname))
+    except ValueError:
+        return Access.NONE, "invalid_path"
 
     access = load_config(path, "access.yml")
     agent_names = read_agents_lists(path)
