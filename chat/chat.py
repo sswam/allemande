@@ -80,7 +80,7 @@ class Symbol:  # pylint: disable=too-few-public-methods
 
 USER_NARRATIVE = Symbol("Narrative")
 USER_CONTINUED = Symbol("Continued")
-ROOM_MAX_LENGTH = 100
+ROOM_PATH_MAX_LENGTH = 1000
 ROOM_MAX_DEPTH = 10
 
 # see: https://python-markdown.github.io/extensions/
@@ -505,8 +505,8 @@ def sanitize_pathname(room):
     # join back together
     room = "/".join(parts)
 
-    if len(room) > ROOM_MAX_LENGTH:
-        raise HTTPException(status_code=400, detail=f"The room name is too long, max {ROOM_MAX_LENGTH} characters.")
+    if len(room) > ROOM_PATH_MAX_LENGTH:
+        raise HTTPException(status_code=400, detail=f"The room name is too long, max {ROOM_PATH_MAX_LENGTH} characters.")
 
     # check for control characters
     if re.search(r"[\x00-\x1F\x7F]", room):
@@ -1057,7 +1057,7 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
 
     url = (room.parent_url / name).as_posix()
 
-    logger.info(f"Uploading {name} to {room} by {user}: {file_path=} {url=}")
+    logger.info(f"Uploading {name} to {room.name} by {user}: {file_path=} {url=}")
 
     await save_uploaded_file(filename, str(file_path), file=file)
 
@@ -1311,9 +1311,8 @@ def write_agents_list(agents):
         yaml.dump(agent_names, f)
 
 
-def read_agents_list() -> list[str]:
+def read_agents_list(path) -> list[str]:
     """Read the list of agents from a file."""
-    path = Path(os.environ["ALLEMANDE_ROOMS"]) / "agents.yml"
     if not path.exists():
         return []
     agent_names = cache.load(path)
@@ -1321,6 +1320,24 @@ def read_agents_list() -> list[str]:
         raise ValueError("Invalid agents list")
     agent_names = [name.lower() for name in agent_names]
     return agent_names
+
+
+def read_agents_lists(path) -> list[str]:
+    """Read the list of agents from a file."""
+    top_dir = Path(os.environ["ALLEMANDE_ROOMS"])
+    agent_names = []
+
+    room_dir = path.parent
+    if top_dir != room_dir and top_dir not in room_dir.parents:
+        raise ValueError(f"Invalid room directory: {room_dir}")
+
+    while True:
+        agent_names.extend(read_agents_list(room_dir / "agents.yml"))
+        if room_dir == top_dir:
+            break
+        room_dir = room_dir.parent
+
+    return list(set(agent_names))
 
 
 def check_access(user: str, pathname: str) -> Access:
@@ -1352,7 +1369,7 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     path = safe_join(Path(ROOMS_DIR), Path(pathname))
 
     access = load_config(path, "access.yml")
-    agent_names = read_agents_list()
+    agent_names = read_agents_lists(path)
 
     user = user.lower()
 

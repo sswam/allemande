@@ -27,13 +27,12 @@ import conductor
 import search  # type: ignore
 import tab  # type: ignore
 import chat
-from chat import Agent
 import llm  # type: ignore
 from ally import portals  # type: ignore
-from safety import safety  # type: ignore
 from ally.cache import cache  # type: ignore
 import aligno_py as aligno  # type: ignore
 from ally import re_map
+from agents import Agents, Agent
 
 Message = dict[str, Any]
 
@@ -63,85 +62,12 @@ REMOTE_AGENT_RETRIES = 3
 
 MAX_REPLIES = 1
 
-ADULT = True
-
-SAFE = False
+ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
+SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 
 TOKENIZERS: dict[str, transformers.AutoTokenizer] = {}
 
 Messasge = dict[str, Any]
-
-
-def setup_maps_for_agent(agent):
-    """Setup maps for an agent"""
-    for k in "input_map", "output_map", "map", "map_cs", "input_map_cs", "output_map_cs":
-        if k not in agent:
-            agent[k] = {}
-    for k, v in agent["input_map"].items():
-        k_lc = k.lower()
-        if k == k_lc:
-            continue
-        del agent["input_map"][k]
-        agent["input_map"][k_lc] = v
-    for k, v in agent["output_map"].items():
-        k_lc = k.lower()
-        if k == k_lc:
-            continue
-        del agent["output_map"][k]
-        agent["output_map"][k_lc] = v
-    for k, v in agent["map"].items():
-        k_lc = k.lower()
-        v_lc = v.lower()
-        if k_lc not in agent["input_map"]:
-            agent["input_map"][k_lc] = v
-        if v_lc not in agent["output_map"]:
-            agent["output_map"][v_lc] = k
-    for k, v in agent["map_cs"].items():
-        if k not in agent["input_map_cs"]:
-            agent["input_map_cs"][k] = v
-        if v not in agent["output_map_cs"]:
-            agent["output_map_cs"][v] = k
-
-
-def set_up_agent(agent: Agent) -> Agent:
-    """Set up an agent"""
-
-    agent_type = agent["type"]
-    if agent_type in ["human", "visual"]:
-        return None
-
-    service = services.get(agent_type)
-
-    if service is None:
-        raise ValueError(f'Unknown service for agent: {agent["name"]}, {agent["type"]}')
-
-    agent.update(service)
-
-    if SAFE and not agent.get("safe", True):
-        raise ValueError(f'Unsafe agent {agent["name"]} not allowed in safe mode')
-
-    if not ADULT and agent.get("adult"):
-        raise ValueError(f'Adult agent {agent["name"]} only allowed in adult mode')
-
-    # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
-    for prompt_key in "system_top", "system_bottom":
-        prompt = agent.get(prompt_key)
-        if not prompt:
-            continue
-        name = agent["name"]
-        fullname = agent.get("fullname", name)
-        aliases = agent.get("aliases") or [name]
-        aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
-        prompt = re.sub(r"\$NAME\b", name, prompt)
-        prompt = re.sub(r"\$FULLNAME\b", fullname, prompt)
-        prompt = re.sub(r"\$ALIAS\b", aliases_or, prompt)
-        agent[prompt_key] = prompt
-
-    agent = safety.apply_or_remove_adult_options(agent, ADULT)
-
-    setup_maps_for_agent(agent)
-
-    return agent
 
 
 def load_tokenizer(model_path: Path):
@@ -208,9 +134,9 @@ def fix_layout(response, _args, agent):
 
     # Remove agent's name, if present
     logger.debug("lines[0]: %r", lines[0])
-    logger.debug("agent['name']: %r", agent["name"])
+    logger.debug("agent.name: %r", agent.name)
     name_part = None
-    if lines[0].startswith(agent["name"] + ":\t"):
+    if lines[0].startswith(agent.name + ":\t"):
         name_part, lines[0] = lines[0].split(":\t", 1)
     logger.debug("lines[0] after: %r", lines[0])
     logger.debug("name_part: %r", name_part)
@@ -364,7 +290,7 @@ def config_read(file):
 
 async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None, num=10, agents=None):
     """Run a search agent."""
-    name = agent["name"]
+    name = agent.name
     logger.debug("history: %r", history)
     history_messages = list(chat.lines_to_messages(history))
     logger.debug("history_messages: %r", history_messages)
@@ -407,6 +333,33 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     return response4
 
 
+def load_local_agents(room, agents=None):
+    """Load the local agents."""
+    room_dir = room.parent
+    top_dir = PATH_ROOMS
+    if top_dir != room_dir and top_dir not in room_dir.parents:
+        raise ValueError(f"Room directory {room_dir} is not under {top_dir}")
+
+    agents_dirs = []
+
+    while room_dir != top_dir:
+        agents_dir = room_dir / "agents"
+        if agents_dir.exists():
+            agents_dirs.append(agents_dir)
+        room_dir = room_dir.parent
+
+    for agent_dir in reversed(agents_dirs):
+        agents = Agents(services, parent=agents)
+        agents.load_all(agent_dir)
+
+        agents.write_agents_list(agent_dir.parent / "agents.yml")
+
+        logger.info("Loaded agents from %s", agent_dir)
+        logger.debug("Agents: %r", agents.names())
+
+    return agents
+
+
 async def process_file(file, args, history_start=0, skip=None, agents=None) -> int:
     """Process a file, return True if appended new content."""
     logger.info("Processing %s", file)
@@ -427,6 +380,9 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
     config_file = room.find_resource_file("yml", "options")
     config = config_read(config_file)
 
+    # Load local agents
+    agents = load_local_agents(room, agents)
+
     history_messages = list(chat.lines_to_messages(history))
 
     # TODO distinguish poke (only AIs and tools respond) vs posted message (humans might be notified)
@@ -436,7 +392,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
 
     bots = conductor.who_should_respond(
         message,
-        agents_dict=agents,
+        agents=agents,
         history=history_messages,
         default=welcome_agents,
         include_humans_for_ai_message=False,
@@ -457,10 +413,10 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
 
     count = 0
     for bot in bots:
-        if not (bot and bot.lower() in agents):
+        if not (bot and bot.lower() in agents.names()):
             continue
 
-        agent = agents[bot.lower()]
+        agent = agents.get(bot.lower())
 
         # load agent's mission file, if present
         my_mission = mission.copy()
@@ -490,7 +446,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
         response = response.strip()
 
         if agent.get("narrator"):
-            response = response.lstrip(f'{agent["name"]}:')
+            response = response.lstrip(f'{agent.name}:')
             # remove 1 tab from start of each line
             response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
 
@@ -515,14 +471,14 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
     return count
 
 
-async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None):
+async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None) -> str:
     """Run an agent."""
     function = agent["fn"]
     logger.debug("query: %r", query)
     return await function(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents)
 
 
-async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None):
+async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None) -> str:
     """Run a local agent."""
     # print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 
@@ -530,7 +486,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         config = {}
 
     # Note: the invitation should not end with a space, or the model might use lots of emojis!
-    name = agent["name"]
+    name = agent.name
     name_lc = name.lower()
 
     # Allow to override agent settings in the config
@@ -645,11 +601,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     service = agent["type"]
 
+    logger.info("service: %r", service)
+
     portal = portals.get_portal(service)
 
     logger.debug("fulltext: %r", fulltext2)
     logger.debug("config: %r", gen_config)
-    logger.debug("portal: %r", str(portal.portal))
+    logger.info("portal: %r", str(portal.portal))
 
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 
@@ -690,7 +648,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
                 prompt = re.sub(r"\n+Negative prompt: ", " NEGATIVE ", prompt)
                 text += prompt
 
-        name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent["name"], str(resp_file), alt=text or None)
+        name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent.name, str(resp_file), alt=text or None)
         if task:
             add_task(task, f"upload post-processing: {name}")
         if response:
@@ -703,12 +661,12 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     logger.debug("response: %r", response)
 
-    agent_names = list(agents.keys())
+    agent_names = list(agents.names())
     history_messages = list(chat.lines_to_messages(history))
     all_people = conductor.participants(history_messages)
     people_lc = list(map(str.lower, set(agent_names + all_people)))
 
-    response = trim_response(response, args, agent["name"], people_lc=people_lc)
+    response = trim_response(response, args, agent.name, people_lc=people_lc)
     response = fix_layout(response, args, agent)
 
     if invitation:
@@ -787,14 +745,14 @@ def apply_maps(mapping, mapping_cs, context):
             logger.debug("map: %r -> %r", old, context[i])
 
 
-async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None):
+async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None) -> str:
     """Run a remote agent."""
     service = agent["type"]
 
     if config is None:
         config = {}
 
-    name = agent["name"]
+    name = agent.name
     name_lc = name.lower()
 
     # Allow to override agent settings in the config
@@ -840,11 +798,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     remote_messages = []
 
-    # agent_names = list(AGENTS.keys())
-    # agents_lc = list(map(str.lower, agent_names))
-
     # TODO images in system messages?
-    await add_images_to_messages(context_messages, agent.get("images", 0))
+    await add_images_to_messages(file, context_messages, agent.get("images", 0))
 
     # convert context_messages to remote_messages, with only user and assistant roles
 
@@ -854,7 +809,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         u_lc = u.lower() if u is not None else None
         # if u in agents_lc:
         content = msg["content"]
-        if u_lc == agent["name"].lower():
+        if u_lc == agent.name.lower():
             role = "assistant"
         else:
             role = "user"
@@ -928,12 +883,12 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     logger.debug("remote_messages: %s", json.dumps(remote_messages, indent=2))
 
     ###### the actual query ######
-    logger.debug("querying %r = %r", agent["name"], agent["model"])
+    logger.debug("querying %r = %r", agent.name, agent["model"])
     try:
         output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, opts, remote_messages)
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("Exception during generation")
-        return f"{agent['name']}:\t{e}"
+        return f"{agent.name}:\t{e}"
     #google.generativeai.types.generation_types.StopCandidateException: finish_reason: PROHIBITED_CONTENT
 
     response = output_message["content"]
@@ -941,9 +896,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     apply_maps(agent["output_map"], agent["output_map_cs"], box)
     response = box[0]
 
-    if response.startswith(agent["name"] + ": "):
+    if response.startswith(agent.name + ": "):
         logger.debug("stripping agent name from response")
-        response = response[len(agent["name"]) + 2 :]
+        response = response[len(agent.name) + 2 :]
 
     # fix indentation for code
     if opts.indent:
@@ -954,12 +909,12 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     logger.debug("response 1: %r", response)
     response = fix_layout(response, args, agent)
     logger.debug("response 2: %r", response)
-    response = f'{agent["name"]}:\t{response.strip()}'
+    response = f'{agent.name}:\t{response.strip()}'
     logger.debug("response 3: %r", response)
     return response.rstrip()
 
 
-async def add_images_to_messages(messages: list[Message], image_count_max: int) -> None:
+async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int) -> None:
     """Add images to a list of messages."""
     if not image_count_max:
         return messages
@@ -1007,7 +962,7 @@ async def add_images_to_messages(messages: list[Message], image_count_max: int) 
         # TODO could fetch in parallel, likely not necessary
         # TODO could split text where images occur
         msg['images'] = [
-            await resolve_image_path(url, msg['user'], throw=False)
+            await resolve_image_path(file, url, msg['user'], throw=False)
             for url
             in msg['images']]
 
@@ -1028,7 +983,7 @@ async def add_images_to_messages(messages: list[Message], image_count_max: int) 
     logger.info("Found %d messages with %d images", message_count, image_count)
 
 
-async def resolve_image_path(url: str, user: str, throw: bool = True, fetch: bool = False) -> str|None:
+async def resolve_image_path(file: str, url: str, user: str, throw: bool = True, fetch: bool = False) -> str|None:
     """
     Resolve an image path, handling both local and remote URLs.
 
@@ -1061,14 +1016,16 @@ async def resolve_image_path(url: str, user: str, throw: bool = True, fetch: boo
 
         # Local path
         safe_path = chat.sanitize_pathname(url)
-        full_path = PATH_ROOMS / safe_path
+        room = chat.Room(path=Path(file))
+        path2 = (Path(room.name).parent)/safe_path
+        full_path = str(PATH_ROOMS / str(path2).lstrip("/"))
 
         # Check access permissions
-        if not chat.check_access(user, safe_path):
-            raise PermissionError(f"Access denied to {safe_path}")
+        if not chat.check_access(user, full_path):
+            raise PermissionError(f"Access denied to {full_path}")
 
         if not os.path.exists(full_path):
-            raise FileNotFoundError(f"Local image not found: {safe_path}")
+            raise FileNotFoundError(f"Local image not found: {full_path}")
 
         return str(full_path)
 
@@ -1208,7 +1165,7 @@ async def run_subprocess(command, query):
 
 async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None, agents=None):
     """Run a shell agent."""
-    name = agent["name"]
+    name = agent.name
     logger.debug("history: %r", history)
     history_messages = list(chat.lines_to_messages(history))
     logger.debug("history_messages: %r", history_messages)
@@ -1310,144 +1267,6 @@ def list_active_tasks():
         logger.info("  - %s", description)
 
 
-def write_agents_list(agents: dict[str, Agent]):
-    """Write the list of agents to a file."""
-    agent_names = sorted(set(agent["name"] for agent in agents.values()))
-    path = PATH_ROOMS / "agents.yml"
-    cache.save(path, agent_names, noclobber=False)
-
-
-def agent_get_all_names(agent: Agent) -> list[str]:
-    """Get all the names for an agent."""
-    agent_names = [agent["name"]]
-    fullname = agent.get("fullname")
-    if fullname:
-        agent_names.append(fullname)
-        if " " in fullname:
-            agent_names.append(fullname.split(" ")[0])
-    agent_names.extend(agent.get("aliases", []))
-    return agent_names
-
-
-def load_agent(agents, agent_file):
-    """Load an agent from a file."""
-    name = Path(agent_file).stem
-    remove_agent(agents, name)
-
-    with open(agent_file, encoding="utf-8") as f:
-        agent = yaml.safe_load(f)
-
-    if "name" not in agent:
-        agent["name"] = name
-    elif agent["name"].lower() != name.lower():
-        raise ValueError(f'Agent name mismatch: {name} vs {agent["name"]}')
-
-    update_visual(agent)
-
-    agent = set_up_agent(agent)
-
-    if not agent:
-        return
-
-    all_names = agent_get_all_names(agent)
-
-    for name_lc in map(str.lower, all_names):
-        if name_lc in agents:
-            if agents[name_lc] != agent:
-                old_main_name = agents[name_lc]["name"]
-                logger.warning("Agent name conflict: %r vs %r for %r", old_main_name, agent["name"], name_lc)
-            continue
-        agents[name_lc] = agent
-
-    return agent
-
-
-def update_visual(agent: Agent):
-    """Update the visual prompts for an agent."""
-    visual = agent.get("visual")
-    logger.debug("update_visual: %r %r", agent["name"], visual)
-    if not visual:
-        return
-    name_lc = agent["name"].lower()
-    all_names = agent_get_all_names(agent)
-
-    # supporting arbitrary keys might be a security risk
-    for key in "person", "clothes", "age", "emo":
-        if key not in visual:
-            cache.remove(str(PATH_VISUAL / key / name_lc) + ".txt")
-            for name in all_names:
-                for dest in name, name.lower():
-                    cache.remove(str(PATH_VISUAL / key / dest) + ".txt")
-        prompt = visual.get(key)
-        if prompt:
-            path = key if key == "person" else "person/" + key
-            prompt = str(prompt).strip() + "\n"
-            (PATH_VISUAL/path).mkdir(parents=True, exist_ok=True)
-            cache.save(str(PATH_VISUAL / path / name_lc) + ".txt", prompt, noclobber=False)
-            cache.chmod(str(PATH_VISUAL / path / name_lc) + ".txt", 0o664)
-            # symlink the main file to the agent's other names
-            for name in all_names:
-                for dest in name, name.lower():
-                    if dest == name_lc:
-                        continue
-                    cache.symlink(name_lc + ".txt", str(PATH_VISUAL / path / dest) + ".txt")
-
-def remove_visual(agent: Agent):
-    """Remove the visual prompts for an agent."""
-    name = agent["name"].lower()
-    name_lc = name.lower()
-    all_names = agent_get_all_names(agent)
-
-    for key in "person", "person/clothes":
-        for name in all_names:
-            for dest in name, name.lower():
-                try:
-                    cache.remove(str(PATH_VISUAL / key / dest) + ".txt")
-                except FileNotFoundError:
-                    pass
-
-
-def remove_agent(agents: dict[str, Agent], name: str):
-    """Remove an agent."""
-    agent = agents.get(name.lower())
-    if not agent:
-        return
-    agent_names = agent_get_all_names(agent)
-    for name_lc in map(str.lower, agent_names):
-        agents.pop(name_lc, None)
-
-    remove_visual(agent)
-
-
-def load_agents(base_dir=None, agents=None):
-    """Load all agents"""
-    if not agents:
-        agents = {}
-    if not base_dir:
-        base_dir = PATH_AGENTS
-
-    for agent_file in base_dir.glob("*.yml"):
-        try:
-            load_agent(agents, agent_file)
-        except Exception:  # pylint: disable=broad-except
-            logger.exception("Error loading agent", exc_info=True)
-
-    write_agents_list(agents)
-
-    return agents
-
-
-def agent_file_changed(agents: dict, file_path: str, change_type: Change):
-    """Process an agent file change."""
-    if change_type == Change.deleted:
-        name = Path(file_path).stem
-        logger.info("Removing agent: %r", name)
-        remove_agent(agents, name)
-    else:
-        logger.info("Loading agent: %r", file_path)
-        load_agent(agents, file_path)
-
-
 def check_file_type(path):
     """Check the file type, either room or agent."""
     ext = Path(path).suffix
@@ -1462,7 +1281,9 @@ async def watch_loop(args):
     """Follow the watch log, and process files."""
     skip = defaultdict(int)
 
-    agents = load_agents()
+    agents = Agents(services)
+    agents.load_all(PATH_AGENTS)
+    agents.write_agents_list(PATH_ROOMS / "agents.yml")
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
         while (line := await queue.get()) is not None:
@@ -1479,8 +1300,8 @@ async def watch_loop(args):
                     add_task(task, f"file changed: {file_path}")
                     list_active_tasks()
                 elif file_type == "agent":
-                    agent_file_changed(agents, file_path, change_type)
-                    write_agents_list(agents)
+                    agents.handle_file_change(file_path, change_type)
+                    agents.write_agents_list(PATH_ROOMS / "agents.yml")
                 else:
                     logger.debug("Ignoring change to file: %r", file_path)
             except Exception:  # pylint: disable=broad-except

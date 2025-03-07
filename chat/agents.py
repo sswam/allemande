@@ -1,0 +1,332 @@
+"""This module contains the classes for the agents in the Allemande system"""
+
+import os
+import logging
+from pathlib import Path
+import yaml
+from watchfiles import Change
+import re
+from copy import deepcopy
+from typing import Any
+
+from deepmerge import always_merger
+
+from ally.cache import cache  # type: ignore
+from safety import safety  # type: ignore
+import chat
+
+
+logger = logging.getLogger(__name__)
+
+# Constants, TODO shared
+PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
+
+ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
+SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
+
+
+class Agents:
+    pass
+
+
+class Agent:
+    """An Allemande Agent"""
+
+    def __init__(self, name: str, data: dict = None, agents: Agents = None):
+        self.name = name
+        self.data = data or {}
+        self.agents = agents
+
+    def copy(self):
+        """Return a copy of the agent"""
+        return Agent(self.name, deepcopy(self.data), self.agents)
+
+    def get(self, key: str, default=None, raise_error=False):
+        """Get a value from the agent's data"""
+        base = self.base()
+        if key not in self.data and base:
+            return base.get(key, default, raise_error)
+        if key not in self.data and raise_error:
+            raise KeyError(key)
+        value = self.data.get(key)
+
+        # if dict or list, deep merge with base agent's value
+        # This will extend lists and merge dictionaries
+        # Extending lists might not always be the desired behavior, we'll see
+        if base and isinstance(value, (dict, list)):
+            base_value = base.get(key)
+            if isinstance(base_value, type(value)):
+                value = always_merger.merge(base_value, value)
+        return self.data.get(key, default)
+
+    def base(self):
+        """Get the base agent"""
+        base_name = self.data.get("base")
+        if base_name == "super" and self.agents.parent:
+            return self.agents.parent.get(self.name)
+        if base_name:
+            return self.agents.get(base_name)
+        return None
+
+    def set(self, key: str, value):
+        """Set a value in the agent's data"""
+        self.data[key] = value
+
+    def __getitem__(self, key: str):
+        """Enable dictionary-style access using square brackets"""
+        return self.get(key, raise_error=True)
+
+    def __setitem__(self, key: str, value):
+        """Enable dictionary-style value setting using square brackets"""
+        self.data[key] = value
+
+    def __contains__(self, key: str):
+        """Check if the agent's data contains a key"""
+        try:
+            return self[key]
+        except KeyError:
+            return False
+
+    def update(self, data: dict):
+        """Update the agent's data"""
+        self.data.update(data)
+
+    def get_all_names(self) -> list[str]:
+        """Get all the names for this agent."""
+        agent_names = [self.name]
+        fullname = self.get("fullname")
+        if fullname:
+            agent_names.append(fullname)
+            if " " in fullname:
+                agent_names.append(fullname.split(" ")[0])
+        agent_names.extend(self.get("aliases", []))
+        return agent_names
+
+    def set_up(self, services: dict[str, Any]) -> bool:
+        """Set up an agent"""
+
+        agent_type = self.get("type")
+        if agent_type in ["human", "visual"]:
+            return False
+
+        service = services.get(agent_type)
+
+        if service is None:
+            raise ValueError(f'Unknown service for agent: {agent["name"]}, {agent["type"]}')
+
+        self.update(service)
+
+        if SAFE and not self.get("safe", True):
+            return False
+
+        if not ADULT and self.get("adult"):
+            return False
+
+        # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
+        for prompt_key in "system_top", "system_bottom":
+            prompt = self.get(prompt_key)
+            if not prompt:
+                continue
+            name = self.get("name")
+            fullname = self.get("fullname", name)
+            aliases = self.get("aliases") or [name]
+            aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
+            prompt = re.sub(r"\$NAME\b", name, prompt)
+            prompt = re.sub(r"\$FULLNAME\b", fullname, prompt)
+            prompt = re.sub(r"\$ALIAS\b", aliases_or, prompt)
+            self.set(prompt_key, prompt)
+
+        self.data = safety.apply_or_remove_adult_options(self.data, ADULT)
+
+        self.setup_maps()
+
+        return True
+
+    def update_visual(self):
+        """Update the visual prompts for an agent."""
+        visual = self.get("visual")
+        logger.debug("update_visual: %r %r", self.name, visual)
+        if not visual:
+            return
+
+        name_lc = self.name.lower()
+        all_names = self.get_all_names()
+
+        # supporting arbitrary keys might be a security risk
+        for key in "person", "clothes", "age", "emo":
+            if key not in visual:
+                cache.remove(str(PATH_VISUAL / key / name_lc) + ".txt")
+                for name in all_names:
+                    for dest in name, name.lower():
+                        cache.remove(str(PATH_VISUAL / key / dest) + ".txt")
+                continue
+
+            prompt = visual.get(key)
+            if prompt:
+                path = key if key == "person" else "person/" + key
+                prompt = str(prompt).strip() + "\n"
+                (PATH_VISUAL / path).mkdir(parents=True, exist_ok=True)
+                cache.save(str(PATH_VISUAL / path / name_lc) + ".txt",
+                        prompt, noclobber=False)
+                cache.chmod(str(PATH_VISUAL / path / name_lc) + ".txt", 0o664)
+
+                # symlink main file to agent's other names
+                for name in all_names:
+                    for dest in name, name.lower():
+                        if dest == name_lc:
+                            continue
+                        cache.symlink(name_lc + ".txt",
+                                str(PATH_VISUAL / path / dest) + ".txt")
+
+    def remove_visual(self):
+        """Remove the visual prompts for an agent."""
+        all_names = self.get_all_names()
+
+        for key in "person", "person/clothes":
+            for name in all_names:
+                for dest in name, name.lower():
+                    try:
+                        cache.remove(str(PATH_VISUAL / key / dest) + ".txt")
+                    except FileNotFoundError:
+                        pass
+
+    def setup_maps(self):
+        """Setup maps for an agent"""
+        data = self.data
+        for k in "input_map", "output_map", "map", "map_cs", "input_map_cs", "output_map_cs":
+            if k not in data:
+                data[k] = {}
+        for k, v in data["input_map"].items():
+            k_lc = k.lower()
+            if k == k_lc:
+                continue
+            del data["input_map"][k]
+            data["input_map"][k_lc] = v
+        for k, v in data["output_map"].items():
+            k_lc = k.lower()
+            if k == k_lc:
+                continue
+            del data["output_map"][k]
+            data["output_map"][k_lc] = v
+        for k, v in data["map"].items():
+            k_lc = k.lower()
+            v_lc = v.lower()
+            if k_lc not in data["input_map"]:
+                data["input_map"][k_lc] = v
+            if v_lc not in data["output_map"]:
+                data["output_map"][v_lc] = k
+        for k, v in data["map_cs"].items():
+            if k not in data["input_map_cs"]:
+                data["input_map_cs"][k] = v
+            if v not in data["output_map_cs"]:
+                data["output_map_cs"][v] = k
+
+
+class Agents:
+    """A collection of agents"""
+
+    def __init__(self, services: dict[str, Any], parent: Agents|None=None):
+        self.agents: dict[str, Agent] = {}
+        self.services: dict[str, Any] = services
+        self.parent: Agents = parent
+
+    def write_agents_list(self, path: str):
+        """Write the list of agents to a file."""
+        agent_names = sorted(set(agent.name for agent in self.agents.values()))
+        cache.save(path, agent_names, noclobber=False)
+
+    def load_agent(self, agent_file: Path) -> Agent | None:
+        """Load an agent from a file."""
+        name = agent_file.stem
+        self.remove_agent(name)
+
+        with open(agent_file, encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+
+        if "name" not in data:
+            data["name"] = name
+        elif data["name"].lower() != name.lower():
+            raise ValueError(f'Agent name mismatch: {name} vs {data["name"]}')
+
+        agent = Agent(name, data, self)
+        agent.update_visual()
+
+        agent_type = self.get("type")
+        service = self.services.get(agent_type)
+        if not agent.set_up(self.services):
+            return
+
+        # Add agent under all its names
+        all_names = agent.get_all_names()
+        for name_lc in map(str.lower, all_names):
+            if name_lc in self.agents:
+                if self.agents[name_lc] != agent:
+                    old_main_name = self.agents[name_lc].name
+                    logger.warning("Agent name conflict: %r vs %r for %r",
+                                old_main_name, agent.name, name_lc)
+                continue
+            self.agents[name_lc] = agent
+
+        return agent
+
+    def remove_agent(self, name: str):
+        """Remove an agent."""
+        agent = self.agents.get(name.lower())
+        if not agent:
+            return
+        agent_names = agent.get_all_names()
+        for name_lc in map(str.lower, agent_names):
+            self.agents.pop(name_lc, None)
+
+        agent.remove_visual()
+
+    def load_all(self, base_dir: Path):
+        """Load all agents"""
+        for agent_file in base_dir.glob("*.yml"):
+            try:
+                self.load_agent(agent_file)
+            except Exception:  # pylint: disable=broad-except
+                logger.exception("Error loading agent", exc_info=True)
+
+    def handle_file_change(self, file_path: str, change_type: Change):
+        """Process an agent file change."""
+        if change_type == Change.deleted:
+            name = Path(file_path).stem
+            logger.info("Removing agent: %r", name)
+            self.remove_agent(name)
+        else:
+            logger.info("Loading agent: %r", file_path)
+            self.load_agent(Path(file_path))
+
+    def items(self):
+        """Get the agents as a list of tuples."""
+        pairs = list(self.agents.items())
+        if self.parent:
+            for name, agent in self.parent.items():
+                if name not in self.agents:
+                    pairs.append((name, agent))
+        return pairs
+
+    def names(self) -> list[str]:
+        """Get the names of the agents."""
+        keys = set(self.agents.keys())
+        if self.parent:
+            keys.update(self.parent.names())
+        return list(keys)
+
+    def get(self, name: str) -> Agent | None:
+        """Get an agent by name."""
+        name_lc = name.lower()
+        if name_lc in self.agents:
+            return self.agents[name_lc]
+        if self.parent:
+            return self.parent.get(name)
+        return None
+
+    def set(self, name: str, agent: Agent):
+        """Set an agent."""
+        self.agents[name.lower()] = agent
+
+    def __contains__(self, name: str):
+        """Check if an agent is in the collection."""
+        return self.get(name) is not None
