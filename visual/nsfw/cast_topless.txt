@@ -1,0 +1,16 @@
+(simple studio background, black background:1.5),
+(solo:1.5), face, chest, nipples, upper-body shot, [use choose_a_person]
+[use character_name],
+([get age]:1.5),
+([get person]:1.5),
+upper-body shot, face, (nipples:1.5),
+[get emo],
+(topless, nude, nipples:1.8),
+upper-body shot,
+[use photo], (nipples:1.5),
+<lora:eyes:0.2>
+[use expressive]
+<lora:boring:-0.5>
+[sets cfg_scale=3.5]
+[use neg]
+[set negative_prompt] [get negative_prompt] (torso, legs:2), busty [/set]
