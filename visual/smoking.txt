@@ -1,0 +1,6 @@
+smoking, cigarette,
+holding cigarette,
+smoke,
+[opt 50 1.0 1.3] blowing smoke, [/opt]
+
+<lora:smoking4:1>
