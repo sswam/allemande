@@ -38,8 +38,15 @@ accounting:
 
 - image input
 
+
+
+
 Sam ideas tacked on:
 
 - fix chat / escape_indents restore_indents, use only during code blocks I guess maybe? But shouldn't be needed in code blocks!
 - also audio input, gpt-4o-audio-preview supports, clever Emmy!
 - Fix to allow multiple image prompts in a message, to be run sequentialy.
+- <think keep=1> option to make thinking available in future context
+
+- move agents code to its own file
+	- support base / inheritance at use time, via a get_agent function
