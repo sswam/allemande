@@ -512,7 +512,9 @@ function set_room(r) {
 
 function browse_up(ev) {
   let new_room;
-  if (room.match(/\/$/)) {
+  if (room == "/") {
+    new_room = DEFAULT_ROOM;
+  } else if (room.match(/\/$/)) {
     new_room = room.replace(/[^\/]*\/$/, "");
     if (new_room == "") {
       new_room = "/";
@@ -922,11 +924,17 @@ function setup_user_button() {
 
 // Wrapper function to initialize drag controls for the input row ------------
 
+function resizedInputRow(height) {
+  view_options.input_row_height = height;
+  view_options_apply();
+}
+
 function initDragControls() {
   const resizer = new DragResizer({
     element: $inputrow,
     direction: 'up',
     overlay: $messages_overlay,
+    notify: resizedInputRow,
   });
 
   return (e) => resizer.initDrag(e);
@@ -1475,6 +1483,8 @@ let view_options = {
   canvas: 0,
   clean: 0,
   image_size: 4,
+  input_row_height: 80,
+  theme: "default",
 };
 
 function setup_view_options() {
@@ -1499,6 +1509,7 @@ function view_options_apply() {
   active_set("view_canvas", view_options.canvas);
   active_set("view_clean", view_options.clean);
   active_set("view_image_size", view_options.image_size);
+  $inputrow.style.flexBasis = view_options.input_row_height + "px";
   // send message to the rooms iframe to apply view options
   $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
 }
@@ -1524,10 +1535,13 @@ function view_clean() {
   view_options_apply();
 }
 
+function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
+
 function view_image_size(ev) {
   // starts at 4, range from 1 to 10
   delta = ev.shiftKey ? -1 : 1;
-  view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
+  view_options.image_size = clamp((view_options.image_size || 4) + delta, 1, 10);
+//  view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
   view_options_apply();
 }
 

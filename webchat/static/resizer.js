@@ -7,6 +7,7 @@ class DragResizer {
     this.minSize = options.minSize || 0;
     this.maxSize = options.maxSize || Infinity;
     this.property = options.property || 'flexBasis';
+    this.notify = options.notify || (() => {});
 
     // Bound methods
     this.doDrag = this.doDrag.bind(this);
@@ -15,6 +16,8 @@ class DragResizer {
     // Initial values
     this.startPos = { x: 0, y: 0 };
     this.startSize = { width: 0, height: 0 };
+
+    this.newSize = 0;
   }
 
   initDrag(e) {
@@ -36,6 +39,8 @@ class DragResizer {
     if (this.overlay) {
       this.overlay.style.display = 'block';
     }
+
+    this.newSize = null;
   }
 
   doDrag(e) {
@@ -58,9 +63,9 @@ class DragResizer {
     }
 
     // Apply min/max constraints
-    newSize = Math.max(this.minSize, Math.min(this.maxSize, newSize));
+    this.newSize = Math.max(this.minSize, Math.min(this.maxSize, newSize));
 
-    this.element.style[this.property] = `${newSize}px`;
+    this.element.style[this.property] = this.newSize + 'px';
   }
 
   stopDrag(e) {
@@ -76,5 +81,8 @@ class DragResizer {
     if (this.overlay) {
       this.overlay.style.removeProperty('display');
     }
+
+    // Notify changed size
+    this.notify(this.newSize);
   }
 }
