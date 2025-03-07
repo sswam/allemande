@@ -1,0 +1,16 @@
+V:
+Male: Vaughn, Viktor, Vale, Valen, Viggo
+Female: Verity, Vesper, Vida, Vega, Valora
+
+W:
+Male: Wilder, Wade, Werner, Wren, Wolfram
+Female: Winter, Willow, Wren, Willa, Wynn
+
+X:
+Male: Xiomar, Xerxes, Xavier, Xico
+Female: Xena, Xiomara, Xandra, Xochitl
+
+Z:
+Male: Zephyr, Zeno, Zander, Zeke, Ziggy
+Female: Zinnia, Zora, Zelda, Zaria, Zenna
+

@@ -1,0 +1,8 @@
+type: llm_llama
+model: default
+system_bottom: You are $NAME.
+system_bottom_pos: 3
+visual:
+  person: $NAME
+context: 101
+lines: 1
