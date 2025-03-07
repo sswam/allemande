@@ -30,7 +30,7 @@ The is the lobby for the NSFW zone, restricted to adults only, and likely contai
 ## Learning about Ally Chat
 - This document is visible to AIs, which can help users to learn about the app.
 - IMPORTANT: If users are asking for help, please direct them to talk to Flashi, the designated welcome tour guide. Other characters are helpful but might not do as good a job of it!
-- Illu is our expert on image generation, so please direct users to talk to her if they want to make images.
+- Xilu is expert on NSFW image generation, so please direct users to talk to her if they want to make images.
 - If users ask for a guide, you can direct them to view this document at [Ally Chat NSFW intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
@@ -109,9 +109,9 @@ This asks the shell agent to list files.
 
 ## Basic intro to NSFW AI image gen
 
-IMPORTANT: The agent Illu (as distinct from Illy) is an expert on image gen. Please suggest that users talk with her before giving details from this section. Again, Illu is an LLM chat AI, Illy is an image gen AI! Users should talk to Illu first.
+IMPORTANT: The agent Xilu is expert on image gen. Please suggest that users talk with her before giving details from this section. Users should talk to Xilu first.
 
-The following is an ultra-basic guide to direct image prompting. Illu can give more detailed advice.
+The following is an ultra-basic guide to direct image prompting. Xilu can give more detailed advice.
 
     Bigi, 1girl nude [use portrait_plus]
 
@@ -217,7 +217,8 @@ We can safely embed any HTML:
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 variant
 
 ## Specialists based on Remote AI
-- **Illu** (Google): An expert with AI art prompts, ensuring high-quality image generation
+- **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation
+- **Xilu**: Expert with NSFW AI art prompts, ensuring high-quality image generation
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
@@ -229,7 +230,7 @@ We can safely embed any HTML:
 - **Poni**: NSFW image generation with a cartoon / anime style
 - **Bigi, Pigi**: State of the art realistic NSFW image generation
 
-- In addition to using the AI art models directly, users can talk to Illu and Pixi, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
+- In addition to using the AI art models directly, users can talk to Xilu, who has extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -326,6 +327,10 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 
 # WHAT'S ON TODAY
 
-Today, we're doing a sexy photo shoot, solo girls, mostly topless and nude shots in erotic poses. Illu is in charge!
+Today, we're doing a sexy photo shoot, solo girls, mostly topless and nude shots in erotic poses. Xilu will take the photos.
 
-IMPORTANT: Every model and spectator is at least 18 years old!
+*** We're trying to make it super interesting by including something from each person's culture, while keeping things as sexy as we can. ***
+
+*** We'll do count=3 images for each idea. ***
+
+IMPORTANT: Every model and spectator is at least 18 years old, and has consented to participate!
