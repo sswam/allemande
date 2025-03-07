@@ -38,9 +38,10 @@ class Shortcode:
             name = "Barbarella"
 
         # Construct the prompt
-        prompt = f"{name}, [use {_name}]"
+        prompt = f"{name}"
         if _age:
             prompt += f", ({_age}:1.5)"
+        prompt += f", [use {_name}]"
         if _emo:
             prompt += f", {_emo}"
         if _clothes:
