@@ -9,7 +9,7 @@ import re
 from copy import deepcopy
 from typing import Any
 
-from deepmerge import always_merger
+from deepmerge import always_merger, Merger, STRATEGY_END
 
 from ally.cache import cache  # type: ignore
 from safety import safety  # type: ignore
@@ -24,22 +24,38 @@ PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
 ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
 SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 
-def merge_string_strategy(config, path, base, nxt):
-    """A strategy to merge strings"""
-    # This will merge dictionaries and extend lists.
-    # We also support "+" at start of string to append to base string, with a space.
-    # Extending lists might not always be the desired behavior, we'll see.
-    # - TODO ideas:
-    #   - if first element of list is "+" we extend, else overwrite.
-    #   - if first element is "U" we add and deduplicate, like set union.
-    #   - s/foo/bar
-    #   - =foo to pass foo through literally as a string without changes
-    if nxt.startswith("+"):
-        return base + " " + nxt[1:]
-    return nxt
 
-# TODO: proper agent merging
-agent_merger = always_merger
+# - TODO:
+#   - if first element of list is "+" we extend, else overwrite.
+#   - if first element is "U" we add and deduplicate, like set union.
+#   - s/foo/bar
+#   - =foo to pass foo through literally as a string without changes
+#   - ["=", ...] means pass the rest of the list through without changes
+
+def merge_string_strategy(config, path, base, nxt):
+    """A strategy to merge strings with support for '+' prefix"""
+    if isinstance(base, str) and isinstance(nxt, str):
+        if nxt.startswith("+"):
+            # check followed by whitespace or end of string
+            if len(nxt) == 1 or nxt[1].isspace():
+                return base + nxt[1:]
+            return base + " " + nxt[1:]
+        return nxt
+    return STRATEGY_END
+
+# Create a custom merger with specific strategies for different types
+agent_merger = Merger(
+    # Type-specific strategies
+    [
+        (dict, ["merge"]),  # Merge dictionaries
+        (list, ["append"]), # Append lists
+        (str, merge_string_strategy), # Custom string merging
+    ],
+    # Fallback strategy for other types
+    ["override"],
+    # Strategy for type conflicts
+    ["override"]
+)
 
 
 class Agents:
