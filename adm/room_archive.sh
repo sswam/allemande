@@ -31,8 +31,8 @@ fi
 to=$(archive -D html "$from")
 
 # Create empty source file and html file, or from template
-if [ -e "$from.template" ]; then
-	cp "$from.template" "$from"
+if [ -e "$from.base" ]; then
+	cp "$from.base" "$from"
 else
 	touch "$from"
 fi
