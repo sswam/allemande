@@ -4,5 +4,3 @@ context: 20
 alternating_context: true
 system_top: '[You are $NAME]'
 online: true
-aliases:
-- Sonar

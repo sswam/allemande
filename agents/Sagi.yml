@@ -4,7 +4,4 @@ context: 5
 alternating_context: true
 system_top: '[You are $NAME]'
 online: true
-aliases:
 expensive: true
-aliases:
-- Sonar Pro
