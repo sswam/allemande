@@ -1,6 +1,6 @@
 [set char]
 [choose]
-[use everyone]
+[use people]
 [/choose]
 [/set]
 [use character]

@@ -60,6 +60,8 @@ rooms.*
 /pix/banner?.*
 /visual/everyone_count.txt
 /visual/everyone.txt
+/visual/people_count.txt
+/visual/people.txt
 /visual/girls_count.txt
 /visual/girls.txt
 /visual/boys_count.txt
