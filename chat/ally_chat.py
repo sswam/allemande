@@ -352,7 +352,7 @@ def load_local_agents(room, agents=None):
         agents = Agents(services, parent=agents)
         agents.load_all(agent_dir)
 
-        agents.write_agents_list(agent_dir.parent / "agents.yml")
+        agents.write_agents_list(agent_dir.parent / ".agents.yml")
 
         logger.info("Loaded agents from %s", agent_dir)
         logger.debug("Agents: %r", agents.names())
@@ -1283,7 +1283,7 @@ async def watch_loop(args):
 
     agents = Agents(services)
     agents.load_all(PATH_AGENTS)
-    agents.write_agents_list(PATH_ROOMS / "agents.yml")
+    agents.write_agents_list(PATH_ROOMS / ".agents.yml")
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
         while (line := await queue.get()) is not None:
@@ -1301,7 +1301,7 @@ async def watch_loop(args):
                     list_active_tasks()
                 elif file_type == "agent":
                     agents.handle_file_change(file_path, change_type)
-                    agents.write_agents_list(PATH_ROOMS / "agents.yml")
+                    agents.write_agents_list(PATH_ROOMS / ".agents.yml")
                 else:
                     logger.debug("Ignoring change to file: %r", file_path)
             except Exception:  # pylint: disable=broad-except

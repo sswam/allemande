@@ -350,19 +350,22 @@ class Room:
             options = {}
         return options
 
-    def set_options(self, user, options):
+    def set_options(self, user, new_options):
         """Set the options for a room."""
         access = self.check_access(user).value
         if not access & Access.MODERATE.value:
             raise PermissionError("You are not allowed to set options for this room.")
         options_file = self.find_resource_file("yml", "options", create=True)
         if options_file:
-            old_options = cache.load(options_file)
-            logger.debug("old options: %r", old_options)
-            new_options = always_merger.merge(old_options, options)
-            new_options = tree_prune(new_options)
+            logger.debug("options file: %s", options_file)
+            options = cache.load(options_file)
+            logger.debug("old options: %r", options)
             logger.debug("new options: %r", new_options)
-            cache.save(options_file, new_options)
+            always_merger.merge(options, new_options)  # modifies options
+            logger.debug("merged options: %r", options)
+            options = tree_prune(options)
+            logger.debug("pruned options: %r", options)
+            cache.save(options_file, options)
         else:
             raise FileNotFoundError("Options file not found.")
 
@@ -1300,14 +1303,6 @@ def load_config(path: Path, filename: str) -> dict[str, Any]:
     return config_all
 
 
-def write_agents_list(agents):
-    """Write the list of agents to a file."""
-    agent_names = list(agents.keys())
-    path = Path(os.environ["ALLEMANDE_ROOMS"]) / "agents.yml"
-    with open(path, "w", encoding="utf-8") as f:
-        yaml.dump(agent_names, f)
-
-
 def read_agents_list(path) -> list[str]:
     """Read the list of agents from a file."""
     if not path.exists():
@@ -1332,7 +1327,7 @@ def read_agents_lists(path) -> list[str]:
         raise ValueError(f"Invalid room directory: {room_dir}")
 
     while True:
-        agent_names.extend(read_agents_list(room_dir / "agents.yml"))
+        agent_names.extend(read_agents_list(room_dir / ".agents.yml"))
         if room_dir == top_dir:
             break
         room_dir = room_dir.parent
@@ -1374,7 +1369,7 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     except ValueError:
         return Access.NONE, "invalid_path"
 
-    access = load_config(path, "access.yml")
+    access = load_config(path, ".access.yml")
     agent_names = read_agents_lists(path)
 
     user = user.lower()
