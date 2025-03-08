@@ -319,10 +319,10 @@ def who_should_respond(
     for agent in all_participants:
         agent_lc = agent.lower()
         if agent_lc not in agents:
-            human = Agent(agent, {
+            human = Agent(data={
                 "name": agent,
                 "type": "human",
-            }, agents)
+            }, agents=agents)
             agents.set(agent_lc, human)
 
     agent_names = agents.names()
