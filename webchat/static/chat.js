@@ -1628,9 +1628,9 @@ async function get_options() {
   const data = await response.json();
 //  console.log("get_options", data);
 
-  const context = data?.agents?.all?.context || "";
-  const lines = data?.agents?.all?.lines || "";
-  const images = data?.agents?.all?.images || "";
+  const context = data?.agents?.all?.context ?? "";
+  const lines = data?.agents?.all?.lines ?? "";
+  const images = data?.agents?.all?.images ?? "";
   $id("opt_context").value = context;
   $id("opt_lines").value = lines;
   $id("opt_images").value = images;
