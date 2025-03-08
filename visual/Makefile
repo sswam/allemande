@@ -3,7 +3,7 @@ all: sync install chmod
 person: sync
 
 sync:
-	in-dir person arcs
+	in-dir person git pull
 
 build: everyone.txt girls.txt boys.txt nonbinary.txt people.txt everyone_count.txt girls_count.txt boys_count.txt nonbinary_count.txt people_count.txt
 
