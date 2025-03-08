@@ -350,7 +350,7 @@ def load_local_agents(room, agents=None):
 
     for agent_dir in reversed(agents_dirs):
         agents = Agents(services, parent=agents)
-        agents.load_all(agent_dir)
+        agents.load(agent_dir)
 
         agents.write_agents_list(agent_dir.parent / ".agents.yml")
 
@@ -1192,13 +1192,24 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     # echo the query to the subprocess
     output, errors, status = await run_subprocess(command, query)
 
+    eol = not output or output.endswith("\n")
+    if not eol:
+        output += "\n"
+
     # format the response
     response = ""
-    if errors or status:
-        response += f"status: {status}\n\n"
-        response += "## errors:\n```\n" + errors + "\n```\n\n"
+    if errors or status or not eol:
+        info = []
+        if status:
+            info.append(f"status: {status}")
+        if not eol:
+            info.append("no EOL")
+        if info:
+            response += ", ".join(info) + "\n\n"
+        if errors:
+            response += "## errors:\n```\n" + errors + "\n```\n\n"
         response += "## output:\n"
-    response += "```\n" + output + "\n```\n"
+    response += "```\n" + output + "```\n"
 
     response2 = f"{name}:\t{response}"
     response3 = fix_layout(response2, args, agent)
@@ -1282,7 +1293,7 @@ async def watch_loop(args):
     skip = defaultdict(int)
 
     agents = Agents(services)
-    agents.load_all(PATH_AGENTS)
+    agents.load(PATH_AGENTS)
     agents.write_agents_list(PATH_ROOMS / ".agents.yml")
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:

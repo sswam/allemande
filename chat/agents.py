@@ -26,7 +26,14 @@ SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 
 def merge_string_strategy(config, path, base, nxt):
     """A strategy to merge strings"""
-    # + at start to append to base string
+    # This will merge dictionaries and extend lists.
+    # We also support "+" at start of string to append to base string, with a space.
+    # Extending lists might not always be the desired behavior, we'll see.
+    # - TODO ideas:
+    #   - if first element of list is "+" we extend, else overwrite.
+    #   - if first element is "U" we add and deduplicate, like set union.
+    #   - s/foo/bar
+    #   - =foo to pass foo through literally as a string without changes
     if nxt.startswith("+"):
         return base + " " + nxt[1:]
     return nxt
@@ -41,15 +48,30 @@ class Agents:
 
 class Agent:
     """An Allemande Agent"""
-
-    def __init__(self, name: str, data: dict = None, agents: Agents = None):
-        self.name = name
-        self.data = data or {}
+    def __init__(self, data: dict = None, agents: Agents = None, file: Path = None):
         self.agents = agents
+        if file and data:
+            raise ValueError("Cannot specify both file and data")
+        if data:
+            self.data = data
+        else:
+            self.load_agent(file)
+        self.name = self.data["name"]
+
+    def load_agent(self, file: Path) -> None:
+        """Load the agent data from a file."""
+        name = file.stem
+        with open(file, encoding="utf-8") as f:
+            self.data = yaml.safe_load(f)
+
+        if "name" not in self.data:
+            self.data["name"] = name
+        elif self.data["name"].lower() != name.lower():
+            raise ValueError(f'Agent name mismatch: {name} vs {self.data["name"]}')
 
     def copy(self):
         """Return a copy of the agent"""
-        return Agent(self.name, deepcopy(self.data), self.agents)
+        return Agent(data=deepcopy(self.data), agents=self.agents)
 
     def get(self, key: str, default=None, raise_error=False):
         """Get a value from the agent's data"""
@@ -65,10 +87,14 @@ class Agent:
             # This will extend lists and merge dictionaries
             # Extending lists might not always be the desired behavior, we'll see
             # TODO reduce indent here
-            if base and isinstance(value, (dict, list)):
-                base_value = base.get(key)
-                if isinstance(base_value, type(value)):
-                    value = agent_merger.merge(deepcopy(base_value), value)
+            if base:
+                base_value = deepcopy(base.get(key))
+                value = agent_merger.merge(base_value, value)
+
+#             if base and isinstance(value, (dict, list)):
+#                 base_value = base.get(key)
+#                 if isinstance(base_value, type(value)):
+#                     value = agent_merger.merge(deepcopy(base_value), value)
 
         # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
         # We do this on get, rather than initially, because we can define
@@ -140,7 +166,7 @@ class Agent:
         service = services.get(agent_type)
 
         if service is None:
-            raise ValueError(f'Unknown service for agent: {agent["name"]}, {agent["type"]}')
+            raise ValueError(f'Unknown service for agent: {self["name"]}, {agent_type}')
 
         self.update(service)
 
@@ -165,6 +191,8 @@ class Agent:
 
         name_lc = self.name.lower()
         all_names = self.get_all_names()
+
+        # TODO reduce indent here
 
         # supporting arbitrary keys might be a security risk
         for key in "person", "clothes", "age", "emo":
@@ -249,26 +277,12 @@ class Agents:
         agent_names = sorted(set(agent.name for agent in self.agents.values()))
         cache.save(path, agent_names, noclobber=False)
 
-    def load_agent(self, agent_file: Path) -> Agent | None:
+    def load_agent_without_setup(self, agent_file: Path) -> Agent | None:
         """Load an agent from a file."""
         name = agent_file.stem
         self.remove_agent(name)
 
-        with open(agent_file, encoding="utf-8") as f:
-            data = yaml.safe_load(f)
-
-        if "name" not in data:
-            data["name"] = name
-        elif data["name"].lower() != name.lower():
-            raise ValueError(f'Agent name mismatch: {name} vs {data["name"]}')
-
-        agent = Agent(name, data, self)
-        agent.update_visual()
-
-        agent_type = self.get("type")
-        service = self.services.get(agent_type)
-        if not agent.set_up(self.services):
-            return
+        agent = Agent(file=agent_file, agents=self)
 
         # Add agent under all its names
         all_names = agent.get_all_names()
@@ -294,13 +308,30 @@ class Agents:
 
         agent.remove_visual()
 
-    def load_all(self, base_dir: Path):
-        """Load all agents"""
-        for agent_file in base_dir.glob("*.yml"):
+    def load(self, path: Path):
+        """Load all agents or one agent from a path."""
+        if path.is_dir():
+            agent_files = path.glob("*.yml")
+        else:
+            agent_files = [path]
+
+        new_agents = []
+
+        # load all agents first
+        for agent_file in agent_files:
             try:
-                self.load_agent(agent_file)
+                agent = self.load_agent_without_setup(agent_file)
+                new_agents.append(agent)
             except Exception:  # pylint: disable=broad-except
                 logger.exception("Error loading agent", exc_info=True)
+
+        # then set up and update visuals
+        for agent in new_agents:
+            agent_type = agent.get("type")
+            if not agent.set_up(self.services):
+                self.remove_agent(agent.name)
+                continue
+            agent.update_visual()
 
     def handle_file_change(self, file_path: str, change_type: Change):
         """Process an agent file change."""
@@ -310,7 +341,7 @@ class Agents:
             self.remove_agent(name)
         else:
             logger.info("Loading agent: %r", file_path)
-            self.load_agent(Path(file_path))
+            self.load(Path(file_path))
 
     def items(self):
         """Get the agents as a list of tuples."""

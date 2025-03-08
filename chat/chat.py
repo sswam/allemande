@@ -216,10 +216,10 @@ class Room:
                 raise PermissionError("You are not allowed to clear this room.")
             if backup:
                 backup_file(str(self.path))
-            # If there is a template file, copy it to the room
-            # e.g. foo.bb => foo.bb.template
+            # If there is a base file, copy it to the room
+            # e.g. foo.bb => foo.bb.base
             # else, truncate the file
-            template_file = self.path.with_suffix(".bb.template")
+            template_file = self.path.with_suffix(".bb.base")
             if template_file.exists():
                 shutil.copy(template_file, self.path)
             else:
