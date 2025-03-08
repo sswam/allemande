@@ -11,8 +11,12 @@ body > form, div#main {
 body.admin, body.admin .admin {
 	display: block;
 }
+input, textarea {
+	min-width: 88px;
+	width: 0;
+}
 #messages {
-	min-height: 80px;
+	min-height: 88px;
 	position: relative;
 }
 #messages_overlay {
@@ -24,11 +28,11 @@ body.admin, body.admin .admin {
 	display: none;
 }
 #inputrow {
-	height: 80px;
+	height: 88px;
 	margin: 0;
 	flex-grow: 0;
 	flex-shrink: 0;
-	max-height: calc(100dvh - 80px);
+	max-height: calc(100dvh - 88px);
 }
 #inputrow > .controls {
 	flex-grow: 0;
@@ -59,10 +63,12 @@ body.admin, body.admin .admin {
 .row {
 	display: flex;
 	flex-direction: row;
+	width: 100%;
 }
 .col {
 	display: flex;
 	flex-direction: column;
+	height: 100%;
 }
 .col_wrap {
 /*	display: flex;

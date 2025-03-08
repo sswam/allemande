@@ -1,3 +1,5 @@
+#!/usr/bin/make -Lf
+
 static_files = $(wildcard static/*.html) $(wildcard static/*.css) $(wildcard static/*.js) $(wildcard static/*.wasm) $(wildcard static/*.json) $(wildcard static/*.png)
 
 all: build.stamp get

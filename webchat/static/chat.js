@@ -1483,7 +1483,7 @@ let view_options = {
   canvas: 0,
   clean: 0,
   image_size: 4,
-  input_row_height: 80,
+  input_row_height: 88,
   theme: "default",
 };
 
