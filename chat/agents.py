@@ -24,6 +24,16 @@ PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
 ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
 SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 
+def merge_string_strategy(config, path, base, nxt):
+    """A strategy to merge strings"""
+    # + at start to append to base string
+    if nxt.startswith("+"):
+        return base + " " + nxt[1:]
+    return nxt
+
+# TODO: proper agent merging
+agent_merger = always_merger
+
 
 class Agents:
     pass
@@ -45,19 +55,37 @@ class Agent:
         """Get a value from the agent's data"""
         base = self.base()
         if key not in self.data and base:
-            return base.get(key, default, raise_error)
-        if key not in self.data and raise_error:
+            value = base.get(key, default, raise_error)
+        elif key not in self.data and raise_error:
             raise KeyError(key)
-        value = self.data.get(key)
+        else:
+            value = self.data.get(key, default)
 
-        # if dict or list, deep merge with base agent's value
-        # This will extend lists and merge dictionaries
-        # Extending lists might not always be the desired behavior, we'll see
-        if base and isinstance(value, (dict, list)):
-            base_value = base.get(key)
-            if isinstance(base_value, type(value)):
-                value = always_merger.merge(base_value, value)
-        return self.data.get(key, default)
+            # if dict or list, deep merge with base agent's value
+            # This will extend lists and merge dictionaries
+            # Extending lists might not always be the desired behavior, we'll see
+            # TODO reduce indent here
+            if base and isinstance(value, (dict, list)):
+                base_value = base.get(key)
+                if isinstance(base_value, type(value)):
+                    value = agent_merger.merge(deepcopy(base_value), value)
+
+        # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
+        # We do this on get, rather than initially, because we can define
+        # a derived agent with different names.
+        # TODO do this more generally for other variables?
+        if value and key in ["system_top", "system_bottom"]:
+            name = self.get("name")
+            fullname = self.get("fullname", name)
+            aliases = self.get("aliases") or [name]
+            aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
+            value = re.sub(r"\$NAME\b", name, value)
+            value = re.sub(r"\$FULLNAME\b", fullname, value)
+            value = re.sub(r"\$ALIAS\b", aliases_or, value)
+
+        # TODO remove null values? i.e. enable to remove an attribute from base
+
+        return value
 
     def base(self):
         """Get the base agent"""
@@ -121,20 +149,6 @@ class Agent:
 
         if not ADULT and self.get("adult"):
             return False
-
-        # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
-        for prompt_key in "system_top", "system_bottom":
-            prompt = self.get(prompt_key)
-            if not prompt:
-                continue
-            name = self.get("name")
-            fullname = self.get("fullname", name)
-            aliases = self.get("aliases") or [name]
-            aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
-            prompt = re.sub(r"\$NAME\b", name, prompt)
-            prompt = re.sub(r"\$FULLNAME\b", fullname, prompt)
-            prompt = re.sub(r"\$ALIAS\b", aliases_or, prompt)
-            self.set(prompt_key, prompt)
 
         self.data = safety.apply_or_remove_adult_options(self.data, ADULT)
 
