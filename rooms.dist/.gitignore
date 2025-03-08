@@ -4,7 +4,9 @@
 !*.m
 !*.yml
 !*.txt
-!*.template
+!*.base
+!*.css
+!*.js
 !.gitignore
 
 !*/

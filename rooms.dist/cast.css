@@ -1,0 +1,13 @@
+.cast img {
+	border-radius: 12px;  /* Rounded corners but not fully circular */
+	margin: 4px;  /* Small spacing between images */
+}
+
+.cast img:hover {
+	border: 2px solid white;
+	box-shadow: 5px 5px 10px 10px rgba(0, 0, 0, 0.8);
+	transform: scale(1.65);
+	z-index: 2;
+	position: relative;
+	transition: all 0.3s ease;  /* Smooth transition for hover effects */
+}
