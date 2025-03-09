@@ -335,14 +335,15 @@ function new_chat_message(message) {
 
 function textarea_indent(textarea, dedent = false) {
   // If no selection, handle single tab insertion/removal
+  textarea.focus();
   if (textarea.selectionStart === textarea.selectionEnd) {
+    console.log("single tab");
     if (dedent) {
       // For shift-tab with no selection, remove previous tab if it exists
       const pos = textarea.selectionStart;
       if (pos > 0 && textarea.value[pos - 1] === '\t') {
         setRangeText(textarea, '', pos - 1, pos);
         textarea.selectionStart = textarea.selectionEnd = pos - 1;
-      } else {
       }
     } else {
       // For tab with no selection, insert a tab at caret
@@ -371,31 +372,41 @@ function textarea_indent(textarea, dedent = false) {
   while (blockEnd < text.length && text[blockEnd] !== '\n') {
     blockEnd++;
   }
+  // Do not include the trailing newline
 
   // Split the selected block into lines
   const selectedText = text.slice(blockStart, blockEnd);
   const lines = selectedText.split('\n');
 
   // Process each line
-  const processedLines = lines.map(line => {
-    if (dedent) {
-      // Remove one tab if it exists at the start
-      return line.startsWith('\t') ? line.slice(1) : line;
-    } else {
-      // Add a tab
-      return '\t' + line;
+  const processedLines = [];
+  if (dedent) {
+    // Remove one tab if it exists at the start
+    for (const line of lines) {
+      if (line.startsWith('\t')) {
+        processedLines.push(line.slice(1));
+      } else {
+        // abort the dedent if any line doesn't start with a tab
+        return;
+      }
     }
-  });
+  } else {
+    for (const line of lines) {
+      // Add a tab
+      processedLines.push('\t' + line);
+    }
+  }
 
   // Join the lines back together
   const newText = processedLines.join('\n');
 
+  // Replace the text
+  setRangeText(textarea, newText, blockStart, blockEnd);
+
   // Calculate new selection positions
   const deltaPerLine = dedent ? -1 : 1;
   const newSelStart = selStart + (selStart > blockStart ? deltaPerLine : 0);
-  const newSelEnd = selEnd + deltaPerLine * lines.length - (selEnd === blockEnd ? deltaPerLine : 0);
-
-  setRangeText(textarea, newText, blockStart, blockEnd);
+  const newSelEnd = selEnd + (lines.length * deltaPerLine);
 
   // Restore selection
   textarea.setSelectionRange(newSelStart, newSelEnd);
@@ -406,12 +417,19 @@ function setRangeText(textarea, newText, blockStart, blockEnd) {
   const selStart = textarea.selectionStart;
   const selEnd = textarea.selectionEnd;
 
+  console.log(selStart, selEnd);
+
   // Make the replacement
   textarea.setSelectionRange(blockStart, blockEnd);
+  const oldText = textarea.value.slice(blockStart, blockEnd);
   document.execCommand('insertText', false, newText);
 
   // Calculate how the replacement affected positions
   const lengthDiff = newText.length - (blockEnd - blockStart);
+
+  console.log(oldText, newText);
+  console.log(oldText.length, newText.length);
+  console.log(lengthDiff);
 
   // Restore selection, adjusting for text length changes
   const adjustedStart = selStart < blockStart ? selStart :
@@ -421,6 +439,10 @@ function setRangeText(textarea, newText, blockStart, blockEnd) {
   const adjustedEnd = selEnd < blockStart ? selEnd :
             selEnd > blockEnd ? selEnd + lengthDiff :
             blockEnd;
+
+  console.log(selStart, selEnd);
+  console.log(blockStart, blockEnd);
+  console.log(adjustedStart, adjustedEnd);
 
   textarea.setSelectionRange(adjustedStart, adjustedEnd);
 }
@@ -1853,6 +1875,7 @@ const icons = {
   access_private: '<svg width="18" height="18" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2"/></svg>',
   access_public: '<svg width="18" height="18" fill="currentColor" class="bi bi-unlock-fill" viewBox="0 0 16 16"><path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2"/></svg>',
   tick: '<svg width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/></svg>',
+  edit_tab: '<svg width="20" height="20" fill="currentColor" class="bi bi-indent" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3 8a.5.5 0 0 1 .5-.5h6.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H3.5A.5.5 0 0 1 3 8"/><path fill-rule="evenodd" d="M12.5 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5"/></svg>',
 };
 
 
@@ -1930,6 +1953,7 @@ function chat_main() {
   $on($id("edit_reset"), "click", edit_reset);
   $on($id("edit_clear"), "click", edit_clear);
   $on($id("edit_close"), "click", edit_close);
+  $on($id("edit_tab"), "click", edit_insert_tab);
 
   $on($id("view_theme"), "click", change_theme);
   $on($id("view_images"), "click", view_images);
