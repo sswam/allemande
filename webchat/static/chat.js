@@ -18,6 +18,8 @@ const $edit = $id("view_edit");
 const $auto = $id('mod_auto');
 const $messages_overlay = $id("messages_overlay");
 
+let is_private = false;
+
 const narrator = "Nova";
 const illustrator = "Illu";
 
@@ -61,6 +63,7 @@ let user;
 let admin = false;
 let dev = false;
 let controls = "input_main";
+let top_controls = "top_main";
 let view = "messages";
 
 let room_ready = false;
@@ -77,7 +80,7 @@ const SHORTCUTS_GLOBAL = shortcuts_to_dict([
   ["ctrl+'", room_clear_number, "Clear room number"],
   ['ctrl+.', room_next, 'Go to next room'],
   ['ctrl+,', room_prev, 'Go to previous room'],
-  ['ctrl+/', room_random, 'Go to random room'],
+  ['ctrl+/', room_last, 'Go to last room'],
 ]);
 
 const SHORTCUTS_MESSAGE = shortcuts_to_dict([
@@ -87,7 +90,7 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['alt+t', content_insert_tab, 'Insert tab'],
   ['shift+alt+t', content_insert_tab, 'Insert tab'],
   ['alt+backspace', clear_content, 'Clear content'],
-  ['alt+u', browse_up, 'Browse up'],
+  ['alt+u', nav_up, 'Browse up'],
   ['alt+i', view_images, 'View images'],
   ['alt+c', view_clean, 'View clean'],
 
@@ -425,8 +428,14 @@ function setRangeText(textarea, newText, blockStart, blockEnd) {
 // handle message change -----------------------------------------------------
 
 function message_changed(ev) {
-  if ($content.value == "") $id("send").textContent = "poke";
-  else $id("send").textContent = "send";
+  const $send = $id("send");
+  if ($content.value == "") {
+    $send.innerHTML = icons["poke"];
+    $send.title = "poke the chat: alt+enter";
+  } else {
+    $send.innerHTML = icons["send"];
+    $send.title = "send your message: ctrl+enter";
+  }
 }
 
 function content_keydown(ev) {
@@ -464,6 +473,11 @@ function set_room(r) {
   // check if r was passed
   if (r === undefined) {
     r = $room.value;
+  }
+
+  if (room === r) {
+    $content.focus();
+    return;
   }
 
   const type = get_file_type(r);
@@ -508,9 +522,25 @@ function set_room(r) {
 
   if (view !== "view_edit")
     reset_ui();
+
+  show_room_privacy();
 }
 
-function browse_up(ev) {
+function show_room_privacy() {
+  const $privacy = $id("privacy");
+  is_private = room.startsWith(user + "/");
+  if (is_private) {
+    $privacy.innerHTML = icons["access_private"];
+    $privacy.title = "private";
+  } else {
+    $privacy.innerHTML = icons["access_public"];
+    $privacy.title = "public";
+  }
+}
+
+// navigation ----------------------------------------------------------------
+
+function nav_up(ev) {
   let new_room;
   if (room == "/") {
     new_room = DEFAULT_ROOM;
@@ -523,6 +553,14 @@ function browse_up(ev) {
     new_room = room.replace(/[^\/]+$/, "") || "/";
   }
   set_room(new_room);
+}
+
+function nav_top(ev) {
+  $messages_iframe.contentWindow.postMessage({ type: "set_scroll", x: 0, y: 0 }, ROOMS_URL);
+}
+
+function nav_bot(ev) {
+  $messages_iframe.contentWindow.postMessage({ type: "set_scroll", x: 0, y: -1 }, ROOMS_URL);
 }
 
 // user info and settings ----------------------------------------------------
@@ -662,6 +700,7 @@ function change_room() {
 function escape() {
   if (controls !== "input_main") {
     set_controls();
+    set_top();
     set_view();
   } else {
     change_room();
@@ -671,9 +710,10 @@ function escape() {
 // room numbers --------------------------------------------------------------
 
 function room_set_number(n) {
+  let new_room;
   if (n === "") {
-    room = room.replace(/-?\d+$/, "");
-    set_room(room);
+    new_room = room.replace(/-?\d+$/, "");
+    set_room(new_room);
     return;
   }
   if (n < 0) {
@@ -682,8 +722,8 @@ function room_set_number(n) {
   if (n > MAX_ROOM_NUMBER) {
     n = MAX_ROOM_NUMBER;
   }
-  room = room.replace(/-?\d+$|$/, "-" + n);
-  set_room(room);
+  new_room = room.replace(/-?\d+$|$/, "-" + n);
+  set_room(new_room);
 }
 
 function room_get_number() {
@@ -691,9 +731,11 @@ function room_get_number() {
   return match ? match[1] : null;
 }
 
+/*
 function room_random() {
   room_set_number(Math.floor(Math.random() * (MAX_ROOM_NUMBER + 1)));
 }
+*/
 
 function room_next() {
   let num = room_get_number();
@@ -719,6 +761,21 @@ function room_prev() {
 
 function room_clear_number() {
   room_set_number("");
+}
+
+async function room_last() {
+  // fetch the last number from the server
+  const room_enc = encodeURIComponent(room);
+  const response = await fetch(`/x/last?room=${room_enc}`);
+  if (!response.ok) {
+    throw new Error("GET themes request failed");
+  }
+  const data = await response.json();
+  if (data.error) {
+    throw new Error(data.error);
+  }
+  console.log("last", data.last);
+  room_set_number(data.last);
 }
 
 // Keyboard shortcuts handling -----------------------------------------------
@@ -923,9 +980,9 @@ function authChat() {
 function setup_user_button() {
   const $user = $id("user");
   $user.innerText = user;
-  if (room == user + "/") $user.href = "/" + query_to_hash(DEFAULT_ROOM);
-  else if (room == user) $user.href = "/" + query_to_hash(user) + "/";
-  else $user.href = "/" + query_to_hash(user);
+  if (room == user) $user.href = "/" + query_to_hash(DEFAULT_ROOM);
+  else if (room == user + "/chat") $user.href = "/" + query_to_hash(user);
+  else $user.href = "/" + query_to_hash(user) + "/chat";
 }
 
 // Wrapper function to initialize drag controls for the input row ------------
@@ -1177,12 +1234,25 @@ function set_controls(id) {
 
 function reset_ui() {
   set_controls();
+//  set_top();
   set_view();
   active_reset("send");
   active_reset("add_file");
   active_reset("edit_save");
   stop_auto_play();
   // TODO stop any current recording
+}
+
+// top controls --------------------------------------------------------------
+
+function set_top(id) {
+  id = id || "top_main";
+  const $el = $id(id);
+  if ($el.classList.contains("hidden")) {
+    hide($("#top > .top_controls:not(.hidden)"));
+    show($id(id || "top_main"));
+  }
+  top_controls = id;
 }
 
 // auto play -----------------------------------------------------------------
@@ -1227,7 +1297,7 @@ function stop_auto_play() {
     clearInterval(auto_play_interval_timer);
   auto_play_interval_timer = null;
   auto_play_interval = null;
-  $auto.textContent = "auto";
+  $auto.innerHTML = icons["mod_auto"];
   active_set("mod_auto", 0);
 }
 
@@ -1518,6 +1588,8 @@ function view_options_apply() {
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
   // send message to the rooms iframe to apply view options
   $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
+  const image_size_icon = view_options.image_size < 10 ? "expand" : "contract";
+  $id("view_image_size").innerHTML = icons[image_size_icon];
 }
 
 function view_images() {
@@ -1546,8 +1618,8 @@ function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
 function view_image_size(ev) {
   // starts at 4, range from 1 to 10
   delta = ev.shiftKey ? -1 : 1;
-  view_options.image_size = clamp((view_options.image_size || 4) + delta, 1, 10);
-//  view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
+//  view_options.image_size = clamp((view_options.image_size || 4) + delta, 1, 10);
+  view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
   view_options_apply();
 }
 
@@ -1615,8 +1687,21 @@ async function change_theme(ev) {
   $messages_iframe.contentWindow.postMessage({ type: "theme_changed", theme }, ROOMS_URL);
 }
 
+let hide_theme_timeout;
+
+function hide_theme() {
+  const $view_theme = $id("view_theme");
+  $off($view_theme, "mouseout");
+  clearTimeout(hide_theme_timeout);
+  hide_theme_timeout = setTimeout(() => $view_theme.innerHTML = icons["view_theme"], 1000);
+}
+
 function show_theme() {
-  $id("view_theme").textContent = theme;
+  const $view_theme = $id("view_theme");
+  $view_theme.textContent = theme;
+  $off($view_theme, "mouseout");
+  $on($view_theme, "mouseout", hide_theme);
+  clearTimeout(hide_theme_timeout);
 }
 
 // options -------------------------------------------------------------------
@@ -1705,22 +1790,109 @@ async function opt_images(ev) {
   });
 }
 
+// icons ---------------------------------------------------------------------
+
+// This is almost like i18n!
+
+const icons = {
+  nav_up: '<svg width="18" height="18" fill="currentColor" class="bi bi-folder-fill" viewBox="0 0 16 16"><path d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a2 2 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12q.322-.119.684-.12h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z"/></svg>',
+  nav_first: '<svg width="20" height="20" fill="currentColor" class="bi bi-skip-start-fill" viewBox="0 0 16 16"><path d="M4 4a.5.5 0 0 1 1 0v3.248l6.267-3.636c.54-.313 1.232.066 1.232.696v7.384c0 .63-.692 1.01-1.232.697L5 8.753V12a.5.5 0 0 1-1 0z"/></svg>',
+  nav_last: '<svg width="20" height="20" fill="currentColor" class="bi bi-skip-end-fill" viewBox="0 0 16 16"><path d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.693 3.3 4 3.678 4 4.308v7.384c0 .63.692 1.01 1.233.697L11.5 8.753V12a.5.5 0 0 0 1 0z"/></svg>',
+  nav_next: '<svg width="20" height="20" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16"><path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/></svg>',
+  nav_prev: '<svg width="20" height="20" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16"><path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/></svg>',
+  nav_top: '<svg width="20" height="20" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16"><path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/></svg>',
+  nav_bot: '<svg width="20" height="20" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>',
+  nav: '<svg width="18" height="18" fill="currentColor" class="bi bi-compass-fill" viewBox="0 0 16 16"><path d="M15.5 8.516a7.5 7.5 0 1 1-9.462-7.24A1 1 0 0 1 7 0h2a1 1 0 0 1 .962 1.276 7.5 7.5 0 0 1 5.538 7.24m-3.61-3.905L6.94 7.439 4.11 12.39l4.95-2.828 2.828-4.95z"/></svg>',
+  logout: '<svg width="20" height="20" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg>',
+  x: '<svg width="20" height="20" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>',
+  x_large: '<svg width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16"><path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/></svg>',
+  add: '<svg width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/></svg>',
+  view: '<svg width="20" height="20" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/></svg>',
+  opt: '<svg width="20" height="20" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/></svg>',
+  mod: '<svg width="20" height="20" fill="currentColor" class="bi bi-shield-fill" viewBox="0 0 16 16"><path d="M5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/></svg>',
+  send: '<svg width="20" height="20" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16"><path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z"/></svg>',
+  poke: '<svg width="20" height="20" fill="currentColor" class="bi bi-hand-index-thumb-fill" viewBox="0 0 16 16"><path d="M8.5 1.75v2.716l.047-.002c.312-.012.742-.016 1.051.046.28.056.543.18.738.288.273.152.456.385.56.642l.132-.012c.312-.024.794-.038 1.158.108.37.148.689.487.88.716q.113.137.195.248h.582a2 2 0 0 1 1.99 2.199l-.272 2.715a3.5 3.5 0 0 1-.444 1.389l-1.395 2.441A1.5 1.5 0 0 1 12.42 16H6.118a1.5 1.5 0 0 1-1.342-.83l-1.215-2.43L1.07 8.589a1.517 1.517 0 0 1 2.373-1.852L5 8.293V1.75a1.75 1.75 0 0 1 3.5 0"/></svg>',
+  add_file: '<svg width="20" height="20" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/></svg>',
+  add_record_audio: '<svg width="20" height="20" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/></svg>',
+  add_record_video: '<svg width="20" height="20" fill="currentColor" class="bi bi-camera-video-fill" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z"/></svg>',
+  rec_stop: '<svg width="20" height="20" fill="currentColor" class="bi bi-stop-fill" viewBox="0 0 16 16"><path d="M5 3.5h6A1.5 1.5 0 0 1 12.5 5v6a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 11V5A1.5 1.5 0 0 1 5 3.5"/></svg>',
+  pause: '<svg width="20" height="20" fill="currentColor" class="bi bi-pause-fill" viewBox="0 0 16 16"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/></svg>',
+  view_theme: '<svg width="20" height="20" fill="currentColor" class="bi bi-palette-fill" viewBox="0 0 16 16"><path d="M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07M8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3M5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg>',
+  view_images: '<svg width="20" height="20" fill="currentColor" class="bi bi-image-fill" viewBox="0 0 16 16"><path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/></svg>',
+  view_source: '<svg width="20" height="20" fill="currentColor" class="bi bi-braces" viewBox="0 0 16 16"><path d="M2.114 8.063V7.9c1.005-.102 1.497-.615 1.497-1.6V4.503c0-1.094.39-1.538 1.354-1.538h.273V2h-.376C3.25 2 2.49 2.759 2.49 4.352v1.524c0 1.094-.376 1.456-1.49 1.456v1.299c1.114 0 1.49.362 1.49 1.456v1.524c0 1.593.759 2.352 2.372 2.352h.376v-.964h-.273c-.964 0-1.354-.444-1.354-1.538V9.663c0-.984-.492-1.497-1.497-1.6M13.886 7.9v.163c-1.005.103-1.497.616-1.497 1.6v1.798c0 1.094-.39 1.538-1.354 1.538h-.273v.964h.376c1.613 0 2.372-.759 2.372-2.352v-1.524c0-1.094.376-1.456 1.49-1.456V7.332c-1.114 0-1.49-.362-1.49-1.456V4.352C13.51 2.759 12.75 2 11.138 2h-.376v.964h.273c.964 0 1.354.444 1.354 1.538V6.3c0 .984.492 1.497 1.497 1.6"/></svg>',
+  view_canvas: '<svg width="20" height="20" fill="currentColor" class="bi bi-easel-fill" viewBox="0 0 16 16"><path d="M8.473.337a.5.5 0 0 0-.946 0L6.954 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1.85l-1.323 3.837a.5.5 0 1 0 .946.326L4.908 11H7.5v2.5a.5.5 0 0 0 1 0V11h2.592l1.435 4.163a.5.5 0 0 0 .946-.326L12.15 11H14a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H9.046z"/></svg>',
+  view_clean: '<svg width="20" height="20" fill="currentColor" class="bi bi-book-fill" viewBox="0 0 16 16"><path d="M8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/></svg>',
+  expand: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-angle-expand" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707"/></svg>',
+  contract: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-angle-contract" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M.172 15.828a.5.5 0 0 0 .707 0l4.096-4.096V14.5a.5.5 0 1 0 1 0v-3.975a.5.5 0 0 0-.5-.5H1.5a.5.5 0 0 0 0 1h2.768L.172 15.121a.5.5 0 0 0 0 .707M15.828.172a.5.5 0 0 0-.707 0l-4.096 4.096V1.5a.5.5 0 1 0-1 0v3.975a.5.5 0 0 0 .5.5H14.5a.5.5 0 0 0 0-1h-2.768L15.828.879a.5.5 0 0 0 0-.707"/></svg>',
+  undo: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/></svg>',
+  mod_clear: '<svg width="20" height="20" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/></svg>',
+  mod_edit: '<svg width="20" height="20" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/></svg>',
+  mod_auto: '<svg width="20" height="20" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/></svg>',
+  mod_archive: '<svg width="20" height="20" fill="currentColor" class="bi bi-archive-fill" viewBox="0 0 16 16"><path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z"/></svg>',
+  people: '<svg width="20" height="20" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>',
+  home_open: '<svg width="20" height="20" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16"><path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5"/></svg>',
+  home: '<svg width="20" height="20" fill="currentColor" class="bi bi-house-fill" viewBox="0 0 16 16"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/><path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293z"/></svg>',
+  access_private: '<svg width="18" height="18" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2m3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2"/></svg>',
+  access_public: '<svg width="18" height="18" fill="currentColor" class="bi bi-unlock-fill" viewBox="0 0 16 16"><path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2"/></svg>',
+  tick: '<svg width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/></svg>',
+};
+
+
+function setup_icons() {
+  for (const prefix of ["mod", "add", "view", "opt", "nav"]) {
+    icons[`${prefix}_cancel`] = icons["x"];
+  }
+  icons["edit_close"] = icons["x"];
+  for (const prefix of ["rec", "rec_preview"]) {
+    icons[`${prefix}_cancel`] = icons["x_large"];
+  }
+  for (const id of ["rec_save", "rec_preview_save", "edit_save"]) {
+    icons[id] = icons["tick"];
+  }
+  icons["mod_undo"] = icons["x_large"];
+  icons["mod_clean"] = icons["view_clean"];
+  icons["mod_retry"] = icons["undo"];
+  icons["edit_reset"] = icons["undo"];
+  icons["edit_clear"] = icons["mod_clear"];
+
+  for (const id in icons) {
+    const el = $id(id);
+    if (!el)
+      continue;
+    const text = el.textContent;
+    el.title = el.title || text;
+    el.innerHTML = icons[id];
+  }
+}
+
+// privacy -------------------------------------------------------------------
+
+function change_privacy() {
+  if (is_private) {
+    set_room(DEFAULT_ROOM);
+  } else {
+    set_room(user + "/chat");
+  }
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
   user = authChat();
+  setup_icons();
   load_theme();
   setup_dev();
   set_debug(DEBUG);
   on_hash_change();
 
   $on($id("send"), "click", send);
-  $on($id("up"), "click", browse_up);
 
   $on($id("add"), "click", () => set_controls("input_add"));
   $on($id("mod"), "click", () => set_controls("input_mod"));
   $on($id("view"), "click", () => set_controls("input_view"));
   $on($id("opt"), "click", () => set_controls("input_opt"));
+
+  $on($id("nav"), "click", () => set_top("top_nav"));
 
   $on($id("mod_undo"), "click", undo);
   $on($id("mod_retry"), "click", retry);
@@ -1754,6 +1926,15 @@ function chat_main() {
   $on($id("opt_images"), "change", opt_images);
   $on($id("opt_cancel"), "click", () => set_controls());
 
+  $on($id("nav_up"), "click", nav_up);
+  $on($id("nav_top"), "click", nav_top);
+  $on($id("nav_bot"), "click", nav_bot);
+  $on($id("nav_first"), "click", room_clear_number);
+  $on($id("nav_prev"), "click", room_prev);
+  $on($id("nav_next"), "click", room_next);
+  $on($id("nav_last"), "click", room_last);
+  $on($id("nav_cancel"), "click", () => set_top());
+
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_MESSAGE));
   $on($content, "keydown", content_keydown);
@@ -1767,6 +1948,8 @@ function chat_main() {
   const dragControls = initDragControls();
   $on($id("resizer"), "mousedown", dragControls);
   $on($id("resizer"), "touchstart", dragControls);
+
+  $on($id("privacy"), "click", change_privacy);
 
   setup_view_options();
 
