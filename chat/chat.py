@@ -29,6 +29,7 @@ from deepmerge import always_merger
 
 import video_compatible
 from ally.cache import cache
+from ally.quote import quote_words
 
 
 os.umask(0o007)
@@ -137,6 +138,8 @@ class Room:
             self.name = name
             self.path = name_to_path(name + EXTENSION)
         self.parent = self.path.parent
+
+        # TODO can a disallowed user create directories in this way?
         self.parent.mkdir(parents=True, exist_ok=True)
         self.parent_url = Path("/", self.name).parent
 
@@ -369,6 +372,35 @@ class Room:
         else:
             raise FileNotFoundError("Options file not found.")
 
+    def get_last_room_number(self, user: str) -> str:
+        """Get the last room number."""
+        access = check_access(user, str(self.parent)).value
+        if not access & Access.READ.value:
+            raise PermissionError("You are not allowed to get the last room number.")
+
+        # chop off any number
+        name = self.name
+        name = re.sub(r"-\d+$", "", name)
+
+        # list files in parent
+        files = self.parent.glob(f"{name}*{EXTENSION}")
+
+        # cut off room name and extension
+        files = [f.stem for f in files]
+
+        # only this room and its numbered pages
+        files = [f for f in files if f == name or f.startswith(name + "-")]
+
+        # cut off room name
+        files = [re.sub(rf"^{name}-?", "", f) or "-1" for f in files]
+
+        # convert to integers
+        files = [int(f) for f in files]
+
+        # find the maximum
+        last = max(files, default=-1)
+        return "" if last == -1 else str(last)
+
 
 def tree_prune(tree: dict) -> dict:
     """Prune a tree in-place, removing None values."""
@@ -486,6 +518,10 @@ def sanitize_pathname(room):
     if room in ("", "/"):
         return room
 
+    is_dir = room.endswith("/")
+    if is_dir:
+        room = room[:-1]
+
     # split into parts
     parts = room.split("/")
 
@@ -511,6 +547,9 @@ def sanitize_pathname(room):
     # check for control characters
     if re.search(r"[\x00-\x1F\x7F]", room):
         raise HTTPException(status_code=400, detail="The room name cannot contain control characters.")
+
+    if is_dir:
+        room += "/"
 
     return room
 
@@ -782,6 +821,32 @@ def find_and_fix_inline_math(line: str) -> tuple[str, bool]:
 
     return line, has_math
 
+HTML_TAGS = quote_words("""
+html base head link meta style title body address article aside footer header
+h1 h2 h3 h4 h5 h6 hgroup main nav section blockquote dd div dl dt figcaption
+figure hr li main ol p pre ul a abbr b bdi bdo br cite code data dfn em i kbd
+mark q rb rp rt rtc ruby s samp small span strong sub sup time u var wbr area
+audio img map track video embed iframe object param picture source canvas
+noscript script del ins caption col colgroup table tbody td tfoot th thead tr
+button datalist fieldset form input label legend meter optgroup option output
+progress select textarea details dialog menu summary slot template acronym
+applet basefont bgsound big blink center command content dir element font frame
+frameset image isindex keygen listing marquee menuitem multicol nextid nobr
+noembed noframes plaintext shadow spacer strike tt xmp
+""")
+
+SVG_TAGS = quote_words("""
+a animate animateMotion animateTransform circle clipPath defs desc discard
+ellipse feBlend feColorMatrix feComponentTransfer feComposite feConvolveMatrix
+feDiffuseLighting feDisplacementMap feDistantLight feDropShadow feFlood feFuncA
+feFuncB feFuncG feFuncR feGaussianBlur feImage feMerge feMergeNode feMorphology
+feOffset fePointLight feSpecularLighting feSpotLight feTile feTurbulence filter
+foreignObject g image line linearGradient marker mask metadata mpath path
+pattern polygon polyline radialGradient rect script set stop style svg switch
+symbol text textPath title tspan use view
+""")
+
+RE_TAGS = re.compile(rf"</?({'|'.join(set(HTML_TAGS + SVG_TAGS))})\b")
 
 def preprocess(content):
     """Preprocess chat message content, for markdown-katex"""
@@ -801,15 +866,12 @@ def preprocess(content):
     in_script = False
     was_blank = False
     for line in content.splitlines():
-        is_html = False
+        is_markup = False
         was_code = bool(in_code)
         # if first and re.search(r"\t<", line[0]):
-        #     is_html = True
-        if not in_code and re.search(
-            r"</?(html|base|head|link|meta|style|title|body|address|article|aside|footer|header|h1|h2|h3|h4|h5|h6|hgroup|main|nav|section|blockquote|dd|div|dl|dt|figcaption|figure|hr|li|main|ol|p|pre|ul|a|abbr|b|bdi|bdo|br|cite|code|data|dfn|em|i|kbd|mark|q|rb|rp|rt|rtc|ruby|s|samp|small|span|strong|sub|sup|time|u|var|wbr|area|audio|img|map|track|video|embed|iframe|object|param|picture|source|canvas|noscript|script|del|ins|caption|col|colgroup|table|tbody|td|tfoot|th|thead|tr|button|datalist|fieldset|form|input|label|legend|meter|optgroup|option|output|progress|select|textarea|details|dialog|menu|summary|slot|template|acronym|applet|basefont|bgsound|big|blink|center|command|content|dir|element|font|frame|frameset|image|isindex|keygen|listing|marquee|menuitem|multicol|nextid|nobr|noembed|noframes|plaintext|shadow|spacer|strike|tt|xmp)\b",
-            line,
-        ):
-            is_html = True
+        #     is_markup = True
+        if not in_code and re.search(RE_TAGS, line):
+            is_markup = True
         is_markdown_image = re.search(r"!\[.*\]\(.*\)", line)
         logger.debug("check line: %r", line)
         is_math_start = re.match(r"\s*(\$\$|```tex|```math)$", line)
@@ -822,7 +884,7 @@ def preprocess(content):
             out.append(line)
             in_code = 0
             in_script = False
-        elif is_html or is_markdown_image:
+        elif is_markup or is_markdown_image:
             out.append(line)
         elif is_math_start and not in_code:
             out.append("```math")
