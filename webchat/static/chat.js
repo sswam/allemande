@@ -904,8 +904,14 @@ async function register_service_worker() {
 
 // authentication ------------------------------------------------------------
 
+function logout_confirm(ev) {
+  ev.preventDefault();
+  if (confirm("Log out?"))
+    logoutChat();
+}
+
 function authChat() {
-  $on($id("logout"), "click", logoutChat);
+  $on($id("logout"), "click", logout_confirm);
   userData = getJSONCookie("user_data");
   if (!userData) throw new Error("Setup error: Not logged in");
 

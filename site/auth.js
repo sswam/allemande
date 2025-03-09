@@ -29,7 +29,8 @@ async function loginFailed() {
 }
 
 async function login(e) {
-	e.preventDefault();
+	if (e)
+		e.preventDefault();
 	const username = $('#username').value;
 	const password = $('#password').value;
 	if (!username || !password) {
@@ -62,7 +63,8 @@ function mainDomainURL() {
 }
 
 async function logout(e) {
-	e.preventDefault();
+	if (e)
+		e.preventDefault();
 	console.log('Logging out');
 	// We need to strip the subdomain off the current URL proto and host
 	// because the logout endpoint is on the main domain.

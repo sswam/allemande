@@ -5,6 +5,8 @@ const timeout_seconds = 60;
 const CHAT_URL =
   location.protocol + "//" + location.host.replace(/^rooms\b/, "chat");
 
+let room;
+
 let $body, $messages, $overlay, $messages_wrap, $canvas_div;
 
 let timeout;
@@ -14,6 +16,8 @@ let $currentImg;
 let currentImgIndex;
 let allImages;
 let overlay_fullscreen = true;
+
+let suppressInitialScroll = false;
 
 function get_status_element() {
   let status = $id("allemande_status");
@@ -81,7 +85,8 @@ function messages_scrolled() {
     var messages_height = $e.scrollHeight;
     if (messages_height != messages_height_last) {
       messages_height_last = messages_height;
-      scroll_to_bottom($e);
+      if (!suppressInitialScroll)
+        scroll_to_bottom($e);
       messages_height_last = $e.scrollHeight;
     }
   }
@@ -798,10 +803,25 @@ async function error(id) {
 }
 */
 
+function handle_intro() {
+  const hasSeenIntro = localStorage.getItem(`seen_intro_${room}`);
+  if (!hasSeenIntro) {
+    suppressInitialScroll = true;
+    setTimeout(() => {
+      localStorage.setItem(`seen_intro_${room}`, true);
+      suppressInitialScroll = false;
+    }, 10000);
+  }
+}
+
 // main ----------------------------------------------------------------------
 
 async function room_main() {
+  room = decodeURIComponent(location.pathname.replace(/\.html$/, '').replace(/^\//, ''));
+  handle_intro();
+
   setup_mutation_observer();
+
   await wait_for_load();
   // console.log("room loaded");
   $body = $("body");
