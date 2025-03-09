@@ -36,6 +36,10 @@ body#messages {
 	background: var(--frame);
 }
 
+body#dir {
+	background: var(--background);
+}
+
 body#messages > div.messages_wrap {
 	background: var(--background);
 }

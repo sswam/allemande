@@ -204,3 +204,15 @@ button#send {
 #inputrow > .controls > input {
 	width: 4.5em;
 }
+
+.top_controls {
+	flex-basis: 0;
+}
+
+button:has(svg) {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2px 4px;
+	line-height: 1;
+}
