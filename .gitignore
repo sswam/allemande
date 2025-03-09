@@ -47,6 +47,7 @@ rooms.*
 # symlinks for dev
 /cz/old
 /cz/src
+/exclude
 
 # derived files
 /code/lang.rec
