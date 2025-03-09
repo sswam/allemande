@@ -167,7 +167,7 @@ vscode-local:
 	code "$$file" & disown
 
 chat-api:
-	cd $(WEBCHAT) && awatch -a -i -p chat-api.py ../chat/chat.py -s -- uvicorn chat-api:app --reload --timeout-graceful-shutdown 5
+	cd $(WEBCHAT) && awatch -a -i -p chat_api.py ../chat/chat.py -s -- uvicorn chat_api:app --reload --timeout-graceful-shutdown 5
 
 stream:
 	cd $(WEBCHAT) && awatch -a -i -p stream.py ../chat/chat.py ../text/atail.py -s -- uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
