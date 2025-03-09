@@ -1,0 +1,10 @@
+TODO:
+✓ remote agents, add key as name
+- remote models: need option to limit context by tokens not messages
+- move config.sh and agents to ~/my/allemande/$hostname and symlink back
+✓ could keep agents under rooms?  makes sense...
+	- done for local agents at least
+
+✓ conductor for multi addressing like @Emmy and @Claude, do you like the pictures?
+	- issue, this syntax will provoke the AI's to also use @ notation. We could possibly remove it when converting to HTML, or convert them to links.
+		- or just allow the AI to use it, that's fine
