@@ -15,7 +15,7 @@ import shutil
 import subprocess
 import random
 import enum
-from stat import S_IFREG, S_IROTH, S_IWOTH, S_IFLNK
+from stat import S_IFMT, S_IFREG, S_IROTH, S_IWOTH, S_IFLNK
 import asyncio
 import copy
 import io
@@ -1365,13 +1365,11 @@ def load_config(path: Path, filename: str) -> dict[str, Any]:
     # list of folders from path up to ROOMS_DIR
     folders = list(path.relative_to(ROOMS_DIR).parents)
     # Go top-down from ROOMS_DIR to the folder containing the file
-    logger.info("folders: %s", folders)
     config_all = {}
     for folder in reversed(folders):
         config_path = ROOMS_DIR / folder / filename
         if not config_path.exists():
             continue
-        logger.info("loading config: %s", config_path)
         with config_path.open("r", encoding="utf-8") as f:
             config = cache.load(config_path)
             if config.get("reset"):
@@ -1477,8 +1475,21 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     except FileNotFoundError:
         exists = False
 
-    is_file = not exists or stats.st_mode & S_IFREG
-    is_symlink = exists and stats.st_mode & S_IFLNK
+    is_file = not exists or S_IFMT(stats.st_mode) == S_IFREG
+    is_symlink = exists and S_IFMT(stats.st_mode) == S_IFLNK
+
+    # Symlink, must have access to the target too
+    if is_symlink:
+        target = None
+        try:
+            target = path.resolve().relative_to(ROOMS_DIR)
+        except ValueError:
+            # target is not in ROOMS_DIR, that's fine, don't check access
+            pass
+        except FileNotFoundError:
+            return Access.NONE, "broken_symlink"
+        if target and not check_access(user, str(target)).value & Access.READ.value:
+            return Access.NONE, "symlink_target unreadable"
 
     # Moderators have moderation on all files in the root
     if user in MODERATORS and not "/" in pathname and (is_file or is_symlink):
@@ -1501,9 +1512,6 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     if pathname == "":
         return Access.READ, "root"
 
-    logger.info("pathname: %s", pathname)
-    logger.info("is_file, is_symlink: %s, %s", is_file, is_symlink)
-
     # Users have access to files in the root, check is a file
     if not "/" in pathname and (is_file or is_symlink):
         return Access.READ_WRITE, "user_root_file"
@@ -1525,6 +1533,9 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
         access |= Access.WRITE.value
 
     # TODO Users have access to group-readable entries if they are marked as a friend
+
+    if access & Access.READ.value and is_symlink:
+        return check_access(user, str(Path(pathname).resolve()))
 
     return Access(access), "shared_public"
 

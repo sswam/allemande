@@ -151,9 +151,6 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
         pathname += "/"
 
     for item in items:
-        if not chat.check_access(info.user, pathname + item.name).value & Access.READ.value:
-            continue
-
         mime_type, icon = get_mime_type_and_icon(item)
         ext = item.suffix.lstrip(".").lower()
         record = {
@@ -213,6 +210,9 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
             #         "link": f"{info.rooms_base_url}/{pathname}{item.name}",
             #     }
             # )
+
+        if not chat.check_access(info.user, pathname + item.name).value & Access.READ.value:
+            continue
 
         listing.append(record)
 
