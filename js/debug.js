@@ -38,6 +38,8 @@ function addComputedStyles(rootElement, attrName = 's', recursive = false) {
     }
 
     processElement(rootElement);
+
+    return rootElement;
 }
 
 function addMatchedStyles(rootElement, attrName = 's', recursive = false, ignoreStyles = undefined) {
@@ -102,4 +104,6 @@ function addMatchedStyles(rootElement, attrName = 's', recursive = false, ignore
     }
 
     processElement(rootElement);
+
+    return rootElement;
 }
