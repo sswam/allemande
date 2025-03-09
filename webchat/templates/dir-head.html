@@ -1,7 +1,12 @@
 <!DOCTYPE html>
+<head>
+<meta name="referrer" content="no-referrer">
 <base href="{{ chat_base_url }}" target="_top">
+<script>var user = {{ user|tojson|safe }}, theme = {{ theme|tojson|safe }};</script>
 <link rel="stylesheet" href="/allychat.css">
 <link rel="stylesheet" href="/room.css">
 <link id="theme" rel="stylesheet" type="text/css" href="{{ chat_base_url }}/themes/{{ theme|safe }}.css">
-<link id="user_styles" rel="stylesheet" type="text/css" href="/users/{{ user }}/styles.css">
-<body>
+<link id="user_styles" rel="stylesheet" type="text/css" href="{{ chat_base_url }}/users/{{ user }}/styles.css">
+<script id="user_script" src="{{ chat_base_url }}/users/{{ user }}/script.js"></script>
+</head>
+<body id="dir">
