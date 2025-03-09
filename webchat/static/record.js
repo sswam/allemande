@@ -114,7 +114,10 @@ async function handleRecording(includeVideo = false) {
         $on($timer, 'click', () => {
             if (mediaRecorder.state === 'recording') {
                 mediaRecorder.pause();
-                $timer.innerText = 'resume';
+
+                $timer.innerHTML = icons["pause"];
+                $timer.title = 'resume reording';
+
                 seconds_before = Math.floor(seconds_before + Date.now() / 1000 - start);
                 start = null;
                 active_reset("rec_time");
@@ -123,6 +126,7 @@ async function handleRecording(includeVideo = false) {
                 start = Date.now() / 1000;
                 active_set("rec_time");
                 update_timer();
+                $timer.title = 'pause recording';
             }
         })
 

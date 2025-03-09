@@ -721,6 +721,13 @@ async function handle_message(ev) {
   } else if (ev.data.type === "theme_changed") {
     const $style = $id("theme");
     $style.href = CHAT_URL + "/themes/" + ev.data.theme + ".css";
+  } else if (ev.data.type === "set_scroll") {
+    const x = ev.data.x;
+    let y = ev.data.y;
+    if (y == -1)
+      y = $messages_wrap.scrollHeight;
+    $messages_wrap.scrollLeft = x;
+    $messages_wrap.scrollTop = y;
   }
 }
 
