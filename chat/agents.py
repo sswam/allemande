@@ -288,7 +288,7 @@ class Agents:
         self.services: dict[str, Any] = services
         self.parent: Agents = parent
 
-    def write_agents_list(self, path: str):
+    def write_agents_list(self, path: str) -> None:
         """Write the list of agents to a file."""
         agent_names = sorted(set(agent.name for agent in self.agents.values()))
         cache.save(path, agent_names, noclobber=False)
@@ -313,7 +313,7 @@ class Agents:
 
         return agent
 
-    def remove_agent(self, name: str):
+    def remove_agent(self, name: str, keep_visual: bool = False) -> None:
         """Remove an agent."""
         agent = self.agents.get(name.lower())
         if not agent:
@@ -322,9 +322,10 @@ class Agents:
         for name_lc in map(str.lower, agent_names):
             self.agents.pop(name_lc, None)
 
-        agent.remove_visual()
+        if not keep_visual:
+            agent.remove_visual()
 
-    def load(self, path: Path):
+    def load(self, path: Path) -> None:
         """Load all agents or one agent from a path."""
         if path.is_dir():
             agent_files = path.glob("*.yml")
@@ -344,12 +345,12 @@ class Agents:
         # then set up and update visuals
         for agent in new_agents:
             agent_type = agent.get("type")
-            if not agent.set_up(self.services):
-                self.remove_agent(agent.name)
-                continue
             agent.update_visual()
+            if not agent.set_up(self.services):
+                self.remove_agent(agent.name, keep_visual=True)
+                continue
 
-    def handle_file_change(self, file_path: str, change_type: Change):
+    def handle_file_change(self, file_path: str, change_type: Change) -> None:
         """Process an agent file change."""
         if change_type == Change.deleted:
             name = Path(file_path).stem
@@ -359,7 +360,7 @@ class Agents:
             logger.info("Loading agent: %r", file_path)
             self.load(Path(file_path))
 
-    def items(self):
+    def items(self) -> list[tuple[str, Agent]]:
         """Get the agents as a list of tuples."""
         pairs = list(self.agents.items())
         if self.parent:
@@ -388,6 +389,6 @@ class Agents:
         """Set an agent."""
         self.agents[name.lower()] = agent
 
-    def __contains__(self, name: str):
+    def __contains__(self, name: str) -> bool:
         """Check if an agent is in the collection."""
         return self.get(name) is not None
