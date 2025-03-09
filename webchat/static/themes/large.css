@@ -1,3 +1,6 @@
 body, textarea, input, button, a {
 	font-size: x-large;
 }
+:root {
+	--pad: 12px;
+}
