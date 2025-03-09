@@ -195,6 +195,22 @@ async def options_get(request):
     return JSONResponse(options)
 
 
+@app.route("/x/last", methods=["GET"])
+async def last(request):
+    """Get last numbered chat room."""
+    user = request.headers["X-Forwarded-User"]
+    # get room from query param
+    room_name = request.query_params["room"]
+    room_name = chat.sanitize_pathname(room_name)
+    room = chat.Room(name=room_name)
+    logger.info("Getting last room number for %s", room_name)
+    try:
+        last = room.get_last_room_number(user)
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=e.args[0]) from e
+    return JSONResponse({"last": last})
+
+
 @app.route("/x/subscribe", methods=["POST"])
 async def subscribe(request):
     """Subscribe to push notifications."""

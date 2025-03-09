@@ -11,6 +11,7 @@ from typing import TextIO
 import json
 import mimetypes
 import dataclasses
+from typing import Any
 
 from starlette.templating import Jinja2Templates
 
@@ -218,7 +219,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
     return sorted(listing, key=lambda x: (x["type_sort"], x["name"].lower()))
 
 
-def get_dir_listing_html(path: Path, pathname: str, info: FolderInfo, templates: Jinja2Templates = None) -> str:
+def get_dir_listing_html(path: Path, pathname: str, info: FolderInfo, templates: Jinja2Templates = None, context: dict[str,Any] = None) -> str:
     """Get directory listing as HTML"""
     listing = get_dir_listing(path, pathname, info)
 
@@ -226,7 +227,6 @@ def get_dir_listing_html(path: Path, pathname: str, info: FolderInfo, templates:
 
     # HTML header
     if templates:
-        context = {"user": info.user, "chat_base_url": info.chat_base_url}
         html.append(templates.get_template("dir-head.html").render(context))
 
     # Generate HTML for directory listing

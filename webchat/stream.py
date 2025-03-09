@@ -160,12 +160,18 @@ async def stream(request, path=""):
     if not chat.check_access(user, pathname).value & Access.READ.value:
         raise HTTPException(status_code=404, detail="Not found")
 
+    # readlink $ALLEMANDE_USERS/$user/theme.css
+    theme_symlink = Path(os.environ["ALLEMANDE_USERS"], user, "theme.css")
+    theme = theme_symlink.readlink().stem if os.path.islink(theme_symlink) else "default"
+
+    context = {"user": user, "chat_base_url": info.chat_base_url, "theme": theme}
+
     # folder listings
     if path.is_dir():
         want_json = request.query_params.get('json') == '1'
         if want_json:
             return JSONResponse(folder.get_dir_listing(path, pathname, info))
-        return HTMLResponse(folder.get_dir_listing_html(path, pathname, info, templates))
+        return HTMLResponse(folder.get_dir_listing_html(path, pathname, info, templates, context))
 
     media_type = "text/plain"
     header = ""
@@ -174,14 +180,9 @@ async def stream(request, path=""):
 
     ext = path.suffix
 
-    # readlink $ALLEMANDE_USERS/$user/theme.css
-    theme_symlink = Path(os.environ["ALLEMANDE_USERS"], user, "theme.css")
-    theme = theme_symlink.readlink().stem if os.path.islink(theme_symlink) else "default"
-
     if ext == ".html":
         media_type = "text/html"
         if templates:
-            context = {"user": user, "chat_base_url": info.chat_base_url, "theme": theme}
             header = templates.get_template("room-header.html").render(context)
         header = try_loading_extra_header(path, header)
         keepalive_string = HTML_KEEPALIVE
