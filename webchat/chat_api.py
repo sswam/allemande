@@ -183,7 +183,7 @@ async def options_set(request):
 
 @app.route("/x/options", methods=["GET"])
 async def options_get(request):
-    """Get chat room options, including agent settings like context."""
+    """Get chat room options, including agent settings like context. Also checks for a redirect."""
     # TODO validation: length, type, no unknown keys
     user = request.headers["X-Forwarded-User"]
     # get room from query param

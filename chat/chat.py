@@ -15,7 +15,7 @@ import shutil
 import subprocess
 import random
 import enum
-from stat import S_IFREG, S_IROTH, S_IWOTH
+from stat import S_IFREG, S_IROTH, S_IWOTH, S_IFLNK
 import asyncio
 import copy
 import io
@@ -309,7 +309,7 @@ class Room:
 
     def check_access(self, user: str) -> Access:
         """Check access for a user."""
-        return check_access(user, self.name)
+        return check_access(user, self.name + EXTENSION)
 
     def find_resource_file(self, ext, name=None, create=False):
         """Find a resource file for the chat room."""
@@ -346,6 +346,15 @@ class Room:
         access = self.check_access(user).value
         if not access & Access.READ.value:
             raise PermissionError("You are not allowed to get options for this room.")
+        if self.path.is_symlink():
+            target = self.path.resolve().relative_to(ROOMS_DIR)
+            if target.suffix == EXTENSION:
+                target = target.with_suffix("")
+            room2 = Room(str(target))
+            access = room2.check_access(user).value
+            if not access & Access.READ.value:
+                raise PermissionError("You are not allowed to get options for this room.")
+            return { "redirect": str(target) }
         options_file = self.find_resource_file("yml", "options")
         if options_file:
             options = cache.load(options_file)
@@ -382,24 +391,30 @@ class Room:
         name = self.name
         name = re.sub(r"-\d+$", "", name)
 
-        # list files in parent
-        files = self.parent.glob(f"{name}*{EXTENSION}")
+        path = name_to_path(name)
+        basename = path.name
 
-        # cut off room name and extension
+        # list files in parent
+        files = list(path.parent.glob(f"{basename}*{EXTENSION}"))
+
+        # cut off room dir and extension
         files = [f.stem for f in files]
 
         # only this room and its numbered pages
-        files = [f for f in files if f == name or f.startswith(name + "-")]
+        files = [f for f in files if f == basename or f.startswith(basename + "-")]
 
         # cut off room name
-        files = [re.sub(rf"^{name}-?", "", f) or "-1" for f in files]
+        files = [re.sub(rf"^{re.escape(basename)}-?", "", f) or "-1" for f in files]
 
         # convert to integers
         files = [int(f) for f in files]
 
         # find the maximum
         last = max(files, default=-1)
-        return "" if last == -1 else str(last)
+
+        last = "" if last == -1 else str(last)
+
+        return last
 
 
 def tree_prune(tree: dict) -> dict:
@@ -1350,11 +1365,13 @@ def load_config(path: Path, filename: str) -> dict[str, Any]:
     # list of folders from path up to ROOMS_DIR
     folders = list(path.relative_to(ROOMS_DIR).parents)
     # Go top-down from ROOMS_DIR to the folder containing the file
+    logger.info("folders: %s", folders)
     config_all = {}
     for folder in reversed(folders):
         config_path = ROOMS_DIR / folder / filename
         if not config_path.exists():
             continue
+        logger.info("loading config: %s", config_path)
         with config_path.open("r", encoding="utf-8") as f:
             config = cache.load(config_path)
             if config.get("reset"):
@@ -1400,7 +1417,7 @@ def read_agents_lists(path) -> list[str]:
 def check_access(user: str, pathname: str) -> Access:
     """Check if the user has access to the path, and log the access."""
     access, reason = _check_access_2(user, pathname)
-    logger.debug("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
+    logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
     return access
 
 
@@ -1456,14 +1473,15 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
 
     exists = True
     try:
-        stats = path.stat()
+        stats = path.lstat()
     except FileNotFoundError:
         exists = False
 
     is_file = not exists or stats.st_mode & S_IFREG
+    is_symlink = exists and stats.st_mode & S_IFLNK
 
     # Moderators have moderation on all files in the root
-    if user in MODERATORS and not "/" in pathname and is_file:
+    if user in MODERATORS and not "/" in pathname and (is_file or is_symlink):
         return Access.MODERATE_READ_WRITE, "moderator_top"
 
     # Denied users have no access
@@ -1483,8 +1501,11 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     if pathname == "":
         return Access.READ, "root"
 
+    logger.info("pathname: %s", pathname)
+    logger.info("is_file, is_symlink: %s, %s", is_file, is_symlink)
+
     # Users have access to files in the root, check is a file
-    if not "/" in pathname and is_file:
+    if not "/" in pathname and (is_file or is_symlink):
         return Access.READ_WRITE, "user_root_file"
 
     # TODO guests can create new files in a shared folder?

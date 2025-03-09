@@ -469,7 +469,7 @@ function get_file_type(name) {
     return "room";                   // no extension
 }
 
-function set_room(r) {
+async function set_room(r, no_history) {
   // check if r was passed
   if (r === undefined) {
     r = $room.value;
@@ -493,19 +493,14 @@ function set_room(r) {
 
   clear_messages_box();
   room = r;
-  set_title_hash(room);
+  set_title_hash(room, no_history);
   if (!room) return;
 
-  //	who();
-
-  if (type == "room" || type == "dir") {
-    let stream_url = ROOMS_URL + "/" + room;
-    if (type == "room") {
-      stream_url += ".html";
-    }
-    stream_url += "?stream=1";
-    messages_iframe_set_src(stream_url);
+  if (type == "room") {
+    await get_options();
   }
+
+  //	who();
 
   setup_user_button();
   setup_admin();
@@ -524,6 +519,15 @@ function set_room(r) {
     reset_ui();
 
   show_room_privacy();
+
+  if (type == "room" || type == "dir") {
+    let stream_url = ROOMS_URL + "/" + room;
+    if (type == "room") {
+      stream_url += ".html";
+    }
+    stream_url += "?stream=1";
+    messages_iframe_set_src(stream_url);
+  }
 }
 
 function show_room_privacy() {
@@ -624,11 +628,20 @@ function query_to_hash(query) {
   return "#" + query.replace(/ /g, "+");
 }
 
-function set_title_hash(query) {
+function set_title_hash(query, no_history) {
   new_hash = query_to_hash(query);
   new_title = query_to_title(query);
-  if (location.hash != new_hash)
-    location.hash = new_hash;
+
+  if (location.hash !== new_hash) {
+    if (no_history) {
+      // Replace current history entry without creating a new one
+      location.replace('#' + new_hash.substring(1));
+    } else {
+      // Create new history entry (default behavior)
+      location.hash = new_hash;
+    }
+  }
+
   $title.innerText = new_title;
 }
 
@@ -1719,6 +1732,11 @@ async function get_options() {
   const data = await response.json();
 //  console.log("get_options", data);
 
+  if (data.redirect) {
+    set_room(data.redirect, true);
+    return;
+  }
+
   const context = data?.agents?.all?.context ?? "";
   const lines = data?.agents?.all?.lines ?? "";
   const images = data?.agents?.all?.images ?? "";
@@ -1961,6 +1979,4 @@ function chat_main() {
   $content.focus();
 
   load_user_styles_and_script();
-
-  get_options();
 }
