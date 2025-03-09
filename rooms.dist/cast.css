@@ -11,3 +11,7 @@
 	position: relative;
 	transition: all 0.3s ease;  /* Smooth transition for hover effects */
 }
+
+div.cast {
+	padding: 0 8px;
+}
