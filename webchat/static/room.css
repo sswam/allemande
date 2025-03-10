@@ -222,12 +222,47 @@ details.search > div {
 	margin-bottom: 40px;
 }
 
-.directory-listing {
+body#dir {
+	padding: 0;
+	width: auto;
+	height: 100%;
+	display: block;
+}
+body#dir.rows {
+	flex-direction: column;
+}
+
+body#dir.columns {
+	flex-direction: row;
+	overflow-x: auto; /* to allow horizontal scrolling */
+	overflow-y: hidden;
+}
+
+ul.directory-listing {
 	list-style: none;
 	padding: 0;
+	display: grid;
+	/* margin: 0; */
 }
-.directory-listing li {
-	padding: 8px;
+
+body#dir.rows ul.directory-listing {
+ 	width: 100%;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+body#dir.columns ul.directory-listing {
+	grid-auto-flow: column;
+	grid-template-rows: repeat(auto-fill, minmax(27px, auto));
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	scroll-snap-type: x mandatory;
+	scroll-padding: 0 1rem; /* optional: adds some padding to snap points */
+	max-height: 100%;
+}
+
+ul.directory-listing > li {
+	padding: 4px;
+	min-width: 200px;
+	scroll-snap-align: start;
 }
 .icon {
 	margin-right: 10px;
