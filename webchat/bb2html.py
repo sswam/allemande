@@ -9,6 +9,7 @@ import logging
 from pathlib import Path
 import asyncio
 from collections import defaultdict
+import io
 
 from watchfiles import Change
 
@@ -62,17 +63,46 @@ async def file_changed(bb_file, html_file, old_size, new_size):
         return row
 
 
-async def handle_completed_tasks(tasks: set, out=sys.stdout):
-    """Handle completed tasks"""
-    for task in list(tasks):
-        if not task.done():
-            continue
-        try:
-            row = await task
-            print(*row, sep="\t", file=out)
-        except Exception as exc:  # pylint: disable=broad-except
-            logger.exception("error processing file: %s", exc)
-        tasks.discard(task)
+async def handle_completed_task(task: asyncio.Task, tasks: set, out: io.TextIOBase = sys.stdout):
+    """Handle completed task by printing result or logging exception"""
+    try:
+        result = await task
+        print(*result, sep="\t", file=out)
+    except Exception as exc:
+        logger.exception("Error processing task: %s", exc)
+    tasks.discard(task)
+
+
+def make_done_callback(tasks: set, out: io.TextIOBase = sys.stdout):
+    def callback(task):
+        asyncio.create_task(handle_completed_task(task, tasks, out))
+    return callback
+
+
+async def process_change(line, opts, tasks, out):
+    """Process a change line from the watch log"""
+    logger.debug("line from tail: %s", line)
+    bb_file, change_type, old_size, new_size = line.rstrip("\n").split("\t")
+    change_type = Change(int(change_type))
+    old_size = int(old_size) if old_size != "" else None
+    new_size = int(new_size) if new_size != "" else None
+
+    if not bb_file.endswith(opts.exts):
+        return
+
+    html_file = str(Path(bb_file).with_suffix(".html"))
+    if change_type == Change.deleted:
+        Path(html_file).unlink(missing_ok=True)
+        return
+
+    # If file is new, and html file exists, do not update
+    if old_size is None and Path(html_file).exists():
+        return
+
+    # Create and store new task
+    task = asyncio.create_task(file_changed(bb_file, html_file, old_size, new_size))
+    tasks.add(task)
+    task.add_done_callback(make_done_callback(tasks, out))
 
 
 async def bb2html(opts, watch_log, out=sys.stdout):
@@ -83,37 +113,14 @@ async def bb2html(opts, watch_log, out=sys.stdout):
     async with atail.AsyncTail(filename=watch_log, follow=True, rewind=True, restart=True) as queue:
         while (line := await queue.get()) is not None:
             try:
-                logger.debug("line from tail: %s", line)
-                bb_file, change_type, old_size, new_size = line.rstrip("\n").split("\t")
-                change_type = Change(int(change_type))
-                old_size = int(old_size) if old_size != "" else None
-                new_size = int(new_size) if new_size != "" else None
-                if not bb_file.endswith(opts.exts):
-                    continue
+                await process_change(line, opts, tasks, out)
+            except Exception as exc:
+                logger.exception("Error processing line: %s", exc)
+            queue.task_done()
 
-                html_file = str(Path(bb_file).with_suffix(".html"))
-                if change_type == Change.deleted:
-                    Path(html_file).unlink(missing_ok=True)
-                    continue
-
-                # If file is new, and html file exists, do not update
-                if old_size is None and Path(html_file).exists():
-                    continue
-
-                # Create and store new task
-                task = asyncio.create_task(file_changed(bb_file, html_file, old_size, new_size))
-                tasks.add(task)
-                task.add_done_callback(tasks.discard)
-
-                await handle_completed_tasks(tasks, out)
-
-            finally:
-                queue.task_done()
-
-        # Wait for any remaining tasks
-        # TODO, this isn't reached yet. Could handle ctrl-C and kill signals then do this.
-        if tasks:
-            await asyncio.gather(*tasks, return_exceptions=True)
+    # TODO, this isn't reached yet. Could handle ctrl-C and kill signals then do this.
+    if tasks:
+        await asyncio.gather(*tasks)
 
 
 def get_opts():
