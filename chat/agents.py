@@ -89,11 +89,11 @@ class Agent:
         """Return a copy of the agent"""
         return Agent(data=deepcopy(self.data), agents=self.agents)
 
-    def get(self, key: str, default=None, raise_error=False):
+    def get(self, key: str, default=None, raise_error=False, raw=False):
         """Get a value from the agent's data"""
         base = self.base()
         if key not in self.data and base:
-            value = base.get(key, default, raise_error)
+            value = base.get(key, default, raise_error, raw=True)
         elif key not in self.data and raise_error:
             raise KeyError(key)
         else:
@@ -104,7 +104,7 @@ class Agent:
             # Extending lists might not always be the desired behavior, we'll see
             # TODO reduce indent here
             if base:
-                base_value = deepcopy(base.get(key))
+                base_value = deepcopy(base.get(key, raw=True))
                 value = agent_merger.merge(base_value, value)
 
 #             if base and isinstance(value, (dict, list)):
@@ -112,18 +112,19 @@ class Agent:
 #                 if isinstance(base_value, type(value)):
 #                     value = agent_merger.merge(deepcopy(base_value), value)
 
-        # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
-        # We do this on get, rather than initially, because we can define
-        # a derived agent with different names.
-        # TODO do this more generally for other variables?
-        if value and key in ["system_top", "system_bottom"]:
-            name = self.get("name")
-            fullname = self.get("fullname", name)
-            aliases = self.get("aliases") or [name]
-            aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
-            value = re.sub(r"\$NAME\b", name, value)
-            value = re.sub(r"\$FULLNAME\b", fullname, value)
-            value = re.sub(r"\$ALIAS\b", aliases_or, value)
+        if not raw:
+            # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
+            # We do this on get, rather than initially, because we can define
+            # a derived agent with different names.
+            # TODO do this more generally for other variables?
+            if value and key in ["system_top", "system_bottom"]:
+                name = self.get("name")
+                fullname = self.get("fullname", name)
+                aliases = self.get("aliases") or [name]
+                aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
+                value = re.sub(r"\$NAME\b", name, value)
+                value = re.sub(r"\$FULLNAME\b", fullname, value)
+                value = re.sub(r"\$ALIAS\b", aliases_or, value)
 
         # TODO remove null values? i.e. enable to remove an attribute from base
 

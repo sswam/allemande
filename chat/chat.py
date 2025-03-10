@@ -198,11 +198,6 @@ class Room:
             raise FileNotFoundError("Room not found.")
         empty = self.path.stat().st_size == 0
 
-        # A double clear will erase the file
-        if empty:
-            self.path.unlink()
-            return
-
         if op == "archive":
             if not access & Access.MODERATE.value:
                 raise PermissionError("You are not allowed to archive this room.")
@@ -226,7 +221,8 @@ class Room:
             if template_file.exists():
                 shutil.copy(template_file, self.path)
             else:
-                self.path.write_text("")
+                # self.path.write_text("")
+                self.path.unlink()
         elif op == "clean":
             await self.clean(user)
 
@@ -1412,8 +1408,10 @@ def read_agents_lists(path) -> list[str]:
     return list(set(agent_names))
 
 
-def check_access(user: str, pathname: str) -> Access:
+def check_access(user: str, pathname: Path|str) -> Access:
     """Check if the user has access to the path, and log the access."""
+    if isinstance(pathname, Path):
+        pathname = str(pathname)
     access, reason = _check_access_2(user, pathname)
     logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
     return access
@@ -1615,6 +1613,39 @@ async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
 
+
+def move_file(user, source, dest, clobber=False):
+    """Move a file to a new location."""
+    source_path = name_to_path(source)
+    dest_path = name_to_path(dest)
+    access = check_access(user, source_path).value
+    if not access & Access.WRITE.value:
+        raise PermissionError(f"You are not allowed to move this file: user: {user}, path: {source_path}, access: {access}")
+    access = check_access(user, dest_path).value
+    if not access & Access.WRITE.value:
+        raise PermissionError(f"You are not allowed to move to this location: user: {user}, path: {dest_path}, access: {access}")
+    if not clobber and Path(dest_path).exists():
+        raise ValueError(f"Destination already exists: {dest_path}")
+
+    # hack: if moving a folder, the user would have to be able to write to a file within the proposed destination folder
+    dest_example_file = Path(dest_path) / ("chat" + EXTENSION)
+    access = check_access(user, dest_example_file).value
+    if not access & Access.WRITE.value:
+        raise PermissionError(f"You are not allowed to write to this location: user: {user}, path: {dest}/, access: {access}")
+
+    try:
+        # move html files for chat rooms too
+        # should I move config files too? not right now
+        if source_path.suffix == EXTENSION and dest_path.suffix == EXTENSION:
+            source_html = source_path.with_suffix(".html")
+            dest_html = dest_path.with_suffix(".html")
+            if source_html.exists():
+                # ok to overwrite the html file
+                shutil.move(source_html, dest_html)
+
+        shutil.move(str(source_path), str(dest_path))
+    except (shutil.Error, OSError) as e:
+        raise PermissionError(f"Error moving file: {e}")
 
 def remove_thinking_sections(content: str, agent: Agent | None, n_own_messages: int) -> tuple[str, int]:
     remember_thoughts = agent.get("remember_thoughts", 0) if agent else 0
