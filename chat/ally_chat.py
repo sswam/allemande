@@ -833,11 +833,15 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     system_bottom_role = "user" if service == "google" else agent.get("system_bottom_role", "user")
     system_top_role = "user" if service == "google" else agent.get("system_top_role", "system")
     if system_bottom:
+        if system_bottom_role == "user":
+            system_bottom = f"System: {system_bottom}"
         n_messages = len(remote_messages)
         pos = agent.get("system_bottom_pos", 0)
         pos = min(pos, n_messages)
         remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom.rstrip()})
     if system_top:
+        if system_top_role == "user":
+            system_top = f"System: {system_top}"
         remote_messages.insert(0, {"role": system_top_role, "content": system_top.rstrip()})
 
     # Some agents require alternating user and assistant messages. Mark most recent message as "user", then check backwards and cut off when no longer alternating.

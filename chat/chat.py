@@ -192,11 +192,11 @@ class Room:
     async def clear(self, user, op="clear", backup=True):
         """Clear a room."""
         access = self.check_access(user).value
-        if not self.path.exists():
-            return
-        if not self.path.is_file():
+#         if not self.path.exists():
+#             return
+        if self.path.exists() and not self.path.is_file():
             raise FileNotFoundError("Room not found.")
-        empty = self.path.stat().st_size == 0
+#        empty = self.path.stat().st_size == 0
 
         if op == "archive":
             if not access & Access.MODERATE.value:
@@ -857,7 +857,7 @@ pattern polygon polyline radialGradient rect script set stop style svg switch
 symbol text textPath title tspan use view
 """)
 
-RE_TAGS = re.compile(rf"</?({'|'.join(set(HTML_TAGS + SVG_TAGS))})\b")
+RE_TAGS = re.compile(rf"</?({'|'.join(set(HTML_TAGS + SVG_TAGS))})\b", flags=re.IGNORECASE)
 
 def preprocess(content):
     """Preprocess chat message content, for markdown-katex"""
@@ -870,7 +870,7 @@ def preprocess(content):
     out = []
 
     # make sure <think> tags are on their own lines...
-    content = re.sub(r"\s*(</?think(ing)?>)\s*", r"\n\1\n", content, flags=re.DOTALL)
+    content = re.sub(r"\s*(</?think(ing)?>)\s*", r"\n\1\n", content, flags=re.DOTALL|re.IGNORECASE)
 
     in_math = False
     in_code = 0
@@ -887,11 +887,11 @@ def preprocess(content):
         logger.debug("check line: %r", line)
         is_math_start = re.match(r"\s*(\$\$|```tex|```math)$", line)
         is_math_end = re.match(r"\s*(\$\$|```)$", line)
-        if re.match(r"""^\s*<script( type=["']?text/javascript["']?)?>$""", line) and not in_code:
+        if re.match(r"\s*<(script|style)\b", line, re.IGNORECASE) and not in_code:
             out.append(line)
             in_code = 1
             in_script = True
-        elif re.match(r"^\s*</script>$", line) and in_script:
+        elif re.match(r"\s*</(script|style)>\s*$", line, re.IGNORECASE) and in_script:
             out.append(line)
             in_code = 0
             in_script = False
@@ -923,10 +923,11 @@ def preprocess(content):
             out.append(line)
             in_code -= 1
         elif in_code:
+            logger.debug("code line: %r", line)
             out.append(line)
-        elif re.match(r"^\s*<think(ing)?>$", line):
+        elif re.match(r"^\s*<think(ing)?>$", line, re.IGNORECASE):
             out.append(r"""<details markdown="1" class="think"><summary>thinking</summary>""")
-        elif re.match(r"^\s*</think(ing)?>$", line):
+        elif re.match(r"^\s*</think(ing)?>$", line, re.IGNORECASE):
             out.append(r"""</details>""")
         else:
             line, has_math1 = find_and_fix_inline_math(line)
@@ -1048,7 +1049,7 @@ def message_to_html(message):
     if user:
         user_ee = html.escape(user)
         return f"""<div class="message" user="{user_ee}"><div class="label">{user_ee}:</div><div class="content">{html_content}</div></div>\n\n"""
-    return f"""<div class="narrative"><div class="content">{html_content}</div></div>\n\n"""
+    return f"""<div class="message narrative"><div class="content">{html_content}</div></div>\n\n"""
 
 
 LANGUAGES = r"python|bash|sh|shell|console|html|xml|css|javascript|js|json|yaml|yml|toml|ini|sql|c|cpp|csharp|cs|java|kotlin|swift|php|perl|ruby|lua|rust|go|dart|scala|groovy|powershell|plaintext"
