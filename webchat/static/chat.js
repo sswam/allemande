@@ -2,6 +2,7 @@ const ROOMS_URL =
   location.protocol + "//" + location.host.replace(/^chat\b/, "rooms");
 const MAX_ROOM_NUMBER = 1e3; // 1e12;
 const DEFAULT_ROOM = "Ally Chat";
+const EXTENSION = ".bb";
 
 // TODO: no!
 const global_moderators = ["root", "sam"];
@@ -93,6 +94,7 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['alt+u', nav_up, 'Browse up'],
   ['alt+i', view_images, 'View images'],
   ['alt+c', view_clean, 'View clean'],
+  ['alt+m', move_mode, 'Move mode', ADMIN],
 
   ['alt+z', undo, 'Undo last action', ADMIN],
   ['alt+r', retry, 'Retry last action', ADMIN],
@@ -109,6 +111,7 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
 
 const SHORTCUTS_ROOM = shortcuts_to_dict([
   ['enter', focus_content, 'Focus message input'],
+  ['alt+m', move_mode, 'Move mode', ADMIN],
 ]);
 
 const SHORTCUTS_EDIT = shortcuts_to_dict([
@@ -497,9 +500,27 @@ async function set_room(r, no_history) {
     r = $room.value;
   }
 
+  // check if we're already in the room
   if (room === r) {
+    console.log("already in room", room);
+    active_reset("move");
     $content.focus();
     return;
+  }
+
+  // check if we're moving / renaming
+  if (active_get("move")) {
+    if (r = await move(room, r)) {
+      active_reset("move");
+      // continue browsing to the new name, will do a reload unfortunately
+    } else {
+      // move was rejected
+      $room.value = room;
+      error("move");
+      // stay in move mode
+      select_room_basename();
+      return;
+    }
   }
 
   const type = get_file_type(r);
@@ -530,7 +551,7 @@ async function set_room(r, no_history) {
   if (view === "view_edit") {
     editor_file = r;
     if (type == "room")
-      editor_file += ".bb";
+      editor_file += EXTENSION;
     editor_text_orig = null;
   } else if (type == "file") {
     // start editing the file
@@ -562,6 +583,68 @@ function show_room_privacy() {
     $privacy.innerHTML = icons["access_public"];
     $privacy.title = "public";
   }
+}
+
+// move a room or file -----------------------------------------------------
+
+function move_mode() {
+  // button was clicked, toggle move mode
+  active_toggle("move");
+  if (active_get("move")) {
+    select_room_basename();
+  } else {
+    $content.focus();
+  }
+}
+
+async function move(source, dest) {
+  const source_type = get_file_type(source);
+  if (source_type == "dir" && !dest.match(/\/$/))
+    dest += "/";
+  if (dest.endsWith(EXTENSION)) {
+    dest = dest.slice(0, -EXTENSION.length);
+  }
+  const dest_type = get_file_type(dest);
+  if (source_type != dest_type) {
+    return false;
+  }
+
+  const dest_name_to_return = dest;
+
+  console.log("dest_name_to_return", dest_name_to_return);
+
+  // add extension to room names
+  if (source_type == "room") {
+    source += EXTENSION;
+    dest += EXTENSION;
+  }
+
+  // remove trailing / from directories
+  if (source_type == "dir") {
+    source = source.replace(/\/$/, "");
+    dest = dest.replace(/\/$/, "");
+  }
+
+  // call the server to do the move
+  const formData = new FormData();
+  formData.append("source", source);
+  formData.append("dest", dest);
+
+  const my_error = async (error_message) => {
+    console.error(error_message);
+    await error(`move`);
+    return false;
+  };
+
+  const response = await fetch("/x/move", {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    return await my_error("move failed");
+  }
+  return dest_name_to_return;
 }
 
 // navigation ----------------------------------------------------------------
@@ -711,33 +794,45 @@ function change_room() {
       $room.select();
     }
   } else {
-    $room.focus();
-    const value = $room.value;
-    const lastSlashIndex = value.lastIndexOf('/');
-
-    let start = 0;
-    if (value.endsWith('/')) {
-      // If ends with /, find the previous slash
-      const previousSlashIndex = value.lastIndexOf('/', lastSlashIndex - 1);
-      if (previousSlashIndex !== -1) {
-        // If there's a previous slash, select from there to end
-        start = previousSlashIndex + 1;
-      }
-    } else if (lastSlashIndex !== -1) {
-      // If there's a slash (not at the end), select from after it to end
-      start = lastSlashIndex + 1;
-    }
-    $room.setSelectionRange(start, value.length);
+    select_room_basename();
   }
   return false;
 }
 
+function select_room_basename() {
+  $room.focus();
+  const value = $room.value;
+  const lastSlashIndex = value.lastIndexOf('/');
+
+  let start = 0;
+  if (value.endsWith('/')) {
+    // If ends with /, find the previous slash
+    const previousSlashIndex = value.lastIndexOf('/', lastSlashIndex - 1);
+    if (previousSlashIndex !== -1) {
+      // If there's a previous slash, select from there to end
+      start = previousSlashIndex + 1;
+    }
+  } else if (lastSlashIndex !== -1) {
+    // If there's a slash (not at the end), select from after it to end
+    start = lastSlashIndex + 1;
+  }
+  $room.setSelectionRange(start, value.length);
+}
+
 function escape() {
+  let acted = false;
+  if (active_get("move")) {
+    active_reset("move");
+    $content.focus();
+    acted = true;
+  }
   if (controls !== "input_main") {
     set_controls();
     set_top();
     set_view();
-  } else {
+    acted = true;
+  }
+  if (!acted) {
     change_room();
   }
 }
@@ -1015,8 +1110,13 @@ function authChat() {
 function setup_user_button() {
   const $user = $id("user");
   $user.innerText = user;
+  // go from public user chat to default room
   if (room == user) $user.href = "/" + query_to_hash(DEFAULT_ROOM);
-  else if (room == user + "/chat") $user.href = "/" + query_to_hash(user);
+  // fo from users's folder to user's public room
+  else if (room == user + "/") $user.href = "/" + query_to_hash(user);
+  // go from private user chat to user's folder
+  else if (room == user + "/chat") $user.href = "/" + query_to_hash(user) + "/";
+  // from anywhere else, go to private user chat
   else $user.href = "/" + query_to_hash(user) + "/chat";
 }
 
@@ -1487,7 +1587,7 @@ async function edit(file) {
   stop_auto_play();
 
   if (file === undefined) {
-    file = room + ".bb";
+    file = room + EXTENSION;
   }
 
   try {
@@ -1515,7 +1615,6 @@ async function edit(file) {
 }
 
 async function edit_save() {
-  // if it's a .bb file, and not empty, ensure it ends with a double newline
   if (!editor_file) {
     error("edit_save");
     return false;
@@ -1523,7 +1622,8 @@ async function edit_save() {
 
   edit_get_text();
 
-  if (editor_file.match(/\.bb$/) && editor_text && !editor_text.match(/[^\n]\n\n$/)) {
+  // if it's a chat room file, and not empty, ensure it ends with a double newline
+  if (editor_file.endsWith(EXTENSION) && editor_text && !editor_text.match(/[^\n]\n\n$/)) {
     edit_set_text(editor_text.replace(/\n*$/, "\n\n"));
   }
 
@@ -1866,7 +1966,7 @@ const icons = {
   contract: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-angle-contract" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M.172 15.828a.5.5 0 0 0 .707 0l4.096-4.096V14.5a.5.5 0 1 0 1 0v-3.975a.5.5 0 0 0-.5-.5H1.5a.5.5 0 0 0 0 1h2.768L.172 15.121a.5.5 0 0 0 0 .707M15.828.172a.5.5 0 0 0-.707 0l-4.096 4.096V1.5a.5.5 0 1 0-1 0v3.975a.5.5 0 0 0 .5.5H14.5a.5.5 0 0 0 0-1h-2.768L15.828.879a.5.5 0 0 0 0-.707"/></svg>',
   undo: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2z"/><path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466"/></svg>',
   mod_clear: '<svg width="20" height="20" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/></svg>',
-  mod_edit: '<svg width="20" height="20" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/></svg>',
+  edit: '<svg width="18" height="18" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16"><path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/></svg>',
   mod_auto: '<svg width="20" height="20" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16"><path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/></svg>',
   mod_archive: '<svg width="20" height="20" fill="currentColor" class="bi bi-archive-fill" viewBox="0 0 16 16"><path d="M12.643 15C13.979 15 15 13.845 15 12.5V5H1v7.5C1 13.845 2.021 15 3.357 15zM5.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1M.8 1a.8.8 0 0 0-.8.8V3a.8.8 0 0 0 .8.8h14.4A.8.8 0 0 0 16 3V1.8a.8.8 0 0 0-.8-.8z"/></svg>',
   people: '<svg width="20" height="20" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>',
@@ -1895,6 +1995,8 @@ function setup_icons() {
   icons["mod_retry"] = icons["undo"];
   icons["edit_reset"] = icons["undo"];
   icons["edit_clear"] = icons["mod_clear"];
+  icons["mod_edit"] = icons["edit"];
+  icons["move"] = icons["edit"];
 
   for (const id in icons) {
     const el = $id(id);
@@ -1992,6 +2094,8 @@ function chat_main() {
   $on($id("resizer"), "touchstart", dragControls);
 
   $on($id("privacy"), "click", change_privacy);
+
+  $on($id("move"), "click", move_mode);
 
   setup_view_options();
 
