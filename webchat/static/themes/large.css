@@ -4,3 +4,6 @@ body, textarea, input, button, a {
 :root {
 	--pad: 12px;
 }
+.directory-listing li {
+	padding: 8px;
+}
