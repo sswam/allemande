@@ -5,6 +5,8 @@ const timeout_seconds = 60;
 const CHAT_URL =
   location.protocol + "//" + location.host.replace(/^rooms\b/, "chat");
 
+var inIframe = window.parent !== window.self;
+
 let room;
 
 let $body, $messages, $overlay, $messages_wrap, $canvas_div;
@@ -18,6 +20,8 @@ let allImages;
 let overlay_fullscreen = true;
 
 let suppressInitialScroll = false;
+
+let view_options = {};
 
 function get_status_element() {
   let status = $id("allemande_status");
@@ -64,42 +68,61 @@ $on(document, "readystatechange", ready_state_change);
 // scrolling to the bottom ---------------------------------------------------
 
 let messages_at_bottom = true;
+let messages_width_last;
 let messages_height_last;
 let top_message;
 
 function is_at_bottom($e) {
-  const bot = Math.abs($e.scrollHeight - $e.scrollTop - $e.clientHeight) < 8;
-  // console.log("is at bottom", $e, bot);
+  if (view_options.columns) {
+    return Math.abs($e.scrollWidth - $e.scrollLeft - $e.clientWidth) < 8;
+  } else {
+    return Math.abs($e.scrollHeight - $e.scrollTop - $e.clientHeight) < 8;
+  }
   return bot;
 }
 
 function scroll_to_bottom($e) {
   // console.log("scroll to bottom", $e);
-  $e.scrollTop = $e.scrollHeight;
+  if (view_options.columns) {
+    // console.log("scroll to right");
+    $e.scrollLeft = $e.scrollWidth;
+  } else {
+    $e.scrollTop = $e.scrollHeight;
+  }
 }
 
 function messages_scrolled() {
   // console.log("messages scrolled");
   var $e = $messages_wrap;
-  if (messages_at_bottom) {
+  if (messages_at_bottom && view_options.columns) {
+    var messages_width = $e.scrollWidth;
+    if (messages_width != messages_width_last) {
+      messages_width_last = messages_width;
+      if (!suppressInitialScroll)
+        scroll_to_bottom($e);
+    }
+  } else if (messages_at_bottom) {
     var messages_height = $e.scrollHeight;
     if (messages_height != messages_height_last) {
       messages_height_last = messages_height;
       if (!suppressInitialScroll)
         scroll_to_bottom($e);
-      messages_height_last = $e.scrollHeight;
     }
   }
   messages_at_bottom = is_at_bottom($e);
 
-  top_message = getTopmostVisibleElement();
+  if (view_options.columns) {
+    top_message = getLeftmostVisibleElement();
+  } else {
+    top_message = getTopmostVisibleElement();
+  }
   // console.log("top message", top_message);
 }
 
 function getTopmostVisibleElement() {
   // If half visible, round to nearest element
   const container = $messages_wrap;
-  const elements = container.querySelectorAll('.message, .narrative');
+  const elements = container.querySelectorAll('.message');
 
   // Get container's top boundary
   const containerTop = container.scrollTop;
@@ -116,6 +139,26 @@ function getTopmostVisibleElement() {
   }
 
   return null;
+}
+
+function getLeftmostVisibleElement() {
+  // If half visible, round to nearest element
+  const container = $messages_wrap;
+  const elements = container.querySelectorAll('.message');
+
+  // Get container's left boundary
+  const containerLeft = container.scrollLeft;
+
+  // Find first element that's visible
+  for (const element of elements) {
+    const rect = element.getBoundingClientRect();
+    const elementLeft = element.offsetLeft - container.offsetLeft;
+    const elementMiddle = elementLeft + rect.width / 2;
+
+    if (elementMiddle >= containerLeft) {
+      return element;
+    }
+  }
 }
 
 // wait for ------------------------------------------------------------------
@@ -153,8 +196,7 @@ async function check_for_new_content(mutations) {
     for (const node of mutation.addedNodes) {
       if (
         node.nodeType == Node.ELEMENT_NODE &&
-        node.tagName == "DIV" &&
-        (node.classList.contains("message") || node.classList.contains("narrative"))
+        node.tagName == "DIV" && node.classList.contains("message")
       ) {
         try {
           await wait_for(() => node_has_next_sibling(node), 1000);
@@ -175,6 +217,7 @@ async function mutated(mutations) {
   const new_content = await check_for_new_content(mutations);
   if (new_content) {
     online();
+    messages_resized();
   }
   process_messages(new_content);
 }
@@ -246,12 +289,22 @@ function key_event(ev) {
     toggle_fullscreen();
     return;
   }
+  if (ev.key == "Home") {
+    return scroll_home();
+  }
+  if (ev.key == "End") {
+    return scroll_end();
+  }
   if (
     keysToKeep.includes(ev.key) ||
     (ev.ctrlKey && ctrlKeysToKeep.includes(ev.key))
   ) {
     return;
   }
+  if (!inIframe) {
+    return;
+  }
+
   // relay the event to the parent window
   const copy = {
     type: ev.type,
@@ -706,29 +759,59 @@ async function handle_message(ev) {
     return;
   }
   if (ev.data.type === "set_view_options") {
-    await wait_for_load();
-    const cl = document.body.classList;
-    cl.toggle("images", ev.data.images == 2);
-    cl.toggle("images_alt", ev.data.images == 1);
-    cl.toggle("source", ev.data.source == 1);
-    cl.toggle("canvas", ev.data.canvas == 1);
-    cl.toggle("clean", ev.data.clean == 1);
-    document.documentElement.style.setProperty("--image-width", ev.data.image_size*10 + "vw");
-    document.documentElement.style.setProperty("--image-height", ev.data.image_size*10 + "vh");
-    const image_size_narrative = ev.data.image_size == 10 ? 100 : Math.min(ev.data.image_size*20, 90);
-    document.documentElement.style.setProperty("--image-width-narrative", image_size_narrative + "vw");
-    document.documentElement.style.setProperty("--image-height-narrative", image_size_narrative + "vh");
+    await set_view_options(ev.data);
   } else if (ev.data.type === "theme_changed") {
     const $style = $id("theme");
     $style.href = CHAT_URL + "/themes/" + ev.data.theme + ".css";
   } else if (ev.data.type === "set_scroll") {
-    const x = ev.data.x;
-    let y = ev.data.y;
-    if (y == -1)
-      y = $messages_wrap.scrollHeight;
-    $messages_wrap.scrollLeft = x;
-    $messages_wrap.scrollTop = y;
+    set_scroll(ev.data.x, ev.data.y);
   }
+  messages_resized();
+}
+
+async function set_view_options(new_view_options) {
+  view_options = new_view_options;
+  await wait_for_load();
+  const cl = document.body.classList;
+  cl.toggle("images", view_options.images == 2);
+  cl.toggle("images_alt", view_options.images == 1);
+  cl.toggle("source", view_options.source == 1);
+  cl.toggle("canvas", view_options.canvas == 1);
+  cl.toggle("clean", view_options.clean == 1);
+  cl.toggle("columns", view_options.columns == 1);
+  document.documentElement.style.setProperty("--image-width", view_options.image_size*10 + "vw");
+  document.documentElement.style.setProperty("--image-height", view_options.image_size*10 + "vh");
+  const image_size_large = view_options.image_size == 10 ? 100 : Math.min(view_options.image_size*20, 90);
+  const image_size_small = view_options.image_size*5;
+  document.documentElement.style.setProperty("--image-width-large", image_size_large + "vw");
+  document.documentElement.style.setProperty("--image-height-large", image_size_large + "vh");
+  document.documentElement.style.setProperty("--image-width-small", image_size_small + "vw");
+  document.documentElement.style.setProperty("--image-height-small", image_size_small + "vh");
+}
+
+function scroll_home() {
+  scroll_home_end(0);
+}
+
+function scroll_end() {
+  scroll_home_end(-1);
+}
+
+function scroll_home_end(p) {
+  if (view_options.columns) {
+    set_scroll(p, 0);
+  } else {
+    set_scroll(0, p);
+  }
+}
+
+function set_scroll(x, y) {
+  if (x == -1)
+    x = $messages_wrap.scrollWidth;
+  if (y == -1)
+    y = $messages_wrap.scrollHeight;
+  $messages_wrap.scrollLeft = x;
+  $messages_wrap.scrollTop = y;
 }
 
 // wait for the page to load the main elements -------------------------------
@@ -766,12 +849,14 @@ async function window_resized() {
 }
 
 function messages_resized() {
+//  console.log("messages resized");
   if (!messages_at_bottom && top_message) {
-    top_message.scrollIntoView({ behavior: 'instant', block: 'start' });
+    // top_message.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
   messages_scrolled();
 }
 
+/*
 function canvas_resized() {
   if (canvas_at_bottom) {
     scroll_to_bottom($canvas_div);
@@ -781,6 +866,7 @@ function canvas_resized() {
 function canvas_scrolled() {
   canvas_at_bottom = is_at_bottom($canvas_div);
 }
+*/
 
 // Wrapper function to initialize drag controls for the resizer --------------
 
@@ -827,8 +913,6 @@ async function room_main() {
   room = decodeURIComponent(location.pathname.replace(/\.html$/, '').replace(/^\//, ''));
   handle_intro();
 
-  setup_mutation_observer();
-
   await wait_for_load();
   // console.log("room loaded");
   $body = $("body");
@@ -836,6 +920,8 @@ async function room_main() {
   $messages_wrap = $("div.messages_wrap");
   $overlay = $("div.overlay");
   $canvas_div = $("div.canvas");
+
+  setup_mutation_observer();
 
   $on($overlay, "click", overlay_click);
   setup_swipe();
@@ -847,13 +933,11 @@ async function room_main() {
   window.parent.postMessage({ type: "ready", theme: theme }, CHAT_URL);
   add_hook("window_resize", window_resized);
 
-  new ResizeObserver(canvas_resized).observe($canvas_div);
+//  new ResizeObserver(canvas_resized).observe($canvas_div);
   $on($messages_wrap, "scroll", messages_scrolled);
-  const resizeObserver = new ResizeObserver(entries => {
-    messages_resized();
-  });
+  const resizeObserver = new ResizeObserver(messages_resized);
   resizeObserver.observe($messages);
-  $on($canvas_div, "scroll", canvas_scrolled);
+//  $on($canvas_div, "scroll", canvas_scrolled);
 
   window_resized();
   messages_scrolled();
@@ -863,6 +947,13 @@ async function room_main() {
 
   if (typeof room_user_script === 'function') {
     room_user_script();
+  }
+
+  if (!inIframe) {
+    set_view_options({
+      images: 2,
+      image_size: 4,
+    });
   }
 }
 

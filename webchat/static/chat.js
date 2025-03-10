@@ -186,6 +186,8 @@ async function send(ev) {
   auto_play_back_off();
 
   // if shift or ctrl is pressed, change the active count
+  // TODO this is weird, especially adding to it, maybe don't?  Just shift-click could clear it.
+  // could be useful to block auto-play though... ???
   if (ev && ev.shiftKey)
     return active_inc("send");
   if (ev && ev.ctrlKey)
@@ -280,9 +282,9 @@ function active_set(id, new_count) {
   new_count = +new_count;
   let count = active_get(id);
   const $el = $id(id);
-  if (count > 0)
+  if (count != 0)
     $el.classList.remove(`active-${Math.min(count, active_max_class)}`);
-  count = active_counts[id] = Math.max(new_count, 0);
+  count = active_counts[id] = new_count;
   if (count == 0) {
     $el.classList.remove("active");
   } else {
@@ -296,6 +298,8 @@ function active_add(id, delta, max) {
   if (max !== undefined) {
     count = Math.min(count, max);
   }
+  // constrains > 0 for now
+  count = Math.max(count, 0);
   active_set(id, count);
 }
 
@@ -681,7 +685,11 @@ function nav_top(ev) {
 }
 
 function nav_bot(ev) {
-  $messages_iframe.contentWindow.postMessage({ type: "set_scroll", x: 0, y: -1 }, ROOMS_URL);
+  if (view_options.columns) {
+    $messages_iframe.contentWindow.postMessage({ type: "set_scroll", x: -1, y: 0 }, ROOMS_URL);
+  } else {
+    $messages_iframe.contentWindow.postMessage({ type: "set_scroll", x: 0, y: -1 }, ROOMS_URL);
+  }
 }
 
 // user info and settings ----------------------------------------------------
@@ -693,6 +701,7 @@ function load_theme() {
     $link.id = "theme";
     $link.rel = "stylesheet";
     $link.type = "text/css";
+    $link.media = "screen";
     $head.append($link);
   }
   if (theme) {
@@ -1716,10 +1725,13 @@ let view_options = {
   source: 0,
   canvas: 0,
   clean: 0,
+  columns: 0,
   image_size: 4,
   input_row_height: 88,
   theme: "default",
 };
+
+let view_image_size_delta = 1;
 
 function setup_view_options() {
   // persist from local storage JSON
@@ -1742,11 +1754,19 @@ function view_options_apply() {
   active_set("view_source", view_options.source);
   active_set("view_canvas", view_options.canvas);
   active_set("view_clean", view_options.clean);
-  active_set("view_image_size", view_options.image_size);
+  active_set("view_image_size", view_options.image_size - 4);
+  active_set("view_columns", view_options.columns);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
   // send message to the rooms iframe to apply view options
   $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
-  const image_size_icon = view_options.image_size < 10 ? "expand" : "contract";
+
+  if (view_options.image_size >= 10) {
+    view_image_size_delta = -1;
+  }
+  if (view_options.image_size <= 1) {
+    view_image_size_delta = 1;
+  }
+  const image_size_icon = view_image_size_delta > 0 ? "expand" : "contract";
   $id("view_image_size").innerHTML = icons[image_size_icon];
 }
 
@@ -1771,11 +1791,17 @@ function view_clean() {
   view_options_apply();
 }
 
+function view_columns() {
+  view_options.columns = !view_options.columns;
+  view_options_apply();
+}
+
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
 
 function view_image_size(ev) {
   // starts at 4, range from 1 to 10
-  delta = ev.shiftKey ? -1 : 1;
+  const neg = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  const delta = neg * view_image_size_delta;
 //  view_options.image_size = clamp((view_options.image_size || 4) + delta, 1, 10);
   view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
   view_options_apply();
@@ -2000,6 +2026,7 @@ const icons = {
   access_public: '<svg width="18" height="18" fill="currentColor" class="bi bi-unlock-fill" viewBox="0 0 16 16"><path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2"/></svg>',
   tick: '<svg width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/></svg>',
   edit_tab: '<svg width="20" height="20" fill="currentColor" class="bi bi-indent" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3 8a.5.5 0 0 1 .5-.5h6.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H3.5A.5.5 0 0 1 3 8"/><path fill-rule="evenodd" d="M12.5 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5"/></svg>',
+  view_columns: '<svg width="20" height="20" fill="currentColor" class="bi bi-layout-three-columns" viewBox="0 0 16 16"><path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5zM1.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5H5V1zM10 15V1H6v14zm1 0h3.5a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5H11z"/></svg>',
 };
 
 
@@ -2097,6 +2124,7 @@ function chat_main() {
   $on($id("view_source"), "click", view_source);
   $on($id("view_canvas"), "click", view_canvas);
   $on($id("view_clean"), "click", view_clean);
+  $on($id("view_columns"), "click", view_columns);
   $on($id("view_cancel"), "click", () => set_controls());
 
   $on($id("opt_context"), "change", opt_context);

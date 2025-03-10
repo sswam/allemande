@@ -2,31 +2,56 @@ div.messages {
 /*	margin: 1em 1em 0 1em; */
 	padding: 0.5em 0.5em;
 }
+
+/* labels ----------------------------------------------------------------- */
+
 .label {
 	margin-right: 1em;
 	font-weight: bold;
+}
+.message > .label {
 	float: left;
 }
-.message, .narrative {
+/* moved labels to avoid problems with break-after: avoid */
+.message > .content > p:first-child > .label:first-child {
+	display: inline-block;
+	break-after: avoid;
+	margin-left: -0.5em;
+}
+
+/* an :is(...) list does not work for this case, IDK why */
+.message.me > .label {
+	color: var(--me);
+}
+.message.me > .content > p > .label:first-child {
+	color: var(--me);
+}
+
+/* messages --------------------------------------------------------------- */
+
+.message {
 	clear: both;
 	min-height: 1em;
 	scroll-margin-top: 12px;
 }
-.message.me > .label { color: var(--me); }
 .content p {
 	white-space: pre-wrap;
 }
 .content br {
 	display: none;
 }
+.content details br {
+	display: block;
+}
 .message > .content {
-	margin: 0 0.5em 0 0.5em;
+	margin: 0 0 0 0.5em;
 }
 
+/*
 .narrative > .content {
 	margin: 0;
 }
-
+*/
 
 #allemande_status {
 	position: fixed;
@@ -39,19 +64,25 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin-bottom: 0.75rem;
 }
 
-.narrative img, .narrative video, .narrative audio, .narrative iframe,
-body.clean .narrative img, body.clean .narrative video, body.clean .narrative audio, body.clean .narrative iframe {
+.message :is(img, video, audio, iframe) {
 	vertical-align: top;
 	margin: 6px 4px;
-	max-width: min(var(--image-width-narrative), var(--image-height-narrative));
-	max-height: min(var(--image-width-narrative), var(--image-height-narrative));
+	max-width: calc(max(min(var(--image-width), var(--image-height)), 44px));
+	max-height: calc(max(min(var(--image-width), var(--image-height)), 44px));
 }
 
-.message img, .message video, .message audio, .message iframe {
-	vertical-align: top;
-	margin: 6px 4px;
-	max-width: min(var(--image-width), var(--image-height));
-	max-height: min(var(--image-width), var(--image-height));
+:is(.narrative, .large) :is(img, video, audio, iframe) {
+	max-width: 100%;
+	max-height: 100%;
+}
+.large :is(img, video, audio, iframe) {
+	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
+	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
+}
+
+.small :is(img, video, audio, iframe) {
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 88px));
+	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 88px));
 }
 
 /* borders for markdown tables */
@@ -299,8 +330,7 @@ body.source .graphviz {
 
 body.canvas > div.canvas {
 	display: block;
-/*	overflow: auto; */
-	overflow: hidden;
+	overflow: auto;
 	min-width: 88px;
 	min-height: 88px;
 	width: 100%;
@@ -370,7 +400,7 @@ body.landscape .resizer {
 	cursor: ew-resize;
 }
 
-body.source .content script, body.source .content style {
+body.source .content :is(script, style):not(.hide) {
 	display: block;
 	clear: both;
 	font: 12px fixed;
@@ -392,6 +422,12 @@ pre:has(div.graphviz) {
 */
 
 p:has(> img), div:has(> img) {
+	clear: both;
+}
+.message > .content > p:first-child > .label:first-child:has(+ img, + video, + audio, + iframe) {
+    display: block;
+}
+:has(> img), div:has(> img) {
 	clear: both;
 }
 
@@ -458,4 +494,59 @@ pre:has(> code) {
 
 .graphviz {
 	pointer-events: none;
+}
+
+link[href*="/katex@"] + style {
+    display: none !important;
+}
+
+/* show chat in columns! make it optional */
+body.columns div.messages {
+	column-count: auto;
+	column-width: 25em;
+	column-gap: 16px;
+	height: 100%;
+	max-height: 100%;
+	column-fill: auto;
+}
+body.columns .message {
+	max-width: 100%;
+}
+.message p {
+	break-inside: avoid;
+}
+
+body.columns .message * {
+	max-width: 100%;
+}
+
+.clear {
+	clear: both;
+}
+
+.show-flex {
+	display: flex;
+}
+
+@media print {
+	:root {
+		--text: black;
+		--frame: white;
+		--border: white;
+	}
+	body#messages > div.messages_wrap {
+		background: white !important;
+		color: black;
+		border-radius: 0 !important;
+		overflow: hidden !important;
+	}
+	html, body {
+		background: white !important;
+		height: auto !important;
+		min-height: 0 !important;
+		overflow: visible !important;
+	}
+	.code-controls {
+		display: none !important;
+	}
 }

@@ -39,7 +39,7 @@
 	</div>
 
 	<div id="messages" class="view messages grow">
-		<iframe id="messages_iframe" class="fill" src="about:blank" allowFullScreen></iframe>
+		<iframe id="messages_iframe" class="fill" src="about:blank" scrolling="no" allowFullScreen></iframe>
 		<div id="messages_overlay"  class="fill"></div>
 	</div>
 	<textarea id="view_edit" class="view editor grow hidden"></textarea>
@@ -100,7 +100,8 @@
 			<button id="view_image_size" title="change image size" class="active">image<br>size</button>
 			<button id="view_source" title="view source" class="active">source</button>
 			<button id="view_canvas" title="view JavaScript canvas" >canvas</button>
-			<button id="view_clean" title="clean reading view" >clean</button>
+			<button id="view_clean" title="clean reading view">clean</button>
+			<button id="view_columns" title="view chat in columns (scroll to the right)">columns</button>
 			<button id="view_cancel">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_opt">

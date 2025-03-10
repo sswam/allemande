@@ -1,4 +1,6 @@
 "use strict";
+var inIframe = window.parent !== window.self;
+const moveLabels = true;
 
 function isNodeOnlyImages(node) {
   const hasImage = node.getElementsByTagName('img').length > 0;
@@ -174,6 +176,18 @@ function handleNewMessage(newMessage) {
         moveContent(newContent, prevContent);
       }
       newMessage.remove();
+      newMessage = null;
+    }
+  }
+
+  // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
+  if (newMessage && moveLabels) {
+    const label = newMessage.querySelector(".label");
+    if (label) {
+      const firstChild = newContent.firstChild;
+      if (firstChild && firstChild.nodeName === "P") {
+        firstChild.insertBefore(label, firstChild.firstChild);
+      }
     }
   }
 }
@@ -206,8 +220,13 @@ function decorateCodeBlock(codeBlock) {
 
   // Add click handler for copy button
   copyButton.addEventListener('click', async () => {
-    // send text to parent window
-    window.parent.postMessage({"type": "copy", "text": codeBlock.textContent}, CHAT_URL);
+    if (inIframe) {
+      // send text to parent window
+      window.parent.postMessage({"type": "copy", "text": codeBlock.textContent}, CHAT_URL);
+    } else {
+      // copy text to clipboard
+      await navigator.clipboard.writeText(codeBlock.textContent);
+    }
     flash(copyButton, 'active');
   });
 
@@ -216,19 +235,22 @@ function decorateCodeBlock(codeBlock) {
 
   // Show/hide controls on hover
   pre.addEventListener('mouseenter', () => {
-    controls.style.display = 'flex';
+    controls.classList.add('show-flex');
+    // controls.style.display = 'flex';
   });
 
   pre.addEventListener('mouseleave', (e) => {
     // Check if the mouse is not over the controls
     if (!controls.contains(e.relatedTarget)) {
-      controls.style.display = 'none';
+      controls.classList.remove('show-flex');
+      // controls.style.display = 'none';
     }
   });
 
   // Add additional listener to controls to prevent hiding when hovering over them
   controls.addEventListener('mouseenter', () => {
-    controls.style.display = 'flex';
+    controls.classList.add('show-flex');
+    // controls.style.display = 'flex';
   });
 }
 
