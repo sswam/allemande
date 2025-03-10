@@ -188,6 +188,14 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
 
     def watch_filter(self, change_type, path):
         """Filter out files and directories that we don't want to watch"""
+        try:
+            return self.watch_filter_2(change_type, path)
+        except (OSError, PermissionError, FileNotFoundError) as e:
+            logger.warning("Error filtering: %s", str(e))
+            return False
+
+    def watch_filter_2(self, change_type, path):
+        """Filter out files and directories that we don't want to watch"""
         if not self.default_filter(change_type, path):
             return False
         if not self.opts.hidden and contains_hidden_component(path):
@@ -201,16 +209,21 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
 
         if not self.opts.metadata and change_type == Change.modified:
             # don't trigger on metadata changes
-            try:
-                stat = os.stat(path)
-                if stat.st_mtime != stat.st_ctime:
-                    return False
-            except OSError:
-                pass
+            stat = os.stat(path)
+            if stat.st_mtime != stat.st_ctime:
+                return False
 
         return self.opts.all_files or path.endswith(tuple(self.opts.exts))
 
     async def handle_change(self, change_type, path, initial=False):
+        """Handle a change to a file or directory"""
+        try:
+            async for row in self.handle_change_2(change_type, path, initial):
+                yield row
+        except (OSError, PermissionError, FileNotFoundError) as e:
+            logger.error("Error handling change: %s", str(e))
+
+    async def handle_change_2(self, change_type, path, initial=False):
         """Handle a change to a file or directory"""
         logger.debug("change_type: %r, path: %r", change_type, path)
 
