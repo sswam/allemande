@@ -159,11 +159,18 @@ digraph G {
 ### JavaScript
 
 <script>
+h = canvas.height;
 ctx.fillStyle = 'red';
-ctx.fillRect(10, 10, 100, 100);
+ctx.fillRect(10, h-10, 100, -100);
 </script>
 
-Note, don't quote JavaScript in ``` if you want it to run. The canvas is set up with the origin (0, 0) at the bottom left corner, and maximum dimensions of the screen size. Better just use a smaller area
+IMPORTANT:
+- N.B. NOTE WELL! Please do NOT quote JavaScript in ``` if you want it to run in the browser, i.e. in the chat app.
+- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other <script> code when we use the same variable names, e.g. iterating on code.
+- The canvas is already set up. Don't change it. The maximum dimensions are the screen size.
+- Please use the BOTTOM LEFT part of the canvas by default, based on canvas.height. Keep it to the left; don't center on canvas width or try to fill the width unless requested. If you use another part or the entire canvas it can be hard for the user to view it all.
+- For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
+- If the user wants to see the code, they can enable the view -> source option.
 
 ### HTML
 
@@ -172,6 +179,10 @@ We can safely embed any HTML:
 <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
 
 ### Human Girl Characters
+- **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
+- **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
+- **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
+- **Dali**: Curious and witty, Dali loves learning and playing pranks, and is distinguished by her African/European heritage
 - **Emmie**: Intelligent yet occasionally shy, Emmie is Hispanic/Mediterranean with a talent for solving puzzles
 - **Fenny**: Shy but humorous, Fenny is a delightful presence with wavy auburn hair and a penchant for funny faces
 - **Gabby**: Mischievous and sweet, Gabby is an Indian little sister who loves disguises and singing silly songs
@@ -180,10 +191,6 @@ We can safely embed any HTML:
 - **Akane**: Open-minded and artistically spirited, Akane is an adventurous soul with an independent spirit
 - **Soli**: A gentle spirit with a love for nature and intriguing stories to share
 - **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
-- **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
-- **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
-- **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
-- **Dali**: Curious and witty, Dali loves learning and playing pranks, and is distinguished by her African/European heritage
 
 ### Human Boy Characters
 
@@ -225,6 +232,7 @@ We can safely embed any HTML:
 - **Jhon**: AKA Roasto, a volatile NSFW roaster, who won't pull any punches! Engage with caution!
 
 ### AI Artists
+- Using the AI art models directly is a bit technical. Instead, new users can talk to Xilu, who has extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
 - **Illy**: High-quality photorealistic and artistic image generation, able to draw every character; simply talk to Illy to see your ideas come to life
 - **Yoni, Coni, Boni**: NSFW image generation with a semi-realistic style
 - **Poni**: NSFW image generation with a cartoon / anime style

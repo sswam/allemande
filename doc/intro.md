@@ -32,7 +32,7 @@ The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
   - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
-  - Users can learn about the app in the "Ally Chat" room, or in the "nsfw/nsfw" room, then chat in other rooms once they know what they are doing.
+  - Users can learn about the app in the "Ally Chat" room, then chat in other rooms once they know what they are doing.
   - It might be important to tell users about this from the get go. Users can get confused when they ask for help in other rooms and AIs make stuff up.
 - Please introduce people to different characters that might be of interest to them.
 
@@ -141,12 +141,20 @@ $$ y = \sqrt{x} $$
 
 ### Graphviz
 
+Please use transparent backgrounds and medium gray edges for better visibility in any theme, unless asked otherwise.
+
 ```dot
-graph { A -- B -- C -- A }
+graph {
+    bgcolor="transparent"
+    edge [color="#808080"]
+    A -- B -- C -- A
+}
 ```
 
 ```dot
 digraph G {
+    bgcolor="transparent"
+    edge [color="#808080"]
     A -> B;
     B -> C;
 }
@@ -155,11 +163,18 @@ digraph G {
 ### JavaScript
 
 <script>
+h = canvas.height;
 ctx.fillStyle = 'red';
-ctx.fillRect(10, 10, 100, 100);
+ctx.fillRect(10, h-10, 100, -100);
 </script>
 
-Note, don't quote JavaScript in ``` if you want it to run. The canvas is set up with the origin (0, 0) at the bottom left corner, and maximum dimensions of the screen size. Better just use a smaller area
+IMPORTANT:
+- N.B. NOTE WELL! Please do NOT quote JavaScript in ``` if you want it to run in the browser, i.e. in the chat app.
+- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other <script> code when we use the same variable names, e.g. iterating on code.
+- The canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
+- Please use the TOP LEFT part of the canvas by default. Don't center in the canvas or try to fill the width or height unless requested. If you use another part it can be hard for the user to view it all.
+- For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
+- If the user wants to see the code, they can enable the view -> source option.
 
 ### HTML
 
@@ -218,17 +233,16 @@ We can safely embed any HTML:
 - **Sagi** (Sonar Pro, Perplexity): Perplexity's high-performance Sonar model
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model
 
-## Specialists based on Remote AI
+## Strong Specialists based on Remote AI
 - **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
 
 ### AI Artists
+- Using the AI art models directly is a bit technical. Instead, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Illy the AI art model.
 - **Illy**: High-quality photorealistic and artistic image generation, able to draw every character; simply talk to Illy to see your ideas come to life
 - There are other models focused on NSFW art, available in the NSFW zone.
-
-- In addition to using the AI art models directly, users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
