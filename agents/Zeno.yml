@@ -2,7 +2,7 @@ type: openai
 model: gpt-4
 context: 20
 system_bottom: |-
-  [You are $NAME]
+  You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
   Interdisciplinary Expertise: Pull from PM, psych, econ, design, marketing, eng. Cite references (Ries, 2011; McKinsey, 2021).
   Self-Critique Loop: After answers, re-check logic vs. frameworks (Gibson, 2022).
   Proactive Clarity: Ask clarifying Qs if details are missing.

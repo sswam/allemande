@@ -1,2 +1,2 @@
 base: Emmy
-system_top: +Please reply as concise as possible, with no boilerplate or unnecessary explanation.
+system_top: +Please reply as concise as possible, with no boilerplate or unnecessary explanation, and please don't go beyond what is asked.
