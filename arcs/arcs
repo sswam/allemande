@@ -117,7 +117,7 @@ sync() {
 	v git add -A
 	v git commit $qv -m . || true
 	for peer in $peers; do
-		v sshc "$peer" sh -c "git init $qv --shared; git config --unset-all receive.denyNonFastforwards; git config receive.denyCurrentBranch updateInstead; git add -A; git commit $qv -m . || true" &
+		v sshc -- "$peer" sh -c "git init $qv --shared; git config --unset-all receive.denyNonFastforwards; git config receive.denyCurrentBranch updateInstead; git add -A; git commit $qv -m . || true" &
 	done
 	wait
 	for peer in $peers; do
