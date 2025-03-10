@@ -34,8 +34,10 @@ async def file_changed(bb_file, html_file, old_size, new_size):
 
         # ... unless the file seems to be new or has shrunk ...
         if old_size is None or new_size < old_size:
-            logger.warning("bb file was truncated: %s from %s to %s", bb_file, old_size, new_size)
+            logger.warning("bb file will be re-rendered: %s size changed from %s to %s", bb_file, old_size, new_size)
             html_file_mode = "wb"
+        else:
+            logger.warning("bb file was appended, we assume: %s size changed from %s to %s", bb_file, old_size, new_size)
 
         with open(bb_file, "rb") as bb:
             with open(html_file, html_file_mode) as html:
@@ -45,14 +47,15 @@ async def file_changed(bb_file, html_file, old_size, new_size):
                 html_file_size = html.tell()
                 if old_size and html_file_size:
                     bb.seek(old_size)
-                # Load whole bb file into memory from here on,
+                # Load whole bb file into memory from here on, up to the new_size
                 # This avoids issues when new messages are appended while we are reading
                 # then we receive watch events for the new messages also, so they
                 # get double-processed
                 # TODO: This is maybe still not working 100% yet.
-                chat_lines = bb.read().decode("utf-8").splitlines()
+                chat_lines = bb.read(new_size - bb.tell()).decode("utf-8").splitlines()
                 for message in chat.lines_to_messages(chat_lines):
-                    html.write(chat.message_to_html(message).encode("utf-8"))
+                    html_message = chat.message_to_html(message).encode("utf-8")
+                    html.write(html_message)
                     await asyncio.sleep(0)  # asyncio yield
 
         row = [html_file]
@@ -91,6 +94,10 @@ async def bb2html(opts, watch_log, out=sys.stdout):
                 html_file = str(Path(bb_file).with_suffix(".html"))
                 if change_type == Change.deleted:
                     Path(html_file).unlink(missing_ok=True)
+                    continue
+
+                # If file is new, and html file exists, do not update
+                if old_size is None and Path(html_file).exists():
                     continue
 
                 # Create and store new task

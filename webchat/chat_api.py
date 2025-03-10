@@ -211,6 +211,24 @@ async def last(request):
     return JSONResponse({"last": last})
 
 
+@app.route("/x/move", methods=["POST"])
+async def move(request):
+    """
+    Rename or move a file or dir to a new location.
+    Expacts relative pathnames not room names or slash-terminated dir names.
+    """
+    user = request.headers["X-Forwarded-User"]
+    # get source and dest from form data
+    form = await request.form()
+    source = form["source"]
+    dest = form["dest"]
+    try:
+        chat.move_file(user, source, dest)
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=e.args[0]) from e
+    return JSONResponse({})
+
+
 @app.route("/x/subscribe", methods=["POST"])
 async def subscribe(request):
     """Subscribe to push notifications."""
