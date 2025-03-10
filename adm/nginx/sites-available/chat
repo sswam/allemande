@@ -70,6 +70,11 @@ server {
 #		access_log off;
 #		error_log /dev/null;
 		add_header Cache-Control "no-store";
+		if ($cors_header = "https://rooms.allemande.ai") {
+			add_header Access-Control-Allow-Origin $cors_header always;
+			add_header Access-Control-Allow-Credentials true;
+#			add_header Cross-Origin-Resource-Policy cross-origin;
+		}
 		try_files $uri $uri/ @redirect;
 	}
 
@@ -86,6 +91,11 @@ server {
 #		access_log off;
 #		error_log /dev/null;
 		add_header Cache-Control "no-store";
+		if ($cors_header = "https://rooms.allemande.ai") {
+			add_header Access-Control-Allow-Origin $cors_header always;
+			add_header Access-Control-Allow-Credentials true;
+#			add_header Cross-Origin-Resource-Policy cross-origin;
+		}
 		try_files $uri $uri/ @redirect;
 	}
 
