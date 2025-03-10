@@ -20,6 +20,7 @@ const $auto = $id('mod_auto');
 const $messages_overlay = $id("messages_overlay");
 
 let is_private = false;
+let access_denied = false;
 
 const narrator = "Nova";
 const illustrator = "Illu";
@@ -540,7 +541,13 @@ async function set_room(r, no_history) {
   if (!room) return;
 
   if (type == "room") {
-    await get_options();
+    try {
+      await get_options();  // can throw if access denied
+    } catch {
+      show_room_privacy();
+      setup_user_button();
+      return;
+    }
   }
 
   //	who();
@@ -576,7 +583,10 @@ async function set_room(r, no_history) {
 function show_room_privacy() {
   const $privacy = $id("privacy");
   is_private = room.startsWith(user + "/");
-  if (is_private) {
+  if (access_denied) {
+    $privacy.innerHTML = icons["access_denied"];
+    $privacy.title = "denied";
+  } else if (is_private) {
     $privacy.innerHTML = icons["access_private"];
     $privacy.title = "private";
   } else {
@@ -1848,7 +1858,8 @@ async function get_options() {
     nocache: Math.random(),
   });
   const response = await fetch("/x/options?" + query);
-  if (!response.ok) {
+  access_denied = !response.ok;
+  if (access_denied) {
     throw new Error("GET options request failed");
   }
   const data = await response.json();
@@ -1997,6 +2008,7 @@ function setup_icons() {
   icons["edit_clear"] = icons["mod_clear"];
   icons["mod_edit"] = icons["edit"];
   icons["move"] = icons["edit"];
+  icons["access_denied"] = icons["x_large"];
 
   for (const id in icons) {
     const el = $id(id);
