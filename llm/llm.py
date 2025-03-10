@@ -551,6 +551,7 @@ async def achat_google(opts: Options, messages):
         role = msg["role"]
         if role == "system":
             role = "user"
+            msg["content"] = f"System: {msg['content']}"
         elif role != "user":
             role = "model"
         history.append(
