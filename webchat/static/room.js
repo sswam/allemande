@@ -420,8 +420,8 @@ function clear_overlay_image_cover() {
 // image overlay -------------------------------------------------------------
 
 function image_overlay($el) {
+  // console.log("image_overlay", $el);
   // check if it's an A
-  console.log("image_overlay", $el);
   let $img;
   if ($el.tagName === "A") {
     $currentImg = $el.querySelector("img");

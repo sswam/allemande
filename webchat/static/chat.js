@@ -1,5 +1,7 @@
 const ROOMS_URL =
   location.protocol + "//" + location.host.replace(/^chat\b/, "rooms");
+const SITE_URL =
+  location.protocol + "//" + location.host.replace(/^.*?\./, "") + "/";
 const MAX_ROOM_NUMBER = 1e3; // 1e12;
 const DEFAULT_ROOM = "Ally Chat";
 const EXTENSION = ".bb";
@@ -1107,11 +1109,22 @@ function logout_confirm(ev) {
     logoutChat();
 }
 
+function go_to_main_site() {
+    if (document.referrer == SITE_URL) {
+        history.back();
+    } else {
+        window.location.replace(SITE_URL);
+    }
+}
+
 function authChat() {
   $on($id("logout"), "click", logout_confirm);
   userData = getJSONCookie("user_data");
-  if (!userData) throw new Error("Setup error: Not logged in");
-
+  if (!userData) {
+    console.log("going back to main site");
+    go_to_main_site();
+    throw new Error("Setup error: Not logged in");
+  }
   return userData.username;
 }
 
@@ -2030,6 +2043,15 @@ function change_privacy() {
   }
 }
 
+// mobile keyboards ----------------------------------------------------------
+
+function visual_viewport_resized() {
+  document.documentElement.style.height = `${window.visualViewport.height}px`;
+}
+function account_for_chuckleheaded_mobile_keyboards() {
+  $on(window.visualViewport, "resize", visual_viewport_resized);
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
@@ -2117,6 +2139,8 @@ function chat_main() {
 
   message_changed();
   $content.focus();
+
+  account_for_chuckleheaded_mobile_keyboards();
 
   load_user_styles_and_script();
 }
