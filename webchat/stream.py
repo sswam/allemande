@@ -183,7 +183,7 @@ async def stream(request, path=""):
     if ext == ".html":
         media_type = "text/html"
         if templates:
-            header = templates.get_template("room-header.html").render(context)
+            header = templates.get_template("room_header.html").render(context)
         header = try_loading_extra_header(path, header)
         keepalive_string = HTML_KEEPALIVE
         rewind_string = REWIND_STRING
