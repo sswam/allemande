@@ -320,17 +320,25 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     response3 = fix_layout(response2, args, agent)
     logger.debug("response3:\n%s", response3)
 
-    # wrap secondary divs in <details>
-    response4 = re.sub(
-        r"(</div>\n?\s*)(<div\b.*)",
-        r"""\1<details class="search"><summary>more</summary>\n\t\2</details>\n""",
-        response3,
-        flags=re.DOTALL,
-    )
+#     # wrap secondary divs in <details>
+#     response4 = re.sub(
+#         r"(</div>\n?\s*)(<div\b.*)",
+#         r"""\1<details class="search"><summary>more</summary>\n\t\2</details>\n""",
+#         response3,
+#         flags=re.DOTALL,
+#     )
 
-    logger.debug("response4:\n%s", response3)
+#     # wrap div results in <details>, replacing outer div
+#     response4 = re.sub(
+#         r"<div>(.*)</div>",
+#         r"""<details class="search"><summary>more</summary>\1</details>""",
+#         response3,
+#         flags=re.DOTALL,
+#     )
+#
+#     logger.info("response4:\n%s", response4)
 
-    return response4
+    return response3
 
 
 def load_local_agents(room, agents=None):
