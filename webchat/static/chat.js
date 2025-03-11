@@ -27,6 +27,21 @@ let access_denied = false;
 const narrator = "Nova";
 const illustrator = "Illu";
 
+let view_options = {
+  images: 2,
+  alt: 0,
+  source: 1,
+  details: 0,
+  canvas: 0,
+  clean: 0,
+  columns: 0,
+  image_size: 4,
+  input_row_height: 88,
+  theme: "default",
+};
+
+let view_image_size_delta = 1;
+
 
 // simple messages to keep the conversation going
 const random_message = [
@@ -63,6 +78,7 @@ let VERSION;
 let DEBUG = true;
 
 let room;
+let room_url;
 let user;
 let admin = false;
 let dev = false;
@@ -96,13 +112,14 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['alt+backspace', clear_content, 'Clear content'],
   ['alt+u', nav_up, 'Browse up'],
   ['alt+i', view_images, 'View images'],
+  ['alt+a', view_alt, 'View alt text'],
   ['alt+c', view_clean, 'View clean'],
   ['alt+m', move_mode, 'Move mode', ADMIN],
 
   ['alt+z', undo, 'Undo last action', ADMIN],
   ['alt+r', retry, 'Retry last action', ADMIN],
   ['alt+x', clear_chat, 'Clear messages', ADMIN],
-  ['alt+a', archive_chat, 'Archive chat', ADMIN],
+  ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
   ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
   ['alt+e', () => edit(), 'Edit file', ADMIN],
 
@@ -577,12 +594,11 @@ async function set_room(r, no_history) {
   show_room_privacy();
 
   if (type == "room" || type == "dir") {
-    let stream_url = ROOMS_URL + "/" + room;
+    room_url = ROOMS_URL + "/" + room;
     if (type == "room") {
-      stream_url += ".html";
+      room_url += ".html";
     }
-    stream_url += "?stream=1";
-    messages_iframe_set_src(stream_url);
+    messages_iframe_set_src(room_url + "?stream=1");
   }
 }
 
@@ -1024,6 +1040,14 @@ function handle_message(ev) {
     }
     return;
   }
+
+  /*
+  if (ev.data.type == "size_change") {
+    console.log("size_change", ev.data);
+    document.documentElement.style.setProperty("--messages-width", ev.data.width + "px");
+    document.documentElement.style.setProperty("--messages-height", ev.data.height + "px");
+  }
+  */
 
   $content.focus();
 
@@ -1719,20 +1743,6 @@ function edit_close() {
 
 // view options --------------------------------------------------------------
 
-
-let view_options = {
-  images: 2,
-  source: 0,
-  canvas: 0,
-  clean: 0,
-  columns: 0,
-  image_size: 4,
-  input_row_height: 88,
-  theme: "default",
-};
-
-let view_image_size_delta = 1;
-
 function setup_view_options() {
   // persist from local storage JSON
   // if not present, set to default
@@ -1751,7 +1761,9 @@ function view_options_apply() {
   localStorage.setItem("view_options", JSON.stringify(view_options));
   // update buttons
   active_set("view_images", view_options.images);
+  active_set("view_alt", view_options.alt);
   active_set("view_source", view_options.source);
+  active_set("view_details", view_options.details);
   active_set("view_canvas", view_options.canvas);
   active_set("view_clean", view_options.clean);
   active_set("view_image_size", view_options.image_size - 4);
@@ -1768,30 +1780,43 @@ function view_options_apply() {
   }
   const image_size_icon = view_image_size_delta > 0 ? "expand" : "contract";
   $id("view_image_size").innerHTML = icons[image_size_icon];
+  view_options.details_changed = false;
 }
 
-function view_images() {
-  // goes 2, 1, 0, 2 ...
-  view_options.images = (+view_options.images - 1 + 3) % 3;
+function view_images(ev) {
+  view_options.images = !view_options.images;
   view_options_apply();
 }
 
-function view_source() {
-  view_options.source = !view_options.source;
+function view_alt(ev) {
+  view_options.alt = !view_options.alt;
   view_options_apply();
 }
 
-function view_canvas() {
+function view_source(ev) {
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  view_options.source = (view_options.source + delta + 3) % 3;
+  view_options_apply();
+}
+
+function view_details(ev) {
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  view_options.details = (view_options.details + delta + 4) % 4;
+  view_options.datails_changed = true;
+  view_options_apply();
+}
+
+function view_canvas(ev) {
   view_options.canvas = !view_options.canvas;
   view_options_apply();
 }
 
-function view_clean() {
+function view_clean(ev) {
   view_options.clean = !view_options.clean;
   view_options_apply();
 }
 
-function view_columns() {
+function view_columns(ev) {
   view_options.columns = !view_options.columns;
   view_options_apply();
 }
@@ -2009,6 +2034,7 @@ const icons = {
   pause: '<svg width="20" height="20" fill="currentColor" class="bi bi-pause-fill" viewBox="0 0 16 16"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/></svg>',
   view_theme: '<svg width="20" height="20" fill="currentColor" class="bi bi-palette-fill" viewBox="0 0 16 16"><path d="M12.433 10.07C14.133 10.585 16 11.15 16 8a8 8 0 1 0-8 8c1.996 0 1.826-1.504 1.649-3.08-.124-1.101-.252-2.237.351-2.92.465-.527 1.42-.237 2.433.07M8 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m4.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3M5 6.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m.5 6.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/></svg>',
   view_images: '<svg width="20" height="20" fill="currentColor" class="bi bi-image-fill" viewBox="0 0 16 16"><path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/></svg>',
+  view_alt: '<svg width="22" height="22" fill="currentColor" class="bi bi-alphabet" viewBox="0 0 16 16"><path d="M2.204 11.078c.767 0 1.201-.356 1.406-.737h.059V11h1.216V7.519c0-1.314-.947-1.783-2.11-1.783C1.355 5.736.75 6.42.69 7.27h1.216c.064-.323.313-.552.84-.552s.864.249.864.771v.464H2.346C1.145 7.953.5 8.568.5 9.496c0 .977.693 1.582 1.704 1.582m.42-.947c-.44 0-.845-.235-.845-.718 0-.395.269-.684.84-.684h.991v.538c0 .503-.444.864-.986.864m5.593.937c1.216 0 1.948-.869 1.948-2.31v-.702c0-1.44-.727-2.305-1.929-2.305-.742 0-1.328.347-1.499.889h-.063V3.983h-1.29V11h1.27v-.791h.064c.21.532.776.86 1.499.86Zm-.43-1.025c-.66 0-1.113-.518-1.113-1.28V8.12c0-.825.42-1.343 1.098-1.343.684 0 1.075.518 1.075 1.416v.45c0 .888-.386 1.401-1.06 1.401Zm2.834-1.328c0 1.47.87 2.378 2.305 2.378 1.416 0 2.139-.777 2.158-1.763h-1.186c-.06.425-.313.732-.933.732-.66 0-1.05-.512-1.05-1.352v-.625c0-.81.371-1.328 1.045-1.328.635 0 .879.425.918.776h1.187c-.02-.986-.787-1.806-2.14-1.806-1.41 0-2.304.918-2.304 2.338z"/></svg>',
   view_source: '<svg width="20" height="20" fill="currentColor" class="bi bi-braces" viewBox="0 0 16 16"><path d="M2.114 8.063V7.9c1.005-.102 1.497-.615 1.497-1.6V4.503c0-1.094.39-1.538 1.354-1.538h.273V2h-.376C3.25 2 2.49 2.759 2.49 4.352v1.524c0 1.094-.376 1.456-1.49 1.456v1.299c1.114 0 1.49.362 1.49 1.456v1.524c0 1.593.759 2.352 2.372 2.352h.376v-.964h-.273c-.964 0-1.354-.444-1.354-1.538V9.663c0-.984-.492-1.497-1.497-1.6M13.886 7.9v.163c-1.005.103-1.497.616-1.497 1.6v1.798c0 1.094-.39 1.538-1.354 1.538h-.273v.964h.376c1.613 0 2.372-.759 2.372-2.352v-1.524c0-1.094.376-1.456 1.49-1.456V7.332c-1.114 0-1.49-.362-1.49-1.456V4.352C13.51 2.759 12.75 2 11.138 2h-.376v.964h.273c.964 0 1.354.444 1.354 1.538V6.3c0 .984.492 1.497 1.497 1.6"/></svg>',
   view_canvas: '<svg width="20" height="20" fill="currentColor" class="bi bi-easel-fill" viewBox="0 0 16 16"><path d="M8.473.337a.5.5 0 0 0-.946 0L6.954 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h1.85l-1.323 3.837a.5.5 0 1 0 .946.326L4.908 11H7.5v2.5a.5.5 0 0 0 1 0V11h2.592l1.435 4.163a.5.5 0 0 0 .946-.326L12.15 11H14a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H9.046z"/></svg>',
   view_clean: '<svg width="20" height="20" fill="currentColor" class="bi bi-book-fill" viewBox="0 0 16 16"><path d="M8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/></svg>',
@@ -2027,6 +2053,7 @@ const icons = {
   tick: '<svg width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425z"/></svg>',
   edit_tab: '<svg width="20" height="20" fill="currentColor" class="bi bi-indent" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3 8a.5.5 0 0 1 .5-.5h6.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H3.5A.5.5 0 0 1 3 8"/><path fill-rule="evenodd" d="M12.5 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5"/></svg>',
   view_columns: '<svg width="20" height="20" fill="currentColor" class="bi bi-layout-three-columns" viewBox="0 0 16 16"><path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5zM1.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5H5V1zM10 15V1H6v14zm1 0h3.5a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5H11z"/></svg>',
+  view_details: '<svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><ellipse cx="7.6" cy="4.3" rx="4" ry="3"/><ellipse cx="11.7" cy="4.6" rx="4" ry="3"/><ellipse cx="6.9" cy="8.5" rx="4" ry="3"/><ellipse cx="10.7" cy="7.3" rx="4" ry="3"/><ellipse cx="4.3" cy="6.3" rx="4" ry="3"/><ellipse cx="3.22" cy="12.3" rx="1.2" ry=".9"/><ellipse cx="1.4" cy="14.1" rx=".8" ry=".6"/></svg>',
 };
 
 
@@ -2079,6 +2106,15 @@ function account_for_chuckleheaded_mobile_keyboards() {
   $on(window.visualViewport, "resize", visual_viewport_resized);
 }
 
+// printing ------------------------------------------------------------------
+
+function print_chat(ev) {
+  ev.preventDefault();  /* doesn't! WTF */
+  // TODO: view options! could save them in local storage in the room, maybe?
+  const url = room_url + "?snapshot=1#print";
+  window.location.href = url;
+}
+
 // main ----------------------------------------------------------------------
 
 function chat_main() {
@@ -2120,8 +2156,10 @@ function chat_main() {
 
   $on($id("view_theme"), "click", change_theme);
   $on($id("view_images"), "click", view_images);
+  $on($id("view_alt"), "click", view_alt);
   $on($id("view_image_size"), "click", view_image_size);
   $on($id("view_source"), "click", view_source);
+  $on($id("view_details"), "click", view_details);
   $on($id("view_canvas"), "click", view_canvas);
   $on($id("view_clean"), "click", view_clean);
   $on($id("view_columns"), "click", view_columns);
@@ -2158,6 +2196,8 @@ function chat_main() {
   $on($id("privacy"), "click", change_privacy);
 
   $on($id("move"), "click", move_mode);
+
+  $on(window, "beforeprint", print_chat);
 
   setup_view_options();
 

@@ -240,6 +240,10 @@ button:has(svg) {
 	line-height: 1;
 }
 
+#top {
+	padding-bottom: calc(var(--pad) - 1px);
+}
+
 @media print {
 	:root {
 		--frame: white;
@@ -252,7 +256,9 @@ button:has(svg) {
 		background: white !important;
 		border-radius: 0 !important;
 		border: none !important;
-		overflow: hidden !important;
+		overflow: visible !important;
+/*		width: var(--messages-width) !important;
+		height: var(--messages-height) !important; */
 	}
 	html, body {
 		background: white !important;

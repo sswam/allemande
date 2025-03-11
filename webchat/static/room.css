@@ -13,17 +13,22 @@ div.messages {
 	float: left;
 }
 /* moved labels to avoid problems with break-after: avoid */
-.message > .content > p:first-child > .label:first-child {
+.message > .content > .label:first-child,
+.message > .content > p:first-of-type > .label:first-child {
 	display: inline-block;
 	break-after: avoid;
-	margin-left: -0.5em;
+}
+
+.message:not(.narrative) > .content > .label:first-child,
+.message:not(.narrative) > .content > p:first-of-type > .label:first-child {
+	margin-left: -1em;
 }
 
 /* an :is(...) list does not work for this case, IDK why */
-.message.me > .label {
+.message.me > .content > .label:first-child {
 	color: var(--me);
 }
-.message.me > .content > p > .label:first-child {
+.message.me > .content > p:first-of-type > .label:first-child {
 	color: var(--me);
 }
 
@@ -44,14 +49,13 @@ div.messages {
 	display: block;
 }
 .message > .content {
-	margin: 0 0 0 0.5em;
+	margin: 0 0 0 1em;
+	width: fit-content;
 }
 
-/*
 .narrative > .content {
 	margin: 0;
 }
-*/
 
 #allemande_status {
 	position: fixed;
@@ -75,7 +79,7 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	max-width: 100%;
 	max-height: 100%;
 }
-.large :is(img, video, audio, iframe) {
+:is(.narrative, .large) :is(img, video, audio, iframe) {
 	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
 	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
 }
@@ -95,8 +99,8 @@ table, th, td {
 	padding: 4px;
 }
 
-.caption {
-	width: 280px;
+.alt {
+	width: 100%;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -104,65 +108,86 @@ table, th, td {
 	background: var(--background);
 }
 
-.embed:hover .caption {
-	overflow: visible;
-	white-space: normal;
-	z-index: 100;
-}
-
-.embed .thumb {
-	width: 280px;
-	height: 177px;
-	margin: 0 0 4px 0 !important;
-	object-fit: cover;
-}
-
-.embed {
-	width: 280px;
-	height: 177px;
-	float: left;
-	margin: 0px 20px 40px 0px;
-	padding: 0;
-}
-
-.image .thumb {
-	width: auto;
-	height: 177px;
-	margin: 0 0 4px 0 !important;
-}
-
-.image {
-	height: 201px;
-	float: left;
-	margin: 0px 20px 40px 0px;
-	padding: 0;
-	position: relative;
-	overflow: hidden;
-	padding-bottom: 128px;
-}
-
-.image > a {
+details.search {
 	display: block;
 }
 
-.image .caption {
+
+/* search images ---------------------------------------------------------- */
+
+div:has(> div.image),
+div:has(> div.embed) {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 20px;
+}
+
+body:not(.images) div:has(> div.image),
+body:not(.images) div:has(> div.embed) {
+	display: block;
+}
+
+div.image, div.embed {
+	margin: 0;
+	padding: 0;
+	overflow: visible;
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px));
+	position: relative;
+	margin-bottom: 16px;
+}
+
+.image .thumb, .embed .thumb {
+	width: 100%;
+	height: auto;
+	object-fit: contain;
+}
+
+body:not(.images) :is(.image, .alt),
+body:not(.images) :is(.embed, .alt) {
 	width: auto;
+	min-width: 10em;
+	display: block;
+}
+
+body:not(.images) .image,
+body:not(.images) .embed {
+	min-height: 18px;
+}
+
+.image > a,
+.embed > a {
+	display: block;
+}
+
+.image .alt,
+.embed .alt {
+	width: 100%;
 	position: absolute;
-	top: 177px;
+	bottom: 0;
+	min-height: 18px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	background: var(--background);
+	/* align text to top */
+	display: flex;
+	align-items: flex-start;
+	transform: translateY(100%);
 }
 
-.image:hover {
+.image:hover,
+.embed:hover {
 	overflow: visible;
 }
 
-.image:hover .caption {
+body.images .image:hover .alt,
+body.images .embed:hover .alt {
 	white-space: normal;
 	z-index: 100;
+	overflow: visible;
 }
+
 
 a {
 	text-decoration: none;
@@ -244,13 +269,18 @@ details.think, details.think * {
 	color: var(--think);
 }
 
+/*
 details.search {
 	position: relative;
-	top: -18px;
+	min-width: 20em;
 }
+*/
 
-details.search > div {
-	margin-bottom: 40px;
+details.search summary {
+/*	position: absolute;
+/*	top: -18px;
+	right: max(0px, calc(100% - 252px));
+*/
 }
 
 body#dir {
@@ -273,7 +303,7 @@ ul.directory-listing {
 	list-style: none;
 	padding: 0;
 	display: grid;
-	/* margin: 0; */
+	margin: 6px;
 }
 
 body#dir.rows ul.directory-listing {
@@ -287,7 +317,7 @@ body#dir.columns ul.directory-listing {
 	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	scroll-snap-type: x mandatory;
 	scroll-padding: 0 1rem; /* optional: adds some padding to snap points */
-	max-height: 100%;
+	max-height: calc(100% - 12px);
 }
 
 ul.directory-listing > li {
@@ -315,15 +345,15 @@ body > div.messages_wrap {
 body:not(.images) img {
 	display: none;
 }
-body:not(.images_alt) .alt {
+body:not(.alt) .alt {
 	display: none;
 }
 
-body:not(.source) .language-dot {
+body:not(.dot_source) .language-dot {
 	display: none;
 }
 /*
-body.source .graphviz {
+body.dot_source .graphviz {
 	display: none;
 }
 */
@@ -400,11 +430,23 @@ body.landscape .resizer {
 	cursor: ew-resize;
 }
 
-body.source .content :is(script, style):not(.hide) {
+body.script_source .content :is(script, style):not(.hide, [src]) {
 	display: block;
 	clear: both;
 	font: 12px fixed;
 	white-space: pre-wrap;
+	margin-top: -14px;
+	width: fit-content;
+}
+
+body.script_source .content:has(script, style):not(.hide, [src]) {
+	position: relative;
+}
+
+body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
+	content: "<script/>";
+	display: block;
+	font-weight: normal;
 }
 
 pre:has(div.graphviz) {
@@ -421,13 +463,12 @@ pre:has(div.graphviz) {
 }
 */
 
-p:has(> img), div:has(> img) {
+p:has(> img) {
 	clear: both;
 }
-.message > .content > p:first-child > .label:first-child:has(+ img, + video, + audio, + iframe) {
-    display: block;
-}
-:has(> img), div:has(> img) {
+.message > .content > .label:first-child:has(+ img, + video, + audio, + iframe, + pre + div > div.image, + div > div.embed),
+.message > .content > p:first-of-type > .label:first-child:has(+ img, + video, + audio, + iframe, + pre, + div > div.image, +div > div.embed) {
+	display: block;
 	clear: both;
 }
 
@@ -487,6 +528,10 @@ pre:has(> code) {
 	background: var(--background);
 }
 
+script + .code-controls {
+	top: 24px;
+}
+
 .code-controls button {
 	border-radius: 6px;
 	font-size: 1.2rem;
@@ -528,9 +573,30 @@ body.columns .message * {
 	display: flex;
 }
 
+/* tables ----------------------------------------------------------------- */
+
+th, td {
+	height: 1.5em;
+	max-height: 1.5em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+is:(th, td):hover {
+	overflow: visible;
+	background: var(--background);
+}
+
+.embed:has(iframe) {
+	z-index: 10;
+}
+
+/* printing --------------------------------------------------------------- */
+
 @media print {
 	:root {
-		--text: black;
+		--text: black !important;
+		--link: black !important;
 		--frame: white;
 		--border: white;
 	}
@@ -543,10 +609,17 @@ body.columns .message * {
 	html, body {
 		background: white !important;
 		height: auto !important;
-		min-height: 0 !important;
+		min-height: 100% !important;
 		overflow: visible !important;
+		color: black;
 	}
 	.code-controls {
 		display: none !important;
+	}
+}
+
+@media screen {
+	body.print {
+		display: none;
 	}
 }

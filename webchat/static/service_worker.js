@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.3.0";
+const VERSION = "0.3.517";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
@@ -19,6 +19,7 @@ const URLS_TO_CACHE = [
 	"/process_messages.js",
 	"/voice.js",
 	"/room.js",
+	"/print.js",
 
 	"/d3.min.js",
 	"/wasm.min.js",
