@@ -1,0 +1,587 @@
+div.messages {
+/*	margin: 1em 1em 0 1em; */
+	padding: 0;
+}
+
+/* labels ----------------------------------------------------------------- */
+
+.label {
+	margin-right: 1em;
+	font-weight: bold;
+}
+.message > .label {
+	float: left;
+}
+/* moved labels to avoid problems with break-after: avoid */
+.message > .content > .label:first-child,
+.message > .content > p:first-of-type > .label:first-child {
+	display: inline-block;
+	break-after: avoid;
+	margin-left: -0.5em;
+}
+
+/* an :is(...) list does not work for this case, IDK why */
+.message.me > .label,
+.message.me > .content > .label:first-child,
+.message.me > .content > p:first-of-type > .label:first-child {
+	color: var(--me);
+}
+
+/* messages --------------------------------------------------------------- */
+
+.message {
+	clear: both;
+	min-height: 1em;
+	scroll-margin-top: 12px;
+}
+.content p {
+	white-space: pre-wrap;
+}
+.content br {
+	display: none;
+}
+.content details br {
+	display: block;
+}
+.message > .content {
+	margin: 0 0 0 0.5em;
+	width: fit-content;
+}
+
+/*
+.narrative > .content {
+	margin: 0;
+}
+*/
+
+#allemande_status {
+	position: fixed;
+	top: 0.5em;
+	right: 0.5em;
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
+	margin-top: 0.75rem;
+	margin-bottom: 0.75rem;
+}
+
+/* .message :is(img, video, audio, iframe) { */
+
+.message img:not(.thumb) {
+	vertical-align: top;
+	margin: 6px 4px;
+	max-width: calc(max(min(var(--image-width), var(--image-height)), 44px));
+	max-height: calc(max(min(var(--image-width), var(--image-height)), 44px));
+}
+
+:is(body.clean .narrative, .large) img:not(.thumb) {
+	max-width: 100%;
+	max-height: 100%;
+	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
+	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
+}
+
+.message .small :img:not(.thumb) {
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 88px));
+	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 88px));
+}
+
+/* borders for markdown tables */
+
+table {
+	border-collapse: collapse;
+}
+table, th, td {
+	border: 1px solid var(--col4);
+	padding: 4px;
+}
+
+body:not(.images):not(.images_alt) .image {
+	width: 280px;
+	height: 1.5em;
+}
+
+.caption {
+	width: 280px;
+	min-width: 280px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	position: relative;
+	background: var(--background);
+}
+
+.embed:hover .caption {
+	overflow: visible;
+	white-space: normal;
+	z-index: 100;
+}
+
+.embed .thumb {
+	width: 280px;
+	height: 177px;
+	margin: 0 0 4px 0 !important;
+	object-fit: cover;
+}
+
+.embed {
+	width: 280px;
+	height: 177px;
+	display: inline-block;
+	margin: 0px 20px 40px 0px;
+	padding: 0;
+}
+
+.image .thumb {
+	width: auto;
+	height: 177px;
+	margin: 0 0 4px 0 !important;
+}
+
+.image {
+	display: inline-block;
+	padding: 0;
+}
+
+body.images .image {
+	height: 201px;
+	margin: 0px 20px 40px 0px;
+	padding-bottom: 128px;
+	position: relative;
+	overflow: hidden;
+}
+
+
+.image > a {
+	display: block;
+}
+
+.image .caption {
+	width: auto;
+	position: absolute;
+	top: 177px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	background: var(--background);
+}
+
+.image:hover {
+	overflow: visible;
+}
+
+.image:hover .caption {
+	white-space: normal;
+	z-index: 100;
+}
+
+a {
+	text-decoration: none;
+	color: var(--link);
+}
+a:hover {
+	text-decoration: underline;
+}
+
+@font-face {
+	font-family: "fixed";
+	src: url("https://allemande.ai/MiscFixedSC13.ttf");
+	font-style: normal;
+	font-weight: 400;
+}
+
+code {
+	font: 12px fixed;
+	white-space: pre-wrap;
+}
+
+body.overlay {
+	overflow: hidden;
+}
+
+body.overlay > div.messages {
+	visibility: hidden;
+}
+
+body:not(.overlay) > div.overlay {
+	display: none;
+}
+
+body.overlay > div.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 1);
+	z-index: 100;
+	overflow: auto;
+}
+
+body.overlay > div.overlay > img {
+	display: block;
+	margin: auto;
+	z-index: 101;
+}
+
+body.overlay > div.overlay.maxpect > img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+body.overlay > div.overlay.bad_cover > img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	margin: default;
+}
+
+body.overlay > div.overlay.fit_width > img {
+	width: 100%;
+	min-width: 100%;
+	max-width: 100%;
+	height: auto;
+}
+
+body.overlay > div.overlay.fit_height > img {
+	width: auto;
+	height: 100%;
+	min-height: 100%;
+	max-height: 100%;
+}
+
+details.think, details.think * {
+	color: var(--think);
+}
+
+details.search {
+/*	position: relative; */
+/*	top: -18px; */
+}
+
+body.image details.search > div {
+	margin-bottom: 40px;
+}
+
+body#dir {
+	padding: 0;
+	width: auto;
+	height: 100%;
+	display: block;
+}
+body#dir.rows {
+	flex-direction: column;
+}
+
+body#dir.columns {
+	flex-direction: row;
+	overflow-x: auto; /* to allow horizontal scrolling */
+	overflow-y: hidden;
+}
+
+ul.directory-listing {
+	list-style: none;
+	padding: 0;
+	display: grid;
+	/* margin: 0; */
+}
+
+body#dir.rows ul.directory-listing {
+ 	width: 100%;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+body#dir.columns ul.directory-listing {
+	grid-auto-flow: column;
+	grid-template-rows: repeat(auto-fill, minmax(27px, auto));
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	scroll-snap-type: x mandatory;
+	scroll-padding: 0 1rem; /* optional: adds some padding to snap points */
+	max-height: 100%;
+}
+
+ul.directory-listing > li {
+	padding: 4px;
+	min-width: 200px;
+	scroll-snap-align: start;
+}
+.icon {
+	margin-right: 10px;
+}
+
+body {
+	display: flex;
+/*	overflow: hidden; */
+}
+
+body > div.messages_wrap {
+	overflow: auto;
+	border-radius: 6px;
+	flex-basis: 128px;
+	flex-grow: 1;
+	flex-shrink: 0;
+	padding: 0.5em;
+}
+
+body:not(.images) img {
+	display: none;
+}
+body.images .alt {
+	display: none;
+}
+body:not(.images):not(.images_alt) .alt {
+	width: 1.2em;
+	height: 1.2em;
+	overflow: hidden;
+	display: inline-block;
+}
+
+body:not(.dot_source) .language-dot {
+	display: none;
+}
+
+body.canvas > div.canvas {
+	display: block;
+	overflow: auto;
+	min-width: 88px;
+	min-height: 88px;
+	width: 100%;
+	height: 100%;
+	flex-grow: 0;
+	border-radius: 6px;
+	flex-basis: 128px;
+	flex-shrink: 0;
+}
+body:not(.canvas) div.canvas {
+	display: none;
+}
+body:not(.canvas) div.resizer {
+	display: none;
+}
+
+body.clean div.message.specialist {
+	display: none;
+}
+
+body.clean div.message.invoke-specialist {
+	display: none;
+}
+
+body.clean div.message.narrative div.label {
+	display: none;
+}
+
+body.grab > div.messages_wrap {
+	border: 1px solid #800000;
+}
+
+span.indent {
+	white-space: pre-wrap;
+}
+
+body.portrait {
+	flex-direction: column;
+}
+body.portrait > div.messages_wrap {
+	order: 30;
+}
+body.portrait > div.canvas {
+	order: 10;
+	max-height: calc(100vh - 88px);
+}
+
+body.landscape div.messages_wrap {
+	order: 10;
+}
+body.landscape > div.canvas {
+	order: 30;
+}
+
+.resizer {
+	order: 20;
+	min-height: var(--pad);
+	min-width: var(--pad);
+	margin: 0;
+}
+
+body.portrait .resizer {
+	cursor: ns-resize;
+}
+
+body.landscape .resizer {
+	cursor: ew-resize;
+}
+
+body.script_source .content :is(script, style):not(.hide) {
+	display: block;
+	clear: both;
+	font: 12px fixed;
+	white-space: pre-wrap;
+	width: fit-content;
+	min-width: 12em;
+	margin-top: -14px;  /* compensate for likely leading newline */
+}
+
+body:not(.script_source) .content :has(+script:not(.hide):not([src]), +style:not(.hide))::after {
+	content: "<script/>";
+	display: block;
+	font-weight: normal;
+	color: var(--text);
+	min-width: 12em;
+}
+
+pre:has(div.graphviz) {
+	float: left;
+	margin: 0px 20px 40px 0px;
+}
+
+div.graphviz > svg {
+	width: fit-content;
+	height: fit-content;
+}
+
+/*
+.content script::before {
+	content: "<script>";
+}
+.content script::after {
+	content: "</script>";
+}
+*/
+
+p:has(> img), div:has(> img) {
+	clear: both;
+}
+/* break between label and certain elements that like to be aligned to the left */
+.message > .content > p:first-of-type > .label:first-child:has(+ img, + video, + audio, + iframe, + pre, + script:not([src])) {
+    display: block;
+}
+
+:has(> img), div:has(> img) {
+	clear: both;
+}
+
+.image_size_1 {
+	--image-width: 10vw;
+	--image-height: 10vh;
+}
+.image_size_2 {
+	--image-width: 20vw;
+	--image-height: 20vh;
+}
+.image_size_3 {
+	--image-width: 30vw;
+	--image-height: 30vh;
+}
+.image_size_4 {
+	--image-width: 40vw;
+	--image-height: 40vh;
+}
+.image_size_5 {
+	--image-width: 50vw;
+	--image-height: 50vh;
+}
+.image_size_6 {
+	--image-width: 60vw;
+	--image-height: 60vh;
+}
+.image_size_7 {
+	--image-width: 70vw;
+	--image-height: 70vh;
+}
+.image_size_8 {
+	--image-width: 80vw;
+	--image-height: 80vh;
+}
+.image_size_9 {
+	--image-width: 90vw;
+	--image-height: 90vh;
+}
+.image_size_10 {
+	--image-width: 100vw;
+	--image-height: 100vh;
+}
+
+pre:has(> code), div.content:has(> script, > style) {
+	position: relative;
+}
+
+.code-controls {
+	position: absolute;
+	top: -4px;
+	right: 0;
+	display: none;
+	gap: 8px;
+	z-index: 1;
+	align-items: center;
+	background: var(--background);
+}
+
+.code-controls button {
+	border-radius: 6px;
+	font-size: 1.2rem;
+}
+
+div > .code-controls {
+	top: 13px;
+}
+
+.graphviz {
+	pointer-events: none;
+}
+
+link[href*="/katex@"] + style {
+    display: none !important;
+}
+
+/* show chat in columns! make it optional */
+body.columns div.messages {
+	column-count: auto;
+	column-width: 25em;
+	column-gap: 16px;
+	height: 100%;
+	max-height: 100%;
+	column-fill: auto;
+}
+body.columns .message {
+	max-width: 100%;
+}
+.message p {
+	break-inside: avoid;
+}
+
+body.columns .message * {
+	max-width: 100%;
+}
+
+.clear {
+	clear: both;
+}
+
+.show-flex {
+	display: flex;
+}
+
+@media print {
+	:root {
+		--text: black;
+		--frame: white;
+		--border: white;
+	}
+	body#messages > div.messages_wrap {
+		background: white !important;
+		color: black;
+		border-radius: 0 !important;
+		overflow: hidden !important;
+	}
+	html, body {
+		background: white !important;
+		height: auto !important;
+		min-height: 0 !important;
+		overflow: visible !important;
+	}
+	.code-controls {
+		display: none !important;
+	}
+}

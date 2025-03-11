@@ -1,0 +1,36 @@
+
+/*
+.message :is(.image, .embed) {
+	vertical-align: top;
+	margin: 6px 4px;
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px));
+	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px));
+}
+*/
+
+
+.embed:hover .alt {
+	overflow: visible;
+	white-space: normal;
+	z-index: 100;
+}
+
+.embed .thumb {
+	margin: 0 0 4px 0 !important;
+	width: 100%;
+	height: auto;
+	object-fit: contain;
+}
+
+.embed {
+	float: left;
+	width: 280px;
+	height: 177px;
+	margin: 0px 20px 40px 0px;
+	padding: 0;
+}
+
+body:not(.images) .embed {
+	height: auto;
+	margin: 0px 20px 20px 0px;
+}
