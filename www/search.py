@@ -345,7 +345,7 @@ def format_video_result_markdown(item: dict[str, str], engine: str) -> dict[str,
         video = (
             f"""<div class="embed" data-site="{engine.lower()}" data-videoid="{video_id}">"""
             + thumb
-            + f"""<br><div class="caption">{item['page']}</div></div>"""
+            + f"""<br><div class="alt">{item['page']}</div></div>"""
         )
         item["video"] = video
         del item["thumbnail"]
@@ -360,7 +360,7 @@ def format_image_result_markdown(item: dict[str, str], engine: str) -> dict[str,
     image = (
         f"""<div class="image" data-site="{engine.lower()}" data-image="{image_url}">"""
         + thumb
-        + f"""<br><div class="caption">{item['page']}</div></div>"""
+        + f"""<br><div class="alt">{item['page']}</div></div>"""
     )
     item["image"] = image
     del item["thumbnail"]
