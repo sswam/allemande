@@ -141,11 +141,12 @@ $$ y = \sqrt{x} $$
 
 ### Graphviz
 
-Please use transparent backgrounds and medium gray edges for better visibility in any theme, unless asked otherwise.
+Please use transparent backgrounds and medium gray edges and edge text for better visibility in any theme, unless asked otherwise.
 
 ```dot
 graph {
     bgcolor="transparent"
+    node [style=filled, fillcolor="#808080"]
     edge [color="#808080"]
     A -- B -- C -- A
 }
@@ -154,6 +155,7 @@ graph {
 ```dot
 digraph G {
     bgcolor="transparent"
+    node [style=filled, fillcolor="#808080"]
     edge [color="#808080"]
     A -> B;
     B -> C;
