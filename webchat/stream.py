@@ -87,7 +87,7 @@ app = Starlette(
 )
 
 
-async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n", rewind_string="\x0c\n"):
+async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="\n", rewind_string="\x0c\n", snapshot=False):
     """Follow a file and yield new lines as they are added."""
 
     # TODO read watch.log, then we won't have to create directories
@@ -97,8 +97,10 @@ async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="
     if header:
         yield header
 
+    follow = not snapshot
+
     async with atail.AsyncTail(
-        filename=file, wait_for_create=True, all_lines=True, follow=True, rewind=True, rewind_string=rewind_string, restart=True
+        filename=file, wait_for_create=True, all_lines=True, follow=follow, rewind=False, rewind_string=rewind_string, restart=follow
     ) as queue1:
         async with akeepalive.AsyncKeepAlive(queue1, keepalive, timeout_return=keepalive_string) as queue2:
             try:
@@ -142,6 +144,7 @@ def try_loading_extra_header(path, header):
 async def stream(request, path=""):
     """Stream a file to the browser, like tail -f"""
     global templates  # pylint: disable=global-statement, global-variable-not-assigned
+    snapshot = request.query_params.get("snapshot")
 
     user = request.headers["X-Forwarded-User"]
 
@@ -164,7 +167,9 @@ async def stream(request, path=""):
     theme_symlink = Path(os.environ["ALLEMANDE_USERS"], user, "theme.css")
     theme = theme_symlink.readlink().stem if os.path.islink(theme_symlink) else "default"
 
-    context = {"user": user, "chat_base_url": info.chat_base_url, "theme": theme}
+    room_path = re.sub(r"\.html$", "", pathname)
+
+    context = {"user": user, "chat_base_url": info.chat_base_url, "theme": theme, "room": room_path}
 
     # folder listings
     if path.is_dir():
@@ -189,7 +194,7 @@ async def stream(request, path=""):
         rewind_string = REWIND_STRING
 
     logger.debug("tail: %s", path)
-    follower = follow(str(path), header=header, keepalive_string=keepalive_string, rewind_string=rewind_string)
+    follower = follow(str(path), header=header, keepalive_string=keepalive_string, rewind_string=rewind_string, snapshot=snapshot)
     return StreamingResponse(follower, media_type=media_type)
 
 
