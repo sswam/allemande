@@ -57,6 +57,9 @@ server {
 		if ($args ~* stream=1) {
 			rewrite ^ /stream$uri? last;
 		}
+		if ($args ~* snapshot=1) {
+			rewrite ^ /stream$uri?snapshot=1 last;
+		}
 
 		if ($cors_header = "https://chat.allemande.ai") {
 			add_header Access-Control-Allow-Origin $cors_header always;
