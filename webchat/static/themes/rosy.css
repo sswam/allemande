@@ -1,21 +1,21 @@
 :root {
 	--theme-mode: light;
-	--col0: #f18;
-	--col1: #f39;
-	--col2: #f5a;
-	--col3: #f7b;
-	--col4: #f9c;
-	--col5: #fbd;
-	--col6: #fde;
-	--col7: white;
+	--col0: white;
+	--col1: #fde;
+	--col2: #fbd;
+	--col3: #f9c;
+	--col4: #f7b;
+	--col5: #f5a;
+	--col6: #f39;
+	--col7: #f18;
 
 	--text: black;
-	--border: var(--col2);
-	--frame: var(--col2);
-	--input: var(--col3);
-	--focus: var(--col4);
-	--background: var(--col5);
-	--button: var(--col6);
-	--button-focus: var(--col7);
-	--link: var(--col0);
+	--border: var(--col5);
+	--frame: var(--col5);
+	--input: var(--col4);
+	--focus: var(--col3);
+	--background: var(--col2);
+	--button: var(--col1);
+	--button-focus: var(--col0);
+	--link: var(--col7);
 }

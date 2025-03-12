@@ -45,7 +45,7 @@ div.messages {
 .content p {
 	white-space: pre-wrap;
 }
-.content br {
+.content br, .content details p br {
 	display: none;
 }
 .content details br {
@@ -231,6 +231,7 @@ pre > code, code, pre > code *, code * {
 	font: 12px fixed;
 	white-space: pre-wrap;
 	font-weight: normal;
+	border-radius: 6px;
 }
 
 pre {
@@ -563,23 +564,25 @@ pre:has(> code) {
 	position: relative;
 }
 
+script + .code-controls {
+	top: 24px;
+}
+
 .code-controls {
 	position: absolute;
-	top: 0;
-	right: 0;
+	top: 1px;
+	right: 1px;
 	display: none;
 	gap: 8px;
 	z-index: 1;
 	align-items: center;
 	background: var(--background);
-}
-
-script + .code-controls {
-	top: 24px;
+	border-radius: 5px;
+	padding-left: 6px;
 }
 
 .code-controls button {
-	border-radius: 6px;
+	border-radius: 5px;
 	font-size: 1.2rem;
 }
 

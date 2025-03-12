@@ -141,19 +141,22 @@ input:disabled, input:disabled:hover, input:disabled:focus
 /* default color mappings for a gradient theme */
 
 :root {
-	--background: var(--col0);
-	--focus: var(--col1);
-	--input: var(--col2);
-	--button-focus: var(--col2);
-	--button: var(--col3);
-	--frame: var(--col5);
-	--border: var(--col6);
+	--frame: var(--col0);
+	--background: var(--col1);
+	--focus: var(--col2);
+	--input: var(--col3);
+	--button: var(--col4);
+	--button-focus: var(--col5);
+	--link: var(--col6);
 	--text: var(--col7);
-	--think: var(--col6);
+
+	--border: var(--frame);
+
+	--think: var(--link);
+	--me: var(--link);
 
 	--scrollbar-background: var(--background);
 	--scrollbar: var(--frame);
-	--link: midnightblue;
 
 	--image-width: 40vw;
 	--image-height: 40vh;

@@ -714,21 +714,30 @@ function nav_bot(ev) {
 
 // user info and settings ----------------------------------------------------
 
-function load_theme() {
-  let $link = $id("theme");
-  if (!$link) {
-    $link = $create("link");
-    $link.id = "theme";
-    $link.rel = "stylesheet";
-    $link.type = "text/css";
-    $link.media = "screen";
-    $head.append($link);
-  }
-  if (theme) {
-    $link.href = "/themes/" + theme + ".css";
+async function theme_loaded() {
+  const $body = document.body;
+  console.log("theme_loaded");
+  const theme_mode = getComputedStyle(document.documentElement).getPropertyValue("--theme-mode");
+  console.log("theme_mode", theme_mode);
+  if (theme_mode == "dark") {
+    $body.classList.add("dark");
+    $body.classList.remove("light");
   } else {
-    $link.href = "/users/" + user + "/theme.css";
+    $body.classList.add("light");
+    $body.classList.remove("dark");
   }
+}
+
+function load_theme() {
+  const $old_link = $id("theme");
+  const $new_link = $old_link.cloneNode();
+  if (theme) {
+    $new_link.href = "/themes/" + theme + ".css";
+  } else {
+    $new_link.href = "/users/" + user + "/theme.css";
+  }
+  $new_link.id = "theme";
+  $old_link.replaceWith($new_link);
 }
 
 function user_script_loaded() {

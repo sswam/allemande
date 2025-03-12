@@ -1,12 +1,13 @@
 :root {
 	--theme-mode: dark;
-	--background: midnightblue;
-	--focus: #339;
-	--input: midnightblue;
-	--button-focus: #55f;
-	--button: blue;
-	--frame: black;
-	--border: #00dddd;
-	--text: #dddddd;
-	--link: #00dddd;
+	--col0: black;
+	--col1: midnightblue;
+	--col2: #339;
+	--col3: midnightblue;
+	--col4: #339;
+	--col5: #55f;
+	--col6: #00dddd;
+	--col7: #dddddd;
+
+	--border: var(--col6);
 }

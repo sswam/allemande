@@ -1,21 +1,21 @@
 :root {
 	--theme-mode: light;
-	--blue0: #0e0e79;
-	--blue1: #0f5e9c;
-	--blue2: #2389da;
-	--blue3: #1ca3ec;
-	--blue4: #31aafa;
-	--blue5: #5abcd8;
-	--blue6: #74ccf4;
-	--blue7: white;
+	--col0: #74ccf4;
+	--col1: #5abcd8;
+	--col2: #31aafa;
+	--col3: #2389da;
+/*	--col4: #1ca3ec; */
+	--col5: #0f5e9c;
+	--col6: #0e0e79;
+	--col7: black;
 
-	--text: black;
-	--border: var(--blue0);
-	--frame: var(--blue0);
-	--background: var(--blue4);
-	--input: var(--blue1);
-	--focus: var(--blue2);
-	--button: var(--blue5);
-	--button-focus: var(--blue6);
-	--link: #004488;
+	--text: var(--col7);
+
+	--frame: var(--col6);
+	--background: var(--col2);
+	--input: var(--col5);
+	--focus: var(--col3);
+	--button: var(--col1);
+	--button-focus: var(--col0);
+	--link: var(--col6);
 }

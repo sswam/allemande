@@ -6,16 +6,17 @@
 	--col3: #363636;
 	--col4: #494949;
 	--col5: #5b5b5b;
-	--col6: #6d6d6d;
+	--col6: #5b5b80;  /* blueish */
 	--col7: white;
 
-	--text: var(--col7);
-	--border: var(--col6);
-	--frame: var(--col2);
-	--input: var(--col5);
-	--focus: var(--col4);
-	--background: var(--col3);
+	--frame: var(--col0);
+	--background: var(--col1);
+	--focus: var(--col2);
+	--input: var(--col3);
 	--button: var(--col4);
-	--button-focus: var(--col1);
-	--link: #0077ff;
+	--button-focus: var(--col5);
+	--link: var(--col6);
+	--text: var(--col7);
+
+	--border: var(--col5);
 }

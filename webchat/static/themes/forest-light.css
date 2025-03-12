@@ -1,13 +1,13 @@
 :root {
 	--theme-mode: light;
 	--col0: #0aeb9f;
-	--col1: #039660;
-	--col2: #026641;
-	--col3: #014421;
-	--col4: #002d0b;
-	--col5: #001800;
-	--col6: black;
-	--col7: black;
-	--link: #007733;
-	--me: #008833;
+	--col1: #0aeb9f;
+	--col2: #05ba7a;
+	--col3: #048c5c;
+	--col4: #036644;
+	--col5: #024d33;
+	--col6: #023528;
+	--col7: #001800;
+
+	--link: #004499;
 }

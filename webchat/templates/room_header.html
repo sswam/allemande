@@ -14,7 +14,7 @@
 <script src="{{ chat_base_url }}/wasm.min.js"></script>
 <script src="{{ chat_base_url }}/d3-graphviz.min.js"></script>
 <link rel="stylesheet" href="{{ chat_base_url }}/room.css" crossorigin="use-credentials">
-<link id="theme" rel="stylesheet" type="text/css" media="screen" href="{{ chat_base_url }}/themes/{{ theme|safe }}.css" crossorigin="use-credentials" onload="set_highlight_theme()">
+<link id="theme" rel="stylesheet" type="text/css" media="screen" href="{{ chat_base_url }}/themes/{{ theme|safe }}.css" crossorigin="use-credentials" onload="theme_loaded()">
 <link id="user_styles" rel="stylesheet" type="text/css" href="{{ chat_base_url }}/users/{{ user }}/styles.css" crossorigin="use-credentials">
 <script id="user_script" src="{{ chat_base_url }}/users/{{ user }}/script.js"></script>
 <base target="_top">

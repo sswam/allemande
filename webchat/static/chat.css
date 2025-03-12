@@ -170,50 +170,66 @@ iframe#messages_iframe.overlay {
 	border-radius: 0;
 }
 
-.active {
-	background-color: #606030 !important;
-}
+body.dark .active { background-color: #606030 !important; }
 
-.active-2 { background-color: #707038 !important; color: white !important; }
-.active-3 { background-color: #808040 !important; color: white !important; }
-.active-4 { background-color: #909048 !important; color: white !important; }
-.active-5 { background-color: #a0a050 !important; color: white !important; }
-.active-6 { background-color: #b0b058 !important; color: black !important; }
-.active-7 { background-color: #c0c060 !important; color: black !important; }
-.active-8 { background-color: #d0d068 !important; color: black !important; }
-.active-9 { background-color: #e0e070 !important; color: black !important; }
-.active-10 { background-color: #f0f078 !important; color: black !important; }
-.active-11 { background-color: #ffff80 !important; color: black !important; }
-.active-12 { background-color: #ffff88 !important; color: black !important; }
-.active-13 { background-color: #ffff90 !important; color: black !important; }
-.active-14 { background-color: #ffff98 !important; color: black !important; }
-.active-15 { background-color: #ffffa0 !important; color: black !important; }
-.active-16 { background-color: #ffffa8 !important; color: black !important; }
-.active-17 { background-color: #ffffb0 !important; color: black !important; }
-.active-18 { background-color: #ffffb8 !important; color: black !important; }
-.active-19 { background-color: #ffffc0 !important; color: black !important; }
-.active-20 { background-color: #ffffc8 !important; color: black !important; }
+body.dark .active-2 { background-color: #707038 !important; color: white !important; }
+body.dark .active-3 { background-color: #808040 !important; color: white !important; }
+body.dark .active-4 { background-color: #909048 !important; color: white !important; }
+body.dark .active-5 { background-color: #a0a050 !important; color: white !important; }
+body.dark .active-6 { background-color: #b0b058 !important; color: black !important; }
+body.dark .active-7 { background-color: #c0c060 !important; color: black !important; }
+body.dark .active-8 { background-color: #d0d068 !important; color: black !important; }
+body.dark .active-9 { background-color: #e0e070 !important; color: black !important; }
+body.dark .active-10 { background-color: #f0f078 !important; color: black !important; }
+body.dark .active-11 { background-color: #ffff80 !important; color: black !important; }
+body.dark .active-12 { background-color: #ffff88 !important; color: black !important; }
+body.dark .active-13 { background-color: #ffff90 !important; color: black !important; }
+body.dark .active-14 { background-color: #ffff98 !important; color: black !important; }
+body.dark .active-15 { background-color: #ffffa0 !important; color: black !important; }
+body.dark .active-16 { background-color: #ffffa8 !important; color: black !important; }
+body.dark .active-17 { background-color: #ffffb0 !important; color: black !important; }
+body.dark .active-18 { background-color: #ffffb8 !important; color: black !important; }
+body.dark .active-19 { background-color: #ffffc0 !important; color: black !important; }
+body.dark .active-20 { background-color: #ffffc8 !important; color: black !important; }
 
-.active--1 { background-color: #306060 !important; color: white !important; }
-.active--2 { background-color: #387070 !important; color: white !important; }
-.active--3 { background-color: #408080 !important; color: white !important; }
-.active--4 { background-color: #489090 !important; color: white !important; }
-.active--5 { background-color: #50a0a0 !important; color: white !important; }
-.active--6 { background-color: #58b0b0 !important; color: black !important; }
-.active--7 { background-color: #60c0c0 !important; color: black !important; }
-.active--8 { background-color: #68d0d0 !important; color: black !important; }
-.active--9 { background-color: #70e0e0 !important; color: black !important; }
-.active--10 { background-color: #78f0f0 !important; color: black !important; }
-.active--11 { background-color: #80ffff !important; color: black !important; }
-.active--12 { background-color: #88ffff !important; color: black !important; }
-.active--13 { background-color: #90ffff !important; color: black !important; }
-.active--14 { background-color: #98ffff !important; color: black !important; }
-.active--15 { background-color: #a0ffff !important; color: black !important; }
-.active--16 { background-color: #a8ffff !important; color: black !important; }
-.active--17 { background-color: #b0ffff !important; color: black !important; }
-.active--18 { background-color: #b8ffff !important; color: black !important; }
-.active--19 { background-color: #c0ffff !important; color: black !important; }
-.active--20 { background-color: #c8ffff !important; color: black !important; }
+body.dark .active--1 { background-color: #306060 !important; color: white !important; }
+body.dark .active--2 { background-color: #387070 !important; color: white !important; }
+body.dark .active--3 { background-color: #408080 !important; color: white !important; }
+body.dark .active--4 { background-color: #489090 !important; color: white !important; }
+body.dark .active--5 { background-color: #50a0a0 !important; color: white !important; }
+body.dark .active--6 { background-color: #58b0b0 !important; color: black !important; }
+body.dark .active--7 { background-color: #60c0c0 !important; color: black !important; }
+body.dark .active--8 { background-color: #68d0d0 !important; color: black !important; }
+body.dark .active--9 { background-color: #70e0e0 !important; color: black !important; }
+body.dark .active--10 { background-color: #78f0f0 !important; color: black !important; }
+body.dark .active--11 { background-color: #80ffff !important; color: black !important; }
+body.dark .active--12 { background-color: #88ffff !important; color: black !important; }
+body.dark .active--13 { background-color: #90ffff !important; color: black !important; }
+body.dark .active--14 { background-color: #98ffff !important; color: black !important; }
+body.dark .active--15 { background-color: #a0ffff !important; color: black !important; }
+body.dark .active--16 { background-color: #a8ffff !important; color: black !important; }
+body.dark .active--17 { background-color: #b0ffff !important; color: black !important; }
+body.dark .active--18 { background-color: #b8ffff !important; color: black !important; }
+body.dark .active--19 { background-color: #c0ffff !important; color: black !important; }
+body.dark .active--20 { background-color: #c8ffff !important; color: black !important; }
+
+body.light .active { background-color: #b0b058 !important; color: black !important; }
+body.light .active-1 { background-color: #c0c060 !important; color: black !important; }
+body.light .active-2 { background-color: #d0d068 !important; color: black !important; }
+body.light .active-3 { background-color: #e0e070 !important; color: black !important; }
+body.light .active-4 { background-color: #f0f078 !important; color: black !important; }
+body.light .active-5 { background-color: #ffff80 !important; color: black !important; }
+body.light .active-6 { background-color: #ffff88 !important; color: black !important; }
+body.light .active-7 { background-color: #ffff90 !important; color: black !important; }
+body.light .active-8 { background-color: #ffff98 !important; color: black !important; }
+body.light .active-9 { background-color: #ffffa0 !important; color: black !important; }
+body.light .active-10 { background-color: #ffffa8 !important; color: black !important; }
+
+body.light .active--1 { background-color: #58b0b0 !important; color: black !important; }
+body.light .active--2 { background-color: #60c0c0 !important; color: black !important; }
+body.light .active--3 { background-color: #68d0d0 !important; color: black !important; }
+body.light .active--4 { background-color: #70e0e0 !important; color: black !important; }
+body.light .active--5 { background-color: #78f0f0 !important; color: black !important; }
 
 
 .error {

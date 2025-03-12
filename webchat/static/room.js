@@ -794,8 +794,8 @@ function setup_view_options() {
   set_view_options(view_options);
 }
 
-async function set_highlight_theme() {
-  console.log("set_highlight_theme");
+async function theme_loaded() {
+  console.log("theme_loaded");
   await wait_for_load();
   const theme_mode = getComputedStyle(document.documentElement).getPropertyValue("--theme-mode");
   console.log("theme_mode", theme_mode);
