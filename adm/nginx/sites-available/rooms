@@ -112,7 +112,7 @@ server {
 	include /etc/nginx/mime.types;
 
 	types {
-		text/plain  md markdown bb m;
+		text/plain  md markdown bb m base yml;
 		# should be text/markdown, but the browser won't show it (Firefox)
 	}
 }
