@@ -94,6 +94,23 @@ function handleNewMessage(newMessage) {
   const newUser = newMessage.getAttribute("user");
   notify_new_message({ user: newUser, content: newContent.innerHTML });
 
+  // Remove newline at start of paragraph, pre or code
+  // Maybe not needed now? We'll see...
+  /*
+  for (const node of newContent.querySelectorAll("p, pre, code")) {
+    if (node.firstChild && node.firstChild.nodeType === 3) {
+      const text = node.firstChild.textContent;
+      if (text === "\n" || text === "\r\n") {
+        node.firstChild.remove();
+      } else if (text.startsWith("\n")) {
+        node.firstChild.textContent = node.firstChild.textContent.substring(1);
+      } else if (text.startsWith("\r\n")) {
+        node.firstChild.textContent = node.firstChild.textContent.substring(2);
+      }
+    }
+  }
+  */
+
   // Set title attribute for images
   // and add a <div class="alt"> element for each image
   const images = newMessage.querySelectorAll("img");
