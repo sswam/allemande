@@ -64,13 +64,13 @@ done
 
 cd "$ALLEMANDE_HOME/adm"
 
-./update_nginx.sh
+./nginx_update.sh
 
 # install the haproxy config -------------------------------------------------
 
 cd "$ALLEMANDE_HOME/adm"
 
-./update_haproxy.sh
+./haproxy_update.sh
 
 # restart services -----------------------------------------------------------
 

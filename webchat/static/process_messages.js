@@ -1,4 +1,6 @@
 "use strict";
+var inIframe = window.parent !== window.self;
+const moveLabels = true;
 
 function isNodeOnlyImages(node) {
   const hasImage = node.getElementsByTagName('img').length > 0;
@@ -100,10 +102,13 @@ function handleNewMessage(newMessage) {
       // console.log("setting title", img.alt);
       img.title = img.alt;
     }
-    const altDiv = document.createElement("div");
-    altDiv.className = "alt";
-    altDiv.textContent = "🖼️ " + img.alt;
-    img.parentNode.insertBefore(altDiv, img.nextSibling);
+    const wrapper = img.closest(".image, .embed");
+    if (!(wrapper && wrapper.querySelector(".alt"))) {
+      const altDiv = document.createElement("div");
+      altDiv.className = "alt";
+      altDiv.textContent = "🖼️ " + img.alt
+      img.parentNode.insertBefore(altDiv, img.nextSibling);
+    }
   }
 
   if (newUser) {
@@ -155,8 +160,8 @@ function handleNewMessage(newMessage) {
     }
   }
 
-  // add language info and a copy button to code blocks on hover
-  const codeBlocks = newContent.querySelectorAll("pre code");
+  // add language info and a copy button to code blocks, script and styles on hover
+  const codeBlocks = newContent.querySelectorAll("pre code, script:not(hide):not([src]), style:not(hide)");
   for (const codeBlock of codeBlocks) {
     decorateCodeBlock(codeBlock);
   }
@@ -164,7 +169,7 @@ function handleNewMessage(newMessage) {
   // Combine regular messages from the same user
   if (newMessage) {
     const previousMessage = newMessage.previousElementSibling;
-    if (previousMessage && nodeIsMessage(previousMessage) && previousMessage.getAttribute("user") === newMessage.getAttribute("user")) {
+    if (previousMessage && nodeIsMessage(previousMessage) && previousMessage.getAttribute("user") === newUser) {
       const prevContent = previousMessage.querySelector(".content");
       const prevParagraph = getOnlyChildParagraph(prevContent);
       // If images, combine them into the same paragraph
@@ -174,13 +179,46 @@ function handleNewMessage(newMessage) {
         moveContent(newContent, prevContent);
       }
       newMessage.remove();
+      newMessage = null;
     }
   }
+
+  // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
+  if (newMessage && moveLabels) {
+    const label = newMessage.querySelector(".label");
+    if (label) {
+      let p = newContent.querySelector(":scope > p");
+      let go_before_this = newMessage.querySelector("pre, details");
+      let container = (p && !(go_before_this && isPrecedingSibling(go_before_this, p))) ? p : newContent;
+      if (user.toLowerCase() === "gimg") {
+        console.log("moving label", label, "before", go_before_this, "in", container, "for", user);
+      }
+      container.insertBefore(label, container.firstChild);
+    }
+  }
+
+  // Open details elements according to the view options
+  for (const $details of newContent.querySelectorAll("details"))
+    open_or_close_details($details);
+}
+
+function isPrecedingSibling(node1, node2) {
+  return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
 }
 
 function decorateCodeBlock(codeBlock) {
-  const lang = codeBlock.className.replace(/language-/, "");
-  const pre = codeBlock.parentNode;
+  if (codeBlock.nodeName === "STYLE" && codeBlock.textContent.includes(".katex img")) {
+    return;
+  }
+
+  let lang = codeBlock.className.replace(/language-/, "");
+  const parent = codeBlock.parentNode;
+
+  if (codeBlock.nodeName === "SCRIPT") {
+    lang = "javascript";
+  } else if (codeBlock.nodeName === "STYLE") {
+    lang = "css";
+  }
 
 /*  // Create wrapper for the code block to help with positioning
   const wrapper = document.createElement('div');
@@ -190,8 +228,8 @@ function decorateCodeBlock(codeBlock) {
 */
 
   // Create container for language label and copy button
-  const controls = document.createElement('div');
-  controls.className = 'code-controls';
+  const controls = document.createElement("div");
+  controls.className = "code-controls";
 
   // Add language label if language is specified
   if (lang) {
@@ -199,36 +237,64 @@ function decorateCodeBlock(codeBlock) {
   }
 
   // Create copy button
-  const copyButton = document.createElement('button');
-  copyButton.id = 'copy_button';
-  copyButton.textContent = 'copy';
+  const copyButton = document.createElement("button");
+  copyButton.id = "copy_button";
+  copyButton.textContent = "copy";
   controls.appendChild(copyButton);
 
   // Add click handler for copy button
-  copyButton.addEventListener('click', async () => {
-    // send text to parent window
-    window.parent.postMessage({"type": "copy", "text": codeBlock.textContent}, CHAT_URL);
-    flash(copyButton, 'active');
+  copyButton.addEventListener("click", async () => {
+    const text = codeBlock.textContent.trim() + "\n";
+    if (inIframe) {
+      // send text to parent window
+      window.parent.postMessage({"type": "copy", "text": text}, CHAT_URL);
+    } else {
+      // copy text to clipboard
+      await navigator.clipboard.writeText(text);
+    }
+    flash(copyButton, "active");
   });
 
   // Add controls to wrapper
-  pre.appendChild(controls);
+  parent.appendChild(controls);
 
-  // Show/hide controls on hover
-  pre.addEventListener('mouseenter', () => {
-    controls.style.display = 'flex';
+  let hideTimer;
+
+  function handleHideTimer(show) {
+    if (hideTimer) {
+      clearTimeout(hideTimer);
+      hideTimer = null;
+    }
+
+    if (show) {
+      controls.classList.add('show-flex');
+    } else {
+      hideTimer = setTimeout(function() {
+        controls.classList.remove('show-flex');
+        hideTimer = null;
+      }, 500);
+    }
+  }
+
+  // Show controls on hover
+  parent.addEventListener('mouseenter', function() {
+    handleHideTimer(true);
   });
 
-  pre.addEventListener('mouseleave', (e) => {
+  parent.addEventListener('mouseleave', function(e) {
     // Check if the mouse is not over the controls
     if (!controls.contains(e.relatedTarget)) {
-      controls.style.display = 'none';
+      handleHideTimer(false);
     }
   });
 
-  // Add additional listener to controls to prevent hiding when hovering over them
-  controls.addEventListener('mouseenter', () => {
-    controls.style.display = 'flex';
+  // Add additional listener to controls
+  controls.addEventListener('mouseenter', function() {
+    handleHideTimer(true);
+  });
+
+  controls.addEventListener('mouseleave', function() {
+    handleHideTimer(false);
   });
 }
 

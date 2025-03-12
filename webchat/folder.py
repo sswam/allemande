@@ -227,7 +227,7 @@ def get_dir_listing_html(path: Path, pathname: str, info: FolderInfo, templates:
 
     # HTML header
     if templates:
-        html.append(templates.get_template("dir-head.html").render(context))
+        html.append(templates.get_template("dir_header.html").render(context))
 
     # Generate HTML for directory listing
     html.append(f'<ul class="directory-listing">')

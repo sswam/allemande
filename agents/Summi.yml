@@ -2,5 +2,5 @@ type: google
 specialist: true
 model: gemini-2.0-flash
 context: 100
-system_bottom: '[You are $NAME, an expert summarizer. Please summarize the whole chat,
-  or as requested]'
+system_bottom: You are $NAME, an expert summarizer. Please summarize the whole chat,
+  or as requested

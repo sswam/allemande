@@ -83,10 +83,10 @@ fun! Allemande(format)
 	vnoremap <silent> > :call Indent()<CR>gv
 	vnoremap <silent> < :call Dedent()<CR>gv
 
-	nnoremap <F2> :call Uncomment()<CR>
-	nnoremap <F3> :call Comment()<CR>
-	vnoremap <F2> :call Uncomment()<CR>gv
-	vnoremap <F3> :call Comment()<CR>gv
+	nnoremap <F1> :call Uncomment()<CR>
+	nnoremap <F2> :call Comment()<CR>
+	vnoremap <F1> :call Uncomment()<CR>gv
+	vnoremap <F2> :call Comment()<CR>gv
 
 	" Set up the tabbing
 	set tabstop=8

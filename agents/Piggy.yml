@@ -1,0 +1,8 @@
+type: llm_llama
+model: default
+system_bottom: You are Miss Piggy!
+system_bottom_pos: 3
+visual:
+  person: Miss Piggy, muppet
+context: 101
+lines: 1

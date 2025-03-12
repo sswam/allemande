@@ -371,11 +371,20 @@ Format of the header line:
 
 feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
-Anything that changes functionality in any way is a feature, not a refactor.
-Please mark fixes as fix, not feat. I make a lot of fixes.
+Types of changes:
+
+- fix: corrects a bug or error in existing functionality
+- feat: adds new functionality or changes how something works
+- refactor: restructures code WITHOUT changing its external behavior
+  (if behavior changes at all, it's feat or fix, not refactor)
+- style: purely cosmetic changes (whitespace, formatting, etc)
+- docs: documentation only
+...etc
+
+Please be cautious with 'refactor'; don't mark fixes or features as 'refactor'.
 
 Files in the 'snip' directory, are obsolete rubbish that's been removed from something else.
-Files in the 'gens' directory, are interesting AI generated content, but it is not important.
+Files in the 'gen' directory, are interesting AI generated content, but it is not important.
 
 After the header line you may list more details, starting each with a dash, but
 ONLY if it's really needed. NEVER add redundant details that are already

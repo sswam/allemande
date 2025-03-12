@@ -1,6 +1,6 @@
 div.messages {
 /*	margin: 1em 1em 0 1em; */
-	padding: 0.5em 0.5em;
+	padding: 0;
 }
 
 /* labels ----------------------------------------------------------------- */
@@ -17,17 +17,12 @@ div.messages {
 .message > .content > p:first-of-type > .label:first-child {
 	display: inline-block;
 	break-after: avoid;
-}
-
-.message:not(.narrative) > .content > .label:first-child,
-.message:not(.narrative) > .content > p:first-of-type > .label:first-child {
-	margin-left: -1em;
+	margin-left: -0.5em;
 }
 
 /* an :is(...) list does not work for this case, IDK why */
-.message.me > .content > .label:first-child {
-	color: var(--me);
-}
+.message.me > .label,
+.message.me > .content > .label:first-child,
 .message.me > .content > p:first-of-type > .label:first-child {
 	color: var(--me);
 }
@@ -49,13 +44,15 @@ div.messages {
 	display: block;
 }
 .message > .content {
-	margin: 0 0 0 1em;
+	margin: 0 0 0 0.5em;
 	width: fit-content;
 }
 
+/*
 .narrative > .content {
 	margin: 0;
 }
+*/
 
 #allemande_status {
 	position: fixed;
@@ -68,23 +65,23 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	margin-bottom: 0.75rem;
 }
 
-.message :is(img, video, audio, iframe) {
+/* .message :is(img, video, audio, iframe) { */
+
+.message img:not(.thumb) {
 	vertical-align: top;
 	margin: 6px 4px;
 	max-width: calc(max(min(var(--image-width), var(--image-height)), 44px));
 	max-height: calc(max(min(var(--image-width), var(--image-height)), 44px));
 }
 
-:is(.narrative, .large) :is(img, video, audio, iframe) {
+:is(body.clean .narrative, .large) img:not(.thumb) {
 	max-width: 100%;
 	max-height: 100%;
-}
-:is(.narrative, .large) :is(img, video, audio, iframe) {
 	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
 	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
 }
 
-.small :is(img, video, audio, iframe) {
+.message .small :img:not(.thumb) {
 	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 88px));
 	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 88px));
 }
@@ -99,8 +96,14 @@ table, th, td {
 	padding: 4px;
 }
 
-.alt {
-	width: 100%;
+body:not(.images):not(.images_alt) .image {
+	width: 280px;
+	height: 1.5em;
+}
+
+.caption {
+	width: 280px;
+	min-width: 280px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -108,86 +111,69 @@ table, th, td {
 	background: var(--background);
 }
 
-details.search {
-	display: block;
-}
-
-
-/* search images ---------------------------------------------------------- */
-
-div:has(> div.image),
-div:has(> div.embed) {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-end;
-	gap: 20px;
-}
-
-body:not(.images) div:has(> div.image),
-body:not(.images) div:has(> div.embed) {
-	display: block;
-}
-
-div.image, div.embed {
-	margin: 0;
-	padding: 0;
+.embed:hover .caption {
 	overflow: visible;
-	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px));
-	position: relative;
-	margin-bottom: 16px;
-}
-
-.image .thumb, .embed .thumb {
-	width: 100%;
-	height: auto;
-	object-fit: contain;
-}
-
-body:not(.images) :is(.image, .alt),
-body:not(.images) :is(.embed, .alt) {
-	width: auto;
-	min-width: 10em;
-	display: block;
-}
-
-body:not(.images) .image,
-body:not(.images) .embed {
-	min-height: 18px;
-}
-
-.image > a,
-.embed > a {
-	display: block;
-}
-
-.image .alt,
-.embed .alt {
-	width: 100%;
-	position: absolute;
-	bottom: 0;
-	min-height: 18px;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	background: var(--background);
-	/* align text to top */
-	display: flex;
-	align-items: flex-start;
-	transform: translateY(100%);
-}
-
-.image:hover,
-.embed:hover {
-	overflow: visible;
-}
-
-body.images .image:hover .alt,
-body.images .embed:hover .alt {
 	white-space: normal;
 	z-index: 100;
+}
+
+.embed .thumb {
+	width: 280px;
+	height: 177px;
+	margin: 0 0 4px 0 !important;
+	object-fit: cover;
+}
+
+.embed {
+	width: 280px;
+	height: 177px;
+	display: inline-block;
+	margin: 0px 20px 40px 0px;
+	padding: 0;
+}
+
+.image .thumb {
+	width: auto;
+	height: 177px;
+	margin: 0 0 4px 0 !important;
+}
+
+.image {
+	display: inline-block;
+	padding: 0;
+}
+
+body.images .image {
+	height: 201px;
+	margin: 0px 20px 40px 0px;
+	padding-bottom: 128px;
+	position: relative;
+	overflow: hidden;
+}
+
+
+.image > a {
+	display: block;
+}
+
+.image .caption {
+	width: auto;
+	position: absolute;
+	top: 177px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	background: var(--background);
+}
+
+.image:hover {
 	overflow: visible;
 }
 
+.image:hover .caption {
+	white-space: normal;
+	z-index: 100;
+}
 
 a {
 	text-decoration: none;
@@ -269,18 +255,13 @@ details.think, details.think * {
 	color: var(--think);
 }
 
-/*
 details.search {
-	position: relative;
-	min-width: 20em;
+/*	position: relative; */
+/*	top: -18px; */
 }
-*/
 
-details.search summary {
-/*	position: absolute;
-/*	top: -18px;
-	right: max(0px, calc(100% - 252px));
-*/
+body.image details.search > div {
+	margin-bottom: 40px;
 }
 
 body#dir {
@@ -303,7 +284,7 @@ ul.directory-listing {
 	list-style: none;
 	padding: 0;
 	display: grid;
-	margin: 6px;
+	/* margin: 0; */
 }
 
 body#dir.rows ul.directory-listing {
@@ -317,7 +298,7 @@ body#dir.columns ul.directory-listing {
 	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	scroll-snap-type: x mandatory;
 	scroll-padding: 0 1rem; /* optional: adds some padding to snap points */
-	max-height: calc(100% - 12px);
+	max-height: 100%;
 }
 
 ul.directory-listing > li {
@@ -340,23 +321,25 @@ body > div.messages_wrap {
 	flex-basis: 128px;
 	flex-grow: 1;
 	flex-shrink: 0;
+	padding: 0.5em;
 }
 
 body:not(.images) img {
 	display: none;
 }
-body:not(.alt) .alt {
+body.images .alt {
 	display: none;
+}
+body:not(.images):not(.images_alt) .alt {
+	width: 1.2em;
+	height: 1.2em;
+	overflow: hidden;
+	display: inline-block;
 }
 
 body:not(.dot_source) .language-dot {
 	display: none;
 }
-/*
-body.dot_source .graphviz {
-	display: none;
-}
-*/
 
 body.canvas > div.canvas {
 	display: block;
@@ -430,28 +413,32 @@ body.landscape .resizer {
 	cursor: ew-resize;
 }
 
-body.script_source .content :is(script, style):not(.hide, [src]) {
+body.script_source .content :is(script, style):not(.hide) {
 	display: block;
 	clear: both;
 	font: 12px fixed;
 	white-space: pre-wrap;
-	margin-top: -14px;
 	width: fit-content;
+	min-width: 12em;
+	margin-top: -14px;  /* compensate for likely leading newline */
 }
 
-body.script_source .content:has(script, style):not(.hide, [src]) {
-	position: relative;
-}
-
-body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
+body:not(.script_source) .content :has(+script:not(.hide):not([src]), +style:not(.hide))::after {
 	content: "<script/>";
 	display: block;
 	font-weight: normal;
+	color: var(--text);
+	min-width: 12em;
 }
 
 pre:has(div.graphviz) {
 	float: left;
 	margin: 0px 20px 40px 0px;
+}
+
+div.graphviz > svg {
+	width: fit-content;
+	height: fit-content;
 }
 
 /*
@@ -463,12 +450,15 @@ pre:has(div.graphviz) {
 }
 */
 
-p:has(> img) {
+p:has(> img), div:has(> img) {
 	clear: both;
 }
-.message > .content > .label:first-child:has(+ img, + video, + audio, + iframe, + pre + div > div.image, + div > div.embed),
-.message > .content > p:first-of-type > .label:first-child:has(+ img, + video, + audio, + iframe, + pre, + div > div.image, +div > div.embed) {
-	display: block;
+/* break between label and certain elements that like to be aligned to the left */
+.message > .content > p:first-of-type > .label:first-child:has(+ img, + video, + audio, + iframe, + pre, + script:not([src])) {
+    display: block;
+}
+
+:has(> img), div:has(> img) {
 	clear: both;
 }
 
@@ -513,13 +503,13 @@ p:has(> img) {
 	--image-height: 100vh;
 }
 
-pre:has(> code) {
+pre:has(> code), div.content:has(> script, > style) {
 	position: relative;
 }
 
 .code-controls {
 	position: absolute;
-	top: 0;
+	top: -4px;
 	right: 0;
 	display: none;
 	gap: 8px;
@@ -528,13 +518,13 @@ pre:has(> code) {
 	background: var(--background);
 }
 
-script + .code-controls {
-	top: 24px;
-}
-
 .code-controls button {
 	border-radius: 6px;
 	font-size: 1.2rem;
+}
+
+div > .code-controls {
+	top: 13px;
 }
 
 .graphviz {
@@ -573,30 +563,9 @@ body.columns .message * {
 	display: flex;
 }
 
-/* tables ----------------------------------------------------------------- */
-
-th, td {
-	height: 1.5em;
-	max-height: 1.5em;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-is:(th, td):hover {
-	overflow: visible;
-	background: var(--background);
-}
-
-.embed:has(iframe) {
-	z-index: 10;
-}
-
-/* printing --------------------------------------------------------------- */
-
 @media print {
 	:root {
-		--text: black !important;
-		--link: black !important;
+		--text: black;
 		--frame: white;
 		--border: white;
 	}
@@ -609,17 +578,10 @@ is:(th, td):hover {
 	html, body {
 		background: white !important;
 		height: auto !important;
-		min-height: 100% !important;
+		min-height: 0 !important;
 		overflow: visible !important;
-		color: black;
 	}
 	.code-controls {
 		display: none !important;
-	}
-}
-
-@media screen {
-	body.print {
-		display: none;
 	}
 }

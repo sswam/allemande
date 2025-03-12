@@ -1,6 +1,6 @@
 // Debug tools ---------------------------------------------------------------
 
-function addComputedStyles(rootElement, attrName = 's', recursive = false) {
+function addComputedStyles(rootElement, attrName = 's', recursive = true) {
     function getNonDefaultStyles(element) {
         // Create a fresh element of the same type
         const dummy = document.createElement(element.tagName);
@@ -42,7 +42,7 @@ function addComputedStyles(rootElement, attrName = 's', recursive = false) {
     return rootElement;
 }
 
-function addMatchedStyles(rootElement, attrName = 's', recursive = false, ignoreStyles = undefined) {
+function addMatchedStyles(rootElement, attrName = 's', recursive = true, ignoreStyles = undefined) {
     // Styles to ignore - common base styles
     if (ignoreStyles === undefined) {
         ignoreStyles = "box-sizing, font-family, color, scrollbar-color";
@@ -107,3 +107,5 @@ function addMatchedStyles(rootElement, attrName = 's', recursive = false, ignore
 
     return rootElement;
 }
+
+styles = addMatchedStyles;

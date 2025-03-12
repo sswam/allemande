@@ -1,15 +1,17 @@
 // status indicator ----------------------------------------------------------
 
-const timeout_seconds = 60;
+const offline_timeout_seconds = 60;
 
 const CHAT_URL =
   location.protocol + "//" + location.host.replace(/^rooms\b/, "chat");
+
+var inIframe = window.parent !== window.self;
 
 let room;
 
 let $body, $messages, $overlay, $messages_wrap, $canvas_div;
 
-let timeout;
+let offline_timeout;
 
 let overlay_mode = false;
 let $currentImg;
@@ -18,6 +20,13 @@ let allImages;
 let overlay_fullscreen = true;
 
 let suppressInitialScroll = false;
+
+let view_options = {
+  images: 2,
+  image_size: 4,
+};
+
+let snapshot = false;
 
 function get_status_element() {
   let status = $id("allemande_status");
@@ -34,14 +43,20 @@ function reload() {
 }
 
 function online() {
-  clearTimeout(timeout);
-  timeout = setTimeout(offline, 1000 * timeout_seconds);
+  console.log("online");
+  if (snapshot)
+    return;
+  clearTimeout(offline_timeout);
+  offline_timeout = setTimeout(offline, 1000 * offline_timeout_seconds);
   const status = get_status_element();
   //	status.innerText = '🔵';
   status.innerText = "";
 }
 
 function offline() {
+  console.log("offline!");
+  if (snapshot)
+    return;
   const status = get_status_element();
   status.innerText = "🔴";
   document.body.addEventListener("mouseenter", reload, { once: true });
@@ -52,54 +67,82 @@ function clear() {
 }
 
 function ready_state_change() {
+  console.log("ready state change", document.readyState);
   if (document.readyState !== "loading") {
     offline();
   }
 }
 
+function load_error() {
+  console.log("load error");
+  offline();
+}
+
+console.log("initial call to online");
 online();
 
 $on(document, "readystatechange", ready_state_change);
+$on(document, "error", load_error);
 
 // scrolling to the bottom ---------------------------------------------------
 
 let messages_at_bottom = true;
+let messages_width_last;
 let messages_height_last;
 let top_message;
 
 function is_at_bottom($e) {
-  const bot = Math.abs($e.scrollHeight - $e.scrollTop - $e.clientHeight) < 8;
-  // console.log("is at bottom", $e, bot);
+  if (view_options.columns) {
+    return Math.abs($e.scrollWidth - $e.scrollLeft - $e.clientWidth) < 8;
+  } else {
+    return Math.abs($e.scrollHeight - $e.scrollTop - $e.clientHeight) < 8;
+  }
   return bot;
 }
 
 function scroll_to_bottom($e) {
   // console.log("scroll to bottom", $e);
-  $e.scrollTop = $e.scrollHeight;
+  if (view_options.columns) {
+    // console.log("scroll to right");
+    $e.scrollLeft = $e.scrollWidth;
+  } else {
+    $e.scrollTop = $e.scrollHeight;
+  }
 }
 
-function messages_scrolled() {
+async function messages_scrolled() {
   // console.log("messages scrolled");
+  await wait_for_load();
   var $e = $messages_wrap;
-  if (messages_at_bottom) {
+  if (messages_at_bottom && view_options.columns) {
+    var messages_width = $e.scrollWidth;
+    if (messages_width != messages_width_last) {
+      messages_width_last = messages_width;
+      if (!suppressInitialScroll)
+        scroll_to_bottom($e);
+    }
+  } else if (messages_at_bottom) {
     var messages_height = $e.scrollHeight;
     if (messages_height != messages_height_last) {
       messages_height_last = messages_height;
       if (!suppressInitialScroll)
         scroll_to_bottom($e);
-      messages_height_last = $e.scrollHeight;
     }
   }
   messages_at_bottom = is_at_bottom($e);
 
-  top_message = getTopmostVisibleElement();
+  if (view_options.columns) {
+    top_message = getLeftmostVisibleElement();
+  } else {
+    top_message = getTopmostVisibleElement();
+  }
   // console.log("top message", top_message);
 }
 
 function getTopmostVisibleElement() {
   // If half visible, round to nearest element
   const container = $messages_wrap;
-  const elements = container.querySelectorAll('.message, .narrative');
+  const elements = container.querySelectorAll('.message');
 
   // Get container's top boundary
   const containerTop = container.scrollTop;
@@ -116,6 +159,26 @@ function getTopmostVisibleElement() {
   }
 
   return null;
+}
+
+function getLeftmostVisibleElement() {
+  // If half visible, round to nearest element
+  const container = $messages_wrap;
+  const elements = container.querySelectorAll('.message');
+
+  // Get container's left boundary
+  const containerLeft = container.scrollLeft;
+
+  // Find first element that's visible
+  for (const element of elements) {
+    const rect = element.getBoundingClientRect();
+    const elementLeft = element.offsetLeft - container.offsetLeft;
+    const elementMiddle = elementLeft + rect.width / 2;
+
+    if (elementMiddle >= containerLeft) {
+      return element;
+    }
+  }
 }
 
 // wait for ------------------------------------------------------------------
@@ -153,8 +216,7 @@ async function check_for_new_content(mutations) {
     for (const node of mutation.addedNodes) {
       if (
         node.nodeType == Node.ELEMENT_NODE &&
-        node.tagName == "DIV" &&
-        (node.classList.contains("message") || node.classList.contains("narrative"))
+        node.tagName == "DIV" && node.classList.contains("message")
       ) {
         try {
           await wait_for(() => node_has_next_sibling(node), 1000);
@@ -174,7 +236,9 @@ async function check_for_new_content(mutations) {
 async function mutated(mutations) {
   const new_content = await check_for_new_content(mutations);
   if (new_content) {
+    console.log("new content call to online");
     online();
+    messages_resized();
   }
   process_messages(new_content);
 }
@@ -246,12 +310,22 @@ function key_event(ev) {
     toggle_fullscreen();
     return;
   }
+  if (ev.key == "Home") {
+    return scroll_home();
+  }
+  if (ev.key == "End") {
+    return scroll_end();
+  }
   if (
     keysToKeep.includes(ev.key) ||
     (ev.ctrlKey && ctrlKeysToKeep.includes(ev.key))
   ) {
     return;
   }
+  if (!inIframe) {
+    return;
+  }
+
   // relay the event to the parent window
   const copy = {
     type: ev.type,
@@ -263,14 +337,18 @@ function key_event(ev) {
     shiftKey: ev.shiftKey,
     metaKey: ev.metaKey,
   };
-  window.parent.postMessage(copy, CHAT_URL);
+  if (inIframe)
+    window.parent.postMessage(copy, CHAT_URL);
   ev.preventDefault();
 }
 
+/*
 function go_home() {
   // tell the parent window to GTFO of here
-  window.parent.postMessage({ type: "go_home" }, CHAT_URL);
+  if (inIframe)
+    window.parent.postMessage({ type: "go_home" }, CHAT_URL);
 }
+*/
 
 function key_event_overlay(ev) {
   if (ev.key == "Escape" || ev.key == "q") {
@@ -420,8 +498,8 @@ function clear_overlay_image_cover() {
 // image overlay -------------------------------------------------------------
 
 function image_overlay($el) {
+  // console.log("image_overlay", $el);
   // check if it's an A
-  console.log("image_overlay", $el);
   let $img;
   if ($el.tagName === "A") {
     $currentImg = $el.querySelector("img");
@@ -438,7 +516,7 @@ function image_overlay($el) {
   // Get all images and links containing images in document order
   allImages = Array.from($messages.querySelectorAll("img"));
   currentImgIndex = allImages.indexOf($currentImg);
-  console.log("currentImgIndex", currentImgIndex);
+//  console.log("currentImgIndex", currentImgIndex);
   allImages = allImages.map(element => {
       // If this is an image in a link
       if (element.parentElement.tagName === "A") {
@@ -491,7 +569,8 @@ function overlay_close(ev) {
 }
 
 function signal_overlay(overlay) {
-  window.parent.postMessage({ type: "overlay", overlay: overlay }, CHAT_URL);
+  if (inIframe)
+    window.parent.postMessage({ type: "overlay", overlay: overlay }, CHAT_URL);
 }
 
 function image_go(delta) {
@@ -694,10 +773,25 @@ function click(ev) {
 
 function notify_new_message(newMessage) {
   // send a message to the parent window
-  window.parent.postMessage({ type: "new_message", message: newMessage }, CHAT_URL);
+  if (inIframe)
+    window.parent.postMessage({ type: "new_message", message: newMessage }, CHAT_URL);
 }
 
 // view options --------------------------------------------------------------
+
+function setup_view_options() {
+  // persist from local storage JSON
+  // if not present, set to default
+  let view_options_str = localStorage.getItem("view_options");
+  if (view_options_str) {
+    const view_options_loaded = JSON.parse(view_options_str);
+    for (const key in view_options_loaded) {
+      view_options[key] = view_options_loaded[key];
+    }
+  }
+  view_options.details_changed = true;
+  set_view_options(view_options);
+}
 
 async function handle_message(ev) {
   // console.log("room handle_message", ev);
@@ -706,46 +800,114 @@ async function handle_message(ev) {
     return;
   }
   if (ev.data.type === "set_view_options") {
-    await wait_for_load();
-    const cl = document.body.classList;
-    cl.toggle("images", ev.data.images == 2);
-    cl.toggle("images_alt", ev.data.images == 1);
-    cl.toggle("source", ev.data.source == 1);
-    cl.toggle("canvas", ev.data.canvas == 1);
-    cl.toggle("clean", ev.data.clean == 1);
-    document.documentElement.style.setProperty("--image-width", ev.data.image_size*10 + "vw");
-    document.documentElement.style.setProperty("--image-height", ev.data.image_size*10 + "vh");
-    const image_size_narrative = ev.data.image_size == 10 ? 100 : Math.min(ev.data.image_size*20, 90);
-    document.documentElement.style.setProperty("--image-width-narrative", image_size_narrative + "vw");
-    document.documentElement.style.setProperty("--image-height-narrative", image_size_narrative + "vh");
+    await set_view_options(ev.data);
   } else if (ev.data.type === "theme_changed") {
     const $style = $id("theme");
     $style.href = CHAT_URL + "/themes/" + ev.data.theme + ".css";
   } else if (ev.data.type === "set_scroll") {
-    const x = ev.data.x;
-    let y = ev.data.y;
-    if (y == -1)
-      y = $messages_wrap.scrollHeight;
-    $messages_wrap.scrollLeft = x;
-    $messages_wrap.scrollTop = y;
+    set_scroll(ev.data.x, ev.data.y);
   }
+  messages_resized();
+}
+
+async function set_view_options(new_view_options) {
+//  console.log("set_view_options", new_view_options);
+  view_options = new_view_options;
+  localStorage.setItem("view_options", JSON.stringify(view_options));
+  await wait_for_load();
+//  console.log("applying view options");
+  const cl = document.body.classList;
+  cl.toggle("images", view_options.images == 1);
+  cl.toggle("alt", view_options.alt == 1);
+  cl.toggle("script_source", view_options.source >= 1);
+  cl.toggle("dot_source", view_options.source >= 2);
+  cl.toggle("canvas", view_options.canvas == 1);
+  cl.toggle("clean", view_options.clean == 1);
+  cl.toggle("columns", view_options.columns == 1);
+  document.documentElement.style.setProperty("--image-width", view_options.image_size*10 + "vw");
+  document.documentElement.style.setProperty("--image-height", view_options.image_size*10 + "vh");
+  const image_size_large = view_options.image_size == 10 ? 100 : Math.min(view_options.image_size*20, 90);
+  const image_size_small = view_options.image_size*5;
+  document.documentElement.style.setProperty("--image-width-large", image_size_large + "vw");
+  document.documentElement.style.setProperty("--image-height-large", image_size_large + "vh");
+  document.documentElement.style.setProperty("--image-width-small", image_size_small + "vw");
+  document.documentElement.style.setProperty("--image-height-small", image_size_small + "vh");
+  if (view_options.details_changed) {
+    set_view_details();
+    view_options.details_changed = false;
+  }
+}
+
+function set_view_details() {
+  for (const $details of $messages.querySelectorAll("details"))
+    open_or_close_details($details);
+}
+
+function open_or_close_details($details) {
+  const view_details = view_options.details;
+  const show_thinking = view_details & 1;
+  const show_other_details = view_details & 2;
+  if ($details.classList.contains("think")) {
+    $details.open = show_thinking;
+  } else {
+    $details.open = show_other_details;
+  }
+}
+
+// scroll to home or end -----------------------------------------------------
+
+function scroll_home() {
+  scroll_home_end(0);
+}
+
+function scroll_end() {
+  scroll_home_end(-1);
+}
+
+function scroll_home_end(p) {
+  if (view_options.columns) {
+    set_scroll(p, 0);
+  } else {
+    set_scroll(0, p);
+  }
+}
+
+function set_scroll(x, y) {
+  if (x == -1)
+    x = $messages_wrap.scrollWidth;
+  if (y == -1)
+    y = $messages_wrap.scrollHeight;
+  $messages_wrap.scrollLeft = x;
+  $messages_wrap.scrollTop = y;
 }
 
 // wait for the page to load the main elements -------------------------------
 
+function setup_ids() {
+    $body = $("body");
+    $messages = $("div.messages");
+    $messages_wrap = $("div.messages_wrap");
+    $overlay = $("div.overlay");
+    $canvas_div = $("div.canvas");
+}
+
 function wait_for_load() {
   return new Promise(resolve => {
-    if (document.body) {
-      resolve();
-      return;
-    }
-
-    const observer = new MutationObserver(mutations => {
+    function check_ready() {
+//      console.log("check_ready");
+//      console.log($("div.messages"), $("div.canvas canvas"));
       if ($("div.messages") && $("div.canvas canvas")) {
         observer.disconnect();
+        setup_ids();
         resolve();
+        return true;
       }
-    });
+      return false;
+    }
+    const observer = new MutationObserver(check_ready);
+
+    if (check_ready())
+      return;
 
     observer.observe(document.documentElement, { childList: true, subtree: true });
   });
@@ -766,12 +928,18 @@ async function window_resized() {
 }
 
 function messages_resized() {
+//  console.log("messages resized");
   if (!messages_at_bottom && top_message) {
-    top_message.scrollIntoView({ behavior: 'instant', block: 'start' });
+    // top_message.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
+  /*
+  if (inIframe)
+    window.parent.postMessage({ type: "size_change", width: $messages_wrap.scrollWidth, height: $messages_wrap.scrollHeight }, CHAT_URL);
+  */
   messages_scrolled();
 }
 
+/*
 function canvas_resized() {
   if (canvas_at_bottom) {
     scroll_to_bottom($canvas_div);
@@ -781,6 +949,7 @@ function canvas_resized() {
 function canvas_scrolled() {
   canvas_at_bottom = is_at_bottom($canvas_div);
 }
+*/
 
 // Wrapper function to initialize drag controls for the resizer --------------
 
@@ -825,17 +994,21 @@ function handle_intro() {
 
 async function room_main() {
   room = decodeURIComponent(location.pathname.replace(/\.html$/, '').replace(/^\//, ''));
-  handle_intro();
+
+  // check for ?snapshot=1 in URL, properly by parsing the query string
+  const url = new URL(location.href);
+  if (url.searchParams.has("snapshot")) {
+    snapshot = url.searchParams.get("snapshot") && true;
+  }
+
+  setup_view_options();
 
   setup_mutation_observer();
 
+  handle_intro();
+
   await wait_for_load();
   // console.log("room loaded");
-  $body = $("body");
-  $messages = $("div.messages");
-  $messages_wrap = $("div.messages_wrap");
-  $overlay = $("div.overlay");
-  $canvas_div = $("div.canvas");
 
   $on($overlay, "click", overlay_click);
   setup_swipe();
@@ -844,16 +1017,15 @@ async function room_main() {
   $on(window, "resize", () => run_hooks("window_resize"));
   $on(window, "message", handle_message);
   setup_keyboard_shortcuts();
-  window.parent.postMessage({ type: "ready", theme: theme }, CHAT_URL);
+  if (inIframe)
+    window.parent.postMessage({ type: "ready", theme: theme }, CHAT_URL);
   add_hook("window_resize", window_resized);
 
-  new ResizeObserver(canvas_resized).observe($canvas_div);
+//  new ResizeObserver(canvas_resized).observe($canvas_div);
   $on($messages_wrap, "scroll", messages_scrolled);
-  const resizeObserver = new ResizeObserver(entries => {
-    messages_resized();
-  });
+  const resizeObserver = new ResizeObserver(messages_resized);
   resizeObserver.observe($messages);
-  $on($canvas_div, "scroll", canvas_scrolled);
+//  $on($canvas_div, "scroll", canvas_scrolled);
 
   window_resized();
   messages_scrolled();

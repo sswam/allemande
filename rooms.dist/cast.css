@@ -14,4 +14,17 @@
 
 div.cast {
 	padding: 0 8px;
+	clear: both;
+}
+
+@media screen {
+	div.message:has(div.cast) {
+		break-after: column;
+	}
+}
+
+@media print {
+	div.message:has(div.cast) {
+		break-after: page;
+	}
 }

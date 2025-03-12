@@ -16,6 +16,7 @@ input, textarea {
 	width: 0;
 }
 #messages {
+	margin: 0;
 	min-height: 88px;
 	position: relative;
 }
@@ -193,6 +194,28 @@ iframe#messages_iframe.overlay {
 .active-19 { background-color: #ffffc0 !important; color: black !important; }
 .active-20 { background-color: #ffffc8 !important; color: black !important; }
 
+.active--1 { background-color: #306060 !important; color: white !important; }
+.active--2 { background-color: #387070 !important; color: white !important; }
+.active--3 { background-color: #408080 !important; color: white !important; }
+.active--4 { background-color: #489090 !important; color: white !important; }
+.active--5 { background-color: #50a0a0 !important; color: white !important; }
+.active--6 { background-color: #58b0b0 !important; color: black !important; }
+.active--7 { background-color: #60c0c0 !important; color: black !important; }
+.active--8 { background-color: #68d0d0 !important; color: black !important; }
+.active--9 { background-color: #70e0e0 !important; color: black !important; }
+.active--10 { background-color: #78f0f0 !important; color: black !important; }
+.active--11 { background-color: #80ffff !important; color: black !important; }
+.active--12 { background-color: #88ffff !important; color: black !important; }
+.active--13 { background-color: #90ffff !important; color: black !important; }
+.active--14 { background-color: #98ffff !important; color: black !important; }
+.active--15 { background-color: #a0ffff !important; color: black !important; }
+.active--16 { background-color: #a8ffff !important; color: black !important; }
+.active--17 { background-color: #b0ffff !important; color: black !important; }
+.active--18 { background-color: #b8ffff !important; color: black !important; }
+.active--19 { background-color: #c0ffff !important; color: black !important; }
+.active--20 { background-color: #c8ffff !important; color: black !important; }
+
+
 .error {
 	background-color: #422 !important;
 }
@@ -215,4 +238,29 @@ button:has(svg) {
 	justify-content: center;
 	padding: 2px 4px;
 	line-height: 1;
+}
+
+#top {
+	padding-bottom: calc(var(--pad) - 1px);
+}
+
+@media print {
+	:root {
+		--frame: white;
+		--border: white;
+	}
+	#top, #inputrow, #resizer {
+		display: none;
+	}
+	iframe#messages_iframe {
+		background: white !important;
+		border-radius: 0 !important;
+		border: none !important;
+		overflow: visible !important;
+/*		width: var(--messages-width) !important;
+		height: var(--messages-height) !important; */
+	}
+	html, body {
+		background: white !important;
+	}
 }

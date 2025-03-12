@@ -320,17 +320,25 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     response3 = fix_layout(response2, args, agent)
     logger.debug("response3:\n%s", response3)
 
-    # wrap secondary divs in <details>
-    response4 = re.sub(
-        r"(</div>\n?\s*)(<div\b.*)",
-        r"""\1<details class="search"><summary>more</summary>\n\t\2</details>\n""",
-        response3,
-        flags=re.DOTALL,
-    )
+#     # wrap secondary divs in <details>
+#     response4 = re.sub(
+#         r"(</div>\n?\s*)(<div\b.*)",
+#         r"""\1<details class="search"><summary>more</summary>\n\t\2</details>\n""",
+#         response3,
+#         flags=re.DOTALL,
+#     )
 
-    logger.debug("response4:\n%s", response3)
+#     # wrap div results in <details>, replacing outer div
+#     response4 = re.sub(
+#         r"<div>(.*)</div>",
+#         r"""<details class="search"><summary>more</summary>\1</details>""",
+#         response3,
+#         flags=re.DOTALL,
+#     )
+#
+#     logger.info("response4:\n%s", response4)
 
-    return response4
+    return response3
 
 
 def load_local_agents(room, agents=None):
@@ -833,11 +841,15 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     system_bottom_role = "user" if service == "google" else agent.get("system_bottom_role", "user")
     system_top_role = "user" if service == "google" else agent.get("system_top_role", "system")
     if system_bottom:
+        if system_bottom_role == "user":
+            system_bottom = f"System: {system_bottom}"
         n_messages = len(remote_messages)
         pos = agent.get("system_bottom_pos", 0)
         pos = min(pos, n_messages)
         remote_messages.insert(n_messages - pos, {"role": system_bottom_role, "content": system_bottom.rstrip()})
     if system_top:
+        if system_top_role == "user":
+            system_top = f"System: {system_top}"
         remote_messages.insert(0, {"role": system_top_role, "content": system_top.rstrip()})
 
     # Some agents require alternating user and assistant messages. Mark most recent message as "user", then check backwards and cut off when no longer alternating.

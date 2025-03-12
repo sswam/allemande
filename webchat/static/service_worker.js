@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.2.859";
+const VERSION = "0.3.517";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
@@ -19,6 +19,7 @@ const URLS_TO_CACHE = [
 	"/process_messages.js",
 	"/voice.js",
 	"/room.js",
+	"/print.js",
 
 	"/d3.min.js",
 	"/wasm.min.js",
@@ -34,16 +35,30 @@ const CORS_URLS_TO_CACHE = [
 async function sw_install(event) {
 	try {
 		const cache = await caches.open(CACHE_NAME);
-		
+
 		// Cache local resources
-		await cache.addAll(URLS_TO_CACHE);
+		// await cache.addAll(URLS_TO_CACHE);
+		await Promise.all(
+			URLS_TO_CACHE.map(async (url) => {
+				const response = await fetch(url);
+				if (response.redirected) {
+					console.log(`Skipped caching redirect for: ${url}`)
+				} else {
+					await cache.put(url, response);
+				}
+			})
+		);
 
 		// Cache cross-origin resources with CORS mode
 		for (const url of CORS_URLS_TO_CACHE) {
 			console.log(`Caching CORS resource: ${url}`);
 			const response = await fetch(url, { mode: 'cors', credentials: 'omit' });
-			await cache.put(url, response);
-			console.log(`Cached CORS resource: ${url}`);
+			if (!response.redirected) {
+				await cache.put(url, response);
+				console.log(`Cached CORS resource: ${url}`);
+			} else {
+				console.log(`Skipped caching redirect for: ${url}`);
+			}
 		}
 
 		// Activate the new service worker immediately
