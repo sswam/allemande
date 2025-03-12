@@ -105,7 +105,7 @@ input:disabled, input:disabled:hover, input:disabled:focus
 }
 
 :root {
-	--pad: 5px;
+	--pad: 8px;
 }
 
 /* light mode / dark mode default colours, avoid flash of white or black */

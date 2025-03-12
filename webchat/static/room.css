@@ -8,10 +8,13 @@ div.messages {
 .label {
 	margin-right: 1em;
 	font-weight: bold;
+	align-self: flex-start;
 }
+/*
 .message > .label {
 	float: left;
 }
+*/
 /* moved labels to avoid problems with break-after: avoid */
 .message > .content > .label:first-child,
 .message > .content > p:first-of-type > .label:first-child {
@@ -85,8 +88,8 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 }
 
 .small :is(img, video, audio, iframe) {
-	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 88px));
-	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 88px));
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 22px));
+	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 22px));
 }
 
 /* borders for markdown tables */
@@ -99,7 +102,7 @@ table, th, td {
 	padding: 4px;
 }
 
-.alt {
+image .alt, embed .alt {
 	width: 100%;
 	overflow: hidden;
 	white-space: nowrap;
@@ -116,11 +119,13 @@ details.search {
 /* search images ---------------------------------------------------------- */
 
 div:has(> div.image),
-div:has(> div.embed) {
+div:has(> div.embed),
+p:has(> div.image),
+p:has(> div.embed) {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-end;
-	gap: 20px;
+	gap: 16px;
 }
 
 body:not(.images) div:has(> div.image),
@@ -129,12 +134,24 @@ body:not(.images) div:has(> div.embed) {
 }
 
 div.image, div.embed {
+	display: inline-block;
 	margin: 0;
 	padding: 0;
 	overflow: visible;
-	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px));
+	max-width: calc(max(min(var(--image-width), var(--image-height)), 44px));
 	position: relative;
+}
+
+body.alt div:is(.image, .embed) {
 	margin-bottom: 16px;
+}
+
+:is(.narrative, .large) :is(div.image, div.embed, .image .alt, .embed .alt) {
+	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 44px));
+}
+
+.small :is(div.image, div.embed, .image .alt, .embed .alt) {
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px));
 }
 
 .image .thumb, .embed .thumb {
@@ -145,9 +162,10 @@ div.image, div.embed {
 
 body:not(.images) :is(.image, .alt),
 body:not(.images) :is(.embed, .alt) {
-	width: auto;
-	min-width: 10em;
+	max-width: 90vw !important;
+	width: 90vw !important;
 	display: block;
+	overflow: visible;
 }
 
 body:not(.images) .image,
@@ -164,7 +182,6 @@ body:not(.images) .embed {
 .embed .alt {
 	width: 100%;
 	position: absolute;
-	bottom: 0;
 	min-height: 18px;
 	overflow: hidden;
 	white-space: nowrap;
@@ -173,6 +190,12 @@ body:not(.images) .embed {
 	/* align text to top */
 	display: flex;
 	align-items: flex-start;
+	padding: 2px;
+	border-radius: 4px;
+}
+
+body.images :is(.image, .embed) .alt {
+	bottom: 3px;
 	transform: translateY(100%);
 }
 
@@ -204,10 +227,29 @@ a:hover {
 	font-weight: 400;
 }
 
-code {
+pre > code, code, pre > code *, code * {
 	font: 12px fixed;
 	white-space: pre-wrap;
+	font-weight: normal;
 }
+
+pre {
+	width: fit-content;
+}
+
+/* TODO light mode support */
+code.hljs {
+	background: rgba(255,255,255,0.05);
+	border: 1px solid rgba(255,255,255,0.1);
+	/* background-color: transparent; */
+}
+
+/*
+code.hljs {
+	background: rgba(0,0,0,0.3);
+	border: 1px solid rgba(0,0,0,0.6);
+}
+*/
 
 body.overlay {
 	overflow: hidden;
@@ -450,7 +492,8 @@ body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
 }
 
 pre:has(div.graphviz) {
-	float: left;
+	/* float: left; */
+	display: inline-block;
 	margin: 0px 20px 40px 0px;
 }
 
@@ -466,10 +509,9 @@ pre:has(div.graphviz) {
 p:has(> img) {
 	clear: both;
 }
-.message > .content > .label:first-child:has(+ img, + video, + audio, + iframe, + pre + div > div.image, + div > div.embed),
-.message > .content > p:first-of-type > .label:first-child:has(+ img, + video, + audio, + iframe, + pre, + div > div.image, +div > div.embed) {
+.message > .content > .label:first-child:has(+ img, + video, + audio, + iframe, + pre, + div.image, + div > div.image, + div > div.embed),
+.message > .content > p:first-of-type > .label:first-child:has(+ img, + video, + audio, + iframe, + pre, + div.image, + div > div.image, +div > div.embed) {
 	display: block;
-	clear: both;
 }
 
 .image_size_1 {
@@ -622,4 +664,41 @@ is:(th, td):hover {
 	body.print {
 		display: none;
 	}
+}
+
+/* limit visible items ---------------------------------------------------- */
+
+/*
+.search tbody tr:nth-child(n + (var(--visible-items) + 1)),
+div.search div:nth-child(n + (var(--visible-items) + 1)) {
+	display: none;
+}
+*/
+
+body.items_0 .search > div,
+body.items_1 .search > div:nth-child(n + 2),
+body.items_2 .search > div:nth-child(n + 3),
+body.items_3 .search > div:nth-child(n + 4),
+body.items_4 .search > div:nth-child(n + 5),
+body.items_5 .search > div:nth-child(n + 6),
+body.items_6 .search > div:nth-child(n + 7),
+body.items_7 .search > div:nth-child(n + 8),
+body.items_8 .search > div:nth-child(n + 9),
+body.items_9 .search > div:nth-child(n + 10) {
+  display: none;
+}
+/* body.items_10 .search > div:nth-child(n + 11) { */
+/* 10 or more means unlimited */
+
+body.items_0 .search tbody > tr,
+body.items_1 .search tbody > tr:nth-child(n + 2),
+body.items_2 .search tbody > tr:nth-child(n + 3),
+body.items_3 .search tbody > tr:nth-child(n + 4),
+body.items_4 .search tbody > tr:nth-child(n + 5),
+body.items_5 .search tbody > tr:nth-child(n + 6),
+body.items_6 .search tbody > tr:nth-child(n + 7),
+body.items_7 .search tbody > tr:nth-child(n + 8),
+body.items_8 .search tbody > tr:nth-child(n + 9),
+body.items_9 .search tbody > tr:nth-child(n + 10) {
+  display: none;
 }
