@@ -1,0 +1,101 @@
+const HIGHLIGHT_JS_VERSION = "11.11.1";
+
+// Track loaded state and languages
+const highlightState = {
+  core: null,  // Will hold the highlight.js instance
+  loadedLanguages: new Set(),
+};
+
+// Load highlight.js core if needed
+async function highlight_ensureHighlightCore() {
+  if (!highlightState.core) {
+    // Load core from CDN
+    await loadScript(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HIGHLIGHT_JS_VERSION}/highlight.min.js`);
+    highlightState.core = window.hljs;
+  }
+  return highlightState.core;
+}
+
+// Load a specific language module
+async function highlight_loadLanguage(lang) {
+  if (!highlightState.loadedLanguages.has(lang) && !highlightState.core.getLanguage(lang)) {
+    highlightState.loadedLanguages.add(lang);  // even on failure, and before await, to avoid repeated or concurrent attempts
+    try {
+      await loadScript(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HIGHLIGHT_JS_VERSION}/languages/${lang}.min.js`);
+    } catch (e) {
+      console.warn(`Failed to load language: ${lang}`, e);
+    }
+  }
+}
+
+// Helper to load scripts
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+// Process a single code block
+async function highlight_processCodeBlock(codeElement) {
+  const langClass = Array.from(codeElement.classList)
+    .find(cls => cls.startsWith('language-'));
+
+  if (langClass) {
+    const lang = langClass.replace('language-', '');
+    await highlight_loadLanguage(lang);
+  }
+
+  // Store original text content for unhighlighting
+  if (!codeElement.dataset.originalCode) {
+    codeElement.dataset.originalCode = codeElement.textContent;
+  }
+
+  highlightState.core.highlightElement(codeElement);
+}
+
+// Main handler for new messages
+async function highlight_code(messageElement, viewOptions) {
+  const codeBlocks = messageElement.querySelectorAll('code');
+  if (!codeBlocks.length) return;
+
+  if (viewOptions.highlight) {
+    await highlight_ensureHighlightCore();
+
+    for (const codeBlock of codeBlocks) {
+      await highlight_processCodeBlock(codeBlock);
+    }
+  } else {
+    // Restore original code if highlighting is disabled
+    for (const block of codeBlocks) {
+      if (block.dataset.originalCode) {
+        block.textContent = block.dataset.originalCode;
+        block.className = block.className.replace(/hljs|language-\w+/, '');
+      }
+    }
+  }
+}
+
+function highlight_set_stylesheet(style) {
+  let styleElement = document.getElementById('highlight_styles');
+  if (!styleElement) {
+    styleElement = document.createElement('link');
+    styleElement.id = 'highlight_styles';
+    styleElement.rel = 'stylesheet';
+    document.head.appendChild(styleElement);
+  }
+  const href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HIGHLIGHT_JS_VERSION}/styles/${style}.min.css`;
+  if (styleElement.href !== href) {
+    styleElement.href = href;
+  }
+}
+
+// Example usage in message handler:
+/*
+async function onNewMessage(messageElement) {
+  await handleCodeHighlighting(messageElement, viewOptions);
+}
+*/
