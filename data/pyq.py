@@ -5,44 +5,82 @@
 
 # TODO: support more formats like shell env, ini, etc
 
-import sys
-import json
-import csv
-from email.parser import Parser
-import subprocess
 import argparse
+import csv
+import datetime  # for evaluating .py data  # pylint: disable=unused-import
+import json
 import pprint
+import subprocess
+from email.parser import Parser
+from io import StringIO
+import sys
+import re
+
+import jq
 import xmltodict
 import yaml
-import jq
-from io import StringIO
+from deepmerge import always_merger
 
-# for evaluating py data:
-import datetime
-
-from records import read_records, write_records
 import csv_tidy
-
+from records import read_records, write_records
 
 which_jq = "system"  # "system" or "python"
+
+
+def yaml_str_presenter(dumper, data):
+    """
+    Presenter for strings that detects multi-line strings and formats them 
+    using the literal style (|) indicator
+    """
+    if re.search(r".\n.", data, flags=re.DOTALL):
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+
+
+yaml.add_representer(str, yaml_str_presenter)
+
+
+def merge_data(data_list: list[object]) -> object:
+    """Merge multiple data inputs using always_merger."""
+    if not data_list:
+        return None
+    result = data_list[0]
+    for data in data_list[1:]:
+        result = always_merger.merge(result, data)
+    return result
+
+
+def process_input(input_file, opts) -> object:
+    """Process a single input file using the appropriate loader."""
+    loader = loaders[opts.from_]
+    return loader(input_file, opts)
 
 
 def pyq_subprocess(data, *args):
     if args == (".",):
         return data
     print(args)
-    proc = subprocess.Popen(["jq"] + list(args), stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(
+        ["jq"] + list(args), stdin=subprocess.PIPE, stdout=subprocess.PIPE
+    )
     proc.stdin.write(json.dumps(data).encode("utf-8"))
     proc.stdin.close()
-
+    proc.wait()
+    if proc.returncode:
+        raise subprocess.CalledProcessError(proc.returncode, ["jq"] + list(args))
     jqout = json.loads(proc.stdout.read().decode("utf-8"))
     return jqout
 
 
 def pyq_subprocess_to_file(data, out_file, *args):
-    proc = subprocess.Popen(["jq"] + list(args), stdin=subprocess.PIPE, stdout=out_file)
+    proc = subprocess.Popen(
+        ["jq"] + list(args), stdin=subprocess.PIPE, stdout=out_file
+    )
     proc.stdin.write(json.dumps(data).encode("utf-8"))
     proc.stdin.close()
+    proc.wait()
+    if proc.returncode:
+        raise subprocess.CalledProcessError(proc.returncode, ["jq"] + list(args))
 
 
 def pyq_jq(data, jq_program):
@@ -60,13 +98,26 @@ def pyq(data, jq_program, jq_opts=None):
         return pyq_jq(data, jq_program)
 
 
-def pyq_streams(in_file, out_file, jq_program, opts):
+def pyq_streams(input_files: list[str], out_file, jq_program: str, opts):
+    """Process input files and run jq on merged result."""
     jq_opts = opts.jq_opts or []
 
-    loader = loaders[opts.from_]
-    formatter = formatters[opts.to]
+    # Collect data from all input files
+    data_list = []
+    if not input_files:
+        input_files = ["-"]
+    for filename in input_files:
+        if filename == "-":
+            data = process_input(sys.stdin, opts)
+        else:
+            with open(filename, encoding="utf-8") as f:
+                data = process_input(f, opts)
+        data_list.append(data)
 
-    data = loader(in_file, opts)
+    # Merge all inputs
+    data = merge_data(data_list)
+
+    formatter = formatters[opts.to]
 
     if opts.to == "json" and which_jq == "system":
         # we can output directly to the file,
@@ -76,7 +127,7 @@ def pyq_streams(in_file, out_file, jq_program, opts):
 
     jqout = pyq(data, jq_program, jq_opts)
     output = formatter(jqout, opts)
-    if output[-1] != "\n":
+    if output and output[-1] != "\n":
         output += "\n"
     print(output, end="", file=out_file)
 
@@ -120,8 +171,8 @@ def load_yaml(in_file, opts) -> object:
 
 def format_yaml(obj, opts) -> str:
     if not opts.compact:
-        return yaml.dump(obj, default_flow_style=opts.compact, indent=4)
-    return yaml.dump(obj)
+        return yaml.dump(obj, default_flow_style=False, indent=2, sort_keys=False)
+    return yaml.dump(obj, sort_keys=False)
 
 
 def load_csv(in_file, opts) -> object:
@@ -233,19 +284,27 @@ formatters = {
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Process python object notation like jq, using jq")
+    """Process input files with jq-like functionality."""
+    parser = argparse.ArgumentParser(
+        description="Process python object notation like jq, using jq"
+    )
 
-    # options to read and write either python object notation or json
-    # default is py to json
-    # option --from to specify input format
     parser.add_argument(
-        "--from", "-f", dest="from_", default="py", choices=formatters.keys(), help="input format"
+        "--from",
+        "-f",
+        dest="from_",
+        default="py",
+        choices=formatters.keys(),
+        help="input format",
     )
-    # option --to to specify output format
     parser.add_argument(
-        "--to", "-t", dest="to", default="json", choices=formatters.keys(), help="output format"
+        "--to",
+        "-t",
+        dest="to",
+        default="json",
+        choices=formatters.keys(),
+        help="output format",
     )
-    # option --format to specify both input and output format
     parser.add_argument(
         "--format",
         "-F",
@@ -254,10 +313,16 @@ def main():
         choices=formatters.keys(),
         help="input and output format",
     )
-    # option --ugly
-    parser.add_argument("--compact", "-c", action="store_true", help="compact output")
+    parser.add_argument(
+        "--compact", "-c", action="store_true", help="compact output"
+    )
     parser.add_argument("--delimiter", "-d", default=",", help="CSV delimiter")
-    parser.add_argument("--jq", choices=("system", "python"), help="use system jq or python jq")
+    parser.add_argument(
+        "--jq", choices=("system", "python"), help="use system jq or python jq"
+    )
+    parser.add_argument(
+        "--input", "-i", nargs="+", help="input files (use - for stdin)"
+    )
     parser.add_argument("jq_program", nargs="?", help="jq program")
     parser.add_argument("jq_opts", nargs=argparse.REMAINDER, help="jq options")
 
@@ -271,10 +336,10 @@ def main():
         opts.jq_program = "."
 
     if opts.jq:
-        global which_jq
+        global which_jq  # pylint: disable=global-statement
         which_jq = opts.jq
 
-    pyq_streams(sys.stdin, sys.stdout, opts.jq_program, opts)
+    pyq_streams(opts.input, sys.stdout, opts.jq_program, opts)
 
 
 if __name__ == "__main__":

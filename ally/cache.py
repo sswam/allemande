@@ -20,6 +20,19 @@ __VERSION__ = "0.1.6"
 logger = logging.getLogger(__name__)
 
 
+def yaml_str_presenter(dumper, data):
+    """
+    Presenter for strings that detects multi-line strings and formats them 
+    using the literal style (|) indicator
+    """
+    if re.search(r".\n.", data, flags=re.DOTALL):
+        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+
+
+yaml.add_representer(str, yaml_str_presenter)
+
+
 class FileCache:
     """Loads and saves file content with modification tracking."""
 
@@ -124,7 +137,7 @@ class FileCache:
         elif fmt == "json":
             formatted_content = json.dumps(content, **kwargs)
         elif fmt in ["yaml", "yml"]:
-            formatted_content = yaml.safe_dump(content, **kwargs)
+            formatted_content = yaml.safe_dump(content, sort_keys=False, **kwargs)
         elif fmt in ["csv", "tsv"]:
             output = io.StringIO()
             delimiter = "\t" if fmt == "tsv" else kwargs.get("delimiter", ",")
