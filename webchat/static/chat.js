@@ -40,7 +40,8 @@ let view_options = {
   theme: "default",
   details_changed: true,
   highlight: 1,
-  highlight_theme: "a11y-dark", // "github-dark",
+  highlight_theme_light: "a11y-light",
+  highlight_theme_dark: "a11y-dark",
 };
 
 let view_image_size_delta = 1;
@@ -1771,7 +1772,7 @@ function view_options_apply() {
   active_set("view_clean", view_options.clean);
   active_set("view_image_size", view_options.image_size - 4);
   active_set("view_columns", view_options.columns);
-  $id("view_items").value = view_options.items;
+  $id("view_items").value = view_options.items ?? "";
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
 
   if (view_options.image_size >= 10) {

@@ -1,13 +1,13 @@
 :root {
 	--theme-mode: dark;
-	--col0: #;
+	--col0: #F8B195;
 	--col1: #F8B195;
 	--col2: #F67280;
 	--col3: #C06C84;
 	--col4: #6C5B7B;
 	--col5: #355C7D;
-	--col6: #;
-	--col7: #white;
+	--col6: #99B898;
+	--col7: white;
 
 	--text: var(--col7);
 	--border: var(--col1);

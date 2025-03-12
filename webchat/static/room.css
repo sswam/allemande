@@ -237,11 +237,15 @@ pre {
 	width: fit-content;
 }
 
-/* TODO light mode support */
-code.hljs {
+body.dark code.hljs {
 	background: rgba(255,255,255,0.05);
 	border: 1px solid rgba(255,255,255,0.1);
 	/* background-color: transparent; */
+}
+
+body.light code.hljs {
+	background: rgba(0,0,0,0.05);
+	border: 1px solid rgba(0,0,0,0.1);
 }
 
 /*

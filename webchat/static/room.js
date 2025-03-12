@@ -81,7 +81,6 @@ function load_error() {
   offline();
 }
 
-console.log("initial call to online");
 online();
 
 $on(document, "readystatechange", ready_state_change);
@@ -239,7 +238,6 @@ async function check_for_new_content(mutations) {
 async function mutated(mutations) {
   const new_content = await check_for_new_content(mutations);
   if (new_content) {
-    console.log("new content call to online");
     online();
     messages_resized();
   }
@@ -796,6 +794,34 @@ function setup_view_options() {
   set_view_options(view_options);
 }
 
+async function set_highlight_theme() {
+  console.log("set_highlight_theme");
+  await wait_for_load();
+  const theme_mode = getComputedStyle(document.documentElement).getPropertyValue("--theme-mode");
+  console.log("theme_mode", theme_mode);
+  let highlight_theme;
+  if (theme_mode == "dark") {
+    $body.classList.add("dark");
+    $body.classList.remove("light");
+    highlight_theme = view_options.highlight_theme_dark;
+  } else {
+    $body.classList.add("light");
+    $body.classList.remove("dark");
+    highlight_theme = view_options.highlight_theme_light;
+  }
+  console.log("highlight_theme", highlight_theme);
+  highlight_set_stylesheet(highlight_theme);
+}
+
+function set_theme(theme) {
+  console.log("theme changed", theme);
+  const $old_link = $id("theme");
+  const $new_link = $old_link.cloneNode();
+  $new_link.href = CHAT_URL + "/themes/" + theme + ".css";
+  $new_link.id = "theme";
+  $old_link.replaceWith($new_link);
+}
+
 async function handle_message(ev) {
   // console.log("room handle_message", ev);
   if (ev.origin !== CHAT_URL) {
@@ -805,8 +831,7 @@ async function handle_message(ev) {
   if (ev.data.type === "set_view_options") {
     await set_view_options(ev.data);
   } else if (ev.data.type === "theme_changed") {
-    const $style = $id("theme");
-    $style.href = CHAT_URL + "/themes/" + ev.data.theme + ".css";
+    set_theme(ev.data.theme);
   } else if (ev.data.type === "set_scroll") {
     set_scroll(ev.data.x, ev.data.y);
   }
@@ -1014,8 +1039,6 @@ async function room_main() {
   }
 
   setup_view_options();
-
-  highlight_set_stylesheet(view_options.highlight_theme);
 
   setup_mutation_observer();
 

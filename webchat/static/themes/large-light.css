@@ -1,8 +1,8 @@
+@import url('/themes/light.css');
 body, textarea, input, button, a {
 	font-size: x-large;
 }
 :root {
-	--theme-mode: dark;
 	--pad: 12px;
 }
 .directory-listing li {
