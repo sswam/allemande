@@ -1,4 +1,5 @@
 :root {
+	--theme-mode: light;
 	--text: black;
 	--border: white;
 	--frame: white;

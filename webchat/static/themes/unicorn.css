@@ -1,7 +1,8 @@
 :root {
+	--theme-mode: dark;
 	--col0: #;
 	--col1: #F8B195;
-	--col2: #F67280; 
+	--col2: #F67280;
 	--col3: #C06C84;
 	--col4: #6C5B7B;
 	--col5: #355C7D;

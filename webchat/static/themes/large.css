@@ -2,6 +2,7 @@ body, textarea, input, button, a {
 	font-size: x-large;
 }
 :root {
+	--theme-mode: light;
 	--pad: 12px;
 }
 .directory-listing li {

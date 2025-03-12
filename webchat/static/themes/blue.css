@@ -1,4 +1,5 @@
 :root {
+	--theme-mode: dark;
 	--background: midnightblue;
 	--focus: #339;
 	--input: midnightblue;

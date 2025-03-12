@@ -1,4 +1,5 @@
 :root {
+	--theme-mode: dark;
 	/* gradient.py --css .25 .75 8 */
 	--col0: #404040;
 	--col1: #525252;

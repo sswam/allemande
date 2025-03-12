@@ -1,4 +1,5 @@
 :root {
+	--theme-mode: light;
 	--background: #fac000;
 	--focus: #fc6400;
 	--input: #ff7500;
