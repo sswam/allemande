@@ -1,9 +1,9 @@
+dir=$(shell readlink -f .)
+
 all: sync install chmod
 
-person: sync
-
 sync:
-	in-dir person sshc -- $${SERVER_SSH}= sh -c "git add -A; git commit -m ." || true
+	sshc -- $${SERVER_SSH}= sh -c "make install chmod; cd person; git add -A; git commit -m ." || true
 	in-dir person git pull
 
 build: everyone.txt girls.txt boys.txt nonbinary.txt people.txt everyone_count.txt girls_count.txt boys_count.txt nonbinary_count.txt people_count.txt
@@ -27,8 +27,8 @@ people.txt: girls.txt boys.txt nonbinary.txt
 	<$< wc -l >$@
 
 install: build
-	ln -sf $$PWD/*.txt $$PWD/ar/*.txt $$PWD/person/*/ $$PWD/person/*.txt $$PWD/nsfw/*.txt ../unprompted/unprompted/templates/
-	cd ../unprompted/unprompted/templates/ ; deadlinks | xa rm
+	ln -sf $$PWD/*.txt $$PWD/ar/*.txt $$PWD/person/*/ $$PWD/person/*.txt $$PWD/nsfw/*.txt $(dir)/../unprompted/unprompted/templates/
+	cd $(dir)/../unprompted/unprompted/templates/ ; deadlinks | xa rm
 
 chmod:
 	chmod o+rx person/ person/*/
