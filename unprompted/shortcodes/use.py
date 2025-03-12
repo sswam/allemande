@@ -30,7 +30,7 @@ class Shortcode:
         else:
             comma = ""
 
-        content = f"[call {_file}]"
+        content = f"""[call "{_file}"]"""
 
         to_return = ""
         if int(float(_number)) >= random.randint(1, int(_sides)):

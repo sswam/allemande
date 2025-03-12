@@ -5,9 +5,9 @@
 face,
 bust shot, eyes, nose, mouth, ears, hair, face,
 face, [get emo],
-face, ([get clothes]:0.7),
+face, ([get clothes_upper]:0.7),
 face, bust shot,
-[use photo], ([use bust]:1.5), white background
+[use photo], ([use bust]:1.5), (white background:1.5)
 <lora:eyes:0.2>
 [use expressive]
 <lora:boring:-0.5>

@@ -14,22 +14,33 @@ class Shortcode:
         _age = self.Unprompted.parse_advanced(pargs[3], context) if len(pargs) > 3 else None
 
         # "." means the default (load the file)
-        if _clothes is None or _clothes == ".":
-            _clothes = f"[use clothes/{_name}]"
-        if _emo is None or _emo == ".":
-            _emo = f"[use emo/{_name}]"
-        if _age is None or _age == ".":
-            _age = f"[use age/{_name}]"
-
         # "-" means a global default
-        if _clothes == "-":
-            _clothes = "nude"
-        if _emo == "-":
-            _emo = "light smile"
-        if _age == "-":
-            _age = 21
-        if str(_age).isnumeric():
-            _age = f"{_age} years old"
+
+        # clothes
+        if _clothes is None or _clothes == ".":
+            _clothes = f"""[use "clothes/{_name},"]"""
+        elif _clothes == "-":
+            _clothes = "nude,"
+        elif _clothes:
+            _clothes += ","
+
+        # expression / emotion
+        if _emo is None or _emo == ".":
+            _emo = f"""[use "emo/{_name},"]"""
+        elif _emo == "-":
+            _emo = "light smile,"
+        elif _emo:
+            _emo += ","
+
+        # age
+        if _age is None or _age == ".":
+            _age = f"""[use "age/{_name}," 100 1.5]"""
+        elif _age == "-":
+            _age = f"(21 years old:1.5),"
+        elif str(_age).isnumeric():
+            _age = f"({_age} years old:1.5),"
+        elif _age:
+            _age = f"({_age}:1.5),"
 
         # "" means nothing, omit the field
 
@@ -37,15 +48,15 @@ class Shortcode:
         if name.lower() == "barbie":
             name = "Barbarella"
 
-        # Construct the prompt
-        prompt = f"{name}"
+        # Construct the prompt: name, age, person, emotion, clothes
+        prompt = f"{name}, "
         if _age:
-            prompt += f", ({_age}:1.5)"
-        prompt += f", [use {_name}]"
+            prompt += f"{_age} "
+        prompt += f"""[use "{_name},"] """
         if _emo:
-            prompt += f", {_emo}"
+            prompt += f"{_emo} "
         if _clothes:
-            prompt += f", {_clothes}"
+            prompt += f"{_clothes} "
 
         # Process and return the constructed prompt
         return self.Unprompted.process_string(prompt, context)

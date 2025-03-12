@@ -67,6 +67,8 @@ rooms.*
 /visual/girls.txt
 /visual/boys_count.txt
 /visual/boys.txt
+/visual/nonbinary_count.txt
+/visual/nonbinary.txt
 
 # derived header files
 /c/sea.h
