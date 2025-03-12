@@ -2,5 +2,5 @@ type: openai
 model: o1
 context: 5
 #system_bottom: '[You are $NAME. Please reply concisely, with no boilerplate or unncecessary explanation.]'
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Please use markdown, including code blocks as needed.
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Please use markdown, including code blocks like ```python ...``` as needed.
 expensive: true
