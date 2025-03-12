@@ -90,6 +90,9 @@ async def process_change(line, opts, tasks, out):
     if not bb_file.endswith(opts.exts):
         return
 
+    if os.path.islink(bb_file):
+        return
+
     html_file = str(Path(bb_file).with_suffix(".html"))
     if change_type == Change.deleted:
         Path(html_file).unlink(missing_ok=True)

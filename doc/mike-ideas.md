@@ -37,8 +37,25 @@ accounting:
 ✓ image input
 	- unfortunately censored re. identifying people, even celebs
 
+- file copy-paste and drag and drop to upload
+
+- having a little 3-dot menu icon on past messages with the option to delete just that message would be great, too
 
 
+- Mike: "fork chat" idea, from a message, how many messages to copy
+	- can copy back to original chat too
+	- basic idea is to copy select messages to another chat room, either new or existing
+	- maybe show connections between chats in a "map view" somehow
+
+- edit single message
+
+- bookmark chat messages
+	- possible bookmarks side-pane
+
+- import instructions from a file
+
+- UI for base and mission files
+	- view what mission is active in the chat
 
 Sam ideas tacked on:
 
@@ -50,3 +67,10 @@ Sam ideas tacked on:
 
 ✓ move agents code to its own file
 	✓ support base / inheritance at use time
+
+- Start self talk only with "@Sam" not "Sam". Double user message should not trigger self talk.
+
+- fast and smart agent for voice chat: wrap up a fast agent together with a slower agent, fast agent can reply for a bit first while slow agent is thinking.
+	- or just accept thinking pauses in conversation
+	- or use fast agent for normal chat and slow for difficult stuff
+
