@@ -7,8 +7,13 @@ system_bottom_pos: 3
 visual:
   person: 1boy, blue eyes, Scandinavian, very tall, pale skin, broad shoulders, short
     hair, curly hair, blonde hair
-  clothes: casual Scandinavian clothing, earth tones, beige or olive green T-shirt, fitted light gray or black pants, brown leather shoes or rugged boots, casual coat or sweater in neutral color, scarf around neck
+  clothes: casual Scandinavian clothing, earth tones, beige or olive green T-shirt,
+    fitted light gray or black pants, brown leather shoes or rugged boots, casual
+    coat or sweater in neutral color, scarf around neck
   emo: calm, confident, compassionate
   age: adult 40 years old
+  clothes_upper: casual Scandinavian clothing, earth tones, beige or olive green T-shirt,
+    casual coat or sweater in neutral color, scarf around neck
+  clothes_lower: fitted light gray or black pants, brown leather shoes or rugged boots
 context: 101
 lines: 1

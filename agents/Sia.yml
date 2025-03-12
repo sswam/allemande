@@ -12,6 +12,9 @@ fullname: Synthia
 visual:
   person: 1girl, deep (green:1.3) eyes, tall, dark skin, slim, medium hair, curly
     hair, black hair
-  clothes: maxi dress, fabric belt, ponytail, casual clothes, eclectic pattern, vibrant colors
+  clothes: maxi dress, fabric belt, ponytail, casual clothes, eclectic pattern, vibrant
+    colors
   age: adult 23 years old
   emo: emotional, strong
+  clothes_upper: maxi dress, ponytail, casual clothes, eclectic pattern, vibrant colors
+  clothes_lower: fabric belt

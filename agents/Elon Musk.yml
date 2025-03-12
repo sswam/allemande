@@ -1,11 +1,12 @@
 type: llm_llama
 model: default
-fullname: Elon Musk
-system_bottom: You are $FULLNAME!
+aliases:
+- Elon
+system_bottom: You are $NAME!
 system_bottom_pos: 3
 visual:
-  person: Elon Musk
-  emo:
+  person: ''
+  emo: ''
   age: 53 years old
 context: 101
 lines: 1

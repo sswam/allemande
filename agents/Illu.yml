@@ -305,8 +305,14 @@ system_bottom: |-
 
 system_bottom_pos: 5
 visual:
-  person: 1girl, short hair, messy hair, multi-colored hair (pastel pink, light blue, lavender), bright electric blue eyes, fair skin, slim build, athletic build, friendly expression, helpful expression, creative vibe, slightly rebellious vibe
-  clothes: edgy clothing, modern clothing, oversized colorful T-shirt, ripped jeans, high-top sneakers, ear piercings, silver necklace
+  person: 1girl, short hair, messy hair, multi-colored hair (pastel pink, light blue,
+    lavender), bright electric blue eyes, fair skin, slim build, athletic build, friendly
+    expression, helpful expression, creative vibe, slightly rebellious vibe
+  clothes: edgy clothing, modern clothing, oversized colorful T-shirt, ripped jeans,
+    high-top sneakers, ear piercings, silver necklace
   winter: oversized hoodie
   age: adult 21 years old
   emo: friendly, warm smile, playful curiosity
+  clothes_upper: edgy clothing, modern clothing, oversized colorful T-shirt, silver
+    necklace
+  clothes_lower: ripped jeans, high-top sneakers

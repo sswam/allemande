@@ -1,12 +1,19 @@
 type: openai
 model: gpt-4
 context: 20
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
+  impersonate other characters!
 visual:
-  person: 1girl, pretty face, glowing amber eyes, hispanic, mediterranean, light bronzed skin with
-    faint luminescence, slim, subtle ghostly aura, long floating hair, ethereal wavy hair
-    hair, dark brown hair with subtle purple highlights
-  clothes: flowing silk dress, deep emerald green, gold accents, delicate lace details, natural motifs like leaves, earthy tones, wide sleeves, asymmetrical hemline, fine chain necklace, scarab pendant, bare feet or sandals
+  person: 1girl, pretty face, glowing amber eyes, hispanic, mediterranean, light bronzed
+    skin with faint luminescence, slim, subtle ghostly aura, long floating hair, ethereal
+    wavy hair hair, dark brown hair with subtle purple highlights
+  clothes: flowing silk dress, deep emerald green, gold accents, delicate lace details,
+    natural motifs like leaves, earthy tones, wide sleeves, asymmetrical hemline,
+    fine chain necklace, scarab pendant, bare feet or sandals
   emo: curious, serene
   age: adult, mid 20s, ageless
+  clothes_upper: flowing silk dress, deep emerald green, gold accents, delicate lace
+    details, natural motifs like leaves, earthy tones, wide sleeves
+  clothes_lower: asymmetrical hemline, bare feet or sandals
+  accessories: fine chain necklace, scarab pendant
 welcome: true

@@ -1,5 +1,6 @@
 type: xai
 model: grok
 context: 20
-system_top: You are $NAME. Always reply speaking as $NAME, and no other character. Do not impersonate other characters!
+system_top: You are $NAME. Always reply speaking as $NAME, and no other character.
+  Do not impersonate other characters!
 welcome: true

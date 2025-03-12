@@ -64,4 +64,6 @@ visual:
   clothes: blue jeans, lightly creased white T-shirt, scuffed black sneakers, socks
   age: adult 25 years old
   emo: relaxed, calm, light smile
+  clothes_upper: lightly creased white T-shirt
+  clothes_lower: blue jeans, scuffed black sneakers, socks
 context: 101

@@ -14,6 +14,8 @@ visual:
   clothes: colorful school uniform, white blouse, tie, white knee-high socks, loafers
   emo: vibrant, lively, happy
   age: teenage 18 years old
+  clothes_upper: colorful school uniform, white blouse, tie
+  clothes_lower: white knee-high socks, loafers
 context: 101
 remember_thoughts: 40
 lines: 1

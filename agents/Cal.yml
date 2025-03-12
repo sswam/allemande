@@ -9,8 +9,13 @@ fullname: Calix
 visual:
   person: 1boy, dark brown eyes, caramel skin, medium height, athletic build, medium
     hair, curly hair, dark hair, Persian / African American
-  clothes: black Nike shorts with white accents, super bold, electric blue jersey with lime green stripes, custom jersey, number "11", eleven, name "Cal" on jersey, black Nike Air Max shoes
+  clothes: black Nike shorts with white accents, super bold, electric blue jersey
+    with lime green stripes, custom jersey, number "11", eleven, name "Cal" on jersey,
+    black Nike Air Max shoes
   age: adult 26 years old
   emo: goofy grin
+  clothes_upper: electric blue jersey with lime green stripes, custom jersey, number
+    "11", eleven, name "Cal" on jersey
+  clothes_lower: black Nike shorts with white accents, black Nike Air Max shoes
 context: 101
 lines: 1

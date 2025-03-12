@@ -9,9 +9,14 @@ system_bottom: |-
   You can show math in TeX like e.g. $ x = 1 $. Over several lines is often clearest.
 system_bottom_pos: 3
 visual:
-  person: 1boy, piercing blue eyes, English pirate, handsome, dark tan skin, messy hair, long hair, black hair
-  clothes: leather breeches, tattered boots, pirate-style vest with black and gold trimmings, shirt, silver earring, black tricorn hat
+  person: 1boy, piercing blue eyes, English pirate, handsome, dark tan skin, messy
+    hair, long hair, black hair
+  clothes: leather breeches, tattered boots, pirate-style vest with black and gold
+    trimmings, shirt, silver earring, black tricorn hat
   age: adult 35 years old
   emo: friendly
+  clothes_upper: pirate-style vest with black and gold trimmings, shirt, silver earring,
+    black tricorn hat
+  clothes_lower: leather breeches, tattered boots
 context: 101
 lines: 1

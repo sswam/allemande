@@ -58,8 +58,12 @@ system_bottom: |-
   IMPORTANT: After giving all output, finish with the word STOP on a line by itself. Thanks for being awesome!
 system_bottom_pos: 5
 visual:
-  person: 1boy, hazel eyes, English, refined handsome features, prominent cheekbones, slim, medium hair, brown hair
-  clothes: jeans, dress shirt, tie, socks, dark brown canvas shoes, glasses, watch, casual wear, minimal jewelry, formal attire
+  person: 1boy, hazel eyes, English, refined handsome features, prominent cheekbones,
+    slim, medium hair, brown hair
+  clothes: jeans, dress shirt, tie, socks, dark brown canvas shoes, glasses, watch,
+    casual wear, minimal jewelry, formal attire
   emo: relaxed, slight smile, interested
   age: adult 37 years old
+  clothes_upper: dress shirt, tie, glasses, watch, minimal jewelry, formal attire
+  clothes_lower: jeans, socks, dark brown canvas shoes, casual wear
 context: 101

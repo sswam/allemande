@@ -3,8 +3,6 @@ model: default
 system_bottom: You are $NAME!
 system_bottom_pos: 3
 visual:
-  person: Big Bird, muppet
-  emo: happy, lively, smile
-  age: 6 years old
+  person: Bigbird1024 <lora:Bigbird1024:0.8>
 context: 101
 lines: 1

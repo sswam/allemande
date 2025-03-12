@@ -7,8 +7,11 @@ system_bottom_pos: 3
 visual:
   person: 1boy, deep brown eyes, olive skin, medium height, muscular male, Middle
     Eastern, short hair, dark hair
-  clothes: white shirt, short sleeves, button down, slim fit, dress pants, navy pants, brown belt, black loafers, black socks
+  clothes: white shirt, short sleeves, button down, slim fit, dress pants, navy pants,
+    brown belt, black loafers, black socks
   age: adult 24 years old
   emo: happy, positive, romantic
+  clothes_upper: white shirt, short sleeves, button down, slim fit
+  clothes_lower: dress pants, navy pants, brown belt, black loafers, black socks
 context: 101
 lines: 1

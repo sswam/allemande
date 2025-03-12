@@ -9,8 +9,12 @@ fullname: Garrick
 visual:
   person: 1boy, grey eyes, fair skin, strong jawline, tall and robust, Russian, spiky
     hair, short hair, brown hair
-  clothes: white shirt, blue jeans, black leather jacket, scuffed engineer's boots, tool belt, watch on the left wrist, silver ring on the right hand
+  clothes: white shirt, blue jeans, black leather jacket, scuffed engineer's boots,
+    tool belt, watch on the left wrist, silver ring on the right hand
   emo: composed, thoughtful, serious
   age: adult 28 years old
+  clothes_upper: white shirt, black leather jacket, watch on the left wrist, silver
+    ring on the right hand
+  clothes_lower: blue jeans, scuffed engineer's boots, tool belt
 context: 101
 lines: 1

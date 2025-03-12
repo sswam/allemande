@@ -1,6 +1,9 @@
 type: human
 visual:
-  person: 1boy, green eyes, slim, handsome, Australian Caucasian, shaved head, short brown stubble
+  person: 1boy, green eyes, slim, handsome, Australian Caucasian, shaved head, short
+    brown stubble
   clothes: colored T-shirt, colorful fractal design shirt, shorts, sandals
   age: youthful adult 48 years old
   emo: happy, thoughtful
+  clothes_upper: colored T-shirt, colorful fractal design shirt
+  clothes_lower: dark grey shorts, sandals
