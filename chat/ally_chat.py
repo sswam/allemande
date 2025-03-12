@@ -304,7 +304,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     logger.debug("rx: %r", rx)
     query = re.sub(rx, "", query, flags=re.IGNORECASE | re.DOTALL)
     logger.debug("query 3: %r", query)
-    query = re.sub(r"(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+", "", query, re.IGNORECASE)
+    query = re.sub(r"(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+", "", query, flags=re.IGNORECASE)
     logger.debug("query 4: %r", query)
     query = re.sub(r"#.*", "", query)
     logger.debug("query 5: %r", query)
@@ -319,6 +319,12 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     logger.debug("response:\n%s", response2)
     response3 = fix_layout(response2, args, agent)
     logger.debug("response3:\n%s", response3)
+
+    # wrap in a <div class="search"> container if not in a div already
+    if re.search(r"<div\b", response3):
+        response4 = re.sub(r"<div\b", r'<div class="search"', response3, flags=re.IGNORECASE)
+    else:
+        response4 = re.sub(r"\t\n(.*)", rf'\t\n\t<div class="search" markdown=1>\n\1\n\t</div>\n', response3, flags=re.DOTALL)
 
 #     # wrap secondary divs in <details>
 #     response4 = re.sub(
@@ -338,7 +344,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 #
 #     logger.info("response4:\n%s", response4)
 
-    return response3
+    return response4
 
 
 def load_local_agents(room, agents=None):
@@ -957,7 +963,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
     image_count = 0
 
     for msg in reversed(messages):
-        matches = re.findall(image_url_pattern, msg['content'], re.VERBOSE | re.DOTALL | re.IGNORECASE)
+        matches = re.findall(image_url_pattern, msg['content'], flags=re.VERBOSE | re.DOTALL | re.IGNORECASE)
         logger.debug("Checking message: %s", msg['content'])
         logger.debug("Matches: %s", matches)
         image_urls = [url for markdown_url, html_url in matches for url in (markdown_url, html_url) if url]

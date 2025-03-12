@@ -366,7 +366,7 @@ class Room:
         options_file = self.find_resource_file("yml", "options", create=True)
         if options_file:
             logger.debug("options file: %s", options_file)
-            options = cache.load(options_file)
+            options = cache.load(options_file) or {}
             logger.debug("old options: %r", options)
             logger.debug("new options: %r", new_options)
             always_merger.merge(options, new_options)  # modifies options
@@ -887,11 +887,11 @@ def preprocess(content):
         logger.debug("check line: %r", line)
         is_math_start = re.match(r"\s*(\$\$|```tex|```math)$", line)
         is_math_end = re.match(r"\s*(\$\$|```)$", line)
-        if re.match(r"\s*<(script|style|svg)\b", line, re.IGNORECASE) and not in_code:
+        if re.match(r"\s*<(script|style|svg)\b", line, flags=re.IGNORECASE) and not in_code:
             out.append(line)
             in_code = 1
             in_script = True
-        elif re.match(r"\s*</(script|style|svg)>\s*$", line, re.IGNORECASE) and in_script:
+        elif re.match(r"\s*</(script|style|svg)>\s*$", line, flags=re.IGNORECASE) and in_script:
             out.append(line)
             in_code = 0
             in_script = False
@@ -925,9 +925,9 @@ def preprocess(content):
         elif in_code:
             logger.debug("code line: %r", line)
             out.append(line)
-        elif re.match(r"^\s*<think(ing)?>$", line, re.IGNORECASE):
+        elif re.match(r"^\s*<think(ing)?>$", line, flags=re.IGNORECASE):
             out.append(r"""<details markdown="1" class="think"><summary>thinking</summary>""")
-        elif re.match(r"^\s*</think(ing)?>$", line, re.IGNORECASE):
+        elif re.match(r"^\s*</think(ing)?>$", line, flags=re.IGNORECASE):
             out.append(r"""</details>""")
         else:
             line, has_math1 = find_and_fix_inline_math(line)

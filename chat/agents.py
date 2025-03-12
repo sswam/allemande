@@ -19,6 +19,7 @@ import chat
 logger = logging.getLogger(__name__)
 
 # Constants, TODO shared
+VISUAL_KEYS = ["person", "clothes", "clothes_upper", "clothes_lower", "age", "emo"]
 PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
 
 ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
@@ -206,46 +207,38 @@ class Agent:
         if not visual:
             return
 
-        name_lc = self.name.lower()
         all_names = self.get_all_names()
 
         # TODO reduce indent here
 
         # supporting arbitrary keys might be a security risk
-        for key in "person", "clothes", "age", "emo":
-            if key not in visual:
-                cache.remove(str(PATH_VISUAL / key / name_lc) + ".txt")
-                for name in all_names:
-                    for dest in name, name.lower():
-                        cache.remove(str(PATH_VISUAL / key / dest) + ".txt")
-                continue
+        for key in VISUAL_KEYS:
+            prompt = visual.get(key, "")
+            path = key if key == "person" else "person/" + key
+            prompt = str(prompt).strip() + "\n"
+            (PATH_VISUAL / path).mkdir(parents=True, exist_ok=True)
+            cache.save(str(PATH_VISUAL / path / self.name) + ".txt",
+                    prompt, noclobber=False)
+            cache.chmod(str(PATH_VISUAL / path / self.name) + ".txt", 0o664)
 
-            prompt = visual.get(key)
-            if prompt:
-                path = key if key == "person" else "person/" + key
-                prompt = str(prompt).strip() + "\n"
-                (PATH_VISUAL / path).mkdir(parents=True, exist_ok=True)
-                cache.save(str(PATH_VISUAL / path / name_lc) + ".txt",
-                        prompt, noclobber=False)
-                cache.chmod(str(PATH_VISUAL / path / name_lc) + ".txt", 0o664)
-
-                # symlink main file to agent's other names
-                for name in all_names:
-                    for dest in name, name.lower():
-                        if dest == name_lc:
-                            continue
-                        cache.symlink(name_lc + ".txt",
-                                str(PATH_VISUAL / path / dest) + ".txt")
+            # symlink main file to agent's other names
+            for name in all_names:
+                for dest in name, name.lower():
+                    if dest == self.name:
+                        continue
+                    cache.symlink(self.name + ".txt",
+                            str(PATH_VISUAL / path / dest) + ".txt")
 
     def remove_visual(self):
         """Remove the visual prompts for an agent."""
         all_names = self.get_all_names()
 
-        for key in "person", "person/clothes":
+        for key in VISUAL_KEYS:
+            path = key if key == "person" else "person/" + key
             for name in all_names:
                 for dest in name, name.lower():
                     try:
-                        cache.remove(str(PATH_VISUAL / key / dest) + ".txt")
+                        cache.remove(str(PATH_VISUAL / path / dest) + ".txt")
                     except FileNotFoundError:
                         pass
 
