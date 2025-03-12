@@ -926,9 +926,9 @@ def preprocess(content):
             logger.debug("code line: %r", line)
             out.append(line)
         elif re.match(r"^\s*<think(ing)?>$", line, flags=re.IGNORECASE):
-            out.append(r"""<details markdown="1" class="think"><summary>thinking</summary>""")
+            out.append("""<details markdown="1" class="think">\n<summary>thinking</summary>""")
         elif re.match(r"^\s*</think(ing)?>$", line, flags=re.IGNORECASE):
-            out.append(r"""</details>""")
+            out.append("""</details>""")
         else:
             line, has_math1 = find_and_fix_inline_math(line)
             has_math = has_math or has_math1
