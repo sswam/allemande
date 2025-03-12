@@ -28,7 +28,6 @@ __version__ = "0.2.2"
 
 
 logger = logs.get_logger()
-logger.setLevel(logging.INFO)
 
 prog = main.prog_info()
 
