@@ -6,6 +6,7 @@ const CHAT_URL =
   location.protocol + "//" + location.host.replace(/^rooms\b/, "chat");
 
 var inIframe = window.parent !== window.self;
+var highlighter;
 
 let room;
 
@@ -24,6 +25,8 @@ let suppressInitialScroll = false;
 let view_options = {
   images: 2,
   image_size: 4,
+  items: 10,
+  highlight: 1,
 };
 
 let snapshot = false;
@@ -812,6 +815,7 @@ async function handle_message(ev) {
 
 async function set_view_options(new_view_options) {
 //  console.log("set_view_options", new_view_options);
+  const old_view_options = view_options;
   view_options = new_view_options;
   localStorage.setItem("view_options", JSON.stringify(view_options));
   await wait_for_load();
@@ -835,6 +839,14 @@ async function set_view_options(new_view_options) {
   if (view_options.details_changed) {
     set_view_details();
     view_options.details_changed = false;
+  }
+
+  if (old_view_options.items >= 0 && old_view_options.items < 10) {
+    $body.classList.remove("items_" + Math.round(old_view_options.items));
+  }
+  if (view_options.items >= 0 && view_options.items < 10) {
+    $body.classList.add("items_" + Math.round(view_options.items));
+//  document.documentElement.style.setProperty("--visible-items", view_options.items);
   }
 }
 
@@ -1002,6 +1014,8 @@ async function room_main() {
   }
 
   setup_view_options();
+
+  highlight_set_stylesheet(view_options.highlight_theme);
 
   setup_mutation_observer();
 

@@ -38,6 +38,9 @@ let view_options = {
   image_size: 4,
   input_row_height: 88,
   theme: "default",
+  details_changed: true,
+  highlight: 1,
+  highlight_theme: "a11y-dark", // "github-dark",
 };
 
 let view_image_size_delta = 1;
@@ -1768,9 +1771,8 @@ function view_options_apply() {
   active_set("view_clean", view_options.clean);
   active_set("view_image_size", view_options.image_size - 4);
   active_set("view_columns", view_options.columns);
+  $id("view_items").value = view_options.items;
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
-  // send message to the rooms iframe to apply view options
-  $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
 
   if (view_options.image_size >= 10) {
     view_image_size_delta = -1;
@@ -1781,6 +1783,9 @@ function view_options_apply() {
   const image_size_icon = view_image_size_delta > 0 ? "expand" : "contract";
   $id("view_image_size").innerHTML = icons[image_size_icon];
   view_options.details_changed = false;
+
+  // send message to the rooms iframe to apply view options
+  $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
 }
 
 function view_images(ev) {
@@ -1800,9 +1805,10 @@ function view_source(ev) {
 }
 
 function view_details(ev) {
-  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
-  view_options.details = (view_options.details + delta + 4) % 4;
-  view_options.datails_changed = true;
+  view_options.details = !view_options.details;
+//  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+//  view_options.details = (view_options.details + delta + 4) % 4;
+  view_options.details_changed = true;
   view_options_apply();
 }
 
@@ -1829,6 +1835,13 @@ function view_image_size(ev) {
   const delta = neg * view_image_size_delta;
 //  view_options.image_size = clamp((view_options.image_size || 4) + delta, 1, 10);
   view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
+  view_options_apply();
+}
+
+function view_items(ev) {
+  let items = ev.target.value;
+  items = items === "" ? 0 : +items;
+  view_options.items = items;
   view_options_apply();
 }
 
@@ -2163,6 +2176,8 @@ function chat_main() {
   $on($id("view_canvas"), "click", view_canvas);
   $on($id("view_clean"), "click", view_clean);
   $on($id("view_columns"), "click", view_columns);
+  $on($id("view_items"), "change", view_items);
+  $on($id("view_items"), "keyup", view_items);
   $on($id("view_cancel"), "click", () => set_controls());
 
   $on($id("opt_context"), "change", opt_context);

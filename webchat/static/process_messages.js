@@ -104,10 +104,17 @@ function handleNewMessage(newMessage) {
     }
     const wrapper = img.closest(".image, .embed");
     if (!(wrapper && wrapper.querySelector(".alt"))) {
+      const parent = img.parentNode;
+      const next = img.nextSibling;
+      const wrapDiv = document.createElement("div");
       const altDiv = document.createElement("div");
+      wrapDiv.className = "image";
       altDiv.className = "alt";
-      altDiv.textContent = "🖼️ " + img.alt
-      img.parentNode.insertBefore(altDiv, img.nextSibling);
+//      altDiv.textContent = "🖼️ " + img.al;
+      altDiv.textContent = img.alt;
+      wrapDiv.appendChild(img);
+      wrapDiv.appendChild(altDiv);
+      parent.insertBefore(wrapDiv, next);
     }
   }
 
@@ -117,8 +124,10 @@ function handleNewMessage(newMessage) {
       newMessage.classList.add("me");
     }
 
+    const summarisers = ["summi", "summar", "sia", "sio"];  // TODO: read from config, extend list
+
     // mark specialist messages
-    const specialists = ["pixi", "illu", "sia", "sio", "summi", "summar", "pliny", "atla", "chaz", "morf", "brie"];  // TODO: read from config, extend list
+    const specialists = ["pixi", "illu", "pliny", "atla", "chaz", "morf", "brie"];  // TODO: read from config, extend list
     if (specialists.includes(newUser.toLowerCase())) {
       newMessage.classList.add("specialist");
     }
@@ -132,8 +141,8 @@ function handleNewMessage(newMessage) {
     // mark messages invoking or mentioning a specialist, match whole word case-insensitive
 
     const pattern = new RegExp(`\\b(${specialists.join("|")})\\b`, "i");
-    if (newContent && pattern.test(newContent.textContent)) {
-      newMessage.classList.add("invoke-specialist");
+    if (newContent && pattern.test(newContent.textContent) && !summarisers.includes(newUser.toLowerCase())) {
+       newMessage.classList.add("invoke-specialist");
     }
   }
 
@@ -141,6 +150,19 @@ function handleNewMessage(newMessage) {
 
   // render graphviz diagrams
   render_graphviz(newContent);
+
+  // add language info and a copy button to code blocks, script and styles on hover
+  const codeBlocks = newContent.querySelectorAll("pre code, script:not(hide):not([src]), style:not(hide)");
+  for (const codeBlock of codeBlocks) {
+    decorateCodeBlock(codeBlock);
+  }
+
+  // Open details elements according to the view options
+  for (const $details of newContent.querySelectorAll("details"))
+    open_or_close_details($details);
+
+  // Code highlighting according to the view options
+  highlight_code(newMessage, view_options);
 
   const newParagraph = getOnlyChildParagraph(newContent);
 
@@ -158,12 +180,6 @@ function handleNewMessage(newMessage) {
         newMessage = null;
       }
     }
-  }
-
-  // add language info and a copy button to code blocks, script and styles on hover
-  const codeBlocks = newContent.querySelectorAll("pre code, script:not(hide):not([src]), style:not(hide)");
-  for (const codeBlock of codeBlocks) {
-    decorateCodeBlock(codeBlock);
   }
 
   // Combine regular messages from the same user
@@ -196,14 +212,33 @@ function handleNewMessage(newMessage) {
       container.insertBefore(label, container.firstChild);
     }
   }
-
-  // Open details elements according to the view options
-  for (const $details of newContent.querySelectorAll("details"))
-    open_or_close_details($details);
 }
 
 function isPrecedingSibling(node1, node2) {
   return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
+}
+
+let hideTimer;
+let controls_visible;
+
+function showHideControls(controls, show) {
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
+
+  if (show) {
+    if (controls_visible) {
+      controls_visible.classList.remove('show-flex');
+    }
+    controls.classList.add('show-flex');
+    controls_visible = controls;
+  } else {
+    hideTimer = setTimeout(function() {
+      controls.classList.remove('show-flex');
+      hideTimer = null;
+    }, 500);
+  }
 }
 
 function decorateCodeBlock(codeBlock) {
@@ -258,43 +293,25 @@ function decorateCodeBlock(codeBlock) {
   // Add controls to wrapper
   parent.appendChild(controls);
 
-  let hideTimer;
-
-  function handleHideTimer(show) {
-    if (hideTimer) {
-      clearTimeout(hideTimer);
-      hideTimer = null;
-    }
-
-    if (show) {
-      controls.classList.add('show-flex');
-    } else {
-      hideTimer = setTimeout(function() {
-        controls.classList.remove('show-flex');
-        hideTimer = null;
-      }, 500);
-    }
-  }
-
   // Show controls on hover
   parent.addEventListener('mouseenter', function() {
-    handleHideTimer(true);
+    showHideControls(controls, true);
   });
 
   parent.addEventListener('mouseleave', function(e) {
     // Check if the mouse is not over the controls
     if (!controls.contains(e.relatedTarget)) {
-      handleHideTimer(false);
+      showHideControls(controls, false);
     }
   });
 
   // Add additional listener to controls
   controls.addEventListener('mouseenter', function() {
-    handleHideTimer(true);
+    showHideControls(controls, true);
   });
 
   controls.addEventListener('mouseleave', function() {
-    handleHideTimer(false);
+    showHideControls(controls, false);
   });
 }
 
