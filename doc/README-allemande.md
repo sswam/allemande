@@ -6,6 +6,12 @@ We are [Allemande AI](https://allemande.ai), an AI consultancy in Melbourne, Aus
 
 Our flagship product is an innovative multi-player chat app called <A href="https://chat.allemande.ai">Ally Chat</A>, based on a powerful open-source AI toolkit.
 
+## Quickstart
+
+Contact the developer for access, and check out [./intro_basic.md](the Quick Start Guide) to get started.
+
+We also have [./intro.md](a longer guide), which the AIs can use to help you learn.a longer guide, which the AIs can use to help you learn.
+
 ## Ally Chat
 
 Ally Chat is a chat system of many multiples:
@@ -16,16 +22,16 @@ Ally Chat is a chat system of many multiples:
 - multi-agent: we have ten different programming tools for seven important languages
 - multi-search: we have several web search tools
 
-### Electric People
+### AI Characters
 
-- Ally, a human-like model based on Point Alpaca, and the star of our show.
+- Ally, a human-like model based on Llama 3.1, and the star of our show.
 - Barbie, a human-like model similar to Ally, configured identically at the moment.
-- Callam, Ally's male counterpart, configured identically at the moment.
+- Callam, Ally's male counterpart, configured to talk like a pirate.
 - Dav, OpenAI's ChatGPT 3.5, with a default context of twenty messages.
 - Emmy, OpenAI's GPT-4, with a default context of ten messages.
-- Claud, Claude from Anthropic, with a default context of fifty messages.
+- Claude from Anthropic, with a default context of fifty messages.
 - Clia, Claude Instant from Anthropic, with a default context of one hundred messages.
-- Jaski, Google Bard, currently limited to a single message of context, and AWOL due to an API change.
+- Flashi, Google Gemini 2.0 Flash.
 
 ### Programming Agents
 
@@ -44,6 +50,7 @@ Ally Chat is a chat system of many multiples:
 ### Search Agents
 
 - Goog, the Google search engine
+- Gimg, Google image search
 - UTube, find videos on YouTube
 - ... and more!
 
@@ -77,47 +84,6 @@ These applications are currently stand-alone tools; they are not yet integrated 
 	- Users
 - Separate domains for kids, teens, edu, safe, work, make, fun, date, adult, anon, LGQBTQIA+, etc.
 
-## Our Names
-
-### The Company
-
-Allemande is a dance style originating in Germany, characterized by intricate handholds, turns, and moderate pace, often featured in Baroque-era court dances and instrumental suites. The lead developer loves the music of Johann Sebastian Bach. Bach wrote Allemandes for keyboard, violin, cello, lute, and flute.
-
-Allemand is the French word for the German language.
-
-The word Allemande contains the letters LLM in that order.
-
-We have named our main protagonist Ally, short for Allemanda, and evoking a sincere helper.
-
-### Electric People
-
-- Ally, short for Allemanda (after Allemande, a slow dance), with the letters LLM, and evoking a sincere helper (ally).
-- Barbie, short for Barbarella (after the famous movie); also contains LL.
-- Callam, a male name variant of Callum, with the letters LLM
-- Dav, after Leonardo da Vinci; the code name for GPT 3 is "davinci"
-- Emmy, after Emmy Noether, a famous scientist, and continuing OpenAI's naming convention: Ada, Babbage, Curie, DaVinci, Emmy
-- Claud, short for Claude, the official name of Anthropic's large language model
-- Clia, short for Claudia, a female variant of Claude
-- Jaski, after Jaskier, the bard from the Witcher series
-
-### Programming Agents
-
-- Dogu, after Doug McIlroy, the leader Bell labs when UNIX was developed, and inventor of pipes
-- Gud, after Guido van Rossum, the creator of Python
-- Lary, after Larry Wall, the creator of Perl
-- Matz, after Yukihiro Matsumoto, the creator of Ruby
-- Luah, after Lua, meaning moon
-- Jyan, after JavaScript and Ryan Dahl, the creator of Node JS
-- Jahl, after JavaScript and Ryan Dahl, the creator of Deno
-- Faby, after Fabrice Bellard, the creator of the tiny C compiler
-- Qell, after Quick and Fabrice Bellard, the creator of QuickJS
-- Palc, for Python Calculator
-
-### Search Agents
-
-- Serry, after Sergey Brin and Larry Page, the founders of Google
-- Jadev, after Jawed Karim, and Chad Hurley, and Steve Chen, the founders of YouTube
-
 ### Applications
 
 - Flash, for spaced repetition flash-cards
@@ -126,6 +92,12 @@ We have named our main protagonist Ally, short for Allemanda, and evoking a sinc
 - Sherlock, after Sherlock Holmes, the famous fictional detective
 
 ## Screenshots
+
+### Newest Demos
+
+![Lots in one page](pix/ally_chat_0.png)
+
+![Lots in one page part 2](pix/ally_chat_4.png)
 
 ### Embedded Math
 
