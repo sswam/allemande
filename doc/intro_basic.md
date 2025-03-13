@@ -18,13 +18,17 @@ For making images, talk to Illu or Gema - they are image generation experts.
 Example of image generation:
 
 > You: Illu, I'd like to draw a rainbow.
+>
 > Illu: <details><summary>Thinking</summary> ... </details>
-> Illy, landscape, grassland, mountains, (vibrant rainbow:1.5), (majestic mountains:1.2), lush grassland, scenic view, clear sky, sunny, peaceful, [use photo], lens flare, sunlight, bokeh NEGATIVE (deformed, blurry, bad anatomy:2), unrealistic, ugly, watermark [sets width=1344   │  - If you don't use a name, the last person who spoke will respond
->                         height=768 hq=1.5 steps=30]                                                                                                                                                                                                                                           │  - Say "someone" or "anyone" to get a random response
-> [you press poke here]
+>
+> Illy, landscape, grassland, mountains, (vibrant rainbow:1.5), (majestic mountains:1.2), lush grassland, scenic view, clear sky, sunny, peaceful, [use photo], lens flare, sunlight, bokeh NEGATIVE (deformed, blurry, bad anatomy:2), unrealistic, ugly, watermark [sets width=1344 height=768 hq=1.5 steps=30]
+>
+> ***[you press poke here]***
+>
 > Illy: [generates image]
 
 Remember:
+
 - If you don't use a name, the last person who spoke will respond
 - Sometimes the system thinks you are talking to yourself. Try mentioning an AI's name.
 - Say "someone" or "anyone" to get a random response
