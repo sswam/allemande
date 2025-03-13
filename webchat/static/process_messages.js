@@ -241,7 +241,7 @@ let hideTimer;
 let controls_visible;
 
 function showHideControls(controls, show) {
-  console.log("showHideControls", show, controls);
+  // console.log("showHideControls", show, controls);
   if (hideTimer) {
     clearTimeout(hideTimer);
     hideTimer = null;

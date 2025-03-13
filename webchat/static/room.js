@@ -795,10 +795,10 @@ function setup_view_options() {
 }
 
 async function theme_loaded() {
-  console.log("theme_loaded");
+  // console.log("theme_loaded");
   await wait_for_load();
   const theme_mode = getComputedStyle(document.documentElement).getPropertyValue("--theme-mode");
-  console.log("theme_mode", theme_mode);
+  // console.log("theme_mode", theme_mode);
   let highlight_theme;
   if (theme_mode == "dark") {
     $body.classList.add("dark");
@@ -809,12 +809,12 @@ async function theme_loaded() {
     $body.classList.remove("dark");
     highlight_theme = view_options.highlight_theme_light;
   }
-  console.log("highlight_theme", highlight_theme);
+  // console.log("highlight_theme", highlight_theme);
   highlight_set_stylesheet(highlight_theme);
 }
 
 function set_theme(theme) {
-  console.log("theme changed", theme);
+  // console.log("theme changed", theme);
   const $old_link = $id("theme");
   const $new_link = $old_link.cloneNode();
   $new_link.href = CHAT_URL + "/themes/" + theme + ".css";
@@ -853,14 +853,18 @@ async function set_view_options(new_view_options) {
   cl.toggle("canvas", view_options.canvas == 1);
   cl.toggle("clean", view_options.clean == 1);
   cl.toggle("columns", view_options.columns == 1);
-  document.documentElement.style.setProperty("--image-width", view_options.image_size*10 + "vw");
-  document.documentElement.style.setProperty("--image-height", view_options.image_size*10 + "vh");
-  const image_size_large = view_options.image_size == 10 ? 100 : Math.min(view_options.image_size*20, 90);
-  const image_size_small = view_options.image_size*5;
-  document.documentElement.style.setProperty("--image-width-large", image_size_large + "vw");
-  document.documentElement.style.setProperty("--image-height-large", image_size_large + "vh");
+  cl.toggle("compact", view_options.compact == 1);
+
+  const image_size = view_options.image_size * 5;
+  const image_size_small = view_options.image_size*2.5;
+  const image_size_large = view_options.image_size == 10 ? 100 : Math.min(view_options.image_size*10, 90);
+  document.documentElement.style.setProperty("--image-width", image_size + "vw");
+  document.documentElement.style.setProperty("--image-height", image_size + "vh");
   document.documentElement.style.setProperty("--image-width-small", image_size_small + "vw");
   document.documentElement.style.setProperty("--image-height-small", image_size_small + "vh");
+  document.documentElement.style.setProperty("--image-width-large", image_size_large + "vw");
+  document.documentElement.style.setProperty("--image-height-large", image_size_large + "vh");
+
   if (view_options.details_changed) {
     set_view_details();
     view_options.details_changed = false;

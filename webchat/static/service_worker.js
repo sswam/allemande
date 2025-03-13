@@ -1,167 +1,203 @@
 "use strict";
 
-const VERSION = "0.3.846";
+const VERSION = "0.3.983";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
 
 const CACHE_NAME = "allemande-ai-" + VERSION;
 const URLS_TO_CACHE = [
-	"/",
-	"/config.js",
-	"/chat.js",
-	"/record.js",
-	"/notify.js",
-	"/util.js",
-	"/allychat.css",
-	"/chat.css",
-	"/icon.png",
-	"/process_messages.js",
-	"/voice.js",
-	"/room.js",
-	"/print.js",
-	"/highlight.js",
+  "/",
+  "/config.js",
+  "/chat.js",
+  "/record.js",
+  "/notify.js",
+  "/util.js",
+  "/allychat.css",
+  "/chat.css",
+  "/icon.png",
+  "/process_messages.js",
+  "/voice.js",
+  "/room.js",
+  "/print.js",
+  "/highlight.js",
 
-	"/d3.min.js",
-	"/wasm.min.js",
-	"/d3-graphviz.min.js",
-	"/graphvizlib.wasm",
+  "/d3.min.js",
+  "/wasm.min.js",
+  "/d3-graphviz.min.js",
+  "/graphvizlib.wasm",
 ];
 
-const CORS_URLS_TO_CACHE = [
-	"https://allemande.ai/auth.js"
-];
+const CORS_URLS_TO_CACHE = ["https://allemande.ai/auth.js"];
 
 // Install event - cache resources
+async function sw_install_3(event) {
+  const cache = await caches.open(CACHE_NAME);
+
+  // Cache local resources
+  // await cache.addAll(URLS_TO_CACHE);
+  await Promise.all(
+    URLS_TO_CACHE.map(async (url) => {
+      const response = await fetch(url);
+      if (response.redirected) {
+        console.log(`Skipped caching redirect for: ${url}`);
+      } else {
+        await cache.put(url, response);
+      }
+    })
+  );
+
+  // Cache cross-origin resources with CORS mode
+  for (const url of CORS_URLS_TO_CACHE) {
+    console.log(`Caching CORS resource: ${url}`);
+    const response = await fetch(url, { mode: "cors", credentials: "omit" });
+    if (!response.redirected) {
+      await cache.put(url, response);
+      console.log(`Cached CORS resource: ${url}`);
+    } else {
+      console.log(`Skipped caching redirect for: ${url}`);
+    }
+  }
+
+  // Activate the new service worker immediately
+  await self.skipWaiting();
+}
+
+async function sw_install_2(event) {
+  try {
+    await sw_install_3(event);
+  } catch (err) {
+    console.error(`Cache installation failed: ${err.message}`);
+  }
+  console.log(`Service worker installed, version ${VERSION}`);
+}
+
 async function sw_install(event) {
-	try {
-		const cache = await caches.open(CACHE_NAME);
-
-		// Cache local resources
-		// await cache.addAll(URLS_TO_CACHE);
-		await Promise.all(
-			URLS_TO_CACHE.map(async (url) => {
-				const response = await fetch(url);
-				if (response.redirected) {
-					console.log(`Skipped caching redirect for: ${url}`)
-				} else {
-					await cache.put(url, response);
-				}
-			})
-		);
-
-		// Cache cross-origin resources with CORS mode
-		for (const url of CORS_URLS_TO_CACHE) {
-			console.log(`Caching CORS resource: ${url}`);
-			const response = await fetch(url, { mode: 'cors', credentials: 'omit' });
-			if (!response.redirected) {
-				await cache.put(url, response);
-				console.log(`Cached CORS resource: ${url}`);
-			} else {
-				console.log(`Skipped caching redirect for: ${url}`);
-			}
-		}
-
-		// Activate the new service worker immediately
-		await self.skipWaiting();
-	} catch (err) {
-		console.error(`Cache installation failed: ${err.message}`);
-	}
-	console.log(`Service worker installed, version ${VERSION}`);
+  event.waitUntil(sw_install_2(event));
 }
 
 // Activate event - clean old caches
+async function sw_activate_3(event) {
+  const cacheKeys = await caches.keys();
+  for (const key of cacheKeys) {
+    if (key !== CACHE_NAME) {
+      await caches.delete(key);
+    }
+  }
+  await self.clients.claim();
+}
+
+async function sw_activate_2(event) {
+  try {
+    await sw_activate_3(event);
+  } catch (err) {
+    console.error(`Cache activation failed: ${err.message}`);
+  }
+}
+
 async function sw_activate(event) {
-	try {
-		const cacheKeys = await caches.keys();
-		for (const key of cacheKeys) {
-			if (key !== CACHE_NAME) {
-				await caches.delete(key);
-			}
-		}
-		await self.clients.claim();
-	} catch (err) {
-		console.error(`Cache activation failed: ${err.message}`);
-	}
+  event.waitUntil(sw_activate_2(event));
 }
 
 // Fetch resource from cache or network
 async function sw_fetch_cached(req) {
-	const cached = await caches.match(req);
-	if (cached) {
-		console.log(`Cached resource: ${req.url}`);
-		return cached;
-	}
-	console.log(`Fetching resource not found in cache: ${req.url}`);
-	return await fetch(req, { mode: "cors" });
+  const cached = await caches.match(req);
+  if (cached) {
+    console.log(`Cached resource: ${req.url}`);
+    return cached;
+  }
+  console.log(`Fetching resource not found in cache: ${req.url}`);
+  return await fetch(req, { mode: "cors" });
 }
 
 // Fetch event - serve GET and HEAD requests from cache or network
 function sw_fetch(event) {
-	console.log(`Fetch event: ${event.request.method} ${event.request.url}`);
-	const req = event.request;
-	if (!["GET", "HEAD"].includes(req.method)) {
-		console.log(`Ignoring non-GET/HEAD request: ${req.method} ${req.url}`);
-		return;
-	}
-	event.respondWith(sw_fetch_cached(req));
+  console.log(`Fetch event: ${event.request.method} ${event.request.url}`);
+  const req = event.request;
+  if (!["GET", "HEAD"].includes(req.method)) {
+    console.log(`Ignoring non-GET/HEAD request: ${req.method} ${req.url}`);
+    return;
+  }
+  event.respondWith(sw_fetch_cached(req));
 }
 
 // Push event - handle incoming notifications
 async function sw_push(event) {
-	const data = event.data.json();
-	const options = {
-		body: data.body,
-		icon: "https://allemande.ai/icon.png",
-		badge: "https://allemande.ai/icon.png",
-		data: {
-			room: data.room,
-			url: data.url  // not needed, just use room?
-			// TODO anchor to a specific message
-		}
-	};
+  const data = event.data.json();
+  const options = {
+    body: data.body,
+    icon: "https://allemande.ai/icon.png",
+    badge: "https://allemande.ai/icon.png",
+    data: {
+      room: data.room,
+      url: data.url, // not needed, just use room?
+      // TODO anchor to a specific message
+    },
+  };
 
-	event.waitUntil(self.registration.showNotification("Allemande AI", options));
+  event.waitUntil(self.registration.showNotification("Allemande AI", options));
 }
 
 // Notification click event - handle user interaction
 async function sw_notificationclick(event) {
-	event.notification.close();
-//	const urlToOpen = event.notification.data.url || "/";
-	const urlToOpen = `/#${event.notification.data.room}`;
+  event.notification.close();
+  //	const urlToOpen = event.notification.data.url || "/";
+  const urlToOpen = `/#${event.notification.data.room}`;
 
-	const windowClients = await self.clients.matchAll({
-		type: "window",
-		includeUncontrolled: true
-	});
+  const windowClients = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
 
-	for (const client of windowClients) {
-		if (client.url === urlToOpen && "focus" in client) {
-			await client.focus();
-			return;
-		}
-	}
+  for (const client of windowClients) {
+    if (client.url === urlToOpen && "focus" in client) {
+      await client.focus();
+      return;
+    }
+  }
 
-	event.waitUntil(self.clients.openWindow(urlToOpen));
+  event.waitUntil(self.clients.openWindow(urlToOpen));
+}
+
+// Check for updates
+// TODO possibly debounce this?
+async function check_for_updates() {
+  try {
+    const registration = await self.registration;
+    await registration.update();
+    return true;
+  } catch (err) {
+    console.error("Update check failed:", err);
+    return false;
+  }
 }
 
 // Communicate with main app
 
 function sw_port_message(communicationPort, event) {
-	if (event.data === "getAppInfo") {
-		communicationPort.postMessage({
-			type: "APP_INFO",
-			version: VERSION,
-			debug: DEBUG,
-		});
-	}
+  const command = event.data;
+
+  if (command === "getAppInfo") {
+    communicationPort.postMessage({
+      type: "APP_INFO",
+      version: VERSION,
+      debug: DEBUG,
+    });
+    return;
+  }
+
+  if (command === "checkForUpdates") {
+    check_for_updates();
+    return;
+  }
 }
 
-function sw_message(event) {
-	if (event.data && event.data.type === 'PORT_INITIALIZATION') {
-		const communicationPort = event.ports[0];
-		communicationPort.onmessage = (event) => sw_port_message(communicationPort, event);
-	}
+function sw_receive_message(event) {
+  if (event.data && event.data.type === "PORT_INITIALIZATION") {
+    const communicationPort = event.ports[0];
+    communicationPort.onmessage = (event) =>
+      sw_port_message(communicationPort, event);
+  }
 }
 
 // Event listeners
@@ -171,4 +207,4 @@ self.addEventListener("activate", sw_activate);
 self.addEventListener("fetch", sw_fetch);
 self.addEventListener("push", sw_push);
 self.addEventListener("notificationclick", sw_notificationclick);
-self.addEventListener("message", sw_message);
+self.addEventListener("message", sw_receive_message);

@@ -35,6 +35,7 @@ let view_options = {
   canvas: 0,
   clean: 0,
   columns: 0,
+  compact: 0,
   image_size: 4,
   input_row_height: 88,
   theme: "default",
@@ -263,10 +264,10 @@ function send_continue(n) {
   // nth from the end of the last_users array
   n = n || 1;
   if (n > last_users.length) return;
-  console.log("send_continue", n);
-  console.log("last_users", last_users);
+  // console.log("send_continue", n);
+  // console.log("last_users", last_users);
   const message = "-@" + last_users[last_users.length - n];
-  console.log("message", message);
+  // console.log("message", message);
   send_text(message);
 }
 
@@ -368,7 +369,7 @@ function textarea_indent(textarea, dedent = false) {
   // If no selection, handle single tab insertion/removal
   textarea.focus();
   if (textarea.selectionStart === textarea.selectionEnd) {
-    console.log("single tab");
+    // console.log("single tab");
     if (dedent) {
       // For shift-tab with no selection, remove previous tab if it exists
       const pos = textarea.selectionStart;
@@ -448,7 +449,7 @@ function setRangeText(textarea, newText, blockStart, blockEnd) {
   const selStart = textarea.selectionStart;
   const selEnd = textarea.selectionEnd;
 
-  console.log(selStart, selEnd);
+  // console.log(selStart, selEnd);
 
   // Make the replacement
   textarea.setSelectionRange(blockStart, blockEnd);
@@ -458,9 +459,9 @@ function setRangeText(textarea, newText, blockStart, blockEnd) {
   // Calculate how the replacement affected positions
   const lengthDiff = newText.length - (blockEnd - blockStart);
 
-  console.log(oldText, newText);
-  console.log(oldText.length, newText.length);
-  console.log(lengthDiff);
+//   console.log(oldText, newText);
+//   console.log(oldText.length, newText.length);
+//   console.log(lengthDiff);
 
   // Restore selection, adjusting for text length changes
   const adjustedStart = selStart < blockStart ? selStart :
@@ -471,9 +472,9 @@ function setRangeText(textarea, newText, blockStart, blockEnd) {
             selEnd > blockEnd ? selEnd + lengthDiff :
             blockEnd;
 
-  console.log(selStart, selEnd);
-  console.log(blockStart, blockEnd);
-  console.log(adjustedStart, adjustedEnd);
+//   console.log(selStart, selEnd);
+//   console.log(blockStart, blockEnd);
+//   console.log(adjustedStart, adjustedEnd);
 
   textarea.setSelectionRange(adjustedStart, adjustedEnd);
 }
@@ -530,7 +531,7 @@ async function set_room(r, no_history) {
 
   // check if we're already in the room
   if (room === r) {
-    console.log("already in room", room);
+    // console.log("already in room", room);
     active_reset("move");
     $content.focus();
     return;
@@ -603,6 +604,8 @@ async function set_room(r, no_history) {
       room_url += ".html";
     }
     messages_iframe_set_src(room_url + "?stream=1");
+
+    check_for_updates();
   }
 }
 
@@ -647,7 +650,7 @@ async function move(source, dest) {
 
   const dest_name_to_return = dest;
 
-  console.log("dest_name_to_return", dest_name_to_return);
+  // console.log("dest_name_to_return", dest_name_to_return);
 
   // add extension to room names
   if (source_type == "room") {
@@ -716,9 +719,9 @@ function nav_bot(ev) {
 
 async function theme_loaded() {
   const $body = document.body;
-  console.log("theme_loaded");
+  // console.log("theme_loaded");
   const theme_mode = getComputedStyle(document.documentElement).getPropertyValue("--theme-mode");
-  console.log("theme_mode", theme_mode);
+  // console.log("theme_mode", theme_mode);
   if (theme_mode == "dark") {
     $body.classList.add("dark");
     $body.classList.remove("light");
@@ -954,7 +957,7 @@ async function room_last() {
   if (data.error) {
     throw new Error(data.error);
   }
-  console.log("last", data.last);
+  // console.log("last", data.last);
   room_set_number(data.last);
 }
 
@@ -1070,8 +1073,7 @@ function handle_message(ev) {
     (ev.data.key == "F5" ||
       (ev.data.ctrlKey && ev.data.key.toLowerCase() == "r"))
   ) {
-    reload_page();
-    return;
+    return reload_page();
   }
 
   // sending on the event cannot enter text in the input,
@@ -1118,16 +1120,14 @@ function sw_updatefound() {
 }
 
 function sw_statechange(ev) {
-  if (ev.target.state === "activated") reload_page();
+  if (ev.target.state === "activated")
+    reload_page();
 }
 
 async function register_service_worker() {
-  if (!"serviceWorker" in navigator) return;
+  if (!navigator.serviceWorker) return;
   try {
-    sw_registration = await navigator.serviceWorker.register(
-      "/service_worker.js"
-    );
-    // console.log("ServiceWorker registration successful");
+    sw_registration = await navigator.serviceWorker.register("/service_worker.js");
   } catch (err) {
     console.error("ServiceWorker registration failed: ", err);
     return;
@@ -1135,7 +1135,7 @@ async function register_service_worker() {
 
   await navigator.serviceWorker.ready;
 
-  sw_registration.addEventListener("updatefound", sw_updatefound);
+  $on(sw_registration, "updatefound", sw_updatefound);
   sw_registration.update();
 
   // Request the app version from the service worker
@@ -1145,6 +1145,14 @@ async function register_service_worker() {
   ]);
   sw_message_channel.port1.onmessage = handle_sw_message;
   sw_message_channel.port1.postMessage("getAppInfo");
+
+//  $on(navigator.serviceWorker, "controllerchange", reload_page)
+}
+
+function check_for_updates() {
+  if (!sw_message_channel)
+    throw new Error("Service worker not registered");
+  sw_message_channel.port1.postMessage("checkForUpdates");
 }
 
 // authentication ------------------------------------------------------------
@@ -1167,7 +1175,7 @@ function authChat() {
   $on($id("logout"), "click", logout_confirm);
   userData = getJSONCookie("user_data");
   if (!userData) {
-    console.log("going back to main site");
+    // console.log("going back to main site");
     go_to_main_site();
     throw new Error("Setup error: Not logged in");
   }
@@ -1586,7 +1594,7 @@ async function check_ok_to_edit(file) {
   const check_mime = !EDITABLE_EXTENSIONS.includes(ext);
 
   if (check_mime) {
-    console.log("checking mime type for file:", file);
+    // console.log("checking mime type for file:", file);
     const mime = await check_mime_type(file);
     if (!mime.startsWith("text/")) {
       throw new Error("disallowed mime type for file: " + file + " (" + mime + ")");
@@ -1781,8 +1789,12 @@ function view_options_apply() {
   active_set("view_clean", view_options.clean);
   active_set("view_image_size", view_options.image_size - 4);
   active_set("view_columns", view_options.columns);
+  active_set("view_compact", view_options.compact);
   $id("view_items").value = view_options.items ?? "";
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
+
+  const cl = document.body.classList;
+  cl.toggle("compact", view_options.compact == 1);
 
   if (view_options.image_size >= 10) {
     view_image_size_delta = -1;
@@ -1837,14 +1849,24 @@ function view_columns(ev) {
   view_options_apply();
 }
 
+function view_compact(ev) {
+  view_options.compact = !view_options.compact;
+  view_options_apply();
+}
+
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
 
 function view_image_size(ev) {
   // starts at 4, range from 1 to 10
-  const neg = ev.shiftKey || ev.ctrlKey ? -1 : 1;
-  const delta = neg * view_image_size_delta;
-//  view_options.image_size = clamp((view_options.image_size || 4) + delta, 1, 10);
-  view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
+  const reset = ev.ctrlKey;
+  if (reset) {
+    view_options.image_size = 4;
+    view_image_size_delta = 1;
+  } else {
+    const neg = ev.shiftKey ? -1 : 1;
+    const delta = neg * view_image_size_delta;
+    view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
+  }
   view_options_apply();
 }
 
@@ -1983,7 +2005,7 @@ async function set_options(options) {
 }
 
 async function opt_context(ev) {
-  console.log("opt_context", ev.target.value);
+  // console.log("opt_context", ev.target.value);
   let context = ev.target.value;
   context = context === "" ? null : +context;
   await set_options({
@@ -2077,6 +2099,7 @@ const icons = {
   edit_tab: '<svg width="20" height="20" fill="currentColor" class="bi bi-indent" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3 8a.5.5 0 0 1 .5-.5h6.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H3.5A.5.5 0 0 1 3 8"/><path fill-rule="evenodd" d="M12.5 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5"/></svg>',
   view_columns: '<svg width="20" height="20" fill="currentColor" class="bi bi-layout-three-columns" viewBox="0 0 16 16"><path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5zM1.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5H5V1zM10 15V1H6v14zm1 0h3.5a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5H11z"/></svg>',
   view_details: '<svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><ellipse cx="7.6" cy="4.3" rx="4" ry="3"/><ellipse cx="11.7" cy="4.6" rx="4" ry="3"/><ellipse cx="6.9" cy="8.5" rx="4" ry="3"/><ellipse cx="10.7" cy="7.3" rx="4" ry="3"/><ellipse cx="4.3" cy="6.3" rx="4" ry="3"/><ellipse cx="3.22" cy="12.3" rx="1.2" ry=".9"/><ellipse cx="1.4" cy="14.1" rx=".8" ry=".6"/></svg>',
+  view_compact: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-collapse-vertical" viewBox="0 0 16 16"><path d="M8 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M0 8a.5.5 0 0 1 .5-.5h3.793L3.146 6.354a.5.5 0 1 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L4.293 8.5H.5A.5.5 0 0 1 0 8m11.707.5 1.147 1.146a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2a.5.5 0 0 1 .708.708L11.707 7.5H15.5a.5.5 0 0 1 0 1z"/></svg>',
 };
 
 
@@ -2123,10 +2146,16 @@ function change_privacy() {
 // mobile keyboards ----------------------------------------------------------
 
 function visual_viewport_resized() {
-  document.documentElement.style.height = `${window.visualViewport.height}px`;
+  const height = `${window.visualViewport.height}px`;
+  document.documentElement.style.height = height;
+  document.body.style.height = height;
+
+  if (window.scrollY < 0)
+    window.scrollTo(0, 0);
 }
 function account_for_chuckleheaded_mobile_keyboards() {
   $on(window.visualViewport, "resize", visual_viewport_resized);
+  visual_viewport_resized();
 }
 
 // printing ------------------------------------------------------------------
@@ -2171,7 +2200,7 @@ function chat_main() {
   $on($id("files"), "change", files_changed);
   $on($id("add_cancel"), "click", () => set_controls());
 
-  $on($id("edit_save"), "click", edit_save);
+  $on($id("edit_save"), "click", edit_save_and_close);
   $on($id("edit_reset"), "click", edit_reset);
   $on($id("edit_clear"), "click", edit_clear);
   $on($id("edit_close"), "click", edit_close);
@@ -2186,6 +2215,7 @@ function chat_main() {
   $on($id("view_canvas"), "click", view_canvas);
   $on($id("view_clean"), "click", view_clean);
   $on($id("view_columns"), "click", view_columns);
+  $on($id("view_compact"), "click", view_compact);
   $on($id("view_items"), "change", view_items);
   $on($id("view_items"), "keyup", view_items);
   $on($id("view_cancel"), "click", () => set_controls());
@@ -2236,4 +2266,8 @@ function chat_main() {
   account_for_chuckleheaded_mobile_keyboards();
 
   load_user_styles_and_script();
+
+  $on(document, "touchmove", function(e) {
+    e.preventDefault();
+  }, { passive: false });
 }
