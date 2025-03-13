@@ -55,6 +55,7 @@ run() {
 
 lint_txt() { :; }
 lint_md() { :; }
+lint_html() { :; }
 
 lint_sh() {
 	local prog="$1"

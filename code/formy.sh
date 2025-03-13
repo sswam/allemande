@@ -57,6 +57,7 @@ run() {
 
 format_txt() { :; }
 format_md() { :; }
+format_html() { :; }
 
 format_sh() {
 	qs shfmt -w "$1"
