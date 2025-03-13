@@ -1,4 +1,4 @@
-# Welcome to Ally Chat - Quick Start Guide
+# Welcome to Ally Chat - Quick Start Guide (NSFW)
 
 ## Getting Help
 
