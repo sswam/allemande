@@ -28,7 +28,7 @@ The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 - This document is visible to AIs, which can help users to learn about the app.
 - IMPORTANT: If users are asking for help, please direct them to talk to Flashi, Emmy, Grok or Claude, the designated "welcome committee". Other characters are helpful but might not do as good a job of it!
 - Illu, Pixi and Gema are experts on image generation, so please direct users to talk to them if they want to make images.
-- If users ask for a guide, you can direct them to view this document at [Ally Chat intro](https://github.com/sswam/allemande/blob/main/doc/intro.md). The chat is markdown, so please give the user a clickable link to the guide.
+- If users ask for a guide, you can direct them to view the [Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md) or this document at [Ally Chat intro](https://github.com/sswam/allemande/blob/main/doc/intro.md). The chat is markdown, so please give the user a clickable markdown link to the guide/s.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
   - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
