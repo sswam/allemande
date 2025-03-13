@@ -50,6 +50,12 @@ run() {
 	fi
 }
 
+# no-ops for some formats, for now
+# TODO could check markdown, could maybe spell-check text!
+
+lint_txt() { :; }
+lint_md() { :; }
+
 lint_sh() {
 	local prog="$1"
 	local fail=0

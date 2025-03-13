@@ -52,6 +52,12 @@ run() {
 	fi
 }
 
+# no-ops for some formats, for now
+# TODO could maybe reformat, but nah
+
+format_txt() { :; }
+format_md() { :; }
+
 format_sh() {
 	qs shfmt -w "$1"
 }
