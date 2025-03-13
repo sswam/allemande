@@ -22,7 +22,7 @@ if (prevH1 && prevH1.tagName === 'H1') {
 }
 </script>
 
-Please keep this space PG and family friendly.
+Please keep this space PG and family friendly. [Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md)
 
 The Cast:	```dot
 	digraph Anthropic {
