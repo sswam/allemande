@@ -1,4 +1,5 @@
 const HIGHLIGHT_JS_VERSION = "11.11.1";
+const HIGHLIGHT_LANGUAGES_UNSUPPORTED = new Set(['dot']);
 
 // Track loaded state and languages
 const highlightState = {
@@ -18,7 +19,7 @@ async function highlight_ensureHighlightCore() {
 
 // Load a specific language module
 async function highlight_loadLanguage(lang) {
-  if (!highlightState.loadedLanguages.has(lang) && !highlightState.core.getLanguage(lang)) {
+  if (!highlightState.loadedLanguages.has(lang) && !HIGHLIGHT_LANGUAGES_UNSUPPORTED.has(lang) && !highlightState.core.getLanguage(lang)) {
     highlightState.loadedLanguages.add(lang);  // even on failure, and before await, to avoid repeated or concurrent attempts
     try {
       await loadScript(`https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HIGHLIGHT_JS_VERSION}/languages/${lang}.min.js`);
@@ -46,6 +47,9 @@ async function highlight_processCodeBlock(codeElement) {
 
   if (langClass) {
     const lang = langClass.replace('language-', '');
+    if (HIGHLIGHT_LANGUAGES_UNSUPPORTED.has(lang)) {
+      return;
+    }
     await highlight_loadLanguage(lang);
   }
 
