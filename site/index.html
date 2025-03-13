@@ -1,40 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta content="width=device-width, initial-scale=1" name="viewport" />
+<html lang="en"><head>
+	<meta charset="utf-8"/>
+	<meta content="width=device-width, initial-scale=1" name="viewport"/>
 	<title>Allemande AI</title>
-	<link rel="icon" type="image/png" href="icon.png">
-	<link href="style@1731538402.css" rel="stylesheet" />
+	<link href="icon.png" rel="icon" type="image/png"/>
+	<link href="style@1741847986.css" rel="stylesheet"/>
 </head>
 <body>
-	<img alt="Allemande" id="banner" src="allemande@1683146134.jpg" />
+	<img alt="Allemande" id="banner" src="allemande@1683146134.jpg"/>
 	<div class="space" style="flex-grow: 1; max-height: 3.5em; min-height: 2em;">
 	</div>
 	<div class="box" id="info">
 		<p>G'day, we're <i>Allemande</i>, from Melbourne, Australia.</p>
 		<p>We build AI software for work, learning, and fun.</p>
-		<p>Log in to try <i>Ally Chat</i>, our multi-user AI chat app.</p>
-		<p>Contact us for a free meeting to learn about AI.</p>
+		<p>Contact us to try <i>Ally Chat</i>, our multi-user AI chat app.</p>
 		<div style="text-align:center">
 			<!--a class="button yellow" href="/plans.html">Plans </a-->
 			<!-- </a><a class="button yellow" href="https://flash.allemande.ai">Flash -->
 			<!-- </a><a class="button green" href="https://alfred.allemande.ai">Alfred</a> -->
-		<a class="button red" href="https://chat.allemande.ai" id="chatlink">Ally Chat </a><a class="button yellow" href="https://raw.githubusercontent.com/sswam/allemande/refs/heads/main/pix/ally_chat_0.png">Example</a><a class="button green" href="mailto:sam@allemande.ai?subject=Allemande AI">Contact </a><a class="button blue" href="https://github.com/sswam/allemande">Code</a>
+		<a class="button red" href="https://chat.allemande.ai" id="chatlink">Ally Chat </a><a class="button yellow" href="https://github.com/sswam/allemande/tree/main/pix/examples#readme">Examples</a><a class="button green" href="mailto:sam@allemande.ai?subject=Allemande AI" title="email sam@allemande.ai">Contact </a><a class="button blue" href="https://github.com/sswam/allemande">Code</a>
 		</div>
 	</div>
 	<div class="space" style="flex-grow: 3; min-height: 40px;">
 	</div>
 	<form class="box login hidden auth_box" id="login_box">
-	<input id="username" placeholder="User" size="14" type="text" autocomplete="username"/><input id="password" placeholder="Password" size="7" type="password" autocomplete="current-password"/><button class="button green" id="login">Continue</button>
+	<input autocomplete="username" id="username" placeholder="User" size="14" type="text"/><input autocomplete="current-password" id="password" placeholder="Password" size="7" type="password"/><button class="button green" id="login">Continue</button>
 	</form>
 	<div class="box session hidden auth_box" id="session_box">
-	<input id="session_username" readonly="" size="14" type="text" /><button class="button red" id="logout">Log out</button>
+	<input id="session_username" readonly="" size="14" type="text"/><button class="button red" id="logout">Log out</button>
 	</div>
 	<div class="space" style="height: 40px;">
 	</div>
-	<script src="util@1682080032.js"></script>
-	<script src="auth@1731721074.js"></script>
+	<script src="util@1741847773.js"></script>
+	<script src="auth@1741848042.js"></script>
 	<script>
 		if (location.href.indexOf("local.") > -1) {
 			document.getElementById("chatlink").href = "https://chat-local.allemande.ai";
@@ -44,5 +42,7 @@
 		}
 		authHomepage();
 	</script>
-</body>
-</html>
+
+
+
+</body></html>

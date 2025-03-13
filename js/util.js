@@ -49,6 +49,13 @@ function hide(element) {
   show(element, false);
 }
 
+function enable_link(element, enabled) {
+  if (typeof element === "string")
+    element = $id(element);
+  element.classList.toggle("disabled", !enabled);
+  element.ariaDisabled = !enabled;
+}
+
 // Hook system ---------------------------------------------------------------
 
 const hooks = {};

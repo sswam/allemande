@@ -173,3 +173,9 @@ body {
 .error {
 	background-color: #422 !important;
 }
+
+.disabled {
+	color: #888 !important;
+	/* pointer-events: none; */
+	/* background-color: #444 !important; */
+}
