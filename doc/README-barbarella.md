@@ -8,9 +8,9 @@ Our flagship product is an innovative multi-player chat app called <A href="http
 
 ## Quickstart
 
-Contact the developer for access, and check out [./intro_basic.md](the Quick Start Guide) to get started.
+Contact the developer for access, and check out [the Quick Start Guide](./intro_basic.md) to get started.
 
-We also have [./intro.md](a longer guide), which the AIs can use to help you learn.a longer guide, which the AIs can use to help you learn.
+We also have [a longer guide](./intro.md), which the AIs can use to help you learn.a longer guide, which the AIs can use to help you learn.
 
 ## Ally Chat
 
@@ -29,7 +29,7 @@ Ally Chat is a chat system of many multiples:
 - Callam, Ally's male counterpart, configured to talk like a pirate.
 - Dav, OpenAI's ChatGPT 3.5, with a default context of twenty messages.
 - Emmy, OpenAI's GPT-4, with a default context of ten messages.
-- Claud, Claude from Anthropic, with a default context of fifty messages.
+- Claude from Anthropic, with a default context of fifty messages.
 - Clia, Claude Instant from Anthropic, with a default context of one hundred messages.
 - Flashi, Google Gemini 2.0 Flash.
 
@@ -50,6 +50,7 @@ Ally Chat is a chat system of many multiples:
 ### Search Agents
 
 - Goog, the Google search engine
+- Gimg, Google image search
 - UTube, find videos on YouTube
 - Pr0nto, find adult videos on PornHub
 

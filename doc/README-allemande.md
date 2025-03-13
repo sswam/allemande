@@ -8,9 +8,9 @@ Our flagship product is an innovative multi-player chat app called <A href="http
 
 ## Quickstart
 
-Contact the developer for access, and check out [./intro_basic.md](the Quick Start Guide) to get started.
+Contact the developer for access, and check out [the Quick Start Guide](./intro_basic.md) to get started.
 
-We also have [./intro.md](a longer guide), which the AIs can use to help you learn.a longer guide, which the AIs can use to help you learn.
+We also have [a longer guide](./intro.md), which the AIs can use to help you learn.a longer guide, which the AIs can use to help you learn.
 
 ## Ally Chat
 
@@ -52,7 +52,6 @@ Ally Chat is a chat system of many multiples:
 - Goog, the Google search engine
 - Gimg, Google image search
 - UTube, find videos on YouTube
-- ... and more!
 
 ### Applications
 
