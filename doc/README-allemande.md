@@ -8,9 +8,9 @@ Our flagship product is an innovative multi-player chat app called <A href="http
 
 ## Quickstart
 
-Contact the developer for access, and check out [the Quick Start Guide](./intro_basic.md) to get started.
+Contact the developer for access, and check out [the Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md) to get started.
 
-We also have [a longer guide](./intro.md), which the AIs can use to help you learn.a longer guide, which the AIs can use to help you learn.
+We also have [a longer guide](https://github.com/sswam/allemande/blob/main/doc/intro.md), which the AIs can use to help you learn.a longer guide, which the AIs can use to help you learn.
 
 ## Ally Chat
 
