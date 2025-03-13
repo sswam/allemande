@@ -4,12 +4,16 @@
 }
 
 .cast img:hover {
-	border: 2px solid white;
-	box-shadow: 5px 5px 10px 10px rgba(0, 0, 0, 0.8);
-	transform: scale(1.65);
+	/* border: 2px solid white; */
+	box-shadow: 0 0 5px 5px rgba(255, 255, 0, 0.8);
+	transform: scale(1.5);
 	z-index: 2;
 	position: relative;
 	transition: all 0.3s ease;  /* Smooth transition for hover effects */
+}
+
+.cast .image:hover .alt {
+	display: none;
 }
 
 div.cast {
@@ -17,6 +21,11 @@ div.cast {
 	clear: both;
 }
 
+div.cast p {
+	break-inside: auto;
+}
+
+/*
 @media screen {
 	div.message:has(div.cast) {
 		break-after: column;
@@ -28,3 +37,4 @@ div.cast {
 		break-after: page;
 	}
 }
+*/
