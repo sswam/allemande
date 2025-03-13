@@ -160,3 +160,5 @@ types-tabulate
 
 deepmerge
 Pillow
+
+whisperx

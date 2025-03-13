@@ -57,3 +57,20 @@ NVCC_PREPEND_FLAGS='-ccbin /usr/bin/gcc-13' CUDACXX="/usr/local/cuda/bin/nvcc" C
 
 # stylelint, a CSS linter
 npm install -g stylelint stylelint-config-recommended  # stylelint-config-standard
+
+
+# CTranslate2, had to build from source for whisperx
+
+cd ~/soft-ai
+apt install libmkl-dev
+git clone git@github.com:OpenNMT/CTranslate2.git
+cd CTranslate2
+git checkout v4.4.0
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DMKL_INCLUDE_DIR=/usr/include/mkl ..
+make
+sudo checkinstall --pkgname ctranslate2
+
+cd ../python
+pip install -e .

@@ -93,3 +93,5 @@ lilypond
 lilypond-doc
 
 mediainfo
+
+libmkl-dev
