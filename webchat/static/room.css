@@ -494,6 +494,7 @@ body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
 	content: "<script/>";
 	display: block;
 	font-weight: normal;
+	margin-left: 1em;
 }
 
 pre:has(div.graphviz) {
@@ -560,7 +561,7 @@ p:has(> img) {
 	--image-height: 100vh;
 }
 
-pre:has(> code) {
+:has(> code) {
 	position: relative;
 }
 
@@ -573,18 +574,22 @@ script + .code-controls {
 	top: 1px;
 	right: 1px;
 	display: none;
-	gap: 8px;
 	z-index: 1;
 	align-items: center;
 	background: var(--background);
 	border-radius: 5px;
-	padding-left: 6px;
 }
 
+.code-controls .language {
+	padding: 2px 6px;
+}
+
+/*
 .code-controls button {
 	border-radius: 5px;
 	font-size: 1.2rem;
 }
+*/
 
 .graphviz {
 	pointer-events: none;
@@ -709,3 +714,6 @@ body.items_8 .search tbody > tr:nth-child(n + 9),
 body.items_9 .search tbody > tr:nth-child(n + 10) {
   display: none;
 }
+
+body.dark .active { background-color: #606030 !important; }
+body.light .active { background-color: #b0b058 !important; color: black !important; }
