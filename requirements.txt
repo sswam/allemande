@@ -161,4 +161,5 @@ types-tabulate
 deepmerge
 Pillow
 
+optree
 whisperx

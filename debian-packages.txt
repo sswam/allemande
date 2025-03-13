@@ -95,3 +95,5 @@ lilypond-doc
 mediainfo
 
 libmkl-dev
+
+python3-pdfminer
