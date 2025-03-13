@@ -2,6 +2,8 @@
 var inIframe = window.parent !== window.self;
 const moveLabels = true;
 
+const HIDE_CONTROLS_DELAY = 1000;
+
 function isNodeOnlyImages(node) {
   const hasImage = node.getElementsByTagName('img').length > 0;
   const hasText = Array.from(node.childNodes).some(
@@ -168,8 +170,8 @@ function handleNewMessage(newMessage) {
   // render graphviz diagrams
   render_graphviz(newContent);
 
-  // add language info and a copy button to code blocks, script and styles on hover
-  const codeBlocks = newContent.querySelectorAll("pre code, script:not(hide):not([src]), style:not(hide)");
+  // add language info ~~and a copy button~~ to code blocks, script and styles on hover
+  const codeBlocks = newContent.querySelectorAll("code, script:not(hide):not([src]), style:not(hide)");
   for (const codeBlock of codeBlocks) {
     decorateCodeBlock(codeBlock);
   }
@@ -221,7 +223,7 @@ function handleNewMessage(newMessage) {
     const label = newMessage.querySelector(".label");
     if (label) {
       let p = newContent.querySelector(":scope > p");
-      let go_before_this = newMessage.querySelector("pre, details");
+      let go_before_this = newMessage.querySelector("pre, details, script, style");
       let container = (p && !(go_before_this && isPrecedingSibling(go_before_this, p))) ? p : newContent;
       if (user.toLowerCase() === "gimg") {
         console.log("moving label", label, "before", go_before_this, "in", container, "for", user);
@@ -239,6 +241,7 @@ let hideTimer;
 let controls_visible;
 
 function showHideControls(controls, show) {
+  console.log("showHideControls", show, controls);
   if (hideTimer) {
     clearTimeout(hideTimer);
     hideTimer = null;
@@ -254,7 +257,7 @@ function showHideControls(controls, show) {
     hideTimer = setTimeout(function() {
       controls.classList.remove('show-flex');
       hideTimer = null;
-    }, 500);
+    }, HIDE_CONTROLS_DELAY);
   }
 }
 
@@ -263,8 +266,13 @@ function decorateCodeBlock(codeBlock) {
     return;
   }
 
-  let lang = codeBlock.className.replace(/language-/, "");
+  let lang = (codeBlock.className.split(' ')
+    .find(className => className.startsWith('language-')) || '')
+    .replace('language-', '');
+
   const parent = codeBlock.parentNode;
+
+  const parentIsPre = parent.nodeName === "PRE";
 
   if (codeBlock.nodeName === "SCRIPT") {
     lang = "javascript";
@@ -279,24 +287,35 @@ function decorateCodeBlock(codeBlock) {
   wrapper.appendChild(codeBlock);
 */
 
-  // Create container for language label and copy button
+  // Create container for language label ~~and copy button~~
   const controls = document.createElement("div");
   controls.className = "code-controls";
 
   // Add language label if language is specified
   if (lang) {
-    controls.textContent = lang;
+    const div = document.createElement("div");
+    div.className = "language";
+    div.textContent = lang;
+    controls.appendChild(div);
   }
 
+  /* TODO clean up */
+
+  /*
   // Create copy button
   const copyButton = document.createElement("button");
   copyButton.id = "copy_button";
   copyButton.textContent = "copy";
   controls.appendChild(copyButton);
+  */
 
-  // Add click handler for copy button
-  copyButton.addEventListener("click", async () => {
-    const text = codeBlock.textContent.trim() + "\n";
+  // Add click handler for ~~copy button~~ code block
+//  copyButton.addEventListener("click", async () => {
+  codeBlock.addEventListener("click", async () => {
+    let text = codeBlock.textContent.trim();
+    if (parentIsPre) {
+      text = text.replace(/\n*$/, "\n");
+    }
     if (inIframe) {
       // send text to parent window
       window.parent.postMessage({"type": "copy", "text": text}, CHAT_URL);
@@ -304,22 +323,20 @@ function decorateCodeBlock(codeBlock) {
       // copy text to clipboard
       await navigator.clipboard.writeText(text);
     }
-    flash(copyButton, "active");
+    flash(controls, "active");
   });
 
   // Add controls to wrapper
   parent.appendChild(controls);
 
   // Show controls on hover
-  parent.addEventListener('mouseenter', function() {
+  codeBlock.addEventListener('mouseenter', function() {
     showHideControls(controls, true);
   });
 
+  // Only hide when leave the parent, after a delay
   parent.addEventListener('mouseleave', function(e) {
-    // Check if the mouse is not over the controls
-    if (!controls.contains(e.relatedTarget)) {
-      showHideControls(controls, false);
-    }
+    showHideControls(controls, false);
   });
 
   // Add additional listener to controls
