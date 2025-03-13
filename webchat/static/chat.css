@@ -5,7 +5,7 @@
 .admin {
 	display: none;
 }
-body > form, div#main {
+body > form, div#main, div#messages {
 	overflow: hidden;
 }
 body.admin, body.admin .admin {
@@ -98,6 +98,9 @@ input, textarea {
 .pad {
 	padding: var(--pad);
 }
+body.compact .pad {
+	padding: 0px;
+}
 .col > :first-child, .row > :first-child {
 	margin: 0;
 }
@@ -126,7 +129,11 @@ input, textarea {
 	padding: 4px;
 }
 
-input, textarea, button, iframe, .button {
+input, textarea, button, .button {
+	border-radius: 6px;
+}
+
+body:not(.compact) iframe {
 	border-radius: 6px;
 }
 

@@ -22,8 +22,8 @@ div.messages {
 	break-after: avoid;
 }
 
-.message:not(.narrative) > .content > .label:first-child,
-.message:not(.narrative) > .content > p:first-of-type > .label:first-child {
+body:not(.compact) .message:not(.narrative) > .content > .label:first-child,
+body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .label:first-child {
 	margin-left: -1em;
 }
 
@@ -151,7 +151,7 @@ body.alt div:is(.image, .embed) {
 }
 
 .small :is(div.image, div.embed, .image .alt, .embed .alt) {
-	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px));
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px)) !important;
 }
 
 .image .thumb, .embed .thumb {
@@ -227,10 +227,37 @@ a:hover {
 	font-weight: 400;
 }
 
-pre > code, code, pre > code *, code * {
+pre > code, code, pre > code *, code *,
+body.script_source .content :is(script, style):not(.hide, [src]) {
 	font: 12px fixed;
 	white-space: pre-wrap;
+	word-break: break-all;
 	font-weight: normal;
+	/* hackery to prevent blurry bitmap fonts when positioned off-grid */
+	font-smooth: never;
+	-webkit-font-smoothing: none;
+	-moz-osx-font-smoothing: none;
+	text-rendering: optimizeSpeed;
+	transform: translateZ(0);
+	will-change: transform;
+	/* other hacks that seem unnecessary in Chrome at least */
+	/* image-rendering: pixelated; */
+	/* transform: translate3d(0, 0, 0); */
+	/* backface-visibility: hidden; */
+}
+
+p > code {
+	display: inline-block;
+	min-width: auto !important;
+	width: auto !important;
+}
+
+body.script_source .content :is(script, style):not(.hide, [src]) {
+	display: block;
+	clear: both;
+}
+
+body:not(.compact) code {
 	border-radius: 6px;
 }
 
@@ -383,16 +410,22 @@ body {
 
 body > div.messages_wrap {
 	overflow: auto;
-	border-radius: 6px;
 	flex-basis: 128px;
 	flex-grow: 1;
 	flex-shrink: 0;
+}
+
+body:not(.compact) > div.messages_wrap {
+	border-radius: 6px;
 }
 
 body:not(.images) img {
 	display: none;
 }
 body:not(.alt) .alt {
+	display: none;
+}
+body:not(.images):not(.alt) .image {
 	display: none;
 }
 
@@ -477,15 +510,6 @@ body.landscape .resizer {
 	cursor: ew-resize;
 }
 
-body.script_source .content :is(script, style):not(.hide, [src]) {
-	display: block;
-	clear: both;
-	font: 12px fixed;
-	white-space: pre-wrap;
-	margin-top: -14px;
-	width: fit-content;
-}
-
 body.script_source .content:has(script, style):not(.hide, [src]) {
 	position: relative;
 }
@@ -566,18 +590,26 @@ p:has(> img) {
 }
 
 script + .code-controls {
-	top: 24px;
+	top: 0px;
 }
 
 .code-controls {
 	position: absolute;
-	top: 1px;
-	right: 1px;
+	top: calc(-1lh - 4px);
+	right: 2px;
 	display: none;
 	z-index: 1;
 	align-items: center;
-	background: var(--background);
-	border-radius: 5px;
+	background: rgba(255,255,255,0.05);
+	border-radius: 5px 5px 0 0;
+}
+
+body.dark .code-controls {
+	background: rgba(255,255,255,0.05);
+}
+
+body.light .code-controls {
+	background: rgba(0,0,0,0.05);
 }
 
 .code-controls .language {
@@ -602,7 +634,7 @@ link[href*="/katex@"] + style {
 /* show chat in columns! make it optional */
 body.columns div.messages {
 	column-count: auto;
-	column-width: 25em;
+	column-width: 479px;
 	column-gap: 16px;
 	height: 100%;
 	max-height: 100%;
@@ -617,6 +649,31 @@ body.columns .message {
 
 body.columns .message * {
 	max-width: 100%;
+}
+
+body.compact div.messages {
+	padding: 0px;
+	column-gap: 0px;
+}
+
+body.compact div.content {
+	margin-left: 0px;
+}
+
+body.compact div.messages code,
+body.compact div.messages code.hljs {
+	padding: 0px !important;
+	border: 0px;
+/*	background-clip: padding-box;
+	border-right: 2px solid transparent; */
+	box-shadow: inset -2px 0 0 var(--background);
+}
+
+body.columns.compact div.messages code,
+body.columns.compact div.messages code.hljs {
+	width: 480px;
+	min-width: 480px;
+	overflow: visible;
 }
 
 .clear {
