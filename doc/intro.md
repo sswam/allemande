@@ -303,7 +303,6 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 #### Language Models
 
-|---------------|----------------------|---------|----------|------------------|------------------|-------------------|-------------------------------------------------------------------------------------------------------------------|
 | Creator       | Model                | Name    | Context  | Max              | Input Price / M  | Output Price / M  | Description                                                                                                       |
 |---------------|----------------------|---------|----------|------------------|------------------|-------------------|-------------------------------------------------------------------------------------------------------------------|
 | Anthropic     | Claude 3.7 Sonnet    | Claude  | 200K     | 8192 / 128K [1]  | $3.00            | $15.00            | Anthropic's most powerful reasoning model; supports extended thinking.                                            |
@@ -319,17 +318,14 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Perplexity    | Sonar Reasoning      | Sonari  | 128K     | 8K               | $1 [3]           | $5                | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro.  |
 | Perplexity    | Sonar                | Sona    | 128K     | 8K               | $1               | $1                | Perplexity's fastest and most affordable online model with live internet data.                                    |
 | Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A smaller model, prioritizing creativity and engaging conversations. Most characters use this model               |
-|---------------|----------------------|---------|----------|------------------|------------------|-------------------|-------------------------------------------------------------------------------------------------------------------|
 
 * The Llama model powers numerous characters including Ally, Barbie, Cleo, etc.
 
 #### Image Models (SFW)
 
-|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
 | Creator       | Model               | Name | Description                                                                                                 |
 |---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
 | RunDiffusion  | Juggernaut XL v9    | Illy | A popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica   |
-|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
 
 **Notes:**
 

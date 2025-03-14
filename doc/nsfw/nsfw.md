@@ -304,19 +304,16 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 
 #### Language Models
 
-|------------|------------------|--------|----------------|-----------------|------------------|-----------------------------------------------------------------------------------------------------|
 | Creator    | Model            | Name   | Context | Max  | Input Price / M | Output Price / M | Description                                                                                         |
 |------------|------------------|--------|----------------|-----------------|------------------|-----------------------------------------------------------------------------------------------------|
 | Google     | Gemini 2.0 Flash | Flashi | 1M      | 8192 | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and tool use                                     |
 | Google     | Gemini 1.5 Pro   | Gemmy  | 2M      | 8192 | $1.25 [1]       | $5.00 [1]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks                        |
 | Meta       | Llama 3.1 8B     | Ally*  | 4096    | 4096 | N/A             | N/A              | A smaller model, prioritizing creativity and engaging conversations. Most characters use this model |
-|------------|------------------|--------|----------------|-----------------|------------------|-----------------------------------------------------------------------------------------------------|
 
 * The Llama model powers numerous characters including Ally, Barbie, Cleo, etc.
 
 #### Image Models
 
-|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
 | Creator       | Model               | Name | Description                                                                                                 |
 |---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
 | RunDiffusion  | Juggernaut XL v9    | Illy | A popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica   |
@@ -326,7 +323,6 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                     |
 | SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Illy, with more SDXL than Pony             |
 | SubtleShader  | Big Love Pony       | Pigi | The more Pony-flavoured variant, a bit less realistic but with a better understanding of booru tags         |
-|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
 
 **Notes:**
 
