@@ -12,10 +12,10 @@ from copy import deepcopy
 import io
 import re
 
-import yaml
+import ruamel.yaml
 
 
-__VERSION__ = "0.1.6"
+__VERSION__ = "0.1.7"
 
 
 logger = logging.getLogger(__name__)
@@ -23,15 +23,18 @@ logger = logging.getLogger(__name__)
 
 def yaml_str_presenter(dumper, data):
     """
-    Presenter for strings that detects multi-line strings and formats them 
+    Presenter for strings that detects multi-line strings and formats them
     using the literal style (|) indicator
     """
     if re.search(r".\n.", data, flags=re.DOTALL):
-        return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-    return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+        return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
+    return dumper.represent_scalar("tag:yaml.org,2002:str", data)
 
 
-yaml.add_representer(str, yaml_str_presenter)
+yaml = ruamel.yaml.YAML(pure=True)
+yaml.default_flow_style = False
+yaml.indent(mapping=2, sequence=4, offset=2)
+yaml.representer.add_representer(str, yaml_str_presenter)
 
 
 class FileCache:
@@ -121,7 +124,7 @@ class FileCache:
             if fmt == "json":
                 return json.load(file)
             if fmt in ["yaml", "yml"]:
-                return yaml.safe_load(file)
+                return yaml.load(file)
             if fmt == "tsv":
                 return list(csv.reader(file, delimiter="\t"))
             if fmt == "csv":
@@ -132,13 +135,14 @@ class FileCache:
     def _save_file(self, path: str, content: Any, fmt: str, **kwargs):
         """Save content to file based on format"""
         # First format the content to string based on format
-        formatted_content = ""
         if fmt in ["txt", "md", "html"]:
             formatted_content = str(content)
         elif fmt == "json":
             formatted_content = json.dumps(content, **kwargs)
         elif fmt in ["yaml", "yml"]:
-            formatted_content = yaml.safe_dump(content, sort_keys=False, **kwargs)
+            with open(path, "w", encoding="utf-8") as file:
+                yaml.dump(content, file, **kwargs)
+            return True
         elif fmt in ["csv", "tsv"]:
             output = io.StringIO()
             delimiter = "\t" if fmt == "tsv" else kwargs.get("delimiter", ",")
@@ -229,5 +233,6 @@ class FileCache:
         except FileNotFoundError:
             pass
         self.clear(path)
+
 
 cache = FileCache()

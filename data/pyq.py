@@ -18,14 +18,13 @@ import re
 
 import jq
 import xmltodict
-import yaml
+import ruamel.yaml
 from deepmerge import always_merger
 
 import csv_tidy
 from records import read_records, write_records
 
 which_jq = "system"  # "system" or "python"
-
 
 def yaml_str_presenter(dumper, data):
     """
@@ -35,10 +34,6 @@ def yaml_str_presenter(dumper, data):
     if re.search(r".\n.", data, flags=re.DOTALL):
         return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
     return dumper.represent_scalar('tag:yaml.org,2002:str', data)
-
-
-yaml.add_representer(str, yaml_str_presenter)
-
 
 def merge_data(data_list: list[object]) -> object:
     """Merge multiple data inputs using always_merger."""
@@ -166,13 +161,19 @@ def format_xml(obj, opts) -> str:
 
 
 def load_yaml(in_file, opts) -> object:
-    return yaml.safe_load(in_file)
+    yaml = ruamel.yaml.YAML(pure=True)
+    return yaml.load(in_file)
 
 
 def format_yaml(obj, opts) -> str:
+    yaml = ruamel.yaml.YAML(pure=True)
     if not opts.compact:
-        return yaml.dump(obj, default_flow_style=False, indent=2, sort_keys=False)
-    return yaml.dump(obj, sort_keys=False)
+        yaml.default_flow_style = False
+    yaml.indent(mapping=2, sequence=4, offset=2)
+    yaml.representer.add_representer(str, yaml_str_presenter)
+    stream = StringIO()
+    yaml.dump(obj, stream)
+    return stream.getvalue()
 
 
 def load_csv(in_file, opts) -> object:
