@@ -31,7 +31,8 @@ def yaml_str_presenter(dumper, data):
     return dumper.represent_scalar("tag:yaml.org,2002:str", data)
 
 
-yaml = ruamel.yaml.YAML(pure=True)
+# typ='safe' messes up key order, but it's very slow without it
+yaml = ruamel.yaml.YAML(typ='safe', pure=True)
 yaml.default_flow_style = False
 yaml.indent(mapping=2, sequence=4, offset=2)
 yaml.representer.add_representer(str, yaml_str_presenter)
@@ -60,8 +61,9 @@ class FileCache:
         """
         current_time = time.time()
 
-        # If we have a recent check and no_stat_time_s is set, return cached content
+        # If the file was checked recently (within no_stat_time_s), return the cached content
         if no_stat_time_s is not None and current_time - self._last_check_time.get(path, 0) < no_stat_time_s:
+            logger.debug("Recent check, returning cached content for %s", path)
             return deepcopy(self._cache.get(path))
 
         # Store the check time
@@ -78,11 +80,13 @@ class FileCache:
         current_mtime = os.path.getmtime(path)
         if current_mtime <= self._last_modified.get(path, 0):
             content = self._cache[path]
+            logger.debug("File not modified, returning cached content for %s", path)
             return deepcopy(self._cache[path])
 
         content = self._load_file(path, fmt, **kwargs)
         self._cache[path] = content
         self._last_modified[path] = current_mtime
+        logger.debug("Loaded %s file: %s", fmt, path)
         return deepcopy(content)
 
     def save(self, path: str, content: Any, fmt: str | None = None, noclobber: bool = True, **kwargs):

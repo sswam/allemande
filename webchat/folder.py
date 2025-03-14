@@ -17,6 +17,7 @@ from starlette.templating import Jinja2Templates
 
 import chat
 from chat import Access
+from ally import debug
 
 logger = logging.getLogger(__name__)
 
@@ -211,6 +212,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
             #     }
             # )
 
+#        if not debug.profile_function(chat.check_access, info.user, pathname + item.name).value & Access.READ.value:
         if not chat.check_access(info.user, pathname + item.name).value & Access.READ.value:
             continue
 
