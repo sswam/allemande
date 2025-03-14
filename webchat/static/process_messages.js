@@ -21,7 +21,7 @@ function moveContent(source, target) {
 
 function moveImages(source, target) {
   while (source.firstChild) {
-    if (source.firstChild.nodeName === "IMG") {
+    if (source.firstChild.className === "image") {
       target.appendChild(document.createTextNode(" "));
       target.appendChild(source.firstChild);
     } else {
