@@ -18,7 +18,7 @@ crosspy() {
 	create_exemplar "${input_files[@]}"
 
 	# Confirm, give user a chance to review and edit the exemplar script.
-	confirm "continue?"
+	confirm -t "continue?"
 
 	# Step 2: Update other scripts based on exemplar
 	update_scripts "${input_files[@]}"

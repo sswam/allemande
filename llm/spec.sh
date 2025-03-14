@@ -35,11 +35,11 @@ spec() {
 	md) ;;
 	txt|html|json)
 		echo >&2 "Warning, we recommend to use markdown format, not: $format"
-		confirm continue?
+		confirm -t continue?
 		;;
 	*)
 		echo >&2 "Warning, unusual format: $format"
-		confirm continue?
+		confirm -t continue?
 		;;
 	esac
 
