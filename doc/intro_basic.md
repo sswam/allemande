@@ -1,4 +1,4 @@
-# Welcome to Ally Chat - Quick Start Guide
+# Ally Chat - Quick Start Guide
 
 ## Getting Help
 
