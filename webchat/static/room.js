@@ -1,6 +1,6 @@
 // status indicator ----------------------------------------------------------
 
-const offline_timeout_seconds = 60;
+const offline_timeout_seconds = 10;
 
 const CHAT_URL =
   location.protocol + "//" + location.host.replace(/^rooms\b/, "chat");
@@ -45,8 +45,13 @@ function reload() {
   window.location.reload();
 }
 
+function clean_up_server_events() {
+  for (const $e of $$("script.event"))
+    $e.remove();
+}
+
 function online() {
-  console.log("online");
+  // console.log("online");
   if (snapshot)
     return;
   clearTimeout(offline_timeout);
@@ -54,10 +59,11 @@ function online() {
   const status = get_status_element();
   //	status.innerText = '🔵';
   status.innerText = "";
+  clean_up_server_events();
 }
 
 function offline() {
-  console.log("offline!");
+  // console.log("offline!");
   if (snapshot)
     return;
   const status = get_status_element();
@@ -67,17 +73,20 @@ function offline() {
 
 function clear() {
   $("div.messages").innerHTML = "";
+  clean_up_server_events();
 }
 
 function ready_state_change() {
-  console.log("ready state change", document.readyState);
+  /* This does not work now, who knows why */
+  // console.log("ready state change", document.readyState);
   if (document.readyState !== "loading") {
     offline();
   }
 }
 
 function load_error() {
-  console.log("load error");
+  // console.log("load error");
+  /* Never seen this work */
   offline();
 }
 
@@ -237,7 +246,7 @@ async function check_for_new_content(mutations) {
 
 async function mutated(mutations) {
   const new_content = await check_for_new_content(mutations);
-  if (new_content) {
+  if (new_content.length) {
     online();
     messages_resized();
   }

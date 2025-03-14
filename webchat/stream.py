@@ -37,9 +37,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-FOLLOW_KEEPALIVE = 50
-HTML_KEEPALIVE = "<script>online()</script>\n"
-REWIND_STRING = "<script>clear()</script>\n"
+FOLLOW_KEEPALIVE = 5
+HTML_KEEPALIVE = '<script class="event">online()</script>\n'
+REWIND_STRING = '<script class="event">clear()</script>\n'
 
 
 BASE_DIR = Path(".").resolve()
