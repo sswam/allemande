@@ -53,11 +53,6 @@ async function highlight_processCodeBlock(codeElement) {
     await highlight_loadLanguage(lang);
   }
 
-  // Store original text content for unhighlighting
-  if (!codeElement.dataset.originalCode) {
-    codeElement.dataset.originalCode = codeElement.textContent;
-  }
-
   highlightState.core.highlightElement(codeElement);
 }
 
@@ -69,15 +64,24 @@ async function highlight_code(messageElement, viewOptions) {
   if (viewOptions.highlight) {
     await highlight_ensureHighlightCore();
 
-    for (const codeBlock of codeBlocks) {
-      await highlight_processCodeBlock(codeBlock);
+    for (const block of codeBlocks) {
+      block.dataset.originalCode = block.textContent;
+      if (block.dataset.highlightedCode) {
+        block.innerHTML = block.dataset.highlightedCode;
+        block.classList.add('hljs');
+        delete block.dataset.highlightedCode;
+      } else {
+        await highlight_processCodeBlock(block);
+      }
     }
   } else {
     // Restore original code if highlighting is disabled
     for (const block of codeBlocks) {
       if (block.dataset.originalCode) {
+        block.dataset.highlightedCode = block.innerHTML;
         block.textContent = block.dataset.originalCode;
-        block.className = block.className.replace(/hljs|language-\w+/, '');
+        delete block.dataset.originalCode;
+        block.className = block.classList.remove('hljs');
       }
     }
   }
@@ -96,10 +100,3 @@ function highlight_set_stylesheet(style) {
     styleElement.href = href;
   }
 }
-
-// Example usage in message handler:
-/*
-async function onNewMessage(messageElement) {
-  await handleCodeHighlighting(messageElement, viewOptions);
-}
-*/

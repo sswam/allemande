@@ -6,7 +6,6 @@ const CHAT_URL =
   location.protocol + "//" + location.host.replace(/^rooms\b/, "chat");
 
 var inIframe = window.parent !== window.self;
-var highlighter;
 
 let room;
 
@@ -26,7 +25,6 @@ let view_options = {
   images: 2,
   image_size: 4,
   items: 10,
-  highlight: 1,
 };
 
 let snapshot = false;
@@ -808,17 +806,27 @@ async function theme_loaded() {
   await wait_for_load();
   const theme_mode = getComputedStyle(document.documentElement).getPropertyValue("--theme-mode");
   // console.log("theme_mode", theme_mode);
-  let highlight_theme;
   if (theme_mode == "dark") {
     $body.classList.add("dark");
     $body.classList.remove("light");
-    highlight_theme = view_options.highlight_theme_dark;
   } else {
     $body.classList.add("light");
     $body.classList.remove("dark");
+  }
+  await highlight_set_stylesheet_for_theme();
+}
+
+async function highlight_set_stylesheet_for_theme() {
+  if (!view_options.highlight)
+    return;
+  const theme_mode = getComputedStyle(document.documentElement).getPropertyValue("--theme-mode");
+  // console.log("theme_mode", theme_mode);
+  let highlight_theme;
+  if (theme_mode == "dark") {
+    highlight_theme = view_options.highlight_theme_dark;
+  } else {
     highlight_theme = view_options.highlight_theme_light;
   }
-  // console.log("highlight_theme", highlight_theme);
   highlight_set_stylesheet(highlight_theme);
 }
 
@@ -885,6 +893,11 @@ async function set_view_options(new_view_options) {
   if (view_options.items >= 0 && view_options.items < 10) {
     $body.classList.add("items_" + Math.round(view_options.items));
 //  document.documentElement.style.setProperty("--visible-items", view_options.items);
+  }
+
+  if (view_options.highlight != old_view_options.highlight) {
+    await highlight_set_stylesheet_for_theme();
+    highlight_code($messages, view_options);
   }
 }
 

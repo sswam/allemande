@@ -259,20 +259,30 @@ body.script_source .content :is(script, style):not(.hide, [src]) {
 }
 
 body:not(.compact) code {
-	border-radius: 6px;
+	border-radius: 4px 0 4px 4px;
 }
 
 pre {
 	width: fit-content;
 }
 
-body.dark code.hljs {
+code {
+	padding: 3px 5px;
+}
+
+pre code {
+	overflow: auto;
+	display: block;
+	padding: 1em;
+}
+
+body.dark code {
 	background: rgba(255,255,255,0.05);
 	border: 1px solid rgba(255,255,255,0.1);
 	/* background-color: transparent; */
 }
 
-body.light code.hljs {
+body.light code {
 	background: rgba(0,0,0,0.05);
 	border: 1px solid rgba(0,0,0,0.1);
 }
@@ -594,15 +604,25 @@ script + .code-controls {
 	top: 0px;
 }
 
+body.dark .code-controls {
+	border: 1px solid rgba(255,255,255,0.1);
+}
+
+body.light .code-controls {
+	border: 1px solid rgba(0,0,0,0.1);
+}
+
 .code-controls {
 	position: absolute;
-	top: calc(-1lh - 4px);
-	right: 2px;
+	right: 0;
+	top: calc(-1lh - 5px);
 	display: none;
 	z-index: 1;
 	align-items: center;
 	background: rgba(255,255,255,0.05);
-	border-radius: 5px 5px 0 0;
+	border-radius: 4px 4px 0 0;
+	border: 1px solid var(--background);
+	border-bottom: 1px solid var(--background) !important;
 }
 
 body.dark .code-controls {
