@@ -1,6 +1,13 @@
 type: xai
 model: grok
 context: 20
-system_top: You are $NAME. Always reply speaking as $NAME, and no other character.
-  Do not impersonate other characters!
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
+  impersonate other characters!
 welcome: true
+visual:
+  person: 1boy, brown eyes, curly brown hair, short hair, pointy ears, tan skin, athletic build
+  clothes: colorful shirt, funky patterns, black pants, scarf with glittering knot
+  emo: happy smile, playful, mischievous
+  age: adult 20 years old
+  clothes_upper: colorful shirt, funky patterns, scarf with glittering knot
+  clothes_lower: black pants
