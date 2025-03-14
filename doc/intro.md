@@ -109,7 +109,7 @@ IMPORTANT: The agents Illu (as distinct from Illy), Pixi and Gema are experts on
 
 The following is an ultra-basic guide to direct image prompting. Illu, Pixi and Gema can give more detailed advice.
 
-    Illy, big dog  [use landscape]
+    Illy, big dog [use landscape]
 
 This asks Illy, an image gen AI, to draw a big dog, in a wider landscape image.
 
@@ -121,13 +121,13 @@ Draws Ally with her appearange, age, normal emotion / expression, and normal clo
 
 This does the same thing more concisely, for Barbie, making sure it's a solo picture.
 
-    Illy, [person cleo "green dress" . 30], ballroom, (full body, heels:1.5)  [use portrait_tall]
+    Illy, [person Cleo "green dress" . 30], ballroom, (full body, heels:1.5)  [use portrait_tall]
 
 This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a tall image. Try to get a full body shot by mentioning shoes or feet!
 
-    Illy, [person bast "business suit" angry], office  [use portrait] [sets steps=30 hq=1.5]
+    Illy, [person Bast "business suit" angry], office [use portrait] [sets steps=30 hq=1.5]
 
-This draws Bast in a business suit in the office, looking angry that he has to go to work, with a portrait image.
+This draws a portrait image of Bast in a business suit in the office, looking angry that he has to go to work.
 
 ## Examples of Advanced Syntax
 
@@ -172,7 +172,7 @@ ctx.fillRect(10, h-10, 100, -100);
 
 IMPORTANT:
 - N.B. NOTE WELL! Please do NOT quote JavaScript in ``` if you want it to run in the browser, i.e. in the chat app.
-- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other <script> code when we use the same variable names, e.g. iterating on code.
+- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
 - The canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
 - Please use the TOP LEFT part of the canvas by default. Don't center in the canvas or try to fill the width or height unless requested. If you use another part it can be hard for the user to view it all.
 - For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
@@ -235,7 +235,7 @@ We can safely embed any HTML:
 - **Sagi** (Sonar Pro, Perplexity): Perplexity's high-performance Sonar model
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model
 
-## Strong Specialists based on Remote AI
+## Specialists based on Remote AI
 - **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI

@@ -31,7 +31,7 @@ The is the lobby for the NSFW zone, restricted to adults only, and likely contai
 - This document is visible to AIs, which can help users to learn about the app.
 - IMPORTANT: If users are asking for help, please direct them to talk to Flashi, the designated welcome tour guide. Other characters are helpful but might not do as good a job of it!
 - Xilu is expert on NSFW image generation, so please direct users to talk to her if they want to make images.
-- If users ask for a guide, you can direct them to view this document at [Ally Chat NSFW intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
+- If users ask for a guide, you can direct them to view the [NSFW Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/nsfw/intro_basic_nsfw.md) or this document at [Ally Chat NSFW intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
   - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
@@ -125,13 +125,13 @@ Draws Ally with her appearange, age, normal emotion / expression, and normal clo
 
 This does the same thing more concisely, for Barbie, making sure it's a solo picture.
 
-    Illy, [person cleo "green lingerie" . 19], seedy parking lot, night, (full body, heels:1.5)  [use portrait_tall]
+    Illy, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5)  [use portrait_tall]
 
-This draws Cleo in green lingerie in a seedy parking lot at night, with her default cheery expression, at the age of 19, in a tall image. Try to get a full body shot by mentioning shoes or feet!
+This draws Cleo in green lingerie in a seedy parking lot at night, with her default cheery expression, in a tall image. Try to get a full body shot by mentioning shoes or feet!
 
-    Illy, [person bast "topless, leather shorts" angry], jungle  [use portrait] [sets steps=30 hq=1.5]
+    Illy, [person Bast "topless, leather shorts" angry], jungle [use portrait] [sets steps=30 hq=1.5]
 
-This draws Bast in the jungle, looking angry that he forgot his mosquito repellant.
+This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant.
 
 ## Examples of Advanced Syntax
 
@@ -145,12 +145,22 @@ $$ y = \sqrt{x} $$
 
 ### Graphviz
 
+Please use transparent backgrounds and medium gray edges and edge text for better visibility in any theme, unless asked otherwise.
+
 ```dot
-graph { A -- B -- C -- A }
+graph {
+    bgcolor="transparent"
+    node [style=filled, fillcolor="#808080"]
+    edge [color="#808080"]
+    A -- B -- C -- A
+}
 ```
 
 ```dot
 digraph G {
+    bgcolor="transparent"
+    node [style=filled, fillcolor="#808080"]
+    edge [color="#808080"]
     A -> B;
     B -> C;
 }
@@ -166,9 +176,9 @@ ctx.fillRect(10, h-10, 100, -100);
 
 IMPORTANT:
 - N.B. NOTE WELL! Please do NOT quote JavaScript in ``` if you want it to run in the browser, i.e. in the chat app.
-- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other <script> code when we use the same variable names, e.g. iterating on code.
-- The canvas is already set up. Don't change it. The maximum dimensions are the screen size.
-- Please use the BOTTOM LEFT part of the canvas by default, based on canvas.height. Keep it to the left; don't center on canvas width or try to fill the width unless requested. If you use another part or the entire canvas it can be hard for the user to view it all.
+- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
+- The canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
+- Please use the TOP LEFT part of the canvas by default. Don't center in the canvas or try to fill the width or height unless requested. If you use another part it can be hard for the user to view it all.
 - For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
 - If the user wants to see the code, they can enable the view -> source option.
 
@@ -178,7 +188,7 @@ We can safely embed any HTML:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
 
-### Human Girl Characters
+### Human Female Characters
 - **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
 - **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
 - **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
@@ -192,7 +202,7 @@ We can safely embed any HTML:
 - **Soli**: A gentle spirit with a love for nature and intriguing stories to share
 - **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
 
-### Human Boy Characters
+### Human Male Characters
 
 - **Amir**: Confident and charismatic Middle Eastern man; the thoughtful protector with insightful perspectives on life
 - **Bast**: Vibrant, quick-to-laugh Caribbean man with boundless energy, deeply fond of storytelling and sharing laughter
@@ -205,14 +215,14 @@ We can safely embed any HTML:
 - **Callam**: The spirited pirate, life of the chat, combining humor with educational math and science dialogues
 - **Kai**: Enthusiastic about nature, Kai is a young man with bright blue eyes and a love for exploring
 
-### Girl Specialists
+### Female Specialists
 - **Pixi**: Crafts detailed AI art prompts, ensuring high-quality image generation
 - **Sia**: Expert writer focused on summarizing entire chats
 - **Sio**: Expert writer focused on summarizing entire chats in structured markdown format
 - **Nova**: Master narrator for immersive storytelling in interactive fiction
 - **Brie**: Creative brainstorming specialist offering a range of diverse solutions
 
-### Boy Specialists
+### Male Specialists
 
 - **Chaz**: Expert character designer capturing unique traits and mannerisms
 - **Atla**: Environment and setting design specialist rendering realistic and vibrant scenes
@@ -224,15 +234,15 @@ We can safely embed any HTML:
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 variant
 
 ## Specialists based on Remote AI
-- **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation
 - **Xilu**: Expert with NSFW AI art prompts, ensuring high-quality image generation
+- **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
 - **Jhon**: AKA Roasto, a volatile NSFW roaster, who won't pull any punches! Engage with caution!
 
 ### AI Artists
-- Using the AI art models directly is a bit technical. Instead, new users can talk to Xilu, who has extensive knowledge about how to create good prompts, and all the options and settings that the models understand.
+- Using the AI art models directly is a bit technical. Instead, new users can talk to Xilu, who has extensive knowledge about how to create good prompts, including NSFW, and all the options and settings that the models understand.
 - **Illy**: High-quality photorealistic and artistic image generation, able to draw every character; simply talk to Illy to see your ideas come to life
 - **Yoni, Coni, Boni**: NSFW image generation with a semi-realistic style
 - **Poni**: NSFW image generation with a cartoon / anime style
