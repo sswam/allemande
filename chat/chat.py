@@ -226,7 +226,7 @@ class Room:
         elif op == "clean":
             await self.clean(user)
 
-    def undo(self, user, n=1):
+    def undo(self, user, n=1, backup=True):
         """Remove the last n messages from a room."""
         # Messages are delimited by blank lines, and the file should end with a blank line.
         if n <= 0:
@@ -247,11 +247,18 @@ class Room:
                 break
             count_bytes += len(line)
 
+        if backup:
+            self.backup()
+
         with open(self.path, "a+b") as f:
             logger.debug("undo truncating file %s", self.path)
             logger.debug("undo truncate %d bytes", count_bytes)
             logger.debug("current file size: %d", f.tell())
             f.truncate(f.tell() - count_bytes)
+
+    def backup(self):
+        """Backup a room."""
+        backup_file(str(self.path))
 
     def last(self, n=1):
         """Get the last n messages from a room."""
@@ -1584,10 +1591,24 @@ def backup_file(path: str):
     # Run git commands from repo root
     try:
         subprocess.run(["git", "add", rel_path], check=True, cwd=repo_root)
-        subprocess.run(["git", "commit", "-m", f"Backup {rel_path}"], check=True, cwd=repo_root)
+        # Check if there are staged changes for the file
+        result = subprocess.run(
+            ["git", "diff", "--staged", "--quiet", rel_path],
+            cwd=repo_root,
+            capture_output=True
+        )
+
+        # If exit code is 1, there are changes to commit
+        if result.returncode == 1:
+            # Proceed with commit
+            subprocess.run(
+                ["git", "commit", "-m", f"Backup {rel_path}", rel_path],
+                check=True,
+                cwd=repo_root
+            )
     except subprocess.CalledProcessError as e:
-        # This can happen if there are no changes to commit
-        logger.error("git error: %s", e)
+        # Handle any git command failures
+        print(f"Git operation failed: {e}")
 
 
 async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=False):
