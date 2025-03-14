@@ -1,2 +1,11 @@
 base: Illu
 model: gemini-1.5-pro
+visual:
+  person: 1girl, shoulder-length hair, multi-colored hair (pastel green, light blue), bright green eyes, dark skin, slim build, athletic build, friendly
+    expression, helpful expression, creative vibe, slightly rebellious vibe
+  clothes: casual streetwear, modern clothing, loose-fit colored T-shirt, distressed jeans, classic sneakers, simple earrings, delicate silver chain necklace
+  winter: oversized hoodie
+  age: adult 23 years old
+  emo: friendly, warm smile, curious
+  clothes_upper: casual streetwear, modern clothing, loose-fit colored T-shirt, simple earrings, delicate silver chain necklace
+  clothes_lower: distressed jeans, classic sneakers

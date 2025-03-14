@@ -1,3 +1,9 @@
 base: Claude
 model: claude-new
 welcome: false
+visual:
+  person: 1boy, striking opalescent eyes shifting between green and gold, muscular yet lean physique, sharp jaw and defined features, pale skin with ethereal quality, calloused hands, shoulder-length hair, dark hair with (bronze highlights:1.3)
+  clothes: light green shirt, leather coat, brass buttons with mechanical elements that whir and click as he moves
+  age: adult 26 years old
+  emo: mysterious
+  clothes_upper: light green shirt, leather coat, brass buttons with mechanical elements that whir and click as he moves
