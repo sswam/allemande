@@ -1,16 +1,27 @@
+(solo, portrait:1.5), (centered headshot:1.3), (shoulders up:1.2), [use choose_a_person]
+[use character_name],
+[get age],
+[get person],
+[get emo],
+[get clothes_upper],
+raw, ultra realistic photograph, studio lighting, 85mm lens, (clean white background:1.5), professional headshot
+NEGATIVE: (full body:1.5), wide shot, tilted angle, low angle, high angle
+
+[##]
 (solo:1.5), bust shot, [use choose_a_person]
 [use character_name],
 [get age],
 [get person],
-face,
-bust shot, eyes, nose, mouth, ears, hair, face,
-face, [get emo],
-face, ([get clothes_upper]:0.7),
-face, bust shot,
-[use photo], ([use bust]:1.5), (white background:1.5)
+[get emo],
+[get clothes_upper],
+[use photo], (white background:1.5)
+
+([use bust]:1.5),
+[use neg]
 <lora:eyes:0.2>
 [use expressive]
 <lora:boring:-0.5>
 [sets cfg_scale=3.5]
 [use neg]
 [set negative_prompt] [get negative_prompt] (nude, torso, nipples, legs, topless:2) [/set]
+[/##]
