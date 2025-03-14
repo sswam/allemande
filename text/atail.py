@@ -17,7 +17,7 @@ import ucm
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 class AsyncTail:
@@ -65,7 +65,7 @@ class AsyncTail:
         try:
             while True:
                 await self.run_until_removed()
-                logger.debug("File moved or removed: %s", self.filename)
+                logger.debug("File moved, removed or shrunk: %s", self.filename)
                 if not self.restart:
                     break
                 self.wait_for_create = True
@@ -79,6 +79,7 @@ class AsyncTail:
     async def run_until_removed(self):
         created = False
         if self.wait_for_create and not Path(self.filename).exists():
+            logger.debug("Waiting for file to be created: %s", self.filename)
             await self.wait_for_file_creation()
             created = True
 
@@ -89,12 +90,15 @@ class AsyncTail:
             # FIXME this is inefficient when using the n option on regular files
             # TODO use the tac code, maybe add an option not to reverse the lines and call it tail
             if all_lines or self.lines:
+                logger.debug("Reading lines from file: %s", self.filename)
                 lines = await f.readlines()
                 if not all_lines:
                     lines = lines[-self.lines :]
                 for line in lines:
                     await self.queue.put(line)
+                logger.debug("Put %d lines in queue", len(lines))
             else:
+                logger.debug("Seeking to end of file: %s", self.filename)
                 await self.seek_to_end(f)
 
             if self.follow:
@@ -126,24 +130,33 @@ class AsyncTail:
                 while line := await f.readline():
                     await self.queue.put(line)
                     count += 1
+                logger.debug("At end of file: %s", self.filename)
                 if self.rewind and not count:
                     pos_before_seek = await f.tell()
+                    logger.debug("before seek_to_end")
                     await self.seek_to_end(f)
+                    logger.debug("after seek_to_end")
                     pos_at_end = await f.tell()
-                    if pos_at_end < pos_previous:
+                    logger.debug("Pos before seek: %d, pos at end: %d", pos_before_seek, pos_at_end)
+                    # Check if the file has shrunk at any point
+                    if min(pos_at_end, pos_before_seek) < max(pos_previous, pos_before_seek):
                         # file has shrunk, so we will start again.
+                        logger.debug("File has shrunk, rewinding")
                         return
                     elif pos_at_end > pos_before_seek:
                         # Went forward due to race condition, undo that
+                        logger.debug("File has grown in race condition, rewinding to previous position")
                         try:
                             await f.seek(pos_before_seek, 0)
+                            pos_at_end = pos_before_seek
                         except io.UnsupportedOperation:
                             pass
-                else:
-                    pos = await f.tell()
+                    pos_previous = pos_at_end
                 event = await self.watcher.get_event()
+                # XXX Why is ATTRIB a trigger that the file was removed?
                 if event.flags & removed_flags and not Path(self.filename).exists():
-                    break
+                    logger.debug("File removed: %s", self.filename)
+                    return
         finally:
             self.close_watcher()
 

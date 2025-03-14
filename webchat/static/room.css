@@ -9,6 +9,7 @@ div.messages {
 	margin-right: 1em;
 	font-weight: bold;
 	align-self: flex-start;
+	user-select: none;
 }
 /*
 .message > .label {

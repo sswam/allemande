@@ -95,6 +95,7 @@ async def process_change(line, opts, tasks, out):
 
     html_file = str(Path(bb_file).with_suffix(".html"))
     if change_type == Change.deleted:
+        logger.debug("bb2html: bb file deleted: %r", bb_file)
         Path(html_file).unlink(missing_ok=True)
         return
 

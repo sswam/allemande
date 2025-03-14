@@ -56,7 +56,7 @@ def setup_templates():
         logger.warning("No templates directory set")
         return
     templates = Jinja2Templates(directory=TEMPLATES_DIR)
-    logger.info("Using templates from %s", TEMPLATES_DIR)
+    logger.debug("Using templates from %s", TEMPLATES_DIR)
 
 
 async def startup_event():
@@ -100,7 +100,7 @@ async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="
     follow = not snapshot
 
     async with atail.AsyncTail(
-        filename=file, wait_for_create=True, all_lines=True, follow=follow, rewind=False, rewind_string=rewind_string, restart=follow
+        filename=file, wait_for_create=True, all_lines=True, follow=follow, rewind=follow, rewind_string=rewind_string, restart=follow
     ) as queue1:
         async with akeepalive.AsyncKeepAlive(queue1, keepalive, timeout_return=keepalive_string) as queue2:
             try:
