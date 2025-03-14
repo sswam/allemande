@@ -15,4 +15,4 @@ function shuffleImages(selector) {
 	divs.forEach(div => container.appendChild(div));
 }
 
-//setTimeout(() => shuffleImages('.cast > p'), 100);
+setTimeout(() => shuffleImages('.cast > p'), 1000);
