@@ -1,0 +1,6 @@
+# I'll help modify the `speech_to_text` function to properly call and handle the async function. Based on the requirements, here's how I would update the function:
+
+def speech_to_text(portal, run_event, q_audio, q_text, lang, confidence_threshold=0.8):
+    """Transcribe from the audio queue to the text queue"""
+    import asyncio
+    asyncio.run(speech_to_text_async(portal, run_event, q_audio, q_text, lang, confidence_threshold))

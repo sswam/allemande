@@ -55,3 +55,7 @@ done
 "$ALLEMANDE_HOME/canon/allemande-user-add" sam
 
 "$ALLEMANDE_HOME/safety/setup"
+
+touch "$portals/gpu_mutex"
+chown $user:$www_user "$portals/gpu_mutex"
+chmod g+rw "$portals/gpu_mutex"

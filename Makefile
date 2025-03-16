@@ -92,7 +92,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt images.xt a1111.xt # whisper.xt
+core: llm.xt images.xt a1111.xt whisper.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -116,7 +116,7 @@ alfred:
 	cd $(ALLEMANDE_HOME)/apps/alfred && \
 	./alfred-webui.py
 
-core.xtc: llm.xtc images.xtc a1111.xtc # whisper.xtc
+core.xtc: llm.xtc images.xtc a1111.xtc whisper.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
@@ -134,10 +134,10 @@ llm:
 	while true; do $(PYTHON) core/llm_llama.py -v -m "$(LLM_MODEL)"; sleep 1; done
 
 whisper:
-	sudo -E -u $(ALLEMANDE_USER) $(PYTHON) core/stt_whisper.py -d
+	while true; do $(PYTHON) core/stt_whisper.py -v; sleep 1; done
 
 images:
-	while true; do $(PYTHON) core/image_a1111.py -d; sleep 1; done
+	while true; do $(PYTHON) core/image_a1111.py -v; sleep 1; done
 
 a1111:
 	cd ~/webui ; ./webui.sh
@@ -246,7 +246,7 @@ canon:
 	$(ALLEMANDE_HOME)/files/canon_links.py $(ALLEMANDE_PATH)
 	(cd canon ; rm -f guidance-*.md ; ln -sf ../*/guidance-*.md .)
 	ln -sf $(ALLEMANDE_HOME)/canon/usr-local-bin /usr/local/bin
-	cd canon ; usr-local-bin python3-allemande confirm uniqo lecho i3-xterm-floating note waywo ally opts opts-long opts-help path-uniq day find-quick need-bash get-root llm query process que proc text-strip cat-named aligno include status-update i3status-wrapper name-terminal name-terminal-nicely mount-point move-rubbish
+	cd canon ; usr-local-bin python3-allemande confirm uniqo lecho i3-xterm-floating note waywo ally opts opts-long opts-help path-uniq day find-quick need-bash get-root llm query process que proc text-strip cat-named aligno include status-update i3status-wrapper name-terminal name-terminal-nicely mount-point move-rubbish mic speaker
 	cd alias ; usr-local-bin v
 
 fresh-old:: 

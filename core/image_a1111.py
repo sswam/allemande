@@ -8,6 +8,7 @@ from pathlib import Path
 import asyncio
 import re
 import math
+import fcntl
 
 import yaml
 
@@ -25,13 +26,14 @@ prog = main.prog_info()
 
 portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / prog.name
 
+GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
+
 MAX_PIXELS = 1280 * 1280
 MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 
 
-def process_hq_macro(prompt: str, config: dict, macros: dict) -> dict:
+def process_hq_macro(prompt: str, config: dict, sets: dict) -> dict:
     """Process hq macro in prompt and update config accordingly"""
-    sets = macros.get('sets', {})
     hq = float(sets.get("hq", 0))
 
     if hq == 0:
@@ -147,7 +149,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
             need_update_macros = True
             config['seed'] = int(sets['seed'])
 
-        config = process_hq_macro(prompt, config, macros)
+        config = process_hq_macro(prompt, config, sets)
         config = limit_dimensions_and_hq(config)
 
         # Update settings in prompt if needed
@@ -156,7 +158,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
             sets['height'] = str(config['height'])
             sets['hires'] = str(config['hires'])
             sets['seed'] = "---REMOVEME---"
-            prompt = update_macros(prompt, macros)
+            prompt = update_macros(prompt, {"sets":sets})
             prompt = re.sub(r"seed=---REMOVEME---", "", prompt)
 
             logger.info("updated prompt: %s", prompt)
@@ -179,25 +181,32 @@ async def process_request(portals: str, portal_str: Path, req: str):
         if fmt not in ("jpg", "png"):
             raise ValueError(f"unknown format: {fmt}")
 
-        seed = await a1111_client.a1111_client(
-            output=str(d / output_stem),
-            prompt=prompt,
-            negative_prompt=negative_prompt,
-            seed=config.get("seed", -1),
-            sampler_name=config.get("sampler_name", "DPM++ 2M"),
-            scheduler=config.get("scheduler", "Karras"),
-            steps=config.get("steps", 15),
-            cfg_scale=config.get("cfg_scale", 7.0),
-            width=config.get("width", 1024),
-            height=config.get("height", 1024),
-            count=config.get("count", 1),
-            adetailer=config.get("adetailer", None),
-            pag=config.get("pag", False),
-            hires=config.get("hires", 0.0),
-            pony=config.get("pony", 0.0),
-            ad_mask_k_largest=config.get("ad_mask_k_largest", 0),
-            model=config.get("model"),
-        )
+        # Acquire GPU mutex lock
+        with GPU_MUTEX.open("w") as lockfile:
+            try:
+                fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
+                # Run image gen with the lock held
+                seed = await a1111_client.a1111_client(
+                    output=str(d / output_stem),
+                    prompt=prompt,
+                    negative_prompt=negative_prompt,
+                    seed=config.get("seed", -1),
+                    sampler_name=config.get("sampler_name", "DPM++ 2M"),
+                    scheduler=config.get("scheduler", "Karras"),
+                    steps=config.get("steps", 15),
+                    cfg_scale=config.get("cfg_scale", 7.0),
+                    width=config.get("width", 1024),
+                    height=config.get("height", 1024),
+                    count=config.get("count", 1),
+                    adetailer=config.get("adetailer", None),
+                    pag=config.get("pag", False),
+                    hires=config.get("hires", 0.0),
+                    pony=config.get("pony", 0.0),
+                    ad_mask_k_largest=config.get("ad_mask_k_largest", 0),
+                    model=config.get("model"),
+                )
+            finally:
+                fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
 
         if fmt == "jpg":
             metadata = convert_images_to_jpeg(portal, req, d)

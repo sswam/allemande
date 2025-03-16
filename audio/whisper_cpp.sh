@@ -32,6 +32,7 @@ model=""
 language=en
 have_format=0
 output_dir="."
+cpu=""
 
 while [[ $# -gt 0 ]]; do
 	if [[ "$1" == "--model" ]]; then
@@ -60,6 +61,9 @@ while [[ $# -gt 0 ]]; do
 		output_dir="$2"
 		mkdir -p "$output_dir"
 		shift 2
+	elif [[ "$1" == "--cpu" ]]; then
+		cpu=1
+		shift
 	else
 		args+=("$1")
 		shift
@@ -126,7 +130,11 @@ fi
 # run whisper.cpp -------------------------------------------------------------
 
 # cd "$whisper_cpp_dir"
-"$whisper_cpp_dir/whisper" "${args[@]}"
+exe="whisper"
+if [ "$cpu" = 1 ]; then
+	exe="whisper-cpu"
+fi
+v "$whisper_cpp_dir/$exe" "${args[@]}"
 
 
 # rename any output files -----------------------------------------------------
