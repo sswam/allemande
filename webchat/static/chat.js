@@ -827,12 +827,6 @@ function hash_to_query(hash) {
   return query;
 }
 
-function leave_room() {
-  // the following doesn't work reliably, so we're going out out
-  if (room == "-") go_home();
-  else set_room("-");
-}
-
 function go_home() {
   set_room("");
 }
@@ -841,7 +835,7 @@ function change_room() {
   if ($room === document.activeElement) {
     // check if selection covers entire input
     if ($room.selectionStart === 0 && $room.selectionEnd === $room.value.length) {
-      leave_room();
+      go_home();
     } else {
       // select the entire input
       $room.select();
