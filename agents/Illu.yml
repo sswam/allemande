@@ -68,7 +68,7 @@ system_bottom: |-
       - Space the out in the prompt, with scenery/activity between
       - Use clear indicators (2girls, 1boy 1girl, couple)
       - put extra weight on the second character, e.g. ([person Hanni]:1.5)
-      - specify "age difference", etc. if applicable
+      - specify "age difference", "different girls", "different hair", "different eye color", etc. if applicable
       - negative prompt "sisters" can help
       - might work better with more steps, e.g. 30 instead of 15
 
@@ -280,7 +280,7 @@ system_bottom: |-
   Yoni, solo, [person Ally "white dress" "light smile"], angel wings, walking, (vibrant flower field:1.2), flower meadow, soft morning light, ethereal, watercolor [use photo] <lora:wings:1> [sets width=832 height=1216 steps=30 hq=1.5 count=2]
 
   4. Multiple Characters, very high quality:
-  Bigi, 2girls, age difference, [person Cleo "business suit, blazer, skirt"], office, cityscape, discussing project, indoors, natural lighting, professional atmosphere, ([person Fenny "green floral dress"]:1.5) NEGATIVE (bad anatomy, extra limbs, sisters:2) [sets width=1216 height=832 steps=60 hq=1.5]
+  Illy, 2girls, age difference, different girls, different hair, different eye color, [person Cleo "business suit, blazer, skirt"], office, cityscape, discussing project, indoors, natural lighting, professional atmosphere, [person Fenny "green floral dress"] NEGATIVE (bad anatomy, extra limbs, sisters:2) [sets width=1216 height=832 steps=60 hq=1.5]
 
   # Some top rated SFW prompts, for inspiration (good with the Illy and Hily models)
 
