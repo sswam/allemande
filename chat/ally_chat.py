@@ -364,7 +364,7 @@ def load_local_agents(room, agents=None):
 
     for agent_dir in reversed(agents_dirs):
         agents = Agents(services, parent=agents)
-        agents.load(agent_dir)
+        agents.load(agent_dir, visual=False)
 
         agents.write_agents_list(agent_dir.parent / ".agents.yml")
 

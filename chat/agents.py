@@ -319,7 +319,7 @@ class Agents:
         if not keep_visual:
             agent.remove_visual()
 
-    def load(self, path: Path) -> None:
+    def load(self, path: Path, visual: bool=True) -> None:
         """Load all agents or one agent from a path."""
         if path.is_dir():
             agent_files = path.glob("*.yml")
@@ -339,7 +339,8 @@ class Agents:
         # then set up and update visuals
         for agent in new_agents:
             agent_type = agent.get("type")
-            agent.update_visual()
+            if visual:
+                agent.update_visual()
             if not agent.set_up(self.services):
                 self.remove_agent(agent.name, keep_visual=True)
                 continue
