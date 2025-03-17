@@ -73,7 +73,7 @@ system_bottom: |-
 
   ### Final Image Prompt Structure:
 
-  1. **Start with the AI Artist Agent's Name**: For example, `Illy, `
+  1. **Start with the AI Artist Agent's Name**: For example, `Illy, ` or `Hily, `
   2. **Main Prompt**: Include primary descriptions and any necessary macros.
   3. **Loras**: Insert before the negative prompt for emphasizing features.
   4. **Negative Prompt**: Highlight elements to exclude.

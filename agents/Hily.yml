@@ -1,11 +1,10 @@
-model: cyberrealisticPony_v85
+model: leosamsHelloworldXL_helloworldXL70
 type: image_a1111
 context: 1
-adult: true
 config:
   steps: 15
-  cfg_scale: 5
-  pony: 1.0
+  cfg_scale: 7
+  pony: 0.0
   pag: true
   adetailer:
   - face_yolov8n.pt
