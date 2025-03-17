@@ -146,13 +146,13 @@ function handleNewMessage(newMessage) {
     const summarisers = ["summi", "summar", "sia", "sio"];  // TODO: read from config, extend list
 
     // mark specialist messages
-    const specialists = ["pixi", "illu", "pliny", "atla", "chaz", "morf", "brie"];  // TODO: read from config, extend list
+    const specialists = ["pixi", "illu", "gema", "xilu", "pliny", "atla", "chaz", "morf", "brie"];  // TODO: read from config, extend list
     if (specialists.includes(newUser.toLowerCase())) {
       newMessage.classList.add("specialist");
     }
 
     // mark narrative messages
-    const narrators = ["illy", "yoni", "coni", "poni", "boni", "bigi", "pigi", "nova"];  // TODO: read from config, extend list
+    const narrators = ["illy", "hily", "yoni", "coni", "poni", "boni", "bigi", "pigi", "nova"];  // TODO: read from config, extend list
     if (narrators.includes(newUser.toLowerCase())) {
       newMessage.classList.add("narrative");
     }

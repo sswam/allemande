@@ -60,30 +60,30 @@ https://allemande.ai
 Getting Started with Ally Chat:
 
 1. Log in and select "Ally Chat"
-- The default "Ally Chat" room is public
-- Here you can interact with AI helpers like Flashi, Emmy, and Claude to learn about the app
+- The default "Ally Chat" room is public.
+- Here you can interact with AI helpers like Flashi, Emmy, and Claude to learn about the app.
 
 2. Talking to AI Characters
-- Simply mention their name in your message
-- Available AIs: Flashi, Emmy, Claude, Ally, and others
+- Simply mention their name in your message.
+- Available AIs: Flashi, Emmy, Claude, Ally, and many others.
 
 3. Creating Images
-- Illy is the main image generation model
-- Illu is an AI expert who can:
-	• Create images using Illy
-	• Guide you through the image creation process
+- Illy is the main image generation model.
+- Illu is an AI art expert who can:
+	• create images using Illy
+	• guide you through the image creation process
 
 4. Continuing AI Conversations
-- When AIs are talking to each other
-- Leave the message box empty
-- Click "Poke" to let them continue
-- Example: When Illu writes a prompt for Illy, click "Poke" to generate the image
-- Alternatively, you could copy the prompt, edit it and send that message
+- When AIs are talking to each other...
+- Leave the message box empty.
+- Click "Poke" to let them continue.
+- Example: When Illu writes a prompt for Illy, click "Poke" to generate the image.
+- Alternatively, you could copy the prompt, edit it and send that message.
 
 5. Switching Rooms
-- Click the room name at the top
-- Type a new room name (e.g. "$user/chat")
-- Press Enter to switch
+- Click the room name at the top.
+- Type a new room name (e.g. "$user/chat").
+- Press Enter to switch.
 END
 		done
 	if ((nsfw)); then
@@ -91,12 +91,14 @@ END
 		cat <<END
 
 6. NSFW Features
-- Ally Chat supports NSFW chat and image generation
+- Ally Chat supports NSFW chat and image generation.
 - To use NSFW features, please go to the "nsfw/nsfw" room.
 - In this room, Flashi can help you learn about the app, including NSFW features.
-- Talking to Illu, then pressing "poke", is the easiest way to generate high quality images.
+- Xilu is an AI art expert similar to Illu, with more knowledge around NSFW art.
+- To get started with NSFW images, talk to Xilu, then press "poke" when she writes an AI art prompt.
+- You cannot talk to Anthropic, OpenAI, Perplexity or xAI models in the NSFW zone.
+- Please do not talk to Anthropic, OpenAI, Perplexity or xAI models on NSFW topics in private chat.
 - There is a section for more extreme adult content, available on request.
-- You cannot talk to Anthropic, OpenAI, Perplexity or xAI models in the NSFW zone. Please do not chat with these models on NSFW topics.
 END
 	fi
 	mkdir -p rooms/"$user"

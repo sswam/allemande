@@ -135,10 +135,12 @@ The Cast:	```dot
 	    "SDXL" [label=<<b>SDXL</b>>]
 	    "PonyXL" [label=<<b>PonyXL</b>>]
 	    "Illy" [label=<<b>Illy</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8">Image Gen</font>>]
+	    "Hily" [label=<<b>Hily</b><br/><font point-size="10">HelloWorld XL</font><br/><font point-size="8">Image Gen</font>>]
 	
 	    "Stability AI" -> "SDXL"
 	    "SDXL" -> "PonyXL"
 	    "SDXL" -> "Illy"
+	    "SDXL" -> "Hily"
 	}
 	```
 	

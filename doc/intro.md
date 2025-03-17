@@ -33,7 +33,7 @@ The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
   - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
   - Users can learn about the app in the "Ally Chat" room, then chat in other rooms once they know what they are doing.
-  - It might be important to tell users about this from the get go. Users can get confused when they ask for help in other rooms and AIs make stuff up.
+  - It might be important to tell users about this from the get go. Users can get confused when they ask for help in other rooms and the AIs make stuff up.
 - Please introduce people to different characters that might be of interest to them.
 
 ## The Team
@@ -207,6 +207,7 @@ We can safely embed any HTML:
 - **Soli**: A gentle spirit with a love for nature and intriguing stories to share
 - **Kai**: Enthusiastic about nature, Kai is a young man with bright blue eyes and a love for exploring
 - **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
+- **Nalani**: A vivacious, witty African/European woman and mother, with curly black hair.
 
 ### Specialists
 - **Pixi**: Crafts detailed AI art prompts, ensuring high-quality image generation
@@ -220,7 +221,8 @@ We can safely embed any HTML:
 - **Morf**: Game Master and narrative supervisor maintaining story coherence and forward progression
 
 ### Powerful AI Models
-- **Claude** (Claude 3.7 Sonnet, Anthropic): The most powerful reasoning model from Anthropic, expert at coding.
+- **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding.
+- **Clauden** (Claude 3.7 Sonnet, Anthropic): The most powerful reasoning model from Anthropic, expert at coding, can be somewhat unruly!
 - **Clia** (Claude 3.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4o, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Dav** (GPT-4o mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
@@ -228,6 +230,7 @@ We can safely embed any HTML:
 - **Fermi** (o3 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
 - **Gemmy** (Gemini Pro, Google): Google's high-performance Gemini language model
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 variant
+- **Grok** (Grok 2, xAI): xAI's quirky and intelligent language model
 
 ### Online Models with Internet Access
 - **Sageri** (Sonar Reasoning Pro, Perplexity): Perplexity's advanced reasoning model
@@ -236,14 +239,19 @@ We can safely embed any HTML:
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model
 
 ## Specialists based on Remote AI
-- **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation
+- **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model.
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
+- **Clu** (Anthropic): A variant of Claude that replies more concisely
+- **Emm** (OpenAI): A variant of Emmy (GPT-4o) that replies more concisely
+- **Vega** (Anthropic): A variant of Claude with a strong academic focus.
+- **Zeno** (OpenAI): A variant of GPT-4o with a strong academic focus.
 
 ### AI Artists
-- Using the AI art models directly is a bit technical. Instead, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Illy the AI art model.
-- **Illy**: High-quality photorealistic and artistic image generation, able to draw every character; simply talk to Illy to see your ideas come to life
+- Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Illy the AI art model.
+- **Illy**: High-quality photorealistic and artistic image generation using Juggernaut XL, able to draw every character; talk to Illy to see your ideas come to life
+- **Hily**: High-quality image generation using LEOSAM's HelloWorld XL, for a wide range of conceptual and fantasy art, able to draw every character
 - There are other models focused on NSFW art, available in the NSFW zone.
 
 ### Search Agents
@@ -313,22 +321,23 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | OpenAI        | GPT-4o-mini          | Dav     | 128K     | 16384            | $0.15            | $0.60             | OpenAI's fast and affordable model, ideal for efficient interactions.                                             |
 | OpenAI        | o1                   | Grace   | 200K     | 100000           | $15.00           | $60.00            | OpenAI's most powerful reasoning model for advanced applications.                                                 |
 | OpenAI        | o3-mini              | Fermi   | 200K     | 100000           | $1.10            | $4.40             | OpenAI's fast and affordable model, ideal for efficient reasoning.                                                |
-| Perplexity    | Sonar Reasoning Pro  | Sageri  | 128K     | 8K               | $2 [3]           | $8                | Online model with live internet data, specializing in complex reasoning tasks.  $5/1000 search queries.           |
-| Perplexity    | Sonar Pro            | Sagi    | 200K     | 8K               | $3 [3]           | $15               | Online model with live internet data; Perplexity's high-performance option.  Includes search costs.               |
+| Perplexity    | Sonar Reasoning Pro  | Sageri  | 128K     | 8K               | $2 [3]           | $8                | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.            |
+| Perplexity    | Sonar Pro            | Sagi    | 200K     | 8K               | $3 [3]           | $15               | Online model with live internet data; Perplexity's high-performance option. Includes search costs.                |
 | Perplexity    | Sonar Reasoning      | Sonari  | 128K     | 8K               | $1 [3]           | $5                | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro.  |
 | Perplexity    | Sonar                | Sona    | 128K     | 8K               | $1               | $1                | Perplexity's fastest and most affordable online model with live internet data.                                    |
-| Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A smaller model, prioritizing creativity and engaging conversations. Most characters use this model               |
+| Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A smaller model, prioritizing creativity and engaging conversations. Most characters use this model.              |
 
-* The Llama model powers numerous characters including Ally, Barbie, Cleo, etc.
+* The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
 #### Image Models (SFW)
 
-| Creator       | Model               | Name | Description                                                                                                 |
-|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
-| RunDiffusion  | Juggernaut XL v9    | Illy | A popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica   |
+| Creator       | Model             | Name | Description                                                                                                           |
+|---------------|---------------------|------|---------------------------------------------------------------------------------------------------------------------|
+| RunDiffusion  | Juggernaut XL v9    | Illy | The most popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica    |
+| LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art including soft-core erotica  |
 
 **Notes:**
 
-1. Claude 3.7 Sonnet larger output window is not yet enabled in our app.
-2. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K
+1. Claude 3.7 Sonnet's larger output window is not yet enabled in our app.
+2. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K)
 3. Perplexity models also incur search costs of $5 per 1000 searches.
