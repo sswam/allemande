@@ -52,16 +52,10 @@ def parse_macro_block(text: str, start: int) -> tuple[str, dict[str, str], int]:
         Tuple of (macro_name, key_value_pairs, end_position)
     """
     # Extract macro name
-    name_end = text.find(" ", start + 1)
-    if name_end == -1:
-        # Check if this is an empty macro
-        close_pos = text.find("]", start + 1)
-        if close_pos == -1:
-            raise ValueError("Unclosed macro block")
-        macro_name = text[start + 1 : close_pos]
-        if not macro_name:
-            raise ValueError("Invalid macro format - no name")
-        return macro_name, {}, close_pos
+    name_end_match = re.search(r"[\]\s]", text[start+1:])
+    if name_end_match is None:
+        raise ValueError("Unclosed macro block")
+    name_end = name_end_match.start() + start + 1
 
     macro_name = text[start + 1 : name_end]
     if not macro_name:
