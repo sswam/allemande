@@ -97,3 +97,6 @@ mediainfo
 libmkl-dev
 
 python3-pdfminer
+
+mecab
+libmecab-dev
