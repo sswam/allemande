@@ -5,11 +5,12 @@
 testy() {
 	local verbose= v=0	# verbose mode, output results when all tests pass
 	local timeout= t=10	# timeout (per test, Python only at the moment)
+	local debug= d=         # run test with debug option to show logs and stdout
 
 	eval "$(ally)"
 
 	if (( $# != 1 )); then
-		each testy : "$@"
+		each testy -v="$v" -t="$t" -d="$d" : "$@"
 		return $?
 	fi
 
@@ -80,11 +81,18 @@ test_sh() {
 test_py() {
 	local tests_file="$1"
 	results=$(mktemp)
-	if COLUMNS=80 run pytest --timeout=$timeout --asyncio-mode=auto -vv --capture=no --tb=short --disable-warnings --no-header "$tests_file" >"$results" 2>&1; then
+	local debug_opts=()
+	if (( debug )); then
+		debug_opts=(--log-cli-level=DEBUG --capture=tee-sys)
+	fi
+	if COLUMNS=80 run pytest "${debug_opts[@]}" --timeout="$timeout" --asyncio-mode=auto -vv --capture=no --tb=short --disable-warnings --no-header "$tests_file" >"$results" 2>&1; then
+		if (( verbose )); then
+			cat "$results"
+		fi
 		rm "$results"
 		return 0
 	fi
-	if grep "=== ERRORS ===" "$results"; then
+	if (( verbose )) || grep "=== ERRORS ===" "$results"; then
 		cat "$results"
 	else
 		# Just keep the important part of the output
