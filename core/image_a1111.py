@@ -15,8 +15,8 @@ import yaml
 import a1111_client  # type: ignore
 import slug  # type: ignore
 import stamp  # type: ignore
-from ally import main, logs
-from unprompted.unprompted_macros import parse_macros, update_macros
+from ally import main, logs  # type: ignore
+from unprompted.unprompted_macros import parse_macros, update_macros  # type: ignore
 
 __version__ = "0.1.1"
 
@@ -32,8 +32,8 @@ MAX_PIXELS = 1280 * 1280
 MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 
 
-def process_hq_macro(prompt: str, config: dict, sets: dict) -> dict:
-    """Process hq macro in prompt and update config accordingly"""
+def process_hq_macro(config: dict, sets: dict) -> dict:
+    """Process hq macro and update config accordingly"""
     hq = float(sets.get("hq", 0))
 
     if hq == 0:
@@ -116,6 +116,7 @@ def load(portals, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
+# pylint: disable=too-many-locals, too-many-branches, too-many-statements
 async def process_request(portals: str, portal_str: Path, req: str):
     """Process a request on a portal"""
     portal = Path(portal_str)
@@ -132,10 +133,12 @@ async def process_request(portals: str, portal_str: Path, req: str):
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         prompt = load(portals, d, "request.txt")
 
-        # Process hq macro
+        # Process macros
         macros = parse_macros(prompt)
         sets = macros.get('sets', {})
         need_update_macros = False
+
+        # Process hq setting
         if 'width' in sets:
             need_update_macros = True
             config['width'] = int(sets['width'])
@@ -149,7 +152,17 @@ async def process_request(portals: str, portal_str: Path, req: str):
             need_update_macros = True
             config['seed'] = int(sets['seed'])
 
-        config = process_hq_macro(prompt, config, sets)
+        # Process rp macro (regional prompter)
+        regional_kwargs = {}
+        rp = macros.get("rp", {})
+        if "rp" in macros:
+            # change all keys to prefix rp_
+            for key, value in rp.items():
+                regional_kwargs[f"rp_{key}"] = value
+            regional_kwargs["regional"] = regional_kwargs.pop("rp_mode", "columns")
+            need_update_macros = True
+
+        config = process_hq_macro(config, sets)
         config = limit_dimensions_and_hq(config)
 
         # Update settings in prompt if needed
@@ -158,7 +171,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
             sets['height'] = str(config['height'])
             sets['hires'] = str(config['hires'])
             sets['seed'] = "---REMOVEME---"
-            prompt = update_macros(prompt, {"sets":sets})
+            prompt = update_macros(prompt, {"sets":sets, "rp":None})
             prompt = re.sub(r"seed=---REMOVEME---", "", prompt)
 
             logger.info("updated prompt: %s", prompt)
@@ -204,6 +217,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
                     pony=config.get("pony", 0.0),
                     ad_mask_k_largest=config.get("ad_mask_k_largest", 0),
                     model=config.get("model"),
+                    **regional_kwargs,
                 )
             finally:
                 fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)

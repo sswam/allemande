@@ -13,11 +13,13 @@ import signal
 import asyncio
 import json
 import re
+from typing import Any
 
 import aiohttp
 from tqdm import tqdm  # type: ignore
 
-from ally import main, text  # type: ignore
+from ally import main  # type: ignore
+from ally.text import squeeze
 
 __version__ = "0.1.0"
 
@@ -37,6 +39,7 @@ def remove_comments(text):
     return re.sub(r"#.*", "", text, flags=re.MULTILINE)
 
 
+# pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
 async def a1111_client(
     output: str = "",
     prompt: str = "",
@@ -52,11 +55,16 @@ async def a1111_client(
     sleep: float = 0.0,
     clobber: bool = False,
     pony: float = 0.0,
-    adetailer: list[str] = None,
+    adetailer: list[str]|None = None,
     pag: bool = False,
     hires: float = 0.0,
     ad_mask_k_largest = 0,
     model: str = "",
+    regional: str|None = None,
+    rp_ratios: str = "1,1",
+    rp_base_ratios: str = "0",
+    rp_calc: str = "attention",
+    rp_flip: bool|None = False,
 ) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -70,13 +78,13 @@ async def a1111_client(
     if seed == -1:
         seed = random.randint(0, 2**32 - 1)
 
-    prompt = text.squeeze(remove_comments(prompt))
-    negative_prompt = text.squeeze(remove_comments(negative_prompt))
+    prompt = squeeze(remove_comments(prompt))
+    negative_prompt = squeeze(remove_comments(negative_prompt))
 
     if pony:
         prompt, negative_prompt = pony_biolerplate(pony, prompt, negative_prompt)
 
-    params = {
+    params: dict[str, Any] = {
         "prompt": prompt,
         "negative_prompt": negative_prompt,
         "sampler_name": sampler_name,
@@ -100,6 +108,9 @@ async def a1111_client(
 
     if pag:
         perturbed_attention_guidance_add_params(params)
+
+    if regional:
+        regional_prompter_add_params(params, regional, rp_ratios, rp_base_ratios, rp_calc, rp_flip)
 
     interrupt_flag = False
 
@@ -135,7 +146,7 @@ async def a1111_client(
                 if sleep:
                     await asyncio.sleep(sleep)
             logger.debug("Generated %s images to %s", i + 1, outdir)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logger.error("Error: %s", e)
     finally:
         logger.debug("Exiting")
@@ -147,15 +158,18 @@ async def a1111_client(
 
 def pony_biolerplate(pony, prompt, negative_prompt):
     """Add pony boilerplate to the prompt and negative prompt."""
-    pony1p = f"(score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:{pony})\nBREAK\n"
+#    pony1p = f"(score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:{pony})\nBREAK\n"
+    pony1p = f"(score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:{pony})\n"
     prompt = f"{pony1p}{prompt}"
 #    pony1n = f"(score_6, score_5, score_4:{pony})\nBREAK\n"
-    pony1n = f"score_6, score_5, score_4\nBREAK\n"
+#    pony1n = f"score_6, score_5, score_4\nBREAK\n"
+    pony1n = "score_6, score_5, score_4\n"
     negative_prompt = f"{pony1n}{negative_prompt}"
     return prompt, negative_prompt
 
 
 def hires_fix_add_params(params, scale, denoising_strength=0.3, steps=None):
+    """Add hires fix parameters to the params."""
     if steps is None:
         steps = max(1, round(denoising_strength * params["steps"] + 0.5 - 1e-6))
     params.update(
@@ -286,6 +300,39 @@ def perturbed_attention_guidance_add_params(params):
     )
 
 
+# pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
+def regional_prompter_add_params(params, our_mode, ratios, base_ratios, calcmode, flip):
+    """Add regional prompter parameters to the params."""
+    if not "alwayson_scripts" in params:
+        params["alwayson_scripts"] = {}
+
+    our_mode = our_mode.lower()
+
+    active = True
+    debug = False
+    mode = "Matrix" if our_mode in ["columns", "rows"] else "Prompt"
+    mode_matrix = our_mode.title() if mode == "Matrix" else ""
+    mode_mask = ""
+    mode_prompt = our_mode.title() if mode == "Prompt" else ""
+    # ratios
+    # base_ratios
+    use_base = base_ratios != "0"
+    use_common = False  # hopefully this will activate if the prompt contains ADDCOMM
+    use_neg_common = False  # as above
+    calcmode = calcmode.title()
+    not_change_and = False
+    lora_textencoder = "0"
+    lora_unet = "0"
+    threshold = "0"
+    mask = ""
+    lora_stop_step = "0"
+    lora_hires_stop_step = "0"
+    flip = flip != False   # None becomes True
+
+    args = [active, debug, mode, mode_matrix, mode_mask, mode_prompt, ratios, base_ratios, use_base, use_common, use_neg_common, calcmode, not_change_and, lora_textencoder, lora_unet, threshold, mask, lora_stop_step, lora_hires_stop_step, flip]
+    params["alwayson_scripts"]["Regional Prompter"] = {"args": args}
+
+
 def setup_args(arg):
     """Setup the command line arguments."""
     arg("-o", "--output", help="output file (png)")
@@ -307,6 +354,11 @@ def setup_args(arg):
     arg("-u", "--hires", help="hires fix / upscale by factor")
     arg("--ad-mask-k-largest", type=int, help="adetailer mask limit to k largest matches")
     arg("-m", "--model", help="stable diffusion model checkpoint")
+    arg("-r", "--regional", choices=["columns", "rows", "prompt", "prompt-ex"], help="regional prompter mode")
+    arg("--rp-ratios", type=str, help="regional prompter ratios")
+    arg("--rp-base-ratios", type=str, help="regional prompter base ratios")
+    arg("--rp-calc", choices=["attention", "latent"], help="regional prompter calculation mode")
+    arg("--rp-flip", help="regional prompter flip", action="store_true")
 
 
 if __name__ == "__main__":
