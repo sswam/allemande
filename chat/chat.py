@@ -292,7 +292,7 @@ class Room:
         # TODO don't hard-code the agent names!!!
         # TODO it would be better to do this as a view
         exclude = ["Illu", "Pixi", "Atla", "Chaz", "Brie", "Morf", "Pliny", "Sia", "Sio", "Summar", "Summi"]
-        narrators = ["Nova", "Illy", "Hily", "Yoni", "Poni", "Coni", "Boni", "Bigi", "Pigi"]
+        narrators = ["Nova", "Illy", "Hily", "Yoni", "Poni", "Coni", "Boni", "Bigi", "Pigi", "Dily", "Wili"]
 
         messages = [msg for msg in messages if msg.user not in exclude]
 

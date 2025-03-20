@@ -890,7 +890,7 @@ async function set_view_options(new_view_options) {
   if (old_view_options.items >= 0 && old_view_options.items < 10) {
     $body.classList.remove("items_" + Math.round(old_view_options.items));
   }
-  if (view_options.items >= 0 && view_options.items < 10) {
+  if (view_options.items !== "" && view_options.items >= 0 && view_options.items < 10) {
     $body.classList.add("items_" + Math.round(view_options.items));
 //  document.documentElement.style.setProperty("--visible-items", view_options.items);
   }
@@ -1051,6 +1051,31 @@ function handle_intro() {
       suppressInitialScroll = false;
     }, 10000);
   }
+}
+
+// helper functions for theme colors -----------------------------------------
+
+function getForegroundColorWithOpacity(opacity) {
+  return hexColorWithOpacity(getCssVarColorHex('--text'), opacity);
+}
+
+function getCssVarColorHex(varName = '--text') {
+    const temp = document.createElement('div');
+    temp.style.color = getComputedStyle(document.body).getPropertyValue(varName);
+    document.body.appendChild(temp);
+    const rgb = getComputedStyle(temp).color;
+    document.body.removeChild(temp);
+    const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+    if (!match) return '#808080';
+    const hex = '#' + match.slice(1).map(x =>
+        parseInt(x).toString(16).padStart(2, '0')
+    ).join('');
+    return hex;
+}
+
+function hexColorWithOpacity(color, opacity) {
+    const alpha = Math.round(opacity * 255);
+    return color + alpha.toString(16).padStart(2, '0');
 }
 
 // main ----------------------------------------------------------------------

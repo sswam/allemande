@@ -94,12 +94,12 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 22px));
 }
 
-/* borders for markdown tables */
+/* borders for markdown tables, exclude uPlot tables */
 
-table {
+table:not(.u-legend) {
 	border-collapse: collapse;
 }
-table, th, td {
+table:not(.u-legend), table:not(.u-legend) :is(th, td) {
 	border: 1px solid var(--col4);
 	padding: 4px;
 }

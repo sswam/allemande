@@ -152,7 +152,7 @@ function handleNewMessage(newMessage) {
     }
 
     // mark narrative messages
-    const narrators = ["illy", "hily", "yoni", "coni", "poni", "boni", "bigi", "pigi", "nova"];  // TODO: read from config, extend list
+    const narrators = ["illy", "hily", "yoni", "coni", "poni", "boni", "bigi", "pigi", "dily", "wili", "nova"];  // TODO: read from config, extend list
     if (narrators.includes(newUser.toLowerCase())) {
       newMessage.classList.add("narrative");
     }
@@ -170,7 +170,7 @@ function handleNewMessage(newMessage) {
   // render graphviz diagrams
   render_graphviz(newContent);
 
-  // add language info ~~and a copy button~~ to code blocks, script and styles on hover
+  // add language info to code blocks, script and styles on hover
   const codeBlocks = newContent.querySelectorAll("code, script:not(hide):not([src]), style:not(hide)");
   for (const codeBlock of codeBlocks) {
     decorateCodeBlock(codeBlock);
@@ -265,6 +265,9 @@ function decorateCodeBlock(codeBlock) {
   if (codeBlock.nodeName === "STYLE" && codeBlock.textContent.includes(".katex img")) {
     return;
   }
+
+  // Add title click to copy
+  codeBlock.title = "click to copy";
 
   let lang = (codeBlock.className.split(' ')
     .find(className => className.startsWith('language-')) || '')
