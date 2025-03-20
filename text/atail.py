@@ -69,7 +69,7 @@ class AsyncTail:
                 if not self.restart:
                     break
                 self.wait_for_create = True
-                if self.rewind_string:
+                if self.rewind and self.rewind_string:
                     await self.queue.put(self.rewind_string)
         finally:
             self.running = False
@@ -83,7 +83,7 @@ class AsyncTail:
             await self.wait_for_file_creation()
             created = True
 
-        all_lines = self.all_lines or (created and self.follow)
+        all_lines = self.all_lines or (created and self.follow and self.rewind)
 
         async with aiofiles.open(self.filename, mode="r") as f:
             # Regular tail functionality
