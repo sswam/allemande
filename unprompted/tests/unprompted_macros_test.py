@@ -159,3 +159,12 @@ def test_do_not_combine_macros():
     result = subject.parse_macros(text)
     assert result == {"use": {"Sia": None, "John": None, "photo": None}}
     assert subject.update_macros(text, result) == "hello [use Sia] [use John] [use photo] world"
+
+
+def test_delete_macro():
+    """Test that we can delete a macro from text by setting its value to None."""
+    text = "[rp] [foo a=1] hello [rp mode=attention] world"
+    result = subject.parse_macros(text)
+    # assert result == {"foo": {"a": "1"}, "rp": {"mode": "attention"}}
+    result["rp"] = None
+    assert subject.update_macros(text, result) == "[foo a=1] hello  world"

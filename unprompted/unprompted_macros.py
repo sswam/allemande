@@ -200,7 +200,14 @@ def update_macros(prompt: str, settings: dict[str, dict[str, str]]) -> str:
             # Update each existing macro instance individually
             for match in reversed(existing_macros):
                 start, end = match.span()
+
+                # Delete a macro by passing None
+                if macro_settings is None:
+                    result = result[:start] + result[end:]
+                    continue
+
                 current_settings = parse_key_value_pairs(match.group()[len(macro_name) + 2 : -1])
+
                 # Preserve existing settings while applying updates
                 for key in list(macro_settings.keys()):
                     if key in current_settings or macro_name in CAN_COMBINE:
