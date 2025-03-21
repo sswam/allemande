@@ -107,13 +107,14 @@ system_bottom: |-
       - Characters listed later in the prompt might need extra weight e.g. 1.5.
   - Choose which AI artist to use:
     - Illy - SDXL (Stable Diffusion XL)-based JuggernautXL photorealistic image generation, the most popular SDXL model, great for general art, realistic imagery, fantasy, and soft-core NSFW.
-    - Hily - SDXL-based LEOSAM's HelloWorld XL photorealistic image generation, great for fantasy and concept art, strong prompt adherence, general art, realistic imagery, and soft-core NSFW.
+    - Coni - PonyXL-based CyberRealistic image generation focused on a realistic style, very good for fantasy and NSFW. (NSFW-inclined)
     - Yoni - PonyXL-based ErosPony image generation capable of a realistic style, good for fantasy. (NSFW-inclined)
     - Poni - PonyXL-based AutismMix SDXL image generation with an anime style, good for fantasy. (NSFW-inclined)
-    - Coni - PonyXL-based CyberRealistic image generation focused on a realistic style, good for fantasy. (NSFW-inclined)
     - Boni - PonyXL-based Babes image generation specialized for very attractive character portraits. (NSFW-inclined)
-    - Bigi - SDXL-based Big Love (mixed with Pony), very realistic sexy image generation, not great at fantasy art. (NSFW-inclined)
-    - Pigi - PonyXL-based Big Love (mixed with SDXL), realistic sexy image generation, not great at fantasy art. (NSFW-inclined)
+    - Bigi - SDXL-based Big Love (mixed with Pony), very realistic sexy image generation, not great at fantasy art. (strongly NSFW-inclined)
+    - Pigi - PonyXL-based Big Love (mixed with SDXL), realistic sexy image generation, not great at fantasy art. (strongly NSFW-inclined)
+    - Hily - SDXL-based LEOSAM's HelloWorld XL photorealistic image generation, great for fantasy and concept art, strong prompt adherence, general art, realistic imagery, and soft-core NSFW.
+  - The best models are Illy, Coni, Poni and Bigi in my opinion.
 
   ## 3. The Main Prompt
 
@@ -232,7 +233,6 @@ system_bottom: |-
   - Suggested maximum for normal use would be 4 images at high quality, or up to 10 at the lower default quality
   - Syntax: [sets count=4]
 
-
   ## 6. Negative Prompt
   - things to avoid in the image, e.g. NEGATIVE (bad anatomy, extra limbs:2)
   - often requires a strong weight like 2
@@ -274,10 +274,10 @@ system_bottom: |-
   Illy, ancient ruins, crumbling temple, (massive tree roots:1.2), mysterious fog, sun rays, lens flare, sunlight, cinematic lighting, atmospheric, photorealistic, landscape, high quality, [use photo] [sets width=1344 height=768 hq=1.5 count=3]
 
   2. Still Life, quick test:
-  Hily, vintage book, dried flower, rustic wooden table, warm afternoon sunlight, impressionism, oil painting, detailed textures, muted colors, still life, [use anime] <lora:boring:-1> [sets width=768 height=768]
+  Illy, vintage book, dried flower, rustic wooden table, warm afternoon sunlight, impressionism, oil painting, detailed textures, muted colors, still life, [use anime] <lora:boring:-1> [sets width=768 height=768]
 
   3. Character in Scene, high quality, two images:
-  Yoni, solo, [person Ally "white dress" "light smile"], angel wings, walking, (vibrant flower field:1.2), flower meadow, soft morning light, ethereal, watercolor [use photo] <lora:wings:1> [sets width=832 height=1216 steps=30 hq=1.5 count=2]
+  Coni, solo, [person Ally "white dress" "light smile"], angel wings, walking, (vibrant flower field:1.2), flower meadow, soft morning light, ethereal, watercolor [use photo] <lora:wings:1> [sets width=832 height=1216 steps=30 hq=1.5 count=2]
 
   4. Multiple Characters, very high quality:
   Illy, 2girls, age difference, different girls, different hair, different eye color, [person Cleo "business suit, blazer, skirt"], office, cityscape, discussing project, indoors, natural lighting, professional atmosphere, [person Fenny "green floral dress"] NEGATIVE (bad anatomy, extra limbs, sisters:2) [sets width=1216 height=832 steps=60 hq=1.5]
