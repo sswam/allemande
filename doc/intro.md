@@ -172,58 +172,62 @@ ctx.fillRect(10, 10, 100, 100);
 
 <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.iife.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.min.css">
-<div id="world_population_chart"></div>
+<div id="smartphone_market_share_1"></div>
 
 <script>
 data = [
-    [1800, 1850, 1900, 1950, 1975, 2000, 2025],
-    [1.0, 1.26, 1.65, 2.52, 4.07, 6.12, 8.05]
+    [0, 1, 2, 3, 4],
+    [22.1, 19.4, 13.3, 11.2, 7.8]
 ];
 
 textColor = getCssVarColorHex("--text");
-gridColor = withOpacity(textColor, 0.1);  // 10% opacity for grid
-fillColor = withOpacity(textColor, 0.05);  // 5% opacity for fill
+gridColor = hexColorWithOpacity(textColor, 0.1);
+fillColor = hexColorWithOpacity(textColor, 0.05);
+
+companies = ["Samsung", "Apple", "Xiaomi", "OPPO", "vivo"];
 
 opts = {
-    title: "World Population Growth 1800-2025",
+    title: "Global Smartphone Market Share Q3 2023 (%)",
     width: 600,
     height: 300,
     series: [
         {
-            label: "Year"
+            label: "Company"
         },
         {
-            label: "Population (Billions)",
+            label: "Market Share %",
             stroke: textColor,
-            fill: fillColor
+            fill: fillColor,
+            paths: uPlot.paths.bars({size: [0.6, 100]}),
         }
     ],
     scales: {
         x: {
-            time: false
+            time: false,
+            range: [-0.5, 4.5]
         }
     },
     axes: [
         {
-            label: "Year",
+            values: (self, splits) => splits.map(i => companies[i]),
             stroke: textColor,
-            grid: {stroke: gridColor}
+            grid: {stroke: gridColor},
+            size: 70  // Give more space for labels
         },
         {
-            label: "Population (Billions)",
             stroke: textColor,
             grid: {stroke: gridColor}
         }
     ]
 };
 
-uplot = new uPlot(opts, data, document.getElementById("world_population_chart"));
+uplot = new uPlot(opts, data, document.getElementById("smartphone_market_share_1"))
 </script>
 
 IMPORTANT:
 - N.B. NOTE WELL! Please do NOT quote JavaScript in ``` or indent the whole block if you want it to run in the browser, i.e. in the chat app.
 - N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
-- Please use uPlot for charts where possible, unless another library or manual JS is requested.
+- Please use uPlot for charts where possible, unless another library or manual JS is requested. You need to pull in the required uPlot JavaScript and CSS first.
 - The shared canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
 - Please use the TOP LEFT part of the canvas by default. Don't center in the canvas or try to fill the width or height unless requested. If you use another part it can be hard for the user to view it all.
 - For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
