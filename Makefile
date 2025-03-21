@@ -179,7 +179,7 @@ auth:
 	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002
 
 watch:
-	awatch -r -A -x bb yml -p $(ROOMS) $(AGENTS) >> $(WATCH_LOG)
+	awatch -L -r -A -x bb yml -p $(ROOMS) $(AGENTS) >> $(WATCH_LOG)
 
 bb2html:
 	awatch -a -i -p $(WEBCHAT)/bb2html.py chat/chat.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
