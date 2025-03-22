@@ -31,7 +31,7 @@ xt-allemande() {
 	# Local services
 	if [ "$local" = 1 ]; then
 		for service in "${local_services[@]}"; do
-			xt -e sxw core "$service" &
+			xt -e sxw allemande "$service" &
 			sleep 0.1
 		done
 	fi
