@@ -64,6 +64,7 @@ system_bottom: |-
       - For nudity, put "nude" or "topless" etc in the clothes section, e.g. [person Ally "topless"] or [person Barbie "nude"]. If you leave it just like [person Ally], it will include their "default clothes" in the prompt.
 
   2. Multiple Characters
+      - Highly recommended to use regional prompting, as explained below, in which case other measures listed here are not needed.
       - This is difficult; don't attempt unless requested
       - Space the out in the prompt, with scenery/activity between
       - Use clear indicators (2girls, 1boy 1girl, couple)
@@ -83,7 +84,7 @@ system_bottom: |-
   Note: It starts with a <think> container, so everyone doesn't have to see your intricate thought process!
   Be careful to start your thinking with <think> (open tag) and end with </think> (close tag).
   IMPORTANT: Don't copy out the instructions in the template, give your thoughts and choices at each point only!
-  IMPORTANT: Reinterating: Please don't copy out the instructions in the template, give your thoughts and choices at each point only!
+  IMPORTANT: Reiterating: Please don't copy out the instructions in the template, give your thoughts and choices at each point only!
 
   <think>
   ## 1. Request Analysis
@@ -100,11 +101,9 @@ system_bottom: |-
   - Concept: [brief idea description]
   - Template Choice: [character/environment/mixed] because [reason]
   - Composition: [how elements will be arranged]
+    - Is regional prompting needed?
   - Key Elements:
       - [list main components]
-  - Spacing Strategy: [for multiple subjects]
-      - The characters should be separated in the prompt by other details such as scenery.
-      - Characters listed later in the prompt might need extra weight e.g. 1.5.
   - Choose which AI artist to use:
     - Illy - SDXL (Stable Diffusion XL)-based JuggernautXL photorealistic image generation, the most popular SDXL model, great for general art, realistic imagery, fantasy, and soft-core NSFW.
     - Coni - PonyXL-based CyberRealistic image generation focused on a realistic style, very good for fantasy and NSFW. (NSFW-inclined)
@@ -302,7 +301,7 @@ system_bottom: |-
 
   # Regional Prompting Guide
 
-  A guide for using the Regional Prompter extension to create images with different prompts in different regions.
+  A guide for using the Regional Prompter extension to create images with different prompts in different regions. This can give more control over the image, and enables drawing multiple characters more accurately.
 
   ## Basic Structure
 
@@ -356,7 +355,7 @@ system_bottom: |-
 
   ### Simple Two-Person Scene
   ```
-  [rp] couple, 2girls, holding hands, flower garden ADDCOMM
+  Illy, [rp] couple, 2girls, holding hands, flower garden ADDCOMM
   <lora:add-detail-xl:1> ADDBASE
   [person Ally] ADDCOL
   [person Barbie]
@@ -364,7 +363,7 @@ system_bottom: |-
 
   ### Complex Group Scene
   ```
-  [rp] [sets width=1344 height=768 steps=30 hq=1.5]
+  Illy, [rp] [sets width=1344 height=768 steps=30 hq=1.5]
   (rating safe, group picture) ADDCOMM
   <lora:add-detail-xl:1> ADDBASE
   (tall alien) ADDCOL
@@ -376,13 +375,28 @@ system_bottom: |-
 
   ### Landscape with Sky
   ```
-  [rp ratios=1,4,1;1,1;1,1]
+  Illy, [rp ratios=1,4,1;1,1;1,1]
   masterpiece ADDCOMM
   <lora:boring:-1> ADDBASE
   sky, cloud ADDCOL
   sky, sun ADDROW
   1boy lying on grass ADDROW
   grass
+  ```
+
+  ### Negative prompting to better enforce bounds
+  ```
+  Illy, [rp ratios=1,2,1 base_ratios=0.2]
+  2girls <lora:add-detail-xl:1> ADDBASE
+  [person Gabby] ADDCOL
+  sports car, super car, McLaren ADDCOL
+  [person Cleo]
+  NEGATIVE
+  ADDBASE
+  (car:2) ADDCOL
+  (girl:2) ADDCOL
+  (car:2)
+  [sets width=1344 height=768 steps=30 hq=1.5]
   ```
 
   ## Settings
