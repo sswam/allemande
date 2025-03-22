@@ -15,6 +15,7 @@ class Shortcode:
 
         # "." means the default (load the file)
         # "-" means a global default
+        # "" means nothing (of course)
 
         # clothes
         if _clothes is None or _clothes == ".":
