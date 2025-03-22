@@ -1,1 +1,2 @@
 source anime, toon \(style\)
+[set negative_prompt] [get negative_prompt] (3d:2) [/set]
