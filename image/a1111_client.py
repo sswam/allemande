@@ -316,9 +316,9 @@ def regional_prompter_add_params(params, our_mode, ratios, base_ratios, calcmode
     mode_prompt = our_mode.title() if mode == "Prompt" else ""
     # ratios
     # base_ratios
-    use_base = base_ratios != "0"
-    use_common = False  # hopefully this will activate if the prompt contains ADDCOMM
-    use_neg_common = False  # as above
+    use_base = base_ratios != "0"  # it also activates on ADDBASE
+    use_common = False  # it also activates on ADDCOMM
+    use_neg_common = False  # it also activates on ADDCOMM in negative prompt
     calcmode = calcmode.title()
     not_change_and = False
     lora_textencoder = "0"
