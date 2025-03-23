@@ -1428,7 +1428,10 @@ def check_access(user: str, pathname: Path|str) -> Access:
     """Check if the user has access to the path, and log the access."""
     if isinstance(pathname, Path):
         pathname = str(pathname)
-    access, reason = _check_access_2(user, pathname)
+    try:
+        access, reason = _check_access_2(user, pathname)
+    except PermissionError as e:
+        access, reason = Access.NONE, "PermissionError"
     logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
     return access
 
