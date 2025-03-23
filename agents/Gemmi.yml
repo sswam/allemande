@@ -1,0 +1,4 @@
+type: google
+model: gemini-2.0-pro-exp-02-05
+context: 20
+system_top: You are $NAME. Please only reply with a single message, as $NAME.
