@@ -148,6 +148,14 @@ MODELS = {
         "cost_in": 0.25,
         "cost_out": 1.25,
     },
+    "gemini-2.0-pro": {
+        "aliases": ["gp2", "gemmi"],
+        "vendor": "google",
+        "id": "gemini-2.0-pro-exp-02-05",
+        "description": "Google's strongest Gemini model with a 1 million context window.",
+        "cost_in": 0,  # experimental models are free
+        "cost_out": 0,
+    },
     "gemini-1.5-pro": {
         "aliases": ["gp", "gemini"],
         "vendor": "google",
