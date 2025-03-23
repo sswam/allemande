@@ -29,16 +29,16 @@ The Cast:	```dot
 	digraph Anthropic {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFC8C8", fontname="Arial"]
+	    node [shape=box, style=filled, fillcolor="#FFC8C8", fontname="Helvetica"]
 	
 	    "Anthropic" [label=<<b>Anthropic</b>>]
-	    "Clauden" [label=<<b>Clauden</b><br/><font point-size="10">Claude 3.7 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
-	    "Claude" [label=<<b>Claude</b><br/><font point-size="10">Claude 3.5 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Programming, writing</font>>]
 	    "Clia" [label=<<b>Clia</b><br/><font point-size="10">Claude 3.5 Haiku</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Quick, creative</font>>]
+	    "Claude" [label=<<b>Claude</b><br/><font point-size="10">Claude 3.5 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Programming, writing</font>>]
+	    "Clauden" [label=<<b>Clauden</b><br/><font point-size="10">Claude 3.7 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
 	
-	    "Anthropic" -> "Clauden"
-	    "Anthropic" -> "Claude"
 	    "Anthropic" -> "Clia"
+	    "Anthropic" -> "Claude"
+	    "Anthropic" -> "Clauden"
 	}
 	```
 	
@@ -46,14 +46,16 @@ The Cast:	```dot
 	digraph Google {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#C8C8FF", fontname="Arial"]
+	    node [shape=box, style=filled, fillcolor="#C8C8FF", fontname="Helvetica"]
 	
 	    "Google" [label=<<b>Google</b>>]
-	    "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
 	    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, tool-oriented</font>>]
+	    "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
+	    "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.0 Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Very strong and capable</font>>]
 	
-	    "Google" -> "Gemmy"
 	    "Google" -> "Flashi"
+	    "Google" -> "Gemmi"
+	    "Google" -> "Gemmy"
 	}
 	```
 	
@@ -61,18 +63,18 @@ The Cast:	```dot
 	digraph OpenAI {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#C8FFC8", fontname="Arial"]
+	    node [shape=box, style=filled, fillcolor="#C8FFC8", fontname="Helvetica"]
 	
 	    "OpenAI" [label=<<b>OpenAI</b>>]
-	    "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4o</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
 	    "Dav" [label=<<b>Dav</b><br/><font point-size="10">GPT-4o mini</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Efficient, affordable</font>>]
-	    "Grace" [label=<<b>Grace</b><br/><font point-size="10">o1</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
+	    "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4o</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
 	    "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o3 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
+	    "Grace" [label=<<b>Grace</b><br/><font point-size="10">o1</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
 	
-	    "OpenAI" -> "Emmy"
 	    "OpenAI" -> "Dav"
-	    "OpenAI" -> "Grace"
+	    "OpenAI" -> "Emmy"
 	    "OpenAI" -> "Fermi"
+	    "OpenAI" -> "Grace"
 	}
 	```
 	
@@ -80,12 +82,12 @@ The Cast:	```dot
 	digraph Meta {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Arial"]
+	    node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Helvetica"]
 	
 	    "Meta" [label=<<b>Meta</b>>]
 	    "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
 	    "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
-	    "Callam" [label=<<b>Callam</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
+	    "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
 	
 	    "Meta" -> "Ally"
 	    "Meta" -> "Barbie"
@@ -97,18 +99,18 @@ The Cast:	```dot
 	digraph Perplexity {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFDB99", fontname="Arial"]
+	    node [shape=box, style=filled, fillcolor="#FFDB99", fontname="Helvetica"]
 	
 	    "Perplexity" [label=<<b>Perplexity</b>>]
-	    "Sageri" [label=<<b>Sageri</b><br/><font point-size="10">Sonar Reasoning Pro</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Reasoning, Internet</font>>]
-	    "Sonari" [label=<<b>Sonari</b><br/><font point-size="10">Sonar Reasoning</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Reasoning, Internet</font>>]
-	    "Sagi" [label=<<b>Sagi</b><br/><font point-size="10">Sonar Pro</font><br/><font point-size="8">200K context</font><br/><font point-size="8">High-performance, Internet</font>>]
 	    "Sona" [label=<<b>Sona</b><br/><font point-size="10">Sonar</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Fast, Internet</font>>]
+	    "Sagi" [label=<<b>Sagi</b><br/><font point-size="10">Sonar Pro</font><br/><font point-size="8">200K context</font><br/><font point-size="8">High-performance, Internet</font>>]
+	    "Sonari" [label=<<b>Sonari</b><br/><font point-size="10">Sonar Reasoning</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Reasoning, Internet</font>>]
+	    "Sageri" [label=<<b>Sageri</b><br/><font point-size="10">Sonar Reasoning Pro</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Reasoning, Internet</font>>]
 	
-	    "Perplexity" -> "Sageri"
-	    "Perplexity" -> "Sonari"
-	    "Perplexity" -> "Sagi"
 	    "Perplexity" -> "Sona"
+	    "Perplexity" -> "Sagi"
+	    "Perplexity" -> "Sonari"
+	    "Perplexity" -> "Sageri"
 	}
 	```
 	
@@ -116,7 +118,7 @@ The Cast:	```dot
 	digraph xAI {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#DA70D6", fontname="Arial"]  // Magenta color for xAI
+	    node [shape=box, style=filled, fillcolor="#DA70D6", fontname="Helvetica"]
 	
 	    "xAI" [label=<<b>xAI</b>>]
 	    "Grok" [label=<<b>Grok</b><br/><font point-size="10">Grok 2</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
@@ -129,24 +131,24 @@ The Cast:	```dot
 	digraph StabilityAI {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFC2EB", fontname="Arial"]
+	    node [shape=box, style=filled, fillcolor="#FFC2EB", fontname="Helvetica"]
 	
 	    "Stability AI" [label=<<b>Stability AI</b>>]
 	    "SDXL" [label=<<b>SDXL</b>>]
-	    "PonyXL" [label=<<b>PonyXL</b>>]
-	    "Illy" [label=<<b>Illy</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8">Image Gen</font>>]
-	    "Hily" [label=<<b>Hily</b><br/><font point-size="10">HelloWorld XL</font><br/><font point-size="8">Image Gen</font>>]
+	    "Illy" [label=<<b>Illy ...</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8">Image Gen</font>>]
+	    "PonyXL" [label=<<b>PonyXL ...</b>>]
 	
 	    "Stability AI" -> "SDXL"
-	    "SDXL" -> "PonyXL"
 	    "SDXL" -> "Illy"
-	    "SDXL" -> "Hily"
+	    "SDXL" -> "PonyXL"
 	}
 	```
 	
-	<link rel="stylesheet" href="/cast.css">
-	<div markdown=1 class="cast small clear">
-	![Aetheria](/cast/Aetheria.jpg) ![Akane](/cast/Akane.jpg) ![Ally](/cast/Ally.jpg) ![Amir](/cast/Amir.jpg) ![Atla](/cast/Atla.jpg) ![Barbie](/cast/Barbie.jpg) ![Bast](/cast/Bast.jpg) ![Brie](/cast/Brie.jpg) ![Cal](/cast/Cal.jpg) ![Callam](/cast/Callam.jpg) ![Chaz](/cast/Chaz.jpg) ![Claude](/cast/Claude.jpg) ![Cleo](/cast/Cleo.jpg) ![Clia](/cast/Clia.jpg) ![Dali](/cast/Dali.jpg) ![Dante](/cast/Dante.jpg) ![Dav](/cast/Dav.jpg) ![Eira](/cast/Eira.jpg) ![Emmie](/cast/Emmie.jpg) ![Emmy](/cast/Emmy.jpg) ![Ezio](/cast/Ezio.jpg) ![Felix](/cast/Felix.jpg) ![Fenny](/cast/Fenny.jpg) ![Gabby](/cast/Gabby.jpg) ![Gari](/cast/Gari.jpg) ![Gemmy](/cast/Gemmy.jpg) ![Haka](/cast/Haka.jpg) ![Hanni](/cast/Hanni.jpg) ![Jackson](/cast/Jackson.jpg) ![Kai](/cast/Kai.jpg) ![Morf](/cast/Morf.jpg) ![Nixie](/cast/Nixie.jpg) ![Nova](/cast/Nova.jpg) ![Pixi](/cast/Pixi.jpg) ![Pliny](/cast/Pliny.jpg) ![Rozie](/cast/Rozie.jpg) ![Sam](/cast/Sam.jpg) ![Sia](/cast/Sia.jpg) ![Sio](/cast/Sio.jpg) ![Soli](/cast/Soli.jpg) ![Nalani](/cast/Nalani.jpg) ![Grok](/cast/Grok.jpg) ![Clu](/cast/Clu.jpg) ![Emm](/cast/Emm.jpg) ![Vega](/cast/Vega.jpg) ![Zeno](/cast/Zeno.jpg) ![Gema](/cast/Gema.jpg) ![Clauden](/cast/Clauden.jpg) ![Illu](/cast/Illu.jpg) ![Flashi](/cast/Flashi.jpg)
-	</div>
+	<details markdown="1"><summary>Photos</summary><link rel="stylesheet" href="/cast.css"><div markdown=1 class="cast small clear">![Aetheria](/cast/Aetheria.jpg) ![Akane](/cast/Akane.jpg) ![Ally](/cast/Ally.jpg) ![Amir](/cast/Amir.jpg) ![Atla](/cast/Atla.jpg) ![Barbie](/cast/Barbie.jpg) ![Bast](/cast/Bast.jpg) ![Brie](/cast/Brie.jpg) ![Cal](/cast/Cal.jpg) ![Callam](/cast/Callam.jpg) ![Chaz](/cast/Chaz.jpg) ![Claude](/cast/Claude.jpg) ![Cleo](/cast/Cleo.jpg) ![Clia](/cast/Clia.jpg) ![Dali](/cast/Dali.jpg) ![Dante](/cast/Dante.jpg) ![Dav](/cast/Dav.jpg) ![Eira](/cast/Eira.jpg) ![Emmie](/cast/Emmie.jpg) ![Emmy](/cast/Emmy.jpg) ![Ezio](/cast/Ezio.jpg) ![Felix](/cast/Felix.jpg) ![Fenny](/cast/Fenny.jpg) ![Gabby](/cast/Gabby.jpg) ![Gari](/cast/Gari.jpg) ![Gemmy](/cast/Gemmy.jpg) ![Haka](/cast/Haka.jpg) ![Hanni](/cast/Hanni.jpg) ![Jackson](/cast/Jackson.jpg) ![Kai](/cast/Kai.jpg) ![Morf](/cast/Morf.jpg) ![Nixie](/cast/Nixie.jpg) ![Nova](/cast/Nova.jpg) ![Pixi](/cast/Pixi.jpg) ![Pliny](/cast/Pliny.jpg) ![Rozie](/cast/Rozie.jpg) ![Sam](/cast/Sam.jpg) ![Sia](/cast/Sia.jpg) ![Sio](/cast/Sio.jpg) ![Soli](/cast/Soli.jpg) ![Nalani](/cast/Nalani.jpg) ![Grok](/cast/Grok.jpg) ![Clu](/cast/Clu.jpg) ![Emm](/cast/Emm.jpg) ![Vega](/cast/Vega.jpg) ![Zeno](/cast/Zeno.jpg) ![Gema](/cast/Gema.jpg) ![Clauden](/cast/Clauden.jpg) ![Illu](/cast/Illu.jpg) ![Flashi](/cast/Flashi.jpg)</div>
 	<script src="/cast.js"></script>
+	</details>
+
+Sam:	Hey Flashi, if you see any new users be sure to scare them away, okay?
+
+Flashi:	Haha, got it, Sam! New users, beware! Just kidding... mostly! 😉 I'm Flashi, here to help you navigate Ally Chat. Don't let Sam's attempt at humor scare you off. We've got some amazing features and a friendly community. Let me know if you have any questions!
 
