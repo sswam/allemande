@@ -2,6 +2,10 @@
 
 Note: Some of the examples are from an older version.
 
+![Math example](models.png)
+
+![Math example](photos.png)
+
 ![Math example](math.png)
 
 ![Chat example 1](ally_chat_0.png)
