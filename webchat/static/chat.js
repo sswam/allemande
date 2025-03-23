@@ -28,7 +28,7 @@ const narrator = "Nova";
 const illustrator = "Illu";
 
 let view_options = {
-  images: 2,
+  images: 1,
   alt: 0,
   source: 1,
   details: 0,

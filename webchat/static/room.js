@@ -22,7 +22,7 @@ let overlay_fullscreen = true;
 let suppressInitialScroll = false;
 
 let view_options = {
-  images: 2,
+  images: 1,
   image_size: 4,
   items: 10,
 };
