@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.4.148";
+const VERSION = "0.4.162";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
@@ -26,6 +26,7 @@ const URLS_TO_CACHE = [
   "/wasm.min.js",
   "/d3-graphviz.min.js",
   "/graphvizlib.wasm",
+  "/mermaid.min.js",
 ];
 
 const CORS_URLS_TO_CACHE = ["https://allemande.ai/auth.js"];

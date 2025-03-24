@@ -8,7 +8,7 @@ build.stamp: $(static_files) ../site/auth.js
 	./update_version.sh
 	touch build.stamp
 
-get: static/d3.min.js static/wasm.min.js static/graphvizlib.wasm static/d3-graphviz.min.js
+get: static/d3.min.js static/wasm.min.js static/graphvizlib.wasm static/d3-graphviz.min.js static/mermaid.min.js
 
 static/d3.min.js:
 	wget -O $@ "https://unpkg.com/d3@5.16.0/dist/d3.min.js"
@@ -22,6 +22,9 @@ static/graphvizlib.wasm:
 static/d3-graphviz.min.js:
 	wget -O $@ https://unpkg.com/d3-graphviz@3.1.0/build/d3-graphviz.min.js
 
+static/mermaid.min.js:
+	wget -O $@ https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js
+
 clean:
-	rm -f static/d3.min.js static/wasm.min.js static/graphvizlib.wasm static/d3-graphviz.min.js
+	rm -f static/d3.min.js static/wasm.min.js static/graphvizlib.wasm static/d3-graphviz.min.js static/mermaid.min.js
 

@@ -5,9 +5,9 @@ const moveLabels = true;
 const HIDE_CONTROLS_DELAY = 1000;
 
 function isNodeOnlyImages(node) {
-  const hasImage = node.getElementsByTagName('img').length > 0;
+  const hasImage = node.getElementsByTagName("img").length > 0;
   const hasText = Array.from(node.childNodes).some(
-    child => child.nodeType === 3 && child.textContent.trim() !== ''
+    (child) => child.nodeType === 3 && child.textContent.trim() !== ""
   );
   return hasImage && !hasText;
 }
@@ -45,7 +45,11 @@ function findMatchingImageMessage(message) {
   const user = message.getAttribute("user");
   const imgAlt = getAltText(message.querySelector("img"));
 
-  for (let current = message.previousElementSibling; current; current = current.previousElementSibling) {
+  for (
+    let current = message.previousElementSibling;
+    current;
+    current = current.previousElementSibling
+  ) {
     if (!isNodeOnlyImages(current)) {
       continue;
     }
@@ -79,14 +83,29 @@ function getOnlyChildParagraph(node) {
 }
 
 function render_graphviz(node) {
-  const dot = node.querySelectorAll("code.language-dot");  
+  const dot = node.querySelectorAll("code.language-dot");
   for (const elem of dot) {
     const par = elem.parentElement;
     d3.select(par)
-        .append("div")
-        .classed("graphviz", true)
-        .graphviz()
-        .renderDot(elem.innerText);
+      .append("div")
+      .classed("graphviz", true)
+      .graphviz()
+      .renderDot(elem.innerText);
+  }
+}
+
+function render_mermaid(node) {
+  const mermaidCode = node.querySelectorAll("code.language-mermaid");
+  for (const elem of mermaidCode) {
+    const par = elem.parentElement;
+    const id = `mermaid-${Date.now()}`;
+    mermaid.render(id, elem.innerText)
+      .then(({ svg }) => {
+        const div = document.createElement("div");
+        div.className = "mermaid";
+        div.innerHTML = svg;
+        par.appendChild(div);
+      });
   }
 }
 
@@ -129,7 +148,7 @@ function handleNewMessage(newMessage) {
       const altDiv = document.createElement("div");
       wrapDiv.className = "image";
       altDiv.className = "alt";
-//      altDiv.textContent = "🖼️ " + img.al;
+      //      altDiv.textContent = "🖼️ " + img.al;
       altDiv.textContent = img.alt;
       wrapDiv.appendChild(img);
       wrapDiv.appendChild(altDiv);
@@ -143,16 +162,38 @@ function handleNewMessage(newMessage) {
       newMessage.classList.add("me");
     }
 
-    const summarisers = ["summi", "summar", "sia", "sio"];  // TODO: read from config, extend list
+    const summarisers = ["summi", "summar", "sia", "sio"]; // TODO: read from config, extend list
 
     // mark specialist messages
-    const specialists = ["pixi", "illu", "gema", "xilu", "pliny", "atla", "chaz", "morf", "brie"];  // TODO: read from config, extend list
+    const specialists = [
+      "pixi",
+      "illu",
+      "gema",
+      "xilu",
+      "pliny",
+      "atla",
+      "chaz",
+      "morf",
+      "brie",
+    ]; // TODO: read from config, extend list
     if (specialists.includes(newUser.toLowerCase())) {
       newMessage.classList.add("specialist");
     }
 
     // mark narrative messages
-    const narrators = ["illy", "hily", "yoni", "coni", "poni", "boni", "bigi", "pigi", "dily", "wili", "nova"];  // TODO: read from config, extend list
+    const narrators = [
+      "illy",
+      "hily",
+      "yoni",
+      "coni",
+      "poni",
+      "boni",
+      "bigi",
+      "pigi",
+      "dily",
+      "wili",
+      "nova",
+    ]; // TODO: read from config, extend list
     if (narrators.includes(newUser.toLowerCase())) {
       newMessage.classList.add("narrative");
     }
@@ -160,8 +201,12 @@ function handleNewMessage(newMessage) {
     // mark messages invoking or mentioning a specialist, match whole word case-insensitive
 
     const pattern = new RegExp(`\\b(${specialists.join("|")})\\b`, "i");
-    if (newContent && pattern.test(newContent.textContent) && !summarisers.includes(newUser.toLowerCase())) {
-       newMessage.classList.add("invoke-specialist");
+    if (
+      newContent &&
+      pattern.test(newContent.textContent) &&
+      !summarisers.includes(newUser.toLowerCase())
+    ) {
+      newMessage.classList.add("invoke-specialist");
     }
   }
 
@@ -170,8 +215,13 @@ function handleNewMessage(newMessage) {
   // render graphviz diagrams
   render_graphviz(newContent);
 
+  // render mermaid diagrams
+  render_mermaid(newContent);
+
   // add language info to code blocks, script and styles on hover
-  const codeBlocks = newContent.querySelectorAll("code, script:not(hide):not([src]), style:not(hide)");
+  const codeBlocks = newContent.querySelectorAll(
+    "code, script:not(hide):not([src]), style:not(hide)"
+  );
   for (const codeBlock of codeBlocks) {
     decorateCodeBlock(codeBlock);
   }
@@ -204,11 +254,20 @@ function handleNewMessage(newMessage) {
   // Combine regular messages from the same user
   if (newMessage) {
     const previousMessage = newMessage.previousElementSibling;
-    if (previousMessage && nodeIsMessage(previousMessage) && previousMessage.getAttribute("user") === newUser) {
+    if (
+      previousMessage &&
+      nodeIsMessage(previousMessage) &&
+      previousMessage.getAttribute("user") === newUser
+    ) {
       const prevContent = previousMessage.querySelector(".content");
       const prevParagraph = getOnlyChildParagraph(prevContent);
       // If images, combine them into the same paragraph
-      if (newParagraph && isNodeOnlyImages(newParagraph) && prevParagraph && isNodeOnlyImages(prevParagraph)) {
+      if (
+        newParagraph &&
+        isNodeOnlyImages(newParagraph) &&
+        prevParagraph &&
+        isNodeOnlyImages(prevParagraph)
+      ) {
         moveImages(newParagraph, prevParagraph);
       } else {
         moveContent(newContent, prevContent);
@@ -223,10 +282,24 @@ function handleNewMessage(newMessage) {
     const label = newMessage.querySelector(".label");
     if (label) {
       let p = newContent.querySelector(":scope > p");
-      let go_before_this = newMessage.querySelector("pre, details, script, style");
-      let container = (p && !(go_before_this && isPrecedingSibling(go_before_this, p))) ? p : newContent;
+      let go_before_this = newMessage.querySelector(
+        "pre, details, script, style"
+      );
+      let container =
+        p && !(go_before_this && isPrecedingSibling(go_before_this, p))
+          ? p
+          : newContent;
       if (user.toLowerCase() === "gimg") {
-        console.log("moving label", label, "before", go_before_this, "in", container, "for", user);
+        console.log(
+          "moving label",
+          label,
+          "before",
+          go_before_this,
+          "in",
+          container,
+          "for",
+          user
+        );
       }
       container.insertBefore(label, container.firstChild);
     }
@@ -234,7 +307,9 @@ function handleNewMessage(newMessage) {
 }
 
 function isPrecedingSibling(node1, node2) {
-  return node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING;
+  return (
+    node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING
+  );
 }
 
 let hideTimer;
@@ -249,29 +324,34 @@ function showHideControls(controls, show) {
 
   if (show) {
     if (controls_visible) {
-      controls_visible.classList.remove('show-flex');
+      controls_visible.classList.remove("show-flex");
     }
-    controls.classList.add('show-flex');
+    controls.classList.add("show-flex");
     controls_visible = controls;
   } else {
-    hideTimer = setTimeout(function() {
-      controls.classList.remove('show-flex');
+    hideTimer = setTimeout(function () {
+      controls.classList.remove("show-flex");
       hideTimer = null;
     }, HIDE_CONTROLS_DELAY);
   }
 }
 
 function decorateCodeBlock(codeBlock) {
-  if (codeBlock.nodeName === "STYLE" && codeBlock.textContent.includes(".katex img")) {
+  if (
+    codeBlock.nodeName === "STYLE" &&
+    codeBlock.textContent.includes(".katex img")
+  ) {
     return;
   }
 
   // Add title click to copy
   codeBlock.title = "click to copy";
 
-  let lang = (codeBlock.className.split(' ')
-    .find(className => className.startsWith('language-')) || '')
-    .replace('language-', '');
+  let lang = (
+    codeBlock.className
+      .split(" ")
+      .find((className) => className.startsWith("language-")) || ""
+  ).replace("language-", "");
 
   const parent = codeBlock.parentNode;
 
@@ -283,7 +363,7 @@ function decorateCodeBlock(codeBlock) {
     lang = "css";
   }
 
-/*  // Create wrapper for the code block to help with positioning
+  /*  // Create wrapper for the code block to help with positioning
   const wrapper = document.createElement('div');
   wrapper.style.position = 'relative';
   codeBlock.parentNode.insertBefore(wrapper, codeBlock);
@@ -313,7 +393,7 @@ function decorateCodeBlock(codeBlock) {
   */
 
   // Add click handler for ~~copy button~~ code block
-//  copyButton.addEventListener("click", async () => {
+  //  copyButton.addEventListener("click", async () => {
   codeBlock.addEventListener("click", async () => {
     let text = codeBlock.textContent.trim();
     if (parentIsPre) {
@@ -321,7 +401,7 @@ function decorateCodeBlock(codeBlock) {
     }
     if (inIframe) {
       // send text to parent window
-      window.parent.postMessage({"type": "copy", "text": text}, CHAT_URL);
+      window.parent.postMessage({ type: "copy", text: text }, CHAT_URL);
     } else {
       // copy text to clipboard
       await navigator.clipboard.writeText(text);
@@ -333,21 +413,21 @@ function decorateCodeBlock(codeBlock) {
   parent.appendChild(controls);
 
   // Show controls on hover
-  codeBlock.addEventListener('mouseenter', function() {
+  codeBlock.addEventListener("mouseenter", function () {
     showHideControls(controls, true);
   });
 
   // Only hide when leave the parent, after a delay
-  parent.addEventListener('mouseleave', function(e) {
+  parent.addEventListener("mouseleave", function () {
     showHideControls(controls, false);
   });
 
   // Add additional listener to controls
-  controls.addEventListener('mouseenter', function() {
+  controls.addEventListener("mouseenter", function () {
     showHideControls(controls, true);
   });
 
-  controls.addEventListener('mouseleave', function() {
+  controls.addEventListener("mouseleave", function () {
     showHideControls(controls, false);
   });
 }

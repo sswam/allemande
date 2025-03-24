@@ -417,9 +417,10 @@ function textarea_indent(textarea, dedent = false) {
     for (const line of lines) {
       if (line.startsWith('\t')) {
         processedLines.push(line.slice(1));
-      } else {
-        // abort the dedent if any line doesn't start with a tab
-        return;
+      } else if (line.startsWith('    ')) {
+        processedLines.push(line.slice(4));
+      } else if (line.startsWith('  ')) {
+        processedLines.push(line.slice(2));
       }
     }
   } else {

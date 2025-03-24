@@ -441,14 +441,9 @@ body:not(.images):not(.alt) .image {
 	display: none;
 }
 
-body:not(.dot_source) .language-dot {
+body:not(.diagram_source) :is(.language-dot, .language-mermaid) {
 	display: none;
 }
-/*
-body.dot_source .graphviz {
-	display: none;
-}
-*/
 
 body.canvas > div.canvas {
 	display: block;
@@ -533,8 +528,7 @@ body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
 	margin-left: 1em;
 }
 
-pre:has(div.graphviz) {
-	/* float: left; */
+pre:has(div.graphviz), pre:has(div.mermaid) {
 	display: inline-block;
 	margin: 0px 20px 40px 0px;
 }
