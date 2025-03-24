@@ -341,6 +341,7 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
     indent: str | None = None
     timeit: bool = False
     system: str | None = None
+    stop: list[str] | None = None
 
     def __init__(self, **kwargs):
         if "model" in kwargs:
@@ -381,6 +382,12 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
 
     if token_limit != inf:
         options["max_tokens"] = token_limit
+
+    if opts.stop:
+        options["stop"] = opts.stop
+        if len(opts.stop) > 4:
+            logger.warning("achat_openai: too many stop sequences, truncating to 4")
+            options["stop"] = opts.stop[:4]
 
     if opts.timeit:
         start_time = time.time()
@@ -512,6 +519,9 @@ async def achat_claude(opts: Options, messages):
     if token_limit != inf:
         options["token_limit"] = token_limit
 
+    if opts.stop:
+        options["stop_sequences"] = opts.stop
+
     if opts.timeit:
         start_time = time.time()
 
@@ -520,7 +530,7 @@ async def achat_claude(opts: Options, messages):
         options["system"] = messages[0]["content"]
         messages = messages[1:]
 
-    logger.info("achat_claude: messages: %s", json.dumps(messages, indent=2))
+    # logger.info("achat_claude: messages: %s", json.dumps(messages, indent=2))
 
     response = await claude.chat_claude(messages, _async=True, **options)
 
@@ -551,6 +561,12 @@ async def achat_google(opts: Options, messages):
 
     if token_limit != inf:
         options["max_output_tokens"] = token_limit
+
+    if opts.stop:
+        options["stop_sequences"] = opts.stop
+        if len(opts.stop) > 5:
+            logger.warning("achat_google: too many stop sequences, truncating to 5")
+            options["stop_sequences"] = opts.stop[:5]
 
     model_obj = google_genai.GenerativeModel(model)
 
@@ -711,6 +727,7 @@ async def aprocess(
     get_json=False,
     timeit=False,
     system=None,
+    stop=None,
 ):
     """Process some text through the LLM with a prompt asynchronously."""
     if __name__ == "__main__":
@@ -749,6 +766,7 @@ async def aprocess(
             log=log,
             get_json=get_json,
             system=system,
+            stop=stop,
         )
 
     # split the input into lines
@@ -772,6 +790,7 @@ async def aprocess(
             log=log,
             get_json=get_json,
             system=system,
+            stop=stop,
         )
         output.append(output1)
 
@@ -780,7 +799,7 @@ async def aprocess(
     return output_s
 
 
-async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, temperature, token_limit, retries, log, get_json, system):
+async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, temperature, token_limit, retries, log, get_json, system, stop):
     """Process some text through the LLM with a prompt asynchronously."""
     full_input = f"""
 {prompt}
@@ -800,6 +819,7 @@ async def aprocess2(prompt, prompt2, input_text, ostream, model, indent, tempera
         log=log,
         get_json=get_json,
         system=system,
+        stop=stop,
     )
 
 
@@ -815,6 +835,7 @@ async def aquery(
     get_json=False,
     timeit=False,
     system=None,
+    stop=None,
 ):
     """Ask the LLM a question asynchronously."""
     if __name__ == "__main__":
@@ -896,7 +917,7 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
 
 
 async def achat(
-    istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, system=None
+    istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, system=None, stop=None
 ):
     """Chat with the LLM asynchronously."""
     opts = Options(**vars())
@@ -920,9 +941,10 @@ async def achat2(opts: Options, istream=stdin, ostream=stdout):
 @arg("-n", "--token-limit", type=int, help="token limit")
 @arg("-r", "--retries", type=int, default=RETRIES, help="number of retries")
 @arg("-s", "--system", help="system prompt")
-def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, system=None):
+@arg("-S", "--stop", nargs="*", help="stop sequences")
+def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, temperature=None, token_limit=None, retries=RETRIES, system=None, stop=None):
     """Synchronous wrapper for achat."""
-    return asyncio.run(achat(istream, ostream, model, fake, temperature, token_limit, retries, system=system))
+    return asyncio.run(achat(istream, ostream, model, fake, temperature, token_limit, retries, system=system, stop=stop))
 
 
 @arg("prompt", nargs="+", help="prompt text")
@@ -936,6 +958,7 @@ def chat(istream=stdin, ostream=stdout, model=default_model, fake=False, tempera
 @arg("-j", "--json", action="store_true", help="output JSON", dest="get_json")
 @arg("-T", "--timeit", action="store_true", help="time the actual request")
 @arg("-s", "--system", help="system prompt")
+@arg("-S", "--stop", nargs="*", help="stop sequences")
 def query(
     *prompt,
     ostream: IO[str] | None = None,
@@ -948,6 +971,7 @@ def query(
     get_json=False,
     timeit=False,
     system=None,
+    stop=None,
 ):
     """Synchronous wrapper for aquery."""
     return asyncio.run(
@@ -963,6 +987,7 @@ def query(
             get_json=get_json,
             timeit=timeit,
             system=system,
+            stop=stop,
         )
     )
 
@@ -984,6 +1009,7 @@ def query(
 @arg("-j", "--json", action="store_true", help="output JSON", dest="get_json")
 @arg("-T", "--timeit", action="store_true", help="time the actual request")
 @arg("-s", "--system", help="system prompt")
+@arg("-S", "--stop", nargs="*", help="stop sequences")
 def process(
     *prompt,
     prompt2: str | None = None,
@@ -1002,6 +1028,7 @@ def process(
     get_json=False,
     timeit=False,
     system=None,
+    stop=None,
 ):
     """Synchronous wrapper for aprocess."""
     return asyncio.run(
@@ -1023,6 +1050,7 @@ def process(
             get_json=get_json,
             timeit=timeit,
             system=system,
+            stop=stop,
         )
     )
 

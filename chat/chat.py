@@ -1028,17 +1028,17 @@ def restore_indents(text):
 def message_to_html(message):
     """Convert a chat message to HTML."""
     global math_cache
-    logger.info("converting message to html: %r", message["content"])
+    logger.debug("converting message to html: %r", message["content"])
     content, has_math = preprocess(message["content"])
     if content in math_cache:
         html_content = math_cache[content]
     else:
         try:
-            logger.info("markdown content: %r", content)
+            logger.debug("markdown content: %r", content)
             # content = escape_indents(content)
             html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
             # html_content = restore_indents(html_content)
-            logger.info("html content: %r", html_content)
+            logger.debug("html content: %r", html_content)
             html_content = disenfuckulate_html(html_content)
         #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
         #             html_content = html_content.replace("<br />", "")
@@ -1049,7 +1049,7 @@ def message_to_html(message):
             html_content = f"<pre>{html.escape(content)}</pre>"
         if has_math:
             math_cache[content] = html_content
-    logger.info("html_content: %r", html_content)
+    logger.debug("html_content: %r", html_content)
     if html_content == "":
         html_content = "&nbsp;"
     user = message.get("user")

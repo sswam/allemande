@@ -894,6 +894,16 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         remote_messages[-1]["content"] = "?"
     remote_messages = [m for m in remote_messages if m["content"]]
 
+    # Set up stop sequences for other participants
+    all_people = conductor.all_participants(context_messages)
+    opts.stop = []
+    for p in all_people:
+        if p == agent.name:
+            continue
+        opts.stop.append(f"\n\n{p}: ")
+
+    logger.info("stop: %r", opts.stop)
+
     # import python pretty printer:
     from pprint import pformat
 

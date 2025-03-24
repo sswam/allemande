@@ -223,6 +223,22 @@ def participants(history: list[dict[str, str]], use_all=False) -> list[str]:
     return list(agents_set)
 
 
+def all_participants(history: list[dict[str, str]]) -> list[str]:
+    """get all participants in the history including system and tools, most recent first"""
+    seen = set()
+    result = []
+
+    # Go through history in reverse to get most recent first
+    for msg in reversed(history):
+        user = msg.get("user")
+        if not user or user in seen:
+            continue
+        seen.add(user)
+        result.append(user)
+
+    return result
+
+
 def agent_is_tool(agent: dict[str, Any]) -> bool:
     """check if an agent is a tool"""
     return agent.get("link") == "tool" or agent.get("type") == "image_a1111"
