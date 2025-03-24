@@ -26,6 +26,7 @@ Note: Some of the examples are from an older version.
 
 <details>
 <summary>Examples including mildly NSFW content</summary>
+
 ![Chat example 3](ally_chat_2.png)
 
 ![Chat example 4](ally_chat_3.png)
