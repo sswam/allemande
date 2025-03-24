@@ -16,11 +16,13 @@ This draws Cleo in a green dress in a ballroom, with her default cheery expressi
 
 The chat format is markdown, including tables, code, links, images, etc.
 
-### HTML
+### HTML and SVG
 
-We can safely embed any HTML:
+We can safely embed any HTML or SVG:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
+
+Don't quote such in backticks if you want them to render in the chat.
 
 ### TeX math
 
@@ -53,6 +55,29 @@ digraph G {
 }
 ```
 
+### Mermaid Diagrams
+
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#808080',
+    'primaryTextColor': '#ffffff',
+    'primaryBorderColor': '#404040',
+    'lineColor': '#808080',
+    'secondaryColor': '#808080',
+    'tertiaryColor': '#808080'
+  }
+}}%%
+flowchart TD
+    A[Start] --> B{Decision?}
+
+    B -->|Yes| C[Do something]
+    B -->|No| D[Do something else]
+    C --> E[End]
+    D --> E
+```
+
 ### JavaScript
 
 ### Drawing on the shared canvas
@@ -64,6 +89,8 @@ ctx.fillRect(10, 10, 100, 100);
 </script>
 
 ### Drawing a chart with uPlot, and our helper functions
+
+Note that uPlot defaults to "time" on the x-axis, so turn that off unless needed.
 
 <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.iife.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.min.css">

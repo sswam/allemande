@@ -214,6 +214,8 @@ ctx.fillRect(10, 10, 100, 100);
 
 ### Drawing a chart with uPlot, and our helper functions
 
+Note that uPlot defaults to "time" on the x-axis, so turn that off unless needed.
+
 <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.iife.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.min.css">
 <div id="smartphone_market_share_1"></div>

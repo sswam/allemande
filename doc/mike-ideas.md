@@ -57,6 +57,9 @@ accounting:
 - UI for base and mission files
 	- view what mission is active in the chat
 
+- agent to improve LLM prompts, or help people improve their prompts interactively
+
+
 Sam ideas tacked on:
 
 - prevent talk to self without explicit name?!
