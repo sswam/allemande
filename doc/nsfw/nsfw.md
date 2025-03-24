@@ -24,7 +24,7 @@ The is the lobby for the NSFW zone, restricted to adults only, and likely contai
 - **Specialized Tools**: Programming assistants for seven languages and various search tools
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**:
-  - Markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, and JavaScript
+  - Markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
 - **Universal*: Features for general assistance, work, education, and entertainment.
 
 ## Learning about Ally Chat
@@ -136,6 +136,18 @@ This draws a portrait image of Bast in the jungle, looking angry that he forgot 
 
 ## Examples of Advanced Syntax
 
+### Markdown
+
+The chat format is markdown, including tables, code, links, images, etc.
+
+### HTML and SVG
+
+We can safely embed any HTML or SVG:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
+
+Don't quote such in backticks if you want them to render in the chat.
+
 ### TeX math
 
 Inline math goes between dollar signs, like $ y = \sqrt{x} $.
@@ -167,27 +179,104 @@ digraph G {
 }
 ```
 
+### Mermaid Diagrams
+
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#808080',
+    'primaryTextColor': '#ffffff',
+    'primaryBorderColor': '#404040',
+    'lineColor': '#808080',
+    'secondaryColor': '#808080',
+    'tertiaryColor': '#808080'
+  }
+}}%%
+flowchart TD
+    A[Start] --> B{Decision?}
+
+    B -->|Yes| C[Do something]
+    B -->|No| D[Do something else]
+    C --> E[End]
+    D --> E
+```
+
 ### JavaScript
+
+### Drawing on the shared canvas
 
 <script>
 h = canvas.height;
 ctx.fillStyle = 'red';
-ctx.fillRect(10, h-10, 100, -100);
+ctx.fillRect(10, 10, 100, 100);
+</script>
+
+### Drawing a chart with uPlot, and our helper functions
+
+<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.iife.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.min.css">
+<div id="smartphone_market_share_1"></div>
+
+<script>
+data = [
+    [0, 1, 2, 3, 4],
+    [22.1, 19.4, 13.3, 11.2, 7.8]
+];
+
+textColor = getCssVarColorHex("--text");
+gridColor = hexColorWithOpacity(textColor, 0.1);
+fillColor = hexColorWithOpacity(textColor, 0.05);
+
+companies = ["Samsung", "Apple", "Xiaomi", "OPPO", "vivo"];
+
+opts = {
+    title: "Global Smartphone Market Share Q3 2023 (%)",
+    width: 600,
+    height: 300,
+    series: [
+        {
+            label: "Company"
+        },
+        {
+            label: "Market Share %",
+            stroke: textColor,
+            fill: fillColor,
+            paths: uPlot.paths.bars({size: [0.6, 100]}),
+        }
+    ],
+    scales: {
+        x: {
+            time: false,
+            range: [-0.5, 4.5]
+        }
+    },
+    axes: [
+        {
+            values: (self, splits) => splits.map(i => companies[i]),
+            stroke: textColor,
+            grid: {stroke: gridColor},
+            size: 70  // Give more space for labels
+        },
+        {
+            stroke: textColor,
+            grid: {stroke: gridColor}
+        }
+    ]
+};
+
+uplot = new uPlot(opts, data, document.getElementById("smartphone_market_share_1"))
 </script>
 
 IMPORTANT:
-- N.B. NOTE WELL! Please do NOT quote JavaScript in ``` if you want it to run in the browser, i.e. in the chat app.
+- N.B. NOTE WELL! Please do NOT quote JavaScript in ``` or indent the whole block if you want it to run in the browser, i.e. in the chat app.
 - N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
-- The canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
+- Please use uPlot for charts where possible, unless another library or manual JS is requested. You need to pull in the required uPlot JavaScript and CSS first.
+- The shared canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
 - Please use the TOP LEFT part of the canvas by default. Don't center in the canvas or try to fill the width or height unless requested. If you use another part it can be hard for the user to view it all.
 - For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
-- If the user wants to see the code, they can enable the view -> source option.
-
-### HTML
-
-We can safely embed any HTML:
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
+- If the user wants to see the code, they can enable our view -> code option.
+- You can add canvases, divs, svg, etc inline in the chat as needed. Please use unique descriptive IDs when doing so.
 
 ### Human Female Characters
 - **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
@@ -267,7 +356,7 @@ We can safely embed any HTML:
 - **Faby**: Tiny C Compiler
 - **Qell**: QuickJS
 - **Bilda**: Make
-- **Unp**: Unprompted
+- **Unp**: Unprompted (macro processor for image gen)
 
 Examples:
 

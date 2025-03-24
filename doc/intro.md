@@ -21,7 +21,7 @@ The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 - **Specialized Tools**: Programming assistants for seven languages and various search tools
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**:
-  - Markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, and JavaScript
+  - Markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
 - **Universal*: Features for general assistance, work, education, and entertainment.
 
 ## Learning about Ally Chat
@@ -121,11 +121,13 @@ This draws Cleo in a green dress in a ballroom, with her default cheery expressi
 
 The chat format is markdown, including tables, code, links, images, etc.
 
-### HTML
+### HTML and SVG
 
-We can safely embed any HTML:
+We can safely embed any HTML or SVG:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
+
+Don't quote such in backticks if you want them to render in the chat.
 
 ### TeX math
 
@@ -156,6 +158,29 @@ digraph G {
     A -> B;
     B -> C;
 }
+```
+
+### Mermaid Diagrams
+
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#808080',
+    'primaryTextColor': '#ffffff',
+    'primaryBorderColor': '#404040',
+    'lineColor': '#808080',
+    'secondaryColor': '#808080',
+    'tertiaryColor': '#808080'
+  }
+}}%%
+flowchart TD
+    A[Start] --> B{Decision?}
+
+    B -->|Yes| C[Do something]
+    B -->|No| D[Do something else]
+    C --> E[End]
+    D --> E
 ```
 
 ### JavaScript
@@ -367,6 +392,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Anthropic     | Claude 3.5 Haiku     | Clia    | 200K     | 8192             | $0.80            | $4.00             | Fast and affordable for quick, creative conversations.                                                            |
 | Google        | Gemini 2.0 Flash     | Flashi  | 1M       | 8192             | $0.10            | $0.40             | Google's fastest Gemini model, optimized for speed and tool use.                                                  |
 | Google        | Gemini 1.5 Pro       | Gemmy   | 2M       | 8192             | $1.25 [2]        | $5.00 [2]         | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                     |
+| Google        | Gemini 2.0 Pro       | Gemmi   | 2M       | 8192             | $1.25 [2]        | $5.00 [2]         | Google's powerful Gemini 2.0  model optimized for a wide range of reasoning tasks.                                |
 | OpenAI        | GPT-4o               | Emmy    | 128K     | 16384            | $2.50            | $10.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                         |
 | OpenAI        | GPT-4o-mini          | Dav     | 128K     | 16384            | $0.15            | $0.60             | OpenAI's fast and affordable model, ideal for efficient interactions.                                             |
 | OpenAI        | o1                   | Grace   | 200K     | 100000           | $15.00           | $60.00            | OpenAI's most powerful reasoning model for advanced applications.                                                 |
