@@ -20,6 +20,13 @@ Note: Some of the examples are from an older version.
 
 ![Chat example 2](ally_chat_1.png)
 
+![Maths example light mode](math-light-mode.png)
+
+![Maths example dark mode](math-dark-mode.png)
+
+<details>
+<summary>Examples including mildly NSFW content</summary>
 ![Chat example 3](ally_chat_2.png)
 
 ![Chat example 4](ally_chat_3.png)
+</details>
