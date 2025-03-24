@@ -776,7 +776,7 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
             re.VERBOSE,
         )
         if match is None:
-            part = part[:start] + html.escape(part[start:], quote=False)
+#            part = part[:start] + html.escape(part[start:], quote=False)
             break
         groups = match.groups()
         pre, post = groups[0], groups[10]
@@ -792,7 +792,7 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
             raise ValueError("No math group matched")
         replaced, has_math1 = quote_inline_math(pre, d1, math, d2, post)
         has_math = has_math or has_math1
-        pre = html.escape(pre, quote=False)
+#        pre = html.escape(pre, quote=False)
         part = part[:start] + pre + replaced + post
         start += len(pre) + len(replaced)
 
@@ -892,8 +892,8 @@ def preprocess(content):
             is_markup = True
         is_markdown_image = re.search(r"!\[.*\]\(.*\)", line)
         logger.debug("check line: %r", line)
-        is_math_start = re.match(r"\s*(\$\$|```tex|```math)$", line)
-        is_math_end = re.match(r"\s*(\$\$|```)$", line)
+        is_math_start = re.match(r"\s*(\$\$|```tex|```math|\\\[)$", line)
+        is_math_end = re.match(r"\s*(\$\$|```|\\\])$", line)
         if re.match(r"\s*<(script|style|svg)\b", line, flags=re.IGNORECASE) and not in_code:
             out.append(line)
             in_code = 1
@@ -1028,17 +1028,17 @@ def restore_indents(text):
 def message_to_html(message):
     """Convert a chat message to HTML."""
     global math_cache
-    logger.debug("converting message to html: %r", message["content"])
+    logger.info("converting message to html: %r", message["content"])
     content, has_math = preprocess(message["content"])
     if content in math_cache:
         html_content = math_cache[content]
     else:
         try:
-            logger.debug("markdown content: %r", content)
+            logger.info("markdown content: %r", content)
             # content = escape_indents(content)
             html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
             # html_content = restore_indents(html_content)
-            logger.debug("html content: %r", html_content)
+            logger.info("html content: %r", html_content)
             html_content = disenfuckulate_html(html_content)
         #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
         #             html_content = html_content.replace("<br />", "")
@@ -1049,7 +1049,7 @@ def message_to_html(message):
             html_content = f"<pre>{html.escape(content)}</pre>"
         if has_math:
             math_cache[content] = html_content
-    logger.debug("html_content: %r", html_content)
+    logger.info("html_content: %r", html_content)
     if html_content == "":
         html_content = "&nbsp;"
     user = message.get("user")
