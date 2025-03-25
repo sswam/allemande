@@ -507,6 +507,7 @@ def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_c
         return invoked
     result = []
     for agent in invoked:
+        agent = re.sub(r"^@", "", agent)
         if access_check_cache.get(agent) is None:
             access_check_cache[agent] = room.check_access(agent).value
         if access_check_cache[agent] & chat.Access.READ_WRITE.value:
