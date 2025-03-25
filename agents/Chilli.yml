@@ -1,11 +1,11 @@
-model: cyberrealisticPony_v85
+model: chilloutmix_NiPrunedFp16Fix
+# model: chilloutmix_NiPrunedFp32Fix
 type: image_a1111
 context: 1
-adult: true
 config:
   steps: 15
   cfg_scale: 5
-  pony: 1.0
+  pony: 0.0
   pag: 3
   adetailer:
   - face_yolov8n.pt

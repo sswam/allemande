@@ -1,10 +1,11 @@
-model: cyberrealisticPony_v85
+model: novaFurryXL_v30
 type: image_a1111
 context: 1
 adult: true
 config:
   steps: 15
-  cfg_scale: 5
+  cfg_scale: 6
+  clip_skip: 2
   pony: 1.0
   pag: 3
   adetailer:

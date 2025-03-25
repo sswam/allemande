@@ -1,12 +1,13 @@
-model: cyberrealisticPony_v85
+model: waiNSFWIllustrious_v120
 type: image_a1111
 context: 1
 adult: true
 config:
   steps: 15
-  cfg_scale: 5
+  cfg_scale: 7
   pony: 1.0
   pag: 3
+  clip_skip: 2
   adetailer:
   - face_yolov8n.pt
   adetailer_adult:

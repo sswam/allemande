@@ -1,10 +1,10 @@
-model: cyberrealisticPony_v85
+model: badromancePony_v20
 type: image_a1111
 context: 1
 adult: true
 config:
   steps: 15
-  cfg_scale: 5
+  cfg_scale: 4
   pony: 1.0
   pag: 3
   adetailer:

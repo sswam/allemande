@@ -1,10 +1,10 @@
-model: cyberrealisticPony_v85
+model: goddessOfRealism_gorV6ilxlVAE
 type: image_a1111
 context: 1
 adult: true
 config:
   steps: 15
-  cfg_scale: 5
+  cfg_scale: 5.5
   pony: 1.0
   pag: 3
   adetailer:

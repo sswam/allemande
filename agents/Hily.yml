@@ -5,7 +5,7 @@ config:
   steps: 15
   cfg_scale: 7
   pony: 0.0
-  pag: true
+  pag: 3
   adetailer:
   - face_yolov8n.pt
   adetailer_adult:
