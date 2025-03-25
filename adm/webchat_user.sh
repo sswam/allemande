@@ -87,7 +87,7 @@ Getting Started with Ally Chat:
 END
 		done
 	if ((nsfw)); then
-		echo "- $user" >> rooms/nsfw/access.yml
+		echo "- $user" >> rooms/nsfw/.access.yml
 		cat <<END
 
 6. NSFW Features
@@ -129,8 +129,8 @@ remove-user() {
 	fi
 	htpasswd -D .htpasswd "$user"
 
-	# remove from any access.yml lists
-	find rooms/ -name access.yml | xargs sed -i "/^- $user\$/d"
+	# remove from any .access.yml lists
+	find rooms/ -name .access.yml | xargs sed -i "/^- $user\$/d"
 
 	# remove style and user directory
 	move-rubbish users/"$user"
