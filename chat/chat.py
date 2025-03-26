@@ -776,7 +776,7 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
             re.VERBOSE,
         )
         if match is None:
-#            part = part[:start] + html.escape(part[start:], quote=False)
+            part = part[:start] + html.escape(part[start:], quote=False)
             break
         groups = match.groups()
         pre, post = groups[0], groups[10]
@@ -792,7 +792,7 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
             raise ValueError("No math group matched")
         replaced, has_math1 = quote_inline_math(pre, d1, math, d2, post)
         has_math = has_math or has_math1
-#        pre = html.escape(pre, quote=False)
+        pre = html.escape(pre, quote=False)
         part = part[:start] + pre + replaced + post
         start += len(pre) + len(replaced)
 
@@ -884,6 +884,7 @@ def preprocess(content):
     in_script = False
     was_blank = False
     for line in content.splitlines():
+        logger.info("line: %r", line)
         is_markup = False
         was_code = bool(in_code)
         # if first and re.search(r"\t<", line[0]):
@@ -917,16 +918,19 @@ def preprocess(content):
             line = fix_math_escape_percentages(line)
             out.append(line)
         elif re.match(r"\s*```", line) and not in_code:
+            logger.info("start code 1")
             if not was_blank:
                 out.append("")
             out.append(line)
             in_code = 1
         elif re.match(r"\s*```\w", line) and not in_script:
+            logger.info("start code 2")
             if not was_blank:
                 out.append("")
             out.append(line)
             in_code += 1
         elif re.match(r"\s*```", line) and in_code:
+            logger.info("end code")
             out.append(line)
             in_code -= 1
         elif in_code:
@@ -937,6 +941,7 @@ def preprocess(content):
         elif re.match(r"^\s*</think(ing)?>$", line, flags=re.IGNORECASE):
             out.append("""</details>""")
         else:
+            logger.info("not in code or anything")
             line, has_math1 = find_and_fix_inline_math(line)
             has_math = has_math or has_math1
             out.append(line)
