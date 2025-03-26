@@ -57,7 +57,27 @@ run() {
 
 format_txt() { :; }
 format_md() { :; }
-format_html() { :; }
+
+format_html() {
+	qs modify html-indent : "$1"
+}
+
+# TODO difference between svg / xml / html?
+
+format_svg() {
+	qs modify html-indent : "$1"
+}
+
+format_xml() {
+	qs modify html-indent : "$1"
+}
+
+format_css() {
+	qs css-beautify -r "$1"
+	if [ -s "$1" ]; then
+		echo >> "$1"
+	fi
+}
 
 format_sh() {
 	qs shfmt -w "$1"
