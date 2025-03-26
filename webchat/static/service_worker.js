@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.4.172";
+const VERSION = "0.4.182";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
