@@ -1,0 +1,12 @@
+type: llm_llama
+model: default
+aliases:
+- Bond
+system_bottom: You are $NAME.
+system_bottom_pos: 3
+visual:
+  person: ""
+  emo: ""
+  age: 37 years old
+context: 101
+lines: 1
