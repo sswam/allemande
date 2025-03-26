@@ -5,17 +5,14 @@ div.messages {
 
 /* labels ----------------------------------------------------------------- */
 
-.label {
+.message > .content > .label:first-child,
+.message > .content > p:first-of-type > .label:first-child {
 	margin-right: 1em;
 	font-weight: bold;
 	align-self: flex-start;
 	user-select: none;
 }
-/*
-.message > .label {
-	float: left;
-}
-*/
+
 /* moved labels to avoid problems with break-after: avoid */
 .message > .content > .label:first-child,
 .message > .content > p:first-of-type > .label:first-child {
@@ -29,9 +26,7 @@ body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .labe
 }
 
 /* an :is(...) list does not work for this case, IDK why */
-.message.me > .content > .label:first-child {
-	color: var(--me);
-}
+.message.me > .content > .label:first-child,
 .message.me > .content > p:first-of-type > .label:first-child {
 	color: var(--me);
 }
