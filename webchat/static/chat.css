@@ -251,11 +251,10 @@ body.light .active--5 { background-color: #78f0f0 !important; color: black !impo
 	background-color: #422 !important;
 }
 
-/*
 button#send {
-	min-height: 70px !important;
+	min-height: 60px !important;
+	min-width: 60px !important;
 }
-*/
 
 #inputrow > .controls > input {
 	width: calc(50px + var(--pad));
