@@ -56,7 +56,7 @@ async def a1111_client(
     clobber: bool = False,
     pony: float = 0.0,
     adetailer: list[str]|None = None,
-    pag: bool = False,
+    pag: float = 0,
     hires: float = 0.0,
     ad_mask_k_largest = 0,
     model: str = "",
@@ -65,6 +65,8 @@ async def a1111_client(
     rp_base_ratios: str = "0",
     rp_calc: str = "attention",
     rp_flip: bool|None = False,
+    rp_threshold: str|None = None,
+    clip_skip: int|None = None,
 ) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -100,17 +102,26 @@ async def a1111_client(
     if model:
         params["override_settings"]["sd_model_checkpoint"] = model
 
+    if clip_skip:
+        params["override_settings"]["CLIP_stop_at_last_layers"] = clip_skip
+
     if hires:
         hires_fix_add_params(params, hires)
 
     if adetailer:
         adetailer_add_params(params, adetailer, ad_mask_k_largest)
 
-    if pag:
-        perturbed_attention_guidance_add_params(params)
-
     if regional:
-        regional_prompter_add_params(params, regional, rp_ratios, rp_base_ratios, rp_calc, rp_flip)
+        regional_prompter_add_params(params, regional, rp_ratios, rp_base_ratios, rp_calc, rp_flip, rp_threshold)
+
+    if regional in ["prompt", "prompt-ex"] and pag:
+        logger.warning("Regional Prompter in 'prompt' or 'prompt-ex' mode does not work with PAG, disabling PAG")
+        pag = False
+
+    if pag:
+        perturbed_attention_guidance_add_params(params, pag)
+
+    logger.debug("params: %r", params)
 
     interrupt_flag = False
 
@@ -159,11 +170,11 @@ async def a1111_client(
 def pony_biolerplate(pony, prompt, negative_prompt):
     """Add pony boilerplate to the prompt and negative prompt."""
 #    pony1p = f"(score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:{pony})\nBREAK\n"
-    pony1p = f"(score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:{pony})\n"
+    pony1p = f"(score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:{pony}),\n"
     prompt = f"{pony1p}{prompt}"
 #    pony1n = f"(score_6, score_5, score_4:{pony})\nBREAK\n"
 #    pony1n = f"score_6, score_5, score_4\nBREAK\n"
-    pony1n = "score_6, score_5, score_4\n"
+    pony1n = "score_6, score_5, score_4,\n"
     negative_prompt = f"{pony1n}{negative_prompt}"
     return prompt, negative_prompt
 
@@ -247,61 +258,59 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest):
         )
 
 
-def perturbed_attention_guidance_add_params(params):
+def perturbed_attention_guidance_add_params(params: dict[str, Any], pag_scale: float):
     """Add perturbed attention guidance parameters to the params."""
     if not "alwayson_scripts" in params:
         params["alwayson_scripts"] = {}
 
     # This is a bit unintelligible as the extension does not name its parameters.
     # I just copied them from the API payload extension.
-    params["alwayson_scripts"]["Incantations"] = (
-        {
-            "args": [
-                False,
-                11,
-                0,
-                150,
-                False,
-                1,
-                0.8,
-                3,
-                0,
-                0,
-                150,
-                4,
-                True,
-                5,
-                0,
-                150,
-                False,
-                "Constant",
-                0,
-                100,
-                True,
-                False,
-                False,
-                2,
-                0.1,
-                0.5,
-                0,
-                "",
-                0,
-                25,
-                1,
-                False,
-                False,
-                False,
-                "BREAK",
-                "-",
-                0.2,
-                10,
-            ]
-        },
-    )
+    params["alwayson_scripts"]["Incantations"] = {
+        "args": [
+            False,
+            11,
+            0,
+            150,
+            False,
+            1,
+            0.8,
+            3,
+            0,
+            0,
+            150,
+            4,
+            True,
+            pag_scale,
+            0,
+            150,
+            False,
+            "Constant",
+            0,
+            100,
+            True,
+            False,
+            False,
+            2,
+            0.1,
+            0.5,
+            0,
+            "",
+            0,
+            25,
+            1,
+            False,
+            False,
+            False,
+            "BREAK",
+            "-",
+            0.2,
+            10,
+        ]
+    }
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
-def regional_prompter_add_params(params, our_mode, ratios, base_ratios, calcmode, flip):
+def regional_prompter_add_params(params, our_mode, ratios, base_ratios, calcmode, flip, rp_threshold):
     """Add regional prompter parameters to the params."""
     if not "alwayson_scripts" in params:
         params["alwayson_scripts"] = {}
@@ -323,7 +332,7 @@ def regional_prompter_add_params(params, our_mode, ratios, base_ratios, calcmode
     not_change_and = False
     lora_textencoder = "0"
     lora_unet = "0"
-    threshold = "0"
+    threshold = rp_threshold if rp_threshold else "0"
     mask = ""
     lora_stop_step = "0"
     lora_hires_stop_step = "0"
@@ -350,7 +359,7 @@ def setup_args(arg):
     arg("-X", "--clobber", help="overwrite existing files", action="store_true")
     arg("-P", "--pony", help="add pony boilerplate; strength")
     arg("-D", "--adetailer", nargs="*", help="use adetailer with specified models")
-    arg("-g", "--pag", help="use perturbed attention guidance", action="store_true")
+    arg("-g", "--pag", help="use perturbed attention guidance, with this scale (suggest 3)")
     arg("-u", "--hires", help="hires fix / upscale by factor")
     arg("--ad-mask-k-largest", type=int, help="adetailer mask limit to k largest matches")
     arg("-m", "--model", help="stable diffusion model checkpoint")
@@ -359,6 +368,8 @@ def setup_args(arg):
     arg("--rp-base-ratios", type=str, help="regional prompter base ratios")
     arg("--rp-calc", choices=["attention", "latent"], help="regional prompter calculation mode")
     arg("--rp-flip", help="regional prompter flip", action="store_true")
+    arg("--rp-threshold", help="regional prompter threshold")
+    arg("--clip-skip", help="clip skip", type=int)
 
 
 if __name__ == "__main__":

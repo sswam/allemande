@@ -138,6 +138,8 @@ async def process_request(portals: str, portal_str: Path, req: str):
         sets = macros.get('sets', {})
         need_update_macros = False
 
+        logger.debug("sets: %r", sets)
+
         # Process hq setting
         if 'width' in sets:
             need_update_macros = True
@@ -151,6 +153,9 @@ async def process_request(portals: str, portal_str: Path, req: str):
         if 'seed' in sets:
             need_update_macros = True
             config['seed'] = int(sets['seed'])
+        if 'pag' in sets:
+            need_update_macros = True
+            config['pag'] = float(sets['pag'])
 
         # Process rp macro (regional prompter)
         regional_kwargs = {}
@@ -212,11 +217,12 @@ async def process_request(portals: str, portal_str: Path, req: str):
                     height=config.get("height", 1024),
                     count=config.get("count", 1),
                     adetailer=config.get("adetailer", None),
-                    pag=config.get("pag", False),
+                    pag=config.get("pag", 0),
                     hires=config.get("hires", 0.0),
                     pony=config.get("pony", 0.0),
                     ad_mask_k_largest=config.get("ad_mask_k_largest", 0),
                     model=config.get("model"),
+                    clip_skip=config.get("clip_skip"),
                     **regional_kwargs,
                 )
             finally:
