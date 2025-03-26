@@ -516,6 +516,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     model_name = agent["model"]
     n_context = agent.get("context")
+    if agent.get("type") in ["image_a1111", "safe_shell", "search"]:
+        n_context = 1
+
     if n_context is not None:
         if n_context == 0:
             context = []
