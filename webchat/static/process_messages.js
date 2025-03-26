@@ -105,6 +105,8 @@ function render_mermaid(node) {
         div.className = "mermaid";
         div.innerHTML = svg;
         par.appendChild(div);
+        const svgElement = div.querySelector('svg');
+        svgElement.style.width = svgElement.style.maxWidth;
       });
   }
 }

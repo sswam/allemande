@@ -1,0 +1,14 @@
+/* diagrams --------------------------------------------------------------- */
+
+.message div.graphviz > svg {
+	vertical-align: top;
+	margin: 6px 4px;
+	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
+	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
+}
+
+.message div.mermaid > svg {
+	vertical-align: top;
+	margin: 6px 4px;
+	width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
+}

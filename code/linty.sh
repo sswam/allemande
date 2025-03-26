@@ -129,6 +129,13 @@ lint_ts() {
 	return $fail
 }
 
+lint_css() {
+	local prog="$1"
+	fail=0
+	run stylelint "$prog" || fail=1
+	return $fail
+}
+
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	linty "$@"
 fi

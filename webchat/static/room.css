@@ -94,24 +94,8 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 22px));
 }
 
-/* diagrams --------------------------------------------------------------- */
 
-.message div.graphviz > svg {
-	vertical-align: top;
-	margin: 6px 4px;
-	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
-	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
-}
-
-.message div.mermaid > svg {
-	vertical-align: top;
-	margin: 6px 4px;
-	width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
-	/* height: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px)); */
-}
-
-
-/* borders for markdown tables, exclude uPlot tables */
+/* borders for markdown tables, exclude uPlot tables ---------------------- */
 
 table:not(.u-legend) {
 	border-collapse: collapse;
