@@ -148,16 +148,16 @@ MODELS = {
         "cost_in": 0.25,
         "cost_out": 1.25,
     },
-    "gemini-2.0-pro": {
-        "aliases": ["gp2", "gemmi"],
+    "gemini-2.5-pro": {
+        "aliases": ["gp", "gemmi"],
         "vendor": "google",
-        "id": "gemini-2.0-pro-exp-02-05",
-        "description": "Google's strongest Gemini model with a 1 million context window.",
+        "id": "gemini-2.5-pro-exp-03-25",
+        "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
         "cost_in": 0,  # experimental models are free
         "cost_out": 0,
     },
     "gemini-1.5-pro": {
-        "aliases": ["gp", "gemini"],
+        "aliases": ["gp1", "gemini"],
         "vendor": "google",
         "description": "Google's next-generation Gemini model with a 1 million context window.",
         "cost_in": 1.25,  # free tier, for PAYG it's complicated

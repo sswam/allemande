@@ -26,6 +26,42 @@ Please keep this space PG and family friendly.
 [Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md)
 
 The Cast:	```dot
+	digraph Meta {
+	    graph [bgcolor=transparent]
+	    edge [color="#CCCCCC"]
+	    node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Helvetica"]
+	
+	    "Meta" [label=<<b>Meta</b>>]
+	    "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
+	    "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
+	    "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
+	
+	    "Meta" -> "Ally"
+	    "Meta" -> "Barbie"
+	    "Meta" -> "Callam"
+	}
+	```
+	
+	```dot
+	digraph OpenAI {
+	    graph [bgcolor=transparent]
+	    edge [color="#CCCCCC"]
+	    node [shape=box, style=filled, fillcolor="#C8FFC8", fontname="Helvetica"]
+	
+	    "OpenAI" [label=<<b>OpenAI</b>>]
+	    "Dav" [label=<<b>Dav</b><br/><font point-size="10">GPT-4o mini</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Efficient, affordable</font>>]
+	    "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4o</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
+	    "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o3 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
+	    "Grace" [label=<<b>Grace</b><br/><font point-size="10">o1</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
+	
+	    "OpenAI" -> "Dav"
+	    "OpenAI" -> "Emmy"
+	    "OpenAI" -> "Fermi"
+	    "OpenAI" -> "Grace"
+	}
+	```
+	
+	```dot
 	digraph Anthropic {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
@@ -51,47 +87,11 @@ The Cast:	```dot
 	    "Google" [label=<<b>Google</b>>]
 	    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, tool-oriented</font>>]
 	    "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
-	    "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.0 Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Very strong and capable</font>>]
+	    "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
 	
 	    "Google" -> "Flashi"
 	    "Google" -> "Gemmi"
 	    "Google" -> "Gemmy"
-	}
-	```
-	
-	```dot
-	digraph OpenAI {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#C8FFC8", fontname="Helvetica"]
-	
-	    "OpenAI" [label=<<b>OpenAI</b>>]
-	    "Dav" [label=<<b>Dav</b><br/><font point-size="10">GPT-4o mini</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Efficient, affordable</font>>]
-	    "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4o</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
-	    "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o3 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
-	    "Grace" [label=<<b>Grace</b><br/><font point-size="10">o1</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
-	
-	    "OpenAI" -> "Dav"
-	    "OpenAI" -> "Emmy"
-	    "OpenAI" -> "Fermi"
-	    "OpenAI" -> "Grace"
-	}
-	```
-	
-	```dot
-	digraph Meta {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Helvetica"]
-	
-	    "Meta" [label=<<b>Meta</b>>]
-	    "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
-	    "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
-	    "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
-	
-	    "Meta" -> "Ally"
-	    "Meta" -> "Barbie"
-	    "Meta" -> "Callam"
 	}
 	```
 	
