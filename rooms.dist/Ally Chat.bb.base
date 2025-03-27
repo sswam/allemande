@@ -131,7 +131,7 @@ The Cast:	```dot
 	digraph DeepSeek {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#DA70D6", fontname="Helvetica"]
+	    node [shape=box, style=filled, fillcolor="#A893E9", fontname="Helvetica"]
 	
 	    "DeepSeek" [label=<<b>DeepSeek</b>>]
 	    "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
