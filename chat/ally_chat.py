@@ -323,9 +323,9 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 
     # wrap in a <div class="search"> container if not in a div already
     if re.search(r"<div\b", response3):
-        response4 = re.sub(r"<div\b", r'<div class="search"', response3, flags=re.IGNORECASE)
+        response4 = re.sub(r"<div\b", r'<div class="search"', response3, flags=re.IGNORECASE, count=1)
     else:
-        response4 = re.sub(r"\t\n(.*)", rf'\t\n\t<div class="search" markdown="1">\n\1\n\t</div>\n', response3, flags=re.DOTALL)
+        response4 = re.sub(r"\t\n(.*)", rf'\t\n\t<div class="search" markdown="1">\n\1\n\t</div>\n', response3, flags=re.DOTALL, count=1)
 
 #     # wrap secondary divs in <details>
 #     response4 = re.sub(
