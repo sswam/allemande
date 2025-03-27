@@ -404,7 +404,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Perplexity    | Sonar Reasoning Pro  | Sageri  | 128K     | 8K               | $2 [3]           | $8                | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.            |
 | Perplexity    | Sonar Pro            | Sagi    | 200K     | 8K               | $3 [3]           | $15               | Online model with live internet data; Perplexity's high-performance option. Includes search costs.                |
 | Perplexity    | Sonar Reasoning      | Sonari  | 128K     | 8K               | $1 [3]           | $5                | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro.  |
-| Perplexity    | Sonar                | Sona    | 128K     | 8K               | $1               | $1                | Perplexity's fastest and most affordable online model with live internet data.                                    |
+| Perplexity    | Sonar                | Sona    | 128K     | 8K               | $1               | $1                | Perplexity's fastest and most affordable Online model with live internet data.                                    |
 | xAI           | Grok 2               | Grok    | 128K     | 128K             | $2               | $10               | xAI's helpful, truthful and humorous Grok 2 model.                                                                |
 | DeepSeek      | DeepSeek Chat V3     | Dese    | 64K      | 8192             | $0.27            | $1.10             | DeepSeek's creative and intelligent chat model.                                                                   |
 | DeepSeek      | DeepSeek Reasoner R1 | Deseri  | 64K      | 8192             | $0.55            | $2.19             | DeepSeek's strong and creative reasoning model.                                                                   |
@@ -423,4 +423,5 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 1. Claude 3.7 Sonnet's larger output window is not yet enabled in our app.
 2. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K)
-3. Perplexity models also incur search costs of $5 per 1000 searches.
+3. Only the Perplexity models have access to search the internet. They incur search costs of $5 per 1000 searches.
+   Other models can search using the Goog tool, and fetch pages using `Dogu, web-text URL`.
