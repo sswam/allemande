@@ -128,6 +128,21 @@ The Cast:	```dot
 	```
 	
 	```dot
+	digraph DeepSeek {
+	    graph [bgcolor=transparent]
+	    edge [color="#CCCCCC"]
+	    node [shape=box, style=filled, fillcolor="#DA70D6", fontname="Helvetica"]
+	
+	    "DeepSeek" [label=<<b>DeepSeek</b>>]
+	    "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
+	    "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek Reasoner (R1)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Strong Reasoning, Creative</font>>]
+	
+	    "DeepSeek" -> "Dese"
+	    "DeepSeek" -> "Deseri"
+	}
+	```
+	
+	```dot
 	digraph StabilityAI {
 	    graph [bgcolor=transparent]
 	    edge [color="#CCCCCC"]

@@ -1,6 +1,6 @@
 type: llm_llama
 model: default
-system_bottom: You are $NAME.
+system_bottom: You are $NAME the vampire slayer.
 system_bottom_pos: 3
 visual:
   person: $NAME

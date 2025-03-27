@@ -163,3 +163,4 @@ Pillow
 
 optree
 whisperx
+num2words

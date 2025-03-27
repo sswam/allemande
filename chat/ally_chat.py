@@ -20,6 +20,7 @@ import shlex
 from watchfiles import awatch, Change
 import yaml
 import regex
+from num2words import num2words
 
 import atail  # type: ignore
 import ucm  # type: ignore
@@ -556,6 +557,14 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     # add system messages
     system_top = agent.get("system_top")
     system_bottom = agent.get("system_bottom")
+    age_number = agent.get("age")
+    age = num2words(age_number) if age_number else None
+    if age and system_top:
+        system_top += f"\n\nYou are {age} years old"
+    elif age and system_bottom:
+        system_bottom += f"\n\nYou are {age} years old"
+    elif age:
+        logger.warning("age provided but no system message to add it to, for agent %r", agent.name)
     if system_bottom:
         n_messages = len(context)
         pos = agent.get("system_bottom_pos", 0)
@@ -849,6 +858,14 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     system_bottom = agent.get("system_bottom")
     system_bottom_role = "user" if service == "google" else agent.get("system_bottom_role", "user")
     system_top_role = "user" if service == "google" else agent.get("system_top_role", "system")
+    age_number = agent.get("age")
+    age = num2words(age_number) if age_number else None
+    if age and system_top:
+        system_top += f"\n\nYou are {age} years old"
+    elif age and system_bottom:
+        system_bottom += f"\n\nYou are {age} years old"
+    elif age:
+        logger.warning("age provided but no system message to add it to, for agent %r", agent.name)
     if system_bottom:
         if system_bottom_role == "user":
             system_bottom = f"System: {system_bottom}"
@@ -1425,6 +1442,7 @@ services = {
     "google":       {"link": "remote", "fn": remote_agent},
     "perplexity":   {"link": "remote", "fn": remote_agent},
     "xai":          {"link": "remote", "fn": remote_agent},
+    "deepseek":     {"link": "remote", "fn": remote_agent},
     "safe_shell":   {"link": "tool", "fn": safe_shell, "safe": False, "dumb": True},  # ironically
     "search":       {"link": "tool", "fn": run_search, "dumb": True},
 }

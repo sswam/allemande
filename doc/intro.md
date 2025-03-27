@@ -405,6 +405,9 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Perplexity    | Sonar Pro            | Sagi    | 200K     | 8K               | $3 [3]           | $15               | Online model with live internet data; Perplexity's high-performance option. Includes search costs.                |
 | Perplexity    | Sonar Reasoning      | Sonari  | 128K     | 8K               | $1 [3]           | $5                | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro.  |
 | Perplexity    | Sonar                | Sona    | 128K     | 8K               | $1               | $1                | Perplexity's fastest and most affordable online model with live internet data.                                    |
+| xAI           | Grok 2               | Grok    | 128K     | 128K             | $2               | $10               | xAI's helpful, truthful and humorous Grok 2 model.                                                                |
+| DeepSeek      | DeepSeek Chat V3     | Dese    | 64K      | 8192             | $0.27            | $1.10             | DeepSeek's creative and intelligent chat model.                                                                   |
+| DeepSeek      | DeepSeek Reasoner R1 | Deseri  | 64K      | 8192             | $0.55            | $2.19             | DeepSeek's strong and creative reasoning model.                                                                   |
 | Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A smaller model, prioritizing creativity and engaging conversations. Most characters use this model.              |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.

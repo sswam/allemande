@@ -42,7 +42,7 @@ accounting:
 - having a little 3-dot menu icon on past messages with the option to delete just that message would be great, too
 
 
-- Mike: "fork chat" idea, from a message, how many messages to copy
+- "fork chat" idea, from a message, how many messages to copy
 	- can copy back to original chat too
 	- basic idea is to copy select messages to another chat room, either new or existing
 	- maybe show connections between chats in a "map view" somehow
@@ -60,7 +60,7 @@ accounting:
 - agent to improve LLM prompts, or help people improve their prompts interactively
 
 
-Sam ideas tacked on:
+--------------
 
 - prevent talk to self without explicit name?!
 - fix chat / escape_indents restore_indents, use only during code blocks I guess maybe? But shouldn't be needed in code blocks!
@@ -77,3 +77,12 @@ Sam ideas tacked on:
 	- or just accept thinking pauses in conversation
 	- or use fast agent for normal chat and slow for difficult stuff
 
+
+--------------
+
+maybe make the models answer when they are tagged with @
+like the average chats
+it's more user-friendly
+Yeah maybe better not to do it without the @. I could try that or make it an option.
+make them profiles in the chat , so one can press on their names if they wanna chat privately or know information about 
+and make the usernames colorful like in whatsapp groups

@@ -884,7 +884,7 @@ def preprocess(content):
     in_script = False
     was_blank = False
     for line in content.splitlines():
-        logger.info("line: %r", line)
+        logger.debug("line: %r", line)
         is_markup = False
         was_code = bool(in_code)
         # if first and re.search(r"\t<", line[0]):
@@ -918,19 +918,19 @@ def preprocess(content):
             line = fix_math_escape_percentages(line)
             out.append(line)
         elif re.match(r"\s*```", line) and not in_code:
-            logger.info("start code 1")
+            logger.debug("start code 1")
             if not was_blank:
                 out.append("")
             out.append(line)
             in_code = 1
         elif re.match(r"\s*```\w", line) and not in_script:
-            logger.info("start code 2")
+            logger.debug("start code 2")
             if not was_blank:
                 out.append("")
             out.append(line)
             in_code += 1
         elif re.match(r"\s*```", line) and in_code:
-            logger.info("end code")
+            logger.debug("end code")
             out.append(line)
             in_code -= 1
         elif in_code:
@@ -941,7 +941,7 @@ def preprocess(content):
         elif re.match(r"^\s*</think(ing)?>$", line, flags=re.IGNORECASE):
             out.append("""</details>""")
         else:
-            logger.info("not in code or anything")
+            logger.debug("not in code or anything")
             line, has_math1 = find_and_fix_inline_math(line)
             has_math = has_math or has_math1
             out.append(line)
