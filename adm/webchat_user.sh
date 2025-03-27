@@ -11,8 +11,6 @@ webchat-user() {
 	local command=${1:-}
 	shift || true
 
-	echo "args: @_"
-
 	cd ~/allemande
 	. ./env.sh
 	cd webchat
@@ -64,8 +62,18 @@ Getting Started with Ally Chat:
 - Here you can interact with AI helpers like Flashi, Emmy, and Claude to learn about the app.
 END
 		done
+
+	mkdir -p rooms/"$user"
+	chmod o-rwx rooms/"$user"
+	mkdir -p users/"$user"
+	ln -s ../../static/themes/template.css users/"$user"/theme.css
+
 	if ((nsfw)); then
 		echo "- $user" >> rooms/nsfw/.access.yml
+		cat <<END > rooms/$user/.access.yml
+reset: true
+allow_agents: true
+END
 		cat <<END
 
 NSFW Features:
@@ -75,10 +83,6 @@ NSFW Features:
 - In this room, Flashi can help you learn about the app, including NSFW features.
 END
 	fi
-	mkdir -p rooms/"$user"
-	chmod o-rwx rooms/"$user"
-	mkdir -p users/"$user"
-	ln -s ../../static/themes/forest.css users/"$user"/theme.css
 }
 
 change-password() {
