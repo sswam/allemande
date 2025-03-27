@@ -86,3 +86,7 @@ it's more user-friendly
 Yeah maybe better not to do it without the @. I could try that or make it an option.
 make them profiles in the chat , so one can press on their names if they wanna chat privately or know information about 
 and make the usernames colorful like in whatsapp groups
+
+--------------
+
+voice chat and talking heads, from any image
