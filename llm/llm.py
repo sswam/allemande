@@ -54,6 +54,13 @@ lazy(
         api_key=os.environ.get("XAI_API_KEY"),
     ),
 )
+lazy(
+    "openai",
+    deepseek_async_client=lambda openai: openai.AsyncOpenAI(
+        base_url="https://api.deepseek.com",
+        api_key=os.environ.get("DEEPSEEK_API_KEY"),
+    ),
+)
 
 
 lazy("anthropic")
@@ -215,6 +222,20 @@ MODELS = {
         "description": "xAI's Grok 2 model, with 128K context and a sense of humour",
         "cost_in": 2,
         "cost_out": 10,
+    },
+    "deepseek-chat": {
+        "aliases": ["dese"],
+        "vendor": "deepseek",
+        "description": "deepseek-chat points to DeepSeek-V3",
+        "cost_in": 0.27,
+        "cost_out": 1.10,
+    },
+    "deepseek-reasoner": {
+        "aliases": ["deseri"],
+        "vendor": "deepseek",
+        "description": "deepseek-reasoner points to DeepSeek-R1",
+        "cost_in": 0.55,
+        "cost_out": 2.19,
     },
 }
 
@@ -499,6 +520,11 @@ async def achat_xai(opts: Options, messages):
     return await achat_openai(opts, messages, client=xai_async_client, citations=True)
 
 
+async def achat_deepseek(opts: Options, messages):
+    """Chat with Deepseek models asynchronously."""
+    return await achat_openai(opts, messages, client=deepseek_async_client, citations=True)
+
+
 async def achat_claude(opts: Options, messages):
     """Chat with Anthropic Claude models asynchronously."""
     model = MODELS[opts.model]["id"]
@@ -632,6 +658,8 @@ async def allm_chat(opts: Options, messages):
         return await achat_google(opts, messages)
     if vendor == "xai":
         return await achat_xai(opts, messages)
+    if vendor == "deepseek":
+        return await achat_deepseek(opts, messages)
     raise ValueError(f"unknown model: {model}")
 
 
