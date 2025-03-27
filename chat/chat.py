@@ -1377,10 +1377,11 @@ def filter_stars_prob(message: ChatMessage, prob: float = 0.5) -> ChatMessage | 
     )
 
 
-def load_config(path: Path, filename: str) -> dict[str, Any]:
+def load_config(dir_path: Path, filename: str) -> dict[str, Any]:
     """Load YAML configuration from files."""
-    # list of folders from path up to ROOMS_DIR
-    folders = list(path.relative_to(ROOMS_DIR).parents)
+    # list of folders from dir_path up to ROOMS_DIR
+    rel_path = dir_path.relative_to(ROOMS_DIR)
+    folders = [rel_path] + list(rel_path.parents)
     # Go top-down from ROOMS_DIR to the folder containing the file
     config_all = {}
     for folder in reversed(folders):
@@ -1460,6 +1461,11 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     elif pathname.startswith(ROOMS_DIR + "/"):
         pathname = pathname[len(ROOMS_DIR) + 1 :]
 
+    # If pathname ends with / it's a directory
+    is_dir = pathname.endswith("/") or pathname == ""
+
+    logger.info("pathname %r is_dir %r", pathname, is_dir)
+
     if sanitize_pathname(pathname) != pathname:
         raise ValueError(f"Invalid pathname, not sanitized: {pathname}, {sanitize_pathname(pathname)}")
 
@@ -1468,8 +1474,15 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     except ValueError:
         return Access.NONE, "invalid_path"
 
-    access = load_config(path, ".access.yml")
+    if is_dir:
+        dir_path = path
+    else:
+        dir_path = path.parent
+
+    access = load_config(dir_path, ".access.yml")
     agent_names = read_agents_lists(path)
+
+    logger.info("path %r access %r", path, access)
 
     user = user.lower()
 
