@@ -31,6 +31,9 @@ GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 MAX_PIXELS = 1280 * 1280
 MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 
+COUNT_LIMIT = 10
+STEPS_LIMIT = 150
+
 
 def process_hq_macro(config: dict, sets: dict) -> dict:
     """Process hq macro and update config accordingly"""
@@ -211,11 +214,11 @@ async def process_request(portals: str, portal_str: Path, req: str):
                     seed=config.get("seed", -1),
                     sampler_name=config.get("sampler_name", "DPM++ 2M"),
                     scheduler=config.get("scheduler", "Karras"),
-                    steps=config.get("steps", 15),
+                    steps=min(config.get("steps", 15), STEPS_LIMIT),
                     cfg_scale=config.get("cfg_scale", 7.0),
                     width=config.get("width", 1024),
                     height=config.get("height", 1024),
-                    count=config.get("count", 1),
+                    count=min(config.get("count", 1), COUNT_LIMIT),
                     adetailer=config.get("adetailer", None),
                     pag=config.get("pag", 0),
                     hires=config.get("hires", 0.0),
