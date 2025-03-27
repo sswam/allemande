@@ -104,7 +104,6 @@ MARKDOWN_EXTENSIONS = [
     "toc",
     "wikilinks",
     "markdown_katex",
-    "md_in_html",
 ]
 
 MARKDOWN_EXTENSION_CONFIGS = {
@@ -882,6 +881,7 @@ def preprocess(content):
     in_math = False
     in_code = 0
     in_script = False
+    in_svg = False     # we need to avoid line breaks in SVG unfortunately
     was_blank = False
     for line in content.splitlines():
         logger.debug("line: %r", line)
@@ -896,59 +896,67 @@ def preprocess(content):
         is_math_start = re.match(r"\s*(\$\$|```tex|```math|\\\[)$", line)
         is_math_end = re.match(r"\s*(\$\$|```|\\\])$", line)
         if re.match(r"\s*<(script|style|svg)\b", line, flags=re.IGNORECASE) and not in_code:
-            out.append(line)
             in_code = 1
             in_script = True
+            in_svg = re.match(r"\s*<svg\b", line, flags=re.IGNORECASE)
+            if in_svg:
+                out.append(line)
+            else:
+                out.append(line + "\n")
         elif re.match(r"\s*</(script|style|svg)>\s*$", line, flags=re.IGNORECASE) and in_script:
-            out.append(line)
+            out.append(line + "\n")
             in_code = 0
             in_script = False
+            in_svg = False
         elif is_markup or is_markdown_image:
-            out.append(line)
+            out.append(line + "\n")
         elif is_math_start and not in_code:
-            out.append("```math")
+            out.append("```math\n")
             in_math = True
             has_math = True
             in_code += 1
         elif is_math_end and in_math:
-            out.append("```")
+            out.append("```\n")
             in_math = False
             in_code = 0
         elif in_math:
             line = fix_math_escape_percentages(line)
-            out.append(line)
+            out.append(line + "\n")
         elif re.match(r"\s*```", line) and not in_code:
             logger.debug("start code 1")
             if not was_blank:
-                out.append("")
-            out.append(line)
+                out.append("\n")
+            out.append(line + "\n")
             in_code = 1
         elif re.match(r"\s*```\w", line) and not in_script:
             logger.debug("start code 2")
             if not was_blank:
-                out.append("")
-            out.append(line)
+                out.append("\n")
+            out.append(line + "\n")
             in_code += 1
         elif re.match(r"\s*```", line) and in_code:
             logger.debug("end code")
-            out.append(line)
+            out.append(line + "\n")
             in_code -= 1
+        elif in_svg:
+            logger.debug("SVG line: %r", line)
+            out.append(line)
         elif in_code:
             logger.debug("code line: %r", line)
-            out.append(line)
+            out.append(line + "\n")
         elif re.match(r"^\s*<think(ing)?>$", line, flags=re.IGNORECASE):
-            out.append("""<details markdown="1" class="think">\n<summary>thinking</summary>""")
+            out.append("""<details markdown="1" class="think">\n<summary>thinking</summary>\n""")
         elif re.match(r"^\s*</think(ing)?>$", line, flags=re.IGNORECASE):
-            out.append("""</details>""")
+            out.append("""</details>\n""")
         else:
             logger.debug("not in code or anything")
             line, has_math1 = find_and_fix_inline_math(line)
             has_math = has_math or has_math1
-            out.append(line)
+            out.append(line + "\n")
 
     out = add_blanks_after_code_blocks(out)
 
-    content = "\n".join(out) + "\n"
+    content = "".join(out)
     logger.debug("preprocess content: %s", content)
     return content, has_math
 
@@ -1033,17 +1041,17 @@ def restore_indents(text):
 def message_to_html(message):
     """Convert a chat message to HTML."""
     global math_cache
-    logger.debug("converting message to html: %r", message["content"])
+    logger.info("converting message to html: %r", message["content"])
     content, has_math = preprocess(message["content"])
     if content in math_cache:
         html_content = math_cache[content]
     else:
         try:
-            logger.debug("markdown content: %r", content)
+            logger.info("markdown content: %r", content)
             # content = escape_indents(content)
             html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
             # html_content = restore_indents(html_content)
-            logger.debug("html content: %r", html_content)
+            logger.info("html content: %r", html_content)
             html_content = disenfuckulate_html(html_content)
         #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
         #             html_content = html_content.replace("<br />", "")
@@ -1054,7 +1062,7 @@ def message_to_html(message):
             html_content = f"<pre>{html.escape(content)}</pre>"
         if has_math:
             math_cache[content] = html_content
-    logger.debug("html_content: %r", html_content)
+    logger.info("html_content 2: %r", html_content)
     if html_content == "":
         html_content = "&nbsp;"
     user = message.get("user")
