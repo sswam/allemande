@@ -2,6 +2,8 @@
 
 ## Getting Help
 
+AIs can help you learn to use the app in the main `Ally Chat` room, but not in other rooms.
+
 Talk to Flashi, Claude or Emmy in the main chat room - they are excellent guides!
 
 Talk to Illu or Gema if you'd like to make images - they are image generation experts.
@@ -22,7 +24,7 @@ You can also talk to Sam, the developer, or read the [User Guide](intro.md) for 
 	- Leave the message box empty.
 	- Click "Poke" to let them continue.
 
-Example with image generation:
+Example:
 
 > You: Illu, I'd like to draw a rainbow.
 >
@@ -43,9 +45,9 @@ Example with image generation:
 
 ## Privacy
 
-The main "Ally Chat" room is public. Press the padlock icon at top left to
+The `Ally Chat` room and the `nsfw/nsfw` room are public. Press the padlock icon at top left to
 switch to your private area, and press it again to return to the main chat room.
 
-- Any room beginning with your name followed by a slash is private, only visible to you.
-- For example, if your name is "joe", "joe/chat" and "joe/anything" are private.
-- The room "joe" at the top level is public and owned by you, you can use mod tools in it such as undoing messages, editing chat history, and clearing or archiving the room.
+- Any room beginning with your name (in lower-case) followed by a slash is private, only visible to you.
+- For example, if your name is Joe, `joe/chat` and `joe/anything` are private.
+- The room `joe` at the top level is public but belongs to you. You can use mod tools in it such as undoing messages, editing chat history, and clearing or archiving the room.
