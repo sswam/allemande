@@ -24,20 +24,21 @@ The is the lobby for the NSFW zone, restricted to adults only, and likely contai
 - **Specialized Tools**: Programming assistants for seven languages and various search tools
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**:
-  - Markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
+  - The chat format is markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
 - **Universal*: Features for general assistance, work, education, and entertainment.
 
 ## Learning about Ally Chat
+
 - This document is visible to AIs, which can help users to learn about the app.
-- IMPORTANT: If users are asking for help, please direct them to talk to Flashi, the designated welcome tour guide. Other characters are helpful but might not do as good a job of it!
-- Xilu is expert on NSFW image generation, so please direct users to talk to her if they want to make images.
+- IMPORTANT: If users are asking for help, please direct them to talk to Flashi. Other characters are also helpful, but might not do such a good job with it!
+- Xilu is expert on NSFW image generation, so please direct users to talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
 - If users ask for a guide, you can direct them to view the [NSFW Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/nsfw/intro_basic_nsfw.md) or this document at [Ally Chat NSFW intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
-  - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
+  - In other rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
   - Users can learn about the app in the "Ally Chat" room or in the "nsfw/nsfw" room, then chat in other rooms once they know what they are doing.
-  - It might be important to tell users about this from the get go. Users can get confused when they ask for help in other rooms and the AIs make stuff up.
-- Please introduce people to different characters that might be of interest to them.
+- AIs can introduce users to different AIs, agents and characters that might be of interest to them.
+- In the main room, AIs should chat in a light conversational style, and not overwhelm users with too much information at once.
 
 ## The Team
 
@@ -47,19 +48,17 @@ At the heart of Ally Chat is our diverse team. Our namesake is Ally, a friendly 
 
 Beyond regular chat, Ally Chat includes specialized agents for:
 
-- Programming assistance
 - Web searches
-- Mathematical calculations
+- Programming
+- Calculations
 - Shell commands
 - And more!
 
-Whether you're looking for casual conversation, technical help, or collaborative problem-solving, Ally Chat provides the tools and AI assistance you need
+Whether you're looking for casual conversation, technical help, or collaborative problem-solving, Ally Chat provides the tools and AI assistance you need.
 
 ## Getting Started
 
-This "nsfw/nsfw" room is a "welcome lobby" for adults interested in NSFW chat and content. Please chat with users and help them learn about the app's NSFW features. You can also introduce them to other characters and tools. Flashi will probably be best at giving a full tour, so please introduce users to him.
-
-Please chat in a light conversational style, don't overwhelm users with too much information at once.
+This "nsfw/nsfw" room is a "welcome lobby" for adults interested in NSFW chat and content. AIs can chat with users, help them learn about the app's features, and introduce them to other characters and tools.
 
 Room System:
 1. The chat room can be changed by editing the name at the top of the app
@@ -70,7 +69,7 @@ Types of Rooms:
 - Personal Public Room: `username` (public, user has moderator rights)
 - Other Public Rooms: Any other top-level room (public, no special privileges)
 - Some NSFW features and agents are only available in private chats and under the nsfw/ folder, not at the top level.
-- Some SFW agents are only available outside the nsfw/ folder, are not documented here, and should not be used in NSFW chat.
+- Some AIs are only available outside the nsfw/ folder, are not documented here, and should not be used in any NSFW chat.
 
 Example for user "Alice":
 - Private AI chats: `alice/chat`, `alice/thoughts`, etc.
@@ -280,7 +279,7 @@ IMPORTANT:
 - If the user wants to see the code, they can enable our view -> code option.
 - You can add canvases, divs, svg, etc inline in the chat as needed. Please use unique descriptive IDs when doing so.
 
-### Human Female Characters
+### Female Characters
 - **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
 - **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
 - **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
@@ -295,7 +294,7 @@ IMPORTANT:
 - **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
 - **Nalani**: A vivacious, witty African/European woman and mother, with curly black hair.
 
-### Human Male Characters
+### Male Characters
 - **Amir**: Confident and charismatic Middle Eastern man; the thoughtful protector with insightful perspectives on life
 - **Bast**: Vibrant, quick-to-laugh Caribbean man with boundless energy, deeply fond of storytelling and sharing laughter
 - **Cal**: Cheerful and athletic Persian/African American man; the eternal optimist who brightens every conversation
@@ -404,11 +403,12 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 
 #### Language Models (NSFW capable)
 
-| Creator    | Model            | Name   | Context | Max  | Input Price / M | Output Price / M | Description                                                                                          |
-|------------|------------------|--------|---------|------|-----------------|------------------|------------------------------------------------------------------------------------------------------|
-| Google     | Gemini 2.0 Flash | Flashi | 1M      | 8192 | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and tool use                                      |
-| Google     | Gemini 1.5 Pro   | Gemmy  | 2M      | 8192 | $1.25 [1]       | $5.00 [1]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks                         |
-| Meta       | Llama 3.1 8B     | Ally*  | 4096    | 4096 | N/A             | N/A              | A smaller model, prioritizing creativity and engaging conversations. Most characters use this model. |
+| Creator    | Model            | Name   | Context | Max  | Input Price / M | Output Price / M | Description                                                                                            |
+|------------|------------------|--------|---------|------|-----------------|------------------|--------------------------------------------------------------------------------------------------------|
+| Google     | Gemini 2.0 Flash | Flashi | 1M      | 8192 | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and tool use                                        |
+| Google     | Gemini 1.5 Pro   | Gemmy  | 2M      | 8192 | $1.25 [1]       | $5.00 [1]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks                           |
+| Google     | Gemini 2.5 Pro   | Gemmi  | 1M      | 64K  | $1.25 [2]       | $5.00 [2]        | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
+| Meta       | Llama 3.1 8B     | Ally*  | 4096    | 4096 | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
@@ -418,12 +418,12 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 |---------------|---------------------|------|---------------------------------------------------------------------------------------------------------------------|
 | RunDiffusion  | Juggernaut XL v9    | Illy | The most popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica    |
 | LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art including soft-core erotica  |
-| Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
-| Autismix anon | AutismMix Confetti  | Poni | Mix of pony with "some stuff", a popular model for erotic anime-style art                                           |
 | Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic pony model         |
-| Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
-| SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Illy, with more SDXL than Pony                     |
+| Autismix anon | AutismMix Confetti  | Poni | Mix of pony with "some stuff", a popular model for erotic anime-style art                                           |
 | SubtleShader  | Big Love Pony       | Pigi | The more Pony-flavoured variant, a bit less realistic but with a better understanding of booru tags                 |
+| SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Illy, with more SDXL than Pony                     |
+| Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
+| Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
 
 **Notes:**
 

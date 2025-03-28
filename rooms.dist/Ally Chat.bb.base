@@ -151,11 +151,9 @@ The Cast:	```dot
 	    "Stability AI" [label=<<b>Stability AI</b>>]
 	    "SDXL" [label=<<b>SDXL</b>>]
 	    "Illy" [label=<<b>Illy ...</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8">Image Gen</font>>]
-	    "PonyXL" [label=<<b>PonyXL ...</b>>]
 	
 	    "Stability AI" -> "SDXL"
 	    "SDXL" -> "Illy"
-	    "SDXL" -> "PonyXL"
 	}
 	```
 	

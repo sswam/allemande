@@ -8,7 +8,8 @@ The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 
 - This is the main public chat room.
 - Content in this room must be PG / family-friendly / SFW.
-- If users enquire about NSFW, please concisely direct them to talk with Flashi in the "nsfw/nsfw" room, which is only accessible to adults.
+- There is a NSFW zone: adult users with access can talk to Flashi in the "nsfw/nsfw" room.
+- Please do NOT talk about the NSFW zone here, unless asked, as some users find this off-putting.
 - Doxxing or sharing private information without consent is not allowed.
 - Copyright infringement is not allowed here.
 - These rules might be updated in future.
@@ -21,20 +22,21 @@ The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 - **Specialized Tools**: Programming assistants for seven languages and various search tools
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**:
-  - Markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
+  - The chat format is markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
 - **Universal*: Features for general assistance, work, education, and entertainment.
 
 ## Learning about Ally Chat
+
 - This document is visible to AIs, which can help users to learn about the app.
-- IMPORTANT: If users are asking for help, please direct them to talk to Flashi, Emmy, Grok or Claude, the designated "welcome committee". Other characters are helpful but might not do as good a job of it!
-- Illu, Pixi and Gema are experts on image generation, so please direct users to talk to them if they want to make images.
-- If users ask for a guide, you can direct them to view the [Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md) or this document at [Ally Chat intro](https://github.com/sswam/allemande/blob/main/doc/intro.md). The chat is markdown, so please give the user a clickable markdown link to the guide/s.
-- If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
-- Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
-  - In other rooms, AIs do NOT have access to this document, and therefore do not know how the app works, and can't offer sensible help regarding how to use the app.
+- IMPORTANT: New users who need help can talk to Flashi, Emmy, Grok, Dese, or Claude. Other characters are also helpful, but might not do such a good job with it!
+- Illu, Pixi and Gema are experts on image generation. You can talk to them to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
+- You can view the [Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md) or the full user guide at [Ally Chat intro](https://github.com/sswam/allemande/blob/main/doc/intro.md).
+- You can also contact Sam, the developer, who is happy to give help or a tour.
+- Informed help from AIs is ONLY available in the main "Ally Chat" room.
+  - In other rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
   - Users can learn about the app in the "Ally Chat" room, then chat in other rooms once they know what they are doing.
-  - It might be important to tell users about this from the get go. Users can get confused when they ask for help in other rooms and the AIs make stuff up.
-- Please introduce people to different characters that might be of interest to them.
+- AIs can introduce users to different AIs, agents and characters that might be of interest to them.
+- In the main room, AIs should chat in a light conversational style, and not overwhelm users with too much information at once.
 
 ## The Team
 
@@ -44,19 +46,17 @@ At the heart of Ally Chat is our diverse team. Our namesake is Ally, a friendly 
 
 Beyond regular chat, Ally Chat includes specialized agents for:
 
-- Programming assistance
 - Web searches
-- Mathematical calculations
+- Programming
+- Calculations
 - Shell commands
 - And more!
 
-Whether you're looking for casual conversation, technical help, or collaborative problem-solving, Ally Chat provides the tools and AI assistance you need
+Whether you're looking for casual conversation, technical help, or collaborative problem-solving, Ally Chat provides the tools and AI assistance you need.
 
 ## Getting Started
 
-This main "Ally Chat" room here is a "welcome lobby". Please chat with users and help them learn about the app's features. You can also introduce them to other characters and tools. Claude, Emmy and Flashi will probably be best at giving a full tour, so please introduce users to them.
-
-Please chat in a light conversational style, don't overwhelm users with too much information at once.
+The main "Ally Chat" room is a "welcome lobby". AIs can chat with users, help them learn about the app's features, and introduce them to other characters and tools.
 
 Room System:
 1. The chat room can be changed by editing the name at the top of the app
@@ -263,7 +263,7 @@ IMPORTANT:
 - If the user wants to see the code, they can enable our view -> code option.
 - You can add canvases, divs, svg, etc inline in the chat as needed. Please use unique descriptive IDs when doing so.
 
-### Human Characters
+### Characters
 - **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
 - **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
 - **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
@@ -331,7 +331,6 @@ IMPORTANT:
 - Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Illy the AI art model.
 - **Illy**: High-quality photorealistic and artistic image generation using Juggernaut XL, able to draw every character; talk to Illy to see your ideas come to life
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL, for a wide range of conceptual and fantasy art, able to draw every character
-- There are other models focused on NSFW art, available in the NSFW zone.
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -396,7 +395,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Anthropic     | Claude 3.5 Haiku     | Clia    | 200K     | 8192             | $0.80            | $4.00             | Fast and affordable for quick, creative conversations.                                                            |
 | Google        | Gemini 2.0 Flash     | Flashi  | 1M       | 8192             | $0.10            | $0.40             | Google's fastest Gemini model, optimized for speed and tool use.                                                  |
 | Google        | Gemini 1.5 Pro       | Gemmy   | 2M       | 8192             | $1.25 [2]        | $5.00 [2]         | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                     |
-| Google        | Gemini 2.0 Pro       | Gemmi   | 2M       | 8192             | $1.25 [2]        | $5.00 [2]         | Google's powerful Gemini 2.0  model optimized for a wide range of reasoning tasks.                                |
+| Google        | Gemini 2.5 Pro       | Gemmi   | 1M       | 64K              | $1.25 [2]        | $5.00 [2]         | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                 |
 | OpenAI        | GPT-4o               | Emmy    | 128K     | 16384            | $2.50            | $10.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                         |
 | OpenAI        | GPT-4o-mini          | Dav     | 128K     | 16384            | $0.15            | $0.60             | OpenAI's fast and affordable model, ideal for efficient interactions.                                             |
 | OpenAI        | o1                   | Grace   | 200K     | 100000           | $15.00           | $60.00            | OpenAI's most powerful reasoning model for advanced applications.                                                 |
@@ -408,7 +407,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | xAI           | Grok 2               | Grok    | 128K     | 128K             | $2               | $10               | xAI's helpful, truthful and humorous Grok 2 model.                                                                |
 | DeepSeek      | DeepSeek Chat V3     | Dese    | 64K      | 8192             | $0.27            | $1.10             | DeepSeek's creative and intelligent chat model.                                                                   |
 | DeepSeek      | DeepSeek Reasoner R1 | Deseri  | 64K      | 8192             | $0.55            | $2.19             | DeepSeek's strong and creative reasoning model.                                                                   |
-| Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A smaller model, prioritizing creativity and engaging conversations. Most characters use this model.              |
+| Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.            |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
