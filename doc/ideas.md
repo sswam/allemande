@@ -24,6 +24,10 @@ accounting:
 
 - use 100dhv to adjust for keyboard issues on mobile
 	- tried, not working
+	- I got it working but causes other issues
+	- try with position: fixed or something?
+	- I'd like to be able to zoom in the image viewer, maybe
+	- How to allow reload by drag down, which used to work?
 
 - set up a dev instance
 
@@ -90,3 +94,16 @@ and make the usernames colorful like in whatsapp groups
 --------------
 
 voice chat and talking heads, from any image
+
+--------------
+
+Fix Deseri and Perplexity models alternating context.
+
+Error code: 400 - {'error': {'message': 'deepseek-reasoner does not support successive user or assistant messages (messages[1] and messages[2] in your input). You should interleave the user/assistant messages in the message sequence.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_request_error'}}
+
+We can combine multiple user messages together, and multiple AI messages together. Hopefully it will work!
+
+
+Fix all the themes so all text is high contrast and readable, need to test with multi-media content like the demo.
+
+-
