@@ -53,6 +53,7 @@
 			<button id="send">send</button>
 			<button id="add" title="add a file or recording">add</button>
 			<button id="view" title="view settings">view</button>
+			<button id="audio" title="audio settings">audio</button>
 			<button id="opt" title="room options">opt</button>
 			<button id="mod" title="owner tools" class="admin">mod</button>
 		</div>
@@ -109,10 +110,19 @@
 			<input id="view_items" placeholder="items" title="number of search results to show">
 			<button id="view_cancel">back</button>
 		</div>
+		<div class="controls col_wrap hidden" id="input_audio">
+			<button id="audio_stt" title="speech to text">stt</button>
+			<button id="audio_tts" title="text to speech">tts</button>
+			<button id="audio_vad" title="voice activity detection">vad</button>
+			<button id="audio_auto" title="automatic voice chat">auto</button>
+			<input id="audio_voice" placeholder="voice" title="your text to speech voice">
+			<button id="audio_cancel">back</button>
+		</div>
 		<div class="controls col_wrap hidden" id="input_opt">
 			<input id="opt_context" placeholder="context" title="number of recent messages AI can see">
 			<input id="opt_lines" placeholder="lines" title="limit number of lines of AI output (local models only)">
 			<input id="opt_images" placeholder="images" title="number of recent images AI can see">
+			<input id="opt_mission" placeholder="mission" title="mission file to use, - for none">
 			<button id="opt_cancel">back</button>
 		</div>
 	</div>

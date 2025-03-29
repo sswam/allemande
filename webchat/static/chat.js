@@ -1986,9 +1986,11 @@ async function get_options() {
   const context = data?.agents?.all?.context ?? "";
   const lines = data?.agents?.all?.lines ?? "";
   const images = data?.agents?.all?.images ?? "";
+  const mission = data?.mission === "" ? "-" : data?.mission ?? "";
   $id("opt_context").value = context;
   $id("opt_lines").value = lines;
   $id("opt_images").value = images;
+  $id("opt_mission").value = mission;
   return data;
 }
 
@@ -2053,6 +2055,18 @@ async function opt_images(ev) {
     }
   });
 }
+
+async function opt_mission(ev) {
+  let mission = ev.target.value;
+  mission = mission === "" ? null : mission === "-" ? "" : mission;
+  await set_options({
+    room: room,
+    options: {
+      mission
+    }
+  });
+}
+
 
 // icons ---------------------------------------------------------------------
 
@@ -2230,6 +2244,7 @@ function chat_main() {
   $on($id("opt_context"), "change", opt_context);
   $on($id("opt_lines"), "change", opt_lines);
   $on($id("opt_images"), "change", opt_images);
+  $on($id("opt_mission"), "change", opt_mission);
   $on($id("opt_cancel"), "click", () => set_controls());
 
   $on($id("nav_up"), "click", nav_up);
