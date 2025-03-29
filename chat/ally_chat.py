@@ -375,7 +375,7 @@ def load_local_agents(room, agents=None):
     return agents
 
 
-async def process_file(file, args, history_start=0, skip=None, agents=None) -> int:
+async def process_file(file, args, history_start=0, skip=None, agents=None, poke=False) -> int:
     """Process a file, return True if appended new content."""
     logger.info("Processing %s", file)
 
@@ -394,7 +394,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
     mission_file = room.find_resource_file("m", mission_file_name, try_room_name=mission_try_room_name)
     mission = chat.chat_read(mission_file, args)
 
-    logger.info("mission name %r, mission_try_room_name %r, mission_file %r", mission_file_name, mission_try_room_name, mission_file)
+    # logger.info("mission name %r, mission_try_room_name %r, mission_file %r", mission_file_name, mission_try_room_name, mission_file)
 
     # Load summary file, if present
     summary_file = room.find_resource_file("s", "summary")
@@ -405,14 +405,24 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
 
     history_messages = list(chat.lines_to_messages(history))
 
-    # TODO distinguish poke (only AIs and tools respond) vs posted message (humans might be notified)
     message = history_messages[-1] if history_messages else None
 
     # check for editing commands, AI should not respond to these
-    if message and re.search(r"""<allychat-meta\b[a-z0-9 ="']*>\s*$""", message["content"], flags=re.IGNORECASE):
+    if message and not poke and re.search(r"""<allychat-meta\b[a-z0-9 ="']*>\s*$""", message["content"], flags=re.IGNORECASE):
         return 0
 
+    # logger.info("history_messages 1: %r", history_messages)
+
+    # flatten history, removing any editing commands
     history_messages = chat.apply_editing_commands(history_messages)
+
+    message = history_messages[-1] if history_messages else None
+
+    # so inefficient, need to rework this sensibly one day using ChatMessage objects
+    history = list(chat.messages_to_lines(history_messages))
+
+    # logger.info("history_messages 2: %r", history_messages)
+    # logger.info("history 2: %r", history)
 
     welcome_agents = [name for name, agent in agents.items() if agent.get("welcome")]
 
@@ -1291,6 +1301,8 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip, a
     if new_size == 0 and old_size != 0:
         return
 
+    poke = new_size == old_size
+
     if skip.get(file_path):
         logger.debug("Won't react to AI response: %r", file_path)
         skip[file_path] -= 1
@@ -1298,7 +1310,7 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip, a
 
     try:
         logger.debug("Processing file: %r", file_path)
-        count = await process_file(file_path, args, skip=skip, agents=agents)
+        count = await process_file(file_path, args, skip=skip, agents=agents, poke=poke)
         logger.debug("Processed file: %r, %r agents responded", file_path, count)
     except Exception:  # pylint: disable=broad-except
         logger.exception("Processing file failed", exc_info=True)

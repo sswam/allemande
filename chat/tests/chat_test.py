@@ -197,9 +197,7 @@ def test_basic_message_no_meta():
         {"content": "Hello"},
         {"content": "World"}
     ]
-    output = []
-    apply_editing_commands(messages)
-    flatten_edited_messages(messages, output)
+    output = apply_editing_commands(messages)
     assert len(output) == 2
     assert output[0]["content"] == "Hello"
     assert output[1]["content"] == "World"
@@ -212,9 +210,7 @@ def test_remove_command():
         {"content": "Second"},
         {"content": "Remove message 1 <allychat-meta remove='1'>"}
     ]
-    output = []
-    apply_editing_commands(messages)
-    flatten_edited_messages(messages, output)
+    output = apply_editing_commands(messages)
     assert len(output) == 2
     assert output[0]["content"] == "First"
     assert output[1]["content"] == "Remove message 1"
@@ -226,9 +222,7 @@ def test_edit_command():
         {"content": "Original"},
         {"content": "Edit above <allychat-meta edit='0'>"}
     ]
-    output = []
-    apply_editing_commands(messages)
-    flatten_edited_messages(messages, output)
+    output = apply_editing_commands(messages)
     assert len(output) == 1
     assert output[0]["content"] == "Edit above"
 
@@ -240,9 +234,7 @@ def test_insert_command():
         {"content": "Insert before First <allychat-meta insert='0'>"},
         {"content": "Last"}
     ]
-    output = []
-    apply_editing_commands(messages)
-    flatten_edited_messages(messages, output)
+    output = apply_editing_commands(messages)
     assert len(output) == 3
     assert output[0]["content"] == "Insert before First"
     assert output[1]["content"] == "First"
@@ -256,9 +248,7 @@ def test_empty_message_removal():
         {"content": "Keep"},
         {"content": "<allychat-meta remove='0'>"}
     ]
-    output = []
-    apply_editing_commands(messages)
-    flatten_edited_messages(messages, output)
+    output = apply_editing_commands(messages)
     assert len(output) == 1
     assert output[0]["content"] == "Keep"
 
@@ -269,9 +259,7 @@ def test_preserve_other_meta_attrs():
         {"content": "Edit me"},
         {"content": 'Test <allychat-meta edit="0" data-foo="bar">'}
     ]
-    output = []
-    apply_editing_commands(messages)
-    flatten_edited_messages(messages, output)
+    output = apply_editing_commands(messages)
     assert len(output) == 1
     assert 'data-foo="bar"' in output[0]["content"]
     assert 'edit="0"' not in output[0]["content"]
@@ -284,8 +272,6 @@ def test_multiple_edits():
         {"content": "Edit 1 <allychat-meta edit='0'>"},
         {"content": "Edit 2 <allychat-meta edit='1'>"}
     ]
-    output = []
-    apply_editing_commands(messages)
-    flatten_edited_messages(messages, output)
+    output = apply_editing_commands(messages)
     assert len(output) == 1
     assert output[0]["content"] == "Edit 2"

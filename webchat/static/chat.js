@@ -1399,25 +1399,30 @@ async function undo(ev, hard) {
   auto_play_back_off();
 
   if (!(ev.key || ev.shiftKey || confirm("Undo the last message?\n(hold shift to skip this confirmation next time)")))
-    return;
+    return false;
 
   if (hard) {
     try {
       await undo_last_message(room);
       // TODO should clear immediately for other users too, not just the current user
       // reload_messages();
+      return true;
     } catch (err) {
       console.error(err.message);
       await error("mod_undo");
     }
   } else {
     await send_text(`<allychat-meta remove=${lastMessageId}>`);
+    return true;
   }
+
+  return false;
 }
 
 async function retry(ev) {
   try {
-    await undo(ev);
+    if (!await undo(ev))
+      return;
     await $wait(100);
     await poke();
   } catch (err) {

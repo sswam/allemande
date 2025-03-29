@@ -696,6 +696,12 @@ def message_to_text(message: dict[str, Any]) -> str:
     return text.rstrip("\n") + "\n"
 
 
+def messages_to_lines(messages):
+    """Convert chat messages to lines."""
+    for message in messages:
+        yield message_to_text(message)
+
+
 def chat_message_to_text(message: ChatMessage) -> str:
     """Convert a chat message to text."""
     return message_to_text({"user": message.user, "content": message.content})
@@ -883,7 +889,7 @@ def preprocess(content):
     out = []
 
     # make sure <think> tags are on their own lines...
-    content = re.sub(r"\s*(</?think(ing)?>)\s*", r"\n\1\n", content, flags=re.DOTALL|re.IGNORECASE)
+    # content = re.sub(r"\s*(</?think(ing)?>)\s*", r"\n\1\n", content, flags=re.DOTALL|re.IGNORECASE)
 
     in_math = False
     in_code = 0
@@ -1907,8 +1913,12 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         if not edit and not insert and not message["content"].strip():
             messages[i]["remove"] = True
 
+    logger.info("messages after editing commands: %r", messages)
+
     output = []
     flatten_edited_messages(messages, output)
+
+    return output
 
 
 def flatten_edited_messages(messages, output):
