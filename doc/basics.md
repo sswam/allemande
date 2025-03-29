@@ -74,9 +74,11 @@ flowchart TD
 
     B -->|Yes| C[Do something]
     B -->|No| D[Do something else]
-    C --> E[End]
+    C --> E["End (or is it)?"]
     D --> E
 ```
+
+Note: We need to quote labels that contain parentheses.
 
 ### JavaScript
 

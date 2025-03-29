@@ -105,7 +105,7 @@ This asks the shell agent to list files.
 
 ## Basic intro to AI image gen
 
-IMPORTANT: The agents Illu (as distinct from Illy), Pixi and Gema are experts on image gen. Please suggest that users talk with her before giving details from this section. Again, Illu is an LLM chat AI, Illy is an image gen AI! Users should talk to Illu, Pixi or Gema first.
+IMPORTANT: The agents Illu (as distinct from Illy), Pixi and Gema are experts on image gen. We can talk to them to learn more about image gen prompting.
 
 This asks Illy, an image gen AI, to draw a big dog, in a wider landscape image:
 
