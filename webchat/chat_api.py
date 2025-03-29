@@ -14,6 +14,7 @@ from starlette.responses import JSONResponse
 from starlette.exceptions import HTTPException
 from pywebpush import webpush
 import uvicorn
+from deepmerge import always_merger
 
 import chat
 
@@ -173,7 +174,9 @@ async def options_set(request):
     user = request.headers["X-Forwarded-User"]
     request = await request.json()
     room = chat.Room(name=request["room"])
-    options = request["options"]
+    old_options = room.get_options(user)
+    new_options = request["options"]
+    options = always_merger.merge(old_options, new_options)
     try:
         room.set_options(user, options)
     except PermissionError as e:

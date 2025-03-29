@@ -383,17 +383,22 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
 
     history = chat.chat_read(file, args)
 
+    # Load config file, if present
+    config_file = room.find_resource_file("yml", "options")
+    config = config_read(config_file)
+
+    mission_file_name = config.get("mission", "mission")
+    mission_try_room_name = "mission" not in config
+
     # Load mission file, if present
-    mission_file = room.find_resource_file("m", "mission")
+    mission_file = room.find_resource_file("m", mission_file_name, try_room_name=mission_try_room_name)
     mission = chat.chat_read(mission_file, args)
+
+    logger.info("mission name %r, mission_try_room_name %r, mission_file %r", mission_file_name, mission_try_room_name, mission_file)
 
     # Load summary file, if present
     summary_file = room.find_resource_file("s", "summary")
     summary = summary_read(summary_file, args)
-
-    # Load config file, if present
-    config_file = room.find_resource_file("yml", "options")
-    config = config_read(config_file)
 
     # Load local agents
     agents = load_local_agents(room, agents)

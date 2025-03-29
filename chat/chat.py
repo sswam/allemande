@@ -313,18 +313,20 @@ class Room:
         """Check access for a user."""
         return check_access(user, self.name + EXTENSION)
 
-    def find_resource_file(self, ext, name=None, create=False):
+    def find_resource_file(self, ext, name=None, create=False, try_room_name=True):
         """Find a resource file for the chat room."""
         parent = self.path.parent
         stem = self.path.stem
-        resource = parent / (stem + "." + ext)
-        if not resource.exists():
+        resource = None
+        if try_room_name:
+            resource = parent / (stem + "." + ext)
+        if try_room_name and not resource.exists():
             stem_no_num = re.sub(r"-\d+$", "", stem)
             if stem_no_num != stem:
                 resource = parent / (stem_no_num + "." + ext)
-        if not resource.exists():
+        if not resource or not resource.exists() and name:
             resource = parent / (name + "." + ext)
-        if not resource.exists() and not create:
+        if resource and not resource.exists() and not create:
             resource = None
         return str(resource) if resource else None
 
