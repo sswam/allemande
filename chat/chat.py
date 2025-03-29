@@ -26,6 +26,7 @@ import markdown
 from starlette.exceptions import HTTPException
 import aiofiles
 from deepmerge import always_merger
+from bs4 import BeautifulSoup
 
 import video_compatible
 from ally.cache import cache
@@ -865,7 +866,11 @@ pattern polygon polyline radialGradient rect script set stop style svg switch
 symbol text textPath title tspan use view
 """)
 
-RE_TAGS = re.compile(rf"</?({'|'.join(set(HTML_TAGS + SVG_TAGS))})\b", flags=re.IGNORECASE)
+ALLYCHAT_TAGS = quote_words("""
+allychat-meta
+""")
+
+RE_TAGS = re.compile(rf"</?({'|'.join(set(HTML_TAGS + SVG_TAGS + ALLYCHAT_TAGS))})\b", flags=re.IGNORECASE)
 
 def preprocess(content):
     """Preprocess chat message content, for markdown-katex"""
@@ -1856,6 +1861,65 @@ def set_user_theme(user, theme):
     path.parent.mkdir(parents=True, exist_ok=True)
     cache.chmod(path.parent, 0o755)
     cache.symlink(source, path)
+
+
+def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Apply editing commands to the chat history."""
+    lookup = messages.copy()
+    for i in range(len(messages)):
+        message = messages[i]
+        m = re.search(r"""(<allychat-meta\b[-a-z0-9 ="']*>)\s*$""", message["content"], flags=re.IGNORECASE)
+        if not m:
+            continue
+        xmltext = m.group(1).strip()
+        # chop it off the message content
+        message["content"] = message["content"][: m.start()].rstrip()
+        soup = BeautifulSoup(xmltext, "html.parser")
+        meta = soup.find("allychat-meta")
+        if not meta:
+            raise ValueError("Invalid allychat-meta tag.")
+
+        remove = meta.get("remove")
+        edit = meta.get("edit")
+        insert = meta.get("insert")
+
+        # remove the remove, edit and insert attributes
+        for attr in ["remove", "edit", "insert"]:
+            if attr in meta.attrs:
+                del meta[attr]
+        # add the meta tag back to the message content if there are any remaining attributes
+        if meta.attrs:
+            message["content"] += str(meta)
+
+        old = remove or edit
+        if old is not None:
+            lookup[int(old)]["remove"] = True
+
+        target = edit or insert
+        if target is not None:
+            if "before" not in lookup[int(target)]:
+                lookup[int(target)]["before"] = [message]
+            else:
+                lookup[int(target)]["before"].append(message)
+            messages[i] = None
+
+        # if a message that wasn't moved is now empty, mark it for removal
+        if not edit and not insert and not message["content"].strip():
+            messages[i]["remove"] = True
+
+    output = []
+    flatten_edited_messages(messages, output)
+
+
+def flatten_edited_messages(messages, output):
+    """Flatten edited messages."""
+    for message in messages:
+        if message is None:
+            continue
+        if "before" in message:
+            flatten_edited_messages(message["before"], output)
+        if "remove" not in message:
+            output.append(message)
 
 
 if __name__ == "__main__":

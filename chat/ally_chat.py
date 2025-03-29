@@ -408,6 +408,12 @@ async def process_file(file, args, history_start=0, skip=None, agents=None) -> i
     # TODO distinguish poke (only AIs and tools respond) vs posted message (humans might be notified)
     message = history_messages[-1] if history_messages else None
 
+    # check for editing commands, AI should not respond to these
+    if message and re.search(r"""<allychat-meta\b[a-z0-9 ="']*>\s*$""", message["content"], flags=re.IGNORECASE):
+        return 0
+
+    history_messages = chat.apply_editing_commands(history_messages)
+
     welcome_agents = [name for name, agent in agents.items() if agent.get("welcome")]
 
     bots = conductor.who_should_respond(
