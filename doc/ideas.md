@@ -106,4 +106,11 @@ We can combine multiple user messages together, and multiple AI messages togethe
 
 Fix all the themes so all text is high contrast and readable, need to test with multi-media content like the demo.
 
--
+--------------
+
+Edit tabular data, at least basic editing. Doesn't have to be a spreadsheet!
+
+--------------
+
+✓ Option to use or not to use mission, in chat options.
+- Consider whether chat options should be user specific, they likely should be.
