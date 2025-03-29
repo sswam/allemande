@@ -12,21 +12,28 @@ function isNodeOnlyImages(node) {
   return hasImage && !hasText;
 }
 
-function moveContent(source, target) {
+function copyContent(source, target, idClass) {
   target.appendChild(document.createTextNode("\n"));
-  while (source.firstChild) {
-    target.appendChild(source.firstChild);
+  let el = source.firstChild;
+  while (el) {
+    console.log(el);
+    if (el.nodeType === 1)
+      el.classList.add(idClass);
+    target.appendChild(el.cloneNode(true));
+    el = el.nextSibling;
   }
 }
 
-function moveImages(source, target) {
-  while (source.firstChild) {
-    if (source.firstChild.className === "image") {
+function copyImages(source, target, idClass) {
+  let el = source.firstChild;
+  while (el) {
+    if (el.classList.contains("image")) {
+      const clone = el.cloneNode(true);
+      clone.classList.add(idClass);
       target.appendChild(document.createTextNode(" "));
-      target.appendChild(source.firstChild);
-    } else {
-      source.removeChild(source.firstChild);
+      target.appendChild(clone);
     }
+    el = el.nextSibling;
   }
 }
 
@@ -50,23 +57,19 @@ function findMatchingImageMessage(message) {
     current;
     current = current.previousElementSibling
   ) {
-    if (!isNodeOnlyImages(current)) {
+    if (current.classList.contains("hidden"))
       continue;
-    }
-    if (current.getAttribute("user") !== user) {
-      // console.log("image message with different user", current);
+    if (!isNodeOnlyImages(current))
+      continue;
+    if (current.getAttribute("user") !== user)
       return null;
-    }
     const currentImg = current.querySelector("img");
     if (currentImg) {
-      if (getAltText(currentImg) === imgAlt) {
+      if (getAltText(currentImg) === imgAlt)
         return current;
-      }
-      // console.log("image message with different alt text", current);
       return null;
     }
   }
-  // console.log("no matching image message found");
   return null;
 }
 
@@ -111,10 +114,43 @@ function render_mermaid(node) {
   }
 }
 
+function getMessageId(element) {
+  let id;
+  const match = element.className.match(/(?:^|\s)m(\d+)(?:\s|$)/);
+  if (match) {
+    id = parseInt(match[1]);
+  } else {
+    const prev = element.previousElementSibling;
+    if (!prev) {
+      id = 0;
+    } else {
+      id = getMessageId(prev) + 1;
+    }
+    element.classList.add("m" + id);
+  }
+  return id;
+}
+
+function getPreviousVisibleMessage(element) {
+  let prev = element.previousElementSibling;
+  while (prev && prev.classList.contains("hidden"))
+    prev = prev.previousElementSibling;
+  return prev;
+}
+
 function handleNewMessage(newMessage) {
+  // if hidden, don't process
+  if (newMessage.classList.contains("hidden"))
+    return;
+
   // console.log("handling new message", newMessage);
   const newContent = newMessage.querySelector(".content");
   const newUser = newMessage.getAttribute("user");
+
+  // Add message number as a class, like m123
+  const id = getMessageId(newMessage);
+  const idClass = "m" + id;
+
   notify_new_message({ user: newUser, content: newContent.innerHTML });
 
   // Remove newline at start of paragraph, pre or code
@@ -235,55 +271,17 @@ function handleNewMessage(newMessage) {
   // Code highlighting according to the view options
   highlight_code(newMessage, view_options);
 
-  const newParagraph = getOnlyChildParagraph(newContent);
-
-  // Move images from new message to previous message if they have
-  // the same user and same generation prompt in the alt text
-  if (newParagraph && isNodeOnlyImages(newParagraph)) {
-    const matchingMessage = findMatchingImageMessage(newMessage);
-    if (matchingMessage) {
-      // console.log("found matching", matchingMessage);
-      const prevContent = matchingMessage.querySelector(".content");
-      const prevParagraph = getOnlyChildParagraph(prevContent);
-      if (prevParagraph) {
-        moveImages(newParagraph, prevParagraph);
-        newMessage.remove();
-        newMessage = null;
-      }
-    }
-  }
-
-  // Combine regular messages from the same user
-  if (newMessage) {
-    const previousMessage = newMessage.previousElementSibling;
-    if (
-      previousMessage &&
-      nodeIsMessage(previousMessage) &&
-      previousMessage.getAttribute("user") === newUser
-    ) {
-      const prevContent = previousMessage.querySelector(".content");
-      const prevParagraph = getOnlyChildParagraph(prevContent);
-      // If images, combine them into the same paragraph
-      if (
-        newParagraph &&
-        isNodeOnlyImages(newParagraph) &&
-        prevParagraph &&
-        isNodeOnlyImages(prevParagraph)
-      ) {
-        moveImages(newParagraph, prevParagraph);
-      } else {
-        moveContent(newContent, prevContent);
-      }
-      newMessage.remove();
-      newMessage = null;
-    }
-  }
+  // Combine messages from the same user
+  newMessage = combineMessages(newMessage, idClass);
 
   // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
   if (newMessage && moveLabels) {
     const label = newMessage.querySelector(".label");
+    // console.log("trying to move label for message ID", id, "label", label);
+    // console.log("new message", newMessage);
     if (label) {
       let p = newContent.querySelector(":scope > p");
+      // console.log("first paragraph", p);
       let go_before_this = newMessage.querySelector(
         "pre, details, script, style"
       );
@@ -291,6 +289,7 @@ function handleNewMessage(newMessage) {
         p && !(go_before_this && isPrecedingSibling(go_before_this, p))
           ? p
           : newContent;
+      /*
       if (user.toLowerCase() === "gimg") {
         console.log(
           "moving label",
@@ -303,9 +302,63 @@ function handleNewMessage(newMessage) {
           user
         );
       }
+      */
       container.insertBefore(label, container.firstChild);
     }
   }
+}
+
+function combineMessages(message) {
+  const content = message.querySelector(".content");
+  const user = message.getAttribute("user");
+  const id = getMessageId(message);
+  const idClass = "m" + id;
+
+  const paragraph = getOnlyChildParagraph(content);
+
+  // Move images from new message to previous message if they have
+  // the same user and same generation prompt in the alt text
+  if (paragraph && isNodeOnlyImages(paragraph)) {
+    const matchingMessage = findMatchingImageMessage(message);
+    if (matchingMessage) {
+      // console.log("found matching", matchingMessage);
+      const prevContent = matchingMessage.querySelector(".content");
+      const prevParagraph = getOnlyChildParagraph(prevContent);
+      if (prevParagraph) {
+        copyImages(paragraph, prevParagraph, idClass);
+        message.classList.add("hidden");
+        message = null;
+      }
+    }
+  }
+
+  // Combine regular messages from the same user
+  if (message) {
+    const previousMessage = getPreviousVisibleMessage(message);
+    if (
+      previousMessage &&
+      nodeIsMessage(previousMessage) &&
+      previousMessage.getAttribute("user") === user
+    ) {
+      const prevContent = previousMessage.querySelector(".content");
+      const prevParagraph = getOnlyChildParagraph(prevContent);
+      // If images, combine them into the same paragraph
+      if (
+        paragraph &&
+        isNodeOnlyImages(paragraph) &&
+        prevParagraph &&
+        isNodeOnlyImages(prevParagraph)
+      ) {
+        copyImages(paragraph, prevParagraph, idClass);
+      } else {
+        copyContent(content, prevContent, idClass);
+      }
+      message.classList.add("hidden");
+      message = null;
+    }
+  }
+
+  return message;
 }
 
 function isPrecedingSibling(node1, node2) {
@@ -438,4 +491,112 @@ function process_messages(new_content) {
   for (const newMessage of new_content) {
     handleNewMessage(newMessage);
   }
+}
+
+// history editing functions -------------------------------------------------
+
+function findMessageIdTaggedChildren(element) {
+  return Array.from(element.querySelectorAll('[class*="m"]')).filter(el =>
+    /(?:^|\s)m(\d+)(?:\s|$)/.test(el.className)
+  )
+}
+
+function reprocess_tagged_children($el) {
+  const taggedChildren = findMessageIdTaggedChildren($el);
+  for (const $child of taggedChildren) {
+    const id = getMessageId($child);
+    const $main = $(`.message.m${id}:not(.removed)`);
+    if (!$main)
+      continue;
+    $main.classList.remove("hidden");
+    process_messages([$main]);
+  }
+}
+
+async function get_script_message_and_id() {
+  const script = document.currentScript;
+  console.log("script", script);
+  const script_message = script.closest('.message');
+  if (!script_message) {
+    throw new Error("script not in message");
+  }
+  const script_message_id = getMessageId(script_message);
+  await wait_for_whole_message(script_message);
+  return { script, script_message, script_message_id };
+}
+
+async function remove2(messageId) {
+  const idClass = `m${messageId}`;
+  let message = null;
+  // add class hidden to all matching elements
+  for (const $el of $$(`.${idClass}`)) {
+    $el.classList.add("hidden");
+    $el.classList.add("removed");
+    if (!$el.classList.contains("message"))
+      continue;
+    message = $el;
+    // check for any message IDs within the content,
+    // unhide the corresponding main messages, and re-processes them in order
+    reprocess_tagged_children($el);
+  }
+  if (!message)
+    console.error(`remove: message ${messageId} not found`);
+  return message;
+}
+
+async function remove(messageId) {
+  const { script, script_message, script_message_id } = await get_script_message_and_id();
+  const message = await remove2(messageId);
+  // remove the script element
+  script.remove();
+  // hide the message that contained the script if it's now empty
+  if (script_message && !script_message.querySelector(".content").innerHTML.trim())
+    script_message.classList.add("hidden");
+  return message;
+}
+
+async function insert2(messageId, message) {
+  const idClass = `m${messageId}`;
+  const $el = $(`.message.${idClass}`);
+  if (!$el) {
+    console.error(`insert: message ${messageId} not found`);
+    return;
+  }
+  // insert a placeholder with same ID before the message where it is
+  const placeholder = document.createElement("div");
+  placeholder.classList.add(idClass);
+  placeholder.classList.add("hidden");
+  placeholder.classList.add("placeholder");
+  message.before(placeholder);
+  // insert message before $el
+  $el.before(message);
+  return message;
+}
+
+async function insert(messageId) {
+  const { script, script_message, script_message_id } = await get_script_message_and_id();
+  const message = await insert2(messageId, script_message);
+  // remove the script element
+  script.remove();
+  return message;
+}
+
+async function edit(messageId) {
+  const { script, script_message, script_message_id } = await get_script_message_and_id();
+  console.log("edit: script_message", script_message);
+  // remove then insert
+  const replaced = await remove2(messageId, true);
+  if (!replaced)
+    return;
+  const message = await insert2(messageId, script_message);
+  // we need to tag the message with the old message ID
+  // using data-prev attribute
+  console.log("edit: message", message);
+  console.log("edit: message.dataset", message.dataset);
+  message.dataset.prev = messageId;
+  // mark the old message as edited
+  replaced.classList.add("edited");
+  // remove the script element
+  script.remove();
+  return message;
 }

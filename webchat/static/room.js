@@ -216,6 +216,16 @@ function node_has_next_sibling(node) {
   return node.nextSibling;
 }
 
+async function wait_for_whole_message(node) {
+  try {
+    await wait_for(() => node_has_next_sibling(node), 1000);   // newline works
+  } catch (e) {
+    console.error("timeout waiting for next sibling (newline)", node, e);
+    return false;
+  }
+  return true;
+}
+
 async function check_for_new_content(mutations) {
   const new_content = [];
   for (const mutation of mutations) {
@@ -227,12 +237,8 @@ async function check_for_new_content(mutations) {
         node.nodeType == Node.ELEMENT_NODE &&
         node.tagName == "DIV" && node.classList.contains("message")
       ) {
-        try {
-          await wait_for(() => node_has_next_sibling(node), 1000);
-        } catch (e) {
-          console.error("timeout waiting for next sibling (newline)", node, e);
-          // push it anyway
-        }
+        await wait_for_whole_message(node);
+        // push it even if it fails to load in time
         new_content.push(node);
       }
     }
