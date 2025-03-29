@@ -16,7 +16,6 @@ function copyContent(source, target, idClass) {
   target.appendChild(document.createTextNode("\n"));
   let el = source.firstChild;
   while (el) {
-    console.log(el);
     if (el.nodeType === 1)
       el.classList.add(idClass);
     target.appendChild(el.cloneNode(true));
@@ -151,8 +150,6 @@ function handleNewMessage(newMessage) {
   const id = getMessageId(newMessage);
   const idClass = "m" + id;
 
-  notify_new_message({ user: newUser, content: newContent.innerHTML });
-
   // Remove newline at start of paragraph, pre or code
   // Maybe not needed now? We'll see...
   /*
@@ -271,8 +268,11 @@ function handleNewMessage(newMessage) {
   // Code highlighting according to the view options
   highlight_code(newMessage, view_options);
 
+  // Processing editing commands
+  process_editing_commands(newMessage);
+
   // Combine messages from the same user
-  newMessage = combineMessages(newMessage, idClass);
+  // newMessage = combineMessages(newMessage, idClass);   // TODO put back
 
   // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
   if (newMessage && moveLabels) {
@@ -306,6 +306,15 @@ function handleNewMessage(newMessage) {
       container.insertBefore(label, container.firstChild);
     }
   }
+
+  // ID of last visible mesage in chat, for undo
+  let lastMessage = $messages.lastElementChild;
+  while (lastMessage && lastMessage.classList.contains("hidden"))
+    lastMessage = lastMessage.previousElementSibling;
+  const lastMessageId = lastMessage ? getMessageId(lastMessage) : 0;
+
+  // notify parent window of new message
+  notify_new_message({ user: newUser, content: newContent.innerHTML, lastMessageId });
 }
 
 function combineMessages(message) {
@@ -495,15 +504,15 @@ function process_messages(new_content) {
 
 // history editing functions -------------------------------------------------
 
-function findMessageIdTaggedChildren(element) {
+function find_message_id_tagged_children(element) {
   return Array.from(element.querySelectorAll('[class*="m"]')).filter(el =>
     /(?:^|\s)m(\d+)(?:\s|$)/.test(el.className)
   )
 }
 
 function reprocess_tagged_children($el) {
-  const taggedChildren = findMessageIdTaggedChildren($el);
-  for (const $child of taggedChildren) {
+  const tagged_children = find_message_id_tagged_children($el);
+  for (const $child of tagged_children) {
     const id = getMessageId($child);
     const $main = $(`.message.m${id}:not(.removed)`);
     if (!$main)
@@ -513,19 +522,8 @@ function reprocess_tagged_children($el) {
   }
 }
 
-async function get_script_message_and_id() {
-  const script = document.currentScript;
-  console.log("script", script);
-  const script_message = script.closest('.message');
-  if (!script_message) {
-    throw new Error("script not in message");
-  }
-  const script_message_id = getMessageId(script_message);
-  await wait_for_whole_message(script_message);
-  return { script, script_message, script_message_id };
-}
-
-async function remove2(messageId) {
+function remove(messageId, edit = false) {
+  // console.log("removing message", messageId);
   const idClass = `m${messageId}`;
   let message = null;
   // add class hidden to all matching elements
@@ -539,64 +537,94 @@ async function remove2(messageId) {
     // unhide the corresponding main messages, and re-processes them in order
     reprocess_tagged_children($el);
   }
-  if (!message)
+  if (!message) {
     console.error(`remove: message ${messageId} not found`);
+    return;
+  }
+  if (edit) {
+    // mark the message as edited
+    // console.log("marking message as edited", message);
+    message.classList.add("edited");
+  }
   return message;
 }
 
-async function remove(messageId) {
-  const { script, script_message, script_message_id } = await get_script_message_and_id();
-  const message = await remove2(messageId);
-  // remove the script element
-  script.remove();
-  // hide the message that contained the script if it's now empty
-  if (script_message && !script_message.querySelector(".content").innerHTML.trim())
-    script_message.classList.add("hidden");
-  return message;
-}
-
-async function insert2(messageId, message) {
-  const idClass = `m${messageId}`;
-  const $el = $(`.message.${idClass}`);
-  if (!$el) {
-    console.error(`insert: message ${messageId} not found`);
+function insert(targetId, message) {
+  // console.log("inserting message", message, "before", targetId);
+  const targetIdClass = `m${targetId}`;
+  const $target = $(`.message.${targetIdClass}`);
+  if (!$target) {
+    console.error(`insert: message ${targetIdClass} not found`);
     return;
   }
   // insert a placeholder with same ID before the message where it is
+  const messageId = getMessageId(message);
+  const idClass = `m${messageId}`;
   const placeholder = document.createElement("div");
   placeholder.classList.add(idClass);
   placeholder.classList.add("hidden");
   placeholder.classList.add("placeholder");
   message.before(placeholder);
-  // insert message before $el
-  $el.before(message);
+  // insert message before $target
+  $target.before(message);
   return message;
 }
 
-async function insert(messageId) {
-  const { script, script_message, script_message_id } = await get_script_message_and_id();
-  const message = await insert2(messageId, script_message);
-  // remove the script element
-  script.remove();
-  return message;
+function get_message_meta(message) {
+  return message.getElementsByTagName('allychat-meta');
 }
 
-async function edit(messageId) {
-  const { script, script_message, script_message_id } = await get_script_message_and_id();
-  console.log("edit: script_message", script_message);
-  // remove then insert
-  const replaced = await remove2(messageId, true);
-  if (!replaced)
-    return;
-  const message = await insert2(messageId, script_message);
-  // we need to tag the message with the old message ID
-  // using data-prev attribute
-  console.log("edit: message", message);
-  console.log("edit: message.dataset", message.dataset);
-  message.dataset.prev = messageId;
-  // mark the old message as edited
-  replaced.classList.add("edited");
-  // remove the script element
-  script.remove();
-  return message;
+function message_is_empty(message) {
+    const content = message.querySelector('.content');
+    const label = content.querySelector('.label');
+    const hasNonLabelNonPContent = content.querySelector(':not(.label):not(p)');
+    const contentText = content.textContent.trim();
+
+    if (hasNonLabelNonPContent)
+      return false;
+
+    if (!label)
+      return contentText === '';
+
+    const labelText = label.textContent.trim();
+
+    return contentText === labelText;
+}
+
+function process_editing_commands(message) {
+  const metas = get_message_meta(message);
+  // if (metas.length > 0) {
+  //   console.log("process_editing_commands: message", message.outerHTML);
+  //   console.log("metas", metas);
+  // }
+  for (const meta of metas) {
+    const remove_ids = meta.getAttribute("remove");
+    const insert_id = meta.getAttribute("insert");
+    const edit_id = meta.getAttribute("edit");
+    meta.removeAttribute("remove");
+    meta.removeAttribute("insert");
+    meta.removeAttribute("edit");
+
+    // if no attributes remain on the tag, remove the meta tag
+    if (!meta.hasAttributes())
+      meta.remove();
+
+    // if the message content is now empty, aside from the label, hide the message
+    if (message_is_empty(message))
+      message.classList.add('hidden');
+
+    if (remove_ids) {
+      for (const id of remove_ids.split(" "))
+        remove(id);
+    }
+
+    if (edit_id)
+      remove(edit_id, true);
+
+    const point = insert_id || edit_id;
+    if (point) {
+      insert(point, message);
+      message.dataset.prev = point;
+    }
+  }
 }

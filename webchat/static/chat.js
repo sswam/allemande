@@ -27,6 +27,8 @@ let access_denied = false;
 const narrator = "Nova";
 const illustrator = "Illu";
 
+let lastMessageId = null;
+
 let view_options = {
   images: 1,
   alt: 0,
@@ -121,7 +123,8 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['alt+c', view_clean, 'View clean'],
   ['alt+m', move_mode, 'Move mode', ADMIN],
 
-  ['alt+z', undo, 'Undo last action', ADMIN],
+  ['alt+z', undo, 'Undo last message', ADMIN],
+  ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
   ['alt+r', retry, 'Retry last action', ADMIN],
   ['alt+x', clear_chat, 'Clear messages', ADMIN],
   ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
@@ -255,12 +258,12 @@ function focus_content() {
   $content.focus();
 }
 
-function send_random_message() {
+async function send_random_message() {
   const message = random_message[Math.floor(Math.random() * random_message.length)];
-  send_text(message);
+  await send_text(message);
 }
 
-function send_continue(n) {
+async function send_continue(n) {
   // nth from the end of the last_users array
   n = n || 1;
   if (n > last_users.length) return;
@@ -268,7 +271,7 @@ function send_continue(n) {
   // console.log("last_users", last_users);
   const message = "-@" + last_users[last_users.length - n];
   // console.log("message", message);
-  send_text(message);
+  await send_text(message);
 }
 
 
@@ -361,6 +364,7 @@ function new_chat_message(message) {
         last_users.shift();
     }
   }
+  lastMessageId = message.lastMessageId;
 }
 
 // insert tabs and indent ----------------------------------------------------
@@ -1388,21 +1392,26 @@ async function undo_last_message(room) {
   return data;
 }
 
-async function undo(ev) {
+async function undo(ev, hard) {
   ev.preventDefault();
 
+  hard = hard || ev.ctrlKey;
   auto_play_back_off();
 
   if (!(ev.key || ev.shiftKey || confirm("Undo the last message?\n(hold shift to skip this confirmation next time)")))
     return;
 
-  try {
-    await undo_last_message(room);
-    // TODO should clear immediately for other users too, not just the current user
-    // reload_messages();
-  } catch (err) {
-    console.error(err.message);
-    await error("mod_undo");
+  if (hard) {
+    try {
+      await undo_last_message(room);
+      // TODO should clear immediately for other users too, not just the current user
+      // reload_messages();
+    } catch (err) {
+      console.error(err.message);
+      await error("mod_undo");
+    }
+  } else {
+    await send_text(`<allychat-meta remove=${lastMessageId}>`);
   }
 }
 
@@ -1883,8 +1892,8 @@ function view_items(ev) {
 
 // invoke someone ------------------------------------------------------------
 
-function invoke(who) {
-  send_text(`-@${who}`);
+async function invoke(who) {
+  await send_text(`-@${who}`);
 }
 
 // themes --------------------------------------------------------------------
