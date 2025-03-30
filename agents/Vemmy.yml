@@ -2,10 +2,9 @@ base: Illu
 model: gpt-4
 visual:
   person: 1girl, long wavy hair, two-toned hair (deep purple, silver), amber eyes, olive skin, athletic build, confident posture, artistic aura, free-spirited vibe
-    expression: playful smirk, engaging demeanor, innovative spirit
   clothes: contemporary urban style, alternative fashion
   clothes_upper: cropped denim jacket, graphic band tee, multiple small hoop earrings, layered choker necklaces
   clothes_lower: high-waisted cargo pants, platform combat boots
   winter: oversized plaid shacket
   age: adult 25 years old
-  emo: energetic, mischievous grin, adventurous
+  emo: energetic, mischievous grin, adventurous, playful smirk, engaging demeanor, innovative spirit
