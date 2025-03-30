@@ -196,7 +196,7 @@ function handleNewMessage(newMessage) {
         "pre, details, script, style"
       );
       let container =
-        p && !(go_before_this && isPrecedingSibling(go_before_this, p))
+        p && !(go_before_this && isPrecedingNode(go_before_this, p))
           ? p
           : newContent;
       /*
@@ -229,12 +229,6 @@ function handleNewMessage(newMessage) {
 
   // notify parent window of new message
   notify_new_message({ user: newUser, content: newContent.innerHTML, lastMessageId });
-}
-
-function isPrecedingSibling(node1, node2) {
-  return (
-    node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING
-  );
 }
 
 function getLastVisibleMessageId() {

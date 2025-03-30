@@ -56,6 +56,12 @@ function enable_link(element, enabled) {
   element.ariaDisabled = !enabled;
 }
 
+function isPrecedingNode(node1, node2) {
+  return (
+    node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING
+  );
+}
+
 // Hook system ---------------------------------------------------------------
 
 const hooks = {};
