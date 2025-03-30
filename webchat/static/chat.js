@@ -610,6 +610,7 @@ async function set_room(r, no_history) {
     }
     messages_iframe_set_src(room_url + "?stream=1");
 
+    // console.log("set_room, calling check_for_updates");
     check_for_updates();
   }
 }
@@ -1145,13 +1146,22 @@ async function register_service_worker() {
   sw_message_channel.port1.onmessage = handle_sw_message;
   sw_message_channel.port1.postMessage("getAppInfo");
 
+  // console.log("ServiceWorker registration successful with scope: ", sw_registration.scope);
+  check_for_updates();
 //  $on(navigator.serviceWorker, "controllerchange", reload_page)
 }
 
+let last_check_for_updates = 0;
+
 function check_for_updates() {
-  if (!sw_message_channel)
-    throw new Error("Service worker not registered");
-  sw_message_channel.port1.postMessage("checkForUpdates");
+  if (Date.now() - last_check_for_updates < 1000) {
+    return;
+  }
+  last_check_for_updates = Date.now();
+  // console.log("check_for_updates");
+  if (sw_message_channel) {
+    sw_message_channel.port1.postMessage("checkForUpdates");
+  }
 }
 
 // authentication ------------------------------------------------------------
@@ -2134,6 +2144,7 @@ const icons = {
   view_columns: '<svg width="20" height="20" fill="currentColor" class="bi bi-layout-three-columns" viewBox="0 0 16 16"><path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5zM1.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5H5V1zM10 15V1H6v14zm1 0h3.5a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5H11z"/></svg>',
   view_details: '<svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><ellipse cx="7.6" cy="4.3" rx="4" ry="3"/><ellipse cx="11.7" cy="4.6" rx="4" ry="3"/><ellipse cx="6.9" cy="8.5" rx="4" ry="3"/><ellipse cx="10.7" cy="7.3" rx="4" ry="3"/><ellipse cx="4.3" cy="6.3" rx="4" ry="3"/><ellipse cx="3.22" cy="12.3" rx="1.2" ry=".9"/><ellipse cx="1.4" cy="14.1" rx=".8" ry=".6"/></svg>',
   view_compact: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-collapse-vertical" viewBox="0 0 16 16"><path d="M8 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M0 8a.5.5 0 0 1 .5-.5h3.793L3.146 6.354a.5.5 0 1 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L4.293 8.5H.5A.5.5 0 0 1 0 8m11.707.5 1.147 1.146a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2a.5.5 0 0 1 .708.708L11.707 7.5H15.5a.5.5 0 0 1 0 1z"/></svg>',
+  audio: '<svg width="20" height="20" fill="currentColor" class="bi bi-headset" viewBox="0 0 16 16"><path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5"/></svg>',
 };
 
 

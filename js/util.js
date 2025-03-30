@@ -10,7 +10,7 @@ const $append = (parent, child) => parent.appendChild(child);
 const $remove = (element) => element.parentNode.removeChild(element);
 const $replace = (oldElement, newElement) => oldElement.parentNode.replaceChild(newElement, oldElement);
 const $empty = (element) => element.innerHTML = '';
-const $on = (element, event, handler) => element.addEventListener(event, handler);
+const $on = (element, event, handler, options) => element.addEventListener(event, handler, options);
 const $off = (element, event, handler) => element.removeEventListener(event, handler);
 const $dispatch = (element, event) => element.dispatchEvent(new Event(event));
 const $animate = (element, animation, callback) => {
