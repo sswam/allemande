@@ -723,6 +723,8 @@ def quote_inline_math(pre, d1, math, d2, post):
         logger.warning("already processed: %r", math)
         has_math = True
         is_math = False
+    elif d1 == r"\(" and d2 == r"\)" and ' ' not in math:  # hack: avoid triggering on image prompt \(medium\) etc!
+        is_math = False
     elif d1 == r"\(" and d2 == r"\)":
         pass
     elif d1 == r"\[" and d2 == r"\]":
