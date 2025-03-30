@@ -106,7 +106,7 @@ def trim_response(response, args, agent_name, people_lc=None):
     # response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
 
     if response != response_before:
-        logger.info("Trimmed response: %r\nto: %r", response_before, response)
+        logger.debug("Trimmed response: %r\nto: %r", response_before, response)
 
     response = " " + response.strip()
     return response
@@ -421,7 +421,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     # so inefficient, need to rework this sensibly one day using ChatMessage objects
     history = list(chat.messages_to_lines(history_messages))
 
-    # logger.info("history_messages 2: %r", history_messages)
+#     logger.info("history_messages 2: %r", history_messages)
     # logger.info("history 2: %r", history)
 
     welcome_agents = [name for name, agent in agents.items() if agent.get("welcome")]
@@ -437,7 +437,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         config=config,
         room=room,
     )
-    logger.info("who should respond: %r", bots)
+#    logger.info("who should respond: %r", bots)
 
     # Support "directed-poke" which removes itself, like -@Ally
     # TODO this is a bit dodgy and has a race condition
@@ -648,13 +648,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     service = agent["type"]
 
-    logger.info("service: %r", service)
+#     logger.info("service: %r", service)
 
     portal = portals.get_portal(service)
 
     logger.debug("fulltext: %r", fulltext2)
     logger.debug("config: %r", gen_config)
-    logger.info("portal: %r", str(portal.portal))
+#     logger.info("portal: %r", str(portal.portal))
 
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 
@@ -943,7 +943,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
             continue
         opts.stop.append(f"\n\n{p}: ")
 
-    logger.info("stop: %r", opts.stop)
+#     logger.info("stop: %r", opts.stop)
 
     # import python pretty printer:
     from pprint import pformat
@@ -1049,7 +1049,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
         if image_count >= image_count_max:
             break
 
-    logger.info("Found %d messages with %d images", message_count, image_count)
+#     logger.info("Found %d messages with %d images", message_count, image_count)
 
 
 async def resolve_image_path(file: str, url: str, user: str, throw: bool = True, fetch: bool = False) -> str|None:
