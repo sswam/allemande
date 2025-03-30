@@ -131,7 +131,7 @@ trap 'message-and-exit 1' INT
 get_options() {
     run_initial_gens=1
 
-    while getopts "nC:B43cioMm:F:exh" opt; do
+    while getopts "nC:B43cioMgfm:F:exh" opt; do
         case "$opt" in
         n)
             run_initial_gens=0
