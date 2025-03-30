@@ -217,6 +217,12 @@ function handleNewMessage(newMessage) {
     }
   }
 
+  // Add ID labels which can be shown, div class=id
+  const idDiv = document.createElement("div");
+  idDiv.className = "id";
+  idDiv.textContent = id;
+  newMessage.appendChild(idDiv);
+
   // ID of last visible mesage in chat, for undo
   const lastMessageId = getLastVisibleMessageId();
   // console.log("last visible message ID", lastMessageId);

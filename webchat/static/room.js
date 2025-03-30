@@ -876,6 +876,8 @@ async function set_view_options(new_view_options) {
   cl.toggle("clean", view_options.clean == 1);
   cl.toggle("columns", view_options.columns == 1);
   cl.toggle("compact", view_options.compact == 1);
+  cl.toggle("ids-hover", view_options.ids == 1);
+  cl.toggle("ids", view_options.ids == 2);
 
   const image_size = view_options.image_size * 5;
   const image_size_small = view_options.image_size*2.5;
