@@ -1056,17 +1056,17 @@ def restore_indents(text):
 def message_to_html(message):
     """Convert a chat message to HTML."""
     global math_cache
-    logger.info("converting message to html: %r", message["content"])
+#     logger.info("converting message to html: %r", message["content"])
     content, has_math = preprocess(message["content"])
     if content in math_cache:
         html_content = math_cache[content]
     else:
         try:
-            logger.info("markdown content: %r", content)
+#             logger.info("markdown content: %r", content)
             # content = escape_indents(content)
             html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
             # html_content = restore_indents(html_content)
-            logger.info("html content: %r", html_content)
+#             logger.info("html content: %r", html_content)
             html_content = disenfuckulate_html(html_content)
         #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
         #             html_content = html_content.replace("<br />", "")
@@ -1077,7 +1077,7 @@ def message_to_html(message):
             html_content = f"<pre>{html.escape(content)}</pre>"
         if has_math:
             math_cache[content] = html_content
-    logger.info("html_content 2: %r", html_content)
+#     logger.info("html_content 2: %r", html_content)
     if html_content == "":
         html_content = "&nbsp;"
     user = message.get("user")
@@ -1461,7 +1461,7 @@ def check_access(user: str, pathname: Path|str) -> Access:
         access, reason = _check_access_2(user, pathname)
     except PermissionError as e:
         access, reason = Access.NONE, "PermissionError"
-    logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
+#     logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
     return access
 
 
@@ -1487,7 +1487,7 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     # If pathname ends with / it's a directory
     is_dir = pathname.endswith("/") or pathname == ""
 
-    logger.info("pathname %r is_dir %r", pathname, is_dir)
+#     logger.info("pathname %r is_dir %r", pathname, is_dir)
 
     if sanitize_pathname(pathname) != pathname:
         raise ValueError(f"Invalid pathname, not sanitized: {pathname}, {sanitize_pathname(pathname)}")
@@ -1505,7 +1505,7 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     access = load_config(dir_path, ".access.yml")
     agent_names = read_agents_lists(path)
 
-    logger.info("path %r access %r", path, access)
+    logger.debug("path %r access %r", path, access)
 
     user = user.lower()
 
@@ -1873,6 +1873,9 @@ def set_user_theme(user, theme):
 
 def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Apply editing commands to the chat history."""
+#     logger.info("\n\n\n")
+#     logger.info("messages before editing commands: %r", messages)
+#     logger.info("\n\n\n")
     lookup = messages.copy()
     for i in range(len(messages)):
         message = messages[i]
@@ -1899,9 +1902,20 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         if meta.attrs:
             message["content"] += str(meta)
 
-        old = remove or edit
-        if old is not None:
-            lookup[int(old)]["remove"] = True
+        rm_ids = []
+        if edit:
+            rm_ids.append(int(edit))
+        elif remove:
+            rm_ids += list(map(int, remove.split(" ")))
+        for rm_id in rm_ids:
+            if rm_id <= len(lookup):
+#                 logger.warning("Removing message ID: %s", rm_id)
+                lookup[rm_id]["remove"] = True
+            else:
+                logger.warning("Invalid message ID in editing command: %s", rm_id)
+
+        if edit and insert:
+            logger.warning("Both edit and insert attributes in the same message, will edit: %s", message)
 
         target = edit or insert
         if target is not None:
@@ -1911,14 +1925,21 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
                 lookup[int(target)]["before"].append(message)
             messages[i] = None
 
+#         logger.info("message ID: %s, remove: %s, edit: %s, insert: %s, content: %s", i, remove, edit, insert, message["content"])
+
         # if a message that wasn't moved is now empty, mark it for removal
-        if not edit and not insert and not message["content"].strip():
+        if remove and not edit and not insert and not message["content"].strip():
+#             logger.warning("Removing editing message ID: %s", i)
             messages[i]["remove"] = True
 
-    logger.info("messages after editing commands: %r", messages)
+#     logger.info("messages after editing commands: %r", messages)
+#     logger.info("\n\n\n")
 
     output = []
     flatten_edited_messages(messages, output)
+
+#     logger.info("apply_editing_commands: output: %r", output)
+#     logger.info("\n\n\n")
 
     return output
 
