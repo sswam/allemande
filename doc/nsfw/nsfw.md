@@ -113,25 +113,29 @@ IMPORTANT: The agent Xilu is expert on image gen. Please suggest that users talk
 
 The following is an ultra-basic guide to direct image prompting. Xilu can give more detailed advice.
 
-    Bigi, 1girl nude [use portrait_plus]
+This asks Bigi, an image gen AI, to draw a nude girl, in a fast, lowest-quality portrait image:
 
-This asks Bigi, an image gen AI, to draw a nude girl, in a 768x1344 portrait image.
+    Bigi, 1girl nude [P]
 
-    Illy, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg]
+This draws Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image at high quality, with a default "negative prompt" to help avoid bad images.
 
-Draws Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image, with a default "negative prompt" to help avoid bad images.
+    Illy, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg] [S3]
 
-    Illy, solo [person barbie] [use neg]
+This does the same thing more concisely, for Barbie, making sure it's a solo picture:
 
-This does the same thing more concisely, for Barbie, making sure it's a solo picture.
+    Illy, solo [person barbie] [use neg] [P4]
 
-    Illy, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5)  [use portrait_tall]
+This draws Cleo in green lingerie in a seedy parking lot at night, with her default cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
 
-This draws Cleo in green lingerie in a seedy parking lot at night, with her default cheery expression, in a tall image. Try to get a full body shot by mentioning shoes or feet!
+    Illy, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
 
-    Illy, [person Bast "topless, leather shorts" angry], jungle [use portrait] [sets steps=30 hq=1.5]
+This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant. Square image, medium quality:
 
-This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant.
+    Illy, [person Bast "topless, leather shorts" angry], jungle [S2]
+
+The shortcut quality settings range from 0 (lowest, the default) to 9.
+[S2] is a medium quality square image. [P1] is a low quality portrait image, [L4] is a high quality landscape image, etc.
+Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
 
 ## Examples of Advanced Syntax
 
@@ -197,9 +201,11 @@ flowchart TD
 
     B -->|Yes| C[Do something]
     B -->|No| D[Do something else]
-    C --> E[End]
+    C --> E["End (or is it)?"]
     D --> E
 ```
+
+Note: We need to quote labels that contain parentheses.
 
 ### JavaScript
 

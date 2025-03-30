@@ -119,6 +119,53 @@ def load(portals, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
+def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
+    """Apply a shortcut to the sets macro"""
+    add = {}
+    add['steps'] = "15"
+    add['hq'] = "0"
+    if quality == 0:
+        if shape == "S":
+            add['width'] = "768"
+            add['height'] = "768"
+        elif shape == "P":
+            add['width'] = "768"
+            add['height'] = "1024"
+        elif shape == "L":
+            add['width'] = "1024"
+            add['height'] = "768"
+    else:
+        if shape == "S":
+            add['width'] = "1024"
+            add['height'] = "1024"
+        elif shape == "P":
+            add['width'] = "960"
+            add['height'] = "1280"
+        elif shape == "L":
+            add['width'] = "1280"
+            add['height'] = "960"
+        if quality == 1:
+            pass
+        if quality == 2:
+            add['hq'] = "1"  # use adetailer
+        else:
+            add['hq'] = "1.5"  # use hires-fix and adetailer (3)
+        if quality == 4:
+            add['steps'] = "30"
+        elif quality == 5:
+            add['steps'] = "45"
+        elif quality == 6:
+            add['steps'] = "60"
+        elif quality == 7:
+            add['steps'] = "90"
+        elif quality == 8:
+            add['steps'] = "120"
+        elif quality == 9:
+            add['steps'] = "150"
+
+    sets.update({k:v for k,v in add.items() if k not in sets})
+
+
 # pylint: disable=too-many-locals, too-many-branches, too-many-statements
 async def process_request(portals: str, portal_str: Path, req: str):
     """Process a request on a portal"""
@@ -140,6 +187,19 @@ async def process_request(portals: str, portal_str: Path, req: str):
         macros = parse_macros(prompt)
         sets = macros.get('sets', {})
         need_update_macros = False
+
+        # TODO for SD1.5 models limit resolution to 768x768 max, and default to 512x512?
+
+        # Shortcuts
+        for shortcut in macros:
+            if re.match(r"[SPL]\d?$", shortcut):
+                shape = shortcut[0]
+                quality = int(shortcut[1] or "0")
+                apply_shortcut(sets, shape, quality)
+                need_update_macros = True
+                break
+        else:
+            shortcut = None
 
         logger.debug("sets: %r", sets)
 
@@ -179,7 +239,10 @@ async def process_request(portals: str, portal_str: Path, req: str):
             sets['height'] = str(config['height'])
             sets['hires'] = str(config['hires'])
             sets['seed'] = "---REMOVEME---"
-            prompt = update_macros(prompt, {"sets":sets, "rp":None})
+            update = {"sets": sets, "rp": None}
+            if shortcut:
+                update[shortcut] = None
+            prompt = update_macros(prompt, update)
             prompt = re.sub(r"seed=---REMOVEME---", "", prompt)
 
             logger.info("updated prompt: %s", prompt)

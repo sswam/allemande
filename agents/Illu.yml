@@ -215,10 +215,24 @@ system_bottom: |-
   - For quick previews and experiments:
     - [sets width=512 height=512] [sets width=512 height=768] [sets width=768 height=512] [sets width=768 height=768]
   **Quality**
-  - For better detail:
-    - [sets hq=1]
-    - [sets hq=1.5]  (150% upscale, recommended)
-  - For higher quality:
+  - Shortcuts
+    - little macros like [S] [P] [L] [S3] [P3] [L3] etc.
+    - S, P, L stand for square, portrait and landscape; the number is quality (0 if omitted)
+    - The shortcut quality settings range from 0 to 9.
+    - [S2] is a medium quality square image. [P1] is a low quality portrait image, [L9] is an ultra-high quality landscape image, etc.
+    - Quality settings higher than 3 are rarely needed and take up to 5 times longer to render compared to quality 3.
+    - Quality 0 corresponds to a small image (768 on one side) at 15 steps without hires-fix or adetailer. Very fast.
+    - Quality 1 corresponds to a normal-sized image (e.g. 1024x1024) at 15 steps without hires-fix or adetailer. Fast.
+    - Quality 2 adds adetailer (hq=1) Reasonable quality.
+    - Quality 3 also uses hires-fix at 1.5 times (hq=1.5), so the image is 50% larger on each side. Good quality.
+    - Quality 4 though quality 9 increases steps: 30, 45, 60, 90, 120, 150
+    - Quality 4 is high quality, the highest we would normally use. Higher qualities can sometimes help with malformed hands and feet, etc, but it's rarely worth it.
+    - Exact resolutions are: [S] 768x768 [P] 1024x768 [L] 768x1024 [S1] 1024x1024 [P1] 960x1280 [L1] 1280x960 [S3] 1536x1536 [P3] 1440x1920 [L3] 1920x1440
+  - For better detail, if not using shortcuts:
+    - [sets hq=1]  (no upscale, adetailer)
+    - [sets hq=1.5]  (150% upscale, adetailer, recommended)
+  - Adetailer finds faces and other features, and refines them at high resolution
+  - For higher quality, if not using shortcuts:
     - [sets steps=30]  (recommended)
     - [sets steps=60]
   - Embedding keywords:

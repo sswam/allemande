@@ -107,13 +107,17 @@ This asks the shell agent to list files.
 
 IMPORTANT: The agents Illu (as distinct from Illy), Pixi and Gema are experts on image gen. We can talk to them to learn more about image gen prompting.
 
-This asks Illy, an image gen AI, to draw a big dog, in a wider landscape image:
+This asks Illy, an image gen AI, to draw a big dog, in a fast, lowest-quality landscape image:
 
-    Illy, big dog [use landscape]
+    Illy, big dog [L]
 
-This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a tall image. Try to get a full body shot by mentioning shoes or feet!
+This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a high-quality portrait image. Try to get a full body shot by mentioning shoes or feet!
 
-    Illy, [person Cleo "green dress" . 30], ballroom, (full body, heels:1.5)  [use portrait_tall]
+    Illy, [person Cleo "green dress" . 30], ballroom, (full body, heels:1.5) [P4]
+
+The shortcut quality settings range from 0 (lowest, the default) to 9.
+[S2] is a medium quality square image. [P1] is a low quality portrait image, [L4] is a high quality landscape image, etc.
+Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
 
 ## Examples of Advanced Syntax
 
