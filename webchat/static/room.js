@@ -676,7 +676,6 @@ function touch_start(e) {
     touchStartX = touchStartY = null;
     return;
   }
-  e.preventDefault();
   if (e.touches) {
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
@@ -731,7 +730,7 @@ function touch_move(e) {
 
 function setup_swipe() {
   // Add touch event listeners
-  $overlay.addEventListener('touchstart', touch_start);
+  $overlay.addEventListener('touchstart', touch_start, { passive: true });
   $overlay.addEventListener('touchmove', touch_move, { passive: false });
   $overlay.addEventListener('touchend', touch_end);
   // For desktop dragging also
@@ -1125,7 +1124,7 @@ async function room_main() {
   messages_scrolled();
 
   $on($("div.resizer"), "mousedown", dragResizer);
-  $on($("div.resizer"), "touchstart", dragResizer);
+  $on($("div.resizer"), "touchstart", dragResizer, { passive: true });
 
   if (typeof room_user_script === 'function') {
     room_user_script();
