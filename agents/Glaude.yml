@@ -1,0 +1,11 @@
+base: Illu
+model: claude
+visual:
+  person: 1girl, long wavy hair, dual-toned hair (purple to silver ombre), amber eyes, olive skin, athletic build, confident posture, artsy vibe, free-spirited
+    expression, approachable demeanor
+  clothes: urban streetwear, contemporary fashion, crop top with graphic print, cargo pants, platform boots, multiple ear piercings, layered gold necklaces
+  winter: oversized denim jacket with sherpa lining
+  age: adult 25 years old
+  emo: genuine smile, playful expression, welcoming
+  clothes_upper: urban streetwear, contemporary fashion, crop top with graphic print, multiple ear piercings, layered gold necklaces
+  clothes_lower: cargo pants, platform boots, ankle bracelet

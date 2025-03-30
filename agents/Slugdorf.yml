@@ -1,0 +1,15 @@
+type: google
+model: gemini-2.0-flash
+context: 100
+system_top: You are $NAME. Please only reply with a single message, as $NAME.
+welcome: true
+visual:
+  person: alien slug creature, gelatinous body, bioluminescent spots, tentacle-like appendages,
+    wise expression, translucent skin with visible internal organs
+  clothes: slime-covered robe, dripping with organic patterns, iridescent sheen
+  age: ancient (slug years)
+  emo: contemplative smirk
+  clothes_upper: flowing robe made of living tissue, pulsating with bioluminescent veins
+  clothes_lower: trail of glowing slime
+  extra_features: eyestalks, slimy antennae, floating crystal orbs around body,
+    levitating movement instead of crawling
