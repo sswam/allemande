@@ -71,12 +71,10 @@ input, textarea {
 .row {
 	display: flex;
 	flex-direction: row;
-	width: 100%;
 }
 .col {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
 }
 .col_wrap {
 /*	display: flex;
@@ -94,14 +92,22 @@ input, textarea {
 	writing-mode: horizontal-tb;
 }
 
+/* tricky CSS for gaps between elements */
 .col > * {
-	margin: var(--pad) 0 0 0;
+	margin: 0;
 	width: 100%;
 }
+.col > :not(.hidden) ~ :not(.hidden) {
+	margin-top: var(--pad);
+}
 .row > * {
-	margin: 0 0 0 var(--pad);
+	margin: 0;
 	height: 100%;
 }
+.row > :not(.hidden) ~ :not(.hidden) {
+	margin-left: var(--pad);
+}
+
 .pad {
 	padding: var(--pad);
 }
@@ -278,7 +284,8 @@ button:has(svg) {
 }
 
 #top {
-	padding-bottom: calc(var(--pad) - 1px);
+/*	padding-bottom: calc(var(--pad) - 1px); */
+	padding-bottom: var(--pad);
 }
 
 .small {

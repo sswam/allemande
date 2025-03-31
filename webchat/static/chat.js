@@ -891,13 +891,15 @@ function select_room_basename() {
 function escape() {
   let acted = false;
   if (active_get("room_ops_move")) {
+    $room.value = room;
     active_reset("room_ops_move");
     // $content.focus();
     acted = true;
   }
   if (controls !== "input_main") {
-    set_controls();
+    set_top_left();
     set_top();
+    set_controls();
     set_view();
     acted = true;
   }
@@ -1459,6 +1461,18 @@ async function retry(ev) {
 
 // input controls ------------------------------------------------------------
 
+function reset_ui() {
+  set_controls();
+//  set_top();
+//  set_top_left();
+  set_view();
+  active_reset("send");
+  active_reset("add_file");
+  active_reset("edit_save");
+  stop_auto_play();
+  // TODO stop any current recording
+}
+
 let view_theme_original_text;
 
 function set_controls(id) {
@@ -1466,7 +1480,7 @@ function set_controls(id) {
   const $el = $id(id);
   if ($el.classList.contains("hidden")) {
     hide($("#inputrow > .controls:not(.hidden)"));
-    show($id(id || "input_main"));
+    show($id(id));
   }
   if (id === "input_main") {
     // setTimeout(() => $content.focus(), 1);
@@ -1482,25 +1496,26 @@ function set_controls(id) {
   controls = id;
 }
 
-function reset_ui() {
-  set_controls();
-//  set_top();
-  set_view();
-  active_reset("send");
-  active_reset("add_file");
-  active_reset("edit_save");
-  stop_auto_play();
-  // TODO stop any current recording
-}
-
 // top controls --------------------------------------------------------------
+
+// TODO think about and combine controls functions
 
 function set_top(id) {
   id = id || "top_main";
   const $el = $id(id);
   if ($el.classList.contains("hidden")) {
     hide($("#top > .top_controls:not(.hidden)"));
-    show($id(id || "top_main"));
+    show($el);
+  }
+  top_controls = id;
+}
+
+function set_top_left(id) {
+  id = id || "top_left_main";
+  const $el = $id(id);
+  if ($el.classList.contains("hidden")) {
+    hide($("#top > .top_left_controls:not(.hidden)"));
+    show($el);
   }
   top_controls = id;
 }
@@ -2263,9 +2278,9 @@ function chat_main() {
   $on($id("view"), "click", () => set_controls("input_view"));
   $on($id("opt"), "click", () => set_controls("input_opt"));
 
-  $on($id("nav"), "click", () => set_top("top_nav"));
+  $on($id("nav"), "click", () => set_top_left("top_left_nav"));
   $on($id("scroll"), "click", () => set_top("top_scroll"));
-  $on($id("room_ops"), "click", () => set_top("top_room_ops"));
+  $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
 
   $on($id("mod_undo"), "click", undo);
   $on($id("mod_retry"), "click", retry);
@@ -2317,7 +2332,7 @@ function chat_main() {
   $on($id("nav_prev"), "click", room_prev);
   $on($id("nav_next"), "click", room_next);
   $on($id("nav_last"), "click", room_last);
-  $on($id("nav_cancel"), "click", () => set_top());
+  $on($id("nav_cancel"), "click", () => set_top_left());
 
   $on($id("scroll_home"), "click", (ev) => scroll_home_end(ev, 0));
   $on($id("scroll_end"), "click", (ev) => scroll_home_end(ev, 1));
@@ -2327,7 +2342,7 @@ function chat_main() {
 
   $on($id("room_ops_move"), "click", move_mode);
   $on($id("room_ops_copy"), "click", copy_mode);
-  $on($id("room_ops_cancel"), "click", () => set_top());
+  $on($id("room_ops_cancel"), "click", () => set_top_left());
 
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_MESSAGE));

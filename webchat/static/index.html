@@ -16,18 +16,13 @@
 <input type="hidden" id="op" name="op" value="post">
 <div id="main" class="col pad fill">
 	<div class="row" id="top">
-		<button id="privacy"></button>
-		<input id="room" name="room" class="flex grow">
-		<div class="top_controls row" id="top_main">
-			<button id="debug" title="toggle debug" class="hidden small">?</button>
+		<div class="top_left_controls row" id="top_left_main">
+			<button id="privacy"></button>
 			<button id="nav" title="navigation">nav</button>
-			<button id="scroll" title="scrolling">scroll</button>
 			<button id="room_ops" title="room operations">room</button>
-			<button class="hidden" id="notify">notify</button>
-			<a class="button" href="" id="user" title="cycle main rooms">?</a>
-			<button id="logout" title="log out">exit</button>
 		</div>
-		<div class="top_controls row hidden" id="top_nav">
+		<div class="top_left_controls row hidden" id="top_left_nav">
+			<button id="nav_cancel">back</button>
 			<button id="nav_up" title="go up to parent folder: alt+u">up</button>
 			<button id="nav_allychat" title="Ally Chat">allychat</button>
 			<button id="nav_porch" title="porch">your public porch</button>
@@ -36,7 +31,19 @@
 			<button id="nav_prev" title="previous page: ctrl+,">prev</button>
 			<button id="nav_next" title="next page: ctrl+.">next</button>
 			<button id="nav_last" title="last page: ctrl+/">last</button>
-			<button id="nav_cancel">back</button>
+		</div>
+		<div class="top_left_controls row hidden" id="top_left_room_ops">
+			<button id="room_ops_cancel">back</button>
+			<button id="room_ops_copy" title="copy all or part of the room">copy</button>
+			<button id="room_ops_move" title="rename or move: alt+m" class="admin">move</button>
+		</div>
+		<input id="room" name="room" class="flex grow">
+		<div class="top_controls row" id="top_main">
+			<button id="debug" title="toggle debug" class="hidden small">?</button>
+			<button id="scroll" title="scrolling">scroll</button>
+			<button class="hidden" id="notify">notify</button>
+			<a class="button" href="" id="user" title="cycle main rooms">?</a>
+			<button id="logout" title="log out">exit</button>
 		</div>
 		<div class="top_controls row hidden" id="top_scroll">
 			<button id="scroll_home" title="start of room: home">top</button>
@@ -44,11 +51,6 @@
 			<button id="scroll_pagedown" title="page down">pagedown</button>
 			<button id="scroll_end" title="end of room: end">bot</button>
 			<button id="scroll_cancel">back</button>
-		</div>
-		<div class="top_controls row hidden" id="top_room_ops">
-			<button id="room_ops_move" title="rename or move: alt+m" class="admin">move</button>
-			<button id="room_ops_copy" title="copy all or part of the room">copy</button>
-			<button id="room_ops_cancel">back</button>
 		</div>
 	</div>
 
