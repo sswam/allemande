@@ -16,12 +16,6 @@ body, html {
 	overflow: hidden;
 }
 
-/*
-body {
-	overscroll-behavior-y: contain;
-}
-*/
-
 .hidden {
 	display: none !important;
 }

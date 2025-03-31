@@ -325,10 +325,20 @@ function key_event(ev) {
     return;
   }
   if (ev.key == "Home") {
-    return scroll_home();
+    ev.preventDefault();
+    return scroll_home_end(0);
   }
   if (ev.key == "End") {
-    return scroll_end();
+    ev.preventDefault();
+    return scroll_home_end(1);
+  }
+  if (ev.key == "PageUp") {
+    ev.preventDefault();
+    return scroll_pages(-1);
+  }
+  if (ev.key == "End") {
+    ev.preventDefault();
+    return scroll_pages(1);
   }
   if (
     keysToKeep.includes(ev.key) ||
@@ -768,6 +778,17 @@ function click(ev) {
   if (!$messages.contains(ev.target)) {
     return;
   }
+
+  // focus on message if clicked, can show IDs
+  // TODO, only in "select mode", keyboard control / accessibility...
+  /*
+  const $message = ev.target.closest(".message");
+  if ($message) {
+    ev.preventDefault();
+    select_message($message, ev.shiftKey, ev.ctrlKey);
+  }
+  */
+
   if (ev.target.classList.contains("thumb") && ev.target.parentNode.classList.contains("embed")) {
     ev.preventDefault();
     return embed_click(ev, ev.target);
@@ -782,6 +803,44 @@ function click(ev) {
     ev.preventDefault();
     return image_click(ev.target, ev);
   }
+}
+
+let $select_message_prev;
+
+function select_message($message, shift, ctrl) {
+  // if ctrl not held, clear previous selections
+  if (!ctrl) {
+    for (const $m of $$(".message.select")) {
+      $m.classList.remove("select");
+    }
+  }
+  // range select
+  if (shift && $message !== $select_message_prev) {
+    // put them in order, also exclude the previous message
+    let $from = $select_message_prev;
+    let $to = $message;
+    if (isPrecedingNode($from, $to)) {
+      if (ctrl) {
+        $from = $from.nextElementSibling;
+      }
+    } else {
+      [$from, $to] = [$to, $from];
+      if (ctrl) {
+        $to = $to.previousElementSibling;
+      }
+    }
+    let $m = $from;
+    while ($m) {
+      $m.classList.toggle("select");
+      if ($m === $to)
+        break;
+      $m = $m.nextElementSibling;
+    }
+  } else {
+    // toggle .select class
+    $message.classList.toggle("select");
+  }
+  $select_message_prev = $message;
 }
 
 function notify_new_message(newMessage) {
@@ -854,8 +913,10 @@ async function handle_message(ev) {
     await set_view_options(ev.data);
   } else if (ev.data.type === "theme_changed") {
     set_theme(ev.data.theme);
-  } else if (ev.data.type === "set_scroll") {
-    set_scroll(ev.data.x, ev.data.y);
+  } else if (ev.data.type === "scroll_home_end") {
+    scroll_home_end(ev.data.p);
+  } else if (ev.data.type === "scroll_pages") {
+    scroll_pages(ev.data.d);
   }
   messages_resized();
 }
@@ -924,31 +985,22 @@ function open_or_close_details($details) {
   }
 }
 
-// scroll to home or end -----------------------------------------------------
-
-function scroll_home() {
-  scroll_home_end(0);
-}
-
-function scroll_end() {
-  scroll_home_end(-1);
-}
+// scroll to home or end, page up, page down ---------------------------------
 
 function scroll_home_end(p) {
   if (view_options.columns) {
-    set_scroll(p, 0);
+    $messages_wrap.scrollLeft = p * $messages_wrap.scrollWidth;
   } else {
-    set_scroll(0, p);
+    $messages_wrap.scrollTop = p * $messages_wrap.scrollHeight;
   }
 }
 
-function set_scroll(x, y) {
-  if (x == -1)
-    x = $messages_wrap.scrollWidth;
-  if (y == -1)
-    y = $messages_wrap.scrollHeight;
-  $messages_wrap.scrollLeft = x;
-  $messages_wrap.scrollTop = y;
+function scroll_pages(d) {
+  if (view_options.columns) {
+    $messages_wrap.scrollLeft += d * $messages_wrap.clientWidth;
+  } else {
+    $messages_wrap.scrollTop += d * $messages_wrap.clientHeight;
+  }
 }
 
 // wait for the page to load the main elements -------------------------------
@@ -1107,6 +1159,7 @@ async function room_main() {
 
   $on($overlay, "click", overlay_click);
   setup_swipe();
+  // $on(document, "click", click);
   $on(document, "click", click);
   $on(document, "auxclick", click);
   $on(window, "resize", () => run_hooks("window_resize"));

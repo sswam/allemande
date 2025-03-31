@@ -193,13 +193,18 @@ function handleNewMessage(newMessage) {
       let p = newContent.querySelector(":scope > p");
       // console.log("first paragraph", p);
       let go_before_this = newMessage.querySelector(
-        "pre, details, script, style"
+        "pre, details, script:not([src]), style, ol, ul"
       );
-      let container =
-        p && !(go_before_this && isPrecedingNode(go_before_this, p))
-          ? p
-          : newContent;
-      /*
+      let container;
+      if (p && !(go_before_this && isPrecedingNode(go_before_this, p))) {
+        container = p;
+      } else {
+        label.style.float = "left";
+//        label.style.paddingRight = "1em";
+        container = newContent;
+      }
+      container.insertBefore(label, container.firstChild);
+
       if (user.toLowerCase() === "gimg") {
         console.log(
           "moving label",
@@ -212,7 +217,6 @@ function handleNewMessage(newMessage) {
           user
         );
       }
-      */
       container.insertBefore(label, container.firstChild);
     }
   }

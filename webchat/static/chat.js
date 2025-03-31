@@ -376,7 +376,7 @@ function textarea_indent(textarea, dedent = false) {
   if (textarea.selectionStart === textarea.selectionEnd) {
     // console.log("single tab");
     if (dedent) {
-      // For shift-tab with no selection, remove previous tab if it exists
+      // For shift-tab with no selection, remove previous tab if it exists  // FIXME not ideal
       const pos = textarea.selectionStart;
       if (pos > 0 && textarea.value[pos - 1] === '\t') {
         setRangeText(textarea, '', pos - 1, pos);
@@ -426,6 +426,10 @@ function textarea_indent(textarea, dedent = false) {
         processedLines.push(line.slice(4));
       } else if (line.startsWith('  ')) {
         processedLines.push(line.slice(2));
+      } else if (line.startsWith(' ')) {
+        processedLines.push(line.slice(1));
+      } else {
+        processedLines.push(line);
       }
     }
   } else {
@@ -442,9 +446,9 @@ function textarea_indent(textarea, dedent = false) {
   setRangeText(textarea, newText, blockStart, blockEnd);
 
   // Calculate new selection positions
-  const deltaPerLine = dedent ? -1 : 1;
-  const newSelStart = selStart + (selStart > blockStart ? deltaPerLine : 0);
-  const newSelEnd = selEnd + (lines.length * deltaPerLine);
+  const deltaLength = newText.length - (blockEnd - blockStart);
+  const newSelStart = selStart + (selStart > blockStart ? deltaLength : 0);
+  const newSelEnd = selEnd + deltaLength;
 
   // Restore selection
   textarea.setSelectionRange(newSelStart, newSelEnd);
@@ -538,20 +542,20 @@ async function set_room(r, no_history) {
   // check if we're already in the room
   if (room === r) {
     // console.log("already in room", room);
-    active_reset("move");
+    active_reset("room_ops_move");
     // $content.focus();
     return;
   }
 
   // check if we're moving / renaming
-  if (active_get("move")) {
+  if (active_get("room_ops_move")) {
     if (r = await move(room, r)) {
-      active_reset("move");
+      active_reset("room_ops_move");
       // continue browsing to the new name, will do a reload unfortunately
     } else {
       // move was rejected
       $room.value = room;
-      error("move");
+      error("room_ops_move");
       // stay in move mode
       select_room_basename();
       return;
@@ -635,8 +639,8 @@ function show_room_privacy() {
 
 function move_mode() {
   // button was clicked, toggle move mode
-  active_toggle("move");
-  if (active_get("move")) {
+  active_toggle("room_ops_move");
+  if (active_get("room_ops_move")) {
     select_room_basename();
   } else {
     // $content.focus();
@@ -693,6 +697,19 @@ async function move(source, dest) {
   return dest_name_to_return;
 }
 
+// copy a room, file or selection --------------------------------------------
+
+function copy_mode() {
+  // TODO
+  // button was clicked, toggle copy mode
+  active_toggle("room_ops_copy");
+  if (active_get("room_ops_copy")) {
+    select_room_basename();
+  } else {
+    // $content.focus();
+  }
+}
+
 // navigation ----------------------------------------------------------------
 
 function nav_up(ev) {
@@ -710,16 +727,14 @@ function nav_up(ev) {
   set_room(new_room);
 }
 
-function nav_top(ev) {
-  $messages_iframe.contentWindow.postMessage({ type: "set_scroll", x: 0, y: 0 }, ROOMS_URL);
+function scroll_home_end(ev, p) {
+  ev.preventDefault();
+  $messages_iframe.contentWindow.postMessage({ type: "scroll_home_end", p }, ROOMS_URL);
 }
 
-function nav_bot(ev) {
-  if (view_options.columns) {
-    $messages_iframe.contentWindow.postMessage({ type: "set_scroll", x: -1, y: 0 }, ROOMS_URL);
-  } else {
-    $messages_iframe.contentWindow.postMessage({ type: "set_scroll", x: 0, y: -1 }, ROOMS_URL);
-  }
+function scroll_pages(ev, d) {
+  ev.preventDefault();
+  $messages_iframe.contentWindow.postMessage({ type: "scroll_pages", d }, ROOMS_URL);
 }
 
 // user info and settings ----------------------------------------------------
@@ -875,8 +890,8 @@ function select_room_basename() {
 
 function escape() {
   let acted = false;
-  if (active_get("move")) {
-    active_reset("move");
+  if (active_get("room_ops_move")) {
+    active_reset("room_ops_move");
     // $content.focus();
     acted = true;
   }
@@ -1768,7 +1783,9 @@ function edit_clear() {
   edit_set_text("");
 }
 
-function edit_close() {
+function edit_close(ev) {
+  if (ev)
+    ev.stopPropagation();
   if (edit_get_text() !== editor_text_orig) {
     if (!confirm("Discard changes?")) return false;
   }
@@ -2110,8 +2127,10 @@ const icons = {
   nav_last: '<svg width="20" height="20" fill="currentColor" class="bi bi-skip-end-fill" viewBox="0 0 16 16"><path d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.693 3.3 4 3.678 4 4.308v7.384c0 .63.692 1.01 1.233.697L11.5 8.753V12a.5.5 0 0 0 1 0z"/></svg>',
   nav_next: '<svg width="20" height="20" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16"><path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/></svg>',
   nav_prev: '<svg width="20" height="20" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16"><path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/></svg>',
-  nav_top: '<svg width="20" height="20" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16"><path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/></svg>',
-  nav_bot: '<svg width="20" height="20" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>',
+  scroll_home: '<svg width="20" height="20" fill="currentColor" class="bi bi-chevron-bar-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.646 11.854a.5.5 0 0 0 .708 0L8 8.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708M2.4 5.2c0 .22.18.4.4.4h10.4a.4.4 0 0 0 0-.8H2.8a.4.4 0 0 0-.4.4"/></svg>',
+  scroll_end: '<svg width="20" height="20" fill="currentColor" class="bi bi-chevron-bar-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M3.646 4.146a.5.5 0 0 1 .708 0L8 7.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708M1 11.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5"/></svg>',
+  scroll_pageup: '<svg width="20" height="20" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/></svg>',
+  scroll_pagedown: '<svg width="20" height="20" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/></svg>',
   nav: '<svg width="18" height="18" fill="currentColor" class="bi bi-compass-fill" viewBox="0 0 16 16"><path d="M15.5 8.516a7.5 7.5 0 1 1-9.462-7.24A1 1 0 0 1 7 0h2a1 1 0 0 1 .962 1.276 7.5 7.5 0 0 1 5.538 7.24m-3.61-3.905L6.94 7.439 4.11 12.39l4.95-2.828 2.828-4.95z"/></svg>',
   logout: '<svg width="20" height="20" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg>',
   x: '<svg width="20" height="20" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>',
@@ -2154,11 +2173,17 @@ const icons = {
   view_compact: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-collapse-vertical" viewBox="0 0 16 16"><path d="M8 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5M0 8a.5.5 0 0 1 .5-.5h3.793L3.146 6.354a.5.5 0 1 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L4.293 8.5H.5A.5.5 0 0 1 0 8m11.707.5 1.147 1.146a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2a.5.5 0 0 1 .708.708L11.707 7.5H15.5a.5.5 0 0 1 0 1z"/></svg>',
   audio: '<svg width="20" height="20" fill="currentColor" class="bi bi-headset" viewBox="0 0 16 16"><path d="M8 1a5 5 0 0 0-5 5v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a6 6 0 1 1 12 0v6a2.5 2.5 0 0 1-2.5 2.5H9.366a1 1 0 0 1-.866.5h-1a1 1 0 1 1 0-2h1a1 1 0 0 1 .866.5H11.5A1.5 1.5 0 0 0 13 12h-1a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h1V6a5 5 0 0 0-5-5"/></svg>',
   view_ids: '<svg width="20" height="20" fill="currentColor" class="bi bi-hash" viewBox="0 0 16 16"><path d="M8.39 12.648a1 1 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1 1 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.51.51 0 0 0-.523-.516.54.54 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532s.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531s.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"/></svg>',
+  room_ops_copy: '<svg width="20" height="20" fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/></svg>',
+  nav_porch: '<svg width="20" height="20" fill="currentColor" class="bi bi-house-door-fill" viewBox="0 0 16 16"><path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5"/></svg>',
+  nav_home: '<svg width="20" height="20" fill="currentColor" class="bi bi-house-fill" viewBox="0 0 16 16"><path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z"/><path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293z"/></svg>',
+  nav_allychat: '<svg width="20" height="20" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>',
+  room_ops: '<svg width="20" height="20" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16"><path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5M5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1z"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1"/></svg>',
+  scroll: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>',
 };
 
 
 function setup_icons() {
-  for (const prefix of ["mod", "add", "view", "opt", "nav"]) {
+  for (const prefix of ["mod", "add", "view", "opt", "nav", "scroll", "room_ops"]) {
     icons[`${prefix}_cancel`] = icons["x"];
   }
   icons["edit_close"] = icons["x"];
@@ -2174,7 +2199,7 @@ function setup_icons() {
   icons["edit_reset"] = icons["undo"];
   icons["edit_clear"] = icons["mod_clear"];
   icons["mod_edit"] = icons["edit"];
-  icons["move"] = icons["edit"];
+  icons["room_ops_move"] = icons["edit"];
   icons["access_denied"] = icons["x_large"];
 
   for (const id in icons) {
@@ -2239,6 +2264,8 @@ function chat_main() {
   $on($id("opt"), "click", () => set_controls("input_opt"));
 
   $on($id("nav"), "click", () => set_top("top_nav"));
+  $on($id("scroll"), "click", () => set_top("top_scroll"));
+  $on($id("room_ops"), "click", () => set_top("top_room_ops"));
 
   $on($id("mod_undo"), "click", undo);
   $on($id("mod_retry"), "click", retry);
@@ -2283,13 +2310,24 @@ function chat_main() {
   $on($id("opt_cancel"), "click", () => set_controls());
 
   $on($id("nav_up"), "click", nav_up);
-  $on($id("nav_top"), "click", nav_top);
-  $on($id("nav_bot"), "click", nav_bot);
+  $on($id("nav_allychat"), "click", () => set_room(DEFAULT_ROOM));
+  $on($id("nav_porch"), "click", () => set_room(user));
+  $on($id("nav_home"), "click", () => set_room(user + "/chat"));
   $on($id("nav_first"), "click", room_clear_number);
   $on($id("nav_prev"), "click", room_prev);
   $on($id("nav_next"), "click", room_next);
   $on($id("nav_last"), "click", room_last);
   $on($id("nav_cancel"), "click", () => set_top());
+
+  $on($id("scroll_home"), "click", (ev) => scroll_home_end(ev, 0));
+  $on($id("scroll_end"), "click", (ev) => scroll_home_end(ev, 1));
+  $on($id("scroll_pageup"), "click", (ev) => scroll_pages(ev, -1));
+  $on($id("scroll_pagedown"), "click", (ev) => scroll_pages(ev, 1));
+  $on($id("scroll_cancel"), "click", () => set_top());
+
+  $on($id("room_ops_move"), "click", move_mode);
+  $on($id("room_ops_copy"), "click", copy_mode);
+  $on($id("room_ops_cancel"), "click", () => set_top());
 
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_MESSAGE));
@@ -2306,8 +2344,6 @@ function chat_main() {
   $on($id("resizer"), "touchstart", dragControls);
 
   $on($id("privacy"), "click", change_privacy);
-
-  $on($id("move"), "click", move_mode);
 
   $on(window, "beforeprint", print_chat);
 

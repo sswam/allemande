@@ -5,19 +5,19 @@ div.messages {
 
 /* labels ----------------------------------------------------------------- */
 
+/* moved labels to avoid problems with break-after: avoid */
 .message > .content > .label:first-child,
 .message > .content > p:first-of-type > .label:first-child {
+	display: inline-block;
+	break-after: avoid;
 	margin-right: 1em;
 	font-weight: bold;
 	align-self: flex-start;
 	user-select: none;
 }
 
-/* moved labels to avoid problems with break-after: avoid */
 .message > .content > .label:first-child,
 .message > .content > p:first-of-type > .label:first-child {
-	display: inline-block;
-	break-after: avoid;
 }
 
 body:not(.compact) .message:not(.narrative) > .content > .label:first-child,
@@ -732,7 +732,8 @@ body.ids div.message > div.id {
 	display: block;
 }
 
-body.ids-hover div.message:hover > div.id {
+body.ids-hover div.message:hover > div.id,
+body.ids-hover div.message.select > div.id {
 	display: block;
 }
 
