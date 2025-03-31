@@ -538,7 +538,8 @@ function image_overlay($el) {
   signal_overlay(true);
 
   // Get all images and links containing images in document order
-  allImages = Array.from($messages.querySelectorAll("img"));
+  allImages = Array.from($messages.querySelectorAll('img:not(.hidden)')).filter(img => !img.closest('.hidden'));
+
   currentImgIndex = allImages.indexOf($currentImg);
 //  console.log("currentImgIndex", currentImgIndex);
   allImages = allImages.map(element => {
