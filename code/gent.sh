@@ -9,6 +9,7 @@ gent() {
 	local edit= e=1   # do not edit
 	local test= t=1   # run tests after generating
 	local funcs= f=() # process only listed functions
+	local append= a=0 # append to existing tests file without reading it
 
 	eval "$(ally)"
 
@@ -90,12 +91,16 @@ gent() {
 		input=":)"
 	fi
 
-	if [ -s "$tests_path" ]; then
+	if ((append)) && [ -s "$tests_path" ]; then
+		prompt="$prompt\n\nPlease append more test cases to the existing tests, i.e. no header boilerplate just test functions."
+	fi
+
+	if ! ((append)) && [ -s "$tests_path" ]; then
 		echo >&2 "already exists: $tests_path"
 		printf "%s\n" "$input" | improve -t=0 -L=0 -m="$model" "$tests_path" "$prompt" -
 	else
 		# Process input and save result
-		printf "%s\n" "$input" | process -m="$model" "$prompt" | markdown-code -c '#' >"$tests_path"
+		printf "%s\n" "$input" | process -m="$model" "$prompt" | markdown-code -c '#' >>"$tests_path"
 	fi
 
 	if [ "$executable" = 1 ]; then
