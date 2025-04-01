@@ -6,11 +6,10 @@ A script to extract and analyze functions, methods, and classes from Python sour
 
 import ast
 from typing import TextIO
-import re
 
 from ally import main, logs  # type: ignore
 
-__version__ = "0.1.13"
+__version__ = "0.1.15"
 
 logger = logs.get_logger()
 
@@ -35,26 +34,47 @@ def extract_items(tree):
     items = []
     class_methods = {}
 
+    # First pass: collect top-level definitions and establish parent relationships
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef):
+            # Add the class directly
+            items.append(node)
+            # Process its methods
             for child in ast.iter_child_nodes(node):
                 if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     child.parent = node
-            items.append(node)
+                    if node.name not in class_methods:
+                        class_methods[node.name] = []
+                    class_methods[node.name].append(child)
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             # Set parent for nested functions
             for child in ast.iter_child_nodes(node):
                 if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     child.parent = node
-            _handle_function_node(node, class_methods, items)
 
-    # Add properly formatted class methods
+            # Only add top-level functions here
+            if not hasattr(node, "parent"):
+                _handle_function_node(node, class_methods, items)
+
+    # Second pass: add nested functions in correct order
+    nested_items = []
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if hasattr(node, "parent"):
+                if isinstance(node.parent, ast.FunctionDef):
+                    nested_items.append(node)
+
+    # Build final list preserving order
     final_items = []
     for item in items:
         final_items.append(item)
         if isinstance(item, ast.ClassDef) and item.name in class_methods:
-            for method in class_methods[item.name]:
-                final_items.append(method)
+            final_items.extend(class_methods[item.name])
+        elif isinstance(item, ast.FunctionDef):
+            # Add nested functions right after their parent
+            for nested in nested_items:
+                if getattr(nested, "parent", None) is item:
+                    final_items.append(nested)
 
     return final_items
 

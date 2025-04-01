@@ -73,3 +73,22 @@ def outer():
     subject.func(istream, ostream, "-", "outer.inner", show_names=True)
     result = ostream.getvalue().strip()
     assert result == "outer.inner"
+
+def test_nested_function_order():
+    nested_code = """
+def outer():
+    def inner1():
+        pass
+    def inner2():
+        pass
+    pass
+def another():
+    pass
+"""
+    ostream = io.StringIO()
+    istream = io.StringIO(nested_code)
+    subject.func(istream, ostream, "-", list_mode=True)
+    lines = ostream.getvalue().strip().split('\n')
+    actual = [line for line in lines if line]
+    expected = ['outer', 'outer.inner1', 'outer.inner2', 'another']
+    assert actual == expected
