@@ -209,8 +209,6 @@ make
 pip install -r requirements-core.txt
 pip install -r requirements-1.txt
 pip install -r requirements-2.txt  # there may be issues!
-pip install gradio
-pip install gTTS
 
 rm -rf ~/.cache/pip
 
