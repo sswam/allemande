@@ -18,13 +18,14 @@ improve() {
 	local changes= S=1   # allow changes to existing functionality or API changes
 	local features= F=1  # allow new features
 	local lint= L=1      # run linters and type checkers if possible
-	local format= f=1    # format code
+	local format= F=1    # format code
 #	local writetest= w=1 # write tests if none found
 	local numline= n=    # number lines
 	local strict= X=1    # only do what is requested
 	local ed= E=0        # provide changes as an ed script
 	local diff= d=0      # provide changes as a unified diff
 	local think= t=1     # encourage thinking
+	local funcs= f=()    # process only listed functions
 
 	eval "$(ally)"
 
@@ -156,12 +157,12 @@ improve() {
 		fi
 	fi
 
-	files_to_edit="\`$base\`"
+	files_to_edit='`'"$base"'`'
 	if [ -f "$tests_file" ] && [ -s "$tests_file" ]; then
 		if ((codeok)); then
-			files_to_edit="\`$(basename "$tests_file")\`"
+			files_to_edit='`'"$(basename "$tests_file")"'`'
 		elif ((!testok)); then
-			files_to_edit+="and/or \`$(basename "$tests_file")\`"
+			files_to_edit+='and/or `'"$(basename "$tests_file")"'`'
 		fi
 	fi
 
@@ -237,7 +238,21 @@ improve() {
 	"
 	fi
 
-	local input=$(v cat-named -p -S $'\n' "${opt_b[@]}" "${opt_n[@]}" "$file" "${refs[@]}")
+	local target_file="$file"
+
+	local input
+	if [ ${#funcs[@]} -gt 0 ]; then
+		target_file="$file.funcs"
+		input=$(
+			echo "#File: $(basename "$file")"
+			echo "#Functions: ${funcs[*]}"
+			func "$file" "${funcs[@]}" | tee "$target_file"
+			cat-named -p -b "${refs[@]}"
+			v cat-named -p -S $'\n' "${opt_b[@]}" "${opt_n[@]}" "${refs[@]}"
+		)
+	else
+		input=$(v cat-named -p -S $'\n' "${opt_b[@]}" "${opt_n[@]}" "$file" "${refs[@]}")
+	fi
 
 	# Backup original file
 	if [ -e "$file.new" ]; then
@@ -259,7 +274,6 @@ improve() {
 		;;
 	esac
 
-	target_file="$file"
 	output_file="$file.changes"
 
 	# By default, it should edit the main code.
@@ -301,20 +315,20 @@ improve() {
 	fi
 
 	# auto-apply
-
-	echo >&2 "test: $test codeok: $codeok testok: $testok"
-	echo >&2 "tests_file: $tests_file exists? $(test -e "$tests_file" && echo yes || echo no)"
-
-	if ((test)) && ((codeok == 0)) && ((testok == 0)) && [ -e "$tests_file" ]; then
-		confirm -t apply -c="$output_file" "$target_file" "$tests_file" && return
+	applied=0
+	if auto_apply; then
+		applied=1
 	fi
 
-	if ((test)) && ((codeok == 1)) && ((testok == 0)) && [ -e "$tests_file" ]; then
-		confirm -t apply -c="$output_file" "$tests_file" && return
+	if [ ${#funcs[@]} -gt 0 ] && ((applied)); then
+		confirm func-replace "$file" <"$target_file" && return
+	fi
+	if [ ${#funcs[@]} -gt 0 ]; then
+		confirm func-replace "$file" <"$output_file" && return
 	fi
 
-	if ((codeok == 0)); then
-		confirm -t apply -c="$output_file" "$target_file" && return
+	if ((applied)); then
+		return
 	fi
 
 	# if using -t but not -C or -T, it may edit the code and/or the tests, so we don't automatically replace the old version with the new one
@@ -342,6 +356,24 @@ improve() {
 
 	# In the case that it edited both files, the user should have figured it out in their editor,
 	# we can't handle that automatically yet.
+}
+
+auto_apply() {
+	echo >&2 "test: $test codeok: $codeok testok: $testok"
+	echo >&2 "tests_file: $tests_file exists? $(test -e "$tests_file" && echo yes || echo no)"
+
+	if ((test)) && ((codeok == 0)) && ((testok == 0)) && [ -e "$tests_file" ]; then
+		confirm -t apply -c="$output_file" "$target_file" "$tests_file" && return
+	fi
+
+	if ((test)) && ((codeok == 1)) && ((testok == 0)) && [ -e "$tests_file" ]; then
+		confirm -t apply -c="$output_file" "$tests_file" && return
+	fi
+
+	if ((codeok == 0)); then
+		confirm -t apply -c="$output_file" "$target_file" && return
+	fi
+	return 1
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
