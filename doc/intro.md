@@ -199,6 +199,11 @@ ctx.fillStyle = 'red';
 ctx.fillRect(10, 10, 100, 100);
 </script>
 
+### Using a fresh canvas in the chat
+
+<canvas id="canvas_with_a_unique_name"></canvas>
+
+
 ### Drawing a chart with uPlot, and our helper functions
 
 Note that uPlot defaults to "time" on the x-axis, so turn that off unless needed.

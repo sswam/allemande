@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 file_locks = defaultdict(asyncio.Lock)
 
 
-async def file_changed(bb_file, html_file, old_size, new_size):
+async def file_changed(bb_file: str, html_file: str, old_size: int|None, new_size: int|None):
     """convert a bb file to html"""
     async with file_locks[bb_file]:
         # assume the file was appended to ...
@@ -55,7 +55,7 @@ async def file_changed(bb_file, html_file, old_size, new_size):
                 # TODO: This is maybe still not working 100% yet.
                 chat_lines = bb.read(new_size - bb.tell()).decode("utf-8").splitlines()
                 for message in chat.lines_to_messages(chat_lines):
-                    html_message = chat.message_to_html(message).encode("utf-8")
+                    html_message = (await chat.message_to_html(message, bb_file)).encode("utf-8")
                     html.write(html_message)
                     await asyncio.sleep(0)  # asyncio yield
 

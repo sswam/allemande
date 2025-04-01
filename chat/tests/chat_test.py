@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 
 import chat as subject  # type: ignore
 from chat import apply_editing_commands
+from chat import parse_markdown_attributes
 
 subject_name = subject.__name__
 
@@ -354,3 +355,80 @@ def test_multiple_edits():
     output = apply_editing_commands(messages)
     assert len(output) == 1
     assert output[0]["content"] == "Edit 2"
+
+def test_empty_attributes():
+    assert parse_markdown_attributes("{}") == {}
+
+def test_single_id():
+    assert parse_markdown_attributes("{#myid}") == {"id": ["myid"]}
+
+def test_single_class():
+    assert parse_markdown_attributes("{.myclass}") == {"class": ["myclass"]}
+
+def test_multiple_classes():
+    assert parse_markdown_attributes("{.class1 .class2}") == {"class": ["class1", "class2"]}
+
+def test_id_and_class():
+    assert parse_markdown_attributes("{#myid .myclass}") == {"id": ["myid"], "class": ["myclass"]}
+
+def test_simple_key_value():
+    assert parse_markdown_attributes("{key=value}") == {"key": "value"}
+
+def test_quoted_value():
+    assert parse_markdown_attributes('{key="value with spaces"}') == {"key": "value with spaces"}
+
+def test_single_quoted_value():
+    assert parse_markdown_attributes("{key='value with spaces'}") == {"key": "value with spaces"}
+
+def test_multiple_attributes():
+    result = parse_markdown_attributes("{#myid .class1 key=value .class2}")
+    assert result == {
+        "id": ["myid"],
+        "class": ["class1", "class2"],
+        "key": "value"
+    }
+
+def test_boolean_attribute():
+    assert parse_markdown_attributes("{disabled}") == {"disabled": True}
+
+def test_complex_attributes():
+    result = parse_markdown_attributes('{#main .big .bold title="Main Section" data-value=123 hidden}')
+    assert result == {
+        "id": ["main"],
+        "class": ["big", "bold"],
+        "title": "Main Section",
+        "data-value": "123",
+        "hidden": True
+    }
+
+def test_invalid_syntax():
+    with pytest.raises(ValueError):
+        parse_markdown_attributes("{invalid=}")
+
+def test_mismatched_quotes():
+    with pytest.raises(ValueError):
+        parse_markdown_attributes('{key="unclosed string}')
+
+def test_empty_key():
+    with pytest.raises(ValueError):
+        parse_markdown_attributes("{=value}")
+
+def test_whitespace_handling():
+    result = parse_markdown_attributes("{  #myid   .class1    key=value   }")
+    assert result == {
+        "id": ["myid"],
+        "class": ["class1"],
+        "key": "value"
+    }
+
+def test_special_characters():
+    result = parse_markdown_attributes("{data-attr_123='value-123_456'}")
+    assert result == {"data-attr_123": "value-123_456"}
+
+def test_multiple_ids():
+    result = parse_markdown_attributes("{#id1 #id2}")
+    assert result == {"id": ["id1", "id2"]}
+
+def test_mixed_quotes():
+    result = parse_markdown_attributes('{key1="value1" key2=\'value2\'}')
+    assert result == {"key1": "value1", "key2": "value2"}

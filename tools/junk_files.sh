@@ -29,6 +29,7 @@ junk_files() {
             -name '*~' -o \
             -name '*.new' -o \
             -name '*.changes' -o \
+            -name '*.funcs' -o \
             -name '*.old' -o \
             -name '.*.results.txt' -o \
             -name '*.tmp.*' -o \

@@ -20,6 +20,8 @@ import asyncio
 import copy
 import io
 import yaml
+from urllib.parse import urlparse
+import fetch
 
 import argh
 import markdown
@@ -897,7 +899,7 @@ allychat-meta
 RE_TAGS = re.compile(rf"</?({'|'.join(set(HTML_TAGS + SVG_TAGS + ALLYCHAT_TAGS))})\b", flags=re.IGNORECASE)
 
 
-def preprocess(content: str):
+async def preprocess(content: str, bb_file: str, user: str|None) -> tuple[str, bool]:
     """Preprocess chat message content, for markdown-katex, and other fixes"""
 
     # replace $foo$ with $`foo`$
@@ -980,6 +982,11 @@ def preprocess(content: str):
             out.append("""<details markdown="1" class="think">\n<summary>thinking</summary>\n""")
         elif re.match(r"^\s*</think(ing)?>$", line, flags=re.IGNORECASE):
             out.append("""</details>\n""")
+        elif m := re.match(r"^\s*\[(.*?)\]\((.*?)\){(.*?)}\s*$", line):
+            text = await process_include_maybe(line, bb_file, user, m.group(1), m.group(2), m.group(3))
+            if not text.endswith("\n"):
+                text += "\n"
+            out.append(text)
         else:
             logger.debug("not in code or anything")
             line, has_math1 = find_and_fix_inline_math(line)
@@ -996,8 +1003,144 @@ def preprocess(content: str):
 def preprocess_cli():
     """Preprocess stdin and print to stdout"""
     content = sys.stdin.read()
-    processed, has_math = preprocess(content)
+    processed, has_math = asyncio.run(preprocess(content, "/", "root"))
     print(processed)
+
+
+async def process_include_maybe(line: str, bb_file: str, user: str|None, text: str, url_str: str, attributes_str: str) -> str:
+    """Process an include directive"""
+    attributes = parse_markdown_attributes(attributes_str)
+    include = attributes.get("include")
+    code = attributes.get("code")
+    hide = attributes.get("hide")
+    if not include:
+        return line
+    # basic literal include for now
+    try:
+        path = await resolve_url_path(bb_file, url_str, user, do_fetch=True)
+    except Exception as e:
+        logger.warning("Include error: %s, %s", url_str, e)
+        return line
+
+    try:
+        with open(path) as f:
+            text = f.read()
+    except (FileNotFoundError, PermissionError) as e:
+        logger.warning("Include file not readable: %s", path)
+        return line
+
+    if not text.endswith("\n"):
+        text += "\n"
+    lang = "" if code is True else code
+    if lang is not None:
+        text = f"```{lang}\n{text}\n```"
+    if hide and lang is not None:
+        text = f"\n{text}\n"
+    if hide:
+        text = f"""{line} <details markdown="1">\n<summary>include</summary>\n{text}</details>\n"""
+    else:
+        text = f"{line}\n\n" + text
+    return text
+
+
+async def resolve_url_path(file: str, url: str, user: str|None, throw: bool = True, do_fetch: bool = False) -> str|None:
+    """
+    Resolve a URL path, handling both local and remote URLs.
+
+    Args:
+        url: The URL or local path
+        throw: Whether to raise exceptions on errors
+
+    Returns:
+        Resolved local filesystem path or URL
+
+    Raises:
+        ValueError: If the path is invalid and throw=True
+        PermissionError: If access is denied and throw=True
+        IOError: If fetch fails and throw=True
+    """
+    try:
+        # Parse URL to determine if local or remote
+        parsed_url = urlparse(url)
+
+        # Remote URL - cache
+        if parsed_url.scheme in ('http', 'https'):
+            if do_fetch:
+                cached_path = await fetch.fetch_cached(url)
+                return cached_path
+            else:
+                return str(url)
+
+        if parsed_url.scheme:
+            raise ValueError(f"Unsupported URL scheme: {parsed_url.scheme}")
+
+        # Local path
+        # TODO improve this code, I think it's safe but it's not very simple
+        room = Room(path=Path(file))
+        if url.startswith("/"):
+            path2 = Path(url[1:])
+        else:
+            path2 = (Path(room.name).parent)/url
+        safe_path = safe_join(Path(ROOMS_DIR), Path(path2))
+
+        # Check access permissions
+        if not (user and check_access(user, safe_path)):
+            raise PermissionError(f"Access denied to {safe_path} for user {user}")
+
+        if not os.path.exists(safe_path):
+            raise FileNotFoundError(f"Local file not found: {safe_path}")
+
+        return str(safe_path)
+
+    except Exception as e:
+        logging.error(f"Error resolving file path {url}: {str(e)}")
+        if throw:
+            raise
+        return None
+
+
+def parse_markdown_attributes(attr_str: str) -> dict:
+    """Parse attributes in markdown format, e.g. {#id .class key=value key2="value 2"}"""
+    attrs = {}
+    pos = 0
+    attr_str = attr_str.strip('{}')
+
+    pattern = r'''
+        \s*                         # Leading whitespace
+        (?:
+            ([#.])([^\s#.=]+)      # #id or .class
+            |
+            ([^\s=#.][^\s=]*)      # Key (for key=value or boolean)
+            (?:
+                \s*=\s*            # = with optional whitespace
+                (?:
+                    (["'])(.*?)\4   # Quoted value
+                    |
+                    ([^\s"']+)     # Unquoted value
+                )
+                |
+                ()                 # No value (boolean attribute)
+            )?
+        )
+        \s*                        # Trailing whitespace
+    '''
+
+    while pos < len(attr_str):
+        match = re.match(pattern, attr_str[pos:], re.VERBOSE)
+        if not match:
+            raise ValueError(f"Invalid attribute syntax at position {pos}: {attr_str[pos:]}")
+
+        prefix, id_class, key, quote, quoted_val, unquoted_val, _ = match.groups()
+
+        if prefix:  # #id or .class
+            attr_type = 'id' if prefix == '#' else 'class'
+            attrs.setdefault(attr_type, []).append(id_class)
+        else:  # key=value or boolean attribute
+            value = quoted_val if quote else unquoted_val if unquoted_val else True
+            attrs[key] = value
+
+        pos += match.end()
+    return attrs
 
 
 def add_blanks_after_code_blocks(lines: list[str]) -> list[str]:
@@ -1089,11 +1232,11 @@ def markdown_to_html_cli():
     print(html_content)
 
 
-def message_to_html(message):
+async def message_to_html(message: str, bb_file: str):
     """Convert a chat message to HTML."""
     global math_cache
     #     logger.info("converting message to html: %r", message["content"])
-    content, has_math = preprocess(message["content"])
+    content, has_math = await preprocess(message["content"], bb_file, message.get("user"))
     if content in math_cache:
         html_content = math_cache[content]
     else:
@@ -1161,7 +1304,7 @@ def chat_to_html():
     # for src in scripts:
     #     print(f"""<script src="{html.escape(src)}"></script>""")
     for message in lines_to_messages(sys.stdin.buffer):
-        print(message_to_html(message))
+        print(asyncio.run(message_to_html(message)))
 
 
 image_extensions = ["jpg", "jpeg", "png", "gif", "svg", "webp"]
@@ -1494,7 +1637,7 @@ def read_agents_lists(path) -> list[str]:
     return list(set(agent_names))
 
 
-def check_access(user: str, pathname: Path | str) -> Access:
+def check_access(user: str|None, pathname: Path | str) -> Access:
     """Check if the user has access to the path, and log the access."""
     if isinstance(pathname, Path):
         pathname = str(pathname)
@@ -1506,7 +1649,7 @@ def check_access(user: str, pathname: Path | str) -> Access:
     return access
 
 
-def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
+def _check_access_2(user: str|None, pathname: str) -> tuple[Access, str]:
     """Check if the user has access to the path"""
     # TODO make a wrapper method in the room class
     # user has access to the top-level dir, all files at the top-level
@@ -1548,7 +1691,8 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
 
     logger.debug("path %r access %r", path, access)
 
-    user = user.lower()
+    if user is not None:
+        user = user.lower()
 
     logger.debug("check_access: User: %s, pathname: %s, Path: %s", user, pathname, path)
 
@@ -1561,11 +1705,11 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
         return Access.MODERATE_READ_WRITE, "moderator"
 
     # Users have admin on their own directory, and files in their own directory
-    if re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE) or pathname == user or pathname.startswith(user + "/"):
+    if user is not None and re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE) or pathname == user or pathname.startswith(user + "/"):
         return Access.ADMIN, "user_dir"
 
     # Users have admin on their top-level room, or a file with their name and any extension
-    if re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE):
+    if user is not None and re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE):
         return Access.ADMIN, "user_top"
 
     exists = True
@@ -1633,8 +1777,9 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
 
     # TODO Users have access to group-readable entries if they are marked as a friend
 
-    if access & Access.READ.value and is_symlink:
-        return check_access(user, str(Path(pathname).resolve()))
+# symlink done above?
+#     if access & Access.READ.value and is_symlink:
+#         return check_access(user, str(Path(pathname).resolve()))
 
     return Access(access), "shared_public"
 

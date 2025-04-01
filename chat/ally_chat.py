@@ -28,6 +28,7 @@ import conductor
 import search  # type: ignore
 import tab  # type: ignore
 import chat
+import fetch
 import llm  # type: ignore
 from ally import portals  # type: ignore
 from ally.cache import cache  # type: ignore
@@ -605,6 +606,15 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     agent_name_esc = regex.escape(name)
 
+    # preprocess markdown in messages for includes
+    context_messages = [
+        {
+            "user": m.get("user"),
+            "content": (await chat.preprocess(m["content"], file, m.get("user")))[0]
+        }
+        for m in lines_to_messages(context)]
+    context = list(chat.messages_to_lines(context_messages))
+
     need_clean_prompt = agent.get("clean_prompt", dumb_agent)
     if need_clean_prompt:
         fulltext = chat.clean_prompt(context, name, args.delim)
@@ -848,6 +858,12 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     # TODO images in system messages?
     await add_images_to_messages(file, context_messages, agent.get("images", 0))
 
+    # preprocess markdown in messages for includes
+    for m in context_messages:
+        m["content"] = (await chat.preprocess(m["content"], file, m.get("user")))[0]
+
+    # TODO Can't include from system messages, what user permission to use?
+
     # convert context_messages to remote_messages, with only user and assistant roles
 
     for msg in context_messages:
@@ -900,6 +916,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         remote_messages.insert(0, {"role": system_top_role, "content": system_top.rstrip()})
 
     # Some agents require alternating user and assistant messages. Mark most recent message as "user", then check backwards and cut off when no longer alternating.
+    # TODO aggregate messages together so we can include everything
     if agent.get("alternating_context") and remote_messages:
         logger.debug("alternating_context")
         remote_messages[-1]["role"] = "user"
@@ -1031,7 +1048,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
         # TODO could fetch in parallel, likely not necessary
         # TODO could split text where images occur
         msg['images'] = [
-            await resolve_image_path(file, url, msg['user'], throw=False)
+            await chat.resolve_url_path(file, url, msg['user'], throw=False)
             for url
             in msg['images']]
 
@@ -1050,165 +1067,6 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
             break
 
 #     logger.info("Found %d messages with %d images", message_count, image_count)
-
-
-async def resolve_image_path(file: str, url: str, user: str, throw: bool = True, fetch: bool = False) -> str|None:
-    """
-    Resolve an image path, handling both local and remote URLs.
-
-    Args:
-        url: The image URL or local path
-        throw: Whether to raise exceptions on errors
-
-    Returns:
-        Resolved local filesystem path
-
-    Raises:
-        ValueError: If the path is invalid and throw=True
-        PermissionError: If access is denied and throw=True
-        IOError: If fetch fails and throw=True
-    """
-    try:
-        # Parse URL to determine if local or remote
-        parsed_url = urlparse(url)
-
-        # Remote URL - cache
-        if parsed_url.scheme in ('http', 'https'):
-            if fetch:
-                cached_path = await fetch_cached(url)
-                return cached_path
-            else:
-                return str(url)
-
-        if parsed_url.scheme:
-            raise ValueError(f"Unsupported URL scheme: {parsed_url.scheme}")
-
-        # Local path
-        safe_path = chat.sanitize_pathname(url)
-        room = chat.Room(path=Path(file))
-        path2 = (Path(room.name).parent)/safe_path
-        full_path = str(PATH_ROOMS / str(path2).lstrip("/"))
-
-        # Check access permissions
-        if not chat.check_access(user, full_path):
-            raise PermissionError(f"Access denied to {full_path}")
-
-        if not os.path.exists(full_path):
-            raise FileNotFoundError(f"Local image not found: {full_path}")
-
-        return str(full_path)
-
-    except Exception as e:
-        logging.error(f"Error resolving image path {url}: {str(e)}")
-        if throw:
-            raise
-        return None
-
-
-async def fetch_cached(url: str) -> str:
-    """
-    Fetch and cache a remote image.
-
-    Args:
-        url: Remote image URL
-
-    Returns:
-        Path to cached local file
-
-    Raises:
-        IOError: If fetch fails
-    """
-    # TODOs:
-    # Add file type validation for security
-    # Add cache cleanup mechanism
-    # Add timeout and size limits for remote fetches
-    # Add proper mime-type checking
-    # Add retry logic for failed fetches
-    # Add proper file extension handling
-
-    os.makedirs(PATH_CACHE, exist_ok=True)
-
-    # Generate cache filename from URL
-    url_hash = hashlib.sha256(url.encode()).hexdigest()
-    cached_path = os.path.join(PATH_CACHE, f"{url_hash}")
-
-    # Return cached version if exists
-    if os.path.exists(cached_path):
-        return cached_path
-
-    # Fetch and cache if doesn't exist
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, timeout=FETCH_TIMEOUT) as response:
-                if response.status != 200:
-                    raise IOError(f"Failed to fetch {url}: HTTP {response.status}")
-
-                # Save to cache file
-                with open(cached_path, 'wb') as f:
-                    while True:
-                        chunk = await response.content.read(8192)
-                        if not chunk:
-                            break
-                        f.write(chunk)
-
-        return cached_path
-
-    except Exception as e:
-        raise IOError(f"Failed to fetch {url}: {str(e)}")
-
-
-async def fetch_cached(url: str) -> str:
-    """Fetch a URL and cache it, returning the path to the cached file."""
-
-    # You might want to add:
-    # - File extension validation
-    # - Size limits for downloaded files
-    # - Cache expiration
-    # - Content type checking
-    # - Additional error handling
-    # depending on your specific needs.
-
-    # 1. Parse URL
-    parsed_url = urlparse(url)
-    protocol = parsed_url.scheme
-    hostname = parsed_url.netloc
-
-    # Split path into components and remove empty strings
-    path_components = [quote(p) for p in parsed_url.path.split('/') if p]
-
-    # Create filename, including query parameters if present
-    filename = quote(path_components[-1]) if path_components else 'index'
-    if parsed_url.query:
-        # Quote query string to make it filesystem-safe
-        filename = f"{filename}?{quote(parsed_url.query)}"
-
-    # 2. Create cache path
-    cache_path = chat.safe_join(PATH_WEBCACHE, protocol, quote(hostname), *path_components[:-1])
-
-    # Ensure cache directory exists
-    os.makedirs(cache_path, exist_ok=True)
-
-    # Full path to cached file
-    cached_file = Path(cache_path) / filename
-
-    # 4. Check if cached file exists
-    if cached_file.exists():
-        return str(cached_file)
-
-    # 5. Fetch with aiohttp if not cached
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(url) as response:
-                response.raise_for_status()
-                # 6. Save response to cache file
-                content = await response.read()
-                with open(cached_file, 'wb') as f:
-                    f.write(content)
-        except (aiohttp.ClientError, IOError) as e:
-            raise Exception(f"Failed to fetch or cache URL {url}: {str(e)}")
-
-    # 7. Return cached file path
-    return str(cached_file)
 
 
 async def run_subprocess(command, query):
