@@ -1,8 +1,8 @@
 python3
 python3-pip
 python3-venv
-python3.11-dev
-python3.11-venv
+python3.11-venv|python3.12-venv
+python3.11-dev|python3.12-dev
 perl
 bash
 make
@@ -56,6 +56,7 @@ cmake
 
 libcairo2-dev
 libgirepository1.0-dev
+libgirepository-2.0-dev
 
 wamerican
 wamerican-small
@@ -79,7 +80,7 @@ ruby-dev
 
 libquickjs
 libnode-dev
-libmozjs-102-dev
+libmozjs-102-dev|libmozjs-115-dev|libmozjs-128-dev
 python3-tk
 
 libjwt-dev
@@ -94,9 +95,10 @@ lilypond-doc
 
 mediainfo
 
-libmkl-dev
-
 python3-pdfminer
 
 mecab
 libmecab-dev
+
+# non-free:
+# libmkl-dev

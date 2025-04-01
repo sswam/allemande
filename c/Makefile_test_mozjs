@@ -1,6 +1,6 @@
 CC = g++
-CXXFLAGS = -Wall $(shell pkg-config --cflags mozjs-102)
-LDLIBS = $(shell pkg-config --libs mozjs-102)
+CXXFLAGS = -Wall $(shell pkg-config --cflags mozjs-115)
+LDLIBS = $(shell pkg-config --libs mozjs-115)
 
 test_mozjs: test_mozjs.o
 

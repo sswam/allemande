@@ -1,6 +1,6 @@
 dir=$(shell readlink -f .)
 
-all: sync install chmod
+all: install chmod
 
 sync:
 	sshc -- $${SERVER_SSH}= sh -c "make install chmod; cd person; git add -A; git commit -m ." || true
@@ -31,7 +31,7 @@ install: build
 	cd $(dir)/../unprompted/unprompted/templates/ ; deadlinks | xa rm
 
 chmod:
-	chmod o+rx person/ person/*/
-	chmod o+r person/* person/*/*
+	chmod o+rx person/ person/*/ || true
+	chmod o+r person/* person/*/* || true
 
 .PHONY: all build install chmod

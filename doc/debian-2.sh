@@ -121,21 +121,58 @@ cd allemande
 
 sudo apt-get -y install ./debian/python3.11-distutils-bogus_1.0_all.deb
 
+# -------- set up a Python 3.11 or 3.12 virtual environment ------------------
+
+# NOTE: use 3.11 on stable or 3.12 on testing / sid. Python 3.13 is no good yet.
+
+sudo apt install python3.11-venv python3.11-dev python3.11-tk
+python3.11 -m venv venv
+# sudo apt install python3.12-venv python3.12-dev python3.12-tk
+# python3.12 -m venv venv
+. venv/bin/activate
+
+# -------- Build htmlsplit, needed to download Go ----------------------------
+
+(cd html; make)
+
+# -------- setup names for tools, and environment ----------------------------
+
+make canon
+. ./env.sh
+
+# -------- install Go from upstream ------------------------------------------
+
+go_url=$(curl https://go.dev/dl/ | htmllinks | grep linux | head -n1)
+rm -f go*.linux-amd64.tar.gz
+wget "https://go.dev$go_url"
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go*.linux-amd64.tar.gz
+rm go*.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
+printf "\n%s\n" 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+
+# Go modules
+go install golang.org/x/lint/golint@latest
+go install honnef.co/go/tools/cmd/staticcheck@latest
+
+# -------- Build opts-help, opts-long, needed by many scripts (e.g. metadeb) -
+
+(cd bash; make); (cd text; make)
+make canon
+
 # -------- install allemande Debian dependencies -----------------------------
 
-sudo apt-get -y install `< debian-packages.txt grep -v '^#'`
-sudo apt-get -y clean
+metadeb -n=allemande-deps debian-allemande-deps.txt
 
-# -------- set up a Python3.10 virtual environment ---------------------------
-
-python3.11 -m venv venv
-. venv/bin/activate
+# Alternative without metadeb:
+# sudo apt-get -y install `< debian-packages.txt grep -v '^#'`
+# sudo apt-get -y clean
 
 # -------- bashrc additions --------------------------------------------------
 
 mkdir -p ~/my
 chmod go-rwx ~/my
 touch ~/my/ai.env
+# NOTE: copy ai.env or populate as needed with API keys
 
 cat <<'END' >>~/.bashrc
 
@@ -153,10 +190,25 @@ if [ -n "$PS1" ]; then
 fi
 END
 
+exec bash
+
+# -------- unprompted --------------------------------------------------------
+
+mkdir -p ~/soft-ai
+cd ~/soft-ai
+git clone git@github.com:ThereforeGames/unprompted.git
+ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
+cd ~/allemande
+
+# -------- build stuff -------------------------------------------------------
+
+make
+
 # -------- install allemande Python dependencies -----------------------------
 
 pip install -r requirements-core.txt
-pip install -r requirements.txt  # there may be issues!
+pip install -r requirements-1.txt
+pip install -r requirements-2.txt  # there may be issues!
 pip install gradio
 pip install gTTS
 
@@ -164,7 +216,7 @@ rm -rf ~/.cache/pip
 
 # -------- install whisper.cpp -----------------------------------------------
 
-mkdir ~/soft-ai
+mkdir -p ~/soft-ai
 cd ~/soft-ai
 git clone https://github.com/ggerganov/whisper.cpp.git
 cd whisper.cpp
