@@ -63,6 +63,8 @@ accounting:
 
 - agent to improve LLM prompts, or help people improve their prompts interactively
 
+- paste plain code in, auto detect and wrap in backticks
+
 
 --------------
 
