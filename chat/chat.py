@@ -44,6 +44,8 @@ MODERATORS = os.environ.get("ALLYCHAT_MODERATORS", "").split()
 
 
 class Access(enum.Enum):
+    """Access levels for a room."""
+
     NONE = 0
     READ = 1
     WRITE = 2
@@ -90,7 +92,9 @@ MARKDOWN_EXTENSIONS = [
     "abbr",
     # 'attr_list',
     "def_list",
-    "fenced_code",
+    #    "fenced_code",
+    "pymdownx.superfences",
+    "pymdownx.highlight",
     "footnotes",
     "md_in_html",
     "tables",
@@ -105,12 +109,17 @@ MARKDOWN_EXTENSIONS = [
     "toc",
     "wikilinks",
     "markdown_katex",
+    #    "markdown_criticmarkup",
+    "attr_list",
 ]
 
 MARKDOWN_EXTENSION_CONFIGS = {
     "markdown_katex": {
         # 		'no_inline_svg': True, # fix for WeasyPrint
         "insert_fonts_css": True,
+    },
+    "pymdownx.highlight": {
+        "use_pygments": False,
     },
 }
 
@@ -192,11 +201,11 @@ class Room:
     async def clear(self, user, op="clear", backup=True):
         """Clear a room."""
         access = self.check_access(user).value
-#         if not self.path.exists():
-#             return
+        #         if not self.path.exists():
+        #             return
         if self.path.exists() and not self.path.is_file():
             raise FileNotFoundError("Room not found.")
-#        empty = self.path.stat().st_size == 0
+        #        empty = self.path.stat().st_size == 0
 
         if op == "archive":
             if not access & Access.MODERATE.value:
@@ -359,7 +368,7 @@ class Room:
             access = room2.check_access(user).value
             if not access & Access.READ.value:
                 raise PermissionError("You are not allowed to get options for this room.")
-            return { "redirect": str(target) }
+            return {"redirect": str(target)}
         options_file = self.find_resource_file("yml", "options")
         if options_file:
             options = cache.load(options_file)
@@ -605,7 +614,7 @@ def split_message_line(line):
 def lines_to_messages(lines):
     """A generator to convert an iterable of lines to chat messages."""
 
-    message: dict|None = None
+    message: dict | None = None
 
     lines = iter(lines)
     skipped_blank = 0
@@ -723,7 +732,7 @@ def quote_inline_math(pre, d1, math, d2, post):
         logger.warning("already processed: %r", math)
         has_math = True
         is_math = False
-    elif d1 == r"\(" and d2 == r"\)" and ' ' not in math:  # hack: avoid triggering on image prompt \(medium\) etc!
+    elif d1 == r"\(" and d2 == r"\)" and " " not in math:  # hack: avoid triggering on image prompt \(medium\) etc!
         is_math = False
     elif d1 == r"\(" and d2 == r"\)":
         pass
@@ -849,7 +858,9 @@ def find_and_fix_inline_math(line: str) -> tuple[str, bool]:
 
     return line, has_math
 
-HTML_TAGS = quote_words("""
+
+HTML_TAGS = quote_words(
+    """
 html base head link meta style title body address article aside footer header
 h1 h2 h3 h4 h5 h6 hgroup main nav section blockquote dd div dl dt figcaption
 figure hr li main ol p pre ul a abbr b bdi bdo br cite code data dfn em i kbd
@@ -861,9 +872,11 @@ progress select textarea details dialog menu summary slot template acronym
 applet basefont bgsound big blink center command content dir element font frame
 frameset image isindex keygen listing marquee menuitem multicol nextid nobr
 noembed noframes plaintext shadow spacer strike tt xmp
-""")
+"""
+)
 
-SVG_TAGS = quote_words("""
+SVG_TAGS = quote_words(
+    """
 a animate animateMotion animateTransform circle clipPath defs desc discard
 ellipse feBlend feColorMatrix feComponentTransfer feComposite feConvolveMatrix
 feDiffuseLighting feDisplacementMap feDistantLight feDropShadow feFlood feFuncA
@@ -872,16 +885,20 @@ feOffset fePointLight feSpecularLighting feSpotLight feTile feTurbulence filter
 foreignObject g image line linearGradient marker mask metadata mpath path
 pattern polygon polyline radialGradient rect script set stop style svg switch
 symbol text textPath title tspan use view
-""")
+"""
+)
 
-ALLYCHAT_TAGS = quote_words("""
+ALLYCHAT_TAGS = quote_words(
+    """
 allychat-meta
-""")
+"""
+)
 
 RE_TAGS = re.compile(rf"</?({'|'.join(set(HTML_TAGS + SVG_TAGS + ALLYCHAT_TAGS))})\b", flags=re.IGNORECASE)
 
-def preprocess(content):
-    """Preprocess chat message content, for markdown-katex"""
+
+def preprocess(content: str):
+    """Preprocess chat message content, for markdown-katex, and other fixes"""
 
     # replace $foo$ with $`foo`$
     # replace $$\n...\n$$ with ```math\n...\n```
@@ -896,7 +913,7 @@ def preprocess(content):
     in_math = False
     in_code = 0
     in_script = False
-    in_svg = False     # we need to avoid line breaks in SVG unfortunately
+    in_svg = False  # we need to avoid line breaks in SVG unfortunately
     was_blank = False
     for line in content.splitlines():
         logger.debug("line: %r", line)
@@ -976,6 +993,13 @@ def preprocess(content):
     return content, has_math
 
 
+def preprocess_cli():
+    """Preprocess stdin and print to stdout"""
+    content = sys.stdin.read()
+    processed, has_math = preprocess(content)
+    print(processed)
+
+
 def add_blanks_after_code_blocks(lines: list[str]) -> list[str]:
     out = []
     in_code_block = False
@@ -1053,20 +1077,32 @@ def restore_indents(text):
     return text
 
 
+def markdown_to_html(content: str) -> str:
+    html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
+    return html_content
+
+
+def markdown_to_html_cli():
+    """Convert markdown from stdin to html on stdout"""
+    content = sys.stdin.read()
+    html_content = markdown_to_html(content)
+    print(html_content)
+
+
 def message_to_html(message):
     """Convert a chat message to HTML."""
     global math_cache
-#     logger.info("converting message to html: %r", message["content"])
+    #     logger.info("converting message to html: %r", message["content"])
     content, has_math = preprocess(message["content"])
     if content in math_cache:
         html_content = math_cache[content]
     else:
         try:
-#             logger.info("markdown content: %r", content)
+            #             logger.info("markdown content: %r", content)
             # content = escape_indents(content)
-            html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
+            html_content = markdown_to_html(content)
             # html_content = restore_indents(html_content)
-#             logger.info("html content: %r", html_content)
+            #             logger.info("html content: %r", html_content)
             html_content = disenfuckulate_html(html_content)
         #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
         #             html_content = html_content.replace("<br />", "")
@@ -1077,7 +1113,7 @@ def message_to_html(message):
             html_content = f"<pre>{html.escape(content)}</pre>"
         if has_math:
             math_cache[content] = html_content
-#     logger.info("html_content 2: %r", html_content)
+    #     logger.info("html_content 2: %r", html_content)
     if html_content == "":
         html_content = "&nbsp;"
     user = message.get("user")
@@ -1093,18 +1129,22 @@ LANGUAGES = r"python|bash|sh|shell|console|html|xml|css|javascript|js|json|yaml|
 def disenfuckulate_html(html: str) -> str:
     """Fix various issues with HTML generated by markdown."""
 
-    def replace_nested_code_block(match):
-        class_attr = f' class="language-{match.group(1)}"' if match.group(1) else ""
-        return f"<pre><code{class_attr}>{match.group(2)}</code></pre>"
-
-    # fix nested code blocks
-    html = re.sub(rf"<p><code>((?:{LANGUAGES})\n)?(.*?)</code></p>", replace_nested_code_block, html, flags=re.DOTALL|re.IGNORECASE)
+    # Hopefully not needed with superfences:
+#     def replace_nested_code_block(match):
+#         class_attr = f' class="language-{match.group(1)}"' if match.group(1) else ""
+#         return f"<pre><code{class_attr}>{match.group(2)}</code></pre>"
+#
+#     # fix nested code blocks
+#     html = re.sub(
+#         rf"<p><code>((?:{LANGUAGES})\n)?(.*?)</code></p>", replace_nested_code_block, html, flags=re.DOTALL | re.IGNORECASE
+#     )
 
     # fix <summary> tags, which sometimes get broken
     html = re.sub(rf"<p><summary>(.*?)</summary><br\s*/>", r"<summary>\1</summary><p>", html)
 
-    # remove empty paragraphs: could potentially mess up code but whatever
-    html = re.sub(rf"<p></p>", r"", html)
+    # Disabled for now, don't want to mess up code!
+#     # remove empty paragraphs: could potentially mess up code but whatever
+#     html = re.sub(rf"<p></p>", r"", html)
     return html
 
 
@@ -1380,6 +1420,7 @@ def filter_stars_prob(message: ChatMessage, prob: float = 0.5) -> ChatMessage | 
 
     # 2. Remove random selection of text between * and * (non-greedy match)
     def random_replace(match):
+        """Replace match with empty string with probability prob."""
         return "" if random.random() < prob else match.group(0)
 
     content = re.sub(r"\*.*?\*", random_replace, content)
@@ -1453,7 +1494,7 @@ def read_agents_lists(path) -> list[str]:
     return list(set(agent_names))
 
 
-def check_access(user: str, pathname: Path|str) -> Access:
+def check_access(user: str, pathname: Path | str) -> Access:
     """Check if the user has access to the path, and log the access."""
     if isinstance(pathname, Path):
         pathname = str(pathname)
@@ -1461,7 +1502,7 @@ def check_access(user: str, pathname: Path|str) -> Access:
         access, reason = _check_access_2(user, pathname)
     except PermissionError as e:
         access, reason = Access.NONE, "PermissionError"
-#     logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
+    #     logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
     return access
 
 
@@ -1487,7 +1528,7 @@ def _check_access_2(user: str, pathname: str) -> tuple[Access, str]:
     # If pathname ends with / it's a directory
     is_dir = pathname.endswith("/") or pathname == ""
 
-#     logger.info("pathname %r is_dir %r", pathname, is_dir)
+    #     logger.info("pathname %r is_dir %r", pathname, is_dir)
 
     if sanitize_pathname(pathname) != pathname:
         raise ValueError(f"Invalid pathname, not sanitized: {pathname}, {sanitize_pathname(pathname)}")
@@ -1636,20 +1677,12 @@ def backup_file(path: str):
     try:
         subprocess.run(["git", "add", rel_path], check=True, cwd=repo_root)
         # Check if there are staged changes for the file
-        result = subprocess.run(
-            ["git", "diff", "--staged", "--quiet", rel_path],
-            cwd=repo_root,
-            capture_output=True
-        )
+        result = subprocess.run(["git", "diff", "--staged", "--quiet", rel_path], cwd=repo_root, capture_output=True)
 
         # If exit code is 1, there are changes to commit
         if result.returncode == 1:
             # Proceed with commit
-            subprocess.run(
-                ["git", "commit", "-m", f"Backup {rel_path}", rel_path],
-                check=True,
-                cwd=repo_root
-            )
+            subprocess.run(["git", "commit", "-m", f"Backup {rel_path}", rel_path], check=True, cwd=repo_root)
     except subprocess.CalledProcessError as e:
         # Handle any git command failures
         print(f"Git operation failed: {e}")
@@ -1720,6 +1753,7 @@ def move_file(user, source, dest, clobber=False):
         shutil.move(str(source_path), str(dest_path))
     except (shutil.Error, OSError) as e:
         raise PermissionError(f"Error moving file: {e}")
+
 
 def remove_thinking_sections(content: str, agent: Agent | None, n_own_messages: int) -> tuple[str, int]:
     remember_thoughts = agent.get("remember_thoughts", 0) if agent else 0
@@ -1873,9 +1907,9 @@ def set_user_theme(user, theme):
 
 def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Apply editing commands to the chat history."""
-#     logger.info("\n\n\n")
-#     logger.info("messages before editing commands: %r", messages)
-#     logger.info("\n\n\n")
+    #     logger.info("\n\n\n")
+    #     logger.info("messages before editing commands: %r", messages)
+    #     logger.info("\n\n\n")
     lookup = messages.copy()
     for i in range(len(messages)):
         message = messages[i]
@@ -1909,7 +1943,7 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
             rm_ids += list(map(int, remove.split(" ")))
         for rm_id in rm_ids:
             if rm_id <= len(lookup):
-#                 logger.warning("Removing message ID: %s", rm_id)
+                #                 logger.warning("Removing message ID: %s", rm_id)
                 lookup[rm_id]["remove"] = True
             else:
                 logger.warning("Invalid message ID in editing command: %s", rm_id)
@@ -1925,21 +1959,21 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
                 lookup[int(target)]["before"].append(message)
             messages[i] = None
 
-#         logger.info("message ID: %s, remove: %s, edit: %s, insert: %s, content: %s", i, remove, edit, insert, message["content"])
+        #         logger.info("message ID: %s, remove: %s, edit: %s, insert: %s, content: %s", i, remove, edit, insert, message["content"])
 
         # if a message that wasn't moved is now empty, mark it for removal
         if remove and not edit and not insert and not message["content"].strip():
-#             logger.warning("Removing editing message ID: %s", i)
+            #             logger.warning("Removing editing message ID: %s", i)
             messages[i]["remove"] = True
 
-#     logger.info("messages after editing commands: %r", messages)
-#     logger.info("\n\n\n")
+    #     logger.info("messages after editing commands: %r", messages)
+    #     logger.info("\n\n\n")
 
     output = []
     flatten_edited_messages(messages, output)
 
-#     logger.info("apply_editing_commands: output: %r", output)
-#     logger.info("\n\n\n")
+    #     logger.info("apply_editing_commands: output: %r", output)
+    #     logger.info("\n\n\n")
 
     return output
 
@@ -1955,5 +1989,28 @@ def flatten_edited_messages(messages, output):
             output.append(message)
 
 
+def main():
+    def proc(code: str | None = None, func: str | None = None):
+        return process_chat_cli(code, func)
+
+    def html():
+        return chat_to_html()
+
+    def pre():
+        return preprocess_cli()
+
+    def markdown():
+        return markdown_to_html_cli()
+
+    argh.dispatch_commands(
+        [
+            proc,
+            html,
+            pre,
+            markdown,
+        ]
+    )
+
+
 if __name__ == "__main__":
-    argh.dispatch_command(process_chat_cli)
+    main()
