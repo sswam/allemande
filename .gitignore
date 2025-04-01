@@ -17,6 +17,7 @@ commit-message.*
 /adm/nginx/banned_ips.conf
 tracks
 *.log
+*.o
 sparkjoy
 
 # state files
@@ -160,3 +161,4 @@ rooms.*
 /cz/unbrace
 /linux/top_grouped
 /text/aligno
+/allemande-deps_0.1_all.deb

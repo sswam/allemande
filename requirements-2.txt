@@ -1,0 +1,24 @@
+# Note: potentially conflicting packages, may require older libs
+
+ultralytics
+
+parler-tts
+grpcio-status  # needs older version to be compatible with parler-tts
+
+
+# gTTS
+# TTS
+# BLIP
+# clip-interrogator
+
+# gradio
+
+# jellyfish
+# astor
+# metaphone
+
+# git+https://github.com/huggingface/parler-tts.git
+# git+https://github.com/huggingface/parler-tts.git@5d0aca9753ab74ded179732f5bd797f7a8c6f8ee
+
+
+# python-magic

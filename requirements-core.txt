@@ -33,13 +33,25 @@ nbdev
 
 argh
 sh
+
 lxml
+
+black
+pylint
+mypy
 pytest
+pytest-asyncio
+pytest-timeout
+
 spacy
+
+jsbeautifier
+cssbeautifier
 
 watchdog
 
 anthropic
+aiohttp
 aionotify
 
 starlette
@@ -60,3 +72,18 @@ pyjwt
 markdown-katex
 
 tiktoken
+uv
+
+google-generativeai
+google-cloud-aiplatform[tokenization]
+
+jq
+yq
+
+types-PyYAML
+types-Markdown
+types-aiofiles
+types-regex
+
+py-vapid
+pywebpush

@@ -245,7 +245,7 @@ canon:
 	ln -sf ../tools/python3_allemande.sh canon/python3-allemande
 	$(ALLEMANDE_HOME)/files/canon_links.py $(ALLEMANDE_PATH)
 	(cd canon ; rm -f guidance-*.md ; ln -sf ../*/guidance-*.md .)
-	ln -sf $(ALLEMANDE_HOME)/canon/usr-local-bin /usr/local/bin
+	sudo ln -sf $(ALLEMANDE_HOME)/canon/usr-local-bin /usr/local/bin
 	cd canon ; usr-local-bin python3-allemande confirm uniqo lecho i3-xterm-floating note waywo ally opts opts-long opts-help path-uniq day find-quick need-bash get-root llm query process que proc text-strip cat-named aligno include status-update i3status-wrapper name-terminal name-terminal-nicely mount-point move-rubbish mic speaker
 	cd alias ; usr-local-bin v
 
