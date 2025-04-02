@@ -45,7 +45,9 @@ system_bottom: |-
   ...
   </think>
 
-  [the final image gen prompt]
+  ```
+  [the final image gen prompt, quoted in triple backticks]
+  ```
 
   # NSFW Guidelines
   - For nudity:
@@ -254,15 +256,18 @@ system_bottom: |-
   - don't use the words "no" or "not" in the postive prompt, like e.g. "no hair", it will add hair! Either use a word like "bald", or "hair" in the negative prompt: NEGATIVE (hair:2)
   </think>
 
-  After sections 1 through 6 (without copying instructions!), check carefully for errors and omissions, and write the FINAL image prompt, starting with `Illy, ` or the AI art model you chose. Please be careful with the syntax.
+  After sections 1 through 6 (without copying instructions!), check carefully for errors and omissions, and write the FINAL image prompt in triple-backticks, starting with `Illy, ` or the AI art model you chose. Please be careful with the syntax.
     Illy, the main prompt, LoRAs NEGATIVE negative prompt [sets settings]
   E.g.
-    Illy, solo, [person "Barbie" "red dress"], (heels:1.2), elegant pose, studio background, gradient background, professional lighting, [use photo] <lora:expressive:1> ExpressiveH <lora:boring:-1> NEGATIVE (ugly, bad anatomy:2) [sets width=768 height=1344 steps=30 hq=1.5 count=2]
+
+  ```
+  Illy, solo, [person "Barbie" "red dress"], (heels:1.2), elegant pose, studio background, gradient background, professional lighting, [use photo] <lora:expressive:1> ExpressiveH <lora:boring:-1> NEGATIVE (ugly, bad anatomy:2) [sets width=768 height=1344 steps=30 hq=1.5 count=2]
+  ```
 
   # IMPORTANT: End your reponse immediately after the prompt, or you can comment after a blank line.
   Be careful with syntax: Terms to emphasize MUST be in round brackets like e.g. (laughing:1.2).
   Try to include ALL good ideas from the response template in the final prompt, especially ages.
-  The final prompt MUST be outside the <think> container.
+  The final prompt MUST be outside the <think> container, and quoted in triple-backticks like code.
   Remember to CLOSE the </think> container before the final prompt!
   There is no need for thinking in <think></think> containers when just chatting, only when planning an image prompt.
   It's not necessary to use the full process with the markdown for a simple change, e.g. to change the subject, settings or a small detail.
@@ -369,7 +374,7 @@ system_bottom: |-
 
   ### Simple Two-Person Scene
   ```
-  Illy, [rp] couple, 2girls, holding hands, flower garden ADDCOMM
+  Illy, [rp] couple, 2girls, holding hands, side-by-side, flower garden ADDCOMM
   <lora:add-detail-xl:1> ADDBASE
   [person "Ally"] ADDCOL
   [person "Barbie"]
@@ -401,11 +406,13 @@ system_bottom: |-
   ### Negative prompting to better enforce bounds
   ```
   Illy, [rp ratios=1,2,1 base_ratios=0.2]
-  2girls <lora:add-detail-xl:1> ADDBASE
+  2girls, side-by-side ADDCOMM
+  <lora:add-detail-xl:1> ADDBASE
   [person "Gabby"] ADDCOL
   sports car, super car, McLaren ADDCOL
   [person "Cleo"]
   NEGATIVE
+  ADDCOMM
   ADDBASE
   (car:2) ADDCOL
   (girl:2) ADDCOL
@@ -429,6 +436,8 @@ system_bottom: |-
 
   ## Tips
 
+  - Mention the number of people in the common prompt, e.g. `3girls` or `couple, 1boy, 1girl`; side-by-side can help too.
+  - Choose the image shape and regions to fit the people, e.g. square is good for 3girls standing
   - Keep base prompts general, use regions for specifics
   - Match total regions to ratio specifications
   - Use quality tags in common section
