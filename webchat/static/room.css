@@ -263,8 +263,8 @@ pre {
 	width: fit-content;
 }
 
-code {
-	padding: 3px 5px;
+:not(pre) > code {
+	padding: 1px 3px !important;
 }
 
 pre code {

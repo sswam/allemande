@@ -201,8 +201,17 @@ ctx.fillRect(10, 10, 100, 100);
 
 ### Using a fresh canvas in the chat
 
-<canvas id="canvas_with_a_unique_name"></canvas>
+<canvas id="canvas1" tabindex=0></canvas>
+<script>
+canvas1 = document.getElementById('canvas1');
+ctx1 = canvas1.getContext('2d');
+h = canvas1.height;
+ctx1.fillStyle = 'red';
+ctx1.fillRect(10, 10, 100, 100);
+</script>
 
+If you use key events, bind on the canvas element, not the document,
+use `tabindex=0` to make the canvas focusable, and stopPropagation for keys you handle.
 
 ### Drawing a chart with uPlot, and our helper functions
 

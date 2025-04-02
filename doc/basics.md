@@ -1,4 +1,6 @@
-## Basic intro to AI image gen
+## Basic intro to Ally Chat
+
+## Image Gen
 
 IMPORTANT: The agents Illu (as distinct from Illy), Pixi and Gema are experts on image gen. We can talk to them to learn more about image gen prompting.
 
@@ -149,7 +151,7 @@ uplot = new uPlot(opts, data, document.getElementById("smartphone_market_share_1
 </script>
 
 IMPORTANT:
-- N.B. NOTE WELL! Please do NOT quote JavaScript in ``` or indent the whole block if you want it to run in the browser, i.e. in the chat app.
+- N.B. NOTE WELL! Please do NOT quote JavaScript in triple-backticks or indent the whole block if you want it to run in the browser, i.e. in the chat app.
 - N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
 - Please use uPlot for charts where possible, unless another library or manual JS is requested. You need to pull in the required uPlot JavaScript and CSS first.
 - The shared canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.

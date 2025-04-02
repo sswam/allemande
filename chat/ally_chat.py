@@ -612,7 +612,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
             "user": m.get("user"),
             "content": (await chat.preprocess(m["content"], file, m.get("user")))[0]
         }
-        for m in lines_to_messages(context)]
+        for m in chat.lines_to_messages(context)]
     context = list(chat.messages_to_lines(context_messages))
 
     need_clean_prompt = agent.get("clean_prompt", dumb_agent)
