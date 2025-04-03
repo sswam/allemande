@@ -26,12 +26,12 @@ unrubbish() {
 
 	if [ $# -eq 0 ]; then
 		# No prefixes given, find the last changed file
-		last_file=$( (i "$RUBBISH/" ls -tc1 || true) | head -n1)
+		last_file=$( (i "$RUBBISH/" ls -tc1A || true) | head -n1)
 	else
 		# Find the last changed file matching any of the given prefixes
 		local pattern
 		pattern=$(printf "%s|" "$@" | sed 's/|$//')
-		last_file=$( (i "$RUBBISH/" ls -tc1 || true) | grep -E "^($pattern)" | head -n1)
+		last_file=$( (i "$RUBBISH/" ls -tc1A || true) | grep -E "^($pattern)" | head -n1)
 	fi
 
 	if [ -z "$last_file" ]; then

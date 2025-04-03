@@ -1,0 +1,37 @@
+set -a
+
+# set up directories and paths
+# TODO possibly prefix some of these with __AMPS__ or somthing
+dir="$PWD"
+work_dir="$dir/.amps.$$"
+prog_dir="$(dirname "$(readlink -f "$0")")"
+prog="${0##*/}"
+prog_stem="${prog%%.*}"
+conf="$prog_stem.conf"
+conf_file_var="${prog_stem}_conf"
+PATH="$prog_dir:$prog_dir/sub:$prog_dir/use:$PATH"
+PERL5LIB="$prog_dir:$prog_dir/perl:$PERL5LIB"
+
+# TODO this might be overkill for the moment
+for conf_path in "$prog_dir/$conf" "/etc/default/$prog" "/etc/$conf" "$HOME/.config/$conf" "./$conf" "${!conf_file_var}"; do
+	if [ -e "$conf_path" ]; then
+		. "$conf_path";
+	fi
+done
+
+# parse options and handle --help usage
+. opts
+
+# _subs=
+# trap '
+# 	kill -TERM $_subs 2>/dev/null
+# 	wait
+# 	trap - EXIT
+# 	find "$work_dir" \( -type p -o -type l \) -print0 |
+# 	  xargs --no-run-if-empty -0 rm -f
+# 	rmdir "$work_dir"
+# 	exit
+# ' HUP INT QUIT TERM PIPE EXIT
+
+mkdir "$work_dir"
+set +e

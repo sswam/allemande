@@ -1,0 +1,21 @@
+. AMPS.sh
+
+# AMPS_shell - translate AMPS-shell programs to bash shell scripts
+
+# 1. copy header comment if present
+# 2. skip . AMPS.sh
+# 3. copy options lines
+# 4. command to invoke options parser (ally)
+# 5. copy header, which sources setup code
+# 6. signature section:
+#   - symlink inputs and outputs into the working directory
+#   - keep original names in variables
+# 7. don't support additional constraints in the signature section yet
+# 8. only a single body for now
+# 9. number each line of the body
+# 10. write dependency file:
+#   - line number, input_file
+#   - output_file, line_number
+# 11. run tsort to order operations
+# 12. extract only line numbers from ordered file
+# 13. Output commands in order to target file, without < and > suffix on file arguments.

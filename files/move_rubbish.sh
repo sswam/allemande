@@ -5,7 +5,14 @@
 # moves each file to ~/rubbish/${basename}_${timestamp}
 # undo with unrubbish
 
+quiet= q=	# move quietly
+
 eval "$(ally)"
+
+verbose=""
+if ((!quiet)); then
+	verbose="-v -i"
+fi
 
 timestamp() {
 	date +%Y%m%d_%H%M%S%N%z_%a
@@ -27,7 +34,7 @@ for A; do
 		B="$RUBBISH/${N}_$(timestamp)_$$"
 		[ -e "$B" ] || break  # XXX not entirely secure, should use >| to creat or something?
 	done
-	mv -v -i -- "$A" "$B" || status=1
+	mv $verbose -- "$A" "$B" || status=1
 	[ -n "${mr_echo:-}" ] && echo "$DEST"
 done
 exit $status

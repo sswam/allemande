@@ -1,0 +1,37 @@
+#!/usr/bin/awk -f
+
+# split input text on blank lines, avoiding empty files
+# alternative with GNU: csplit --suppress-matched csplit_test.txt '/^$/' '{*}'
+
+BEGIN {
+    # Usage and prefix setup
+    split(ARGV[0], parts, "/")
+    prog = parts[length(parts)]
+    if (ARGC < 2) {
+        print "usage: " prog " prefix < input" > "/dev/stderr"
+        exit 1
+    }
+    prefix = ARGV[1]
+    ARGV[1] = "-"
+
+    # State: file number and flag
+    file_num = -1   # Start at -1, so first increment makes it 0
+    new_section = 1 # Flag: 1 means next content line starts a new file/section
+}
+
+/^$/ {
+    # Blank line: Signal that the next content line should start a new section
+    new_section = 1
+    next # Don't process blank lines further
+}
+
+{
+    # Content line arrives
+    if (new_section == 1) {
+        file_num++      # Increment file number only when starting a new section
+        new_section = 0 # Clear the flag, we are now inside a section
+    }
+    # Construct filename and print the content line
+    fname = prefix sprintf("%04d", file_num)
+    print > fname
+}

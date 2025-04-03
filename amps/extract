@@ -1,0 +1,15 @@
+# extract - handle various archive formats
+.   amps.sh
+@   archive<
+
+# zip handler
+*   is_zip     [[ "$archive" == *.zip ]]
+*   unzip   unzip "$archive"
+
+# rar handler
+*   is_rar     [[ "$archive" == *.rar ]]
+*   unrar   unrar x "$archive"
+
+# tar.gz handler
+*   is_targz   [[ "$archive" == *.tar.gz || "$archive" == *.tgz ]]
+*   untar   tar xzf "$archive"

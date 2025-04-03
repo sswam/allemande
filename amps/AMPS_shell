@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# warning: derived file, from AMPS_shell
+# AMPS_shell - translate AMPS-shell programs to bash shell scripts
+set -e
+
+. AMPS_shell_init
+
+[ $# = 1 ] || { echo >&2 usage: "$prog amps_code"; exit 2; }
+amps_code=${1} && ln -s "$(readlink -f "${1}")" "$work_dir/amps_code"
+shell_code=stdout && ln -s /dev/stdout "$work_dir/shell_code"
+
+cd "$work_dir"
+
+mkdir	parts	&&	split_paragraphs	parts/	<amps_code
+mv	parts/0000	filetype
+mv	parts/0001	in_head
+[ "$(<filetype)" = ". AMPS.sh" ]	||	die	"invalid file type header"
+csplit	-s -n 1 -f	in_head_	in_head	'/^[^#]/' '/^/'
+mv	in_head_0	head_comments
+mv	in_head_1	signature
+mv	in_head_2	options
+lecho	"#!/usr/bin/env bash"	"# warning: derived file, from $(basename $amps_code)"	>out_head_0
+echo	'set -e'	>set_e
+cat	out_head_0	head_comments	set_e	>out_head
+echo	'cd "$work_dir"'	>cd_work_dir
+echo	'. AMPS_shell_init'	>init
+cut	-f2-	<signature	|	tr '\t' '\n'	|	sed 's/[<>]\(\t\|$\)/\1/g'	>args
+arg_symlink_commands	<args	>arg_commands
+cat	parts/*	>commands_0
+tsort_commands	<commands_0	>commands_1
+<commands_1	sed 's/[<>]\(\t\|$\)/\1/g'	>commands
+cat_paragraphs	out_head	options	init	arg_commands	cd_work_dir	commands	>shell_code

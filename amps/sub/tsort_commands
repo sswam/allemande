@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# tsort_process_commands - sort AMPS shell process commands in dependency order
+# warning: derived file, from tsort_process_commands
+set -e
+
+. AMPS_shell_init
+
+[ $# = 0 ] || { echo >&2 usage: "$prog"; exit 2; }
+commands=stdin && ln -s /dev/stdin "$work_dir/commands"
+sorted_commands=stdout && ln -s /dev/stdout "$work_dir/sorted_commands"
+
+cd "$work_dir"
+
+number_lines_all	<commands	>numbered
+numbered_commands_to_deps	<numbered	>deps
+tsort	<deps	|	grep	'^[0-9][0-9]*$'	>sorted_numbers
+lookup	numbered	<sorted_numbers	>sorted_commands

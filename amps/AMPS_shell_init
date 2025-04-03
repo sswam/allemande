@@ -1,0 +1,50 @@
+# AMPS shell common initialisation
+
+# export all these variables, and exit on error
+set -a
+set -e
+
+# set up directories, variables, and paths
+call_dir="$PWD"
+work_dir="$call_dir/.amps.$$"
+__AMPS_work_dir="$work_dir"
+prog_dir="$(dirname "$(readlink -f "$0")")"
+prog="${0##*/}"
+prog_stem="${prog%%.*}"
+
+PATH="$prog_dir:$prog_dir/sub:$prog_dir/use:${PATH:+:$PATH}"
+PYTHONPATH="$prog_dir:$prog_dir/python:${PYTHONPATH:+:$PYTHONPATH}"
+PERL5LIB="$prog_dir:$prog_dir/perl:${PERL5LIB:+:$PERL5LIB}"
+
+# load configuration files if present
+function __AMPS_load_conf() {
+	local conf="$prog_stem.conf"
+	local conf_file_var="${prog_stem}_conf"
+	local conf_path
+
+	for conf_path in "$prog_dir/$conf" "/etc/default/$prog" "/etc/$conf" "$HOME/.config/$conf" "./$conf" "${!conf_file_var}"; do
+		if [ -e "$conf_path" ]; then
+			. "$conf_path";
+		fi
+	done
+}
+
+__AMPS_load_conf
+
+# parse options and handle --help usage
+eval "$(ally)"
+
+# clean up on successful exit
+trap '
+	exit_status=$?
+	trap - EXIT
+	if ((AMPS_KEEP_WORK)); then
+		echo >&2 "AMPS work: $__AMPS_work_dir"
+	else
+		move-rubbish -q "$__AMPS_work_dir"
+	fi
+	exit $exit_status
+' HUP INT QUIT TERM PIPE EXIT
+
+# create working dir
+mkdir "$__AMPS_work_dir"

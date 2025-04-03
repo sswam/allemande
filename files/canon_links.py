@@ -9,6 +9,7 @@ import sys
 import shutil
 from pathlib import Path
 from typing import TextIO
+import re
 
 from ally import main
 
@@ -17,10 +18,10 @@ __version__ = "0.1.2"
 logger = main.get_logger()
 
 
-def _create_symlink(file: Path, target_dir: Path) -> None:
+def _create_symlink(file: Path, target_dir: Path, dash: str) -> None:
     filename = file.name
     stem = file.stem
-    symlink_name = stem.replace('_', '-')
+    symlink_name = re.sub(r'[-_]', dash, stem)
 
     relative_path = Path(os.path.relpath(file, target_dir))
     symlink_path = target_dir / symlink_name
@@ -64,7 +65,8 @@ def _process_directory(source_dir: Path, target_dir: Path) -> None:
 def _process_file(file: Path, target_dir: Path) -> None:
     is_executable = os.access(file, os.X_OK)
     if is_executable or file.suffix == '.sh':
-        _create_symlink(file, target_dir)
+        _create_symlink(file, target_dir, "-")
+        _create_symlink(file, target_dir, "_")
 
 
 def _remove_dead_links(target_dir: Path) -> None:
