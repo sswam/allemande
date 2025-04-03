@@ -1,7 +1,7 @@
 . AMPS
 
 # AMPS_dot - translate AMPS-shell programs to dot graphs
-AMPS_dor	amps_code<	>graph.dot
+AMPS_dot	amps_code<	>graph.dot
 
 split1	mkdir	parts>	&&	split_paragraphs	parts/	<amps_code	#	>parts/0000	>parts/0001
 mv1	mv	parts/0000<	filetype>	&	mv	parts/0001<	in_head>	&&	echo	>>in_head
