@@ -1,4 +1,4 @@
-. AMPS.sh
+. AMPS
 
 # word_freq - Doug McIlroy's pipeline to show most frequent words
 word_freq	document<	most_frequent_n>

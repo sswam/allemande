@@ -1,40 +1,69 @@
 #!/usr/bin/perl -n
-# arg_symlink_cmds: output bash code to create symlinks for named arguments
+# arg_cmds: output bash code to handle AMPS named arguments
+# For now, >>append is treated like regular output
 
 use strict;
 use warnings;
 
-our ($template, $count, @names, @symlink_commands);
+our ($count, @usage_args, @commands, @modes);
 
 BEGIN {
-	$template = <<'End';
-[ -n "$file" ] && ln -s "$(readlink -f "$file")" "$work_dir/$arg_name"
-End
 	$count = 0;
-	@names = ();
-	@symlink_commands = ();
 }
 
 # argument number and name
 my $arg_num = $.;
 chomp(my $arg_name = $_);
-
-# replace $file and $arg_name in the template
-my $command = $template;
-$command =~ s/\$file/\${$arg_num}/g;
-$command =~ s/\$arg_name/$arg_name/g;
-
-# collect the symlink commands
-push @symlink_commands, $command;
-++$count;
+my $arg_abs;
+my $arg_val;
 
 # collect argument names
-push @names, $arg_name;
+my $usage_arg = $arg_name;
+$usage_arg =~ s/[<>]+$//;
+push @usage_args, $arg_name;
 
-# finally, code to check that the right number of arguments were provided, then output the symlink commands
+my $mode;
+
+# handle stdio
+if ($arg_name =~ s/^<//) {
+	$arg_val = "/dev/stdin";
+	$arg_abs = $arg_val;
+} elsif ($arg_name =~ s/^>+//) {
+	$arg_val = "/dev/stdout";
+	$arg_abs = $arg_val;
+} else {
+	$arg_val = "\${$arg_num}";
+	++$count;
+	if ($arg_name =~ s/<$//) {
+		$mode = "I";
+	} elsif ($arg_name =~ s/>$//) {
+		$mode = "O";
+	} else {
+		$mode = "s";
+	}
+	if ($mode eq "I" || $mode eq "O") {
+		$arg_abs = qq{\$(realpath -s "$arg_val")};
+	} else {
+		$arg_abs = undef;
+	}
+	push @modes, $mode;
+}
+
+my $command = "$arg_name=$arg_val";
+if ($arg_abs) {
+	$command .= qq{ && ln -s "$arg_abs" "\$__AMPS_work_dir/$arg_name"};
+}
+$command .= "\n";
+
+# collect the commands
+push @commands, $command;
+
+# finally, code to check that the right number of arguments were provided, then output the commands
 END {
 	print <<End;
-[ \$# = $count ] || { echo >&2 usage: "\$prog @names"; exit 2; }
+[ \$# = $count ] || { echo >&2 usage: "\$prog @usage_args"; exit 2; }
+AMPS_argv "@modes" "\$@"
+set -- "\${__AMPS_argv[@]}"
 End
-	print @symlink_commands;
+	print @commands;
 }

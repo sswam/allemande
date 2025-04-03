@@ -1,4 +1,4 @@
-. AMPS.sh
+. AMPS
 
 # AMPS_shell - translate AMPS-shell programs to bash shell scripts
 

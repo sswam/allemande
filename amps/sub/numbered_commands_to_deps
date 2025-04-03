@@ -1,5 +1,6 @@
 #!/usr/bin/perl -n
 # numbered_commands_to_deps - output dependencies between file args and command numbers, for tsort
+# For now, >>append is treated like regular output
 use strict;
 use warnings;
 chomp;
@@ -7,7 +8,7 @@ my ($n, @args) = split /\t/, $_;
 for my $arg (@args) {
 	if ($arg =~ s/^<|<$//) {
 		print "$arg\t$n\n";
-	} elsif ($arg =~ s/^>|>$//) {
+	} elsif ($arg =~ s/^>+|>+$//) {
 		print "$n\t$arg\n";
 	}
 }

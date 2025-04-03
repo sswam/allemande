@@ -34,12 +34,34 @@ __AMPS_load_conf
 # parse options and handle --help usage
 eval "$(ally)"
 
+# process arguments
+AMPS_argv() {               
+        local modes=($1) i j arg
+        shift
+        __AMPS_argv=()
+        for ((i=0; i<$#; i++)); do
+		j=$((i+1))
+                arg=${!j}
+                __AMPS_argv[$i]=$arg
+                if [ "$arg" != "-" ]; then
+                        continue
+                fi              
+                if [ "${modes[$i]}" = "I" ]; then
+                        __AMPS_argv[$i]="/dev/stdin"
+                elif [ "${modes[$i]}" = "O" ]; then
+                        __AMPS_argv[$i]="/dev/stdout"
+                fi        
+        done
+}                                 
+
 # clean up on successful exit
 trap '
 	exit_status=$?
 	trap - EXIT
 	if ((AMPS_KEEP_WORK)); then
 		echo >&2 "AMPS work: $__AMPS_work_dir"
+	elif ((AMPS_RM_WORK)); then
+		rm -rf "$__AMPS_work_dir"
 	else
 		move-rubbish -q "$__AMPS_work_dir"
 	fi

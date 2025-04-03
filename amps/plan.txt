@@ -1,0 +1,1 @@
+- fix ally help and options to work with AMPS
