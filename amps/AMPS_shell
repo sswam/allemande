@@ -3,22 +3,19 @@
 # AMPS_shell - translate AMPS-shell programs to bash shell scripts
 AMPS_shell	amps_code<	>shell_code
 
-mkdir	parts>	&&	split_paragraphs	parts/	<amps_code	#	>parts/0000	>parts/0001
-mv	parts/0000<	filetype>
-mv	parts/0001<	in_head>	&&	echo	>>in_head
-[ "$(<filetype)" = ". AMPS" ]	||	die	"invalid file type header"	#	<filetype
-csplit	-s -n 1 -f	in_head_	in_head<	'/^[^#]/' '/^/'	#	>in_head_0	>in_head_1	>in_head_2
-mv	in_head_0<	head_comments>
-mv	in_head_1<	signature>
-mv	in_head_2<	options>
-lecho	"#!/usr/bin/env bash"	"# warning: derived file, from $(basename $amps_code)"	>out_head_0
-echo	'set -e'	>set_e
-cat	out_head_0<	head_comments<	set_e<	>out_head
-echo	'cd "$__AMPS_work_dir"'	>cd_work_dir
-echo	'. AMPS_shell_init'	>init
-cut	-f2-	<signature	|	tr '\t' '\n'	>args
-arg_symlink_commands	<args	>arg_commands
-cat	parts/*	>commands_0	#	<parts
-tsort_commands	<commands_0	>commands_1
-<commands_1	sed 's/[<>]\(\t\|$\)/\1/g'	>commands
-cat_paragraphs	out_head<	options<	init<	arg_commands<	cd_work_dir<	commands<	>shell_code
+split1	mkdir	parts>	&&	split_paragraphs	parts/	<amps_code	#	>parts/0000	>parts/0001
+mv1	mv	parts/0000<	filetype>	&&	mv	parts/0001<	in_head>	&&	echo	>>in_head
+type	[ "$(<filetype)" = ". AMPS" ]	||	die	"invalid file type header"	#	<filetype
+split2	csplit	-s -n 1 -f	in_head_	in_head<	'/^[^#]/' '/^/'	#	>in_head_0	>in_head_1	>in_head_2
+mv2	mv	in_head_0<	head_comments>	&&	mv	in_head_1<	signature>	&&	mv	in_head_2<	options>
+write1	lecho	"#!/usr/bin/env bash"	"# warning: derived file, from $(basename $amps_code)"	>out_head_0
+write2	echo	'set -e'	>set_e
+cat1	cat	out_head_0<	head_comments<	set_e<	>out_head
+write3	echo	'cd "$__AMPS_work_dir"'	>cd_work_dir
+write4	echo	'. AMPS_shell_init'	>init
+split3	cut	-f2-	<signature	|	tr '\t' '\n'	>args
+argv	arg_commands	<args	>arg_commands
+cat2	cat	parts/*	>commands_0	#	<parts
+tsort	tsort_commands	<commands_0	>commands_1
+clean	<commands_1	cut	-f2-	|	sed 's/[<>]\(\t\|$\)/\1/g'	>commands
+cat3	cat_paragraphs	out_head<	options<	init<	arg_commands<	cd_work_dir<	commands<	>shell_code

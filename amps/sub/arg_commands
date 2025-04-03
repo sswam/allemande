@@ -1,5 +1,5 @@
 #!/usr/bin/perl -n
-# arg_cmds: output bash code to handle AMPS named arguments
+# output bash code to handle AMPS named arguments
 # For now, >>append is treated like regular output
 
 use strict;

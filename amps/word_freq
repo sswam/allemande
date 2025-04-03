@@ -4,9 +4,9 @@
 word_freq	document<	most_frequent_n>
 number_of_words= n=10	# number of frequent words to output
 
-tr	-cs	A-Za-z	'\n'	<document	>words
-tr	A-Z	a-z	<words	>words_lc
-sort	<words_lc	>words_sorted
-uniq	-c	<words_sorted	>word_counts
-sort	-rn	<word_counts	>by_frequency
-head	-n "$number_of_words"	<by_frequency	>most_frequent_n
+split	tr	-cs	A-Za-z	'\n'	<document	>words
+lc	tr	A-Z	a-z	<words	>words_lc
+sort	sort	<words_lc	>words_sorted
+count	uniq	-c	<words_sorted	>word_counts
+order	sort	-rn	<word_counts	>by_frequency
+top	head	-n "$number_of_words"	<by_frequency	>most_frequent_n
