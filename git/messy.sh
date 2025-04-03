@@ -119,7 +119,6 @@ message-and-exit() {
 }
 
 git-commit() {
-    set -x
     get_lock
     git add -A -- "${files[@]:-.}"
     git commit "$@" "${files[@]:-.}"
