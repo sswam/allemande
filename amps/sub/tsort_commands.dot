@@ -1,0 +1,20 @@
+# warning: derived file, from tsort_commands
+digraph G {
+edge [labeldistance=1.5];
+node [shape=oval];
+labelloc="t";
+label="tsort_commands"
+commands	[shape=plaintext];
+deps	[shape=plaintext];
+numbered	[shape=plaintext];
+sorted_commands	[shape=plaintext];
+sorted_numbers	[shape=plaintext];
+commands -> number;
+number -> numbered;
+numbered -> depends;
+depends -> deps;
+deps -> tsort;
+tsort -> sorted_numbers;
+sorted_numbers -> lookup;
+lookup -> sorted_commands;
+}

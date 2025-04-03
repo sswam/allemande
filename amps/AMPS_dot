@@ -1,0 +1,18 @@
+. AMPS
+
+# AMPS_dot - translate AMPS-shell programs to dot graphs
+AMPS_dor	amps_code<	>graph.dot
+
+split1	mkdir	parts>	&&	split_paragraphs	parts/	<amps_code	#	>parts/0000	>parts/0001
+mv1	mv	parts/0000<	filetype>	&	mv	parts/0001<	in_head>	&&	echo	>>in_head
+type	[ "$(<filetype)" = ". AMPS" ]	||	die	"invalid file type header"	#	<filetype
+write1	echo	"# warning: derived file, from $(basename $amps_code)"	>out_head
+write2	lecho	'labelloc="t";' "label=\"$(basename "$amps_code")\""	>title
+write3	echo	'}'	>foot
+cat	cat	out_head<	"$prog_dir"/AMPS_dot_head<	title<	>head
+cat2	cat	parts/*	>commands	#	<parts
+tok	perl -pe 's/\t/\n/g; s/$/\n/'	<commands	>tokens
+data1	perl -ne 'print if s/^[<>](?=\w)|(?<=\w)[<>]+$//'	<tokens	|	sort -u	>data
+data2	data_to_dot	<data	>data_dot
+proc1	procs_and_links_to_dot	<tokens	>procs_links_dot
+cat3	cat	head<	data_dot<	procs_links_dot<	foot<	>graph.dot

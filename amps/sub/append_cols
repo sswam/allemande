@@ -1,0 +1,6 @@
+#!/usr/bin/perl
+# append fixed columns to each line
+while (<STDIN>) {
+	chomp;
+	print join("\t", $_, @ARGV), "\n";
+}

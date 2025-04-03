@@ -1,0 +1,55 @@
+# warning: derived file, from AMPS_dot
+digraph G {
+edge [labeldistance=1.5];
+node [shape=oval];
+labelloc="t";
+label="AMPS_dot"
+_prog_dir_AMPS_dot_head	[shape=plaintext];
+amps_code	[shape=plaintext];
+commands	[shape=plaintext];
+data	[shape=plaintext];
+data_dot	[shape=plaintext];
+filetype	[shape=plaintext];
+foot	[shape=plaintext];
+graph_dot	[shape=plaintext];
+head	[shape=plaintext];
+in_head	[shape=plaintext];
+out_head	[shape=plaintext];
+parts	[shape=plaintext];
+parts_0000	[shape=plaintext];
+parts_0001	[shape=plaintext];
+procs_links_dot	[shape=plaintext];
+title	[shape=plaintext];
+tokens	[shape=plaintext];
+split1 -> parts [taillabel=0];
+amps_code -> split1;
+split1 -> parts_0000;
+split1 -> parts_0001;
+parts_0000 -> mv1 [headlabel=0];
+mv1 -> filetype [taillabel=0];
+parts_0001 -> mv1 [headlabel=1];
+mv1 -> in_head [taillabel=1];
+filetype -> type;
+write1 -> out_head;
+write2 -> title;
+write3 -> foot;
+out_head -> cat [headlabel=0];
+_prog_dir_AMPS_dot_head -> cat [headlabel=1];
+title -> cat [headlabel=2];
+cat -> head;
+cat2 -> commands;
+parts -> cat2;
+commands -> tok;
+tok -> tokens;
+tokens -> data1;
+data1 -> data;
+data -> data2;
+data2 -> data_dot;
+tokens -> proc1;
+proc1 -> procs_links_dot;
+head -> cat3 [headlabel=0];
+data_dot -> cat3 [headlabel=1];
+procs_links_dot -> cat3 [headlabel=2];
+foot -> cat3 [headlabel=3];
+cat3 -> graph_dot;
+}

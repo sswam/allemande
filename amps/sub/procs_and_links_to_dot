@@ -1,0 +1,20 @@
+#!/usr/bin/perl -n
+# make graphviz dot code for AMPS processes and links
+BEGIN { @ARGV = (); $prev = ""; }
+chomp;
+s{[^\w<>]+}{_}g;  # disallowed chars
+if ($prev eq "") {
+	$proc = $_;
+	$extra_out_count = $extra_in_count = 0;
+} elsif (s/(?<=\w)>$//){
+	print "$proc -> $_ [taillabel=$extra_out_count];\n";
+	++$extra_out_count;
+} elsif (s/(?<=\w)<$//){
+	print "$_ -> $proc [headlabel=$extra_in_count];\n";
+	++$extra_in_count;
+} elsif (s/^>(?=\w)//) {
+	print "$proc -> $_;\n";
+} elsif (s/^<(?=\w)//) {
+	print "$_ -> $proc;\n";
+}
+$prev = $_;

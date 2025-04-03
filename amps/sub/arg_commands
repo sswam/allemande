@@ -48,8 +48,10 @@ if ($arg_name =~ s/^<//) {
 	}
 	push @modes, $mode;
 }
+my $arg_varname = $arg_name;
+$arg_varname =~ s/\..*//;
 
-my $command = "$arg_name=$arg_val";
+my $command = "$arg_varname=$arg_val";
 if ($arg_abs) {
 	$command .= qq{ && ln -s "$arg_abs" "\$__AMPS_work_dir/$arg_name"};
 }
