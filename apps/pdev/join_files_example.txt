@@ -1,0 +1,11 @@
+#File: build-plan.md
+Tasks list for building the visual task tracker app:
+
+1. Design TSV file format
+   - Define columns: ID, object type, additional info
+   - Implement append-only structure for changes/deletions
+
+#File: design-chat.md
+**AI:** Hey there, Sam! Ready to dive into some programming magic and tackle those critical decision blues today? Let's get those coding gears turning!
+
+**Sam:** sure thing, I've been working up a storm but I'm a bit unfocused, I get distracted easily and work on side-projects that often aren't so important

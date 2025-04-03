@@ -114,8 +114,14 @@ rooms.*
 # data files for dev
 /image/model.json
 
+# references for dev
+/apps/pdev/refs
+
+# heavy stuff
+/apps/pdev/awake
+
 # generated program files
-/apps/plan/hello.js
+/apps/pdev/hello.js
 
 # build stamp files
 /webchat/build.stamp
@@ -148,7 +154,7 @@ rooms.*
 /bash/opts_long
 /bash/opts_help
 /data/tsv2txt
-/apps/plan/hello.wasm
+/apps/pdev/hello.wasm
 /tools/pipechat
 /chat/llama-cpp-python-api-reference-high-level.md
 /chat/llama-cpp-python-api-reference-low-level.md

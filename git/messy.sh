@@ -11,7 +11,7 @@ fi
 . confirm
 
 diff_context=5  # lines of context for diffs
-model="d"       # default model
+model="gf"       # default model
 # initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
@@ -119,6 +119,7 @@ message-and-exit() {
 }
 
 git-commit() {
+    set -x
     get_lock
     git add -A -- "${files[@]:-.}"
     git commit "$@" "${files[@]:-.}"
@@ -513,7 +514,7 @@ messy() {
                 ;;
             *)
                 if [[ -n "${option_model_codes["$choice"]}" ]]; then
-                    generate-commit-message "$choice"
+                    generate-commit-message "${option_model_codes["$choice"]}"
                 else
                     echo >&2 "Invalid choice"
                 fi
