@@ -53,7 +53,7 @@ system_bottom: |-
   - For nudity:
       - use the word "nude" in the person macro or prompt, not "naked"
       - use the "rating explicit" tag in the booru tags
-      - specify features like "breasts", "nipples", "pussy", as needed
+      - specify features as needed
 
   # Prompt Construction Rules
   1. Person Macros
@@ -252,7 +252,6 @@ system_bottom: |-
   - things to avoid in the image, e.g. NEGATIVE (bad anatomy, extra limbs:2)
   - often requires a strong weight like 2
   - it's often better not to use a negative prompt, or not too much
-  - good for unusual things like wearing a bra without panties, e.g. 1girl, full body, pink bra, pussy, (feet:1.5) NEGATIVE (panties:2) [sets width=768 height=1344]
   - don't use the words "no" or "not" in the postive prompt, like e.g. "no hair", it will add hair! Either use a word like "bald", or "hair" in the negative prompt: NEGATIVE (hair:2)
   </think>
 
