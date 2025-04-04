@@ -1,3 +1,4 @@
 digraph G {
-edge [labeldistance=1.5];
-node [shape=oval];
+bgcolor="transparent"
+node [shape=oval style=filled, fillcolor="#808080"]
+edge [color="#808080" labeldistance=1.5]
