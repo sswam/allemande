@@ -1,0 +1,6 @@
+# Ally Chat: Vector Databases
+
+test_faiss	>faiss
+use vector DB syntax	>syntax
+create vector DB on demand	>create
+vector DBs	<faiss	<syntax	<create

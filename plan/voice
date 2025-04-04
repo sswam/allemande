@@ -1,0 +1,11 @@
+# Ally Chat: Voice Chat
+
+connect1	<audio upload	<STT portals	<voice UI	>STT
+code1	<STT	>AV transcription
+design	<audio menu	<icons	>voice UI
+set up	<ricky0123/vad	<voice UI	>browser VAD
+connect2	<OpenAI TTS	>TTS gen
+integrate1	<TTS gen	<TTS on demand	<voice UI	>TTS
+code2	<audio upload	>pass through
+integrate2	<browser VAD	<TTS	<STT	<pass through	>live voice chat
+finish	>voice services	<live voice chat	<AV transcription

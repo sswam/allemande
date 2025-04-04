@@ -1,0 +1,9 @@
+# Ally Chat: Chat Editing
+
+select messages	>select
+delete	<select	>edit
+edit chat	<select	>edit
+fork	<edit
+revamp edit UI	>select
+edit in place	<select	>edit
+edit as new	<select	>edit

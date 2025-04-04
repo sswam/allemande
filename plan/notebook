@@ -1,0 +1,6 @@
+# Ally Chat: Computing Notebooks
+
+python_kernel	>py_kernel
+notebook_agent	<py_kernel	>python_notebook
+file_for_instance	>python_notebook
+notebook_edit	<edit	>python_notebook
