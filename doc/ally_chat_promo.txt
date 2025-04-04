@@ -27,4 +27,4 @@ Novel features include:
 
 For example (shown attached), you can upload a photo of a math equation, ask Claude to look at it can copy it as TeX math, ask Fermi (GPT o3 mini) to solve it, ask Claude again to write JavaScript to check the solution numerically and draw graphs of it, then ask Emmy (GPT 4o) to draw a GraphViz or Mermaid diagram of the flow of the chat. OpenAI will never include the competing Claude and Gemini in their app, but Ally Chat can and does.
 
-Paid users enjoy higher limits, priority support and custom feature requests, i.e. I will try to develop whatever you might need, if the app doesn't do it yet.
+Paid users enjoy higher limits, priority support and custom feature requests, i.e. I will try to develop whatever you might need, if the app doesn't do it yet. Please help me make Ally Chat as good as it can be!
