@@ -1,0 +1,30 @@
+Ally Chat is a unique multi-user chat platform. It features numerous top quality AI models, from providers including OpenAI, Anthropic, Meta, Google, Perplexity, xAI, DeepSeek, Stability AI, and the Civitai community.
+
+Please check out the attached images. You can see various AIs helping me to solve problems and do other interesting things.
+
+This is perhaps the only AI chat service in the world where you can talk with all of the most powerful AI models together in once place. You can get them talking to each other and checking each-other's work, and invite your friends and colleagues to join in too. The app is fully open source. It is free to use, with full functionality and very generous limits.
+
+Novel features include:
+
+- markdown-based chat with complete HTML support:
+  (images, videos, embeds, diagrams, SVG, CSS, JS; everything)
+- Graphviz and Mermaid diagrams, TeX Math, any sort of charts, etc.
+- quality AI art with SDXL models, and assisted prompting; not censored
+- a flexible room file system; private, public and group chats
+- very performant: create new rooms instantly, switch rooms instantly
+- undo, retry and edit the chat history; archive or clear old chat rooms
+- a numbered "chapters" system, to split up your chats for performance
+- a "conductor" that manages AI responses based on mentions and cues
+- a shared canvas for collaborative drawing using JavaScript
+- AIs can teach you how to use the app, including all the models and tools
+- a column view option, to make the most of your screen
+- web, image, video search; programming tools such as Bash and Python
+- the whole app is open source, you can potentially run it at home
+- a cast of more than 100 characters and agents, including specialists
+- custom agents and missions, adjust context and other settings mid-chat
+- a wide range of styles, support for custom styles and JavaScript
+- we value free speech and include access to various uncensored AIs
+
+For example (shown attached), you can upload a photo of a math equation, ask Claude to look at it can copy it as TeX math, ask Fermi (GPT o3 mini) to solve it, ask Claude again to write JavaScript to check the solution numerically and draw graphs of it, then ask Emmy (GPT 4o) to draw a GraphViz or Mermaid diagram of the flow of the chat. OpenAI will never include the competing Claude and Gemini in their app, but Ally Chat can and does.
+
+Paid users enjoy higher limits, priority support and custom feature requests, i.e. I will try to develop whatever you might need, if the app doesn't do it yet.
