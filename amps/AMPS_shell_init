@@ -58,9 +58,9 @@ AMPS_argv() {
 trap '
 	exit_status=$?
 	trap - EXIT
-	if ((AMPS_KEEP_WORK)); then
+	if ((${AMPS_KEEP_WORK:-0})); then
 		echo >&2 "AMPS work: $__AMPS_work_dir"
-	elif ((AMPS_RM_WORK)); then
+	elif ((${AMPS_RM_WORK:-0})); then
 		rm -rf "$__AMPS_work_dir"
 	else
 		move-rubbish -q "$__AMPS_work_dir"

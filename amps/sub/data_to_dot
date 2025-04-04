@@ -1,5 +1,9 @@
 #!/usr/bin/perl -p
 # make graphviz dot code for AMPS data
+use strict;
+use warnings;
 chomp;
-s{[^\w<>]+}{_}g;  # disallowed chars
-$_ .= "\t[shape=plaintext];\n"
+my $label = $_;
+my $id = $_;
+$id =~ s{[^\w<>]+}{_}g;  # disallowed chars
+$_ = qq{$id\t[shape=plaintext label="$label"];\n};

@@ -1,20 +1,37 @@
 #!/usr/bin/perl -n
 # make graphviz dot code for AMPS processes and links
+use strict;
+use warnings;
+our ($prev, %seen, $proc, $proc_id, $id, $extra_out_count, $extra_in_count);
 BEGIN { @ARGV = (); $prev = ""; }
 chomp;
-s{[^\w<>]+}{_}g;  # disallowed chars
+sub name_to_id {
+	my ($name) = @_;
+	my $id = $name;
+	$id =~ s{[^\w<>]+}{_}g;  # disallowed chars
+	return $id;
+}
 if ($prev eq "") {
 	$proc = $_;
+	$proc_id = name_to_id($proc);
+	if (!$seen{$proc}) {
+		print qq{$proc_id\t[label="$proc"];\n};
+		$seen{$proc} = 1;
+	}
 	$extra_out_count = $extra_in_count = 0;
 } elsif (s/(?<=\w)>$//){
-	print "$proc -> $_ [taillabel=$extra_out_count];\n";
+	$id = name_to_id($_);
+	print "$proc_id -> $id [taillabel=$extra_out_count];\n";
 	++$extra_out_count;
 } elsif (s/(?<=\w)<$//){
-	print "$_ -> $proc [headlabel=$extra_in_count];\n";
+	$id = name_to_id($_);
+	print "$id -> $proc_id [headlabel=$extra_in_count];\n";
 	++$extra_in_count;
 } elsif (s/^>(?=\w)//) {
-	print "$proc -> $_;\n";
+	$id = name_to_id($_);
+	print "$proc_id -> $id;\n";
 } elsif (s/^<(?=\w)//) {
-	print "$_ -> $proc;\n";
+	$id = name_to_id($_);
+	print "$id -> $proc_id;\n";
 }
 $prev = $_;
