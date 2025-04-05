@@ -2225,6 +2225,7 @@ function setup_icons() {
   icons["mod_edit"] = icons["edit"];
   icons["room_ops_move"] = icons["edit"];
   icons["access_denied"] = icons["x_large"];
+  icons["add_file_2"] = icons["add_file"];
 
   for (const id in icons) {
     const el = $id(id);
@@ -2302,6 +2303,7 @@ function chat_main() {
   $on($id("mod_cancel"), "click", () => set_controls());
 
   $on($id("add_file"), "click", file_clicked);
+  $on($id("add_file_2"), "click", file_clicked);
   $on($id("files"), "change", files_changed);
   $on($id("add_cancel"), "click", () => set_controls());
 
