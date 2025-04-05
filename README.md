@@ -8,9 +8,9 @@ Our main product is an innovative multi-player chat app called <A href="https://
 
 ## Quickstart
 
-Contact the developer for access, and check out [the Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md) to get started.
+Contact the developer for access, and check out [the Quick Start Guide](doc/intro_basic.md) to get started.
 
-The [full user guide](https://github.com/sswam/allemande/blob/main/doc/intro.md) provides comprehensive details about features, models, and advanced usage. The AIs in the main chat room can also use this guide to help you learn.
+The [full user guide](doc/intro.md) provides comprehensive details about features, models, and advanced usage. The AIs in the main chat room can also use this guide to help you learn.
 
 ## Ally Chat
 
@@ -41,7 +41,7 @@ to join.
 
 ### AI Models and Characters
 
-We offer a wide array of AI models and predefined characters. See the [full user guide (`intro.md`)](https://github.com/sswam/allemande/blob/main/doc/intro.md) for detailed descriptions, personalities, and the latest model table including context sizes and pricing. Highlights include:
+We offer a wide array of AI models and predefined characters. See the [full user guide](doc/intro.md) for detailed descriptions, personalities, and the latest model table including context sizes and pricing. Highlights include:
 
 * **Powerful LLMs**:
 	* Anthropic: Claude 3.7 Sonnet (Clauden), Claude 3.5 Sonnet (Claude), Claude 3.5 Haiku (Clia)
@@ -85,20 +85,47 @@ We offer a wide array of AI models and predefined characters. See the [full user
 Ally Chat supports a wide range of embedded content:
 
 **TeX Math:**
-Inline: $ E = mc^2 $ Display: $$ \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi} $$
+
+```math
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+```
 
 **Graphviz:**
+
 ```dot
-graph { bgcolor="transparent"; node [style=filled, fillcolor="#808080"]; edge [color="#808080"]; A -- B -- C -- A; }
+digraph G {
+    bgcolor="transparent"
+    node [style=filled, fillcolor="#808080"]
+    edge [color="#808080"]
+    A -> B;
+    B -> C;
+}
 ```
 
 **Mermaid:**
+
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#808080', 'primaryTextColor': '#ffffff', 'lineColor': '#808080'}}}%%
-flowchart TD; A[Start] --> B{Decision?}; B -->|Yes| C[Do something]; B -->|No| D[Do other]; C & D --> E[End];
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#808080',
+    'primaryTextColor': '#ffffff',
+    'primaryBorderColor': '#404040',
+    'lineColor': '#808080',
+    'secondaryColor': '#808080',
+    'tertiaryColor': '#808080'
+  }
+}}%%
+flowchart TD
+    A[Start] --> B{Decision?}
+
+    B -->|Yes| C[Do something]
+    B -->|No| D[Do something else]
+    C --> E["End (or is it)?"]
+    D --> E
 ```
 
-(See the [full user guide](https://github.com/sswam/allemande/blob/main/doc/intro.md) for HTML, SVG, JavaScript, and charting examples.)
+(See the [full user guide](doc/intro.md) for HTML, SVG, JavaScript, and charting examples.)
 
 ### Applications
 
@@ -115,9 +142,9 @@ These applications are currently stand-alone tools; they are not yet integrated 
 - The GPU services provide local LLMs (e.g. Llama 3.1) and image gen with SDXL.
 - A 24GB+ GPU (e.g., Nvidia 3090 or better) is recommended for running local models like Llama 3.1 (Ally, etc.) and SDXL (Illy, Hily) concurrently.
 - If you use Windows, you will need to install Debian in WSL2, see [doc/windows.txt](doc/windows.txt) for details.
-- Refer to [doc/debian.sh](/doc/debian.sh) for the main install guide. It should work with other Linux distros, and possibly on Mac. You will need to figure out the corresponding packages, etc.
-- Python packages are listed in [requirements-webchat.txt], [requirements-1.txt](/requirements-1.txt), [requirements-2.txt](/requirements-2.txt), [requirements-cuda.txt](/requirements-cuda.txt).
-- An install guide for certain extra packages: [requirements-extra.txt](/requirements-extra.txt)
+- Refer to [doc/debian.sh](doc/debian.sh) for the main install guide. It should work with other Linux distros, and possibly on Mac. You will need to figure out the corresponding packages, etc.
+- Python packages are listed in [requirements-webchat.txt], [requirements-1.txt](requirements-1.txt), [requirements-2.txt](requirements-2.txt), [requirements-cuda.txt](requirements-cuda.txt).
+- An install guide for certain extra packages: [requirements-extra.txt](requirements-extra.txt)
 - The install guides are yet not comprehensive. Please contact the developer for help if you want to self-host Ally Chat.
 
 ## Examples
