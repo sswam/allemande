@@ -1,0 +1,52 @@
+[build-system]
+requires = ["flit_core >=3.2.0,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "mdformat_light_touch"
+authors = [
+    { name = "Sam Watkins", email = "sam@ucm.dev" },
+]
+readme = "README.md"
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["mdformat", "markdown", "markdown-it"]
+requires-python = ">=3.7"
+dependencies = [
+    "mdformat >=0.7.0,<0.8.0",
+]
+dynamic = ["version", "description"]
+
+[project.optional-dependencies]
+test = [
+    "pytest~=6.0",
+    "coverage",
+    "pytest-cov",
+]
+dev = ["pre-commit"]
+
+[project.urls]
+Homepage = "https://github.com/sswam/allemande"
+
+[project.entry-points."mdformat.parser_extension"]
+light_touch = "mdformat_light_touch"
+
+[tool.flit.sdist]
+include = []
+exclude = [".github/", "tests/"]
+
+[tool.isort]
+# Force imports to be sorted by module, independent of import type
+force_sort_within_sections = true
+# Group first party and local folder imports together
+no_lines_before = ["LOCALFOLDER"]
+
+# Configure isort to work without access to site-packages
+known_first_party = ["mdformat_light_touch", "tests"]
+
+# Settings for Black compatibility
+profile = "black"

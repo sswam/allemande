@@ -31,6 +31,7 @@ from deepmerge import always_merger
 from bs4 import BeautifulSoup
 from markdown_it import MarkdownIt
 from mdformat.renderer import MDRenderer
+import mdformat_light_touch
 
 import video_compatible
 from ally.cache import cache
@@ -850,13 +851,19 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     # render back to markdown using mdformat
     options = {
         "number": True,
+        "parser_extension": [mdformat_light_touch],
     }
     env = {}
     out_text = mdformat.render(tokens, options, env)
+
+    # This should not be needed now with mdformat_light_touch:
+    # replace $\` and \`$ with $` and `$  :(
+    # out_text = out_text.replace(r"$\`", "$`").replace(r"\`$", "`$")
+
     out_text = newlines_before + out_text.strip("\n") + newlines_after
 
     if out_text != in_text:
-        logger.info("preprocess_normal_markdown: %r -> %r", in_text, out_text)
+        logger.info("preprocess_normal_markdown:\n%s\n%s", in_text, out_text)
 
     return out_text, has_math
 
@@ -930,8 +937,8 @@ async def preprocess(content: str, bb_file: str, user: str|None) -> tuple[str, b
     out = []
 
     # make sure <think> tags are on their own lines...
-    content = re.sub(r"^\s*(<think>)\s*", r"\n\1\n", content, flags=re.IGNORECASE)
-    content = re.sub(r"\s*(</think>)\s*$", r"\n\1\n", content, flags=re.IGNORECASE)
+    content = re.sub(r"^\s*(<think>)\s*", r"\n\1\n", content, flags=re.IGNORECASE|re.MULTILINE)
+    content = re.sub(r"\s*(</think>)\s*$", r"\n\1\n", content, flags=re.IGNORECASE|re.MULTILINE)
 
     in_math = False
     in_code = 0

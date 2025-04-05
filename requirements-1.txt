@@ -58,3 +58,6 @@ flax[all]
 whisperx
 insanely-fast-whisper
 speechbrain
+
+flit
+tox
