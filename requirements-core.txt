@@ -64,6 +64,7 @@ websockets
 
 markdown
 markdown-it-py[linkify,plugins]
+mdformat
 pymdown-extensions
 aiofiles
 jinja2

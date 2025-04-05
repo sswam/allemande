@@ -30,6 +30,7 @@ import aiofiles
 from deepmerge import always_merger
 from bs4 import BeautifulSoup
 from markdown_it import MarkdownIt
+from mdformat.renderer import MDRenderer
 
 import video_compatible
 from ally.cache import cache
@@ -47,6 +48,7 @@ ADMINS = os.environ.get("ALLYCHAT_ADMINS", "").split()
 MODERATORS = os.environ.get("ALLYCHAT_MODERATORS", "").split()
 
 md = MarkdownIt()
+mdformat = MDRenderer()
 
 
 class Access(enum.Enum):
@@ -824,30 +826,39 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
     return part, has_math
 
 
-def preprocess_normal_line(line: str, bb_file: str) -> tuple[str, bool]:
-    """Find and fix inline math in a line, also preprocess links."""
-    tokens = md.parse(line)
-    tokens_out, has_math = preprocess_normal_line_tokens(tokens, bb_file)
-    line_out = md.renderer.render(tokens_out, md.options, {})
-    return line_out, has_math
+def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
+    """Find and fix inline math in markdown, also preprocess links."""
+    newlines_before, text, newlines_after = re.match(r"(\n*)(.*?)(\n*)$", in_text, re.DOTALL).groups()
 
-
-def preprocess_normal_line_tokens(tokens: list[dict[str, Any]], bb_file: str) -> tuple[list[dict[str, Any]], bool]:
-    """Find and fix inline math in a line, also preprocess links."""
     has_math = False
+    tokens = md.parse(text)
 
-    for token in tokens:
-        if token.children:
-            token.children, has_math_2 = preprocess_normal_line_tokens(token.children, bb_file)
-            has_math = has_math or has_math_2
-        if token.type == 'link_open':
-            token.attrs['href'] = fix_link(token.attrs['href'], bb_file)
-        elif token.type == 'text':
-            fixed_text, has_math_2 = find_and_fix_inline_math_part(token.content)
-            has_math = has_math or has_math_2
-            token.content = fixed_text
+    def process_tokens(tokens):
+        nonlocal has_math
+        for token in tokens:
+            if token.children:
+                process_tokens(token.children)
+            if token.type == 'link_open':
+                token.attrs['href'] = fix_link(token.attrs['href'], bb_file)
+            elif token.type == 'text':
+                fixed_text, has_math_part = find_and_fix_inline_math_part(token.content)
+                has_math = has_math or has_math_part
+                token.content = fixed_text
 
-    return tokens, has_math
+    process_tokens(tokens)
+
+    # render back to markdown using mdformat
+    options = {
+        "number": True,
+    }
+    env = {}
+    out_text = mdformat.render(tokens, options, env)
+    out_text = newlines_before + out_text.strip("\n") + newlines_after
+
+    if out_text != in_text:
+        logger.info("preprocess_normal_markdown: %r -> %r", in_text, out_text)
+
+    return out_text, has_math
 
 
 def fix_link(href: str, bb_file: str) -> str:
@@ -927,6 +938,20 @@ async def preprocess(content: str, bb_file: str, user: str|None) -> tuple[str, b
     in_script = False
     in_svg = False  # we need to avoid line breaks in SVG unfortunately
     was_blank = False
+
+    # accumulate normal lines to process together with process_normal_markdown
+    normal_lines = []
+
+    is_normal_line = False
+
+    def do_normal_lines():
+        nonlocal normal_lines, has_math
+        text = "\n".join(normal_lines) + "\n"
+        text, has_math1 = preprocess_normal_markdown(text, bb_file)
+        has_math = has_math or has_math1
+        normal_lines = []
+        return text
+
     for line in content.splitlines():
         logger.debug("line: %r", line)
         is_markup = False
@@ -939,6 +964,7 @@ async def preprocess(content: str, bb_file: str, user: str|None) -> tuple[str, b
         logger.debug("check line: %r", line)
         is_math_start = re.match(r"\s*(\$\$|```tex|```math|\\\[)$", line)
         is_math_end = re.match(r"\s*(\$\$|```|\\\])$", line)
+        is_normal_line = False
         if re.match(r"\s*<(script|style|svg)\b", line, flags=re.IGNORECASE) and not in_code:
             in_code = 1
             in_script = True
@@ -999,9 +1025,16 @@ async def preprocess(content: str, bb_file: str, user: str|None) -> tuple[str, b
             out.append(text)
         else:
             logger.debug("not in code or anything")
-            line, has_math1 = preprocess_normal_line(line, bb_file)
-            has_math = has_math or has_math1
-            out.append(line + "\n")
+            normal_lines.append(line)
+            is_normal_line = True
+
+        if not is_normal_line and normal_lines:
+            text = do_normal_lines()
+            out.insert(-1, text)
+
+    if normal_lines:
+        text = do_normal_lines()
+        out.append(text)
 
     out = add_blanks_after_code_blocks(out)
 
@@ -1238,7 +1271,9 @@ def restore_indents(text):
 
 
 def markdown_to_html(content: str) -> str:
-    html_content = markdown.markdown(content, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
+    """Convert markdown to HTML."""
+    # Note: mdformat gives 3-space indents, so we need to use tab_length=3
+    html_content = markdown.markdown(content, tab_length=3, extensions=MARKDOWN_EXTENSIONS, extension_configs=MARKDOWN_EXTENSION_CONFIGS)
     return html_content
 
 
