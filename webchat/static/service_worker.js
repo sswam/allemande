@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "0.4.639";
+const VERSION = "0.4.647";
 const DEBUG = false;
 
 console.log = DEBUG ? console.log : () => {};
@@ -21,6 +21,8 @@ const URLS_TO_CACHE = [
   "/room.js",
   "/print.js",
   "/highlight.js",
+  "/debug.js",
+  "/resizer.js",
 
   "/d3.min.js",
   "/wasm.min.js",
@@ -100,15 +102,26 @@ async function sw_activate(event) {
   event.waitUntil(sw_activate_2(event));
 }
 
+// Fetch resource from network
+async function sw_fetch_from_network(req, options) {
+  console.log(`Fetching from network: ${req.url}`);
+  const response = await fetch(req, options);
+  console.log(`Network response: ${req.url}`, response.status);
+  return response;
+}
+
 // Fetch resource from cache or network
-async function sw_fetch_cached(req) {
+async function sw_fetch_from_cache_or_network(req) {
   const cached = await caches.match(req);
   if (cached) {
     console.log(`Cached resource: ${req.url}`);
     return cached;
   }
-  console.log(`Fetching resource not found in cache: ${req.url}`);
-  return await fetch(req, { mode: "cors" });
+  // list of domains to avoid cors mode
+  if (req.url.startsWith('https://fonts.googleapis.com') || req.url.startsWith('https://fonts.gstatic.com')) {
+    return await sw_fetch_from_network(req);
+  }
+  return await sw_fetch_from_network(req, { mode: "cors" });
 }
 
 // Fetch event - serve GET and HEAD requests from cache or network
@@ -119,7 +132,7 @@ function sw_fetch(event) {
     console.log(`Ignoring non-GET/HEAD request: ${req.method} ${req.url}`);
     return;
   }
-  event.respondWith(sw_fetch_cached(req));
+  event.respondWith(sw_fetch_from_cache_or_network(req));
 }
 
 // Push event - handle incoming notifications
