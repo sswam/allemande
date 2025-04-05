@@ -5,8 +5,8 @@
 - after login, choices to get started, carousel type thing
 
 - UI options
-	- simple mode
-	- advanced mode
+	✓ simple mode
+	✓ advanced mode
 	- coding on/off
 	- literary mode?
 	- pop-up suggestions
@@ -39,7 +39,7 @@
 
 ## other ideas
 
-- include guides as pages in the app
+✓ include guides as pages in the app
 
 - hide / show individual messages or ranges, using select UI
 
