@@ -46,6 +46,7 @@ let view_options = {
   highlight: 1,
   highlight_theme_light: "a11y-light",
   highlight_theme_dark: "a11y-dark",
+  advanced: 0,
 };
 
 let view_image_size_delta = 1;
@@ -1848,10 +1849,12 @@ function view_options_apply() {
   active_set("view_columns", view_options.columns);
   active_set("view_compact", view_options.compact);
   $id("view_items").value = view_options.items ?? "";
+  active_set("view_advanced", view_options.advanced);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
 
   const cl = document.body.classList;
   cl.toggle("compact", view_options.compact == 1);
+  cl.toggle("simple", view_options.advanced == 0);
 
   if (view_options.image_size >= 10) {
     view_image_size_delta = -1;
@@ -1919,6 +1922,11 @@ function view_columns(ev) {
 
 function view_compact(ev) {
   view_options.compact = !view_options.compact;
+  view_options_apply();
+}
+
+function view_advanced(ev) {
+  view_options.advanced = !view_options.advanced;
   view_options_apply();
 }
 
@@ -2194,6 +2202,7 @@ const icons = {
   nav_allychat: '<svg width="20" height="20" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg>',
   room_ops: '<svg width="20" height="20" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16"><path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5M5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1z"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1"/></svg>',
   scroll: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>',
+  view_advanced: '<svg width="20" height="20" fill="currentColor" class="bi bi-lightbulb-fill" viewBox="0 0 16 16"><path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m3 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1-.5-.5"/></svg>',
 };
 
 
@@ -2316,6 +2325,7 @@ function chat_main() {
   $on($id("view_compact"), "click", view_compact);
   $on($id("view_items"), "change", view_items);
   $on($id("view_items"), "keyup", view_items);
+  $on($id("view_advanced"), "click", view_advanced);
   $on($id("view_cancel"), "click", () => set_controls());
 
   $on($id("opt_context"), "change", opt_context);

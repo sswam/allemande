@@ -117,6 +117,10 @@ body.compact .pad {
 .col > :first-child, .row > :first-child {
 	margin: 0;
 }
+/* hack! */
+body.simple #user {
+	margin: 0;
+}
 .flex {
 	flex: 1;
 }
@@ -290,6 +294,14 @@ button:has(svg) {
 
 .small {
 	font-size: small;
+}
+
+body.simple .advanced {
+	display: none;
+}
+
+body:not(.simple) .simple {
+	display: none;
 }
 
 @media print {

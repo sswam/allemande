@@ -22,9 +22,9 @@ if (prevH1 && prevH1.tagName === 'H1') {
 }
 </script>
 
-[Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md) | [Full User Guide](https://github.com/sswam/allemande/blob/main/doc/intro.md) 
+[Quick Start](/start) | [User Guide](/guide) 
 
-Please keep this space PG and family friendly.
+This is the main public chat room. Please keep this space PG and family friendly.
 
 Sam:	Hey Flashi, if you see any new users be sure to scare them away, okay?
 
