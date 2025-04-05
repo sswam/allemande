@@ -179,3 +179,7 @@ body {
 	/* pointer-events: none; */
 	/* background-color: #444 !important; */
 }
+
+#chatlink:not(.disabled) {
+	box-shadow: 0 0 10px 2px rgba(255, 191, 191, 0.5);
+}

@@ -2,9 +2,13 @@
 
 # Debian GNU/Linux Installation
 
-# Part 2 of 2
+# These install notes are fairly minimal with a few suggested extras.
 
-# ======== settings ==========================================================
+# The developer recommends to use Debian.
+
+# You can either step through these scripts, or run them.
+
+# ======== run some things as root {{{ =======================================
 
 user=$USER
 host=$HOSTNAME
@@ -12,12 +16,26 @@ servers=(ucm.dev pi.ucm.dev)
 server0=${servers[0]}
 code=$server0:/home/sam/code
 fullname=`awk -F: -v user=$user '$1==user {print $5}' /etc/passwd | sed 's/,.*//'`
+read -i "$fullname" -p "Your full name: " fullname
+sudo chfn -f "$fullname" $USER
 
 read -p "Settings are user=$user, host=$host, servers=${servers[*]}, code=$code, okay? " yn
 if [ "$yn" != y ]; then
 	echo >&2 "Please fix your settings, then re-run $(basename $0)"
 	exit 1
 fi
+
+# -------- set up sudo with staff group --------------------------------------
+
+sudo sh -c "
+cat <<END >/etc/sudoers.d/local
+%staff ALL = (ALL) NOPASSWD: ALL
+END
+
+sudo adduser $USER staff
+"
+
+newgrp staff
 
 # -------- set up apt sources.list -------------------------------------------
 
@@ -33,10 +51,10 @@ deb http://ftp.debian.org/debian experimental main contrib non-free non-free-fir
 END
 "
 
-# -------- set up 99dontbreakdebian for safety with other sources ------------
+# -------- set up 00dontbreakdebian for safety with other sources ------------
 
 sudo sh -c "
-cat <<END >/etc/apt/preferences.d/99dontbreakdebian
+cat <<END >/etc/apt/preferences.d/00dontbreakdebian
 Package: *
 Pin: release o=Debian,a=experimental
 Pin-Priority: 1
@@ -48,14 +66,6 @@ Pin-Priority: 90
 Package: *
 Pin: release o=Debian,a=testing
 Pin-Priority: 95
-
-Package: *
-Pin: release a=focal
-Pin-Priority: 70
-
-Package: *
-Pin: release o=LP-PPA-deadsnakes
-Pin-Priority: 90
 
 Package: *
 Pin: origin ppa.launchpad.net
@@ -173,6 +183,7 @@ mkdir -p ~/my
 chmod go-rwx ~/my
 touch ~/my/ai.env
 # NOTE: copy ai.env or populate as needed with API keys
+# refer to config/ai.env.dist
 
 cat <<'END' >>~/.bashrc
 

@@ -43,7 +43,3 @@ After following this guide, continue with the debian.txt install notes.
 - install gimp
 - install zoom
 - install windirstat
-
-## How to do it?
-
-- windows search -> use firefox or chrome, not edge
