@@ -63,6 +63,7 @@ inotify
 websockets
 
 markdown
+markdown-it-py[linkify,plugins]
 pymdown-extensions
 aiofiles
 jinja2

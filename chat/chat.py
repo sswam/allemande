@@ -29,6 +29,7 @@ from starlette.exceptions import HTTPException
 import aiofiles
 from deepmerge import always_merger
 from bs4 import BeautifulSoup
+from markdown_it import MarkdownIt
 
 import video_compatible
 from ally.cache import cache
@@ -40,9 +41,12 @@ os.umask(0o007)
 
 EXTENSION = ".bb"
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
+ALLYCHAT_SITE = os.environ["ALLYCHAT_SITE"]
 
 ADMINS = os.environ.get("ALLYCHAT_ADMINS", "").split()
 MODERATORS = os.environ.get("ALLYCHAT_MODERATORS", "").split()
+
+md = MarkdownIt()
 
 
 class Access(enum.Enum):
@@ -820,45 +824,50 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
     return part, has_math
 
 
-def find_and_fix_inline_math(line: str) -> tuple[str, bool]:
-    """Find and fix inline math in a line."""
-    # run the regexpes repeatedly to work through the string
+def preprocess_normal_line(line: str, bb_file: str) -> tuple[str, bool]:
+    """Find and fix inline math in a line, also preprocess links."""
+    tokens = md.parse(line)
+    tokens_out, has_math = preprocess_normal_line_tokens(tokens, bb_file)
+    line_out = md.renderer.render(tokens_out, md.options, {})
+    return line_out, has_math
 
-    start = 0
+
+def preprocess_normal_line_tokens(tokens: list[dict[str, Any]], bb_file: str) -> tuple[list[dict[str, Any]], bool]:
+    """Find and fix inline math in a line, also preprocess links."""
     has_math = False
-    while True:
-        logger.debug("preprocess line part from: %r %r", start, line[start:])
-        # 1. find quoted code, and skip those bits
-        match = re.match(
-            r"""
-            ^
-            (
-                [^`]+       # Any characters except `
-                |`.*?`       # OR `...`
-                |```.*?```   # OR ```...```
-                |.+          # OR Any characters, if syntax is broken
-            )
-            """,
-            line[start:],
-            re.VERBOSE,
-        )
-        if not match:
-            break
-        found = match.group(1)
-        if found.startswith("`"):
-            start += len(found)
-            continue
 
-        # 2. find inline math, and replace with $`...`$
+    for token in tokens:
+        if token.children:
+            token.children, has_math_2 = preprocess_normal_line_tokens(token.children, bb_file)
+            has_math = has_math or has_math_2
+        if token.type == 'link_open':
+            token.attrs['href'] = fix_link(token.attrs['href'], bb_file)
+        elif token.type == 'text':
+            fixed_text, has_math_2 = find_and_fix_inline_math_part(token.content)
+            has_math = has_math or has_math_2
+            token.content = fixed_text
 
-        fixed, has_math1 = find_and_fix_inline_math_part(found)
-        has_math = has_math or has_math1
+    return tokens, has_math
 
-        # 3. replace the fixed part in the line
-        line = line[:start] + fixed + line[start + len(found) :]
-        start += len(fixed)
 
-    return line, has_math
+def fix_link(href: str, bb_file: str) -> str:
+    """Fix room links"""
+    logger.info("fix_link: %r", href)
+    # parse the URL
+    url = urlparse(href)
+    # is it a remote URL?
+    if url.scheme or url.netloc:
+        return href
+    # is the final part a room name (file without an extension?)
+    if re.match(r"(^|/)[^\./]+", href):
+        try:
+            _safe_path, href = safe_path_for_local_file(bb_file, href)
+        except ValueError as e:
+            logger.warning("Invalid path: %s", e)
+            # TODO should we return maybe a javascript warning or something?
+            return href
+        href = f"""{ALLYCHAT_SITE}/#{href}"""
+    return href
 
 
 HTML_TAGS = quote_words(
@@ -990,7 +999,7 @@ async def preprocess(content: str, bb_file: str, user: str|None) -> tuple[str, b
             out.append(text)
         else:
             logger.debug("not in code or anything")
-            line, has_math1 = find_and_fix_inline_math(line)
+            line, has_math1 = preprocess_normal_line(line, bb_file)
             has_math = has_math or has_math1
             out.append(line + "\n")
 
@@ -1077,12 +1086,7 @@ async def resolve_url_path(file: str, url: str, user: str|None, throw: bool = Tr
 
         # Local path
         # TODO improve this code, I think it's safe but it's not very simple
-        room = Room(path=Path(file))
-        if url.startswith("/"):
-            path2 = Path(url[1:])
-        else:
-            path2 = (Path(room.name).parent)/url
-        safe_path = safe_join(Path(ROOMS_DIR), Path(path2))
+        safe_path, _rel_path = safe_path_for_local_file(file, url)
 
         # Check access permissions
         if not (user and check_access(user, safe_path)):
@@ -1098,6 +1102,18 @@ async def resolve_url_path(file: str, url: str, user: str|None, throw: bool = Tr
         if throw:
             raise
         return None
+
+
+def safe_path_for_local_file(file: str, url: str) -> str:
+    """Resolve a local file path, ensuring it's safe and within the rooms directory."""
+    room = Room(path=Path(file))
+    if url.startswith("/"):
+        path2 = Path(url[1:])
+    else:
+        path2 = (Path(room.name).parent)/url
+    safe_path = safe_join(Path(ROOMS_DIR), Path(path2))
+    rel_path = safe_path.relative_to(Path(ROOMS_DIR))
+    return safe_path, rel_path
 
 
 def parse_markdown_attributes(attr_str: str) -> dict:

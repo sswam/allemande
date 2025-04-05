@@ -1,0 +1,50 @@
+# ideas to improve UI / UX and first impression
+
+- landing page improvements
+
+- after login, choices to get started, carousel type thing
+
+- UI options
+	- simple mode
+	- advanced mode
+	- coding on/off
+	- literary mode?
+	- pop-up suggestions
+
+- use cases
+	- work
+	- creative
+	- personal / therapy
+	- coding
+
+- interactive tutorial
+	- simple mode
+	- advanced mode
+
+- carousel meet new characters / agents
+
+- drop-down list for selecting agent to talk to
+
+- and select own role / character
+
+- show who's in the chat room on the right side, like messenger, collapsible
+
+- custom misssions and agents UI
+	- editor on side
+
+- profile pictures possibly
+
+
+
+
+## other ideas
+
+- include guides as pages in the app
+
+- hide / show individual messages or ranges, using select UI
+
+- agent based GET, HEAD, PUT.
+
+- indent options: tab / 4 spaces / 2 spaces etc
+
+- AIs can't see messages IDs, show to them somehow so they can do edits?

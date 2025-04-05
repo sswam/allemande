@@ -4,8 +4,11 @@ const moveLabels = true;
 
 const HIDE_CONTROLS_DELAY = 1000;
 
-function render_graphviz(node) {
+async function render_graphviz(node) {
   const dot = node.querySelectorAll("code.language-dot");
+  if (dot.length === 0)
+    return;
+  await ensure_graphviz_scripts();
   for (const elem of dot) {
     const par = elem.parentElement;
     d3.select(par)
@@ -16,8 +19,11 @@ function render_graphviz(node) {
   }
 }
 
-function render_mermaid(node) {
+async function render_mermaid(node) {
   const mermaidCode = node.querySelectorAll("code.language-mermaid");
+  if (mermaidCode.length === 0)
+    return;
+  await ensure_mermaid_scripts();
   for (const elem of mermaidCode) {
     const par = elem.parentElement;
     const id = `mermaid-${Date.now()}`;
@@ -31,6 +37,18 @@ function render_mermaid(node) {
         svgElement.style.width = svgElement.style.maxWidth;
       });
   }
+}
+
+async function ensure_graphviz_scripts() {
+  await Promise.all([
+    $script("script_graphviz", `${CHAT_URL}/d3.min.js`),
+    $script("script_graphviz_wasm", `${CHAT_URL}/wasm.min.js`),
+    $script("script_d3", `${CHAT_URL}/d3-graphviz.min.js`),
+  ]);
+}
+
+async function ensure_mermaid_scripts() {
+  await $script("script_mermaid", `${CHAT_URL}/mermaid.min.js`);
 }
 
 function getMessageId(element) {
@@ -50,7 +68,7 @@ function getMessageId(element) {
   return id;
 }
 
-function handleNewMessage(newMessage) {
+async function handleNewMessage(newMessage) {
   // if hidden, don't process
   if (newMessage.classList.contains("hidden"))
     return;
@@ -161,10 +179,10 @@ function handleNewMessage(newMessage) {
   // console.log(newMessage.outerHTML);
 
   // render graphviz diagrams
-  render_graphviz(newContent);
+  await render_graphviz(newContent);
 
   // render mermaid diagrams
-  render_mermaid(newContent);
+  await render_mermaid(newContent);
 
   // add language info to code blocks, script and styles on hover
   const codeBlocks = newContent.querySelectorAll(
@@ -362,9 +380,9 @@ function decorateCodeBlock(codeBlock) {
   });
 }
 
-function process_messages(new_content) {
+async function process_messages(new_content) {
   for (const newMessage of new_content) {
-    handleNewMessage(newMessage);
+    await handleNewMessage(newMessage);
   }
 }
 

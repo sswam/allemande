@@ -248,13 +248,19 @@ async function check_for_new_content(mutations) {
 
 // mutation observer ---------------------------------------------------------
 
-async function mutated(mutations) {
+const mutationMutex = new Mutex();
+
+async function mutated_2(mutations) {
   const new_content = await check_for_new_content(mutations);
   if (new_content.length) {
     online();
     messages_resized();
   }
-  process_messages(new_content);
+  await process_messages(new_content);
+}
+
+async function mutated(mutations) {
+  await mutationMutex.lock(() => mutated_2(mutations));
 }
 
 function setup_mutation_observer() {

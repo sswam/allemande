@@ -36,6 +36,20 @@ const $waitUntilElementHidden = (selector, time) => $waitUntil(() => $(selector)
 const $waitUntilElementText = (selector, text, time) => $waitUntil(() => $(selector).innerText === text, time);
 const $waitUntilElementAttribute = (selector, attribute, value, time) => $waitUntil(() => $(selector).getAttribute(attribute) === value, time);
 
+const $script = async (id, src, async = false) => {
+  if ($id(id))
+    return;
+  await new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.id = id;
+    script.src = src;
+    script.async = async;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    document.head.appendChild(script);
+  });
+}
+
 function show(element, do_show) {
   if (typeof element === "string")
     element = $id(element);
@@ -84,4 +98,24 @@ function run_hooks(name, ...args) {
     return;
   for (const func of hooks[name])
     func(...args);
+}
+
+// Mutex system ---------------------------------------------------------------
+
+class Mutex {
+  constructor() {
+    this.current = Promise.resolve();
+  }
+
+  async lock(fn) {
+    let old = this.current;
+    let unlock;
+    this.current = new Promise(resolve => unlock = resolve);
+    await old;
+    try {
+      return await fn();
+    } finally {
+      unlock();
+    }
+  }
 }

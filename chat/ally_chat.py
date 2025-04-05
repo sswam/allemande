@@ -847,7 +847,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         context2 += f"System:\t{summary}"
     context2 += context
     if mission:
-        context2.insert(mission_pos, "\n".join(mission))
+        context2.insert(mission_pos, "System:\t" + "\n".join(mission))
     # put remote_messages[-1] through the input_maps
     apply_maps(agent["input_map"], agent["input_map_cs"], context2)
 
@@ -953,6 +953,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     remote_messages = [m for m in remote_messages if m["content"]]
 
     # Set up stop sequences for other participants
+    logger.info("context_messages: %r", context_messages)
     all_people = conductor.all_participants(context_messages)
     opts.stop = []
     for p in all_people:
@@ -960,7 +961,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
             continue
         opts.stop.append(f"\n\n{p}: ")
 
-#     logger.info("stop: %r", opts.stop)
+    logger.info("stop: %r", opts.stop)
 
     # import python pretty printer:
     from pprint import pformat
