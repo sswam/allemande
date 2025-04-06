@@ -31,6 +31,8 @@ junk_files() {
             -name '*.changes' -o \
             -name '*.funcs' -o \
             -name '*.old' -o \
+            -name '*.lint' -o \
+            -name '*.test' -o \
             -name '.*.results.txt' -o \
             -name '*.tmp.*' -o \
             -name 'subtitle.txt' \

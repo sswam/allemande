@@ -12,6 +12,9 @@ from chat import parse_markdown_attributes
 
 subject_name = subject.__name__
 
+bb_file = "/opt/allemande/rooms/Ally Chat.bb"
+user = "Ally"
+
 
 def test_safe_join_basic():
     """Test basic path joining functionality."""
@@ -148,25 +151,25 @@ def test_lines_to_messages():
     assert messages[2] == {"content": "Once upon a time\n"}
 
 
-def test_find_and_fix_inline_math():
+def test_preprocess_normal_markdown():
     """Test handling of inline math expressions."""
     # Basic inline math
-    text, has_math = subject.find_and_fix_inline_math("Let $x$ be a number")
+    text, has_math = subject.preprocess_normal_markdown("Let $x$ be a number", bb_file)
     assert text == "Let $`x`$ be a number"
     assert has_math
 
     # Multiple math expressions
-    text, has_math = subject.find_and_fix_inline_math("$a$ + $b$ = $c$")
+    text, has_math = subject.preprocess_normal_markdown("$a$ + $b$ = $c$", bb_file)
     assert text == "$`a`$ + $`b`$ = $`c`$"
     assert has_math
 
     # Code block should be preserved
-    text, has_math = subject.find_and_fix_inline_math("Code `$x$` here")
+    text, has_math = subject.preprocess_normal_markdown("Code `$x$` here", bb_file)
     assert text == "Code `$x$` here"
     assert not has_math
 
     # Escaped math symbols
-    text, has_math = subject.find_and_fix_inline_math("100% pure")
+    text, has_math = subject.preprocess_normal_markdown("100% pure", bb_file)
     assert text == "100% pure"
     assert not has_math
 
@@ -194,7 +197,7 @@ def test_find_and_fix_inline_math_part():
     assert part == "$`x + y`$"
 
 
-def test_preprocess_code_blocks():
+async def test_preprocess_code_blocks():
     """Test preprocessing of indented code blocks."""
     content = """1.  HTML
     ```html
@@ -223,14 +226,14 @@ def test_preprocess_code_blocks():
     ```
 """
 
-    result, has_math = subject.preprocess(content)
+    result, has_math = await subject.preprocess(content, bb_file, user)
     assert not has_math
     assert result == expect
 
 
 # TODO the following tests aren't very thorough ((
 
-def test_preprocess_math_blocks():
+async def test_preprocess_math_blocks():
     """Test preprocessing of math blocks."""
     content = """Here's some math:
     $$
@@ -238,33 +241,33 @@ def test_preprocess_math_blocks():
     $$
     And inline math $z = 1$"""
 
-    result, has_math = subject.preprocess(content)
+    result, has_math = await subject.preprocess(content, bb_file, user)
     assert has_math
     assert "```math" in result
     assert "$`z = 1`$" in result
 
 
-def test_preprocess_script_tags():
+async def test_preprocess_script_tags():
     """Test preprocessing of script tags."""
     content = """<script>
     var x = 1;
     </script>
     Normal text"""
 
-    result, has_math = subject.preprocess(content)
+    result, has_math = await subject.preprocess(content, bb_file, user)
     assert not has_math
     assert "<script>" in result
     assert "var x = 1;" in result
     assert "Normal text" in result
 
 
-def test_preprocess_svg():
+async def test_preprocess_svg():
     """Test preprocessing of SVG content."""
     content = """<svg>
     <rect x="0" y="0" width="100" height="100"/>
     </svg>"""
 
-    result, has_math = subject.preprocess(content)
+    result, has_math = await subject.preprocess(content, bb_file, user)
     assert not has_math
     assert "<svg>" in result
     assert "<rect" in result

@@ -59,8 +59,10 @@ testy() {
 		fi
 		printf "%s\n" "$tests_file"
 
+		local output_file="$prog.test"
+
 		# call calls a function, but won't run a tool
-		call "test_$ext" "$tests_file"
+		call "test_$ext" "$tests_file" 2>&1 | tee "$output_file"
 	)
 }
 

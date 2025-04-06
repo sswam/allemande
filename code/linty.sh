@@ -38,8 +38,10 @@ linty() {
 			return 0
 		fi
 
+		local output_file="$prog.lint"
+
 		# call calls a function, but won't run a tool
-		call "lint_$ext" "$prog" 2>&1
+		call "lint_$ext" "$prog" 2>&1 | tee "$output_file"
 	)
 }
 

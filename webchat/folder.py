@@ -16,8 +16,10 @@ from typing import Any
 from starlette.templating import Jinja2Templates
 
 import chat
-from chat import Access
+import ally_room
+from ally_room import Access
 from ally import debug
+from util import sanitize_pathname, safe_join
 
 logger = logging.getLogger(__name__)
 
@@ -212,8 +214,8 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
             #     }
             # )
 
-#        if not debug.profile_function(chat.check_access, info.user, pathname + item.name).value & Access.READ.value:
-        if not chat.check_access(info.user, pathname + item.name).value & Access.READ.value:
+#        if not debug.profile_function(ally_room.check_access, info.user, pathname + item.name).value & Access.READ.value:
+        if not ally_room.check_access(info.user, pathname + item.name).value & Access.READ.value:
             continue
 
         listing.append(record)

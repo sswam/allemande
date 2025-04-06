@@ -26,7 +26,9 @@ import mimetypes
 import atail
 import akeepalive
 import chat
-from chat import Access
+import ally_room
+from ally_room import Access
+from util import sanitize_pathname, safe_join
 import folder
 
 
@@ -150,8 +152,8 @@ async def stream(request, path=""):
 
     try:
         pathname = request.path_params["path"]
-        pathname = chat.sanitize_pathname(pathname)
-        path = chat.safe_join(BASE_DIR, Path(pathname))
+        pathname = sanitize_pathname(pathname)
+        path = safe_join(BASE_DIR, Path(pathname))
     except Exception as exc:
         logger.warning("Invalid path: %s", exc)
         raise
@@ -160,7 +162,7 @@ async def stream(request, path=""):
     chat_base_url = rooms_base_url.replace("rooms", "chat")
     info = folder.FolderInfo(user=user, chat_base_url=chat_base_url, rooms_base_url=rooms_base_url)
 
-    if not chat.check_access(user, pathname).value & Access.READ.value:
+    if not ally_room.check_access(user, pathname).value & Access.READ.value:
         raise HTTPException(status_code=404, detail="Not found")
 
     # readlink $ALLEMANDE_USERS/$user/theme.css

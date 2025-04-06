@@ -17,6 +17,10 @@ import uvicorn
 from deepmerge import always_merger
 
 import chat
+import ally_room
+from ally_room import Room
+import util
+import settings
 
 
 VAPID_PRIVATE_KEY = os.environ["ALLYCHAT_WEBPUSH_VAPID_PRIVATE_KEY"]
@@ -46,10 +50,10 @@ async def whoami(request):
     form = await request.form()
     room = form.get("room")
     if room:
-        room = chat.sanitize_pathname(room)
+        room = util.sanitize_pathname(room)
     # TODO moderator status might depend on the room
     user = request.headers["X-Forwarded-User"]
-    admin = user in chat.ADMINS
+    admin = user in settings.ADMINS
     mod = admin
     return JSONResponse({"user": user, "room": room, "admin": admin, "mod": mod})
 
@@ -62,7 +66,7 @@ async def post(request):
     content = form["content"]
     user = request.headers["X-Forwarded-User"]
 
-    room = chat.Room(name=room)
+    room = Room(name=room)
 
     try:
         exists = room.exists()
@@ -96,7 +100,7 @@ async def put_file(request, path=""):
     content = content.decode()
 
     try:
-        await chat.overwrite_file(user, path, content, delay=0.2, noclobber=noclobber)
+        await ally_room.overwrite_file(user, path, content, delay=0.2, noclobber=noclobber)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({"status": "success"})
@@ -107,7 +111,7 @@ async def upload(request):
     """File upload."""
     form = await request.form()
     room = form["room"]
-    room = chat.sanitize_pathname(room)
+    room = util.sanitize_pathname(room)
     file = form["file"]
     to_text = form.get("to_text", False)
     user = request.headers["X-Forwarded-User"]
@@ -131,7 +135,7 @@ async def clear(request):
     if op not in ["clear", "archive", "rotate", "clean"]:
         raise HTTPException(status_code=400, detail="Invalid operation.")
 
-    room = chat.Room(name=room)
+    room = Room(name=room)
     try:
         await room.clear(user, op)
     except PermissionError as e:
@@ -147,7 +151,7 @@ async def undo(request):
     n = form.get("n", "1")
     user = request.headers["X-Forwarded-User"]
 
-    room = chat.Room(name=room)
+    room = Room(name=room)
     try:
         room.undo(user, n=int(n))
     except PermissionError as e:
@@ -173,7 +177,7 @@ async def options_set(request):
     """Update chat room options, including agent settings like context."""
     user = request.headers["X-Forwarded-User"]
     request = await request.json()
-    room = chat.Room(name=request["room"])
+    room = Room(name=request["room"])
     old_options = room.get_options(user)
     new_options = request["options"]
     options = always_merger.merge(old_options, new_options)
@@ -190,7 +194,7 @@ async def options_get(request):
     # TODO validation: length, type, no unknown keys
     user = request.headers["X-Forwarded-User"]
     # get room from query param
-    room = chat.Room(name=request.query_params["room"])
+    room = Room(name=request.query_params["room"])
     try:
         options = room.get_options(user)
     except PermissionError as e:
@@ -204,8 +208,8 @@ async def last(request):
     user = request.headers["X-Forwarded-User"]
     # get room from query param
     room_name = request.query_params["room"]
-    room_name = chat.sanitize_pathname(room_name)
-    room = chat.Room(name=room_name)
+    room_name = util.sanitize_pathname(room_name)
+    room = util.Room(name=room_name)
     logger.info("Getting last room number for %s", room_name)
     try:
         last = room.get_last_room_number(user)
@@ -226,7 +230,7 @@ async def move(request):
     source = form["source"]
     dest = form["dest"]
     try:
-        chat.move_file(user, source, dest)
+        ally_room.move_file(user, source, dest)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})

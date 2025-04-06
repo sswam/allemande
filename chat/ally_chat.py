@@ -28,6 +28,9 @@ import conductor
 import search  # type: ignore
 import tab  # type: ignore
 import chat
+import bb_lib
+import ally_markdown
+from ally_room import Room
 import fetch
 import llm  # type: ignore
 from ally import portals  # type: ignore
@@ -294,7 +297,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     """Run a search agent."""
     name = agent.name
     logger.debug("history: %r", history)
-    history_messages = list(chat.lines_to_messages(history))
+    history_messages = list(bb_lib.lines_to_messages(history))
     logger.debug("history_messages: %r", history_messages)
     message = history_messages[-1]
     query = message["content"]
@@ -380,7 +383,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     """Process a file, return True if appended new content."""
     logger.info("Processing %s", file)
 
-    room = chat.Room(path=Path(file))
+    room = Room(path=Path(file))
 
     history = chat.chat_read(file, args)
 
@@ -404,7 +407,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     # Load local agents
     agents = load_local_agents(room, agents)
 
-    history_messages = list(chat.lines_to_messages(history))
+    history_messages = list(bb_lib.lines_to_messages(history))
 
     message = history_messages[-1] if history_messages else None
 
@@ -420,7 +423,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     message = history_messages[-1] if history_messages else None
 
     # so inefficient, need to rework this sensibly one day using ChatMessage objects
-    history = list(chat.messages_to_lines(history_messages))
+    history = list(bb_lib.messages_to_lines(history_messages))
 
 #     logger.info("history_messages 2: %r", history_messages)
     # logger.info("history 2: %r", history)
@@ -472,7 +475,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             query1 = query1.format(bot=bot) or None
             history = [query1]
         logger.debug("query1: %r", query1)
-        messages = list(chat.lines_to_messages([query1]))
+        messages = list(bb_lib.lines_to_messages([query1]))
         query = messages[-1]["content"] if messages else None
 
         logger.debug("query: %r", query)
@@ -610,10 +613,10 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     context_messages = [
         {
             "user": m.get("user"),
-            "content": (await chat.preprocess(m["content"], file, m.get("user")))[0]
+            "content": (await ally_markdown.preprocess(m["content"], file, m.get("user")))[0]
         }
-        for m in chat.lines_to_messages(context)]
-    context = list(chat.messages_to_lines(context_messages))
+        for m in bb_lib.lines_to_messages(context)]
+    context = list(bb_lib.messages_to_lines(context_messages))
 
     need_clean_prompt = agent.get("clean_prompt", dumb_agent)
     if need_clean_prompt:
@@ -670,7 +673,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
-    room = chat.Room(path=Path(file))
+    room = Room(path=Path(file))
 
     # try to get image seed from response
     image_seed = None
@@ -719,7 +722,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     logger.debug("response: %r", response)
 
     agent_names = list(agents.names())
-    history_messages = list(chat.lines_to_messages(history))
+    history_messages = list(bb_lib.lines_to_messages(history))
     all_people = conductor.participants(history_messages)
     people_lc = list(map(str.lower, set(agent_names + all_people)))
 
@@ -851,7 +854,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     # put remote_messages[-1] through the input_maps
     apply_maps(agent["input_map"], agent["input_map_cs"], context2)
 
-    context_messages = list(chat.lines_to_messages(context2))
+    context_messages = list(bb_lib.lines_to_messages(context2))
 
     remote_messages = []
 
@@ -860,7 +863,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     # preprocess markdown in messages for includes
     for m in context_messages:
-        m["content"] = (await chat.preprocess(m["content"], file, m.get("user")))[0]
+        m["content"] = (await ally_markdown.preprocess(m["content"], file, m.get("user")))[0]
 
     # TODO Can't include from system messages, what user permission to use?
 
@@ -1049,7 +1052,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
         # TODO could fetch in parallel, likely not necessary
         # TODO could split text where images occur
         msg['images'] = [
-            await chat.resolve_url_path(file, url, msg['user'], throw=False)
+            await ally_markdown.resolve_url_path(file, url, msg['user'], throw=False)
             for url
             in msg['images']]
 
@@ -1095,7 +1098,7 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     """Run a shell agent."""
     name = agent.name
     logger.debug("history: %r", history)
-    history_messages = list(chat.lines_to_messages(history))
+    history_messages = list(bb_lib.lines_to_messages(history))
     logger.debug("history_messages: %r", history_messages)
     message = history_messages[-1]
     query = message["content"]

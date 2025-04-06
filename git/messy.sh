@@ -27,8 +27,8 @@ declare -A model_names=(
     ["om"]="OpenAI o1-mini"
     ["c"]="Claude"
     ["i"]="Claude Instant"
-    ["gp"]="Gemini 1.5 Pro"
-    ["gf"]="Gemini 1.5 Flash"
+    ["gp"]="Gemini 2.5 Pro"
+    ["gf"]="Gemini 2.0 Flash"
 )
 
 declare -A option_model_codes=(

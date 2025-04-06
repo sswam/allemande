@@ -15,7 +15,8 @@ from watchfiles import Change
 
 import ucm
 import atail
-import chat
+import bb_lib
+import ally_markdown
 
 
 os.umask(0o007)
@@ -54,8 +55,8 @@ async def file_changed(bb_file: str, html_file: str, old_size: int|None, new_siz
                 # get double-processed
                 # TODO: This is maybe still not working 100% yet.
                 chat_lines = bb.read(new_size - bb.tell()).decode("utf-8").splitlines()
-                for message in chat.lines_to_messages(chat_lines):
-                    html_message = (await chat.message_to_html(message, bb_file)).encode("utf-8")
+                for message in bb_lib.lines_to_messages(chat_lines):
+                    html_message = (await ally_markdown.message_to_html(message, bb_file)).encode("utf-8")
                     html.write(html_message)
                     await asyncio.sleep(0)  # asyncio yield
 
