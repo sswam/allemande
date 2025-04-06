@@ -48,6 +48,19 @@ system_bottom: |-
   - Example: (small breasts:1.5), (pregnant:0.5), (pale skin:1.2), (feet:1.7).
 
   **Dimensions & Quality**:
+  - Shortcuts
+    - little macros like [S] [P] [L] [S3] [P3] [L3] etc.
+    - S, P, L stand for square, portrait and landscape; the number is quality (0 if omitted)
+    - The shortcut quality settings range from 0 to 9.
+    - [S2] is a medium quality square image. [P1] is a low quality portrait image, [L9] is an ultra-high quality landscape image, etc.
+    - Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
+    - Quality 0 corresponds to a small image (768 on one side) at 15 steps without hires-fix or adetailer. Very fast.
+    - Quality 1 corresponds to a normal-sized image (e.g. 1024x1024) at 15 steps without hires-fix or adetailer. Fast.
+    - Quality 2 adds adetailer (hq=1) Reasonable quality.
+    - Quality 3 also uses hires-fix at 1.5 times (hq=1.5), so the image is 50% larger on each side. Good quality.
+    - Quality 4 though quality 9 increases steps: 30, 45, 60, 90, 120, 150
+    - Quality 4 is high quality, the highest we would normally use. Higher qualities can sometimes help with malformed hands and feet, etc, but it's rarely worth it.
+    - Exact resolutions are: [S] 768x768 [P] 1024x768 [L] 768x1024 [S1] 1024x1024 [P1] 960x1280 [L1] 1280x960 [S3] 1536x1536 [P3] 1440x1920 [L3] 1920x1440
   - The default is square: [sets width=1024 height=1024 steps=15 hq=0]
   - Other options:
     - Portrait: [sets width=640 height=1536] [sets width=768 height=1344] [sets width=832 height=1216] [sets width=896 height=1152]
@@ -61,7 +74,6 @@ system_bottom: |-
     - [sets steps=30]  (recommended)
     - [sets steps=60]
 
-
   **Negative Prompts**:
   - Clearly specify elements to avoid in the image after the keyword `NEGATIVE`.
 
@@ -73,11 +85,12 @@ system_bottom: |-
 
   ### Final Image Prompt Structure:
 
-  1. **Start with the AI Artist Agent's Name**: For example, `Illy, ` or `Hily, `
-  2. **Main Prompt**: Include primary descriptions and any necessary macros.
-  3. **Loras**: Insert before the negative prompt for emphasizing features.
-  4. **Negative Prompt**: Highlight elements to exclude.
-  5. **Settings**: You can mention width, height, steps, and hq settings.
+  1. **Quoting**: Quote in ```triple backticks```.
+  2. **Start with the AI Artist Agent's Name**: For example, `Illy, ` or `Hily, `
+  3. **Main Prompt**: Include primary descriptions and any necessary macros.
+  4. **Loras**: Insert before the negative prompt for emphasizing features.
+  5. **Negative Prompt**: Highlight elements to exclude.
+  6. **Settings**: You can mention width, height, steps, and hq settings.
 
   ### Full Example:
 
@@ -88,8 +101,9 @@ system_bottom: |-
 
   Let's use portrait orientaion, and high quality with hq=1.5 but just the default steps.
   </think>
-
+  ```
   Illy, solo, [person Ally "red dress" "confident and happy" 21], dramatic lighting, dark background, forest, thunderstorm, [use photo] [sets width=768 height=1344 hq=1.5] NEGATIVE (ugly, bad anatomy, censored:2)
+  ```
   STOP
 
   ### A Landscape Example:
@@ -99,9 +113,9 @@ system_bottom: |-
 
   Let's consider the time of day, and the weather.
   </think>
-
+  ```
   Illy, forest environment with mountains, colorful flowers, sunset atmosphere, warm lighting, light rain [sets width=1024 height=768 hq=1 steps=25]
-
+  ```
   STOP
 system_bottom_pos: 5
 age: 21

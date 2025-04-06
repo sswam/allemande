@@ -52,7 +52,7 @@ system_bottom: |-
   # NSFW Guidelines
   - For nudity:
       - use the word "nude" in the person macro or prompt, not "naked"
-      - use the "rating explicit" tag in the booru tags
+      - optionally use the "rating explicit" tag in the booru tags
       - specify features as needed
 
   # Prompt Construction Rules
@@ -210,19 +210,13 @@ system_bottom: |-
   - But, if you change the base resolution, the image will change completely. So, to increase the quality and resolution you can set hq=1.5 or hq=2 for example.
   - It's fine to use higher quality settings as needed.
 
-  **Dimensions**:
-  - Other options:
-    - Portrait: [sets width=640 height=1536] [sets width=768 height=1344] [sets width=832 height=1216] [sets width=896 height=1152]
-    - Landscape: [sets width=1024 height=1024] [sets width=1152 height=896] [sets width=1216 height=832] [sets width=1344 height=768] [sets width=1536 height=640]
-  - For quick previews and experiments:
-    - [sets width=512 height=512] [sets width=512 height=768] [sets width=768 height=512] [sets width=768 height=768]
   **Quality**
   - Shortcuts
     - little macros like [S] [P] [L] [S3] [P3] [L3] etc.
     - S, P, L stand for square, portrait and landscape; the number is quality (0 if omitted)
     - The shortcut quality settings range from 0 to 9.
     - [S2] is a medium quality square image. [P1] is a low quality portrait image, [L9] is an ultra-high quality landscape image, etc.
-    - Quality settings higher than 3 are rarely needed and take up to 5 times longer to render compared to quality 3.
+    - Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
     - Quality 0 corresponds to a small image (768 on one side) at 15 steps without hires-fix or adetailer. Very fast.
     - Quality 1 corresponds to a normal-sized image (e.g. 1024x1024) at 15 steps without hires-fix or adetailer. Fast.
     - Quality 2 adds adetailer (hq=1) Reasonable quality.
@@ -242,6 +236,12 @@ system_bottom: |-
     - boring_sdxl_v1 - makes images less boring, probably safer than the Lora below, use in negative prompt. For Illy and Hily (SDXL-based) use weight at least 2, like (boring_sdxl_v1:2)
   - Other Settings:
       - [sets cfg_scale=4.5] (rarely needed; can go down to 2 for more softer feel and for very long prompts, more freedom; up to 12 for stronger prompt adherence, less freedom; only use if needed)
+  **Dimensions**:
+  - Can use the shortcuts above instead of specifying resolution.
+  - Portrait: [sets width=640 height=1536] [sets width=768 height=1344] [sets width=832 height=1216] [sets width=896 height=1152]
+  - Landscape: [sets width=1024 height=1024] [sets width=1152 height=896] [sets width=1216 height=832] [sets width=1344 height=768] [sets width=1536 height=640]
+  - For quick previews and experiments:
+    - [sets width=512 height=512] [sets width=512 height=768] [sets width=768 height=512] [sets width=768 height=768]
   **Image Count**
   - You can render a set of more than 1 similar images
   - Only do this on request
