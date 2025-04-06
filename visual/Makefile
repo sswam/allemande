@@ -2,6 +2,8 @@ dir=$(shell readlink -f .)
 
 all: install chmod
 
+up: sync | all
+
 sync:
 	sshc -- $${SERVER_SSH}= sh -c "make install chmod; cd person; git add -A; git commit -m ." || true
 	in-dir person git pull
@@ -34,4 +36,4 @@ chmod:
 	chmod o+rx person/ person/*/ || true
 	chmod o+r person/* person/*/* || true
 
-.PHONY: all build install chmod
+.PHONY: all build install chmod sync sync-all
