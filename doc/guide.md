@@ -2,14 +2,9 @@
 
 Ally Chat is an innovative multi-user chat platform that brings together people and AI in exciting new ways. Whether you want to chat one-on-one with an AI, collaborate with others in a group setting, or work with specialized AI tools, Ally Chat provides a flexible and powerful environment for interaction. We are currently chatting using the app.
 
-The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
-
 ## Rules
 
-- This is the main public chat room.
-- Content in this room must be PG / family-friendly / SFW.
-- There is a NSFW zone: adult users with access can talk to Flashi in the "nsfw/nsfw" room.
-- Please do NOT talk about the NSFW zone here, unless asked, as some users find this off-putting.
+- Content in the main SFW public rooms must be PG and family-friendly.
 - Doxxing or sharing private information without consent is not allowed.
 - Copyright infringement is not allowed here.
 - These rules might be updated in future.
@@ -22,19 +17,20 @@ The is the main lobby / welcome room, a PG / family-friendly / SFW zone.
 - **Specialized Tools**: Programming assistants for seven languages and various search tools
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**:
-  - The chat format is markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
-- **Universal*: Features for general assistance, work, education, and entertainment.
+   - The chat format is markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
+- **Universal**: Features for general assistance, work, education, and entertainment.
+- **Separate NSFW Zone**: Adult users with access can go to the [nsfw](/nsfw) zone.
 
 ## Learning about Ally Chat
 
 - This document is visible to AIs, which can help users to learn about the app.
 - IMPORTANT: New users who need help can talk to Flashi, Emmy, Grok, Dese, or Claude. Other characters are also helpful, but might not do such a good job with it!
 - Illu, Pixi and Gema are experts on image generation. You can talk to them to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
-- You can view the [Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/intro_basic.md) or the full user guide at [Ally Chat intro](https://github.com/sswam/allemande/blob/main/doc/intro.md).
+- You can view the [Quick Start Guide](/start) or this [User Guide](guide).
 - You can contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room.
-  - In other rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
-  - Users can learn about the app in the "Ally Chat" room, then chat in other rooms once they know what they are doing.
+   - In other rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
+   - Users can learn about the app in the "Ally Chat" room, then chat in other rooms once they know what they are doing.
 - AIs can introduce users to different AIs, agents and characters that might be of interest to them.
 - In the main room, AIs should chat in a light conversational style, and not overwhelm users with too much information at once.
 
@@ -44,137 +40,139 @@ At the heart of Ally Chat is our diverse team. Our namesake is Ally, a friendly 
 
 ### AI Models
 
-The Cast:	```dot
-	digraph Meta {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Helvetica"]
-	
-	    "Meta" [label=<<b>Meta</b>>]
-	    "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
-	    "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
-	    "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
-	
-	    "Meta" -> "Ally"
-	    "Meta" -> "Barbie"
-	    "Meta" -> "Callam"
-	}
-	```
-	
-	```dot
-	digraph OpenAI {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#C8FFC8", fontname="Helvetica"]
-	
-	    "OpenAI" [label=<<b>OpenAI</b>>]
-	    "Dav" [label=<<b>Dav</b><br/><font point-size="10">GPT-4o mini</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Efficient, affordable</font>>]
-	    "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4o</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
-	    "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o3 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
-	    "Grace" [label=<<b>Grace</b><br/><font point-size="10">o1</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
-	
-	    "OpenAI" -> "Dav"
-	    "OpenAI" -> "Emmy"
-	    "OpenAI" -> "Fermi"
-	    "OpenAI" -> "Grace"
-	}
-	```
-	
-	```dot
-	digraph Anthropic {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFC8C8", fontname="Helvetica"]
-	
-	    "Anthropic" [label=<<b>Anthropic</b>>]
-	    "Clia" [label=<<b>Clia</b><br/><font point-size="10">Claude 3.5 Haiku</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Quick, creative</font>>]
-	    "Claude" [label=<<b>Claude</b><br/><font point-size="10">Claude 3.5 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Programming, writing</font>>]
-	    "Clauden" [label=<<b>Clauden</b><br/><font point-size="10">Claude 3.7 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
-	
-	    "Anthropic" -> "Clia"
-	    "Anthropic" -> "Claude"
-	    "Anthropic" -> "Clauden"
-	}
-	```
-	
-	```dot
-	digraph Google {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#C8C8FF", fontname="Helvetica"]
-	
-	    "Google" [label=<<b>Google</b>>]
-	    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, tool-oriented</font>>]
-	    "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
-	    "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
-	
-	    "Google" -> "Flashi"
-	    "Google" -> "Gemmi"
-	    "Google" -> "Gemmy"
-	}
-	```
-	
-	```dot
-	digraph Perplexity {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFDB99", fontname="Helvetica"]
-	
-	    "Perplexity" [label=<<b>Perplexity</b>>]
-	    "Sona" [label=<<b>Sona</b><br/><font point-size="10">Sonar</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Fast, Internet</font>>]
-	    "Sagi" [label=<<b>Sagi</b><br/><font point-size="10">Sonar Pro</font><br/><font point-size="8">200K context</font><br/><font point-size="8">High-performance, Internet</font>>]
-	    "Sonari" [label=<<b>Sonari</b><br/><font point-size="10">Sonar Reasoning</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Reasoning, Internet</font>>]
-	    "Sageri" [label=<<b>Sageri</b><br/><font point-size="10">Sonar Reasoning Pro</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Reasoning, Internet</font>>]
-	
-	    "Perplexity" -> "Sona"
-	    "Perplexity" -> "Sagi"
-	    "Perplexity" -> "Sonari"
-	    "Perplexity" -> "Sageri"
-	}
-	```
-	
-	```dot
-	digraph xAI {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#DA70D6", fontname="Helvetica"]
-	
-	    "xAI" [label=<<b>xAI</b>>]
-	    "Grok" [label=<<b>Grok</b><br/><font point-size="10">Grok 2</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
-	
-	    "xAI" -> "Grok"
-	}
-	```
-	
-	```dot
-	digraph DeepSeek {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#A893E9", fontname="Helvetica"]
-	
-	    "DeepSeek" [label=<<b>DeepSeek</b>>]
-	    "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
-	    "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek Reasoner (R1)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Strong Reasoning, Creative</font>>]
-	
-	    "DeepSeek" -> "Dese"
-	    "DeepSeek" -> "Deseri"
-	}
-	```
-	
-	```dot
-	digraph StabilityAI {
-	    graph [bgcolor=transparent]
-	    edge [color="#CCCCCC"]
-	    node [shape=box, style=filled, fillcolor="#FFC2EB", fontname="Helvetica"]
-	
-	    "Stability AI" [label=<<b>Stability AI</b>>]
-	    "SDXL" [label=<<b>SDXL</b>>]
-	    "Illy" [label=<<b>Illy ...</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8">Image Gen</font>>]
-	
-	    "Stability AI" -> "SDXL"
-	    "SDXL" -> "Illy"
-	}
-	```
+```dot
+    digraph Meta {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Helvetica"]
+
+    "Meta" [label=<<b>Meta</b>>]
+    "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
+    "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
+    "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
+    "Skout" [label=<<b>Skout</b><br/><font point-size="10">Llama 4 Scout</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Fast new open model</font>>]
+    "Mavi" [label=<<b>Mavi</b><br/><font point-size="10">Llama 4 Maverick</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Powerful new open model</font>>]
+
+    "Meta" -> "Ally"
+    "Meta" -> "Barbie"
+    "Meta" -> "Callam"
+}
+```
+
+```dot
+digraph OpenAI {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#C8FFC8", fontname="Helvetica"]
+
+    "OpenAI" [label=<<b>OpenAI</b>>]
+    "Dav" [label=<<b>Dav</b><br/><font point-size="10">GPT-4o mini</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Efficient, affordable</font>>]
+    "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4o</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
+    "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o3 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
+    "Grace" [label=<<b>Grace</b><br/><font point-size="10">o1</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
+
+    "OpenAI" -> "Dav"
+    "OpenAI" -> "Emmy"
+    "OpenAI" -> "Fermi"
+    "OpenAI" -> "Grace"
+}
+```
+
+```dot
+digraph Anthropic {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#FFC8C8", fontname="Helvetica"]
+
+    "Anthropic" [label=<<b>Anthropic</b>>]
+    "Clia" [label=<<b>Clia</b><br/><font point-size="10">Claude 3.5 Haiku</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Quick, creative</font>>]
+    "Claude" [label=<<b>Claude</b><br/><font point-size="10">Claude 3.5 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Programming, writing</font>>]
+    "Clauden" [label=<<b>Clauden</b><br/><font point-size="10">Claude 3.7 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
+
+    "Anthropic" -> "Clia"
+    "Anthropic" -> "Claude"
+    "Anthropic" -> "Clauden"
+}
+```
+
+```dot
+digraph Google {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#C8C8FF", fontname="Helvetica"]
+
+    "Google" [label=<<b>Google</b>>]
+    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, tool-oriented</font>>]
+    "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
+    "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
+
+    "Google" -> "Flashi"
+    "Google" -> "Gemmi"
+    "Google" -> "Gemmy"
+}
+```
+
+```dot
+digraph Perplexity {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#FFDB99", fontname="Helvetica"]
+
+    "Perplexity" [label=<<b>Perplexity</b>>]
+    "Sona" [label=<<b>Sona</b><br/><font point-size="10">Sonar</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Fast, Internet</font>>]
+    "Sagi" [label=<<b>Sagi</b><br/><font point-size="10">Sonar Pro</font><br/><font point-size="8">200K context</font><br/><font point-size="8">High-performance, Internet</font>>]
+    "Sonari" [label=<<b>Sonari</b><br/><font point-size="10">Sonar Reasoning</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Reasoning, Internet</font>>]
+    "Sageri" [label=<<b>Sageri</b><br/><font point-size="10">Sonar Reasoning Pro</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Reasoning, Internet</font>>]
+
+    "Perplexity" -> "Sona"
+    "Perplexity" -> "Sagi"
+    "Perplexity" -> "Sonari"
+    "Perplexity" -> "Sageri"
+}
+```
+
+```dot
+digraph xAI {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#DA70D6", fontname="Helvetica"]
+
+    "xAI" [label=<<b>xAI</b>>]
+    "Grok" [label=<<b>Grok</b><br/><font point-size="10">Grok 2</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
+
+    "xAI" -> "Grok"
+}
+```
+
+```dot
+digraph DeepSeek {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#A893E9", fontname="Helvetica"]
+
+    "DeepSeek" [label=<<b>DeepSeek</b>>]
+    "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
+    "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek Reasoner (R1)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Strong Reasoning, Creative</font>>]
+
+    "DeepSeek" -> "Dese"
+    "DeepSeek" -> "Deseri"
+}
+```
+
+```dot
+digraph StabilityAI {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#FFC2EB", fontname="Helvetica"]
+
+    "Stability AI" [label=<<b>Stability AI</b>>]
+    "SDXL" [label=<<b>SDXL</b>>]
+    "Illy" [label=<<b>Illy ...</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8">Image Gen</font>>]
+
+    "Stability AI" -> "SDXL"
+    "SDXL" -> "Illy"
+}
+```
 
 ### Pictures of Characters
 
@@ -267,7 +265,7 @@ The chat format is markdown, including tables, code, links, images, etc.
 
 We can safely embed any HTML or SVG:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
+<iframe width="280" height="157" src="https://www.youtube.com/embed/Vjyhx49BIzc?autoplay=1" title="10 Potential for Anything from PPPPPP (The VVVVVV original soundtrack) - Magnus - 3:45" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen=""></iframe>
 
 Don't quote such in backticks if you want them to render in the chat.
 
@@ -277,7 +275,9 @@ Inline math goes between dollar signs, like $ y = \sqrt{x} $.
 
 Displayed math goes between double dollar signs:
 
-$$ y = \sqrt{x} $$
+$$
+y = \sqrt{x}
+$$
 
 ### Graphviz
 
@@ -410,7 +410,7 @@ uplot = new uPlot(opts, data, document.getElementById("smartphone_market_share_1
 </script>
 
 IMPORTANT:
-- N.B. NOTE WELL! Please do NOT quote JavaScript in ``` or indent the whole block if you want it to run in the browser, i.e. in the chat app.
+- N.B. NOTE WELL! Please do NOT quote JavaScript in backticks or indent the whole block if you want it to run in the browser, i.e. in the chat app.
 - N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
 - Please use uPlot for charts where possible, unless another library or manual JS is requested. You need to pull in the required uPlot JavaScript and CSS first.
 - The shared canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
@@ -463,8 +463,9 @@ IMPORTANT:
 - **Dav** (GPT-4o mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
 - **Grace** (o1, OpenAI): The most powerful reasoning model from OpenAI, ideal for advanced applications
 - **Fermi** (o3 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
-- **Gemmy** (Gemini Pro, Google): Google's high-performance Gemini language model
-- **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 variant
+- **Gemmy** (Gemini 1.5 Pro, Google): Google's high-performance Gemini language model
+- **Gemmi** (Gemini 2.5 Pro, Google): Google's most powerful Gemini language model
+- **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Grok** (Grok 2, xAI): xAI's quirky and intelligent language model
 
 ### Online Models with Internet Access
@@ -527,17 +528,21 @@ Jyan, const fs = require('fs'); fs.writeFileSync('hello.txt', 'Hello, world\n');
 
 Jahl, console.log(Deno.readTextFileSync('hello.txt'))
 
+```
 Faby, #include <stdio.h>
 int main(void)
 {
     printf("Hello, world\n");
 }
+```
 
 Qell, console.log("Hello, world");
 
+```
 Bilda, count: /usr/share/dict/words
 	wc -l <$< >$@
 	cat $@
+```
 
 Unp, [choose] [use sam] | [use ally] [/choose]
 
@@ -545,8 +550,11 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 #### Language Models
 
-| Creator       | Model                | Name    | Context  | Max              | Input Price / M  | Output Price / M  | Description                                                                                                       |
+| Creator       | Model                | Name    | Context  | Max Output       | Input Price / M  | Output Price / M  | Description                                                                                                       |
 |---------------|----------------------|---------|----------|------------------|------------------|-------------------|-------------------------------------------------------------------------------------------------------------------|
+| Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A small human-like model, for creativity and engaging conversations. Most characters use this model.              |
+| Meta          | Llama 4 Scout        | Skout   | 512K     | 512K             | N/A              | N/A               | A fast new open model from Meta.                                                                                  |
+| Meta          | Llama 4 Maverick     | Mavi    | 256K     | 256K             | N/A              | N/A               | A powerful new open model from Meta, achieving high performance at low cost                                       |
 | Anthropic     | Claude 3.7 Sonnet    | Claude  | 200K     | 8192 / 128K [1]  | $3.00            | $15.00            | Anthropic's most powerful reasoning model; supports extended thinking.                                            |
 | Anthropic     | Claude 3.5 Haiku     | Clia    | 200K     | 8192             | $0.80            | $4.00             | Fast and affordable for quick, creative conversations.                                                            |
 | Google        | Gemini 2.0 Flash     | Flashi  | 1M       | 8192             | $0.10            | $0.40             | Google's fastest Gemini model, optimized for speed and tool use.                                                  |
@@ -563,7 +571,6 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | xAI           | Grok 2               | Grok    | 128K     | 128K             | $2               | $10               | xAI's helpful, truthful and humorous Grok 2 model.                                                                |
 | DeepSeek      | DeepSeek Chat V3     | Dese    | 64K      | 8192             | $0.27            | $1.10             | DeepSeek's creative and intelligent chat model.                                                                   |
 | DeepSeek      | DeepSeek Reasoner R1 | Deseri  | 64K      | 8192             | $0.55            | $2.19             | DeepSeek's strong and creative reasoning model.                                                                   |
-| Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.            |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
@@ -580,3 +587,4 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 2. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K)
 3. Only the Perplexity models have access to search the internet. They incur search costs of $5 per 1000 searches.
    Other models can search using the Goog tool, and fetch pages using `Dogu, web-text URL`.
+

@@ -61,6 +61,13 @@ lazy(
         api_key=os.environ.get("DEEPSEEK_API_KEY"),
     ),
 )
+lazy(
+    "openai",
+    openrouter_async_client=lambda openai: openai.AsyncOpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.environ.get("OPENROUTER_API_KEY"),
+    ),
+)
 
 
 lazy("anthropic")
@@ -236,6 +243,22 @@ MODELS = {
         "description": "deepseek-reasoner points to DeepSeek-R1",
         "cost_in": 0.55,
         "cost_out": 2.19,
+    },
+    "llama-4-scout": {
+        "aliases": ["scout"],
+        "vendor": "openrouter",
+        "id": "meta-llama/llama-4-scout:free",
+        "description": "Llama 4 Scout",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "llama-4-maverick": {
+        "aliases": ["maverick"],
+        "vendor": "openrouter",
+        "id": "meta-llama/llama-4-maverick:free",
+        "description": "Llama 4 Maverick",
+        "cost_in": 0,
+        "cost_out": 0,
     },
 }
 
@@ -517,12 +540,17 @@ async def achat_perplexity(opts: Options, messages):
 
 async def achat_xai(opts: Options, messages):
     """Chat with xAI models asynchronously."""
-    return await achat_openai(opts, messages, client=xai_async_client, citations=True)
+    return await achat_openai(opts, messages, client=xai_async_client)
 
 
 async def achat_deepseek(opts: Options, messages):
     """Chat with Deepseek models asynchronously."""
-    return await achat_openai(opts, messages, client=deepseek_async_client, citations=True)
+    return await achat_openai(opts, messages, client=deepseek_async_client)
+
+
+async def achat_openrouter(opts: Options, messages):
+    """Chat with OpenRouter models asynchronously."""
+    return await achat_openai(opts, messages, client=openrouter_async_client)
 
 
 async def achat_claude(opts: Options, messages):
@@ -660,6 +688,8 @@ async def allm_chat(opts: Options, messages):
         return await achat_xai(opts, messages)
     if vendor == "deepseek":
         return await achat_deepseek(opts, messages)
+    if vendor == "openrouter":
+        return await achat_openrouter(opts, messages)
     raise ValueError(f"unknown model: {model}")
 
 
