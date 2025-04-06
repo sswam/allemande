@@ -5,6 +5,7 @@ static_files = $(wildcard static/*.html) $(wildcard static/*.css) $(wildcard sta
 all: build.stamp get
 
 build.stamp: $(static_files) ../site/auth.js
+	echo $(static_files)
 	./update_version.sh
 	touch build.stamp
 

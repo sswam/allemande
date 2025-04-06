@@ -1147,6 +1147,8 @@ function hexColorWithOpacity(color, opacity) {
 // main ----------------------------------------------------------------------
 
 async function room_main() {
+  register_service_worker();
+
   room = decodeURIComponent(location.pathname.replace(/\.html$/, '').replace(/^\//, ''));
 
   // check for ?snapshot=1 in URL, properly by parsing the query string

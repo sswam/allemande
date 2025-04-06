@@ -1,12 +1,22 @@
 :root {
 	--theme-mode: dark;
-	/* gradient.py --css (0.0, 0.0, 0.0) (0.5, 0.5, 0.5) 8 */
-	--col0: #000000;
+	--col0: black;
 	--col1: #121212;
 	--col2: #242424;
 	--col3: #363636;
 	--col4: #494949;
 	--col5: #5b5b5b;
 	--col6: #5b5b80;  /* blueish */
-	--col7: #808080;
+	--col7: white;
+
+	--frame: var(--col0);
+	--background: var(--col1);
+	--focus: var(--col2);
+	--input: var(--col3);
+	--button: var(--col4);
+	--button-focus: var(--col5);
+	--link: var(--col6);
+	--text: var(--col7);
+
+	--border: var(--col5);
 }

@@ -20,7 +20,6 @@ input, textarea {
 	width: 0;
 }
 #messages {
-	margin: 0;
 	min-height: var(--ui-size-min);
 	position: relative;
 }
@@ -285,11 +284,6 @@ button:has(svg) {
 
 .controls input {
 	text-align: center;
-}
-
-#top {
-/*	padding-bottom: calc(var(--pad) - 1px); */
-	padding-bottom: var(--pad);
 }
 
 .small {

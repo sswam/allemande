@@ -1119,70 +1119,6 @@ function set_overlay(overlay) {
   }
 }
 
-// Register service worker ---------------------------------------------------
-
-let sw_registration;
-let sw_message_channel;
-
-function handle_sw_message(event) {
-  if (event.data.type == "APP_INFO") {
-    VERSION = event.data.version;
-    $id("debug").textContent = VERSION;
-  }
-}
-
-function sw_updatefound() {
-  const newWorker = sw_registration.installing;
-
-  // Listen for state changes on the new service worker
-  newWorker.addEventListener("statechange", sw_statechange);
-}
-
-function sw_statechange(ev) {
-  if (ev.target.state === "activated")
-    reload_page();
-}
-
-async function register_service_worker() {
-  if (!navigator.serviceWorker) return;
-  try {
-    sw_registration = await navigator.serviceWorker.register("/service_worker.js");
-  } catch (err) {
-    console.error("ServiceWorker registration failed: ", err);
-    return;
-  }
-
-  await navigator.serviceWorker.ready;
-
-  $on(sw_registration, "updatefound", sw_updatefound);
-  sw_registration.update();
-
-  // Request the app version from the service worker
-  sw_message_channel = new MessageChannel();
-  sw_registration.active.postMessage({ type: "PORT_INITIALIZATION" }, [
-    sw_message_channel.port2,
-  ]);
-  sw_message_channel.port1.onmessage = handle_sw_message;
-  sw_message_channel.port1.postMessage("getAppInfo");
-
-  // console.log("ServiceWorker registration successful with scope: ", sw_registration.scope);
-  check_for_updates();
-//  $on(navigator.serviceWorker, "controllerchange", reload_page)
-}
-
-let last_check_for_updates = 0;
-
-function check_for_updates() {
-  if (Date.now() - last_check_for_updates < 1000) {
-    return;
-  }
-  last_check_for_updates = Date.now();
-  // console.log("check_for_updates");
-  if (sw_message_channel) {
-    sw_message_channel.port1.postMessage("checkForUpdates");
-  }
-}
-
 // authentication ------------------------------------------------------------
 
 function logout_confirm(ev) {
@@ -1657,8 +1593,9 @@ async function check_ok_to_edit(file) {
 }
 
 async function fetch_file(file) {
-  const response = await fetch(`${ROOMS_URL}/${file}?nocache=${Math.random()}`, {
-    credentials: 'include'
+  const response = await fetch(`${ROOMS_URL}/${file}`, {
+    credentials: 'include',
+    cache: 'no-cache',
   });
   if (!response.ok) {
     throw new Error("GET request failed: " + file);
@@ -2040,9 +1977,8 @@ async function get_options() {
 //  console.log("get_options", room);
   const query = new URLSearchParams({
     room,
-    nocache: Math.random(),
   });
-  const response = await fetch("/x/options?" + query);
+  const response = await fetch("/x/options?" + query, { cache: "no-cache" });
   access_denied = !response.ok;
   if (access_denied) {
     throw new Error("GET options request failed");
@@ -2275,6 +2211,8 @@ function print_chat(ev) {
 
 function chat_main() {
   user = authChat();
+  register_service_worker();
+
   setup_icons();
   load_theme();
   setup_dev();
@@ -2376,7 +2314,6 @@ function chat_main() {
 
   setup_view_options();
 
-  register_service_worker();
   notify_main();
   record_main();
 

@@ -1,37 +1,61 @@
 "use strict";
 
-const VERSION = "0.4.696";
-const DEBUG = false;
+// CONFIG
+
+const VERSION = "0.4.737";
+const DEBUG = true;
+
+const subdomain = self.location.hostname.split(".")[0];
 
 console.log = DEBUG ? console.log : () => {};
 
 const CACHE_NAME = "allemande-ai-" + VERSION;
-const URLS_TO_CACHE = [
-  "/",
-  "/config.js",
-  "/chat.js",
-  "/record.js",
-  "/notify.js",
-  "/util.js",
-  "/allychat.css",
-  "/chat.css",
-  "/icon.png",
-  "/process_messages.js",
-  "/voice.js",
-  "/room.js",
-  "/print.js",
-  "/highlight.js",
-  "/debug.js",
-  "/resizer.js",
 
-  "/d3.min.js",
-  "/wasm.min.js",
-  "/d3-graphviz.min.js",
-  "/graphvizlib.wasm",
-  "/mermaid.min.js",
-];
+const URLS_TO_CACHE = {
+  "chat": [
+    "/",
+    "manifest.json",
+    "/allychat.css",
+    "/chat.css",
+    "/icon.png",
+    "/util.js",
+    "/config.js",
+    "/notify.js",
+    "/record.js",
+    "/resizer.js",
+    "/sw_register.js",
+    "/chat.js",
+    "/debug.js",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap",
+  ],
+  "rooms": [
+    "/sw_register.js",
+    "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap",
+  ],
+};
 
-const CORS_URLS_TO_CACHE = ["https://allemande.ai/auth.js"];
+const CORS_URLS_TO_CACHE = {
+  "chat": [
+    ALLEMANDE_URL + "/auth.js",
+  ],
+  "rooms": [
+    "/allychat.css",
+    "/room.css",
+    "/util.js",
+    "/print.js",
+    "/debug.js",
+    "/resizer.js",
+    "/highlight.js",
+    "/process_messages.js",
+    "/room.js",
+    "/voice.js",
+//    "/d3.min.js",
+//    "/wasm.min.js",
+//    "/d3-graphviz.min.js",
+//    "/graphvizlib.wasm",
+//    "/mermaid.min.js",
+  ].map((url) => ALLYCHAT_CHAT_URL + url),
+};
 
 // Install event - cache resources
 async function sw_install_3(event) {
@@ -40,20 +64,21 @@ async function sw_install_3(event) {
   // Cache local resources
   // await cache.addAll(URLS_TO_CACHE);
   await Promise.all(
-    URLS_TO_CACHE.map(async (url) => {
-      const response = await fetch(url);
+    URLS_TO_CACHE[subdomain].map(async (url) => {
+      const response = await fetch(url, {cache: "no-cache"});
       if (response.redirected) {
         console.log(`Skipped caching redirect for: ${url}`);
       } else {
         await cache.put(url, response);
+        console.log(`Cached resource: ${url}`);
       }
     })
   );
 
   // Cache cross-origin resources with CORS mode
-  for (const url of CORS_URLS_TO_CACHE) {
+  for (const url of CORS_URLS_TO_CACHE[subdomain]) {
     console.log(`Caching CORS resource: ${url}`);
-    const response = await fetch(url, { mode: "cors", credentials: "omit" });
+    const response = await fetch(url, { cache: "no-cache", mode: "cors", credentials: "omit" });
     if (!response.redirected) {
       await cache.put(url, response);
       console.log(`Cached CORS resource: ${url}`);
@@ -114,14 +139,20 @@ async function sw_fetch_from_network(req, options) {
 async function sw_fetch_from_cache_or_network(req) {
   const cached = await caches.match(req);
   if (cached) {
-    console.log(`Cached resource: ${req.url}`);
+    console.log(`Returning cached resource: ${req.url}`);
     return cached;
   }
+  const options = {};
   // list of domains to avoid cors mode
-  if (req.url.startsWith('https://fonts.googleapis.com') || req.url.startsWith('https://fonts.gstatic.com')) {
-    return await sw_fetch_from_network(req);
-  }
-  return await sw_fetch_from_network(req, { mode: "cors" });
+  const no_cors_domains = ["https://fonts.googleapis.com", "https://fonts.gstatic.com"];
+  const app_domains = [ALLYCHAT_CHAT_URL, ALLYCHAT_ROOMS_URL];
+  const is_app_domain = app_domains.some((domain) => req.url.startsWith(domain));
+  const is_no_cors_domain = !is_app_domain && no_cors_domains.some((domain) => req.url.startsWith(domain));
+  if (!is_no_cors_domain)
+    options.mode = "cors";
+  if (!is_app_domain)
+    options.credentials = "omit";
+  return await sw_fetch_from_network(req, options);
 }
 
 // Fetch event - serve GET and HEAD requests from cache or network
