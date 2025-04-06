@@ -21,8 +21,9 @@ linty() {
 			return 1
 		fi
 #		cd "$(dirname "$prog")"
-		local ext="${prog##*.}"
-		if [[ $prog != *.* ]]; then
+		base="$(basename "$prog")"
+		local ext="${base##*.}"
+		if [[ $base != *.* ]] && [ "$base" != Makefile ]; then
 			ext="sh"
 		fi
 
