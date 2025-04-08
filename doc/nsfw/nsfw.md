@@ -411,10 +411,11 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 
 | Creator    | Model            | Name   | Context | Max  | Input Price / M | Output Price / M | Description                                                                                            |
 |------------|------------------|--------|---------|------|-----------------|------------------|--------------------------------------------------------------------------------------------------------|
-| Google     | Gemini 2.0 Flash | Flashi | 1M      | 8192 | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and tool use                                        |
-| Google     | Gemini 1.5 Pro   | Gemmy  | 2M      | 8192 | $1.25 [1]       | $5.00 [1]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks                           |
-| Google     | Gemini 2.5 Pro   | Gemmi  | 1M      | 64K  | $1.25 [2]       | $5.00 [2]        | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
+| Google     | Gemini 2.0 Flash | Flashi | 1M      | 8192 | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and tool use.                                       |
+| Google     | Gemini 1.5 Pro   | Gemmy  | 2M      | 8192 | $1.25 [1]       | $5.00 [1]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                          |
+| Google     | Gemini 2.5 Pro   | Gemmi  | 1M      | 64K  | N/A             | N/A              | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
 | Meta       | Llama 3.1 8B     | Ally*  | 4096    | 4096 | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
+| Alibaba +  | EVA Qwen2.5 72B  | Eva    | 128K    | 128K | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.    |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 

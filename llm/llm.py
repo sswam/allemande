@@ -349,6 +349,22 @@ MODELS = {
         "cost_in": 0,
         "cost_out": 0,
     },
+    "qwq-32b": {
+        "aliases": ["qwen"],
+        "vendor": "openrouter",
+        "id": "qwen/qwq-32b:free",
+        "description": "Qwen: QwQ 23B (free)",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "eva-qwen2.5-72b": {
+        "aliases": ["eva"],
+        "vendor": "openrouter",
+        "id": "eva-unit-01/eva-qwen-2.5-72b",
+        "description": "EVA Qwen2.5 72B",
+        "cost_in": 0.9,
+        "cost_out": 1.2,
+    },
 }
 
 

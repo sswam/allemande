@@ -56,6 +56,8 @@ At the heart of Ally Chat is our diverse team. Our namesake is Ally, a friendly 
     "Meta" -> "Ally"
     "Meta" -> "Barbie"
     "Meta" -> "Callam"
+    "Meta" -> "Skout"
+    "Meta" -> "Mavi"
 }
 ```
 
@@ -156,6 +158,21 @@ digraph DeepSeek {
 
     "DeepSeek" -> "Dese"
     "DeepSeek" -> "Deseri"
+}
+```
+
+```dot
+digraph Alibaba {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#A7D8D5", fontname="Helvetica"]
+
+    "Alibaba" [label=<<b>Alibaba Cloud</b>>]
+    "Qwen" [label=<<b>Grok</b><br/><font point-size="10">QwQ 32B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Small, strong reasoning</font>>]
+    "Eva" [label=<<b>Eva</b><br/><font point-size="10">EVA Qwen2.5 72B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Roleplay, story writing</font>>]
+
+    "Alibaba" -> "Qwen"
+    "Alibaba" -> "Eva"
 }
 ```
 
@@ -467,6 +484,12 @@ IMPORTANT:
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's most powerful Gemini language model
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Grok** (Grok 2, xAI): xAI's quirky and intelligent language model
+- **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model.
+- **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model.
+- **Skout** (Meta Llama 4 Scout): A fast new open model from Meta.
+- **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta.
+- **Qwen** (Alibaba QwQ 32B): A small but very capable model.
+- **Eva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model.
 
 ### Online Models with Internet Access
 - **Sageri** (Sonar Reasoning Pro, Perplexity): Perplexity's advanced reasoning model
@@ -554,12 +577,12 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 |---------------|----------------------|---------|----------|------------------|------------------|-------------------|-------------------------------------------------------------------------------------------------------------------|
 | Meta          | Llama 3.1 8B         | Ally*   | 4096     | 4096             | N/A              | N/A               | A small human-like model, for creativity and engaging conversations. Most characters use this model.              |
 | Meta          | Llama 4 Scout        | Skout   | 512K     | 512K             | N/A              | N/A               | A fast new open model from Meta.                                                                                  |
-| Meta          | Llama 4 Maverick     | Mavi    | 256K     | 256K             | N/A              | N/A               | A powerful new open model from Meta, achieving high performance at low cost                                       |
+| Meta          | Llama 4 Maverick     | Mavi    | 256K     | 256K             | N/A              | N/A               | A powerful new open model from Meta, achieving high performance at low cost.                                      |
 | Anthropic     | Claude 3.7 Sonnet    | Claude  | 200K     | 8192 / 128K [1]  | $3.00            | $15.00            | Anthropic's most powerful reasoning model; supports extended thinking.                                            |
 | Anthropic     | Claude 3.5 Haiku     | Clia    | 200K     | 8192             | $0.80            | $4.00             | Fast and affordable for quick, creative conversations.                                                            |
 | Google        | Gemini 2.0 Flash     | Flashi  | 1M       | 8192             | $0.10            | $0.40             | Google's fastest Gemini model, optimized for speed and tool use.                                                  |
 | Google        | Gemini 1.5 Pro       | Gemmy   | 2M       | 8192             | $1.25 [2]        | $5.00 [2]         | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                     |
-| Google        | Gemini 2.5 Pro       | Gemmi   | 1M       | 64K              | $1.25 [2]        | $5.00 [2]         | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                 |
+| Google        | Gemini 2.5 Pro       | Gemmi   | 1M       | 64K              | N/A              | N/A               | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                 |
 | OpenAI        | GPT-4o               | Emmy    | 128K     | 16384            | $2.50            | $10.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                         |
 | OpenAI        | GPT-4o-mini          | Dav     | 128K     | 16384            | $0.15            | $0.60             | OpenAI's fast and affordable model, ideal for efficient interactions.                                             |
 | OpenAI        | o1                   | Grace   | 200K     | 100000           | $15.00           | $60.00            | OpenAI's most powerful reasoning model for advanced applications.                                                 |
@@ -571,6 +594,8 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | xAI           | Grok 2               | Grok    | 128K     | 128K             | $2               | $10               | xAI's helpful, truthful and humorous Grok 2 model.                                                                |
 | DeepSeek      | DeepSeek Chat V3     | Dese    | 64K      | 8192             | $0.27            | $1.10             | DeepSeek's creative and intelligent chat model.                                                                   |
 | DeepSeek      | DeepSeek Reasoner R1 | Deseri  | 64K      | 8192             | $0.55            | $2.19             | DeepSeek's strong and creative reasoning model.                                                                   |
+| Alibaba Cloud | QwQ 32B              | Qwen    | 128K     | 128K             | N/A              | N/A               | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.          |
+| Alibaba +     | EVA Qwen2.5 72B      | Eva     | 128K     | 128K             | $0.9             | $1.2              | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.               |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 

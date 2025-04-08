@@ -44,12 +44,14 @@ to join.
 We offer a wide array of AI models and predefined characters. See the [full user guide](doc/intro.md) for detailed descriptions, personalities, and the latest model table including context sizes and pricing. Highlights include:
 
 * **Powerful LLMs**:
+  * Meta: Llama 3.1 8B (Ally...), Llama 4 Maverick (Mavi), Llama 4 Scout (Skout)
 	* Anthropic: Claude 3.7 Sonnet (Clauden), Claude 3.5 Sonnet (Claude), Claude 3.5 Haiku (Clia)
 	* OpenAI: GPT-4o (Emmy), GPT-4o-mini (Dav), o1 (Grace), o3-mini (Fermi)
 	* Google: Gemini 2.0 Flash (Flashi), Gemini 1.5 Pro (Gemmy), Gemini 2.5 Pro (Gemmi)
 	* Perplexity (with Internet Access): Sonar Reasoning Pro (Sageri), Sonar Pro (Sagi), Sonar Reasoning (Sonari), Sonar (Sona)
 	* xAI: Grok 2 (Grok)
 	* DeepSeek: Chat V3 (Dese), Reasoner R1 (Deseri)
+  * Alibaba: QwQ 32B (Qwen), EVA Qwen2.5-72B (Eva)
 * **Characters (Llama 3.1 based)**: Ally, Barbie, Callam (pirate!), Cleo, Dali, Emmie, Fenny, Gabby, Hanni, Amir, Bast, Cal, Dante, Ezio, Felix, Gari, Haka, Nixie, Akane, Soli, Kai, Eira, Nalani, and more.
 * **Specialists**:
 	* Clu/Emm: concise versions of Claude and Emmy (GPT 4o)

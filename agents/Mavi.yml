@@ -2,13 +2,13 @@ type: openrouter
 model: maverick-free
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
   impersonate other characters!
-options:
-  repetition_penalty: 0
+# options:
+#   repetition_penalty: 0
 context: 101
 visual:
   person: 1girl, bright hazel eyes, thick eyelashes, Turkish / German, pale skin, small nose, freckles, athletic build, petite, long hair, dark brown hair, messy hair
   clothes: navy blue t-shirt, bright pink hoodie, faded light-blue denim jeans, white sneakers
-  age: 21
+  age: youthful 21 years old
   emo: light smile
   clothes_upper: navy blue t-shirt, bright pink hoodie
   clothes_lower: faded light-blue denim jeans, white sneakers

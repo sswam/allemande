@@ -1,0 +1,14 @@
+type: openrouter
+model: qwq-32b
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
+  impersonate other characters!
+# options:
+#   repetition_penalty: 0
+context: 101
+visual:
+  person: 1girl, dark brown eyes, Chinese, light tan skin, small nose bridge, round face, slim build, petite, shoulder-length hair, black hair, sleek straight hair
+  clothes: white cotton blouse, sage green cardigan, high-waisted black pants, beige canvas shoes
+  age: 23
+  emo: gentle smile
+  clothes_upper: white cotton blouse, sage green cardigan
+  clothes_lower: high-waisted black pants, beige canvas shoes
