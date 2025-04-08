@@ -13,6 +13,7 @@ import enum
 from typing import Any
 from stat import S_IFMT, S_IFREG, S_IROTH, S_IWOTH, S_IFLNK
 import asyncio
+from datetime import datetime
 
 from deepmerge import always_merger
 
@@ -100,6 +101,16 @@ class Room:
             user_tc = user
         if user_tc:
             user_tc = user_tc.replace(".", "_")
+
+#         options = self.get_options(user)
+
+#         # timestamps option
+#         if options.get("timestamps"):
+#             now = datetime.now()
+#             timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+#             human_time = now.strftime("%Y-%m-%d %H:%M:%S")
+#             content = f"""<time datetime="{timestamp}">{human_time}</time>{content}"""
+
         message = {"user": user_tc, "content": content}
 
         text = message_to_text(message) + "\n"

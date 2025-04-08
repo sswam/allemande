@@ -949,6 +949,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         remote_messages.append({"role": "user", "content": ""})
 
     opts = llm.Options(model=agent["model"])  # , indent="\t")
+    for k, v in agent.get("options", {}).items():
+        setattr(opts, k, v)
 
     # Some agents don't like empty content, specifically google
     if not remote_messages[-1]["content"]:
@@ -958,7 +960,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     # Set up stop sequences for other participants
     logger.info("context_messages: %r", context_messages)
     all_people = conductor.all_participants(context_messages)
-    opts.stop = []
+    if opts.stop is None:
+        opts.stop = []
     for p in all_people:
         if p == agent.name:
             continue
