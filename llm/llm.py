@@ -163,9 +163,18 @@ MODELS = {
         "cost_out": 1.25,
     },
     "gemini-2.5-pro": {
-        "aliases": ["gp", "gemmi"],
+        "aliases": ["gemmi"],
         "vendor": "google",
+        "api_key": "GOOGLE_API_KEY_PAID",
         "id": "gemini-2.5-pro-exp-03-25",
+        "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
+        "cost_in": 0,  # experimental models are free
+        "cost_out": 0,
+    },
+    "gemini-2.5-pro-openrouter": {
+        "aliases": ["gp", "gemmi-openrouter"],
+        "vendor": "openrouter",
+        "id": "google/gemini-2.5-pro-exp-03-25:free",
         "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
         "cost_in": 0,  # experimental models are free
         "cost_out": 0,
@@ -244,10 +253,25 @@ MODELS = {
         "cost_in": 0.55,
         "cost_out": 2.19,
     },
+    "llama-4-scout-free": {
+        "aliases": ["scout-free", "skout-free"],
+        "vendor": "openrouter",
+        "id": "meta-llama/llama-4-scout:free",
+        "description": "Llama 4 Scout",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "llama-4-maverick-free": {
+        "aliases": ["maverick-free", "mavi-free"],
+        "vendor": "openrouter",
+        "id": "meta-llama/llama-4-maverick:free",
+        "description": "Llama 4 Maverick",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
     "llama-4-scout": {
         "aliases": ["scout", "skout"],
         "vendor": "openrouter",
-#        "id": "meta-llama/llama-4-scout:free",
         "id": "meta-llama/llama-4-scout",
         "description": "Llama 4 Scout",
         "cost_in": 0,
@@ -256,9 +280,72 @@ MODELS = {
     "llama-4-maverick": {
         "aliases": ["maverick", "mavi"],
         "vendor": "openrouter",
-#        "id": "meta-llama/llama-4-maverick:free",
         "id": "meta-llama/llama-4-maverick",
         "description": "Llama 4 Maverick",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "gemma-3-27b-free": {
+        "aliases": ["gemma-free"],
+        "vendor": "openrouter",
+        "id": "google/gemma-3-27b-it:free",
+        "description": "Gemma 3 27B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "gemma-3-27b": {
+        "aliases": ["gemma"],
+        "vendor": "openrouter",
+        "id": "google/gemma-3-27b-it",
+        "description": "Gemma 3 27B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "gemma-3-12b-free": {
+        "aliases": ["gemma-12b-free"],
+        "vendor": "openrouter",
+        "id": "google/gemma-3-12b-it:free",
+        "description": "Gemma 3 12B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "gemma-3-12b": {
+        "aliases": ["gemma-12b"],
+        "vendor": "openrouter",
+        "id": "google/gemma-3-12b-it",
+        "description": "Gemma 3 12B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "gemma-3-4b-free": {
+        "aliases": ["gemma-4b-free"],
+        "vendor": "openrouter",
+        "id": "google/gemma-3-4b-it:free",
+        "description": "Gemma 3 4B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "gemma-3-4b": {
+        "aliases": ["gemma-4b"],
+        "vendor": "openrouter",
+        "id": "google/gemma-3-4b-it",
+        "description": "Gemma 3 4B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "gemma-3-1b-free": {
+        "aliases": ["gemma-1b-free"],
+        "vendor": "openrouter",
+        "id": "google/gemma-3-1b-it:free",
+        "description": "Gemma 3 1B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
+    "gemma-3-1b": {
+        "aliases": ["gemma-1b"],
+        "vendor": "openrouter",
+        "id": "google/gemma-3-1b-it",
+        "description": "Gemma 3 1B",
         "cost_in": 0,
         "cost_out": 0,
     },
@@ -388,6 +475,7 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
     timeit: bool = False
     system: str | None = None
     stop: list[str] | None = None
+    repetition_penalty: float | None = None
 
     def __init__(self, **kwargs):
         if "model" in kwargs:
@@ -426,6 +514,9 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
         "temperature": temperature,
     }
 
+    if opts.repetition_penalty is not None:
+        options["repetition_penalty"] = opts.repetition_penalty
+
     if token_limit != inf:
         options["max_tokens"] = token_limit
 
@@ -437,6 +528,8 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
 
     if opts.timeit:
         start_time = time.time()
+
+    logger.info("options: %s", options)
 
     raw_response = await client.chat.completions.with_raw_response.create(**options)
     response = raw_response.parse()
@@ -601,6 +694,8 @@ async def achat_claude(opts: Options, messages):
 async def achat_google(opts: Options, messages):
     """Chat with Google models asynchronously."""
     model = MODELS[opts.model]["id"]
+    api_key_name = MODELS[opts.model].get("api_key", "GOOGLE_API_KEY")
+    api_key = os.environ.get(api_key_name)
 
     temperature = opts.temperature
     token_limit = opts.token_limit
@@ -623,6 +718,8 @@ async def achat_google(opts: Options, messages):
         if len(opts.stop) > 5:
             logger.warning("achat_google: too many stop sequences, truncating to 5")
             options["stop_sequences"] = opts.stop[:5]
+
+    google_genai.configure(api_key=api_key)
 
     model_obj = google_genai.GenerativeModel(model)
 
