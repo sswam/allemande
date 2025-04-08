@@ -45,13 +45,14 @@ async function highlight_processCodeBlock(codeElement) {
   const langClass = Array.from(codeElement.classList)
     .find(cls => cls.startsWith('language-'));
 
-  if (langClass) {
-    const lang = langClass.replace('language-', '');
-    if (HIGHLIGHT_LANGUAGES_UNSUPPORTED.has(lang)) {
-      return;
-    }
-    await highlight_loadLanguage(lang);
+  if (!langClass)
+    return;
+
+  const lang = langClass.replace('language-', '');
+  if (HIGHLIGHT_LANGUAGES_UNSUPPORTED.has(lang)) {
+    return;
   }
+  await highlight_loadLanguage(lang);
 
   highlightState.core.highlightElement(codeElement);
 }

@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.4.737";
+const VERSION = "0.4.747";
 const DEBUG = true;
 
 const subdomain = self.location.hostname.split(".")[0];
