@@ -34,7 +34,18 @@
 
 - profile pictures possibly
 
+- message timestamps, can do as invisible metadata maybe
+	- would AIs see it? optionally (room option)
+	- include user's time zone?
 
+- search / filter messages
+
+- per-message one-line summary, overview with links to the messages
+
+- secure independent instances for users
+	- subdomain hosting
+	- on own computer
+	- API keys
 
 
 ## other ideas
