@@ -43,10 +43,26 @@ const $script = async (id, src, async = false) => {
     const script = document.createElement("script");
     script.id = id;
     script.src = src;
+    script.type = "text/javascript";
     script.async = async;
     script.onload = () => resolve();
     script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
     document.head.appendChild(script);
+  });
+}
+
+const $style = async (id, href) => {
+  if ($id(id))
+    return;
+  await new Promise((resolve, reject) => {
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.href = href;
+    link.type = "text/css";
+    link.onload = () => resolve();
+    link.onerror = () => reject(new Error(`Failed to load stylesheet: ${href}`));
+    document.head.appendChild(link);
   });
 }
 
