@@ -9,7 +9,15 @@ build.stamp: $(static_files) ../site/auth.js
 	./update_version.sh
 	touch build.stamp
 
-get: static/d3.min.js static/wasm.min.js static/graphvizlib.wasm static/d3-graphviz.min.js static/mermaid.min.js
+get: static/d3.min.js static/wasm.min.js static/graphvizlib.wasm static/d3-graphviz.min.js static/mermaid.min.js # static/katex.min.css static/katex.min.js
+# ln -sfT ~/soft-ai/KaTeX/fonts static/fonts
+
+# Using CDN, because fonts are tricky to fetch cross-origin
+# static/katex.min.css:
+# 	wget -O $@ https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css
+#
+# static/katex.min.js:
+# 	wget -O $@ https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js
 
 static/d3.min.js:
 	wget -O $@ "https://unpkg.com/d3@5.16.0/dist/d3.min.js"

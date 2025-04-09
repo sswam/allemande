@@ -72,6 +72,7 @@ rooms.*
 /visual/nonbinary.txt
 /plan/*.dot
 /plan/all
+/webchat/static/service_worker.js
 
 # derived header files
 /c/sea.h
@@ -91,6 +92,8 @@ rooms.*
 /webchat/static/d3.min.js
 /webchat/static/graphvizlib.wasm
 /webchat/static/mermaid.min.js
+# /webchat/static/katex.min.css
+# /webchat/static/katex.min.js
 
 # Symlinks to 3rd-party tools and libraries
 /unprompted/unprompted
@@ -170,4 +173,3 @@ rooms.*
 /linux/top_grouped
 /text/aligno
 /allemande-deps_0.1_all.deb
-/webchat/static/service_worker.js
