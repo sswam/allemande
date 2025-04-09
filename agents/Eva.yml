@@ -1,7 +1,8 @@
 type: openrouter
 model: eva-qwen2.5-72b
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
+system_bottom: You are $NAME. Please only reply with a single message, as $NAME; do not
   impersonate other characters!
+system_bottom_pos: 9
 # options:
 #   repetition_penalty: 0
 context: 101
