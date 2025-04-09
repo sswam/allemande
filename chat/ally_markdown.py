@@ -25,6 +25,7 @@ from ally.quote import quote_words  # type: ignore  # pylint: disable=wrong-impo
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
 
 
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
@@ -182,6 +183,43 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     newlines_before, text, newlines_after = match.groups()
 
     has_math = False
+
+    # MarkdownIt replaces \( with ( etc, so we need to fix math first, I think it will be okay in most cases,
+    # but we need to be careful with code blocks
+    # This should match the whole string
+    code_pattern = r"""
+        (```.*?```)     # Triple-quoted inline code
+        |
+        (`.*?`+)        # Single-quoted inline code, with a catch-all for multi blackticks
+        |
+        ([^`]+)         # Regular text
+    """
+
+    # Find all matches
+    matches = re.finditer(code_pattern, text, re.VERBOSE | re.DOTALL)
+
+    new_parts = []
+    prev_end = 0
+    for match in matches:
+        if prev_end != match.start():
+            raise ValueError("preprocess_normal_markdown: internal error, finditer did not match entire string (1)")
+        part = match[1] or match[2] or match[3]
+
+        if part.startswith("`"):
+            new_parts.append(part)
+        else:
+            # Process the part to find inline math
+            part, has_math_part = find_and_fix_inline_math_part(part)
+            has_math = has_math or has_math_part
+            new_parts.append(part)
+        prev_end = match.end()
+
+    if text and prev_end != len(text):
+        raise ValueError("preprocess_normal_markdown: internal error, finditer did not match entire string (2)")
+
+    text = "".join(new_parts)
+
+    # Now fix the links
     tokens = md_parser.parse(text)
 
     def process_tokens(tokens):
@@ -191,10 +229,6 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
                 process_tokens(token.children)
             if token.type == 'link_open':
                 token.attrs['href'] = fix_link(token.attrs['href'], bb_file)
-            elif token.type == 'text':
-                fixed_text, has_math_part = find_and_fix_inline_math_part(token.content)
-                has_math = has_math or has_math_part
-                token.content = fixed_text
 
     process_tokens(tokens)
 

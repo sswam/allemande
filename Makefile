@@ -182,7 +182,7 @@ watch:
 	awatch -L -r -A -x bb yml -p $(ROOMS) $(AGENTS) >> $(WATCH_LOG)
 
 bb2html:
-	awatch -a -i -p $(WEBCHAT)/bb2html.py chat/chat.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
+	awatch -a -i -p $(WEBCHAT)/bb2html.py chat/chat.py chat/ally_markdown.py chat/ally_room.py chat/bb_lib.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 build-ui:
 	# Note, changes to the service_worker.js will require a manual rebuild
