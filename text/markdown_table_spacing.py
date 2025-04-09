@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 Markdown Table Formatter
 
 CLI Usage:
-    echo "your_markdown_table" | python markdown_table_spacing.py --compact True/False
+    python markdown_table_spacing.py --compact True/False < your_table.md
 
 Args:
     --compact: If True, generates a compact table with minimal spacing.
