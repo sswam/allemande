@@ -282,7 +282,7 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     out_text = newlines_before + out_text.strip("\n") + newlines_after
 
     if out_text != in_text:
-        logger.info("preprocess_normal_markdown:\n%s\n%s", in_text, out_text)
+        logger.debug("preprocess_normal_markdown:\n%s\n%s", in_text, out_text)
 
     return out_text, has_math
 
