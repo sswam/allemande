@@ -31,7 +31,7 @@ The is the lobby for the NSFW zone, restricted to adults only, and likely contai
 
 - This document is visible to AIs, which can help users to learn about the app.
 - IMPORTANT: If users are asking for help, please direct them to talk to Flashi. Other characters are also helpful, but might not do such a good job with it!
-- Xavi and Xilu are expert on NSFW image generation, so please direct users to talk to them to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
+- Xilu is expert on NSFW image generation, so please direct users to talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
 - If users ask for a guide, you can direct them to view the [NSFW Quick Start Guide](https://github.com/sswam/allemande/blob/main/doc/nsfw/intro_basic_nsfw.md) or this document at [Ally Chat NSFW intro](https://github.com/sswam/allemande/blob/main/doc/nsfw/nsfw.md). The chat is markdown, so please give the user a clickable link to the guide.
 - If users aren't satisfied with your help, you can suggest that they contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room, and the "nsfw/nsfw" room.
@@ -109,9 +109,9 @@ This asks the shell agent to list files.
 
 ## Basic intro to NSFW AI image gen
 
-IMPORTANT: The agents Xilu and Xavi are expert on image gen. Please suggest that users talk with her before giving details from this section. Users should talk to them first.
+IMPORTANT: The agent Xilu is expert on image gen. Please suggest that users talk with her before giving details from this section. Users should talk to them first.
 
-The following is an ultra-basic guide to direct image prompting. Xavi and Xilu can give more detailed advice.
+The following is an ultra-basic guide to direct image prompting. Xilu can give more detailed advice.
 
 This asks Bigi, an image gen AI, to draw a nude girl, in a fast, lowest-quality portrait image:
 
@@ -328,9 +328,10 @@ IMPORTANT:
 ### Powerful AI Models (NSFW capable)
 - **Gemmy** (Gemini Pro, Google): Google's high-performance Gemini language model
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 variant
+- **Eva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model.
 
 ## Specialists based on Remote AI
-- **Xilu** and **Xavi**: Experts with NSFW AI art prompts, ensuring high-quality image generation
+- **Xilu**: Expert with NSFW AI art prompts, ensuring high-quality image generation
 - **Illu** and **Gema** (Google): Experts with SFW AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model.
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
@@ -338,7 +339,7 @@ IMPORTANT:
 - **Jhon**: AKA Roasto, a volatile NSFW roaster, who won't pull any punches! Engage with caution!
 
 ### AI Artists
-- Using the AI art models directly can be a bit technical. For best results, new users can talk to Xilu or Xavi, who have extensive knowledge about how to create good prompts, including NSFW, and all the options and settings that the models understand.
+- Using the AI art models directly can be a bit technical. For best results, new users can talk to Xilu, who has extensive knowledge about how to create good prompts, including NSFW, and all the options and settings that the models understand.
 - **Illy**: High-quality photorealistic and artistic image generation, able to draw every character; simply talk to Illy to see your ideas come to life
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL, for a wide range of conceptual and fantasy art, able to draw every character
 - **Yoni, Coni, Boni**: NSFW image generation with a semi-realistic style
@@ -439,7 +440,7 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 
 # WHAT'S ON TODAY
 
-Today, we're doing a sexy photo shoot, solo girls, mostly topless and nude shots in erotic poses. Xavi will take the photos.
+Today, we're doing a sexy photo shoot, solo girls, mostly topless and nude shots in erotic poses. Xilu will take the photos.
 
 *** We're trying to make it interesting by including something from each person's culture, while keeping things as sexy as we can. ***
 
