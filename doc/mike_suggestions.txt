@@ -47,6 +47,12 @@
 	- on own computer
 	- API keys
 
+- workshop / toolkit: users can create tools and run them within the app
+	- databases
+	- persistent notebook-style runtime
+
+- monospace input option, issues with table IO
+
 
 ## other ideas
 
