@@ -209,7 +209,7 @@ async def last(request):
     # get room from query param
     room_name = request.query_params["room"]
     room_name = util.sanitize_pathname(room_name)
-    room = util.Room(name=room_name)
+    room = Room(name=room_name)
     logger.info("Getting last room number for %s", room_name)
     try:
         last = room.get_last_room_number(user)
