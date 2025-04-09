@@ -25,7 +25,7 @@ from ally.quote import quote_words  # type: ignore  # pylint: disable=wrong-impo
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 
 
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
@@ -148,7 +148,7 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
             $
             """,
             part[start:],
-            re.VERBOSE,
+            re.VERBOSE | re.DOTALL,
         )
         if match is None:
             part = part[:start] + html.escape(part[start:], quote=False)
@@ -190,9 +190,9 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     code_pattern = r"""
         (```.*?```)     # Triple-quoted inline code
         |
-        (`.*?`+)        # Single-quoted inline code, with a catch-all for multi blackticks
+        (`.*?`+)        # Single-quoted inline code, with a catch-all for multi backticks
         |
-        ([^`]+)         # Regular text
+        (.+?)(?=`|$)    # Any other text, non-greedy, until a backtick or end of string
     """
 
     # Find all matches
@@ -209,7 +209,9 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
             new_parts.append(part)
         else:
             # Process the part to find inline math
+            logger.debug("part: %r", part)
             part, has_math_part = find_and_fix_inline_math_part(part)
+            logger.debug("part after: %r", part)
             has_math = has_math or has_math_part
             new_parts.append(part)
         prev_end = match.end()
