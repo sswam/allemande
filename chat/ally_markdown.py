@@ -69,22 +69,25 @@ MARKDOWN_EXTENSION_CONFIGS = {
 }
 
 md_parser = MarkdownIt()
+md_parser.disable("escape")
 md_formatter = MDRenderer()
 
 
 def quote_inline_math(pre, d1, math, d2, post):
     """Process potential inline math delimited by matching delimiters, wrapping math content in $`...`$"""
     logger.info("quote_inline_math")
-    logger.info("  pre:  %r", pre)
-    logger.info("  d1:   %r", d1)
-    logger.info("  math: %r", math)
-    logger.info("  d2:   %r", d2)
-    logger.info("  post: %r", post)
+    logger.info("  pre:  %s", pre)
+    logger.info("  d1:   %s", d1)
+    logger.info("  math: %s", math)
+    logger.info("  d2:   %s", d2)
+    logger.info("  post: %s", post)
     # check if it looks like math...
     is_math = True
     if d1 == r"$``" and d2 == r"``$":
         pass
     elif d1 == r"$`" and d2 == r"`$":
+        pass
+    elif d1 == r"`$" and d2 == r"$`":
         pass
     elif d1 == r"\(" and d2 == r"\)" and " " not in math:  # hack for image prompt \(medium\) etc!
         is_math = False
@@ -98,19 +101,19 @@ def quote_inline_math(pre, d1, math, d2, post):
         is_math = False
     if not is_math:
         return f"{d1}{math}{d2}", False
-    math = fix_math_escape_percentages(math)
+#    math = fix_math_escape_percentages(math)
     return f"""<code class="language-latex">{math}</code>""", True
 
 
-def fix_math_escape_percentages(math_content):
-    """Escape unescaped % symbols in math content"""
-    # FIXME: This approach assumes that a % symbol immediately preceded by a
-    # backslash is already escaped. This is not always the case.
-    return re.sub(r"(?<!\\)%", r"\%", math_content)
+# def fix_math_escape_percentages(math_content):
+#     """Escape unescaped % symbols in math content"""
+#     # FIXME: This approach assumes that a % symbol immediately preceded by a
+#     # backslash is already escaped. This is not always the case.
+#     return re.sub(r"(?<!\\)%", r"\%", math_content)
 
 
-def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
-    """Find and fix inline math in a part of a line, without quoted code."""
+def find_and_fix_inline_math(part: str) -> tuple[str, bool]:
+    """Find and fix inline math in text without quoted code."""
     # run the regexpes repeatedly to work through the string
 
     has_math = False
@@ -122,12 +125,12 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
             (
                 (          # Group 2: Inline math with $$...$$
                     \$\$
-                    (.+?)  # Group 3: Math content
+                    ((?!\$\$).+?)  # Group 3: Math content
                     \$\$
                 ) |
                 (          # Group 4: Inline math with $...$
-                    \$
-                    (.+?)  # Group 5: Math content
+                    (?!\$)\$
+                    ((?:\\\$|[^$])+?)  # Group 5: Math content
                     \$
                 ) |
                 (          # Group 6: Inline math with \[...\]
@@ -142,17 +145,17 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
                 ) |
                 (          # Group 10: Inline math with $``...``$
                     \$``
-                    (.+?)  # Group 11: Math content
+                    ((?!``).+?)  # Group 11: Math content
                     ``\$
                 ) |
                 (          # Group 12: Inline math with $`...`$
                     \$`
-                    (.+?)  # Group 13: Math content
+                    ([^`]+?)  # Group 13: Math content
                     `\$
                 ) |
                 (          # Group 14: Inline math with `$...$`
                     `\$
-                    (.+?)  # Group 15: Math content
+                    ((?:\\\$|[^$])+?)  # Group 15: Math content
                     \$`
                 )
             )
@@ -206,6 +209,12 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     # but we need to be careful with code blocks
     # This should match the whole string
     code_pattern = r"""
+        (\$``(?!``).*?``\$)     # Math case 1
+        |
+        (\$`[^`]*?`\$)          # Math case 2
+        |
+        (`\$(?:\\\$|[^$])*?\$`)  # Math case 3
+        |
         (````.*?````)   # Quad-quoted inline code
         |
         (```.*?```)     # Triple-quoted inline code
@@ -214,7 +223,7 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
         |
         (`.*?`+)        # Single-quoted inline code, with a catch-all for multi backticks
         |
-        (.+?)(?=`|$)    # Any other text, non-greedy, until a backtick or end of string
+        (.+?)(?=`|\$`|$)    # Any other text, non-greedy, until a backtick or end of string
     """
 
     # Find all matches
@@ -225,15 +234,15 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     for match in matches:
         if prev_end != match.start():
             raise ValueError("preprocess_normal_markdown: internal error, finditer did not match entire string (1)")
-        part = match[1] or match[2] or match[3] or match[4] or match[5]
+        part = next(x for x in match.groups() if x is not None)
 
-        if part.startswith("`"):
+        if part.startswith("`") and not part.startswith("`$"):
             new_parts.append(part)
         else:
             # Process the part to find inline math
-            logger.info("part: %r", part)
-            part, has_math_part = find_and_fix_inline_math_part(part)
-            logger.info("part after: %r", part)
+            logger.debug("part: %s", part)
+            part, has_math_part = find_and_fix_inline_math(part)
+            logger.debug("part after: %s", part)
             has_math = has_math or has_math_part
             new_parts.append(part)
         prev_end = match.end()
@@ -261,6 +270,8 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
         "number": True,
         "parser_extension": [mdformat_light_touch],
     }
+    logger.debug("tokens: %r", tokens)
+
     env: dict = {}
     out_text = md_formatter.render(tokens, options, env)
 
@@ -377,7 +388,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
             is_markup = True
         is_markdown_image = re.search(r"!\[.*\]\(.*\)", line)
         logger.debug("check line: %r", line)
-        is_math_start = bool(re.match(r"\s*(\$\$|```latex|```math|\\\[)$", line))
+        is_math_start = bool(re.match(r"\s*(\$\$|```tex|```latex|```math|\\\[)$", line))
         is_math_end = bool(re.match(r"\s*(\$\$|```|\\\])$", line))
         is_normal_line = False
         if re.match(r"\s*<(script|style|svg)\b", line, flags=re.IGNORECASE) and not in_code:
@@ -405,7 +416,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
             in_math = False
             in_code = 0
         elif in_math:
-            line = fix_math_escape_percentages(line)
+#            line = fix_math_escape_percentages(line)
             out.append(line + "\n")
         elif re.match(r"\s*```", line) and not in_code:
             logger.debug("start code 1")

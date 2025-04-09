@@ -22,6 +22,7 @@ import ally_markdown
 os.umask(0o007)
 
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Dictionary to store locks for each file
@@ -144,6 +145,7 @@ def main():
     """Main function"""
     opts = get_opts()
     ucm.setup_logging(opts)
+    logger.info("bb2html started")
     exts = tuple(f".{ext}" for ext in opts.extension or ())
     opts.exts = exts
     ucm.run_async(bb2html(opts=opts, watch_log=opts.watch_log))

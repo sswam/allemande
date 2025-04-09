@@ -62,8 +62,8 @@ inotify
 
 websockets
 
-markdown
-markdown-it-py[linkify,plugins]
+markdown @ git+https://github.com/sswam/markdown.git
+markdown-it-py[linkify,plugins] @ git+https://github.com/sswam/markdown-it-py.git
 mdformat
 pymdown-extensions
 aiofiles
