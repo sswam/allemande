@@ -82,7 +82,7 @@ async function highlight_code(messageElement, viewOptions) {
         block.dataset.highlightedCode = block.innerHTML;
         block.textContent = block.dataset.originalCode;
         delete block.dataset.originalCode;
-        block.className = block.classList.remove('hljs');
+        block.classList.remove('hljs');
       }
     }
   }

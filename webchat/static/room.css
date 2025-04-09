@@ -43,6 +43,10 @@ body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .labe
 .content p {
 	white-space: pre-wrap;
 }
+.content code span.katex,
+.content code span.katex * {
+	white-space: normal !important;
+}
 .content br, .content details p br {
 	display: none;
 }
@@ -435,8 +439,12 @@ body:not(.images):not(.alt) .image {
 	display: none;
 }
 
-body:not(.diagram_source) :is(.language-dot, .language-mermaid) {
+body:not(.rendered_source) :is(.language-latex, .language-dot, .language-mermaid) {
 	display: none;
+}
+
+code.language-latex:has(+ span.katex) {
+    margin-right: 0.5em;
 }
 
 body.canvas > div.canvas {

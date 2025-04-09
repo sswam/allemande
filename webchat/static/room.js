@@ -939,7 +939,7 @@ async function set_view_options(new_view_options) {
   cl.toggle("images", view_options.images == 1);
   cl.toggle("alt", view_options.alt == 1);
   cl.toggle("script_source", view_options.source >= 1);
-  cl.toggle("diagram_source", view_options.source >= 2);
+  cl.toggle("rendered_source", view_options.source >= 2);
   cl.toggle("canvas", view_options.canvas == 1);
   cl.toggle("clean", view_options.clean == 1);
   cl.toggle("columns", view_options.columns == 1);

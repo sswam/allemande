@@ -185,9 +185,9 @@ bb2html:
 	awatch -a -i -p $(WEBCHAT)/bb2html.py chat/chat.py chat/ally_markdown.py chat/ally_room.py chat/bb_lib.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 build-ui:
-	# Note, changes to the service_worker.js will require a manual rebuild
+	# Note, changes to service_worker_in.js will require a manual rebuild
 	# because we don't want to bump the version when the version changes, e.g. git stuff
-	cd $(WEBCHAT) && awatch -p static ../js/util.js ../js/debug.js ../site/auth.js -e static/service_worker.js -a -J ./Makefile
+	cd $(WEBCHAT) && awatch -p static ../js/util.js ../js/debug.js ../site/auth.js -e static/service_worker_in.js -a -J ./Makefile
 
 nginx:
 	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx; echo ... done; done

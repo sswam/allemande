@@ -4,12 +4,33 @@ const moveLabels = true;
 
 const HIDE_CONTROLS_DELAY = 1000;
 
+async function render_math(node) {
+  const codes = node.querySelectorAll("code.language-latex");
+  if (codes.length === 0)
+    return;
+  await ensure_katex_scripts();
+  // TODO try / catch on each element, for protection against bad TeX?
+  for (const elem of codes) {
+    const par = elem.parentElement;
+    const displayMode = par.tagName === "PRE";
+    const appendAfter = displayMode ? par : elem;
+    const rendered = document.createElement('span');
+    katex.render(elem.innerText, rendered, {
+      throwOnError: false,
+      displayMode: displayMode,
+    });
+    while (rendered.lastChild) {
+      appendAfter.after(rendered.lastChild);
+    }
+  }
+}
+
 async function render_graphviz(node) {
-  const dot = node.querySelectorAll("code.language-dot");
-  if (dot.length === 0)
+  const codes = node.querySelectorAll("code.language-dot");
+  if (codes.length === 0)
     return;
   await ensure_graphviz_scripts();
-  for (const elem of dot) {
+  for (const elem of codes) {
     const par = elem.parentElement;
     d3.select(par)
       .append("div")
@@ -37,6 +58,13 @@ async function render_mermaid(node) {
         svgElement.style.width = svgElement.style.maxWidth;
       });
   }
+}
+
+async function ensure_katex_scripts() {
+  await Promise.all([
+    $style("style_katex", `https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css`),
+    $script("script_katex", `https://cdn.jsdelivr.net/npm/katex/dist/katex.min.js`),
+  ]);
 }
 
 async function ensure_graphviz_scripts() {
@@ -178,6 +206,9 @@ async function handleNewMessage(newMessage) {
 
   // console.log(newMessage.outerHTML);
 
+  // render TeX math
+  await render_math(newContent);
+
   // render graphviz diagrams
   await render_graphviz(newContent);
 
@@ -197,7 +228,7 @@ async function handleNewMessage(newMessage) {
     open_or_close_details($details);
 
   // Code highlighting according to the view options
-  highlight_code(newMessage, view_options);
+  await highlight_code(newMessage, view_options);
 
   // Processing editing commands
   process_editing_commands(newMessage);

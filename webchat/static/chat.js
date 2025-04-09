@@ -128,6 +128,7 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['alt+z', undo, 'Undo last message', ADMIN],
   ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
   ['alt+r', retry, 'Retry last action', ADMIN],
+  ['ctrl+alt+r', (ev) => retry(ev, true), 'Retry last action', ADMIN],
   ['alt+x', clear_chat, 'Clear messages', ADMIN],
   ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
   ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
@@ -1363,7 +1364,7 @@ async function undo(ev, hard) {
   hard = hard || ev.ctrlKey;
   auto_play_back_off();
 
-  if (!(ev.key || ev.shiftKey || confirm("Undo the last message?\n(hold shift to skip this confirmation next time)")))
+  if (!(ev.key || ev.shiftKey || confirm("Undo the last message?\n(hold shift to skip this confirmation next time, or use keyboard shortcuts)")))
     return false;
 
   if (hard) {
@@ -1384,9 +1385,9 @@ async function undo(ev, hard) {
   return false;
 }
 
-async function retry(ev) {
+async function retry(ev, hard) {
   try {
-    if (!await undo(ev))
+    if (!await undo(ev, hard))
       return;
     await $wait(100);
     await poke();
