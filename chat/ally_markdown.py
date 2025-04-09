@@ -25,7 +25,7 @@ from ally.quote import quote_words  # type: ignore  # pylint: disable=wrong-impo
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
@@ -53,16 +53,16 @@ MARKDOWN_EXTENSIONS = [
     # 'smarty',
     "toc",
     "wikilinks",
-    "markdown_katex",
+    #   "markdown_katex",  # do this in the browser
     #    "markdown_criticmarkup",
     "attr_list",
 ]
 
 MARKDOWN_EXTENSION_CONFIGS = {
-    "markdown_katex": {
-        # 		'no_inline_svg': True, # fix for WeasyPrint
-        "insert_fonts_css": True,
-    },
+#     "markdown_katex": {
+#         # 		'no_inline_svg': True, # fix for WeasyPrint
+#         "insert_fonts_css": True,
+#     },
     "pymdownx.highlight": {
         "use_pygments": False,
     },
@@ -74,21 +74,19 @@ md_formatter = MDRenderer()
 
 def quote_inline_math(pre, d1, math, d2, post):
     """Process potential inline math delimited by matching delimiters, wrapping math content in $`...`$"""
-    logger.debug("quote_inline_math")
-    logger.debug("  pre:  %r", pre)
-    logger.debug("  d1:   %r", d1)
-    logger.debug("  math: %r", math)
-    logger.debug("  d2:   %r", d2)
-    logger.debug("  post: %r", post)
+    logger.info("quote_inline_math")
+    logger.info("  pre:  %r", pre)
+    logger.info("  d1:   %r", d1)
+    logger.info("  math: %r", math)
+    logger.info("  d2:   %r", d2)
+    logger.info("  post: %r", post)
     # check if it looks like math...
-    has_math = False
     is_math = True
-    if math.startswith("`") and math.endswith("`"):
-        # already processed
-        logger.warning("already processed: %r", math)
-        has_math = True
-        is_math = False
-    elif d1 == r"\(" and d2 == r"\)" and " " not in math:  # hack: avoid triggering on image prompt \(medium\) etc!
+    if d1 == r"$``" and d2 == r"``$":
+        pass
+    elif d1 == r"$`" and d2 == r"`$":
+        pass
+    elif d1 == r"\(" and d2 == r"\)" and " " not in math:  # hack for image prompt \(medium\) etc!
         is_math = False
     elif d1 == r"\(" and d2 == r"\)":
         pass
@@ -98,11 +96,10 @@ def quote_inline_math(pre, d1, math, d2, post):
         is_math = False
     elif re.match(r"\w$", pre):
         is_math = False
-    if is_math:
-        has_math = True
-        math = fix_math_escape_percentages(math)
-        return f"$`{math}`$", has_math
-    return f"{d1}{math}{d2}", has_math
+    if not is_math:
+        return f"{d1}{math}{d2}", False
+    math = fix_math_escape_percentages(math)
+    return f"""<code class="language-latex">{math}</code>""", True
 
 
 def fix_math_escape_percentages(math_content):
@@ -142,9 +139,24 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
                     \\\(
                     (.+?)  # Group 9: Math content
                     \\\)
+                ) |
+                (          # Group 10: Inline math with $``...``$
+                    \$``
+                    (.+?)  # Group 11: Math content
+                    ``\$
+                ) |
+                (          # Group 12: Inline math with $`...`$
+                    \$`
+                    (.+?)  # Group 13: Math content
+                    `\$
+                ) |
+                (          # Group 14: Inline math with `$...$`
+                    `\$
+                    (.+?)  # Group 15: Math content
+                    \$`
                 )
             )
-            (.*)           # Group 10: Any remaining characters
+            (.*)           # Group 16: Any remaining characters
             $
             """,
             part[start:],
@@ -154,7 +166,7 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
             part = part[:start] + html.escape(part[start:], quote=False)
             break
         groups = match.groups()
-        pre, post = groups[0], groups[10]
+        pre, post = groups[0], groups[16]
         if groups[2]:
             d1, math, d2 = "$$", groups[3], "$$"
         elif groups[4]:
@@ -163,6 +175,12 @@ def find_and_fix_inline_math_part(part: str) -> tuple[str, bool]:
             d1, math, d2 = r"\[", groups[7], r"\]"
         elif groups[8]:
             d1, math, d2 = r"\(", groups[9], r"\)"
+        elif groups[10]:
+            d1, math, d2 = "$``", groups[11], "``$"
+        elif groups[12]:
+            d1, math, d2 = "$`", groups[13], "`$"
+        elif groups[14]:
+            d1, math, d2 = "`$", groups[15], "$`"
         else:
             raise ValueError("No math group matched")
         replaced, has_math1 = quote_inline_math(pre, d1, math, d2, post)
@@ -188,7 +206,11 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     # but we need to be careful with code blocks
     # This should match the whole string
     code_pattern = r"""
+        (````.*?````)   # Quad-quoted inline code
+        |
         (```.*?```)     # Triple-quoted inline code
+        |
+        (``.*?``)       # Double-quoted inline code
         |
         (`.*?`+)        # Single-quoted inline code, with a catch-all for multi backticks
         |
@@ -203,15 +225,15 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     for match in matches:
         if prev_end != match.start():
             raise ValueError("preprocess_normal_markdown: internal error, finditer did not match entire string (1)")
-        part = match[1] or match[2] or match[3]
+        part = match[1] or match[2] or match[3] or match[4] or match[5]
 
         if part.startswith("`"):
             new_parts.append(part)
         else:
             # Process the part to find inline math
-            logger.debug("part: %r", part)
+            logger.info("part: %r", part)
             part, has_math_part = find_and_fix_inline_math_part(part)
-            logger.debug("part after: %r", part)
+            logger.info("part after: %r", part)
             has_math = has_math or has_math_part
             new_parts.append(part)
         prev_end = match.end()
@@ -249,7 +271,7 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     out_text = newlines_before + out_text.strip("\n") + newlines_after
 
     if out_text != in_text:
-        logger.debug("preprocess_normal_markdown:\n%s\n%s", in_text, out_text)
+        logger.info("preprocess_normal_markdown:\n%s\n%s", in_text, out_text)
 
     return out_text, has_math
 
@@ -317,7 +339,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
     """Preprocess chat message content, for markdown-katex, and other fixes"""
 
     # replace $foo$ with $`foo`$
-    # replace $$\n...\n$$ with ```math\n...\n```
+    # replace $$\n...\n$$ with ```latex\n...\n```
 
     has_math = False
 
@@ -355,7 +377,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
             is_markup = True
         is_markdown_image = re.search(r"!\[.*\]\(.*\)", line)
         logger.debug("check line: %r", line)
-        is_math_start = bool(re.match(r"\s*(\$\$|```tex|```math|\\\[)$", line))
+        is_math_start = bool(re.match(r"\s*(\$\$|```latex|```math|\\\[)$", line))
         is_math_end = bool(re.match(r"\s*(\$\$|```|\\\])$", line))
         is_normal_line = False
         if re.match(r"\s*<(script|style|svg)\b", line, flags=re.IGNORECASE) and not in_code:
@@ -374,7 +396,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
         elif is_markup or is_markdown_image:
             out.append(line + "\n")
         elif is_math_start and not in_code:
-            out.append("```math\n")
+            out.append("```latex\n")
             in_math = True
             has_math = True
             in_code += 1
@@ -432,7 +454,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
     out = add_blanks_after_code_blocks(out)
 
     content = "".join(out)
-    logger.debug("preprocess content: %s", content)
+    logger.debug("preprocess content: %s, has_math: %s", content)
     return content, has_math
 
 
