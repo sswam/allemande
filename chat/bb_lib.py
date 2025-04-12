@@ -7,6 +7,7 @@ from pathlib import Path
 import logging
 from typing import Any, TextIO, IO, Iterator, cast
 from dataclasses import dataclass
+import re
 
 from util import Symbol
 
@@ -67,6 +68,8 @@ def lines_to_messages(lines: Iterator[str | bytes]) -> Iterator[dict[str, Any]]:
         line = next(lines, None)
         if line is None:
             break
+
+        line = re.sub(r"\n\t", r"\n", line)
 
         if isinstance(line, bytes):
             line = line.decode("utf-8")
