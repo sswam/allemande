@@ -1,6 +1,6 @@
 #!/usr/bin/env python3-allemande
 
-""" Allemande chat rooms library """
+"""Allemande chat rooms library"""
 
 from pathlib import Path
 import os
@@ -25,7 +25,6 @@ from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-orde
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 
 class Access(enum.Enum):  # pylint: disable=too-few-public-methods
@@ -72,7 +71,7 @@ class Room:
         """Check if a room exists."""
         return self.path.exists()
 
-    def write(self, user: str|None, content: str) -> None:
+    def write(self, user: str | None, content: str) -> None:
         """
         Write a message to a room.
         We don't convert to HTML here, a follower process does that.
@@ -93,7 +92,7 @@ class Room:
             self.touch()
             return
 
-        user_tc: str|None = None
+        user_tc: str | None = None
 
         if user and (user == user.lower() or user == user.upper()):
             user_tc = user.title()
@@ -102,14 +101,14 @@ class Room:
         if user_tc:
             user_tc = user_tc.replace(".", "_")
 
-#         options = self.get_options(user)
+        #         options = self.get_options(user)
 
-#         # timestamps option
-#         if options.get("timestamps"):
-#             now = datetime.now()
-#             timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-#             human_time = now.strftime("%Y-%m-%d %H:%M:%S")
-#             content = f"""<time datetime="{timestamp}">{human_time}</time>{content}"""
+        #         # timestamps option
+        #         if options.get("timestamps"):
+        #             now = datetime.now()
+        #             timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+        #             human_time = now.strftime("%Y-%m-%d %H:%M:%S")
+        #             content = f"""<time datetime="{timestamp}">{human_time}</time>{content}"""
 
         message = {"user": user_tc, "content": content}
 
@@ -238,7 +237,7 @@ class Room:
         save_chat_messages(messages, output, mode="w")
         await overwrite_file(user, self.name + EXTENSION, output.getvalue(), backup=backup)
 
-    def check_access(self, user: str|None) -> Access:
+    def check_access(self, user: str | None) -> Access:
         """Check access for a user."""
         return check_access(user, self.name + EXTENSION)
 
@@ -350,7 +349,7 @@ class Room:
         return last
 
 
-def check_access(user: str|None, pathname: Path | str) -> Access:
+def check_access(user: str | None, pathname: Path | str) -> Access:
     """Check if the user has access to the path, and log the access."""
     if isinstance(pathname, Path):
         pathname = str(pathname)
@@ -363,7 +362,7 @@ def check_access(user: str|None, pathname: Path | str) -> Access:
 
 
 # pylint: disable=too-many-branches, too-many-return-statements, too-many-statements
-def _check_access_2(user: str|None, pathname: str) -> tuple[Access, str]:
+def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     """Check if the user has access to the path"""
     # TODO make a wrapper method in the room class
     # user has access to the top-level dir, all files at the top-level
@@ -419,7 +418,12 @@ def _check_access_2(user: str|None, pathname: str) -> tuple[Access, str]:
         return Access.MODERATE_READ_WRITE, "moderator"
 
     # Users have admin on their own directory, and files in their own directory
-    if user is not None and re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE) or pathname == user or pathname.startswith(f"{user}/"):
+    if (
+        user is not None
+        and re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE)
+        or pathname == user
+        or pathname.startswith(f"{user}/")
+    ):
         return Access.ADMIN, "user_dir"
 
     # Users have admin on their top-level room, or a file with their name and any extension
@@ -491,9 +495,9 @@ def _check_access_2(user: str|None, pathname: str) -> tuple[Access, str]:
 
     # TODO Users have access to group-readable entries if they are marked as a friend
 
-# symlink done above?
-#     if access & Access.READ.value and is_symlink:
-#         return check_access(user, str(Path(pathname).resolve()))
+    # symlink done above?
+    #     if access & Access.READ.value and is_symlink:
+    #         return check_access(user, str(Path(pathname).resolve()))
 
     return Access(access), "shared_public"
 
@@ -633,8 +637,7 @@ def safe_path_for_local_file(file: str, url: str) -> tuple[Path, Path]:
     if url.startswith("/"):
         path2 = Path(url[1:])
     else:
-        path2 = (Path(room.name).parent)/url
+        path2 = (Path(room.name).parent) / url
     safe_path = safe_join(Path(ROOMS_DIR), Path(path2))
     rel_path = safe_path.relative_to(Path(ROOMS_DIR))
     return safe_path, rel_path
-

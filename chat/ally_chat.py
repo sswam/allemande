@@ -958,7 +958,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     remote_messages = [m for m in remote_messages if m["content"]]
 
     # Set up stop sequences for other participants
-    logger.info("context_messages: %r", context_messages)
+    logger.debug("context_messages: %r", context_messages)
     all_people = conductor.all_participants(context_messages)
     if opts.stop is None:
         opts.stop = []

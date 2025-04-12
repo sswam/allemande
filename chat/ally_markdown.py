@@ -75,12 +75,12 @@ md_formatter = MDRenderer()
 
 def quote_inline_math(pre, d1, math, d2, post):
     """Process potential inline math delimited by matching delimiters, wrapping math content in $`...`$"""
-    logger.info("quote_inline_math")
-    logger.info("  pre:  %s", pre)
-    logger.info("  d1:   %s", d1)
-    logger.info("  math: %s", math)
-    logger.info("  d2:   %s", d2)
-    logger.info("  post: %s", post)
+    logger.debug("quote_inline_math")
+    logger.debug("  pre:  %s", pre)
+    logger.debug("  d1:   %s", d1)
+    logger.debug("  math: %s", math)
+    logger.debug("  d2:   %s", d2)
+    logger.debug("  post: %s", post)
     # check if it looks like math...
     is_math = True
     if d1 == r"$``" and d2 == r"``$":
@@ -129,7 +129,7 @@ def find_and_fix_inline_math(part: str) -> tuple[str, bool]:
                     \$\$
                 ) |
                 (          # Group 4: Inline math with $...$
-                    (?!\$)\$
+                    (?<!\$)\$
                     ((?:\\\$|[^$])+?)  # Group 5: Math content
                     \$
                 ) |
@@ -166,7 +166,7 @@ def find_and_fix_inline_math(part: str) -> tuple[str, bool]:
             re.VERBOSE | re.DOTALL,
         )
         if match is None:
-            part = part[:start] + html.escape(part[start:], quote=False)
+#            part = part[:start] + html.escape(part[start:], quote=False)
             break
         groups = match.groups()
         pre, post = groups[0], groups[16]
@@ -188,7 +188,7 @@ def find_and_fix_inline_math(part: str) -> tuple[str, bool]:
             raise ValueError("No math group matched")
         replaced, has_math1 = quote_inline_math(pre, d1, math, d2, post)
         has_math = has_math or has_math1
-        pre = html.escape(pre, quote=False)
+#        pre = html.escape(pre, quote=False)
         part = part[:start] + pre + replaced + post
         start += len(pre) + len(replaced)
 
@@ -282,7 +282,7 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     out_text = newlines_before + out_text.strip("\n") + newlines_after
 
     if out_text != in_text:
-        logger.debug("preprocess_normal_markdown:\n%s\n%s", in_text, out_text)
+        logger.debug("preprocess_normal_markdown:\n1: %s\n2: %s\n3: %s", in_text, text, out_text)
 
     return out_text, has_math
 
@@ -381,12 +381,12 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
 
     for line in content.splitlines():
         logger.debug("line: %r", line)
-        is_markup = False
-        # if first and re.search(r"\t<", line[0]):
-        #     is_markup = True
-        if not in_code and re.search(RE_TAGS, line):
-            is_markup = True
-        is_markdown_image = re.search(r"!\[.*\]\(.*\)", line)
+#         is_markup = False
+#         # if first and re.search(r"\t<", line[0]):
+#         #     is_markup = True
+#         if not in_code and re.search(RE_TAGS, line):
+#             is_markup = True
+#         is_markdown_image = re.search(r"!\[.*\]\(.*\)", line)
         logger.debug("check line: %r", line)
         is_math_start = bool(re.match(r"\s*(\$\$|```tex|```latex|```math|\\\[)$", line))
         is_math_end = bool(re.match(r"\s*(\$\$|```|\\\])$", line))
@@ -404,8 +404,8 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
             in_code = 0
             in_script = False
             in_svg = False
-        elif is_markup or is_markdown_image:
-            out.append(line + "\n")
+#         elif is_markup or is_markdown_image:
+#             out.append(line + "\n")
         elif is_math_start and not in_code:
             out.append("```latex\n")
             in_math = True
