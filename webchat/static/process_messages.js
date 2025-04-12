@@ -316,12 +316,14 @@ function showHideControls(controls, show) {
 }
 
 function decorateCodeBlock(codeBlock) {
+  /*
   if (
     codeBlock.nodeName === "STYLE" &&
     codeBlock.textContent.includes(".katex img")
   ) {
     return;
   }
+  */
 
   // Add title click to copy
   codeBlock.title = "click to copy";
@@ -390,6 +392,8 @@ function decorateCodeBlock(codeBlock) {
 
   // Add controls to wrapper
   parent.appendChild(controls);
+
+  /* TODO would be better to handle events at the top level, without duplicate handlers */
 
   // Show controls on hover
   codeBlock.addEventListener("mouseenter", function () {

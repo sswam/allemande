@@ -537,6 +537,10 @@ pre:has(div.graphviz), pre:has(div.mermaid) {
 }
 */
 
+.graphviz, .mermaid {
+	overflow: auto;
+}
+
 /*
 .content script::before {
 	content: "<script>";
@@ -614,14 +618,13 @@ body.light .code-controls {
 .code-controls {
 	position: absolute;
 	right: 0;
-	top: calc(-1lh - 5px);
+	top: 0;
 	display: none;
 	z-index: 1;
 	align-items: center;
 	background: rgba(255,255,255,0.05);
-	border-radius: 4px 4px 0 0;
-	border: 1px solid var(--background);
-	border-bottom: 1px solid var(--background) !important;
+	border-radius: 0 0 0 4px;
+	border: none !important;
 }
 
 body.dark .code-controls {
@@ -633,7 +636,7 @@ body.light .code-controls {
 }
 
 .code-controls .language {
-	padding: 2px 6px;
+	padding: 3px 6px;
 }
 
 /*
@@ -669,6 +672,10 @@ body.columns .message {
 
 body.columns .message * {
 	max-width: 100%;
+}
+
+body.columns .message :is(.graphviz, .mermaid) {
+	max-width: auto;
 }
 
 body.compact div.messages {

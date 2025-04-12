@@ -972,7 +972,7 @@ async function set_view_options(new_view_options) {
 
   if (view_options.highlight != old_view_options.highlight) {
     await highlight_set_stylesheet_for_theme();
-    highlight_code($messages, view_options);
+    await highlight_code($messages, view_options);
   }
 }
 
@@ -1142,6 +1142,25 @@ function getCssVarColorHex(varName = '--text') {
 function hexColorWithOpacity(color, opacity) {
     const alpha = Math.round(opacity * 255);
     return color + alpha.toString(16).padStart(2, '0');
+}
+
+// helper functions ----------------------------------------------------------
+
+function previous(selector, lookBack = 0) {
+	// Get all elements matching the selector
+	const elements = Array.from(document.querySelectorAll(selector));
+
+	// Find elements before the script
+	const beforeScript = elements.filter(element =>
+		!(document.currentScript.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING)
+	);
+
+	// If no elements found before script, return null
+	if (!beforeScript.length) return null;
+
+	// Get the element at the specified lookBack position from the end
+	const index = beforeScript.length - 1 - lookBack;
+	return index >= 0 ? beforeScript[index] : null;
 }
 
 // main ----------------------------------------------------------------------

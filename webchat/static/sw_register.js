@@ -2,11 +2,18 @@
 
 let sw_registration;
 let sw_message_channel;
+let reloading = false;
+
+function reload_page() {
+  if (reloading) return;
+  reloading = true;
+  location.reload();
+}
 
 function handle_sw_message(event) {
   if (event.data.type == "APP_INFO") {
     VERSION = event.data.version;
-    const $debug = $id("debug");
+    const $debug = document.getElementById("debug");
     if ($debug)
       $debug.textContent = VERSION;
   }
@@ -25,6 +32,7 @@ function sw_statechange(ev) {
 }
 
 async function register_service_worker() {
+//  console.log("Registering service worker");
   if (!navigator.serviceWorker) return;
   try {
     sw_registration = await navigator.serviceWorker.register("/service_worker.js", {"cache": "no-cache"});
@@ -35,7 +43,7 @@ async function register_service_worker() {
 
   await navigator.serviceWorker.ready;
 
-  $on(sw_registration, "updatefound", sw_updatefound);
+  sw_registration.addEventListener("updatefound", sw_updatefound);
   sw_registration.update();
 
   // Request the app version from the service worker
@@ -46,9 +54,9 @@ async function register_service_worker() {
   sw_message_channel.port1.onmessage = handle_sw_message;
   sw_message_channel.port1.postMessage("getAppInfo");
 
-  // console.log("ServiceWorker registration successful with scope: ", sw_registration.scope);
+//  console.log("ServiceWorker registration successful with scope: ", sw_registration.scope);
   check_for_updates();
-//  $on(navigator.serviceWorker, "controllerchange", reload_page)
+//  navigator.serviceWorker.addEventListener("controllerchange", reload_page);
 }
 
 let last_check_for_updates = 0;
@@ -59,7 +67,6 @@ function check_for_updates() {
   }
   last_check_for_updates = Date.now();
   // console.log("check_for_updates");
-  if (sw_message_channel) {
+  if (sw_message_channel)
     sw_message_channel.port1.postMessage("checkForUpdates");
-  }
 }

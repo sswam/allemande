@@ -15,9 +15,11 @@ body > form, div#main, div#messages {
 body.admin, body.admin .admin {
 	display: block;
 }
+html {
+	overflow: auto;  // enable reload on mobile
+}
 input, textarea {
 	min-width: var(--ui-size-min);
-	width: 0;
 }
 #messages {
 	min-height: var(--ui-size-min);
@@ -55,7 +57,7 @@ input, textarea {
 	flex-shrink: 1;
 	max-height: 128px;
 }
-#content {
+#content, #math_input {
 	min-height: 32px;
 	resize: none;
 	flex-grow: 1;
@@ -297,6 +299,34 @@ body.simple .advanced {
 body:not(.simple) .simple {
 	display: none;
 }
+
+math-field {
+	border: none;
+	outline: none;
+	background: var(--input);
+	color: var(--text);
+}
+
+math-field:focus {
+	border: none;
+	background: var(--focus);
+	--selection-color: var(--text);
+	--selection-background-color: var(--input);
+	--contains-highlight-background-color: var(--input);
+	--placeholder-color: var(--text);
+	--placeholder-opacity: 0.5;
+	--smart-fence-color: var(--text);
+	--smart-fence-opacity: 0.5;
+	--highlight-text: var(--text);
+	--latex-color: var(--text);
+	--correct-color: var(--text);
+	--incorrect-color: var(--text);
+}
+
+math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) {
+	color: var(--text);
+}
+
 
 @media print {
 	:root {

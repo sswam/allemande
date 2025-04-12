@@ -11,8 +11,10 @@ const global_moderators = ["root", "sam"];
 const devs = ["root", "sam"];
 
 const $head = $("head");
+const $body = $("body");
 const $room = $id("room");
 const $content = $id("content");
+const $math_input = $id("math_input");
 const $messages_iframe = $id("messages_iframe");
 const $form = $id("form");
 const $title = $("title");
@@ -123,7 +125,8 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['alt+i', view_images, 'View images'],
   ['alt+a', view_alt, 'View alt text'],
   ['alt+c', view_clean, 'View clean'],
-  ['alt+m', move_mode, 'Move mode', ADMIN],
+  ['alt+m', add_math, 'Add math'],
+  ['shift+alt+m', move_mode, 'Move mode', ADMIN],
 
   ['alt+z', undo, 'Undo last message', ADMIN],
   ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
@@ -142,7 +145,7 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
 
 const SHORTCUTS_ROOM = shortcuts_to_dict([
   ['enter', focus_content, 'Focus message input'],
-  ['alt+m', move_mode, 'Move mode', ADMIN],
+  ['shift+alt+m', move_mode, 'Move mode', ADMIN],
 ]);
 
 const SHORTCUTS_EDIT = shortcuts_to_dict([
@@ -258,6 +261,7 @@ function clear_content(ev) {
 }
 
 function focus_content() {
+  // console.log("focus_content");
   $content.focus();
 }
 
@@ -457,6 +461,8 @@ function textarea_indent(textarea, dedent = false) {
 }
 
 function setRangeText(textarea, newText, blockStart, blockEnd) {
+  textarea.focus();
+
   // Store original selection
   const selStart = textarea.selectionStart;
   const selEnd = textarea.selectionEnd;
@@ -478,11 +484,11 @@ function setRangeText(textarea, newText, blockStart, blockEnd) {
   // Restore selection, adjusting for text length changes
   const adjustedStart = selStart < blockStart ? selStart :
             selStart > blockEnd ? selStart + lengthDiff :
-            blockStart;
+            blockEnd + lengthDiff;
 
   const adjustedEnd = selEnd < blockStart ? selEnd :
             selEnd > blockEnd ? selEnd + lengthDiff :
-            blockEnd;
+            blockEnd + lengthDiff;
 
 //   console.log(selStart, selEnd);
 //   console.log(blockStart, blockEnd);
@@ -641,8 +647,7 @@ function show_room_privacy() {
 
 function move_mode() {
   // button was clicked, toggle move mode
-  active_toggle("room_ops_move");
-  if (active_get("room_ops_move")) {
+  if (active_toggle("room_ops_move")) {
     select_room_basename();
   } else {
     // $content.focus();
@@ -749,9 +754,11 @@ async function theme_loaded() {
   if (theme_mode == "dark") {
     $body.classList.add("dark");
     $body.classList.remove("light");
+//    $body.setAttribute("theme", "dark");
   } else {
     $body.classList.add("light");
     $body.classList.remove("dark");
+//    $body.setAttribute("theme", "light");
   }
 }
 
@@ -891,6 +898,8 @@ function select_room_basename() {
 }
 
 function escape() {
+  if (active_get("add_math"))
+    return;
   let acted = false;
   if (active_get("room_ops_move")) {
     $room.value = room;
@@ -1023,16 +1032,6 @@ function dispatch_shortcut(ev, shortcuts) {
   return false;
 }
 
-// reload the page -----------------------------------------------------------
-
-let reloading = false;
-
-function reload_page() {
-  if (reloading) return;
-  reloading = true;
-  location.reload();
-}
-
 // handle messages from the messages iframe ----------------------------------
 
 function handle_message(ev) {
@@ -1058,6 +1057,7 @@ function handle_message(ev) {
     room_ready = true;
     theme = ev.data.theme;
     run_hooks("room_ready");
+    return;
   }
 
   if (ev.data.type == "overlay") {
@@ -1085,6 +1085,7 @@ function handle_message(ev) {
   }
   */
 
+  // console.log("focus_content from handle_message: ev.data", ev.data);
   $content.focus();
 
   // detect F5 or ctrl-R to reload the page
@@ -2140,6 +2141,7 @@ const icons = {
   room_ops: '<svg width="20" height="20" fill="currentColor" class="bi bi-file-text" viewBox="0 0 16 16"><path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5M5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1z"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1"/></svg>',
   scroll: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>',
   view_advanced: '<svg width="20" height="20" fill="currentColor" class="bi bi-lightbulb-fill" viewBox="0 0 16 16"><path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m3 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1-.5-.5"/></svg>',
+  add_math: 'Σ',  // capital sigma
 };
 
 
@@ -2184,19 +2186,46 @@ function change_privacy() {
   }
 }
 
-// mobile keyboards ----------------------------------------------------------
+// math input ----------------------------------------------------------------
 
-function visual_viewport_resized() {
-  const height = `${window.visualViewport.height}px`;
-  document.documentElement.style.height = height;
-  document.body.style.height = height;
-
-  if (window.scrollY < 0)
-    window.scrollTo(0, 0);
+async function add_math_input(ev) {
+  if (ev.inputType === "insertLineBreak")
+    await add_math(ev);
 }
-function account_for_chuckleheaded_mobile_keyboards() {
-  $on(window.visualViewport, "resize", visual_viewport_resized);
-  visual_viewport_resized();
+
+async function add_math(ev) {
+  if (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
+  await $script("script_mathlive", "https://unpkg.com/mathlive");
+  MathfieldElement.soundsDirectory = null;
+  MathfieldElement.keypressVibration = null;
+  // hide normal input, show the <math-field> container
+  if (active_toggle("add_math")) {
+    console.log("add_math");
+    // if any text in selected in content, put it in the math input
+    // TODO perhaps expand from caret to the surrounding math delimiters :/
+    let selected_text = $content.value.substring($content.selectionStart, $content.selectionEnd);
+    // strip $ from both ends
+    selected_text = selected_text.replace(/^\$|\$$/g, "");
+    $math_input.value = selected_text;
+    hide($content);
+    show($math_input);
+    $math_input.focus();
+  } else {
+    console.log("add_math cancel");
+    hide($math_input);
+    show($content);
+    $content.focus();
+
+    // insert $id("math-input").value into the content field at the cursor
+    let tex_math = $math_input.value.trim();
+    if (tex_math)
+      tex_math = "$" + tex_math + "$";
+    $math_input.value = "";
+    setRangeText($content, tex_math, $content.selectionStart, $content.selectionEnd);
+  }
 }
 
 // printing ------------------------------------------------------------------
@@ -2212,7 +2241,6 @@ function print_chat(ev) {
 
 function chat_main() {
   user = authChat();
-  register_service_worker();
 
   setup_icons();
   load_theme();
@@ -2243,6 +2271,8 @@ function chat_main() {
 
   $on($id("add_file"), "click", file_clicked);
   $on($id("add_file_2"), "click", file_clicked);
+  $on($id("add_math"), "click", add_math);
+  $on($math_input, "input", add_math_input);
   $on($id("files"), "change", files_changed);
   $on($id("add_cancel"), "click", () => set_controls());
 
@@ -2321,11 +2351,11 @@ function chat_main() {
   message_changed();
   // $content.focus();
 
-  // account_for_chuckleheaded_mobile_keyboards();
-
   load_user_styles_and_script();
 
+  /* This breaks scrolling in view_edit, etc, and I forget why I added it!
   $on(document, "touchmove", function(e) {
     e.preventDefault();
   }, { passive: false });
+  */
 }

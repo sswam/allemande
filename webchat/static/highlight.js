@@ -66,6 +66,8 @@ async function highlight_code(messageElement, viewOptions) {
     await highlight_ensureHighlightCore();
 
     for (const block of codeBlocks) {
+      if (block.classList.contains('hljs'))
+        continue;
       block.dataset.originalCode = block.textContent;
       if (block.dataset.highlightedCode) {
         block.innerHTML = block.dataset.highlightedCode;
@@ -78,6 +80,8 @@ async function highlight_code(messageElement, viewOptions) {
   } else {
     // Restore original code if highlighting is disabled
     for (const block of codeBlocks) {
+      if (!block.classList.contains('hljs'))
+        continue;
       if (block.dataset.originalCode) {
         block.dataset.highlightedCode = block.innerHTML;
         block.textContent = block.dataset.originalCode;

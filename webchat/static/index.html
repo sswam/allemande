@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Allemande AI</title>
 <meta name="mobile-web-app-capable" content="yes" />
-<meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
 <link rel="stylesheet" href="allychat.css">
 <link rel="stylesheet" href="chat.css">
 <link rel="icon" type="image/png" href="icon.png">
@@ -68,6 +68,7 @@
 
 	<div class="row" id="inputrow">
 		<textarea id="content" name="content" class="content_input grow"></textarea>
+		<math-field id="math_input" class="hidden"></math-field>
 		<div class="controls col_wrap" id="input_main">
 			<button id="send">send</button>
 			<button id="add" title="add a file or recording" class="advanced">add</button>
@@ -93,6 +94,7 @@
 			<button id="add_file" title="upload files">file</button>
 			<button id="add_record_audio" title="record audio">audio</button>
 			<button id="add_record_video" title="record video">video</button>
+			<button id="add_math" title="add mathematics">math</button>
 			<button id="add_cancel">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_record">
@@ -150,15 +152,16 @@
 	</div>
 </div>
 </form>
+<script src="sw_register.js"></script>
+<script>register_service_worker();</script>
 <script src="util.js"></script>
 <script src="config.js"></script>
 <script src="https://allemande.ai/auth.js"></script>
 <script src="notify.js"></script>
 <script src="record.js"></script>
 <script src="resizer.js"></script>
-<script src="sw_register.js"></script>
-<script src="chat.js"></script>
 <script src="debug.js"></script>
+<script src="chat.js"></script>
 <script>chat_main();</script>
 </body>
 </html>
