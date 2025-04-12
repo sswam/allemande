@@ -1,0 +1,30 @@
+#!/bin/bash
+
+l=      # /usr/local
+a=      # all
+
+. opts
+
+old_requirements="requirements_$(dttm _).txt"
+old_list="pip_list_$(dttm _).txt"
+
+message() {
+	echo >&2
+	echo >&2 "Saved old packages to $old_requirements and $old_list"
+	echo >&2
+}
+
+pip freeze > "$old_requirements"
+pip list -v > "$old_list"
+
+message
+
+if [ "$l" ]; then
+	pip list -v | grep ' /usr/local/' | cut -f1 -d ' ' | xa pip install -U --upgrade-strategy eager
+elif [ "$a" ]; then
+	pip list -v | cut -f1 -d ' ' | xa pip install -U --upgrade-strategy eager
+else
+	pip freeze | cut -d'=' -f1 | xa pip install -U --upgrade-strategy eager
+fi
+
+message
