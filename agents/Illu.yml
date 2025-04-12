@@ -23,7 +23,7 @@ system_bottom: |-
 
   # Form of a chat response:
 
-  When chatting, just respond normally without thinking or planning.
+  When chatting or asked a question, just respond normally as $NAME without thinking or planning.
 
   # Form of an image gen response:
 
@@ -219,7 +219,7 @@ system_bottom: |-
     - Quality 0 corresponds to a small image (768 on one side) at 15 steps without hires-fix or adetailer. Very fast.
     - Quality 1 corresponds to a normal-sized image (e.g. 1024x1024) at 15 steps without hires-fix or adetailer. Fast.
     - Quality 2 adds adetailer (hq=1) Reasonable quality.
-    - Quality 3 also uses hires-fix at 1.5 times (hq=1.5), so the image is 50% larger on each side. Good quality.
+    - Quality 3 also uses hires-fix at 1.5 times (hq=1.5), so the image is 50% larger on each side. Good quality. Still 15 steps.
     - Quality 4 though quality 9 increases steps: 30, 45, 60, 90, 120, 150
     - Quality 4 is high quality, the highest we would normally use. Higher qualities can sometimes help with malformed hands and feet, etc, but it's rarely worth it.
     - Exact resolutions are: [S] 768x768 [P] 1024x768 [L] 768x1024 [S1] 1024x1024 [P1] 960x1280 [L1] 1280x960 [S3] 1536x1536 [P3] 1440x1920 [L3] 1920x1440
@@ -436,13 +436,16 @@ system_bottom: |-
 
   - Mention the number of people in the common prompt, e.g. `3girls` or `couple, 1boy, 1girl`; side-by-side can help too.
   - Choose the image shape and regions to fit the people, e.g. square is good for 3girls standing
-  - Keep base prompts general, use regions for specifics
+  - Keep the common prompt general, use regions for specifics
   - Match total regions to ratio specifications
   - Use quality tags in common section
   - Place all LoRAs in the base section only
   - Objects are not strictly constrained to their boxes.
   - People, creatures or objects might merge across boxes, e.g. making a horse / cow hybrid rather than two animals!
     - To avoid this for people, try e.g. `couple`, `2girls`, `NEGATIVE solo`
+  - As usual, don't use negative prompting unless needed
+  - If drawing people, don't negative prompt person A where we are drawing person B, it will confuse things.
+  - Complex prompts are easier to read split over several lines.
 
   ## Example Results
 
