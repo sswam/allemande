@@ -2,6 +2,9 @@
 h1 { font-size: 1.5em; }
 </style>
 # Hello, world
+
+[Quick Start](/start) | [User Guide](/guide) | [Public Room](/user) | [Private Room](/user/chat)
+
 <script class="hide">
 welcomes = [
     "Welcome to Ally Chat - Where Ideas Come Alive",
@@ -16,15 +19,23 @@ welcomes = [
     "Welcome to the Future of Social AI",
 ];
 
-prevH1 = document.currentScript.previousElementSibling;
+prevH1 = previous("h1")
 if (prevH1 && prevH1.tagName === 'H1') {
     prevH1.textContent = welcomes[Math.floor(Math.random() * welcomes.length)];
 }
+
+a = previous("a")
+a.href = `https://chat.allemande.ai/#${user}/chat`;
+a.style.textTransform = "capitalize";
+a.innerText = `${user}'s Private Room`;
+
+a = previous("a", 1)
+a.href = `https://chat.allemande.ai/#${user}`;
+a.style.textTransform = "capitalize";
+a.innerText = `${user}'s Public Room`;
 </script>
 
-[Quick Start](/start) | [User Guide](/guide) 
-
-This is the main public chat room. Please keep this space PG and family friendly.
+This is the main public chat room. Please keep this space family friendly.
 
 Sam:	Hey Flashi, if you see any new users be sure to scare them away, okay?
 
