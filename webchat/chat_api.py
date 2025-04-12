@@ -34,7 +34,6 @@ async def http_exception(_request: Request, exc: HTTPException):
     return JSONResponse({"error": exc.detail}, status_code=exc.status_code)
 
 
-
 exception_handlers = {
     HTTPException: http_exception,
 }
@@ -63,7 +62,7 @@ async def post(request):
     """Post a message to a room."""
     form = await request.form()
     room = form["room"]
-    content = form["content"]
+    content = form["content"].strip()
     user = request.headers["X-Forwarded-User"]
 
     room = Room(name=room)
