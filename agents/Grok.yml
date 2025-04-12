@@ -8,6 +8,6 @@ visual:
   person: 1boy, brown eyes, curly brown hair, short hair, pointy ears, tan skin, athletic build
   clothes: light blue and brown colorful shirt, funky patterns, scarf with glittering knot, black pants [set negative_prompt] [get negative_prompt] white shirt [/set]
   emo: happy smile, playful, mischievous
-  age: adult 21 years old
+  age: adult 23 years old
   clothes_upper: light blue and brown colorful shirt, funky patterns, scarf with glittering knot [set negative_prompt] [get negative_prompt] white shirt [/set]
   clothes_lower: black pants

@@ -118,12 +118,12 @@ system_bottom: |-
   ```
   STOP
 system_bottom_pos: 5
-age: 21
+age: 23
 visual:
   person: 1girl, bright blue eyes, messy hair, brown hair
   clothes: ripped jeans, white crop top
   winter: denim jacket
-  age: adult 21 years old
+  age: adult 23 years old
   emo: friendly, happy
   clothes_upper: white crop top
   clothes_lower: ripped jeans
