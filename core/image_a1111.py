@@ -194,7 +194,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
         for shortcut in macros:
             if re.match(r"[SPL]\d?$", shortcut):
                 shape = shortcut[0]
-                quality = int(shortcut[1] or "0")
+                quality = int((shortcut+"0")[1])
                 apply_shortcut(sets, shape, quality)
                 need_update_macros = True
                 break
