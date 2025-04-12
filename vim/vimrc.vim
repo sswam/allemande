@@ -24,15 +24,15 @@ fun! Comment()
 	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='rust' || &ft=='java' || &ft=='javascript' ||
 		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
 		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
-		s,^,// ,
+		s,^\(\s*\),\1// ,
 	elseif &ft=='vim'
-		s,^," ,
+		s,^\(\s*\),\1" ,
 	elseif &ft=='scheme' || &ft=='lisp'
-		s,^,; ,
+		s,^\(\s*\),\1; ,
 	elseif &ft=='lua' || &ft=='sql'
-		s,^,-- ,
+		s,^\(\s*\),\1-- ,
 	else
-		s,^,# ,
+		s,^\(\s*\),\1# ,
 	endif
 	silent! s,  *$,, " remove trailing spaces
 	noh
