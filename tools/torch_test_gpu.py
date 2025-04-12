@@ -1,4 +1,8 @@
 #!/usr/bin/env python
 import torch
-dev = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-print(repr(dev))
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
+
+if torch.cuda.is_available():
+    print(f"CUDA Version: {torch.version.cuda}")
