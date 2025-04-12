@@ -341,10 +341,11 @@ async def llm_llama(portals:str =str(portals_dir), model: str|None = None, use_i
     # because llama_cpp prints a lot of debug info
     # TODO Ideally we would want to always keep it in the log file,
     # and show it also on the console in debug mode. Later.
-    if logs.level() <= logs.DEBUG:
-        await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
-    with unix.redirect(stdout=None, stderr=None):
-        await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
+    # if logs.level() <= logs.DEBUG:
+        # await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
+    # with unix.redirect(stdout=None, stderr=None):
+        # await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
+    await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
 
 
 async def llm_llama_main(portals: str, model: str|None, use_inotify: bool, gguf: bool, context=32*1024, n_gpu_layers=-1):
