@@ -7,7 +7,7 @@
 
 i() {
 	eval "$(ally)"
-	. mdcd -- "$1" ; shift
+	. mkdir-chdir -- "$1" ; shift
 	"$@"
 }
 
