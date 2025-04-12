@@ -496,6 +496,28 @@ class AutoInit:  # pylint: disable=too-few-public-methods
         class_name = self.__class__.__name__
         return f"{class_name}({', '.join(attributes)})"
 
+    def __copy__(self):
+        """Implement shallow copy"""
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result.__dict__.update(self.__dict__)
+        return result
+
+    def __deepcopy__(self, memo):
+        """Implement deep copy"""
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            setattr(result, k, deepcopy(v, memo))
+        return result
+
+    def clone(self, **kwargs):
+        """Create a copy with optional overrides"""
+        new_dict = self.__dict__.copy()
+        new_dict.update(kwargs)
+        return self.__class__(**new_dict)
+
 
 class Options(AutoInit):  # pylint: disable=too-few-public-methods
     """Options for the chat function."""
@@ -663,6 +685,8 @@ def replace_citations(content, cites):
 
 async def achat_perplexity(opts: Options, messages):
     """Chat with Perplexity models asynchronously."""
+    opts = opts.clone()
+    opts.stop = None
     return await achat_openai(opts, messages, client=perplexity_async_client, citations=True)
 
 
