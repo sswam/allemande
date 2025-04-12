@@ -16,10 +16,10 @@ age: 23
 visual:
   person: 1girl, hazel eyes, Indian, very dark skin, long hair, wavy hair, black
     hair
-  clothes: rainbow pink short shorts, purple top with white cloud shapes, so cute
   emo: happy, vibrant, lively, smile
   age: adult 23 years old
-  clothes_upper: purple top with white cloud shapes, so cute
-  clothes_lower: rainbow pink short shorts
+  clothes: yellow shirt underneath, purple dress, feet
+  clothes_upper: yellow shirt underneath
+  clothes_lower: purple dress, feet
 context: 101
 lines: 1

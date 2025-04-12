@@ -14,10 +14,10 @@ age: 23
 visual:
   person: 1girl, brown eyes, Asian / French, wavy hair, long hair, parted hair,
     blonde hair
-  clothes: plaid skirt, white socks, sneakers, pink and blue striped top, yellow scarf
+  clothes: pastel pink short-sleeved peasant blouse, long, flowy pastel pink skirt, floral belt, leather sandals, pendant necklace
+  clothes_upper: pastel pink short-sleeved peasant blouse, pendant necklace
+  clothes_lower: long, flowy pastel pink skirt, floral belt, leather sandals
   age: adult 23 years old
   emo: light smile, optimisitic
-  clothes_upper: pink and blue striped top, yellow scarf
-  clothes_lower: plaid skirt, white socks, sneakers
 context: 101
 lines: 1

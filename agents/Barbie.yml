@@ -14,10 +14,10 @@ fullname: Barbarella
 age: 23
 visual:
   person: 1girl, blue eyes, Greek, long hair, curly hair, black hair
-  clothes: blue floral sundress with light pink flowers, silver necklace, brown sandals
   age: adult 23 years old
   emo: happy, smile, excited, curious
-  clothes_upper: blue floral sundress with light pink flowers, silver necklace
-  clothes_lower: brown sandals
+  clothes: floral print mini skirt, light blue crop top, white high heels
+  clothes_upper: light blue drop top
+  clothes_lower: floral print mini skirt, white high heels
 context: 101
 lines: 1
