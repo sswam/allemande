@@ -65,3 +65,5 @@
 - indent options: tab / 4 spaces / 2 spaces etc
 
 - AIs can't see messages IDs, show to them somehow so they can do edits?
+
+- math-input has a "spoken text" option, can use with TTS
