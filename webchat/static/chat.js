@@ -1595,7 +1595,7 @@ async function check_ok_to_edit(file) {
 }
 
 async function fetch_file(file) {
-  const response = await fetch(`${ROOMS_URL}/${file}`, {
+  const response = await fetch(`${ROOMS_URL}/${file}?_=${Math.random()}`, {
     credentials: 'include',
     cache: 'no-cache',
   });
