@@ -3,7 +3,8 @@
 # Group files for committing together, with AI help.
 
 git_commit_groups() {
-	local model= m=	# LLM model
+	local model= m=gp   # LLM model
+	local ci_model= c=  # LLM model for commit messages
 	local max_diff_lines= M=40	# maximum number of lines in a diff to show
 
 	eval "$(ally)"
@@ -88,7 +89,7 @@ For example:
 
 	confirm "commit using messy-screen?"
 
-	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-screen
+	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-screen -a="$ci_model"
 	screen -x ci
 
 	move-rubbish "$commit_plan"

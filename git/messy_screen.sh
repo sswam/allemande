@@ -6,6 +6,7 @@
 
 messy-screen() {
 	local no_connect= X=  # do not connect to the screen
+	local ai_model= a=    # model to use for commit messages
 
 	eval "$(ally)"
 
@@ -14,7 +15,7 @@ messy-screen() {
 		screen -c xi </dev/tty
 		exit 120
 	fi
-	screen-run ci "$*" exec messy "$@" </dev/tty
+	screen-run ci "$*" exec messy -a "$ai_model" "$@" </dev/tty
 	if ! ((no_connect)); then
 		screen -x ci </dev/tty
 	fi

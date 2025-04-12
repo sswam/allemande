@@ -11,7 +11,7 @@ fi
 . confirm
 
 diff_context=5  # lines of context for diffs
-model="gf"       # default model
+model="gp"       # default model
 # initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
@@ -43,7 +43,7 @@ declare -A option_model_codes=(
 )
 
 usage() {
-    echo "Usage: `basename "$0"` [-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-h]"
+    echo "Usage: `basename "$0"` [-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-x] [-a model] [-h]"
     echo "  -n: start at menu, do not generate"
     for opt in "${!option_model_codes[@]}"; do
         model_code="${option_model_codes[$opt]}"
@@ -56,8 +56,9 @@ usage() {
     echo "  -m: use the given message instead of generating one"
     echo "  -F: use the given message in a file"
     echo "  -e: normal git commit using the editor"
-    echo "  -h: show this help message"
     echo "  -x: clean up commit-message.*.txt files"
+    echo "  -a: specify the AI model to use"
+    echo "  -h: show this help message"
 }
 
 if type move-rubbish >/dev/null 2>&1; then
@@ -131,8 +132,13 @@ trap 'message-and-exit 1' INT
 get_options() {
     run_initial_gens=1
 
-    while getopts "nC:B43cioMgfm:F:exh" opt; do
+    while getopts "nC:B43cioMgfm:F:exa:h" opt; do
         case "$opt" in
+        a)
+            if [ -n "$OPTARG" ]; then
+                model="$OPTARG"
+            fi
+            ;;
         n)
             run_initial_gens=0
             ;;
