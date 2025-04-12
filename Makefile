@@ -179,7 +179,7 @@ auth:
 	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002
 
 watch:
-	awatch -L -r -A -x bb yml -p $(ROOMS) $(AGENTS) >> $(WATCH_LOG)
+	awatch -r -A -x bb yml -p $(ROOMS) $(AGENTS) >> $(WATCH_LOG)  # -L was there, to follow symlinks; why?
 
 bb2html:
 	awatch -a -i -p $(WEBCHAT)/bb2html.py chat/chat.py chat/ally_markdown.py chat/ally_room.py chat/bb_lib.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
@@ -246,8 +246,8 @@ canon:
 	$(ALLEMANDE_HOME)/files/canon_links.py $(ALLEMANDE_PATH)
 	(cd canon ; rm -f guidance-*.md ; ln -sf ../*/guidance-*.md .)
 	sudo ln -sf $(ALLEMANDE_HOME)/canon/usr-local-bin /usr/local/bin
-	cd canon ; usr-local-bin python3-allemande confirm uniqo lecho i3-xterm-floating note waywo ally opts opts-long opts-help path-uniq day find-quick need-bash get-root llm query process que proc text-strip cat-named aligno include status-update i3status-wrapper name-terminal name-terminal-nicely mount-point move-rubbish mic speaker
-	cd alias ; usr-local-bin v
+	cd canon ; usr-local-bin python3-allemande confirm uniqo lecho i3-xterm-floating note waywo ally opts opts-long opts-help path-uniq day find-quick need-bash get-root llm query process que proc text-strip cat-named aligno include status-update i3status-wrapper name-terminal name-terminal-nicely mount-point move-rubbish mic speaker mdcd
+	cd alias ; usr-local-bin v i
 
 fresh-old:: 
 	time=$$(date +%Y%m%d-%H%M%S) ; html=$${file%.bb}.html ; \
