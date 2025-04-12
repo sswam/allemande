@@ -163,41 +163,58 @@ MODELS = {
         "cost_out": 1.25,
     },
     "gemini-2.5-pro": {
-        "aliases": ["gemmi"],
+        "aliases": ["gemmi", "gemini", "gp"],
         "vendor": "google",
-        "api_key": "GOOGLE_API_KEY_PAID",
+        "api_key": "GOOGLE_API_KEY",
+        "id": "gemini-2.5-pro-exp-03-25",
+#        "id": "gemini-2.5-pro-preview-03-25",
+        "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
+        "cost_in": 1.25,
+        "cost_out": 10,
+    },
+    "gemini-2.5-pro-free": {
+        "aliases": ["gemmi-free", "gemini-free"],
+        "vendor": "google",
+        "api_key": "GOOGLE_API_KEY_FREE",
         "id": "gemini-2.5-pro-exp-03-25",
         "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
-        "cost_in": 0,  # experimental models are free
+        "cost_in": 0,
         "cost_out": 0,
     },
     "gemini-2.5-pro-openrouter": {
-        "aliases": ["gp", "gemmi-openrouter"],
+        "aliases": ["gemmi-openrouter"],
         "vendor": "openrouter",
         "id": "google/gemini-2.5-pro-exp-03-25:free",
         "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
-        "cost_in": 0,  # experimental models are free
+        "cost_in": 0,
         "cost_out": 0,
     },
     "gemini-1.5-pro": {
-        "aliases": ["gp1", "gemini"],
+        "aliases": ["gp1"],
         "vendor": "google",
         "description": "Google's next-generation Gemini model with a 1 million context window.",
-        "cost_in": 1.25,  # free tier, for PAYG it's complicated
+        "cost_in": 1.25,
         "cost_out": 5,
     },
     "gemini-2.0-flash": {
-        "aliases": ["gf2", "flashi"],
+        "aliases": ["gf", "flashi"],
+        "vendor": "google",
+        "description": "Google's fast model with a 1 million context window.",
+        "cost_in": 0.1,
+        "cost_out": 0.4,
+    },
+    "gemini-2.0-flash-lite": {
+        "aliases": ["lite"],
         "vendor": "google",
         "description": "Google's fastest model with a 1 million context window.",
-        "cost_in": 0.1,  # free tier, for PAYG it's complicated
-        "cost_out": 0.7,
+        "cost_in": 0.075,
+        "cost_out": 0.3,
     },
     "gemini-1.5-flash": {
-        "aliases": ["gf", "flasho"],
+        "aliases": ["gf1", "flasho"],
         "vendor": "google",
         "description": "Google's cheapest model with a 1 million context window.",
-        "cost_in": 0.075,  # free tier, for PAYG it's complicated
+        "cost_in": 0.075,
         "cost_out": 0.3,
     },
     "sonar-reasoning-pro": {
@@ -1263,11 +1280,14 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
             if "latest" in opts.model:
                 model = opts.model.replace("-latest", "-001")
                 tokenizer = google_tokenization.get_tokenizer_for_model(model)
+            elif opts.model.startswith("gemini-2.5-pro"):
+                model = "gemini-1.5-flash-002"
+                tokenizer = google_tokenization.get_tokenizer_for_model(model)
             else:
                 raise ex
         n_tokens = tokenizer.count_tokens(text).total_tokens
     else:
-        raise ValueError(f"unknown model vendor: {vendor}")
+        raise ValueError(f"unsupported model vendor for token counting: {vendor}")
     rv = [n_tokens]
     if in_cost:
         rv.append(decimal_string(model["cost_in"] * n_tokens / 1e6))
