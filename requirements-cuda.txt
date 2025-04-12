@@ -1,6 +1,9 @@
+torch -f https://download.pytorch.org/whl/cu126
+torchvision -f https://download.pytorch.org/whl/cu126
+torchaudio -f https://download.pytorch.org/whl/cu126
 tensorrt
 tensorrt-lean
 tensorrt-dispatch
 tensorflow[and-cuda]
 jax[cuda12]
-natten==0.17.1+torch240cu124
+# natten==0.17.5+torch260cu126
