@@ -41,6 +41,7 @@ let view_options = {
   clean: 0,
   columns: 0,
   compact: 0,
+  history: 0,
   image_size: 4,
   input_row_height: 66,
   theme: "default",
@@ -89,7 +90,6 @@ let VERSION;
 let DEBUG = true;
 
 let room;
-let room_url;
 let user;
 let admin = false;
 let dev = false;
@@ -541,14 +541,14 @@ function get_file_type(name) {
     return "room";                   // no extension
 }
 
-async function set_room(r, no_history) {
-  // check if r was passed
-  if (r === undefined) {
-    r = $room.value;
+async function set_room(room_new, no_history) {
+  // check if room_new was passed
+  if (room_new === undefined) {
+    room_new = $room.value;
   }
 
   // check if we're already in the room
-  if (room === r) {
+  if (room === room_new) {
     // console.log("already in room", room);
     active_reset("room_ops_move");
     // $content.focus();
@@ -557,7 +557,7 @@ async function set_room(r, no_history) {
 
   // check if we're moving / renaming
   if (active_get("room_ops_move")) {
-    if (r = await move(room, r)) {
+    if (room_new = await move(room, room_new)) {
       active_reset("room_ops_move");
       // continue browsing to the new name, will do a reload unfortunately
     } else {
@@ -570,7 +570,7 @@ async function set_room(r, no_history) {
     }
   }
 
-  const type = get_file_type(r);
+  const type = get_file_type(room_new);
 
   if (view === "view_edit" && type == "dir" && !edit_close()) {
     // reject changing to a directory if we have unsaved changes in the editor
@@ -579,11 +579,10 @@ async function set_room(r, no_history) {
     return;
   }
 
-  $room.value = r;
+  room = $room.value = room_new;
+  set_title_hash(room, no_history);
 
   clear_messages_box();
-  room = r;
-  set_title_hash(room, no_history);
   if (!room) return;
 
   if (type == "room") {
@@ -602,13 +601,13 @@ async function set_room(r, no_history) {
   setup_admin();
 
   if (view === "view_edit") {
-    editor_file = r;
+    editor_file = room_new;
     if (type == "room")
       editor_file += EXTENSION;
     editor_text_orig = null;
   } else if (type == "file") {
     // start editing the file
-    edit(r);
+    edit(room_new);
   }
 
   if (view !== "view_edit")
@@ -617,15 +616,20 @@ async function set_room(r, no_history) {
   show_room_privacy();
 
   if (type == "room" || type == "dir") {
-    room_url = ROOMS_URL + "/" + room;
-    if (type == "room") {
-      room_url += ".html";
-    }
-    messages_iframe_set_src(room_url + "?stream=1");
+    messages_iframe_set_src(room_url() + "?stream=1");
 
     // console.log("set_room, calling check_for_updates");
     check_for_updates();
   }
+}
+
+function room_url() {
+  const type = get_file_type(room);
+  let url = ROOMS_URL + "/" + room;
+  if (type == "room") {
+    url += ".html";
+  }
+  return url;
 }
 
 function show_room_privacy() {
@@ -1383,7 +1387,7 @@ async function undo(ev, hard) {
       await error("mod_undo");
     }
   } else {
-    await send_text(`<allychat-meta remove=${lastMessageId}>`);
+    await send_text(`<ac rm=${lastMessageId}>`);
     return true;
   }
 
@@ -1791,6 +1795,7 @@ function view_options_apply() {
   active_set("view_image_size", view_options.image_size - 4);
   active_set("view_columns", view_options.columns);
   active_set("view_compact", view_options.compact);
+  active_set("view_history", view_options.history);
   $id("view_items").value = view_options.items ?? "";
   active_set("view_advanced", view_options.advanced);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
@@ -1865,6 +1870,11 @@ function view_columns(ev) {
 
 function view_compact(ev) {
   view_options.compact = !view_options.compact;
+  view_options_apply();
+}
+
+function view_history(ev) {
+  view_options.history = !view_options.history;
   view_options_apply();
 }
 
@@ -2147,6 +2157,7 @@ const icons = {
   scroll: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-move" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10M.146 8.354a.5.5 0 0 1 0-.708l2-2a.5.5 0 1 1 .708.708L1.707 7.5H5.5a.5.5 0 0 1 0 1H1.707l1.147 1.146a.5.5 0 0 1-.708.708zM10 8a.5.5 0 0 1 .5-.5h3.793l-1.147-1.146a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L14.293 8.5H10.5A.5.5 0 0 1 10 8"/></svg>',
   view_advanced: '<svg width="20" height="20" fill="currentColor" class="bi bi-lightbulb-fill" viewBox="0 0 16 16"><path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13h-5a.5.5 0 0 1-.46-.302l-.761-1.77a2 2 0 0 0-.453-.618A5.98 5.98 0 0 1 2 6m3 8.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1-.5-.5"/></svg>',
   add_math: 'Σ',  // capital sigma
+  view_history: '<svg width="20" height="20" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16"><path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z"/><path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z"/><path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/></svg>',
 };
 
 
@@ -2238,7 +2249,7 @@ async function add_math(ev) {
 function print_chat(ev) {
   ev.preventDefault();  /* doesn't! WTF */
   // TODO: view options! could save them in local storage in the room, maybe?
-  const url = room_url + "?snapshot=1#print";
+  const url = room_url() + "?snapshot=1#print";
   window.location.href = url;
 }
 
@@ -2300,6 +2311,7 @@ function chat_main() {
   $on($id("view_clean"), "click", view_clean);
   $on($id("view_columns"), "click", view_columns);
   $on($id("view_compact"), "click", view_compact);
+  $on($id("view_history"), "click", view_history);
   $on($id("view_items"), "change", view_items);
   $on($id("view_items"), "keyup", view_items);
   $on($id("view_advanced"), "click", view_advanced);
