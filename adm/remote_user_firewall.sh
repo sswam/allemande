@@ -22,7 +22,7 @@ elif [ "$op" = "list" ]; then
 	nft list table inet "$TABLE_NAME"
 	exit 0
 elif [ "$op" != "add" ]; then
-	echo >&2 "Usage: $(basename "$0") add|delete"
+	echo >&2 "Usage: $(basename "$0") add|delete|list"
 	exit 1
 fi
 

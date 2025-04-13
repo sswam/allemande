@@ -7,6 +7,10 @@ import urllib
 import json
 from datetime import datetime, timedelta
 import logging
+import pwd
+from pathlib import Path
+import asyncio
+from asyncio.subprocess import Process
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -79,6 +83,66 @@ def set_cookies(response, jwt_token, user_data, max_age):
     )
 
 
+async def ensure_system_account(username: str, password: str) -> bool:
+    """ Check if the user has a system account, and create it if not """
+    try:
+        pwd.getpwnam(username)
+        return True
+    except KeyError:
+        pass
+
+    home = Path("/opt/allemande/rooms") / username
+
+    proc = None
+
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "verbose",
+            "sudo",
+            "adduser",
+            "--comment", username.title(),
+            "--home", str(home),
+            "--gid", os.environ["CHATUSER_GID"],
+            "--firstuid", "60000",
+            "--lastuid", "65535",
+            "--shell", "/usr/sbin/nologin",
+            username,
+            stdin=asyncio.subprocess.PIPE,
+        )
+        await asyncio.wait_for(
+            proc.communicate(f"{password}\n{password}\n".encode()),
+            timeout=5
+        )
+        if proc.returncode != 0:
+            raise RuntimeError(f"Failed to create system account for {username}.")
+    except asyncio.TimeoutError:
+        raise RuntimeError(f"Timeout while creating system account for {username}") from e
+    finally:
+        if proc:
+            try:
+                proc.kill()
+            except ProcessLookupError:
+                pass
+
+    logger.warning("Created system account for %s", username)
+
+    # chown the home directory to the new user
+    try:
+        await asyncio.create_subprocess_exec(
+            "verbose",
+            "sudo",
+            "chown",
+            "-R",
+            username,
+            str(home),
+        )
+    except Exception as e:
+        logger.warning("Failed to chown home directory for %s: %s", username, e)
+        return False
+
+    return False
+
+
 @app.route("/x/login", methods=["POST"])
 async def login(request):
     """Login with username and password"""
@@ -96,7 +160,11 @@ async def login(request):
     user_data = {
         "username": username,
     }
-    response = JSONResponse({})
+
+    # TODO going forward, create system accounts at signup, and remove this
+    task = lambda: ensure_system_account(username, password)
+
+    response = JSONResponse({}, background=task)
     set_cookies(response, jwt_token, user_data, SESSION_MAX_AGE)
 
     return response

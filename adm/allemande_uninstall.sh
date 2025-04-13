@@ -6,4 +6,6 @@
 
 rm -rf "$ALLEMANDE_PORTALS"
 userdel "$ALLEMANDE_USER" || true
+groupdel "$ALLEMANDE_USER" || true
+groupdel chatuser || true
 rm -f /etc/cron.d/allemande

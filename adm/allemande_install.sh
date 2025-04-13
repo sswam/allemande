@@ -17,6 +17,7 @@ ln -sfT "$home" /opt/allemande
 cp -T "$home/adm/crontab" /etc/cron.d/allemande
 
 groupadd -g "$ALLEMANDE_GID" "$user" || true
+groupadd -g "$CHATUSER_GID" "chatuser" || true
 useradd -m -d "$portals" -s "$(which bash)" -u "$ALLEMANDE_UID" -g "$ALLEMANDE_GID" "$user" || true
 
 chown $user:$www_user "$portals"

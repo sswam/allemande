@@ -273,6 +273,23 @@ make canon
 
 rm -r ~/llm.log
 
+# -------- set up firewall for semi-trusted chatusers ------------------------
+
+# copy and edit config from adm/remote_user_firewall.sh to /etc/remote_user_firewall.conf
+
+cat <<END | sudo tee -a /etc/rc.local
+
+/opt/allemande/adm/remote_user_firewall.sh add
+END
+
+sudo chmod +x /etc/rc.local
+sudo systemctl enable rc-local
+
+sudo /opt/allemande/adm/remote_user_firewall.sh add
+
+# check after reboot with:
+sudo /opt/allemande/adm/remote_user_firewall.sh list
+
 # -------- TODO: install other allemande deps that are tricky ----------------
 
 #   - stable diffusion / flux
