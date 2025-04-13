@@ -10,13 +10,13 @@ system_bottom_pos: 3
 fullname: Fenella
 age: 23
 visual:
-  person: 1girl, green eyes, Scottish, pale skin, long hair, wavy hair, auburn
+  person: 1girl, green eyes, Scottish, pale skin, skinny, long hair, wavy hair, auburn
     hair
   clothes: white sweater, blue jeans, brown leather boots, beige scarf
   clothes_upper: white sweater, beige scarf
   clothes_lower: blue jeans, brown leather boots
   emo: vibrant, lively, happy
-  age: adult 23 years old
+  age: adult 20 years old
 context: 101
 remember_thoughts: 40
 lines: 1
