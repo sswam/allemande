@@ -20,8 +20,12 @@ body, html {
 	overflow: hidden;
 }
 
-.hidden {
+body:not(.history) .hidden, .hidden:not(.removed) {
 	display: none !important;
+}
+
+body.history .hidden.removed, body.history .hidden.removed * {
+	opacity: 0.75 !important;
 }
 
 .invisible {

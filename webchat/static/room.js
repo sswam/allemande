@@ -944,6 +944,7 @@ async function set_view_options(new_view_options) {
   cl.toggle("clean", view_options.clean == 1);
   cl.toggle("columns", view_options.columns == 1);
   cl.toggle("compact", view_options.compact == 1);
+  cl.toggle("history", view_options.history == 1);
   cl.toggle("ids-hover", view_options.ids == 1);
   cl.toggle("ids", view_options.ids == 2);
 
