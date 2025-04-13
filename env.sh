@@ -13,9 +13,6 @@ ALLYCHAT_PASSWD="$ALLYCHAT_HOME/.htpasswd"
 ALLYCHAT_THEMES="$ALLYCHAT_HOME/static/themes"
 ALLEMANDE_USERS="$ALLEMANDE_HOME/webchat/users"
 
-ALLYCHAT_SITE="https://chat.allemande.ai"
-ALLYCHAT_ROOMS="https://rooms.allemande.ai"
-
 ALLEMANDE_MODELS="$ALLEMANDE_HOME/models"
 
 ALLEMANDE_USER="allemande"
