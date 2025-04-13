@@ -172,7 +172,7 @@ IMPORTANT:
 ### Select Tools
 - **Palc**: Calculator
 - **Dogu**: Bash shell
-- **Gid**: Python
+- **Gido**: Python
 
 Examples:
 
@@ -182,4 +182,4 @@ Dogu, look wizard
 
 Dogu, web-text https://beebom.com/cool-interesting-websites/
 
-Gid, import html ; print(html.escape("&&&"))
+Gido, import html ; print(html.escape("&&&"))

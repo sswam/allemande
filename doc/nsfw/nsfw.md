@@ -355,7 +355,7 @@ IMPORTANT:
 ### Programming Tools
 - **Palc**: Calculator
 - **Dogu**: Bash shell
-- **Gid**: Python
+- **Gido**: Python
 - **Lary**: Perl
 - **Matz**: Ruby
 - **Luah**: Lua
@@ -374,7 +374,7 @@ Dogu, look wizard
 
 Dogu, web-text https://beebom.com/cool-interesting-websites/
 
-Gid, import html ; print(html.escape("&&&"))
+Gido, import html ; print(html.escape("&&&"))
 
 Lary, ($_ = "Hello, world") =~ tr/A-Za-z/a-zA-Z/; print
 

@@ -45,7 +45,7 @@ ANYONE_WORDS = [
 
 # TODO exclude based on an attribute or settings
 # TODO should not include tools in the list of participants
-EXCLUDE_TOOLS = set(["Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda", "Goog", "Gimg", "Utube", "Pr0nto"])
+EXCLUDE_TOOLS = set(["Palc", "Dogu", "Gido", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda", "Goog", "Gimg", "Utube", "Pr0nto"])
 EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf"])
 # EXCLUDE_PARTICIPANTS = set(["System", "Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
 EXCLUDE_PARTICIPANTS_SYSTEM = set(["System", "The Cast"])
