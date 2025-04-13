@@ -455,23 +455,23 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
     #     logger.info("\n\n\n")
     lookup = messages.copy()
     for i, message in enumerate(messages):
-        m = re.search(r"""(<allychat-meta\b[-a-z0-9 ="']*>)\s*$""", message["content"], flags=re.IGNORECASE)
+        m = re.search(r"""(<ac\b[-a-z0-9 ="']*>)\s*$""", message["content"], flags=re.IGNORECASE)
         if not m:
             continue
         xmltext = m.group(1).strip()
         # chop it off the message content
         message["content"] = message["content"][: m.start()].rstrip()
         soup = BeautifulSoup(xmltext, "html.parser")
-        meta = soup.find("allychat-meta")
+        meta = soup.find("ac")
         if not meta:
-            raise ValueError("Invalid allychat-meta tag.")
+            raise ValueError("Invalid ac tag.")
 
-        remove = meta.get("remove")
+        remove = meta.get("rm")
         edit = meta.get("edit")
         insert = meta.get("insert")
 
-        # remove the remove, edit and insert attributes
-        for attr in ["remove", "edit", "insert"]:
+        # remove the rm, edit and insert attributes
+        for attr in ["rm", "edit", "insert"]:
             if attr in meta.attrs:
                 del meta[attr]
         # add the meta tag back to the message content if there are any remaining attributes
@@ -486,7 +486,7 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         for rm_id in rm_ids:
             if rm_id <= len(lookup):
                 #                 logger.warning("Removing message ID: %s", rm_id)
-                lookup[rm_id]["remove"] = True
+                lookup[rm_id]["rm"] = True
             else:
                 logger.warning("Invalid message ID in editing command: %s", rm_id)
 
@@ -506,7 +506,7 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         # if a message that wasn't moved is now empty, mark it for removal
         if remove and not edit and not insert and not message["content"].strip():
             #             logger.warning("Removing editing message ID: %s", i)
-            messages[i]["remove"] = True
+            messages[i]["rm"] = True
 
     #     logger.info("messages after editing commands: %r", messages)
     #     logger.info("\n\n\n")
@@ -527,7 +527,7 @@ def flatten_edited_messages(messages, output):
             continue
         if "before" in message:
             flatten_edited_messages(message["before"], output)
-        if "remove" not in message:
+        if "rm" not in message:
             output.append(message)
 
 
