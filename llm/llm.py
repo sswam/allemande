@@ -1302,13 +1302,12 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
             tokenizer = google_tokenization.get_tokenizer_for_model(opts.model)
         except ValueError as ex:
             if "latest" in opts.model:
-                model = opts.model.replace("-latest", "-001")
-                tokenizer = google_tokenization.get_tokenizer_for_model(model)
-            elif opts.model.startswith("gemini-2.5-pro"):
-                model = "gemini-1.5-flash-002"
-                tokenizer = google_tokenization.get_tokenizer_for_model(model)
+                similar_model_id = opts.model.replace("-latest", "-001")
+            elif opts.model.startswith("gemini-"):
+                similar_model_id = "gemini-1.5-flash-002"
             else:
                 raise ex
+            tokenizer = google_tokenization.get_tokenizer_for_model(similar_model_id)
         n_tokens = tokenizer.count_tokens(text).total_tokens
     else:
         raise ValueError(f"unsupported model vendor for token counting: {vendor}")
