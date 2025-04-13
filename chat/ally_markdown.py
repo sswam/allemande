@@ -338,7 +338,7 @@ symbol text textPath title tspan use view
 
 ALLYCHAT_TAGS = quote_words(
     """
-allychat-meta
+ac
 """
 )
 

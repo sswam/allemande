@@ -469,7 +469,7 @@ function insert(targetId, message) {
 }
 
 function get_message_meta(message) {
-  return message.getElementsByTagName('allychat-meta');
+  return message.getElementsByTagName('ac');
 }
 
 function message_is_empty(message) {
@@ -498,10 +498,10 @@ function process_editing_commands(message) {
   //   console.log("metas", metas);
   // }
   for (const meta of metas) {
-    const remove_ids = meta.getAttribute("remove");
+    const remove_ids = meta.getAttribute("rm");
     const insert_id = meta.getAttribute("insert");
     const edit_id = meta.getAttribute("edit");
-    meta.removeAttribute("remove");
+    meta.removeAttribute("rm");
     meta.removeAttribute("insert");
     meta.removeAttribute("edit");
 

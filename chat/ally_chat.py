@@ -412,7 +412,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     message = history_messages[-1] if history_messages else None
 
     # check for editing commands, AI should not respond to these
-    if message and not poke and re.search(r"""<allychat-meta\b[a-z0-9 ="']*>\s*$""", message["content"], flags=re.IGNORECASE):
+    if message and not poke and re.search(r"""<ac\b[a-z0-9 ="']*>\s*$""", message["content"], flags=re.IGNORECASE):
         return 0
 
     # logger.info("history_messages 1: %r", history_messages)
