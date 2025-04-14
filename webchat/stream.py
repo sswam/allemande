@@ -171,7 +171,9 @@ async def stream(request, path=""):
 
     room_path = re.sub(r"\.html$", "", pathname)
 
-    context = {"user": user, "chat_base_url": info.chat_base_url, "theme": theme, "room": room_path}
+    context = {"user": user, "chat_base_url": info.chat_base_url, "rooms_base_url": info.rooms_base_url, "theme": theme, "room": room_path}
+
+    logger.info("context %r", context)
 
     # folder listings
     if path.is_dir():

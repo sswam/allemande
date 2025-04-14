@@ -36,8 +36,8 @@ body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .labe
 .message {
 	clear: both;
 	min-height: 1em;
-	scroll-margin-top: 12px;
-	margin: 12px 0;
+	scroll-margin-top: 0.75rem;
+	margin: 0.75rem 0;
 	width: 100%;
 }
 .content p {
@@ -76,9 +76,9 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 
 .message :is(img, video, audio, iframe) {
 	vertical-align: top;
-	margin: 6px 4px;
-	max-width: calc(max(min(var(--image-width), var(--image-height)), 44px));
-	max-height: calc(max(min(var(--image-width), var(--image-height)), 44px));
+	margin: 0.375rem 0.25rem;
+	max-width: calc(max(min(var(--image-width), var(--image-height)), 2.75rem));
+	max-height: calc(max(min(var(--image-width), var(--image-height)), 2.75rem));
 }
 
 :is(.narrative, .large) :is(img, video, audio, iframe) {
@@ -86,13 +86,13 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	max-height: 100%;
 }
 :is(.narrative, .large) :is(img, video, audio, iframe) {
-	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
-	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 88px));
+	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 5.5rem));
+	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 5.5rem));
 }
 
 .small :is(img, video, audio, iframe) {
-	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 22px));
-	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 22px));
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 1.375rem));
+	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 1.375rem));
 }
 
 
@@ -102,8 +102,8 @@ table:not(.u-legend) {
 	border-collapse: collapse;
 }
 table:not(.u-legend), table:not(.u-legend) :is(th, td) {
-	border: 1px solid var(--col4);
-	padding: 4px;
+	border: 0.0625rem solid var(--col4);
+	padding: 0.25rem;
 }
 
 image .alt, embed .alt {
@@ -129,7 +129,7 @@ p:has(> div.embed) {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-end;
-	gap: 16px;
+	gap: 1rem;
 }
 
 body:not(.images) div:has(> div.image),
@@ -142,20 +142,20 @@ div.image, div.embed {
 	margin: 0;
 	padding: 0;
 	overflow: visible;
-	max-width: calc(max(min(var(--image-width), var(--image-height)), 44px));
+	max-width: calc(max(min(var(--image-width), var(--image-height)), 2.75rem));
 	position: relative;
 }
 
 body.alt div:is(.image, .embed) {
-	margin-bottom: 16px;
+	margin-bottom: 1rem;
 }
 
 :is(.narrative, .large) :is(div.image, div.embed, .image .alt, .embed .alt) {
-	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 44px));
+	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 2.75rem));
 }
 
 .small :is(div.image, div.embed, .image .alt, .embed .alt) {
-	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 44px)) !important;
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 2.75rem)) !important;
 }
 
 .image .thumb, .embed .thumb {
@@ -174,7 +174,7 @@ body:not(.images) :is(.embed, .alt) {
 
 body:not(.images) .image,
 body:not(.images) .embed {
-	min-height: 18px;
+	min-height: 1.125rem;
 }
 
 .image > a,
@@ -186,7 +186,7 @@ body:not(.images) .embed {
 .embed .alt {
 	width: 100%;
 	position: absolute;
-	min-height: 18px;
+	min-height: 1.125rem;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -194,12 +194,12 @@ body:not(.images) .embed {
 	/* align text to top */
 	display: flex;
 	align-items: flex-start;
-	padding: 2px;
-	border-radius: 4px;
+	padding: 0.125rem;
+	border-radius: 0.25rem;
 }
 
 body.images :is(.image, .embed) .alt {
-	bottom: 3px;
+	bottom: 0.1875rem;
 	transform: translateY(100%);
 }
 
@@ -233,7 +233,7 @@ a:hover {
 
 pre > code, code, pre > code *, code *,
 body.script_source .content :is(script, style):not(.hide, [src]) {
-	font: 12px fixed;
+	font: var(--font-size-code) fixed;
 	white-space: pre-wrap;
 	word-break: break-all;
 	font-weight: normal;
@@ -262,11 +262,11 @@ body.script_source .content :is(script, style):not(.hide, [src]) {
 }
 
 body:not(.compact) code {
-	border-radius: 4px 0 4px 4px;
+	border-radius: 0.25rem 0 0.25rem 0.25rem;
 }
 
 :not(pre) > code {
-	padding: 1px 3px !important;
+	padding: 0.0625rem 0.1875rem !important;
 }
 
 pre code {
@@ -277,19 +277,19 @@ pre code {
 
 body.dark code {
 	background: rgba(255,255,255,0.05);
-	border: 1px solid rgba(255,255,255,0.1);
+	border: 0.0625rem solid rgba(255,255,255,0.1);
 	/* background-color: transparent; */
 }
 
 body.light code {
 	background: rgba(0,0,0,0.05);
-	border: 1px solid rgba(0,0,0,0.1);
+	border: 0.0625rem solid rgba(0,0,0,0.1);
 }
 
 /*
 code.hljs {
 	background: rgba(0,0,0,0.3);
-	border: 1px solid rgba(0,0,0,0.6);
+	border: 0.0625rem solid rgba(0,0,0,0.6);
 }
 */
 
@@ -362,8 +362,8 @@ details.search {
 
 details.search summary {
 /*	position: absolute;
-/*	top: -18px;
-	right: max(0px, calc(100% - 252px));
+/*	top: -1.125rem;
+	right: max(0, calc(100% - 15.75rem));
 */
 }
 
@@ -387,30 +387,30 @@ ul.directory-listing {
 	list-style: none;
 	padding: 0;
 	display: grid;
-	margin: 6px;
+	margin: 0.375rem;
 }
 
 body#dir.rows ul.directory-listing {
  	width: 100%;
-	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
 }
 
 body#dir.columns ul.directory-listing {
 	grid-auto-flow: column;
-	grid-template-rows: repeat(auto-fill, minmax(27px, auto));
-	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	grid-template-rows: repeat(auto-fill, minmax(1.6875rem, auto));
+	grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
 	scroll-snap-type: x mandatory;
 	scroll-padding: 0 1rem; /* optional: adds some padding to snap points */
-	max-height: calc(100% - 12px);
+	max-height: calc(100% - 0.75rem);
 }
 
 ul.directory-listing > li {
-	padding: 4px;
-	min-width: 200px;
+	padding: 0.25rem;
+	min-width: 12.5rem;
 	scroll-snap-align: start;
 }
 .icon {
-	margin-right: 10px;
+	margin-right: 0.625rem;
 }
 
 body {
@@ -420,13 +420,13 @@ body {
 
 body > div.messages_wrap {
 	overflow: auto;
-	flex-basis: 128px;
+	flex-basis: 8.0rem;
 	flex-grow: 1;
 	flex-shrink: 0;
 }
 
 body:not(.compact) > div.messages_wrap {
-	border-radius: 6px;
+	border-radius: 0.375rem;
 }
 
 body:not(.images) img {
@@ -450,13 +450,13 @@ code.language-latex:has(+ span.katex) {
 body.canvas > div.canvas {
 	display: block;
 	overflow: auto;
-	min-width: 88px;
-	min-height: 88px;
+	min-width: 5.5rem;
+	min-height: 5.5rem;
 	width: 100%;
 	height: 100%;
 	flex-grow: 0;
-	border-radius: 6px;
-	flex-basis: 128px;
+	border-radius: 0.375rem;
+	flex-basis: 8.0rem;
 	flex-shrink: 0;
 }
 body:not(.canvas) div.canvas {
@@ -479,7 +479,7 @@ body.clean div.message.narrative div.label {
 }
 
 body.grab > div.messages_wrap {
-	border: 1px solid #800000;
+	border: 0.0625rem solid #800000;
 }
 
 span.indent {
@@ -494,7 +494,7 @@ body.portrait > div.messages_wrap {
 }
 body.portrait > div.canvas {
 	order: 10;
-	max-height: calc(100vh - 88px);
+	max-height: calc(100vh - 5.5rem);
 }
 
 body.landscape div.messages_wrap {
@@ -533,7 +533,7 @@ body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
 /*
 pre:has(div.graphviz), pre:has(div.mermaid) {
 	display: inline-block;
-	margin: 0px 20px 40px 0px;
+	margin: 0 1.25rem 2.5rem 0;
 }
 */
 
@@ -604,15 +604,15 @@ p:has(> img) {
 }
 
 script + .code-controls {
-	top: 0px;
+	top: 0;
 }
 
 body.dark .code-controls {
-	border: 1px solid rgba(255,255,255,0.1);
+	border: 0.0625rem solid rgba(255,255,255,0.1);
 }
 
 body.light .code-controls {
-	border: 1px solid rgba(0,0,0,0.1);
+	border: 0.0625rem solid rgba(0,0,0,0.1);
 }
 
 .code-controls {
@@ -623,7 +623,7 @@ body.light .code-controls {
 	z-index: 1;
 	align-items: center;
 	background: rgba(255,255,255,0.05);
-	border-radius: 0 0 0 4px;
+	border-radius: 0 0 0 0.25rem;
 	border: none !important;
 }
 
@@ -636,12 +636,12 @@ body.light .code-controls {
 }
 
 .code-controls .language {
-	padding: 3px 6px;
+	padding: 0.1875rem 0.375rem;
 }
 
 /*
 .code-controls button {
-	border-radius: 5px;
+	border-radius: 0.3125rem;
 	font-size: 1.2rem;
 }
 */
@@ -657,8 +657,8 @@ link[href*="/katex@"] + style {
 /* show chat in columns! make it optional */
 body.columns div.messages {
 	column-count: auto;
-	column-width: 479px;
-	column-gap: 16px;
+	column-width: 29.9375rem;
+	column-gap: 1rem;
 	height: 100%;
 	max-height: 100%;
 	column-fill: auto;
@@ -679,27 +679,27 @@ body.columns .message :is(.graphviz, .mermaid) {
 }
 
 body.compact div.messages {
-	padding: 0px;
-	column-gap: 0px;
+	padding: 0;
+	column-gap: 0;
 }
 
 body.compact div.content {
-	margin-left: 0px;
+	margin-left: 0;
 }
 
 body.compact div.messages code,
 body.compact div.messages code.hljs {
-	padding: 0px !important;
-	border: 0px;
+	padding: 0 !important;
+	border: 0;
 /*	background-clip: padding-box;
-	border-right: 2px solid transparent; */
-	box-shadow: inset -2px 0 0 var(--background);
+	border-right: 0.125rem solid transparent; */
+	box-shadow: inset -0.125rem 0 0 var(--background);
 }
 
 body.columns.compact div.messages code,
 body.columns.compact div.messages code.hljs {
-	width: 480px;
-	min-width: 480px;
+	width: 30.0rem;
+	min-width: 30.0rem;
 	overflow: visible;
 }
 
@@ -740,7 +740,7 @@ div.message > div.id {
 	position: absolute;
 	top: -1em;
 	right: 0;
-	font-size: 0.8em;
+	font-size: 0.8rem;
 }
 
 body.ids div.message > div.id {

@@ -1,5 +1,5 @@
 :root {
-	--ui-size-min: 66px;
+	--ui-size-min: 4.5rem;
 }
 
 .fill {
@@ -46,8 +46,8 @@ input, textarea {
 }
 #inputrow > .controls > *,
 #top :is(button, a.button) {
-	min-width: 32px;
-	min-height: 28px;
+	min-width: 2rem;
+	min-height: 2rem;
 }
 #inputrow > .controls > * {
 	flex-grow: 1;
@@ -55,10 +55,10 @@ input, textarea {
 #inputrow > .controls > video {
 	flex-grow: 0;
 	flex-shrink: 1;
-	max-height: 128px;
+	max-height: 8rem;
 }
 #content, #math_input {
-	min-height: 32px;
+	min-height: 2rem;
 	resize: none;
 	flex-grow: 1;
 	flex-shrink: 0;
@@ -85,7 +85,7 @@ input, textarea {
 	writing-mode: vertical-lr;
 	flex-wrap: wrap;
 	align-content: flex-start;
-	height: 350px;
+	height: 21.875rem;
 	gap: var(--pad);
 }
 
@@ -113,7 +113,7 @@ input, textarea {
 	padding: var(--pad);
 }
 body.compact .pad {
-	padding: 0px;
+	padding: 0;
 }
 .col > :first-child, .row > :first-child {
 	margin: 0;
@@ -129,7 +129,7 @@ body.simple #user {
 	flex-grow: 1;
 }
 .outline {
-	border: 1px solid black;
+	border: 0.0625rem solid black;
 }
 .inputfile.hide {
 	width: 0.1px;
@@ -144,15 +144,15 @@ body.simple #user {
 }
 
 input, textarea {
-	padding: 4px;
+	padding: 0.25rem;
 }
 
 input, textarea, button, .button {
-	border-radius: 6px;
+	border-radius: 0.375rem;
 }
 
 body:not(.compact) iframe {
-	border-radius: 6px;
+	border-radius: 0.375rem;
 }
 
 iframe:fullscreen {
@@ -174,14 +174,14 @@ input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
 }
 
 video {
-	min-height: 128px;
+	min-height: 8rem;
 }
 
 div.label {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: 6px;
+	border-radius: 0.375rem;
 	font-size: 1.2rem;
 }
 
@@ -195,7 +195,7 @@ iframe#messages_iframe.overlay {
 	border-radius: 0;
 }
 
-body.dark .active { background-color: #606030 !important; }
+body.dark .active { background-color: #606030 !important; color: white !important; }
 
 body.dark .active-2 { background-color: #707038 !important; color: white !important; }
 body.dark .active-3 { background-color: #808040 !important; color: white !important; }
@@ -263,13 +263,13 @@ body.light .active--5 { background-color: #78f0f0 !important; color: black !impo
 }
 
 button#send {
-	min-height: 60px !important;
-	min-width: 60px !important;
+	min-height: 3.75rem !important;
+	min-width: 3.75rem !important;
 }
 
 #inputrow > .controls > input {
-	width: calc(50px + var(--pad));
-	min-width: calc(50px + var(--pad));
+	width: calc(3.125rem + var(--pad));
+	min-width: calc(3.125rem + var(--pad));
 }
 
 .top_controls {
@@ -280,7 +280,7 @@ button:has(svg) {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 2px 2px;
+	padding: 0.125rem 0.125rem;
 	line-height: 1;
 }
 
@@ -289,7 +289,7 @@ button:has(svg) {
 }
 
 .small {
-	font-size: small;
+	font-size: 0.8125rem;
 }
 
 body.simple .advanced {
@@ -326,6 +326,12 @@ math-field:focus {
 math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) {
 	color: var(--text);
 }
+
+.icon.i16 { width: 1rem; height: 1rem; }
+.icon.i18 { width: 1.125rem; height: 1.125rem; }
+.icon.i20 { width: 1.25rem; height: 1.25rem; }
+.icon.i22 { width: 1.375rem; height: 1.375rem; }
+.icon.i40 { width: 2.5rem; height: 2.5rem; }
 
 
 @media print {

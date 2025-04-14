@@ -7,6 +7,7 @@ const CHAT_URL =
 
 var inIframe = window.parent !== window.self;
 
+let file_type;
 let room;
 
 let $body, $messages, $overlay, $messages_wrap, $canvas_div;
@@ -24,6 +25,7 @@ let suppressInitialScroll = false;
 let view_options = {
   images: 1,
   image_size: 4,
+  font_size: 4,
   items: 10,
 };
 
@@ -88,11 +90,6 @@ function load_error() {
   offline();
 }
 
-online();
-
-$on(document, "readystatechange", ready_state_change);
-$on(document, "error", load_error);
-
 // scrolling to the bottom ---------------------------------------------------
 
 let messages_at_bottom = true;
@@ -123,6 +120,8 @@ async function messages_scrolled() {
   // console.log("messages scrolled");
   await wait_for_load();
   var $e = $messages_wrap;
+  if (!$e)
+    return;
   if (messages_at_bottom && view_options.columns) {
     var messages_width = $e.scrollWidth;
     if (messages_width != messages_width_last) {
@@ -936,17 +935,20 @@ async function set_view_options(new_view_options) {
   await wait_for_load();
 //  console.log("applying view options");
   const cl = document.body.classList;
-  cl.toggle("images", view_options.images == 1);
-  cl.toggle("alt", view_options.alt == 1);
-  cl.toggle("script_source", view_options.source >= 1);
-  cl.toggle("rendered_source", view_options.source >= 2);
-  cl.toggle("canvas", view_options.canvas == 1);
-  cl.toggle("clean", view_options.clean == 1);
-  cl.toggle("columns", view_options.columns == 1);
+  if (file_type === "room") {
+    cl.toggle("images", view_options.images == 1);
+    cl.toggle("alt", view_options.alt == 1);
+    cl.toggle("script_source", view_options.source >= 1);
+    cl.toggle("rendered_source", view_options.source >= 2);
+    cl.toggle("canvas", view_options.canvas == 1);
+    cl.toggle("clean", view_options.clean == 1);
+    cl.toggle("columns", view_options.columns == 1);
+    cl.toggle("history", view_options.history == 1);
+    cl.toggle("ids-hover", view_options.ids == 1);
+    cl.toggle("ids", view_options.ids == 2);
+  }
+
   cl.toggle("compact", view_options.compact == 1);
-  cl.toggle("history", view_options.history == 1);
-  cl.toggle("ids-hover", view_options.ids == 1);
-  cl.toggle("ids", view_options.ids == 2);
 
   const image_size = view_options.image_size * 5;
   const image_size_small = view_options.image_size*2.5;
@@ -957,6 +959,12 @@ async function set_view_options(new_view_options) {
   document.documentElement.style.setProperty("--image-height-small", image_size_small + "vh");
   document.documentElement.style.setProperty("--image-width-large", image_size_large + "vw");
   document.documentElement.style.setProperty("--image-height-large", image_size_large + "vh");
+
+  const zoom = 1.15**(view_options.font_size-4);
+  const font_size = Math.round(16*zoom);
+  document.documentElement.style.setProperty("--font-size", font_size + "px");
+  const font_size_code = 12 * Math.round(zoom);
+  document.documentElement.style.setProperty("--font-size-code", font_size_code + "px");
 
   if (view_options.details_changed) {
     set_view_details();
@@ -978,6 +986,8 @@ async function set_view_options(new_view_options) {
 }
 
 function set_view_details() {
+  if (!$messages)
+    return;
   for (const $details of $messages.querySelectorAll("details"))
     open_or_close_details($details);
 }
@@ -1026,7 +1036,7 @@ function wait_for_load() {
     function check_ready() {
 //      console.log("check_ready");
 //      console.log($("div.messages"), $("div.canvas canvas"));
-      if ($("div.messages") && $("div.canvas canvas")) {
+      if ($("div.messages") && $("div.canvas canvas") || $("ul.directory-listing")) {
         observer.disconnect();
         setup_ids();
         resolve();
@@ -1167,7 +1177,14 @@ function previous(selector, lookBack = 0) {
 // main ----------------------------------------------------------------------
 
 async function room_main() {
+  file_type = "room";
+
   register_service_worker();
+
+  online();
+
+  $on(document, "readystatechange", ready_state_change);
+  $on(document, "error", load_error);
 
   room = decodeURIComponent(location.pathname.replace(/\.html$/, '').replace(/^\//, ''));
 
@@ -1215,4 +1232,27 @@ async function room_main() {
   }
 }
 
-room_main();
+async function folder_main() {
+  file_type = "dir";
+
+  register_service_worker();
+
+  room = decodeURIComponent(location.pathname.replace(/\.html$/, '').replace(/^\//, ''));
+
+  // check for ?snapshot=1 in URL, properly by parsing the query string
+  const url = new URL(location.href);
+  if (url.searchParams.has("snapshot")) {
+    snapshot = url.searchParams.get("snapshot") && true;
+  }
+
+  setup_view_options();
+
+  $on(window, "message", handle_message);
+  // setup_keyboard_shortcuts();
+  if (inIframe)
+    window.parent.postMessage({ type: "ready", theme: theme }, CHAT_URL);
+
+  if (typeof room_user_script === 'function') {
+    room_user_script();
+  }
+}
