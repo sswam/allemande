@@ -34,6 +34,7 @@ a.href = `https://chat.allemande.ai/#${user}`;
 a.style.textTransform = "capitalize";
 a.innerText = `${user}'s Public Room`;
 </script>
+<script class="hide">$style("bootstrap_icons", "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");</script>
 
 This is the main public chat room. Please keep this space family friendly.
 
