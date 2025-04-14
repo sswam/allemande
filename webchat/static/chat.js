@@ -116,6 +116,7 @@ const SHORTCUTS_GLOBAL = shortcuts_to_dict([
 
 const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['ctrl+enter', () => send(), 'Send message'],
+  ['alt+enter', poke, 'Poke the chat'],
   ['alt+s', send, 'Send message'],
   ['alt+p', poke, 'Poke the chat'],
   ['alt+t', content_insert_tab, 'Insert tab'],
@@ -1881,6 +1882,7 @@ function view_history(ev) {
 function view_advanced(ev) {
   view_options.advanced = !view_options.advanced;
   view_options_apply();
+  set_controls();
 }
 
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }

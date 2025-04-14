@@ -1,6 +1,5 @@
 function chat_user_script() {
 	Object.assign(SHORTCUTS_MESSAGE, shortcuts_to_dict([
-    ['alt+enter', poke, 'Poke the chat'],
     ['alt+1', () => send_continue(), 'Send a continue message'],
     ['alt+2', () => send_continue(2), 'Send a continue message to 2nd-last speaker'],
     ['alt+3', () => send_continue(3), 'Send a continue message to 3rd-last speaker'],
