@@ -29,7 +29,7 @@ case "${file,,}" in
 	evince -- "$file" ;;
 	# zathura "$file" ;;
 *.png|*.jpg|*.jpeg|*.gif|*.bmp)
-	qiv -- "$file" ;;
+	qiv -D -X 0 -m -f -- "$file" ;;
 	# sxiv "$file" ;;
 *.mp4|*.mkv|*.avi|*.webm|*.mpg|*.mpeg|*.m4v|*.ts|*.flv|*.wmv)
 	mp -- "$file" ;;
