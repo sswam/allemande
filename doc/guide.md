@@ -618,3 +618,220 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 4. Only the Perplexity models have access to search the internet. They incur search costs of $5 per 1000 searches.
    Other models can search using the Goog tool, and fetch pages using `Dogu, web-text URL`.
 
+# Ally Chat User Interface Guide
+
+<!-- NOTE: this script to include the bootstrap_icons stylesheet is required if you want to use any of the icons below in Ally Chat -->
+<script class="hide">$style("bootstrap_icons", "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");</script>
+
+## Overview
+
+| Component | Description |
+|-----------|-------------|
+| Room Name | Input/display field for current chat room |
+| Messages View | Secure iframe showing chat messages |
+| Input Area | Message composition textarea |
+| Control Buttons | Core functionality buttons |
+
+## Simple Mode
+
+### Top Bar Controls
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-lock-fill"></i> <i class="bi-unlock-fill"></i> |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
+|  | `Ctrl+;` or `Esc` | Room Name | Change room |
+|  |  | User | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
+| <i class="bi-box-arrow-right"></i> |  | Exit | Log out |
+
+### Bottom-Right Controls
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-send-fill"></i> | `Ctrl+Enter` | Send | Send message |
+| <i class="bi-hand-index-thumb-fill"></i> | `Ctrl+Enter` | Poke | Poke the chat (so an AI might respond) |
+| <i class="bi-upload"></i> |  | File | Upload files |
+| <i class="bi-eye-fill"></i> |  | View | view settings |
+
+### View Settings Menu
+
+| Icon | Shortcut | Setting | Description |
+|---------|----------|-------------|----------|
+| <i class="bi-palette-fill"></i> |  | Theme | Change UI theme |
+| <i class="bi-lightbulb-fill"></i> |  | Advanced | Toggle advanced mode |
+| <i class="bi-x"></i> |  | Back | Return to main controls |
+
+## Advanced Mode
+
+### Top-Left Controls
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-compass-fill"></i> |  | Nav | Navigation menu |
+| <i class="bi-file-text"></i> |  | Room Ops | Room operations |
+
+### Navigation Submenu
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+|  <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 113.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a2 2 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12q.322-.119.684-.12h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z M8 6L11 9.75L5 9.75z"/></svg> | `Alt+U` | Up | Go to parent folder |
+| <i class="bi-people-fill"></i> |  | Ally Chat | Go to main room |
+| <i class="bi-house-door-fill"></i> |  | Porch | Go to your public room |
+| <i class="bi-house-fill"></i> |  | Home | Go to your private folder |
+| <i class="bi-skip-start-fill"></i> | `Ctrl+'` | First | Go to first page |
+| <i class="bi-caret-left-fill"></i> | `Ctrl+,` | Prev | Previous page |
+| <i class="bi-caret-right-fill"></i> | `Ctrl+.` | Next | Next page |
+| <i class="bi-skip-end-fill"></i> | `Ctrl+/` | Last | Go to last page |
+
+### Room Operations Submenu
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-copy"></i> |  | Copy | Copy all or part of room |
+| <i class="bi-pencil-fill"></i> | `Alt+M` | Move | Rename or move room (owner only) |
+
+## Top-Right Controls
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+|  |  | Debug | Toggle debug mode (developer only) |
+| <i class="bi-arrows-move"></i> |  | Scroll | Open scroll controls |
+
+### Scroll Submenu
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-chevron-bar-up"></i> | `Home` | Top | Go to start of room |
+| <i class="bi-chevron-up"></i> | `PageUp` | Page Up | Scroll back one page |
+| <i class="bi-chevron-down"></i> | `PageDown` | Page Down | Scroll forwards one page |
+| <i class="bi-chevron-bar-down"></i> | `End` | Bottom | Go to end of room |
+
+## Bottom-Right Controls
+
+### Main Controls
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-plus-lg"></i> |  | Add | Open media/content menu |
+| <i class="bi-headset"></i> |  | Audio | Audio settings |
+| <i class="bi-gear-fill"></i> |  | Opt | Room options |
+| <i class="bi-shield-fill"></i> |  | Mod | Owner tools (when you own the room) |
+
+### Add Menu
+
+| Icon | Shortcut | Name | Description | Process |
+|---------|----------|------|-------------|----------|
+| <i class="bi-upload"></i> |  | File | Upload files | Select files to upload |
+| <i class="bi-mic-fill"></i> |  | Audio Recording | Record audio | Opens recording controls |
+| <i class="bi-camera-video-fill"></i> |  | Video Recording | Record video | Opens recording controls |
+| Σ |  | Math | Add mathematics | Switches to math editor |
+
+#### Recording Controls
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-pause-fill"></i> |  | Time | Shows duration, click to pause/resume |
+| <i class="bi-stop-fill"></i> |  | Stop | End recording and preview |
+|  |  | Preview | Review recording before upload |
+| <i class="bi-check-lg"></i> |  | Save | Upload recording |
+| <i class="bi-x-lg"></i> |  | Cancel | Discard recording |
+
+### View Settings Menu
+
+| Icon | Shortcut | Setting | Description |
+|---------|----------|-------------|----------|
+| <i class="bi-hash"></i> |  | IDs | View message IDs |
+| <i class="bi-image-fill"></i> | `Alt+I` | Images | Toggle showing images |
+| <i class="bi-alphabet"></i> | `Alt+A` | Alt | Toggle showing alt captions |
+| <i class="bi-arrows-angle-expand"></i> <i class="bi-arrows-angle-contract"></i> |  | Image Size | Change image size |
+| <i class="bi-braces"></i> |  | Source | View source |
+| <i class="bi-asterisk"></i> |  | Color | Highlight code |
+| <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><ellipse cx="7.6" cy="4.3" rx="4" ry="3"/><ellipse cx="11.7" cy="4.6" rx="4" ry="3"/><ellipse cx="6.9" cy="8.5" rx="4" ry="3"/><ellipse cx="10.7" cy="7.3" rx="4" ry="3"/><ellipse cx="4.3" cy="6.3" rx="4" ry="3"/><ellipse cx="3.22" cy="12.3" rx="1.2" ry=".9"/><ellipse cx="1.4" cy="14.1" rx=".8" ry=".6"/></svg> |  | Details | View thoughts and details |
+| <i class="bi-easel-fill"></i> |  | Canvas | View shared canvas |
+| <i class="bi-book-fill"></i> | `Alt+C` | Clean | Clean reading view |
+| <i class="bi-layout-three-columns"></i> |  | Columns | View chat in columns |
+| <i class="bi-arrows-collapse-vertical"></i> |  | Compact | Compact view |
+| <i class="bi-clock-history"></i> |  | History | View change history (deleted and edited messages) |
+|  |  | Items | Number of search results to show |
+
+### Audio Settings Menu
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+|  |  | STT | Speech to text |
+|  |  | TTS | Text to speech |
+|  |  | VAD | Voice activity detection |
+|  |  | Auto | Automatic voice chat |
+|  |  | Voice | Set TTS voice |
+
+### Options Menu
+
+| Icon | Shortcut | Option | Description |
+|---------|----------|------|-------------|
+|  |  | Context | Number of recent messages AI can see |
+|  |  | Lines | Limit number of lines of AI output (local models only) |
+|  |  | Images | Number of recent images AI can see |
+|  |  | Mission | Mission file to use, - for none |
+
+### Moderator Tools (Room Owner)
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-x-lg"></i> | `Alt+Z` | Undo | Remove last message |
+| <i class="bi-arrow-counterclockwise"></i> | `Alt+R` | Retry | Retry last message |
+| <i class="bi-pencil-fill"></i> | `Alt+E` | Edit | Edit the room |
+| <i class="bi-play-fill"></i> |  | Auto | Auto play |
+| <i class="bi-archive-fill"></i> | `Alt+A` | Archive | Archive this room |
+| <i class="bi-trash3-fill"></i> | `Alt+X` | Clear | Clear this room |
+| <i class="bi-book-fill"></i> |  | Clean | Clean up room, removes messages from specialists |
+
+### Editor Controls
+
+When editing (room owner only), these controls appear:
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-check-lg"></i> |  | Save | Save changes. |
+| <i class="bi-arrow-counterclockwise"></i> |  | Reset | Revert changes. |
+| <i class="bi-indent"></i> | `Alt+T` | Indent | Insert a tab character or indent the selected text. |
+| <i class="bi-unindent"></i> | `Shift+Alt+T` | Dedent | Remove a tab character or dedent the selected text. |
+| <i class="bi-trash3-fill"></i> |  | Clear | Clear the contents of the editor. |
+| <i class="bi-x"></i> |  | Close | Close without saving. |
+
+### Image Viewing Mode
+
+Clicking on an image in the chat enters image viewing mode.
+
+| Action | Mouse Click | Keyboard Shortcut | Swipe (Mobile) | Description |
+|---------------------|----------------------------------|---------------------------------|-------------------|-------------------------------------------------------------|
+| Close | Click near the middle | `Q` or `Esc` | N/A | Return to normal chat mode. |
+| Fullscreen | Click near the top-middle | `F` | Swipe Up | Toggle full-screen. |
+| Zoom | Click near the bottom-middle | `M` | Swipe Down | Cycle zoom: `Fit`, `Cover`, `Original Size`. |
+| Next Image | Click near the right edge | `Spacebar`, `Right Arrow` | Swipe Right | Display the next image. |
+| Previous Image | Click near the left edge | `Backspace`, `Left Arrow` | Swipe Left | Display the previous image. |
+| Skip 10 Images Forward | N/A | `Page Down` | N/A | Skip ahead 10 images. |
+| Skip 10 Images Backward | N/A | `Page Up` | N/A | Skip back 10 images. |
+| Go to First Image | N/A | `Home` | N/A | Display the first image. |
+| Go to Last Image | N/A | `End` | N/A | Display the last image. |
+| Open Image in New Window | `Shift + Click` | N/A | N/A | Open the image in a new browser window. |
+| Open Image in New Tab | `Ctrl + Click` | N/A | N/A | Open the image in a new browser tab. |
+| Open Image in This Tab | `Alt + Click` | N/A | N/A | Open image in current tab (TODO: change to download) |
+
+### Additional Keyboard Shortcuts
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+| <i class="bi-indent"></i> | `Alt+T` | Indent | Insert tab or indent text |
+| <i class="bi-unindent"></i> | `Shift+Alt+T` | Dedent | Dedent text |
+|  | `Alt+Backspace` | Clear Content | Clear message input |
+|  | `Alt+N` | Invoke Narrator | Call the narrator |
+|  | `Alt+V` | Invoke Illustrator | Call the illustrator |
+|  | `Alt+/` | Random AI | Invoke anyone randomly |
+|  | `Shift+Alt+/` | All AIs | Invoke everyone (or several AIs) |
+
+### Keyboard Shortcuts in Messages Section
+
+| Icon | Shortcut | Name | Description |
+|---------|----------|------|-------------|
+|  | `Alt+F` | Fullscreen | Toggle full-screen mode for the messages section. |
+|  | `Alt+G` | Grab | Toggle grab events.  When enabled, keyboard presses will not trigger Ally Chat UI actions, useful for embedded games. |
+
