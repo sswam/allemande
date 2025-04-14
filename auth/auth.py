@@ -126,19 +126,19 @@ async def ensure_system_account(username: str, password: str) -> bool:
 
     logger.warning("Created system account for %s", username)
 
-    # chown the home directory to the new user
-    try:
-        await asyncio.create_subprocess_exec(
-            "verbose",
-            "sudo",
-            "chown",
-            "-R",
-            username,
-            str(home),
-        )
-    except Exception as e:
-        logger.warning("Failed to chown home directory for %s: %s", username, e)
-        return False
+    # TODO chown the home directory to the new user
+    # try:
+    #     await asyncio.create_subprocess_exec(
+    #         "verbose",
+    #         "sudo",
+    #         "chown",
+    #         "-R",
+    #         username,
+    #         str(home),
+    #     )
+    # except Exception as e:
+    #     logger.warning("Failed to chown home directory for %s: %s", username, e)
+    #     return False
 
     return False
 
