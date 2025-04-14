@@ -19,43 +19,86 @@ fun! Dedent() range
 endfun
 
 
-" Comment and Uncomment
-fun! Comment()
+fun! Comment(visual)
+	" This comment function adds comments at the minimum indent level
+
+	" Handle single line when no visual selection
+	if a:visual
+		let l:first_line = line("'<")
+		let l:last_line = line("'>")
+	else
+		let l:first_line = line(".")
+		let l:last_line = line(".")
+	endif
+
+	" Find minimum indent level in selection
+	let l:min_indent = -1
+	for l:lnum in range(l:first_line, l:last_line)
+		let l:line = getline(l:lnum)
+		let l:indent = len(matchstr(l:line, '^\s*'))
+		if l:min_indent == -1 || (l:indent < l:min_indent && l:line !~ '^\s*$')
+			let l:min_indent = l:indent
+		endif
+	endfor
+
+	" If no non-empty lines found, default to 0
+	if l:min_indent == -1
+		let l:min_indent = 0
+	endif
+
+	" Create the indent pattern
+	let l:indent_pattern = '^\s\{' . l:min_indent . '}'
+
+	let l:range = l:first_line . ',' . l:last_line
+
 	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='rust' || &ft=='java' || &ft=='javascript' ||
 		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
 		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
-		s,^\(\s*\),\1// ,
+		exe l:range . 's,' . l:indent_pattern . ',\0// ,'
 	elseif &ft=='vim'
-		s,^\(\s*\),\1" ,
+		exe l:range . 's,' . l:indent_pattern . ',\0" ,'
 	elseif &ft=='scheme' || &ft=='lisp'
-		s,^\(\s*\),\1; ,
+		exe l:range . 's,' . l:indent_pattern . ',\0; ,'
 	elseif &ft=='lua' || &ft=='sql'
-		s,^\(\s*\),\1-- ,
+		exe l:range . 's,' . l:indent_pattern . ',\0-- ,'
 	else
-		s,^\(\s*\),\1# ,
+		exe l:range . 's,' . l:indent_pattern . ',\0# ,'
 	endif
-	silent! s,  *$,, " remove trailing spaces
+
+	silent! exe l:range . 's,\s\+$,,' " remove trailing spaces
 	noh
 endfun
 
-fun! Uncomment()
+fun! Uncomment(visual)
+	" Handle single line when no visual selection
+	if a:visual
+		let l:first_line = line("'<")
+		let l:last_line = line("'>")
+	else
+		let l:first_line = line(".")
+		let l:last_line = line(".")
+	endif
+
+	let l:range = l:first_line . ',' . l:last_line
+
 	if &ft=='go' || &ft=='c' || &ft=='cpp' || &ft=='rust' || &ft=='java' || &ft=='javascript' ||
 		\ &ft=='typescript' || &ft == 'css' || &ft == 'scss' || &ft == 'less' ||
 		\ &ft == 'sass' || &ft == 'vue' || &ft == 'php' || &ft == 'svelte'
-		silent! s,^\(\s*\)// \?,\1,
+		silent! exe l:range . 's,^\(\s*\)// \?,\1,'
 	elseif &ft=='vim'
-		silent! s,^\(\s*\)" \?,\1,
+		silent! exe l:range . 's,^\(\s*\)" \?,\1,'
 	elseif &ft=='scheme' || &ft=='lisp'
-		silent! s,^\(\s*\); \?,\1,
+		silent! exe l:range . 's,^\(\s*\); \?,\1,'
 	elseif &ft=='lua' || &ft=='sql'
-		silent! s,^\(\s*\)-- \?,\1,
+		silent! exe l:range . 's,^\(\s*\)-- \?,\1,'
 	endif
 	" always try to remove a # comment, because my scripts add them
 	" to the wrong types of files pretty often
-	silent! s,^\(\s*\)# ,\1,
-	silent! s,^\(\s*\)#$,\1,
+	silent! exe l:range . 's,^\(\s*\)# ,\1,'
+	silent! exe l:range . 's,^\(\s*\)#$,\1,'
 	noh
 endfun
+
 
 fun! AllemandeRaw()
 	set binary
@@ -83,10 +126,10 @@ fun! Allemande(format)
 	vnoremap <silent> > :call Indent()<CR>gv
 	vnoremap <silent> < :call Dedent()<CR>gv
 
-	nnoremap <F1> :call Uncomment()<CR>
-	nnoremap <F2> :call Comment()<CR>
-	vnoremap <F1> :call Uncomment()<CR>gv
-	vnoremap <F2> :call Comment()<CR>gv
+	nnoremap <F1> :<C-U>call Uncomment()<CR>
+	nnoremap <F2> :<C-U>call Comment()<CR>
+	vnoremap <F1> :<C-U>call Uncomment(1)<CR>gv
+	vnoremap <F2> :<C-U>call Comment(1)<CR>gv
 
 	" Set up the tabbing
 	set tabstop=8
