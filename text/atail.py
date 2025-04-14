@@ -119,7 +119,10 @@ class AsyncTail:
 
         removed_flags = aionotify.Flags.DELETE_SELF | aionotify.Flags.MOVE_SELF | aionotify.Flags.ATTRIB
 
-        pos_previous = await f.tell()
+        try:
+            pos_previous = await f.tell()
+        except io.UnsupportedOperation as e:
+            pos_previous = None
 
         try:
             self.watcher = aionotify.Watcher()
@@ -131,7 +134,7 @@ class AsyncTail:
                     await self.queue.put(line)
                     count += 1
                 logger.debug("At end of file: %s", self.filename)
-                if self.rewind and not count:
+                if pos_previous is not None and self.rewind and not count:
                     pos_before_seek = await f.tell()
                     logger.debug("before seek_to_end")
                     await self.seek_to_end(f)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3-allemande
 
-""" bb2html: a program that converts bb files to html as they change """
+"""bb2html: a program that converts bb files to html as they change"""
 
 import os
 import sys
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 file_locks = defaultdict(asyncio.Lock)
 
 
-async def file_changed(bb_file: str, html_file: str, old_size: int|None, new_size: int|None):
+async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None):
     """convert a bb file to html"""
     async with file_locks[bb_file]:
         # assume the file was appended to ...
@@ -78,16 +78,24 @@ async def handle_completed_task(task: asyncio.Task, tasks: set, out: io.TextIOBa
 def make_done_callback(tasks: set, out: io.TextIOBase = sys.stdout):
     def callback(task):
         asyncio.create_task(handle_completed_task(task, tasks, out))
+
     return callback
 
 
 async def process_change(line, opts, tasks, out):
     """Process a change line from the watch log"""
     logger.debug("line from tail: %s", line)
-    bb_file, change_type, old_size, new_size = line.rstrip("\n").split("\t")
-    change_type = Change(int(change_type))
-    old_size = int(old_size) if old_size != "" else None
-    new_size = int(new_size) if new_size != "" else None
+    line = line.rstrip("\n")
+    if "\t" in line:
+        bb_file, change_type, old_size, new_size = line.split("\t")
+        change_type = Change(int(change_type))
+        old_size = int(old_size) if old_size != "" else None
+        new_size = int(new_size) if new_size != "" else None
+    else:
+        bb_file = line
+        change_type = Change.added
+        old_size = None
+        new_size = os.path.getsize(bb_file)
 
     if not bb_file.endswith(opts.exts):
         return
@@ -116,7 +124,9 @@ async def bb2html(opts, watch_log, out=sys.stdout):
     logger.debug("opts: %s", opts)
 
     tasks = set()
-    async with atail.AsyncTail(filename=watch_log, follow=True, rewind=True, restart=True) as queue:
+    async with atail.AsyncTail(
+        filename=watch_log, follow=opts.follow, rewind=opts.follow, restart=opts.follow, all_lines=not opts.follow
+    ) as queue:
         while (line := await queue.get()) is not None:
             try:
                 await process_change(line, opts, tasks, out)
@@ -136,6 +146,7 @@ def get_opts():
     )
     parser.add_argument("-w", "--watch-log", default="/dev/stdin", help="the file where changes are logged")
     parser.add_argument("-x", "--extension", nargs="*", default=("bb",), help="the file extensions to process")
+    parser.add_argument("-F", "--no-follow", dest="follow", action="store_false", help="do not follow the file, good for stdin")
     ucm.add_logging_options(parser)
     opts = parser.parse_args()
     return opts
