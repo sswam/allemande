@@ -26,7 +26,7 @@ def px_to_rem(match: re.Match) -> str:
 
 def convert_line(line: str) -> str:
     """Convert all pixel values in a line to rem units."""
-    return re.sub(r"(\d+)px\b", px_to_rem, line)
+    return re.sub(r"(\d+(?:\.\d+)?)px\b", px_to_rem, line)
 
 
 def process_css(istream: TextIO, ostream: TextIO) -> None:
