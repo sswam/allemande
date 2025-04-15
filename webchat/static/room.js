@@ -453,26 +453,6 @@ function embed_click(ev, $thumb) {
 
 // fullscreen ----------------------------------------------------------------
 
-function is_fullscreen() {
-  return document.fullscreenElement;
-}
-
-function go_fullscreen(target) {
-  if (is_fullscreen()) {
-    return;
-  }
-  target = target || document.documentElement;
-  console.log("go_fullscreen", target);
-  target.requestFullscreen().catch((err) => console.error(err));
-}
-
-function exit_fullscreen() {
-  if (!is_fullscreen()) {
-    return;
-  }
-  document.exitFullscreen().catch((err) => console.error(err));
-}
-
 function toggle_fullscreen(target) {
   if (is_fullscreen()) {
     exit_fullscreen();
@@ -577,16 +557,16 @@ function image_overlay($el) {
   // focus the overlay, for keyboard scrolling
   $overlay.focus();
 
-  if (overlay_fullscreen) {
+  if (overlay_fullscreen)
     go_fullscreen();
-  }
 
   add_hook("window_resize", setup_overlay_image_cover);
   setup_overlay_image_cover();
 }
 
 function overlay_close(ev) {
-  ev.preventDefault();
+  if (ev)
+    ev.preventDefault();
   $body.classList.remove("overlay");
   clear_overlay_image_cover();
   $overlay.innerHTML = "";
@@ -1235,6 +1215,13 @@ async function room_main() {
   if (typeof room_user_script === 'function') {
     room_user_script();
   }
+
+  $on(document, "fullscreenchange", fullscreenchange);
+}
+
+function fullscreenchange(ev) {
+  if (!is_fullscreen())
+    overlay_close();
 }
 
 async function folder_main() {

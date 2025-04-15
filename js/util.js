@@ -135,3 +135,22 @@ class Mutex {
     }
   }
 }
+
+// fullscreen API -------------------------------------------------------------
+
+function is_fullscreen() {
+  return document.fullscreenElement;
+}
+
+function go_fullscreen(target) {
+  if (is_fullscreen())
+    return;
+  target = target || document.documentElement;
+  target.requestFullscreen().catch((err) => console.error(err));
+}
+
+function exit_fullscreen() {
+  if (!is_fullscreen())
+    return;
+  document.exitFullscreen().catch((err) => console.error(err));
+}

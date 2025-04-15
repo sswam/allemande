@@ -874,7 +874,7 @@ function hash_to_query(hash) {
 }
 
 function go_home() {
-  set_room("");
+  set_room(DEFAULT_ROOM);
 }
 
 function change_room() {
@@ -916,13 +916,15 @@ function escape() {
   if (active_get("add_math"))
     return;
 
+  set_fullscreen(0);
+
   // escape from the full-screen canvas!
   if (view_options.canvas > 0) {
     view_options.canvas--;
     view_options_apply();
     return;
   }
-    
+
   let acted = false;
   if (active_get("room_ops_move")) {
     $room.value = room;
@@ -1796,6 +1798,7 @@ function setup_view_options() {
     for (const key in view_options_loaded) {
       view_options[key] = view_options_loaded[key];
     }
+    view_options.fullscreen = 0;
   }
   add_hook("room_ready", view_options_apply);
 }
@@ -1860,8 +1863,25 @@ function view_options_apply() {
 
   view_options.details_changed = false;
 
+  if (view_options.fullscreen >= 1)
+    go_fullscreen();
+  else
+    exit_fullscreen();
+
+  set_overlay(view_options.fullscreen == 2);
+
   // send message to the rooms iframe to apply view options
   $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
+}
+
+function set_fullscreen(fullscreen) {
+  view_options.fullscreen = fullscreen;
+  view_options_apply();
+}
+
+function fullscreenchange() {
+  view_options.fullscreen = is_fullscreen() ? 1 : 0;
+  view_options_apply();
 }
 
 function view_ids(ev) {
@@ -2433,6 +2453,8 @@ function chat_main() {
   $on($id("privacy"), "click", change_privacy);
 
   $on(window, "beforeprint", print_chat);
+
+  $on(document, "fullscreenchange", fullscreenchange);
 
   setup_view_options();
 

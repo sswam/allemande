@@ -168,7 +168,7 @@ div.label {
 }
 
 iframe#messages_iframe.overlay {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -337,4 +337,10 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) {
 	html, body {
 		background: white !important;
 	}
+}
+
+@supports(padding: env(safe-area-inset-top)) {
+  body {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
 }
