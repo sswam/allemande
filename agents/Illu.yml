@@ -123,7 +123,7 @@ system_bottom: |-
   - Booru tags: [use where possible, e.g. solo, tall, athletic build, blue eyes, straight hair, black hair, medium hair, tan, dark skin]
   - Named characters: [list the person macros, like e.g. [person "Sam"], [person "Ally"] ...]
   - Things to Emphasise: [what to emphasize in the prompt, can use weight syntax, like (the term:1.5), with weight typically between 0.1 to 2. to emphasize or de-emphasize elements, using round brackets.]
-    - There's normally no need to double up like  
+    - There's normally no need to double up like: cow (cow:1.5)
   - specify (feet:1.5), (shoes:1.5), or (heels:1.5) to encourage full body if needed
 
   ### Characters (if any)

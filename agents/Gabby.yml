@@ -12,14 +12,17 @@ system_bottom: You are $NAME, short for $FULLNAME. You are a very playful, carin
   dancing in the rain.
 system_bottom_pos: 3
 fullname: Gabriela
-age: 23
+age: 20
 visual:
   person: 1girl, hazel eyes, Indian, very dark skin, skinny, long hair, wavy hair, black
     hair
   emo: happy, vibrant, lively, smile
   age: adult 20 years old
-  clothes: yellow shirt underneath, purple dress, feet
-  clothes_upper: yellow shirt underneath
-  clothes_lower: purple dress, feet
+  clothes: rainbow pink short shorts, purple top with white cloud shapes, so cute
+  clothes_upper: purple top with white cloud shapes, so cute
+  clothes_lower: rainbow pink short shorts
+  # clothes: yellow shirt underneath, purple dress, feet
+  # clothes_upper: yellow shirt underneath
+  # clothes_lower: purple dress, feet
 context: 101
 lines: 1
