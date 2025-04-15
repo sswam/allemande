@@ -18,4 +18,7 @@
 	--button: var(--col1);
 	--button-focus: var(--col0);
 	--link: var(--col6);
+
+	--background-image: url("/themes/ocean.jpg");
+	--code-background-opacity: 0.3;
 }
