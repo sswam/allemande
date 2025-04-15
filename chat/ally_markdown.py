@@ -399,6 +399,11 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
                 out.append(line)
             else:
                 out.append(line + "\n")
+            # This is getting shady...!
+            if re.search(r"</(script|style|svg)>\s*$", line, flags=re.IGNORECASE):
+                in_code = 0
+                in_script = False
+                in_svg = False
         elif re.match(r"\s*</(script|style|svg)>\s*$", line, flags=re.IGNORECASE) and in_script:
             out.append(line + "\n")
             in_code = 0

@@ -598,7 +598,7 @@ def move_file(user, source, dest, clobber=False):
     access = check_access(user, dest_path).value
     if not access & Access.WRITE.value:
         raise PermissionError(f"You are not allowed to move to this location: user: {user}, path: {dest_path}, access: {access}")
-    if not clobber and Path(dest_path).exists():
+    if not clobber and dest_path.exists() and dest_path.stat().st_size != 0:
         raise ValueError(f"Destination already exists: {dest_path}")
 
     # hack: if moving a folder, the user would have to be able to write to a file within the proposed destination folder

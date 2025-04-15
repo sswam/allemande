@@ -232,6 +232,8 @@ async def move(request):
         ally_room.move_file(user, source, dest)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=e.args[0]) from e
     return JSONResponse({})
 
 
