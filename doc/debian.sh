@@ -253,10 +253,19 @@ source ~/.vimrc
 END
 
 # -------- copy ai.env secrets file from another staff member ----------------
+# or copy from config/ai.env.dist and add your own keys; they are all optional
 
 scp sam@ucm.dev:my/ai.env ~/my/
 set -a
 . ~/my/ai.env
+
+# -------- copy secrets.sh from another staff member -------------------------
+# or copy from config/secrets.sh.dist and set ALLYCHAT_JWT_SECRET
+# Back this up if you are running a production service!
+
+cp config/secrets.sh.dist secrets.sh
+ALLYCHAT_JWT_SECRET="$(head -c32 /dev/urandom | xxd -p | tr -d '\n')"
+sed -i 's/ALLYCHAT_JWT_SECRET=""/ALLYCHAT_JWT_SECRET="'$ALLYCHAT_JWT_SECRET'"/' secrets.sh
 
 # -------- run setup scripts -------------------------------------------------
 
