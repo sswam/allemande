@@ -555,6 +555,7 @@ function get_file_type(name) {
 async function set_room(room_new, no_history) {
   // check if room_new was passed
   if (room_new === undefined) {
+    $room.value = $room.value.trim();
     room_new = $room.value;
   }
 
