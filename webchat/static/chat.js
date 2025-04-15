@@ -29,6 +29,8 @@ let access_denied = false;
 const narrator = "Nova";
 const illustrator = "Illu";
 
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
 let lastMessageId = null;
 
 let view_options = {
@@ -242,6 +244,8 @@ async function send(ev) {
     set_content(message);
     error("send");
   }
+
+  $content.placeholder = "";
 }
 
 async function send_text(text) {
@@ -1803,6 +1807,14 @@ function view_options_apply() {
   $id("view_items").value = view_options.items ?? "";
   active_set("view_advanced", view_options.advanced);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
+
+  let input_placeholder = "";
+  if ($content.placeholder != "" && !view_options.advanced && isMobile) {
+    input_placeholder = "Type your message...";
+  } else if ($content.placeholder != "" && !view_options.advanced) {
+    input_placeholder = "Type your message... (Ctrl+Enter to send)";
+  }
+  $content.placeholder = input_placeholder;
 
   const cl = document.body.classList;
   cl.toggle("compact", view_options.compact == 1);
