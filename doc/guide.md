@@ -23,7 +23,7 @@ Ally Chat is an innovative multi-user chat platform that brings together people 
 
 ## Learning about Ally Chat
 
-- This document is visible to AIs, which can help users to learn about the app.
+- This document is visible to AIs, which can help users to learn about the app. They even show which icons to press!
 - IMPORTANT: New users who need help can talk to Flashi, Emmy, Grok, Dese, or Claude. Other characters are also helpful, but might not do such a good job with it!
 - Illu, Pixi and Gema are experts on image generation. You can talk to them to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
 - You can view the [Quick Start Guide](/start) or this [User Guide](guide).
@@ -647,8 +647,8 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
-| <i class="bi-send-fill"></i> | `Ctrl+Enter` | Send | Send message |
-| <i class="bi-hand-index-thumb-fill"></i> | `Ctrl+Enter` | Poke | Poke the chat (so an AI might respond) |
+| <i class="bi-send-fill"></i> | `Ctrl+Enter` | Send | Send message (visible when message entered) |
+| <i class="bi-hand-index-thumb-fill"></i> | `Alt+Enter` | Poke | Prompt AI response (visible when no message) |
 | <i class="bi-upload"></i> |  | File | Upload files |
 | <i class="bi-eye-fill"></i> |  | View | view settings |
 
@@ -694,7 +694,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 |  |  | Debug | Toggle debug mode (developer only) |
-| <i class="bi-arrows-move"></i> |  | Scroll | Open scroll controls |
+| <i class="bi-arrows-move"></i> |  | Scroll | Open scroll controls, useful on mobile |
 
 ### Scroll Submenu
 
@@ -735,6 +735,15 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | <i class="bi-check-lg"></i> |  | Save | Upload recording |
 | <i class="bi-x-lg"></i> |  | Cancel | Discard recording |
 
+#### Math Editor
+
+- [Full math-field documentation](https://cortexjs.io/mathfield/)
+- Type to enter math
+- Press enter or click the math button again to save it as TeX in the main message entry.
+- You can also paste TeX into the math entry
+- There is a button to open a virtual keyboard, like a super calculator
+- There is a menu button with many other options, including matrix entry
+
 ### View Settings Menu
 
 | Icon | Shortcut | Setting | Description |
@@ -743,7 +752,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | <i class="bi-image-fill"></i> | `Alt+I` | Images | Toggle showing images |
 | <i class="bi-alphabet"></i> | `Alt+A` | Alt | Toggle showing alt captions |
 | <i class="bi-arrows-angle-expand"></i> <i class="bi-arrows-angle-contract"></i> |  | Image Size | Change image size |
-| <i class="bi-braces"></i> |  | Source | View source |
+| <i class="bi-braces"></i> |  | Source | View source (none, javascript, math/diagram source) |
 | <i class="bi-asterisk"></i> |  | Color | Highlight code |
 | <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><ellipse cx="7.6" cy="4.3" rx="4" ry="3"/><ellipse cx="11.7" cy="4.6" rx="4" ry="3"/><ellipse cx="6.9" cy="8.5" rx="4" ry="3"/><ellipse cx="10.7" cy="7.3" rx="4" ry="3"/><ellipse cx="4.3" cy="6.3" rx="4" ry="3"/><ellipse cx="3.22" cy="12.3" rx="1.2" ry=".9"/><ellipse cx="1.4" cy="14.1" rx=".8" ry=".6"/></svg> |  | Details | View thoughts and details |
 | <i class="bi-easel-fill"></i> |  | Canvas | View shared canvas |
@@ -835,3 +844,7 @@ Clicking on an image in the chat enters image viewing mode.
 |  | `Alt+F` | Fullscreen | Toggle full-screen mode for the messages section. |
 |  | `Alt+G` | Grab | Toggle grab events.  When enabled, keyboard presses will not trigger Ally Chat UI actions, useful for embedded games. |
 
+## Other Tricks
+
+- Click code to copy it, can paste into the input or elsewhere.
+- Poke an image gen prompt several times to create multiple images.
