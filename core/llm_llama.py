@@ -1,16 +1,16 @@
 #!/usr/bin/env python3-allemande
 
-""" allemande - core llama module """
+"""allemande - core llama module"""
 
 import os
 import logging
 from pathlib import Path
 from functools import partial
 import regex
-import time
-from typing import AsyncIterator, Iterator, cast
+from typing import AsyncIterator, Iterator, Callable, cast
 from threading import Thread
 import asyncio
+from asyncio import sleep as asleep
 
 import inotify.adapters  # type: ignore
 import torch
@@ -22,9 +22,9 @@ os.environ["GGML_CUDA_ENABLE_UNIFIED_MEMORY"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 import transformers  # type: ignore # pylint: disable=wrong-import-order, wrong-import-position
-from llama_cpp import Llama as LlamaCpp, CreateCompletionResponse # pylint: disable=wrong-import-order, wrong-import-position
+from llama_cpp import Llama as LlamaCpp, CreateCompletionResponse  # pylint: disable=wrong-import-order, wrong-import-position
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 
 logger = logs.get_logger()
@@ -34,8 +34,8 @@ prog = main.prog_info()
 portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / prog.name
 models_dir = Path(os.environ["ALLEMANDE_MODELS"]) / "llm"
 
-default_model: str = str(models_dir/"default")
-default_model_gguf: str = str(models_dir/"default.gguf")
+default_model: str = str(models_dir / "default")
+default_model_gguf: str = str(models_dir / "default.gguf")
 
 
 # Matches a line that starts with a unicode 'name':
@@ -88,7 +88,9 @@ def load_gguf_model(model: str, context: int = 131072, n_gpu_layers=-1) -> Llama
     return llm
 
 
-async def stream_transformers(pipeline: transformers.Pipeline, prompt: str, generation_kwargs: dict|None = None) -> AsyncIterator[str]:
+async def stream_transformers(
+    pipeline: transformers.Pipeline, prompt: str, generation_kwargs: dict | None = None
+) -> AsyncIterator[str]:
     """Stream the output of the transformers pipeline"""
     streamer = transformers.TextIteratorStreamer(pipeline.tokenizer, skip_prompt=True)
     generation_kwargs = {"text_inputs": prompt, "streamer": streamer, **(generation_kwargs or {})}
@@ -114,11 +116,14 @@ async def stream_gguf(llm: LlamaCpp, prompt: str, generation_kwargs: dict) -> As
 
     generation_kwargs = util.dict_not_none(generation_kwargs)
 
-    stream = cast(Iterator[CreateCompletionResponse], llm(
-        prompt,
-        stream=True,
-        **generation_kwargs,
-    ))
+    stream = cast(
+        Iterator[CreateCompletionResponse],
+        llm(
+            prompt,
+            stream=True,
+            **generation_kwargs,
+        ),
+    )
 
     while True:
         try:
@@ -167,7 +172,7 @@ async def collect_response(streamer, model, config, input_text, *_args, **_kwarg
                 if match := stopper.search(text2):
                     logger.debug("Stopping at: `%s`", match.group())
                     logger.debug("Stopping regex: %s", stopper)
-                    text2 = text2[:match.start()]
+                    text2 = text2[: match.start()]
                     stop = True
                     break
             else:
@@ -267,7 +272,7 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
             logger.removeHandler(log_handler)
 
 
-async def serve_requests_inotify(portals: str, gen: callable):
+async def serve_requests_inotify(portals: str, gen: Callable):
     """Serve requests from a directory of directories"""
     logger.info("serving requests from %s", portals)
     i = inotify.adapters.Inotify()
@@ -310,31 +315,50 @@ def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]
     return requests
 
 
-async def serve_requests_poll(portals: str, gen: callable, poll_interval: float = 0.1):
+async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float = 0.1, idle_timeout: float = 60.0):
     """Serve requests from a directory of directories using polling"""
     logger.info("serving requests from %s", portals)
+    served_count = 0
+    last_request_time = asyncio.get_event_loop().time()
     known_requests = find_todo_requests(portals)
     for portal, req in known_requests:
         logger.info("Initial request: %s in %s", req, portal)
+        served_count += 1
         await process_request(portals, portal, req, gen)
 
     known_requests_set = set(known_requests)
 
     while True:
         new_requests = find_todo_requests(portals)
-        for portal, req_name in new_requests:
-            if (portal, req_name) in known_requests_set:
-                continue
-            logger.info("New request: %s in %s", req_name, portal)
-            await process_request(portals, portal, req_name, gen)
-
-        known_requests_set = set(new_requests)
+        new_requests = [(portal, req_name) for portal, req_name in new_requests if (portal, req_name) not in known_requests_set]
+        current_time = asyncio.get_event_loop().time()
+        time_since_last = current_time - last_request_time
+        logger.debug("idle_timeout, new_requests, time_since_last, served_count: %s %s %s %s", idle_timeout, new_requests, time_since_last, served_count)
+        if idle_timeout > 0 and not new_requests and current_time - last_request_time > idle_timeout and served_count > 0:
+            logger.warning("No requests for %s seconds, exiting to free VRAM", idle_timeout)
+            return
+        if new_requests:
+            for portal, req_name in new_requests:
+                logger.info("New request: %s in %s", req_name, portal)
+                served_count += 1
+                await process_request(portals, portal, req_name, gen)
+            known_requests_set = set(new_requests)
+            last_request_time = asyncio.get_event_loop().time()
 
         # Wait before next poll
-        await asyncio.sleep(poll_interval)
+        await asleep(poll_interval)
 
 
-async def llm_llama(portals:str =str(portals_dir), model: str|None = None, use_inotify: bool=False, gguf: bool=False, context: int=32*1024, n_gpu_layers: int=-1):
+async def llm_llama(
+    portals: str = str(portals_dir),
+    model: str | None = None,
+    use_inotify: bool = False,
+    gguf: bool = False,
+    context: int = 32 * 1024,
+    n_gpu_layers: int = -1,
+    poll_interval: float = 0.1,
+    idle_timeout: float = 60.0,
+):
     """main function wrapper to suppress output from llama_cpp"""
 
     # redirect stdout and stderr to /dev/null if not in debug mode
@@ -342,13 +366,22 @@ async def llm_llama(portals:str =str(portals_dir), model: str|None = None, use_i
     # TODO Ideally we would want to always keep it in the log file,
     # and show it also on the console in debug mode. Later.
     # if logs.level() <= logs.DEBUG:
-        # await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
+    # await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
     # with unix.redirect(stdout=None, stderr=None):
-        # await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
-    await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
+    # await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
+    await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers, poll_interval, idle_timeout)
 
 
-async def llm_llama_main(portals: str, model: str|None, use_inotify: bool, gguf: bool, context=32*1024, n_gpu_layers=-1):
+async def llm_llama_main(
+    portals: str,
+    model: str | None,
+    use_inotify: bool,
+    gguf: bool,
+    context: int = 32 * 1024,
+    n_gpu_layers: int = -1,
+    poll_interval: float = 0.1,
+    idle_timeout: float = 60.0,
+):
     """main function"""
     if not model:
         model = default_model_gguf if gguf else default_model
@@ -368,17 +401,19 @@ async def llm_llama_main(portals: str, model: str|None, use_inotify: bool, gguf:
     if use_inotify:
         await serve_requests_inotify(portals, gen)
     else:
-        await serve_requests_poll(portals, gen)
+        await serve_requests_poll(portals, gen, idle_timeout=idle_timeout)
 
 
 def setup_args(arg):
     """Set up the command-line arguments"""
     arg("-p", "--portals", help="Directory of portals")
     arg("-m", "--model", help="Model name or path")
-    arg("-i", "--use-inotify", action="store_true", help="Use inotify")
+    arg("-I", "--use-inotify", action="store_true", help="Use inotify")
     arg("-g", "--gguf", action="store_true", help="Use GGUF model")
     arg("-c", "--context", help="Context size")
     arg("-n", "--n-gpu-layers", help="Number of GPU layers to use for GGUF")
+    arg("-i", "--poll-interval", type=float, default=0.1, help="Polling interval in seconds (default: 0.1)")
+    arg("-t", "--idle-timeout", type=float, default=60.0, help="Idle timeout in seconds before exiting (default: 60)")
 
 
 if __name__ == "__main__":
