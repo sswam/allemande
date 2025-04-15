@@ -24,6 +24,25 @@ body, html {
 	overflow: hidden;
 }
 
+.row {
+	display: flex;
+	flex-direction: row;
+}
+.col {
+	display: flex;
+	flex-direction: column;
+}
+.pad {
+	padding: var(--pad);
+}
+.gap {
+	gap: var(--pad);
+}
+.fill {
+	width: 100%;
+	height: 100%;
+}
+
 body:not(.history) .hidden, .hidden:not(.removed) {
 	display: none !important;
 }
@@ -53,13 +72,14 @@ body#app {
 }
 
 body#messages {
-	background: var(--frame);
+	background: var(--background);
 }
 
 body#dir {
 	background: var(--background);
 }
 
+/*
 body#messages > div.messages_wrap {
 	background: var(--background);
 }
@@ -67,6 +87,7 @@ body#messages > div.messages_wrap {
 body#messages > div.canvas {
 	background: var(--background);
 }
+*/
 
 input, textarea, button, iframe, .button {
 	background: var(--input);
@@ -186,4 +207,8 @@ input:disabled, input:disabled:hover, input:disabled:focus
 	--image-height-large: 90vh;
 	--image-width-small: 20vw;
 	--image-height-small: 20vh;
+
+	--background-image: none;
+	--background-image-opacity: 0.5;
+	--code-background-opacity: 0.05;
 }

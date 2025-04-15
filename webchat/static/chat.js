@@ -52,6 +52,7 @@ let view_options = {
   highlight: 1,
   highlight_theme_light: "a11y-light",
   highlight_theme_dark: "a11y-dark",
+  fullscreen: 0,
   advanced: 0,
 };
 
@@ -112,10 +113,11 @@ const ADMIN = "admin";
 const SHORTCUTS_GLOBAL = shortcuts_to_dict([
   ['escape', escape, 'Go back, change or leave room'],
   ['ctrl+;', change_room, 'Change room'],
-  ["ctrl+'", room_clear_number, "Clear room number"],
+  ["ctrl+[", room_first, "Go to first room"],
   ['ctrl+.', room_next, 'Go to next room'],
   ['ctrl+,', room_prev, 'Go to previous room'],
-  ['ctrl+/', room_last, 'Go to last room'],
+  ['ctrl+]', () => room_last(), 'Go to last room'],
+  ['ctrl+\\', () => room_last(1), 'Go beyond last room'],
 ]);
 
 const SHORTCUTS_MESSAGE = shortcuts_to_dict([
@@ -130,6 +132,8 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['alt+i', view_images, 'View images'],
   ['alt+a', view_alt, 'View alt text'],
   ['alt+c', view_clean, 'View clean'],
+  ['alt+j', view_canvas, 'View canvas'],
+  ['alt+f', view_fullscreen, 'View fullscreen'],
   ['alt+m', add_math, 'Add math'],
   ['shift+alt+m', move_mode, 'Move mode', ADMIN],
 
@@ -911,6 +915,14 @@ function select_room_basename() {
 function escape() {
   if (active_get("add_math"))
     return;
+
+  // escape from the full-screen canvas!
+  if (view_options.canvas > 0) {
+    view_options.canvas--;
+    view_options_apply();
+    return;
+  }
+    
   let acted = false;
   if (active_get("room_ops_move")) {
     $room.value = room;
@@ -982,11 +994,12 @@ function room_prev() {
   room_set_number(num);
 }
 
-function room_clear_number() {
+function room_first() {
   room_set_number("");
 }
 
-async function room_last() {
+async function room_last(i) {
+  i = i || 0;
   // fetch the last number from the server
   const room_enc = encodeURIComponent(room);
   const response = await fetch(`/x/last?room=${room_enc}`);
@@ -998,7 +1011,7 @@ async function room_last() {
     throw new Error(data.error);
   }
   // console.log("last", data.last);
-  room_set_number(data.last);
+  room_set_number(+data.last + i);
 }
 
 // Keyboard shortcuts handling -----------------------------------------------
@@ -1301,7 +1314,7 @@ async function clear_chat(ev, op) {
   else if (op === "rotate")
     confirm_message = "Save and clear the first half of the chat?";
   else if (op === "archive")
-    confirm_message = "Save and clear the chat?";
+    confirm_message = "Archive the chat?  You can go to it later with ctrl-].";
   else if (op == "clean")
     confirm_message = "Clean up the room?  Removes messages from specialists.";
   // TODO it would be better to hide them from everyone, with a switch
@@ -1804,6 +1817,7 @@ function view_options_apply() {
   active_set("view_columns", view_options.columns);
   active_set("view_compact", view_options.compact);
   active_set("view_history", view_options.history);
+  active_set("view_fullscreen", view_options.fullscreen);
   $id("view_items").value = view_options.items ?? "";
   active_set("view_advanced", view_options.advanced);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
@@ -1886,7 +1900,8 @@ function view_details(ev) {
 }
 
 function view_canvas(ev) {
-  view_options.canvas = !view_options.canvas;
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  view_options.canvas = (view_options.canvas + delta + 3) % 3;
   view_options_apply();
 }
 
@@ -1902,6 +1917,12 @@ function view_columns(ev) {
 
 function view_compact(ev) {
   view_options.compact = !view_options.compact;
+  view_options_apply();
+}
+
+function view_fullscreen(ev) {
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  view_options.fullscreen = (view_options.fullscreen + delta + 3) % 3;
   view_options_apply();
 }
 
@@ -2206,6 +2227,7 @@ const icons = {
   add_math: 'Σ',  // capital sigma
   view_history: '<svg class="icon i20 bi bi-clock-history" fill="currentColor" viewBox="0 0 16 16"><path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z"/><path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0z"/><path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/></svg>',
   font_expand: '<svg class="icon i20 bi bi-fonts" fill="currentColor" viewBox="0 0 16 16"><path d="M12.258 3h-8.51l-.083 2.46h.479c.26-1.544.758-1.783 2.693-1.845l.424-.013v7.827c0 .663-.144.82-1.3.923v.52h4.082v-.52c-1.162-.103-1.306-.26-1.306-.923V3.602l.431.013c1.934.062 2.434.301 2.693 1.846h.479z"/></svg>',
+  view_fullscreen: '<svg width="20" height="20" fill="currentColor" class="bi bi-arrows-fullscreen" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"/></svg>',
 };
 
 
@@ -2362,6 +2384,7 @@ function chat_main() {
   $on($id("view_columns"), "click", view_columns);
   $on($id("view_compact"), "click", view_compact);
   $on($id("view_history"), "click", view_history);
+  $on($id("view_fullscreen"), "click", view_fullscreen);
   $on($id("view_items"), "change", view_items);
   $on($id("view_items"), "keyup", view_items);
   $on($id("view_advanced"), "click", view_advanced);
@@ -2377,10 +2400,10 @@ function chat_main() {
   $on($id("nav_allychat"), "click", () => set_room(DEFAULT_ROOM));
   $on($id("nav_porch"), "click", () => set_room(user));
   $on($id("nav_home"), "click", () => set_room(user + "/chat"));
-  $on($id("nav_first"), "click", room_clear_number);
+  $on($id("nav_first"), "click", room_first);
   $on($id("nav_prev"), "click", room_prev);
   $on($id("nav_next"), "click", room_next);
-  $on($id("nav_last"), "click", room_last);
+  $on($id("nav_last"), "click", () => room_last());
   $on($id("nav_cancel"), "click", () => set_top_left());
 
   $on($id("scroll_home"), "click", (ev) => scroll_home_end(ev, 0));

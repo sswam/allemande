@@ -23,10 +23,10 @@
 <base target="_top">
 <title>{{ room }}</title>
 </head>
-<body id="messages">
+<body id="messages" class="messages">
 <div class="overlay maxpect"></div>
 <div class="canvas">
-<canvas id="canvas"></canvas>
+<canvas id="canvas" tabindex=0></canvas>
 <script>
 // set canvas size to screen size (not window size)
 canvas = $id('canvas');

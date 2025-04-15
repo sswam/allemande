@@ -276,14 +276,14 @@ pre code {
 }
 
 body.dark code {
-	background: rgba(255,255,255,0.05);
-	border: 0.0625rem solid rgba(255,255,255,0.1);
+	background: rgba(0,0,0,var(--code-background-opacity));
+	border: 0.0625rem solid rgba(255,255,255,var(--code-background-opacity));
 	/* background-color: transparent; */
 }
 
 body.light code {
-	background: rgba(0,0,0,0.05);
-	border: 0.0625rem solid rgba(0,0,0,0.1);
+	background: rgba(255,255,255,var(--code-background-opacity));
+	border: 0.0625rem solid rgba(0,0,0,var(--code-background-opacity));
 }
 
 /*
@@ -462,7 +462,15 @@ body.canvas > div.canvas {
 body:not(.canvas) div.canvas {
 	display: none;
 }
-body:not(.canvas) div.resizer {
+body:not(.canvas.messages) div.resizer {
+	display: none;
+}
+body.canvas:not(.messages) div.canvas {
+	min-height: 100% !important;
+	min-width: 100% !important;
+}
+
+body:not(.messages) > div.messages_wrap {
 	display: none;
 }
 
@@ -608,11 +616,13 @@ script + .code-controls {
 }
 
 body.dark .code-controls {
-	border: 0.0625rem solid rgba(255,255,255,0.1);
+	border: 0.0625rem solid rgba(255,255,255,0.2);
+	background: rgba(255,255,255,0.1);
 }
 
 body.light .code-controls {
-	border: 0.0625rem solid rgba(0,0,0,0.1);
+	border: 0.0625rem solid rgba(0,0,0,0.2);
+	background: rgba(0,0,0,0.1);
 }
 
 .code-controls {
@@ -625,14 +635,6 @@ body.light .code-controls {
 	background: rgba(255,255,255,0.05);
 	border-radius: 0 0 0 0.25rem;
 	border: none !important;
-}
-
-body.dark .code-controls {
-	background: rgba(255,255,255,0.05);
-}
-
-body.light .code-controls {
-	background: rgba(0,0,0,0.05);
 }
 
 .code-controls .language {
@@ -752,6 +754,13 @@ body.ids-hover div.message.select > div.id {
 	display: block;
 }
 
+blockquote {
+	border-left: 0.125rem solid var(--primary);
+	padding-left: 1rem;
+	margin-left: 0;
+	clear: left;
+}
+
 /* printing --------------------------------------------------------------- */
 
 @media print {
@@ -824,3 +833,21 @@ body.items_9 .search tbody > tr:nth-child(n + 10) {
 
 body.dark .active { background-color: #606030 !important; }
 body.light .active { background-color: #b0b058 !important; color: black !important; }
+
+/* background image ----------------------------------------------------- */
+
+body#messages {
+    position: relative;
+}
+body#messages::before {
+    content: "";
+    background: var(--background-image) no-repeat center center fixed;
+    background-size: cover;
+    opacity: var(--background-image-opacity);
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: -1;
+}

@@ -326,7 +326,7 @@ function key_event(ev) {
   }
   if (ev.altKey && ev.key == "f") {
     ev.preventDefault();
-    toggle_fullscreen();
+    toggle_fullscreen(ev.target);
     return;
   }
   if (ev.key == "Home") {
@@ -457,11 +457,13 @@ function is_fullscreen() {
   return document.fullscreenElement;
 }
 
-function go_fullscreen() {
+function go_fullscreen(target) {
   if (is_fullscreen()) {
     return;
   }
-  document.documentElement.requestFullscreen().catch((err) => console.error(err));
+  target = target || document.documentElement;
+  console.log("go_fullscreen", target);
+  target.requestFullscreen().catch((err) => console.error(err));
 }
 
 function exit_fullscreen() {
@@ -471,12 +473,14 @@ function exit_fullscreen() {
   document.exitFullscreen().catch((err) => console.error(err));
 }
 
-function toggle_fullscreen() {
+function toggle_fullscreen(target) {
   if (is_fullscreen()) {
     exit_fullscreen();
+    signal_overlay(false);
     overlay_fullscreen = false;
   } else {
-    go_fullscreen();
+    go_fullscreen(target);
+    signal_overlay(true);
     overlay_fullscreen = true;
   }
 }
@@ -940,7 +944,8 @@ async function set_view_options(new_view_options) {
     cl.toggle("alt", view_options.alt == 1);
     cl.toggle("script_source", view_options.source >= 1);
     cl.toggle("rendered_source", view_options.source >= 2);
-    cl.toggle("canvas", view_options.canvas == 1);
+    cl.toggle("canvas", view_options.canvas >= 1);
+    cl.toggle("messages", view_options.canvas <= 1);
     cl.toggle("clean", view_options.clean == 1);
     cl.toggle("columns", view_options.columns == 1);
     cl.toggle("history", view_options.history == 1);

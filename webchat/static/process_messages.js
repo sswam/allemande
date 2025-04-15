@@ -242,7 +242,7 @@ async function handleNewMessage(newMessage) {
       let p = newContent.querySelector(":scope > p");
       // console.log("first paragraph", p);
       let go_before_this = newMessage.querySelector(
-        "pre, details, script:not([src]), style, ol, ul"
+        "pre, details, script:not([src]), style, ol, ul, blockquote"
       );
       let container;
       if (p && !(go_before_this && isPrecedingNode(go_before_this, p))) {

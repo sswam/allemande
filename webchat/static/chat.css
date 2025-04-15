@@ -2,10 +2,6 @@
 	--ui-size-min: 4.5rem;
 }
 
-.fill {
-	width: 100%;
-	height: 100%;
-}
 .admin {
 	display: none;
 }
@@ -20,6 +16,7 @@ html {
 }
 input, textarea {
 	min-width: var(--ui-size-min);
+	padding: 0.25rem;
 }
 #messages {
 	min-height: var(--ui-size-min);
@@ -69,14 +66,6 @@ input, textarea {
 	cursor: ns-resize;
 	margin: 0;
 }
-.row {
-	display: flex;
-	flex-direction: row;
-}
-.col {
-	display: flex;
-	flex-direction: column;
-}
 .col_wrap {
 /*	display: flex;
 	flex-flow: column wrap;
@@ -109,9 +98,6 @@ input, textarea {
 	margin-left: var(--pad);
 }
 
-.pad {
-	padding: var(--pad);
-}
 body.compact .pad {
 	padding: 0;
 }
@@ -141,10 +127,6 @@ body.simple #user {
 }
 .attached {
 	overflow: hidden;
-}
-
-input, textarea {
-	padding: 0.25rem;
 }
 
 input, textarea, button, .button {
@@ -268,8 +250,10 @@ button#send {
 }
 
 #inputrow > .controls > input {
-	width: calc(3.125rem + var(--pad));
-	min-width: calc(3.125rem + var(--pad));
+	width: calc(3.5rem + var(--pad));
+	min-width: calc(3.5rem + var(--pad));
+/*	width: calc(2rem);
+	min-width: calc(2rem); */
 }
 
 .top_controls {
