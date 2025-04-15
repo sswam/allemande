@@ -36,6 +36,7 @@ server {
 	auth_jwt_algorithm HS256;
 
 	location /service_worker.js {
+		add_header Cache-Control "no-cache";
 		try_files $uri $uri/ =404;
 	}
 
@@ -49,6 +50,7 @@ server {
 #		access_log off;
 #		error_log /dev/null;
 #		add_header Cache-Control "no-store";
+		add_header Cache-Control "no-cache";
 		if ($cors_header = "https://rooms.allemande.ai") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
@@ -70,6 +72,7 @@ server {
 #		access_log off;
 #		error_log /dev/null;
 #		add_header Cache-Control "no-store";
+		add_header Cache-Control "no-cache";
 		if ($cors_header = "https://rooms.allemande.ai") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
@@ -91,6 +94,7 @@ server {
 #		access_log off;
 #		error_log /dev/null;
 #		add_header Cache-Control "no-store";
+		add_header Cache-Control "no-cache";
 		if ($cors_header = "https://rooms.allemande.ai") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
@@ -116,6 +120,7 @@ server {
 	location /x {
 		auth_jwt_enabled on;
 		auth_jwt_redirect off;
+		add_header Cache-Control "no-cache";
 # 		auth_basic "Auth";
 # 		auth_basic_user_file /var/www/allychat/.htpasswd;
 		proxy_pass http://127.0.0.1:8000;

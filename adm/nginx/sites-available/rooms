@@ -41,13 +41,15 @@ server {
 	auth_jwt_algorithm HS256;
 
 	location = /service_worker.js {
-	    root /var/www/allychat/static;
-	    try_files /service_worker.js =404;
+		root /var/www/allychat/static;
+		add_header Cache-Control "no-cache";
+		try_files /service_worker.js =404;
 	}
 
 	location = /sw_register.js {
-	    root /var/www/allychat/static;
-	    try_files /sw_register.js =404;
+		root /var/www/allychat/static;
+		add_header Cache-Control "no-cache";
+		try_files /sw_register.js =404;
 	}
 
 	location / {
@@ -63,6 +65,7 @@ server {
 #		access_log off;
 #		error_log /dev/null;
 #		add_header Cache-Control "no-store";
+		add_header Cache-Control "no-cache";
 
 		if ($args ~* stream=1) {
 			rewrite ^ /stream$uri? last;
@@ -99,6 +102,7 @@ server {
 		proxy_set_header X-Forwarded-Proto https;
 #		proxy_set_header Authorization "";
 #		proxy_set_header X-Forwarded-User $remote_user;
+		add_header Cache-Control "no-cache";
 		auth_jwt_extract_request_claims sub;
 		proxy_set_header X-Forwarded-User $http_jwt_sub;
 
