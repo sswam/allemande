@@ -442,7 +442,7 @@ IMPORTANT:
 - **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
 - **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
 - **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
-- **Dali**: Curious and witty, Dali loves learning and playing pranks, and is distinguished by her African/European heritage
+- **Dali**: Curious and witty, Dali loves learning and playing pranks, and she is distinguished by her African/European heritage
 - **Emmie**: Intelligent yet occasionally shy, Emmie is Hispanic/Mediterranean with a talent for solving puzzles
 - **Fenny**: Shy but humorous, Fenny is a delightful presence with wavy auburn hair and a penchant for funny faces
 - **Gabby**: Mischievous and sweet, Gabby is an Indian little sister who loves disguises and singing silly songs
@@ -656,6 +656,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 | Icon | Shortcut | Setting | Description |
 |---------|----------|-------------|----------|
+| <i class="bi-fonts"></i> |  | Font Size | Change font size |
 | <i class="bi-palette-fill"></i> |  | Theme | Change UI theme |
 | <i class="bi-lightbulb-fill"></i> |  | Advanced | Toggle advanced mode |
 | <i class="bi-x"></i> |  | Back | Return to main controls |
@@ -677,10 +678,11 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | <i class="bi-people-fill"></i> |  | Ally Chat | Go to main room |
 | <i class="bi-house-door-fill"></i> |  | Porch | Go to your public room |
 | <i class="bi-house-fill"></i> |  | Home | Go to your private folder |
-| <i class="bi-skip-start-fill"></i> | `Ctrl+'` | First | Go to first page |
+| <i class="bi-skip-start-fill"></i> | `Ctrl+[` | First | Go to first page |
 | <i class="bi-caret-left-fill"></i> | `Ctrl+,` | Prev | Previous page |
 | <i class="bi-caret-right-fill"></i> | `Ctrl+.` | Next | Next page |
-| <i class="bi-skip-end-fill"></i> | `Ctrl+/` | Last | Go to last page |
+| <i class="bi-skip-end-fill"></i> | `Ctrl+]` | Last | Go to last page |
+|  | `Ctrl+]` | New | Go to new room beyond last page |
 
 ### Room Operations Submenu
 
@@ -760,6 +762,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | <i class="bi-layout-three-columns"></i> |  | Columns | View chat in columns |
 | <i class="bi-arrows-collapse-vertical"></i> |  | Compact | Compact view |
 | <i class="bi-clock-history"></i> |  | History | View change history (deleted and edited messages) |
+| <i class="bi-arrows-fullscreen"></i> |  | Full-screen | Make chat area full-screen (off, whole window, full-screen) |
 |  |  | Items | Number of search results to show |
 
 ### Audio Settings Menu
