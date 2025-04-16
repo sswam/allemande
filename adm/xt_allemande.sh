@@ -4,8 +4,8 @@
 # Open xterminals for allemande services locally and on server
 
 # remote_services=(chat-api stream watch bb2html auth build-ui brain)
-remote_services=(chat-api stream bb2html brain)
-local_services=(a1111 llm image)
+remote_services=(chat-api stream bb2html brain auth wat)
+local_services=(llm image a1111)
 
 xt-allemande() {
 	local server= s=$SERVER   # server to connect to
@@ -20,18 +20,18 @@ xt-allemande() {
 		remote=1
 	fi
 
-	# Remote services
-	if [ "$remote" = 1 ]; then
-		for service in "${remote_services[@]}"; do
-			xt -e sshc "$server" sxw allemande "$service" &
-			sleep 0.1
-		done
-	fi
-
 	# Local services
 	if [ "$local" = 1 ]; then
 		for service in "${local_services[@]}"; do
 			xt -e sxw allemande "$service" &
+			sleep 0.1
+		done
+	fi
+
+	# Remote services
+	if [ "$remote" = 1 ]; then
+		for service in "${remote_services[@]}"; do
+			xt -e sshc "$server" sxw allemande "$service" &
 			sleep 0.1
 		done
 	fi
