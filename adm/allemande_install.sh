@@ -57,7 +57,7 @@ for module in $ALLEMANDE_MODULES; do
 done
 
 "$ALLEMANDE_HOME/canon/allemande-user-add" www-data
-"$ALLEMANDE_HOME/canon/allemande-user-add" sam
+"$ALLEMANDE_HOME/canon/allemande-user-add" "$SUDO_USER"
 
 "$ALLEMANDE_HOME/safety/safety_setup.sh"
 
