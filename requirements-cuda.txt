@@ -7,3 +7,6 @@ tensorrt-dispatch
 tensorflow[and-cuda]
 jax[cuda12]
 # natten==0.17.5+torch260cu126
+
+# jax
+flax[all]

@@ -1,3 +1,5 @@
+# These packages are probably not useful without a GPU.
+
 # Note: potentially conflicting packages, may require older libs
 
 ultralytics
@@ -7,8 +9,9 @@ grpcio-status  # needs older version to be compatible with parler-tts
 # git+https://github.com/huggingface/parler-tts.git
 # git+https://github.com/huggingface/parler-tts.git@5d0aca9753ab74ded179732f5bd797f7a8c6f8ee
 
-gradio
-gTTS
+whisperx
+insanely-fast-whisper
+segment-anything
 
 
 # TTS

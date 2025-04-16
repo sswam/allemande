@@ -1,6 +1,6 @@
-export PATH:=$(PWD)/boot:$(PATH)
+export PATH:=$(PWD)/bootstrap:$(PATH)
 
-bootstrap: sub/.tsort_commands .AMPS_shell
+boot: sub/.tsort_commands .AMPS_shell
 
 sub/.tsort_commands: sub/tsort_commands
 	sub/tsort_commands </dev/null

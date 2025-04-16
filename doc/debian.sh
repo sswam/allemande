@@ -12,6 +12,12 @@
 # Some of the commands here are for setting up a fresh server.
 # Please consider whether you need to run them or not.
 
+# To run the web service, you need a domain name and two subdomains:
+# 'chat' and 'rooms'. The 'chat' subdomain hosts the main user interface.
+# The UI includes an iframe to display chat messages, from
+# the 'rooms' subdomain. This protects us from JavaScript,
+# so we can include untrusted JavaScript in the chat safely.
+
 # -------- user and host settings --------------------------------------------
 
 host=$HOSTNAME
@@ -207,21 +213,26 @@ cd ~/soft-ai
 git clone git@github.com:ThereforeGames/unprompted.git
 ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
 
-# -------- build stuff -------------------------------------------------------
-# This may likely fail in some way; please check with the developer or fix it!
-
-cd ~/allemande
-make
-
 # -------- install allemande Python dependencies -----------------------------
 
 pip install -r requirements-core.txt
 pip install -r requirements-1.txt
-pip install -r requirements-2.txt  # there will likely be conflicts / issues!
+# pip install -r requirements-2.txt  # with GPU, there will likely be conflicts / issues!
+# pip install -r requirements-cuda.txt  # only if you have an NVIDIA GPU
 
 rm -rf ~/.cache/pip
 
+# -------- build stuff -------------------------------------------------------
+# This may likely fail in some way; please check with the developer or fix it!
+
+cd ~/allemande/amps
+make
+
+cd ~/allemande
+make
+
 # -------- install whisper.cpp -----------------------------------------------
+# Not recommended without a GPU or on a server
 
 mkdir -p ~/soft-ai
 cd ~/soft-ai
@@ -249,6 +260,10 @@ set runtimepath^=~/.vim runtimepath+=~/.vim/after
 let &packpath=&runtimepath
 source ~/.vimrc
 END
+
+# -------- edit config.sh ----------------------------------------------------
+
+# Edit ~/allemande/config.sh, set your domain name and server name.
 
 # -------- set up secrets.sh -------------------------------------------------
 

@@ -1,5 +1,5 @@
-DOT_FILES = $(wildcard *.dot)
-SOURCE_FILES = $(DOT_FILES:.dot=)
+SOURCE_FILES = $(shell ls -p | grep -v / | grep '^[a-z]' | grep -v '\.')
+DOT_FILES = $(addsuffix .dot,$(SOURCE_FILES))
 
 build: $(DOT_FILES) all.dot
 %.dot: %

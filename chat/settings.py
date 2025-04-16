@@ -7,7 +7,7 @@ import os
 
 EXTENSION = ".bb"
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
-ALLYCHAT_SITE = os.environ["ALLYCHAT_SITE"]
+ALLYCHAT_CHAT_URL = os.environ["ALLYCHAT_CHAT_URL"]
 
 ADMINS = os.environ.get("ALLYCHAT_ADMINS", "").split()
 MODERATORS = os.environ.get("ALLYCHAT_MODERATORS", "").split()

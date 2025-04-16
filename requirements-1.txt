@@ -26,7 +26,7 @@ webdriver_manager
 nltk
 python-Levenshtein
 
-ttkthemes
+# ttkthemes
 
 pytesseract
 
@@ -50,16 +50,13 @@ pyannote.audio
 
 faiss-cpu
 
-segment-anything
 
-
-jax
-flax[all]
-whisperx
-insanely-fast-whisper
 speechbrain
 
 flit
 tox
 
 esprima
+
+gradio
+gTTS

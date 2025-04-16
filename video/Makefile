@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -pedantic -std=gnu11
-LDLIBS=-lGL -lGLU -lX11 -lm
+LDLIBS=-lm
 
 mp4_fast_start: mp4_fast_start.c
 

@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
-ALLYCHAT_SITE = os.environ["ALLYCHAT_SITE"]
+ALLYCHAT_CHAT_URL = os.environ["ALLYCHAT_CHAT_URL"]
 
 
 # see: https://python-markdown.github.io/extensions/
@@ -303,7 +303,7 @@ def fix_link(href: str, bb_file: str) -> str:
             logger.warning("Invalid path: %s", e)
             # TODO should we return maybe a javascript warning or something?
             return href
-        href = f"""{ALLYCHAT_SITE}/#{href}"""
+        href = f"""{ALLYCHAT_CHAT_URL}/#{href}"""
     return href
 
 

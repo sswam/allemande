@@ -29,6 +29,7 @@ bats-assert
 perltidy
 clang-format
 clang-tidy
+ripgrep
 
 splint
 flawfinder
@@ -78,7 +79,7 @@ ruby-dev
 
 libquickjs
 libnode-dev
-libmozjs-102-dev|libmozjs-115-dev|libmozjs-128-dev
+libmozjs-128-dev|libmozjs-115-dev|libmozjs-102-dev
 python3-tk
 
 libjwt-dev

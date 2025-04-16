@@ -36,4 +36,7 @@ chmod:
 	chmod o+rx person/ person/*/ || true
 	chmod o+r person/* person/*/* || true
 
+person:
+	mkdir -p person
+
 .PHONY: all build install chmod sync sync-all
