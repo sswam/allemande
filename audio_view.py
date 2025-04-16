@@ -1,1 +1,0 @@
-/home/sam/allemande/audio/audio_view.py

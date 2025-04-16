@@ -3,7 +3,7 @@ venv=${1%/}
 
 find "$venv" -name __pycache__ | xargs rm -rf --
 
-old=`perl -ne '/VIRTUAL_ENV="(.*?)"/ && print "$1\n"' "$venv/bin/activate"`
+old=`< "$venv/bin/activate" sed -n '/^\s*VIRTUAL_ENV=/ { s/^\s*VIRTUAL_ENV=//; s/"'\''//g; p; }'`
 new=`readlink -f "$venv"`
 
 old2="(`basename "$old"`)"
@@ -17,7 +17,7 @@ else
 	echo "Replace $old with $new in the above files?"
 	read -p "[yn] ? " YN
 	if [ "$YN" = y ]; then
-		echo "$files" | xargs --no-run-if-empty | sed -i "s:$old:$new:g"
+		echo "$files" | xargs --no-run-if-empty sed -i "s:$old:$new:g"
 	fi
 
 	files=`fgrep -I -r "$old2" "$venv"/bin/activate* -l`
@@ -25,6 +25,6 @@ else
 	echo "Replace $old2 with $new2 in the above files?"
 	read -p "[yn] ? " YN
 	if [ "$YN" = y ]; then
-		echo "$files" | xargs --no-run-if-empty | sed -i "s:$old2:$new2:g" 
+		echo "$files" | xargs --no-run-if-empty sed -i "s:$old2:$new2:g" 
 	fi
 fi

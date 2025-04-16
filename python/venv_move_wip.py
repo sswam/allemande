@@ -56,10 +56,10 @@ def venv_move(venv: str, remove_pycache: bool = True, yes: bool = False) -> None
     with open(activate_path, "r", encoding="utf-8") as f:
         activate_script = f.read()
 
-    match = re.search(r'VIRTUAL_ENV=["\'](.*?)["\']', activate_script)
+    match = re.search(r'VIRTUAL_ENV=(["\']?)(.*?)(\1)', activate_script)
     if not match:
         raise ValueError("Could not find VIRTUAL_ENV in activate script")
-    old_path = match.group(1)
+    old_path = match.group(2)
     new_path = os.path.abspath(venv)
 
     if old_path == new_path:

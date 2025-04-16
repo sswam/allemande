@@ -27,11 +27,13 @@ if [ "$yn" != y ]; then
 	exit 1
 fi
 
-# -------- set up sudo with staff group --------------------------------------
+# -------- as root: set up sudo with staff group -----------------------------
 
+read -p "Your username: " user
 echo "%staff ALL = (ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers.d/local >/dev/null
-sudo adduser $USER staff
+adduser $user staff
 
+# As your user
 newgrp staff
 
 # -------- set up apt sources.list; WARNING this overwrites the file ---------
@@ -130,24 +132,16 @@ sudo apt-get -y install ./debian/python3.11-distutils-bogus_1.0_all.deb
 
 # NOTE: use 3.11 on stable or 3.12 on testing / sid. Python 3.13 is no good yet.
 
-sudo apt install python3.11-venv python3.11-dev python3.11-tk
+sudo apt install python3.11-venv python3.11-dev python3-tk
 python3.11 -m venv venv
 # sudo apt install python3.12-venv python3.12-dev python3.12-tk
 # python3.12 -m venv venv
 . venv/bin/activate
 
-# -------- Build htmlsplit, needed to download Go ----------------------------
-
-(cd html; make)
-
-# -------- setup names for tools, and environment ----------------------------
-
-make canon
-. ./env.sh
-
 # -------- install Go from upstream ------------------------------------------
 
-go_url=$(curl https://go.dev/dl/ | htmllinks | grep linux | head -n1)
+go_arch="amd64"  # or just download the right package!
+go_url=$(curl https://go.dev/dl/ | sed -n "/href=\"\/dl\/go.*linux-$go_arch/ { s/.*href=\"//; s/\".*//; p; q; }")
 rm -f go*.linux-amd64.tar.gz
 wget "https://go.dev$go_url"
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go*.linux-amd64.tar.gz
@@ -158,6 +152,26 @@ printf "\n%s\n" 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 # Go modules
 go install golang.org/x/lint/golint@latest
 go install honnef.co/go/tools/cmd/staticcheck@latest
+
+# -------- bashrc additions --------------------------------------------------
+
+cat <<'END' >>~/.bashrc
+
+set -a
+. ~/allemande/venv/bin/activate
+. ~/allemande/env.sh
+. ~/my/ai.env
+
+if [ -n "$PS1" ]; then
+	prompt_status() { if [ $? = 0 ]; then echo '# '; else echo -e '#!'; fi; }
+	export PS1='$(prompt_status)'
+	export PS2='#;'
+	stty stop ''
+	stty -ixon
+fi
+END
+
+exec bash  # restart bash
 
 # -------- Build opts-help, opts-long, needed by many scripts (e.g. metadeb) -
 
@@ -179,26 +193,6 @@ mkdir -p ~/my
 chmod go-rwx ~/my
 cp config/ai.env.dist ~/my/ai.env
 # NOTE: edit ~/ai.env and populate as needed with API keys. They are all optional.
-
-# -------- bashrc additions --------------------------------------------------
-
-cat <<'END' >>~/.bashrc
-
-set -a
-. ~/allemande/venv/bin/activate
-. ~/allemande/env.sh
-. ~/my/ai.env
-
-if [ -n "$PS1" ]; then
-	prompt_status() { if [ $? = 0 ]; then echo '# '; else echo -e '#!'; fi; }
-	export PS1='$(prompt_status)'
-	export PS2='#;'
-	stty stop ''
-	stty -ixon
-fi
-END
-
-exec bash  # restart bash
 
 # -------- unprompted, a macro processor for image gen -----------------------
 

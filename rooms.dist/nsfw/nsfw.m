@@ -1,1 +1,1 @@
-/home/sam/allemande/doc/nsfw/nsfw.md
+../../doc/nsfw/nsfw.md

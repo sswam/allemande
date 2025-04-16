@@ -3,8 +3,8 @@ ALLYCHAT_ROOMS="https://rooms.allemande.ai"
 
 SERVER="opal"
 
-ALLYCHAT_ADMINS="root sam"
-ALLYCHAT_MODERATORS="root sam"
+ALLYCHAT_ADMINS="root lakesun"
+ALLYCHAT_MODERATORS="root lakesun"
 
 ALLYCHAT_ADULT="1"
 ALLYCHAT_SAFE="0"
