@@ -9,13 +9,17 @@ rooms-commit() {
 
 	local status=0
 	while IFS= read -r git; do
+		if [ ! -d "$git" ]; then
+			echo >&2 "Not a directory: $git"
+			continue
+		fi
 		repo=$(dirname "$git")
 		if [ "$verbose" = 1 ]; then
 			verbose arcs "$repo" || status=1
 		else
 			quiet-on-success arcs "$repo" || status=1
 		fi
-	done < <(find "$ALLEMANDE_ROOMS" -type d -name .git | tac)
+	done < <(find "$ALLEMANDE_ROOMS" -name .git | tac)
 	return "$status"
 }
 
