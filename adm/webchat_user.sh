@@ -66,7 +66,7 @@ END
 	mkdir -p rooms/"$user"
 	chmod o-rwx rooms/"$user"
 	mkdir -p users/"$user"
-	ln -s ../../static/themes/template.css users/"$user"/theme.css
+	ln -s ../../static/themes/pastel.css users/"$user"/theme.css
 
 	if ((nsfw)); then
 		echo "- $user" >> rooms/nsfw/.access.yml

@@ -38,9 +38,9 @@ fi
 read -p "Your username: " user
 echo "%staff ALL = (ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers.d/local >/dev/null
 adduser $user staff
+adduser $user www-data
 
-# As your user
-newgrp staff
+# Log out and log in again to activate the new groups
 
 # -------- set up apt sources.list; WARNING this overwrites the file ---------
 

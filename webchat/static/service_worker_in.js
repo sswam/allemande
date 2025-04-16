@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.5.85";
+const VERSION = "0.5.92";
 const DEBUG = false;
 
 const subdomain = self.location.hostname.split(".")[0];
@@ -150,6 +150,8 @@ async function sw_fetch_from_cache_or_network(req) {
   const is_no_cors_domain = !is_app_domain && no_cors_domains.some((domain) => req.url.startsWith(domain));
   if (!is_no_cors_domain)
     options.mode = "cors";
+  // if (is_app_domain)
+  //   options.credentials = "include";
   if (!is_app_domain)
     options.credentials = "omit";
   return await sw_fetch_from_network(req, options);

@@ -1172,7 +1172,8 @@ function go_to_main_site() {
     }
 }
 
-function authChat() {
+async function authChat() {
+  await $script("auth", ALLEMANDE_LOGIN_URL + "/auth.js");
   $on($id("logout"), "click", logout_confirm);
   userData = getJSONCookie("user_data");
   if (!userData) {
@@ -2355,8 +2356,8 @@ function print_chat(ev) {
 
 // main ----------------------------------------------------------------------
 
-function chat_main() {
-  user = authChat();
+async function chat_main() {
+  user = await authChat();
 
   setup_icons();
   load_theme();

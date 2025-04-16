@@ -28,12 +28,14 @@ if [ ! -d "rooms" ]; then
 	cp -a rooms.dist rooms
 fi
 
+find rooms -type d | xa chown $SUDO_USER:www-data --
+find rooms -type d | xa chmod 2775
+find rooms -type f | xa chown $SUDO_USER:www-data --
+find rooms -type f | xa chmod 660
+
 # -------- install the webchat web app ---------------------------------------
 
 cd "$ALLEMANDE_HOME/webchat"
-
-mkdir -p "$ALLEMANDE_HOME/rooms"
-mode 771 rooms
 
 if [ ! -e .htpasswd ]; then
 	touch .htpasswd

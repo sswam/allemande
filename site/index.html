@@ -32,18 +32,19 @@
 	<div class="space" style="height: 40px;">
 	</div>
 	<script src="util@1743385552.js"></script>
-	<script src="auth@1741848930.js"></script>
 	<script>
-		currentUrl = new URL(location.href);
-		domain = currentUrl.hostname;
-		domain = domain.replace(/^login\./, '');
-		chatDomain = domain.startsWith('local.')
-		    ? domain.replace(/^local\./, 'chat-local.')
-		    : 'chat.' + domain;
+		var { protocol, hostname } = window.location;
+		ALLEMANDE_LOGIN_URL = `${protocol}//${hostname}`;
+		chatDomain = hostname.startsWith('local.')
+		    ? hostname.replace(/^local\./, 'chat-local.')
+		    : 'chat.' + hostname;
 		document.getElementById("chatlink").href = `https://${chatDomain}`;
 		for ([index, p] of document.querySelectorAll("#info > p").entries()) {
 			p.style.textIndent = `${index}em`;
 		}
+	</script>
+	<script src="auth@1741848930.js"></script>
+	<script>
 		authHomepage();
 	</script>
 

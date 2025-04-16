@@ -187,7 +187,7 @@ bb2html:
 build-ui:
 	# Note, changes to service_worker_in.js will require a manual rebuild
 	# because we don't want to bump the version when the version changes, e.g. git stuff
-	cd $(WEBCHAT) && awatch -p static ../js/util.js ../js/debug.js ../site/auth.js -e static/service_worker_in.js -a -J ./Makefile
+	cd $(WEBCHAT) && awatch -p static ../js/util.js ../js/debug.js ../site/auth.js -e static/service_worker_in.js static/room.css -a -J ./Makefile
 
 nginx:
 	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx; echo ... done; done

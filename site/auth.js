@@ -57,18 +57,13 @@ async function login(e) {
 	checkLogin();
 }
 
-function mainDomainURL() {
-	const { protocol, hostname } = window.location;
-	return `${protocol}//${hostname.split('.').slice(-2).join('.')}`;
-}
-
 async function logout(e) {
 	if (e)
 		e.preventDefault();
 	console.log('Logging out');
 	// We need to strip the subdomain off the current URL proto and host
 	// because the logout endpoint is on the main domain.
-	const logoutURL = mainDomainURL() + '/x/logout';
+	const logoutURL = ALLEMANDE_LOGIN_URL + '/x/logout';
 	const response = await fetch(logoutURL, {
 		method: 'POST',
 		credentials: 'include',
@@ -89,8 +84,7 @@ async function logoutHome(e) {
 
 async function logoutChat(e) {
 	await logout(e);
-	const homeURL = mainDomainURL();
-	window.location = homeURL;
+	window.location = ALLEMANDE_LOGIN_URL;
 }
 
 function alert_not_logged_in(e) {
