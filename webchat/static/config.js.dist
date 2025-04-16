@@ -1,5 +1,4 @@
 ALLEMANDE_URL="https://allemande.ai";
 ALLYCHAT_CHAT_URL="https://chat.allemande.ai";
 ALLYCHAT_ROOMS_URL="https://rooms.allemande.ai";
-
-ALLYCHAT_WEBPUSH_VAPID_PUBLIC_KEY="...";
+ALLYCHAT_WEBPUSH_VAPID_PUBLIC_KEY="";

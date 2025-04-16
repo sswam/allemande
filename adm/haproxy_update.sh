@@ -11,8 +11,12 @@ if [ ! -e /etc/haproxy/haproxy.cfg.dist ]; then
 	mv /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.dist
 fi
 
+if [ ! -e /etc/haproxy/haproxy-clients.cfg ]; then
+	touch /etc/haproxy/haproxy-clients.cfg
+fi
+
 rm -f /etc/haproxy/haproxy.cfg
 
-include < haproxy/haproxy.cfg > /etc/haproxy/haproxy.cfg
+envsubst '$ALLEMANDE_DOMAIN' < "haproxy/haproxy.cfg" | include > /etc/haproxy/haproxy.cfg
 
 service haproxy reload

@@ -9,16 +9,15 @@ ALLYCHAT_JWT_SECRET_BINHEX=$(echo -n "$ALLYCHAT_JWT_SECRET" | binhex)
 
 set -e -u
 
-cd "$ALLEMANDE_HOME/adm"
-
-cd nginx/sites-available
+cd "$ALLEMANDE_HOME/adm/nginx"
 
 umask 0077
 
-for site in *; do
-	rm -f "/etc/nginx/sites-available/$site"
-	sed 's/^\([[:space:]]*auth_jwt_key \)".*";$/\1"'"$ALLYCHAT_JWT_SECRET_BINHEX"'";/' \
-		< "$site" > /etc/nginx/sites-available/"$site"
+ALLEMANDE_DOMAIN_ESC=${ALLEMANDE_DOMAIN//./\\.}
+
+find . -type f \( -name ".*" -o -print \) |
+while read file; do
+	envsubst '$ALLYCHAT_JWT_SECRET_BINHEX,$ALLEMANDE_DOMAIN,$ALLEMANDE_DOMAIN_ESC' < "$file" > "/etc/nginx/$file"
 done
 
 service nginx reload || service nginx start

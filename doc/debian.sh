@@ -52,6 +52,14 @@ deb http://security.debian.org/debian-security bookworm-security main contrib no
 deb http://ftp.debian.org/debian bookworm-backports main contrib non-free non-free-firmware
 deb http://ftp.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
 deb http://ftp.debian.org/debian experimental main contrib non-free non-free-firmware
+
+deb-src http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian sid main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
+deb-src http://security.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+deb-src http://ftp.debian.org/debian bookworm-backports main contrib non-free non-free-firmware
+deb-src http://ftp.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
+deb-src http://ftp.debian.org/debian experimental main contrib non-free non-free-firmware
 END
 
 # -------- set up 00dontbreakdebian for safety with other sources ------------
@@ -241,7 +249,7 @@ cd whisper.cpp
 make -j8
 
 # -------- install clip-interrogator -----------------------------------------
-# This isn't used yet, so you can skip it.
+# This needs a GPU and isn't used yet, so you can skip it.
 
 cd ~/soft-ai
 git clone git@github.com:pharmapsychotic/BLIP.git
@@ -252,7 +260,11 @@ pip install -e clip-interrogator
 # -------- nvim settings for vim compatibility -------------------------------
 # You can skip this if you don't use nvim.
 
-touch ~/.vimrc
+cat <<END >~/.vimrc
+set nocp
+set hls
+END
+
 mkdir -p ~/.config/nvim
 
 cat <<END >>~/.config/nvim/init.vim
@@ -271,11 +283,21 @@ export ALLYCHAT_JWT_SECRET="$(openssl rand -hex 32)"
 envsubst < config/secrets.sh.dist > secrets.sh
 # Back this up if you are running a production service!
 
+# -------- SSL certificates --------------------------------------------------
+
+# TODO
+
+# -------- build nginx with JWT support --------------------------------------
+
+nginx-build-with-jwt "1.22.1-9"  # known good version, compatible with the plugin
+# nginx-build-with-jwt           # or try your luck with the latest version, which isn't
+
 # -------- run setup scripts -------------------------------------------------
 
 cd ~/allemande
 . ./env.sh
 
+sudo rm -f /etc/nginx/sites-enabled/default
 allemande-install
 web-install
 make canon

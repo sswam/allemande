@@ -15,12 +15,12 @@ ln -sfT "$ALLEMANDE_HOME/site" /var/www/allemande
 
 # install mousetrap library --------------------------------------------------
 
-cd "$ALLEMANDE_HOME/js"
-if [ ! -e mousetrap ]; then
-	git clone https://github.com/ccampbell/mousetrap
-fi
+# cd "$ALLEMANDE_HOME/js"
+# if [ ! -e mousetrap ]; then
+# 	git clone https://github.com/ccampbell/mousetrap
+# fi
 
-# copy rooms.dict to rooms
+# copy rooms.dist to rooms
 
 cd "$ALLEMANDE_HOME"
 
@@ -33,8 +33,7 @@ fi
 cd "$ALLEMANDE_HOME/webchat"
 
 mkdir -p "$ALLEMANDE_HOME/rooms"
-mkdir -p files
-mode 771 rooms files
+mode 771 rooms
 
 if [ ! -e .htpasswd ]; then
 	touch .htpasswd
@@ -48,23 +47,25 @@ ln -sfT $PWD /var/www/allychat
 
 cd rooms
 
-mode 660 *.bb *.html
-mode 440 -.bb -.html
+mode 660 *.bb *.html || true
 
 # install the nginx config and sites -----------------------------------------
 
-cd "$ALLEMANDE_HOME/adm/nginx"
-find . -type f \( -name ".*" -o -print \) |
-while read conf; do
-	dir=$(dirname "$conf")
-	ln -sf "$PWD/$conf" -t /etc/nginx/$dir/
-done
-
-# install the nginx sites properly -------------------------------------------
-
 cd "$ALLEMANDE_HOME/adm"
 
+if [ ! -e /etc/nginx/banned_ips.conf ]; then
+	touch /etc/nginx/banned_ips.conf
+	mode 600 /etc/nginx/banned_ips.conf
+fi
+
+rm -f /etc/nginx/sites-enabled/default
+
 ./nginx_update.sh
+
+cd /etc/nginx/sites-enabled
+for site in chat rooms; do
+	ln -sf ../sites-available/$site .
+done
 
 # install the haproxy config -------------------------------------------------
 
@@ -74,7 +75,7 @@ cd "$ALLEMANDE_HOME/adm"
 
 # restart services -----------------------------------------------------------
 
-service nginx stop
 service haproxy stop
+service nginx stop
 service nginx start
 service haproxy start

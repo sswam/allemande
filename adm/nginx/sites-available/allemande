@@ -1,5 +1,5 @@
 server {
-	server_name allemande.ai local.allemande.ai;
+	server_name $ALLEMANDE_DOMAIN local.$ALLEMANDE_DOMAIN;
 
 	charset UTF-8;
 
@@ -20,8 +20,8 @@ server {
 	# Read up on ssl_ciphers to ensure a secure configuration.
 	# See: https://bugs.debian.org/765782
 
-	ssl_certificate /etc/letsencrypt/live/allemande.ai/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/allemande.ai/privkey.pem;
+	ssl_certificate /etc/letsencrypt/live/$ALLEMANDE_DOMAIN/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/$ALLEMANDE_DOMAIN/privkey.pem;
 
 	root /var/www/allemande/;
 	index index.html;
@@ -30,7 +30,7 @@ server {
 
 	location = /ban.html {
 		if ($is_banned = 0) {
-			return 302 https://allemande.ai/;
+			return 302 https://$ALLEMANDE_DOMAIN/;
 		}
 		try_files $uri =404;
 		add_header Cache-Control "no-cache";
@@ -38,7 +38,7 @@ server {
 
 	location = / {
 		if ($is_banned) {
-			return 302 https://allemande.ai/ban.html;
+			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 	}
 
@@ -48,17 +48,17 @@ server {
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded-Proto https;
-# 		if ($cors_header = "https://rooms.allemande.ai") {
+# 		if ($cors_header = "https://rooms.$ALLEMANDE_DOMAIN") {
 # 			add_header Access-Control-Allow-Origin $cors_header always;
 # 		}
-		if ($cors_header = "https://chat.allemande.ai") {
+		if ($cors_header = "https://chat.$ALLEMANDE_DOMAIN") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
 		}
 	}
 
-	auth_jwt_key "REDACTED";
-	auth_jwt_loginurl "https://allemande.ai/";
+	auth_jwt_key "$ALLYCHAT_JWT_SECRET_BINHEX";
+	auth_jwt_loginurl "https://$ALLEMANDE_DOMAIN/";
 	auth_jwt_enabled off;
 	auth_jwt_redirect on;
 	auth_jwt_location COOKIE=auth;
@@ -86,7 +86,7 @@ server {
 }
 
 server {
-	server_name www.allemande.ai;
+	server_name www.$ALLEMANDE_DOMAIN;
 	listen 127.0.0.1:440 ssl http2 proxy_protocol;
-	return 302 $scheme://allemande.ai$request_uri;
+	return 302 $scheme://$ALLEMANDE_DOMAIN$request_uri;
 }

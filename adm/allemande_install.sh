@@ -7,12 +7,16 @@ python_dir="${1:-$(dirname "$(which python)")}"
 
 . get-root
 
+PATH="/usr/sbin:$PATH"
+
 home="$ALLEMANDE_HOME"
 user="$ALLEMANDE_USER"
 www_user="www-data"
 portals="$ALLEMANDE_PORTALS"
 
-ln -sfT "$home" /opt/allemande
+if [ ! -d /opt/allemande ]; then
+	ln -sfT "$home" /opt/allemande
+fi
 
 cp -T "$home/adm/crontab" /etc/cron.d/allemande
 
@@ -55,7 +59,7 @@ done
 "$ALLEMANDE_HOME/canon/allemande-user-add" www-data
 "$ALLEMANDE_HOME/canon/allemande-user-add" sam
 
-"$ALLEMANDE_HOME/safety/setup"
+"$ALLEMANDE_HOME/safety/safety_setup.sh"
 
 touch "$portals/gpu_mutex"
 chown $user:$www_user "$portals/gpu_mutex"

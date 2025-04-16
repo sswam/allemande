@@ -1,10 +1,10 @@
 map $host $redirect_host {
-	default chat.allemande.ai;
-	~^rooms(-\w+)?\.allemande\.ai$ chat$1.allemande.ai;
+	default chat.$ALLEMANDE_DOMAIN;
+	~^rooms(-\w+)?\.$ALLEMANDE_DOMAIN_ESC$ chat$1.$ALLEMANDE_DOMAIN;
 }
 
 server {
-	server_name rooms.allemande.ai rooms-local.allemande.ai;
+	server_name rooms.$ALLEMANDE_DOMAIN rooms-local.$ALLEMANDE_DOMAIN;
 
 	charset UTF-8;
 
@@ -25,16 +25,16 @@ server {
 	# Read up on ssl_ciphers to ensure a secure configuration.
 	# See: https://bugs.debian.org/765782
 
-	ssl_certificate /etc/letsencrypt/live/allemande.ai/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/allemande.ai/privkey.pem;
+	ssl_certificate /etc/letsencrypt/live/$ALLEMANDE_DOMAIN/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/$ALLEMANDE_DOMAIN/privkey.pem;
 
 	root /var/www/allychat/rooms/;
 	index index.html;
 
 	absolute_redirect off;
 
-	auth_jwt_key "REDACTED";
-	auth_jwt_loginurl "https://allemande.ai/";
+	auth_jwt_key "$ALLYCHAT_JWT_SECRET_BINHEX";
+	auth_jwt_loginurl "https://$ALLEMANDE_DOMAIN/";
 	auth_jwt_enabled off;
 	auth_jwt_redirect off;
 	auth_jwt_location COOKIE=auth;
@@ -54,7 +54,7 @@ server {
 
 	location / {
 		if ($is_banned) {
-			return 302 https://allemande.ai/ban.html;
+			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 		auth_jwt_enabled on;
 #		auth_basic "Auth";
@@ -74,7 +74,7 @@ server {
 			rewrite ^ /stream$uri?snapshot=1 last;
 		}
 
-		if ($cors_header = "https://chat.allemande.ai") {
+		if ($cors_header = "https://chat.$ALLEMANDE_DOMAIN") {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
 		}
@@ -90,7 +90,7 @@ server {
 
 	location /stream {
 		if ($is_banned) {
-			return 302 https://allemande.ai/ban.html;
+			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 		auth_jwt_enabled on;
 #		auth_basic "Auth";

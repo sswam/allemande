@@ -23,5 +23,5 @@ while read conf; do
 	rm -f "/etc/nginx/$conf"
 done
 
-systemctl restart nginx
-systemctl restart haproxy
+service nginx restart
+service haproxy restart

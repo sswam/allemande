@@ -4,7 +4,8 @@ set -e -u -o pipefail
 
 NGINX_VERSION=${1:-}
 
-cd ~/soft/
+mkdir -p ~/soft
+cd ~/soft
 
 if [ ! -e ngx-http-auth-jwt-module ]; then
 	git clone git@github.com:TeslaGov/ngx-http-auth-jwt-module.git
@@ -27,7 +28,7 @@ apt-get source nginx=$NGINX_VERSION
 
 apt-get build-dep -s nginx=$NGINX_VERSION |
 	sed -n '/^The following NEW packages will be installed:$/,/^[^ ]/p' |
-	grep '^ ' || true > nginx-build-deps
+	(grep '^ ' || true) > nginx-build-deps
 if [ -s nginx-build-deps ]; then
 	metadeb nginx-build-deps
 fi
@@ -60,7 +61,7 @@ w
 q
 END
 
-debuild -b
+debuild -b -us -uc
 
 cd ..
 

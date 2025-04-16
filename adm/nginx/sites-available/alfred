@@ -1,5 +1,5 @@
 server {
-	server_name alfred.allemande.ai;
+	server_name alfred.$ALLEMANDE_DOMAIN;
 
 	charset UTF-8;
 
@@ -17,16 +17,16 @@ server {
 	# Read up on ssl_ciphers to ensure a secure configuration.
 	# See: https://bugs.debian.org/765782
 
-	ssl_certificate /etc/letsencrypt/live/allemande.ai/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/allemande.ai/privkey.pem;
+	ssl_certificate /etc/letsencrypt/live/$ALLEMANDE_DOMAIN/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/$ALLEMANDE_DOMAIN/privkey.pem;
 
 	root /opt/allemande/apps/alfred;
 	index index.html;
 
 	absolute_redirect off;
 
-	auth_jwt_key "REDACTED";
-	auth_jwt_loginurl "https://allemande.ai/";
+	auth_jwt_key "$ALLYCHAT_JWT_SECRET_BINHEX";
+	auth_jwt_loginurl "https://$ALLEMANDE_DOMAIN/";
 	auth_jwt_enabled off;
 	auth_jwt_redirect on;
 	auth_jwt_location COOKIE=auth;
@@ -34,7 +34,7 @@ server {
 
 	location / {
 		if ($is_banned) {
-			return 302 https://allemande.ai/ban.html;
+			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
  		auth_jwt_enabled on;
 # 		auth_basic "Auth";
@@ -57,7 +57,7 @@ server {
 
 # 	location /logout {
 # 		if ($is_banned) {
-# 			return 302 https://allemande.ai/ban.html;
+# 			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 # 		}
 # 		auth_basic "Auth";
 # 		auth_basic_user_file /var/www/allychat/.htpasswd;
