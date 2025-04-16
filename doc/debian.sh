@@ -6,7 +6,8 @@
 
 # The developer recommends to use Debian.
 
-# You can either step through these scripts, or run them.
+# Note: Do not simply execute the whole file, rather read it and copy-paste the
+# commands after confirming that they are good for your system.
 
 # ======== run some things as root {{{ =======================================
 

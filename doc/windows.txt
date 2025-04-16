@@ -1,7 +1,9 @@
 # Windows Installation
 
 This is an install guide and suggested settings for Windows with WSL.
-After following this guide, continue with the debian.txt install notes.
+After following this guide, continue with the debian.sh install notes.
+Note: Do not simply execute debian.sh, rather read it and copy-paste the
+commands after confirming that they are good for your system.
 
 ## Basic Setup
 
