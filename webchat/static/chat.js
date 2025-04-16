@@ -145,6 +145,7 @@ const SHORTCUTS_MESSAGE = shortcuts_to_dict([
   ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
   ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
   ['alt+e', () => edit(), 'Edit file', ADMIN],
+  ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
 
   ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
   ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
@@ -302,7 +303,10 @@ async function flash($el, className) {
 }
 
 async function error(id) {
-  await flash($id(id), "error");
+  const $e = $id(id);
+  if (!$e)
+    return;
+  await flash($e, "error");
 }
 
 // active indicator for buttons ----------------------------------------------
@@ -1320,11 +1324,13 @@ async function clear_chat(ev, op) {
     confirm_message = "Archive the chat?  You can go to it later with ctrl-].";
   else if (op == "clean")
     confirm_message = "Clean up the room?  Removes messages from specialists.";
+  else if (op == "render")
+    confirm_message = null;
   // TODO it would be better to hide them from everyone, with a switch
   else
     throw new Error("invalid op: " + op);
 
-  if (!confirm(confirm_message)) return;
+  if (confirm_message && !confirm(confirm_message)) return;
 
   ev.preventDefault();
   const formData = new FormData();
@@ -1352,9 +1358,6 @@ async function clear_chat(ev, op) {
   }
 
   reset_ui();
-
-  // TODO should clear immediately for other users too, not just the current user
-  // reload_messages();
 }
 
 async function archive_chat(ev) {
@@ -1367,6 +1370,10 @@ async function rotate_chat(ev) {
 
 async function clean_chat(ev) {
   await clear_chat(ev, "clean");
+}
+
+async function rerender_html(ev) {
+  await clear_chat(ev, "render");
 }
 
 async function undo_last_message(room) {
@@ -2014,7 +2021,8 @@ async function fetch_themes_options() {
   const links = [...doc.getElementsByTagName('a')];
   links.shift();
   const hrefs = links.map(link => link.getAttribute('href'));
-  const themes = hrefs.map(href => href.replace(/\.css$/, ''));
+  const themes_css = hrefs.filter(href => href.endsWith('.css'));
+  const themes = themes_css.map(href => href.replace(/\.css$/, ''));
   return themes;
 }
 
