@@ -136,6 +136,11 @@ rooms.*
 # web cache
 /webcache
 
+# symlinks to NSFW agents
+/agents/Sylvi.yml
+/agents/Xilu.yml
+/agents/Xavi.yml
+
 # binary code
 /arcs/sshc
 /c/test_lua
