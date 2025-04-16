@@ -1,47 +1,42 @@
 #!/bin/bash -eu
 
-# Debian GNU/Linux Installation
+# NOTE: Do not simply execute the whole file, rather read it and copy-paste the
+# commands after confirming that they are good for your system.
+
+# Installation for Debian GNU/Linux
 
 # These install notes are fairly minimal with a few suggested extras.
 
 # The developer recommends to use Debian.
 
-# Note: Do not simply execute the whole file, rather read it and copy-paste the
-# commands after confirming that they are good for your system.
+# Some of the commands here are for setting up a fresh server.
+# Please consider whether you need to run them or not.
 
-# ======== run some things as root {{{ =======================================
+# -------- user and host settings --------------------------------------------
 
-user=$USER
 host=$HOSTNAME
-servers=(ucm.dev pi.ucm.dev)
-server0=${servers[0]}
-code=$server0:/home/sam/code
-fullname=`awk -F: -v user=$user '$1==user {print $5}' /etc/passwd | sed 's/,.*//'`
+email=$USER@$HOSTNAME
+fullname=`awk -F: -v user=$USER '$1==user {print $5}' /etc/passwd | sed 's/,.*//'`
 read -i "$fullname" -p "Your full name: " fullname
+read -i "$email" -p "Your email: " email
 sudo chfn -f "$fullname" $USER
 
-read -p "Settings are user=$user, host=$host, servers=${servers[*]}, code=$code, okay? " yn
+read -p "Settings are user=$USER, email=$email, host=$HOSTNAME, okay? " yn
 if [ "$yn" != y ]; then
-	echo >&2 "Please fix your settings, then re-run $(basename $0)"
+	echo >&2 "Please fix your settings, and try again"
 	exit 1
 fi
 
 # -------- set up sudo with staff group --------------------------------------
 
-sudo sh -c "
-cat <<END >/etc/sudoers.d/local
-%staff ALL = (ALL) NOPASSWD: ALL
-END
-
+echo "%staff ALL = (ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers.d/local >/dev/null
 sudo adduser $USER staff
-"
 
 newgrp staff
 
-# -------- set up apt sources.list -------------------------------------------
+# -------- set up apt sources.list; WARNING this overwrites the file ---------
 
-sudo sh -c "
-cat <<END >/etc/apt/sources.list
+cat <<END | sudo tee /etc/apt/sources.list >/dev/null
 deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
 deb http://deb.debian.org/debian sid main contrib non-free non-free-firmware
 deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
@@ -50,12 +45,10 @@ deb http://ftp.debian.org/debian bookworm-backports main contrib non-free non-fr
 deb http://ftp.debian.org/debian bookworm-updates main contrib non-free non-free-firmware
 deb http://ftp.debian.org/debian experimental main contrib non-free non-free-firmware
 END
-"
 
 # -------- set up 00dontbreakdebian for safety with other sources ------------
 
-sudo sh -c "
-cat <<END >/etc/apt/preferences.d/00dontbreakdebian
+cat <<END | sudo tee /etc/apt/preferences.d/00dontbreakdebian >/dev/null
 Package: *
 Pin: release o=Debian,a=experimental
 Pin-Priority: 1
@@ -80,9 +73,8 @@ Package: *
 Pin: release o=Debian,a=stable-updates
 Pin-Priority: 990
 END
-"
 
-# -------- allow staff to install programs without sudo ----------------------
+# -------- allow staff to install programs without sudo (optional) -----------
 
 cd /usr/local
 dirs="bin sbin man man/man1 lib/site_perl"
@@ -100,32 +92,34 @@ sudo apt-get -y dist-upgrade
 
 sudo update-alternatives --config editor
 
-# -------- set up ssh --------------------------------------------------------
+# -------- set up ssh and generate a key -------------------------------------
 
 mkdir -p ~/.ssh
 chmod go-rwx ~/.ssh
-ssh-keygen -t rsa -b 4096 -C $user@$server0 -f ~/.ssh/id_rsa -N ""
+ssh-keygen -t rsa -b 4096 -C "$email" -f ~/.ssh/id_rsa -N ""
 cat ~/.ssh/id_rsa.pub >>~/.ssh/authorized_keys
 
-# -------- copy ssh keys to servers and connect ------------------------------
+# Add your new ssh public key from ~/.ssh/id_rsa.pub to your Github settings:
+# https://github.com/settings/keys
 
-for server in "${servers[@]}"; do
-	ssh-copy-id $server
-	ssh -T -f -oServerAliveInterval=15 -oServerAliveCountMax=3 -N $server
-	echo "ln -s -f -t ~ ~sam/allemande" | ssh $server
-done
+# -------- copy ssh public keys to other servers, likely not applicable ------
+
+# for server in ucm.dev pi.ucm.dev; do
+# 	ssh-copy-id $server
+# 	ssh -T -f -oServerAliveInterval=15 -oServerAliveCountMax=3 -N $server
+# done
 
 # -------- set up git --------------------------------------------------------
 
-git config --global user.email $user@$server0
+git config --global user.email "$email"
 git config --global user.name "$fullname"
-git config --global pull.rebase false 
+git config --global pull.rebase false      # or true if you prefer!
 
 # -------- clone allemande and use the main branch ---------------------------
 
-git clone https://github.com/sswam/allemande.git
-# git clone ucm.dev:allemande  # alternative
-# git clone git@github.com:sswam/allemande.git  # alternative
+git clone git@github.com:sswam/allemande.git
+# git clone https://github.com/sswam/allemande.git  # alternative, but can't push
+# You could also fork on github and clone your version.
 cd allemande
 
 # -------- install python3.11-distutils-bogus --------------------------------
@@ -171,20 +165,22 @@ go install honnef.co/go/tools/cmd/staticcheck@latest
 make canon
 
 # -------- install allemande Debian dependencies -----------------------------
+# metadeb creates a meta-package, makes it easier to uninstall things later
 
 metadeb -n=allemande-deps debian-allemande-deps.txt
 
 # Alternative without metadeb:
-# sudo apt-get -y install `< debian-packages.txt grep -v '^#'`
+# sudo apt-get -y install $(< debian-packages.txt grep -v '^#')
 # sudo apt-get -y clean
 
-# -------- bashrc additions --------------------------------------------------
+# -------- ai.env: API keys to access AI providers ---------------------------
 
 mkdir -p ~/my
 chmod go-rwx ~/my
-touch ~/my/ai.env
-# NOTE: copy ai.env or populate as needed with API keys
-# refer to config/ai.env.dist
+cp config/ai.env.dist ~/my/ai.env
+# NOTE: edit ~/ai.env and populate as needed with API keys. They are all optional.
+
+# -------- bashrc additions --------------------------------------------------
 
 cat <<'END' >>~/.bashrc
 
@@ -202,25 +198,26 @@ if [ -n "$PS1" ]; then
 fi
 END
 
-exec bash
+exec bash  # restart bash
 
-# -------- unprompted --------------------------------------------------------
+# -------- unprompted, a macro processor for image gen -----------------------
 
 mkdir -p ~/soft-ai
 cd ~/soft-ai
 git clone git@github.com:ThereforeGames/unprompted.git
 ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
-cd ~/allemande
 
 # -------- build stuff -------------------------------------------------------
+# This may likely fail in some way; please check with the developer or fix it!
 
+cd ~/allemande
 make
 
 # -------- install allemande Python dependencies -----------------------------
 
 pip install -r requirements-core.txt
 pip install -r requirements-1.txt
-pip install -r requirements-2.txt  # there may be issues!
+pip install -r requirements-2.txt  # there will likely be conflicts / issues!
 
 rm -rf ~/.cache/pip
 
@@ -228,21 +225,21 @@ rm -rf ~/.cache/pip
 
 mkdir -p ~/soft-ai
 cd ~/soft-ai
-git clone https://github.com/ggerganov/whisper.cpp.git
+git clone git@github.com:ggerganov/whisper.cpp.git
 cd whisper.cpp
 make -j8
 
-# TODO install scripts so we can run it conveniently
-
 # -------- install clip-interrogator -----------------------------------------
+# This isn't used yet, so you can skip it.
 
 cd ~/soft-ai
-git clone https://github.com/pharmapsychotic/BLIP.git
-git clone https://github.com/pharmapsychotic/clip-interrogator.git
+git clone git@github.com:pharmapsychotic/BLIP.git
+git clone git@github.com:pharmapsychotic/clip-interrogator.git
 pip install -e BLIP
 pip install -e clip-interrogator
 
 # -------- nvim settings for vim compatibility -------------------------------
+# You can skip this if you don't use nvim.
 
 touch ~/.vimrc
 mkdir -p ~/.config/nvim
@@ -253,20 +250,11 @@ let &packpath=&runtimepath
 source ~/.vimrc
 END
 
-# -------- copy ai.env secrets file from another staff member ----------------
-# or copy from config/ai.env.dist and add your own keys; they are all optional
+# -------- set up secrets.sh -------------------------------------------------
 
-scp sam@ucm.dev:my/ai.env ~/my/
-set -a
-. ~/my/ai.env
-
-# -------- copy secrets.sh from another staff member -------------------------
-# or copy from config/secrets.sh.dist and set ALLYCHAT_JWT_SECRET
+export ALLYCHAT_JWT_SECRET="$(openssl rand -hex 32)"
+envsubst < config/secrets.sh.dist > secrets.sh
 # Back this up if you are running a production service!
-
-cp config/secrets.sh.dist secrets.sh
-ALLYCHAT_JWT_SECRET="$(head -c32 /dev/urandom | xxd -p | tr -d '\n')"
-sed -i 's/ALLYCHAT_JWT_SECRET=""/ALLYCHAT_JWT_SECRET="'$ALLYCHAT_JWT_SECRET'"/' secrets.sh
 
 # -------- run setup scripts -------------------------------------------------
 
@@ -278,14 +266,27 @@ web-install
 make canon
 
 # -------- test allemande tools ----------------------------------------------
+# llm is the low-level tool, check its --help
+# 1sf gives a one-sentence response
+# query and process are wrappers
+# que and proc give short responses
+# 1s and 1w give 1 sentence and 1 word responses
+# 1sf and 1wf try to force the model to answer definitively
 
-1sf 'What is the most famous tower in the world?'
+llm models  # list all supported models and their aliases
+query -m=4 "Please tell me a story about ponies!"         # use GPT 4o
+1sf 'What is the most famous tower in the world?'         # uses Claude by default
+1sf -m=gf 'What is the most famous donkey in the world?'  # use Gemini Flash
+fortune | tee /dev/stderr | proc -m=dese "to a poem"      # use Deepseek V3
 
-rm -r ~/llm.log
+rm -r ~/llm.log  # remove the llm log files, if you don't want to keep them
 
 # -------- set up firewall for semi-trusted chatusers ------------------------
+# NOTE: This is optional and experimental, you probably should skip it for now.
 
-# copy and edit config from adm/remote_user_firewall.sh to /etc/remote_user_firewall.conf
+sudo cp config/remote_user_firewall.conf.dist /etc/remote_user_firewall.conf
+# edit /etc/remote_user_firewall.conf to set your gateway at least
+# ROUTER_IPv6 can be blank if you don't use IPv6 or want to block it
 
 cat <<END | sudo tee -a /etc/rc.local
 
@@ -297,9 +298,9 @@ sudo systemctl enable rc-local
 
 sudo /opt/allemande/adm/remote_user_firewall.sh add
 
-# check after reboot with:
+# check that the firewall was applied after reboot, with:
 sudo /opt/allemande/adm/remote_user_firewall.sh list
 
-# -------- TODO: install other allemande deps that are tricky ----------------
+# -------- install other allemande soft dependencies that are tricky ---------
 
-#   - stable diffusion / flux
+# see requirements-extra.sh: install notes for some other dependencies

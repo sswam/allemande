@@ -146,7 +146,7 @@ These applications are currently stand-alone tools; they are not yet integrated 
 - If you use Windows, you will need to install Debian in WSL2, see [doc/windows.txt](doc/windows.txt) for details.
 - Refer to [doc/debian.sh](doc/debian.sh) for the main install guide. It should work with other Linux distros, and possibly on Mac. You will need to figure out the corresponding packages, etc.
 - Python packages are listed in [requirements-webchat.txt], [requirements-1.txt](requirements-1.txt), [requirements-2.txt](requirements-2.txt), [requirements-cuda.txt](requirements-cuda.txt).
-- An install guide for certain extra packages: [requirements-extra.txt](requirements-extra.txt)
+- An install guide for certain extra packages: [requirements-extra.sh](requirements-extra.sh)
 - The install guides are yet not comprehensive. Please contact the developer for help if you want to self-host Ally Chat.
 
 ## Examples
