@@ -53,7 +53,7 @@ Here's the info to access Ally Chat:
 
 user: $user
 pass: $pass
-https://allemande.ai
+https://$ALLEMANDE_DOMAIN
 
 Getting Started with Ally Chat:
 

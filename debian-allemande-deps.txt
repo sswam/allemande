@@ -100,5 +100,9 @@ python3-pdfminer
 mecab
 libmecab-dev
 
+certbot
+apache2-utils
+pwgen
+
 # non-free:
 # libmkl-dev

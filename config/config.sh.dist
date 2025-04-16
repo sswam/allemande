@@ -1,9 +1,10 @@
 ALLEMANDE_DOMAIN="allemande.ai"
+ALLEMANDE_LOGIN_DOMAIN="allemande.ai"  # or can be login.allemande.ai
 
-SERVER="opal"
+SERVER="opal"  # your server's short hostname
 
-ALLYCHAT_ADMINS="root lakesun"
-ALLYCHAT_MODERATORS="root lakesun"
+ALLYCHAT_ADMINS="root sam"      # replace 'sam' with your admin username
+ALLYCHAT_MODERATORS="root sam"  # ^
 
 ALLYCHAT_ADULT="1"
 ALLYCHAT_SAFE="0"

@@ -228,6 +228,8 @@ pip install -r requirements-1.txt
 # pip install -r requirements-2.txt  # with GPU, there will likely be conflicts / issues!
 # pip install -r requirements-cuda.txt  # only if you have an NVIDIA GPU
 
+pip install -e mdformat-light-touch
+
 rm -rf ~/.cache/pip
 
 # -------- build stuff -------------------------------------------------------

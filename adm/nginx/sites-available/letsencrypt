@@ -1,0 +1,19 @@
+server {
+	server_name $ALLEMANDE_DOMAIN chat.$ALLEMANDE_DOMAIN rooms.$ALLEMANDE_DOMAIN login.$ALLEMANDE_DOMAIN;
+	listen 127.0.0.1:81;
+	listen [::]:81;
+	root /var/www/html/;
+
+        # Only serve the .well-known directory
+        location ^~ /.well-known/acme-challenge/ {
+                # Disable directory listing
+                autoindex off;
+                # Only allow GET requests
+                limit_except GET { deny all; }
+        }
+
+        # Deny access to all other locations
+        location / {
+                deny all;
+        }
+}

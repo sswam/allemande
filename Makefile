@@ -196,22 +196,22 @@ logs:
 	tail -f /var/log/nginx/access.log /var/log/nginx/error.log
 
 firefox-webchat-local:
-	(sleep 1; firefox -P "$$USER" "https://chat-local.allemande.ai/#$$room") & disown
+	(sleep 1; firefox -P "$$USER" "https://chat-local.$$ALLEMANDE_DOMAIN/#$$room") & disown
 
 firefox-webchat-online:
-	(sleep 1; firefox -P "$$USER" "https://chat.allemande.ai/#$$room") & disown
+	(sleep 1; firefox -P "$$USER" "https://chat.$$ALLEMANDE_DOMAIN/#$$room") & disown
 
 firefox-pro-local:
-	(sleep 1; firefox -P "$$USER" "https://pro-local.allemande.ai/") & disown
+	(sleep 1; firefox -P "$$USER" "https://pro-local.$$ALLEMANDE_DOMAIN/") & disown
 
 firefox-pro-online:
-	(sleep 1; firefox -P "$$USER" "https://pro.allemande.ai/") & disown
+	(sleep 1; firefox -P "$$USER" "https://pro.$$ALLEMANDE_DOMAIN/") & disown
 
 chrome-webchat-local:
-	(sleep 1; chrome "https://chat-local.allemande.ai/#$$room") & disown
+	(sleep 1; chrome "https://chat-local.$$ALLEMANDE_DOMAIN/#$$room") & disown
 
 chrome-webchat-online:
-	(sleep 1; chrome "https://chat.allemande.ai/#$$room") & disown
+	(sleep 1; chrome "https://chat.$$ALLEMANDE_DOMAIN/#$$room") & disown
 
 %.xt:
 	xterm-screen-run "$(SCREEN)" "$*" nt-make "$*"; sleep 0.1

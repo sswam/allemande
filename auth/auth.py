@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 SESSION_MAX_AGE = 30 * 24 * 3600  # 30 days
 JWT_ALGORITHM = "HS256"
 
+ALLEMANDE_DOMAIN = os.environ["ALLEMANDE_DOMAIN"]
 JWT_SECRET = os.environ["ALLYCHAT_JWT_SECRET"]
 HTPASSWD = os.environ["ALLYCHAT_PASSWD"]
 
@@ -67,7 +68,7 @@ def set_cookies(response, jwt_token, user_data, max_age):
         max_age=max_age,
         httponly=True,  # Prevent JavaScript access
         secure=True,  # HTTPS only
-        domain=".allemande.ai",  # Allow subdomains
+        domain="." + ALLEMANDE_DOMAIN,  # Allow subdomains
         samesite="lax",  # Protect against CSRF
     )
 
@@ -78,7 +79,7 @@ def set_cookies(response, jwt_token, user_data, max_age):
         max_age=max_age,
         httponly=False,  # Allow JavaScript access
         secure=True,
-        domain=".allemande.ai",
+        domain="." + ALLEMANDE_DOMAIN,
         samesite="lax",
     )
 

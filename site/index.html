@@ -18,7 +18,7 @@
 			<!--a class="button yellow" href="/plans.html">Plans </a-->
 			<!-- </a><a class="button yellow" href="https://flash.allemande.ai">Flash -->
 			<!-- </a><a class="button green" href="https://alfred.allemande.ai">Alfred</a> -->
-		<a class="button red" href="https://chat.allemande.ai" id="chatlink">Ally Chat </a><a class="button yellow" href="https://github.com/sswam/allemande/tree/main/pix/examples#readme">Examples</a><a class="button green" href="mailto:sam@allemande.ai?subject=Allemande AI" title="email sam@allemande.ai">Contact </a><a class="button blue" href="https://github.com/sswam/allemande#readme">Code / Doc</a>
+		<a class="button red" href="#" id="chatlink">Ally Chat </a><a class="button yellow" href="https://github.com/sswam/allemande/tree/main/pix/examples#readme">Examples</a><a class="button green" href="mailto:sam@allemande.ai?subject=Allemande AI" title="email sam@allemande.ai">Contact </a><a class="button blue" href="https://github.com/sswam/allemande#readme">Code / Doc</a>
 		</div>
 	</div>
 	<div class="space" style="flex-grow: 3; min-height: 40px;">
@@ -34,10 +34,14 @@
 	<script src="util@1743385552.js"></script>
 	<script src="auth@1741848930.js"></script>
 	<script>
-		if (location.href.indexOf("local.") > -1) {
-			document.getElementById("chatlink").href = "https://chat-local.allemande.ai";
-		}
-		for (const [index, p] of document.querySelectorAll("#info > p").entries()) {
+		currentUrl = new URL(location.href);
+		domain = currentUrl.hostname;
+		domain = domain.replace(/^login\./, '');
+		chatDomain = domain.startsWith('local.')
+		    ? domain.replace(/^local\./, 'chat-local.')
+		    : 'chat.' + domain;
+		document.getElementById("chatlink").href = `https://${chatDomain}`;
+		for ([index, p] of document.querySelectorAll("#info > p").entries()) {
 			p.style.textIndent = `${index}em`;
 		}
 		authHomepage();

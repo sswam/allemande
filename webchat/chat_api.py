@@ -24,6 +24,7 @@ import settings
 
 
 VAPID_PRIVATE_KEY = os.environ["ALLYCHAT_WEBPUSH_VAPID_PRIVATE_KEY"]
+ALLEMANDE_DOMAIN = os.environ["ALLEMANDE_DOMAIN"]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -264,7 +265,7 @@ async def send_push(user_id, message):
         subscription = json.load(f)
 
     vapid_claims = {
-        "sub": "mailto:admin@allemande.ai",
+        "sub": f"mailto:admin@{ALLEMANDE_DOMAIN}",
         "exp": int(time.time()) + 12 * 3600,  # 12 hours from now
     }
 

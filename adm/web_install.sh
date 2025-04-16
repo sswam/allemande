@@ -9,18 +9,18 @@ mode() {
 	chmod $mode -- "$@"
 }
 
-# install the allemande.ai website -------------------------------------------
+# -------- install the allemande website -------------------------------------
 
 ln -sfT "$ALLEMANDE_HOME/site" /var/www/allemande
 
-# install mousetrap library --------------------------------------------------
+# -------- install mousetrap library -----------------------------------------
 
 # cd "$ALLEMANDE_HOME/js"
 # if [ ! -e mousetrap ]; then
 # 	git clone https://github.com/ccampbell/mousetrap
 # fi
 
-# copy rooms.dist to rooms
+# -------- copy rooms.dist to rooms ------------------------------------------
 
 cd "$ALLEMANDE_HOME"
 
@@ -28,7 +28,7 @@ if [ ! -d "rooms" ]; then
 	cp -a rooms.dist rooms
 fi
 
-# install the webchat web app ------------------------------------------------
+# -------- install the webchat web app ---------------------------------------
 
 cd "$ALLEMANDE_HOME/webchat"
 
@@ -43,13 +43,13 @@ mode 640 .htpasswd static/logout/.htpasswd
 
 ln -sfT $PWD /var/www/allychat
 
-# set up the rooms -----------------------------------------------------------
+# -------- set up the rooms --------------------------------------------------
 
 cd rooms
 
 mode 660 *.bb *.html || true
 
-# install the nginx config and sites -----------------------------------------
+# -------- install the nginx config and sites --------------------------------
 
 cd "$ALLEMANDE_HOME/adm"
 
@@ -58,22 +58,34 @@ if [ ! -e /etc/nginx/banned_ips.conf ]; then
 	mode 600 /etc/nginx/banned_ips.conf
 fi
 
-rm -f /etc/nginx/sites-enabled/default
-
-./nginx_update.sh
-
 cd /etc/nginx/sites-enabled
-for site in chat rooms; do
-	ln -sf ../sites-available/$site .
-done
-
-# install the haproxy config -------------------------------------------------
+rm -f default
+ln -sf ../sites-available/letsencrypt .
 
 cd "$ALLEMANDE_HOME/adm"
 
+./nginx_update.sh
+
+# -------- install the haproxy config ----------------------------------------
+
 ./haproxy_update.sh
 
-# restart services -----------------------------------------------------------
+# -------- set up SSL certificates using letsencrypt / certbot ---------------
+
+if [ ! -s "/etc/letsencrypt/live/$ALLEMANDE_LOGIN_DOMAIN/fullchain.pem" ]; then
+	service nginx stop
+	service nginx start
+	certbot certonly --webroot -w /var/www/html -d "$ALLEMANDE_LOGIN_DOMAIN" -d chat."$ALLEMANDE_DOMAIN" -d rooms."$ALLEMANDE_DOMAIN"
+fi
+
+# -------- enable the sites --------------------------------------------------
+
+cd /etc/nginx/sites-enabled
+for site in allemande chat rooms; do
+	ln -sf ../sites-available/$site .
+done
+
+# -------- restart services --------------------------------------------------
 
 service haproxy stop
 service nginx stop

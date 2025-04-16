@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.5.49";
+const VERSION = "0.5.57";
 const DEBUG = false;
 
 const subdomain = self.location.hostname.split(".")[0];
@@ -171,8 +171,8 @@ async function sw_push(event) {
   const data = event.data.json();
   const options = {
     body: data.body,
-    icon: "https://allemande.ai/icon.png",
-    badge: "https://allemande.ai/icon.png",
+    icon: ALLEMANDE_LOGIN_URL + "/icon.png",
+    badge: ALLEMANDE_LOGIN_URL + "/icon.png",
     data: {
       room: data.room,
       url: data.url, // not needed, just use room?
