@@ -1,0 +1,58 @@
+#!/bin/bash
+# sorttime		sort files by time
+# usage:		sorttime [-s] [-t=m|c|a|b] [-h]
+
+s=	# show seconds, rather than human readable timestamp
+t=m	# sort by mtime, ctime, atime, or birthtime
+r=	# reverse
+m=	# sort by modification time (default)
+c=	# sort by inode change time
+a=	# sort by access time
+b=	# sort by birth time
+h=	# show this message
+
+. opts
+
+if [ "$r" = 1 ]; then
+	r=
+else
+	r=r
+fi
+
+# set t based on m c a b
+for t1 in m c a b; do
+	if [ -n "${!t1}" ]; then
+		t=$t1
+	fi
+done
+
+# if -h is given, show usage and exit ------------------------
+
+if [ -n "$h" ]; then
+	usage
+	exit 0
+fi
+
+
+# the basic command ------------------------------------------
+
+cmd="xa stat${t}time | order 1${r}n"
+
+
+# if -s is not given, pipe through secs2date-tsv -------------
+
+if [ -z "$s" ]; then
+	cmd+=" | secs2date-tsv"
+fi
+
+
+# if stdout is a TTY, pipe through less ----------------------
+
+if [ -t 1 ]; then
+	cmd+=" | less"
+fi
+
+
+# execute the command ----------------------------------------
+
+eval "$cmd"

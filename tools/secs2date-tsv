@@ -1,0 +1,10 @@
+#! /usr/bin/awk -f
+# secs2date-tsv: convert seconds since epoch to date in tsv
+BEGIN {
+    FS = "\t"
+    OFS = "\t"
+}
+{ 
+    $1 = strftime("%Y-%m-%d %H:%M:%S", $1) 
+    print 
+}

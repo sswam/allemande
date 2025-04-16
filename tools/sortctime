@@ -1,0 +1,3 @@
+#!/bin/bash
+# Sort files by inode change time
+sorttime -c -s "$@"

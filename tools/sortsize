@@ -1,0 +1,2 @@
+#!/bin/bash
+xa statsize | order 1rn
