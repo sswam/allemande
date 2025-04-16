@@ -47,7 +47,6 @@ cppcheck
 splint
 flawfinder
 
-perltidy
 libperl-critic-perl
 
 check
@@ -69,7 +68,7 @@ wbritish-huge
 wget
 
 libterm-readline-gnu-perl
-
+libfile-slurp-perl
 libemail-simple-perl
 liblog-log4perl-perl
 

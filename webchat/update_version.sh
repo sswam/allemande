@@ -6,7 +6,7 @@ cd "$ALLEMANDE_HOME/webchat/static"
 modify perl -pe '
 	s/^const VERSION = "(\d+)\.(\d+)\.(\d+)";$/qq{const VERSION = "$1.$2.} . ($3 + 1) . qq{";}/e
 ' : service_worker_in.js
-chmod +w service_worker.js
+chmod +w service_worker.js || true
 perl -pe '
 	use File::Slurp;
 	if (m{^// CONFIG$}) {

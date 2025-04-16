@@ -13,7 +13,8 @@ fi
 for A; do
 	N=`basename -- "$A"`
 	while true; do
-		B="$RUBBISH/${N}_`nano=1 dt0`_$$"
+		timestamp=$(date "+%Y%m%d_%H%M%S%N%z_%a" | tr '[:upper:]' '[:lower:]')
+		B="$RUBBISH/${N}_${timestamp}_$$"
 		[ -e "$B" ] || break  # XXX not entirely secure, should use >| to creat or something?
 	done
 	cp -i -- "$A" "$B" || exit 1

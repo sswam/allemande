@@ -194,6 +194,12 @@ chmod go-rwx ~/my
 cp config/ai.env.dist ~/my/ai.env
 # NOTE: edit ~/ai.env and populate as needed with API keys. They are all optional.
 
+# -------- config.js ---------------------------------------------------------
+
+cp config/config.js.dist webchat/static/config.js
+# You can edit to set your host URLs.
+# The Vapid key is not used yet.
+
 # -------- unprompted, a macro processor for image gen -----------------------
 
 mkdir -p ~/soft-ai
