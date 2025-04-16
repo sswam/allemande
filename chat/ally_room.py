@@ -152,6 +152,13 @@ class Room:
                 self.path.unlink()
         elif op == "clean":
             await self.clean(user)
+        elif op == "render":
+            if not access & Access.MODERATE.value:
+                raise PermissionError("You are not allowed to re-render this room.")
+            content = self.path.read_text(encoding="utf-8")
+            await overwrite_file(user, self.name + EXTENSION, content, delay=0.2, noclobber=False)
+        else:
+            raise ValueError(f"Unknown operation: {op}")
 
     def undo(self, user, n=1, backup=True):
         """Remove the last n messages from a room."""
@@ -555,7 +562,7 @@ def read_agents_lists(path) -> list[str]:
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments
-async def overwrite_file(user, file, content, backup=True, delay=0.2, noclobber=False):
+async def overwrite_file(user: str | None, file: str, content: str, backup: bool = True, delay: float = 0.2, noclobber: bool = False):
     """Overwrite a file with new content."""
     logger.warning("overwrite_file: %s", file)
     path = str(name_to_path(file))
@@ -622,7 +629,7 @@ def move_file(user, source, dest, clobber=False):
         raise PermissionError(f"Error moving file: {e}") from e
 
 
-def name_to_path(name):
+def name_to_path(name: str) -> Path:
     """Convert a filename to a path."""
     name = sanitize_pathname(name)
     assert isinstance(name, str)

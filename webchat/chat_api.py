@@ -131,7 +131,7 @@ async def clear(request):
     op = form["op"]
     user = request.headers["X-Forwarded-User"]
 
-    if op not in ["clear", "archive", "rotate", "clean"]:
+    if op not in ["clear", "archive", "rotate", "clean", "render"]:
         raise HTTPException(status_code=400, detail="Invalid operation.")
 
     room = Room(name=room)
