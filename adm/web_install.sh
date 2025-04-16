@@ -39,7 +39,7 @@ if [ ! -e .htpasswd ]; then
 	touch .htpasswd
 fi
 
-mode 640 .htpasswd static/logout/.htpasswd
+mode 640 .htpasswd
 
 ln -sfT $PWD /var/www/allychat
 
@@ -72,10 +72,10 @@ cd "$ALLEMANDE_HOME/adm"
 
 # -------- set up SSL certificates using letsencrypt / certbot ---------------
 
-if [ ! -s "/etc/letsencrypt/live/$ALLEMANDE_LOGIN_DOMAIN/fullchain.pem" ]; then
+if [ ! -s "/etc/letsencrypt/live/$ALLEMANDE_DOMAIN/fullchain.pem" ]; then
 	service nginx stop
 	service nginx start
-	certbot certonly --webroot -w /var/www/html -d "$ALLEMANDE_LOGIN_DOMAIN" -d chat."$ALLEMANDE_DOMAIN" -d rooms."$ALLEMANDE_DOMAIN"
+	certbot certonly --webroot -w /var/www/html -d "$ALLEMANDE_DOMAIN" -d chat."$ALLEMANDE_DOMAIN" -d rooms."$ALLEMANDE_DOMAIN"
 fi
 
 # -------- enable the sites --------------------------------------------------

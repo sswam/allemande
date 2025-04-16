@@ -1,5 +1,4 @@
 ALLEMANDE_DOMAIN="allemande.ai"
-ALLEMANDE_LOGIN_DOMAIN="allemande.ai"  # or can be login.allemande.ai
 
 SERVER="opal"  # your server's short hostname
 

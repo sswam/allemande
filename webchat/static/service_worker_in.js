@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.5.57";
+const VERSION = "0.5.85";
 const DEBUG = false;
 
 const subdomain = self.location.hostname.split(".")[0];
@@ -36,7 +36,7 @@ const URLS_TO_CACHE = {
 
 const CORS_URLS_TO_CACHE = {
   "chat": [
-    ALLEMANDE_URL + "/auth.js",
+    ALLEMANDE_LOGIN_URL + "/auth.js",
   ],
   "rooms": [
     "/allychat.css",

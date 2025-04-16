@@ -17,7 +17,7 @@ ALLEMANDE_DOMAIN_ESC=${ALLEMANDE_DOMAIN//./\\.}
 
 find . -type f \( -name ".*" -o -print \) |
 while read file; do
-	envsubst '$ALLYCHAT_JWT_SECRET_BINHEX,$ALLEMANDE_DOMAIN,$ALLEMANDE_DOMAIN_ESC,$ALLEMANDE_LOGIN_DOMAIN' < "$file" > "/etc/nginx/$file"
+	envsubst '$ALLYCHAT_JWT_SECRET_BINHEX,$ALLEMANDE_DOMAIN,$ALLEMANDE_DOMAIN_ESC' < "$file" > "/etc/nginx/$file"
 done
 
 service nginx reload || service nginx start
