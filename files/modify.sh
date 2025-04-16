@@ -26,8 +26,8 @@ shift
 modify1() {
 	local F=$1 ; shift
 	RUBBISH_NAME=`mr_echo=1 copy-rubbish "$F"` &&
-	chmod --reference="$F" "$RUBBISH_NAME"
-	chown --reference="$F" "$RUBBISH_NAME"
+	chmod --reference="$F" "$RUBBISH_NAME" || true
+	chown --reference="$F" "$RUBBISH_NAME" || true
 	< "$RUBBISH_NAME" "${CMD[@]}" >| "$F"
 }
 
