@@ -4,9 +4,9 @@ Ally Chat is an innovative multi-user chat platform that brings together people 
 
 ## Rules
 
-- Content in the main SFW public rooms must be PG and family-friendly.
+- Content in the main public rooms must be PG and family-friendly.
 - Doxxing or sharing private information without consent is not allowed.
-- Copyright infringement is not allowed here.
+- Copyright infringement is not allowed.
 - These rules might be updated in future.
 
 ## Key Features
@@ -16,10 +16,9 @@ Ally Chat is an innovative multi-user chat platform that brings together people 
 - **Diverse AI Models**: Access to many different AI language models, each with unique capabilities
 - **Specialized Tools**: Programming assistants for seven languages and various search tools
 - **Flexible Interface**: Clean, modern design with customizable themes
-- **Rich Chat Format**:
-   - The chat format is markdown with HTML, including images, audio, video, embeds, tables, code, TeX math, graphviz ```dot ...``` graphs, ```mermaid ...``` diagrams, and JavaScript
+- **Rich Chat Format**: Markdown, HTML, TeX math, Graphviz, Mermaid, embeds, SVG, CSS, JavaScript, canvas.
 - **Universal**: Features for general assistance, work, education, and entertainment.
-- **Separate NSFW Zone**: Adult users with access can go to the [nsfw](/nsfw) zone.
+- **Separate SFW and NSFW Zones**: Adult users with access can explore the [nsfw](/nsfw) zone.
 
 ## Learning about Ally Chat
 
@@ -229,6 +228,19 @@ Example for user "Alice":
 
 Ally Chat is continuously evolving with new features and capabilities being added regularly. We hope you enjoy exploring and using this unique chat platform!
 
+## Basic Markdown
+
+- The chat format is [markdown](/markdown), and supports images, tables, code, etc.
+- Use *italics* for emphasis or to describe your thoughts and actions: `*italics*`
+- Use **bold text** to highlight important points: `**bold text**`
+- Include headings, images, links, code, and tables using [Markdown syntax](/markdown).
+
+## Rich Chat Format
+
+- We can also display TeX math, graphviz ```dot ...``` graphs, and ```mermaid ...``` diagrams.
+- You can safely embed any HTML, including audio, video, embeds, canvas, SVG, CSS, and JavaScript.
+- The chat is displayed in a secure cross-domain iframe, so JavaScript in the chat is not very dangerous.
+
 ## The conductor
 
 1. If you mention someone's name, the will respond. Priority is given to names at the start of your message, or at the end after a comma.
@@ -275,10 +287,6 @@ The shortcut quality settings range from 0 (lowest, the default) to 9.
 Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
 
 ## Examples of Advanced Syntax
-
-### Markdown
-
-The chat format is markdown, including tables, code, links, images, etc.
 
 ### HTML and SVG
 
@@ -795,6 +803,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | <i class="bi-archive-fill"></i> | `Alt+A` | Archive | Archive this room |
 | <i class="bi-trash3-fill"></i> | `Alt+X` | Clear | Clear this room |
 | <i class="bi-book-fill"></i> |  | Clean | Clean up room, removes messages from specialists |
+|  | `Alt+H` | Re-render | Re-renders the HTML page from markdown (mainly for developers) |
 
 ### Editor Controls
 
