@@ -98,19 +98,20 @@ exceptions_to_retry = (
 )
 
 default_model = "claude"
-default_model_small = "gpt-4o-mini"
+default_model_small = "gemini-2.0-flash"
 
 # Define available models and their properties
 MODELS = {
-    "o1": {
+    "o3": {
         "aliases": ["op", "grace"],
+        "id": "o3-2025-04-16",
         "vendor": "openai",
         "vision": True,
         "description": "OpenAI's strongest reasoning model, with complex reasoning",
-        "cost_in": 15,
-        "cost_out": 60,
+        "cost_in": 10,
+        "cost_out": 40,
     },
-    "o3-mini": {
+    "o4-mini": {
         "aliases": ["om", "fermi"],
         "vendor": "openai",
         "vision": True,
@@ -122,16 +123,17 @@ MODELS = {
         "aliases": ["4", "emmy"],
         "vendor": "openai",
         "vision": True,
-        "id": "gpt-4o-2024-08-06",
-        "description": "OpenAI's GPT-4o is an advanced multimodal model.",
+        "id": "gpt-4.1-2025-04-14",
+#        "id": "gpt-4o-2024-11-20",
+        "description": "OpenAI's GPT-4.1 is an advanced multimodal model.",
         "cost_in": 2.5,
         "cost_out": 10,
     },
-    "gpt-4o-mini": {
+    "gpt-4.1-mini": {
         "aliases": ["4m", "dav", "davinci"],
         "vendor": "openai",
         "vision": True,
-        "description": "OpenAI's GPT-4o mini is a cost-efficient model.",
+        "description": "OpenAI's GPT-4.1 mini is a cost-efficient model.",
         "cost_in": 0.15,
         "cost_out": 0.6,
     },
@@ -149,7 +151,7 @@ MODELS = {
         "vendor": "anthropic",
         "vision": True,
         "id": "claude-3-5-sonnet-latest",
-        "description": "Claude 3.7 Sonnet is Anthropic's strongest AI model.",
+        "description": "Claude 3.5 Sonnet is Anthropic's strong and reliable AI model.",
         "cost_in": 3,
         "cost_out": 15,
     },
@@ -255,6 +257,13 @@ MODELS = {
         "description": "xAI's Grok 2 model, with 128K context and a sense of humour",
         "cost_in": 2,
         "cost_out": 10,
+    },
+    "rocki": {
+        "vendor": "xai",
+        "id": "grok-3-beta",
+        "description": "xAI's Grok 3 model, with 128K context and a sense of humour",
+        "cost_in": 3,
+        "cost_out": 15,
     },
     "deepseek-chat": {
         "aliases": ["dese"],
