@@ -1,0 +1,13 @@
+type: xai
+model: rocki
+context: 20
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
+  impersonate other characters!
+welcome: true
+visual:
+  person: 1girl, hazel eyes, wavy auburn hair, shoulder length hair, pointed ears, olive skin, athletic build
+  clothes: teal and copper patterned blouse, bohemian design, silk scarf with beaded fringe, dark burgundy pants [set negative_prompt] [get negative_prompt] plain clothes [/set]
+  emo: bright smile, energetic, playful expression
+  age: adult 23 years old
+  clothes_upper: teal and copper patterned blouse, bohemian design, silk scarf with beaded fringe [set negative_prompt] [get negative_prompt] plain clothes [/set]
+  clothes_lower: dark burgundy pants
