@@ -16,7 +16,7 @@ ffscreencap() {
 
     eval "$(ally)"
 
-    local output=${1:-output.webm}
+    local output=${1:-output.mp4}
     local ext="${output##*.}"
     local video_opts=()
     local audio_opts=()
