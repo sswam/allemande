@@ -67,10 +67,10 @@ digraph OpenAI {
     node [shape=box, style=filled, fillcolor="#C8FFC8", fontname="Helvetica"]
 
     "OpenAI" [label=<<b>OpenAI</b>>]
-    "Dav" [label=<<b>Dav</b><br/><font point-size="10">GPT-4o mini</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Efficient, affordable</font>>]
-    "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o3 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
-    "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4o</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
-    "Grace" [label=<<b>Grace</b><br/><font point-size="10">o1</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
+    "Dav" [label=<<b>Dav</b><br/><font point-size="10">GPT-4.1 mini</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Efficient, affordable</font>>]
+    "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o4 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
+    "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4.1</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
+    "Grace" [label=<<b>Grace</b><br/><font point-size="10">o3</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
 
     "OpenAI" -> "Dav"
     "OpenAI" -> "Fermi"
@@ -142,8 +142,10 @@ digraph xAI {
 
     "xAI" [label=<<b>xAI</b>>]
     "Grok" [label=<<b>Grok</b><br/><font point-size="10">Grok 2</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
+    "Rocki" [label=<<b>Rocki</b><br/><font point-size="10">Grok 3</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
 
     "xAI" -> "Grok"
+    "xAI" -> "Rocki"
 }
 ```
 
@@ -169,7 +171,7 @@ digraph Alibaba {
     node [shape=box, style=filled, fillcolor="#A7D8D5", fontname="Helvetica"]
 
     "Alibaba" [label=<<b>Alibaba Cloud</b>>]
-    "Qwen" [label=<<b>Grok</b><br/><font point-size="10">QwQ 32B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Small, strong reasoning</font>>]
+    "Qwen" [label=<<b>Qwen</b><br/><font point-size="10">QwQ 32B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Small, strong reasoning</font>>]
     "Eva" [label=<<b>Eva</b><br/><font point-size="10">EVA Qwen2.5 72B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Roleplay, story writing</font>>]
 
     "Alibaba" -> "Qwen"
@@ -486,14 +488,15 @@ IMPORTANT:
 - **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding.
 - **Clauden** (Claude 3.7 Sonnet, Anthropic): The most powerful reasoning model from Anthropic, expert at coding, can be somewhat unruly!
 - **Clia** (Claude 3.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
-- **Emmy** (GPT-4o, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
-- **Dav** (GPT-4o mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
-- **Grace** (o1, OpenAI): The most powerful reasoning model from OpenAI, ideal for advanced applications
-- **Fermi** (o3 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
+- **Emmy** (GPT-4.1, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
+- **Dav** (GPT-4.1 mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
+- **Grace** (o3, OpenAI): The most powerful reasoning model from OpenAI, ideal for advanced applications
+- **Fermi** (o4 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
 - **Gemmy** (Gemini 1.5 Pro, Google): Google's high-performance Gemini language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's most powerful Gemini language model
 - **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Grok** (Grok 2, xAI): xAI's quirky and intelligent language model
+- **Rocki** (Grok 3, xAI): xAI's latest quirky and intelligent language model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model.
 - **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model.
 - **Skout** (Meta Llama 4 Scout): A fast new open model from Meta.
@@ -513,7 +516,7 @@ IMPORTANT:
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
 - **Clu** (Anthropic): A variant of Claude that replies more concisely
-- **Emm** (OpenAI): A variant of Emmy (GPT-4o) that replies more concisely
+- **Emm** (OpenAI): A variant of Emmy (GPT-4.1) that replies more concisely
 - **Vega** (Anthropic): A variant of Claude with a strong academic focus.
 - **Zeno** (OpenAI): A variant of GPT-4o with a strong academic focus.
 
@@ -585,25 +588,26 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 | Creator       | Model                 | Name    | Context | Max Output      | Input Price / M | Output Price / M | Description                                                                                                      |
 |---------------|-----------------------|---------|---------|-----------------|-----------------|------------------|------------------------------------------------------------------------------------------------------------------|
-| Meta          | Llama 3.1 8B          | Ally*   | 4096    | 4096            | N/A             | N/A              | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
+| Meta          | Llama 3.1 8B          | Ally*   | 4K      | 4K              | N/A             | N/A              | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
 | Meta          | Llama 4 Scout         | Skout   | 512K    | 512K            | N/A             | N/A              | A fast new open model from Meta.                                                                                 |
 | Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K            | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
-| Anthropic     | Claude 3.5 Haiku      | Clia    | 200K    | 8192            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
-| Anthropic     | Claude 3.5 Sonnet     | Claude  | 200K    | 8192 / 128K [1] | $3.00           | $15.00           | Anthropic's powerful and reliable model.                                                                         |
-| Anthropic     | Claude 3.7 Sonnet     | Clauden | 200K    | 8192 / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
-| Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8192            | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
-| Google        | Gemini 2.0 Flash      | Flashi  | 1M      | 8192            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed and tool use.                                                    |
-| Google        | Gemini 1.5 Pro        | Gemmy   | 2M      | 8192            | $1.25 [2]       | $5.00 [2]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                    |
+| Anthropic     | Claude 3.5 Haiku      | Clia    | 200K    | 8K              | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
+| Anthropic     | Claude 3.5 Sonnet     | Claude  | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's powerful and reliable model.                                                                         |
+| Anthropic     | Claude 3.7 Sonnet     | Clauden | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K              | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
+| Google        | Gemini 2.0 Flash      | Flashi  | 1M      | 8K              | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed and tool use.                                                    |
+| Google        | Gemini 1.5 Pro        | Gemmy   | 2M      | 8K              | $1.25 [2]       | $5.00 [2]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                    |
 | Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K             | $1.25 [3]       | $10.00 [3]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
-| OpenAI        | GPT-4o-mini           | Dav     | 128K    | 16384           | $0.15           | $0.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
-| OpenAI        | o3-mini               | Fermi   | 200K    | 100000          | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
-| OpenAI        | GPT-4o                | Emmy    | 128K    | 16384           | $2.50           | $10.00           | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
-| OpenAI        | o1                    | Grace   | 200K    | 100000          | $15.00          | $60.00           | OpenAI's most powerful reasoning model for advanced applications.                                                |
+| OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K             | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
+| OpenAI        | o4-mini               | Fermi   | 200K    | 100K            | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
+| OpenAI        | GPT-4.1               | Emmy    | 1M      | 32K             | $2              | $8.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
+| OpenAI        | o3                    | Grace   | 200K    | 100K            | $10.00          | $40.00           | OpenAI's most powerful reasoning model for advanced applications.                                                |
 | Perplexity    | Sonar                 | Sona    | 128K    | 8K              | $1              | $1               | Perplexity's fastest and most affordable Online model with live internet data.                                   |
 | Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K              | $1 [4]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
 | Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K              | $3 [4]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
 | Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K              | $2 [4]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
 | xAI           | Grok 2                | Grok    | 128K    | 128K            | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model.                                                               |
+| xAI           | Grok 3                | Rocki   | 128K    | 128K            | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
 | DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192            | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                                  |
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192            | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K            | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
@@ -860,3 +864,4 @@ Clicking on an image in the chat enters image viewing mode.
 
 - Click code to copy it, can paste into the input or elsewhere.
 - Poke an image gen prompt several times to create multiple images.
+

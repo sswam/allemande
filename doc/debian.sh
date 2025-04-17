@@ -167,6 +167,25 @@ printf "\n%s\n" 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 go install golang.org/x/lint/golint@latest
 go install honnef.co/go/tools/cmd/staticcheck@latest
 
+# -------- ai.env: API keys to access AI providers ---------------------------
+
+mkdir -p ~/my
+chmod go-rwx ~/my
+cp config/ai.env.dist ~/my/ai.env
+# NOTE: edit ~/ai.env and populate as needed with API keys. They are all optional.
+
+# Get API keys from here:
+
+# Hugging Face (dev, free): https://huggingface.co/settings/tokens
+# Google (free): https://aistudio.google.com/app/u/2/apikey
+# OpenAI: https://platform.openai.com/settings/organization/api-keys
+# Anthropic: https://console.anthropic.com/settings/keys
+# Perplexity: https://www.perplexity.ai/account/api
+# xAI: https://console.x.ai/
+# DeepSeek: https://platform.deepseek.com/api_keys
+# OpenRouter: https://openrouter.ai/settings/keys
+# Serper (search): https://serper.dev/api-key
+
 # -------- bashrc additions --------------------------------------------------
 
 cat <<'END' >>~/.bashrc
@@ -200,13 +219,6 @@ metadeb -n=allemande-deps debian-allemande-deps.txt
 # Alternative without metadeb:
 # sudo apt-get -y install $(< debian-packages.txt grep -v '^#')
 # sudo apt-get -y clean
-
-# -------- ai.env: API keys to access AI providers ---------------------------
-
-mkdir -p ~/my
-chmod go-rwx ~/my
-cp config/ai.env.dist ~/my/ai.env
-# NOTE: edit ~/ai.env and populate as needed with API keys. They are all optional.
 
 # -------- config.js ---------------------------------------------------------
 
