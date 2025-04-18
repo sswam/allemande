@@ -170,24 +170,24 @@ vscode-local:
 	code "$$file" & disown
 
 chat-api:
-	cd $(WEBCHAT) && awatch -a -i -p chat_api.py ../chat/chat.py ../chat/ally_room.py -s -- uvicorn chat_api:app --reload --timeout-graceful-shutdown 5
+	cd $(WEBCHAT) && awatch -a -i -p ../Makefile chat_api.py ../chat/chat.py ../chat/ally_room.py -s -- uvicorn chat_api:app --reload --timeout-graceful-shutdown 5
 
 stream:
-	cd $(WEBCHAT) && awatch -a -i -p stream.py ../chat/chat.py ../text/atail.py ../ally/cache.py -s -- uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
+	cd $(WEBCHAT) && awatch -a -i -p ../Makefile stream.py ../chat/chat.py ../text/atail.py ../ally/cache.py -s -- uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
 
 auth:
 	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002
 
 watch:
-	awatch -i -r -A -x bb yml -p $(ROOMS) $(AGENTS) | tee -a $(WATCH_LOG)  # -L was there, to follow symlinks; why?
+	awatch -I -r -A -x bb yml -p $(ROOMS) $(AGENTS) | tee -a $(WATCH_LOG)  # -L was there, to follow symlinks; why?
 
 bb2html:
-	awatch -a -i -p $(WEBCHAT)/bb2html.py chat/chat.py chat/ally_markdown.py chat/ally_room.py chat/bb_lib.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
+	awatch -a -i -p Makefile $(WEBCHAT)/bb2html.py chat/chat.py chat/ally_markdown.py chat/ally_room.py chat/bb_lib.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)
 
 build-ui:
 	# Note, changes to service_worker_in.js will require a manual rebuild
 	# because we don't want to bump the version when the version changes, e.g. git stuff
-	cd $(WEBCHAT) && awatch -p static ../js/util.js ../js/debug.js ../site/auth.js -e static/service_worker_in.js static/room.css -a -J ./Makefile
+	cd $(WEBCHAT) && awatch -p ../Makefile static ../js/util.js ../js/debug.js ../site/auth.js -e static/service_worker_gen.js static/room_gen.css -a -J ./Makefile
 
 nginx:
 	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx; echo ... done; done

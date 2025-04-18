@@ -31,6 +31,7 @@ class WatcherOptions(BaseModel):
     hidden: bool = False
     dirs: bool = False
     initial_state: bool = False
+    initial_scan: bool = False
     follow: bool = False
     recursive: bool = False
     absolute: bool = False
@@ -156,12 +157,14 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
     async def run(self):
         """Watch the files and directories"""
 
-        if self.opts.initial_state:
+        if self.opts.initial_state or self.opts.initial_scan:
             for path in self.paths:
                 async for row in self.handle_change(Change.added, path, initial=True):
-                    yield row
-                    await self.changed_run_process(path)
-            yield self.flush
+                    if self.opts.initial_state:
+                        yield row
+                        await self.changed_run_process(path)
+            if self.opts.initial_state:
+                yield self.flush
 
         watcher = awatch(*self.paths, watch_filter=self.watch_filter, recursive=self.opts.recursive)
 
@@ -327,6 +330,7 @@ def setup_args(arg):
     arg("-H", "--hidden", help="watch hidden files", action="store_true")
     arg("-D", "--dirs", help="report changes to directories", action="store_true")
     arg("-i", "--initial-state", help="report initial state", action="store_true")
+    arg("-I", "--initial-scan", help="scan initial state but do not report", action="store_true")
     arg("-L", "--follow", help="follow symlinks", action="store_true")
     arg("-A", "--absolute", help="return absolute paths", action="store_true")
     arg("-R", "--run", help="run command when files change, with pathname as argument", action="store_true")
