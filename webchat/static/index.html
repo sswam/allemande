@@ -2,14 +2,14 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Allemande AI</title>
+<title>Ally Chat</title>
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content viewport-fit=cover">
 <link rel="stylesheet" href="allychat.css">
 <link rel="stylesheet" href="chat.css">
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
-<link id="theme" rel="stylesheet" type="text/css" media="screen" onload="theme_loaded()">
+<link id="theme" rel="stylesheet" type="text/css" media="screen">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
@@ -164,7 +164,6 @@
 <script src="record.js"></script>
 <script src="resizer.js"></script>
 <script src="debug.js"></script>
-<script src="chat.js"></script>
-<script>chat_main();</script>
+<script>$import("chat")</script>
 </body>
 </html>

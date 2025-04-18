@@ -1,6 +1,6 @@
-"use strict";
 var inIframe = window.parent !== window.self;
 const moveLabels = true;
+const room = await $import("room");
 
 const HIDE_CONTROLS_DELAY = 1000;
 
@@ -69,34 +69,46 @@ async function ensure_katex_scripts() {
 
 async function ensure_graphviz_scripts() {
   await Promise.all([
-    $script("script_graphviz", `${CHAT_URL}/d3.min.js`),
-    $script("script_graphviz_wasm", `${CHAT_URL}/wasm.min.js`),
-    $script("script_d3", `${CHAT_URL}/d3-graphviz.min.js`),
+    await $script("script_d3", `${ALLYCHAT_CHAT_URL}/d3.min.js`),
+    await $script("script_graphviz_wasm", `${ALLYCHAT_CHAT_URL}/wasm.min.js`),
   ]);
+  await $script("script_d3_grapviz", `${ALLYCHAT_CHAT_URL}/d3-graphviz.min.js`);
 }
 
 async function ensure_mermaid_scripts() {
-  await $script("script_mermaid", `${CHAT_URL}/mermaid.min.js`);
+  await $script("script_mermaid", `${ALLYCHAT_CHAT_URL}/mermaid.min.js`);
+}
+
+async function ensurePreviousMessagesProcessed(element) {
+  let id = getMessageId(element);
+  if (id)
+    return [id, true];
+  const prev = element.previousElementSibling;
+  if (!prev) {
+    id = 0;
+  } else {
+    id = await processMessage(prev) + 1;
+  }
+  element.classList.add("m" + id);
+  return [id, false];
 }
 
 function getMessageId(element) {
-  let id;
+  let id
   const match = element.className.match(/(?:^|\s)m(\d+)(?:\s|$)/);
-  if (match) {
+  if (match)
     id = parseInt(match[1]);
-  } else {
-    const prev = element.previousElementSibling;
-    if (!prev) {
-      id = 0;
-    } else {
-      id = getMessageId(prev) + 1;
-    }
-    element.classList.add("m" + id);
-  }
   return id;
 }
 
-async function handleNewMessage(newMessage) {
+async function processMessage(newMessage) {
+  // Add message number as a class, like m123
+  const [id, processed] = await ensurePreviousMessagesProcessed(newMessage);
+  if (processed)
+    return id;
+
+  const idClass = "m" + id;
+
   // if hidden, don't process
   if (newMessage.classList.contains("hidden"))
     return;
@@ -104,10 +116,6 @@ async function handleNewMessage(newMessage) {
   // console.log("handling new message", newMessage);
   const newContent = newMessage.querySelector(".content");
   const newUser = newMessage.getAttribute("user");
-
-  // Add message number as a class, like m123
-  const id = getMessageId(newMessage);
-  const idClass = "m" + id;
 
   // Remove newline at start of paragraph, pre or code
   // Maybe not needed now? We'll see...
@@ -225,13 +233,13 @@ async function handleNewMessage(newMessage) {
 
   // Open details elements according to the view options
   for (const $details of newContent.querySelectorAll("details"))
-    open_or_close_details($details);
+    room.open_or_close_details($details);
 
   // Code highlighting according to the view options
-  await highlight_code(newMessage, view_options);
+  await highlight_code(newMessage, room.view_options);
 
   // Processing editing commands
-  process_editing_commands(newMessage);
+  await process_editing_commands(newMessage);
 
   // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
   if (newMessage && moveLabels) {
@@ -281,10 +289,13 @@ async function handleNewMessage(newMessage) {
   // console.log("last visible message ID", lastMessageId);
 
   // notify parent window of new message
-  notify_new_message({ user: newUser, content: newContent.innerHTML, lastMessageId });
+  room.notify_new_message({ user: newUser, content: newContent.innerHTML, lastMessageId });
+
+  return id;
 }
 
 function getLastVisibleMessageId() {
+  const $messages = $("div.messages");
   let lastMessage = $messages.lastElementChild;
   while (lastMessage && lastMessage.classList.contains("hidden"))
     lastMessage = lastMessage.previousElementSibling;
@@ -382,12 +393,12 @@ function decorateCodeBlock(codeBlock) {
     }
     if (inIframe) {
       // send text to parent window
-      window.parent.postMessage({ type: "copy", text: text }, CHAT_URL);
+      window.parent.postMessage({ type: "copy", text: text }, ALLYCHAT_CHAT_URL);
     } else {
       // copy text to clipboard
       await navigator.clipboard.writeText(text);
     }
-    flash(controls, "active");
+    room.flash(controls, "active");
   });
 
   // Add controls to wrapper
@@ -415,9 +426,9 @@ function decorateCodeBlock(codeBlock) {
   });
 }
 
-async function process_messages(new_content) {
+export async function process_messages(new_content) {
   for (const newMessage of new_content) {
-    await handleNewMessage(newMessage);
+    await processMessage(newMessage);
   }
 }
 
@@ -491,7 +502,7 @@ function message_is_empty(message) {
     return empty;
 }
 
-function process_editing_commands(message) {
+async function process_editing_commands(message) {
   const metas = get_message_meta(message);
   // if (metas.length > 0) {
   //   console.log("process_editing_commands: message", message.outerHTML);
@@ -524,7 +535,7 @@ function process_editing_commands(message) {
 
     const point = insert_id || edit_id;
     if (point) {
-      insert(point, message);
+      await insert(point, message);
       message.dataset.prev = point;
     }
   }

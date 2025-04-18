@@ -43,7 +43,7 @@ let view_options = {
   image_size: 4,
   font_size: 4,
   input_row_height: 72,
-  theme: "default",
+  theme: "pastel",
   details_changed: true,
   highlight: 1,
   highlight_theme_light: "a11y-light",
@@ -121,66 +121,6 @@ let theme;
 let last_users = [];
 
 const ADMIN = "admin";
-
-// keyboard shortcuts --------------------------------------------------------
-
-const SHORTCUTS_GLOBAL = shortcuts_to_dict([
-  ['escape', escape, 'Go back, change or leave room'],
-  ['ctrl+;', change_room, 'Change room'],
-  ["ctrl+[", room_first, "Go to first room"],
-  ['ctrl+.', room_next, 'Go to next room'],
-  ['ctrl+,', room_prev, 'Go to previous room'],
-  ['ctrl+]', () => room_last(), 'Go to last room'],
-  ['ctrl+\\', () => room_last(1), 'Go beyond last room'],
-]);
-
-const SHORTCUTS_MESSAGE = shortcuts_to_dict([
-  ['ctrl+enter', () => send(), 'Send message'],
-  ['alt+enter', poke, 'Poke the chat'],
-  ['alt+s', send, 'Send message'],
-  ['alt+p', poke, 'Poke the chat'],
-  ['alt+t', content_insert_tab, 'Insert tab'],
-  ['shift+alt+t', content_insert_tab, 'Insert tab'],
-  ['alt+backspace', clear_content, 'Clear content'],
-  ['alt+u', nav_up, 'Browse up'],
-  ['alt+i', view_images, 'View images'],
-  ['alt+a', view_alt, 'View alt text'],
-  ['alt+c', view_clean, 'View clean'],
-  ['alt+j', view_canvas, 'View canvas'],
-  ['alt+f', view_fullscreen, 'View fullscreen'],
-  ['alt+m', add_math, 'Add math'],
-  ['shift+alt+m', move_mode, 'Move mode', ADMIN],
-
-  ['alt+z', undo, 'Undo last message', ADMIN],
-  ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
-  ['alt+r', retry, 'Retry last action', ADMIN],
-  ['ctrl+alt+r', (ev) => retry(ev, true), 'Retry last action', ADMIN],
-  ['alt+x', clear_chat, 'Clear messages', ADMIN],
-  ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
-  ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
-  ['alt+e', () => edit(), 'Edit file', ADMIN],
-  ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
-
-  ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
-  ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
-  ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
-  ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
-]);
-
-const SHORTCUTS_ROOM = shortcuts_to_dict([
-  ['enter', focus_content, 'Focus message input'],
-  ['shift+alt+m', move_mode, 'Move mode', ADMIN],
-]);
-
-const SHORTCUTS_EDIT = shortcuts_to_dict([
-  ['alt+t', edit_indent, 'Insert tab / indent'],
-  ['shift+alt+t', edit_dedent, 'dedent'],
-  ['escape', edit_close, 'Close edit'],
-  ['ctrl+s', edit_save, 'Save edit'],
-  ['ctrl+enter', edit_save_and_close, 'Save edit and close'],
-  ['alt+z', edit_reset, 'Reset edit'],
-  ['alt+x', edit_clear, 'Clear edit'],
-]);
 
 // developer functions -------------------------------------------------------
 
@@ -291,12 +231,12 @@ function focus_content() {
   $content.focus();
 }
 
-async function send_random_message() {
+export async function send_random_message() {
   const message = random_message[Math.floor(Math.random() * random_message.length)];
   await send_text(message);
 }
 
-async function send_continue(n) {
+export async function send_continue(n) {
   // nth from the end of the last_users array
   n = n || 1;
   if (n > last_users.length) return;
@@ -404,6 +344,18 @@ function new_chat_message(message) {
 }
 
 // insert tabs and indent ----------------------------------------------------
+
+function content_insert_tab(ev) {
+  textarea_indent($content, ev.shiftKey);
+}
+
+function edit_indent(ev) {
+  textarea_indent($edit, ev.shiftKey);
+}
+
+function edit_dedent(ev) {
+  textarea_indent($edit, true);
+}
 
 function textarea_indent(textarea, dedent = false) {
   // If no selection, handle single tab insertion/removal
@@ -805,37 +757,17 @@ function load_theme() {
     $new_link.href = "/users/" + user + "/theme.css";
   }
   $new_link.id = "theme";
+  $on($new_link, "load", theme_loaded);
   $old_link.replaceWith($new_link);
 }
 
-function user_script_loaded() {
-  // Check if chat_user_script function exists and call it if it does
-  if (typeof chat_user_script === 'function') {
-    chat_user_script();
-  }
-}
+async function load_user_styles_and_script() {
+  const [_, userScript] = await Promise.all([
+    $style("user_styles", "/users/" + user + "/styles.css"),
+    $import("user_script", "/users/" + user + "/script.js")
+  ]);
 
-function load_user_styles_and_script() {
-  let $link = $id("user_styles");
-  if (!$link) {
-    $link = $create("link");
-    $link.id = "user_styles";
-    $link.rel = "stylesheet";
-    $link.type = "text/css";
-    $head.append($link);
-  }
-  $link.href = "/users/" + user + "/styles.css";
-
-  let $script = $id("user_script");
-  if (!$script) {
-    $script = $create("script");
-    $script.id = "user_script";
-    $head.append($script);
-  }
-
-  $script.onload = user_script_loaded;
-
-  $script.src = "/users/" + user + "/script.js";
+  modules.user_script = userScript;
 }
 
 // hash change ---------------------------------------------------------------
@@ -1035,19 +967,14 @@ async function room_last(i) {
   room_set_number(+data.last + i);
 }
 
-// Keyboard shortcuts handling -----------------------------------------------
+// Keyboard shortcuts --------------------------------------------------------
 
-function content_insert_tab(ev) {
-  textarea_indent($content, ev.shiftKey);
-}
-
-function edit_indent(ev) {
-  textarea_indent($edit, ev.shiftKey);
-}
-
-function edit_dedent(ev) {
-  textarea_indent($edit, true);
-}
+export const shortcuts = {
+  global: {},
+  message: {},
+  room: {},
+  edit: {},
+};
 
 function shortcuts_to_dict(shortcuts) {
   const dict = {};
@@ -1055,6 +982,10 @@ function shortcuts_to_dict(shortcuts) {
     dict[key] = { fn, desc, admin };
   }
   return dict;
+}
+
+export function add_shortcuts(shortcuts, shortcuts_list) {
+  Object.assign(shortcuts, shortcuts_to_dict(shortcuts_list));
 }
 
 function dispatch_shortcut(ev, shortcuts) {
@@ -1080,6 +1011,64 @@ function dispatch_shortcut(ev, shortcuts) {
   }
   return false;
 }
+
+add_shortcuts(shortcuts.global, [
+  ['escape', escape, 'Go back, change or leave room'],
+  ['ctrl+;', change_room, 'Change room'],
+  ["ctrl+[", room_first, "Go to first room"],
+  ['ctrl+.', room_next, 'Go to next room'],
+  ['ctrl+,', room_prev, 'Go to previous room'],
+  ['ctrl+]', () => room_last(), 'Go to last room'],
+  ['ctrl+\\', () => room_last(1), 'Go beyond last room'],
+]);
+
+add_shortcuts(shortcuts.message, [
+  ['ctrl+enter', () => send(), 'Send message'],
+  ['alt+enter', poke, 'Poke the chat'],
+  ['alt+s', send, 'Send message'],
+  ['alt+p', poke, 'Poke the chat'],
+  ['alt+t', content_insert_tab, 'Insert tab'],
+  ['shift+alt+t', content_insert_tab, 'Insert tab'],
+  ['alt+backspace', clear_content, 'Clear content'],
+  ['alt+u', nav_up, 'Browse up'],
+  ['alt+i', view_images, 'View images'],
+  ['alt+a', view_alt, 'View alt text'],
+  ['alt+c', view_clean, 'View clean'],
+  ['alt+j', view_canvas, 'View canvas'],
+  ['alt+f', view_fullscreen, 'View fullscreen'],
+  ['alt+m', add_math, 'Add math'],
+  ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+
+  ['alt+z', undo, 'Undo last message', ADMIN],
+  ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
+  ['alt+r', retry, 'Retry last action', ADMIN],
+  ['ctrl+alt+r', (ev) => retry(ev, true), 'Retry last action', ADMIN],
+  ['alt+x', clear_chat, 'Clear messages', ADMIN],
+  ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
+  ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
+  ['alt+e', () => edit(), 'Edit file', ADMIN],
+  ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
+
+  ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
+  ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
+  ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
+  ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
+]);
+
+add_shortcuts(shortcuts.room, [
+  ['enter', focus_content, 'Focus message input'],
+  ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+]);
+
+add_shortcuts(shortcuts.edit, [
+  ['alt+t', edit_indent, 'Insert tab / indent'],
+  ['shift+alt+t', edit_dedent, 'dedent'],
+  ['escape', edit_close, 'Close edit'],
+  ['ctrl+s', edit_save, 'Save edit'],
+  ['ctrl+enter', edit_save_and_close, 'Save edit and close'],
+  ['alt+z', edit_reset, 'Reset edit'],
+  ['alt+x', edit_clear, 'Clear edit'],
+]);
 
 // handle messages from the messages iframe ----------------------------------
 
@@ -1616,7 +1605,7 @@ function auto_play_back_off() {
 
 // edit file -----------------------------------------------------------------
 
-EDITABLE_EXTENSIONS = [
+const EDITABLE_EXTENSIONS = [
   // plain text
   "bb", "m", "txt", "md", "markdown",
   // web files
@@ -1629,7 +1618,7 @@ EDITABLE_EXTENSIONS = [
   "csv", "tsv",
 ];
 
-DISALLOWED_EXTENSIONS = [
+const DISALLOWED_EXTENSIONS = [
   // images
   "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico", "tiff", "tif", "psd", "xcf", "eps", "ai", "indd", "eps", "svg", "svgz", "wmf", "emf",
   // audio
@@ -2420,7 +2409,7 @@ function print_chat(ev) {
 
 // main ----------------------------------------------------------------------
 
-async function chat_main() {
+export async function init() {
   user = await authChat();
 
   setup_icons();
@@ -2513,11 +2502,11 @@ async function chat_main() {
 
   $on($id("audio_cancel"), "click", () => set_controls());
 
-  $on(document, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_GLOBAL));
-  $on($content, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_MESSAGE));
+  $on(document, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.global));
+  $on($content, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.message));
   $on($content, "keydown", content_keydown);
-  $on($room, "keypress", (ev) => dispatch_shortcut(ev, SHORTCUTS_ROOM));
-  $on($edit, "keydown", (ev) => dispatch_shortcut(ev, SHORTCUTS_EDIT));
+  $on($room, "keypress", (ev) => dispatch_shortcut(ev, shortcuts.room));
+  $on($edit, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.edit));
   $on($content, "input", message_changed);
 
   $on($room, "change", () => set_room());
@@ -2546,7 +2535,7 @@ async function chat_main() {
   message_changed();
   // $content.focus();
 
-  load_user_styles_and_script();
+  await load_user_styles_and_script();
 
   /* This breaks scrolling in view_edit, etc, and I forget why I added it!
   $on(document, "touchmove", function(e) {

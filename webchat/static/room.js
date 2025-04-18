@@ -2,9 +2,6 @@
 
 const offline_timeout_seconds = 10;
 
-const CHAT_URL =
-  location.protocol + "//" + location.host.replace(/^rooms\b/, "chat");
-
 var inIframe = window.parent !== window.self;
 
 let file_type;
@@ -22,7 +19,7 @@ let overlay_fullscreen = true;
 
 let suppressInitialScroll = false;
 
-let view_options = {
+export let view_options = {
   images: 1,
   image_size: 4,
   font_size: 4,
@@ -50,7 +47,7 @@ function clean_up_server_events() {
     $e.remove();
 }
 
-function online() {
+export function online() {
   // console.log("online");
   if (snapshot)
     return;
@@ -71,7 +68,7 @@ function offline() {
   document.body.addEventListener("mouseenter", reload, { once: true });
 }
 
-function clear() {
+export function clear() {
   $("div.messages").innerHTML = "";
   clean_up_server_events();
 }
@@ -225,7 +222,7 @@ async function wait_for_whole_message(node) {
   return true;
 }
 
-async function check_for_new_content(mutations) {
+function check_for_new_messages(mutations) {
   const new_content = [];
   for (const mutation of mutations) {
     if (mutation.type != "childList") {
@@ -236,8 +233,6 @@ async function check_for_new_content(mutations) {
         node.nodeType == Node.ELEMENT_NODE &&
         node.tagName == "DIV" && node.classList.contains("message")
       ) {
-        await wait_for_whole_message(node);
-        // push it even if it fails to load in time
         new_content.push(node);
       }
     }
@@ -245,21 +240,30 @@ async function check_for_new_content(mutations) {
   return new_content;
 }
 
+async function wait_for_messages_to_load(elements) {
+  for (const element of elements) {
+    await wait_for_whole_message(element);
+  }
+}
+
 // mutation observer ---------------------------------------------------------
 
 const mutationMutex = new Mutex();
 
-async function mutated_2(mutations) {
-  const new_content = await check_for_new_content(mutations);
-  if (new_content.length) {
-    online();
-    messages_resized();
-  }
-  await process_messages(new_content);
+async function call_process_messages(messages) {
+  if (messages === undefined)
+    messages = $messages.querySelectorAll(".message");
+  await wait_for_messages_to_load(messages);
+  online();
+  messages_resized();
+  const process_messages = await $import("process_messages");
+  await process_messages.process_messages(messages);
 }
 
 async function mutated(mutations) {
-  await mutationMutex.lock(() => mutated_2(mutations));
+  const messages = check_for_new_messages(mutations);
+  if (messages.length)
+    await mutationMutex.lock(() => call_process_messages(messages));
 }
 
 function setup_mutation_observer() {
@@ -267,6 +271,10 @@ function setup_mutation_observer() {
     childList: true,
     subtree: true,
   });
+}
+
+async function process_current_messages() {
+  await mutationMutex.lock(call_process_messages);
 }
 
 // keyboard shortcuts --------------------------------------------------------
@@ -367,7 +375,7 @@ function key_event(ev) {
     metaKey: ev.metaKey,
   };
   if (inIframe)
-    window.parent.postMessage(copy, CHAT_URL);
+    window.parent.postMessage(copy, ALLYCHAT_CHAT_URL);
   ev.preventDefault();
 }
 
@@ -375,7 +383,7 @@ function key_event(ev) {
 function go_home() {
   // tell the parent window to GTFO of here
   if (inIframe)
-    window.parent.postMessage({ type: "go_home" }, CHAT_URL);
+    window.parent.postMessage({ type: "go_home" }, ALLYCHAT_CHAT_URL);
 }
 */
 
@@ -584,7 +592,7 @@ function overlay_close(ev) {
 
 function signal_overlay(overlay) {
   if (inIframe)
-    window.parent.postMessage({ type: "overlay", overlay: overlay }, CHAT_URL);
+    window.parent.postMessage({ type: "overlay", overlay: overlay }, ALLYCHAT_CHAT_URL);
 }
 
 function image_go(delta) {
@@ -833,10 +841,10 @@ function select_message($message, shift, ctrl) {
   $select_message_prev = $message;
 }
 
-function notify_new_message(newMessage) {
+export function notify_new_message(newMessage) {
   // send a message to the parent window
   if (inIframe)
-    window.parent.postMessage({ type: "new_message", message: newMessage }, CHAT_URL);
+    window.parent.postMessage({ type: "new_message", message: newMessage }, ALLYCHAT_CHAT_URL);
 }
 
 // view options --------------------------------------------------------------
@@ -856,7 +864,6 @@ function setup_view_options() {
 }
 
 async function theme_loaded() {
-  // console.log("theme_loaded");
   await wait_for_load();
   const theme_mode = getComputedStyle(document.documentElement).getPropertyValue("--theme-mode");
   // console.log("theme_mode", theme_mode);
@@ -888,14 +895,15 @@ function set_theme(theme) {
   // console.log("theme changed", theme);
   const $old_link = $id("theme");
   const $new_link = $old_link.cloneNode();
-  $new_link.href = CHAT_URL + "/themes/" + theme + ".css";
+  $new_link.href = ALLYCHAT_CHAT_URL + "/themes/" + theme + ".css";
   $new_link.id = "theme";
+  $on($new_link, "load", theme_loaded);
   $old_link.replaceWith($new_link);
 }
 
 async function handle_message(ev) {
   // console.log("room handle_message", ev);
-  if (ev.origin !== CHAT_URL) {
+  if (ev.origin !== ALLYCHAT_CHAT_URL) {
     console.error("ignoring message from", ev.origin);
     return;
   }
@@ -977,7 +985,7 @@ function set_view_details() {
     open_or_close_details($details);
 }
 
-function open_or_close_details($details) {
+export function open_or_close_details($details) {
   const view_details = view_options.details;
   const show_thinking = view_details & 1;
   const show_other_details = view_details & 2;
@@ -1059,7 +1067,7 @@ function messages_resized() {
   }
   /*
   if (inIframe)
-    window.parent.postMessage({ type: "size_change", width: $messages_wrap.scrollWidth, height: $messages_wrap.scrollHeight }, CHAT_URL);
+    window.parent.postMessage({ type: "size_change", width: $messages_wrap.scrollWidth, height: $messages_wrap.scrollHeight }, ALLYCHAT_CHAT_URL);
   */
   messages_scrolled();
 }
@@ -1092,7 +1100,7 @@ function dragResizer(ev) {
 
 // TODO this is common, move to utils
 
-async function flash($el, className) {
+export async function flash($el, className) {
   $el.classList.add(className);
   await $wait(300);
   $el.classList.remove(className);
@@ -1115,53 +1123,13 @@ function handle_intro() {
   }
 }
 
-// helper functions for theme colors -----------------------------------------
-
-function getForegroundColorWithOpacity(opacity) {
-  return hexColorWithOpacity(getCssVarColorHex('--text'), opacity);
-}
-
-function getCssVarColorHex(varName = '--text') {
-    const temp = document.createElement('div');
-    temp.style.color = getComputedStyle(document.body).getPropertyValue(varName);
-    document.body.appendChild(temp);
-    const rgb = getComputedStyle(temp).color;
-    document.body.removeChild(temp);
-    const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-    if (!match) return '#808080';
-    const hex = '#' + match.slice(1).map(x =>
-        parseInt(x).toString(16).padStart(2, '0')
-    ).join('');
-    return hex;
-}
-
-function hexColorWithOpacity(color, opacity) {
-    const alpha = Math.round(opacity * 255);
-    return color + alpha.toString(16).padStart(2, '0');
-}
-
-// helper functions ----------------------------------------------------------
-
-function previous(selector, lookBack = 0) {
-	// Get all elements matching the selector
-	const elements = Array.from(document.querySelectorAll(selector));
-
-	// Find elements before the script
-	const beforeScript = elements.filter(element =>
-		!(document.currentScript.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING)
-	);
-
-	// If no elements found before script, return null
-	if (!beforeScript.length) return null;
-
-	// Get the element at the specified lookBack position from the end
-	const index = beforeScript.length - 1 - lookBack;
-	return index >= 0 ? beforeScript[index] : null;
-}
-
 // main ----------------------------------------------------------------------
 
-async function room_main() {
+async function load_user_script() {
+  modules.user_script = await import(ALLYCHAT_CHAT_URL + "/users/" + user + "/script.js")
+}
+
+export async function room_main() {
   file_type = "room";
 
   register_service_worker();
@@ -1179,9 +1147,12 @@ async function room_main() {
     snapshot = url.searchParams.get("snapshot") && true;
   }
 
+  theme_loaded();
+
   setup_view_options();
 
   setup_mutation_observer();
+  await process_current_messages(); // must be after setup_mutation_observer
 
   handle_intro();
 
@@ -1197,7 +1168,7 @@ async function room_main() {
   $on(window, "message", handle_message);
   setup_keyboard_shortcuts();
   if (inIframe)
-    window.parent.postMessage({ type: "ready", theme: theme }, CHAT_URL);
+    window.parent.postMessage({ type: "ready", theme: theme }, ALLYCHAT_CHAT_URL);
   add_hook("window_resize", window_resized);
 
 //  new ResizeObserver(canvas_resized).observe($canvas_div);
@@ -1224,7 +1195,7 @@ function fullscreenchange(ev) {
     overlay_close();
 }
 
-async function folder_main() {
+export async function folder_main() {
   file_type = "dir";
 
   register_service_worker();
@@ -1237,12 +1208,14 @@ async function folder_main() {
     snapshot = url.searchParams.get("snapshot") && true;
   }
 
+  theme_loaded();
+
   setup_view_options();
 
   $on(window, "message", handle_message);
   // setup_keyboard_shortcuts();
   if (inIframe)
-    window.parent.postMessage({ type: "ready", theme: theme }, CHAT_URL);
+    window.parent.postMessage({ type: "ready", theme: theme }, ALLYCHAT_CHAT_URL);
 
   if (typeof room_user_script === 'function') {
     room_user_script();
