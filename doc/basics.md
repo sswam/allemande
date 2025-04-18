@@ -1,4 +1,44 @@
-## Basic intro to Ally Chat
+# Welcome to Ally Chat
+
+Ally Chat is a unique multi-user chat platform, with access to numerous top-quality AI models from providers including OpenAI, Anthropic, Meta, Google, Perplexity, xAI, DeepSeek, Alibaba Cloud, Open Router, Stability AI, and the Civitai community.
+
+The app is fully open source. The service is free to use, with full functionality and generous limits; or you can pay if you feel like it!
+
+Please check out the examples attached. You can see various AIs helping me to learn, solve problems and do other interesting things.
+
+This is perhaps the only AI chat service in the world where you can talk with all the most powerful AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
+
+Novel features include:
+
+- private chat, and group chat with multiple AI and human participants
+- very performant: create new rooms instantly, switch rooms instantly
+- markdown-based chat with complete HTML support:
+  (images, videos, embeds, diagrams, SVG, CSS, JS; everything)
+- Graphviz and Mermaid diagrams, TeX Math, any sort of charts, etc.
+- quality AI art with SDXL models, and assisted prompting; not censored
+- a flexible room file system; private, public and group chats
+- undo, retry and edit the chat history; archive or clear old chat rooms
+- a numbered "chapters" system, to split up your chats for performance
+- a "conductor" that manages AI responses based on mentions and cues
+- a shared canvas for collaborative drawing using JavaScript
+- AIs can teach you about the app, including all the models and agents
+- a column view option, to make the most of your screen
+- web, image, video search; programming tools such as Bash and Python
+- the whole app is open source; you can potentially run it at home
+- a cast of more than 100 characters, specialist agents, and tools
+- custom agents and missions, adjust context and other settings mid-chat
+- a wide range of styles, support for custom styles and JavaScript
+- we value free speech, and include access to various uncensored AIs
+
+Example #1: upload a photo of a math equation, ask GPT 4o to copy it as TeX math, ask GPT o3 mini to solve it, ask Claude to write JavaScript to check the solution, draw a chart, and a GraphViz diagram showing the flow of the chat.
+
+Example #2: Clu (concise Claude) helps me learn about rainbows. We draw AI art of a rainbow with help from Gemini Flash and Juggernaut XL. Clu writes JavaScript to draw a rainbow on the canvas (at right). We search Google images for rainbow physics, and Clu explains it to me, with relevant maths. I search up a music video on YouTube, then Emm (concise GPT 4o) draws a colourful diagram showing learning paths in AI.
+
+These demos barely scratch the surface of what's possible. One random example, Claude wrote a local weather applet which ran directly in the chat.
+
+Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
+
+Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
 
 ## Image Gen
 

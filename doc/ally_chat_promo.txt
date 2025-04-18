@@ -1,13 +1,14 @@
-Ally Chat is a unique multi-user chat platform, with access to numerous top quality AI models from providers including OpenAI, Anthropic, Meta, Google, Perplexity, xAI, DeepSeek, Stability AI, and the Civitai community.
+Ally Chat is a unique multi-user chat platform, with access to numerous top-quality AI models from providers including OpenAI, Anthropic, Meta, Google, Perplexity, xAI, DeepSeek, Alibaba Cloud, Open Router, Stability AI, and the Civitai community.
 
 The app is fully open source. The service is free to use, with full functionality and generous limits; or you can pay if you feel like it!
 
 Please check out the examples attached. You can see various AIs helping me to learn, solve problems and do other interesting things.
 
-This is perhaps the only AI chat service in the world where you can talk with all the most powerful AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends and colleagues to join in too.
+This is perhaps the only AI chat service in the world where you can talk with all the most powerful AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
 
 Novel features include:
 
+- private chat, and group chat with multiple AI and human participants
 - very performant: create new rooms instantly, switch rooms instantly
 - markdown-based chat with complete HTML support:
   (images, videos, embeds, diagrams, SVG, CSS, JS; everything)
@@ -31,8 +32,8 @@ Example #1: upload a photo of a math equation, ask GPT 4o to copy it as TeX math
 
 Example #2: Clu (concise Claude) helps me learn about rainbows. We draw AI art of a rainbow with help from Gemini Flash and Juggernaut XL. Clu writes JavaScript to draw a rainbow on the canvas (at right). We search Google images for rainbow physics, and Clu explains it to me, with relevant maths. I search up a music video on YouTube, then Emm (concise GPT 4o) draws a colourful diagram showing learning paths in AI.
 
-These demos barely scratch the surface of what's possible. One random example, Claude wrote a weather app which ran directly in the chat.
+These demos barely scratch the surface of what's possible. One random example, Claude wrote a local weather applet which ran directly in the chat.
 
-Please message me for free access and a demo / tour. I hope you'll like it!
+Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
 
-Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas and help make Ally Chat super awesome. 🔥
+Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
