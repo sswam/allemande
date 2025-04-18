@@ -318,6 +318,10 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) {
 .icon.i40 { width: 2.5rem; height: 2.5rem; }
 
 
+.drop_target {
+	background: var(--button-focus);
+}
+
 @media print {
 	:root {
 		--frame: white;

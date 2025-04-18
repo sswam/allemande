@@ -1236,6 +1236,41 @@ async function files_changed(ev) {
   set_controls();
 }
 
+// upload: drag and drop, paste ----------------------------------------------
+
+function content_dragover(event) {
+  event.preventDefault();
+  // Add visual feedback for drag over, e.g., change border color
+  $content.classList.add("drop_target");
+}
+
+function content_dragleave(event) {
+  // Remove visual feedback when drag leaves
+  $content.classList.remove("drop_target");
+}
+
+function content_drop(event) {
+  event.preventDefault();
+  $content.classList.remove("drop_target");
+  const files = event.dataTransfer.files;
+  upload_files(files, true);
+}
+
+function content_paste(event) {
+  event.preventDefault();
+  const items = event.clipboardData.items;
+  const files = [];
+  for (const item of items) {
+    if (item.kind === 'file') {
+      const file = item.getAsFile();
+      if (file)
+        files.push(file);
+    }
+  }
+  if (files.length > 0)
+    upload_files(files, true)
+}
+
 async function upload_files(files, to_text) {
   // upload in parallel
   active_add("add_file", files.length);
@@ -2461,6 +2496,11 @@ async function chat_main() {
   $on(window, "beforeprint", print_chat);
 
   $on(document, "fullscreenchange", fullscreenchange);
+
+  $content.addEventListener('dragover', content_dragover);
+  $content.addEventListener('dragleave', content_dragleave);
+  $content.addEventListener('drop', content_drop);
+  $content.addEventListener('paste', content_paste);
 
   setup_view_options();
 

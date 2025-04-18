@@ -2,7 +2,8 @@
 
 // CONFIG
 
-const VERSION = "0.5.103";
+const VERSION = "0.5.543";
+
 const DEBUG = false;
 
 const subdomain = self.location.hostname.split(".")[0];
