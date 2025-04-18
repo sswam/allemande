@@ -110,6 +110,7 @@ MODELS = {
         "description": "OpenAI's strongest reasoning model, with complex reasoning",
         "cost_in": 10,
         "cost_out": 40,
+        "no_stop": True,
     },
     "o4-mini": {
         "aliases": ["om", "fermi"],
@@ -118,6 +119,7 @@ MODELS = {
         "description": "OpenAI's faster, cheaper reasoning model.",
         "cost_in": 3,
         "cost_out": 12,
+        "no_stop": True,
     },
     "gpt-4": {
         "aliases": ["4", "emmy"],
@@ -694,8 +696,6 @@ def replace_citations(content, cites):
 
 async def achat_perplexity(opts: Options, messages):
     """Chat with Perplexity models asynchronously."""
-    opts = opts.clone()
-    opts.stop = None
     return await achat_openai(opts, messages, client=perplexity_async_client, citations=True)
 
 
@@ -826,6 +826,8 @@ async def allm_chat(opts: Options, messages):
     """Send a list of messages to the model, and return the response asynchronously. This is the core function used by everything else."""
     logger.debug("llm_chat: input: %r", messages)
 
+    opts = opts.clone()
+
     if opts.system is not None:
         system_message_obj = {"role": "system", "content": opts.system}
         logger.warning("system message: %s", system_message_obj)
@@ -838,6 +840,9 @@ async def allm_chat(opts: Options, messages):
         logger.debug("llm_chat: vision, trying to format messages")
         messages = [llm_vision.format_message_for_vision(message, vendor) for message in messages]
         logger.debug("llm_chat: vision messages: %r", [msg for msg in messages if "image" in msg["content"] or "image_url" in msg["content"]])
+
+    if model.get("no_stop") or vendor == "perplexity":
+        opts.stop = None
 
     if opts.fake:
         return fake_completion
