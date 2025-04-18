@@ -1,5 +1,5 @@
 type: openai
-model: o1
+model: o3
 context: 5
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
   impersonate other characters! Please use markdown, including code blocks like ```python
