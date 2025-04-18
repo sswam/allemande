@@ -2,3 +2,5 @@ const ALLEMANDE_LOGIN_URL="https://allemande.ai";
 const ALLYCHAT_CHAT_URL="https://chat.allemande.ai";
 const ALLYCHAT_ROOMS_URL="https://rooms.allemande.ai";
 const ALLYCHAT_WEBPUSH_VAPID_PUBLIC_KEY="";
+const GLOBAL_MODERATORS = ["root", "yourusername"];
+const DEVS = ["root", "yourusername"];

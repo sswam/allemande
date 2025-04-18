@@ -6,10 +6,6 @@ const MAX_ROOM_NUMBER = 1e3; // 1e12;
 const DEFAULT_ROOM = "Ally Chat";
 const EXTENSION = ".bb";
 
-// TODO: no!
-const global_moderators = ["root", "sam"];
-const devs = ["root", "sam"];
-
 const $head = $("head");
 const $body = $("body");
 const $room = $id("room");
@@ -179,7 +175,7 @@ function set_debug(debug) {
 }
 
 function setup_dev() {
-  dev = devs.includes(user);
+  dev = DEVS.includes(user);
   if (dev) {
     show($id("debug"));
     $on($id("debug"), "click", () => set_debug(!DEBUG));
@@ -1308,7 +1304,7 @@ function setup_admin() {
   // this includes a top-level room being the user's name
   const components = room.split("/");
   const top_dir = components[0];
-  admin = global_moderators.includes(user) || top_dir == user;
+  admin = GLOBAL_MODERATORS.includes(user) || top_dir == user;
   if (admin) document.body.classList.add("admin");
   else document.body.classList.remove("admin");
 }
