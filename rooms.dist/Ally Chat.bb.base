@@ -25,12 +25,12 @@ if (prevH1 && prevH1.tagName === 'H1') {
 }
 
 a = previous("a")
-a.href = `${CHAT_URL}/#${user}/chat`;
+a.href = `${ALLYCHAT_CHAT_URL}/#${user}/chat`;
 a.style.textTransform = "capitalize";
 a.innerText = `${user}'s Private Room`;
 
 a = previous("a", 1)
-a.href = `${CHAT_URL}/#${user}`;
+a.href = `${ALLYCHAT_CHAT_URL}/#${user}`;
 a.style.textTransform = "capitalize";
 a.innerText = `${user}'s Public Room`;
 </script>
