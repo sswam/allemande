@@ -585,7 +585,7 @@ function overlay_close(ev) {
   // Reset current image index
   allImages = null;
   $currentImg = null;
-  $currentImgIndex = null;
+  currentImgIndex = null;
 
   remove_hook("resize", setup_overlay_image_cover);
 }
