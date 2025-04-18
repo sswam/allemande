@@ -37,7 +37,7 @@ server {
 
 	location /service_worker.js {
 		add_header Cache-Control "no-cache";
-		try_files $uri $uri/ =404;
+		try_files /service_worker_gen.js =404;
 	}
 
 	location / {

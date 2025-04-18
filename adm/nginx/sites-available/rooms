@@ -40,10 +40,10 @@ server {
 	auth_jwt_location COOKIE=auth;
 	auth_jwt_algorithm HS256;
 
-	location = /service_worker.js {
+	location ~ ^/service_worker(_gen)?\.js$ {
 		root /var/www/allychat/static;
 		add_header Cache-Control "no-cache";
-		try_files /service_worker.js =404;
+		try_files /service_worker_gen.js =404;
 	}
 
 	location = /sw_register.js {

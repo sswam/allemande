@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.5.578";
+const VERSION = "0.5.744";
 
 const DEBUG = false;
 
@@ -41,12 +41,12 @@ const CORS_URLS_TO_CACHE = {
   ],
   "rooms": [
     "/allychat.css",
-    "/room.css",
+    "/room_gen.css",
     "/util.js",
     "/print.js",
     "/debug.js",
     "/resizer.js",
-    "/highlight.js",
+    "/ally_highlight.js",
     "/process_messages.js",
     "/room.js",
     "/voice.js",

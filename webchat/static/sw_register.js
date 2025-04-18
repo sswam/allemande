@@ -33,7 +33,7 @@ function sw_statechange(ev) {
 
 async function register_service_worker() {
 //  console.log("Registering service worker");
-  const sw_url = window.location.origin + "/service_worker.js"
+  const sw_url = window.location.origin + "/service_worker_gen.js"
   if (!navigator.serviceWorker) return;
   try {
     sw_registration = await navigator.serviceWorker.register(sw_url, {"cache": "no-cache"});
