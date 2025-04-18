@@ -14,6 +14,8 @@ Novel features include:
 - very performant: create new rooms instantly, switch rooms instantly
 - markdown-based chat with complete HTML support:
   (images, videos, embeds, diagrams, SVG, CSS, JS; everything)
+- The chat is displayed in a secure cross-domain iframe,
+  so JavaScript in the chat is not very dangerous.
 - Graphviz and Mermaid diagrams, TeX Math, any sort of charts, etc.
 - quality AI art with SDXL models, and assisted prompting; not censored
 - a flexible room file system; private, public and group chats
@@ -223,3 +225,44 @@ Dogu, look wizard
 Dogu, web-text https://beebom.com/cool-interesting-websites/
 
 Gido, import html ; print(html.escape("&&&"))
+
+### Side by Side Formatting
+
+<style class="hide">
+.doc-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1em;
+  max-width: 43rem;
+}
+</style>
+
+<div class="doc-container" markdown="1">
+
+<div markdown="1">
+# Welcome to Markdown!
+
+Hello, world! This is a sample markdown document to showcase various features and best practices.
+</div>
+<div markdown="1">
+
+```markdown
+# Welcome to Markdown!
+
+Hello, world! This is a sample markdown document to showcase various features and best practices.
+```
+</div>
+
+<div markdown="1">
+## Text Formatting
+
+You can make text *italic*, **bold**, or ***both***. For inline code, use `backticks`.
+</div>
+<div markdown="1">
+
+```markdown
+## Text Formatting
+
+You can make text *italic*, **bold**, or ***both***. For inline code, use `backticks`.
+```
+</div>

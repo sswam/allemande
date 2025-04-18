@@ -14,6 +14,8 @@ Novel features include:
 - very performant: create new rooms instantly, switch rooms instantly
 - markdown-based chat with complete HTML support:
   (images, videos, embeds, diagrams, SVG, CSS, JS; everything)
+- The chat is displayed in a secure cross-domain iframe,
+  so JavaScript in the chat is not very dangerous.
 - Graphviz and Mermaid diagrams, TeX Math, any sort of charts, etc.
 - quality AI art with SDXL models, and assisted prompting; not censored
 - a flexible room file system; private, public and group chats
