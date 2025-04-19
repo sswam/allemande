@@ -580,6 +580,7 @@ async function set_room(room_new, no_history) {
   //	who();
 
   setup_user_button();
+  setup_nav_button();
   setup_admin();
 
   if (view === "view_edit") {
@@ -901,8 +902,7 @@ function room_set_number(n) {
   let new_room;
   if (n === "") {
     new_room = room.replace(/-?\d+$/, "");
-    set_room(new_room);
-    return;
+    return new_room;
   }
   if (n < 0) {
     n = 0;
@@ -911,7 +911,7 @@ function room_set_number(n) {
     n = MAX_ROOM_NUMBER;
   }
   new_room = room.replace(/-?\d+$|$/, "-" + n);
-  set_room(new_room);
+  return new_room;
 }
 
 function room_get_number() {
@@ -932,7 +932,7 @@ function room_next() {
   } else {
     num = +num + 1;
   }
-  room_set_number(num);
+  return room_set_number(num);
 }
 
 function room_prev() {
@@ -944,11 +944,11 @@ function room_prev() {
   } else {
     num = +num - 1;
   }
-  room_set_number(num);
+  return room_set_number(num);
 }
 
 function room_first() {
-  room_set_number("");
+  return room_set_number("");
 }
 
 async function room_last(i) {
@@ -964,7 +964,7 @@ async function room_last(i) {
     throw new Error(data.error);
   }
   // console.log("last", data.last);
-  room_set_number(+data.last + i);
+  return room_set_number(+data.last + i);
 }
 
 // Keyboard shortcuts --------------------------------------------------------
@@ -1200,6 +1200,73 @@ function setup_user_button() {
   else if (room == user + "/chat") $user.href = "/" + query_to_hash(user) + "/";
   // from anywhere else, go to private user chat
   else $user.href = "/" + query_to_hash(user) + "/chat";
+}
+
+// set  the nav button href -------------------------------------
+
+async function setup_nav_button() {
+  // Setup nav_up button ----------------------
+  const $nav_up = $id("nav_up");
+  let new_room;
+  if (room == "/") {
+    new_room = DEFAULT_ROOM;
+  } else if (room.match(/\/$/)) {
+    new_room = room.replace(/[^\/]*\/$/, "");
+    if (new_room == "") {
+      new_room = "/";
+    }
+  } else {
+    new_room = room.replace(/[^\/]+$/, "") || "/";
+  }
+  $nav_up.href = "/" + query_to_hash(new_room);
+
+  // Setup allychat button --------------------
+  const $nav_allychat = $id("nav_allychat");
+  $nav_allychat.href = "/" + query_to_hash(DEFAULT_ROOM);
+
+  // Setup porch button --------------------
+  const $nav_porch = $id("nav_porch");
+  $nav_porch.href = "/" + query_to_hash(user);
+
+  // Setup home button --------------------
+  const $nav_home = $id("nav_home");
+  $nav_home.href = "/" + query_to_hash(user + "/chat");
+
+  // Setup first room button --------------------
+  const $nav_first = $id("nav_first");
+  const nav_first_query = room_first();
+  if (nav_first_query) {
+    $nav_first.href = query_to_hash(nav_first_query);
+  } else {
+    $nav_first.removeAttribute("href");
+  }
+
+  // Setup prev room button --------------------
+  const $nav_prev = $id("nav_prev");
+  const roomPrev = room_prev();
+  if (roomPrev) {
+    $nav_prev.href = "/" + query_to_hash(roomPrev);
+  } else {
+    $nav_prev.removeAttribute("href");
+  }
+
+  // Setup next room button --------------------
+  const $nav_next = $id("nav_next");
+  const roomNext = await room_next();
+  if (roomNext) {
+    $nav_next.href = "/" + query_to_hash(roomNext);
+  } else {
+    $nav_next.removeAttribute("href");
+  }
+
+  // Setup last room button --------------------
+  const $nav_last = $id("nav_last");
+  const roomLast = await room_last();
+  if (roomLast) {
+    $nav_last.href = "/" + query_to_hash(roomLast);
+  } else {
+    $nav_last.removeAttribute("href");
+  }
 }
 
 // Wrapper function to initialize drag controls for the input row ------------
@@ -2480,14 +2547,6 @@ export async function init() {
   $on($id("opt_mission"), "change", opt_mission);
   $on($id("opt_cancel"), "click", () => set_controls());
 
-  $on($id("nav_up"), "click", nav_up);
-  $on($id("nav_allychat"), "click", () => set_room(DEFAULT_ROOM));
-  $on($id("nav_porch"), "click", () => set_room(user));
-  $on($id("nav_home"), "click", () => set_room(user + "/chat"));
-  $on($id("nav_first"), "click", room_first);
-  $on($id("nav_prev"), "click", room_prev);
-  $on($id("nav_next"), "click", room_next);
-  $on($id("nav_last"), "click", () => room_last());
   $on($id("nav_cancel"), "click", () => set_top_left());
 
   $on($id("scroll_home"), "click", (ev) => scroll_home_end(ev, 0));
