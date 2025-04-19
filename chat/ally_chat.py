@@ -1055,7 +1055,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
         # TODO could fetch in parallel, likely not necessary
         # TODO could split text where images occur
         msg['images'] = [
-            await ally_markdown.resolve_url_path(file, url, msg['user'], throw=False)
+            await ally_markdown.resolve_url_path(file, url, msg.get('user'), throw=False)
             for url
             in msg['images']]
 

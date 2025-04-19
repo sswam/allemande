@@ -548,7 +548,7 @@ async def resolve_url_path(file: str, url: str, user: str | None, throw: bool = 
         safe_path, _rel_path = safe_path_for_local_file(file, url)  # type: ignore
 
         # Check access permissions
-        if not (user and check_access(user, safe_path)):
+        if not check_access(user, safe_path):
             raise PermissionError(f"Access denied to {safe_path} for user {user}")
 
         if not os.path.exists(safe_path):
