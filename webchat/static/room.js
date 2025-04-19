@@ -756,7 +756,7 @@ function image_click($el, ev) {
   if ($el.tagName === "IMG" && $el.parentNode.tagName === "A") {
     src = $el.parentNode.href;
   } else if ($el.tagName === "IMG") {
-    src = $el.tagName === "IMG";
+    src = $el.src;
   } else if ($el.tagName === "A") {
     src = $el.href;
   } else {
@@ -767,7 +767,12 @@ function image_click($el, ev) {
   } else if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
     window.open(src, "_blank").focus();
   } else if (ev.altKey) {
-    window.top.location.href = src;
+    const a = document.createElement("a");
+    a.href = src;
+    a.download = src.split("/").pop(); // Use the file name from the URL
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   } else if (!overlay_mode) {
     image_overlay($el);
   }

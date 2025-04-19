@@ -102,6 +102,7 @@ input:focus, textarea:focus, iframe:focus {
 	display: inline-block;
 	text-decoration: none;
 	padding: 0.0625rem 0.375rem;
+	cursor: default;
 }
 
 button, .button {
