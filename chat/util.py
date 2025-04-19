@@ -67,7 +67,7 @@ def backup_file(path: str):
     try:
         subprocess.run(["git", "add", rel_path], check=True, cwd=repo_root)
         # Check if there are staged changes for the file
-        result = subprocess.run(["git", "diff", "--staged", "--quiet", rel_path], cwd=repo_root, capture_output=True, check=True)
+        result = subprocess.run(["git", "diff", "--staged", "--quiet", rel_path], cwd=repo_root, capture_output=True)
 
         # If exit code is 1, there are changes to commit
         if result.returncode == 1:

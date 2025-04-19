@@ -81,11 +81,11 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 	max-height: calc(max(min(var(--image-width), var(--image-height)), 2.75rem));
 }
 
-:is(.narrative, .large) :is(img, video, audio, iframe) {
+:is(.large) :is(img, video, audio, iframe) {
 	max-width: 100%;
 	max-height: 100%;
 }
-:is(.narrative, .large) :is(img, video, audio, iframe) {
+:is(.large) :is(img, video, audio, iframe) {
 	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 5.5rem));
 	max-height: calc(max(min(var(--image-width-large), var(--image-height-large)), 5.5rem));
 }
@@ -150,7 +150,7 @@ body.alt div:is(.image, .embed) {
 	margin-bottom: 1rem;
 }
 
-:is(.narrative, .large) :is(div.image, div.embed, .image .alt, .embed .alt) {
+:is(.large) :is(div.image, div.embed, .image .alt, .embed .alt) {
 	max-width: calc(max(min(var(--image-width-large), var(--image-height-large)), 2.75rem));
 }
 
@@ -549,6 +549,10 @@ pre:has(div.graphviz), pre:has(div.mermaid) {
 	overflow: auto;
 }
 
+.graphviz > *, .mermaid > *{
+	max-width: 100% !important;
+}
+
 /*
 .content script::before {
 	content: "<script>";
@@ -665,6 +669,9 @@ body.columns div.messages {
 	max-height: 100%;
 	column-fill: auto;
 }
+body.compact:not(.compact2).columns div.messages {
+	column-width: 28.5rem;
+}
 body.columns .message {
 	max-width: 100%;
 }
@@ -680,7 +687,7 @@ body.columns .message :is(.graphviz, .mermaid) {
 	max-width: auto;
 }
 
-body.compact div.messages {
+body.compact2 div.messages {
 	padding: 0;
 	column-gap: 0;
 }
@@ -703,6 +710,12 @@ body.columns.compact div.messages code.hljs {
 	width: 30.0rem;
 	min-width: 30.0rem;
 	overflow: visible;
+}
+
+body.columns.compact:not(.compact2) div.messages code,
+body.columns.compact:not(.compact2) div.messages code.hljs {
+	width: 29.25rem;
+	min-width: 29.25rem;
 }
 
 .clear {

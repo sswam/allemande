@@ -202,6 +202,8 @@ input:disabled, input:disabled:hover, input:disabled:focus
 	--scrollbar-background: var(--background);
 	--scrollbar: var(--frame);
 
+	--ui-size-min: 3.75rem;
+
 	--image-width: 40vw;
 	--image-height: 40vh;
 	--image-width-large: 90vw;

@@ -1966,7 +1966,8 @@ function view_options_apply() {
   $content.placeholder = input_placeholder;
 
   const cl = document.body.classList;
-  cl.toggle("compact", view_options.compact == 1);
+  cl.toggle("compact", view_options.compact >= 1);
+  cl.toggle("compact2", view_options.compact == 2);
   cl.toggle("simple", view_options.advanced == 0);
 
   if (view_options.image_size >= 10) {
@@ -2068,7 +2069,8 @@ function view_columns(ev) {
 }
 
 function view_compact(ev) {
-  view_options.compact = !view_options.compact;
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  view_options.compact = (view_options.compact + delta + 3) % 3;
   view_options_apply();
 }
 

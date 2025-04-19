@@ -350,7 +350,7 @@ function key_event(ev) {
     ev.preventDefault();
     return scroll_pages(-1);
   }
-  if (ev.key == "End") {
+  if (ev.key == "PageDown") {
     ev.preventDefault();
     return scroll_pages(1);
   }
@@ -947,7 +947,8 @@ async function set_view_options(new_view_options) {
     cl.toggle("ids", view_options.ids == 2);
   }
 
-  cl.toggle("compact", view_options.compact == 1);
+  cl.toggle("compact", view_options.compact >= 1);
+  cl.toggle("compact2", view_options.compact == 2);
 
   const image_size = view_options.image_size * 5;
   const image_size_small = view_options.image_size*2.5;

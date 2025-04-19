@@ -1,7 +1,3 @@
-:root {
-	--ui-size-min: 4.5rem;
-}
-
 .admin {
 	display: none;
 }
@@ -98,7 +94,7 @@ input, textarea {
 	margin-left: var(--pad);
 }
 
-body.compact .pad {
+body.compact2 .pad {
 	padding: 0;
 }
 .col > :first-child, .row > :first-child {
