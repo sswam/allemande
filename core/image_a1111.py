@@ -146,7 +146,7 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
             add['height'] = "960"
         if quality == 1:
             pass
-        if quality == 2:
+        elif quality == 2:
             add['hq'] = "1"  # use adetailer
         else:
             add['hq'] = "1.5"  # use hires-fix and adetailer (3)

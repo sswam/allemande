@@ -140,7 +140,7 @@ images:
 	while true; do $(PYTHON) core/image_a1111.py -v; sleep 1; done
 
 a1111:
-	cd ~/webui ; ./webui.sh
+	cd ~/webui ; while true; do ./webui.sh; done
 
 # brain-remote: clean
 # 	cd chat && ./brain.sh --remote

@@ -28,10 +28,25 @@ logger = main.get_logger()
 API_URL = "http://127.0.0.1:7860/sdapi/v1/txt2img"
 
 
-async def generate_image(session, params):
+async def generate_image(session, params, restart_on_fail=False) -> dict[str, Any]:
     """Send a request to the API and return the response."""
-    async with session.post(API_URL, json=params) as response:
-        return await response.json()
+    try:
+        async with session.post(API_URL, json=params) as response:
+            return await response.json()
+    except Exception as e:
+        logger.error("Error generating image: %s", e)
+        if not restart_on_fail:
+            raise
+        logger.info("Restarting API, will try one more time")
+        await restart_api()
+        return await generate_image(session, params, False)
+
+
+async def restart_api():
+    """Restart the API."""
+    logger.info("Restarting automatic1111 stable diffusion API service")
+    os.system("a1111-kill")
+    await asyncio.sleep(20)
 
 
 def remove_comments(text):
@@ -67,6 +82,7 @@ async def a1111_client(
     rp_flip: bool|None = False,
     rp_threshold: str|None = None,
     clip_skip: int|None = None,
+    restart_on_fail: bool = True,
 ) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -144,7 +160,7 @@ async def a1111_client(
                     continue
                 logger.debug("Generating image %s/%s", i + 1, count)
                 params["seed"] = (seed + i) % 2**32
-                response = await generate_image(session, params)
+                response = await generate_image(session, params, restart_on_fail=restart_on_fail)
                 if "images" not in response:
                     raise ValueError(f"Got no images in response: {json.dumps(response)}")
                 image = base64.b64decode(response["images"][0])
