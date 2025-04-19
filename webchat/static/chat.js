@@ -571,16 +571,14 @@ async function set_room(room_new, no_history) {
     try {
       await get_options();  // can throw if access denied
     } catch {
-      show_room_privacy();
-      setup_user_button();
+      setup_all_link_buttons();
       return;
     }
   }
 
   //	who();
 
-  setup_user_button();
-  setup_nav_button();
+  setup_all_link_buttons();
   setup_admin();
 
   if (view === "view_edit") {
@@ -595,8 +593,6 @@ async function set_room(room_new, no_history) {
 
   if (view !== "view_edit")
     reset_ui();
-
-  show_room_privacy();
 
   if (type == "room" || type == "dir") {
     messages_iframe_set_src(room_url() + "?stream=1");
@@ -615,6 +611,12 @@ function room_url() {
   return url;
 }
 
+function setup_all_link_buttons() {
+  show_room_privacy();
+  setup_user_button();
+  setup_nav_buttons();
+}
+
 function show_room_privacy() {
   const $privacy = $id("privacy");
   is_private = room.startsWith(user + "/");
@@ -627,6 +629,12 @@ function show_room_privacy() {
   } else {
     $privacy.innerHTML = icons["access_public"];
     $privacy.title = "public";
+  }
+
+  if (is_private) {
+    $privacy.href = "/" + query_to_hash(DEFAULT_ROOM);
+  } else {
+    $privacy.href = "/" + query_to_hash(user + "/chat");
   }
 }
 
@@ -1202,9 +1210,9 @@ function setup_user_button() {
   else $user.href = "/" + query_to_hash(user) + "/chat";
 }
 
-// set  the nav button href -------------------------------------
+// set the nav button href ---------------------------------------------------
 
-async function setup_nav_button() {
+async function setup_nav_buttons() {
   // Setup nav_up button ----------------------
   const $nav_up = $id("nav_up");
   let new_room;
@@ -2413,16 +2421,6 @@ function setup_icons() {
   }
 }
 
-// privacy -------------------------------------------------------------------
-
-function change_privacy() {
-  if (is_private) {
-    set_room(DEFAULT_ROOM);
-  } else {
-    set_room(user + "/chat");
-  }
-}
-
 // math input ----------------------------------------------------------------
 
 async function add_math_input(ev) {
@@ -2574,8 +2572,6 @@ export async function init() {
   const dragControls = initDragControls();
   $on($id("resizer"), "mousedown", dragControls);
   $on($id("resizer"), "touchstart", dragControls);
-
-  $on($id("privacy"), "click", change_privacy);
 
   $on(window, "beforeprint", print_chat);
 
