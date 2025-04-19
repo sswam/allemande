@@ -251,6 +251,7 @@ async function wait_for_messages_to_load(elements) {
 const mutationMutex = new Mutex();
 
 async function call_process_messages(messages) {
+  await wait_for_load();
   if (messages === undefined)
     messages = $messages.querySelectorAll(".message");
   await wait_for_messages_to_load(messages);
