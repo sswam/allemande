@@ -200,12 +200,13 @@ MODELS = {
         "cost_in": 1.25,
         "cost_out": 5,
     },
-    "gemini-2.0-flash": {
+    "gemini-2.5-flash": {
         "aliases": ["gf", "flashi"],
+        "id": "models/gemini-2.5-flash-preview-04-17",
         "vendor": "google",
-        "description": "Google's fast model with a 1 million context window.",
-        "cost_in": 0.1,
-        "cost_out": 0.4,
+        "description": "Google's fast thinking model with a 1 million context window.",
+        "cost_in": 0.15,
+        "cost_out": 0.6,
     },
     "gemini-2.0-flash-lite": {
         "aliases": ["lite"],
@@ -214,12 +215,12 @@ MODELS = {
         "cost_in": 0.075,
         "cost_out": 0.3,
     },
-    "gemini-2.5-flash": {
-        "aliases": ["gft", "flasho"],
+    "gemini-2.0-flash": {
+        "aliases": ["flasho"],
         "vendor": "google",
-        "description": "Google's fast thinking model with a 1 million context window.",
-        "cost_in": 0.15,
-        "cost_out": 0.6,
+        "description": "Google's fast model with a 1 million context window.",
+        "cost_in": 0.1,
+        "cost_out": 0.4,
     },
     "sonar-reasoning-pro": {
         "aliases": ["sageri"],

@@ -144,8 +144,7 @@ digraph Google {
 
     "Google" [label=<<b>Google</b>>]
     "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.0 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
-    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, tool-oriented</font>>]
-    "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, thinking</font>>]
+    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, intelligent</font>>]
     "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
 
