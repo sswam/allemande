@@ -914,6 +914,7 @@ async function handle_message(ev) {
     return;
   }
   if (ev.data.type === "set_view_options") {
+    delete ev.data.type;
     await set_view_options(ev.data);
   } else if (ev.data.type === "theme_changed") {
     set_theme(ev.data.theme);

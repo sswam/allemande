@@ -1,4 +1,4 @@
-const inIframe = window.parent !== window.self;
+const embed = window.parent !== window.self;
 
 const ROOMS_URL =
   location.protocol + "//" + location.host.replace(/^chat\b/, "rooms");
@@ -28,6 +28,8 @@ const narrator = "Nova";
 const illustrator = "Illu";
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+let help_room = "help";
+let help_url = ALLYCHAT_CHAT_URL + `/#${help_room}`;
 
 let lastMessageId = null;
 
@@ -57,6 +59,22 @@ let view_options = {
   audio_vad: 0,
   audio_auto: 0,
   audio_voice: "ballad",
+};
+
+let view_options_embed = {
+  alt: 1,
+  source: 1,
+  details: 0,
+  canvas: 0,
+  clean: 0,
+  columns: 0,
+  compact: 0,
+  history: 0,
+  image_size: 4,
+  input_row_height: 60,
+  details_changed: true,
+  fullscreen: 0,
+  advanced: 0,
 };
 
 let tts_voice_options = [
@@ -491,6 +509,14 @@ function message_changed(ev) {
     $send.innerHTML = icons["send"];
     $send.title = "send your message: ctrl+enter";
   }
+
+  if (embed) {
+    // make the send/poke button smaller
+    const $send_icon = $("#send > svg");
+    $send_icon.classList.add("i30");
+    $send_icon.classList.remove("i40");
+  }
+
   // save input content to local storage for this room in case of page reload, etc
   save_content();
 }
@@ -1106,6 +1132,16 @@ function setup_main_ui_shortcuts() {
 // handle messages from the messages iframe ----------------------------------
 
 function handle_message(ev) {
+  if (embed && ev.origin == ALLYCHAT_CHAT_URL) {  /* TODO support other host sites */
+    if (ev.data.type == "theme_changed")
+      return set_theme(ev.data.theme);
+    if (ev.data.type == "clear")
+      return clear_chat();
+    if (ev.data.type == "set_view_options") {
+      delete ev.data.type;
+      return set_view_options(ev.data);
+    }
+  }
   if (ev.origin != ROOMS_URL) {
     console.error("ignoring message from", ev.origin);
     return;
@@ -1948,13 +1984,25 @@ function setup_view_options() {
     }
     view_options.fullscreen = 0;
   }
+  if (embed) {
+    for (const key in view_options_embed) {
+      view_options[key] = view_options_embed[key];
+    }
+  }
   add_hook("room_ready", view_options_apply);
+}
+
+function set_view_options(new_view_options) {
+  for (const key of Object.keys(new_view_options))
+    view_options[key] = new_view_options[key];
+  view_options_apply();
 }
 
 function view_options_apply() {
   // includes audio options
   // save to local storage
-  localStorage.setItem("view_options", JSON.stringify(view_options));
+  if (!embed)
+    localStorage.setItem("view_options", JSON.stringify(view_options));
   // update buttons
   // TODO simplify / de-dup this code
   active_set("view_ids", view_options.ids);
@@ -1994,6 +2042,7 @@ function view_options_apply() {
   cl.toggle("compact", view_options.compact >= 1);
   cl.toggle("compact2", view_options.compact == 2);
   cl.toggle("simple", view_options.advanced == 0);
+  cl.toggle("embed", embed);
 
   if (view_options.image_size >= 10) {
     view_image_size_delta = -1;
@@ -2144,6 +2193,8 @@ function view_font_size(ev) {
     view_options.font_size = ((view_options.font_size || 4) + delta + 9) % 10 + 1;
   }
   view_options_apply();
+  if (!$id("help-widget").classList.contains("hidden"))
+    $id("help-frame").contentWindow.postMessage({ type: "set_view_options", font_size: view_options.font_size }, ALLYCHAT_CHAT_URL);
 }
 
 function view_items(ev) {
@@ -2212,10 +2263,19 @@ async function change_theme(ev) {
       theme = themes[Math.floor(Math.random() * themes.length)];
     } while (theme === view_options.theme && themes.length > 1);
   }
+  set_theme(theme);
+}
+
+function set_theme(theme_new) {
+  theme = theme_new;
   show_theme();
   set_settings({ theme: theme });
   load_theme();
   $messages_iframe.contentWindow.postMessage({ type: "theme_changed", theme }, ROOMS_URL);
+
+  // If help is open, reload it for the new theme
+  if (!$id("help-widget").classList.contains("hidden"))
+    $id("help-frame").contentWindow.postMessage({ type: "theme_changed", theme }, ALLYCHAT_CHAT_URL);
 }
 
 let hide_theme_timeout;
@@ -2411,7 +2471,7 @@ const icons = {
   audio_stt: '<svg width="20" height="20" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/></svg>',
   audio_tts: '<svg width="20" height="20" fill="currentColor" class="bi bi-volume-up-fill" viewBox="0 0 16 16"><path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"/><path d="M8.707 11.182A4.5 4.5 0 0 0 10.025 8a4.5 4.5 0 0 0-1.318-3.182L8 5.525A3.5 3.5 0 0 1 9.025 8 3.5 3.5 0 0 1 8 10.475zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06"/></svg>',
   audio_vad: '<svg width="20" height="20" fill="currentColor" class="bi bi-soundwave" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.5 2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-1 0v-11a.5.5 0 0 1 .5-.5m-2 2a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m4 0a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m-6 1.5A.5.5 0 0 1 5 6v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m8 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m-10 1A.5.5 0 0 1 3 7v2a.5.5 0 0 1-1 0V7a.5.5 0 0 1 .5-.5m12 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V7a.5.5 0 0 1 .5-.5"/></svg>',
-  info: '<svg width="20" height="20" fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16"><path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>',
+  help: '<svg width="20" height="20" fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16"><path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>',
 };
 
 
@@ -2438,6 +2498,9 @@ function setup_icons() {
   icons["font_contract"] = icons["font_expand"];
   icons["mod_auto"] = icons["auto"];
   icons["audio_auto"] = icons["auto"];
+
+  icons["help-widget-close"] = icons["x"];
+  icons["help-widget-clear"] = icons["mod_clear"]
 
   for (const id in icons) {
     const el = $id(id);
@@ -2503,9 +2566,16 @@ function print_chat(ev) {
 // embedding e.g. help overlay -----------------------------------------------
 
 function setup_embed_vs_main_ui() {
-  if (inIframe)
+  if (embed)
     return setup_embed_ui();
   return setup_main_ui();
+}
+
+function setup_main_ui() {
+  // show all UI controls
+  show("top");
+  show("inputrow");
+  setup_main_ui_shortcuts();
 }
 
 function setup_embed_ui() {
@@ -2521,11 +2591,42 @@ function setup_embed_ui() {
   return;
 }
 
-function setup_main_ui() {
-  // show all UI controls
-  show("top");
-  show("inputrow");
-  setup_main_ui_shortcuts();
+// help and info -------------------------------------------------------------
+
+function setup_help() {
+  help_room = `${user}/help`;
+  help_url = ALLYCHAT_CHAT_URL + `/#${help_room}`;
+  const $help = $id("help");
+  $help.href = help_url;
+  $on($help, "click", help_click);
+  $on($id("help-widget-clear"), help_clear);
+}
+
+async function help_click(ev) {
+  // if shift, ctrl pressed, do the default action
+  if (ev.shiftKey || ev.ctrlKey)
+    return;
+  ev.preventDefault();
+  // if alt pressed, open in this window
+  if (ev.altKey) {
+    await set_room(help_room);
+    return;
+  }
+  // for normal click, we open a magic embedded chat on the help room!!
+  await ensure_embed_scripts();
+  $id("help-frame").src = help_url;
+  toggle("help-widget");
+}
+
+function help_clear(ev) {
+  $id("help-frame").contentWindow.postMessage({ type: "clear" }, ALLYCHAT_CHAT_URL);
+}
+
+async function ensure_embed_scripts() {
+  await Promise.all([
+    $script("script_embed", "/embed.js"),
+    $style("style_embed", "/embed.css"),
+  ]);
 }
 
 // main ----------------------------------------------------------------------
@@ -2533,8 +2634,9 @@ function setup_main_ui() {
 export async function init() {
   user = await authChat();
 
-  setup_embed_vs_main_ui();
+  setup_help();
   setup_icons();
+  setup_embed_vs_main_ui();
   load_theme();
   setup_dev();
   set_debug(DEBUG);

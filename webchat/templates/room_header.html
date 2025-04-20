@@ -35,7 +35,9 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 <title>{{ room }}</title>
 </head>
 <body id="messages" class="messages">
+
 <div class="overlay maxpect"></div>
+
 <div class="canvas">
 <canvas id="canvas" tabindex=0></canvas>
 <script>
@@ -53,7 +55,9 @@ ctx.fillStyle = 'grey';
 $('.canvas').scrollTop = $('.canvas').scrollHeight;
 </script>
 </div>
+
 <div class="resizer">
 </div>
+
 <div class="messages_wrap">
 <div class="messages">

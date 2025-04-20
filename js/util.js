@@ -194,6 +194,15 @@ function hide(element) {
   show(element, false);
 }
 
+function toggle(element, do_show) {
+  if (typeof element === "string")
+    element = $id(element);
+  if (do_show === undefined)
+    do_show = element.classList.contains("hidden");
+  show(element, do_show);
+}
+
+
 function enable_link(element, enabled) {
   if (typeof element === "string")
     element = $id(element);

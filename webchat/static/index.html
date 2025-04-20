@@ -18,7 +18,7 @@
 <body id="app" class="simple">
 <form id="form" class="fill" onsubmit="return false;">
 <input type="hidden" id="op" name="op" value="post">
-<div id="main" class="col pad fill">
+<div id="main" class="col fill">
 	<div class="row hidden" id="top">
 		<div class="top_left_controls row" id="top_left_main">
 			<a class="button" href="" id="privacy" title=""></a>
@@ -47,7 +47,7 @@
 			<button id="scroll" title="scrolling" class="advanced">scroll</button>
 			<button class="hidden" id="notify">notify</button>
 			<a class="button" href="" id="user" title="cycle main rooms">?</a>
-			<a class="button" href="" id="info" title="help and info" target="_blank"></a>
+			<a class="button" href="" id="help" title="help and info"></a>
 			<button id="logout" title="log out">exit</button>
 		</div>
 		<div class="top_controls row hidden" id="top_scroll">
@@ -61,8 +61,10 @@
 
 	<div id="messages" class="view messages grow">
 		<iframe id="messages_iframe" class="fill" src="about:blank" scrolling="no" allowFullScreen></iframe>
+
 		<div id="messages_overlay"  class="fill"></div>
 	</div>
+
 	<textarea id="view_edit" class="view editor grow hidden"></textarea>
 
 	<div class="row" id="resizer">
@@ -158,6 +160,18 @@
 	</div>
 </div>
 </form>
+
+<div id="help-widget" class="hidden">
+	<div id="help-widget-header">
+		<span id="help-widget-title">Help!</span>
+		<button id="help-widget-clear" title="clear the help"></button>
+		<button id="help-widget-close" title="close"></button>
+	</div>
+	<div id="help-frame-container">
+		<iframe id="help-frame"></iframe>
+	</div>
+</div>
+
 <script src="sw_register.js"></script>
 <script>register_service_worker();</script>
 <script src="util.js"></script>
