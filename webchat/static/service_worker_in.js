@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.5.855";
+const VERSION = "0.5.972";
 
 const DEBUG = false;
 
@@ -27,6 +27,8 @@ const URLS_TO_CACHE = {
     "/sw_register.js",
     "/chat.js",
     "/debug.js",
+    "/embed.js",
+    "/embed.css",
     "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap",
   ],
   "rooms": [
