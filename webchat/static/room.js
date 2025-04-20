@@ -1,8 +1,6 @@
-// status indicator ----------------------------------------------------------
-
 const offline_timeout_seconds = 10;
 
-var inIframe = window.parent !== window.self;
+const inIframe = window.parent !== window.self;
 
 let file_type;
 let room;
@@ -27,6 +25,8 @@ export let view_options = {
 };
 
 let snapshot = false;
+
+// status indicator ----------------------------------------------------------
 
 function get_status_element() {
   let status = $id("allemande_status");

@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="allychat.css">
 <link rel="stylesheet" href="chat.css">
 <link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 <link id="theme" rel="stylesheet" type="text/css" media="screen">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,7 +19,7 @@
 <form id="form" class="fill" onsubmit="return false;">
 <input type="hidden" id="op" name="op" value="post">
 <div id="main" class="col pad fill">
-	<div class="row" id="top">
+	<div class="row hidden" id="top">
 		<div class="top_left_controls row" id="top_left_main">
 			<a class="button" href="" id="privacy" title=""></a>
 			<button id="nav" title="navigation" class="advanced">nav</button>
@@ -46,6 +47,7 @@
 			<button id="scroll" title="scrolling" class="advanced">scroll</button>
 			<button class="hidden" id="notify">notify</button>
 			<a class="button" href="" id="user" title="cycle main rooms">?</a>
+			<a class="button" href="" id="info" title="help and info" target="_blank"></a>
 			<button id="logout" title="log out">exit</button>
 		</div>
 		<div class="top_controls row hidden" id="top_scroll">
@@ -66,7 +68,7 @@
 	<div class="row" id="resizer">
 	</div>
 
-	<div class="row" id="inputrow">
+	<div class="row" id="inputrow" class="hidden">
 		<textarea id="content" name="content" class="content_input grow" placeholder=" "></textarea>
 		<math-field id="math_input" class="hidden"></math-field>
 		<div class="controls col_wrap" id="input_main">

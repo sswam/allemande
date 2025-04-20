@@ -1,3 +1,5 @@
+const inIframe = window.parent !== window.self;
+
 const ROOMS_URL =
   location.protocol + "//" + location.host.replace(/^chat\b/, "rooms");
 const SITE_URL =
@@ -489,6 +491,28 @@ function message_changed(ev) {
     $send.innerHTML = icons["send"];
     $send.title = "send your message: ctrl+enter";
   }
+  // save input content to local storage for this room in case of page reload, etc
+  save_content();
+}
+
+function save_content() {
+  const content = $content.value;
+  const key = "content_" + room;
+  if (content) {
+    localStorage.setItem(key, content);
+  } else {
+    localStorage.removeItem(key);
+  }
+}
+
+function restore_content() {
+  // restore input content from local storage
+  if ($content.value)
+    return;
+  const key = "content_" + room;
+  const content = localStorage.getItem("content_" + room);
+  if (content)
+    $content.value = content;
 }
 
 function content_keydown(ev) {
@@ -1019,63 +1043,65 @@ function dispatch_shortcut(ev, shortcuts) {
   return false;
 }
 
-add_shortcuts(shortcuts.global, [
-  ['escape', escape, 'Go back, change or leave room'],
-  ['ctrl+;', change_room, 'Change room'],
-  ["ctrl+[", () => set_room(room_first()), "Go to first room"],
-  ['ctrl+.', () => set_room(room_next()), 'Go to next room'],
-  ['ctrl+,', () => set_room(room_prev()), 'Go to previous room'],
-  ['ctrl+]', async () => set_room(await room_last()), 'Go to last room'],
-  ['ctrl+\\', async () => set_room(await room_last(1)), 'Go beyond last room'],
-]);
+function setup_main_ui_shortcuts() {
+  add_shortcuts(shortcuts.global, [
+    ['escape', escape, 'Go back, change or leave room'],
+    ['ctrl+;', change_room, 'Change room'],
+    ["ctrl+[", () => set_room(room_first()), "Go to first room"],
+    ['ctrl+.', () => set_room(room_next()), 'Go to next room'],
+    ['ctrl+,', () => set_room(room_prev()), 'Go to previous room'],
+    ['ctrl+]', async () => set_room(await room_last()), 'Go to last room'],
+    ['ctrl+\\', async () => set_room(await room_last(1)), 'Go beyond last room'],
+  ]);
 
-add_shortcuts(shortcuts.message, [
-  ['ctrl+enter', () => send(), 'Send message'],
-  ['alt+enter', poke, 'Poke the chat'],
-  ['alt+s', send, 'Send message'],
-  ['alt+p', poke, 'Poke the chat'],
-  ['alt+t', content_insert_tab, 'Insert tab'],
-  ['shift+alt+t', content_insert_tab, 'Insert tab'],
-  ['alt+backspace', clear_content, 'Clear content'],
-  ['alt+u', nav_up, 'Browse up'],
-  ['alt+i', view_images, 'View images'],
-  ['alt+a', view_alt, 'View alt text'],
-  ['alt+c', view_clean, 'View clean'],
-  ['alt+j', view_canvas, 'View canvas'],
-  ['alt+f', view_fullscreen, 'View fullscreen'],
-  ['alt+m', add_math, 'Add math'],
-  ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+  add_shortcuts(shortcuts.message, [
+    ['ctrl+enter', () => send(), 'Send message'],
+    ['alt+enter', poke, 'Poke the chat'],
+    ['alt+s', send, 'Send message'],
+    ['alt+p', poke, 'Poke the chat'],
+    ['alt+t', content_insert_tab, 'Insert tab'],
+    ['shift+alt+t', content_insert_tab, 'Insert tab'],
+    ['alt+backspace', clear_content, 'Clear content'],
+    ['alt+u', nav_up, 'Browse up'],
+    ['alt+i', view_images, 'View images'],
+    ['alt+a', view_alt, 'View alt text'],
+    ['alt+c', view_clean, 'View clean'],
+    ['alt+j', view_canvas, 'View canvas'],
+    ['alt+f', view_fullscreen, 'View fullscreen'],
+    ['alt+m', add_math, 'Add math'],
+    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
 
-  ['alt+z', undo, 'Undo last message', ADMIN],
-  ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
-  ['alt+r', retry, 'Retry last action', ADMIN],
-  ['ctrl+alt+r', (ev) => retry(ev, true), 'Retry last action', ADMIN],
-  ['alt+x', clear_chat, 'Clear messages', ADMIN],
-  ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
-  ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
-  ['alt+e', () => edit(), 'Edit file', ADMIN],
-  ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
+    ['alt+z', undo, 'Undo last message', ADMIN],
+    ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
+    ['alt+r', retry, 'Retry last action', ADMIN],
+    ['ctrl+alt+r', (ev) => retry(ev, true), 'Retry last action', ADMIN],
+    ['alt+x', clear_chat, 'Clear messages', ADMIN],
+    ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
+    ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
+    ['alt+e', () => edit(), 'Edit file', ADMIN],
+    ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
 
-  ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
-  ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
-  ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
-  ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
-]);
+    ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
+    ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
+    ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
+    ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
+  ]);
 
-add_shortcuts(shortcuts.room, [
-  ['enter', focus_content, 'Focus message input'],
-  ['shift+alt+m', move_mode, 'Move mode', ADMIN],
-]);
+  add_shortcuts(shortcuts.room, [
+    ['enter', focus_content, 'Focus message input'],
+    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+  ]);
 
-add_shortcuts(shortcuts.edit, [
-  ['alt+t', edit_indent, 'Insert tab / indent'],
-  ['shift+alt+t', edit_dedent, 'dedent'],
-  ['escape', edit_close, 'Close edit'],
-  ['ctrl+s', edit_save, 'Save edit'],
-  ['ctrl+enter', edit_save_and_close, 'Save edit and close'],
-  ['alt+z', edit_reset, 'Reset edit'],
-  ['alt+x', edit_clear, 'Clear edit'],
-]);
+  add_shortcuts(shortcuts.edit, [
+    ['alt+t', edit_indent, 'Insert tab / indent'],
+    ['shift+alt+t', edit_dedent, 'dedent'],
+    ['escape', edit_close, 'Close edit'],
+    ['ctrl+s', edit_save, 'Save edit'],
+    ['ctrl+enter', edit_save_and_close, 'Save edit and close'],
+    ['alt+z', edit_reset, 'Reset edit'],
+    ['alt+x', edit_clear, 'Clear edit'],
+  ]);
+}
 
 // handle messages from the messages iframe ----------------------------------
 
@@ -2385,6 +2411,7 @@ const icons = {
   audio_stt: '<svg width="20" height="20" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16"><path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/><path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/></svg>',
   audio_tts: '<svg width="20" height="20" fill="currentColor" class="bi bi-volume-up-fill" viewBox="0 0 16 16"><path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"/><path d="M8.707 11.182A4.5 4.5 0 0 0 10.025 8a4.5 4.5 0 0 0-1.318-3.182L8 5.525A3.5 3.5 0 0 1 9.025 8 3.5 3.5 0 0 1 8 10.475zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06"/></svg>',
   audio_vad: '<svg width="20" height="20" fill="currentColor" class="bi bi-soundwave" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.5 2a.5.5 0 0 1 .5.5v11a.5.5 0 0 1-1 0v-11a.5.5 0 0 1 .5-.5m-2 2a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m4 0a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5m-6 1.5A.5.5 0 0 1 5 6v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m8 0a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m-10 1A.5.5 0 0 1 3 7v2a.5.5 0 0 1-1 0V7a.5.5 0 0 1 .5-.5m12 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0V7a.5.5 0 0 1 .5-.5"/></svg>',
+  info: '<svg width="20" height="20" fill="currentColor" class="bi bi-info-lg" viewBox="0 0 16 16"><path d="m9.708 6.075-3.024.379-.108.502.595.108c.387.093.464.232.38.619l-.975 4.577c-.255 1.183.14 1.74 1.067 1.74.72 0 1.554-.332 1.933-.789l.116-.549c-.263.232-.65.325-.905.325-.363 0-.494-.255-.402-.704zm.091-2.755a1.32 1.32 0 1 1-2.64 0 1.32 1.32 0 0 1 2.64 0"/>',
 };
 
 
@@ -2473,16 +2500,56 @@ function print_chat(ev) {
   window.location.href = url;
 }
 
+// embedding e.g. help overlay -----------------------------------------------
+
+function setup_embed_vs_main_ui() {
+  if (inIframe)
+    return setup_embed_ui();
+  return setup_main_ui();
+}
+
+function setup_embed_ui() {
+  // hide main controls other than the send button
+  for (const $e of $$("#input_main > button:not(#send)"))
+    hide($e);
+  show("inputrow");
+
+  // we want ctrl+enter to send the message, no other shortcuts
+  add_shortcuts(shortcuts.message, [
+    ['ctrl+enter', () => send(), 'Send message'],
+  ]);
+  return;
+}
+
+function setup_main_ui() {
+  // show all UI controls
+  show("top");
+  show("inputrow");
+  setup_main_ui_shortcuts();
+}
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
   user = await authChat();
 
+  setup_embed_vs_main_ui();
   setup_icons();
   load_theme();
   setup_dev();
   set_debug(DEBUG);
   on_hash_change();
+
+  $on($content, "input", message_changed);
+  restore_content();
+  message_changed();
+
+  // enable keyboard shortcuts
+  $on(document, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.global));
+  $on($content, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.message));
+  $on($content, "keydown", content_keydown);
+  $on($room, "keypress", (ev) => dispatch_shortcut(ev, shortcuts.room));
+  $on($edit, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.edit));
 
   $on($id("send"), "click", send);
 
@@ -2560,13 +2627,6 @@ export async function init() {
 
   $on($id("audio_cancel"), "click", () => set_controls());
 
-  $on(document, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.global));
-  $on($content, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.message));
-  $on($content, "keydown", content_keydown);
-  $on($room, "keypress", (ev) => dispatch_shortcut(ev, shortcuts.room));
-  $on($edit, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.edit));
-  $on($content, "input", message_changed);
-
   $on($room, "change", () => set_room());
   $on(window, "hashchange", on_hash_change);
   $on(window, "message", handle_message);
@@ -2588,7 +2648,6 @@ export async function init() {
   notify_main();
   record_main();
 
-  message_changed();
   // $content.focus();
 
   await load_user_styles_and_script();
