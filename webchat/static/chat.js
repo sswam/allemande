@@ -971,7 +971,6 @@ async function room_last(i) {
   if (data.error) {
     throw new Error(data.error);
   }
-  // console.log("last", data.last);
   return room_set_number(+data.last + i);
 }
 
@@ -1023,11 +1022,11 @@ function dispatch_shortcut(ev, shortcuts) {
 add_shortcuts(shortcuts.global, [
   ['escape', escape, 'Go back, change or leave room'],
   ['ctrl+;', change_room, 'Change room'],
-  ["ctrl+[", room_first, "Go to first room"],
-  ['ctrl+.', room_next, 'Go to next room'],
-  ['ctrl+,', room_prev, 'Go to previous room'],
-  ['ctrl+]', () => room_last(), 'Go to last room'],
-  ['ctrl+\\', () => room_last(1), 'Go beyond last room'],
+  ["ctrl+[", () => set_room(room_first()), "Go to first room"],
+  ['ctrl+.', () => set_room(room_next()), 'Go to next room'],
+  ['ctrl+,', () => set_room(room_prev()), 'Go to previous room'],
+  ['ctrl+]', async () => set_room(await room_last()), 'Go to last room'],
+  ['ctrl+\\', async () => set_room(await room_last(1)), 'Go beyond last room'],
 ]);
 
 add_shortcuts(shortcuts.message, [
@@ -1260,7 +1259,7 @@ async function setup_nav_buttons() {
 
   // Setup next room button --------------------
   const $nav_next = $id("nav_next");
-  const roomNext = await room_next();
+  const roomNext = room_next();
   if (roomNext) {
     $nav_next.href = "/" + query_to_hash(roomNext);
   } else {
