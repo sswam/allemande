@@ -409,9 +409,11 @@ ul.directory-listing > li {
 	min-width: 12.5rem;
 	scroll-snap-align: start;
 }
+/*
 .icon {
 	margin-right: 0.625rem;
 }
+*/
 
 body {
 	display: flex;

@@ -151,12 +151,6 @@ input:disabled, input:disabled:hover, input:disabled:focus
 	font-size: var(--font-size);
 }
 
-.icon.i16 { width: 1rem; height: 1rem; }
-.icon.i18 { width: 1.125rem; height: 1.125rem; }
-.icon.i20 { width: 1.25rem; height: 1.25rem; }
-.icon.i22 { width: 1.375rem; height: 1.375rem; }
-.icon.i40 { width: 2.5rem; height: 2.5rem; }
-
 /* light mode / dark mode default colours, avoid flash of white or black */
 
 @media (prefers-color-scheme: light) {
