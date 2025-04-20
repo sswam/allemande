@@ -214,12 +214,12 @@ MODELS = {
         "cost_in": 0.075,
         "cost_out": 0.3,
     },
-    "gemini-1.5-flash": {
-        "aliases": ["gf1", "flasho"],
+    "gemini-2.5-flash": {
+        "aliases": ["gft", "flasho"],
         "vendor": "google",
-        "description": "Google's cheapest model with a 1 million context window.",
-        "cost_in": 0.075,
-        "cost_out": 0.3,
+        "description": "Google's fast thinking model with a 1 million context window.",
+        "cost_in": 0.15,
+        "cost_out": 0.6,
     },
     "sonar-reasoning-pro": {
         "aliases": ["sageri"],

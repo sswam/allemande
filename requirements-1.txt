@@ -60,3 +60,5 @@ esprima
 
 gradio
 gTTS
+
+geoip2

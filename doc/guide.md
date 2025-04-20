@@ -145,13 +145,15 @@ digraph Google {
     "Google" [label=<<b>Google</b>>]
     "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.0 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
     "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, tool-oriented</font>>]
+    "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, thinking</font>>]
     "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
 
     "Google" -> "Lite"
     "Google" -> "Flashi"
-    "Google" -> "Gemmi"
+    "Google" -> "Flasho"
     "Google" -> "Gemmy"
+    "Google" -> "Gemmi"
 }
 ```
 
@@ -332,11 +334,9 @@ Quality settings higher than 4 are rarely needed and take up to 5 times longer t
 
 ### HTML and SVG
 
-We can safely embed any HTML or SVG:
+We can safely embed any HTML or SVG.
 
-<iframe width="280" height="157" src="https://www.youtube.com/embed/Vjyhx49BIzc?autoplay=1" title="10 Potential for Anything from PPPPPP (The VVVVVV original soundtrack) - Magnus - 3:45" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" allowfullscreen=""></iframe>
-
-Don't quote such in backticks if you want them to render in the chat.
+Don't quote the markup in backticks if you want them to render in the chat.
 
 ### TeX math
 

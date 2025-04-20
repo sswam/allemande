@@ -7,6 +7,7 @@ import json
 import time
 import logging
 import asyncio
+from typing import Any
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -15,6 +16,8 @@ from starlette.exceptions import HTTPException
 from pywebpush import webpush
 import uvicorn
 from deepmerge import always_merger
+import geoip2.database
+import geoip2.errors
 
 import chat
 import ally_room
@@ -25,9 +28,20 @@ import settings
 
 VAPID_PRIVATE_KEY = os.environ["ALLYCHAT_WEBPUSH_VAPID_PRIVATE_KEY"]
 ALLEMANDE_DOMAIN = os.environ["ALLEMANDE_DOMAIN"]
+GEOIP_DB_PATH = os.environ.get("ALLYCHAT_GEOIP_DB_PATH", "/var/lib/GeoIP/GeoLite2-City.mmdb")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize GeoIP reader once at startup
+try:
+    geoip_reader = geoip2.database.Reader(GEOIP_DB_PATH)
+except FileNotFoundError:
+    logger.warning("GeoIP database not found at %s", GEOIP_DB_PATH)
+    geoip_reader = None
+except Exception as e:  # pylint: disable=broad-except
+    logger.error("Failed to initialize GeoIP reader: %s", e)
+    geoip_reader = None
 
 
 async def http_exception(_request: Request, exc: HTTPException):
@@ -285,6 +299,43 @@ async def send_push(user_id, message):
 #     - note that not every mention invokes a user
 # - avoid sending notifications if the user is active in the room, somehow
 #     - or delay them until we are sure the user didn't see the message
+
+@app.route("/x/geoip", methods=["GET"])
+async def geoip(request: Request):
+    """Look up GeoIP info for an IP address."""
+    if not geoip_reader:
+        raise HTTPException(status_code=503, detail="GeoIP service not available")
+
+    # First try to get IP from query parameters
+    ip = request.query_params.get("ip")
+
+    # If no IP provided in query, try to get it from headers
+    if not ip:
+        for header in ["X-Forwarded-For", "X-Real-IP"]:
+            if header_value := request.headers.get(header):
+                ip = header_value.split(',')[0].strip()
+                break
+
+    if not ip:
+        raise HTTPException(status_code=400, detail="Could not determine IP address")
+
+    try:
+        response = geoip_reader.city(ip)
+        return JSONResponse({
+            "country": response.country.iso_code,
+            "city": response.city.name,
+            "location": {
+                "latitude": response.location.latitude,
+                "longitude": response.location.longitude
+            }
+        })
+    except geoip2.errors.AddressNotFoundError:
+        raise HTTPException(status_code=404, detail="IP address not found")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid IP address")
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error("GeoIP lookup failed: %s", e)
+        raise HTTPException(status_code=500, detail="GeoIP lookup failed")
 
 
 if __name__ == "__main__":
