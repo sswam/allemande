@@ -894,7 +894,8 @@ async function highlight_set_stylesheet_for_theme() {
   } else {
     highlight_theme = view_options.highlight_theme_light;
   }
-  highlight_set_stylesheet(highlight_theme);
+  if (typeof highlight_set_stylesheet === "function")
+    highlight_set_stylesheet(highlight_theme);
 }
 
 function set_theme(theme) {

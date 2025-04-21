@@ -513,7 +513,7 @@ function message_changed(ev) {
   if (embed) {
     // make the send/poke button smaller
     const $send_icon = $("#send > svg");
-    $send_icon.classList.add("i30");
+    $send_icon.classList.add("i35");
     $send_icon.classList.remove("i40");
   }
 
@@ -1135,11 +1135,19 @@ function handle_message(ev) {
   if (embed && ev.origin == ALLYCHAT_CHAT_URL) {  /* TODO support other host sites */
     if (ev.data.type == "theme_changed")
       return set_theme(ev.data.theme);
-    if (ev.data.type == "clear")
-      return clear_chat();
     if (ev.data.type == "set_view_options") {
       delete ev.data.type;
       return set_view_options(ev.data);
+    }
+    if (ev.data.type == "op") {
+      if (ev.data.op == "undo")
+        return undo();
+      if (ev.data.op == "retry")
+        return retry();
+      if (ev.data.op == "archive")
+        return archive_chat();
+      if (ev.data.op == "clear")
+        return clear_chat();
     }
   }
   if (ev.origin != ROOMS_URL) {
@@ -1261,8 +1269,10 @@ async function authChat() {
 function setup_user_button() {
   const $user = $id("user");
   $user.innerText = user;
-  // go from public user chat to default room
-  if (room == user) $user.href = "/" + query_to_hash(DEFAULT_ROOM);
+  // go from main directory to default room
+  if (room == "/") $user.href = "/" + query_to_hash(DEFAULT_ROOM);
+  // go from public user chat to main directory
+  else if (room == user) $user.href = "/" + query_to_hash("/")
   // fo from users's folder to user's public room
   else if (room == user + "/") $user.href = "/" + query_to_hash(user);
   // go from private user chat to user's folder
@@ -1329,6 +1339,7 @@ async function setup_nav_buttons() {
   }
 
   // Setup last room button --------------------
+  // TODO this is heavy, avoid unless clicked?
   const $nav_last = $id("nav_last");
   const roomLast = await room_last();
   if (roomLast) {
@@ -1508,7 +1519,8 @@ async function clear_chat(ev, op) {
 
   if (confirm_message && !confirm(confirm_message)) return;
 
-  ev.preventDefault();
+  if (ev)
+    ev.preventDefault();
   const formData = new FormData();
   formData.append("room", room);
   formData.append("op", op);
@@ -1574,12 +1586,13 @@ async function undo_last_message(room) {
 }
 
 async function undo(ev, hard) {
-  ev.preventDefault();
+  if (ev)
+    ev.preventDefault();
 
-  hard = hard || ev.ctrlKey;
+  hard = hard || (ev && ev.ctrlKey);
   auto_play_back_off();
 
-  if (!(ev.key || ev.shiftKey || confirm("Undo the last message?\n(hold shift to skip this confirmation next time, or use keyboard shortcuts)")))
+  if (!(ev && (ev.key || ev.shiftKey) || confirm("Undo the last message?\n(hold shift to skip this confirmation next time, or use keyboard shortcuts)")))
     return false;
 
   if (hard) {
@@ -2499,8 +2512,11 @@ function setup_icons() {
   icons["mod_auto"] = icons["auto"];
   icons["audio_auto"] = icons["auto"];
 
-  icons["help-widget-close"] = icons["x"];
-  icons["help-widget-clear"] = icons["mod_clear"]
+  icons["help_undo"] = icons["x_large"];
+  icons["help_retry"] = icons["undo"];
+  icons["help_archive"] = icons["mod_archive"];
+  icons["help_clear"] = icons["mod_clear"]
+  icons["help_close"] = icons["x"];
 
   for (const id in icons) {
     const el = $id(id);
@@ -2587,6 +2603,13 @@ function setup_embed_ui() {
   // we want ctrl+enter to send the message, no other shortcuts
   add_shortcuts(shortcuts.message, [
     ['ctrl+enter', () => send(), 'Send message'],
+    ['alt+z', undo, 'Undo last message', ADMIN],
+    ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
+    ['alt+r', retry, 'Retry last action', ADMIN],
+    ['ctrl+alt+r', (ev) => retry(ev, true), 'Retry last action', ADMIN],
+    ['alt+x', clear_chat, 'Clear messages', ADMIN],
+    ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
+    ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
   ]);
   return;
 }
@@ -2598,8 +2621,17 @@ function setup_help() {
   help_url = ALLYCHAT_CHAT_URL + `/#${help_room}`;
   const $help = $id("help");
   $help.href = help_url;
+  $id("help_link").href = help_url;
   $on($help, "click", help_click);
-  $on($id("help-widget-clear"), help_clear);
+  $on($id("help_close"), "click", () => hide("help-widget"));
+  $on($id("help_undo"), "click", () => help_op("undo"));
+  $on($id("help_retry"), "click", () => help_op("retry"));
+  $on($id("help_archive"), "click", () => help_op("archive"));
+  $on($id("help_clear"), "click", () => help_op("clear"));
+
+  for ($e of $$("help-widget-header a")) {
+    $on($e, "click", handleHelpLinkClick);
+  }
 }
 
 async function help_click(ev) {
@@ -2618,8 +2650,8 @@ async function help_click(ev) {
   toggle("help-widget");
 }
 
-function help_clear(ev) {
-  $id("help-frame").contentWindow.postMessage({ type: "clear" }, ALLYCHAT_CHAT_URL);
+function help_op(op) {
+  $id("help-frame").contentWindow.postMessage({ type: "op", op: op }, ALLYCHAT_CHAT_URL);
 }
 
 async function ensure_embed_scripts() {
@@ -2627,6 +2659,25 @@ async function ensure_embed_scripts() {
     $script("script_embed", "/embed.js"),
     $style("style_embed", "/embed.css"),
   ]);
+}
+
+function handleHelpLinkClick(event) {
+  const linkElement = this;
+  const targetHref = linkElement.href;
+
+  if (event.shiftKey || event.ctrlKey)
+    return true;
+
+  event.preventDefault();
+
+  if (event.altKey) {
+    window.top.location.href = targetHref;
+    return false;
+  }
+
+  var targetIframe = $id('help-frame');
+  targetIframe.contentWindow.location.replace(targetHref);
+  return false;
 }
 
 // main ----------------------------------------------------------------------

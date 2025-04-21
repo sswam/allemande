@@ -1,5 +1,5 @@
 const HIGHLIGHT_JS_VERSION = "11.11.1";
-const HIGHLIGHT_LANGUAGES_UNSUPPORTED = new Set(['dot']);
+const HIGHLIGHT_LANGUAGES_UNSUPPORTED = new Set(['dot', 'mermaid']);
 
 // Track loaded state and languages
 const highlightState = {

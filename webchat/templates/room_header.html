@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <head>
 <meta name="referrer" content="no-referrer">
-<script>var user = {{ user|tojson|safe }}, theme = {{ theme|tojson|safe }};</script>
-<link rel="stylesheet" href="{{ chat_base_url }}/allychat.css" crossorigin="use-credentials">
 <script>
+var user = {{ user|tojson|safe }}, theme = {{ theme|tojson|safe }};
 const ALLEMANDE_LOGIN_URL="{{ login_base_url }}";
 const ALLYCHAT_CHAT_URL="{{ chat_base_url }}";
 const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 </script>
+<link rel="stylesheet" href="{{ chat_base_url }}/allychat.css" crossorigin="use-credentials">
 <script src="{{ chat_base_url }}/util.js"></script>
 <script src="{{ chat_base_url }}/print.js"></script>
 <script src="{{ chat_base_url }}/debug.js"></script>

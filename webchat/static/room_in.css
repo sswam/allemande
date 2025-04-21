@@ -216,14 +216,6 @@ body.images .embed:hover .alt {
 }
 
 
-a {
-	text-decoration: none;
-	color: var(--link);
-}
-a:hover {
-	text-decoration: underline;
-}
-
 @font-face {
 	font-family: "fixed";
 	src: url("https://$ALLEMANDE_DOMAIN/MiscFixedSC13.ttf");

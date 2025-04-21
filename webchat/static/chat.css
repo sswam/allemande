@@ -280,11 +280,11 @@ button#send {
 }
 
 body.simple .advanced {
-	display: none;
+	display: none !important;
 }
 
 body:not(.simple) .simple {
-	display: none;
+	display: none !important;
 }
 
 math-field {
