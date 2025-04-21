@@ -144,9 +144,13 @@ class Room:
             # If there is a base file, copy it to the room
             # e.g. foo.bb => foo.bb.base
             # else, truncate the file
-            template_file = self.path.with_suffix(".bb.base")
-            if template_file.exists():
-                shutil.copy(template_file, self.path)
+            # The template can be foo.bb.base or .foo.bb.base
+            template_file_1 = self.path.with_suffix(".bb.base")
+            template_file_2 = template_file.parent / ("." + template_file.name)
+            for template_file in (template_file_1, template_file_2):
+                if template_file.exists():
+                    shutil.copy(template_file, self.path)
+                    break
             else:
                 # self.path.write_text("")
                 self.path.unlink()
@@ -249,21 +253,47 @@ class Room:
         return check_access(user, self.name + EXTENSION)
 
     def find_resource_file(self, ext, name=None, create=False, try_room_name=True):
-        """Find a resource file for the chat room."""
+        """Find a resource file for the chat room.
+        Tries to find the file in the following order:
+        1. room_name.ext
+        2. .room_name.ext
+        3. room_name_without_number.ext (if applicable)
+        4. .room_name_without_number.ext (if applicable)
+        5. specified_name.ext (if name provided)
+        6. .specified_name.ext (if name provided)
+        """
         parent = self.path.parent
         stem = self.path.stem
-        resource = None
+        possible_paths = []
+
+        # Collect all possible paths
         if try_room_name:
-            resource = parent / (stem + "." + ext)
-        if try_room_name and not resource.exists():
+            possible_paths.append(parent / f"{stem}.{ext}")
+            possible_paths.append(parent / f".{stem}.{ext}")
+
+            # Check stem without number
             stem_no_num = re.sub(r"-\d+$", "", stem)
             if stem_no_num != stem:
-                resource = parent / (stem_no_num + "." + ext)
-        if not resource or not resource.exists() and name:
-            resource = parent / (name + "." + ext)
-        if resource and not resource.exists() and not create:
-            resource = None
-        return str(resource) if resource else None
+                possible_paths.append(parent / f"{stem_no_num}.{ext}")
+                possible_paths.append(parent / f".{stem_no_num}.{ext}")
+
+        if name:
+            possible_paths.append(parent / f"{name}.{ext}")
+            possible_paths.append(parent / f".{name}.{ext}")
+
+        # Try each path in order
+        for path in possible_paths:
+            if path.exists():
+                return str(path)
+
+        # If create flag is True, return the first non-hidden path even if it doesn't exist
+        if create and possible_paths:
+            # Find first non-hidden path
+            for path in possible_paths:
+                if not path.name.startswith('.'):
+                    return str(path)
+
+        return None
 
     def find_agent_resource_file(self, ext, agent_name=None):
         """Find a resource file for the agent and chat room."""
@@ -329,6 +359,10 @@ class Room:
         # chop off any number
         name = self.name
         name = re.sub(r"-\d+$", "", name)
+
+        # chop off trailing slash for folders
+        name = name.rstrip("/")
+        # TODO what happens with top dir?
 
         path = name_to_path(name)
         basename = path.name
