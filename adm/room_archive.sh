@@ -15,6 +15,8 @@ room=${room%.bb}
 
 # Set the source file paths
 from="$ALLEMANDE_HOME/rooms/$room.bb"
+dirname="$(dirname "$from")"
+basename="$(basename "$from")"
 
 # Check if the source file exists
 if [ ! -f "$from" ]; then
@@ -30,9 +32,14 @@ fi
 
 to=$(archive -D html "$from")
 
+sleep 0.1
+
 # Create empty source file and html file, or from template
+# The template can be foo.base or .foo.base
 if [ -e "$from.base" ]; then
 	cp "$from.base" "$from"
+elif [ -e "$dirname/.$basename.base" ]; then
+	cp "$dirname/.$basename.base" "$from"
 else
 	touch "$from"
 fi
