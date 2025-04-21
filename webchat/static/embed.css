@@ -1,18 +1,18 @@
 #help-widget {
   position: fixed;
-  top: 58px;
-  right: 18px;
-  width: 400px;
-  height: 500px;
-  min-width: 300px;
-  min-height: 200px;
+  top: 3.625rem;
+  right: 1.125rem;
+  width: 20.0rem;
+  height: 25rem;
+  min-width: 18.75rem;
+  min-height: 12.5rem;
   background: var(--frame);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+/*  box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.2); */
   z-index: 1000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   cursor: default;
   padding: 0;
   box-sizing: border-box;
@@ -59,6 +59,15 @@
     white-space: nowrap;
 }
 
+#help-widget-header a {
+  padding: 0 0.125rem;
+  border-radius: 0.125rem;
+}
+
+#help-widget-header a.link_active {
+  text-decoration: underline;
+}
+
 #help-widget-header button {
   flex-shrink: 0;
   flex-grow: 0;
@@ -89,7 +98,6 @@
   max-height: 100%;
   flex-grow: 1;
   display: block;
-  background: white;
 }
 
 #help-widget-controls {

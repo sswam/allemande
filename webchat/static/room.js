@@ -104,7 +104,6 @@ function is_at_bottom($e) {
 }
 
 function scroll_to_bottom($e) {
-  // console.log("scroll to bottom", $e);
   if (view_options.columns) {
     // console.log("scroll to right");
     $e.scrollLeft = $e.scrollWidth;
@@ -123,15 +122,17 @@ async function messages_scrolled() {
     var messages_width = $e.scrollWidth;
     if (messages_width != messages_width_last) {
       messages_width_last = messages_width;
-      if (!suppressInitialScroll)
+      if (!suppressInitialScroll) {
         scroll_to_bottom($e);
+      }
     }
   } else if (messages_at_bottom) {
     var messages_height = $e.scrollHeight;
     if (messages_height != messages_height_last) {
       messages_height_last = messages_height;
-      if (!suppressInitialScroll)
+      if (!suppressInitialScroll) {
         scroll_to_bottom($e);
+      }
     }
   }
   messages_at_bottom = is_at_bottom($e);
@@ -1122,7 +1123,7 @@ async function error(id) {
 */
 
 function handle_intro() {
-  const hasSeenIntro = localStorage.getItem(`seen_intro_${room}`);
+  const hasSeenIntro = !['guide', 'intro'].includes(room) && localStorage.getItem(`seen_intro_${room}`);
   if (!hasSeenIntro) {
     suppressInitialScroll = true;
     setTimeout(() => {
@@ -1160,10 +1161,10 @@ export async function room_main() {
 
   setup_view_options();
 
+  handle_intro();
+
   setup_mutation_observer();
   await process_current_messages(); // must be after setup_mutation_observer
-
-  handle_intro();
 
   await wait_for_load();
   // console.log("room loaded");
