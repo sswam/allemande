@@ -221,6 +221,7 @@ widget.onmousedown = function (e) {
     iframe.style.pointerEvents = "none"; // Prevent iframe from capturing mouse events
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+    /* TODO can't move / resize on mobile yet, some bug I guess */
     document.addEventListener("touchmove", handleMouseMove, { passive: false }); // Use same handler, preventDefault in handler
     document.addEventListener("touchend", handleMouseUp);
     if (overlay) {

@@ -2054,6 +2054,11 @@ function view_options_apply() {
   show("help-widget", view_options.help);
   if (view_options.help) {
     help_iframe_set_src(help_url);
+    for (const $l of $$("#help-widget-header a")) {
+      $l.classList.remove("link_active");
+    }
+    $id("help_link").classList.add("link_active");
+
     ensure_embed_scripts();
   } else {
     // help_iframe_set_src("");

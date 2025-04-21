@@ -1,0 +1,217 @@
+Here's a solution that implements the requested tooltip functionality for both mobile and desktop, with customizable styling and HTML support:
+
+```javascript
+class EnhancedTooltips {
+	constructor(options = {}) {
+		this.options = {
+			offset_y: options.offset_y || 20,
+			hoverDelay: options.hoverDelay || 500,
+			hideDelay: options.hideDelay || 300,
+			tooltipClass: options.tooltipClass || 'enhanced-tooltip',
+			...options
+		};
+
+		this.tooltip = null;
+		this.longPressTimer = null;
+		this.currentElement = null;
+		this.isDragging = false;
+		this.hideTimeout = null;
+
+		this.init();
+	}
+
+	init() {
+		// Create tooltip element
+		this.tooltip = document.createElement('div');
+		this.tooltip.className = this.options.tooltipClass;
+		document.body.appendChild(this.tooltip);
+
+		// Mobile events
+		document.addEventListener('touchstart', this.handleTouchStart.bind(this));
+		document.addEventListener('touchmove', this.handleTouchMove.bind(this));
+		document.addEventListener('touchend', this.handleTouchEnd.bind(this));
+
+		// Desktop events
+		document.addEventListener('mouseover', this.handleMouseOver.bind(this));
+		document.addEventListener('mouseout', this.handleMouseOut.bind(this));
+	}
+
+	handleTouchStart(e) {
+		const element = e.target.closest('[title]');
+		if (!element) return;
+
+		this.longPressTimer = setTimeout(() => {
+			this.isDragging = true;
+			this.showTooltip(element, e);
+		}, 500);
+	}
+
+	handleTouchMove(e) {
+		if (!this.isDragging) {
+			clearTimeout(this.longPressTimer);
+			return;
+		}
+
+		const element = document.elementFromPoint(
+			e.touches[0].clientX,
+			e.touches[0].clientY
+		).closest('[title]');
+
+		if (element) {
+			this.showTooltip(element, e);
+		} else {
+			this.hideTooltip();
+		}
+	}
+
+	handleTouchEnd() {
+		clearTimeout(this.longPressTimer);
+		this.isDragging = false;
+		this.hideTooltip();
+	}
+
+	handleMouseOver(e) {
+		const element = e.target.closest('[title]');
+		if (!element) return;
+
+		clearTimeout(this.hideTimeout);
+
+		if (this.currentElement !== element) {
+			setTimeout(() => {
+				this.showTooltip(element, e);
+			}, this.options.hoverDelay);
+		} else {
+			this.showTooltip(element, e);
+		}
+	}
+
+	handleMouseOut() {
+		this.hideTimeout = setTimeout(() => {
+			this.hideTooltip();
+		}, this.options.hideDelay);
+	}
+
+	showTooltip(element, event) {
+		if (!element.title) return;
+
+		const title = element.title;
+		element.dataset.originalTitle = title;
+		element.removeAttribute('title');
+
+		let content = title;
+		if (title.startsWith('html:')) {
+			content = title.substring(5);
+			this.tooltip.innerHTML = content;
+		} else {
+			this.tooltip.textContent = content;
+		}
+
+		const rect = element.getBoundingClientRect();
+		const tooltipRect = this.tooltip.getBoundingClientRect();
+
+		let top = rect.top - tooltipRect.height - this.options.offset_y;
+		let left = rect.left + (rect.width - tooltipRect.width) / 2;
+
+		// Check if tooltip would go off-screen
+		if (top < 0) {
+			top = rect.bottom + this.options.offset_y;
+		}
+		if (left < 0) {
+			left = 0;
+		} else if (left + tooltipRect.width > window.innerWidth) {
+			left = window.innerWidth - tooltipRect.width;
+		}
+
+		this.tooltip.style.top = `${top + window.scrollY}px`;
+		this.tooltip.style.left = `${left}px`;
+		this.tooltip.style.display = 'block';
+
+		this.currentElement = element;
+	}
+
+	hideTooltip() {
+		if (this.currentElement) {
+			if (this.currentElement.dataset.originalTitle) {
+				this.currentElement.title = this.currentElement.dataset.originalTitle;
+				delete this.currentElement.dataset.originalTitle;
+			}
+		}
+		this.tooltip.style.display = 'none';
+		this.currentElement = null;
+	}
+}
+```
+
+```css
+.enhanced-tooltip {
+	position: absolute;
+	z-index: 9999;
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 8px 12px;
+	border-radius: 4px;
+	font-size: 14px;
+	pointer-events: none;
+	max-width: 300px;
+	word-wrap: break-word;
+	display: none;
+	animation: tooltip-fade-in 0.2s ease-in-out;
+}
+
+.enhanced-tooltip::after {
+	content: '';
+	position: absolute;
+	bottom: -6px;
+	left: 50%;
+	transform: translateX(-50%);
+	border-width: 6px 6px 0;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0.8) transparent transparent;
+}
+
+@keyframes tooltip-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+```
+
+Usage:
+
+```html
+<div title="Regular tooltip">Hover or long-press me</div>
+<div title="html:<strong>Bold</strong> and <em>italic</em>">HTML tooltip</div>
+
+<script>
+const tooltips = new EnhancedTooltips({
+	offset_y: 20,
+	hoverDelay: 500,
+	hideDelay: 300,
+	tooltipClass: 'enhanced-tooltip'
+});
+</script>
+```
+
+This implementation:
+
+1. Supports both mobile (long-press and drag) and desktop (hover) interactions
+2. Handles HTML content in tooltips when prefixed with "html:"
+3. Positions tooltips to avoid going off-screen
+4. Provides customizable styling through CSS
+5. Includes smooth animations and positioning
+6. Preserves original title attributes
+7. Handles multiple tooltips and proper cleanup
+8. Doesn't interfere with other default behaviors
+
+Alternative: If you prefer using an existing library, you might want to check out:
+
+1. Tippy.js (https://atomiks.github.io/tippyjs/)
+2. Popper.js (https://popper.js.org/)
+3. Tooltip.js (https://github.com/floating-ui/floating-ui)
+
+These libraries provide similar functionality with extensive customization options and better edge case handling, but they might be overkill if you only need basic tooltip functionality.

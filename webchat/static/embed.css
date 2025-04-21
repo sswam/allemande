@@ -16,6 +16,7 @@
   cursor: default;
   padding: 0;
   box-sizing: border-box;
+  /* touch-action: none;  can't move / resize on mobile yet */
 }
 
 @media (max-width: 640px) {
@@ -39,7 +40,6 @@
   background: var(--frame);
   color: var(--text);
   user-select: none;
-  touch-action: none;
   flex-shrink: 0;
   display: flex;
   justify-content: space-between;
