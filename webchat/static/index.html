@@ -47,7 +47,7 @@
 			<button id="scroll" title="scrolling" class="advanced">scroll</button>
 			<button class="hidden" id="notify">notify</button>
 			<a class="button" href="" id="user" title="cycle main rooms">?</a>
-			<a class="button" href="" id="help" title="help and info"></a>
+			<a class="button" href="" id="help" title="help to use Ally Chat"></a>
 			<button id="logout" title="log out">exit</button>
 		</div>
 		<div class="top_controls row hidden" id="top_scroll">
@@ -163,12 +163,21 @@
 
 <div id="help-widget" class="hidden">
 	<div id="help-widget-header">
-		<span id="help-widget-title">Help!</span>
-		<button id="help-widget-clear" title="clear the help"></button>
-		<button id="help-widget-close" title="close"></button>
+       	        <div>
+			<a id="help_link" href="/#help" target="help-frame">Help</a> |
+			<a href="/#intro" target="help-frame">Intro</a> |
+			<a href="/#guide" target="help-frame">Guide</a>
+		</div>
+		<div id="help-widget-controls">
+			<button id="help_undo" title="remove the last help message" class="advanced">undo</button>
+			<button id="help_retry" title="retry the last help message" class="advanced">retry</button>
+			<button id="help_archive" title="archive this help">archive</button>
+			<button id="help_clear" title="clear the help">clear</button>
+			<button id="help_close" title="close"></button>
+		</div>
 	</div>
 	<div id="help-frame-container">
-		<iframe id="help-frame"></iframe>
+		<iframe id="help-frame" name="help-frame"></iframe>
 	</div>
 </div>
 

@@ -1,70 +1,84 @@
 #help-widget {
   position: fixed;
   top: 58px;
-  right: 26px;
-  width: 400px; /* Initial width */
-  height: 500px; /* Initial height */
-  min-width: calc(2 * var(--pad, 10px) + 150px); /* Account for padding */
-  min-height: calc(3 * var(--pad, 10px) + 100px); /* Account for padding + title */
-  background: var(--frame); /* Opaque background for the content area */
-  /* border: 1px solid var(--text); Removed border */
+  right: 18px;
+  width: 400px;
+  height: 500px;
+  min-width: 300px;
+  min-height: 200px;
+  background: var(--frame);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Still needed */
+  overflow: hidden;
   border-radius: 8px;
   cursor: default;
-  padding: 0; /* Padding will be handled by internal elements */
-  /* resize: both; Removed standard resize handle */
+  padding: 0;
   box-sizing: border-box;
 }
 
+@media (max-width: 640px) {
+  #help-widget {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-width: unset;
+    min-height: unset;
+    border-radius: 0;
+  }
+}
+
 #help-widget-header {
-  /* Height determined by content + padding */
   padding: var(--pad);
-  padding-bottom: 0; /* No padding at the bottom */
+  padding-bottom: 0;
   cursor: move;
-  background: var(--frame); /* Match widget background */
+  background: var(--frame);
   color: var(--text);
-  /* border-bottom: 1px solid var(--text); Removed border */
-  /* font-size: 0.9em; Removed custom font size */
   user-select: none;
   touch-action: none;
   flex-shrink: 0;
   display: flex;
-  justify-content: space-between; /* Space between title and button */
+  justify-content: space-between;
   align-items: center;
-  position: relative; /* Keep for potential future absolute elements if needed */
-  border-top-left-radius: 8px; /* Match container */
-  border-top-right-radius: 8px; /* Match container */
+  gap: var(--pad);
+}
+
+@media (max-width: 640px) {
+  #help-widget-header {
+    cursor: default;  /* Remove move cursor on mobile */
+  }
 }
 
 #help-widget-title {
-    /* Title takes available space, naturally centered if button is last item */
-    margin-right: var(--pad, 10px); /* Space before button */
-    overflow: hidden; /* Prevent text overflow */
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-#help-widget-close {
-   /* Using default button styles now */
-   flex-shrink: 0; /* Prevent button from shrinking */
-   margin-left: auto; /* Push to the right */
+#help-widget-header button {
+  flex-shrink: 0;
+  flex-grow: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.125rem;
+  line-height: 1;
 }
-/* #help-widget-close:hover { removed - use default button hover */
-     /* background-color: rgba(128, 128, 128, 0.2); */
- /* } */
 
-#help-frame-container { /* New container for padding around iframe */
+#help-widget-header button > svg {
+  transform: scale(0.75);
+}
+
+#help-frame-container {
   padding: var(--pad);
-  flex-grow: 1; /* Takes remaining space */
-  display: flex; /* To make iframe fill it */
-  min-height: 0; /* Crucial for flex-grow in flex column */
-  background: var(--frame); /* Match widget background */
-  border-bottom-left-radius: 8px; /* Match container */
-  border-bottom-right-radius: 8px; /* Match container */
+  flex-grow: 1;
+  display: flex;
+  min-height: 0;
+  background: var(--frame);
 }
 
 #help-frame {
@@ -73,7 +87,12 @@
   height: 100%;
   max-width: 100%;
   max-height: 100%;
-  flex-grow: 1; /* Fill the container */
+  flex-grow: 1;
   display: block;
-  background: white; /* Or inherit, or var(--frame) if needed */
+  background: white;
+}
+
+#help-widget-controls {
+  display: flex;
+  gap: var(--pad);
 }

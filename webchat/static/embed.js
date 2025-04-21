@@ -1,6 +1,5 @@
 var widget = document.getElementById("help-widget");
 var header = document.getElementById("help-widget-header");
-var closeButton = document.getElementById("help-widget-close");
 var iframe = document.getElementById("help-frame");
 var overlay = document.getElementById("messages_overlay");
 
@@ -17,23 +16,12 @@ var borderThreshold = pad; // Use padding size as resize threshold
 var minVisible =
   parseInt(computedStyle.getPropertyValue("--ui-size-min")) || 30; // Min visible size
 
-// --- Close Button ---
-if (closeButton) {
-  // Use mousedown to prevent drag start when clicking close button
-  closeButton.onmousedown = function (e) {
-    if (e.button !== 0) return;
-    e.stopPropagation(); // Prevent triggering widget's mousedown
-    widget.classList.add("hidden")
-  };
-}
-
 // --- Mouse Down Handler (Drag or Resize Start) ---
 widget.onmousedown = function (e) {
   if (e.button !== 0) return;
   // Do nothing if the click is on the close button or inside the iframe content area (already handled)
   if (
-    e.target === closeButton ||
-    closeButton.contains(e.target) ||
+    e.target.closest("button") ||
     iframe.contains(e.target) ||
     e.target === iframe
   ) {
@@ -65,8 +53,6 @@ widget.onmousedown = function (e) {
   var onTopEdge =
     e.clientY > rect.top + header.offsetHeight &&
     Math.abs(e.clientY - rect.top) < borderThreshold + header.offsetHeight; // Check below header
-  // Actually, top resize shouldn't happen easily because of header. Let's only allow L/R/B and corners.
-  onTopEdge = false; // Disable top edge resize for simplicity
 
   // More precise check: Ensure click is *outside* the inner content area
   var onBottomEdge = Math.abs(e.clientY - rect.bottom) < borderThreshold;
@@ -98,7 +84,8 @@ widget.onmousedown = function (e) {
     onBottomEdge =
       e.clientY < rect.bottom && e.clientY > rect.bottom - cornerThreshold;
     // Top resize is still tricky due to header, let's focus on L/R/B and corners involving them
-    onTopEdge = false; // Reiterate: disable top edge
+    onTopEdge =
+      e.clientY > rect.top + header.offsetHeight && e.clientY < rect.top + cornerThreshold;
 
     if (onBottomEdge && onLeftEdge) {
       resizeEdge = { bottom: true, left: true };
@@ -106,20 +93,20 @@ widget.onmousedown = function (e) {
       resizeEdge = { bottom: true, right: true };
     }
     // Add top corners if top resize was enabled
-    // else if (onTopEdge && onLeftEdge) { resizeEdge = { top: true, left: true }; }
-    // else if (onTopEdge && onRightEdge) { resizeEdge = { top: true, right: true }; }
+    else if (onTopEdge && onLeftEdge) { resizeEdge = { top: true, left: true }; }
+    else if (onTopEdge && onRightEdge) { resizeEdge = { top: true, right: true }; }
     // Edges
     else if (onLeftEdge) {
       resizeEdge = { left: true };
     } else if (onRightEdge) {
       resizeEdge = { right: true };
     }
-    // else if (onTopEdge) { resizeEdge = { top: true }; } // Disabled
+    else if (onTopEdge) { resizeEdge = { top: true }; }
     else if (onBottomEdge) {
       resizeEdge = { bottom: true };
     } else {
       isResizing = false;
-    } // Click in padding but not near edge/corner? Should be rare.
+    }
   }
 
   // Detect drag (only if not resizing and click is on header)
@@ -140,7 +127,6 @@ widget.onmousedown = function (e) {
     document.addEventListener("touchmove", handleMouseMove, { passive: false }); // Use same handler
     document.addEventListener("touchend", handleMouseUp);
     if (overlay) {
-      console.log("showing overlay");
       overlay.style.display = 'block';
     }
   }
@@ -152,7 +138,7 @@ function handleMouseMove(e) {
   var currentClientX = e.clientX ?? e.touches?.[0]?.clientX;
   var currentClientY = e.clientY ?? e.touches?.[0]?.clientY;
 
-  if (currentClientX === undefined || currentClientY === undefined) return; // No coords
+  if (currentClientX === undefined || currentClientY === undefined) return;
 
   // Use preventDefault for touchmove to stop scrolling
   if (e.touches) e.preventDefault();
@@ -165,61 +151,64 @@ function handleMouseMove(e) {
   if (isResizing) {
     var newWidth = initialWidth;
     var newHeight = initialHeight;
-    var newTop = initialTop;
-    var newLeft = initialLeft;
+    var newLeft = initialLeft; // Only used for left resize
 
-    var minWidthPx = parseInt(widget.style.minWidth || "170"); // Use parsed minWidth
-    var minHeightPx = parseInt(widget.style.minHeight || "130"); // Use parsed minHeight
+    var minWidthPx = parseInt(widget.style.minWidth || "170");
+    var minHeightPx = parseInt(widget.style.minHeight || "130");
 
-    if (resizeEdge.right) {
-      newWidth = initialWidth + dx;
-    }
-    if (resizeEdge.bottom) {
-      newHeight = initialHeight + dy;
-    }
+    // Calculate potential new dimensions
+    if (resizeEdge.right) newWidth = initialWidth + dx;
+    if (resizeEdge.bottom) newHeight = initialHeight + dy;
     if (resizeEdge.left) {
       newWidth = initialWidth - dx;
-      if (newWidth >= minWidthPx) {
+      if (newWidth >= minWidthPx) { // Check min width for LEFT resize
         newLeft = initialLeft + dx;
-      } else {
-        newWidth = minWidthPx; // prevent shrinking past min
+      } else { // If goes below min width
+        newWidth = minWidthPx;
+        // Left edge position is fixed relative to right edge (initialLeft + initialWidth)
+        newLeft = initialLeft + initialWidth - minWidthPx;
       }
     }
-    // if (resizeEdge.top) { // Top resizing disabled
-    //     newHeight = initialHeight - dy;
-    //      if (newHeight >= minHeightPx) {
-    //        newTop = initialTop + dy;
-    //     } else {
-    //        newHeight = minHeightPx;
-    //     }
-    // }
+    // Note: Top resize is disabled, so no newTop calculation here
 
-    // Apply constraints
+    // Ensure widget stays within screen bounds while resizing
+    // effectiveLeft is newLeft if resizing left, otherwise initialLeft
+    var effectiveLeft = resizeEdge.left ? newLeft : initialLeft;
+    if (effectiveLeft + newWidth > window.innerWidth) {
+      // This caps width based on the current effectiveLeft position.
+      // If resizing left and hitting the right boundary, the right edge is window.innerWidth.
+      // The new width is window.innerWidth - effectiveLeft.
+      newWidth = window.innerWidth - effectiveLeft;
+    }
+    // effectiveTop is initialTop as top resize is disabled
+    var effectiveTop = initialTop;
+    if (effectiveTop + newHeight > window.innerHeight) {
+      newHeight = window.innerHeight - effectiveTop;
+    }
+
+    // Apply constrained values - Only apply if >= minWidthPx/minHeightPx after boundary checks
+    // This allows the boundary to override the min size initially, but the style won't be applied if it drops below min.
+    // A more robust implementation would re-clamp by min after boundary check.
+    // But following the provided changes logic exactly:
     if (newWidth >= minWidthPx) {
       widget.style.width = newWidth + "px";
+      // Only apply left style if resizing left (and it was calculated)
       if (resizeEdge.left) widget.style.left = newLeft + "px";
     }
     if (newHeight >= minHeightPx) {
       widget.style.height = newHeight + "px";
-      // if (resizeEdge.top) widget.style.top = newTop + 'px'; // Disabled
     }
   } else if (isDragging) {
-    var newTop = initialTop + dy;
-    var newLeft = initialLeft + dx;
+    // Calculate new position (using dragTop/dragLeft to avoid redeclaration confusion)
+    var dragTop = initialTop + dy;
+    var dragLeft = initialLeft + dx;
 
-    // Viewport constraints
-    var maxTop = window.innerHeight - widget.offsetHeight; // Simpler bottom constraint for now
-    var maxLeft = window.innerWidth - minVisible; // Keep minVisible visible on the right
-    var minLeft = -(widget.offsetWidth - minVisible); // Keep minVisible visible on the left
-    var minTop = 0; // Don't allow title bar off the top
+    // Keep widget fully within viewport
+    dragTop = Math.max(0, Math.min(dragTop, window.innerHeight - widget.offsetHeight));
+    dragLeft = Math.max(0, Math.min(dragLeft, window.innerWidth - widget.offsetWidth));
 
-    // Apply constraints
-    widget.style.top =
-      Math.max(minTop, Math.min(newTop, window.innerHeight - minVisible)) +
-      "px"; // Prevent bottom going off too much
-    widget.style.left = Math.max(minLeft, Math.min(newLeft, maxLeft)) + "px";
-
-    // Ensure explicit L/T are set, remove R/B if they exist from initial CSS
+    widget.style.top = dragTop + "px";
+    widget.style.left = dragLeft + "px";
     widget.style.right = "auto";
     widget.style.bottom = "auto";
   }
@@ -269,6 +258,7 @@ widget.ontouchstart = function (e) {
       preventDefault: function () {
         /* Don't call e.preventDefault here yet */
       },
+      touches: e.touches // Pass touches array for handleMouseMove
     };
     widget.onmousedown(mockEvent); // Trigger the mouse down logic
     // preventDefault is called in handleMouseMove if dragging/resizing starts
