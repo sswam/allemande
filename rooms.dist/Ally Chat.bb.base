@@ -3,7 +3,7 @@ h1 { font-size: 1.5em; }
 </style>
 # Hello, world
 
-[Quick Start](/start) | [User Guide](/guide) | [Public Room](/user) | [Private Room](/user/chat)
+[Quick Intro](/intro) | [User Guide](/guide) | [Public Room](/user) | [Private Room](/user/chat)
 
 <script class="hide">
 welcomes = [

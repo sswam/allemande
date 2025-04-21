@@ -65,7 +65,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - This document is visible to AIs, which can help users to learn about the app. They even show which icons to press!
 - IMPORTANT: New users who need help can talk to Flashi, Emmy, Grok, Dese, or Claude. Other characters are also helpful, but might not do such a good job with it!
 - Illu, Pixi and Gema are experts on image generation. You can talk to them to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
-- You can view the [Quick Start Guide](/start) or this [User Guide](guide).
+- You can view the [Quick Intro](/intro) or this [User Guide](guide).
 - You can contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is ONLY available in the main "Ally Chat" room.
    - In other rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
@@ -150,7 +150,6 @@ digraph Google {
 
     "Google" -> "Lite"
     "Google" -> "Flashi"
-    "Google" -> "Flasho"
     "Google" -> "Gemmy"
     "Google" -> "Gemmi"
 }
@@ -533,7 +532,7 @@ IMPORTANT:
 - **Fermi** (o4 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
 - **Gemmy** (Gemini 1.5 Pro, Google): Google's high-performance Gemini language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's most powerful Gemini language model
-- **Flashi** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
+- **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Grok** (Grok 2, xAI): xAI's quirky and intelligent language model
 - **Rocki** (Grok 3, xAI): xAI's latest quirky and intelligent language model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model.
@@ -634,7 +633,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Anthropic     | Claude 3.5 Sonnet     | Claude  | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's powerful and reliable model.                                                                         |
 | Anthropic     | Claude 3.7 Sonnet     | Clauden | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K              | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
-| Google        | Gemini 2.0 Flash      | Flashi  | 1M      | 8K              | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed and tool use.                                                    |
+| Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K              | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed and tool use.                                                    |
 | Google        | Gemini 1.5 Pro        | Gemmy   | 2M      | 8K              | $1.25 [2]       | $5.00 [2]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                    |
 | Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K             | $1.25 [3]       | $10.00 [3]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
 | OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K             | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
