@@ -92,7 +92,7 @@ class AsyncFileReader:
                     break
                 await self.queue.put(line)
             # Signal end of file
-            await sef.queue.put(None)
+            await self.queue.put(None)
         except asyncio.CancelledError:
             raise
         except Exception as e:
