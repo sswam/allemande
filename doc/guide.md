@@ -67,7 +67,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - Illu, Pixi and Gema are experts on image generation. You can talk to them to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
 - You can view the [Quick Intro](/intro) or this [User Guide](guide).
 - You can contact Sam, the developer, who is happy to give help or a tour.
-- Informed help from AIs is ONLY available in the main "Ally Chat" room.
+- Informed help from AIs is ONLY available in the main "Ally Chat" room and the help widget.
    - In other rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
    - Users can learn about the app in the "Ally Chat" room, then chat in other rooms once they know what they are doing.
 - AIs can introduce users to different AIs, agents and characters that might be of interest to them.
@@ -669,9 +669,6 @@ Unp, [choose] [use sam] | [use ally] [/choose]
    Other models can search using the Goog tool, and fetch pages using `Dogu, web-text URL`.
 
 # Ally Chat User Interface Guide
-
-<!-- NOTE: this script to include the bootstrap_icons stylesheet is required if you want to use any of the icons below in Ally Chat -->
-<script class="hide">$style("bootstrap_icons", "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");</script>
 
 ## Overview
 

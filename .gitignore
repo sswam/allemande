@@ -77,9 +77,12 @@ rooms.*
 /allemande-deps_0.1_all.deb
 /apps/pdev/design-chat.html
 /site/epic.html
-
-# derived header files
 /c/sea.h
+/webchat/all-icons-unicode.txt
+/webchat/icons.txt
+/webchat/icons-unicode.txt
+/webchat/static/icons.css
+/webchat/static/icons.woff2
 
 # 3rd-party content
 /code/pop.pdf
@@ -98,6 +101,8 @@ rooms.*
 /webchat/static/mermaid.min.js
 # /webchat/static/katex.min.css
 # /webchat/static/katex.min.js
+/webchat/bootstrap-icons.css
+/webchat/bootstrap-icons.woff2
 
 # Symlinks to 3rd-party tools and libraries
 /unprompted/unprompted

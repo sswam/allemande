@@ -62,3 +62,6 @@ gradio
 gTTS
 
 geoip2
+
+fonttools
+brotli

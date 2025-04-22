@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.6.37";
+const VERSION = "0.6.176";
 
 const DEBUG = false;
 
@@ -29,6 +29,9 @@ const URLS_TO_CACHE = {
     "/debug.js",
     "/embed.js",
     "/embed.css",
+    "/icons.js",
+    "/icons.css",
+    "/icons.woff2",
     "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap",
   ],
   "rooms": [
@@ -52,6 +55,10 @@ const CORS_URLS_TO_CACHE = {
     "/process_messages.js",
     "/room.js",
     "/voice.js",
+    // only needed for help system, could load them specifically there?
+    "/icons.js",
+    "/icons.css",
+    "/icons.woff2",
 //    "/d3.min.js",
 //    "/wasm.min.js",
 //    "/d3-graphviz.min.js",
