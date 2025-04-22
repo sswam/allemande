@@ -66,7 +66,14 @@ END
 	mkdir -p rooms/"$user"
 	chmod o-rwx rooms/"$user"
 	mkdir -p users/"$user"
-	ln -s ../../static/themes/pastel.css users/"$user"/theme.css
+	touch users/"$user"/styles.css
+	touch users/"$user"/script.js
+	ln -sf ../../static/themes/pastel.css users/"$user"/theme.css
+
+	if ! ((nsfw)); then
+		ln -sf ../../doc/guide.md rooms/"$user"/.help.m
+		ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
+	fi
 
 	if ((nsfw)); then
 		echo "- $user" >> rooms/nsfw/.access.yml
@@ -82,7 +89,11 @@ NSFW Features:
 - To use NSFW features, please go to the "nsfw/nsfw" room.
 - In this room, Flashi can help you learn about the app, including NSFW features.
 END
+		ln -sf ../../doc/nsfw.md rooms/"$user"/.help.m
+		ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	fi
+
+	cp rooms/"$user"/.help.bb.base rooms/"$user"/help.bb
 }
 
 change-password() {
@@ -112,6 +123,9 @@ remove-user() {
 
 	# remove style and user directory
 	move-rubbish users/"$user"
+
+	# Note: Does not remove their rooms/$user directory.
+	sudo userdel "$user"
 
 	printf -- "- %s\n" "$user"
 }
