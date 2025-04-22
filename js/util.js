@@ -202,6 +202,13 @@ function toggle(element, do_show) {
   show(element, do_show);
 }
 
+function is_hidden(element) {
+  return window.getComputedStyle(element).display === 'none';
+}
+
+function is_showing(element) {
+  return !is_hidden(element);
+}
 
 function enable_link(element, enabled) {
   if (typeof element === "string")

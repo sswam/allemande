@@ -765,8 +765,6 @@ function image_click($el, ev) {
   }
   if (ev.shiftKey) {
     window.open(src, "_blank");
-  } else if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
-    window.open(src, "_blank").focus();
   } else if (ev.altKey) {
     const a = document.createElement("a");
     a.href = src;
@@ -774,6 +772,8 @@ function image_click($el, ev) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  } else if (ev.ctrlKey || ev.metaKey || ev.button === 1 || view_options["embed"]) {
+    window.open(src, "_blank").focus();
   } else if (!overlay_mode) {
     image_overlay($el);
   }

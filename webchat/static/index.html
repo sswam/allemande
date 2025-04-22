@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content viewport-fit=cover">
 <link rel="stylesheet" href="allychat.css">
 <link rel="stylesheet" href="chat.css">
+<link rel="stylesheet" href="/icons.css">
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
@@ -23,6 +24,7 @@
 		<div class="top_left_controls row" id="top_left_main">
 			<a class="button" href="" id="privacy" title=""></a>
 			<button id="nav" title="navigation" class="advanced">nav</button>
+			<button id="select" title="select messages" class="advanced">select</button>
 			<button id="room_ops" title="room operations" class="advanced">room</button>
 		</div>
 		<div class="top_left_controls row hidden" id="top_left_nav">
@@ -35,6 +37,16 @@
 			<a class="button" href="" id="nav_prev" title="previous page: ctrl+,">prev</a>
 			<a class="button" href="" id="nav_next" title="next page: ctrl+.">next</a>
 			<a class="button" href="" id="nav_last" title="last page: ctrl+]">last</a>
+		</div>
+		<div class="top_left_controls row hidden" id="top_left_select" class="advanced">
+			<button id="select_cancel">back</button>
+			<button id="select_all" title="select all messages, or no messages">all</button>
+			<button id="select_download" title="download selected messages">download</button>
+			<button id="select_copy" title="copy selected messages to another room">copy</button>
+			<button id="select_move" title="move selected messages to another room" class="admin">move</button>
+			<button id="select_tts" title="speak selected messages">tts</button>
+			<input id="select_selection" placeholder="0,-1,3:6" title="selected messages and ranges">
+			<input id="select_target" placeholder="target room" title="target room for copy / move">
 		</div>
 		<div class="top_left_controls row hidden" id="top_left_room_ops">
 			<button id="room_ops_cancel">back</button>
@@ -164,9 +176,10 @@
 <div id="help-widget" class="hidden">
 	<div id="help-widget-header">
        	        <div>
-			<a id="help_link" href="/#help" target="help-frame">Help</a> |
-			<a href="/#intro" target="help-frame">Intro</a> |
-			<a href="/#guide" target="help-frame">Guide</a>
+			<a id="intro_link" href="/#intro" target="help-frame" class="simple" title="Ally Chat - Quick Intro">Intro</a>
+			<a id="qa_link" href="/#qa" target="help-frame" class="advanced" title="general side-bar Q&A chat">Q&A</a> |
+			<a id="help_link" href="/#help" target="help-frame" title="your Ally Chat help room">Help</a> |
+			<a href="/#guide" target="help-frame" title="the full user guide">Guide</a>
 		</div>
 		<div id="help-widget-controls">
 			<button id="help_undo" title="remove the last help message" class="advanced">undo</button>
@@ -189,6 +202,9 @@
 <script src="record.js"></script>
 <script src="resizer.js"></script>
 <script src="debug.js"></script>
-<script>$import("chat")</script>
+<script>
+$import("icons");
+$import("chat");
+</script>
 </body>
 </html>
