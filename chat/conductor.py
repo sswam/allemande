@@ -364,6 +364,7 @@ def who_should_respond(
 
     include_humans = (is_human and include_humans_for_human_message) or include_humans_for_ai_message
 
+    # TODO AIs talk to themselves?  not right now
     if not is_human:
         include_self = False
 
@@ -403,6 +404,7 @@ def who_should_respond(
         everyone_with_at = random.sample(everyone_with_at, AI_EVERYONE_MAX)
 
     # For @mode, all mentioned agents should reply
+    # To start talking to self, must use @name now.
     reason = "named @"
     invoked = who_is_named(
         content,
@@ -426,7 +428,7 @@ def who_should_respond(
             content,
             user,
             agent_names,
-            include_self=include_self,
+            include_self=False,  # no talking to self without @ now
             chat_participants=chat_participants_names_lc,
             chat_participants_all=chat_participants_names_all_lc,
             everyone_words=everyone,
@@ -461,6 +463,7 @@ def who_should_respond(
         logger.debug("direct_reply_chance: %r", direct_reply_chance)
         logger.debug("direct_reply: %r", direct_reply)
 
+    # direct replies: Allow replying to self without triggering an AI to respond
     if not invoked and direct_reply:
         reason = "direct_reply"
         invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self, include_humans=include_humans)

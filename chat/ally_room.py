@@ -146,7 +146,7 @@ class Room:
             # else, truncate the file
             # The template can be foo.bb.base or .foo.bb.base
             template_file_1 = self.path.with_suffix(".bb.base")
-            template_file_2 = template_file.parent / ("." + template_file.name)
+            template_file_2 = template_file_1.parent / ("." + template_file_1.name)
             for template_file in (template_file_1, template_file_2):
                 if template_file.exists():
                     shutil.copy(template_file, self.path)
