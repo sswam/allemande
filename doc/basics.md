@@ -1,268 +1,83 @@
 # Welcome to Ally Chat
 
-Ally Chat is a unique multi-user chat platform, with access to numerous top-quality AI models from providers including OpenAI, Anthropic, Meta, Google, Perplexity, xAI, DeepSeek, Alibaba Cloud, Open Router, Stability AI, and the Civitai community.
+Ally Chat is a multi-user chat platform with access to numerous AI models. It's open source, free to use, and lets you chat with multiple AIs and humans together.
 
-The app is fully open source. The service is free to use, with full functionality and generous limits; or you can pay if you feel like it!
+## Getting Started
 
-Please check out the examples attached. You can see various AIs helping me to learn, solve problems and do other interesting things.
+1. **Getting Help**
+- Click the `i` help icon and talk to Flashi. In the help system, Flashi has access to the full user guide and can give very detailed help.
+- Talk with Sam, the main developer, and other users.
+- Read the [User Guide](guide) for full details on the app, models, characters, and tools.
 
-This is perhaps the only AI chat service in the world where you can talk with all the most powerful AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
+2. **Talking with AIs**
 
-Novel features include:
+- Address AIs by name:
+  - "Ally, how are you?"
+  - "Can you help, Flashi?"
+  - "@Illu, draw something!"
+- Use empty "poke" messages to continue AI conversations
+- Say "someone" for random AI or "everyone" for multiple responses
 
-- private chat, and group chat with multiple AI and human participants
-- very performant: create new rooms instantly, switch rooms instantly
-- markdown-based chat with complete HTML support:
-  (images, videos, embeds, diagrams, SVG, CSS, JS; everything)
-- The chat is displayed in a secure cross-domain iframe,
-  so JavaScript in the chat is not very dangerous.
-- Graphviz and Mermaid diagrams, TeX Math, any sort of charts, etc.
-- quality AI art with SDXL models, and assisted prompting; not censored
-- a flexible room file system; private, public and group chats
-- undo, retry and edit the chat history; archive or clear old chat rooms
-- a numbered "chapters" system, to split up your chats for performance
-- a "conductor" that manages AI responses based on mentions and cues
-- a shared canvas for collaborative drawing using JavaScript
-- AIs can teach you about the app, including all the models and agents
-- a column view option, to make the most of your screen
-- web, image, video search; programming tools such as Bash and Python
-- the whole app is open source; you can potentially run it at home
-- a cast of more than 100 characters, specialist agents, and tools
-- custom agents and missions, adjust context and other settings mid-chat
-- a wide range of styles, support for custom styles and JavaScript
-- we value free speech, and include access to various uncensored AIs
+## Select Characters and Tools
 
-Example #1: upload a photo of a math equation, ask GPT 4o to copy it as TeX math, ask GPT o3 mini to solve it, ask Claude to write JavaScript to check the solution, draw a chart, and a GraphViz diagram showing the flow of the chat.
+- **General Chat**
+    - Ally, Barbie: friendly chat
+    - Flashi, Emmy, Claude, Gemmi: strong assistants
+    - Fli, Emm, Clu, Gemm: concise responses from the above
 
-Example #2: Clu (concise Claude) helps me learn about rainbows. We draw AI art of a rainbow with help from Gemini Flash and Juggernaut XL. Clu writes JavaScript to draw a rainbow on the canvas (at right). We search Google images for rainbow physics, and Clu explains it to me, with relevant maths. I search up a music video on YouTube, then Emm (concise GPT 4o) draws a colourful diagram showing learning paths in AI.
+- **AI Art**
+    - Illu, Gema: prompting
+    - Illy: generation
 
-These demos barely scratch the surface of what's possible. One random example, Claude wrote a local weather applet which ran directly in the chat.
+- **Specialists**
+    - Brie: brainstorming
+    - Summi: summaries
+    - Chaz: character design
+    - Nova: narrative
 
-Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
+- **Search & Info**
+    - Goog, "Allemande AI"
+    - Gimg, cute animals
+    - UTube, indie games
+    - Sona, any LLM news today?
 
-Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
+- **Code & Calculation**
+    - Dogu, date +%F ; fortune
+    - Gido, import this
+    - Palc, sqrt(3)/2, 2**32
 
-## Image Gen
+## Rich Content Support
 
-IMPORTANT: The agents Illu (as distinct from Illy), Pixi and Gema are experts on image gen. We can talk to them to learn more about image gen prompting.
+- Full markdown/HTML/SVG/CSS/JS runs in the chat (no backticks)
+- TeX math: $y = \sqrt{x}$  and  $$ ... $$ displays
+- Graphviz ```dot ```, and ```mermaid ``` diagrams
+- Interactive charts, simulations, mini-games with JavaScript
 
-This asks Illy, an image gen AI, to draw a big dog, in a wider landscape image:
+## Platform Features
 
-    Illy, big dog [use landscape]
+- Private/group chat rooms
+- Instant room creation and switching
+- 100+ characters, specialists, and tools
 
-This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a tall image. Try to get a full body shot by mentioning shoes or feet!
+## Privacy & Rooms
 
-    Illy, [person Cleo "green dress" . 30], ballroom, (full body, heels:1.5)  [use portrait_tall]
+- [Ally Chat](Ally+Chat) room is public
+- Use padlock icon to toggle public/private
+- Private areas are separate from main chat
 
-## Examples of Advanced Syntax
+## Example Usage
 
-### Markdown
+```
+You: Illu, I'd like to draw a rainbow.
 
-The chat format is markdown, including tables, code, links, images, etc.
+Illu: [Thinking...]
+Illy, landscape, grassland, mountains, (vibrant rainbow:1.5),
+(majestic mountains:1.2), lush grassland, scenic view...
 
-### HTML and SVG
+[poke to continue]
 
-We can safely embed any HTML or SVG:
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=wbdyVVoV5BaF7uqb"></iframe>
-
-Don't quote such in backticks if you want them to render in the chat.
-
-### TeX math
-
-Inline math goes between dollar signs, like $ y = \sqrt{x} $.
-
-Displayed math goes between double dollar signs:
-
-$$ y = \sqrt{x} $$
-
-### Graphviz
-
-Please use transparent backgrounds and medium gray edges and edge text for better visibility in any theme, unless asked otherwise.
-
-```dot
-graph {
-    bgcolor="transparent"
-    node [style=filled, fillcolor="#808080"]
-    edge [color="#808080"]
-    A -- B -- C -- A
-}
+Illy: [generates image]
 ```
 
-```dot
-digraph G {
-    bgcolor="transparent"
-    node [style=filled, fillcolor="#808080"]
-    edge [color="#808080"]
-    A -> B;
-    B -> C;
-}
-```
+Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
-### Mermaid Diagrams
-
-```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#808080',
-    'primaryTextColor': '#ffffff',
-    'primaryBorderColor': '#404040',
-    'lineColor': '#808080',
-    'secondaryColor': '#808080',
-    'tertiaryColor': '#808080'
-  }
-}}%%
-flowchart TD
-    A[Start] --> B{Decision?}
-
-    B -->|Yes| C[Do something]
-    B -->|No| D[Do something else]
-    C --> E["End (or is it)?"]
-    D --> E
-```
-
-Note: We need to quote labels that contain parentheses.
-
-### JavaScript
-
-### Drawing on the shared canvas
-
-<script>
-h = canvas.height;
-ctx.fillStyle = 'red';
-ctx.fillRect(10, 10, 100, 100);
-</script>
-
-### Drawing a chart with uPlot, and our helper functions
-
-Note that uPlot defaults to "time" on the x-axis, so turn that off unless needed.
-
-<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.iife.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.min.css">
-<div id="smartphone_market_share_1"></div>
-
-<script>
-data = [
-    [0, 1, 2, 3, 4],
-    [22.1, 19.4, 13.3, 11.2, 7.8]
-];
-
-textColor = getCssVarColorHex("--text");
-gridColor = hexColorWithOpacity(textColor, 0.1);
-fillColor = hexColorWithOpacity(textColor, 0.05);
-
-companies = ["Samsung", "Apple", "Xiaomi", "OPPO", "vivo"];
-
-opts = {
-    title: "Global Smartphone Market Share Q3 2023 (%)",
-    width: 600,
-    height: 300,
-    series: [
-        {
-            label: "Company"
-        },
-        {
-            label: "Market Share %",
-            stroke: textColor,
-            fill: fillColor,
-            paths: uPlot.paths.bars({size: [0.6, 100]}),
-        }
-    ],
-    scales: {
-        x: {
-            time: false,
-            range: [-0.5, 4.5]
-        }
-    },
-    axes: [
-        {
-            values: (self, splits) => splits.map(i => companies[i]),
-            stroke: textColor,
-            grid: {stroke: gridColor},
-            size: 70  // Give more space for labels
-        },
-        {
-            stroke: textColor,
-            grid: {stroke: gridColor}
-        }
-    ]
-};
-
-uplot = new uPlot(opts, data, document.getElementById("smartphone_market_share_1"))
-</script>
-
-IMPORTANT:
-- N.B. NOTE WELL! Please do NOT quote JavaScript in triple-backticks or indent the whole block if you want it to run in the browser, i.e. in the chat app.
-- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
-- Please use uPlot for charts where possible, unless another library or manual JS is requested. You need to pull in the required uPlot JavaScript and CSS first.
-- The shared canvas is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
-- Please use the TOP LEFT part of the canvas by default. Don't center in the canvas or try to fill the width or height unless requested. If you use another part it can be hard for the user to view it all.
-- For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
-- If the user wants to see the code, they can enable our view -> code option.
-- You can add canvases, divs, svg, etc inline in the chat as needed. Please use unique descriptive IDs when doing so.
-
-### AI Artists
-- Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Illy the AI art model.
-- **Illy**: High-quality photorealistic and artistic image generation using Juggernaut XL, able to draw every character; talk to Illy to see your ideas come to life
-
-### Search Agents
-- **Goog**: A search agent that provides Google web search results
-- **Gimg**: A search agent that provides Google image search results
-- **UTube**: A video search agent that helps you find the best content on YouTube
-
-### Select Tools
-- **Palc**: Calculator
-- **Dogu**: Bash shell
-- **Gido**: Python
-
-Examples:
-
-Palc, sqrt(2) / sin(pi/4)
-
-Dogu, look wizard
-
-Dogu, web-text https://beebom.com/cool-interesting-websites/
-
-Gido, import html ; print(html.escape("&&&"))
-
-### Side by Side Formatting
-
-<style class="hide">
-.doc-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-  gap: 1em;
-  max-width: 43rem;
-}
-</style>
-
-<div class="doc-container" markdown="1">
-
-<div markdown="1">
-# Welcome to Markdown!
-
-Hello, world! This is a sample markdown document to showcase various features and best practices.
-</div>
-<div markdown="1">
-
-```markdown
-# Welcome to Markdown!
-
-Hello, world! This is a sample markdown document to showcase various features and best practices.
-```
-</div>
-
-<div markdown="1">
-## Text Formatting
-
-You can make text *italic*, **bold**, or ***both***. For inline code, use `backticks`.
-</div>
-<div markdown="1">
-
-```markdown
-## Text Formatting
-
-You can make text *italic*, **bold**, or ***both***. For inline code, use `backticks`.
-```
-</div>
