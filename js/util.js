@@ -223,6 +223,12 @@ function isPrecedingNode(node1, node2) {
   );
 }
 
+function reload_page() {
+  if (reloading) return;
+  reloading = true;
+  location.reload();
+}
+
 // Hook system ---------------------------------------------------------------
 
 const hooks = {};

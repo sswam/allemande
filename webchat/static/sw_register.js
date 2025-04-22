@@ -4,12 +4,6 @@ let sw_registration;
 let sw_message_channel;
 let reloading = false;
 
-function reload_page() {
-  if (reloading) return;
-  reloading = true;
-  location.reload();
-}
-
 function handle_sw_message(event) {
   if (event.data.type == "APP_INFO") {
     VERSION = event.data.version;

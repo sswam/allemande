@@ -35,7 +35,7 @@ async function render_graphviz(node) {
     d3.select(par)
       .append("div")
       .classed("graphviz", true)
-      .graphviz()
+      .graphviz({useWorker: false})
       .renderDot(elem.innerText);
   }
 }

@@ -29,6 +29,9 @@ const narrator = "Nova";
 const illustrator = "Illu";
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isFirefox = navigator.userAgent.includes('Firefox');
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 const iOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 function confirm_except_iOS(message) {
   if (iOS) return true;
@@ -36,6 +39,8 @@ function confirm_except_iOS(message) {
 }
 
 let lastMessageId = null;
+
+let help_room, qa_room, help_url, qa_url;
 
 let view_options = {
   ids: 0,
@@ -632,7 +637,7 @@ async function set_room(room_new, no_history) {
     }
   }
 
-  //	who();
+  // who();
 
   setup_all_link_buttons();
   setup_admin();
@@ -769,6 +774,14 @@ function copy_mode() {
 }
 
 // navigation ----------------------------------------------------------------
+
+function nav_click(ev) {
+  if (event.button !== 0 || event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)
+    // let the browser do the default action, e.g. open this same page in another tab
+    return true;
+  ev.preventDefault();
+  set_top_left("top_left_nav");
+}
 
 function nav_up(ev) {
   let new_room;
@@ -2047,6 +2060,7 @@ function view_options_apply() {
   active_set("audio_auto", view_options.audio_auto);
 
   active_set("help", view_options.help > 0);
+  $id("help").href = view_options.advanced ? qa_url : help_url;
 
   $id("audio_voice").value = view_options.audio_voice;
 
@@ -2568,19 +2582,15 @@ function setup_embed_ui() {
 
 // help and info -------------------------------------------------------------
 
-let help_room, qa_room;
-
 function setup_help() {
   help_room = `${user}/help`;
   qa_room = `${user}/qa`;
-  const help_url = ALLYCHAT_CHAT_URL + `/#${help_room}`;
-  const qa_url = ALLYCHAT_CHAT_URL + `/#${qa_room}`;
-  const $help = $id("help");
-  $help.href = help_url;
+  help_url = ALLYCHAT_CHAT_URL + `/#${help_room}`;
+  qa_url = ALLYCHAT_CHAT_URL + `/#${qa_room}`;
   $id("help_link").href = help_url;
   $id("qa_link").href = qa_url;
 
-  $on($help, "click", help_click);
+  $on($id("help"), "click", help_click);
 
   $on($id("help_close"), "click", () => help_click());
   $on($id("help_undo"), "click", () => help_op("undo"));
@@ -2601,7 +2611,7 @@ async function help_click(ev) {
     ev.preventDefault();
   // if alt pressed, open in this window
   if (ev && (ev.altKey)) {
-    await set_room(help_room);
+    await set_room(view_options.advanced ? qa_room : help_room);
     return;
   }
   // for normal click, we open a magic embedded chat on the help room!!
@@ -2650,14 +2660,53 @@ function handleHelpLinkClick(event) {
   return false;
 }
 
+// controls layout hack; Firefox and Safari don't do flex wrap properly ------
+
+function controls_resized(entry) {
+  const $controls = entry.target;
+  $controls.style.removeProperty("width");
+  $controls.style.width = $controls.scrollWidth + 'px';
+}
+
+function controls_layout_hack_for_firefox_and_safari() {
+  const observer = new ResizeObserver((entries) => entries.forEach(controls_resized));
+  for (const controls of $$(".controls"))
+    observer.observe(controls);
+}
+
+// iOS hack to reload on pull down -------------------------------------------
+
+let do_reload = false;
+
+function iOS_reload_scroll(ev) {
+  // $id("debug").textContent = -window.scrollY;
+  const $reload_icon = $id("reload_icon");
+  if (do_reload && window.scrollY >= -50) {
+    reload_page();
+  } else if (window.scrollY < -100) {
+    do_reload = true;
+    $reload_icon.firstChild.style.color = "#7f7";
+  } else if (window.scrollY < -10) {
+    show($reload_icon);
+    const rotation = Math.min(2 * (-window.scrollY-10), 360);
+    $reload_icon.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+  } else {
+    hide($reload_icon)
+  }
+}
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
   user = await authChat();
 
   setup_help();
+  setup_view_options();
   await setup_icons();
   setup_embed_vs_main_ui();
+
+  if (isFirefox || isSafari)
+    controls_layout_hack_for_firefox_and_safari();
   load_theme();
   setup_dev();
   set_debug(DEBUG);
@@ -2682,7 +2731,7 @@ export async function init() {
   $on($id("opt"), "click", () => set_controls("input_opt"));
   $on($id("audio"), "click", () => set_controls("input_audio"));
 
-  $on($id("nav"), "click", () => set_top_left("top_left_nav"));  // TODO use to open same page in another tab, etc
+  $on($id("nav"), "click", nav_click);
   $on($id("select"), "click", () => set_top_left("top_left_select"));
   $on($id("scroll"), "click", () => set_top("top_scroll"));
   $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
@@ -2748,6 +2797,9 @@ export async function init() {
   $on($id("scroll_pagedown"), "click", (ev) => scroll_pages(ev, 1));
   $on($id("scroll_cancel"), "click", () => set_top());
 
+  if (iOS && navigator.standalone)
+    $on(window, "scroll", iOS_reload_scroll);
+
   $on($id("room_ops_move"), "click", move_mode);
   $on($id("room_ops_copy"), "click", copy_mode);
   $on($id("room_ops_cancel"), "click", () => set_top_left());
@@ -2769,8 +2821,6 @@ export async function init() {
   $content.addEventListener('dragleave', content_dragleave);
   $content.addEventListener('drop', content_drop);
   $content.addEventListener('paste', content_paste);
-
-  setup_view_options();
 
   notify_main();
   record_main();

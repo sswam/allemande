@@ -121,22 +121,6 @@ input:disabled, input:disabled:hover, input:disabled:focus
 	background: var(--col3);
 }
 
-/* buttons with SVG icons */
-
-button:has(svg.icon), .button:has(svg.icon), button:has(i.bi), .button:has(i.bi) {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0.125rem 0.125rem;
-	line-height: 1;
-}
-.button#user {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	line-height: 1;
-}
-
 .i16 { width: 1rem; height: 1rem; font-size: 1rem; }
 .i18 { width: 1.125rem; height: 1.125rem; font-size: 1.125rem; }
 .i20 { width: 1.25rem; height: 1.25rem; font-size: 1.25rem; }
@@ -237,7 +221,7 @@ input::placeholder, textarea::placeholder {
 	--scrollbar-background: var(--background);
 	--scrollbar: var(--frame);
 
-	--ui-size-min: 3rem;
+	--ui-size-min: 2rem;
 	--input-width-min: 8rem;
 
 	--image-width: 40vw;

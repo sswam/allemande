@@ -44,12 +44,13 @@ input, textarea {
 	max-width: 100%;
 }
 #inputrow > .controls {
-	flex-grow: 0;
-	flex-shrink: 1;
+	flex-basis: fit-content;
+	flex: 0 1 auto;
 	overflow-x: auto;
 	overscroll-behavior: none;
 	&::-webkit-scrollbar { display: none; }
 	scrollbar-width: none;
+	width: fit-content;
 }
 #inputrow > .controls > *,
 #top :is(button, a.button) {
@@ -67,8 +68,7 @@ input, textarea {
 #content, #math_input {
 	min-height: 2rem;
 	resize: none;
-	flex-grow: 1;
-	flex-shrink: 100;
+	flex: 1 100 0;
 }
 #resizer {
 	height: var(--pad);
@@ -77,14 +77,20 @@ input, textarea {
 	margin: 0;
 }
 .col_wrap {
-/*	display: flex;
+	display: flex;
 	flex-flow: column wrap;
+	gap: var(--pad);
+}
+
+.col_wrap_ff {
 	/* hack for Firefox broken flex layout */
 
 	display: flex;
 	writing-mode: vertical-lr;
 	flex-wrap: wrap;
-	align-content: flex-start;
+	justify-content: fill;
+	align-items: stretch;
+/*	align-content: flex-start;*/
 	height: 100%;
 	min-width: 0;
 	min-height: 0;
@@ -94,6 +100,21 @@ input, textarea {
 
 .col_wrap > * {
 	writing-mode: horizontal-tb;
+}
+
+/* buttons with SVG icons */
+
+button:has(svg.icon), .button:has(svg.icon), button:has(i.bi), .button:has(i.bi), #top_main #user {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.125rem 0.125rem;
+	line-height: 1;
+	overflow: clip;
+	height: 1.5em;  /* disregard content size */
+}
+#top_main #user {
+	padding: 0.125rem 0.375rem;
 }
 
 /* tricky CSS for gaps between elements */
@@ -258,9 +279,18 @@ body.light .active--5 { background-color: #78f0f0 !important; color: black !impo
 	background-color: #422 !important;
 }
 
-button#send {
-	min-height: 3rem !important;
+div.controls {
+	width: auto;
+}
+
+div.controls > * {
+	flex-grow: 1;
+	flex-basis: 0;
+}
+
+div.controls > button#send {
 	min-width: 3rem !important;
+	flex-grow: 2;
 }
 
 #inputrow > .controls > input {
@@ -320,6 +350,27 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) {
 
 .drop_target {
 	background: var(--button-focus);
+}
+
+#reload_icon {
+	position: fixed;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%) rotate(0deg);
+	background-color: rgba(128, 128, 128, 0.8);
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform-origin: center center;
+	transition: transform 0.1s ease;
+}
+
+#reload_icon i {
+	color: white;
+	font-size: 24px;
 }
 
 @media print {

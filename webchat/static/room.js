@@ -1139,10 +1139,20 @@ async function load_user_script() {
   modules.user_script = await import(ALLYCHAT_CHAT_URL + "/users/" + user + "/script.js")
 }
 
+async function deregister_service_worker() {
+  if (!'serviceWorker' in navigator)
+    return;
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  for (const registration of registrations) {
+    await registration.unregister();
+  }
+}
+
 export async function room_main() {
   file_type = "room";
 
-  register_service_worker();
+  // register_service_worker();
+  deregister_service_worker();
 
   online();
 

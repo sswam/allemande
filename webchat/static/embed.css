@@ -2,7 +2,7 @@
   position: fixed;
   top: 3.625rem;
   right: 1.125rem;
-  width: 20.0rem;
+  width: 22rem;
   height: 25rem;
   min-width: 18.75rem;
   min-height: 12.5rem;
@@ -78,8 +78,8 @@
   line-height: 1;
 }
 
-#help-widget-header button > svg {
-  transform: scale(0.75);
+#help-widget-header button > * {
+  transform: scale(0.85);
 }
 
 #help-frame-container {
@@ -103,4 +103,5 @@
 #help-widget-controls {
   display: flex;
   gap: var(--pad);
+  align-items: stretch;
 }

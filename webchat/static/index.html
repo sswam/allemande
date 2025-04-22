@@ -17,13 +17,14 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 </head>
 <body id="app" class="simple">
+<div id="reload_icon" class="hidden"><i class="bi bi-arrow-clockwise"></i></div>
 <form id="form" class="fill" onsubmit="return false;">
 <input type="hidden" id="op" name="op" value="post">
 <div id="main" class="col fill">
 	<div class="row hidden" id="top">
 		<div class="top_left_controls row" id="top_left_main">
 			<a class="button" href="" id="privacy" title=""></a>
-			<button id="nav" title="navigation" class="advanced">nav</button>
+			<a class="button" href="" id="nav" title="navigation" class="advanced">nav</a>
 			<button id="select" title="select messages" class="advanced">select</button>
 			<button id="room_ops" title="room operations" class="advanced">room</button>
 		</div>
@@ -194,9 +195,9 @@
 	</div>
 </div>
 
+<script src="util.js"></script>
 <script src="sw_register.js"></script>
 <script>register_service_worker();</script>
-<script src="util.js"></script>
 <script src="config.js"></script>
 <script src="notify.js"></script>
 <script src="record.js"></script>
