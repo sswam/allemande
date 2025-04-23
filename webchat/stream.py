@@ -118,6 +118,10 @@ async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="
 
 
 def try_loading_extra_header(path, header):
+    """
+    Load an extra header from a file if it exists.
+    I'm not sure what this was for, not currently in use.
+    """
     extra_header_path = path.with_suffix(".h.html")
 
     if extra_header_path.exists():
@@ -141,6 +145,35 @@ def try_loading_extra_header(path, header):
     return header
 
 
+def add_mtime_to_resource_pathnames(html_string, chat_base_url):
+    static_dir = Path(os.environ['ALLEMANDE_HOME']) / 'webchat' / 'static'
+
+    def replace_with_mtime(match):
+        # Extract the full path after chat_base_url
+        path_parts = match.group(1).split('/')
+
+        # Construct the full filepath under static dir
+        filepath = static_dir.joinpath(*path_parts)
+
+        if filepath.exists():
+            mtime = int(filepath.stat().st_mtime)
+            # Split filename and extension
+            base, ext = os.path.splitext(path_parts[-1])
+            # Build new path with .mtime before extension
+            new_filename = f"{base}.{mtime}{ext}"
+
+            # Reconstruct full path, preserving any subdirectories
+            path_parts[-1] = new_filename
+            new_path = '/'.join(path_parts)
+            return f"{chat_base_url}/{new_path}"
+
+        return match.group(0)  # Return unchanged if file not found
+
+    base_q = re.escape(chat_base_url)
+    pattern = rf'"{base_q}/([^"\s]+)"'
+    return re.sub(pattern, replace_with_mtime, html_string)
+
+
 @app.route("/stream/", methods=["GET"])
 @app.route("/stream/{path:path}", methods=["GET"])
 async def stream(request, path=""):
@@ -160,7 +193,8 @@ async def stream(request, path=""):
 
     rooms_base_url = str(request.base_url).rstrip("/")
     chat_base_url = rooms_base_url.replace("rooms", "chat")
-    info = folder.FolderInfo(user=user, chat_base_url=chat_base_url, rooms_base_url=rooms_base_url)
+    login_base_url = rooms_base_url.replace("rooms.", "")
+    info = folder.FolderInfo(user=user, chat_base_url=chat_base_url, rooms_base_url=rooms_base_url, login_base_url=login_base_url)
 
     if not ally_room.check_access(user, pathname).value & Access.READ.value:
         raise HTTPException(status_code=404, detail="Not found")
@@ -171,7 +205,7 @@ async def stream(request, path=""):
 
     room_path = re.sub(r"\.html$", "", pathname)
 
-    context = {"user": user, "chat_base_url": info.chat_base_url, "rooms_base_url": info.rooms_base_url, "theme": theme, "room": room_path}
+    context = {"user": user, "login_base_url": info.login_base_url, "chat_base_url": info.chat_base_url, "rooms_base_url": info.rooms_base_url, "theme": theme, "room": room_path}
 
     logger.info("context %r", context)
 
@@ -194,6 +228,7 @@ async def stream(request, path=""):
         if templates:
             header = templates.get_template("room_header.html").render(context)
         header = try_loading_extra_header(path, header)
+        header = add_mtime_to_resource_pathnames(header, info.chat_base_url)
         keepalive_string = HTML_KEEPALIVE
         rewind_string = REWIND_STRING
 
