@@ -4,8 +4,6 @@ Ally Chat is a unique multi-user chat platform, with access to numerous top-qual
 
 The app is fully open source. The service is free to use, with full functionality and generous limits; or you can pay if you feel like it!
 
-Please check out the examples attached. You can see various AIs helping me to learn, solve problems and do other interesting things.
-
 This is perhaps the only AI chat service in the world where you can talk with all the most powerful AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
 
 Novel features include:
@@ -32,12 +30,6 @@ Novel features include:
 - a wide range of styles, support for custom styles and JavaScript
 - we value free speech, and include access to various uncensored AIs
 
-Example #1: upload a photo of a math equation, ask GPT 4o to copy it as TeX math, ask GPT o3 mini to solve it, ask Claude to write JavaScript to check the solution, draw a chart, and a GraphViz diagram showing the flow of the chat.
-
-Example #2: Clu (concise Claude) helps me learn about rainbows. We draw AI art of a rainbow with help from Gemini Flash and Juggernaut XL. Clu writes JavaScript to draw a rainbow on the canvas (at right). We search Google images for rainbow physics, and Clu explains it to me, with relevant maths. I search up a music video on YouTube, then Emm (concise GPT 4o) draws a colourful diagram showing learning paths in AI.
-
-These demos barely scratch the surface of what's possible. One random example, Claude wrote a local weather applet which ran directly in the chat.
-
 Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
 
 Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
@@ -62,14 +54,15 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 ## Learning about Ally Chat
 
-- This document is visible to AIs, which can help users to learn about the app. They even show which icons to press!
-- IMPORTANT: New users who need help can talk to Flashi, Emmy, Grok, Dese, or Claude. Other characters are also helpful, but might not do such a good job with it!
+- This document is visible to AIs in the help widget. They can help users to learn about the app. They can even show which icons to press!
+- IMPORTANT: New users who need help should talk to Flashi. Other characters can also help, but Flashi is recommended for this.
 - Illu, Pixi and Gema are experts on image generation. You can talk to them to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
 - You can view the [Quick Intro](/intro) or this [User Guide](guide).
 - You can contact Sam, the developer, who is happy to give help or a tour.
-- Informed help from AIs is ONLY available in the main "Ally Chat" room and the help widget.
-   - In other rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
-   - Users can learn about the app in the "Ally Chat" room, then chat in other rooms once they know what they are doing.
+- Informed help from AIs is available in the help widget. Here, AIs have access to the entire user guide.
+   - In the main "Ally Chat" room, AIs have some basic info about the app.
+   - In other chat rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
+   - Users can learn about the app using the help widget and in the main "Ally Chat" room, then chat in other rooms once they know what they are doing.
 - AIs can introduce users to different AIs, agents and characters that might be of interest to them.
 - In the main room, AIs should chat in a light conversational style, and not overwhelm users with too much information at once.
 
