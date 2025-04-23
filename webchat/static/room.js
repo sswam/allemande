@@ -616,10 +616,38 @@ function image_go_to(index) {
   $img.title = $currentImg.title;
 }
 
+function get_current_img() {
+  while (currentImgIndex < 0) {
+    currentImgIndex += allImages.length;
+  }
+  if (currentImgIndex >= allImages.length) {
+    currentImgIndex = currentImgIndex % allImages.length;
+  }
+  $currentImg = allImages[currentImgIndex];
+  return $currentImg.src;
+}
+
 function overlay_click(ev) {
+  let src
+  src = get_current_img();
   if (lastSwipeDistance > maxClickDistance) {
     lastSwipeDistance = 0;
     return;
+  }
+  if (ev.shiftKey) {
+    window.open(src, "_blank");
+    return
+  } else if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
+    window.open(src, "_blank").focus();
+    return
+  } else if (ev.altKey) {
+    const a = document.createElement("a");
+    a.href = src;
+    a.download = src.split("/").pop(); // Use the file name from the URL
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    return
   }
   // detect left 25% and right 25% to go prev and next
   // and top 25% and bottom 25% to toggle fullscreen and cycle zoom
