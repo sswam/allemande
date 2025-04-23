@@ -65,10 +65,10 @@ END
 
 	mkdir -p rooms/"$user"
 	chmod o-rwx rooms/"$user"
-	mkdir -p users/"$user"
-	touch users/"$user"/styles.css
-	touch users/"$user"/script.js
-	ln -sf ../../static/themes/pastel.css users/"$user"/theme.css
+	mkdir -p static/users/"$user"
+	touch static/users/"$user"/styles.css
+	touch static/users/"$user"/script.js
+	ln -sf ../../themes/pastel.css static/users/"$user"/theme.css
 
 	if ! ((nsfw)); then
 		ln -sf ../../doc/guide.md rooms/"$user"/.help.m
@@ -104,11 +104,35 @@ change-password() {
 	if [[ "$user" != "${user,,}" ]]; then
 		die "Username must be lower-case"
 	fi
+
+	local gen
+	if [ "$pass" = "-i" ]; then
+		gen=0
+		while true; do
+			read -s -p "Enter password: " pass1
+			echo
+			read -s -p "Confirm password: " pass2
+			echo
+
+			if [ "$pass1" = "$pass2" ]; then
+				pass="$pass1"
+				break
+			else
+				echo "Passwords do not match. Please try again."
+			fi
+		done
+	fi
 	if [ -z "$pass" ]; then
+		gen=1
 		pass=$(pwgen 6 -1 | head -n1 | tr -d '\n')
 	fi
+
 	htpasswd -b .htpasswd "$user" "$pass"
-	printf "+ %s %s\n" "$user" "$pass"
+	echo "$user:$pass" | sudo chpasswd || true
+
+	if [ "$gen" = 1 ]; then
+		printf "+ %s %s\n" "$user" "$pass"
+	fi
 }
 
 remove-user() {
@@ -122,10 +146,10 @@ remove-user() {
 	find rooms/ -name .access.yml | xargs sed -i "/^- $user\$/d"
 
 	# remove style and user directory
-	move-rubbish users/"$user"
+	move-rubbish static/users/"$user"
 
 	# Note: Does not remove their rooms/$user directory.
-	sudo userdel "$user"
+	sudo userdel "$user" || true
 
 	printf -- "- %s\n" "$user"
 }
