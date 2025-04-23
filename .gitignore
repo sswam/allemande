@@ -26,7 +26,7 @@ rooms.*
 !rooms.dist
 /schedule.tsv
 /webchat/static/push-docs
-/webchat/users
+/webchat/static/users
 
 # config files
 /webchat/static/config.js
@@ -130,6 +130,7 @@ rooms.*
 
 # references for dev
 /apps/pdev/refs
+/push-docs
 
 # heavy stuff
 /apps/pdev/awake
@@ -187,5 +188,3 @@ rooms.*
 /cz/unbrace
 /linux/top_grouped
 /text/aligno
-/webchat/static/users
-/push-docs

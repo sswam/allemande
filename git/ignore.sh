@@ -32,9 +32,8 @@ ignore() {
 
 		# Check if the path already exists in .gitignore
 		if grep -q "^${rel_path}$" "$ignore_file" 2>/dev/null; then
-			if [ "$f" -eq 0 ]; then
-				echo >&2 "Path '$rel_path' already exists in $ignore_file"
-			fi
+			echo >&2 "Path '$rel_path' already exists in $ignore_file"
+			continue
 		fi
 
 		# Add the path to .gitignore
