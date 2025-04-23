@@ -53,7 +53,7 @@ let view_options = {
   columns: 0,
   compact: 0,
   history: 0,
-  image_size: 4,
+  image_size: 8,
   font_size: 4,
   input_row_height: 48, // 32 // 72
   theme: "pastel",
