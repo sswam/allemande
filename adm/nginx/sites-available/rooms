@@ -1,15 +1,7 @@
-map $host $redirect_host {
-	default chat.$ALLEMANDE_DOMAIN;
-	~^rooms(-\w+)?\.$ALLEMANDE_DOMAIN_ESC$ chat$1.$ALLEMANDE_DOMAIN;
-}
-
 server {
 	server_name rooms.$ALLEMANDE_DOMAIN rooms-local.$ALLEMANDE_DOMAIN;
 
 	charset UTF-8;
-
-#	listen 80;
-#	listen [::]:80;
 
 	# SSL configuration
 
@@ -40,16 +32,8 @@ server {
 	auth_jwt_location COOKIE=auth;
 	auth_jwt_algorithm HS256;
 
-	location ~ ^/service_worker(_gen)?\.js$ {
-		root /var/www/allychat/static;
-		add_header Cache-Control "no-cache";
-		try_files /service_worker_gen.js =404;
-	}
-
-	location = /sw_register.js {
-		root /var/www/allychat/static;
-		add_header Cache-Control "no-cache";
-		try_files /sw_register.js =404;
+	location ~ /\. {
+		deny all;
 	}
 
 	location / {
@@ -57,15 +41,11 @@ server {
 			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 		auth_jwt_enabled on;
-#		auth_basic "Auth";
-#		auth_basic_user_file /var/www/allychat/.htpasswd;
-#		autoindex on;
-#		try_files $uri $uri/ @redirect;
 # TODO if we want strong privacy
 #		access_log off;
 #		error_log /dev/null;
 #		add_header Cache-Control "no-store";
-		add_header Cache-Control "no-cache";
+#		add_header Cache-Control "no-cache";
 
 		if ($args ~* stream=1) {
 			rewrite ^ /stream$uri? last;
@@ -81,27 +61,16 @@ server {
 		try_files $uri $uri/ =404;
 	}
 
-# 	location @redirect {
-# 		if ($request_uri ~* (^/(favicon\.ico|styles\.css|room\.css|util\.js|room\.js|mousetrap\.min.js)$|^/users/)) {
-# 			return 302 $scheme://$redirect_host$request_uri;
-# 		}
-# 		return 404;
-# 	}
-
 	location /stream {
 		if ($is_banned) {
 			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 		auth_jwt_enabled on;
-#		auth_basic "Auth";
-#		auth_basic_user_file /var/www/allychat/.htpasswd;
 		proxy_pass http://127.0.0.1:8001;
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
 		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 		proxy_set_header X-Forwarded-Proto https;
-#		proxy_set_header Authorization "";
-#		proxy_set_header X-Forwarded-User $remote_user;
 		add_header Cache-Control "no-cache";
 		auth_jwt_extract_request_claims sub;
 		proxy_set_header X-Forwarded-User $http_jwt_sub;
@@ -113,15 +82,6 @@ server {
 		proxy_set_header Connection "";
 		proxy_read_timeout 120s;
 	}
-
-# 	location /logout/logout {
-# 		auth_basic "Auth";
-# 		auth_basic_user_file /var/www/allychat/static/logout/.htpasswd;
-# 		autoindex on;
-# 		try_files $uri $uri/ =404;
-# #		access_log off;
-# #		error_log /dev/null;
-# 	}
 
 	include /etc/nginx/mime.types;
 
