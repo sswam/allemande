@@ -107,6 +107,7 @@ class FolderInfo:
     user: str
     chat_base_url: str
     rooms_base_url: str
+    login_base_url: str
 
 
 def get_mime_type_and_icon(path: Path) -> tuple[str, str]:

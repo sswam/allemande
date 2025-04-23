@@ -2,6 +2,10 @@
 <head>
 <meta name="referrer" content="no-referrer">
 <script>
+(async () => {
+	const regs = await navigator.serviceWorker?.getRegistrations?.().catch(() => []);
+	await Promise.all((regs || []).map(r => r.unregister().catch(() => {})));
+})();
 var user = {{ user|tojson|safe }}, theme = {{ theme|tojson|safe }};
 const ALLEMANDE_LOGIN_URL="{{ login_base_url }}";
 const ALLYCHAT_CHAT_URL="{{ chat_base_url }}";
@@ -28,7 +32,6 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 <link rel="stylesheet" href="{{ chat_base_url }}/room_gen.css" crossorigin="use-credentials">
 <link id="theme" rel="stylesheet" type="text/css" media="screen" href="{{ chat_base_url }}/themes/{{ theme|safe }}.css" crossorigin="use-credentials">
 <link id="user_styles" rel="stylesheet" type="text/css" href="{{ chat_base_url }}/users/{{ user }}/styles.css" crossorigin="use-credentials">
-<link rel="stylesheet" href="{{ chat_base_url}}/icons.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
