@@ -511,6 +511,7 @@ body.landscape > div.canvas {
 	min-height: var(--pad);
 	min-width: var(--pad);
 	margin: 0;
+	background: var(--frame);
 }
 
 body.portrait .resizer {
@@ -841,20 +842,33 @@ body.items_9 .search tbody > tr:nth-child(n + 10) {
 body.dark .active { background-color: #606030 !important; }
 body.light .active { background-color: #b0b058 !important; color: black !important; }
 
-/* background image ----------------------------------------------------- */
+/* background image ------------------------------------------------------- */
 
 body#messages {
     position: relative;
 }
 body#messages::before {
-    content: "";
-    background: var(--background-image) no-repeat center center fixed;
-    background-size: cover;
-    opacity: var(--background-image-opacity);
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: -1;
+	content: "";
+	background: var(--background-image) no-repeat center center fixed;
+	background-size: cover;
+	opacity: var(--background-image-opacity);
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	z-index: -1;
+}
+
+/* selection and hidden checkboxes ---------------------------------------- */
+
+body:not(.select) input[type="checkbox"].select {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
 }

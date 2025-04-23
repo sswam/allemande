@@ -21,49 +21,49 @@
 <form id="form" class="fill" onsubmit="return false;">
 <input type="hidden" id="op" name="op" value="post">
 <div id="main" class="col fill">
-	<div class="row hidden" id="top">
-		<div class="top_left_controls row" id="top_left_main">
+	<div class="row gap hidden" id="top">
+		<div class="top_left_controls row gap" id="top_left_main">
 			<a class="button" href="" id="privacy" title=""></a>
-			<a class="button" href="" id="nav" title="navigation" class="advanced">nav</a>
-			<button id="select" title="select messages" class="advanced">select</button>
-			<button id="room_ops" title="room operations" class="advanced">room</button>
+			<a class="button advanced" href="" id="nav" title="navigation">nav</a>
+			<button id="select" title="select messages" class="boffin">select</button> <!-- should be advanced when done -->
+			<!--<button id="room_ops" title="room operations" class="advanced">room</button>-->
 		</div>
-		<div class="top_left_controls row hidden" id="top_left_nav">
+		<div class="top_left_controls row gap hidden" id="top_left_nav">
 			<button id="nav_cancel">back</button>
-			<a class="button" href="" id="nav_up" title="go up to parent folder: alt+u">up</a>
-			<a class="button" href="" id="nav_allychat" title="Ally Chat">allychat</a>
-			<a class="button" href="" id="nav_porch" title="porch">your public "porch"</a>
-			<a class="button" href="" id="nav_home" title="home">your private home</a>
+			<a class="button" href="" id="nav_up" title="go up to the parent folder: alt+u">up</a>
+			<a class="button" href="" id="nav_allychat" title="go to the main 'Ally Chat' room">allychat</a>
+			<a class="button" href="" id="nav_porch" title="your 'porch', a public room you control">porch</a>
+			<a class="button" href="" id="nav_home" title="your 'home', a private room">home</a>
 			<a class="button" href="" id="nav_first" title="first page: ctrl+[">first</a>
 			<a class="button" href="" id="nav_prev" title="previous page: ctrl+,">prev</a>
 			<a class="button" href="" id="nav_next" title="next page: ctrl+.">next</a>
 			<a class="button" href="" id="nav_last" title="last page: ctrl+]">last</a>
 		</div>
-		<div class="top_left_controls row hidden" id="top_left_select" class="advanced">
+		<div class="top_left_controls row gap hidden" id="top_left_select" class="advanced">
 			<button id="select_cancel">back</button>
 			<button id="select_all" title="select all messages, or no messages">all</button>
 			<button id="select_download" title="download selected messages">download</button>
 			<button id="select_copy" title="copy selected messages to another room">copy</button>
 			<button id="select_move" title="move selected messages to another room" class="admin">move</button>
 			<button id="select_tts" title="speak selected messages">tts</button>
-			<input id="select_selection" placeholder="0,-1,3:6" title="selected messages and ranges">
+			<input id="select_selection" placeholder="0,-1,3:6" title="selected messages and ranges" class="boffin">
 			<input id="select_target" placeholder="target room" title="target room for copy / move">
 		</div>
-		<div class="top_left_controls row hidden" id="top_left_room_ops">
+		<div class="top_left_controls row gap hidden" id="top_left_room_ops">
 			<button id="room_ops_cancel">back</button>
 			<button id="room_ops_copy" title="copy all or part of the room">copy</button>
 			<button id="room_ops_move" title="rename or move: alt+m" class="admin">move</button>
 		</div>
 		<input id="room" name="room" class="flex grow">
-		<div class="top_controls row" id="top_main">
-			<button id="debug" title="debug" class="hidden small advanced">?</button>
+		<div class="top_controls row gap" id="top_main">
+			<button id="debug" title="debug" class="small boffin">?</button>
 			<button id="scroll" title="scrolling" class="advanced">scroll</button>
 			<button class="hidden" id="notify">notify</button>
-			<a class="button" href="" id="user" title="cycle main rooms">?</a>
-			<a class="button" href="" id="help" title="help to use Ally Chat"></a>
+			<a class="button" href="" id="user" title="cycle your main rooms">?</a>
+			<a class="button" href="" id="help" title="get help to use Ally Chat"></a>
 			<button id="logout" title="log out">exit</button>
 		</div>
-		<div class="top_controls row hidden" id="top_scroll">
+		<div class="top_controls row gap hidden" id="top_scroll">
 			<button id="scroll_home" title="start of room: home">top</button>
 			<button id="scroll_pageup" title="page up">pageup</button>
 			<button id="scroll_pagedown" title="page down">pagedown</button>
@@ -83,7 +83,7 @@
 	<div class="row" id="resizer">
 	</div>
 
-	<div class="row" id="inputrow" class="hidden">
+	<div class="row gap" id="inputrow">
 		<textarea id="content" name="content" class="content_input grow" placeholder=" "></textarea>
 		<math-field id="math_input" class="hidden"></math-field>
 		<div class="controls col_wrap" id="input_main">
@@ -103,7 +103,7 @@
 			<!--<button id="rotate" disabled>rotate</button>-->
 			<button id="mod_archive" title="archive this room: shift+alt+a">archive</button>
 			<button id="mod_clear" title="clear this room: alt+x">clear</button>
-			<button id="mod_clean" title="clean up this room" class="advanced">clean</button>
+			<button id="mod_clean" title="clean up this room" class="boffin">clean</button>
 			<button id="mod_cancel">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_add">
@@ -138,21 +138,21 @@
 		<div class="controls col_wrap hidden" id="input_view">
 			<button id="view_font_size" title="change font size">font size</button>
 			<button id="view_theme" title="change the theme">theme</button>
-			<button id="view_ids" title="view message IDs" class="advanced">IDs</button>
+			<button id="view_ids" title="view message IDs" class="boffin">IDs</button>
 			<button id="view_images" title="show images: alt+i" class="active advanced">images</button>
 			<button id="view_alt" title="show alt captions: alt+a" class="advanced">alt</button>
 			<button id="view_image_size" title="change image size" class="advanced">image size</button>
 			<button id="view_source" title="view source" class="active advanced">source</button>
 			<button id="view_highlight" title="highlight code" class="active advanced">color</button>
-			<button id="view_details" title="view thoughts and details" class="advanced">details</button>
-			<button id="view_canvas" title="view JavaScript canvas" class="advanced">canvas</button>
-			<button id="view_clean" title="clean reading view" class="advanced">clean</button>
+			<button id="view_details" title="view thoughts and details" class="boffin">details</button>
+			<button id="view_canvas" title="view JavaScript canvas" class="boffin">canvas</button>
+			<button id="view_clean" title="clean reading view" class="boffin">clean</button>
 			<button id="view_columns" title="view chat in columns (scroll to the right)" class="advanced">columns</button>
-			<button id="view_compact" title="compact view" class="advanced">compact</button>
+			<button id="view_compact" title="compact view" class="boffin">compact</button>
 			<button id="view_history" title="view change history" class="advanced">history</button>
-			<button id="view_fullscreen" title="view fullscreen" class="advanced">fullscreen</button>
-			<input id="view_items" placeholder="items" title="number of search results to show" class="advanced">
-			<button id="view_advanced" title="advanced mode">advanced</button>
+			<button id="view_fullscreen" title="view fullscreen" class="advanced noios">fullscreen</button>
+			<input id="view_items" placeholder="items" title="number of search results to show" class="boffin">
+			<button id="view_advanced" title="advanced modes">advanced</button>
 			<button id="view_cancel">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_audio">
@@ -167,7 +167,7 @@
 			<input id="opt_context" placeholder="context" title="number of recent messages AI can see">
 			<input id="opt_lines" placeholder="lines" title="limit number of lines of AI output (local models only)">
 			<input id="opt_images" placeholder="images" title="number of recent images AI can see">
-			<input id="opt_mission" placeholder="mission" title="mission file to use, - for none">
+			<input id="opt_mission" placeholder="mission" title="mission file to use, - for none" class="boffin">
 			<button id="opt_cancel">back</button>
 		</div>
 	</div>

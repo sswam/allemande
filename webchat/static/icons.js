@@ -4,7 +4,7 @@
 
 export const icons = {
   // unicode icons
-  add_math: 'Σ',  // capital sigma
+  add_math: '<span class="i20">Σ</span>',  // capital sigma
 
   // custom icons
 //  view_details: '<svg class="icon i20 ac-thoughts-details" fill="currentColor" viewBox="0 0 16 16"><ellipse cx="7.6" cy="4.3" rx="4" ry="3"/><ellipse cx="11.7" cy="4.6" rx="4" ry="3"/><ellipse cx="6.9" cy="8.5" rx="4" ry="3"/><ellipse cx="10.7" cy="7.3" rx="4" ry="3"/><ellipse cx="4.3" cy="6.3" rx="4" ry="3"/><ellipse cx="3.22" cy="12.3" rx="1.2" ry=".9"/><ellipse cx="1.4" cy="14.1" rx=".8" ry=".6"/></svg>',
@@ -73,7 +73,6 @@ export const icons = {
   nav_allychat: '<i class="bi bi-people i20"></i>',
   room_ops: '<i class="bi bi-file-text i20"></i>',
   scroll: '<i class="bi bi-arrows-move i20"></i>',
-  view_advanced: '<i class="bi bi-lightbulb i20"></i>',
   view_history: '<i class="bi bi-clock-history i20"></i>',
   font_expand: '<i class="bi bi-fonts i20"></i>',
   view_fullscreen: '<i class="bi bi-arrows-fullscreen i20"></i>',
@@ -88,4 +87,8 @@ export const icons = {
   select_all: '<i class="bi bi-check2-all i20"></i>',
   select_tts: '<i class="bi bi-volume-up i20"></i>',
   reload: '<i class="bi bi-arrow-clockwise i20"></i>',
+
+  view_mode_simple: '<i class="bi bi-lightbulb i20"></i>',
+  view_mode_advanced: '<i class="bi bi-lightbulb-fill i20"></i>',
+  view_mode_boffin: '<i class="bi bi-lightning-fill i20"></i>',
 };

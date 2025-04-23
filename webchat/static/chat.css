@@ -34,6 +34,7 @@ input, textarea {
 	overflow-x: auto;
 	&::-webkit-scrollbar { display: none; }
 	scrollbar-width: none;
+	padding-bottom: var(--pad);
 }
 #inputrow {
 	height: var(--ui-size-min);
@@ -75,6 +76,7 @@ input, textarea {
 	min-height: var(--pad);
 	cursor: ns-resize;
 	margin: 0;
+	background: var(--frame);
 }
 .col_wrap {
 	display: flex;
@@ -118,6 +120,7 @@ button:has(svg.icon), .button:has(svg.icon), button:has(i.bi), .button:has(i.bi)
 }
 
 /* tricky CSS for gaps between elements */
+/*
 .col > * {
 	margin: 0;
 	width: 100%;
@@ -132,6 +135,7 @@ button:has(svg.icon), .button:has(svg.icon), button:has(i.bi), .button:has(i.bi)
 .row > :not(.hidden) ~ :not(.hidden) {
 	margin-left: var(--pad);
 }
+*/
 
 body.compact2 .pad {
 	padding: 0;
@@ -312,11 +316,10 @@ div.controls > button#send {
 	font-size: 0.8125rem;
 }
 
-body.simple .advanced {
-	display: none !important;
-}
-
-body:not(.simple) .simple {
+body.simple .advanced,
+body:not(.simple) .simple,
+body:not(.boffin) .boffin,
+body.ios .noios {
 	display: none !important;
 }
 
@@ -371,6 +374,24 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) {
 #reload_icon i {
 	color: white;
 	font-size: 24px;
+}
+
+#theme-overlay {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	padding: 20px 40px;
+	background: var(--background);
+	color: var(--text);
+	border: 2px solid var(--frame);
+	border-radius: 15px;
+	font-size: 24px;
+	font-weight: bold;
+	z-index: 9999;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	pointer-events: none;
 }
 
 @media print {

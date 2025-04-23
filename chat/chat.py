@@ -439,7 +439,7 @@ def set_user_theme(user, theme):
     if sanitize_filename(theme) != theme:
         raise ValueError("Invalid theme name.")
     path = Path(os.environ["ALLEMANDE_USERS"]) / user / "theme.css"
-    source = "../../static/themes/" + theme + ".css"
+    source = "../../themes/" + theme + ".css"
     if not (Path(os.environ["ALLEMANDE_USERS"]) / user / source).exists:
         raise ValueError("Theme not found.")
     path.parent.mkdir(parents=True, exist_ok=True)
