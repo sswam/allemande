@@ -106,8 +106,9 @@ async function processMessage(newMessage) {
   const [id, processed] = await ensurePreviousMessagesProcessed(newMessage);
   if (processed)
     return id;
+  console.log("processing message", id);
 
-  const idClass = "m" + id;
+  // const idClass = "m" + id;
 
   // if hidden, don't process
   if (newMessage.classList.contains("hidden"))
@@ -283,6 +284,13 @@ async function processMessage(newMessage) {
   idDiv.className = "id";
   idDiv.textContent = id;
   newMessage.appendChild(idDiv);
+
+  // Prepend a checkbox for selecting it
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.className = "select";
+  checkbox.id = "s" + id;
+  newMessage.prepend(checkbox);
 
   // ID of last visible mesage in chat, for undo
   const lastMessageId = getLastVisibleMessageId();

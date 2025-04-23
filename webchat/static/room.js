@@ -24,6 +24,10 @@ export let view_options = {
   items: 10,
 };
 
+let mode_options = {
+  select: 0,
+}
+
 let snapshot = false;
 
 // status indicator ----------------------------------------------------------
@@ -918,6 +922,9 @@ async function handle_message(ev) {
   if (ev.data.type === "set_view_options") {
     delete ev.data.type;
     await set_view_options(ev.data);
+  } else if (ev.data.type === "set_mode_options") {
+    delete ev.data.type;
+    await set_mode_options(ev.data);
   } else if (ev.data.type === "theme_changed") {
     set_theme(ev.data.theme);
   } else if (ev.data.type === "scroll_home_end") {
@@ -986,6 +993,14 @@ async function set_view_options(new_view_options) {
     await highlight_set_stylesheet_for_theme();
     await highlight_code($messages, view_options);
   }
+}
+
+async function set_mode_options(new_mode_options) {
+  const old_mode_options = mode_options;
+  mode_options = new_mode_options;
+  await wait_for_load();
+  const cl = document.body.classList;
+  cl.toggle("select", mode_options.select);
 }
 
 function set_view_details() {
@@ -1133,6 +1148,17 @@ function handle_intro() {
   }
 }
 
+// selection and hidden checkboxes -------------------------------------------
+
+function setup_select() {
+  // listen on div.messages for clicks
+  $on($messages, "click", messages_click);
+}
+
+function messages_click(ev) {
+  // if not select mode, return for default
+}
+
 // main ----------------------------------------------------------------------
 
 async function load_user_script() {
@@ -1140,9 +1166,9 @@ async function load_user_script() {
 }
 
 async function deregister_service_worker() {
-  if (!'serviceWorker' in navigator)
+  if (!navigator.serviceWorker)
     return;
-  const registrations = await navigator.serviceWorker.getRegistrations();
+  const registrations = await navigator.serviceWorker?.getRegistrations() || [];
   for (const registration of registrations) {
     await registration.unregister();
   }
@@ -1218,7 +1244,7 @@ function fullscreenchange(ev) {
 export async function folder_main() {
   file_type = "dir";
 
-  register_service_worker();
+  // register_service_worker();
 
   room = decodeURIComponent(location.pathname.replace(/\.html$/, '').replace(/^\//, ''));
 

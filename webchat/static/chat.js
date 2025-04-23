@@ -72,6 +72,10 @@ let view_options = {
   embed: 0,
 };
 
+let mode_options = {
+  select: 0,
+};
+
 let view_options_embed = {
   alt: 0,
   source: 1,
@@ -164,14 +168,12 @@ function set_debug(debug) {
   active_set("debug", DEBUG);
 }
 
-function setup_dev() {
+function setup_debug() {
   dev = DEVS.includes(user);
-  if (dev) {
-    show($id("debug"));
-    $on($id("debug"), "click", () => set_debug(!DEBUG));
-  } else {
+  if (!dev)
     DEBUG = false;
-  }
+  set_debug(DEBUG);
+  $on($id("debug"), "click", () => set_debug(!DEBUG));
 }
 
 // send a message ------------------------------------------------------------
@@ -593,25 +595,25 @@ async function set_room(room_new, no_history) {
   // check if we're already in the room
   if (room === room_new) {
     // console.log("already in room", room);
-    active_reset("room_ops_move");
+//    active_reset("room_ops_move");
     // $content.focus();
     return;
   }
 
-  // check if we're moving / renaming
-  if (active_get("room_ops_move")) {
-    if (room_new = await move(room, room_new)) {
-      active_reset("room_ops_move");
-      // continue browsing to the new name, will do a reload unfortunately
-    } else {
-      // move was rejected
-      $room.value = room;
-      error("room_ops_move");
-      // stay in move mode
-      select_room_basename();
-      return;
-    }
-  }
+  // // check if we're moving / renaming
+  // if (active_get("room_ops_move")) {
+  //   if (room_new = await move(room, room_new)) {
+  //     active_reset("room_ops_move");
+  //     // continue browsing to the new name, will do a reload unfortunately
+  //   } else {
+  //     // move was rejected
+  //     $room.value = room;
+  //     error("room_ops_move");
+  //     // stay in move mode
+  //     select_room_basename();
+  //     return;
+  //   }
+  // }
 
   const type = get_file_type(room_new);
 
@@ -624,6 +626,7 @@ async function set_room(room_new, no_history) {
 
   room = $room.value = room_new;
   set_title_hash(room, no_history);
+  $id("nav").href = location.pathname + location.hash;
 
   clear_messages_box();
   if (!room) return;
@@ -701,14 +704,14 @@ function show_room_privacy() {
 
 // move a room or file -----------------------------------------------------
 
-function move_mode() {
-  // button was clicked, toggle move mode
-  if (active_toggle("room_ops_move")) {
-    select_room_basename();
-  } else {
-    // $content.focus();
-  }
-}
+// function move_mode() {
+//   // button was clicked, toggle move mode
+//   if (active_toggle("room_ops_move")) {
+//     select_room_basename();
+//   } else {
+//     // $content.focus();
+//   }
+// }
 
 async function move(source, dest) {
   const source_type = get_file_type(source);
@@ -762,16 +765,16 @@ async function move(source, dest) {
 
 // copy a room, file or selection --------------------------------------------
 
-function copy_mode() {
-  // TODO
-  // button was clicked, toggle copy mode
-  active_toggle("room_ops_copy");
-  if (active_get("room_ops_copy")) {
-    select_room_basename();
-  } else {
-    // $content.focus();
-  }
-}
+// function copy_mode() {
+//   // TODO
+//   // button was clicked, toggle copy mode
+//   active_toggle("room_ops_copy");
+//   if (active_get("room_ops_copy")) {
+//     select_room_basename();
+//   } else {
+//     // $content.focus();
+//   }
+// }
 
 // navigation ----------------------------------------------------------------
 
@@ -827,12 +830,13 @@ async function theme_loaded() {
 }
 
 function load_theme() {
+  const now = Date.now();  /* XXX this is not ideal */
   const $old_link = $id("theme");
   const $new_link = $old_link.cloneNode();
   if (theme) {
-    $new_link.href = "/themes/" + theme + ".css";
+    $new_link.href = "/themes/" + theme + ".css?_=" + now;
   } else {
-    $new_link.href = "/users/" + user + "/theme.css";
+    $new_link.href = "/users/" + user + "/theme.css?_=" + now;
   }
   $new_link.id = "theme";
   $on($new_link, "load", theme_loaded);
@@ -955,12 +959,12 @@ function escape() {
   }
 
   let acted = false;
-  if (active_get("room_ops_move")) {
-    $room.value = room;
-    active_reset("room_ops_move");
-    // $content.focus();
-    acted = true;
-  }
+  // if (active_get("room_ops_move")) {
+  //   $room.value = room;
+  //   active_reset("room_ops_move");
+  //   // $content.focus();
+  //   acted = true;
+  // }
   if (controls !== "input_main") {
     set_top_left();
     set_top();
@@ -1114,7 +1118,7 @@ function setup_main_ui_shortcuts() {
     ['alt+j', view_canvas, 'View canvas'],
     ['alt+f', view_fullscreen, 'View fullscreen'],
     ['alt+m', add_math, 'Add math'],
-    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+//    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
 
     ['alt+z', undo, 'Undo last message', ADMIN],
     ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
@@ -1134,7 +1138,7 @@ function setup_main_ui_shortcuts() {
 
   add_shortcuts(shortcuts.room, [
     ['enter', focus_content, 'Focus message input'],
-    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+//    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
   ]);
 
   add_shortcuts(shortcuts.edit, [
@@ -1676,7 +1680,8 @@ function set_controls(id) {
     } else {
       view_theme_original_text = $id("view_theme").textContent;
     }
-    $on($id("view_theme"), "mouseover", show_theme);
+    $on($id("view_theme"), "mouseover", show_theme_name);
+    $on($id("view_theme"), "touchstart", show_theme_name);
   }
   controls = id;
 }
@@ -2035,6 +2040,13 @@ function view_options_apply() {
   // save to local storage
   if (!embed)
     localStorage.setItem("view_options", JSON.stringify(view_options));
+
+  // Don't allow full-screen canvas except in boffin mode:
+  // It makes it look like the app is broken!
+  if (view_options.advanced != 2 && view_options.canvas == 2) {
+    view_options.canvas = 1;
+  }
+
   // update buttons
   // TODO simplify / de-dup this code
   active_set("view_ids", view_options.ids);
@@ -2062,10 +2074,21 @@ function view_options_apply() {
   active_set("help", view_options.help > 0);
   $id("help").href = view_options.advanced ? qa_url : help_url;
 
+  // show different simple / advanced / boffin icons
+  const $view_advanced = $id("view_advanced");
+  if (view_options.advanced == 0) {
+    $view_advanced.innerHTML = icons["view_mode_simple"]
+  } else if (view_options.advanced == 1) {
+    $view_advanced.innerHTML = icons["view_mode_advanced"]
+  } else {
+    $view_advanced.innerHTML = icons["view_mode_boffin"]
+  }
+
   $id("audio_voice").value = view_options.audio_voice;
 
   const cl = document.body.classList;
   cl.toggle("simple", view_options.advanced == 0);
+  cl.toggle("boffin", view_options.advanced >= 2);
   cl.toggle("compact", view_options.compact >= 1);
   cl.toggle("compact2", view_options.compact == 2);
   cl.toggle("embed", embed);
@@ -2130,6 +2153,8 @@ function view_options_apply() {
 
   // send message to the rooms iframe to apply view options
   $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
+
+  controls_resized();
 }
 
 function set_fullscreen(fullscreen) {
@@ -2211,9 +2236,10 @@ function view_history(ev) {
 }
 
 function view_advanced(ev) {
-  view_options.advanced = !view_options.advanced;
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  view_options.advanced = (view_options.advanced + delta + 3) % 3;
   view_options_apply();
-  set_controls();
+  // set_controls();
 }
 
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
@@ -2264,7 +2290,8 @@ async function invoke(who) {
 // themes --------------------------------------------------------------------
 
 async function fetch_themes_options() {
-  const response = await fetch("/themes/");
+  // add current time ms
+  const response = await fetch("/themes/?_=" + Date.now());  /* XXX not ideal */
   if (!response.ok) {
     throw new Error("GET themes request failed");
   }
@@ -2319,7 +2346,7 @@ async function change_theme(ev) {
 
 function set_theme(theme_new) {
   theme = theme_new;
-  show_theme();
+  show_theme_name();
   set_settings({ theme: theme });
   load_theme();
   $messages_iframe.contentWindow.postMessage({ type: "theme_changed", theme }, ROOMS_URL);
@@ -2331,19 +2358,27 @@ function set_theme(theme_new) {
 
 let hide_theme_timeout;
 
-function hide_theme() {
-  const $view_theme = $id("view_theme");
-  $off($view_theme, "mouseout");
-  clearTimeout(hide_theme_timeout);
-  hide_theme_timeout = setTimeout(() => $view_theme.innerHTML = icons["view_theme"], 1000);
+function create_theme_overlay() {
+  const overlay = document.createElement('div');
+  overlay.id = 'theme-overlay';
+  document.body.appendChild(overlay);
+  return overlay;
 }
 
-function show_theme() {
-  const $view_theme = $id("view_theme");
-  $view_theme.textContent = theme;
-  $off($view_theme, "mouseout");
-  $on($view_theme, "mouseout", hide_theme);
+function show_theme_name() {
+  let overlay = $id('theme-overlay');
+  if (!overlay) {
+    overlay = create_theme_overlay();
+  }
+
+  overlay.textContent = theme;
+  overlay.style.opacity = '1';
+
   clearTimeout(hide_theme_timeout);
+  hide_theme_timeout = setTimeout(() => {
+    overlay.remove();
+    overlay = null;
+  }, 1000);
 }
 
 // options -------------------------------------------------------------------
@@ -2454,7 +2489,7 @@ async function opt_mission(ev) {
 async function setup_icons() {
   await $import("icons");
   icons = modules.icons.icons;
-  for (const prefix of ["mod", "add", "view", "opt", "nav", "scroll", "room_ops", "audio", "select"]) {
+  for (const prefix of ["mod", "add", "view", "opt", "nav", "scroll", "audio", "select"]) {
     icons[`${prefix}_cancel`] = icons["x"];
   }
   icons["edit_close"] = icons["x"];
@@ -2470,7 +2505,7 @@ async function setup_icons() {
   icons["edit_reset"] = icons["undo"];
   icons["edit_clear"] = icons["mod_clear"];
   icons["mod_edit"] = icons["edit"];
-  icons["room_ops_move"] = icons["select_move"];
+//  icons["room_ops_move"] = icons["select_move"];
   icons["access_denied"] = icons["x_large"];
   icons["add_file_2"] = icons["add_file"];
   icons["font_contract"] = icons["font_expand"];
@@ -2483,7 +2518,9 @@ async function setup_icons() {
   icons["help_clear"] = icons["mod_clear"]
   icons["help_close"] = icons["x"];
 
-  icons["room_ops_copy"] = icons["copy"];  // TODO remove this
+  icons["view_advanced"] = icons["view_mode_simple"];
+
+//  icons["room_ops_copy"] = icons["copy"];  // TODO remove this
   icons["select_copy"] = icons["copy"];
 
   for (const id in icons) {
@@ -2663,6 +2700,13 @@ function handleHelpLinkClick(event) {
 // controls layout hack; Firefox and Safari don't do flex wrap properly ------
 
 function controls_resized(entry) {
+  if (!(isFirefox || isSafari))
+    return;
+  if (!entry) {
+    for (const controls of $$(".controls"))
+      controls_resized({target: controls})
+    return;
+  }
   const $controls = entry.target;
   $controls.style.removeProperty("width");
   $controls.style.width = $controls.scrollWidth + 'px';
@@ -2695,10 +2739,27 @@ function iOS_reload_scroll(ev) {
   }
 }
 
+// selection -----------------------------------------------------------------
+
+function select_click(ev) {
+  set_top_left("top_left_select");
+  mode_options.select = true;
+  $messages_iframe.contentWindow.postMessage({ type: "set_mode_options", ...mode_options }, ROOMS_URL);
+}
+
+function select_cancel(ev) {
+  set_top_left();
+  mode_options.select = false;
+  $messages_iframe.contentWindow.postMessage({ type: "set_mode_options", ...mode_options }, ROOMS_URL);
+}
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
   user = await authChat();
+
+  if (iOS)
+    document.body.classList.add("ios")
 
   setup_help();
   setup_view_options();
@@ -2708,8 +2769,7 @@ export async function init() {
   if (isFirefox || isSafari)
     controls_layout_hack_for_firefox_and_safari();
   load_theme();
-  setup_dev();
-  set_debug(DEBUG);
+  setup_debug();
   on_hash_change();
 
   $on($content, "input", message_changed);
@@ -2732,12 +2792,12 @@ export async function init() {
   $on($id("audio"), "click", () => set_controls("input_audio"));
 
   $on($id("nav"), "click", nav_click);
-  $on($id("select"), "click", () => set_top_left("top_left_select"));
+  $on($id("select"), "click", select_click);
   $on($id("scroll"), "click", () => set_top("top_scroll"));
-  $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
+  // $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
 
   // select functions
-  $on($id("select_cancel"), "click", () => set_top_left());
+  $on($id("select_cancel"), "click", select_cancel);
 
   $on($id("mod_undo"), "click", undo);
   $on($id("mod_retry"), "click", retry);
@@ -2800,9 +2860,9 @@ export async function init() {
   if (iOS && navigator.standalone)
     $on(window, "scroll", iOS_reload_scroll);
 
-  $on($id("room_ops_move"), "click", move_mode);
-  $on($id("room_ops_copy"), "click", copy_mode);
-  $on($id("room_ops_cancel"), "click", () => set_top_left());
+  // $on($id("room_ops_move"), "click", move_mode);
+  // $on($id("room_ops_copy"), "click", copy_mode);
+  // $on($id("room_ops_cancel"), "click", () => set_top_left());
 
   $on($id("audio_cancel"), "click", () => set_controls());
 
