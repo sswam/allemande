@@ -131,7 +131,7 @@ clean:
 	> $(WATCH_LOG)
 
 llm:
-	while true; do $(PYTHON) core/llm_llama.py -v -m "$(LLM_MODEL)"; sleep 1; done
+	while true; do $(PYTHON) core/llm_llama.py -g -v; sleep 1; done
 
 whisper:
 	while true; do $(PYTHON) core/stt_whisper.py -v; sleep 1; done

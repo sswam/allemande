@@ -1,6 +1,7 @@
 ALLEMANDE_DOMAIN="allemande.ai"
 
 SERVER="opal"  # your server's short hostname
+ALLEMANDE_ROOMS_SERVER="$ALLEMANDE_HOME/rooms.server"
 
 ALLYCHAT_ADMINS="root sam"      # replace 'sam' with your admin username
 ALLYCHAT_MODERATORS="root sam"  # ^

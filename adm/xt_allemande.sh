@@ -3,8 +3,7 @@
 # [server name]
 # Open xterminals for allemande services locally and on server
 
-# remote_services=(chat-api stream watch bb2html auth build-ui brain)
-remote_services=(chat-api stream bb2html brain auth wat)
+remote_services=(chat-api stream watch bb2html auth build-ui brain wat)
 local_services=(llm image a1111)
 
 xt-allemande() {
