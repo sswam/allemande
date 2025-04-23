@@ -1234,6 +1234,7 @@ export async function room_main() {
   // console.log("room loaded");
 
   $on($overlay, "click", overlay_click);
+  $on($overlay, "auxclick", overlay_click);
   setup_swipe();
   // $on(document, "click", click);
   $on(document, "click", click);
