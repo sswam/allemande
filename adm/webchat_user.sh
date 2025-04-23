@@ -57,9 +57,11 @@ https://$ALLEMANDE_DOMAIN
 
 Getting Started with Ally Chat:
 
-- Log in and select "Ally Chat"
-- The default "Ally Chat" room is public.
-- Here you can interact with AI helpers like Flashi, Emmy, and Claude to learn about the app.
+* We strongly recommend you stay in the main "Ally Chat" room while you learn how the app works!
+
+- Log in and select "Ally Chat".
+- The main "Ally Chat" room is public.
+- You can use the "i" help function to get in-depth help.
 END
 		done
 
@@ -85,9 +87,8 @@ END
 
 NSFW Features:
 
-- Ally Chat supports NSFW chat and image generation.
-- To use NSFW features, please go to the "nsfw/nsfw" room.
-- In this room, Flashi can help you learn about the app, including NSFW features.
+- For NSFW chat and image generation, please go to the "nsfw" room.
+- You can also use NSFW features in your private chat rooms.
 END
 		ln -sf ../../doc/nsfw.md rooms/"$user"/.help.m
 		ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
