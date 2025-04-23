@@ -32,7 +32,10 @@ async def generate_image(session, params, restart_on_fail=False) -> dict[str, An
     """Send a request to the API and return the response."""
     try:
         async with session.post(API_URL, json=params) as response:
-            return await response.json()
+            response = await response.json()
+            if "images" not in response:
+                raise ValueError(f"Got no images in response: {json.dumps(response)}")
+            return response
     except Exception as e:
         logger.error("Error generating image: %s", e)
         if not restart_on_fail:
@@ -161,8 +164,6 @@ async def a1111_client(
                 logger.debug("Generating image %s/%s", i + 1, count)
                 params["seed"] = (seed + i) % 2**32
                 response = await generate_image(session, params, restart_on_fail=restart_on_fail)
-                if "images" not in response:
-                    raise ValueError(f"Got no images in response: {json.dumps(response)}")
                 image = base64.b64decode(response["images"][0])
                 with open(image_file, "wb") as f:
                     f.write(image)
