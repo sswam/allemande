@@ -1262,13 +1262,15 @@ export async function room_main() {
     room_user_script();
   }
 
-  $on(document, "fullscreenchange", fullscreenchange);
+  // $on(document, "fullscreenchange", fullscreenchange);
 }
 
+/*
 function fullscreenchange(ev) {
   if (!is_fullscreen())
     overlay_close();
 }
+*/
 
 export async function folder_main() {
   file_type = "dir";
