@@ -6,6 +6,7 @@
 
 linty() {
 	local verbose= v=0	# verbose mode, output results when all tests pass
+	local unique= u=0        # strip line numbers and de-duplicate messages
 
 	eval "$(ally)"
 
@@ -41,8 +42,21 @@ linty() {
 		local output_file="$prog.lint"
 
 		# call calls a function, but won't run a tool
-		call "lint_$ext" "$prog" 2>&1 | tee "$output_file"
+		# dedup and save in any case, but output what the user asked for
+		if ((unique)); then
+			exec 3>/dev/null 4>&1
+		else
+			exec 3>&1 4>/dev/null
+		fi
+		call "lint_$ext" "$prog" 2>&1 |
+			tee "$output_file" /dev/fd/3 |
+			dedup | tee "$output_file.dedup" >&4
+		exec 3>&- 4>&-
 	)
+}
+
+dedup() {
+	perl -pe 's/.*?:(\d+:)+ *//' | uniqo
 }
 
 run() {

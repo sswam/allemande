@@ -20,6 +20,10 @@ tracks
 *.o
 sparkjoy
 
+# check output files
+*.lint
+*.lint.dedup
+
 # state files
 rooms
 rooms.*
