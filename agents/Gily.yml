@@ -1,0 +1,13 @@
+model: gpt-image-1
+type: image_openai
+context: 1
+config:
+  size: auto
+# 1024x1024 (square) 1536x1024 (portrait) 1024x1536 (landscape) auto
+  quality: auto
+# low medium high auto
+  format: webp
+# png, jpeg or webp.
+  background: transparent
+  moderation: low
+# auto, low

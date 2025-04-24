@@ -18,13 +18,18 @@ import regex
 import argh
 import aiofiles
 from bs4 import BeautifulSoup
-from ally_markdown import preprocess, markdown_to_html, chat_to_html
 
+from ally_markdown import preprocess, markdown_to_html, chat_to_html, resolve_url_path
 from ally_room import Room, Access
 from util import sanitize_filename
 from ally.cache import cache  # type: ignore
 from bb_lib import ChatMessage, save_chat_messages, load_chat_messages
 import video_compatible  # type: ignore  # pylint: disable=wrong-import-order
+import aligno_py as aligno  # type: ignore
+from ally import re_map
+
+
+Message = dict[str, Any]   # TODO use a class, bb_lib.ChatMessage?
 
 
 os.umask(0o007)
@@ -529,6 +534,263 @@ def flatten_edited_messages(messages, output):
             flatten_edited_messages(message["before"], output)
         if "rm" not in message:
             output.append(message)
+
+
+def apply_maps(mapping, mapping_cs, context):
+    """for each word in the mapping, replace it with the value"""
+
+    logger.debug("apply_maps: %r %r", mapping, mapping_cs)
+
+    if not (mapping or mapping_cs):
+        return
+
+    def map_word(match):
+        """Map a word."""
+        word = match.group(1)
+        word_lc = word.lower()
+        out = mapping_cs.get(word)
+        if out is None:
+            out = mapping.get(word_lc)
+        if out is None:
+            out = word
+        return out
+
+    for i, msg in enumerate(context):
+        old = msg
+        context[i] = re.sub(r"\b(.+?)\b", map_word, msg)
+        if context[i] != old:
+            logger.debug("map: %r -> %r", old, context[i])
+
+
+async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int) -> None:
+    """Add images to a list of messages."""
+    if not image_count_max:
+        return messages
+
+    image_url_pattern = r'''
+        # First alternative: Markdown image syntax
+        !             # Literal exclamation mark
+        \[            # Opening square bracket
+        [^]]*         # Any characters except closing bracket
+        \]            # Closing square bracket
+        \(            # Opening parenthesis
+        (.*?)         # First capturing group: URL (non-greedy match)
+        \)            # Closing parenthesis
+
+        |             # OR
+
+        # Second alternative: HTML image tag
+        <img\s        # Opening img tag
+        [^>]*?        # Any attributes before src (non-greedy)
+        src="         # src attribute opening
+        ([^"<>]*?)    # Second capturing group: URL (non-greedy match)
+        "             # Closing quote
+    '''
+
+    logger.debug("Checking messages for images")
+
+    message_count = 0
+    image_count = 0
+
+    for msg in reversed(messages):
+        matches = re.findall(image_url_pattern, msg['content'], flags=re.VERBOSE | re.DOTALL | re.IGNORECASE)
+        logger.debug("Checking message: %s", msg['content'])
+        logger.debug("Matches: %s", matches)
+        image_urls = [url for markdown_url, html_url in matches for url in (markdown_url, html_url) if url]
+
+        logger.debug("Found image URLs: %s", image_urls)
+        if not image_urls:
+           continue
+
+        # count messages having images
+        message_count += 1
+
+        msg['images'] = image_urls
+
+        # TODO could fetch in parallel, likely not necessary
+        # TODO could split text where images occur
+        msg['images'] = [
+            await resolve_url_path(file, url, msg.get('user'), throw=False)
+            for url
+            in msg['images']]
+
+        msg['images'] = [url for url in msg['images'] if url]
+
+        # If we have too many images, take the first ones from the message
+        space_left = image_count_max - image_count
+        if len(msg['images']) > space_left:
+            msg['images'] = msg['images'][:space_left]
+
+        image_count += len(msg['images'])
+
+        logger.debug("Message contains images: %s", msg['images'])
+
+        if image_count >= image_count_max:
+            break
+
+#     logger.info("Found %d messages with %d images", message_count, image_count)
+
+
+def fix_response_layout(response, _args, agent):
+    """Fix the layout and indentation of the response."""
+    logger.debug("response before fix_layout: %s", response)
+    lines = response.strip().split("\n")
+    out = []
+    in_table = False
+    in_code = False
+
+    if agent.get("strip_triple_backticks"):
+        if lines and "```" in lines[0]:
+            lines[0] = re.sub(r"```\w*\s*", "", lines[0])
+            if lines[0].endswith("\t"):
+                lines[1] = lines[0] + lines[1].strip()
+                lines.pop(0)
+        lines = [line for line in lines if not re.match(r"\t?```\w*\s*$", line)]
+
+    # Remove agent's name, if present
+    logger.debug("lines[0]: %r", lines[0])
+    logger.debug("agent.name: %r", agent.name)
+    name_part = None
+    if lines[0].startswith(agent.name + ":\t"):
+        name_part, lines[0] = lines[0].split(":\t", 1)
+    logger.debug("lines[0] after: %r", lines[0])
+    logger.debug("name_part: %r", name_part)
+
+    # First line may be indented differently
+    lines[0] = lines[0].strip()
+
+    # detect common indent
+    common_indent = aligno.find_common_indent(lines[1:])
+
+    # clean up the lines
+    for i, line in enumerate(lines):
+        # strip common indent
+        if line.startswith(common_indent):
+            line = line[len(common_indent) :]
+
+        line = line.rstrip()
+
+        # markdown tables must have a blank line before them ...
+        if not in_table and ("---" in line or re.search(r"\|.*\|", line)):
+            if i > 0 and lines[i - 1].strip():
+                out.append("")
+            in_table = True
+
+        if in_table and not line.strip():
+            in_table = False
+
+#         # detect if in_code
+#         if not in_code and (re.search(r"```", line) or re.search(r"<script\b", line)):
+#             in_code = True
+#             line1 = line
+#             if i == 0:
+#                 line1 = re.sub(r"^[^\t]*", "", line1)
+#             base_indent = leading_spaces(line1)
+#         elif in_code and (re.search(r"```", line) or re.search(r"</script>", line)):
+#             in_code = False
+#
+#         if in_code:
+#             # For code, try to remove base_indent from the start of the line
+#             if base_indent and line.startswith(base_indent):
+#                 line = line[len(base_indent) :]
+#             else:
+#                 base_indent = ""
+#             if i > 0:
+#                 line = "\t" + line
+#         else:
+# #            # For non-code, strip all leading tabs and trailing whitespace, to avoid issues
+# #            line = line.lstrip("\t").rstrip()
+#             line = line.rstrip()
+#             if i > 0:
+#                 line = "\t" + line
+#             elif "\t" not in line:
+#                 line = line + "\t"
+
+        if i == 0 and name_part:
+            line = name_part + ":\t" + line
+        else:
+            line = "\t" + line
+        out.append(line)
+
+    response = ("\n".join(out)).rstrip()
+
+    logger.debug("response after fix_layout: %s", response)
+
+    return response
+
+
+# def leading_spaces(text):
+#     """Return the number of leading spaces in a text."""
+#     return re.match(r"\s*", text).group(0)
+
+
+def add_configured_image_prompts(fulltext, configs):
+    """Add configured prompts to the fulltext."""
+    splits = re.split(r"\s*\bNEGATIVE\b\s*", fulltext, maxsplit=1)
+    if len(splits) == 2:
+        positive, negative = splits
+    else:
+        positive = fulltext
+        negative = ""
+    mappings_1 = {}
+    mappings = {}
+    mappings_neg_1 = {}
+    mappings_neg = {}
+    for config in configs:
+        if "image_prompt_map_1" in config:
+            mappings_1 |= config["image_prompt_map_1"]
+        if "image_prompt_map" in config:
+            mappings |= config["image_prompt_map"]
+        if "image_prompt_negative_map_1" in config:
+            mappings_neg_1 |= config["image_prompt_negative_map_1"]
+        if "image_prompt_negative_map" in config:
+            mappings_neg |= config["image_prompt_negative_map"]
+    positive = re_map.apply_mappings(positive, mappings, mappings_1)
+    negative = re_map.apply_mappings(negative, mappings_neg, mappings_neg_1)
+
+    for config in configs:
+        if "image_prompt_template" in config:
+            positive = str(config["image_prompt_template"]).replace("%s", positive)
+        if "image_prompt_negative_template" in config:
+            negative = str(config["image_prompt_negative_template"]).replace("%s", negative)
+    positive = re.sub(r'\s\s+', ' ', positive.strip())
+    negative = re.sub(r'\s\s+', ' ', negative.strip())
+    fulltext = positive
+    if negative:
+        fulltext += "\nNEGATIVE\n" + negative
+
+    return fulltext
+
+
+def trim_response(response, args, agent_name, people_lc=None):
+    """Trim the response to the first message."""
+    if people_lc is None:
+        people_lc = []
+
+    def check_person_remove(match):
+        """Remove text starting with a known person's name."""
+        if match.group(2).lower() in people_lc:
+            return ""
+        return match.group(1)
+
+    response = response.strip()
+
+    response_before = response
+
+    # remove agent's own `name: ` from response
+    agent_name_esc = re.escape(agent_name)
+    response = re.sub(r"^[ \t]*" + agent_name_esc + r"[ \t]*:[ \t]*(.*)", r"\1", response, flags=re.MULTILINE)
+
+    # remove anything after a known person's name
+    response = re.sub(r"(\n[ \t]*(\w+)[ \t]*:[ \t]*(.*))", check_person_remove, response, flags=re.DOTALL)
+
+    # response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
+
+    if response != response_before:
+        logger.debug("Trimmed response: %r\nto: %r", response_before, response)
+
+    response = " " + response.strip()
+    return response
 
 
 def main():

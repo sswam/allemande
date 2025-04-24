@@ -241,7 +241,7 @@ def all_participants(history: list[dict[str, str]]) -> list[str]:
 
 def agent_is_tool(agent: dict[str, Any]) -> bool:
     """check if an agent is a tool"""
-    return agent.get("link") == "tool" or agent.get("type") == "image_a1111"
+    return agent.get("link") == "tool" or agent.get("type").startswith("image_")
 
 
 def agent_is_human(agent: dict[str, Any]) -> bool:
@@ -372,7 +372,7 @@ def who_should_respond(
     chat_participants_names_lc = [
         agent
         for agent in all_participants
-        if agents.get(agent.lower())["type"] not in ["tool", "image_a1111"]
+        if agents.get(agent.lower())["type"] != "tool" and not agents.get(agent.lower())["type"].startswith("image_")
         and (include_humans or agents.get(agent.lower())["type"] != "human")
     ]
 
@@ -380,7 +380,7 @@ def who_should_respond(
     chat_participants_names_all_lc = [
         agent
         for agent in all_participants_with_excluded
-        if agents.get(agent.lower())["type"] not in ["tool", "image_a1111"]
+        if agents.get(agent.lower())["type"] != "tool" and not agents.get(agent.lower())["type"].startswith("image_")
         and (include_humans or agents.get(agent.lower())["type"] != "human")
     ]
 
