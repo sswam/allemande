@@ -32,6 +32,7 @@ junk_files() {
             -name '*.funcs' -o \
             -name '*.old' -o \
             -name '*.lint' -o \
+            -name '*.lint.dedup' -o \
             -name '*.test' -o \
             -name '.*.results.txt' -o \
             -name '*.tmp.*' -o \
