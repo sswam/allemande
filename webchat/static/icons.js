@@ -45,6 +45,7 @@ export const icons = {
   view_source: '<i class="bi bi-braces i20"></i>',
   view_highlight: '<i class="bi bi-asterisk i16"></i>',
 //  view_highlight: '<i class="bi bi-braces i20"></i>',
+  view_toc: '<i class="bi bi-list-nested i20"></i>',
   view_canvas: '<i class="bi bi-easel i20"></i>',
   view_clean: '<i class="bi bi-book i20"></i>',
   expand: '<i class="bi bi-arrows-angle-expand i16"></i>',

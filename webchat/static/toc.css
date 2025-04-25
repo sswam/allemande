@@ -1,0 +1,42 @@
+.toc {
+    position: fixed;
+    right: 0;
+    top: 0;
+    max-width: 300px;
+    max-height: 60vh;
+    overflow: auto;
+    border: 1px solid var(--border);
+    background: var(--background);
+    z-index: 500;
+    color: var(--text);
+    border-radius: 4px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.toc ul {
+    list-style: none;
+    padding-left: 20px;
+}
+
+.toc li {
+    margin: 8px 0;
+}
+
+.toc a {
+    text-decoration: none;
+}
+
+.toc a:hover {
+    text-decoration: underline;
+}
+
+.toc #toc_close {
+    float: right;
+    width: 1em;
+    height: 1em;
+}
+
+/* When TOC is hidden, just show a small icon button */
+.toc-collapsed {
+}

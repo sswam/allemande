@@ -146,6 +146,7 @@
 			<button id="view_highlight" title="highlight code" class="active advanced">color</button>
 			<button id="view_details" title="view thoughts and details" class="boffin">details</button>
 			<button id="view_canvas" title="view JavaScript canvas" class="boffin">canvas</button>
+			<button id="view_toc" title="view table of contents" class="boffin">contents</button>
 			<button id="view_clean" title="clean reading view" class="boffin">clean</button>
 			<button id="view_columns" title="view chat in columns (scroll to the right)" class="advanced">columns</button>
 			<button id="view_compact" title="compact view" class="boffin">compact</button>
@@ -176,11 +177,13 @@
 
 <div id="help-widget" class="hidden">
 	<div id="help-widget-header">
-       	        <div>
-			<a id="intro_link" href="/#intro" target="help-frame" class="simple" title="Ally Chat - Quick Intro">Intro</a>
-			<a id="qa_link" href="/#qa" target="help-frame" class="advanced" title="general side-bar Q&A chat">Q&A</a> |
-			<a id="help_link" href="/#help" target="help-frame" title="your Ally Chat help room">Help</a> |
-			<a href="/#guide" target="help-frame" title="the full user guide">Guide</a>
+		<div id="help-widget-links">
+			<a id="intro_link" href="/#intro" target="help-frame" class="simple" title="Ally Chat - Quick Intro">Intro</a><a
+			id="intro_link_nsfw" href="/#nsfw/intro" target="help-frame" class="simple hidden" title="Ally Chat - NSFW Intro">NSFW Intro</a><a
+			id="qa_link" href="/#qa" target="help-frame" class="advanced" title="general side-bar Q&A chat">Q&A</a><a
+			id="help_link" href="/#help" target="help-frame" title="your Ally Chat help room">Help</a><a
+			href="/#guide" target="help-frame" title="the full user guide">Guide</a><a
+			id="guide_nsfw" href="/#nsfw/guide" target="help-frame" class="hidden" title="the NSFW guide">NSFW Guide</a>
 		</div>
 		<div id="help-widget-controls">
 			<button id="help_undo" title="remove the last help message" class="advanced">undo</button>
