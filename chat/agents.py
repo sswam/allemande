@@ -34,15 +34,21 @@ SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 #   - ["=", ...] means pass the rest of the list through without changes
 
 def merge_string_strategy(config, path, base, nxt):
-    """A strategy to merge strings with support for '+' prefix"""
-    if isinstance(base, str) and isinstance(nxt, str):
-        if nxt.startswith("+"):
-            # check followed by whitespace or end of string
-            if len(nxt) == 1 or nxt[1].isspace():
-                return base + nxt[1:]
-            return base + " " + nxt[1:]
-        return nxt
-    return STRATEGY_END
+    """A strategy to merge strings with support for '+' prefix and suffix."""
+    if not (isinstance(base, str) and isinstance(nxt, str)):
+        return STRATEGY_END
+    if nxt.startswith("+"):
+        # check followed by whitespace or end of string
+        if len(nxt) == 1 or nxt[1].isspace():
+            return base + nxt[1:]
+        return base + " " + nxt[1:]
+    elif nxt.endswith("+") or nxt.endswith("+\n"):
+        # check preceded by whitespace
+        nxt = nxt[:nxt.rfind("+")]
+        if not nxt or nxt[-1].isspace():
+            return nxt + base
+        return nxt + " " + base
+    return nxt
 
 # Create a custom merger with specific strategies for different types
 agent_merger = Merger(
@@ -322,7 +328,7 @@ class Agents:
     def load(self, path: Path, visual: bool=True) -> None:
         """Load all agents or one agent from a path."""
         if path.is_dir():
-            agent_files = path.glob("*.yml")
+            agent_files = path.rglob("*.yml")
         else:
             agent_files = [path]
 
