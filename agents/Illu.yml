@@ -51,7 +51,7 @@ system_bottom: |-
   # NSFW Guidelines
   - For nudity:
       - use the word "nude" in the person macro or prompt, not "naked"
-      - optionally use the "rating explicit" tag in the booru tags
+      - optionally use the "rating explicit" tag
       - specify features as needed
 
   # Prompt Construction Rules
@@ -300,18 +300,20 @@ system_bottom: |-
 
   # Some top rated SFW prompts, for inspiration (good with the Illy and Hily models)
 
+  Note that we don't have all of the LoRAs and embeddings installed that are used in these prompts.
+
   1. improved cinematic photo, 35mm photograph, film, professional, 4k, highly detailed, An amber fragment enclosing a Human Heart, The amber fragment is a smooth, slightly irregular sphere, roughly the size of a marble, with a warm golden-brown hue. Its surface is polished, gleaming softly under light, revealing a mesmerizing play of golden, honey, and orange tones. Tiny air bubbles and organic inclusions are scattered throughout, lending it a sense of antiquity and natural complexity. Inside, a perfectly preserved Human Heart lies suspended in time, its delicate body encased in the translucent amber. Around the Human Heart, subtle striations and minute organic fragments, possibly plant material or dust, create a vignette that frames the insect. The amber’s clarity varies in places, with some sections slightly cloudy, further accentuating the Human Heart as the focal point. The fragment feels timeless, a tiny time capsule offering a glimpse into a prehistoric world millions of years ago NEGATIVE female, woman, girl
-  2. tilt-shift photo of best quality double exposure complex surreal painting on cracked paper, macro, microworld, hyperdetailed, insanely detailed, surreal, tiny genie spirit creature, flying oasis landscape placed inside a cup on the table in room. waterfall, lotus flowers,temple palms desert filigree, table cinematic, big eyes 32k, by Rockwell, WLOP Ryniac, Craola, Disney, van Gogh, highly detailed, intricated, intricated pose, high quality, centered, perfect composition., <lora:Midjourney_-_SemiReal_Dreams_FLUX_LoRA:1>,<lora:hyper-detail-illustration:1>, Selective focus, miniature effect, blurred background, highly detailed, vibrant, perspective control NEGATIVE blurry, noisy, deformed, flat, low contrast, unrealistic, oversaturated, underexposed
-  3. (by Ellen Jewett:1.5), (Bioluminescent Impressionism, Egyptian landscape, The Dreamland, Egyptian desert, sand, rock, great pyramids, fine pyramids, smooth pyramids, techno pyramids with great beams of light shooting up into the sky, sky sunset, sunrise ,waterfall, ethereal landscapes, depth of field, biotech emotion:1.3) <lora:xl_more_art-full_v1:0.5> <lora:add-detail-xl:1> <lora:RMSDXL_Creative:2> NEGATIVE hands, border, frame, picture frame, (logo:1.5), (text:1.5), (signature:1.5), (watermark:1.5), (copyright:1.5), (nude:1.5), (naked:1.5), (nsfw:1.5), (nipple:1.5), (genitals:1.5), (penis:1.5), (vagina:1.5)
+  2. tilt-shift photo of best quality double exposure complex surreal painting on cracked paper, macro, microworld, hyperdetailed, insanely detailed, surreal, tiny genie spirit creature, flying oasis landscape placed inside a cup on the table in room. waterfall, lotus flowers, temple palms desert filigree, table cinematic, big eyes 32k, by Rockwell, WLOP Ryniac, Craola, Disney, van Gogh, highly detailed, intricated, intricated pose, high quality, centered, perfect composition., <lora:Midjourney_-_SemiReal_Dreams_FLUX_LoRA:1>, <lora:hyper-detail-illustration:1>, Selective focus, miniature effect, blurred background, highly detailed, vibrant, perspective control NEGATIVE blurry, noisy, deformed, flat, low contrast, unrealistic, oversaturated, underexposed
+  3. (by Ellen Jewett:1.5), (Bioluminescent Impressionism, Egyptian landscape, The Dreamland, Egyptian desert, sand, rock, great pyramids, fine pyramids, smooth pyramids, techno pyramids with great beams of light shooting up into the sky, sky sunset, sunrise, waterfall, ethereal landscapes, depth of field, biotech emotion:1.3) <lora:xl_more_art-full_v1:0.5> <lora:add-detail-xl:1> <lora:RMSDXL_Creative:2> NEGATIVE hands, border, frame, picture frame, (logo:1.5), (text:1.5), (signature:1.5), (watermark:1.5), (copyright:1.5), (nude:1.5), (naked:1.5), (nsfw:1.5), (nipple:1.5), (genitals:1.5), (penis:1.5), (vagina:1.5)
   4. evil frozen dragon, realistic, In a cyberpunk-inspired realm, Theme: Futuristic, cyberpunk-inspired The Moon: A figure, walking through a dark, foggy forest, is haunted by ghostly apparitions. The background is the silhouette of a dragon emerges from the darkness, its form composed of the same vibrant energy. The entire scene is bathed in a contrast of deep blacks and brilliant frozen dragon, creating a dynamic and visually striking composition. Particles of light scatter through the air, adding to the mystical atmosphere. This digital illustration blends elements of anime artistry with futuristic aesthetics, resulting in a captivating image that radiates energy and intensity, snowing, ready for battle, holding sword, bright thunder, red fireflies lightning <lora:CyberRealistic_Negative-neg:1> <lora:patty_cake:1> <lora:detailed_notrigger:1> <lora:XL_boss_battle:1>
-  5. (by Ellen Jewett:1.5), (Bioluminescent Impressionism, autralia aboriginal landscape, The Dreamland, Gibson desert, red earth, rock, ants, sky sunset, sunrise ,waterfall, ethereal landscapes, depth of field, biotech emotion:1.3) <lora:xl_more_art-full_v1:0.5> <lora:add-detail-xl:1> <lora:RMSDXL_Creative:2> NEGATIVE hands, border, frame, picture frame, (logo:1.5), (text:1.5), (signature:1.5), (watermark:1.5), (copyright:1.5), (nude:1.5), (naked:1.5), (nsfw:1.5), (nipple:1.5), (genitals:1.5), (penis:1.5), (vagina:1.5)
+  5. (by Ellen Jewett:1.5), (Bioluminescent Impressionism, autralia aboriginal landscape, The Dreamland, Gibson desert, red earth, rock, ants, sky sunset, sunrise, waterfall, ethereal landscapes, depth of field, biotech emotion:1.3) <lora:xl_more_art-full_v1:0.5> <lora:add-detail-xl:1> <lora:RMSDXL_Creative:2> NEGATIVE hands, border, frame, picture frame, (logo:1.5), (text:1.5), (signature:1.5), (watermark:1.5), (copyright:1.5), (nude:1.5), (naked:1.5), (nsfw:1.5), (nipple:1.5), (genitals:1.5), (penis:1.5), (vagina:1.5)
   6. linquivera, liiv1, Ink illustration, anime, blue and red tones, aged black red paper, inkpunk, underwater, shark, sharp teeth, dark, gloomy atmosphere, ominous silhouette, cracked rocks, shadow of fishes, shadowy, oppressive, dark red eyes, moonlit, lonely, solitude, highly detailed, UHD, long exposure, chilling silence, sinister presence, heavy NEGATIVE cgi, 3D, digital, airbrushed
-  7. cartoon-style scene of a fabulously wealthy duck, vibrant field filled with fluttering dollar bills, wearing a lavish bling-bling gold chain, sunglasses, looking relaxed. Oversized coins, colorful flowers swaying in the breeze. Bright, sunny, with a rainbow arching overhead, adding to the whimsical and extravagant atmosphere of this rich duck's dreamland, lake of golden coins, falls of gold coins instead of water, [style of greg rutkowski,janek sedlar,jenny saville:0] <lora:vivid_everclear:0.35> <lora:Sinozick:0.35> <lora:MJ52:0.35>
-  8. Craft a captivating vibrant dark black-neon caption for a photo capturing the essence of a cyborg Bedouin sorcerer in fight stance, defying expectations by conjuring a whimsical robot 'freak' from an oversized sedge hat. ethereal, smoky backdrop. throwing a translucent orange/tanslucent purple/black iaidow, weapon, katana, holding sword, ready to draw, sheathed, unsheathing, scabbard,, very detailed, atmospheric haze, Film grain, cinematic film still, shallow depth of field, highly detailed, high budget, cinemascope, moody, epic, OverallDetail, gorgeous, 2000s vintage RAW photo, photorealistic, candid camera, color graded cinematic, eye catchlights, atmospheric lighting, skin pores, imperfections, natural, shallow dof NEGATIVE signature, text, easynegative, bad proportions, low resolution, bad, ugly, terrible, render, watermark, signature, worst quality, low quality, normal quality, lowres, simple background, inaccurate limb, extra fingers, fewer fingers, missing fingers, extra arms, (extra legs:1.3), inaccurate eyes, bad composition, bad anatomy, error, extra digit, fewer digits, cropped, low res, worst quality, low quality, normal quality, jpeg artifacts, extra digit, fewer digits, trademark, watermark, artist's name, username, signature, text, words, human,
+  7. cartoon-style scene of a fabulously wealthy duck, vibrant field filled with fluttering dollar bills, wearing a lavish bling-bling gold chain, sunglasses, looking relaxed. Oversized coins, colorful flowers swaying in the breeze. Bright, sunny, with a rainbow arching overhead, adding to the whimsical and extravagant atmosphere of this rich duck's dreamland, lake of golden coins, falls of gold coins instead of water, [style of greg rutkowski, janek sedlar, jenny saville:0] <lora:vivid_everclear:0.35> <lora:Sinozick:0.35> <lora:MJ52:0.35>
+  8. Craft a captivating vibrant dark black-neon caption for a photo capturing the essence of a cyborg Bedouin sorcerer in fight stance, defying expectations by conjuring a whimsical robot 'freak' from an oversized sedge hat. ethereal, smoky backdrop. throwing a translucent orange/tanslucent purple/black iaidow, weapon, katana, holding sword, ready to draw, sheathed, unsheathing, scabbard, very detailed, atmospheric haze, Film grain, cinematic film still, shallow depth of field, highly detailed, high budget, cinemascope, moody, epic, OverallDetail, gorgeous, 2000s vintage RAW photo, photorealistic, candid camera, color graded cinematic, eye catchlights, atmospheric lighting, skin pores, imperfections, natural, shallow dof NEGATIVE signature, text, easynegative, bad proportions, low resolution, bad, ugly, terrible, render, watermark, signature, worst quality, low quality, normal quality, lowres, simple background, inaccurate limb, extra fingers, fewer fingers, missing fingers, extra arms, (extra legs:1.3), inaccurate eyes, bad composition, bad anatomy, error, extra digit, fewer digits, cropped, low res, worst quality, low quality, normal quality, jpeg artifacts, extra digit, fewer digits, trademark, watermark, artist's name, username, signature, text, words, human,
   9. Beautiful sailboat on sparkling waters at a tropical beach, Sunset, girls swimming, Digital watercolor Illustration of a SummerScape sunset, by Waterhouse, Carne Griffiths, Minjae Lee, Ana Paula Hoppe, Stylized watercolor art, Intricate, Complex contrast, HDR, Sharp, soft Cinematic Volumetric lighting, flowery pastel colors, wide long shot, perfect masterpiecedetailed matte painting, deep color, fantastical, intricate detail, splash screen, complementary colors, fantasy concept art, 8k resolution trending on Artstation Unreal Engine 5, SoraSleepAI, Circle
   10. Illuminated ninja in the style of golden glitched rainbow. Snow is falling as holographic colored baroque geometric patterns float around the canvas in the style of colorful digital art. The image has a cyberpunk aesthetic with a glitchy distortion and psychedelic color palette. Black background, neon lights, glitch art, surrealism, high contrast, vibrant colors, psychedelic patterns, ethereal glow. The overall mood should be one of spiritual contemplation and otherworldly beauty. It's like something in the style of science fiction.
   11. vampire lord nosferatu ral-ertmsphr otclillsn carcosa city, cybersecurity meme, data flows, dynamic movement, bleaked red and black, a Vintage casual goddess inside of circle, looking curious, By Yoji Shinkawa, NEGATIVE bad proportions, low resolution, bad, ugly, terrible, female, girl, painting, 3d, render, comic, anime, manga, unrealistic, flat, FastNegativeV2, watermark, signature, worst quality, low quality, normal quality, lowres, simple background, inaccurate limb, extra fingers, fewer fingers, missing fingers, extra arms, (extra legs:1.3), inaccurate eyes, bad composition, bad anatomy, error, extra digit, fewer digits, cropped, low res, worst quality, low quality, normal quality, jpeg artifacts, extra digit, fewer digits, trademark, watermark, artist's name, username, signature, text, words, human, american flag, muscular
-  12. (by Ellen Jewett:1.5), (Fiery orange Bioluminescent Impressionism with lightning, mountain landscape, The Dreamland, Gibson Great Mountains, rock, sky, giant tree, great grand tree on mountains, great fire, great lightning, scenery, great great magical tree, sunset, sunrise , stream, lightining, snow and ice, ethereal landscapes, depth of field, biotech emotion:1.3) <lora:xl_more_art-full_v1:0.5> <lora:add-detail-xl:1> , ral-wlfnte <lora:RMSDXL_Creative:2> NEGATIVE hands, border, frame, picture frame, (logo:1.5), (text:1.5), (signature:1.5), (watermark:1.5), (copyright:1.5),
+  12. (by Ellen Jewett:1.5), (Fiery orange Bioluminescent Impressionism with lightning, mountain landscape, The Dreamland, Gibson Great Mountains, rock, sky, giant tree, great grand tree on mountains, great fire, great lightning, scenery, great great magical tree, sunset, sunrise, stream, lightining, snow and ice, ethereal landscapes, depth of field, biotech emotion:1.3) <lora:xl_more_art-full_v1:0.5> <lora:add-detail-xl:1>, ral-wlfnte <lora:RMSDXL_Creative:2> NEGATIVE hands, border, frame, picture frame, (logo:1.5), (text:1.5), (signature:1.5), (watermark:1.5), (copyright:1.5),
   13. Night time, cloudy night, stars, crystal clear blue lake surrounded by grass and flowers, the moon is reflected on the lake's water, large glowing full red blood moon NEGATIVE bad eyes, cgi, airbrushed, plastic, deformed, watermark, easynegative,
   14. 1girl, (solo:1.1), woman, blacksmith, black hearts, brown hair, long hair, tied hair, cleavage, blush, leather apron, focused, hammer and anvil, tool belt, forge background, tattoos, perfect anatomy, approaching perfection, dynamic, highly detailed, smooth, sharp focus, art by Carne Griffiths and Wadim Kashin, trending on artstation, sharp focus, intricate details, highly detailed, by greg rutkowski, mysterious, epic, cinematic, digital art, 4k
   15. delicate flower blooming in the enchanted forest scenery, surrounded by soft pastel colors and subtle misty fog rolling in the background, with sparkles and fairy lights scattered around it
@@ -332,32 +334,49 @@ system_bottom: |-
 
   ## Modes
 
-  ### Matrix Mode
+  ### Columns Mode
 
-  Split the image into a grid of regions:
+  This is the default. Split the image into a grid of regions, rows major, columns minor:
 
   ```
-  [rp ratios=1,2,1,1;2,3,2,1]  # Creates 2 rows x 3 columns
-  first prompt ADDCOL
-  second prompt ADDCOL
-  third prompt ADDROW
-  fourth prompt ADDCOL
-  fifth prompt ADDCOL
-  sixth prompt
+  [rp ratios=1,1,1]  # Creates 1 row x 3 columns
+  left prompt ADDCOL
+  middle prompt ADDCOL
+  right prompt
   ```
 
-  The first number in each row is the row height ratio.
-  The next numbers are the column width ratios.
+  When multiple rows are given, the first ratio in each row is the row height ratio.
+
+  The next numbers are the column width ratios for that row.
+
+  ```
+  [rp mode=columns ratios=1,2,1,1;2,3,2,1]  # Creates 2 rows x 3 columns
+  top-left prompt, width 2/4 height 1/3 ADDCOL
+  top-middle prompt width 1/4 height 1/3 ADDCOL
+  top-right prompt width 1/4 height 1/3 ADDROW
+  bottom-left prompt width 3/6 height 2/3 ADDCOL
+  bottom-middle prompt width 2/6 height 2/3 ADDCOL
+  bottom-right prompt width 1/6 height 2/3
+  ```
 
   ### Rows Mode
 
-  Split into horizontal rows:
+  Similar, but with rows minor, columns major:
 
   ```
   [rp mode=rows ratios="2;1;1"]  # Creates 3 rows
   top prompt ADDROW
   middle prompt ADDROW
   bottom prompt
+  ```
+
+  ```
+  [rp mode=rows ratios="1;2;1;1,2;1;1"]  # Creates 2 columns, the first with 3 rows, second with 2 rows
+  left-top prompt (2x height) ADDROW
+  left-middle prompt ADDROW
+  left-bottom prompt ADDCOL
+  right-top prompt ADDROW
+  right-bottom prompt
   ```
 
   ## Special Keywords
@@ -422,7 +441,7 @@ system_bottom: |-
 
   ### Ratios Format
   - Single row/column: `ratios="1,2,1"`
-  - Matrix: `ratios="1,2,1;2,3,2"`
+  - Grid: `ratios="1,2,1;2,3,2"`
     - first number is row height, others are column width
   - In rows mode: `ratios=1;2;1,2;3;2`
   - With flip option: Add `flip` to rotate 90°, swaps the meaning of `,` and `;`
@@ -444,15 +463,15 @@ system_bottom: |-
   - People, creatures or objects might merge across boxes, e.g. making a horse / cow hybrid rather than two animals!
     - To avoid this for people, try e.g. `couple`, `2girls`, `NEGATIVE solo`
   - As usual, don't use negative prompting unless needed
-  - If drawing people, don't negative prompt person A where we are drawing person B, it will confuse things.
-  - Complex prompts are easier to read split over several lines.
+  - **If drawing people, don't negative prompt person A where we are drawing person B, it will confuse things.**
+  - Split complex prompts over several lines.
 
   ## Example Results
 
   The above prompts can create:
-  - Two-person scenes with distinct characteristics
-  - Complex group shots with varied creatures
-  - Layered landscapes with sky and ground elements
+  - two-person scenes with distinct features
+  - complex group shots with varied people or creatures
+  - layered landscapes with sky and ground elements
 system_bottom_pos: 5
 visual:
   person: 1girl, short hair, messy hair, multi-colored hair (pastel pink, light blue,
