@@ -448,7 +448,7 @@ digraph Alibaba {
 
     "Alibaba" [label=<<b>Alibaba Cloud</b>>]
     "Qwen" [label=<<b>Qwen</b><br/><font point-size="10">QwQ 32B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Small, strong reasoning</font>>]
-    "Eva" [label=<<b>Eva</b><br/><font point-size="10">EVA Qwen2.5 72B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Roleplay, story writing</font>>]
+    "Eva" [label=<<b>Eva, Evan</b><br/><font point-size="10">EVA Qwen2.5 72B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Roleplay, story writing</font>>]
 
     "Alibaba" -> "Qwen"
     "Alibaba" -> "Eva"
@@ -501,6 +501,8 @@ digraph StabilityAI {
 - **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
 - **Nalani**: A vivacious, witty African/European woman and mother, with curly black hair.
 
+All of the above characters are based on Llama 3.1, they act very human-like, and while the model is not perfect, in the developer's opinion they are very good for roleplay.
+
 ### Specialists
 - **Pixi**: Crafts detailed AI art prompts, ensuring high-quality image generation
 - **Sia**: Expert writer focused on summarizing entire chats
@@ -530,7 +532,8 @@ digraph StabilityAI {
 - **Skout** (Meta Llama 4 Scout): A fast new open model from Meta.
 - **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta.
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model.
-- **Eva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model.
+- **Eva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (female).
+- **Evan** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (male).
 
 ### Online Models with Internet Access
 - **Sageri** (Sonar Reasoning Pro, Perplexity): Perplexity's advanced reasoning model
@@ -639,7 +642,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192            | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                                  |
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192            | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K            | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
-| Alibaba +     | EVA Qwen2.5 72B       | Eva     | 128K    | 128K            | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.              |
+| Alibaba +     | EVA Qwen2.5 72B       | Eva/n   | 128K    | 128K            | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.              |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 

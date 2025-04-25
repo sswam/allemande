@@ -87,6 +87,10 @@ rooms.*
 /webchat/icons-unicode.txt
 /webchat/static/icons.css
 /webchat/static/icons.woff2
+/doc/nsfw/guide.md
+
+# NSFW agents
+/agents/nsfw
 
 # 3rd-party content
 /code/pop.pdf
@@ -149,13 +153,6 @@ rooms.*
 
 # web cache
 /webcache
-
-# symlinks to NSFW agents
-/agents/Sylvi.yml
-/agents/Xilu.yml
-/agents/Xavi.yml
-/agents/Xavii.yml
-/agents/Pyrite.yml
 
 # compiled binaries
 /arcs/sshc

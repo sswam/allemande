@@ -26,7 +26,7 @@ The NSFW zone contains sexual material, and is restricted to adults only.
 ## Select Characters and Tools
 
 **General Chat**
-- Ally, Barbie, Eva, Pyrite: chat
+- Ally, Barbie, Eva, Evan, Pyrite: chat
 - Flashi, Gemmi: assistants
 - Fli, Gemm: concise responses
 

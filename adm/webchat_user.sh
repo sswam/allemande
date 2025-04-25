@@ -72,9 +72,10 @@ END
 	touch static/users/"$user"/script.js
 	ln -sf ../../themes/pastel.css static/users/"$user"/theme.css
 
-	if ! ((nsfw)); then
+	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
+
+	if ((!nsfw)); then
 		ln -sf ../../doc/guide.md rooms/"$user"/.help.m
-		ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	fi
 
 	if ((nsfw)); then
@@ -90,8 +91,7 @@ NSFW Features:
 - For NSFW chat and image generation, please go to the "nsfw" room.
 - You can also use NSFW features in your private chat rooms.
 END
-		ln -sf ../../doc/nsfw.md rooms/"$user"/.help.m
-		ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
+		ln -sf ../../doc/nsfw/guide.md rooms/"$user"/.help.m
 	fi
 
 	cp rooms/"$user"/.help.bb.base rooms/"$user"/help.bb
