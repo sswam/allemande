@@ -54,7 +54,9 @@ async function login(e) {
 	const data = await response.json();
 	// we don't need the response data
 	console.log("Login successful:", data);
-	checkLogin();
+	if (checkLogin()) {
+		$('#chatlink').click();
+	}
 }
 
 async function logout(e) {
@@ -119,10 +121,13 @@ function setupLoggedOut() {
 
 function checkLogin() {
 	userData = getJSONCookie('user_data');
-	if (userData)
+	if (userData) {
 		setupLoggedIn();
-	else
+		return true;
+	} else {
 		setupLoggedOut();
+		return false;
+	}
 }
 
 function authHomepage() {
