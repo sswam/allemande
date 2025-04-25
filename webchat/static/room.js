@@ -1,5 +1,6 @@
 const offline_timeout_seconds = 10;
 
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const inIframe = window.parent !== window.self;
 
 let file_type;
@@ -13,20 +14,20 @@ let overlay_mode = false;
 let $currentImg;
 let currentImgIndex;
 let allImages;
-let overlay_fullscreen = true;
+let overlay_fullscreen = isMobile;
 
 let suppressInitialScroll = false;
 
 export let view_options = {
   images: 1,
-  image_size: 4,
+  image_size: 8,
   font_size: 4,
   items: 10,
 };
 
 let mode_options = {
   select: 0,
-}
+};
 
 let snapshot = false;
 

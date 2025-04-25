@@ -17,6 +17,9 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 <script src="{{ chat_base_url }}/debug.js"></script>
 <script src="{{ chat_base_url }}/resizer.js"></script>
 <script src="{{ chat_base_url }}/ally_highlight.js"></script>
+<link rel="stylesheet" href="{{ chat_base_url }}/icons.css">
+<script src="{{ chat_base_url }}/toc.js"></script>
+<link rel="stylesheet" href="{{ chat_base_url }}/toc.css" crossorigin="use-credentials">
 <!--<script src="/sw_register.js"></script>-->
 <script>
 (async () => {
@@ -42,22 +45,27 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 
 <div class="overlay maxpect"></div>
 
-<div class="canvas">
-<canvas id="canvas" tabindex=0></canvas>
-<script>
-// set canvas size to screen size (not window size)
-canvas = $id('canvas');
-canvas.width = window.screen.width * window.devicePixelRatio;
-canvas.height = window.screen.height * window.devicePixelRatio;
-ctx = canvas.getContext('2d');
-// AI can't remember the canvas is flipped, so disable that for now.
-// ctx.transform(1, 0, 0, -1, 0, canvas.height);
-ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-ctx.strokeStyle = 'grey';
-ctx.fillStyle = 'grey';
-// scroll div.canvas to bottom
-$('.canvas').scrollTop = $('.canvas').scrollHeight;
-</script>
+<div class="right sidebar toc hidden">
+	<button id="toc_close" title="close"><i class="bi bi-x i20"></i></button>
+Hello, world
+</div>
+
+<div class="right sidebar canvas">
+	<canvas id="canvas" tabindex=0></canvas>
+	<script>
+		// set canvas size to screen size (not window size)
+		canvas = $id('canvas');
+		canvas.width = window.screen.width * window.devicePixelRatio;
+		canvas.height = window.screen.height * window.devicePixelRatio;
+		ctx = canvas.getContext('2d');
+		// AI can't remember the canvas is flipped, so disable that for now.
+		// ctx.transform(1, 0, 0, -1, 0, canvas.height);
+		ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+		ctx.strokeStyle = 'grey';
+		ctx.fillStyle = 'grey';
+		// scroll div.canvas to bottom
+		$('.canvas').scrollTop = $('.canvas').scrollHeight;
+	</script>
 </div>
 
 <div class="resizer">

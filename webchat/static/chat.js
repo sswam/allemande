@@ -31,8 +31,8 @@ const illustrator = "Illu";
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const isFirefox = navigator.userAgent.includes('Firefox');
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
 const iOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
 function confirm_except_iOS(message) {
   if (iOS) return true;
   return confirm(message);
@@ -49,6 +49,7 @@ let view_options = {
   source: 1,
   details: 0,
   canvas: 0,
+  toc: 1,
   clean: 0,
   columns: 0,
   compact: 0,
@@ -81,6 +82,7 @@ let view_options_embed = {
   source: 1,
   details: 0,
   canvas: 0,
+  toc: 1,
   clean: 0,
   columns: 0,
   compact: 0,
@@ -677,6 +679,7 @@ function room_url() {
 
 function setup_all_link_buttons() {
   show_room_privacy();
+  setup_help_links();
   setup_user_button();
   setup_nav_buttons();
 }
@@ -700,6 +703,14 @@ function show_room_privacy() {
   } else {
     $privacy.href = "/" + query_to_hash(user + "/chat");
   }
+}
+
+function setup_help_links() {
+  const show_nsfw = room.startsWith("nsfw/") && !access_denied;
+  const $help_links = $id("help-widget-links");
+  show("intro_link", !show_nsfw);
+  show("intro_link_nsfw", show_nsfw);
+  show("guide_nsfw", show_nsfw);
 }
 
 // move a room or file -----------------------------------------------------
@@ -951,7 +962,7 @@ function escape() {
 
   set_fullscreen(0);
 
-  // escape from the full-screen canvas!
+  // escape from the full-screen canvas! or any canvas
   if (view_options.canvas > 0) {
     view_options.canvas--;
     view_options_apply();
@@ -2043,9 +2054,12 @@ function view_options_apply() {
 
   // Don't allow full-screen canvas except in boffin mode:
   // It makes it look like the app is broken!
-  if (view_options.advanced != 2 && view_options.canvas == 2) {
+  if (view_options.canvas == 2 && view_options.advanced < 2)
     view_options.canvas = 1;
-  }
+
+  // view TOC contradicts view canvas
+  if (view_options.toc)
+    view_options.canvas = 0;
 
   // update buttons
   // TODO simplify / de-dup this code
@@ -2056,6 +2070,7 @@ function view_options_apply() {
   active_set("view_highlight", view_options.highlight);
   active_set("view_details", view_options.details);
   active_set("view_canvas", view_options.canvas);
+  active_set("view_toc", view_options.toc);
   active_set("view_clean", view_options.clean);
   active_set("view_image_size", view_options.image_size - 4);
   active_set("view_font_size", view_options.font_size - 4);
@@ -2205,6 +2220,14 @@ function view_details(ev) {
 function view_canvas(ev) {
   const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
   view_options.canvas = (view_options.canvas + delta + 3) % 3;
+  // view canvas contradicts view toc
+  if (view_options.canvas)
+    view_options.toc = 0;
+  view_options_apply();
+}
+
+function view_toc(ev) {
+  view_options.toc = !view_options.toc;
   view_options_apply();
 }
 
@@ -2833,6 +2856,7 @@ export async function init() {
   $on($id("view_highlight"), "click", view_highlight);
   $on($id("view_details"), "click", view_details);
   $on($id("view_canvas"), "click", view_canvas);
+  $on($id("view_toc"), "click", view_toc);
   $on($id("view_clean"), "click", view_clean);
   $on($id("view_columns"), "click", view_columns);
   $on($id("view_compact"), "click", view_compact);

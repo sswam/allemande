@@ -2,7 +2,7 @@
   position: fixed;
   top: 3.625rem;
   right: 1.125rem;
-  width: 22rem;
+  width: 28rem;
   height: 25rem;
   min-width: 18.75rem;
   min-height: 12.5rem;
@@ -59,11 +59,6 @@
     white-space: nowrap;
 }
 
-#help-widget-header a {
-  padding: 0 0.125rem;
-  border-radius: 0.125rem;
-}
-
 #help-widget-header a.link_active {
   text-decoration: underline;
 }
@@ -104,4 +99,12 @@
   display: flex;
   gap: var(--pad);
   align-items: stretch;
+}
+
+#help-widget-links > * {
+  padding: 0 0.4375rem;
+}
+
+#help-widget-links > *:not(.hidden):has(~ :not(.hidden)) {
+  border-right: 0.0625rem solid var(--link);
 }

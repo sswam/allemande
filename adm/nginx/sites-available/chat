@@ -41,6 +41,13 @@ server {
 		deny all;
 	}
 
+	location ~ ^/icons.woff2\?.*$ {
+		add_header Access-Control-Allow-Origin https://rooms.$ALLEMANDE_DOMAIN always;
+		add_header Access-Control-Allow-Credentials true;
+
+		try_files $uri $uri/ =404;
+	}
+
 	location /themes {
 		# Allow client to list available themes
 		autoindex on;
