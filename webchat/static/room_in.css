@@ -512,6 +512,7 @@ body.landscape > div.canvas {
 	min-width: var(--pad);
 	margin: 0;
 	background: var(--frame);
+	touch-action: none;
 }
 
 body.portrait .resizer {

@@ -44,7 +44,7 @@ class DragResizer {
   }
 
   doDrag(e) {
-    // e.preventDefault();
+    e.preventDefault();
 
     const currentX = e.clientX || (e.touches && e.touches[0].clientX);
     const currentY = e.clientY || (e.touches && e.touches[0].clientY);

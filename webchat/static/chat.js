@@ -2723,8 +2723,8 @@ function handleHelpLinkClick(event) {
 // controls layout hack; Firefox and Safari don't do flex wrap properly ------
 
 function controls_resized(entry) {
-  if (!(isFirefox || isSafari))
-    return;
+  // if (!(isFirefox || isSafari))
+  //   return;
   if (!entry) {
     for (const controls of $$(".controls"))
       controls_resized({target: controls})
@@ -2789,8 +2789,11 @@ export async function init() {
   await setup_icons();
   setup_embed_vs_main_ui();
 
-  if (isFirefox || isSafari)
-    controls_layout_hack_for_firefox_and_safari();
+  // The controls layout used to work in Chrome without the hack,
+  // but now behaves wrongly when the input bar is reduced to minimum height.
+  // With the hack, it seems to work.
+  // if (isFirefox || isSafari)
+  controls_layout_hack_for_firefox_and_safari();
   load_theme();
   setup_debug();
   on_hash_change();
