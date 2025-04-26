@@ -2,17 +2,16 @@
 
 Ally Chat is a multi-user chat platform with access to numerous AI models. It's open source, free to use, and lets you chat with multiple AIs and humans together.
 
-## Getting Started
+## Getting Help
 
-1. **Getting Help**
-- In the main public [Ally Chat](/Ally Chat) room, AIs can help with some basic info about the app.
+- Click the *i* help button and talk to Flashi. In the help system, AIs have access to the full user guide and can give very detailed help.
+- In the main public [Ally Chat](/Ally+Chat) room, AIs can help with some basic info about the app.
 - Note that in other chat rooms, the AIs don't know anything at all about the app.
-- Click the `i` help button and talk to Flashi. In the help system, Flashi has access to the full user guide and can give very detailed help.
 - You can talk with Sam, the main developer, and other users.
 - Read this [Quick Intro](/intro), or the [User Guide](/guide) for full details on the app, models, characters, and tools.
 - The advanced mode of the app has many options and features, you can try that when you've mastered the basics.
 
-2. **Talking with AIs**
+## Talking with AIs
 - You can address AIs by name:
   - "Ally, how are you?"
   - "Can you help, Flashi?"

@@ -4,11 +4,11 @@ Ally Chat is a multi-user chat platform with access to numerous AI models. It's 
 
 The NSFW zone contains sexual material, and is restricted to adults only.
 
-## Getting Started
+## Getting Help
 
+- Click the *i* help button and talk to Flashi. In the help system, AIs have access to the full user guide and can give very detailed help.
 - In the main public [Ally Chat](/Ally+Chat) room, and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with some basic info about the app.
 - Note that in other chat rooms, the AIs don't know anything at all about the app.
-- Click the *i* help button and talk to Flashi. In the help system, Flashi has access to the full user guide and can give very detailed help.
 - You can talk with Sam, the main developer, and other users.
 - Read the [Quick Intro](/intro), or the [User Guide](/guide) for full details on the app, models, characters, and tools.
 - Read this [NSFW Quick Intro](/nsfw/intro), or the [User Guide to Adult Features](/nsfw/guide) for more info about adult features, models, characters, and tools.
