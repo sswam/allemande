@@ -30,6 +30,11 @@ static/d3.min.js:
 
 static/wasm.min.js:
 	wget -O- "https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.js" | sed 's/{credentials:"same-origin"}/{credentials:"include"}/g' >$@
+	ed $@ <<EOT
+	$
+	s/sourceMappingURL=.*/sourceMappingURL=
+	wq
+	EOT
 
 static/graphvizlib.wasm:
 	wget -O $@ "https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/graphvizlib.wasm"

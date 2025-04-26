@@ -1,6 +1,6 @@
 var inIframe = window.parent !== window.self;
 const moveLabels = true;
-const room = await $import("room");
+const room = await $import("chat:room");
 
 const HIDE_CONTROLS_DELAY = 1000;
 
@@ -81,7 +81,7 @@ async function ensure_mermaid_scripts() {
 
 async function ensurePreviousMessagesProcessed(element) {
   let id = getMessageId(element);
-  if (id)
+  if (id !== null)
     return [id, true];
   const prev = element.previousElementSibling;
   if (!prev) {
@@ -94,7 +94,7 @@ async function ensurePreviousMessagesProcessed(element) {
 }
 
 function getMessageId(element) {
-  let id
+  let id = null;
   const match = element.className.match(/(?:^|\s)m(\d+)(?:\s|$)/);
   if (match)
     id = parseInt(match[1]);
@@ -106,7 +106,6 @@ async function processMessage(newMessage) {
   const [id, processed] = await ensurePreviousMessagesProcessed(newMessage);
   if (processed)
     return id;
-  console.log("processing message", id);
 
   // const idClass = "m" + id;
 

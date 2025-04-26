@@ -263,7 +263,7 @@ async function call_process_messages(messages) {
   await wait_for_messages_to_load(messages);
   online();
   messages_resized();
-  const process_messages = await $import("process_messages");
+  const process_messages = await $import("chat:process_messages");
   await process_messages.process_messages(messages);
 }
 

@@ -119,6 +119,9 @@ function _get_module_real_id_and_src(id, src) {
   if (!src.includes("/"))
     src = `./${src}`;
 
+  // Chop off numeric mtime from id if present
+  id = id.replace(/\.\d+/, "");
+
   return [ id, src ];
 }
 
@@ -131,8 +134,10 @@ async function _import_real(id, src) {
     // check for cross-domain import
     if (src.startsWith("https://") && !src.startsWith(location.origin + "/"))
       module = await _import_cross_domain(src);
-    else
+    else {
+      // console.log("import module: ", src);
       module = await import(src);
+    }
   } catch (error) {
     // Handle import error
     module = { "import_error": error };
@@ -157,6 +162,7 @@ async function _import_real(id, src) {
 }
 
 async function _import_cross_domain(url) {
+  // console.log("import module cross-domain: ", url);
   const response = await fetch(url, { credentials: 'include' });
 
   if (!response.ok)
