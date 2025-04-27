@@ -252,7 +252,7 @@ class Room:
         """Check access for a user."""
         return check_access(user, self.name + EXTENSION)
 
-    def find_resource_file(self, ext, name=None, create=False, try_room_name=True):
+    def find_resource_file(self, ext, name=None, create=False, try_room_name=True) -> str|None:
         """Find a resource file for the chat room.
         Tries to find the file in the following order:
         1. room_name.ext
@@ -261,10 +261,17 @@ class Room:
         4. .room_name_without_number.ext (if applicable)
         5. specified_name.ext (if name provided)
         6. .specified_name.ext (if name provided)
+
+        If name starts with '/', the path will be relative to ROOMS_DIR.
         """
         parent = self.path.parent
         stem = self.path.stem
         possible_paths = []
+
+        # Handle absolute paths (relative to ROOMS_DIR)
+        if name and name.startswith('/'):
+            parent = Path(ROOMS_DIR)
+            name = name[1:]
 
         # Collect all possible paths
         if try_room_name:
@@ -337,6 +344,19 @@ class Room:
         if not access & Access.MODERATE.value:
             raise PermissionError("You are not allowed to set options for this room.")
         options_file = self.find_resource_file("yml", "options", create=True)
+
+        # access control for mission option: user setting the mission must have access to the resolved mission file
+        # It's a bit wack, because it could resolve to a different file later. But good enough I guess.
+        mission_new = new_options.get("mission")
+        if mission_new:
+            mission_file = self.find_resource_file("m", mission_new, try_room_name=False)
+            if not mission_file:
+                logger.warning("set_options: mission not resolved: %s", mission_new)
+                del new_options["mission"]
+            elif not check_access(user, mission_file).value & Access.READ.value:
+                logger.warning("set_options: mission access denied: %s", mission_new)
+                del new_options["mission"]
+
         if options_file:
             logger.debug("options file: %s", options_file)
             options = cache.load(options_file) or {}
