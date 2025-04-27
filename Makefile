@@ -96,7 +96,7 @@ core: llm.xt images.xt a1111.xt whisper.xt
 
 voice: mike.xt speak.xt whisper.xt
 
-webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt build-ui.xt
+webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt build-ui.xt wat.xt
 
 pro: svelte.xt
 pro-dev: svelte-dev.xt
