@@ -814,12 +814,20 @@ function nav_up(ev) {
 
 function scroll_home_end(ev, p) {
   ev.preventDefault();
-  $messages_iframe.contentWindow.postMessage({ type: "scroll_home_end", p }, ROOMS_URL);
+  if(!editor_file)
+    $messages_iframe.contentWindow.postMessage({ type: "scroll_home_end", p }, ROOMS_URL);
+  else {
+    $edit.scrollTop = p * $edit.scrollHeight;
+  }
 }
 
 function scroll_pages(ev, d) {
   ev.preventDefault();
-  $messages_iframe.contentWindow.postMessage({ type: "scroll_pages", d }, ROOMS_URL);
+  if(!editor_file)
+    $messages_iframe.contentWindow.postMessage({ type: "scroll_pages", d }, ROOMS_URL);
+  else {
+    $edit.scrollTop += d * $edit.clientHeight;
+  }
 }
 
 // user info and settings ----------------------------------------------------
