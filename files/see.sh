@@ -33,7 +33,7 @@ case "${file,,}" in
 	# sxiv "$file" ;;
 *.mp4|*.mkv|*.avi|*.webm|*.mpg|*.mpeg|*.m4v|*.ts|*.flv|*.wmv)
 	mp -- "$file" ;;
-*.mp3|*.ogg|*.wav|*.aac)
+*.mp3|*.ogg|*.wav|*.aac|*.flac)
 	mp -- "$file" ;;
 *.zip)
 	mcomix -- "$file" ;;
