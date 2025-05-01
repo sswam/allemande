@@ -61,6 +61,11 @@ while [[ $# -gt 0 ]]; do
 		output_dir="$2"
 		mkdir -p "$output_dir"
 		shift 2
+	elif [[ "$1" == "--task" ]]; then
+		if [ "$2" = translate ]; then
+			args+=("--translate")
+		fi
+		shift 2
 	elif [[ "$1" == "--cpu" ]]; then
 		cpu=1
 		shift
