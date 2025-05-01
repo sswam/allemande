@@ -90,6 +90,7 @@ async function ensurePreviousMessagesProcessed(element) {
     id = await processMessage(prev) + 1;
   }
   element.classList.add("m" + id);
+  element.id = "m" + id;
   return [id, false];
 }
 

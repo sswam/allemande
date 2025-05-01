@@ -1,3 +1,5 @@
+let chat;
+
 async function checkMediaPermissions() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const hasAudioPermission = devices.some(device =>
@@ -11,8 +13,8 @@ async function setupRecorder(includeVideo) {
     let room_saved;
     const { hasAudioPermission, hasVideoPermission } = await checkMediaPermissions();
     if (!hasAudioPermission || !hasVideoPermission) {
-        room_saved = room;
-        clear_messages_box();
+        room_saved = chat.room;
+        chat.clear_messages_box();
 //        await $wait();
     }
 
@@ -36,7 +38,7 @@ async function setupRecorder(includeVideo) {
     });
 
     if (room_saved)
-        set_room(room_saved);
+        chat.set_room(room_saved);
 
     return {
         mediaRecorder,
@@ -71,7 +73,7 @@ function set_timer(seconds) {
 
 // Main recording function
 async function handleRecording(includeVideo = false) {
-    set_controls('input_record');
+    chat.set_controls('input_record');
 
     try {
         const {
@@ -95,7 +97,7 @@ async function handleRecording(includeVideo = false) {
         let start = Date.now() / 1000;
         let seconds_before = 0;
         const $timer = $id('rec_time');
-        active_set("rec_time");
+        chat.active_set("rec_time");
         set_timer(0);
             
         const update_timer = () => {
@@ -120,11 +122,11 @@ async function handleRecording(includeVideo = false) {
 
                 seconds_before = Math.floor(seconds_before + Date.now() / 1000 - start);
                 start = null;
-                active_reset("rec_time");
+                chat.active_reset("rec_time");
             } else if (mediaRecorder.state === 'paused') {
                 mediaRecorder.resume();
                 start = Date.now() / 1000;
-                active_set("rec_time");
+                chat.active_set("rec_time");
                 update_timer();
                 $timer.title = 'pause recording';
             }
@@ -145,7 +147,7 @@ async function handleRecording(includeVideo = false) {
 
         clearInterval(timerInterval);
         set_timer(0);
-        active_reset("rec_time");
+        chat.active_reset("rec_time");
 
         const mediaBlob = await stopRecording(mediaRecorder, chunks, stream, includeVideo);
         console.log('Recording complete:', mediaBlob);
@@ -169,7 +171,7 @@ async function handleRecording(includeVideo = false) {
                 hide("rec_preview_videoPreview");
             }
             preview.src = url;
-            set_controls('input_record_preview');
+            chat.set_controls('input_record_preview');
 
             // wait for one of the save / cancel buttons to be clicked,
             stop_action = await new Promise((resolve) => {
@@ -189,10 +191,10 @@ async function handleRecording(includeVideo = false) {
         if (stop_action === 'save') {
             // Send the recording to the server
             const fileName = includeVideo ? `${user}_video.webm` : `${user}_audio.webm`;
-            active_set(save_button);
-            if (!await add_upload_file_link(upload_file(mediaBlob, fileName, true)))
-                await error(save_button);
-            active_reset(save_button);
+            chat.active_set(save_button);
+            if (!await chat.add_upload_file_link(chat.upload_file(mediaBlob, fileName, true)))
+                await chat.error(save_button);
+            chat.active_reset(save_button);
         }
 
     } catch (err) {
@@ -201,10 +203,12 @@ async function handleRecording(includeVideo = false) {
 
     set_timer(0);
 
-    set_controls();
+    chat.set_controls();
 }
 
-function record_main() {
+async function record_main() {
+    chat = await $import("chat");
+
     $on($id('add_record_audio'), 'click', () => handleRecording(false));
     $on($id('add_record_video'), 'click', () => handleRecording(true));
 }

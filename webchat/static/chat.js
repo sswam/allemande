@@ -146,7 +146,7 @@ const random_message = [
 let VERSION;
 let DEBUG = true;
 
-let room;
+export let room;
 let user;
 let admin = false;
 let dev = false;
@@ -293,7 +293,7 @@ async function flash($el, className) {
   $el.classList.remove(className);
 }
 
-async function error(id) {
+export async function error(id) {
   const $e = $id(id);
   if (!$e)
     return;
@@ -313,7 +313,7 @@ function active_get(id) {
   return count;
 }
 
-function active_set(id, new_count) {
+export function active_set(id, new_count) {
   if (new_count === undefined) {
     new_count = 1;
   }
@@ -349,7 +349,7 @@ function active_dec(id) {
   active_add(id, -1);
 }
 
-function active_reset(id) {
+export function active_reset(id) {
   active_set(id, 0);
 }
 
@@ -579,7 +579,7 @@ function reload_messages() {
   // setTimeout(() => set_room(), 1);
 }
 
-function clear_messages_box() {
+export function clear_messages_box() {
   messages_iframe_set_src("about:blank");
 }
 
@@ -592,7 +592,7 @@ function get_file_type(name) {
     return "room";                   // no extension
 }
 
-async function set_room(room_new, no_history) {
+export async function set_room(room_new, no_history) {
   // check if room_new was passed
   if (room_new === undefined) {
     $room.value = $room.value.trim();
@@ -1495,7 +1495,7 @@ async function upload_files(files, to_text) {
   }
 }
 
-async function add_upload_file_link(promise) {
+export async function add_upload_file_link(promise) {
   const data = await promise;
   if (!data)
     return false;
@@ -1510,7 +1510,7 @@ async function add_upload_file_link(promise) {
   return true;
 }
 
-async function upload_file(file, filename, to_text) {
+export async function upload_file(file, filename, to_text) {
   // upload in the background using fetch
   const formData = new FormData();
   formData.append("room", room);
@@ -1686,7 +1686,7 @@ function reset_ui() {
 
 let view_theme_original_text;
 
-function set_controls(id) {
+export function set_controls(id) {
   id = id || "input_main";
   const $el = $id(id);
   if ($el.classList.contains("hidden")) {
