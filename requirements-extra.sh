@@ -62,6 +62,7 @@ npm install -g stylelint stylelint-config-recommended  # stylelint-config-standa
 # I had to build this from source, for whisperx
 # You might need to fix the CUDA headers first, as described below.
 
+CUDA_CXX="/usr/bin/g++-13"
 cd ~/soft-ai
 apt install libmkl-dev
 git clone git@github.com:OpenNMT/CTranslate2.git
@@ -70,7 +71,7 @@ git checkout v4.4.0
 git submodule update --init --recursive
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr -D WITH_CUDA=on -D WITH_CUDNN=on -DMKL_INCLUDE_DIR=/usr/include/mkl ..
+cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_CXX_COMPILER="$CUDA_CXX" -DCMAKE_INSTALL_PREFIX=/usr -D WITH_CUDA=on -D WITH_CUDNN=on -DMKL_INCLUDE_DIR=/usr/include/mkl ..
 make
 sudo checkinstall --pkgname ctranslate2
 

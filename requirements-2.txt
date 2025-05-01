@@ -10,6 +10,7 @@ grpcio-status  # needs older version to be compatible with parler-tts
 # git+https://github.com/huggingface/parler-tts.git@5d0aca9753ab74ded179732f5bd797f7a8c6f8ee
 
 whisperx
+ctranslate2==4.4.0
 insanely-fast-whisper
 segment-anything
 
