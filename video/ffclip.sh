@@ -1,8 +1,24 @@
-#!/bin/bash
-set -euo pipefail
-url=$1 out=$2 start=$3 end=$4
-user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
-. opts
-len=$(hms "$(calc `hms- "$end"` - `hms- "$start"`)")
-# -user_agent "$user_agent" -headers "Referer: $url" 
-v ffmpeg -y -ss "$start" -i "$url" -t "$len" "$out"
+#!/usr/bin/env bash
+
+# <url> <outfile> <start_time> <end_time>
+# Clips a video from URL between start and end times
+
+ffclip() {
+	eval "$(ally)"
+
+	local url=${1:?URL required}
+	local output=${2:?output file required}
+	local start=${3:?start time required}
+	local end=${4:?end time required}
+
+	# Calculate clip duration
+	local len=$(hms "$(calc "$(hms- "$end")" - "$(hms- "$start")")")
+
+	v ffmpeg -y -ss "$start" -i "$url" -t "$len" "$output"
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	ffclip "$@"
+fi
+
+# version: 0.1.1
