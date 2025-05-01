@@ -2,6 +2,28 @@
 
 # [options]
 # Monitors system resources and network connectivity
+#
+# MIT license:
+#
+# Copyright 2025, Sam Watkins
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the “Software”), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 # The script monitors:
 # - Disk space usage
@@ -18,15 +40,46 @@
 #
 # */15 * * * * /path/to/monitor.sh
 
-monitor() {
-  local threshold_storage= s=95 # storage usage threshold percentage
-  local threshold_load= l=1     # load average threshold
-  local threshold_mem= m=95     # memory usage threshold percentage
-  local threshold_vm= M=90      # VM (RAM + swap) usage threshold percentage
-  local ping_host= p=8.8.8.8    # host to ping test
-  local verbose= v=             # verbose
+usage() {
+  cat << EOF
+Usage: $(basename "$0") [options]
+Monitor system resources and network connectivity
 
-  eval "$(ally)"
+Options:
+  -s PERCENT   Storage usage threshold percentage (default: 95)
+  -l LOAD      Load average threshold (default: 1)
+  -m PERCENT   Memory usage threshold percentage (default: 95)
+  -M PERCENT   VM (RAM + swap) usage threshold percentage (default: 90)
+  -p HOST      Host to ping test (default: 8.8.8.8)
+  -v           Verbose mode
+  -h           Display this help message
+EOF
+  exit 1
+}
+
+monitor() {
+  local threshold_storage=95
+  local threshold_load=1
+  local threshold_mem=95
+  local threshold_vm=90
+  local ping_host="8.8.8.8"
+  local verbose=
+
+  # Parse command line options
+  local OPTIND
+  while getopts "s:l:m:M:p:vh" opt; do
+    case $opt in
+      s) threshold_storage="$OPTARG" ;;
+      l) threshold_load="$OPTARG" ;;
+      m) threshold_mem="$OPTARG" ;;
+      M) threshold_vm="$OPTARG" ;;
+      p) ping_host="$OPTARG" ;;
+      v) verbose=1 ;;
+      h) usage ;;
+      ?) usage >&2 ;;
+    esac
+  done
+  shift $((OPTIND-1))
 
   check_disk
   check_load
