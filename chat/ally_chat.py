@@ -101,7 +101,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     response = await search.search(query, engine=name, markdown=True, num=num, limit=limit, safe=not ADULT)
     response2 = f"{name}:\t\n{response}"
     logger.debug("response:\n%s", response2)
-    response3 = fix_layout(response2, args, agent)
+    response3 = chat.fix_response_layout(response2, args, agent)
     logger.debug("response3:\n%s", response3)
 
     # wrap in a <div class="search"> container if not in a div already
