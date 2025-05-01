@@ -214,6 +214,11 @@ async function send(ev) {
   if (ev)
     ev.preventDefault();
 
+  if (get_file_type($room.value) === "dir") {
+    flash($id("send"), "error");
+    return;
+  }
+
   auto_play_back_off();
 
   // if shift or ctrl is pressed, change the active count
@@ -401,7 +406,7 @@ function textarea_indent(textarea, dedent = false) {
     } else {
       // For tab with no selection, insert a tab at caret
       setRangeText(textarea, '\t', textarea.selectionStart, textarea.selectionEnd);
-      const newPos = textarea.selectionStart + 1;
+      const newPos = textarea.selectionStart;
       textarea.selectionStart = textarea.selectionEnd = newPos;
     }
     return;
@@ -814,12 +819,20 @@ function nav_up(ev) {
 
 function scroll_home_end(ev, p) {
   ev.preventDefault();
-  $messages_iframe.contentWindow.postMessage({ type: "scroll_home_end", p }, ROOMS_URL);
+  if(!editor_file)
+    $messages_iframe.contentWindow.postMessage({ type: "scroll_home_end", p }, ROOMS_URL);
+  else {
+    $edit.scrollTop = p * $edit.scrollHeight;
+  }
 }
 
 function scroll_pages(ev, d) {
   ev.preventDefault();
-  $messages_iframe.contentWindow.postMessage({ type: "scroll_pages", d }, ROOMS_URL);
+  if(!editor_file)
+    $messages_iframe.contentWindow.postMessage({ type: "scroll_pages", d }, ROOMS_URL);
+  else {
+    $edit.scrollTop += d * $edit.clientHeight;
+  }
 }
 
 // user info and settings ----------------------------------------------------
