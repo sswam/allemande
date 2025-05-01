@@ -821,18 +821,16 @@ function scroll_home_end(ev, p) {
   ev.preventDefault();
   if(!editor_file)
     $messages_iframe.contentWindow.postMessage({ type: "scroll_home_end", p }, ROOMS_URL);
-  else {
+  else
     $edit.scrollTop = p * $edit.scrollHeight;
-  }
 }
 
 function scroll_pages(ev, d) {
   ev.preventDefault();
   if(!editor_file)
     $messages_iframe.contentWindow.postMessage({ type: "scroll_pages", d }, ROOMS_URL);
-  else {
+  else
     $edit.scrollTop += d * $edit.clientHeight;
-  }
 }
 
 // user info and settings ----------------------------------------------------
