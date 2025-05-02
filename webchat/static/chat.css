@@ -366,22 +366,76 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) {
 	font-size: 24px;
 }
 
-#theme-overlay {
+#theme-overlay, #intro {
 	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	padding: 20px 40px;
+	padding: 1.25rem 2.5rem;
 	background: var(--background);
 	color: var(--text);
-	border: 2px solid var(--frame);
-	border-radius: 15px;
-	font-size: 24px;
+	border: 0.125rem solid var(--frame);
+	border-radius: 0.9375rem;
+	font-size: 1.5rem;
 	font-weight: bold;
 	z-index: 9999;
-	opacity: 0;
 	transition: opacity 0.3s ease;
 	pointer-events: none;
+	text-align: center;
+}
+
+body.intro :is(button, a.button, input, textarea, iframe):not(#help) {
+	opacity: 0.125;
+	transition: opacity 0.3s ease;
+}
+
+/* in intro mode, animate the help button with a pulse and wiggle effect */
+body.intro #help {
+	animation: pulse 1s infinite ease-in-out;
+}
+
+#intro-help-arrow {
+	position: absolute;
+	top: 3rem;
+	right: 5rem;
+	width: 30vw;
+	height: 30vh;
+	z-index: 9998;
+}
+
+body:not(.intro) :is(#intro, #intro-help-arrow) {
+	display: none;
+	opacity: 0;
+}
+
+@keyframes pulse {
+	0% {
+		transform: scale(1) rotate(0deg);
+	}
+	12.5% {
+		transform: scale(1.05) rotate(5deg);
+	}
+	25% {
+		transform: scale(1.1) rotate(0deg);
+	}
+	37.5% {
+		transform: scale(1.15) rotate(-5deg);
+	}
+	50% {
+		transform: scale(1.2) rotate(0deg);
+	}
+	62.5% {
+		transform: scale(1.15) rotate(5deg);
+	}
+	75% {
+		transform: scale(1.1) rotate(0deg);
+	}
+	87.5% {
+		transform: scale(1.05) rotate(-5deg);
+	}
+	100% {
+		transform: scale(1) rotate(0deg);
+	}
 }
 
 @media print {

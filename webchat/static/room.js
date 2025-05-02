@@ -1166,7 +1166,7 @@ async function error(id) {
 }
 */
 
-function handle_intro() {
+function handle_room_intro() {
   const hasSeenIntro = !['guide', 'intro'].includes(room) && localStorage.getItem(`seen_intro_${room}`);
   if (!hasSeenIntro) {
     suppressInitialScroll = true;
@@ -1226,7 +1226,7 @@ export async function room_main() {
 
   setup_view_options();
 
-  handle_intro();
+  handle_room_intro();
 
   setup_mutation_observer();
   await process_current_messages(); // must be after setup_mutation_observer

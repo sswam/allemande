@@ -2787,6 +2787,18 @@ function select_cancel(ev) {
   $messages_iframe.contentWindow.postMessage({ type: "set_mode_options", ...mode_options }, ROOMS_URL);
 }
 
+// intro to Ally Chat: point at the help icon! -------------------------------
+
+function handle_intro() {
+  if (localStorage.getItem("intro"))
+    return;
+  localStorage.setItem("intro", "1");
+
+  const cl = document.body.classList;
+  cl.add("intro");
+  setTimeout(() => cl.remove("intro"), 5000);
+}
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -2932,4 +2944,6 @@ export async function init() {
     e.preventDefault();
   }, { passive: false });
   */
+
+  handle_intro();
 }
