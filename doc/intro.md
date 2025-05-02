@@ -1,34 +1,53 @@
-# Quick Intro to Ally Chat
+# Quick Intro
 
-Ally Chat is a multi-user chat platform with access to numerous AI models. It's open source, free to use, and lets you chat with multiple AIs and humans together.
+Welcome to Ally Chat, the multi-player AI chat app.
 
-## Getting Help
+Ally Chat is open source and free to use.
 
-- Click the *i* help button and talk to Flashi. In the help system, AIs have access to the full user guide and can give very detailed help.
-- In the main public [Ally Chat](/Ally+Chat) room, AIs can help with some basic info about the app.
-- Note that in other chat rooms, the AIs don't know anything at all about the app.
-- You can talk with Sam, the main developer, and other users.
-- Read this [Quick Intro](/intro), or the [User Guide](/guide) for full details on the app, models, characters, and tools.
-- The advanced mode of the app has many options and features, you can try that when you've mastered the basics.
+You can talk with top AI models from different providers, and realistic AI characters too.
+
+You can have group chats with several AIs together, and with other people.
+
+Free users have access to all models and features, but there are some good perks for supporters too.
+
+If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
+
+## Getting Started
+
+Click the *i* help button at any time, and talk with Flashi. In the help system, AIs have access to the full user guide and can give detailed help.
+
+In the main [Ally Chat](/Ally+Chat) room, AIs can help with some basic info about the app.
+
+**NOTE**: In other chat rooms, AIs don't know anything at all about the app!
+
+Read this [Quick Intro](/intro), then the [User Guide](/guide), for full details on the app, models, characters, and tools.
+
+The app has advanced modes with many options and features, but please master the basics first.
+
+Please contact Sam, the main developer, for more help and to give feedback.
 
 ## Talking with AIs
-- You can address AIs by name:
-  - "Ally, how are you?"
-  - "Can you help, Flashi?"
-  - "@Illu, let's draw a garden!"
-- Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an AI art prompt for you.
-- You can say "someone" for a random AI, or "everyone" for several responses.
+
+Address AIs by name to get their attention:
+
+> Ally, how are you?
+> Can you help, Flashi?
+> Illu, let's draw a garden!
+
+Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an AI art prompt for you.
+
+You can say "someone" for a random AI, or "everyone" for several responses.
 
 ## Select Characters and Tools
 
 **General Chat**
-- Ally, Barbie: friendly chat
+- Ally, Barbie, Callam: friendly chat
 - Flashi, Emmy, Claude, Gemmi: strong assistants
-- Fli, Emm, Clu, Gemm: concise responses from the above
+- Fli, Emm, Clu, Gemm: for concise responses
 
 **AI Art**
 - Illu, Gema: prompting
-- Illy: generation
+- Illy: image generation
 
 **Specialists**
 - Brie: brainstorming
@@ -40,19 +59,19 @@ Ally Chat is a multi-user chat platform with access to numerous AI models. It's 
 - Goog, "Allemande AI"
 - Gimg, cute animals
 - UTube, indie games
-- Sona, any LLM news today?
+- Sona, any LLM or AI art news lately?
 
 **Code & Calculation**
 - Dogu, date +%F ; fortune
 - Gido, import this
 - Palc, sqrt(3)/2, 2**32
 
-There are many, many more; check the guide, or try the help system!
+There are many, many more; check the guide, and try the help system!
 
 ## Rich Content Support
 
-- Full markdown/HTML/SVG/CSS/JS runs in the chat (no backticks)
-- TeX math: $y = \sqrt{x}$  and  $$ ... $$ displays
+- Full markdown/HTML/SVG/CSS/JS works in the chat (no backticks)
+- TeX math: `$y = \sqrt{x}$` gives $y = \sqrt{x}$, use `$$ ... $$` for displays
 - Graphviz ```dot ```, and ```mermaid ``` diagrams
 - Interactive charts, simulations, mini-games with JavaScript
 
@@ -60,12 +79,12 @@ There are many, many more; check the guide, or try the help system!
 
 - Private/group chat rooms
 - Instant room creation and switching
-- 100+ characters, specialists, and tools
+- 100+ characters, assistants, specialists, and tools
 
 ## Privacy and Rooms
 
 - The [Ally Chat](/Ally+Chat) room is public.
-- Press the padlock icon at top left to toggle public / private.
+- Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
 

@@ -1,38 +1,61 @@
-# Quick Intro to Adult Content in Ally Chat
+# Quick Intro (NSFW)
 
-Ally Chat is a multi-user chat platform with access to numerous AI models. It's open source, free to use, and lets you chat with multiple AIs and humans together.
+Welcome to Ally Chat, the multi-player AI chat app.
+
+Ally Chat is open source and free to use.
+
+You can talk with top AI models from different providers, and realistic AI characters too.
+
+You can have group chats with several AIs together, and with other people.
+
+We believe in privacy and free speech, and oppose censorship.
+
+The app includes models and features for adult entertainment, and is good for other things too.
 
 The NSFW zone contains sexual material, and is restricted to adults only.
 
-## Getting Help
+Free users have access to all models and features, but there are some good perks for supporters too.
 
-- Click the *i* help button and talk to Flashi. In the help system, AIs have access to the full user guide and can give very detailed help.
-- In the main public [Ally Chat](/Ally+Chat) room, and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with some basic info about the app.
-- Note that in other chat rooms, the AIs don't know anything at all about the app.
-- You can talk with Sam, the main developer, and other users.
-- Read the [Quick Intro](/intro), or the [User Guide](/guide) for full details on the app, models, characters, and tools.
-- Read this [NSFW Quick Intro](/nsfw/intro), or the [User Guide to Adult Features](/nsfw/guide) for more info about adult features, models, characters, and tools.
-- The advanced mode of the app has many options and features, you can try that when you've mastered the basics.
+If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
+
+## Getting Started
+
+Click the *i* help button at any time, and talk with Flashi. In the help system, AIs have access to the full user guide and can give detailed help.
+
+In the main public [Ally Chat](/Ally+Chat) room, and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with some basic info about the app.
+
+**NOTE**: In other chat rooms, AIs don't know anything at all about the app!
+
+Read the [Quick Intro](/intro), then the [User Guide](/guide), for full details on the app, models, characters, and tools.
+
+Read this [NSFW Quick Intro](/nsfw/intro), or the [User Guide to Adult Features](/nsfw/guide) for more info about adult features, models, characters, and tools.
+
+The app has advanced modes with many options and features, but please master the basics first.
+
+Please contact Sam, the main developer, for more help and to give feedback.
 
 ## Talking with AIs
 
-- You can address AIs by name:
-  - "hey Ally, you're looking hot!"
-  - "Can you help run a photoshoot, Flashi?"
-  - "@Xilu, draw a sexy nude girl!"
-- Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an AI art prompt for you.
-- You can say "someone" for a random AI, or "everyone" for several responses.
+Address AIs by name to get their attention:
+
+> hey Ally, you're looking hot!
+> Can you help run a sexy photoshoot, Flashi?
+> Xilu, draw a nude girl!
+
+Send an empty "poke" message to continue AI conversations. You'll need to do this after Xilu writes an AI art prompt for you.
+
+You can say "someone" for a random AI, or "everyone" for several responses.
 
 ## Select Characters and Tools
 
 **General Chat**
-- Ally, Barbie, Eva, Evan, Pyrite: chat
-- Flashi, Gemmi: assistants
-- Fli, Gemm: concise responses
+- Ally, Barbie, Callam, Eva, Pyrite: friendly chat
+- Flashi, Gemmi: strong assistants
+- Fli, Gemm: for concise responses
 
 **AI Art**
 - Xilu: NSFW image prompting
-- Illy, Hily: high quality, realistic, soft-core
+- Illy, Hily: high quality, realistic images, including soft-core
 - Yoni, Coni, Boni: semi-realistic NSFW images
 - Poni: cartoon / anime NSFW images
 - Bigi, Pigi: realistic NSFW images
@@ -49,26 +72,27 @@ The NSFW zone contains sexual material, and is restricted to adults only.
 - UTube, indie games
 - Pr0nto, striptease
 
-There are many, many more; check the guides, or try the help system!
+There are many, many more; check the guides, and try the help system!
 
 ## Rich Content Support
 
-- Full markdown/HTML/SVG/CSS/JS runs in the chat (no backticks)
+- Full markdown/HTML/SVG/CSS/JS works in the chat (no backticks)
 - Mini-games with JavaScript
 
 ## Platform Features
 
 - Private/group chat rooms
 - Instant room creation and switching
-- 100+ characters, specialists, and tools
+- 100+ characters, assistants, specialists, and tools
 
 ## Privacy and Rooms
 
 - The [Ally Chat](/Ally+Chat) room is public.
-- The [NSFW Chat](/nsfw/nsfw) room is public (adults only).
-- Press the padlock icon at top left to toggle public / private.
+- The [NSFW Chat](/nsfw/nsfw) room is public (for adults only).
+- Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
-- Some adult features, characters and agents are only available under the nsfw/ folder, and in private chats, not in the public rooms at the top level.
+- Click your name in the top bar to cycle through some different rooms.
+- Some adult features, characters and agents are only available under the nsfw/ folder, and in your private chats, not in public rooms at the top level.
 - Some AIs are only available outside the nsfw/ folder, and should not be used in any NSFW chat.
 
 ## Example Usage
