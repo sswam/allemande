@@ -1,0 +1,21 @@
+# Base settings
+REMOTE_UID_MIN=60000
+REMOTE_UID_MAX=69999
+CHROOT_BASE="/srv/chroot/remote"
+REMOTE_GROUP="remote"
+
+# Network settings
+ALLOW_PORTS_MIN=60000
+ALLOW_PORTS_MAX=65535
+ROUTER_IPv4="192.168.1.1"
+ROUTER_IPv6="fd00::1"
+IF_LOCAL="lo"
+IF_ETHERNET="enp6s0"
+TABLE_NAME="remote_user_firewall"
+
+# Resource limits
+CGROUP="remote_user"
+MEMORY_MAX="32G"
+SWAP_MAX="8G"
+CPU_QUOTA=50000  # 50% CPU
+PROCESSES=2048

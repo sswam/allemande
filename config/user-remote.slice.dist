@@ -1,0 +1,9 @@
+[Unit]
+Description=Remote User Slice
+Before=slices.target
+
+[Slice]
+CPUQuota=50%
+MemoryMax=32G
+MemorySwapMax=8G
+TasksMax=2048

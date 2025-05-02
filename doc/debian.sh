@@ -342,6 +342,7 @@ sudo cp config/remote_user_firewall.conf.dist /etc/remote_user_firewall.conf
 cat <<END | sudo tee -a /etc/rc.local
 
 /opt/allemande/adm/remote_user_firewall.sh add
+/opt/allemande/adm/remote_user_startup.sh
 END
 
 sudo chmod +x /etc/rc.local

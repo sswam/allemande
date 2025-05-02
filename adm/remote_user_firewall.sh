@@ -11,7 +11,7 @@ IF_LOCAL="lo"
 IF_ETHERNET="enp6s0"
 TABLE_NAME="remote_user_firewall"
 
-. /etc/remote_user_firewall.conf
+. /etc/remote_user.conf
 
 op="$1"
 
