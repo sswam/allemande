@@ -42,6 +42,9 @@ let lastMessageId = null;
 
 let help_room, qa_room, help_url, qa_url;
 
+const image_size_default = 6;
+const font_size_default = 4;
+
 let view_options = {
   ids: 0,
   images: 1,
@@ -54,8 +57,8 @@ let view_options = {
   columns: 0,
   compact: 0,
   history: 0,
-  image_size: 8,
-  font_size: 4,
+  image_size: image_size_default,
+  font_size: font_size_default,
   input_row_height: 48, // 32 // 72
   theme: "pastel",
   details_changed: true,
@@ -2083,8 +2086,8 @@ function view_options_apply() {
   active_set("view_canvas", view_options.canvas);
   active_set("view_toc", view_options.toc);
   active_set("view_clean", view_options.clean);
-  active_set("view_image_size", view_options.image_size - 4);
-  active_set("view_font_size", view_options.font_size - 4);
+  active_set("view_image_size", view_options.image_size - image_size_default);
+  active_set("view_font_size", view_options.font_size - font_size_default);
   active_set("view_columns", view_options.columns);
   active_set("view_compact", view_options.compact);
   active_set("view_history", view_options.history);
@@ -2162,7 +2165,7 @@ function view_options_apply() {
   const font_size_icon = view_font_size_delta > 0 ? "font_expand" : "font_contract";
   $id("view_font_size").innerHTML = icons[font_size_icon];
 
-  const zoom = 1.15**(view_options.font_size-4);
+  const zoom = 1.15**(view_options.font_size-font_size_default);
   const font_size = Math.round(16*zoom);
   document.documentElement.style.setProperty("--font-size", font_size + "px");
   const font_size_code = 12 * Math.round(zoom);
@@ -2279,29 +2282,29 @@ function view_advanced(ev) {
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
 
 function view_image_size(ev) {
-  // starts at 4, range from 1 to 10
+  // range from 1 to 10
   const reset = ev.ctrlKey;
   if (reset) {
-    view_options.image_size = 4;
+    view_options.image_size = image_size_default;
     view_image_size_delta = 1;
   } else {
     const neg = ev.shiftKey ? -1 : 1;
     const delta = neg * view_image_size_delta;
-    view_options.image_size = ((view_options.image_size || 4) + delta + 9) % 10 + 1;
+    view_options.image_size = ((view_options.image_size || image_size_default) + delta + 9) % 10 + 1;
   }
   view_options_apply();
 }
 
 function view_font_size(ev) {
-  // starts at 4, range from 1 to 10
+  // range from 1 to 10
   const reset = ev.ctrlKey;
   if (reset) {
-    view_options.font_size = 4;
+    view_options.font_size = font_size_default;
     view_font_size_delta = 1;
   } else {
     const neg = ev.shiftKey ? -1 : 1;
     const delta = neg * view_font_size_delta;
-    view_options.font_size = ((view_options.font_size || 4) + delta + 9) % 10 + 1;
+    view_options.font_size = ((view_options.font_size || font_size_default) + delta + 9) % 10 + 1;
   }
   view_options_apply();
   if (!$id("help-widget").classList.contains("hidden"))

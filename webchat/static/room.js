@@ -989,15 +989,15 @@ async function set_view_options(new_view_options) {
   cl.toggle("compact", view_options.compact >= 1);
   cl.toggle("compact2", view_options.compact == 2);
 
-  const image_size = view_options.image_size * 5;
-  const image_size_small = view_options.image_size*2.5;
-  const image_size_large = view_options.image_size == 10 ? 100 : Math.min(view_options.image_size*10, 90);
+  const image_size = view_options.image_size * 10;
+  const image_size_small = view_options.image_size*5;
+  // const image_size_large = view_options.image_size == 10 ? 100 : Math.min(view_options.image_size*10, 90);
   document.documentElement.style.setProperty("--image-width", image_size + "vw");
   document.documentElement.style.setProperty("--image-height", image_size + "vh");
   document.documentElement.style.setProperty("--image-width-small", image_size_small + "vw");
   document.documentElement.style.setProperty("--image-height-small", image_size_small + "vh");
-  document.documentElement.style.setProperty("--image-width-large", image_size_large + "vw");
-  document.documentElement.style.setProperty("--image-height-large", image_size_large + "vh");
+  // document.documentElement.style.setProperty("--image-width-large", image_size_large + "vw");
+  // document.documentElement.style.setProperty("--image-height-large", image_size_large + "vh");
 
   const zoom = 1.15**(view_options.font_size-4);
   const font_size = Math.round(16*zoom);
