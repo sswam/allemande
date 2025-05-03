@@ -1471,7 +1471,7 @@ function content_paste(event) {
   }
 }
 
-async function upload_files(files, to_text) {
+export async function upload_files(files, to_text) {
   // upload in parallel
   active_add("add_file", files.length);
   const promises = [];
@@ -1797,6 +1797,17 @@ function auto_play_back_off() {
     set_auto_play(0);
   }
 }
+
+// audio control -------------------------------------------------------------
+
+async function set_audio_vad() {
+  // await toggleVAD();
+  await $script("script_voice", "/voice.js");
+  view_options.audio_vad = view_options.audio_vad ? 0 : 1;
+  view_options_apply();
+}
+
+
 
 // edit file -----------------------------------------------------------------
 
@@ -2894,6 +2905,8 @@ export async function init() {
   $on($id("scroll_pageup"), "click", (ev) => scroll_pages(ev, -1));
   $on($id("scroll_pagedown"), "click", (ev) => scroll_pages(ev, 1));
   $on($id("scroll_cancel"), "click", () => set_top());
+
+  $on($id("audio_vad"), "click", set_audio_vad);
 
   if (iOS && navigator.standalone)
     $on(window, "scroll", iOS_reload_scroll);

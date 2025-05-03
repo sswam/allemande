@@ -3,7 +3,12 @@
 console.log("GOT HERE 1");
 
 // import { createVADMic } from '@ricky0123/vad-web';
-const { createVADMic } = vad;
+// const { createVADMic } = vad;
+// let chat;
+
+// async function importChat() {
+//   chat = await import('./chat.js');
+// }
 
 class VoiceInterface {
   constructor(options) {
@@ -16,13 +21,14 @@ class VoiceInterface {
 
   async init() {
     try {
-      this.vad = await createVADMic({
+      this.vad = await vad.MicVAD.new({
         onSpeechStart: this.onSpeechStart,
         onSpeechEnd: (audio) => {
-          const audioArray = new Float32Array(audio.length);
-          audio.copyTo(audioArray);
-          this.onSpeechEnd(audioArray);
+          // const audioArray = new Float32Array(audio.length);
+          // audio.copyTo(audioArray);
+          this.onSpeechEnd(audio);
         },
+        // onFrameProcessed: this.onFrameProcessed
       });
     } catch (e) {
       this.onError('Failed to initialize voice interface:', e);
@@ -84,14 +90,79 @@ class VoiceControls {
   }
 }
 
+// Helper function to convert Float32Array to WAV Blob
+function float32ArrayToWavBlob(audioData, sampleRate = 16000) {
+  // Create WAV header
+  const numChannels = 1;
+  const bitsPerSample = 16;
+  const blockAlign = numChannels * bitsPerSample / 8;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = audioData.length * 2; // 16-bit samples
+  const headerSize = 44;
+  const totalSize = headerSize + dataSize;
+  
+  const buffer = new ArrayBuffer(totalSize);
+  const view = new DataView(buffer);
+  
+  // Write WAV header
+  const writeString = (offset, string) => {
+    for (let i = 0; i < string.length; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  };
+  
+  writeString(0, 'RIFF');
+  view.setUint32(4, totalSize - 8, true);
+  writeString(8, 'WAVE');
+  writeString(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM format
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bitsPerSample, true);
+  writeString(36, 'data');
+  view.setUint32(40, dataSize, true);
+  
+  // Write audio data
+  const samples = new Int16Array(audioData.length);
+  for (let i = 0; i < audioData.length; i++) {
+    const s = Math.max(-1, Math.min(1, audioData[i]));
+    samples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+  }
+  
+  const samplesBytes = new Uint8Array(samples.buffer);
+  const audioDataView = new Uint8Array(buffer, 44);
+  audioDataView.set(samplesBytes);
+  
+  return new Blob([buffer], { type: 'audio/wav' });
+}
+
 // Initialize and add voice interface to the chat app
 async function initVoiceInterface() {
   console.log("ENABLING VOICE CHAT INTERFACE");
   const voiceInterface = new VoiceInterface({
     onSpeechStart: () => console.log('Speech started'),
-    onSpeechEnd: (audio) => {
-      console.log('Speech ended', audio);
-      // Here you would send the audio to your backend for processing
+    onSpeechEnd: async (audio) => {
+      console.log('Speech ended, converting to WAV...');
+      
+      const wavBuffer = vad.utils.encodeWAV(audio);
+    
+      // Create a Blob from the WAV buffer
+      const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+      
+      // Create a File object from the Blob with a timestamp in the filename
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const file = new File([wavBlob], `voice_recording_${timestamp}.wav`, { type: 'audio/wav' });
+      
+      // Use the upload_files function from chat.js with an array of files
+      try {
+        await chat.upload_files([file], true);
+      } catch (err) {
+        console.error('Failed to upload audio:', err);
+        this.onError('Failed to upload audio: ' + err.message);
+      }
     },
     onError: (error) => console.error('Voice interface error:', error),
   });
