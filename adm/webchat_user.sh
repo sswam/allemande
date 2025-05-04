@@ -70,7 +70,7 @@ END
 	mkdir -p static/users/"$user"
 	touch static/users/"$user"/styles.css
 	touch static/users/"$user"/script.js
-	ln -sf ../../themes/pastel.css static/users/"$user"/theme.css
+	ln -sf ../../themes/light.css static/users/"$user"/theme.css
 
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 
