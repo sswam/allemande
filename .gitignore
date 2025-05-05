@@ -95,6 +95,7 @@ rooms.*
 /agents/celeb
 /agents/disney
 /agents/fiction
+/doc/extra.md
 
 # 3rd-party content
 /code/pop.pdf

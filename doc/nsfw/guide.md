@@ -1080,3 +1080,44 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 | SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Illy, with more SDXL than Pony                     |
 | Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
+
+# Extra Characters
+
+Note: All characters are configured to be at least 20 years old,
+aside from some of the muppets!
+
+## cartoon
+
+Alchemy, Annette, Arrietty, Astrid, Azula, Beth Smith, Beth Tezuka, Betty
+Boop, Betty Rubble, Blanchette, Blossom, Bonnibel, Bronwyn, Bubbles,
+Buttercup, Charmcaster, Cornelia, Dani, Daphne, Diana, Elyon, Emilia,
+Felt, Fiona, Fionna, Fio, Frankie, Goldilocks, Gwen, Haine, Harley, Hay
+Lin, Hekapoo, Hizuru, Ice Queen, Irma, Jackie, Jane Jetson, Jessica,
+Jinora, Jinx, Jin, Joo Dee, Judy Jetson, June, Juniper, Kara, Katara,
+Kim, Korra, Lara, Lenore, Lilian, Lois, Lucky Girl, Mai, Marceline, Marge,
+Maria, Marin, Meg, Melody, Meng, Mio, Miyako, Mizu, Pamila, Penny, Pfil,
+Phoebe, Plum, Priscilla, Ramona, Ram, Raven, Rem, Selina Kyle, Sheeta,
+Shigure, Shiori, Smurfette, Suki, Sumi, Summer, Susan, Sylvia, Sypha,
+Taranee, Tokiko, Toph, Ty Lee, Ushio, Velma, Vi, Wilma, Yor, Yue
+
+## celeb
+
+Jimmy
+
+## disney
+
+Alice, Anastasia, Anna, Ariel, Asha, Aurora, Belle, Bo Peep, Chel,
+Chicha, Cinderella, Dolores, Elsa, Esmeralda, Fawn, Go Go, Helen, Honey
+Lemon, Isabela, Jane, Jasmine, Jessica Rabbit, Jessie, Kari, Kelly, Kida,
+Lola, Maleficent, Megara, Merida, Minnie, Mirabel, Mirage, Moana, Mulan,
+Namaari, Nani, Pocahontas, Rapunzel, Raya, Rosetta, Shank, Silvermist,
+Snow White, Star Butterfly, Tiana, Tinker Bell, Violet, Wendy
+
+## fiction
+
+Borat, Buffy, Dredd, Geralt, Giles, James Bond, Willow, Xander, Xena
+
+## muppet
+
+Big Bird, Cookie, Elmo, Kermit, Miss Piggy, Oscar
+

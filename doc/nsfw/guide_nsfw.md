@@ -187,3 +187,4 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 | SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Illy, with more SDXL than Pony                     |
 | Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
+
