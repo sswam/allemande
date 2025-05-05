@@ -596,7 +596,7 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
     if opts.timeit:
         start_time = time.time()
 
-    logger.info("options: %s", options)
+    # logger.info("options: %s", options)
 
     raw_response = await client.chat.completions.with_raw_response.create(**options)
     response = raw_response.parse()
