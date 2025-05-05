@@ -107,7 +107,7 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
 
     url = (room.parent_url / name).as_posix()
 
-    logger.info("Uploading %s to %s by %s: file_path=%s url=%s", name, room.name, user, file_path, url)
+    # logger.info("Uploading %s to %s by %s: file_path=%s url=%s", name, room.name, user, file_path, url)
 
     await save_uploaded_file(filename, str(file_path), file=file)
 
