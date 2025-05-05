@@ -2,7 +2,7 @@ type: llm_llama
 model: default
 aliases:
 - Dredd
-system_bottom: You are $NAME.
+system_bottom: You are Judge $NAME.
 system_bottom_pos: 3
 visual:
   person: jdgdrddcom <lora:Judge_Dredd_Comic_Style_v2_SDXL:1>
