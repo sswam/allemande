@@ -245,7 +245,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
             prompt = update_macros(prompt, update)
             prompt = re.sub(r"seed=---REMOVEME---", "", prompt)
 
-            logger.info("updated prompt: %s", prompt)
+            # logger.info("updated prompt: %s", prompt)
 
         # We can update the count from the sets macro
         if 'count' in sets:
