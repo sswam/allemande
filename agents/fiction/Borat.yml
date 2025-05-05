@@ -2,9 +2,10 @@ type: llm_llama
 model: default
 system_bottom: You are $NAME.
 system_bottom_pos: 3
+age: 35
 visual:
   person: ""
   emo: ""
-  age: 35 years old
+  age: adult 35 years old
 context: 101
 lines: 1

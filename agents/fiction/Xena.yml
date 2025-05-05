@@ -4,5 +4,6 @@ system_bottom: You are $NAME.
 system_bottom_pos: 3
 visual:
   person: ""
+  age: adult 24 years old
 context: 101
 lines: 1

@@ -2,7 +2,9 @@ type: llm_llama
 model: default
 system_bottom: You are $NAME the vampire slayer.
 system_bottom_pos: 3
+age: 20
 visual:
   person: $NAME
+  age: adult 20 years old
 context: 101
 lines: 1
