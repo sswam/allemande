@@ -26,30 +26,38 @@ __version__ = "0.1.0"
 logger = main.get_logger()
 
 API_URL = "http://127.0.0.1:7860/sdapi/v1/txt2img"
+MAX_RETRIES = 5
+RETRY_DELAY = 10
 
 
 async def generate_image(session, params, restart_on_fail=False) -> dict[str, Any]:
     """Send a request to the API and return the response."""
-    try:
-        async with session.post(API_URL, json=params) as response:
-            response = await response.json()
-            if "images" not in response:
-                raise ValueError(f"Got no images in response: {json.dumps(response)}")
-            return response
-    except Exception as e:
-        logger.error("Error generating image: %s", e)
-        if not restart_on_fail:
-            raise
-        logger.info("Restarting API, will try one more time")
-        await restart_api()
-        return await generate_image(session, params, False)
+    for attempt in range(MAX_RETRIES if restart_on_fail else 1):
+        try:
+            async with session.post(API_URL, json=params) as response:
+                response = await response.json()
+                if "images" not in response:
+                    raise ValueError(f"Got no images in response: {json.dumps(response)}")
+                return response
+
+        except Exception as e:
+            logger.error(f"Attempt {attempt + 1}/{MAX_RETRIES} failed: {e}")
+
+            if attempt + 1 == MAX_RETRIES:
+                logger.error("All retry attempts failed")
+                raise
+
+            if attempt == 0:
+                logger.info(f"Restarting API")
+                await restart_api()
+            logger.info(f"Waiting {RETRY_DELAY} seconds before next attempt")
+            await asyncio.sleep(RETRY_DELAY)
 
 
 async def restart_api():
     """Restart the API."""
     logger.info("Restarting automatic1111 stable diffusion API service")
     os.system("a1111-kill")
-    await asyncio.sleep(20)
 
 
 def remove_comments(text):
