@@ -7,8 +7,6 @@ ALLYCHAT_JWT_SECRET_BINHEX=$(echo -n "$ALLYCHAT_JWT_SECRET" | binhex)
 
 . get-root
 
-set -e -u
-
 cd "$ALLEMANDE_HOME/adm/nginx"
 
 umask 0077
