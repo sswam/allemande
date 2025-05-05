@@ -89,8 +89,11 @@ rooms.*
 /webchat/static/icons.woff2
 /doc/nsfw/guide.md
 
-# NSFW agents
+# agents
 /agents/nsfw
+/agents/cartoon
+/agents/celeb
+/agents/disney
 
 # 3rd-party content
 /code/pop.pdf
