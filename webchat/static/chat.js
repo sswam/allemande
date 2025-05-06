@@ -1708,6 +1708,41 @@ export function set_controls(id) {
   controls = id;
 }
 
+async function audio_cancel() {
+  set_controls();
+  const voiceModule = await import('./voice.js');
+  if (voiceModule.toggleVADControls) {
+    voiceModule.toggleVADControls(0);
+  }
+}
+
+// Set Audio interface -------------------------------------------------------
+
+async function set_audio() {
+  set_controls("input_audio");
+  
+  // Check if voice.js is loaded, if not, load it
+  if (!window.voiceModuleLoaded) {
+    try {
+      await $script("script_voice", "/voice.js");
+      window.voiceModuleLoaded = true;
+    } catch (err) {
+      console.error('Failed to load voice module:', err);
+      return;
+    }
+  }
+  
+  // Toggle voice interface based on audio_vad setting
+  try {
+    const voiceModule = await import('./voice.js');
+    if (voiceModule.toggleVADControls) {
+      voiceModule.toggleVADControls(view_options.audio_vad);
+    }
+  } catch (err) {
+    console.error('Failed to toggle voice controls:', err);
+  }
+}
+
 // top controls --------------------------------------------------------------
 
 // TODO think about and combine controls functions
@@ -1802,9 +1837,17 @@ function auto_play_back_off() {
 
 async function set_audio_vad() {
   // await toggleVAD();
-  await $script("script_voice", "/voice.js");
+  const voiceModule = await import('./voice.js');
+  // voiceModule.initVoiceInterface()
   view_options.audio_vad = view_options.audio_vad ? 0 : 1;
   view_options_apply();
+  try {
+    if (voiceModule.toggleVADControls) {
+      voiceModule.toggleVADControls(view_options.audio_vad);
+    }
+  } catch (err) {
+    console.error('Failed to toggle voice controls:', err);
+  }
 }
 
 
@@ -2837,7 +2880,7 @@ export async function init() {
   $on($id("mod"), "click", () => set_controls("input_mod"));
   $on($id("view"), "click", () => set_controls("input_view"));
   $on($id("opt"), "click", () => set_controls("input_opt"));
-  $on($id("audio"), "click", () => set_controls("input_audio"));
+  $on($id("audio"), "click", () => set_audio());
 
   $on($id("nav"), "click", nav_click);
   $on($id("select"), "click", select_click);
@@ -2915,7 +2958,7 @@ export async function init() {
   // $on($id("room_ops_copy"), "click", copy_mode);
   // $on($id("room_ops_cancel"), "click", () => set_top_left());
 
-  $on($id("audio_cancel"), "click", () => set_controls());
+  $on($id("audio_cancel"), "click", () => audio_cancel());
 
   $on($room, "change", () => set_room());
   $on(window, "hashchange", on_hash_change);

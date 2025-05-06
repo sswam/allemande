@@ -71,6 +71,7 @@ class VoiceControls {
     this.speakerButton.addEventListener('click', () => this.toggleSpeaker());
 
     this.container = document.createElement('div');
+    this.container.id = 'voice-controls-container'; 
     this.container.appendChild(this.micButton);
     this.container.appendChild(this.speakerButton);
   }
@@ -140,8 +141,14 @@ function float32ArrayToWavBlob(audioData, sampleRate = 16000) {
 }
 
 // Initialize and add voice interface to the chat app
-async function initVoiceInterface() {
-  console.log("ENABLING VOICE CHAT INTERFACE");
+export async function initVoiceInterface() {
+
+  const existingControls = document.getElementById('voice-controls-container');
+  if (existingControls) {
+    // Toggle visibility instead of creating new controls
+    existingControls.style.display = 'block';
+    return;
+  }
   const voiceInterface = new VoiceInterface({
     onSpeechStart: () => console.log('Speech started'),
     onSpeechEnd: async (audio) => {
@@ -186,11 +193,44 @@ async function initVoiceInterface() {
   */
 }
 
+export function toggleVADControls(show) {
+  const controls = document.getElementById('voice-controls-container');
+  
+  if (show) {
+    // Initialize if not yet created
+    if (!controls) {
+      initVoiceInterface();
+    } else {
+      controls.style.display = 'block';
+    }
+  } else {
+    // Hide if exists
+    if (controls) {
+      controls.style.display = 'none';
+      // Turn off both mic and speaker when hiding controls
+      const buttons = controls.querySelectorAll('button');
+      if (buttons.length >= 2) {
+        const micButton = buttons[0];
+        const speakerButton = buttons[1];
+        // Turn off microphone if it's on
+        if (micButton && micButton.textContent === 'Mic On') {
+          micButton.click()
+        }
+        
+        // Set speaker to off state
+        if (speakerButton && speakerButton.textContent === 'Speaker On') {
+          speakerButton.click()
+        }
+      }
+    }
+  }
+}
+
 console.log("GOT HERE");
 
 // Call this function when the page loads
 // window.addEventListener('load', initVoiceInterface);
-initVoiceInterface()
+// initVoiceInterface()
 
 // Here's a simplified version of `voice.js` that implements a voice chat interface for your chat app, based on the provided `index.html` and using the VAD system you mentioned:
 
