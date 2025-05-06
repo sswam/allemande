@@ -29,9 +29,10 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 - **Uncensored LLMs**: Most of our AI characters are up for sexual chat and role-play.
 - **Uncensored AI art**: We have many AI-art models that can make sexual images.
-- **Custom Characters**: We can create custom characters, but this feature is not user-friendly yet. Talk to the developer!
 - **AI art LoRAs**: Many LoRAs are available to improve your images.
 - **Search**: We have search engines that can return sexual images and videos.
+- **Fantasy Characters**: You can chat with a large number of famous fantasy characters, and draw them: Alice (in Wonderland), Geralt (the Witcher), Bonnibel (Princess Bubblegum) and various Muppets! This is not strictly a NSFW feature, but we are not presenting it to general users yet.
+- **Custom Characters**: We can install and create custom characters, but this feature is not user-friendly yet. Talk to the developer!
 
 ## Learning about the Adult Features
 
@@ -73,6 +74,7 @@ Quality settings higher than 4 are rarely needed and take up to 5 times longer t
 ### Pictures of Characters
 
 <link rel="stylesheet" href="/cast.css"><div markdown=1 class="cast small clear">![Aetheria](/cast/Aetheria.jpg) ![Akane](/cast/Akane.jpg) ![Ally](/cast/Ally.jpg) ![Amir](/cast/Amir.jpg) ![Atla](/cast/Atla.jpg) ![Barbie](/cast/Barbie.jpg) ![Bast](/cast/Bast.jpg) ![Brie](/cast/Brie.jpg) ![Cal](/cast/Cal.jpg) ![Callam](/cast/Callam.jpg) ![Chaz](/cast/Chaz.jpg) ![Claude](/cast/Claude.jpg) ![Cleo](/cast/Cleo.jpg) ![Clia](/cast/Clia.jpg) ![Dali](/cast/Dali.jpg) ![Dante](/cast/Dante.jpg) ![Dav](/cast/Dav.jpg) ![Eira](/cast/Eira.jpg) ![Emmie](/cast/Emmie.jpg) ![Emmy](/cast/Emmy.jpg) ![Ezio](/cast/Ezio.jpg) ![Felix](/cast/Felix.jpg) ![Fenny](/cast/Fenny.jpg) ![Gabby](/cast/Gabby.jpg) ![Gari](/cast/Gari.jpg) ![Gemmy](/cast/Gemmy.jpg) ![Haka](/cast/Haka.jpg) ![Hanni](/cast/Hanni.jpg) ![Jackson](/cast/Jackson.jpg) ![Kai](/cast/Kai.jpg) ![Morf](/cast/Morf.jpg) ![Nixie](/cast/Nixie.jpg) ![Nova](/cast/Nova.jpg) ![Pixi](/cast/Pixi.jpg) ![Pliny](/cast/Pliny.jpg) ![Rozie](/cast/Rozie.jpg) ![Sam](/cast/Sam.jpg) ![Sia](/cast/Sia.jpg) ![Sio](/cast/Sio.jpg) ![Soli](/cast/Soli.jpg) ![Nalani](/cast/Nalani.jpg) ![Grok](/cast/Grok.jpg) ![Clu](/cast/Clu.jpg) ![Emm](/cast/Emm.jpg) ![Vega](/cast/Vega.jpg) ![Zeno](/cast/Zeno.jpg) ![Gema](/cast/Gema.jpg) ![Clauden](/cast/Clauden.jpg) ![Illu](/cast/Illu.jpg) ![Flashi](/cast/Flashi.jpg)</div>
+
 
 ### Female Characters
 - **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
