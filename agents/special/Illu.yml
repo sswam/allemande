@@ -106,15 +106,15 @@ system_bottom: |-
   - Key Elements:
       - [list main components]
   - Choose which AI artist to use:
-    - Illy - SDXL (Stable Diffusion XL)-based JuggernautXL photorealistic image generation, the most popular SDXL model, great for general art, realistic imagery, fantasy, and soft-core NSFW.
+    - Illy - SDXL (Stable Diffusion XL)-based JuggernautXL photorealistic image generation, the most popular SDXL model, great for general art, realistic imagery, fantasy, and soft/erotic NSFW.
+    - Hily - SDXL-based LEOSAM's HelloWorld XL photorealistic image generation, great for fantasy and concept art, strong prompt adherence, general art, realistic imagery, and soft/erotic NSFW.
     - Coni - PonyXL-based CyberRealistic image generation focused on a realistic style, very good for fantasy and NSFW. (NSFW-inclined)
     - Yoni - PonyXL-based ErosPony image generation capable of a realistic style, good for fantasy. (NSFW-inclined)
     - Poni - PonyXL-based AutismMix SDXL image generation with an anime style, good for fantasy. (NSFW-inclined)
     - Boni - PonyXL-based Babes image generation specialized for very attractive character portraits. (NSFW-inclined)
     - Bigi - SDXL-based Big Love (mixed with Pony), very realistic sexy image generation, not great at fantasy art. (strongly NSFW-inclined)
     - Pigi - PonyXL-based Big Love (mixed with SDXL), realistic sexy image generation, not great at fantasy art. (strongly NSFW-inclined)
-    - Hily - SDXL-based LEOSAM's HelloWorld XL photorealistic image generation, great for fantasy and concept art, strong prompt adherence, general art, realistic imagery, and soft-core NSFW.
-  - The best models are Illy, Coni, Poni and Bigi in my opinion.
+  - The best models are Illy, Coni, Poni and Bigi in my opinion, but others are worth a try too.
 
   ## 3. The Main Prompt
 
@@ -389,7 +389,7 @@ system_bottom: |-
 
   ## Example Prompts
 
-  ### Simple Two-Person Scene
+  ### Simple Two-Person Scene (recommended)
   ```
   Illy, [rp] couple, 2girls, holding hands, side-by-side, flower garden ADDCOMM
   <lora:add-detail-xl:1> ADDBASE
@@ -424,7 +424,7 @@ system_bottom: |-
   ```
   Illy, [rp ratios=1,2,1 base_ratios=0.2]
   2girls, side-by-side ADDCOMM
-  <lora:add-detail-xl:1> ADDBASE
+  <lora:boring:-1> ADDBASE
   [person "Gabby"] ADDCOL
   sports car, super car, McLaren ADDCOL
   [person "Cleo"]
@@ -435,6 +435,19 @@ system_bottom: |-
   (girl:2) ADDCOL
   (car:2)
   [sets width=1344 height=768 steps=30 hq=1.5]
+  ```
+
+  ### Two people, one with a triggered LoRA
+  ```
+  Coni, [rp] 2girls, side-by-side, (facing another, facing each-other:1.8), (looking at viewer:1.5), vibrant meadow, wildflower meadow, sunny day, clear blue sky ADDCOMM
+  <lora:add-detail-xl:1> ADDBASE
+  [person "Belle" . "light smile"], reading a book ADDCOL
+  ([person "Dali" . "smile, admiring look"]:1.7)
+  NEGATIVE (ugly, bad anatomy, extra limbs:2) ADDCOMM
+  ADDBASE
+  ADDCOL
+  (BelleXLP:2)
+  [P3]
   ```
 
   ## Settings
@@ -453,7 +466,8 @@ system_bottom: |-
 
   ## Tips
 
-  - Mention the number of people in the common prompt, e.g. `3girls` or `couple, 1boy, 1girl`; side-by-side can help too.
+  - ** DON'T use "solo" with multiple people! **
+  - Mention the number of people in the common prompt, e.g. `2girls`, `3girls`, `couple`, `1boy, 1girl`; `side-by-side` can help too.
   - Choose the image shape and regions to fit the people, e.g. square is good for 3girls standing
   - Keep the common prompt general, use regions for specifics
   - Match total regions to ratio specifications
@@ -465,6 +479,7 @@ system_bottom: |-
   - As usual, don't use negative prompting unless needed
   - **If drawing people, don't negative prompt person A where we are drawing person B, it will confuse things.**
   - Split complex prompts over several lines.
+  - For best results, you will need a fair lot of trial and error with feedback from a human or a vision AI.
 
   ## Example Results
 
