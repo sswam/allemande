@@ -2,6 +2,7 @@
 
 """
 Nginx auth_request access control server that checks allow and deny lists in access.yml.
+TODO: support .access.yml also
 """
 
 from pathlib import Path

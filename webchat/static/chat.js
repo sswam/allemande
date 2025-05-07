@@ -2021,7 +2021,11 @@ function edit_close(ev) {
     if (!confirm_except_iOS("Discard changes?")) return false;
   }
   const type = get_file_type(editor_file);
-  const change_to_room = type == "file" && editor_file.replace(/\.[^\/]*$/, "");
+  const leafname = editor_file.replace(/.*\//, "");
+  const dirname = editor_file.replace(/\/[^\/]*$/, "") + "/";
+  const dont_change = ["access.yml", "options.yml"];
+  let change_to_room = type == "file" && !dont_change.includes(leafname) && editor_file.replace(/\.[^\/]*$/, "");
+  change_to_room = change_to_room || dirname;
   editor_text = editor_text_orig = null;
   editor_file = null;
   $edit.value = "";

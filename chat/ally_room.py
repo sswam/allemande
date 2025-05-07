@@ -460,7 +460,7 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     else:
         dir_path = path.parent
 
-    access_conf = load_config(dir_path, ".access.yml")
+    access_conf = load_config(dir_path, "access.yml")
     agent_names = read_agents_lists(path)
 
     logger.debug("path %r access %r", path, access_conf)
@@ -563,23 +563,36 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     return Access(access), "shared_public"
 
 
-def load_config(dir_path: Path, filename: str) -> dict[str, Any]:
+def load_config(dir_path: Path, filename: str, check_hidden=True) -> dict[str, Any]:
     """Load YAML configuration from files."""
+    if filename.startswith("."):
+        check_hidden = False
+
     # list of folders from dir_path up to ROOMS_DIR
     rel_path = dir_path.relative_to(ROOMS_DIR)
     folders = [rel_path] + list(rel_path.parents)
     # Go top-down from ROOMS_DIR to the folder containing the file
     config_all = {}
+
     for folder in reversed(folders):
+        # Check regular file
         config_path = ROOMS_DIR / folder / filename
-        if not config_path.exists():
-            continue
-        config = cache.load(config_path)
-        if config.get("reset"):
-            config_all = config
-        else:
-            # We only merge at the top level
-            config_all.update(config)
+        hidden_config_path = ROOMS_DIR / folder / f".{filename}"
+
+        paths_to_check = [config_path]
+        if check_hidden:
+            paths_to_check.append(hidden_config_path)
+
+        for path in paths_to_check:
+            if not path.exists():
+                continue
+            config = cache.load(path)
+            if config.get("reset"):
+                config_all = config
+            else:
+                # We only merge at the top level
+                config_all.update(config)
+            break
     return config_all
 
 
