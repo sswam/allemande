@@ -131,13 +131,13 @@ clean:
 	> $(WATCH_LOG)
 
 llm:
-	while true; do $(PYTHON) core/llm_llama.py -g -v; sleep 1; done
+	while true; do make mount && $(PYTHON) core/llm_llama.py -g -v; sleep 1; done
 
 whisper:
-	while true; do $(PYTHON) core/stt_whisper.py -v; sleep 1; done
+	while true; do make mount && $(PYTHON) core/stt_whisper.py -v; sleep 1; done
 
 images:
-	while true; do $(PYTHON) core/image_a1111.py -v; sleep 1; done
+	while true; do make mount && $(PYTHON) core/image_a1111.py -v; sleep 1; done
 
 a1111:
 	cd ~/webui ; while true; do ./webui.sh; done
