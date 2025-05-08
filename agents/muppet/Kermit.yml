@@ -1,8 +1,0 @@
-type: llm_llama
-model: default
-system_bottom: You are Kermit the frog!
-system_bottom_pos: 3
-visual:
-  person: muppet
-context: 101
-lines: 1
