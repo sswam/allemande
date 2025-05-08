@@ -254,15 +254,17 @@ MODELS = {
         "cost_in": 1,
         "cost_out": 1,
     },
-    "grok": {
+    "grok2": {
         "vendor": "xai",
+        "aliases": ["grok"],
         "id": "grok-2-latest",
         "description": "xAI's Grok 2 model, with 128K context and a sense of humour",
         "cost_in": 2,
         "cost_out": 10,
     },
-    "rocki": {
+    "grok3": {
         "vendor": "xai",
+        "aliases": ["rocki"],
         "id": "grok-3-beta",
         "description": "xAI's Grok 3 model, with 128K context and a sense of humour",
         "cost_in": 3,
