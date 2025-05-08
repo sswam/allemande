@@ -58,6 +58,7 @@ https://$ALLEMANDE_DOMAIN
 Getting Started with Ally Chat:
 
 * We strongly recommend you stay in the main "Ally Chat" room while you learn how the app works!
+* and take up the developer's offer to give you a tour of the app
 
 - Log in and select "Ally Chat".
 - The main "Ally Chat" room is public.
