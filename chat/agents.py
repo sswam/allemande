@@ -12,6 +12,7 @@ from typing import Any
 from deepmerge import always_merger, Merger, STRATEGY_END
 
 from ally.cache import cache  # type: ignore
+from ally.util import replace_variables  # type: ignore
 from safety import safety  # type: ignore
 import chat
 
@@ -129,9 +130,11 @@ class Agent:
                 fullname = self.get("fullname", name)
                 aliases = self.get("aliases") or [name]
                 aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
-                value = re.sub(r"\$NAME\b", name, value)
-                value = re.sub(r"\$FULLNAME\b", fullname, value)
-                value = re.sub(r"\$ALIAS\b", aliases_or, value)
+                value = replace_variables(value, {
+                    "NAME": name,
+                    "FULLNAME": fullname,
+                    "ALIAS": aliases_or,
+                })
 
         # TODO remove null values? i.e. enable to remove an attribute from base
 
