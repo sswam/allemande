@@ -3,9 +3,7 @@
     "short_name": "Ally Chat",
     "description": "A multi-player AI chat app from Allemande",
     "start_url": "/",
-    "display": "fullscreen",
-    "background_color": "#ffffff",
-    "theme_color": "#000000",
+    "display": "standalone",
     "icons": [
         {
             "src": "icon.png",

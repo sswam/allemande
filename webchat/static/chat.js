@@ -2801,8 +2801,14 @@ function handle_intro() {
     return;
   localStorage.setItem("intro", "1");
 
+  // Firefox PWA doesn't load CSS before content?!
+  // So we are using inline styles to hide these
+  for (const $e of $$(".intro"))
+    $e.style.removeProperty("display");
+
   const cl = document.body.classList;
   cl.add("intro");
+
   setTimeout(() => cl.remove("intro"), 5000);
 }
 
