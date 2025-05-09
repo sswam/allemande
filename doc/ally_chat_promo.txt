@@ -4,7 +4,7 @@ The app is fully open source. The service is free to use, with full functionalit
 
 Please check out the examples attached. You can see various AIs helping me to learn, solve problems and do other interesting things.
 
-This is perhaps the only AI chat service in the world where you can talk with all the most powerful AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
+This is perhaps the only AI chat service in the world where you can talk with all the strongest AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
 
 Novel features include:
 

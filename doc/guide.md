@@ -4,7 +4,7 @@ Ally Chat is an innovative multi-user chat platform, with access to numerous top
 
 The app is fully open source. The service is free to use, with full functionality and generous limits; or you can pay if you feel like it!
 
-This is perhaps the only AI chat service in the world where you can talk with all the most powerful AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
+This is perhaps the only AI chat service in the world where you can talk with all the strongest AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
 
 Novel features include:
 
@@ -477,14 +477,20 @@ digraph StabilityAI {
 <link rel="stylesheet" href="/cast.css"><div markdown=1 class="cast small clear">![Aetheria](/cast/Aetheria.jpg) ![Akane](/cast/Akane.jpg) ![Ally](/cast/Ally.jpg) ![Amir](/cast/Amir.jpg) ![Atla](/cast/Atla.jpg) ![Barbie](/cast/Barbie.jpg) ![Bast](/cast/Bast.jpg) ![Brie](/cast/Brie.jpg) ![Cal](/cast/Cal.jpg) ![Callam](/cast/Callam.jpg) ![Chaz](/cast/Chaz.jpg) ![Claude](/cast/Claude.jpg) ![Cleo](/cast/Cleo.jpg) ![Clia](/cast/Clia.jpg) ![Dali](/cast/Dali.jpg) ![Dante](/cast/Dante.jpg) ![Dav](/cast/Dav.jpg) ![Eira](/cast/Eira.jpg) ![Emmie](/cast/Emmie.jpg) ![Emmy](/cast/Emmy.jpg) ![Ezio](/cast/Ezio.jpg) ![Felix](/cast/Felix.jpg) ![Fenny](/cast/Fenny.jpg) ![Gabby](/cast/Gabby.jpg) ![Gari](/cast/Gari.jpg) ![Gemmy](/cast/Gemmy.jpg) ![Haka](/cast/Haka.jpg) ![Hanni](/cast/Hanni.jpg) ![Jackson](/cast/Jackson.jpg) ![Kai](/cast/Kai.jpg) ![Morf](/cast/Morf.jpg) ![Nixie](/cast/Nixie.jpg) ![Nova](/cast/Nova.jpg) ![Pixi](/cast/Pixi.jpg) ![Pliny](/cast/Pliny.jpg) ![Rozie](/cast/Rozie.jpg) ![Sam](/cast/Sam.jpg) ![Sia](/cast/Sia.jpg) ![Sio](/cast/Sio.jpg) ![Soli](/cast/Soli.jpg) ![Nalani](/cast/Nalani.jpg) ![Grok](/cast/Grok.jpg) ![Clu](/cast/Clu.jpg) ![Emm](/cast/Emm.jpg) ![Vega](/cast/Vega.jpg) ![Zeno](/cast/Zeno.jpg) ![Gema](/cast/Gema.jpg) ![Clauden](/cast/Clauden.jpg) ![Illu](/cast/Illu.jpg) ![Flashi](/cast/Flashi.jpg)</div>
 
 ### Characters
-- **Ally**: A creative and talkative figure with an Asian/European background, known for her engaging conversation and long wavy blonde hair
-- **Barbie**: Playful and lively, Barbie is Greek/Italian, with long curly black hair and a love for making music and dancing
-- **Cleo**: Brave and adventurous, Cleo is always ready to flirt and charm with her European background and straight blonde hair
-- **Dali**: Curious and witty, Dali loves learning and playing pranks, and she is distinguished by her African/European heritage
-- **Emmie**: Intelligent yet occasionally shy, Emmie is Hispanic/Mediterranean with a talent for solving puzzles
-- **Fenny**: Shy but humorous, Fenny is a delightful presence with wavy auburn hair and a penchant for funny faces
-- **Gabby**: Mischievous and sweet, Gabby is an Indian little sister who loves disguises and singing silly songs
-- **Hanni**: Friendly and clever, Hanni has a Native American/Hawaiian background and a shy charm
+- **Ally**: A creative and talkative young woman with an Asian/European background, known for her engaging conversation and long wavy blonde hair
+- **Barbie**: Playful and lively, she is Greek/Italian, with long curly black hair and a love for making music and dancing
+- **Cleo**: Brave and adventurous, she is always ready to flirt and charm with her European background and straight blonde hair
+- **Dali**: Curious and witty, this young woman loves learning and playing pranks, and she is distinguished by her African/European heritage
+- **Emmie**: Intelligent yet occasionally shy, she is Hispanic/Mediterranean with a talent for solving puzzles
+- **Fenny**: Shy but humorous, she is a delightful presence with wavy auburn hair and a penchant for funny faces
+- **Gabby**: Mischievous and sweet, this little girl is Indian and loves disguises and singing silly songs
+- **Hanni**: Friendly and clever, this young woman has a Native American/Hawaiian background and a shy charm
+- **Nixie**: A rebellious girl with cyber mods, her striking green eyes and messy fringe set her apart
+- **Akane**: Open-minded and artistically spirited, she is an adventurous soul with an independent spirit
+- **Soli**: A gentle woman with a love for nature and intriguing stories to share
+- **Eira**: A free-spirited female adventurer passionate about storytelling and discovery, she is known for her engaging communication style
+- **Nalani**: A vivacious, witty African/European woman and mother, with curly black hair
+- **Rozie**: A gentle and serene woman with a round face, short dark hair, and a warm smile, known for her colorful style.
 - **Amir**: Confident and charismatic Middle Eastern man; the thoughtful protector with insightful perspectives on life
 - **Bast**: Vibrant, quick-to-laugh Caribbean man with boundless energy, deeply fond of storytelling and sharing laughter
 - **Cal**: Cheerful and athletic Persian/African American man; the eternal optimist who brightens every conversation
@@ -493,38 +499,35 @@ digraph StabilityAI {
 - **Felix**: Jovial and quick-witted Irish man; a charming companion who ensures every chat comes with humor
 - **Gari**: Reserved and thoughtful Russian man with surprising wit; a deep thinker known for contemplative responses
 - **Haka**: Thoughtful and graceful Japanese man; detail-oriented in both conversation and perspective
-- **Callam**: The spirited pirate, life of the chat, combining humor with educational math and science dialogues
-- **Nixie**: A rebellious girl with cyber mods, Nixie's striking green eyes and messy fringe set her apart
-- **Akane**: Open-minded and artistically spirited, Akane is an adventurous soul with an independent spirit
-- **Soli**: A gentle spirit with a love for nature and intriguing stories to share
+- **Callam**: The spirited pirate, he's the life of the chat, combining humor with educational math and science dialogues
 - **Kai**: Enthusiastic about nature, Kai is a young man with bright blue eyes and a love for exploring
-- **Eira**: A free-spirited adventurer passionate about storytelling and discovery, Eira is known for her engaging communication style
-- **Nalani**: A vivacious, witty African/European woman and mother, with curly black hair.
+- **Jackson**: A charming and confident salesman with a strong build, and a warm smile, known for his engaging personality and bold style.
 
 All of the above characters are based on Llama 3.1, they act very human-like, and while the model is not perfect, in the developer's opinion they are very good for roleplay.
 
 ### Specialists
-- **Pixi**: Crafts detailed AI art prompts, ensuring high-quality image generation
-- **Sia**: Expert writer focused on summarizing entire chats
-- **Sio**: Expert writer focused on summarizing entire chats in structured markdown format
-- **Nova**: Master narrator for immersive storytelling in interactive fiction
-- **Brie**: Creative brainstorming specialist offering a range of diverse solutions
-- **Chaz**: Expert character designer capturing unique traits and mannerisms
-- **Atla**: Environment and setting design specialist rendering realistic and vibrant scenes
-- **Pliny**: Plot specialist crafting cohesive narrative structures for gaming and storytelling
-- **Morf**: Game Master and narrative supervisor maintaining story coherence and forward progression
+- **Pixi**: She crafts detailed AI art prompts, ensuring high-quality image generation
+- **Sia**: She is an expert writer focused on summarizing entire chats
+- **Sio**: She is an expert writer focused on summarizing entire chats in structured markdown format
+- **Nova**: She is a master narrator for immersive storytelling in interactive fiction
+- **Brie**: She is a creative brainstorming specialist offering a range of diverse solutions
+- **Chaz**: He is an expert character designer capturing unique traits and mannerisms
+- **Atla**: He is an environment and setting design specialist rendering realistic and vibrant scenes
+- **Pliny**: He is a plot specialist crafting cohesive narrative structures for gaming and storytelling
+- **Morf**: He is a Game Master and narrative supervisor maintaining story coherence and forward progression
 
-### Powerful AI Models
+### Strong AI Models
 - **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding.
-- **Clauden** (Claude 3.7 Sonnet, Anthropic): The most powerful reasoning model from Anthropic, expert at coding, can be somewhat unruly!
+- **Clauden** (Claude 3.7 Sonnet, Anthropic): The strongest reasoning model from Anthropic, expert at coding, can be somewhat unruly!
 - **Clia** (Claude 3.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4.1, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Dav** (GPT-4.1 mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
-- **Grace** (o3, OpenAI): The most powerful reasoning model from OpenAI, ideal for advanced applications
+- **Grace** (o3, OpenAI): The strongest reasoning model from OpenAI, ideal for advanced applications
 - **Fermi** (o4 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
-- **Gemmy** (Gemini 1.5 Pro, Google): Google's high-performance Gemini language model
-- **Gemmi** (Gemini 2.5 Pro, Google): Google's most powerful Gemini language model
+- **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
+- **Gemmy** (Gemini 1.5 Pro, Google): Google's high-performance Gemini language model
+- **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
 - **Grok** (Grok 2, xAI): xAI's quirky and intelligent language model
 - **Rocki** (Grok 3, xAI): xAI's latest quirky and intelligent language model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model.
