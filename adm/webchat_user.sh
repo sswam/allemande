@@ -95,7 +95,10 @@ END
 		ln -sf ../../doc/nsfw/guide.md rooms/"$user"/.help.m
 	fi
 
-	cp rooms/"$user"/.help.bb.base rooms/"$user"/help.bb
+	if [ ! -e rooms/"$user"/help.bb ]; then
+		# delay to avoid detecting the change twice, with the dir add and the file add
+		(sleep 1; cp rooms/"$user"/.help.bb.base rooms/"$user"/help.bb) &
+	fi
 }
 
 change-password() {
