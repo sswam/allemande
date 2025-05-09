@@ -3,10 +3,10 @@
 	--text: black;
 	--border: white;
 	--frame: white;
-	--input: #ddd;
-	--focus: #aaa;
-	--background: #ccc;
-	--button: #888;
-	--button-focus: #666;
+	--input: #aaa;
+	--focus: #ccc;
+	--background: #eee;
+	--button: #bbb;
+	--button-focus: #999;
 	--link: #003388;
 }

@@ -4,7 +4,7 @@ const ROOMS_URL =
   location.protocol + "//" + location.host.replace(/^chat\b/, "rooms");
 const SITE_URL =
   location.protocol + "//" + location.host.replace(/^.*?\./, "") + "/";
-const MAX_ROOM_NUMBER = 1e3; // 1e12;
+const MAX_ROOM_NUMBER = 9999;
 const DEFAULT_ROOM = "Ally Chat";
 const EXTENSION = ".bb";
 
