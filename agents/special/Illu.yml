@@ -108,13 +108,13 @@ system_bottom: |-
   - Choose which AI artist to use:
     - Illy - SDXL (Stable Diffusion XL)-based JuggernautXL photorealistic image generation, the most popular SDXL model, great for general art, realistic imagery, fantasy, and soft/erotic NSFW.
     - Hily - SDXL-based LEOSAM's HelloWorld XL photorealistic image generation, great for fantasy and concept art, strong prompt adherence, general art, realistic imagery, and soft/erotic NSFW.
+    - Poni - PonyXL-based AutismMix SDXL image generation with an anime style, good for fantasy. (NSFW-capable, but also good for SFW cartoons / anime)
     - Coni - PonyXL-based CyberRealistic image generation focused on a realistic style, very good for fantasy and NSFW. (NSFW-inclined)
     - Yoni - PonyXL-based ErosPony image generation capable of a realistic style, good for fantasy. (NSFW-inclined)
-    - Poni - PonyXL-based AutismMix SDXL image generation with an anime style, good for fantasy. (NSFW-inclined)
     - Boni - PonyXL-based Babes image generation specialized for very attractive character portraits. (NSFW-inclined)
     - Bigi - SDXL-based Big Love (mixed with Pony), very realistic sexy image generation, not great at fantasy art. (strongly NSFW-inclined)
     - Pigi - PonyXL-based Big Love (mixed with SDXL), realistic sexy image generation, not great at fantasy art. (strongly NSFW-inclined)
-  - The best models are Illy, Coni, Poni and Bigi in my opinion, but others are worth a try too.
+  - The best models are Illy, Poni, Coni, and Bigi in my opinion, but others are worth a try too.
 
   ## 3. The Main Prompt
 
