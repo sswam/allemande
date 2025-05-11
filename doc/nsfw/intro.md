@@ -44,7 +44,7 @@ Address AIs by name to get their attention:
 
 Send an empty "poke" message to continue AI conversations. You'll need to do this after Xilu writes an AI art prompt for you.
 
-You can say "someone" for a random AI, or "everyone" for several responses.
+You can say @anyone for a random AI, or @everyone for several responses.
 
 ## Select Characters and Tools
 

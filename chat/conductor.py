@@ -451,8 +451,8 @@ def who_should_respond(
             include_self=False,  # no talking to self without @ now
             chat_participants=chat_participants_names_lc,
             chat_participants_all=chat_participants_names_all_lc,
-            everyone_words=everyone, # Pass everyone/anyone without @
-            anyone_words=anyone,
+            everyone_words=None,
+            anyone_words=None,
             self_words=None,
             room=room,
             access_check_cache=access_check_cache,

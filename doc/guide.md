@@ -119,9 +119,9 @@ Ally Chat is continuously evolving with new features and capabilities being adde
 
 2. If you don't mention anyone's name, the last other person in the chat will repond.
 
-3. If you say "someone", "anyone" or similar, a random AI will respond!
+3. If you say @anyone, a random AI will respond.
 
-4. If you say "everyone" or similar, several AIs will respond.
+4. If you say @everyone, several AIs will respond.
 
 5. You can "poke" the chat to get the next person to respond without saying anything yourself.
 
