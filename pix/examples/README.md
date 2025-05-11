@@ -2,6 +2,10 @@
 
 Note: Some of the examples are from an older version.
 
+![demo light mode](demo-light.png)
+
+![demo dark mode](demo-dark.png)
+
 ![Cultural Exchange](exchange.png)
 
 ![Math example](models.png)
