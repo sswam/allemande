@@ -2,6 +2,8 @@
 
 Note: Some of the examples are from an older version.
 
+![Cultural Exchange](exchange.png)
+
 ![Math example](models.png)
 
 ![Math example](photos.png)
