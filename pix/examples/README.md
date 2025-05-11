@@ -32,6 +32,7 @@ Note: Some of the examples are from an older version.
 
 <details>
 <summary>Examples including mildly NSFW content</summary>
+
 ![not really violence](violence.png)
 
 ![Chat example 3](ally_chat_2.png)
