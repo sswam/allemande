@@ -56,6 +56,7 @@ MARKDOWN_EXTENSIONS = [
     #   "markdown_katex",  # do this in the browser
     #    "markdown_criticmarkup",
     "attr_list",
+#    "urlize",
 ]
 
 MARKDOWN_EXTENSION_CONFIGS = {

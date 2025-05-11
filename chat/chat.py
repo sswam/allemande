@@ -764,13 +764,34 @@ def add_configured_image_prompts(fulltext, configs):
 
 def trim_response(response, args, agent_name, people_lc=None):
     """Trim the response to the first message."""
+    logger.debug("trim_response: %r, %r, %r, %r", response, args, agent_name, people_lc)
+
     if people_lc is None:
         people_lc = []
 
     def check_person_remove(match):
         """Remove text starting with a known person's name."""
-        if match.group(2).lower() in people_lc:
-            return ""
+        # Get the full line of text after the newline
+        full_line = match.group(1)
+        logger.debug(f"Full line from match: '{full_line}'")
+
+        # Extract the name part before the colon
+        name_part = re.match(r"[ \t]*([^:]+)[ \t]*:", full_line)
+        logger.debug(f"Extracted name_part: {name_part}")
+
+        if name_part:
+            extracted_name = name_part.group(1).lower().strip()
+            logger.debug(f"Cleaned name: '{extracted_name}'")
+            logger.debug(f"Known people (lowercase): {people_lc}")
+
+            if extracted_name in people_lc:
+                logger.debug(f"Name '{extracted_name}' found in people list - removing line")
+                return ""
+            else:
+                logger.debug(f"Name '{extracted_name}' not found in people list - keeping line")
+        else:
+            logger.debug("No name pattern found in line")
+
         return match.group(1)
 
     response = response.strip()
@@ -782,9 +803,7 @@ def trim_response(response, args, agent_name, people_lc=None):
     response = re.sub(r"^[ \t]*" + agent_name_esc + r"[ \t]*:[ \t]*(.*)", r"\1", response, flags=re.MULTILINE)
 
     # remove anything after a known person's name
-    response = re.sub(r"(\n[ \t]*(\w+)[ \t]*:[ \t]*(.*))", check_person_remove, response, flags=re.DOTALL)
-
-    # response = re.sub(r"\n(##|<nooutput>|<noinput>|#GPTModelOutput|#End of output|\*/\n\n// End of dialogue //|// end of output //|### Output:|\\iend{code})(\n.*|$)", "", response , flags=re.DOTALL|re.IGNORECASE)
+    response = re.sub(r"(\n[ \t]*[^:\n]+[ \t]*:[ \t]*.*)", check_person_remove, response, flags=re.DOTALL)
 
     if response != response_before:
         logger.debug("Trimmed response: %r\nto: %r", response_before, response)

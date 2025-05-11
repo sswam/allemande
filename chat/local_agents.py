@@ -251,12 +251,41 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         gen_config["lines"] = agent["lines"]
 
     # TODO: These stop regexps don't yet handle names with spaces or punctuation.
+
+    #    r"(?umi)^(?!" + agent_name_esc + r"\s*:)[\p{L}][\p{L}\p{N}_]*:\s*\Z",
+
     gen_config["stop_regexs"] = [
-        # Allow the agent's own name (ignoring case) using a negative lookahead.
-        # A line starting with a name starting with any letter, colon and whitespace.
-        r"(?umi)^(?!" + agent_name_esc + r"\s*:)[\p{L}][\p{L}\p{N}_]*:\s*\Z",
-        # A name beginning with upper-case letter followed by colon and TAB, anywhere in the line
-        r"(?u)\b(?!" + agent_name_esc + r":)[\p{Lu}][\p{L}\p{N}_]*:\t",
+        # First pattern: Match one or two-word capitalized names at line start
+        r'''(?umx)                 # Enable unicode, multiline, verbose mode
+            ^                      # Start of line
+            \s*                    # Optional whitespace
+            (?!                    # Negative lookahead
+                ''' + agent_name_esc + r'''   # Don't match agent's name
+                \s*:               # Followed by optional whitespace and colon
+            )
+            [\p{Lu}]               # First word starts with uppercase
+            [\p{L}\p{N}_]*         # Rest of first word
+            (                      # Optional second word
+                \s                 # Space between words
+                [\p{Lu}]           # Second word starts with uppercase
+                [\p{L}\p{N}_]*     # Rest of second word
+            )?                     # Optional second word
+            :                      # Colon
+            \s                     # Whitespace
+        '''
+
+        # # Second pattern: Match capitalized names with tab (except agent's name) anywhere in the line
+        # Disabled for now, hopefully isn't needed
+        # r'''(?ux)                 # Enable unicode and verbose mode
+        #     \b                     # Word boundary
+        #     (?!                    # Negative lookahead
+        #         ''' + agent_name_esc + r''':  # Don't match agent's name and colon
+        #     )
+        #     [\p{Lu}]               # Must start with uppercase letter
+        #     [\p{L}\p{N}_]*         # Rest of name: letters, numbers, underscore
+        #     :                      # Colon
+        #     \t                     # Tab character
+        # ''',
     ]
 
     # If no history, stop after the first line always. It tends to run away otherwise.
