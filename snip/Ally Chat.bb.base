@@ -3,6 +3,8 @@ h1 { font-size: 1.5em; }
 </style>
 # Hello, world
 
+[Quick Intro](/intro) | [User Guide](/guide) | [Public Room](/user) | [Private Room](/user/chat)
+
 <script class="hide">
 welcomes = [
     "Welcome to Ally Chat - Where Ideas Come Alive",
@@ -21,6 +23,16 @@ prevH1 = previous("h1")
 if (prevH1 && prevH1.tagName === 'H1') {
     prevH1.textContent = welcomes[Math.floor(Math.random() * welcomes.length)];
 }
+
+a = previous("a")
+a.href = `${ALLYCHAT_CHAT_URL}/#${user}/chat`;
+a.style.textTransform = "capitalize";
+a.innerText = `${user}'s Private Room`;
+
+a = previous("a", 1)
+a.href = `${ALLYCHAT_CHAT_URL}/#${user}`;
+a.style.textTransform = "capitalize";
+a.innerText = `${user}'s Public Room`;
 </script>
 
 This is the main public chat room. Please keep this space family friendly.
