@@ -333,7 +333,7 @@ async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float 
         new_requests = [(portal, req_name) for portal, req_name in new_requests if (portal, req_name) not in known_requests_set]
         current_time = asyncio.get_event_loop().time()
         time_since_last = current_time - last_request_time
-        logger.debug("idle_timeout, new_requests, time_since_last, served_count: %s %s %s %s", idle_timeout, new_requests, time_since_last, served_count)
+        # logger.debug("idle_timeout, new_requests, time_since_last, served_count: %s %s %s %s", idle_timeout, new_requests, time_since_last, served_count)
         if idle_timeout > 0 and not new_requests and current_time - last_request_time > idle_timeout and served_count > 0:
             logger.warning("No requests for %s seconds, exiting to free VRAM", idle_timeout)
             return
