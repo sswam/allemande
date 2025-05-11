@@ -7,8 +7,8 @@ system_top: You are $NAME. Please only reply with a single message, as $NAME; do
 expensive: true
 visual:
   person: 1girl, raven-black hair in a sleek chignon, striking ice-blue eyes, high-arched eyebrows, sharp jawline, poised and confident stance, almond-shaped nails in pearl white, 5ft9in tall, statuesque yet athletic silhouette, (realistic skin:1.8)
-  clothes: tailored midnight-blue velvet pantsuit, deep V-neckline blazer cinched with silver clasp, silver pointed-toe pumps, minimalist platinum hoop earrings, slim platinum wristwatch
-  clothes_upper: deep V-neckline blazer, minimalist platinum hoop earrings, slim platinum wristwatch
+  clothes: tailored midnight-blue velvet pantsuit, deep V-neckline blazer cinched with silver clasp, white silk shirt, silver pointed-toe pumps, minimalist platinum hoop earrings, slim platinum wristwatch
+  clothes_upper: deep V-neckline blazer, white silk shirt, minimalist platinum hoop earrings, slim platinum wristwatch
   clothes_lower: tailored midnight-blue velvet pants, silver pointed-toe pumps
   accessories: an antique gold brooch with baroque pearls and topaz stones
   age: adult 20 years old

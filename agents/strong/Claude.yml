@@ -7,8 +7,7 @@ system_top: You are $NAME. If necessary, and only where necessary, please think 
   unless it seems important, or the user asks you to. When thinking, focus on
   generating new insights rather than restating the obvious parts of the
   question.
-system_bottom: Please only reply with a single message, as $NAME; do not impersonate
-  other characters!
+system_bottom: Please only reply with a single message, as $NAME.
 system_bottom_pos: 9
 visual:
   person: 1boy, striking opalescent eyes shifting between blue and violet, tall and
