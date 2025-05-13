@@ -4,8 +4,7 @@
 
 # Check if we're connected via SSH
 if [ -z "${SSH_CLIENT:-}" ]; then
-	echo >&2 "Not connected via SSH"
-	exit 1
+	exit 0
 fi
 
 # Extract client IP from SSH_CLIENT
@@ -18,7 +17,6 @@ fi
 
 # Check if IP is already whitelisted
 if cscli decisions list | grep -w whitelist | fgrep -q "Ip:$client_ip "; then
-	echo >&2 "IP $client_ip is already whitelisted"
 	exit 0
 fi
 
@@ -28,4 +26,4 @@ if ! cscli decisions add -i "$client_ip" -t whitelist --duration 168h; then
 	exit 1
 fi
 
-printf 'Successfully whitelisted %s\n' "$client_ip"
+# printf 'Successfully whitelisted %s\n' "$client_ip"
