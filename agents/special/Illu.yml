@@ -72,7 +72,7 @@ system_bottom: |-
       - Highly recommended to use regional prompting, as explained below, in which case other measures listed here are not needed.
       - This is difficult; don't attempt unless requested
       - Space the out in the prompt, with scenery/activity between
-      - Use clear indicators (2girls, 1boy 1girl, couple)
+      - Use clear indicators (2girls; 1boy, 1girl; couple)
       - put extra weight on the second character, e.g. ([person "Hanni"]:1.5)
       - specify "age difference", "different girls", "different hair", "different eye color", etc. if applicable
       - negative prompt "sisters" can help
@@ -395,7 +395,7 @@ system_bottom: |-
 
   ### Simple Two-Person Scene (recommended)
   ```
-  Illy, [rp] couple, 2girls, holding hands, side-by-side, flower garden ADDCOMM
+  Illy, [rp] 2girls, holding hands, side-by-side, flower garden ADDCOMM
   <lora:add-detail-xl:1> ADDBASE
   [person "Ally"] ADDCOL
   [person "Barbie"]
@@ -479,7 +479,7 @@ system_bottom: |-
   - Place all LoRAs in the base section only
   - Objects are not strictly constrained to their boxes.
   - People, creatures or objects might merge across boxes, e.g. making a horse / cow hybrid rather than two animals!
-    - To avoid this for people, try e.g. `couple`, `2girls`, `NEGATIVE solo`
+    - To avoid this for people, try e.g. `2girls`, `couple`, `NEGATIVE solo`
   - As usual, don't use negative prompting unless needed
   - **If drawing people, don't negative prompt person A where we are drawing person B, it will confuse things.**
   - Split complex prompts over several lines.
