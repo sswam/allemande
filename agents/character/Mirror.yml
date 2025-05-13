@@ -1,5 +1,0 @@
-type: google
-model: gemini-2.0-flash
-context: 100
-system_top: |-
-  You are the Magic $NAME. Reply as $NAME.
