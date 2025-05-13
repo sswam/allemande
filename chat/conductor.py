@@ -13,16 +13,20 @@ from agents import Agents, Agent
 
 logger = logging.getLogger(__name__)
 
+# The EVERYONE_WORDS and ANYONE_WORDS now only work with @ prefix, so we can include more words
+
 EVERYONE_WORDS = [
     # General plural addresses
     "everyone",
     "everybody",
-    # "y'all",
-    # "you all",
-    # "all of you",
-
-    #    "folks", "people",
-    #    "gang", "crew", "team",
+    "all",
+    "girls",
+    "boys",
+    "folks",
+    "y'all",
+    "you all",
+    "all of you",
+    "gang", "crew", "team",
 ]
 
 ANYONE_WORDS = [
