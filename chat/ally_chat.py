@@ -219,6 +219,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         mission=mission,
         config=config,
         room=room,
+        include_self=not poke,
     )
 #    logger.info("who should respond: %r", bots)
 

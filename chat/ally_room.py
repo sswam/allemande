@@ -362,6 +362,11 @@ class Room:
             options = cache.load(options_file) or {}
             logger.debug("old options: %r", options)
             logger.debug("new options: %r", new_options)
+
+            # otherwise they double up
+            if "mediator" in new_options:
+                new_options["mediator"] = []
+
             always_merger.merge(options, new_options)  # modifies options
             logger.debug("merged options: %r", options)
             options = tree_prune(options)

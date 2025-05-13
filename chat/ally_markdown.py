@@ -224,11 +224,11 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
         |
         (`.*?`+)        # Single-quoted inline code, with a catch-all for multi backticks
         |
-        (.+?)(?=`|\$`|$)    # Any other text, non-greedy, until a backtick or end of string
+        ([\s\S]+?)(?=`|\$`|$)    # Any other text, non-greedy, until a backtick or end of string
     """
 
     # Find all matches
-    matches = re.finditer(code_pattern, text, re.VERBOSE | re.DOTALL)
+    matches = re.finditer(code_pattern, text, re.VERBOSE)  # | re.DOTALL
 
     new_parts = []
     prev_end = 0

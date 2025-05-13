@@ -7,6 +7,7 @@ import os
 import subprocess
 from pathlib import Path
 import re
+from typing import Any
 
 from starlette.exceptions import HTTPException
 
@@ -15,6 +16,11 @@ from settings import ROOM_MAX_DEPTH, ROOM_PATH_MAX_LENGTH
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def uniqo(l: list[Any]) -> list[Any]:
+    """remove duplicates from a list while preserving order"""
+    return list(dict.fromkeys(l))
 
 
 class Symbol:  # pylint: disable=too-few-public-methods

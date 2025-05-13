@@ -8,6 +8,7 @@ import random
 from typing import Any, Iterable
 
 import chat
+from util import uniqo
 from agents import Agents, Agent
 
 logger = logging.getLogger(__name__)
@@ -105,11 +106,6 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True) -> t
     return best_match
 
 
-def uniqo(l: list[Any]) -> list[Any]:
-    """remove duplicates from a list while preserving order"""
-    return list(dict.fromkeys(l))
-
-
 def who_is_named(
     content: str,
     user: str | None,
@@ -142,14 +138,10 @@ def who_is_named(
         "who_is_named: %r %r %r %r %r %r %r %r %r %r", content, user, agent_names, include_self, chat_participants, chat_participants_all, everyone_words, anyone_words, self_words, get_all
     )
 
-    # Calculate everyone_except_user before using in function
-    if user:
-        user_clean = user.lstrip("@")
-        everyone_except_user = [a for a in chat_participants if a != user_clean]
-        everyone_except_user_all = [a for a in chat_participants_all if a != user_clean]
-    else:
-        everyone_except_user = chat_participants
-        everyone_except_user_all = chat_participants_all
+    # Calculate everyone_except_user
+    user_clean = (user or '').lstrip("@")
+    everyone_except_user = [a for a in chat_participants if a != user_clean]
+    everyone_except_user_all = [a for a in chat_participants_all if a != user_clean]
 
     agents_and_plurals = agent_names
     if USE_PLURALS:
@@ -462,12 +454,23 @@ def who_should_respond(
 
     direct_reply = random.random() < direct_reply_chance
 
+    # Calculate everyone_except_user
+    user_clean = (user or '').lstrip("@")
+    everyone_except_user = [a for a in chat_participants_names_lc if a != user_clean]
+    everyone_except_user_all = [a for a in chat_participants_names_all_lc if a != user_clean]
+
     # mediators reply when no one is mentioned
     mediator = config.get("mediator")
     if mediator is None:
         mediator = []
     if not isinstance(mediator, list):
         mediator = [mediator]
+    for i in range(len(mediator)):
+        agent = mediator[i]
+        if agent in anyone and everyone_except_user:
+            mediator[i] = random.choice(everyone_except_user)
+        elif agent in anyone and everyone_except_user_all:
+            mediator[i] = random.choice(everyone_except_user_all)
     mediator = filter_access(mediator, room, access_check_cache)
 #    mediator = [m for m in mediator if m != user]  # exclude user
     # We don't want mediators to reply to themselves or other mediators,
