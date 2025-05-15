@@ -66,7 +66,7 @@ AI_EVERYONE_MAX = 2
 USE_PLURALS = True
 
 
-def find_name_in_content(content: str, name: str, ignore_case: bool = True) -> tuple[int, int, int, str | None]:
+def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_tool: bool = False) -> tuple[int, int, int, str | None]:
     """
     Try to find a name in message content, prioritizing later sentences
     Returns tuple of (match_type, sentence_num_from_end, position, name)
@@ -84,12 +84,16 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True) -> t
 
     # Define match patterns
     start_comma_word = r"^\s*" + re.escape(name) + r"\b\s*,"  # at start with comma
-    comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*$"  # at end with comma
-    word_start = r"^\s*" + re.escape(name) + r"\b"  # at start
-    word_end = r"(\s|\b)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"  # at end
-    whole_word = r"(\s|\b)" + re.escape(name) + r"\b"  # anywhere
 
-    patterns = [start_comma_word, comma_word_end, word_start, word_end, whole_word]
+    patterns = [start_comma_word]
+
+    if not is_tool:
+        comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*$"  # at end with comma
+        word_start = r"^\s*" + re.escape(name) + r"\b"  # at start
+        word_end = r"(\s|\b)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"  # at end
+        whole_word = r"(\s|\b)" + re.escape(name) + r"\b"  # anywhere
+        patterns += [comma_word_end, word_start, word_end, whole_word]
+
     flags = re.IGNORECASE if ignore_case else 0
 
     # Split into sentences
@@ -123,6 +127,7 @@ def who_is_named(
     get_all: bool = False,
     room: chat.Room | None = None,
     access_check_cache: dict[str, int] | None = None,
+    agents: Agents | None = None,
 ) -> list[str]:
     """check who is named first in the message"""
     if chat_participants is None:
@@ -150,7 +155,12 @@ def who_is_named(
     agents_and_plurals = agent_names
     if USE_PLURALS:
         agents_and_plurals = agent_names + everyone_words + anyone_words + self_words
-    matches = [find_name_in_content(content, agent) for agent in agents_and_plurals]
+
+    matches = []
+    for agent in agents_and_plurals:
+        is_tool = agents is not None and agent in agents and agent_is_tool(agents.get(agent))
+        matches.append(find_name_in_content(content, agent, is_tool=is_tool))
+
     if not include_self and user:
         matches = [m for m in matches if m[3] and m[3].lower() != user.lower()]
     if not matches:
@@ -432,6 +442,7 @@ def who_should_respond(
         get_all=True,
         room=room,
         access_check_cache=access_check_cache,
+        agents=agents,
     )
     invoked = filter_access(invoked, room, access_check_cache)
     logger.debug("who_is_named @: %r", invoked)
@@ -450,6 +461,7 @@ def who_should_respond(
             self_words=None,
             room=room,
             access_check_cache=access_check_cache,
+            agents=agents,
         )
         invoked = filter_access(invoked, room, access_check_cache)
         logger.debug("who_is_named: %r", invoked)
@@ -473,21 +485,20 @@ def who_should_respond(
         elif agent in anyone and everyone_except_user_all:
             mediator[i] = random.choice(everyone_except_user_all)
     mediator = filter_access(mediator, room, access_check_cache)
-#    mediator = [m for m in mediator if m != user]  # exclude user
 
-    # We don't want mediators to reply to themselves or other mediators,
-    # they need to be able to chat with users
-    if user in mediator:
-        mediator = []
+    # We don't want mediators to reply to themselves
+    mediator = [m for m in mediator if m != user_clean]
 
     use_mediator = mediator and (mediator_for_humans or not is_human)
 
+    logger.info("use_mediator: %r", use_mediator)
+    logger.info("mediators: %r", mediator)
+
     # direct_reply_chance
     if use_mediator:
-        direct_reply_chance = 0.0
+        direct_reply_chance = config.get("direct_reply_chance", 0.0)
     else:
         direct_reply_chance = 1.0
-    direct_reply_chance = config.get("direct_reply_chance", direct_reply_chance)
 
     direct_reply = random.random() < direct_reply_chance
 
@@ -509,7 +520,6 @@ def who_should_respond(
     # mediator
     if not invoked and use_mediator:
         reason = "mediator"
-        logger.info("mediators: %r", mediator)
         invoked = [random.choice(mediator)]
         logger.info("mediator: %r", invoked)
 
@@ -526,23 +536,24 @@ def who_should_respond(
             invoked = who_spoke_last(history[:-1], user, ai_participant_agents, include_self=True, include_humans=False)
             invoked = filter_access(invoked, room, access_check_cache)
             logger.debug("who_spoke_last ai: %r", invoked)
+        ai_participants_not_user = [agent for agent in ai_participants if agent != user_clean]
+        ai_participants_with_excluded_not_user = [agent for agent in ai_participants_with_excluded if agent != user_clean]
 
     # mediator is better than random!
     if not invoked and mediator:
         reason = "mediator"
-        logger.info("mediators: %r", mediator)
         invoked = [random.choice(mediator)]
         logger.info("mediator: %r", invoked)
 
     # random AI
-    if not invoked and ai_participants and ai_participants != [user]:
+    if not invoked and ai_participants_not_user:
         reason = "random_ai"
-        invoked = [random.choice(ai_participants)]
+        invoked = [random.choice(ai_participants_not_user)]
         logger.debug("random ai: %r", invoked)
-        logger.debug("ai_participants: %r", ai_participants)
-    if not invoked and ai_participants_with_excluded and ai_participants_with_excluded != [user]:
+        logger.debug("ai_participants_not_user: %r", ai_participants_not_user)
+    if not invoked and ai_participants_with_excluded:
         reason = "random_ai_with_excluded"
-        invoked = [random.choice(ai_participants_with_excluded)]
+        invoked = [random.choice(ai_participants_with_excluded_not_user)]
         logger.debug("random ai 2: %r", invoked)
     if not invoked and default:
         reason = "default"
