@@ -1655,6 +1655,7 @@ async function undo(ev, hard) {
     }
   } else {
     await send_text(`<ac rm=${lastMessageId}>`);
+    active_dec("send");  // FIXME this is wonky
     return true;
   }
 
@@ -1792,6 +1793,7 @@ function auto_play(ev) {
     auto_play_poke();
     set_auto_play(auto_play_interval_options.indexOf(15));
   }
+  controls_resized();
 }
 
 function auto_play_back_off() {
