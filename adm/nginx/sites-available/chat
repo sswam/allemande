@@ -32,6 +32,11 @@ server {
 	auth_jwt_location COOKIE=auth;
 	auth_jwt_algorithm HS256;
 
+	# privacy
+	access_log off;
+	# error_log /dev/null;
+	# access_log /var/log/nginx/cors-debug.log cors_debug;
+
 	location /service_worker.js {
 		add_header Cache-Control "no-cache";
 		try_files /service_worker_gen.js =404;
@@ -52,16 +57,10 @@ server {
 		# Allow client to list available themes
 		autoindex on;
 
-		access_log /var/log/nginx/cors-debug.log cors_debug;
 		if ($is_banned) {
 			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 		auth_jwt_enabled on;
-#		autoindex on;
-# TODO if we want strong privacy
-#		access_log off;
-#		error_log /dev/null;
-#		add_header Cache-Control "no-store";
 
 		# working CORS alternative #1:
 		# Return the Access-Control-Allow-Origin header, even when requested by other domains.
@@ -83,16 +82,10 @@ server {
 	}
 
 	location / {
-		access_log /var/log/nginx/cors-debug.log cors_debug;
 		if ($is_banned) {
 			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 		auth_jwt_enabled on;
-#		autoindex on;
-# TODO if we want strong privacy
-#		access_log off;
-#		error_log /dev/null;
-#		add_header Cache-Control "no-store";
 
 		# working CORS alternative #1:
 		add_header Access-Control-Allow-Origin https://rooms.$ALLEMANDE_DOMAIN always;

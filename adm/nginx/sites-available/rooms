@@ -32,6 +32,11 @@ server {
 	auth_jwt_location COOKIE=auth;
 	auth_jwt_algorithm HS256;
 
+	# privacy
+	access_log off;
+	# error_log /dev/null;
+	# access_log /var/log/nginx/cors-debug.log cors_debug;
+
 	location ~ /\. {
 		deny all;
 	}
@@ -41,11 +46,6 @@ server {
 			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 		auth_jwt_enabled on;
-# TODO if we want strong privacy
-#		access_log off;
-#		error_log /dev/null;
-#		add_header Cache-Control "no-store";
-#		add_header Cache-Control "no-cache";
 
 		if ($args ~* stream=1) {
 			rewrite ^ /stream$uri? last;
