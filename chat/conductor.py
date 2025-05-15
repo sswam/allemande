@@ -310,8 +310,6 @@ def who_should_respond(
 
     history = chat.history_remove_thinking_sections(history, None)
 
-    direct_reply_chance = config.get("direct_reply_chance", 1.0)
-
     # mentioned in mission hack
     mentioned_in_mission = set()
     if mission:
@@ -456,14 +454,13 @@ def who_should_respond(
         invoked = filter_access(invoked, room, access_check_cache)
         logger.debug("who_is_named: %r", invoked)
 
-    direct_reply = random.random() < direct_reply_chance
-
     # Calculate everyone_except_user
     user_clean = (user or '').lstrip("@")
     everyone_except_user = [a for a in chat_participants_names_lc if a != user_clean]
     everyone_except_user_all = [a for a in chat_participants_names_all_lc if a != user_clean]
 
-    # mediators reply when no one is mentioned
+    # mediators reply when no one is mentioned, and no direct reply
+    mediator_for_humans = config.get("mediator_for_humans", False)
     mediator = config.get("mediator")
     if mediator is None:
         mediator = []
@@ -477,19 +474,26 @@ def who_should_respond(
             mediator[i] = random.choice(everyone_except_user_all)
     mediator = filter_access(mediator, room, access_check_cache)
 #    mediator = [m for m in mediator if m != user]  # exclude user
+
     # We don't want mediators to reply to themselves or other mediators,
     # they need to be able to chat with users
     if user in mediator:
         mediator = []
 
-    if not invoked and not is_human and mediator:
-        reason = "mediator"
-        invoked = [random.choice(mediator)]
-        logger.debug("mediator: %r", invoked)
+    use_mediator = mediator and (mediator_for_humans or not is_human)
+
+    # direct_reply_chance
+    if use_mediator:
+        direct_reply_chance = 0.0
+    else:
+        direct_reply_chance = 1.0
+    direct_reply_chance = config.get("direct_reply_chance", direct_reply_chance)
+
+    direct_reply = random.random() < direct_reply_chance
 
     if not invoked:
-        logger.debug("direct_reply_chance: %r", direct_reply_chance)
-        logger.debug("direct_reply: %r", direct_reply)
+        logger.info("direct_reply_chance: %r", direct_reply_chance)
+        logger.info("direct_reply: %r", direct_reply)
 
     # direct replies: Allow replying to self without triggering an AI to respond
     if not invoked and direct_reply:
@@ -502,7 +506,14 @@ def who_should_respond(
         invoked = filter_access(invoked, room, access_check_cache)
         logger.debug("who_spoke_last: %r", invoked)
 
-    # If still no one to respond, default to last AI speaker or random AI
+    # mediator
+    if not invoked and use_mediator:
+        reason = "mediator"
+        logger.info("mediators: %r", mediator)
+        invoked = [random.choice(mediator)]
+        logger.info("mediator: %r", invoked)
+
+    # If still no one to respond, default to last AI speaker
     if not invoked:
         ai_participants = [agent for agent in all_participants if agent_is_ai(agents.get(agent.lower()))]
         ai_participants = filter_access(ai_participants, room, access_check_cache)
@@ -515,19 +526,28 @@ def who_should_respond(
             invoked = who_spoke_last(history[:-1], user, ai_participant_agents, include_self=True, include_humans=False)
             invoked = filter_access(invoked, room, access_check_cache)
             logger.debug("who_spoke_last ai: %r", invoked)
-        if not invoked and ai_participants and ai_participants != [user]:
-            reason = "random_ai"
-            invoked = [random.choice(ai_participants)]
-            logger.debug("random ai: %r", invoked)
-            logger.debug("ai_participants: %r", ai_participants)
-        if not invoked and ai_participants_with_excluded and ai_participants_with_excluded != [user]:
-            reason = "random_ai_with_excluded"
-            invoked = [random.choice(ai_participants_with_excluded)]
-            logger.debug("random ai 2: %r", invoked)
-        if not invoked and default:
-            reason = "default"
-            invoked = [random.choice(default)]
-            logger.debug("default: %r", invoked)
+
+    # mediator is better than random!
+    if not invoked and mediator:
+        reason = "mediator"
+        logger.info("mediators: %r", mediator)
+        invoked = [random.choice(mediator)]
+        logger.info("mediator: %r", invoked)
+
+    # random AI
+    if not invoked and ai_participants and ai_participants != [user]:
+        reason = "random_ai"
+        invoked = [random.choice(ai_participants)]
+        logger.debug("random ai: %r", invoked)
+        logger.debug("ai_participants: %r", ai_participants)
+    if not invoked and ai_participants_with_excluded and ai_participants_with_excluded != [user]:
+        reason = "random_ai_with_excluded"
+        invoked = [random.choice(ai_participants_with_excluded)]
+        logger.debug("random ai 2: %r", invoked)
+    if not invoked and default:
+        reason = "default"
+        invoked = [random.choice(default)]
+        logger.debug("default: %r", invoked)
 
     logger.info("who_should_respond: %r %r", reason, invoked)
 
