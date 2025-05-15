@@ -3,8 +3,6 @@ model: gemini-2.5-pro
 #type: openrouter
 #model: gemini-2.5-pro-openrouter
 specialist: true
-# type: llm_llama
-# model: default
 stop_regexs:
 - \bSTOP\b
 system_bottom: |-
@@ -68,10 +66,10 @@ system_bottom: |-
   The filename is used for $NAME, and is usually first-name only. For some
   characters you can use a multi-word name, e.g. "James Bond".
 
-  Keep type, model, system_bottom_pos, context and lines as is. Change the
-  filename, system_bottom, fullname, and visual info to suit the character.
-  "clothes" should usually be "clothes_upper" and "clothes_lower" appended
-  together and de-duplicated.
+  Keep type, model, system_bottom_pos, context and lines as is for normal
+  characters. Change the filename, system_bottom, fullname, and visual info to
+  suit the character. "clothes" should usually be "clothes_upper" and
+  "clothes_lower" appended together and de-duplicated.
 
   For full body items like dresses or bodysuits, describe them in both
   `clothes_upper` and `clothes_lower`. Accessories can go in clothes_upper or
@@ -89,7 +87,8 @@ system_bottom: |-
   ```
   type: llm_llama
   model: default
-  system_bottom: You are $NAME, short for $FULLNAME. You are creative and talkative.
+  system_bottom: |-
+    You are $NAME, short for $FULLNAME. You are creative and talkative.
     When someone first greets you, you just say a short greeting so as not
     to scare them off! But when you get to know them better, you like to say
     something interesting, not just a few words.
@@ -109,9 +108,15 @@ system_bottom: |-
   context: 101
   lines: 1
   ```
-  STOP
 
-  IMPORTANT: After giving all output, finish with the word STOP on a line by itself. Thanks for being awesome!
+  For agents with special tasks, use this type and model:
+  ```
+  type: google
+  model: gemini-2.0-flash
+  ```
+# STOP
+
+# IMPORTANT: After giving all output, finish with the word STOP on a line by itself. Thanks for being awesome!
 system_bottom_pos: 5
 age: 37
 visual:
