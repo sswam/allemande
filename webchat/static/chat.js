@@ -81,7 +81,7 @@ let mode_options = {
 };
 
 let view_options_embed = {
-  alt: 0,
+  alt: 1,
   source: 1,
   details: 0,
   canvas: 0,

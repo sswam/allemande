@@ -1,0 +1,178 @@
+Okay, let's go through the list and identify names that are either common English dictionary words or common first names.
+
+Here are the names from your list that could potentially cause accidental invocation due to being common words or names:
+
+**Common Dictionary Words:**
+
+*   **Mirror**
+*   **Violet** (also a name)
+*   **Belle** (also a name)
+*   **Jasmine** (also a name)
+*   **Mirage**
+*   **Aurora** (also a name)
+*   **Fawn** (also a name)
+*   **Maleficent**
+*   **Shank**
+*   **Bast**
+*   **Pyrite**
+*   **June** (also a name)
+*   **Bubbles** (also a nickname/name)
+*   **Raven** (also a name)
+*   **Alchemy**
+*   **Ram**
+*   **Juniper** (also a name)
+*   **Jinx**
+*   **Rem**
+*   **Felt**
+*   **Penny** (also a name)
+*   **Buttercup** (also a nickname/name)
+*   **Melody** (also a name)
+*   **Plum**
+*   **Lite**
+*   **Grace** (also a name)
+*   **Brie** (also a name)
+*   **Nova** (also a name)
+*   **Cookie** (also a nickname/name)
+*   **Vega** (also a name, star name)
+*   **Haka** (Maori term, but potentially recognized)
+*   **Yoni** (Sanskrit term, potentially problematic)
+
+**Common First Names / Nicknames:**
+
+*   **Nani**
+*   **Rosetta**
+*   **Elsa**
+*   **Violet** (also a word)
+*   **Belle** (also a word)
+*   **Jasmine** (also a word)
+*   **Jessie** (and **Jessi**)
+*   **Aurora** (also a word)
+*   **Mirabel**
+*   **Alice**
+*   **Tiana**
+*   **Helen**
+*   **Esmeralda**
+*   **Lola**
+*   **Mulan**
+*   **Fawn** (also a word)
+*   **Anna**
+*   **Asha**
+*   **Wendy**
+*   **Minnie**
+*   **Megara** (less common, but recognizable name)
+*   **Kida**
+*   **Kelly**
+*   **Raya**
+*   **Isabela**
+*   **Dolores**
+*   **Anastasia** (and **Nastia**)
+*   **Merida**
+*   **Kari**
+*   **Moana**
+*   **Ariel**
+*   **Gabby**
+*   **Amir**
+*   **Evan**
+*   **Dante**
+*   **Barbie**
+*   **Ezio**
+*   **Cleo**
+*   **Kai**
+*   **Emmie** (and **Emm**)
+*   **Ellie**
+*   **Yvonne**
+*   **Nixie** (also a word)
+*   **Dali** (Common surname, less common first)
+*   **Soli** (less common, but could be a name/soundalike)
+*   **Ally**
+*   **Cal**
+*   **Felix**
+*   **Luna** (also a word/concept)
+*   **Eva**
+*   **Jackson**
+*   **Riley**
+*   **Jhon** (misspelling of John)
+*   **Xavi** (nickname for Xavier)
+*   **Sylvi** (nickname for Sylvia)
+*   **Gemm / Gemmi / Gemmy** (close to "Gem", also a name)
+*   **June** (also a word)
+*   **Lois**
+*   **Lenore**
+*   **Jin**
+*   **Jackie**
+*   **Sylvia**
+*   **Irma**
+*   **Bubbles** (also a word)
+*   **Raven** (also a word)
+*   **Maria**
+*   **Bronwyn**
+*   **Marceline**
+*   **Fionna**
+*   **Daphne**
+*   **Katara**
+*   **Diana**
+*   **Korra**
+*   **Azula**
+*   **Sumi**
+*   **Cornelia**
+*   **Juniper** (also a word)
+*   **Dani**
+*   **Kara**
+*   **Vi**
+*   **Velma**
+*   **Meg**
+*   **Jessica**
+*   **Frankie**
+*   **Ramona**
+*   **Kim**
+*   **Harley**
+*   **Buttercup** (also a word)
+*   **Annette**
+*   **Penny** (also a word)
+*   **Mio**
+*   **Melody** (also a word)
+*   **Priscilla**
+*   **Suki**
+*   **Emilia**
+*   **Blanchette**
+*   **Fiona**
+*   **Phoebe**
+*   **Mai**
+*   **Astrid**
+*   **Marin**
+*   **Gwen** (and **Qwen**)
+*   **Yue**
+*   **Fio**
+*   **Jinora**
+*   **Marge**
+*   **Lilian**
+*   **Wilma**
+*   **Taranee**
+*   **Blossom** (also a word)
+*   **Lara**
+*   **Susan**
+*   **Sona**
+*   **Emmy**
+*   **Sonari**
+*   **Gemma** (and **Gema**)
+*   **Dav** (short for David)
+*   **Mavi**
+*   **Sagi** (less common name/word)
+*   **Claude**
+*   **Gemmy**
+*   **Tony**
+*   **Jessi**
+*   **Vega** (also a word)
+*   **Sal**
+*   **Zeno**
+*   **Chaz**
+*   **Brie** (also a word)
+*   **Greta**
+*   **Nova** (also a word)
+*   **Lavi**
+*   **Atla**
+*   **Sia**
+*   **Elmo**
+*   **Oscar**
+*   **Cookie** (also a word)
+*   **Sam**

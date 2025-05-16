@@ -8,7 +8,18 @@ In addition to general features, which you can read about in the [User Guide](/g
 - Your use is necessarily recorded in chat histories. For private rooms, we can wipe these on request.
 - We ask that you keep adult content in the NSFW zone, or in private chat, and follow a few rules.
 
+Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
+
+If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
+
 Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
+
+## Topless Pictures of Characters
+
+<link rel="stylesheet" href="/cast.css"><details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](cast/Amir.jpg) ![Atla](cast/Atla.jpg) ![Bast](cast/Bast.jpg) ![Cal](cast/Cal.jpg) ![Callam](cast/Callam.jpg) ![Chaz](cast/Chaz.jpg) ![Dante](cast/Dante.jpg) ![Ezio](cast/Ezio.jpg) ![Felix](cast/Felix.jpg) ![Gari](cast/Gari.jpg) ![Haka](cast/Haka.jpg) ![Jackson](cast/Jackson.jpg) ![Jhon](cast/Jhon.jpg) ![Kai](cast/Kai.jpg) ![Morf](cast/Morf.jpg) ![Pliny](cast/Pliny.jpg)</div>
+</details>
+<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](cast/Aetheria.jpg) ![Akane](cast/Akane.jpg) ![Ally](cast/Ally.jpg) ![Barbie](cast/Barbie.jpg) ![Brie](cast/Brie.jpg) ![Cleo](cast/Cleo.jpg) ![Dali](cast/Dali.jpg) ![Eira](cast/Eira.jpg) ![Emmie](cast/Emmie.jpg) ![Fenny](cast/Fenny.jpg) ![Gabby](cast/Gabby.jpg) ![Gemmy](cast/Gemmy.jpg) ![Hanni](cast/Hanni.jpg) ![Nixie](cast/Nixie.jpg) ![Nova](cast/Nova.jpg) ![Pixi](cast/Pixi.jpg) ![Rozie](cast/Rozie.jpg) ![Sia](cast/Sia.jpg) ![Sio](cast/Sio.jpg) ![Soli](cast/Soli.jpg) ![Nalani](cast/Nalani.jpg) ![Illu](cast/Illu.jpg) ![Gema](cast/Gema.jpg) ![Xilu](cast/Xilu.jpg) ![Flashi](cast/Flashi.jpg)</div>
+</details>
 
 ## Rules for Adult Content
 

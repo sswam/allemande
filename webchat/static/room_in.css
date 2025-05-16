@@ -549,10 +549,12 @@ pre:has(div.graphviz), pre:has(div.mermaid) {
 	overflow: auto;
 }
 
+/*
 .graphviz > *, .mermaid > * {
 	max-width: calc(100vw - 4 * var(--pad)) !important;
 	max-height: calc(100vh - 4 * var(--pad)) !important;
 }
+*/
 
 /*
 .content script::before {

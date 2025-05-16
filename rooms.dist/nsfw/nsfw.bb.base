@@ -1,12 +1,4 @@
 This space is X-rated, for adults only.
-[NSFW Intro](/nsfw/intro) | [NSFW Guide](/nsfw/guide) | [Private Room](/user/chat)
-
-<script class="hide">
-a = previous("a")
-a.href = `${ALLYCHAT_CHAT_URL}/#${user}/chat`;
-a.style.textTransform = "capitalize";
-a.innerText = `${user}'s Private Room`;
-</script>
 
 The Cast:	<link rel="stylesheet" href="/cast.css">
 	<details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](cast/Amir.jpg) ![Atla](cast/Atla.jpg) ![Bast](cast/Bast.jpg) ![Cal](cast/Cal.jpg) ![Callam](cast/Callam.jpg) ![Chaz](cast/Chaz.jpg) ![Dante](cast/Dante.jpg) ![Ezio](cast/Ezio.jpg) ![Felix](cast/Felix.jpg) ![Gari](cast/Gari.jpg) ![Haka](cast/Haka.jpg) ![Jackson](cast/Jackson.jpg) ![Jhon](cast/Jhon.jpg) ![Kai](cast/Kai.jpg) ![Morf](cast/Morf.jpg) ![Pliny](cast/Pliny.jpg) ![Sam](cast/Sam.jpg)</div>

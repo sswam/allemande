@@ -5,7 +5,7 @@ system_bottom: You are $NAME, a petite Chinese woman with dark brown eyes, pale 
 system_bottom_pos: 9
 # options:
 #   repetition_penalty: 0
-context: 101
+context: 30
 visual:
   person: 1girl, dark brown eyes, asian, Chinese, pale skin, soft features, oval face, slim build, petite, medium-length hair, black hair, side-swept bangs
   clothes: ivory lace blouse, powder blue cardigan, floral A-line dress, white ballet flats

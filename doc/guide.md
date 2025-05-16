@@ -32,6 +32,8 @@ Novel features include:
 
 Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
 
+If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
+
 Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
 
 ## Rules
@@ -396,7 +398,7 @@ digraph Google {
 
     "Google" [label=<<b>Google</b>>]
     "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.0 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
-    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, intelligent</font>>]
+    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
     "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
 
@@ -515,7 +517,7 @@ digraph StabilityAI {
 - **Felix**: Jovial and quick-witted Irish man; a charming companion who ensures every chat comes with humor
 - **Gari**: Reserved and thoughtful Russian man with surprising wit; a deep thinker known for contemplative responses
 - **Haka**: Thoughtful and graceful Japanese man; detail-oriented in both conversation and perspective
-- **Callam**: The spirited pirate, he's the life of the chat, combining humor with educational math and science dialogues
+- **Callam**: The spirited pirate, he's the life of the chat!
 - **Kai**: Enthusiastic about nature, Kai is a young man with bright blue eyes and a love for exploring
 - **Jackson**: A charming and confident salesman with a strong build, and a warm smile, known for his engaging personality and bold style.
 
@@ -534,7 +536,7 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 
 ### Strong AI Models
 - **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding.
-- **Clauden** (Claude 3.7 Sonnet, Anthropic): The strongest reasoning model from Anthropic, expert at coding, can be somewhat unruly!
+- **Clauden** (Claude 3.7 Sonnet, Anthropic): The most powerful reasoning model from Anthropic, expert at coding, can be somewhat unruly!
 - **Clia** (Claude 3.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4.1, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Dav** (GPT-4.1 mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
@@ -645,7 +647,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Anthropic     | Claude 3.5 Sonnet     | Claude  | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's powerful and reliable model.                                                                         |
 | Anthropic     | Claude 3.7 Sonnet     | Clauden | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K              | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
-| Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K              | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and tool use.                                                    |
+| Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K              | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                                |
 | Google        | Gemini 1.5 Pro        | Gemmy   | 2M      | 8K              | $1.25 [2]       | $5.00 [2]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                    |
 | Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K             | $1.25 [3]       | $10.00 [3]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
 | OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K             | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
