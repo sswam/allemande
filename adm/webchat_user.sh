@@ -99,6 +99,14 @@ END
 		# delay to avoid detecting the change twice, with the dir add and the file add
 		(sleep 1; cp rooms/"$user"/.help.bb.base rooms/"$user"/help.bb) &
 	fi
+
+	# rooms git: ignore user's dir
+	cd rooms
+	echo "/$user" >> .gitignore
+
+	# add git to user's dir with arcs
+	cd "$user"
+	yes n | arcs -i
 }
 
 change-password() {
