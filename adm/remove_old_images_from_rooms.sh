@@ -1,10 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-cd "$ALLEMANDE_ROOMS"
+dir="$1"
 
 # Get a list of all jpg files older than 2 days, not in the cast directory, and are owner writable
-find . -mtime +2 -type f -name '*.jpg' -not -path '*/cast/*' -perm /200 | sed 's|^\./||' | sort > .all_jpg_files.txt
+find "$dir" -mtime +2 -type f -name '*.jpg' -not -path '*/cast/*' -perm /200 | sed 's|^\./||' | sort > .all_jpg_files.txt
 
 # Get list of files tracked by Git
 git ls-files "*.jpg" | sed 's|^\./||' | sort > .git_jpg_files.txt
