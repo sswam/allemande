@@ -62,19 +62,19 @@ This asks Bigi, an image gen AI, to draw a nude girl, in a fast, lowest-quality 
 
 This draws Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image at high quality, with a default "negative prompt" to help avoid bad images.
 
-    Illy, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg] [S3]
+    Jily, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg] [S3]
 
 This does the same thing more concisely, for Barbie, making sure it's a solo picture:
 
-    Illy, solo [person barbie] [use neg] [P4]
+    Jily, solo [person barbie] [use neg] [P4]
 
 This draws Cleo in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
 
-    Illy, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
+    Jily, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
 
 This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant. Square image, medium quality:
 
-    Illy, [person Bast "topless, leather shorts" angry], jungle [S2]
+    Jily, [person Bast "topless, leather shorts" angry], jungle [S2]
 
 The shortcut quality settings range from 0 (lowest, the default) to 9 (much too high!).
 [S2] is a medium quality square image. [P1] is a low quality portrait image, [L4] is a high quality landscape image, etc.
@@ -107,7 +107,7 @@ The other strong models mentioned in the main guide are averse to NSFW chat, and
 
 ### AI Artists
 - Using the AI art models directly can be a bit technical. For best results, new users can talk to Xilu, who has extensive knowledge about how to create good prompts, including NSFW, and all the options and settings that the models understand.
-- **Illy**: High-quality photorealistic and artistic image generation using Juggernaut XL
+- **Jily**: High-quality photorealistic and artistic image generation using Juggernaut XL
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
 - **Yoni, Coni, Boni**: NSFW image generation with a semi-realistic style (based on PonyXL)
 - **Poni**: NSFW image generation with a cartoon / anime style (based on PonyXL)
@@ -130,7 +130,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 Please do not use languages models other than those listed here for NSFW content, or if there is any NSFW content in the chat.
 
-The Illy and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art.
+The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art.
 Most of our other image gen models are based primarily on Pony XL, with less understanding of English; these should be prompted mainly using Danbooru tags. They are very strong at soft and hardcore art.
 The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It can understand both English and Danbooru tags to some extent.
 
@@ -153,12 +153,12 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 
 | Creator       | Model               | Name | Description                                                                                                         |
 |---------------|---------------------|------|---------------------------------------------------------------------------------------------------------------------|
-| RunDiffusion  | Juggernaut XL v9    | Illy | The most popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica    |
+| RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica    |
 | LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art including soft-core erotica  |
 | Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic pony model         |
 | Autismix anon | AutismMix Confetti  | Poni | Mix of pony with "some stuff", a popular model for erotic anime-style art                                           |
 | SubtleShader  | Big Love Pony       | Pigi | The more Pony-flavoured variant, a bit less realistic but with a better understanding of booru tags                 |
-| SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Illy, with more SDXL than Pony                     |
+| SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Jily, with more SDXL than Pony                     |
 | Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
 

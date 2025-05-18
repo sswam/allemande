@@ -143,15 +143,15 @@ This asks the shell agent to list files.
 
 ## Basic intro to AI Image Generation
 
-IMPORTANT: The agents Illu (as distinct from Illy) and Gema are experts on image gen. We can talk to them to learn about image prompting, much more than is in this guide.
+IMPORTANT: The agents Illu and Gema are experts on image gen. We can talk to them to learn about image prompting, much more than is in this guide.
 
-This asks Illy, an image gen AI, to draw a big dog, in a fast, lowest-quality landscape image:
+This asks Jily, an image gen AI, to draw a big dog, in a fast, lowest-quality landscape image:
 
-    Illy, big dog [L]
+    Jily, big dog [L]
 
 This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a high-quality portrait image. Try to get a full body shot by mentioning shoes or feet!
 
-    Illy, [person "Cleo" "green dress" . "30"], ballroom, (full body, heels:1.5) [P4]
+    Jily, [person "Cleo" "green dress" . "30"], ballroom, (full body, heels:1.5) [P4]
 
 The "person" macro accepts up to 4 parameters.
 
@@ -165,7 +165,7 @@ Optional parameters (use "." for default):
 
 NOTE: The position is important, e.g. to specify age only:
 
-    Illy, [person "Ally" . . "baby 1 year old"], crawling [P2]
+    Jily, [person "Ally" . . "baby 1 year old"], crawling [P2]
 
 The shortcut quality settings range from 0 (lowest, the default) to 9.
 
@@ -481,10 +481,10 @@ digraph StabilityAI {
 
     "Stability AI" [label=<<b>Stability AI</b>>]
     "SDXL" [label=<<b>SDXL</b>>]
-    "Illy" [label=<<b>Illy ...</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8">Image Gen</font>>]
+    "Jily" [label=<<b>Jily ...</b><br/><font point-size="10">Juggernaut XL</font><br/><font point-size="8">Image Gen</font>>]
 
     "Stability AI" -> "SDXL"
-    "SDXL" -> "Illy"
+    "SDXL" -> "Jily"
 }
 ```
 
@@ -573,8 +573,8 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Zeno** (OpenAI): A variant of GPT-4o with a strong academic focus.
 
 ### AI Artists
-- Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Illy the AI art model.
-- **Illy**: High-quality photorealistic and artistic image generation using Juggernaut XL
+- Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Jily the AI art model.
+- **Jily**: High-quality photorealistic and artistic image generation using Juggernaut XL
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
 
 ### Search Agents
@@ -677,7 +677,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 | Creator       | Model             | Name | Description                                                                              |
 |---------------|---------------------|------|----------------------------------------------------------------------------------------|
-| RunDiffusion  | Juggernaut XL v9    | Illy | The most popular model based on SDXL, for high-quality realistic and artistic images   |
+| RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images   |
 | LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art |
 
 # Ally Chat User Interface Guide

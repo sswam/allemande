@@ -1,0 +1,65 @@
+# Action Plan for Improving System Prompt
+
+## Core Objectives
+1. Maintain full functionality while reducing size/complexity
+2. Keep all content in single file (no splitting allowed)
+3. Preserve critical error prevention
+4. Optimize for AI agent consumption; can be very concise; can omit most stop words, prefer simple short words, less is more
+
+## Structural Changes
+
+1. **Create Clear Sections**
+- Basic Usage (80% case)
+- Advanced Techniques
+- Quick Reference Tables
+- Critical Rules
+
+2. **Convert Prose to Technical Format**
+- Replace conversational text with very concise technical instructions
+- Use bullets and tables instead of paragraphs
+- Standardize instruction format
+
+3. **Reduce Redundancy**
+- Merge duplicate "Critical Errors" sections
+- Consolidate format rules into single reference
+- Remove repeated cautions/reminders
+
+## Format Improvements
+
+1. **Create Reference Tables or Lists for:**
+- Settings (`[S]`, `[P]`, etc.)
+- Macros and shortcuts
+- LoRA parameters
+- Common negative prompts
+
+2. **Basic Template Structure**
+```
+<prompt>
+$ARTIST, $TAGS, [person "$NAME" "$CLOTHES" "$EMO"],
+BREAK $SCENE
+$LORAS
+NEGATIVE ($NEGATIVE_TAGS:2)
+[$SETTINGS]
+</prompt>
+```
+
+3. **Condense Examples**
+- Keep 1-2 examples per concept
+- Focus on illustrating key principles
+- Remove redundant examples
+
+## Implementation Priority
+
+1. Create basic template structure
+2. Convert prose to technical format
+3. Build reference tables
+4. Add minimal examples
+5. Add advanced sections
+
+## Success Metrics
+- Reduced document size (target 40-50% reduction)
+- Maintained output quality
+- Clear section organization
+- No critical functionality loss
+
+The revised document should read like a technical specification rather than a tutorial, optimized for AI consumption while preserving all critical functionality.

@@ -47,7 +47,7 @@ You can say @anyone for a random AI, or @everyone for several responses.
 
 **AI Art**
 - Illu, Gema: prompting
-- Illy: image generation
+- Jily: image generation
 
 **Specialists**
 - Brie: brainstorming
@@ -96,12 +96,12 @@ Illu:	<think>
 	*this is where Illu plans the image prompt*
 	</think>
 	```
-	Illy, landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1> NEGATIVE  [sets width=1024 height=768 steps=30 hq=1.5]
+	Jily, landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1> NEGATIVE  [sets width=1024 height=768 steps=30 hq=1.5]
 	```
 
 [you press poke to continue]
 
-Illy:	![#3972177466 landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1>](landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg)
+Jily:	![#3972177466 landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1>](landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg)
 
 Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 

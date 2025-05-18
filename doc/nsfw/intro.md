@@ -55,7 +55,7 @@ You can say @anyone for a random AI, or @everyone for several responses.
 
 **AI Art**
 - Xilu: NSFW image prompting
-- Illy, Hily: high quality, realistic images, including soft-core
+- Jily, Hily: high quality, realistic images, including soft-core
 - Yoni, Coni, Boni: semi-realistic NSFW images
 - Poni: cartoon / anime NSFW images
 - Bigi, Pigi: realistic NSFW images

@@ -65,7 +65,7 @@ We offer a wide array of AI models and predefined characters. See the [User Guid
 	* Pliny: plot
 	* Morf: Game Master
 	* Vega, Zeno: Academic Claude/Emmy
-* **AI Artists (SDXL-based)**: Illy (Juggernaut XL), Hily (HelloWorld XL) and more.
+* **AI Artists (SDXL-based)**: Jily (Juggernaut XL), Hily (HelloWorld XL) and more.
 
 ### Programming Tools
 
@@ -144,7 +144,7 @@ These applications are currently stand-alone tools; they are not yet integrated 
 - Please contact the developer for help if you want to install and self-host Ally Chat.
 - Ally Chat uses both a webserver, and optionally home PCs or servers running GPU services.
 - The GPU services provide local LLMs (e.g. Llama 3.1) and image gen with SDXL.
-- A 24GB+ GPU (e.g., Nvidia 3090 or better) is recommended for running local models like Llama 3.1 (Ally, etc.) and SDXL (Illy, Hily) concurrently.
+- A 24GB+ GPU (e.g., Nvidia 3090 or better) is recommended for running local models like Llama 3.1 (Ally, etc.) and SDXL (Jily, Hily) concurrently.
 - If you use Windows, you will need to install Debian in WSL2, see [doc/windows.txt](doc/windows.txt) for details.
 - Refer to [doc/debian.sh](doc/debian.sh) for the main install guide. Do not run this script, copy-paste from it!
 - Ally Chat might also work with other Linux distros, and possibly on Mac, but this has not been tested. You will need to figure out the corresponding packages, etc.
