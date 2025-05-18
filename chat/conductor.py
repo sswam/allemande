@@ -37,6 +37,8 @@ ANYONE_WORDS = [
     "who",
     "anybody",
     "somebody",
+    "another",
+    "other",
 
     # "one of you",
     # "one of y'all",
