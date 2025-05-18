@@ -187,7 +187,10 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, opts, remote_messages)
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("Exception during generation")
-        return f"{agent.name}:\n" + re.sub(r'(?m)^', '\t', str(e))
+        msg = str(e)
+        if msg in ["list index out of range"]:
+            msg = ""
+        return f"{agent.name}:\n" + re.sub(r'(?m)^', '\t', msg)
     #google.generativeai.types.generation_types.StopCandidateException: finish_reason: PROHIBITED_CONTENT
 
     response = output_message["content"]
