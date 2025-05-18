@@ -10,6 +10,6 @@ find "$dir" -mtime +2 -type f -name '*.jpg' -not -path '*/cast/*' -perm /200 | s
 git ls-files "*.jpg" | sed 's|^\./||' | sort > .git_jpg_files.txt
 
 # Use comm to find files that are in all_jpg_files but not in git_jpg_files, and remove them
-comm -23 .all_jpg_files.txt .git_jpg_files.txt | xargs-better move-rubbish
+comm -23 .all_jpg_files.txt .git_jpg_files.txt | xargs-better move-rubbish --
 
 rm -f .all_jpg_files.txt .git_jpg_files.txt
