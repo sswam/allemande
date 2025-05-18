@@ -85,7 +85,7 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
     logger.debug("find_name_in_content: %r %r %r", content, name, ignore_case)
 
     # Define match patterns
-    start_comma_word = r"^\s*" + re.escape(name) + r"\b\s*,"  # at start with comma
+    start_comma_word = r"^\s*" + re.escape(name) + r"\b\s*(,|$)"  # at start with comma, or whole line
 
     patterns = [start_comma_word]
 
@@ -472,8 +472,8 @@ def who_should_respond(
 
     use_mediator = mediator and (mediator_for_humans or not is_human)
 
-    logger.info("use_mediator: %r", use_mediator)
-    logger.info("mediators: %r", mediator)
+    logger.debug("use_mediator: %r", use_mediator)
+    logger.debug("mediators: %r", mediator)
 
     # direct_reply_chance
     if use_mediator:
