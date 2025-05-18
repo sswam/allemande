@@ -27,14 +27,13 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         config = {}
 
     name = agent.name
-    name_lc = name.lower()
 
     # Allow to override agent settings in the config
     agent = agent.copy()
     if config and config.get("agents") and "all" in config["agents"]:
         agent.update(config["agents"]["all"])
-    if config and config.get("agents") and name_lc in config["agents"]:
-        agent.update(config["agents"][name_lc])
+    if config and config.get("agents") and name in config["agents"]:
+        agent.update(config["agents"][name])
 
     logger.debug("Running remote agent %r", agent)
 
@@ -65,8 +64,6 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     context2 += context
     if mission:
         context2.insert(mission_pos, "System:\t" + "\n".join(mission))
-    # put remote_messages[-1] through the input_maps
-    chat.apply_maps(agent["input_map"], agent["input_map_cs"], context2)
 
     context_messages = list(bb_lib.lines_to_messages(context2))
 
@@ -85,11 +82,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     for msg in context_messages:
         logger.debug("msg1: %r", msg)
-        u = msg.get("user")
-        u_lc = u.lower() if u is not None else None
-        # if u in agents_lc:
+        u = msg.get("user") or ""
         content = msg["content"]
-        if u_lc == agent.name.lower():
+        if u == agent.name:
             role = "assistant"
         else:
             role = "user"
@@ -173,7 +168,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     # Set up stop sequences for other participants
     logger.debug("context_messages: %r", context_messages)
-    all_people = conductor.all_participants(context_messages)
+    all_people = conductor.get_all_participants(context_messages)
     if opts.stop is None:
         opts.stop = []
     for p in all_people:
@@ -197,7 +192,6 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     response = output_message["content"]
     box = [response]
-    chat.apply_maps(agent["output_map"], agent["output_map_cs"], box)
     response = box[0]
 
     if response.startswith(agent.name + ": "):

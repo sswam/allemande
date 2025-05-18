@@ -536,32 +536,6 @@ def flatten_edited_messages(messages, output):
             output.append(message)
 
 
-def apply_maps(mapping, mapping_cs, context):
-    """for each word in the mapping, replace it with the value"""
-
-    logger.debug("apply_maps: %r %r", mapping, mapping_cs)
-
-    if not (mapping or mapping_cs):
-        return
-
-    def map_word(match):
-        """Map a word."""
-        word = match.group(1)
-        word_lc = word.lower()
-        out = mapping_cs.get(word)
-        if out is None:
-            out = mapping.get(word_lc)
-        if out is None:
-            out = word
-        return out
-
-    for i, msg in enumerate(context):
-        old = msg
-        context[i] = re.sub(r"\b(.+?)\b", map_word, msg)
-        if context[i] != old:
-            logger.debug("map: %r -> %r", old, context[i])
-
-
 async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int) -> None:
     """Add images to a list of messages."""
     if not image_count_max:

@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 # The EVERYONE_WORDS and ANYONE_WORDS now only work with @ prefix, so we can include more words
 
+IGNORE_CASE = False
+
 EVERYONE_WORDS = [
     # General plural addresses
     "everyone",
@@ -106,17 +108,14 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
                 # Calculate absolute position in original content
                 abs_pos = content.find(sentence) + match.start()
                 current_match = (match_type, sent_num, abs_pos, name)
-
-                # Update if this is a better match
-                if current_match < best_match:
-                    best_match = current_match
+                best_match = min(best_match, current_match)
 
     return best_match
 
 
 def who_is_named(
     content: str,
-    user: str | None,
+    user: str,
     agent_names: list[str],
     include_self: bool = True,
     chat_participants: list[str] | None = None,
@@ -128,6 +127,7 @@ def who_is_named(
     room: chat.Room | None = None,
     access_check_cache: dict[str, int] | None = None,
     agents: Agents | None = None,
+    ignore_case: bool = True,
 ) -> list[str]:
     """check who is named first in the message"""
     if chat_participants is None:
@@ -148,9 +148,8 @@ def who_is_named(
     )
 
     # Calculate everyone_except_user
-    user_clean = (user or '').lstrip("@")
-    everyone_except_user = [a for a in chat_participants if a != user_clean]
-    everyone_except_user_all = [a for a in chat_participants_all if a != user_clean]
+    everyone_except_user = [a for a in chat_participants if a != user]
+    everyone_except_user_all = [a for a in chat_participants_all if a != user]
 
     agents_and_plurals = agent_names
     if USE_PLURALS:
@@ -159,10 +158,10 @@ def who_is_named(
     matches = []
     for agent in agents_and_plurals:
         is_tool = agents is not None and agent in agents and agent_is_tool(agents.get(agent))
-        matches.append(find_name_in_content(content, agent, is_tool=is_tool))
+        matches.append(find_name_in_content(content, agent, is_tool=is_tool, ignore_case=ignore_case))
 
     if not include_self and user:
-        matches = [m for m in matches if m[3] and m[3].lower() != user.lower()]
+        matches = [m for m in matches if m[3] and m[3] != user]
     if not matches:
         return []
 
@@ -175,8 +174,8 @@ def who_is_named(
 
     logger.debug("matches 2: %r", matches)
 
-    logger.debug(f"{everyone_except_user=}")
-    logger.debug(f"{everyone_except_user_all=}")
+    logger.debug("%r", everyone_except_user)
+    logger.debug("%r", everyone_except_user_all)
 
     result: list[str] = []
     for _type, _sentence, _pos, agent in matches:
@@ -208,26 +207,24 @@ def who_is_named(
 
 def who_spoke_last(
     history: list[dict[str, Any]],
-    user: str | None,
+    user: str,
     agents: Agents,
     include_self: bool = False,
     include_humans: bool = True,
     include_tools: bool = False,
 ) -> list[str]:
     """check who else spoke in recent history"""
-    user_lc = user.lower() if user is not None else None
     for i in range(len(history) - 1, -1, -1):
         user2 = history[i].get("user")
         if user2 is None:
             continue
         if user2 in EXCLUDE_PARTICIPANTS_SYSTEM:
             continue
-        user2_lc = user2.lower() if user2 is not None else None
         if (
-            user2_lc in agents
-            and (include_self or user2_lc != user_lc)
-            and (include_tools or not agent_is_tool(agents.get(user2_lc)))
-            and (include_humans or not agent_is_human(agents.get(user2_lc)))
+            user2 in agents
+            and (include_self or user2 != user)
+            and (include_tools or not agent_is_tool(agents.get(user2)))
+            and (include_humans or not agent_is_human(agents.get(user2)))
         ):
             return [user2]
     return []
@@ -243,7 +240,7 @@ def participants(history: list[dict[str, str]], use_all=False) -> list[str]:
     return list(agents_set)
 
 
-def all_participants(history: list[dict[str, str]]) -> list[str]:
+def get_all_participants(history: list[dict[str, str]]) -> list[str]:
     """get all participants in the history including system and tools, most recent first"""
     seen = set()
     result = []
@@ -275,6 +272,7 @@ def agent_is_ai(agent: dict[str, Any]) -> bool:
 
 
 def is_image_message(agents: Agents, message: dict[str, str]) -> bool:
+    """check if a message is an image message"""
     user = message.get("user")
     if not user:
         return False
@@ -352,34 +350,24 @@ def who_should_respond(
 
     # Add agents for humans in the history
     for agent in all_participants:
-        agent_lc = agent.lower()
-        if agent_lc not in agents:
+        if agent not in agents:
             human = Agent(data={
                 "name": agent,
                 "type": "human",
             }, agents=agents)
-            agents.set(agent_lc, human)
+            agents.set(agent, human)
 
     agent_names = agents.names()
-    agents_lc = list(map(str.lower, agent_names))
     agent_case_map = {k.lower(): agents.get(k)["name"] for k in agent_names}
 
-    user = message.get("user") if message else None
-    user_lc = user.lower() if user else None
+    user = message.get("user") if message else "System"  # System ???
 
-    logger.debug("user, user_lc: %r %r", user, user_lc)
+    is_human = False
 
-    if user_lc in agents_lc:
-        user_agent = agents.get(user_lc)
+    if user in agents:
+        user_agent = agents.get(user)
         logger.debug('user_agent["type"]: %r', user_agent["type"])
-        # What does this do, exactly?
-        # It seems to be a hack to make tools reply to the last human speaker
-        # I'm disabling this temporarily to see if it breaks anything
-#         if user_agent["type"] == "tool":
-#             invoked = who_spoke_last(history[:-1], user, agents, include_self=include_self, include_humans=include_humans_for_ai_message)
-#             return [agent_case_map[i.lower()] for i in invoked]
-
-    is_human = user_lc in agents_lc and agents.get(user_lc)["type"] == "human"
+        is_human = user_agent["type"] == "human"
 
     include_humans = (is_human and include_humans_for_human_message) or include_humans_for_ai_message
 
@@ -388,43 +376,36 @@ def who_should_respond(
         include_self = False
 
     # Filter chat participants based on include_humans setting
-    chat_participants_names_lc = [
+    chat_participants_names = [
         agent
         for agent in all_participants
-        if agents.get(agent.lower())["type"] != "tool" and not agents.get(agent.lower())["type"].startswith("image_")
-        and (include_humans or agents.get(agent.lower())["type"] != "human")
+        if agents.get(agent)["type"] != "tool" and not agents.get(agent)["type"].startswith("image_")
+        and (include_humans or agents.get(agent)["type"] != "human")
     ]
 
     # Filter chat participants based on include_humans setting
-    chat_participants_names_all_lc = [
+    chat_participants_names_all = [
         agent
         for agent in all_participants_with_excluded
-        if agents.get(agent.lower())["type"] != "tool" and not agents.get(agent.lower())["type"].startswith("image_")
-        and (include_humans or agents.get(agent.lower())["type"] != "human")
+        if agents.get(agent)["type"] != "tool" and not agents.get(agent)["type"].startswith("image_")
+        and (include_humans or agents.get(agent)["type"] != "human")
     ]
 
-    logger.debug("chat_participants_names_lc: %r", chat_participants_names_lc)
+    logger.debug("chat_participants_names: %r", chat_participants_names)
 
     content = message["content"] if message else ""
 
     # Filter out human users if requested from agent_names
     if not include_humans:
-        agent_names = [name for name in agent_names if agents.get(name.lower())["type"] != "human"]
+        agent_names = [name for name in agent_names if agents.get(name)["type"] != "human"]
 
-    agents_names_with_at = [f"@{name}" for name in agent_names]
+    agent_names_with_at = [f"@{name}" for name in agent_names]
 
-    everyone = EVERYONE_WORDS if USE_PLURALS else []
-    anyone = ANYONE_WORDS if USE_PLURALS else []
-    everyone_with_at = [f"@{agent}" for agent in everyone]
-    anyone_with_at = [f"@{agent}" for agent in anyone]
+    logger.info("agent_names: %r", agent_names)
+
+    everyone_with_at = [f"@{agent}" for agent in EVERYONE_WORDS]
+    anyone_with_at = [f"@{agent}" for agent in ANYONE_WORDS]
     self_words_with_at = [f"@{agent}" for agent in SELF_WORDS]
-
-    if not is_human:
-        sample_size = min(len(everyone), AI_EVERYONE_MAX)
-        everyone = random.sample(everyone, sample_size)
-
-        sample_size_with_at = min(len(everyone_with_at), AI_EVERYONE_MAX)
-        everyone_with_at = random.sample(everyone_with_at, sample_size_with_at)
 
     # For @mode, all mentioned agents should reply
     # To start talking to self, must use @name now.
@@ -432,10 +413,10 @@ def who_should_respond(
     invoked = who_is_named(
         content,
         f"@{user}",
-        agents_names_with_at,
+        agent_names_with_at,
         include_self=include_self,
-        chat_participants=chat_participants_names_lc,
-        chat_participants_all=chat_participants_names_all_lc,
+        chat_participants=chat_participants_names,
+        chat_participants_all=chat_participants_names_all,
         everyone_words=everyone_with_at,
         anyone_words=anyone_with_at,
         self_words=self_words_with_at,
@@ -443,6 +424,7 @@ def who_should_respond(
         room=room,
         access_check_cache=access_check_cache,
         agents=agents,
+        ignore_case=True,
     )
     invoked = filter_access(invoked, room, access_check_cache)
     logger.debug("who_is_named @: %r", invoked)
@@ -454,22 +436,22 @@ def who_should_respond(
             user,
             agent_names,
             include_self=False,  # no talking to self without @ now
-            chat_participants=chat_participants_names_lc,
-            chat_participants_all=chat_participants_names_all_lc,
+            chat_participants=chat_participants_names,
+            chat_participants_all=chat_participants_names_all,
             everyone_words=None,
             anyone_words=None,
             self_words=None,
             room=room,
             access_check_cache=access_check_cache,
             agents=agents,
+            ignore_case=False,
         )
         invoked = filter_access(invoked, room, access_check_cache)
         logger.debug("who_is_named: %r", invoked)
 
     # Calculate everyone_except_user
-    user_clean = (user or '').lstrip("@")
-    everyone_except_user = [a for a in chat_participants_names_lc if a != user_clean]
-    everyone_except_user_all = [a for a in chat_participants_names_all_lc if a != user_clean]
+    everyone_except_user = [a for a in chat_participants_names if a != user]
+    everyone_except_user_all = [a for a in chat_participants_names_all if a != user]
 
     # mediators reply when no one is mentioned, and no direct reply
     mediator_for_humans = config.get("mediator_for_humans", False)
@@ -478,16 +460,15 @@ def who_should_respond(
         mediator = []
     if not isinstance(mediator, list):
         mediator = [mediator]
-    for i in range(len(mediator)):
-        agent = mediator[i]
-        if agent in anyone and everyone_except_user:
+    for i, agent in enumerate(mediator):
+        if agent in ANYONE_WORDS and everyone_except_user:
             mediator[i] = random.choice(everyone_except_user)
-        elif agent in anyone and everyone_except_user_all:
+        elif agent in ANYONE_WORDS and everyone_except_user_all:
             mediator[i] = random.choice(everyone_except_user_all)
     mediator = filter_access(mediator, room, access_check_cache)
 
     # We don't want mediators to reply to themselves
-    mediator = [m for m in mediator if m != user_clean]
+    mediator = [m for m in mediator if m != user]
 
     use_mediator = mediator and (mediator_for_humans or not is_human)
 
@@ -525,19 +506,19 @@ def who_should_respond(
 
     # If still no one to respond, default to last AI speaker
     if not invoked:
-        ai_participants = [agent for agent in all_participants if agent_is_ai(agents.get(agent.lower()))]
+        ai_participants = [agent for agent in all_participants if agent_is_ai(agents.get(agent))]
         ai_participants = filter_access(ai_participants, room, access_check_cache)
-        ai_participants_with_excluded = [agent for agent in all_participants_with_excluded if agent_is_ai(agents.get(agent.lower()))]
+        ai_participants_with_excluded = [agent for agent in all_participants_with_excluded if agent_is_ai(agents.get(agent))]
         ai_participants_with_excluded = filter_access(ai_participants_with_excluded, room, access_check_cache)
         default = filter_access(default, room, access_check_cache)
         if ai_participants and direct_reply:
             reason = "last_ai_speaker"
-            ai_participant_agents = {name.lower(): agents.get(name.lower()) for name in ai_participants}
+            ai_participant_agents = {name: agents.get(name) for name in ai_participants}
             invoked = who_spoke_last(history[:-1], user, ai_participant_agents, include_self=True, include_humans=False)
             invoked = filter_access(invoked, room, access_check_cache)
             logger.debug("who_spoke_last ai: %r", invoked)
-        ai_participants_not_user = [agent for agent in ai_participants if agent != user_clean]
-        ai_participants_with_excluded_not_user = [agent for agent in ai_participants_with_excluded if agent != user_clean]
+        ai_participants_not_user = [agent for agent in ai_participants if agent != user]
+        ai_participants_with_excluded_not_user = [agent for agent in ai_participants_with_excluded if agent != user]
 
     # mediator is better than random!
     if not invoked and mediator:

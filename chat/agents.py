@@ -90,7 +90,7 @@ class Agent:
 
         if "name" not in self.data:
             self.data["name"] = name
-        elif self.data["name"].lower() != name.lower():
+        elif self.data["name"] != name:
             raise ValueError(f'Agent name mismatch: {name} vs {self.data["name"]}')
 
     def copy(self):
@@ -179,7 +179,9 @@ class Agent:
         if fullname:
             agent_names.append(fullname)
             if " " in fullname:
-                agent_names.append(fullname.split(" ")[0])
+                firstname = fullname.split(" ")[0]
+                if firstname:
+                    agent_names.append(firstname)
         agent_names.extend(self.get("aliases", []))
         return agent_names
 
@@ -205,8 +207,6 @@ class Agent:
 
         self.data = safety.apply_or_remove_adult_options(self.data, ADULT)
 
-        self.setup_maps()
-
         return True
 
     def update_visual(self):
@@ -231,12 +231,11 @@ class Agent:
             cache.chmod(str(PATH_VISUAL / path / self.name) + ".txt", 0o664)
 
             # symlink main file to agent's other names
-            for name in all_names:
-                for dest in name, name.lower():
-                    if dest == self.name:
-                        continue
-                    cache.symlink(self.name + ".txt",
-                            str(PATH_VISUAL / path / dest) + ".txt")
+            for dest in all_names:
+                if dest == self.name:
+                    continue
+                cache.symlink(self.name + ".txt",
+                        str(PATH_VISUAL / path / dest) + ".txt")
 
     def remove_visual(self):
         """Remove the visual prompts for an agent."""
@@ -244,43 +243,11 @@ class Agent:
 
         for key in VISUAL_KEYS:
             path = key if key == "person" else "person/" + key
-            for name in all_names:
-                for dest in name, name.lower():
-                    try:
-                        cache.remove(str(PATH_VISUAL / path / dest) + ".txt")
-                    except FileNotFoundError:
-                        pass
-
-    def setup_maps(self):
-        """Setup maps for an agent"""
-        data = self.data
-        for k in "input_map", "output_map", "map", "map_cs", "input_map_cs", "output_map_cs":
-            if k not in data:
-                data[k] = {}
-        for k, v in data["input_map"].items():
-            k_lc = k.lower()
-            if k == k_lc:
-                continue
-            del data["input_map"][k]
-            data["input_map"][k_lc] = v
-        for k, v in data["output_map"].items():
-            k_lc = k.lower()
-            if k == k_lc:
-                continue
-            del data["output_map"][k]
-            data["output_map"][k_lc] = v
-        for k, v in data["map"].items():
-            k_lc = k.lower()
-            v_lc = v.lower()
-            if k_lc not in data["input_map"]:
-                data["input_map"][k_lc] = v
-            if v_lc not in data["output_map"]:
-                data["output_map"][v_lc] = k
-        for k, v in data["map_cs"].items():
-            if k not in data["input_map_cs"]:
-                data["input_map_cs"][k] = v
-            if v not in data["output_map_cs"]:
-                data["output_map_cs"][v] = k
+            for dest in all_names:
+                try:
+                    cache.remove(str(PATH_VISUAL / path / dest) + ".txt")
+                except FileNotFoundError:
+                    pass
 
 
 class Agents:
@@ -305,25 +272,25 @@ class Agents:
 
         # Add agent under all its names
         all_names = agent.get_all_names()
-        for name_lc in map(str.lower, all_names):
-            if name_lc in self.agents:
-                if self.agents[name_lc] != agent:
-                    old_main_name = self.agents[name_lc].name
+        for name1 in all_names:
+            if name1 in self.agents:
+                if self.agents[name1] != agent:
+                    old_main_name = self.agents[name1].name
                     logger.warning("Agent name conflict: %r vs %r for %r",
-                                old_main_name, agent.name, name_lc)
+                                old_main_name, agent.name, name1)
                 continue
-            self.agents[name_lc] = agent
+            self.agents[name1] = agent
 
         return agent
 
     def remove_agent(self, name: str, keep_visual: bool = False) -> None:
         """Remove an agent."""
-        agent = self.agents.get(name.lower())
+        agent = self.agents.get(name)
         if not agent:
             return
         agent_names = agent.get_all_names()
-        for name_lc in map(str.lower, agent_names):
-            self.agents.pop(name_lc, None)
+        for name1 in agent_names:
+            self.agents.pop(name1, None)
 
         if not keep_visual:
             agent.remove_visual()
@@ -382,16 +349,15 @@ class Agents:
 
     def get(self, name: str) -> Agent | None:
         """Get an agent by name."""
-        name_lc = name.lower()
-        if name_lc in self.agents:
-            return self.agents[name_lc]
+        if name in self.agents:
+            return self.agents[name]
         if self.parent:
             return self.parent.get(name)
         return None
 
     def set(self, name: str, agent: Agent):
         """Set an agent."""
-        self.agents[name.lower()] = agent
+        self.agents[name] = agent
 
     def __contains__(self, name: str) -> bool:
         """Check if an agent is in the collection."""

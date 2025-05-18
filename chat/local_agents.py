@@ -140,14 +140,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     # Note: the invitation should not end with a space, or the model might use lots of emojis!
     name = agent.name
-    name_lc = name.lower()
 
     # Allow to override agent settings in the config
     agent = agent.copy()
     if config and config.get("agents") and "all" in config["agents"]:
         agent.update(config["agents"]["all"])
-    if config and config.get("agents") and name_lc in config["agents"]:
-        agent.update(config["agents"][name_lc])
+    if config and config.get("agents") and name in config["agents"]:
+        agent.update(config["agents"][name])
 
     logger.debug("Running local agent %r", agent)
 
@@ -187,10 +186,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         context2 += context
         if mission:
             context2.insert(mission_pos, "\n".join(mission))
-        # put remote_messages[-1] through the input_maps
         context = context2
-
-    chat.apply_maps(agent["input_map"], agent["input_map_cs"], context)
 
     # add system messages
     system_top = agent.get("system_top")
@@ -312,8 +308,6 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 #     logger.info("portal: %r", str(portal.portal))
 
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
-
-    chat.apply_maps(agent["output_map"], agent["output_map_cs"], [response])
 
     room = Room(path=Path(file))
 

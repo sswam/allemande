@@ -233,14 +233,14 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     count = 0
     for bot in bots:
-        if not (bot and bot.lower() in agents.names()):
+        if not (bot and bot in agents.names()):
             continue
 
-        agent = agents.get(bot.lower())
+        agent = agents.get(bot)
 
         # load agent's mission file, if present
         my_mission = mission.copy()
-        agent_mission_file = room.find_agent_resource_file("m", bot.lower())
+        agent_mission_file = room.find_agent_resource_file("m", bot)
         mission2 = chat.chat_read(agent_mission_file, args)
         logger.debug("mission: %r", mission)
         logger.debug("mission2: %r", mission2)

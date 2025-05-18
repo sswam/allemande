@@ -94,12 +94,10 @@ class Room:
 
         user_tc: str | None = None
 
-        if user and (user == user.lower() or user == user.upper()):
+        if user and user == user.lower():
             user_tc = user.title()
         else:
             user_tc = user
-        if user_tc:
-            user_tc = user_tc.replace(".", "_")
 
         #         options = self.get_options(user)
 
