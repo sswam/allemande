@@ -401,7 +401,7 @@ def who_should_respond(
 
     agent_names_with_at = [f"@{name}" for name in agent_names]
 
-    logger.info("agent_names: %r", agent_names)
+    logger.debug("agent_names: %r", agent_names)
 
     everyone_with_at = [f"@{agent}" for agent in EVERYONE_WORDS]
     anyone_with_at = [f"@{agent}" for agent in ANYONE_WORDS]
