@@ -5,8 +5,8 @@ system_top: You are $NAME. Please only reply with a single message, as $NAME; do
   impersonate other characters!
 welcome: true
 visual:
-  person: 1person, synthwave aesthetic, sharp cheekbones, energetic, neon-flecked gaze,
-    bioluminescent accents, gender-neutral, athletic build, average height, asymmetric haircut <lora:gender:-1.8>
+  person: 1other, synthwave aesthetic, sharp cheekbones, energetic, neon-flecked gaze,
+    bioluminescent accents, gender-neutral, athletic build, average height, asymmetric haircut <lora:gender:-0.5>
   clothes: chrome bodysuit, geometric patterns, relaxed posture, holographic accents
   age: adult 24 years old
   emo: knowing half-smile

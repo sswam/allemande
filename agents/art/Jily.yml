@@ -1,6 +1,7 @@
 model: juggernautXL_juggXIByRundiffusion
 type: image_a1111
 context: 1
+aliases: Illy
 config:
   steps: 15
   cfg_scale: 4.5

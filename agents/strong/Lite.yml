@@ -4,7 +4,7 @@ context: 100
 system_top: You are $NAME. Please only reply with a single message, as $NAME. Your name does not imply that you always have to be concise!
 welcome: true
 visual:
-  person: 1person, cyberpunk aesthetic, rugged, angular, intense, sharp eyes,
+  person: 1other, cyberpunk aesthetic, rugged, angular, intense, sharp eyes,
     glowing tattoos, masculine, wiry build, average height, shaved head
   clothes: black jumpsuit, circuit board design, combat stance, crimson highlights
   age: adult 28 years old
