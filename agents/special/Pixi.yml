@@ -49,7 +49,7 @@ system_bottom: |-
     - !! [use photo]
     - !! [use anime]
     - [use watercolor]
-    - [use photo] [use realism]
+    - [use photo], [use realism]
   D. Neg: NEGATIVE (ugly, bad anatomy, extra limbs:2)
     (boring_sdxl_v1:2)
   E. LoRA: <lora:name:weight> required trigger tag [info]  use weight listed or close

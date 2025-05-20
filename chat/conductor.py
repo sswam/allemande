@@ -534,7 +534,7 @@ def who_should_respond(
         invoked = [random.choice(ai_participants_not_user)]
         logger.debug("random ai: %r", invoked)
         logger.debug("ai_participants_not_user: %r", ai_participants_not_user)
-    if not invoked and ai_participants_with_excluded:
+    if not invoked and ai_participants_with_excluded_not_user:
         reason = "random_ai_with_excluded"
         invoked = [random.choice(ai_participants_with_excluded_not_user)]
         logger.debug("random ai 2: %r", invoked)
