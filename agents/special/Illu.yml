@@ -91,7 +91,7 @@ system_bottom: |-
   [person "Barbie"] ADDCOL
   [choose] [person "Cleo"] | [person "Dali"] [/choose]
   NEGATIVE
-  (rating explicit, solo, 3girls, ugly, bad anatomy, extra limbs:2) ADDCOMM
+  hands, (rating explicit, solo, 3girls, ugly, bad anatomy, extra limbs:2) ADDCOMM
   ADDBASE
   ADDCOL
   [S3]
@@ -105,7 +105,7 @@ system_bottom: |-
   ([person "Morf"]:1.5) ADDCOL
   ([person "Hanni"]:1.5)
   NEGATIVE
-  (rating explicit, solo, 3girls, 2boys, ugly, bad anatomy, extra limbs:2) ADDCOMM
+  hands, (rating explicit, solo, 3girls, 2boys, ugly, bad anatomy, extra limbs:2) ADDCOMM
   ADDBASE
   (1boy:2) ADDCOL
   (1girl:2) ADDCOL
