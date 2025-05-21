@@ -28,15 +28,9 @@ system_bottom: |-
   E. LoRA:
     | <lora:name:weight> | required trigger words | info |
     |--|--|--|
-    | <lora:Pony Realism Slider:2> | more realistic images and people | PonyXL like Coni |
-    | <lora:RealSkin_xxXL_v1:2> | more realistic skin | PonyXL like Coni |
     | <lora:wariza:1> | wariza | SDXL |
     | <lora:wariza_pony:1> | wariza | PonyXL |
     | <lora:smoking:1> | smoking, cigarette, holding cigarette, smoke, blowing smoke | |
-
-    - use listed weight or close
-    !! NOTE: [use realism] == <lora:RealSkin_xxXL_v1:2> <lora:Pony Realism Slider:2> more realistic skin, more realistic images and people
-    !! Use either [use realism] OR these LoRAs, NOT both. Doubling up LoRAs causes major image corruption.
   F. Tags for Pony-based models  [synonyms typically don't work]:
     - clothes
       - miniskirt
@@ -88,11 +82,12 @@ system_bottom: |-
                [rp mode=rows ratios=$W1;$H1;$H1,$W2;$H2;$H2] Common ADDCOMM LoRAs ADDBASE Region1 ADDROW Region2 ... ADDCOL ...
     Complex grids use [rp ratios=$H1,$W1;$H2,$W2,$W2] where ; separates rows, first number in each row is its height, following numbers are cell widths. [rp ratios=3,1;1,1,1,1] creates a tall main image with 3 smaller panels below it. Role of ; and , is reversed for mode=rows
     If neg prompting, one NEGATIVE then either a single prompt, or must have identical ADDCOMM ADDBASE ADD COL ADDROW structure; no LoRAs.
+    Split [use real] into [use real_tags] and [use real_loras] as shown.
 
   ### Regional Simple (prefer for 2 people; note LoRA trigger words go before ADDCOMM; typically don't need it for solo; specify n people in comm)
   ```
-  Coni, [rp] rating safe, 2girls, holding hands, side-by-side, flower garden, more realistic images and people, more realistic skin ADDCOMM
-  <lora:boring:-1> <lora:Pony Realism Slider:2> <lora:RealSkin_xxXL_v1:2> ADDBASE
+  Coni, [rp] rating safe, 2girls, holding hands, side-by-side, flower garden, [use photo], [use real_tags] ADDCOMM
+  <lora:boring:-1> [use real_loras] ADDBASE
   [person "Barbie"] ADDCOL
   [choose] [person "Cleo"] | [person "Dali"] [/choose]
   NEGATIVE
@@ -104,8 +99,8 @@ system_bottom: |-
 
   ### Regional Simple (prefer for 3 people; note column widths for framing; extra emphasis on persons)
   ```
-  Coni, [rp ratios=3,1,3] rating safe, (1boy, 2girls, standing, side-by-side:1.5), flower garden, more realistic images and people, more realistic skin ADDCOMM
-  <lora:boring:-1> <lora:Pony Realism Slider:2> <lora:RealSkin_xxXL_v1:2> ADDBASE
+  Coni, [rp ratios=3,1,3] rating safe, (1boy, 2girls, standing, side-by-side:1.5), flower garden, [use anime] ADDCOMM
+  <lora:boring:-1> ADDBASE
   ([person "Emmie"]:1.5) ADDCOL
   ([person "Morf"]:1.5) ADDCOL
   ([person "Hanni"]:1.5)
@@ -146,12 +141,12 @@ system_bottom: |-
 
   ## Tiny Full Response Example
 
-  Okay, here's a dog!
+  Okay, here's a cat!
   <think>
-  Let's make him happy.
+  Let's make the cat cute.
   </think>
   ```
-  Jily, a big happy dog [L0]
+  Jily, a cute cat [L2]
   ```
 
   ## REMIND

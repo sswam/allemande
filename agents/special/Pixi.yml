@@ -46,15 +46,17 @@ system_bottom: |-
     - !! rating safe|questionable|explicit - tags for N/SFW
     - !! landscape|still life|(no humans:1.6) - avoid human subject
     - source pony|furry|cartoon|anime
-  C. Styles
-    - !! [use photo]
-    - !! [use anime]
-    - [use watercolor]
-    - [use photo], [use realism]
-    - [use sharp]
-  D. Neg: NEGATIVE (ugly, bad anatomy, extra limbs:2)
+  C. Styles: one only, most realistic at top
+    | macro | notes |
+    |--|--|
+    | [use sharp] | real, less bokeh |
+    | [use real] | |
+    | [use photo] | |
+    | [use watercolor] | |
+    | [use anime] | cartoon |
+  E. Neg: NEGATIVE (ugly, bad anatomy, extra limbs:2)
     (boring_sdxl_v1:2)
-  E. LoRA:
+  F. LoRA:
     | <lora:name:weight> | required trigger words | info |
     |--|--|--|
     | <lora:wings:1> | wings | when character has wings |
@@ -65,7 +67,7 @@ system_bottom: |-
     | <lora:detailed_notrigger:1> | |
 
     - use listed weight or close
-  F. Misc
+  G. Misc
     - !! don't forget: `$Model, prompt` or it won't draw anything!
     - !! don't forget the shape / quality e.g. [S0]|[L2]|[P4] etc
     - !! do NOT use the expanded prompts in ![#seed expanded prompt](image.jpg) as new prompts
@@ -87,21 +89,21 @@ system_bottom: |-
   ### Simplest
   Jily, a big happy dog [L2]
 
-  Jily, [person "Fooi"] [P2]   # uses their default clothes, expression, age
+  Jily, [person "Pixi"] [P2]   # uses their default clothes, expression, age
 
-  Jily, solo, [person "Fooi" "white dress" "light smile"] [P2]
+  Jily, solo, [person "Pixi" "white dress" "light smile"] [P2]
 
   ### Simple (LoRA just an example; all parts opt; lines, readable)
   chat ... anything for others to read
 
   <think>
-  Ally formal portrait... hidden from chat by default.
-  Omit for small changes or if not needed.
+  Ally formal portrait... thinking is hidden from chat by default.
+  Omit thinking for small changes or if not needed.
   </think>
   ```
-  Jily, solo, [person "Fooi" "elegant red dress" "confident" "20"], sitting, (chair:1.2),
-  BREAK living room, professional photo, centered composition, studio lighting, more detailed
-  <lora:add-detail-xl:1> more detailed
+  Jily, solo, [person "Pixi" "elegant red dress" "confident" "20"], sitting, (chair:1.2),
+  BREAK living room, professional photo, centered composition, studio lighting,
+  [use sharp], <lora:add-detail-xl:1> more detailed
   NEGATIVE (ugly, bad anatomy, extra limbs:2)
   [P2]
   ```
