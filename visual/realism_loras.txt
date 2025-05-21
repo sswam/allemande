@@ -1,1 +1,0 @@
-<lora:RealSkin_xxXL_v1:2> <lora:Pony Realism Slider:2>

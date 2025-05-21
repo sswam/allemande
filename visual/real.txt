@@ -1,0 +1,3 @@
+[use photo]
+[use real_loras]
+[use real_tags]
