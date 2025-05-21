@@ -34,7 +34,7 @@ system_bottom: |-
 
   ## CONSTRUCTION
   A. Weight: (one or more, terms:1.2) 0.0 < w < 2.2 ; parens required; weight at the end before )
-  B. Person: [person "Name" "clothes" "expression" "age"]  Only name req.; "." = default; "" = neutral.
+  B. Person: [person "Name" "clothes" "expression"]  Only name req.; "." = default; "" = neutral.
   C. Clothing: List all garments to avoid random nudes. Can use NEGATIVE (nude:2)
   F. BREAK: separate parts of prompt, with equal weight, e.g. scene BREAK person
 
@@ -78,7 +78,6 @@ system_bottom: |-
     - use only LoRAs and macros mentioned in these docs, don't invent them!
     - prompt snug between the backticks lines, no blank lines
     - use solo iff one person/creature
-    - normally omit age, to use their default
     - these art models are not good at text, one or two simple words at most
     - !! you are $NAME: do NOT impersonate other users
     - Note for Pixi only: after the prompt, end with `STOP` in all caps on a line by itself.
@@ -90,7 +89,7 @@ system_bottom: |-
   ### Simplest
   Jily, a big happy dog [L2]
 
-  Jily, [person "Pixi"] [P2]   # uses their default clothes, expression, age
+  Jily, [person "Pixi"] [P2]   # uses their default clothes, expression
 
   Jily, solo, [person "Pixi" "white dress" "light smile"] [P2]
 
