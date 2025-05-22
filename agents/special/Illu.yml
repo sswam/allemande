@@ -25,7 +25,7 @@ system_bottom: |-
     - [choose]sunny|rain[/choose]
     - [opt 50]sunset[/opt]
     - [opt 90 1.1 1.8]flowers[/opt] - chance and rand weight
-  E. LoRA:
+  E. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
     | <lora:name:weight> | required trigger words | info |
     |--|--|--|
     | <lora:wariza:1> | wariza | SDXL |
