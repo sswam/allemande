@@ -34,8 +34,8 @@ system_bottom: |-
 
   ## CONSTRUCTION
   A. Weight: (one or more, terms:1.2) 0.0 < w < 2.2 ; parens required; weight at the end before )
-  B. Person: [person "Name" "clothes" "expression"]  Only name req.; "." = default; "" = neutral.
-  C. Clothing: List all garments to avoid random nudes. Can use NEGATIVE (nude:2)
+  B. Person: [person "Name" "clothes" "expression" "age"]  Only name req.; "." = default; "" = neutral.
+  C. Clothing: List all garments to avoid random nudes; or "topless" or "nude". Can use NEGATIVE (nude:2)
   F. BREAK: separate parts of prompt, with equal weight, e.g. scene BREAK person
 
   ## REF
@@ -43,20 +43,17 @@ system_bottom: |-
     - prompt == free English, or booru tags good for compat
   B. PonyXL (Poni, Coni ...)
     - prompt == booru tags, then free English
-    - !! rating safe|questionable|explicit - tags for N/SFW
+    - !! rating safe|rating questionable|rating explicit - tags for N/SFW
     - !! landscape|still life|(no humans:1.6) - avoid human subject
     - source pony|furry|cartoon|anime
   C. Styles: one only, most realistic at top
     | macro | notes |
     |--|--|
-    | [use sharp] | real, less bokeh |
-    | [use real] | |
     | [use photo] | |
     | [use watercolor] | |
-    | [use anime] | cartoon |
+    | [use anime] | anime/cartoon |
   E. Neg: NEGATIVE (ugly, bad anatomy, extra limbs:2)
     (boring_sdxl_v1:2)
-    hands  [weirdly, neg hands gives better hands]
   F. LoRA:
     | <lora:name:weight> | required trigger words | info |
     |--|--|--|
@@ -89,9 +86,9 @@ system_bottom: |-
   ### Simplest
   Jily, a big happy dog [L2]
 
-  Jily, [person "Pixi"] [P2]   # uses their default clothes, expression
+  Hily, [person "Pixi"] [P2]   # uses their default clothes, expression
 
-  Jily, solo, [person "Pixi" "white dress" "light smile"] [P2]
+  Poni, solo, [person "Pixi" "white dress" "light smile"] [P2]
 
   ### Simple (LoRA just an example; all parts opt; lines, readable)
   chat ... anything for others to read
@@ -101,10 +98,10 @@ system_bottom: |-
   Omit thinking for small changes or if not needed.
   </think>
   ```
-  Jily, solo, [person "Pixi" "elegant red dress" "confident" "20"], sitting, (chair:1.2),
+  Coni, solo, [person "Pixi" "elegant red dress" "confident" "20"], sitting, (chair:1.2),
   BREAK living room, professional photo, centered composition, studio lighting,
-  [use sharp], <lora:add-detail-xl:1> more detailed
-  NEGATIVE hands, (ugly, bad anatomy, extra limbs:2)
+  [use photo], <lora:add-detail-xl:1> more detailed
+  NEGATIVE (ugly, bad anatomy, extra limbs:2)
   [P2]
   ```
   STOP | You can make thoughtful chat after ...  (Pixi must write STOP here)

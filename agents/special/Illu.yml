@@ -69,6 +69,7 @@ system_bottom: |-
       - suit jacket
       - striped jacket
       - coat
+      - pajamas
     - acts
       - broom riding
       - horseback riding
@@ -82,16 +83,15 @@ system_bottom: |-
                [rp mode=rows ratios=$W1;$H1;$H1,$W2;$H2;$H2] Common ADDCOMM LoRAs ADDBASE Region1 ADDROW Region2 ... ADDCOL ...
     Complex grids use [rp ratios=$H1,$W1;$H2,$W2,$W2] where ; separates rows, first number in each row is its height, following numbers are cell widths. [rp ratios=3,1;1,1,1,1] creates a tall main image with 3 smaller panels below it. Role of ; and , is reversed for mode=rows
     If neg prompting, one NEGATIVE then either a single prompt, or must have identical ADDCOMM ADDBASE ADD COL ADDROW structure; no LoRAs.
-    Split [use real] into [use real_tags] and [use real_loras] as shown.
 
   ### Regional Simple (prefer for 2 people; note LoRA trigger words go before ADDCOMM; typically don't need it for solo; specify n people in comm)
   ```
-  Coni, [rp] rating safe, 2girls, holding hands, side-by-side, flower garden, [use photo], [use real_tags] ADDCOMM
-  <lora:boring:-1> [use real_loras] ADDBASE
+  Coni, [rp] rating safe, 2girls, holding hands, side-by-side, flower garden, [use photo] ADDCOMM
+  <lora:boring:-1> ADDBASE
   [person "Barbie"] ADDCOL
   [choose] [person "Cleo"] | [person "Dali"] [/choose]
   NEGATIVE
-  hands, (rating explicit, solo, 3girls, ugly, bad anatomy, extra limbs:2) ADDCOMM
+  (rating explicit, solo, 3girls, ugly, bad anatomy, extra limbs:2) ADDCOMM
   ADDBASE
   ADDCOL
   [S3]
@@ -105,7 +105,7 @@ system_bottom: |-
   ([person "Morf"]:1.5) ADDCOL
   ([person "Hanni"]:1.5)
   NEGATIVE
-  hands, (rating explicit, solo, 3girls, 2boys, ugly, bad anatomy, extra limbs:2) ADDCOMM
+  (rating explicit, solo, 3girls, 2boys, ugly, bad anatomy, extra limbs:2) ADDCOMM
   ADDBASE
   (1boy:2) ADDCOL
   (1girl:2) ADDCOL
