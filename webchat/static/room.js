@@ -715,17 +715,27 @@ function handleSwipe() {
 }
 
 function touch_start(e) {
+  // swipe with mouse is diabled, it was trouble
+  // For mouse events, only process left clicks (button 0)
+  // if (!e.touches && e.button !== 0) {
+  //   return;
+  // }
+
   if (e.touches && e.touches.length == 1) {
     touchStartX = touchStartY = null;
     return;
   }
+
   if (e.touches) {
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
-  } else {
+  }
+  /*
+  else {
     touchStartX = e.clientX;
     touchStartY = e.clientY;
   }
+  */
 }
 
 function touch_end(e) {
@@ -776,11 +786,11 @@ function setup_swipe() {
   $overlay.addEventListener('touchstart', touch_start, { passive: true });
   $overlay.addEventListener('touchmove', touch_move, { passive: false });
   $overlay.addEventListener('touchend', touch_end);
-  // For desktop dragging also
-  $overlay.addEventListener('mousedown', touch_start);
-  $overlay.addEventListener('mousemove', touch_move);
-  $overlay.addEventListener('mouseup', touch_end);
-  $overlay.addEventListener('mouseleave', touch_end);
+  // For desktop dragging also; disabled
+  // $overlay.addEventListener('mousedown', touch_start);
+  // $overlay.addEventListener('mousemove', touch_move);
+  // $overlay.addEventListener('mouseup', touch_end);
+  // $overlay.addEventListener('mouseleave', touch_end);
 }
 
 // ---------------------------------------------------------------------------
