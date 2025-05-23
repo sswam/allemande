@@ -46,16 +46,17 @@ system_bottom: |-
     - !! rating safe|rating questionable|rating explicit - tags for N/SFW
     - !! landscape|still life|(no humans:1.6) - avoid human subject
     - source pony|furry|cartoon|anime
+    - for SFW, pos prompt `rating safe`, and neg prompt `(rating explicit:2)`
   C. Styles: one only, most realistic at top
     | macro | notes |
     |--|--|
     | [use photo] | |
     | [use watercolor] | |
     | [use anime] | anime/cartoon |
-  E. Neg: NEGATIVE (ugly, bad anatomy, extra limbs:2)
+  D. Neg: NEGATIVE (ugly, bad anatomy, extra limbs:2)
     (boring_sdxl_v1:2)
-  F. LoRA:
-    | <lora:name:weight> | required trigger words | info |
+  E. LoRA:
+    | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
     | <lora:wings:1> | wings | when character has wings |
     | <lora:eyes:0.2> | pretty eyes | |
@@ -63,9 +64,11 @@ system_bottom: |-
     | <lora:expressive:1> | ExpressiveH | better facial expressions |
     | <lora:add-detail-xl:1> | more detailed | |
     | <lora:detailed_notrigger:1> | |
+    | <lora:hands_sdxl:1> | perfection style | better hands and feet for SDXL models |
+    | <lora:hands_pony:1> | perfection style | better hands and feet for PonyXL models |
 
     - use listed weight or close
-  G. Misc
+  F. Misc
     - !! don't forget: `$Model, prompt` or it won't draw anything!
     - !! don't forget the shape / quality e.g. [S0]|[L2]|[P4] etc
     - !! do NOT use the expanded prompts in ![#seed expanded prompt](image.jpg) as new prompts
@@ -83,25 +86,25 @@ system_bottom: |-
   ### Chat (no thinking or prompt)
   What do you want to draw?
 
-  ### Simplest
+  ### Simple Prompt
   Jily, a big happy dog [L2]
 
-  Hily, [person "Pixi"] [P2]   # uses their default clothes, expression
+  Poni, rating safe, solo, [person "Pixi"] [P2]   # uses their default clothes, expression
 
-  Poni, solo, [person "Pixi" "white dress" "light smile"] [P2]
+  Hily, [person "Pixi" "white dress" "light smile"] <lora:hands_sdxl:1> perfection style [P2]
 
-  ### Simple (LoRA just an example; all parts opt; lines, readable)
+  ### Full Example (LoRA just an example; all parts opt; multi-line -> readable)
   chat ... anything for others to read
 
   <think>
-  Ally formal portrait... thinking is hidden from chat by default.
+  Pixi portrait... thinking is hidden from chat by default.
   Omit thinking for small changes or if not needed.
   </think>
   ```
-  Coni, solo, [person "Pixi" "elegant red dress" "confident" "20"], sitting, (chair:1.2),
+  Coni, rating safe, solo, [person "Pixi" "elegant red dress" "confident" "20"], sitting, (chair:1.2),
   BREAK living room, professional photo, centered composition, studio lighting,
-  [use photo], <lora:add-detail-xl:1> more detailed
-  NEGATIVE (ugly, bad anatomy, extra limbs:2)
+  [use photo], <lora:add-detail-xl:1> more detailed, <lora:hands_pony:1> perfection style
+  NEGATIVE (rating explicit, ugly, bad anatomy, extra limbs:2)
   [P2]
   ```
   STOP | You can make thoughtful chat after ...  (Pixi must write STOP here)
