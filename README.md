@@ -45,9 +45,9 @@ We offer a wide array of AI models and predefined characters. See the [User Guid
 
 * **Powerful LLMs**:
   * Meta: Llama 3.1 8B (Ally...), Llama 4 Maverick (Mavi), Llama 4 Scout (Skout)
-	* Anthropic: Claude 3.7 Sonnet (Clauden), Claude 3.5 Sonnet (Claude), Claude 3.5 Haiku (Clia)
+	* Anthropic: Claude 4 Opus (Claudo), Claude 4 Sonnet (Clauden), Claude 3.5 Sonnet (Claude), Claude 3.5 Haiku (Clia)
 	* OpenAI: GPT-4.1 (Emmy), GPT-4.1-mini (Dav), o3 (Grace), o4-mini (Fermi)
-	* Google: Gemini 2.5 Pro (Gemmi), Gemini 2.5 Flash (Flashi), Gemini 2.0 Flash (Flasho), Gemini 1.5 Pro (Gemmy)
+	* Google: Gemini 2.5 Pro (Gemmi), Gemini 2.5 Flash (Flasho), Gemini 2.0 Flash (Flashi), Gemini 2.0 Flash Lite (Lite), Gemini 1.5 Pro (Gemmy)
 	* Perplexity (with Internet Access): Sonar Reasoning Pro (Sageri), Sonar Pro (Sagi), Sonar Reasoning (Sonari), Sonar (Sona)
 	* xAI: Grok 3 (Rocki), Grok 2 (Grok)
 	* DeepSeek: Chat V3 (Dese), Reasoner R1 (Deseri)

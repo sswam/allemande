@@ -1,5 +1,5 @@
 base: Claude
-model: claude-sonnet
+model: claude-opus
 welcome: false
 visual:
   person: 1boy, striking opalescent eyes shifting between green and gold, muscular yet lean physique, sharp jaw and defined features, pale skin with ethereal quality, calloused hands, shoulder-length hair, dark hair with (bronze highlights:1.3)

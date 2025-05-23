@@ -382,11 +382,13 @@ digraph Anthropic {
     "Anthropic" [label=<<b>Anthropic</b>>]
     "Clia" [label=<<b>Clia</b><br/><font point-size="10">Claude 3.5 Haiku</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Quick, creative</font>>]
     "Claude" [label=<<b>Claude</b><br/><font point-size="10">Claude 3.5 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Programming, writing</font>>]
-    "Clauden" [label=<<b>Clauden</b><br/><font point-size="10">Claude 3.7 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
+    "Clauden" [label=<<b>Clauden</b><br/><font point-size="10">Claude 4 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
+    "Claudo" [label=<<b>Claudo</b><br/><font point-size="10">Claude 4 Opus</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Strongest reasoning</font>>]
 
     "Anthropic" -> "Clia"
     "Anthropic" -> "Claude"
     "Anthropic" -> "Clauden"
+    "Anthropic" -> "Claudo"
 }
 ```
 
@@ -398,12 +400,14 @@ digraph Google {
 
     "Google" [label=<<b>Google</b>>]
     "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.0 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
-    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
+    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, free, very capable</font>>]
+    "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
     "Gemmy" [label=<<b>Gemmy</b><br/><font point-size="10">Gemini Pro</font><br/><font point-size="8">2M context</font><br/><font point-size="8">Wide range of tasks</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
 
     "Google" -> "Lite"
     "Google" -> "Flashi"
+    "Google" -> "Flasho"
     "Google" -> "Gemmy"
     "Google" -> "Gemmi"
 }
@@ -536,7 +540,8 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 
 ### Strong AI Models
 - **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding.
-- **Clauden** (Claude 3.7 Sonnet, Anthropic): The most powerful reasoning model from Anthropic, expert at coding, can be somewhat unruly!
+- **Clauden** (Claude 4 Sonnet, Anthropic): The latest sonnet reasoning model from Anthropic.
+- **Claudo** (Claude 4 Opus, Anthropic): The most powerful reasoning model from Anthropic.
 - **Clia** (Claude 3.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4.1, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Dav** (GPT-4.1 mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
@@ -645,9 +650,11 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K            | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
 | Anthropic     | Claude 3.5 Haiku      | Clia    | 200K    | 8K              | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
 | Anthropic     | Claude 3.5 Sonnet     | Claude  | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's powerful and reliable model.                                                                         |
-| Anthropic     | Claude 3.7 Sonnet     | Clauden | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Anthropic     | Claude 4 Sonnet       | Clauden | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's most powerful sonnet model; supports extended thinking.                                              |
+| Anthropic     | Claude 4 Opus         | Claudo  | 200K    | 8K / 128K [1]   | $15.00          | $75.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K              | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
-| Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K              | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                                |
+| Google        | Gemini 2.0 Flash      | Flashi  | 1M      | 8K              | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
+| Google        | Gemini 2.5 Flash      | Flasho  | 1M      | 8K              | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                                |
 | Google        | Gemini 1.5 Pro        | Gemmy   | 2M      | 8K              | $1.25 [2]       | $5.00 [2]        | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                                    |
 | Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K             | $1.25 [3]       | $10.00 [3]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
 | OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K             | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
@@ -663,11 +670,11 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192            | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                                  |
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192            | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K            | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
-| Alibaba +     | EVA Qwen2.5 72B       | Eva/n   | 128K    | 128K            | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.              |
+| Alibaba+      | EVA Qwen2.5 72B       | Eva/n   | 128K    | 128K            | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.              |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
-1. Claude 3.7 Sonnet's larger output window is not yet enabled in our app.
+1. Claude 4's larger output window is not yet enabled in our app.
 2. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K)
 3. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
 4. Only the Perplexity models have access to search the internet. They incur search costs of $5 per 1000 searches.
