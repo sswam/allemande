@@ -7,6 +7,11 @@ if [ -z "${SSH_CLIENT:-}" ]; then
 	exit 0
 fi
 
+# Check for cscli command
+if ! command -v cscli &> /dev/null; then
+	exit 0
+fi
+
 # Extract client IP from SSH_CLIENT
 client_ip=${SSH_CLIENT%% *}
 
