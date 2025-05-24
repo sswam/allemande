@@ -3,5 +3,5 @@
 
 [set negative_prompt]
 	[get negative_prompt]
-	(blurry background, bokeh:2.0)
+	(blurry background, bokeh:2)
 [/set]
