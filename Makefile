@@ -170,10 +170,10 @@ vscode-local:
 	code "$$file" & disown
 
 chat-api:
-	cd $(WEBCHAT) && awatch -a -i -p ../Makefile chat_api.py ../chat/chat.py ../chat/ally_room.py -s -- uvicorn chat_api:app --reload --timeout-graceful-shutdown 5
+	cd $(WEBCHAT) && awatch -a -i -p ../Makefile chat_api.py ../chat/chat.py ../chat/ally_room.py ../chat/ally_service.py -s -- uvicorn chat_api:app --reload --timeout-graceful-shutdown 5
 
 stream:
-	cd $(WEBCHAT) && awatch -a -i -p ../Makefile stream.py ../chat/chat.py ../text/atail.py ../ally/cache.py -s -- uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
+	cd $(WEBCHAT) && awatch -a -i -p ../Makefile stream.py ../chat/chat.py ../text/atail.py ../ally/cache.py ../chat/ally_service.py -s -- uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
 
 auth:
 	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002

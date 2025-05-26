@@ -24,6 +24,7 @@ import ally_room
 from ally_room import Room
 import util
 import settings
+from ally_service import get_user
 
 
 VAPID_PRIVATE_KEY = os.environ["ALLYCHAT_WEBPUSH_VAPID_PRIVATE_KEY"]
@@ -66,7 +67,7 @@ async def whoami(request):
     if room:
         room = util.sanitize_pathname(room)
     # TODO moderator status might depend on the room
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
     admin = user in settings.ADMINS
     mod = admin
     return JSONResponse({"user": user, "room": room, "admin": admin, "mod": mod})
@@ -78,7 +79,7 @@ async def post(request):
     form = await request.form()
     room = form["room"]
     content = form["content"].strip()
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
 
     room = Room(name=room)
 
@@ -100,7 +101,7 @@ async def post(request):
 @app.route("/x/put/{path:path}", methods=["PUT"])
 async def put_file(request, path=""):
     """Edit a file in the room if user has admin access."""
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
 
     try:
         path = request.path_params["path"]
@@ -128,7 +129,7 @@ async def upload(request):
     room = util.sanitize_pathname(room)
     file = form["file"]
     to_text = form.get("to_text", False)
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
 
     try:
         name, url, medium, markdown, task = await chat.upload_file(room, user, file.filename, file=file, to_text=to_text)
@@ -144,7 +145,7 @@ async def clear(request):
     form = await request.form()
     room = form["room"]
     op = form["op"]
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
 
     if op not in ["clear", "archive", "rotate", "clean", "render"]:
         raise HTTPException(status_code=400, detail="Invalid operation.")
@@ -163,7 +164,7 @@ async def undo(request):
     form = await request.form()
     room = form["room"]
     n = form.get("n", "1")
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
 
     room = Room(name=room)
     try:
@@ -176,7 +177,7 @@ async def undo(request):
 @app.route("/x/settings", methods=["POST"])
 async def settings(request):
     """Update user settings, including theme."""
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
     settings = await request.json()
     theme = settings.pop("theme", None)
     if theme:
@@ -189,7 +190,7 @@ async def settings(request):
 @app.route("/x/options", methods=["POST"])
 async def options_set(request):
     """Update chat room options, including agent settings like context."""
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
     request = await request.json()
     room = Room(name=request["room"])
     old_options = room.get_options(user)
@@ -206,12 +207,13 @@ async def options_set(request):
 async def options_get(request):
     """Get chat room options, including agent settings like context. Also checks for a redirect."""
     # TODO validation: length, type, no unknown keys
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
     # get room from query param
     room = Room(name=request.query_params["room"])
     try:
         options = room.get_options(user)
     except PermissionError as e:
+        logger.info("PermissionError: %r", e)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse(options)
 
@@ -219,7 +221,7 @@ async def options_get(request):
 @app.route("/x/last", methods=["GET"])
 async def last(request):
     """Get last numbered chat room."""
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
     # get room from query param
     room_name = request.query_params["room"]
     room_name = util.sanitize_pathname(room_name)
@@ -238,7 +240,7 @@ async def move(request):
     Rename or move a file or dir to a new location.
     Expacts relative pathnames not room names or slash-terminated dir names.
     """
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
     # get source and dest from form data
     form = await request.form()
     source = form["source"]

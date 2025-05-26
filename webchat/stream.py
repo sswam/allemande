@@ -30,6 +30,7 @@ import ally_room
 from ally_room import Access
 from util import sanitize_pathname, safe_join
 import folder
+from ally_service import get_user
 
 
 os.chdir(os.environ["ROOMS"])
@@ -190,7 +191,7 @@ async def stream(request, path=""):
     global templates  # pylint: disable=global-statement, global-variable-not-assigned
     snapshot = request.query_params.get("snapshot")
 
-    user = request.headers["X-Forwarded-User"]
+    user = get_user(request)
 
     try:
         pathname = request.path_params["path"]
