@@ -107,6 +107,7 @@ async def ensure_system_account(username: str, password: str) -> bool:
             "--firstuid", "60000",
             "--lastuid", "65535",
             "--shell", "/usr/sbin/nologin",
+            "--allow-all-names",
             username,
             stdin=asyncio.subprocess.PIPE,
         )
