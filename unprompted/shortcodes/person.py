@@ -37,7 +37,7 @@ class Shortcode:
         if _age is None or _age == ".":
             _age = f"""[use "age/{_name}," 100 1.6]"""
         elif _age == "-":
-            _age = f"(23 years old:1.6),"
+            _age = f"(20 years old:1.6),"
         elif str(_age).isnumeric():
             _age = f"({_age} years old:1.6),"
         elif _age:
