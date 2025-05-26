@@ -375,7 +375,7 @@ class Room:
 
     def get_last_room_number(self, user: str) -> str:
         """Get the last room number."""
-        access = check_access(user, str(self.parent)).value
+        access = check_access(user, str(self.parent)+"/").value
         if not access & Access.READ.value:
             raise PermissionError("You are not allowed to get the last room number.")
 
@@ -421,7 +421,7 @@ def check_access(user: str | None, pathname: Path | str) -> Access:
         access, _reason = _check_access_2(user, pathname)
     except PermissionError as _e:
         access, _reason = Access.NONE, "PermissionError"
-    #     logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, reason)
+    logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
     return access
 
 
