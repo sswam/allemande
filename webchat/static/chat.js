@@ -886,8 +886,12 @@ function query_to_title(query) {
   return query;
 }
 
+function query_encode(query) {
+  return encodeURIComponent(query).replace(/%20/g, "+");
+}
+
 function query_to_hash(query) {
-  return "#" + query.replace(/ /g, "+");
+  return "#" + query_encode(query);
 }
 
 function set_title_hash(query, no_history) {
@@ -925,9 +929,9 @@ function on_hash_change() {
 
 function hash_to_query(hash) {
   let query = hash.replace(/\+|%20/g, " ");
-  if (query.length) {
+  if (query.length)
     query = query.substr(1);
-  }
+  query = decodeURIComponent(query);
   return query;
 }
 
@@ -1060,10 +1064,10 @@ function room_first() {
 async function room_last(i) {
   i = i || 0;
   // fetch the last number from the server
-  const room_enc = encodeURIComponent(room);
+  const room_enc = query_encode(room);
   const response = await fetch(`/x/last?room=${room_enc}`);
   if (!response.ok) {
-    throw new Error("GET themes request failed");
+    throw new Error("GET last room number request failed");
   }
   const data = await response.json();
   if (data.error) {
