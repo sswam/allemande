@@ -1,7 +1,7 @@
 server {
 	server_name pro.$ALLEMANDE_DOMAIN pro-local.$ALLEMANDE_DOMAIN;
 
-	charset UTF-8;
+	charset utf-8;
 
 #	listen 80;
 #	listen [::]:80;

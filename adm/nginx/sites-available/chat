@@ -1,7 +1,7 @@
 server {
 	server_name chat.$ALLEMANDE_DOMAIN chat-local.$ALLEMANDE_DOMAIN;
 
-	charset UTF-8;
+	charset utf-8;
 
 	# SSL configuration
 

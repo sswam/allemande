@@ -1,7 +1,7 @@
 server {
 	server_name $ALLEMANDE_DOMAIN login.$ALLEMANDE_DOMAIN local.$ALLEMANDE_DOMAIN;
 
-	charset UTF-8;
+	charset utf-8;
 
 #	listen 80;
 #	listen [::]:80;
