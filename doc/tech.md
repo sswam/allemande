@@ -6,7 +6,7 @@
 - unprompted
 - Gemini 2.0 Flash
 - Llama 3.1 8B
-- Ally Chat, my FLOSS AI chat service (beta)
+- Ally Chat, my FLOSS AI chat service (closed beta)
 
 
 Creating realistic images with SDXL and Pony models:
