@@ -11,7 +11,7 @@ dry_seq_breakers: '["-----"]'
 # dry_seq_breakers: '["\n", ":\t", "\"", "*"]'
 repetition_penalty: 1.08
 min_p: 0.02
-top_p: 100
+top_p: 1.0
 top_k: 1000
 # top_p: 1000000
 # top_k: 1000000
