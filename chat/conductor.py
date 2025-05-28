@@ -409,6 +409,59 @@ def who_should_respond(
     anyone_with_at = [f"@{agent}" for agent in ANYONE_WORDS]
     self_words_with_at = [f"@{agent}" for agent in SELF_WORDS]
 
+    # Calculate everyone_except_user
+    everyone_except_user = [a for a in chat_participants_names if a != user]
+    everyone_except_user_all = [a for a in chat_participants_names_all if a != user]
+
+    # mediators reply when no one is mentioned, and no direct reply
+    mediator_for_humans = config.get("mediator_for_humans", False)
+    mediator = config.get("mediator")
+    if mediator is None:
+        mediator = []
+    if not isinstance(mediator, list):
+        mediator = [mediator]
+    mediator = mediator.copy()
+    for i, agent in enumerate(mediator):
+        if agent in ANYONE_WORDS and everyone_except_user:
+            mediator[i] = random.choice(everyone_except_user)
+        elif agent in ANYONE_WORDS and everyone_except_user_all:
+            mediator[i] = random.choice(everyone_except_user_all)
+    mediator = filter_access(mediator, room, access_check_cache)
+
+    is_mediator = user in mediator
+
+    # We don't want mediators to reply to themselves
+    mediator = [m for m in mediator if m != user]
+
+    use_mediator = mediator and (mediator_for_humans or not is_human)
+
+    logger.debug("use_mediator: %r", use_mediator)
+    logger.debug("mediators: %r", mediator)
+
+    # direct_reply_chance
+    direct_reply_chance = 1.0
+    if use_mediator:
+        direct_reply_chance = config.get("direct_reply_chance", 0.0)
+
+    direct_reply = random.random() < direct_reply_chance
+
+    # AI invoked reply chance
+    # The randomness prevents interminable loops between two AIs.
+    # At the moment, only enabled when a mediator is used.
+    # Exceptions:
+    # - humans invoking anyone
+    # - mediators invoking anyone
+    # - AIs invoking tools (e.g. AI art)
+    # - @ mentions
+    invoked_reply_chance = 1.0
+    if not is_human and use_mediator and not is_mediator:
+        invoked_reply_chance = config.get("ai_invoked_reply_chance", 1.0)
+
+    invoked_reply = random.random() < invoked_reply_chance
+
+    reason = None
+    invoked = None
+
     # For @mode, all mentioned agents should reply
     # To start talking to self, must use @name now.
     reason = "named @"
@@ -451,39 +504,9 @@ def who_should_respond(
         invoked = filter_access(invoked, room, access_check_cache)
         logger.debug("who_is_named: %r", invoked)
 
-    # Calculate everyone_except_user
-    everyone_except_user = [a for a in chat_participants_names if a != user]
-    everyone_except_user_all = [a for a in chat_participants_names_all if a != user]
-
-    # mediators reply when no one is mentioned, and no direct reply
-    mediator_for_humans = config.get("mediator_for_humans", False)
-    mediator = config.get("mediator")
-    if mediator is None:
-        mediator = []
-    if not isinstance(mediator, list):
-        mediator = [mediator]
-    for i, agent in enumerate(mediator):
-        if agent in ANYONE_WORDS and everyone_except_user:
-            mediator[i] = random.choice(everyone_except_user)
-        elif agent in ANYONE_WORDS and everyone_except_user_all:
-            mediator[i] = random.choice(everyone_except_user_all)
-    mediator = filter_access(mediator, room, access_check_cache)
-
-    # We don't want mediators to reply to themselves
-    mediator = [m for m in mediator if m != user]
-
-    use_mediator = mediator and (mediator_for_humans or not is_human)
-
-    logger.debug("use_mediator: %r", use_mediator)
-    logger.debug("mediators: %r", mediator)
-
-    # direct_reply_chance
-    if use_mediator:
-        direct_reply_chance = config.get("direct_reply_chance", 0.0)
-    else:
-        direct_reply_chance = 1.0
-
-    direct_reply = random.random() < direct_reply_chance
+        # if ai_invoked_reply_chance failed, the AI can only invoke tools
+        if not invoked_reply:
+            invoked = [agent for agent in invoked if agent_is_tool(agents.get(agent))]
 
     if not invoked:
         logger.info("direct_reply_chance: %r", direct_reply_chance)
