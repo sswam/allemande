@@ -694,7 +694,6 @@ kusanagi motoko
 kuwayama chiyuki
 kyonko
 kyouka \(princess connect!\)
-kyubey
 la+ darknesss \(1st costume\)
 la+ darknesss
 laffey \(azur lane\)
@@ -1503,4 +1502,5 @@ tristana \( league of legends\)
 
 [##]
 slime \(genshin impact\)
+kyubey
 [/##]
