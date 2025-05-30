@@ -1,0 +1,23 @@
+[choose _weighted]
+1 | happy
+1 | fun
+1 | playful
+1 | smile
+1 | grin
+1 | smirk
+1 | light smile
+1 | confident
+1 | joyful
+1 | laughing
+1 | curious
+1 | open mouth
+
+1 | naughty face
+1 | evil grin, mischievous, naughty face
+1 | (head back:0.7)
+1 | tongue out
+1 | winking
+1 | seductive smile
+1 | biting own lip
+1 | shy, slight smile, smirk
+[/choose]
