@@ -10,7 +10,7 @@ document.getElementById('export').addEventListener('click', () => {
     // For TSV
     // const tsv = ['URL\tTitle']
      const tsv = tabData.map(tab => `${tab.url}\t${tab.title}`)
-      .join('\n');
+      .join("\n") + "\n";
 
     // For JSON
     // const json = JSON.stringify(tabData, null, 2);
