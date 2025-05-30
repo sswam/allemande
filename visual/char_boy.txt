@@ -1,0 +1,205 @@
+[choose]
+9s \(nier:automata\)
+accelerator \(toaru majutsu no index\)
+admiral \(kancolle\)
+aether \(genshin impact\)
+akizuki ryo
+albedo \(genshin impact\)
+alhaitham \(genshin impact\)
+amamiya ren
+america \(hetalia\)
+araragi koyomi
+archer \(fate\)
+arjuna \(fate\)
+armin arlert
+ash ketchum
+ashiya douman \(fate\)
+astolfo \(fate\)
+astolfo \(sailor paladin\) \(fate\)
+bakugou katsuki
+barnaby brooks jr.
+bede \(pokemon\)
+brendan \(pokemon\)
+bridget \(guilty gear\)
+bruno bucciarati
+byleth \(male\) \(fire emblem\)
+caesar anthonio zeppeli
+calem \(pokemon\)
+chongyun \(genshin impact\)
+chris redfield
+cloud strife
+commander \(azur lane\)
+commander \(girls' frontline\)
+cu chulainn \(fate\)
+cu chulainn \(fate/stay night\)
+cyno \(genshin impact\)
+dan heng \(honkai: star rail\)
+denji \(chainsaw man\)
+diarmuid ua duibhne \(lancer\) \(fate\)
+diluc \(genshin impact\)
+dio brando
+edward elric
+elio \(pokemon\)
+emiya kiritsugu
+emiya shirou
+endeavor \(boku no hero academia\)
+enkidu \(fate\)
+eren yeager
+ethan \(pokemon\)
+frisk \(undertale\)
+fujimaru ritsuka \(male\)
+fujisaki chihiro
+fushiguro megumi
+gamagoori ira
+getou suguru
+gilgamesh \(fate\)
+giorno giovanna
+gladion \(pokemon\)
+goh \(pokemon\)
+gojou satoru
+gran \(granblue fantasy\)
+guido mista
+gyro zeppeli
+hanamura yousuke
+hawks \(boku no hero academia\)
+higashikata josuke
+hilbert \(pokemon\)
+hinata hajime
+hiro \(darling in the franxx\)
+honebami toushirou
+horikawa kunihiro
+ib \(ib\)
+ikari shinji
+ike \(fire emblem\)
+inkling boy
+iskandar \(fate\)
+itadori yuuji
+ivan karelin
+izumi-no-kami kanesada
+james \(pokemon\)
+jean pierre polnareff
+johnny joestar
+jonathan joestar
+joseph joestar \(old\)
+joseph joestar \(young\)
+joseph joestar
+kaburagi t. kotetsu
+kaedehara kazuha
+kaeya \(genshin impact\)
+kagamine len
+kaito \(vocaloid\)
+kakyoin noriaki
+kamado tanjirou
+kamijou touma
+kamisato ayato
+kamui gakupo
+kamukura izuru
+kaneki ken
+karna \(fate\)
+kars \(jojo\)
+kashuu kiyomitsu
+katsuki yuuri
+kaveh \(genshin impact\)
+killua zoldyck
+king hassan \(fate\)
+kirino ranmaru
+kirito
+kisaragi shintarou
+kishibe rohan
+koizumi itsuki
+komaeda nagito
+kotomine kirei
+kujo jotaro
+kurosaki ichigo
+kyon
+lelouch vi britannia
+leon \(pokemon\)
+leon s. kennedy
+levi \(shingeki no kyojin\)
+link
+lio fotia
+little boy admiral \(kancolle\)
+lucas \(pokemon\)
+maebara keiichi
+marth \(fire emblem\)
+matou kariya
+matsuno karamatsu
+matsuno osomatsu
+merlin \(fate\)
+midare toushirou
+midoriya izuku
+mikazuki munechika
+momota kaito
+monkey d. luffy
+morichika rinnosuke
+mountain \(arknights\)
+n \(pokemon\)
+naegi makoto
+nagisa kaworu
+namazuo toushirou
+nanami kento
+napoleon bonaparte \(fate\)
+narukami yuu
+nate \(pokemon\)
+natsuki subaru
+oberon \(fate\)
+oma kokichi
+oreki houtarou
+phosphophyllite
+piers \(pokemon\)
+pipimi
+producer \(idolmaster cinderella girls anime\)
+producer \(idolmaster\)
+ragna the bloodedge
+raihan \(pokemon\)
+red \(pokemon\)
+reiner braun
+rex \(xenoblade\)
+robin \(male\) \(fire emblem\)
+roronoa zoro
+ru-class battleship
+ryoumen sukuna \(jujutsu kaisen\)
+ryu \(street fighter\)
+saihara shuichi
+saitama \(one-punch man\)
+sakata gintoki
+sanageyama uzu
+sanji \(one piece\)
+satou kazuma
+scaramouche \(genshin impact\)
+sephiroth
+simon \(ttgl\)
+slaine troyard
+son gohan
+son goku
+sonic the hedgehog
+sora \(kingdom hearts\)
+steven stone
+t-head admiral
+t-head trainer
+tartaglia \(genshin impact\)
+tatsumi kanji
+tenma tsukasa
+tighnari \(genshin impact\)
+todoroki shouto
+tohsaka tokiomi
+toon link
+trafalgar law
+trainer \(umamusume\)
+tsurumaru kuninaga
+twilight \(spy x family\)
+uryuu ryuunosuke
+ushiromiya battler
+vegeta
+venti \(genshin impact\)
+victor \(pokemon\)
+viktor nikiforov
+wanderer \(genshin impact\)
+waver velvet
+xiao \(genshin impact\)
+xingqiu \(genshin impact\)
+yamato-no-kami yasusada
+yuri lowell
+yuuki makoto
+zhongli \(genshin impact\)
+[/choose]
