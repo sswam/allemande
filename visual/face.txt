@@ -13,7 +13,16 @@
 [set cheekbones][/set]
 [set ears][/set]
 [set build][choose]plump|skinny|muscular[/choose][/set]
-[set hair][choose]very long hair|long hair|medium hair|short hair|shaved head|short hair, shaved head[/choose][/set]
+[set hair]
+	[choose _weighted]
+	4 | very long hair
+	8 | long hair
+	8 | medium hair
+	8 | short hair
+	1 | shaved head
+	1 | short hair, shaved head
+	[/choose]
+[/set]
 [set height]tall[/set]
 
 [use race, 100 1.7 2.0] [use nationality, 70 1.7 2.0]
@@ -153,6 +162,6 @@ BREAK
 [/opt]
 
 [if gender="female"]
-[sets n=3 strength=0.2 low=0.7 high=1.3]
-[use celebs_girl]
+[sets n=3 strength=0.3 low=0.7 high=1.3]
+[use celebs_girl 100 0.7 1.3]
 [/if]
