@@ -5,5 +5,3 @@
 [use ./skin_eyes_hair,]
 
 [opt 20] tan, [/opt]
-
-[use ./hairstyle,]

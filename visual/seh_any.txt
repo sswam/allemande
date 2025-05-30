@@ -6,8 +6,6 @@
 
 [opt 20] tan, [/opt]
 
-[use ./hairstyle,]
-
 [##]
 2 | (vitiligo:1.5), {set skinword}vitiligo{/set} {use ./eyes_any,} {use ./hair_any,}
 2 | albino {sets albino="1"},

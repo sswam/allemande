@@ -3,5 +3,3 @@
 [sets skin_light=2 skin_dark=40 skin_pale=2 skin_very_dark=40 skin_white=0 skin_black=10 skin_colored=2]
 
 [use ./skin_eyes_hair,]
-
-[use ./hairstyle,]
