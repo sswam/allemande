@@ -1,0 +1,5 @@
+(rating safe, solo:1.8), 1girl, woman, headshot, portrait photo, [use exp], looking at viewer, facing viewer, [use face], [use emo], <lora:real-humans-PublicPrompts:1.5> [use real_pony], simple background <lora:boring:-0.8>
+[set negative_prompt]
+[get negative_prompt]
+(cleft chin, 1boy, couple, sex, rating explicit, rating questionable, distorted, hands, photo \(object\), breasts, nude, close-up, furry, animal ears, heart:2)
+[/set]
