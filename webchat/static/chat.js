@@ -887,7 +887,7 @@ function query_to_title(query) {
 }
 
 function query_encode(query) {
-  return encodeURIComponent(query).replace(/%20/g, "+");
+  return encodeURIComponent(query).replace(/%20/g, "+").replace(/%2F/g, "/");
 }
 
 function query_to_hash(query) {
