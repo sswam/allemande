@@ -23,7 +23,6 @@ akagi miria
 akai haato
 akali
 akamatsu kaede
-akane \(blue archive\)
 akari \(pokemon\)
 akatsuki kirika
 akaza akari
@@ -34,7 +33,6 @@ akiyama mio
 akiyama mizuki
 akiyama yukari
 akizuki ritsuko
-ako \(blue archive\)
 akuma homura
 albedo \(overlord\)
 alear \(fire emblem\)
@@ -70,11 +68,8 @@ aqua \(konosuba\)
 arch bishop \(ragnarok online\)
 arcueid brunestud
 arima kana
-aris \(blue archive\)
 arisugawa natsuha
 arlecchino \(genshin impact\)
-arona \(blue archive\)
-arona's sensei doodle \(blue archive\)
 artoria caster \(fate\)
 artoria pendragon \(alter swimsuit rider\) \(fate\)
 artoria pendragon \(alter swimsuit rider\) \(second ascension\) \(fate\)
@@ -82,7 +77,6 @@ artoria pendragon \(fate\)
 artoria pendragon \(lancer alter\) \(fate\)
 artoria pendragon \(lancer\) \(fate\)
 artoria pendragon \(swimsuit ruler\) \(fate\)
-aru \(blue archive\)
 asahina mafuyu
 asahina mikuru
 asakura ryouko
@@ -90,8 +84,6 @@ asakura toru
 ashido mina
 assam \(girls und panzer\)
 asui tsuyu
-asuna \(blue archive\)
-asuna \(bunny\) \(blue archive\)
 asuna \(sao\)
 atago \(azur lane\)
 atalanta \(fate\)
@@ -99,7 +91,6 @@ ayanami \(azur lane\)
 ayanami rei
 ayase eli
 azura \(fire emblem\)
-azusa \(blue archive\)
 backbeako
 backbeard
 baiken
@@ -283,8 +274,6 @@ hakui koyori \(1st costume\)
 hakui koyori
 hakurei reimu
 han juri
-hanako \(blue archive\)
-hanako \(swimsuit\) \(blue archive\)
 hanasaki tsubomi
 hanekawa tsubasa
 haniyasushin keiki
@@ -293,11 +282,8 @@ haramura nodoka
 haro
 haru urara \(umamusume\)
 harukawa maki
-haruna \(blue archive\)
 haruno sakura
 hassan of serenity \(fate\)
-hasumi \(blue archive\)
-hasumi \(track\) \(blue archive\)
 hata no kokoro
 hatoba tsugu
 hatsune miku \(append\)
@@ -308,10 +294,7 @@ hecatia lapislazuli
 helena blavatsky \(fate\)
 hestia \(danmachi\)
 hex maniac \(pokemon\)
-hibiki \(blue archive\)
-hibiki \(cheer squad\) \(blue archive\)
 hieda no akyuu
-hifumi \(blue archive\)
 higashi setsuna
 higashiyama kobeni
 high priest \(ragnarok online\)
@@ -329,8 +312,6 @@ himejima akeno
 himekaidou hatate
 himemori luna
 himeno \(chainsaw man\)
-hina \(blue archive\)
-hina \(swimsuit\) \(blue archive\)
 hinaichigo
 hinanawi tenshi
 hino akane \(smile precure!\)
@@ -357,8 +338,6 @@ hoshikawa sara
 hoshimachi suisei \(1st costume\)
 hoshimachi suisei
 hoshimiya ichigo
-hoshino \(blue archive\)
-hoshino \(swimsuit\) \(blue archive\)
 hoshino ai \(oshi no ko\)
 hoshino fumina
 hoshizora miyuki
@@ -382,7 +361,6 @@ ibaraki douji \(fate\)
 ibaraki kasen
 ibuki suika
 ichihara nina
-ichika \(blue archive\)
 ichikawa hinana
 ichinose shiki
 ifrit \(arknights\)
@@ -405,12 +383,10 @@ inugami korone
 inui toko
 inuyama aoi
 iono \(pokemon\)
-iori \(blue archive\)
 irene \(arknights\)
 irida \(pokemon\)
 iris \(pokemon\)
 irisviel von einzbern
-iroha \(blue archive\)
 irys \(hololive\)
 isabelle \(animal crossing\)
 ishtar \(fate\)
@@ -420,7 +396,6 @@ izayoi sakuya
 izumi konata
 izumi mei
 izumi sagiri
-izuna \(blue archive\)
 jack the ripper \(fate/apocrypha\)
 jaguar \(kemono friends\)
 jakuzure nonon
@@ -475,8 +450,6 @@ kaname madoka
 kanna kamui
 kanroji mitsuri
 kanzaki ranko
-karin \(blue archive\)
-karin \(bunny\) \(blue archive\)
 karyl \(princess connect!\)
 kasane teto
 kashino \(azur lane\)
@@ -492,13 +465,11 @@ katyusha \(girls und panzer\)
 kawashima momo
 kawashiro nitori
 kay \(girls und panzer\)
-kayoko \(blue archive\)
 kazama iroha \(1st costume\)
 kazama iroha
 kazami yuuka
 kazanari tsubasa
 kazano hiori
-kazusa \(blue archive\)
 kemomimi-chan \(naga u\)
 kenzaki makoto
 keqing \(genshin impact\)
@@ -521,7 +492,6 @@ kiriya aoi
 kiryu coco \(1st costume\)
 kiryu coco
 kiryuuin satsuki
-kisaki \(blue archive\)
 kisaragi chihaya
 kise yayoi
 kishin sagume
@@ -540,11 +510,8 @@ koakuma
 kochiya sanae
 kochou shinobu
 kohaku \(tsukihime\)
-koharu \(blue archive\)
-koharu \(swimsuit\) \(blue archive\)
 koizumi hanayo
 kokkoro \(princess connect!\)
-kokona \(blue archive\)
 komaki manaka
 komano aunn
 komeiji koishi
@@ -647,8 +614,6 @@ manhattan cafe \(umamusume\)
 manjuu \(azur lane\)
 mankanshoku mako
 march 7th \(honkai: star rail\)
-mari \(blue archive\)
-mari \(track\) \(blue archive\)
 marianne von edmund
 maribel hearn
 marie \(girls und panzer\)
@@ -696,10 +661,8 @@ mercy \(overwatch\)
 merlin prismriver
 micaiah \(fire emblem\)
 midna
-midori \(blue archive\)
 midorikawa nao
 mihono bourbon \(umamusume\)
-mika \(blue archive\)
 mika \(girls und panzer\)
 mikasa ackerman
 miki sayaka
@@ -725,20 +688,17 @@ misumi nagisa
 mitake ran
 miura azusa
 miyafuji yoshika
-miyako \(blue archive\)
 miyako yoshika
 miyamizu mitsuha
 miyamoto frederica
 miyamoto musashi \(fate\)
 miyamoto musashi \(swimsuit berserker\) \(fate\)
-miyu \(blue archive\)
 miyu edelfelt
 mizuhashi parsee
 mizunashi akari
 mizuno ai
 mizuno ami
 modeus \(helltaker\)
-momoi \(blue archive\)
 momosuzu nene
 momozono love
 mona \(genshin impact\)
@@ -766,7 +726,6 @@ murasa minamitsu
 murasaki shikibu \(fate\)
 murasaki shion \(1st costume\)
 murasaki shion
-mutsuki \(blue archive\)
 myoudouin itsuki
 mysterious heroine x alter \(fate\)
 mysterious heroine xx \(fate\)
@@ -808,7 +767,6 @@ nero claudius \(bride\) \(fate\)
 nero claudius \(fate\)
 nero claudius \(fate/extra\)
 nero claudius \(swimsuit caster\) \(fate\)
-neru \(blue archive\)
 nessa \(pokemon\)
 nia \(blade\) \(xenoblade\)
 nia \(xenoblade\)
@@ -831,13 +789,10 @@ nishizumi shiho
 nitocris \(fate\)
 nitta minami
 niwatari kutaka
-noa \(blue archive\)
 noel vermillion
 noelle \(genshin impact\)
 noire \(neptunia\)
 nonna \(girls und panzer\)
-nonomi \(blue archive\)
-nonomi \(swimsuit\) \(blue archive\)
 northern ocean princess
 northern white-faced owl \(kemono friends\)
 noumi kudryavka
@@ -882,10 +837,8 @@ patchouli knowledge
 pearl \(splatoon\)
 pecorine \(princess connect!\)
 pepperoni \(girls und panzer\)
-peroro \(blue archive\)
 perrine h. clostermann
 pharah \(overwatch\)
-plana \(blue archive\)
 platinum \(arknights\)
 pochita \(chainsaw man\)
 pod \(nier:automata\)
@@ -934,7 +887,6 @@ rice shower \(umamusume\)
 riesz
 rika \(pokemon\)
 ringo \(touhou\)
-rio \(blue archive\)
 rita rossweisse
 ro635 \(girls' frontline\)
 robin \(female\) \(fire emblem\)
@@ -965,7 +917,6 @@ sajo yukimi
 sakamata chloe \(1st costume\)
 sakamata chloe
 sakamoto mio
-saki \(blue archive\)
 sakuma mayu
 sakura futaba
 sakura kyoko
@@ -980,7 +931,6 @@ samus aran
 sangonomiya kokomi
 saniwa \(touken ranbu\)
 sanya v. litvyak
-saori \(blue archive\)
 saren \(princess connect!\)
 saria \(arknights\)
 sasaki chie
@@ -1003,10 +953,8 @@ sendai hakurei no miko
 sengoku nadeko
 senjougahara hitagi
 senketsu
-sensei \(blue archive\)
 sento isuzu
 serena \(pokemon\)
-serika \(blue archive\)
 serizawa asahi
 serval \(kemono friends\)
 sessyoin kiara
@@ -1043,15 +991,10 @@ shirasaka koume
 shirase sakuya
 shirogane naoto
 shirogane noel
-shiroko \(blue archive\)
-shiroko \(swimsuit\) \(blue archive\)
-shiroko terror \(blue archive\)
 shishiro botan \(1st costume\)
 shishiro botan
 shoebill \(kemono friends\)
 shokuhou misaki
-shun \(blue archive\)
-shun \(small\) \(blue archive\)
 shuten douji \(fate\)
 siege \(arknights\)
 signum
@@ -1158,8 +1101,6 @@ tohno akiha
 tohru \(maidragon\)
 tohsaka rin
 tokai teio \(umamusume\)
-toki \(blue archive\)
-toki \(bunny\) \(blue archive\)
 tokiko \(touhou\)
 tokino sora
 tokisaki kurumi
@@ -1198,7 +1139,6 @@ tsushima yoshiko
 twin turbo \(umamusume\)
 uchiha sasuke
 uehara ayumu
-ui \(blue archive\)
 uiharu kazari
 ujimatsu chiya
 ultimate madoka
@@ -1283,12 +1223,9 @@ yukishiro honoka
 yumemi riamu
 yumi \(senran kagura\)
 yuno \(hidamari sketch\)
-yuuka \(blue archive\)
-yuuka \(track\) \(blue archive\)
 yuuki haru
 yuuki mikan
 yuuki setsuna \(love live!\)
-yuzu \(blue archive\)
 yuzuki choco
 yuzuki yukari
 yuzuriha inori
@@ -1504,4 +1441,69 @@ z3 max schultz \(kancolle\)
 zara \(kancolle\)
 zuihou \(kancolle\)
 zuikaku \(kancolle\)
+
+akane \(blue archive\)
+ako \(blue archive\)
+aris \(blue archive\)
+arona \(blue archive\)
+arona's sensei doodle \(blue archive\)
+aru \(blue archive\)
+asuna \(blue archive\)
+asuna \(bunny\) \(blue archive\)
+azusa \(blue archive\)
+hanako \(blue archive\)
+hanako \(swimsuit\) \(blue archive\)
+haruna \(blue archive\)
+hasumi \(blue archive\)
+hasumi \(track\) \(blue archive\)
+hibiki \(blue archive\)
+hibiki \(cheer squad\) \(blue archive\)
+hifumi \(blue archive\)
+hina \(blue archive\)
+hina \(swimsuit\) \(blue archive\)
+hoshino \(blue archive\)
+hoshino \(swimsuit\) \(blue archive\)
+ichika \(blue archive\)
+iori \(blue archive\)
+iroha \(blue archive\)
+izuna \(blue archive\)
+karin \(blue archive\)
+karin \(bunny\) \(blue archive\)
+kayoko \(blue archive\)
+kazusa \(blue archive\)
+kisaki \(blue archive\)
+koharu \(blue archive\)
+koharu \(swimsuit\) \(blue archive\)
+kokona \(blue archive\)
+mari \(blue archive\)
+mari \(track\) \(blue archive\)
+midori \(blue archive\)
+mika \(blue archive\)
+miyako \(blue archive\)
+miyu \(blue archive\)
+momoi \(blue archive\)
+mutsuki \(blue archive\)
+neru \(blue archive\)
+noa \(blue archive\)
+nonomi \(blue archive\)
+nonomi \(swimsuit\) \(blue archive\)
+peroro \(blue archive\)
+plana \(blue archive\)
+rio \(blue archive\)
+saki \(blue archive\)
+saori \(blue archive\)
+sensei \(blue archive\)
+serika \(blue archive\)
+shiroko \(blue archive\)
+shiroko \(swimsuit\) \(blue archive\)
+shiroko terror \(blue archive\)
+shun \(blue archive\)
+shun \(small\) \(blue archive\)
+toki \(blue archive\)
+toki \(bunny\) \(blue archive\)
+ui \(blue archive\)
+yuuka \(blue archive\)
+yuuka \(track\) \(blue archive\)
+yuzu \(blue archive\)
+
 [/##]
