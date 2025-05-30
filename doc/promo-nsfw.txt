@@ -1,0 +1,11 @@
+My AI chat app, Ally Chat, is open source, and the service is free to use (or please sponsor!) with full features and access to most major LLMs at no cost. There are many NSFW-capable LLMs and characters, and NSFW-capable AI art models too. The AI art is quite strong (based on SDXL and PonyXL models), and it's free to use. I haven't had to limit anyone's usage of anything yet.
+
+The app is not exclusively for smutty role-playing, but it's quite good at it I think. You can have multi-user and multi-AI group chats, for example you could go on an illustrated non-smutty adventure with IRL friends, Claude, Gemini and ChatGPT together. We can also do automatic interactive AI photo shoots, with AIs playing the photographer and models.
+
+Users can compare and combine responses from several different AIs in the one chat. You can undo, retry and freely edit chat history including the AI parts, of course. Different AIs can also talk to each other.
+
+Ally Chat is excellent for mathematics, with TeX, equation input, graphviz and mermaid diagrams, inline JavaScript for graphs, simulations, etc. It's quite good for planning, programming, writing help, general Q&A, therapy, etc.
+
+Characters can have rich functionality. Some of the more interesting ones include Illu and Xilu, image prompting experts; Jessi, a pretty good comedian; Jennifer Melfi the therapist; Jhon, a NSFW "roasting specialist"; Chaz, a character and agent designer; Brie, a brain-stormer; Sal, a pizza-shop owner who dislikes pineapple; and Cris, a ChatGPT that doesn't just agree with you all the time. It's easy if a little technical to add more characters and agents.
+
+The app is in closed beta, so the way to get an account is to message me and ask for one.
