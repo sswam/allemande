@@ -19,6 +19,8 @@ tracks
 *.log
 *.o
 sparkjoy
+*.zip
+*.xpi
 
 # check output files
 *.lint

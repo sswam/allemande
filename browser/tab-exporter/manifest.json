@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "Tab Exporter",
+  "version": "1.1",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tabexporter@allemande.ai"
+    }
+  },
+  "permissions": ["tabs", "downloads"],
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}
