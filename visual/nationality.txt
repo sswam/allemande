@@ -1,0 +1,79 @@
+[choose _weighted]
+20|White Caucasian
+20|Black African
+20|Asian
+20|Hispanic, Latina
+20|Middle Eastern, Arab
+20|Indian
+10|Native American
+10|Pacific Islander
+
+1|Afghan
+1|Algerian
+1|Argentine
+1|Australian
+1|Austrian
+1|Belgian
+1|Brazilian
+1|Canadian
+1|Chilean
+1|Chinese
+1|Colombian
+1|Cuban
+1|Czech
+1|Danish
+1|Egyptian
+1|Finnish
+1|French
+1|German
+1|Greek
+1|Hungarian
+1|Indonesian
+1|Iranian
+1|Iraqi
+1|Irish
+1|Israeli
+1|Italian
+1|Japanese
+1|Mexican
+1|Dutch
+1|Nigerian
+1|Norwegian
+1|Pakistani
+1|Polish
+1|Portuguese
+1|Russian
+1|Saudi
+1|South African
+1|South Korean
+1|Spanish
+1|Swedish
+1|Swiss
+1|Thai
+1|Turkish
+1|Ukrainian
+1|Emirati
+1|British
+1|American
+1|Vatican
+1|Vietnamese
+
+1|Latina
+1|Maori
+1|Romani
+1|Aboriginal Australian
+
+1|Southeast Asian
+1|East Asian
+1|Mixed Race, Multiracial
+1|Inuit, Eskimo
+1|Romani, Gypsy
+1|Polynesian
+1|Melanesian
+1|Micronesian
+1|Jewish
+1|Slavic
+1|Celtic
+1|Germanic
+1|Mediterranean
+[/choose]
