@@ -174,7 +174,7 @@ illustration_prompts() {
 		example_prefix="1girl, 1boy, close-up, hand, brushing hair, ear, long fingers, eyes closed, soft lighting, spotlight, romantic, couple, intimate, soft lighting, "
 	fi
 	if (( pony )) && (( ! adult )); then
-		example_prefix="1boy, close-up, face, gaunt, sunken eyes, desperate expression, determined expression, farmhouse, field, horizon, cloudy sky, gloomy"
+		example_prefix="rating safe, 1boy, close-up, face, gaunt, sunken eyes, desperate expression, determined expression, farmhouse, field, horizon, cloudy sky, gloomy, "
 	fi
 	if (( pony )); then
 		alt_syntax="tag1, tag2, ..., tagn, $alt_syntax"
@@ -276,7 +276,7 @@ generate_the_story() {
 			< "$filename" sed -n "/${continue:-.}/,\$p"
 	 	fi |
 			(llm process --model="$model" --empty-ok "$prompt"; echo) |
-			story_correct_image_tags.py |
+			story-correct-image-tags |
 			tee -a "$new_content_filename.$try"
 			if [ "$(< "$new_content_filename.$try" grep -c .)" -gt 2 ]; then
 			mv "$new_content_filename.$try" "$new_content_filename"
@@ -322,7 +322,7 @@ add_illustrations() {
 		echo >&2 "Generating text for images... try $try of $retry"
 		number-lines-all "$filename" |
 		(llm process --model="$model" --empty-ok "$prompt"; echo) |
-		story_correct_image_tags.py |
+		story-correct-image-tags |
 		tee -a "$add_images_filename.$try"
 		if [ "$(< "$add_images_filename.$try" grep -c .)" -gt 2 ]; then
 			mv "$add_images_filename.$try" "$add_images_filename"
@@ -389,7 +389,7 @@ illustrate_the_story() {
 		pony_args=(--pony)
 	fi
 
-	illustrate --debug --prompt0 "${illustrate#1} ${positive0}" --prompt1 "${positive1}" --negative "$negative" --module "$module" --count "$count" --steps "$steps" --cfg-scale "$cfg_scale" "${pony_args[@]}" "$filename"
+	illustrate --prompt0 "${illustrate#1} ${positive0}" --prompt1 "${positive1}" --negative "$negative" --module "$module" --count "$count" --steps "$steps" --cfg-scale "$cfg_scale" "${pony_args[@]}" "$filename"
 }
 
 view_the_result() {

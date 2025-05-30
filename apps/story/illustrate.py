@@ -275,15 +275,14 @@ def generate_image(
         # run the a1111 stable diffusion webui client
         sh.a1111_client("-d", **kwargs)  # type: ignore
     except sh.ErrorReturnCode as e:  # type: ignore
-        logger.error(f"Failed to generate image for {filename}: {prompt}")
-        logger.error(f"Error: {e}")
-        raise
+        pass
+        # logger.error(f"Failed to generate image for {filename}: {prompt} ?")
+        # logger.error(f"Error: {e}")
+        # raise
 
     # symlink the first image, foo_00000.png, to foo.png
     numbered_output_path = numbered_image_name(output_path)
-    if os.path.exists(output_path):
-        logger.warning(f"Already exists: {output_path}")
-    else:
+    if not os.path.exists(output_path):
         logger.info(f"Creating symlink: {output_path} -> {numbered_output_path}")
         os.symlink(numbered_output_path, output_path)
 
@@ -309,6 +308,7 @@ def setup_args(arg):
     arg("-P", "--pony", help="Add prompting boilerplate for Pony and Pony-derived models", action="store_true")
     arg("-S", "--steps", help="Number of steps to run the model")
     arg("-cs", "--cfg-scale", help="CFG scale")
+    arg("-M", "--module", help="Python module to modify prompts")
 
 
 if __name__ == "__main__":
