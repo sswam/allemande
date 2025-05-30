@@ -1,4 +1,6 @@
-woman, headshot, portrait photo, [use exp], looking at viewer, facing viewer, [use face], [use emo], [use real_sdxl]
+woman, headshot, portrait photo, looking at viewer, facing viewer
+BREAK [use face]
+BREAK [use exp], [use emo], [use real_sdxl]
 BREAK (simple background, white background:1.5)
 <lora:boring:-0.6>
 [set negative_prompt]

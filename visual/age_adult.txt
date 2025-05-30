@@ -1,1 +1,1 @@
-adult [rand 18 60 0] years old
+adult [rand 18 40 0] years old

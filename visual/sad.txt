@@ -1,6 +1,5 @@
 [choose _weighted]
 2 | sad
-2 | sad, crying
 2 | scared
 2 | pensive
 2 | anxious
@@ -16,9 +15,11 @@
 2 | lonely
 1 | angry
 2 | dazed
+[/choose]
 
 [##]
 2 | drunk
+2 | sad, crying
 2 | sad, crying, tears
 2 | sad, crying, streaming tears
 2 | yawning
@@ -27,4 +28,3 @@
 2 | heavy breathing
 1 | [choose] crazy | crazy eyes | crazy smile | crazy, crazy eyes, crazy smile [/choose]
 [/##]
-[/choose]

@@ -1,1 +1,2 @@
 teenage [rand 13 18 0] years old
+<lora:age:-1>

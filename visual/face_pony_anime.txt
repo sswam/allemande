@@ -1,6 +1,6 @@
 (rating safe, solo, 1girl:1.8), headshot, portrait photo, looking at viewer, facing viewer
 BREAK [use face], (solo:1.8)
-BREAK [use exp], [use emo], [use real_pony]
+BREAK [use exp], [use emo], [use anime]
 BREAK (simple background, white background:1.5)
 <lora:boring:-0.6>
 [set negative_prompt]

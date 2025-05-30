@@ -18,9 +18,9 @@
 1 | seductive smile
 1 | biting own lip
 1 | shy, slight smile, smirk
+[/choose]
 
 [##]
 1 | tongue out
 1 | winking
 [/##]
-[/choose]

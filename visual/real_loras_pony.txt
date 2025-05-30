@@ -1,2 +1,2 @@
-<lora:realskin:1.0>
-<lora:realism:1.5>
+<lora:realskin:1.5>
+<lora:realism:2>
