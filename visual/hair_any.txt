@@ -1,0 +1,11 @@
+[choose _weighted]
+20 | black
+20 | brown
+20 | blonde
+20 | red brown orange
+2 | blue
+2 | white
+2 | pink
+1 | grey
+[/choose]
+hair

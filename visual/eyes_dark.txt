@@ -1,0 +1,11 @@
+[opt 100 0.7]
+[choose _weighted]
+90 | brown
+10 | light brown
+2 | blue
+2 | green
+2 | aqua
+2 | grey
+[/choose]
+eyes
+[/opt]

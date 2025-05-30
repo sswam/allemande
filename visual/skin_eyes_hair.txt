@@ -1,0 +1,9 @@
+[choose _weighted]
+[get skin_light]     | {use ./eyes_any,} {use ./hair_any,}
+[get skin_dark]      | dark skin, dark-skinned female, {set skinword}dark skin, dark-skinned female{/set} {use ./eyes_dark,} {use ./hair_dark,}
+[get skin_pale]      | pale skin, {set skinword}pale skin{/set} {use ./eyes_light,} {use ./hair_light,}
+[get skin_very_dark] | very dark skin, dark-skinned female, {set skinword}very dark skin, dark-skinned female{/set} {use ./eyes_dark,} {use ./hair_dark,}
+[get skin_white]     | white skin, {set skinword}white skin{/set} {use ./eyes_light,} {use ./hair_light,}
+[get skin_black]     | black skin, {set skinword}black skin{/set} {use ./eyes_dark,} {use ./hair_dark,}
+[get skin_colored]   | colored skin, {set skinword}colored skin{/set} {use ./eyes_any,} {use ./hair_any,}
+[/choose]

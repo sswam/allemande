@@ -1,0 +1,79 @@
+[choose _weighted]
+20|Caucasian, {use ./seh_light,}
+20|African, {use ./seh_dark,}
+20|Asian, {use ./seh_medium,}
+20|Hispanic, Latina, {use ./seh_medium,}
+20|Arab, {use ./seh_medium,}
+20|Indian, {use ./seh_medium,}
+10|Native American, {use ./seh_medium,}
+10|Pacific Islander, {use ./seh_dark,}
+
+1|Afghan, {use ./seh_any,}
+1|Algerian, {use ./seh_medium,}
+1|Argentine, {use ./seh_light,}
+1|Australian, {use ./seh_medium,}
+1|Austrian, {use ./seh_light,}
+1|Belgian, {use ./seh_light,}
+1|Brazilian, {use ./seh_any,}
+1|Canadian, {use ./seh_any,}
+1|Chilean, {use ./seh_medium,}
+1|Chinese, {use ./seh_light,}
+1|Colombian, {use ./seh_medium,}
+1|Cuban, {use ./seh_medium,}
+1|Czech, {use ./seh_light,}
+1|Danish, {use ./seh_light,}
+1|Egyptian, {use ./seh_medium,}
+1|Finnish, {use ./seh_light,}
+1|French, {use ./seh_light,}
+1|German, {use ./seh_light,}
+1|Greek, {use ./seh_medium,}
+1|Hungarian, {use ./seh_light,}
+1|Indian, {use ./seh_medium,}
+1|Indonesian, {use ./seh_medium,}
+1|Iranian, {use ./seh_medium,}
+1|Iraqi, {use ./seh_medium,}
+1|Irish, {use ./seh_light,}
+1|Israeli, {use ./seh_any,}
+1|Italian, {use ./seh_medium,}
+1|Japanese, {use ./seh_light,}
+1|Mexican, {use ./seh_medium,}
+1|Dutch, {use ./seh_light,}
+1|Nigerian, {use ./seh_dark,}
+1|Norwegian, {use ./seh_light,}
+1|Pakistani, {use ./seh_medium,}
+1|Polish, {use ./seh_light,}
+1|Portuguese, {use ./seh_medium,}
+1|Russian, {use ./seh_light,}
+1|Saudi, {use ./seh_medium,}
+1|South African, {use ./seh_any,}
+1|South Korean, {use ./seh_light,}
+1|Spanish, {use ./seh_medium,}
+1|Swedish, {use ./seh_light,}
+1|Swiss, {use ./seh_light,}
+1|Thai, {use ./seh_medium,}
+1|Turkish, {use ./seh_medium,}
+1|Ukrainian, {use ./seh_light,}
+1|Emirati, {use ./seh_medium,}
+1|British, {use ./seh_light,}
+1|American, {use ./seh_any,}
+1|Vietnamese, {use ./seh_medium,}
+
+1|Latina, {use ./seh_medium,}
+1|Maori, {use ./seh_medium,}
+1|Romani, {use ./seh_medium,}
+1|Koori, Aboriginal Australian, {use ./seh_dark,}
+1|Southeast Asian, {use ./seh_medium,}
+1|East Asian, {use ./seh_light,}
+1|Mixed Race, Multiracial, {use ./seh_any,}
+
+1|Inuit, Eskimo, {use ./seh_medium,}
+1|Polynesian, {use ./seh_medium,}
+1|Melanesian, {use ./seh_dark,}
+1|Micronesian, {use ./seh_medium,}
+1|Jewish, {use ./seh_any,}
+1|Slavic, Russian, {use ./seh_light,}
+1|Celtic, Irish, {use ./seh_light,}
+1|Germanic, German, {use ./seh_light,}
+1|Mediterranean, Spanish, {use ./seh_medium,}
+1|Noordic, {use ./seh_light,}
+[/choose]

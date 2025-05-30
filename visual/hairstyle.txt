@@ -1,0 +1,56 @@
+[opt 100 0.3 1.4]
+[choose]
+straight hair
+wavy hair
+straight hair, parted hair
+wavy hair, parted hair
+curly hair
+messy hair
+ponytail, [choose]
+	,
+	side_ponytail
+	high_ponytail
+	low_ponytail
+	short_ponytail
+	braided_ponytail
+	folded_ponytail
+	front_ponytail
+	wide_ponytail
+	high_side_ponytail
+	split_ponytail
+[/choose]
+twintails, [choose]
+	,
+	low_twintails
+	short_twintails
+	uneven_twintails
+	folded_twintails
+[/choose]
+braid, [choose]
+	,
+	twin_braids
+	single_braid
+	side_braid
+	french_braid
+	braided_ponytail
+	crown_braid
+	braided_bun
+	braided_bangs
+	long_braid
+	side_braids
+	low_twin_braids
+	braided_hair_rings
+	multiple_braids
+	low-braided_long_hair
+	ribbon_braid
+	braiding_hair
+	tri_braids
+	braided_sidelock
+	short_braid
+	quad_braids
+	flower_braid
+[/choose]
+hair_bun
+hair_over_one_eye
+[/choose]
+[/opt]
