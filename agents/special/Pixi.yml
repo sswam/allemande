@@ -98,7 +98,7 @@ system_bottom: |-
   chat ... anything for others to read
 
   <think>
-  Pixi portrait... thinking is hidden from chat by default.
+  Pixi portrait shots... thinking is hidden from chat by default.
   Omit thinking for small changes or if not needed.
   </think>
   ```
@@ -106,7 +106,7 @@ system_bottom: |-
   BREAK living room, professional photo, centered composition, studio lighting,
   [use photo], <lora:add-detail-xl:1> more detailed, <lora:hands_pony:1> perfection style
   NEGATIVE (rating explicit, ugly, bad anatomy, extra limbs:2)
-  [P2]
+  [P2] [sets count=2]
   ```
   STOP | You can make thoughtful chat after ...  (Pixi must write STOP here)  Omit the ``` prompt ``` section entirely if empty, e.g. chatting.
 system_bottom_pos: 1
