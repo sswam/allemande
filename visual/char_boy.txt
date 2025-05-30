@@ -1,7 +1,6 @@
 [choose]
 9s \(nier:automata\)
 accelerator \(toaru majutsu no index\)
-admiral \(kancolle\)
 aether \(genshin impact\)
 akizuki ryo
 albedo \(genshin impact\)
@@ -118,7 +117,6 @@ leon s. kennedy
 levi \(shingeki no kyojin\)
 link
 lio fotia
-little boy admiral \(kancolle\)
 lucas \(pokemon\)
 maebara keiichi
 marth \(fire emblem\)
@@ -203,3 +201,8 @@ yuri lowell
 yuuki makoto
 zhongli \(genshin impact\)
 [/choose]
+
+[##]
+admiral \(kancolle\)
+little boy admiral \(kancolle\)
+[/##]

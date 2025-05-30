@@ -5,13 +5,11 @@ abe nana
 abigail williams \(fate\)
 abigail williams \(swimsuit foreigner\) \(fate\)
 abigail williams \(traveling outfit\) \(fate\)
-abukuma \(kancolle\)
 adachi rei
 admire vega \(umamusume\)
 adventurer \(ff11\)
 aegis \(persona\)
 aerith gainsborough
-agano \(kancolle\)
 agnes digital \(umamusume\)
 agnes tachyon \(umamusume\)
 ahri \(league of legends\)
@@ -21,28 +19,20 @@ air groove \(umamusume\)
 aisaka taiga
 ak-12 \(girls' frontline\)
 akagi \(azur lane\)
-akagi \(kancolle\)
 akagi miria
 akai haato
 akali
 akamatsu kaede
 akane \(blue archive\)
 akari \(pokemon\)
-akashi \(kancolle\)
-akatsuki \(kancolle\)
 akatsuki kirika
 akaza akari
-akebono \(kancolle\)
 akemi homura
 aki minoriko
 aki shizuha
-akigumo \(kancolle\)
-akitsu maru \(kancolle\)
-akitsushima \(kancolle\)
 akiyama mio
 akiyama mizuki
 akiyama yukari
-akizuki \(kancolle\)
 akizuki ritsuko
 ako \(blue archive\)
 akuma homura
@@ -60,7 +50,6 @@ amami haruka
 amane kanata \(1st costume\)
 amane kanata
 amanogawa kirara
-amatsukaze \(kancolle\)
 amber \(genshin impact\)
 amiya \(arknights\)
 amy rose
@@ -76,17 +65,13 @@ angel \(kof\)
 angelina \(arknights\)
 anila \(granblue fantasy\)
 anya \(spy x family\)
-aoba \(kancolle\)
 aoki reika
 aqua \(konosuba\)
-arashi \(kancolle\)
-arashio \(kancolle\)
 arch bishop \(ragnarok online\)
 arcueid brunestud
 arima kana
 aris \(blue archive\)
 arisugawa natsuha
-ark royal \(kancolle\)
 arlecchino \(genshin impact\)
 arona \(blue archive\)
 arona's sensei doodle \(blue archive\)
@@ -98,27 +83,19 @@ artoria pendragon \(lancer alter\) \(fate\)
 artoria pendragon \(lancer\) \(fate\)
 artoria pendragon \(swimsuit ruler\) \(fate\)
 aru \(blue archive\)
-asagumo \(kancolle\)
 asahina mafuyu
 asahina mikuru
 asakura ryouko
 asakura toru
-asashimo \(kancolle\)
-asashio \(kancolle\)
-asashio kai ni \(kancolle\)
 ashido mina
-ashigara \(kancolle\)
 assam \(girls und panzer\)
 asui tsuyu
 asuna \(blue archive\)
 asuna \(bunny\) \(blue archive\)
 asuna \(sao\)
 atago \(azur lane\)
-atago \(kancolle\)
 atalanta \(fate\)
-atlanta \(kancolle\)
 ayanami \(azur lane\)
-ayanami \(kancolle\)
 ayanami rei
 ayase eli
 azura \(fire emblem\)
@@ -144,7 +121,6 @@ bernadetta von varley
 berserker \(fate/zero\)
 bianca \(pokemon\)
 bibi \(tokoyami towa\)
-bismarck \(kancolle\)
 black rock shooter \(character\)
 blake belladonna
 blanc \(neptunia\)
@@ -182,12 +158,9 @@ chen
 cheshire \(azur lane\)
 chi-chi \(dragon ball\)
 chibi usa
-chikuma \(kancolle\)
 chitanda eru
-chitose \(kancolle\)
 chiyoda momo
 chloe von einzbern
-choukai \(kancolle\)
 chouzetsusaikawa tenshi-chan
 christa renz
 chun-li
@@ -195,7 +168,6 @@ ciel \(tsukihime\)
 cirno
 clarisse \(granblue fantasy\)
 clownpiece
-colorado \(kancolle\)
 common raccoon \(kemono friends\)
 corrin \(female\) \(fire emblem\)
 corrin \(fire emblem\)
@@ -240,8 +212,6 @@ elsa \(frozen\)
 elysia \(honkai impact\)
 emilia \(re:zero\)
 emperor penguin \(kemono friends\)
-enemy aircraft \(kancolle\)
-enemy lifebuoy \(kancolle\)
 enoshima junko
 enterprise \(azur lane\)
 ereshkigal \(fate\)
@@ -249,7 +219,6 @@ erica hartmann
 estellise sidos heurassein
 eternity larva
 etna \(disgaea\)
-etorofu \(kancolle\)
 eula \(genshin impact\)
 eurasian eagle owl \(kemono friends\)
 eve \(elsword\)
@@ -258,16 +227,13 @@ exusiai \(arknights\)
 eyjafjalla \(arknights\)
 ezo red fox \(kemono friends\)
 failure penguin
-fairy \(kancolle\)
 fate testarossa
 felicia \(vampire\)
-female admiral \(kancolle\)
 fennec \(kemono friends\)
 ferry \(granblue fantasy\)
 fine motion \(umamusume\)
 fischl \(genshin impact\)
 flandre scarlet
-fletcher \(kancolle\)
 florence nightingale \(fate\)
 formidable \(azur lane\)
 fou \(fate\)
@@ -276,31 +242,24 @@ frankenstein's monster \(fate\)
 frederica bernkastel
 frieren
 fu hua
-fubuki \(kancolle\)
 fubuki \(one-punch man\)
-fubuki kai ni \(kancolle\)
 fujibayashi kyou
 fujimaru ritsuka \(female\)
 fujiwara chika
 fujiwara no mokou
 fukumaru koito
 fukuzawa yumi
-fumizuki \(kancolle\)
 funami yui
 furina \(genshin impact\)
 furude rika
 furukawa nagisa
-furutaka \(kancolle\)
 furutani himawari
-fusou \(kancolle\)
 futaba anzu
 futami ami
 futami mami
 futatsuiwa mamizou
 g11 \(girls' frontline\)
-gambier bay \(kancolle\)
 ganaha hibiki
-gangut \(kancolle\)
 ganyu \(genshin impact\)
 gawr gura \(1st costume\)
 gawr gura
@@ -310,9 +269,7 @@ gloria \(pokemon\)
 gokou ruri
 gold ship \(umamusume\)
 goldenglow \(arknights\)
-gotland \(kancolle\)
 gotoh hitori
-graf zeppelin \(kancolle\)
 grass wonder \(umamusume\)
 green \(pokemon\)
 grey wolf \(kemono friends\)
@@ -320,14 +277,11 @@ gumi
 gwen \(league of legends\)
 hachikuji mayoi
 hachimiya meguru
-hagikaze \(kancolle\)
 hagiwara yukiho
-haguro \(kancolle\)
 hakos baelz
 hakui koyori \(1st costume\)
 hakui koyori
 hakurei reimu
-hamakaze \(kancolle\)
 han juri
 hanako \(blue archive\)
 hanako \(swimsuit\) \(blue archive\)
@@ -340,34 +294,23 @@ haro
 haru urara \(umamusume\)
 harukawa maki
 haruna \(blue archive\)
-haruna \(kancolle\)
-haruna kai ni \(kancolle\)
 haruno sakura
-harusame \(kancolle\)
 hassan of serenity \(fate\)
 hasumi \(blue archive\)
 hasumi \(track\) \(blue archive\)
 hata no kokoro
 hatoba tsugu
-hatsukaze \(kancolle\)
 hatsune miku \(append\)
-hatsushimo \(kancolle\)
-hatsuyuki \(kancolle\)
-hatsuzuki \(kancolle\)
 hayakawa aki
 hayami kanade
 hayasaka ai
-hayashimo \(kancolle\)
-hayasui \(kancolle\)
 hecatia lapislazuli
 helena blavatsky \(fate\)
 hestia \(danmachi\)
 hex maniac \(pokemon\)
 hibiki \(blue archive\)
 hibiki \(cheer squad\) \(blue archive\)
-hibiki \(kancolle\)
 hieda no akyuu
-hiei \(kancolle\)
 hifumi \(blue archive\)
 higashi setsuna
 higashiyama kobeni
@@ -395,7 +338,6 @@ hino rei
 hirasawa ui
 hirasawa yui
 hiroi kikuri
-hiryuu \(kancolle\)
 hisakawa hayate
 hisakawa nagi
 hishikawa rikka
@@ -427,21 +369,13 @@ houjou satoko
 houjuu nue
 hourai doll
 houraisan kaguya
-houshou \(kancolle\)
 houshou marine \(1st costume\)
 houshou marine \(summer\)
 houshou marine
 hozuki momiji
 hu tao \(genshin impact\)
 huang baoling
-hyuuga \(kancolle\)
 hyuuga hinata
-i-168 \(kancolle\)
-i-19 \(kancolle\)
-i-26 \(kancolle\)
-i-401 \(kancolle\)
-i-58 \(kancolle\)
-i-8 \(kancolle\)
 i-class destroyer
 ia \(vocaloid\)
 ibaraki douji \(fate\)
@@ -456,18 +390,15 @@ igarashi futaba \(shiromanta\)
 iizunamaru megumu
 ijichi nijika
 ikamusume
-ikazuchi \(kancolle\)
 illustrious \(azur lane\)
 illyasviel von einzbern
 imaizumi kagerou
 inaba tewi
-inazuma \(kancolle\)
 index \(toaru majutsu no index\)
 inkling girl
 inkling
 inoue orihime
 inoue takina
-intrepid \(kancolle\)
 inubashiri momiji
 inugami korone \(1st costume\)
 inugami korone
@@ -475,7 +406,6 @@ inui toko
 inuyama aoi
 iono \(pokemon\)
 iori \(blue archive\)
-iowa \(kancolle\)
 irene \(arknights\)
 irida \(pokemon\)
 iris \(pokemon\)
@@ -483,11 +413,7 @@ irisviel von einzbern
 iroha \(blue archive\)
 irys \(hololive\)
 isabelle \(animal crossing\)
-ise \(kancolle\)
 ishtar \(fate\)
-isokaze \(kancolle\)
-isonami \(kancolle\)
-isuzu \(kancolle\)
 isuzu hana
 itsumi erika
 izayoi sakuya
@@ -509,20 +435,15 @@ jeanne d'arc alter \(fate\)
 jeanne d'arc alter \(swimsuit berserker\) \(fate\)
 jeanne d'arc alter \(ver. shinjuku 1999\) \(fate\)
 jeanne d'arc alter santa lily \(fate\)
-jervis \(kancolle\)
 jessie \(pokemon\)
 jill valentine
-jingei \(kancolle\)
-jintsuu \(kancolle\)
 jinx \(league of legends\)
 jirou kyouka
-johnston \(kancolle\)
 jougasaki mika
 jougasaki rika
 joutouguu mayumi
 juliana \(pokemon\)
 jumpy dumpty
-jun'you \(kancolle\)
 junketsu
 junko \(touhou\)
 justice \(helltaker\)
@@ -533,28 +454,23 @@ kaenbyou rin
 kafka \(honkai: star rail\)
 kafuu chino
 kaga \(azur lane\)
-kaga \(kancolle\)
 kagamihara nadeshiko
 kagamine rin
 kagari atsuko
-kagerou \(kancolle\)
 kagiyama hina
 kagura \(gintama\)
 kaguya luna
-kako \(kancolle\)
 kaku seiga
 kal'tsit \(arknights\)
 kallen stadtfeld
 kama \(fate\)
 kamado nezuko
-kamikaze \(kancolle\)
 kamikita komari
 kamina \(ttgl\)
 kamio misuzu
 kamisato ayaka
 kamishirasawa keine
 kamiya nao
-kamoi \(kancolle\)
 kaname madoka
 kanna kamui
 kanroji mitsuri
@@ -563,27 +479,20 @@ karin \(blue archive\)
 karin \(bunny\) \(blue archive\)
 karyl \(princess connect!\)
 kasane teto
-kashima \(kancolle\)
 kashino \(azur lane\)
 kashiwazaki sena
 kasodani kyouko
 kasugano sakura
 kasumi \(doa\)
-kasumi \(kancolle\)
-kasumi kai ni \(kancolle\)
-katori \(kancolle\)
 katou asuka
 katou megumi
-katsuragi \(kancolle\)
 katsuragi misato
 katsushika hokusai \(fate\)
 katyusha \(girls und panzer\)
-kawakaze \(kancolle\)
 kawashima momo
 kawashiro nitori
 kay \(girls und panzer\)
 kayoko \(blue archive\)
-kazagumo \(kancolle\)
 kazama iroha \(1st costume\)
 kazama iroha
 kazami yuuka
@@ -602,34 +511,28 @@ king halo \(umamusume\)
 kino \(kino no tabi\)
 kino makoto
 kinomoto sakura
-kinugasa \(kancolle\)
 kirby
 kirigaya suguha
 kirigiri kyoko
 kirijou mitsuru
 kirima syaro
 kirisame marisa
-kirishima \(kancolle\)
 kiriya aoi
 kiryu coco \(1st costume\)
 kiryu coco
 kiryuuin satsuki
 kisaki \(blue archive\)
-kisaragi \(kancolle\)
 kisaragi chihaya
 kise yayoi
 kishin sagume
 kishinami hakuno \(female\)
-kiso \(kancolle\)
 kisume
 kita ikuyo
 kitagawa marin
-kitakami \(kancolle\)
 kitasan black \(umamusume\)
 kitashirakawa tamako
 kitazawa shiho
 kiyohime \(fate\)
-kiyoshimo \(kancolle\)
 kizuna ai
 kizuna akari
 klee \(genshin impact\)
@@ -648,8 +551,6 @@ komeiji koishi
 komeiji satori
 komi shouko
 komiya kaho
-kongou \(kancolle\)
-kongou kai ni \(kancolle\)
 konjiki no yami
 konno junko
 konpaku youmu \(ghost\)
@@ -675,9 +576,7 @@ kujou karen
 kujou sara
 kuki shinobu
 kula diamond
-kuma \(kancolle\)
 kuma \(persona 4\)
-kumano \(kancolle\)
 kumoi ichirin
 kunikida hanamaru
 kureiji ollie
@@ -687,7 +586,6 @@ kuroki tomoko
 kurokoma saki
 kurosawa dia
 kurosawa ruby
-kuroshio \(kancolle\)
 kurumi erika
 kururugi suzaku
 kusanagi motoko
@@ -706,13 +604,11 @@ leafa
 leona heidern
 leonardo da vinci \(fate\)
 letty whiterock
-libeccio \(kancolle\)
 lilith aensland
 lillie \(pokemon\)
 lily white
 lisa \(genshin impact\)
 little red riding hood \(grimm\)
-littorio \(kancolle\)
 lize helesta
 louise francoise le blanc de la valliere
 lucifer \(helltaker\)
@@ -740,16 +636,13 @@ m4a1 \(girls' frontline\)
 madotsuki
 maekawa miku
 magical mirai miku
-maikaze \(kancolle\)
 maizono sayaka
 makaino ririmu
-makigumo \(kancolle\)
 makima \(chainsaw man\)
 makinami mari illustrious
 makise kurisu
 makoto nanaya
 mallow \(pokemon\)
-mamiya \(kancolle\)
 manhattan cafe \(umamusume\)
 manjuu \(azur lane\)
 mankanshoku mako
@@ -765,7 +658,6 @@ marina \(splatoon\)
 mario
 marnie \(pokemon\)
 martha \(fate\)
-maru-yu \(kancolle\)
 mash kyrielight \(dangerous beast\)
 mash kyrielight
 matara okina
@@ -782,7 +674,6 @@ matsuno todomatsu
 matsuura kanan
 may \(guilty gear\)
 may \(pokemon\)
-maya \(kancolle\)
 mayano top gun \(umamusume\)
 mayuzumi fuyuko
 medb \(fate\)
@@ -804,7 +695,6 @@ melusine \(fate\)
 mercy \(overwatch\)
 merlin prismriver
 micaiah \(fire emblem\)
-michishio \(kancolle\)
 midna
 midori \(blue archive\)
 midorikawa nao
@@ -813,7 +703,6 @@ mika \(blue archive\)
 mika \(girls und panzer\)
 mikasa ackerman
 miki sayaka
-mikuma \(kancolle\)
 millia rage
 mima \(touhou\)
 mimura kanako
@@ -844,14 +733,11 @@ miyamoto musashi \(fate\)
 miyamoto musashi \(swimsuit berserker\) \(fate\)
 miyu \(blue archive\)
 miyu edelfelt
-miyuki \(kancolle\)
 mizuhashi parsee
 mizunashi akari
 mizuno ai
 mizuno ami
-mochizuki \(kancolle\)
 modeus \(helltaker\)
-mogami \(kancolle\)
 momoi \(blue archive\)
 momosuzu nene
 momozono love
@@ -876,35 +762,22 @@ mostima \(arknights\)
 motoori kosuzu
 mr. c.b. \(umamusume\)
 mudrock \(arknights\)
-murakumo \(kancolle\)
-murakumo kai ni \(kancolle\)
 murasa minamitsu
 murasaki shikibu \(fate\)
 murasaki shion \(1st costume\)
 murasaki shion
-murasame \(kancolle\)
-musashi \(kancolle\)
-musashi kai ni \(kancolle\)
-mutsu \(kancolle\)
 mutsuki \(blue archive\)
-mutsuki \(kancolle\)
 myoudouin itsuki
-myoukou \(kancolle\)
 mysterious heroine x alter \(fate\)
 mysterious heroine xx \(fate\)
 mystia lorelei
 mythra \(xenoblade\)
-nachi \(kancolle\)
 nagae iku
-naganami \(kancolle\)
 nagato \(azur lane\)
-nagato \(kancolle\)
 nagato yuki
 nagatoro hayase
-nagatsuki \(kancolle\)
 nagi \(kannagi\)
 nahida \(genshin impact\)
-naka \(kancolle\)
 nakamura yuri
 nakano azusa
 nakano ichika
@@ -962,18 +835,14 @@ noa \(blue archive\)
 noel vermillion
 noelle \(genshin impact\)
 noire \(neptunia\)
-non-human admiral \(kancolle\)
 nonna \(girls und panzer\)
 nonomi \(blue archive\)
 nonomi \(swimsuit\) \(blue archive\)
 northern ocean princess
 northern white-faced owl \(kemono friends\)
-noshiro \(kancolle\)
 noumi kudryavka
-nowaki \(kancolle\)
 nu-13
 nursery rhyme \(fate\)
-oboro \(kancolle\)
 octoling girl
 octoling
 oda nobunaga \(fate\)
@@ -988,12 +857,9 @@ okita souji \(koha-ace\)
 okita souji alter \(fate\)
 omaru polka
 onozuka komachi
-ooi \(kancolle\)
 ookami mio
 oomuro sakurako
-ooshio \(kancolle\)
 ootori emu
-ooyodo \(kancolle\)
 oozora subaru
 orange pekoe \(girls und panzer\)
 oribe yasuna
@@ -1007,7 +873,6 @@ oumae kumiko
 ouro kronii
 oyama mahiro
 oyama mihari
-oyashio \(kancolle\)
 p-head producer
 paimon \(genshin impact\)
 palutena
@@ -1024,7 +889,6 @@ plana \(blue archive\)
 platinum \(arknights\)
 pochita \(chainsaw man\)
 pod \(nier:automata\)
-pola \(kancolle\)
 pomu rainpuff
 popuko
 power \(chainsaw man\)
@@ -1033,7 +897,6 @@ princess king boo
 princess peach
 princess zelda
 prinz eugen \(azur lane\)
-prinz eugen \(kancolle\)
 prinz eugen \(unfading smile\) \(azur lane\)
 prisma illya
 purple heart \(neptunia\)
@@ -1068,18 +931,15 @@ rensouhou-kun
 reze \(chainsaw man\)
 rias gremory
 rice shower \(umamusume\)
-richelieu \(kancolle\)
 riesz
 rika \(pokemon\)
 ringo \(touhou\)
 rio \(blue archive\)
 rita rossweisse
-ro-500 \(kancolle\)
 ro635 \(girls' frontline\)
 robin \(female\) \(fire emblem\)
 robin \(fire emblem\)
 roll \(mega man\)
-roma \(kancolle\)
 rosa \(pokemon\)
 rosalina
 rosaria \(genshin impact\)
@@ -1090,7 +950,6 @@ rumia
 rydia \(ff4\)
 ryougi shiki
 ryuuguu rena
-ryuujou \(kancolle\)
 saber alter
 saber lily
 saber
@@ -1117,13 +976,11 @@ sakuragi mano
 sakurai momoka
 sakurajima mai
 sakurauchi riko
-samidare \(kancolle\)
 samus aran
 sangonomiya kokomi
 saniwa \(touken ranbu\)
 sanya v. litvyak
 saori \(blue archive\)
-saratoga \(kancolle\)
 saren \(princess connect!\)
 saria \(arknights\)
 sasaki chie
@@ -1131,8 +988,6 @@ sasaki saku
 saten ruiko
 satonaka chie
 satono diamond \(umamusume\)
-satsuki \(kancolle\)
-sazanami \(kancolle\)
 scathach \(fate\)
 scathach \(swimsuit assassin\) \(fate\)
 scathach skadi \(fate\)
@@ -1144,9 +999,7 @@ seiun sky \(umamusume\)
 sekibanki
 selen tatsuki
 selene \(pokemon\)
-sendai \(kancolle\)
 sendai hakurei no miko
-sendai kai ni \(kancolle\)
 sengoku nadeko
 senjougahara hitagi
 senketsu
@@ -1165,17 +1018,13 @@ shenhe \(genshin impact\)
 sheryl nome
 shibuya rin
 shidare hotaru
-shigure \(kancolle\)
-shigure kai ni \(kancolle\)
 shigure ui \(vtuber\)
 shihouin yoruichi
 shiina yuika
 shijou takane
 shiki eiki
-shikinami \(kancolle\)
 shima rin
 shimada arisu
-shimakaze \(kancolle\)
 shimamura uzuki
 shinano \(azur lane\)
 shinjou akane
@@ -1188,13 +1037,10 @@ shiomi syuko
 shirai kuroko
 shirakami fubuki \(1st costume\)
 shirakami fubuki
-shiranui \(kancolle\)
 shiranui flare
 shiranui mai
 shirasaka koume
 shirase sakuya
-shiratsuyu \(kancolle\)
-shirayuki \(kancolle\)
 shirogane naoto
 shirogane noel
 shiroko \(blue archive\)
@@ -1204,8 +1050,6 @@ shishiro botan \(1st costume\)
 shishiro botan
 shoebill \(kemono friends\)
 shokuhou misaki
-shouhou \(kancolle\)
-shoukaku \(kancolle\)
 shun \(blue archive\)
 shun \(small\) \(blue archive\)
 shuten douji \(fate\)
@@ -1232,7 +1076,6 @@ sonozaki mion
 sonozaki shion
 sonya \(kill me baby\)
 sorceress \(dragon's crown\)
-souryuu \(kancolle\)
 souryuu asuka langley
 souseiseki
 special week \(umamusume\)
@@ -1260,33 +1103,26 @@ super sonico
 surtr \(arknights\)
 sussurro \(arknights\)
 suzuhara lulu
-suzukaze \(kancolle\)
 suzukaze aoba
 suzumiya haruhi
 suzuran \(arknights\)
-suzutsuki \(kancolle\)
-suzuya \(kancolle\)
 symboli rudolf \(umamusume\)
 ta-class battleship
 tachibana arisu
 tachibana hibiki \(symphogear\)
 tachibana kanade
 tada riina
-taigei \(kancolle\)
 taihou \(azur lane\)
-taihou \(kancolle\)
 tainaka ritsu
 takagaki kaede
 takagi-san
 takamachi nanoha
 takamaki anne
 takami chika
-takanami \(kancolle\)
 takanashi kiara
 takanashi rikka
 takane lui
 takao \(azur lane\)
-takao \(kancolle\)
 takara miyuki
 takarada rikka
 takasaki yuu
@@ -1294,7 +1130,6 @@ takatsuki yayoi
 takeba yukari
 takebe saori
 takodachi \(ninomae ina'nis\)
-tama \(kancolle\)
 tamaki iroha
 tamamo \(fate\)
 tamamo cat \(fate\)
@@ -1304,18 +1139,14 @@ tamamo no mae \(swimsuit lancer\) \(fate\)
 tamura yuri
 tanaka mamimi
 taneshima popura
-tashkent \(kancolle\)
 tatara kogasa
 tateyama ayano
 tatsumaki
-tatsuta \(kancolle\)
 tedeza rize
 teireida mai
 tenkyuu chimata
 tennouji rina
-tenryuu \(kancolle\)
 terra branford
-teruzuki \(kancolle\)
 texas \(arknights\)
 tharja \(fire emblem\)
 theresa apocalypse
@@ -1333,14 +1164,12 @@ tokiko \(touhou\)
 tokino sora
 tokisaki kurumi
 tokitarou \(fate\)
-tokitsukaze \(kancolle\)
 tokoyami towa \(1st costume\)
 tokoyami towa \(jirai kei\)
 tokoyami towa
 tomoe gozen \(fate\)
 tomoe hotaru
 tomoe mami
-tone \(kancolle\)
 toramaru shou
 toshinou kyouko
 totoki airi
@@ -1365,23 +1194,18 @@ tsunade \(naruto\)
 tsunomaki watame
 tsurumaki maki
 tsuruya
-tsushima \(kancolle\)
 tsushima yoshiko
 twin turbo \(umamusume\)
-u-511 \(kancolle\)
 uchiha sasuke
 uehara ayumu
 ui \(blue archive\)
 uiharu kazari
 ujimatsu chiya
 ultimate madoka
-umikaze \(kancolle\)
 ump45 \(girls' frontline\)
 ump9 \(girls' frontline\)
 unicorn \(azur lane\)
-unryuu \(kancolle\)
 unzan
-urakaze \(kancolle\)
 uraraka ochako
 uruha rushia \(1st costume\)
 uruha rushia
@@ -1389,14 +1213,11 @@ usada pekora \(1st costume\)
 usada pekora
 usami renko
 usami sumireko
-ushio \(kancolle\)
 ushiromiya ange
 ushiromiya maria
 ushiwakamaru \(fate\)
 uzaki hana
-uzuki \(kancolle\)
 uzumaki naruto
-verniy \(kancolle\)
 vikala \(granblue fantasy\)
 violet evergarden
 vita \(nanoha\)
@@ -1406,7 +1227,6 @@ w \(arknights\)
 wa2000 \(girls' frontline\)
 wakasagihime
 warrior of light \(ff14\)
-warspite \(kancolle\)
 watanabe you
 watatsuki no toyohime
 watatsuki no yorihime
@@ -1426,22 +1246,16 @@ yae miko
 yae sakura
 yagami hayate
 yagokoro eirin
-yahagi \(kancolle\)
 yakumo ran
 yakumo yukari
 yamada ryo
-yamagumo \(kancolle\)
-yamakaze \(kancolle\)
 yamashiro \(azur lane\)
-yamashiro \(kancolle\)
-yamato \(kancolle\)
 yamato \(one piece\)
 yanfei \(genshin impact\)
 yang guifei \(fate\)
 yang xiao long
 yaoyorozu momo
 yasaka kanako
-yayoi \(kancolle\)
 yazawa nico
 yelan \(genshin impact\)
 yin \(darker than black\)
@@ -1463,18 +1277,12 @@ yuigahama yui
 yuki miku
 yukihana lamy \(1st costume\)
 yukihana lamy
-yukikaze \(kancolle\)
 yukine chris
 yukinoshita yukino
 yukishiro honoka
 yumemi riamu
 yumi \(senran kagura\)
 yuno \(hidamari sketch\)
-yura \(kancolle\)
-yuubari \(kancolle\)
-yuudachi \(kancolle\)
-yuudachi kai ni \(kancolle\)
-yuugumo \(kancolle\)
 yuuka \(blue archive\)
 yuuka \(track\) \(blue archive\)
 yuuki haru
@@ -1484,15 +1292,10 @@ yuzu \(blue archive\)
 yuzuki choco
 yuzuki yukari
 yuzuriha inori
-z1 leberecht maass \(kancolle\)
 z23 \(azur lane\)
-z3 max schultz \(kancolle\)
 zara \(azur lane\)
-zara \(kancolle\)
 zero two \(darling in the franxx\)
 zeta \(granblue fantasy\)
-zuihou \(kancolle\)
-zuikaku \(kancolle\)
 judy hopps
 loona \(helluva boss\)
 mavis
@@ -1503,4 +1306,202 @@ tristana \( league of legends\)
 [##]
 slime \(genshin impact\)
 kyubey
+
+abukuma \(kancolle\)
+agano \(kancolle\)
+akagi \(kancolle\)
+akashi \(kancolle\)
+akatsuki \(kancolle\)
+akebono \(kancolle\)
+akigumo \(kancolle\)
+akitsu maru \(kancolle\)
+akitsushima \(kancolle\)
+akizuki \(kancolle\)
+amatsukaze \(kancolle\)
+aoba \(kancolle\)
+arashi \(kancolle\)
+arashio \(kancolle\)
+ark royal \(kancolle\)
+asagumo \(kancolle\)
+asashimo \(kancolle\)
+asashio \(kancolle\)
+asashio kai ni \(kancolle\)
+ashigara \(kancolle\)
+atago \(kancolle\)
+atlanta \(kancolle\)
+ayanami \(kancolle\)
+bismarck \(kancolle\)
+chikuma \(kancolle\)
+chitose \(kancolle\)
+choukai \(kancolle\)
+colorado \(kancolle\)
+enemy aircraft \(kancolle\)
+enemy lifebuoy \(kancolle\)
+etorofu \(kancolle\)
+fairy \(kancolle\)
+female admiral \(kancolle\)
+fletcher \(kancolle\)
+fubuki \(kancolle\)
+fubuki kai ni \(kancolle\)
+fumizuki \(kancolle\)
+furutaka \(kancolle\)
+fusou \(kancolle\)
+gambier bay \(kancolle\)
+gangut \(kancolle\)
+gotland \(kancolle\)
+graf zeppelin \(kancolle\)
+hagikaze \(kancolle\)
+haguro \(kancolle\)
+hamakaze \(kancolle\)
+haruna \(kancolle\)
+haruna kai ni \(kancolle\)
+harusame \(kancolle\)
+hatsukaze \(kancolle\)
+hatsushimo \(kancolle\)
+hatsuyuki \(kancolle\)
+hatsuzuki \(kancolle\)
+hayashimo \(kancolle\)
+hayasui \(kancolle\)
+hibiki \(kancolle\)
+hiei \(kancolle\)
+hiryuu \(kancolle\)
+houshou \(kancolle\)
+hyuuga \(kancolle\)
+i-168 \(kancolle\)
+i-19 \(kancolle\)
+i-26 \(kancolle\)
+i-401 \(kancolle\)
+i-58 \(kancolle\)
+i-8 \(kancolle\)
+ikazuchi \(kancolle\)
+inazuma \(kancolle\)
+intrepid \(kancolle\)
+iowa \(kancolle\)
+ise \(kancolle\)
+isokaze \(kancolle\)
+isonami \(kancolle\)
+isuzu \(kancolle\)
+jervis \(kancolle\)
+jingei \(kancolle\)
+jintsuu \(kancolle\)
+johnston \(kancolle\)
+jun'you \(kancolle\)
+kaga \(kancolle\)
+kagerou \(kancolle\)
+kako \(kancolle\)
+kamikaze \(kancolle\)
+kamoi \(kancolle\)
+kashima \(kancolle\)
+kasumi \(kancolle\)
+kasumi kai ni \(kancolle\)
+katori \(kancolle\)
+katsuragi \(kancolle\)
+kawakaze \(kancolle\)
+kazagumo \(kancolle\)
+kinugasa \(kancolle\)
+kirishima \(kancolle\)
+kisaragi \(kancolle\)
+kiso \(kancolle\)
+kitakami \(kancolle\)
+kiyoshimo \(kancolle\)
+kongou \(kancolle\)
+kongou kai ni \(kancolle\)
+kuma \(kancolle\)
+kumano \(kancolle\)
+kuroshio \(kancolle\)
+libeccio \(kancolle\)
+littorio \(kancolle\)
+maikaze \(kancolle\)
+makigumo \(kancolle\)
+mamiya \(kancolle\)
+maru-yu \(kancolle\)
+maya \(kancolle\)
+michishio \(kancolle\)
+mikuma \(kancolle\)
+miyuki \(kancolle\)
+mochizuki \(kancolle\)
+mogami \(kancolle\)
+murakumo \(kancolle\)
+murakumo kai ni \(kancolle\)
+murasame \(kancolle\)
+musashi \(kancolle\)
+musashi kai ni \(kancolle\)
+mutsu \(kancolle\)
+mutsuki \(kancolle\)
+myoukou \(kancolle\)
+nachi \(kancolle\)
+naganami \(kancolle\)
+nagato \(kancolle\)
+nagatsuki \(kancolle\)
+naka \(kancolle\)
+non-human admiral \(kancolle\)
+noshiro \(kancolle\)
+nowaki \(kancolle\)
+oboro \(kancolle\)
+ooi \(kancolle\)
+ooshio \(kancolle\)
+ooyodo \(kancolle\)
+oyashio \(kancolle\)
+pola \(kancolle\)
+prinz eugen \(kancolle\)
+richelieu \(kancolle\)
+ro-500 \(kancolle\)
+roma \(kancolle\)
+ryuujou \(kancolle\)
+samidare \(kancolle\)
+saratoga \(kancolle\)
+satsuki \(kancolle\)
+sazanami \(kancolle\)
+sendai \(kancolle\)
+sendai kai ni \(kancolle\)
+shigure \(kancolle\)
+shigure kai ni \(kancolle\)
+shikinami \(kancolle\)
+shimakaze \(kancolle\)
+shiranui \(kancolle\)
+shiratsuyu \(kancolle\)
+shirayuki \(kancolle\)
+shouhou \(kancolle\)
+shoukaku \(kancolle\)
+souryuu \(kancolle\)
+suzukaze \(kancolle\)
+suzutsuki \(kancolle\)
+suzuya \(kancolle\)
+taigei \(kancolle\)
+taihou \(kancolle\)
+takanami \(kancolle\)
+takao \(kancolle\)
+tama \(kancolle\)
+tashkent \(kancolle\)
+tatsuta \(kancolle\)
+tenryuu \(kancolle\)
+teruzuki \(kancolle\)
+tokitsukaze \(kancolle\)
+tone \(kancolle\)
+tsushima \(kancolle\)
+u-511 \(kancolle\)
+umikaze \(kancolle\)
+unryuu \(kancolle\)
+urakaze \(kancolle\)
+ushio \(kancolle\)
+uzuki \(kancolle\)
+verniy \(kancolle\)
+warspite \(kancolle\)
+yahagi \(kancolle\)
+yamagumo \(kancolle\)
+yamakaze \(kancolle\)
+yamashiro \(kancolle\)
+yamato \(kancolle\)
+yayoi \(kancolle\)
+yukikaze \(kancolle\)
+yura \(kancolle\)
+yuubari \(kancolle\)
+yuudachi \(kancolle\)
+yuudachi kai ni \(kancolle\)
+yuugumo \(kancolle\)
+z1 leberecht maass \(kancolle\)
+z3 max schultz \(kancolle\)
+zara \(kancolle\)
+zuihou \(kancolle\)
+zuikaku \(kancolle\)
 [/##]
