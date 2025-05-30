@@ -403,7 +403,7 @@ class Room:
         files = [re.sub(rf"^{re.escape(basename)}-?", "", f) or "-1" for f in files]
 
         # convert to integers
-        files = [int(f) for f in files]
+        files = [int(f) for f in files if re.match(r'[0-9]+$', f)]
 
         # find the maximum
         last = max(files, default=-1)
