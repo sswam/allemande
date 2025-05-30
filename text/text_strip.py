@@ -1,7 +1,7 @@
 #!/usr/bin/env python3-allemande
 
 """
-Clean up text by removing trailing whitespace from lines and blank lines from the top.
+Clean up text by removing trailing whitespace from lines and blank lines from the top and bottom.
 """
 
 import sys
