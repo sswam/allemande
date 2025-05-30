@@ -9,7 +9,6 @@
 2 | sleepy
 2 | surprised
 2 | shocked
-2 | confused
 2 | serious
 2 | concentrating
 2 | lonely
@@ -18,6 +17,7 @@
 [/choose]
 
 [##]
+2 | confused
 2 | drunk
 2 | sad, crying
 2 | sad, crying, tears

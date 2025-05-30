@@ -1,5 +1,5 @@
 [choose _weighted]
-8 | {use age_adult}
+18 | {use age_adult}
 1 | {use age_middle}
 1 | {use age_elder}
 [/choose]

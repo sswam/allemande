@@ -10,6 +10,7 @@
 1 | joyful
 1 | laughing
 1 | curious
+1 | parted lips
 1 | open mouth
 
 1 | naughty face

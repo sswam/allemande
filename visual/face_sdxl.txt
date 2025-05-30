@@ -1,3 +1,4 @@
+[sets pony=0]
 woman, headshot, portrait photo, looking at viewer, facing viewer
 BREAK [use face]
 BREAK [use exp], [use emo], [use real_sdxl]
