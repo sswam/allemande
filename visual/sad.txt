@@ -8,9 +8,6 @@
 2 | tired
 2 | exhausted
 2 | sleepy
-2 | sleeping
-2 | yawning
-2 | sneezing
 2 | surprised
 2 | shocked
 2 | confused
@@ -18,14 +15,16 @@
 2 | concentrating
 2 | lonely
 1 | angry
-1 | [choose] crazy | crazy eyes | crazy smile | crazy, crazy eyes, crazy smile [/choose]
-
-2 | heavy breathing
 2 | dazed
 
 [##]
 2 | drunk
 2 | sad, crying, tears
 2 | sad, crying, streaming tears
+2 | yawning
+2 | sneezing
+2 | sleeping
+2 | heavy breathing
+1 | [choose] crazy | crazy eyes | crazy smile | crazy, crazy eyes, crazy smile [/choose]
 [/##]
 [/choose]

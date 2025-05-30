@@ -3,5 +3,5 @@ BREAK (simple background, white background:1.5)
 <lora:boring:-0.6>
 [set negative_prompt]
 [get negative_prompt]
-(cleft chin, feathers, blurry, 1boy, couple, sex, rating explicit, rating questionable, distorted, hands, photo \(object\), breasts, nude, close-up, furry, animal ears, heart:2)
+(rating explicit, rating questionable, couple, cleft chin, hand, glitter, sparkle, feathers, facepaint, blurry, 1boy, couple, sex, distorted, cleft chin, hand, photo \(object\), breasts, nude, close-up, furry, animal ears, heart, cleft chin, hand:2)
 [/set]

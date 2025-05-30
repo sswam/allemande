@@ -1,6 +1,6 @@
 [##] skin, eyes, hair [/##]
 
-[sets skin_light=30 skin_dark=30 skin_pale=10 skin_very_dark=10 skin_white=5 skin_black=5 skin_colored=2]
+[sets skin_light=30 skin_dark=30 skin_pale=10 skin_very_dark=10 skin_white=5 skin_black=5 skin_colored=0]
 
 [use ./skin_eyes_hair,]
 
