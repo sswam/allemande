@@ -1,0 +1,6 @@
+[choose _weighted]
+1 | {use age_child}
+2 | {use age_teen}
+5 | {use age_adult}
+2 | {use age_elder}
+[/choose]

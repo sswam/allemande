@@ -1,5 +1,7 @@
-woman, headshot, portrait photo, [use exp], looking at viewer, facing viewer, [use face], [use emo], <lora:real-humans-PublicPrompts:1.5> [use real_sdxl], simple background <lora:boring:-0.8>
+woman, headshot, portrait photo, [use exp], looking at viewer, facing viewer, [use face], [use emo], [use real_sdxl]
+BREAK (simple background, white background:1.5)
+<lora:boring:-0.6>
 [set negative_prompt]
 [get negative_prompt]
-(cleft chin, boy, couple, sex, nsfw, distorted, hands, breasts, nude, close-up:2)
+(cleft chin, feathers, blurry, boy, couple, sex, nsfw, distorted, hands, breasts, nude, close-up:2)
 [/set]

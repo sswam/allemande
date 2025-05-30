@@ -15,9 +15,12 @@
 1 | naughty face
 1 | evil grin, mischievous, naughty face
 1 | (head back:0.7)
-1 | tongue out
-1 | winking
 1 | seductive smile
 1 | biting own lip
 1 | shy, slight smile, smirk
+
+[##]
+1 | tongue out
+1 | winking
+[/##]
 [/choose]

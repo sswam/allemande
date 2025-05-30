@@ -10,11 +10,15 @@ class Shortcode():
 	def run_atomic(self, pargs, kwargs, context):
 		_min = self.Unprompted.parse_advanced(pargs[0], context)
 		_max = self.Unprompted.parse_advanced(pargs[1], context)
-		place = self.Unprompted.parse_advanced(pargs[2], context)
+		places = self.Unprompted.parse_advanced(pargs[2], context) if len(pargs) > 2 else 0
 
 		val = random.uniform(float(_min), float(_max))
 
-		if place is not None:
-			val = round(val, place)
+		if places == 0:
+			val = int(val)
+		elif places != "":
+			val = round(val - (10**-places)/2, int(places))
+		if val == 0:
+			val = 0
 
 		return val
