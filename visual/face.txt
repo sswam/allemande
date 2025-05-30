@@ -9,7 +9,7 @@
 [set mouth][choose]thick lips|puffy lips|heart-shaped mouth[/choose][/set]
 [set chin][choose]strong|weak|square|pointed|round|cleft[/choose][/set]
 [set cheekbones][choose]|high|low|prominent|subtle[/choose][/set]
-[set ears][choose]small|large|protruding|close-set[/choose][/set]
+[set ears][choose]small|protruding|close-set[/choose][/set]
 [set build][choose]plump|skinny|athletic|muscular[/choose][/set]
 [set hair][choose]very long hair|long hair|medium hair|short hair|shaved head[/choose][/set]
 [set height][choose]tall|short[/choose][/set]
