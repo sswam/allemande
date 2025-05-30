@@ -62,7 +62,7 @@ Getting Started with Ally Chat:
 
 - Log in and select "Ally Chat".
 - The main "Ally Chat" room is public.
-- You can use the "i" help function to get in-depth help.
+- Use the "i" help function to read the intro and get in-depth help.
 END
 		done
 
