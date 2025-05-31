@@ -9,10 +9,10 @@
 (rating safe, source photo, solo, [get person]:1.8), headshot, portrait photo, looking at viewer, facing viewer
 BREAK ([get person]:1.8), [use face], (solo:1.8)
 BREAK [use exp], ([get person]:1.8), [use emo], [use real_pony]
-BREAK (simple background, white background:1.5)
+BREAK (white background, simple background:2)
 <lora:boring:-0.6>
 [set negative_prompt]
 [get negative_prompt]
-(cleft chin:3), (rating explicit, rating questionable, 1boy, 2girls, couple, penis, hand on another's head, cleft chin, hand, elf, pointy ears, glitter, sparkle, feathers, facepaint, blurry, 1boy, 2girls, couple, penis, hand on another's head, sex, distorted, cleft chin, hand, photo \(object\):2)
+(cleft chin:3), (rating explicit, rating questionable, 1boy, 2girls, couple, penis, hand on another's head, hand on own head, cleft chin, hand, elf, pointy ears, glitter, sparkle, feathers, facepaint, blurry, 1boy, 2girls, couple, penis, hand on another's head, sex, distorted, cleft chin, hand, photo \(object\):2)
 BREAK (breasts:2), (cleft chin, comic, multiple views, animal ears, horns, hat, halo, photo \(object\):3), (nude, topless, cum, close-up, furry, animal ears, fake animal ears, heart, cleft chin, hand, hair ornament, forehead jewel, jewelry, earrings, nose ring:2)
 [/set]

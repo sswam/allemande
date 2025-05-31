@@ -162,6 +162,7 @@ BREAK
 [/opt]
 
 [if gender="female"]
-[sets n=3 strength=0.3 low=0.7 high=1.3]
-[use celebs_girl 100 0.7 1.3]
+[set n][rand 2 5][/set]
+[sets strength=1.2/n low=1 high=1.6]
+[use celebs_girl]
 [/if]

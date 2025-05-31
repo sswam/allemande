@@ -1,2 +1,2 @@
-child [rand 2 13 0] years old
+child [rand 2 13] years old
 <lora:age:-2>

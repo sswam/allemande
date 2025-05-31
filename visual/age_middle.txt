@@ -1,2 +1,2 @@
-adult [rand 40 60 0] years old
+adult [rand 40 60] years old
 <lora:age:1>

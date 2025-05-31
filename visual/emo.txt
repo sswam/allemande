@@ -1,6 +1,6 @@
 [choose _weighted]
-	3 | {use ./happy 100 1.2 1.6}
-	1 | {use ./sad 100 1.2 1.6}
+	3 | {use ./happy 100 1.0 1.4}
+	1 | {use ./sad 100 1.0 1.4}
 [/choose]
 
 [opt 10], blush [/opt]
