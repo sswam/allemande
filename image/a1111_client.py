@@ -94,6 +94,7 @@ async def a1111_client(
     rp_threshold: str|None = None,
     clip_skip: int|None = None,
     restart_on_fail: bool = True,
+    ad_checkpoint: str|None = None,
 ) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -124,6 +125,7 @@ async def a1111_client(
         "height": height,
         "do_not_save_grid": True,
         "override_settings": {},
+        "ad_checkpoint": ad_checkpoint,
     }
 
     if model:
@@ -233,13 +235,16 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest):
 
     args = [True, False]
     params["alwayson_scripts"]["ADetailer"] = {"args": args}
+    ad_checkpoint = params.get("ad_checkpoint")
     for model in adetailer:
+        # ad_checkpoint only for face at the moment
+        ad_use_checkpoint = ad_checkpoint and model.startswith("face")
         args.append(
             {
 #                "ad_denoising_strength": 0.3,
                 "ad_denoising_strength": 0.4,
                 "ad_cfg_scale": 7,
-                "ad_checkpoint": "Use same checkpoint",
+                "ad_checkpoint": ad_checkpoint if ad_use_checkpoint else "Use same checkpoint",
                 "ad_clip_skip": 1,
                 "ad_confidence": 0.3,
                 "ad_controlnet_guidance_end": 1,
@@ -268,7 +273,7 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest):
                 "ad_steps": 28,
                 "ad_tab_enable": True,
                 "ad_use_cfg_scale": False,
-                "ad_use_checkpoint": False,
+                "ad_use_checkpoint": ad_use_checkpoint,
                 "ad_use_clip_skip": False,
                 "ad_use_inpaint_width_height": False,
                 "ad_use_noise_multiplier": False,
@@ -395,6 +400,7 @@ def setup_args(arg):
     arg("--rp-flip", help="regional prompter flip", action="store_true")
     arg("--rp-threshold", help="regional prompter threshold")
     arg("--clip-skip", help="clip skip", type=int)
+    arg("--ad-checkpoint", help="checkpoint for adetailer", type=str)
 
 
 if __name__ == "__main__":

@@ -219,6 +219,9 @@ async def process_request(portals: str, portal_str: Path, req: str):
         if 'pag' in sets:
             need_update_macros = True
             config['pag'] = float(sets['pag'])
+        if 'ad_checkpoint' in sets:
+            need_update_macros = True
+            config['ad_checkpoint'] = sets['ad_checkpoint']
 
         # Process rp macro (regional prompter)
         regional_kwargs = {}
@@ -238,12 +241,14 @@ async def process_request(portals: str, portal_str: Path, req: str):
             sets['width'] = str(config['width'])
             sets['height'] = str(config['height'])
             sets['hires'] = str(config['hires'])
-            sets['seed'] = "---REMOVEME---"
+            for k in ['seed', 'pag', 'ad_checkpoint']:
+                if k in sets:
+                    sets[k] = "---REMOVEME---"
             update = {"sets": sets, "rp": None}
             if shortcut:
                 update[shortcut] = None
             prompt = update_macros(prompt, update)
-            prompt = re.sub(r"seed=---REMOVEME---", "", prompt)
+            prompt = re.sub(r"\w+=---REMOVEME---", "", prompt)
 
             # logger.info("updated prompt: %s", prompt)
 
@@ -283,6 +288,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
                     height=config.get("height", 1024),
                     count=min(config.get("count", 1), COUNT_LIMIT),
                     adetailer=config.get("adetailer", None),
+                    ad_checkpoint=config.get("ad_checkpoint", None),
                     pag=config.get("pag", 0),
                     hires=config.get("hires", 0.0),
                     pony=config.get("pony", 0.0),
