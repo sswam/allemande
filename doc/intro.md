@@ -73,7 +73,8 @@ There are many, many more; check the guide, and try the help system!
 - Full markdown/HTML/SVG/CSS/JS works in the chat (no backticks)
 - TeX math: `$y = \sqrt{x}$` gives $y = \sqrt{x}$, use `$$ ... $$` for displays
 - Graphviz ```dot ```, and ```mermaid ``` diagrams
-- Interactive charts, simulations, mini-games with JavaScript
+- Interactive charts, simulations, mini-games with e.g. `<canvas>`, `<script>` (not in backticks)
+- JS DOM utils such as $id(id), $(query), $$(query) all
 
 ## Platform Features
 
