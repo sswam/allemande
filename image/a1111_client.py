@@ -125,7 +125,6 @@ async def a1111_client(
         "height": height,
         "do_not_save_grid": True,
         "override_settings": {},
-        "ad_checkpoint": ad_checkpoint,
     }
 
     if model:
@@ -138,7 +137,7 @@ async def a1111_client(
         hires_fix_add_params(params, hires)
 
     if adetailer:
-        adetailer_add_params(params, adetailer, ad_mask_k_largest)
+        adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint)
 
     if regional:
         regional_prompter_add_params(params, regional, rp_ratios, rp_base_ratios, rp_calc, rp_flip, rp_threshold)
@@ -223,7 +222,7 @@ def hires_fix_add_params(params, scale, denoising_strength=0.3, steps=None):
     )
 
 
-def adetailer_add_params(params, adetailer, ad_mask_k_largest):
+def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
     """Add adetailer parameters to the params."""
     if not "alwayson_scripts" in params:
         params["alwayson_scripts"] = {}
@@ -235,10 +234,9 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest):
 
     args = [True, False]
     params["alwayson_scripts"]["ADetailer"] = {"args": args}
-    ad_checkpoint = params.get("ad_checkpoint")
     for model in adetailer:
         # ad_checkpoint only for face at the moment
-        ad_use_checkpoint = ad_checkpoint and model.startswith("face")
+        ad_use_checkpoint = bool(ad_checkpoint and model.startswith("face"))
         args.append(
             {
 #                "ad_denoising_strength": 0.3,
