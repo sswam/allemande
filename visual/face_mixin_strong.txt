@@ -38,8 +38,8 @@
 [/opt]
 
 [if gender="male" _not]
-[set n][rand 2 5][/set]
-[sets strength=1.2/n low=1 high=1.6]
+[set n][rand 3 5][/set]
+[sets strength=0.9/n low=1 high=1.6]
 [use celebs_girl]
 [/if]
 
