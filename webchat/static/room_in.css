@@ -396,8 +396,8 @@ body#dir.columns ul.directory-listing {
 	grid-template-rows: repeat(auto-fill, minmax(1.6875rem, auto));
 	grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
 	scroll-snap-type: x mandatory;
-	scroll-padding: 0 1rem; /* optional: adds some padding to snap points */
-	max-height: calc(100% - 0.75rem);
+	scroll-padding: 0 1rem;
+	height: calc(100% - 1rem);
 }
 
 ul.directory-listing > li {

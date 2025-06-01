@@ -451,7 +451,7 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     #     logger.info("pathname %r is_dir %r", pathname, is_dir)
 
     if sanitize_pathname(pathname) != pathname:
-        raise ValueError(f"Invalid pathname, not sanitized: {pathname}, {sanitize_pathname(pathname)}")
+        return Access.NONE, "invalid_path_hidden_or_not_sanitized"
 
     try:
         path = safe_join(Path(ROOMS_DIR), Path(pathname))

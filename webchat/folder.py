@@ -20,6 +20,7 @@ import ally_room
 from ally_room import Access
 from ally import debug
 from util import sanitize_pathname, safe_join
+from ally_service import add_mtime_to_resource_pathnames
 
 logger = logging.getLogger(__name__)
 
@@ -231,8 +232,12 @@ def get_dir_listing_html(path: Path, pathname: str, info: FolderInfo, templates:
     html = []
 
     # HTML header
+    header = ""
+
     if templates:
-        html.append(templates.get_template("dir_header.html").render(context))
+        header = templates.get_template("dir_header.html").render(context)
+        header = add_mtime_to_resource_pathnames(header, info.chat_base_url)
+        html.append(header)
 
     # Generate HTML for directory listing
     html.append(f'<ul class="directory-listing">')
