@@ -1,0 +1,21 @@
+[choose]
+	[choose _weighted]
+	1 | <lora:is_pretty:-2.5> is pretty,
+	2 | <lora:is_pretty:-2> is pretty,
+	3 | <lora:is_pretty:-1> is pretty,
+	4 | <lora:is_pretty:-0.5> is pretty,
+	3 | <lora:is_pretty:0.5> is pretty,
+	2 | <lora:is_pretty:1> is pretty,
+	1 | <lora:is_pretty:2> is pretty,
+	1 | <lora:is_pretty:2.5> is pretty,
+	1 | <lora:is_pretty:3> is pretty,
+	[/choose]
+	[choose _weighted]
+	2 | <lora:ugly:-0.3> uglylora,
+	3 | <lora:ugly:-0.2> uglylora,
+	4 | <lora:ugly:-0.1> uglylora,
+	6 | <lora:ugly:0.1> uglylora,
+	5 | <lora:ugly:0.2> uglylora,
+	4 | <lora:ugly:0.3> uglylora,
+	[/choose]
+[/choose]

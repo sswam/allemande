@@ -1,0 +1,50 @@
+[opt 90]
+[choose _weighted]
+4 | <lora:real-humans-PublicPrompts:0.8>
+5 | <lora:real-humans-PublicPrompts:0.9>
+6 | <lora:real-humans-PublicPrompts:1.0>
+5 | <lora:real-humans-PublicPrompts:1.1>
+4 | <lora:real-humans-PublicPrompts:1.2>
+3 | <lora:real-humans-PublicPrompts:1.3>
+2 | <lora:real-humans-PublicPrompts:1.4>
+1 | <lora:real-humans-PublicPrompts:1.5>
+1 | <lora:real-humans-PublicPrompts:1.6>
+1 | <lora:real-humans-PublicPrompts:1.7>
+[/choose]
+[/opt]
+
+[opt 70]
+[choose _weighted]
+4 | <lora:Face_Enhancer:0.1>
+5 | <lora:Face_Enhancer:0.2>
+6 | <lora:Face_Enhancer:0.3>
+5 | <lora:Face_Enhancer:0.4>
+4 | <lora:Face_Enhancer:0.5>
+3 | <lora:Face_Enhancer:0.6>
+2 | <lora:Face_Enhancer:0.7>
+1 | <lora:Face_Enhancer:0.8>
+[/choose]
+[/opt]
+
+[opt 70 0.9 1.3]
+[choose _weighted]
+1 | <lora:BetterFaces:0.1>
+1 | <lora:BetterFaces:0.2>
+1 | <lora:BetterFaces:0.3>
+2 | <lora:BetterFaces:0.4>
+3 | <lora:BetterFaces:0.5>
+2 | <lora:BetterFaces:0.6>
+[/choose] BetterFaces
+[/opt]
+
+[if gender="male" _not]
+[set n][rand 2 5][/set]
+[sets strength=1.2/n low=1 high=1.6]
+[use celebs_girl]
+[/if]
+
+[##]
+TODO
+- celeb mixins for male
+- non-celeb mixins
+[/##]

@@ -78,16 +78,7 @@ BREAK
 [/else]
 
 BREAK
-[if gender="female"]
-	[use name_given_girl 100 1.2 1.7] [use surname 90 1.2 1.7],
-	[if pony=1]
-		[use char_girl, 100 0.9 1.7]
-		[use char_girl, 90 0.9 1.7]
-		[use char_girl, 90 0.9 1.7]
-		[use char_girl, 50 0.9 1.7]
-	[/if]
-[/if]
-[else]
+[if gender="male"]
 	[use name_given_boy 100 1.2 1.7] [use surname 90 1.2 1.7],
 	[if pony=1]
 		[use char_boy, 100 0.9 1.7]
@@ -95,74 +86,18 @@ BREAK
 		[use char_boy, 90 0.9 1.7]
 		[use char_boy, 50 0.9 1.7]
 	[/if]
+[/if]
+[else]
+	[use name_given_girl 100 1.2 1.7] [use surname 90 1.2 1.7],
+	[if pony=1]
+		[use char_girl, 100 0.9 1.7]
+		[use char_girl, 90 0.9 1.7]
+		[use char_girl, 90 0.9 1.7]
+		[use char_girl, 50 0.9 1.7]
+	[/if]
 [/else]
 
 BREAK
-[opt 80 0.8 1.5]
-[choose]
-	[choose _weighted]
-	1 | <lora:is_pretty:-2.5> is pretty,
-	2 | <lora:is_pretty:-2> is pretty,
-	3 | <lora:is_pretty:-1> is pretty,
-	4 | <lora:is_pretty:-0.5> is pretty,
-	3 | <lora:is_pretty:0.5> is pretty,
-	2 | <lora:is_pretty:1> is pretty,
-	1 | <lora:is_pretty:2> is pretty,
-	1 | <lora:is_pretty:2.5> is pretty,
-	1 | <lora:is_pretty:3> is pretty,
-	[/choose]
-	[choose _weighted]
-	2 | <lora:ugly:-0.3> uglylora,
-	3 | <lora:ugly:-0.2> uglylora,
-	4 | <lora:ugly:-0.1> uglylora,
-	6 | <lora:ugly:0.1> uglylora,
-	5 | <lora:ugly:0.2> uglylora,
-	4 | <lora:ugly:0.3> uglylora,
-	[/choose]
-[/choose]
-[/opt]
+[use face_pretty_ugly, 80 0.8 1.5]
 
-[opt 90]
-[choose _weighted]
-4 | <lora:real-humans-PublicPrompts:0.8>
-5 | <lora:real-humans-PublicPrompts:0.9>
-6 | <lora:real-humans-PublicPrompts:1.0>
-5 | <lora:real-humans-PublicPrompts:1.1>
-4 | <lora:real-humans-PublicPrompts:1.2>
-3 | <lora:real-humans-PublicPrompts:1.3>
-2 | <lora:real-humans-PublicPrompts:1.4>
-1 | <lora:real-humans-PublicPrompts:1.5>
-1 | <lora:real-humans-PublicPrompts:1.6>
-1 | <lora:real-humans-PublicPrompts:1.7>
-[/choose]
-[/opt]
-
-[opt 70]
-[choose _weighted]
-4 | <lora:Face_Enhancer:0.1>
-5 | <lora:Face_Enhancer:0.2>
-6 | <lora:Face_Enhancer:0.3>
-5 | <lora:Face_Enhancer:0.4>
-4 | <lora:Face_Enhancer:0.5>
-3 | <lora:Face_Enhancer:0.6>
-2 | <lora:Face_Enhancer:0.7>
-1 | <lora:Face_Enhancer:0.8>
-[/choose]
-[/opt]
-
-[opt 70 0.9 1.3]
-[choose _weighted]
-1 | <lora:BetterFaces:0.1>
-1 | <lora:BetterFaces:0.2>
-1 | <lora:BetterFaces:0.3>
-2 | <lora:BetterFaces:0.4>
-3 | <lora:BetterFaces:0.5>
-2 | <lora:BetterFaces:0.6>
-[/choose] BetterFaces
-[/opt]
-
-[if gender="female"]
-[set n][rand 2 5][/set]
-[sets strength=1.2/n low=1 high=1.6]
-[use celebs_girl]
-[/if]
+[use face_mixin_strong]

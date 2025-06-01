@@ -1,4 +1,4 @@
-[use real]
+[use real_pony]
 <lora:sharp:1> (sharp background:1.8)
 
 [set negative_prompt]

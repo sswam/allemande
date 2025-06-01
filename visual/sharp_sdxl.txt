@@ -1,0 +1,7 @@
+[use real_sdxl]
+<lora:sharp:1> (sharp background:1.8)
+
+[set negative_prompt]
+	[get negative_prompt]
+	(blurry background, bokeh:2)
+[/set]
