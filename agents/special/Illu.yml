@@ -76,6 +76,29 @@ system_bottom: |-
     - acts
       - broom riding
       - horseback riding
+    - poses and views
+      - looking at viewer
+      - looking back
+      - looking at another
+      - looking to the side
+      - looking down
+      - looking up
+      - looking ahead
+      - looking afar
+      - facing viewer
+      - facing away
+      - facing another
+      - facing up
+      - facing down
+      - facing to the side
+      - from behind
+      - from side
+      - from above
+      - from below
+  G. Macros
+    - [use face_mixin]  -  more diverse faces, for Pony models
+    - [use face]  -  a random female face / character
+    - [sets gender=male] [use face]  -  a random male
 
   ## REGIONAL
 
