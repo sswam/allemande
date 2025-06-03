@@ -700,7 +700,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
-| <i class="bi-lock-fill"></i> <i class="bi-unlock-fill"></i> |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
+| <i class="bi-lock"></i> <i class="bi-unlock"></i> |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
 |  | `Ctrl+;` or `Esc` | Room Name | Change room |
 |  |  | User | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
 | <i class="bi-box-arrow-right"></i> |  | Exit | Log out |
@@ -709,18 +709,18 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
-| <i class="bi-send-fill"></i> | `Ctrl+Enter` | Send | Send message (visible when message entered) |
-| <i class="bi-hand-index-thumb-fill"></i> | `Alt+Enter` | Poke | Prompt AI response (visible when no message) |
+| <i class="bi-send"></i> | `Ctrl+Enter` | Send | Send message (visible when message entered) |
+| <i class="bi-hand-index-thumb"></i> | `Alt+Enter` | Poke | Prompt AI response (visible when no message) |
 | <i class="bi-upload"></i> |  | File | Upload files |
-| <i class="bi-eye-fill"></i> |  | View | view settings |
+| <i class="bi-eye"></i> |  | View | view settings |
 
 ### View Settings Menu
 
 | Icon | Shortcut | Setting | Description |
 |---------|----------|-------------|----------|
 | <i class="bi-fonts"></i> |  | Font Size | Change font size |
-| <i class="bi-palette-fill"></i> |  | Theme | Change UI theme |
-| <i class="bi-lightbulb-fill"></i> |  | Advanced | Toggle advanced mode |
+| <i class="bi-palette"></i> |  | Theme | Change UI theme |
+| <i class="bi-lightbulb"></i> <i class="bi-lightbulb-fill"></i> <i class="bi-lightning-fill"></i> |  | Advanced | Toggle advanced modes |
 | <i class="bi-x"></i> |  | Back | Return to main controls |
 
 ## Advanced Mode
@@ -729,7 +729,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
-| <i class="bi-compass-fill"></i> |  | Nav | Navigation menu |
+| <i class="bi-compass"></i> |  | Nav | Navigation menu |
 | <i class="bi-file-text"></i> |  | Room Ops | Room operations |
 
 ### Navigation Submenu
@@ -737,13 +737,13 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 |  <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 113.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a2 2 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12q.322-.119.684-.12h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z M8 6L11 9.75L5 9.75z"/></svg> | `Alt+U` | Up | Go to parent folder |
-| <i class="bi-people-fill"></i> |  | Ally Chat | Go to main room |
-| <i class="bi-house-door-fill"></i> |  | Porch | Go to your public room |
-| <i class="bi-house-fill"></i> |  | Home | Go to your private folder |
-| <i class="bi-skip-start-fill"></i> | `Ctrl+[` | First | Go to first page |
-| <i class="bi-caret-left-fill"></i> | `Ctrl+,` | Prev | Previous page |
-| <i class="bi-caret-right-fill"></i> | `Ctrl+.` | Next | Next page |
-| <i class="bi-skip-end-fill"></i> | `Ctrl+]` | Last | Go to last page |
+| <i class="bi-people"></i> |  | Ally Chat | Go to main room |
+| <i class="bi-house-door"></i> |  | Porch | Go to your public room |
+| <i class="bi-house"></i> |  | Home | Go to your private folder |
+| <i class="bi-skip-start"></i> | `Ctrl+[` | First | Go to first page |
+| <i class="bi-caret-left"></i> | `Ctrl+,` | Prev | Previous page |
+| <i class="bi-caret-right"></i> | `Ctrl+.` | Next | Next page |
+| <i class="bi-skip-end"></i> | `Ctrl+]` | Last | Go to last page |
 |  | `Ctrl+]` | New | Go to new room beyond last page |
 
 ### Room Operations Submenu
@@ -751,7 +751,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 | <i class="bi-copy"></i> |  | Copy | Copy all or part of room |
-| <i class="bi-pencil-fill"></i> | `Alt+M` | Move | Rename or move room (owner only) |
+| <i class="bi-pencil"></i> | `Alt+M` | Move | Rename or move room (owner only) |
 
 ## Top-Right Controls
 
@@ -777,24 +777,24 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 |---------|----------|------|-------------|
 | <i class="bi-plus-lg"></i> |  | Add | Open media/content menu |
 | <i class="bi-headset"></i> |  | Audio | Audio settings |
-| <i class="bi-gear-fill"></i> |  | Opt | Room options |
-| <i class="bi-shield-fill"></i> |  | Mod | Owner tools (when you own the room) |
+| <i class="bi-gear"></i> |  | Opt | Room options |
+| <i class="bi-shield"></i> |  | Mod | Owner tools (when you own the room) |
 
 ### Add Menu
 
 | Icon | Shortcut | Name | Description | Process |
 |---------|----------|------|-------------|----------|
 | <i class="bi-upload"></i> |  | File | Upload files | Select files to upload |
-| <i class="bi-mic-fill"></i> |  | Audio Recording | Record audio | Opens recording controls |
-| <i class="bi-camera-video-fill"></i> |  | Video Recording | Record video | Opens recording controls |
+| <i class="bi-mic"></i> |  | Audio Recording | Record audio | Opens recording controls |
+| <i class="bi-camera-video"></i> |  | Video Recording | Record video | Opens recording controls |
 | Σ |  | Math | Add mathematics | Switches to math editor |
 
 #### Recording Controls
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
-| <i class="bi-pause-fill"></i> |  | Time | Shows duration, click to pause/resume |
-| <i class="bi-stop-fill"></i> |  | Stop | End recording and preview |
+| <i class="bi-pause"></i> |  | Time | Shows duration, click to pause/resume |
+| <i class="bi-stop"></i> |  | Stop | End recording and preview |
 |  |  | Preview | Review recording before upload |
 | <i class="bi-check-lg"></i> |  | Save | Upload recording |
 | <i class="bi-x-lg"></i> |  | Cancel | Discard recording |
@@ -813,14 +813,14 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 | Icon | Shortcut | Setting | Description |
 |---------|----------|-------------|----------|
 | <i class="bi-hash"></i> |  | IDs | View message IDs |
-| <i class="bi-image-fill"></i> | `Alt+I` | Images | Toggle showing images |
+| <i class="bi-image"></i> | `Alt+I` | Images | Toggle showing images |
 | <i class="bi-alphabet"></i> | `Alt+A` | Alt | Toggle showing alt captions |
 | <i class="bi-arrows-angle-expand"></i> <i class="bi-arrows-angle-contract"></i> |  | Image Size | Change image size |
 | <i class="bi-braces"></i> |  | Source | View source (none, javascript, math/diagram source) |
 | <i class="bi-asterisk"></i> |  | Color | Highlight code |
 | <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><ellipse cx="7.6" cy="4.3" rx="4" ry="3"/><ellipse cx="11.7" cy="4.6" rx="4" ry="3"/><ellipse cx="6.9" cy="8.5" rx="4" ry="3"/><ellipse cx="10.7" cy="7.3" rx="4" ry="3"/><ellipse cx="4.3" cy="6.3" rx="4" ry="3"/><ellipse cx="3.22" cy="12.3" rx="1.2" ry=".9"/><ellipse cx="1.4" cy="14.1" rx=".8" ry=".6"/></svg> |  | Details | View thoughts and details |
-| <i class="bi-easel-fill"></i> |  | Canvas | View shared canvas |
-| <i class="bi-book-fill"></i> | `Alt+C` | Clean | Clean reading view |
+| <i class="bi-easel"></i> |  | Canvas | View shared canvas |
+| <i class="bi-book"></i> | `Alt+C` | Clean | Clean reading view |
 | <i class="bi-layout-three-columns"></i> |  | Columns | View chat in columns |
 | <i class="bi-arrows-collapse-vertical"></i> |  | Compact | Compact view |
 | <i class="bi-clock-history"></i> |  | History | View change history (deleted and edited messages) |
@@ -852,11 +852,11 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 |---------|----------|------|-------------|
 | <i class="bi-x-lg"></i> | `Alt+Z` | Undo | Remove last message |
 | <i class="bi-arrow-counterclockwise"></i> | `Alt+R` | Retry | Retry last message |
-| <i class="bi-pencil-fill"></i> | `Alt+E` | Edit | Edit the room |
-| <i class="bi-play-fill"></i> |  | Auto | Auto play |
-| <i class="bi-archive-fill"></i> | `Alt+A` | Archive | Archive this room |
-| <i class="bi-trash3-fill"></i> | `Alt+X` | Clear | Clear this room |
-| <i class="bi-book-fill"></i> |  | Clean | Clean up room, removes messages from specialists |
+| <i class="bi-pencil"></i> | `Alt+E` | Edit | Edit the room |
+| <i class="bi-play"></i> |  | Auto | Auto play |
+| <i class="bi-archive"></i> | `Alt+A` | Archive | Archive this room |
+| <i class="bi-trash3"></i> | `Alt+X` | Clear | Clear this room |
+| <i class="bi-book"></i> |  | Clean | Clean up room, removes messages from specialists |
 |  | `Alt+H` | Re-render | Re-renders the HTML page from markdown (mainly for developers) |
 
 ### Editor Controls
@@ -869,7 +869,7 @@ When editing (room owner only), these controls appear:
 | <i class="bi-arrow-counterclockwise"></i> |  | Reset | Revert changes. |
 | <i class="bi-indent"></i> | `Alt+T` | Indent | Insert a tab character or indent the selected text. |
 | <i class="bi-unindent"></i> | `Shift+Alt+T` | Dedent | Remove a tab character or dedent the selected text. |
-| <i class="bi-trash3-fill"></i> |  | Clear | Clear the contents of the editor. |
+| <i class="bi-trash3"></i> |  | Clear | Clear the contents of the editor. |
 | <i class="bi-x"></i> |  | Close | Close without saving. |
 
 ### Image Viewing Mode
