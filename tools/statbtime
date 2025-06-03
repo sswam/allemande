@@ -1,0 +1,3 @@
+#!/bin/bash
+# statbtime - display file status with birth time
+stat -c $'%W\t%n' -- "$@"

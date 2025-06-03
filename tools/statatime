@@ -1,0 +1,3 @@
+#!/bin/bash
+# statatime - display file status with access time
+stat -c $'%X\t%n' -- "$@"

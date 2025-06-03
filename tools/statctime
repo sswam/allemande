@@ -1,0 +1,3 @@
+#!/bin/bash
+# statctime - display file status with change time
+stat -c $'%Z\t%n' -- "$@"

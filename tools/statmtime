@@ -1,0 +1,3 @@
+#!/bin/bash
+# statmtime - display file status with modification time
+stat -c $'%Y\t%n' -- "$@"
