@@ -1,3 +1,7 @@
+torch==2.6.0
+torchvision
+torchaudio
+
 numpy
 rouge_score
 fire
