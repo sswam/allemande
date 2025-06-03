@@ -2,12 +2,16 @@
 set -euo pipefail
 
 dir="$1"
+days="${2:-7}"
 
-# Get a list of all jpg files older than 2 days, not in the cast directory, and are owner writable
-find "$dir" -mtime +2 -type f -name '*.jpg' -not -path '*/cast/*' -perm /200 | sed 's|^\./||' | sort > .all_jpg_files.txt
+cd "$dir"
+
+# Get a list of all jpg files older than $days days, not in the cast directory, and are owner writable
+find "." -mtime +$days -type f -name '*.jpg' -not -path '*/cast/*' -perm /200 | sed 's|^\./||' | sort > .all_jpg_files.txt
 
 # Get list of files tracked by Git
-git ls-files "*.jpg" | sed 's|^\./||' | sort > .git_jpg_files.txt
+# NOTE: doesn't handle sub-repositories
+git ls-files | grep '\.jpg$' || true | sed 's|^\./||' | sort > .git_jpg_files.txt
 
 # Use comm to find files that are in all_jpg_files but not in git_jpg_files, and remove them
 comm -23 .all_jpg_files.txt .git_jpg_files.txt | xargs-better move-rubbish --
