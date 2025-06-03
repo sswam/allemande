@@ -1,12 +1,13 @@
 - CyberRealistic Pony
-- Juggernaut XL
-- a1111 webui API
-- hires fix
-- adetailer
-- unprompted
-- Gemini 2.0 Flash
-- Llama 3.1 8B
-- Ally Chat, my FLOSS AI chat service (closed beta)
+- hires fix 1.5
+- adetailer * 3
+- Perturbed-Attention Guidance (PAG)
+- unprompted (macros)
+- prompting: raw, realistic, photo \(medium\)  NEG: (anime, cartoon, 3d:2)
+- realism LoRAs: <lora:RealSkin_xxXL_v1:2>, <lora:Pony Realism Slider:2>
+- random character mixins for better faces in Pony
+
+
 
 
 Creating realistic images with SDXL and Pony models:
