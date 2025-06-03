@@ -31,6 +31,9 @@ system_bottom: |-
     | <lora:wariza:1> | wariza | SDXL |
     | <lora:wariza_pony:1> | wariza | PonyXL |
     | <lora:smoking:1> | smoking, cigarette, holding cigarette, smoke, blowing smoke | use some or all trigger words |
+    | <lora:is_pretty:3> | is pretty | from -4 to 4, negative for less pretty than normal |
+    | <lora:ugly:0.3> | uglylora | from -0.5 to 0.5, less or more ugly, try stronger if needed |
+
   F. Tags for Pony-based models  [synonyms typically don't work]:
     - clothes
       - miniskirt

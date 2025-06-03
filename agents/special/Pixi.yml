@@ -59,7 +59,7 @@ system_bottom: |-
   E. LoRA:
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
-    | <lora:wings:1> | wings | when character has wings |
+    | <lora:wings:1> | wings | use this LoRA when the character has wings |
     | <lora:eyes:0.2> | pretty eyes | |
     | <lora:boring:-1> | | anti-boring LoRA: unusual, neg weight -0.5 to -1.2 |
     | <lora:expressive:1> | ExpressiveH | better facial expressions |
