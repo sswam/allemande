@@ -1,0 +1,4 @@
+torch==2.3.1 -f https://download.pytorch.org/whl/cu126
+torchvision==0.18.1 -f https://download.pytorch.org/whl/cu126
+torchaudio==2.3.1 -f https://download.pytorch.org/whl/cu126
+

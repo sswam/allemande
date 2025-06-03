@@ -1,6 +1,3 @@
-torch -f https://download.pytorch.org/whl/cu126
-torchvision -f https://download.pytorch.org/whl/cu126
-torchaudio -f https://download.pytorch.org/whl/cu126
 tensorrt
 tensorrt-lean
 tensorrt-dispatch

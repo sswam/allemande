@@ -235,6 +235,10 @@ ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
 
 # -------- install allemande Python dependencies -----------------------------
 
+pip install -r requirements-core-cuda.txt  # with NVIDIA GPU
+# pip install -r requirements-core-cpu.txt  # without GPU
+# pip install -r requirements-core-rocm.txt  # with AMD GPU
+
 pip install -r requirements-core.txt
 pip install -r requirements-1.txt
 # pip install -r requirements-2.txt  # with GPU, there will likely be conflicts / issues!
