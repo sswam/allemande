@@ -179,8 +179,6 @@ async def stream(request, path=""):
 
     context = {"user": user, "login_base_url": info.login_base_url, "chat_base_url": info.chat_base_url, "rooms_base_url": info.rooms_base_url, "theme": theme, "room": room_path}
 
-    logger.info("context %r", context)
-
     # folder listings
     if path.is_dir():
         want_json = request.query_params.get('json') == '1'
