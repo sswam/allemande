@@ -1,3 +1,4 @@
-torch==2.3.1 -f https://download.pytorch.org/whl/cpu
-torchvision==0.18.1 -f https://download.pytorch.org/whl/cpu
-torchaudio==2.3.1 -f https://download.pytorch.org/whl/cpu
+--index-url https://download.pytorch.org/whl/cpu
+torch==2.6.0
+torchvision
+torchaudio
