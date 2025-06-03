@@ -43,6 +43,9 @@ async def generate_image(session, params, restart_on_fail=False) -> dict[str, An
         except Exception as e:
             logger.error(f"Attempt {attempt + 1}/{MAX_RETRIES} failed: {e}")
 
+            if "list index out of range" in f"{e}":
+                logger.error("Fatal error, faulty prompt?")
+                raise
             if attempt + 1 == MAX_RETRIES:
                 logger.error("All retry attempts failed")
                 raise
