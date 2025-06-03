@@ -1,0 +1,6 @@
+tiktoken
+Pillow
+openai
+anthropic
+google-generativeai
+google-cloud-aiplatform[tokenization]

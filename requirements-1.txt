@@ -7,7 +7,6 @@ types-beautifulsoup4
 types-requests
 types-tabulate
 deepmerge
-Pillow
 num2words
 pydub
 soundfile

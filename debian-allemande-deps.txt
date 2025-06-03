@@ -50,6 +50,7 @@ splint
 flawfinder
 
 libperl-critic-perl
+liblist-moreutils-perl
 
 check
 cproto

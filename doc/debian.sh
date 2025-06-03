@@ -209,11 +209,13 @@ exec bash  # restart bash
 # -------- Build opts-help, opts-long, needed by many scripts (e.g. metadeb) -
 
 (cd bash; make); (cd text; make)
+pip install argh
 make canon
 
 # -------- install allemande Debian dependencies -----------------------------
 # metadeb creates a meta-package, makes it easier to uninstall things later
 
+sudo apt-get install equivs
 metadeb -n=allemande-deps debian-allemande-deps.txt
 
 # Alternative without metadeb:
