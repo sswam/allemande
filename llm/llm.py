@@ -204,13 +204,6 @@ MODELS = {
         "cost_in": 0,
         "cost_out": 0,
     },
-    "gemini-1.5-pro": {
-        "aliases": ["gp1"],
-        "vendor": "google",
-        "description": "Google's next-generation Gemini model with a 1 million context window.",
-        "cost_in": 1.25,
-        "cost_out": 5,
-    },
     "gemini-2.5-flash": {
         "aliases": ["gf", "flasho"],
         "id": "models/gemini-2.5-flash-preview-04-17",

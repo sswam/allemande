@@ -18,7 +18,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 <link rel="stylesheet" href="/cast.css"><details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](cast/Amir.jpg) ![Atla](cast/Atla.jpg) ![Bast](cast/Bast.jpg) ![Cal](cast/Cal.jpg) ![Callam](cast/Callam.jpg) ![Chaz](cast/Chaz.jpg) ![Dante](cast/Dante.jpg) ![Ezio](cast/Ezio.jpg) ![Felix](cast/Felix.jpg) ![Gari](cast/Gari.jpg) ![Haka](cast/Haka.jpg) ![Jackson](cast/Jackson.jpg) ![Jhon](cast/Jhon.jpg) ![Kai](cast/Kai.jpg) ![Morf](cast/Morf.jpg) ![Pliny](cast/Pliny.jpg)</div>
 </details>
-<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](cast/Aetheria.jpg) ![Akane](cast/Akane.jpg) ![Ally](cast/Ally.jpg) ![Barbie](cast/Barbie.jpg) ![Brie](cast/Brie.jpg) ![Cleo](cast/Cleo.jpg) ![Dali](cast/Dali.jpg) ![Eira](cast/Eira.jpg) ![Emmie](cast/Emmie.jpg) ![Fenny](cast/Fenny.jpg) ![Gabby](cast/Gabby.jpg) ![Gemmy](cast/Gemmy.jpg) ![Hanni](cast/Hanni.jpg) ![Nixie](cast/Nixie.jpg) ![Nova](cast/Nova.jpg) ![Pixi](cast/Pixi.jpg) ![Rozie](cast/Rozie.jpg) ![Sia](cast/Sia.jpg) ![Sio](cast/Sio.jpg) ![Soli](cast/Soli.jpg) ![Nalani](cast/Nalani.jpg) ![Illu](cast/Illu.jpg) ![Gema](cast/Gema.jpg) ![Xilu](cast/Xilu.jpg) ![Flashi](cast/Flashi.jpg)</div>
+<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](cast/Aetheria.jpg) ![Akane](cast/Akane.jpg) ![Ally](cast/Ally.jpg) ![Barbie](cast/Barbie.jpg) ![Brie](cast/Brie.jpg) ![Cleo](cast/Cleo.jpg) ![Dali](cast/Dali.jpg) ![Eira](cast/Eira.jpg) ![Emmie](cast/Emmie.jpg) ![Fenny](cast/Fenny.jpg) ![Gabby](cast/Gabby.jpg) ![Hanni](cast/Hanni.jpg) ![Nixie](cast/Nixie.jpg) ![Nova](cast/Nova.jpg) ![Pixi](cast/Pixi.jpg) ![Rozie](cast/Rozie.jpg) ![Sia](cast/Sia.jpg) ![Sio](cast/Sio.jpg) ![Soli](cast/Soli.jpg) ![Nalani](cast/Nalani.jpg) ![Illu](cast/Illu.jpg) ![Gema](cast/Gema.jpg) ![Xilu](cast/Xilu.jpg) ![Flashi](cast/Flashi.jpg)</div>
 </details>
 
 ## Rules for Adult Content
@@ -90,7 +90,6 @@ The general characters in the main guide are very good for NSFW chat and rolepla
 ### Strong AI Models (NSFW capable)
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
-- **Gemmy** (Gemini 1.5 Pro, Google): Google's strong Gemini language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
 
 Sometimes these models may refuse to help you, depending on the context. You can retry, or change the context, to avoid this problem.
@@ -140,7 +139,6 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 |-----------|-------------------|---------|----------|-------------|------------------|-------------------|---------------------------------------------------------------------------------------------------------|
 | Google    | Gemini 2.0 Flash  | Flashi  | 1M       | 64K         | $0.10            | $0.40             | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                     |
 | Google    | Gemini 2.5 Flash  | Flasho  | 1M       | 64K         | $0.15            | $0.60             | Google's fast Gemini model, optimized for speed and very capable.                                       |
-| Google    | Gemini 1.5 Pro    | Gemmy   | 2M       | 8192        | $1.25 [1]        | $5.00 [1]         | Google's powerful Gemini model optimized for a wide range of reasoning tasks.                           |
 | Google    | Gemini 2.5 Pro    | Gemmi   | 1M       | 64K         | $1.25 [2]        | $10.00 [2]        | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                       |
 | Meta      | Llama 3.1 8B      | Ally*   | 4096     | 4096        | N/A              | N/A               | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
 | Alibaba+  | EVA Qwen2.5 72B   | Eva/n   | 128K     | 128K        | $0.9             | $1.2              | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.     |
