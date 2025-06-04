@@ -1,5 +1,7 @@
 # Important Notes to AI
 
+Simplicity is more important than correctness.
+
 AVOID DEEP INDENTATION OR NESTING, better to use if/elif or a function. This
 is the number one rule! If needed, we can use variables to avoid repeating
 parts of conditions. Test negative or short cases first, and use continue,
