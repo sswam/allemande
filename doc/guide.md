@@ -720,7 +720,7 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 |---------|----------|-------------|----------|
 | <i class="bi-fonts"></i> |  | Font Size | Change font size |
 | <i class="bi-palette"></i> |  | Theme | Change UI theme |
-| <i class="bi-lightbulb"></i> <i class="bi-lightbulb-fill"></i> <i class="bi-lightning-fill"></i> |  | Advanced | Toggle advanced modes |
+| <i class="bi-lightbulb"></i> <i class="bi-lightbulb-fill"></i> |  | Advanced | Toggle advanced mode |
 | <i class="bi-x"></i> |  | Back | Return to main controls |
 
 ## Advanced Mode

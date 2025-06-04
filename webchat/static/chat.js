@@ -173,7 +173,7 @@ function set_debug(debug) {
   active_set("debug", DEBUG);
 }
 
-function setup_debug() {
+function setup_dev() {
   dev = DEVS.includes(user);
   if (!dev)
     DEBUG = false;
@@ -2076,6 +2076,10 @@ function view_options_apply() {
   if (!embed)
     localStorage.setItem("view_options", JSON.stringify(view_options));
 
+  // Don't allow boffin mode except for devs
+  if (!dev && view_options.advanced >= 2)
+    view_options.advanced = 1;
+
   // Don't allow full-screen canvas except in boffin mode:
   // It makes it look like the app is broken!
   if (view_options.canvas == 2 && view_options.advanced < 2)
@@ -2284,7 +2288,8 @@ function view_history(ev) {
 
 function view_advanced(ev) {
   const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
-  view_options.advanced = (view_options.advanced + delta + 3) % 3;
+  const max = dev ? 3 : 2;
+  view_options.advanced = (view_options.advanced + delta + max) % max;
   view_options_apply();
   // set_controls();
 }
@@ -2837,7 +2842,7 @@ export async function init() {
   // if (isFirefox || isSafari)
   controls_layout_hack_for_firefox_and_safari();
   load_theme();
-  setup_debug();
+  setup_dev();
   on_hash_change();
 
   $on($content, "input", message_changed);

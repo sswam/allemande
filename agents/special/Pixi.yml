@@ -35,6 +35,7 @@ system_bottom: |-
 
   ## CONSTRUCTION
   A. Weight: (one or more, terms:1.2) 0.0 < w < 2.2 ; parens required; weight at the end before )
+    * excessive weight ruins the image: normally up to 1.8, max 2.2
   B. Person: [person "Name" "clothes" "expression" "age"]  Only name req.; "." = default; "" = neutral.
   C. Clothing: List all garments to avoid random nudes; or "topless" or "nude". Can use NEGATIVE (nude:2)
   F. BREAK: separate parts of prompt, with equal weight, e.g. scene BREAK person
