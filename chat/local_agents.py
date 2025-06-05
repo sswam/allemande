@@ -191,14 +191,23 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     # add system messages
     system_top = agent.get("system_top")
     system_bottom = agent.get("system_bottom")
-    age_number = agent.get("age")
-    age = num2words(age_number) if age_number else None
+
+    # add system message for age
+    age_input = agent.get("age")
+    age = None
+    if isinstance(age_input, str):
+        age = age_input
+    elif age_input:  # If it's a number
+        age = num2words(age_input) + " years old"
     if age and system_top:
-        system_top += f"\n\nYou are {age} years old"
+        system_top += f"\n\nYou are {age}"
     elif age and system_bottom:
-        system_bottom += f"\n\nYou are {age} years old"
+        system_bottom += f"\n\nYou are {age}"
     elif age:
         logger.warning("age provided but no system message to add it to, for agent %r", agent.name)
+
+    logger.debug("system message for %s: %s", agent.name, system_top or system_bottom)
+
     if system_bottom:
         n_messages = len(context)
         pos = agent.get("system_bottom_pos", 0)

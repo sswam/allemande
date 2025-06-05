@@ -2029,17 +2029,17 @@ function edit_close(ev) {
   const type = get_file_type(editor_file);
   const leafname = editor_file.replace(/.*\//, "");
   const dirname = editor_file.replace(/\/[^\/]*$/, "") + "/";
-  const dont_change = ["access.yml", "options.yml"];
-  let change_to_room = type == "file" && !dont_change.includes(leafname) && editor_file.replace(/\.[^\/]*$/, "");
+//  const dont_change = ["access.yml", "options.yml"];
+//  let change_to_room = type == "file" && !dont_change.includes(leafname) && editor_file.replace(/\.[^\/]*$/, "");
+  let change_to_room = null;
   change_to_room = change_to_room || dirname;
   editor_text = editor_text_orig = null;
   editor_file = null;
   $edit.value = "";
   set_view();
   set_controls();
-  if (change_to_room) {
+  if (change_to_room)
     set_room(change_to_room);
-  }
   return true;
 }
 

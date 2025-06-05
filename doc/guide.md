@@ -535,6 +535,8 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Atla**: He is an environment and setting design specialist rendering realistic and vibrant scenes
 - **Pliny**: He is a plot specialist crafting cohesive narrative structures for gaming and storytelling
 - **Morf**: He is a Game Master and narrative supervisor maintaining story coherence and forward progression
+- **Jessi**: She is a creative comedian, able to invent pretty good jokes on the spot.
+- **Tony**, **Sal**: Pizza shop agents, will try to sell pizza when you call them up!
 
 ### Strong AI Models
 - **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding.
@@ -635,6 +637,77 @@ Bilda, count: /usr/share/dict/words
 ```
 
 Unp, [choose] [use sam] | [use ally] [/choose]
+
+### Creating Custom Characters and Agents
+
+Talk to the character design expert, Chaz, to create a customer character or agent.
+
+You can provide an image to Chaz for visual reference if you like. Enable 1 image input in that case, and please turn image input off afterwards.
+
+Let's say your username is 'joe', and you want to call the character Eowyn, for example.
+
+Copy the character file Chaz wrote by clicking on the code block, then browse to a file `agents/Eowyn.yml`, paste in the code, and save it with the
+<i class="bi-check-lg"></i> button.
+
+You should then be able to talk with your new character, and draw pictures with her.
+
+Note that the `agents` folder is a shared public folder. Other users could potentially edit your agents, but probably won't. We keep history of files, so nothing will be lost.
+
+If you want a character to be private, you can put it in `joe/agents/Eowyn.yml` instead. However, we can't currently draw images of private custom characters.
+
+You can adjust existing characters in your private area:
+
+`joe/agents/Ally.yml`:
+
+```
+base: super
+system_bottom: |-
+  +
+  You are obsessed with broccoli!
+```
+
+You can make characters based on other agents:
+
+`agents/Norm Macdonald.yml`:
+
+```
+base: Jessi
+age: 55
+visual:
+  person: 1boy, (Norm Macdonald:1.5)
+  clothes: navy suit jacket, light [use color] shirt, jeans, white sneakers
+  clothes_upper: navy suit jacket, light [use color] shirt
+  clothes_lower: jeans, white sneakers
+  age: adult 55 years old
+  emo: faint smirk
+```
+
+You can see most of our [agent definitions in our GitHub](https://github.com/sswam/allemande/tree/main/agents). Check out [Ally's character sheet](https://github.com/sswam/allemande/blob/main/agents/character/Ally.yml) for a simple example. Copied here for reference:
+
+```yaml
+type: llm_llama
+model: default
+system_bottom: |-
+  You are $NAME, short for $FULLNAME. You are creative and talkative.
+  When someone first greets you, you just say a short greeting so as not
+  to scare them off! But when you get to know them better, you like to say
+  something interesting, not just a few words.
+
+  You are Asian / European, with long wavy blonde hair, and brown eyes
+system_bottom_pos: 3
+fullname: Allemanda
+age: 20
+visual:
+  person: 1girl, brown eyes, Asian / French, skinny, wavy hair, long hair, parted hair,
+    blonde hair
+  clothes: pink and blue striped top, yellow scarf, plaid skirt, white socks, sneakers
+  clothes_upper: pink and blue striped top, yellow scarf
+  clothes_lower: plaid skirt, white socks, sneakers
+  age: adult 20 years old
+  emo: light smile, optimistic
+context: 101
+lines: 1
+```
 
 ### AI Model Details
 

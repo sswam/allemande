@@ -11,7 +11,7 @@ import io
 import logging
 import enum
 from typing import Any
-from stat import S_IFMT, S_IFREG, S_IROTH, S_IWOTH, S_IFLNK
+from stat import S_IFMT, S_IFREG, S_IFDIR, S_IROTH, S_IWOTH, S_IFLNK, S_IWGRP, S_IRGRP
 import asyncio
 from datetime import datetime
 
@@ -330,10 +330,12 @@ class Room:
                 raise PermissionError("You are not allowed to get options for this room.")
             return {"redirect": str(target)}
         options_file = self.find_resource_file("yml", "options")
+        options = {}
         if options_file:
-            options = cache.load(options_file)
-        else:
-            options = {}
+            try:
+                options = cache.load(options_file)
+            except Exception as e:
+                logger.error("Error loading options file %s: %s", options_file, e)
         return options
 
     def set_options(self, user, new_options):
@@ -500,6 +502,7 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     except FileNotFoundError:
         exists = False
 
+    entry_is_dir = exists and S_IFMT(stats.st_mode) == S_IFDIR
     is_file = not exists or S_IFMT(stats.st_mode) == S_IFREG
     is_symlink = exists and S_IFMT(stats.st_mode) == S_IFLNK
 
@@ -541,11 +544,18 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     if not "/" in pathname and (is_file or is_symlink):
         return Access.READ_WRITE, "user_root_file"
 
-    # TODO guests can create new files in a shared folder?
 
-    # Check if the path exists
-    if not path.exists():
-        return Access.NONE, "not_found"
+    # users have access to files in a shared folder
+    # stat if dir_path is group readable
+    try:
+        dir_stat = dir_path.lstat()
+    except FileNotFoundError:
+        return Access.NONE, "dir_not_found"
+
+    dir_mode = dir_stat.st_mode
+    logger.debug(f"path: {path}, entry_is_dir: {entry_is_dir}, dir_path: {dir_path}, dir_mode: {dir_mode:#o}, S_IWGRP: {S_IWGRP:#o}, S_IRGRP: {S_IRGRP:#o}")
+    if not entry_is_dir and dir_mode & S_IWGRP:
+        return Access.READ_WRITE, "shared_public_writable"
 
     mode = stats.st_mode
 
@@ -627,6 +637,8 @@ def read_agents_lists(path) -> list[str]:
         if room_dir == top_dir:
             break
         room_dir = room_dir.parent
+
+    agent_names.extend(read_agents_list(top_dir / ".agents_global.yml"))
 
     return list(set(agent_names))
 

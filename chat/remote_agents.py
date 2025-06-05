@@ -107,14 +107,23 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     system_bottom = agent.get("system_bottom")
     system_bottom_role = "user" if service == "google" else agent.get("system_bottom_role", "user")
     system_top_role = "user" if service == "google" else agent.get("system_top_role", "system")
-    age_number = agent.get("age")
-    age = num2words(age_number) if age_number else None
+
+    # add system message for age
+    age_input = agent.get("age")
+    age = None
+    if isinstance(age_input, str):
+        age = age_input
+    elif age_input:  # If it's a number
+        age = num2words(age_input) + " years old"
     if age and system_top:
-        system_top += f"\n\nYou are {age} years old"
+        system_top += f"\n\nYou are {age}"
     elif age and system_bottom:
-        system_bottom += f"\n\nYou are {age} years old"
+        system_bottom += f"\n\nYou are {age}"
     elif age:
         logger.warning("age provided but no system message to add it to, for agent %r", agent.name)
+
+    logger.debug("system message for %s: %s", agent.name, system_top or system_bottom)
+
     if system_bottom:
         if system_bottom_role == "user":
             system_bottom = f"System: {system_bottom}"

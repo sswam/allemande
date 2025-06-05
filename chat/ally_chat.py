@@ -140,10 +140,12 @@ def load_local_agents(room, agents=None):
 
     agents_dirs = []
 
-    while room_dir != top_dir:
+    while True:
         agents_dir = room_dir / "agents"
         if agents_dir.exists():
             agents_dirs.append(agents_dir)
+        if room_dir == top_dir:
+            break
         room_dir = room_dir.parent
 
     for agent_dir in reversed(agents_dirs):
@@ -419,7 +421,7 @@ async def watch_loop(args):
 
     agents = Agents(services)
     agents.load(PATH_AGENTS)
-    agents.write_agents_list(PATH_ROOMS / ".agents.yml")
+    agents.write_agents_list(PATH_ROOMS / ".agents_global.yml")
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
         while (line := await queue.get()) is not None:
@@ -437,7 +439,7 @@ async def watch_loop(args):
                     tasks.list_active_tasks()
                 elif file_type == "agent":
                     agents.handle_file_change(file_path, change_type)
-                    agents.write_agents_list(PATH_ROOMS / ".agents.yml")
+                    agents.write_agents_list(PATH_ROOMS / ".agents_global.yml")
                 else:
                     logger.debug("Ignoring change to file: %r", file_path)
             except Exception:  # pylint: disable=broad-except
