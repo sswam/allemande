@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 file_locks = defaultdict(asyncio.Lock)
 
 
-async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None):
+async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None, delay: float = 0.5):
     """convert a bb file to html"""
     async with file_locks[bb_file]:
         # assume the file was appended to ...
@@ -50,6 +50,8 @@ async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_s
                 html_file_size = html.tell()
                 if old_size and html_file_size:
                     bb.seek(old_size)
+                else:
+                    await asyncio.sleep(delay)
                 # Load whole bb file into memory from here on, up to the new_size
                 # This avoids issues when new messages are appended while we are reading
                 # then we receive watch events for the new messages also, so they

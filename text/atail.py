@@ -142,13 +142,13 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
         except Exception as e:  # pylint: disable=broad-exception-caught
             # try to restart on error after a short sleep, if enabled
             logger.error("Unexpected error in AsyncTail: %s", e, exc_info=True)
-            if self.restart:
-                await asyncio.sleep(0.5)
 
         # If we got here due to an error or a planned stop (shrink/remove), check if we should restart
         if not self.restart:
             logger.debug("Restart not configured, exiting main loop.")
             return False
+
+        await asyncio.sleep(0.5)
 
         # Prepare for restart
         self.wait_for_create = True  # Wait for it to appear again
@@ -200,9 +200,9 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
 
             # 2. Follow changes if configured
             if self.follow and self.poll_interval is not None:
-                    await self.follow_changes_poll(f)
+                await self.follow_changes_poll(f)
             elif self.follow:
-                        await self.follow_changes_notify(f)
+                await self.follow_changes_notify(f)
 
     async def seek_to_end(self, f: AsyncTextIOWrapper) -> None:
         """Seeks to the end of the file stream, ignoring errors for unseekable streams."""
@@ -256,12 +256,14 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
         assert self.queue is not None
         assert self.watcher is not None
 
+        logger.debug("Following file changes step: %s, pos_previous: %s", self.filename, pos_previous)
+
         # 1. Read available lines since last check
         lines_read_count = 0
         while line := await f.readline():
             await self.queue.put(line)
             lines_read_count += 1
-        # logger.debug("Read %d lines from %s", lines_read_count, self.filename) # Can be noisy
+        logger.debug("Read %d lines from %s", lines_read_count, self.filename)
 
         # 2.Check for file shrinkage if we can rewind, the previous size is known, and no lines were read.
         if self.rewind and pos_previous is not None and not lines_read_count:
@@ -272,6 +274,8 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
             assert current_size is not None
             larger_earlier_size = max(pos_previous, pos_before_seek)
             smaller_later_size = min(current_size, pos_before_seek)
+            logger.debug("shrink check: pos_previous=%d, pos_before_seek=%d, current_size=%d, larger_earlier_size=%d, smaller_later_size=%d",
+                        pos_previous, pos_before_seek, current_size, larger_earlier_size, smaller_later_size)
             if smaller_later_size < larger_earlier_size:
                 logger.debug("File has shrunk from %d to %d, rewinding", larger_earlier_size, smaller_later_size)
                 return None
@@ -288,6 +292,13 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
         assert event is not None
 
         logger.debug("Received event: flags=%s, name=%s", event.flags, event.name)
+        logger.debug("access: %s, attrib: %s, modify: %s, close_write: %s, delete_self: %s, move_self: %s",
+                     event.flags & aionotify.Flags.ACCESS,
+                     event.flags & aionotify.Flags.ATTRIB,
+                     event.flags & aionotify.Flags.MODIFY,
+                     event.flags & aionotify.Flags.CLOSE_WRITE,
+                     event.flags & aionotify.Flags.DELETE_SELF,
+                     event.flags & aionotify.Flags.MOVE_SELF)
 
         # 4. Handle file removal/move events detected by inotify
         if event.flags & self.REMOVED_FLAGS:

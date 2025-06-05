@@ -162,7 +162,7 @@ class Room:
         else:
             raise ValueError(f"Unknown operation: {op}")
 
-    def undo(self, user, n=1, backup=True):
+    async def undo(self, user, n=1, backup=True, delay: float = 0.2):
         """Remove the last n messages from a room."""
         # Messages are delimited by blank lines, and the file should end with a blank line.
         if n <= 0:
@@ -191,6 +191,9 @@ class Room:
             logger.debug("undo truncate %d bytes", count_bytes)
             logger.debug("current file size: %d", f.tell())
             f.truncate(f.tell() - count_bytes)
+
+        if delay:
+            await asyncio.sleep(delay)
 
     def backup(self):
         """Backup a room."""

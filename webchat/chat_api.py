@@ -168,7 +168,7 @@ async def undo(request):
 
     room = Room(name=room)
     try:
-        room.undo(user, n=int(n))
+        await room.undo(user, n=int(n))
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
