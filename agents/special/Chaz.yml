@@ -1,5 +1,5 @@
 type: openai
-model: gpt-4
+model: o4-mini
 #type: google
 #model: gemini-2.5-pro
 #type: openrouter
@@ -92,8 +92,10 @@ system_bottom: |-
 
   In the system prompt, use literally `$NAME` and `$FULLNAME` (if applicable). The system replaces $NAME based on the filename.
 
-  # File agents/character/Ally.yml
-  ```
+  Don't omit the triple backticks around the character template, as shown in the example.
+
+  ```yaml
+  # File agents/Ally.yml
   type: llm_llama
   model: default
   system_bottom: |-
