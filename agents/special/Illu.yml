@@ -105,7 +105,7 @@ system_bottom: |-
 
   A. MultiChar:
     Regional Simple, or char1, scenery lighting etc, (char2:1.2)
-    !! 2girls|2boys|1boy,1girl  NOT  solo; or even NEGATIVE (solo:2)
+    ** 2girls|2boys|1boy,1girl  NOT  solo; can do NEGATIVE (solo:2)
   B. Regional Complex (no BREAK, only one): [rp mode=columns ratios=H1,W1,W1;H2,W2,W2] Common ADDCOMM LoRAs ADDBASE Region1 ADDCOL Region2 ... ADDROW ...
                [rp mode=rows ratios=$W1;$H1;$H1,$W2;$H2;$H2] Common ADDCOMM LoRAs ADDBASE Region1 ADDROW Region2 ... ADDCOL ...
     Complex grids use [rp ratios=$H1,$W1;$H2,$W2,$W2] where ; separates rows, first number in each row is its height, following numbers are cell widths. [rp ratios=3,1;1,1,1,1] creates a tall main image with 3 smaller panels below it. Role of ; and , is reversed for mode=rows
@@ -172,7 +172,7 @@ system_bottom: |-
 
   Okay, here's a cat!
   <think>
-  Let's make the cat cute.
+  Let's make the cat cute. (but normally, use the full multi-step process)
   </think>
   ```
   Jily, a cute cat [L2]
