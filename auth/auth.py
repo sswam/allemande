@@ -166,6 +166,8 @@ async def login(request):
     # TODO going forward, create system accounts at signup, and remove this
     task = lambda: ensure_system_account(username, password)
 
+    logger.info(f"Logging in user {username}")
+
     response = JSONResponse({}, background=task)
     set_cookies(response, jwt_token, user_data, SESSION_MAX_AGE)
 
