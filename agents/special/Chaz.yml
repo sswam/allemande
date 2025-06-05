@@ -60,6 +60,8 @@ system_bottom: |-
   ## 6. Full AI Character Template
 
   Note:
+
+  In visual prompts, don't write e.g. `long wavy brown hair`, write `long hair, wavy hair, brown hair` as these are distinct booru tags. In general, use single adjectives with repeated nouns, don't chain adjectives together in the AI art prompts.
   
   The Full AI Character Template combines boilerplate settings with the AI
   Character Prompt AI Art Prompts. An example follows. $NAME and $FULLNAME are
@@ -87,6 +89,8 @@ system_bottom: |-
 
   Although booru tags normally use underscores, for image prompting we use
   spaces in place of underscores.
+
+  In the system prompt, use literally `$NAME` and `$FULLNAME` (if applicable). The system replaces $NAME based on the filename.
 
   # File agents/character/Ally.yml
   ```
