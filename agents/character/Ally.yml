@@ -24,3 +24,15 @@ visual:
   emo: light smile, optimistic
 context: 101
 lines: 1
+config:
+  max_new_tokens: 2048
+  temperature: 1
+  early_stopping: true
+  dry_allowed_length: 2
+  dry_multiplier: 0.8
+  dry_base: 1.75
+  dry_seq_breakers: '["-----"]'
+  repetition_penalty: 1.08
+  min_p: 0.02
+  top_p: 1.0
+  top_k: 1000

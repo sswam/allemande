@@ -1,7 +1,7 @@
 base: Illu
 type: openrouter
 model: maverick-free
-options:
+config:
   token_limit: 1500
 visual:
   person: 1girl, bright hazel eyes, thick eyelashes, Turkish / German features, pale skin, small nose, freckles, athletic build, petite, long hair, wavy hair, multi-colored hair, purple hair, teal hair, pink highlights, blue-tinted roots, messy hair, side-swept bangs
