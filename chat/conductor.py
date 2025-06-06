@@ -12,6 +12,7 @@ from util import uniqo
 from agents import Agents, Agent
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # The EVERYONE_WORDS and ANYONE_WORDS now only work with @ prefix, so we can include more words
 
@@ -88,7 +89,7 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
 
     Note: The sentence splitting is very simple and can be improved.
     """
-    logger.debug("find_name_in_content: %r %r %r", content, name, ignore_case)
+    # logger.debug("find_name_in_content: %r %r %r", content, name, ignore_case)
 
     # Define match patterns
     start_comma_word = r"^\s*" + re.escape(name) + r"\b\s*(,|$)"  # at start with comma, or whole line

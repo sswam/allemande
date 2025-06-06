@@ -99,14 +99,14 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         logger.debug("msg2: %r", msg2)
         remote_messages.append(msg2)
 
-    if remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] in "anthropic":
+    if remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] in ["anthropic", "google"]:
         remote_messages.insert(0, {"role": "user", "content": "?"})
 
     # add system messages
     system_top = agent.get("system_top")
     system_bottom = agent.get("system_bottom")
     system_bottom_role = "user" if service == "google" else agent.get("system_bottom_role", "user")
-    system_top_role = "user" if service == "google" else agent.get("system_top_role", "system")
+    system_top_role = agent.get("system_top_role", "system")
 
     # add system message for age
     age_input = agent.get("age")
@@ -166,9 +166,17 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if agent["type"] == "anthropic" and not remote_messages or remote_messages[-1]["role"] == "assistant":
         remote_messages.append({"role": "user", "content": ""})
 
+    if "config" not in agent:
+        agent["config"] = {}
+    if "temp" in agent:
+        agent["config"]["temperature"] = agent["temp"]
+
     opts = llm.Options(model=agent["model"])  # , indent="\t")
-    for k, v in agent.get("options", {}).items():
+    for k, v in agent.get("config", {}).items():
         setattr(opts, k, v)
+
+    logger.debug("config: %r", config)
+    logger.debug("agent: %r", agent.data)
 
     # Some agents don't like empty content, specifically google
     if not remote_messages[-1]["content"]:

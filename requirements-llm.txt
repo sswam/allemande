@@ -2,5 +2,5 @@ tiktoken
 Pillow
 openai
 anthropic
-google-generativeai
+google-genai
 google-cloud-aiplatform[tokenization]

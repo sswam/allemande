@@ -255,6 +255,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     if "lines" in agent:
         gen_config["lines"] = agent["lines"]
 
+    if "temp" in agent:
+        gen_config["temperature"] = agent["temp"]
+
     # TODO: These stop regexps don't yet handle names with spaces or punctuation.
 
     #    r"(?umi)^(?!" + agent_name_esc + r"\s*:)[\p{L}][\p{L}\p{N}_]*:\s*\Z",

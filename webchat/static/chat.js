@@ -2465,10 +2465,12 @@ async function get_options() {
   const context = data?.agents?.all?.context ?? "";
   const lines = data?.agents?.all?.lines ?? "";
   const images = data?.agents?.all?.images ?? "";
+  const temp = data?.agents?.all?.temp ?? "";
   const mission = data?.mission === "" ? "-" : data?.mission ?? "";
   $id("opt_context").value = context;
   $id("opt_lines").value = lines;
   $id("opt_images").value = images;
+  $id("opt_temp").value = temp;
   $id("opt_mission").value = mission;
   return data;
 }
@@ -2529,6 +2531,21 @@ async function opt_images(ev) {
       agents: {
         all: {
           images
+        }
+      }
+    }
+  });
+}
+
+async function opt_temp(ev) {
+  let temp = ev.target.value;
+  temp = temp === "" ? null : +temp;
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          temp
         }
       }
     }
@@ -2929,6 +2946,7 @@ export async function init() {
   $on($id("opt_context"), "change", opt_context);
   $on($id("opt_lines"), "change", opt_lines);
   $on($id("opt_images"), "change", opt_images);
+  $on($id("opt_temp"), "change", opt_temp);
   $on($id("opt_mission"), "change", opt_mission);
   $on($id("opt_cancel"), "click", () => set_controls());
 

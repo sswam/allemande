@@ -94,7 +94,7 @@ diffusers
 jax
 flax[all]
 
-google-generativeai
+google-genai
 
 cmake
 ninja

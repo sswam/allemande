@@ -163,10 +163,10 @@ class Agent:
 
     def __contains__(self, key: str):
         """Check if the agent's data contains a key"""
-        try:
-            return self[key]
-        except KeyError:
-            return False
+        if key in self.data:
+            return True
+        base = self.base()
+        return base and key in base
 
     def update(self, data: dict):
         """Update the agent's data"""

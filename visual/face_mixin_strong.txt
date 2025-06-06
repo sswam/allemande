@@ -1,3 +1,4 @@
+[##]
 [opt 90]
 [choose _weighted]
 4 | <lora:real-humans-PublicPrompts:0.8>
@@ -36,6 +37,7 @@
 2 | <lora:BetterFaces:0.6>
 [/choose] BetterFaces
 [/opt]
+[/##]
 
 [if gender="male" _not]
 [set n][rand 3 5][/set]

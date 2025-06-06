@@ -74,7 +74,7 @@ markdown-katex
 tiktoken
 uv
 
-google-generativeai
+google-genai
 google-cloud-aiplatform[tokenization]
 
 jq

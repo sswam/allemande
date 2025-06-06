@@ -72,7 +72,15 @@ lazy(
 
 lazy("anthropic")
 lazy("claude")
-lazy("google.generativeai", _as="google_genai")
+
+lazy(
+    "google.genai",
+    _as="google_genai",
+    google_client=lambda google_genai: google_genai.Client(
+        api_key=os.environ.get("GOOGLE_API_KEY")
+    ),
+)
+
 lazy("vertexai.preview.tokenization", _as="google_tokenization")
 
 lazy("transformers", "AutoTokenizer")
@@ -429,6 +437,9 @@ setup_models()
 ALLOWED_ROLES = ["user", "assistant", "system"]
 
 DEFAULT_TEMPERATURE = 1
+CLAUDE_MAX_TEMPERATURE = 1
+OPENAI_MAX_TEMPERATURE = 2
+GOOGLE_MAX_TEMPERATURE = 2
 TOKEN_LIMIT = inf
 
 os.environ["HF_HUB_OFFLINE"] = "1"
@@ -579,7 +590,12 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
+    if temperature > OPENAI_MAX_TEMPERATURE:
+        temperature = OPENAI_MAX_TEMPERATURE
+
     # logger.info("achat_openai: messages: %s", json.dumps(messages, indent=2))
+
+    logger.debug("openai temperature: %r", temperature)
 
     options = {
         "messages": messages,
@@ -733,6 +749,11 @@ async def achat_claude(opts: Options, messages):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
+    if temperature > CLAUDE_MAX_TEMPERATURE:
+        temperature = CLAUDE_MAX_TEMPERATURE
+
+    logger.debug("claude temperature: %r", temperature)
+
     options = {
         "model": model,
         "temperature": temperature,
@@ -767,8 +788,13 @@ async def achat_claude(opts: Options, messages):
 async def achat_google(opts: Options, messages):
     """Chat with Google models asynchronously."""
     model = MODELS[opts.model]["id"]
+
     api_key_name = MODELS[opts.model].get("api_key", "GOOGLE_API_KEY")
-    api_key = os.environ.get(api_key_name)
+    if api_key_name == "GOOGLE_API_KEY":
+        client = google_client
+    else:
+        api_key = os.environ.get(api_key_name)
+        client = google_genai.Client(api_key=api_key)
 
     temperature = opts.temperature
     token_limit = opts.token_limit
@@ -778,8 +804,12 @@ async def achat_google(opts: Options, messages):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
+    if temperature > GOOGLE_MAX_TEMPERATURE:
+        temperature = GOOGLE_MAX_TEMPERATURE
+
+    logger.debug("google temperature: %r", temperature)
+
     options = {
-        "model": model,
         "temperature": temperature,
     }
 
@@ -792,31 +822,58 @@ async def achat_google(opts: Options, messages):
             logger.warning("achat_google: too many stop sequences, truncating to 5")
             options["stop_sequences"] = opts.stop[:5]
 
-    google_genai.configure(api_key=api_key)
-
-    model_obj = google_genai.GenerativeModel(model)
+    # generation_config: generation_types.GenerationConfigType
 
     history = []
-    for msg in messages[:-1]:
+
+    types = google_genai.types
+
+    # logger.info("google messages: %r", messages)
+
+    if messages and messages[0]["role"] == "system":
+        options["system_instruction"] = messages[0]["content"]
+        messages.pop(0)
+
+    squash_messages = False  # dumb new API might need it?! :[
+
+    for msg in messages:
         role = msg["role"]
         if role == "system":
             role = "user"
             msg["content"] = f"System: {msg['content']}"
         elif role != "user":
             role = "model"
-        history.append(
-            {
-                "role": role,
-                "parts": [msg["content"]],
-            }
-        )
 
-    chat = model_obj.start_chat(history=history)
+        if squash_messages and history and role == history[-1].role:
+            history[-1].parts[0].text += "\n\n" + msg["content"]
+        else:
+            history.append(
+                types.Content(
+                    role = role,
+                    parts = [
+                        types.Part(text = msg["content"]),
+                    ],
+                )
+            )
+
+    # history = [{'role': 'user', 'parts': ['System: You are Flashi. Please only reply with a single message, as Flashi; do not impersonate other characters!']}]
+
+    config = types.GenerateContentConfig(
+#        top_k=2,
+#        top_p=0.5,
+#        response_mime_type='application/json',
+#        seed=42,
+        **options,
+    )
+
+    # logger.info("google config: %r", config)
+
+    # logger.info("history: %r", history)
 
     if opts.timeit:
         start_time = time.time()
 
-    response = await chat.send_message_async(messages[-1]["content"])
+    response = await client.aio.models.generate_content(model=model, contents=history, config=config)
 
     if opts.timeit:
         print(f"time: {time.time() - start_time:.3f}", file=stderr)

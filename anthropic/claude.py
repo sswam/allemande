@@ -132,6 +132,7 @@ def chat_claude(
     # 		stream=stream,
     # 		temperature=temperature,
     # 	)
+    logger.debug("claude temperature: %r", temperature)
     if stream:
         fn = c.messages.stream
     else:
