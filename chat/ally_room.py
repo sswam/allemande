@@ -426,7 +426,7 @@ def check_access(user: str | None, pathname: Path | str) -> Access:
         access, _reason = _check_access_2(user, pathname)
     except PermissionError as _e:
         access, _reason = Access.NONE, "PermissionError"
-    logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
+    logger.debug("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
     return access
 
 
