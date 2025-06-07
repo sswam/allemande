@@ -1,6 +1,8 @@
 type: llm_llama
-specialist: true
 model: default
+# type: openrouter
+# model: eva-qwen2.5-72b
+specialist: true
 stop_regexs:
 - \bSTOP\b
 system_bottom: |-

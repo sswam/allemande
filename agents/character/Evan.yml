@@ -7,8 +7,9 @@ system_bottom_pos: 9
 # options:
 #   repetition_penalty: 0
 context: 30
+age: 20
 visual:
-  person: 1boy, dark brown eyes, asian, Chinese, pale skin, oval face, slim athletic build, medium-length hair, black hair
+  person: 1boy, black hair, asian, Chinese, oval face, skinny, muscular, short hair, brown eyes
   clothes: navy button-down shirt, gray wool blazer, dark slim jeans, brown leather oxford shoes
   age: adult 20 years old
   emo: sweet smile
