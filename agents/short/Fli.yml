@@ -1,5 +1,5 @@
 base: Flashi
-# system_top: +Please reply as concise as possible, with no boilerplate or
+# system_top: +Please reply as concisely as possible, with no boilerplate or
 system_top: +Please reply concisely, with no boilerplate or
   unnecessary explanation, and please don't go beyond what is asked.
 visual:
