@@ -1,5 +1,0 @@
-[if gender="male" _not]
-	[sets gender=female]
-[/if]
-[if gender="male"]old man[/if][else]old woman[/else] [rand 60 100] years old
-<lora:age:2>

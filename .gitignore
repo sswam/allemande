@@ -159,6 +159,7 @@ rooms.*
 /webchat/build.stamp
 
 /visual/person
+/visual/extra
 
 # web cache
 /webcache

@@ -1,6 +1,0 @@
-[choose _weighted]
-18 | {use age_adult_young.txt}
-5 | {use age_adult_mid.txt}
-2 | {use age_middle}
-1 | {use age_elder}
-[/choose]
