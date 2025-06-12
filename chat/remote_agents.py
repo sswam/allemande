@@ -211,8 +211,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     #google.generativeai.types.generation_types.StopCandidateException: finish_reason: PROHIBITED_CONTENT
 
     response = output_message["content"]
-    box = [response]
-    response = box[0]
+
+    if response is None:
+        response = ""
 
     if response.startswith(agent.name + ": "):
         logger.debug("stripping agent name from response")
