@@ -17,7 +17,7 @@ que() {
 		opts+=("--system=$system")
 	fi
 
-	concise="Please reply as concise as possible, with no boilerplate or unnecessary explanation."
+	concise="Please reply as concisely as possible, with no boilerplate or unnecessary explanation."
 
 	query -m="$model" "${opts[@]}" "$prompt"$'\n'"$concise" "$@" | text-strip
 }

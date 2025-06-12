@@ -23,7 +23,7 @@ proc() {
 		opts+=("--system=$system")
 	fi
 
-	prompt="$prompt Please reply as concise as possible, with no boilerplate \
+	prompt="$prompt Please reply as concisely as possible, with no boilerplate \
 or explanation. Do not abbreviate text unrelated to the request. \
 If editing, do not make edits that are not requested (e.g. removing comments \
 or blank lines). If the input has code but does not include code quoting with \
