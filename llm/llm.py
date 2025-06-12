@@ -590,8 +590,7 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
-    if temperature > OPENAI_MAX_TEMPERATURE:
-        temperature = OPENAI_MAX_TEMPERATURE
+    temperature = max(0, min(temperature, OPENAI_MAX_TEMPERATURE))
 
     # logger.info("achat_openai: messages: %s", json.dumps(messages, indent=2))
 
@@ -749,8 +748,7 @@ async def achat_claude(opts: Options, messages):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
-    if temperature > CLAUDE_MAX_TEMPERATURE:
-        temperature = CLAUDE_MAX_TEMPERATURE
+    temperature = max(0, min(temperature, CLAUDE_MAX_TEMPERATURE))
 
     logger.debug("claude temperature: %r", temperature)
 
@@ -804,8 +802,7 @@ async def achat_google(opts: Options, messages):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
-    if temperature > GOOGLE_MAX_TEMPERATURE:
-        temperature = GOOGLE_MAX_TEMPERATURE
+    temperature = max(0, min(temperature, GOOGLE_MAX_TEMPERATURE))
 
     logger.debug("google temperature: %r", temperature)
 
