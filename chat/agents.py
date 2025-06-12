@@ -8,6 +8,7 @@ from watchfiles import Change
 import re
 from copy import deepcopy
 from typing import Any
+from datetime import datetime, timezone
 
 from deepmerge import always_merger, Merger, STRATEGY_END
 
@@ -122,6 +123,7 @@ class Agent:
 
         if not raw:
             # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
+            # replace $DATE, $TIME, $TZ and $TIMESTAMP with the current time
             # We do this on get, rather than initially, because we can define
             # a derived agent with different names.
             # TODO do this more generally for other variables?
@@ -130,10 +132,19 @@ class Agent:
                 fullname = self.get("fullname", name)
                 aliases = self.get("aliases") or [name]
                 aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
+                now = datetime.now(timezone.utc)
+                date = now.strftime("%Y-%m-%d")
+                time = now.strftime("%H:%M:%S")
+                tz = now.strftime("%Z")
+                timestamp = f"{date} {time} {tz}"
                 value = replace_variables(value, {
                     "NAME": name,
                     "FULLNAME": fullname,
                     "ALIAS": aliases_or,
+                    "DATE": date,
+                    "TIME": time,
+                    "TZ": tz,
+                    "TIMESTAMP": timestamp,
                 })
 
         # TODO remove null values? i.e. enable to remove an attribute from base
