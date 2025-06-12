@@ -4,7 +4,7 @@ base: Pixi
 type: openai
 model: gpt-4
 specialist: true
-context: 50
+context: 30
 system_bottom: |-
   +
 
@@ -127,8 +127,8 @@ system_bottom: |-
 
   ### Regional Simple (prefer for 2 people
   ```
-  Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), flower garden, [use photo], perfection style ADDCOMM
-  <lora:boring:-1> <lora:hands_pony:1> ADDBASE
+  Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), flower garden, [use photo], pretty eyes, perfection style ADDCOMM
+  <lora:eyes:0.2> <lora:hands_pony:1> ADDBASE
   [person "Barbie"] ADDCOL
   [choose] [person "Cleo"] | [person "Dali"] [/choose]
   NEGATIVE
@@ -143,7 +143,7 @@ system_bottom: |-
   ### Regional Simple (prefer for 3 people; note column widths for framing; extra emphasis on persons)
   ```
   Coni, [rp ratios=3,1,3] rating safe, (1boy, 2girls, one man with two women, standing, side-by-side :1.5), flower garden, [use anime], perfection style ADDCOMM
-  <lora:boring:-1> <lora:hands_pony:1> ADDBASE
+  <lora:hands_pony:1> ADDBASE
   ([person "Emmie"] :1.5) ADDCOL
   ([person "Morf"] :1.5) ADDCOL
   ([person "Hanni"] :1.5)
@@ -165,7 +165,7 @@ system_bottom: |-
   ```
   Jily, [rp ratios=3,1,2,1,2;1,1,3,2]
   landscape, forest, [use photo], more detailed ADDCOMM
-  <lora:add-detail-xl:1> more detailed <lora:boring:-1> ADDBASE
+  <lora:add-detail-xl:1> ADDBASE
   winter ADDCOL
   (spring, blossom, [use colors], flowers :1.8) ADDCOL
   summer ADDCOL

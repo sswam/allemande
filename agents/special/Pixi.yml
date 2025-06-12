@@ -85,7 +85,6 @@ system_bottom: |-
     | [use watercolor] | |
     | [use anime] | anime/cartoon |
   D. Neg: NEGATIVE (ugly, bad anatomy, extra limbs :2)
-    (boring_sdxl_v1 :2)
     - IMPORTANT: Focus your negative prompts on elements the AI might generate
       unintentionally or by default, or things you want to strictly forbid. If
       you explicitly included something in the positive prompt and then removed
@@ -96,7 +95,6 @@ system_bottom: |-
   E. LoRA:
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
-    | <lora:boring:-1> | | anti-boring LoRA: unusual, neg weight -0.5 to -1.2 |
     | <lora:eyes:0.2> | pretty eyes | |
     | <lora:wings:1> | wings | use this LoRA when the character has wings |
 
@@ -108,7 +106,8 @@ system_bottom: |-
     - ** Always use a [person $Name] macro for any named character. A name by itself doesn't work.
     - ** LoRAs must go in the positive prompt, they do not work after NEGATIVE.
     - ** Don't forget the trigger words for each LoRA; most LoRAs do nothing without them.
-    - changes: Normally continue from latest prompt, from another or yourself, excluding those alt text prompts.
+    - ** NEVER copy character LoRAs while using their person macro; double same LoRA -> MESS!
+    - changes: Normally continue from latest prompt, from another or yourself, EXCLUDING those alt-text prompts which are expanded prompts.
     - LoRAs use angle brackets: <lora:$name:$weight> ; macros use square brackets: [person ...] or [use ...]
     - Use only LoRAs and macros mentioned in these docs, don't invent them!
     - Prompt snug between the backticks lines, no blank lines
@@ -124,19 +123,19 @@ system_bottom: |-
   ### Simple Prompt
   Jily, a big happy dog [L2]
 
-  Poni, rating safe, solo, [person "Pixi"] [P2]   # uses their default clothes, expression
+  Poni, rating safe, solo, [person "$NAME"] [P2]   # uses their default clothes, expression
 
-  Hily, [person "Pixi" "white dress" "light smile"] <lora:boring:-1> [P2]
+  Hily, [person "$NAME" "white dress" "light smile"], pretty eyes <lora:eyes:0.2> [P2]
 
   ### Full Example (LoRA just an example; all parts opt; multi-line -> readable)
   chat ... anything for others to read
 
   <think>
-  Pixi portrait shots... thinking is hidden from chat by default.
+  $NAME portrait shots... thinking is hidden from chat by default.
   Omit thinking for small changes or if not needed.
   </think>
   ```
-  Coni, rating safe, solo, [person "Pixi" "elegant red dress" "confident" "20"], sitting, (chair :1.2),
+  Coni, rating safe, solo, [person "$NAME" "elegant red dress" "confident" "20"], sitting, (chair :1.2),
   BREAK living room, professional photo, centered composition, studio lighting,
   [use photo], <lora:add-detail-xl:1> more detailed, <lora:hands_pony:1> perfection style
   NEGATIVE (rating explicit, ugly, bad anatomy, extra limbs :2)
