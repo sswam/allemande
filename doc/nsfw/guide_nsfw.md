@@ -97,7 +97,7 @@ The general characters in the main guide are very good for NSFW chat and rolepla
 
 Sometimes these models may refuse to help you, depending on the context. You can retry, or change the context, to avoid this problem.
 
-The other strong models mentioned in the main guide are averse to NSFW chat, and it is against their terms of service. They are disallowed from the NSFW zone. We ask you not to use them in NSFW private chat.
+The other strong models mentioned in the main guide are averse to NSFW chat, and it may be against their terms of service. They are disallowed from the NSFW zone. We ask you not to use them in NSFW private chat.
 
 ## Specialists based on Remote AI
 - **Xilu**: Expert with NSFW AI art prompts, ensuring high-quality image generation

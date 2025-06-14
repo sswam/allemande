@@ -339,3 +339,7 @@ function previous(selector, lookBack = 0) {
 	const index = beforeScript.length - 1 - lookBack;
 	return index >= 0 ? beforeScript[index] : null;
 }
+
+function rem_to_px(n) {
+    return n * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}

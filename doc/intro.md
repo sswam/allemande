@@ -14,15 +14,17 @@ If you'd like to support us, you can [become a patron](https://www.patreon.com/a
 
 ## Getting Started
 
-Click the *i* help button at any time, and talk with Flashi. In the help system, AIs have access to the full user guide and can give detailed help.
+Read this intro carefully!
 
-In the main [Ally Chat](/Ally+Chat) room, AIs can help with some basic info about the app.
+Click the <i class="bi-question-lg"></i> help button, and talk with Flashi in the *Help* tab. In this help system, AIs can give extensive help based on the full user guide.
+
+In the main [Ally Chat](/Ally+Chat) room, AIs can help with basic info about the app.
 
 **NOTE**: In other chat rooms, AIs don't know anything at all about the app!
 
 Read this [Quick Intro](/intro), then the [User Guide](/guide), for full details on the app, models, characters, and tools.
 
-The app has advanced modes with many options and features, but please master the basics first.
+The app has an advanced mode with many options and features, but please master the basics first.
 
 Please contact Sam, the main developer, for more help and to give feedback.
 
@@ -41,13 +43,15 @@ You can say @anyone for a random AI, or @everyone for several responses.
 ## Select Characters and Tools
 
 **General Chat**
-- Ally, Barbie, Callam: friendly chat
+- Ally, Barbie, Callam, Dante: friendly chat
 - Flashi, Emmy, Claude, Gemmi: strong assistants
 - Fli, Emm, Clu, Gemm: for concise responses
 
 **AI Art**
-- Illu, Gema: prompting
-- Jily: image generation
+- Illu, Gema: image prompting
+- Jily, Hily: high quality, realistic images
+- Poni: cartoon / anime images, use "rating safe" in prompt to avoid nudity
+- Coni: semi-realistic images, use "rating safe" in prompt to avoid nudity
 
 **Specialists**
 - Brie: brainstorming
@@ -73,16 +77,16 @@ There are many, many more; check the guide, and try the help system!
 - Full markdown/HTML/SVG/CSS/JS works in the chat (no backticks)
 - TeX math: `$y = \sqrt{x}$` gives $y = \sqrt{x}$, use `$$ ... $$` for displays
 - Graphviz ```dot ```, and ```mermaid ``` diagrams
-- Interactive charts, simulations, mini-games with e.g. `<canvas>`, `<script>` (not in backticks)
-- JS DOM utils such as $id(id), $(query), $$(query) all
+- Interactive charts, simulations, mini-games with e.g. `<canvas>` and `<script>` (not in backticks)
+- JS DOM utils such as $id(id), $(query), $$(query).
 
 ## Platform Features
 
 - Private/group chat rooms
 - Instant room creation and switching
-- 100+ characters, assistants, specialists, and tools
+- 300+ characters, assistants, specialists, and tools
 
-## Privacy and Rooms
+## Rooms and Privacy
 
 - The [Ally Chat](/Ally+Chat) room is public.
 - Press the padlock icon at top left to switch between public and private rooms.

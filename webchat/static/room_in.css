@@ -10,19 +10,15 @@ div.messages {
 .message > .content > p:first-of-type > .label:first-child {
 	display: inline-block;
 	break-after: avoid;
-	margin-right: 1em;
+	margin-right: 1rem;
 	font-weight: bold;
 	align-self: flex-start;
 	user-select: none;
 }
 
-.message > .content > .label:first-child,
-.message > .content > p:first-of-type > .label:first-child {
-}
-
 body:not(.compact) .message:not(.narrative) > .content > .label:first-child,
 body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .label:first-child {
-	margin-left: -1em;
+	margin-left: -1rem;
 }
 
 /* an :is(...) list does not work for this case, IDK why */
@@ -35,7 +31,7 @@ body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .labe
 
 .message {
 	clear: both;
-	min-height: 1em;
+	min-height: 1rem;
 	scroll-margin-top: 0.75rem;
 	margin: 0.75rem 0;
 	width: 100%;
@@ -54,7 +50,7 @@ body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .labe
 	display: block;
 }
 .message > .content {
-	margin: 0 0 0 1em;
+	margin: 0 0 0 1rem;
 /*	width: fit-content;
 	height: fit-content; */
 }
@@ -65,8 +61,8 @@ body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .labe
 
 #allemande_status {
 	position: fixed;
-	top: 0.5em;
-	right: 0.5em;
+	top: 0.5rem;
+	right: 0.5rem;
 }
 
 h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
@@ -268,7 +264,7 @@ body:not(.compact) code {
 pre code {
 	overflow: auto;
 	display: block;
-	padding: 1em;
+	padding: 1rem;
 }
 
 body.dark code {
@@ -352,7 +348,7 @@ details.think, details.think * {
 /*
 details.search {
 	position: relative;
-	min-width: 20em;
+	min-width: 20rem;
 }
 */
 
@@ -442,7 +438,7 @@ body:not(.rendered_source) :is(.language-latex, .language-dot, .language-mermaid
 }
 
 code.language-latex:has(+ span.katex) {
-    margin-right: 0.5em;
+    margin-right: 0.5rem;
 }
 
 body.canvas > div.canvas {
@@ -535,7 +531,7 @@ body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
 	content: "<script/>";
 	display: block;
 	font-weight: normal;
-	margin-left: 1em;
+	margin-left: 1rem;
 }
 
 /*
@@ -732,8 +728,8 @@ body.columns.compact:not(.compact2) div.messages code.hljs {
 /* tables ----------------------------------------------------------------- */
 
 th, td {
-	height: 1.5em;
-	max-height: 1.5em;
+	height: 1.5rem;
+	max-height: 1.5rem;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
@@ -756,7 +752,7 @@ div.message {
 div.message > div.id {
 	display: none;
 	position: absolute;
-	top: -1em;
+	top: -1rem;
 	right: 0;
 	font-size: 0.8rem;
 }
@@ -879,4 +875,22 @@ body:not(.select) input[type="checkbox"].select {
 	overflow: hidden;
 	clip: rect(0, 0, 0, 0);
 	border: 0;
+}
+
+/* RTL support ------------------------------------------------------------ */
+
+.message .content:has(*[dir="rtl"]) {
+    direction: rtl;
+}
+
+.message .content:has(*[dir="rtl"]) .label {
+    float: right !important;
+    margin-left: 1rem !important;
+    margin-right: 0 !important;
+}
+
+/* Move message ID to left side for RTL messages */
+.message:has(*[dir="rtl"]) > .id {
+    right: auto;
+    left: 0;
 }

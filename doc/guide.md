@@ -25,7 +25,7 @@ Novel features include:
 - a column view option, to make the most of your screen
 - web, image, video search; programming tools such as Bash and Python
 - the whole app is open source; you can potentially run it at home
-- a cast of more than 100 characters, specialist agents, and tools
+- a cast of more than 300 characters, specialist agents, and tools
 - custom agents and missions, adjust context and other settings mid-chat
 - a wide range of styles, support for custom styles and JavaScript
 - we value free speech, and include access to various uncensored AIs
@@ -65,7 +65,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - Informed help from AIs is available in the help widget. Here, AIs have access to the entire user guide.
    - In the main "Ally Chat" room, AIs have some basic info about the app.
    - In other chat rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
-   - Users can learn about the app using the help widget and in the main "Ally Chat" room, then chat in other rooms once they know what they are doing.
+   - Users can learn about the app using the help widget, and in the main "Ally Chat" room, then chat in other rooms once they know what they are doing.
 
 ## Tools and Capabilities
 
@@ -776,6 +776,7 @@ lines: 1
 | <i class="bi-lock"></i> <i class="bi-unlock"></i> |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
 |  | `Ctrl+;` or `Esc` | Room Name | Change room |
 |  |  | User | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
+| <i class="bi-question-lg"></i> |  | Help | Read the Intro and Guide, and get AI help to use the app. Brightly coloured and slightly animated in 'basic' mode. |
 | <i class="bi-box-arrow-right"></i> |  | Exit | Log out |
 
 ### Bottom-Right Controls
@@ -793,7 +794,7 @@ lines: 1
 |---------|----------|-------------|----------|
 | <i class="bi-fonts"></i> |  | Font Size | Change font size |
 | <i class="bi-palette"></i> |  | Theme | Change UI theme |
-| <i class="bi-lightbulb"></i> <i class="bi-lightbulb-fill"></i> |  | Advanced | Toggle advanced mode |
+| <i class="bi-lightbulb"></i> <i class="bi-lightbulb-fill"></i> |  | Advanced | Toggle basic / advanced mode. Disables potentially annoying highlighting of the help button! |
 | <i class="bi-x"></i> |  | Back | Return to main controls |
 
 ## Advanced Mode
