@@ -157,8 +157,8 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 |---------------|---------------------|------|---------------------------------------------------------------------------------------------------------------------|
 | RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images including soft-core erotica    |
 | LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art including soft-core erotica  |
-| Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic pony model         |
-| Autismix anon | AutismMix Confetti  | Poni | Mix of pony with "some stuff", a popular model for erotic anime-style art                                           |
+| Autismix anon | AutismMix Confetti  | Poni | Mix of Pony with "some stuff", a popular model for anime-style art                                                  |
+| Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic Pony model         |
 | SubtleShader  | Big Love Pony       | Pigi | The more Pony-flavoured variant, a bit less realistic but with a better understanding of booru tags                 |
 | SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Jily, with more SDXL than Pony                     |
 | Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |

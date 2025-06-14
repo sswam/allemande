@@ -751,10 +751,14 @@ lines: 1
 
 #### Image Models (SFW)
 
-| Creator       | Model             | Name | Description                                                                              |
-|---------------|---------------------|------|----------------------------------------------------------------------------------------|
-| RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images   |
-| LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art |
+| Creator       | Model               | Name | Description                                                                                                 |
+|---------------|---------------------|------|-------------------------------------------------------------------------------------------------------------|
+| RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images                        |
+| LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art                      |
+| Autismix anon | AutismMix Confetti  | Poni | Mix of pony with "some stuff", a popular model for anime-style art                                          |
+| Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic pony model |
+
+* Note that Poni and Coni models should be prompted with "rating safe" to avoid nudity.
 
 # Ally Chat User Interface Guide
 
