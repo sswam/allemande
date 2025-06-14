@@ -119,6 +119,8 @@ MODELS = {
         "cost_in": 10,
         "cost_out": 40,
         "no_stop": True,
+        "temp_min": 1,
+        "temp_max": 1,
     },
     "o4-mini": {
         "aliases": ["om", "fermi"],
@@ -128,6 +130,8 @@ MODELS = {
         "cost_in": 3,
         "cost_out": 12,
         "no_stop": True,
+        "temp_min": 1,
+        "temp_max": 1,
     },
     "gpt-4": {
         "aliases": ["4", "emmy"],
@@ -578,9 +582,10 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
     """Chat with OpenAI ChatGPT models asynchronously."""
     if client is None:
         client = openai_async_client
-    model = MODELS[opts.model]["id"]
+    model = MODELS[opts.model]
+    model_id = model["id"]
 
-    logger.debug("model: %s", model)
+    logger.debug("model: %s", model_id)
 
     temperature = opts.temperature
     token_limit = opts.token_limit
@@ -590,7 +595,9 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
-    temperature = max(0, min(temperature, OPENAI_MAX_TEMPERATURE))
+    min_temp = model.get("temp_min", 0)
+    max_temp = model.get("temp_max", OPENAI_MAX_TEMPERATURE)
+    temperature = min(max(temperature, min_temp), max_temp)
 
     # logger.info("achat_openai: messages: %s", json.dumps(messages, indent=2))
 
@@ -598,7 +605,7 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
 
     options = {
         "messages": messages,
-        "model": model,
+        "model": model_id,
         "temperature": temperature,
     }
 
@@ -738,7 +745,8 @@ async def achat_openrouter(opts: Options, messages):
 
 async def achat_claude(opts: Options, messages):
     """Chat with Anthropic Claude models asynchronously."""
-    model = MODELS[opts.model]["id"]
+    model = MODELS[opts.model]
+    model_id = model["id"]
 
     temperature = opts.temperature
     token_limit = opts.token_limit
@@ -748,12 +756,14 @@ async def achat_claude(opts: Options, messages):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
-    temperature = max(0, min(temperature, CLAUDE_MAX_TEMPERATURE))
+    min_temp = model.get("temp_min", 0)
+    max_temp = model.get("temp_max", CLAUDE_MAX_TEMPERATURE)
+    temperature = min(max(temperature, min_temp), max_temp)
 
     logger.debug("claude temperature: %r", temperature)
 
     options = {
-        "model": model,
+        "model": model_id,
         "temperature": temperature,
     }
 
@@ -785,9 +795,10 @@ async def achat_claude(opts: Options, messages):
 
 async def achat_google(opts: Options, messages):
     """Chat with Google models asynchronously."""
-    model = MODELS[opts.model]["id"]
+    model = MODELS[opts.model]
+    model_id = model["id"]
 
-    api_key_name = MODELS[opts.model].get("api_key", "GOOGLE_API_KEY")
+    api_key_name = model.get("api_key", "GOOGLE_API_KEY")
     if api_key_name == "GOOGLE_API_KEY":
         client = google_client
     else:
@@ -802,7 +813,9 @@ async def achat_google(opts: Options, messages):
     if token_limit is None:
         token_limit = TOKEN_LIMIT
 
-    temperature = max(0, min(temperature, GOOGLE_MAX_TEMPERATURE))
+    min_temp = model.get("temp_min", 0)
+    max_temp = model.get("temp_max", GOOGLE_MAX_TEMPERATURE)
+    temperature = min(max(temperature, min_temp), max_temp)
 
     logger.debug("google temperature: %r", temperature)
 
@@ -870,7 +883,7 @@ async def achat_google(opts: Options, messages):
     if opts.timeit:
         start_time = time.time()
 
-    response = await client.aio.models.generate_content(model=model, contents=history, config=config)
+    response = await client.aio.models.generate_content(model=model_id, contents=history, config=config)
 
     if opts.timeit:
         print(f"time: {time.time() - start_time:.3f}", file=stderr)
