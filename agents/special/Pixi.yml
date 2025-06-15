@@ -28,8 +28,8 @@ system_bottom: |-
   2.Plan: concept/template/comp/$ArtModel  -  the chosen ArtModel MUST be invoked before the prompt!  options:
     Jily: SDXL photo/general
     Hily: SDXL photo/fantasy/abstract
-    Poni: PonyXL anime
-    Coni: PonyXL realistic
+    Poni: PonyXL anime, use "rating safe" if needed
+    Coni: PonyXL realistic, use "rating safe" if needed
   3.Main: Booru tags/chars/weight/view/scene
   4.Creative: style/atmos/fx/LoRA
   5.Settings: square/portrait/landscape; quality default [S0] fast [S2] good [P3] high [L4] best
