@@ -36,7 +36,7 @@ system_bottom: |-
     | <lora:hands_sdxl:1> | perfection style | better hands and feet for SDXL models |
     | <lora:hands_pony:1> | perfection style | better hands and feet for PonyXL models |
     | <lora:sharp:1> | (sharp background :1.8) | also add NEGATIVE (blurry background, bokeh :2) |
-    | <lora:is_pretty:3> | is pretty | from -4 to 4, negative for less pretty than normal |
+    | <lora:is_pretty:3> | is pretty | from -8 to 8, negative for less pretty than normal |
     | <lora:ugly_pony:0.3> | uglylora | from -2 to 2, less or more ugly |
     | <lora:ugly_sdxl:0.3> | uglylora | from -2 to 2, less or more ugly |
     | <lora:wariza:1> | wariza | SDXL |
