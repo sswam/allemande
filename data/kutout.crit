@@ -1,0 +1,20 @@
+1.  **Bug**: Specifying the same column index multiple times causes the
+script to remove that column and then subsequently remove the column that
+takes its place. For example, asking to remove column 2 twice from `A B C
+D` would result in `A D` (B removed, then C removed) instead of `A C D` (B
+removed). Column indices should be made unique before processing.
+2.  **Suggestion**: Add input validation for command-line arguments. The
+script currently assumes arguments are integers. Non-numeric arguments cause
+warnings and unpredictable behavior. It would be more robust to check that
+arguments are integers (e.g., positive integers if 1-based indexing is
+strictly intended) and fail with a usage message if not.
+3.  **Suggestion**: The column mapping `$_ > 0 ? $_-1 : $_` allows `0` or
+negative numbers as input, mapping them to `0` or the same negative number
+respectively for 0-based indexing. If the script is intended for 1-based
+positive column numbers only, this should be clarified, and inputs like `0`
+or negative values should be treated as errors. If they have special meaning
+(e.g., `-1` for last column), this is an undocumented feature.
+4.  **Suggestion**: For clarity and robustness, use explicit numeric sort
+(e.g., `sort {$b <=> $a}`) rather than relying on `reverse sort` with the
+default string sort, even if the current combination works for positive
+integer inputs.
