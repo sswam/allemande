@@ -13,6 +13,7 @@ CUDACXX="/usr/local/cuda/bin/nvcc"
 cd ~/soft-ai
 git clone git@github.com:zpin/llama-cpp-python-xtc-dry.git
 NVCC_PREPEND_FLAGS="-ccbin $CUDA_CC" CUDACXX="$CUDACXX" CMAKE_ARGS="-DGGML_CUDA=on" FORCE_CMAKE=1 pip install --upgrade --force-reinstall -e ./llama-cpp-python-xtc-dry --no-cache-dir
+# CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=all-major"  # for wider CUDA / GPU compatibility; might be needed on WSL
 
 
 # -------- whisper.cpp -------------------------------------------------------
