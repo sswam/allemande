@@ -1,0 +1,18 @@
+{
+	"manifest_version": 2,
+	"name": "Flix",
+	"version": "1.0",
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "flix@allemande.ai"
+		}
+	},
+	"permissions": ["alarms", "tabs"],
+	"browser_action": {
+		"default_popup": "popup.html"
+	},
+	"background": {
+		"scripts": ["background.js"],
+		"persistent": false
+	}
+}
