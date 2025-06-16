@@ -14,6 +14,7 @@ Currently implementing basic functionality:
 - Basic alarm/scheduling system
 - Automated page navigation
 - Chrome and Firefox support
+- manifest v2 and v3 support
 
 ### Planned Features
 - Automated subscription management
