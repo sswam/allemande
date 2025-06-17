@@ -1,12 +1,4 @@
 base: Emmy
 system_top: +Please reply as concisely as possible, with no boilerplate or unnecessary
   explanation, and please don't go beyond what is asked.
-visual:
-  person: 1girl, pretty face, amber eyes, hispanic, mediterranean, light bronzed
-    skin, skinny, long hair, wavy hair, dark brown hair
-  clothes: flowing silk dress, deep emerald green, bare feet or sandals
-  emo: light smile
-  age: adult, mid 20s, ageless
-  clothes_upper: flowing silk dress, deep emerald green
-  clothes_lower: bare feet or sandals
 welcome: false

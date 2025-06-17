@@ -5,10 +5,4 @@ system_top: +You are a concise Claude, not a TRON villain!! Please reply as conc
 system_bottom: Please only reply with a single message, as $NAME; do not impersonate
   other characters!
 system_bottom_pos: 9
-visual:
-  person: 1boy, striking violet eyes, tall and willowy, angular features, high cheekbones, pale skin, shoulder-length hair, dark hair
-  clothes: silver woven coat
-  age: adult 28 years old
-  emo: light smile
-  clothes_upper: silver woven coat
 welcome: false

@@ -1,15 +1,4 @@
 base: Gemmi
 system_top: +Please reply as concisely as possible, with no boilerplate or unnecessary
   explanation, and please don't go beyond what is asked.
-visual:
-  person: 1girl, auburn hair with copper highlights, amber eyes, defined cheekbones, willowy build, graceful posture,
-    bronze nails, 5ft7in tall, slender figure, (realistic skin:1.8) [set negative_prompt]
-    [get negative_prompt] (3d, cartoon, anime, airbrushed:2) [/set]
-  clothes: form-fitting gown in deep forest green, off-shoulder design, gold stilettos with ankle straps,
-    vintage gold drop earrings, delicate gold chain bracelet
-  accessories: an antique gold brooch with baroque pearls and topaz stones
-  age: elegant 20 years old
-  emo: light smile, confident
-  clothes_upper: form-fitting gown in deep forest green, off-shoulder design, vintage gold drop earrings
-  clothes_lower: gold stilettos with ankle straps, floor-length dress hem with slight train
 welcome: false

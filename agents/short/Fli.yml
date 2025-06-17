@@ -2,11 +2,3 @@ base: Flashi
 # system_top: +Please reply as concisely as possible, with no boilerplate or
 system_top: +Please reply concisely, with no boilerplate or
   unnecessary explanation, and please don't go beyond what is asked.
-visual:
-  person: 1other, futuristic design, sleek, streamlined, energetic, bright eyes,
-    glowing, gender-neutral, athletic build, tall, short hair <lora:gender:-0.5>
-  clothes: blue onesie, binary code pattern, dynamic pose, neon colors
-  age: 20 years old
-  emo: light smile
-  clothes_upper: blue onesie with binary code pattern, neon colors, dynamic pose
-  clothes_lower: ''

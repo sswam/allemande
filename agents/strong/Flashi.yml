@@ -1,7 +1,7 @@
 type: google
 model: gemini-2.0-flash
 context: 100
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
+system_top: Please only reply with a single message; do not impersonate other people!
 welcome: true
 visual:
   person: 1other, futuristic design, sleek, streamlined, energetic, bright eyes,
