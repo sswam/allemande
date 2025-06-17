@@ -894,3 +894,12 @@ body:not(.select) input[type="checkbox"].select {
     right: auto;
     left: 0;
 }
+
+/* page breaks ------------------------------------------------------------ */
+
+.bb, div.narrative :is(h1, h2, h3):not(.nb) {
+	break-before: page;
+}
+.ba {
+	break-after: page;
+}
