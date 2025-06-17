@@ -232,7 +232,7 @@ umount:
 	ally-mount -u
 
 wat:
-	wat -s=10 -c sh -c 'cd "$(ROOMS)"; find . -name ".?*" -prune -o -print | sortmtime | grep \\.bb | head -n 9 | secs2ago | sed "s/\t/ /"'
+	wat -s=10 -c sh -c 'cd "$(ROOMS)"; find . -name ".?*" -prune -o -print | sortmtime | grep \\.bb | head -n 9 | secs2ago --human | sed "s/\t/ /"'
 
 opal-loop:
 	opal-loop
