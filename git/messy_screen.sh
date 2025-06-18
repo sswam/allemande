@@ -11,7 +11,7 @@ messy-screen() {
 	eval "$(ally)"
 
 	if [ "$#" = 0 ]; then
-		exec xargs-tsv messy-screen -X
+		hold | exec xargs-tsv messy-screen -X
 		screen -c xi </dev/tty
 		exit 120
 	fi
