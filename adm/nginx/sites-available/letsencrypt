@@ -1,7 +1,7 @@
 server {
 	server_name $ALLEMANDE_DOMAIN chat.$ALLEMANDE_DOMAIN rooms.$ALLEMANDE_DOMAIN login.$ALLEMANDE_DOMAIN;
-	listen 127.0.0.1:81;
-	listen [::]:81;
+	listen 127.0.0.1:82;
+	listen [::]:82;
 	root /var/www/html/;
 
         # Only serve the .well-known directory

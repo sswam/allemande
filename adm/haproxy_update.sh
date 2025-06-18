@@ -17,6 +17,9 @@ fi
 
 rm -f /etc/haproxy/haproxy.cfg
 
-envsubst '$ALLEMANDE_DOMAIN' < "haproxy/haproxy.cfg" | include > /etc/haproxy/haproxy.cfg
+(
+	echo "# DERIVED FILE: DO NOT EDIT!"
+	envsubst '$ALLEMANDE_DOMAIN' < "haproxy/haproxy.cfg" | include
+) > /etc/haproxy/haproxy.cfg
 
 service haproxy reload
