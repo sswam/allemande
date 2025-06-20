@@ -32,6 +32,8 @@ Read the [Quick Intro](/intro), then the [User Guide](/guide), for full details 
 
 Read this [NSFW Intro](/nsfw/intro), then the [User Guide to Adult Features](/nsfw/guide) for more info about adult features, models, characters, and tools.
 
+A red dot at the top-right means you are disconnected or offline. Reload the page.
+
 The app has an advanced mode with many options and features, but please master the basics first.
 
 Please contact Sam, the main developer, for more help and to give feedback.

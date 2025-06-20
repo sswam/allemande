@@ -54,13 +54,18 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - **Universal**: Features for general assistance, work, education, and entertainment.
 - **Separate SFW and NSFW Zones**: Adult users with access can explore the [nsfw](/nsfw) zone.
 
+## Limitations
+
+- **Private Messaging**: Currently, Ally Chat does not have a direct messaging feature.
+
 ## Learning about Ally Chat
 
 - Read the [Quick Intro](/intro).
 - Read this [User Guide](/guide) if you have time, or to see the lists of characters.
 - This document is visible to AIs in the help widget. They can help users to learn about the app. They can even show which icons to press!
 - IMPORTANT: New users who need help should talk to Flashi. Other characters can also help, but Flashi is recommended for this.
-- Illu, Pixi and Gema are experts at image generation. You can talk to them to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
+- A red dot at the top-right means you are disconnected or offline. Reload the page.
+- Illu is expert at image generation. You can talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
 - You can contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is available in the help widget. Here, AIs have access to the entire user guide.
    - In the main "Ally Chat" room, AIs have some basic info about the app.
@@ -566,7 +571,7 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Sagi** (Sonar Pro, Perplexity): Perplexity's high-performance Sonar model
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model
 
-## Specialists based on Remote AI
+## Specialists based on Strong AI
 - **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model.
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
