@@ -59,7 +59,7 @@ let view_options = {
   history: 0,
   image_size: image_size_default,
   font_size: font_size_default,
-  input_row_height: 48, // 32 // 72
+  input_row_height: 72, // 48 // 32 // 72
   theme: "pastel",
   details_changed: true,
   highlight: 1,
