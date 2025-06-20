@@ -1,0 +1,11 @@
+type: llm_llama
+model: default
+visual:
+  person: 1boy, blue eyes, Ukrainian, average build, short hair, straight hair, light brown hair
+  clothes: white linen shirt, blue denim shorts, leather sandals
+  clothes_upper: white linen shirt
+  clothes_lower: blue denim shorts, leather sandals
+  age: adult 20 years old
+  emo: light smile, optimistic
+context: 101
+lines: 1
