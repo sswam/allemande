@@ -486,6 +486,10 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     if user in MODERATORS and pathname == "":
         return Access.MODERATE_READ_WRITE, "moderator"
 
+    # Denied users have no access
+    if user in access_conf.get("deny", []):
+        return Access.NONE, "deny"
+
     # Users have admin on their own directory, and files in their own directory
     if (
         user is not None
@@ -525,10 +529,6 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     # Moderators have moderation on all files in the root
     if user in MODERATORS and not "/" in pathname and (is_file or is_symlink):
         return Access.MODERATE_READ_WRITE, "moderator_top"
-
-    # Denied users have no access
-    if user in access_conf.get("deny", []):
-        return Access.NONE, "deny"
 
     # Allowed users have access
     logger.debug("access: %s", access_conf)
