@@ -4,7 +4,6 @@
 List directory contents with MIME types and icons.
 """
 
-import os
 import logging
 from pathlib import Path
 from typing import TextIO
@@ -14,11 +13,10 @@ import dataclasses
 from typing import Any
 
 from starlette.templating import Jinja2Templates
+from natsort import natsort_keygen
 
-import chat
 import ally_room
 from ally_room import Access
-from ally import debug
 from util import sanitize_pathname, safe_join
 from ally_service import add_mtime_to_resource_pathnames
 
@@ -116,6 +114,7 @@ def get_mime_type_and_icon(path: Path) -> tuple[str, str]:
     ext = path.suffix.lstrip(".").lower()
 
     # Handle directories
+    mime_type: str | None = None
     if path.is_dir():
         mime_type = "inode/directory"
 
@@ -222,12 +221,19 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
 
         listing.append(record)
 
-    return sorted(listing, key=lambda x: (x["type_sort"], x["name"].lower()))
+    natsort_key = natsort_keygen(key=lambda x: x.lower())
+    return sorted(listing, key=lambda x: (x["type_sort"], natsort_key(x["name"])))
 
 
-def get_dir_listing_html(path: Path, pathname: str, info: FolderInfo, templates: Jinja2Templates = None, context: dict[str,Any] = None) -> str:
+def get_dir_listing_html(
+    path: Path,
+    pathname: str,
+    info: FolderInfo,
+    templates: Jinja2Templates | None = None,
+    context: dict[str, Any] | None = None
+) -> str:
     """Get directory listing as HTML"""
-    listing = get_dir_listing(path, pathname, info)
+    listing = get_dir_listing(path, pathname, info)
 
     html = []
 
@@ -270,7 +276,9 @@ def list_directory(
         if not dir_path.is_dir():
             raise ValueError(f"Not a directory: {path}")
 
-        listing = get_dir_listing(dir_path, pathname, user)
+        dummy_info = FolderInfo(user=user, chat_base_url="", rooms_base_url="", login_base_url="")
+
+        listing = get_dir_listing(dir_path, pathname, dummy_info)
 
         if json_output and html_output:
             raise ValueError("Cannot output both JSON and HTML")
@@ -281,7 +289,7 @@ def list_directory(
             return
 
         if html_output:
-            ostream.write(get_dir_listing_html(dir_path, pathname, user))
+            ostream.write(get_dir_listing_html(dir_path, pathname, dummy_info, templates=None, context=None))
             return
 
         for item in listing:

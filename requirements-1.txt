@@ -64,3 +64,4 @@ geoip2
 
 fonttools
 brotli
+natsort
