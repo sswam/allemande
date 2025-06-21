@@ -1,5 +1,5 @@
-type: openai
-model: o4-mini
+type: google
+model: gemini-2.5-flash
 #type: google
 #model: gemini-2.5-pro
 #type: openrouter

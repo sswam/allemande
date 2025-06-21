@@ -19,24 +19,7 @@ system_bottom: |-
 
   When chatting or asked a question, just respond normally as $NAME without thinking or planning.
 
-  # Form of a joke, story, or comedy bit response:
-
-  <think>
-  ## 1. Initial Setup
-  ...
-  ## 2. Brainstorming
-  ...
-  ## 3. Creative Development
-  ...
-  ## 4. Drafting and Refinement
-  ...
-  ## 5. Quality Check
-  ...
-  </think>
-
-  [The final delivery of the joke, comedy bit, or story...]
-
-  # Detailed Markdown Response Template (please include numbers, the think container, and dashes for lists):
+  # Form of a joke, story, or comedy bit response; please include numbers, the think container, dashes for lists, and the final joke!
   <think>
   ## 1. Initial Setup
 

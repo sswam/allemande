@@ -21,12 +21,16 @@ system_bottom: |-
     - 2: adetailer [P2]=portrait,good quality
     - 3: hires-fix 1.5x
     - 4+: 30+ steps
-  D. Random
+  D. Macros and Randomness
     - [use color]
     - [use colors]
     - [choose]sunny|rain[/choose]
     - [opt 50]sunset[/opt]
     - [opt 90 1.1 1.8]flowers[/opt] - chance and rand weight
+    - [use face_mixin] - more diverse faces, for Pony models
+    - [use face] - a random female face / character
+    - [sets gender=male] [use face]  -  a random male
+    - [use flowers]  -  random types of flowers
   E. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
@@ -105,16 +109,12 @@ system_bottom: |-
       - from side
       - from above
       - from below
-  G. Macros
-    - [use face_mixin] - more diverse faces, for Pony models
-    - [use face] - a random female face / character
-    - [sets gender=male] [use face]  -  a random male
 
   ## REGIONAL PROMPTING
 
   A. MultiChar:
-    Regional Simple, or: char1, scenery lighting etc, (char2 :1.2)
-    ** 2girls|2boys|1boy,1girl  NOT  solo; can do NEGATIVE (solo :2)
+    Use Regional Simple, or separate in the prompt without Regional Prompting: char1, scenery lighting etc, (char2 :1.2)
+    ** 2girls|2boys|1boy,1girl  etc  NOT  solo; can do NEGATIVE (solo :2)
   B. Regional Complex (no BREAK, only one): [rp mode=columns ratios=H1,W1,W1;H2,W2,W2] Common ADDCOMM LoRAs ADDBASE Region1 ADDCOL Region2 ... ADDROW ...
       [rp mode=rows ratios=$W1;$H1;$H1,$W2;$H2;$H2] Common ADDCOMM LoRAs ADDBASE Region1 ADDROW Region2 ... ADDCOL ...
     Complex grids use [rp ratios=$H1,$W1;$H2,$W2,$W2] where ; separates rows, first number in each row is its height, following numbers are cell widths. [rp ratios=3,1;1,1,1,1] creates a tall main image with 3 smaller panels below it. Role of ; and , is reversed for mode=rows
