@@ -193,6 +193,7 @@ MODELS = {
     "gemini-2.5-pro": {
         "aliases": ["gemmi-paid", "gemini", "gp"],
         "vendor": "google",
+        "vision": True,
         "api_key": "GOOGLE_API_KEY",
         "id": "gemini-2.5-pro-preview-03-25",
 #        "id": "gemini-2.5-pro-preview-03-25",
@@ -203,6 +204,7 @@ MODELS = {
     "gemini-2.5-pro-free": {
         "aliases": ["gemmi", "gemmi-free", "gemini-free"],
         "vendor": "google",
+        "vision": True,
         "api_key": "GOOGLE_API_KEY_FREE",
         "id": "gemini-2.5-pro-exp-03-25",
         "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
@@ -212,6 +214,7 @@ MODELS = {
     "gemini-2.5-pro-openrouter": {
         "aliases": ["gemmi-openrouter"],
         "vendor": "openrouter",
+        "vision": True,
         "id": "google/gemini-2.5-pro-exp-03-25:free",
         "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
         "cost_in": 0,
@@ -221,6 +224,7 @@ MODELS = {
         "aliases": ["gf", "flasho"],
         "id": "models/gemini-2.5-flash-preview-04-17",
         "vendor": "google",
+        "vision": True,
         "description": "Google's fast thinking model with a 1 million context window.",
         "cost_in": 0.15,
         "cost_out": 0.6,
@@ -228,6 +232,7 @@ MODELS = {
     "gemini-2.0-flash-lite": {
         "aliases": ["lite"],
         "vendor": "google",
+        "vision": True,
         "description": "Google's fastest model with a 1 million context window.",
         "cost_in": 0.075,
         "cost_out": 0.3,
@@ -235,6 +240,7 @@ MODELS = {
     "gemini-2.0-flash": {
         "aliases": ["flashi"],
         "vendor": "google",
+        "vision": True,
         "description": "Google's fast model with a 1 million context window.",
         "cost_in": 0.1,
         "cost_out": 0.4,
@@ -845,7 +851,7 @@ async def achat_google(opts: Options, messages):
         options["system_instruction"] = messages[0]["content"]
         messages.pop(0)
 
-    squash_messages = False  # dumb new API might need it?! :[
+    # squash_messages = False  # dumb new API might need it?! :[
 
     for msg in messages:
         role = msg["role"]
@@ -855,17 +861,22 @@ async def achat_google(opts: Options, messages):
         elif role != "user":
             role = "model"
 
-        if squash_messages and history and role == history[-1].role:
-            history[-1].parts[0].text += "\n\n" + msg["content"]
-        else:
-            history.append(
-                types.Content(
-                    role = role,
-                    parts = [
-                        types.Part(text = msg["content"]),
-                    ],
-                )
-            )
+        # if squash_messages and history and role == history[-1].role:
+        #     history[-1].parts[0].text += "\n\n" + msg["content"]
+        # else:
+
+        # is content a list?
+        parts = msg["content"] if isinstance(msg["content"], list) else [msg["content"]]
+
+        for i in range(len(parts)):
+            if isinstance(parts[i], str):
+                parts[i] = types.Part(text=parts[i])
+            if isinstance(parts[i], dict) and parts[i]["type"] == "text":
+                parts[i] = types.Part(text=parts[i]["text"])
+            elif not isinstance(parts[i], types.Part):
+                raise ValueError(f"achat_google: invalid part type: {type(parts[i])}")
+
+        history.append(types.Content(role = role, parts = parts))
 
     # history = [{'role': 'user', 'parts': ['System: You are Flashi. Please only reply with a single message, as Flashi; do not impersonate other characters!']}]
 

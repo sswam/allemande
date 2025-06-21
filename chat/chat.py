@@ -340,6 +340,25 @@ def context_remove_thinking_sections(context: list[str], agent: Agent | None) ->
     return context
 
 
+def remove_image_details(content: str) -> str:
+    """Remove image details from the content."""
+    modified = re.sub(r"!\[(#\d+) (.*?)\]\((.*?)\)", r"![\1](\3)", content)
+    if modified != content:
+        logger.debug("Removed image details from message: original: %s", content)
+        logger.debug("  modified: %s", modified)
+    return modified
+
+
+def context_remove_image_details(context: list[str]) -> list[str]:
+    """Remove image details from the context."""
+
+    n = len(context)
+    for i in range(n - 1, -1, -1):
+        context[i] = remove_image_details(context[i])
+
+    return context
+
+
 def history_remove_thinking_sections(history: list[dict[str, Any]], agent: Agent | None):
     """Remove "thinking" sections from the history."""
     # Remove any "thinking" sections from the context

@@ -13,6 +13,13 @@ from typing import Any
 from PIL import Image
 from PIL.Image import Image as PILImage
 
+from ally.lazy import lazy
+
+# Lazy imports for API clients
+lazy(
+    "google.genai",
+    _as="google_genai",
+)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -27,15 +34,20 @@ def is_url(string: str) -> bool:
         return False
 
 
-def encode_image_file(image_path: str) -> str:
-    """Encode a local image file to base64."""
+def load_image_file(image_path: str) -> str:
+    """Load an image file and return its binary content."""
     try:
         with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode("utf-8")
+            return image_file.read()
     except FileNotFoundError as exc:
         raise FileNotFoundError(f"Image file not found: {image_path}") from exc
     except OSError as exc:
         raise OSError(f"Error reading image file: {image_path}: {exc}") from exc
+
+
+def encode_image_file(image_path: str) -> str:
+    """Encode a local image file to base64."""
+    return base64.b64encode(load_image_file(image_path)).decode("utf-8")
 
 
 def calculate_resize_factor(
@@ -192,18 +204,25 @@ def format_image(image_source: str, vendor: str, detail: str = "auto") -> dict[s
             return {"type": "image_url", "image_url": {"url": image_source, "detail": detail}}
         if vendor == "anthropic":
             return {"type": "image", "source": {"type": "url", "url": image_source}}
+        if vendor == "google":
+            # TODO could download
+            raise ValueError(f"Unsupported vendor for remote image: {vendor}")
         raise ValueError(f"Unsupported vendor: {vendor}")
 
     # For local files
     try:
         # Get JPEG version and encode
         file_path, mime_type = get_image_to_send(image_source, detail)
-        base64_image = encode_image_file(str(file_path))
 
         if vendor == "openai":
+            base64_image = encode_image_file(str(file_path))
             return {"type": "image_url", "image_url": {"url": f"data:{mime_type};base64,{base64_image}", "detail": detail}}
         if vendor == "anthropic":
+            base64_image = encode_image_file(str(file_path))
             return {"type": "image", "source": {"type": "base64", "media_type": mime_type, "data": base64_image}}
+        if vendor == "google":
+            image_bytes = load_image_file(str(file_path))
+            return google_genai.types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
         raise ValueError(f"Unsupported vendor: {vendor}")
     except FileNotFoundError as e:
         raise FileNotFoundError(f"Local file not found: {image_source}") from e
@@ -235,7 +254,7 @@ def format_message_for_vision(message: dict, vendor: str, detail: str = "auto") 
         message.pop("images", None)
         return message
 
-    if vendor not in ["openai", "anthropic"]:
+    if vendor not in ["openai", "anthropic", "google"]:
         raise ValueError(f"Unsupported vendor: {vendor}")
 
     try:

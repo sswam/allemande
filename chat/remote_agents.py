@@ -54,6 +54,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     # remove "thinking" sections from context
     context = chat.context_remove_thinking_sections(context, agent)
+    context = chat.context_remove_image_details(context)
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?
@@ -98,6 +99,10 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
             msg2["images"] = msg["images"]
         logger.debug("msg2: %r", msg2)
         remote_messages.append(msg2)
+
+    # Google Gemini doesn't like NSFW images in the most recent message?! but cool otherwise!
+    if agent.get("blank_message_after_image") and remote_messages and "images" in remote_messages[-1]:
+        remote_messages.append({"role":"assistant", "content":""})
 
     if remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] in ["anthropic", "google"]:
         remote_messages.insert(0, {"role": "user", "content": "?"})
