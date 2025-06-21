@@ -3,6 +3,7 @@
 [set char_clothes_lower]clothes_lower/[get char][/set]
 [set char_emo]emo/[get char][/set]
 [set char_age]age/[get char][/set]
+
 [set person][use "{get char}"][/set]
 [set clothes][use "{get char_clothes}"][/set]
 [set clothes_upper][use "{get char_clothes_upper}"][/set]
