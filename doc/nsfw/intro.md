@@ -22,7 +22,7 @@ If you'd like to support us, you can [become a patron](https://www.patreon.com/a
 
 Read this intro carefully!
 
-Click the <i class="bi-question-lg"></i> help button, and talk with Flashi in the *Help* tab. In this help system, AIs can give extensive help based on the full user guide.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with Flashi in the *Help* tab. In this help system, Flashi can give extensive help based on the full user guide.
 
 In the main [Ally Chat](/Ally+Chat) room and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with basic info about the app.
 
@@ -117,3 +117,6 @@ Boni:	![#1628847956 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, sc
 
 Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
+## What next?
+
+Click the **Help** tab, and ask Flashi some questions about the app, or they can introduce you to some different characters.
