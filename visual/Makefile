@@ -14,13 +14,13 @@ everyone.txt: person
 	find $< -mindepth 1 -maxdepth 1 -type f -printf "%f\n" | sed 's/\.[^.]*$$//' | shuf >$@
 
 girls.txt: person
-	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l '^1girl,' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -w '1girl' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
 
 boys.txt: person
-	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l '^1boy,' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -w '1boy' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
 
 nonbinary.txt: person
-	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l '^1person,' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -v -w -e '1girl' -e '1boy' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
 
 people.txt: girls.txt boys.txt nonbinary.txt
 	cat $^ | shuf >$@
