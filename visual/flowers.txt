@@ -1,0 +1,112 @@
+[set n] [random _min=1 _max=5] [/set]
+[choose n]
+white flower
+red flower
+pink flower
+blue flower
+yellow flower
+purple flower
+orange flower
+black flower
+
+lily (flower)
+peony (flower)
+anemone (flower)
+poppy (flower)
+cosmos (flower)
+iris (flower)
+nemophila (flower)
+lavender (flower)
+clover (flower)
+violet (flower)
+forget-me-not (flower)
+gentiana (flower)
+mimosa (flower)
+bougainvillea (flower)
+clematis (flower)
+freesia (flower)
+snowdrop (flower)
+azalea (flower)
+rafflesia (flower)
+dogwood (flower)
+primrose (flower)
+snowbell (flower)
+petunia (flower)
+buttercup (flower)
+alstroemeria (flower)
+amaryllis (flower)
+matatabi (flower)
+red ginger (flower)
+crocus (flower)
+wolfsbane (flower)
+jasmine (flower)
+larkspur (flower)
+moonflower (flower)
+allium (flower)
+edelweiss (flower)
+periwinkle (flower)
+adonis (flower)
+lupinus (flower)
+gardenia (flower)
+salvia (flower)
+acacia (flower)
+bluebell (flower)
+sandersonia (flower)
+gloriosa (flower)
+begonia (flower)
+reimu (flower)
+bleeding heart (flower)
+chicory (flower)
+heliotrope (flower)
+
+[choose] red | blue | white | pink | purple | yellow | ruby | black [/choose] rose
+tulip
+daisy
+sunflower
+carnation
+orchid
+daffodil
+chrysanthemum
+dahlia
+hydrangea
+marigold
+pansy
+pansy orchid
+zinnia
+geranium
+snapdragon
+aster
+gladiolus
+hibiscus
+lilac
+ranunculus
+gerbera
+hyacinth
+calla lily
+magnolia
+delphinium
+camellia
+foxglove
+sweet pea
+calendula
+morning glory
+dianthus
+
+qingxin flower
+brown flower
+grey flower
+glowing flower
+water lily flower
+bellflower
+aqua flower
+moonlight flower
+hornflower
+chinese bellflower
+wild flower
+bird of paradise flower
+cornflower
+pomegranate flower
+apricot flower
+skeleton flower (plant)
+quince flower
+[/choose]
