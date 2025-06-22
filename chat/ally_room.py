@@ -81,7 +81,7 @@ class Room:
             raise PermissionError("You are not allowed to post to this room.")
 
         # support narration by moderators
-        if content.startswith("--") and access & Access.MODERATE.value:
+        if content.startswith("--") and access & Access.MODERATE.value == Access.MODERATE.value:
             user = None
             content = content[2:]
 
@@ -124,7 +124,7 @@ class Room:
         #        empty = self.path.stat().st_size == 0
 
         if op == "archive":
-            if not access & Access.MODERATE.value:
+            if not access & Access.MODERATE.value == Access.MODERATE.value:
                 raise PermissionError("You are not allowed to archive this room.")
             # run room-archive script with room name
             # TODO in Python
@@ -135,7 +135,7 @@ class Room:
             # TODO in Python, archive half, keep half. Media?
             # subprocess.run(["room-rotate", self.name], check=True)
         elif op == "clear":
-            if not access & Access.ADMIN.value:
+            if not access & Access.ADMIN.value == Access.ADMIN.value:
                 raise PermissionError("You are not allowed to clear this room.")
             if backup:
                 backup_file(str(self.path))
@@ -155,7 +155,7 @@ class Room:
         elif op == "clean":
             await self.clean(user)
         elif op == "render":
-            if not access & Access.MODERATE.value:
+            if not access & Access.MODERATE.value == Access.MODERATE.value:
                 raise PermissionError("You are not allowed to re-render this room.")
             content = self.path.read_text(encoding="utf-8")
             await overwrite_file(user, self.name + EXTENSION, content, delay=0.2, noclobber=False)
@@ -169,10 +169,10 @@ class Room:
             return
 
         access = self.check_access(user).value
-        if n > 1 and not access & Access.ADMIN.value:
+        if n > 1 and not access & Access.ADMIN.value == Access.ADMIN.value:
             raise PermissionError("You are not allowed to undo multiple messages in this room.")
 
-        if not access & Access.MODERATE.value:
+        if not access & Access.MODERATE.value == Access.MODERATE.value:
             raise PermissionError("You are not allowed to undo messages in this room.")
 
         count_bytes = 0
@@ -225,7 +225,7 @@ class Room:
     async def clean(self, user, backup=True):
         """Clean up the room, removing specialist messages"""
         access = self.check_access(user).value
-        if not access & Access.MODERATE.value:
+        if not access & Access.MODERATE.value == Access.MODERATE.value:
             raise PermissionError("You are not allowed to clean this room.")
         messages = load_chat_messages(self.path)
         # TODO don't hard-code the agent names!!!
@@ -344,7 +344,7 @@ class Room:
     def set_options(self, user, new_options):
         """Set the options for a room."""
         access = self.check_access(user).value
-        if not access & Access.MODERATE.value:
+        if not access & Access.MODERATE.value == Access.MODERATE.value:
             raise PermissionError("You are not allowed to set options for this room.")
         options_file = self.find_resource_file("yml", "options", create=True)
 
