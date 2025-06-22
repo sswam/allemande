@@ -903,3 +903,18 @@ body:not(.select) input[type="checkbox"].select {
 .ba {
 	break-after: page;
 }
+
+@keyframes blink {
+  0%, 75% { visibility: visible; }
+  75.1%, 100% { visibility: hidden; }
+}
+
+blink {
+  animation: blink 1s step-start infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  blink {
+    animation: none;
+  }
+}

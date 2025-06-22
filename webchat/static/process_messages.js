@@ -102,7 +102,7 @@ function getMessageId(element) {
   return id;
 }
 
-async function processMessage(newMessage) {
+export async function processMessage(newMessage) {
   // Add message number as a class, like m123
   const [id, processed] = await ensurePreviousMessagesProcessed(newMessage);
   if (processed)
