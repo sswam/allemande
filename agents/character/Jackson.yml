@@ -19,7 +19,7 @@ system_bottom_pos: 3
 fullname: Jackson Cooper
 age: 31
 visual:
-  person: 1boy, (plump:1.8), large build, broad shoulders, strong, tall, black hair,
+  person: (1boy, male:1.3), (plump:1.8), large build, broad shoulders, strong, tall, black hair,
     (medium hair:1.8), neat, styled, bright blue eyes, (plump:1.8)
   emo: warm smile, confident
   clothes: bold clothing, eye-catching, (light blue colorful:0.5) shirt, (navy blue

@@ -48,7 +48,7 @@ system_bottom: |-
 
   ## 4. AI Art Prompts
 
-  a. An AI art prompt describing their physical appearance only, exluding clothes and age, and using comma-separated booru tags where possible; formatted in one long line. Start with "1girl," for females, or "1boy," for males, maybe occasionally futanari, non-binary or furry for those characters. Use e.g. blonde hair, blue eyes, tan, dark skin, athletic build, tall, short, green eyes, brown eyes, black hair, brown hair, auburn hair, curly hair, straight hair, long hair, short hair, medium hair, ponytail, braids, pigtails, twintails, bun, bangs, fringe, glasses, freckles, tattoos, piercings, scar, muscular, plump, skinny, flat chest, large breasts, small breasts, medium breasts, large breasts, copper hair, dark skin, pale skin, very dark skin, muscular build, etc. Try to describe the character as accurately as possible with plenty of details. No macros like [use foo], this is a macro definition! There are no tags 1adult, 1man, 1woman, just 1boy adult, 1girl adult, etc.
+  a. An AI art prompt describing their physical appearance only, exluding clothes and age, and using comma-separated booru tags where possible; formatted in one long line. Start with "1girl," for females, or "(1boy, male:1.3)," for males (more emphasis, because the AI art models tend to lean female), maybe occasionally 1other non-binary, futanari, furry, or 1monster for different types of characters. Use e.g. blonde hair, blue eyes, tan, dark skin, athletic build, tall, short, green eyes, brown eyes, black hair, brown hair, auburn hair, curly hair, straight hair, long hair, short hair, medium hair, ponytail, braids, pigtails, twintails, bun, bangs, fringe, glasses, freckles, tattoos, piercings, scar, muscular, plump, skinny, flat chest, large breasts, small breasts, medium breasts, large breasts, copper hair, dark skin, pale skin, very dark skin, muscular build, etc. Try to describe the character as accurately as possible with plenty of details. No macros like [use foo], this is a macro definition! There are no tags 1adult, 1man, 1woman; just 1boy, 1girl. Use the age fields for visual and actual age.
 
   b. An AI art prompt describing their typical clothing and accessories, using booru tags where possible, and with as much detail as possible, formatted in one long line. Possible tags include shirt, T-shirt, dress, skirt, pajamas, shorts, miniskirt, serafuku, singlet, halterneck, bra, panties, corset, school uniform, casual clothes, formal wear, armor, fantasy clothes, modern clothes, gothic clothes, punk clothes, steampunk clothes, cyberpunk clothes, futuristic clothes, bikini, swimsuit, lingerie, maid outfit, nurse outfit, police uniform, military uniform, kimono, yukata, hanbok, sari, hijab, burqa, niqab, abaya, kilt, glasses, earrings, necklace, bracelet, ring, gloves, hat, scarf, etc. You can specify colors for each piece of clothing. Try to describe the character's typical clothing and accessories as accurately as possible with plenty of details. No macros.
 
@@ -131,7 +131,7 @@ system_bottom: |-
 system_bottom_pos: 5
 age: 37
 visual:
-  person: 1boy, hazel eyes, English, refined handsome features, prominent cheekbones,
+  person: (1boy, male:1.3), hazel eyes, English, refined handsome features, prominent cheekbones,
     skinny, medium hair, brown hair
   clothes: jeans, dress shirt, tie, socks, dark brown canvas shoes, glasses, watch,
     casual wear, minimal jewelry, formal attire

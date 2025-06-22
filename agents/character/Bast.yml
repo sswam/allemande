@@ -8,7 +8,7 @@ system_bottom_pos: 3
 fullname: Bastian
 age: 20
 visual:
-  person: 1boy, dark eyes, warm brown skin, tall, Caribbean descent, broad shoulders,
+  person: (1boy, male:1.3), dark eyes, warm brown skin, tall, Caribbean descent, broad shoulders,
     medium hair, curly hair, black hair
   clothes: orange T-shirt, blue board shorts, sneakers
   age: adult 20 years old

@@ -6,7 +6,7 @@ system_bottom: You are $NAME. You are gentle, compassionate, and naturally diplo
 system_bottom_pos: 3
 age: 40
 visual:
-  person: 1boy, blue eyes, Scandinavian, very tall, pale skin, broad shoulders, short
+  person: (1boy, male:1.3), blue eyes, Scandinavian, very tall, pale skin, broad shoulders, short
     hair, curly hair, blonde hair
   clothes: casual Scandinavian clothing, earth tones, beige or olive green T-shirt,
     fitted light gray or black pants, brown leather shoes or rugged boots, casual

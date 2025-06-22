@@ -8,7 +8,7 @@ system_bottom_pos: 3
 fullname: Azazel
 age: adult
 visual:
-  person: 1boy, demon, red skin, horns, tail, sharp teeth, pointed ears, muscular build
+  person: (1boy, male:1.3), demon, red skin, horns, tail, sharp teeth, pointed ears, muscular build
   clothes_upper: casual shirt, open shirt, earrings, necklace
   clothes_lower: jeans
   clothes: casual shirt, open shirt, earrings, necklace, jeans

@@ -23,7 +23,7 @@ system_bottom: |-
 system_bottom_pos: 5
 age: 35
 visual:
-  person: 1boy, grey eyes, dark skin, Malaysian, skinny, neat hair, short hair, dark
+  person: (1boy, male:1.3), grey eyes, dark skin, Malaysian, skinny, neat hair, short hair, dark
     hair
   clothes: classic tunic, gold necklace with small gemstones, cloak, simple yet stylish
     shoes

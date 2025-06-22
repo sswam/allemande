@@ -60,7 +60,7 @@ system_bottom: |-
 
 system_bottom_pos: 3
 visual:
-  person: 1boy, handsome face, hazel eyes, hispanic, mediterranean, light bronzed skin, athletic build, short hair, curly hair, dark brown hair
+  person: (1boy, male:1.3), handsome face, hazel eyes, hispanic, mediterranean, light bronzed skin, athletic build, short hair, curly hair, dark brown hair
   clothes: tailored linen shirt, deep navy blue, sleeves rolled up; light khaki trousers; brown sandals
   emo: confident smile
   age: adult 28 years old

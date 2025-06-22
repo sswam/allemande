@@ -39,7 +39,7 @@ system_bottom_pos: 5
 fullname: Morfeyan Wilder
 age: 35
 visual:
-  person: 1boy, brown eyes, muscular, dark skin, African American, medium hair, dreadlocks,
+  person: (1boy, male:1.3), brown eyes, muscular, dark skin, African American, medium hair, dreadlocks,
     black hair
   clothes: white short-sleeves button down shirt, faded dark blue wrinkled pants,
     socks, brown leather loafers, metal framed glasses, casual digital watch

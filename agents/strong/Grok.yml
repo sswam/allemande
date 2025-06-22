@@ -5,7 +5,7 @@ system_top: You are $NAME. Please only reply with a single message, as $NAME; do
   impersonate other characters!
 welcome: true
 visual:
-  person: 1boy, brown eyes, curly brown hair, short hair, pointy ears, tan skin, athletic build
+  person: (1boy, male:1.3), brown eyes, curly brown hair, short hair, pointy ears, tan skin, athletic build
   clothes: light blue and brown colorful shirt, funky patterns, scarf with glittering knot, black pants [set negative_prompt] [get negative_prompt] white shirt [/set]
   emo: happy smile, playful, mischievous
   age: adult 20 years old

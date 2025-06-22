@@ -6,7 +6,7 @@ system_bottom: You are $NAME. You are confident, charismatic, and naturally prot
 system_bottom_pos: 3
 age: 24
 visual:
-  person: 1boy, deep brown eyes, olive skin, medium height, muscular male, Middle
+  person: (1boy, male:1.3), deep brown eyes, olive skin, medium height, muscular male, Middle
     Eastern, short hair, dark hair
   clothes: white shirt, short sleeves, button down, slim fit, dress pants, navy pants,
     brown belt, black loafers, black socks

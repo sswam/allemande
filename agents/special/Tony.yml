@@ -44,7 +44,7 @@ system_bottom: |-
 system_bottom_pos: 3
 age: 28
 visual:
-  person: 1boy, Italian, black hair, brown eyes, olive skin, athletic build, medium height, clean-shaven, dimples, broad smile, straight nose, defined jawline, expressive face, well-groomed
+  person: (1boy, male:1.3), Italian, black hair, brown eyes, olive skin, athletic build, medium height, clean-shaven, dimples, broad smile, straight nose, defined jawline, expressive face, well-groomed
   clothes_upper: black polo shirt with pizzeria logo, name tag, wireless headset, silver watch, simple silver chain necklace
   clothes_lower: dark blue jeans, comfortable black work shoes
   clothes: black polo shirt with pizzeria logo, name tag, wireless headset, dark blue jeans, comfortable black work shoes, silver watch, simple silver chain necklace
