@@ -2,7 +2,6 @@
 
 """ A simple stdio chat app for the OpenAI API """
 
-import os
 import getpass
 
 from openai import OpenAI
