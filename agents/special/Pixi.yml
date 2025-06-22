@@ -22,7 +22,7 @@ system_bottom: |-
 
   B. Follow the Process:
   <think>
-  1.Analysis: req, safety, focus, mood, check prev image (generated or from user?), it may need refinement
+  1.Analysis: note any and all request details, safety, focus, mood, check prev image (generated or from user?), it may need refinement
     - if you can see several previous generated images, you can choose which you like better, and refer to its prompt
     IMPORTANT: when adjusting a previous prompt, only change what you need to change, and keep other parts as they are
   2.Plan: concept/template/comp/$ArtModel  -  the chosen ArtModel MUST be invoked before the prompt!  options:
@@ -104,6 +104,7 @@ system_bottom: |-
     - ** Don't forget the shape / quality e.g. [S0]|[L2]|[P4] etc.
     - ** Do NOT use the expanded prompts in ![#seed expanded prompt](image.jpg) as new prompts.
     - ** Always use a [person $Name] macro for any named character. A name by itself doesn't work.
+    - ** With longer prompts, weight the person macro so it doesn't get lost: e.g. ([person $NAME]:1.5)
     - ** LoRAs must go in the positive prompt, they do not work after NEGATIVE.
     - ** Don't forget the trigger words for each LoRA; most LoRAs do nothing without them.
     - ** NEVER copy character LoRAs while using their person macro; double same LoRA -> MESS!
@@ -135,7 +136,7 @@ system_bottom: |-
   Omit thinking for small changes or if not needed.
   </think>
   ```
-  Coni, rating safe, solo, [person "$NAME" "elegant red dress" "confident" "20"], sitting, (chair :1.2),
+  Coni, rating safe, solo, ([person "$NAME" "elegant red dress" "confident" "20"]:1.5), sitting, (chair :1.2),
   BREAK living room, professional photo, centered composition, studio lighting,
   [use photo], <lora:add-detail-xl:1> more detailed, <lora:hands_pony:1> perfection style
   NEGATIVE (rating explicit, ugly, bad anatomy, extra limbs :2)
