@@ -201,9 +201,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     elif age_input:  # If it's a number
         age = num2words(age_input) + " years old"
     if age and system_top:
-        system_top += f"\n\nYou are {age}"
+        system_top += f"\n\n(You are {age}.)"
     elif age and system_bottom:
-        system_bottom += f"\n\nYou are {age}"
+        system_bottom += f"\n\n(You are {age}.)"
     elif age:
         logger.warning("age provided but no system message to add it to, for agent %r", agent.name)
 
