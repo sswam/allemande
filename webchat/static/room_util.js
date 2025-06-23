@@ -235,6 +235,6 @@ function snow() {
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  snowflakes = Array(100).fill().map(() => new Snowflake());
+  snowflakes = Array(50).fill().map(() => new Snowflake());
   snowing();
 }
