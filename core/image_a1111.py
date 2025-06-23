@@ -31,8 +31,13 @@ GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 MAX_PIXELS = 1280 * 1280
 MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 
-COUNT_LIMIT = 10
-STEPS_LIMIT = 150
+# TODO: other ideas for limits
+# - COUNT_LIMIT depends on number of steps, etc
+# - an actual time limit, just stop after that time
+# - fair queueing, handle multiple requests. How? need to know user?
+
+COUNT_LIMIT = 4    # 10
+STEPS_LIMIT = 30   # 150
 
 
 def process_hq_macro(config: dict, sets: dict) -> dict:
