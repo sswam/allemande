@@ -508,7 +508,7 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         elif remove:
             rm_ids += list(map(int, remove.split(" ")))
         for rm_id in rm_ids:
-            if rm_id <= len(lookup):
+            if rm_id < len(lookup):
                 #                 logger.warning("Removing message ID: %s", rm_id)
                 lookup[rm_id]["rm"] = True
             else:
