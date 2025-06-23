@@ -33,6 +33,9 @@ rooms.*
 /schedule.tsv
 /webchat/static/push-docs
 /webchat/static/users
+/users.txt
+/agents.txt
+/agents_loaded.txt
 
 # config files
 /webchat/static/config.js
