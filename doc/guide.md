@@ -541,7 +541,7 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Pliny**: He is a plot specialist crafting cohesive narrative structures for gaming and storytelling
 - **Morf**: He is a Game Master and narrative supervisor maintaining story coherence and forward progression
 - **Jessi**: She is a creative comedian, able to invent pretty good jokes on the spot.
-- **Tony**, **Sal**: Pizza shop agents, will try to sell pizza when you call them up!
+- **Nicc**, **Sal**: Pizza shop agents, will try to sell pizza when you call them up!
 
 ### Strong AI Models
 - **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding.
