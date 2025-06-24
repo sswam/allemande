@@ -178,6 +178,14 @@ The shortcut quality settings range from 0 (lowest, the default) to 9.
 
 Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
 
+## AI Vision
+
+Characters based on models from OpenAI, Anthropic and Google can see images in the chat. Other characters cannot. They all tend to pretend that they can see them, though! When images have alt text, that can help the text-only models and any unsighted users.
+
+AI Vision is turned off by default for efficiency.
+
+You can enable vision in the room options, for rooms that you own, by setting the "images" field to 1 or a higher number. This is the "number of recent images AI can see". It's a good idea to turn it off again when not needed, by setting to 0 or blank.
+
 ## Examples of Advanced Syntax
 
 ### HTML and SVG
@@ -405,13 +413,13 @@ digraph Google {
 
     "Google" [label=<<b>Google</b>>]
     "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.0 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
-    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, free, very capable</font>>]
-    "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
+    "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, free, very capable</font>>]
+    "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
 
     "Google" -> "Lite"
-    "Google" -> "Flashi"
     "Google" -> "Flasho"
+    "Google" -> "Flashi"
     "Google" -> "Gemmi"
 }
 ```
@@ -728,8 +736,8 @@ lines: 1
 | Anthropic     | Claude 4 Sonnet       | Clauden | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's most powerful sonnet model; supports extended thinking.                                              |
 | Anthropic     | Claude 4 Opus         | Claudo  | 200K    | 8K / 128K [1]   | $15.00          | $75.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K              | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
-| Google        | Gemini 2.0 Flash      | Flashi  | 1M      | 8K              | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
-| Google        | Gemini 2.5 Flash      | Flasho  | 1M      | 8K              | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                                |
+| Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K              | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
+| Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K              | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                                |
 | Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K             | $1.25 [3]       | $10.00 [3]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
 | OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K             | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
 | OpenAI        | o4-mini               | Fermi   | 200K    | 100K            | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
