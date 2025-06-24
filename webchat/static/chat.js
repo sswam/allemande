@@ -6,6 +6,7 @@ const SITE_URL =
   location.protocol + "//" + location.host.replace(/^.*?\./, "") + "/";
 const MAX_ROOM_NUMBER = 9999;
 const DEFAULT_ROOM = "Ally Chat";
+const NSFW_ROOM = "nsfw/nsfw";
 const EXTENSION = ".bb";
 
 const $head = $("head");
@@ -1313,7 +1314,7 @@ async function authChat() {
     go_to_main_site();
     throw new Error("Setup error: Not logged in");
   }
-  return userData.username;
+  return userData;
 }
 
 // set the user button text and href -----------------------------------------
@@ -1354,6 +1355,10 @@ async function setup_nav_buttons() {
   // Setup allychat button --------------------
   const $nav_allychat = $id("nav_allychat");
   $nav_allychat.href = "/" + query_to_hash(DEFAULT_ROOM);
+
+  // Setup nsfw button --------------------
+  const $nav_nsfw = $id("nav_nsfw");
+  $nav_nsfw.href = "/" + query_to_hash(NSFW_ROOM);
 
   // Setup porch button --------------------
   const $nav_porch = $id("nav_porch");
@@ -2852,7 +2857,10 @@ function handle_intro() {
 // main ----------------------------------------------------------------------
 
 export async function init() {
-  user = await authChat();
+  const { username, nsfw } = await authChat();
+  user = username;
+
+  show("nav_nsfw", nsfw);
 
   if (iOS)
     document.body.classList.add("ios")

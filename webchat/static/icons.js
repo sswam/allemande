@@ -72,6 +72,7 @@ export const icons = {
   nav_porch: '<i class="bi bi-house-door i20"></i>',
   nav_home: '<i class="bi bi-house i20"></i>',
   nav_allychat: '<i class="bi bi-people i20"></i>',
+  nav_nsfw: '<i class="bi bi-explicit i20"></i>',
   room_ops: '<i class="bi bi-file-text i20"></i>',
   scroll: '<i class="bi bi-arrows-move i20"></i>',
   view_history: '<i class="bi bi-clock-history i20"></i>',

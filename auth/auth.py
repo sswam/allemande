@@ -19,6 +19,7 @@ from starlette.exceptions import HTTPException
 import uvicorn
 import jwt
 from passlib.apache import HtpasswdFile
+import yaml
 
 
 logging.basicConfig(level=logging.INFO)
@@ -158,9 +159,15 @@ async def login(request):
     # Create JWT token
     jwt_token = create_jwt_token(username)
 
+    # Check NSFW access
+    nsfw_dir = Path("/opt/allemande/rooms/nsfw")
+    access = yaml.safe_load((nsfw_dir/".access.yml").read_text())
+    has_nsfw_access = username in access.get("allow", [])
+
     # Create response with both cookies
     user_data = {
         "username": username,
+        "nsfw": has_nsfw_access,
     }
 
     # TODO going forward, create system accounts at signup, and remove this
