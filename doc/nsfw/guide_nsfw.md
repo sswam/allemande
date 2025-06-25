@@ -57,7 +57,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 ## Basic Intro to NSFW AI Image Generation
 
-IMPORTANT: The agent Xilu is expert on NSFW image gen. We can talk to her to learn more about image prompting.
+IMPORTANT: The agent Xilu is expert on NSFW image gen. Talk to her to learn more about image prompting.
 
 This asks Bigi, an image gen AI, to draw a nude girl, in a fast, lowest-quality portrait image:
 
@@ -83,6 +83,14 @@ The shortcut quality settings range from 0 (lowest, the default) to 9 (much too 
 [S2] is a medium quality square image. [P1] is a low quality portrait image, [L4] is a high quality landscape image, etc.
 Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
 
+## NSFW AI Vision
+
+The OpenAI, Anthropic and Google models support AI Vision, but only the Google models are okay with NSFW content.
+
+Xilu, Xillu, Illu and Gema are all based on Google models, and should be able to see NSFW images in the chat, when enabled.
+
+The Google models do still have limits. If they refuse to respond, try turning off vision.
+
 ## NSFW AI Characters and Agents
 
 The general characters in the main guide are very good for NSFW chat and roleplay, in the developer's opinion.
@@ -100,7 +108,7 @@ Sometimes these models may refuse to help you, depending on the context. You can
 The other strong models mentioned in the main guide are averse to NSFW chat, and it may be against their terms of service. They are disallowed from the NSFW zone. We ask you not to use them in NSFW private chat.
 
 ## Specialists based on Remote AI
-- **Xilu**: Expert with NSFW AI art prompts, ensuring high-quality image generation
+- **Xilu** and **Xillu** (Google): Expert with NSFW AI art prompts, ensuring high-quality image generation. Xilu is faster, Xillu uses a stronger model.
 - **Illu** and **Gema** (Google): Experts with SFW AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model.
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI

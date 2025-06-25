@@ -138,6 +138,18 @@ Ally Chat is continuously evolving with new features and capabilities being adde
 
 8. The conductor rules are a bit more complex than described above. If in doubt, use @ mentions.
 
+## The Poke function
+
+When your message box is empty, the <i class="bi-send"></i> **Send** button changes into the <i class="bi-hand-index-thumb"></i> **Poke** button.
+
+Pressing **Poke** is often used to send an AI-written image prompt (like one from Illu) directly to an AI art model (like Jily).
+
+It can also prompt the AIs to continue the conversation among themselves, or get the next AI to respond if you don't have anything to add.
+
+**Poke** will usually trigger an AI to respond, except when two humans have been talking most recently. This is subject to change.
+
+In an empty chat room, you can press Poke to have a random AI start the conversation. Only certain characters will do this.
+
 ## How to use Tool Agents
 
 We have several agents that are not LLMs and do not fully understand natural language, such as search engines, programming tools, and AI image generators. When talking to these agents, say their name, then exactly what you want. Don't say anything else afterwards. For example:
@@ -180,11 +192,18 @@ Quality settings higher than 4 are rarely needed and take up to 5 times longer t
 
 ## AI Vision
 
-Characters based on models from OpenAI, Anthropic and Google can see images in the chat. Other characters cannot. They all tend to pretend that they can see them, though! When images have alt text, that can help the text-only models and any unsighted users.
+Characters based on models from OpenAI, Anthropic and Google can see images in the chat. Other characters cannot. They all tend to pretend that they can see them, though! When images have alt text, it helps unsighted users and text-only models.
 
 AI Vision is turned off by default for efficiency.
 
-You can enable vision in the room options, for rooms that you own, by setting the "images" field to 1 or a higher number. This is the "number of recent images AI can see". It's a good idea to turn it off again when not needed, by setting to 0 or blank.
+You can enable vision in a room that you own, or ask an admin to enable it in a public room.
+
+1. Make sure you're in **Advanced Mode**. Click the <i class="bi-eye"></i> **View** button, then click the lightbulb button <i class="bi-lightbulb"></i> to switch to advanced mode. Close the View menu by clicking the <i class="bi-x"></i> button.
+2. Go to room options by clicking the <i class="bi-gear"></i> **Options** button.
+3. Set the **images** option to 1 or a higher number. This controls how many recent images the AI can see.
+4. Upload an image, or check that there is one in the chat history.
+5. Now talk to a vision-capable character, such as Illu, Emmy, Flashi, Gemmi or Claude. You can ask them about the image.
+6. Please set the **images** option to 0 or blank when you are not using AI vision. This makes responses faster, and can save money.
 
 ## Examples of Advanced Syntax
 
@@ -523,7 +542,7 @@ digraph StabilityAI {
 - **Soli**: A gentle woman with a love for nature and intriguing stories to share
 - **Eira**: A free-spirited female adventurer passionate about storytelling and discovery, she is known for her engaging communication style
 - **Nalani**: A vivacious, witty African/European woman and mother, with curly black hair
-- **Rozie**: A gentle and serene woman with a round face, short dark hair, and a warm smile, known for her colorful style.
+- **Rozie**: A gentle and serene woman with a round face, short dark hair, and a warm smile, known for her colorful style
 - **Amir**: Confident and charismatic Middle Eastern man; the thoughtful protector with insightful perspectives on life
 - **Bast**: Vibrant, quick-to-laugh Caribbean man with boundless energy, deeply fond of storytelling and sharing laughter
 - **Cal**: Cheerful and athletic Persian/African American man; the eternal optimist who brightens every conversation
@@ -534,7 +553,7 @@ digraph StabilityAI {
 - **Haka**: Thoughtful and graceful Japanese man; detail-oriented in both conversation and perspective
 - **Callam**: The spirited pirate, he's the life of the chat!
 - **Kai**: Enthusiastic about nature, Kai is a young man with bright blue eyes and a love for exploring
-- **Jackson**: A charming and confident salesman with a strong build, and a warm smile, known for his engaging personality and bold style.
+- **Jackson**: A charming and confident salesman with a strong build, and a warm smile, known for his engaging personality and bold style
 
 All of the above characters are based on Llama 3.1, they act very human-like, and while the model is not perfect, in the developer's opinion they are very good for roleplay.
 
@@ -544,17 +563,14 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Sio**: She is an expert writer focused on summarizing entire chats in structured markdown format
 - **Nova**: She is a master narrator for immersive storytelling in interactive fiction
 - **Brie**: She is a creative brainstorming specialist offering a range of diverse solutions
-- **Chaz**: He is an expert character designer capturing unique traits and mannerisms
 - **Atla**: He is an environment and setting design specialist rendering realistic and vibrant scenes
 - **Pliny**: He is a plot specialist crafting cohesive narrative structures for gaming and storytelling
 - **Morf**: He is a Game Master and narrative supervisor maintaining story coherence and forward progression
-- **Jessi**: She is a creative comedian, able to invent pretty good jokes on the spot.
-- **Nicc**, **Sal**: Pizza shop agents, will try to sell pizza when you call them up!
 
 ### Strong AI Models
-- **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding.
-- **Clauden** (Claude 4 Sonnet, Anthropic): The latest sonnet reasoning model from Anthropic.
-- **Claudo** (Claude 4 Opus, Anthropic): The most powerful reasoning model from Anthropic.
+- **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding
+- **Clauden** (Claude 4 Sonnet, Anthropic): The latest sonnet reasoning model from Anthropic
+- **Claudo** (Claude 4 Opus, Anthropic): The most powerful reasoning model from Anthropic
 - **Clia** (Claude 3.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4.1, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Dav** (GPT-4.1 mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
@@ -565,13 +581,13 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
 - **Grok** (Grok 2, xAI): xAI's quirky and intelligent language model
 - **Rocki** (Grok 3, xAI): xAI's latest quirky and intelligent language model
-- **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model.
-- **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model.
-- **Skout** (Meta Llama 4 Scout): A fast new open model from Meta.
-- **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta.
-- **Qwen** (Alibaba QwQ 32B): A small but very capable model.
-- **Eva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (female).
-- **Evan** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (male).
+- **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
+- **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
+- **Skout** (Meta Llama 4 Scout): A fast new open model from Meta
+- **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta
+- **Qwen** (Alibaba QwQ 32B): A small but very capable model
+- **Eva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (female)
+- **Evan** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (male)
 
 ### Online Models with Internet Access
 - **Sageri** (Sonar Reasoning Pro, Perplexity): Perplexity's advanced reasoning model
@@ -580,17 +596,21 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model
 
 ## Specialists based on Strong AI
-- **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model.
+- **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model
+- **Novi**: She is a master narrator for immersive storytelling in interactive fiction
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
 - **Clu** (Anthropic): A variant of Claude that replies more concisely
 - **Emm** (OpenAI): A variant of Emmy (GPT-4.1) that replies more concisely
-- **Vega** (Anthropic): A variant of Claude with a strong academic focus.
-- **Zeno** (OpenAI): A variant of GPT-4o with a strong academic focus.
+- **Vega** (Anthropic): A variant of Claude with a strong academic focus
+- **Zeno** (OpenAI): A variant of GPT-4o with a strong academic focus
+- **Chaz**: He is an expert character designer capturing unique traits and mannerisms
+- **Jessi**: She is a creative comedian, able to invent pretty good jokes on the spot
+- **Nicc**, **Sal**: Pizza shop agents, will try to sell pizza when you call them up!
 
 ### AI Artists
-- Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Jily the AI art model.
+- Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Jily the AI art model
 - **Jily**: High-quality photorealistic and artistic image generation using Juggernaut XL
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
 
@@ -1003,6 +1023,7 @@ Clicking on an image in the chat enters image viewing mode.
 
 ## Other Tricks
 
-- Click code to copy it, can paste into the input or elsewhere.
-- Poke an image gen prompt several times to create multiple images.
+Click code to copy it, can paste into the input or elsewhere.
+
+Poke an image gen prompt several times to create multiple images. You can do similar with other agents too, e.g. with Jessi to make several jokes.
 
