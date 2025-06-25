@@ -384,7 +384,7 @@ async def llm_llama(
 
 class GGUFModel:
     def __init__(self, model: str, context: int = 32 * 1024, n_gpu_layers: int = -1):
-        self.model = model
+        self.name = model
         self.context = context
         self.n_gpu_layers = n_gpu_layers
         self.model = None
@@ -393,7 +393,11 @@ class GGUFModel:
     def open(self):
         if self.model:
             return
+<<<<<<< HEAD
         self.model = load_gguf_model(self.model, context=self.context, n_gpu_layers=self.n_gpu_layers)
+=======
+        self.model = load_gguf_model(self.name, context=self.context, n_gpu_layers=self.n_gpu_layers)
+>>>>>>> cf0c2d5 (feat(llm): Introduce GGUFModel (WIP), fix seeding and streaming issues)
         self.gen = partial(collect_response, stream_gguf, llama_gguf)
 
     def close(self):
