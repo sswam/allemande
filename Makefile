@@ -261,6 +261,6 @@ fresh-old::
 api_doc: llm/llm.api
 
 %.api: %.py
-	func -a -I "$<" > "$@"
+	func-py -a -I "$<" > "$@"
 
 .PHONY: all default $(JOBS) %.xt canon api_doc subdirs $(SUBDIRS) deps deb-deps venv
