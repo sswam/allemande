@@ -11,6 +11,7 @@ from typing import AsyncIterator, Iterator, Callable, cast
 from threading import Thread
 import asyncio
 from asyncio import sleep as asleep
+import random
 
 import inotify.adapters  # type: ignore
 import torch
@@ -27,6 +28,9 @@ from llama_cpp import Llama as LlamaCpp, CreateCompletionResponse  # pylint: dis
 __version__ = "0.2.3"
 
 
+IDLE_TIMEOUT = 120.0
+
+
 logger = logs.get_logger()
 
 prog = main.prog_info()
@@ -36,6 +40,8 @@ models_dir = Path(os.environ["ALLEMANDE_MODELS"]) / "llm"
 
 default_model: str = str(models_dir / "default")
 default_model_gguf: str = str(models_dir / "default.gguf")
+
+GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 
 
 # Matches a line that starts with a unicode 'name':
@@ -84,6 +90,8 @@ def load_gguf_model(model: str, context: int = 131072, n_gpu_layers=-1) -> Llama
         n_ctx=context,
         n_gpu_layers=n_gpu_layers,
         n_batch=512,
+#        seed=-1,  # should be random, does not work
+        seed=random.randint(0, 2**32),
     )
     return llm
 
@@ -94,6 +102,8 @@ async def stream_transformers(
     """Stream the output of the transformers pipeline"""
     streamer = transformers.TextIteratorStreamer(pipeline.tokenizer, skip_prompt=True)
     generation_kwargs = {"text_inputs": prompt, "streamer": streamer, **(generation_kwargs or {})}
+    for unsupported in ["dry_allowed_length", "dry_base", "dry_multiplier", "dry_seq_breakers", "model"]:
+        generation_kwargs.pop(unsupported, None)
 
     thread = Thread(target=pipeline, kwargs=generation_kwargs)
     thread.start()
@@ -315,7 +325,7 @@ def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]
     return requests
 
 
-async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float = 0.1, idle_timeout: float = 60.0):
+async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float = 0.1, idle_timeout: float = IDLE_TIMEOUT):
     """Serve requests from a directory of directories using polling"""
     logger.info("serving requests from %s", portals)
     served_count = 0
@@ -357,7 +367,7 @@ async def llm_llama(
     context: int = 32 * 1024,
     n_gpu_layers: int = -1,
     poll_interval: float = 0.1,
-    idle_timeout: float = 60.0,
+    idle_timeout: float = IDLE_TIMEOUT,
 ):
     """main function wrapper to suppress output from llama_cpp"""
 
@@ -372,6 +382,32 @@ async def llm_llama(
     await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers, poll_interval, idle_timeout)
 
 
+class GGUFModel:
+    def __init__(self, model: str, context: int = 32 * 1024, n_gpu_layers: int = -1):
+        self.model = model
+        self.context = context
+        self.n_gpu_layers = n_gpu_layers
+        self.model = None
+        self.gen = None
+
+    def open(self):
+        if self.model:
+            return
+        self.model = load_gguf_model(self.model, context=self.context, n_gpu_layers=self.n_gpu_layers)
+        self.gen = partial(collect_response, stream_gguf, llama_gguf)
+
+    def close(self):
+        if not self.model:
+            return
+        del self.model
+        self.gen = None
+        self.model = None
+
+
+# class TransformersModel:
+# TODO
+
+
 async def llm_llama_main(
     portals: str,
     model: str | None,
@@ -380,7 +416,7 @@ async def llm_llama_main(
     context: int = 32 * 1024,
     n_gpu_layers: int = -1,
     poll_interval: float = 0.1,
-    idle_timeout: float = 60.0,
+    idle_timeout: float = IDLE_TIMEOUT,
 ):
     """main function"""
     if not model:
@@ -412,8 +448,8 @@ def setup_args(arg):
     arg("-g", "--gguf", action="store_true", help="Use GGUF model")
     arg("-c", "--context", help="Context size")
     arg("-n", "--n-gpu-layers", help="Number of GPU layers to use for GGUF")
-    arg("-i", "--poll-interval", type=float, default=0.1, help="Polling interval in seconds (default: 0.1)")
-    arg("-t", "--idle-timeout", type=float, default=60.0, help="Idle timeout in seconds before exiting (default: 60)")
+    arg("-i", "--poll-interval", type=float, default=0.1, help="Polling interval in seconds")
+    arg("-t", "--idle-timeout", type=float, default=IDLE_TIMEOUT, help="Idle timeout in seconds before exiting")
 
 
 if __name__ == "__main__":
