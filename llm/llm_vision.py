@@ -287,3 +287,11 @@ def format_message_for_vision(message: dict, vendor: str, detail: str = "auto") 
         raise TypeError(f"Error processing message: {exc}") from exc
     except (FileNotFoundError, OSError, Exception) as exc: # pylint: disable=broad-except
         raise Exception(f"Error processing message: {exc}") from exc  # pylint: disable=broad-exception-raised
+
+
+def remove_images_from_message(message: dict) -> dict:
+    """Remove images from a message."""
+    if "images" in message:
+        message = deepcopy(message)
+        del message["images"]
+    return message

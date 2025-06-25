@@ -419,6 +419,14 @@ MODELS = {
         "cost_in": 0.9,
         "cost_out": 1.2,
     },
+    "mistral-large": {
+        "aliases": ["misti"],
+        "vendor": "openrouter",
+        "id": "mistralai/mistral-large-2411",
+        "description": "Mistral Large 2411",
+        "cost_in": 2,
+        "cost_out": 6,
+    },
 }
 
 
@@ -926,6 +934,8 @@ async def allm_chat(opts: Options, messages):
         logger.debug("llm_chat: vision, trying to format messages")
         messages = [llm_vision.format_message_for_vision(message, vendor) for message in messages]
         logger.debug("llm_chat: vision messages: %r", [msg for msg in messages if "image" in msg["content"] or "image_url" in msg["content"]])
+    else:
+        messages = [llm_vision.remove_images_from_message(message) for message in messages]
 
     if model.get("no_stop") or vendor == "perplexity":
         opts.stop = None

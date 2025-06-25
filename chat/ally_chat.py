@@ -216,7 +216,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         agents=agents,
         history=history_messages,
         default=welcome_agents,
-        include_humans_for_ai_message=False,
+        include_humans_for_ai_message=not poke,
         include_humans_for_human_message=True,
         mission=mission,
         config=config,
@@ -412,6 +412,8 @@ def check_file_type(path):
         return "room"
     if ext == ".yml" and path.startswith(str(PATH_AGENTS)+"/"):
         return "agent"
+    if ext == ".yml" and path.startswith(str(PATH_ROOMS)+"/") and Path(path).parent.name == "agents" and not Path(path).is_symlink():
+        return "agent_private"
     return None
 
 
@@ -421,6 +423,11 @@ async def watch_loop(args):
 
     agents = Agents(services)
     agents.load(PATH_AGENTS)
+
+    for agents_dir in Path(PATH_ROOMS).rglob('agents'):
+        if agents_dir.is_dir():
+            agents.load(agents_dir, private=True)
+
     agents.write_agents_list(PATH_ROOMS / ".agents_global.yml")
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
@@ -440,6 +447,8 @@ async def watch_loop(args):
                 elif file_type == "agent":
                     agents.handle_file_change(file_path, change_type)
                     agents.write_agents_list(PATH_ROOMS / ".agents_global.yml")
+                elif file_type == "agent_private":
+                    agents.handle_file_change(file_path, change_type, private=True)
                 else:
                     logger.debug("Ignoring change to file: %r", file_path)
             except Exception:  # pylint: disable=broad-except

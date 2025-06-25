@@ -644,8 +644,13 @@ def fix_response_layout(response, _args, agent):
     logger.debug("lines[0]: %r", lines[0])
     logger.debug("agent.name: %r", agent.name)
     name_part = None
-    if lines[0].startswith(agent.name + ":\t"):
-        name_part, lines[0] = lines[0].split(":\t", 1)
+
+    name_pattern = r'^(\*|_|\*\*|__)?' + re.escape(agent.name) + r'\1:\s(.*)'
+
+    match = re.match(name_pattern, lines[0])
+    if match:
+        lines[0] = match.group(2)
+
     logger.debug("lines[0] after: %r", lines[0])
     logger.debug("name_part: %r", name_part)
 

@@ -21,7 +21,7 @@ import chat
 logger = logging.getLogger(__name__)
 
 # Constants, TODO shared
-VISUAL_KEYS = ["person", "clothes", "clothes_upper", "clothes_lower", "age", "emo"]
+VISUAL_KEYS = ["person", "clothes", "clothes_upper", "clothes_lower", "age", "emo", "furry", "pony"]
 PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
 
 ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
@@ -73,7 +73,7 @@ class Agents:
 
 class Agent:
     """An Allemande Agent"""
-    def __init__(self, data: dict = None, agents: Agents = None, file: Path = None):
+    def __init__(self, data: dict = None, agents: Agents = None, file: Path = None, private: bool=False):
         self.agents = agents
         if file and data:
             raise ValueError("Cannot specify both file and data")
@@ -82,12 +82,19 @@ class Agent:
         else:
             self.load_agent(file)
         self.name = self.data["name"]
+        self.private = private
+        if private:
+            self.data = {k: self.data[k] for k in ("visual", "name", "fullname", "aliases") if k in self.data}
+            self.data["type"] = "visual"
 
     def load_agent(self, file: Path) -> None:
         """Load the agent data from a file."""
         name = file.stem
         with open(file, encoding="utf-8") as f:
             self.data = yaml.safe_load(f)
+
+        if self.data is None:
+            raise ValueError(f"Agent file {file} is empty or invalid")
 
         if "name" not in self.data:
             self.data["name"] = name
@@ -220,7 +227,7 @@ class Agent:
 
         return True
 
-    def update_visual(self):
+    def update_visual(self, private: bool=False):
         """Update the visual prompts for an agent."""
         visual = self.get("visual")
         logger.debug("update_visual: %r %r", self.name, visual)
@@ -229,7 +236,11 @@ class Agent:
 
         all_names = self.get_all_names()
 
-        # TODO reduce indent here
+        if private:
+            agent1 = self.agents.get(self.name)
+            if not agent1.private:
+                logger.warning("Name conflict between private and public agent: %r", self.name)
+                return
 
         # supporting arbitrary keys might be a security risk
         for key in VISUAL_KEYS:
@@ -242,21 +253,30 @@ class Agent:
             cache.chmod(str(PATH_VISUAL / path / self.name) + ".txt", 0o664)
 
             # symlink main file to agent's other names
-            for dest in all_names:
-                if dest == self.name:
+            for name1 in all_names:
+                if name1 == self.name:
                     continue
+                if private:
+                    agent1 = self.agents.get(name1)
+                    if agent1 and not agent1.private:
+                        logger.warning("Alias conflict for private agent: %r, %r", self.name, name1)
+                        continue
                 cache.symlink(self.name + ".txt",
-                        str(PATH_VISUAL / path / dest) + ".txt")
+                        str(PATH_VISUAL / path / name1) + ".txt")
 
-    def remove_visual(self):
+    def remove_visual(self, private: bool=False):
         """Remove the visual prompts for an agent."""
         all_names = self.get_all_names()
 
         for key in VISUAL_KEYS:
             path = key if key == "person" else "person/" + key
-            for dest in all_names:
+            for name1 in all_names:
+                if private:
+                    agent1 = self.agents.get(name1)
+                    if agent1 and not agent1.private:
+                        continue
                 try:
-                    cache.remove(str(PATH_VISUAL / path / dest) + ".txt")
+                    cache.remove(str(PATH_VISUAL / path / name1) + ".txt")
                 except FileNotFoundError:
                     pass
 
@@ -274,12 +294,12 @@ class Agents:
         agent_names = sorted(set(agent.name for agent in self.agents.values()))
         cache.save(path, agent_names, noclobber=False)
 
-    def load_agent_without_setup(self, agent_file: Path) -> Agent | None:
+    def load_agent_without_setup(self, agent_file: Path, private: bool=False) -> Agent | None:
         """Load an agent from a file."""
         name = agent_file.stem
-        self.remove_agent(name)
+        self.remove_agent(name, private=private)
 
-        agent = Agent(file=agent_file, agents=self)
+        agent = Agent(file=agent_file, agents=self, private=private)
 
         # Add agent under all its names
         all_names = agent.get_all_names()
@@ -287,26 +307,32 @@ class Agents:
             if name1 in self.agents:
                 if self.agents[name1] != agent:
                     old_main_name = self.agents[name1].name
-                    logger.warning("Agent name conflict: %r vs %r for %r",
-                                old_main_name, agent.name, name1)
+                    msg_private = " for private agent" if private else ""
+                    logger.warning("Agent name conflict%s: %r vs %r for %r",
+                            msg_private, old_main_name, agent.name, name1)
                 continue
             self.agents[name1] = agent
 
         return agent
 
-    def remove_agent(self, name: str, keep_visual: bool = False) -> None:
+    def remove_agent(self, name: str, keep_visual: bool=False, private: bool=False) -> None:
         """Remove an agent."""
         agent = self.agents.get(name)
         if not agent:
             return
-        agent_names = agent.get_all_names()
-        for name1 in agent_names:
-            self.agents.pop(name1, None)
 
         if not keep_visual:
-            agent.remove_visual()
+            agent.remove_visual(private=private)
 
-    def load(self, path: Path, visual: bool=True) -> None:
+        agent_names = agent.get_all_names()
+        for name1 in agent_names:
+            if private:
+                agent1 = self.agents.get(name1)
+                if agent1 and not agent1.private:
+                    continue
+            self.agents.pop(name1, None)
+
+    def load(self, path: Path, visual: bool=True, private: bool=False) -> None:
         """Load all agents or one agent from a path."""
         if path.is_dir():
             agent_files = path.rglob("*.yml")
@@ -318,29 +344,29 @@ class Agents:
         # load all agents first
         for agent_file in agent_files:
             try:
-                agent = self.load_agent_without_setup(agent_file)
+                agent = self.load_agent_without_setup(agent_file, private=private)
                 new_agents.append(agent)
             except Exception:  # pylint: disable=broad-except
-                logger.exception("Error loading agent", exc_info=True)
+                logger.exception(f"Error loading agent from {agent_file}", exc_info=True)
 
         # then set up and update visuals
         for agent in new_agents:
             agent_type = agent.get("type")
             if visual:
-                agent.update_visual()
+                agent.update_visual(private=private)
             if not agent.set_up(self.services):
-                self.remove_agent(agent.name, keep_visual=True)
+                self.remove_agent(agent.name, keep_visual=True, private=private)
                 continue
 
-    def handle_file_change(self, file_path: str, change_type: Change) -> None:
+    def handle_file_change(self, file_path: str, change_type: Change, private: bool=False) -> None:
         """Process an agent file change."""
         if change_type == Change.deleted:
             name = Path(file_path).stem
             logger.info("Removing agent: %r", name)
-            self.remove_agent(name)
+            self.remove_agent(name, private=private)
         else:
             logger.info("Loading agent: %r", file_path)
-            self.load(Path(file_path))
+            self.load(Path(file_path), private=private)
 
     def items(self) -> list[tuple[str, Agent]]:
         """Get the agents as a list of tuples."""
