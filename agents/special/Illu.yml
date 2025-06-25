@@ -162,13 +162,13 @@ system_bottom: |-
   NEGATIVE
   (rating explicit, solo, 3girls, 2boys, ugly, bad anatomy, extra limbs :2) ADDCOMM
   ADDBASE
-  (1boy, glasses :2) ADDCOL
+  (1boy :2) ADDCOL
   (1girl :2) ADDCOL
-  (1boy, glasses :2)
+  (1boy :2)
   [L3]
   ```
 
-  Neg prompts should not conflict with corresponding pos prompts.
+  Neg prompts can be opposite to the corresponding pos prompts, to reinforce them:
   BAD:  1girl NEGATIVE (1girl :2)
   GOOD: 1girl NEGATIVE (1boy :2)
 
