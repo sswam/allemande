@@ -1,7 +1,7 @@
 const offline_timeout_seconds = 10;
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-const isFirefox = /Firefox/i.test(navigator.userAgent);
+// const isFirefox = /Firefox/i.test(navigator.userAgent);
 const inIframe = window.parent !== window.self;
 
 let file_type;
@@ -1214,6 +1214,7 @@ async function deregister_service_worker() {
   }
 }
 
+/*
 function bugfix_hack_load_bootstrap_icons_font() {
   // There's some CORS issue with fetching our minimal icons font in Firefox,
   // so use the CDN one for now
@@ -1224,6 +1225,7 @@ function bugfix_hack_load_bootstrap_icons_font() {
   link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css';
   document.head.appendChild(link);
 }
+*/
 
 export async function room_main() {
   file_type = "room";
@@ -1250,7 +1252,7 @@ export async function room_main() {
 
   handle_room_intro();
 
-  bugfix_hack_load_bootstrap_icons_font();
+  // bugfix_hack_load_bootstrap_icons_font();
 
   setup_mutation_observer();
   await process_current_messages(); // must be after setup_mutation_observer

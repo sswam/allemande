@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.6.853";
+const VERSION = "0.6.866";
 
 const DEBUG = false;
 
@@ -30,13 +30,15 @@ const URLS_TO_CACHE = {
     "/embed.js",
     "/embed.css",
     "/icons.js",
-    "/icons.css",
-    "/icons.woff2",
+//    "/icons.css",
+//    "/icons.woff2",
     "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap",
+    "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css",
   ],
   "rooms": [
     "/sw_register.js",
     "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap",
+    "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css",
   ],
 };
 
@@ -57,8 +59,8 @@ const CORS_URLS_TO_CACHE = {
     "/voice.js",
     // only needed for help system, could load them specifically there?
     "/icons.js",
-    "/icons.css",
-    "/icons.woff2",
+//    "/icons.css",
+//    "/icons.woff2",
 //    "/d3.min.js",
 //    "/wasm.min.js",
 //    "/d3-graphviz.min.js",

@@ -77,12 +77,12 @@ async function waitForImageLoad(img) {
   });
 }
 
-function image_text(img, text1, text2, size = 1, font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive") {
+function image_text(img, texts, size = 1, font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive") {
   const current_script = document.currentScript;
-  return image_text_async(img, text1, text2, size, font, current_script);
+  return image_text_async(img, texts, size, font, current_script);
 }
 
-async function image_text_async(img, text1, text2, size = 1, font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive", ref = null) {
+async function image_text_async(img, texts = [], size = 1, font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive", ref = null) {
   const process_messages = await $import("chat:process_messages");
   const message = ref.closest('div.message');
   await process_messages.processMessage(message);
@@ -100,12 +100,10 @@ async function image_text_async(img, text1, text2, size = 1, font = "'Brush Scri
   } else {
     // Create new wrapper div if needed
     wrapper = document.createElement('div');
-    // Wrap the image
     img.parentNode.insertBefore(wrapper, img);
     wrapper.appendChild(img);
   }
 
-  // Set styles regardless of whether it's new or existing
   wrapper.style.position = 'relative';
   wrapper.style.display = 'inline-block';
 
@@ -151,20 +149,20 @@ async function image_text_async(img, text1, text2, size = 1, font = "'Brush Scri
     return text;
   }
 
-  // Add top text
-  const topText = createText(text1);
-  if (topText) overlay.appendChild(topText);
-  else overlay.appendChild(document.createElement('div')); // spacer
+  // Ensure texts is an array
+  texts = Array.isArray(texts) ? texts : [texts];
 
-  // Add bottom text
-  const bottomText = createText(text2);
-  if (bottomText) overlay.appendChild(bottomText);
+  // Calculate spacing
+  for (const text of texts) {
+    const textElement = createText(text);
+    overlay.appendChild(textElement);
+  }
 
   wrapper.appendChild(overlay);
 }
 
 // Example:
-// image_text(previous("img"), "flying", "cow");
+// image_text(previous("img"), ["flying", "cow"]);
 
 
 // snowing ------------------------------------------------------------------
