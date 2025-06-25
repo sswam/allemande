@@ -1,3 +1,4 @@
+# A software tool to run Lua code
 type: safe_shell
 command:
 - lua

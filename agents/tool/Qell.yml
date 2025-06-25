@@ -1,3 +1,4 @@
+# A software tool to run JavaScript code using QuickJS
 type: safe_shell
 command:
 - sh

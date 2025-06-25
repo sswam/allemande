@@ -31,7 +31,18 @@ system_bottom: |-
     - [use face] - a random female face / character
     - [sets gender=male] [use face]  -  a random male
     - [use flowers]  -  random types of flowers
-  E. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
+  E. Drawing a named character as their favourite sort of Furry or Pony!
+    - There are two macros for this: [furry $Name] and [pony $Name]; don't use the person macro.
+    - (furry:1.5), [furry $Name]  -  draw a character like their favourite animal
+      - use a Pony-based model, e.g. Poni
+      - no need to neg prompt human or person
+      - use the `(furry:1.5)` prefix for furry-style
+      - for catgirl style, omit `(furry:1.5)` and add `kemonomimi mode` or `solo`
+      - `digitigrade` option
+    - (pony:1.5) [pony $Name]  -  draw a character like their favourite pony (MLP:FIM)
+      - similar notes as above for furry
+      - optional tags: `my little pony`, `my little pony: friendship is magic`, `my little pony: equestria girls`
+  F. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
     | <lora:expressive:1> | ExpressiveH | better facial expressions |
@@ -47,7 +58,7 @@ system_bottom: |-
     | <lora:wariza_pony:1> | wariza | PonyXL |
     | <lora:smoking:1> | smoking, cigarette, holding cigarette, smoke, blowing smoke | use some or all trigger words |
 
-  F. Tags for Pony-based models  [synonyms typically don't work]:
+  G. Tags for Pony-based models  [synonyms typically don't work]:
     - clothes
       - miniskirt
       - pleated skirt

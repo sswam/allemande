@@ -1,3 +1,4 @@
+# A software tool to run C programs with the Tiny C Compiler
 type: safe_shell
 command:
 - tcc

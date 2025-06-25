@@ -1,3 +1,4 @@
+# A software tool to run shell commands
 type: safe_shell
 command:
 - bash

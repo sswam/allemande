@@ -1,3 +1,4 @@
+# A software tool to run make(1) scripts
 type: safe_shell
 command:
 - make

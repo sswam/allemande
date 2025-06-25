@@ -1,3 +1,4 @@
+# A software tool to run Perl code
 type: safe_shell
 command:
 - perl
