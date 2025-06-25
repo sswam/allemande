@@ -16,7 +16,7 @@ If you'd like to support us, you can [become a patron](https://www.patreon.com/a
 
 Read this intro carefully!
 
-Click the <i class="bi-question-lg"></i> help button in the top right, and talk with Flashi in the *Help* tab. In this help system, Flashi can give extensive help based on the full user guide.
+Click the <i class="bi-question-lg"></i> help button in the top right, and talk with Aidi in the *Help* tab. In this help system, Aidi can give extensive help based on the full user guide.
 
 In the main [Ally Chat](/Ally+Chat) room, AIs can help with basic info about the app.
 
@@ -35,7 +35,7 @@ Please contact Sam, the main developer, for more help and to give feedback.
 Address AIs by name to get their attention:
 
 > Ally, how are you?
-> Can you help, Flashi?
+> Can you help, Aidi?
 > Illu, let's draw a garden!
 
 Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an AI art prompt for you.
@@ -114,4 +114,4 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 ## What next?
 
-Click the **Help** tab, and ask Flashi some questions about the app, or they can introduce you to some different characters.
+Click the **Help** tab, and ask Aidi some questions about the app, or they can introduce you to some different characters.

@@ -2,7 +2,8 @@
 
 In addition to general features, which you can read about in the [User Guide](/guide), Ally Chat has many features for adult entertainment!
 
-- **Separate SFW and NSFW Zones**: Adult users with access can explore the [nsfw](/nsfw) zone.
+- **Separate SFW and NSFW Zones**: Adult users with access can explore the NSFW zone.
+- You can get to the NSFW zone by entering "nsfw" in the room name, or clicking <i class="bi-explicit"></i> the E button in the <i class="bi-compass"></i> **Nav** menu (advanced mode).
 - We value free speech, and include access to various uncensored AIs.
 - We do not monitor or restrict your private use of Ally Chat.
 - Your use is necessarily recorded in chat histories. For private rooms, we can wipe these on request.
@@ -52,7 +53,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 - Read the [NSFW Quick Intro](/nsfw/intro)
 - Read this [Guide to Adult Features](/nsfw/guide) if you have time, or to see the lists of characters.
-- In the main NSFW room, AIs have some basic info about the app. Talk to Flashi.
+- In the main NSFW room, AIs have some basic info about the app. Talk to Assi, our tech support AI. She is the NSFW version of Aidi.
 - Xilu is expert at NSFW image generation. You can talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt.
 
 ## Basic Intro to NSFW AI Image Generation
@@ -102,12 +103,14 @@ The general characters in the main guide are very good for NSFW chat and rolepla
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
+- **Misti** (Mistral Large 2411): Mistral's strongest language model
 
 Sometimes these models may refuse to help you, depending on the context. You can retry, or change the context, to avoid this problem.
 
 The other strong models mentioned in the main guide are averse to NSFW chat, and it may be against their terms of service. They are disallowed from the NSFW zone. We ask you not to use them in NSFW private chat.
 
 ## Specialists based on Remote AI
+- **Assi**: The AI assistant (NSFW edition), she is a helpful and friendly guide for new users and technical support
 - **Xilu** and **Xillu** (Google): Expert with NSFW AI art prompts, ensuring high-quality image generation. Xilu is faster, Xillu uses a stronger model.
 - **Illu** and **Gema** (Google): Experts with SFW AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model.
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
@@ -146,13 +149,14 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 
 #### Language Models (NSFW capable)
 
-| Creator   | Model             | Name    | Context  | Max Output  | Input Price / M  | Output Price / M  | Description                                                                                             |
-|-----------|-------------------|---------|----------|-------------|------------------|-------------------|---------------------------------------------------------------------------------------------------------|
-| Google    | Gemini 2.0 Flash  | Flasho  | 1M       | 64K         | $0.10            | $0.40             | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                     |
-| Google    | Gemini 2.5 Flash  | Flashi  | 1M       | 64K         | $0.15            | $0.60             | Google's fast Gemini model, optimized for speed and very capable.                                       |
-| Google    | Gemini 2.5 Pro    | Gemmi   | 1M       | 64K         | $1.25 [2]        | $10.00 [2]        | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                       |
-| Meta      | Llama 3.1 8B      | Ally*   | 4096     | 4096        | N/A              | N/A               | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
-| Alibaba+  | EVA Qwen2.5 72B   | Eva/n   | 128K     | 128K        | $0.9             | $1.2              | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.     |
+| Creator  | Model              | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                            |
+|----------|--------------------|--------|---------|------------|-----------------|------------------|--------------------------------------------------------------------------------------------------------|
+| Google   | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
+| Google   | Gemini 2.5 Flash   | Flashi | 1M      | 64K        | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                      |
+| Google   | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [2]       | $10.00 [2]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
+| Meta     | Llama 3.1 8B       | Ally*  | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
+| Alibaba+ | EVA Qwen2.5 72B    | Eva/n  | 128K    | 128K       | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.    |
+| Mistral  | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 

@@ -22,7 +22,7 @@ If you'd like to support us, you can [become a patron](https://www.patreon.com/a
 
 Read this intro carefully!
 
-Click the <i class="bi-question-lg"></i> help button at the top right, and talk with Flashi in the *Help* tab. In this help system, Flashi can give extensive help based on the full user guide.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with Assi in the *Help* tab. In this help system, Assi can give extensive help based on the full user guide.
 
 In the main [Ally Chat](/Ally+Chat) room and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with basic info about the app.
 
@@ -119,4 +119,4 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 ## What next?
 
-Click the **Help** tab, and ask Flashi some questions about the app, or they can introduce you to some different characters.
+Click the **Help** tab, and ask Assi some questions about the app, or they can introduce you to some different characters.

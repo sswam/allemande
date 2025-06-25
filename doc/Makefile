@@ -14,8 +14,9 @@ extra.md: ../agents/cartoon ../agents/celeb ../agents/disney ../agents/fiction .
 	@echo >>$@
 	@(cd ../agents ; for cat in cartoon celeb disney fiction muppet; do echo "## $$cat"; echo; ls "$$cat" | sed 's/\.yml$$/, /' | tr -d '\n' | sed 's/, $$//'; echo; echo; done) | fmt >>$@
 
-summaries.md: $(shell find ../agents/ -name '.?*' -prune -o -type d -print)
-	echo $^
+
+summaries.md:
+	webchat-agent-summaries-update
 
 ../rooms/intro.bb: intro.md
 	rm -f $@ ../rooms/intro.html

@@ -52,7 +52,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**: Markdown, HTML, TeX math, Graphviz, Mermaid, embeds, SVG, CSS, JavaScript, canvas.
 - **Universal**: Features for general assistance, work, education, and entertainment.
-- **Separate SFW and NSFW Zones**: Adult users with access can explore the [nsfw](/nsfw) zone.
+- **Separate SFW and NSFW Zones**: Adult users with access can explore the NSFW zone.
 
 ## Limitations
 
@@ -63,7 +63,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - Read the [Quick Intro](/intro).
 - Read this [User Guide](/guide) if you have time, or to see the lists of characters.
 - This document is visible to AIs in the help widget. They can help users to learn about the app. They can even show which icons to press!
-- IMPORTANT: New users who need help should talk to Flashi. Other characters can also help, but Flashi is recommended for this.
+- IMPORTANT: New users who need help should talk to Aidi. Other characters can also help, but Aidi is specialised at this.
 - A red dot at the top-right means you are disconnected or offline. Reload the page.
 - Illu is expert at image generation. You can talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
 - You can contact Sam, the developer, who is happy to give help or a tour.
@@ -225,7 +225,11 @@ $$
 
 ### Graphviz
 
-Please use transparent backgrounds and medium gray edges and edge text for better visibility in any theme, unless asked otherwise.
+The easiest way to get a diagram is to ask one of the stronger AIs to draw a diagrams with dot or mermaid code:
+
+> Hey Claude, can you dissect this very sentence in a diagram, using dot or mermaid code?
+
+You can ask for transparent backgrounds and medium gray edges and text for better visibility in any theme.
 
 ```dot
 graph {
@@ -508,6 +512,19 @@ digraph Alibaba {
 ```
 
 ```dot
+digraph Mistral {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#B19CD9", fontname="Helvetica"]
+
+    "Mistral" [label=<<b>Mistral AI</b>>]
+    "Misti" [label=<<b>Misti</b><br/><font point-size="10">Mistral Large 2411</font><br/><font point-size="8">128K context</font><br/><font point-size="8">General purpose, reasoning</font>>]
+
+    "Mistral" -> "Misti"
+}
+```
+
+```dot
 digraph StabilityAI {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -558,6 +575,7 @@ digraph StabilityAI {
 All of the above characters are based on Llama 3.1, they act very human-like, and while the model is not perfect, in the developer's opinion they are very good for roleplay.
 
 ### Specialists
+- **Aidi**: The AI assistant, she is a helpful and friendly guide for new users and technical support
 - **Pixi**: She crafts detailed AI art prompts, ensuring high-quality image generation
 - **Sia**: She is an expert writer focused on summarizing entire chats
 - **Sio**: She is an expert writer focused on summarizing entire chats in structured markdown format
@@ -586,6 +604,7 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Skout** (Meta Llama 4 Scout): A fast new open model from Meta
 - **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
+- **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
 - **Eva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (female)
 - **Evan** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (male)
 
@@ -746,33 +765,34 @@ lines: 1
 
 #### Language Models
 
-| Creator       | Model                 | Name    | Context | Max Output      | Input Price / M | Output Price / M | Description                                                                                                      |
-|---------------|-----------------------|---------|---------|-----------------|-----------------|------------------|------------------------------------------------------------------------------------------------------------------|
-| Meta          | Llama 3.1 8B          | Ally*   | 4K      | 4K              | N/A             | N/A              | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
-| Meta          | Llama 4 Scout         | Skout   | 512K    | 512K            | N/A             | N/A              | A fast new open model from Meta.                                                                                 |
-| Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K            | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
-| Anthropic     | Claude 3.5 Haiku      | Clia    | 200K    | 8K              | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
-| Anthropic     | Claude 3.5 Sonnet     | Claude  | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's powerful and reliable model.                                                                         |
-| Anthropic     | Claude 4 Sonnet       | Clauden | 200K    | 8K / 128K [1]   | $3.00           | $15.00           | Anthropic's most powerful sonnet model; supports extended thinking.                                              |
-| Anthropic     | Claude 4 Opus         | Claudo  | 200K    | 8K / 128K [1]   | $15.00          | $75.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
-| Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K              | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
-| Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K              | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
-| Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K              | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                                |
-| Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K             | $1.25 [3]       | $10.00 [3]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
-| OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K             | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
-| OpenAI        | o4-mini               | Fermi   | 200K    | 100K            | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
-| OpenAI        | GPT-4.1               | Emmy    | 1M      | 32K             | $2              | $8.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
-| OpenAI        | o3                    | Grace   | 200K    | 100K            | $10.00          | $40.00           | OpenAI's most powerful reasoning model for advanced applications.                                                |
-| Perplexity    | Sonar                 | Sona    | 128K    | 8K              | $1              | $1               | Perplexity's fastest and most affordable Online model with live internet data.                                   |
-| Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K              | $1 [4]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
-| Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K              | $3 [4]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
-| Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K              | $2 [4]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
-| xAI           | Grok 2                | Grok    | 128K    | 128K            | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model.                                                               |
-| xAI           | Grok 3                | Rocki   | 128K    | 128K            | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
-| DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192            | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                                  |
-| DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192            | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
-| Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K            | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
-| Alibaba+      | EVA Qwen2.5 72B       | Eva/n   | 128K    | 128K            | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.              |
+| Creator       | Model                 | Name    | Context | Max Output    | Input Price / M | Output Price / M | Description                                                                                                      |
+|---------------|-----------------------|---------|---------|---------------|-----------------|------------------|------------------------------------------------------------------------------------------------------------------|
+| Meta          | Llama 3.1 8B          | Ally*   | 4K      | 4K            | N/A             | N/A              | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
+| Meta          | Llama 4 Scout         | Skout   | 512K    | 512K          | N/A             | N/A              | A fast new open model from Meta.                                                                                 |
+| Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
+| Anthropic     | Claude 3.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
+| Anthropic     | Claude 3.5 Sonnet     | Claude  | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's powerful and reliable model.                                                                         |
+| Anthropic     | Claude 4 Sonnet       | Clauden | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful sonnet model; supports extended thinking.                                              |
+| Anthropic     | Claude 4 Opus         | Claudo  | 200K    | 8K / 128K [1] | $15.00          | $75.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K            | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
+| Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
+| Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K            | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                                |
+| Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K           | $1.25 [3]       | $10.00 [3]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
+| OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K           | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
+| OpenAI        | o4-mini               | Fermi   | 200K    | 100K          | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
+| OpenAI        | GPT-4.1               | Emmy    | 1M      | 32K           | $2              | $8.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
+| OpenAI        | o3                    | Grace   | 200K    | 100K          | $10.00          | $40.00           | OpenAI's most powerful reasoning model for advanced applications.                                                |
+| Perplexity    | Sonar                 | Sona    | 128K    | 8K            | $1              | $1               | Perplexity's fastest and most affordable Online model with live internet data.                                   |
+| Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K            | $1 [4]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
+| Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K            | $3 [4]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
+| Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K            | $2 [4]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
+| xAI           | Grok 2                | Grok    | 128K    | 128K          | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model.                                                               |
+| xAI           | Grok 3                | Rocki   | 128K    | 128K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
+| DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                                  |
+| DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192          | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
+| Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
+| Alibaba+      | EVA Qwen2.5 72B       | Eva/n   | 128K    | 128K          | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.              |
+| Mistral       | Mistral Large 2411    | Misti   | 128K    | 128K          | $2              | $6               | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
@@ -849,6 +869,7 @@ lines: 1
 |---------|----------|------|-------------|
 |  <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 113.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a2 2 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12q.322-.119.684-.12h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z M8 6L11 9.75L5 9.75z"/></svg> | `Alt+U` | Up | Go to parent folder |
 | <i class="bi-people"></i> |  | Ally Chat | Go to main room |
+| <i class="bi-explicit"></i> |  | NSFW | Go to main NSFW room (visible when enabled for the user) |
 | <i class="bi-house-door"></i> |  | Porch | Go to your public room |
 | <i class="bi-house"></i> |  | Home | Go to your private folder |
 | <i class="bi-skip-start"></i> | `Ctrl+[` | First | Go to first page |

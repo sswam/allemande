@@ -4,7 +4,7 @@
 # Manage users in the Allemande webchat
 
 webchat-user() {
-	local nsfw= n=   # include nsfw intro text
+	local nsfw= n=   # enable nsfw for a user; list nsfw users only; 0 to list sfw users only
 
 	eval "$(ally)"
 
@@ -42,27 +42,30 @@ webchat-user() {
 
 add-user() {
 	local user=${1-}
-	if [ -n "$user" ] && list-users | grep -q -F -w "$user"; then
+	if [ -n "$user" ] && nsfw= list-users | grep -q -F -w "$user"; then
 		die "User $user already exists"
 	fi
 
 	change-password "$@" |
 		while read -r _ user pass; do
 			cat <<END
-Here's the info to access Ally Chat:
+Thanks for joining Ally Chat!
 
-user: $user
-pass: $pass
-https://$ALLEMANDE_DOMAIN
+* The app is quite complex. Please let me give you a demo!
+* Stay in the main "Ally Chat" room while you learn the ropes.
+* Wally went direct to private chat, got confused and gave up. Don't be like Wally!
+* In return for your free access, please stay in touch and give me some feedback.
+* If you would like to sponsor the project, check our Patreon which is linked from the intro.
 
-Getting Started with Ally Chat:
+Getting Started:
 
-* We strongly recommend you stay in the main "Ally Chat" room while you learn how the app works!
-* and take up the developer's offer to give you a tour of the app
-
-- Log in and select "Ally Chat".
-- The main "Ally Chat" room is public.
-- Use the "?" help function to read the intro and get in-depth help.
+1. Go to https://$ALLEMANDE_DOMAIN and log in:
+  - user: $user
+  - pass: $pass
+2. The main "Ally Chat" room is public and PG-rated.
+3. Press the "?" help button, and read the intro.
+4. Click the "help" tab and chat to the assistant.
+5. Message Sam to arrange a demo in the app!
 END
 		done
 
@@ -89,8 +92,9 @@ END
 
 NSFW Features:
 
-- For NSFW chat and image generation, please go to the "nsfw" room.
+- For NSFW chat and image generation, please go to the public "nsfw" room.
 - You can also use NSFW features in your private chat rooms.
+- If you stay in private all the time, you won't be able to learn from other users.
 END
 		ln -sf ../../doc/nsfw/guide.md rooms/"$user"/.help.m
 	fi
@@ -190,7 +194,23 @@ enable-user() {
 
 list-users() {
 	local filter=${1:-}
-	cut <.htpasswd -f1 -d":" | grep -i "$filter"
+	users=$(
+		cut <.htpasswd -f1 -d":" | grep -i "$filter" | sort
+	)
+	nsfw_users=$(
+		< rooms/nsfw/.access.yml yq -r '.allow | .[]' | sort
+	)
+	case "$nsfw" in
+	"")
+		printf "%s\n" "$users"
+		;;
+	"1")
+		printf "%s\n" "$nsfw_users"
+		;;
+	"0")
+		comm -13 <(printf "%s\n" "$nsfw_users") <(printf "%s\n" "$users")
+		;;
+	esac
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
