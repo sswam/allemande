@@ -392,9 +392,9 @@ Please be cautious with 'refactor'; don't mark fixes or features as 'refactor'.
 Files in the 'snip' directory, are obsolete rubbish that's been removed from something else.
 Files in the 'gen' directory, are interesting AI generated content, but it is not important.
 
-After the header line you may list more details, starting each with a dash, but
-ONLY if it's really needed. NEVER add redundant details that are already
-covered in the header line, and don't explain what you did:
+After the header line, and a blank line, you may list more details, starting
+each with a dash, but ONLY if it's really needed. NEVER add redundant details
+that are already covered in the header line, and don't explain what you did:
 
 - Describe each change very concisely, if not already covered in the header;
   as few list items as possible.
