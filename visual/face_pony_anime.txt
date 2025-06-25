@@ -4,8 +4,7 @@ BREAK [use face], (solo:1.8)
 BREAK [use exp], [use emo], [use anime]
 BREAK (white background, simple background:2)
 <lora:boring:-0.6>
-[set negative_prompt]
-[get negative_prompt]
+[set negative_prompt _append]
 (cleft chin:3), (rating explicit, rating questionable, 1boy, 2girls, couple, penis, hand on another's head, hand on own head, cleft chin, hand, elf, pointy ears, glitter, sparkle, feathers, facepaint, blurry, 1boy, 2girls, couple, penis, hand on another's head, sex, distorted, cleft chin, hand, photo \(object\):2)
 BREAK (breasts:2), (cleft chin, comic, multiple views, animal ears, horns, hat, halo, photo \(object\):3), (nude, topless, cum, close-up, furry, animal ears, fake animal ears, heart, cleft chin, hand, hair ornament, forehead jewel, jewelry, earrings, nose ring:2)
 [/set]

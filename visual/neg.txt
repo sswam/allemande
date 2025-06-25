@@ -1,1 +1,1 @@
-[set negative_prompt] [get negative_prompt] (ugly, bad anatomy, extra limbs:2) [/set]
+[set negative_prompt _append] (ugly, bad anatomy, extra limbs:2) [/set]

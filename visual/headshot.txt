@@ -1,4 +1,4 @@
 (3/4 headshot, head and shoulders only, head close-up:1.2), chest, casual smile, warm comfortable lighting, plain soft grey background, [use photo]
 BREAK
-[set negative_prompt] [get negative_prompt] (cropped image, out of shot:2) [/set]
+[set negative_prompt _append] (cropped image, out of shot:2) [/set]
 <lora:b:-1> [sets width=768 height=768]

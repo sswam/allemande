@@ -92,7 +92,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt images.xt a1111.xt whisper.xt
+core: llm.xt images.xt a1111.xt whisper.xt vup.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -116,7 +116,7 @@ alfred:
 	cd $(ALLEMANDE_HOME)/apps/alfred && \
 	./alfred-webui.py
 
-core.xtc: llm.xtc images.xtc a1111.xtc whisper.xtc
+core.xtc: llm.xtc images.xtc a1111.xtc whisper.xtc vup.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
@@ -141,6 +141,10 @@ images:
 
 a1111:
 	cd ~/webui ; while true; do ./webui.sh; done
+
+vup:
+	cd $(ALLEMANDE_VISUAL) && \
+	while true; do make up; sleep 30; done
 
 # brain-remote: clean
 # 	cd chat && ./brain.sh --remote

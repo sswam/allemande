@@ -1,9 +1,10 @@
-(solo, portrait:1.5), (centered headshot, face:1.8), (head and shoulders:1.5),
-raw, ultra realistic photograph, studio lighting, 85mm lens, (clean white background:1.5), professional headshot
+(solo, furry, portrait:1.5), (centered headshot, face:1.8), (head and shoulders:1.5),
+studio lighting, (clean white background:1.5)
 BREAK
 [use choose_a_person]
 [use character_name],
 ([get age]:1.6),
+([get furry]:1.5),
 [get person],
 [get emo],
 [get clothes_upper]

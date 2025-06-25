@@ -1,6 +1,6 @@
 (solo, portrait:1.5), 
 (2 year old baby:1.5),
-(centered headshot, face close-up:1.8), (head and shoulders:1.5),
+(centered headshot, face:1.8), (head and shoulders:1.5),
 raw, ultra realistic photograph, studio lighting, 85mm lens, (clean white background:1.5), professional headshot,
 (2 year old baby:1.5),
 BREAK
@@ -10,6 +10,8 @@ BREAK
 [get person],
 [get emo],
 [get clothes_upper],
-(face close-up:1.8),
-(2 year old baby:1.5),
-NEGATIVE (cropped:2), (full body:1.5), wide shot, tilted angle, low angle, high angle
+(2 year old baby:1.5)
+
+[set negative_prompt _append]
+(cropped, cropped head:2), (full body:1.5), wide shot, tilted angle, low angle, high angle
+[/set]

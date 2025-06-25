@@ -3,6 +3,8 @@
 [set char_clothes_lower]clothes_lower/[get char][/set]
 [set char_emo]emo/[get char][/set]
 [set char_age]age/[get char][/set]
+[set char_furry]furry/[get char][/set]
+[set char_pony]pony/[get char][/set]
 
 [set person][use "{get char}"][/set]
 [set clothes][use "{get char_clothes}"][/set]
@@ -10,3 +12,5 @@
 [set clothes_lower][use "{get char_clothes_lower}"][/set]
 [set emo][use "{get char_emo}"][/set]
 [set age][use "{get char_age}"][/set]
+[set furry][use "{get char_furry}"][/set]
+[set pony][use "{get char_pony}"][/set]

@@ -1,4 +1,4 @@
 (full body shot, facing viewer:1.2), happy smile, [use photo]
 BREAK
-[set negative_prompt] [get negative_prompt] (bad teeth, bad anatomy, extra limbs, cropped image, out of shot:2) [/set]
+[set negative_prompt _append] (bad teeth, bad anatomy, extra limbs, cropped image, out of shot:2) [/set]
 <lora:b:-1> [sets width=576 height=1024]
