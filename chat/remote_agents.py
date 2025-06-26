@@ -19,8 +19,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None) -> str:
+async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str = None) -> str:
     """Run a remote agent."""
+    # NOTE: responsible_human is not used here yet
+
     service = agent["type"]
 
     if config is None:

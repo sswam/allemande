@@ -42,7 +42,7 @@ class Access(enum.Enum):  # pylint: disable=too-few-public-methods
 class Room:
     """A chat room object."""
 
-    def __init__(self, name=None, path=None):
+    def __init__(self, name: str | None = None, path: Path | None = None):
         """Create a room object."""
         if path:
             assert name is None

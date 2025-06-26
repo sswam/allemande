@@ -131,7 +131,7 @@ async def client_request(portal, input_text, config=None, timeout=None):
     return new_text, resp  # , generated_text
 
 
-async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None) -> str:
+async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str = None) -> str:
     """Run a local agent."""
     # print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 
@@ -320,6 +320,8 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     logger.debug("fulltext: %r", fulltext2)
     logger.debug("config: %r", gen_config)
 #     logger.info("portal: %r", str(portal.portal))
+
+    gen_config["user"] = responsible_human
 
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 

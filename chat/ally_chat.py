@@ -72,8 +72,9 @@ def config_read(file):
     return {}
 
 
-async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None, num=10, agents=None):
+async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None, num=10, agents=None, responsible_human: str=None):
     """Run a search agent."""
+    # NOTE: responsible_human is not used here yet
     name = agent.name
     logger.debug("history: %r", history)
     history_messages = list(bb_lib.lines_to_messages(history))
@@ -211,7 +212,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     welcome_agents = [name for name, agent in agents.items() if agent.get("welcome")]
 
-    bots = conductor.who_should_respond(
+    responsible_human, bots = conductor.who_should_respond(
         message,
         agents=agents,
         history=history_messages,
@@ -223,7 +224,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         room=room,
         include_self=not poke,
     )
-#    logger.info("who should respond: %r", bots)
+    logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
 
     # Support "directed-poke" which removes itself, like -@Ally
     # TODO this is a bit dodgy and has a race condition
@@ -263,7 +264,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         logger.debug("query: %r", query)
         logger.debug("history 1: %r", history)
         response = await run_agent(
-                agent, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents
+                agent, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
         )
         response = response.strip()
 
@@ -293,11 +294,11 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     return count
 
 
-async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None) -> str:
+async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human=None) -> str:
     """Run an agent."""
     function = agent["fn"]
     logger.debug("query: %r", query)
-    return await function(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents)
+    return await function(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human)
 
 
 async def run_subprocess(command, query):
@@ -321,8 +322,10 @@ async def run_subprocess(command, query):
     return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
 
 
-async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None, agents=None):
+async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None, agents=None, responsible_human: str=None):
     """Run a shell agent."""
+    # NOTE: responsible_human is not used here
+
     name = agent.name
     logger.debug("history: %r", history)
     history_messages = list(bb_lib.lines_to_messages(history))

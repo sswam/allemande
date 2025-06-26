@@ -2,14 +2,17 @@
 
 """ conductor.py: decide which agent/s should respond to a message """
 
+import os
 import logging
 import re
 import random
 from typing import Any, Iterable
+from pathlib import Path
 
 import chat
 from util import uniqo
 from agents import Agents, Agent
+import ally_room
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -290,6 +293,40 @@ def is_image_message(agents: Agents, message: dict[str, str]) -> bool:
     return service and service.startswith("image_")
 
 
+def responsible_human(
+    history: list[dict[str, Any]],
+    agents: Agents,
+    room: chat.Room | None = None,
+) -> str | None:
+    """returns guess at responsible human user"""
+    # TODO
+    # responsible human user is based on the most recent message from a human in the chat history (from the end)
+    # or, if none, the top-level path component of the room name, if it matches a user's name  (e.g. sam/foo -> sam and sam -> sam)
+    top_dir = Path(os.environ["ALLEMANDE_ROOMS"])
+    access_config = ally_room.load_config(top_dir, "access.yml")
+    all_human_users = set(access_config.get("allow", []))
+
+    # Try to find the most recent human user in the history
+    for i in range(len(history) - 1, -1, -1):
+        user = history[i].get("user")
+        if user is None:
+            continue
+        agent = agents.get(user)
+        if agent and agent_is_human(agent):
+            return user.lower()
+        if not agent and user in all_human_users:
+            return user.lower()
+
+    # If no human user found in history, check the room name
+    if room and room.name:
+        top_name = room.name.split("/")[0]
+        if top_name in all_human_users:
+            return top_name
+
+    # If still no responsible human user, return None
+    return None
+
+
 def who_should_respond(
     message: dict[str, Any] | None,
     agents: Agents | None = None,
@@ -301,8 +338,8 @@ def who_should_respond(
     config: dict[str, Any] | None = None,
     mission: str | None = None,
     room: chat.Room | None = None,
-) -> list[str]:
-    """who should respond to a message"""
+) -> tuple[str|None, list[str]]:
+    """returns guess at responsible human user, and who should respond to a message"""
 
     access_check_cache = {}
 
@@ -574,7 +611,12 @@ def who_should_respond(
     logger.info("who_should_respond: %r %r", reason, invoked)
 
     # Filter out special words and only use actual agent names
-    return [agent_case_map[agent.lower()] for agent in invoked if agent.lower() in agent_case_map]
+    agents_to_respond = [agent_case_map[agent.lower()] for agent in invoked if agent.lower() in agent_case_map]
+
+    # Responsible human user
+    responsible_human_user = responsible_human(history, agents, room)
+
+    return responsible_human_user, agents_to_respond
 
 
 def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_cache: dict[str, int]) -> list[str]:
