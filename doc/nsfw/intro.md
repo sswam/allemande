@@ -40,10 +40,10 @@ Please contact Sam, the main developer, for more help and to give feedback.
 
 ## Talking with AIs
 
-Address AIs by name to get their attention:
+Address AIs by name to get their attention, with a capital letter or @ sign:
 
 > hey Ally, you're looking hot!
-> Can you help run a sexy photoshoot, Flashi?
+> Can you help run a sexy photoshoot, @flashi?
 > Xilu, draw a nude girl!
 
 Send an empty "poke" message to continue AI conversations. You'll need to do this after Xilu writes an AI art prompt for you.
@@ -63,6 +63,11 @@ You can say @anyone for a random AI, or @everyone for several responses.
 - Poni: cartoon / anime NSFW images
 - Yoni, Coni, Boni: semi-realistic NSFW images
 - Bigi, Pigi: realistic NSFW images
+- When talking to a tool like an AI art model, start a line with their name, using a capital letter and a comma:
+```
+Coni, 1girl, 20 years old, nude, flowers [P2]
+```
+- Be patient, it can take a little while depending on the quality and the load on the GPU.
 
 **Specialists**
 - Brie: brainstorming

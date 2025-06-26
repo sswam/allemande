@@ -97,6 +97,9 @@ NSFW Features:
 - If you stay in private all the time, you won't be able to learn from other users.
 END
 		ln -sf ../../doc/nsfw/guide.md rooms/"$user"/.help.m
+		ln -sf ../../rooms.dist/help.bb.base.nsfw rooms/"$user"/.help.bb.base
+	else
+		ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	fi
 
 	if [ ! -e rooms/"$user"/help.bb ]; then
