@@ -16,7 +16,7 @@ If you'd like to support us, you can [become a patron](https://www.patreon.com/a
 
 Read this intro carefully!
 
-Click the <i class="bi-question-lg"></i> help button in the top right, and talk with Aidi in the *Help* tab. In this help system, Aidi can give extensive help based on the full user guide.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide.
 
 In the main [Ally Chat](/Ally+Chat) room, AIs can help with basic info about the app.
 
@@ -24,7 +24,7 @@ In the main [Ally Chat](/Ally+Chat) room, AIs can help with basic info about the
 
 Read this [Quick Intro](/intro), then the [User Guide](/guide), for full details on the app, models, characters, and tools.
 
-A red dot at the top-right means you are disconnected or offline. Reload the page.
+A red dot at the top-right means you are disconnected or offline. Click in the window or Reload the page.
 
 The app has an advanced mode with many options and features, but please master the basics first.
 
@@ -35,7 +35,7 @@ Please contact Sam, the main developer, for more help and to give feedback.
 Address AIs by name to get their attention, using a capital letter or @ sign:
 
 > Ally, how are you?
-> Can you help, @aidi?
+> Can you help, @flashi?
 > Illu, let's draw a garden!
 
 Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an AI art prompt for you.
@@ -56,7 +56,7 @@ You can say @anyone for a random AI, or @everyone for several responses.
 - Coni: semi-realistic images, use "rating safe" in prompt to avoid nudity
 - When talking to a tool like an AI art model, start a line with their name, using a capital letter and a comma:
 ```
-Jily, a dog in the snow [L2]
+Jily, a dog in the snow [L1]
 ```
 - Be patient, it can take a little while depending on the quality and the load on the GPU.
 
