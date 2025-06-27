@@ -9,6 +9,10 @@ import asyncio
 import re
 import math
 import fcntl
+import random
+from dataclasses import dataclass
+from typing import Any
+import time
 
 import yaml
 
@@ -36,8 +40,16 @@ MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 # - an actual time limit, just stop after that time
 # - fair queueing, handle multiple requests. How? need to know user?
 
-COUNT_LIMIT = 4    # 10
-STEPS_LIMIT = 30   # 150
+COUNT_LIMIT = 10
+STEPS_LIMIT = 150
+
+JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
+JOB_BASE_TIME = 15
+MIN_STEPS = 15
+MIN_JOB_PENALTY = 1
+MAX_JOB_PENALTY = 2
+MAX_JOB_DELAY = 540  # 9 minutes, after that the client will likely timeout
+ADETAILER_TIME = 3  # seconds, how long adetailer takes to run roughly
 
 
 def process_hq_macro(config: dict, sets: dict) -> dict:
@@ -46,14 +58,14 @@ def process_hq_macro(config: dict, sets: dict) -> dict:
 
     if hq == 0:
         # hq=0 - disable adetailer, no hires
-        config['adetailer'] = None
-        config['hires'] = 0.0
+        config["adetailer"] = None
+        config["hires"] = 0.0
     elif hq == 1:
         # hq=1 - keep adetailer from config, no hires fix
-        config['hires'] = 0.0
+        config["hires"] = 0.0
     else:
         # hq != 1 - set hires to hq value
-        config['hires'] = hq
+        config["hires"] = hq
 
     return config
 
@@ -97,11 +109,11 @@ def limit_dimensions_and_hq(config: dict) -> dict:
     # update config and log
     if width != config.get("width", 1024) or height != config.get("height", 1024):
         logger.info("limiting dimensions to %dx%d", width, height)
-        config['width'] = width
-        config['height'] = height
+        config["width"] = width
+        config["height"] = height
     if hires != config.get("hires", 1.0):
         logger.info("limiting hires to %.2f", hires)
-        config['hires'] = hires
+        config["hires"] = hires
 
     return config
 
@@ -127,51 +139,347 @@ def load(portals, d, filename):
 def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
     """Apply a shortcut to the sets macro"""
     add = {}
-    add['steps'] = "15"
-    add['hq'] = "0"
+    add["steps"] = "15"
+    add["hq"] = "0"
     if quality == 0:
         if shape == "S":
-            add['width'] = "768"
-            add['height'] = "768"
+            add["width"] = "768"
+            add["height"] = "768"
         elif shape == "P":
-            add['width'] = "768"
-            add['height'] = "1024"
+            add["width"] = "768"
+            add["height"] = "1024"
         elif shape == "L":
-            add['width'] = "1024"
-            add['height'] = "768"
+            add["width"] = "1024"
+            add["height"] = "768"
     else:
         if shape == "S":
-            add['width'] = "1024"
-            add['height'] = "1024"
+            add["width"] = "1024"
+            add["height"] = "1024"
         elif shape == "P":
-            add['width'] = "960"
-            add['height'] = "1280"
+            add["width"] = "960"
+            add["height"] = "1280"
         elif shape == "L":
-            add['width'] = "1280"
-            add['height'] = "960"
+            add["width"] = "1280"
+            add["height"] = "960"
         if quality == 1:
             pass
         elif quality == 2:
-            add['hq'] = "1"  # use adetailer
+            add["hq"] = "1"  # use adetailer
         else:
-            add['hq'] = "1.5"  # use hires-fix and adetailer (3)
+            add["hq"] = "1.5"  # use hires-fix and adetailer (3)
         if quality == 4:
-            add['steps'] = "30"
+            add["steps"] = "30"
         elif quality == 5:
-            add['steps'] = "45"
+            add["steps"] = "45"
         elif quality == 6:
-            add['steps'] = "60"
+            add["steps"] = "60"
         elif quality == 7:
-            add['steps'] = "90"
+            add["steps"] = "90"
         elif quality == 8:
-            add['steps'] = "120"
+            add["steps"] = "120"
         elif quality == 9:
-            add['steps'] = "150"
+            add["steps"] = "150"
 
-    sets.update({k:v for k,v in add.items() if k not in sets})
+    sets.update({k: v for k, v in add.items() if k not in sets})
 
 
-# pylint: disable=too-many-locals, too-many-branches, too-many-statements
+# Global priority queue
+image_queue = asyncio.PriorityQueue()
+
+
+# User jobs count
+user_usage: dict[str, int] = {}
+
+
+@dataclass(order=True)
+class ImageJob:
+    priority: int
+    d: Path
+    output_stem: str
+    prompt: str
+    negative_prompt: str
+    seed: int
+    config: dict[str, Any]
+    regional_kwargs: dict[str, Any]
+    i: int
+    count: int
+    portal: Path
+    request_time: float
+    duration: float
+
+
+job = None
+
+
+async def process_image_queue():
+    """Process jobs from the image queue"""
+    global job  # pylint: disable=global-statement
+    while True:
+        try:
+            # Log the queue with priority and user-name
+            logger.info("Queue size: %d", image_queue.qsize())
+            current_time = time.time()
+            for job in sorted(list(image_queue._queue), key=lambda j: j.priority):
+                logger.info("Job: %.0f: %s", job.priority - current_time, job.config.get("user"))
+
+            # Get job from queue
+            job = await image_queue.get()
+
+            current_time = time.time()
+            logger.info("\nRunning Job: %.0f: %s", job.priority - current_time, job.config.get("user"))
+
+            if current_time - job.request_time > MAX_JOB_DELAY:
+                # Don't process the job if it has been in the queue for too long, as the client will have timed out
+                await complete_batch(job)
+            else:
+                # Process the job
+                with GPU_MUTEX.open("w") as lockfile:
+                    try:
+                        fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
+                        await a1111_client.a1111_client(
+                            output=str(job.d / f"{job.output_stem}_{job.seed}"),
+                            prompt=job.prompt,
+                            negative_prompt=job.negative_prompt,
+                            seed=job.seed,
+                            sampler_name=job.config.get("sampler_name", "DPM++ 2M"),
+                            scheduler=job.config.get("scheduler", "Karras"),
+                            steps=min(job.config.get("steps", 15), STEPS_LIMIT),
+                            cfg_scale=job.config.get("cfg_scale", 7.0),
+                            width=job.config.get("width", 1024),
+                            height=job.config.get("height", 1024),
+                            count=1,
+                            adetailer=job.config.get("adetailer", None),
+                            ad_checkpoint=job.config.get("ad_checkpoint", None),
+                            pag=job.config.get("pag", 0),
+                            hires=job.config.get("hires", 0.0),
+                            pony=job.config.get("pony", 0.0),
+                            ad_mask_k_largest=job.config.get("ad_mask_k_largest", 0),
+                            model=job.config.get("model"),
+                            clip_skip=job.config.get("clip_skip"),
+                            **job.regional_kwargs,
+                        )
+                    finally:
+                        fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
+
+                    # Check if this is the last job in the batch
+                    if job.i == job.count - 1:
+                        await complete_batch(job)
+        except asyncio.CancelledError:
+            break
+        except Exception as e:
+            print(f"Error processing image job: {e}")
+            # Mark task as done even if it failed
+        finally:
+            job = None
+            image_queue.task_done()
+
+
+async def complete_batch(job: ImageJob):
+    portal = job.portal
+    fmt = job.config.get("format", "jpg")
+    req = job.d.name
+    if fmt == "jpg":
+        metadata = convert_images_to_jpeg(portal, req, job.d)
+    else:
+        metadata = extract_metadata(portal, req, job.d)
+
+    data = yaml.dump(
+        {
+            "seed": job.seed,
+            "metadata": metadata,
+        }
+    )
+    (job.d / "result.yaml").write_text(data, encoding="utf-8")
+
+    os.rename(job.d, portal / "done" / req)
+    logger.info("%s:%s - done", portal, req)
+
+
+def estimate_job_weight(job: dict[str, Any]) -> float:
+    """Estimate the weight of a job compared to the base job"""
+    job_weight = 1.0
+
+    log = logger.debug
+
+    log("job_weight 1: %.2f", job_weight)
+
+    config = job.config
+
+    # add for adetailer
+    job_weight += len(config.get("adetailer") or []) * ADETAILER_TIME / JOB_BASE_TIME
+    log("Adetailer weight: %.2f", len(config.get("adetailer") or []) * ADETAILER_TIME / JOB_BASE_TIME)
+
+    log("job_weight 2: %.2f", job_weight)
+
+    # multiply based on steps
+    job_weight *= config.get("steps", MIN_STEPS) / MIN_STEPS
+    log("Steps weight: %.2f", config.get("steps", MIN_STEPS) / MIN_STEPS)
+
+    log("job_weight 3: %.2f", job_weight)
+
+    # multiply based on image size, relative to 1024x1024
+    job_weight *= config.get("width", 1024) * config.get("height", 1024) / (1024 * 1024)
+    log("Image size weight: %.2f", config.get("width", 1024) * config.get("height", 1024) / (1024 * 1024))
+
+    log("job_weight 4: %.2f", job_weight)
+
+    # multiply based on hires; this isn't right but good enough for now
+    job_weight *= (config.get("hires") or 1.0) ** 2
+    log("Hires weight: %.2f", (config.get("hires") or 1.0) ** 2)
+
+    log("job_weight 5: %.2f", job_weight)
+
+    # multiply by 1.5 if using regional prompter
+    if job.regional_kwargs:
+        log("Regional prompter detected, increasing job weight")
+        job_weight *= 1.5
+
+    log("Estimated job weight: %.2f", job_weight)
+
+    return job_weight
+
+
+def get_user_job_penalty(usage: float) -> float:
+    """
+    Calculate the job penalty for a user based on the number of jobs they have run.
+    Soft max between MIN_JOB_PENALTY and MAX_JOB_PENALTY.
+    """
+    return MIN_JOB_PENALTY + (MAX_JOB_PENALTY - MIN_JOB_PENALTY) * (
+        1 - 1 / (usage * JOB_PENALTY / (MAX_JOB_PENALTY - MIN_JOB_PENALTY) + 1)
+    )
+
+
+async def enqueue_image_jobs(
+    d: Path, prompt: str, negative_prompt: str, output_stem: str, config: dict, regional_kwargs: dict, portal: Path
+) -> int:
+    """Enqueue image generation jobs into the priority queue"""
+    seed = config.get("seed", random.randint(0, 2**32 - 1))
+    count = min(config.get("count", 1), COUNT_LIMIT)
+
+    user = config.get("user", None)
+
+    current_time = time.time()
+
+    # TODO can estimate job duration / weight better from parameters
+    # TODO or measure job duration
+
+    # penalty = min(JOB_PENALTY * jobs_count, MAX_PENALTY)
+
+    # penalty = MAX_PENALTY * (1 - 1/(jobs_count * JOB_PENALTY / MAX_PENALTY + 1))
+
+    logger.info("Enqueuing %d jobs for user %s", count, user)
+
+    # Calculate the priority for the first job, considering existing queued jobs for the user
+    priority = current_time
+    logger.info("priority 1: %.2f", priority)
+    for j in list(image_queue._queue) + [job]:
+        if not j or j.config.get("user") != user:
+            continue
+        priority += j.duration
+    logger.info("priority 2: %.2f", priority)
+
+    # Enqueue each image job
+    for i in range(count):
+        # logger.info("enqueuing job %d/%d for user %s with jobs count %s", i + 1, count, user, user_usage.get(user, 0))
+        new_job = ImageJob(
+            priority=priority,
+            d=d,
+            output_stem=output_stem,
+            prompt=prompt,
+            negative_prompt=negative_prompt,
+            seed=seed + i,
+            config=config,
+            regional_kwargs=regional_kwargs,
+            i=i,
+            count=count,
+            portal=portal,
+            request_time=current_time,
+            duration=0,
+        )
+        weight = estimate_job_weight(new_job)
+        job_penalty = get_user_job_penalty(user_usage.get(user, 0.0))
+        new_job.duration = weight * job_penalty * JOB_BASE_TIME
+        logger.info("weight, job_penalty, duration: %.2f, %.2f, %.2f", weight, job_penalty, new_job.duration)
+        await image_queue.put(new_job)
+        priority += new_job.duration
+        user_usage[user] = user_usage.get(user, 0) + weight
+
+    return seed
+
+
+def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[str, str, dict, dict, bool, dict[str, str], str]:
+    """Process prompt and config, returning updated values and whether macros need updating"""
+    sets = macros.get("sets", {})
+    need_update_macros = False
+    regional_kwargs = {}
+
+    # Process shortcuts
+    for shortcut in macros:
+        if re.match(r"[SPL]\d?$", shortcut):
+            shape = shortcut[0]
+            quality = int((shortcut + "0")[1])
+            apply_shortcut(sets, shape, quality)
+            need_update_macros = True
+            break
+    else:
+        shortcut = None
+
+    # Process settings
+    for setting in ["width", "height", "hires", "seed", "pag", "ad_checkpoint"]:
+        if setting not in sets:
+            continue
+        value = sets[setting]
+        need_update_macros = True
+        if setting in ["width", "height", "seed"]:
+            config[setting] = int(value)
+        elif setting in ["ad_checkpoint"]:
+            config[setting] = value
+        else:
+            config[setting] = float(value)
+
+    # Process regional prompter
+    rp = macros.get("rp", {})
+    if "rp" in macros:
+        # change all keys to prefix rp_
+        for key, value in rp.items():
+            regional_kwargs[f"rp_{key}"] = value
+        regional_kwargs["regional"] = regional_kwargs.pop("rp_mode", "columns")
+        need_update_macros = True
+
+    config = process_hq_macro(config, sets)
+    config = limit_dimensions_and_hq(config)
+
+    # Process negative prompt
+    negative_prompt = config.get("negative_prompt", "")
+    if negative_prompt == "":
+        try:
+            prompt, negative_prompt = re.split(r"\s+NEGATIVE\s+", prompt, 1)
+        except ValueError:
+            pass
+
+    # We can update the count from the sets macro
+    if "count" in sets:
+        config["count"] = int(sets["count"])
+
+    return prompt, negative_prompt, config, regional_kwargs, need_update_macros, sets, shortcut
+
+
+def update_prompt_with_macros(prompt: str, config: dict, sets: dict[str, str], shortcut: str = None) -> str:
+    """Update the prompt with macros"""
+    sets["width"] = str(config["width"])
+    sets["height"] = str(config["height"])
+    sets["hires"] = str(config["hires"])
+    for k in ["seed", "pag", "ad_checkpoint"]:
+        if k in sets:
+            sets[k] = "---REMOVEME---"
+    update = {"sets": sets, "rp": None}
+    if shortcut:
+        update[shortcut] = None
+    prompt = update_macros(prompt, update)
+    prompt = re.sub(r"\w+=---REMOVEME---", "", prompt)
+    return prompt
+
+
 async def process_request(portals: str, portal_str: Path, req: str):
     """Process a request on a portal"""
     portal = Path(portal_str)
@@ -190,134 +498,20 @@ async def process_request(portals: str, portal_str: Path, req: str):
 
         # Process macros
         macros = parse_macros(prompt)
-        sets = macros.get('sets', {})
-        need_update_macros = False
+        prompt, negative_prompt, config, regional_kwargs, need_update_macros, sets, shortcut = process_prompt_and_config(
+            prompt, config, macros
+        )
 
-        # TODO for SD1.5 models limit resolution to 768x768 max, and default to 512x512?
-
-        # Shortcuts
-        for shortcut in macros:
-            if re.match(r"[SPL]\d?$", shortcut):
-                shape = shortcut[0]
-                quality = int((shortcut+"0")[1])
-                apply_shortcut(sets, shape, quality)
-                need_update_macros = True
-                break
-        else:
-            shortcut = None
-
-        logger.debug("sets: %r", sets)
-
-        # Process hq setting
-        if 'width' in sets:
-            need_update_macros = True
-            config['width'] = int(sets['width'])
-        if 'height' in sets:
-            need_update_macros = True
-            config['height'] = int(sets['height'])
-        if 'hires' in sets:
-            need_update_macros = True
-            config['hires'] = float(sets['hires'])
-        if 'seed' in sets:
-            need_update_macros = True
-            config['seed'] = int(sets['seed'])
-        if 'pag' in sets:
-            need_update_macros = True
-            config['pag'] = float(sets['pag'])
-        if 'ad_checkpoint' in sets:
-            need_update_macros = True
-            config['ad_checkpoint'] = sets['ad_checkpoint']
-
-        # Process rp macro (regional prompter)
-        regional_kwargs = {}
-        rp = macros.get("rp", {})
-        if "rp" in macros:
-            # change all keys to prefix rp_
-            for key, value in rp.items():
-                regional_kwargs[f"rp_{key}"] = value
-            regional_kwargs["regional"] = regional_kwargs.pop("rp_mode", "columns")
-            need_update_macros = True
-
-        config = process_hq_macro(config, sets)
-        config = limit_dimensions_and_hq(config)
-
-        # Update settings in prompt if needed
         if need_update_macros:
-            sets['width'] = str(config['width'])
-            sets['height'] = str(config['height'])
-            sets['hires'] = str(config['hires'])
-            for k in ['seed', 'pag', 'ad_checkpoint']:
-                if k in sets:
-                    sets[k] = "---REMOVEME---"
-            update = {"sets": sets, "rp": None}
-            if shortcut:
-                update[shortcut] = None
-            prompt = update_macros(prompt, update)
-            prompt = re.sub(r"\w+=---REMOVEME---", "", prompt)
-
-            # logger.info("updated prompt: %s", prompt)
-
-        # We can update the count from the sets macro
-        if 'count' in sets:
-            config['count'] = int(sets['count'])
+            prompt = update_prompt_with_macros(prompt, config, sets)
 
         output_stem = slug.slug(prompt)[:70]
-
-        negative_prompt = config.get("negative_prompt", "")
-
-        if negative_prompt == "":
-            try:
-                prompt, negative_prompt = re.split(r"\s+NEGATIVE\s+", prompt, 1)
-            except ValueError:
-                pass
 
         fmt = config.get("format", "jpg")
         if fmt not in ("jpg", "png"):
             raise ValueError(f"unknown format: {fmt}")
 
-        # Acquire GPU mutex lock
-        with GPU_MUTEX.open("w") as lockfile:
-            try:
-                fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
-                # Run image gen with the lock held
-                seed = await a1111_client.a1111_client(
-                    output=str(d / output_stem),
-                    prompt=prompt,
-                    negative_prompt=negative_prompt,
-                    seed=config.get("seed", -1),
-                    sampler_name=config.get("sampler_name", "DPM++ 2M"),
-                    scheduler=config.get("scheduler", "Karras"),
-                    steps=min(config.get("steps", 15), STEPS_LIMIT),
-                    cfg_scale=config.get("cfg_scale", 7.0),
-                    width=config.get("width", 1024),
-                    height=config.get("height", 1024),
-                    count=min(config.get("count", 1), COUNT_LIMIT),
-                    adetailer=config.get("adetailer", None),
-                    ad_checkpoint=config.get("ad_checkpoint", None),
-                    pag=config.get("pag", 0),
-                    hires=config.get("hires", 0.0),
-                    pony=config.get("pony", 0.0),
-                    ad_mask_k_largest=config.get("ad_mask_k_largest", 0),
-                    model=config.get("model"),
-                    clip_skip=config.get("clip_skip"),
-                    **regional_kwargs,
-                )
-            finally:
-                fcntl.flock(lockfile.fileno(), fcntl.LOCK_UN)
-
-        if fmt == "jpg":
-            metadata = convert_images_to_jpeg(portal, req, d)
-        else:
-            metadata = extract_metadata(portal, req, d)
-
-        data = yaml.dump({
-            "seed": seed,
-            "metadata": metadata,
-        })
-        (d/"result.yaml").write_text(data, encoding="utf-8")
-
-        os.rename(d, portal / "done" / req)
-        logger.info("%s:%s - done", portal, req)
+        seed = await enqueue_image_jobs(d, prompt, negative_prompt, output_stem, config, regional_kwargs, portal)
     except (Exception, KeyboardInterrupt) as e:  # pylint: disable=broad-exception-caught
         logger.exception("%s:%s - error: %s", portal, req, e)
         os.rename(d, portal / "error" / req)
@@ -378,6 +572,8 @@ async def serve_requests(portals: str = str(portals_dir), poll_interval: float =
         await process_request(portals, portal, req)
 
     known_requests_set = set(known_requests)
+
+    queue_processor = asyncio.create_task(process_image_queue())
 
     while True:
         new_requests = find_todo_requests(portals)

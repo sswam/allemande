@@ -261,6 +261,7 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
         logger.addHandler(log_handler)
 
         config = yaml.safe_load(load(portals, d, "config.yaml"))
+        user = config.pop("user", None)  # TODO use this for fair queueing
         request = load(portals, d, "request.txt")
         response = await gen(config, request, *args, **kwargs)
         for k, v in response.items():
