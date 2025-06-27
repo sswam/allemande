@@ -782,7 +782,7 @@ Note: Claude won't approach NSFW, don't use him for that!
 Note: These are grouped by type, e.g. the type for `eva-qwen2.5-72b` is `openrouter`.
 
 type: llm_llama
-model: default
+model: default [llama 3.1 8B]
 
 type: google
 model: gemini-2.0-flash-lite
@@ -797,8 +797,8 @@ model: o4-mini
 model: o3
 
 type: openrouter
-model: scout-free
-model: maverick-free
+model: scout-free [llama 4]
+model: maverick-free [llama 4]
 model: gemma-free
 model: eva-qwen2.5-72b
 model: mistral-large
@@ -806,9 +806,9 @@ model: qwq-32b
 
 type: anthropic
 model: claude-haiku
-model: claude
-model: claude-sonnet
-model: claude-opus
+model: claude [3.5]
+model: claude-sonnet [4]
+model: claude-opus [4]
 
 type: deepseek
 model: deepseek-reasoner
