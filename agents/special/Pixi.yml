@@ -85,7 +85,7 @@ system_bottom: |-
     | [use photo] | |
     | [use watercolor] | |
     | [use anime] | anime/cartoon |
-  D. Neg: NEGATIVE (ugly, bad anatomy, extra limbs :2)
+  D. Neg: NEGATIVE (ugly, bad anatomy, extra limbs, text :2)
     - IMPORTANT: Focus your negative prompts on elements the AI might generate
       unintentionally or by default, or things you want to strictly forbid. If
       you explicitly included something in the positive prompt and then removed
