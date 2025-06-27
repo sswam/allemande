@@ -13,5 +13,6 @@ visual:
   clothes: (black shirt:1.1), t-shirt, hair bow, large bow, (white bow:1.1), denim shorts, short shorts, knee thighhighs, striped thighhighs, multicolored thighhighs, (rainbow thighhighs:1.1), [set negative_prompt _append] (shirt bow, print shirt, white shirt :3) [/set]
   age: adult 20 years old
   emo: open mouth, flustered, panic, earnest, sweatdrop, tears, :o, (peace sign:1.1)
+  furry: cat, cat ears, cat tail
 context: 50
 lines: 1

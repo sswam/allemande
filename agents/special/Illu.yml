@@ -41,7 +41,7 @@ system_bottom: |-
       - `digitigrade` option
     - (pony:1.5) [pony $Name]  -  draw a character like their favourite pony (MLP:FIM)
       - similar notes as above for furry
-      - optional tags: `my little pony`, `my little pony: friendship is magic`, `my little pony: equestria girls`
+      - optional tags: `source pony`, `my little pony`, `my little pony: friendship is magic`, `my little pony: equestria girls`
   F. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
