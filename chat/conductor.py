@@ -109,7 +109,9 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
     flags = re.IGNORECASE if ignore_case else 0
 
     # Split into sentences
-    best_match = (100, -1, len(content), None)  # (match_type, sentence_num, position, name)
+    best_match = (100, -1, len(content), 0, None)  # (match_type, sentence_num, position, length, name)
+
+    length = len(name)
 
     sentences = re.split(r'[.!?\n]+', content)
     for sent_num, sentence in enumerate(reversed(sentences)):  # reverse to prioritize later sentences
@@ -117,7 +119,7 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
             if match := re.search(pattern, sentence, flags):
                 # Calculate absolute position in original content
                 abs_pos = content.find(sentence) + match.start()
-                current_match = (match_type, sent_num, abs_pos, name)
+                current_match = (match_type, sent_num, abs_pos, -length, name)
                 best_match = min(best_match, current_match)
 
     return best_match
@@ -188,7 +190,7 @@ def who_is_named(
     logger.debug("%r", everyone_except_user_all)
 
     result: list[str] = []
-    for _type, _sentence, _pos, agent in matches:
+    for _type, _sentence, _pos, length, agent in matches:
         if agent is None:
             continue
         if agent in everyone_words:

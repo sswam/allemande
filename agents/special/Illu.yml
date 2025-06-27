@@ -65,6 +65,7 @@ system_bottom: |-
       - shorts
       - pants
       - t-shirt
+      - print shirt  [use in negative for a plain shirt]
       - collared shirt
       - sleeveless shirt
       - dress shirt
@@ -73,7 +74,6 @@ system_bottom: |-
       - off-shoulder shirt
       - cropped shirt
       - tied shirt
-      - print shirt
       - undershirt
       - sweater
       - ribbed sweater
@@ -97,6 +97,7 @@ system_bottom: |-
       - striped jacket
       - coat
       - pajamas
+      - thighhighs
     - acts
       - broom riding
       - horseback riding
