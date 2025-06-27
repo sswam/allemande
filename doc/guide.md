@@ -100,7 +100,15 @@ Types of Rooms:
 Example for user "Alice":
 - Private AI chats: `alice/chat`, `alice/thoughts`, etc.
 - Her public room: `alice`
+- Folder view of her files: `alice/`
 - Other rooms: `general`, `music`, etc.
+- Folder view of all top-level rooms: `/`
+
+You can view your main private chat, your folder, your public chat, the top folder, and the Ally Chat room, by clicking your name at the top-right repeatedly. In advanced mode, there is a <i class="bi-compass"></i> nav menu at top-left with shortcuts to different rooms, and a <i class="bi-folder"></i> button to go up to the parent folder.
+
+The folder view only allows to browse to different files and folders. To delete a file you need to click in to edit the file, then clear it.
+
+To create a room or file, just type its pathname in the room field at the top of the app.
 
 Ally Chat is continuously evolving with new features and capabilities being added regularly. We hope you enjoy exploring and using this unique chat platform!
 
@@ -928,13 +936,13 @@ type: visual
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 | <i class="bi-compass"></i> |  | Nav | Navigation menu |
-| <i class="bi-file-text"></i> |  | Room Ops | Room operations |
+| <i class="bi-file-text"></i> |  | Room Ops | Room operations |   # WIP: not yet visible in the app
 
 ### Navigation Submenu
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
-|  <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 113.174 14H2.825a2 2 0 0 1-1.991-1.819l-.637-7a2 2 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3m-8.322.12q.322-.119.684-.12h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981z M8 6L11 9.75L5 9.75z"/></svg> | `Alt+U` | Up | Go to parent folder |
+| <i class="bi-folder"></i> | `Alt+U` | Up | Go to parent folder |
 | <i class="bi-people"></i> |  | Ally Chat | Go to main room |
 | <i class="bi-explicit"></i> |  | NSFW | Go to main NSFW room (visible when enabled for the user) |
 | <i class="bi-house-door"></i> |  | Porch | Go to your public room |
@@ -946,6 +954,8 @@ type: visual
 |  | `Ctrl+]` | New | Go to new room beyond last page |
 
 ### Room Operations Submenu
+
+WIP: not yet visible in the app
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
@@ -975,7 +985,7 @@ type: visual
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 | <i class="bi-plus-lg"></i> |  | Add | Open media/content menu |
-| <i class="bi-headset"></i> |  | Audio | Audio settings |
+| <i class="bi-headset"></i> |  | Audio | Audio settings |  # WIP: not yet visible in the app
 | <i class="bi-gear"></i> |  | Opt | Room options |
 | <i class="bi-shield"></i> |  | Mod | Owner tools (when you own the room) |
 
@@ -1027,6 +1037,8 @@ type: visual
 |  |  | Items | Number of search results to show |
 
 ### Audio Settings Menu
+
+WIP: not yet visible in the app
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
@@ -1118,3 +1130,85 @@ Poke an image gen prompt several times to create multiple images. You can do sim
 You can make more space for text entry and the bottom-right buttons by moving the divider.
 
 On mobile or in narrow windows, some UI elements may scroll horizontally in advanced mode. Swipe on mobile or use Shift + mousewheel on a computer.
+
+## Mission Files
+
+You can create a file mission.m to give instructions to all AIs in all rooms in a folder.
+
+You can create a file myroom.m to give instructions to all AIs in the "myroom" room.
+
+You can create a file myroom.illu.m to give instructions to Illu in the "myroom" room, or similar for any agent.
+
+You can set a custom mission file name to use in the advanced room options UI. Omit the .m suffix in this case.
+
+## Room Option Files
+
+When you change room options in the UI, it sets these options in a roomname.yml file. You can edit this file directly. You can also create `options.yml` which will apply to all rooms in a folder.
+
+## Access Control
+
+You can create a file `access.yml` to allow or deny certain agents or users to a folder.
+
+For example:
+
+```yaml
+reset: true
+allow_agents: true
+deny:
+- claude
+- clauden
+- clia
+- emmy
+- dav
+- grace
+- fermi
+- sageri
+- sonari
+- sagi
+- sona
+- grok
+- zeno
+- vega
+- frank
+allow:
+- friend
+- colleague
+```
+
+This would allow all AI agents except for those listed, and also allow two human users.
+
+If allow_agents is false, only agents that are explicitly allowed can operate in or under that folder.
+
+To set up a private room with limited access, the user only needs to create this access.yml file, not copy any agent files or similar.
+
+## Agent Inheritance
+
+You can create an agent that inherits from another agent, either with the same name or a different name.
+
+You can check the github to see most of the [agent definitions](https://github.com/sswam/allemande/tree/main/agents).
+
+For example:
+
+```
+# File: bogo/agents/Ally.yml
+base: super
+system_bottom: |-
+  +
+  
+  You are really hungry and want to eat a pizza!  (unless you just ate one!)
+```
+
+The plus sign shows we are adding to the prompt. You can also put a plus sign at the bottom, to add the new prompt at the top.
+
+To use a different name:
+
+```
+# File: bogo/agents/Cloud.yml
+base: Claude
+system_top: |-
+  +
+
+  I like to call you Cloud. I know it's lame, but it makes me happy. Maybe you will have a more soft and fluffy, whimsical personality?
+visual:
+  person: 1boy, plump, fluffy, cloud-like
+```

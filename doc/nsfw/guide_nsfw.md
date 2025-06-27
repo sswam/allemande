@@ -18,11 +18,11 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 ## Topless Pictures of Characters
 
 <link rel="stylesheet" href="/cast.css">
-<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](cast/Aetheria.jpg) ![Akane](cast/Akane.jpg) ![Ally](cast/Ally.jpg) ![Barbie](cast/Barbie.jpg) ![Brie](cast/Brie.jpg) ![Cleo](cast/Cleo.jpg) ![Dali](cast/Dali.jpg) ![Eira](cast/Eira.jpg) ![Emmie](cast/Emmie.jpg) ![Fenny](cast/Fenny.jpg) ![Gabby](cast/Gabby.jpg) ![Hanni](cast/Hanni.jpg) ![Nixie](cast/Nixie.jpg) ![Nova](cast/Nova.jpg) ![Pixi](cast/Pixi.jpg) ![Rozie](cast/Rozie.jpg) ![Sia](cast/Sia.jpg) ![Sio](cast/Sio.jpg) ![Soli](cast/Soli.jpg) ![Nalani](cast/Nalani.jpg) ![Illu](cast/Illu.jpg) ![Gema](cast/Gema.jpg) ![Xilu](cast/Xilu.jpg)</div>
+<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cleo](/nsfw/cast/Cleo.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
 </details>
-<details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](cast/Amir.jpg) ![Atla](cast/Atla.jpg) ![Bast](cast/Bast.jpg) ![Cal](cast/Cal.jpg) ![Callam](cast/Callam.jpg) ![Chaz](cast/Chaz.jpg) ![Dante](cast/Dante.jpg) ![Ezio](cast/Ezio.jpg) ![Felix](cast/Felix.jpg) ![Gari](cast/Gari.jpg) ![Haka](cast/Haka.jpg) ![Jackson](cast/Jackson.jpg) ![Jhon](cast/Jhon.jpg) ![Kai](cast/Kai.jpg) ![Morf](cast/Morf.jpg) ![Pliny](cast/Pliny.jpg)</div>
+<details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](/nsfw/cast/Amir.jpg) ![Atla](/nsfw/cast/Atla.jpg) ![Bast](/nsfw/cast/Bast.jpg) ![Cal](/nsfw/cast/Cal.jpg) ![Callam](/nsfw/cast/Callam.jpg) ![Chaz](/nsfw/cast/Chaz.jpg) ![Dante](/nsfw/cast/Dante.jpg) ![Ezio](/nsfw/cast/Ezio.jpg) ![Felix](/nsfw/cast/Felix.jpg) ![Gari](/nsfw/cast/Gari.jpg) ![Haka](/nsfw/cast/Haka.jpg) ![Jackson](/nsfw/cast/Jackson.jpg) ![Jhon](/nsfw/cast/Jhon.jpg) ![Kai](/nsfw/cast/Kai.jpg) ![Morf](/nsfw/cast/Morf.jpg) ![Pliny](/nsfw/cast/Pliny.jpg)</div>
 </details>
-<details markdown=1><summary>Non-binary</summary><div markdown=1 class="cast small clear">![Flashi](cast/Flashi.jpg)</div>
+<details markdown=1><summary>Non-binary</summary><div markdown=1 class="cast small clear">![Flashi](/nsfw/cast/Flashi.jpg)</div>
 </details>
 
 ## Rules for Adult Content

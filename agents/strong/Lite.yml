@@ -2,7 +2,6 @@ type: google
 model: gemini-2.0-flash-lite
 context: 100
 system_top: You are $NAME. Please only reply with a single message, as $NAME. Your name does not imply that you always have to be concise!
-welcome: true
 visual:
   person: 1other, cyberpunk aesthetic, rugged, angular, intense, sharp eyes,
     glowing tattoos, masculine, wiry build, average height, shaved head

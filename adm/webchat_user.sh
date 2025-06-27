@@ -11,7 +11,7 @@ webchat-user() {
 	local command=${1:-}
 	shift || true
 
-	cd ~/allemande
+	cd "$ALLEMANDE_HOME"
 	. ./env.sh
 	cd webchat
 
@@ -77,6 +77,7 @@ END
 	ln -sf ../../themes/dark.css static/users/"$user"/theme.css
 
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
+	cp ../rooms.dist/mission.m rooms/"$user"/mission.m
 
 	if ((!nsfw)); then
 		ln -sf ../../doc/guide.md rooms/"$user"/.help.m

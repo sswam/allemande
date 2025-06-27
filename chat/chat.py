@@ -32,7 +32,7 @@ from ally import re_map
 Message = dict[str, Any]   # TODO use a class, bb_lib.ChatMessage?
 
 
-os.umask(0o007)
+os.umask(0o027)
 
 
 logging.basicConfig(level=logging.INFO)
@@ -645,7 +645,7 @@ def fix_response_layout(response, _args, agent):
     logger.debug("agent.name: %r", agent.name)
     name_part = None
 
-    name_pattern = r'^(\*|_|\*\*|__)?' + re.escape(agent.name) + r'\1:\s(.*)'
+    name_pattern = r'^(\*|_|\*\*|__)?' + re.escape(agent.name) + r'(?::\1|\1:)\s(.*)'
 
     match = re.match(name_pattern, lines[0])
     if match:

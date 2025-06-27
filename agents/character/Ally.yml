@@ -37,3 +37,4 @@ config:
   min_p: 0.02
   top_p: 1.0
   top_k: 1000
+welcome: true

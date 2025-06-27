@@ -19,7 +19,7 @@ import bb_lib
 import ally_markdown
 
 
-os.umask(0o007)
+os.umask(0o027)
 
 
 logging.basicConfig(level=logging.INFO)

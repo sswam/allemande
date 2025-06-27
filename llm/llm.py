@@ -191,7 +191,7 @@ MODELS = {
         "cost_out": 1.25,
     },
     "gemini-2.5-pro": {
-        "aliases": ["gemmi-paid", "gemini", "gp"],
+        "aliases": ["gemmi", "gemmi-paid", "gemini", "gp"],
         "vendor": "google",
         "vision": True,
         "api_key": "GOOGLE_API_KEY",
@@ -202,7 +202,7 @@ MODELS = {
         "cost_out": 10,
     },
     "gemini-2.5-pro-free": {
-        "aliases": ["gemmi", "gemmi-free", "gemini-free"],
+        "aliases": ["gemmi-free", "gemini-free"],
         "vendor": "google",
         "vision": True,
         "api_key": "GOOGLE_API_KEY_FREE",
@@ -221,7 +221,7 @@ MODELS = {
         "cost_out": 0,
     },
     "gemini-2.5-flash": {
-        "aliases": ["gf", "flasho"],
+        "aliases": ["gf", "flashi"],
         "id": "models/gemini-2.5-flash-preview-04-17",
         "vendor": "google",
         "vision": True,
@@ -238,7 +238,7 @@ MODELS = {
         "cost_out": 0.3,
     },
     "gemini-2.0-flash": {
-        "aliases": ["flashi"],
+        "aliases": ["flasho"],
         "vendor": "google",
         "vision": True,
         "description": "Google's fast model with a 1 million context window.",

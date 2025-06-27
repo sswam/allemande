@@ -2,7 +2,6 @@ type: perplexity
 model: sonar-reasoning
 context: 5
 alternating_context: true
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
-  impersonate other characters!
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 online: true
 expensive: true
