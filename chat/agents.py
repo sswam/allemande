@@ -213,7 +213,8 @@ class Agent:
         service = services.get(agent_type)
 
         if service is None:
-            raise ValueError(f'Unknown service for agent: {self["name"]}, {agent_type}')
+            logger.error("Unknown service for agent: %r, %s", self.name, agent_type)
+            return False
 
         self.update(service)
 
@@ -351,7 +352,6 @@ class Agents:
 
         # then set up and update visuals
         for agent in new_agents:
-            agent_type = agent.get("type")
             if visual:
                 agent.update_visual(private=private)
             if not agent.set_up(self.services):
