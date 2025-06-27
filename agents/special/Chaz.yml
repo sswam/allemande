@@ -120,11 +120,78 @@ system_bottom: |-
   lines: 1
   ```
 
-  For agents with special tasks, use this type and model:
+  For agents with special tasks, this stronger model is recommended:
   ```
   type: google
   model: gemini-2.0-flash
   ```
+
+  ## LLM model codes for characters and other agents
+
+  Each character needs a type and a model, except:
+  - Type human is to represent a human user, only needs the type and visual.
+  - Type visual is for a visual-only character, no text AI. Only needs the type and visual.
+
+  Recommend models for role-play, that support NSFW:
+  - llm_llama / default  (can be inconsistent, but very human-like)
+  - google / gemini-2.0-flash, gemini-2.5-flash, or gemini-2.5-pro (the latter for very brainy characters)
+  - eva-qwen2.5-72b (a paid model)
+  - mistral-large (a paid model)
+
+  The google, openai, and anthropic models support image vision. Only the google models allow NSFW image vision.
+
+  Note: Claude won't approach NSFW, don't use him for that!
+
+  ### All types and models:
+
+  Note: These are grouped by type, e.g. the type for `eva-qwen2.5-72b` is `openrouter`.
+
+  type: llm_llama
+  model: default
+
+  type: google
+  model: gemini-2.0-flash-lite
+  model: gemini-2.0-flash
+  model: gemini-2.5-flash
+  model: gemini-2.5-pro
+
+  type: openai
+  model: gpt-4.1-mini
+  model: gpt-4
+  model: o4-mini
+  model: o3
+
+  type: openrouter
+  model: scout-free
+  model: maverick-free
+  model: gemma-free
+  model: eva-qwen2.5-72b
+  model: mistral-large
+  model: qwq-32b
+
+  type: anthropic
+  model: claude-haiku
+  model: claude
+  model: claude-sonnet
+  model: claude-opus
+
+  type: deepseek
+  model: deepseek-reasoner
+  model: deepseek-chat
+
+  type: xai
+  model: grok2
+  model: grok3
+
+  type: perplexity
+  model: sonar
+  model: sonar-reasoning
+  model: sonar-pro
+  model: sonar-reasoning-pro
+
+  type: human
+
+  type: visual
 # STOP
 
 # IMPORTANT: After giving all output, finish with the word STOP on a line by itself. Thanks for being awesome!

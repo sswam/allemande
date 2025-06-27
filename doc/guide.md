@@ -184,7 +184,7 @@ NOTE: The position is important, e.g. to specify age only:
 
     Jily, [person "Ally" . . "baby 1 year old"], crawling [P2]
 
-The shortcut quality settings range from 0 (lowest, the default) to 9.
+The shortcut quality settings range from 0 (lowest, the default) to 6.
 
 [S2] is a good quality square image. [P1] is a low quality portrait image, [L4] is a very high quality landscape image, etc.
 
@@ -614,7 +614,7 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Sagi** (Sonar Pro, Perplexity): Perplexity's high-performance Sonar model
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model
 
-## Specialists based on Strong AI
+### Specialists based on Strong AI
 - **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model
 - **Novi**: She is a master narrator for immersive storytelling in interactive fiction
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
@@ -690,7 +690,7 @@ Bilda, count: /usr/share/dict/words
 
 Unp, [choose] [use sam] | [use ally] [/choose]
 
-### Creating Custom Characters and Agents
+## Creating Custom Characters and Agents
 
 Talk to the character design expert, Chaz, to create a customer character or agent.
 
@@ -760,6 +760,73 @@ visual:
 context: 101
 lines: 1
 ```
+
+### LLM model codes for characters and other agents
+
+Each character needs a type and a model, except:
+- Type human is to represent a human user, only needs the type and visual.
+- Type visual is for a visual-only character, no text AI. Only needs the type and visual.
+
+Recommend models for role-play, that support NSFW:
+- llm_llama / default  (can be inconsistent, but very human-like)
+- google / gemini-2.0-flash, gemini-2.5-flash, or gemini-2.5-pro (the latter for very brainy characters)
+- eva-qwen2.5-72b (a paid model)
+- mistral-large (a paid model)
+
+The google, openai, and anthropic models support image vision. Only the google models allow NSFW image vision.
+
+Note: Claude won't approach NSFW, don't use him for that!
+
+#### All types and models:
+
+Note: These are grouped by type, e.g. the type for `eva-qwen2.5-72b` is `openrouter`.
+
+type: llm_llama
+model: default
+
+type: google
+model: gemini-2.0-flash-lite
+model: gemini-2.0-flash
+model: gemini-2.5-flash
+model: gemini-2.5-pro
+
+type: openai
+model: gpt-4.1-mini
+model: gpt-4
+model: o4-mini
+model: o3
+
+type: openrouter
+model: scout-free
+model: maverick-free
+model: gemma-free
+model: eva-qwen2.5-72b
+model: mistral-large
+model: qwq-32b
+
+type: anthropic
+model: claude-haiku
+model: claude
+model: claude-sonnet
+model: claude-opus
+
+type: deepseek
+model: deepseek-reasoner
+model: deepseek-chat
+
+type: xai
+model: grok2
+model: grok3
+
+type: perplexity
+model: sonar
+model: sonar-reasoning
+model: sonar-pro
+model: sonar-reasoning-pro
+
+type: human
+
+type: visual
 
 ### AI Model Details
 
