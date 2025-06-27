@@ -36,19 +36,19 @@ MAX_PIXELS = 1280 * 1280
 MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 
 # TODO: other ideas for limits
-# - COUNT_LIMIT depends on number of steps, etc
+# - MAX_COUNT depends on number of steps, etc
 # - an actual time limit, just stop after that time
 # - fair queueing, handle multiple requests. How? need to know user?
 
-COUNT_LIMIT = 10
-STEPS_LIMIT = 150
+MAX_COUNT = 10
+MAX_STEPS = 60  # 150
 
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
-JOB_BASE_TIME = 15
+JOB_BASE_TIME = 25 # seconds, base time for a job at 1024x1024x15
 MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
 MAX_JOB_PENALTY = 2
-MAX_JOB_DELAY = 540  # 9 minutes, after that the client will likely timeout
+MAX_JOB_DELAY = 420  # 7 minutes, after that the client might timeout
 ADETAILER_TIME = 3  # seconds, how long adetailer takes to run roughly
 
 
@@ -115,6 +115,11 @@ def limit_dimensions_and_hq(config: dict) -> dict:
         logger.info("limiting hires to %.2f", hires)
         config["hires"] = hires
 
+    # limit steps to MAX_STEPS
+    if config.get("steps", 15) > MAX_STEPS:
+        logger.info("limiting steps to %d", MAX_STEPS)
+        config["steps"] = MAX_STEPS
+
     return config
 
 
@@ -171,14 +176,14 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
             add["steps"] = "30"
         elif quality == 5:
             add["steps"] = "45"
-        elif quality == 6:
+        elif quality >= 6:
             add["steps"] = "60"
-        elif quality == 7:
-            add["steps"] = "90"
-        elif quality == 8:
-            add["steps"] = "120"
-        elif quality == 9:
-            add["steps"] = "150"
+        # elif quality == 7:
+        #     add["steps"] = "90"
+        # elif quality == 8:
+        #     add["steps"] = "120"
+        # elif quality == 9:
+        #     add["steps"] = "150"
 
     sets.update({k: v for k, v in add.items() if k not in sets})
 
@@ -225,10 +230,10 @@ async def process_image_queue():
             # Get job from queue
             job = await image_queue.get()
 
-            current_time = time.time()
-            logger.info("\nRunning Job: %.0f: %s", job.priority - current_time, job.config.get("user"))
+            start_time = time.time()
+            logger.info("\nRunning Job: %.0f: %s", job.priority - start_time, job.config.get("user"))
 
-            if current_time - job.request_time > MAX_JOB_DELAY:
+            if start_time - job.request_time > MAX_JOB_DELAY:
                 # Don't process the job if it has been in the queue for too long, as the client will have timed out
                 await complete_batch(job)
             else:
@@ -243,7 +248,7 @@ async def process_image_queue():
                             seed=job.seed,
                             sampler_name=job.config.get("sampler_name", "DPM++ 2M"),
                             scheduler=job.config.get("scheduler", "Karras"),
-                            steps=min(job.config.get("steps", 15), STEPS_LIMIT),
+                            steps=min(job.config.get("steps", 15), MAX_STEPS),
                             cfg_scale=job.config.get("cfg_scale", 7.0),
                             width=job.config.get("width", 1024),
                             height=job.config.get("height", 1024),
@@ -264,6 +269,8 @@ async def process_image_queue():
                     # Check if this is the last job in the batch
                     if job.i == job.count - 1:
                         await complete_batch(job)
+                end_time = time.time()
+                logger.info("Job duration vs estimate: %.2f seconds vs %.2f", end_time - start_time, job.duration)
         except asyncio.CancelledError:
             break
         except Exception as e:
@@ -305,27 +312,28 @@ def estimate_job_weight(job: dict[str, Any]) -> float:
 
     config = job.config
 
-    # add for adetailer
-    job_weight += len(config.get("adetailer") or []) * ADETAILER_TIME / JOB_BASE_TIME
-    log("Adetailer weight: %.2f", len(config.get("adetailer") or []) * ADETAILER_TIME / JOB_BASE_TIME)
-
-    log("job_weight 2: %.2f", job_weight)
-
     # multiply based on steps
+    steps = config.get("steps", MIN_STEPS)
     job_weight *= config.get("steps", MIN_STEPS) / MIN_STEPS
     log("Steps weight: %.2f", config.get("steps", MIN_STEPS) / MIN_STEPS)
 
-    log("job_weight 3: %.2f", job_weight)
+    log("job_weight 2: %.2f", job_weight)
 
     # multiply based on image size, relative to 1024x1024
     job_weight *= config.get("width", 1024) * config.get("height", 1024) / (1024 * 1024)
     log("Image size weight: %.2f", config.get("width", 1024) * config.get("height", 1024) / (1024 * 1024))
 
+    log("job_weight 3: %.2f", job_weight)
+
+    # add for hires
+    job_weight += job_weight * (config.get("hires") or 1.0) ** 2 * 0.3
+    log("Hires weight: %.2f", (config.get("hires") or 1.0) ** 2)
+
     log("job_weight 4: %.2f", job_weight)
 
-    # multiply based on hires; this isn't right but good enough for now
-    job_weight *= (config.get("hires") or 1.0) ** 2
-    log("Hires weight: %.2f", (config.get("hires") or 1.0) ** 2)
+    # add for adetailer
+    job_weight += len(config.get("adetailer") or []) * ADETAILER_TIME / JOB_BASE_TIME
+    log("Adetailer weight: %.2f", len(config.get("adetailer") or []) * ADETAILER_TIME / JOB_BASE_TIME)
 
     log("job_weight 5: %.2f", job_weight)
 
@@ -354,7 +362,7 @@ async def enqueue_image_jobs(
 ) -> int:
     """Enqueue image generation jobs into the priority queue"""
     seed = config.get("seed", random.randint(0, 2**32 - 1))
-    count = min(config.get("count", 1), COUNT_LIMIT)
+    count = min(config.get("count", 1), MAX_COUNT)
 
     user = config.get("user", None)
 
@@ -371,12 +379,11 @@ async def enqueue_image_jobs(
 
     # Calculate the priority for the first job, considering existing queued jobs for the user
     priority = current_time
-    logger.info("priority 1: %.2f", priority)
     for j in list(image_queue._queue) + [job]:
         if not j or j.config.get("user") != user:
             continue
         priority += j.duration
-    logger.info("priority 2: %.2f", priority)
+    logger.info("priority: %.2f", priority - current_time)
 
     # Enqueue each image job
     for i in range(count):
@@ -425,12 +432,12 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[
         shortcut = None
 
     # Process settings
-    for setting in ["width", "height", "hires", "seed", "pag", "ad_checkpoint"]:
+    for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint"]:
         if setting not in sets:
             continue
         value = sets[setting]
         need_update_macros = True
-        if setting in ["width", "height", "seed"]:
+        if setting in ["steps", "width", "height", "seed"]:
             config[setting] = int(value)
         elif setting in ["ad_checkpoint"]:
             config[setting] = value
@@ -469,10 +476,12 @@ def update_prompt_with_macros(prompt: str, config: dict, sets: dict[str, str], s
     sets["width"] = str(config["width"])
     sets["height"] = str(config["height"])
     sets["hires"] = str(config["hires"])
+    sets["steps"] = str(config["steps"])
     for k in ["seed", "pag", "ad_checkpoint"]:
         if k in sets:
             sets[k] = "---REMOVEME---"
     update = {"sets": sets, "rp": None}
+    logger.info("update_prompt_with_macros: sets=%s", sets)
     if shortcut:
         update[shortcut] = None
     prompt = update_macros(prompt, update)
