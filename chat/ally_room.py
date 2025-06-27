@@ -530,9 +530,9 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     if user in MODERATORS and not "/" in pathname and (is_file or is_symlink):
         return Access.MODERATE_READ_WRITE, "moderator_top"
 
-    # Allowed users have access
+    # Allowed users have access, except for directories
     logger.debug("access: %s", access_conf)
-    if user in access_conf.get("allow", []):
+    if user in access_conf.get("allow", []) and not entry_is_dir:
         return Access.READ_WRITE, "allow"
 
     # Agents have access if allowed
