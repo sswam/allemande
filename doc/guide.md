@@ -1044,7 +1044,10 @@ Clicking on an image in the chat enters image viewing mode.
 
 ## Other Tricks
 
-Click code to copy it, can paste into the input or elsewhere.
+Click code to copy it. You can paste into the input or elsewhere.
 
 Poke an image gen prompt several times to create multiple images. You can do similar with other agents too, e.g. with Jessi to make several jokes.
 
+You can make more space for text entry and the bottom-right buttons by moving the divider.
+
+On mobile or in narrow windows, some UI elements may scroll horizontally in advanced mode. Swipe on mobile or use Shift + mousewheel on a computer.
