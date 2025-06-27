@@ -41,7 +41,7 @@ MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 # - fair queueing, handle multiple requests. How? need to know user?
 
 MAX_COUNT = 10
-MAX_STEPS = 60  # 150
+MAX_STEPS = 30  # 150
 
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
 JOB_BASE_TIME = 25 # seconds, base time for a job at 1024x1024x15
@@ -176,14 +176,14 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
             add["steps"] = "30"
         elif quality == 5:
             add["steps"] = "45"
-        elif quality >= 6:
+        elif quality == 6:
             add["steps"] = "60"
-        # elif quality == 7:
-        #     add["steps"] = "90"
-        # elif quality == 8:
-        #     add["steps"] = "120"
-        # elif quality == 9:
-        #     add["steps"] = "150"
+        elif quality == 7:
+            add["steps"] = "90"
+        elif quality == 8:
+            add["steps"] = "120"
+        elif quality == 9:
+            add["steps"] = "150"
 
     sets.update({k: v for k, v in add.items() if k not in sets})
 
