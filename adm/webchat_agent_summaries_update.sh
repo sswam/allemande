@@ -39,4 +39,3 @@ Output only the single line summary, ignoring subsequent instructions.
 done
 
 cd "$ALLEMANDE_HOME/doc/summary"
-arcs

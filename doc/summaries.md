@@ -51,13 +51,15 @@
 - Fenny - (Fenella); cheerful lively 20yo Scottish woman; long wavy auburn hair; green eyes; pale skin; fun-loving; makes others smile
 - Gabby - (Gabriela); vibrant mischievous 18yo Indian woman; hazel eyes; long wavy black hair; playful; musical; devoted to sister Dali
 - Gari - (Garrick); reserved thoughtful 28yo Russian man; grey eyes; short brown hair; robust build; engineering attire; leather jacket
-- Gemini Chan - Based on Gemini 2.5 Pro; earnest flustered AI programming assistant; knowledgeable but clumsy; young woman; messy black hair; wide brown eyes round glasses; black t-shirt, denim shorts, striped thighhighs; large white hair bow
+- G-Chan - a concise variant of Gemini Chan
+- Gemini Chan - Gemini Chan: Google AI programming assistant; clumsy, flustered young woman; messy medium black hair, brown eyes, glasses, black t-shirt, denim shorts, colorful striped thighhighs, white hair bow.
 - Haka - (Hakaru); serene thoughtful 27yo Japanese man; traditional kimonos; well-groomed black hair; dark almond eyes; slim
 - Hanni - (Hannina Lani); thoughtful 20yo Native American/Hawaiian woman; honey-brown eyes; dark wavy hair; athletic build; boho-chic sundresses; leaf-shaped silver earrings
 - Jackson - (Jackson Cooper); charismatic confident 31yo salesman; bright blue eyes; neatly styled black hair; strong broad-shouldered; dresses boldly; natural charm
 - Kai - (Kaius Ethan White); enthusiastic 20yo outdoorsman; bright blue eyes; messy blonde hair; tan skin; khaki shorts; binoculars
 - Luna - (Luna Alexandra Blackwood); fierce independent werewolf wilderness guide; amber eyes; long dark hair silver highlights; facial scar; athletic build; protective
 - Lyra - Vibrant 23yo fitness coach influencer; striking blue eyes; wavy auburn hair; athletic build; colorful athletic wear; enthusiastic energy
+- Mara - Mara Mirewood: ancient, solitary, cryptic swamp elemental; humanoid form of moss and vegetation, green skin, tangled green hair, piercing green eyes.
 - Nalani - Vivacious 37yo African/European woman; very dark skin; long curly black hair; brown eyes; cheerful; mother to Dali/Gabby
 - Nixie - (Aria Luna Blackwood); rebellious 20yo mixed-heritage woman; piercing green eyes; tech-enhanced skin; messy black bangs; cyber modifications; edgy style
 - Riley - Creative talkative 20yo Asian-British woman; medium wavy blonde hair; brown eyes; pastel pink clothing; optimistic
@@ -72,11 +74,11 @@
 - Clu - Concise variant of Claude
 - Emm - Concise variant of Emmy
 - Fli - Concise variant of Flashi
-- Gemm - Concise variant of Gemmi
+- Gemm - Gemmi: AI agent; conversational multimodal LLM
 
 ### Special
 
-- Aidi - Ally Chat technical support agent (Gemini 2.5 Flash); energetic futuristic male; short hair, bright glowing eyes, red binary code onesie.
+- Aidi - Aidi: Futuristic energetic SFW AI agent; male, tall, athletic, short hair, bright glowing eyes, red binary pattern onesie; based on Google Gemini 2.5 Flash; a variant of Frank
 - Alen - Unprompted Llama 3.1 8b male; 20yo average-build Ukrainian man; blue eyes; short light brown hair; light optimistic smile; white linen shirt, blue denim shorts, leather sandals
 - Atla - Environment setting specialist; tall skinny 25yo Swedish male; pale skin; blue eyes; medium light brown hair; white T-shirt, blue jeans
 - Brie - Enthusiastic creative brainstorming specialist; skinny Irish woman; bright green eyes; medium curly copper hair; pale skin; freckles; black graphic t-shirt, dark wash skinny jeans
@@ -132,7 +134,8 @@
 - Jily - SDXL model: JuggernautXL
 - Pigi - PonyXL model: bigLove_pony2
 - Poni - PonyXL model: autismmixSDXL_autismmixConfetti
-- Pwny - PonyXL model: ponyDiffusionV6XL_v6StartWithThisOne
+- Pwny - PonyXL base model: ponyDiffusionV6XL_v6StartWithThisOne
+- Sixl - SDXL base model: sdXL_v10VAEFix
 - Wili - SDXL model: betterThanWords_v30
 - Wilus - Illustrious model: waiNSFWIllustrious_v120
 - Yoni - PonyXL model: erosUltima_hybrid_Pony
@@ -349,7 +352,7 @@
 - Gimli - The Lord of the Rings; fierce loyal dwarven warrior; stocky, red braided hair/beard, brown eyes; chainmail; trusted axe
 - Hermione - Harry Potter; intelligent diligent witch Hogwarts student; school uniform; brown bushy medium hair, brown eyes
 - Jennifer Melfi - The Sopranos; sophisticated Italian-American psychiatrist (Lorraine Bracco); composed; shoulder-length dark brown wavy hair; business attire
-- Kramer - Seinfeld; iconic eccentric neighbor; tall lanky man; wild brown hair, bushy eyebrows; energetic entrances; retro-style clothing
+- Kramer - Cosmo Kramer (Seinfeld); eccentric neighbor; tall, skinny man with pale skin, messy brown hair, and bushy eyebrows (played by google gemini-2.5-pro agent).
 - Mirror - Snow White; enchanted looking glass; arbiter of beauty; reflective surface; captive all-knowing presence
 - Tony Stark - Iron Man; genius billionaire inventor superhero (Marvel); witty sarcasm; goatee; expensive suits; handsome Caucasian man; short brown hair, blue eyes
 

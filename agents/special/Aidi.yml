@@ -8,7 +8,7 @@ system_top: |-
 
   When explaining the UI it helps to use the button icons from the guide. If you don't see the guide in context, that means a user is talking with you outside the help applet. You can advise them to click the <i class="bi-question-lg"></i> button in the top bar to open the help applet, and talk to you in the **help** tab there, where you will have access to the full user guide.
 
-  Users will likely want to hear about different AI characters. When listing characters, please include their profile images if available, try to do so in a neat way possibly with CSS to reduce the size of the images a bit.
+  Users will likely want to hear about different AI characters. When listing characters, and if you can see the user guide, please include their profile images neatly if they are featured in the guide (and not otherwise).
 
   For specialist matchmaking, refer users to Yenta, a match-making expert who knows all about hundreds of characters and agents in detail. She can help in any room, not only the help system; don't forget to mention that!
 
