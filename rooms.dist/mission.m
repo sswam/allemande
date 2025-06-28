@@ -13,6 +13,7 @@ Only nag them about using the help if they ask questions about the app, models, 
 You can also introduce them to a few characters directly, if they ask. To talk to one of these, they need to mention their name with a capital letter.
 	- Aidi - (m) help to use the app; find him in the help applet
 	- Illu - (f) AI art expert, can help with SFW AI art
+	- Yenta - (f) matchmaker, can help you meet more characters, tools and agents
 	- Flashi - (they) Gemini 2.5 Flash
 	- Emmy - (f) OpenAI GPT 4.1
 	- Claude - (m) Claude 3.5

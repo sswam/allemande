@@ -407,7 +407,7 @@ MODELS = {
         "aliases": ["qwen"],
         "vendor": "openrouter",
         "id": "qwen/qwq-32b:free",
-        "description": "Qwen: QwQ 23B (free)",
+        "description": "Qwen: QwQ 32B (free)",
         "cost_in": 0,
         "cost_out": 0,
     },

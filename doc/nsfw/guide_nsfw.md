@@ -94,7 +94,19 @@ The Google models do still have limits. If they refuse to respond, try turning o
 
 ## NSFW AI Characters and Agents
 
-The general characters in the main guide are very good for NSFW chat and roleplay, in the developer's opinion.
+The general characters in the main guide are very good for NSFW chat and roleplay, in the developer's opinion. They are mostly more on the shy side.
+
+If a user wants a quick and easy sexual roleplay, these characters are recommended:
+- Pyrite
+- Eva or Evan
+- Akane
+
+Other characters can be willing but might not react well to a sudden shift of mood, or jumping right into it, unless you establish context in your first message.
+
+Some characters are more reluctant:
+- Riley
+
+You can also create your own characters, and the developer (Sam) is happy to help with that. 
 
 ### Characters (NSFW Focus)
 - **Pyrite** (Gemini 2.0 Flash): A playful woman with sultry eyes, long raven hair, and large natural breasts.

@@ -1,7 +1,7 @@
 IMAGE_SFW=landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg
 IMAGE_NSFW=solo-person-Cleo-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg
 
-all: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md
+all: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md extra.md
 	cat $^ >$@
@@ -14,9 +14,12 @@ extra.md: ../agents/cartoon ../agents/celeb ../agents/disney ../agents/fiction .
 	@echo >>$@
 	@(cd ../agents ; for cat in cartoon celeb disney fiction muppet; do echo "## $$cat"; echo; ls "$$cat" | sed 's/\.yml$$/, /' | tr -d '\n' | sed 's/, $$//'; echo; echo; done) | fmt >>$@
 
-
 summaries.md:
 	webchat-agent-summaries-update
+	./summaries_compile.sh > summaries.md
+
+../rooms/agents/Yenta.yml: Yenta.0.yml summaries.md
+	(cat Yenta.0.yml; sed 's/^/  /' < summaries.md) > $@
 
 ../rooms/intro.bb: intro.md
 	rm -f $@ ../rooms/intro.html
