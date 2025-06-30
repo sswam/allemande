@@ -6,6 +6,8 @@ Note: Some of the examples are from an older version.
 
 ![demo dark mode](demo-dark.png)
 
+![Diffusion](diffusion.png)
+
 ![Cultural Exchange](exchange.png)
 
 ![Math example](models.png)
