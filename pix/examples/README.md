@@ -2,6 +2,8 @@
 
 Note: Some of the examples are from an older version.
 
+These examples show chat with Claude, Gemini, GPT 4, o3, Llama 3 characters, DeepSeek, YouTube search, Google web and images search, multiple users in the chat, SDXL and PonyXL AI art, executing shell commands; plus GraphViz diagrams, and rich HTML / JS content.
+
 ![demo light mode](demo-light.png)
 
 ![demo dark mode](demo-dark.png)
