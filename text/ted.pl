@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+# ted.pl - apply transformations to text from STDIN as a whole
+
 use strict;
 use warnings;
 use autodie;
