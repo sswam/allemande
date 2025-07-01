@@ -90,8 +90,6 @@ For example:
 	confirm "commit using messy-screen?"
 
 	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-screen -a="$ci_model"
-	screen -x ci
-
 	move-rubbish "$commit_plan"
 }
 

@@ -12,7 +12,7 @@ messy-screen() {
 
 	if [ "$#" = 0 ]; then
 		hold | exec xargs-tsv messy-screen -X
-		screen -c xi </dev/tty
+		screen -c ci </dev/tty
 		exit 120
 	fi
 	screen-run ci "$*" exec messy -a "$ai_model" "$@" </dev/tty
