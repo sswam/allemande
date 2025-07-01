@@ -264,7 +264,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     #    r"(?umi)^(?!" + agent_name_esc + r"\s*:)[\p{L}][\p{L}\p{N}_]*:\s*\Z",
 
     if not image_agent:
-        gen_config["stop_regexs"] = [
+        gen_config["stop_regexs"] = []
+    if not image_agent and not agent.get("allow_play_script"):
+        gen_config["stop_regexs"] += [
             # First pattern: Match one or two-word capitalized names at line start
             r'''(?umx)                 # Enable unicode, multiline, verbose mode
                 ^                      # Start of line
@@ -297,7 +299,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
             #     \t                     # Tab character
             # ''',
         ]
-
+    if not image_agent:
         # If no history, stop after the first line always. It tends to run away otherwise.
         if not history or (len(history) == 1 and history[0].startswith("System:\t")):
             logger.debug("No history, will stop after the first line.")
