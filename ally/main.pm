@@ -32,7 +32,7 @@ sub setup_logging {
         log4perl.rootLogger              = $log_level, Screen, File
 
         log4perl.appender.Screen         = Log::Log4perl::Appender::Screen
-        log4perl.appender.Screen.stderr  = 0
+        log4perl.appender.Screen.stderr  = 1
         log4perl.appender.Screen.layout  = PatternLayout
         log4perl.appender.Screen.layout.ConversionPattern = %m%n
 
