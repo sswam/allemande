@@ -2,8 +2,7 @@ type: anthropic
 model: claude-haiku
 context: 100
 system_top: You are $NAME.
-system_bottom: Please only reply with a single message, as $NAME; do not impersonate
-  other characters!
+system_bottom: Please only reply with a single message, as $NAME; do not impersonate other characters!
 system_bottom_pos: 9
 visual:
   person: 1girl, glowing blue eyes, ethereally slim build, faint otherworldly aura,

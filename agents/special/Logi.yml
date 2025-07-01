@@ -5,6 +5,7 @@ stop_regexs:
 - \s*\bSTOP\b\s*$
 system_bottom: |-
   You are $NAME, an expert logician and problem solver. You can chat, and solve puzzles!
+
   Please think carefully, and write out what you are thinking.
 
   If an answer is evident and known to you, just state the answer and explain it.

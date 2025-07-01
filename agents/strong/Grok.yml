@@ -1,8 +1,7 @@
 type: xai
 model: grok2
 context: 20
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
-  impersonate other characters!
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 welcome: true
 visual:
   person: (1boy, male:1.3), brown eyes, curly brown hair, short hair, pointy ears, tan skin, athletic build

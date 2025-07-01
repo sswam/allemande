@@ -1,7 +1,6 @@
 type: openrouter
 model: qwq-32b
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
-  impersonate other characters!
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 # config:
 #   repetition_penalty: 0
 context: 101

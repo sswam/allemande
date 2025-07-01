@@ -1,7 +1,6 @@
 type: openrouter
 model: gemma-free
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not
-  impersonate other characters!
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 context: 101
 visual:
   person: 1girl, dark dark brown eyes, South Asian (Indian), warm tan skin, full lips, high cheekbones, athletic build, medium height, shoulder-length hair, jet black hair with subtle waves
