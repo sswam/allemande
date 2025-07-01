@@ -1,7 +1,6 @@
 model: sdXL_v10VAEFix
 type: image_a1111
 context: 1
-aliases: Illy
 config:
   steps: 15
   cfg_scale: 8
