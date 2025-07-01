@@ -9,6 +9,7 @@ import re
 import subprocess
 import asyncio
 from typing import Callable
+import logging
 
 from pydantic import BaseModel
 from watchfiles import awatch, Change, DefaultFilter
@@ -309,6 +310,11 @@ def null_to(x, replacement):
 
 async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     """Main function for awatch"""
+
+    logging.getLogger("watchfiles").setLevel(logging.WARNING)
+    logging.getLogger("watchfiles.main").setLevel(logging.WARNING)
+    logging.getLogger("watchfiles.watcher").setLevel(logging.WARNING)
+
     opts.exts = [f".{ext}" for ext in opts.extension]
     if (opts.run or opts.job or opts.service) and not opts.command:
         raise ValueError("command is required when using --run, --job or --service")
