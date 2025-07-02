@@ -1,4 +1,4 @@
-(solo, pony, my little pony, my little pony: friendship is magic, portrait:1.5), (centered headshot, face:1.8), (head and shoulders:1.5),
+rating safe, (solo, pony, my little pony, my little pony: friendship is magic, portrait:1.5), (centered headshot, face:1.8), (head and shoulders:1.5),
 studio lighting, (clean white background:1.5)
 BREAK
 [use choose_a_person]

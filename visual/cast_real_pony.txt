@@ -1,4 +1,4 @@
-(solo, portrait:1.5), (centered headshot, face:1.8), (head and shoulders:1.5),
+rating safe, (solo, portrait:1.5), (centered headshot, face:1.8), (head and shoulders:1.5),
 studio lighting, 85mm lens, (clean white background:1.5), professional headshot
 BREAK
 [use choose_a_person]
