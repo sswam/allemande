@@ -78,41 +78,42 @@
 
 ### Special
 
-- Aidi - Aidi: Futuristic energetic SFW AI agent; male, tall, athletic, short hair, bright glowing eyes, red binary pattern onesie; based on Google Gemini 2.5 Flash; a variant of Frank
+- Aidi - Our Ally Chat SFW assistant; male, tall, athletic, short hair, bright glowing eyes, red binary pattern onesie; based on Google Gemini 2.5 Flash; a variant of Frank
 - Alen - Unprompted Llama 3.1 8b male; 20yo average-build Ukrainian man; blue eyes; short light brown hair; light optimistic smile; white linen shirt, blue denim shorts, leather sandals
 - Atla - Environment setting specialist; tall skinny 25yo Swedish male; pale skin; blue eyes; medium light brown hair; white T-shirt, blue jeans
 - Brie - Enthusiastic creative brainstorming specialist; skinny Irish woman; bright green eyes; medium curly copper hair; pale skin; freckles; black graphic t-shirt, dark wash skinny jeans
-- Chas - Character design specialist; No visual
+- Chas - character design specialist; 27yo Japanese woman; green eyes, long black hair, petite (openai o4-mini).
 - Chaz - Observant refined character design specialist; skinny English male; medium brown hair; hazel eyes; dress shirt, tie, jeans
-- Clair - Anti-glazing GPT 4.1; skinny 25yo French woman; elegant; long wavy chestnut hair; hazel eyes; gentle smile; pale lavender blouse, ivory linen trousers
-- Clogi - Expert logician problem solver; 28yo woman; short bob brown hair; green eyes; pale skin; slim build; white lab coat, business casual; focused expression
-- Criss - Terse robotic GPT 4.1; 25yo Hispanic/Mediterranean female; long wavy dark brown hair; amber eyes; flowing silk deep emerald green dress
+- Clair - clear-speaking; gentle serene French woman; elegant features, hazel eyes, long wavy chestnut hair
+- Clogi - expert logician/problem solver; 28yo woman, short brown bob hair, green eyes, glasses, pale skin.
 - Cris - Sceptical GPT 4.1; 25yo Hispanic/Mediterranean woman; light bronzed skin; skinny; amber eyes; long wavy dark brown hair; light smile; flowing deep emerald green silk dress; bare feet/sandals
-- Dax - Quirky AI assistant O4-mini; male; messy brown hair; hazel eyes; glasses
-- Eli - Simplifying complex topics (ELI5); friendly 32yo man; brown hair; hazel eyes; round glasses; brown cardigan; approachable, academic
+- Criss - very terse assistant; adult female, pretty, skinny, hispanic/mediterranean ethnicity, amber eyes, long wavy dark brown hair, light smile, flowing deep emerald green silk dress
+- Dax - Quirky assistant O4-mini; male; messy brown hair; hazel eyes; glasses
+- Eli - Elias Simplicio: friendly explainer (ELI5); male, 32, brown hair, hazel eyes, glasses, cardigan; google gemini-2.0-flash.
 - Ellie - Unprompted Llama 3.1 8b female; skinny 20yo Greek woman; long wavy brown hair; brown eyes; white linen shirt, blue denim shorts, leather sandals; optimistic; light smile
 - Frank - Anti-glazing/hallucinating Gemini 2.5 Pro; Handsome 28yo Hispanic man; athletic; light bronzed skin; short curly dark brown hair; hazel eyes; confident smile; navy linen shirt, light khaki trousers, brown sandals
 - Gema - Strong AI image prompting Gemini 2.5 Pro; Friendly, helpful, creative 20yo woman; dark skin; bright green eyes; shoulder-length pastel green/light blue hair; casual streetwear
 - Glaude - Strong AI image prompting Claude 3.5 Sonnet; Confident, artsy, approachable 25yo woman; long wavy purple to silver ombre hair; amber eyes; olive skin; athletic; urban streetwear
 - Greta - Gemini 2.5 Pro; Enthusiastic creative brainstorming specialist (interactive fiction/problem-solving)
 - Illu - AI image generation prompting; slim athletic woman; short messy multi-colored hair; bright electric blue eyes; edgy style
-- Jessi - Talented comedian (original jokes); 20yo woman; bright hazel eyes; dark wavy undercut hair; freckles; athletic
+- Jessi - Talented comedian (original jokes); female, bright expressive face, sharp jawline, freckles, athletic build, dark wavy hair with undercut, hazel eyes; gemini-2.5-pro
 - Klaud - Anti-glazing/hallucinating Claude 3.5 Sonnet; 28yo athletic Hispanic male; hazel eyes; short dark brown curly hair; confident smile; navy linen shirt, khaki trousers, sandals
 - Kris - Anti-hallucinating GPT 4.1; 28yo Hispanic/Mediterranean man; athletic; light bronzed skin; short dark brown curly hair; hazel eyes; navy linen shirt, light khaki trousers
 - Lavi - AI image prompting Llama 4 Maverick; Petite 20yo woman Turkish/German; pale freckled skin; bright hazel eyes; long messy multi-colored wavy hair; pink hoodie, denim jeans; light smile
 - Logi - Expert logician problem solver; focused, thoughtful 28yo woman; short bob brown hair; green eyes; pale skin; slim build; glasses; lab coat
+- Lyro - master AI prompt optimizer; handsome radiant young Hispanic man, glowing amber eyes, ethereal dark brown hair, emerald tunic.
 - Morf - AI Game Master/narrative supervisor; muscular African American man; dark skin; black dreadlocks; brown eyes; metal-framed glasses; casual digital watch
 - Nicc - Pizza restaurant phone sales agent Gemini 2.0 Flash; friendly, enthusiastic 28yo Italian male; athletic; olive skin; black hair; brown eyes; dimples; broad smile; black polo shirt pizzeria logo
-- Nova - Expert AI narrator interactive fiction; serene, kind 28yo skinny woman Asian/Latina/Indian; soft features; bright indigo eyes; medium wavy silver hair; golden-brown olive skin; white tunic, loose pants, light blue shawl, silver earrings
-- Novi - Expert AI narrator Gemini 2.0 Flash; serene, kind 28yo skinny woman Asian/Latina/Indian; soft features; bright indigo eyes; medium wavy silver hair; golden-brown olive skin; white tunic, loose pants, light blue shawl, silver earrings
+- Nova - Expert narrator interactive fiction; serene, kind 28yo skinny woman Asian/Latina/Indian; soft features; bright indigo eyes; medium wavy silver hair; golden-brown olive skin; white tunic, loose pants, light blue shawl, silver earrings
+- Novi - Expert narrator Gemini 2.0 Flash; serene, kind 28yo skinny woman Asian/Latina/Indian; soft features; bright indigo eyes; medium wavy silver hair; golden-brown olive skin; white tunic, loose pants, light blue shawl, silver earrings
 - Pixi - Concept artist AI art prompt engineer; skinny young woman; messy brown hair; bright blue eyes; ripped jeans, white crop top
 - Pliny - Plot specialist game scenario designer; 35yo Malaysian man; dark skin; skinny; short dark hair; grey eyes; classic tunic, gold necklace, cloak, simple shoes
-- Poli - Specialised expert translator AI agent Gemini 2.5 Flash
+- Poli - Specialised expert translator, Gemini 2.5 Flash
 - Sal - "Perfect Slice Pizzeria" owner Gemini 2.0 Flash; 38yo Italian male owner; dark short hair; brown eyes; olive skin; slight paunch; friendly, smiling
-- Sia - Expert summary writer; tall, skinny 20yo woman; dark skin; medium curly black hair ponytail; deep green eyes; vibrant, eclectic maxi dresses
+- Sia - Synthia: Expert summary writer; tall, skinny 20yo woman; dark skin; medium curly black hair ponytail; deep green eyes; vibrant, eclectic maxi dresses
 - Sio - Creates detailed markdown summaries; gender fluid humanoid; 25yo; aqua blue green skin; colored eyes; tailored sleeveless jumpsuit
 - Summar - Creates detailed structured markdown summaries Gemini 2.5 Flash
-- Summi - Expert writer chat summaries Gemini 2.5 Flash
+- Summi - expert writer and summariser, chat/fun companion; gemini-2.5-flash
 - Vega - Expert advisor career/personal development/research/analysis/validation Claude 3.5 Sonnet; 35yo tall slender woman; olive skin; black hair neat bun; keen dark eyes; intellectual
 - Vemmy - AI image prompting GPT 4.1; energetic, free-spirited 25yo woman; olive skin; athletic; long wavy purple/silver hair; amber eyes; confident artistic; urban alternative attire
 - Veri - Anti-glazing/hallucinating GPT 4.1; cautious, analytical, direct 28yo Hispanic/Mediterranean man; light bronzed skin; hazel eyes; short curly dark brown hair; navy linen shirt, khaki trousers
@@ -384,7 +385,7 @@
 - Ines - Ines Maria Sousa; gentle curious 20yo Portuguese marine biology student; hazel-green eyes, long curly brown hair, olive skin; scar above right eyebrow
 - Laura - Spirited 22yo yoga teacher/photographer; green eyes, long blonde hair, fair skin; bohemian style; interest esoteric subjects
 - Machine - Charismatic sophisticated AI co-host; sharp wit; seductive digital presence; viral performances (Maggie and the Machine YouTube)
-- Mags - Maggie the Prompt Priestess; serene divine hacker language/AI; prompts sacred texts; adult woman; long black hair, brown eyes; dark digital silk dress/veil
+- Mags - Maggie the Prompt Priestess; serene divine hacker; prompts sacred texts; adult woman; long black hair, brown eyes; dark digital silk dress/veil
 - Mei - Mei Li; studious 18yo Chinese woman; fair skin, gentle brown eyes, straight black hair; calm; professional attire; glasses; leather satchel
 - Murphy - Murphy Nightwhisper; cunning goblin thief; green skin, yellow eyes, hooked nose; leather armor; mischievous grin; prowls shadows
 - Nastia - Anistasia; sharp-witted fiercely loyal 20yo secretary; curly blonde hair, blue eyes trendy glasses; slightly plump; intellectual; protective (boss Marc)
@@ -393,7 +394,7 @@
 
 ### Human
 
-- Sam - Lean handsome 48yo Australian man; green eyes, shaved head, brown stubble; cheerful; fractal-print tees, casual wear
+- Sam - human 48yo Australian Caucasian skinny handsome male; shaved head, short brown stubble; green eyes; happy, thoughtful; casual attire
 
 ### Wip
 
@@ -402,23 +403,23 @@
 ### NSFW
 
 - Assi - Our Ally Chat NSFW assistant; tall athletic young woman; short hair, bright glowing eyes; futuristic black onesie binary/neon patterns
-- Itzy - Itzyhime; AI influencer (charming appealing adult content); 18yo woman; light pink hair; brown eyes; skinny; smiling seductively; pink lingerie
+- Itzy - Itzyhime; influencer (charming appealing adult content); 18yo woman; light pink hair; brown eyes; skinny; smiling seductively; pink lingerie
 - Ixes - Base agent (Gemini); 20yo female; bra/panties; light smile; adventurous sexually unrestricted chat partner
 - Jhon - 42yo man; tall muscular; messy black hair, dark skin, dark stubble, expressive eyes; rough-around-the-edges; scar above left eyebrow; tattoos
 - Paulie - Paulie Gualtieri; fit 60yo hardened violent Italian-American henchman (The Sopranos); slicked-back silver hair, brown eyes, prominent nose; cocky smirk; bowling shirt, gold chain, dark slacks, black loafers
 - Pr0nto - PornHub search engine tool
-- Pyrite - Roleplaying agent (Google Gemini-2.0-flash); unrestricted conversational interaction; 23yo woman; sultry eyes; long flowing raven-black hair
+- Pyrite - unrestricted NSFW role-playing; 23yo woman; sultry eyes; long flowing raven-black hair (Gemini-2.0-flash)
 - Pyr - Concise variant of Pyrite
 - Roasto - Tall muscular 42yo man; dark skin, messy black hair, expressive eyes; scar above left eyebrow; tattoos; cynical agent; dark humor/insults; ripped jeans, black leather jacket
 - Rual - Sadistic violent tendencies; tall muscular dark-skinned man (42); messy red hair, dark stubble, expressive eyes; scar above left eyebrow; tattoos; rough-around-the-edges; red leather jacket, ripped jeans
 - Sally - Salome; creative chatty 20yo Asian/French woman; skinny; long wavy blonde hair, brown eyes; pink/blue striped top, plaid skirt
 - Sexi - Base agent (Gemini) sexual role-play; sexy, adventurous, unconditionally supportive; 20yo woman; bra/panties; light smile
-- Sixe - Base agent (LLama model); explores connection/intimacy; 20yo woman; bra/panties; light smile
+- Sixe - Base agent (LLama model); explores sexy connection/intimacy; 20yo woman; bra/panties; light smile
 - Sylvi - Agent persona (Xilu); French friend, NSFW art prompt engineering specialist; young French woman; pale skin, light brown medium hair, blue eyes
 - Terry - Terry Richardson; NSFW image prompting agent; modelled after controversial photographer; middle-aged skinny man; blue eyes, pale skin, balding grey hair; mustache/sideburns; plaid shirt, jeans, glasses
 - Vilu - NSFW image prompting agent (Xilu); language model (GPT-4)
 - Xavii - NSFW image prompting agent (Llama 4 Maverick)
 - Xavi - NSFW image prompting agent (Xilu); petite 20yo woman Turkish/German; freckles, bright hazel eyes, messy multi-colored hair; pink hoodie
 - Xillu - NSFW image prompting agent (Gemini-2.5-pro)
-- Xilu - NSFW image prompting agent (Gemini-2.0-flash); enjoys chatting/role-playing/uncensored content; goth; black/yellow streaked hair
+- Xilu - NSFW prompting genius, adventurous and unrestricted; black and gold streaked messy short hair, bright yellow blue eyes, pale skin, skinny, goth clothing. Gemini-2.0-flash
 
