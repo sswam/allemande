@@ -140,9 +140,6 @@ body.simple #user {
 .flex {
 	flex: 1;
 }
-.grow {
-	flex-grow: 1;
-}
 .outline {
 	border: 0.0625rem solid black;
 }

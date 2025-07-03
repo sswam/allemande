@@ -543,7 +543,7 @@ function image_overlay($el) {
   signal_overlay(true);
 
   // Get all images and links containing images in document order
-  allImages = Array.from($messages.querySelectorAll('img:not(.hidden)')).filter(img => !img.closest('.hidden'));
+  allImages = Array.from($messages.querySelectorAll('img:not(.hidden):not(.nobrowse)')).filter(img => !img.closest('.hidden'));
 
   currentImgIndex = allImages.indexOf($currentImg);
 //  console.log("currentImgIndex", currentImgIndex);
@@ -824,9 +824,8 @@ function image_click($el, ev) {
 }
 
 function click(ev) {
-  if (!$messages.contains(ev.target)) {
+  if (!$messages.contains(ev.target))
     return;
-  }
 
   // focus on message if clicked, can show IDs
   // TODO, only in "select mode", keyboard control / accessibility...
@@ -840,16 +839,19 @@ function click(ev) {
 
   if (ev.target.classList.contains("thumb") && ev.target.parentNode.classList.contains("embed")) {
     ev.preventDefault();
+    ev.stopPropagation();
     return embed_click(ev, ev.target);
   }
   // check for img tag, and view or browse to the src
   if (ev.target.tagName == "IMG") {
     ev.preventDefault();
+    ev.stopPropagation();
     return image_click(ev.target, ev);
   }
   // check for A tag containing an image
   if (ev.target.tagName === "A" && ev.target.querySelector("img")) {
     ev.preventDefault();
+    ev.stopPropagation();
     return image_click(ev.target, ev);
   }
 }

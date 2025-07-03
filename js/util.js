@@ -36,6 +36,14 @@ const $waitUntilElementHidden = (selector, time) => $waitUntil(() => $(selector)
 const $waitUntilElementText = (selector, text, time) => $waitUntil(() => $(selector).innerText === text, time);
 const $waitUntilElementAttribute = (selector, attribute, value, time) => $waitUntil(() => $(selector).getAttribute(attribute) === value, time);
 
+async function $get(url, options = {}) {
+  const url_with_time = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+  const response = await fetch(url_with_time, options);
+  if (!response.ok)
+    throw new Error(`$get failed: ${response.status} ${response.statusText}`);
+  return await response.text();
+}
+
 const $script = async (id, src) => {
   if ($id(id))
     return;
@@ -296,4 +304,12 @@ function exit_fullscreen() {
   if (!is_fullscreen())
     return;
   document.exitFullscreen().catch((err) => console.error(err));
+}
+
+async function waitForMessage(element) {
+	const process_messages = await $import("chat:process_messages");
+	const message = element.closest('div.message');
+  if (!message)
+    return;
+	await process_messages.processMessage(message);
 }

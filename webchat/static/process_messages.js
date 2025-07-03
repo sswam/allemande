@@ -60,6 +60,18 @@ async function render_mermaid(node) {
   }
 }
 
+async function render_cards(node) {
+  for (const el of node.querySelectorAll("card")) {
+    const path = el.getAttribute("path");
+    console.log("path", path);
+    if (!path)
+      continue;
+    const card = await loadProfile(path);
+    console.log(card);
+    el.replaceWith(card);
+  }
+}
+
 async function ensure_katex_scripts() {
   await Promise.all([
     $style("style_katex", `https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css`),
@@ -228,6 +240,9 @@ export async function processMessage(newMessage) {
 
   // render mermaid diagrams
   await render_mermaid(newContent);
+
+  // render profile cards
+  render_cards(newContent);  // in background
 
   // add language info to code blocks, script and styles on hover
   const codeBlocks = newContent.querySelectorAll(

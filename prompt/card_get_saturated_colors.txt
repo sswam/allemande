@@ -1,0 +1,10 @@
+process -m=claudo "Let's change this to get a list of distinct 'fairly saturated' colour
+s from the image. I'm hoping to exclude dull colours like black, white, grey, and typical skin
+and hair colours, but include any bright colours. I'd like to collect the total of r g b and pi
+xel count for each 'hue bucket' being 1/12th of the colour wheel, considering only the 'bright
+coloured' pixels. Then calculate average r,g,b for each bucket. Then remove duplicates (weighte
+d average to combine adjacent buckets based on pixel counts if they are similar hues). The pres
+ent in a list in rainbow cycle order, with the most populous color first in the list. Then set
+a 'gradient' attribute in the returned object, being a CSS linear gradient with these colours t
+hat will appear with first color at top, and 15 degrees off the vertical in a south-south-west
+direction."

@@ -42,6 +42,9 @@ body, html {
 	width: 100%;
 	height: 100%;
 }
+.grow {
+	flex-grow: 1;
+}
 
 body:not(.history) .hidden, .hidden:not(.removed) {
 	display: none !important;

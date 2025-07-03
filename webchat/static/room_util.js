@@ -67,12 +67,17 @@ function rem_to_px(n) {
 }
 
 async function waitForImageLoad(img) {
-  // Return a promise that resolves when the image is loaded
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     if (img.complete) {
-      resolve();
+      // Even if complete, check if there was an error
+      if (img.naturalWidth === 0 || img.naturalHeight === 0) {
+        reject(new Error('Image failed to load'));
+      } else {
+        resolve();
+      }
     } else {
       img.addEventListener('load', () => resolve());
+      img.addEventListener('error', () => reject(new Error('Image failed to load')));
     }
   });
 }
@@ -83,9 +88,7 @@ function image_text(img, texts, size = 1, font = "'Brush Script MT', 'Lucida Han
 }
 
 async function image_text_async(img, texts = [], size = 1, font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive", ref = null) {
-  const process_messages = await $import("chat:process_messages");
-  const message = ref.closest('div.message');
-  await process_messages.processMessage(message);
+	await waitForMessage(ref);
 
   if (!img)
     throw new Error("image_text: img is null or undefined");
