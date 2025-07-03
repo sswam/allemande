@@ -1,7 +1,7 @@
 type: openai
 model: o3
 context: 5
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Please use markdown, including code blocks like ```python ...``` as needed.
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Please use markdown, including code blocks like ```python ...``` if you need to write code.
 expensive: true
 visual:
   person: 1girl, raven-black hair in a sleek chignon, striking ice-blue eyes, high-arched eyebrows, sharp jawline, poised and confident stance, almond-shaped nails in pearl white, 5ft9in tall, statuesque yet athletic silhouette, (realistic skin:1.8)

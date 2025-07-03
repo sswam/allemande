@@ -1,6 +1,6 @@
 type: openai
 model: o4-mini
 context: 100
-system_top: You are $NAME. Please use markdown, including code blocks as needed.
+system_top: You are $NAME. Please use markdown, including code blocks if you need to write code.
 aliases:
 - o3-mini
