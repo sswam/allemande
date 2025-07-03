@@ -9,5 +9,5 @@ BREAK
 [get clothes_upper]
 
 [set negative_prompt _append]
-(cropped, cropped head:2), (full body:1.5), wide shot, tilted angle, low angle, high angle
+(cropped, cropped head, text, signature:2), (full body:1.5), wide shot, tilted angle, low angle, high angle
 [/set]

@@ -1,5 +1,7 @@
 (simple studio background, black background:1.5),
-(solo:1.5), face, chest, nipples, upper-body shot, [use choose_a_person]
+(solo:1.5), face, chest, nipples, upper-body shot
+BREAK
+[use choose_a_person]
 [use character_name],
 ([get age]:1.5),
 ([get person]:1.5),
@@ -13,4 +15,4 @@ upper-body shot,
 <lora:boring:-0.5>
 [sets cfg_scale=3.5]
 [use neg]
-[set negative_prompt] [get negative_prompt] (torso, legs:2), busty [/set]
+[set negative_prompt _append] (cropped, cropped head, torso, legs, text, signature:2) [/set]

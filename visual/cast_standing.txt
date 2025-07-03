@@ -1,0 +1,13 @@
+rating safe, (solo:1.5), (standing, full body:1.8),
+raw, ultra realistic photograph, studio lighting, 85mm lens, (clean white background:1.5)
+BREAK
+[use choose_a_person]
+[use character_name],
+([get age]:1.6),
+[get person],
+[get emo],
+[get clothes]
+
+[set negative_prompt _append]
+(cropped, cropped head, bad anatomy, extra limbs, text, signature:2), wide shot, tilted angle, low angle, high angle
+[/set]

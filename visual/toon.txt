@@ -1,2 +1,2 @@
-source anime
+source anime, toon \(style\)
 [set negative_prompt _append] (realistic, 3d:2) [/set]
