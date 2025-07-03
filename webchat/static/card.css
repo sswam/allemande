@@ -150,4 +150,5 @@ img.card-avatar {
 	pointer-events: none;
 	mix-blend-mode: overlay;
 	z-index: 2;
+	border-radius: 0.625rem;
 }

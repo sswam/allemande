@@ -281,10 +281,10 @@ async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 	});
 
 	// Add shine effect on hover
-	container.addEventListener('mousemove', (e) => {
+	function handleMove(x, y) {
 		const rect = container.getBoundingClientRect();
-		const x = e.clientX - rect.left;
-		const y = e.clientY - rect.top;
+		x -= rect.left;
+		y -= rect.top;
 
 		// Convert to percentages for shine position
 		const xPercent = (x / rect.width) * 100;
@@ -311,16 +311,26 @@ async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 		card.style.setProperty('--shine-x', `${flipped ? 100-xPercent : xPercent}%`);
 		card.style.setProperty('--shine-y', `${yPercent}%`);
 		card.style.setProperty('--shine-opacity', '1');
+	}
+
+	container.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+	container.addEventListener('touchmove', (e) => {
+		const touch = e.touches[0];
+		handleMove(touch.clientX, touch.clientY);
 	});
 
-	container.addEventListener('mouseleave', () => {
+	function handleLeave() {
 		const flipRotation = card.classList.contains('flipped') ? 180 : 0;
 
 		// Reset transform origin to center
 		// card.style.transformOrigin = '50% 50%';
 		card.style.transform = `rotateY(${flipRotation}deg)`;
 		card.style.setProperty('--shine-opacity', '0');
-	});
+	}
+
+	container.addEventListener('mouseleave', handleLeave);
+	container.addEventListener('touchend', handleLeave);
+	container.addEventListener('touchcancel', handleLeave);
 
 	// Load additional images if available
 	// Try to load extra images until one fails
