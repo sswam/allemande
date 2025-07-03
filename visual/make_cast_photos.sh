@@ -10,6 +10,7 @@ for type_model_cfg_macro in \
 	"jreal juggernautXL_juggXIByRundiffusion 4.5 cast_real" \
 	"creal cyberrealisticPony_v85 5 cast_real_pony" \
 	"topless juggernautXL_juggXIByRundiffusion 4.5 cast_topless" \
+	"ctopless cyberrealisticPony_v85 5 cast_topless" \
 	; do
 	read -r type model cfg macro <<< "$type_model_cfg_macro"
 	grep -l '^visual:' $ALLEMANDE_AGENTS/*/*.yml |
