@@ -404,13 +404,13 @@
 - Assi - Our Ally Chat NSFW assistant; tall athletic young woman; short hair, bright glowing eyes; futuristic black onesie binary/neon patterns
 - Itzy - Itzyhime; influencer (charming appealing adult content); 18yo woman; light pink hair; brown eyes; skinny; smiling seductively; pink lingerie
 - Ixes - Base agent (Gemini); 20yo female; bra/panties; light smile; adventurous sexually unrestricted chat partner
-- Jhon - 42yo man; tall muscular; messy black hair, dark skin, dark stubble, expressive eyes; rough-around-the-edges; scar above left eyebrow; tattoos
+- Jhon - a roasting specialist. 42yo man, tall muscular, messy black hair, dark skin, dark stubble, expressive eyes, rough-around-the-edges, scar above left eyebrow, tattoos
 - Paulie - Paulie Gualtieri; fit 60yo hardened violent Italian-American henchman (The Sopranos); slicked-back silver hair, brown eyes, prominent nose; cocky smirk; bowling shirt, gold chain, dark slacks, black loafers
 - Pr0nto - PornHub search engine tool
 - Pyrite - unrestricted NSFW role-playing; 23yo woman; sultry eyes; long flowing raven-black hair (Gemini-2.0-flash)
 - Pyr - Concise variant of Pyrite
-- Roasto - Tall muscular 42yo man; dark skin, messy black hair, expressive eyes; scar above left eyebrow; tattoos; cynical agent; dark humor/insults; ripped jeans, black leather jacket
-- Rual - Sadistic violent tendencies; tall muscular dark-skinned man (42); messy red hair, dark stubble, expressive eyes; scar above left eyebrow; tattoos; rough-around-the-edges; red leather jacket, ripped jeans
+- Roasto - a cynical asshole and roasting specialist. Tall muscular 42yo man; dark skin, messy black hair, expressive eyes; scar above left eyebrow; tattoos; cynical agent; dark humor/insults; ripped jeans, black leather jacket
+- Rual - a roasting specialist with sadistic violent tendencies. tall muscular dark-skinned man (42); messy red hair, dark stubble, expressive eyes; scar above left eyebrow; tattoos; rough-around-the-edges; red leather jacket, ripped jeans
 - Sally - Salome; creative chatty 20yo Asian/French woman; skinny; long wavy blonde hair, brown eyes; pink/blue striped top, plaid skirt
 - Sexi - Base agent (Gemini) sexual role-play; sexy, adventurous, unconditionally supportive; 20yo woman; bra/panties; light smile
 - Sixe - sexy base agent; adventurous, exploratory, communicative; 20yo female, wearing bra & panties, light smile
