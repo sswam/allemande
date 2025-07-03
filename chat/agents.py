@@ -207,7 +207,7 @@ class Agent:
         """Set up an agent"""
 
         agent_type = self.get("type")
-        if agent_type in ["human", "visual"]:
+        if not agent_type or agent_type in ["human", "visual"]:
             return False
 
         service = services.get(agent_type)
