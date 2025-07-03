@@ -37,6 +37,7 @@ Address AIs by name to get their attention, using a capital letter or @ sign:
 > Ally, how are you?
 > Can you help, @flashi?
 > Illu, let's draw a garden!
+> Tell me about the strong models, Yenta.
 
 Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an AI art prompt for you.
 
@@ -119,4 +120,5 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 ## What next?
 
-Click the **Help** tab, and ask Aidi some questions about the app, or they can introduce you to some different characters.
+- Click the **Help** tab, and ask Aidi some questions about the app.
+- Ask Yenta to introduce you to some different characters.

@@ -56,7 +56,17 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 ## Limitations
 
-- **Private Messaging**: Currently, Ally Chat does not have a direct messaging feature.
+### Work in Progess
+
+- **Notifications**: We're working on AI initiative and notifications, it's not done yet.
+- **Voice Chat**: Voice chat is under development, it's going to be good!
+- **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually using summaries, and pasting into mission files, or custom character sheets.
+- **Document Processing**: We are working on document conversion, vector embedding indexes and RAG to efficiently handle PDF documents and the like. It's not done yet.
+
+### Future Directions
+
+- **Private Messaging**: We don't yet have a direct messaging feature
+- **Video Generation**: We don't have AI video generation yet
 
 ## Learning about Ally Chat
 
@@ -66,6 +76,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - IMPORTANT: New users who need help should talk to Aidi. Other characters can also help, but Aidi is specialised at this.
 - A red dot at the top-right means you are disconnected or offline. Reload the page.
 - Illu is expert at image generation. You can talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
+- Ask Yenta to introduce you to other characters, agents and even tools.
 - You can contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is available in the help widget. Here, AIs have access to the entire user guide.
    - In the main "Ally Chat" room, AIs have some basic info about the app.

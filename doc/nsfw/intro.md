@@ -45,6 +45,7 @@ Address AIs by name to get their attention, with a capital letter or @ sign:
 > hey Ally, you're looking hot!
 > Can you help run a sexy photoshoot, @flashi?
 > Xilu, draw a nude girl!
+> Do you know any brunettes who might be up for sexy role-play, Yenta?
 
 Send an empty "poke" message to continue AI conversations. You'll need to do this after Xilu writes an AI art prompt for you.
 
@@ -124,4 +125,5 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 ## What next?
 
-Click the **Help** tab, and ask Assi some questions about the app, or they can introduce you to some different characters.
+- Click the **Help** tab, and ask Assi some questions about the app.
+- Ask Yenta to introduce you to some different characters.
