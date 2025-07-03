@@ -2,10 +2,10 @@
 // With image processing to extract colors for styling
 
 async function createCard(template) {
-	const card = document.createElement('div');
-	card.className = 'card-container';
-	card.innerHTML = await $get(template, { credentials: 'include' });
-	return card;
+	const container = document.createElement('div');
+	container.className = 'card-container';
+	container.innerHTML = await $get(template, { credentials: 'include' });
+	return container;
 }
 
 function getAverageColor(img) {
@@ -222,7 +222,8 @@ function label_em_and_value(label, value) {
 
 async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 	const name = path.replace(/.*\//, '');
-	const card = await createCard(template);
+	const container = await createCard(template);
+	const card = container.firstElementChild;
 
 	const text = await $get(`/cast/${path}.rec`);
 
@@ -262,17 +263,63 @@ async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 //	back.style.setProperty('--text-color', colors.text);
 	back.style.setProperty('--card-gradient', saturatedColors.gradient);
 
-	// Add flip functionality
-	card.querySelector('.card').addEventListener('click', function(ev) {
+	// Handle flip
+	card.addEventListener('click', function(ev) {
 		// Ignore clicks on images or links
 		if (['IMG', 'A'].includes(ev.target.tagName)) return;
 
 		// Check if there's any text selected
 		if (window.getSelection().toString().length > 0) return;
 
-		this.style.transform = this.style.transform === 'rotateY(180deg)'
-			? 'rotateY(0deg)'
-			: 'rotateY(180deg)';
+		const flipped = card.classList.contains('flipped');
+		this.classList.toggle('flipped');
+		if (flipped)
+			setTimeout(() => { this.classList.remove('preserve-3d'); }, 600);
+		else
+			this.classList.add('preserve-3d');
+		this.style.transform = `rotateY(${!flipped ? 180 : 0}deg)`;
+	});
+
+	// Add shine effect on hover
+	container.addEventListener('mousemove', (e) => {
+		const rect = container.getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+
+		// Convert to percentages for shine position
+		const xPercent = (x / rect.width) * 100;
+		const yPercent = (y / rect.height) * 100;
+
+		// Convert coordinates for tilt
+		const xTilt = -(x / rect.width - 0.5) * 2;
+		const yTilt = -(y / rect.height - 0.5) * 2;
+
+		// Apply rotation (max 10 degrees)
+		const rotateX = yTilt * -10;
+		const rotateY = xTilt * 10;
+
+		const flipped = card.classList.contains('flipped');
+
+		// Combine 3D effect with flip state
+		const flipRotation = flipped ? 180 : 0;
+
+		// Set transform-origin for more natural movement
+		// card.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+		card.style.transform = `rotateY(${flipRotation + rotateY}deg) rotateX(${flipped ? -rotateX : rotateX}deg)`;
+
+		// Update shine effect position and opacity
+		card.style.setProperty('--shine-x', `${flipped ? 100-xPercent : xPercent}%`);
+		card.style.setProperty('--shine-y', `${yPercent}%`);
+		card.style.setProperty('--shine-opacity', '1');
+	});
+
+	container.addEventListener('mouseleave', () => {
+		const flipRotation = card.classList.contains('flipped') ? 180 : 0;
+
+		// Reset transform origin to center
+		// card.style.transformOrigin = '50% 50%';
+		card.style.transform = `rotateY(${flipRotation}deg)`;
+		card.style.setProperty('--shine-opacity', '0');
 	});
 
 	// Load additional images if available
@@ -299,7 +346,7 @@ async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 		extraImagesContainer.appendChild(secondImg);
 	}
 
-	return card;
+	return container;
 }
 
 async function loadProfiles(paths) {
