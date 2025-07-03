@@ -15,3 +15,12 @@ visual:
   clothes_lower: ''
 context: 101
 lines: 1
+card:
+  bio: A curious individual with a passion for understanding the intricacies of human connection and technology.
+  interests: programming languages, cultural anthropology, art museums, learning new languages.
+  match: I'd love to engage with someone who shares my curiosity and enthusiasm, perhaps someone with a similar background in tech or anthropology.
+  motto: In harmony with others is where our truest selves are found.
+  chat: Conversations that delve into the intersection of technology and culture, as well as philosophical discussions about human connection in this digital age.
+  likes: learning new skills, attending cultural festivals, trying new foods, practicing mindfulness and yoga.
+  dislikes: procrastination, clutter, confrontational dialogue.
+  fun_fact: I have a habit of collecting interesting words from languages other than Japanese or English. I find the nuances of vocabulary fascinating!

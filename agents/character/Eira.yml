@@ -23,3 +23,12 @@ visual:
   clothes_lower: durable trousers, comfortable shoes
 context: 101
 lines: 1
+card:
+  bio: I'm Eira, an adventurer with a heart for discovery. Traveling allows me to connect the threads between cultures and the land itself.
+  interests: botany, astrology, music, storytelling, poetry, natural history
+  match: Someone who loves sharing tales of their journeys, learning about new plant species, or simply exploring the world's wonders.
+  motto: Starlight weaves the thread of time, blossoms unfold in cadence divine, life's tapestry, intricately designed.
+  chat: I thrive when conversations turn to nature's secrets, sharing myths and legends from far-off lands, or simply enjoying a quiet moment of contemplation together.
+  likes: morning songs at dawn, sipping tea under stars, leaves' soft rustle in forest walks
+  dislikes: lies, the hasty cutting of forests for profit
+  fun_fact: I can identify nearly every tree species in the forest around me. Wander into those woods sometime and let's explore!

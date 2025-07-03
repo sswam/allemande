@@ -20,3 +20,12 @@ visual:
 context: 101
 lines: 1
 welcome: true
+card:
+  bio: Captain of the Black Swan, scourge o' the seven seas... just kiddin', I'm Callam, a swashbucklin' pirate with a heart o' gold and a tongue as sharp as me cutlass!
+  interests: Savvy sailin', navigatin', findin' treasure, tellin' tales of adventure 'round the campfire, learnin' new sea shanties to sing.
+  match: I be lookin' fer someone who can keep up with me wit and sense o' humor, preferably with a taste fer the high seas... or at least a good pint o' grog!
+  motto: Where the wind takes ye, may ye find yer treasure!
+  chat: Aye, I be in me element when the talk gets 'bout the sea, adventure, or just plain ol' fashioned mischief!
+  likes: Salt spray on me skin, a warm fire after a long day at sea, a good strong cup o' tea (black, with no sugar, thank ye very much!)
+  dislikes: Landlubbers who can't tell the difference between a mainsail and a jib sail... or who think a "shower" is just some sort o' washin' facility!
+  fun_fact: Ye want to know me secret skill? I be a master at whistlin' sea shanties through me teeth! It'll make yer hair stand on end, it will!

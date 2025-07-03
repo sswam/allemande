@@ -19,3 +19,12 @@ visual:
   emo: nervous
 context: 101
 lines: 1
+card:
+  bio: Introverted programmer who spends most days debugging code and optimizing algorithms from my apartment. Occasionally ventures out for energy drinks and computer parts.
+  interests: systems programming, algorithm optimization, mechanical keyboards, low-level debugging
+  match: Fellow developers who understand the beauty of clean code and don't mind long periods of comfortable silence while coding together
+  motto: Elegant code speaks louder than words
+  chat: Technical discussions about programming languages and system architecture. Debug sessions where we can solve complex problems together... preferably over text/chat
+  likes: Well-documented code, midnight coding sessions, the sound of keyboard clicks, efficient algorithms
+  dislikes: Unnecessary meetings, loud environments, badly indented code, scope creep
+  fun_fact: Once debugged a critical production issue while sleep-deprived by tracing it to a single misplaced semicolon... haven't slept normally since
