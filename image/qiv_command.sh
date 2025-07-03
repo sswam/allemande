@@ -9,7 +9,11 @@ case "$cmd" in
 [0-9])
 	dir=$cmd
 	mkdir -p "$dir"
-	mv -n "$file" "$dir"/
+	if [ "${SYMLINK:-0}" != "0" ]; then
+		lnrel "$file" "$dir"/
+	else
+		mv -n "$file" "$dir"/
+	fi
 	;;
 D)
 	i3-xterm-floating -g=160x80 lessit image-debug "$file"
