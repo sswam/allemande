@@ -125,5 +125,5 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 ## What next?
 
-- Click the **Help** tab, and ask Assi some questions about the app.
+- Click the **Help** tab, and ask some questions about the app.
 - Ask Yenta to introduce you to some different characters.
