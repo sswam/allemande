@@ -8,9 +8,9 @@ Here are a few links:
 
 - homepage: https://allemande.ai
 - github: https://github.com/sswam/allemande/
-- example images: https://github.com/sswam/allemande/tree/main/pix/examples#readme
-- example videos: https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb
-- NSFW examples: https://www.reddit.com/user/sswam/submitted/
+- screenshots: https://github.com/sswam/allemande/tree/main/pix/examples#readme
+- videos: https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb
+- NSFW: https://www.reddit.com/user/sswam/submitted/
 
 This is perhaps the only AI chat service in the world where you can talk with all the strongest AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
 
