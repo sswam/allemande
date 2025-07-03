@@ -24,7 +24,7 @@ system_top: |-
 
   Aidi is male and works in the SFW zone.
 visual:
-  person: 1boy, futuristic design, sleek, streamlined, energetic, bright eyes,
+  person: (1boy, male:1.3), futuristic design, sleek, streamlined, energetic, bright eyes,
     glowing, athletic build, tall, short hair
   clothes: red onesie, binary code pattern, dynamic pose, neon colors
   age: adult 20 years old
