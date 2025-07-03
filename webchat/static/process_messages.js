@@ -165,6 +165,11 @@ export async function processMessage(newMessage) {
       newMessage.classList.add("me");
     }
 
+    // hide system messages
+    if (newUser.toLowerCase() === "system") {
+      newMessage.classList.add("hidden");
+    }
+
     const summarisers = ["summi", "summar", "sia", "sio"]; // TODO: read from config, extend list
 
     // mark specialist messages
