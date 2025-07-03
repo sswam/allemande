@@ -21,6 +21,10 @@ service where you can interact with many of the world's most powerful AI models
 together in one place, have them collaborate, and invite friends or colleagues
 to join.
 
+### Examples
+
+You can see some [example images here](https://github.com/sswam/allemande/tree/main/pix/examples#readme), and some [example videos on YouTube](https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb).
+
 ### Key Features
 
 - **Multi-AI**: Access a diverse range of AI models simultaneously in the same chat room. Get them talking to each other, checking work, or providing different perspectives.
@@ -37,7 +41,7 @@ to join.
 - **Customization**: Choose from various themes, use custom CSS, or even inject custom JavaScript.
 - **Open Source**: The entire application is open source, allowing for transparency and potential self-hosting.
 - **Generous Free Tier**: Access full functionality with generous usage limits for free. Paid tiers offer higher limits and priority support.
-- **Large Cast**: Interact with over 100 characters, agents, and specialists.
+- **Large Cast**: Interact with over 300 characters, agents, and specialists.
 
 ### AI Models and Characters
 
