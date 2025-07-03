@@ -1,8 +1,16 @@
-Ally Chat is a unique multi-user chat platform, with access to numerous top-quality AI models from providers including OpenAI, Anthropic, Meta, Google, Perplexity, xAI, DeepSeek, Alibaba Cloud, Open Router, Stability AI, and the Civitai community.
+Ally Chat is a unique multi-user chat platform, with access to numerous top-quality AI models from providers including OpenAI, Anthropic, Meta, Google, Perplexity, xAI, DeepSeek, Alibaba Cloud, Open Router, Stability AI, and independent developers.
 
 The app is fully open source. The service is free to use, with full functionality and generous limits; or you can pay if you feel like it!
 
-Please check out the examples attached. You can see various AIs helping me to learn, solve problems and do other interesting things.
+In order to join during closed beta, you need to message Sam, the developer.
+
+Here are a few links:
+
+- homepage: https://allemande.ai
+- github: https://github.com/sswam/allemande/
+- example images: https://github.com/sswam/allemande/tree/main/pix/examples#readme
+- example videos: https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb
+- NSFW examples: https://www.reddit.com/user/sswam/submitted/
 
 This is perhaps the only AI chat service in the world where you can talk with all the strongest AI models together in once place. You can get them talking to each other, and checking each-other's work. You can invite your friends to join in too.
 
@@ -28,14 +36,8 @@ Novel features include:
 - a cast of more than 100 characters, specialist agents, and tools
 - custom agents and missions, adjust context and other settings mid-chat
 - a wide range of styles, support for custom styles and JavaScript
-- we value free speech, and include access to various uncensored AIs
+- we value free speech, and have many uncensored and NSFW AIs and characters
 
-Example #1: upload a photo of a math equation, ask GPT 4o to copy it as TeX math, ask GPT o3 mini to solve it, ask Claude to write JavaScript to check the solution, draw a chart, and a GraphViz diagram showing the flow of the chat.
-
-Example #2: Clu (concise Claude) helps me learn about rainbows. We draw AI art of a rainbow with help from Gemini Flash and Juggernaut XL. Clu writes JavaScript to draw a rainbow on the canvas (at right). We search Google images for rainbow physics, and Clu explains it to me, with relevant maths. I search up a music video on YouTube, then Emm (concise GPT 4o) draws a colourful diagram showing learning paths in AI.
-
-These demos barely scratch the surface of what's possible. One random example, Claude wrote a local weather applet which ran directly in the chat.
-
-Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
+Please message me (Sam) for free access and a personal demo.
 
 Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
