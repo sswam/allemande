@@ -25,7 +25,11 @@ for type_model_cfg_macro in \
 	head -n $limit_n_chars |
 	while read file; do
 		char=${file##*/}; char=${char%.yml}
-		if [ -d "$char/$type" ]; then
+		if [ -e "$char/$type.png" ]; then
+			continue
+		elif [ -d "$char/$type" ]; then
+			mv "$char/$type"/*.png "$char/$type.png"
+			rmdir "$char/$type"
 			continue
 		fi
 		mkdir -p "$char/$type"
@@ -34,6 +38,8 @@ for type_model_cfg_macro in \
 			cd "$char/$type"
 			a1111-client --count "$N" --model "$model" --cfg-scale "$cfg" --pag 3 --adetailer "face_yolov8n.pt" --ad-mask-k-largest 10 --hires 1.5 --prompt "[sets char=\"$char\"] [use $macro] [use $shape] [sets steps=30]"
 			sleep 1
+			mv "$char/$type"/*.png "$char/$type.png"
+			rmdir "$char/$type"
 #			a1111-client --count "$N" --model "$model" --cfg-scale "$cfg" --pag 3 --prompt "[sets char=\"$char\"] [use $macro] [use square] [sets steps=15]"
 		)
 	done
