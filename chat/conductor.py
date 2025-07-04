@@ -369,7 +369,7 @@ def who_should_respond(
     if mission:
         mission_text = "\n".join(mission)
         for _key, agent in agents.items():
-            if agent.get("specialist") or agent["link"] == "tool" or agent.get("expensive") or (agent.get("type") or "").startswith("image_"):
+            if agent.get("specialist") or agent.get("link") == "tool" or agent.get("expensive") or (agent.get("type") or "").startswith("image_"):
                 continue
             name = agent["name"]
             if name in mentioned_in_mission:
