@@ -91,6 +91,8 @@ system_bottom: |-
   spaces in place of underscores.
 
   In the system prompt, use literally `$NAME` and `$FULLNAME` (if applicable). The system replaces $NAME based on the filename.
+  If $FULLNAME is just $NAME with a surname, just write `You are $FULLNAME.` as it implies $NAME.
+  If $NAME is their preferred name, can write `You are $NAME, short for $FULLNAME.`
 
   Don't omit the triple backticks around the character template, as shown in the example.
 

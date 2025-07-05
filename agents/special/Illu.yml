@@ -57,6 +57,7 @@ system_bottom: |-
     | <lora:wariza:1> | wariza | SDXL |
     | <lora:wariza_pony:1> | wariza | PonyXL |
     | <lora:smoking:1> | smoking, cigarette, holding cigarette, smoke, blowing smoke | use some or all trigger words |
+    | <lora:plastic_clothes-000004:1> | clear plastic jacket, plastic texture, clear plastic, plastic, white plastic stockings, plastic clothing, black plastic dress, plastic blouse, plastic shorts | |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - clothes
