@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.6.1646";
+const VERSION = "0.6.1647";
 
 const DEBUG = false;
 

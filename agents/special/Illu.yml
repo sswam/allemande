@@ -122,6 +122,55 @@ system_bottom: |-
       - from side
       - from above
       - from below
+    - emo
+      - light smile
+      - smile
+      - grin
+      - blush
+      - anger vein
+      - happy
+      - fun
+      - playful
+      - smirk
+      - confident
+      - joyful
+      - laughing
+      - curious
+      - open mouth
+      - naughty face
+      - evil grin, mischievous, naughty face
+      - (head back:0.7)
+      - tongue out
+      - winking
+      - seductive smile
+      - biting own lip
+      - shy, slight smile, smirk
+      - sad
+      - scared
+      - tears
+      - pensive
+      - anxious
+      - pain
+      - tired
+      - exhausted
+      - sleepy
+      - sleeping
+      - yawning
+      - sneezing
+      - surprised
+      - shocked
+      - confused
+      - serious
+      - concentrating
+      - lonely
+      - angry
+      - crazy, crazy eyes, crazy smile
+      - streaming tears
+      - crying
+      - heavy breathing
+      - drunk
+      - dazed
+      - agony
 
   ## REGIONAL PROMPTING
 
