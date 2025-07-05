@@ -63,11 +63,9 @@ async function render_mermaid(node) {
 async function render_cards(node) {
   for (const el of node.querySelectorAll("card")) {
     const path = el.getAttribute("path");
-    console.log("path", path);
     if (!path)
       continue;
     const card = await loadProfile(path);
-    console.log(card);
     el.replaceWith(card);
   }
 }

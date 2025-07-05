@@ -14,20 +14,20 @@ const $on = (element, event, handler, options) => element.addEventListener(event
 const $off = (element, event, handler) => element.removeEventListener(event, handler);
 const $dispatch = (element, event) => element.dispatchEvent(new Event(event));
 const $animate = (element, animation, callback) => {
-	element.classList.add('animated', animation);
-	element.addEventListener('animationend', () => {
-		element.classList.remove('animated', animation);
-		if (callback) callback();
-	});
+  element.classList.add('animated', animation);
+  element.addEventListener('animationend', () => {
+    element.classList.remove('animated', animation);
+    if (callback) callback();
+  });
 }
 const $wait = (time) => new Promise((resolve) => setTimeout(resolve, time||0));
 const $waitUntil = (condition, time) => new Promise((resolve) => {
-	const interval = setInterval(() => {
-		if (condition()) {
-			clearInterval(interval);
-			resolve();
-		}
-	}, time);
+  const interval = setInterval(() => {
+    if (condition()) {
+      clearInterval(interval);
+      resolve();
+    }
+  }, time);
 });
 const $waitUntilElement = (selector, time) => $waitUntil(() => $(selector), time);
 const $waitUntilElementRemoved = (selector, time) => $waitUntil(() => !$(selector), time);
@@ -307,9 +307,48 @@ function exit_fullscreen() {
 }
 
 async function waitForMessage(element) {
-	const process_messages = await $import("chat:process_messages");
-	const message = element.closest('div.message');
+  const process_messages = await $import("chat:process_messages");
+  const message = element.closest('div.message');
   if (!message)
     return;
-	await process_messages.processMessage(message);
+  await process_messages.processMessage(message);
+}
+
+// colours -------------------------------------------------------------------
+
+// TODO consider using my custom RGB <-> HSL functions that might work better
+
+function clamp(v, low, high) {
+  return Math.min(Math.max(v, low), high);
+}
+
+// Standard HSL to RGB conversion function
+function hslToRgb(h, s, l) {
+  let r, g, b;
+
+  if (s === 0) {
+    r = g = b = l; // achromatic
+  } else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+
+    r = hue2rgb(p, q, h / 360 + 1/3);
+    g = hue2rgb(p, q, h / 360);
+    b = hue2rgb(p, q, h / 360 - 1/3);
+  }
+
+  return {
+    r: clamp(Math.floor(r * 256), 0, 255),
+    g: clamp(Math.floor(g * 256), 0, 255),
+    b: clamp(Math.floor(b * 256), 0, 255),
+  };
 }

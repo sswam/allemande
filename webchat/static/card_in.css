@@ -1,0 +1,299 @@
+:root {
+	--card-scale: calc(15/16);
+	--card-font-size: calc(15/16);
+}
+
+.card-container {
+	perspective: 150rem;
+	font-size: calc(var(--card-scale) * 1rem);
+	width: calc(var(--card-scale) * 28.125rem);
+	height: calc(var(--card-scale) * 28.125rem * 7/5);
+	display: inline-block;
+	vertical-align: top;
+	margin: 0 calc(var(--card-scale) * 2rem) calc(var(--card-scale) * 2rem) 0;
+	--shine-opacity: 0;
+}
+
+.card {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	transition:
+		transform 0.6s ease-out,  /* For card flip */
+		transform-origin 0.2s ease; /* For hover movement */
+	border-radius: 0.625em;
+	background: var(--card-border-gradient);
+	box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.5);
+	transform-style: preserve-3d;
+	font-size: calc(var(--card-font-size) * 1em);
+}
+
+.card-face {
+	z-index: 2;
+	position: absolute;
+	top: 0.75em;
+	left: 0.75em;
+	right: 0.75em;
+	bottom: 0.75em;
+	backface-visibility: hidden;
+	padding: 1.5em;
+	overflow-y: auto;
+	scrollbar-width: none;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 0.5em;
+	background: var(--card-gradient);
+	background-color: var(--card-bg, #fff);
+	color: var(--text-color, #000);
+	text-align: justify;
+	border-radius: 0.625em;
+}
+
+/*
+.card-face > * {
+	border: 0.0625em solid red;
+}
+*/
+
+.card-face > div:not(.card-extra-images) {
+	margin: 0;
+	padding: 0.625em;
+	border-radius: 0.625em;
+	margin: -0.625em;
+	border: 0.0625em solid rgba(128, 128, 128, 0.125);
+}
+
+body.light .card-face > div.card-bio {
+	background: rgba(255, 127, 127, 0.125);
+}
+body.dark .card-face > div.card-bio {
+	background: rgba(127, 0, 0, 0.125);
+}
+body.light .card-face > div.card-interests {
+	background: rgba(255, 191, 127, 0.125);
+}
+body.dark .card-face > div.card-interests {
+	background: rgba(127, 63, 0, 0.125);
+}
+body.light .card-face > div.card-match {
+	background: rgba(255, 255, 127, 0.125);
+}
+body.dark .card-face > div.card-match {
+	background: rgba(127, 127, 0, 0.125);
+}
+body.light .card-face > div.card-motto {
+	background: rgba(127, 255, 127, 0.125);
+}
+body.dark .card-face > div.card-motto {
+	background: rgba(0, 127, 0, 0.125);
+}
+body.light .card-face > div.card-chat {
+	background: rgba(127, 255, 255, 0.125);
+}
+body.dark .card-face > div.card-chat {
+	background: rgba(0, 127, 127, 0.125);
+}
+body.light .card-face > div.card-likes {
+	background: rgba(127, 127, 255, 0.125);
+}
+body.dark .card-face > div.card-likes {
+	background: rgba(0, 0, 127, 0.125);
+}
+body.light .card-face > div.card-dislikes {
+	background: rgba(191, 127, 255, 0.125);
+}
+body.dark .card-face > div.card-dislikes {
+	background: rgba(63, 0, 127, 0.125);
+}
+body.light .card-face > div.card-fun-fact {
+	background: rgba(255, 127, 255, 0.125);
+}
+body.dark .card-face > div.card-fun-fact {
+	background: rgba(127, 0, 127, 0.125);
+}
+
+.card-back {
+	transform: rotateY(180deg);
+}
+
+.card-header {
+	position: absolute;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.card-name {
+	font-size: 1.5em;
+	font-weight: bold;
+	margin: 0.75em;
+	z-index: 5;
+}
+
+.card-name > a {
+	color: rgba(0, 0, 255, 0.5);
+	text-decoration: underline;
+	text-decoration-color: rgba(0, 0, 255, 0.2);
+}
+
+.card-name > a:hover {
+	color: rgb(0, 0, 255);
+	text-decoration-color: blue;
+}
+
+.card-icons {
+	min-width: 6.25em;
+}
+
+.card-extra-images {
+	position: relative;
+	align-self: flex-end;
+	width: 100%;
+	overflow: hidden;
+	scrollbar-width: none;
+	height: 6.25em;
+}
+
+.card-extra-images-scrolling-content {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	width: fit-content;
+	white-space: nowrap;
+	height: 100%;
+	gap: 0.5em;
+	animation: scroll 10s linear infinite;
+}
+
+@keyframes scroll {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+.card-extra-images-scrolling-content > img {
+	margin: 0;
+	border-radius: 0.625em;
+}
+
+.card-extra-images-scrolling-content:hover {
+	animation-play-state: paused;
+}
+
+.card-face::-webkit-scrollbar, .card-extra-images::-webkit-scrollbar {
+	display: none;
+}
+
+img.card-avatar {
+	z-index: 4;
+	margin: 0;
+	width: 100%;
+	height: auto;
+	max-width: none;
+	max-height: none;
+	object-fit: cover;
+	border-radius: 0.625em;
+	align-self: stretch;
+	flex-shrink: 0;
+}
+
+/* Shine overlay */
+.card-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	opacity: var(--shine-opacity, 0);
+	transition: opacity 0.2s ease;
+	pointer-events: none;
+	border-radius: 0.625em;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	overflow: hidden;
+	mask-image: url(https://$ALLEMANDE_DOMAIN/card/mask.png);
+	mask-mode: alpha;
+	mask-size: 120% 120%;
+	mask-position: var(--mask-x) var(--mask-y);
+}
+
+/* Shine overlay */
+.card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: radial-gradient(
+		circle at var(--shine-x) var(--shine-y),
+		rgba(255, 255, 255, 1) 0%,
+		rgba(255, 255, 191, 0.6) 15%,
+		rgba(255, 223, 191, 0.0) 50%
+	);
+	transition: opacity 0.2s ease;
+	pointer-events: none;
+	border-radius: 0.625em;
+	z-index: 1;
+	opacity: var(--shine-opacity, 0);
+}
+
+/* Glow overlay */
+.card-face::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: radial-gradient(
+		circle at var(--glow-x) var(--glow-y),
+		rgba(100, 255, 100, 0.3) 0em,
+		rgba(100, 220, 220, 0.3) 10em,
+		rgba(100, 100, 255, 0.3) 20em,
+		rgba(220, 100, 220, 0.3) 30em,
+		rgba(255, 100, 100, 0.3) 40em,
+		rgba(255, 100, 100, 0.3) 50em,
+		rgba(220, 220, 100, 0.3) 60em
+	);
+	transition: opacity 0.2s ease;
+	pointer-events: none;
+	border-radius: 0.625em;
+	z-index: 1;
+	opacity: calc(var(--shine-opacity, 0) * 0.6);
+}
+
+.card-overlay > img {
+	position: absolute;
+	top: var(--texture-y, 0);
+	left: var(--texture-x, 0);
+	margin: 0;
+	width: 120%;
+	height: 120%;
+	max-width: none;
+	max-height: none;
+	border-radius: 0.625em;
+	z-index: 2;
+}
+
+/* Shade overlay */
+.card-face::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, var(--shade, 0));
+	transition: background-color 0.2s ease;
+	pointer-events: none;
+	z-index: 5;
+	border-radius: 0.625em;
+}

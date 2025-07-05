@@ -33,7 +33,7 @@ function getAverageColor(img) {
 	};
 }
 
-function getSaturatedColors(img) {
+function getSaturatedColors(img, dark) {
 	const canvas = document.createElement('canvas');
 	const ctx = canvas.getContext('2d');
 	const res = 64;
@@ -44,7 +44,9 @@ function getSaturatedColors(img) {
 
 	// Initialize 12 hue buckets (30-degree segments)
 	const hueBuckets = Array(12).fill(null).map(() => ({
-		r: 0, g: 0, b: 0, count: 0
+		r: 0, g: 0, b: 0, 
+		hue: 0, saturation: 0, lightness: 0,
+		count: 0,
 	}));
 
 	// Process each pixel
@@ -60,16 +62,6 @@ function getSaturatedColors(img) {
 		const lightness = (max + min) / 510; // 0-1 range
 		const saturation = max === 0 ? 0 : delta / max;
 
-		// Filter out dull colors (low saturation, too dark/light)
-		if (saturation < 0.1 || lightness < 0.40 || lightness > 0.8) continue;
-
-		// Filter out typical skin/hair tones (browns, tans)
-		const isSkintone = (r > g && g > b) &&
-						(r - b < 100) &&
-						(saturation < 0.5) &&
-						(lightness > 0.3 && lightness < 0.7);
-		if (isSkintone) continue;
-
 		// Calculate hue (0-360 degrees)
 		let hue = 0;
 		if (delta !== 0) {
@@ -83,29 +75,56 @@ function getSaturatedColors(img) {
 			hue = (hue * 60 + 360) % 360;
 		}
 
+		// Calculate dullness confidence (0-1)
+		let dull = Math.max(
+			Math.max(0, 0.2 - saturation), // Low saturation
+			Math.max(0, 0.2 - lightness),  // Too dark
+			Math.max(0, lightness - 0.8)   // Too light
+		);
+		dull = Math.min(1, dull * 5); // Normalize to 0-1
+
+		if (dull > 0.5) continue; // Skip dull colors
+
+		let skinTone = 1;
+		skinTone *= Math.max(0, 1 - Math.abs(hue - 25) / 25); // Hue between 0-50, centered at 25
+		skinTone *= Math.max(0, 1 - Math.abs(saturation - 0.4) / 0.2); // Saturation around 0.4
+		skinTone *= Math.max(0, 1 - Math.abs(lightness - 0.5) / 0.3); // Lightness around 0.5
+		skinTone *= (r > g && g > b) ? Math.min(1, (100 - Math.abs(r - g)) / 50) : 0; // R>G>B check
+
+		const weight = 1 - Math.max(dull, skinTone);
+
 		// Add to appropriate bucket (0-11)
 		const bucketIndex = Math.floor(hue / 30);
-		hueBuckets[bucketIndex].r += r;
-		hueBuckets[bucketIndex].g += g;
-		hueBuckets[bucketIndex].b += b;
-		hueBuckets[bucketIndex].count++;
+		const bucket = hueBuckets[bucketIndex];
+		bucket.r += r * weight;
+		bucket.g += g * weight;
+		bucket.b += b * weight;
+		bucket.hue += hue * weight;
+		bucket.saturation += saturation * weight;
+		bucket.lightness += lightness * weight;
+		bucket.count += weight;
 	}
 
-	// Calculate averages and filter empty buckets
-	const colors = hueBuckets
+	const minCount = imageData.length * 1/10000
+
+	// Calculate averages and filter buckets with too few pixels
+	let colors = hueBuckets
 		.map((bucket, index) => {
-			if (bucket.count === 0) return null;
+			if (bucket.count < minCount)
+				return null;
 			return {
-				r: Math.round(bucket.r / bucket.count),
-				g: Math.round(bucket.g / bucket.count),
-				b: Math.round(bucket.b / bucket.count),
+				r: bucket.r / bucket.count,
+				g: bucket.g / bucket.count,
+				b: bucket.b / bucket.count,
+				hue: bucket.hue / bucket.count,
+				saturation: bucket.saturation / bucket.count,
+				lightness: bucket.lightness / bucket.count,
 				count: bucket.count,
-				hue: index * 30 + 15 // Center of bucket
+				bucketHue: index * 30 + 15 // Center of bucket
 			};
 		})
 		.filter(color => color !== null);
 
-	/*
 	// Merge similar adjacent colors
 	const mergedColors = [];
 	let skipFirst = false;
@@ -146,8 +165,11 @@ function getSaturatedColors(img) {
 			r: Math.round((current.r * current.count + next.r * next.count) / totalCount),
 			g: Math.round((current.g * current.count + next.g * next.count) / totalCount),
 			b: Math.round((current.b * current.count + next.b * next.count) / totalCount),
+			hue: (current.hue * current.count + next.hue * next.count) / totalCount,
+			saturation: (current.saturation * current.count + next.saturation * next.count) / totalCount,
+			lightness: (current.lightness * current.count + next.lightness * next.count) / totalCount,
 			count: totalCount,
-			hue: (current.hue * current.count + next.hue * next.count) / totalCount
+			bucketHue: (current.bucketHue + next.bucketHue) / 2,
 		};
 
 		// Handle wraparound case (merging last with first)
@@ -159,28 +181,61 @@ function getSaturatedColors(img) {
 			i++; // Skip next color as it's merged
 		}
 	}
-	*/
-	mergedColors = colors;
+
+	colors = mergedColors;
 
 	// If no colors were found, return no gradient
-	if (mergedColors.length === 0) {
+	if (colors.length === 0) {
 		return { colors: [], gradient: 'none' };
 	}
 
 	// Find the most populous color and reorder from there
-	const sortedColors = [...mergedColors].sort((a, b) => b.count - a.count);
+	colors = [...colors].sort((a, b) => b.count - a.count);
 
-	const startHue = sortedColors[0].hue;
+	const startHue = colors[0].bucketHue;
 
-	const reorderedColors = mergedColors.sort((a, b) => {
-		const aOffset = (a.hue - startHue + 360) % 360;
-		const bOffset = (b.hue - startHue + 360) % 360;
+	colors = colors.sort((a, b) => {
+		const aOffset = (a.bucketHue - startHue + 360) % 360;
+		const bOffset = (b.bucketHue - startHue + 360) % 360;
 		return aOffset - bOffset;
 	});
 
+	// For background colours, we want light colours, so apply minimum lightness and covert back to RGB
+	colors = colors.map(color => {
+		let { hue, saturation, lightness } = color;
+
+		// Ensure lightness appropriate for dark or light mode
+		let lightnessCard;
+		let lightnessBorder;
+		if (dark) {
+			lightnessCard = lightness / 5 + 0.05;
+			lightnessBorder = lightness / 3 + 0.1;
+		} else {
+			lightnessCard = lightness / 5 + 0.75;
+			lightnessBorder = lightness / 3 + 0.2;
+		}
+
+		// Ensure saturation is at least 0.2 for visibility
+		saturation = clamp(saturation, 0.2, 1);
+
+		// Convert HSL back to RGB
+		const rgb = hslToRgb(hue, saturation, lightnessCard);
+		const rgbBorder = hslToRgb(hue, saturation, lightnessBorder);
+
+		return {
+			...color,
+			r: rgb.r,
+			g: rgb.g,
+			b: rgb.b,
+			rBorder: rgbBorder.r,
+			gBorder: rgbBorder.g,
+			bBorder: rgbBorder.b,
+		};
+	});
+
 	// Calculate positions based on hue
-	const colorStops = reorderedColors.map((color, index) => {
-		const hueOffset = (color.hue - startHue + 360) % 360;
+	const colorStops = colors.map((color, index) => {
+		const hueOffset = (color.bucketHue - startHue + 360) % 360;
 		const position = (hueOffset / 360) * 100;
 		return {
 			...color,
@@ -190,7 +245,7 @@ function getSaturatedColors(img) {
 
 	// Add the first color at 100% to close the gradient loop
 	colorStops.push({
-		...reorderedColors[0],
+		...colors[0],
 		position: 100
 	});
 
@@ -200,30 +255,38 @@ function getSaturatedColors(img) {
 		.map(color => `rgb(${color.r},${color.g},${color.b})`)
 		.join(', ');
 
-	const gradient = reorderedColors.length > 0
-		? `linear-gradient(165deg, ${gradientColors})`
-		: 'none';
+	const gradientColorsBorder = colorStops
+		.map(color => `rgb(${color.rBorder},${color.gBorder},${color.bBorder})`)
+		.join(', ');
+
+	const gradient = `linear-gradient(165deg, ${gradientColors})`;
+
+	const gradientBorder = `linear-gradient(165deg, ${gradientColorsBorder})`;
 
 	return {
-		colors: reorderedColors.map(color => ({
+		colors: colors.map(color => ({
 			rgb: `rgb(${color.r},${color.g},${color.b})`,
 			count: color.count
 		})),
-		gradient: gradient
+		gradient: gradient,
+		gradientBorder: gradientBorder,
 	};
 }
 
-function label_em_and_value(label, value) {
+function label_and_value(label, value) {
 	const em = document.createElement('em');
+	em.style.fontWeight = 'bold';
 	em.textContent = label;
 	const html = em.outerHTML + ': ' + value;
 	return html;
 }
 
 async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
+	// check dark mode, if body has "dark" class
+	const dark = document.body.matches('.dark');
 	const name = path.replace(/.*\//, '');
 	const container = await createCard(template);
-	const card = container.firstElementChild;
+	const card = container.querySelector('.card');
 
 	const text = await $get(`/cast/${path}.rec`);
 
@@ -239,29 +302,42 @@ async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 	link.innerText = name;
 	card.querySelector(".card-name").appendChild(link);
 	card.querySelector('.card-bio').textContent = data.bio;
-	card.querySelector('.card-interests').innerHTML = label_em_and_value('Interests', data.interests);
-	card.querySelector('.card-match').innerHTML = label_em_and_value('Match', data.match);
+	card.querySelector('.card-interests').innerHTML = label_and_value('Interests', data.interests);
+	card.querySelector('.card-match').innerHTML = label_and_value('Match', data.match);
 	card.querySelector('.card-motto').textContent = `"${data.motto}"`;
 	card.querySelector('.card-chat').textContent = data.chat;
-	card.querySelector('.card-likes').innerHTML = label_em_and_value('Likes', data.likes);
-	card.querySelector('.card-dislikes').innerHTML = label_em_and_value('Dislikes', data.dislikes);
+	card.querySelector('.card-likes').innerHTML = label_and_value('Likes', data.likes);
+	card.querySelector('.card-dislikes').innerHTML = label_and_value('Dislikes', data.dislikes);
 	card.querySelector('.card-fun-fact').textContent = data['fun fact'];
+
+	// Overlay texture image
+	const overlay = container.querySelector('.card-overlay');
+	const texture = document.createElement('img');
+	texture.src = `${ALLEMANDE_LOGIN_URL}/card/gold.jpg`
+	texture.classList.add('nobrowse');
+	overlay.appendChild(texture);
 
 	// Wait for image to load to get colors
 	const img = card.querySelector('.card-avatar');
 	img.src = `/cast/${path}.jpg`;
 	await waitForImageLoad(img);
 	const colors = getAverageColor(img);
-	colors.text = "black";
-	const saturatedColors = getSaturatedColors(img);
+	colors.text = dark ? 'white' : 'black';
+	const saturatedColors = getSaturatedColors(img, dark);
 	const front = card.querySelector('.card-front');
 	const back = card.querySelector('.card-back');
-	front.style.setProperty('--card-bg', colors.bg);
-//	front.style.setProperty('--text-color', colors.text);
-	front.style.setProperty('--card-gradient', saturatedColors.gradient);
-	back.style.setProperty('--card-bg', colors.bg);
-//	back.style.setProperty('--text-color', colors.text);
-	back.style.setProperty('--card-gradient', saturatedColors.gradient);
+	card.style.setProperty('--card-bg', colors.bg);
+	card.style.setProperty('--text-color', colors.text);
+	card.style.setProperty('--card-gradient', saturatedColors.gradient);
+	card.style.setProperty('--card-border-gradient', saturatedColors.gradientBorder);
+
+	// Get flip rotation
+	function getFlipRotation() {
+		const oldTransform = card.style.transform || 'rotateY(0deg)';
+		const oldTurn = parseFloat(oldTransform.match(/rotateY\((.+?)deg\)/)[1]);
+		const flipRotation = Math.round(oldTurn / 180) * 180;
+		return flipRotation;
+	}
 
 	// Handle flip
 	card.addEventListener('click', function(ev) {
@@ -271,13 +347,17 @@ async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 		// Check if there's any text selected
 		if (window.getSelection().toString().length > 0) return;
 
+		// Check right or left side of card
+		const rect = card.getBoundingClientRect();
+		const x = ev.clientX - rect.left;
+		const left = x < rect.width / 2;
+		const delta = left ? 180 : -180;
+		const flipRotation = getFlipRotation();
+		const newTurn = flipRotation + delta;
+
 		const flipped = card.classList.contains('flipped');
-		this.classList.toggle('flipped');
-		if (flipped)
-			setTimeout(() => { this.classList.remove('preserve-3d'); }, 600);
-		else
-			this.classList.add('preserve-3d');
-		this.style.transform = `rotateY(${!flipped ? 180 : 0}deg)`;
+		card.classList.toggle('flipped');
+		card.style.transform = `rotateY(${newTurn}deg)`;
 	});
 
 	// Add shine effect on hover
@@ -294,23 +374,36 @@ async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 		const xTilt = -(x / rect.width - 0.5) * 2;
 		const yTilt = -(y / rect.height - 0.5) * 2;
 
-		// Apply rotation (max 10 degrees)
-		const rotateX = yTilt * -10;
-		const rotateY = xTilt * 10;
+		// Apply rotation
+		const maxTilt = 15;
+		const maxShade = 0.2;
+		const rotateX = yTilt * -maxTilt;
+		const rotateY = xTilt * maxTilt;
 
 		const flipped = card.classList.contains('flipped');
 
 		// Combine 3D effect with flip state
-		const flipRotation = flipped ? 180 : 0;
+		const flipRotation = getFlipRotation();
 
 		// Set transform-origin for more natural movement
 		// card.style.transformOrigin = `${xPercent}% ${yPercent}%`;
 		card.style.transform = `rotateY(${flipRotation + rotateY}deg) rotateX(${flipped ? -rotateX : rotateX}deg)`;
 
 		// Update shine effect position and opacity
-		card.style.setProperty('--shine-x', `${flipped ? 100-xPercent : xPercent}%`);
-		card.style.setProperty('--shine-y', `${yPercent}%`);
-		card.style.setProperty('--shine-opacity', '1');
+		container.style.setProperty('--shine-x', `${flipped ? 100-xPercent : xPercent}%`);
+		container.style.setProperty('--shine-y', `${yPercent}%`);
+		container.style.setProperty('--glow-x', `${xPercent}%`);
+		container.style.setProperty('--glow-y', `${yPercent}%`);
+		container.style.setProperty('--texture-x', -Math.round(Math.random()*20) + '%');
+		container.style.setProperty('--texture-y', -Math.round(Math.random()*20) + '%');
+		/*
+		container.style.setProperty('--texture-x', `${flipped ? -xPercent : -100+xPercent}px`);
+		container.style.setProperty('--texture-y', `${-yPercent}px`);
+		*/
+		container.style.setProperty('--mask-x', `${(flipped ? 1 : -1) * xPercent/4}px`);
+		container.style.setProperty('--mask-y', `${-yPercent/4}px`);
+		container.style.setProperty('--shine-opacity', '1');
+		container.style.setProperty('--shade', Math.max(-rotateX / maxTilt * maxShade, 0).toString());
 	}
 
 	container.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
@@ -320,12 +413,15 @@ async function loadProfile(path, template = ALLYCHAT_CHAT_URL + '/card.html') {
 	});
 
 	function handleLeave() {
-		const flipRotation = card.classList.contains('flipped') ? 180 : 0;
+		const oldTransform = card.style.transform || 'rotateY(0deg)';
+		const oldTurn = parseFloat(oldTransform.match(/rotateY\((.+?)deg\)/)[1]);
+		const flipRotation = Math.round(oldTurn / 180) * 180;
 
 		// Reset transform origin to center
 		// card.style.transformOrigin = '50% 50%';
 		card.style.transform = `rotateY(${flipRotation}deg)`;
-		card.style.setProperty('--shine-opacity', '0');
+		container.style.setProperty('--shine-opacity', '0');
+		container.style.setProperty('--shade', '0');
 	}
 
 	container.addEventListener('mouseleave', handleLeave);

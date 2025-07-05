@@ -24,5 +24,5 @@ while read file; do
 	fi
 	out="${file/_in\./_gen\.}"
 	echo "$file -> $out" >&2
-	envsubst '$ALLEMANDE_DOMAIN' < "$file" > "$out"
+	envsubst '$ALLEMANDE_DOMAIN,$ALLYCHAT_CHAT_DOMAIN,$ALLYCHAT_ROOMS_DOMAIN' < "$file" > "$out"
 done
