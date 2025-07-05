@@ -1,0 +1,26 @@
+[choose]
+	<lora:toro_ahe_pony:-1.25>
+	<lora:toro_ahe_pony:-1>
+	<lora:toro_ahe_pony:-0.75>
+	<lora:toro_ahe_pony:0.75>
+	<lora:toro_ahe_pony:1>
+	<lora:toro_ahe_pony:1.25>
+[/choose]
+
+[opt 100 1.2 1.6] ahegao [/opt]
+
+[set n] [random _min=1 _max=12] [/set]
+[choose n]
+[opt 100 0.9 1.2] exhausted [/opt]
+[opt 100 0.9 1.2] pleasure [/opt]
+[opt 100 0.9 1.2] embarrassed [/opt]
+[opt 100 0.9 1.2] blush [/opt]
+[opt 100 0.9 1.2] sweat [/opt]
+[opt 100 0.9 1.2] saliva [/opt]
+[opt 100 0.9 1.2] afterglow [/opt]
+[opt 100 0.9 1.2] aftersex [/opt]
+[opt 100 0.9 1.2] ecstasy [/opt]
+[opt 100 0.9 1.2] bliss [/opt]
+[opt 100 0.9 1.2] orgasm [/opt]
+[opt 100 0.9 1.2] heavy breathing [/opt]
+[/choose]
