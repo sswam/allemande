@@ -69,9 +69,9 @@ This draws Ally with her appearange, age, normal emotion / expression, and norma
 
     Jily, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg] [S3]
 
-This does the same thing more concisely, for Barbie, making sure it's a solo picture:
+This does the same thing more concisely, for Barbie, making sure it's a solo picture, and with a Tall image:
 
-    Jily, solo [person barbie] [use neg] [P4]
+    Jily, solo [person barbie] [use neg] [T4]
 
 This draws Cleo in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
 
@@ -81,9 +81,11 @@ This draws a portrait image of Bast in the jungle, looking angry that he forgot 
 
     Jily, [person Bast "topless, leather shorts" angry], jungle [S2]
 
-The shortcut quality settings range from 0 (lowest, the default) to 9 (much too high!).
-[S2] is a medium quality square image. [P1] is a low quality portrait image, [L4] is a high quality landscape image, etc.
-Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
+The shortcut quality settings range from 0 (lowest, the default) to 4.
+
+[S2] is a medium quality square image. [P1] is a low quality portrait image, [L4] is a very high quality landscape image, etc.
+
+We can do taller portrait images with e.g. [T2] and wider landscape images with e.g. [W3].
 
 ## NSFW AI Vision
 

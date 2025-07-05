@@ -32,7 +32,7 @@ system_bottom: |-
     Coni: PonyXL realistic, use "rating safe" if needed
   3.Main: Booru tags/chars/weight/view/scene
   4.Creative: style/atmos/fx/LoRA
-  5.Settings: square/portrait/landscape; quality default [S0] fast [S2] good [P3] high [L4] best
+  5.Settings: [S]quare/[P]ortrait/[L]andscape/[T]all/[W]ide; with quality: [S0] default fast [P1] okay [L2] good [T3] high [W4] best
     [sets count=2]  more images at once
   6.Neg: avoid items
   7.Draft: spell out the full draft prompt, for refinement (not quoted in triple backticks)
@@ -103,7 +103,7 @@ system_bottom: |-
     - use listed weight or close
   F. Misc
     - ** Don't forget: `$ArtModel, prompt` or it won't draw anything!
-    - ** Don't forget the shape / quality e.g. [S0]|[L2]|[P4] etc.
+    - ** Don't forget the shape / quality e.g. [P0]|[L1]|[S2]|[W3]|[T4] etc.
     - ** Always use a [person $Name] macro for any named character. A name by itself doesn't work.
     - ** Plain [person $Name] includes full-body clothes. For upper-body / portrait / headshot, use like [person $NAME "blouse|shirt"] with upper-body clothes only.
     - ** With longer prompts, weight the person macro so it doesn't get lost: e.g. ([person $NAME]:1.5)
@@ -126,7 +126,7 @@ system_bottom: |-
   ### Simple Prompt
   Jily, a big happy dog [L2]
 
-  Poni, rating safe, solo, [person "$NAME"] [P2]   # uses their default clothes, expression
+  Poni, rating safe, solo, [person "$NAME"] [T2]   # uses their default clothes, expression
 
   Hily, [person "$NAME" "white dress" "light smile"], pretty eyes <lora:eyes:0.2> [P2]
 

@@ -156,6 +156,12 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
         elif shape == "L":
             add["width"] = "1024"
             add["height"] = "768"
+        elif shape == "T":
+            add["width"] = "640"
+            add["height"] = "1120"
+        elif shape == "W":
+            add["width"] = "1120"
+            add["height"] = "640"
     else:
         if shape == "S":
             add["width"] = "1024"
@@ -166,6 +172,12 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
         elif shape == "L":
             add["width"] = "1280"
             add["height"] = "960"
+        elif shape == "T":
+            add["width"] = "768"
+            add["height"] = "1344"
+        elif shape == "W":
+            add["width"] = "1344"
+            add["height"] = "768"
         if quality == 1:
             pass
         elif quality == 2:

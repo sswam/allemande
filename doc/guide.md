@@ -203,11 +203,11 @@ NOTE: The position is important, e.g. to specify age only:
 
     Jily, [person "Ally" . . "baby 1 year old"], crawling [P2]
 
-The shortcut quality settings range from 0 (lowest, the default) to 6.
+The shortcut quality settings range from 0 (lowest, the default) to 4.
 
 [S2] is a good quality square image. [P1] is a low quality portrait image, [L4] is a very high quality landscape image, etc.
 
-Quality settings higher than 4 are rarely needed and take up to 5 times longer to render compared to quality 4.
+We can do taller portrait images with e.g. [T2] and wider landscape images with e.g. [W3].
 
 ## AI Vision
 
