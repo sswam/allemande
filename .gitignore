@@ -83,6 +83,7 @@ rooms.*
 /plan/all
 /webchat/static/service_worker_gen.js
 /webchat/static/room_gen.css
+/webchat/static/card_gen.css
 /allemande-deps_0.1_all.deb
 /apps/pdev/design-chat.html
 /site/epic.html
