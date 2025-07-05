@@ -206,7 +206,8 @@ def format_image(image_source: str, vendor: str, detail: str = "auto") -> dict[s
             return {"type": "image", "source": {"type": "url", "url": image_source}}
         if vendor == "google":
             # TODO could download
-            raise ValueError(f"Unsupported vendor for remote image: {vendor}")
+            logger.error(f"Unsupported vendor for remote image: {vendor}")
+            return None
         raise ValueError(f"Unsupported vendor: {vendor}")
 
     # For local files
@@ -274,7 +275,8 @@ def format_message_for_vision(message: dict, vendor: str, detail: str = "auto") 
         # Process each image
         for image_source in image_sources:
             image_content = format_image(image_source, vendor, detail)
-            content.append(image_content)
+            if image_content:
+                content.append(image_content)
 
         # Handle text content
         content = handle_text_content(message, content)
