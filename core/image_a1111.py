@@ -434,7 +434,7 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[
 
     # Process shortcuts
     for shortcut in macros:
-        if re.match(r"[SPL]\d?$", shortcut):
+        if re.match(r"[SPLTW]\d?$", shortcut):
             shape = shortcut[0]
             quality = int((shortcut + "0")[1])
             apply_shortcut(sets, shape, quality)
