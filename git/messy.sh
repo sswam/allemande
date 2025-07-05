@@ -367,9 +367,7 @@ generate-commit-message() {
     run-git-diff | llm process -m "$model" "## First Task
 
 Please describe this diff, for a high-level Conventional Commits message.
-You know how to read a diff. Lines that are not preceded with + or - is just CONTEXT.
-We won't commit on the context as if it was newly added, right?! :)
-
+Lines not starting + or - are CONTEXT.
 *** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
 Return only the git commit message, no prelude or conclusion.
 
@@ -377,52 +375,36 @@ Format of the header line:
 
 feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
-Types of changes:
+After the header line, add a blank line.
 
-- fix: corrects a bug or error in existing functionality
-- feat: adds new functionality or changes how something works
-- refactor: restructures code WITHOUT changing its external behavior
-  (if behavior changes at all, it's feat or fix, not refactor)
-- style: purely cosmetic changes (whitespace, formatting, etc)
-- docs: documentation only
-...etc
+- Then concise down-to-earth details, ONLY if really needed, not redundant to header.
+  Indent continuing lines with two spaces.
+
+Note: a refactor restructures code WITHOUT changing external behavior. If in
+doubt, it's a fix. Most are feat|fix|docs.
 
 Please be cautious with 'refactor'; don't mark fixes or features as 'refactor'.
 
-Files in the 'snip' directory, are obsolete rubbish that's been removed from something else.
-Files in the 'gen' directory, are interesting AI generated content, but it is not important.
+Files in the 'snip' directory, are obsolete stuff.
+Files in the 'gen' directory, are interesting AI content.
 
-After the header line, and a blank line, you may list more details, starting
-each with a dash, but ONLY if it's really needed. NEVER add redundant details
-that are already covered in the header line, and don't explain what you did:
-
-- Describe each change very concisely, if not already covered in the header;
-  as few list items as possible.
-- Continuing lines are indented with two spaces, as shown.
-
-Write very concisely in a down-to-earth tone.
 *** DO NOT use market-speak words like 'enhance', 'streamline'. ***
-We don't want too much detail or flowery language, short and sweet is best.
 
 ## Second Task
 
-Please carefully review this patch with a fine-tooth comb. Important: DON'T
-WRITE ANYTHING if it is bug-free and you see no issues, or list bugs still
-present in the patched code. Do NOT list bugs in the original code that are
-fixed by the patch. Also list other issues or suggestions if they seem
-worthwhile. Especially, check for sensitive information such as private keys or
-email addresses that should not be committed to git. Adding the author's email
-deliberately is okay. Also note any grossly bad code or gross inefficiencies.
-If you don't find anything wrong, don't write anything for this task so as not
-    to waste both of our time. Thanks!
-
-Expected format:
+Please carefully review this patch with a fine-tooth comb. DON'T WRITE ANYTHING
+if you see no issues; or list bugs still present in the patched code. Do NOT
+list bugs in the original code that are fixed by the patch. Also list other
+worthwhile suggestions. Check for sensitive information that should not be
+committed. Also note any grossly bad or inefficient code. If you don't find
+anything wrong, don't write anything for this task so as not to waste our time.
+Thanks! Format:
 
 1. bug or issue
 2. another bug or issue
 
-Or if nothing is wrong, please DON'T WRITE ANYTHING for the second task, just
-the commit message for the first task. Thanks for being awesome!
+If nothing is wrong, DON'T WRITE ANYTHING for the second task, just the commit
+message for the first task. Thanks for being awesome!
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;
     if (@lines && $lines[0] =~ /:$/) {
