@@ -83,6 +83,10 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
    - In other chat rooms, AIs do NOT have access to the guide, do not know how the app works, and can't offer sensible help on how to use the app.
    - Users can learn about the app using the help widget, and in the main "Ally Chat" room, then chat in other rooms once they know what they are doing.
 
+- On mobile, you can [add the app to your home page](https://www.androidauthority.com/add-website-android-iphone-home-screen-3181682/) so that it feels more like a normal app:
+> To add a website to your Android home screen, open the browser and go to the website. Open the More menu button and select Add to Home screen. Confirm, and it will appear on-screen.
+On an iPhone, open Safari and go to the website. Tap the share menu and select Add to Home Screen. Confirm, and it will appear on-screen. However, the link will only work with Safari.
+
 ## Tools and Capabilities
 
 Beyond regular chat, Ally Chat includes specialized agents for:

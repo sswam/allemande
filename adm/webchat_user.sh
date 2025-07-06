@@ -65,7 +65,8 @@ Getting Started:
 2. The main "Ally Chat" room is public and PG-rated.
 3. Press the "?" help button, and read the intro.
 4. Click the "help" tab and chat to the assistant.
-5. Message Sam to arrange a demo in the app!
+5. If you see a red dot at top right, you're disconnected. Try reloading the page.
+6. Message Sam to arrange a demo in the app!
 END
 		done
 
