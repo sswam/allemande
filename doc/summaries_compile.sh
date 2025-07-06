@@ -8,7 +8,7 @@ while read dir; do
 		for A in *.yml; do
 			A=${A%.yml}
 			echo -n "- $A - "
-			cat "$ALLEMANDE_HOME/doc/summary/$A.txt"
+			cat "$ALLEMANDE_HOME/doc/summary/$A.txt" || echo
 		done
 	)
 	echo

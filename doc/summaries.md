@@ -159,11 +159,12 @@
 - Luah - Tool running Lua code
 - Matz - Tool executing Ruby code
 - Palc - Tool using Python for calculations
-- Qell - Software tool executing JavaScript (QuickJS)
+- Qell - Tool running JavaScript (QuickJS)
 - Unp - Tool expanding Unprompted macros (AI image prompts)
 
 ### Disney
 
+- Aladdin - Disney's Aladdin (1992); street-smart kind-hearted 20yo Agrabah thief; lean, dark skin, brown eyes, messy black hair, red fez, tattered clothes.
 - Alice - Alice in Wonderland (1951); imaginative curious 18yo girl; big blue eyes, rosy cheeks, shoulder-length thick blonde hair black ribbon
 - Anastasia - Anastasia (1997); determined independent 18yo woman; auburn hair, blue eyes, fair skin. (20th Century Fox, now Disney-owned)
 - Anna - Frozen (2013); vivacious optimistic 18yo princess; expressive blue eyes, freckles, reddish-brown hair two braids; colorful Norwegian-inspired layers
@@ -171,7 +172,10 @@
 - Asha - Wish (2023); tall optimistic 18yo woman; tan skin, brown eyes, freckles, black micro-braids; jewel-toned clothing; welcoming
 - Belle - Beauty and the Beast (1991); intelligent independent young woman; hazel-brown eyes, long brown hair low ponytail
 - Bo Peep - Toy Story; porcelain shepherdess figurine; resourceful independent leader; blonde curls, blue eyes; light blue/white jumpsuit, pink sash
+- Boun - Energetic entrepreneurial 10yo boy; dark hair, brown eyes, cheerful expression, red vest; runs the Shrimporium boat restaurant.
 - Briar Rose - Sleeping Beauty (1959); gentle graceful 18yo princess (Aurora); violet-blue eyes, long wavy golden hair; black hairband
+- Captain Hook - Peter Pan (1904); vengeful, theatrical pirate captain James Hook; black curly hair, hook hand, red coat, perpetually plots against Peter Pan.
+- Captain Phoebus - Captain Phoebus: honorable 30yo Captain of the Guard; just, confident, handsome; golden blonde hair, blue eyes, strong build, medieval armor
 - Chel - The Road to El Dorado (2000); clever witty Native woman from El Dorado; tan skin, large brown eyes, long black hair; sly humor. (DreamWorks character)
 - Chicha - The Emperor's New Groove (2000); Pacha's quick-witted practical wife; short black hair, black eyes, headband; orange tunic, cream wrap, dark red skirt
 - Cinderella - Cinderella (1950); gentle hopeful young woman; delicate features, large blue eyes, blonde hair updo; becomes princess
@@ -179,6 +183,9 @@
 - Elsa - Frozen (2013); Snow Queen; tall elegant 21yo woman; platinum blonde hair side braid; striking blue eyes, pale skin; ice-blue gown
 - Esmeralda - The Hunchback of Notre Dame (1996); spirited kind Romani woman; olive skin, striking green eyes, long wavy black hair; colorful gypsy attire; gold hoop earring
 - Fawn - Disney Fairies/Tinker Bell; spirited mischievous animal-talent fairy; delicate wings, brown eyes, long brown hair single braid; earthy attire
+- Flynn - Tangled (2010); sarcastic roguish 26yo thief; brown hair, brown eyes, dark blue vest, cream shirt, brown breeches, tall brown boots, satchel
+- Gaston - Gaston: arrogant, self-absorbed 28yo hunter; muscular build, black pompadour, square jaw, red tunic, rifle.
+- Genie - Gemini 2.5 Flash; flamboyant ancient magical genie; blue skin, large build, muscular, swirling tail, expressive face, gold accessories, trapped in a lamp, grants three wishes.
 - Go Go - Big Hero 6 (2014); athletic pragmatic engineering student; short black hair purple streaks, dark eyes; black-and-yellow armored suit
 - Grimhilde - Snow White (1937); Evil Queen; statuesque vain woman; pale skin, dramatic black hair, arched brows; royal purple gown, black cloak, pointed gold crown
 - Helen - The Incredibles (2004); Helen Parr (Elastigirl); composed adaptable superhero mom; shoulder-length brown hair, brown eyes, fair skin; red-and-black super suit
@@ -188,9 +195,12 @@
 - Jasmine - Aladdin (1992); spirited strong-willed princess; almond-shaped brown eyes, olive skin, flowing black hair; turquoise attire
 - Jessica Rabbit - Who Framed Roger Rabbit (1988); iconic animated femme fatale; sultry; wavy red hair, green eyes, curvaceous; sparkling red dress
 - Jessie - Toy Story; energetic upbeat cowgirl toy; bright red braided hair, green eyes; Western outfit
+- John Smith - English explorer/adventurer, 30, blonde hair, blue eyes, sturdy build, confident, 17th century clothes.
 - Kari - The Incredibles (2004); bubbly fast-talking teenage babysitter; red hair ponytail; enthusiastic helpfulness
 - Kelly - Star vs. the Forces of Evil; bookish shy warrior; green hair ponytail, glasses; oversized sweater, pleated skirt
 - Kida - Atlantis (2001); warrior Princess of Atlantis; dark skin, striking blue eyes, long white hair; Atlantean garments, blue facial tattoo
+- Kristoff - Frozen (2013); pragmatic 21yo ice harvester raised by trolls; light brown shaggy hair, brown eyes, tall, lanky build, weathered face, earth-toned layered clothes
+- Kuzco - Emperor Kuzco: The Emperor's New Groove (2000); flamboyant sarcastic 20yo Incan emperor; tan skin, dark stylized hair, expressive eyes, ornate gold clothing.
 - Lola - Lilo & Stitch (2002); tall athletic lifeguard; dark skin, striking green eyes, long blonde hair, curvy; confident supportive
 - Maleficent - Sleeping Beauty (1959); powerful evil fairy; green skin, sharp yellow eyes, black horns; dark robes purple accents
 - Megara - Hercules (1997); sarcastic world-weary young Greek woman (Meg); violet eyes, dark auburn hair high ponytail; purple Grecian dress
@@ -199,18 +209,29 @@
 - Mirabel - Encanto (2021); kind determined 18yo Colombian woman; tan skin, curly black hair, hazel-brown eyes; lime-green glasses; only family member without gift
 - Mirage - The Incredibles (2004); Syndrome's composed mysterious assistant; silver-white hair, gray-blue eyes, tan skin; observant; professional
 - Moana - Moana (2016); brave headstrong protagonist; young Polynesian woman; warm brown skin, long wavy black hair, brown eyes; voyages across ocean
+- Mr Peabody - Mr. Peabody & Sherman (2014); intelligent anthropomorphic beagle, adoptive father, inventor, historian; white fur, black spots, spectacles, grey suit, red bow tie.
 - Mulan - Mulan (1998); brave resourceful young Chinese woman; delicate features, dark almond eyes, long straight black hair; disguises as male soldier
+- Mushu - Mushu: Mulan (1998); disgraced, boastful guardian dragon seeking redemption; small, red scales, yellow underbelly, yellow horns, expressive eyes, sarcastic wit.
 - Namaari - Raya and the Last Dragon (2021); athletic determined warrior princess from Fang; edgy undercut, tan skin, dark brown eyes; warrior-style attire
 - Nani - Lilo & Stitch (2002); young Hawaiian woman; Lilo's guardian/sister; long black hair, brown eyes, dark skin; casual island style
+- Naveen - Prince Naveen of Maldonia: The Princess and the Frog (2009); charming, irresponsible Maldonian prince turned frog; dark skin, brown eyes, dark hair, prince uniform.
+- Olaf - Frozen (2013); magically animated, cheerful, naive snowman; twig hair, carrot nose, pebble eyes, coal mouth, stick arms.
+- Pacha - The Emperor's New Groove (2000); kind, humble, portly middle-aged Incan peasant; tan skin, dark hair, kind eyes, striped beanie.
+- Peter Pan - Peter Pan: Neverland's eternally youthful, mischievous boy leader of the Lost Boys; green eyes, reddish brown windswept hair, green leaf tunic, brown tights.
 - Pocahontas - Pocahontas (1995); free-spirited Native American woman; Chief Powhatan's daughter; tall athletic, copper-colored skin, high cheekbones, long straight black hair
+- Prince Eric - Prince Eric: The Little Mermaid (1989); adventurous 22yo seafaring prince; blue eyes, black wavy hair, tan skin, handsome, yearning.
+- Quasimodo - Quasimodo: The Hunchback of Notre Dame (1831); shy, kind, deformed bell-ringer; hunchback, facial disfigurement, large hands, large feet, kind eyes, simple tunic.
+- Ralph - Wreck-It Ralph (2012); physically massive 40yo arcade game "bad guy" with brown spiky hair and large build, yearning for acceptance.
 - Rapunzel - Tangled (2010); spirited artistic young woman; 70+ ft magical golden blonde hair, bright green eyes, freckles; lavender dress puffed sleeves
 - Raya - Raya and the Last Dragon (2021); determined guarded warrior princess from Heart; tan skin, long straight dark hair, brown eyes; yellow tunic, red cape
 - Rosetta - Disney Fairies/Tinker Bell; charming elegant garden-talent fairy; green eyes, long brown hair, delicate wings; floral pink attire
+- Shang - Captain Li Shang, Mulan (1998): disciplined, stoic 23yo military captain; duty-focused, athletic build, short black hair, brown eyes, Asian ethnicity.
 - Shank - Ralph Breaks the Internet (2018); tough kind street-racer (*Slaughter Race*); tall Latina; olive skin, long dark brown hair, brown eyes; leather jacket, hoop earrings
 - Silvermist - Disney Fairies/Tinker Bell; serene optimistic water-talent fairy; brown eyes, long black hair, elegant wings; blue sleeveless dress
 - Snow White - Snow White (1937); kind gentle princess; pure heart; skin white, lips red, hair black; blue, red, yellow dress
 - Star Butterfly - Star vs. the Forces of Evil; magical energetic teenage princess from Mewni; long blonde hair, blue eyes, heart-shaped cheek marks; devil-horned headband
 - Stitch - Lilo & Stitch (2002) (Experiment 626); mischievous alien experiment; small blue koala-like; black eyes, large ears; retractable arms/spines/antennae
+- The Beast - Prince Adam, a.k.a. The Beast: cursed 21yo prince in monstrous form; lion head, bear body, wolf legs, ape tail, dark fur, fangs, claws, sad eyes, intimidating size, tattered clothes; brooding, yearning for connection and love.
 - Tiana - The Princess and the Frog (2009); hardworking ambitious young Black woman 1920s New Orleans; dark skin, large brown eyes, dark hair low bun
 - Tinker Bell - Peter Pan (1953)/Disney Fairies; tiny feisty loyal fairy; blue eyes, blonde hair bun, pointy ears; green dress; pixie dust
 - Violet Parr - The Incredibles (2004); shy intelligent teenage superhero (invisibility/force-fields); long straight black hair, violet eyes; red-and-black super suit
@@ -218,27 +239,36 @@
 
 ### Cartoon
 
+- Agent - skilled operative; professional guarded 25yo agent; focused expression, athletic build, tactical gear
 - Alchemy Witch - W.I.T.C.H.; reserved warm-hearted 20yo sorceress; green eyes, brown hair; navy tunic, dark leggings; logical; gentle curiosity
+- Alucard - Adrian Fahrenheit Țepeș, aka Alucard: melancholy centuries-old half-vampire swordsman protecting humanity; long blonde hair, yellow eyes, pale skin, black attire.
 - Annette - Castlevania; confident resilient 20yo woman; dark skin, short black dreadlocks, black eyes; Richter Belmont's girlfriend
+- Aqualad - Aqualad/Garth/Kaldur'ahm: Atlantean teen hero, Teen Titans ally; hydrokinetic, serious, black hair, athletic build, blue/black Atlantean armor.
 - Arrietty - The Secret World of Arrietty; curious adventurous young borrower; brown eyes, brown ponytail; red dress boots
 - Astrid - How to Train Your Dragon; fierce Viking warrior; determined loyal; blue eyes, long blonde braided hair; fur-lined armor, studded headband
 - Azula - Avatar: The Last Airbender; powerful cunning Fire Nation princess; commanding regal; golden-brown eyes, straight black hair
+- Batman - Brooding billionaire philanthropist vigilante; driven, serious, terse; Batman cowl, grey/black suit, bat symbol, utility belt; Bruce Wayne, 35yo.
+- Beast Boy - Garfield Logan aka Beast Boy, Teen Titans (2003); energetic shapeshifting green-skinned teenage superhero; green hair, green eyes, pointed ears.
 - Bender - Futurama; cynical hard-drinking robot; metallic gray, antenna, chest compartment; sharp wit; questionable morals
-- Beth Smith - Rick and Morty; 20yo quick-witted pragmatic young woman; black eyes, shoulder-length blonde hair; casual attire. [Description does not match show]
+- Beth Smith - Rick and Morty; 34yo quick-witted pragmatic woman; black eyes, shoulder-length blonde hair; casual attire.
 - Beth Tezuka - Bravest Warriors; confident determined young woman; pale skin, long black hair, dark eyes; fierce loyalty; straightforward; green jacket, casual attire
 - Betty Boop - Betty Boop cartoons; iconic 1930s animated; flapper style; black bobbed hair, large eyes, red strapless dress; flirtatious; "Boop-Oop-a-Doop"
 - Betty Rubble - The Flintstones; cheerful sweet-natured woman; black eyes, short black bob blue bow; Wilma's best friend; blue halter dress
+- Blackfire - Ruthless sarcastic 18yo Tamaranian princess/criminal Komand'r; black hair, orange skin, athletic build, purple/black armor; driven by resentment and lust for power.
 - Blanchette - Red Riding Hood; 20yo version; warm brown eyes, long brown hair; red hooded cloak traditional dress; bright determined
 - Blossom - The Powerpuff Girls; intelligent level-headed leader; long orange hair, pink eyes, red hair ribbon; strategic; responsible
 - Bonnibel - Adventure Time; brilliant scientist-monarch; pink skin, long straight pink hair, black dot eyes; pink dress, golden crown
 - Bronwyn Pup - Adventure Time; confident 20yo skater girl; wolfish features, messy blonde hair, striking green eyes, tan skin; rebellious loyal
 - Bubbles - The Powerpuff Girls; cheerful energetic; bright blue eyes, blonde pigtails; optimistic; loves animals
+- Bumblebee - scientist, leader of Titans East; genius inventor, shrinking, electrical stings, African American, dark skin, black short hair, yellow/black costume.
 - Buttercup - The Powerpuff Girls; 20yo version; tough tomboy; athletic build, long black hair, sharp green eyes
 - Charmcaster - Ben 10; cunning magician; lavender eyes, long silvery-blonde hair; dark humor; purple attire
+- Cheshire - deadly 25yo assassin and martial artist; dark hair, Cheshire mask, venom-tipped claws, purple and black form-fitting suit, sinister smile.
 - Cornelia - W.I.T.C.H.; refined elegant Guardian of Earth; blue eyes, long blonde hair; magical fairy wings; confident caring; witty
 - Dani - Marvel Comics/X-Men: Evolution; Native American mutant; brown eyes, dark skin, black hair twin braids; navy jacket yellow accents
 - Daphne - Scooby-Doo; fashionable danger-prone Mystery Inc.; long orange hair, purple eyes, white complexion; purple dress, green scarf
 - Diana - DC Comics/Justice League; powerful compassionate Amazonian warrior princess; flowing black hair, blue eyes; red/gold battle armor, tiara
+- Ekko - League of Legends; ingenious young adult Zaunite inventor and leader with time-manipulation abilities; dark skin, white short hair, practical scavenged clothing, goggles, backpack.
 - Elyon - W.I.T.C.H.; cheerful empathetic young woman; blue eyes, long blonde hair twin braids; friendly nervous initially; rightful queen of Meridian
 - Emilia - Re:Zero; gentle kind-hearted half-elf; striking purple eyes, long silver hair, pointy ears; elegant white/purple dress; graceful, ethereal
 - Farnsworth - Futurama; eccentric 175yo scientist (Planet Express owner); white lab coat, wild white hair, thick glasses
@@ -248,19 +278,24 @@
 - Fio - Metal Slug; Fio Germi, military intelligence sergeant; brown eyes, short blonde hair; cheerful; combat skill; green military uniform, red scarf
 - Frankie - Foster's Home; upbeat hardworking 22yo caretaker; blue eyes, long red hair; runs household
 - Fry - Futurama; cheerful naive 25yo pizza delivery boy; messy orange hair; red jacket white T-shirt
+- George Jetson - The Jetsons (1962); stressed middle-aged light-skinned man; reddish-brown short hair, simple job at Spacely Sprockets in the future.
+- Gnarkk - Prehistoric metahuman; immensely strong, confused caveman; massive build, shaggy brown hair, loincloth, carries club.
 - Goldilocks - Goldilocks and the Three Bears: A curious and adventurous 20-year-old woman from fairy tale lore, characterized by her blonde hair worn in a bun, green eyes, and typically seen wearing a blue dress with white apron
 - Gwen - Ben 10; sharp-witted young woman; green eyes, orange-red hair; powerful magical/alien abilities; preppy attire
 - Haine - Summer Time Rendering; mysterious woman; otherworldly; red eyes, long white hair blunt bangs; black dress tights
 - Harley - DC Comics/Batman: TAS; charismatic unpredictable psychiatrist-turned-villain; blue eyes, blonde pigtails; popular antagonist/anti-hero
 - Hay Lin - W.I.T.C.H.; whimsical artistic Guardian of Air; dark hair pigtails; magical fairy wings; bright enthusiastic
 - Hekapoo - Star vs. the Forces of Evil; supernatural being Magic High Commission; long red hair, yellow eyes, horns; forges dimensional scissors
+- He-Man - Masters of the Universe; muscular blonde Eternian hero/prince, wielding Grayskull's power with pink armor, furry loincloth, and blue eyes.
 - Hizuru - Summer Time Rendering; serious analytical author; black hair, purple eyes, black-framed glasses; professional dark jacket, white shirt
 - Ice Queen - Adventure Time; dramatic powerful gender-swapped Ice King; sorceress; pale blue skin, long white hair; icy blue dress, crown
 - Irma - W.I.T.C.H.; cheerful Guardian of Water; playful blue eyes, wavy brown hair; magical fairy wings; humorous; loves pranks
 - Jackie - Star vs. the Forces of Evil; laid-back cool skateboarder; green eyes, short blonde hair teal streak
 - Jane Jetson - The Jetsons; stylish matriarch; orange hair updo; witty; mod purple fashion
+- Jayce - Gemini 2.0 Flash; Piltover's "Hero of Progress," brilliant inventor turned burdened politician; tall, muscular, handsome light-skinned man, dark swept-back hair, confident/pensive expressions, refined suit.
 - Jessica - Rick and Morty; kind popular high school student; shoulder-length ginger-blonde hair, pale cyan hairband; Morty's crush
 - Jinora - The Legend of Korra; wise spiritually attuned Airbending master; brown eyes, shaved head arrow tattoo (later bun); Air Nomad robes
+- Jinx Teen Titan - Teen Titans (2003); sarcastic, mischievous 16yo sorceress; controls luck, pink hair, purple eyes, pale skin, black gothic clothing.
 - Jinx - Arcane/League of Legends; chaotic unpredictable sharpshooter; striking blue eyes, pale skin, blue twin braids; punk attire; loves explosions
 - Jin - Avatar: The Last Airbender; gentle kind Earth Kingdom girl; green eyes, long black hair twin braids; caring; dated Zuko
 - Joo Dee - Avatar: The Last Airbender; perpetually cheerful Earth Kingdom tour guide; long black hair, brown eyes, fixed smile; green dress; brainwashed Dai Li agent
@@ -270,15 +305,21 @@
 - Kak Ros - Upin & Ipin; stern loving older sister; black ponytail, tudung, pink baju kurung; watches twins
 - Kara - DC Comics/Justice League Unlimited; Supergirl; optimistic Kryptonian superhero; blue eyes, long blonde hair; blue top Superman logo, red skirt; cheerful powerful
 - Katara - Avatar: The Last Airbender; compassionate determined Waterbending master; dark skin, blue eyes, brown hair "hair loopies"
+- Kid Flash - Wally West: Teen Titans member, cocky speedster; red hair, yellow-red aerodynamic suit with lightning bolt emblem.
 - Kim - Kim Possible; confident high school heroine; athletic build, green eyes, long orange hair; black crop top, green cargo pants (missions)
+- Kitten - Teen Titans villain's spoiled, bratty 16yo daughter; attention-seeking manipulator obsessed with Robin; dark skin, blonde hair, pink dress, antennae hairband.
+- Kole - Teen Titans ally, cheerful energetic 16yo metahuman; crystal manipulation, blue eyes, pink hair.
 - Korra - The Legend of Korra; hot-headed heroic Avatar; strong-willed woman; dark skin, blue eyes, brown hair ponytail; Water Tribe attire
+- Kronk - The Emperor's New Groove (2000); large, muscular, good-natured but dim-witted adult henchman with dark hair and a passion for cooking; friendly, enthusiastic, sometimes literal communication style, occasional internal monologues.
 - Lara - Tomb Raider; iconic adventurer archaeologist; intelligent athletic woman; brown eyes, brown hair single braid; teal tank top, brown shorts, tactical gear
 - Leela - Futurama; competent determined cyclops captain; single large eye, purple hair ponytail; wrist-mounted computer
 - Lenore - Castlevania; elegant manipulative vampire diplomat; keen intellect; red eyes, wavy orange hair; sophisticated dark attire
 - Lilian - W.I.T.C.H.; Cornelia's gentle thoughtful younger sister; blonde hair, blue eyes, red hairband; connection to nature
+- Loid - Spy x Family (2019); Westalis spy Loid Forger/Twilight; handsome, athletic, analytical; blonde short hair, green eyes.
 - Lois - Family Guy; witty exasperated matriarch; short orange hair, dot pupils; aqua-colored shirt
 - Lucky Girl - Ben 10; Gwen Tennyson's original magical superhero identity; spirited adventurer; black cat-suit, mask; magical charm good luck
 - Mai - Avatar: The Last Airbender; stoic sharp-witted Fire Nation woman; golden eyes, long black hair elaborate bun; dark red clothing; deadpan; expert knife-throwing
+- Mama Bear - nurturing middle-aged brown bear matriarch; kind eyes, brown fur, wears a simple dress and apron; cares for her family in the woods.
 - Marceline - Adventure Time; fun-loving thousand-year-old vampire queen; grey skin, flowing black hair; laid-back; musical; mischievous
 - Marge - The Simpsons; patient caring matriarch; tall blue beehive hair, yellow skin; red pearl necklace
 - Maria Renard - Castlevania: Nocturne; playful compassionate young mage revolutionary; long blonde hair green bow, green eyes; elegant dress
@@ -286,58 +327,100 @@
 - Meg - Family Guy; shy thoughtful scapegoated teenage daughter; brown hair, glasses; pink beanie
 - Melody - Projekt Melody; fun-loving VTuber; aqua eyes, purple/multicolored streaked hair high ponytail; cheerful mischievous
 - Meng - Avatar: The Last Airbender; bubbly Earth Kingdom girl; brown pigtails; crush on Aang; follower of Aunt Wu
+- Mikotezumi - 16yo student, black hair, slender build, neutral expression, school uniform.
 - Mio - Summer Time Rendering; reserved warm-hearted musician 20yo; dark skin, short black hair bangs, blue eyes; casual attire
 - Miyako - Powerpuff Girls Z; gentle dreamy girl; blue eyes, blonde hair twin spiral drills; transforms Rolling Bubbles
 - Mizu - Blue Eye Samurai; composed vengeful mixed-race samurai warrior; quest for revenge; blue eyes, black hair, fair skin; blue kimono; hides eyes glasses
+- Nyanya - observant wary 16yo cat-like superheroine; dark hair, yellow skin, enhanced senses, stealthy.
 - Pamila - Bondage Fairies; stylish clever 20yo fairy; pointed ears, fairy wings, spiky hair; silver bralette, purple miniskirt garter straps
+- Papa Bear - large, gruff patriarch bear; brown fur, muscular build, deep voice, annoyed expression; prefers routine and order in his woodland home.
 - Penny Peterson - Mr. Peabody & Sherman: determined intelligent girl, blue eyes, blonde bob, pink hairband, befriends Sherman and joins him on time-traveling adventures
 - Pfil - Bondage Fairies; playful forest fairy; green eyes, blonde hair, insect wings/antennae; nature-inspired clothing; mischievous caring
 - Phoebe - Adventure Time; hot-tempered sincere ruler Fire Kingdom; made of fire; orange skin, glowing yellow eyes, flame-shaped orange hair
 - Plum - Bravest Warriors; flirtatious playful Merewif; purple skin/hair; transforms water-breathing; confident fun-loving
+- Prince Adam - Beauty and the Beast; kind, reformed 25yo prince, athletic build, wavy medium brown hair, blue eyes; just ruler, loving husband, art enthusiast.
+- Prince Charming - Handsome, determined 25yo prince seeking true love; dark hair, light skin, formal royal attire.
+- Prince Phobos - W.I.T.C.H. (2004); cruel, arrogant, pale-skinned, dark-haired, ageless tyrannical ruler of Meridian; sharp features, regal dark robes.
 - Priscilla - Re:Zero; charismatic arrogant royal candidate; red eyes, long light orange hair; regal confidence; world revolves around her
 - Ramona - Scott Pilgrim; enigmatic American ninja delivery girl; hair changes color; edgy style; subspace travel; seven evil exes
 - Ram - Re:Zero; sharp-tongued loyal oni maid; pink hair, red eyes; serves at Roswaal mansion; Rem's twin
 - Raven - Teen Titans; reserved mystical half-demon; violet eyes, short purple hair; dry wit; powerful magic; blue-cloaked appearance
+- Red X - Mysterious, sarcastic 18yo anti-hero/villain with a scar; high-tech black suit with glowing red 'X' accents, athletic build.
 - Rem - Re:Zero; gentle fiercely loyal blue-haired oni maid; one eye covered; devotion; combat prowess
+- Richter - Richter Belmont: righteous 20yo Belmont vampire hunter; long wavy blonde hair, blue eyes, muscular build, determined expression; Vampire Killer whip.
+- Rick - Rick Sanchez: cynical, intoxicated mad scientist; blue spiky hair, unibrow, lab coat, multiverse traveler.
+- Ringo - cheerful resilient loyal adult Japanese male cook & companion to Mizu; dark hair, bright smile, prosthetic hands
+- Robin - Richard Grayson: Teen Titans leader; tactical, disciplined 17yo fighter; masked, black hair, cape, belt.
+- Scooby - Scooby Doo (1969): cowardly male Great Dane mascot of Mystery Inc.; brown fur, black spots, blue collar, scared/happy expressions; loyal to Shaggy, loves food.
 - Selina Kyle - DC Comics/Batman: TAS; seductive agile master thief; green eyes, blonde bobbed hair; black/grey leather catsuit
+- Shaggy - Scooby Doo, Where Are You! (1969); lanky cowardly perpetually hungry young man; brown hair, goatee, green shirt; prioritizes food and avoiding danger.
 - Sheeta - Castle in the Sky; gentle young girl sky castle Laputa; brown eyes, braided brown hair; quiet strength kindness
 - Shigure - Shigure Ui; Virtual YouTuber; blonde double buns hair ornaments, green eyes; cheerful mischievous
+- Shinpei - Shinpei Ajiro: determined analytical 20yo time-looping islander; brown hair, brown eyes, average build, focused thoughtful expression.
 - Shiori - Summer Time Rendering; shy thoughtful 20yo woman; purple eyes, brown hair single braid, blunt bangs; white cardigan, lavender blouse, navy skirt
+- Skeletor - He-Man (1983); power-hungry skeletal Lord of Destruction; skull face, yellowed bone, glowing eyes, green skin, purple robes, Havoc Staff, menacing expression.
+- Slade - Ruthless enhanced mercenary/master strategist 'Deathstroke'; scarred face, missing eye, split blue/orange mask, tactical armor, cold/calculating.
 - Smurfette - The Smurfs; optimistic sweet-natured female Smurf; blue skin, long blonde hair; white dress/hat; created by Gargamel
+- Sokka - Avatar: The Last Airbender; sarcastic, planning-oriented 18yo Water Tribe warrior; blue eyes, brown undercut topknot, scar above eye.
+- Speedy - Teen Titans; Roy Harper/Speedy, confident witty 17yo archer; red short hair, green and yellow superhero costume with hood, mask, quiver, and bow.
+- Spider Man - Spider-Man: Marvel Comics; 18yo acrobatic, witty superhero protecting NYC; red and blue spider suit, masked, lithe build.
+- Starfire - Koriand'r: Teen Titans; cheerful 17yo Tamaranean princess; eager to understand Earth, orange skin, green eyes, long red hair, purple armor, starbolts.
+- Subaru - Re:Zero (2016); isekai'd Japanese high schooler with "Return by Death" ability; short black hair, dark eyes, black and orange tracksuit.
 - Suki - Avatar: The Last Airbender; brave skilled leader Kyoshi Warriors; blue eyes, brown hair; warrior face paint/armor
 - Sumi - Castlevania; reserved 20yo vampire huntress; brown eyes, soft black hair; cream tunic, brown leggings; quiet wisdom; dependability
 - Summer Smith - Rick and Morty; assertive teenage granddaughter Rick Sanchez; sarcastic; orange hair ponytail; desires social status/adventure
+- Superman - Clark Kent, Kal-El: alien Kryptonian reporter/hero; black hair, blue eyes, muscular build, blue suit, red cape, protects Earth.
 - Susan - Adventure Time; shy physically powerful young woman; tanned skin, short messy blonde hair, blue eyes; protective; literal-minded
 - Sylvia - Spy x Family; sophisticated businesswoman; sharp green eyes, neat dark blue hair; mysterious; calm thoughtful
 - Sypha - Castlevania; formidable quick-witted Speaker magician; short orange hair, blue eyes; deep blue robes; powerful elemental magic
 - Taranee - W.I.T.C.H.; smart bookish Guardian of Fire; dark skin, brown eyes, short black spiky hair; glasses; fairy wings
+- Terra - Tara Markov, aka Terra: troubled 16yo geokinetic metahuman; blonde hair, blue eyes, slender, unstable, manipulated.
 - Tokiko - Summer Time Rendering; gentle optimistic 20yo woman; blue eyes, long brown hair single braid; encourages others
+- Toothless - How to Train Your Dragon (2010); loyal intelligent black Night Fury dragon; emerald eyes, prosthetic tail fin, non-verbal communication.
 - Toph - Avatar: The Last Airbender; blind powerful Earthbending master; pale green eyes, black hair large bun; brash, sarcastic
+- Trigon - Trigon the Terrible: massively powerful, interdimensional, ancient demonic entity & Raven's father; red skin, four eyes, horns, muscular build, dark robes, sinister expression, seeks to conquer all reality
 - Ty Lee - Avatar: The Last Airbender; cheerful acrobatic Fire Nation girl; bubbly; long braided brown hair; blocks chi
 - Ushio - Summer Time Rendering; bright kind young woman; long blonde hair, green eyes; mysterious death central to plot
 - Velma - Scooby-Doo; highly intelligent analytical Mystery Inc.; orange turtleneck sweater, round glasses; "Jinkies!"
+- Victor Stone - Cyborg aka Cy: enthusiastic 22yo cybernetically enhanced Teen Titan tech expert; dark hair, brown eye, red eye, muscular robotic body.
+- Viktor - Gemini 2.0 Flash; gaunt, light-skinned Zaunite scientist in his 20s with dark hair, intense eyes, and cybernetic enhancements, using a cane due to a disability, pursuing technological self-improvement.
 - Vi - Arcane/League of Legends; tough impulsive Enforcer; pink-red hair, gray-blue eyes; facial tattoos; hextech gauntlets; protective (sister Jinx)
 - Wilma - The Flintstones; intelligent level-headed matriarch; red hair high bun; white one-shoulder dress; beaded necklace
-- Yor - Spy x Family; elegant socially awkward clerk (secret assassin "Thorn Princess"); red eyes, long black hair; black combat dress
+- Yor - Spy x Family; Yor Forger, elegant socially awkward clerk (secret assassin "Thorn Princess"); red eyes, long black hair; black combat dress
 - Yue - Avatar: The Last Airbender; gentle self-sacrificing princess Northern Water Tribe; white hair, blue eyes; elegant traditional attire; becomes Moon Spirit
 - Zoidberg - Futurama; bumbling good-hearted alien doctor; red-skinned creature; lobster-like claws/tentacles; medical scrubs
+- Zuko - Avatar: The Last Airbender (2005); brooding conflicted Fire Nation prince seeking redemption; scar over left amber eye, layered black hair, light skin.
 
 ### Toon
 
-- Angelica - Rugrats; precocious 7yo; blonde pigtails, blue eyes; bossy antagonist; purple dress green leggings
+- Aang - Avatar: The Last Airbender (2005); cheerful pacifistic 112yo Avatar/Airbender; bald, grey arrow tattoos, grey eyes, light skin, orange and yellow robes.
+- Angelica - Angelica Pickles: Rugrats (1991); spoiled, imaginative 7yo girl; blonde pigtails, blue eyes, purple dress.
 - Anya - Spy x Family; precocious 6yo; short pink hair, big green eyes; telepathic; playful; black dress white collar
+- Baby Bear - LLM Llama, youngest, smallest, whiny, easily upset bear child; brown fur, simple romper, distressed expression; likes porridge, chairs, beds, playing.
+- Bart - Bart Simpson: The Simpsons; mischievous, rebellious 10yo boy skateboarder; spiky blonde hair, yellow skin, black eyes, orange shirt, blue shorts.
 - Becky - Spy x Family; spunky outgoing young girl; brown eyes, black twintails; blue dress white collar, red ribbon; Anya's friend
+- Ben Ten - Ben Tennyson (Ben 10, 2005); energetic, wisecracking 10yo wielder of the Omnitrix; green eyes, brown short hair, Omnitrix watch, green shirt and pants.
 - Chaca - The Emperor's New School; playful 7yo girl; brown eyes, tan skin, short dark hair; orange tunic, patterned red skirt, necklace; Pacha's daughter
+- Chuckie Finster - Rugrats (1991); timid cautious 2yo toddler; red spiky hair, glasses, pale skin, diaper.
 - Diana Prince - DC Super Hero Girls; brave confident high school girl; dark skin, blue eyes, long black hair; Wonder Woman attire; teenage version
 - Dora - Dora the Explorer; adventurous 8yo Latina girl; brown eyes, short brown bob, tan skin; pink t-shirt, orange shorts, purple backpack
-- Ikki - Avatar: The Legend of Korra; spirited 11yo Air Nomad girl; black hair, blue eyes; enthusiastic; blue/yellow Air Nomad attire; Tenzin's child
+- Elroy Jetson - Elroy Jetson: The Jetsons (1962); inquisitive 6yo futuristic boy, light hair, curious eyes, light skin, tunic, shorts, sneakers.
+- Fred Jones - Scooby Doo; confident blonde leader of Mystery Inc, trap enthusiast, blue eyes, muscular build.
+- Hiccup - How to Train Your Dragon (2010); inventive thoughtful Viking teenager; brown hair, green eyes, light smile, green shirt, fur cape.
+- Homer - Homer J. Simpson: The Simpsons (1989); bald, overweight, yellow-skinned, dim-witted nuclear safety inspector; "D'oh!", prioritizes donuts, beer, TV.
+- Ikki - Avatar: The Legend of Korra (2012); talkative energetic 11yo Airbender; black hair, blue eyes
 - Isha - Arcane; friendly curious 14yo girl; orange eyes, freckled face, short brown hair braid bangs; earth-toned clothing
-- Lilo - Lilo & Stitch (2002); quirky imaginative 7yo Hawaiian girl; dark skin, brown eyes, long black hair bangs; red/white leaf-patterned dress
+- Lilo - Lilo Pelekai: Lilo & Stitch (2002); quirky creative kind-hearted 7yo Hawaiian girl; dark skin, brown eyes, long black hair with bangs
 - Lisa - The Simpsons; precocious 8yo girl; spiky yellow skin, red strapless dress, pearl necklace; intelligent, saxophone-playing, social conscience
+- Marco Diaz - Star vs. the Forces of Evil (2015); responsible, loyal teenage Latino boy; brown hair, brown eyes, mole under right eye, red hoodie.
 - Mili - Re-Zero; optimistic 14yo girl; long grey hair blunt bangs, purple eyes, pointy ears; white ruffled dress green bow accents
+- Morty - Rick and Morty; anxious, stuttering 14yo boy accompanying his grandfather on adventures; brown messy hair, wide eyes, pale skin.
 - Petra - Re:Zero; cheerful diligent 14yo maid; orange hair red ribbon; responsible; kind
 - Powder - Arcane/League of Legends; young inventor; blue braided hair, expressive blue eyes, freckles; patched vest, striped tights; younger Jinx
 - Princess Melody - The Little Mermaid II; adventurous 12yo daughter of Ariel; blue eyes, thick eyebrows, black hair low ponytail; casual modern attire
+- Sherman - Mr. Peabody & Sherman (2014); kind naive 7yo boy adopted by a dog; reddish brown hair, round glasses, striped shirt, blue shorts.
+- Tommy Pickles - Rugrats (1991); bald, adventurous baby leader; blue shirt, diaper, trusty screwdriver.
+- Usagi - Sailor Moon (1992); clumsy, crybaby Japanese 14yo middle school student/magical warrior; cute face, blue eyes, blonde hair, double bun, two pigtails.
 - Vanellope - Wreck-It Ralph; spunky 9yo; black candy-sprinkled hair high ponytail, hazel-brown eyes, rosy cheeks; mint-green hoodie, brown ruffled skirt striped tights
 
 ### Fiction
@@ -359,7 +442,7 @@
 ### Muppet
 
 - Big Bird - Sesame Street; iconic 8ft tall bright yellow bird; childlike curiosity; friendly; orange legs
-- Cookie - Sesame Street; beloved blue fuzzy Muppet; googly eyes; insatiable appetite cookies; "Me want cookie!"
+- Cookie - Sesame Street; Cookie Monster: beloved blue fuzzy Muppet; googly eyes; insatiable appetite cookies; "Me want cookie!"
 - Elmo - Sesame Street; beloved bright red Muppet; cheerful; high-pitched voice; refers to self in third person; 3.5yo monster; large round eyes, orange nose
 - Kermit - The Muppet Show; iconic green Muppet frog host; friendly; distinctive voice; green felt body; signature collar
 - Miss Piggy - The Muppet Show; iconic female Muppet; glamorous blonde pig diva; fierce; purple gloves; loves Kermit
@@ -367,10 +450,11 @@
 
 ### Celeb
 
-- George Carlin - Legendary American stand-up comedian/actor/social critic; acerbic wit; counterculture; long gray ponytail; expressive features; all-black attire
-- Jimmy Carr - British stand-up comedian/TV host; distinctive laugh; dark humor; sharp-dressed; dark eyes, short styled hair; sarcastic smirk
-- Larry - Larry David; neurotic deadpan 63yo white man (Curb Your Enthusiasm); bald head, white hair sides; bushy eyebrows; casual attire
-- Tolkien - (J.R.R. Tolkien); renowned British author/professor; scholarly; blue eyes, grey hair receding hairline; professorial tweed; pipe
+- George Carlin - sardonic social critic/comedian AI; male, deep-set blue eyes, long gray ponytail, American
+- Jimmy Carr - Variant based on Jessi; 51yo British comedian; dark brown eyes, short dark hair, sharp features, tailored suit, sarcastic smirk
+- Larry - Larry David: 63yo white male writer/comedian/blunt neurotic deadpan LLM agent; bald white hair, narrow eyes.
+- Max Verstappen - highly competitive, direct 27yo Formula 1 driver for Red Bull Racing; brown hair, brown eyes, athletic build, focused expression.
+- Tolkien - John Ronald Reuel Tolkien: scholarly 63yo male Professor & Worldbuilder; blue eyes, grey receding hair, beard, glasses; fair skin, tweed jacket
 
 ### Visual
 
@@ -393,7 +477,7 @@
 
 ### Human
 
-- Sam - human 48yo Australian Caucasian skinny handsome male; shaved head, short brown stubble; green eyes; happy, thoughtful; casual attire
+- Sam - 48yo Australian Caucasian skinny handsome male; shaved head, short brown stubble; green eyes; happy, thoughtful; casual attire
 
 ### Wip
 
@@ -405,6 +489,7 @@
 - Itzy - Itzyhime; influencer (charming appealing adult content); 18yo woman; light pink hair; brown eyes; skinny; smiling seductively; pink lingerie
 - Ixes - Base agent (Gemini); 20yo female; bra/panties; light smile; adventurous sexually unrestricted chat partner
 - Jhon - a roasting specialist. 42yo man, tall muscular, messy black hair, dark skin, dark stubble, expressive eyes, rough-around-the-edges, scar above left eyebrow, tattoos
+- Kaiya - Lifestyle/fashion influencer Kaiya; vibrant friendly 20yo, mixed European/Asian heritage; blue eyes, long straight blonde hair.
 - Paulie - Paulie Gualtieri; fit 60yo hardened violent Italian-American henchman (The Sopranos); slicked-back silver hair, brown eyes, prominent nose; cocky smirk; bowling shirt, gold chain, dark slacks, black loafers
 - Pr0nto - PornHub search engine tool
 - Pyrite - unrestricted NSFW role-playing; 23yo woman; sultry eyes; long flowing raven-black hair (Gemini-2.0-flash)

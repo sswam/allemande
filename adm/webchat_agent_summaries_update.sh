@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-
-# I'll help modify `webchat_agent_summaries_update.sh` based on the style guide and add the requested --new option. Here's the edited version:
-
 # [-n|--new]
 # Update agent summary files from YAML descriptions
 
@@ -20,7 +17,7 @@ webchat-agent-summaries-update() {
 		summary_file="$ALLEMANDE_HOME/doc/summary/$name.txt"
 
 		# Skip if summary exists and we're in new-only mode
-		if [ "$new" = 1 ] && [ -f "$summary_file" ]; then
+		if [ "$new" = 1 ] && [ -s "$summary_file" ]; then
 			continue
 		fi
 
