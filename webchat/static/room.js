@@ -535,6 +535,24 @@ function image_overlay($el) {
   } else {
     $currentImg = $el;
   }
+
+  // Get all images and links containing images in document order
+  allImages = Array.from($messages.querySelectorAll('img:not(.hidden):not(.nobrowse)')).filter(img => !img.closest('.hidden'));
+  if ($currentImg.matches(".nobrowse")) {
+    const src_path = new URL($currentImg.src, ALLYCHAT_ROOMS_URL).pathname;
+    $currentImg = $("img:not(.nobrowse):not(.hidden)[src='" + src_path + "']");
+    if (!$currentImg) {
+      console.warn("Pair image not found in messages", src_path);
+      return;
+    }
+  }
+
+  currentImgIndex = allImages.indexOf($currentImg);
+  if (currentImgIndex === -1) {
+    console.warn("Image not found in allImages", $currentImg);
+    return
+  }
+
   $overlay.innerHTML = "";
   $img = $create("img");
   $overlay.appendChild($img);
@@ -542,10 +560,6 @@ function image_overlay($el) {
   overlay_mode = true;
   signal_overlay(true);
 
-  // Get all images and links containing images in document order
-  allImages = Array.from($messages.querySelectorAll('img:not(.hidden):not(.nobrowse)')).filter(img => !img.closest('.hidden'));
-
-  currentImgIndex = allImages.indexOf($currentImg);
 //  console.log("currentImgIndex", currentImgIndex);
   allImages = allImages.map(element => {
       // If this is an image in a link
@@ -1205,15 +1219,6 @@ function messages_click(ev) {
 
 async function load_user_script() {
   modules.user_script = await import(ALLYCHAT_CHAT_URL + "/users/" + user + "/script.js")
-}
-
-async function deregister_service_worker() {
-  if (!navigator.serviceWorker)
-    return;
-  const registrations = await navigator.serviceWorker?.getRegistrations() || [];
-  for (const registration of registrations) {
-    await registration.unregister();
-  }
 }
 
 /*

@@ -352,3 +352,14 @@ function hslToRgb(h, s, l) {
     b: clamp(Math.floor(b * 256), 0, 255),
   };
 }
+
+// service worker trouble ----------------------------------------------------
+
+async function deregister_service_worker() {
+  if (!navigator.serviceWorker)
+    return;
+  const registrations = await navigator.serviceWorker?.getRegistrations() || [];
+  for (const registration of registrations) {
+    await registration.unregister();
+  }
+}
