@@ -184,10 +184,6 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
     sets.update({k: v for k, v in add.items() if k not in sets})
 
 
-# Global priority queue
-image_queue: asyncio.PriorityQueue[ImageJob] = asyncio.PriorityQueue()
-
-
 # User jobs count
 user_usage: dict[str, int] = {}
 
@@ -208,6 +204,10 @@ class ImageJob:
     portal: Path
     request_time: float
     duration: float
+
+
+# Global priority queue
+image_queue: asyncio.PriorityQueue[ImageJob] = asyncio.PriorityQueue()
 
 
 job = None
