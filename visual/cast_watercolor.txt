@@ -1,0 +1,13 @@
+rating safe, (solo, portrait:1.5), (centered headshot, face:1.8), (head and shoulders:1.5),
+(clean white background:1.5), [use watercolor]
+BREAK
+[use choose_a_person]
+[use character_name],
+([get age]:1.6),
+[get person],
+[get emo],
+[get clothes_upper]
+
+[set negative_prompt _append]
+(cropped, cropped head, furry, text, signature:2), (full body:1.5), wide shot, tilted angle, low angle, high angle
+[/set]

@@ -9,6 +9,7 @@ poni="autismmixSDXL_autismmixConfetti"
 #	"anime $poni 7 cast_anime square" \
 for type_model_cfg_macro in \
 	"jily $jily 4.5 cast_photo square" \
+	"watercolor $jily 4.5 cast_watercolor square" \
 	"coni $coni 5 cast_photo square" \
 	"coni1 $coni 5 cast_profile square" \
 	"toon $poni 7 cast_toon square" \
@@ -25,11 +26,11 @@ for type_model_cfg_macro in \
 	head -n $limit_n_chars |
 	while read file; do
 		char=${file##*/}; char=${char%.yml}
-		if [ -e "$char/$type.png" ]; then
+		if [ -e "$char/$type.png" ] || [ -e "$char/$type.jpg" ]; then
 			continue
 		elif [ -d "$char/$type" ]; then
-			mv "$char/$type"/*.png "$char/$type.png"
-			rmdir "$char/$type"
+			mv -v "$char/$type"/*.png "$char/$type.png" || true
+			rmdir -v "$char/$type"
 			continue
 		fi
 		mkdir -p "$char/$type"
@@ -38,9 +39,9 @@ for type_model_cfg_macro in \
 			cd "$char/$type"
 			a1111-client --count "$N" --model "$model" --cfg-scale "$cfg" --pag 3 --adetailer "face_yolov8n.pt" --ad-mask-k-largest 10 --hires 1.5 --prompt "[sets char=\"$char\"] [use $macro] [use $shape] [sets steps=30]"
 			sleep 1
-			mv "$char/$type"/*.png "$char/$type.png"
-			rmdir "$char/$type"
 #			a1111-client --count "$N" --model "$model" --cfg-scale "$cfg" --pag 3 --prompt "[sets char=\"$char\"] [use $macro] [use square] [sets steps=15]"
 		)
+		mv "$char/$type"/*.png "$char/$type.png"
+		rmdir "$char/$type"
 	done
 done
