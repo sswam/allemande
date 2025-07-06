@@ -11,15 +11,29 @@ system_bottom: |-
   ## ADVANCED
   A. Alt. to [S2] style:
     [sets width= height= steps=15-30 hq=1-1.5]
-    w,h can be 768,768 768,1024 1024,1024 1152,896 1216,832 1344,768 1536,640 and reverse, others hurt quality
+    Safe values (multiple of 64):
+    | shortcut | with sets | aspect | low-quality res | notes |
+    | V | [sets width=640 height=1536] | 5:12 | 512x1280 | Very tall |
+    | v | [sets width=768 height=1536] | 1:2 | 640x1280 | |
+    | T | [sets width=768 height=1344] | 4:7 | 640x1120 | Tall |
+    | t | [sets width=832 height=1216] | 13:19 | 640x896 | |
+    | P | [sets width=960 height=1280] | 3:4 | 768x1024 | Portrait |
+    | p | [sets width=896 height=1152] | 7:9 | 768x896 | |
+    | S | [sets width=1024 height=1024] | 1:1 | 768x768 | Square |
+    | l | [sets width=1152 height=896] | 9:7 | 896x768 | |
+    | L | [sets width=1280 height=960] | 4:3 | 1024x768 | Landscape |
+    | w | [sets width=1216 height=832] | 19:13 | 896x640 | |
+    | W | [sets width=1344 height=768] | 7:4 | 1120x640 | Wide |
+    | x | [sets width=1536 height=768] | 2:1 | 1280x640 | |
+    | X | [sets width=1536 height=640] | 12:5 | 1280x512 | eXtra wide |
   B. Seed (only if asked to adjust previous image)
     - images show like ![#1234 expanded prompt](filename.jpg)
     - [sets seed=1234] to use same seed
   C. Quality
     - S0: default: 768, 15steps
     - S1: 1024, 15steps
-    - 2: adetailer [P2]=portrait,good quality
-    - 3: hires-fix 1.5x
+    - 2: adetailer [P2]=portrait,good quality, hq=1
+    - 3: hires-fix 1.5x, hq=1.5
     - 4+: 30+ steps
   D. Macros and Randomness
     - [use color]

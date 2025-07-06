@@ -51,6 +51,31 @@ MAX_JOB_PENALTY = 2
 MAX_JOB_DELAY = 420  # 7 minutes, after that the client might timeout
 ADETAILER_TIME = 3  # seconds, how long adetailer takes to run roughly
 
+SHAPE_GEOMETRY = {
+    "S": (("768", "768"), ("1024", "1024")),
+    "p": (("768", "896"), ("896", "1152")),
+    "P": (("768", "1024"), ("960", "1280")),
+    "l": (("896", "768"), ("1152", "896")),
+    "L": (("1024", "768"), ("1280", "960")),
+    "t": (("640", "896"), ("832", "1216")),
+    "T": (("640", "1120"), ("768", "1344")),
+    "w": (("896", "640"), ("1216", "832")),
+    "W": (("1120", "640"), ("1344", "768")),
+    "v": (("640", "1280"), ("768", "1536")),
+    "V": (("512", "1280"), ("640", "1536")),
+    "x": (("1280", "640"), ("1536", "768")),
+    "X": (("1280", "512"), ("1536", "640"))
+}
+
+QUALITY_STEPS = {
+    4: "30",
+    5: "45",
+    6: "60",
+    7: "90",
+    8: "120",
+    9: "150"
+}
+
 
 def process_hq_macro(config: dict, sets: dict) -> dict:
     """Process hq macro and update config accordingly"""
@@ -144,64 +169,23 @@ def load(portals, d, filename):
 def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
     """Apply a shortcut to the sets macro"""
     add = {}
-    add["steps"] = "15"
+
+    resolution_option = 0 if quality == 0 else 1
+    add["width"], add["height"] = SHAPE_GEOMETRY[shape][resolution_option]
+
     add["hq"] = "0"
-    if quality == 0:
-        if shape == "S":
-            add["width"] = "768"
-            add["height"] = "768"
-        elif shape == "P":
-            add["width"] = "768"
-            add["height"] = "1024"
-        elif shape == "L":
-            add["width"] = "1024"
-            add["height"] = "768"
-        elif shape == "T":
-            add["width"] = "640"
-            add["height"] = "1120"
-        elif shape == "W":
-            add["width"] = "1120"
-            add["height"] = "640"
-    else:
-        if shape == "S":
-            add["width"] = "1024"
-            add["height"] = "1024"
-        elif shape == "P":
-            add["width"] = "960"
-            add["height"] = "1280"
-        elif shape == "L":
-            add["width"] = "1280"
-            add["height"] = "960"
-        elif shape == "T":
-            add["width"] = "768"
-            add["height"] = "1344"
-        elif shape == "W":
-            add["width"] = "1344"
-            add["height"] = "768"
-        if quality == 1:
-            pass
-        elif quality == 2:
-            add["hq"] = "1"  # use adetailer
-        else:
-            add["hq"] = "1.5"  # use hires-fix and adetailer (3)
-        if quality == 4:
-            add["steps"] = "30"
-        elif quality == 5:
-            add["steps"] = "45"
-        elif quality == 6:
-            add["steps"] = "60"
-        elif quality == 7:
-            add["steps"] = "90"
-        elif quality == 8:
-            add["steps"] = "120"
-        elif quality == 9:
-            add["steps"] = "150"
+    if quality == 2:
+        add["hq"] = "1"  # use adetailer
+    elif quality >= 3:
+        add["hq"] = "1.5"  # use hires-fix and adetailer (3)
+
+    add["steps"] = QUALITY_STEPS.get(quality, "15")
 
     sets.update({k: v for k, v in add.items() if k not in sets})
 
 
 # Global priority queue
-image_queue = asyncio.PriorityQueue()
+image_queue: asyncio.PriorityQueue[ImageJob] = asyncio.PriorityQueue()
 
 
 # User jobs count
@@ -210,7 +194,8 @@ user_usage: dict[str, int] = {}
 
 @dataclass(order=True)
 class ImageJob:
-    priority: int
+    """Represents a single image generation job with priority scheduling"""
+    priority: float  # Changed to float since we're using timestamps
     d: Path
     output_stem: str
     prompt: str
@@ -228,6 +213,11 @@ class ImageJob:
 job = None
 
 
+def get_queue_jobs() -> list[ImageJob]:
+    """Get list of jobs from queue, for inspection only"""
+    return list(image_queue._queue)  # pylint: disable=protected-access
+
+
 async def process_image_queue():
     """Process jobs from the image queue"""
     global job  # pylint: disable=global-statement
@@ -236,7 +226,7 @@ async def process_image_queue():
             # Log the queue with priority and user-name
             logger.info("Queue size: %d", image_queue.qsize())
             current_time = time.time()
-            for job in sorted(list(image_queue._queue), key=lambda j: j.priority):
+            for job in sorted(get_queue_jobs(), key=lambda j: j.priority):
                 logger.info("Job: %.0f: %s", job.priority - current_time, job.config.get("user"))
 
             # Get job from queue
@@ -314,7 +304,7 @@ async def complete_batch(job: ImageJob):
     logger.info("%s:%s - done", portal, req)
 
 
-def estimate_job_weight(job: dict[str, Any]) -> float:
+def estimate_job_weight(job: ImageJob) -> float:
     """Estimate the weight of a job compared to the base job"""
     job_weight = 1.0
 
@@ -391,11 +381,12 @@ async def enqueue_image_jobs(
 
     # Calculate the priority for the first job, considering existing queued jobs for the user
     priority = current_time
-    for j in list(image_queue._queue) + [job]:
+    for j in get_queue_jobs() + [job]:
         if not j or j.config.get("user") != user:
             continue
         priority += j.duration
     logger.info("priority: %.2f", priority - current_time)
+
 
     # Enqueue each image job
     for i in range(count):
@@ -426,22 +417,23 @@ async def enqueue_image_jobs(
     return seed
 
 
-def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[str, str, dict, dict, bool, dict[str, str], str]:
+def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[str, str, dict, dict, bool, dict[str, str], str | None]:
     """Process prompt and config, returning updated values and whether macros need updating"""
     sets = macros.get("sets", {})
     need_update_macros = False
     regional_kwargs = {}
+    shortcut = None # Initialize shortcut
 
     # Process shortcuts
-    for shortcut in macros:
-        if re.match(r"[SPLTW]\d?$", shortcut):
+    for macro_key in macros:
+        if re.match(r"[SpPlLtTwWvVxX]\d?$", macro_key):
+            shortcut = macro_key # Assign the found shortcut
             shape = shortcut[0]
             quality = int((shortcut + "0")[1])
             apply_shortcut(sets, shape, quality)
             need_update_macros = True
+            # break # No break, allow multiple shortcuts? No, the logic seems to process the first one found. Let's keep break.
             break
-    else:
-        shortcut = None
 
     # Process settings
     for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint"]:
@@ -483,17 +475,18 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[
     return prompt, negative_prompt, config, regional_kwargs, need_update_macros, sets, shortcut
 
 
-def update_prompt_with_macros(prompt: str, config: dict, sets: dict[str, str], shortcut: str = None) -> str:
+def update_prompt_with_macros(prompt: str, config: dict, sets: dict[str, str], shortcut: str | None = None) -> str:
     """Update the prompt with macros"""
     sets["width"] = str(config["width"])
     sets["height"] = str(config["height"])
     sets["hires"] = str(config["hires"])
     sets["steps"] = str(config["steps"])
+    # Remove settings that shouldn't be in the final prompt sets string
     for k in ["seed", "pag", "ad_checkpoint"]:
         if k in sets:
             sets[k] = "---REMOVEME---"
     update = {"sets": sets, "rp": None}
-    logger.info("update_prompt_with_macros: sets=%s", sets)
+    logger.info("update_prompt_with_macros: sets=%s, shortcut=%s", sets, shortcut)
     if shortcut:
         update[shortcut] = None
     prompt = update_macros(prompt, update)
@@ -501,16 +494,23 @@ def update_prompt_with_macros(prompt: str, config: dict, sets: dict[str, str], s
     return prompt
 
 
-async def process_request(portals: str, portal_str: Path, req: str):
+async def process_request(portals: str, portal_str: Path, req: str) -> None:
     """Process a request on a portal"""
     portal = Path(portal_str)
     logger.info("%s:%s - processing", portal, req)
     log_handler = None
     seed = None
 
+    d = None
+
     try:
         d = portal / "doing" / req
-        os.rename(portal / "todo" / req, d)
+        try:
+            os.rename(portal / "todo" / req, d)
+        except OSError as e:
+            logger.warning("%s:%s - failed to rename from todo to doing, possibly handled by another process: %s", portal, req, e)
+            return
+
         log_handler = logging.FileHandler(d / "log.txt")
         logger.addHandler(log_handler)
 
@@ -524,7 +524,7 @@ async def process_request(portals: str, portal_str: Path, req: str):
         )
 
         if need_update_macros:
-            prompt = update_prompt_with_macros(prompt, config, sets)
+            prompt = update_prompt_with_macros(prompt, config, sets, shortcut)
 
         output_stem = slug.slug(prompt)[:70]
 
@@ -535,7 +535,8 @@ async def process_request(portals: str, portal_str: Path, req: str):
         seed = await enqueue_image_jobs(d, prompt, negative_prompt, output_stem, config, regional_kwargs, portal)
     except (Exception, KeyboardInterrupt) as e:  # pylint: disable=broad-exception-caught
         logger.exception("%s:%s - error: %s", portal, req, e)
-        os.rename(d, portal / "error" / req)
+        if d:
+            os.rename(d, portal / "error" / req)
     finally:
         if log_handler:
             logger.removeHandler(log_handler)
@@ -552,8 +553,9 @@ def convert_images_to_jpeg(portal: Path, req: str, d: Path, quality: int = 95):
                 img.unlink()
             except Exception as e:  # pylint: disable=broad-exception-caught
                 logger.exception("%s:%s - error converting images to JPEG: %s", portal, req, e)
-                dest.unlink()
-                # continue with PNG
+                if dest.exists():
+                    dest.unlink()
+                # The original PNG remains, which is better than losing the image entirely.
                 # TODO ideally stamp would clean up
     return metadata
 
@@ -562,52 +564,93 @@ def extract_metadata(portal: Path, req: str, d: Path):
     """Extract metadata from all images in a directory"""
     metadata = {}
     for img in d.iterdir():
+        # Only process image files (png, jpg, jpeg)
+        if img.suffix.lower() not in (".png", ".jpg", ".jpeg"):
+            continue
         try:
             metadata[img.name] = stamp.extract_metadata(img)
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logger.exception("%s:%s - error extracting metadata: %s", portal, req, e)
+            logger.exception("%s:%s - error extracting metadata from %s: %s", portal, req, img.name, e)
     return metadata
 
 
 def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]]:
     """Find all requests in the todo directories"""
     requests = []
-    for portal in Path(portals).iterdir():
+    portals_root = Path(portals)
+    if not portals_root.exists():
+        logger.error("Portals directory not found: %s", portals)
+        return requests
+    if not portals_root.is_dir():
+        logger.error("Portals path is not a directory: %s", portals)
+        return requests
+
+    for portal in portals_root.iterdir():
         if not portal.is_dir():
             continue
         todo = portal / "todo"
+        if not todo.is_dir():
+            logger.warning("Skipping portal %s, no todo directory found", portal)
+            continue
+
         for req in todo.iterdir():
             if not req.is_dir():
                 continue
-            requests.append((portal, req.name))
+            # Check for required files to consider it a valid request directory
+            if (req / "request.txt").exists() and (req / "config.yaml").exists():
+                requests.append((portal, req.name))
+            else:
+                logger.warning("Skipping incomplete request directory: %s (missing request.txt or config.yaml)", req)
+
     requests.sort(key=lambda x: (x[0].stat().st_mtime, x[1]))
+
     return requests
 
 
 async def serve_requests(portals: str = str(portals_dir), poll_interval: float = 0.1):
     """Serve image generation requests from portals directory"""
-    logger.info("serving requests from %s", portals)
+    logger.info("serving requests from %s (poll interval %.1f seconds)", portals, poll_interval)
+
+    queue_processor_task = asyncio.create_task(process_image_queue())
+
+    # Process existing requests first
     known_requests = find_todo_requests(portals)
-    for portal, req in known_requests:
+    for portal, req_name in known_requests:
         logger.debug("Initial request detected: %s in %s", req, portal)
-        await process_request(portals, portal, req)
+        await process_request(portals, portal, req_name)
 
     known_requests_set = set(known_requests)
 
-    queue_processor = asyncio.create_task(process_image_queue())
-
     while True:
-        new_requests = find_todo_requests(portals)
-        for portal, req_name in new_requests:
-            if (portal, req_name) in known_requests_set:
-                continue
-            logger.debug("New request detected: %s in %s", req_name, portal)
-            await process_request(portals, portal, req_name)
+        try:
+            new_requests = find_todo_requests(portals)
+            for portal, req_name in new_requests:
+                if (portal, req_name) in known_requests_set:
+                    continue
+                logger.debug("New request detected: %s in %s", req_name, portal)
+                await process_request(portals, portal, req_name)
 
-        known_requests_set = set(new_requests)
+            known_requests_set = set(new_requests)
+
+        except (asyncio.CancelledError, KeyboardInterrupt):
+            logger.info("Serve requests task cancelled.")
+            break
+        except Exception as e:
+            logger.exception("Error during request serving loop: %s", e)
 
         # Wait before next poll
         await asyncio.sleep(poll_interval)
+
+    # Wait for the queue processor to finish if the server task is cancelled
+    first = True
+    while job is not None and not image_queue.empty():
+        if first:
+            logger.info("Waiting for queue processor to finish remaining jobs...")
+            first = False
+        await asyncio.sleep(1)
+    queue_processor_task.cancel()
+    await queue_processor_task
+    logger.info("Server shutdown complete.")
 
 
 def setup_args(arg):
