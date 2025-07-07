@@ -115,9 +115,6 @@ improve() {
 
 	if [ -e "$results_file" ]; then
 		echo >&2 "Checks failed: $results_file"
-		if [ -n "$tests_file" ]; then
-			refs+=("$tests_file")
-		fi
 		refs+=("$results_file")
 		check_msg="With check issues, please either fix the issue, or disable the warning with a comment."
 		if ((testok)); then
@@ -131,12 +128,13 @@ improve() {
 		echo >&2 "Checks passed"
 		checks_prompt="Our checks passed."
 		rm -f "$results_file"
-		if [ -n "$tests_file" ]; then
-			refs+=("$tests_file")
-		fi
 	elif ((test)); then
 		echo >&2 "No tests found"
 		test=""
+	fi
+
+	if [ -n "$tests_file" ] && [ "$tests_file" != "$file" ]; then
+		refs+=("$tests_file")
 	fi
 
 	# guidance reference and prompt for -g --guidance option
