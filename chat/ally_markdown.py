@@ -298,8 +298,7 @@ def fix_link(href: str, bb_file: str) -> str:
     # is the final part a room name (file without an extension?)
     if re.match(r"(^|/)[^\./]+", href):
         try:
-            _safe_path, href_path = safe_path_for_local_file(bb_file, href)
-            href = str(href_path)
+            _safe_path, href = safe_path_for_local_file(bb_file, href)
         except ValueError as e:
             logger.warning("Invalid path: %s", e)
             # TODO should we return maybe a javascript warning or something?

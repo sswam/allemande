@@ -136,6 +136,7 @@ def safe_join(base_dir: Path | str, *paths: str | Path) -> Path:
     """
     Return a safe path under base_dir, or raise ValueError if the path is unsafe.
     Preserves symlinks and only checks for path traversal attacks.
+    Does not preserve trailing slash as Path can't do that, client should do that as needed.
 
     Args:
         base_dir: Base directory path

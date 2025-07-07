@@ -723,13 +723,18 @@ def name_to_path(name: str) -> Path:
     return Path(ROOMS_DIR) / name
 
 
-def safe_path_for_local_file(file: str, url: str) -> tuple[Path, Path]:
+def safe_path_for_local_file(file: str, url: str) -> tuple[str, str]:
     """Resolve a local file path, ensuring it's safe and within the rooms directory."""
     room = Room(path=Path(file))
     if url.startswith("/"):
         path2 = Path(url[1:])
     else:
         path2 = (Path(room.name).parent) / url
-    safe_path = safe_join(Path(ROOMS_DIR), Path(path2))
+    safe_path = safe_join(Path(ROOMS_DIR), path2)
     rel_path = safe_path.relative_to(Path(ROOMS_DIR))
-    return safe_path, rel_path
+    safe_path_s = str(safe_path)
+    rel_path_s = str(rel_path)
+    if url.endswith("/"):
+        safe_path_s += "/"
+        rel_path_s += "/"
+    return safe_path_s, rel_path_s
