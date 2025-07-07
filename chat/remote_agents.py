@@ -18,6 +18,8 @@ from settings import REMOTE_AGENT_RETRIES
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Placeholder content where the LLM expects a user message.
+USER_PLACEHOLDER_CONTENT = "..."
 
 async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str = None) -> str:
     """Run a remote agent."""
@@ -106,8 +108,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if agent.get("blank_message_after_image") and remote_messages and "images" in remote_messages[-1]:
         remote_messages.append({"role":"assistant", "content":""})
 
+    # Google Gemini doesn't like the first message to be an assistant message, so we add a user message if needed
     if remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] in ["anthropic", "google"]:
-        remote_messages.insert(0, {"role": "user", "content": "?"})
+        remote_messages.insert(0, {"role": "user", "content": USER_PLACEHOLDER_CONTENT})
 
     # add system messages
     system_top = agent.get("system_top")
@@ -187,7 +190,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     # Some agents don't like empty content, specifically google
     if not remote_messages[-1]["content"]:
-        remote_messages[-1]["content"] = "?"
+        remote_messages[-1]["content"] = USER_PLACEHOLDER_CONTENT
     remote_messages = [m for m in remote_messages if m["content"]]
 
     # Set up stop sequences for other participants
