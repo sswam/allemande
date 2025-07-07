@@ -42,7 +42,7 @@ webchat-user() {
 
 add-user() {
 	local user=${1-}
-	if [ -n "$user" ] && nsfw= list-users | grep -q -F -w "$user"; then
+	if [ -n "$user" ] && nsfw= list-users | grep -q "^$user$"; then
 		die "User $user already exists"
 	fi
 
