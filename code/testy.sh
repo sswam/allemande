@@ -25,6 +25,8 @@ testy() {
 		# TODO I think there was some problem with doing this, I should have noted what it was...
 		cd "$(dirname "$prog")"
 
+		prog_basename="$(basename "$prog")"
+
 		# Get the extension of the program
 		local ext="${prog##*.}"
 		if [[ $prog != *.* ]]; then
@@ -46,7 +48,10 @@ testy() {
 		if [ "$ext" == "sh" ]; then
 			test_ext="bats"
 		fi
-		if [ "$ext" = rs ]; then
+		# If prog path contains tests, or prog is test_* or *_test.*, use the prog as the tests_file
+		if [[ "$prog" == tests/* ]] || [[ "$prog" == */tests/* ]] || [[ "$prog_basename" == test_* ]] || [[ "$prog_basename" == *_test.* ]]; then
+			local tests_file="$prog"
+		elif [ "$ext" = rs ]; then
 			local tests_file="$prog"
 		elif [ "$ext" = go ]; then
 			local tests_file="$(dirname "$prog")/$(basename "$prog" ".$ext")_test.$test_ext"
