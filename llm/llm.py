@@ -153,7 +153,7 @@ MODELS = {
         "cost_out": 0.6,
     },
     "claude-opus": {
-        "aliases": ["co", "claudo"],
+        "aliases": ["co", "claudo", "claude-4-opus"],
         "vendor": "anthropic",
         "vision": True,
         "id": "claude-opus-4-20250514",
@@ -163,7 +163,7 @@ MODELS = {
         "cost_out": 75,
     },
     "claude-sonnet": {
-        "aliases": ["cn", "clauden"],
+        "aliases": ["cn", "clauden", "claude-4-sonnet"],
         "vendor": "anthropic",
         "vision": True,
         "id": "claude-sonnet-4-20250514",
@@ -173,7 +173,7 @@ MODELS = {
         "cost_out": 15,
     },
     "claude": {
-        "aliases": ["c", "claud"],
+        "aliases": ["c", "claud", "claude-3.5"],
         "vendor": "anthropic",
         "vision": True,
         "id": "claude-3-5-sonnet-latest",
@@ -182,7 +182,7 @@ MODELS = {
         "cost_out": 15,
     },
     "claude-haiku": {
-        "aliases": ["i", "clia"],
+        "aliases": ["i", "clia", "claude-3.5-haiku"],
         "vendor": "anthropic",
         "vision": True,
         "id": "claude-3-haiku-20240307",
