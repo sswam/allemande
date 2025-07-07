@@ -15,7 +15,8 @@ let overlay_mode = false;
 let $currentImg;
 let currentImgIndex;
 let allImages;
-let overlay_fullscreen = isMobile;
+// let overlay_fullscreen = isMobile;
+let overlay_fullscreen = false;
 
 let suppressInitialScroll = false;
 
@@ -71,6 +72,8 @@ function offline() {
     return;
   const status = get_status_element();
   status.innerText = "🔴";
+  if (!view_options.advanced)
+    status.innerText = "disconnected; reload " + status.innerText;
   document.body.addEventListener("mouseenter", reload, { once: true });
 }
 
@@ -527,6 +530,8 @@ function clear_overlay_image_cover() {
 // image overlay -------------------------------------------------------------
 
 function image_overlay($el) {
+  show($id("overlay_help"), !view_options.advanced);
+
   // console.log("image_overlay", $el);
   // check if it's an A
   let $img;
@@ -592,9 +597,22 @@ function image_overlay($el) {
 
   add_hook("window_resize", setup_overlay_image_cover);
   setup_overlay_image_cover();
+
+  // handle back button to close overlay
+  history.pushState({}, "");
+  $on(window, "popstate", image_overlay_back);
 }
 
-function overlay_close(ev) {
+function image_overlay_back(ev) {
+  overlay_close(null, true);
+}
+
+function hide_overlay_help(ev) {
+  ev.preventDefault();
+  hide($id("overlay_help"));
+}
+
+function overlay_close(ev, back) {
   if (ev)
     ev.preventDefault();
   $body.classList.remove("overlay");
@@ -610,6 +628,13 @@ function overlay_close(ev) {
   currentImgIndex = null;
 
   remove_hook("resize", setup_overlay_image_cover);
+
+  // clean up the "back button to close overlay" state
+  $off(window, "popstate", image_overlay_back);
+  if (!back)
+    history.back();
+//  history.go(1);
+//  history.replaceState(null, "");
 }
 
 function signal_overlay(overlay) {
@@ -830,8 +855,10 @@ function image_click($el, ev) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  } else if (ev.ctrlKey || ev.metaKey || ev.button === 1 || view_options["embed"]) {
+  } else if (ev.ctrlKey || ev.metaKey || ev.button === 1) {
     window.open(src, "_blank").focus();
+  } else if (view_options["embed"]) {
+    // don't do anything for normal click / tap in embed mode, it can be confusing for new users
   } else if (!overlay_mode) {
     image_overlay($el);
   }
@@ -1292,19 +1319,19 @@ export async function room_main() {
   $on($("div.resizer"), "mousedown", dragResizer);
   $on($("div.resizer"), "touchstart", dragResizer, { passive: true });
 
+  $on(document, "fullscreenchange", fullscreenchange);
+
+  $on($id("overlay_help"), "click", hide_overlay_help);
+
   if (typeof room_user_script === 'function') {
     room_user_script();
   }
-
-  // $on(document, "fullscreenchange", fullscreenchange);
 }
 
-/*
 function fullscreenchange(ev) {
   if (!is_fullscreen())
     overlay_close();
 }
-*/
 
 export async function folder_main() {
   file_type = "dir";

@@ -1284,6 +1284,7 @@ function set_overlay(overlay) {
   // set the iframe to fill the window
   if (overlay) {
     $messages_iframe.classList.add("overlay");
+    $content.placeholder = ""; // it interferes with the overlay in Chrome
   } else {
     $messages_iframe.classList.remove("overlay");
   }
@@ -2167,13 +2168,13 @@ function view_options_apply() {
   }
 
   // input placeholder in basic mode, before first message sent in this session
-  let input_placeholder = "";
-  if ($content.placeholder != "" && !view_options.advanced && isMobile) {
-    input_placeholder = "Type your message...";
-  } else if ($content.placeholder != "" && !view_options.advanced) {
-    input_placeholder = "Type your message... (Ctrl+Enter to send)";
+  if ($content.placeholder != "" && !view_options.advanced) {
+    let input_placeholder = "Type your message here.";
+    if (!isMobile)
+      input_placeholder += " Ctrl+Enter to Send.";
+    input_placeholder += " Send an empty message to Poke the chat.";
+    $content.placeholder = input_placeholder;
   }
-  $content.placeholder = input_placeholder;
 
   if (view_options.image_size >= 10) {
     view_image_size_delta = -1;
