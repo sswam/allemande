@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-
-# I'll add the -s/--system option and fix the identified issues.
-#
-# Here's the updated `query.sh`:
-
-
 # [prompt [reference files ...]]
 # Query an LLM with the given prompt
 
