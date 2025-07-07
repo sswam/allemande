@@ -1,9 +1,10 @@
 """End-to-end tests for the chat interface"""
 
 import re
+from datetime import datetime
 
 import pytest
-from playwright.sync_api import Page, expect, TimeoutError
+from playwright.sync_api import Page, expect
 
 
 TIMEOUT = 10000  # Default timeout for Playwright actions
@@ -28,7 +29,7 @@ def test_send_message(allychat: Page, auth_credentials: dict, clear: bool):
 
         try:
             allychat.click("#mod_cancel")
-        except TimeoutError:
+        except Exception:
             print("mod_cancel button was not visible")
 
         # Wait for messages to be cleared
@@ -36,14 +37,15 @@ def test_send_message(allychat: Page, auth_credentials: dict, clear: bool):
 
     # Send test message
     if clear:
-        test_message = f"{agent_name}, hello from {screen_name} at Testalot, our automated test system!"
+        timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        test_message = f"{agent_name}, hello from {screen_name} at Testalot, our automated test system! It is {timestamp_str} right now. *waves*"
     else:
         test_message = f"How's it going, {agent_name}, been up to anything cool lately? *smiles*"
     allychat.fill("#content", test_message)
     allychat.click("#send")
 
     # Look for sent message; assuming AI is slower than playwright, which it is!
-    sent = messages_frame.locator(".message").last
+    sent = messages_frame.locator(f".message[user='{screen_name}']").last
     expect(sent).to_have_attribute("user", screen_name, timeout=TIMEOUT)
     expect(sent).to_contain_text(test_message.replace("*", ""), timeout=TIMEOUT)
 
