@@ -151,6 +151,8 @@ async def login(request):
     """Login with username and password"""
     data = await request.json()
     username, password = data["username"], data["password"]
+    username = username.strip().lower()
+    password = password.strip()
     htpasswd.load_if_changed()
     is_valid = htpasswd.check_password(username, password)
     if not is_valid:
