@@ -73,7 +73,7 @@ function offline() {
   const status = get_status_element();
   status.innerText = "🔴";
   if (!view_options.advanced)
-    status.innerText = "disconnected; reload " + status.innerText;
+    status.innerText += " disconnected; reload!";
   document.body.addEventListener("mouseenter", reload, { once: true });
 }
 
@@ -399,6 +399,9 @@ function go_home() {
 */
 
 function key_event_overlay(ev) {
+  // ignore if any modifier is pressed
+  if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey)
+    return;
   if (ev.key == "Escape" || ev.key == "q") {
     overlay_close(ev);
   } else if (ev.key == "f") {
@@ -472,8 +475,11 @@ function embed_click(ev, $thumb) {
 
 // fullscreen ----------------------------------------------------------------
 
+let fullscreen_exit_requested = false;
+
 function toggle_fullscreen(target) {
   if (is_fullscreen()) {
+    fullscreen_exit_requested = true;
     exit_fullscreen();
     signal_overlay(false);
     overlay_fullscreen = false;
@@ -482,6 +488,12 @@ function toggle_fullscreen(target) {
     signal_overlay(true);
     overlay_fullscreen = true;
   }
+}
+
+function fullscreenchange(ev) {
+  if (!is_fullscreen() && !fullscreen_exit_requested)
+    overlay_close();
+  fullscreen_exit_requested = false;
 }
 
 // image zoom ----------------------------------------------------------------
@@ -612,29 +624,31 @@ function hide_overlay_help(ev) {
   hide($id("overlay_help"));
 }
 
-function overlay_close(ev, back) {
+function overlay_close(ev, back_pressed) {
   if (ev)
     ev.preventDefault();
+
+  if (!overlay_mode)
+    return;
+
+  remove_hook("resize", setup_overlay_image_cover);
+
+  overlay_mode = false;
   $body.classList.remove("overlay");
   clear_overlay_image_cover();
   $overlay.innerHTML = "";
-  exit_fullscreen();
-  overlay_mode = false;
   signal_overlay(false);
+  exit_fullscreen();
 
   // Reset current image index
   allImages = null;
   $currentImg = null;
   currentImgIndex = null;
 
-  remove_hook("resize", setup_overlay_image_cover);
-
   // clean up the "back button to close overlay" state
   $off(window, "popstate", image_overlay_back);
-  if (!back)
+  if (!back_pressed)
     history.back();
-//  history.go(1);
-//  history.replaceState(null, "");
 }
 
 function signal_overlay(overlay) {
@@ -1297,7 +1311,6 @@ export async function room_main() {
   $on($overlay, "click", overlay_click);
   $on($overlay, "auxclick", overlay_click);
   setup_swipe();
-  // $on(document, "click", click);
   $on(document, "click", click);
   $on(document, "auxclick", click);
   $on(window, "resize", () => run_hooks("window_resize"));
@@ -1326,11 +1339,6 @@ export async function room_main() {
   if (typeof room_user_script === 'function') {
     room_user_script();
   }
-}
-
-function fullscreenchange(ev) {
-  if (!is_fullscreen())
-    overlay_close();
 }
 
 export async function folder_main() {
