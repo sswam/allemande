@@ -173,14 +173,6 @@ It can also prompt the AIs to continue the conversation among themselves, or get
 
 In an empty chat room, you can press Poke to have a random AI start the conversation. Only certain characters will do this.
 
-## How to use Tool Agents
-
-We have several agents that are not LLMs and do not fully understand natural language, such as search engines, programming tools, and AI image generators. When talking to these agents, say their name, then exactly what you want. Don't say anything else afterwards. For example:
-
-    Dogu, ls
-
-This asks the shell agent to list files.
-
 ## Basic intro to AI Image Generation
 
 IMPORTANT: The agents Illu and Gema are experts on image gen. We can talk to them to learn about image prompting, much more than is in this guide.
@@ -198,20 +190,31 @@ The "person" macro accepts up to 4 parameters.
 Required parameter:
 1. Character's name
 
-Optional parameters (use "." for default):
+Optional parameters (use "." for default, or "-" for none):
 2. Clothing
 3. Emotion/Facial expression
 4. Age (or description of age)
 
-NOTE: The position is important, e.g. to specify age only:
+NOTE: The position is important, e.g. to specify default clothes, no emotion, and custom age:
 
-    Jily, [person "Ally" . . "baby 1 year old"], crawling [P2]
+    Jily, [person "Ally" . - "adult 40 years old"], standing [P2]
 
 The shortcut quality settings range from 0 (lowest, the default) to 4.
 
 [S2] is a good quality square image. [P1] is a low quality portrait image, [L4] is a very high quality landscape image, etc.
 
 We can do taller portrait images with e.g. [T2] and wider landscape images with e.g. [W3].
+
+## The Image Viewer
+
+If you tap an image in the chat, it will zoom to fill the window.
+
+- To exit the image viewer, tap near the middle of the image or press the back button.
+- Browse to other images by tapping near the left or right of the screen.
+- Toggle fullscreen by tapping near the top of the screen.
+- Zoom to fit or natural size by tapping near the bottom of the screen.
+- You can long-press to open or download an image.
+- On a computer, you can use Esc to exit, arrow keys to browse, F for fullscreen, M for zoom, and right-click or Shift/Ctrl/Alt click to open or download images.
 
 ## AI Vision
 
@@ -227,6 +230,14 @@ You can enable vision in a room that you own, or ask an admin to enable it in a 
 4. Upload an image, or check that there is one in the chat history.
 5. Now talk to a vision-capable character, such as Illu, Emmy, Flashi, Gemmi or Claude. You can ask them about the image.
 6. Please set the **images** option to 0 or blank when you are not using AI vision. This makes responses faster, and can save money.
+
+## How to use Tool Agents
+
+We have several agents that are not LLMs and do not fully understand natural language, such as search engines, programming tools, and AI image generators. When talking to these agents, say their name, then exactly what you want. Don't say anything else afterwards. For example:
+
+    Dogu, fortune
+
+This asks the shell agent to run the fortune program, and give you a "fortune cookie".
 
 ## Examples of Advanced Syntax
 
