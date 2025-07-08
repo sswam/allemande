@@ -46,7 +46,7 @@ You can say @anyone for a random AI, or @everyone for several responses.
 ## Select Characters and Tools
 
 **General Chat**
-- Ally, Barbie, Callam, Dante: friendly chat
+- Ally/Allie, Barbie, Callam, Dante: friendly chat
 - Flashi, Emmy, Claude, Gemmi: strong assistants
 - Fli, Emm, Clu, Gemm: for concise responses
 

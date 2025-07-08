@@ -4,7 +4,9 @@ IMAGE_NSFW=solo-person-Cleo-black-lace-lingerie-seductive-lingerie-details-1-2-s
 all: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md extra.md
+	rm -f $@
 	cat $^ >$@
+	chmod a-w $@
 
 extra.md: ../agents/cartoon ../agents/celeb ../agents/disney ../agents/fiction ../agents/muppet
 	@echo "# Extra Characters" >$@

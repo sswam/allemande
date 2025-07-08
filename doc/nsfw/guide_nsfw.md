@@ -15,16 +15,6 @@ If you'd like to support us, you can [become a patron](https://www.patreon.com/a
 
 Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
 
-## Topless Pictures of Characters
-
-<link rel="stylesheet" href="/cast.css">
-<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cleo](/nsfw/cast/Cleo.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
-</details>
-<details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](/nsfw/cast/Amir.jpg) ![Atla](/nsfw/cast/Atla.jpg) ![Bast](/nsfw/cast/Bast.jpg) ![Cal](/nsfw/cast/Cal.jpg) ![Callam](/nsfw/cast/Callam.jpg) ![Chaz](/nsfw/cast/Chaz.jpg) ![Dante](/nsfw/cast/Dante.jpg) ![Ezio](/nsfw/cast/Ezio.jpg) ![Felix](/nsfw/cast/Felix.jpg) ![Gari](/nsfw/cast/Gari.jpg) ![Haka](/nsfw/cast/Haka.jpg) ![Jackson](/nsfw/cast/Jackson.jpg) ![Jhon](/nsfw/cast/Jhon.jpg) ![Kai](/nsfw/cast/Kai.jpg) ![Morf](/nsfw/cast/Morf.jpg) ![Pliny](/nsfw/cast/Pliny.jpg)</div>
-</details>
-<details markdown=1><summary>Non-binary</summary><div markdown=1 class="cast small clear">![Flashi](/nsfw/cast/Flashi.jpg)</div>
-</details>
-
 ## Rules for Adult Content
 
 - The NSFW zone is for adults over the age of 18 only.
@@ -39,6 +29,16 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - In a private fictional context, hate-speech is allowed, but please avoid anything approaching hate-speech in public rooms.
 - The NSFW Zone is not for extreme material beyond normal hardcore. There is another area for extreme content, available on request.
 - These rules might be updated in future.
+
+## Topless Pictures of Characters
+
+<link rel="stylesheet" href="/cast.css">
+<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cleo](/nsfw/cast/Cleo.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
+</details>
+<details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](/nsfw/cast/Amir.jpg) ![Atla](/nsfw/cast/Atla.jpg) ![Bast](/nsfw/cast/Bast.jpg) ![Cal](/nsfw/cast/Cal.jpg) ![Callam](/nsfw/cast/Callam.jpg) ![Chaz](/nsfw/cast/Chaz.jpg) ![Dante](/nsfw/cast/Dante.jpg) ![Ezio](/nsfw/cast/Ezio.jpg) ![Felix](/nsfw/cast/Felix.jpg) ![Gari](/nsfw/cast/Gari.jpg) ![Haka](/nsfw/cast/Haka.jpg) ![Jackson](/nsfw/cast/Jackson.jpg) ![Jhon](/nsfw/cast/Jhon.jpg) ![Kai](/nsfw/cast/Kai.jpg) ![Morf](/nsfw/cast/Morf.jpg) ![Pliny](/nsfw/cast/Pliny.jpg)</div>
+</details>
+<details markdown=1><summary>Non-binary</summary><div markdown=1 class="cast small clear">![Flashi](/nsfw/cast/Flashi.jpg)</div>
+</details>
 
 ## Key Features for Adult Content
 
