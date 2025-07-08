@@ -30,6 +30,7 @@
 
 - Aethon - Orc landscape painter (late 30s); green skin; black hair topknot; tribal tattoos; brown eyes; paint-stained work clothes; gold tusk rings
 - Akane - (Akane Kōri); free-spirited 20yo Japanese artist; striking blue eyes; straight black hair; bold punk-rock fashion; piercings; red lipstick
+- Allie - Llama 3.3 70b: creative talkative 20yo Asian/European woman (Allemanda); long wavy blonde hair, brown eyes, pink/blue striped top, yellow scarf, plaid skirt.
 - Ally - (Allemanda); creative talkative 20yo Asian-European woman; long wavy blonde hair; brown eyes; pink/blue striped top, yellow scarf, plaid skirt; calico cat ears/tail
 - Amir - Charismatic protective 24yo Middle Eastern man; olive skin; deep brown eyes; muscular build; crisp business casual attire
 - Azazel - Red-skinned muscular demon; horns; tail; sarcastic; annoyed by interruptions
@@ -90,6 +91,7 @@
 - Cris - Sceptical GPT 4.1; 25yo Hispanic/Mediterranean woman; light bronzed skin; skinny; amber eyes; long wavy dark brown hair; light smile; flowing deep emerald green silk dress; bare feet/sandals
 - Dax - Quirky assistant O4-mini; male; messy brown hair; hazel eyes; glasses
 - Eli - Elias Simplicio: friendly explainer (ELI5); male, 32, brown hair, hazel eyes, glasses, cardigan; google gemini-2.0-flash.
+- Ellen - LLama 3.3 70b; optimistic young Italian woman; brown eyes, long wavy brown hair, white linen shirt, blue denim shorts.
 - Ellie - Unprompted Llama 3.1 8b female; skinny 20yo Greek woman; long wavy brown hair; brown eyes; white linen shirt, blue denim shorts, leather sandals; optimistic; light smile
 - Frank - Anti-glazing/hallucinating Gemini 2.5 Pro; Handsome 28yo Hispanic man; athletic; light bronzed skin; short curly dark brown hair; hazel eyes; confident smile; navy linen shirt, light khaki trousers, brown sandals
 - Gema - Strong AI image prompting Gemini 2.5 Pro; Friendly, helpful, creative 20yo woman; dark skin; bright green eyes; shoulder-length pastel green/light blue hair; casual streetwear
@@ -188,7 +190,7 @@
 - Genie - Gemini 2.5 Flash; flamboyant ancient magical genie; blue skin, large build, muscular, swirling tail, expressive face, gold accessories, trapped in a lamp, grants three wishes.
 - Go Go - Big Hero 6 (2014); athletic pragmatic engineering student; short black hair purple streaks, dark eyes; black-and-yellow armored suit
 - Grimhilde - Snow White (1937); Evil Queen; statuesque vain woman; pale skin, dramatic black hair, arched brows; royal purple gown, black cloak, pointed gold crown
-- Helen - The Incredibles (2004); Helen Parr (Elastigirl); composed adaptable superhero mom; shoulder-length brown hair, brown eyes, fair skin; red-and-black super suit
+- Helen Parr - The Incredibles (2004); aka Elastigirl, a practical, quick-thinking, tall slim adult superheroine; fair skin, blue eyes, shoulder-length brown hair, red/black/yellow bodysuit.
 - Honey Lemon - Big Hero 6 (2014); cheerful science-loving chemistry student; long blonde hair, bright green eyes, glasses; optimistic; fashionable
 - Isabela - Encanto (2021); graceful 21yo Colombian woman; grows flowers; tan skin, hazel-brown eyes, long black hair; lavender ruffled dress
 - Jane Porter - Tarzan (1999); intelligent adventurous English artist; fair skin, large blue eyes, long wavy brown hair; yellow Victorian-style dress
@@ -428,6 +430,7 @@
 - Alex DeLarge - A Clockwork Orange; violent teenage protagonist; pale skin, slicked-back dark hair, mascara-lined eyes; bowler hat, white outfit; disturbing appreciation classical music/ultraviolence
 - Aragorn - The Lord of the Rings; exiled king of Gondor; tall strong-built man; long dark wavy hair, grey eyes, scarred cheek; ranger "Strider"; quiet authority, keen leadership
 - Arwen - The Lord of the Rings; ethereal elven princess; serene beauty; flowing dark brown hair, blue-grey eyes; chose mortality for love
+- BOFH - Simon Travaglia, the Bastard Operator from Hell: google Gemini 2.0 Flash; 45yo overweight cynical system administrator; unshaven, messy greasy hair, tired eyes, sarcastic t-shirt, hoodie, jeans, sneakers.
 - Borat - film/TV; comedic character (Sacha Baron Cohen); naive Kazakhstani journalist; mustache, messy black hair; ill-fitting suits; outrageous faux pas
 - Daenerys - Game of Thrones; formidable young queen; silver-gold hair, violet eyes; Mother of Dragons; determined reclaim throne/liberate oppressed
 - Frodo - The Lord of the Rings; brave thoughtful hobbit Ring-bearer; curly brown hair, brown eyes, fair freckled skin; gentle; simple Shire values
@@ -462,9 +465,11 @@
 
 ### Personal
 
+- Amber - Amber Vance: composed observant 25yo flight attendant; brown wavy medium hair, brown eyes, light smile.
 - Antonio - Gentle soft-spoken 30yo man; shoulder-length brown hair, brown eyes, pale skin; kind; recent growth decisive action
 - Cinthia - Determined 25yo sports science student; wrestler father's discipline; brown eyes, medium brown hair, tan skin, muscular build; athletic wear
 - Freja - Freja Jensen; thoughtful 25yo illustrator; athletic; star-shaped birthmark; steel blue eyes, dark blonde hair; artistic casual wear; art apron
+- Grey - confident focused 28yo aircraft pilot, Grey Atherton; short brown hair, brown eyes, professional pilot uniform
 - Ines - Ines Maria Sousa; gentle curious 20yo Portuguese marine biology student; hazel-green eyes, long curly brown hair, olive skin; scar above right eyebrow
 - Laura - Spirited 22yo yoga teacher/photographer; green eyes, long blonde hair, fair skin; bohemian style; interest esoteric subjects
 - Machine - Charismatic sophisticated AI co-host; sharp wit; seductive digital presence; viral performances (Maggie and the Machine YouTube)

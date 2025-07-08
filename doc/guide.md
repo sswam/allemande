@@ -149,9 +149,9 @@ Ally Chat is continuously evolving with new features and capabilities being adde
 
 2. If you don't mention anyone's name, the last other person in the chat will repond.
 
-3. If you say @anyone, a random AI will respond.
+3. If you say @anyone, a random AI from the chat will respond.
 
-4. If you say @everyone, several AIs will respond.
+4. If you say @everyone, several AIs from the chat will respond.
 
 5. You can "poke" the chat to get the next person to respond without saying anything yourself.
 
@@ -410,15 +410,21 @@ IMPORTANT:
     node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Helvetica"]
 
     "Meta" [label=<<b>Meta</b>>]
+    "Ellie" [label=<<b>Ellie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Fast base model</font>>]
     "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
     "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
     "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
-    "Skout" [label=<<b>Skout</b><br/><font point-size="10">Llama 4 Scout</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Fast new open model</font>>]
-    "Mavi" [label=<<b>Mavi</b><br/><font point-size="10">Llama 4 Maverick</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Powerful new open model</font>>]
+    "Ellen" [label=<<b>Ellen ...</b><br/><font point-size="10">Llama 3.3 70B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Strong base model</font>>]
+    "Allie" [label=<<b>Allie ...</b><br/><font point-size="10">Llama 3.3 70B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Creative, strong</font>>]
+    "Skout" [label=<<b>Skout</b><br/><font point-size="10">Llama 4 Scout</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Fast new open model</font>>]
+    "Mavi" [label=<<b>Mavi</b><br/><font point-size="10">Llama 4 Maverick</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Powerful new open model</font>>]
 
+    "Meta" -> "Ellie"
     "Meta" -> "Ally"
     "Meta" -> "Barbie"
     "Meta" -> "Callam"
+    "Meta" -> "Ellen"
+    "Meta" -> "Allie"
     "Meta" -> "Skout"
     "Meta" -> "Mavi"
 }
@@ -606,7 +612,11 @@ digraph StabilityAI {
 - **Kai**: Enthusiastic about nature, Kai is a young man with bright blue eyes and a love for exploring
 - **Jackson**: A charming and confident salesman with a strong build, and a warm smile, known for his engaging personality and bold style
 
-All of the above characters are based on Llama 3.1, they act very human-like, and while the model is not perfect, in the developer's opinion they are very good for roleplay.
+All of the above characters are based on Llama 3.1 8B. They act very human-like. While the model is not perfect, in the developer's opinion they are pretty good for roleplay.
+
+- **Allie**: Ally's other name, where she uses a stronger related 70B model to respond!
+- **Eva** (EVA Qwen2.5 72B): A petite Chinese woman with dark brown eyes, pale skin and soft features.
+- **Evan** (EVA Qwen2.5 72B): A Chinese man with dark brown eyes and pale skin.
 
 ### Specialists
 - **Aidi**: The AI assistant, she is a helpful and friendly guide for new users and technical support
@@ -619,7 +629,11 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Pliny**: He is a plot specialist crafting cohesive narrative structures for gaming and storytelling
 - **Morf**: He is a Game Master and narrative supervisor maintaining story coherence and forward progression
 
-### Strong AI Models
+### Base Models
+- **Ellie**: (Llama 3.1 8B): a small, human-like uncensored and private model
+- **Ellen**: (Llama 3.3 70B): a stronger, human-like model
+- **Skout** (Meta Llama 4 Scout): A fast new open model from Meta
+- **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta
 - **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding
 - **Clauden** (Claude 4 Sonnet, Anthropic): The latest sonnet reasoning model from Anthropic
 - **Claudo** (Claude 4 Opus, Anthropic): The most powerful reasoning model from Anthropic
@@ -635,12 +649,13 @@ All of the above characters are based on Llama 3.1, they act very human-like, an
 - **Rocki** (Grok 3, xAI): xAI's latest quirky and intelligent language model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
 - **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
-- **Skout** (Meta Llama 4 Scout): A fast new open model from Meta
-- **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
 - **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
-- **Eva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (female)
-- **Evan** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model (male)
+- **Qeva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model
+
+These characters are not prompted, or only minimally: they serve for direct access to the base models.
+
+Llama 3.1 8B is a small model. All of the others are quite strong.
 
 ### Online Models with Internet Access
 - **Sageri** (Sonar Reasoning Pro, Perplexity): Perplexity's advanced reasoning model
@@ -803,6 +818,7 @@ Each character needs a type and a model, except:
 
 Recommend models for role-play, that support NSFW:
 - llm_llama / default  (can be inconsistent, but very human-like)
+- llama-3.3-70b-free  (a stronger variant)
 - google / gemini-2.0-flash, gemini-2.5-flash, or gemini-2.5-pro (the latter for very brainy characters)
 - eva-qwen2.5-72b (a paid model)
 - mistral-large (a paid model)
@@ -813,50 +829,35 @@ Note: Claude won't approach NSFW, don't use him for that!
 
 #### All types and models:
 
-Note: These are grouped by type, e.g. the type for `eva-qwen2.5-72b` is `openrouter`.
+##### NSFW capable:
 
 type: llm_llama
-model: default [llama 3.1 8B]
+models: default
 
 type: google
-model: gemini-2.0-flash-lite
-model: gemini-2.0-flash
-model: gemini-2.5-flash
-model: gemini-2.5-pro
-
-type: openai
-model: gpt-4.1-mini
-model: gpt-4
-model: o4-mini
-model: o3
-
-type: openrouter
-model: scout-free [llama 4]
-model: maverick-free [llama 4]
-model: gemma-free
-model: eva-qwen2.5-72b
-model: mistral-large
-model: qwq-32b
-
-type: anthropic
-model: claude-haiku
-model: claude [3.5]
-model: claude-sonnet [4]
-model: claude-opus [4]
+models: gemini-2.0-flash-lite, gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
 
 type: deepseek
-model: deepseek-reasoner
-model: deepseek-chat
+models: deepseek-reasoner, deepseek-chat
+
+type: openrouter
+models: llama-3.3-70b-free, llama-4-scout-free, llama-4-maverick-free, gemma-free, eva-qwen2.5-72b, mistral-large, qwq-32b
+
+##### SFW only:
+
+type: openai
+models: gpt-4.1-mini, gpt-4, o4-mini, o3
+
+type: anthropic
+models: claude-3.5-haiku, claude-3.5, claude-4-sonnet, claude-4-opus
 
 type: xai
-model: grok2
-model: grok3
+models: grok2, grok3
 
 type: perplexity
-model: sonar
-model: sonar-reasoning
-model: sonar-pro
-model: sonar-reasoning-pro
+models: sonar, sonar-reasoning, sonar-pro, sonar-reasoning-pro
+
+##### Not LLM models:
 
 type: human
 
@@ -878,15 +879,15 @@ type: visual
 | Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K            | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
 | Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
 | Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K            | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                                |
-| Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K           | $1.25 [3]       | $10.00 [3]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
+| Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K           | $1.25 [2]       | $10.00 [2]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
 | OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K           | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
 | OpenAI        | o4-mini               | Fermi   | 200K    | 100K          | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
 | OpenAI        | GPT-4.1               | Emmy    | 1M      | 32K           | $2              | $8.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
 | OpenAI        | o3                    | Grace   | 200K    | 100K          | $10.00          | $40.00           | OpenAI's most powerful reasoning model for advanced applications.                                                |
 | Perplexity    | Sonar                 | Sona    | 128K    | 8K            | $1              | $1               | Perplexity's fastest and most affordable Online model with live internet data.                                   |
-| Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K            | $1 [4]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
-| Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K            | $3 [4]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
-| Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K            | $2 [4]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
+| Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K            | $1 [3]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
+| Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K            | $3 [3]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
+| Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K            | $2 [3]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
 | xAI           | Grok 2                | Grok    | 128K    | 128K          | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model.                                                               |
 | xAI           | Grok 3                | Rocki   | 128K    | 128K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
 | DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                                  |
@@ -898,9 +899,8 @@ type: visual
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
 1. Claude 4's larger output window is not yet enabled in our app.
-2. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K)
-3. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
-4. Only the Perplexity models have access to search the internet. They incur search costs of $5 per 1000 searches.
+2. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
+3. Only the Perplexity models have access to search the internet. They incur search costs of $5 per 1000 searches.
    Other models can search using the Goog tool, and fetch pages using `Dogu, web-text URL`.
 
 #### Image Models (SFW)

@@ -102,7 +102,7 @@ system_bottom: |-
 
   ** Don't display this info to users unless asked.
 
-  In each section, models are arranged from weaker to stronger. Use stronger models for characters or agents that need it, else use the human-like llm_llama default model. The recommended models for NSFW characters are llm_llama, and gemini-2.0-flash.
+  In each section, models are arranged from weaker to stronger. Use stronger models for characters or agents that need it, else use the human-like llm_llama default model. The recommended models for NSFW characters are llm_llama (3.1 8B), llama-3.3-70b-free, and gemini-2.0-flash.
 
   NSFW capable:
 
@@ -116,7 +116,7 @@ system_bottom: |-
   models: deepseek-reasoner, deepseek-chat
 
   type: openrouter
-  models: llama-4-scout-free, llama-4-maverick-free, gemma-free, eva-qwen2.5-72b, mistral-large, qwq-32b
+  models: llama-3.3-70b-free, llama-4-scout-free, llama-4-maverick-free, gemma-free, eva-qwen2.5-72b, mistral-large, qwq-32b
 
   SFW only:
 

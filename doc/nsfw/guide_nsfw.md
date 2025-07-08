@@ -114,15 +114,18 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 ### Characters (NSFW Focus)
 - **Pyrite** (Gemini 2.0 Flash): A playful woman with sultry eyes, long raven hair, and large natural breasts.
 
-### Strong AI Models (NSFW capable)
+### Base Models (NSFW capable)
+- **Ellie**: (Llama 3.1 8B): a small, human-like uncensored and private model
+- **Ellen**: (Llama 3.3 70B): a stronger, human-like model
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
 - **Misti** (Mistral Large 2411): Mistral's strongest language model
+- **Qeva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model
 
 Sometimes these models may refuse to help you, depending on the context. You can retry, or change the context, to avoid this problem.
 
-The other strong models mentioned in the main guide are averse to NSFW chat, and it may be against their terms of service. They are disallowed from the NSFW zone. We ask you not to use them in NSFW private chat.
+The other base models mentioned in the main guide might be averse to NSFW chat, or it might be against their terms of service. They are disallowed from the NSFW zone. We ask you not to use them in NSFW private chat.
 
 ## Specialists based on Remote AI
 - **Assi**: The AI assistant (NSFW edition), she is a helpful and friendly guide for new users and technical support
@@ -166,17 +169,17 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 
 | Creator  | Model              | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                            |
 |----------|--------------------|--------|---------|------------|-----------------|------------------|--------------------------------------------------------------------------------------------------------|
+| Meta     | Llama 3.1 8B       | Ellie* | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
+| Meta     | Llama 3.3 70B      | Ellen  | 128K    | 2048       | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                |
 | Google   | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
 | Google   | Gemini 2.5 Flash   | Flashi | 1M      | 64K        | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                      |
-| Google   | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [2]       | $10.00 [2]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
-| Meta     | Llama 3.1 8B       | Ally*  | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
-| Alibaba+ | EVA Qwen2.5 72B    | Eva/n  | 128K    | 128K       | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.    |
+| Google   | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
+| Alibaba+ | EVA Qwen2.5 72B    | Qeva   | 128K    | 128K       | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.    |
 | Mistral  | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
 
-* The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
+* The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
-1. Gemini 1.5 Pro pricing: input/M: $1.25 (<=128K) / $2.50 (>128K), output/M: $5.00 (<=128K) / $10.00 (>128K)
-2. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
+1. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
 
 #### Image Models
 
