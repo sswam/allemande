@@ -59,9 +59,7 @@ Sam:	<script>image_text(previous("img"), ["where           does", "all          
 	
 	Profile cards, work in progress...
 	
-	<card path="character/Ally"></card> <card path="character/Cleo"></card> <card path="character/Hanni"></card> <card path="character/Soli"></card>
-	
-	<card path="character/Callam"></card> <card path="character/Amir"></card> <card path="character/Bast"></card> <card path="character/Dante"></card>
+	<card path="character/Ally"></card><card path="character/Cleo"></card><card path="character/Hanni"></card><card path="character/Soli"></card><card path="character/Callam"></card><card path="character/Amir"></card><card path="character/Bast"></card><card path="character/Dante"></card>
 
 Sam:	hey Aidi, we might have more new users soon perhaps.
 
