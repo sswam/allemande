@@ -10,7 +10,7 @@ DeepSeek, ...) and specialized tools.
 - a "conductor" that manages AI responses based on user mentions and cues
 - support for Graphviz and Mermaid diagrams
 - AI art based on SDXL and PonyXL models
-- 375 models, characters, agents, and tools... (and counting)
+- 375 characters, agents, models, and tools... (and counting)
 
 The platform offers free speech, NSFW options, coding support in 7 languages,
 search tools, and diverse AI personalities. It includes an AI help system to
