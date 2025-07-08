@@ -59,7 +59,7 @@ Wally joined Ally Chat, but he didn't press the ? button, to read the Intro and 
 
 We are building the best damn app on the planet.  Don't miss out.
 
-^^^ You read that carefully, right?
+^^^ You read that carefully, right? :)
 
 
 Okay, then...
@@ -83,7 +83,7 @@ Please consider joining our Patreon to support the project.
 
 Free-tier users have access to all models and features, but subscribers get some good perks too.
 
-We do need your help, if you can. Subscriptions start at $5 / month.  You can also join as a free member.
+We do need your help, if you can. Subscriptions start at \$5 / month.  You can also join as a free member.
 END
 	done
 
