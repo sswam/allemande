@@ -49,24 +49,25 @@ add-user() {
 	change-password "$@" |
 		while read -r _ user pass; do
 			cat <<END
-Thanks for joining Ally Chat!
+Welcome to Ally Chat!
 
-* The app is quite complex. Please let me give you a demo!
-* Stay in the main "Ally Chat" room while you learn the ropes.
-* Wally went direct to private chat, got confused and gave up. Don't be like Wally!
-* In return for your free access, please stay in touch and give me some feedback.
-* If you would like to sponsor the project, check our Patreon which is linked from the intro.
+Important Tips:
+• Stay in the main "Ally Chat" room while learning
+• Let me give you a quick demo to help you get started
+• Your feedback helps improve the app
+• Optional: Support us on Patreon (link in intro)
 
-Getting Started:
+Login Details:
+• Site: https://$ALLEMANDE_DOMAIN
+• Username: $user
+• Password: $pass
 
-1. Go to https://$ALLEMANDE_DOMAIN and log in:
-  - user: $user
-  - pass: $pass
-2. The main "Ally Chat" room is public and PG-rated.
-3. Press the "?" help button, and read the intro.
-4. Click the "help" tab and chat to the assistant.
-5. If you see a red dot at top right, you're disconnected. Try reloading the page.
-6. Message Sam to arrange a demo in the app!
+Quick Start:
+1. Log in with credentials above
+2. Join the main "Ally Chat" room (PG-rated) and say hi!
+3. Check the "?" help button and read the intro
+4. Use the "help" tab to chat with the assistant
+5. Message Sam to schedule your demo
 END
 		done
 
@@ -96,9 +97,9 @@ END
 
 NSFW Features:
 
-- For NSFW chat and image generation, please go to the public "nsfw" room.
-- You can also use NSFW features in your private chat rooms.
-- If you stay in private all the time, you won't be able to learn from other users.
+• Use the "nsfw" room for NSFW chat/images
+• NSFW features work in private rooms too
+• Join public rooms to learn from others
 END
 		ln -sf ../../doc/nsfw/guide.md rooms/"$user"/.help.m
 		ln -sf ../../rooms.dist/help.bb.base.nsfw rooms/"$user"/.help.bb.base
