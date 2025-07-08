@@ -47,29 +47,45 @@ add-user() {
 	fi
 
 	change-password "$@" |
-		while read -r _ user pass; do
-			cat <<END
-Welcome to Ally Chat!
+	while read -r _ user pass; do
+		cat <<END
+*** WARNING: Ally Chat is a cutting-edge power tool.  It's not a dumbed-down app for chuckle-monkeys.
 
-Important Tips:
-• Stay in the main "Ally Chat" room while learning
-• Let me give you a quick demo to help you get started
-• Your feedback helps improve the app
-• Optional: Support us on Patreon (link in intro)
+There are a few rules, but we don't believe in censorship or "AI safety".  You are responsible for your own behaviour and your own safety.
 
-Login Details:
-• Site: https://$ALLEMANDE_DOMAIN
-• Username: $user
-• Password: $pass
+Before you start, please read the story of "Wally".  It's short and it's sad.
 
-Quick Start:
-1. Log in with credentials above
-2. Join the main "Ally Chat" room (PG-rated) and say hi!
-3. Check the "?" help button and read the intro
-4. Use the "help" tab to chat with the assistant
-5. Message Sam to schedule your demo
+Wally joined Ally Chat, but he didn't press the ? button, to read the Intro and use the AI Help!  He certainly didn't read the User Guide.  Wally expected Ally Chat to be simple like ChatGPT, but Ally Chat is a power tool.  Wally got confused right away, and gave up on Ally Chat before he even got started.  Don't be a chuckle-monkey like Wally!
+
+We are building the best damn app on the planet.  Don't miss out.
+
+^^^ You read that carefully, right?
+
+
+Okay, then...
+
+=== Welcome to Ally Chat! ===
+
+Login at https://$ALLEMANDE_DOMAIN
+Username: $user
+Password: $pass
+
+Getting Started:
+1. Say "hi" in the "Ally Chat" room!
+2. Press '?' and read the Intro
+3. Visit the AI 'help' tab and ask some questions
+4. Ask Sam for a demo.
+
+If you don't follow these steps, we reserve the right to delete your account!
+
+Please consider joining our Patreon to support the project.
+- https://www.patreon.com/allychat
+
+Free-tier users have access to all models and features, but subscribers get some good perks too.
+
+We do need your help, if you can. Subscriptions start at $5 / month.  You can also join as a free member.
 END
-		done
+	done
 
 	mkdir -p rooms/"$user"
 	chmod o-rwx rooms/"$user"
@@ -98,6 +114,7 @@ END
 NSFW Features:
 
 • Use the "nsfw" room for NSFW chat/images
+• You can read the NSFW intro and guide when you are in the "nsfw" zone
 • NSFW features work in private rooms too
 • Join public rooms to learn from others
 END

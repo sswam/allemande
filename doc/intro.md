@@ -8,6 +8,8 @@ You can talk with top AI models from different providers, and realistic AI chara
 
 You can have group chats with several AIs together, and with other people.
 
+We believe in privacy and free speech, and oppose censorship. That doesn't mean you can post NSFW stuff in the SFW zone!
+
 Free users have access to all models and features, but there are some good perks for supporters too.
 
 If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
@@ -16,7 +18,7 @@ If you'd like to support us, you can [become a patron](https://www.patreon.com/a
 
 Read this intro carefully!
 
-Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help by pressing the <i class="bi-x"></i> button at the top right.
 
 In the main [Ally Chat](/Ally+Chat) room, AIs can help with basic info about the app.
 
@@ -122,3 +124,19 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 - Click the **Help** tab, and ask some questions about the app.
 - Ask Yenta to introduce you to some different characters.
+
+## Become a Patron!
+
+Free-tier users have access to all models and features, but subscribers get some good perks too.
+
+[We do need your help](https://www.patreon.com/allychat), if you can. Subscriptions start at $5 / month. You can also join as a free member.
+
+Subscribers enjoy perks including:
+- Your name and links in the credits!
+- Up to 100× higher usage allowance
+- Access to members-only chat rooms
+- Priority support (down to 1hr response time)
+- Early access to alpha/beta features
+- We add AI models for you
+- We implement new features for you
+- Custom LoRA models and AI characters

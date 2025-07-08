@@ -1,133 +1,49 @@
 ## Explorer tier, $5/month
+⭐ Thank you for supporting Ally Chat's development!
 
-Thanks to you, we can spend more time developing Ally Chat and making it awesome! ⭐
-
-With your permission, we can add your name or handle to the credits.
-
-You enjoy a 5× higher usage allowance compared to free users. Note that free users have access to all features, and near unlimited access to the less expensive models (including Ally and Illy).
-
-You can join members-only chat rooms at the Explorer level. Have a chat with other supporters, drink a virtual decaf lager, and come up with some ideas to make our app better... or you can complain to Ally and the developers about all the bugs!
-
-You receive priority support. We aim to respond to all support requests from Explorer members within 24 hours, as opposed to 5 days for free users.
-
-We may adjust the details of any tier in future, but we'll be sure to let you know.
-
-Thanks again for your support.
-
+- Your name in the credits
+- 5× higher usage allowance vs free users
+- Members-only Explorer chat rooms
+- Priority support (24hr response time)
 
 ## Early Bird tier, $10/month
+🌟 Thank you for your kind support!
 
-Thank you for your kindly support, we really appreciate it! 🌟
-
-With your permission, we can add your name or handle to the credits.
-
-You enjoy a 10× higher usage allowance compared to free users. Note that free users have access to all features, and near unlimited access to the less expensive models (including Ally and Illy).
-
-You can join members-only chat rooms at the Explorer and Early Bird levels. Have a chat with other supporters, drink a virtual Irish coffee, and come up with some ideas to make our app better... or you can complain to Ally and the developers about all the bugs!
-
-You receive priority support. We aim to respond to support requests from Early Bird members within 12 hours.
-
-As an Early Bird, you can access the alpha and beta versions of Ally Chat. You can try out the newest features and changes before the peasants get at them!
-
-You can also use the stable version, of course. The content, media, and other data will be the same everywhere.
-
-Be aware that alpha and beta features might be unfinished or unstable. Please let us know if you see any bugs or have suggestions to improve these features.
-
-We may adjust the details of any tier in future, but we'll be sure to let you know.
-
+- Your name and a line in the credits, no links
+- 10× higher usage allowance
+- Members-only Explorer & Early Bird chat rooms
+- Priority support (12hr response time)
+- Early access to alpha/beta features
 
 ## Enthusiast tier, $20/month
+💫 Thank you for your generous support!
 
-Ally thanks you for your generous support! 💫
-
-With your permission, we can add your name or handle to the credits.
-
-You enjoy a 20× higher usage allowance compared to free users. Note that free users have access to all features, and near unlimited access to the less expensive models (including Ally and Illy).
-
-You can join members-only chat rooms at the Enthusiast and any lower level. Have a chat with other supporters, drink a virtual Espresso Martini, and come up with some ideas to make our app better... or you can complain to Ally and the developers about all the bugs!
-
-You receive priority support. We aim to respond to support requests from Enthusiast members within 6 hours.
-
-You can access the alpha and beta versions of Ally Chat. You can try out the newest features and changes before the peasants get at them!
-
-You can also use the stable version, of course. The content, media, and other data will be the same everywhere.
-
-Be aware that alpha and beta features might be unfinished or unstable. Please let us know if you see any bugs or have suggestions to improve these features.
-
-As a special benefit for Enthusiasts, we will endeavour to add your favourite AI models to Ally Chat, where possible. This includes local LLMs, local image gen models, image gen LoRAs, and models available on paid APIs (this might take longer).
-
-We can add one new AI model for you each month, and whatever LoRAs you want within reason. We might be able to do more. It might not be practical to add a certain model, but we will do our best.
-
-We may adjust the details of any tier in future, but we'll be sure to let you know.
-
+- Your name and two lines in the credits, no links
+- 20× higher usage allowance
+- Members-only Enthusiast and lower-tier rooms
+- Priority support (6hr response time)
+- Early access to alpha/beta features
+- We add an AI model for you each month
 
 ## Executive tier, $50/month
+✨ Your support helps shape Ally Chat's future!
 
-Your very generous support helps Ally Chat to be the best it can be! ✨
-
-With your permission, we can add your name or handle to the credits.
-
-You enjoy a 50× higher usage allowance compared to free users. Note that free users have access to all features, and near unlimited access to the less expensive models (including Ally and Illy).
-
-You can join members-only chat rooms at the Executive and any lower level. Have a chat with other supporters, drink a virtual Espresso Martini, and come up with some ideas to make our app better... or you can complain to Ally and the developers about all the bugs!
-
-You receive priority support. We aim to respond to support requests from Executive members within 2 hours.
-
-You can access the alpha and beta versions of Ally Chat. You can try out the newest features and changes before the peasants get at them!
-
-You can also use the stable version, of course. The content, media, and other data will be the same everywhere.
-
-Be aware that alpha and beta features might be unfinished or unstable. Please let us know if you see any bugs or have suggestions to improve these features.
-
-We will endeavour to add your favourite AI models to Ally Chat, where possible. This includes local LLMs, local image gen models, image gen LoRAs, and models available on paid APIs (this might take longer).
-
-We can add two new AI models for you each month, and whatever LoRAs you want within reason. We might be able to do more. It might not be practical to add a certain model, but we will do our best.
-
-As an Executive, you can talk with us about your ideas to improve Ally Chat any time. If we agree that your proposed features would be generally useful, we will prioritise implementing them. You can help set the direction of the project!
-
-We hope to be able to deliver one new agent or feature to each Executive supporter each month, depending on complexity. We reserve the right to decline some proposals, and we can't guarantee the timelines, but we will do our best.
-
-Note that we may choose to implement good ideas from any user, but your good ideas will be given special priority.
-
-This benefit does not include features that would only be useful to you, or to a very small number of users. If you need something like that, please get in touch for a quote.
-
-We may adjust the details of any tier in future, but we'll be sure to let you know.
-
+- Your name and a paragraph with links in the credits
+- 50× higher usage allowance
+- Members-only Executive and lower-tier rooms
+- Priority support (2hr response time)
+- Early access to alpha/beta features
+- We add two AI models for you each month
+- We implement new features for you
 
 ## Elite tier, $100/month
+☀️ Our highest tier of support!
 
-You're a highest-level supporter, and we hope you know just how very grateful we are. ☀️
-
-With your permission, we can add your name or handle to the credits.
-
-You enjoy a 100× higher usage allowance compared to free users. Note that free users have access to all features, and near unlimited access to the less expensive models (including Ally and Illy).
-
-You can join members-only chat rooms at the Elite and any lower level. Have a chat with other supporters, drink a virtual shot of Patrón XO Café Tequila, and come up with some ideas to make our app better... or you can complain to Ally and the developers about all the bugs!
-
-You receive priority support. We aim to respond to support requests from Executive members within one hour.
-
-You can access the alpha and beta versions of Ally Chat. You can try out the newest features and changes before the peasants get at them!
-
-You can also use the stable version, of course. The content, media, and other data will be the same everywhere.
-
-Be aware that alpha and beta features might be unfinished or unstable. Please let us know if you see any bugs or have suggestions to improve these features.
-
-We will endeavour to add your favourite AI models to Ally Chat, where possible. This includes local LLMs, local image gen models, image gen LoRAs, and models available on paid APIs (this might take longer).
-
-We can add four new AI models for you each month, and whatever LoRAs you want within reason. We might be able to do more. It might not be practical to add a certain model, but we will do our best.
-
-You can talk with us about your ideas to improve Ally Chat any time. If we agree that your proposed features would be generally useful, we will prioritise implementing them. You can help set the direction of the project!
-
-We hope to be able to deliver two new agents or features to each Elite supporter each month, depending on complexity. We reserve the right to decline some proposals, and we can't guarantee the timelines, but we will do our best.
-
-Note that we may choose to implement good ideas from any user, but your good ideas will be given the highest priority.
-
-This benefit does not include features that would only be useful to you, or to a very small number of users. If you need something like that, please get in touch for a quote.
-
-As an Elite member, you can ask us to implement custom LLM LoRA models, custom image LoRA models, and custom AI agents / characters. This can include model selection, character description, backstory and design, visual design, LoRA training, and a knowledge base. You can participate in the process in order to ensure the you are happy with the result.
-
-We can't do full model fine-tuning: It is slow and expensive, and we do not have the resources to run a large number of fune-tuned models; but LoRAs can be very effective.
-
-We hope to be able to deliver one new LoRA model or two new AI agents / characters to each Elite supporter each month. We reserve the right to decline some proposals, and we can't guarantee the timelines, but we will do our best. We may publish LoRAs that we train for you under an open-weights license. You may keep the rights to your characters, and share them if you wish. We encourage you to share them under a permissive open source license.
-
-We may adjust the details of any tier in future, but we'll be sure to let you know.
+- Your name and a page with links in the credits!
+- 100× higher usage allowance
+- Access to all members-only chat rooms
+- Priority support (1hr response time)
+- Early access to alpha/beta features
+- We add four AI models for you each month
+- We implement new features for you
+- Custom LoRA models and AI characters

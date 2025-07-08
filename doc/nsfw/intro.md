@@ -8,7 +8,7 @@ You can talk with top AI models from different providers, and realistic AI chara
 
 You can have group chats with several AIs together, and with other people.
 
-We believe in privacy and free speech, and oppose censorship.
+We believe in privacy and free speech, and oppose censorship. That doesn't mean you can post NSFW stuff in the SFW zone!
 
 The app includes models and features for adult entertainment, and is good for other things too.
 
@@ -127,3 +127,19 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 - Click the **Help** tab, and ask some questions about the app.
 - Ask Yenta to introduce you to some different characters.
+
+## Become a Patron!
+
+Free-tier users have access to all models and features...
+
+But [we do need your help](https://www.patreon.com/allychat), if you can. Subscriptions start at a mere $5 / month. You can also join as a free member.
+
+Subscribers enjoy perks including:
+- Your name and links in the credits!
+- Up to 100× higher usage allowance
+- Access to members-only chat rooms
+- Priority support (down to 1hr response time)
+- Early access to alpha/beta features
+- We add AI models for you
+- We implement new features for you
+- Custom LoRA models and AI characters
