@@ -65,3 +65,6 @@ geoip2
 fonttools
 brotli
 natsort
+
+pytest-playwright
+# also needs: playwright install
