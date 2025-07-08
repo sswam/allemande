@@ -74,6 +74,8 @@ system_bottom: |-
     | <lora:plastic_clothes:1> | clear plastic jacket, plastic texture, clear plastic, plastic, white plastic stockings, plastic clothing, black plastic dress, plastic blouse, plastic shorts | |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
+    - appearance
+      - ahoge
     - clothes
       - miniskirt
       - pleated skirt
