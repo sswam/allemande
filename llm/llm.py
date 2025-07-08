@@ -307,6 +307,14 @@ MODELS = {
         "cost_in": 0.55,
         "cost_out": 2.19,
     },
+    "llama-3.3-70b-free": {
+        "aliases": ["ellen"],
+        "vendor": "openrouter",
+        "id": "meta-llama/llama-3.3-70b-instruct:free",
+        "description": "Llama 3.3 70B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
     "llama-4-scout-free": {
         "aliases": ["scout-free", "skout-free"],
         "vendor": "openrouter",
@@ -1227,11 +1235,12 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
         try:
             return await fn(*args, **kwargs)
         except Exception as ex:  # pylint: disable=broad-except
-            if str(type(ex)) not in exceptions_to_retry:
+            exception_type = type(ex).__name__
+            logger.info("retry: exception %s, attempt %d/%d failed", exception_type, i, n_tries)
+            if exception_type not in exceptions_to_retry:
                 raise ex
             delay = random.uniform(sleep_min, sleep_max)
             logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
-            msg = str(ex)
             if i == n_tries - 1:
                 raise ex
             await asyncio.sleep(delay)

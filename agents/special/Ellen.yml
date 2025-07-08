@@ -1,0 +1,13 @@
+type: openrouter
+model: llama-3.3-70b-free
+# system_bottom: You are $NAME.
+# system_bottom_pos: 3
+visual:
+  person: 1girl, brown eyes, Italian, skinny, wavy hair, long hair, parted hair, brown hair
+  clothes: white linen shirt, blue denim shorts, leather sandals
+  clothes_upper: white linen shirt
+  clothes_lower: blue denim shorts, leather sandals
+  age: adult 20 years old
+  emo: light smile, optimistic
+context: 101
+lines: 1
