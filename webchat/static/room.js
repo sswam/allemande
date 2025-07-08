@@ -41,6 +41,7 @@ function get_status_element() {
     status = $create("div");
     status.id = "allemande_status";
     $append(document.lastChild, status);
+    hide(status);
   }
   return status;
 }
@@ -63,6 +64,7 @@ export function online() {
   const status = get_status_element();
   //	status.innerText = '🔵';
   status.innerText = "";
+  hide(status);
   clean_up_server_events();
 }
 
@@ -74,7 +76,9 @@ function offline() {
   status.innerText = "🔴";
   if (!view_options.advanced)
     status.innerText += " disconnected; reload!";
-  document.body.addEventListener("mouseenter", reload, { once: true });
+  show(status);
+  for (const evname of ["mouseenter", "mousemove", "click", "touchstart"]) 
+    document.body.addEventListener(evname, reload);
 }
 
 export function clear() {

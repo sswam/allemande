@@ -4,7 +4,10 @@
 async function createCard(template) {
 	const container = document.createElement('div');
 	container.className = 'card-container';
-	container.innerHTML = await $get(template, { credentials: 'include' });
+	const container2 = document.createElement('div');
+	container2.className = 'card-container-2';
+	container2.innerHTML = await $get(template, { credentials: 'include' });
+	container.appendChild(container2);
 	return container;
 }
 

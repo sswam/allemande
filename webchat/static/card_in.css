@@ -1,17 +1,28 @@
 :root {
-	--card-scale: calc(15/16);
-	--card-font-size: calc(15/16);
+	--card-scale: 0.9375; /* 15/16 */
+	--card-font-size: 0.9375; /* 15/16 */
 }
 
 .card-container {
-	perspective: 150rem;
-	font-size: calc(var(--card-scale) * 1rem);
-	width: calc(var(--card-scale) * 28.125rem);
-	height: calc(var(--card-scale) * 28.125rem * 7/5);
-	display: inline-block;
+	width: min(100%, calc(var(--card-scale) * 28.125rem));
+	aspect-ratio: 5 / 7;
 	vertical-align: top;
 	margin: 0 calc(var(--card-scale) * 2rem) calc(var(--card-scale) * 2rem) 0;
 	--shine-opacity: 0;
+	container-type: inline-size;
+	overflow: visible;
+	display: inline-block;
+	position: relative;
+}
+
+.card-container-2 {
+	position: absolute;
+	overflow: visible;
+	perspective: 150rem;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
 }
 
 .card {
@@ -25,7 +36,9 @@
 	background: var(--card-border-gradient);
 	box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.5);
 	transform-style: preserve-3d;
-	font-size: calc(var(--card-font-size) * 1em);
+/*	font-size: calc(var(--card-font-size) * 1em); */
+	font-size: calc(var(--card-font-size) * 3.556cqw);
+	overflow: visible;
 }
 
 .card-face {
@@ -48,6 +61,7 @@
 	color: var(--text-color, #000);
 	text-align: justify;
 	border-radius: 0.625em;
+	margin: 0;
 }
 
 /*
@@ -56,12 +70,11 @@
 }
 */
 
-.card-face > div:not(.card-extra-images) {
-	margin: 0;
+.card-face > div:not(.card-extra-images):not(.card-header) {
 	padding: 0.625em;
 	border-radius: 0.625em;
 	margin: -0.625em;
-	border: 0.0625em solid rgba(128, 128, 128, 0.125);
+/*	border: 0.0625em solid rgba(128, 128, 128, 0.125); */
 }
 
 body.light .card-face > div.card-bio {
@@ -205,6 +218,7 @@ img.card-avatar {
 /* Shine overlay */
 .card-overlay {
 	position: absolute;
+	margin: 0;
 	top: 0;
 	left: 0;
 	right: 0;
