@@ -86,10 +86,11 @@ generate_log() {
         done
     fi
 
+    # doesn't work well, so disabled
     time_off_prompt=""
-    if [ "$default_ref" = 1 ]; then
-        time_off_prompt="If the dev took some time off since the previous working week, like one or more whole weeks, note that and approx. how much! "
-    fi
+    # if [ "$default_ref" = 1 ]; then
+    #     time_off_prompt="If the dev took some time off since the previous working week, like one or more whole weeks, note that and approx. how much! "
+    # fi
 
     prompt="Please generate a devlog entry for week of $week_start to $week_end.
 ${time_off_prompt}
