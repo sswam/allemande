@@ -59,7 +59,7 @@ Wally joined Ally Chat, but he didn't press the ? button, to read the Intro and 
 
 We are building the best damn app on the planet.  Don't miss out.
 
-^^^ You read that carefully, right? :)
+^^^ Please read that carefully, okay?
 
 
 Okay, then...
