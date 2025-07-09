@@ -237,6 +237,7 @@ async def process_image_queue():
 
             if start_time - job.request_time > MAX_JOB_DELAY:
                 # Don't process the job if it has been in the queue for too long, as the client will have timed out
+                logger.info("skipping old job: %.0f seconds old, more than %.0f seconds", start_time - job.request_time, MAX_JOB_DELAY)
                 await complete_batch(job)
             else:
                 # Process the job
