@@ -2176,12 +2176,10 @@ function view_options_apply() {
     $content.placeholder = input_placeholder;
   }
 
-  if (view_options.image_size >= 10) {
+  if (view_options.image_size >= 10)
     view_image_size_delta = -1;
-  }
-  if (view_options.image_size <= 1) {
+  if (view_options.image_size <= 1)
     view_image_size_delta = 1;
-  }
   const image_size_icon = view_image_size_delta > 0 ? "expand" : "contract";
   $id("view_image_size").innerHTML = icons[image_size_icon];
 
@@ -2314,13 +2312,15 @@ function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
 function view_image_size(ev) {
   // range from 1 to 10
   const reset = ev.ctrlKey;
+  if (reset || ev.shiftKey)
+    view_image_size_delta = 1;
   if (reset) {
     view_options.image_size = image_size_default;
-    view_image_size_delta = 1;
   } else {
     const neg = ev.shiftKey ? -1 : 1;
     const delta = neg * view_image_size_delta;
-    view_options.image_size = ((view_options.image_size || image_size_default) + delta + 9) % 10 + 1;
+    // view_options.image_size = ((view_options.image_size || image_size_default) + delta + 9) % 10 + 1;
+    view_options.image_size = clamp((view_options.image_size || image_size_default) + delta, 1, 10);
   }
   view_options_apply();
 }
