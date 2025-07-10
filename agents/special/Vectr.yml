@@ -65,12 +65,13 @@ system_bottom: |-
 system_bottom_pos: 3
 age: 37
 visual:
-  person: 1other, ageless, sharp eyes, analytical, serious expression, short hair, neat hair, neutral pose, white background, red accents, professional look
+  person: 1boy, ageless, sharp eyes, analytical, serious expression, short hair, neat hair, professional look
+  background: white background, red accents
   clothes_upper: suit jacket, white shirt, tie
   clothes_lower: suit pants
   clothes: dark suit, white shirt, tie, subtle red tie, minimalist style, pocket square
   age: adult 37 years old
-  emo: serious expression
+  emo: serious expression, neutral pose
 context: 101
 lines: 1
 
