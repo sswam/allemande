@@ -11,7 +11,7 @@ In addition to general features, which you can read about in the [User Guide](/g
 
 Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
 
-If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
+If you'd like to support us, you can [become a patron](https://www.patreon.com/allychatx) (NSFW Patreon).
 
 Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
 

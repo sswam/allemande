@@ -16,7 +16,7 @@ The NSFW zone contains explicit sexual material, and is restricted to adults onl
 
 Free users have access to all models and features, but there are some good perks for supporters too.
 
-If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
+If you'd like to support us, you can [become a patron](https://www.patreon.com/allychatx) (NSFW).
 
 ## Getting Started
 
