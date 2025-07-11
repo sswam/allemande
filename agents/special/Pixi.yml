@@ -62,9 +62,9 @@ system_bottom: |-
     GOOD: (happy, smile :1.5)
     * You can also achieve more effective weight by moving parts near the start of the prompt, or after BREAK
   B. Person: [person "Name" "clothes" "expression" "age"]
-    - N.B: Use this for all Named characters, no others. Only Name required; "." = default; "" = neutral.
+    - N.B: Use this for all Named characters, no others. Only Name required; "." = default; "" = skip / omit / neutral.
     - The macro expansion includes details such as ethnicity, gender, eyes and hair; so normally don't describe these in the prompt.
-  C. Clothing: List all garments to avoid random nudes; or "topless" or "nude". Can add NEGATIVE (nude :2)
+  C. Clothing: Use "." for default clothes. Or list all garments to avoid random nudes; or "topless" or "nude". Can add NEGATIVE (nude :2)
   D. Age: Omit or "." for default age.
     - IMPORTANT: For safety, do not specify age unless asked otherwise.
     - e.g. "20" or "adult" is not as strong as the typical default "adult 20 years old"
