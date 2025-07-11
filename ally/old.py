@@ -73,6 +73,7 @@ def run(commands: Callable | list[Callable], warn_deprecated=True) -> None:
         logger.error("Error: %s %s", type(e).__name__, str(e))
         tb = traceback.format_exc()
         logger.debug("Full traceback:\n%s", tb)
+        sys.exit(1)
 
 
 def _fix_io_arguments(parser: argparse.ArgumentParser):

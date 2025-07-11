@@ -530,9 +530,8 @@ def get_model_by_alias(model):
     if len(abbrev_models) == 1:
         return abbrev_models[0]
     if model not in MODELS:
-        logger.error("Model not found: %s\n\nAvailable models and aliases:", model)
         models(aliases=True, file=stderr)
-        sys.exit(1)
+        raise ValueError("Model not found: %s" % model)
     return model
 
 
