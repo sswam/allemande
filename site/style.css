@@ -91,8 +91,8 @@ body {
 }
 
 .button.yellow {
-	background-color: #663;
-	color: #ffe;
+	background-color: #442;
+	color: #eec;
 }
 
 .button.yellow:hover {
@@ -100,7 +100,7 @@ body {
 }
 
 .button.green {
-	background-color: #242;
+	background-color: #232;
 	color: #cfc;
 }
 
@@ -118,7 +118,7 @@ body {
 }
 
 .button.blue {
-	background-color: #226;
+	background-color: #225;
 	color: #ccf;
 }
 

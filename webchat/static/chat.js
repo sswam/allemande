@@ -271,6 +271,11 @@ function clear_content(ev) {
   set_content("");
 }
 
+function focus_content_on_pc() {
+  if (!isMobile)
+      focus_content();
+}
+
 function focus_content() {
   $content.focus();
 }
@@ -1720,6 +1725,7 @@ export function set_controls(id) {
     $on($id("view_theme"), "touchstart", show_theme_name);
   }
   controls = id;
+  focus_content_on_pc();
 }
 
 // top controls --------------------------------------------------------------
@@ -1734,6 +1740,7 @@ function set_top(id) {
     show($el);
   }
   top_controls = id;
+  focus_content_on_pc();
 }
 
 function set_top_left(id) {
@@ -1744,6 +1751,7 @@ function set_top_left(id) {
     show($el);
   }
   top_controls = id;
+  focus_content_on_pc();
 }
 
 // auto play -----------------------------------------------------------------
@@ -2397,6 +2405,12 @@ async function change_theme(ev) {
   if (!themes.length) {
     return;
   }
+  // basic mode, just toggle light and dark
+  if (!view_options.advanced) {
+    theme = theme === "light" ? "dark" : "light";
+    return set_theme(theme);
+  }
+
   const index = themes.indexOf(theme);
   const mode = ev.shiftKey ? "prev" : ev.ctrlKey ? "random" : "next";
   if (mode === "next") {
@@ -2837,24 +2851,6 @@ function select_cancel(ev) {
   $messages_iframe.contentWindow.postMessage({ type: "set_mode_options", ...mode_options }, ROOMS_URL);
 }
 
-// intro to Ally Chat: point at the help icon! -------------------------------
-
-function handle_intro() {
-  if (localStorage.getItem("intro"))
-    return;
-  localStorage.setItem("intro", "1");
-
-  // Firefox PWA doesn't load CSS before content?!
-  // So we are using inline styles to hide these
-  for (const $e of $$(".intro"))
-    $e.style.removeProperty("display");
-
-  const cl = document.body.classList;
-  cl.add("intro");
-
-  setTimeout(() => cl.remove("intro"), 5000);
-}
-
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -3005,5 +3001,5 @@ export async function init() {
   }, { passive: false });
   */
 
-  handle_intro();
+  focus_content_on_pc();
 }
