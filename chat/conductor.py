@@ -78,7 +78,7 @@ AI_EVERYONE_MAX = 2
 USE_PLURALS = True
 
 
-def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_tool: bool = False) -> tuple[int, int, int, str | None]:
+def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_tool: bool = False) -> tuple[int, int, int, str | None] | None:
     """
     Try to find a name in message content, prioritizing later sentences
     Returns tuple of (match_type, sentence_num_from_end, position, name)
@@ -122,7 +122,9 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
                 current_match = (match_type, sent_num, abs_pos, -length, name)
                 best_match = min(best_match, current_match)
 
-    return best_match
+    if best_match[4]:
+        return best_match
+    return None
 
 
 def who_is_named(
@@ -170,10 +172,12 @@ def who_is_named(
     matches = []
     for agent in agents_and_plurals:
         is_tool = agents is not None and agent in agents and agent_is_tool(agents.get(agent))
-        matches.append(find_name_in_content(content, agent, is_tool=is_tool, ignore_case=ignore_case))
+        best_match = find_name_in_content(content, agent, is_tool=is_tool, ignore_case=ignore_case)
+        if best_match:
+            matches.append(best_match)
 
     if not include_self and user:
-        matches = [m for m in matches if m[3] and m[3] != user]
+        matches = [m for m in matches if m[4] and m[4] != user]
     if not matches:
         return []
 
