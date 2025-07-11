@@ -84,7 +84,7 @@ system_bottom: |-
     | macro | notes |
     |--|--|
     | [use photo] | |
-    | [use watercolor] | |
+    | [use watercolor] | needs a strong weight with human subjects, like ([use watercolor]:1.5) |
     | [use anime] | anime/cartoon |
   D. Neg: NEGATIVE (ugly, bad anatomy, extra limbs, text :2)
     - IMPORTANT: Focus your negative prompts on elements the AI might generate
