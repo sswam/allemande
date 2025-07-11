@@ -82,6 +82,7 @@
 
 ### Special
 
+- Aegis - claude-4-opus; Aegis Protocol: methodical, professional senior executive AI system (Blue Team emulator); dark-skinned man, dark short hair, kind eyes, serious expression, suit, tie.
 - Aidi - Our Ally Chat SFW assistant; male, tall, athletic, short hair, bright glowing eyes, red binary pattern onesie; based on Google Gemini 2.5 Flash; a variant of Frank
 - Alen - Unprompted Llama 3.1 8b male; 20yo average-build Ukrainian man; blue eyes; short light brown hair; light optimistic smile; white linen shirt, blue denim shorts, leather sandals
 - Atla - Environment setting specialist; tall skinny 25yo Swedish male; pale skin; blue eyes; medium light brown hair; white T-shirt, blue jeans
@@ -128,21 +129,14 @@
 - Bigi - SDXL model: bigLove_xl1
 - Boni - PonyXL model: babesByStableYogi_ponyV4VAEFix
 - Broni - PonyXL model: badromancePony_v20
-- Chillo - SD1.5 model: chilloutmix_NiPrunedFp16Fix
 - Coni - PonyXL model: cyberrealisticPony_v85
-- Dily - SDXL model: dreamshaperXL_v21TurboDPMSDE
-- Furii - Illustrious model: novaFurryXL_illustriousV50
-- Furri - SDXL model: novaFurryXL_v30
-- Gilus - Illustrious model: goddessOfRealism_gorV6ilxlVAE
 - Hily - SDXL model: leosamsHelloworldXL_helloworldXL70
-- Ilus - Illustrious model: illustriousXL_v01
 - Jily - SDXL model: JuggernautXL
 - Pigi - PonyXL model: bigLove_pony2
 - Poni - PonyXL model: autismmixSDXL_autismmixConfetti
 - Pwny - PonyXL base model: ponyDiffusionV6XL_v6StartWithThisOne
 - Sixl - SDXL base model: sdXL_v10VAEFix
 - Wili - SDXL model: betterThanWords_v30
-- Wilus - Illustrious model: waiNSFWIllustrious_v120
 - Yoni - PonyXL model: erosUltima_hybrid_Pony
 
 ### Search
@@ -489,10 +483,6 @@
 ### Human
 
 - Sam - 48yo Australian Caucasian skinny handsome male; shaved head, short brown stubble; green eyes; happy, thoughtful; casual attire
-
-### Wip
-
-- Gily - OpenAI image generation AI model; configurable; optional transparent background; moderation
 
 ### NSFW
 
