@@ -26,7 +26,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-SESSION_MAX_AGE = 30 * 24 * 3600  # 30 days
+SESSION_MAX_AGE = 7 * 24 * 3600  # 7 days
 JWT_ALGORITHM = "HS256"
 
 ALLEMANDE_DOMAIN = os.environ["ALLEMANDE_DOMAIN"]
