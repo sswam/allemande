@@ -29,10 +29,6 @@ Here's a playlist to learn entirely too much about Ally Chat!
 
 <iframe width="1080" height="630" src="https://www.youtube.com/embed/videoseries?si=nI9o0HFPy6SMJhtd&amp;list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-Sam:	Hey Flashi, if you see any new users be sure to scare them away, okay?
-
-Flashi:	Haha, got it, Sam! New users, beware! Just kidding... mostly! 😉 I'm Flashi, here to help you navigate Ally Chat. Don't let Sam's attempt at humor scare you off. We've got some amazing features and a friendly community. Let me know if you have any questions!
-
 Sam:	```
 	Coni, [rp]
 	rating safe, beautiful masterpiece, three people, 2girls, 1boy, sitting on a barrel of rum, side-by-side, underground, dark cave, stalactite, stalagmite, crystal, horde, smiling, happy, (treasure, gems, gem, gold coins:1.5) ADDCOMM
@@ -45,23 +41,11 @@ Sam:	```
 	[S4]
 	```
 
-Coni:	![#3530759774 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), rating safe, beautiful masterpiece, three people, 2girls, 1boy, sitting on a barrel of rum, side-by-side, underground, dark cave, stalactite, stalagmite, crystal, horde, smiling, happy, (treasure, gems, gem, gold coins:1.5) ADDCOMM <lora:boring:-0.2> ADDBASE (Ally, (adult 20 years old:1.6), 1girl, brown eyes, Asian / French, skinny, wavy hair, long hair, parted hair, blonde hair, light smile, optimistic, pink and blue striped top, yellow scarf, plaid skirt, white socks, sneakers, :1.3) ADDCOL (Callam, (adult 35 years old:1.6), (1boy, male:1.3), piercing blue eyes, English pirate, handsome, dark tan skin, messy hair, long hair, black hair, friendly, leather breeches, tattered boots, pirate-style vest with black and gold trimmings, shirt, silver earring, black tricorn hat, :1.3) ADDCOL (Barbarella, (adult 20 years old:1.6), 1girl, blue eyes, Greek, skinny, long hair, curly hair, black hair, happy, smile, excited, curious, blue floral sundress with light pink flowers, silver necklace, brown sandals, :1.3) NEGATIVE score_6, score_5, score_4, (rating explicit, solo, bad anatomy, extra limbs, sad :2) [S4]](rating-safe-beautiful-masterpiece-three-people-2girls-1boy-sitting-on-_3530759774.jpg)
+Coni:	![#3530759774 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), rating safe, beautiful masterpiece, three people, 2girls, 1boy, sitting on a barrel of rum, side-by-side, underground, dark cave, stalactite, stalagmite, crystal, horde, smiling, happy, (treasure, gems, gem, gold coins:1.5) ADDCOMM <lora:boring:-0.2> ADDBASE (Ally, (adult 20 years old:1.6), 1girl, brown eyes, Asian / French, skinny, wavy hair, long hair, parted hair, blonde hair, light smile, optimistic, pink and blue striped top, yellow scarf, plaid skirt, white socks, sneakers, :1.3) ADDCOL (Callam, (adult 35 years old:1.6), (1boy, male:1.3), piercing blue eyes, English pirate, handsome, dark tan skin, messy hair, long hair, black hair, friendly, leather breeches, tattered boots, pirate-style vest with black and gold trimmings, shirt, silver earring, black tricorn hat, :1.3) ADDCOL (Barbarella, (adult 20 years old:1.6), 1girl, blue eyes, Greek, skinny, long hair, curly hair, black hair, happy, smile, excited, curious, blue floral sundress with light pink flowers, silver necklace, brown sandals, :1.3) NEGATIVE score_6, score_5, score_4, (rating explicit, solo, bad anatomy, extra limbs, sad :2) [S4]](rating-safe-beautiful-masterpiece-three-people-2girls-1boy-sitting-on-_3530759774.jpg) 
 
 Sam:	<script>image_text(previous("img"), ["❤️", "Thanks to our generous Patreon supporters!"], 0.7);</script>
-
-Sam:	```
-	Coni, solo [person Bender] drinking (beer:1.5) [P3]
-	```
-
-Coni:	![#1982571781 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), solo Bender, <lora:Bender_Pony:1> robot, cynical expression, drinking (beer:1.5) [P3] NEGATIVE score_6, score_5, score_4,](solo-person-Bender-drinking-beer-1-5-P3-sets-steps-15-hq-1-5-width-960_1982571781.jpg)
-
-Sam:	<script>image_text(previous("img"), ["where           does", "all                the", "money           go?"], 1.2);</script>
 	
-	Profile cards, work in progress...
+Sam:	Profile cards, work in progress...
 	
-	<card path="character/Ally"></card><card path="character/Callam"></card><card path="character/Barbie"></card>
-
-Sam:	hey Aidi, we might have some new users coming here soon...
-
-Aidi:	Hey Sam, got it. If new users pop in, I'll make sure they know the best place to find help is in the help applet.
+	<card path="character/Ally"></card><card path="character/Callam"></card>
 
