@@ -341,6 +341,7 @@ def who_should_respond(
     include_self: bool = True,
     include_humans_for_ai_message: bool = True,
     include_humans_for_human_message: bool = True,
+    may_use_mediator: bool = True,
     config: dict[str, Any] | None = None,
     mission: str | None = None,
     room: chat.Room | None = None,
@@ -462,26 +463,29 @@ def who_should_respond(
     everyone_except_user_all = [a for a in chat_participants_names_all if a != user]
 
     # mediators reply when no one is mentioned, and no direct reply
-    mediator_for_humans = config.get("mediator_for_humans", False)
+    use_mediator = False
     mediator = config.get("mediator")
     if mediator is None:
         mediator = []
-    if not isinstance(mediator, list):
-        mediator = [mediator]
-    mediator = mediator.copy()
-    for i, agent in enumerate(mediator):
-        if agent in ANYONE_WORDS and everyone_except_user:
-            mediator[i] = random.choice(everyone_except_user)
-        elif agent in ANYONE_WORDS and everyone_except_user_all:
-            mediator[i] = random.choice(everyone_except_user_all)
-    mediator = filter_access(mediator, room, access_check_cache)
 
-    is_mediator = user in mediator
+    if may_use_mediator:
+        mediator_for_humans = config.get("mediator_for_humans", False)
+        if not isinstance(mediator, list):
+            mediator = [mediator]
+        mediator = mediator.copy()
+        for i, agent in enumerate(mediator):
+            if agent in ANYONE_WORDS and everyone_except_user:
+                mediator[i] = random.choice(everyone_except_user)
+            elif agent in ANYONE_WORDS and everyone_except_user_all:
+                mediator[i] = random.choice(everyone_except_user_all)
+        mediator = filter_access(mediator, room, access_check_cache)
 
-    # We don't want mediators to reply to themselves
-    mediator = [m for m in mediator if m != user]
+        is_mediator = user in mediator
 
-    use_mediator = mediator and (mediator_for_humans or not is_human)
+        # We don't want mediators to reply to themselves
+        mediator = [m for m in mediator if m != user]
+
+        use_mediator = mediator and (mediator_for_humans or not is_human)
 
     logger.debug("use_mediator: %r", use_mediator)
     logger.debug("mediators: %r", mediator)
@@ -594,7 +598,7 @@ def who_should_respond(
         ai_participants_with_excluded_not_user = [agent for agent in ai_participants_with_excluded if agent != user]
 
     # mediator is better than random!
-    if not invoked and mediator:
+    if not invoked and may_use_mediator and mediator:
         reason = "mediator"
         invoked = [random.choice(mediator)]
         logger.info("mediator: %r", invoked)

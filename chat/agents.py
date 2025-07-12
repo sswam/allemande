@@ -16,6 +16,7 @@ from ally.cache import cache  # type: ignore
 from ally.util import replace_variables  # type: ignore
 from safety import safety  # type: ignore
 import chat
+from util import uniqo
 
 
 logger = logging.getLogger(__name__)
@@ -237,6 +238,8 @@ class Agent:
 
         all_names = self.get_all_names()
 
+        all_names_with_lc = uniqo(all_names + [name.lower() for name in all_names])
+
         if private:
             agent1 = self.agents.get(self.name)
             if not agent1.private:
@@ -254,7 +257,7 @@ class Agent:
             cache.chmod(str(PATH_VISUAL / path / self.name) + ".txt", 0o664)
 
             # symlink main file to agent's other names
-            for name1 in all_names:
+            for name1 in all_names_with_lc:
                 if name1 == self.name:
                     continue
                 if private:
@@ -268,10 +271,11 @@ class Agent:
     def remove_visual(self, private: bool=False):
         """Remove the visual prompts for an agent."""
         all_names = self.get_all_names()
+        all_names_with_lc = uniqo(all_names + [name.lower() for name in all_names])
 
         for key in VISUAL_KEYS:
             path = key if key == "person" else "person/" + key
-            for name1 in all_names:
+            for name1 in all_names_with_lc:
                 if private:
                     agent1 = self.agents.get(name1)
                     if agent1 and not agent1.private:

@@ -171,7 +171,9 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     # Load config file, if present
     config_file = room.find_resource_file("yml", "options")
+    logger.info("config_file: %r", config_file)
     config = config_read(config_file)
+    logger.info("config: %r", config)
 
     mission_file_name = config.get("mission", "mission")
     mission_try_room_name = "mission" not in config
@@ -268,11 +270,48 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         )
         response = response.strip()
 
+        # Forwarding to other agents transparently:
+        # TODO use a function or something?
+        if agent.get("forward") and response:
+            logger.info("Forward response: %r", response)
+            # look for the final line @agent_name
+            response_message = list(bb_lib.lines_to_messages([response]))[-1]
+            _responsible_human, bots2 = conductor.who_should_respond(
+                response_message,
+                agents=agents,
+                history=[response_message],
+                default=[],
+                include_humans_for_ai_message=False,
+                include_humans_for_human_message=False,
+                may_use_mediator=False,
+                config=config,
+                room=room,
+                include_self=False,
+            )
+
+            logger.info("Forward: who should respond: %r", bots2)
+            for bot2 in bots2:
+                logger.info("Forwarding to %s", bot2)
+                agent2 = agents.get(bot2)
+                # replace agent.name with agent2.name in user's message
+                logger.info("Replacing %s with %s in query: %r", agent.name, agent2.name, query)
+                query2 = history[-1] = re.sub(rf"\b{re.escape(agent.name)}\b", agent2.name, query)
+                logger.info("  query2: %r", query2)
+                response = await run_agent(
+                    agent2, query2, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
+                )
+                response = response.strip()
+                if agent.get("forward") == "transparent" and response:
+                    response = f"{agent.name}:\t" + re.sub(r".*?:\t", "", response, count=1)
+                breaak  # only forward to at most one agent, for now
+
+        # Narrator agents:
         if agent.get("narrator"):
             response = response.lstrip(f'{agent.name}:')
             # remove 1 tab from start of each line
             response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
 
+        # Ephemeral messages:
         # If the previous message begins with - it was ephemeral, so remove it
         # TODO this might not work well when multiple bots respond
         if history and history[-1].startswith("-"):
