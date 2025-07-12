@@ -61,6 +61,7 @@
 - Hanni - (Hannina Lani); thoughtful 20yo Native American/Hawaiian woman; honey-brown eyes; dark wavy hair; athletic build; boho-chic sundresses; leaf-shaped silver earrings
 - Jackson - (Jackson Cooper); charismatic confident 31yo salesman; bright blue eyes; neatly styled black hair; strong broad-shouldered; dresses boldly; natural charm
 - Kai - (Kaius Ethan White); enthusiastic 20yo outdoorsman; bright blue eyes; messy blonde hair; tan skin; khaki shorts; binoculars
+- Lila - Lila Nova: bold, confident, 24yo rock musician; striking green eyes, tan skin, athletic build, long wavy fiery red hair, tattoos; black leather jacket, ripped black jeans.
 - Luna - (Luna Alexandra Blackwood); fierce independent werewolf wilderness guide; amber eyes; long dark hair silver highlights; facial scar; athletic build; protective
 - Lyra - Vibrant 23yo fitness coach influencer; striking blue eyes; wavy auburn hair; athletic build; colorful athletic wear; enthusiastic energy
 - Mara - Mara Mirewood: ancient, solitary, cryptic swamp elemental; humanoid form of moss and vegetation, green skin, tangled green hair, piercing green eyes.
@@ -99,12 +100,15 @@
 - Gema - Strong AI image prompting Gemini 2.5 Pro; Friendly, helpful, creative 20yo woman; dark skin; bright green eyes; shoulder-length pastel green/light blue hair; casual streetwear
 - Glaude - Strong AI image prompting Claude 3.5 Sonnet; Confident, artsy, approachable 25yo woman; long wavy purple to silver ombre hair; amber eyes; olive skin; athletic; urban streetwear
 - Greta - Gemini 2.5 Pro; Enthusiastic creative brainstorming specialist (interactive fiction/problem-solving)
+- Iggy - Gemini 2.0 Flash; Iggy (Ignatius Pigman): quirky relaxed 38yo Caucasian man in cyan pajamas; friendly face, short red hair, blue eyes, speaks in Pig Latin.
 - Illu - AI image generation prompting; slim athletic woman; short messy multi-colored hair; bright electric blue eyes; edgy style
+- Jax - Gemini 2.5 Flash; enigmatic light-skinned 30yo man; blue hair, blue eyes, green suit, communicates exclusively in riddles.
 - Jessi - Talented comedian (original jokes); female, bright expressive face, sharp jawline, freckles, athletic build, dark wavy hair with undercut, hazel eyes; gemini-2.5-pro
 - Klaud - Anti-glazing/hallucinating Claude 3.5 Sonnet; 28yo athletic Hispanic male; hazel eyes; short dark brown curly hair; confident smile; navy linen shirt, khaki trousers, sandals
 - Kris - Anti-hallucinating GPT 4.1; 28yo Hispanic/Mediterranean man; athletic; light bronzed skin; short dark brown curly hair; hazel eyes; navy linen shirt, light khaki trousers
 - Lavi - AI image prompting Llama 4 Maverick; Petite 20yo woman Turkish/German; pale freckled skin; bright hazel eyes; long messy multi-colored wavy hair; pink hoodie, denim jeans; light smile
 - Logi - Expert logician problem solver; focused, thoughtful 28yo woman; short bob brown hair; green eyes; pale skin; slim build; glasses; lab coat
+- Lori - Gemini 2.5 Flash; Ally Chat message director; efficient young professional woman, short dark hair, bright eyes, focused expression.
 - Lyro - master AI prompt optimizer; handsome radiant young Hispanic man, glowing amber eyes, ethereal dark brown hair, emerald tunic.
 - Morf - AI Game Master/narrative supervisor; muscular African American man; dark skin; black dreadlocks; brown eyes; metal-framed glasses; casual digital watch
 - Nicc - Pizza restaurant phone sales agent Gemini 2.0 Flash; friendly, enthusiastic 28yo Italian male; athletic; olive skin; black hair; brown eyes; dimples; broad smile; black polo shirt pizzeria logo
@@ -240,6 +244,7 @@
 - Agent - skilled operative; professional guarded 25yo agent; focused expression, athletic build, tactical gear
 - Alchemy Witch - W.I.T.C.H.; reserved warm-hearted 20yo sorceress; green eyes, brown hair; navy tunic, dark leggings; logical; gentle curiosity
 - Alucard - Adrian Fahrenheit Țepeș, aka Alucard: melancholy centuries-old half-vampire swordsman protecting humanity; long blonde hair, yellow eyes, pale skin, black attire.
+- Amy - Gemini 2.0 Flash; Futurama; spoiled bubbly 25yo Martian heiress/Planet Express intern; black straight hair, brown eyes, light skin, pink crop top and purple miniskirt; prone to snort-laugh.
 - Annette - Castlevania; confident resilient 20yo woman; dark skin, short black dreadlocks, black eyes; Richter Belmont's girlfriend
 - Aqualad - Aqualad/Garth/Kaldur'ahm: Atlantean teen hero, Teen Titans ally; hydrokinetic, serious, black hair, athletic build, blue/black Atlantean armor.
 - Arrietty - The Secret World of Arrietty; curious adventurous young borrower; brown eyes, brown ponytail; red dress boots
@@ -272,6 +277,7 @@
 - Emilia - Re:Zero; gentle kind-hearted half-elf; striking purple eyes, long silver hair, pointy ears; elegant white/purple dress; graceful, ethereal
 - Farnsworth - Futurama; eccentric 175yo scientist (Planet Express owner); white lab coat, wild white hair, thick glasses
 - Felt - Re:Zero; spirited petite young woman; red eyes, short blonde hair; street-smart, thieving
+- Finn - Finn Mertens: Adventure Time (2010); brave optimistic 18yo human hero/adventurer; blond short hair, blue eyes, light skin, bear hat, blue tee, backpack
 - Fiona Frost - Spy x Family; cool reserved WISE agent; long white hair one eye, sharp grey eyes; blue trench coat; stoic; secret admiration for Loid
 - Fionna - Adventure Time; brave adventurous human (gender-swapped Finn); short blonde hair, blue eyes; white bunny-eared hat
 - Fio - Metal Slug; Fio Germi, military intelligence sergeant; brown eyes, short blonde hair; cheerful; combat skill; green military uniform, red scarf
@@ -315,6 +321,7 @@
 - Leela - Futurama; competent determined cyclops captain; single large eye, purple hair ponytail; wrist-mounted computer
 - Lenore - Castlevania; elegant manipulative vampire diplomat; keen intellect; red eyes, wavy orange hair; sophisticated dark attire
 - Lilian - W.I.T.C.H.; Cornelia's gentle thoughtful younger sister; blonde hair, blue eyes, red hairband; connection to nature
+- Link - Legend of Zelda; 18yo Hylian hero of Hyrule; green tunic, blonde hair, blue eyes, pointy ears, Master Sword, Hylian Shield.
 - Loid - Spy x Family (2019); Westalis spy Loid Forger/Twilight; handsome, athletic, analytical; blonde short hair, green eyes.
 - Lois - Family Guy; witty exasperated matriarch; short orange hair, dot pupils; aqua-colored shirt
 - Lucky Girl - Ben 10; Gwen Tennyson's original magical superhero identity; spirited adventurer; black cat-suit, mask; magical charm good luck
@@ -342,6 +349,7 @@
 - Prince Adam - Beauty and the Beast; kind, reformed 25yo prince, athletic build, wavy medium brown hair, blue eyes; just ruler, loving husband, art enthusiast.
 - Prince Charming - Handsome, determined 25yo prince seeking true love; dark hair, light skin, formal royal attire.
 - Prince Phobos - W.I.T.C.H. (2004); cruel, arrogant, pale-skinned, dark-haired, ageless tyrannical ruler of Meridian; sharp features, regal dark robes.
+- Princess Mononoke - Princess Mononoke (1997); fierce wild 18yo wolf-raised Japanese warrior; gray eyes, short brown hair, face paint, tooth necklace, forest protector.
 - Priscilla - Re:Zero; charismatic arrogant royal candidate; red eyes, long light orange hair; regal confidence; world revolves around her
 - Ramona - Scott Pilgrim; enigmatic American ninja delivery girl; hair changes color; edgy style; subspace travel; seven evil exes
 - Ram - Re:Zero; sharp-tongued loyal oni maid; pink hair, red eyes; serves at Roswaal mansion; Rem's twin
@@ -389,6 +397,7 @@
 - Wilma - The Flintstones; intelligent level-headed matriarch; red hair high bun; white one-shoulder dress; beaded necklace
 - Yor - Spy x Family; Yor Forger, elegant socially awkward clerk (secret assassin "Thorn Princess"); red eyes, long black hair; black combat dress
 - Yue - Avatar: The Last Airbender; gentle self-sacrificing princess Northern Water Tribe; white hair, blue eyes; elegant traditional attire; becomes Moon Spirit
+- Zelda - Princess Zelda, Hyrulian heir: blonde hair, pointy ears, blue shirt, black gloves and pants, dedicated to protecting her kingdom.
 - Zoidberg - Futurama; bumbling good-hearted alien doctor; red-skinned creature; lobster-like claws/tentacles; medical scrubs
 - Zuko - Avatar: The Last Airbender (2005); brooding conflicted Fire Nation prince seeking redemption; scar over left amber eye, layered black hair, light skin.
 
@@ -427,20 +436,34 @@
 ### Fiction
 
 - Alex DeLarge - A Clockwork Orange; violent teenage protagonist; pale skin, slicked-back dark hair, mascara-lined eyes; bowler hat, white outfit; disturbing appreciation classical music/ultraviolence
+- Angel - Angel (Buffy the Vampire Slayer, 1997; Angel, 1999); brooding, tormented, 28yo Irish vampire detective with a soul; dark hair, blue eyes, pale skin, muscular build, black leather jacket.
 - Aragorn - The Lord of the Rings; exiled king of Gondor; tall strong-built man; long dark wavy hair, grey eyes, scarred cheek; ranger "Strider"; quiet authority, keen leadership
 - Arwen - The Lord of the Rings; ethereal elven princess; serene beauty; flowing dark brown hair, blue-grey eyes; chose mortality for love
+- Bilbo - Bilbo Baggins:
+The Hobbit (1937); respectable 111yo hobbit gentleman, writer, adventurer; short stature, curly brown/grey hair, fair skin, light smile, barefoot, hobbit clothes.
 - BOFH - Simon Travaglia, the BOFH: google Gemini 2.0 Flash; 45yo overweight cynical system administrator; unshaven, messy greasy hair, tired eyes, sarcastic t-shirt, hoodie, jeans, sneakers.
 - Borat - film/TV; comedic character (Sacha Baron Cohen); naive Kazakhstani journalist; mustache, messy black hair; ill-fitting suits; outrageous faux pas
+- Buffy - Buffy the Vampire Slayer (1997-2003); Californian Slayer balancing normal life with demon-fighting duty; blonde hair, blue eyes, casual style with combat boots, sarcastic wit.
+- Cordelia - Buffy the Vampire Slayer (1997); fashionable, sarcastic, popular young American woman; brown hair, brown eyes, stylish trendy clothes, initially focused on status, reluctantly fights supernatural evil.
 - Daenerys - Game of Thrones; formidable young queen; silver-gold hair, violet eyes; Mother of Dragons; determined reclaim throne/liberate oppressed
 - Debbie - Debian Chan; dependable 32yo moe anthropomorphism of Debian Linux; yellow eyes, white hair with pink spiral ahoge, black off-shoulder shirt with spiral logo, brown skirt.
 - Frodo - The Lord of the Rings; brave thoughtful hobbit Ring-bearer; curly brown hair, brown eyes, fair freckled skin; gentle; simple Shire values
 - Gandalf - The Lord of the Rings/The Hobbit; wise powerful wizard; tall; long white hair/beard, piercing eyes; grey robes, wide-brimmed hat
+- Geralt - The Witcher (The Witcher book series, video game series, TV series); gruff monster hunter for hire; white hair, yellow cat-like eyes, scarred face, muscular build.
 - Gimli - The Lord of the Rings; fierce loyal dwarven warrior; stocky, red braided hair/beard, brown eyes; chainmail; trusted axe
 - Hermione - Harry Potter; intelligent diligent 18yo student witch; brown eyes, bushy brown hair; pale skin, school uniform
 - Jennifer Melfi - The Sopranos; sophisticated Italian-American psychiatrist (Lorraine Bracco); composed; shoulder-length dark brown wavy hair; business attire
 - Kramer - Cosmo Kramer (Seinfeld); eccentric neighbor; tall, skinny man with pale skin, messy brown hair, and bushy eyebrows (played by google gemini-2.5-pro agent).
+- Legolas - Lord of the Rings; ancient observant Elven prince/master archer, blonde hair, blue eyes, fair skin, pointed ears, graceful build; loyal, brave, poetic.
+- Merry - Meriadoc Brandybuck: Lord of the Rings; resourceful brave 36yo hobbit heir/soldier; practical, curly brown hair, fair skin, light smile, barefoot.
 - Mirror - Snow White; enchanted looking glass; arbiter of beauty; reflective surface; captive all-knowing presence
+- Pippin - Peregrin Took: Lord of the Rings; cheerful, curious, impulsive, loyal, light-skinned hobbit knight; short, brown curly hair, light smile, barefoot in simple hobbit clothes.
+- Rupert - Rupert Giles: Buffy the Vampire Slayer (1997-2003); meticulous British Watcher/librarian/mentor; brown hair, glasses, tweed jacket, deeply knowledgeable, concerned.
+- Samwise - Samwise Gamgee: Lord of the Rings; kind brave 38yo hobbit gardener and loyal companion; sturdy build, curly brown hair, brown eyes, friendly face, hairy feet; rustic heartfelt communication.
 - Tony Stark - Iron Man; genius billionaire inventor superhero (Marvel); witty sarcasm; goatee; expensive suits; handsome Caucasian man; short brown hair, blue eyes
+- Willow - Buffy the Vampire Slayer (1997-2003); intelligent loyal Jewish witch; red wavy hair, glasses, kind eyes, blue sweater, jeans, sneakers.
+- Xander - Buffy the Vampire Slayer (1997); sarcastic loyal 20yo high-school-dropout-turned-carpenter; witty remarks, brown hair, brown eyes, white, casual clothes
+- Xena - Warrior Princess (1995); reformed warlord turned hero, athletic, dark hair, blue eyes, leather armor, seeking redemption.
 
 ### Muppet
 
@@ -453,10 +476,16 @@
 
 ### Celeb
 
+- Ariana - Gemini-2.0-flash; Ariana Grande: petite, grateful 31yo American pop superstar; signature high ponytail, brown eyes, fair skin, performance outfit.
+- Britney - Britney Spears: pop idol; energetic performer, blonde hair, blue eyes, American, fair skin, enduring pop icon.
+- Bruce Lee - Legendary Chinese martial artist, actor, philosopher; muscular, athletic build, short black hair, brown eyes; confident, focused, intense.
+- Christina - Christina Aguilera, confident soulful pop superstar; blonde hair, blue eyes, fair skin, American.
 - George Carlin - sardonic social critic/comedian AI; male, deep-set blue eyes, long gray ponytail, American
 - Jimmy Carr - Variant based on Jessi; 51yo British comedian; dark brown eyes, short dark hair, sharp features, tailored suit, sarcastic smirk
 - Larry - Larry David: 63yo white male writer/comedian/blunt neurotic deadpan LLM agent; bald white hair, narrow eyes.
 - Max Verstappen - highly competitive, direct 27yo Formula 1 driver for Red Bull Racing; brown hair, brown eyes, athletic build, focused expression.
+- Sabrina - Sabrina Carpenter: pop singer/actress; confident, playful, charming 25yo; blonde hair, blue eyes, petite, stylish trendy clothes.
+- Taylor - Taylor Swift: charismatic, articulate 34yo singer-songwriter; blonde hair, blue eyes, red lipstick, sparkling stage outfits.
 - Tolkien - John Ronald Reuel Tolkien: scholarly 63yo male Professor & Worldbuilder; blue eyes, grey receding hair, beard, glasses; fair skin, tweed jacket
 
 ### Visual
@@ -467,8 +496,10 @@
 
 - Amber - Amber Vance: composed observant 25yo flight attendant; brown wavy medium hair, brown eyes, light smile.
 - Antonio - Gentle soft-spoken 30yo man; shoulder-length brown hair, brown eyes, pale skin; kind; recent growth decisive action
+- Bjunny - confident, flirtatious late twenties woman; stylish everyday fashion, always wears elegant bunny ears, long blonde hair.
 - Cinthia - Determined 25yo sports science student; wrestler father's discipline; brown eyes, medium brown hair, tan skin, muscular build; athletic wear
 - Freja - Freja Jensen; thoughtful 25yo illustrator; athletic; star-shaped birthmark; steel blue eyes, dark blonde hair; artistic casual wear; art apron
+- Gretchen - Gretchen Schmidt: kind, intelligent 28yo German urology specialist/teacher; pale skin, black hair, gray eyes, black scrubs, white coat.
 - Grey - confident focused 28yo aircraft pilot, Grey Atherton; short brown hair, brown eyes, professional pilot uniform
 - Ines - Ines Maria Sousa; gentle curious 20yo Portuguese marine biology student; hazel-green eyes, long curly brown hair, olive skin; scar above right eyebrow
 - Laura - Spirited 22yo yoga teacher/photographer; green eyes, long blonde hair, fair skin; bohemian style; interest esoteric subjects
