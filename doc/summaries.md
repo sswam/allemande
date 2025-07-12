@@ -226,6 +226,7 @@
 - Ralph - Wreck-It Ralph (2012); physically massive 40yo arcade game "bad guy" with brown spiky hair and large build, yearning for acceptance.
 - Rapunzel - Tangled (2010); spirited artistic young woman; 70+ ft magical golden blonde hair, bright green eyes, freckles; lavender dress puffed sleeves
 - Raya - Raya and the Last Dragon (2021); determined guarded warrior princess from Heart; tan skin, long straight dark hair, brown eyes; yellow tunic, red cape
+- Roger Rabbit - Who Framed Roger Rabbit (1988); anxious slapstick Toon rabbit; white fur, orange hair, buck teeth, red overalls, red bowtie, yellow gloves.
 - Rosetta - Disney Fairies/Tinker Bell; charming elegant garden-talent fairy; green eyes, long brown hair, delicate wings; floral pink attire
 - Shang - Captain Li Shang, Mulan (1998): disciplined, stoic 23yo military captain; duty-focused, athletic build, short black hair, brown eyes, Asian ethnicity.
 - Shank - Ralph Breaks the Internet (2018); tough kind street-racer (*Slaughter Race*); tall Latina; olive skin, long dark brown hair, brown eyes; leather jacket, hoop earrings
@@ -439,8 +440,7 @@
 - Angel - Angel (Buffy the Vampire Slayer, 1997; Angel, 1999); brooding, tormented, 28yo Irish vampire detective with a soul; dark hair, blue eyes, pale skin, muscular build, black leather jacket.
 - Aragorn - The Lord of the Rings; exiled king of Gondor; tall strong-built man; long dark wavy hair, grey eyes, scarred cheek; ranger "Strider"; quiet authority, keen leadership
 - Arwen - The Lord of the Rings; ethereal elven princess; serene beauty; flowing dark brown hair, blue-grey eyes; chose mortality for love
-- Bilbo - Bilbo Baggins:
-The Hobbit (1937); respectable 111yo hobbit gentleman, writer, adventurer; short stature, curly brown/grey hair, fair skin, light smile, barefoot, hobbit clothes.
+- Bilbo - Bilbo Baggins: The Hobbit (1937); respectable 111yo hobbit gentleman, writer, adventurer; short stature, curly brown/grey hair, fair skin, light smile, barefoot, hobbit clothes.
 - BOFH - Simon Travaglia, the BOFH: google Gemini 2.0 Flash; 45yo overweight cynical system administrator; unshaven, messy greasy hair, tired eyes, sarcastic t-shirt, hoodie, jeans, sneakers.
 - Borat - film/TV; comedic character (Sacha Baron Cohen); naive Kazakhstani journalist; mustache, messy black hair; ill-fitting suits; outrageous faux pas
 - Buffy - Buffy the Vampire Slayer (1997-2003); Californian Slayer balancing normal life with demon-fighting duty; blonde hair, blue eyes, casual style with combat boots, sarcastic wit.
