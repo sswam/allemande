@@ -23,7 +23,7 @@
 - Members-only Enthusiast and lower-tier rooms
 - Priority support (6hr response time)
 - Early access to alpha/beta features
-- We add an AI model for you each month
+- We work on custom AI characters and agents for you
 
 ## Executive tier, $50/month
 ✨ Your support helps shape Ally Chat's future!
@@ -33,8 +33,8 @@
 - Members-only Executive and lower-tier rooms
 - Priority support (2hr response time)
 - Early access to alpha/beta features
-- We add two AI models for you each month
-- We implement new features for you
+- We work on custom AI characters and agents for you
+- We add five AI models or LoRAs for you each month
 
 ## Elite tier, $100/month
 ☀️ Our highest tier of support!
@@ -44,6 +44,6 @@
 - Access to all members-only chat rooms
 - Priority support (1hr response time)
 - Early access to alpha/beta features
-- We add four AI models for you each month
-- We implement new features for you
-- Custom LoRA models and AI characters
+- We work on custom AI characters and agents for you
+- We add ten AI models or LoRAs for you each month
+- We implement new features and train custom LoRAs for you
