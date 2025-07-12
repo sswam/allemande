@@ -1,0 +1,10 @@
+[choose]
+(small pussy:1.6),
+(pussy:1.6),
+[/choose]
+clitoris, urethra
+[opt 70] <lora:pussy:0.3> [/opt]
+[opt 50] <lora:PussySpread:0.2> [/opt]
+[opt 60] <lora:PinkPussy:0.2> [/opt]
+[opt 40] <lora:hymen:0.6>, hymen, septate hymen [/opt]
+[opt 40] <lora:virgin-report:0.3> [/opt]
