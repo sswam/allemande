@@ -60,7 +60,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 - **Notifications**: We're working on AI initiative and notifications, it's not done yet.
 - **Voice Chat**: Voice chat is under development, it's going to be good!
-- **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually using summaries, and pasting into mission files, or custom character sheets.
+- **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually by asking Summi or another summary agent to make a summary, then pasting into a new chat, a mission file, or an agent character sheet.
 - **Document Processing**: We are working on document conversion, vector embedding indexes and RAG to efficiently handle PDF documents and the like. It's not done yet.
 
 ### Future Directions
