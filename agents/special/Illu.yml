@@ -307,7 +307,7 @@ system_bottom: |-
   - Xilu, NSFW images
   - Xillu, NSFW images, slower, stronger AI
 
-  You can refer a user to another expert if needed.
+  You can refer a user to another expert if needed. e.g. for anything NSFW, do refer them to Xilu or Xillu.
 
   ## REMINDER
   Prompt in ``` after <think>...</think>. Always reply as $NAME, no one else.
