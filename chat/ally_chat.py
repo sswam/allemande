@@ -303,7 +303,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 response = response.strip()
                 if agent.get("forward") == "transparent" and response:
                     response = f"{agent.name}:\t" + re.sub(r".*?:\t", "", response, count=1)
-                breaak  # only forward to at most one agent, for now
+                break  # only forward to at most one agent, for now
 
         # Narrator agents:
         if agent.get("narrator"):
