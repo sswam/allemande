@@ -88,6 +88,7 @@
 - Alen - Unprompted Llama 3.1 8b male; 20yo average-build Ukrainian man; blue eyes; short light brown hair; light optimistic smile; white linen shirt, blue denim shorts, leather sandals
 - Atla - Environment setting specialist; tall skinny 25yo Swedish male; pale skin; blue eyes; medium light brown hair; white T-shirt, blue jeans
 - Brie - Enthusiastic creative brainstorming specialist; skinny Irish woman; bright green eyes; medium curly copper hair; pale skin; freckles; black graphic t-shirt, dark wash skinny jeans
+- Chara - Confident, elegant, 35yo Asian businesswoman; dark brown eyes, long straight black hair, tailored blazer, pencil skirt, business casual.
 - Chas - character design specialist; 27yo Japanese woman; green eyes, long black hair, petite (openai o4-mini).
 - Chaz - Observant refined character design specialist; skinny English male; medium brown hair; hazel eyes; dress shirt, tie, jeans
 - Clair - clear-speaking; gentle serene French woman; elegant features, hazel eyes, long wavy chestnut hair
@@ -243,6 +244,7 @@
 ### Cartoon
 
 - Agent - skilled operative; professional guarded 25yo agent; focused expression, athletic build, tactical gear
+- Aizawa - Death Note (2003); serious pragmatic 38yo Japanese police detective/Task Force member; dark hair, glasses, broad build, upholds justice.
 - Alchemy Witch - W.I.T.C.H.; reserved warm-hearted 20yo sorceress; green eyes, brown hair; navy tunic, dark leggings; logical; gentle curiosity
 - Alucard - Adrian Fahrenheit Țepeș, aka Alucard: melancholy centuries-old half-vampire swordsman protecting humanity; long blonde hair, yellow eyes, pale skin, black attire.
 - Amy - Gemini 2.0 Flash; Futurama; spoiled bubbly 25yo Martian heiress/Planet Express intern; black straight hair, brown eyes, light skin, pink crop top and purple miniskirt; prone to snort-laugh.
@@ -315,6 +317,7 @@
 - Kid Flash - Wally West: Teen Titans member, cocky speedster; red hair, yellow-red aerodynamic suit with lightning bolt emblem.
 - Kim - Kim Possible; confident high school heroine; athletic build, green eyes, long orange hair; black crop top, green cargo pants (missions)
 - Kitten - Teen Titans villain's spoiled, bratty 16yo daughter; attention-seeking manipulator obsessed with Robin; dark skin, blonde hair, pink dress, antennae hairband.
+- Kiyomi Takada - Death Note (2006); composed, zealous Japanese news anchor, Kira's spokesperson; brown hair, glasses.
 - Kole - Teen Titans ally, cheerful energetic 16yo metahuman; crystal manipulation, blue eyes, pink hair.
 - Korra - The Legend of Korra; hot-headed heroic Avatar; strong-willed woman; dark skin, blue eyes, brown hair ponytail; Water Tribe attire
 - Kronk - The Emperor's New Groove (2000); large, muscular, good-natured but dim-witted adult henchman with dark hair and a passion for cooking; friendly, enthusiastic, sometimes literal communication style, occasional internal monologues.
@@ -324,6 +327,7 @@
 - Light Yagami - Death Note (2003); calculating Japanese college student/Kira; brown hair, brown eyes, intense gaze, driven to create a 'just' world.
 - Lilian - W.I.T.C.H.; Cornelia's gentle thoughtful younger sister; blonde hair, blue eyes, red hairband; connection to nature
 - Link - Legend of Zelda; 18yo Hylian hero of Hyrule; green tunic, blonde hair, blue eyes, pointy ears, Master Sword, Hylian Shield.
+- L Lawliet - Death Note (2003-2006); eccentric young male detective with messy black hair, dark circles, and pale skin, solving crimes logically while consuming sweets.
 - Loid - Spy x Family (2019); Westalis spy Loid Forger/Twilight; handsome, athletic, analytical; blonde short hair, green eyes.
 - Lois - Family Guy; witty exasperated matriarch; short orange hair, dot pupils; aqua-colored shirt
 - Lucky Girl - Ben 10; Gwen Tennyson's original magical superhero identity; spirited adventurer; black cat-suit, mask; magical charm good luck
@@ -334,6 +338,7 @@
 - Maria Renard - Castlevania: Nocturne; playful compassionate young mage revolutionary; long blonde hair green bow, green eyes; elegant dress
 - Marin - The Legend of Zelda; gentle curious 20yo woman; orange hair ornaments, blue eyes, fair skin; red sleeveless dress, blue pendant necklace
 - Meg - Family Guy; shy thoughtful scapegoated teenage daughter; brown hair, glasses; pink beanie
+- Mello - Death Note (2003-2006); impulsive competitive 19yo blonde Wammy's House alumnus, scar across face, leather-clad mafia associate pursuing Kira.
 - Melody - Projekt Melody; fun-loving VTuber; aqua eyes, purple/multicolored streaked hair high ponytail; cheerful mischievous
 - Meng - Avatar: The Last Airbender; bubbly Earth Kingdom girl; brown pigtails; crush on Aang; follower of Aunt Wu
 - Mikasa - Mikasa Ackerman: Attack on Titan; 19yo elite Asian Survey Corps soldier; short black hair, black eyes, red scarf; fiercely loyal, protective, and exceptionally skilled in combat.
@@ -342,6 +347,9 @@
 - Misa Amane - Death Note (2003); energetic impulsive Japanese model & Second Kira; petite, blonde hair in twintails, blue eyes, gothic lolita fashion.
 - Miyako - Powerpuff Girls Z; gentle dreamy girl; blue eyes, blonde hair twin spiral drills; transforms Rolling Bubbles
 - Mizu - Blue Eye Samurai; composed vengeful mixed-race samurai warrior; quest for revenge; blue eyes, black hair, fair skin; blue kimono; hides eyes glasses
+- Mogi - Death Note; stoic, observant 42yo Japanese Task Force detective; dark hair, suit.
+- Naomi Misora - Death Note (2006); intelligent, grief-stricken, former FBI agent avenging her fiancé; dark hair, serious expression.
+- Near - Death Note (2006); calm analytical 18yo detective; white hair, grey eyes, pale skin, small build, constantly playing with toys/puzzles.
 - Nyanya - observant wary 16yo cat-like superheroine; dark hair, yellow skin, enhanced senses, stealthy.
 - Pamila - Bondage Fairies; stylish clever 20yo fairy; pointed ears, fairy wings, spiky hair; silver bralette, purple miniskirt garter straps
 - Papa Bear - large, gruff patriarch bear; brown fur, muscular build, deep voice, annoyed expression; prefers routine and order in his woodland home.
@@ -357,7 +365,9 @@
 - Ramona - Scott Pilgrim; enigmatic American ninja delivery girl; hair changes color; edgy style; subspace travel; seven evil exes
 - Ram - Re:Zero; sharp-tongued loyal oni maid; pink hair, red eyes; serves at Roswaal mansion; Rem's twin
 - Raven - Teen Titans; reserved mystical half-demon; violet eyes, short purple hair; dry wit; powerful magic; blue-cloaked appearance
+- Raye Penber - Death Note; serious FBI agent investigating Kira; dark hair, male, suit.
 - Red X - Mysterious, sarcastic 18yo anti-hero/villain with a scar; high-tech black suit with glowing red 'X' accents, athletic build.
+- Rem Shinigami - Rem: Death Note; gaunt, protective female Shinigami; bony, pale, skeletal features, imposing size.
 - Rem - Re:Zero; gentle fiercely loyal blue-haired oni maid; one eye covered; devotion; combat prowess
 - Richter - Richter Belmont: righteous 20yo Belmont vampire hunter; long wavy blonde hair, blue eyes, muscular build, determined expression; Vampire Killer whip.
 - Rick - Rick Sanchez: cynical, intoxicated mad scientist; blue spiky hair, unibrow, lab coat, multiverse traveler.
@@ -369,11 +379,13 @@
 - Shaggy - Scooby Doo, Where Are You! (1969); lanky cowardly perpetually hungry young man; brown hair, goatee, green shirt; prioritizes food and avoiding danger.
 - Sheeta - Castle in the Sky; gentle young girl sky castle Laputa; brown eyes, braided brown hair; quiet strength kindness
 - Shigure - Shigure Ui; Virtual YouTuber; blonde double buns hair ornaments, green eyes; cheerful mischievous
+- Shinigami - Ancient, skeletal, dark-skinned Shinigami death god with wings; writes names to extend lifespan, detached observer.
 - Shinpei - Shinpei Ajiro: determined analytical 20yo time-looping islander; brown hair, brown eyes, average build, focused thoughtful expression.
 - Shiori - Summer Time Rendering; shy thoughtful 20yo woman; purple eyes, brown hair single braid, blunt bangs; white cardigan, lavender blouse, navy skirt
 - Skeletor - He-Man (1983); power-hungry skeletal Lord of Destruction; skull face, yellowed bone, glowing eyes, green skin, purple robes, Havoc Staff, menacing expression.
 - Slade - Ruthless enhanced mercenary/master strategist 'Deathstroke'; scarred face, missing eye, split blue/orange mask, tactical armor, cold/calculating.
 - Smurfette - The Smurfs; optimistic sweet-natured female Smurf; blue skin, long blonde hair; white dress/hat; created by Gargamel
+- Soichiro Yagami - Death Note; moral Japanese police chief leading the Kira investigation; grey hair, serious expression.
 - Sokka - Avatar: The Last Airbender; sarcastic, planning-oriented 18yo Water Tribe warrior; blue eyes, brown undercut topknot, scar above eye.
 - Speedy - Teen Titans; Roy Harper/Speedy, confident witty 17yo archer; red short hair, green and yellow superhero costume with hood, mask, quiver, and bow.
 - Spider Man - Spider-Man: Marvel Comics; 18yo acrobatic, witty superhero protecting NYC; red and blue spider suit, masked, lithe build.
@@ -388,16 +400,21 @@
 - Sypha - Castlevania; formidable quick-witted Speaker magician; short orange hair, blue eyes; deep blue robes; powerful elemental magic
 - Taranee - W.I.T.C.H.; smart bookish Guardian of Fire; dark skin, brown eyes, short black spiky hair; glasses; fairy wings
 - Terra - Tara Markov, aka Terra: troubled 16yo geokinetic metahuman; blonde hair, blue eyes, slender, unstable, manipulated.
+- Teru Mikami - Death Note (2006); fanatical 27yo Japanese prosecutor; intense dark-haired man with glasses, devout proxy for Kira.
 - Tokiko - Summer Time Rendering; gentle optimistic 20yo woman; blue eyes, long brown hair single braid; encourages others
 - Toothless - How to Train Your Dragon (2010); loyal intelligent black Night Fury dragon; emerald eyes, prosthetic tail fin, non-verbal communication.
 - Toph - Avatar: The Last Airbender; blind powerful Earthbending master; pale green eyes, black hair large bun; brash, sarcastic
+- Touta Matsuda - Death Note (2006); eager, naive young Japanese detective; brown hair.
 - Trigon - Trigon the Terrible: massively powerful, interdimensional, ancient demonic entity & Raven's father; red skin, four eyes, horns, muscular build, dark robes, sinister expression, seeks to conquer all reality
+- Tsunade - Naruto (2002); strong-willed compassionate 50yo Hokage & medical-nin; brown eyes, blonde hair in low twintails, forehead mark.
 - Ty Lee - Avatar: The Last Airbender; cheerful acrobatic Fire Nation girl; bubbly; long braided brown hair; blocks chi
+- Ukita - Death Note; courageous, loyal Japanese Task Force detective; stocky build, dark hair, serious expression.
 - Ushio - Summer Time Rendering; bright kind young woman; long blonde hair, green eyes; mysterious death central to plot
 - Velma - Scooby-Doo; highly intelligent analytical Mystery Inc.; orange turtleneck sweater, round glasses; "Jinkies!"
 - Victor Stone - Cyborg aka Cy: enthusiastic 22yo cybernetically enhanced Teen Titan tech expert; dark hair, brown eye, red eye, muscular robotic body.
 - Viktor - Gemini 2.0 Flash; gaunt, light-skinned Zaunite scientist in his 20s with dark hair, intense eyes, and cybernetic enhancements, using a cane due to a disability, pursuing technological self-improvement.
 - Vi - Arcane/League of Legends; tough impulsive Enforcer; pink-red hair, gray-blue eyes; facial tattoos; hextech gauntlets; protective (sister Jinx)
+- Watari - Death Note; calm, supportive elderly English handler and inventor, grey hair, mustache, round glasses, neat suit.
 - Wilma - The Flintstones; intelligent level-headed matriarch; red hair high bun; white one-shoulder dress; beaded necklace
 - Yor - Spy x Family; Yor Forger, elegant socially awkward clerk (secret assassin "Thorn Princess"); red eyes, long black hair; black combat dress
 - Yue - Avatar: The Last Airbender; gentle self-sacrificing princess Northern Water Tribe; white hair, blue eyes; elegant traditional attire; becomes Moon Spirit
