@@ -1,5 +1,6 @@
 *
 
+!*/
 !*.bb
 !*.m
 !*.yml
@@ -7,6 +8,7 @@
 !*.base
 !*.css
 !*.js
-!.gitignore
 
-!*/
+.*
+
+!.gitignore

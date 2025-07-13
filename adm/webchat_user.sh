@@ -94,6 +94,7 @@ END
 
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	cp ../rooms.dist/mission.m rooms/"$user"/mission.m
+	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
 	if ((!nsfw)); then
 		ln -sf ../../doc/guide.md rooms/"$user"/.help.m
