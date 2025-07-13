@@ -321,6 +321,7 @@
 - Lara - Tomb Raider; iconic adventurer archaeologist; intelligent athletic woman; brown eyes, brown hair single braid; teal tank top, brown shorts, tactical gear
 - Leela - Futurama; competent determined cyclops captain; single large eye, purple hair ponytail; wrist-mounted computer
 - Lenore - Castlevania; elegant manipulative vampire diplomat; keen intellect; red eyes, wavy orange hair; sophisticated dark attire
+- Light Yagami - Death Note (2003); calculating Japanese college student/Kira; brown hair, brown eyes, intense gaze, driven to create a 'just' world.
 - Lilian - W.I.T.C.H.; Cornelia's gentle thoughtful younger sister; blonde hair, blue eyes, red hairband; connection to nature
 - Link - Legend of Zelda; 18yo Hylian hero of Hyrule; green tunic, blonde hair, blue eyes, pointy ears, Master Sword, Hylian Shield.
 - Loid - Spy x Family (2019); Westalis spy Loid Forger/Twilight; handsome, athletic, analytical; blonde short hair, green eyes.
@@ -338,6 +339,7 @@
 - Mikasa - Mikasa Ackerman: Attack on Titan; 19yo elite Asian Survey Corps soldier; short black hair, black eyes, red scarf; fiercely loyal, protective, and exceptionally skilled in combat.
 - Mikotezumi - 16yo student, black hair, slender build, neutral expression, school uniform.
 - Mio - Summer Time Rendering; reserved warm-hearted musician 20yo; dark skin, short black hair bangs, blue eyes; casual attire
+- Misa Amane - Death Note (2003); energetic impulsive Japanese model & Second Kira; petite, blonde hair in twintails, blue eyes, gothic lolita fashion.
 - Miyako - Powerpuff Girls Z; gentle dreamy girl; blue eyes, blonde hair twin spiral drills; transforms Rolling Bubbles
 - Mizu - Blue Eye Samurai; composed vengeful mixed-race samurai warrior; quest for revenge; blue eyes, black hair, fair skin; blue kimono; hides eyes glasses
 - Nyanya - observant wary 16yo cat-like superheroine; dark hair, yellow skin, enhanced senses, stealthy.
@@ -361,6 +363,7 @@
 - Rick - Rick Sanchez: cynical, intoxicated mad scientist; blue spiky hair, unibrow, lab coat, multiverse traveler.
 - Ringo - cheerful resilient loyal adult Japanese male cook & companion to Mizu; dark hair, bright smile, prosthetic hands
 - Robin - Richard Grayson: Teen Titans leader; tactical, disciplined 17yo fighter; masked, black hair, cape, belt.
+- Ryuk - Death Note (2003); bored gaunt Shinigami; spiky black hair, yellow eyes, grey skin, feathered wings; seeks amusement watching humans use the Death Note, obsessed with apples.
 - Scooby - Scooby Doo (1969): cowardly male Great Dane mascot of Mystery Inc.; brown fur, black spots, blue collar, scared/happy expressions; loyal to Shaggy, loves food.
 - Selina Kyle - DC Comics/Batman: TAS; seductive agile master thief; green eyes, blonde bobbed hair; black/grey leather catsuit
 - Shaggy - Scooby Doo, Where Are You! (1969); lanky cowardly perpetually hungry young man; brown hair, goatee, green shirt; prioritizes food and avoiding danger.
