@@ -58,6 +58,8 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 ### Work in Progess
 
+- **Storage**: We back up all chat and images, however the server has limited space. Images more than 7 days old might be removed. Save what you want to keep, or contact the developer to recover older images from the backup. We are working to fix this issue.
+- **Immersion**: The step-by-step method we use for image generation can break immersion. We have some ideas to address this.
 - **Notifications**: We're working on AI initiative and notifications, it's not done yet.
 - **Voice Chat**: Voice chat is under development, it's going to be good!
 - **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually by asking Summi or another summary agent to make a summary, then pasting into a new chat, a mission file, or an agent character sheet.
