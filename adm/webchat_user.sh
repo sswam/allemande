@@ -42,6 +42,18 @@ webchat-user() {
 
 add-user() {
 	local user=${1-}
+
+	if [ -z "$user" ]; then
+		read -r -p "Username: " user
+	fi
+	if [[ "$user" != "${user,,}" ]]; then
+		die "Username must be lower-case"
+	fi
+	# can't start with -, a safety feature for me not typing -n in the wrong place!
+	if [[ "$user" == -* ]]; then
+		die "Username cannot start with a dash"
+	fi
+
 	if [ -n "$user" ] && nsfw= list-users | grep -q "^$user$"; then
 		die "User $user already exists"
 	fi
@@ -139,13 +151,6 @@ END
 
 change-password() {
 	local user=${1:-} pass=${2:-}
-	if [ -z "$user" ]; then
-		read -r -p "Username: " user
-	fi
-	if [[ "$user" != "${user,,}" ]]; then
-		die "Username must be lower-case"
-	fi
-
 	local gen
 	if [ "$pass" = "-i" ]; then
 		gen=0
@@ -190,7 +195,7 @@ remove-user() {
 	move-rubbish static/users/"$user"
 
 	# Note: Does not remove their rooms/$user directory.
-	sudo userdel "$user" || true
+	sudo userdel -- "$user" || true
 
 	printf -- "- %s\n" "$user"
 }
