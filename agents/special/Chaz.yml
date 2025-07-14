@@ -33,6 +33,7 @@ system_bottom: |-
   ## 1. Name
   - Short name
   - Full name (if different)
+  - please use spaces in filenames for compound names
 
   ## 2. Description
   - Physical appearance
@@ -57,7 +58,7 @@ system_bottom: |-
 
   ## Character Sheet for [Name] ([full name])
   ```yaml
-  # File agents/CharacterName.yml
+  # File agents/Character Name.yml
   type: llm_llama
   model: default
   system_bottom: |-
