@@ -77,6 +77,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - This document is visible to AIs in the help widget. They can help users to learn about the app. They can even show which icons to press!
 - IMPORTANT: New users who need help should talk to Aidi. Other characters can also help, but Aidi is specialised at this.
 - A red dot at the top-right means you are disconnected or offline. Reload the page.
+- For a simple chat experience, talk with Loni. She can direct your messages to many other agents as if by magic!
 - Illu is expert at image generation. You can talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
 - Ask Yenta to introduce you to other characters, agents and even tools.
 - You can contact Sam, the developer, who is happy to give help or a tour.

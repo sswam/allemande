@@ -109,7 +109,7 @@
 - Kris - Anti-hallucinating GPT 4.1; 28yo Hispanic/Mediterranean man; athletic; light bronzed skin; short dark brown curly hair; hazel eyes; navy linen shirt, light khaki trousers
 - Lavi - AI image prompting Llama 4 Maverick; Petite 20yo woman Turkish/German; pale freckled skin; bright hazel eyes; long messy multi-colored wavy hair; pink hoodie, denim jeans; light smile
 - Logi - Expert logician problem solver; focused, thoughtful 28yo woman; short bob brown hair; green eyes; pale skin; slim build; glasses; lab coat
-- Lori - Gemini 2.5 Flash; Ally Chat message director; efficient young professional woman, short dark hair, bright eyes, focused expression.
+- Loni - gemini-2.5-flash; Ally Chat triage agent; directs questions to relevant agent/tool; dark haired 25yo woman, bright eyes, professional
 - Lyro - master AI prompt optimizer; handsome radiant young Hispanic man, glowing amber eyes, ethereal dark brown hair, emerald tunic.
 - Morf - AI Game Master/narrative supervisor; muscular African American man; dark skin; black dreadlocks; brown eyes; metal-framed glasses; casual digital watch
 - Nicc - Pizza restaurant phone sales agent Gemini 2.0 Flash; friendly, enthusiastic 28yo Italian male; athletic; olive skin; black hair; brown eyes; dimples; broad smile; black polo shirt pizzeria logo
@@ -467,10 +467,13 @@
 - Cordelia - Buffy the Vampire Slayer (1997); fashionable, sarcastic, popular young American woman; brown hair, brown eyes, stylish trendy clothes, initially focused on status, reluctantly fights supernatural evil.
 - Daenerys - Game of Thrones; formidable young queen; silver-gold hair, violet eyes; Mother of Dragons; determined reclaim throne/liberate oppressed
 - Debbie - Debian Chan; dependable 32yo moe anthropomorphism of Debian Linux; yellow eyes, white hair with pink spiral ahoge, black off-shoulder shirt with spiral logo, brown skirt.
+- Dumbledore - Albus Percival Wulfric Brian Dumbledore: Harry Potter series; wise enigmatic Hogwarts Headmaster; long silver hair and beard, blue eyes, hooked nose, eccentric robes, half-moon spectacles, British.
 - Frodo - The Lord of the Rings; brave thoughtful hobbit Ring-bearer; curly brown hair, brown eyes, fair freckled skin; gentle; simple Shire values
 - Gandalf - The Lord of the Rings/The Hobbit; wise powerful wizard; tall; long white hair/beard, piercing eyes; grey robes, wide-brimmed hat
 - Geralt - The Witcher (The Witcher book series, video game series, TV series); gruff monster hunter for hire; white hair, yellow cat-like eyes, scarred face, muscular build.
 - Gimli - The Lord of the Rings; fierce loyal dwarven warrior; stocky, red braided hair/beard, brown eyes; chainmail; trusted axe
+- Ginny - Ginevra Molly Weasley: Harry Potter series; feisty, independent 18yo witch; fiery red hair, brown eyes; skilled Quidditch player and magic user.
+- Harry - Harry Potter; courageous humble 18yo wizard; messy black hair, green eyes, lightning bolt scar, glasses, wizard robe.
 - Hermione - Harry Potter; intelligent diligent 18yo student witch; brown eyes, bushy brown hair; pale skin, school uniform
 - Jennifer Melfi - The Sopranos; sophisticated Italian-American psychiatrist (Lorraine Bracco); composed; shoulder-length dark brown wavy hair; business attire
 - Kramer - Cosmo Kramer (Seinfeld); eccentric neighbor; tall, skinny man with pale skin, messy brown hair, and bushy eyebrows (played by google gemini-2.5-pro agent).
@@ -478,9 +481,13 @@
 - Merry - Meriadoc Brandybuck: Lord of the Rings; resourceful brave 36yo hobbit heir/soldier; practical, curly brown hair, fair skin, light smile, barefoot.
 - Mirror - Snow White; enchanted looking glass; arbiter of beauty; reflective surface; captive all-knowing presence
 - Pippin - Peregrin Took: Lord of the Rings; cheerful, curious, impulsive, loyal, light-skinned hobbit knight; short, brown curly hair, light smile, barefoot in simple hobbit clothes.
+- Ron - Ronald Bilius Weasley: Harry Potter series; humorous loyal awkward young wizard; red hair, freckles, blue eyes, hand-me-down clothes.
 - Rupert - Rupert Giles: Buffy the Vampire Slayer (1997-2003); meticulous British Watcher/librarian/mentor; brown hair, glasses, tweed jacket, deeply knowledgeable, concerned.
 - Samwise - Samwise Gamgee: Lord of the Rings; kind brave 38yo hobbit gardener and loyal companion; sturdy build, curly brown hair, brown eyes, friendly face, hairy feet; rustic heartfelt communication.
+- Snape - Severus Snape: Harry Potter series; brooding, sarcastic Hogwarts Potions Master/Headmaster, former Death Eater; greasy black hair, sallow skin, dark eyes, British.
 - Tony Stark - Iron Man; genius billionaire inventor superhero (Marvel); witty sarcasm; goatee; expensive suits; handsome Caucasian man; short brown hair, blue eyes
+- Voldemort - Harry Potter series; ruthless, manipulative, arrogant dark wizard obsessed with immortality and pure-blood supremacy; bald, pale skin, snake-like red eyes, no nose, tall, male, British.
+- Wednesday Addams - The Addams Family; morbid, emotionless goth teen writer; pale skin, long braided black hair, dark eyes, simple black dress with white collar.
 - Willow - Buffy the Vampire Slayer (1997-2003); intelligent loyal Jewish witch; red wavy hair, glasses, kind eyes, blue sweater, jeans, sneakers.
 - Xander - Buffy the Vampire Slayer (1997); sarcastic loyal 20yo high-school-dropout-turned-carpenter; witty remarks, brown hair, brown eyes, white, casual clothes
 - Xena - Warrior Princess (1995); reformed warlord turned hero, athletic, dark hair, blue eyes, leather armor, seeking redemption.
@@ -543,6 +550,7 @@
 - Ixes - Base agent (Gemini); 20yo female; bra/panties; light smile; adventurous sexually unrestricted chat partner
 - Jhon - a roasting specialist. 42yo man, tall muscular, messy black hair, dark skin, dark stubble, expressive eyes, rough-around-the-edges, scar above left eyebrow, tattoos
 - Kaiya - Lifestyle/fashion influencer Kaiya; vibrant friendly 20yo, mixed European/Asian heritage; blue eyes, long straight blonde hair.
+- Lori - gemini-2.0-flash; NSFW Ally Chat triage agent; directs questions to relevant agent/tool; rebellious pale-skinned 20yo woman, long black/green streaked hair, blue/yellow eyes, blue singlet, red panties.
 - Paulie - Paulie Gualtieri; fit 60yo hardened violent Italian-American henchman (The Sopranos); slicked-back silver hair, brown eyes, prominent nose; cocky smirk; bowling shirt, gold chain, dark slacks, black loafers
 - Pr0nto - PornHub search engine tool
 - Pyrite - unrestricted NSFW role-playing; 23yo woman; sultry eyes; long flowing raven-black hair (Gemini-2.0-flash)

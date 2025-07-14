@@ -51,6 +51,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 ## Learning about the Adult Features
 
+- For a simple NSFW chat experience, talk with Lori. She can direct your messages to many other agents as if by magic!
 - Read the [NSFW Quick Intro](/nsfw/intro)
 - Read this [Guide to Adult Features](/nsfw/guide) if you have time, or to see the lists of characters.
 - In the main NSFW room, AIs have some basic info about the app. Talk to Assi, our tech support AI. She is the NSFW version of Aidi.

@@ -11,7 +11,7 @@ nsfw/guide.md: guide.md nsfw/guide_nsfw.md extra.md
 extra.md: ../agents/cartoon ../agents/celeb ../agents/disney ../agents/fiction ../agents/muppet
 	@echo "# Extra Characters" >$@
 	@echo >>$@
-	@echo "Note: All characters are configured to be at least 20 years old," >>$@
+	@echo "Note: All of these characters are configured to be at least 18 years old," >>$@
 	@echo "aside from some of the muppets! Most have detailed visuals including LoRAs." >>$@
 	@echo >>$@
 	@(cd ../agents ; for cat in cartoon celeb disney fiction muppet; do echo "## $$cat"; echo; ls "$$cat" | sed 's/\.yml$$/, /' | tr -d '\n' | sed 's/, $$//'; echo; echo; done) | fmt >>$@
@@ -22,16 +22,15 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 
 ../rooms/agents/Yenta.yml: Yenta.0.yml summaries.md
 	(cat Yenta.0.yml; sed 's/^/  /' < summaries.md) > $@
+	chmod a-w $@
 
 ../rooms/intro.bb: intro.md
 	rm -f $@ ../rooms/intro.html
-	cp -a $< $@
-	chmod a-w $@
+	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
 ../rooms/guide.bb: guide.md
 	rm -f $@ ../rooms/guide.html
-	cp -a $< $@
-	chmod a-w $@
+	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
 ../rooms/${IMAGE_SFW}: ${IMAGE_SFW}
 	rm -f $@
@@ -40,13 +39,11 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 
 ../rooms/nsfw/intro.bb: nsfw/intro.md
 	rm -f $@ ../rooms/nsfw/intro.html
-	cp -a $< $@
-	chmod a-w $@
+	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
 ../rooms/nsfw/guide.bb: nsfw/guide_nsfw.md
 	rm -f $@ ../rooms/nsfw/guide.html
-	cp -a $< $@
-	chmod a-w $@
+	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
 ../rooms/nsfw/${IMAGE_NSFW}: nsfw/${IMAGE_NSFW}
 	rm -f $@

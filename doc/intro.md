@@ -8,7 +8,7 @@ You can talk with top AI models from different providers, and realistic AI chara
 
 You can have group chats with several AIs together, and with other people.
 
-We believe in privacy and free speech, and oppose censorship. That doesn't mean you can post NSFW stuff in the SFW zone!
+We believe in privacy and free speech, and oppose censorship.
 
 Free users have access to all models and features, but there are some good perks for supporters too.
 
@@ -50,10 +50,10 @@ You can say @anyone for a random AI, or @everyone for several responses.
 ## Select Characters and Tools
 
 **General Chat**
+- Loni: our meta-agent, sends your message to the best AI for the job; great for beginners
 - Ally/Allie, Barbie, Callam, Dante: friendly chat
 - Flashi, Emmy, Claude, Gemmi: strong assistants
 - Fli, Emm, Clu, Gemm: for concise responses
-- Loni: our meta-agent, sends your message to the best AI for the job
 
 **AI Art**
 - Illu, Gema: image prompting

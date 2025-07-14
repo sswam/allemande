@@ -1,4 +1,4 @@
-# Quick Intro - NSFW
+# Quick Intro
 
 Welcome to Ally Chat, the multi-player AI chat app.
 
@@ -8,7 +8,7 @@ You can talk with top AI models from different providers, and realistic AI chara
 
 You can have group chats with several AIs together, and with other people.
 
-We believe in privacy and free speech, and oppose censorship. That doesn't mean you can post NSFW stuff in the SFW zone!
+We believe in privacy and free speech, and oppose censorship. But don't post NSFW stuff in the SFW zone!
 
 The app includes models and features for adult entertainment, and is good for other things too.
 
@@ -16,23 +16,21 @@ The NSFW zone contains explicit sexual material, and is restricted to adults onl
 
 Free users have access to all models and features, but there are some good perks for supporters too.
 
-If you'd like to support us, you can [become a patron](https://www.patreon.com/allychatx) (NSFW).
+If you'd like to support us, you can become a patron: ([SFW](https://www.patreon.com/allychat) or [NSFW](https://www.patreon.com/allychatx)).
 
 ## Getting Started
 
 Read this intro carefully!
 
-Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help by pressing the <i class="bi-x"></i> button at the top right.
 
 In the main [Ally Chat](/Ally+Chat) room and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with basic info about the app.
 
 **NOTE**: In other chat rooms, AIs don't know anything at all about the app!
 
-Read the [Quick Intro](/intro), then the [User Guide](/guide), for full details on the app, models, characters, and tools.
+Read this [NSFW Quick Intro](/nsfw/intro), the [User Guide](/guide), and the [NSFW Guide](/nsfw/guide), for full details on the app, models, characters, tools, and NSFW features.
 
-Read this [NSFW Intro](/nsfw/intro), then the [NSFW User Guide](/nsfw/guide) for more info about adult features, models, characters, and tools.
-
-A red dot at the top-right means you are disconnected or offline. Reload the page.
+A red dot at the top-right means you are disconnected or offline. Click in the window or Reload the page.
 
 The app has an advanced mode with many options and features, but please master the basics first.
 
@@ -40,13 +38,13 @@ Please contact Sam, the main developer, for more help and to give feedback.
 
 ## Talking with AIs
 
-Address AIs by name to get their attention, with a capital letter or @ sign:
+Address AIs by name to get their attention, with a capital letter or @ sign.
 
 Lori is a good one to start with. She has meta-powers of 26 agents combined!
 
-> hey Ally, you're looking hot!
+> hey Ally, you're looking fine, girl!
 > Can you help run a sexy photoshoot, @lori?
-> Xilu, please draw a nude lady!
+> Xilu, please draw a nude guy or lady!
 > Do you know any brunettes who might be up for sexy role-play, Yenta?
 
 Send an empty "poke" message to continue AI conversations. You'll need to do this after Xilu writes an image prompt for you.
@@ -56,20 +54,22 @@ You can say @anyone for a random AI, or @everyone for several responses.
 ## Select Characters and Tools
 
 **General Chat**
-- Ally/Allie, Barbie, Callam, Eva, Pyrite: friendly chat
+- Lori: our NSFW meta-agent, sends your message to the best AI for the job; great for beginners
+- Ally/Allie, Barbie, Callam, Dante: friendly chat, can be sexual too
+- Eva, Pyrite: friendly chat, 
 - Flashi, Gemmi: strong assistants
 - Fli, Gemm: for concise responses
-- Lori: our NSFW meta-agent, sends your message to the best AI for the job
 
 **AI Art**
+- Illu, Gema: SFW image prompting
 - Xilu: NSFW image prompting
 - Jily, Hily: high quality, realistic images, including soft-core
-- Poni: cartoon / anime NSFW images
-- Yoni, Coni, Boni: semi-realistic NSFW images
+- Poni: cartoon / anime images, can do hard-core and hentai, use "rating safe" in prompt to avoid nudity
+- Coni, Boni, Yoni: semi-realistic images, can do hard-core and hentai, use "rating safe" in prompt to avoid nudity
 - Bigi, Pigi: realistic NSFW images
 - When talking to a tool like an AI art model, start a line with their name, using a capital letter and a comma:
 ```
-Coni, 1girl, 20 years old, nude, flowers [P2]
+Coni, 1girl, 25 years old, nude, flowers [P2]
 ```
 - Be patient, it can take a little while depending on the quality and the load on the GPU.
 
@@ -83,14 +83,22 @@ Coni, 1girl, 20 years old, nude, flowers [P2]
 - Goog, "Allemande AI"
 - Gimg, cute animals
 - UTube, indie games
+- Sona, any LLM or AI art news lately?
 - Pr0nto, striptease
+
+**Code & Calculation**
+- Dogu, date +%F ; fortune
+- Gido, import this
+- Palc, sqrt(3)/2, 2**32
 
 There are many, many more; check the guides, and try the help system!
 
 ## Rich Content Support
 
 - Full markdown/HTML/SVG/CSS/JS works in the chat (no backticks)
-- Mini-games with e.g. `<canvas>` and `<script>` (not in backticks)
+- TeX math: `$y = \sqrt{x}$` gives $y = \sqrt{x}$, use `$$ ... $$` for displays
+- Graphviz ```dot ```, and ```mermaid ``` diagrams
+- Interactive charts, simulations, mini-games with e.g. `<canvas>` and `<script>` (not in backticks)
 - JS DOM utils such as $id(id), $(query), $$(query).
 
 ## Platform Features
@@ -102,7 +110,7 @@ There are many, many more; check the guides, and try the help system!
 ## Rooms and Privacy
  
 - The [Ally Chat](/Ally+Chat) room is public.
-- The [NSFW Chat](/nsfw/nsfw) room is public (for adults only).
+- The [NSFW Chat](/nsfw/nsfw) room is public (adults only, opt-in).
 - Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
@@ -130,7 +138,7 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 Free-tier users have access to all models and features, with generous limits.
 
-[We do appreciate your support](https://www.patreon.com/allychat), if you can. Subscriptions start at $5 / month. You can also join as a free member.
+[We do appreciate your support](https://www.patreon.com/allychatx), if you can. Subscriptions start at $5 / month. You can also join as a free member.
 
 Subscribers enjoy perks including:
 
