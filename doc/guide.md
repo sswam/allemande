@@ -25,7 +25,7 @@ Novel features include:
 - a column view option, to make the most of your screen
 - web, image, video search; programming tools such as Bash and Python
 - the whole app is open source; you can potentially run it at home
-- a cast of more than 300 characters, specialist agents, and tools
+- a cast of more than 500 characters, specialist agents, and tools
 - custom agents and missions, adjust context and other settings mid-chat
 - a wide range of styles, support for custom styles and JavaScript
 - we value free speech, and include access to various uncensored AIs

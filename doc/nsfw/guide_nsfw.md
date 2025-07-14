@@ -42,12 +42,12 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 ## Key Features for Adult Content
 
-- **Uncensored LLMs**: Most of our AI characters are up for sexual chat and role-play.
+- **Uncensored LLMs**: Most of our 500+ AI characters are up for sexual chat and role-play.
 - **Uncensored AI art**: We have many AI-art models that can make sexual images.
 - **AI art LoRAs**: Many LoRAs are available to improve your images.
 - **Search**: We have search engines that can return sexual images and videos.
-- **Fantasy Characters**: You can chat with a large number of famous fantasy characters, and draw them: Alice (in Wonderland), Geralt (the Witcher), Bonnibel (Princess Bubblegum) and various Muppets! This is not strictly a NSFW feature, but we are not presenting it to general users yet.
-- **Custom Characters**: We can install and create custom characters, but this feature is not user-friendly yet. Talk to the developer!
+- **Fantasy Characters**: You can chat with a large number of famous fantasy characters, and draw them: Alice (in Wonderland), Geralt (the Witcher), Bonnibel (Princess Bubblegum), and various Muppets!
+- **Custom Characters**: We can easily create custom characters, with help from Chaz or Chara, our character gen agents.
 
 ## Learning about the Adult Features
 

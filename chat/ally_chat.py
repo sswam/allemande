@@ -15,6 +15,7 @@ import json
 from typing import Any
 import aiohttp
 from urllib.parse import urlparse, quote
+import requests
 
 import shlex
 from watchfiles import awatch, Change
@@ -41,6 +42,7 @@ from local_agents import local_agent
 import local_agents
 from settings import *
 import tasks
+from ally import stopwords
 
 
 logger = logging.getLogger(__name__)
@@ -99,7 +101,15 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 
     logger.debug("query: %r %r", name, query)
 
-    response = await search.search(query, engine=name, markdown=True, num=num, limit=limit, safe=not ADULT)
+    try:
+        response = await search.search(query, engine=name, markdown=True, num=num, limit=limit, safe=not ADULT)
+    except requests.exceptions.HTTPError:
+        if name != "Pr0nto":
+            raise
+        query2 = stopwords.strip_stopwords(query, strict=True)
+        logger.info("Stripped stopwords from query: %r -> %r", query, query2)
+        response = await search.search(query2, engine=name, markdown=True, num=num, limit=limit, safe=not ADULT)
+
     response2 = f"{name}:\t\n{response}"
     logger.debug("response:\n%s", response2)
     response3 = chat.fix_response_layout(response2, args, agent)
@@ -302,7 +312,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 )
                 response = response.strip()
                 if agent.get("forward") == "transparent" and response:
-                    response = f"{agent.name}:\t" + re.sub(r".*?:\t", "", response, count=1)
+                    response = f"{agent.name}:\t" + re.sub(r"\A.*?:(\t|$)", "", response, count=1, flags=re.MULTILINE)
                 break  # only forward to at most one agent, for now
 
         # Narrator agents:
