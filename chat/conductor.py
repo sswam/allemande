@@ -102,14 +102,14 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
     if not is_tool:
         comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*$"  # at end with comma
         word_start = r"^\s*" + re.escape(name) + r"\b"  # at start
-        word_end = r"(\s|\b)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"  # at end
-        whole_word = r"(\s|\b)" + re.escape(name) + r"\b"  # anywhere
+        word_end = r"(\W|\b|^)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"  # at end
+        whole_word = r"(\W|\b|^)" + re.escape(name) + r"\b"  # anywhere
         patterns += [comma_word_end, word_start, word_end, whole_word]
 
     flags = re.IGNORECASE if ignore_case else 0
 
     # Split into sentences
-    best_match = (100, -1, len(content), 0, None)  # (match_type, sentence_num, position, length, name)
+    best_match = (100, -1, len(content), 0, "")  # (match_type, sentence_num, position, length, name)
 
     length = len(name)
 
@@ -345,6 +345,8 @@ def who_should_respond(
     config: dict[str, Any] | None = None,
     mission: str | None = None,
     room: chat.Room | None = None,
+    at_only: bool = False,
+    use_aggregates: bool = True,
 ) -> tuple[str|None, list[str]]:
     """returns guess at responsible human user, and who should respond to a message"""
 
@@ -454,9 +456,12 @@ def who_should_respond(
 
     logger.debug("agent_names: %r", agent_names)
 
-    everyone_with_at = [f"@{agent}" for agent in EVERYONE_WORDS]
-    anyone_with_at = [f"@{agent}" for agent in ANYONE_WORDS]
-    self_words_with_at = [f"@{agent}" for agent in SELF_WORDS]
+    if use_aggregates:
+        everyone_with_at = [f"@{agent}" for agent in EVERYONE_WORDS]
+        anyone_with_at = [f"@{agent}" for agent in ANYONE_WORDS]
+        self_words_with_at = [f"@{agent}" for agent in SELF_WORDS]
+    else:
+        everyone_with_at = anyone_with_at = self_words_with_at = None
 
     # Calculate everyone_except_user
     everyone_except_user = [a for a in chat_participants_names if a != user]
@@ -535,6 +540,9 @@ def who_should_respond(
     )
     invoked = filter_access(invoked, room, access_check_cache)
     logger.debug("who_is_named @: %r", invoked)
+
+    if not invoked and at_only:
+        invoked = ["-None-"]
 
     if not invoked:
         reason = "named"

@@ -15,8 +15,9 @@ import json
 from typing import Any
 import aiohttp
 from urllib.parse import urlparse, quote
-import requests
+import random
 
+import requests
 import shlex
 from watchfiles import awatch, Change
 import yaml
@@ -282,7 +283,8 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
         # Forwarding to other agents transparently:
         # TODO use a function or something?
-        if agent.get("forward") and response:
+        forward = agent.get("forward")
+        if forward and response:
             logger.info("Forward response: %r", response)
             # look for the final line @agent_name
             response_message = list(bb_lib.lines_to_messages([response]))[-1]
@@ -297,22 +299,31 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 config=config,
                 room=room,
                 include_self=False,
+                at_only=True,
+                use_aggregates=False,
             )
 
             logger.info("Forward: who should respond: %r", bots2)
             for bot2 in bots2:
+                if agent.get("forward_all"):
+                    bot2 = random.choice(forward)
+                elif isinstance(forward, list) and bot2 not in forward:
+                    continue
                 logger.info("Forwarding to %s", bot2)
-                agent2 = agents.get(bot2)
+                agent2 = agents.get(bot2).copy_with_identity(agent)
                 # replace agent.name with agent2.name in user's message
-                logger.info("Replacing %s with %s in query: %r", agent.name, agent2.name, query)
-                query2 = history[-1] = re.sub(rf"\b{re.escape(agent.name)}\b", agent2.name, query)
-                logger.info("  query2: %r", query2)
+                # logger.info("Replacing %s with %s in query: %r", agent.name, agent2.name, query)
+                # query2 = history[-1] = re.sub(rf"\b{re.escape(agent.name)}\b", agent2.name, query)
+                # logger.info("  query2: %r", query2)
                 response = await run_agent(
-                    agent2, query2, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
+                    agent2, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
+#                    agent2, query2, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
                 )
                 response = response.strip()
-                if agent.get("forward") == "transparent" and response:
-                    response = f"{agent.name}:\t" + re.sub(r"\A.*?:(\t|$)", "", response, count=1, flags=re.MULTILINE)
+                # if agent.get("forward") == "transparent_half" and response:
+                #     response = f"{agent.name}:\t" + re.sub(r"\A.*?:(\t|$)", "", response, count=1, flags=re.MULTILINE)
+                # elif agent.get("forward") == "transparent" and response:
+                #     response = re.sub(rf"\b{re.escape(agent2.name)}\b", agent.name, response)
                 break  # only forward to at most one agent, for now
 
         # Narrator agents:

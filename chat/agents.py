@@ -73,6 +73,10 @@ class Agents:
 
 
 class Agent:
+    pass
+
+
+class Agent:
     """An Allemande Agent"""
     def __init__(self, data: dict = None, agents: Agents = None, file: Path = None, private: bool=False):
         self.agents = agents
@@ -102,9 +106,17 @@ class Agent:
         elif self.data["name"] != name:
             raise ValueError(f'Agent name mismatch: {name} vs {self.data["name"]}')
 
-    def copy(self):
+    def copy(self) -> Agent:
         """Return a copy of the agent"""
         return Agent(data=deepcopy(self.data), agents=self.agents)
+
+    def copy_with_identity(self, reference) -> Agent:
+        copy = self.copy()
+        copy.name = reference.name
+        for key in ["name", "fullname", "aliases", "age", "visual"]:
+            if key in reference.data:
+                copy.data[key] = deepcopy(reference.data[key])
+        return copy
 
     def get(self, key: str, default=None, raise_error=False, raw=False):
         """Get a value from the agent's data"""
@@ -330,11 +342,13 @@ class Agents:
             agent.remove_visual(private=private)
 
         agent_names = agent.get_all_names()
+        logger.debug("remove_agent: %r", name)
         for name1 in agent_names:
             if private:
                 agent1 = self.agents.get(name1)
                 if agent1 and not agent1.private:
                     continue
+            logger.debug("Removing agent by name: %r", name1)
             self.agents.pop(name1, None)
 
     def load(self, path: Path, visual: bool=True, private: bool=False) -> None:
