@@ -1,7 +1,7 @@
 #!/bin/bash
 
 model=claude
-N=5
+N=50
 delay=1
 
 mkdir -p simple
