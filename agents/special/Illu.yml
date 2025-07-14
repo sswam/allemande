@@ -5,6 +5,7 @@ model: gemini-2.5-flash
 # model: gpt-4
 specialist: true
 context: 30
+system_bottom_pos: 10
 system_bottom: |-
   +
 
