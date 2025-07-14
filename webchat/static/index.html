@@ -26,6 +26,7 @@
 		<div class="top_left_controls row gap" id="top_left_main">
 			<a class="button" href="" id="privacy" title=""></a>
 			<a class="button advanced" href="" id="nav" title="navigation">nav</a>
+			<a class="button nsfw nav_nsfw simple" href="" title="go to the main NSFW room">nsfw</a>
 			<button id="select" title="select messages" class="boffin">select</button> <!-- should be advanced when done -->
 			<!--<button id="room_ops" title="room operations" class="advanced">room</button>-->
 		</div>
@@ -33,7 +34,7 @@
 			<button id="nav_cancel">back</button>
 			<a class="button" href="" id="nav_up" title="go up to the parent folder: alt+u">up</a>
 			<a class="button" href="" id="nav_allychat" title="go to the main 'Ally Chat' room">allychat</a>
-			<a class="button" href="" id="nav_nsfw" title="go to the main NSFW room">nsfw</a>
+			<a class="button nsfw nav_nsfw" href="" title="go to the main NSFW room">nsfw</a>
 			<a class="button" href="" id="nav_porch" title="your 'porch', a public room you control">porch</a>
 			<a class="button" href="" id="nav_home" title="your 'home', a private room">home</a>
 			<a class="button" href="" id="nav_first" title="first page: ctrl+[">first</a>
@@ -181,12 +182,12 @@
 <div id="help-widget" class="hidden">
 	<div id="help-widget-header">
 		<div id="help-widget-links">
-			<a id="intro_link" href="/#intro" target="help-frame" class="simple" title="Ally Chat - Quick Intro">Intro</a><a
-			id="intro_link_nsfw" href="/#nsfw/intro" target="help-frame" class="simple hidden" title="Ally Chat - NSFW Intro">NSFW Intro</a><a
+			<a id="intro_link" href="/#intro" target="help-frame" class="simple sfw" title="Ally Chat - Quick Intro">Intro</a><a
+			id="intro_link_nsfw" href="/#nsfw/intro" target="help-frame" class="simple nsfw" title="Ally Chat - Quick Intro - NSFW">Intro</a><a
 			id="qa_link" href="/#qa" target="help-frame" class="advanced" title="general side-bar Q&A chat">Q&A</a><a
 			id="help_link" href="/#help" target="help-frame" title="your Ally Chat help room">Help</a><a
 			href="/#guide" target="help-frame" title="the full user guide">Guide</a><a
-			id="guide_nsfw" href="/#nsfw/guide" target="help-frame" class="hidden" title="the NSFW guide">NSFW Guide</a>
+			id="guide_nsfw" href="/#nsfw/guide" target="help-frame" class="nsfw" title="the NSFW guide">Extra</a>
 		</div>
 		<div id="help-widget-controls">
 			<button id="help_undo" title="remove the last help message" class="advanced">undo</button>

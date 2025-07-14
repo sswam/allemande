@@ -693,7 +693,7 @@ function room_url() {
 
 function setup_all_link_buttons() {
   show_room_privacy();
-  setup_help_links();
+//  setup_help_links();
   setup_user_button();
   setup_nav_buttons();
 }
@@ -719,6 +719,7 @@ function show_room_privacy() {
   }
 }
 
+/*
 function setup_help_links() {
   const show_nsfw = room.startsWith("nsfw/") && !access_denied;
   const $help_links = $id("help-widget-links");
@@ -726,6 +727,7 @@ function setup_help_links() {
   show("intro_link_nsfw", show_nsfw);
   show("guide_nsfw", show_nsfw);
 }
+*/
 
 // move a room or file -----------------------------------------------------
 
@@ -1362,9 +1364,9 @@ async function setup_nav_buttons() {
   const $nav_allychat = $id("nav_allychat");
   $nav_allychat.href = "/" + query_to_hash(DEFAULT_ROOM);
 
-  // Setup nsfw button --------------------
-  const $nav_nsfw = $id("nav_nsfw");
-  $nav_nsfw.href = "/" + query_to_hash(NSFW_ROOM);
+  // Setup nsfw buttons --------------------
+  for (const $nav_nsfw of $$(".nav_nsfw"))
+    $nav_nsfw.href = "/" + query_to_hash(NSFW_ROOM);
 
   // Setup porch button --------------------
   const $nav_porch = $id("nav_porch");
@@ -2622,13 +2624,19 @@ async function setup_icons() {
   icons["select_copy"] = icons["copy"];
 
   for (const id in icons) {
-    const el = $id(id);
-    if (!el)
-      continue;
-    const text = el.textContent;
-    el.title = el.title || text;
-    el.innerHTML = icons[id];
+    let el = $id(id);
+    if (el)
+      setup_icon(id, el);
+    else
+      for (el of $$("."+id))
+        setup_icon(id, el);
   }
+}
+
+function setup_icon(id, el) {
+  const text = el.textContent;
+  el.title = el.title || text;
+  el.innerHTML = icons[id];
 }
 
 // math input ----------------------------------------------------------------
@@ -2857,7 +2865,8 @@ export async function init() {
   const { username, nsfw } = await authChat();
   user = username;
 
-  show("nav_nsfw", nsfw);
+  if (nsfw)
+    $body.classList.add("nsfw");
 
   if (iOS)
     document.body.classList.add("ios")

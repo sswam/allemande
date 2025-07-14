@@ -306,7 +306,9 @@ div.controls > button#send {
 body.simple .advanced,
 body:not(.simple) .simple,
 body:not(.boffin) .boffin,
-body.ios .noios {
+body.ios .noios,
+body:not(.nsfw) .nsfw,
+body.nsfw .sfw {
 	display: none !important;
 }
 
