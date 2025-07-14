@@ -1,0 +1,24 @@
+- say hi to Ally
+	- hey Ally, let's do a quick demo!
+- create a quick game in the chat with Emmy:
+  Hey Emmy, let's make a mini-game on canvas we can play in the chat... no backticks!
+- draw pictures directly and with Illu
+	- Jily, [person Bast] [P1]
+	- Illu, let's draw Ally up a mountain at sunset, with flowers
+- meet characters with Yenta: comedians, villains
+	- hey Yenta, show me some comedians?
+	- and how about some villains?
+- chat with a comedian
+	- What's going on in the world, George Carlin?
+- math with Fermi
+	- hey Fermi, can you derive the quadratic formula in brief?
+	- math input E=mc^2, ask Dav about it
+- cards:
+	- <card path="character/Ally"> </card>
+	- <card path="character/Callam"> </card>
+- meta-agent:
+	- hi, Loni, what's going on in Melbourne?
+	- let's draw an eagle
+- talk to a few weird characters: Roger Rabbit
+	- what's going on, Bender!
+	- okay, Roger Rabbit, it's the end of the demo, bye bye!
