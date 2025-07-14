@@ -34,14 +34,16 @@ Please contact Sam, the main developer, for more help and to give feedback.
 
 ## Talking with AIs
 
-Address AIs by name to get their attention, using a capital letter or @ sign:
+Address AIs by name to get their attention, with a capital letter or @ sign.
+
+Lori is a good one to start with. She has meta-powers of 25 agents combined!
 
 > Ally, how are you?
-> Can you help, @flashi?
+> Can you help, @loni?
 > Illu, let's draw a garden!
 > Tell me about the strong models, Yenta.
 
-Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an AI art prompt for you.
+Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an image prompt for you.
 
 You can say @anyone for a random AI, or @everyone for several responses.
 
@@ -51,6 +53,7 @@ You can say @anyone for a random AI, or @everyone for several responses.
 - Ally/Allie, Barbie, Callam, Dante: friendly chat
 - Flashi, Emmy, Claude, Gemmi: strong assistants
 - Fli, Emm, Clu, Gemm: for concise responses
+- Loni: our meta-agent, sends your message to the best AI for the job
 
 **AI Art**
 - Illu, Gema: image prompting
@@ -94,7 +97,7 @@ There are many, many more; check the guide, and try the help system!
 
 - Private/group chat rooms
 - Instant room creation and switching
-- 300+ characters, assistants, specialists, and tools
+- 500+ characters, assistants, specialists, and tools
 
 ## Rooms and Privacy
 
@@ -120,23 +123,24 @@ Jily:	![#3972177466 landscape, rainbow, vibrant, colorful, scenic, daylight, sun
 
 Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
+## Become a Patron!
+
+Free-tier users have access to all models and features, with generous limits.
+
+[We do appreciate your support](https://www.patreon.com/allychat), if you can. Subscriptions start at $5 / month. You can also join as a free member.
+
+Subscribers enjoy perks including:
+
+- Your name and links in the credits!
+- Up to 100× higher usage allowance
+- Access to members-only chat rooms
+- Priority support
+- Early access to alpha/beta features
+- We work on custom AI characters and agents for you
+- We add AI models or LoRAs for you each month
+- We implement new features and train custom LoRAs for you
+
 ## What next?
 
 - Click the **Help** tab, and ask some questions about the app.
 - Ask Yenta to introduce you to some different characters.
-
-## Become a Patron!
-
-Free-tier users have access to all models and features, but subscribers get some good perks too.
-
-[We do need your help](https://www.patreon.com/allychat), if you can. Subscriptions start at $5 / month. You can also join as a free member.
-
-Subscribers enjoy perks including:
-- Your name and links in the credits!
-- Up to 100× higher usage allowance
-- Access to members-only chat rooms
-- Priority support (down to 1hr response time)
-- Early access to alpha/beta features
-- We add AI models for you
-- We implement new features for you
-- Custom LoRA models and AI characters

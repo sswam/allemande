@@ -1,4 +1,4 @@
-# Quick Intro (NSFW)
+# Quick Intro - NSFW
 
 Welcome to Ally Chat, the multi-player AI chat app.
 
@@ -30,7 +30,7 @@ In the main [Ally Chat](/Ally+Chat) room and the main [NSFW Chat](/nsfw/nsfw) ro
 
 Read the [Quick Intro](/intro), then the [User Guide](/guide), for full details on the app, models, characters, and tools.
 
-Read this [NSFW Intro](/nsfw/intro), then the [User Guide to Adult Features](/nsfw/guide) for more info about adult features, models, characters, and tools.
+Read this [NSFW Intro](/nsfw/intro), then the [NSFW User Guide](/nsfw/guide) for more info about adult features, models, characters, and tools.
 
 A red dot at the top-right means you are disconnected or offline. Reload the page.
 
@@ -42,12 +42,14 @@ Please contact Sam, the main developer, for more help and to give feedback.
 
 Address AIs by name to get their attention, with a capital letter or @ sign:
 
+Lori is a good one to start with. She has meta-powers of 26 agents combined!
+
 > hey Ally, you're looking hot!
-> Can you help run a sexy photoshoot, @flashi?
-> Xilu, draw a nude girl!
+> Can you help run a sexy photoshoot, @lori?
+> Xilu, please draw a nude lady!
 > Do you know any brunettes who might be up for sexy role-play, Yenta?
 
-Send an empty "poke" message to continue AI conversations. You'll need to do this after Xilu writes an AI art prompt for you.
+Send an empty "poke" message to continue AI conversations. You'll need to do this after Xilu writes an image prompt for you.
 
 You can say @anyone for a random AI, or @everyone for several responses.
 
@@ -57,6 +59,7 @@ You can say @anyone for a random AI, or @everyone for several responses.
 - Ally/Allie, Barbie, Callam, Eva, Pyrite: friendly chat
 - Flashi, Gemmi: strong assistants
 - Fli, Gemm: for concise responses
+- Lori: our NSFW meta-agent, sends your message to the best AI for the job
 
 **AI Art**
 - Xilu: NSFW image prompting
@@ -94,7 +97,7 @@ There are many, many more; check the guides, and try the help system!
 
 - Private/group chat rooms
 - Instant room creation and switching
-- 300+ characters, assistants, specialists, and tools
+- 500+ characters, assistants, specialists, and tools
 
 ## Rooms and Privacy
  
@@ -103,7 +106,7 @@ There are many, many more; check the guides, and try the help system!
 - Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
-- Some adult features, characters and agents are only available under the nsfw/ folder, and in your private chats, not in public rooms at the top level.
+- Some adult features, characters and agents are only available under the nsfw/ folder, and in your private chats, not in public SFW rooms at the top level.
 - Some AIs are only available outside the nsfw/ folder, and should not be used in any NSFW chat.
 
 ## Example Usage
@@ -123,23 +126,24 @@ Boni:	![#1628847956 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, sc
 
 Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
+## Become a Patron!
+
+Free-tier users have access to all models and features, with generous limits.
+
+[We do appreciate your support](https://www.patreon.com/allychat), if you can. Subscriptions start at $5 / month. You can also join as a free member.
+
+Subscribers enjoy perks including:
+
+- Your name and links in the credits!
+- Up to 100× higher usage allowance
+- Access to members-only chat rooms
+- Priority support
+- Early access to alpha/beta features
+- We work on custom AI characters and agents for you
+- We add AI models or LoRAs for you each month
+- We implement new features and train custom LoRAs for you
+
 ## What next?
 
 - Click the **Help** tab, and ask some questions about the app.
 - Ask Yenta to introduce you to some different characters.
-
-## Become a Patron!
-
-Free-tier users have access to all models and features...
-
-But [we do need your help](https://www.patreon.com/allychat), if you can. Subscriptions start at a mere $5 / month. You can also join as a free member.
-
-Subscribers enjoy perks including:
-- Your name and links in the credits!
-- Up to 100× higher usage allowance
-- Access to members-only chat rooms
-- Priority support (down to 1hr response time)
-- Early access to alpha/beta features
-- We add AI models for you
-- We implement new features for you
-- Custom LoRA models and AI characters
