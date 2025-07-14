@@ -17,6 +17,7 @@ messy-screen() {
 	fi
 	screen-run ci "$*" exec messy -a "$ai_model" "$@" </dev/tty
 	if ! ((no_connect)); then
+		sleep 0.5
 		screen -x ci </dev/tty
 	fi
 }
