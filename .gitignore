@@ -47,6 +47,7 @@ rooms.*
 # data files
 /geo/country_city_timezone.tsv
 /safety/nsfw_words
+/visual/celebs_girl.txt
 
 # cache files
 /text/dictionaries.pkl
