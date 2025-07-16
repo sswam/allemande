@@ -21,7 +21,7 @@ visual:
   age: adult 25 years old
   clothes_upper: flowing silk dress, deep emerald green
   clothes_lower: bare feet or sandals
-welcome: false
+# welcome: false
 card:
   bio: Algorithmic interface, optimized for precision.
   interests: logic models, knowledge synthesis, error correction, critical analysis

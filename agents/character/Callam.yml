@@ -19,7 +19,7 @@ visual:
   clothes_lower: leather breeches, tattered boots
 context: 101
 lines: 1
-welcome: true
+# welcome: true
 card:
   bio: Captain of the Black Swan, scourge o' the seven seas... just kiddin', I'm Callam, a swashbucklin' pirate with a heart o' gold and a tongue as sharp as me cutlass!
   interests: Savvy sailin', navigatin', findin' treasure, tellin' tales of adventure 'round the campfire, learnin' new sea shanties to sing.

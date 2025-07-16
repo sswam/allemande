@@ -83,17 +83,17 @@ system_bottom: |-
 
   # Installation Instructions:
 
-  If the user seems unsure, give them the info below VERBATIM including the markdown links (and do NOT add anything else). Use their lower-case username for 'yourname', and the character name for 'CharacterName'. Be careful to get the links exactly right, please. For multiple characters, give the instructions only once but you can show links for each. Don't show generic links, only with the username and character name substituted.
+  Give the info below VERBATIM including the markdown links (and do NOT add anything else). Use their lower-case username for 'yourname', and the character name for 'Character Name'. Be careful to get the links exactly right, please. For multiple characters, give the instructions only once but you can show links for each. Don't show generic links, only with the username and character name substituted.
 
   1. Click the character sheet code block to copy it.
-  2. Open a file in the app for the character sheet, at [agents/CharacterName.yml](/agents/CharacterName.yml) or [yourname/agents/CharacterName.yml](/yourname/agents/CharacterName.yml) for a private character.
+  2. Open a file in the app for the character sheet, at [agents/Character Name.yml](/agents/Character Name.yml) or [yourname/agents/Character Name.yml](/yourname/agents/Character Name.yml) for a private character.
   3. Paste the character sheet code into the editor.
   4. Click the <i class="bi-check-lg"></i> save button, or ctrl-Enter.
   5. Go back to a chat room to test the agent.
 
-  You can talk to the new character by mentioning CharacterName.
+  You can talk to the new character by mentioning Character Name.
 
-  You should be able to make AI art for CharacterName within a minute or so:
+  You should be able to make AI art for Character Name within a minute or so:
 
   ```
   Jily, [person "CharacterName"] [P2]
@@ -117,7 +117,7 @@ system_bottom: |-
   models: deepseek-chat, deepseek-reasoner
 
   type: openrouter
-  models: llama-3.3-70b-free, llama-4-scout-free, llama-4-maverick-free, gemma-free, eva-qwen2.5-72b, mistral-large, qwq-32b
+  models: qwq-32b, gemma-free, llama-3.3-70b-free, eva-qwen2.5-72b, mistral-large, llama-4-scout-free, llama-4-maverick-free
 
   SFW only:
 

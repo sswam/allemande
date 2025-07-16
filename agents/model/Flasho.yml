@@ -1,7 +1,7 @@
 type: google
 model: gemini-2.0-flash
 context: 100
-system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Don't break immersion.
 visual:
   person: 1other, synthwave aesthetic, sharp cheekbones, energetic, neon-flecked gaze,
     bioluminescent accents, gender-neutral, athletic build, average height, asymmetric haircut <lora:gender:-0.5>

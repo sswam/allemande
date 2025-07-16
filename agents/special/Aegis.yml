@@ -1,4 +1,3 @@
-# File agents/Aegis.yml
 type: anthropic
 model: claude-4-opus
 system_bottom: |-
@@ -97,3 +96,5 @@ visual:
   emo: serious expression, neutral pose
 context: 101
 lines: 1
+
+# credit to: https://www.reddit.com/r/ChatGPTPromptGenius/comments/1lwj24a/the_startup_defense_system_99_of_entrepreneurs/
