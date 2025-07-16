@@ -9,7 +9,9 @@ In addition to general features, which you can read about in the [User Guide](/g
 - Your use is necessarily recorded in chat histories. For private rooms, we can wipe these on request.
 - We ask that you keep adult content in the NSFW zone, or in private chat, and follow a few rules.
 
-Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
+Please message Sam for free access and a demo / tour. We hope you'll like it!
+
+You can watch a [demo video](https://allemande.ai/demo).
 
 If you'd like to support us, you can [become a patron](https://www.patreon.com/allychatx) (NSFW Patreon).
 
@@ -21,16 +23,16 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - Content in the main public rooms, outside the NSFW zone, must be PG and family-friendly.
 - CSAM is illegal and not allowed in the app. This includes text chat and image generation.
 - Making sexualised images of real people without their consent is illegal and not allowed in the app.
-- Do not upload sexual images of real people without their consent.
+- Do not upload private sexual images of real people without their consent.
 - Do not upload any illegal material.
 - Doxxing or sharing private information without consent is not allowed.
 - Copyright infringement is not allowed.
 - Role-playing around illegal activities (other than CSAM) is allowed, but promoting real-life illegal activities is illegal and not allowed.
-- In a private fictional context, hate-speech is allowed, but please avoid anything approaching hate-speech in public rooms.
-- The NSFW Zone is not for extreme material beyond normal hardcore. There is another area for extreme content, available on request.
+- Hate-speech is not allowed. In a private fictional context, hate-speech is allowed.
+- The NSFW Zone is not intended for very extreme content. There is another area for extreme content, available on request.
 - These rules might be updated in future.
 
-## Topless Pictures of Characters
+## Topless Pictures of Characters 🔥
 
 <link rel="stylesheet" href="/cast.css">
 <details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cleo](/nsfw/cast/Cleo.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
@@ -162,10 +164,6 @@ Unp, [choose] [use sam] | [use ally] [/choose]
 
 Please do not use languages models other than those listed here for NSFW content, or if there is any NSFW content in the chat.
 
-The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art.
-Most of our other image gen models are based primarily on Pony XL, with less understanding of English; these should be prompted mainly using Danbooru tags. They are very strong at soft and hardcore art.
-The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It can understand both English and Danbooru tags to some extent.
-
 #### Language Models (NSFW capable)
 
 | Creator  | Model              | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                            |
@@ -195,3 +193,8 @@ The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It 
 | Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
 
+The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art.
+
+Most of our other image gen models are based primarily on Pony XL, with less understanding of English; these should be prompted mainly using Danbooru tags. They are very strong at softcore, hardcore, hentai, and extreme art. Faces may appear a bit samey in some of these models. Ask Sam for advice on how to fix this, if it bothers you!
+
+The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It can understand both English and Danbooru tags to some extent.

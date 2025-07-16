@@ -22,6 +22,8 @@ If you'd like to support us, you can become a patron: ([SFW](https://www.patreon
 
 Read this intro carefully!
 
+You can watch a [demo video](https://allemande.ai/demo) (SFW).
+
 Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help by pressing the <i class="bi-x"></i> button at the top right.
 
 In the main [Ally Chat](/Ally+Chat) room and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with basic info about the app.
@@ -114,6 +116,7 @@ There are many, many more; check the guides, and try the help system!
 - Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
+- A few app-support agents can see the room name (Aidi, Assi, sometimes Loni and Lori). Others cannot.
 - Some adult features, characters and agents are only available under the nsfw/ folder, and in your private chats, not in public SFW rooms at the top level.
 - Some AIs are only available outside the nsfw/ folder, and should not be used in any NSFW chat.
 

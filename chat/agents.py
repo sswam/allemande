@@ -91,6 +91,9 @@ class Agent:
         if private:
             self.data = {k: self.data[k] for k in ("visual", "name", "fullname", "aliases") if k in self.data}
             self.data["type"] = "visual"
+        self.nsfw = False
+        if file and file.parent.name == "nsfw":
+            self.data["adult"] = True
 
     def load_agent(self, file: Path) -> None:
         """Load the agent data from a file."""
@@ -110,15 +113,18 @@ class Agent:
         """Return a copy of the agent"""
         return Agent(data=deepcopy(self.data), agents=self.agents)
 
-    def copy_with_identity(self, reference) -> Agent:
-        copy = self.copy()
-        copy.name = reference.name
+    def apply_identity(self, reference: Agent) -> Agent:
+        """Create a new agent based on self with name and other attributes from reference."""
+        data = {
+            "base": self.name,
+        }
         for key in ["name", "fullname", "aliases", "age", "visual"]:
             if key in reference.data:
-                copy.data[key] = deepcopy(reference.data[key])
-        return copy
+                data[key] = deepcopy(reference.data[key])
+        agent = Agent(data=data, agents=self.agents)
+        return agent
 
-    def get(self, key: str, default=None, raise_error=False, raw=False):
+    def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None):
         """Get a value from the agent's data"""
         base = self.base()
         if key not in self.data and base:
@@ -147,6 +153,7 @@ class Agent:
             # We do this on get, rather than initially, because we can define
             # a derived agent with different names.
             # TODO do this more generally for other variables?
+            # replace $ROOM with the room name
             if value and key in ["system_top", "system_bottom"]:
                 name = self.get("name")
                 fullname = self.get("fullname", name)
@@ -165,6 +172,7 @@ class Agent:
                     "TIME": time,
                     "TZ": tz,
                     "TIMESTAMP": timestamp,
+                    "ROOM": room or '[unknown]',
                 })
 
         # TODO remove null values? i.e. enable to remove an attribute from base

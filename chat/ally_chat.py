@@ -225,17 +225,19 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     welcome_agents = [name for name, agent in agents.items() if agent.get("welcome")]
 
+    include_self = config.get("self_talk") and not poke
+
     responsible_human, bots = conductor.who_should_respond(
         message,
         agents=agents,
         history=history_messages,
         default=welcome_agents,
         include_humans_for_ai_message=not poke,
-        include_humans_for_human_message=True,
+        include_humans_for_human_message=not poke,  # True,
         mission=mission,
         config=config,
         room=room,
-        include_self=not poke,
+        include_self=include_self,
     )
     logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
 
@@ -277,13 +279,22 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         logger.debug("query: %r", query)
         logger.debug("history 1: %r", history)
         response = await run_agent(
-                agent, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
+            agent, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
         )
-        response = response.strip()
+        response = response.lstrip().rstrip("\n ")
 
         # Forwarding to other agents transparently:
-        # TODO use a function or something?
+        # TODO use a function or something
         forward = agent.get("forward")
+        forward_allow = agent.get("forward_allow")
+        forward_deny = agent.get("forward_deny")
+        forward_if_denied = agent.get("forward_if_denied")
+        forward_if_code = agent.get("forward_if_code")
+        forward_if_image = agent.get("forward_if_image")
+        forward_if_blank = agent.get("forward_if_blank")
+
+        if forward_if_blank and (not response or response == f"{agent.name}:"):
+            response = f"@{forward_if_blank}"
         if forward and response:
             logger.info("Forward response: %r", response)
             # look for the final line @agent_name
@@ -303,14 +314,24 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 use_aggregates=False,
             )
 
+            # HACK: if the agent tried to give an image prompt or an image, forward it
+            if not bots2 and forward_if_code and "```" in response:
+                bots2 = [forward_if_code]
+            if not bots2 and forward_if_image and "![" in response:
+                bots2 = [forward_if_image]
+
             logger.info("Forward: who should respond: %r", bots2)
             for bot2 in bots2:
-                if agent.get("forward_all"):
-                    bot2 = random.choice(forward)
-                elif isinstance(forward, list) and bot2 not in forward:
+                if isinstance(forward_allow, list) and bot2 not in forward_allow or isinstance(forward_deny, list) and bot2 in forward_deny:
+                    bot2 = agent.get("forward_if_denied")
+                    if not bot2:
+                        continue
+                # never forward to self
+                if bot2 == agent.name:
+                    logger.info("Skipping forwarding to self: %s", bot2)
                     continue
                 logger.info("Forwarding to %s", bot2)
-                agent2 = agents.get(bot2).copy_with_identity(agent)
+                agent2 = agents.get(bot2).apply_identity(agent)
                 # replace agent.name with agent2.name in user's message
                 # logger.info("Replacing %s with %s in query: %r", agent.name, agent2.name, query)
                 # query2 = history[-1] = re.sub(rf"\b{re.escape(agent.name)}\b", agent2.name, query)
@@ -319,7 +340,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                     agent2, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
 #                    agent2, query2, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
                 )
-                response = response.strip()
+                response = response.lstrip().rstrip("\n ")
                 # if agent.get("forward") == "transparent_half" and response:
                 #     response = f"{agent.name}:\t" + re.sub(r"\A.*?:(\t|$)", "", response, count=1, flags=re.MULTILINE)
                 # elif agent.get("forward") == "transparent" and response:
@@ -341,6 +362,9 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             room.undo("root")
             # sleep for a bit
             await asyncio.sleep(0.1)
+
+        if response == f"{agent.name}:":
+            response += ""
 
         history.append(response)
         logger.debug("history 2: %r", history)

@@ -131,9 +131,23 @@ async def client_request(portal, input_text, config=None, timeout=None):
     return new_text, resp  # , generated_text
 
 
+def code_unwrap_input(message: str) -> str:
+    """Remove ``` code quoting from a message"""
+    message = re.sub(r'```[\w]*\n?', '', message)
+    return message
+
+
+def strip_images(message: str) -> str:
+    """Remove images from a message, e.g. ![image](image.jpg)"""
+    message = re.sub(r'!\[[^\]]*\]\([^\)]+\)', '', message)
+    return message
+
+
 async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str = None) -> str:
     """Run a local agent."""
     # print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
+
+    room = Room(path=Path(file))
 
     if config is None:
         config = {}
@@ -190,8 +204,8 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         context = context2
 
     # add system messages
-    system_top = agent.get("system_top")
-    system_bottom = agent.get("system_bottom")
+    system_top = agent.get("system_top", room=room.name)
+    system_bottom = agent.get("system_bottom", room=room.name)
 
     # add system message for age
     age_input = agent.get("age")
@@ -206,6 +220,15 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         system_bottom += f"\n\n(You are {age}.)"
     elif age:
         logger.warning("age provided but no system message to add it to, for agent %r", agent.name)
+
+    # add system message for self_image
+    self_image = agent.get("self_image")
+    if self_image and system_top:
+        system_top += "\n\n" + self_image
+    elif self_image and system_bottom:
+        system_bottom += "\n\n" + self_image
+    elif self_image:
+        logger.warning("self_image provided but no system message to add it to, for agent %r", agent.name)
 
     logger.debug("system message for %s: %s", agent.name, system_top or system_bottom)
 
@@ -241,6 +264,10 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     if need_clean_prompt:
         fulltext = chat.clean_prompt(context, name, args.delim)
     else:
+        if agent.get("code_unwrap_input"):
+            context = [code_unwrap_input(line) for line in context]
+        if agent.get("strip_images_input"):
+            context = [strip_images(line) for line in context]
         fulltext, history_start = get_fulltext(args, model_name, context, history_start, invitation, args.delim)
 
     if "config" in agent:
@@ -327,8 +354,6 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 
-    room = Room(path=Path(file))
-
     # try to get image seed from response
     image_seed = None
     image_metadata = {}
@@ -382,6 +407,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     response = chat.trim_response(response, args, agent.name, people_lc=people_lc)
     response = chat.fix_response_layout(response, args, agent)
+
+    if agent.get("code_wrap_output"):
+        response = "```\n\t" + response.strip() + "\n\t```"
 
     if invitation:
         tidy_response = invitation.strip() + "\t" + response.strip()

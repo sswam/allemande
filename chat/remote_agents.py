@@ -4,6 +4,7 @@ import logging
 import re
 import json
 from pprint import pformat
+from pathlib import Path
 
 from num2words import num2words
 
@@ -14,6 +15,7 @@ import bb_lib
 import ally_markdown
 import llm  # type: ignore, pylint: disable=wrong-import-order
 from settings import REMOTE_AGENT_RETRIES
+from ally_room import Room
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,6 +26,8 @@ USER_PLACEHOLDER_CONTENT = "..."
 async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str = None) -> str:
     """Run a remote agent."""
     # NOTE: responsible_human is not used here yet
+
+    room = Room(path=Path(file))
 
     service = agent["type"]
 
@@ -113,8 +117,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         remote_messages.insert(0, {"role": "user", "content": USER_PLACEHOLDER_CONTENT})
 
     # add system messages
-    system_top = agent.get("system_top")
-    system_bottom = agent.get("system_bottom")
+    system_top = agent.get("system_top", room=room.name)
+    system_bottom = agent.get("system_bottom", room=room.name)
     system_bottom_role = "user" if service == "google" else agent.get("system_bottom_role", "user")
     system_top_role = agent.get("system_top_role", "system")
 
@@ -131,6 +135,15 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         system_bottom += f"\n\n(You are {age}.)"
     elif age:
         logger.warning("age provided but no system message to add it to, for agent %r", agent.name)
+
+    # add system message for self_image
+    self_image = agent.get("self_image")
+    if self_image and system_top:
+        system_top += "\n\n" + self_image
+    elif self_image and system_bottom:
+        system_bottom += "\n\n" + self_image
+    elif self_image:
+        logger.warning("self_image provided but no system message to add it to, for agent %r", agent.name)
 
     logger.debug("system message for %s: %s", agent.name, system_top or system_bottom)
 
@@ -184,6 +197,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     opts = llm.Options(model=agent["model"])  # , indent="\t")
     for k, v in agent.get("config", {}).items():
         setattr(opts, k, v)
+    if agent.get("vision") is False:
+        opts.vision = False
 
     logger.debug("config: %r", config)
     logger.debug("agent: %r", agent.data)

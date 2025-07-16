@@ -18,6 +18,8 @@ If you'd like to support us, you can [become a patron](https://www.patreon.com/a
 
 Read this intro carefully!
 
+You can watch a [demo video](https://allemande.ai/demo).
+
 Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help by pressing the <i class="bi-x"></i> button at the top right.
 
 In the main [Ally Chat](/Ally+Chat) room, AIs can help with basic info about the app.
@@ -50,7 +52,7 @@ You can say @anyone for a random AI, or @everyone for several responses.
 ## Select Characters and Tools
 
 **General Chat**
-- Loni: our meta-agent, sends your message to the best AI for the job; great for beginners
+- Loni: our meta-agent, sends your message to the best AI for the job; great for beginners.
 - Ally/Allie, Barbie, Callam, Dante: friendly chat
 - Flashi, Emmy, Claude, Gemmi: strong assistants
 - Fli, Emm, Clu, Gemm: for concise responses
@@ -105,6 +107,7 @@ There are many, many more; check the guide, and try the help system!
 - Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
+- A few app-support agents can see the room name (e.g. Aidi). Others cannot.
 
 ## Example Usage
 

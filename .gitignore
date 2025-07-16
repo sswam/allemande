@@ -94,6 +94,7 @@ rooms.*
 /webchat/static/icons.css
 /webchat/static/icons.woff2
 /doc/nsfw/guide.md
+/rooms.dist/mission.m
 
 # agents
 /agents/nsfw
@@ -107,6 +108,9 @@ rooms.*
 /agents/old
 /doc/extra.md
 /doc/summary
+
+# NSFW files
+/doc/nsfw/demo_plan_1_nsfw.md
 
 # 3rd-party content
 /code/pop.pdf
@@ -207,4 +211,3 @@ rooms.*
 /cz/unbrace
 /linux/top_grouped
 /text/aligno
-/doc/nsfw/demo_plan_1_nsfw.md

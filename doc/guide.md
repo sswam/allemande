@@ -30,7 +30,9 @@ Novel features include:
 - a wide range of styles, support for custom styles and JavaScript
 - we value free speech, and include access to various uncensored AIs
 
-Please message me (Sam) for free access and a demo / tour. I hope you'll like it!
+Please message Sam for free access and a demo / tour. We hope you'll like it!
+
+You can watch a [demo video](https://allemande.ai/demo).
 
 If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
 
@@ -52,7 +54,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - **Flexible Interface**: Clean, modern design with customizable themes
 - **Rich Chat Format**: Markdown, HTML, TeX math, Graphviz, Mermaid, embeds, SVG, CSS, JavaScript, canvas.
 - **Universal**: Features for general assistance, work, education, and entertainment.
-- **Separate SFW and NSFW Zones**: Adult users with access can explore the NSFW zone.
+- **Separate SFW and NSFW Zones**: Adult users can opt-in to access the NSFW zone.
 
 ## Limitations
 
@@ -72,7 +74,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 ## Learning about Ally Chat
 
-- Read the [Quick Intro](/intro).
+- Read the [Quick Intro](/intro). It is not repeated here.
 - Read this [User Guide](/guide) if you have time, or to see the lists of characters.
 - This document is visible to AIs in the help widget. They can help users to learn about the app. They can even show which icons to press!
 - IMPORTANT: New users who need help should talk to Aidi. Other characters can also help, but Aidi is specialised at this.
@@ -145,22 +147,28 @@ Ally Chat is continuously evolving with new features and capabilities being adde
 
 ## The conductor
 
-1. If you mention someone's name, they will respond. Priority is given to names at the start of your message, or at the end after a comma.
+1. If you mention an AI's name with a capital letter, they will respond. Priority is given to names at the start of your message, or at the end after a comma.
 
   - hey Ally, how are you?   - invokes Ally
   - I like Ally, Sam  - invokes Sam
 
 2. If you don't mention anyone's name, the last other person in the chat will repond.
 
-3. If you say @anyone, a random AI from the chat will respond.
+3. If you poke the chat, an AI mentioned in the last message, or the previous AI, will respond.
 
-4. If you say @everyone, several AIs from the chat will respond.
+5. You can mention an AI in lower-case to avoid triggering them to respond.
 
-5. You can "poke" the chat to get the next person to respond without saying anything yourself.
+6. If you say @anyone, a random AI from the chat will respond.
 
-6. You can prompt several named people to respond like: @Ally, @Barbie, @Cleo ...
+7. If you say @everyone, several AIs from the chat will respond.
 
-7. You can invoke someone without saying anything like -@Ally
+8. You can "poke" the chat to get the next person to respond without saying anything yourself.
+
+9. You can prompt several named people to respond like: @Ally, @Barbie, @Cleo ...
+
+  - hey, Barbie... do you like ally?
+
+10. You can invoke someone without saying anything like -@Ally
 
 8. The conductor rules are a bit more complex than described above. If in doubt, use @ mentions.
 
@@ -622,7 +630,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Evan** (EVA Qwen2.5 72B): A Chinese man with dark brown eyes and pale skin.
 
 ### Specialists
-- **Aidi**: The AI assistant, she is a helpful and friendly guide for new users and technical support
+- **Aidi**: The AI assistant, he is a helpful and friendly guide for new users and technical support. Aidi can see the full name of the room he is in.
 - **Pixi**: She crafts detailed AI art prompts, ensuring high-quality image generation
 - **Sia**: She is an expert writer focused on summarizing entire chats
 - **Sio**: She is an expert writer focused on summarizing entire chats in structured markdown format
@@ -819,12 +827,14 @@ Each character needs a type and a model, except:
 - Type human is to represent a human user, only needs the type and visual.
 - Type visual is for a visual-only character, no text AI. Only needs the type and visual.
 
-Recommend models for role-play, that support NSFW:
+Recommend models for role-play:
 - llm_llama / default  (can be inconsistent, but very human-like)
 - llama-3.3-70b-free  (a stronger variant)
 - google / gemini-2.0-flash, gemini-2.5-flash, or gemini-2.5-pro (the latter for very brainy characters)
 - eva-qwen2.5-72b (a paid model)
 - mistral-large (a paid model)
+
+These models support NSFW chat, but are not focused on it.
 
 The google, openai, and anthropic models support image vision. Only the google models allow NSFW image vision.
 
@@ -844,7 +854,7 @@ type: deepseek
 models: deepseek-reasoner, deepseek-chat
 
 type: openrouter
-models: llama-3.3-70b-free, llama-4-scout-free, llama-4-maverick-free, gemma-free, eva-qwen2.5-72b, mistral-large, qwq-32b
+models: qwq-32b, gemma-free, llama-3.3-70b-free, eva-qwen2.5-72b, mistral-large, llama-4-scout-free, llama-4-maverick-free
 
 ##### SFW only:
 
@@ -908,12 +918,12 @@ type: visual
 
 #### Image Models (SFW)
 
-| Creator       | Model               | Name | Description                                                                                                         |
-|---------------|---------------------|------|---------------------------------------------------------------------------------------------------------------------|
-| RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images                                |
-| LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art                              |
-| Autismix anon | AutismMix Confetti  | Poni | Mix of pony with "some stuff", a popular model for anime-style art with NSFW tendencies                             |
-| Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, realistic with NSFW tendencies |
+| Creator       | Model               | Name | Description                                                                                                     |
+|---------------|---------------------|------|-----------------------------------------------------------------------------------------------------------------|
+| RunDiffusion  | Juggernaut XL v9    | Jily | The most popular model based on SDXL, for high-quality realistic and artistic images                            |
+| LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art                          |
+| Autismix anon | AutismMix Confetti  | Poni | Mix of pony with "some stuff", a popular model for anime-style art, NSFW tendencies                             |
+| Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, realistic, NSFW tendencies |
 
 * Note that Poni and Coni models should be prompted with "rating safe" to avoid nudity.
 
@@ -935,6 +945,7 @@ type: visual
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 | <i class="bi-lock"></i> <i class="bi-unlock"></i> |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
+| <i class="bi-explicit"></i> |  | NSFW | Go to main NSFW room (when enabled for the user, in advanced mode, this is in the nav menu) |
 |  | `Ctrl+;` or `Esc` | Room Name | Change room |
 |  |  | User | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
 | <i class="bi-question-lg"></i> |  | Help | Read the Intro and Guide, and get AI help to use the app. Brightly coloured and slightly animated in 'basic' mode. |
@@ -946,7 +957,7 @@ type: visual
 |---------|----------|------|-------------|
 | <i class="bi-send"></i> | `Ctrl+Enter` | Send | Send message (visible when message entered) |
 | <i class="bi-hand-index-thumb"></i> | `Alt+Enter` | Poke | Prompt AI response (visible when no message) |
-| <i class="bi-upload"></i> |  | File | Upload files |
+| <i class="bi-upload"></i> |  | File | Upload files (in advanced mode, this is in the add menu) |
 | <i class="bi-eye"></i> |  | View | view settings |
 
 ### View Settings Menu
@@ -1051,7 +1062,7 @@ WIP: not yet visible in the app
 | Icon | Shortcut | Setting | Description |
 |---------|----------|-------------|----------|
 | <i class="bi-hash"></i> |  | IDs | View message IDs |
-| <i class="bi-image"></i> | `Alt+I` | Images | Toggle showing images |
+| <i class="bi-image"></i> | `Alt+I` | Images | Cycle images display: normal, blur, hidden |
 | <i class="bi-alphabet"></i> | `Alt+A` | Alt | Toggle showing alt captions |
 | <i class="bi-arrows-angle-expand"></i> <i class="bi-arrows-angle-contract"></i> |  | Image Size | Change image size |
 | <i class="bi-braces"></i> |  | Source | View source (none, javascript, math/diagram source) |

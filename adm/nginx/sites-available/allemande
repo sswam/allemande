@@ -84,6 +84,11 @@ server {
 # 		}
 		add_header Access-Control-Allow-Origin *;
 	}
+
+	# Redirects
+	location = /demo {
+		return 302 https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb;
+	}
 }
 
 server {
