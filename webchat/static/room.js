@@ -639,10 +639,6 @@ function overlay_close(ev, back_pressed) {
 
   overlay_mode = false;
   $body.classList.remove("overlay");
-  clear_overlay_image_cover();
-  $overlay.innerHTML = "";
-  signal_overlay(false);
-  exit_fullscreen();
 
   // Reset current image index
   allImages = null;
@@ -653,6 +649,18 @@ function overlay_close(ev, back_pressed) {
   $off(window, "popstate", image_overlay_back);
   if (!back_pressed)
     history.back();
+
+  signal_overlay(false);
+
+  // for blur: allow remove body.overlay to apply before removing the overlay
+  // setTimeout(overlay_close_2, 0);
+  // }
+
+  // function overlay_close_2() {
+
+  clear_overlay_image_cover();
+  $overlay.innerHTML = "";
+  exit_fullscreen();
 }
 
 function signal_overlay(overlay) {
@@ -1045,7 +1053,8 @@ async function set_view_options(new_view_options) {
 //  console.log("applying view options");
   const cl = document.body.classList;
   if (file_type === "room") {
-    cl.toggle("images", view_options.images == 1);
+    cl.toggle("images", view_options.images > 0);
+    cl.toggle("blur", view_options.images == 2);
     cl.toggle("alt", view_options.alt == 1);
     cl.toggle("script_source", view_options.source >= 1);
     cl.toggle("rendered_source", view_options.source >= 2);

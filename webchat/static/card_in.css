@@ -215,6 +215,10 @@ img.card-avatar {
 	flex-shrink: 0;
 }
 
+body.blur > :not(.overlay) img.card-avatar {
+	clip-path: inset(0 round 0.625em);
+}
+
 /* Shine overlay */
 .card-overlay {
 	position: absolute;

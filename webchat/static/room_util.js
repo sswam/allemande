@@ -83,6 +83,7 @@ async function waitForImageLoad(img) {
 }
 
 function image_text(img, texts, size = 1, font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive") {
+  img.classList.add('layout');
   const current_script = document.currentScript;
   return image_text_async(img, texts, size, font, current_script);
 }

@@ -449,9 +449,29 @@ body:not(.compact) > div.messages_wrap {
 	border-radius: 0.375rem;
 }
 
-body:not(.images) img {
+body:not(.images) img:not(.layout) {
 	display: none;
 }
+
+body:not(.images) img.layout {
+	visibility: hidden;
+}
+
+body:not(.images) img.layout {
+	opacity: 0;
+	pointer-events: none;
+}
+
+body.blur > :not(.overlay) img {
+  filter: blur(24px);
+  clip-path: inset(0);
+}
+
+body.blur > :not(.overlay) img:hover {
+  filter: none;
+  clip-path: none;
+}
+
 body:not(.alt) .alt {
 	display: none;
 }

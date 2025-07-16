@@ -803,6 +803,16 @@ async function move(source, dest) {
 //   }
 // }
 
+// send a message to the room iframe -----------------------------------------
+
+function send_to_room_iframe(message) {
+  $messages_iframe.contentWindow.postMessage(message, ROOMS_URL);
+}
+
+function send_to_help_iframe(message) {
+  $id("help-frame").contentWindow.postMessage(message, ALLYCHAT_CHAT_URL);
+}
+
 // navigation ----------------------------------------------------------------
 
 function nav_click(ev) {
@@ -831,7 +841,7 @@ function nav_up(ev) {
 function scroll_home_end(ev, p) {
   ev.preventDefault();
   if(!editor_file)
-    $messages_iframe.contentWindow.postMessage({ type: "scroll_home_end", p }, ROOMS_URL);
+    send_to_room_iframe({ type: "scroll_home_end", p });
   else
     $edit.scrollTop = p * $edit.scrollHeight;
 }
@@ -839,7 +849,7 @@ function scroll_home_end(ev, p) {
 function scroll_pages(ev, d) {
   ev.preventDefault();
   if(!editor_file)
-    $messages_iframe.contentWindow.postMessage({ type: "scroll_pages", d }, ROOMS_URL);
+    send_to_room_iframe({ type: "scroll_pages", d });
   else
     $edit.scrollTop += d * $edit.clientHeight;
 }
@@ -920,7 +930,7 @@ function set_title_hash(query, no_history) {
 }
 
 function on_hash_change() {
-  $title.innerText = query_to_title(hash_to_query(location.hash));
+  $title.innerText = query_to_title(hash_to_room(location.hash));
   let h = location.hash;
   if (h == "" || h == "#") {
     h = "#" + DEFAULT_ROOM;
@@ -929,17 +939,19 @@ function on_hash_change() {
     clear_messages_box();
   }
   if (h != new_hash) {
-    let query = hash_to_query(h);
+    let query = hash_to_room(h);
     $room.value = query;
     set_room();
   }
 }
 
-function hash_to_query(hash) {
+function hash_to_room(hash) {
   let query = hash.replace(/\+|%20/g, " ");
   if (query.length)
     query = query.substr(1);
+  // replace #.* with empty string
   query = decodeURIComponent(query);
+  query = query.replace(/#.*/, "");
   return query;
 }
 
@@ -969,12 +981,14 @@ function select_room_basename() {
 
   let start = 0;
   if (value.endsWith('/')) {
-    // If ends with /, find the previous slash
-    const previousSlashIndex = value.lastIndexOf('/', lastSlashIndex - 1);
-    if (previousSlashIndex !== -1) {
-      // If there's a previous slash, select from there to end
-      start = previousSlashIndex + 1;
-    }
+    // folder view, don't select the folder
+    return;
+    // // If ends with /, find the previous slash
+    // const previousSlashIndex = value.lastIndexOf('/', lastSlashIndex - 1);
+    // if (previousSlashIndex !== -1) {
+    //   // If there's a previous slash, select from there to end
+    //   start = previousSlashIndex + 1;
+    // }
   } else if (lastSlashIndex !== -1) {
     // If there's a slash (not at the end), select from after it to end
     start = lastSlashIndex + 1;
@@ -2218,7 +2232,7 @@ function view_options_apply() {
   set_overlay(view_options.fullscreen == 2);
 
   // send message to the rooms iframe to apply view options
-  $messages_iframe.contentWindow.postMessage({ type: "set_view_options", ...view_options }, ROOMS_URL);
+  send_to_room_iframe({ type: "set_view_options", ...view_options });
 
   controls_resized();
 }
@@ -2240,7 +2254,8 @@ function view_ids(ev) {
 }
 
 function view_images(ev) {
-  view_options.images = !view_options.images;
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  view_options.images = (view_options.images + delta + 3) % 3;
   view_options_apply();
 }
 
@@ -2348,7 +2363,7 @@ function view_font_size(ev) {
   }
   view_options_apply();
   if (!$id("help-widget").classList.contains("hidden"))
-    $id("help-frame").contentWindow.postMessage({ type: "set_view_options", font_size: view_options.font_size }, ALLYCHAT_CHAT_URL);
+    send_to_help_iframe({ type: "set_view_options", font_size: view_options.font_size });
 }
 
 function view_items(ev) {
@@ -2432,11 +2447,11 @@ function set_theme(theme_new) {
   show_theme_name();
   set_settings({ theme: theme });
   load_theme();
-  $messages_iframe.contentWindow.postMessage({ type: "theme_changed", theme }, ROOMS_URL);
+  send_to_room_iframe({ type: "theme_changed", theme });
 
   // If help is open, reload it for the new theme
   if (!$id("help-widget").classList.contains("hidden"))
-    $id("help-frame").contentWindow.postMessage({ type: "theme_changed", theme }, ALLYCHAT_CHAT_URL);
+    send_to_help_iframe({ type: "theme_changed", theme });
 }
 
 let hide_theme_timeout;
@@ -2763,7 +2778,7 @@ async function help_click(ev) {
 }
 
 function help_op(op) {
-  $id("help-frame").contentWindow.postMessage({ type: "op", op: op }, ALLYCHAT_CHAT_URL);
+  send_to_help_iframe({ type: "op", op: op });
 }
 
 async function ensure_embed_scripts() {
@@ -2850,13 +2865,13 @@ function iOS_reload_scroll(ev) {
 function select_click(ev) {
   set_top_left("top_left_select");
   mode_options.select = true;
-  $messages_iframe.contentWindow.postMessage({ type: "set_mode_options", ...mode_options }, ROOMS_URL);
+  send_to_room_iframe({ type: "set_mode_options", ...mode_options });
 }
 
 function select_cancel(ev) {
   set_top_left();
   mode_options.select = false;
-  $messages_iframe.contentWindow.postMessage({ type: "set_mode_options", ...mode_options }, ROOMS_URL);
+  send_to_room_iframe({ type: "set_mode_options", ...mode_options });
 }
 
 // main ----------------------------------------------------------------------
