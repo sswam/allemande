@@ -2,6 +2,8 @@ export async function init() {
   const chat = window.modules.chat;
   if (!chat)
     return;
+  // disabled, it's more annoying than useful for now
+  /*
   chat.add_shortcuts(chat.shortcuts.message, [
     ['alt+1', () => chat.send_continue(), 'Send a continue message'],
     ['alt+2', () => chat.send_continue(2), 'Send a continue message to 2nd-last speaker'],
@@ -15,4 +17,5 @@ export async function init() {
     ['alt+0', () => chat.send_continue(10), 'Send a continue message to 10th-last speaker'],
     ['shift+enter', chat.send_random_message, 'Send a random message'],
   ]);
+  */
 }
