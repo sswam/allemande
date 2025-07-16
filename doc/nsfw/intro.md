@@ -137,6 +137,18 @@ Boni:	![#1628847956 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, sc
 
 Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
+## Current Limitations and Work in Progress
+
+- difficult for new users (WIP)
+- limited image storage (> 1 week may be removed)
+- no notifications (WIP)
+- no voice chat (WIP)
+- no documents / RAG (WIP)
+- limited range of art models
+- no direct messaging
+- no video generation
+- no memory (can do it manually)
+
 ## Become a Patron!
 
 Free-tier users have access to all models and features, with generous limits.

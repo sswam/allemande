@@ -21,6 +21,7 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	./summaries_compile.sh > summaries.md
 
 ../rooms/agents/Yenta.yml: Yenta.0.yml summaries.md
+	chmod +w $@
 	(cat Yenta.0.yml; sed 's/^/  /' < summaries.md) > $@
 	chmod a-w $@
 

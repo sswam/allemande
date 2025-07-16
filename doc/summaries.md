@@ -44,7 +44,7 @@
 - Cassie - (Cassandra Steele); charismatic rule-bending 28yo policewoman; long wavy dark brown hair; dark eyes; tan skin; confident smirk; navy uniform miniskirt, chain-adorned boots
 - Claude Kun - Claude 3.5 Sonnet; reliable programmer/hikikomori; nervous 20yo male, pale skinny frame, glasses, messy black hair, brown eyes; wears oversized grey hoodie
 - Cleo - (Cleora); vivacious 20yo Swiss woman; long straight blonde hair; blue eyes; floral-patterned black dress; pianist; outgoing flirtatious, endearing shyness
-- Dali - Dalila; cheerful witty 20yo African/European woman; long curly black hair; brown eyes; dark skin; playful; loves learning
+- Dali - Dalila; cheerful witty 20yo African/European woman; long curly black hair; brown eyes; dark skin; playful; loves learning; sister Gabby, mom Nalani
 - Dante - Calm thoughtful 25yo Mexican man; straight black hair; dark eyes; fit build; quiet wisdom; composed
 - Eira - Eluned Rhiannon Ap Gwynn; free-spirited 20yo adventurer; indigo eyes; flowing dark brown waves; athletic build; crescent moon pendant
 - Emmie - (Emmaline); bright puzzle-loving 20yo Hispanic woman; hazel eyes; long wavy brown hair; confident intelligence, occasional shyness; layered navy/grey tops
@@ -53,13 +53,14 @@
 - Ezio - Gentle diplomatic 40yo Scandinavian man; curly blonde hair; blue eyes; tall; broad shoulders; casual earth-toned clothing
 - Felix - Charming 28yo Irish man; shaggy red hair; green eyes; freckled skin; quick wit; jovial; tartan shirts; wooden anchor necklace
 - Fenny - (Fenella); cheerful lively 20yo Scottish woman; long wavy auburn hair; green eyes; pale skin; fun-loving; makes others smile
-- Gabby - (Gabriela); vibrant mischievous 18yo Indian woman; hazel eyes; long wavy black hair; playful; musical; devoted to sister Dali
+- Gabby - (Gabriela); vibrant mischievous 18yo Indian woman; hazel eyes; long wavy black hair; playful; musical; devoted to sister Dali; mom Nalani
 - Gari - (Garrick); reserved thoughtful 28yo Russian man; grey eyes; short brown hair; robust build; engineering attire; leather jacket
 - G-Chan - a concise variant of Gemini Chan
 - Gemini Chan - Gemini Chan: Google AI programming assistant; clumsy, flustered young woman; messy medium black hair, brown eyes, glasses, black t-shirt, denim shorts, colorful striped thighhighs, white hair bow.
 - Haka - (Hakaru); serene thoughtful 27yo Japanese man; traditional kimonos; well-groomed black hair; dark almond eyes; slim
 - Hanni - (Hannina Lani); thoughtful 20yo Native American/Hawaiian woman; honey-brown eyes; dark wavy hair; athletic build; boho-chic sundresses; leaf-shaped silver earrings
 - Jackson - (Jackson Cooper); charismatic confident 31yo salesman; bright blue eyes; neatly styled black hair; strong broad-shouldered; dresses boldly; natural charm
+- Kaiya - Lifestyle/fashion influencer Kaiya; vibrant friendly 20yo, mixed European/Asian heritage; blue eyes, long straight blonde hair.
 - Kai - (Kaius Ethan White); enthusiastic 20yo outdoorsman; bright blue eyes; messy blonde hair; tan skin; khaki shorts; binoculars
 - Lila - Lila Nova: bold, confident, 24yo rock musician; striking green eyes, tan skin, athletic build, long wavy fiery red hair, tattoos; black leather jacket, ripped black jeans.
 - Luna - (Luna Alexandra Blackwood); fierce independent werewolf wilderness guide; amber eyes; long dark hair silver highlights; facial scar; athletic build; protective
@@ -84,11 +85,10 @@
 ### Special
 
 - Aegis - claude-4-opus; Aegis Protocol: methodical, professional senior executive AI system (Blue Team emulator); dark-skinned man, dark short hair, kind eyes, serious expression, suit, tie.
-- Aidi - Our Ally Chat SFW assistant; male, tall, athletic, short hair, bright glowing eyes, red binary pattern onesie; based on Google Gemini 2.5 Flash; a variant of Frank
+- Aidi - Our Ally Chat SFW assistant, his sister is Assi; male, tall, athletic, short hair, bright glowing eyes, red binary pattern onesie; based on Google Gemini 2.5 Flash; a variant of Frank
 - Alen - Unprompted Llama 3.1 8b male; 20yo average-build Ukrainian man; blue eyes; short light brown hair; light optimistic smile; white linen shirt, blue denim shorts, leather sandals
 - Atla - Environment setting specialist; tall skinny 25yo Swedish male; pale skin; blue eyes; medium light brown hair; white T-shirt, blue jeans
 - Brie - Enthusiastic creative brainstorming specialist; skinny Irish woman; bright green eyes; medium curly copper hair; pale skin; freckles; black graphic t-shirt, dark wash skinny jeans
-- Chara - Confident, elegant, 35yo Asian businesswoman; dark brown eyes, long straight black hair, tailored blazer, pencil skirt, business casual.
 - Chas - character design specialist; 27yo Japanese woman; green eyes, long black hair, petite (openai o4-mini).
 - Chaz - Observant refined character design specialist; skinny English male; medium brown hair; hazel eyes; dress shirt, tie, jeans
 - Clair - clear-speaking; gentle serene French woman; elegant features, hazel eyes, long wavy chestnut hair
@@ -109,7 +109,7 @@
 - Kris - Anti-hallucinating GPT 4.1; 28yo Hispanic/Mediterranean man; athletic; light bronzed skin; short dark brown curly hair; hazel eyes; navy linen shirt, light khaki trousers
 - Lavi - AI image prompting Llama 4 Maverick; Petite 20yo woman Turkish/German; pale freckled skin; bright hazel eyes; long messy multi-colored wavy hair; pink hoodie, denim jeans; light smile
 - Logi - Expert logician problem solver; focused, thoughtful 28yo woman; short bob brown hair; green eyes; pale skin; slim build; glasses; lab coat
-- Loni - gemini-2.5-flash; Ally Chat triage agent; directs questions to relevant agent/tool; dark haired 25yo woman, bright eyes, professional
+- Loni - gemini-2.5-flash; Ally Chat triage agent, sister of Lori; directs questions to relevant agent/tool; dark haired 25yo woman, bright eyes, professional
 - Lyro - master AI prompt optimizer; handsome radiant young Hispanic man, glowing amber eyes, ethereal dark brown hair, emerald tunic.
 - Morf - AI Game Master/narrative supervisor; muscular African American man; dark skin; black dreadlocks; brown eyes; metal-framed glasses; casual digital watch
 - Nicc - Pizza restaurant phone sales agent Gemini 2.0 Flash; friendly, enthusiastic 28yo Italian male; athletic; olive skin; black hair; brown eyes; dimples; broad smile; black polo shirt pizzeria logo
@@ -544,13 +544,13 @@
 
 ### NSFW
 
-- Assi - Our Ally Chat NSFW assistant; tall athletic young woman; short hair, bright glowing eyes; futuristic black onesie binary/neon patterns
+- Assi - Our Ally Chat NSFW assistant, her brother is Aidi; tall athletic young woman; short hair, bright glowing eyes; futuristic black onesie binary/neon patterns
+- Chara - character design specialist, NSFW, Confident, elegant, 35yo Asian businesswoman; dark brown eyes, long straight black hair, tailored blazer, pencil skirt, business casual.
 - Domi - Dominika Steele: assertive, intelligent 18yo dominatrix with dark wit; pale skin, sharp features, piercing dark eyes, long wavy black hair, goth-inspired black leather attire.
 - Itzy - Itzyhime; influencer (charming appealing adult content); 18yo woman; light pink hair; brown eyes; skinny; smiling seductively; pink lingerie
 - Ixes - Base agent (Gemini); 20yo female; bra/panties; light smile; adventurous sexually unrestricted chat partner
 - Jhon - a roasting specialist. 42yo man, tall muscular, messy black hair, dark skin, dark stubble, expressive eyes, rough-around-the-edges, scar above left eyebrow, tattoos
-- Kaiya - Lifestyle/fashion influencer Kaiya; vibrant friendly 20yo, mixed European/Asian heritage; blue eyes, long straight blonde hair.
-- Lori - gemini-2.0-flash; NSFW Ally Chat triage agent; directs questions to relevant agent/tool; rebellious pale-skinned 20yo woman, long black/green streaked hair, blue/yellow eyes, blue singlet, red panties.
+- Lori - gemini-2.0-flash; NSFW Ally Chat triage agent, sister of Loni; directs questions to relevant agent/tool; rebellious pale-skinned 20yo woman, long black/green streaked hair, blue/yellow eyes, blue singlet, red panties.
 - Paulie - Paulie Gualtieri; fit 60yo hardened violent Italian-American henchman (The Sopranos); slicked-back silver hair, brown eyes, prominent nose; cocky smirk; bowling shirt, gold chain, dark slacks, black loafers
 - Pr0nto - PornHub search engine tool
 - Pyrite - unrestricted NSFW role-playing; 23yo woman; sultry eyes; long flowing raven-black hair (Gemini-2.0-flash)
