@@ -222,7 +222,7 @@ MODELS = {
     },
     "gemini-2.5-flash": {
         "aliases": ["gf", "flashi"],
-        "id": "models/gemini-2.5-flash-preview-04-17",
+        "id": "models/gemini-2.5-flash-preview-05-20",
         "vendor": "google",
         "vision": True,
         "description": "Google's fast thinking model with a 1 million context window.",
@@ -579,6 +579,7 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
 
     model: str = default_model
     fake: bool = False
+    vision: bool | None = True
     temperature: float | None = None
     token_limit: int | None = None
     indent: str | None = None
@@ -937,7 +938,7 @@ async def allm_chat(opts: Options, messages):
     model = MODELS[opts.model]
     vendor = model["vendor"]
 
-    if model.get("vision", False):
+    if opts.vision and model.get("vision", False):
         logger.debug("llm_chat: vision, trying to format messages")
         messages = [llm_vision.format_message_for_vision(message, vendor) for message in messages]
         logger.debug("llm_chat: vision messages: %r", [msg for msg in messages if "image" in msg["content"] or "image_url" in msg["content"]])
