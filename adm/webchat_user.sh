@@ -34,6 +34,9 @@ webchat-user() {
 	list)
 		list-users "$@"
 		;;
+	missions)
+		update-missions "$@"
+		;;
 	*)
 		die "Usage: webchat-user {add|passwd|rm|off|on|list} [args...]"
 		;;
@@ -58,11 +61,14 @@ add-user() {
 		die "User $user already exists"
 	fi
 
-	local patreon
+	local start_nsfw patreon_links
 	if ((nsfw)); then
-		patreon="https://www.patreon.com/allychatx"
+		start_nsfw="6. Press the 'E' button to go to the 'nsfw' zone
+7. NSFW features work in private rooms too
+"
+		patreon_links=$'- https://www.patreon.com/allychat (SFW)\n- https://www.patreon.com/allychatx (NSFW)'
 	else
-		patreon="https://www.patreon.com/allychat"
+		patreon_links="- https://www.patreon.com/allychat"
 	fi
 
 	change-password "$@" |
@@ -70,30 +76,36 @@ add-user() {
 		cat <<END
 === Welcome to Ally Chat! ===
 
-There are a few rules, but we don't believe in censorship or "AI safety".  You are responsible for your own behaviour and your own safety.
+*** WARNING: This is a power tool. It takes a little time to learn. ***
 
-Before you start, please read the story of "Wally".  It's short and it's sad.
+There are a few rules, but we don't believe in censorship or 'AI safety'.  You are responsible for your own behaviour and safety.
 
-Wally joined Ally Chat, but he didn't press the ? button, to read the Intro and use the AI Help!  He certainly didn't read the User Guide.  Wally expected Ally Chat to be simple like ChatGPT, but Ally Chat is a power tool.  Wally got confused right away, and gave up on Ally Chat before he even got started.  Don't be a chuckle-monkey like Wally!
+*** The Sad Story of Wally ***
 
-*** WARNING: This app is a power tool. It takes a little time to learn.
+Wally joined Ally Chat, but he didn't press the ? button for the Intro and AI Help!  He certainly didn't read the User Guide.  Wally expected Ally Chat to be simple like ChatGPT, but Ally Chat is a power tool.  Wally got confused right away, didn't ask Sam for a demo, and gave up before he even got started.  Don't be a chuckle-monkey like Wally!
+
 
 Login at https://$ALLEMANDE_DOMAIN
 Username: $user
 Password: $pass
 
 Getting Started:
-1. Say "hi" and chat a little in the "Ally Chat" room.
-2. Press '?' and read the Intro
-3. Visit the AI 'help' tab and ask some questions
-4. Ask Sam for a demo.
 
-Please consider joining our Patreon to support the project.
-- $patreon
+1. Say hi in the main 'Ally Chat' room
+2. Press the '?' button and read the Intro
+3. Visit the 'help' tab and ask the AI some questions. This is where to get help. Close it with the X at top-right.
+4. It's a good idea to stay in public rooms for a start, so you can learn from others
+5. Please ask Sam for a demo. Watch a demo video: https://allemande.ai/demo
+$start_nsfw
+Please consider supporting us on Patreon:
+
+$patreon_links
 
 Free-tier users have access to all models and features, but subscribers get some good perks too.
 
-Subscriptions start at \$5 / month.  You can also join as a free member.
+Subscriptions start at around US \$3 per month.  You can also join as a free member, to follow our updates.
+
+I'm happy to give you a demo in the app, and it's strongly recommended.  We'll make a custom character for you, and I'll give you some good AI art tips.
 END
 	done
 
@@ -105,7 +117,11 @@ END
 	ln -sf ../../themes/dark.css static/users/"$user"/theme.css
 
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
-	cp ../rooms.dist/mission.m rooms/"$user"/mission.m
+	if ((nsfw)); then
+		cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
+	else
+		cp ../rooms.dist/mission.m rooms/"$user"/mission.m
+	fi
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
 	if ((!nsfw)); then
@@ -121,13 +137,6 @@ reset: true
 allow_agents: true
 END
 		cat <<END
-
-NSFW Features:
-
-• Use the "nsfw" room for NSFW chat/images
-• You can read the NSFW intro and guide when you are in the "nsfw" zone
-• NSFW features work in private rooms too
-• Join public rooms to learn from others
 END
 		ln -sf ../../doc/nsfw/guide.md rooms/"$user"/.help.m
 		ln -sf ../../rooms.dist/help.bb.base.nsfw rooms/"$user"/.help.bb.base
@@ -240,6 +249,20 @@ list-users() {
 		comm -13 <(printf "%s\n" "$nsfw_users") <(printf "%s\n" "$users")
 		;;
 	esac
+}
+
+update-missions() {
+	nsfw=0 list-users |
+	while read user; do
+		[ -e "$user"/mission.m ] || continue
+		cp ../rooms.dist/mission.m rooms/"$user"/mission.m
+	done
+
+	nsfw=1 list-users |
+	while read user; do
+		[ -e "$user"/mission.m ] || continue
+		cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
+	done
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
