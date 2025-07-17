@@ -416,6 +416,9 @@ function decorateCodeBlock(codeBlock) {
     let text = codeBlock.textContent.trim();
     if (parentIsPre) {
       text = text.replace(/\n*$/, "\n");
+      // if no lang, probably an image prompt; quote it
+      if (!lang)
+        text = "```\n" + text + "```\n";
     }
     if (inIframe) {
       // send text to parent window
