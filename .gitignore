@@ -2,6 +2,7 @@
 xor-c
 .DS_Store
 /models
+/lora
 .*
 *.bak
 *~
