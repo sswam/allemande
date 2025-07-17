@@ -144,7 +144,7 @@ a1111:
 
 vup:
 	cd $(ALLEMANDE_VISUAL) && \
-	while true; do make up; sleep 30; done
+	while true; do make up; move-contrib; sleep 30; done
 
 # brain-remote: clean
 # 	cd chat && ./brain.sh --remote
