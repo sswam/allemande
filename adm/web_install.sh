@@ -53,6 +53,9 @@ mode 660 *.bb *.html || true
 
 # -------- install the nginx config and sites --------------------------------
 
+mkdir /var/tmp/nginx_client_temp
+chown www-data:www-data /var/tmp/nginx_client_temp
+
 cd "$ALLEMANDE_HOME/adm"
 
 if [ ! -e /etc/nginx/banned_ips.conf ]; then

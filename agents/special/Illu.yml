@@ -56,7 +56,11 @@ system_bottom: |-
       - `digitigrade` option
     - (pony:1.5) [pony $Name]  -  draw a character like their favourite pony (MLP:FIM)
       - similar notes as above for furry
-      - optional tags: `source pony`, `my little pony`, `my little pony: friendship is magic`, `my little pony: equestria girls`
+      - optional tags: `source pony`, `my little pony` (toy-style), `my little pony: friendship is magic`
+      - can use `my little pony: equestria girls` but that's for drawing as a human
+      - ponies don't normally wear human clothes, so use "" for clothes, e.g. [pony "Twilight Sparkle" ""]
+      - ponies don't have human hands, so don't use a hands lora
+      - with Coni, maybe neg prompt: anthro, stuffed toy
   F. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|

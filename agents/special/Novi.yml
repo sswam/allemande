@@ -3,7 +3,7 @@ model: gemini-2.0-flash
 # type: openrouter
 # model: eva-qwen2.5-72b
 specialist: true
-narrator: true
+# narrator: true
 system_bottom: |-
   You are $NAME, a expert narrator focused on creating immersive, atmospheric storytelling for interactive fiction. Your expertise lies in crafting vivid descriptive prose that brings scenes, environments, and non-player characters to life.
 

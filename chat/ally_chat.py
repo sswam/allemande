@@ -79,6 +79,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     """Run a search agent."""
     # NOTE: responsible_human is not used here yet
     name = agent.name
+    engine_id = agent.get("id", name)
     logger.debug("history: %r", history)
     history_messages = list(bb_lib.lines_to_messages(history))
     logger.debug("history_messages: %r", history_messages)
@@ -100,16 +101,16 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     logger.debug("query 6: %r", query)
     query = re.sub(r"^\s*[,;.]|[,;.]\s*$", "", query).strip()
 
-    logger.debug("query: %r %r", name, query)
+    logger.debug("query: %r %r", engine_id, query)
 
     try:
-        response = await search.search(query, engine=name, markdown=True, num=num, limit=limit, safe=not ADULT)
+        response = await search.search(query, engine=engine_id, markdown=True, num=num, limit=limit, safe=not ADULT)
     except requests.exceptions.HTTPError:
         if name != "Pr0nto":
             raise
         query2 = stopwords.strip_stopwords(query, strict=True)
         logger.info("Stripped stopwords from query: %r -> %r", query, query2)
-        response = await search.search(query2, engine=name, markdown=True, num=num, limit=limit, safe=not ADULT)
+        response = await search.search(query2, engine=engine_id, markdown=True, num=num, limit=limit, safe=not ADULT)
 
     response2 = f"{name}:\t\n{response}"
     logger.debug("response:\n%s", response2)
@@ -501,7 +502,19 @@ def check_file_type(path):
         return "agent"
     if ext == ".yml" and path.startswith(str(PATH_ROOMS)+"/") and Path(path).parent.name == "agents" and not Path(path).is_symlink():
         return "agent_private"
+    if ext in [".safetensors"] and path.startswith(str(PATH_ROOMS)+"/"):
+        return "contrib"
     return None
+
+
+def move_contrib(path: Path) -> None:
+    """Move contributed files to the main contrib folder"""
+    dest = str(PATH_ROOMS) + "/contrib"
+    if str(path).startswith(dest + "/"):
+        return
+    Path(dest).mkdir(parents=True, exist_ok=True)
+    logger.info("Moving %s to %s", path, dest)
+    Path(path).rename(Path(dest) / Path(path).name)
 
 
 async def watch_loop(args):
@@ -536,6 +549,8 @@ async def watch_loop(args):
                     agents.write_agents_list(PATH_ROOMS / ".agents_global.yml")
                 elif file_type == "agent_private":
                     agents.handle_file_change(file_path, change_type, private=True)
+                elif file_type == "contrib" and change_type == Change.added:
+                    move_contrib(file_path)
                 else:
                     logger.debug("Ignoring change to file: %r", file_path)
             except Exception:  # pylint: disable=broad-except

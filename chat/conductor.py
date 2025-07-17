@@ -142,6 +142,7 @@ def who_is_named(
     access_check_cache: dict[str, int] | None = None,
     agents: Agents | None = None,
     ignore_case: bool = True,
+    uniq: bool = True,
 ) -> list[str]:
     """check who is named first in the message"""
     if chat_participants is None:
@@ -214,7 +215,8 @@ def who_is_named(
                 result.append(agent)
 
     result = [x.lstrip("@") for x in result]
-    result = uniqo(result)
+    if uniq:
+        result = uniqo(result)
 
     logger.debug("who_is_named result: %r", result)
 
@@ -537,6 +539,7 @@ def who_should_respond(
         access_check_cache=access_check_cache,
         agents=agents,
         ignore_case=True,
+        uniq=False,
     )
     invoked = filter_access(invoked, room, access_check_cache)
     logger.debug("who_is_named @: %r", invoked)

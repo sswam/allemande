@@ -1464,9 +1464,9 @@ function file_clicked() {
 async function files_changed(ev) {
   const files = ev.target.files;
   // clear the file input so we can upload the same file again
-  await upload_files(files, true);
+  upload_files(files, true);  // in the background
   ev.target.value = "";
-  set_controls();
+  // set_controls();
 }
 
 // upload: drag and drop, paste ----------------------------------------------

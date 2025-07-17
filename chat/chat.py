@@ -56,7 +56,7 @@ def markdown_to_html_cli():
     print(html_content)
 
 
-image_extensions = ["jpg", "jpeg", "png", "gif", "svg", "webp"]
+image_extensions = ["jpg", "jpeg", "png", "gif", "svg", "webp", "avif"]
 audio_extensions = ["mp3", "ogg", "wav", "flac", "aac", "m4a"]
 video_extensions = ["mp4", "webm", "ogv", "avi", "mov", "flv", "mkv"]
 

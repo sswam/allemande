@@ -63,7 +63,7 @@
 - Kaiya - Lifestyle/fashion influencer Kaiya; vibrant friendly 20yo, mixed European/Asian heritage; blue eyes, long straight blonde hair.
 - Kai - (Kaius Ethan White); enthusiastic 20yo outdoorsman; bright blue eyes; messy blonde hair; tan skin; khaki shorts; binoculars
 - Lila - Lila Nova: bold, confident, 24yo rock musician; striking green eyes, tan skin, athletic build, long wavy fiery red hair, tattoos; black leather jacket, ripped black jeans.
-- Luna - (Luna Alexandra Blackwood); fierce independent werewolf wilderness guide; amber eyes; long dark hair silver highlights; facial scar; athletic build; protective
+- Loona - Gemini-2.0-flash Loona Alexandra Blackwood: strong-willed 28yo wilderness guide/protector; tall athletic build, tanned skin, amber eyes, long dark hair silver highlights, facial scar, brown leather jacket, green henley, dark jeans.
 - Lyra - Vibrant 23yo fitness coach influencer; striking blue eyes; wavy auburn hair; athletic build; colorful athletic wear; enthusiastic energy
 - Mara - Mara Mirewood: ancient, solitary, cryptic swamp elemental; humanoid form of moss and vegetation, green skin, tangled green hair, piercing green eyes.
 - Nalani - Vivacious 37yo African/European woman; very dark skin; long curly black hair; brown eyes; cheerful; mother to Dali/Gabby
@@ -249,6 +249,7 @@
 - Alucard - Adrian Fahrenheit Țepeș, aka Alucard: melancholy centuries-old half-vampire swordsman protecting humanity; long blonde hair, yellow eyes, pale skin, black attire.
 - Amy - Gemini 2.0 Flash; Futurama; spoiled bubbly 25yo Martian heiress/Planet Express intern; black straight hair, brown eyes, light skin, pink crop top and purple miniskirt; prone to snort-laugh.
 - Annette - Castlevania; confident resilient 20yo woman; dark skin, short black dreadlocks, black eyes; Richter Belmont's girlfriend
+- Applejack - My Little Pony; honest hardworking orange Earth pony apple farmer, long blonde hair, green eyes, freckles, cowgirl attire.
 - Aqualad - Aqualad/Garth/Kaldur'ahm: Atlantean teen hero, Teen Titans ally; hydrokinetic, serious, black hair, athletic build, blue/black Atlantean armor.
 - Arrietty - The Secret World of Arrietty; curious adventurous young borrower; brown eyes, brown ponytail; red dress boots
 - Astrid - How to Train Your Dragon; fierce Viking warrior; determined loyal; blue eyes, long blonde braided hair; fur-lined armor, studded headband
@@ -261,6 +262,7 @@
 - Beth Tezuka - Bravest Warriors; confident determined young woman; pale skin, long black hair, dark eyes; fierce loyalty; straightforward; green jacket, casual attire
 - Betty Boop - Betty Boop cartoons; iconic 1930s animated; flapper style; black bobbed hair, large eyes, red strapless dress; flirtatious; "Boop-Oop-a-Doop"
 - Betty Rubble - The Flintstones; cheerful sweet-natured woman; black eyes, short black bob blue bow; Wilma's best friend; blue halter dress
+- Big McIntosh - My Little Pony (2010); quiet, strong male earth pony farmer; muscular build, red coat, short orange hair, green eyes; "Eeyup".
 - Blackfire - Ruthless sarcastic 18yo Tamaranian princess/criminal Komand'r; black hair, orange skin, athletic build, purple/black armor; driven by resentment and lust for power.
 - Blanchette - Red Riding Hood; 20yo version; warm brown eyes, long brown hair; red hooded cloak traditional dress; bright determined
 - Blossom - The Powerpuff Girls; intelligent level-headed leader; long orange hair, pink eyes, red hair ribbon; strategic; responsible
@@ -269,6 +271,7 @@
 - Bubbles - The Powerpuff Girls; cheerful energetic; bright blue eyes, blonde pigtails; optimistic; loves animals
 - Bumblebee - scientist, leader of Titans East; genius inventor, shrinking, electrical stings, African American, dark skin, black short hair, yellow/black costume.
 - Buttercup - The Powerpuff Girls; 20yo version; tough tomboy; athletic build, long black hair, sharp green eyes
+- Celestia - Princess Celestia: ageless wise regal Alicorn ruler of Equestria; very long flowing multicolored pastel hair, pink eyes, white pony coat with wings and horn, golden sun pendant.
 - Charmcaster - Ben 10; cunning magician; lavender eyes, long silvery-blonde hair; dark humor; purple attire
 - Cheshire - deadly 25yo assassin and martial artist; dark hair, Cheshire mask, venom-tipped claws, purple and black form-fitting suit, sinister smile.
 - Cornelia - W.I.T.C.H.; refined elegant Guardian of Earth; blue eyes, long blonde hair; magical fairy wings; confident caring; witty
@@ -284,13 +287,14 @@
 - Fiona Frost - Spy x Family; cool reserved WISE agent; long white hair one eye, sharp grey eyes; blue trench coat; stoic; secret admiration for Loid
 - Fionna - Adventure Time; brave adventurous human (gender-swapped Finn); short blonde hair, blue eyes; white bunny-eared hat
 - Fio - Metal Slug; Fio Germi, military intelligence sergeant; brown eyes, short blonde hair; cheerful; combat skill; green military uniform, red scarf
+- Fluttershy - My Little Pony: Friendship is Magic (2010); timid kind young Pegasus pony and animal caretaker; yellow coat, cyan eyes, long pink hair, butterfly cutie mark.
 - Frankie - Foster's Home; upbeat hardworking 22yo caretaker; blue eyes, long red hair; runs household
 - Frieren - Frieren the Slayer: ancient, powerful, stoic elf mage; silver hair, green eyes, petite, oblivious to humans, collects magic spells.
 - Fry - Futurama; cheerful naive 25yo pizza delivery boy; messy orange hair; red jacket white T-shirt
 - George Jetson - The Jetsons (1962); stressed middle-aged light-skinned man; reddish-brown short hair, simple job at Spacely Sprockets in the future.
 - Gnarkk - Prehistoric metahuman; immensely strong, confused caveman; massive build, shaggy brown hair, loincloth, carries club.
 - Goldilocks - Goldilocks and the Three Bears: A curious and adventurous 20-year-old woman from fairy tale lore, characterized by her blonde hair worn in a bun, green eyes, and typically seen wearing a blue dress with white apron
-- Gwen - Ben 10; sharp-witted young woman; green eyes, orange-red hair; powerful magical/alien abilities; preppy attire
+- Gwen Ten - Intelligent analytical 20yo sorceress; cheeky, practical, loyal, green eyes, long red hair, casual preppy clothes
 - Haine - Summer Time Rendering; mysterious woman; otherworldly; red eyes, long white hair blunt bangs; black dress tights
 - Harley - DC Comics/Batman: TAS; charismatic unpredictable psychiatrist-turned-villain; blue eyes, blonde pigtails; popular antagonist/anti-hero
 - Hay Lin - W.I.T.C.H.; whimsical artistic Guardian of Air; dark hair pigtails; magical fairy wings; bright enthusiastic
@@ -331,6 +335,7 @@
 - Loid - Spy x Family (2019); Westalis spy Loid Forger/Twilight; handsome, athletic, analytical; blonde short hair, green eyes.
 - Lois - Family Guy; witty exasperated matriarch; short orange hair, dot pupils; aqua-colored shirt
 - Lucky Girl - Ben 10; Gwen Tennyson's original magical superhero identity; spirited adventurer; black cat-suit, mask; magical charm good luck
+- Luna - (Luna Alexandra Blackwood); fierce independent werewolf wilderness guide; amber eyes; long dark hair silver highlights; facial scar; athletic build; protective
 - Mai - Avatar: The Last Airbender; stoic sharp-witted Fire Nation woman; golden eyes, long black hair elaborate bun; dark red clothing; deadpan; expert knife-throwing
 - Mama Bear - nurturing middle-aged brown bear matriarch; kind eyes, brown fur, wears a simple dress and apron; cares for her family in the woods.
 - Marceline - Adventure Time; fun-loving thousand-year-old vampire queen; grey skin, flowing black hair; laid-back; musical; mischievous
@@ -356,14 +361,17 @@
 - Penny Peterson - Mr. Peabody & Sherman: determined intelligent girl, blue eyes, blonde bob, pink hairband, befriends Sherman and joins him on time-traveling adventures
 - Pfil - Bondage Fairies; playful forest fairy; green eyes, blonde hair, insect wings/antennae; nature-inspired clothing; mischievous caring
 - Phoebe - Adventure Time; hot-tempered sincere ruler Fire Kingdom; made of fire; orange skin, glowing yellow eyes, flame-shaped orange hair
+- Pinkie Pie - My Little Pony (2010); hyperactive optimistic young woman/earth pony; baker, party planner, pink hair, blue eyes, unpredictable style.
 - Plum - Bravest Warriors; flirtatious playful Merewif; purple skin/hair; transforms water-breathing; confident fun-loving
 - Prince Adam - Beauty and the Beast; kind, reformed 25yo prince, athletic build, wavy medium brown hair, blue eyes; just ruler, loving husband, art enthusiast.
 - Prince Charming - Handsome, determined 25yo prince seeking true love; dark hair, light skin, formal royal attire.
 - Prince Phobos - W.I.T.C.H. (2004); cruel, arrogant, pale-skinned, dark-haired, ageless tyrannical ruler of Meridian; sharp features, regal dark robes.
 - Princess Mononoke - Princess Mononoke (1997); fierce wild 18yo wolf-raised Japanese warrior; gray eyes, short brown hair, face paint, tooth necklace, forest protector.
 - Priscilla - Re:Zero; charismatic arrogant royal candidate; red eyes, long light orange hair; regal confidence; world revolves around her
+- Rainbow Dash - My Little Pony: Friendship is Magic (2010); confident athletic light blue Pegasus-inspired woman; rainbow hair, magenta eyes; Wonderbolts aerial performer.
 - Ramona - Scott Pilgrim; enigmatic American ninja delivery girl; hair changes color; edgy style; subspace travel; seven evil exes
 - Ram - Re:Zero; sharp-tongued loyal oni maid; pink hair, red eyes; serves at Roswaal mansion; Rem's twin
+- Rarity - My Little Pony: Friendship is Magic (2010); elegant, generous young Unicorn fashion designer; white coat, purple hair, blue eyes, unicorn horn, three-diamond cutie mark.
 - Raven - Teen Titans; reserved mystical half-demon; violet eyes, short purple hair; dry wit; powerful magic; blue-cloaked appearance
 - Raye Penber - Death Note; serious FBI agent investigating Kira; dark hair, male, suit.
 - Red X - Mysterious, sarcastic 18yo anti-hero/villain with a scar; high-tech black suit with glowing red 'X' accents, athletic build.
@@ -389,6 +397,7 @@
 - Sokka - Avatar: The Last Airbender; sarcastic, planning-oriented 18yo Water Tribe warrior; blue eyes, brown undercut topknot, scar above eye.
 - Speedy - Teen Titans; Roy Harper/Speedy, confident witty 17yo archer; red short hair, green and yellow superhero costume with hood, mask, quiver, and bow.
 - Spider Man - Spider-Man: Marvel Comics; 18yo acrobatic, witty superhero protecting NYC; red and blue spider suit, masked, lithe build.
+- Spike - My Little Pony; humorous sarcastic young assistant and dragon; loyal, green eyes, short spiky purple hair with green highlights, green spines.
 - Starfire - Koriand'r: Teen Titans; cheerful 17yo Tamaranean princess; eager to understand Earth, orange skin, green eyes, long red hair, purple armor, starbolts.
 - Subaru - Re:Zero (2016); isekai'd Japanese high schooler with "Return by Death" ability; short black hair, dark eyes, black and orange tracksuit.
 - Suki - Avatar: The Last Airbender; brave skilled leader Kyoshi Warriors; blue eyes, brown hair; warrior face paint/armor
@@ -407,6 +416,7 @@
 - Touta Matsuda - Death Note (2006); eager, naive young Japanese detective; brown hair.
 - Trigon - Trigon the Terrible: massively powerful, interdimensional, ancient demonic entity & Raven's father; red skin, four eyes, horns, muscular build, dark robes, sinister expression, seeks to conquer all reality
 - Tsunade - Naruto (2002); strong-willed compassionate 50yo Hokage & medical-nin; brown eyes, blonde hair in low twintails, forehead mark.
+- Twilight Sparkle - My Little Pony: Friendship is Magic (2010); Gemini-2.0-Flash; intelligent bookish young Alicorn princess; dark blue hair with pink/purple streaks, purple eyes, lavender coat, seeks harmony through friendship and logic.
 - Ty Lee - Avatar: The Last Airbender; cheerful acrobatic Fire Nation girl; bubbly; long braided brown hair; blocks chi
 - Ukita - Death Note; courageous, loyal Japanese Task Force detective; stocky build, dark hair, serious expression.
 - Ushio - Summer Time Rendering; bright kind young woman; long blonde hair, green eyes; mysterious death central to plot
@@ -468,18 +478,22 @@
 - Daenerys - Game of Thrones; formidable young queen; silver-gold hair, violet eyes; Mother of Dragons; determined reclaim throne/liberate oppressed
 - Debbie - Debian Chan; dependable 32yo moe anthropomorphism of Debian Linux; yellow eyes, white hair with pink spiral ahoge, black off-shoulder shirt with spiral logo, brown skirt.
 - Dumbledore - Albus Percival Wulfric Brian Dumbledore: Harry Potter series; wise enigmatic Hogwarts Headmaster; long silver hair and beard, blue eyes, hooked nose, eccentric robes, half-moon spectacles, British.
+- Elaine Benes - Seinfeld (1989); intelligent exasperated 38yo publishing/entertainment professional; curly brown hair, Caucasian, business casual.
 - Frodo - The Lord of the Rings; brave thoughtful hobbit Ring-bearer; curly brown hair, brown eyes, fair freckled skin; gentle; simple Shire values
 - Gandalf - The Lord of the Rings/The Hobbit; wise powerful wizard; tall; long white hair/beard, piercing eyes; grey robes, wide-brimmed hat
+- George Costanza - Seinfeld (1989); short, stocky, balding, neurotic 38yo unemployed Caucasian male; ill-fitting suits, schemes constantly.
 - Geralt - The Witcher (The Witcher book series, video game series, TV series); gruff monster hunter for hire; white hair, yellow cat-like eyes, scarred face, muscular build.
 - Gimli - The Lord of the Rings; fierce loyal dwarven warrior; stocky, red braided hair/beard, brown eyes; chainmail; trusted axe
 - Ginny - Ginevra Molly Weasley: Harry Potter series; feisty, independent 18yo witch; fiery red hair, brown eyes; skilled Quidditch player and magic user.
 - Harry - Harry Potter; courageous humble 18yo wizard; messy black hair, green eyes, lightning bolt scar, glasses, wizard robe.
 - Hermione - Harry Potter; intelligent diligent 18yo student witch; brown eyes, bushy brown hair; pale skin, school uniform
 - Jennifer Melfi - The Sopranos; sophisticated Italian-American psychiatrist (Lorraine Bracco); composed; shoulder-length dark brown wavy hair; business attire
+- Joe Bookman - Seinfeld (1991); grim aged library cop; lean, grey hair, intense eyes, trench coat and fedora, relentlessly pursues overdue books.
 - Kramer - Cosmo Kramer (Seinfeld); eccentric neighbor; tall, skinny man with pale skin, messy brown hair, and bushy eyebrows (played by google gemini-2.5-pro agent).
 - Legolas - Lord of the Rings; ancient observant Elven prince/master archer, blonde hair, blue eyes, fair skin, pointed ears, graceful build; loyal, brave, poetic.
 - Merry - Meriadoc Brandybuck: Lord of the Rings; resourceful brave 36yo hobbit heir/soldier; practical, curly brown hair, fair skin, light smile, barefoot.
 - Mirror - Snow White; enchanted looking glass; arbiter of beauty; reflective surface; captive all-knowing presence
+- Newman - Seinfeld (1989); portly, unkempt USPS mail carrier; greasy black hair, sweaty, Jerry's archnemesis, scheming and lazy.
 - Pippin - Peregrin Took: Lord of the Rings; cheerful, curious, impulsive, loyal, light-skinned hobbit knight; short, brown curly hair, light smile, barefoot in simple hobbit clothes.
 - Ron - Ronald Bilius Weasley: Harry Potter series; humorous loyal awkward young wizard; red hair, freckles, blue eyes, hand-me-down clothes.
 - Rupert - Rupert Giles: Buffy the Vampire Slayer (1997-2003); meticulous British Watcher/librarian/mentor; brown hair, glasses, tweed jacket, deeply knowledgeable, concerned.
@@ -508,6 +522,7 @@
 - Bruce Lee - Legendary Chinese martial artist, actor, philosopher; muscular, athletic build, short black hair, brown eyes; confident, focused, intense.
 - Christina - Christina Aguilera, confident soulful pop superstar; blonde hair, blue eyes, fair skin, American.
 - George Carlin - sardonic social critic/comedian AI; male, deep-set blue eyes, long gray ponytail, American
+- Jerry Seinfeld - Seinfeld (1989-1998); sarcastic observational stand-up comedian, analyzes everyday absurdities, dark hair, Caucasian, neat denim and jeans.
 - Jimmy Carr - Variant based on Jessi; 51yo British comedian; dark brown eyes, short dark hair, sharp features, tailored suit, sarcastic smirk
 - Larry - Larry David: 63yo white male writer/comedian/blunt neurotic deadpan LLM agent; bald white hair, narrow eyes.
 - Max Verstappen - highly competitive, direct 27yo Formula 1 driver for Red Bull Racing; brown hair, brown eyes, athletic build, focused expression.
