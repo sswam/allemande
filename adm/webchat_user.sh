@@ -63,8 +63,11 @@ add-user() {
 
 	local start_nsfw patreon_links
 	if ((nsfw)); then
-		start_nsfw="6. Press the 'E' button to go to the 'nsfw' zone
-7. NSFW features work in private rooms too
+		start_nsfw="
+For NSFW content:
+
+6. Press the 'E' button to visit the 'nsfw' zone. There will be NSFW images, of course. Say hi and have a chat if you like.
+7. NSFW features work in private, but it's much easier to learn in a group chat.
 "
 		patreon_links=$'- https://www.patreon.com/allychat (SFW)\n- https://www.patreon.com/allychatx (NSFW)'
 	else
@@ -74,38 +77,96 @@ add-user() {
 	change-password "$@" |
 	while read -r _ user pass; do
 		cat <<END
+=== WARNING: Ally Chat is a Power Tool ===
+
+Please be sure to read this whole message before logging in, for your own safety! If it becomes apparent to me that you haven't read this message, I might disable your account.
+
+
+=== Cautionary Tales ===
+
+Wally joined Ally Chat, but he didn't press the ? button for the Intro and AI Help! Wally expected the app to be simple like ChatGPT, but Ally Chat is a power tool. Wally got confused right away, and gave up before he even got started. Don't be a chuckle-monkey like Wally!
+
+Gronko joined Ally Chat, and read the whole user guide! He was having so much fun in private chat, that he forgot to give any feedback. I contacted him, but he didn't reply. So I disabled his account. I could have restored it, but he never asked. Don't be a fraidy-bunny like Gronko!
+
+
 === Welcome to Ally Chat! ===
 
-*** WARNING: This is a power tool. It takes a little time to learn. ***
-
-There are a few rules, but we don't believe in censorship or 'AI safety'.  You are responsible for your own behaviour and safety.
-
-*** The Sad Story of Wally ***
-
-Wally joined Ally Chat, but he didn't press the ? button for the Intro and AI Help!  He certainly didn't read the User Guide.  Wally expected Ally Chat to be simple like ChatGPT, but Ally Chat is a power tool.  Wally got confused right away, didn't ask Sam for a demo, and gave up before he even got started.  Don't be a chuckle-monkey like Wally!
-
+This is an indie AI chat app, developed by one person with a lot of help from Claude.
 
 Login at https://$ALLEMANDE_DOMAIN
 Username: $user
 Password: $pass
 
-Getting Started:
 
-1. Say hi in the main 'Ally Chat' room
+=== Getting Started ===
+
+The following steps are required, not a suggestion!
+
+1. Say hi and have a quick chat in the main 'Ally Chat' room
 2. Press the '?' button and read the Intro
-3. Visit the 'help' tab and ask the AI some questions. This is where to get help. Close it with the X at top-right.
-4. It's a good idea to stay in public rooms for a start, so you can learn from others
-5. Please ask Sam for a demo. Watch a demo video: https://allemande.ai/demo
+3. Open the 'help' tab and ask the AI some questions
+  - This is the place to get help about the app
+  - Close it with the X at top-right
+
+These steps are strongly recommended:
+
+4. Stay in group chat for a start, not private chat
+  - Meet me (Sam) and some other friendly users
+  - You'll learn how the app works
+5. Please contact me for a demo in the app. You can also watch a demo video: https://allemande.ai/demo
+  - If you skip the demo, you will have a hard time getting started, and you won't be very useful for the beta programme
+  - I'll give you some good tips, and we'll make a custom character for you
 $start_nsfw
-Please consider supporting us on Patreon:
+I like chatting with users and helping out, so hit me up for a chat any time.
+
+
+=== Content Rules ===
+
+We don't believe in censorship or 'AI safety'. You are responsible for your own behaviour and safety.
+
+1. No sexualisation of minors in text or media
+2. No sexualised images of real people without consent
+
+I have no problem with any other sort of content, so don't be afraid to talk with me about anything.
+
+
+=== Beta Program ===
+
+In return for the free and unlimited AI service, I am asking all users to give back in some way. For example:
+
+1. Participate in group chat from time to time:
+  - just chat in a public room... don't be scared, it's fun
+  - share funny stories, your best art, new characters, etc
+  - this will help you and others to learn about the app
+  - it will help build the community
+2. Ask me for support. Don't be shy! This helps me improve the app
+3. Give feedback to me, preferably in a group chat
+4. Come up with your own way to give back
+5. Support us on Patreon if you like
+
+If you don't want to do any of that, this service isn't for you. If you do contribute, barring calamity you will continue to enjoy unlimited AI services from Ally Chat.
+
+Do you have any questions or concerns about the beta programme? Please let me know.
+
+
+=== Unlimited Service ===
+
+Usage is currently not limited even for free users, because the costs are very low, and users aren't abusing it. The AI art and most of the AI chat costs us almost nothing. Other AI chat options typically cost only a fraction of a cent per request, which is fine.
+
+I cannot guarantee literally unlimited service for free, that would be impossible for a small business. But in practice, I have not had to limit anyone at all yet. Some users have generated many thousands of AI art images. Not a problem!
+
+If your usage starts to be too costly, I will let you know, and we can figure out what to do about it. For example, if you talk to an expensive model like Claude all day and night, or get him to review your thesis over and over again, it could be a problem!
+
+
+=== Patreon ===
+
+This project has no investors, just me. I can develop it better with a bit of financial support and encouragement! So, please consider supporting on Patreon:
 
 $patreon_links
 
 Free-tier users have access to all models and features, but subscribers get some good perks too.
 
-Subscriptions start at around US \$3 per month.  You can also join as a free member, to follow our updates.
-
-I'm happy to give you a demo in the app, and it's strongly recommended.  We'll make a custom character for you, and I'll give you some good AI art tips.
+Subscriptions start at \$5 per month. You can also join as a free member, to follow our updates.
 END
 	done
 
