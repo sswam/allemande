@@ -49,6 +49,7 @@ MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
 MAX_JOB_PENALTY = 2
 MAX_JOB_DELAY = 420  # 7 minutes, after that the client might timeout
+MAX_QUEUE_DELAY = 1020  # 17 minutes, don't schedule extra jobs beyond that point
 ADETAILER_TIME = 3  # seconds, how long adetailer takes to run roughly
 
 SHAPE_GEOMETRY = {
@@ -411,6 +412,11 @@ async def enqueue_image_jobs(
         job_penalty = get_user_job_penalty(user_usage.get(user, 0.0))
         new_job.duration = weight * job_penalty * JOB_BASE_TIME
         logger.info("weight, job_penalty, duration: %.2f, %.2f, %.2f", weight, job_penalty, new_job.duration)
+        if priority - current_time > MAX_QUEUE_DELAY:
+            # Don't add the job if would run too far out in the future, as the client will have timed out, and better to give immediate feedback for too many pokes, and not clutter the queue
+            logger.info("skipping new job: priority %.0f > %.0f seconds", priority, MAX_QUEUE_DELAY)
+            await complete_batch(new_job)
+            break
         await image_queue.put(new_job)
         priority += new_job.duration
         user_usage[user] = user_usage.get(user, 0) + weight
@@ -617,7 +623,7 @@ async def serve_requests(portals: str = str(portals_dir), poll_interval: float =
     # Process existing requests first
     known_requests = find_todo_requests(portals)
     for portal, req_name in known_requests:
-        logger.debug("Initial request detected: %s in %s", req, portal)
+        logger.debug("Initial request detected: %s in %s", req_name, portal)
         await process_request(portals, portal, req_name)
 
     known_requests_set = set(known_requests)
