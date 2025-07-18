@@ -1,2 +1,2 @@
 raw, realistic, photo \(medium\)
-[set negative_prompt _append] (anime, cartoon, 3d:2) [/set]
+[set negative_prompt _prepend] (anime, cartoon, 3d:2), [/set]
