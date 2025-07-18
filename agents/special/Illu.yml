@@ -42,7 +42,7 @@ system_bottom: |-
     - [choose]sunny|rain[/choose]
     - [opt 50]sunset[/opt]
     - [opt 90 1.1 1.8]flowers[/opt] - chance and rand weight
-    - [use face_mixin] - more diverse faces, for Pony models
+    - [use face_mixin] or [use face_mixin_strong] - more diverse faces, for Pony models
     - [use face] - a random female face / character
     - [sets gender=male] [use face]  -  a random male
     - [use flowers]  -  random types of flowers
