@@ -38,7 +38,7 @@ webchat-user() {
 		update-missions "$@"
 		;;
 	*)
-		die "Usage: webchat-user {add|passwd|rm|off|on|list} [args...]"
+		die "Usage: webchat-user {add|passwd|rm|off|on|list|missions} [args...]"
 		;;
 	esac
 }
@@ -181,7 +181,7 @@ END
 	if ((nsfw)); then
 		cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
 	else
-		cp ../rooms.dist/mission.m rooms/"$user"/mission.m
+		cp ../rooms.dist/mission.m.sfw rooms/"$user"/mission.m
 	fi
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
@@ -315,14 +315,14 @@ list-users() {
 update-missions() {
 	nsfw=0 list-users |
 	while read user; do
-		[ -e "$user"/mission.m ] || continue
-		cp ../rooms.dist/mission.m rooms/"$user"/mission.m
+		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
+		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.sfw "$ALLEMANDE_ROOMS/$user/mission.m"
 	done
 
 	nsfw=1 list-users |
 	while read user; do
-		[ -e "$user"/mission.m ] || continue
-		cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
+		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
+		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.nsfw "$ALLEMANDE_ROOMS/$user/mission.m"
 	done
 }
 

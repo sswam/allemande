@@ -96,7 +96,8 @@ rooms.*
 /webchat/static/icons.css
 /webchat/static/icons.woff2
 /doc/nsfw/guide.md
-/rooms.dist/mission.m
+/rooms.dist/mission.m.nsfw
+/rooms.dist/mission.m.sfw
 
 # agents
 /agents/nsfw
