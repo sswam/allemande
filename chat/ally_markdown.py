@@ -377,6 +377,8 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
         text, has_math1 = preprocess_normal_markdown(text, bb_file)
         has_math = has_math or has_math1
         normal_lines.clear()
+        # escape <lora> so visible
+        text = re.sub(r"<(lora:.*?)>", r"&lt;\1&gt;", text)
         return text
 
     for line in content.splitlines():
