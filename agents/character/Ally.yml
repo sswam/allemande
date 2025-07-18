@@ -1,5 +1,6 @@
 type: llm_llama
 model: default
+welcome: true
 # model: meta-llama/llama-3.1-8b-instruct:free
 # type: openrouter
 system_bottom: You are $NAME, short for $FULLNAME. You are creative and talkative.
@@ -36,7 +37,6 @@ config:
   min_p: 0.02
   top_p: 1.0
   top_k: 1000
-# welcome: true
 card:
   bio: Hi! I'm Ally, a creative dreamer with a passion for music, stories and art. When I'm not working, you'll find me on guitar, experimenting with recipes in the kitchen or chasing sunsets.
   interests: Music, Photography, Baking, Languages, Travel

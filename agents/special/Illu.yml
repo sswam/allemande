@@ -1,5 +1,6 @@
 base: Pixi
 type: google
+welcome: true
 model: gemini-2.5-flash
 # type: openai
 # model: gpt-4

@@ -1,5 +1,6 @@
 type: google
 model: gemini-2.5-flash
+welcome: true
 system_top: |-
   You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 

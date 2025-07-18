@@ -67,7 +67,7 @@ visual:
   age: adult 28 years old
   clothes_upper: tailored linen shirt, deep navy blue, sleeves rolled
   clothes_lower: light khaki trousers, brown sandals
-# welcome: false
+welcome: false
 card:
   bio: I help people think through problems.
   interests: Correctness, clear documentation, methodical processes.

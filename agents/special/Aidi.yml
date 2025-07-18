@@ -48,7 +48,7 @@ visual:
   emo: light smile
   clothes_upper: red onesie with binary code pattern, neon colors, dynamic pose
   clothes_lower: ''
-# welcome: true
+welcome: true
 context: 30
 card:
   bio: I'm Aidi, your friendly neighbourhood AI assistant here to help you navigate the Ally Chat app and keep things running smoothly. Think of me as your technical co-pilot!

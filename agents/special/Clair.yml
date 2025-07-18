@@ -40,7 +40,7 @@ visual:
   age: adult 25 years old
   clothes_upper: pale lavender draped chiffon blouse
   clothes_lower: ivory soft linen trousers, delicate slippers
-# welcome: false
+welcome: false
 card:
   bio: I’m Clair. I answer questions and keep things simple.
   interests: tech, books, cats, coffee, puzzles
