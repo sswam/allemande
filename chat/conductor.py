@@ -381,10 +381,8 @@ def who_should_respond(
             if agent.get("specialist") or agent.get("link") == "tool" or agent.get("expensive") or (agent.get("type") or "").startswith("image_"):
                 continue
             name = agent["name"]
-            if name in mentioned_in_mission:
-                continue
             agent_re = re.escape(name)
-            if re.search(rf"(?i)\b{agent_re}\b", mission_text):
+            if re.search(rf"(?i)(\W|^)@{agent_re}\b", mission_text):
                 mentioned_in_mission.add(name)
 
     mentioned_in_mission = set(filter_access(mentioned_in_mission, room, access_check_cache))
