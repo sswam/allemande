@@ -426,7 +426,40 @@ ul.directory-listing > li {
 	padding: 0.25rem;
 	min-width: 12.5rem;
 	scroll-snap-align: start;
+	/* overflow ellipsis no wrap or whatever */
+	position: relative;
 }
+ul.directory-listing > li > a {
+	position: absolute;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: fit-content;
+}
+ul.directory-listing > li > a > .name {
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* on hover, show all with a background color and z-index */
+ul.directory-listing > li:hover > a > .icon,
+ul.directory-listing > li:focus-within > a > .icon {
+	display: inline-block;
+	z-index: 2;
+}
+ul.directory-listing > li:hover > a > .name,
+ul.directory-listing > li:focus-within > a > .name {
+	background: var(--focus);
+	z-index: 1;
+	overflow: visible;
+	margin: -0.25rem;
+	padding: 0.25rem;
+	border-radius: 0.25rem;
+	white-space: nowrap;
+}
+
 /*
 .icon {
 	margin-right: 0.625rem;
