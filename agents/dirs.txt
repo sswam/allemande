@@ -11,6 +11,7 @@ toon
 fiction
 muppet
 celeb
+comedy
 visual
 personal
 human
