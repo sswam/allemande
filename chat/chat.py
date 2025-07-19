@@ -494,6 +494,11 @@ def apply_editing_commands(messages: list[dict[str, Any]]) -> list[dict[str, Any
         edit = meta.get("edit")
         insert = meta.get("insert")
 
+        # handle erroneous content, should be only digits and spaces
+        if not re.match(r"[0-9 ]+$", remove or ""):
+            logger.warning("Invalid remove attribute in message %s: %s", i, remove)
+            remove = None
+
         # remove the rm, edit and insert attributes
         for attr in ["rm", "edit", "insert"]:
             if attr in meta.attrs:

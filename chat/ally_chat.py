@@ -354,6 +354,10 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             # remove 1 tab from start of each line
             response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
 
+        # Anti Em-dash!  Could do this more generically for other substitutions
+        if agent.get("anti_em"):
+            response = re.sub(r"—", " - ", response)
+
         # Ephemeral messages:
         # If the previous message begins with - it was ephemeral, so remove it
         # TODO this might not work well when multiple bots respond
