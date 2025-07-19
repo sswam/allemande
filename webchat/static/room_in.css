@@ -958,18 +958,24 @@ body:not(.select) input[type="checkbox"].select {
 
 /* RTL support ------------------------------------------------------------ */
 
+/*
 .message .content:has(*[dir="rtl"]) {
+    text-align: right;
     direction: rtl;
 }
+*/
 
-.message .content:has(*[dir="rtl"]) .label {
+/* Target first or second paragraph if it has dir=rtl */
+.message .content > p:first-child[dir="rtl"] ~ .label,
+.message .content > p:first-child + p[dir="rtl"] ~ .label {
     float: right !important;
     margin-left: 1rem !important;
     margin-right: 0 !important;
 }
 
-/* Move message ID to left side for RTL messages */
-.message:has(*[dir="rtl"]) > .id {
+/* Move message ID to left side when first or second paragraph is RTL */
+.message:has(> .content > p:first-child[dir="rtl"]) > .id,
+.message:has(> .content > p:first-child + p[dir="rtl"]) > .id {
     right: auto;
     left: 0;
 }
