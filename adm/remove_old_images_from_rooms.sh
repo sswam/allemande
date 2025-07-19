@@ -6,6 +6,10 @@ days="${2:-7}"
 
 cd "$dir"
 
+# Confirm that the hostname and folder and days are correct
+
+confirm -d=n "Please confirm the following details: $HOSTNAME, $PWD, $days days?" || exit 1
+
 # Get a list of all jpg files older than $days days, not in the cast directory, and are owner writable
 find "." -mtime +$days -type f -name '*.jpg' -not -path '*/cast/*' -perm /200 | sed 's|^\./||' | sort > .all_jpg_files.txt
 
