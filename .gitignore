@@ -103,6 +103,7 @@ rooms.*
 /agents/nsfw
 /agents/cartoon
 /agents/celeb
+/agents/comedy
 /agents/disney
 /agents/fiction
 /agents/muppet
@@ -111,6 +112,7 @@ rooms.*
 /agents/old
 /doc/extra.md
 /doc/summary
+/doc/summaries.md
 
 # NSFW files
 /doc/nsfw/demo_plan_1_nsfw.md
