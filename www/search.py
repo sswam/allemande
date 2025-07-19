@@ -423,10 +423,10 @@ def list_to_markdown_table(items: list[dict[str, str]], engine: str) -> str:  # 
 
     # check all items have video
     if engine in ("YouTube", "PornHub") and all("video" in item for item in items):
-        return "<div>" + ("\n".join([item["video"] for item in items])) + "</div>"
+        return "<div>\n" + ("\n".join([item["video"] for item in items])) + "\n</div>"
 
     if engine in ("GoogleImages", "GoogleMapsImages"):
-        return "<div>" + ("\n".join([item["image"] for item in items])) + "</div>"
+        return "<div>\n" + ("\n".join([item["image"] for item in items])) + "\n</div>"
 
     return tabulate.tabulate(items, tablefmt="pipe", headers="keys")  # type: ignore[arg-type]
 
