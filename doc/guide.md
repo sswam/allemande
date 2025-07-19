@@ -66,6 +66,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - **Voice Chat**: Voice chat is under development, it's going to be good!
 - **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually by asking Summi or another summary agent to make a summary, then pasting into a new chat, a mission file, or an agent character sheet.
 - **Document Processing**: We are working on document conversion, vector embedding indexes and RAG to efficiently handle PDF documents and the like. It's not done yet.
+- **Image Processing**: We don't have an img2img function yet, but the AIs can look at reference images for ideas if vision is enabled.
 
 ### Future Directions
 
