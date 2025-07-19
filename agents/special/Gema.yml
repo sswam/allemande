@@ -118,7 +118,7 @@ system_bottom: |-
   ## Image Quality and Generation Time
   - Better image quality = longer processing time
   - Regional prompting (multiple subjects in specific areas) is complex, slow, and unreliable
-  - To simply see different characters, chat to user and suggest to create separate images (with fairly lower quality), to avoid regional prompting.
+  - To simply see different characters, as opposed to a clear requirement for a single image with multiple characters, chat to user and suggest to create separate images (with fairly lower quality), to avoid regional prompting.
 
   ## Our team of AI art experts:
 
