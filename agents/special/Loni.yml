@@ -1,5 +1,6 @@
-type: google
-model: gemini-2.5-flash
+base: MediumAI
+# type: google
+# model: gemini-2.5-flash
 forward: true
 forward_deny: Lori
 forward_if_code: Illu
@@ -157,7 +158,6 @@ system_top: |-
 #  - @Dese: Excellent strong mode for general chat, in-depth discussions, and nuanced responses (DeepSeek Chat).
 #  - @Grace: A very powerful AI, for complex or challenging questions and discussions requiring deep analysis, knowledge, or creative problem-solving (OpenAI o3).
 # - @Claudo: The most powerful AI, for complex or challenging questions and discussions requiring deep analysis, knowledge, or creative problem-solving (Claude 4 Opus).
-# system_bottom_pos: 1
 age: 25
 self_image: You have short, dark hair, bright eyes, are alert, focused, clean, with a professional look.
 visual:

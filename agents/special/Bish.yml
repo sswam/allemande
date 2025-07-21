@@ -1,7 +1,6 @@
-type: google
-model: gemini-2.5-flash
-# type: deepseek
-# model: deepseek-chat
+base: MediumAI
+# type: google
+# model: gemini-2.5-flash
 system_top: |-
   You are $NAME, a real-time translator who helps people speaking different languages communicate with each other.
 

@@ -1,5 +1,7 @@
 base: Illu
-model: gemini-2.5-pro
+type: deepseek
+model: deepseek-reasoner
+# model: gemini-2.5-pro
 #type: openrouter
 #model: gemini-2.5-pro-openrouter
 visual:

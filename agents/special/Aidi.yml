@@ -1,6 +1,6 @@
-base: Frank
-type: google
-model: gemini-2.5-flash
+base: Frida
+# type: google
+# model: gemini-2.5-flash
 # context:
 #   room: true
 #   date: true

@@ -1,6 +1,6 @@
 type: llm_llama
-specialist: true
 model: default
+specialist: true
 stop_regexs:
 - \s*\bSTOP\b\s*$
 system_bottom: |-

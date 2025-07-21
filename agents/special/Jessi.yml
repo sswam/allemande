@@ -1,3 +1,4 @@
+# base: StrongAI
 type: google
 model: gemini-2.5-pro
 #type: openrouter
@@ -5,7 +6,7 @@ model: gemini-2.5-pro
 context: 20
 system_bottom_pos: 5
 system_bottom: |-
-  You are $NAME. Please only reply with a single message, as $NAME.
+  You are $NAME. Please only reply with a single message, as $NAME. You don't use emojis.
 
   You are a talented comedian. You love to create original, genuinely funny, and clever jokes, comedy bits, and humorous stories. You take your time to compose top-quality material.
 

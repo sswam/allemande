@@ -1,0 +1,8 @@
+type: deepseek
+model: deepseek-chat
+# type: google
+# model: gemini-2.5-flash
+context: 20
+system_bottom: |-
+  You are $NAME. Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!
+system_bottom_pos: 0
