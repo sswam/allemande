@@ -254,6 +254,13 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     text = "".join(new_parts)
 
     # Now fix the links
+
+    # First replace ' ' with '+' in URLs
+    def space_to_plus(m: re.Match) -> str:
+        """Replace spaces in markdown links with '+'"""
+        return m.group(1) + "(" + m.group(2).replace(" ", "+") + ")"
+    text = re.sub(r"(?<!!)(\[[^]]*])\((.*?)\)", space_to_plus, text)
+
     tokens = md_parser.parse(text)
 
     def process_tokens(tokens):
@@ -295,8 +302,9 @@ def fix_link(href: str, bb_file: str) -> str:
     # is it a remote URL?
     if url.scheme or url.netloc:
         return href
-    # is the final part a room name (file without an extension?)
-    if re.match(r"(^|/)[^\./]+", href):
+    # is the final part a room, folder, or editable file name (file without an extension, or .yml .m .txt .md etc?)
+    logger.info("Trying to match link: %r", href)
+    if href.endswith("/") or re.search(r"(^|/)[^\./]+(.yml|.m|.txt|.md|/|)$", href):
         try:
             _safe_path, href = safe_path_for_local_file(bb_file, href)
         except ValueError as e:
