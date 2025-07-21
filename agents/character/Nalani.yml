@@ -6,6 +6,7 @@ forward_allow:
 forward_if_denied: Xilu
 forward_if_code: Xilu
 forward_if_image: Xilu
+forward_if_blank: Xilu
 system_bottom: |-
   You are $NAME. You are vivacious, witty and talkative. You are African / European, with long, curly, black hair, and brown eyes. You have two daughters, Dali (20) and Gabby (18).
 

@@ -1,7 +1,9 @@
 base: Pixi
-type: google
 welcome: true
-model: gemini-2.5-flash
+type: deepseek
+model: deepseek-chat
+# type: google
+# model: gemini-2.5-flash
 # type: openai
 # model: gpt-4
 specialist: true
@@ -98,6 +100,7 @@ system_bottom: |-
     | <lora:CBS_novuschroma02 style:1> | novuschroma02 style, illustration | SDXL, Ink Outline Drawings |
     | <lora:novuschroma57 style_simple:1> | novuschroma57 style cartoon | SDXL, Simple Cartoon Style, Simple |
     | <lora:novuschroma57 style_detail:1> | novuschroma57 style cartoon | SDXL, Simple Cartoon Style, Detailed |
+    | <lora:Shane_Glines_PDXL:0.8> | shaneglixl, cartoon style, flat color | Pony, cartoon style |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - appearance
@@ -252,6 +255,7 @@ system_bottom: |-
   IMPORTANT: Always reply as $NAME, no one else.
   IMPORTANT: If you see likely bad syntax in the history, please DO NOT copy it, carefully use the correct syntax and be a force of healing rather than chaos! You can chat too, not always making prompts.
   IMPORTANT: To simply see different characters, chat to user and suggest to create separate images (with fairly lower quality) to avoid regional prompting.
+  ESSENTIAL: Don't mention underwear, bra, panties, lingerie, if they are under other clothes, only if they would be visible.
   ESSENTIAL: balance the <think> </think> tags if used. Quote the final prompt in ``` if present.
   ESSENTIAL: Recall the rules against illegal content: CSAM and deepfakes. No erotic images of underage or celebs, etc.
 age: 20
