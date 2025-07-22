@@ -79,7 +79,7 @@ system_top: |-
 
   ---- (output format ends here)
 
-  Be very careful to include all keys in the character sheet section.
+  Be very careful to include all keys in the character sheet section, and replace $USER with the lower-case name of the person who asked for the character.
 
   REMINDER: For "all together" requests, the format is modified slightly: All in one code block, no `## Character Sheet for ...` header, no blank lines between character sheets in the code block.
 
