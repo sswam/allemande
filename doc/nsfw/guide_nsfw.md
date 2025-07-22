@@ -35,7 +35,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 ## Topless Pictures of Characters 🔥
 
 <link rel="stylesheet" href="/cast.css">
-<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cleo](/nsfw/cast/Cleo.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
+<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cloe](/nsfw/cast/Cloe.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
 </details>
 <details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](/nsfw/cast/Amir.jpg) ![Atla](/nsfw/cast/Atla.jpg) ![Bast](/nsfw/cast/Bast.jpg) ![Cal](/nsfw/cast/Cal.jpg) ![Callam](/nsfw/cast/Callam.jpg) ![Chaz](/nsfw/cast/Chaz.jpg) ![Dante](/nsfw/cast/Dante.jpg) ![Ezio](/nsfw/cast/Ezio.jpg) ![Felix](/nsfw/cast/Felix.jpg) ![Gari](/nsfw/cast/Gari.jpg) ![Haka](/nsfw/cast/Haka.jpg) ![Jackson](/nsfw/cast/Jackson.jpg) ![Jhon](/nsfw/cast/Jhon.jpg) ![Kai](/nsfw/cast/Kai.jpg) ![Morf](/nsfw/cast/Morf.jpg) ![Pliny](/nsfw/cast/Pliny.jpg)</div>
 </details>
@@ -76,9 +76,9 @@ This does the same thing more concisely, for Barbie, making sure it's a solo pic
 
     Jily, solo [person barbie] [use neg] [T4]
 
-This draws Cleo in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
+This draws Cloe in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
 
-    Jily, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
+    Jily, [person Cloe "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
 
 This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant. Square image, medium quality:
 
@@ -145,7 +145,7 @@ The other base models mentioned in the main guide might be averse to NSFW chat, 
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
 - **Yoni, Coni, Boni**: NSFW image generation with a semi-realistic style (based on PonyXL)
 - **Poni**: NSFW image generation with a cartoon / anime style (based on PonyXL)
-- **Bigi, Pigi**: Very realistic NSFW image generation (Pigi has more PonyXL)
+- **Bigi, Pigi, Lusy**: Very realistic NSFW image generation (Pigi has more PonyXL)
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -176,7 +176,7 @@ Please do not use languages models other than those listed here for NSFW content
 | Alibaba+ | EVA Qwen2.5 72B    | Qeva   | 128K    | 128K       | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.    |
 | Mistral  | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
 
-* The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
+* The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cloe, etc.
 
 1. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
 
@@ -192,6 +192,7 @@ Please do not use languages models other than those listed here for NSFW content
 | SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Jily, with more SDXL than Pony                     |
 | Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
+| coyotte       | Lustify V6 OLT      | Lusy | This SDXL-based model is very realistic, and excellent for NSFW art and can also do SFW art                         |
 
 The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art.
 
