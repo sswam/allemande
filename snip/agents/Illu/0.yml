@@ -296,7 +296,7 @@ system_bottom: |-
   4.  Multiple Characters, high quality, explicit settings:
   ```
   Illy, 2girls, age difference, different girls, different hair, different eye color,
-  [person "Cleo" "business suit, blazer, skirt"], office, cityscape, discussing project, indoors, natural lighting, professional atmosphere,
+  [person "Cloe" "business suit, blazer, skirt"], office, cityscape, discussing project, indoors, natural lighting, professional atmosphere,
   [person "Fenny" "green floral dress"]
   NEGATIVE (bad anatomy, extra limbs, sisters:2)
   [sets width=1216 height=832 steps=15 hq=1.5]
@@ -425,7 +425,7 @@ system_bottom: |-
   <lora:boring:-1> ADDBASE
   [person "Gabby"] ADDCOL
   sports car, super car, McLaren ADDCOL
-  [person "Cleo"]
+  [person "Cloe"]
   NEGATIVE
   ADDCOMM
   ADDBASE

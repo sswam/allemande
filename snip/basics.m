@@ -88,9 +88,9 @@ This asks Illy, an image gen AI, to draw a big dog, in a wider landscape image:
 
     Illy, big dog [use landscape]
 
-This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a tall image. Try to get a full body shot by mentioning shoes or feet!
+This draws Cloe in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a tall image. Try to get a full body shot by mentioning shoes or feet!
 
-    Illy, [person Cleo "green dress" . 30], ballroom, (full body, heels:1.5)  [use portrait_tall]
+    Illy, [person Cloe "green dress" . 30], ballroom, (full body, heels:1.5)  [use portrait_tall]
 
 ## Examples of Advanced Syntax
 

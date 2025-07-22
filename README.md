@@ -56,7 +56,7 @@ We offer a wide array of AI models and predefined characters. See the [User Guid
 	* xAI: Grok 3 (Rocki), Grok 2 (Grok)
 	* DeepSeek: Chat V3 (Dese), Reasoner R1 (Deseri)
   * Alibaba: QwQ 32B (Qwen), EVA Qwen2.5-72B (Eva, Evan)
-* **Characters (Llama 3.1 based)**: Ally, Barbie, Callam (pirate!), Cleo, Dali, Emmie, Fenny, Gabby, Hanni, Amir, Bast, Cal, Dante, Ezio, Felix, Gari, Haka, Nixie, Akane, Soli, Kai, Eira, Nalani, and many more.
+* **Characters (Llama 3.1 based)**: Ally, Barbie, Callam (pirate!), Cloe, Dali, Emmie, Fenny, Gabby, Hanni, Amir, Bast, Cal, Dante, Ezio, Felix, Gari, Haka, Nixie, Akane, Soli, Kai, Eira, Nalani, and many more.
 * **Specialists**:
 	* Clu, Emm, Gemm, Fli: concise versions of Claude, Emmy, Gemmi and Flashi
 	* Illu, Gema: art prompts

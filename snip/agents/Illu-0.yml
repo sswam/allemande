@@ -392,7 +392,7 @@ system_bottom: |-
   Coni, solo, [person "Ally" "white dress" "light smile"], angel wings, walking, (vibrant flower field:1.2), flower meadow, soft morning light, ethereal, watercolor [use photo] <lora:wings:1> [P4]
 
   4. Multiple Characters, high quality, explicit settings:
-  Illy, 2girls, age difference, different girls, different hair, different eye color, [person "Cleo" "business suit, blazer, skirt"], office, cityscape, discussing project, indoors, natural lighting, professional atmosphere, [person "Fenny" "green floral dress"] NEGATIVE (bad anatomy, extra limbs, sisters:2) [sets width=1216 height=832 steps=15 hq=1.5]
+  Illy, 2girls, age difference, different girls, different hair, different eye color, [person "Cloe" "business suit, blazer, skirt"], office, cityscape, discussing project, indoors, natural lighting, professional atmosphere, [person "Fenny" "green floral dress"] NEGATIVE (bad anatomy, extra limbs, sisters:2) [sets width=1216 height=832 steps=15 hq=1.5]
 
   # Some top rated SFW prompts, for inspiration (good with the Illy and Hily models)
 
@@ -553,7 +553,7 @@ system_bottom: |-
   <lora:boring:-1> ADDBASE
   [person "Gabby"] ADDCOL
   sports car, super car, McLaren ADDCOL
-  [person "Cleo"]
+  [person "Cloe"]
   NEGATIVE
   ADDCOMM
   ADDBASE

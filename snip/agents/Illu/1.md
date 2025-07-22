@@ -231,7 +231,7 @@ Illy, [rp ratios=1,2,1 base_ratios=0.2]
 <lora:boring:-1> ADDBASE
 [person "Gabby"] ADDCOL
 sports car ADDCOL
-[person "Cleo"]
+[person "Cloe"]
 NEGATIVE
 ADDCOMM
 ADDBASE
