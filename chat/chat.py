@@ -454,6 +454,9 @@ def clean_prompt(context, name, delim):
     # Remove leading and trailing whitespace
     text = text.strip()
 
+    # Decode &lt; &gt; &amp;
+    text = html.unescape(text)
+
     logger.debug("clean_prompt: after: %s", text)
     return text
 

@@ -295,6 +295,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         forward_if_blank = agent.get("forward_if_blank")
 
         if forward_if_blank and (not response or response == f"{agent.name}:"):
+            logger.info("Forward: blank, Using forward_if_blank")
             response = f"@{forward_if_blank}"
         if forward and response:
             logger.info("Forward response: %r", response)
@@ -317,13 +318,16 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
             # HACK: if the agent tried to give an image prompt or an image, forward it
             if not bots2 and forward_if_code and "```" in response:
+                logger.info("Forward: code, Using forward_if_code")
                 bots2 = [forward_if_code]
             if not bots2 and forward_if_image and "![" in response:
+                logger.info("Forward: image, Using forward_if_image")
                 bots2 = [forward_if_image]
 
             logger.info("Forward: who should respond: %r", bots2)
             for bot2 in bots2:
                 if isinstance(forward_allow, list) and bot2 not in forward_allow or isinstance(forward_deny, list) and bot2 in forward_deny:
+                    logger.info("Forward: %s not allowed, using forward_if_denied", bot2)
                     bot2 = agent.get("forward_if_denied")
                     if not bot2:
                         continue

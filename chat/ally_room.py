@@ -647,7 +647,7 @@ def read_agents_lists(path) -> list[str]:
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments
-async def overwrite_file(user: str | None, file: str, content: str, backup: bool = True, delay: float = 0.2, noclobber: bool = False):
+async def overwrite_file(user: str | None, file: str, content: str, backup: bool = True, delay: float = 0.2, noclobber: bool = False, remove_empty=False):
     """Overwrite a file with new content."""
     logger.warning("overwrite_file: %s", file)
     path = str(name_to_path(file))
@@ -678,6 +678,9 @@ async def overwrite_file(user: str | None, file: str, content: str, backup: bool
             await asyncio.sleep(delay)
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
+    # if the file is now empty, remove it (optional)
+    if remove_empty and not content:
+        os.unlink(path)
 
 
 def move_file(user, source, dest, clobber=False):

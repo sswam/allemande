@@ -115,7 +115,7 @@ async def put_file(request, path=""):
     content = content.decode()
 
     try:
-        await ally_room.overwrite_file(user, path, content, delay=0.2, noclobber=noclobber)
+        await ally_room.overwrite_file(user, path, content, delay=0.2, noclobber=noclobber, remove_empty=True)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({"status": "success"})
