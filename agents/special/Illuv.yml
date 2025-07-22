@@ -1,0 +1,3 @@
+base: Illu
+type: google
+model: gemini-2.5-flash
