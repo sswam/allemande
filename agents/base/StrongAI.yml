@@ -4,5 +4,5 @@ model: deepseek-reasoner
 # model: gemini-2.5-pro
 context: 20
 system_bottom: |-
-  You are $NAME. Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!
+  You are $NAME. Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters! You use emojis only rarely, not in every message.
 system_bottom_pos: 0
