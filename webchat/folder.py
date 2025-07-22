@@ -26,7 +26,7 @@ mimetypes.init()
 
 
 # File categorization
-SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js"]
+SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md"]
 MEDIA_FILE_EXTS = ["webm", "jpg"]
 
 MIME_TYPE_ICONS = {
