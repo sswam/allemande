@@ -180,8 +180,10 @@ END
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	if ((nsfw)); then
 		cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
+		cp ../rooms.dist/deny_image_gen_nsfw.yml rooms/"$user"/.access.yml
 	else
 		cp ../rooms.dist/mission.m.sfw rooms/"$user"/mission.m
+		cp ../rooms.dist/deny_image_gen_sfw.yml rooms/"$user"/.access.yml
 	fi
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
@@ -193,12 +195,6 @@ END
 
 	if ((nsfw)); then
 		echo "- $user" >> rooms/nsfw/.access.yml
-		cat <<END > rooms/$user/.access.yml
-reset: true
-allow_agents: true
-END
-		cat <<END
-END
 		ln -sf ../../doc/nsfw/guide.md rooms/"$user"/.help.m
 		ln -sf ../../rooms.dist/help.bb.base.nsfw rooms/"$user"/.help.bb.base
 	else

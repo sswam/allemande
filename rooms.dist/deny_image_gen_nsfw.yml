@@ -1,0 +1,24 @@
+reset: true
+allow_agents: true
+deny:
+- illu
+- gema
+- xilu
+- xillu
+- illuv
+- gemav
+- xiluv
+- xilluv
+- bigi
+- boni
+- broni
+- coni
+- hily
+- jily
+- lusy
+- pigi
+- poni
+- pwny
+- sixl
+- wili
+- yoni
