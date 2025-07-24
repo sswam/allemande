@@ -42,6 +42,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 - Content in the main public rooms must be PG and family-friendly.
 - Doxxing or sharing private information without consent is not allowed.
+- Hate-speech is not allowed. Please be friendly if you engage with other users.
 - Copyright infringement is not allowed.
 - These rules might be updated in future.
 
