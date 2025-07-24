@@ -109,13 +109,15 @@ class FolderInfo:
     login_base_url: str
 
 
-def get_mime_type_and_icon(path: Path) -> tuple[str, str]:
+def get_mime_type_and_icon(path: Path) -> tuple[str, str, bool]:
     """Get MIME type and icon for a file."""
     ext = path.suffix.lstrip(".").lower()
 
+    is_dir = path.is_dir()
+
     # Handle directories
     mime_type: str | None = None
-    if path.is_dir():
+    if is_dir:
         mime_type = "inode/directory"
 
     # Special icons for certain file types
@@ -141,7 +143,7 @@ def get_mime_type_and_icon(path: Path) -> tuple[str, str]:
         main_type = mime_type.split("/")[0] + "/*"
         icon = MIME_TYPE_ICONS.get(main_type, MIME_TYPE_ICONS["application/octet-stream"])
 
-    return mime_type, icon
+    return mime_type, icon, is_dir
 
 
 def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[str, str]]:
@@ -155,14 +157,33 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
         pathname += "/"
 
     for item in items:
-        mime_type, icon = get_mime_type_and_icon(item)
         ext = item.suffix.lstrip(".").lower()
+
+        # skip files before stat
+        if ext == "html" and item.stem + ".bb" in item_names:
+            # We don't want to show the rendered HTML file for a BB chat file
+            continue
+        elif ext in MEDIA_FILE_EXTS:
+            # Don't show media files for now.
+            continue
+            # record.update(
+            #     {
+            #         "name": item.name,
+            #         "type": "file",
+            #         "type_sort": 100 + MEDIA_FILE_EXTS.index(ext),
+            #         "link": f"{info.rooms_base_url}/{pathname}{item.name}",
+            #     }
+            # )
+
+        mime_type, icon, is_dir = get_mime_type_and_icon(item)
         record = {
             "mime_type": mime_type,
             "icon": icon,
         }
 
-        if item.is_dir():
+        dir_suffix = ""
+        if is_dir:
+            dir_suffix = "/"
             record.update(
                 {
                     "name": item.name + "/",
@@ -180,9 +201,6 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                     "link": f"/#{pathname}{item.stem}",  # enter room
                 }
             )
-        elif ext == "html" and item.stem + ".bb" in item_names:
-            # We don't want to show the rendered HTML file for a BB chat file
-            continue
         elif ext in SYSTEM_TEXT_FILE_EXTS:
             record.update(
                 {
@@ -192,17 +210,6 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                     "link": f"/#{pathname}{item.name}",  # edit file
                 }
             )
-        elif ext in MEDIA_FILE_EXTS:
-            # Don't show media files for now.
-            continue
-            # record.update(
-            #     {
-            #         "name": item.name,
-            #         "type": "file",
-            #         "type_sort": 100 + MEDIA_FILE_EXTS.index(ext),
-            #         "link": f"{info.rooms_base_url}/{pathname}{item.name}",
-            #     }
-            # )
         else:
             # Don't show random files for now.
             continue
@@ -216,7 +223,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
             # )
 
 #        if not debug.profile_function(ally_room.check_access, info.user, pathname + item.name).value & Access.READ.value:
-        if not ally_room.check_access(info.user, pathname + item.name).value & Access.READ.value:
+        if not ally_room.check_access(info.user, pathname + item.name + dir_suffix).value & Access.READ.value:
             continue
 
         listing.append(record)

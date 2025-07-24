@@ -651,14 +651,16 @@ export async function set_room(room_new, no_history) {
     try {
       await get_options();  // can throw if access denied
     } catch {
-      setup_all_link_buttons();
+      await setup_all_link_buttons();
       return;
     }
   }
 
   // who();
 
-  setup_all_link_buttons();
+  access_denied = false;
+
+  await setup_all_link_buttons();
   setup_admin();
 
   if (view === "view_edit") {
@@ -691,11 +693,11 @@ function room_url() {
   return url;
 }
 
-function setup_all_link_buttons() {
-  show_room_privacy();
+async function setup_all_link_buttons() {
 //  setup_help_links();
   setup_user_button();
-  setup_nav_buttons();
+  await setup_nav_buttons();
+  show_room_privacy();
 }
 
 function show_room_privacy() {
@@ -1088,13 +1090,11 @@ async function room_last(i) {
   // fetch the last number from the server
   const room_enc = query_encode(room);
   const response = await fetch(`/x/last?room=${room_enc}`);
-  if (!response.ok) {
-    throw new Error("GET last room number request failed");
-  }
+  if (!response.ok)
+    return null;
   const data = await response.json();
-  if (data.error) {
-    throw new Error(data.error);
-  }
+  if (data.error)
+    return null;
   return room_set_number(+data.last + i);
 }
 
@@ -1425,6 +1425,7 @@ async function setup_nav_buttons() {
     $nav_last.href = "/" + query_to_hash(roomLast);
   } else {
     $nav_last.removeAttribute("href");
+    access_denied = true;
   }
 }
 
@@ -1574,6 +1575,8 @@ function setup_admin() {
   const components = room.split("/");
   const top_dir = components[0];
   admin = GLOBAL_MODERATORS.includes(user) || top_dir == user;
+  // experiment: allow anyone who can write to moderate
+  admin = true;
   if (admin) document.body.classList.add("admin");
   else document.body.classList.remove("admin");
 }
@@ -2487,8 +2490,8 @@ async function get_options() {
     room,
   });
   const response = await fetch("/x/options?" + query, { cache: "no-cache" });
-  access_denied = !response.ok;
-  if (access_denied) {
+  if (!response.ok) {
+    access_denied = true;
     throw new Error("GET options request failed");
   }
   const data = await response.json();

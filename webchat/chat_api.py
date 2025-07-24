@@ -154,6 +154,7 @@ async def clear(request):
     try:
         await room.clear(user, op)
     except PermissionError as e:
+        logger.info("PermissionError: %r", e)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
 

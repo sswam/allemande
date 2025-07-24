@@ -427,6 +427,11 @@ def check_access(user: str | None, pathname: Path | str) -> Access:
     except PermissionError as _e:
         access, _reason = Access.NONE, "PermissionError"
     logger.debug("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
+
+    # experiment: allow anyone who can write to moderate
+    if access.value & Access.WRITE.value:
+        access = Access(access.value | Access.MODERATE_READ_WRITE.value)
+
     return access
 
 
@@ -530,9 +535,9 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     if user in MODERATORS and not "/" in pathname and (is_file or is_symlink):
         return Access.MODERATE_READ_WRITE, "moderator_top"
 
-    # Allowed users have access, except for directories
+    # Allowed users have access
     logger.debug("access: %s", access_conf)
-    if user in access_conf.get("allow", []) and not entry_is_dir:
+    if user in access_conf.get("allow", []):
         return Access.READ_WRITE, "allow"
 
     # Agents have access if allowed
@@ -559,6 +564,9 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     logger.debug(f"path: {path}, entry_is_dir: {entry_is_dir}, dir_path: {dir_path}, dir_mode: {dir_mode:#o}, S_IWGRP: {S_IWGRP:#o}, S_IRGRP: {S_IRGRP:#o}")
     if not entry_is_dir and dir_mode & S_IWGRP:
         return Access.READ_WRITE, "shared_public_writable"
+
+    if not exists:
+        return Access.NONE, "not_found"
 
     mode = stats.st_mode
 

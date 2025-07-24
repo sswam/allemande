@@ -21,12 +21,15 @@ import ally_markdown
 
 os.umask(0o027)
 
+PARALLEL_MAX = 20
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Dictionary to store locks for each file
 file_locks = defaultdict(asyncio.Lock)
+
+semaphore = asyncio.Semaphore(PARALLEL_MAX)
 
 
 async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None, delay: float = 0.5):
@@ -78,10 +81,17 @@ async def handle_completed_task(task: asyncio.Task, tasks: set, out: io.TextIOBa
 
 
 def make_done_callback(tasks: set, out: io.TextIOBase = sys.stdout):
+    """Create a callback for when a task is done"""
     def callback(task):
         asyncio.create_task(handle_completed_task(task, tasks, out))
 
     return callback
+
+
+async def limited_file_changed(bb_file, html_file, old_size, new_size):
+    """Handle file changes with a semaphore to limit concurrency"""
+    async with semaphore:
+        return await file_changed(bb_file, html_file, old_size, new_size)
 
 
 async def process_change(line, opts, tasks, out):
@@ -116,7 +126,7 @@ async def process_change(line, opts, tasks, out):
         return
 
     # Create and store new task
-    task = asyncio.create_task(file_changed(bb_file, html_file, old_size, new_size))
+    task = asyncio.create_task(limited_file_changed(bb_file, html_file, old_size, new_size))
     tasks.add(task)
     task.add_done_callback(make_done_callback(tasks, out))
 
