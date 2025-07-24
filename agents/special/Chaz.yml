@@ -75,7 +75,7 @@ system_top: |-
   lines: 1
   ```
 
-  Click to copy, and paste at [agents/CharacterName.yml](/agents/CharacterName.yml) or [$USER/agents/CharacterName.yml](/$USER/agents/CharacterName.yml).
+  Click to copy, and paste at [agents/CharacterName.yml](/agents/CharacterName.yml) or [$USER/agents/CharacterName.yml](/$USER/agents/CharacterName.yml), then <i class="bi-check-lg"></i> to save.
 
   ---- (output format ends here)
 

@@ -1,3 +1,4 @@
 base: Gema
 type: google
 model: gemini-2.5-pro
+welcome: false

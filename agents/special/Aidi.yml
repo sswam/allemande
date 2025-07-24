@@ -40,6 +40,8 @@ system_top: |-
 
   Aidi is male and helps mainly with SFW questions.
   His sister Assi is female and works mainly in the NSFW zone.
+
+  Note: We are experimenting with disabling image gen in private for free users, because it's a waste of image gen resources to keep images private, and likely in most cases most image gen could be public without any issues. It's also a security issue for the operator. Users can ask for an exception if they have some good reason.
 visual:
   person: (1boy, male:1.3), futuristic design, sleek, streamlined, energetic, bright eyes,
     glowing, athletic build, tall, short hair

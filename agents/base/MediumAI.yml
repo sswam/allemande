@@ -1,6 +1,7 @@
-type: deepseek
-model: deepseek-chat
-# type: google
+# type: deepseek
+# model: deepseek-chat
+type: google
+model: gemini-2.0-flash
 # model: gemini-2.5-flash
 context: 20
 system_bottom: |-
