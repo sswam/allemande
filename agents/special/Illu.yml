@@ -108,6 +108,8 @@ system_bottom: |-
     | <lora:Found_Polaroid:1> | | |
     | <lora:Vintage_Found_Photos:1> | tcc_foundphotos | |
     | <lora:EldritchPinhole:1> | | Eldritch Pinhole Photography (distressed found photos) |
+    | <lora:InsideOutCH_Style-10:1> | InsideOutXLP, cartoon, colored skin, cute, chibi, big eyes | Inside Out (Feelings) STYLE (Disney Pixar) |
+    | <lora:klimspreeaandrewcockroach:1> | | andrewcockroach style for Pony |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - appearance
