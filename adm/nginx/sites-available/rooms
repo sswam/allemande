@@ -58,6 +58,11 @@ server {
 			add_header Access-Control-Allow-Origin $cors_header always;
 			add_header Access-Control-Allow-Credentials true;
 		}
+		try_files $uri $uri/ @extra;
+	}
+
+	location @extra {
+		root /var/www/allychat/rooms.extra/;
 		try_files $uri $uri/ =404;
 	}
 
