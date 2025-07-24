@@ -41,7 +41,7 @@ MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 # - fair queueing, handle multiple requests. How? need to know user?
 
 MAX_COUNT = 10
-MAX_STEPS = 150  # 30
+MAX_STEPS = 30  # 150
 
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
 JOB_BASE_TIME = 25 # seconds, base time for a job at 1024x1024x15
