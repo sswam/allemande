@@ -240,3 +240,64 @@ function snow() {
   snowflakes = Array(50).fill().map(() => new Snowflake());
   snowing();
 }
+
+function bounceMessage(selector = '.m1') {
+  const current_script = document.currentScript;
+  bounceMessage_async(selector, current_script)
+}
+
+async function bounceMessage_async(selector, ref) {
+	await waitForMessage(ref);
+  const msg = document.querySelector(selector);
+  console.log(msg);
+
+  const origStyle = {...msg.style};
+
+  const rect = msg.getBoundingClientRect();
+  let x = Math.max(rect.left, 0);
+  let y = Math.max(rect.top, 0);
+  let dx = 0.3;
+  let dy = 0.2;
+
+  msg.style.position = 'fixed';
+  msg.style.maxWidth = '300px';
+  msg.style.zIndex = '1';
+  msg.style.backgroundColor = 'var(--background)';
+  msg.style.padding = '0 1rem';
+  msg.style.borderRadius = '0.5rem';
+  msg.style.border = '0.125rem solid var(--border)';
+
+  const animate = () => {
+    x += dx;
+    y += dy;
+
+    if (x + msg.offsetWidth > window.innerWidth) {
+        x = window.innerWidth - msg.offsetWidth;
+        dx *= -1;
+    } else if (x < 0) {
+        x = 0;
+        dx *= -1;
+    }
+
+    if (y + msg.offsetHeight > window.innerHeight) {
+        y = window.innerHeight - msg.offsetHeight;
+        dy *= -1;
+    } else if (y < 0) {
+        y = 0;
+        dy *= -1;
+    }
+
+    msg.style.left = x + 'px';
+    msg.style.top = y + 'px';
+
+    msg.animationId = requestAnimationFrame(animate);
+  };
+
+  msg.onclick = () => {
+    cancelAnimationFrame(msg.animationId);
+    Object.assign(msg.style, origStyle);
+    msg.onclick = null;
+  };
+
+  animate();
+}
