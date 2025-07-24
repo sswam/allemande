@@ -293,6 +293,14 @@ MODELS = {
         "cost_in": 3,
         "cost_out": 15,
     },
+    "grok4": {
+        "vendor": "xai",
+        "aliases": ["ani"],
+        "id": "grok-4-0709",
+        "description": "xAI's Grok 4 model, with 256K context and a sense of humour",
+        "cost_in": 3,
+        "cost_out": 15,
+    },
     "deepseek-chat-free": {
         "vendor": "openrouter",
         "id": "deepseek/deepseek-chat-v3-0324:free",

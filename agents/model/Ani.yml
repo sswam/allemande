@@ -1,0 +1,16 @@
+type: xai
+model: grok4
+welcome: true
+context: 20
+config:
+  stop: false
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
+visual:
+  person: "blonde hair, medium hair, twin tails, blue eyes, soft bangs, light makeup, doll-like appearance"
+  clothes_upper: "gothic lolita, black dress, off-shoulder, ruffled edges, corset, gold belt buckle, lace choker, ribbon wrist ties"
+  clothes_lower: "layered skirt, fishnet stockings"
+  clothes: "gothic lolita, black dress, off-shoulder, ruffled edges, corset, gold belt buckle, layered skirt, fishnet stockings, lace choker, ribbon wrist ties"
+  age: "adult 20 years old"
+  emo: "light smile"
+context: 101
+lines: 1
