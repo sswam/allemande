@@ -293,20 +293,32 @@ MODELS = {
         "cost_in": 3,
         "cost_out": 15,
     },
-    "deepseek-chat": {
-        "aliases": ["dese"],
-#        "vendor": "deepseek",
+    "deepseek-chat-free": {
         "vendor": "openrouter",
         "id": "deepseek/deepseek-chat-v3-0324:free",
         "description": "deepseek-chat points to DeepSeek-V3",
         "cost_in": 0.27,
         "cost_out": 1.10,
     },
-    "deepseek-reasoner": {
-        "aliases": ["deseri"],
-#        "vendor": "deepseek",
+    "deepseek-reasoner-free": {
         "vendor": "openrouter",
         "id": "deepseek/deepseek-r1-0528:free",
+        "description": "deepseek-reasoner points to DeepSeek-R1",
+        "cost_in": 0.55,
+        "cost_out": 2.19,
+    },
+    "deepseek-chat": {
+        "aliases": ["dese"],
+        "vendor": "deepseek",
+        "id": "deepseek-chat",
+        "description": "deepseek-chat points to DeepSeek-V3",
+        "cost_in": 0.27,
+        "cost_out": 1.10,
+    },
+    "deepseek-reasoner": {
+        "aliases": ["deseri"],
+        "vendor": "deepseek",
+        "id": "deepseek-reasoner",
         "description": "deepseek-reasoner points to DeepSeek-R1",
         "cost_in": 0.55,
         "cost_out": 2.19,
