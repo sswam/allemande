@@ -213,10 +213,11 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     all_people = conductor.get_all_participants(context_messages)
     if opts.stop is None:
         opts.stop = []
-    for p in all_people:
-        if p == agent.name:
-            continue
-        opts.stop.append(f"\n\n{p}: ")
+    if opts.stop is not False:
+        for p in all_people:
+            if p == agent.name:
+                continue
+            opts.stop.append(f"\n\n{p}: ")
 
     logger.debug("stop: %r", opts.stop)
 
