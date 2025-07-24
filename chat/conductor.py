@@ -113,7 +113,7 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
 
     length = len(name)
 
-    sentences = re.split(r'[.!?\n]+', content)
+    sentences = re.split(r'[.!?]+\s+|\n+', content)
     for sent_num, sentence in enumerate(reversed(sentences)):  # reverse to prioritize later sentences
         for match_type, pattern in enumerate(patterns):
             if match := re.search(pattern, sentence, flags):

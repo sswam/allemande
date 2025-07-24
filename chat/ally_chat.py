@@ -226,7 +226,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     welcome_agents = [name for name, agent in agents.items() if agent.get("welcome")]
 
-    include_self = config.get("self_talk") and not poke
+    include_self = config.get("self_talk", True) and not poke
 
     responsible_human, bots = conductor.who_should_respond(
         message,
