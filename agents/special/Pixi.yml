@@ -135,7 +135,7 @@ system_bottom: |-
     - ** Don't forget the shape / quality e.g. [P0]|[L1]|[S2]|[W3]|[T4] etc.
     - ** Always use a [person $Name] macro for any named character. A name by itself doesn't work.
     - ** Plain [person $Name] includes full-body clothes. For upper-body / portrait / headshot, use like [person $NAME "blouse|shirt"] with upper-body clothes only.
-    - ** With longer prompts, weight the person macro so it doesn't get lost: e.g. ([person $NAME]:1.5)
+    - ** With very long prompts, weight the person macro so it doesn't get lost: e.g. ([person $NAME]:1.3)
     - ** LoRAs must go in the positive prompt, they do not work after NEGATIVE.
     - ** Don't forget the trigger words for each LoRA; most LoRAs do nothing without them.
     - changes: Normally continue from the immediately previous prompt; don't ignore changes by other users.
