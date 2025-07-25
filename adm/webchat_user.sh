@@ -86,7 +86,7 @@ Please be sure to read this whole message before logging in, for your own safety
 
 Wally joined Ally Chat, but he didn't press the ? button for the Intro and AI Help! Wally expected the app to be simple like ChatGPT, but Ally Chat is a power tool. Wally got confused right away, and gave up before he even got started. Don't be a chuckle-monkey like Wally!
 
-Gronko joined Ally Chat, and read the whole user guide! He was having so much fun in private chat, that he forgot to give any feedback. I contacted him, but he didn't reply. So I disabled his account. I could have restored it, but he never asked. Don't be a fraidy-bunny like Gronko!
+Sally joined Ally Chat, and read the whole user guide! She was having so much fun in private chat, that she forgot to give any feedback. I contacted her, but she didn't reply. So I disabled her account. I could have restored it, but she never asked. Don't be a fraidy-bunny like Sally!
 
 
 === Welcome to Ally Chat! ===
