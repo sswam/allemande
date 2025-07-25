@@ -167,17 +167,17 @@ Please do not use languages models other than those listed here for NSFW content
 
 #### Language Models (NSFW capable)
 
-| Creator  | Model                | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                            |
-|----------|----------------------|--------|---------|------------|-----------------|------------------|--------------------------------------------------------------------------------------------------------|
-| Meta     | Llama 3.1 8B         | Ellie* | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
-| Meta     | Llama 3.3 70B        | Ellen  | 128K    | 2048       | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                |
-| Google   | Gemini 2.0 Flash     | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
-| Google   | Gemini 2.5 Flash     | Flashi | 1M      | 64K        | $0.15           | $0.60            | Google's fast Gemini model, optimized for speed and very capable.                                      |
-| Google   | Gemini 2.5 Pro       | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
-| Alibaba+ | EVA Qwen2.5 72B      | Qeva   | 128K    | 128K       | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.    |
-| Mistral  | Mistral Large 2411   | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
-| xAI      | Grok 4               | Ani    | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
-| DeepSeek | DeepSeek Chat V3     | Dese   | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                        |
+| Creator  | Model              | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                            |
+|----------|--------------------|--------|---------|------------|-----------------|------------------|--------------------------------------------------------------------------------------------------------|
+| Meta     | Llama 3.1 8B       | Ellie* | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
+| Meta     | Llama 3.3 70B      | Ellen  | 128K    | 2048       | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                |
+| Google   | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
+| Google   | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                      |
+| Google   | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
+| Alibaba+ | EVA Qwen2.5 72B    | Qeva   | 128K    | 128K       | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.    |
+| Mistral  | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
+| xAI      | Grok 4             | Ani    | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
+| DeepSeek | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                        |
 
 * The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cloe, etc.
 
