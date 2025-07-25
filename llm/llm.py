@@ -221,7 +221,7 @@ MODELS = {
         "cost_out": 0,
     },
     "gemini-2.5-flash": {
-        "aliases": ["gf", "flashi"],
+        "aliases": ["flashi"],
         "id": "models/gemini-2.5-flash-preview-05-20",
         "vendor": "google",
         "vision": True,
@@ -238,7 +238,7 @@ MODELS = {
         "cost_out": 0.3,
     },
     "gemini-2.0-flash": {
-        "aliases": ["flasho"],
+        "aliases": ["gf", "flasho"],
         "vendor": "google",
         "vision": True,
         "description": "Google's fast model with a 1 million context window.",

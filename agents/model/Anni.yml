@@ -1,6 +1,5 @@
 type: xai
 model: grok4
-welcome: true
 context: 20
 config:
   stop: false

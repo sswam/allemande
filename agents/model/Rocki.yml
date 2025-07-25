@@ -1,6 +1,5 @@
 type: xai
 model: grok3
-welcome: true
 context: 20
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 visual:

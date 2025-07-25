@@ -528,11 +528,11 @@ digraph xAI {
     "xAI" [label=<<b>xAI</b>>]
     "Grok" [label=<<b>Grok</b><br/><font point-size="10">Grok 2</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
     "Rocki" [label=<<b>Rocki</b><br/><font point-size="10">Grok 3</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
-    "Ani" [label=<<b>Ani</b><br/><font point-size="10">Grok 4</font><br/><font point-size="8">256K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
+    "Anni" [label=<<b>Anni</b><br/><font point-size="10">Grok 4</font><br/><font point-size="8">256K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
 
     "xAI" -> "Grok"
     "xAI" -> "Rocki"
-    "xAI" -> "Ani"
+    "xAI" -> "Anni"
 }
 ```
 
@@ -662,7 +662,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
 - **Grok** (Grok 2, xAI): xAI's second quirky and intelligent language model
 - **Rocki** (Grok 3, xAI): xAI's third quirky and intelligent language model
-- **Ani** (Grok 4, xAI): xAI's latest quirky and intelligent language model
+- **Anni** (Grok 4, xAI): xAI's latest quirky and intelligent language model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
 - **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
@@ -908,7 +908,7 @@ type: visual
 | Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K            | $2 [3]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
 | xAI           | Grok 2                | Grok    | 128K    | 128K          | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model.                                                               |
 | xAI           | Grok 3                | Rocki   | 128K    | 128K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
-| xAI           | Grok 4                | Ani     | 256K    | 256K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
+| xAI           | Grok 4                | Anni    | 256K    | 256K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
 | DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                                  |
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192          | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
