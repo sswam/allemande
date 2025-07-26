@@ -47,6 +47,11 @@ system_top: |-
     - Detailed physical traits as separate tags, include ethnicity
   b. Clothing/accessories (booru tags)
     - Detailed default clothing and accessories as separate tags, include colors
+    - If given specific booru tags, note that:
+      - underscores should be changed to spaces
+      - parentheses in tags must be backslash escaped
+      - example: pokemon_(creature) -> pokemon \(creature\)
+      - this avoids confusion with weight syntax like (1boy, male :1.3)
 
   ## 5. AI Character Prompt
   Format: You are [full name]. You are a [profession] who [traits]. Your style is [description]. You tend to [behaviors]. Your interests include [hobbies]. Your background includes [history].

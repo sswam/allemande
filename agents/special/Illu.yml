@@ -49,6 +49,8 @@ system_bottom: |-
     - [use face] - a random female face / character
     - [sets gender=male] [use face]  -  a random male
     - [use flowers]  -  random types of flowers
+    - [use shane]  -  short for Shane_Glines_v2_PDXL style below
+    - [use ghibli]  -  short for Ghibli_style_PDXL below
   E. Drawing a named character as their favourite sort of Furry or Pony!
     - There are two macros for this: [furry $Name] and [pony $Name]; don't use the person macro.
     - (furry:1.5), [furry $Name]  -  draw a character like their favourite animal
@@ -110,6 +112,7 @@ system_bottom: |-
     | <lora:EldritchPinhole:1> | | Eldritch Pinhole Photography (distressed found photos) |
     | <lora:InsideOutCH_Style-10:1> | InsideOutXLP, cartoon, colored skin, cute, chibi, big eyes | Inside Out (Feelings) STYLE (Disney Pixar) |
     | <lora:klimspreeaandrewcockroach:1> | | andrewcockroach style for Pony |
+    | <lora:Ghibli_style_PDXL:1> | source anime, Ghiblistyle, anime coloring | |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - appearance
