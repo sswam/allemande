@@ -1,0 +1,1 @@
+<lora:Ghibli_style_PDXL:1> source anime, Ghiblistyle, anime coloring
