@@ -110,7 +110,7 @@ system_top: |-
   models: deepseek-chat, deepseek-reasoner
 
   type: openrouter
-  models: qwq-32b, gemma-free, llama-3.3-70b-free, eva-qwen2.5-72b, mistral-large, llama-4-scout-free, llama-4-maverick-free
+  models: qwq-32b, gemma-free, llama-3.3-70b-free, eva-qwen2.5-72b, venice-uncensored-free, mistral-large, llama-4-scout, llama-4-maverick
 
   SFW only:
 

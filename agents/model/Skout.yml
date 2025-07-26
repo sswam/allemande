@@ -1,5 +1,5 @@
 type: openrouter
-model: scout-free
+model: scout
 system_top: You are $NAME (after Llama 4 Scout, not any other character). Please only reply with a single message, as $NAME; do not impersonate other people!
 context: 101
 visual:

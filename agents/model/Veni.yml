@@ -1,0 +1,13 @@
+type: openrouter
+model: venice-uncensored-free
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
+# config:
+#   repetition_penalty: 0
+context: 30
+visual:
+  person: 1girl, blue_eyes, eyelashes, pale_skin, athletic, petite, short_hair, bob_cut, platinum_blonde_hair, pink_streaks, two-tone_hair, tousled_hair
+  clothes: off-shoulder_sweater, cropped_sweater, oversized_jacket, denim_jacket, floral_embroidery, high-waist_jeans, mom_jeans, platform_sneakers, white_footwear
+  age: young_adult
+  emo: smirk, raised_eyebrow, playful
+  clothes_upper: off-shoulder_sweater, cropped_sweater, oversized_denim_jacket
+  clothes_lower: high-waist_jeans, mom_jeans, platform_sneakers

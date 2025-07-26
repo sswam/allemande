@@ -459,6 +459,14 @@ MODELS = {
         "cost_in": 2,
         "cost_out": 6,
     },
+    "venice-uncensored-free": {
+        "aliases": ["veni"],
+        "vendor": "openrouter",
+        "id": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+        "description": "Venice: Uncensored (free)",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
 }
 
 

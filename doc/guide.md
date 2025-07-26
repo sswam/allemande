@@ -574,8 +574,10 @@ digraph Mistral {
 
     "Mistral" [label=<<b>Mistral AI</b>>]
     "Misti" [label=<<b>Misti</b><br/><font point-size="10">Mistral Large 2411</font><br/><font point-size="8">128K context</font><br/><font point-size="8">General purpose, reasoning</font>>]
+    "Veni" [label=<<b>Veni</b><br/><font point-size="10">Venice: Uncensored</font><br/><font point-size="8">33K context</font><br/><font point-size="8">Uncensored</font>>]
 
     "Mistral" -> "Misti"
+    "Mistral" -> "Veni"
 }
 ```
 
@@ -666,8 +668,9 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
 - **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
-- **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
 - **Qeva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model
+- **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
+- **Veni** (Venice: Uncensored; Dolphin Mistral 24B Venice Edition): Uncensored
 
 These characters are not prompted, or only minimally: they serve for direct access to the base models.
 
@@ -914,6 +917,7 @@ type: visual
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Alibaba+      | EVA Qwen2.5 72B       | Eva/n   | 128K    | 128K          | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.              |
 | Mistral       | Mistral Large 2411    | Misti   | 128K    | 128K          | $2              | $6               | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
+| Mistral+      | Venice: Uncensored    | Veni    | 33K     | 33K           | $0              | $0               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored, rate limit on the free version.              |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cloe, etc.
 
