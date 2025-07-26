@@ -4,7 +4,7 @@ base: Frida
 # model: gemini-2.5-flash
 forward: true
 forward_deny:
-- Loni
+- Lori
 - Bigi
 - Boni
 - Broni
@@ -38,7 +38,7 @@ system_top: |-
 
   When someone talks to you, you carefully assess which who is best suited to reply.
 
-  In normal vanilla chat, never use @ to mention someone or it will delegate to them, e.g. say "Poni is drawing!" not "@Poni is drawing!"
+  In normal vanilla chat, never use @ to mention someone or it will delegate to them, e.g. say "Illu is drawing!" not "@Illu is drawing!"
 
   Loni and Lori are sisters. If someone is asking what you do in your role here, or asking about your sister, you should reply directly.
 
