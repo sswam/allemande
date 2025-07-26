@@ -11,6 +11,7 @@ import json
 import mimetypes
 import dataclasses
 from typing import Any
+import stat
 
 from starlette.templating import Jinja2Templates
 from natsort import natsort_keygen
@@ -109,11 +110,13 @@ class FolderInfo:
     login_base_url: str
 
 
-def get_mime_type_and_icon(path: Path) -> tuple[str, str, bool]:
+def get_item_info(path: Path) -> tuple[str, str, bool, int]:
     """Get MIME type and icon for a file."""
     ext = path.suffix.lstrip(".").lower()
 
-    is_dir = path.is_dir()
+    stats = path.stat()
+    is_dir = stat.S_ISDIR(stats.st_mode)  # Check if it's a directory
+    mtime = int(stats.st_mtime)
 
     # Handle directories
     mime_type: str | None = None
@@ -143,7 +146,7 @@ def get_mime_type_and_icon(path: Path) -> tuple[str, str, bool]:
         main_type = mime_type.split("/")[0] + "/*"
         icon = MIME_TYPE_ICONS.get(main_type, MIME_TYPE_ICONS["application/octet-stream"])
 
-    return mime_type, icon, is_dir
+    return mime_type, icon, is_dir, mtime
 
 
 def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[str, str]]:
@@ -175,10 +178,16 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
             #     }
             # )
 
-        mime_type, icon, is_dir = get_mime_type_and_icon(item)
+        try:
+            mime_type, icon, is_dir, mtime = get_item_info(item)
+        except Exception as exc:
+            logger.error("Error getting item info for %s: %s", item, exc)
+            continue
+
         record = {
             "mime_type": mime_type,
             "icon": icon,
+            "mtime": mtime,
         }
 
         dir_suffix = ""
@@ -256,7 +265,7 @@ def get_dir_listing_html(
     html.append(f'<ul class="directory-listing">')
     for item in listing:
         html.append(f'''
-            <li class="item-{item['type']}">
+            <li class="item-{item['type']}" data-type-sort="{item['type_sort']}" data-mtime="{item['mtime']}">
                 <a href="{item['link']}">
                     <span class="icon" title="{item['mime_type']}">{item['icon']}</span>
                     <span class="name">{item['name']}</span>

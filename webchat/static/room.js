@@ -1103,6 +1103,10 @@ async function set_view_options(new_view_options) {
     await highlight_set_stylesheet_for_theme();
     await highlight_code($messages, view_options);
   }
+
+  if (file_type === "dir") {
+    set_dir_sort(view_options.dir_sort);
+  }
 }
 
 async function set_mode_options(new_mode_options) {
@@ -1128,6 +1132,18 @@ export function open_or_close_details($details) {
     $details.open = show_thinking;
   } else {
     $details.open = show_other_details;
+  }
+}
+
+function set_dir_sort(dir_sort) {
+  // console.log("set_dir_sort", dir_sort);
+  const $dir = $("ul.directory-listing");
+  // for each item
+  for (const $item of $dir.children) {
+    if (dir_sort === "alpha")
+      $item.style.removeProperty('order');
+    else
+      $item.style.order = - $item.dataset["mtime"];
   }
 }
 
@@ -1178,6 +1194,30 @@ function wait_for_load() {
       return;
 
     observer.observe(document.documentElement, { childList: true, subtree: true });
+  });
+}
+
+// wait for the document to be fully loaded: for folder view -----------------
+
+async function wait_for_document_load(fail_ok = false) {
+  if (document.readyState === 'complete') {
+    return;
+  }
+
+  return new Promise((resolve, reject) => {
+    document.addEventListener('readystatechange', () => {
+      if (document.readyState === 'complete') {
+        resolve();
+      }
+    });
+
+    window.addEventListener('error', () => {
+      if (fail_ok) {
+        resolve();
+      } else {
+        reject(new Error('Page failed to load'));
+      }
+    });
   });
 }
 
@@ -1373,10 +1413,13 @@ export async function folder_main() {
 
   $on(window, "message", handle_message);
   // setup_keyboard_shortcuts();
-  if (inIframe)
-    window.parent.postMessage({ type: "ready", theme: theme }, ALLYCHAT_CHAT_URL);
 
   if (typeof room_user_script === 'function') {
     room_user_script();
+  }
+
+  if (inIframe) {
+    await wait_for_document_load(true);
+    window.parent.postMessage({ type: "ready", theme: theme }, ALLYCHAT_CHAT_URL);
   }
 }

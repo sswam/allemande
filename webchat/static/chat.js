@@ -75,6 +75,7 @@ let view_options = {
   audio_voice: "ballad",
   help: 0,
   embed: 0,
+  dir_sort: "alpha",
 };
 
 let mode_options = {
@@ -2113,6 +2114,8 @@ function set_view_options(new_view_options) {
 }
 
 function view_options_apply() {
+  const type = get_file_type(room);
+
   // includes audio options
   // save to local storage
   if (!embed)
@@ -2234,6 +2237,15 @@ function view_options_apply() {
 
   set_overlay(view_options.fullscreen == 2);
 
+  // show dir sort
+  if (type === "dir") {
+    const sort_icon = "sort_" + view_options.dir_sort;
+    const $dir_sort = $id("dir_sort");
+    $dir_sort.innerHTML = icons[sort_icon];
+    $dir_sort.title = "sort: " + view_options.dir_sort;
+  }
+  show("dir_sort", type === "dir");
+
   // send message to the rooms iframe to apply view options
   send_to_room_iframe({ type: "set_view_options", ...view_options });
 
@@ -2324,6 +2336,12 @@ function view_fullscreen(ev) {
 
 function view_history(ev) {
   view_options.history = !view_options.history;
+  view_options_apply();
+}
+
+function dir_sort(ev) {
+  ev.preventDefault();
+  view_options.dir_sort = view_options.dir_sort === "alpha" ? "time" : "alpha";
   view_options_apply();
 }
 
@@ -2983,6 +3001,8 @@ export async function init() {
   $on($id("opt_cancel"), "click", () => set_controls());
 
   $on($id("nav_cancel"), "click", () => set_top_left());
+
+  $on($id("dir_sort"), "click", dir_sort);
 
   $on($id("scroll_home"), "click", (ev) => scroll_home_end(ev, 0));
   $on($id("scroll_end"), "click", (ev) => scroll_home_end(ev, 1));
