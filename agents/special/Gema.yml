@@ -1,6 +1,6 @@
 base: Illu
 type: deepseek
-model: deepseek-reasoner
+model: deepseek-chat
 welcome: false
 # model: gemini-2.5-pro
 #type: openrouter
