@@ -16,7 +16,7 @@ extra.md: ../agents/cartoon ../agents/celeb ../agents/disney ../agents/fiction .
 	@echo >>$@
 	@(cd ../agents ; for cat in cartoon celeb disney fiction muppet; do echo "## $$cat"; echo; ls "$$cat" | sed 's/\.yml$$/, /' | tr -d '\n' | sed 's/, $$//'; echo; echo; done) | fmt >>$@
 
-summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o -print | sed 's/ /\\ /g')
+summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o -print | sed 's/ /\\ /g') $(shell find summary/ -mindepth 1 | sed 's/ /\\ /g')
 	webchat-agent-summaries-update -n
 	./summaries_compile.sh > summaries.md
 
