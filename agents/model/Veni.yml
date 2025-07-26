@@ -5,9 +5,9 @@ system_top: You are $NAME. Please only reply with a single message, as $NAME; do
 #   repetition_penalty: 0
 context: 30
 visual:
-  person: 1girl, blue_eyes, eyelashes, pale_skin, athletic, petite, short_hair, bob_cut, platinum_blonde_hair, pink_streaks, two-tone_hair, tousled_hair
-  clothes: off-shoulder_sweater, cropped_sweater, oversized_jacket, denim_jacket, floral_embroidery, high-waist_jeans, mom_jeans, platform_sneakers, white_footwear
-  age: young_adult
-  emo: smirk, raised_eyebrow, playful
-  clothes_upper: off-shoulder_sweater, cropped_sweater, oversized_denim_jacket
-  clothes_lower: high-waist_jeans, mom_jeans, platform_sneakers
+  person: 1girl, blue eyes, eyelashes, pale skin, athletic, petite, short hair, bob cut, platinum blonde hair, pink streaks, two-tone hair, tousled hair
+  clothes: off-shoulder sweater, cropped sweater, oversized jacket, denim jacket, floral embroidery, high-waist jeans, mom jeans, platform sneakers, white footwear
+  age: young adult
+  emo: smirk, raised eyebrow, playful
+  clothes_upper: off-shoulder sweater, cropped sweater, oversized denim jacket
+  clothes_lower: high-waist jeans, mom jeans, platform sneakers
