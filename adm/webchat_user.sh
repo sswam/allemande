@@ -191,7 +191,7 @@ END
 		ln -sf ../../doc/guide.md rooms/"$user"/.help.m
 	fi
 
-	echo "- $user" >> rooms/.access.yml
+	# echo "- $user" >> rooms/.access.yml
 
 	if ((nsfw)); then
 		echo "- $user" >> rooms/nsfw/.access.yml
