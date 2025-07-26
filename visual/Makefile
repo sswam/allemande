@@ -29,6 +29,7 @@ people.txt: girls.txt boys.txt nonbinary.txt
 	<$< wc -l >$@
 
 install: build
+	deadlinks | xa rm
 	ln -sf $$PWD/*.txt $$PWD/ar/*.txt $$PWD/person/*/ $$PWD/person/*.txt $$PWD/nsfw/*.txt $$PWD/extra/*.txt $(dir)/../unprompted/unprompted/templates/
 	cd $(dir)/../unprompted/unprompted/templates/ ; deadlinks | xa rm
 
