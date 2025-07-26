@@ -140,7 +140,7 @@ images:
 	while true; do make mount && $(PYTHON) core/image_a1111.py -v; sleep 1; done
 
 a1111:
-	cd ~/webui ; while true; do ./webui.sh; done
+	cd ~/webui ; while true; do ./webui.sh --skip-install; done
 
 vup:
 	cd $(ALLEMANDE_VISUAL) && \
