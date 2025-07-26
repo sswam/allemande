@@ -110,12 +110,13 @@ class FolderInfo:
     login_base_url: str
 
 
-def get_item_info(path: Path) -> tuple[str, str, bool, int]:
+def get_item_info(path: Path) -> tuple[str, str, bool, bool, int]:
     """Get MIME type and icon for a file."""
     ext = path.suffix.lstrip(".").lower()
 
-    stats = path.stat()
-    is_dir = stat.S_ISDIR(stats.st_mode)  # Check if it's a directory
+    stats = path.lstat()
+    is_symlink = stat.S_ISLNK(stats.st_mode)
+    is_dir = stat.S_ISDIR(stats.st_mode) or is_symlink and path.is_dir()
     mtime = int(stats.st_mtime)
 
     # Handle directories
@@ -146,7 +147,7 @@ def get_item_info(path: Path) -> tuple[str, str, bool, int]:
         main_type = mime_type.split("/")[0] + "/*"
         icon = MIME_TYPE_ICONS.get(main_type, MIME_TYPE_ICONS["application/octet-stream"])
 
-    return mime_type, icon, is_dir, mtime
+    return mime_type, icon, is_dir, is_symlink, mtime
 
 
 def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[str, str]]:
@@ -179,9 +180,13 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
             # )
 
         try:
-            mime_type, icon, is_dir, mtime = get_item_info(item)
+            mime_type, icon, is_dir, is_symlink, mtime = get_item_info(item)
         except Exception as exc:
             logger.error("Error getting item info for %s: %s", item, exc)
+            continue
+
+        # if link target is same with different case, do not show symlink
+        if is_symlink and str(item.readlink()).lower() == item.name.lower():
             continue
 
         record = {
@@ -189,6 +194,10 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
             "icon": icon,
             "mtime": mtime,
         }
+
+        pathname_esc = pathname.replace(" ", "+")
+        name_esc = item.name.replace(" ", "+")
+        stem_esc = item.stem.replace(" ", "+")
 
         dir_suffix = ""
         if is_dir:
@@ -198,7 +207,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                     "name": item.name + "/",
                     "type": "folder",
                     "type_sort": 0,
-                    "link": f"/#{pathname}{item.name}/",  # view dir
+                    "link": f"/#{pathname_esc}{name_esc}/",  # view dir
                 }
             )
         elif ext == "bb":
@@ -207,7 +216,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                     "name": item.stem,
                     "type": "bb",
                     "type_sort": 1,
-                    "link": f"/#{pathname}{item.stem}",  # enter room
+                    "link": f"/#{pathname_esc}{stem_esc}",  # enter room
                 }
             )
         elif ext in SYSTEM_TEXT_FILE_EXTS:
@@ -216,7 +225,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                     "name": item.name,
                     "type": "file",
                     "type_sort": 10 + SYSTEM_TEXT_FILE_EXTS.index(ext),
-                    "link": f"/#{pathname}{item.name}",  # edit file
+                    "link": f"/#{pathname_esc}{name_esc}",  # edit file
                 }
             )
         else:
