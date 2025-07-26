@@ -1136,14 +1136,24 @@ export function open_or_close_details($details) {
 }
 
 function set_dir_sort(dir_sort) {
-  // console.log("set_dir_sort", dir_sort);
   const $dir = $("ul.directory-listing");
-  // for each item
-  for (const $item of $dir.children) {
-    if (dir_sort === "alpha")
+  const items = [...$dir.children];
+
+  if (dir_sort === "alpha") {
+    for (const $item of items) {
+      const $a = $item.querySelector("a");
       $item.style.removeProperty('order');
-    else
-      $item.style.order = - $item.dataset["mtime"];
+      $a.removeAttribute('tabindex');
+    }
+  } else {
+    const sorted = items.sort((a, b) => b.dataset.mtime - a.dataset.mtime);
+    let i = 1;
+    for (const $item of sorted) {
+      const $a = $item.querySelector("a");
+      $item.style.order = i;
+      $a.tabIndex = i;
+      i++;
+    }
   }
 }
 
