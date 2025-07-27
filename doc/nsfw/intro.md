@@ -10,15 +10,15 @@ You can have group chats with several AIs together, and with other people.
 
 We believe in privacy and free speech, and oppose censorship. But don't post NSFW stuff in the SFW zone!
 
-The app includes models and features for adult entertainment, and is good for other things too.
+The app includes many models and features that are great for adult entertainment, and it is good for other things too.
 
-The NSFW zone contains explicit sexual material, and is restricted to adults only.
+The NSFW zone contains explicit sexual material, and is restricted to adults only. Put on your safety goggles!
 
 Free users have access to all models and features, but there are some good perks for supporters too.
 
-If you'd like to support us, you can become a patron: ([SFW](https://www.patreon.com/allychat) or [NSFW](https://www.patreon.com/allychatx)).
+If you'd like to support us, you can become a patron: ([SFW](https://www.patreon.com/allychat) or [NSFW](https://www.patreon.com/allychatx).
 
-We're currently experimenting with **turning off image gen in private rooms** for free users, for various reasons. Don't be shy, come out and try making pictures in public! You can make your own rooms in public too. If you have questions or don't like this change, please let Sam know.
+At the moment, we're **turning off image gen in private rooms** for new free users for [various reasons](/whypublic). Don't be shy, come out and try making pictures in public! You can make your own rooms in public too. After we get to know you a bit, we'll enable private image gen.
 
 ## Getting Started
 
@@ -26,11 +26,11 @@ Read this intro carefully!
 
 You can watch a [demo video](https://allemande.ai/demo) (SFW).
 
-Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help by pressing the <i class="bi-x"></i> button at the top right.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help when you're done by pressing the <i class="bi-x"></i> button at the top right.
 
 In the main [Ally Chat](/Ally+Chat) room and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with basic info about the app.
 
-**NOTE**: In other chat rooms, AIs don't know anything at all about the app!
+**NOTE**: In other chat rooms, AIs don't know anything at all about the app! Use the help system.
 
 Read this [NSFW Quick Intro](/nsfw/intro), the [User Guide](/guide), and the [NSFW Guide](/nsfw/guide), for full details on the app, models, characters, tools, and NSFW features.
 
@@ -44,28 +44,28 @@ Please contact Sam, the main developer, for more help and to give feedback.
 
 Address AIs by name to get their attention, with a capital letter or @ sign.
 
-Lori is a good one to start with. She has meta-powers of 26 agents combined!
+Lori is a good one to start with. She has meta-powers of many other agents combined!
 
 > hey Ally, you're looking fine, girl!
 > Can you help run a sexy photoshoot, @lori?
 > Xilu, please draw a nude guy or lady!
 > Do you know any brunettes who might be up for sexy role-play, Yenta?
 
-Send an empty "poke" message to continue AI conversations. You'll need to do this after Xilu writes an image prompt for you.
+Send an empty message to continue AI conversations, this called a "poke". You'll need to do this after Xilu writes an AI art prompt for you.
 
 You can say @anyone for a random AI, or @everyone for several responses.
 
-## Select Characters and Tools
+## A Few of our Characters and Tools
 
 **General Chat**
 - Lori: our NSFW meta-agent, sends your message to the best AI for the job; great for beginners
-- Ally/Allie, Barbie, Callam, Dante: friendly chat, can be sexual too
-- Eva, Pyrite: friendly chat, 
+- Ally, Barbie, Callam, Dante: friendly chat, can be sexual too
+- Pyrite: strongly sexual chat
 - Flashi, Gemmi: strong assistants
 - Fli, Gemm: for concise responses
 
 **AI Art**
-- Illu, Gema: SFW image prompting
+- Illu: SFW image prompting
 - Xilu: NSFW image prompting
 - Jily, Hily: high quality, realistic images, including soft-core
 - Poni: cartoon / anime images, can do hard-core and hentai, use "rating safe" in prompt to avoid nudity

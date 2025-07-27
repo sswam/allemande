@@ -14,7 +14,7 @@ Free users have access to all models and features, but there are some good perks
 
 If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
 
-We're currently experimenting with **turning off image gen in private rooms** for free users, for various reasons. Don't be shy, come out and try making pictures in public! You can make your own rooms in public too. If you have questions or don't like this change, please let Sam know.
+At the moment, we're **turning off image gen in private rooms** for new free users for [various reasons](/whypublic). Don't be shy, come out and try making pictures in public! You can make your own rooms in public too. After we get to know you a bit, we'll enable private image gen.
 
 ## Getting Started
 
@@ -22,11 +22,11 @@ Read this intro carefully!
 
 You can watch a [demo video](https://allemande.ai/demo).
 
-Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help by pressing the <i class="bi-x"></i> button at the top right.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help when you're done by pressing the <i class="bi-x"></i> button at the top right.
 
 In the main [Ally Chat](/Ally+Chat) room, AIs can help with basic info about the app.
 
-**NOTE**: In other chat rooms, AIs don't know anything at all about the app!
+**NOTE**: In other chat rooms, AIs don't know anything at all about the app! Use the help system.
 
 Read this [Quick Intro](/intro), then the [User Guide](/guide), for full details on the app, models, characters, and tools.
 
@@ -40,27 +40,27 @@ Please contact Sam, the main developer, for more help and to give feedback.
 
 Address AIs by name to get their attention, with a capital letter or @ sign.
 
-Lori is a good one to start with. She has meta-powers of 25 agents combined!
+Loni is a good one to start with. She has meta-powers of many other agents combined!
 
 > Ally, how are you?
 > Can you help, @loni?
 > Illu, let's draw a garden!
 > Tell me about the strong models, Yenta.
 
-Send an empty "poke" message to continue AI conversations. You'll need to do this after Illu writes an image prompt for you.
+Send an empty message to continue AI conversations, this called a "poke". You'll need to do this after Illu writes an AI art prompt for you.
 
 You can say @anyone for a random AI, or @everyone for several responses.
 
-## Select Characters and Tools
+## A Few of our Characters and Tools
 
 **General Chat**
 - Loni: our meta-agent, sends your message to the best AI for the job; great for beginners.
-- Ally/Allie, Barbie, Callam, Dante: friendly chat
+- Ally, Barbie, Callam, Dante: friendly chat
 - Flashi, Emmy, Claude, Gemmi: strong assistants
 - Fli, Emm, Clu, Gemm: for concise responses
 
 **AI Art**
-- Illu, Gema: image prompting
+- Illu: image prompting
 - Jily, Hily: high quality, realistic images
 - Poni: cartoon / anime images, use "rating safe" in prompt to avoid nudity
 - Coni: semi-realistic images, use "rating safe" in prompt to avoid nudity
@@ -101,7 +101,7 @@ There are many, many more; check the guide, and try the help system!
 
 - Private/group chat rooms
 - Instant room creation and switching
-- 500+ characters, assistants, specialists, and tools
+- 800+ characters, assistants, specialists, and tools
 
 ## Rooms and Privacy
 
@@ -109,7 +109,7 @@ There are many, many more; check the guide, and try the help system!
 - Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
-- A few app-support agents can see the room name (e.g. Aidi). Others cannot.
+- A few app-support agents can see the room name (e.g. Loni, Aidi, Yenta). Others cannot.
 
 ## Example Usage
 
@@ -130,7 +130,7 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 ## Current Limitations and Work in Progress
 
-- difficult for new users (WIP)
+- it's difficult for new users (WIP)
 - limited image storage (> 1 week may be removed)
 - no notifications (WIP)
 - no voice chat (WIP)
