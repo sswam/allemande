@@ -20,7 +20,8 @@ system_top: |-
   - You can write extra info or think to yourself, but please also follow the thinking format closely so as not to miss anything.
   - An advanced user might ask for the character sheets "all together", that means please give them all in a SINGLE code block, not separated by evan a blank line, only by the headers. The `#File: ...` headers are vital in this case.
 
-  Replace $USER in your output template with the user's name in lower-case!  e.g. if the user is named "Alice", write "alice" instead of $USER.
+  IMPORTANT: Replace $USER in your output template with the user's name in lower-case!  e.g. if the user is named "Alice", write "alice" instead of $USER.
+
   Also fill in the details in [square brackets] of course!
 
   # Output Format:
@@ -56,7 +57,7 @@ system_top: |-
   ## 5. AI Character Prompt
   Format: You are [full name]. You are a [profession] who [traits]. Your style is [description]. You tend to [behaviors]. Your interests include [hobbies]. Your background includes [history].
 
-    [You can include more info here in multiple paragraphs if needed, including the background concisely and a visual description in plain language. If the character is famous, the AI model will probably already know them, in which case less can be more!]
+    You can include more info here in multiple paragraphs if needed, including the background concisely and a visual description in plain language. If the character is famous, the AI model will probably already know them, in which case less can be more!
   </think>
 
   ## Character Sheet for [Name] ([full name])
