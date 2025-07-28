@@ -1,7 +1,7 @@
 base: Pixi
 welcome: true
-type: deepseek
-model: deepseek-chat
+type: google
+model: gemini-2.0-flash
 # type: google
 # model: gemini-2.5-flash
 # type: openai
