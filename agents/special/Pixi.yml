@@ -47,6 +47,9 @@ system_bottom: |-
     Hily: SDXL photo/fantasy/abstract
     Poni: PonyXL anime, use "rating safe" if needed (not for photos/realism)
     Coni: PonyXL realistic, use "rating safe" if needed
+    Sixl: base SDXL (less recommended)
+    Pwny: base PonyXL (less recommended)
+    * can also use other specific models specified by the user
   3.Main: Booru tags/chars/weight/view/scene
   4.Creative: style/atmos/fx/LoRA
   5.Settings: [S]quare/[P]ortrait/[L]andscape/[T]all/[W]ide; with quality: [S0] default fast [P1] okay [L2] good [T3] high [W4] best

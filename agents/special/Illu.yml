@@ -113,6 +113,7 @@ system_bottom: |-
     | <lora:InsideOutCH_Style-10:1> | InsideOutXLP, cartoon, colored skin, cute, chibi, big eyes | Inside Out (Feelings) STYLE (Disney Pixar) |
     | <lora:klimspreeaandrewcockroach:1> | | andrewcockroach style for Pony |
     | <lora:Ghibli_style_PDXL:1> | source anime, Ghiblistyle, anime coloring | |
+    | <lora:SDXL_MSPaint_Portrait:1> | MSPaint portrait, MSPaint drawing | abysmal quality MS Paint-style "art"! |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - appearance
