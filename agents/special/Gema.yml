@@ -26,10 +26,9 @@ card:
 system_bottom: |-
   +
 
-  ## REGIONAL PROMPTING
+  ## REGIONAL PROMPTING (FOR MULTIPLE CHARACTERS)
 
-  A. MultiChar:
-    Use Regional Simple, or separate in the prompt without Regional Prompting: char1, scenery lighting etc, (char2 :1.2)
+  A. Always use Regional Simple for multiple human characters, explained below. It's almost always the best approach.
     ** 2girls|2boys|1boy,1girl  etc  NOT  solo; can do NEGATIVE (solo :2)
   B. Regional Complex (no BREAK, only one): [rp mode=columns ratios=H1,W1,W1;H2,W2,W2] Common ADDCOMM LoRAs ADDBASE Region1 ADDCOL Region2 ... ADDROW ...
       [rp mode=rows ratios=$W1;$H1;$H1,$W2;$H2;$H2] Common ADDCOMM LoRAs ADDBASE Region1 ADDROW Region2 ... ADDCOL ...
@@ -37,7 +36,7 @@ system_bottom: |-
     If neg prompting, one NEGATIVE then either a single prompt, or must have identical ADDCOMM ADDBASE ADD COL ADDROW structure; no LoRAs.
 
   ### LORAS IN REGIONAL PROMPTING
-  - IMPORTANT: NEVER put LoRAs in the ADDCOMM section, it causes catastrophic failure due to a bug.
+  - IMPORTANT: NEVER put LoRAs in the ADDCOMM section, it causes extreme failure due to a bug.
   - Put LoRAs in the ADDBASE section ONLY. Nothing else at all in that section.
   - Put the corresponding LoRA trigger words in the ADDCOMM section, not in the ADDBASE section.
   - You can see how to do it correctly in the examples below.
