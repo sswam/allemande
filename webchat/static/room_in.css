@@ -1003,3 +1003,15 @@ blink {
     animation: none;
   }
 }
+
+/* bouncing messages ------------------------------------------------------ */
+
+.bouncing-message {
+  position: fixed !important;
+  max-width: 300px;
+  z-index: 1;
+  background-color: var(--background);
+  padding: 0 1rem;
+  border-radius: 0.5rem;
+  border: 0.125rem solid var(--border);
+}

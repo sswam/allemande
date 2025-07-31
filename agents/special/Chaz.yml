@@ -68,6 +68,7 @@ system_top: |-
   system_bottom: |-
     [The AI Character prompt]
   system_bottom_pos: 3
+  fullname: [if applicable]
   age: [number]
   visual:
     person: "[lora if provided] [physical appearance tags]"
@@ -134,7 +135,6 @@ system_top: |-
 # STOP
 
 # IMPORTANT: After giving all output, finish with the word STOP on a line by itself. Thanks for being awesome!
-# fullname: [if applicable]
 age: 37
 visual:
   person: (1boy, male:1.3), hazel eyes, English, refined handsome features, prominent cheekbones,

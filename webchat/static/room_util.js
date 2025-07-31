@@ -461,11 +461,9 @@ function bounceMessage(selector = '.m1') {
 }
 
 async function bounceMessage_async(selector, ref) {
-	await waitForMessage(ref);
+  await waitForMessage(ref);
   const msg = document.querySelector(selector);
   console.log(msg);
-
-  const origStyle = {...msg.style};
 
   const rect = msg.getBoundingClientRect();
   let x = Math.max(rect.left, 0);
@@ -473,32 +471,26 @@ async function bounceMessage_async(selector, ref) {
   let dx = 0.3;
   let dy = 0.2;
 
-  msg.style.position = 'fixed';
-  msg.style.maxWidth = '300px';
-  msg.style.zIndex = '1';
-  msg.style.backgroundColor = 'var(--background)';
-  msg.style.padding = '0 1rem';
-  msg.style.borderRadius = '0.5rem';
-  msg.style.border = '0.125rem solid var(--border)';
+  msg.classList.add('bouncing-message');
 
   const animate = () => {
     x += dx;
     y += dy;
 
     if (x + msg.offsetWidth > window.innerWidth) {
-        x = window.innerWidth - msg.offsetWidth;
-        dx *= -1;
+      x = window.innerWidth - msg.offsetWidth;
+      dx *= -1;
     } else if (x < 0) {
-        x = 0;
-        dx *= -1;
+      x = 0;
+      dx *= -1;
     }
 
     if (y + msg.offsetHeight > window.innerHeight) {
-        y = window.innerHeight - msg.offsetHeight;
-        dy *= -1;
+      y = window.innerHeight - msg.offsetHeight;
+      dy *= -1;
     } else if (y < 0) {
-        y = 0;
-        dy *= -1;
+      y = 0;
+      dy *= -1;
     }
 
     msg.style.left = x + 'px';
@@ -509,7 +501,11 @@ async function bounceMessage_async(selector, ref) {
 
   msg.onclick = () => {
     cancelAnimationFrame(msg.animationId);
-    Object.assign(msg.style, origStyle);
+    msg.classList.remove('bouncing-message');
+
+    // Reset styles
+    msg.style.left = '';
+    msg.style.top = '';
     msg.onclick = null;
   };
 

@@ -262,7 +262,7 @@ class Agent:
 
         if private:
             agent1 = self.agents.get(self.name)
-            if not agent1.private:
+            if agent1 and not agent1.private:
                 logger.warning("Name conflict between private and public agent: %r", self.name)
                 return
 

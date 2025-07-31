@@ -180,10 +180,9 @@ END
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	if ((nsfw)); then
 		cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
-		cp ../rooms.dist/deny_image_gen_nsfw.yml rooms/"$user"/.access.yml
+		cp ../rooms.dist/access_nsfw.yml rooms/"$user"/.access.yml
 	else
 		cp ../rooms.dist/mission.m.sfw rooms/"$user"/mission.m
-		cp ../rooms.dist/deny_image_gen_sfw.yml rooms/"$user"/.access.yml
 	fi
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
