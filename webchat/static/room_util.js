@@ -241,6 +241,220 @@ function snow() {
   snowing();
 }
 
+
+// rain ----------------------------------------------------------------------
+
+// Raindrop class
+class Raindrop {
+  constructor() {
+    // A few shades of blue for variety
+    this.blues = ['#a2d2ff', '#bde0fe', '#8ecae6', '#77b5d9', '#5fa8d3'];
+    this.reset();
+  }
+
+  reset() {
+    this.x = Math.random() * rain_canvas.width;
+    this.y = -Math.random() * rain_canvas.height;
+    this.length = Math.random() * 20 + 10;
+    this.speed = Math.random() * 6 + 4; // A bit faster than snow
+    this.width = Math.random() * 1.5 + 1;
+    this.color = this.blues[Math.floor(Math.random() * this.blues.length)];
+  }
+
+  update() {
+    this.y += this.speed;
+    // Reset if it goes off the bottom of the screen
+    if (this.y > rain_canvas.height) {
+      this.reset();
+    }
+  }
+
+  draw(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    // The line is drawn "behind" the leading point (y)
+    ctx.lineTo(this.x, this.y - this.length);
+    ctx.strokeStyle = this.color;
+    ctx.lineWidth = this.width;
+    ctx.lineCap = 'round'; // Makes the drops look softer
+    ctx.stroke();
+  }
+}
+
+// Global variables for the rain effect
+var rain_canvas;
+var raindrops;
+
+// Animation loop
+function raining() {
+  if (!rain_canvas) return;
+  const ctx = rain_canvas.getContext('2d');
+  ctx.clearRect(0, 0, rain_canvas.width, rain_canvas.height);
+
+  raindrops.forEach(drop => {
+    drop.update();
+    drop.draw(ctx);
+  });
+
+  requestAnimationFrame(raining);
+}
+
+// Main function to set up and start the rain
+function rain() {
+  // Check for the user's motion preference, assuming the function exists globally
+  if (typeof checkReducedMotionPreference === 'function' && checkReducedMotionPreference()) {
+    console.log('Reduced motion preferred - rain effect disabled');
+    return;
+  }
+
+  rain_canvas = document.createElement('canvas');
+  rain_canvas.id = 'rainCanvas';
+  rain_canvas.style.cssText = 'position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;';
+
+  const body = document.body;
+  body.insertBefore(rain_canvas, body.firstChild);
+
+  // Keep the canvas sized to the window
+  function resizeCanvas() {
+    rain_canvas.width = window.innerWidth;
+    rain_canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // Create a nice dense array of raindrops
+  raindrops = Array(300).fill().map(() => new Raindrop());
+  raining();
+}
+
+// matrix WIP! ---------------------------------------------------------------
+
+// Function to convert any color to rgba with opacity
+function convertToRGBA(color, opacity) {
+  // Create a temporary div to compute the color
+  const temp = document.createElement('div');
+  temp.style.color = color;
+  document.body.appendChild(temp);
+
+  // Get the computed color in rgb format
+  const computedColor = window.getComputedStyle(temp).color;
+  document.body.removeChild(temp);
+
+  // Convert to rgba
+  return computedColor.replace('rgb', 'rgba').replace(')', `, ${opacity})`);
+}
+
+function getRainbowColor() {
+  // Get current time in milliseconds
+  const now = Date.now();
+  // Complete cycle every 180 seconds (6 colors × 30 seconds each)
+  const hue = (now / 180000 * 360) % 360;
+
+  return `hsla(${hue}, 100%, 50%, 0.25)`;
+}
+
+// Global variables for the Matrix effect
+var matrix_canvas;
+var matrix_ctx;
+var matrix_bgcolor;
+
+// An array to store the Y position of the last character in each column
+var y_positions;
+
+// The characters to be used in the rain
+const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const nums = '0123456789';
+const matrix_chars = katakana + latin + nums;
+
+// A slower, more sparse Matrix effect
+
+// (Global variables from before are reused: matrix_canvas, matrix_ctx, y_positions, matrix_chars)
+
+const FONT_SIZE = 16; // Using a constant for clarity
+const FALL_SPEED = 5; // The higher the number, the slower the fall. Updates every 5th frame.
+const COLUMN_SPACING = 1; // Multiplier for spacing. 3 means columns are 3x font size apart.
+const RESET_CHANCE = 0.99; // Chance a column will *not* reset. Higher = more empty space.
+
+// A counter to regulate animation speed
+let matrixFrameCount = 0;
+
+// The revised animation loop
+function matrixFallingSlow() {
+  if (!matrix_canvas) return;
+
+  matrixFrameCount++;
+  // Only execute the main logic if the frame count is a multiple of FALL_SPEED
+  if (matrixFrameCount % FALL_SPEED === 0) {
+    // Fading effect
+
+    matrix_ctx.fillStyle = matrix_bgcolor;
+
+    matrix_ctx.fillRect(0, 0, matrix_canvas.width, matrix_canvas.height);
+
+    // Then replace your original line with:
+    matrix_ctx.fillStyle = getRainbowColor();
+
+    matrix_ctx.font = FONT_SIZE + 'px monospace';
+
+    // Loop over each column
+    for (let i = 0; i < y_positions.length; i++) {
+      const text = matrix_chars.charAt(Math.floor(Math.random() * matrix_chars.length));
+      // The x position is now spaced out by the multiplier
+      const x = i * FONT_SIZE * COLUMN_SPACING;
+      const y = y_positions[i] * FONT_SIZE;
+
+      matrix_ctx.fillText(text, x, y);
+
+      if (y > matrix_canvas.height && Math.random() > RESET_CHANCE) {
+        y_positions[i] = 0;
+      }
+      y_positions[i]++;
+    }
+  }
+
+  requestAnimationFrame(matrixFallingSlow);
+}
+
+
+// Main function to set up and start the effect
+function matrix() {
+  if (typeof checkReducedMotionPreference === 'function' && checkReducedMotionPreference()) {
+    console.log('Reduced motion preferred - matrix effect disabled');
+    return;
+  }
+
+  matrix_canvas = document.createElement('canvas');
+  matrix_canvas.id = 'matrixCanvas';
+  matrix_canvas.style.cssText = 'position: fixed; top: 0; left: 0; pointer-events: none; z-index: -1;';
+  document.body.insertBefore(matrix_canvas, document.body.firstChild);
+  matrix_ctx = matrix_canvas.getContext('2d');
+
+  // Get the computed background color
+  const bgColor = getComputedStyle(document.documentElement)
+          .getPropertyValue('--background');
+
+  matrix_bgcolor = convertToRGBA(bgColor, 0.05);
+
+  function resizeCanvas() {
+    matrix_canvas.width = window.innerWidth;
+    matrix_canvas.height = window.innerHeight;
+    // Calculate columns based on the new spacing
+    const columns = Math.floor(matrix_canvas.width / (FONT_SIZE * COLUMN_SPACING));
+    y_positions = Array(columns).fill(1);
+  }
+
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // Reset the frame counter and start the new animation loop
+  matrixFrameCount = 0;
+  matrixFallingSlow();
+}
+
+
+// bouncing messages ---------------------------------------------------------
+
 function bounceMessage(selector = '.m1') {
   const current_script = document.currentScript;
   bounceMessage_async(selector, current_script)
