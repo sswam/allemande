@@ -83,6 +83,8 @@ async def post(request):
 
     room = Room(name=room)
 
+    logger.info("Post length %d to room %s by user %s", len(content), room.name, user)
+
     try:
         exists = room.exists()
         room.write(user, content)
