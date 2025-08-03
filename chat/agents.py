@@ -76,6 +76,10 @@ class Agent:
     pass
 
 
+class NotEnabledError(Exception):
+    pass
+
+
 class Agent:
     """An Allemande Agent"""
     def __init__(self, data: dict = None, agents: Agents = None, file: Path = None, private: bool=False):
@@ -103,6 +107,9 @@ class Agent:
 
         if self.data is None:
             raise ValueError(f"Agent file {file} is empty or invalid")
+
+        if self.data.get("enabled", True) is False:
+            raise NotEnabledError(f"Agent is not enabled: {file}")
 
         if "name" not in self.data:
             self.data["name"] = name
@@ -373,6 +380,8 @@ class Agents:
             try:
                 agent = self.load_agent_without_setup(agent_file, private=private)
                 new_agents.append(agent)
+            except NotEnabledError:
+                logger.info("Agent not enabled: %s", agent_file)
             except Exception:  # pylint: disable=broad-except
                 logger.exception(f"Error loading agent from {agent_file}", exc_info=True)
 
