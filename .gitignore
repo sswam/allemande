@@ -98,6 +98,7 @@ rooms.*
 /doc/nsfw/guide.md
 /rooms.dist/mission.m.nsfw
 /rooms.dist/mission.m.sfw
+/doc/agent_colours.css
 
 # agents
 /agents/nsfw
@@ -115,6 +116,7 @@ rooms.*
 /doc/extra.md
 /doc/summary
 /doc/summaries.md
+/doc/agent_colours.tsv
 
 # NSFW files
 /doc/nsfw/demo_plan_1_nsfw.md

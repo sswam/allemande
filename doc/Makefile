@@ -1,7 +1,7 @@
 IMAGE_SFW=landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg
 IMAGE_NSFW=solo-person-Cloe-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg
 
-all: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml
+all: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml agent_colours.css
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md extra.md
 	rm -f $@
@@ -50,3 +50,9 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	rm -f $@
 	cp -a $< $@
 	chmod a-w $@
+
+agent_colours.tsv: summaries.md
+	./update_colours.sh
+
+agent_colours.css: agent_colours.tsv
+	<$< ./agent_colours_tsv_to_css.py | tee agent_colours.css
