@@ -446,7 +446,7 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[
     for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint"]:
         if setting not in sets:
             continue
-        value = sets[setting]
+        value = sets.pop(setting)
         need_update_macros = True
         if setting in ["steps", "width", "height", "seed"]:
             config[setting] = int(value)
