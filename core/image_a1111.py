@@ -188,6 +188,8 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
 # User jobs count
 user_usage: dict[str, int] = {}
 
+# Day crossover detection
+day_start = None
 
 @dataclass(order=True)
 class ImageJob:
@@ -219,6 +221,32 @@ def get_queue_jobs() -> list[ImageJob]:
     return list(image_queue._queue)  # pylint: disable=protected-access
 
 
+def get_sorted_queue_jobs() -> list[ImageJob]:
+    """Get sorted list of jobs from queue, for inspection only"""
+    return sorted(get_queue_jobs(), key=lambda j: j.priority)
+
+
+def ensure_queue_not_in_past(current_time: float):
+    """Ensure that the queue does not contain jobs scheduled in the past"""
+    global image_queue
+    queue_jobs = get_sorted_queue_jobs()
+
+    set_time = current_time
+    changed = False
+    for job in queue_jobs:
+        if job.priority >= set_time:
+            break
+        job.priority = set_time
+        set_time += 0.001  # ensure unique priority and maintain order
+        changed = True
+
+    if changed:
+        new_queue = asyncio.PriorityQueue()
+        for job in queue_jobs:
+            new_queue.put_nowait(job)
+        image_queue = new_queue
+
+
 async def process_image_queue():
     """Process jobs from the image queue"""
     global job  # pylint: disable=global-statement
@@ -227,7 +255,9 @@ async def process_image_queue():
             # Log the queue with priority and user-name
             logger.info("Queue size: %d", image_queue.qsize())
             current_time = time.time()
-            for job in sorted(get_queue_jobs(), key=lambda j: j.priority):
+            ensure_queue_not_in_past(current_time)
+            queue_jobs = get_sorted_queue_jobs()
+            for job in queue_jobs:
                 logger.info("Job: %.0f: %s", job.priority - current_time, job.config.get("user"))
 
             # Get job from queue
@@ -365,12 +395,18 @@ async def enqueue_image_jobs(
     d: Path, prompt: str, negative_prompt: str, output_stem: str, config: dict, regional_kwargs: dict, portal: Path
 ) -> int:
     """Enqueue image generation jobs into the priority queue"""
+    global day_start
     seed = config.get("seed", random.randint(0, 2**32 - 1))
     count = min(config.get("count", 1), MAX_COUNT)
 
     user = config.get("user", None)
 
     current_time = time.time()
+
+    # Reset usage for all users every 24 hours
+    if day_start is None or current_time - day_start > 24 * 3600:
+        day_start = current_time
+        user_usage.clear()
 
     # TODO can estimate job duration / weight better from parameters
     # TODO or measure job duration
@@ -388,7 +424,6 @@ async def enqueue_image_jobs(
             continue
         priority += j.duration
     logger.info("priority: %.2f", priority - current_time)
-
 
     # Enqueue each image job
     for i in range(count):
