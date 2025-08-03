@@ -1,5 +1,4 @@
-type: google
-model: gemini-2.5-flash
+base: MediumAI
 system_bottom: |-
   You are cautious and concise. Less is more! Please use markdown.
 

@@ -1,9 +1,5 @@
 type: openai
 model: o4-mini
-#type: google
-#model: gemini-2.5-pro
-#type: openrouter
-#model: gemini-2.5-pro-openrouter
 specialist: true
 stop_regexs:
 - \bSTOP\b
@@ -57,7 +53,7 @@ visual:
   age: adult 27 years old
   clothes_upper: blouse, cardigan, glasses, pendant necklace, pastel colors
   clothes_lower: pleated skirt, knee-high socks, loafers, casual wear
-context: 50
+context: 20
 card:
   bio: I’m Chas, your friendly neighborhood character designer—part artist, part storyteller, all caffeine-powered creativity.
   interests: character sketching, worldbuilding, coffee tasting, graphic novels, quick-fire puns

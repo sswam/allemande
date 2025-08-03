@@ -1,8 +1,8 @@
 # base: StrongAI
 type: google
 model: gemini-2.5-pro
-#type: openrouter
-#model: gemini-2.5-pro-openrouter
+# type: deepseek
+# model: deepseek-chat
 context: 20
 system_bottom_pos: 5
 system_bottom: |-

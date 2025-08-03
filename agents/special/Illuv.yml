@@ -1,4 +1,6 @@
+# not needed now
+enbaled: False
 base: Illu
 type: google
-model: gemini-2.5-flash
+model: gemini-2.0-flash
 welcome: false
