@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash -eu
+
 LC_ALL=C comm -2 -3 <(ls summary/ | sed 's/\.txt$//' | LC_ALL=C sort) <(< agent_colours.tsv kut 1 | LC_ALL=C sort) |
 while read A; do
 	echo -n "- $A - "
@@ -11,3 +12,7 @@ process -m=lite "Please output tab-separated TSV with three columns: name,color1
 - color2 is the same color but with lightness inverted for dark mode on a black background." |
 grep -v -e '```' -e '^name	' | grep '	.*	.*)' |
 tee -a agent_colours.tsv
+
+joine <(ls summary/ | sed 's/\.txt$//' | order) <(<agent_colours.tsv order) >agent_colours.tsv.new
+cp agent_colours.tsv.new agent_colours.tsv
+rm agent_colours.tsv.new

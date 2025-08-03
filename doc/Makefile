@@ -55,4 +55,4 @@ agent_colours.tsv: summaries.md
 	./update_colours.sh
 
 agent_colours.css: agent_colours.tsv
-	<$< ./agent_colours_tsv_to_css.py | tee agent_colours.css
+	<$< ./agent_colours_tsv_to_css.py >$@
