@@ -1,7 +1,6 @@
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/opt/allemande/tools
 PYTHONPATH=/opt/allemande/tools
-# 34 10 * * *   root    user-set-theme.py default -f
 # * * * * *   root    . /opt/allemande/env.sh ; user-set-theme.py default -f
 # 0 0 * * *   root    . /opt/allemande/env.sh ; room-archive "Ally Chat"
-*/5 * * * *  find /var/tmp/nginx_client_temp -type f -mmin +5 -delete
+*/5 * * * *   root    find /var/tmp/nginx_client_temp -type f -mmin +5 -delete
