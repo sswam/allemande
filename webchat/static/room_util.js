@@ -434,7 +434,7 @@ function matrix() {
   const bgColor = getComputedStyle(document.documentElement)
           .getPropertyValue('--background');
 
-  matrix_bgcolor = convertToRGBA(bgColor, 0.05);
+  matrix_bgcolor = convertToRGBA(bgColor, 0.1);
 
   function resizeCanvas() {
     matrix_canvas.width = window.innerWidth;
