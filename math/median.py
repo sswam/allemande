@@ -10,7 +10,7 @@ import logging
 from typing import TextIO
 from statistics import median
 
-from ally import main, logs, Get, Put
+from ally import main, logs, geput
 
 __version__ = "0.1.0"
 
@@ -18,8 +18,8 @@ logger = logs.get_logger()
 
 
 def calculate_median(
-    get: Get,
-    put: Put,
+    get: geput.Get,
+    put: geput.Put,
 ) -> None:
     """
     Calculate the median of numbers from stdin, line by line.
