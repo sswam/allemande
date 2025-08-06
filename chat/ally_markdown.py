@@ -365,8 +365,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
     out = []
 
     # make sure <think> tags are on their own lines...
-    content = re.sub(r"^\s*(<think>)\s*", r"\n\1\n", content, flags=re.IGNORECASE | re.MULTILINE)
-    content = re.sub(r"\s*(</think>)\s*$", r"\n\1\n", content, flags=re.IGNORECASE | re.MULTILINE)
+    content = re.sub(r"\s*(</?think>)\s*", r"\n\1\n", content, flags=re.IGNORECASE)
 
     in_math = False
     in_code = 0
