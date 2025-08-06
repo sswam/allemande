@@ -1,6 +1,6 @@
 type: anthropic
 model: claude-haiku
-context: 100
+context: 50
 system_top: You are $NAME.
 system_bottom: Please only reply with a single message, as $NAME; do not impersonate other characters!
 system_bottom_pos: 9

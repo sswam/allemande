@@ -3,7 +3,7 @@ model: qwq-32b
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 # config:
 #   repetition_penalty: 0
-context: 101
+context: 50
 visual:
   person: 1girl, dark brown eyes, asian, Chinese, light tan skin, small nose bridge, round face, slim build, petite, shoulder-length hair, black hair, sleek straight hair
   clothes: white cotton blouse, sage green cardigan, high-waisted black pants, beige canvas shoes

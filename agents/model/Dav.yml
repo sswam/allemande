@@ -1,6 +1,6 @@
 type: openai
 model: gpt-4.1-mini
-context: 100
+context: 50
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 visual:
   person: (1boy, male:1.3), shimmering violet star-like eyes, ethereal appearance, luminescent
