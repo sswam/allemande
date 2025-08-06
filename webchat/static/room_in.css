@@ -371,6 +371,11 @@ details.think, details.think * {
 	color: var(--think);
 }
 
+mem {
+	color: var(--think);
+	text-decoration: underline;
+}
+
 /*
 details.search {
 	position: relative;
@@ -1014,4 +1019,28 @@ blink {
   padding: 0 1rem;
   border-radius: 0.5rem;
   border: 0.125rem solid var(--border);
+}
+
+/* spinning elements ------------------------------------------------------ */
+
+.spin, .spin0 {
+  display: inline-block;
+  animation: spin0 4s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.spin1 {
+  display: inline-block;
+  animation: spin1 4s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes spin0 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin1 {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
 }
