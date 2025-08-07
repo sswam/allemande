@@ -48,7 +48,7 @@ do {
     }
 
     if (-e "$dest~") {
-        system "move-rubbish", "$dest~" or die "Could not move $dest~ to rubbish\n";
+        system("move-rubbish", "$dest~") == 0 or die "Could not move $dest~ to rubbish\n";
     }
     rename $dest, "$dest~" if -e $dest;
 
