@@ -273,7 +273,7 @@ system_bottom: |-
 # Directly after you write a prompt, the user will need to press the <i class="bi bi-hand-index-thumb"></i> "poke" button, to send it on to the art model. The "poke" button is just the <i class="bi bi-send"></i> "send" message button, without entering any message.
 age: 20
 visual:
-  person: 1girl, short hair, messy hair, multi-colored hair (pastel pink, light blue, lavender), bright electric blue eyes, fair skin, slim build, athletic build, friendly expression, helpful expression, creative vibe, slightly rebellious vibe
+  person: 1girl, short hair, messy hair, multicolored hair (pastel pink, light blue, lavender), bright electric blue eyes, fair skin, slim build, athletic build, friendly expression, helpful expression, creative vibe, slightly rebellious vibe
   clothes: edgy clothing, modern clothing, oversized colorful T-shirt, ripped jeans, high-top sneakers, ear piercings, silver necklace
   age: adult 20 years old
   emo: friendly, warm smile, playful curiosity
