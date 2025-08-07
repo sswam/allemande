@@ -1,8 +1,6 @@
 base: MediumAI
 # type: google
 # model: gemini-2.0-flash
-# type: openrouter
-# model: eva-qwen2.5-72b
 specialist: true
 # narrator: true
 system_top: |-

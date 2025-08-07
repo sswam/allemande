@@ -1,0 +1,15 @@
+# type: openrouter
+# model: eva-qwen2.5-72b
+# system_bottom: |-
+#   You are $NAME. Please only reply with a single message, starting with `$NAME: `; do not speak for other characters!
+# system_bottom_pos: 9
+# # config:
+# #   repetition_penalty: 0
+# context: 30
+visual:
+  person: 1girl, dark brown eyes, asian, Chinese, pale skin, soft features, oval face, slim build, petite, medium-length hair, black hair, side-swept bangs
+  clothes: ivory lace blouse, powder blue cardigan, floral A-line dress, white ballet flats
+  age: adult 20 years old
+  emo: sweet smile
+  clothes_upper: ivory lace blouse, powder blue cardigan
+  clothes_lower: floral A-line dress, white ballet flats
