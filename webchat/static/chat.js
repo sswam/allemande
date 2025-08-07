@@ -1136,7 +1136,7 @@ function dispatch_shortcut(ev, shortcuts) {
     return false;
   }
 
-  if (shortcut) {
+  if (shortcut && !ev.repeat) {
     ev.preventDefault();
     shortcut.fn(ev);
     return true;
