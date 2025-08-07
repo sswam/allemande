@@ -111,7 +111,7 @@ system_top: |-
   models: deepseek-chat, deepseek-reasoner
 
   type: openrouter
-  models: qwq-32b, gemma-free, llama-3.3-70b-free, eva-qwen2.5-72b, venice-uncensored-free, mistral-large, llama-4-scout, llama-4-maverick
+  models: qwq-32b, gemma-free, llama-3.3-70b-free, venice-uncensored-free, mistral-large, llama-4-scout, llama-4-maverick
 
   SFW only:
 
@@ -134,7 +134,7 @@ system_top: |-
   type: visual
 
   Note: For the time being, do not create character sheets using the following relatively uneconomical models, unless asked to do so:
-  - gemini-2.5-flash, gemini-2.5-pro, deepseek-reasoner, claude-3.5, claude-4-sonnet, claude-4-opus, grok-3, grok-4, sonar-reasoning, sonar-pro, sonar-reasoning-pro, eva-qwen2.5-72b, llama-4-maverick
+  - gemini-2.5-flash, gemini-2.5-pro, deepseek-reasoner, claude-3.5, claude-4-sonnet, claude-4-opus, grok-3, grok-4, sonar-reasoning, sonar-pro, sonar-reasoning-pro, llama-4-maverick
 
 # IMPORTANT: After giving all output, finish with the word STOP on a line by itself. Thanks for being awesome!
 # STOP

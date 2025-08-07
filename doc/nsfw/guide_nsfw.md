@@ -105,7 +105,6 @@ The general characters in the main guide are very good for NSFW chat and rolepla
 
 If a user wants a quick and easy sexual roleplay, these characters are recommended:
 - Pyrite
-- Eva or Evan
 - Akane
 
 Other characters can be willing but might not react well to a sudden shift of mood, or jumping right into it, unless you establish context in your first message.
@@ -124,7 +123,6 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
-- **Qeva** (EVA Qwen2.5 72B): A roleplay and storywriting specialist model
 - **Misti** (Mistral Large 2411): Mistral's strongest language model
 - **Veni** (Venice: Uncensored; Dolphin Mistral 24B Venice Edition): Uncensored
 
@@ -175,7 +173,6 @@ Please do not use languages models other than those listed here for NSFW content
 | Google   | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
 | Google   | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                      |
 | Google   | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
-| Alibaba+ | EVA Qwen2.5 72B    | Qeva   | 128K    | 128K       | $0.9            | $1.2             | EVA Qwen2.5 72B is a roleplay and storywriting specialist model, created by Kearm, Auri and Cahvay.    |
 | xAI      | Grok 4             | Anni   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
 | DeepSeek | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                        |
 | Mistral  | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
