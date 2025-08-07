@@ -202,7 +202,7 @@ END
 
 	if [ ! -e rooms/"$user"/help.bb ]; then
 		# delay to avoid detecting the change twice, with the dir add and the file add
-		(sleep 1; cp rooms/"$user"/.help.bb.base rooms/"$user"/help.bb; touch -t 197001010000 rooms/"$user"/help.bb) &
+		(sleep 1; cp rooms/"$user"/.help.bb.base rooms/"$user"/help.bb && touch -t 197001010000 rooms/"$user"/help.bb && chmod o-rwx rooms/"$user"/help.bb) &
 	fi
 
 	# rooms git: ignore user's dir

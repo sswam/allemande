@@ -7,7 +7,8 @@ while read file; do
 	room=${file%.bb}
 	mtime=$(stat -c %y "$file")
 	mtime=${mtime%.*}
-	< "$file" grep -oP '^\p{Lu}\p{Ll}+(?=:\t)' | prepend "$mtime	$room	"
+#	< "$file" grep -oP '^\p{Lu}\p{Ll}+(?=:\t)' | prepend "$mtime	$room	"
+	< "$file" grep -oP '^[^ ]+(?=:\t)' | prepend "$mtime	$room	"
 done |
 awk -F'\t' '
 	{
