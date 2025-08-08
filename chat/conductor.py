@@ -95,7 +95,7 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
     # logger.debug("find_name_in_content: %r %r %r", content, name, ignore_case)
 
     # Define match patterns
-    start_comma_word = r"^\s*" + re.escape(name) + r"\b\s*(,|$)"  # at start with comma, or whole line
+    start_comma_word = r"^\s*`*" + re.escape(name) + r"\b\s*(,|$)"  # at start with comma, or whole line, also allow backticks for code quoting
 
     patterns = [start_comma_word]
 
