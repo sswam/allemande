@@ -227,7 +227,7 @@ If you tap an image in the chat, it will zoom to fill the window.
 - Toggle fullscreen by tapping near the top of the screen.
 - Zoom to fit or natural size by tapping near the bottom of the screen.
 - You can long-press to open or download an image.
-- On a computer, you can use Esc to exit, arrow keys to browse, F for fullscreen, M for zoom, and right-click or Shift/Ctrl/Alt click to open or download images.
+- On a computer, you can use Esc, Q, or Enter to exit, arrow keys to browse, F for fullscreen, M for zoom, and right-click or Shift/Ctrl/Alt click to open or download images.
 
 ## AI Vision
 

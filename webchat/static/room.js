@@ -406,7 +406,7 @@ function key_event_overlay(ev) {
   // ignore if any modifier is pressed
   if (ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey)
     return;
-  if (ev.key == "Escape" || ev.key == "q") {
+  if (ev.key == "Escape" || ev.key == "q" || ev.key == "Enter") {
     overlay_close(ev);
   } else if (ev.key == "f") {
     toggle_fullscreen();
