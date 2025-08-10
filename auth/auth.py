@@ -156,6 +156,7 @@ async def login(request):
     htpasswd.load_if_changed()
     is_valid = htpasswd.check_password(username, password)
     if not is_valid:
+        logger.info("Invalid username or password for %r", data["username"])
         raise HTTPException(401, "Invalid username or password")
 
     # Create JWT token
@@ -175,7 +176,7 @@ async def login(request):
     # TODO going forward, create system accounts at signup, and remove this
     task = lambda: ensure_system_account(username, password)
 
-    logger.info(f"Logging in user {username}")
+    logger.info("Logging in user: %r", username)
 
     response = JSONResponse({}, background=task)
     set_cookies(response, jwt_token, user_data, SESSION_MAX_AGE)
