@@ -82,19 +82,56 @@ async function waitForImageLoad(img) {
   });
 }
 
-function image_text(img, texts, size = 1, font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive") {
+function image_text(texts, options = {}) {
+  const img = options.el || previous('img');
   img.classList.add('layout');
   const current_script = document.currentScript;
-  return image_text_async(img, texts, size, font, current_script);
+  return image_text_async(img, texts, options, current_script);
 }
 
-async function image_text_async(img, texts = [], size = 1, font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive", ref = null) {
-	await waitForMessage(ref);
+// Helper to create text element
+function image_text_create_text(content, font, sizePercent) {
+  if (!Array.isArray(content))
+    content = [content];
+
+  const container = document.createElement('div');
+  container.style.cssText = `
+    display: flex;
+    justify-content: ${content.length === 1 ? 'center' : 'space-between'};
+    width: 100%;
+  `;
+
+  for (const text of content) {
+    const textElement = document.createElement('div');
+    textElement.textContent = text;
+    textElement.style.cssText = `
+      font-family: ${font};
+      font-size: ${sizePercent}cqmin;
+      color: white;
+      text-shadow:
+        -2px -2px 4px rgba(0,0,0,0.8),
+        2px -2px 4px rgba(0,0,0,0.8),
+        -2px 2px 4px rgba(0,0,0,0.8),
+        2px 2px 4px rgba(0,0,0,0.8),
+        0 0 10px rgba(0,0,0,0.9);
+      font-weight: bold;
+      text-align: center;
+    `;
+    container.appendChild(textElement);
+  }
+
+  return content.length == 1 ? container.firstChild : container;
+}
+
+async function image_text_async(img, texts = [], options = {}, ref = null) {
+  await waitForMessage(ref);
 
   if (!img)
     throw new Error("image_text: img is null or undefined");
 
   await waitForImageLoad(img);
+
+  const { font = "'Brush Script MT', 'Lucida Handwriting', 'TeX Gyre Chorus', cursive", size = 1 } = options;
 
   let wrapper;
 
@@ -131,34 +168,13 @@ async function image_text_async(img, texts = [], size = 1, font = "'Brush Script
 
   const sizePercent = 12.5 * size;
 
-  // Helper to create text element
-  function createText(content) {
-    if (!content) return null;
-
-    const text = document.createElement('div');
-    text.textContent = content;
-    text.style.cssText = `
-      font-family: ${font};
-      font-size: ${sizePercent}cqmin;
-      color: white;
-      text-shadow:
-        -2px -2px 4px rgba(0,0,0,0.8),
-        2px -2px 4px rgba(0,0,0,0.8),
-        -2px 2px 4px rgba(0,0,0,0.8),
-        2px 2px 4px rgba(0,0,0,0.8),
-        0 0 10px rgba(0,0,0,0.9);
-      font-weight: bold;
-      text-align: center;
-    `;
-    return text;
-  }
-
   // Ensure texts is an array
-  texts = Array.isArray(texts) ? texts : [texts];
+  if (!Array.isArray(texts))
+    texts = [texts];
 
   // Calculate spacing
   for (const text of texts) {
-    const textElement = createText(text);
+    const textElement = image_text_create_text(text, font, sizePercent);
     overlay.appendChild(textElement);
   }
 
@@ -166,7 +182,7 @@ async function image_text_async(img, texts = [], size = 1, font = "'Brush Script
 }
 
 // Example:
-// image_text(previous("img"), ["flying", "cow"]);
+// image_text(['Top text', ['Left', 'Center', 'Right'], 'Bottom text'], { size: 1.2, font: 'Arial' });
 
 
 // snowing ------------------------------------------------------------------
