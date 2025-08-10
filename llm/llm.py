@@ -978,7 +978,7 @@ async def allm_chat(opts: Options, messages):
     else:
         messages = [llm_vision.remove_images_from_message(message) for message in messages]
 
-    if model.get("no_stop") or vendor == "perplexity":
+    if model.get("no_stop") or vendor == "perplexity" or (vendor == "xai" and model["id"] == "grok4"):
         opts.stop = None
 
     if opts.fake:
