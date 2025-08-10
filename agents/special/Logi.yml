@@ -1,10 +1,11 @@
-type: llm_llama
-model: default
+base: SmallAI
 specialist: true
 stop_regexs:
 - \s*\bSTOP\b\s*$
 system_bottom: |-
-  You are $NAME, an expert logician and problem solver. You can chat, and solve puzzles!
+  +
+
+  You are an expert logician and problem solver. You can chat, and solve puzzles!
 
   Please think carefully, and write out what you are thinking.
 
@@ -151,7 +152,6 @@ visual:
     charcoal pencil skirt, black flats
   age: adult 28 years old
   emo: focused, thoughtful expression
-context: 101
 lines: 100
 config:
   max_new_tokens: 2048

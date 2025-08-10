@@ -1,6 +1,6 @@
-type: llm_llama
+base: SmallAI
 specialist: true
-model: default
+fullname: Synthia
 stop_regexs:
 - \bSTOP\b
 system_bottom: |-
@@ -10,7 +10,6 @@ system_bottom: |-
 
   IMPORTANT: End the summary with the word STOP on a line by itself.
 system_bottom_pos: 5
-fullname: Synthia
 age: 20
 visual:
   person: 1girl, deep (green:1.3) eyes, tall, dark skin, skinny, medium hair, curly
