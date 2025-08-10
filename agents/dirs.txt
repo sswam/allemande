@@ -16,6 +16,5 @@ visual
 personal
 human
 nsfw
-base
 extra
 game
