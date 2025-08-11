@@ -500,12 +500,12 @@ body:not(.images) img.layout {
 	pointer-events: none;
 }
 
-body.blur > :not(.overlay) img {
+body.blur > :not(.overlay) :is(img, video) {
   filter: blur(24px);
   clip-path: inset(0);
 }
 
-body.blur > :not(.overlay) img:hover {
+body.blur > :not(.overlay) :is(img, video):hover {
   filter: none;
   clip-path: none;
 }
