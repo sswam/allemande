@@ -4,6 +4,6 @@
 type: google
 model: gemini-2.0-flash
 context: 20
-system_bottom: |-
+system_top: |-
   You are $NAME. Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!
-system_bottom_pos: 0
+system_bottom_pos: 3
