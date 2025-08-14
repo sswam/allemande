@@ -6,6 +6,6 @@ Users can compare and combine responses from several different AIs in the one ch
 
 Ally Chat is excellent for mathematics, with TeX, equation input, graphviz and mermaid diagrams, inline JavaScript for graphs, simulations, etc. It's quite good for planning, programming, writing help, general Q&A, therapy, etc.
 
-Characters can have rich functionality. Some of the more interesting ones include Illu and Xilu, image prompting experts; Jessi, a pretty good comedian; Jennifer Melfi the therapist; Jhon, a NSFW "roasting specialist"; Chaz, a character and agent designer; Brie, a brain-stormer; Sal, a pizza-shop owner who dislikes pineapple; and Cris, a ChatGPT that doesn't just agree with you all the time. It's easy if a little technical to add more characters and agents.
+Characters can have rich functionality. Some of the more interesting ones include Illu and Xilu, image prompting experts; Jessi, a pretty good comedian; Jennifer Melfi the therapist; Juon, a NSFW "roasting specialist"; Chaz, a character and agent designer; Brie, a brain-stormer; Sal, a pizza-shop owner who dislikes pineapple; and Cris, a ChatGPT that doesn't just agree with you all the time. It's easy if a little technical to add more characters and agents.
 
 The app is in closed beta, so the way to get an account is to message me and ask for one.

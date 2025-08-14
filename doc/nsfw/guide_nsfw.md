@@ -38,7 +38,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 <link rel="stylesheet" href="/cast.css">
 <details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cloe](/nsfw/cast/Cloe.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
 </details>
-<details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](/nsfw/cast/Amir.jpg) ![Atla](/nsfw/cast/Atla.jpg) ![Bast](/nsfw/cast/Bast.jpg) ![Cal](/nsfw/cast/Cal.jpg) ![Callam](/nsfw/cast/Callam.jpg) ![Chaz](/nsfw/cast/Chaz.jpg) ![Dante](/nsfw/cast/Dante.jpg) ![Ezio](/nsfw/cast/Ezio.jpg) ![Felix](/nsfw/cast/Felix.jpg) ![Gari](/nsfw/cast/Gari.jpg) ![Haka](/nsfw/cast/Haka.jpg) ![Jackson](/nsfw/cast/Jackson.jpg) ![Jhon](/nsfw/cast/Jhon.jpg) ![Kai](/nsfw/cast/Kai.jpg) ![Morf](/nsfw/cast/Morf.jpg) ![Pliny](/nsfw/cast/Pliny.jpg)</div>
+<details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](/nsfw/cast/Amir.jpg) ![Atla](/nsfw/cast/Atla.jpg) ![Bast](/nsfw/cast/Bast.jpg) ![Cal](/nsfw/cast/Cal.jpg) ![Callam](/nsfw/cast/Callam.jpg) ![Chaz](/nsfw/cast/Chaz.jpg) ![Dante](/nsfw/cast/Dante.jpg) ![Ezio](/nsfw/cast/Ezio.jpg) ![Felix](/nsfw/cast/Felix.jpg) ![Gari](/nsfw/cast/Gari.jpg) ![Haka](/nsfw/cast/Haka.jpg) ![Jackson](/nsfw/cast/Jackson.jpg) ![Juon](/nsfw/cast/Juon.jpg) ![Kai](/nsfw/cast/Kai.jpg) ![Morf](/nsfw/cast/Morf.jpg) ![Pliny](/nsfw/cast/Pliny.jpg)</div>
 </details>
 <details markdown=1><summary>Non-binary</summary><div markdown=1 class="cast small clear">![Flashi](/nsfw/cast/Flashi.jpg)</div>
 </details>
@@ -137,7 +137,7 @@ The other base models mentioned in the main guide might be averse to NSFW chat, 
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
-- **Jhon**: AKA Roasto, a volatile NSFW roaster, who won't pull any punches! Engage with caution!
+- **Juon**: AKA Roasto, a volatile NSFW roaster, who won't pull any punches! Engage with caution!
 
 ### AI Artists
 - Using the AI art models directly can be a bit technical. For best results, new users can talk to Xilu, who has extensive knowledge about how to create good prompts, including NSFW, and all the options and settings that the models understand.

@@ -131,14 +131,13 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 ## Current Limitations and Work in Progress
 
 - it's difficult for new users (WIP)
-- limited image storage (> 1 week may be removed)
+- no memory (can do it manually, WIP)
+- no documents / RAG (WIP)
 - no notifications (WIP)
 - no voice chat (WIP)
-- no documents / RAG (WIP)
 - limited range of art models
 - no direct messaging
 - no video generation
-- no memory (can do it manually)
 
 ## Become a Patron!
 
