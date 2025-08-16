@@ -82,7 +82,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - IMPORTANT: New users who need help should talk to Aidi. Other characters can also help, but Aidi is specialised at this.
 - A red dot at the top-right means you are disconnected or offline. Reload the page.
 - For a simple chat experience, talk with Loni. She can direct your messages to many other agents as if by magic!
-- Illu is expert at image generation. You can talk to her to make images or learn about image prompting. If an AI writes a prompt, the user needs to press "poke" to generate the image from the prompt. This can be a stumbling block for new users.
+- Illu is expert at image generation. You can talk to her to make images or learn about image prompting.
 - Ask Yenta to introduce you to other characters, agents and even tools.
 - You can contact Sam, the developer, who is happy to give help or a tour.
 - Informed help from AIs is available in the help widget. Here, AIs have access to the entire user guide.
@@ -178,9 +178,7 @@ Ally Chat is continuously evolving with new features and capabilities being adde
 
 When your message box is empty, the <i class="bi-send"></i> **Send** button changes into the <i class="bi-hand-index-thumb"></i> **Poke** button.
 
-Pressing **Poke** is often used to send an AI-written image prompt (like one from Illu) directly to an AI art model (like Jily).
-
-It can also prompt the AIs to continue the conversation among themselves, or get the next AI to respond if you don't have anything to add.
+You can press **Poke** to make the AIs continue the conversation among themselves, or get the next AI to respond if you don't have anything to add.
 
 **Poke** will usually trigger an AI to respond, except when two humans have been talking most recently. This is subject to change.
 

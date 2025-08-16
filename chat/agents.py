@@ -3,19 +3,18 @@
 import os
 import logging
 from pathlib import Path
-import yaml
-from watchfiles import Change
-import re
 from copy import deepcopy
 from typing import Any
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
-from deepmerge import always_merger, Merger, STRATEGY_END
+import yaml
+from watchfiles import Change
+from deepmerge import Merger, STRATEGY_END
 
 from ally.cache import cache  # type: ignore
 from ally.util import replace_variables  # type: ignore
 from safety import safety  # type: ignore
-import chat
 from util import uniqo
 
 
@@ -36,7 +35,7 @@ SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 #   - =foo to pass foo through literally as a string without changes
 #   - ["=", ...] means pass the rest of the list through without changes
 
-def merge_string_strategy(config, path, base, nxt):
+def merge_string_strategy(_config, _path, base, nxt):
     """A strategy to merge strings with support for '+' prefix and suffix."""
     if not (isinstance(base, str) and isinstance(nxt, str)):
         return STRATEGY_END
@@ -45,7 +44,7 @@ def merge_string_strategy(config, path, base, nxt):
         if len(nxt) == 1 or nxt[1].isspace():
             return base + nxt[1:]
         return base + " " + nxt[1:]
-    elif nxt.endswith("+") or nxt.endswith("+\n"):
+    if nxt.endswith("+") or nxt.endswith("+\n"):
         # check preceded by whitespace
         nxt = nxt[:nxt.rfind("+")]
         if not nxt or nxt[-1].isspace():
@@ -82,13 +81,15 @@ class NotEnabledError(Exception):
 
 class Agent:
     """An Allemande Agent"""
-    def __init__(self, data: dict = None, agents: Agents = None, file: Path = None, private: bool=False):
+    def __init__(self, data: dict|None = None, agents: Agents|None = None, file: Path|None = None, private: bool=False):
         self.agents = agents
         if file and data:
             raise ValueError("Cannot specify both file and data")
+        if not file and not data:
+            raise ValueError("Must specify either file or data")
         if data:
             self.data = data
-        else:
+        if file:
             self.load_agent(file)
         self.name = self.data["name"]
         self.private = private
@@ -123,7 +124,7 @@ class Agent:
     def apply_identity(self, reference: Agent) -> Agent:
         """Create a new agent based on self with name and other attributes from reference."""
         data = {
-            "base": self.name,
+            "base": [self.name],
         }
         for key in ["name", "fullname", "aliases", "age", "visual"]:
             if key in reference.data:
@@ -131,69 +132,101 @@ class Agent:
         agent = Agent(data=data, agents=self.agents)
         return agent
 
-    def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None):
+    def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None, with_over: bool=True):
         """Get a value from the agent's data"""
         base = self.base()
-        if key not in self.data and base:
-            value = base.get(key, default, raise_error, raw=True)
-        elif key not in self.data and raise_error:
+        over = self.over() if with_over else []
+
+        value = None
+
+        objects = base + [self]
+        if key not in ["name", "fullname"]:
+            objects += over
+
+        for obj in objects:
+            if obj == self:
+                value2 = self.data.get(key)
+            else:
+                use_over = with_over and obj not in base
+                value2 = obj.get(key, raw=True, with_over=use_over)
+            if value is not None and value2 is not None:
+                value2 = agent_merger.merge(deepcopy(value), value2)
+            if value2 is not None:
+                value = value2
+
+        if value is None and raise_error:
             raise KeyError(key)
-        else:
-            value = self.data.get(key, default)
+        if value is None:
+            value = default
 
-            # if dict or list, deep merge with base agent's value
-            # This will extend lists and merge dictionaries
-            # Extending lists might not always be the desired behavior, we'll see
-            # TODO reduce indent here
-            if base:
-                base_value = deepcopy(base.get(key, raw=True))
-                value = agent_merger.merge(base_value, value)
+        if raw:
+            return value
 
-#             if base and isinstance(value, (dict, list)):
-#                 base_value = base.get(key)
-#                 if isinstance(base_value, type(value)):
-#                     value = agent_merger.merge(deepcopy(base_value), value)
+        # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
+        # replace $DATE, $TIME, $TZ and $TIMESTAMP with the current time
+        # We do this on get, rather than initially, because we can define
+        # a derived agent with different names.
+        # TODO do this more generally for other variables?
+        # replace $ROOM with the room name
+        if value and key in ["system_top", "system_bottom"]:
+            name = self.get("name")
+            fullname = self.get("fullname", name)
+            aliases = self.get("aliases") or [name]
+            aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
 
-        if not raw:
-            # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
-            # replace $DATE, $TIME, $TZ and $TIMESTAMP with the current time
-            # We do this on get, rather than initially, because we can define
-            # a derived agent with different names.
-            # TODO do this more generally for other variables?
-            # replace $ROOM with the room name
-            if value and key in ["system_top", "system_bottom"]:
-                name = self.get("name")
-                fullname = self.get("fullname", name)
-                aliases = self.get("aliases") or [name]
-                aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
-                now = datetime.now(timezone.utc)
-                date = now.strftime("%Y-%m-%d")
-                time = now.strftime("%H:%M:%S")
-                tz = now.strftime("%Z")
-                timestamp = f"{date} {time} {tz}"
-                value = replace_variables(value, {
-                    "NAME": name,
-                    "FULLNAME": fullname,
-                    "ALIAS": aliases_or,
-                    "DATE": date,
-                    "TIME": time,
-                    "TZ": tz,
-                    "TIMESTAMP": timestamp,
-                    "ROOM": room or '[unknown]',
-                })
+            tz_name = self.get("timezone", "UTC")
+            tz: timezone|ZoneInfo = timezone.utc
+            if tz_name != "UTC":
+                tz = ZoneInfo(tz_name)
+
+            # tz_offset = timezone(timedelta(hours=11))  # or timezone(timedelta(seconds=11*3600))
+
+            now = datetime.now(tz)
+            date = now.strftime("%Y-%m-%d")
+            time = now.strftime("%H:%M:%S")
+            tz_str = now.strftime("%Z")
+            timestamp = f"{date} {time} {tz_str}"
+            value = replace_variables(value, {
+                "NAME": name,
+                "FULLNAME": fullname,
+                "ALIAS": aliases_or,
+                "DATE": date,
+                "TIME": time,
+                "TZ": tz_str,
+                "TIMESTAMP": timestamp,
+                "ROOM": room or '[unknown]',
+            })
 
         # TODO remove null values? i.e. enable to remove an attribute from base
 
         return value
 
     def base(self):
-        """Get the base agent"""
-        base_name = self.data.get("base")
-        if base_name == "super" and self.agents.parent:
-            return self.agents.parent.get(self.name)
-        if base_name:
-            return self.agents.get(base_name)
-        return None
+        """Get the base agents"""
+        base_names = self.data.get("base", [])
+        if base_names and isinstance(base_names, str):
+            base_names = [base_names]
+        base = []
+        for name in base_names:
+            if name == "super" and self.agents.parent:
+                agent = self.agents.parent.get(self.name)
+            else:
+                agent = self.agents.get(name)
+            if agent:
+                base.append(agent)
+        return base
+
+    def over(self):
+        """Get the over agents"""
+        over_names = self.get("over", [], with_over=False)
+        if over_names and isinstance(over_names, str):
+            over_names = [over_names]
+        over = []
+        for name in over_names:
+            agent = self.agents.get(name)
+            if agent:
+                over.append(agent)
+        return over
 
     def set(self, key: str, value):
         """Set a value in the agent's data"""
@@ -212,7 +245,11 @@ class Agent:
         if key in self.data:
             return True
         base = self.base()
-        return base and key in base
+        over = self.over()
+        for obj in base + over:
+            if key in obj:
+                return True
+        return False
 
     def update(self, data: dict):
         """Update the agent's data"""
@@ -235,16 +272,17 @@ class Agent:
         """Set up an agent"""
 
         agent_type = self.get("type")
-        if not agent_type or agent_type in ["human", "visual"]:
-            return False
+        # if not agent_type or agent_type in ["human", "visual"]:
+        #     return False
 
-        service = services.get(agent_type)
+        if agent_type and agent_type not in ["human", "visual"]:
+            service = services.get(agent_type)
 
-        if service is None:
-            logger.error("Unknown service for agent: %r, %s", self.name, agent_type)
-            return False
+            if service is None:
+                logger.error("Unknown service for agent: %r, %s", self.name, agent_type)
+                return False
 
-        self.update(service)
+            self.update(service)
 
         if SAFE and not self.get("safe", True):
             return False
@@ -319,7 +357,7 @@ class Agents:
     def __init__(self, services: dict[str, Any], parent: Agents|None=None):
         self.agents: dict[str, Agent] = {}
         self.services: dict[str, Any] = services
-        self.parent: Agents = parent
+        self.parent: Agents|None = parent
 
     def write_agents_list(self, path: str) -> None:
         """Write the list of agents to a file."""
@@ -369,7 +407,7 @@ class Agents:
     def load(self, path: Path, visual: bool=True, private: bool=False) -> None:
         """Load all agents or one agent from a path."""
         if path.is_dir():
-            agent_files = path.rglob("*.yml")
+            agent_files = list(path.rglob("*.yml"))
         else:
             agent_files = [path]
 
@@ -383,7 +421,7 @@ class Agents:
             except NotEnabledError:
                 logger.info("Agent not enabled: %s", agent_file)
             except Exception:  # pylint: disable=broad-except
-                logger.exception(f"Error loading agent from {agent_file}", exc_info=True)
+                logger.exception("Error loading agent from %s", agent_file, exc_info=True)
 
         # then set up and update visuals
         for agent in new_agents:

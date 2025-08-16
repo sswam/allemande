@@ -117,6 +117,7 @@ rooms.*
 /doc/summary
 /doc/summaries.md
 /doc/agent_colours.tsv
+/agents/agents_with_duplicate_system_prompts.txt
 
 # NSFW files
 /doc/nsfw/demo_plan_1_nsfw.md

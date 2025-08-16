@@ -257,6 +257,11 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
         agent = agents.get(bot)
 
+        if agent.get("type") in [None, "human", "visual"]:
+            continue
+
+        poke_if = agent.get("poke_if", [])
+
         # load agent's mission file, if present
         my_mission = mission.copy()
         agent_mission_file = room.find_agent_resource_file("m", bot)
@@ -337,6 +342,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                     continue
                 logger.info("Forwarding to %s", bot2)
                 agent2 = agents.get(bot2).apply_identity(agent)
+                poke_if = agent2.get("poke_if", [])
                 # replace agent.name with agent2.name in user's message
                 # logger.info("Replacing %s with %s in query: %r", agent.name, agent2.name, query)
                 # query2 = history[-1] = re.sub(rf"\b{re.escape(agent.name)}\b", agent2.name, query)
@@ -375,10 +381,13 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         if response == f"{agent.name}:":
             response += ""
 
+        poke = any(x in response for x in poke_if)
+        logger.debug("poke_if: %r, poke: %r, response: %r", poke_if, poke, response)
+
         history.append(response)
         logger.debug("history 2: %r", history)
         # avoid re-processing in response to an AI response
-        if skip is not None:
+        if not poke and skip is not None:
             logger.debug("Will skip processing after agent/s response: %r", file)
             skip[file] += 1
         chat.chat_write(file, history[-1:], delim=args.delim, invitation=args.delim)

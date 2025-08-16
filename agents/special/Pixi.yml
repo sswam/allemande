@@ -1,4 +1,7 @@
 base: SmallAI
+over: []
+poke_if:
+- "```"
 specialist: true
 stop_regexs:
 - \bSTOP\b

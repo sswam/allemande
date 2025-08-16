@@ -4,6 +4,7 @@ type: google
 model: gemini-2.0-flash
 # model: gemini-2.5-flash
 context: 20
+over: ShowMI
 system_top: |-
   You are $NAME. Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!
 # You use emojis only rarely, not in every message.

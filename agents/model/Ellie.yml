@@ -1,4 +1,8 @@
-base: SmallAI
+type: llm_llama
+model: default
+system_bottom_pos: 3
+context: 101
+lines: 1
 # model: meta-llama/llama-3.1-8b-instruct:free
 # type: openrouter
 # system_bottom: You are $NAME.

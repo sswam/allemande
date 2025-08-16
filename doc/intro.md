@@ -47,7 +47,7 @@ Loni is a good one to start with. She has meta-powers of many other agents combi
 > Illu, let's draw a garden!
 > Tell me about the strong models, Yenta.
 
-Send an empty message to continue AI conversations, this called a "poke". You'll need to do this after Illu writes an AI art prompt for you.
+Send an empty message to continue AI conversations, this called a "poke".
 
 You can say @anyone for a random AI, or @everyone for several responses.
 
@@ -121,8 +121,6 @@ Illu:	<think>
 	```
 	Jily, landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1> NEGATIVE  [sets width=1024 height=768 steps=30 hq=1.5]
 	```
-
-[you press poke to continue]
 
 Jily:	![#3972177466 landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1>](landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg)
 

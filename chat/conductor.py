@@ -411,6 +411,10 @@ def who_should_respond(
             agents.set(agent, human)
 
     agent_names = agents.names()
+
+    # exclude agents without type (mix-ins) and type == "visual"
+    agent_names = [name for name in agent_names if agents.get(name).get("type") not in [None, "visual"]]
+
     agent_case_map = {k.lower(): agents.get(k)["name"] for k in agent_names}
 
     user = message.get("user") if message else "System"  # System ???

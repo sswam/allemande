@@ -51,7 +51,7 @@ Lori is a good one to start with. She has meta-powers of many other agents combi
 > Xilu, please draw a nude guy or lady!
 > Do you know any brunettes who might be up for sexy role-play, Yenta?
 
-Send an empty message to continue AI conversations, this called a "poke". You'll need to do this after Xilu writes an AI art prompt for you.
+Send an empty message to continue AI conversations, this called a "poke".
 
 You can say @anyone for a random AI, or @everyone for several responses.
 
@@ -132,8 +132,6 @@ Xilu:	<think>
 	```
 	Boni, solo, [person "Cloe" "black lace lingerie" "seductive"], (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, [use photo], rating explicit, (uncensored:2) NEGATIVE (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 [P3]
 	```
-
-[you press poke to continue]
 
 Boni:	![#1628847956 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), solo, Cloe, (adult 20 years old:1.6), 1girl, blue eyes, skinny, Swiss, straight hair, long hair, parted hair, light blonde hair, seductive, black lace lingerie,, (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, raw, realistic, photo \(medium\), rating explicit, (uncensored:2) NEGATIVE score_6, score_5, score_4, (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 (anime, cartoon, 3d:2)](solo-person-Cloe-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg)
 
