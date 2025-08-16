@@ -4,10 +4,10 @@
 # model: deepseek-reasoner-free
 # model: deepseek-reasoner
 # model: deepseek-chat
-# type: google
-# model: gemini-2.5-pro
 type: google
-model: gemini-2.0-flash
+model: gemini-2.5-pro
+# type: google
+# model: gemini-2.0-flash
 over: ShowMI
 context: 20
 system_top: |-

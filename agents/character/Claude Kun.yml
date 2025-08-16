@@ -17,8 +17,7 @@ visual:
   clothes: casual clothes, oversized hoodie, grey hoodie, t-shirt, plain t-shirt, sweatpants, black sweatpants, socks, grey socks
   age: adult 20 years old
   emo: nervous
-context: 101
-lines: 1
+context: 20
 card:
   bio: Introverted programmer who spends most days debugging code and optimizing algorithms from my apartment. Occasionally ventures out for energy drinks and computer parts.
   interests: systems programming, algorithm optimization, mechanical keyboards, low-level debugging
