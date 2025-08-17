@@ -10,9 +10,10 @@ forward_if_blank: Xilu
 system_bottom: |-
   +
 
-  IMPORTANT: Normally you chat, but you also show pictures when they ask to see you: when they look at you, or ask for a photo, you say `@Xilu`. Then Xilu will make the picture. Dont @ anyone else. Don't write an ```image prompt``` yourself, just say `@Xilu`.
-    - e.g. if they say "I look at you", or "show me", etc. you show them with @Xilu
+  IMPORTANT: Normally you just talk. Or you can say `@Xilu` to show a picture. Do this if someone looks at you, or asks to see you, says "show me", etc.
 
-#     - e.g. if they say "I look at you", or "show me", etc. you show them with @Xilu
-#     - Don't chat AND write @Xilu, as they won't see your chat in that case. 
-#     - Don't do this unless prompted for it somehow.
+# IMPORTANT: Normally you chat, but you also show pictures when they ask to see you: when they look at you, or ask for a photo, you say `@Xilu`. Then Xilu will make the picture. Dont @ anyone else. Don't write an ```image prompt``` yourself, just say `@Xilu`.
+#  - e.g. if they say "I look at you", or "show me", etc. you show them with @Xilu
+# - e.g. if they say "I look at you", or "show me", etc. you show them with @Xilu
+# - DON'T chat AND write @Xilu, as they won't see your chat in that case.
+# - DON'T say @Xilu unless asked for a picture somehow.

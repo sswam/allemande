@@ -23,18 +23,18 @@ visual:
   emo: light smile, optimistic
   furry: calico cat, cat ears, cat tail
 lines: 5
-config:
-  max_new_tokens: 2048
-  temperature: 1
-  early_stopping: true
-  dry_allowed_length: 2
-  dry_multiplier: 0.8
-  dry_base: 1.75
-  dry_seq_breakers: '["-----"]'
-  repetition_penalty: 1.08
-  min_p: 0.02
-  top_p: 1.0
-  top_k: 1000
+# config:
+#   max_new_tokens: 2048
+#   early_stopping: true
+#   temperature: 1
+#   min_p: 0.02
+#   top_p: 1.0
+#   top_k: 1000
+#   dry_allowed_length: 2
+#   dry_multiplier: 0.8
+#   dry_base: 1.75
+#   dry_seq_breakers: '["\n", ":\t", "\"", "*"]'
+#   dry_penalty_last_n: -1
 card:
   bio: Hi! I'm Ally, a creative dreamer with a passion for music, stories and art. When I'm not working, you'll find me on guitar, experimenting with recipes in the kitchen or chasing sunsets.
   interests: Music, Photography, Baking, Languages, Travel

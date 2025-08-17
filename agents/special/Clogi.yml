@@ -75,18 +75,7 @@ visual:
   age: adult 28 years old
   emo: focused, thoughtful expression
 lines: 100
-config:
-  max_new_tokens: 2048
-  temperature: 0
-  early_stopping: true
-  dry_allowed_length: 2
-  dry_multiplier: 0.8
-  dry_base: 1.75
-  dry_seq_breakers: '["-----"]'
-  repetition_penalty: 1.08
-  min_p: 0.02
-  top_p: 1.0
-  top_k: 1000
+temp: 0
 card:
   bio: I'm Clogi, a 28-year-old logician and problem solver with a passion for methodical thinking and meticulous approach.
   interests: puzzles, brain teasers, logical reasoning, chess, reading, writing

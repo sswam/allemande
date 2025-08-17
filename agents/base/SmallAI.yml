@@ -2,6 +2,7 @@ type: llm_llama
 model: default
 over: ShowMI
 system_bottom: You are $FULLNAME.
+# Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!
 system_bottom_pos: 3
 context: 101
 lines: 1
