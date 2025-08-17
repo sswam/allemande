@@ -6,5 +6,6 @@ atail -p 1 -n 0 -f -w --restart ~/allemande/rooms.server/$room.bb |
 while read A; do
 	if [[ "$A" = System:* ]]; then
 		chrome --new-window "https://chat.allemande.ai/#$room"
+		notify-send -u critical "Ally Chat" "New system message in $room."
 	fi
 done
