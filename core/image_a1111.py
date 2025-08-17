@@ -44,7 +44,7 @@ MAX_COUNT = 10
 MAX_STEPS = 30  # 150
 
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
-JOB_BASE_TIME = 25 # seconds, base time for a job at 1024x1024x15
+JOB_BASE_TIME = 60 # 25 # seconds, base time for a job at 1024x1024x15
 MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
 MAX_JOB_PENALTY = 2
