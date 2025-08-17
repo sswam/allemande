@@ -244,7 +244,10 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         logger.debug("system_bottom: %r", system_bottom)
     if system_top:
         system_top_role = agent.get("system_top_role", None)
-        context.insert(0, f"{system_top_role}:\t{system_top}")
+        if system_top_role:
+            context.insert(0, f"{system_top_role}:\t{system_top}")
+        else:
+            context.insert(0, system_top)
         logger.debug("system_top: %r", system_top)
 
     logger.debug("context: %s", args.delim.join(context[-6:]))
