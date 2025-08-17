@@ -174,7 +174,7 @@ change-password() {
 	fi
 	if [ -z "$pass" ]; then
 		gen=1
-		pass=$(pwgen 6 -1 | head -n1 | tr -d '\n')
+		pass=$(pwgen 6 -B -1 | head -n1 | tr -d '\n')
 	fi
 
 	htpasswd -b .htpasswd "$user" "$pass"
