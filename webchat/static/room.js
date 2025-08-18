@@ -1056,8 +1056,9 @@ async function set_view_options(new_view_options) {
     cl.toggle("images", view_options.images > 0);
     cl.toggle("blur", view_options.images == 2);
     cl.toggle("alt", view_options.alt == 1);
-    cl.toggle("script_source", view_options.source >= 1);
-    cl.toggle("rendered_source", view_options.source >= 2);
+    cl.toggle("code_source", view_options.source >= 1);
+    cl.toggle("script_source", view_options.source >= 2);
+    cl.toggle("rendered_source", view_options.source >= 3);
     cl.toggle("canvas", view_options.canvas >= 1);
     cl.toggle("messages", view_options.canvas <= 1);
     cl.toggle("clean", view_options.clean == 1);

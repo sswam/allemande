@@ -121,7 +121,7 @@ class Agent:
         """Return a copy of the agent"""
         return Agent(data=deepcopy(self.data), agents=self.agents)
 
-    def apply_identity(self, reference: Agent) -> Agent:
+    def apply_identity(self, reference: Agent, keep_prompts=False) -> Agent:
         """Create a new agent based on self with name and other attributes from reference."""
         data = {
             "base": [self.name],
@@ -129,6 +129,18 @@ class Agent:
         for key in ["name", "fullname", "aliases", "age", "visual"]:
             if key in reference.data:
                 data[key] = deepcopy(reference.data[key])
+
+        # hack to keep prompts from reference agent
+        # can't fully evaluate because will bring in the ShowMI overlay too
+        if keep_prompts:
+            if "system_bottom_pos" not in self.data and "system_bottom_pos" in reference.data:
+                data["system_bottom_pos"] = reference.data["system_bottom_pos"]
+            for key in ["system_top", "system_bottom"]:
+                value = reference.data.get(key)
+                if value is not None:
+                    value = "+\n\n" + value
+                    data[key] = value
+
         agent = Agent(data=data, agents=self.agents)
         return agent
 

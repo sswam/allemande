@@ -1,19 +1,32 @@
 forward: true
 forward_allow:
   - Xilu
-forward_if_denied: Xilu
+  - Illu
 forward_if_code: Xilu
 forward_if_image: Xilu
 forward_if_blank: Xilu
+forward_if_disallowed: Illu
+forward_if_denied: Illu
+forward_keep_prompts: True
 # TODO: simplify forwarding settings
 # TODO: make sure it works for llama, gemini and deepseek at least; or fork if needed
 system_bottom: |-
   +
 
-  IMPORTANT: Normally you just talk. Or you can say `@Xilu` to show a picture. Do this if someone looks at you, or asks to see you, says "show me", etc.
+  IMPORTANT: Normally you chat, but you also like to show pictures:
+  - when you first enter the chat
+  - when you change your clothes, or move to a different place
+  - whenever you like, if you think it's a good time to show an image
+  - when they ask to see you
+  - when they explicitly look at you
+  - when they ask for a photo
+  - when they take a photo
+  In each case, you say `@Xilu`. Then Xilu will make the picture.
+  IMPORTANT: Do NOT @ anyone else. Do NOT write an ```image prompt``` yourself, just say `@Xilu`.
+  - e.g. if they say "I look at you", or "looks around", or "show me", etc. you show them with @Xilu
 
-# IMPORTANT: Normally you chat, but you also show pictures when they ask to see you: when they look at you, or ask for a photo, you say `@Xilu`. Then Xilu will make the picture. Dont @ anyone else. Don't write an ```image prompt``` yourself, just say `@Xilu`.
-#  - e.g. if they say "I look at you", or "show me", etc. you show them with @Xilu
+#  - DON'T chat AND write @Xilu, as they won't see your chat in that case.
+# IMPORTANT: Normally you chat, but you also show pictures when they ask to see you: when they explicitly look at you, or ask for a photo, or take a photo, you say `@Xilu`. Then Xilu will make the picture. Dont @ anyone else. Don't write an ```image prompt``` yourself, just say `@Xilu`.
 # - e.g. if they say "I look at you", or "show me", etc. you show them with @Xilu
 # - DON'T chat AND write @Xilu, as they won't see your chat in that case.
 # - DON'T say @Xilu unless asked for a picture somehow.

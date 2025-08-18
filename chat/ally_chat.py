@@ -298,10 +298,23 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         forward_if_code = agent.get("forward_if_code")
         forward_if_image = agent.get("forward_if_image")
         forward_if_blank = agent.get("forward_if_blank")
+        forward_if_disallowed = agent.get("forward_if_disallowed")
+        forward_keep_prompts = agent.get("forward_keep_prompts")
 
         if forward_if_blank and (not response or response == f"{agent.name}:"):
             logger.info("Forward: blank, Using forward_if_blank")
             response = f"@{forward_if_blank}"
+
+        has_forward = re.search(r'@\w', response)
+
+        # HACK: if the agent tried to give an image prompt or an image, forward it
+        if not has_forward and forward_if_code and "```" in response:
+            logger.info("Forward: code, Using forward_if_code")
+            response = f"@{forward_if_code}"
+        if not has_forward and forward_if_image and "![" in response:
+            logger.info("Forward: image, Using forward_if_image")
+            response = f"@{forward_if_image}"
+
         if forward and response:
             logger.info("Forward response: %r", response)
             # look for the final line @agent_name
@@ -321,13 +334,9 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 use_aggregates=False,
             )
 
-            # HACK: if the agent tried to give an image prompt or an image, forward it
-            if not bots2 and forward_if_code and "```" in response:
-                logger.info("Forward: code, Using forward_if_code")
-                bots2 = [forward_if_code]
-            if not bots2 and forward_if_image and "![" in response:
-                logger.info("Forward: image, Using forward_if_image")
-                bots2 = [forward_if_image]
+            # HACK: if the agent tried to foward to an agent that is not allowed here, replace it
+            if not bots2 and re.search(r'@\w', response):
+                bots2 = [forward_if_disallowed]
 
             logger.info("Forward: who should respond: %r", bots2)
             for bot2 in bots2:
@@ -341,7 +350,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                     logger.info("Skipping forwarding to self: %s", bot2)
                     continue
                 logger.info("Forwarding to %s", bot2)
-                agent2 = agents.get(bot2).apply_identity(agent)
+                agent2 = agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts)
                 poke_if = agent2.get("poke_if", [])
                 # replace agent.name with agent2.name in user's message
                 # logger.info("Replacing %s with %s in query: %r", agent.name, agent2.name, query)

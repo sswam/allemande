@@ -30,7 +30,6 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 - Please be friendly if you engage with other users. No bigotry or kink-shaming.
 - Copyright infringement is not allowed.
 - Role-playing around illegal activities (other than CSAM) is allowed, but promoting real-life illegal activities is illegal and not allowed.
-- The NSFW Zone is not intended for very extreme content. There is another area for extreme content, available on request.
 - These rules might be updated in future.
 
 ## Topless Pictures of Characters 🔥

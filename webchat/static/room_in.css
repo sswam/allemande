@@ -229,6 +229,16 @@ body.images .embed:hover .alt {
 	font-weight: 400;
 }
 
+body:not(.code_source) pre:has(code),
+body:not(.code_source) details.think,
+body:not(.code_source) pre:has(code) + br {
+	display: none;
+}
+
+body:not(.code_source) div.content:has(> p:first-child > div.label):has(> pre:nth-child(2) > code) > p:first-child:has(div.label) {
+	display: inline;
+}
+
 pre > code, code, pre > code *, code *,
 body.script_source .content :is(script, style):not(.hide, [src]) {
 	font: var(--font-size-code) fixed;
@@ -1043,4 +1053,14 @@ blink {
 @keyframes spin1 {
   from { transform: rotate(360deg); }
   to { transform: rotate(0deg); }
+}
+
+/* rainbow text ----------------------------------------------------------- */
+
+.rainbow-text {
+  background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
