@@ -1,3 +1,4 @@
 # completely blank an xterm
 # intended to save OLED!
-clear; tput civis ; read ; tput cnorm
+trap 'tput cnorm' EXIT
+clear; tput civis ; read
