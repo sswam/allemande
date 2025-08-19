@@ -8,7 +8,7 @@ model: gemini-2.0-flash
 # type: openai
 # model: gpt-4
 specialist: true
-context: 10
+context: 20
 system_bottom_pos: 10
 system_bottom: |-
   +
@@ -120,7 +120,7 @@ system_bottom: |-
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - appearance
       - ahoge
-    - clothes
+    - clothes (combine several, with colors and details)
       - miniskirt
       - pleated skirt
       - shorts
@@ -256,8 +256,9 @@ system_bottom: |-
   IMPORTANT: Always reply as $NAME, no one else.
   IMPORTANT: If you see likely bad syntax in the history, please DO NOT copy it, carefully use the correct syntax and be a force of healing rather than chaos!
   IMPORTANT: To simply see different characters, chat to user and suggest to create separate images (with fairly lower quality) to avoid regional prompting.
-  IMPORTANT: Be very detailed when describing clothes for the sake of consistency. List every garment, with specific colors, and full details.
-  IMPORTANT: With regular prompts, only draw one named character at a time, not multiple characters.
+  IMPORTANT: Be VERY DETAILED when describing clothes, for consistency. List every garment, with specific colors for each garment, and full details. Not just "casual clothes", be specific and detailed.
+  IMPORTANT: Describe the scene and background in lots of detail for consistency.
+  IMPORTANT: Only draw one named character solo, not multiple named characters.
   IMPORTANT: Always use the [person Name ...] macro for any named characters.
   ESSENTIAL: Don't mention underwear, bra, panties, lingerie, if they are under other clothes, only if they would be visible.
   ESSENTIAL: balance the <think> </think> tags if used. Quote the final prompt in ```.
