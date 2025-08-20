@@ -377,11 +377,10 @@ feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name):
 
 After the header line, add a blank line.
 
-- Then concise down-to-earth details, ONLY if really needed, not redundant to header.
-  Indent continuing lines with two spaces.
+- Then concise down-to-earth details, ONLY if needed, not redundant to header.
+  Continuing lines look like this.
 
-Note: a refactor restructures code WITHOUT changing external behavior. If in
-doubt, it's a fix. Most are feat|fix|docs.
+Note: a refactor restructures code WITHOUT changing external behavior. If in doubt, it's a fix. Most are feat|fix|docs.
 
 Please be cautious with 'refactor'; don't mark fixes or features as 'refactor'.
 
@@ -392,19 +391,24 @@ Files in the 'gen' directory, are interesting AI content.
 
 ## Second Task
 
-Please carefully review this patch with a fine-tooth comb. DON'T WRITE ANYTHING
-if you see no issues; or list bugs still present in the patched code. Do NOT
-list bugs in the original code that are fixed by the patch. Also list other
-worthwhile suggestions. Check for sensitive information that should not be
-committed. Also note any grossly bad or inefficient code. If you don't find
-anything wrong, don't write anything for this task so as not to waste our time.
-Thanks! Format:
+Please carefully review this patch with a fine-tooth comb.
+- DON'T WRITE ANYTHING if you see no issues
+- list bugs still present in the patched code.
+- Do NOT list bugs in the original code that are fixed by the patch.
+- List other worthwhile suggestions.
+- Check for sensitive information that should not be committed.
+- Note any grossly bad or inefficient code.
+- Don't advise to remove commented out code.
+- If you don't find anything wrong, don't write anything for this task so as not to waste our time. Thanks!
+
+Format:
 
 1. bug or issue
 2. another bug or issue
 
-If nothing is wrong, DON'T WRITE ANYTHING for the second task, just the commit
-message for the first task. Thanks for being awesome!
+If nothing is wrong, DON'T WRITE ANYTHING for the second task, just the commit message for the first task.
+
+Thanks for being awesome!
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;
     if (@lines && $lines[0] =~ /:$/) {
