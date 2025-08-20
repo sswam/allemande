@@ -43,6 +43,7 @@ class WatcherOptions(BaseModel):
     debounce: float = 0.01
     exclude_paths: list[str] = []
     metadata: bool = False
+    echo: bool = False
 
 
 class Debounce:  # pylint: disable=too-few-public-methods
@@ -308,6 +309,23 @@ def null_to(x, replacement):
     return x
 
 
+def echo_change(file: str, change: int, size_old: int|None, size_new: int|None) -> None:
+    """Echo the change details to stderr"""
+    if change not in [Change.added, Change.modified]:
+        return
+    size_old = size_old or 0
+    size_new = size_new or 0
+    if size_new < size_old:
+        # echo whole file
+        content = Path(file).read_bytes().decode(errors="replace")
+    else:
+        # echo only the change
+        with open(file, "rb") as f:
+            f.seek(size_old)
+            content = f.read(size_new - size_old).decode(errors="replace")
+    print(content, file=sys.stderr)
+
+
 async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     """Main function for awatch"""
 
@@ -325,6 +343,9 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
             logger.info("flushed")
         else:
             print(*[null_to(x, "") for x in row], sep="\t", file=out)
+            if opts.echo:
+                print(*[null_to(x, "") for x in row], sep="\t", file=sys.stderr)
+                echo_change(*row)
 
 
 def setup_args(arg):
@@ -345,6 +366,7 @@ def setup_args(arg):
     arg("-d", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
     arg("-e", "--exclude", dest="exclude_paths", nargs="*", default=[], help="paths to exclude from watching")
     arg("-m", "--metadata", help="watch metadata changes", action="store_true")
+    arg("-E", "--echo", help="echo content changes", action="store_true")
     arg("command", nargs="*", help="command or service to run when files change")
 
 
