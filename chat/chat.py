@@ -822,6 +822,11 @@ def trim_response(response, args, agent_name, people_lc=None):
     return response
 
 
+def has_at_mention(content: str) -> bool:
+    """Check if a message contains an @name mention"""
+    return re.search(r'(\W|^)@\w', content)
+
+
 def main():
     """Main function to run the CLI commands."""
     def proc(code: str | None = None, func: str | None = None):

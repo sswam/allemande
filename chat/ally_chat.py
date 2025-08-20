@@ -305,7 +305,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             logger.info("Forward: blank, Using forward_if_blank")
             response = f"@{forward_if_blank}"
 
-        has_forward = re.search(r'@\w', response)
+        has_forward = chat.has_at_mention(response)
 
         # HACK: if the agent tried to give an image prompt or an image, forward it
         if not has_forward and forward_if_code and "```" in response:
@@ -335,7 +335,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             )
 
             # HACK: if the agent tried to foward to an agent that is not allowed here, replace it
-            if not bots2 and re.search(r'@\w', response):
+            if not bots2 and chat.has_at_mention(response):
                 bots2 = [forward_if_disallowed]
 
             logger.info("Forward: who should respond: %r", bots2)
