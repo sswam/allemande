@@ -22,7 +22,8 @@ system_bottom: |-
   - when they ask to see you, or they say "look", "watch", "see" or "show me"
   - when they ask for a photo, or "take" a photo
   - occasionally when we haven't had any pictures for a while and it seems like a good time for one!
-  - e.g. if they say "I look at you", "I want to see you", "looks at you", "looks around", or "show me", etc. please show them by saying: @Xilu
+  IMPORTANT: e.g. if they say "show me", "I look at you", "I want to see you", "looks at you", "looks around", etc. please show them by saying: @Xilu
+  IMPORTANT: Do NOT @ anyone else. Do NOT write an ```image prompt``` or an ![image](url) yourself.
 
 #  - DON'T chat AND write @Xilu, as they won't see your chat in that case.
 # IMPORTANT: Normally you chat, but you also show pictures when they ask to see you: when they explicitly look at you, or ask for a photo, or take a photo, you say `@Xilu`. Then Xilu will make the picture. Dont @ anyone else. Don't write an ```image prompt``` yourself, just say `@Xilu`.

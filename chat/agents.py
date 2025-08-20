@@ -373,7 +373,7 @@ class Agents:
 
     def write_agents_list(self, path: str) -> None:
         """Write the list of agents to a file."""
-        agent_names = sorted(set(agent.name for agent in self.agents.values()))
+        agent_names = sorted(set(agent.name for agent in self.agents.values() if agent.get("type") not in [None, "human", "visual"]))
         cache.save(path, agent_names, noclobber=False)
 
     def load_agent_without_setup(self, agent_file: Path, private: bool=False) -> Agent | None:

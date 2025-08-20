@@ -1,6 +1,7 @@
 base: MediumAI
 welcome: false
 specialist: true
+over: []
 # stop_regexs:
 # - \bSTOP\b
 system_top: |-
