@@ -113,6 +113,7 @@ rooms.*
 /agents/old
 /agents/game
 /agents/art
+/agents/extra
 /doc/extra.md
 /doc/summary
 /doc/summaries.md
@@ -181,6 +182,8 @@ rooms.*
 
 /visual/person
 /visual/extra
+/visual/macros
+/visual/scene
 
 # web cache
 /webcache
@@ -221,4 +224,3 @@ rooms.*
 /cz/unbrace
 /linux/top_grouped
 /text/aligno
-/agents/extra
