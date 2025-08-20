@@ -175,7 +175,7 @@ Please do not use languages models other than those listed here for NSFW content
 | xAI      | Grok 4             | Anni   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
 | DeepSeek | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                        |
 | Mistral  | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
-| Mistral+ | Venice: Uncensored | Veni   | 33K     | 33K        | $0              | $0               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored, rate limit on the free version.    |
+| Mistral+ | Venice: Uncensored | Veni   | 33K     | 33K        | $0.50           | $2               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.                                    |
 
 * The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cloe, etc.
 

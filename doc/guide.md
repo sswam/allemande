@@ -908,7 +908,7 @@ type: visual
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192          | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Mistral       | Mistral Large 2411    | Misti   | 128K    | 128K          | $2              | $6               | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
-| Mistral+      | Venice: Uncensored    | Veni    | 33K     | 33K           | $0              | $0               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored, rate limit on the free version.              |
+| Mistral+      | Venice: Uncensored    | Veni    | 33K     | 33K           | $0.50           | $2               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.                                              |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cloe, etc.
 

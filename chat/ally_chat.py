@@ -634,6 +634,7 @@ services = {
     "xai":          {"link": "remote", "fn": remote_agent},
     "deepseek":     {"link": "remote", "fn": remote_agent},
     "openrouter":   {"link": "remote", "fn": remote_agent},
+    "venice":       {"link": "remote", "fn": remote_agent},
     "safe_shell":   {"link": "tool", "fn": safe_shell, "safe": False, "dumb": True},  # ironically
     "search":       {"link": "tool", "fn": run_search, "dumb": True},
 }
