@@ -68,7 +68,13 @@ lazy(
         api_key=os.environ.get("OPENROUTER_API_KEY"),
     ),
 )
-
+lazy(
+    "openai",
+    venice_async_client=lambda openai: openai.AsyncOpenAI(
+        base_url="https://api.venice.ai/api/v1",
+        api_key=os.environ.get("VENICE_API_KEY"),
+    ),
+)
 
 lazy("anthropic")
 lazy("claude")
@@ -460,13 +466,20 @@ MODELS = {
         "cost_in": 2,
         "cost_out": 6,
     },
-    "venice-uncensored-free": {
+    # "venice-uncensored-free": {
+    #     "aliases": ["veni"],
+    #     "vendor": "openrouter",
+    #     "id": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+    #     "description": "Venice: Uncensored (free)",
+    #     "cost_in": 0,
+    #     "cost_out": 0,
+    # },
+    "venice-uncensored": {
         "aliases": ["veni"],
-        "vendor": "openrouter",
-        "id": "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
-        "description": "Venice: Uncensored (free)",
-        "cost_in": 0,
-        "cost_out": 0,
+        "vendor": "venice",
+        "description": "Venice: Uncensored",
+        "cost_in": 0.5,
+        "cost_out": 2,
     },
 }
 
@@ -798,6 +811,9 @@ async def achat_openrouter(opts: Options, messages):
     """Chat with OpenRouter models asynchronously."""
     return await achat_openai(opts, messages, client=openrouter_async_client)
 
+async def achat_venice(opts: Options, messages):
+    """Chat with Venice models asynchronously."""
+    return await achat_openai(opts, messages, client=venice_async_client)
 
 async def achat_claude(opts: Options, messages):
     """Chat with Anthropic Claude models asynchronously."""
@@ -997,6 +1013,8 @@ async def allm_chat(opts: Options, messages):
         return await achat_deepseek(opts, messages)
     if vendor == "openrouter":
         return await achat_openrouter(opts, messages)
+    if vendor == "venice":
+        return await achat_venice(opts, messages)
     raise ValueError(f"unknown model: {model}")
 
 
