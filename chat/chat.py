@@ -648,6 +648,10 @@ def fix_response_layout(response, _args, agent):
                 lines.pop(0)
         lines = [line for line in lines if not re.match(r"\t?```\w*\s*$", line)]
 
+    # TODO ideally don't apply this to code blocks
+    if agent.get("dedent"):
+        lines = [line.strip() for line in lines]
+
     # Remove agent's name, if present
     logger.debug("lines[0]: %r", lines[0])
     logger.debug("agent.name: %r", agent.name)

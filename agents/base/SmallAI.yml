@@ -6,3 +6,4 @@ system_bottom: You are $FULLNAME.
 system_bottom_pos: 3
 context: 101
 lines: 1
+dedent: true
