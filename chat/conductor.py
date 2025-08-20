@@ -102,8 +102,8 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
     if not is_tool:
         comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*$"  # at end with comma
         word_start = r"^\s*" + re.escape(name) + r"\b"  # at start
-        word_end = r"(\W|\b|^)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"  # at end
-        whole_word = r"(\W|\b|^)" + re.escape(name) + r"\b"  # anywhere
+        word_end = r"(\W|^)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"  # at end
+        whole_word = r"(\W|^)" + re.escape(name) + r"\b"  # anywhere
         patterns += [comma_word_end, word_start, word_end, whole_word]
 
     flags = re.IGNORECASE if ignore_case else 0
@@ -373,6 +373,9 @@ def who_should_respond(
 
     history = chat.history_remove_thinking_sections(history, None)
 
+    # Responsible human user
+    responsible_human_user = responsible_human(history, agents, room)
+
     # mentioned in mission hack
     mentioned_in_mission = set()
     if mission:
@@ -546,6 +549,11 @@ def who_should_respond(
     invoked = filter_access(invoked, room, access_check_cache)
     logger.debug("who_is_named @: %r", invoked)
 
+    # If we @ mention someone not present, no one should respond
+    at_mention_present = chat.has_at_mention(content)
+    if not invoked and at_mention_present:
+        return responsible_human_user, []
+
     if not invoked and at_only:
         invoked = ["-None-"]
 
@@ -635,9 +643,6 @@ def who_should_respond(
 
     # Filter out special words and only use actual agent names
     agents_to_respond = [agent_case_map[agent.lower()] for agent in invoked if agent.lower() in agent_case_map]
-
-    # Responsible human user
-    responsible_human_user = responsible_human(history, agents, room)
 
     return responsible_human_user, agents_to_respond
 
