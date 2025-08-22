@@ -49,7 +49,7 @@ MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
 MAX_JOB_PENALTY = 2
 MAX_JOB_DELAY = 1020  # 17 minutes, after that the client might timeout
-MAX_QUEUE_DELAY = 2400  # 40 minutes, don't schedule extra jobs beyond that point
+MAX_QUEUE_DELAY = 4800  # 80 minutes, don't schedule extra jobs beyond that point
 ADETAILER_TIME = 3  # seconds, how long adetailer takes to run roughly
 
 SHAPE_GEOMETRY = {
