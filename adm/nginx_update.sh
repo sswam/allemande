@@ -22,5 +22,6 @@ while read file; do
 	) > "/etc/nginx/$file"
 done
 
+nginx -t
 service nginx reload || service nginx start
 service nginx status
