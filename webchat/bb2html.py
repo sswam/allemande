@@ -10,6 +10,7 @@ from pathlib import Path
 import asyncio
 from collections import defaultdict
 import io
+import stat
 
 from watchfiles import Change
 
@@ -35,11 +36,18 @@ semaphore = asyncio.Semaphore(PARALLEL_MAX)
 async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None, delay: float = 0.5):
     """convert a bb file to html"""
     async with file_locks[bb_file]:
+        is_writable = os.access(bb_file, os.W_OK) and os.access(html_file, os.W_OK)
+        try:
+            html_add_writable = os.stat(html_file).st_mode | stat.S_IWUSR
+            os.chmod(html_file, html_add_writable)
+        except FileNotFoundError:
+            pass
+
         # assume the file was appended to ...
         html_file_mode = "ab"
 
-        # ... unless the file seems to be new or has shrunk ...
-        if old_size is None or new_size < old_size:
+        # ... unless the file seems to be new or has shrunk, or is not writable ...
+        if old_size is None or new_size < old_size or not is_writable:
             logger.warning("bb file will be re-rendered: %s size changed from %s to %s", bb_file, old_size, new_size)
             html_file_mode = "wb"
         else:

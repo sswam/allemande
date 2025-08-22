@@ -27,7 +27,7 @@ mimetypes.init()
 
 
 # File categorization
-SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md"]
+SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md", "base"]
 MEDIA_FILE_EXTS = ["webm", "jpg"]
 
 MIME_TYPE_ICONS = {
@@ -92,12 +92,14 @@ MIME_TYPE_ICONS = {
     # Special icons
     "text/x-allychat": "💬",  # a speech bubble
     "text/x-allychat-mission": "📜",  # a scroll
+    "text/x-allychat-base": "🗋",  # a blank page
     "text/yaml": "⚙️",  # a gear
 }
 
 SPECIAL_TYPES = {
     "bb": "text/x-allychat",
     "m": "text/x-allychat-mission",
+    "base": "text/x-allychat-base",
     "yml": "text/yaml",
 }
 
@@ -276,8 +278,7 @@ def get_dir_listing_html(
         html.append(f'''
             <li class="item-{item['type']}" data-type-sort="{item['type_sort']}" data-mtime="{item['mtime']}">
                 <a href="{item['link']}">
-                    <span class="icon" title="{item['mime_type']}">{item['icon']}</span>
-                    <span class="name">{item['name']}</span>
+                    <span class="icon" title="{item['mime_type']}">{item['icon']}</span> <span class="name">{item['name']}</span>
                 </a>
             </li>
         ''')
