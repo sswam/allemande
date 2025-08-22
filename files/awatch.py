@@ -44,6 +44,7 @@ class WatcherOptions(BaseModel):
     exclude_paths: list[str] = []
     metadata: bool = False
     echo: bool = False
+    details: bool = False
 
 
 class Debounce:  # pylint: disable=too-few-public-methods
@@ -309,7 +310,7 @@ def null_to(x, replacement):
     return x
 
 
-def echo_change(file: str, change: int, size_old: int|None, size_new: int|None) -> None:
+def echo_change_details(file: str, change: int, size_old: int|None, size_new: int|None) -> None:
     """Echo the change details to stderr"""
     if change not in [Change.added, Change.modified]:
         return
@@ -333,6 +334,9 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     logging.getLogger("watchfiles.main").setLevel(logging.WARNING)
     logging.getLogger("watchfiles.watcher").setLevel(logging.WARNING)
 
+    if opts.details:
+        opts.echo = True
+
     opts.exts = [f".{ext}" for ext in opts.extension]
     if (opts.run or opts.job or opts.service) and not opts.command:
         raise ValueError("command is required when using --run, --job or --service")
@@ -345,7 +349,8 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
             print(*[null_to(x, "") for x in row], sep="\t", file=out)
             if opts.echo:
                 print(*[null_to(x, "") for x in row], sep="\t", file=sys.stderr)
-                echo_change(*row)
+            if opts.details:
+                echo_change_details(*row)
 
 
 def setup_args(arg):
@@ -366,7 +371,8 @@ def setup_args(arg):
     arg("-d", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
     arg("-e", "--exclude", dest="exclude_paths", nargs="*", default=[], help="paths to exclude from watching")
     arg("-m", "--metadata", help="watch metadata changes", action="store_true")
-    arg("-E", "--echo", help="echo content changes", action="store_true")
+    arg("-E", "--echo", help="echo changes", action="store_true")
+    arg("-V", "--details", help="echo verbose change details (implies -E)", action="store_true")
     arg("command", nargs="*", help="command or service to run when files change")
 
 

@@ -18,19 +18,14 @@ from="$ALLEMANDE_HOME/rooms/$room.bb"
 dirname="$(dirname "$from")"
 basename="$(basename "$from")"
 
-# Check if the source file exists
 if [ ! -f "$from" ]; then
 	echo "No such file: $from" >&2
-	exit 0
-fi
-
-# Check if the source file is empty
-if [ ! -s "$from" ]; then
+elif [ ! -s "$from" ]; then
 	echo "Empty file: $from" >&2
-	exit 0
+	rm "$from"
+else
+	to=$(archive -D html "$from")
 fi
-
-to=$(archive -D html "$from")
 
 sleep 0.1
 
@@ -44,6 +39,8 @@ else
 	touch "$from"
 fi
 
-# Copy ownership and permissions from the archived file to the new empty file
-chown --reference="$to" "$from"
-chmod --reference="$to" "$from"
+# Copy ownership and permissions from the archived file to the new file
+if [ -e "$to" ]; then
+	chown --reference="$to" "$from"
+	chmod --reference="$to" "$from"
+fi

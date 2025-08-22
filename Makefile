@@ -177,16 +177,16 @@ vscode-local:
 	code "$$file" & disown
 
 chat-api:
-	cd $(WEBCHAT) && awatch -a -i -p ../Makefile chat_api.py ../chat/chat.py ../chat/ally_room.py ../chat/ally_service.py -s -- uvicorn chat_api:app --reload --timeout-graceful-shutdown 5
+	cd $(WEBCHAT) && awatch -a -i -p ../Makefile chat_api.py ../chat/chat.py ../chat/ally_room.py ../chat/ally_service.py -s -- uvicorn chat_api:app --timeout-graceful-shutdown 5  # --reload
 
 stream:
-	cd $(WEBCHAT) && awatch -a -i -p ../Makefile stream.py ../chat/chat.py ../chat/ally_room.py ../text/atail.py ../ally/cache.py ../chat/ally_service.py -s -- uvicorn stream:app --reload --port 8001 --timeout-graceful-shutdown 1
+	cd $(WEBCHAT) && awatch -a -i -p ../Makefile stream.py folder.py ../chat/chat.py ../chat/ally_room.py ../text/atail.py ../ally/cache.py ../chat/ally_service.py -s -- uvicorn stream:app --port 8001 --timeout-graceful-shutdown 1  # --reload
 
 auth:
 	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002
 
 watch:
-	awatch -I -r -A -x bb yml safetensors -p $(ROOMS) $(AGENTS) -E >> $(WATCH_LOG)  # -L was there, to follow symlinks; why?
+	awatch -I -r -A -x bb yml safetensors -p $(ROOMS) $(AGENTS) -V >> $(WATCH_LOG)  # -L was there, to follow symlinks; why?
 
 bb2html:
 	awatch -a -i -p Makefile $(WEBCHAT)/bb2html.py chat/chat.py chat/ally_markdown.py chat/ally_room.py chat/bb_lib.py text/atail.py -s -- $(WEBCHAT)/bb2html.py -w $(WATCH_LOG)

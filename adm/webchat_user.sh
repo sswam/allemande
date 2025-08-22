@@ -34,9 +34,9 @@ webchat-user() {
 	list)
 		list-users "$@"
 		;;
-	missions)
-		update-missions "$@"
-		;;
+	# missions)
+	# 	update-missions "$@"
+	#	;;
 	*)
 		die "Usage: webchat-user {add|passwd|rm|off|on|list|missions} [args...]"
 		;;
@@ -118,10 +118,10 @@ END
 
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	if ((nsfw)); then
-		cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
+		# cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
 		cp ../rooms.dist/access_nsfw.yml rooms/"$user"/.access.yml
-	else
-		cp ../rooms.dist/mission.m.sfw rooms/"$user"/mission.m
+	# else
+	# 	cp ../rooms.dist/mission.m.sfw rooms/"$user"/mission.m
 	fi
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
@@ -246,19 +246,19 @@ list-users() {
 	esac
 }
 
-update-missions() {
-	nsfw=0 list-users |
-	while read user; do
-		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
-		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.sfw "$ALLEMANDE_ROOMS/$user/mission.m"
-	done
-
-	nsfw=1 list-users |
-	while read user; do
-		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
-		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.nsfw "$ALLEMANDE_ROOMS/$user/mission.m"
-	done
-}
+# update-missions() {
+# 	nsfw=0 list-users |
+# 	while read user; do
+# 		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
+# 		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.sfw "$ALLEMANDE_ROOMS/$user/mission.m"
+# 	done
+# 
+# 	nsfw=1 list-users |
+# 	while read user; do
+# 		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
+# 		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.nsfw "$ALLEMANDE_ROOMS/$user/mission.m"
+# 	done
+# }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	webchat-user "$@"
