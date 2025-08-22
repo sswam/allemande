@@ -368,7 +368,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 break  # only forward to at most one agent, for now
 
         # Narrator agents:
-        if agent.get("narrator"):
+        if agent.get("narrator") == "hard":
             response = response.lstrip(f'{agent.name}:')
             # remove 1 tab from start of each line
             response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
@@ -565,8 +565,10 @@ async def watch_loop(args):
                 new_size = int(new_size) if new_size != "" else None
 
                 file_type = check_file_type(file_path)
-                if file_type == "room":
-                    # Create and track the task
+
+                if file_type == "room" and not os.access(file_path, os.W_OK):
+                    logger.info("Ignoring change to unwritable file: %r", file_path)
+                elif file_type == "room":
                     task = asyncio.create_task(file_changed(file_path, change_type, old_size, new_size, args, skip, agents))
                     tasks.add_task(task, f"file changed: {file_path}")
                     tasks.list_active_tasks()

@@ -181,7 +181,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     # remove "thinking" sections from context
     context = chat.context_remove_thinking_sections(context, agent)
-    context = chat.context_remove_image_details(context)
+
+    # # remove image details (alt text)
+    # context = chat.context_remove_image_details(context)
 
     # missions
     include_mission = agent.get("type") != "image_a1111"  # TODO clean this

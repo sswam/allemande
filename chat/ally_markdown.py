@@ -235,18 +235,23 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
     for match in matches:
         if prev_end != match.start():
             raise ValueError("preprocess_normal_markdown: internal error, finditer did not match entire string (1)")
+        prev_end = match.end()
         part = next(x for x in match.groups() if x is not None)
 
         if part.startswith("`") and not part.startswith("`$"):
             new_parts.append(part)
-        else:
-            # Process the part to find inline math
-            logger.debug("part: %s", part)
-            part, has_math_part = find_and_fix_inline_math(part)
-            logger.debug("part after: %s", part)
-            has_math = has_math or has_math_part
-            new_parts.append(part)
-        prev_end = match.end()
+            continue
+
+        # Process the part to find inline math
+        logger.debug("part: %s", part)
+        part, has_math_part = find_and_fix_inline_math(part)
+        logger.debug("part after: %s", part)
+        has_math = has_math or has_math_part
+
+        # escape <lora> so visible
+        part = re.sub(r"<(lora:.*?)>", r"&lt;\1&gt;", part)
+
+        new_parts.append(part)
 
     if text and prev_end != len(text):
         raise ValueError("preprocess_normal_markdown: internal error, finditer did not match entire string (2)")
@@ -384,8 +389,6 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
         text, has_math1 = preprocess_normal_markdown(text, bb_file)
         has_math = has_math or has_math1
         normal_lines.clear()
-        # escape <lora> so visible
-        text = re.sub(r"<(lora:.*?)>", r"&lt;\1&gt;", text)
         return text
 
     for line in content.splitlines():

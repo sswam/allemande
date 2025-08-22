@@ -62,7 +62,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     # remove "thinking" sections from context
     context = chat.context_remove_thinking_sections(context, agent)
-    context = chat.context_remove_image_details(context)
+
+    # # remove image details (alt text)
+    # context = chat.context_remove_image_details(context)
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?

@@ -56,7 +56,9 @@ def markdown_to_html_cli():
     print(html_content)
 
 
-image_extensions = ["jpg", "jpeg", "png", "gif", "svg", "webp", "avif"]
+image_extensions = ["jpg", "jpeg", "png", "gif", "svg", "webp", "avif", "heic"]
+convert_image_extensions = ["heic"]
+convert_image_to_extension = "jpg"
 audio_extensions = ["mp3", "ogg", "wav", "flac", "aac", "m4a"]
 video_extensions = ["mp4", "webm", "ogv", "avi", "mov", "flv", "mkv"]
 
@@ -72,14 +74,32 @@ async def save_uploaded_file(from_path, to_path, file=None):
             await ostream.write(chunk)
 
 
+def ee(s):
+    """Encode entities."""
+    return html.escape(s, quote=True)
+
+
 def av_element_html(tag, label, url):
     """Return an audio or video element."""
 
-    def ee(s):
-        """Encode entities."""
-        return html.escape(s, quote=True)
-
     return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}" controls></{tag}>'
+
+
+async def convert_image_format(from_path: str, to_path: str) -> int:
+    """Convert image to another format."""
+    try:
+        process = await asyncio.create_subprocess_exec(
+            'convert', from_path, to_path,
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.PIPE
+        )
+        _, stderr = await process.communicate()
+        if process.returncode != 0:
+            logger.error("convert_image_format failed: %s", stderr.decode().strip())
+        return process.returncode
+    except Exception as e:
+        logger.error("convert_image_format exception: %s", e)
+        return 1
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
@@ -114,6 +134,15 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
     task = None
 
     ext = ext.lower().lstrip(".")
+
+    # Handle image format conversion if needed
+    if ext in convert_image_extensions:
+        name = stem + suffix + "." + convert_image_to_extension
+        new_image_path = str(room.parent / name)
+        await convert_image_format(str(file_path), new_image_path)
+        # Update URL and extension for new format
+        url = (room.parent_url / name).as_posix()
+        ext = convert_image_to_extension
 
     if ext in image_extensions:
         medium = "image"
@@ -156,12 +185,14 @@ async def upload_file(room_name, user, filename, file=None, alt=None, to_text=Fa
 
     # markdown to embed or link to the file
     if medium == "image":
+        alt = ee(alt)
         markdown_tag = f"![{alt}]({relurl})"
     elif medium == "audio":
         markdown_tag = av_element_html("audio", alt, relurl)
     elif medium == "video":
         markdown_tag = av_element_html("video", alt, relurl)
     else:
+        alt = ee(alt)
         markdown_tag = f"[{alt}]({relurl})"
 
     return name, url, medium, markdown_tag, task
@@ -601,7 +632,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
 
         logger.debug("Found image URLs: %s", image_urls)
         if not image_urls:
-           continue
+            continue
 
         # count messages having images
         message_count += 1
