@@ -278,7 +278,8 @@ def get_dir_listing_html(
         html.append(f'''
             <li class="item-{item['type']}" data-type-sort="{item['type_sort']}" data-mtime="{item['mtime']}">
                 <a href="{item['link']}">
-                    <span class="icon" title="{item['mime_type']}">{item['icon']}</span> <span class="name">{item['name']}</span>
+                    <span class="icon" title="{item['mime_type']}">{item['icon']}</span>
+                    <span class="name">{item['name']}</span>
                 </a>
             </li>
         ''')

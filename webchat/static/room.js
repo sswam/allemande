@@ -33,6 +33,8 @@ let mode_options = {
 
 let snapshot = false;
 
+let filter = '';
+
 // status indicator ----------------------------------------------------------
 
 function get_status_element() {
@@ -335,6 +337,13 @@ function toggle_grab() {
 }
 
 function key_event(ev) {
+  const target = ev.target;
+
+  // Don't handle keys if target or its parents are form elements, canvas, svg, or have class 'keys'
+  if (target.closest('input, button, textarea, select, canvas, svg, .keys')) {
+    return;
+  }
+
   // console.log("key_event", ev);
   if (overlay_mode) {
     return key_event_overlay(ev);
@@ -421,9 +430,9 @@ function key_event_overlay(ev) {
   } else if (ev.key == "PageDown") {
     image_go(10);
   } else if (ev.key == "Home") {
-    image_go_to(0);
+    image_go_first();
   } else if (ev.key == "End") {
-    image_go_to(-1);
+    image_go_last();
   } else {
     return;
   }
@@ -668,8 +677,27 @@ function signal_overlay(overlay) {
     window.parent.postMessage({ type: "overlay", overlay: overlay }, ALLYCHAT_CHAT_URL);
 }
 
+function is_hidden($el) {
+  return window.getComputedStyle($el).display === 'none';
+}
+
 function image_go(delta) {
-  image_go_to(currentImgIndex + delta);
+  const i0 = currentImgIndex;
+  do {
+    image_go_to(currentImgIndex + delta);
+  } while (currentImgIndex != i0 && is_hidden($currentImg));
+}
+
+function image_go_first() {
+  image_go_to(0);
+  if (is_hidden($currentImg))
+    image_go(1);
+}
+
+function image_go_last() {
+  image_go_to(-1);
+  if (is_hidden($currentImg))
+    image_go(-1);
 }
 
 function image_go_to(index) {
@@ -1108,6 +1136,11 @@ async function set_view_options(new_view_options) {
   if (file_type === "dir") {
     set_dir_sort(view_options.dir_sort);
   }
+
+  if (filter !== view_options.filter) {
+    filter = view_options.filter;
+    update_image_filter(filter);
+  }
 }
 
 async function set_mode_options(new_mode_options) {
@@ -1318,6 +1351,89 @@ function setup_select() {
 
 function messages_click(ev) {
   // if not select mode, return for default
+}
+
+// filter images -------------------------------------------------------------
+
+
+function filter_make_word_selector(term, isNegative) {
+	term = term.replace(/_/g, ' ');
+//	const isSubstring = term.startsWith('*') && term.endsWith('*');
+//	const cleanTerm = isSubstring ? term.slice(1, -1) : term;
+//	const op = isSubstring ? '*=' : '~=';
+//	const selector = `[alt${op}"${cleanTerm}"]`;
+	const selector = `[alt*="${term}"]`;
+
+	return isNegative ? `:not(${selector})` : selector;
+}
+
+function filter_process_term_set(termSet) {
+	const words = termSet.trim().split(/\s+/).filter(w => w);
+	let baseSelector = 'img';
+	let positiveSelectors = '';
+
+	for (const word of words) {
+		if (word.startsWith('-'))
+			baseSelector += filter_make_word_selector(word.slice(1), true);
+		else
+			positiveSelectors += filter_make_word_selector(word, false);
+	}
+
+	// If there are no positive terms, the selector matches everything not excluded.
+	// If there are positive terms, they must all be present.
+	return positiveSelectors ? baseSelector + positiveSelectors : baseSelector;
+}
+
+function filter_string_to_CSS(filterString) {
+	const filterGroups = filterString.split(/;\s+/);
+
+	const groupSelectors = [];
+	for (const group of filterGroups) {
+		if (!group.trim())
+			continue;
+		const isNegated = group.startsWith('!');
+		const cleanGroup = isNegated ? group.slice(1) : group;
+		const termSets = cleanGroup.split(/\s*,\s*/);
+		const termSelectors = [];
+		for (const termSet of termSets)
+			termSelectors.push(filter_process_term_set(termSet));
+		const groupSelector = termSelectors.join(', ');
+		groupSelectors.push(isNegated ? `:not(${groupSelector})` : groupSelector);
+	}
+
+	// Combine groups using :is()
+	const finalSelectorParts = groupSelectors.map(group => {
+		// const innerSelector = group.split(',').map(s => s.trim().substring(3)).join(',');
+		return `:is(${group})`;
+	});
+
+	const finalSelector = finalSelectorParts.join('');
+
+  if (finalSelector === "")
+    return "";
+
+	return `
+:is(img,video):not(${finalSelector}) { display: none !important; }
+.message:not(:has(:is(img,video)${finalSelector}, .content > p > :not(.label, .image), .content > :not(.label, p, video))) { display: none !important; }
+`;
+}
+
+function update_image_filter(filterString) {
+	const existingStyle = document.getElementById('image-filter');
+
+	const CSSRules = filter_string_to_CSS(filterString.toLowerCase());
+
+	// console.log(CSSRules);
+
+	const style = document.createElement('style');
+	style.id = 'image-filter';
+	style.textContent = CSSRules;
+
+	document.head.appendChild(style);
+
+	// remove old filter after adding new, to avoid flashes of unwanted content
+	if (existingStyle)
+		existingStyle.remove();
 }
 
 // main ----------------------------------------------------------------------

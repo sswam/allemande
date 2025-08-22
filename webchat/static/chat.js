@@ -76,6 +76,7 @@ let view_options = {
   help: 0,
   embed: 0,
   dir_sort: "alpha",
+  filter: "",
 };
 
 let mode_options = {
@@ -274,7 +275,7 @@ function clear_content(ev) {
 
 function focus_content_on_pc() {
   if (!isMobile)
-      focus_content();
+    focus_content();
 }
 
 function focus_content() {
@@ -1105,6 +1106,7 @@ export const shortcuts = {
   global: {},
   message: {},
   room: {},
+  filter: {},
   edit: {},
 };
 
@@ -1191,6 +1193,10 @@ function setup_main_ui_shortcuts() {
   add_shortcuts(shortcuts.room, [
     ['enter', focus_content, 'Focus message input'],
 //    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+  ]);
+
+  add_shortcuts(shortcuts.filter, [
+    ['enter', filter_changed, 'Change image filter'],
   ]);
 
   add_shortcuts(shortcuts.edit, [
@@ -1760,7 +1766,10 @@ function set_top(id) {
     show($el);
   }
   top_controls = id;
-  focus_content_on_pc();
+  if (!isMobile && id == "top_filter")
+    $id('filter_query').focus();
+  else
+    focus_content_on_pc();
 }
 
 function set_top_left(id) {
@@ -2625,7 +2634,7 @@ async function opt_mission(ev) {
 async function setup_icons() {
   await $import("icons");
   icons = modules.icons.icons;
-  for (const prefix of ["mod", "add", "view", "opt", "nav", "scroll", "audio", "select"]) {
+  for (const prefix of ["mod", "add", "view", "opt", "nav", "scroll", "audio", "select", "filter"]) {
     icons[`${prefix}_cancel`] = icons["x"];
   }
   icons["edit_close"] = icons["x"];
@@ -2895,6 +2904,45 @@ function select_cancel(ev) {
   send_to_room_iframe({ type: "set_mode_options", ...mode_options });
 }
 
+// filter images -------------------------------------------------------------
+
+function load_filter() {
+	view_options.filter = localStorage.getItem('filter') || '';
+  $id('filter_query').value = view_options.filter;
+}
+
+function save_filter() {
+	localStorage.setItem('filter', view_options.filter);
+}
+
+function filter_changed(ev) {
+  console.log("filter_changed");
+  view_options.filter = $id('filter_query').value;
+	save_filter();
+  view_options_apply();
+}
+
+/* system messages -------------------------------------------------------- */
+
+async function setup_system_message() {
+  // WIP
+  // TODO: load it, can be per user, or from API
+  // TODO: colours / severity?
+  // TODO: versioning or something
+  const system_message = $id('system_message');
+  const system_message_id = 1;
+  const text = "⚠️ Please contact Sam to give feedback, and keep your account active. No stress!";
+  if (!text)
+    return;
+  system_message.textContent = text;
+  // show(system_message);
+  $on(system_message, 'click', () => dismiss_system_message(system_message_id));
+}
+
+function dismiss_system_message(system_message_id) {
+  $id('system_message').remove();
+}
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -2908,9 +2956,11 @@ export async function init() {
     document.body.classList.add("ios")
 
   setup_help();
+  load_filter();
   setup_view_options();
   await setup_icons();
   setup_embed_vs_main_ui();
+  setup_system_message();
 
   // The controls layout used to work in Chrome without the hack,
   // but now behaves wrongly when the input bar is reduced to minimum height.
@@ -2930,6 +2980,7 @@ export async function init() {
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.message));
   $on($content, "keydown", content_keydown);
   $on($room, "keypress", (ev) => dispatch_shortcut(ev, shortcuts.room));
+  $on($id('filter_query'), "keypress", (ev) => dispatch_shortcut(ev, shortcuts.filter));
   $on($edit, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.edit));
 
   $on($id("send"), "click", send);
@@ -2943,6 +2994,7 @@ export async function init() {
   $on($id("nav"), "click", nav_click);
   $on($id("select"), "click", select_click);
   $on($id("scroll"), "click", () => set_top("top_scroll"));
+  $on($id("filter"), "click", () => set_top("top_filter"));
   // $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
 
   // select functions
@@ -3009,6 +3061,9 @@ export async function init() {
   $on($id("scroll_pageup"), "click", (ev) => scroll_pages(ev, -1));
   $on($id("scroll_pagedown"), "click", (ev) => scroll_pages(ev, 1));
   $on($id("scroll_cancel"), "click", () => set_top());
+
+  $on($id('filter_query'), "change", filter_changed);  // or on "input"
+  $on($id("filter_cancel"), "click", () => set_top());
 
   if (iOS && navigator.standalone)
     $on(window, "scroll", iOS_reload_scroll);

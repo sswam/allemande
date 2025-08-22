@@ -97,4 +97,6 @@ export const icons = {
 
   sort_alpha: '<i class="bi bi-sort-alpha-down i20"></i>',
   sort_time: '<i class="bi bi-clock i20"></i>',
+
+  filter: '<i class="bi bi-filter i20"></i>',
 };

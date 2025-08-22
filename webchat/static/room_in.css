@@ -27,6 +27,13 @@ body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .labe
 	color: var(--me);
 }
 
+/* hide narrative labels when code_source is turned off */
+
+body:not(.code_source) .message.narrative > .content > .label:first-child,
+body:not(.code_source) .message.narrative > .content > p:first-of-type > .label:first-child {
+	display: none;
+}
+
 /* messages --------------------------------------------------------------- */
 
 .message {
@@ -458,6 +465,10 @@ ul.directory-listing > li > a > .name {
 	white-space: nowrap;
 }
 
+ul.directory-listing > li > a > .icon {
+	margin-right: 0.25rem;
+}
+
 /* on hover, show all with a background color and z-index */
 ul.directory-listing > li:hover > a > .icon,
 ul.directory-listing > li:focus-within > a > .icon {
@@ -474,12 +485,6 @@ ul.directory-listing > li:focus-within > a > .name {
 	border-radius: 0.25rem;
 	white-space: nowrap;
 }
-
-/*
-.icon {
-	margin-right: 0.625rem;
-}
-*/
 
 body {
 	display: flex;
@@ -1004,6 +1009,8 @@ body:not(.select) input[type="checkbox"].select {
 	break-after: page;
 }
 
+/* blink tag emulation! --------------------------------------------------- */
+
 @keyframes blink {
   0%, 75% { visibility: visible; }
   75.1%, 100% { visibility: hidden; }
@@ -1058,6 +1065,37 @@ blink {
 /* rainbow text ----------------------------------------------------------- */
 
 .rainbow-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+body.light .rainbow-text {
+  background-image: linear-gradient(to right,
+    #ff0000,    /* Red */
+    #ff7f00,    /* Orange */
+    #ffa500,    /* Darker yellow for light mode */
+    #008000,    /* Darker green for light mode */
+    #0000ff,    /* Blue */
+    #4b0082,    /* Indigo */
+    #9400d3     /* Violet */
+  );
+}
+
+body.dark .rainbow-text {
+  background-image: linear-gradient(to right,
+    #ff0000,    /* Red */
+    #ff7f00,    /* Orange */
+    #ffff00,    /* Yellow */
+    #00ff00,    /* Bright green for dark mode */
+    #00ffff,    /* Lighter blue for dark mode */
+    #8f00ff,    /* Brighter indigo for dark mode */
+    #ff00ff     /* Brighter violet for dark mode */
+  );
+}
+
+.rainbow-text-1 {
   background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
   -webkit-background-clip: text;
   background-clip: text;

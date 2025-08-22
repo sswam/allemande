@@ -1,5 +1,6 @@
 var inIframe = window.parent !== window.self;
 const moveLabels = true;
+const hideLabelForSameUser = true;
 const room = await $import("chat:room");
 
 const HIDE_CONTROLS_DELAY = 1000;
@@ -146,7 +147,7 @@ export async function processMessage(newMessage) {
   */
 
   // Set title attribute for images
-  // and add a <div class="alt"> element for each image
+  // add a <div class="alt"> element for each image
   const images = newMessage.querySelectorAll("img");
   for (const img of images) {
     if (!img.title && img.alt) {
@@ -167,6 +168,10 @@ export async function processMessage(newMessage) {
       wrapDiv.appendChild(altDiv);
       parent.insertBefore(wrapDiv, next);
     }
+    // remove NEGATIVE prompt from alt (for filter images function)
+    // and make lower case
+    if (img.alt)
+      img.alt = img.alt.replace(/\s*\bNEGATIVE\b.*?(?=\s----|$)/g, '').toLowerCase();
   }
 
   if (newUser) {
@@ -200,16 +205,22 @@ export async function processMessage(newMessage) {
 
     // mark narrative messages
     const narrators = [
-      "illy",
-      "hily",
-      "yoni",
+      "bigi",
+      "magi",
+      "lusy",
+      "sixl",
       "coni",
+      "wili",
+      "pigi",
+      "broni",
+      "hily",
+      "secs",
+      "pwny",
       "poni",
       "boni",
-      "bigi",
-      "pigi",
-      "dily",
-      "wili",
+      "yoni",
+      "jily",
+      "novi",
       "nova",
     ]; // TODO: read from config, extend list
     if (narrators.includes(newUser.toLowerCase())) {
@@ -261,8 +272,8 @@ export async function processMessage(newMessage) {
   await process_editing_commands(newMessage);
 
   // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
+  const label = newMessage.querySelector(".label");
   if (newMessage && moveLabels) {
-    const label = newMessage.querySelector(".label");
     // console.log("trying to move label for message ID", id, "label", label);
     // console.log("new message", newMessage);
     if (label) {
@@ -279,6 +290,14 @@ export async function processMessage(newMessage) {
 //        label.style.paddingRight = "1em";
         container = newContent;
       }
+      /* Wrapping text nodes in spans */
+      Array.from(container.childNodes)
+        .filter(node => node.nodeType === Node.TEXT_NODE)
+        .forEach(textNode => {
+          const span = document.createElement('span');
+          span.textContent = textNode.textContent;
+          textNode.replaceWith(span);
+        });
       container.insertBefore(label, container.firstChild);
 
       if (user.toLowerCase() === "gimg") {
@@ -297,6 +316,15 @@ export async function processMessage(newMessage) {
     }
   }
 
+  // Hide the label if same user as previous message
+  if (hideLabelForSameUser) {
+    let prevMessage = newMessage.previousElementSibling;
+    while (prevMessage && prevMessage.classList.contains('hidden'))
+        prevMessage = prevMessage.previousElementSibling;
+    if (prevMessage && newUser == prevMessage.getAttribute("user"))
+      label.classList.add("hidden");
+  }
+
   // Add ID labels which can be shown, div class=id
   const idDiv = document.createElement("div");
   idDiv.className = "id";
@@ -310,7 +338,7 @@ export async function processMessage(newMessage) {
   checkbox.id = "s" + id;
   newMessage.prepend(checkbox);
 
-  // ID of last visible mesage in chat, for undo
+  // ID of last visible message in chat, for undo
   const lastMessageId = getLastVisibleMessageId();
   // console.log("last visible message ID", lastMessageId);
 

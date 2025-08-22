@@ -61,6 +61,7 @@
 		<input id="room" name="room" class="flex grow">
 		<div class="top_controls row gap" id="top_main">
 			<button id="debug" title="debug" class="small boffin">?</button>
+			<button id="filter" title="filter media" class="advanced">filter</button>
 			<button id="scroll" title="scrolling" class="advanced">scroll</button>
 			<button class="hidden" id="notify">notify</button>
 			<a class="button" href="" id="user" title="cycle your main rooms">?</a>
@@ -74,12 +75,18 @@
 			<button id="scroll_end" title="end of room: end">bot</button>
 			<button id="scroll_cancel">back</button>
 		</div>
+		<div class="top_controls row gap hidden flex grow" id="top_filter">
+			<input id="filter_query" title="filter images" placeholder="filter" class="wide">
+			<button id="filter_cancel">back</button>
+		</div>
 	</div>
 
 	<div id="messages" class="view messages grow">
+		<div id="system_message" class="system_message hidden"></div>
+
 		<iframe id="messages_iframe" class="fill" src="about:blank" scrolling="no" allowFullScreen></iframe>
 
-		<div id="messages_overlay"  class="fill"></div>
+		<div id="messages_overlay" class="fill"></div>
 	</div>
 
 	<textarea id="view_edit" class="view editor grow hidden"></textarea>

@@ -382,6 +382,8 @@ math-field::part(virtual-keyboard-toggle), math-field::part(menu-toggle) {
 	font-size: 24px;
 }
 
+/* TODO: remove or re-do #intro mode? */
+
 #theme-overlay, #intro {
 	position: fixed;
 	top: 50%;
@@ -453,6 +455,34 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
 		transform: scale(1) rotate(0deg);
 	}
 }
+
+.top_controls.grow {
+	flex: 4 0 0;
+}
+
+/* system messages -------------------------------------------------------- */
+
+.system_message {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1;
+	min-width: min(450px, calc(100% - 2 * var(--pad)));
+	max-width: 50%;
+
+	margin: var(--pad);
+	background-color: var(--background);
+	color: var(--text);
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	border: 0.125rem solid var(--border);
+/*	background-color: rgba(255, 255, 255, 0.9);
+	padding: 10px;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+
+/* printing --------------------------------------------------------------- */
 
 @media print {
 	:root {
