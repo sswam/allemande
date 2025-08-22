@@ -173,7 +173,8 @@ Please do not use languages models other than those listed here for NSFW content
 | Google   | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                      |
 | Google   | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
 | xAI      | Grok 4             | Anni   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
-| DeepSeek | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                        |
+| DeepSeek | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                        |
+| DeepSeek | DeepSeek Chat V3.1 | Desee  | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                     |
 | Mistral  | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
 | Mistral+ | Venice: Uncensored | Veni   | 33K     | 33K        | $0.50           | $2               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.                                    |
 

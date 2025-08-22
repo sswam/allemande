@@ -542,9 +542,11 @@ digraph DeepSeek {
 
     "DeepSeek" [label=<<b>DeepSeek</b>>]
     "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
+    "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek Chat (V3.1)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
     "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek Reasoner (R1)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Strong Reasoning, Creative</font>>]
 
     "DeepSeek" -> "Dese"
+    "DeepSeek" -> "Desee"
     "DeepSeek" -> "Deseri"
 }
 ```
@@ -660,6 +662,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Rocki** (Grok 3, xAI): xAI's third quirky and intelligent language model
 - **Anni** (Grok 4, xAI): xAI's latest quirky and intelligent language model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
+- **Desee** (DeepSeek Chat V3.1): DeepSeek's creative and intelligent chat model, with extra smarts
 - **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
 - **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
@@ -904,7 +907,8 @@ type: visual
 | xAI           | Grok 2                | Grok    | 128K    | 128K          | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model.                                                               |
 | xAI           | Grok 3                | Rocki   | 128K    | 128K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
 | xAI           | Grok 4                | Anni    | 256K    | 256K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
-| DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model.                                                                  |
+| DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192          | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                                  |
+| DeepSeek      | DeepSeek Chat V3.1    | Desee   | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192          | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Mistral       | Mistral Large 2411    | Misti   | 128K    | 128K          | $2              | $6               | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
@@ -1066,7 +1070,7 @@ WIP: not yet visible in the app
 | <i class="bi-image"></i> | `Alt+I` | Images | Cycle images display: normal, blur, hidden |
 | <i class="bi-alphabet"></i> | `Alt+A` | Alt | Toggle showing alt captions |
 | <i class="bi-arrows-angle-expand"></i> <i class="bi-arrows-angle-contract"></i> |  | Image Size | Change image size |
-| <i class="bi-braces"></i> |  | Source | View source (none, javascript, math/diagram source) |
+| <i class="bi-braces"></i> |  | Source | View source (clean, basics, javascript, math/diagram source) |
 | <i class="bi-asterisk"></i> |  | Color | Highlight code |
 | <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><ellipse cx="7.6" cy="4.3" rx="4" ry="3"/><ellipse cx="11.7" cy="4.6" rx="4" ry="3"/><ellipse cx="6.9" cy="8.5" rx="4" ry="3"/><ellipse cx="10.7" cy="7.3" rx="4" ry="3"/><ellipse cx="4.3" cy="6.3" rx="4" ry="3"/><ellipse cx="3.22" cy="12.3" rx="1.2" ry=".9"/><ellipse cx="1.4" cy="14.1" rx=".8" ry=".6"/></svg> |  | Details | View thoughts and details |
 | <i class="bi-easel"></i> |  | Canvas | View shared canvas |
