@@ -1,5 +1,5 @@
-type: openrouter
-model: deepseek-v3
+type: deepseek
+model: deepseek-chat
 welcome: true
 context: 20
 system_bottom: You are $NAME. Please only reply with a single message, as $NAME; do not role-play as other people!

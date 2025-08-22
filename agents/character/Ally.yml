@@ -22,7 +22,7 @@ visual:
   age: adult 20 years old
   emo: light smile, optimistic
   furry: calico cat, cat ears, cat tail
-lines: 5
+lines: 1
 # config:
 #   max_new_tokens: 2048
 #   early_stopping: true
