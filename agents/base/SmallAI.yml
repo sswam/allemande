@@ -4,6 +4,6 @@ over: ShowMI
 system_bottom: You are $FULLNAME.
 # Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!
 system_bottom_pos: 3
-context: 101
+context: 30
 lines: 1
 dedent: true
