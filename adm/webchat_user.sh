@@ -93,7 +93,6 @@ Password: $pass
 4. Close the help with the X at top-right
 $start_nsfw
 
-
 === Beta Program ===
 
 - Ally Chat is a power tool, and can be confusing for beginners.
