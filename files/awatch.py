@@ -321,9 +321,12 @@ def echo_change_details(file: str, change: int, size_old: int|None, size_new: in
         content = Path(file).read_bytes().decode(errors="replace")
     else:
         # echo only the change
-        with open(file, "rb") as f:
-            f.seek(size_old)
-            content = f.read(size_new - size_old).decode(errors="replace")
+        try:
+            with open(file, "rb") as f:
+                f.seek(size_old)
+                content = f.read(size_new - size_old).decode(errors="replace")
+        except FileNotFoundError:
+            content = ""
     print(content, file=sys.stderr)
 
 
