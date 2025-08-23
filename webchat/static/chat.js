@@ -2474,7 +2474,8 @@ async function change_theme(ev) {
 
 function set_theme(theme_new) {
   theme = theme_new;
-  show_theme_name();
+  if (!embed)
+    show_theme_name();
   set_settings({ theme: theme });
   load_theme();
   send_to_room_iframe({ type: "theme_changed", theme });
