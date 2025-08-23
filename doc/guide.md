@@ -452,11 +452,21 @@ digraph OpenAI {
     "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o4 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
     "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4.1</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
     "Grace" [label=<<b>Grace</b><br/><font point-size="10">o3</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
+    "Heis" [label=<<b>Heis</b><br/><font point-size="10">GPT-5-nano</font><br/><font point-size="8">400K context</font><br/><font point-size="8">Small, Fast, newest model</font>>]
+    "Heise" [label=<<b>Heise</b><br/><font point-size="10">GPT-5-mini</font><br/><font point-size="8">400K context</font><br/><font point-size="8">Medium strength, newest model</font>>]
+    "Heisen" [label=<<b>Heisen</b><br/><font point-size="10">GPT-5</font><br/><font point-size="8">400K context</font><br/><font point-size="8">Strong, newest model</font>>]
+    "Gos" [label=<<b>Gos</b><br/><font point-size="10">gpt-oss-20b</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Medium OSS model</font>>]
+    "Goss" [label=<<b>Goss</b><br/><font point-size="10">gpt-oss-120b</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Strong OSS model</font>>]
 
     "OpenAI" -> "Dav"
     "OpenAI" -> "Fermi"
     "OpenAI" -> "Emmy"
     "OpenAI" -> "Grace"
+    "OpenAI" -> "Heis"
+    "OpenAI" -> "Heise"
+    "OpenAI" -> "Heisen"
+    "OpenAI" -> "Gos"
+    "OpenAI" -> "Goss"
 }
 ```
 
@@ -897,9 +907,14 @@ type: visual
 | Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K            | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                                |
 | Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K           | $1.25 [2]       | $10.00 [2]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
 | OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K           | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
-| OpenAI        | o4-mini               | Fermi   | 200K    | 100K          | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
 | OpenAI        | GPT-4.1               | Emmy    | 1M      | 32K           | $2              | $8.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
+| OpenAI        | o4-mini               | Fermi   | 200K    | 100K          | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
 | OpenAI        | o3                    | Grace   | 200K    | 100K          | $10.00          | $40.00           | OpenAI's most powerful reasoning model for advanced applications.                                                |
+| OpenAI        | GPT-5-nano            | Heis    | 400K    | 128K          | $0.05           | $0.40            | OpenAI's fastest, most cost-efficient version of GPT-5.                                                          |
+| OpenAI        | GPT-5-mini            | Heise   | 400K    | 128K          | $0.25           | $2.00            | OpenAI's faster, cost-efficient version of GPT-5 for well-defined tasks.                                         |
+| OpenAI        | GPT-5                 | Heisen  | 400K    | 128K          | $1.25           | $10.00           | OpenAI's best model for coding and agentic tasks across domains.                                                 |
+| OpenAI        | gpt-oss-20b           | Gos     | 128K    | 128K          | $0.04           | $0.15            | OpenAI's medium-sized open-weight model for low latency domains.                                                 |
+| OpenAI        | gpt-oss-120b          | Goss    | 128K    | 128K          | $0.072          | $0.28            | OpenAI's most powerful open-weight model, fits into an H100 GPU.                                                 |
 | Perplexity    | Sonar                 | Sona    | 128K    | 8K            | $1              | $1               | Perplexity's fastest and most affordable Online model with live internet data.                                   |
 | Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K            | $1 [3]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
 | Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K            | $3 [3]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
@@ -1012,6 +1027,7 @@ WIP: not yet visible in the app
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 |  |  | Debug | Toggle debug mode (developer only) |
+| <i class="bi-filter"></i> |  | Filter | Filter images in chat, e.g. `flower, garden; -person -1girl -1boy -1other; !sunset red_rose`. From weak to strong binding: `;` means AND, `!` negates an expression, `,` means OR, spaces separate terms and mean AND, `-` negates one term, `_` stands for a space in a term. It uses case-insensitive substring matching, so "rose" will also match "Roses". |
 | <i class="bi-arrows-move"></i> |  | Scroll | Open scroll controls, useful on mobile |
 
 ### Scroll Submenu
@@ -1145,7 +1161,7 @@ Clicking on an image in the chat enters image viewing mode.
 | Go to Last Image | N/A | `End` | N/A | Display the last image. |
 | Open Image in New Window | `Shift + Click` | N/A | N/A | Open the image in a new browser window. |
 | Open Image in New Tab | `Ctrl + Click` | N/A | N/A | Open the image in a new browser tab. |
-| Open Image in This Tab | `Alt + Click` | N/A | N/A | Open image in current tab (TODO: change to download) |
+| Download Image | `Alt + Click` | N/A | N/A | Download the image |
 
 ### Additional Keyboard Shortcuts
 
@@ -1203,24 +1219,13 @@ deny:
 - claude
 - clauden
 - clia
-- emmy
-- dav
 - grace
 - fermi
-- sageri
-- sonari
-- sagi
-- sona
-- grok
-- zeno
-- vega
-- frank
 allow:
-- friend
-- colleague
+- sam
 ```
 
-This would allow all AI agents except for those listed, and also allow two human users.
+This would allow all AI agents except for those listed, and also allow a human user, Sam.
 
 If allow_agents is false, only agents that are explicitly allowed can operate in or under that folder.
 

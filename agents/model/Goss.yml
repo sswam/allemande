@@ -1,0 +1,5 @@
+type: openrouter
+model: gpt-oss-120b
+welcome: true
+context: 20
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
