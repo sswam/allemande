@@ -93,17 +93,13 @@ Password: $pass
 4. Close the help with the X at top-right
 $start_nsfw
 
-=== Content Rules ===
-
-1. No sexualisation of minors in text or media
-2. No sexualised images of real people without consent
-
-Those are the main rules. See the guide for more details.
-
 
 === Beta Program ===
 
-Please participate in group chats, give feedback, and support us on Patreon if you like the app.
+- Ally Chat is a power tool, and can be confusing for beginners.
+- I can give you a demo in the app, to help you get started.
+- Please participate in group chats, and give feedback.
+- You can support us on Patreon if you like the app.
 
 $patreon_links
 END
