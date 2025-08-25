@@ -1,4 +1,4 @@
-all: lang.rec pop.txt rules.txt
+all: lang.rec # pop.txt rules.txt
 
 .SECONDARY:
 

@@ -276,6 +276,8 @@ touch doc/agent_colours.css
 cd ~/allemande/amps
 make
 
+mkdir -p agents/cartoon agents/celeb agents/disney agents/fiction agents/muppet
+
 cd ~/allemande
 make
 
