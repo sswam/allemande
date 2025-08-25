@@ -268,6 +268,13 @@ pip install -e mdformat-light-touch
 
 rm -rf ~/.cache/pip
 
+# -------- unprompted, a macro processor for image gen -----------------------
+
+mkdir -p ~/soft-ai
+cd ~/soft-ai
+git clone git@github.com:ThereforeGames/unprompted.git
+ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
+
 # -------- build stuff -------------------------------------------------------
 # This may likely fail in some way; please check with the developer or fix it!
 

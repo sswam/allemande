@@ -16,14 +16,6 @@ NVCC_PREPEND_FLAGS="-ccbin $CUDA_CC" CUDACXX="$CUDACXX" CMAKE_ARGS="-DGGML_CUDA=
 # CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=all-major"  # for wider CUDA / GPU compatibility; might be needed on WSL
 
 
-# -------- unprompted, a macro processor for image gen -----------------------
-
-mkdir -p ~/soft-ai
-cd ~/soft-ai
-git clone git@github.com:ThereforeGames/unprompted.git
-ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
-
-
 # -------- whisper.cpp -------------------------------------------------------
 # Not recommended without a GPU or on a server
 
