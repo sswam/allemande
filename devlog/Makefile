@@ -1,6 +1,9 @@
 N=30
 delay=30
 
+auto:
+	@echo >&2 "devlog does not build with default target"
+
 update:
 	find -size 0 | xa rm; devlog -r,ref.md,ally_chat.md
 many:
