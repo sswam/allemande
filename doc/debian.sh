@@ -165,7 +165,7 @@ END
 
 # ======== 3. ALLEMANDE TOOLKIT SETUP ========================================
 
-# -------- clone allemande and use the main branch ---------------------------
+# -------- clone allemande ---------------------------------------------------
 
 git clone git@github.com:sswam/allemande.git
 # git clone https://github.com/sswam/allemande.git  # alternative, but can't push
@@ -173,18 +173,12 @@ git clone git@github.com:sswam/allemande.git
 sudo ln -sf $PWD/allemande /opt/
 cd allemande
 
-# -------- install python3.11-distutils-bogus --------------------------------
+# -------- set up a Python 3.12 virtual environment ------------------
 
-sudo apt-get -y install ./debian/python3.11-distutils-bogus_1.0_all.deb
+# NOTE: Python 3.13 is no good yet (at time of testing).
 
-# -------- set up a Python 3.11 or 3.12 virtual environment ------------------
-
-# NOTE: use 3.11 on stable or 3.12 on testing / sid. Python 3.13 is no good yet.
-
-sudo apt install python3.11-venv python3.11-dev python3-tk
-python3.11 -m venv venv
-# sudo apt install python3.12-venv python3.12-dev python3.12-tk
-# python3.12 -m venv venv
+sudo apt-get install python3.12-venv python3.12-dev python3.12-tk
+python3.12 -m venv venv
 . venv/bin/activate
 
 # -------- install Go from upstream ------------------------------------------
