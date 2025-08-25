@@ -6,7 +6,7 @@ lang.rec: languages.rec
 	<$< grep -E -e '^$$' -e '^(name|extension|shebang):' >$@
 
 pop.pdf:
-	curl "$$(search -l -m 1 "practice of programming type:pdf" | kut 2)" > $@
+	curl "$$(search -l 1 "practice of programming type:pdf" | kut 2)" > $@
 %.txt: %.pdf
 	pdf2txt $< >$@
 rules.txt: pop.txt

@@ -271,6 +271,8 @@ rm -rf ~/.cache/pip
 # -------- build stuff -------------------------------------------------------
 # This may likely fail in some way; please check with the developer or fix it!
 
+touch doc/agent_colours.css
+
 cd ~/allemande/amps
 make
 
