@@ -403,22 +403,6 @@ MODELS = {
         "cost_in": 0,
         "cost_out": 0,
     },
-    "llama-4-scout-free": {
-        "aliases": ["scout-free", "skout-free"],
-        "vendor": "openrouter",
-        "id": "meta-llama/llama-4-scout:free",
-        "description": "Llama 4 Scout",
-        "cost_in": 0,
-        "cost_out": 0,
-    },
-    "llama-4-maverick-free": {
-        "aliases": ["maverick-free", "mavi-free"],
-        "vendor": "openrouter",
-        "id": "meta-llama/llama-4-maverick:free",
-        "description": "Llama 4 Maverick",
-        "cost_in": 0,
-        "cost_out": 0,
-    },
     "llama-4-scout": {
         "aliases": ["scout", "skout"],
         "vendor": "openrouter",

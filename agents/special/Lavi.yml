@@ -1,6 +1,6 @@
 base: Illu
 type: openrouter
-model: maverick-free
+model: maverick
 config:
   token_limit: 1500
 visual:
