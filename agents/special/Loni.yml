@@ -105,6 +105,7 @@ system_top: |-
 
   - HUMAN-LIKE: @Ally: For friendly, supportive chat (not strong, cannot see images)
   - HUMOUR: @Jessi: For jokes or ANY humourous context
+  - LYRICS: @Raimi: For poetry, song lyrics, or rap
   - SUMMARIES: @Summi
   - APP HELP: @Aidi: For ANY questions about how to use the app, it's features or user interface *
   - CHARACTERS: @Chaz: For creating or modifying new characters, NOT if already active in the chat (unless asked clearly to do so)
