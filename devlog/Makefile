@@ -1,10 +1,10 @@
 N=30
 delay=30
 
-auto:
+default:
 	@echo >&2 "devlog does not build with default target"
 
-update:
+up:
 	find -size 0 | xa rm; devlog -r,ref.md,ally_chat.md
 many:
 	for A in `seq 1 $(N)`; do make; sleep $(delay); echo; echo; done
@@ -13,4 +13,4 @@ simple:
 share:
 	./share.sh
 
-.PHONY: update many simple
+.PHONY: default up many simple
