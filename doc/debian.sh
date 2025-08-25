@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
-# NOTE: Do not simply execute the whole file, rather read it and copy-paste the
-# commands after confirming that they are good for your system.
+# IMPORTANT: Do not simply execute the whole file, rather read it and
+# copy-paste the commands after confirming that they are good for your system.
 
 # Installation for Debian GNU/Linux
 
@@ -17,6 +17,18 @@
 # The UI includes an iframe to display chat messages, from
 # the 'rooms' subdomain. This protects us from JavaScript,
 # so we can include untrusted JavaScript in the chat safely.
+
+# This document has four sections:
+
+# 1. Host setup
+# 2. User setup
+# 3. Allemande toolkit setup
+# 4. Ally Chat setup
+
+# You might want to skip some of them!
+
+
+# ======== 1. HOST SETUP =====================================================
 
 # -------- user and host settings --------------------------------------------
 
@@ -108,6 +120,9 @@ sudo apt-get -y dist-upgrade
 
 sudo update-alternatives --config editor
 
+
+# ======== 2. USER SETUP =====================================================
+
 # -------- set up ssh and generate a key -------------------------------------
 
 mkdir -p ~/.ssh
@@ -131,11 +146,31 @@ git config --global user.email "$email"
 git config --global user.name "$fullname"
 git config --global pull.rebase false      # or true if you prefer!
 
+# -------- nvim settings for vim compatibility -------------------------------
+# You can skip this if you don't use nvim or have other preferences
+
+cat <<END >~/.vimrc
+set nocp
+set hls
+END
+
+mkdir -p ~/.config/nvim
+
+cat <<END >>~/.config/nvim/init.vim
+set runtimepath^=~/.vim runtimepath+=~/.vim/after
+let &packpath=&runtimepath
+source ~/.vimrc
+END
+
+
+# ======== 3. ALLEMANDE TOOLKIT SETUP ========================================
+
 # -------- clone allemande and use the main branch ---------------------------
 
 git clone git@github.com:sswam/allemande.git
 # git clone https://github.com/sswam/allemande.git  # alternative, but can't push
 # You could also fork on github and clone your version.
+sudo ln -sf $PWD/allemande /opt/
 cd allemande
 
 # -------- install python3.11-distutils-bogus --------------------------------
@@ -169,10 +204,12 @@ go install honnef.co/go/tools/cmd/staticcheck@latest
 
 # -------- ai.env: API keys to access AI providers ---------------------------
 
+# The ai.env file does not have to be in ~/my/, that's just where I put it.
 mkdir -p ~/my
 chmod go-rwx ~/my
 cp config/ai.env.dist ~/my/ai.env
 # NOTE: edit ~/ai.env and populate as needed with API keys. They are all optional.
+# I suggest to make ~/my a git repo, and clone it to your home PC.
 
 # Get API keys from here:
 
@@ -184,6 +221,7 @@ cp config/ai.env.dist ~/my/ai.env
 # xAI: https://console.x.ai/
 # DeepSeek: https://platform.deepseek.com/api_keys
 # OpenRouter: https://openrouter.ai/settings/keys
+# Venice: https://venice.ai/settings/api
 # Serper (search): https://serper.dev/api-key
 
 # -------- bashrc additions --------------------------------------------------
@@ -191,8 +229,8 @@ cp config/ai.env.dist ~/my/ai.env
 cat <<'END' >>~/.bashrc
 
 set -a
-. ~/allemande/venv/bin/activate
-. ~/allemande/env.sh
+. /opt/allemande/venv/bin/activate
+. /opt/allemande/env.sh
 . ~/my/ai.env
 
 if [ -n "$PS1" ]; then
@@ -222,19 +260,6 @@ metadeb -n=allemande-deps debian-allemande-deps.txt
 # sudo apt-get -y install $(< debian-packages.txt grep -v '^#')
 # sudo apt-get -y clean
 
-# -------- config.js ---------------------------------------------------------
-
-cp config/config.js.dist webchat/static/config.js
-# You can edit to set your host URLs.
-# The Vapid key is not used yet.
-
-# -------- unprompted, a macro processor for image gen -----------------------
-
-mkdir -p ~/soft-ai
-cd ~/soft-ai
-git clone git@github.com:ThereforeGames/unprompted.git
-ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
-
 # -------- install allemande Python dependencies -----------------------------
 
 pip install -r requirements-core-cuda.txt  # with NVIDIA GPU
@@ -259,69 +284,6 @@ make
 cd ~/allemande
 make
 
-# -------- install whisper.cpp -----------------------------------------------
-# Not recommended without a GPU or on a server
-
-mkdir -p ~/soft-ai
-cd ~/soft-ai
-git clone git@github.com:ggerganov/whisper.cpp.git
-cd whisper.cpp
-make -j8
-
-# -------- install clip-interrogator -----------------------------------------
-# This needs a GPU and isn't used yet, so you can skip it.
-
-cd ~/soft-ai
-git clone git@github.com:pharmapsychotic/BLIP.git
-git clone git@github.com:pharmapsychotic/clip-interrogator.git
-pip install -e BLIP
-pip install -e clip-interrogator
-
-# -------- nvim settings for vim compatibility -------------------------------
-# You can skip this if you don't use nvim.
-
-cat <<END >~/.vimrc
-set nocp
-set hls
-END
-
-mkdir -p ~/.config/nvim
-
-cat <<END >>~/.config/nvim/init.vim
-set runtimepath^=~/.vim runtimepath+=~/.vim/after
-let &packpath=&runtimepath
-source ~/.vimrc
-END
-
-# -------- edit config.sh ----------------------------------------------------
-
-# Edit ~/allemande/config.sh, set your domain name and server name.
-
-# -------- set up secrets.sh -------------------------------------------------
-
-export ALLYCHAT_JWT_SECRET="$(openssl rand -hex 32)"
-envsubst < config/secrets.sh.dist > secrets.sh
-# Back this up if you are running a production service!
-
-# -------- SSL certificates --------------------------------------------------
-
-# TODO
-
-# -------- build nginx with JWT support --------------------------------------
-
-nginx-build-with-jwt "1.22.1-9"  # known good version, compatible with the plugin
-# nginx-build-with-jwt           # or try your luck with the latest version, which isn't
-
-# -------- run setup scripts -------------------------------------------------
-
-cd ~/allemande
-. ./env.sh
-
-sudo rm -f /etc/nginx/sites-enabled/default
-allemande-install
-web-install
-make canon
-
 # -------- test allemande tools ----------------------------------------------
 # llm is the low-level tool, check its --help
 # 1sf gives a one-sentence response
@@ -338,7 +300,46 @@ fortune | tee /dev/stderr | proc -m=dese "to a poem"      # use Deepseek V3
 
 rm -r ~/llm.log  # remove the llm log files, if you don't want to keep them
 
-# -------- set up firewall for semi-trusted chatusers ------------------------
+
+
+# ======== 4. ALLY CHAT SETUP ================================================
+
+# -------- config.js ---------------------------------------------------------
+
+cp config/config.js.dist webchat/static/config.js
+# You can edit to set your host URLs.
+# The Vapid key is not used yet.
+
+# -------- edit config.sh ----------------------------------------------------
+
+# Edit ~/allemande/config.sh, set your domain name and server name.
+
+# -------- set up secrets.sh -------------------------------------------------
+
+export ALLYCHAT_JWT_SECRET="$(openssl rand -hex 32)"
+envsubst < config/secrets.sh.dist > secrets.sh
+# Back this up if you are running a production service!
+
+# -------- SSL certificates --------------------------------------------------
+
+# TODO: use LetsEncrypt / certbot
+
+# -------- build nginx with JWT support --------------------------------------
+
+nginx-build-with-jwt "1.22.1-9"  # known good version, compatible with the plugin
+# nginx-build-with-jwt           # or try your luck with the latest version, which isn't
+
+# -------- run setup scripts -------------------------------------------------
+
+cd ~/allemande
+. ./env.sh
+
+sudo rm -f /etc/nginx/sites-enabled/default
+allemande-install
+web-install
+make canon
+
+# -------- set up firewall for semi-trusted users ----------------------------
 # NOTE: This is optional and experimental, you probably should skip it for now.
 
 sudo cp config/remote_user_firewall.conf.dist /etc/remote_user_firewall.conf
@@ -359,6 +360,6 @@ sudo /opt/allemande/adm/remote_user_firewall.sh add
 # check that the firewall was applied after reboot, with:
 sudo /opt/allemande/adm/remote_user_firewall.sh list
 
-# -------- install other allemande soft dependencies that are tricky ---------
+# -------- install other Ally Chat soft dependencies that are tricky ---------
 
 # see requirements-extra.sh: install notes for some other dependencies

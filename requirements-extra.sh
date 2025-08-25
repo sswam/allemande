@@ -16,11 +16,22 @@ NVCC_PREPEND_FLAGS="-ccbin $CUDA_CC" CUDACXX="$CUDACXX" CMAKE_ARGS="-DGGML_CUDA=
 # CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=all-major"  # for wider CUDA / GPU compatibility; might be needed on WSL
 
 
+# -------- unprompted, a macro processor for image gen -----------------------
+
+mkdir -p ~/soft-ai
+cd ~/soft-ai
+git clone git@github.com:ThereforeGames/unprompted.git
+ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
+
+
 # -------- whisper.cpp -------------------------------------------------------
-# See debian.sh for details.
+# Not recommended without a GPU or on a server
 
-
-# -------- Go - see debian.sh ------------------------------------------------
+mkdir -p ~/soft-ai
+cd ~/soft-ai
+git clone git@github.com:ggerganov/whisper.cpp.git
+cd whisper.cpp
+make -j8
 
 
 # -------- Rust --------------------------------------------------------------
@@ -129,6 +140,16 @@ sudo patch "$CUDA_HOME_FOR_PATCH/targets/x86_64-linux/include/crt/math_functions
   * \ingroup CUDA_MATH_DOUBLE
   * \brief  Calculate the sine and cosine of the first input argument 
 END
+
+
+# -------- clip-interrogator -------------------------------------------------
+# This needs a GPU and isn't used yet, so you can skip it.
+
+cd ~/soft-ai
+git clone git@github.com:pharmapsychotic/BLIP.git
+git clone git@github.com:pharmapsychotic/clip-interrogator.git
+pip install -e BLIP
+pip install -e clip-interrogator
 
 
 # -------- TODO: -------------------------------------------------------------
