@@ -173,12 +173,10 @@ git clone git@github.com:sswam/allemande.git
 sudo ln -sf $PWD/allemande /opt/
 cd allemande
 
-# -------- set up a Python 3.12 virtual environment ------------------
+# -------- set up a Python 3.13 virtual environment ------------------
 
-# NOTE: Python 3.13 is no good yet (at time of testing).
-
-sudo apt-get install python3.12-venv python3.12-dev python3.12-tk
-python3.12 -m venv venv
+sudo apt-get install python3.13-venv python3.13-dev python3.13-tk
+python3.13 -m venv venv
 . venv/bin/activate
 
 # -------- install Go from upstream ------------------------------------------
