@@ -225,6 +225,7 @@ set -a
 . /opt/allemande/env.sh
 . ~/my/ai.env
 
+# Sam's prompt preferences, remove if not wanted!
 if [ -n "$PS1" ]; then
 	prompt_status() { if [ $? = 0 ]; then echo '# '; else echo -e '#!'; fi; }
 	export PS1='$(prompt_status)'
@@ -254,8 +255,8 @@ metadeb -n=allemande-deps debian-allemande-deps.txt
 
 # -------- install allemande Python dependencies -----------------------------
 
-pip install -r requirements-core-cuda.txt  # with NVIDIA GPU
-# pip install -r requirements-core-cpu.txt  # without GPU
+pip install -r requirements-core-cpu.txt  # without GPU
+# pip install -r requirements-core-cuda.txt  # with NVIDIA GPU
 # pip install -r requirements-core-rocm.txt  # with AMD GPU
 
 pip install -r requirements-core.txt
