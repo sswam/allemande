@@ -22,7 +22,7 @@ from ally import main, logs, unix, util
 os.environ["GGML_CUDA_ENABLE_UNIFIED_MEMORY"] = "1"
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
-import transformers  # type: ignore # pylint: disable=wrong-import-order, wrong-import-position
+# import transformers  # type: ignore # pylint: disable=wrong-import-order, wrong-import-position
 from llama_cpp import Llama as LlamaCpp, CreateCompletionResponse  # pylint: disable=wrong-import-order, wrong-import-position
 
 __version__ = "0.2.3"
@@ -50,37 +50,37 @@ GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 # 3. Ends with a colon
 # 4. Followed by optional whitespace and end of line
 
-transformers_prompt_cache = transformers.DynamicCache()
+# transformers_prompt_cache = transformers.DynamicCache()
 
 
-def load_transformers_pipeline(model: str) -> transformers.pipeline:
-    """Get the pipeline for the given model"""
-
-    # Handle transformers models
-    # crash issues code commented: https://github.com/meta-llama/llama/issues/380
-    tokenizer = transformers.AutoTokenizer.from_pretrained(model)
-    #    tokenizer.pad_token = "[PAD]"
-    #    tokenizer.padding_side = "left"
-    #     tokenizer.pad_token = tokenizer.bos_token
-    #     tokenizer.padding_side = "left"
-
-    #    quantization_config = BitsAndBytesConfig(load_in_8bit=True)
-
-    return transformers.pipeline(
-        "text-generation",
-        model=model,
-        tokenizer=tokenizer,
-        model_kwargs={"torch_dtype": torch.bfloat16},
-        #        model_kwargs={"quantization_config": quantization_config},
-        #        torch_dtype=torch.float16,
-        #        torch_dtype=torch.bfloat16,
-        device_map="auto",
-        # max_length=100,
-        # max_new_tokens=50,
-        truncation=True,
-        use_cache=True,
-        #        do_sample=False,  # avoid crashes
-    )
+# def load_transformers_pipeline(model: str) -> transformers.pipeline:
+#     """Get the pipeline for the given model"""
+#
+#     # Handle transformers models
+#     # crash issues code commented: https://github.com/meta-llama/llama/issues/380
+#     tokenizer = transformers.AutoTokenizer.from_pretrained(model)
+#     #    tokenizer.pad_token = "[PAD]"
+#     #    tokenizer.padding_side = "left"
+#     #     tokenizer.pad_token = tokenizer.bos_token
+#     #     tokenizer.padding_side = "left"
+#
+#     #    quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+#
+#     return transformers.pipeline(
+#         "text-generation",
+#         model=model,
+#         tokenizer=tokenizer,
+#         model_kwargs={"torch_dtype": torch.bfloat16},
+#         #        model_kwargs={"quantization_config": quantization_config},
+#         #        torch_dtype=torch.float16,
+#         #        torch_dtype=torch.bfloat16,
+#         device_map="auto",
+#         # max_length=100,
+#         # max_new_tokens=50,
+#         truncation=True,
+#         use_cache=True,
+#         #        do_sample=False,  # avoid crashes
+#     )
 
 
 def load_gguf_model(model: str, context: int = 131072, n_gpu_layers=-1) -> LlamaCpp:
@@ -96,22 +96,22 @@ def load_gguf_model(model: str, context: int = 131072, n_gpu_layers=-1) -> Llama
     return llm
 
 
-async def stream_transformers(
-    pipeline: transformers.Pipeline, prompt: str, generation_kwargs: dict | None = None
-) -> AsyncIterator[str]:
-    """Stream the output of the transformers pipeline"""
-    streamer = transformers.TextIteratorStreamer(pipeline.tokenizer, skip_prompt=True)
-    generation_kwargs = {"text_inputs": prompt, "streamer": streamer, **(generation_kwargs or {})}
-    for unsupported in ["dry_allowed_length", "dry_base", "dry_multiplier", "dry_seq_breakers", "model"]:
-        generation_kwargs.pop(unsupported, None)
-
-    thread = Thread(target=pipeline, kwargs=generation_kwargs)
-    thread.start()
-
-    for chunk in streamer:
-        yield chunk
-
-    thread.join()
+# async def stream_transformers(
+#     pipeline: transformers.Pipeline, prompt: str, generation_kwargs: dict | None = None
+# ) -> AsyncIterator[str]:
+#     """Stream the output of the transformers pipeline"""
+#     streamer = transformers.TextIteratorStreamer(pipeline.tokenizer, skip_prompt=True)
+#     generation_kwargs = {"text_inputs": prompt, "streamer": streamer, **(generation_kwargs or {})}
+#     for unsupported in ["dry_allowed_length", "dry_base", "dry_multiplier", "dry_seq_breakers", "model"]:
+#         generation_kwargs.pop(unsupported, None)
+#
+#     thread = Thread(target=pipeline, kwargs=generation_kwargs)
+#     thread.start()
+#
+#     for chunk in streamer:
+#         yield chunk
+#
+#     thread.join()
 
 
 async def stream_gguf(llm: LlamaCpp, prompt: str, generation_kwargs: dict) -> AsyncIterator[str]:
