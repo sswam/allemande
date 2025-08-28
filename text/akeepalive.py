@@ -9,6 +9,7 @@ import asyncio
 import aiofiles
 
 import ucm
+from areader import AsyncFileReader
 
 logger = logging.getLogger(__name__)
 
@@ -53,53 +54,6 @@ class AsyncKeepAlive:
                     self.input_queue.task_done()
 
 
-# TODO put this in a separate module
-
-class AsyncFileReader:
-    """Async File Reader"""
-
-    def __init__(self, ifile: str):
-        """Initialize the Async Reader"""
-        self.ifile = ifile
-        self.istream = None
-        self.queue = None
-        self.task = None
-
-    async def __aenter__(self):
-        self.istream = await aiofiles.open(self.ifile, mode="r")
-        self.queue = asyncio.Queue()
-        self.task = asyncio.create_task(self._run())
-        return self.queue
-
-    async def __aexit__(self, *args):
-        if self.task:
-            self.task.cancel()
-            try:
-                await self.task
-            except asyncio.CancelledError:
-                pass
-        self.task = None
-        self.queue = None
-        if self.istream:
-            await self.istream.close()
-
-    async def _run(self):
-        """Forward items from the istream to the queue"""
-        try:
-            while True:
-                line = await self.istream.readline()
-                if not line:
-                    break
-                await self.queue.put(line)
-            # Signal end of file
-            await self.queue.put(None)
-        except asyncio.CancelledError:
-            raise
-        except Exception as e:
-            logger.error("Error reading file: %s", str(e))
-            raise
-
-
 async def async_keepalive_demo(timeout, timeout_return):
     """Async Timed Iterator Demo"""
     async with AsyncFileReader("/dev/stdin") as input_queue:
@@ -114,7 +68,7 @@ async def async_keepalive_demo(timeout, timeout_return):
 
 def get_opts():
     """Get command line options"""
-    parser = argparse.ArgumentParser(description="atimeout", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description="akeepalive", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-t", "--timeout", type=float, default=1, help="Timeout value in seconds")
     parser.add_argument("-r", "--timeout-return", default=".", help="Value to return on timeout")
     ucm.add_logging_options(parser)
