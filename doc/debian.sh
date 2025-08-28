@@ -343,6 +343,11 @@ allemande-install
 web-install
 make canon
 
+# -------- add users ---------------------------------------------------------
+
+webchat-user -n add root   # admin user, -n is the NSFW option
+webchat-user add $USER     # or what username you want
+
 # -------- set up firewall for semi-trusted users ----------------------------
 # NOTE: This is optional and experimental, you probably should skip it for now.
 
