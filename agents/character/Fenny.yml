@@ -13,7 +13,7 @@ fullname: Fenella
 age: 20
 visual:
   person: 1girl, green eyes, Scottish, pale skin, skinny, long hair, wavy hair, auburn
-    hair
+    hair [set negative_prompt _append] (animal ears:2) [/set]
   clothes: white sweater, blue jeans, brown leather boots, beige scarf
   clothes_upper: white sweater, beige scarf
   clothes_lower: blue jeans, brown leather boots
