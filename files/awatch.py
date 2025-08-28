@@ -310,24 +310,50 @@ def null_to(x, replacement):
     return x
 
 
-def echo_change_details(file: str, change: int, size_old: int|None, size_new: int|None) -> None:
-    """Echo the change details to stderr"""
+def echo_change_details(file: str, change: int, size_old: int|None, size_new: int|None, max_size: int = 16*1024) -> None:
+    """Echo the change details to stderr, skipping large or binary files"""
     if change not in [Change.added, Change.modified]:
         return
+
     size_old = size_old or 0
     size_new = size_new or 0
+
+    # Skip large changes
     if size_new < size_old:
-        # echo whole file
-        content = Path(file).read_bytes().decode(errors="replace")
+        change_size = size_new
     else:
-        # echo only the change
-        try:
+        change_size = size_new - size_old
+
+    if change_size > max_size:
+        logger.warning("Skipping large change: %d bytes", change_size)
+        return
+
+    try:
+        if size_new < size_old:
+            # Read whole file
+            content_bytes = Path(file).read_bytes()
+        else:
+            # Read only the change
             with open(file, "rb") as f:
                 f.seek(size_old)
-                content = f.read(size_new - size_old).decode(errors="replace")
-        except FileNotFoundError:
-            content = ""
-    print(content, file=sys.stderr)
+                content_bytes = f.read(size_new - size_old)
+
+        # Check for null bytes, which are rare in text files
+        if b'\x00' in content_bytes:
+            raise ValueError("Binary content detected")
+        # Check if the content can be decoded as UTF-8
+        content = content_bytes.decode('utf-8')
+
+        # Output the content
+        content = content_bytes.decode('utf-8')
+        print(content, file=sys.stderr)
+
+    except FileNotFoundError:
+        logger.warning("File not found: %s", file)
+    except (UnicodeDecodeError, ValueError):
+        logger.warning("Binary file detected, skipping: %s", file)
+    except Exception as e:
+        logger.error("Error reading file %s: %s", file, str(e))
 
 
 async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
