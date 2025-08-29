@@ -1102,3 +1102,9 @@ body.dark .rainbow-text {
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
+
+/* "subliminal messages"! ------------------------------------------------- */
+
+.fade {
+	opacity: 0.5;
+}

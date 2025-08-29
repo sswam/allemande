@@ -50,7 +50,7 @@ let view_options = {
   ids: 0,
   images: 1,
   alt: 0,
-  source: 0,
+  source: 1,
   details: 0,
   canvas: 0,
   toc: 1,
@@ -2290,7 +2290,10 @@ function view_alt(ev) {
 
 function view_source(ev) {
   const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
-  view_options.source = (view_options.source + delta + 4) % 4;
+  if (view_options.advanced)
+    view_options.source = (view_options.source + delta + 4) % 4;
+  else
+    view_options.source = view_options.source ? 0 : 2;
   view_options_apply();
 }
 

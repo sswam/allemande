@@ -396,8 +396,10 @@ const RESET_CHANCE = 0.99; // Chance a column will *not* reset. Higher = more em
 let matrixFrameCount = 0;
 
 // The revised animation loop
-function matrixFallingSlow() {
+function matrixFallingSlow(chars) {
   if (!matrix_canvas) return;
+
+  chars = chars || matrix_chars;
 
   matrixFrameCount++;
   // Only execute the main logic if the frame count is a multiple of FALL_SPEED
@@ -415,7 +417,7 @@ function matrixFallingSlow() {
 
     // Loop over each column
     for (let i = 0; i < y_positions.length; i++) {
-      const text = matrix_chars.charAt(Math.floor(Math.random() * matrix_chars.length));
+      const text = chars.charAt(Math.floor(Math.random() * chars.length));
       // The x position is now spaced out by the multiplier
       const x = i * FONT_SIZE * COLUMN_SPACING;
       const y = y_positions[i] * FONT_SIZE;
@@ -429,12 +431,12 @@ function matrixFallingSlow() {
     }
   }
 
-  requestAnimationFrame(matrixFallingSlow);
+  requestAnimationFrame(() => matrixFallingSlow(chars));
 }
 
 
 // Main function to set up and start the effect
-function matrix() {
+function matrix(chars) {
   if (typeof checkReducedMotionPreference === 'function' && checkReducedMotionPreference()) {
     console.log('Reduced motion preferred - matrix effect disabled');
     return;
@@ -465,7 +467,7 @@ function matrix() {
 
   // Reset the frame counter and start the new animation loop
   matrixFrameCount = 0;
-  matrixFallingSlow();
+  matrixFallingSlow(chars);
 }
 
 

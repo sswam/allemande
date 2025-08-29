@@ -5,6 +5,8 @@ const room = await $import("chat:room");
 
 const HIDE_CONTROLS_DELAY = 1000;
 
+// let last_message_time = null;
+
 async function render_math(node) {
   const codes = node.querySelectorAll("code.language-latex");
   if (codes.length === 0)
@@ -320,7 +322,7 @@ export async function processMessage(newMessage) {
   if (hideLabelForSameUser) {
     let prevMessage = newMessage.previousElementSibling;
     while (prevMessage && prevMessage.classList.contains('hidden'))
-        prevMessage = prevMessage.previousElementSibling;
+      prevMessage = prevMessage.previousElementSibling;
     if (prevMessage && newUser == prevMessage.getAttribute("user"))
       label.classList.add("hidden");
   }
@@ -484,6 +486,10 @@ function decorateCodeBlock(codeBlock) {
 }
 
 export async function process_messages(new_content) {
+  // const this_message_time = Date.now();
+  // if (last_message_time)
+  //   console.log(this_message_time - last_message_time, "ms since last message");
+  // last_message_time = this_message_time;
   for (const newMessage of new_content) {
     await processMessage(newMessage);
   }
