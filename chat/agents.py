@@ -412,8 +412,10 @@ class Agents:
                     msg_private = " for private agent" if private else ""
                     logger.warning("Agent name conflict%s: %r vs %r for %r",
                             msg_private, old_main_name, agent.name, name1)
+                # logger.info("skipping agent name: %r", name1)
                 continue
             self.agents[name1] = agent
+            # logger.info("added agent under name: %r -> %r", name1, agent.name)
 
         return agent
 
@@ -427,7 +429,7 @@ class Agents:
             agent.remove_visual(private=private)
 
         agent_names = agent.get_all_names()
-        logger.debug("remove_agent: %r", name)
+        # logger.info("remove_agent: %r", name)
         for name1 in agent_names:
             if private:
                 agent1 = self.agents.get(name1)

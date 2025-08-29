@@ -161,6 +161,8 @@ def load_local_agents(room, agents=None):
             break
         room_dir = room_dir.parent
 
+    # logger.info("Loading local agents for room %r from %r", room.path, agents_dirs)
+
     for agent_dir in reversed(agents_dirs):
         agents = Agents(services, parent=agents)
         agents.load(agent_dir, visual=False)
