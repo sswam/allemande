@@ -413,6 +413,9 @@ def who_should_respond(
             }, agents=agents)
             agents.set(agent, human)
 
+    # Responsible human user
+    # responsible_human_user = responsible_human(history, agents, room)
+
     agent_names = agents.names()
 
     # exclude agents without type (mix-ins) and type == "visual"

@@ -226,6 +226,12 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     logger.debug("remote_messages: %s", pformat(remote_messages))
     logger.debug("remote_messages: %s", json.dumps(remote_messages, indent=2))
 
+    # logger.info("agent: %r", agent)
+    # logger.info("system_top: %r", agent.get("system_top"))
+    # logger.info("system_bottom: %r", agent.get("system_bottom"))
+    # logger.info("over: %r", agent.get("over"))
+    # logger.info("forward_allow: %r", agent.get("forward_allow"))
+
     ###### the actual query ######
     logger.debug("querying %r = %r", agent.name, agent["model"])
     try:

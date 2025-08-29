@@ -357,6 +357,11 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     gen_config["user"] = responsible_human
 
+    # logger.info("agent: %r", agent)
+    # logger.info("system_bottom: %r", agent.get("system_bottom"))
+    # logger.info("over: %r", agent.get("over"))
+    # logger.info("forward_allow: %r", agent.get("forward_allow"))
+ 
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 
     # try to get image seed from response

@@ -342,6 +342,8 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             for bot2 in bots2:
                 if isinstance(forward_allow, list) and bot2 not in forward_allow or isinstance(forward_deny, list) and bot2 in forward_deny:
                     logger.info("Forward: %s not allowed, using forward_if_denied", bot2)
+                    logger.info("  forward_allow: %r", forward_allow)
+                    logger.info("  forward_deny: %r", forward_deny)
                     bot2 = agent.get("forward_if_denied")
                     if not bot2:
                         continue

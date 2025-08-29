@@ -28,12 +28,9 @@ ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
 SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 
 
-# - TODO:
-#   - if first element of list is "+" we extend, else overwrite.
-#   - if first element is "U" we add and deduplicate, like set union.
+# - TODO: other ideas for merging
 #   - s/foo/bar
 #   - =foo to pass foo through literally as a string without changes
-#   - ["=", ...] means pass the rest of the list through without changes
 
 def merge_string_strategy(_config, _path, base, nxt):
     """A strategy to merge strings with support for '+' prefix and suffix."""
@@ -52,12 +49,31 @@ def merge_string_strategy(_config, _path, base, nxt):
         return nxt + " " + base
     return nxt
 
+def merge_list_strategy(_config, _path, base, nxt):
+    """A strategy to merge lists by appending."""
+    if not (isinstance(base, list) and isinstance(nxt, list)):
+        return nxt
+        # return STRATEGY_END
+    if len(nxt) == 0:
+        return nxt
+    # if first element of list is "+" we append
+    if nxt[0] == "+":
+        return base + nxt[1:]
+    # if first element is "U" we append and deduplicate, like set union.
+    if nxt[0] == "U":
+        return uniqo(base + nxt[1:])
+    # if first element is "=" we skip the "=" and replace
+    if nxt[0] == "=":
+        return nxt[1:]
+    # otherwise replace
+    return nxt
+
 # Create a custom merger with specific strategies for different types
 agent_merger = Merger(
     # Type-specific strategies
     [
         (dict, ["merge"]),  # Merge dictionaries
-        (list, ["append"]), # Append lists
+        (list, merge_list_strategy), # Append lists
         (str, merge_string_strategy), # Custom string merging
     ],
     # Fallback strategy for other types
@@ -361,6 +377,10 @@ class Agent:
                     cache.remove(str(PATH_VISUAL / path / name1) + ".txt")
                 except FileNotFoundError:
                     pass
+
+    def __repr__(self) -> str:
+        """String representation of the agent"""
+        return f"Agent(name={self.name}, type={self.get('type')}, private={self.private})\n" + yaml.dump(self.data, sort_keys=False)
 
 
 class Agents:
