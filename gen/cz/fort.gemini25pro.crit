@@ -1,0 +1,29 @@
+feat(fort): Implement probabilistic line selection
+ 
+This commit implements a `fort.b` script that probabilistically
+selects a line from standard input and prints it to standard output.
+The probability of selecting a line decreases as the number of lines
+increases.
+ 
+1. The random number generation `(long double)((long long
+int)random()*(((1UL<<31)))+random())/((unsigned long long
+int)(((1UL<<31)))*(((1UL<<31))))` is ridiculously complex and
+inefficient. It's attempting to generate a double between 0 and 1, but
+it's doing so in a very convoluted way. This should be simplified to use
+`drand48()` or similar.
+ 
+2. The `free(choice)` before assigning a new value to `choice` is good, BUT
+there's no corresponding `free(choice)` before the program exits. This leads
+to a memory leak.
+ 
+3. The `strdup` call duplicates the input line even if it's not ultimately
+chosen. This is wasteful if the input is very long.  Consider delaying the
+duplication until a line is actually selected.
+ 
+4. The generated C code includes a lot of dead code and unused variables,
+as mentioned in `fort.b.crit`.  `buffer struct__my__9_b;` `buffer *my__9_b
+= &struct__my__9_b;` These can be removed to improve readability and
+performance. The dead code is generated from the standard library.
+ 
+5. It seems risky to perform `((free(choice)), choice = NULL);` without
+checking for `NULL` first. It is technically safe, but slightly odd.

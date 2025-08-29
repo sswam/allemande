@@ -1,0 +1,125 @@
+#ifndef FBIO_WAITFORVSYNC
+#define FBIO_WAITFORVSYNC _IOW('F', 0x20, __u32)
+#endif
+
+#include <stdlib.h>
+#include <sys/types.h>
+...
+
+struct str;
+union any;
+struct buffer;
+...
+
+typedef struct str str;
+typedef union any any;
+typedef struct buffer buffer;
+...
+
+typedef uint8_t byte;
+typedef double num;
+typedef unsigned char boolean;
+...
+
+struct str
+{
+	char *start;
+	char *end;
+};
+
+union any
+{
+	void *p;
+	char *cs;
+	char c;
+	short s;
+	int i;
+	long l;
+	long long ll;
+	float f;
+	double d;
+	long double ld;
+	size_t z;
+	off_t o;
+};
+
+struct buffer
+{
+	char *start;
+	char *end;
+	char *space_end;
+};
+
+struct circbuf
+{
+	ssize_t size;
+	ssize_t space;
+	ssize_t start;
+	char *data;
+};
+
+struct deq
+{
+	circbuf b;
+	ssize_t element_size;
+	ssize_t space;
+	ssize_t size;
+	ssize_t start;
+};
+
+struct thunk
+{
+	thunk_func *func;
+	void *obj;
+	void *common_arg;
+};
+
+struct list
+{
+	list *next;
+};
+
+...
+
+str new_str(char *start, char *end);
+str str_dup(str s);
+str str_of_size(size_t size);
+...
+
+extern str str_null;
+extern thunk _thunk_null;
+extern thunk *thunk_null;
+...
+
+
+int main(int main__argc, char *main__argv[])
+{
+	main__init(main__argc, main__argv);
+	typeof(1) n = 1;
+	cstr choice = NULL;
+	char *l;
+	buffer struct__my__9_b;
+	buffer *my__9_b = &struct__my__9_b;
+	(buffer_init(my__9_b, 128));
+	while(1)
+	{
+		buffer_clear(my__9_b);
+		if(rl(my__9_b))
+		{
+			break;
+		}
+		l = (my__9_b->start);
+		if(((int)(n*((num)((long double)((long long int)random()*(((1UL<<31)))+random())/((unsigned long long int)(((1UL<<31)))*(((1UL<<31)))))))) == 0)
+		{
+			((free(choice)), choice = NULL);
+			choice = strdup(l);
+		}
+		++n;
+	}
+	if(choice)
+	{
+		Puts(choice);
+	}
+	return 0;
+}
+
