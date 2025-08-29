@@ -5,8 +5,9 @@ all: install chmod
 up: sync | all
 
 sync:
-	sshc -- $${SERVER_SSH}= sh -c "make install chmod; cd person; git add -A; git commit -m ." || true
+	sshc -- $${SERVER_SSH}= sh -c "make install chmod; cd person; git add -A; git commit -m . ; cd ../scene ; git add -A; git commit -m ." || true
 	in-dir person git pull
+	in-dir scene git pull
 
 build: everyone.txt girls.txt boys.txt nonbinary.txt people.txt everyone_count.txt girls_count.txt boys_count.txt nonbinary_count.txt people_count.txt
 
