@@ -44,11 +44,8 @@ class AsyncGather:
         if self.timer_handle and not self.timer_handle.cancelled():
             self.timer_handle.cancel()
 
-        # Flush remaining messages with lock to avoid race
-        async with self.flush_lock:
-            if self.buffer:  # Send any remaining messages
-                await self.output_queue.put("".join(self.buffer))
-                self.buffer.clear()
+        # Flush remaining messages
+        await self._flush_buffer()
 
         self.task = None
         self.output_queue = None
@@ -72,24 +69,20 @@ class AsyncGather:
 
     async def _run(self):
         """Gather messages and forward them after timeout"""
-        try:
-            while True:
-                msg = await self.input_queue.get()
-                if msg is None:  # EOF
-                    # Cancel timer before final flush
-                    if self.timer_handle and not self.timer_handle.cancelled():
-                        self.timer_handle.cancel()
-                    await self._flush_buffer()
-                    await self.output_queue.put(None)
-                    break
+        while True:
+            msg = await self.input_queue.get()
+            if msg is None:  # EOF
+                # Cancel timer before final flush
+                if self.timer_handle and not self.timer_handle.cancelled():
+                    self.timer_handle.cancel()
+                await self._flush_buffer()
+                await self.output_queue.put(None)
+                break
 
-                async with self.flush_lock:
-                    self.buffer.append(msg)
-                self.input_queue.task_done()
-                self._reset_timer()
-        except asyncio.CancelledError:
-            # Let cancellation propagate
-            raise
+            async with self.flush_lock:
+                self.buffer.append(msg)
+            self.input_queue.task_done()
+            self._reset_timer()
 
 
 async def agather_demo(wait: float = 0.2):
@@ -101,7 +94,6 @@ async def agather_demo(wait: float = 0.2):
                 if item is None:
                     break
                 print(item, end="", flush=True)
-                queue.task_done()
 
 
 def get_opts():
