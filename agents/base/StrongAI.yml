@@ -1,14 +1,7 @@
-# Currently the "strong" models are dumbed-down until I implement accounting and get costs in hand!
-
-# type: deepseek
-# model: deepseek-reasoner-free
-# model: deepseek-reasoner
-# model: deepseek-chat
 type: google
 model: gemini-2.5-pro
-# type: google
-# model: gemini-2.0-flash
-over: ShowMI
+over:
+- ShowMI
 context: 20
 system_top: |-
   You are $NAME. Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!

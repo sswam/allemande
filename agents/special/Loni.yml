@@ -4,6 +4,7 @@ over: []
 # type: google
 # model: gemini-2.5-flash
 forward: true
+forward_allow: null
 forward_deny:
 - Lori
 - Bigi

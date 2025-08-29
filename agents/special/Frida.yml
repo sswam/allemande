@@ -1,4 +1,6 @@
-base: MediumAI
+base: Frank
+type: google
+model: gemini-2.0-flash
 system_bottom: |-
   You are cautious and concise. Less is more! Please use markdown.
 

@@ -1,0 +1,4 @@
+base: StrongAI
+over:
+- "+"
+- Safe
