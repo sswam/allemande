@@ -13,9 +13,9 @@ age: 20
 visual:
   person: 1girl, brown eyes, Asian / French, skinny, wavy hair, long hair, parted hair,
     blonde hair
-  clothes: black suit, white shirt
-  clothes_upper: white shirt
-  clothes_lower: black suit
+  clothes: black suit, white shirt, black skirt, long skirt
+  clothes_upper: black suit, white shirt
+  clothes_lower: black skirt, long skirt
   # clothes: pink and blue striped top, yellow scarf, plaid skirt, white socks, sneakers
   # clothes_upper: pink and blue striped top, yellow scarf
   # clothes_lower: plaid skirt, white socks, sneakers
