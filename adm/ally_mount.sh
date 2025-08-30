@@ -25,11 +25,11 @@ done
 ally-mount() {
 	mkdir -p $ALLEMANDE_ROOMS_SERVER # $ALLEMANDE_VISUAL/person
 
-	safe-mount $SERVER_ROOMS_SSH $ALLEMANDE_ROOMS_SERVER .gitignore
+	safe-mount v$SERVER_ROOMS_SSH $ALLEMANDE_ROOMS_SERVER .gitignore
 	# safe-mount $SERVER_PERSON_SSH $ALLEMANDE_VISUAL/person .gitignore
 
 	for client in $ALLEMANDE_PORTAL_CLIENTS; do
-		if [ "$client" = "$HOSTNAME" ]; then
+		if [ "$client" = "$HOSTNAME" ] || [ "$client" = "v$HOSTNAME" ]; then
 			continue
 		fi
 		for service in $ALLEMANDE_MODULES; do
@@ -110,7 +110,7 @@ portal-mount() {
 	local portal=$2
 	local portal_path=$ALLEMANDE_PORTALS/$portal
 
-	safe-mount "$client:$portal_path" "$portal_path" "todo"
+	safe-mount "v$client:$portal_path" "$portal_path" "todo"
 }
 
 portal-umount() {

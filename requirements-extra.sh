@@ -144,5 +144,43 @@ pip install -e BLIP
 pip install -e clip-interrogator
 
 
+# -------- Wireguard VPN between PC and server -------------------------------
+# YMMV!
+
+# On server and PC
+wg genkey | sudo tee /etc/wireguard/private.key
+sudo chmod go= /etc/wireguard/private.key 
+sudo cat /etc/wireguard/private.key | wg pubkey | sudo tee /etc/wireguard/public.key
+
+# On server, create /etc/wireguard/wg0.conf
+
+[Interface]
+Address = 10.0.0.1/24
+ListenPort = 51820
+PrivateKey = <PASTE_SERVER_PRIVATE_KEY_HERE>
+
+[Peer]
+PublicKey = <PASTE_PC_PUBLIC_KEY_HERE>
+AllowedIPs = 10.0.0.2/32
+
+# On PC, create /etc/wireguard/wg0.conf
+
+[Interface]
+Address = 10.0.0.2/24
+PrivateKey = <PASTE_PC_PRIVATE_KEY_HERE>
+
+[Peer]
+PublicKey = <PASTE_SERVER_PUBLIC_KEY_HERE>
+Endpoint = <YOUR_SERVER_PUBLIC_IP>:51820
+AllowedIPs = 10.0.0.1/32
+PersistentKeepalive = 25
+
+# On server and PC
+sudo chmod go= /etc/wireguard/wg0.conf
+
+sudo wg-quick up wg0
+sudo systemctl enable wg-quick@wg0
+
+
 # -------- TODO: -------------------------------------------------------------
-# - Flux
+# - Flux, Illustrious, Chroma

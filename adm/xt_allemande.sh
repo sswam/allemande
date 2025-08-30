@@ -30,7 +30,7 @@ xt-allemande() {
 	# Remote services
 	if [ "$remote" = 1 ]; then
 		for service in "${remote_services[@]}"; do
-			xt -e sshc "$server" sxw allemande "$service" &
+			xt -e sshc v"$server" sxw allemande "$service" &
 			sleep 0.1
 		done
 	fi
