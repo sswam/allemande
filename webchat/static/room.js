@@ -1414,6 +1414,7 @@ function filter_string_to_CSS(filterString) {
 
 	return `
 :is(img,video):not(${finalSelector}) { display: none !important; }
+div.image:has(img:not(${finalSelector})) { display: none !important; }
 .message:not(:has(:is(img,video)${finalSelector}, .content > p > :not(.label, .image), .content > :not(.label, p, video))) { display: none !important; }
 `;
 }
