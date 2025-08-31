@@ -68,3 +68,5 @@ natsort
 
 pytest-playwright
 # also needs: playwright install
+
+ruamel-yaml
