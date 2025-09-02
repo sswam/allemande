@@ -12,9 +12,7 @@ Usage as a module:
 
 import sys
 import logging
-from typing import List, Dict, TextIO, Optional, Tuple
-
-from argh import arg
+from typing import TextIO
 
 from ally import main
 
@@ -23,7 +21,7 @@ __version__ = "1.0.1"
 logger = main.get_logger()
 
 
-def parse_record(lines: List[str], use_dot: bool = False) -> Tuple[Dict[str, str], List[str]]:
+def parse_record(lines: list[str], use_dot: bool = False) -> dict[str, str]:
     """Parse a single record from a list of lines."""
     record = {}
     field_order = []
@@ -31,7 +29,7 @@ def parse_record(lines: List[str], use_dot: bool = False) -> Tuple[Dict[str, str
     current_value = []
 
     for line in lines:
-        line = line.rstrip()
+        line = line.rstrip("\n")
         if not line:
             continue
         if ':' in line and not line.startswith(' ') and not line.startswith('\t'):
@@ -49,64 +47,62 @@ def parse_record(lines: List[str], use_dot: bool = False) -> Tuple[Dict[str, str
     if current_key:
         record[current_key] = '\n'.join(current_value).rstrip()
 
-    return record, field_order
+    record["__field_order__"] = field_order
+
+    return record
 
 
-def read_records(input: TextIO, use_dot: bool = False) -> Tuple[List[Dict[str, str]], List[List[str]]]:
+def read_records(input: TextIO, use_dot: bool = False) -> list[dict[str, str]]:
     """Read records from the input file."""
     records = []
-    all_field_orders = []
     current_record = []
 
+    def add_record():
+        nonlocal current_record
+        record = parse_record(current_record, use_dot)
+        records.append(record)
+        current_record = []
+
     for line in input:
-        if line.strip() == "":
+        if line.rstrip("\n") == "":
             if current_record:
-                record, field_order = parse_record(current_record, use_dot)
-                records.append(record)
-                all_field_orders.append(field_order)
-                current_record = []
+                add_record()
         else:
             current_record.append(line)
 
     if current_record:
-        record, field_order = parse_record(current_record, use_dot)
-        records.append(record)
-        all_field_orders.append(field_order)
+        add_record()
 
-    return records, all_field_orders
+    return records
 
 
-def write_record(output: TextIO, record: Dict[str, str], field_order: Optional[List[str]] = None, indent: str = '\t', use_dot: bool = False):
+def write_record(output: TextIO, record: dict[str, str], indent: str = '\t', use_dot: bool = False):
     """Write a single record to the output file."""
+    field_order = record.get("__field_order__")
     if field_order is None:
         field_order = list(record.keys())
 
-    for key in field_order:
-        if key in record:
-            value = record[key]
-            lines = value.split('\n')
-            output.write(f"{key}: {lines[0]}\n")
-            for line in lines[1:]:
-                if use_dot and not line.strip():
-                    output.write(".\n")
-                else:
-                    output.write(f"{indent}{line}\n")
+    for key in field_order + sorted(k for k in record if k not in field_order):
+        if not key in record or key == "__field_order__":
+            continue
+        value = record[key]
+        lines = value.split('\n')
+        output.write(f"{key}: {lines[0]}\n")
+        for line in lines[1:]:
+            if use_dot and not line.strip():
+                output.write(".\n")
+            else:
+                output.write(f"{indent}{line}\n")
 
     output.write("\n")
 
 
-def write_records(output: TextIO, records: List[Dict[str, str]], field_orders: Optional[List[List[str]]] = None, indent: str = '\t', use_dot: bool = False):
+def write_records(output: TextIO, records: list[dict[str, str]], indent: str = '\t', use_dot: bool = False):
     """Write records to the output file."""
-    if field_orders is None:
-        field_orders = [None] * len(records)
-
-    for record, field_order in zip(records, field_orders):
-        write_record(output, record, field_order, indent, use_dot)
+    for record in records:
+        write_record(output, record, indent, use_dot)
 
 
-@arg('-I', '--indent', help='Indentation string for multi-line values (default: tab)')
-@arg('-D', '--dot', help='Use dots for blank lines in multi-line values', action='store_true', dest='use_dot')
-@arg('--append', help='Append to the output file instead of overwriting', action='store_true')
 def process_records(
     input: TextIO = sys.stdin,
     output: TextIO = sys.stdout,
@@ -117,9 +113,16 @@ def process_records(
     """
     Read records from input, process them, and write to output.
     """
-    records, field_orders = read_records(input, use_dot)
-    write_records(output, records, field_orders, indent, use_dot)
+    records = read_records(input, use_dot)
+    write_records(output, records, indent, use_dot)
+
+
+def setup_args(arg):
+    """Set up command-line arguments."""
+    arg('-I', '--indent', help='Indentation string for multi-line values')
+    arg('-D', '--dot', help='Use dots for blank lines in multi-line values', action='store_true', dest='use_dot')
+    arg('--append', help='Append to the output file instead of overwriting', action='store_true')
 
 
 if __name__ == "__main__":
-    main.run(process_records)
+    main.go(process_records, setup_args)

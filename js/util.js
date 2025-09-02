@@ -73,6 +73,16 @@ const $style = async (id, href) => {
   });
 }
 
+function encode_entities(txt) {
+  return txt.replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+//    "'": '&#39;'
+  })[c]);
+}
+
 window.modules = {};
 
 /**

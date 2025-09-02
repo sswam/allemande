@@ -456,7 +456,7 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
 #    query = re.sub(r"^\s*[,;.]|\s*$", "", query).strip()
 #    logger.debug("query 3: %r", query)
 
-    query = chat.clean_prompt([query], name, args.delim)
+    query = chat.clean_prompt([query], name, args.delim) + "\n"
     logger.debug("query: %s", query)
 
     # shell escape in python
@@ -464,6 +464,8 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     cmd_str += " ".join(map(shlex.quote, agent["command"]))
 
     command = ["sshc", "--", "allemande-nobody@localhost", "bash", "-c", cmd_str]
+
+    logger.info("safe_shell command: %r", command)
 
     # echo the query to the subprocess
     output, errors, status = await run_subprocess(command, query)
@@ -485,7 +487,11 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
         if errors:
             response += "## errors:\n```\n" + errors + "\n```\n\n"
         response += "## output:\n"
-    response += "```\n" + output + "```\n"
+
+    if not agent.get("markdown"):
+        response += "```\n" + output + "```\n"
+    else:
+        response += output
 
     response2 = f"{name}:\t{response}"
     response3 = chat.fix_response_layout(response2, args, agent)

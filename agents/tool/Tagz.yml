@@ -1,0 +1,5 @@
+# A software tool to search booru tags for Pony prompts
+type: safe_shell
+command:
+- tagz
+markdown: True

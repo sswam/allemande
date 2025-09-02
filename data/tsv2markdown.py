@@ -8,6 +8,9 @@ def main():
 	# Read the TSV file
 	tsv_data = sys.stdin.read()
 
+	if not tsv_data:
+		return
+
 	# Split the TSV data into lines
 	tsv_lines = tsv_data.splitlines()
 

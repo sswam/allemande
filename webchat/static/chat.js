@@ -890,11 +890,18 @@ function load_theme() {
   $old_link.replaceWith($new_link);
 }
 
-async function load_user_styles_and_script() {
-  const [_, userScript] = await Promise.all([
-    $style("user_styles", "/users/" + user + "/styles.css"),
-    $import("user_script", "/users/" + user + "/script.js")
+async function load_user_files() {
+  const user_dir = "/users/" + user;
+  const [_, userScript, nag_response] = await Promise.all([
+    $style("user_styles", user_dir + "/styles.css"),
+    $import("user_script", user_dir + "/script.js"),
+    fetch(user_dir + "/nag.html"),
   ]);
+  let nag = nag_response.ok ? await nag_response.text() : "";
+  // title case
+  const name = user.replace(/\b./g, c => c.toUpperCase());
+  nag = nag.replace(/\$USER\b/g, encode_entities(name));
+  setup_system_message(nag);
 
 //  modules.user_script = userScript; // XXX isn't that automatic?
 }
@@ -2928,22 +2935,16 @@ function filter_changed(ev) {
 
 /* system messages -------------------------------------------------------- */
 
-async function setup_system_message() {
-  // WIP
-  // TODO: load it, can be per user, or from API
-  // TODO: colours / severity?
-  // TODO: versioning or something
-  const system_message = $id('system_message');
-  const system_message_id = 1;
-  const text = "⚠️ Please contact Sam to give feedback, and keep your account active. No stress!";
-  if (!text)
+async function setup_system_message(nag) {
+  if (!nag)
     return;
-  system_message.textContent = text;
-  // show(system_message);
-  $on(system_message, 'click', () => dismiss_system_message(system_message_id));
+  const system_message = $id('system_message');
+  system_message.innerHTML = nag;
+  show(system_message);
+  $on(system_message, 'click', () => dismiss_system_message());
 }
 
-function dismiss_system_message(system_message_id) {
+function dismiss_system_message() {
   $id('system_message').remove();
 }
 
@@ -2964,7 +2965,6 @@ export async function init() {
   setup_view_options();
   await setup_icons();
   setup_embed_vs_main_ui();
-  setup_system_message();
 
   // The controls layout used to work in Chrome without the hack,
   // but now behaves wrongly when the input bar is reduced to minimum height.
@@ -3099,13 +3099,13 @@ export async function init() {
 
   // $content.focus();
 
-  await load_user_styles_and_script();
+  focus_content_on_pc();
+
+  await load_user_files();
 
   /* This breaks scrolling in view_edit, etc, and I forget why I added it!
   $on(document, "touchmove", function(e) {
     e.preventDefault();
   }, { passive: false });
   */
-
-  focus_content_on_pc();
 }

@@ -1062,47 +1062,6 @@ blink {
   to { transform: rotate(0deg); }
 }
 
-/* rainbow text ----------------------------------------------------------- */
-
-.rainbow-text {
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-body.light .rainbow-text {
-  background-image: linear-gradient(to right,
-    #ff0000,    /* Red */
-    #ff7f00,    /* Orange */
-    #ffa500,    /* Darker yellow for light mode */
-    #008000,    /* Darker green for light mode */
-    #0000ff,    /* Blue */
-    #4b0082,    /* Indigo */
-    #9400d3     /* Violet */
-  );
-}
-
-body.dark .rainbow-text {
-  background-image: linear-gradient(to right,
-    #ff0000,    /* Red */
-    #ff7f00,    /* Orange */
-    #ffff00,    /* Yellow */
-    #00ff00,    /* Bright green for dark mode */
-    #00ffff,    /* Lighter blue for dark mode */
-    #8f00ff,    /* Brighter indigo for dark mode */
-    #ff00ff     /* Brighter violet for dark mode */
-  );
-}
-
-.rainbow-text-1 {
-  background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
 /* "subliminal messages"! ------------------------------------------------- */
 
 .fade {
