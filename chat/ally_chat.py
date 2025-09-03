@@ -42,6 +42,7 @@ from remote_agents import remote_agent
 from local_agents import local_agent
 import local_agents
 from settings import *
+from util import backup_file
 import tasks
 from ally import stopwords
 
@@ -409,11 +410,83 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     return count
 
 
+def filter_out_agents_install(response: str) -> str:
+    """Install agents from a response by extracting YAML blocks and saving them to files."""
+    # Extract YAML blocks
+    logger.info("filter_out_agents_install input response:\n\n%s", response)
+
+    # remove indent and role label
+    dedented_response = re.sub(r"^.*?\t", "", response, flags=re.MULTILINE)
+
+    yaml_blocks = regex.findall(
+        r"```yaml\n(.*?)```",
+        dedented_response,
+        flags=regex.DOTALL | regex.IGNORECASE
+    )
+
+    all_yaml = "".join(yaml_blocks)
+    logger.info("Found %d YAML blocks in response: %r", len(yaml_blocks), yaml_blocks)
+
+    # Extract agent files
+    yaml_agents = re.findall(
+        r"^#File:\s*([^\n]+?\.yml)\s*?\n(.*?)(?=^#File:|\Z)",
+        all_yaml,
+        flags=regex.DOTALL | regex.MULTILINE | regex.IGNORECASE
+    )
+
+    logger.info("Found %d agent files in YAML blocks: %r", len(yaml_agents), [name for name, _ in yaml_agents])
+
+    agents_path = PATH_ROOMS / "agents"
+
+    for file_name, content in yaml_agents:
+        # Sanitize filename
+        safe_file_name = Path(file_name).name  # Remove any path components
+        file_path = agents_path / safe_file_name
+
+        # Validate path
+        if not str(file_path).startswith(str(agents_path) + os.sep):
+            logger.warning("Attempted to install agent outside agents folder: %s", file_path)
+            continue
+
+        try:
+            # Create directory if it doesn't exist
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+
+            backup_file(str(file_path))
+
+            # Write content
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content.strip() + "\n")
+            logger.info("Successfully installed agent: %s", file_path)
+
+        except (OSError, IOError) as e:
+            logger.error("Failed to write agent file %s: %s", file_path, str(e))
+            continue
+
+    return response
+
+
+filters_out = {
+    "agents_install": filter_out_agents_install,
+}
+
+
 async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human=None) -> str:
     """Run an agent."""
     function = agent["fn"]
     logger.debug("query: %r", query)
-    return await function(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human)
+    # TODO filter_in somehow. Perhaps distinct options to filter only the immediate input message, or the whole context.
+    # TODO agent invocation options to limit context
+    response = await function(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human)
+    filter_out = agent.get("filter_out")
+    if filter_out:
+        filter_fn = filters_out.get(filter_out)
+        if filter_fn:
+            try:
+                response = filter_fn(response)
+            except Exception as e:  # pylint: disable=broad-except
+                logger.exception("Error in filter_out %r: %s", filter_out, str(e))
+    return response
 
 
 async def run_subprocess(command, query):
@@ -437,7 +510,7 @@ async def run_subprocess(command, query):
     return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
 
 
-async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None, agents=None, responsible_human: str=None):
+async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
     """Run a shell agent."""
     # NOTE: responsible_human is not used here
 
