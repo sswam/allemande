@@ -459,13 +459,18 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     query = chat.clean_prompt([query], name, args.delim) + "\n"
     logger.debug("query: %s", query)
 
+    arguments = ""
+    if agent.get("args"):
+        arguments = " " + query.rstrip("\n")
+        query = ""
+
     # shell escape in python
     cmd_str = ". ~/.profile ; "
-    cmd_str += " ".join(map(shlex.quote, agent["command"]))
+    cmd_str += " ".join(map(shlex.quote, agent["command"])) + arguments
 
     command = ["sshc", "--", "allemande-nobody@localhost", "bash", "-c", cmd_str]
 
-    logger.info("safe_shell command: %r", command)
+    logger.info("safe_shell command: %r query: %r", command, query)
 
     # echo the query to the subprocess
     output, errors, status = await run_subprocess(command, query)

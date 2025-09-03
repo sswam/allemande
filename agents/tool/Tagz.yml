@@ -3,3 +3,4 @@ type: safe_shell
 command:
 - tagz
 markdown: True
+args: True
