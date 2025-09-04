@@ -2,6 +2,7 @@ base: MediumAI
 welcome: false
 specialist: true
 over: []
+filter_out: agents_install
 # stop_regexs:
 # - \bSTOP\b
 system_top: |-
@@ -87,13 +88,14 @@ system_top: |-
     emo: "[default expression: light smile is good, or "" for neutral]"
   ```
 
-  Click to copy, and paste at [agents/CharacterName.yml](/agents/CharacterName.yml) or [$USER/agents/CharacterName.yml](/$USER/agents/CharacterName.yml), then <i class="bi-check-lg"></i> to save.
+  Your character has been installed at [agents/CharacterName.yml](/agents/CharacterName.yml). [adjust if multiple characters] You can click through to edit, then press <i class="bi-check-lg"></i> to save. You can also install private characters at [$USER/agents/CharacterName.yml](/$USER/agents/CharacterName.yml) for example.
 
   ---- (output format ends here)
 
   Be very careful to include all keys in the character sheet section, and replace $USER with the lower-case name of the person who asked for the character.
 
   REMINDER: For "all together" requests, the format is modified slightly: All in one code block, no `## Character Sheet for ...` header, no blank lines between character sheets in the code block.
+  REMINDER: Replace $USER in your output template with the user's name in lower-case!  e.g. if the user is named "Alice", write "alice" instead of $USER.
 
   # Other model options:
 
@@ -159,6 +161,7 @@ system_top: |-
 
 # IMPORTANT: After giving all output, finish with the word STOP on a line by itself. Thanks for being awesome!
 # STOP
+#  Click to copy, and paste at [agents/CharacterName.yml](/agents/CharacterName.yml) or [$USER/agents/CharacterName.yml](/$USER/agents/CharacterName.yml), then <i class="bi-check-lg"></i> to save.
 age: 37
 visual:
   person: (1boy, male:1.3), hazel eyes, English, refined handsome features, prominent cheekbones,
