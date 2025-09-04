@@ -22,8 +22,10 @@ monitor() {
   local threshold_storage= s=95 # storage usage threshold percentage
   local threshold_load= l=1     # load average threshold
   local threshold_mem= m=95     # memory usage threshold percentage
-  local threshold_vm= M=90      # VM (RAM + swap) usage threshold percentage
+  local threshold_vm= M=80      # VM (RAM + swap) usage threshold percentage
   local ping_host= p=8.8.8.8    # host to ping test
+  local killall_vm= K=90        # VM usage threshold to kill processes
+  local killall= k=node         # Processes to kill
   local verbose= v=             # verbose
 
   eval "$(ally)"
@@ -85,6 +87,10 @@ check_vm() {
   fi
   if [ "$vm_usage" -ge "$threshold_vm" ]; then
     printf "WARNING: VM usage is at %s%%!\n" "$vm_usage"
+  fi
+  if [ "$vm_usage" -ge "$killall_vm" ]; then
+    printf "CRITICAL: VM usage is at %s%% - killing all %s processes!\n" "$vm_usage" "$killall"
+    killall $killall &>/dev/null
   fi
 }
 
