@@ -4,11 +4,9 @@
 This module says hello, and asks the user how they are feeling.
 """
 
-import sys
-import logging
 import getpass
 import textwrap
-from typing import TextIO, Callable
+from typing import TextIO
 from random import random
 
 import sh  # type: ignore
