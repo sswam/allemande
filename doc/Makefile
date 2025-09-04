@@ -4,7 +4,7 @@ IMAGE_NSFW=solo-person-Cloe-black-lace-lingerie-seductive-lingerie-details-1-2-s
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml agent_colours.css
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml agent_colours.css
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md extra.md
 	rm -f $@
@@ -24,8 +24,13 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	./summaries_compile.sh > summaries.md
 
 ../rooms/agents/Yenta.yml: Yenta.0.yml summaries.md
-	chmod +w $@
+	chmod +w $@ || true
 	(cat Yenta.0.yml; sed 's/^/  /' < summaries.md) > $@
+	chmod a-w $@
+
+../rooms/agents/Shiksa.yml: Shiksa.0.yml summaries.md
+	chmod +w $@ || true
+	(cat Shiksa.0.yml; sed 's/^/  /' < summaries.md) > $@
 	chmod a-w $@
 
 ../rooms/intro.bb: intro.md
