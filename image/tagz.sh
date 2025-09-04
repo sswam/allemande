@@ -12,7 +12,7 @@ tagz() {
 		printf "## %s\n" "$query"
 		(
 			techo count tag
-			grep -- "$query" ~/tags | sed 's/_/ /g; s/,/\t/;' | kut 2 1 | head -n "$nlimit" || true
+			grep -- "$query" ~/danbooru_tags_post_count.csv | sed 's/_/ /g; s/,/\t/;' | kut 2 1 | head -n "$nlimit" || true
 		) | tsv2markdown
 		echo
 	done
