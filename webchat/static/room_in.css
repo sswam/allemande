@@ -1067,3 +1067,19 @@ blink {
 .fade {
 	opacity: 0.5;
 }
+
+/* timestamp -------------------------------------------------------------- */
+
+.timestamp {
+	float: right;
+
+	background-color: var(--background);
+	color: var(--text);
+	padding: 0 0.5rem;
+	opacity: 0.5;
+/*	background-color: rgba(255, 255, 255, 0.9);
+	padding: 10px;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+}
+

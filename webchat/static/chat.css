@@ -469,6 +469,7 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
 	z-index: 1;
 	min-width: min(450px, calc(100% - 2 * var(--pad)));
 	max-width: 50%;
+	max-height: calc(100% - 2 * var(--pad));
 
 	margin: var(--pad);
 	background-color: var(--background);
@@ -480,6 +481,8 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
 	padding: 10px;
 	border-radius: 4px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+
+	overflow-y: auto;
 }
 
 /* printing --------------------------------------------------------------- */

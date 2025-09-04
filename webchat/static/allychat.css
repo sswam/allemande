@@ -258,14 +258,14 @@ input::placeholder, textarea::placeholder {
 
 /* rainbow text ----------------------------------------------------------- */
 
-.rainbow-text {
+.rainbow, .rainbow-text {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
 
-body.light .rainbow-text {
+body.light :is(.rainbow, .rainbow-text) {
   background-image: linear-gradient(to right,
     #ff0000,    /* Red */
     #ff7f00,    /* Orange */
@@ -277,7 +277,7 @@ body.light .rainbow-text {
   );
 }
 
-body.dark .rainbow-text {
+body.dark :is(.rainbow, .rainbow-text) {
   background-image: linear-gradient(to right,
     #ff0000,    /* Red */
     #ff7f00,    /* Orange */

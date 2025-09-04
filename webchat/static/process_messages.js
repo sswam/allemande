@@ -347,6 +347,11 @@ export async function processMessage(newMessage) {
   // notify parent window of new message
   room.notify_new_message({ user: newUser, content: newContent.innerHTML, lastMessageId });
 
+  // append timestamp element to last .message element
+  const timestamp = $id('timestamp');
+  if (timestamp)
+    newMessage.prepend(timestamp);
+
   return id;
 }
 

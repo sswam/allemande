@@ -1437,6 +1437,67 @@ function update_image_filter(filterString) {
 		existingStyle.remove();
 }
 
+// timestamp -----------------------------------------------------------------
+
+function getRelativeTimeString(diff) {
+  // Convert seconds to different units
+  const seconds = Math.floor(diff);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) {
+    return `${days}d`;
+  } else if (hours > 0) {
+    return `${hours}h`;
+  } else if (minutes > 0) {
+    return `${minutes}m`;
+  } else if (seconds > 0) {
+    return `${seconds}s`;
+  } else {
+    return `0s`;
+  }
+}
+
+function formatLocalDateTime(date) {
+  return date.getFullYear() + '-' +
+    String(date.getMonth() + 1).padStart(2, '0') + '-' +
+    String(date.getDate()).padStart(2, '0') + ' ' +
+    String(date.getHours()).padStart(2, '0') + ':' +
+    String(date.getMinutes()).padStart(2, '0') + ':' +
+    String(date.getSeconds()).padStart(2, '0');
+}
+
+async function get_date_and_mtime() {
+  try {
+    const response = await fetch(window.location.pathname, {method: 'HEAD'});
+    const lastMod = response.headers.get('last-modified');
+    const serverDate = response.headers.get('date');
+    if (serverDate && lastMod)
+      return [new Date(serverDate), new Date(lastMod)];
+  } catch (err) {
+    console.error('Error fetching timestamp:', err);
+  }
+  return null, null;
+}
+
+export function show_timestamp(date, mtime) {
+  const diff = (date - mtime) / 1000;
+  let relativeTime = getRelativeTimeString(diff) + ' ago';
+  if (relativeTime == "0s ago")
+    relativeTime = "now";
+  const fullTimestamp = formatLocalDateTime(mtime);
+
+  const timestampElement = $id('timestamp');
+  timestampElement.textContent = relativeTime;
+  timestampElement.title = fullTimestamp;
+  show('timestamp');
+}
+
+function hide_timestamp() {
+  hide('timestamp');
+}
+
 // main ----------------------------------------------------------------------
 
 async function load_user_script() {
@@ -1520,6 +1581,11 @@ export async function room_main() {
   if (typeof room_user_script === 'function') {
     room_user_script();
   }
+
+  const [date, mtime] = await get_date_and_mtime();
+  if (date && mtime)
+    show_timestamp(date, mtime);
+  setTimeout(hide_timestamp, 10000);
 }
 
 export async function folder_main() {
