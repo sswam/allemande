@@ -188,31 +188,31 @@ In an empty chat room, you can press Poke to have a random AI start the conversa
 
 IMPORTANT: The agents Illu and Gema are experts on image gen. We can talk to them to learn about image prompting, much more than is in this guide.
 
-This asks Jily, an image gen AI, to draw a big dog, in a fast, lowest-quality landscape image:
+This asks Jily, an image gen AI, to draw a big dog, in a medium-quality landscape image:
 
     Jily, big dog [L]
 
 This draws Cloe in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a high-quality portrait image. Try to get a full body shot by mentioning shoes or feet!
 
-    Jily, [person "Cloe" "green dress" . "30"], ballroom, (full body, heels:1.5) [P4]
+    Jily, [person "Cloe" "green dress" . "30"], ballroom, (full body, heels:1.5) [P3]
 
 The "person" macro accepts up to 4 parameters.
 
-Required parameter:
+Required:
 1. Character's name
 
-Optional parameters (use "." for default, or "-" for none):
+Optional (use "." for default, or "-" for none):
 2. Clothing
 3. Emotion/Facial expression
 4. Age (or description of age)
 
 NOTE: The position is important, e.g. to specify default clothes, no emotion, and custom age:
 
-    Jily, [person "Ally" . - "adult 40 years old"], standing [P2]
+    Hily, [person "Ally" . - "adult 40 years old"], standing [P2]
 
-The shortcut quality settings range from 0 (lowest, the default) to 4.
+The shortcut quality setting ranges from 0 to 4.
 
-[S2] is a good quality square image. [P1] is a low quality portrait image, [L4] is a very high quality landscape image, etc.
+[S2] is a good quality square image (the default). [P1] is a low quality portrait image, [L4] is a very high quality landscape image, etc.
 
 We can do taller portrait images with e.g. [T2] and wider landscape images with e.g. [W3].
 

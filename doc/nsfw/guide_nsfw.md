@@ -64,29 +64,29 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 IMPORTANT: The agent Xilu is expert on NSFW image gen. Talk to her to learn more about image prompting.
 
-This asks Bigi, an image gen AI, to draw a nude girl, in a fast, lowest-quality portrait image:
+This asks Coni, an image gen AI, to draw a nude girl, in a fast, medium-quality portrait image:
 
-    Bigi, 1girl nude [P]
+    Coni, 1girl, nude [P]
 
 This draws Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image at high quality, with a default "negative prompt" to help avoid bad images.
 
-    Jily, [use ally], [use age/ally], [use emo/ally], [use clothes/ally] [use neg] [S3]
+    Jily, [use Ally], [use age/Ally], [use emo/Ally], [use clothes/Ally] [use neg] [S3]
 
-This does the same thing more concisely, for Barbie, making sure it's a solo picture, and with a Tall image:
+This does the same thing more concisely, for Barbie, making sure it's a solo picture, with a Tall image, and cartoon style with Poni:
 
-    Jily, solo [person barbie] [use neg] [T4]
+    Poni, solo [person Barbie] [use neg] [T4]
 
 This draws Cloe in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
 
-    Jily, [person Cloe "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
+    Lusy, [person Cloe "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
 
-This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant. Square image, medium quality:
+This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant. Square image, good quality:
 
-    Jily, [person Bast "topless, leather shorts" angry], jungle [S2]
+    Hily, [person Bast "topless, leather shorts" angry], jungle [S2]
 
-The shortcut quality settings range from 0 (lowest, the default) to 4.
+The quality settings range from 0 to 4.
 
-[S2] is a medium quality square image. [P1] is a low quality portrait image, [L4] is a very high quality landscape image, etc.
+The default is [S2], a good quality square image. [P1] is a low quality portrait image, [L4] is a very high quality landscape image, etc.
 
 We can do taller portrait images with e.g. [T2] and wider landscape images with e.g. [W3].
 
@@ -109,7 +109,7 @@ If a user wants a quick and easy sexual roleplay, these characters are recommend
 Other characters can be willing but might not react well to a sudden shift of mood, or jumping right into it, unless you establish context in your first message.
 
 Some characters are more reluctant:
-- Riley
+- Riley Lee
 
 You can also create your own characters, and the developer (Sam) is happy to help with that. 
 
@@ -144,7 +144,7 @@ The other base models mentioned in the main guide might be averse to NSFW chat, 
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
 - **Yoni, Coni, Boni**: NSFW image generation with a semi-realistic style (based on PonyXL)
 - **Poni**: NSFW image generation with a cartoon / anime style (based on PonyXL)
-- **Bigi, Pigi, Lusy**: Very realistic NSFW image generation (Pigi has more PonyXL)
+- **Lusy, Bigi, Pigi**: Very realistic NSFW image generation (Pigi has more PonyXL)
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -157,7 +157,7 @@ The other base models mentioned in the main guide might be averse to NSFW chat, 
 
 Example:
 
-Unp, [choose] [use sam] | [use ally] [/choose]
+Unp, [choose] [use Ally] | [use Bast] [/choose]
 
 ### AI Model Details (NSFW capable)
 
@@ -196,7 +196,7 @@ Please do not use languages models other than those listed here for NSFW content
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
 | coyotte       | Lustify V6 OLT      | Lusy | This SDXL-based model is very realistic, and excellent for NSFW art and can also do SFW art                         |
 
-The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art.
+The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art. You can add the nsfw LoRA, or try the Lusy model.
 
 Most of our other image gen models are based primarily on Pony XL, with less understanding of English; these should be prompted mainly using Danbooru tags. They are very strong at softcore, hardcore, hentai, and extreme art. Faces may appear a bit samey in some of these models. Ask Sam for advice on how to fix this, if it bothers you!
 

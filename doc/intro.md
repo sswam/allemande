@@ -119,7 +119,7 @@ Illu:	<think>
 	*this is where Illu plans the image prompt*
 	</think>
 	```
-	Jily, landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1> NEGATIVE  [sets width=1024 height=768 steps=30 hq=1.5]
+	Jily, landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1> [sets width=1024 height=768 steps=30 hq=1.5]
 	```
 
 Jily:	![#3972177466 landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1>](landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg)
