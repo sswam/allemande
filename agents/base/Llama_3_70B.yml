@@ -1,5 +1,5 @@
-type: llm_llama
-model: default
+type: openrouter
+model: llama-3.3-70b-free
 over:
 - ShowMI
 system_bottom: |-
