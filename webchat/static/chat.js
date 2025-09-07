@@ -895,7 +895,7 @@ async function load_user_files() {
   const [_, userScript, nag_response] = await Promise.all([
     $style("user_styles", user_dir + "/styles.css"),
     $import("user_script", user_dir + "/script.js"),
-    fetch(user_dir + "/nag.html"),
+    fetch(user_dir + "/nag.html?" + Date.now()), // prevent caching
   ]);
   let nag = nag_response.ok ? await nag_response.text() : "";
   // title case
