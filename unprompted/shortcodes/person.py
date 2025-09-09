@@ -45,12 +45,13 @@ class Shortcode:
 
         # "" means nothing, omit the field
 
-        name = _name
-        if name.lower() == "barbie":
-            name = "Barbarella"
+        # name = _name
+        # if name.lower() == "barbie":
+        #     name = "Barbarella"
 
         # Construct the prompt: name, age, person, emotion, clothes
-        prompt = f"{name}, "
+        # prompt = f"{name}, "
+        prompt = ""
         if _age:
             prompt += f"{_age} "
         prompt += f"""[use "{_name},"] """
