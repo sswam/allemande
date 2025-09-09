@@ -25,3 +25,19 @@ function av_element_html(tag, stem, url) {
 		// insert the URL into the message box as a markdown link
 		$content.value += `[${stem}](${url})`;
 	}
+
+
+function edit_paste(ev) {
+  if (ev.shiftKey || type != "file")
+    return;
+  let text = ev.clipboardData.getData('text');
+  if (editor_file.endsWith(".yml")) {
+    text = text.replace(/^/gm, "  ");
+    document.execCommand('insertText', false, text);
+  } else {
+    return;
+  }
+  ev.preventDefault();
+}
+
+  $on($edit, "paste", edit_paste);

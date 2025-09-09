@@ -404,19 +404,21 @@ function edit_dedent(ev) {
 }
 
 function textarea_indent(textarea, dedent = false) {
+  const ind = textarea == $edit && editor_file.endsWith(".yml") ? "  " : "\t";
+  const indlen = ind.length;
   // If no selection, handle single tab insertion/removal
   textarea.focus();
   if (textarea.selectionStart === textarea.selectionEnd) {
     if (dedent) {
       // For shift-tab with no selection, remove previous tab if it exists  // FIXME not ideal
       const pos = textarea.selectionStart;
-      if (pos > 0 && textarea.value[pos - 1] === '\t') {
-        setRangeText(textarea, '', pos - 1, pos);
-        textarea.selectionStart = textarea.selectionEnd = pos - 1;
+      if (pos >= indlen && textarea.value.slice(pos - indlen, pos) === ind) {
+        setRangeText(textarea, '', pos - indlen, pos);
+        textarea.selectionStart = textarea.selectionEnd = pos - indlen;
       }
     } else {
       // For tab with no selection, insert a tab at caret
-      setRangeText(textarea, '\t', textarea.selectionStart, textarea.selectionEnd);
+      setRangeText(textarea, ind, textarea.selectionStart, textarea.selectionEnd);
       const newPos = textarea.selectionStart;
       textarea.selectionStart = textarea.selectionEnd = newPos;
     }
@@ -452,7 +454,9 @@ function textarea_indent(textarea, dedent = false) {
   if (dedent) {
     // Remove one tab if it exists at the start
     for (const line of lines) {
-      if (line.startsWith('\t')) {
+      if (line.startsWith(ind)) {
+        processedLines.push(line.slice(indlen));
+      } else if (line.startsWith('\t')) {
         processedLines.push(line.slice(1));
       } else if (line.startsWith('    ')) {
         processedLines.push(line.slice(4));
@@ -467,7 +471,7 @@ function textarea_indent(textarea, dedent = false) {
   } else {
     for (const line of lines) {
       // Add a tab
-      processedLines.push('\t' + line);
+      processedLines.push(ind + line);
     }
   }
 
