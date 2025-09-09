@@ -40,6 +40,7 @@ MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 # - an actual time limit, just stop after that time
 # - fair queueing, handle multiple requests. How? need to know user?
 
+DEFAULT_SHORTCUT = "S2"
 MAX_COUNT = 10
 MAX_STEPS = 30  # 150
 
@@ -464,18 +465,21 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[
     sets = macros.get("sets", {})
     need_update_macros = False
     regional_kwargs = {}
-    shortcut = None # Initialize shortcut
 
     # Process shortcuts
     for macro_key in macros:
         if re.match(r"[SpPlLtTwWvVxX]\d?$", macro_key):
             shortcut = macro_key # Assign the found shortcut
-            shape = shortcut[0]
-            quality = int((shortcut + "0")[1])
-            apply_shortcut(sets, shape, quality)
-            need_update_macros = True
-            # break # No break, allow multiple shortcuts? No, the logic seems to process the first one found. Let's keep break.
             break
+    else:
+        shortcut = DEFAULT_SHORTCUT
+    if len(shortcut) == 1:
+        shortcut += DEFAULT_SHORTCUT[1]
+
+    shape = shortcut[0]
+    quality = int((shortcut)[1])
+    apply_shortcut(sets, shape, quality)
+    need_update_macros = True
 
     # Process settings
     for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint"]:
