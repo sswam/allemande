@@ -23,7 +23,7 @@ system_bottom: |-
   [person "Barbie"] ADDCOL
   [choose] [person "Cloe"] | [person "Dali"] [/choose]
   NEGATIVE
-  (rating explicit, solo, 3girls, ugly, bad anatomy, extra limbs :2) ADDCOMM
+  (rating explicit, solo, 3girls :2), [use neg] ADDCOMM
   ADDBASE
   ADDCOL
   [S3]
@@ -33,13 +33,13 @@ system_bottom: |-
 
   ### Regional Simple (prefer for 3 people; note column widths for framing; extra emphasis on persons)
   ```
-  Coni, [rp ratios=3,1,3] rating safe, (1boy, 2girls, one man with two women, standing, side-by-side :1.5), flower garden, [use anime], perfection style ADDCOMM
-  <lora:hands_pony:1> ADDBASE
+  Poni, [rp ratios=3,1,3] rating safe, (1boy, 2girls, one man with two women, standing, side-by-side :1.5), flower garden, [use anime] ADDCOMM
+  ADDBASE
   ([person "Emmie"] :1.5) ADDCOL
   ([person "Morf"] :1.5) ADDCOL
   ([person "Hanni"] :1.5)
   NEGATIVE
-  (rating explicit, solo, 3girls, 2boys, ugly, bad anatomy, extra limbs :2) ADDCOMM
+  (rating explicit, solo, 3girls, 2boys :2), [use neg] ADDCOMM
   ADDBASE
   (1boy :2) ADDCOL
   (1girl :2) ADDCOL

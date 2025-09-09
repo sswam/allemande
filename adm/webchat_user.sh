@@ -96,6 +96,7 @@ $start_nsfw
 === Beta Program ===
 
 - Ally Chat is a power tool, and can be confusing for beginners.
+- You are responsible for your own safety and behaviour.
 - I can give you a demo in the app, to help you get started.
 - Please participate in group chats, and give feedback.
 - You can support us on Patreon if you like the app.
