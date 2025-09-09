@@ -309,7 +309,7 @@ def fix_link(href: str, bb_file: str) -> str:
         return href
     # is the final part a room, folder, or editable file name (file without an extension, or .yml .m .txt .md etc?)
     logger.info("Trying to match link: %r", href)
-    if href.endswith("/") or re.search(r"(^|/)[^\./]+(.yml|.m|.txt|.md|/|)$", href):
+    if href.endswith("/") or re.search(r"(^|/)[^/]+(.yml|.m|.txt|.md|/|)$", href):
         try:
             _safe_path, href = safe_path_for_local_file(bb_file, href)
         except ValueError as e:
@@ -756,6 +756,7 @@ def html_postprocess(html_text: str) -> str:
     # fix <summary> tags, which sometimes get broken
     html_text = re.sub(r"<p><summary>(.*?)</summary><br\s*/>", r"<summary>\1</summary><p>", html_text)
     html_text = re.sub(r"<img ", r"<img loading=lazy ", html_text)
+    html_text = re.sub(r"<(lora:.*?)>", r"&lt;\1&gt;", html_text)
 
     # Disabled for now, don't want to mess up code!
 #     # remove empty paragraphs: could potentially mess up code but whatever

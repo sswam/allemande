@@ -4,7 +4,7 @@ IMAGE_NSFW=solo-person-Cloe-black-lace-lingerie-seductive-lingerie-details-1-2-s
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml agent_colours.css
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml agent_colours.css ../rooms/nsfw/lora.bb
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md extra.md
 	rm -f $@
@@ -58,6 +58,13 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	rm -f $@
 	cp -a $< $@
 	chmod a-w $@
+
+../rooms/nsfw/lora.bb: ../agents/special/Pixi.yml ../agents/special/Illu.yml ../agents/nsfw/Xilu.yml
+	rm -f $@ ../rooms/nsfw/lora.html
+	(sleep 0.5; lecho '| <lora:name:weight> | required trigger words | info |' '|--|--|--|' ;\
+		cat $^ | grep '^    | <lora:' | grep -v '<lora:name:weight>' | sed 's/ *//') >$@ ;\
+		chmod a-w $@ ;\
+		sudo cp -a $@ /home/allemande-nobody/lora.bb
 
 agent_colours.tsv: summaries.md
 	./update_colours.sh
