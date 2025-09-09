@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # [tag search query]
-# Show tags from ~/tags by search query, one heading per query
+# Show tags from ~/danbooru_tags_post_count.csv by search query, one heading per query
 
 tagz() {
 	local nlimit= n=20      # limit number of results per tag
