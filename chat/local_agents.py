@@ -351,7 +351,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     portal = portals.get_portal(service)
 
-    logger.debug("fulltext: %r", fulltext2)
+    logger.debug("fulltext: %s", fulltext2)
     logger.debug("config: %r", gen_config)
 #     logger.info("portal: %r", str(portal.portal))
 

@@ -99,6 +99,7 @@ class Agent:
     """An Allemande Agent"""
     def __init__(self, data: dict|None = None, agents: Agents|None = None, file: Path|None = None, private: bool=False):
         self.agents = agents
+        self.file = file
         if file and data:
             raise ValueError("Cannot specify both file and data")
         if not file and not data:
@@ -300,6 +301,11 @@ class Agent:
         """Set up an agent"""
 
         agent_type = self.get("type")
+        
+        # if not agent_type:
+        #     logger.error("Agent type not specified: %r: %r", self.name, self.file)
+        #     return False
+
         # if not agent_type or agent_type in ["human", "visual"]:
         #     return False
 
@@ -340,10 +346,13 @@ class Agent:
                 return
 
         # supporting arbitrary keys might be a security risk
+        visual_name = visual.get("name", self.name)
         for key in VISUAL_KEYS:
             prompt = visual.get(key, "")
             path = key if key == "person" else "person/" + key
             prompt = str(prompt).strip() + "\n"
+            if key == "person":
+                prompt = visual_name + ", " + prompt
             (PATH_VISUAL / path).mkdir(parents=True, exist_ok=True)
             cache.save(str(PATH_VISUAL / path / self.name) + ".txt",
                     prompt, noclobber=False)

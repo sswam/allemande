@@ -290,6 +290,8 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
         response = await run_agent(
             agent, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
         )
+        if response is None:
+            continue
         response = response.lstrip().rstrip("\n ")
 
         # Forwarding to other agents transparently:
@@ -319,7 +321,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             response = f"@{forward_if_image}"
 
         if forward and response:
-            logger.info("Forward response: %r", response)
+            logger.debug("Forward response: %r", response)
             # look for the final line @agent_name
             response_message = list(bb_lib.lines_to_messages([response]))[-1]
             _responsible_human, bots2 = conductor.who_should_respond(
@@ -365,6 +367,8 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                     agent2, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
 #                    agent2, query2, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
                 )
+                if response is None:
+                    continue
                 response = response.lstrip().rstrip("\n ")
                 # if agent.get("forward") == "transparent_half" and response:
                 #     response = f"{agent.name}:\t" + re.sub(r"\A.*?:(\t|$)", "", response, count=1, flags=re.MULTILINE)
@@ -413,7 +417,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 def filter_out_agents_install(response: str) -> str:
     """Install agents from a response by extracting YAML blocks and saving them to files."""
     # Extract YAML blocks
-    logger.info("filter_out_agents_install input response:\n\n%s", response)
+    logger.debug("filter_out_agents_install input response:\n\n%s", response)
 
     # remove indent and role label
     dedented_response = re.sub(r"^.*?\t", "", response, flags=re.MULTILINE)
@@ -425,7 +429,7 @@ def filter_out_agents_install(response: str) -> str:
     )
 
     all_yaml = "".join(yaml_blocks)
-    logger.info("Found %d YAML blocks in response: %r", len(yaml_blocks), yaml_blocks)
+    logger.debug("Found %d YAML blocks in response: %r", len(yaml_blocks), yaml_blocks)
 
     # Extract agent files
     yaml_agents = re.findall(
@@ -434,7 +438,7 @@ def filter_out_agents_install(response: str) -> str:
         flags=regex.DOTALL | regex.MULTILINE | regex.IGNORECASE
     )
 
-    logger.info("Found %d agent files in YAML blocks: %r", len(yaml_agents), [name for name, _ in yaml_agents])
+    logger.debug("Found %d agent files in YAML blocks: %r", len(yaml_agents), [name for name, _ in yaml_agents])
 
     agents_path = PATH_ROOMS / "agents"
 
@@ -466,26 +470,130 @@ def filter_out_agents_install(response: str) -> str:
     return response
 
 
+def filter_in_think_add_example(response: str, place: int, example: str = "I was thinking... what was I thinking...?") -> str:
+    """Add an example <think> section to the response, if not already present."""
+    # TODO make sure it's own message, not another agent's message
+    # TODO maybe not needed?
+    if place == 1 and "<think>" not in response:
+        response = re.sub("\t", f"\t<think>{example}</think>\n\t", response, count=1)
+    return response
+
+
+def filter_in_think_brackets(response: str, place: int) -> str:
+    """Replace <think>thinking sections</think> with [thinking sections]"""
+    response = re.sub(r"<think>(.*?)</think>", lambda thought: f"[{thought.group(1).strip()}]", response, flags=re.DOTALL)
+    return response
+
+
+def filter_out_think_brackets(response: str) -> str:
+    """Replace [thinking sections] with <think>thinking sections</think>"""
+    # match at start and end of lines only, so we don't match images / links
+    response = re.sub(r"\t\[(.*?)\]$", r"\t<think>\1</think>", response, flags=re.DOTALL|re.MULTILINE)
+    return response
+
+
+def filter_out_actions_reduce(response: str, keep_prob: int = 0.5) -> str:
+    """Reduce the number of *actions* in the response, based on keep_prob (0-1)."""
+    response2 = re.sub(r" *\*(.*?) (.*?)\*[.!?]* *",
+        lambda action: action.group(0) if random.random() < keep_prob else " ",
+        response, flags=re.DOTALL)
+
+    # strip leading/trailing spaces on each line
+    response2 = re.sub(r"^\t +", "\t", response2, flags=re.MULTILINE)
+    response2 = re.sub(r" +$", "", response2, flags=re.MULTILINE)
+
+    # reduce multiple blank lines
+    response2 = re.sub(r"\n{3,}", "\n\n", response2)
+    if response2 and not re.search(r":\t?$", response2):
+        return response2
+    else:
+        return response
+
+
+filters_in = {
+    "think_add_example": filter_in_think_add_example,
+    "think_brackets": filter_in_think_brackets,
+}
+
+
 filters_out = {
     "agents_install": filter_out_agents_install,
+    "think_brackets": filter_out_think_brackets,
+    "actions_reduce": filter_out_actions_reduce,
 }
+
+
+def apply_filters_in(agent: Agent, query: str, history: list[str]) -> tuple[str, list[str]]:
+    """Apply input filters to the query and history."""
+    filters = agent.get("filter_in")
+    history_new = None
+
+    for filter_name in filters or []:
+        if isinstance(filter_name, list):
+            filter_args = filter_name[1:]
+            filter_name = filter_name[0]
+        else:
+            filter_args = []
+        filter_fn = filters_in.get(filter_name)
+        if not filter_fn:
+            logger.warning("Agent %r: Unknown filter_in: %r", agent.name, filter_name)
+            continue
+        if history_new is None:
+            history_new = history.copy()
+        try:
+            query = filter_fn(query, 0, *filter_args)
+            l = len(history_new)
+            # NOTE: history[-1] is similar to query, but with the username prefix
+            for i in range(l):
+                history_new[i] = filter_fn(history_new[i], l - i, *filter_args)
+        except Exception as e:  # pylint: disable=broad-except
+            logger.exception("Agent %r: Error in filter_in %r: %s", agent.name, filter_name, str(e))
+
+    if history_new is not None:
+        history = history_new
+
+    return query, history
+
+
+def apply_filters_out(agent: Agent, response: str) -> str:
+    """Apply output filters to the response."""
+    filters = agent.get("filter_out")
+    for filter_name in filters or []:
+        if isinstance(filter_name, list):
+            filter_args = filter_name[1:]
+            filter_name = filter_name[0]
+        else:
+            filter_args = []
+        filter_fn = filters_out.get(filter_name)
+        if not filter_fn:
+            logger.warning("Agent %r: Unknown filter_out: %r", agent.name, filter_name)
+            continue
+        try:
+            response = filter_fn(response, *filter_args)
+        except Exception as e:  # pylint: disable=broad-except
+            logger.exception("Agent %r: Error in filter_out %r: %s", agent.name, filter_name, str(e))
+    return response
 
 
 async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human=None) -> str:
     """Run an agent."""
+    limit_user = agent.get("limit_user")
+    if limit_user and responsible_human not in limit_user:
+        return None
     function = agent["fn"]
     logger.debug("query: %r", query)
     # TODO filter_in somehow. Perhaps distinct options to filter only the immediate input message, or the whole context.
     # TODO agent invocation options to limit context
+    logger.debug("Applying input filters, query before: %r", query)
+    query, history = apply_filters_in(agent, query, history)
+    logger.debug("Applying input filters, query after: %r", query)
+
     response = await function(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human)
-    filter_out = agent.get("filter_out")
-    if filter_out:
-        filter_fn = filters_out.get(filter_out)
-        if filter_fn:
-            try:
-                response = filter_fn(response)
-            except Exception as e:  # pylint: disable=broad-except
-                logger.exception("Error in filter_out %r: %s", filter_out, str(e))
+
+    logger.debug("Applying output filters, response before:\n%s", response)
+    response = apply_filters_out(agent, response)
+    logger.debug("Applying output filters, response after:\n%s", response)
+
     return response
 
 
