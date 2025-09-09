@@ -1,1 +1,1 @@
-[set negative_prompt _append] (ugly, bad anatomy, extra limbs, text, logo, signature :2) [/set]
+(bad hands, fewer digits, extra digits, bad anatomy, extra limbs, text, logo, signature :2)
