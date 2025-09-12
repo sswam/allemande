@@ -183,8 +183,9 @@ rooms.*
 
 /visual/person
 /visual/extra
-/visual/macros
+/visual/macro
 /visual/scene
+/visual/clothes
 
 # web cache
 /webcache
