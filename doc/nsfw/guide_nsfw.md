@@ -20,6 +20,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 ## Rules for Adult Content
 
 - The NSFW zone is for adults over the age of 18 only.
+- Breaking the content rules can put the owner and the service at risk.
 - Content in the main public rooms, outside the NSFW zone, must be PG and family-friendly.
 - CSAM is illegal and not allowed in the app. This includes text chat and image generation.
 - Making sexualised images of real people without their consent is illegal and not allowed in the app.
