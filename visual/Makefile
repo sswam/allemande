@@ -5,9 +5,8 @@ all: install chmod
 up: sync | all
 
 sync:
-	sshc -- $${SERVER_SSH}= sh -c "make install chmod; cd person; git add -A; git commit -m . ; cd ../scene ; git add -A; git commit -m ." || true
-	in-dir person git pull
-	in-dir scene git pull
+	sshc -- $${SERVER_SSH} sh -c 'cd $$ALLEMANDE_VISUAL; make install chmod; for D in person scene clothes macro; do (cd "$$D"; git add -A; git commit -m .) ; done' || true
+	for D in person scene clothes macro; do in-dir "$$D" git pull; done
 
 build: everyone.txt girls.txt boys.txt nonbinary.txt people.txt everyone_count.txt girls_count.txt boys_count.txt nonbinary_count.txt people_count.txt
 
@@ -31,7 +30,7 @@ people.txt: girls.txt boys.txt nonbinary.txt
 
 install: build
 	deadlinks | xa rm
-	ln -sf $$PWD/*.txt $$PWD/ar/*.txt $$PWD/person/*/ $$PWD/person/*.txt $$PWD/nsfw/*.txt $$PWD/extra/*.txt $$PWD/scene/*.txt ../unprompted/unprompted/templates/
+	ln -sf $$PWD/*.txt $$PWD/ar/*.txt $$PWD/person/*/ $$PWD/person/*.txt $$PWD/nsfw/*.txt $$PWD/extra/*.txt $$PWD/scene/*.txt $$PWD/clothes/*.txt $$PWD/macro/*.txt ../unprompted/unprompted/templates/
 	cd $(dir)/../unprompted/unprompted/templates/ ; deadlinks | xa rm
 
 chmod:
