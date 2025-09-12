@@ -57,6 +57,7 @@ MARKDOWN_EXTENSIONS = [
     #    "markdown_criticmarkup",
     "attr_list",
 #    "urlize",
+    "mdx_linkify",
 ]
 
 MARKDOWN_EXTENSION_CONFIGS = {

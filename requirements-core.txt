@@ -63,6 +63,7 @@ markdown @ git+https://github.com/sswam/markdown.git
 markdown-it-py[linkify,plugins] @ git+https://github.com/sswam/markdown-it-py.git
 mdformat
 pymdown-extensions
+mdx_linkify
 aiofiles
 jinja2
 python-multipart
