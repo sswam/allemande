@@ -488,6 +488,23 @@ function decorateCodeBlock(codeBlock) {
   controls.addEventListener("mouseleave", function () {
     showHideControls(controls, false);
   });
+
+  // preprocess script type=js
+  if (codeBlock.nodeName === "SCRIPT" && codeBlock.type === "js")
+    run_script_js(codeBlock);
+}
+
+function run_script_js(script) {
+  let code = script.textContent;
+  try {
+    // eslint-disable-next-line no-new-func
+    const func = new Function("script", "echo", code);
+    const echo = (...args) => echo_to(script, ...args);
+    func(script, echo);
+  } catch (e) {
+    // TODO: Catch script execution errors and display them in the chat UI's echo block instead of just console.error?
+    console.error("Error in script", e);
+  }
 }
 
 export async function process_messages(new_content) {

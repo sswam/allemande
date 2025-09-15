@@ -529,3 +529,38 @@ async function bounceMessage_async(selector, ref) {
 
   animate();
 }
+
+// echo ----------------------------------------------------------------------
+
+function echo_n_to(script, ...args) {
+  // Create echo container if next element isn't our pre.echo
+  let pre = script.nextElementSibling;
+
+  if (!pre || pre.tagName !== 'PRE' || !pre.classList.contains('echo')) {
+    pre = document.createElement('pre');
+    pre.className = 'echo';
+    const code = document.createElement('code');
+    pre.appendChild(code);
+    script.parentNode.insertBefore(pre, script.nextSibling);
+  }
+
+  // Append encoded content to the code element
+  const code = pre.querySelector('code');
+  code.innerHTML += args.map(arg =>
+    encode_entities(typeof arg === 'object' ? JSON.stringify(arg) : String(arg))
+  ).join(' ');
+
+  return pre; // For chaining
+}
+
+function echo_to(script, ...args) {
+  return echo_n_to(script, ...args, '\n');
+}
+
+function echo_n(...args) {
+  return echo_n_to(document.currentScript, ...args);
+}
+
+function echo(...args) {
+  return echo_n(...args, '\n');
+}
