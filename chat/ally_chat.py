@@ -722,7 +722,7 @@ def check_file_type(path):
         return "room"
     if ext == ".yml" and path.startswith(str(PATH_AGENTS)+"/"):
         return "agent"
-    if ext == ".yml" and path.startswith(str(PATH_ROOMS)+"/") and Path(path).parent.name == "agents" and not Path(path).is_symlink():
+    if ext == ".yml" and path.startswith(str(PATH_ROOMS)+"/") and "agents" in Path(path).parts and not Path(path).is_symlink():
         return "agent_private"
     if ext in [".safetensors"] and path.startswith(str(PATH_ROOMS)+"/"):
         return "contrib"
