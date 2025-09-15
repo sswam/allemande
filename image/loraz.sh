@@ -4,8 +4,6 @@
 # Show LoRAs from ~/lora.bb by search query, one heading per query
 
 loraz() {
-	local nlimit= n=20      # limit number of results per query
-
 	eval "$(ally)"
 
 	for query; do
