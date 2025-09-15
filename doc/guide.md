@@ -20,12 +20,11 @@ Novel features include:
 - undo, retry and edit the chat history; archive or clear old chat rooms
 - a numbered "chapters" system, to split up your chats for performance
 - a "conductor" that manages AI responses based on mentions and cues
-- a shared canvas for collaborative drawing using JavaScript
 - AIs can teach you about the app, including all the models and agents
 - a column view option, to make the most of your screen
 - web, image, video search; programming tools such as Bash and Python
 - the whole app is open source; you can potentially run it at home
-- a cast of more than 500 characters, specialist agents, and tools
+- a cast of more than 1000 characters, specialist agents, and tools
 - custom agents and missions, adjust context and other settings mid-chat
 - a wide range of styles, support for custom styles and JavaScript
 - we value free speech, and include access to various uncensored AIs
@@ -36,7 +35,7 @@ You can watch a [demo video](https://allemande.ai/demo).
 
 If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
 
-Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
+Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 
 ## Rules
 

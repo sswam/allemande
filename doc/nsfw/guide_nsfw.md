@@ -2,36 +2,31 @@
 
 In addition to general features, which you can read about in the [User Guide](/guide), Ally Chat has many features for adult entertainment!
 
-- **Separate SFW and NSFW Zones**: Adult users with access can explore the NSFW zone.
-- You can get to the NSFW zone by entering "nsfw" in the room name, or clicking <i class="bi-explicit"></i> the E button in the <i class="bi-compass"></i> **Nav** menu (advanced mode).
+- **Separate NSFW Zones**: Adult users with access can explore the NSFW zone.
+- You can get to the NSFW zone by entering "nsfw" in the room name, or clicking <i class="bi-explicit"></i> the E button.
 - We value free speech, and include access to various uncensored AIs.
-- We do not monitor or restrict your private use of Ally Chat.
-- Your use is necessarily recorded in chat histories. For private rooms, we can wipe these on request.
-- We ask that you keep adult content in the NSFW zone, or in private chat, and follow a few rules.
+- We do not normally monitor or restrict your private use of Ally Chat.
+- Your chats are stored on the server. We can wipe them on request.
 
-Please message Sam for free access and a demo / tour. We hope you'll like it!
+Please message Sam for access and a demo / tour. We hope you'll like it!
 
 You can watch a [demo video](https://allemande.ai/demo).
 
 If you'd like to support us, you can [become a patron](https://www.patreon.com/allychatx) (NSFW Patreon).
 
-Paying users enjoy higher limits, and custom feature requests. You can come up with good ideas, and help make Ally Chat awesome. 🔥
+Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 
-## Rules for Adult Content
+## Rules
 
-- The NSFW zone is for adults over the age of 18 only.
-- Breaking the content rules can put the owner and the service at risk.
-- Content in the main public rooms, outside the NSFW zone, must be PG and family-friendly.
-- CSAM is illegal and not allowed in the app. This includes text chat and image generation.
-- Making sexualised images of real people without their consent is illegal and not allowed in the app.
-- Do not upload private sexual images of real people without their consent.
-- Do not upload any illegal material.
-- Doxxing or sharing private information without consent is not allowed.
-- Hate-speech is not allowed. In a private fictional context, hate-speech is allowed.
-- Please be friendly if you engage with other users. No bigotry or kink-shaming.
-- Copyright infringement is not allowed.
-- Role-playing around illegal activities (other than CSAM) is allowed, but promoting real-life illegal activities is illegal and not allowed.
-- These rules might be updated in future.
+Breaking these rules can put the owner and the service at risk. If unsure, ask.
+
+- You must be 18+ for the NSFW zone.
+- No illegal content: underage, NCII, deepfake, piracy.
+- No NSFW content in the SFW public rooms.
+- No hate-speech, shaming, or doxxing.
+- Do not incite crime.
+
+If your account is suspended, please contact Sam to review.
 
 ## Topless Pictures of Characters 🔥
 
@@ -45,7 +40,7 @@ Paying users enjoy higher limits, and custom feature requests. You can come up w
 
 ## Key Features for Adult Content
 
-- **Uncensored LLMs**: Most of our 500+ AI characters are up for sexual chat and role-play.
+- **Uncensored LLMs**: Most of our 1000+ AI characters are up for sexual chat and role-play.
 - **Uncensored AI art**: We have many AI-art models that can make sexual images.
 - **AI art LoRAs**: Many LoRAs are available to improve your images.
 - **Search**: We have search engines that can return sexual images and videos.
@@ -106,6 +101,7 @@ The general characters in the main guide are very good for NSFW chat and rolepla
 If a user wants a quick and easy sexual roleplay, these characters are recommended:
 - Pyrite
 - Akane
+- Sadie
 
 Other characters can be willing but might not react well to a sudden shift of mood, or jumping right into it, unless you establish context in your first message.
 

@@ -22,6 +22,8 @@ extra.md: ../agents/cartoon ../agents/celeb ../agents/disney ../agents/fiction .
 summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o -print | sed 's/ /\\ /g') $(shell find summary/ -mindepth 1 | sed 's/ /\\ /g')
 	webchat-agent-summaries-update -n
 	./summaries_compile.sh > summaries.md
+	rm -f ../rooms/nsfw/characters.html
+	(sleep 0.5; cp summaries.md ../rooms/characters.bb ; sudo cp -a $@ /home/allemande-nobody/characters.bb)
 
 ../rooms/agents/Yenta.yml: Yenta.0.yml summaries.md
 	chmod +w $@ || true
