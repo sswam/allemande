@@ -66,7 +66,7 @@ add-user() {
 		start_nsfw="
 For NSFW content:
 
-5. Press the 'E' button to visit the NSFW zone.
+5. Enter 'nsfw' in the room field to visit the NSFW zone.
 6. NSFW features also work in private chat.
 "
 		patreon_links=$'- https://www.patreon.com/allychat (SFW)\n- https://www.patreon.com/allychatx (NSFW)'
