@@ -150,6 +150,9 @@ command! -nargs=1 Allemande call Allemande(<f-args>)
 
 augroup AllemandeSettings
 	autocmd!
+	autocmd BufNewFile,BufRead *.bb set syntax=markdown
+	" FIXME, seems to revert syntax on autoread
+	"autocmd BufNewFile,BufRead *.bb set syntax=markdown | let b:current_syntax='markdown'
 	autocmd BufEnter *.bb call Allemande("chat")
 augroup END
 
