@@ -1,16 +1,20 @@
 #!/bin/bash
 # runs "lock" to dissuade the user from working at night
 
+conf_file=~/.hopeofsleepatnightrc
+
 sleep_time=2300
 wake_time=0500
-poll_interval_night=5  # check every 5 seconds during night
-poll_interval_day=300  # check every 5 minutes during day
-override_file=$HOME/.emergency_override  # touch this file to skip locking once
-override_duration=600  # override lasts for 10 minutes
+poll_interval_night=1s
+poll_interval_day=5m
+override_duration=10m
+override_file=~/.emergency_override
 lock_process=i3lock
 lock_command=lock
 
-. ~/.hopeofsleepatnightrc
+if [ -f "$conf_file" ]; then
+	. "$conf_file"
+fi
 
 trap '' SIGINT SIGTERM  # can only kill with kill -9
 
@@ -29,8 +33,9 @@ lock_at_night() {
 	if is_day; then
 		sleep $poll_interval_day
 	elif [ -e "$override_file" ]; then
+		override_val=$(cat "$override_file")
 		rm -f "$override_file"
-		sleep $override_duration
+		sleep "${override_val:-$override_duration}"
 	elif pidof "$lock_process" >/dev/null; then
 		sleep $poll_interval_night
 	else
@@ -40,9 +45,15 @@ lock_at_night() {
 }
 
 hopeofsleeptonight() {
+	if [ "$1" == "--abandon-all" ]; then
+		echo "$2" > "$override_file"
+		echo "Override set for ${2:-${override_duration}}."
+		exit 0
+	fi
+
 	while true; do
 		lock_at_night
 	done
 }
 
-hopeofsleeptonight
+hopeofsleeptonight "$@"
