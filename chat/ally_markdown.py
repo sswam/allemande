@@ -404,7 +404,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
         is_math_start = bool(re.match(r"\s*(\$\$|```tex|```latex|```math|\\\[)$", line))
         is_math_end = bool(re.match(r"\s*(\$\$|```|\\\])$", line))
         is_normal_line = False
-        if re.match(r"\s*<(script|style|svg)\b", line, flags=re.IGNORECASE) and not in_code:
+        if re.match(r"\s*<(script|style|svg|sticky)\b", line, flags=re.IGNORECASE) and not in_code:
             in_code = 1
             in_script = True
             in_svg = bool(re.match(r"\s*<svg\b", line, flags=re.IGNORECASE))
@@ -412,16 +412,18 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
             # replace bare <script> with <script type="js">, which will be preprocessed before running (for echo function currently)
             if re.match(r"\s*<script\b", line, flags=re.IGNORECASE) and not re.match(r"\s*<script\s[^>]*?\btype\b", line, flags=re.IGNORECASE):
                 line = re.sub(r"<script\b", r'<script type="js"', line, flags=re.IGNORECASE)
+            # replace sticky with sticky markdown="1"
+            line = re.sub(r"<sticky\b", r'<sticky markdown="1"', line, flags=re.IGNORECASE)
             if in_svg:
                 out.append(line)
             else:
                 out.append(line + "\n")
             # This is getting shady...!
-            if re.search(r"</(script|style|svg)>\s*$", line, flags=re.IGNORECASE):
+            if re.search(r"</(script|style|svg|sticky)>\s*$", line, flags=re.IGNORECASE):
                 in_code = 0
                 in_script = False
                 in_svg = False
-        elif re.match(r"\s*</(script|style|svg)>\s*$", line, flags=re.IGNORECASE) and in_script:
+        elif re.match(r"\s*</(script|style|svg|sticky)>\s*$", line, flags=re.IGNORECASE) and in_script:
             out.append(line + "\n")
             in_code = 0
             in_script = False

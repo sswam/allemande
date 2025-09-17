@@ -208,6 +208,9 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     history_messages = list(bb_lib.lines_to_messages(history))
 
+    logger.debug("len history: %r", len(history))
+    logger.debug("len history_messages: %r", len(history_messages))
+
     message = history_messages[-1] if history_messages else None
 
     # check for editing commands, AI should not respond to these
@@ -216,8 +219,12 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     # logger.info("history_messages 1: %r", history_messages)
 
+    last_message_id = len(history_messages) - 1
+
     # flatten history, removing any editing commands
     history_messages = chat.apply_editing_commands(history_messages)
+
+    logger.debug("len history_messages after edit: %r", len(history_messages))
 
     message = history_messages[-1] if history_messages else None
 
@@ -247,11 +254,23 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     # Support "directed-poke" which removes itself, like -@Ally
     # TODO this is a bit dodgy and has a race condition
+    logger.debug("testing -@ directed poke, message is: %r", message)
+
+    # # directed-poke with hard undo
+    # if message and message["content"].startswith("--@"):  # pylint: disable=unsubscriptable-object
+    #     history_messages.pop()
+    #     history.pop()
+    #     await room.undo("root")
+    #     message = history_messages[-1] if history_messages else None
+
+    # directed-poke with soft undo
     if message and message["content"].startswith("-@"):  # pylint: disable=unsubscriptable-object
+        undo_message = f"{message['user']}:\t<ac rm={last_message_id}>"
         history_messages.pop()
         history.pop()
-        room.undo("root")
+        chat.chat_write(file, [undo_message], delim=args.delim, invitation=args.delim)
         message = history_messages[-1] if history_messages else None
+
 
     count = 0
     for bot in bots:
@@ -383,18 +402,20 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
 
         # Anti Em-dash!  Could do this more generically for other substitutions
+        # TODO use filter_out for this
         if agent.get("anti_em"):
             response = re.sub(r"—", " - ", response)
 
         # Ephemeral messages:
         # If the previous message begins with - it was ephemeral, so remove it
         # TODO this might not work well when multiple bots respond
-        if history and history[-1].startswith("-"):
-            history.pop()
-            history_messages.pop()
-            room.undo("root")
-            # sleep for a bit
-            await asyncio.sleep(0.1)
+        # TODO fix and restore this? I forget what it did exactly!
+        # if history and history[-1].startswith("-"):
+        #     history.pop()
+        #     history_messages.pop()
+        #     room.undo("root")
+        #     # sleep for a bit
+        #     await asyncio.sleep(0.1)
 
         if response == f"{agent.name}:":
             response += ""

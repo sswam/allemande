@@ -572,8 +572,9 @@ def who_should_respond(
         uniq=False,
         agent_name_map=agent_name_map,
     )
+    logger.info("who_is_named 1 @: %r", invoked)
     invoked = filter_access(invoked, room, access_check_cache, agent_name_map)
-    logger.debug("who_is_named @: %r", invoked)
+    logger.info("who_is_named 2 @: %r", invoked)
 
     # If we @ mention someone not present, no one should respond
     at_mention_present = chat.has_at_mention(content)
