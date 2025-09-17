@@ -21,7 +21,7 @@ Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 Breaking these rules can put the owner and the service at risk. If unsure, ask.
 
 - You must be 18+ for the NSFW zone.
-- No illegal content: underage, NCII, deepfake, piracy.
+- No illegal content: underage, NCII / deepfake, piracy.
 - No NSFW content in the SFW public rooms.
 - No hate-speech, shaming, or doxxing.
 - Do not incite crime.
