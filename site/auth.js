@@ -130,7 +130,23 @@ function checkLogin() {
 	}
 }
 
+function username_fix() {
+	const input = $id('username');
+	const orig = input.value;
+	const pos0 = input.selectionStart;
+
+	const dpos = orig.length - orig.trimStart().length;
+	const fixed = orig.toLowerCase().trim();
+
+	if (orig !== fixed) {
+		input.value = fixed;
+		const pos1 = Math.max(0, pos0 - dpos);
+		input.setSelectionRange(pos1, pos1);
+	}
+}
+
 function authHomepage() {
+	$on($id('username'), 'input', username_fix);
 	$on($id('login'), 'click', login);
 	$on($id('logout'), 'click', logoutHome);
 
