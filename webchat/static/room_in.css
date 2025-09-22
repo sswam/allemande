@@ -53,7 +53,7 @@ body:not(.code_source) .message.narrative > .content > p:first-of-type > .label:
 .content br, .content details p br {
 	display: none;
 }
-.content details br {
+.content details br, .content code br {
 	display: block;
 }
 .message > .content {
@@ -104,6 +104,11 @@ h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
 .small :is(img, video, audio, iframe) {
 	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 1.375rem));
 	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 1.375rem));
+}
+
+.tiny :is(img, video, audio, iframe) {
+	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 0.6875rem) / 2);
+	max-height: calc(max(min(var(--image-width-small), var(--image-height-small)), 0.6875rem) / 2);
 }
 
 
@@ -170,6 +175,11 @@ body.alt div:is(.image, .embed) {
 .small :is(div.image, div.embed, .image .alt, .embed .alt) {
 	max-width: calc(max(min(var(--image-width-small), var(--image-height-small)), 2.75rem)) !important;
 }
+
+.tiny :is(div.image, div.embed, .image .alt, .embed .alt) {
+	max-width: calc(max(min(calc(var(--image-width-small) / 2), calc(var(--image-height-small) / 2)), 1.375rem)) !important;
+}
+
 
 .image .thumb, .embed .thumb {
 	width: 100%;
@@ -1096,3 +1106,84 @@ blink {
   75% { transform: rotate(-0.3deg) translate(-2px, 0); }
   100% { transform: rotate(0deg) translate(0, 0); }
 }
+
+/* sticky notes! ---------------------------------------------------------- */
+
+sticky {
+  display: block;
+  width: 200px;
+  min-height: 100px;
+  max-height: 300px;
+  background: rgba(180, 160, 220, 0.5);
+  padding: 10px;
+  cursor: move;
+  overflow: auto;
+  user-select: none;
+  z-index: 1;
+}
+sticky.moving {
+  position: relative;
+}
+/*
+*:has(sticky) {
+  position: relative;
+}
+*/
+
+.fame {
+	animation: fameEffect 3s infinite linear;
+}
+
+@keyframes fameEffect {
+	0% {
+		text-shadow:
+			0px 4px 20px rgb(255, 0, 0),
+			0px 4px 30px rgb(255, 0, 0),
+			3.464px -2px 20px rgb(0, 200, 0),
+			3.464px -2px 30px rgb(0, 200, 0),
+			-3.464px -2px 20px rgb(63, 63, 255),
+			-3.464px -2px 30px rgb(63, 63, 255);
+	}
+	33% {
+		text-shadow:
+			-3.464px -2px 20px rgb(255, 0, 0),
+			-3.464px -2px 30px rgb(255, 0, 0),
+			0px 4px 20px rgb(0, 200, 0),
+			0px 4px 30px rgb(0, 200, 0),
+			3.464px -2px 20px rgb(63, 63, 255),
+			3.464px -2px 30px rgb(63, 63, 255);
+	}
+	66% {
+		text-shadow:
+			3.464px -2px 20px rgb(255, 0, 0),
+			3.464px -2px 30px rgb(255, 0, 0),
+			-3.464px -2px 20px rgb(0, 200, 0),
+			-3.464px -2px 30px rgb(0, 200, 0),
+			0px 4px 20px rgb(63, 63, 255),
+			0px 4px 30px rgb(63, 63, 255);
+	}
+	100% {
+		text-shadow:
+			0px 4px 20px rgb(255, 0, 0),
+			0px 4px 30px rgb(255, 0, 0),
+			3.464px -2px 20px rgb(0, 200, 0),
+			3.464px -2px 30px rgb(0, 200, 0),
+			-3.464px -2px 20px rgb(63, 63, 255),
+			-3.464px -2px 30px rgb(63, 63, 255);
+	}
+}
+
+/* or with RGBA
+@keyframes fameEffect {
+	0% {
+		text-shadow:
+			0px 4px 20px rgba(255, 0, 0, 0.8),
+			0px 4px 30px rgba(255, 0, 0, 0.5),
+			3.464px -2px 20px rgba(0, 200, 0, 0.8),
+			3.464px -2px 30px rgba(0, 200, 0, 0.5),
+			-3.464px -2px 20px rgba(63, 63, 255, 0.8),
+			-3.464px -2px 30px rgba(63, 63, 255, 0.5);
+	}
+	... Repeat for other keyframes with the same pattern ...
+}
+*/

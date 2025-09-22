@@ -10,7 +10,7 @@ body {
 	font-variation-settings: "wdth" 100;
 }
 
-input, button, textarea {
+input, button, select, textarea {
 	font: inherit;
 }
 
@@ -69,7 +69,7 @@ body.history .hidden.removed, body.history .hidden.removed * {
 
 /* themeable elements */
 
-input, textarea, button, .button, .label, div.content, div.id {
+input, textarea, select, button, .button, .label, div.content, div.id {
 	color: var(--text);
 }
 
@@ -95,12 +95,12 @@ body#messages > div.canvas {
 }
 */
 
-input, textarea, button, iframe, .button, #help-widget {
+input, textarea, select, button, iframe, .button, #help-widget {
 	background: var(--input);
 	border: 0.0625rem solid var(--border);
 }
 
-input:focus, textarea:focus, iframe:focus {
+input:focus, textarea:focus, select:focus, iframe:focus {
 	background: var(--focus);
 }
 
@@ -121,7 +121,8 @@ button:hover, button:focus, .button:hover, .button:focus {
 
 button:disabled, button:disabled:hover, button:disabled:focus,
 .button:disabled, .button:disabled:hover, .button:disabled:focus,
-input:disabled, input:disabled:hover, input:disabled:focus
+input:disabled, input:disabled:hover, input:disabled:focus,
+select:disabled, select:disabled:hover, select:disabled:focus
 {
 	color: var(--col7);
 	background: var(--col3);

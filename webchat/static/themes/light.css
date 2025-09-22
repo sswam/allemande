@@ -1,7 +1,7 @@
 :root {
 	--theme-mode: light;
 	--text: black;
-	--border: #888;
+	--border: none; /* #888; */
 	--frame: white;
 	--input: #aaa;
 	--focus: #ccc;

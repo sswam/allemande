@@ -127,12 +127,108 @@ function scroll_to_bottom($e) {
   }
 }
 
+const INSTANT_SCROLL_THRESHOLD = 1000; // 1 second
+const DEBOUNCE_DELAY = 100; // 100ms
+const DEBOUNCE_MESSAGE_COUNT = 2;
+const SCROLL_BACK_PIXELS = 200; // pixels to scroll up to disable auto-scroll
+const SCROLL_BACK_COUNT = 2; // number of scroll up events to disable auto-scroll
+
+let lastMessageTime = 0;
+let messageCount = 0;
+let scrollUpEventCount = 0;
+let isDebouncing = false;
+
+const debounce = (fn, delay) => {
+  let timeoutId;
+  return () => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(), delay);
+  };
+};
+
+// Create both debounced and non-debounced versions
+const messages_scrolled_debounced = debounce(messages_scrolled_2, DEBOUNCE_DELAY);
+
+let prev_scrollTop = 0;
+let prev_scrollLeft = 0;
+
+// Wrapper function to handle adaptive scrolling behavior
 async function messages_scrolled() {
-  // console.log("messages scrolled");
+  const currentTime = Date.now();
+  const timeSinceLastMessage = currentTime - lastMessageTime;
+
   await wait_for_load();
   var $e = $messages_wrap;
-  if (!$e)
-    return;
+  if (!$e) return;
+
+  // Get current dimensions
+  const currentHeight = $e.scrollHeight;
+  const currentWidth = $e.scrollWidth;
+
+  // Check if dimensions grew (new message)
+  const newMessages = view_options.columns ?
+    (currentWidth > messages_width_last) :
+    (currentHeight > messages_height_last);
+
+  if (newMessages) {
+    lastMessageTime = currentTime;
+    messageCount++;
+
+    // If it's been more than 1 second since last message, reset to instant mode
+    if (timeSinceLastMessage > INSTANT_SCROLL_THRESHOLD) {
+      messageCount = 1;
+      isDebouncing = false;
+    }
+
+    // Switch to debounced mode if we get several messages quickly
+    if (messageCount >= DEBOUNCE_MESSAGE_COUNT && timeSinceLastMessage < DEBOUNCE_DELAY) {
+      isDebouncing = true;
+    }
+  }
+
+  // Call either debounced or instant version
+  if (isDebouncing) {
+    // if (newMessages) {
+    //   // scroll on just 1px to indicate that we will be scrolling
+    //   if (view_options.columns)
+    //     $e.scrollLeft += 1;
+    //   } else {
+    //     $e.scrollTop += 1;
+    //   }
+    // }
+    messages_scrolled_debounced();
+  } else {
+    messages_scrolled_2();
+  }
+
+  // If scrolling up, set messages_at_bottom to false
+  if (!newMessages) {
+    const scrollDeltaX = prev_scrollLeft - $e.scrollLeft;
+    const scrollDeltaY = prev_scrollTop - $e.scrollTop;
+    const didScrollLeft = view_options.columns && scrollDeltaX < 0;
+    const didScrollUp = !view_options.columns && scrollDeltaY < 0;
+
+    if (didScrollLeft || didScrollUp)
+      scrollUpEventCount++;
+    else
+      scrollUpEventCount = 0;
+
+    if (scrollUpEventCount >= SCROLL_BACK_COUNT || (view_options.columns ? scrollDeltaX : scrollDeltaY) > SCROLL_BACK_PIXELS) {
+      messages_at_bottom = false;
+      scrollUpEventCount = SCROLL_BACK_COUNT; // cap it
+    }
+  }
+  prev_scrollLeft = $e.scrollLeft;
+  prev_scrollTop = $e.scrollTop;
+}
+
+// Original scroll handling function
+async function messages_scrolled_2() {
+  await wait_for_load();
+  var $e = $messages_wrap;
+  if (!$e) return;
+
+  // Check if we need to auto-scroll when in column view mode
   if (messages_at_bottom && view_options.columns) {
     var messages_width = $e.scrollWidth;
     if (messages_width != messages_width_last) {
@@ -141,6 +237,7 @@ async function messages_scrolled() {
         scroll_to_bottom($e);
       }
     }
+  // Check if we need to auto-scroll in regular view mode
   } else if (messages_at_bottom) {
     var messages_height = $e.scrollHeight;
     if (messages_height != messages_height_last) {
@@ -149,15 +246,17 @@ async function messages_scrolled() {
         scroll_to_bottom($e);
       }
     }
+  } else {
+    messages_at_bottom = is_at_bottom($e);
   }
-  messages_at_bottom = is_at_bottom($e);
+  //console.log(messages_at_bottom);
 
+  // Track the first visible message based on view mode
   if (view_options.columns) {
     top_message = getLeftmostVisibleElement();
   } else {
     top_message = getTopmostVisibleElement();
   }
-  // console.log("top message", top_message);
 }
 
 function getTopmostVisibleElement() {
@@ -808,7 +907,7 @@ function handleSwipe() {
   $img_clone.style.transform = "";
 }
 
-function touch_start(e) {
+function overlay_touch_start(e) {
   // swipe with mouse is diabled, it was trouble
   // For mouse events, only process left clicks (button 0)
   // if (!e.touches && e.button !== 0) {
@@ -832,7 +931,7 @@ function touch_start(e) {
   */
 }
 
-function touch_end(e) {
+function overlay_touch_end(e) {
   if (touchStartX === null) {
     touchStartX = touchStartY = null;
     return;
@@ -850,7 +949,7 @@ function touch_end(e) {
   touchEndX = touchEndY = null;
 }
 
-function touch_move(e) {
+function overlay_touch_move(e) {
   if (touchStartX === null) {
     touchStartX = touchStartY = null;
     return;
@@ -877,14 +976,14 @@ function touch_move(e) {
 
 function setup_swipe() {
   // Add touch event listeners
-  $overlay.addEventListener('touchstart', touch_start, { passive: true });
-  $overlay.addEventListener('touchmove', touch_move, { passive: false });
-  $overlay.addEventListener('touchend', touch_end);
+  $overlay.addEventListener('touchstart', overlay_touch_start, { passive: true });
+  $overlay.addEventListener('touchmove', overlay_touch_move, { passive: false });
+  $overlay.addEventListener('touchend', overlay_touch_end);
   // For desktop dragging also; disabled
-  // $overlay.addEventListener('mousedown', touch_start);
-  // $overlay.addEventListener('mousemove', touch_move);
-  // $overlay.addEventListener('mouseup', touch_end);
-  // $overlay.addEventListener('mouseleave', touch_end);
+  // $overlay.addEventListener('mousedown', overlay_touch_start);
+  // $overlay.addEventListener('mousemove', overlay_touch_move);
+  // $overlay.addEventListener('mouseup', overlay_touch_end);
+  // $overlay.addEventListener('mouseleave', overlay_touch_end);
 }
 
 // ---------------------------------------------------------------------------
@@ -918,7 +1017,7 @@ function image_click($el, ev) {
   }
 }
 
-function click(ev) {
+async function click(ev) {
   if (!$messages.contains(ev.target))
     return;
 
@@ -931,6 +1030,22 @@ function click(ev) {
     select_message($message, ev.shiftKey, ev.ctrlKey);
   }
   */
+
+  // copy username from label?
+  if (ev.target.matches(".message .label")) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    // TODO factor with similar code in process_messages.js
+    const username = ev.target.closest(".message").getAttribute("user");
+    const text = username + ",";
+    if (inIframe) {
+      // send text to parent window
+      window.parent.postMessage({ type: "copy", text: text }, ALLYCHAT_CHAT_URL);
+    } else {
+      // copy text to clipboard
+      await navigator.clipboard.writeText(text);
+    }
+  }
 
   if (ev.target.classList.contains("thumb") && ev.target.parentNode.classList.contains("embed")) {
     ev.preventDefault();
@@ -1498,6 +1613,131 @@ function hide_timestamp() {
   hide('timestamp');
 }
 
+// sticky notes --------------------------------------------------------------
+
+let dragSticky = null;
+let initialX = 0;
+let initialY = 0;
+let currentX = 0;
+let currentY = 0;
+
+// Helper to get coordinates from either mouse or touch event
+function getEventCoordinates(e) {
+  if (e.touches && e.touches.length > 0) {
+    return {
+      clientX: e.touches[0].clientX,
+      clientY: e.touches[0].clientY
+    };
+  }
+  return {
+    clientX: e.clientX,
+    clientY: e.clientY
+  };
+}
+
+// Get current transform values
+function getTransformValues(element) {
+  const transform = window.getComputedStyle(element).transform;
+  if (transform === 'none') {
+    return { x: 0, y: 0 };
+  }
+  const matrix = transform.match(/matrix\((.+)\)/)[1].split(', ');
+  return {
+    x: parseFloat(matrix[4]),
+    y: parseFloat(matrix[5])
+  };
+}
+
+function mouse_down(e) {
+  if (e.target.tagName === 'STICKY') {
+    const coords = getEventCoordinates(e);
+    dragSticky = e.target;
+    dragSticky.classList.add('moving');
+
+    // Get current transform position
+    const currentTransform = getTransformValues(dragSticky);
+    currentX = currentTransform.x;
+    currentY = currentTransform.y;
+
+    // Calculate initial mouse/touch position relative to the element's current position
+    initialX = coords.clientX - currentX;
+    initialY = coords.clientY - currentY;
+
+    // Set will-change for optimization hint
+    dragSticky.style.willChange = 'transform';
+  }
+}
+
+function mouse_move(e) {
+  if (dragSticky) {
+    const coords = getEventCoordinates(e);
+
+    // Calculate new position
+    currentX = coords.clientX - initialX;
+    currentY = coords.clientY - initialY;
+
+    // Use transform for better performance
+    dragSticky.style.transform = `translate(${currentX}px, ${currentY}px)`;
+  }
+}
+
+function mouse_up() {
+  if (dragSticky) {
+    // Check if element is at origin
+    if (currentX === 0 && currentY === 0) {
+      dragSticky.classList.remove('moving');
+      dragSticky.style.removeProperty('transform');
+    }
+
+    // Clean up will-change
+    dragSticky.style.willChange = 'auto';
+
+    dragSticky = null;
+  }
+}
+
+function mouse_double_click(e) {
+  // move back to original position
+  if (e.target.tagName === 'STICKY') {
+    e.target.style.removeProperty('transform');
+    e.target.classList.remove('moving');
+    e.target.style.willChange = 'auto';
+    currentX = 0;
+    currentY = 0;
+  }
+}
+
+// Touch event handlers with proper cancel handling
+function touch_start(e) {
+  if (e.target.tagName === 'STICKY' && e.touches.length === 1) {
+    mouse_down(e);
+  }
+}
+
+function touch_move(e) {
+  if (dragSticky && e.touches.length === 1) {
+    e.preventDefault(); // Prevent scrolling while dragging
+    mouse_move(e);
+  }
+}
+
+function touch_end(e) {
+  mouse_up();
+}
+
+// Handle touch cancel (e.g., when call comes in or gesture is interrupted)
+function touch_cancel(e) {
+  if (dragSticky) {
+    // Optionally snap back to original position on cancel
+    dragSticky.style.transform = 'translate(0px, 0px)';
+    dragSticky.classList.remove('moving');
+    dragSticky.style.willChange = 'auto';
+    currentX = 0;
+    currentY = 0;
+    dragSticky = null;
+  }
+}
+
 // main ----------------------------------------------------------------------
 
 async function load_user_script() {
@@ -1557,6 +1797,17 @@ export async function room_main() {
   $on(document, "auxclick", click);
   $on(window, "resize", () => run_hooks("window_resize"));
   $on(window, "message", handle_message);
+
+  $on($body, "mousedown", mouse_down);
+  $on($body, "mousemove", mouse_move);
+  $on($body, "mouseup", mouse_up);
+  $on($body, "touchstart", touch_start, { passive: true });
+  $on($body, "touchmove", touch_move, { passive: false });
+  $on($body, "touchend", touch_end);
+  $on($body, "touchcancel", touch_cancel);
+  // double click / tap
+  $on($body, "dblclick", mouse_double_click);
+
   setup_keyboard_shortcuts();
   if (inIframe)
     window.parent.postMessage({ type: "ready", theme: theme }, ALLYCHAT_CHAT_URL);

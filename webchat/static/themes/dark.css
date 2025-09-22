@@ -18,5 +18,5 @@
 	--link: var(--col6);
 	--text: var(--col7);
 
-	--border: var(--col5);
+	--border: none; /* var(--col5); */
 }

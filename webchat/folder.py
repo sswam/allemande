@@ -116,9 +116,10 @@ def get_item_info(path: Path) -> tuple[str, str, bool, bool, int]:
     """Get MIME type and icon for a file."""
     ext = path.suffix.lstrip(".").lower()
 
-    stats = path.lstat()
+#    stats = path.lstat()
+    stats = path.stat()
     is_symlink = stat.S_ISLNK(stats.st_mode)
-    is_dir = stat.S_ISDIR(stats.st_mode) or is_symlink and path.is_dir()
+    is_dir = stat.S_ISDIR(stats.st_mode) #or is_symlink and path.is_dir()
     mtime = int(stats.st_mtime)
 
     # Handle directories

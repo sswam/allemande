@@ -22,7 +22,9 @@ const $edit = $id("view_edit");
 const $auto = $id('mod_auto');
 const $messages_overlay = $id("messages_overlay");
 
+let nsfw = false;
 let is_private = false;
+let is_nsfw = false;
 let access_denied = false;
 let icons;
 
@@ -389,6 +391,18 @@ function new_chat_message(message) {
   lastMessageId = message.lastMessageId;
 }
 
+// insert text ---------------------------------------------------------------
+
+function content_insert(ev, text) {
+  textarea_insert($content, text);
+}
+
+function textarea_insert(textarea, text) {
+  textarea.focus();
+  document.execCommand('insertText', false, text);
+  message_changed();
+}
+
 // insert tabs and indent ----------------------------------------------------
 
 function content_insert_tab(ev) {
@@ -622,6 +636,17 @@ export async function set_room(room_new, no_history) {
     return;
   }
 
+  // check for nsfw room in wrong case
+  const room_new_lc = room_new.toLowerCase();
+  if (room_new_lc == "nsfw" || room_new_lc.startsWith("nsfw/"))
+    room_new = "nsfw" + room_new.slice(4);
+
+  is_private = room_new.startsWith(user + "/");
+  is_nsfw = is_private || room_new.startsWith("nsfw/");
+
+  $body.classList.toggle("private", is_private);
+  $body.classList.toggle("nsfw_zone", is_nsfw);
+
   // // check if we're moving / renaming
   // if (active_get("room_ops_move")) {
   //   if (room_new = await move(room, room_new)) {
@@ -669,6 +694,8 @@ export async function set_room(room_new, no_history) {
   await setup_all_link_buttons();
   setup_admin();
 
+  nsfw_zone_room_changed();
+
   if (view === "view_edit") {
     editor_file = room_new;
     if (type == "room")
@@ -708,7 +735,6 @@ async function setup_all_link_buttons() {
 
 function show_room_privacy() {
   const $privacy = $id("privacy");
-  is_private = room.startsWith(user + "/");
   if (access_denied) {
     $privacy.innerHTML = icons["access_denied"];
     $privacy.title = "denied";
@@ -1199,6 +1225,7 @@ function setup_main_ui_shortcuts() {
     ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
     ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
     ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
+    ['ctrl+alt+a', (ev) => content_insert(ev, "α"), 'Insert alpha: α'],
   ]);
 
   add_shortcuts(shortcuts.room, [
@@ -1275,7 +1302,33 @@ function handle_message(ev) {
   if (ev.data.type == "copy") {
     // copy to clipboard
     try {
-      navigator.clipboard.writeText(ev.data.text);
+      let text = ev.data.text;
+      navigator.clipboard.writeText(text);
+
+      // check if spans multiple lines
+      const multiline = text.match(/\n/);
+
+      // if a likely name, ends with , and not multiline FIXME
+      // put it in the input box
+      const paste_to_input = text.endsWith(",") && !multiline;
+      if (paste_to_input) {
+        $content.focus();
+
+        const sep = multiline ? "\n" : " ";
+
+        const old = $content.value;
+        const selStart = $content.selectionStart;
+        const beforeChar = selStart > 0 ? old.charAt(selStart - 1) : sep;
+        const afterChar = selStart < old.length ? old.charAt(selStart) : '';
+
+        if (beforeChar !== sep)
+          text = sep + text;
+        if (afterChar !== sep && !text.endsWith(sep))
+          text += sep;
+
+        document.execCommand('insertText', false, text);
+        message_changed();
+      }
     }
     catch (err) {
       console.error("copy failed", err);
@@ -1398,7 +1451,7 @@ async function setup_nav_buttons() {
 
   // Setup nsfw buttons --------------------
   for (const $nav_nsfw of $$(".nav_nsfw"))
-    $nav_nsfw.href = "/" + query_to_hash(NSFW_ROOM);
+    $nav_nsfw.href = "/" + query_to_hash(room == "nsfw/nsfw" ? DEFAULT_ROOM : NSFW_ROOM);
 
   // Setup porch button --------------------
   const $nav_porch = $id("nav_porch");
@@ -2649,10 +2702,15 @@ async function opt_mission(ev) {
 async function setup_icons() {
   await $import("icons");
   icons = modules.icons.icons;
-  for (const prefix of ["mod", "add", "view", "opt", "nav", "scroll", "audio", "select", "filter"]) {
-    icons[`${prefix}_cancel`] = icons["x"];
+  for (const prefix of ["mod", "add", "view", "opt", "nav", "scroll", "audio", "select"]) { //, "filter"]) {
+    icons[`${prefix}_cancel`] = icons[prefix]; // icons["x"];
   }
-  icons["edit_close"] = icons["x"];
+//  icons["edit_close"] = icons["x"];
+  for (const prefix of ["edit", "help"]) {
+    icons[`${prefix}_close`] = icons[prefix];
+  }
+  // icons["edit_close"] = icons["edit"];
+  icons["help_close"] = icons["x"]; // icons["help"];
   for (const prefix of ["rec", "rec_preview"]) {
     icons[`${prefix}_cancel`] = icons["x_large"];
   }
@@ -2676,12 +2734,13 @@ async function setup_icons() {
   icons["help_retry"] = icons["undo"];
   icons["help_archive"] = icons["mod_archive"];
   icons["help_clear"] = icons["mod_clear"]
-  icons["help_close"] = icons["x"];
 
   icons["view_advanced"] = icons["view_mode_simple"];
 
 //  icons["room_ops_copy"] = icons["copy"];  // TODO remove this
   icons["select_copy"] = icons["copy"];
+
+  icons["filter_2"] = icons["filter"];
 
   for (const id in icons) {
     let el = $id(id);
@@ -2952,14 +3011,119 @@ function dismiss_system_message() {
   $id('system_message').remove();
 }
 
+/* NSFW Zone warning overlay ---------------------------------------------- */
+
+let nsfw_zone_gate_delay_timeout;
+
+export async function nsfw_zone_gate(show_it) {
+  if (!show_it) {
+    hide($id('nsfw-warning'));
+    clearTimeout(nsfw_zone_gate_delay_timeout);
+    nsfw_zone_gate_delay_timeout = null;
+    return;
+  }
+
+  // localStorage.removeItem('nsfw_zone'); // XXX for testing
+  const nsfwSetting = localStorage.getItem('nsfw_zone');
+
+  // No action if already accepted
+  if (nsfwSetting === "1")
+    return;
+
+  // Show overlay if not yet confirmed
+  show($id('nsfw-warning'));
+  $id('nsfw-warning').focus();
+
+  // Encourage user to read the messages
+  const btn = $id('nsfw-warning-yes');
+  btn.disabled = true;
+
+  const $$cb = Array.from($$('#nsfw-warning li input'));
+  for (const $cb of $$cb) {
+    $cb.checked = false;
+    $cb.disabled = true;
+    $on($cb, 'change', () => {
+      const $em = $id($cb.id.replace('cb', 'em'));
+      $em.classList.toggle("invisible", !$cb.checked);
+      const all_checked = $$cb.every(cb => cb.checked);
+      btn.disabled = !all_checked;
+    });
+  }
+
+  const delay = 1000;
+
+  const $$li = Array.from($$('#nsfw-warning li:not(:has(input))'));
+  await $wait(delay);
+
+  for (let i = 0; ; ++i) {
+    if (i == $$li.length)
+      break;
+    const $li = $$li[i];
+    $li.classList.add("highlight");
+    const $em = $id($li.id.replace('con', 'em'));
+    $em.classList.remove("invisible");
+    await $wait(delay);
+  }
+
+  for (const $cb of $$cb)
+    $cb.disabled = false;
+}
+
+export function nsfw_zone_set(accepted) {
+  if (nsfw_zone_gate_delay_timeout)
+    nsfw_zone_gate(false);
+
+  // Show NSFW nav buttons if accepted
+  for (const el of $$('a.nav_nsfw'))
+    show(el, accepted !== "0");
+
+  if (accepted == null)
+    return localStorage.removeItem('nsfw_zone');
+
+  localStorage.setItem('nsfw_zone', accepted);
+  if (accepted !== "1") {
+    // console.log("NSFW no");
+    return go_home()
+  }
+
+  hide($id('nsfw-warning'));
+
+  // console.log("NSFW yes");
+}
+
+export function nsfw_zone_init() {
+  $on($id('nsfw-warning-no'), 'click', () => nsfw_zone_set("0"));
+  $on($id('nsfw-warning-yes'), 'click', () => nsfw_zone_set("1"));
+  // TODO show if room is NSFW and not yet accepted
+  const nsfwSetting = localStorage.getItem('nsfw_zone');
+
+  // Hide NSFW nav buttons if explicitly opted out
+  if (nsfwSetting !== "0")
+    for (const el of $$('a.nav_nsfw'))
+      show(el);
+}
+
+export function nsfw_zone_room_changed() {
+  const in_nsfw_zone = room.startsWith("nsfw/");
+  nsfw_zone_gate(in_nsfw_zone);
+}
+
+// TODO remove export when no longer needed for testing
+
+// Run on page load
+// handleNSFWAccess();
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
-  const { username, nsfw } = await authChat();
-  user = username;
+  const auth = await authChat();
+  user = auth.username;
+  nsfw = auth.nsfw;
 
-  if (nsfw)
+  if (nsfw) {
     $body.classList.add("nsfw");
+    nsfw_zone_init();
+  }
 
   if (iOS)
     document.body.classList.add("ios")
@@ -3071,7 +3235,7 @@ export async function init() {
   $on($id("scroll_cancel"), "click", () => set_top());
 
   $on($id('filter_query'), "change", filter_changed);  // or on "input"
-  $on($id("filter_cancel"), "click", () => set_top());
+  $on($id("filter_2"), "click", () => set_top());
 
   if (iOS && navigator.standalone)
     $on(window, "scroll", iOS_reload_scroll);

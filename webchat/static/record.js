@@ -73,6 +73,9 @@ function set_timer(seconds) {
 
 // Main recording function
 async function handleRecording(includeVideo = false) {
+    await $import("icons");
+    icons = modules.icons.icons;
+
     chat.set_controls('input_record');
 
     try {

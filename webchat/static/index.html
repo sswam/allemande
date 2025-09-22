@@ -23,19 +23,19 @@
 <input type="hidden" id="op" name="op" value="post">
 <div id="main" class="col fill">
 	<div class="row gap hidden" id="top">
+		<a class="button private" href="" id="privacy" title=""></a>
 		<div class="top_left_controls row gap" id="top_left_main">
-			<a class="button" href="" id="privacy" title=""></a>
 			<a class="button advanced" href="" id="nav" title="navigation">nav</a>
+			<a class="button nsfw nav_nsfw hidden" href="" title="go to the main NSFW room">nsfw</a>
 			<a class="button advanced hidden" href="" id="dir_sort" title="sort">sort_alpha</a>
-			<!-- <a class="button nsfw nav_nsfw simple" href="" title="go to the main NSFW room">nsfw</a> -->
 			<button id="select" title="select messages" class="boffin">select</button> <!-- should be advanced when done -->
 			<!--<button id="room_ops" title="room operations" class="advanced">room</button>-->
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_nav">
-			<button id="nav_cancel">back</button>
+			<button id="nav_cancel" class="back">back</button>
 			<a class="button" href="" id="nav_up" title="go up to the parent folder: alt+u">up</a>
 			<a class="button" href="" id="nav_allychat" title="go to the main 'Ally Chat' room">allychat</a>
-			<a class="button nsfw nav_nsfw" href="" title="go to the main NSFW room">nsfw</a>
+			<!--<a class="button nsfw nav_nsfw hidden" href="" title="go to the main NSFW room">nsfw</a>-->
 			<a class="button" href="" id="nav_porch" title="your 'porch', a public room you control">porch</a>
 			<a class="button" href="" id="nav_home" title="your 'home', a private room">home</a>
 			<a class="button" href="" id="nav_first" title="first page: ctrl+[">first</a>
@@ -44,7 +44,7 @@
 			<a class="button" href="" id="nav_last" title="last page: ctrl+]">last</a>
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_select" class="advanced">
-			<button id="select_cancel">back</button>
+			<button id="select_cancel" class="back">back</button>
 			<button id="select_all" title="select all messages, or no messages">all</button>
 			<button id="select_download" title="download selected messages">download</button>
 			<button id="select_copy" title="copy selected messages to another room">copy</button>
@@ -54,14 +54,14 @@
 			<input id="select_target" placeholder="target room" title="target room for copy / move">
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_room_ops">
-			<button id="room_ops_cancel">back</button>
+			<button id="room_ops_cancel" class="back">back</button>
 			<button id="room_ops_copy" title="copy all or part of the room">copy</button>
 			<button id="room_ops_move" title="rename or move: alt+m" class="admin">move</button>
 		</div>
 		<input id="room" name="room" class="flex grow">
 		<div class="top_controls row gap" id="top_main">
 			<button id="debug" title="debug" class="small boffin">?</button>
-			<button id="filter" title="filter media" class="advanced">filter</button>
+			<button id="filter" title="filter media">filter</button>
 			<button id="scroll" title="scrolling" class="advanced">scroll</button>
 			<button class="hidden" id="notify">notify</button>
 			<a class="button" href="" id="user" title="cycle your main rooms">?</a>
@@ -73,11 +73,19 @@
 			<button id="scroll_pageup" title="page up">pageup</button>
 			<button id="scroll_pagedown" title="page down">pagedown</button>
 			<button id="scroll_end" title="end of room: end">bot</button>
-			<button id="scroll_cancel">back</button>
+			<button id="scroll_cancel" class="back">back</button>
 		</div>
 		<div class="top_controls row gap hidden flex grow" id="top_filter">
-			<input id="filter_query" title="filter images" placeholder="filter" class="wide">
-			<button id="filter_cancel">back</button>
+			<input id="filter_query" title="image filter" placeholder="filter" class="wide"> <!-- advanced -->
+			<select id="filter_preset" title="image filter presets" class="wide nsfw hidden">
+			<option value="">  all</option>
+			<option value="">👚 safe</option>
+			<option value="">❤️ nude</option>
+			<option value="">🍑 xxx</option>
+			<option value="">🪢 kink</option>
+			<option value="">💩 off</option>
+			</select>
+			<button id="filter_2" class="back">filter</button>
 		</div>
 	</div>
 
@@ -115,7 +123,7 @@
 			<button id="mod_archive" title="archive this room: shift+alt+a">archive</button>
 			<button id="mod_clear" title="clear this room: alt+x">clear</button>
 			<button id="mod_clean" title="clean up this room" class="boffin">clean</button>
-			<button id="mod_cancel">back</button>
+			<button id="mod_cancel" class="back">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_add">
 			<input id="files" name="files" type="file" class="inputfile hide" tabindex="-1" multiple/>
@@ -123,28 +131,28 @@
 			<button id="add_record_audio" title="record audio">audio</button>
 			<button id="add_record_video" title="record video">video</button>
 			<button id="add_math" title="add mathematics">math</button>
-			<button id="add_cancel">back</button>
+			<button id="add_cancel" class="back">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_record">
 			<button id="rec_time" title="pause recording"></button>
 			<video id="rec_videoPreview" autoplay muted></video>
 			<button id="rec_stop" title="stop recording">stop</button>
-			<button id="rec_save" title="upload the recording">save</button>
-			<button id="rec_cancel">cancel</button>
+			<button id="rec_save" class="okay" title="upload the recording">save</button>
+			<button id="rec_cancel" class="cancel">cancel</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_record_preview">
 			<video id="rec_preview_videoPreview" autoplay controls></video>
 			<audio id="rec_preview_audioPreview" autoplay controls></audio>
-			<button id="rec_preview_save" title="upload the recording">save</button>
-			<button id="rec_preview_cancel">cancel</button>
+			<button id="rec_preview_save" class="okay" title="upload the recording">save</button>
+			<button id="rec_preview_cancel" class="cancel">cancel</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_edit">
-			<button id="edit_save" title="save changes">save</button>
-			<button id="edit_reset" title="revert changes">reset</button>
 			<button id="edit_indent" title="insert tab / indent">indent</button>
 			<button id="edit_dedent" title="dedent">dedent</button>
-			<button id="edit_clear" title="clear the file">clear</button>
-			<button id="edit_close">close</button>
+			<button id="edit_reset" title="revert changes" class="cancel">reset</button>
+			<button id="edit_clear" title="clear the file" class="cancel">clear</button>
+			<button id="edit_save" title="save changes" class="okay">save</button>
+			<button id="edit_close" class="back">close</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_view">
 			<button id="view_font_size" title="change font size">font size</button>
@@ -165,7 +173,7 @@
 			<button id="view_fullscreen" title="view fullscreen" class="advanced noios">fullscreen</button>
 			<input id="view_items" placeholder="items" title="number of search results to show" class="boffin">
 			<button id="view_advanced" title="advanced mode">advanced</button>
-			<button id="view_cancel">back</button>
+			<button id="view_cancel" class="back">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_audio">
 			<button id="audio_stt" title="speech to text">stt</button>
@@ -173,7 +181,7 @@
 			<button id="audio_vad" title="voice activity detection">vad</button>
 			<button id="audio_auto" title="automatic voice chat">auto</button>
 			<input id="audio_voice" placeholder="voice" title="text to speech voice">
-			<button id="audio_cancel">back</button>
+			<button id="audio_cancel" class="back">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_opt">
 			<input id="opt_context" placeholder="context" title="number of recent messages AI can see">
@@ -181,7 +189,7 @@
 			<input id="opt_images" placeholder="images" title="number of recent images AI can see">
 			<input id="opt_temp" placeholder="temp" title="temperature: like creativity or inebriation; 1 is normal, 0 is deterministic, 1.5 is high" class="advanced">
 			<input id="opt_mission" placeholder="mission" title="mission file to use, - for none" class="advanced">
-			<button id="opt_cancel">back</button>
+			<button id="opt_cancel" class="back">back</button>
 		</div>
 	</div>
 </div>
@@ -207,6 +215,37 @@
 	</div>
 	<div id="help-frame-container">
 		<iframe id="help-frame" name="help-frame"></iframe>
+	</div>
+</div>
+
+<div id="nsfw-warning" class="hidden">
+	<div>
+		<h2>⚠️ Adult Content Warning</h2>
+		<p>You are about to enter the NSFW zone, with adult content including:</p>
+		<ul style="text-align: left;">
+			<li id="con0">Explicit sexual imagery, including LGBTQIA+</li>
+			<li id="con1">Sexual role-play, with AI and other users</li>
+			<li id="con2">Free speech, extreme kinks, strong language</li>
+		</ul>
+		<p class="blue"><strong>You must be over 18 to continue.</strong></p>
+		<p>I hereby confirm that:</p>
+		<ul style="text-align: left;">
+			<li> <label for="cb3"> <input type="checkbox" id="cb3"> I am legally an adult, over the age of 18.</label></li>
+			<li> <label for="cb4"> <input type="checkbox" id="cb4"> I am responsible for my own safety.</label> </li>
+			<li> <label for="cb5"> <input type="checkbox" id="cb5"> I am friendly, resilient, respectful, tolerant.</label> </li>
+		</ul>
+		<div style="margin-top: 2rem;">
+			<button id="nsfw-warning-no">Leave</button>
+			<button id="nsfw-warning-yes">I am an adult - Continue</button>
+		</div>
+		<div class="emojis" style="margin-top: 2rem;">
+			<span id="em0" class="invisible">🌶️</span>
+			<span id="em1" class="invisible">🤖</span>
+			<span id="em2" class="invisible">🤢</span>
+			<span id="em3" class="invisible">🧟</span>
+			<span id="em4" class="invisible">☠️</span>
+			<span id="em5" class="invisible">🤗</span>
+		</div>
 	</div>
 </div>
 

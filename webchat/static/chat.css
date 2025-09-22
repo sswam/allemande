@@ -13,7 +13,7 @@ body.admin, body.admin .admin {
 html {
 	overflow: auto;  /* enable reload on mobile */
 }
-input, textarea {
+input:not([type=checkbox]), textarea, select {
 	min-width: min(var(--input-width-min), 50vw);
 	padding: 0.25rem;
 }
@@ -62,9 +62,12 @@ input, textarea {
 	flex-grow: 1;
 }
 #inputrow > .controls > video {
-	flex-grow: 0;
-	flex-shrink: 1;
-	max-height: 8rem;
+	min-width: 9.6rem;
+	min-height: 5.4rem;
+	max-width: 16rem;
+	max-height: 9rem;
+	aspect-ratio: 16/9;
+	flex: 0 0 auto;
 }
 #content, #math_input {
 	min-height: 2rem;
@@ -177,7 +180,7 @@ button, .button {
 	font-size: 1.2rem;
 }
 
-input:focus, textarea:focus, iframe:focus, button:focus, .button:focus {
+input:focus, textarea:focus, select:focus, iframe:focus, button:focus, .button:focus {
 	outline: none;
 }
 
@@ -202,6 +205,12 @@ iframe#messages_iframe.overlay {
 	border: none;
 	border-radius: 0;
 }
+
+body.dark .back { background-color: #303060 !important; color: white !important; }
+body.dark .okay { background-color: #406040 !important; color: white !important; }
+body.dark .cancel { background-color: #604040 !important; color: white !important; }
+body.dark.nsfw_zone .nsfw { background-color: #604060 !important; color: white !important; }
+body.dark.private .private { background-color: #406040 !important; color: white !important; }
 
 body.dark .active { background-color: #606030 !important; color: white !important; }
 
@@ -246,6 +255,12 @@ body.dark .active--18 { background-color: #b8ffff !important; color: black !impo
 body.dark .active--19 { background-color: #c0ffff !important; color: black !important; }
 body.dark .active--20 { background-color: #c8ffff !important; color: black !important; }
 
+body.light .back { background-color: #9090b0 !important; color: black !important; }
+body.light .okay { background-color: #90b090 !important; color: black !important; }
+body.light .cancel { background-color: #b09090 !important; color: black !important; }
+body.light.nsfw_zone .nsfw { background-color: #b090b0 !important; color: black !important; }
+body.light.private .private { background-color: #90b090 !important; color: black !important; }
+
 body.light .active { background-color: #b0b058 !important; color: black !important; }
 
 body.light .active-1 { background-color: #c0c060 !important; color: black !important; }
@@ -265,6 +280,13 @@ body.light .active--3 { background-color: #68d0d0 !important; color: black !impo
 body.light .active--4 { background-color: #70e0e0 !important; color: black !important; }
 body.light .active--5 { background-color: #78f0f0 !important; color: black !important; }
 
+body.dark input[placeholder]:not(:placeholder-shown) {
+	background-color: #606030 !important; color: white !important;
+}
+
+body.light input[placeholder]:not(:placeholder-shown) {
+	background-color: #b0b058 !important; color: black !important;
+}
 
 .error {
 	background-color: #422 !important;
@@ -312,20 +334,27 @@ body.nsfw .sfw {
 	display: none !important;
 }
 
+/*
 body.simple a.button#help {
 	background-color: rgb(255, 205, 0);
 	color: rgb(0, 132, 61);
-	animation: alternateColors 8s steps(2) infinite;
+	animation: alternateColorsDark 8s steps(2) infinite;
 }
 
 @keyframes alternateColors {
 	0%, 49.99% { background-color: rgb(255, 205, 0); color: rgb(0, 132, 61); }
 	50%, 100% { background-color: rgb(0, 132, 61); color: rgb(255, 205, 0); }
 }
+*/
 
-body.simple a.button#help {
-    background: green;
+body.simple.light a.button#help {
+    background: #90b090;
     color: black;
+}
+
+body.simple.dark a.button#help {
+    background: #306030;
+    color: white;
 }
 
 
@@ -509,7 +538,110 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
 }
 
 @supports(padding: env(safe-area-inset-top)) {
-  body {
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-  }
+	body {
+		padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+	}
+}
+
+/* NSFW Zone warning overlay ---------------------------------------------- */
+
+#nsfw-warning {
+	font-size: 1.2rem;
+	background: var(--background);
+	color: var(--text);
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	padding: 1rem;
+	z-index: 9999;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	text-align: center;
+	overflow-y: auto;
+}
+
+#nsfw-warning > div {
+	max-width: 500px;
+	margin: auto;
+	padding: 1rem;
+}
+
+/*
+#nsfw-warning {
+	.. other properties same as above ...
+	display: block;
+	overflow-y: auto;
+}
+
+#nsfw-warning > div {
+	max-width: 600px;
+	margin: 0 auto;
+	padding: 1rem;
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+*/
+
+#nsfw-warning button {
+	padding: 1rem 2rem;
+	margin: 0.5rem;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+#nsfw-warning-no {
+	background: #666;
+}
+
+#nsfw-warning-yes:disabled {
+	cursor: not-allowed !important;
+}
+
+#nsfw-warning-yes:not(:disabled) {
+	background: #f44;
+}
+
+#nsfw-warning .blue {
+	color: #48f;
+}
+
+#nsfw-warning li input:disabled {
+	display: none;
+}
+
+#nsfw-warning li:not(.highlight):not(:has(input)),
+#nsfw-warning li:has(input:not(:checked)) {
+	margin-left: -2rem;
+	color: #f44;
+}
+
+#nsfw-warning li.highlight:not(:has(input)),
+#nsfw-warning li:has(input:checked) {
+	animation: highlight 2s ease-out 1;
+}
+
+#nsfw-warning ul {
+	list-style-type: none;
+}
+
+#nsfw-warning div.emojis {
+	font-size: 2rem;
+}
+
+@keyframes highlight {
+	0% {
+		margin-left: -2rem;
+		color: #f44;
+	}
+	50%,100% {
+		margin-left: 0;
+		color: var(--text);
+	}
 }

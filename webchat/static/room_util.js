@@ -564,3 +564,202 @@ function echo_n(...args) {
 function echo(...args) {
   return echo_n(...args, '\n');
 }
+
+// effects: fire -------------------------------------------------------------
+
+const FX_ANIMATION_INTERVAL = 50; // How often to update animations (ms)
+
+let fire_elements = [];
+let animation_running = false;
+let animation_frame_id = null;
+let last_animation_time = 0;
+
+// Efficient element finder
+function fx_update_elements() {
+	fire_elements = Array.from(document.getElementsByClassName('fire'));
+
+	// Start animation if elements exist and not already running
+	if (fire_elements.length > 0 && !animation_running) {
+		fx_start_animation();
+	}
+	// Stop animation if no elements exist
+	else if (fire_elements.length === 0 && animation_running) {
+		fx_stop_animation();
+	}
+}
+
+function fx_create_fire_shadow() {
+	const rand = Math.random;
+	const dy = rand() * 2 + 1;
+	const x1 = rand() * 4 - 2;
+	const y1 = -dy;
+	const x2 = rand() * 3 - 1.5;
+	const y2 = y1 - dy;
+	const x3 = rand() * 2 - 1;
+	const y3 = y2 - dy;
+	return `${x1}px ${y1}px 7px rgb(255, 255, 0),
+			${x2}px ${y2}px 14px rgb(255, 127, 0),
+			${x3}px ${y3}px 21px rgb(255, 0, 0)`;
+}
+
+function fx_animate(timestamp) {
+	// Throttle animation to FX_ANIMATION_INTERVAL
+	if (timestamp - last_animation_time >= FX_ANIMATION_INTERVAL) {
+		// Update fire elements
+		for (const element of fire_elements) {
+			element.style.textShadow = fx_create_fire_shadow();
+		}
+		last_animation_time = timestamp;
+	}
+
+	if (animation_running && fire_elements.length > 0) {
+		animation_frame_id = requestAnimationFrame(fx_animate);
+	} else {
+		fx_stop_animation();
+	}
+}
+
+function fx_start_animation() {
+	if (!animation_running) {
+		animation_running = true;
+		animation_frame_id = requestAnimationFrame(fx_animate);
+	}
+}
+
+function fx_stop_animation() {
+	if (animation_running) {
+		animation_running = false;
+		if (animation_frame_id) {
+			cancelAnimationFrame(animation_frame_id);
+			animation_frame_id = null;
+		}
+	}
+}
+
+// Set up mutation observer to watch for DOM changes
+const observer = new MutationObserver((mutations) => {
+	let should_update = false;
+
+  // TODO too deep nesting, use extra top-level functions perhaps
+
+	for (const mutation of mutations) {
+		// Check added nodes
+		for (const node of mutation.addedNodes) {
+			if (node.nodeType === Node.ELEMENT_NODE) {
+				if (node.classList?.contains('fire') || node.querySelector?.('.fire')) {
+					should_update = true;
+					break;
+				}
+			}
+		}
+
+		// Check removed nodes
+		if (!should_update) {
+			for (const node of mutation.removedNodes) {
+				if (node.nodeType === Node.ELEMENT_NODE) {
+					if (node.classList?.contains('fire') || node.querySelector?.('.fire')) {
+						should_update = true;
+						break;
+					}
+				}
+			}
+		}
+
+		// Check attribute changes for class modifications
+		if (!should_update && mutation.type === 'attributes' && mutation.attributeName === 'class') {
+			should_update = true;
+		}
+
+		if (should_update) break;
+	}
+
+	if (should_update) {
+		fx_update_elements();
+	}
+});
+
+// Start observing
+async function fx_main() {
+  await $waitUntilElement("div.messages");
+  observer.observe($("div.messages"), {
+  	childList: true,
+  	subtree: true,
+  	attributes: true,
+  	attributeFilter: ['class']
+  });
+  // Initial check
+  fx_update_elements();
+}
+
+fx_main();
+
+
+// let fameElements = [];
+// let a = 0; // Fame animation angle
+
+// fameElements = Array.from(document.getElementsByClassName('fame'));
+// if ((fireElements.length > 0 || fameElements.length > 0) && !animationRunning) {
+
+// // Update fame elements
+// fameElements.forEach(element => {
+// 	element.style.textShadow = createFameShadow(a);
+// });
+
+// a += Math.PI * 2 * 20/360;
+
+// function createFameShadow(angle) {
+// 	const sin = Math.sin, cos = Math.cos, pi2 = 2 * Math.PI;
+// 	const r = 4;
+// 	const x1 = r * sin(angle), y1 = r * cos(angle);
+// 	const x2 = r * sin(angle + pi2/3), y2 = r * cos(angle + pi2/3);
+// 	const x3 = r * sin(angle - pi2/3), y3 = r * cos(angle - pi2/3);
+// 	return `${x1}px ${y1}px 15px rgb(255, 0, 0),
+// 			${x2}px ${y2}px 15px rgb(0, 200, 0),
+// 			${x3}px ${y3}px 15px rgb(63, 63, 255)`;
+// }
+//
+
+// shuffle -------------------------------------------------------------------
+
+function fort(array) {
+  // Fortune: randomly select an element from the array
+  if (array.length === 0) return null;
+  const index = Math.floor(Math.random() * array.length);
+  return array[index];
+}
+
+function shuf(array) {
+	// Fisher-Yates shuffle
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
+	}
+	return array;
+}
+
+function shuffle1(container, selector) {
+	// Shuffle child elements matching selector within container
+	const elements = Array.from(container.querySelectorAll(selector));
+	container.innerHTML = "";
+
+	for (const element of shuf(elements))
+		container.appendChild(element);
+}
+
+function shuffle(selector, item_selector) {
+	// Shuffle child elements matching item_selector within each container matching selector
+	const containers = Array.from(document.querySelectorAll(selector));
+	for (const container of containers)
+		shuffle1(container, item_selector);
+}
+
+// fixed header --------------------------------------------------------------
+
+function header(query) {
+	const $header = $(query || ".header");
+	const observer = new ResizeObserver(entries => {
+	  const height = entries[0].contentRect.height;
+	  $("div.messages").style.marginTop = height + 'px';
+	});
+	observer.observe($header);
+}
