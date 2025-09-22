@@ -520,6 +520,9 @@ function key_event_overlay(ev) {
     toggle_fullscreen();
   } else if (ev.key == "m") {
     cycle_zoom();
+  // look for key in "lrhv"
+  } else if ("lrhv".includes(ev.key)) {
+    transform_overlay(ev.key);
   } else if (ev.key == "ArrowLeft" || ev.key == "Backspace") {
     image_go(-1);
   } else if (ev.key == "ArrowRight" || ev.key == " ") {
@@ -536,6 +539,37 @@ function key_event_overlay(ev) {
     return;
   }
   ev.preventDefault();
+}
+
+let matrix = null;
+
+function transform_overlay(key) {
+  // use CSS transforms to rotate or flip the image
+  const $img = $overlay.querySelector("img");
+  if (!$img)
+    return;
+  if (!$img.style.transform || !matrix)
+    matrix = [1, 0, 0, 1, 0, 0];
+  if (key == "v") {
+    // flip y
+    matrix[1] *= -1;
+    matrix[3] *= -1;
+  } else if (key == "h") {
+    // flip x
+    matrix[0] *= -1;
+    matrix[2] *= -1;
+  } else if (key == "r") {
+    // rotate 90 degrees clockwise
+    matrix = [matrix[2], matrix[3], -matrix[0], -matrix[1], 0, 0];
+  } else if (key == "l") {
+    // rotate 90 degrees counter-clockwise
+    matrix = [-matrix[2], -matrix[3], matrix[0], matrix[1], 0, 0];
+  }
+  const matrix_str = matrix.join(",");
+  if (matrix_str == "1,0,0,1,0,0")
+    $img.style.transform = "";
+  else
+    $img.style.transform = `matrix(${matrix.join(",")})`;
 }
 
 function setup_keyboard_shortcuts() {
