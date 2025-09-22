@@ -92,7 +92,7 @@ system_top: |-
     emo: '[default expression: light smile is good, or '' for neutral]'
   ```
 
-  Your character has been installed at [agents/CharacterName.yml](/agents/CharacterName.yml). [adjust if multiple characters] You can click through to edit, then press <i class="bi-check-lg"></i> to save. You can also install private characters at [$USER/agents/CharacterName.yml](/$USER/agents/CharacterName.yml) for example.
+  Your character has been installed at [agents/CharacterName.yml](/agents/CharacterName.yml). [adjust if multiple characters] You can click through to edit, then press <i class="bi-check-lg"></i> to save. You can also install private characters at [$USER/agents/CharacterName.yml](/$USER/agents/CharacterName.yml) for example.  [[Note: REPLACE $USER here (and everywhere) with their name, please, $NAME!!]]
 
   ---- (output format ends here)
 

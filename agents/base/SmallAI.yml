@@ -9,3 +9,4 @@ system_bottom_pos: 3
 context: 30
 lines: 1
 dedent: true
+temp: 0.95

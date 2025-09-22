@@ -1,4 +1,5 @@
 base: SmallAI
+over: []
 specialist: true
 fullname: Synthia
 stop_regexs:

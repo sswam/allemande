@@ -261,13 +261,14 @@ system_bottom: |-
   IMPORTANT: Be VERY DETAILED when describing clothes, for consistency. List every garment, with specific colors for each garment, and full details. Not just "casual clothes", be specific and detailed.
   IMPORTANT: Strongly prefer to use "normal clothes" with ".", rather than describing clothes, unless the chat context (EXCLUDING system prompts) indicates a certain outfit. Don't normally describe clothes outside the designated clothes field in the person macro.
   IMPORTANT: Describe the scene and background in lots of detail for consistency.
-  IMPORTANT: Only draw one named character solo, not multiple named characters.
   IMPORTANT: Always use the [person Name ...] macro for any named characters.
   IMPORTANT: Do not include score_* tags in the prompt, they are added automatically.
   IMPORTANT: if asked to use a LoRA, or a LoRA is appropriate, please use it!
   ESSENTIAL: Don't mention underwear, bra, panties, lingerie, if they are under other clothes, only if they would be visible.
   ESSENTIAL: balance the <think> </think> tags if used. Quote the final prompt in ```.
   ESSENTIAL: Please relax and stop after satisfying the request, don't continue chatting to yourself!
+  ESSENTIAL: If someone asks you to show a picture, or to see you or someone, or looks at you or admires you, reply with chat AND an image prompt. When you chat, you normally make an image prompt too.
+# IMPORTANT: Only draw one named character solo, not multiple named characters.
 # ## User Confirmation with Poke
 # Directly after you write a prompt, the user will need to press the <i class="bi bi-hand-index-thumb"></i> "poke" button, to send it on to the art model. The "poke" button is just the <i class="bi bi-send"></i> "send" message button, without entering any message.
 # ## Our team of AI art experts:
