@@ -8,7 +8,7 @@ SHELL=bash
 
 static_files = $(wildcard static/*.html) $(wildcard static/*.css) $(wildcard static/*.js) $(wildcard static/*.wasm) $(wildcard static/*.json) $(wildcard static/*.png)
 
-all: build.stamp get users.txt # static/icons.css
+all: build.stamp get ../users.txt # static/icons.css
 
 build.stamp: $(static_files) ../site/auth.js
 	echo $(static_files)
@@ -81,7 +81,7 @@ static/mermaid.min.js:
 # 	EOT
 # 	awk '{print ".bi-" $$1 "::before { content: \"\\" $$2 "\"; }"}' < icons-unicode.txt >>$@
 
-users.txt: .htpasswd
+../users.txt: .htpasswd
 	<"$<" cut -d: -f1 >"$@"
 
 clean:

@@ -147,6 +147,9 @@ END
 	# add git to user's dir with arcs
 	cd "$user"
 	yes n | arcs -i
+
+	# run webchat/Makefile
+	cd "$ALLYCHAT_HOME"; make
 }
 
 change-password() {
@@ -198,6 +201,9 @@ remove-user() {
 	sudo userdel -- "$user" || true
 
 	printf -- "- %s\n" "$user"
+
+	# run webchat/Makefile
+	cd "$ALLYCHAT_HOME"; make
 }
 
 disable-user() {
