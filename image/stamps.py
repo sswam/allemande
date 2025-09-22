@@ -9,6 +9,7 @@ import yaml
 from pathlib import Path
 import sys
 import re
+from typing import Any
 
 from PIL import Image, ExifTags
 from PIL.ExifTags import IFD
@@ -116,7 +117,7 @@ def prompt_add_neg(prompt: str | None, prompt_neg: str | None) -> str:
 
 from collections import namedtuple
 
-Metadata = namedtuple('Metadata', ['seed', 'model', 'model_short', 'prompt_pos', 'prompt_neg', 'prompt_unp_pos', 'prompt_unp_neg', 'alt_text'])
+Metadata = namedtuple('Metadata', ['width', 'height', 'seed', 'model', 'model_short', 'prompt_pos', 'prompt_neg', 'prompt_unp_pos', 'prompt_unp_neg', 'alt_text'])
 
 def get_image_metadata(path: str) -> Metadata | None:
     """Extract and display EXIF data from an image file."""
@@ -139,6 +140,8 @@ def get_image_metadata(path: str) -> Metadata | None:
     #         tag = ExifTags.TAGS.get(key, str(key))
     #         print(f'{tag}:{val}')
 
+    width, height = img.size
+
     comment = get_comment(img_exif)
     if comment:
         # print(comment)
@@ -151,12 +154,12 @@ def get_image_metadata(path: str) -> Metadata | None:
         seed = model = model_short = prompt_pos = prompt_neg = prompt_unp_pos = prompt_unp_neg = None
         alt_text = ""
 
-    return Metadata(seed, model, model_short, prompt_pos, prompt_neg, prompt_unp_pos, prompt_unp_neg, alt_text)
+    return Metadata(width, height, seed, model, model_short, prompt_pos, prompt_neg, prompt_unp_pos, prompt_unp_neg, alt_text)
 
 
-def none_to_empty(s: str | None) -> str:
+def fmt_value(s: Any) -> str:
     """Convert None to empty string."""
-    return s if s is not None else ""
+    return str(s) if s is not None else ""
 
 
 def exif(istream=sys.stdin, markdown: bool=False) -> None:
@@ -175,8 +178,8 @@ def exif(istream=sys.stdin, markdown: bool=False) -> None:
         elif markdown:
             print(f"![{md.alt_text}]({path})")
         else:
-            row = [path, md.seed, md.model, md.model_short, md.prompt_pos, md.prompt_neg, md.prompt_unp_pos, md.prompt_unp_neg]
-            print("\t".join(map(none_to_empty, row)))
+            row = [path, md.width, md.height, md.seed, md.model, md.model_short, md.prompt_pos, md.prompt_neg, md.prompt_unp_pos, md.prompt_unp_neg]
+            print("\t".join(map(fmt_value, row)))
 
 
 def setup_args(arg):
