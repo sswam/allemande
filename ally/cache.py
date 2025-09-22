@@ -144,9 +144,10 @@ class FileCache:
         elif fmt == "json":
             formatted_content = json.dumps(content, **kwargs)
         elif fmt in ["yaml", "yml"]:
-            with open(path, "w", encoding="utf-8") as file:
-                yaml.dump(content, file, **kwargs)
-            return True
+            output = io.StringIO()
+            yaml.dump(content, output, **kwargs)
+            formatted_content = output.getvalue()
+            output.close()
         elif fmt in ["csv", "tsv"]:
             output = io.StringIO()
             delimiter = "\t" if fmt == "tsv" else kwargs.get("delimiter", ",")
@@ -167,7 +168,9 @@ class FileCache:
                 current_content = file.read()
                 if current_content == formatted_content:
                     return False  # Content is identical, no need to write
+            logger.info("File content differs, updating file: %s", path)
         except FileNotFoundError:
+            logger.info("File does not exist, creating new file: %s", path)
             current_content = None
 
         # Write to file if content is different or file doesn't exist
