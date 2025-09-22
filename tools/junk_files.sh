@@ -20,6 +20,7 @@ junk_files() {
 
     # Find junk files and empty files
     found_files=$(find "$directory" \
+        -xdev \
         -path '*/\.*' -prune -o \
         -path '*/__pycache__' -prune -o \
         -path '*/venv' -prune -o \
