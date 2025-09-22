@@ -66,7 +66,7 @@ add-user() {
 		start_nsfw="
 For NSFW content:
 
-5. Enter 'nsfw' in the room field to visit the NSFW zone.
+5. Press the 'E' or enter 'nsfw' in the room field to visit the NSFW zone.
 6. NSFW features also work in private chat.
 "
 		patreon_links=$'- https://www.patreon.com/allychat (SFW)\n- https://www.patreon.com/allychatx (NSFW)'
@@ -106,7 +106,7 @@ END
 	done
 
 	mkdir -p rooms/"$user"
-	chmod o-rwx rooms/"$user"
+	chmod g-w,o-rwx rooms/"$user"
 	mkdir -p static/users/"$user"
 	touch static/users/"$user"/styles.css
 	touch static/users/"$user"/script.js
