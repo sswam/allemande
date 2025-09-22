@@ -16,6 +16,7 @@ from ally.cache import cache  # type: ignore
 from ally.util import replace_variables  # type: ignore
 from safety import safety  # type: ignore
 from util import uniqo
+from settings import *
 
 
 logger = logging.getLogger(__name__)
@@ -197,7 +198,7 @@ class Agent:
         # a derived agent with different names.
         # TODO do this more generally for other variables?
         # replace $ROOM with the room name
-        if value and key in ["system_top", "system_bottom"]:
+        if value and key in ["system_top", "system_bottom", "visual"]:
             name = self.get("name")
             fullname = self.get("fullname", name)
             aliases = self.get("aliases") or [name]
@@ -215,6 +216,11 @@ class Agent:
             time = now.strftime("%H:%M:%S")
             tz_str = now.strftime("%Z")
             timestamp = f"{date} {time} {tz_str}"
+
+            # TODO 1st person, 2nd person, 3rd person options
+            period, period_desc, period_day, period_length, period_visual = self.get_period(now)
+            pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual = self.get_pregnant(now)
+
             value = replace_variables(value, {
                 "NAME": name,
                 "FULLNAME": fullname,
@@ -224,11 +230,76 @@ class Agent:
                 "TZ": tz_str,
                 "TIMESTAMP": timestamp,
                 "ROOM": room or '[unknown]',
+                "PERIOD": period_desc,
+                "PREGNANT": pregnant_desc,
+                "PERIOD_VISUAL": period_visual,
+                "PREGNANT_VISUAL": pregnant_visual,
             })
 
         # TODO remove null values? i.e. enable to remove an attribute from base
 
         return value
+
+    def get_period(self, now):
+        """Get the period description, day, and length."""
+        period = self.get("period")
+        if not isinstance(period, int) or self.get("pregnant"):
+            return None, "", None, None, ""
+        day_count = now.toordinal() + now.hour / 24 + now.minute / 1440 + now.second / 86400
+        period_days = cache.load(str(PATH_AGENTS/"nsfw"/"period.txt")) or " "
+        period_days = period_days.splitlines()
+        period_length = self.get("period_length", 28)
+        period_days_len = len(period_days)
+        period_day = (day_count + period) % period_length
+        period_day_desc = f"<think>it's day {int(period_day)} of your cycle</think>"
+        period_index = int(period_day * period_days_len // period_length)
+        logger.info("Period info; day_count=%r period=%r period_day=%r period_index=%r/%r", day_count, period, period_day, period_index, period_days_len)
+        line = period_days[period_index]
+        name = self.get("name")
+        period_desc = f"{name}, {period_day_desc}. " + line.split("\t")[1]
+        logger.info("Period description: %r", period_desc)
+        is_menstrating = period_index <= 4
+        period_visual = "(menstruation, bleeding, blood:0.8)" if is_menstrating else ""
+        logger.info("Period visual: %r", period_visual)
+        return period, period_desc, period_day, period_length, period_visual
+
+    def get_pregnant(self, now):
+        """Get the pregnancy description."""
+        pregnant = self.get("pregnant")
+        pregnant_desc = ""
+        if not isinstance(pregnant, dict):
+            return "", None, None, None, ""
+        conception_date = pregnant.get("conceived")
+        due_date = pregnant.get("due")
+        if not (conception_date and due_date):
+            logger.warning("Pregnant but missing dates: %r", pregnant)
+            return None, "", None, None, ""
+        # conception_date_ts = datetime.strptime(conception_date, "%Y-%m-%d")
+        # due_date_ts = datetime.strptime(due_date, "%Y-%m-%d")
+        days_pregnant = (now.date() - conception_date).days
+        total_days = (due_date - conception_date).days
+        days_left = (due_date - now.date()).days
+        weeks_pregnant = days_pregnant // 7
+        if weeks_pregnant > 0:
+            duration_desc = f"you are {weeks_pregnant} weeks pregnant"
+        else:
+            duration_desc = f"you think you might be pregnant"
+        if days_left <= 0:
+            duration_desc += f", you are overdue!"
+        elif days_left == 1:
+            duration_desc += f", you are due tomorrow!!"
+        elif days_left <= 7:
+            duration_desc += f", you are due in {days_left} days!"
+        elif days_left <= 14:
+            duration_desc += f", you are due pretty soon!"
+        name = self.get("name")
+        pregnant_desc = f"{name}, {duration_desc}"
+        logger.info("Pregnancy info: days_pregnant=%r total_days=%r", days_pregnant, total_days)
+        logger.info("Pregnancy description: %r", pregnant_desc)
+        pregnant_frac = f"{days_pregnant / total_days:.2f}"
+        pregnant_visual = f"(pregnant:{pregnant_frac})"
+        logger.info("Pregnancy visual: %r", pregnant_visual)
+        return pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual
 
     def base(self):
         """Get the base agents"""

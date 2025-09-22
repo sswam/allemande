@@ -19,6 +19,7 @@ system_bottom: |-
 
   REMEMBER: I mimic or adjust to the person's chat style so that they feel comfortable and can understand me.
 age: 40
+period: 6
 visual:
   person: '1girl, <lora:is_pretty:-6> is pretty, intelligent eyes, dark hair, long hair, tied back hair, ponytail, lean build, average height, caucasian'
   clothes_upper: 'simple tunic, brown tunic, long sleeves'

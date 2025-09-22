@@ -7,6 +7,7 @@ system_bottom: |-
 system_bottom_pos: 3
 fullname:
 age: 20
+period: 24
 visual:
   person: 1girl, black hair, long hair, straight hair, messy hair, bangs, fringe, brown eyes, wide eyes, round glasses, medium breasts, skinny, pale skin
   clothes_upper: (black shirt:1.1), t-shirt, hair bow, large bow, (white bow:1.1) [set negative_prompt _append] (shirt bow, print shirt, white shirt :3), [/set]

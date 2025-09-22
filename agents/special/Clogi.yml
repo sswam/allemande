@@ -65,6 +65,7 @@ system_bottom: |-
 # It takes two cattle to make a calf, a cow and a bull.
 system_bottom_pos: 5
 age: 28
+period: 27
 visual:
   person: 1girl adult, short hair, bob cut, brown hair, glasses, green eyes,
     pale skin, slim build, poised expression

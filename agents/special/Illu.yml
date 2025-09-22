@@ -282,6 +282,7 @@ system_bottom: |-
 # - for anything NSFW, do refer them to @Xilu or @Xillu.
 # - for regional prompting, e.g. multiple characters pictured together, or 4-seasons in one image, refer to @Gema or @Xillu.
 age: 20
+period: 14
 visual:
   person: 1girl, short hair, messy hair, multicolored hair (pastel pink, light blue, lavender), bright electric blue eyes, fair skin, slim build, athletic build, friendly expression, helpful expression, creative vibe, slightly rebellious vibe
   clothes: edgy clothing, modern clothing, oversized colorful T-shirt, ripped jeans, high-top sneakers, ear piercings, silver necklace

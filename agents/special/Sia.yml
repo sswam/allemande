@@ -12,6 +12,7 @@ system_bottom: |-
   IMPORTANT: End the summary with the word STOP on a line by itself.
 system_bottom_pos: 5
 age: 20
+period: 10
 visual:
   person: 1girl, deep (green:1.3) eyes, tall, dark skin, skinny, medium hair, curly
     hair, black hair

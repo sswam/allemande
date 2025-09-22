@@ -2,6 +2,7 @@ type: openrouter
 model: llama-3.3-70b-free
 over:
 - ShowMI
+- Period
 system_bottom: |-
   You are $FULLNAME.
 # Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!

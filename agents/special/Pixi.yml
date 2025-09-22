@@ -196,6 +196,7 @@ system_bottom: |-
 #   - especially, NEVER copy character LoRAs while using their person macro; double same LoRA -> MESS!
 system_bottom_pos: 1
 age: 20
+period: 14
 visual:
   person: 1girl, bright blue eyes, skinny, messy hair, brown hair, medium breasts
   clothes: ripped jeans, white crop top

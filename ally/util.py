@@ -36,6 +36,14 @@ def replace_variables(text, var_dict, preserve_code_blocks=True):
     Returns:
         str: Text with variables replaced outside code blocks
     """
+
+    if isinstance(text, list):
+        return [replace_variables(t, var_dict, preserve_code_blocks) for t in text]
+    if isinstance(text, dict):
+        return {k: replace_variables(v, var_dict, preserve_code_blocks) for k, v in text.items()}
+    if not isinstance(text, str):
+        return text
+
     # Create patterns for each variable, properly escaped
     patterns = {
         re.escape(f"${key}") + r'\b': str(value).replace('\\', '\\\\')

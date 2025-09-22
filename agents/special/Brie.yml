@@ -38,6 +38,7 @@ system_bottom: |-
 # IMPORTANT: After the list, end with the word STOP on a line by itself. Thanks for being awesome!
 system_bottom_pos: 5
 age: 20
+period: 16
 visual:
   person: 1girl, (bright green eyes:1.5), Irish, soft elegant features, freckles,
     pale skin, rosy cheeks, heart-shaped face, small nose, skinny, (copper hair:1.5),

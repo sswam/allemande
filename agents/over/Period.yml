@@ -1,0 +1,10 @@
+type: mixin
+system_bottom: |-
+ +
+
+ $PERIOD $PREGNANT
+
+visual:
+  person: + $PERIOD_VISUAL $PREGNANT_VISUAL
+
+# $POSTPARTUM $MENOPAUSE $ADULT $CHILD $NEONATE
