@@ -7,7 +7,7 @@
 #define TEST 1
 
 #define llm_query mock_llm_query
-#include "../hello_c.c"
+#include "../.hello_c.c.test"
 #undef llm_query
 
 #define BUFFER_SIZE 1024

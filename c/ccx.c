@@ -1,6 +1,8 @@
-#!/usr/bin/env ccx
+// #!/usr/bin/env ccx
 
 // TODO issue, relative paths in INPUTS won't work if executed from another directory
+
+#define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <getopt.h>
 
 #define MAX_CMD 4096
 #define MAX_LINE 1024
@@ -123,6 +126,20 @@ void dump_build_vars(struct build_vars *vars)
 	printf("  PKGS: %s\n", vars->pkgs);
 }
 
+// Modify program name to get source name
+char *prog_source_name(char *prog)
+{
+	char *slash = strrchr(prog, '/');
+	if (slash)
+		prog = slash + 1;
+	if (prog[0] == '.')
+		prog++;
+	char *dot = strrchr(prog, '.');
+	if (dot && strcmp(dot, ".elf") == 0)
+		*dot = '\0';
+	return prog;
+}
+
 int main(int argc, char *argv[])
 {
 	char *src, *basename;
@@ -135,38 +152,24 @@ int main(int argc, char *argv[])
 	int status;
 	char **new_argv;
 	int i;
-	int verbose = 0;
-	int opt;
+	char *verbose;
 
-	// Handle -v option
-	while ((opt = getopt(argc, argv, "v")) != -1) {
-		switch (opt) {
-		case 'v':
-			verbose = 1;
-			break;
-		default:
-			optind = argc; // force usage message
-			break;
-		}
-	}
+	// set verbose from env CCX_VERBOSE
+	verbose = getenv("CCX_VERBOSE");
+	if (verbose && strcmp(verbose, "1"))
+		verbose = NULL;
 
-	if (optind >= argc) {
-		fprintf(stderr, "Usage: %s [-v] <source.c> [args...]\n", argv[0]);
+	if (argc < 2) {
+		fprintf(stderr, "Usage: %s <source.c> [args...]\n", argv[0]);
+		fprintf(stderr, "Version: %s\n", VERSION);
 		return 1;
 	}
 
 	// modify argv[0], skip leading ".", cut off final .elf
-	if (argc > 0) {
-		char *p = argv[0];
-		if (p[0] == '.')
-			p++;
-		char *dot = strrchr(p, '.');
-		if (dot && strcmp(dot, ".elf") == 0)
-			*dot = '\0';
-		argv[0] = p;
-	}
+	if (argc > 0)
+		argv[0] = prog_source_name(argv[0]);
 
-	src = argv[optind];
+	src = argv[1];
 
 	// Create output filename
 	out[0] = '.';
@@ -226,18 +229,19 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	// Modify the execution part to account for optind
-	new_argv = malloc(sizeof(char*) * (argc - optind + 1));
+	// Modify argv to execute the compiled binary
+	new_argv = malloc(sizeof(char*) * argc);
 	if (!new_argv) {
 		perror("malloc");
 		return 1;
 	}
 
-	new_argv[0] = out;
-	for (i = optind + 1; i < argc; i++) {
-		new_argv[i-optind] = argv[i];
+	new_argv[0] = prog_source_name(strdup(out));
+	
+	for (i = 2; i < argc; i++) {
+		new_argv[i-1] = argv[i];
 	}
-	new_argv[argc-optind] = NULL;
+	new_argv[argc-1] = NULL;
 
 	execv(out, new_argv);
 

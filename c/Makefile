@@ -1,4 +1,4 @@
-exes = hello_c test_python test_perl test_lua test_ruby test_quickjs test_v8 test_mozjs
+exes = ccx test_python test_perl test_lua test_ruby test_quickjs test_v8 test_mozjs
 tests = tests/sea_test tests/hello_c_test
 
 CC=gcc
@@ -16,20 +16,25 @@ all: $(exes) $(tests)
 %: %.cc Makefile_%
 	$(MAKE) -f Makefile_$@
 
+.%.c.test: %.c
+	<$< sed 1d >$@
+
 # %: %.c
 # 	$(CC) $(CFLAGS) -o $@ $<
 # %: %.cc
 # 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-hello_c.o: hello_c.c sea.h
+ccx.o: ccx.c
+
+# hello_c.o: hello_c.c sea.h
 tests/sea_test.o: tests/sea_test.c sea.h
 
-hello_c: hello_c.o sea.o
+# hello_c: hello_c.o sea.o
 
 tests/sea_test: tests/sea_test.o sea.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS) -lcheck -lsubunit -lm
 
-tests/hello_c_test.o: tests/hello_c_test.c hello_c.c sea.h
+tests/hello_c_test.o: tests/hello_c_test.c hello_c.c sea.h .hello_c.c.test
 	$(CC) -c $(CFLAGS) -o $@ tests/hello_c_test.c
 tests/hello_c_test: tests/hello_c_test.o sea.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS) -lcheck -lsubunit -lm
