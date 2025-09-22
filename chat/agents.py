@@ -180,7 +180,7 @@ class Agent:
                 value2 = obj.get(key, raw=True, with_over=use_over)
             if value is not None and value2 is not None:
                 value2 = agent_merger.merge(deepcopy(value), value2)
-            if value2 is not None:
+            if value2 is not None and (obj == self or not (key, value2) == ("type","mixin")):
                 value = value2
 
         if value is None and raise_error:
@@ -290,10 +290,10 @@ class Agent:
         fullname = self.get("fullname")
         if fullname:
             agent_names.append(fullname)
-            if " " in fullname:
-                firstname = fullname.split(" ")[0]
-                if firstname:
-                    agent_names.append(firstname)
+            # if " " in fullname:
+            #     firstname = fullname.split(" ")[0]
+            #     if firstname:
+            #         agent_names.append(firstname)
         agent_names.extend(self.get("aliases", []))
         return agent_names
 
@@ -302,14 +302,18 @@ class Agent:
 
         agent_type = self.get("type")
         
+        if not agent_type:
+            logger.error("Agent type not specified: %r: %r", self.name, self.file)
+            return False
+
         # if not agent_type:
         #     logger.error("Agent type not specified: %r: %r", self.name, self.file)
         #     return False
 
-        # if not agent_type or agent_type in ["human", "visual"]:
+        # if not agent_type or agent_type in ["human", "visual", "mixin"]:
         #     return False
 
-        if agent_type and agent_type not in ["human", "visual"]:
+        if agent_type and agent_type not in ["human", "visual", "mixin"]:
             service = services.get(agent_type)
 
             if service is None:
@@ -402,7 +406,7 @@ class Agents:
 
     def write_agents_list(self, path: str) -> None:
         """Write the list of agents to a file."""
-        agent_names = sorted(set(agent.name for agent in self.agents.values() if agent.get("type") not in [None, "human", "visual"]))
+        agent_names = sorted(set(agent.name for agent in self.agents.values() if agent.get("type") not in [None, "human", "visual", "mixin"]))
         cache.save(path, agent_names, noclobber=False)
 
     def load_agent_without_setup(self, agent_file: Path, private: bool=False) -> Agent | None:
@@ -421,8 +425,8 @@ class Agents:
                     msg_private = " for private agent" if private else ""
                     logger.warning("Agent name conflict%s: %r vs %r for %r",
                             msg_private, old_main_name, agent.name, name1)
-                # logger.info("skipping agent name: %r", name1)
-                continue
+                    # logger.info("skipping agent name: %r", name1)
+                    continue
             self.agents[name1] = agent
             # logger.info("added agent under name: %r -> %r", name1, agent.name)
 
@@ -451,6 +455,7 @@ class Agents:
         """Load all agents or one agent from a path."""
         if path.is_dir():
             agent_files = list(path.rglob("*.yml"))
+            logger.info("Loading agents from directory: %r", path)
         else:
             agent_files = [path]
 

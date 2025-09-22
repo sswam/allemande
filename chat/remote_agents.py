@@ -239,7 +239,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("Exception during generation")
         msg = str(e)
-        if msg in ["list index out of range"]:
+        if msg in ["list index out of range"] or "connection has been closed" in msg:
             msg = ""
         return f"{agent.name}:\n" + re.sub(r'(?m)^', '\t', msg)
     #google.generativeai.types.generation_types.StopCandidateException: finish_reason: PROHIBITED_CONTENT

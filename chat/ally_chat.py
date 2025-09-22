@@ -279,7 +279,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
         agent = agents.get(bot)
 
-        if agent.get("type") in [None, "human", "visual"]:
+        if agent.get("type") in [None, "human", "visual", "mixin"]:
             continue
 
         poke_if = agent.get("poke_if", [])
@@ -400,11 +400,6 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             response = response.lstrip(f'{agent.name}:')
             # remove 1 tab from start of each line
             response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
-
-        # Anti Em-dash!  Could do this more generically for other substitutions
-        # TODO use filter_out for this
-        if agent.get("anti_em"):
-            response = re.sub(r"—", " - ", response)
 
         # Ephemeral messages:
         # If the previous message begins with - it was ephemeral, so remove it
@@ -531,6 +526,28 @@ def filter_out_actions_reduce(response: str, keep_prob: int = 0.5) -> str:
         return response
 
 
+def filter_out_emojis(response: str, keep_prob: float = 0.0) -> str:
+    """Reduce the number of emojis in the response, based on keep_prob (0-1)."""
+    # TODO implement probabilistic keeping of emojis
+    if keep_prob == 0.0:
+        return re.sub(r'[\U0001F300-\U0001F6FF]', '', response)
+    if keep_prob == 1.0:
+        return response
+    return re.sub(r'[\U0001F300-\U0001F6FF]', lambda m: m.group(0) if random.random() < keep_prob else '', response)
+
+
+def filter_out_emdash(response: str, keep_prob: float = 0.0, replacement: str = "-") -> str:
+    """Replace em-dash characters with a replacement string, based on keep_prob (0-1)."""
+    # Handle different types of em-dashes and their Unicode variants
+    emdash_pattern = r'( *)(?:[-\u2014\u2013\u2015] *?)+( *)' # includes em-dash, en-dash, and horizontal bar
+
+    if keep_prob == 0.0:
+        return re.sub(emdash_pattern, "\1"+replacement+"\2", response)
+    if keep_prob == 1.0:
+        return response
+    return re.sub(emdash_pattern, lambda m: m.group(0) if random.random() < keep_prob else m.group(1)+replacement+m.group(2), response)
+
+
 filters_in = {
     "think_add_example": filter_in_think_add_example,
     "think_brackets": filter_in_think_brackets,
@@ -541,6 +558,8 @@ filters_out = {
     "agents_install": filter_out_agents_install,
     "think_brackets": filter_out_think_brackets,
     "actions_reduce": filter_out_actions_reduce,
+    "emojis": filter_out_emojis,
+    "emdash": filter_out_emdash,
 }
 
 
@@ -590,7 +609,9 @@ def apply_filters_out(agent: Agent, response: str) -> str:
             logger.warning("Agent %r: Unknown filter_out: %r", agent.name, filter_name)
             continue
         try:
+            logger.info("response before filter %r:\n%s", filter_name, response)
             response = filter_fn(response, *filter_args)
+            logger.info("response after filter %r:\n%s", filter_name, response)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Agent %r: Error in filter_out %r: %s", agent.name, filter_name, str(e))
     return response
@@ -733,7 +754,7 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip, a
         count = await process_file(file_path, args, skip=skip, agents=agents, poke=poke)
         logger.debug("Processed file: %r, %r agents responded", file_path, count)
     except Exception:  # pylint: disable=broad-except
-        logger.exception("Processing file failed", exc_info=True)
+        logger.exception("Processing file failed: %r", file_path, exc_info=True)
 
 
 def check_file_type(path):

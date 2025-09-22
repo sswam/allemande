@@ -17,7 +17,7 @@ from datetime import datetime
 
 from deepmerge import always_merger
 
-from settings import EXTENSION, ROOMS_DIR, ADMINS, MODERATORS
+from settings import EXTENSION, ROOMS_DIR, ADMINS, MODERATORS, PATH_HOME
 from util import backup_file, tree_prune, tac, sanitize_pathname, safe_join
 from bb_lib import load_chat_messages, save_chat_messages, message_to_text
 from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-order
@@ -446,6 +446,9 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     # TODO What's the difference between a moderator and an admin?
     #      Do we need both?
 
+    users_path = str(PATH_HOME/"users.txt")
+    users = cache.load(users_path).strip().split("\n")
+
     if pathname == "/":
         pathname = ""
 
@@ -475,6 +478,16 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
 
     access_conf = load_config(dir_path, "access.yml")
     agent_names = read_agents_lists(path)
+
+    # find overlapping names
+    overlapping_names = set(agent_names).intersection(set(users))
+
+    # log warning if there are overlaps
+    if overlapping_names:
+        logging.warning(f"Found overlapping agent and user names: {', '.join(sorted(overlapping_names))}")
+
+    # remove overlapping names
+    agent_names = list(set(agent_names) - set(users))
 
     logger.debug("path %r access %r", path, access_conf)
 

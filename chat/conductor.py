@@ -212,8 +212,12 @@ def who_is_named(
         elif agent in self_words and user:
             result.append(user)
         else:
+            logger.info("checking access for %r", agent)
             if filter_access([agent], room, access_check_cache, agent_name_map):
+                logger.info("access granted for %r", agent)
                 result.append(agent)
+            else:
+                logger.info("access denied for %r", agent)
 
     result = [x.lstrip("@") for x in result]
     if uniq:
@@ -386,9 +390,15 @@ def who_should_respond(
     agent_names = agents.names()
 
     # exclude agents without type (mix-ins) and type == "visual"
-    agent_names = [name for name in agent_names if agents.get(name).get("type") not in [None, "visual"]]
+    agent_names = [name for name in agent_names if agents.get(name).get("type") not in [None, "visual", "mixin"]]
 
-    agent_name_map = {k.lower(): agents.get(k)["name"] for k in agent_names}
+    # set up a map of lower-case names and aliases to canonical names
+    agent_name_map = {}
+    for k in agent_names:
+        agent = agents.get(k)
+        name = agent["name"]
+        for n in agent.get_all_names():
+            agent_name_map[n.lower()] = name
 
     # mentioned in mission hack
     mentioned_in_mission = set()
@@ -410,13 +420,14 @@ def who_should_respond(
 
     # Filter excluded participants first
     all_participants_with_excluded: list[str] = list(set(participants(history, use_all=True) + list(mentioned_in_mission)))
-    all_participants_with_excluded = filter_access(all_participants_with_excluded, room, access_check_cache, agent_name_map)
+    # logger.info("all_participants_with_excluded 1: %r", all_participants_with_excluded)
+    all_participants_with_excluded = filter_access(all_participants_with_excluded, room, access_check_cache, agent_name_map, must_exist=False)
+    # logger.info("all_participants_with_excluded 2: %r", all_participants_with_excluded)
     all_participants = list(set(all_participants_with_excluded) | mentioned_in_mission - EXCLUDE_PARTICIPANTS)
 
-    logger.debug("all_participants: %r", all_participants)
-    logger.debug("all_participants_with_excluded: %r", all_participants_with_excluded)
+    # logger.info("all_participants: %r", all_participants)
 
-    logger.debug("agent_names: %r", agents.names())
+    # logger.info("agent_names 1: %r", agents.names())
 
     # Add agents for humans in the history
     for agent in all_participants:
@@ -426,6 +437,8 @@ def who_should_respond(
                 "type": "human",
             }, agents=agents)
             agents.set(agent, human)
+
+    # logger.info("agent_names 2: %r", agents.names())
 
     # Responsible human user
     # responsible_human_user = responsible_human(history, agents, room)
@@ -437,11 +450,23 @@ def who_should_respond(
     agent_names = agents.names()
 
     # exclude agents without type (mix-ins) and type == "visual"
-    agent_names = [name for name in agent_names if agents.get(name).get("type") not in [None, "visual"]]
+    agent_names = [name for name in agent_names if agents.get(name).get("type") not in [None, "visual", "mixin"]]
 
-    agent_case_map = {k.lower(): agents.get(k)["name"] for k in agent_names}
+    # set up a map of lower-case names and aliases to canonical names
+    agent_name_map = {}
+    agent_names_and_aliases_set = set()
+    for k in agent_names:
+        agent = agents.get(k)
+        name = agent["name"]
+        for n in agent.get_all_names():
+            agent_name_map[n.lower()] = name
+            agent_names_and_aliases_set.add(n)
+    agent_names_and_aliases = list(agent_names_and_aliases_set)
 
     # END DUPLICATED CODE FROM ABOVE
+
+
+    # logger.info("agent_names 3: %r", agent_names)
 
 
 
@@ -460,21 +485,21 @@ def who_should_respond(
     if not is_human:
         include_self = False
 
-    # Filter chat participants based on include_humans setting
-    chat_participants_names = [
-        agent
-        for agent in all_participants
-        if "type" in agents.get(agent) and agents.get(agent)["type"] != "tool" and not agents.get(agent)["type"].startswith("image_")
-        and (include_humans or agents.get(agent)["type"] != "human")
-    ]
-
-    # Filter chat participants based on include_humans setting
-    chat_participants_names_all = [
-        agent
-        for agent in all_participants_with_excluded
-        if "type" in agents.get(agent) and agents.get(agent)["type"] != "tool" and not agents.get(agent)["type"].startswith("image_")
-        and (include_humans or agents.get(agent)["type"] != "human")
-    ]
+    # Build chat participants lists in one pass
+    chat_participants_names_all = []
+    chat_participants_names = []
+    all_participants_set = set(all_participants)
+    for agent in all_participants_with_excluded:
+        try:
+            agent_data = agents.get(agent)
+            agent_type = agent_data.get("type")
+            if agent_type is None or agent_type == "tool" or agent_type.startswith("image_") or (agent_type == "human" and not include_humans):
+                continue
+            chat_participants_names_all.append(agent)
+            if agent in all_participants_set:
+                chat_participants_names.append(agent)
+        except Exception as e:
+            logger.error(f"Error processing agent {agent}: {str(e)}", exc_info=True)
 
     logger.debug("chat_participants_names: %r", chat_participants_names)
 
@@ -482,9 +507,9 @@ def who_should_respond(
 
     # Filter out human users if requested from agent_names
     if not include_humans:
-        agent_names = [name for name in agent_names if agents.get(name)["type"] != "human"]
+        agent_names_and_aliases = [name for name in agent_names_and_aliases if agents.get(name) and agents.get(name).get("type") != "human"]
 
-    agent_names_with_at = [f"@{name}" for name in agent_names]
+    agent_names_and_aliases_with_at = [f"@{name}" for name in agent_names_and_aliases]
 
     logger.debug("agent_names: %r", agent_names)
 
@@ -524,8 +549,8 @@ def who_should_respond(
 
         use_mediator = mediator and (mediator_for_humans or not is_human)
 
-    logger.debug("use_mediator: %r", use_mediator)
-    logger.debug("mediators: %r", mediator)
+    logger.info("use_mediator: %r", use_mediator)
+    logger.info("mediators: %r", mediator)
 
     # direct_reply_chance
     direct_reply_chance = 1.0
@@ -557,7 +582,7 @@ def who_should_respond(
     invoked = who_is_named(
         content,
         f"@{user}",
-        agent_names_with_at,
+        agent_names_and_aliases_with_at,
         include_self=include_self,
         chat_participants=chat_participants_names,
         chat_participants_all=chat_participants_names_all,
@@ -589,7 +614,7 @@ def who_should_respond(
         invoked = who_is_named(
             content,
             user,
-            agent_names,
+            agent_names_and_aliases,
             include_self=False,  # no talking to self without @ now
             chat_participants=chat_participants_names,
             chat_participants_all=chat_participants_names_all,
@@ -622,7 +647,7 @@ def who_should_respond(
         # Ensure invoked agent is in the participant list
         invoked = [agent for agent in invoked if agent in all_participants]
 
-        invoked = filter_access(invoked, room, access_check_cache, agent_name_map)
+        invoked = filter_access(invoked, room, access_check_cache, agent_name_map, must_exist=False)
         logger.debug("who_spoke_last: %r", invoked)
 
     # mediator
@@ -668,11 +693,15 @@ def who_should_respond(
         invoked = [random.choice(default)]
         logger.debug("default: %r", invoked)
 
-    logger.info("who_should_respond: %r %r", reason, invoked)
-
     # Filter out special words and only use actual agent names (not aliases)
     # agents_to_respond = [agent_name_map[agent.lower()] for agent in invoked if agent.lower() in agent_name_map]
     agents_to_respond = filter_access(invoked, room, access_check_cache, agent_name_map, must_exist=True)
+
+    logger.info("who_should_respond: %r %r", reason, agents_to_respond)
+    for agent in agents_to_respond:
+        agent_data = agents.get(agent)
+        agent_type = agent_data.get("type")
+        logger.info("  %s: %s", agent, agent_type)
 
     return responsible_human_user, agents_to_respond
 
@@ -687,9 +716,9 @@ def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_c
         agent_lc = agent.lower()
         if must_exist and agent_lc not in agent_name_map:
             continue
-        agent = agent_name_map.get(agent_lc, agent_lc)
-        if access_check_cache.get(agent) is None:
-            access_check_cache[agent] = room.check_access(agent).value
-        if access_check_cache[agent] & chat.Access.READ_WRITE.value:
+        agent = agent_name_map.get(agent_lc, agent)
+        if access_check_cache.get(agent_lc) is None:
+            access_check_cache[agent_lc] = room.check_access(agent_lc).value
+        if access_check_cache[agent_lc] & chat.Access.READ_WRITE.value:
             result.append(agent)
     return result
