@@ -34,8 +34,6 @@ gent() {
 	tests_ext=$ext
 	tests_dir=$dir/tests
 
-	local tests_base="${stem}_test.$tests_ext"
-
 	executable=0
 	case "$ext" in
 	sh)
@@ -47,11 +45,13 @@ gent() {
 		;;
 	esac
 
+	local tests_base="${stem}_test.$tests_ext"
+
 	local tests_path="$tests_dir/$tests_base"
 
 	mkdir -p "$tests_dir"
 
-	if [ ext = sh ] && [ ! -e "$tests_dir/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
+	if [ "$ext" = sh ] && [ ! -e "$tests_dir/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
 		ln -s /usr/lib/bats "$tests_dir/test_helper"
 	fi
 

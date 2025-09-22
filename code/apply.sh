@@ -4,10 +4,10 @@
 # Apply changes to a list of files by prompting an AI
 
 apply-sh() {
-	local model= m=gf   # LLM model to use, default Gemini Flash
-	local changes= c=   # changes file, or stdin
-	local edit= e=1     # open an editor after the AI does it's work
-	local prompt= p=1   # additional prompt for the AI
+	local model= m=flashi  # LLM model to use, default Gemini 2.5 Flash
+	local changes= c=      # changes file, or stdin
+	local edit= e=1        # open an editor after the AI does it's work
+	local prompt= p=1      # additional prompt for the AI
 
 	eval "$(ally)"
 
