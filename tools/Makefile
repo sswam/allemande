@@ -6,7 +6,7 @@ CFLAGS=-Wall -Wextra -pedantic -std=c99 -ggdb
 
 .PHONY: all clean
 
-exes = pipechat
+exes = pipechat peep
 
 all: tools_help.txt $(exes)
 
