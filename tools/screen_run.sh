@@ -28,10 +28,11 @@ screen-run() {
 }
 
 locked() {
+	mkdir -p "$HOME/tmp"
 	{
 		flock -x -w $FLOCK_WAIT 200 || exit 1
 		"$@"
-	} 200>/var/lock/screen-run.lock
+	} 200>"$HOME/tmp/screen-run.lock"
 }
 
 screen-new() {
