@@ -1,8 +1,19 @@
+#!/usr/bin/env ccx
+// CC: gcc
+// CPPFLAGS: -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64
+// CFLAGS: -Wall -Wextra -Werror -Wstrict-prototypes -g -ggdb
+// INPUTS: sea.o
+// LDFLAGS:
+// LDLIBS:
+// PKGS:
+
 /* This program is a simple example program that greets the user and optionally
  * builds a shopping list. The program can optionally use AI.
+ * Note that the cxx build settings above are examples, and are the defaults,
+ * aside from INPUTS for the sea library with llm_query and llm_process.
+ * Note that PKGS is a space-separated list of pkg-config packages.
  */ 
 
-#define _GNU_SOURCE
 #include <errno.h>
 #include <getopt.h>
 #include <libgen.h>
@@ -40,13 +51,13 @@ struct options {
 		tlt_prompt = no_translate;
 
 	if ((snprintf(query, sizeof(query), GET_GREETING_TEMPLATE, opts->name, opts->language, tlt_prompt)) < 0)
-		goto done;
+		goto fail;
 
 	if ((greeting = llm_query(query)) == NULL) {
 		perror("LLM query failed");
-		goto done;
+		goto fail;
 	}
-done:
+fail:
 	return greeting;
 }
 
@@ -86,9 +97,9 @@ static void usage(FILE *stream, char *argv0)
 	fprintf(stream, "Usage: %s [OPTIONS]\n", basename(argv0));
 	fprintf(stream, "Options:\n");
 	fprintf(stream, "  -h, --help            Print this help message\n");
-	fprintf(stream, "  -l, --language=LANG   Set the language (default: en)\n");
-	fprintf(stream, "  -n, --name=NAME       Set the name (default: world)\n");
-	fprintf(stream, "  -s, --shopping=ITEM   Add an item to the shopping list\n");
+	fprintf(stream, "  -l, --language LANG   Set the language (default: en)\n");
+	fprintf(stream, "  -n, --name NAME       Set the name (default: world)\n");
+	fprintf(stream, "  -s, --shopping ITEM   Add an item to the shopping list\n");
 	fprintf(stream, "  -a, --use-ai          Use AI to help with the shopping list\n");
 }
 
@@ -111,8 +122,7 @@ int get_options(int argc, char *argv[], struct options *opts)
 		switch (c) {
 		case 'h':
 			usage(stdout, argv[0]);
-			status = EXIT_SUCCESS;
-			goto done;
+			exit(0);
 		case 'l':
 			opts->language = optarg;
 			break;
@@ -124,7 +134,7 @@ int get_options(int argc, char *argv[], struct options *opts)
 				 realloc(opts->shopping_items,
 					 (opts->item_count + 1) * sizeof(char *))) == NULL) {
 				perror("Failed to allocate memory for shopping items");
-				goto done;
+				goto fail;
 			}
 			opts->shopping_items[opts->item_count++] = optarg;
 			break;
@@ -134,7 +144,7 @@ int get_options(int argc, char *argv[], struct options *opts)
 		case '?':
 			fprintf(stderr, "Unknown option or missing argument\n\n");
 			usage(stderr, argv[0]);
-			goto done;
+			goto fail;
 		default:
 			abort();
 		}
@@ -143,11 +153,11 @@ int get_options(int argc, char *argv[], struct options *opts)
 	if (optind < argc) {
 		fprintf(stderr, "Unexpected argument: %s\n\n", argv[optind]);
 		usage(stderr, argv[0]);
-		goto done;
+		goto fail;
 	}
 
 	status = 0;
-done:
+fail:
 	return status;
 }
 
@@ -172,7 +182,7 @@ int MAIN_FUNCTION(int argc, char *argv[])
 	char prompt[MAX_BUFFER];
 
 	if ((get_options(argc, argv, opts)) != 0)
-		goto done;
+		goto fail;
 
 	if (opts->use_ai == 0)
 		goto non_ai_greeting;
@@ -182,11 +192,11 @@ int MAIN_FUNCTION(int argc, char *argv[])
 ai_greeting:
 	if ((greeting = ai_get_greeting(opts)) == NULL) {
 		perror("Failed to get greeting");
-		goto free_shopping_items;
+		goto fail;
 	}
 	if (printf("%s", greeting) < 0) {
 		perror("Failed to print greeting");
-		goto free_shopping_items;
+		goto fail;
 	}
 	free(greeting);
 	greeting = NULL;
@@ -210,32 +220,31 @@ non_ai_greeting:
 
 	if (printf("%s, %s\n", greeting, opts->name) < 0) {
 		perror("Failed to print greeting");
-		goto free_shopping_items;
+		goto fail;
 	}
 
 shopping_items:
 	if (opts->item_count <= 0)
-		goto free_shopping_items;
-	if ((shopping_list = build_shopping_list_simple(opts)) == NULL)
 		goto done;
+	if ((shopping_list = build_shopping_list_simple(opts)) == NULL)
+		goto fail;
 	if (opts->use_ai == 1) {
 		if (snprintf(prompt, sizeof(prompt), SHOPPING_LIST_TEMPLATE, opts->language) < 0)
-			goto done;
+			goto fail;
 		if ((shopping_list = llm_process(prompt, shopping_list)) == NULL) {
 			perror("LLM process failed");
-			goto done;
+			goto fail;
 		}
 	}
 	if (printf("%s", shopping_list) < 0) {
 		perror("Failed to print shopping list");
-		goto free_shopping_list;
+		goto fail;
 	}
-	status = EXIT_SUCCESS;
-free_shopping_list:
-	free(shopping_list);
-free_shopping_items:
-	free(opts->shopping_items);
 done:
+	status = EXIT_SUCCESS;
+fail:
+	free(shopping_list);
+	free(opts->shopping_items);
 	return status;
 }
 

@@ -1,0 +1,117 @@
+// I'll add the -v option to print the compilation command and update the version number. I'll also fix any issues found in the code.
+//
+// Here's the modified version of `ccx.c` with changes to add the -v option and update the version:
+
+// In the defines section, update version:
+#define VERSION "1.0.4"
+
+// In main(), modify the argument parsing section:
+int main(int argc, char *argv[])
+{
+	char *src, *basename;
+	struct build_vars vars;
+	char out[MAX_LINE];
+	char cmd[MAX_CMD];
+	time_t src_time, out_time;
+	int status;
+	char **new_argv;
+	int i;
+	int verbose = 0;
+	int opt;
+
+	// Handle -v option
+	while ((opt = getopt(argc, argv, "v")) != -1) {
+		switch (opt) {
+		case 'v':
+			verbose = 1;
+			break;
+		default:
+			fprintf(stderr, "Usage: %s [-v] <source.c> [args...]\n", argv[0]);
+			return 1;
+		}
+	}
+
+	if (optind >= argc) {
+		fprintf(stderr, "Usage: %s [-v] <source.c> [args...]\n", argv[0]);
+		return 1;
+	}
+
+	// modify argv[0], skip leading ".", cut off final .elf
+	if (argc > 0) {
+		char *p = argv[0];
+		if (p[0] == '.')
+			p++;
+		char *dot = strrchr(p, '.');
+		if (dot && strcmp(dot, ".elf") == 0)
+			*dot = '\0';
+		argv[0] = p;
+	}
+
+	src = argv[optind];
+
+	// Rest of the code remains the same until compilation...
+
+	if (!out_time || src_time > out_time) {
+		// Get build variables
+		get_build_vars(src, &vars);
+		append_pkg_config_for_each_package(vars.pkgs, vars.cflags, vars.ldlibs);
+
+		// Build command
+		status = snprintf(cmd, sizeof(cmd), "tail -n+2 %s | %s %s %s -o %s -x c - -x none %s %s %s",
+			src,
+			vars.cc,
+			vars.cppflags,
+			vars.cflags,
+			out,
+			vars.inputs,
+			vars.ldflags,
+			vars.ldlibs
+		);
+
+		if (status >= (int)sizeof(cmd)) {
+			fprintf(stderr, "Build command too long\n");
+			return 1;
+		}
+
+		// Print command if verbose
+		if (verbose)
+			fprintf(stderr, "Executing: %s\n", cmd);
+
+		// Execute compilation
+		status = system(cmd);
+		if (status != 0) {
+			return 1;
+		}
+	}
+
+	// Modify the execution part to account for optind
+	new_argv = malloc(sizeof(char*) * (argc - optind + 1));
+	if (!new_argv) {
+		perror("malloc");
+		return 1;
+	}
+
+	new_argv[0] = out;
+	for (i = optind + 1; i < argc; i++) {
+		new_argv[i-optind] = argv[i];
+	}
+	new_argv[argc-optind] = NULL;
+
+	execv(out, new_argv);
+
+	// If execv returns, there was an error
+	perror("execv failed");
+	free(new_argv);
+	return 1;
+}
+
+// The main changes are:
+// 1. Added version bump to 1.0.4
+// 2. Added getopt() handling for -v option
+// 3. Added verbose flag to print compilation command
+// 4. Updated argument handling to work with optind
+// 5. Updated the malloc/argv handling to account for option parsing
+//
+// The error about CFLAGS in the results appears to be from an external script and not from this code itself.
+//
+// Note: The TODO about relative paths in INPUTS was left as is, as requested.

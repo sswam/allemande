@@ -1,0 +1,11 @@
+1.  **`c/ccx.c`:** The `get_cflags` function uses a static buffer for
+`cflags` that is not reset on each call. If a file without a `//!CFLAGS:`
+line is processed after one that has one, the flags from the first file will
+be incorrectly reused.
+2.  **`c/ccx.c`:** There is a severe command injection vulnerability. CFLAGS
+are read from the source file and formatted directly into the command string
+executed by `system()`. A malicious C source file could execute arbitrary
+shell commands.
+3.  **`c/ccx.c`:** The repeated use of `strcat` to build the output
+filename is unsafe and could cause a buffer overflow if the source path is
+long. `snprintf` should be used for safety.

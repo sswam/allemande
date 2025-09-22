@@ -1,0 +1,30 @@
+1. The `get_cflags` function uses a static buffer `cflags`. This is not
+thread-safe and can lead to issues if `ccx` is used in a multithreaded
+environment. It should be changed to either allocate the buffer dynamically
+or require the caller to provide the buffer.
+2. In `get_cflags`, the code copies the contents of the line directly into
+`cflags` without checking if the length of the `start` exceeds the size
+of the `cflags` buffer. This can lead to a buffer overflow. Use `strncpy`
+instead of `strcpy`.
+3. In `main`, the allocation size for `new_argv` is incorrect. It should be
+`sizeof(char*) * (argc - 1)` since the first argument is the ccx program
+itself, and the second argument is the source file which isn't passed to the
+compiled program. Or `sizeof(char*) * (argc -1 )`.  The code skips argv[1]
+which is good, but incorrectly computes allocation size.
+4. In `main`, the loop assigning values to `new_argv` starts from `i =
+2`. This means `new_argv[0]` is never initialized, and the following
+assignment `new_argv[i-1] = argv[i]` assigns `argv[2]` to `new_argv[1]`,
+`argv[3]` to `new_argv[2]`, and so on. `new_argv[0]` which should be the
+name of the executed program `out` is missed.  Also the malloc size does not
+correspond to the assignments.
+5. In `main`, the `free(new_argv)` call is reached only if `execv` fails. If
+`execv` succeeds, the allocated memory is never freed, leading to a memory
+leak. It might be better to `fork()` then `execv` in the child, and have the
+parent cleanup.
+6. The use of `system(cmd)` is generally discouraged due to security risks
+(e.g., command injection).  Consider using `fork()` and `exec()` directly for
+better control and security.
+7. The code does not handle errors from `strcat` or `snprintf` which can lead
+to buffer overflows if the combined string exceeds the size of the `out` or
+`cmd` buffers, respectively.
+8. The `sea.o` object is hardcoded. This is inflexible.
