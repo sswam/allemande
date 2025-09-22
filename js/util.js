@@ -373,3 +373,16 @@ async function deregister_service_worker() {
     await registration.unregister();
   }
 }
+
+// timing patterns -----------------------------------------------------------
+
+// not in use now
+const debounce = (fn, delay) => {
+  let timeoutId;
+
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn.apply(context, args), delay);
+  };
+};

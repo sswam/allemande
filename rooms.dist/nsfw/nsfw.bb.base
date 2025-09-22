@@ -7,5 +7,5 @@ Select Characters:	<link rel="stylesheet" href="/cast.css">
 	</details>
 	<details markdown=1><summary>Non-binary</summary><div markdown=1 class="cast small clear">![Flashi](cast/Flashi.jpg)</div>
 	</details>
-	<script src="/cast.js"></script> <!-- @Lori -->
+	<script class=hide>setTimeout(() => shuffle('.cast > p', 'div.image'), 1000);</script> <!-- say hi, @Lori -->
 
