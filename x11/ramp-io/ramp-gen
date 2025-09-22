@@ -1,0 +1,48 @@
+#!/usr/bin/perl -w
+use strict;
+use warnings;
+use Data::Dumper;
+use File::Basename qw(basename);
+
+my ($r0, $r1, $g0, $g1, $b0, $b1, $screens, $levels) = @ARGV;
+
+if (@ARGV < 6) {
+	my $prog = basename($0);
+	die <<EOT;
+usage:  $prog r0 r1 g0 g1 b0 b1 [screens [levels]]
+        values range from 0 to 65535
+e.g.:   ramp-gen 0 50000 0 40000 0 30000 | ramp-io >/dev/null
+	ramp-gen 0 65535 4000 65535 0 65535 | ramp-io >/dev/null
+	ramp-gen 20745 0 11962 0 4380 0 4 1024 | ramp-io >/dev/null
+EOT
+}
+
+$screens ||= 4;
+$levels ||= 1024;
+#$levels ||= 256;
+#$levels ||= 2048;
+
+sub p {
+	print "@_\n";
+}
+
+sub ramp {
+	my ($colour, $start, $end) = @_;
+	p $colour;
+	for my $i (0..$levels-1) {
+		my $value = sprintf "%.f", int(($end-$start)*$i/($levels-1)+$start);
+		p $value;
+	}
+}
+
+p $screens;
+p;
+
+for my $screen (0..$screens-1) {
+	p $screen;
+	p $levels;
+	ramp("R", $r0, $r1);
+	ramp("G", $g0, $g1);
+	ramp("B", $b0, $b1);
+	p;
+}

@@ -1,0 +1,2 @@
+cd "$(dirname "$(readlink -f "$0")")"
+qo ramp-io < data/"${1:-default}"
