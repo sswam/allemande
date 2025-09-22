@@ -1,5 +1,6 @@
 base: SmallAI
 specialist: true
+over: []
 # stop_regexs:
 # - \bSTOP\b
 fullname: Brianna
