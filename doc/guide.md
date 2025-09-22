@@ -964,6 +964,7 @@ type: visual
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 | <i class="bi-lock"></i> <i class="bi-unlock"></i> |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
+| <i class="bi-explicit"></i> |  | NSFW | Go to main NSFW room (visible when enabled for the user, unless declined) |
 |  | `Ctrl+;` or `Esc` | Room Name | Change room |
 |  |  | User | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
 | <i class="bi-question-lg"></i> |  | Help | Read the Intro and Guide, and get AI help to use the app. Brightly coloured and slightly animated in 'basic' mode. |
