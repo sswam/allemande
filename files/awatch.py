@@ -1,6 +1,19 @@
 #!/usr/bin/env python3-allemande
 
-""" Watch files and directories for changes """
+"""
+Monitor file system changes and output in TSV format:
+pathname    type    oldsize newsize
+
+Types:
+1 = Added file
+2 = Modified file
+3 = Deleted file
+
+Size values are empty ("") when file didn't exist (for new files) or doesn't exist (for deleted files)
+
+Example:
+test.txt    2   1024    2048
+"""
 
 import sys
 import os
@@ -10,6 +23,8 @@ import subprocess
 import asyncio
 from typing import Callable
 import logging
+import csv
+import io
 
 from pydantic import BaseModel
 from watchfiles import awatch, Change, DefaultFilter
@@ -17,7 +32,7 @@ from hidden import contains_hidden_component
 
 from ally import main, logs
 
-__VERSION__ = "0.1.3"
+__VERSION__ = "0.1.4"
 
 
 logger = logs.get_logger()
@@ -44,7 +59,9 @@ class WatcherOptions(BaseModel):
     exclude_paths: list[str] = []
     metadata: bool = False
     echo: bool = False
-    details: bool = False
+    details_limit: int = 16384  # 16KB default limit for change details
+    output_format: str = "meta"  # "none", "meta", "meta,text", "text"
+    stderr_format: str = "none"  # as above
 
 
 class Debounce:  # pylint: disable=too-few-public-methods
@@ -310,10 +327,10 @@ def null_to(x, replacement):
     return x
 
 
-def echo_change_details(file: str, change: int, size_old: int|None, size_new: int|None, max_size: int = 16*1024) -> None:
-    """Echo the change details to stderr, skipping large or binary files"""
+def get_change_text(file: str, change: int, size_old: int|None, size_new: int|None, max_size: int = 16*1024) -> str|None:
+    """Get the change details, skipping large or binary files"""
     if change not in [Change.added, Change.modified]:
-        return
+        return None
 
     size_old = size_old or 0
     size_new = size_new or 0
@@ -326,7 +343,7 @@ def echo_change_details(file: str, change: int, size_old: int|None, size_new: in
 
     if change_size > max_size:
         logger.warning("Skipping large change: %d bytes", change_size)
-        return
+        return None
 
     try:
         if size_new < size_old:
@@ -346,14 +363,15 @@ def echo_change_details(file: str, change: int, size_old: int|None, size_new: in
 
         # Output the content
         content = content_bytes.decode('utf-8')
-        print(content, file=sys.stderr)
+        return content.replace("\t", "\\t").replace("\n", "\\n")
 
     except FileNotFoundError:
         logger.warning("File not found: %s", file)
     except (UnicodeDecodeError, ValueError):
         logger.warning("Binary file detected, skipping: %s", file)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         logger.error("Error reading file %s: %s", file, str(e))
+        return None
 
 
 async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
@@ -362,9 +380,6 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
     logging.getLogger("watchfiles").setLevel(logging.WARNING)
     logging.getLogger("watchfiles.main").setLevel(logging.WARNING)
     logging.getLogger("watchfiles.watcher").setLevel(logging.WARNING)
-
-    if opts.details:
-        opts.echo = True
 
     opts.exts = [f".{ext}" for ext in opts.extension]
     if (opts.run or opts.job or opts.service) and not opts.command:
@@ -375,19 +390,34 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
             out.flush()
             logger.info("flushed")
         else:
-            print(*[null_to(x, "") for x in row], sep="\t", file=out)
-            if opts.echo:
-                print(*[null_to(x, "") for x in row], sep="\t", file=sys.stderr)
-            if opts.details:
-                echo_change_details(*row)
+            print(output(row, opts.output_format, opts), file=out)
+            print(output(row, opts.stderr_format, opts), file=sys.stderr)
+
+
+def output(row, fmt, opts):
+    if fmt == "none":
+        return ""
+    fmts = fmt.split(",")
+    output = []
+    for fmt in fmts:
+        if fmt == "text":
+            output.append(get_change_text(*row, max_size=opts.details_limit))
+        elif fmt == "meta":
+            output += row
+        else:
+            raise ValueError(f"Unknown format: {fmt}")
+    output_str = io.StringIO()
+    writer = csv.writer(output_str, delimiter='\t')
+    writer.writerow(output)
+    return output_str.getvalue()
 
 
 def setup_args(arg):
     """Set up the command-line arguments."""
     arg("-p", "--paths", nargs="*", default=".", help="files and directories to watch")
     arg("-r", "--recursive", help="watch recursively under the folders", action="store_true")
+    arg("-a", "--all-files", help="watch all files, i.e. all extensions", action="store_true")
     arg("-x", "--extension", nargs="*", default=[], help="file extensions to watch")
-    arg("-a", "--all-files", help="watch all files", action="store_true")
     arg("-H", "--hidden", help="watch hidden files", action="store_true")
     arg("-D", "--dirs", help="report changes to directories", action="store_true")
     arg("-i", "--initial-state", help="report initial state", action="store_true")
@@ -400,8 +430,9 @@ def setup_args(arg):
     arg("-d", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
     arg("-e", "--exclude", dest="exclude_paths", nargs="*", default=[], help="paths to exclude from watching")
     arg("-m", "--metadata", help="watch metadata changes", action="store_true")
-    arg("-E", "--echo", help="echo changes", action="store_true")
-    arg("-V", "--details", help="echo verbose change details (implies -E)", action="store_true")
+    arg("-f", "--format", dest="output_format", choices=["none", "meta", "meta,text", "text"], default="meta", help="output format")
+    arg("-F", "--stderr-format", dest="stderr_format", choices=["none", "meta", "meta,text", "text"], default="none", help="stderr output format")
+    arg("-l", "--text-limit", type=int, default=16384, help="maximum size in bytes for change text")
     arg("command", nargs="*", help="command or service to run when files change")
 
 
