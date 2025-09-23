@@ -1,0 +1,4 @@
+[opt 100]
+BREAK menstruation, bleeding, blood on pussy, panties, blood on panties
+[set negative_prompt _prepend] (pussy:2) [/set]
+[/opt]
