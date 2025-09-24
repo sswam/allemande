@@ -32,12 +32,12 @@ testy() {
 		if [[ $prog != *.* ]]; then
 			ext="sh"
 		fi
-		local test_ext="$ext"
 
 		# handle Perl modules
 		if [ "$ext" = pm ]; then
 			ext=pl
 		fi
+		local test_ext="$ext"
 
 		# avoid binary files
 		if [[ $(file --mime-encoding -b "$prog") == "binary" ]]; then
@@ -53,10 +53,37 @@ testy() {
 			local tests_file="$prog"
 		elif [ "$ext" = rs ]; then
 			local tests_file="$prog"
-		elif [ "$ext" = go ]; then
-			local tests_file="$(dirname "$prog")/$(basename "$prog" ".$ext")_test.$test_ext"
 		else
-			local tests_file="$(dirname "$prog")/tests/$(basename "$prog" ".$ext")_test.$test_ext"
+			# For Go and general cases, find the test file by searching.
+			local base
+			base=$(basename "$prog" ".$ext")
+			local test_dir
+			# For Go, tests are typically in the same directory.
+			if [ "$ext" = go ]; then
+				test_dir="$(dirname "$prog")"
+			# For other languages, assume a tests/ subdirectory.
+			else
+				test_dir="$(dirname "$prog")/tests"
+			fi
+
+			# Try the expected naming convention first
+			local tests_file="$test_dir/${base}_test.$test_ext"
+
+			if [ ! -f "$tests_file" ]; then
+				# Use an array to safely capture glob results. This prevents errors if no file matches.
+				local test_files=( "$test_dir"/"${base}"_test.* )
+
+				# Warn if multiple test files are found
+				if (( ${#test_files[@]} > 1 )); then
+					echo >&2 "Warning: Multiple test files found for $prog. Using the first match: ${test_files[*]}"
+				fi
+
+				# Check if the glob found an actual file (and not just the unexpanded pattern).
+				if [ -f "${test_files[0]}" ]; then
+					# If a test file is found, use the first match.
+					tests_file="${test_files[0]}"
+				fi
+			fi
 		fi
 		if [ ! -f "$tests_file" ]; then
 			echo >&2 "Tests file not found: $tests_file"

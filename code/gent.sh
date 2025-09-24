@@ -4,12 +4,13 @@
 # Generate tests for a program using AI
 
 gent() {
-	local model= m=   # model
-	local style= s=1  # refer to test_hello.py for test style
-	local edit= e=1   # do not edit
-	local test= t=1   # run tests after generating
-	local funcs= f=() # process only listed functions
-	local append= a=0 # append to existing tests file without reading it
+	local model= m=      # model
+	local style= s=1     # refer to test_hello.py for test style
+	local edit= e=1      # do not edit
+	local test= t=1      # run tests after generating
+	local funcs= f=()    # process only listed functions
+	local append= a=0    # append to existing tests file without reading it
+	local tests_ext= x=  # specify tests file extension / language
 
 	eval "$(ally)"
 
@@ -31,13 +32,17 @@ gent() {
 		ext="sh"
 	fi
 
-	tests_ext=$ext
+	if [ -z "$tests_ext" ] && [ "$ext" = sh ]; then
+		tests_ext=bats
+	elif [ -z "$tests_ext" ]; then
+		tests_ext=$ext
+	fi
+
 	tests_dir=$dir/tests
 
 	executable=0
 	case "$ext" in
 	sh)
-		tests_ext=bats
 		executable=1
 		;;
 	go)
@@ -51,7 +56,7 @@ gent() {
 
 	mkdir -p "$tests_dir"
 
-	if [ "$ext" = sh ] && [ ! -e "$tests_dir/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
+	if [ "$tests_ext" = bats ] && [ ! -e "$tests_dir/test_helper" ] && [ -d "/usr/lib/bats/bats-support" ]; then
 		ln -s /usr/lib/bats "$tests_dir/test_helper"
 	fi
 
@@ -67,7 +72,7 @@ gent() {
 	fi
 
 	# Test style reference and prompt for -s option
-	style_ref="$ALLEMANDE_HOME/$ext/tests/hello_${ext}_test.$tests_ext"
+	style_ref="$ALLEMANDE_HOME/$tests_ext/tests/hello_${tests_ext}_test.$tests_ext"
 	if ((style)) && [ -e "$style_ref" ]; then
 		refs+=("$style_ref")
 		prompt="in the style of \`$style_ref\`, $prompt"
