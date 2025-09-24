@@ -152,7 +152,7 @@ const random_message = [
 ]
 
 let VERSION;
-let DEBUG = true;
+export let DEBUG = true;
 
 export let room;
 let user;
@@ -706,8 +706,11 @@ export async function set_room(room_new, no_history) {
     edit(room_new);
   }
 
-  if (view !== "view_edit")
+  if (view !== "view_edit") {
     reset_ui();
+    // if (view_options.advanced)
+    //   set_top("top_scroll");
+  }
 
   if (type == "room" || type == "dir") {
     messages_iframe_set_src(room_url() + "?stream=1");
@@ -886,6 +889,16 @@ function scroll_pages(ev, d) {
     send_to_room_iframe({ type: "scroll_pages", d });
   else
     $edit.scrollTop += d * $edit.clientHeight;
+}
+
+// pages ---------------------------------------------------------------------
+
+function pages_click(ev) {
+  if (ev.button !== 0 || ev.shiftKey || ev.ctrlKey || ev.altKey || ev.metaKey)
+    // let the browser do the default action, e.g. open this same page in another tab
+    return true;
+  ev.preventDefault();
+  set_top_left("top_left_pages");
 }
 
 // user info and settings ----------------------------------------------------
@@ -1299,6 +1312,11 @@ function handle_message(ev) {
     return;
   }
 
+  if (ev.data.type == "status") {
+    update_room_status(ev.data);
+    return;
+  }
+
   if (ev.data.type == "copy") {
     // copy to clipboard
     try {
@@ -1462,40 +1480,40 @@ async function setup_nav_buttons() {
   $nav_home.href = "/" + query_to_hash(user + "/chat");
 
   // Setup first room button --------------------
-  const $nav_first = $id("nav_first");
-  const nav_first_query = room_first();
-  if (nav_first_query) {
-    $nav_first.href = query_to_hash(nav_first_query);
+  const $pages_first = $id("pages_first");
+  const pages_first_query = room_first();
+  if (pages_first_query) {
+    $pages_first.href = query_to_hash(pages_first_query);
   } else {
-    $nav_first.removeAttribute("href");
+    $pages_first.removeAttribute("href");
   }
 
   // Setup prev room button --------------------
-  const $nav_prev = $id("nav_prev");
+  const $pages_prev = $id("pages_prev");
   const roomPrev = room_prev();
   if (roomPrev) {
-    $nav_prev.href = "/" + query_to_hash(roomPrev);
+    $pages_prev.href = "/" + query_to_hash(roomPrev);
   } else {
-    $nav_prev.removeAttribute("href");
+    $pages_prev.removeAttribute("href");
   }
 
   // Setup next room button --------------------
-  const $nav_next = $id("nav_next");
+  const $pages_next = $id("pages_next");
   const roomNext = room_next();
   if (roomNext) {
-    $nav_next.href = "/" + query_to_hash(roomNext);
+    $pages_next.href = "/" + query_to_hash(roomNext);
   } else {
-    $nav_next.removeAttribute("href");
+    $pages_next.removeAttribute("href");
   }
 
   // Setup last room button --------------------
   // TODO this is heavy, avoid unless clicked?
-  const $nav_last = $id("nav_last");
+  const $pages_last = $id("pages_last");
   const roomLast = await room_last();
   if (roomLast) {
-    $nav_last.href = "/" + query_to_hash(roomLast);
+    $pages_last.href = "/" + query_to_hash(roomLast);
   } else {
-    $nav_last.removeAttribute("href");
+    $pages_last.removeAttribute("href");
     access_denied = true;
   }
 }
@@ -2702,7 +2720,7 @@ async function opt_mission(ev) {
 async function setup_icons() {
   await $import("icons");
   icons = modules.icons.icons;
-  for (const prefix of ["mod", "add", "view", "opt", "nav", "scroll", "audio", "select"]) { //, "filter"]) {
+  for (const prefix of ["mod", "add", "view", "opt", "nav", "pages", "scroll", "audio", "select"]) { //, "filter"]) {
     icons[`${prefix}_cancel`] = icons[prefix]; // icons["x"];
   }
 //  icons["edit_close"] = icons["x"];
@@ -2741,6 +2759,7 @@ async function setup_icons() {
   icons["select_copy"] = icons["copy"];
 
   icons["filter_2"] = icons["filter"];
+  icons["scroll_end_2"] = icons["scroll_end"];
 
   for (const id in icons) {
     let el = $id(id);
@@ -3113,6 +3132,16 @@ export function nsfw_zone_room_changed() {
 // Run on page load
 // handleNSFWAccess();
 
+// update room status --------------------------------------------------------
+
+function update_room_status(data) {
+  const $scroll_end_2 = $id("scroll_end_2");
+  const scroll_icon = data.messages_at_bottom ? "scroll_home" : "scroll_end";
+  const scroll_title = data.messages_at_bottom ? "start of room: home" : "end of room: end";
+  $scroll_end_2.innerHTML = icons[scroll_icon];
+  $scroll_end_2.title = scroll_title;
+}
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -3164,8 +3193,9 @@ export async function init() {
   $on($id("audio"), "click", () => set_controls("input_audio"));
 
   $on($id("nav"), "click", nav_click);
+  $on($id("pages"), "click", pages_click);
   $on($id("select"), "click", select_click);
-  $on($id("scroll"), "click", () => set_top("top_scroll"));
+  /* $on($id("scroll"), "click", () => set_top("top_scroll")); */
   $on($id("filter"), "click", () => set_top("top_filter"));
   // $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
 
@@ -3225,14 +3255,16 @@ export async function init() {
   $on($id("opt_cancel"), "click", () => set_controls());
 
   $on($id("nav_cancel"), "click", () => set_top_left());
+  $on($id("pages_cancel"), "click", () => set_top_left());
 
   $on($id("dir_sort"), "click", dir_sort);
 
-  $on($id("scroll_home"), "click", (ev) => scroll_home_end(ev, 0));
-  $on($id("scroll_end"), "click", (ev) => scroll_home_end(ev, 1));
-  $on($id("scroll_pageup"), "click", (ev) => scroll_pages(ev, -1));
-  $on($id("scroll_pagedown"), "click", (ev) => scroll_pages(ev, 1));
-  $on($id("scroll_cancel"), "click", () => set_top());
+  // $on($id("scroll_home"), "click", (ev) => scroll_home_end(ev, 0));
+  // $on($id("scroll_end"), "click", (ev) => scroll_home_end(ev, 1));
+  $on($id("scroll_end_2"), "click", (ev) => scroll_home_end(ev, 2));
+  // $on($id("scroll_pageup"), "click", (ev) => scroll_pages(ev, -1));
+  // $on($id("scroll_pagedown"), "click", (ev) => scroll_pages(ev, 1));
+  // $on($id("scroll_cancel"), "click", () => set_top());
 
   $on($id('filter_query'), "change", filter_changed);  // or on "input"
   $on($id("filter_2"), "click", () => set_top());

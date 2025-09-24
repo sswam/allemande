@@ -18,7 +18,7 @@ let allImages;
 // let overlay_fullscreen = isMobile;
 let overlay_fullscreen = false;
 
-let suppressInitialScroll = false;
+let suppressInitialScroll = true;
 
 export let view_options = {
   images: 1,
@@ -104,7 +104,7 @@ function load_error() {
 
 // scrolling to the bottom ---------------------------------------------------
 
-let messages_at_bottom = true;
+let messages_at_bottom = false;
 let messages_width_last;
 let messages_height_last;
 let top_message;
@@ -214,7 +214,7 @@ async function messages_scrolled() {
       scrollUpEventCount = 0;
 
     if (scrollUpEventCount >= SCROLL_BACK_COUNT || (view_options.columns ? scrollDeltaX : scrollDeltaY) > SCROLL_BACK_PIXELS) {
-      messages_at_bottom = false;
+      set_messages_at_bottom(false);
       scrollUpEventCount = SCROLL_BACK_COUNT; // cap it
     }
   }
@@ -247,7 +247,7 @@ async function messages_scrolled_2() {
       }
     }
   } else {
-    messages_at_bottom = is_at_bottom($e);
+    set_messages_at_bottom(is_at_bottom($e));
   }
   //console.log(messages_at_bottom);
 
@@ -256,6 +256,14 @@ async function messages_scrolled_2() {
     top_message = getLeftmostVisibleElement();
   } else {
     top_message = getTopmostVisibleElement();
+  }
+}
+
+function set_messages_at_bottom(at_bottom) {
+  // console.log("set_messages_at_bottom", messages_at_bottom);
+  if (at_bottom != messages_at_bottom) {
+    messages_at_bottom = at_bottom;
+    window.parent.postMessage({type: "status", messages_at_bottom: messages_at_bottom}, ALLYCHAT_CHAT_URL);
   }
 }
 
@@ -303,6 +311,8 @@ function getLeftmostVisibleElement() {
 
 // wait for ------------------------------------------------------------------
 
+// TODO move to util.js
+
 async function wait_for(predicate, timeout) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -329,7 +339,7 @@ function node_has_next_sibling(node) {
 
 async function wait_for_whole_message(node) {
   try {
-    await wait_for(() => node_has_next_sibling(node), 1000);   // newline works
+    await wait_for(() => node_has_next_sibling(node), 5000);   // newline works
   } catch (e) {
     console.error("timeout waiting for next sibling (newline)", node, e);
     return false;
@@ -1343,6 +1353,8 @@ function set_dir_sort(dir_sort) {
 // scroll to home or end, page up, page down ---------------------------------
 
 function scroll_home_end(p) {
+  if (p == 2)
+    p = messages_at_bottom ? 0 : 1;
   if (view_options.columns) {
     $messages_wrap.scrollLeft = p * $messages_wrap.scrollWidth;
   } else {
@@ -1481,7 +1493,8 @@ async function error(id) {
 */
 
 function handle_room_intro() {
-  const hasSeenIntro = !['guide', 'intro'].includes(room) && localStorage.getItem(`seen_intro_${room}`);
+  // let hasSeenIntro = !['guide', 'intro'].includes(room) && localStorage.getItem(`seen_intro_${room}`);
+  let hasSeenIntro = false;  // giving up on auto scroll-down for the moment!
   if (!hasSeenIntro) {
     suppressInitialScroll = true;
     setTimeout(() => {
@@ -1630,12 +1643,15 @@ async function get_date_and_mtime() {
   return null, null;
 }
 
-export function show_timestamp(date, mtime) {
+export async function show_timestamp(date, mtime) {
   const diff = (date - mtime) / 1000;
   let relativeTime = getRelativeTimeString(diff) + ' ago';
   if (relativeTime == "0s ago")
     relativeTime = "now";
   const fullTimestamp = formatLocalDateTime(mtime);
+
+
+  await wait_for(() => $id('timestamp'), 5000);
 
   const timestampElement = $id('timestamp');
   timestampElement.textContent = relativeTime;

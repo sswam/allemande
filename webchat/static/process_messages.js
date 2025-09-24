@@ -1,6 +1,7 @@
 var inIframe = window.parent !== window.self;
 const moveLabels = true;
 const hideLabelForSameUser = true;
+const moveImagesForSameUser = true;
 const room = await $import("chat:room");
 
 const HIDE_CONTROLS_DELAY = 1000;
@@ -130,6 +131,7 @@ export async function processMessage(newMessage) {
   // console.log("handling new message", newMessage);
   const newContent = newMessage.querySelector(".content");
   const newUser = newMessage.getAttribute("user");
+  const label = newMessage.querySelector(".label");
 
   // Remove newline at start of paragraph, pre or code
   // Maybe not needed now? We'll see...
@@ -147,6 +149,71 @@ export async function processMessage(newMessage) {
     }
   }
   */
+
+  // Processing editing commands
+  await process_editing_commands(newMessage);
+
+  // Hide the label if same user as previous message
+  if (hideLabelForSameUser) {
+    let prevMessage = newMessage.previousElementSibling;
+    while (prevMessage && prevMessage.classList.contains('hidden'))
+      prevMessage = prevMessage.previousElementSibling;
+    if (prevMessage && newUser == prevMessage.getAttribute("user"))
+      label.classList.add("hidden");
+  }
+
+  // Move images back if same user
+  // in future might put images together with or directly after the prompt that creates them; but how?
+  // We could make the whole messages display: inline-block perhaps?
+
+  /*
+  // Hide the label if same user as previous message
+  if (moveImagesForSameUser) {
+    let prevMessage = newMessage.previousElementSibling;
+    while (prevMessage && prevMessage.classList.contains('hidden'))
+      prevMessage = prevMessage.previousElementSibling;
+    if (prevMessage && newUser == prevMessage.getAttribute("user")) {
+      label.classList.add("hidden");
+      if (prevMessage.querySelector("div.image") && !prevMessage.querySelector(":empty:not(img, .label .alt)") &&
+        newMessage.querySelector("img") && !newMessage.querySelector(":empty:not(img, .label .alt)")) {
+        const $$img = newMessage.querySelectorAll("div.image")
+      }
+    }
+  }
+  */
+
+  // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
+  if (newMessage && moveLabels) {
+    // console.log("trying to move label for message ID", id, "label", label);
+    // console.log("new message", newMessage);
+    if (label) {
+      let p = newContent.querySelector(":scope > p");
+      // console.log("first paragraph", p);
+      let go_before_this = newMessage.querySelector(
+        "pre, details, script:not([src]), style, ol, ul, blockquote, h1, h2, h3, h4, h5, h6"
+      );
+      let container;
+      if (p && !(go_before_this && isPrecedingNode(go_before_this, p))) {
+        container = p;
+      } else {
+        label.style.float = "left";
+//        label.style.paddingRight = "1em";
+        container = newContent;
+      }
+      /* Wrapping text nodes in spans */
+      Array.from(container.childNodes)
+        .filter(node => node.nodeType === Node.TEXT_NODE)
+        .forEach(textNode => {
+          const span = document.createElement('span');
+          span.textContent = textNode.textContent;
+          textNode.replaceWith(span);
+        });
+
+      // if (user.toLowerCase() === "gimg")
+      //   console.log("moving label", label, "before", go_before_this, "in", container, "for", user);
+      container.insertBefore(label, container.firstChild);
+    }
+  }
 
   // Set title attribute for images
   // add a <div class="alt"> element for each image
@@ -269,63 +336,6 @@ export async function processMessage(newMessage) {
 
   // Code highlighting according to the view options
   await highlight_code(newMessage, room.view_options);
-
-  // Processing editing commands
-  await process_editing_commands(newMessage);
-
-  // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
-  const label = newMessage.querySelector(".label");
-  if (newMessage && moveLabels) {
-    // console.log("trying to move label for message ID", id, "label", label);
-    // console.log("new message", newMessage);
-    if (label) {
-      let p = newContent.querySelector(":scope > p");
-      // console.log("first paragraph", p);
-      let go_before_this = newMessage.querySelector(
-        "pre, details, script:not([src]), style, ol, ul, blockquote, h1, h2, h3, h4, h5, h6"
-      );
-      let container;
-      if (p && !(go_before_this && isPrecedingNode(go_before_this, p))) {
-        container = p;
-      } else {
-        label.style.float = "left";
-//        label.style.paddingRight = "1em";
-        container = newContent;
-      }
-      /* Wrapping text nodes in spans */
-      Array.from(container.childNodes)
-        .filter(node => node.nodeType === Node.TEXT_NODE)
-        .forEach(textNode => {
-          const span = document.createElement('span');
-          span.textContent = textNode.textContent;
-          textNode.replaceWith(span);
-        });
-      container.insertBefore(label, container.firstChild);
-
-      if (user.toLowerCase() === "gimg") {
-        console.log(
-          "moving label",
-          label,
-          "before",
-          go_before_this,
-          "in",
-          container,
-          "for",
-          user
-        );
-      }
-      container.insertBefore(label, container.firstChild);
-    }
-  }
-
-  // Hide the label if same user as previous message
-  if (hideLabelForSameUser) {
-    let prevMessage = newMessage.previousElementSibling;
-    while (prevMessage && prevMessage.classList.contains('hidden'))
-      prevMessage = prevMessage.previousElementSibling;
-    if (prevMessage && newUser == prevMessage.getAttribute("user"))
-      label.classList.add("hidden");
-  }
 
   // Add ID labels which can be shown, div class=id
   const idDiv = document.createElement("div");

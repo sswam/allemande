@@ -23,10 +23,11 @@
 <input type="hidden" id="op" name="op" value="post">
 <div id="main" class="col fill">
 	<div class="row gap hidden" id="top">
-		<a class="button private" href="" id="privacy" title=""></a>
+		<a class="button private simple" href="" id="privacy" title=""></a>
 		<div class="top_left_controls row gap" id="top_left_main">
-			<a class="button advanced" href="" id="nav" title="navigation">nav</a>
 			<a class="button nsfw nav_nsfw hidden" href="" title="go to the main NSFW room">nsfw</a>
+			<a class="button advanced" href="" id="nav" title="navigation">nav</a>
+			<a class="button advanced" href="" id="pages" title="pages">pages</a>
 			<a class="button advanced hidden" href="" id="dir_sort" title="sort">sort_alpha</a>
 			<button id="select" title="select messages" class="boffin">select</button> <!-- should be advanced when done -->
 			<!--<button id="room_ops" title="room operations" class="advanced">room</button>-->
@@ -38,10 +39,13 @@
 			<!--<a class="button nsfw nav_nsfw hidden" href="" title="go to the main NSFW room">nsfw</a>-->
 			<a class="button" href="" id="nav_porch" title="your 'porch', a public room you control">porch</a>
 			<a class="button" href="" id="nav_home" title="your 'home', a private room">home</a>
-			<a class="button" href="" id="nav_first" title="first page: ctrl+[">first</a>
-			<a class="button" href="" id="nav_prev" title="previous page: ctrl+,">prev</a>
-			<a class="button" href="" id="nav_next" title="next page: ctrl+.">next</a>
-			<a class="button" href="" id="nav_last" title="last page: ctrl+]">last</a>
+		</div>
+		<div class="top_left_controls row gap hidden" id="top_left_pages">
+			<button id="pages_cancel" class="back">back</button>
+			<a class="button" href="" id="pages_first" title="first page: ctrl+[">first</a>
+			<a class="button" href="" id="pages_prev" title="previous page: ctrl+,">prev</a>
+			<a class="button" href="" id="pages_next" title="next page: ctrl+.">next</a>
+			<a class="button" href="" id="pages_last" title="last page: ctrl+]">last</a>
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_select" class="advanced">
 			<button id="select_cancel" class="back">back</button>
@@ -62,19 +66,20 @@
 		<div class="top_controls row gap" id="top_main">
 			<button id="debug" title="debug" class="small boffin">?</button>
 			<button id="filter" title="filter media">filter</button>
-			<button id="scroll" title="scrolling" class="advanced">scroll</button>
+			<button id="scroll_end_2" title="end of room: end">bot</button>
+			<!-- <button id="scroll" title="scrolling" class="advanced">scroll</button> -->
 			<button class="hidden" id="notify">notify</button>
 			<a class="button" href="" id="user" title="cycle your main rooms">?</a>
 			<a class="button" href="" id="help" title="get help to use Ally Chat"></a>
 			<button id="logout" title="log out">exit</button>
 		</div>
-		<div class="top_controls row gap hidden" id="top_scroll">
+		<!-- <div class="top_controls row gap hidden" id="top_scroll">
 			<button id="scroll_home" title="start of room: home">top</button>
 			<button id="scroll_pageup" title="page up">pageup</button>
 			<button id="scroll_pagedown" title="page down">pagedown</button>
 			<button id="scroll_end" title="end of room: end">bot</button>
 			<button id="scroll_cancel" class="back">back</button>
-		</div>
+		</div> -->
 		<div class="top_controls row gap hidden flex grow" id="top_filter">
 			<input id="filter_query" title="image filter" placeholder="filter" class="wide"> <!-- advanced -->
 			<select id="filter_preset" title="image filter presets" class="wide nsfw hidden">
