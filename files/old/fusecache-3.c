@@ -1,5 +1,5 @@
 #!/usr/bin/env ccx
-// CFLAGS: -Wall -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE
+// CFLAGS: -Wall -D_FILE_OFFSET_BITS=64
 // PKGS: fuse3
 
 #define FUSE_USE_VERSION 31
@@ -16,8 +16,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include <libgen.h>
-#include <time.h>
 
 /*
  * This struct will hold the configuration for our filesystem.
@@ -28,85 +26,20 @@ struct fusecache_config {
 	char *cache_dir;
 };
 
-// Security helper: validates that a constructed path is within a base directory.
-// It returns a newly allocated, resolved path on success, or NULL on failure.
-// On failure, errno is set to EACCES for traversal, or other errors from realpath.
-static char *resolve_and_verify_path(const char *base_dir, const char *path)
-{
-	char *full_path;
-	if (asprintf(&full_path, "%s%s", base_dir, path) == -1)
-		return NULL;	// ENOMEM
-
-	char *resolved = realpath(full_path, NULL);
-	if (resolved) {
-		// Path exists, verify it's a subpath of base_dir
-		size_t base_len = strlen(base_dir);
-
-		if (strncmp(resolved, base_dir, base_len) == 0 && (resolved[base_len] == '\0' || resolved[base_len] == '/')) {
-			free(full_path);
-			return resolved;  // OK
-		}
-		free(resolved);
-		free(full_path);
-		errno = EACCES;	// Traversal detected
-		return NULL;
-	}
-
-	if (errno != ENOENT) {
-		// Some other error like ELOOP, EACCES on a parent dir, etc.
-		free(full_path);
-		return NULL;
-	}
-	// Path doesn't exist. Check its parent.
-	char *full_path_copy = strdup(full_path);
-	if (!full_path_copy) {
-		free(full_path);
-		errno = ENOMEM;
-		return NULL;
-	}
-	char *parent = dirname(full_path_copy);
-	char *resolved_parent = realpath(parent, NULL);
-	free(full_path_copy);
-
-	if (!resolved_parent) {
-		// Parent doesn't exist or other error.
-		free(full_path);
-		return NULL;
-	}
-	// Verify parent is a subpath of base_dir
-	size_t base_len = strlen(base_dir);
-
-	if (strncmp(resolved_parent, base_dir, base_len) == 0 && (resolved_parent[base_len] == '\0' || resolved_parent[base_len] == '/')) {
-		free(resolved_parent);
-		// Parent is OK, so return the original, non-resolved path
-		return full_path;
-	}
-
-	free(resolved_parent);
-	free(full_path);
-	errno = EACCES;		// Parent is outside base dir, traversal detected
-	return NULL;
-}
-
 // Helper to get the full path in the source directory.
 // The caller is responsible for freeing the returned string.
 static char *get_source_path(const char *path)
 {
 	struct fusecache_config *conf = (struct fusecache_config *) fuse_get_context()->private_data;
-	return resolve_and_verify_path(conf->source_dir, path);
+	char *source_path = NULL;
+
+	// asprintf is a GNU extension, requires _GNU_SOURCE
+	int res = asprintf(&source_path, "%s%s", conf->source_dir, path);
+	if (res == -1)
+		return NULL;
+	return source_path;
 }
 
-// Helper to get the full path in the cache directory.
-// The caller is responsible for freeing the returned string.
-static char *get_cache_path(const char *path)
-{
-	struct fusecache_config *conf = (struct fusecache_config *) fuse_get_context()->private_data;
-	return resolve_and_verify_path(conf->cache_dir, path);
-}
-
-// Filesystem operations
-
-// Get file attributes, similar to stat().
 static int fusecache_getattr(const char *path, struct stat *stbuf, struct fuse_file_info *fi)
 {
 	(void) fi;
@@ -123,7 +56,6 @@ static int fusecache_getattr(const char *path, struct stat *stbuf, struct fuse_f
 	return 0;
 }
 
-// Read directory entries.
 static int fusecache_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi, enum fuse_readdir_flags flags)
 {
 	(void) offset;
@@ -148,6 +80,18 @@ static int fusecache_readdir(const char *path, void *buf, fuse_fill_dir_t filler
 	closedir(dp);
 	free(source_path);
 	return 0;
+}
+
+// Helper to get the full path in the cache directory.
+// The caller is responsible for freeing the returned string.
+static char *get_cache_path(const char *path)
+{
+	struct fusecache_config *conf = (struct fusecache_config *) fuse_get_context()->private_data;
+	char *cache_path = NULL;
+	int res = asprintf(&cache_path, "%s%s", conf->cache_dir, path);
+	if (res == -1)
+		return NULL;
+	return cache_path;
 }
 
 // Creates parent directories for a given file path, like "mkdir -p".
@@ -207,95 +151,58 @@ static int copy_file_content(const char *source_path, const char *cache_path)
 	return ret;
 }
 
-// Handles a cache miss by atomically copying the file from the source.
-// Returns 0 on success, or a negative error code.
+// Handles a cache miss by copying the file from the source and opening it.
 static int handle_cache_miss(const char *path, const char *cache_path)
 {
 	char *source_path = get_source_path(path);
 	if (!source_path)
-		return -errno;
-
-	// Do not support symbolic links for now, as there are security implications.
-	// TODO We could support them if we ensure they point within the source directory.
-	struct stat stbuf;
-	int res = lstat(source_path, &stbuf);
-	if (res == -1) {
-		free(source_path);
-		return -errno;
-	}
-	if (S_ISLNK(stbuf.st_mode)) {
-		free(source_path);
-		return -EACCES;
-	}
-
-	// Create parent directories in cache if they don't exist
-	res = ensure_dirs_exist(cache_path);
-	if (res != 0) {
-		free(source_path);
-		return res;
-	}
-	// Create a unique temporary file path for the copy
-	// This will be a file in the cache directory, e.g. ".tmp.<pid>.<rand>"
-	char *tmp_path;
-	if (asprintf(&tmp_path, "%s.tmp.%d.%d", cache_path, getpid(), rand()) == -1) {
-		free(source_path);
 		return -ENOMEM;
-	}
-	// Copy file content from source to the temporary file
-	res = copy_file_content(source_path, tmp_path);
-	free(source_path);	// No longer need the source path
+	// Create parent directories in cache if they don't exist
+	int res = ensure_dirs_exist(cache_path);
 	if (res != 0) {
-		unlink(tmp_path);
-		free(tmp_path);
+		free(source_path);
 		return res;
 	}
-	// Atomically move the file to its final destination.
-	// This will overwrite if it exists, which is fine if another thread just beat us to it.
-	if (rename(tmp_path, cache_path) == -1) {
-		int err = -errno;
-		unlink(tmp_path);
-		free(tmp_path);
-		return err;
-	}
+	// Copy file content from source to cache
+	res = copy_file_content(source_path, cache_path);
+	free(source_path);	// No longer need the source path
+	if (res != 0)
+		return res;
+	// Now that it's cached, open it.
+	int fd = open(cache_path, O_RDONLY);
+	if (fd == -1)
+		return -errno;	// Return the specific error from the final open attempt
 
-	free(tmp_path);
-	return 0;
+	return fd;
 }
 
 static int fusecache_open(const char *path, struct fuse_file_info *fi)
 {
-	// We only support read-only operations.
+	// Error case first: We only support read-only operations.
 	if ((fi->flags & O_ACCMODE) != O_RDONLY)
 		return -EACCES;
 
 	char *cache_path = get_cache_path(path);
 	if (!cache_path)
 		return -ENOMEM;
-
 	// Try to open the file, assuming it's already in the cache.
 	int fd = open(cache_path, O_RDONLY);
-	if (fd == -1 && errno == ENOENT) {
-		int res = handle_cache_miss(path, cache_path);
-		if (res < 0) {
-			free(cache_path);
-			return res;
-		}
-		// Try again now that the file should be in the cache.
-		fd = open(cache_path, O_RDONLY);
-	}
-	// If fd is negative at this point, something failed.
+	if (fd == -1 && errno == ENOENT)
+		fd = handle_cache_miss(path, cache_path);
+	else if (fd == -1)
+		fd = -errno;
+
+	// Centralized error check: If fd is negative at this point, something failed.
 	if (fd < 0) {
-		int err = -errno;
 		free(cache_path);
-		return err;
+		return fd;	// fd already holds the negative error code
 	}
-	// Success
+	// Success path
 	free(cache_path);
 	fi->fh = fd;
 	return 0;
 }
 
-// Read data from an open file.
 static int fusecache_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
 	(void) path;
@@ -307,7 +214,6 @@ static int fusecache_read(const char *path, char *buf, size_t size, off_t offset
 	return res;
 }
 
-// Release (close) an open file.
 static int fusecache_release(const char *path, struct fuse_file_info *fi)
 {
 	(void) path;
@@ -315,7 +221,6 @@ static int fusecache_release(const char *path, struct fuse_file_info *fi)
 	return 0;
 }
 
-// Define the operations structure
 static const struct fuse_operations fusecache_oper = {
 	.getattr = fusecache_getattr,
 	.readdir = fusecache_readdir,
@@ -324,13 +229,10 @@ static const struct fuse_operations fusecache_oper = {
 	.release = fusecache_release,
 };
 
-// Main function: parse arguments and start the FUSE event loop.
 int main(int argc, char *argv[])
 {
 	// struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
 	struct fusecache_config conf;
-
-	srand(time(NULL));
 
 	// We expect 3 arguments from our user:
 	// fusecache <source_dir> <cache_dir> <mount_point> [fuse_options]
