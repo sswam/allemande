@@ -172,8 +172,7 @@ rooms.*
 # references for dev
 /apps/pdev/refs
 /push-docs
-/fs/fuse-headers.h
-/fs/errors.txt
+/files/fuse-headers.h
 
 # heavy stuff
 /apps/pdev/awake

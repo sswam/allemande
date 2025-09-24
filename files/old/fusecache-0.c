@@ -1,5 +1,6 @@
-#!/usr/bin/env cxx
-// CFLAGS=-D_FILE_OFFSET_BITS=64
+#!/usr/bin/env ccx
+// CFLAGS: -Wall -D_FILE_OFFSET_BITS=64
+// PKGS: fuse3
 
 #define FUSE_USE_VERSION 31
 
@@ -12,6 +13,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 /*
  * This struct will hold the configuration for our filesystem.
@@ -23,11 +25,61 @@ struct fusecache_config {
 };
 
 // We'll implement these functions soon.
-static int fusecache_getattr(const char *path, struct stat *stbuf, struct fuse_file_info *fi);
-static int fusecache_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi, enum fuse_readdir_flags flags);
-static int fusecache_open(const char *path, struct fuse_file_info *fi);
-static int fusecache_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi);
-static int fusecache_release(const char *path, struct fuse_file_info *fi);
+static int fusecache_getattr(const char *path, struct stat *stbuf, struct fuse_file_info *fi)
+{
+    (void) fi; // Unused.
+
+    memset(stbuf, 0, sizeof(struct stat));
+
+    if (strcmp(path, "/") == 0) {
+        stbuf->st_mode = S_IFDIR | 0755;
+        stbuf->st_nlink = 2; // . and ..
+        return 0;
+    }
+
+    return -ENOENT;
+}
+
+static int fusecache_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi, enum fuse_readdir_flags flags)
+{
+    (void) offset; // Unused.
+    (void) fi;     // Unused.
+    (void) flags;  // Unused.
+
+    if (strcmp(path, "/") != 0) {
+        return -ENOENT;
+    }
+
+    filler(buf, ".", NULL, 0, 0);
+    filler(buf, "..", NULL, 0, 0);
+
+    return 0;
+}
+
+static int fusecache_open(const char *path, struct fuse_file_info *fi)
+{
+    // Our empty filesystem has no files to open.
+    return -ENOENT;
+}
+
+static int fusecache_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
+{
+    // Should not be called since open() will fail.
+    (void) path;
+    (void) buf;
+    (void) size;
+    (void) offset;
+    (void) fi;
+    return -EIO;
+}
+
+static int fusecache_release(const char *path, struct fuse_file_info *fi)
+{
+    // Should not be called since open() will fail.
+    (void) path;
+    (void) fi;
+    return 0;
+}
 
 static const struct fuse_operations fusecache_oper = {
 	.getattr = fusecache_getattr,
