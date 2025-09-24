@@ -1,0 +1,15 @@
+[opt 100]
+BREAK (rating safe:1.8), (menstruation, bleeding, blood on pussy:1.1)
+[set negative_prompt _prepend] (rating explicit, rating questionable, panties, pussy:2) [/set]
+[/opt]
+
+
+[opt 100]
+BREAK (rating safe:1.8), (menstruation, bleeding, blood on:1.1) pussy
+[set negative_prompt _prepend] (rating explicit, rating questionable, panties, pussy:2) [/set]
+[/opt]
+
+
+[opt 100]
+BREAK (rating safe:1.8), (menstruation, bleeding, blood:1.1) on pussy
+[/opt]

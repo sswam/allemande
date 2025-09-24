@@ -1,4 +1,3 @@
-[opt 100]
-BREAK menstruation, bleeding, blood on pussy, panties, blood on panties
-[set negative_prompt _prepend] (pussy:2) [/set]
+[opt 0]
+BREAK (rating safe:1.8), (menstruation, bleeding, blood:1.0) on pussy
 [/opt]
