@@ -1,3 +1,5 @@
-- visual: when updaing an agent, don't remove and re-create the visual files
-- conductor: -@agent for AIs?
-- dating: tinder-style game to meet different AI characters, agents and tools
+- visual - when updaing an agent, don't remove and re-create the visual files
+- conductor - -@agent for AIs?
+- dating - tinder-style game to meet different AI characters, agents and tools
+- cz - a new dialect of C that looks like Python (WIP, needs rework)
+- amps - a graph-based, relational programming language, long-time major project

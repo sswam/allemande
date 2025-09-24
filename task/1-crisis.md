@@ -1,3 +1,6 @@
-- access: fix nginx user access control
-- access: access.yml should override access.yml
-- stream-bug: long-time annoying bug with streaming and undo
+- fdupes - deduplicate media files on the server with hard links, to save space
+- access - fix nginx user access control
+- access - access.yml should override access.yml
+- stream-bug - long-time annoying bug with streaming and undo
+- reload - hot-reload python modules esp. conductor, rather than restart all the time
+- service - zero-downtime service reloads
