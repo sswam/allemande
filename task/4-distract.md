@@ -1,0 +1,3 @@
+- visual: when updaing an agent, don't remove and re-create the visual files
+- conductor: -@agent for AIs?
+- dating: tinder-style game to meet different AI characters, agents and tools

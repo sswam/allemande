@@ -10,15 +10,17 @@ use Getopt::Long qw(GetOptions);
 use Pod::Usage qw(pod2usage);
 use IO::File;
 
-our $VERSION = '1.0.1';
+our $VERSION = '1.0.2';
 
 my %opts = (
     help => 0,
+    append => 0,
 );
 
 GetOptions(
     'help|h' => \$opts{help},
     'test|n' => \$opts{test},
+    'append|a' => \$opts{append},
 ) or pod2usage(2);
 
 pod2usage(-exitval => 0, -output => \*STDOUT, -noperldoc => 1, -verbose => 2) if $opts{help};
@@ -47,10 +49,12 @@ do {
         die "Error: Target file '$dest' cannot be the input files.\n";
     }
 
-    if (-e "$dest~") {
-        system("move-rubbish", "$dest~") == 0 or die "Could not move $dest~ to rubbish\n";
+    unless ($opts{append}) {
+        if (-e "$dest~") {
+            system("move-rubbish", "$dest~") == 0 or die "Could not move $dest~ to rubbish\n";
+        }
+        rename $dest, "$dest~" if -e $dest;
     }
-    rename $dest, "$dest~" if -e $dest;
 
     my $i = -1;
     while (($i = index $dest, '/', $i + 1) != -1) {
@@ -76,7 +80,7 @@ do {
 } while (defined $line);
 
 foreach my $dest (@dests) {
-    if (-e "$dest~" && !system "cmp", "-s", $dest, "$dest~") {
+    if (!$opts{append} && -e "$dest~" && !system "cmp", "-s", $dest, "$dest~") {
         print "= $dest\n";
         rename "$dest~", $dest;
     }
@@ -88,7 +92,7 @@ foreach my $dest (@dests) {
                 rename "$dest~", $dest;
             }
         }
-        elsif (-e "$dest~") {
+        elsif (!$opts{append} && -e "$dest~") {
             system "chmod", "--reference=$dest~", $dest;
         }
     }
@@ -104,9 +108,10 @@ split-files - Split joined files into separate files
 
 split-files [options] all.txt
 
- Options:
-   --test, -n     Test mode, do not modify files
-   --help         Show this help message
+Options:
+--test, -n     Test mode, do not modify files
+--append, -a   Append to existing files instead of replacing them
+--help         Show this help message
 
 =head1 DESCRIPTION
 

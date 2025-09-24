@@ -1,0 +1,19 @@
+- conductor: invoking options RPG, default/poke = none/direct/anyone, n responses... @sparrow
+- edit: fork (simple), select, export
+- notify: web notifications, opens up many new apps
+- conductor: fix invoking agents by aliases
+- conductor: prefer participants, in case of a name clash, @name to invite?
+- forge: try using forge for image gen
+- img2img: design and implement
+- visual: add models Illustrious, Flux, Chroma
+- tsv: support TSV tables direct in chat
+- conductor: refactor conductor for code quality and maintenance
+- RAG: document RAG
+- memory: explore automatic memory systems, start simple
+- blocking: users can temp or perma-block other users, AIs too?
+- vision: llama 3.3 vision for Ally
+- vision: loras, collect info, auto fetch, browse; distributed mirror
+- voice: stt whisper, tts openai and free, pass through, caching
+- plan: graph-based planning tool
+- pay: encourage more users to becoming paying subscribers
+- tutorial: an AI tutorial to help with onboarding new users
