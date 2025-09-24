@@ -9,9 +9,9 @@ import urllib.parse
 from markdown_it import MarkdownIt
 from markdown_it.token import Token
 
-from ally import main, logs
+from ally import main, logs  # type: ignore[import-untyped]
 
-__version__ = "0.1.4"
+__version__ = "0.1.6"
 
 logger = logs.get_logger()
 
@@ -42,27 +42,31 @@ def _extract_image(token: Token) -> tuple[str, str, str]:
     return 'image', str(url), str(alt)
 
 
+def _traverse_tokens(tokens: list[Token]) -> Iterator[tuple[str, str, str]]:
+    """Recursively traverse tokens to find links and images."""
+    for token in tokens:
+        if token.type == 'inline' and token.children:
+            children = token.children
+            i = 0
+            while i < len(children):
+                child = children[i]
+                if child.type == 'link_open':
+                    _type, url, text, i = _extract_link(children, i)
+                    yield _type, url, text
+                elif child.type == 'image':
+                    _type, url, text = _extract_image(child)
+                    yield _type, url, text
+                i += 1
+        elif token.children:
+            # Only recurse if this isn't an inline token we already processed
+            yield from _traverse_tokens(token.children)
+
+
 def extract_links(text: str) -> Iterator[tuple[str, str, str]]:
     """Extract links and images from markdown text using markdown-it."""
     md = MarkdownIt()
     tokens = md.parse(text)
-
-    for token in tokens:
-        if not (token.type == 'inline' and token.children):
-            continue
-
-        children = token.children
-        i = 0
-        while i < len(children):
-            child = children[i]
-            if child.type == 'link_open':
-                _type, url, text, i = _extract_link(children, i)
-                yield _type, url, text
-            elif child.type == 'image':
-                _type, url, text = _extract_image(child)
-                yield _type, url, text
-
-            i += 1
+    yield from _traverse_tokens(tokens)
 
 
 def process_markdown(

@@ -29,8 +29,8 @@ def test_extract_links_basic(markdown, expected):
 def test_extract_links_multiple():
     """Test extracting multiple links and images."""
     text = """
-    Here's a [link](http://example.com) and an ![image](img.jpg).
-    Another [link with spaces](http://test.com/path) here.
+Here's a [link](http://example.com) and an ![image](img.jpg).
+Another [link with spaces](http://test.com/path) here.
     """
     expected = [
         ('image', 'img.jpg', 'image'),
@@ -85,9 +85,9 @@ def test_process_markdown_complex():
     """Test processing complex markdown with mixed content."""
     markdown = """
     # Header
-    [Link 1](http://example.com)
-    Some text with an ![inline image](img.jpg) and
-    another [link](http://test.com) here.
+[Link 1](http://example.com)
+Some text with an ![inline image](img.jpg) and
+another [link](http://test.com) here.
     """
     input_stream = io.StringIO(markdown)
     output_stream = io.StringIO()
