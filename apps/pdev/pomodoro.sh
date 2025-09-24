@@ -16,7 +16,7 @@ g=	# More grace (or start with rest / grace period)
 q=	# Quit any running pomodoro
 N=	# Take a break now, then continue with next pomodoro
 
-ban="Take a break!"	# Set the banner message
+ban="Take a break, step outside, stretch!"	# Set the banner message
 xd1="0.20 0.75"	# Set the 1st annoy screen brightness
 xd2="0.30 0.50"	# Set the 2nd annoy screen brightness
 xd0="0.00 0.1"	# Set the rest screen brightness
