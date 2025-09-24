@@ -3,6 +3,7 @@
 // TODO issue, relative paths in INPUTS won't work if executed from another directory
 
 #define _POSIX_C_SOURCE 200809L
+#define _DEFAULT_SOURCE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,10 +13,11 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <getopt.h>
+#include <limits.h>
 
 #define MAX_CMD 4096
 #define MAX_LINE 1024
-#define VERSION "1.0.4"
+#define VERSION "1.0.5"
 
 struct build_vars {
 	char cc[MAX_LINE];
@@ -142,16 +144,17 @@ char *prog_source_name(char *prog)
 
 int main(int argc, char *argv[])
 {
-	char *src, *basename;
+	char *src, *basename, *last_slash;
 	struct build_vars vars;
-	char out[MAX_LINE];
+	char out[PATH_MAX];
+	char real_src_path[PATH_MAX];
 	char *cmd_template = "tail -n+2 %s | %s %s %s%s -o %s -x c - -x none %s %s %s%s";
 	char *cmd_template_pkg_config = "tail -n+2 %s | %s %s %s `pkg-config --cflags %s` -o %s -x c - -x none %s %s %s `pkg-config --libs %s`";
 	char cmd[MAX_CMD];
 	time_t src_time, out_time;
 	int status;
 	char **new_argv;
-	int i;
+	int i, dir_len;
 	char *verbose;
 
 	// set verbose from env CCX_VERBOSE
@@ -171,21 +174,27 @@ int main(int argc, char *argv[])
 
 	src = argv[1];
 
-	// Create output filename
-	out[0] = '.';
-	out[1] = '\0';
-	basename = strrchr(src, '/');
-	if (basename) {
-		basename++;
-	} else {
-		basename = src;
+	if (realpath(src, real_src_path) == NULL) {
+		fprintf(stderr, "Error resolving path for: %s\n", src);
+		perror("realpath");
+		return 1;
 	}
+	src = real_src_path;
 
-	if (strlen(basename) + 5 >= MAX_LINE) { // ".elf" + null terminator
-		fprintf(stderr, "Source filename too long\n");
+	// Create output filename
+	last_slash = strrchr(src, '/');
+	// last_slash is guaranteed to be non-NULL because realpath returns an absolute path
+	basename = last_slash + 1;
+	dir_len = (int)(last_slash - src) + 1;
+
+	if ((size_t)dir_len + 1 + strlen(basename) + 4 >= sizeof(out)) {
+		fprintf(stderr, "Output path too long\n");
 		return 1;
 	}
 
+	strncpy(out, src, dir_len);
+	out[dir_len] = '\0';
+	strcat(out, ".");
 	strcat(out, basename);
 	strcat(out, ".elf");
 
@@ -237,7 +246,7 @@ int main(int argc, char *argv[])
 	}
 
 	new_argv[0] = prog_source_name(strdup(out));
-	
+
 	for (i = 2; i < argc; i++) {
 		new_argv[i-1] = argv[i];
 	}
@@ -247,6 +256,7 @@ int main(int argc, char *argv[])
 
 	// If execv returns, there was an error
 	perror("execv failed");
+	free(new_argv[0]);
 	free(new_argv);
 	return 1;
 }
