@@ -39,6 +39,12 @@ def test_extract_links_multiple():
     ]
     assert sorted(list(subject.extract_links(text))) == sorted(expected)
 
+def test_extract_links_with_formatting():
+    """Test link text extraction with inline formatting like code."""
+    markdown = "[a `code` and **bold** link](url)"
+    expected = [('link', 'url', 'a code and bold link')]
+    assert list(subject.extract_links(markdown)) == expected
+
 def test_process_markdown_empty():
     """Test processing empty markdown."""
     input_stream = io.StringIO("")
@@ -67,7 +73,13 @@ def test_process_markdown_empty_urls():
     output_stream = io.StringIO()
 
     subject.process_markdown(input_stream, output_stream)
-    assert output_stream.getvalue() == ""
+
+    # The script should output items even with empty URLs.
+    expected_lines = [
+        "link\t\tempty",
+        "image\t\talso empty",
+    ]
+    assert sorted(output_stream.getvalue().strip().split('\n')) == sorted(expected_lines)
 
 def test_process_markdown_complex():
     """Test processing complex markdown with mixed content."""

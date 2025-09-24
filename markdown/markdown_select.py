@@ -4,24 +4,65 @@
 Extract links and images from markdown files, output as TSV.
 """
 
-import re
 from typing import TextIO, Iterator
 import urllib.parse
+from markdown_it import MarkdownIt
+from markdown_it.token import Token
 
 from ally import main, logs
 
-__version__ = "0.1.1"
+__version__ = "0.1.4"
 
 logger = logs.get_logger()
 
 
-def extract_links(text: str) -> Iterator[tuple[str, str, str]]:
-    """Extract links and images from markdown text."""
+def _extract_link(children: list[Token], index: int) -> tuple[str, str, str, int]:
+    """Extracts URL and text from a link token sequence."""
+    link_open_token = children[index]
+    url = dict(link_open_token.attrs or {}).get('href', '')
 
-    for match in re.finditer(r'(!?)\[([^]]*)\]\(([^)]+)\)', text):
-        is_image = match.group(1) == '!'
-        type_ = 'image' if is_image else 'link'
-        yield (type_, match.group(3), match.group(2))
+    text_parts = []
+    i = index + 1
+    while i < len(children) and children[i].type != 'link_close':
+        token = children[i]
+        if token.content:
+            text_parts.append(token.content)
+        i += 1
+
+    text = "".join(text_parts)
+    # Return the new index pointing to the link_close token. The outer loop
+    # will increment it past the link.
+    return 'link', str(url), text, i
+
+
+def _extract_image(token: Token) -> tuple[str, str, str]:
+    """Extracts URL and alt text from an image token."""
+    url = dict(token.attrs or {}).get('src', '')
+    alt = token.content or ''
+    return 'image', str(url), str(alt)
+
+
+def extract_links(text: str) -> Iterator[tuple[str, str, str]]:
+    """Extract links and images from markdown text using markdown-it."""
+    md = MarkdownIt()
+    tokens = md.parse(text)
+
+    for token in tokens:
+        if not (token.type == 'inline' and token.children):
+            continue
+
+        children = token.children
+        i = 0
+        while i < len(children):
+            child = children[i]
+            if child.type == 'link_open':
+                _type, url, text, i = _extract_link(children, i)
+                yield _type, url, text
+            elif child.type == 'image':
+                _type, url, text = _extract_image(child)
+                yield _type, url, text
+
+            i += 1
 
 
 def process_markdown(
