@@ -390,13 +390,13 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
             out.flush()
             logger.info("flushed")
         else:
-            print(output(row, opts.output_format, opts), file=out)
-            print(output(row, opts.stderr_format, opts), file=sys.stderr)
+            print(output(row, opts.output_format, opts), file=out, end="")
+            print(output(row, opts.stderr_format, opts), file=sys.stderr, end="")
 
 
 def output(row, fmt, opts):
     if fmt == "none":
-        return ""
+        return "\n"
     fmts = fmt.split(",")
     output = []
     for fmt in fmts:
