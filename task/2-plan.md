@@ -20,3 +20,8 @@
 - ui - review top-row UI buttons, which are used often, which to put in submenus
 - agents - cycle simulation, conditional visuals and prompting, states
 - web - fix up my personal websites, improve online presence / reputation
+- nginx - https://joshua.hu/proxy-pass-nginx-decoding-normalizing-url-path-dangerous
+- rwkv - add as a model option, interesting to try: https://featherless.ai/models?query=rwkv
+- competitors - look into Silly Tavern, KoboldAI, and others, to compare and for ideas!
+- APIs - add featherless, huggingface APIs for LLMs
+- research - look at https://github.com/Shubhamsaboo/awesome-llm-apps https://www.reddit.com/r/AgentsOfAI/comments/1myx7da/this_github_repo_is_one_of_the_best_handson_ai/

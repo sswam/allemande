@@ -1,5 +1,6 @@
 - visual - when updaing an agent, don't remove and re-create the visual files
 - conductor - -@agent for AIs?
 - dating - tinder-style game to meet different AI characters, agents and tools
-- cz - a new dialect of C that looks like Python (WIP, needs rework)
-- amps - a graph-based, relational programming language, long-time major project
+- cz - a new dialect of C that looks like Python (WIP, needs rework): /cz room
+- amps - a graph-based, relational programming language, long-time major project: sam/amps room
+- img2img - app, recolour Berserk: https://www.reddit.com/r/Berserk/comments/51xhaq/comment/ndvmpbn/
