@@ -7,6 +7,7 @@ open-chat-on-message() {
 	local system= s=1      # match system messages only
 	local include=() i=()  # array of users to match
 	local exclude=() x=()  # array of users to exclude
+	local timeout= t=60    # notify-send timeout in seconds
 
 	eval "$(ally)"
 
@@ -16,12 +17,22 @@ open-chat-on-message() {
 		paths+=("$ALLEMANDE_ROOMS_SERVER/$room.bb")
 	done
 
-	awatch -r -x bb -p "${paths[@]}" -f meta,text |
-	while IFS=$'\t' read -r room type oldsize newsize text
+	# awatch -r -x bb -p "${paths[@]}" -f meta,text |
+	# while IFS=$'\t' read -r room type oldsize newsize text
+
+	(
+		. reaper
+		for room; do
+			path="$ALLEMANDE_ROOMS_SERVER/$room.bb"
+			v atail -p 1 -n 0 -f -w --restart "$path" |
+			while read line; do
+				printf "$room\t%s\n" "$line"
+			done &
+		done
+		wait
+	) |
+	while IFS=$'\t' read -r room text
 	do
-		if [ "$type" = "3" ]; then	# Deleted
-			continue
-		fi
 		user=${text%%:*}
 		if [ "$user" = "$text" ]; then
 			continue
@@ -50,8 +61,8 @@ open-chat-on-message() {
 			continue
 		fi
 
-		chrome --new-window "https://chat.allemande.ai/#$room"
-		notify-send -u critical "Ally Chat" "New message from $user in $room."
+		# chrome --new-window "https://chat.allemande.ai/#$room"
+		notify-send -t "$timeout" -u critical "Ally Chat" "New message from $user in $room."
 		now=$(date +%F\ %a\ %T)
 		printf "%s\t%s\t%s\t%s\n" "$now" "$room" "$user" "$text"
 	done
@@ -62,4 +73,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 fi
 
 # TODO redo in Python
-# version: 0.1.5
+# version: 0.1.6
