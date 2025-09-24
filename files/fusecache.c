@@ -16,8 +16,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include <libgen.h>
 #include <time.h>
+
 
 /*
  * This struct will hold the configuration for our filesystem.
@@ -28,64 +28,17 @@ struct fusecache_config {
 	char *cache_dir;
 };
 
-// Security helper: validates that a constructed path is within a base directory.
-// It returns a newly allocated, resolved path on success, or NULL on failure.
-// On failure, errno is set to EACCES for traversal, or other errors from realpath.
-static char *resolve_and_verify_path(const char *base_dir, const char *path)
+static char *construct_path(const char *base_dir, const char *path)
 {
 	char *full_path;
-	if (asprintf(&full_path, "%s%s", base_dir, path) == -1)
-		return NULL;	// ENOMEM
 
-	char *resolved = realpath(full_path, NULL);
-	if (resolved) {
-		// Path exists, verify it's a subpath of base_dir
-		size_t base_len = strlen(base_dir);
-
-		if (strncmp(resolved, base_dir, base_len) == 0 && (resolved[base_len] == '\0' || resolved[base_len] == '/')) {
-			free(full_path);
-			return resolved;  // OK
-		}
-		free(resolved);
-		free(full_path);
-		errno = EACCES;	// Traversal detected
+	// asprintf is a safe way to concatenate strings. It allocates the memory for you.
+	if (asprintf(&full_path, "%s%s", base_dir, path) == -1) {
+		// asprintf sets errno to ENOMEM on failure
 		return NULL;
 	}
 
-	if (errno != ENOENT) {
-		// Some other error like ELOOP, EACCES on a parent dir, etc.
-		free(full_path);
-		return NULL;
-	}
-	// Path doesn't exist. Check its parent.
-	char *full_path_copy = strdup(full_path);
-	if (!full_path_copy) {
-		free(full_path);
-		errno = ENOMEM;
-		return NULL;
-	}
-	char *parent = dirname(full_path_copy);
-	char *resolved_parent = realpath(parent, NULL);
-	free(full_path_copy);
-
-	if (!resolved_parent) {
-		// Parent doesn't exist or other error.
-		free(full_path);
-		return NULL;
-	}
-	// Verify parent is a subpath of base_dir
-	size_t base_len = strlen(base_dir);
-
-	if (strncmp(resolved_parent, base_dir, base_len) == 0 && (resolved_parent[base_len] == '\0' || resolved_parent[base_len] == '/')) {
-		free(resolved_parent);
-		// Parent is OK, so return the original, non-resolved path
-		return full_path;
-	}
-
-	free(resolved_parent);
-	free(full_path);
-	errno = EACCES;		// Parent is outside base dir, traversal detected
-	return NULL;
+	return full_path;
 }
 
 // Helper to get the full path in the source directory.
@@ -93,7 +46,7 @@ static char *resolve_and_verify_path(const char *base_dir, const char *path)
 static char *get_source_path(const char *path)
 {
 	struct fusecache_config *conf = (struct fusecache_config *) fuse_get_context()->private_data;
-	return resolve_and_verify_path(conf->source_dir, path);
+	return construct_path(conf->source_dir, path);
 }
 
 // Helper to get the full path in the cache directory.
@@ -101,7 +54,7 @@ static char *get_source_path(const char *path)
 static char *get_cache_path(const char *path)
 {
 	struct fusecache_config *conf = (struct fusecache_config *) fuse_get_context()->private_data;
-	return resolve_and_verify_path(conf->cache_dir, path);
+	return construct_path(conf->cache_dir, path);
 }
 
 // Filesystem operations
@@ -272,23 +225,32 @@ static int fusecache_open(const char *path, struct fuse_file_info *fi)
 	if (!cache_path)
 		return -ENOMEM;
 
+	int fd = -1;
+	int ret = 0; // Use a variable to track our return code
+
 	// Try to open the file, assuming it's already in the cache.
-	int fd = open(cache_path, O_RDONLY);
-	if (fd == -1 && errno == ENOENT) {
-		int res = handle_cache_miss(path, cache_path);
-		if (res < 0) {
-			free(cache_path);
-			return res;
+	fd = open(cache_path, O_RDONLY);
+	if (fd < 0 && errno == ENOENT) {
+		ret = handle_cache_miss(path, cache_path);
+		if (ret == 0) {
+			fd = open(cache_path, O_RDONLY);
+			if (fd < 0) {
+				// This should be rare, but handle it gracefully.
+				ret = -errno;
+			}
 		}
-		// Try again now that the file should be in the cache.
-		fd = open(cache_path, O_RDONLY);
+	} else if (fd < 0) {
+		// The first open failed for a reason other than a cache miss.
+		ret = -errno;
 	}
-	// If fd is negative at this point, something failed.
+
+	// Now, check our final state.
 	if (fd < 0) {
-		int err = -errno;
 		free(cache_path);
-		return err;
+		// 'ret' holds the precise error from the step that failed.
+		return ret;
 	}
+
 	// Success
 	free(cache_path);
 	fi->fh = fd;
@@ -324,44 +286,60 @@ static const struct fuse_operations fusecache_oper = {
 	.release = fusecache_release,
 };
 
+
 // Main function: parse arguments and start the FUSE event loop.
 int main(int argc, char *argv[])
 {
-	// struct fuse_args args = FUSE_ARGS_INIT(argc, argv);
 	struct fusecache_config conf;
 
 	srand(time(NULL));
 
-	// We expect 3 arguments from our user:
+	// We expect at least 4 arguments:
 	// fusecache <source_dir> <cache_dir> <mount_point> [fuse_options]
-	// The mount point and fuse options are handled by libfuse,
-	// so we just need to parse our custom ones.
-
 	if (argc < 4) {
-		fprintf(stderr, "Usage: %s <source_dir> <cache_dir> <mount_point>\n", argv[0]);
+		fprintf(stderr, "Usage: %s <source_dir> <cache_dir> <mount_point> [fuse_options...]\n", argv[0]);
 		return 1;
 	}
+
+	// 1. Parse your application-specific arguments first.
 	// Realpath is used to resolve relative paths and ".."
 	conf.source_dir = realpath(argv[1], NULL);
 	conf.cache_dir = realpath(argv[2], NULL);
 
 	if (!conf.source_dir || !conf.cache_dir) {
-		perror("realpath");
+		perror("realpath failed for source_dir or cache_dir");
 		free(conf.source_dir);
 		free(conf.cache_dir);
 		return 1;
 	}
-	// Adjust argc and argv for fuse_main
-	argv[1] = argv[3];	// mount point
-	for (int i = 2; i < argc - 2; i++) {
-		argv[i] = argv[i + 2];	// shift remaining args left by 2
+
+	// 2. Prepare a new set of arguments for libfuse.
+	// libfuse expects: <program_name> <mount_point> [options...]
+	// So, we will remove source_dir and cache_dir from the list.
+	int fuse_argc = argc - 2;
+	char **fuse_argv = malloc(fuse_argc * sizeof(char*));
+	if (fuse_argv == NULL) {
+		perror("malloc for fuse_argv failed");
+		free(conf.source_dir);
+		free(conf.cache_dir);
+		return 1;
 	}
-	argc = argc - 2;
 
-	// The last argument to fuse_main is user_data, which we can access
+	fuse_argv[0] = argv[0];   // The program name
+	fuse_argv[1] = argv[3];   // The mount point
+
+	// Copy the remaining FUSE options (if any)
+	// These start at the original argv[4]
+	for (int i = 4; i < argc; i++) {
+		fuse_argv[i - 2] = argv[i];
+	}
+
+	// 3. The last argument to fuse_main is user_data, which we can access
 	// in our callbacks via fuse_get_context()->private_data.
-	int ret = fuse_main(argc, argv, &fusecache_oper, &conf);
+	int ret = fuse_main(fuse_argc, fuse_argv, &fusecache_oper, &conf);
 
+	// 4. Clean up all allocated memory.
+	free(fuse_argv);
 	free(conf.source_dir);
 	free(conf.cache_dir);
 

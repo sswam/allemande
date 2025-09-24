@@ -389,6 +389,10 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
         if row == Watcher.flush:
             out.flush()
             logger.info("flushed")
+        elif opts.output_format == opts.stderr_format:
+            output_str = output(row, opts.output_format, opts)
+            print(output_str, file=out, end="")
+            print(output_str, file=sys.stderr, end="")
         else:
             print(output(row, opts.output_format, opts), file=out, end="")
             print(output(row, opts.stderr_format, opts), file=sys.stderr, end="")

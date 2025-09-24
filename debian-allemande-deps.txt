@@ -110,3 +110,6 @@ pwgen
 
 # non-free:
 # libmkl-dev
+
+fuse3
+libfuse3-dev

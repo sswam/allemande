@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
+# dir
 # Prunes files in the specified directories to free up space.
 
-# dir
-
 cache-prune() {
-	free= f=    # ensure FS free space in KiB
-	reduce= r=  # reduce by this amount in KiB
+	free= f=    # ensure FS free space, e.g. 5G
+	reduce= r=  # reduce by this amount, e.g. 50M
 	remove= R=  # actually remove files rather than printing them
 
 	eval "$(ally)"
