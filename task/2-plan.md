@@ -1,4 +1,5 @@
 - conductor - invoking options RPG, default/poke = none/direct/anyone, n responses... @sparrow
+- RAG - document RAG, PDF and doc to markdown, on chat files; datalab-to/marker?
 - edit - fork (simple), select, export
 - notify - web notifications, opens up many new apps
 - conductor - fix invoking agents by aliases
@@ -8,7 +9,6 @@
 - visual - add models Illustrious, Flux, Chroma
 - tsv - support TSV tables direct in chat
 - conductor - refactor conductor for code quality and maintenance
-- RAG - document RAG
 - memory - explore automatic memory systems, start simple
 - blocking - users can temp or perma-block other users, AIs too?
 - vision - llama 3.3 vision for Ally
@@ -19,3 +19,4 @@
 - tutorial - an AI tutorial to help with onboarding new users
 - ui - review top-row UI buttons, which are used often, which to put in submenus
 - agents - cycle simulation, conditional visuals and prompting, states
+- web - fix up my personal websites, improve online presence / reputation
