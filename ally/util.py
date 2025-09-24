@@ -76,3 +76,7 @@ def replace_variables(text, var_dict, preserve_code_blocks=True):
             result.append(line)
 
     return '\n'.join(result)
+
+
+# def clamp(x, a, b):
+# 	return max(a, min(x, b))

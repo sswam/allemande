@@ -144,9 +144,8 @@ class Agent:
         data = {
             "base": [self.name],
         }
-        for key in ["name", "fullname", "aliases", "age", "visual"]:
-            if key in reference.data:
-                data[key] = deepcopy(reference.data[key])
+        for key in ["name", "fullname", "aliases", "age", "visual", "period", "period_length", "pregnant"]:
+            data[key] = deepcopy(reference.data.get(key))
 
         # hack to keep prompts from reference agent
         # can't fully evaluate because will bring in the ShowMI overlay too
@@ -160,6 +159,7 @@ class Agent:
                     data[key] = value
 
         agent = Agent(data=data, agents=self.agents)
+        logger.info("apply_identity: agent: %r", agent)
         return agent
 
     def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None, with_over: bool=True):
@@ -259,7 +259,11 @@ class Agent:
         period_desc = f"{name}, {period_day_desc}. " + line.split("\t")[1]
         logger.info("Period description: %r", period_desc)
         is_menstrating = period_index <= 4
-        period_visual = "(menstruation, bleeding, blood:0.8)" if is_menstrating else ""
+        period_visual = ""
+        if is_menstrating:
+            period_weight = [0.9, 1, 0.95, 0.85, 0.8][period_index]
+            period_percent = 100  # 50?
+            period_visual = f"[use period {period_percent} {period_weight}]"
         logger.info("Period visual: %r", period_visual)
         return period, period_desc, period_day, period_length, period_visual
 
@@ -297,7 +301,7 @@ class Agent:
         logger.info("Pregnancy info: days_pregnant=%r total_days=%r", days_pregnant, total_days)
         logger.info("Pregnancy description: %r", pregnant_desc)
         pregnant_frac = f"{days_pregnant / total_days:.2f}"
-        pregnant_visual = f"(pregnant:{pregnant_frac})"
+        pregnant_visual = f"BREAK (pregnant:{pregnant_frac})"
         logger.info("Pregnancy visual: %r", pregnant_visual)
         return pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual
 
@@ -560,22 +564,6 @@ class Agents:
             logger.info("Loading agent: %r", file_path)
             self.load(Path(file_path), private=private)
 
-    def items(self) -> list[tuple[str, Agent]]:
-        """Get the agents as a list of tuples."""
-        pairs = list(self.agents.items())
-        if self.parent:
-            for name, agent in self.parent.items():
-                if name not in self.agents:
-                    pairs.append((name, agent))
-        return pairs
-
-    def names(self) -> list[str]:
-        """Get the names of the agents."""
-        keys = set(self.agents.keys())
-        if self.parent:
-            keys.update(self.parent.names())
-        return list(keys)
-
     def get(self, name: str) -> Agent | None:
         """Get an agent by name."""
         if name in self.agents:
@@ -591,3 +579,18 @@ class Agents:
     def __contains__(self, name: str) -> bool:
         """Check if an agent is in the collection."""
         return self.get(name) is not None
+
+    def names(self) -> list[str]:
+        """Get the names of the agents."""
+        names = set(self.agents.keys())
+        if self.parent:
+            names.update(self.parent.names())
+        return [name for name in names if name in self]
+
+    def items(self) -> list[tuple[str, Agent]]:
+        """Get the agents as a list of tuples."""
+        return [(name, self.get(name)) for name in self.names()]
+
+    def values(self) -> list[Agent]:
+        """Get the agents as a list."""
+        return [self.get(name) for name in self.names()]

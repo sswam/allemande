@@ -32,7 +32,7 @@ import tab  # type: ignore
 import chat
 import bb_lib
 import ally_markdown
-from ally_room import Room
+from ally_room import Room, Access
 import fetch
 import llm  # type: ignore
 from ally.cache import cache  # type: ignore
@@ -176,6 +176,17 @@ def load_local_agents(room, agents=None):
     return agents
 
 
+# def filter_agents_with_access(room, agents):
+#     """Filter agents with access to this room."""
+#     agents = Agents(agents.services, parent=agents)
+#     for agent in agents.values():
+#         # TODO should check all aliases; re-think how aliases work
+#         if room.check_access(agent.name).value & Access.READ_WRITE.value != Access.READ_WRITE.value:
+#             logger.info("Removing agent %s without access to room %s", agent.name, room.path)
+#             agents.set(agent.name, None)
+#     return agents
+
+
 async def process_file(file, args, history_start=0, skip=None, agents=None, poke=False) -> int:
     """Process a file, return True if appended new content."""
     logger.info("Processing %s", file)
@@ -205,6 +216,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     # Load local agents
     agents = load_local_agents(room, agents)
+    # agents = filter_agents_with_access(room, agents)  # Not working?
 
     history_messages = list(bb_lib.lines_to_messages(history))
 
