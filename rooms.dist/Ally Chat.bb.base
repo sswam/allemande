@@ -27,7 +27,49 @@ This is the main public chat room. Please keep this space family friendly, PG-13
 
 Here's [a playlist to learn entirely too much about Ally Chat](https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb)!
 
-![#3530759774 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), rating safe, beautiful masterpiece, three people, 2girls, 1boy, sitting on a barrel of rum, side-by-side, underground, dark cave, stalactite, stalagmite, crystal, horde, smiling, happy, (treasure, gems, gem, gold coins:1.5) ADDCOMM <lora:boring:-0.2> ADDBASE (Ally, (adult 20 years old:1.6), 1girl, brown eyes, Asian / French, skinny, wavy hair, long hair, parted hair, blonde hair, light smile, optimistic, pink and blue striped top, yellow scarf, plaid skirt, white socks, sneakers, :1.3) ADDCOL (Callam, (adult 35 years old:1.6), (1boy, male:1.3), piercing blue eyes, English pirate, handsome, dark tan skin, messy hair, long hair, black hair, friendly, leather breeches, tattered boots, pirate-style vest with black and gold trimmings, shirt, silver earring, black tricorn hat, :1.3) ADDCOL (Barbarella, (adult 20 years old:1.6), 1girl, blue eyes, Greek, skinny, long hair, curly hair, black hair, happy, smile, excited, curious, blue floral sundress with light pink flowers, silver necklace, brown sandals, :1.3) NEGATIVE score_6, score_5, score_4, (rating explicit, solo, bad anatomy, extra limbs, sad :2) [S4]](rating-safe-beautiful-masterpiece-three-people-2girls-1boy-sitting-on-_3530759774.jpg) <script class="hide">image_text(["❤️", "Thanks to our generous Patreon supporters!"], {"size":0.7});</script> <!-- @Loni -->
+## Featured Rooms
+
+- [Comedy](/comedy) - listen to a favourite comedian
+- [Specialists](/special) - for therapy, coaching, creativity, relaxation...
+- [Music](/music)
+- [Artists Workshop](/art/workshop)
+- [Foodies Kitchen](/food)
+- [Explorers Club](/explorers)
+- [Book Lovers Nook](/books)
+- [Science](/science)
+- [Mathematics](/math)
+- [Programming](/programming)
+- [Philosophy](/philosophy)
+- [History](/history)
+- [Artificial Intelligence](/ai)
+- [Realistic AI Art](/art/realistic)
+- [Nostalgic AI Art](/art/nostalgic)
+
+## Work in Progress!
+
+- [Gallery](gallery) - collected images, add yours too
+- [Dating](dating) - meet some characters, many more coming
+- [Tools](tools) - learn to use tools
+- [Characters](characters) - over 1000 characters, agents, and tools
+
+<script class=hide>
+shuffle("ul", "li");
+$id('h1').classList.add(fort(["rainbow", "fire", "fame"]));
+</script>
+
+<hr>
+
+## News:
+
+- Dynamic scenes, that change according to the seasons, the time of day, and for special events! Check out [Serenity Beach](./Serenity Beach).
+- Faster access to archived images with our new caching filesystem, fusecache!
+- Added basic regional prompting support to Illu, so she can draw people together without resorting to a stronger model.
+
+<hr>
+
+<a target=_blank href="https://www.patreon.com/allychat" markdown>![#3530759774 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), rating safe, beautiful masterpiece, three people, 2girls, 1boy, sitting on a barrel of rum, side-by-side, underground, dark cave, stalactite, stalagmite, crystal, horde, smiling, happy, (treasure, gems, gem, gold coins:1.5) ADDCOMM <lora:boring:-0.2> ADDBASE (Ally, (adult 20 years old:1.6), 1girl, brown eyes, Asian / French, skinny, wavy hair, long hair, parted hair, blonde hair, light smile, optimistic, pink and blue striped top, yellow scarf, plaid skirt, white socks, sneakers, :1.3) ADDCOL (Callam, (adult 35 years old:1.6), (1boy, male:1.3), piercing blue eyes, English pirate, handsome, dark tan skin, messy hair, long hair, black hair, friendly, leather breeches, tattered boots, pirate-style vest with black and gold trimmings, shirt, silver earring, black tricorn hat, :1.3) ADDCOL (Barbarella, (adult 20 years old:1.6), 1girl, blue eyes, Greek, skinny, long hair, curly hair, black hair, happy, smile, excited, curious, blue floral sundress with light pink flowers, silver necklace, brown sandals, :1.3) NEGATIVE score_6, score_5, score_4, (rating explicit, solo, bad anatomy, extra limbs, sad :2) [S4]](rating-safe-beautiful-masterpiece-three-people-2girls-1boy-sitting-on-_3530759774.jpg) <script class="hide">image_text(["❤️", "Thanks to our generous Patreon supporters!"], {"size":0.7});</script></a> <!-- say hi, @Loni -->
+
+<hr>
 
 Loni:	Hello there! Welcome to Ally Chat. If you have any questions about how things work, I'm here to help.
 
