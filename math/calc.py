@@ -2,6 +2,7 @@
 
 import sys
 from math import *
+from random import *
 
 args = sys.argv[1:]
 if args:
