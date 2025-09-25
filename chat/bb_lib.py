@@ -88,7 +88,7 @@ def lines_to_messages(lines: Iterator[str | bytes]) -> Iterator[dict[str, Any]]:
             continue
 
         if not message and user == USER_CONTINUED:
-            logger.warning("Continued line with no previous incomplete message: %s", line)
+            logger.debug("Continued line with no previous incomplete message: %s", line)
             user = USER_NARRATIVE
 
         if message and user == USER_NARRATIVE and "user" not in message:  # pylint: disable=unsupported-membership-test
