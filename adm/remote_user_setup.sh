@@ -4,6 +4,8 @@ set -e -u -o pipefail
 
 . /etc/remote_user.conf
 
+groupadd -f -g "$REMOTE_GID" "$REMOTE_GROUP"
+
 # disable pipewire, etc. for remote users
 
 mkdir -p /etc/systemd/user/{pipewire.service.d,wireplumber.service.d,mpris-proxy.service.d,pipewire-pulse.socket.d,pipewire.socket.d}

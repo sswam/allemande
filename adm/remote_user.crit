@@ -15,8 +15,8 @@ Key security features:
 8. Protected system files
 
 Potential vulnerabilities/improvements:
-1. No input validation for user-provided parameters
-2. Hard-coded DNS servers (8.8.8.8, 8.8.4.4)
+1. No input validation for user-provided parameters  [fixed]
+2. Hard-coded DNS servers (8.8.8.8, 8.8.4.4)  [fixed]
 3. No logging mechanism for auditing
 4. No explicit error handling in many places
 5. Potential race conditions in file operations

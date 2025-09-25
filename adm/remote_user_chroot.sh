@@ -1,7 +1,5 @@
 #!/bin/bash
 
-. get-root
-
 set -e -u -o pipefail
 
 . /etc/remote_user.conf
@@ -14,6 +12,9 @@ mkdir -p "$chroot"/{usr,dev/pts,proc,sys,tmp,home,etc/ssl,run,/var/lib,/var/log,
 # copy device nodes
 cd /dev
 for device in null zero urandom tty console nvidia*; do
+	if [ ! -e "$device" ]; then
+		continue
+	fi
 	cp -a -T "$device" "$chroot/dev/$device"
 done
 
@@ -23,10 +24,11 @@ cd "$chroot"
 chmod a+rwxt tmp var/tmp
 
 # resolv.conf
-cat << EOF >> etc/resolv.conf
-nameserver 8.8.8.8
-nameserver 8.8.4.4
-EOF
+(
+	for ns in $NAMESERVERS; do
+		echo "nameserver $ns"
+	done
+) >> etc/resolv.conf
 
 # hosts
 cat << EOF >> etc/hosts
