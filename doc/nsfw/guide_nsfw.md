@@ -115,7 +115,7 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 
 ### Base Models (NSFW capable)
 - **Ellie**: (Llama 3.1 8B): a small, human-like uncensored and private model
-- **Ellen**: (Llama 3.3 70B): a stronger, human-like model
+- **Ellyn**: (Llama 3.3 70B): a stronger, human-like model
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
@@ -165,7 +165,7 @@ Please do not use languages models other than those listed here for NSFW content
 | Creator  | Model              | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                            |
 |----------|--------------------|--------|---------|------------|-----------------|------------------|--------------------------------------------------------------------------------------------------------|
 | Meta     | Llama 3.1 8B       | Ellie* | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
-| Meta     | Llama 3.3 70B      | Ellen  | 128K    | 2048       | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                |
+| Meta     | Llama 3.3 70B      | Ellyn  | 128K    | 2048       | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                |
 | Google   | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
 | Google   | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                      |
 | Google   | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |

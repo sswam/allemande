@@ -424,7 +424,7 @@ IMPORTANT:
     "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
     "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
     "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
-    "Ellen" [label=<<b>Ellen ...</b><br/><font point-size="10">Llama 3.3 70B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Strong base model</font>>]
+    "Ellyn" [label=<<b>Ellyn ...</b><br/><font point-size="10">Llama 3.3 70B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Strong base model</font>>]
     "Allie" [label=<<b>Allie ...</b><br/><font point-size="10">Llama 3.3 70B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Creative, strong</font>>]
     "Skout" [label=<<b>Skout</b><br/><font point-size="10">Llama 4 Scout</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Fast new open model</font>>]
     "Mavi" [label=<<b>Mavi</b><br/><font point-size="10">Llama 4 Maverick</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Powerful new open model</font>>]
@@ -433,7 +433,7 @@ IMPORTANT:
     "Meta" -> "Ally"
     "Meta" -> "Barbie"
     "Meta" -> "Callam"
-    "Meta" -> "Ellen"
+    "Meta" -> "Ellyn"
     "Meta" -> "Allie"
     "Meta" -> "Skout"
     "Meta" -> "Mavi"
@@ -653,7 +653,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 
 ### Base Models
 - **Ellie**: (Llama 3.1 8B): a small, human-like uncensored and private model
-- **Ellen**: (Llama 3.3 70B): a stronger, human-like model
+- **Ellyn**: (Llama 3.3 70B): a stronger, human-like model
 - **Skout** (Meta Llama 4 Scout): A fast new open model from Meta
 - **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta
 - **Claude** (Claude 3.5 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding

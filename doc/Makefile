@@ -22,8 +22,8 @@ extra.md: ../agents/cartoon ../agents/celeb ../agents/disney ../agents/fiction .
 summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o -print | sed 's/ /\\ /g') $(shell find summary/ -mindepth 1 | sed 's/ /\\ /g')
 	webchat-agent-summaries-update -n
 	./summaries_compile.sh > summaries.md
-	rm -f ../rooms/nsfw/characters.html
-	(sleep 0.5; cp summaries.md ../rooms/characters.bb ; sudo cp -a $@ /home/allemande-nobody/characters.bb)
+	rm -f ../rooms/characters.html ../rooms/characters.bb
+	(sleep 0.5; cp summaries.md ../rooms/characters.bb ; sudo cp -a $@ /home/nobodally/characters.bb)
 
 ../rooms/agents/Yenta.yml: Yenta.0.yml summaries.md
 	chmod +w $@ || true
@@ -66,7 +66,7 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	(sleep 0.5; lecho '| <lora:name:weight> | required trigger words | info |' '|--|--|--|' ;\
 		cat $^ | grep '^    | <lora:' | grep -v '<lora:name:weight>' | sed 's/ *//') >$@ ;\
 		chmod a-w $@ ;\
-		sudo cp -a $@ /home/allemande-nobody/lora.bb
+		sudo cp -a $@ /home/nobodally/lora.bb
 
 agent_colours.tsv: summaries.md
 	./update_colours.sh
