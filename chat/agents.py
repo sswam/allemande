@@ -159,7 +159,7 @@ class Agent:
                     data[key] = value
 
         agent = Agent(data=data, agents=self.agents)
-        logger.info("apply_identity: agent: %r", agent)
+        logger.debug("apply_identity: agent: %r", agent)
         return agent
 
     def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None, with_over: bool=True):

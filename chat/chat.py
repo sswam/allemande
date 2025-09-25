@@ -442,8 +442,9 @@ def clean_prompt(context, name, delim):
 
     agent_name_esc = regex.escape(name)
 
-    # Remove one initial tab from each line in the context
-    context = [regex.sub(r"(?m)^\t", "", line) for line in context]
+    # Remove one initial tab from each line in the context, if all lines start with a tab
+    if all(line.startswith('\t') for line in context):
+        context = [regex.sub(r"(?m)^\t", "", line) for line in context]
 
     # Join all lines in context with the specified delimiter
     text = delim.join(context)
@@ -474,11 +475,11 @@ def clean_prompt(context, name, delim):
 
     logger.debug("clean_prompt: 4: %s", text1)
 
-    #     # Remove the last pair of triple backticks and keep only the content between them
-    #     text = re.sub(r".*```(.*?)```.*", r"\1", text, flags=re.DOTALL, count=1)
+    # Remove the last pair of triple backticks and keep only the content between them
+    text1 = re.sub(r".*```(?:[a-z]*\n?)*(.*?)```.*", r"\1", text1, flags=re.DOTALL, count=1)
 
-    #     # Try single backticks too
-    #     text = re.sub(r".*`(.*?)`.*", r"\1", text, flags=re.DOTALL, count=1)
+    # Try single backticks too
+    text1 = re.sub(r".*`(.*?)`.*", r"\1", text1, flags=re.DOTALL, count=1)
 
     text = text1
 
@@ -666,7 +667,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
 def fix_response_layout(response, _args, agent):
     """Fix the layout and indentation of the response."""
     logger.debug("response before fix_layout: %s", response)
-    lines = response.strip().split("\n")
+    lines = re.split(r"\n|\r\n|\r", response)
     out = []
     in_table = False
     in_code = False
@@ -712,13 +713,19 @@ def fix_response_layout(response, _args, agent):
         line = line.rstrip()
 
         # markdown tables must have a blank line before them ...
-        if not in_table and ("---" in line or re.search(r"\|.*\|", line)):
+        if not in_table and not in_code and ("---" in line or re.search(r"\|.*\|", line)):
             if i > 0 and lines[i - 1].strip():
                 out.append("")
             in_table = True
 
         if in_table and not line.strip():
             in_table = False
+
+        # detect if in_code
+        if not in_table and not in_code and (re.search(r"```", line) or re.search(r"<script\b", line)):
+            in_code = True
+        elif in_code and (re.search(r"```", line) or re.search(r"</script>", line)):
+            in_code = False
 
 #         # detect if in_code
 #         if not in_code and (re.search(r"```", line) or re.search(r"<script\b", line)):

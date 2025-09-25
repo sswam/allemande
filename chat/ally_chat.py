@@ -370,6 +370,8 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 use_aggregates=False,
             )
 
+            bots2 = [b for b in bots2 if b is not None]
+
             # HACK: if the agent tried to foward to an agent that is not allowed here, replace it
             if not bots2 and chat.has_at_mention(response):
                 bots2 = [forward_if_disallowed]
@@ -621,9 +623,9 @@ def apply_filters_out(agent: Agent, response: str) -> str:
             logger.warning("Agent %r: Unknown filter_out: %r", agent.name, filter_name)
             continue
         try:
-            logger.info("response before filter %r:\n%s", filter_name, response)
+            logger.debug("response before filter %r:\n%s", filter_name, response)
             response = filter_fn(response, *filter_args)
-            logger.info("response after filter %r:\n%s", filter_name, response)
+            logger.debug("response after filter %r:\n%s", filter_name, response)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Agent %r: Error in filter_out %r: %s", agent.name, filter_name, str(e))
     return response
@@ -703,9 +705,9 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     cmd_str = ". ~/.profile ; "
     cmd_str += " ".join(map(shlex.quote, agent["command"])) + arguments
 
-    command = ["sshc", "--", "allemande-nobody@localhost", "bash", "-c", cmd_str]
+    command = ["sshc", "--", "nobodally@localhost", "bash", "-c", cmd_str]
 
-    logger.info("safe_shell command: %r query: %r", command, query)
+    logger.debug("safe_shell command: %r query: %r", command, query)
 
     # echo the query to the subprocess
     output, errors, status = await run_subprocess(command, query)
@@ -716,16 +718,14 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
 
     # format the response
     response = ""
-    if errors or status or not eol:
+    if errors or status:
         info = []
         if status:
             info.append(f"status: {status}")
-        if not eol:
-            info.append("no EOL")
         if info:
             response += ", ".join(info) + "\n\n"
         if errors:
-            response += "## errors:\n```\n" + errors + "\n```\n\n"
+            response += "## messages:\n```\n" + errors + "\n```\n\n"
         response += "## output:\n"
 
     if not agent.get("markdown"):
@@ -734,6 +734,7 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
         response += output
 
     response2 = f"{name}:\t{response}"
+    logger.debug("response2:\n%r", response2)
     response3 = chat.fix_response_layout(response2, args, agent)
     logger.debug("response3:\n%s", response3)
     return response3

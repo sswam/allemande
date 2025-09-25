@@ -99,7 +99,10 @@ class Room:
         else:
             user_tc = user
 
-        #         options = self.get_options(user)
+        options = self.get_options(user)
+
+        if options.get("hide_user"):
+            user_tc = None
 
         #         # timestamps option
         #         if options.get("timestamps"):
@@ -135,7 +138,8 @@ class Room:
             # TODO in Python, archive half, keep half. Media?
             # subprocess.run(["room-rotate", self.name], check=True)
         elif op == "clear":
-            if not access & Access.ADMIN.value == Access.ADMIN.value:
+            # if not access & Access.ADMIN.value == Access.ADMIN.value:
+            if not access & Access.MODERATE.value == Access.MODERATE.value:
                 raise PermissionError("You are not allowed to clear this room.")
             if backup:
                 backup_file(str(self.path))
@@ -548,10 +552,17 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     if user in MODERATORS and not "/" in pathname and (is_file or is_symlink):
         return Access.MODERATE_READ_WRITE, "moderator_top"
 
+    # If allowed writers are specified, other users have read-only access
+    user_access = Access.READ if "write" in access_conf else Access.READ_WRITE
+
+    # Writers have read-write access
+    if user in access_conf.get("write", []):
+        user_access = Access.READ_WRITE
+
     # Allowed users have access
     logger.debug("access: %s", access_conf)
     if user in access_conf.get("allow", []):
-        return Access.READ_WRITE, "allow"
+        return user_access, "allow"
 
     # Agents have access if allowed
     if access_conf.get("allow_agents") and user in agent_names:
