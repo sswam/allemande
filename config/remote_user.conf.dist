@@ -2,7 +2,8 @@
 REMOTE_UID_MIN=60000
 REMOTE_UID_MAX=69999
 CHROOT_BASE="/srv/chroot/remote"
-REMOTE_GROUP="remote"
+REMOTE_GID=60000
+REMOTE_GROUP="chatuser"
 
 # Network settings
 ALLOW_PORTS_MIN=60000
@@ -12,3 +13,4 @@ ROUTER_IPv6="fd00::1"
 IF_LOCAL="lo"
 IF_ETHERNET="enp6s0"
 TABLE_NAME="remote_user_firewall"
+NAMESERVERS="8.8.8.8 8.8.4.4"
