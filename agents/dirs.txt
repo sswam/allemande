@@ -14,7 +14,7 @@ celeb
 comedy
 visual
 personal
-human
-nsfw
-extra
 game
+poet
+religion
+nsfw

@@ -1,4 +1,4 @@
-# A software tool to search characters, agents and tools
+# A software tool to search characters, agents, and tools
 type: safe_shell
 command:
 - charz

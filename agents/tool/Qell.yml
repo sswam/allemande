@@ -3,4 +3,4 @@ type: safe_shell
 command:
 - sh
 - -c
-- t=`mktemp`; cat >$t; qjs --std --bignum --qjscalc $t; rm $t
+- t=`mktemp`; cat >$t; qjs --std $t; rm $t
