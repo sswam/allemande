@@ -8,11 +8,14 @@ T=60	# warn when timeout is running low
 f=	# Run in the foreground
 q=	# Quit any running waywo
 e=	# Edit the waywo file
+N=	# cleanup
 
 . opts
 
 if [ -n "$e" ]; then
 	note -e -t=waywo
+elif [ -n "$N" ]; then
+	note -N -t=waywo
 elif [ -z "$f" ]; then
 	daemonize "$0" -f "${OPTS[@]}" "$@" &
 elif [ -n "$q" ]; then

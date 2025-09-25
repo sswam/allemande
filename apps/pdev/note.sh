@@ -34,6 +34,7 @@ A=	# don't add a note
 p=	# initial text / placeholder
 L=	# initial text from last line of file
 H=	# don't add hour markers
+N=	# neaten up the file
 timeout=  # time limit
 warn_timeout=10	# warn when timeout is running low
 opt_1=	# only read first line, no details
@@ -159,7 +160,6 @@ if [ -n "$d" ]; then
 	exit
 fi
 
-
 # AI summary for the day?
 if [ -n "$s" ]; then
 	mkdir -p "$D/summary"
@@ -194,9 +194,19 @@ find_or_create_note_files() {
 		note_file=$D/$t.md
 		confirm create "$note_file" || exit
 	fi
+
+	note_file=$(realpath "$note_file")
 }
 
 find_or_create_note_files
+
+
+# Clean up the file?
+if [ -n "$N" ]; then
+	< "$note_file" ted 's/(^\*.*\n\n)+(^\*.*\n\n)/$2/gm' | ted 's/^## .*\n\n\*\d{4}-\d\d-\d\d.*\n\n(?=^## )//gm' > "$note_file".tmp.$$
+	mv "$note_file".tmp.$$ "$note_file"
+	exit
+fi
 
 
 # Show last n headings?
