@@ -470,16 +470,14 @@ def clean_prompt(context, name, delim):
     if text1 == text:
         text1 = regex.sub(r".*\b" + agent_name_esc + r"\b[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
 
-        # Remove anything after a blank line in this case
-        text1 = re.sub(r"\n\n.*", r"", text1, flags=re.DOTALL)
-
     logger.debug("clean_prompt: 4: %s", text1)
 
-    # Remove the last pair of triple backticks and keep only the content between them
-    text1 = re.sub(r".*```(?:[a-z]*\n?)*(.*?)```.*", r"\1", text1, flags=re.DOTALL, count=1)
-
-    # Try single backticks too
-    text1 = re.sub(r".*`(.*?)`.*", r"\1", text1, flags=re.DOTALL, count=1)
+    original = text1
+    text1 = re.sub(r".*```(?:\w*\n)?(.*?)```.*", r"\1", text1, flags=re.DOTALL, count=1)
+    if text1 == original:  # If no change, try single backticks
+        text1 = re.sub(r".*`(.*?)`.*", r"\1", text1, flags=re.DOTALL, count=1)
+    if text1 == original:  # If no change, remove anything after a blank line
+        text1 = re.sub(r"\n\n.*", r"", text1, flags=re.DOTALL)
 
     text = text1
 
