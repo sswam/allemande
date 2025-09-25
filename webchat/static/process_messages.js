@@ -158,7 +158,7 @@ export async function processMessage(newMessage) {
     let prevMessage = newMessage.previousElementSibling;
     while (prevMessage && prevMessage.classList.contains('hidden'))
       prevMessage = prevMessage.previousElementSibling;
-    if (prevMessage && newUser == prevMessage.getAttribute("user"))
+    if (prevMessage && newUser == prevMessage.getAttribute("user") && label)
       label.classList.add("hidden");
   }
 

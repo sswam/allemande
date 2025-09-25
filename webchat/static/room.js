@@ -1339,7 +1339,7 @@ function set_dir_sort(dir_sort) {
       $a.removeAttribute('tabindex');
     }
   } else {
-    const sorted = items.sort((a, b) => b.dataset.mtime - a.dataset.mtime);
+    const sorted = items.sort((a, b) => a.dataset.typeSort - b.dataset.typeSort || b.dataset.mtime - a.dataset.mtime);
     let i = 1;
     for (const $item of sorted) {
       const $a = $item.querySelector("a");

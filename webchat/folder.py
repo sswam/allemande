@@ -20,6 +20,7 @@ import ally_room
 from ally_room import Access
 from util import sanitize_pathname, safe_join
 from ally_service import add_mtime_to_resource_pathnames
+from settings import *
 
 logger = logging.getLogger(__name__)
 
@@ -92,8 +93,9 @@ MIME_TYPE_ICONS = {
     # Special icons
     "text/x-allychat": "💬",  # a speech bubble
     "text/x-allychat-mission": "📜",  # a scroll
-    "text/x-allychat-base": "🗋",  # a blank page
+    "text/x-allychat-base": "📜",  # a scroll also, was: "🗋",  # a blank page
     "text/yaml": "⚙️",  # a gear
+    "text/x-allychat-agent": "🧑",
 }
 
 SPECIAL_TYPES = {
@@ -139,6 +141,15 @@ def get_item_info(path: Path) -> tuple[str, str, bool, bool, int]:
 #         except:
 #             # Fallback to mimetypes library if magic fails
 #             mime_type, _ = mimetypes.guess_type(str(path))
+
+    # if .yml file in an agents folder, use x-allychat-agent
+    if ext == "yml":
+        current = path
+        while current != PATH_ROOMS and current != current.parent:  # Stop at PATH_ROOMS or root
+            if current.parent.name == "agents":
+                mime_type = "text/x-allychat-agent"
+                break
+            current = current.parent
 
     if not mime_type:
         mime_type = "application/octet-stream"
