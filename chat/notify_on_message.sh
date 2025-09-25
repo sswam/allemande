@@ -24,16 +24,18 @@ open-chat-on-message() {
 		. reaper
 		for room; do
 			path="$ALLEMANDE_ROOMS_SERVER/$room.bb"
-			v atail -p 1 -n 0 -f -w --restart "$path" |
-			while read line; do
+			# v atail -p 1 -n 0 -f -w --restart "$path" |
+			while true; do v tail -n 0 -f "$path"; done |
+			while IFS= read -r line; do
 				printf "$room\t%s\n" "$line"
 			done &
 		done
 		wait
-	) |
+	) | grep --line-buffered -v $'^[^\t]*\t\t' |  # skip intended secondary lines
 	while IFS=$'\t' read -r room text
 	do
 		user=${text%%:*}
+
 		if [ "$user" = "$text" ]; then
 			continue
 		fi
@@ -62,7 +64,7 @@ open-chat-on-message() {
 		fi
 
 		# chrome --new-window "https://chat.allemande.ai/#$room"
-		notify-send -t "$timeout" -u critical "Ally Chat" "New message from $user in $room."
+		v notify-send -t "$[timeout * 1000]" -u critical "Ally Chat" "New message from $user in $room."
 		now=$(date +%F\ %a\ %T)
 		printf "%s\t%s\t%s\t%s\n" "$now" "$room" "$user" "$text"
 	done
