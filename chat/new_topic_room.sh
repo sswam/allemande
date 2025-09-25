@@ -23,7 +23,7 @@ for room; do
 	type=${base%.bb.base}
 	type=${type//_/ }
 	prompt="Please write a base template for a $type room: ${room}, based on the example, in the exact same structure and format, only one output, no boilerplate or commentary.
-The h1 span class can be fire, fame, or rainbow; different visual effects for the room title. Keep any scripts, or HTML comments to invoke a default agent, if present. Only change the title, title style, and intro text."
+The h1 span class can be fire, fame, or rainbow; different visual effects for the room title. Keep any scripts, or HTML comments to invoke the default agent, if present. Do not change the invoked agent. Only change the title, title style, and intro text."
 
 	echo "$base -> $room"
 	(
