@@ -128,9 +128,9 @@ int main(int argc, char **argv)
 	if (ssh_prog == NULL && tty) {
 		ssh_prog = "ssh -q -t";
 #ifdef __MINGW32_MAJOR_VERSION
-		sshc_shell_init = "\". /etc/profile ; . ~/.bash_profile ; \"";
+		sshc_shell_init = "\". /etc/profile ; [ ! -e ~/.profile ] || . ~/.profile ; \"";
 #else
-		sshc_shell_init = "\"if [ -n \\\"\\$BASH\\\" ]; then . /etc/profile ; . ~/.bash_profile ; fi ; \"";
+		sshc_shell_init = "\"if [ -n \\\"\\$BASH\\\" ]; then . /etc/profile ; [ ! -e ~/.profile ] || . ~/.profile ; fi ; \"";
 #endif
 	} else if (ssh_prog == NULL) {
 		ssh_prog = "ssh -q";
