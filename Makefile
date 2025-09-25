@@ -267,4 +267,8 @@ api_doc: llm/llm.api
 %.api: %.py
 	func-py -a -I "$<" > "$@"
 
+notify:
+	./notify.sh
+
+
 .PHONY: all default $(JOBS) %.xt canon api_doc subdirs $(SUBDIRS) deps deb-deps venv

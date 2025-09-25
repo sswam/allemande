@@ -158,6 +158,8 @@ rooms.*
 # private files
 /apps/story/family
 /apps/story/stories
+/sam
+/notify.sh
 
 # test files
 /text/files.md

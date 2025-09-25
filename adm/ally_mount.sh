@@ -74,7 +74,7 @@ safe-mount() {
 	safe-umount "$mount_point"
 
 	# Attempt mount
-	sshfs -o cache=no \
+	v sshfs -o cache=no \
 		-o allow_root \
 		-o allow_other \
 		-o idmap=none \
