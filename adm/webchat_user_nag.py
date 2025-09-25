@@ -25,7 +25,7 @@ def process_records(
     Read records from input, process them, and write to output.
     """
     recs = records.read_records(input, use_dot)
-    nag_dir_path = "../../../../adm/nag/feedback-ally"
+    nag_dir_path = "../../../../adm/nag/active"
     users_dir = os.environ["ALLEMANDE_USERS"]
     for rec in recs:
         support = rec.get("support")
