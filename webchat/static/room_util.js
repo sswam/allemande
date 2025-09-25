@@ -45,7 +45,7 @@ function hexColorWithOpacity(color, opacity) {
     return color + alpha.toString(16).padStart(2, '0');
 }
 
-function previous(selector, lookBack = 0, ref = document.currentScript) {
+function previous(selector, lookBack = 0, ref = document.currentScript||script) {
 	// Get all elements matching the selector
 	const elements = Array.from(document.querySelectorAll(selector));
 
@@ -85,7 +85,7 @@ async function waitForImageLoad(img) {
 function image_text(texts, options = {}) {
   const img = options.el || previous('img');
   img.classList.add('layout');
-  const current_script = document.currentScript;
+  const current_script = document.currentScript||script;
   return image_text_async(img, texts, options, current_script);
 }
 
@@ -123,8 +123,8 @@ function image_text_create_text(content, font, sizePercent) {
   return content.length == 1 ? container.firstChild : container;
 }
 
-async function image_text_async(img, texts = [], options = {}, ref = null) {
-  await waitForMessage(ref);
+async function image_text_async(img, texts = [], options = {}, script = null) {
+  await waitForMessage(script);
 
   if (!img)
     throw new Error("image_text: img is null or undefined");
@@ -474,12 +474,12 @@ function matrix(chars) {
 // bouncing messages ---------------------------------------------------------
 
 function bounceMessage(selector = '.m1') {
-  const current_script = document.currentScript;
+  const current_script = document.currentScript||script;
   bounceMessage_async(selector, current_script)
 }
 
-async function bounceMessage_async(selector, ref) {
-  await waitForMessage(ref);
+async function bounceMessage_async(selector, script) {
+  await waitForMessage(script);
   const msg = document.querySelector(selector);
   console.log(msg);
 
@@ -558,7 +558,7 @@ function echo_to(script, ...args) {
 }
 
 function echo_n(...args) {
-  return echo_n_to(document.currentScript, ...args);
+  return echo_n_to(document.currentScript||script, ...args);
 }
 
 function echo(...args) {

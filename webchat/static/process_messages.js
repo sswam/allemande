@@ -217,13 +217,14 @@ export async function processMessage(newMessage) {
 
   // Set title attribute for images
   // add a <div class="alt"> element for each image
+  // add bg-url for each image
   const images = newMessage.querySelectorAll("img");
   for (const img of images) {
     if (!img.title && img.alt) {
       // console.log("setting title", img.alt);
       img.title = img.alt;
     }
-    const wrapper = img.closest(".image, .embed");
+    let wrapper = img.closest(".image, .embed");
     if (!(wrapper && wrapper.querySelector(".alt"))) {
       const parent = img.parentNode;
       const next = img.nextSibling;
@@ -236,11 +237,15 @@ export async function processMessage(newMessage) {
       wrapDiv.appendChild(img);
       wrapDiv.appendChild(altDiv);
       parent.insertBefore(wrapDiv, next);
+      wrapper = wrapDiv;
     }
     // remove NEGATIVE prompt from alt (for filter images function)
     // and make lower case
     if (img.alt)
       img.alt = img.alt.replace(/\s*\bNEGATIVE\b.*?(?=\s----|$)/g, '').toLowerCase();
+    // set bg-url attribute for CSS background image
+    if (img.src && wrapper && !wrapper.getAttribute("bg-url"))
+      wrapper.style.setProperty("--bg-url", `url(${img.src})`);
   }
 
   if (newUser) {
@@ -508,6 +513,7 @@ function run_script_js(script) {
   let code = script.textContent;
   try {
     // eslint-disable-next-line no-new-func
+    window.script = script;
     const func = new Function("script", "echo", code);
     const echo = (...args) => echo_to(script, ...args);
     func(script, echo);

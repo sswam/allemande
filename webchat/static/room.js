@@ -1097,7 +1097,8 @@ async function click(ev) {
     return embed_click(ev, ev.target);
   }
   // check for img tag, and view or browse to the src
-  if (ev.target.tagName == "IMG") {
+  if (ev.target.tagName === "IMG" && !ev.target.closest('a[href]')) {
+    //  || ev.shiftKey || ev.ctrlKey || ev.metaKey || ev.altKey || ev.button == 1)) {
     ev.preventDefault();
     ev.stopPropagation();
     return image_click(ev.target, ev);

@@ -122,14 +122,8 @@ table:not(.u-legend), table:not(.u-legend) :is(th, td) {
 	padding: 0.25rem;
 }
 
-image .alt, embed .alt {
-	width: 100%;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	position: relative;
-	background: var(--background);
-}
+
+/* details search --------------------------------------------------------- */
 
 details.search {
 	display: block;
@@ -144,9 +138,45 @@ p:has(> div.image),
 p:has(> div.embed) {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: flex-end;
+	/* align-items: flex-end; */
+	align-items: stretch;
 	gap: 1rem;
 }
+
+div.image > img,
+div.embed > img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;  /* or contain */
+	object-position: center;
+	position: relative;
+	overflow: hidden;
+	transition: transform 0.3s ease; /* Add transition for a smooth effect */
+}
+
+body.images div.image:before,
+body.images div.embed:before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: var(--bg-url);
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	filter: blur(10px);
+	z-index: -1;
+}
+
+div.image:hover > img,
+div.embed:hover > img {
+	transform: scale(1.1); /* Scale the image on hover for extra effect */
+}
+
+/* ------------------------------------------------------------------------ */
+
 
 body:not(.images) div:has(> div.image),
 body:not(.images) div:has(> div.embed) {
@@ -160,10 +190,6 @@ div.image, div.embed {
 	overflow: visible;
 	max-width: calc(max(min(var(--image-width), var(--image-height)), 2.75rem));
 	position: relative;
-}
-
-body.alt div:is(.image, .embed) {
-	margin-bottom: 1rem;
 }
 
 /*
@@ -205,6 +231,22 @@ body:not(.images) .embed {
 	display: block;
 }
 
+.image:hover,
+.embed:hover {
+	overflow: visible;
+}
+
+
+/* image alt display ------------------------------------------------------ */
+
+image .alt, embed .alt {
+	width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	background: var(--background);
+}
+
 .image .alt,
 .embed .alt {
 	width: 100%;
@@ -226,9 +268,8 @@ body.images :is(.image, .embed) .alt {
 	transform: translateY(100%);
 }
 
-.image:hover,
-.embed:hover {
-	overflow: visible;
+body.alt div:is(.image, .embed) {
+	margin-bottom: 1rem;
 }
 
 body.images .image:hover .alt,
@@ -237,6 +278,7 @@ body.images .embed:hover .alt {
 	z-index: 100;
 	overflow: visible;
 }
+
 
 
 @font-face {
