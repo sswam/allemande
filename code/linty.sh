@@ -74,6 +74,13 @@ lint_txt() { :; }
 lint_md() { :; }
 lint_html() { :; }
 
+lint_yml() {
+	local prog="$1"
+	local fail=0
+	run yaml-check "$prog" || fail=1
+	return $fail
+}
+
 lint_sh() {
 	local prog="$1"
 	local fail=0
