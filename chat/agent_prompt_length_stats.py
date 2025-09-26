@@ -25,11 +25,8 @@ def get_agent_dirs() -> list[Path]:
 
 
 def get_agent_files(dirs: list[Path]) -> list[Path]:
-    """Find all .yml files in the given directories."""
-    yaml_files = []
-    for directory in dirs:
-        yaml_files.extend(directory.glob("*.yml"))
-    return yaml_files
+    """Find all .yml files in the given directories and their subdirectories."""
+    return [f for d in dirs for f in d.rglob("*.yml")]
 
 
 def get_prompts(yaml_file: Path) -> list[str]:
@@ -51,7 +48,7 @@ def get_prompts(yaml_file: Path) -> list[str]:
 
 def count_stats(text: str) -> tuple[int, int, int]:
     """Count lines, words, and characters in text."""
-    lines = text.splitlines()
+    lines = [line for line in text.splitlines() if line.strip()]
     words = text.split()
     chars = len(text)
     return len(lines), len(words), chars
@@ -67,7 +64,7 @@ def process_files(istream=sys.stdin, ostream=sys.stdout) -> None:
         if prompts:
             combined_text = "\n".join(prompts)
             lines, words, chars = count_stats(combined_text)
-            ostream.write(f"{lines:8} {words:8} {chars:8}\n")
+            print(lines, words, chars, file, sep="\t", file=ostream)
 
 
 if __name__ == "__main__":
