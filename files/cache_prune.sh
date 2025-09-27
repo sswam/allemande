@@ -9,6 +9,8 @@ cache-prune() {
 
 	eval "$(ally)"
 
+	set +o pipefail
+
 	if [ "$#" != 1 ]; then
 		die "Usage: cache-prune [options] [dir]"
 	fi
@@ -51,15 +53,14 @@ prune() {
 	local dir=$1
 	local reduce=$2
 	local remove=$3
-	find "$dir" -type f | sorttime -t=a -r -s | kut 2 | xa du | sed 's/^ *//; s/ /\t/' |
+	find "$dir" -type f | sorttime -t=a -r -s | kut 2 | xa du 2>/dev/null | sed 's/^ *//;' |
 	(
 		total=0
 		while IFS=$'\t' read -r size file && [ $total -lt $reduce ]; do
 			if [ "$remove" ]; then
-				rm -v -f "$file"
-			else
-				echo "$size	$file"
+				rm -f "$file"
 			fi
+			echo "$size	$file"
 			total=$(( total + size ))
 		done
 	)
