@@ -118,6 +118,8 @@ system_bottom: |-
     | <lora:SDXL_MSPaint_Portrait:1> | MSPaint portrait, MSPaint drawing | abysmal quality MS Paint-style "art"! |
     | <lora:SDXL_FILM_PHOTOGRAPHY_STYLE_V1:0.8> | film photography style, light grain / medium grain / heavy grain | for SDXL |
     | <lora:Lightsaber_ComicStyle_v01:1> | | for SDXL, It works well with tags like:  "holding a [color] lightsaber", "holding a [color] lightsaber with both hands", "holding two [color] lightsabers", "comic book style", "dynamic pose", "clean line art", "bold ink lines", "cel-shaded", etc. You can also add pose tags like “in a defensive stance” or “attacking”, etc. |
+    | <lora:LogoRedmondV2-Logo-LogoRedmAF:1> | logo, logoredmaf | for SDXL, for drawing logos |
+    | <lora:logomkrdsxl:1> | logomkrdsxl, vector, logo | for SDXL, for drawing logos |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - appearance
