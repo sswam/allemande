@@ -34,9 +34,15 @@ def histogram(
     ostream: TextIO,
     bins: int = 10,
     log: bool = False,
-    range: tuple[float, float] | None = None,
+    log_values: bool = False,
+    min: float | None = None,
+    max: float | None = None,
 ) -> None:
     """Create a histogram from numbers in input stream."""
+    range = (min, max) if min is not None and max is not None else None
+
+    if log_values:
+        log = True
     numbers = read_numbers(istream)
     if not numbers:
         raise ValueError("No valid numbers found in input")
@@ -52,7 +58,7 @@ def histogram(
 
     # Output as TSV
     for center, count in zip(bin_centers, hist):
-        if log:
+        if log and not log_values:
             center = 10 ** center
         ostream.write(f"{center}\t{count}\n")
 
@@ -60,14 +66,11 @@ def histogram(
 def setup_args(arg):
     """Set up the command-line arguments."""
     arg("-b", "--bins", type=int, default=10, help="number of bins")
-    arg("--log", action="store_true", help="use log10 scale")
+    arg("-l", "--log", action="store_true", help="use log10 scale")
+    arg("-L", "--log-values", action="store_true", help="display log10 of x values")
     arg("--min", type=float, help="minimum value for binning")
     arg("--max", type=float, help="maximum value for binning")
 
 
 if __name__ == "__main__":
-    def wrapper(istream, ostream, bins, log, min, max):  # pylint: disable=redefined-builtin
-        range_tuple = (min, max) if min is not None and max is not None else None
-        histogram(istream, ostream, bins, log, range_tuple)
-
-    main.go(wrapper, setup_args)
+    main.go(histogram, setup_args)
