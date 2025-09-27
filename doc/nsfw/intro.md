@@ -18,8 +18,6 @@ Free users have access to all models and features, but there are some good perks
 
 If you'd like to support us, you can become a patron: ([SFW](https://www.patreon.com/allychat) or [NSFW](https://www.patreon.com/allychatx)).
 
-At the moment, we're **turning off image gen in private rooms** for new free users for [various reasons](/whypublic). Don't be shy, come out and try making pictures in public! You can make your own rooms in public too. After we get to know you a bit, we'll enable private image gen.
-
 ## Getting Started
 
 Read this intro carefully!
