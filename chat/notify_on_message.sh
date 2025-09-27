@@ -25,7 +25,7 @@ open-chat-on-message() {
 		for room; do
 			path="$ALLEMANDE_ROOMS_SERVER/$room.bb"
 			# v atail -p 1 -n 0 -f -w --restart "$path" |
-			while true; do v tail -n 0 -f "$path"; done |
+			while true; do v tail -n 0 -F "$path"; done |
 			while IFS= read -r line; do
 				printf "$room\t%s\n" "$line"
 			done &
