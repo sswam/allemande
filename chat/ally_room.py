@@ -631,16 +631,22 @@ def load_config(dir_path: Path, filename: str, check_hidden=True) -> dict[str, A
         if check_hidden:
             paths_to_check.append(hidden_config_path)
 
+        logger.debug("load_config: checking: %r", paths_to_check)
+
         for path in paths_to_check:
             if not path.exists():
                 continue
             config = cache.load(path)
+            logger.debug("  loaded config: %s: %r", path, config)
+            if config is None:
+                continue
             if config.get("reset"):
+                logger.debug("  reset config_all")
                 config_all = config
             else:
                 # We only merge at the top level
                 config_all.update(config)
-            break
+                logger.debug("  updated config_all: %r", config_all)
     return config_all
 
 
