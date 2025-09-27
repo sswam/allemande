@@ -1,6 +1,5 @@
 base: Pixi
 over: []
-welcome: true
 type: google
 model: gemini-2.0-flash
 # type: google

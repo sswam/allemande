@@ -1,5 +1,4 @@
 base: SmallAI
-welcome: true
 # model: meta-llama/llama-3.1-8b-instruct:free
 # type: openrouter
 system_bottom: |-
