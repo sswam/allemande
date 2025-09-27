@@ -160,6 +160,7 @@ a:hover {
 
 * {
 	scrollbar-color: var(--scrollbar) var(--scrollbar-background);
+	scrollbar-width: thin;
 }
 
 ::-webkit-scrollbar {
@@ -175,7 +176,6 @@ a:hover {
 }
 
 ::-webkit-scrollbar-corner {
-	/* TODO what even is this? */
 	background: var(--background);
 }
 
@@ -240,7 +240,7 @@ input::placeholder, textarea::placeholder {
 	--primary: var(--link);
 
 	--scrollbar-background: var(--background);
-	--scrollbar: var(--frame);
+	--scrollbar: var(--link);
 
 	--ui-size-min: 2rem;
 	--input-width-min: 8rem;
