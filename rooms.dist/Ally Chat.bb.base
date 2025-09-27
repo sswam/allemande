@@ -1,27 +1,7 @@
 <style class="hide">
 h1 { font-size: 1.5em; }
 </style>
-# Hello, world
-
-<script class="hide">
-welcomes = [
-    "Welcome to Ally Chat - Where Ideas Come Alive",
-    "Ally Chat: Your Creative Space for Human-AI Connection",
-    "Join Us in Making AI Chat More Human",
-    "Explore, Create, and Chat with Friendly AI",
-    "Step Into a World of AI-Enhanced Conversation",
-    "Where Every Chat is an Adventure",
-    "Ally Chat: Real Connections, Limitless Possibilities",
-    "Chat Smarter, Create Together",
-    "Your Gateway to Playful AI Interaction",
-    "Welcome to the Future of Social AI",
-];
-
-prevH1 = previous("h1")
-if (prevH1 && prevH1.tagName === 'H1') {
-    prevH1.textContent = welcomes[Math.floor(Math.random() * welcomes.length)];
-}
-</script>
+# <span id="h1">Hello, world</span>
 
 This is the main public chat room. Please keep this space family friendly, PG-13 to M rated is okay.
 
@@ -44,11 +24,6 @@ Here's [a playlist to learn entirely too much about Ally Chat](https://www.youtu
 - [Artificial Intelligence](/ai)
 - [Realistic AI Art](/art/realistic)
 - [Nostalgic AI Art](/art/nostalgic)
-- [Politics](/politics)
-- [Sprituality and Religion](/psyche)
-- [Society](/society)
-- [Technology](/tech)
-- [Gaming](/gaming)
 - [Writing](/writing)
 - [Poetry](/poetry)
 - [LGBTQ+ Support](/lgbtq)
@@ -61,20 +36,35 @@ Here's [a playlist to learn entirely too much about Ally Chat](https://www.youtu
 - [Dating](dating) - meet some characters, many more coming
 - [Tools](tools) - learn to use tools
 - [Characters](characters) - over 1000 characters, agents, and tools
-<!--- [Topic](./topic) - more rooms by topic
+- Powerful creative and reasoning agents, including a strong agent to create such.
+- [Topic](./topic) - more rooms by topic
 - [Games](./games) - play games with friends, and AI
-- [Events](./events) - join in on special events-->
+- [Events](./events) - join in on special events
 
 <script class=hide>
+welcomes = [
+    "Welcome to Ally Chat - Where Ideas Come Alive",
+    "Ally Chat: Your Creative Space for Human-AI Connection",
+    "Join Us in Making AI Chat More Human",
+    "Explore, Create, and Chat with Friendly AI",
+    "Step Into a World of AI-Enhanced Conversation",
+    "Where Every Chat is an Adventure",
+    "Ally Chat: Real Connections, Limitless Possibilities",
+    "Chat Smarter, Create Together",
+    "Your Gateway to Playful AI Interaction",
+    "Welcome to the Future of Social AI",
+];
+
+$id("h1").textContent = welcomes[Math.floor(Math.random() * welcomes.length)];
+$id("h1").classList.add(fort(["rainbow", "fire", "fame"]));
 shuffle("ul", "li");
-$id('h1').classList.add(fort(["rainbow", "fire", "fame"]));
 </script>
 
 <hr>
 
 ## News:
 
-- Dynamic scenes, that change according to the seasons, the time of day, and for special events! Check out [Serenity Beach](./Serenity Beach).
+- Dynamic scenes, that change according to the seasons, the time of day, and for special events!
 - Faster access to archived images with our new caching filesystem, fusecache!
 - Added basic regional prompting support to Illu, so she can draw people together without resorting to a stronger model.
 
