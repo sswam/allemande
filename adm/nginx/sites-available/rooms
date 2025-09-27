@@ -1,6 +1,27 @@
 map $request_uri $error_502 {
-	~^/nsfw/    /nsfw/502.html;
-	default    /502.html;
+	~^/nsfw/  /nsfw/502.html;
+	default   /502.html;
+}
+
+map $request_uri $first_path_segment {
+	~^/([^/]+)/  $1;
+	default      "";
+}
+
+# check $first_path_segment in nsfw sanctuary scene
+map $first_path_segment $allow {
+	""         1;
+	agents     1;
+	scene      1;
+	nsfw       1;
+	art	   1;
+	clothes    1;
+	macros     1;
+	devlog     1;
+	sanctuary  1;
+	old        1;
+	cast       1;
+	default    0;
 }
 
 server {
@@ -46,11 +67,28 @@ server {
 		deny all;
 	}
 
+	location /_auth {
+		internal;
+		auth_jwt_enabled on;
+		auth_jwt_extract_request_claims sub;
+
+		if ($allow = 1) {
+			return 204;
+		}
+		if ($http_jwt_sub = $first_path_segment) {
+			return 204;
+		}
+		return 403;
+	}
+
 	location / {
 		if ($is_banned) {
 			return 302 https://$ALLEMANDE_DOMAIN/ban.html;
 		}
 		auth_jwt_enabled on;
+		auth_jwt_extract_request_claims sub;
+
+		auth_request /_auth;
 
 		if ($args ~* stream=1) {
 			rewrite ^ /stream$uri? last;
