@@ -400,7 +400,7 @@ async def awatch_main(paths, opts: WatcherOptions, out=sys.stdout):
 
 def output(row, fmt, opts):
     if fmt == "none":
-        return "\n"
+        return ""
     fmts = fmt.split(",")
     output = []
     for fmt in fmts:
