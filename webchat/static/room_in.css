@@ -15,6 +15,16 @@ body.simple div.messages {
 	margin-bottom: 0.25rem;
 }
 
+.message > .content {
+	margin: 0 0 0 var(--label-indent);
+/*	width: fit-content;
+	height: fit-content; */
+}
+
+.narrative > .content {
+	margin: 0;
+}
+
 /* moved labels to avoid problems with break-after: avoid */
 .message > .content > .label:first-child,
 .message > .content > p:first-of-type > .label:first-child {
@@ -26,14 +36,25 @@ body.simple div.messages {
 	user-select: none;
 }
 
+/* not sure about this */
+body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
+	content: "<script/>";
+	display: block;
+	font-weight: normal;
+	margin-left: var(--label-gap);
+}
+
 .label-hidden {
+	display: none !important;
+	/*
 	width: 0;
 	visibility: hidden;
+	*/
 }
 
 body:not(.compact) .message:not(.narrative) > .content > .label:first-child,
 body:not(.compact) .message:not(.narrative) > .content > p:first-of-type > .label:first-child {
-	margin-left: calc(0 - var(--label-gap));
+	margin-left: calc(-1 * var(--label-indent));
 }
 
 /* an :is(...) list does not work for this case, IDK why */
@@ -63,13 +84,64 @@ div.messages::after {
 	width: fit-content;
 	min-height: 1rem;
 	scroll-margin-top: 0.75rem;
-	margin: 0.375rem;
 	/* width: 100%; */
+	margin: calc(var(--pad)/2);
 }
+
+.message.turn {
+	margin-top: var(--turn);
+}
+
+.message.me + .message.turn {
+	margin-top: calc(var(--turn) + var(--pad)/2);
+}
+
+body.simple .message.me:not(.turn) {
+	margin-top: calc(-1*var(--turn) - 0.375 * var(--pad));
+	padding-bottom: calc(var(--turn) + 0.375 * var(--pad));
+}
+
 
 body.simple .message {
 	max-width: min(40em, 100%);
 }
+
+/* --- a nasty nasty hack to try to align image batches!!! don't even comment please! --- */
+
+.message:has(div.image) +
+.message:not(.turn) {
+	padding-top: 2rem;
+}
+
+/*
+.message:not(:has(+ .message.turn)):has(div.image) {
+	margin-bottom: -1.5rem;
+}
+*/
+
+.message:has(div.image) {
+	margin-bottom: -1.5rem;
+}
+
+.message:has(div.image):not(.message.narrative.turn)
++ .message.turn:not(.me)::before {
+	float: none;
+	content: " ";
+	clear: both;
+	display: block;
+	width: 100%;
+	padding-top: 3rem;
+}
+
+.message:has(div.image):not(.message.narrative.turn):has(+ .message.turn.me)::after {
+	float: none;
+	content: " ";
+	clear: both;
+	display: block;
+	width: 100%;
+	padding-top: 3rem;
+}
+
 
 /*
 .message:has(pre, code, blockquote, table, div.image, div.embed, video, audio, iframe) {
@@ -77,11 +149,22 @@ body.simple .message {
 }
 */
 
-.message.turn, .message:not(:has(p > *)), .message:has(pre, blockquote, table) {
+.message.turn::before {
+	content: " ";
+	clear: both;
+	display: block;
+}
+.message:not(:has(p > *)), .message:has(pre, blockquote, table), .message:has(.content > :is(span, em, strong)), .message:has(.content > p > :is(span, em, strong)) {
 	float: none !important;
 	clear: both;
 }
-.message.me.turn, .message.me:not(:has(p > *)), .message.me:has(pre, blockquote, table) {
+.message.narrative.turn:not(:has(+ .message.narrative:not(.turn))) {
+	float: none !important;
+	clear: both;
+	margin: auto;
+}
+
+body.simple .message.me.turn, body.simple .message.me:not(:has(p > *)), body.simple .message.me:has(pre, blockquote, table), body.simple .message.me:has(.content > :is(span, em, strong)), body.simple .message.me:has(.content > p > :is(span, em, strong)) {
 	margin-left: auto;
 }
 
@@ -101,15 +184,6 @@ body.simple .message {
 }
 .content details br, .content code br {
 	display: block;
-}
-.message > .content {
-	margin: 0 0 0 var(--label-gap);
-/*	width: fit-content;
-	height: fit-content; */
-}
-
-.narrative > .content {
-	margin: 0;
 }
 
 #allemande_status {
@@ -239,7 +313,7 @@ body.simple div.message {
 	min-height: 1rem;
 }
 
-body.simple div.message {
+body.simple div.message.me {
 	padding-top: var(--pad);
 	padding-bottom: var(--pad);
 	padding-left: calc(var(--pad)*2);
@@ -254,15 +328,34 @@ body.simple .message > .content {
 body.simple div.message.me {
 	/* margin-left: auto; */
 	float: right;
-/*	background: var(--focus); */
-	background: color-mix(in srgb, var(--primary), transparent 70%); 
+	background: var(--focus);
+/*	background: color-mix(in srgb, var(--primary), transparent 70%); */
 }
 body.simple .message.me div.label {
 	display: none !important;
 }
 
+/*
+body.simple .message.narrative {
+	margin-left: 0;
+}
+*/
+
+/*
 body.simple .message.narrative {
 	margin: auto;
+}
+*/
+
+/*
+body.simple .message.narrative :is(div.image, div.embed),
+body.simple .message.narrative a > :is(div.image, div.embed) {
+	margin: auto;
+}
+*/
+
+body.simple .message.narrative p:has(div.image, div.embed) {
+	text-align: center;
 }
 
 div.message > .content > :is(p, pre):first-child {
@@ -275,6 +368,17 @@ div.message > .content > div.label:first-child + :is(p, pre) {
 
 div.message > .content > :is(p, pre):last-child {
     margin-bottom: 0;
+}
+
+/* TODO maybe remove stray empty p and pre on the server or in processing? */
+div.message > .content > :is(p, pre):has(+ :is(p, pre):empty:last-child) {
+    margin-bottom: 0;
+}
+div.message > .content > :is(p, pre):first-child:empty {
+	display: none;
+}
+div.message > .content > :is(p, pre):last-child:empty {
+	display: none;
 }
 
 /* ------------------------------------------------------------------------ */
@@ -779,13 +883,6 @@ body.landscape .resizer {
 
 body.script_source .content:has(script, style):not(.hide, [src]) {
 	position: relative;
-}
-
-body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
-	content: "<script/>";
-	display: block;
-	font-weight: normal;
-	margin-left: var(--label-gap);
 }
 
 /*

@@ -52,6 +52,7 @@ const font_size_default = 4;
 let simple = true;
 
 const VIEW_OPTIONS_DEFAULT = {
+//  beta_test: "simple",
   ids: 0,
   images: 1,
   alt: 0,
@@ -403,7 +404,8 @@ function new_chat_message(message) {
         last_users.shift();
     }
   }
-  lastMessageId = message.lastMessageId;
+  // FIXME some issue where it's null sometimes...
+  lastMessageId = message.lastMessageId || lastMessageId;
   $body.classList.toggle("empty", lastMessageId === null);
 }
 
@@ -3321,6 +3323,28 @@ function hide_placeholder() {
   $content.placeholder = "";
 }
 
+// beta_test: put users' settings into a certain state for testing --------------------
+
+function beta_test() {
+  const beta_test = view_options.beta_test == "simple";
+  // look for beta_test_done in local storage
+  const beta_test_done = localStorage.getItem('beta_test_done');
+
+  if (beta_test == beta_test_done) {
+    // pass
+  } else if (beta_test == "simple" && view_options.advanced >= 0 && user == "sam") { // for testing the beta test function!
+    view_options.source = 0;
+    view_standard();
+    // delete the key
+  } else {
+    // unknown beta test
+    return;
+  }
+
+  view_options.beta_test_done = beta_test;
+  delete view_options.beta_test;
+}
+
 
 // main ----------------------------------------------------------------------
 
@@ -3340,6 +3364,7 @@ export async function init() {
   setup_help();
   load_filter();
   setup_view_options();
+  beta_test();
   await setup_icons();
   setup_embed_vs_main_ui();
 
