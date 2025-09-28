@@ -46,7 +46,12 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 <base target="_top">
 <title>{{ room }}</title>
 </head>
-<body id="messages" class="messages">
+<body id="messages" class="messages simple">
+<script>
+	view_options = JSON.parse(localStorage.getItem("view_options"));
+	advanced = view_options?.advanced;
+	document.body.classList.toggle("simple", advanced === undefined || advanced < 0);
+</script>
 <div id="timestamp" class="timestamp hidden"></div>
 
 <div class="overlay maxpect"></div>

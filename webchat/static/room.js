@@ -20,11 +20,14 @@ let overlay_fullscreen = false;
 
 let suppressInitialScroll = true;
 
+let simple = true;
+
 export let view_options = {
   images: 1,
   image_size: 8,
   font_size: 4,
   items: 10,
+  advanced: -1,
 };
 
 let mode_options = {
@@ -44,6 +47,7 @@ function get_status_element() {
     status.id = "allemande_status";
     $append(document.lastChild, status);
     hide(status);
+    $on(status, "click", reload);
   }
   return status;
 }
@@ -76,7 +80,7 @@ function offline() {
     return;
   const status = get_status_element();
   status.innerText = "🔴";
-  if (!view_options.advanced)
+  if (view_options.advanced <= 0)
     status.innerText += " disconnected; reload!";
   show(status);
   for (const evname of ["mouseenter", "mousemove", "click", "touchstart"]) 
@@ -408,7 +412,7 @@ async function process_current_messages() {
 const keysToKeep = [
   "Control",
   "Shift",
-  "Alt",
+//  "Alt",
   "Meta",
   "ArrowUp",
   "ArrowDown",
@@ -457,7 +461,7 @@ function key_event(ev) {
   if (overlay_mode) {
     return key_event_overlay(ev);
   }
-  if (ev.altKey && ev.key == "g") {
+  if (!simple && ev.altKey && ev.key == "g") {
     ev.preventDefault();
     toggle_grab();
     return;
@@ -465,7 +469,7 @@ function key_event(ev) {
   if (grab_mode) {
     return;
   }
-  if (ev.altKey && ev.key == "f") {
+  if (!simple && ev.altKey && ev.key == "f") {
     ev.preventDefault();
     toggle_fullscreen(ev.target);
     return;
@@ -526,12 +530,12 @@ function key_event_overlay(ev) {
     return;
   if (ev.key == "Escape" || ev.key == "q" || ev.key == "Enter") {
     overlay_close(ev);
-  } else if (ev.key == "f") {
+  } else if (ev.key == "f" && !simple) {
     toggle_fullscreen();
-  } else if (ev.key == "m") {
+  } else if (ev.key == "m" && !simple) {
     cycle_zoom();
   // look for key in "lrhv"
-  } else if ("lrhv".includes(ev.key)) {
+  } else if ("lrhv".includes(ev.key) && !simple) {
     transform_overlay(ev.key);
   } else if (ev.key == "ArrowLeft" || ev.key == "Backspace") {
     image_go(-1);
@@ -698,7 +702,7 @@ function clear_overlay_image_cover() {
 // image overlay -------------------------------------------------------------
 
 function image_overlay($el) {
-  show($id("overlay_help"), !view_options.advanced);
+  show($id("overlay_help"), view_options.advanced == 0);
 
   // console.log("image_overlay", $el);
   // check if it's an A
@@ -894,6 +898,10 @@ function overlay_click(ev) {
   // detect left 25% and right 25% to go prev and next
   // and top 25% and bottom 25% to toggle fullscreen and cycle zoom
   const container = $overlay.getBoundingClientRect();
+  if (simple) {
+    overlay_close();
+    return;
+  }
   if (ev.clientX < container.width / 4) {
     image_go(-1);
   } else if (ev.clientX > container.width * 3 / 4) {
@@ -936,7 +944,7 @@ function handleSwipe() {
   		}
   	}
   } else {
-    if (Math.abs(swipeDistanceY) >= minSwipeDistance) {
+    if (Math.abs(swipeDistanceY) >= minSwipeDistance && !simple) {
       if (swipeDistanceY > 0) {
         // Down swipe
         cycle_zoom();
@@ -1256,6 +1264,8 @@ async function set_view_options(new_view_options) {
     cl.toggle("ids", view_options.ids == 2);
   }
 
+  simple = view_options.advanced < 0;
+  cl.toggle("simple", simple);
   cl.toggle("compact", view_options.compact >= 1);
   cl.toggle("compact2", view_options.compact == 2);
 
@@ -1641,7 +1651,7 @@ async function get_date_and_mtime() {
   } catch (err) {
     console.error('Error fetching timestamp:', err);
   }
-  return null, null;
+  return [null, null];
 }
 
 export async function show_timestamp(date, mtime) {
@@ -1651,12 +1661,13 @@ export async function show_timestamp(date, mtime) {
     relativeTime = "now";
   const fullTimestamp = formatLocalDateTime(mtime);
 
-
   await wait_for(() => $id('timestamp'), 5000);
 
   const timestampElement = $id('timestamp');
   timestampElement.textContent = relativeTime;
   timestampElement.title = fullTimestamp;
+  // if (timestampElement.parentNode == $body)
+  //   $messages.prepend(timestampElement);
   show('timestamp');
 }
 

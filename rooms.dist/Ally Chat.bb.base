@@ -64,6 +64,7 @@ shuffle("ul", "li");
 
 ## News:
 
+- "Simple mode" UI is now the default for new users. To change to standard mode, long tap the input box, or hold ALT/option on desktop, and press the light bulb.
 - Dynamic scenes, that change according to the seasons, the time of day, and for special events!
 - Faster access to archived images with our new caching filesystem, fusecache!
 - Added basic regional prompting support to Illu, so she can draw people together without resorting to a stronger model.

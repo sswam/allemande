@@ -4,8 +4,16 @@
 body > form, div#main, div#messages {
 	overflow: hidden;
 }
-body:not(.embed) div#main {
+body:not(.embed, .simple) div#main {
 	padding: var(--pad);
+}
+body.simple div#main {
+	align-items: center;
+}
+body.simple #inputrow {
+	width: 50em;
+	padding: var(--pad);
+	padding-top: 0;
 }
 body.admin, body.admin .admin {
 	display: block;
@@ -15,11 +23,12 @@ html {
 }
 input:not([type=checkbox]), textarea, select {
 	min-width: min(var(--input-width-min), 50vw);
-	padding: 0.25rem;
+	padding: var(--pad);
 }
 #messages {
 	min-height: var(--ui-size-min);
 	position: relative;
+	width: 100%;
 }
 #messages_overlay {
 	position: absolute;
@@ -44,6 +53,10 @@ input:not([type=checkbox]), textarea, select {
 	max-height: calc(100dvh - var(--ui-size-min));
 	max-width: 100%;
 }
+body.simple #inputrow {
+	min-height: 4.25em;
+	max-height: 50dvh;
+}
 #inputrow > .controls {
 	flex-basis: fit-content;
 	flex: 0 1 auto;
@@ -57,6 +70,11 @@ input:not([type=checkbox]), textarea, select {
 #top :is(button, a.button) {
 	min-width: 2rem;
 	min-height: 2rem;
+}
+body.simple #inputrow > .controls > * {
+	max-width: 3rem;
+	max-height: 3rem;
+	background: var(--background) !important;
 }
 #inputrow > .controls > * {
 	flex-grow: 1;
@@ -77,10 +95,13 @@ input:not([type=checkbox]), textarea, select {
 #resizer {
 	height: var(--pad);
 	min-height: var(--pad);
-	cursor: ns-resize;
+	width: 100%;
 	margin: 0;
 	background: var(--frame);
 	touch-action: none;
+}
+body:not(.simple) #resizer {
+	cursor: ns-resize;
 }
 .col_wrap {
 	display: flex;
@@ -159,11 +180,15 @@ body.simple #user {
 }
 
 input, textarea, button, .button {
-	border-radius: 0.375rem;
+	border-radius: var(--radius);
 }
 
-body:not(.compact) iframe {
-	border-radius: 0.375rem;
+iframe {
+	background: var(--background);
+}
+
+body:not(.compact, .simple) iframe {
+	border-radius: var(--radius);
 }
 
 iframe:fullscreen {
@@ -192,7 +217,7 @@ div.label {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: 0.375rem;
+	border-radius: var(--radius);
 	font-size: 1.2rem;
 }
 
@@ -307,8 +332,8 @@ div.controls > button#send {
 }
 
 #inputrow > .controls > input {
-	width: calc(3.5rem + var(--pad));
-	min-width: calc(3.5rem + var(--pad));
+	width: calc(4rem + var(--pad));
+	min-width: calc(4rem + var(--pad));
 /*	width: calc(2rem);
 	min-width: calc(2rem); */
 }
@@ -325,13 +350,28 @@ div.controls > button#send {
 	font-size: 0.8125rem;
 }
 
+body:not(.option) .option,
+body.simple:not(.option) .option-simple,
+body.standard .simple:not(.standard),
+body:is(.advanced, .boffin) .simple,
+body.simple .standard:not(.simple),
 body.simple .advanced,
-body:not(.simple) .simple,
+body:is(.advanced, .boffin) .standard:not(.advanced),
+body:not(.advanced, .boffin) .advanced:not(.standard),
 body:not(.boffin) .boffin,
 body.ios .noios,
 body:not(.nsfw) .nsfw,
 body.nsfw .sfw {
 	display: none !important;
+}
+
+body.simple.empty #messages {
+	height: 0;
+	flex: 0 0 0;
+}
+
+body:not(.simple.empty) .empty {
+	display: none;
 }
 
 /*

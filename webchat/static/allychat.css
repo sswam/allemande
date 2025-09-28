@@ -134,11 +134,11 @@ button:has(svg.icon), .button:has(svg.icon), button:has(i.bi), .button:has(i.bi)
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0.125rem 0.125rem;
+	padding: calc(var(--pad) / 2);
 	line-height: 1;
 	overflow: clip;
 	height: 1.5em;  /* disregard content size */
-	border-radius: 0.375rem;
+	border-radius: var(--radius);
 	cursor: pointer;
 }
 
@@ -160,7 +160,13 @@ a:hover {
 
 * {
 	scrollbar-color: var(--scrollbar) var(--scrollbar-background);
-	scrollbar-width: thin;
+}
+
+/* scrollbar-width: thin is TOO thin on Firefox */
+@supports selector(::-webkit-scrollbar) {
+	* {
+		scrollbar-width: thin;
+	}
 }
 
 ::-webkit-scrollbar {
@@ -181,9 +187,20 @@ a:hover {
 
 :root {
 	--pad: 0.5rem;
+	--radius: 0.375rem;
 	--font-size: 16px;
 	--font-size-code: 12px;
+	--label-gap: 0.75rem;
 	font-size: var(--font-size);
+}
+
+body.simple {
+	--pad: 0.75rem;
+/*	--pad: 1.5rem; */
+	--radius: 1rem;
+	--ui-size-min: 5rem;
+	--frame: var(--background);
+	--border: none;
 }
 
 input::placeholder, textarea::placeholder {
@@ -196,7 +213,7 @@ input::placeholder, textarea::placeholder {
 @media (prefers-color-scheme: light) {
 	:root {
 		/* gradient.py --css 1 .5 8 */
-		--col0: #ffffff;
+		--col0: #ededed;
 		--col1: #ededed;
 		--col2: #dbdbdb;
 		--col3: #c9c9c9;
@@ -210,7 +227,7 @@ input::placeholder, textarea::placeholder {
 @media (prefers-color-scheme: dark) {
 	:root {
 		/* gradient.py --css 0 .5 8 */
-		--col0: #000000;
+		--col0: #121212;
 		--col1: #121212;
 		--col2: #242424;
 		--col3: #363636;
@@ -254,7 +271,8 @@ input::placeholder, textarea::placeholder {
 
 	--background-image: none;
 	--background-image-opacity: 0.5;
-	--code-background-opacity: 0.05;
+	--code-background-opacity: 0.2;
+	--code-border-opacity: 0.1;
 }
 
 /* rainbow text ----------------------------------------------------------- */

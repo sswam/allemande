@@ -612,7 +612,7 @@ function fx_animate(timestamp) {
 		last_animation_time = timestamp;
 	}
 
-	if (animation_running && fire_elements.length > 0) {
+	if (animation_running && fire_elements.length > 0 && !checkReducedMotionPreference()) {
 		animation_frame_id = requestAnimationFrame(fx_animate);
 	} else {
 		fx_stop_animation();

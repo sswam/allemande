@@ -1,3 +1,7 @@
+* {
+	box-sizing: border-box;
+}
+
 html {
 	margin: 0;
 	width: 100%;
@@ -31,7 +35,9 @@ body {
 .box {
 	text-align: left;
 	padding: 20px 30px;
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 /*	white-space: nowrap; */
 	background-color: #112;
 	color: #aab;
@@ -40,7 +46,15 @@ body {
 	font-size: 18px;
 	font-weight: 300;
 	box-shadow: 0 0 20px 2px rgba(0, 255, 127, 0.25);
-	max-width: 800px;
+	max-width: min(800px, 90%);
+}
+
+.buttons {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	width: 100%;
 }
 
 .info a, .info a:visited {
@@ -50,6 +64,7 @@ body {
 
 .info p {
 	line-height: 1.1;
+	white-space: pre;
 }
 
 .info a:hover {
@@ -61,7 +76,7 @@ body {
 	background-color: #333;
 	color: #aab;
 	text-decoration: none;
-	padding: 10px 25px;
+	padding: 10px 15px;
 	border-radius: 5px;
 	font-weight: 500;
 	margin: 7px;
@@ -72,9 +87,93 @@ body {
 	background-color: #444;
 }
 
+.auth_box {
+	display: flex;
+	flex-direction: row;
+}
+
+input {
+	background-color: #224;
+	color: #aab;
+	border: 1px solid #000;
+	border-radius: 5px;
+	outline: none;
+	padding: 10px 15px;
+	margin: 7px;
+}
+.auth_box * {
+	font-size: 18px;
+}
+
+.narrow {
+	display: none;
+}
+
+@media (max-width: 600px) {
+	.narrow {
+		display: block;
+	}
+	.wide {
+		display: none;
+	}
+	.info p {
+		line-height: 0.85;
+	}
+	.box {
+		padding: 10px 15px;
+	}
+	*, .auth_box {
+		font-size: 15px;
+	}
+	.button, input {
+		padding: 5px 10px;
+		margin: 5px;
+	}
+}
+
+.hidden {
+	display: none !important;
+}
+
+.error {
+	background-color: #422 !important;
+}
+
+/*
+.disabled {
+	color: #888 !important;
+}
+*/
+
+/*
+#chatlink:not(.disabled) {
+	box-shadow: 0 0 10px 2px rgba(191, 255, 191, 0.5);
+}
+*/
+
+.button.green1 {
+	background-color: #255;
+	color: #cff;
+}
+
+.button.green2 {
+	background-color: #243;
+	color: #cfe;
+}
+
+.button.green3 {
+	background-color: #232;
+	color: #cfc;
+}
+
+.button.green4 {
+	background-color: #221;
+	color: #cfa;
+}
+
 .button.red {
 	background-color: #422;
-	color: #fcc;
+	color: #cf8;
 }
 
 .button.red:hover {
@@ -135,51 +234,3 @@ body {
 	background-color: #636;
 }
 
-.auth_box {
-	display: flex;
-	flex-direction: row;
-}
-
-.auth_box input {
-	background-color: #224;
-	color: #aab;
-	border: 1px solid #000;
-	border-radius: 5px;
-	outline: none;
-	padding: 5px 10px;
-}
-.auth_box * {
-	font-size: 18px;
-	margin: 7px;
-}
-
-@media (max-width: 600px) {
-	.info, .auth_box {
-		padding: 10px 15px;
-	}
-	*, .auth_box * {
-		font-size: 15px;
-	}
-	a.button {
-		padding: 10px 15px;
-		margin: 5px;
-	}
-}
-
-.hidden {
-	display: none !important;
-}
-
-.error {
-	background-color: #422 !important;
-}
-
-.disabled {
-	color: #888 !important;
-	/* pointer-events: none; */
-	/* background-color: #444 !important; */
-}
-
-#chatlink:not(.disabled) {
-	box-shadow: 0 0 10px 2px rgba(255, 191, 191, 0.5);
-}

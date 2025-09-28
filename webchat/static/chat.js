@@ -5,9 +5,11 @@ const ROOMS_URL =
 const SITE_URL =
   location.protocol + "//" + location.host.replace(/^.*?\./, "") + "/";
 const MAX_ROOM_NUMBER = 9999;
-const DEFAULT_ROOM = "Ally Chat";
+const PUBLIC_ROOM = "Ally Chat";
 const NSFW_ROOM = "nsfw/nsfw";
 const EXTENSION = ".bb";
+const CONFIRM_ARCHIVE = false;
+let DEFAULT_ROOM = PUBLIC_ROOM;
 
 const $head = $("head");
 const $body = $("body");
@@ -47,12 +49,13 @@ let help_room, qa_room, help_url, qa_url;
 
 const image_size_default = 6;
 const font_size_default = 4;
+let simple = true;
 
-let view_options = {
+const VIEW_OPTIONS_DEFAULT = {
   ids: 0,
   images: 1,
   alt: 0,
-  source: 1,
+  source: 0,
   details: 0,
   canvas: 0,
   toc: 1,
@@ -63,13 +66,13 @@ let view_options = {
   image_size: image_size_default,
   font_size: font_size_default,
   input_row_height: 72, // 48 // 32 // 72
-  theme: "pastel",
+  theme: "light",
   details_changed: true,
   highlight: 1,
   highlight_theme_light: "a11y-light",
   highlight_theme_dark: "a11y-dark",
   fullscreen: 0,
-  advanced: 0,
+  advanced: -1,
   audio_stt: 0,
   audio_tts: 0,
   audio_vad: 0,
@@ -80,6 +83,18 @@ let view_options = {
   dir_sort: "alpha",
   filter: "",
 };
+
+let view_options = {};
+function view_options_reset() {
+  const preserve = {};
+  const preserve_settings = ["theme", "source", "font_size", "image_size", "images", "highlight", "history", "dir_sort", "filter", "toc", "alt", "ids"];
+  for (const key of preserve_settings) {
+    if (view_options[key] !== undefined)
+      preserve[key] = view_options[key];
+  }
+  view_options = { ...VIEW_OPTIONS_DEFAULT, ...preserve };
+}
+view_options_reset();
 
 let mode_options = {
   select: 0,
@@ -389,6 +404,7 @@ function new_chat_message(message) {
     }
   }
   lastMessageId = message.lastMessageId;
+  $body.classList.toggle("empty", lastMessageId === null);
 }
 
 // insert text ---------------------------------------------------------------
@@ -543,14 +559,35 @@ function setRangeText(textarea, newText, blockStart, blockEnd) {
 
 // handle message change -----------------------------------------------------
 
+function rem_to_px(rem) {
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+}
+
 function message_changed(ev) {
   const $send = $id("send");
-  if ($content.value == "") {
+  if ($content.value == "" && !simple) {
     $send.innerHTML = icons["poke"];
     $send.title = "poke the chat: alt+enter";
   } else {
     $send.innerHTML = icons["send"];
-    $send.title = "send your message: ctrl+enter";
+    $send.title = "send your message" + (simple ? "" : ": ctrl+enter");
+  }
+  if (simple) {
+    const old_flexBasis = $inputrow.style.flexBasis;
+    $inputrow.style.flexBasis = "0";
+    // read the var(--pad) * 2
+    const pad = getComputedStyle(document.body).getPropertyValue("--pad");
+    const pad_px = rem_to_px(parseFloat(pad));
+    const new_height = $content.scrollHeight + pad_px;
+    if (new_height != view_options.input_row_height) {
+      view_options.input_row_height = new_height;
+      if (room_ready)
+        view_options_apply();
+      else
+        add_hook("room_ready", view_options_apply);
+    } else {
+      $inputrow.style.flexBasis = old_flexBasis;
+    }
   }
 
   /*
@@ -664,6 +701,9 @@ export async function set_room(room_new, no_history) {
 
   const type = get_file_type(room_new);
 
+  if (type != "room")
+    $body.classList.remove("empty");
+
   if (view === "view_edit" && type == "dir" && !edit_close()) {
     // reject changing to a directory if we have unsaved changes in the editor
     $room.value = room;
@@ -750,7 +790,7 @@ function show_room_privacy() {
   }
 
   if (is_private) {
-    $privacy.href = "/" + query_to_hash(DEFAULT_ROOM);
+    $privacy.href = "/" + query_to_hash(PUBLIC_ROOM);
   } else {
     $privacy.href = "/" + query_to_hash(user + "/chat");
   }
@@ -877,17 +917,19 @@ function nav_up(ev) {
 
 function scroll_home_end(ev, p) {
   ev.preventDefault();
-  if(!editor_file)
+  if(!editor_file) {
+    console.log("scroll_home_end");
     send_to_room_iframe({ type: "scroll_home_end", p });
-  else
+  } else
     $edit.scrollTop = p * $edit.scrollHeight;
 }
 
 function scroll_pages(ev, d) {
   ev.preventDefault();
-  if(!editor_file)
+  if(!editor_file) {
+    console.log("scroll_pages");
     send_to_room_iframe({ type: "scroll_pages", d });
-  else
+  } else
     $edit.scrollTop += d * $edit.clientHeight;
 }
 
@@ -1152,13 +1194,17 @@ async function room_last(i) {
 
 // Keyboard shortcuts --------------------------------------------------------
 
-export const shortcuts = {
-  global: {},
-  message: {},
-  room: {},
-  filter: {},
-  edit: {},
+export const shortcuts = {};
+
+function shortcuts_clear() {
+  shortcuts.global = {};
+  shortcuts.message = {};
+  shortcuts.room = {};
+  shortcuts.filter = {};
+  shortcuts.edit = {};
 };
+
+shortcuts_clear();
 
 function shortcuts_to_dict(shortcuts) {
   const dict = {};
@@ -1174,6 +1220,8 @@ export function add_shortcuts(shortcuts, shortcuts_list) {
 
 function dispatch_shortcut(ev, shortcuts) {
   const key = ev.key.toLowerCase();
+  if (key !== "alt" && ev.altKey)
+    view_option_skip_alt = true;
   const combo = [
     ev.ctrlKey ? 'ctrl+' : '',
     ev.shiftKey ? 'shift+' : '',
@@ -1199,6 +1247,23 @@ function dispatch_shortcut(ev, shortcuts) {
 function setup_main_ui_shortcuts() {
   add_shortcuts(shortcuts.global, [
     ['escape', escape, 'Go back, change or leave room'],
+  ]);
+
+  add_shortcuts(shortcuts.message, [
+    ['ctrl+enter', () => send(), 'Send message'],
+  ]);
+
+  // simple mode
+  if (view_options.advanced < 0) {
+    if (!isMobile) {
+      add_shortcuts(shortcuts.message, [
+        ['enter', () => send(), 'Send message'],
+      ]);
+    }
+    return;
+  }
+
+  add_shortcuts(shortcuts.global, [
     ['ctrl+;', change_room, 'Change room'],
     ["ctrl+[", () => set_room(room_first()), "Go to first room"],
     ['ctrl+.', () => set_room(room_next()), 'Go to next room'],
@@ -1208,7 +1273,6 @@ function setup_main_ui_shortcuts() {
   ]);
 
   add_shortcuts(shortcuts.message, [
-    ['ctrl+enter', () => send(), 'Send message'],
     ['alt+enter', poke, 'Poke the chat'],
     ['alt+s', send, 'Send message'],
     ['alt+p', poke, 'Poke the chat'],
@@ -1433,8 +1497,8 @@ async function authChat() {
 function setup_user_button() {
   const $user = $id("user");
   $user.innerText = user;
-  // go from main directory to default room
-  if (room == "/") $user.href = "/" + query_to_hash(DEFAULT_ROOM);
+  // go from main directory to public room
+  if (room == "/") $user.href = "/" + query_to_hash(PUBLIC_ROOM);
   // go from public user chat to main directory
   else if (room == user) $user.href = "/" + query_to_hash("/")
   // fo from users's folder to user's public room
@@ -1450,26 +1514,26 @@ function setup_user_button() {
 async function setup_nav_buttons() {
   // Setup nav_up button ----------------------
   const $nav_up = $id("nav_up");
-  let new_room;
+  let room_up;
   if (room == "/") {
-    new_room = DEFAULT_ROOM;
+    room_up = DEFAULT_ROOM;
   } else if (room.match(/\/$/)) {
-    new_room = room.replace(/[^\/]*\/$/, "");
-    if (new_room == "") {
-      new_room = "/";
+    room_up = room.replace(/[^\/]*\/$/, "");
+    if (room_up == "") {
+      room_up = "/";
     }
   } else {
-    new_room = room.replace(/[^\/]+$/, "") || "/";
+    room_up = room.replace(/[^\/]+$/, "") || "/";
   }
-  $nav_up.href = "/" + query_to_hash(new_room);
+  $nav_up.href = "/" + query_to_hash(room_up);
 
   // Setup allychat button --------------------
   const $nav_allychat = $id("nav_allychat");
-  $nav_allychat.href = "/" + query_to_hash(DEFAULT_ROOM);
+  $nav_allychat.href = "/" + query_to_hash(PUBLIC_ROOM);
 
   // Setup nsfw buttons --------------------
   for (const $nav_nsfw of $$(".nav_nsfw"))
-    $nav_nsfw.href = "/" + query_to_hash(room == "nsfw/nsfw" ? DEFAULT_ROOM : NSFW_ROOM);
+    $nav_nsfw.href = "/" + query_to_hash(room == "nsfw/nsfw" ? PUBLIC_ROOM : NSFW_ROOM);
 
   // Setup porch button --------------------
   const $nav_porch = $id("nav_porch");
@@ -1678,15 +1742,15 @@ async function clear_chat(ev, op) {
     confirm_message = "Clear the chat?";
   else if (op === "rotate")
     confirm_message = "Save and clear the first half of the chat?";
-  else if (op === "archive")
+  else if (op === "archive" && CONFIRM_ARCHIVE)
     confirm_message = "Archive the chat?  You can go to it later with ctrl-].";
   else if (op == "clean")
     confirm_message = "Clean up the room?  Removes messages from specialists.";
   else if (op == "render")
     confirm_message = null;
   // TODO it would be better to hide them from everyone, with a switch
-  else
-    throw new Error("invalid op: " + op);
+  // else
+  //   throw new Error("invalid op: " + op);
 
   if (confirm_message && !confirm_except_iOS(confirm_message)) return;
 
@@ -2036,6 +2100,7 @@ async function put_file(file, text, noclobber) {
 // TODO edit tabular data in a table, not as plain text
 
 function set_view(id) {
+  // default to messages view
   id = id || "messages";
   const $el = $id(id);
   if ($el.classList.contains("hidden")) {
@@ -2195,7 +2260,15 @@ function setup_view_options() {
       view_options[key] = view_options_embed[key];
     }
   }
+  set_default_room();
   add_hook("room_ready", view_options_apply);
+}
+
+function set_default_room() {
+  if (simple)
+    DEFAULT_ROOM = user + "/chat";
+  else
+    DEFAULT_ROOM = PUBLIC_ROOM;
 }
 
 function set_view_options(new_view_options) {
@@ -2206,11 +2279,27 @@ function set_view_options(new_view_options) {
 
 function view_options_apply() {
   const type = get_file_type(room);
+  simple = view_options.advanced < 0;
+
+  set_default_room();
+
+  // temporarily avoid simple mode! XXX
+  // if (view_options.advanced < 0)
+  //   view_options.advanced = 0
 
   // includes audio options
   // save to local storage
   if (!embed)
     localStorage.setItem("view_options", JSON.stringify(view_options));
+
+  // Reset UI in simple mode
+  if (simple) {
+    set_top();
+    set_top_left();
+    set_controls();
+    set_view();
+    $body.classList.remove("option");
+  }
 
   // Don't allow boffin mode except for devs
   if (!dev && view_options.advanced >= 2)
@@ -2244,6 +2333,7 @@ function view_options_apply() {
   active_set("view_fullscreen", view_options.fullscreen);
   $id("view_items").value = view_options.items ?? "";
   active_set("view_advanced", view_options.advanced);
+  active_set("view_standard", view_options.advanced >= 0);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
   active_set("audio_stt", view_options.audio_stt);
   active_set("audio_tts", view_options.audio_tts);
@@ -2255,18 +2345,29 @@ function view_options_apply() {
 
   // show different simple / advanced / boffin icons
   const $view_advanced = $id("view_advanced");
-  if (view_options.advanced == 0) {
-    $view_advanced.innerHTML = icons["view_mode_simple"]
+  const $view_standard = $id("view_standard");
+  if (view_options.advanced == -1) {
+    $view_standard.innerHTML = icons["view_mode_simple"]
+    $view_standard.title = "simple mode: click for standard mode";
+  } else if (view_options.advanced == 0) {
+    $view_advanced.innerHTML = icons["view_mode_not_advanced"]
+    $view_standard.innerHTML = icons["view_mode_standard"]
+    $view_advanced.title = "standard mode: click for advanced mode";
+    $view_standard.title = "standard mode";
   } else if (view_options.advanced == 1) {
     $view_advanced.innerHTML = icons["view_mode_advanced"]
+    $view_advanced.title = "advanced mode";
   } else {
     $view_advanced.innerHTML = icons["view_mode_boffin"]
+    $view_advanced.title = "boffin mode";
   }
 
   $id("audio_voice").value = view_options.audio_voice;
 
   const cl = document.body.classList;
-  cl.toggle("simple", view_options.advanced == 0);
+  cl.toggle("simple", view_options.advanced == -1);
+  cl.toggle("standard", view_options.advanced == 0);
+  cl.toggle("advanced", view_options.advanced == 1);
   cl.toggle("boffin", view_options.advanced >= 2);
   cl.toggle("compact", view_options.compact >= 1);
   cl.toggle("compact2", view_options.compact == 2);
@@ -2289,11 +2390,17 @@ function view_options_apply() {
   }
 
   // input placeholder in basic mode, before first message sent in this session
-  if ($content.placeholder != "" && !view_options.advanced) {
-    let input_placeholder = "Type your message here.";
+  if (view_options.advanced < 0) {
+    $content.placeholder = " ";
+  } else if ($content.placeholder != "" && view_options.advanced == 0) {
+    let input_placeholder = "";
     if (!isMobile)
-      input_placeholder += " Ctrl+Enter to Send.";
-    input_placeholder += " Send an empty message to Poke the chat.";
+      input_placeholder += "Ctrl+Enter to Send. ";
+    input_placeholder += "Send an empty message to Poke the chat. ";
+    if (isMobile)
+      input_placeholder += "Long-press here to return to simple mode.";
+    else
+      input_placeholder += "Press Alt/Option to return to simple mode.";
     $content.placeholder = input_placeholder;
   }
 
@@ -2336,6 +2443,7 @@ function view_options_apply() {
     $dir_sort.title = "sort: " + view_options.dir_sort;
   }
   show("dir_sort", type === "dir");
+  show("pages", type !== "dir");
 
   // send message to the rooms iframe to apply view options
   send_to_room_iframe({ type: "set_view_options", ...view_options });
@@ -2440,11 +2548,28 @@ function dir_sort(ev) {
 }
 
 function view_advanced(ev) {
+  // -1 simple  (not from this button)
+  // 0 standard
+  // 1 advanced
+  // 2 boffin
   const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
   const max = dev ? 3 : 2;
   view_options.advanced = (view_options.advanced + delta + max) % max;
   view_options_apply();
-  // set_controls();
+}
+
+function view_standard(ev) {
+  // -1 simple
+  // 0 standard
+  view_options.advanced = view_options.advanced >= 0 ? -1 : 0;
+  if (view_options.advanced == 0)
+    view_option_skip_alt = true;
+  else
+    view_options_reset();
+  view_options_apply();
+  shortcuts_clear();
+  setup_main_ui_shortcuts();
+  message_changed();
 }
 
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
@@ -2537,8 +2662,8 @@ async function change_theme(ev) {
   if (!themes.length) {
     return;
   }
-  // basic mode, just toggle light and dark
-  if (!view_options.advanced) {
+  // basic and standard mode, just toggle light and dark
+  if (view_options.advanced <= 0) {
     theme = theme === "light" ? "dark" : "light";
     return set_theme(theme);
   }
@@ -2751,9 +2876,12 @@ async function setup_icons() {
   icons["help_undo"] = icons["x_large"];
   icons["help_retry"] = icons["undo"];
   icons["help_archive"] = icons["mod_archive"];
+  icons["mod_archive_2"] = icons["mod_archive"];
+  icons["view_theme_2"] = icons["view_theme"];
   icons["help_clear"] = icons["mod_clear"]
 
-  icons["view_advanced"] = icons["view_mode_simple"];
+  icons["view_advanced"] = icons["view_mode_standard"]; // XXX check this
+  icons["view_standard"] = icons["view_mode_simple"];
 
 //  icons["room_ops_copy"] = icons["copy"];  // TODO remove this
   icons["select_copy"] = icons["copy"];
@@ -2847,7 +2975,6 @@ function setup_embed_ui() {
     hide($e);
   show("inputrow");
 
-  // we want ctrl+enter to send the message, no other shortcuts
   add_shortcuts(shortcuts.message, [
     ['ctrl+enter', () => send(), 'Send message'],
     ['alt+z', undo, 'Undo last message', ADMIN],
@@ -2892,7 +3019,7 @@ async function help_click(ev) {
     ev.preventDefault();
   // if alt pressed, open in this window
   if (ev && (ev.altKey)) {
-    await set_room(view_options.advanced ? qa_room : help_room);
+    await set_room(view_options.advanced > 0 ? qa_room : help_room);
     return;
   }
   // for normal click, we open a magic embedded chat on the help room!!
@@ -3009,7 +3136,7 @@ function save_filter() {
 }
 
 function filter_changed(ev) {
-  console.log("filter_changed");
+  // console.log("filter_changed");
   view_options.filter = $id('filter_query').value;
 	save_filter();
   view_options_apply();
@@ -3142,6 +3269,59 @@ function update_room_status(data) {
   $scroll_end_2.title = scroll_title;
 }
 
+// view option ---------------------------------------------------------------
+
+let view_option_skip_alt = false;
+
+function view_option(ev) {
+  // holding alt/option shows option controls in simple mode
+  // pressing alt/option toggles option controls in other modes
+  // if not in input_main controls, return to them and show options
+  if (ev.key !== "Alt" || view_options.advanced > 0)
+    return;
+  if (simple) {
+    $body.classList.toggle("option", ev.type === "keydown");
+  } else if (!simple && ev.type === "keyup" && controls == "input_main" && !view_option_skip_alt) {
+    $body.classList.toggle("option");
+  } else if (!simple && ev.type === "keyup" && controls !== "input_main" && !view_option_skip_alt) {
+    set_controls();
+    $body.classList.add("option");
+  } else {
+    view_option_skip_alt = false;
+    return;
+  }
+  controls_resized();
+}
+
+let long_press_timer;
+
+function view_option_touchstart(event) {
+  // Prevent default browser actions like text selection or context menu
+  long_press_timer = setTimeout(() => {
+    $body.classList.toggle("option");
+    if ($body.classList.contains("option")) {
+      set_controls();
+      controls_resized();
+    }
+  }, 750); // 750ms is a common duration for long-press
+}
+
+function view_option_touchend() {
+  clearTimeout(long_press_timer);
+}
+
+function setup_view_option_long_press() {
+  $on($content, "touchstart", view_option_touchstart);
+  $on($content, "touchend", view_option_touchend);
+  //$on($content, "touchmove", view_option_touchend);
+  $on($content, "touchcancel", view_option_touchend);
+}
+
+function hide_placeholder() {
+  $content.placeholder = "";
+}
+
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -3177,6 +3357,8 @@ export async function init() {
   message_changed();
 
   // enable keyboard shortcuts
+  $on(document, "keydown", view_option);
+  $on(document, "keyup", view_option);
   $on(document, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.global));
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.message));
   $on($content, "keydown", content_keydown);
@@ -3206,6 +3388,7 @@ export async function init() {
   $on($id("mod_retry"), "click", retry);
   $on($id("mod_clear"), "click", clear_chat);
   $on($id("mod_archive"), "click", archive_chat);
+  $on($id("mod_archive_2"), "click", archive_chat);
   $on($id("mod_clean"), "click", clean_chat);
   // $on($id('mod_rotate'), 'click', rotate_chat);
   $on($id("mod_auto"), "click", auto_play);
@@ -3227,6 +3410,7 @@ export async function init() {
   $on($id("edit_dedent"), "click", edit_dedent);
 
   $on($id("view_theme"), "click", change_theme);
+  $on($id("view_theme_2"), "click", change_theme);
   $on($id("view_ids"), "click", view_ids);
   $on($id("view_images"), "click", view_images);
   $on($id("view_alt"), "click", view_alt);
@@ -3245,6 +3429,7 @@ export async function init() {
   $on($id("view_items"), "change", view_items);
   $on($id("view_items"), "keyup", view_items);
   $on($id("view_advanced"), "click", view_advanced);
+  $on($id("view_standard"), "click", view_standard);
   $on($id("view_cancel"), "click", () => set_controls());
 
   $on($id("opt_context"), "change", opt_context);
@@ -3282,8 +3467,8 @@ export async function init() {
   $on(window, "hashchange", on_hash_change);
   $on(window, "message", handle_message);
   const dragControls = initDragControls();
-  $on($id("resizer"), "mousedown", dragControls);
-  $on($id("resizer"), "touchstart", dragControls);
+  $on($id("resizer"), "mousedown", (ev) => !simple && dragControls(ev));
+  $on($id("resizer"), "touchstart", (ev) => !simple && dragControls(ev));
 
   $on(window, "beforeprint", print_chat);
 
@@ -3293,6 +3478,11 @@ export async function init() {
   $content.addEventListener('dragleave', content_dragleave);
   $content.addEventListener('drop', content_drop);
   $content.addEventListener('paste', content_paste);
+
+  if (isMobile)
+    setup_view_option_long_press();
+
+  $on($content, "click", hide_placeholder);
 
   notify_main();
   record_main();

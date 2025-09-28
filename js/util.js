@@ -386,3 +386,21 @@ const debounce = (fn, delay) => {
     timeoutId = setTimeout(() => fn.apply(context, args), delay);
   };
 };
+
+// detect if all children of an element are hidden (display: none)
+
+function allChildrenAreHidden(element) {
+  // Get all direct child elements of the parent
+  const children = element.children;
+
+  // Iterate through the children and check their computed display style
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    const computedStyle = window.getComputedStyle(child);
+    if (computedStyle.display !== 'none')
+      return false;
+  }
+
+  // If the loop completes, all children have display: none
+  return true;
+}

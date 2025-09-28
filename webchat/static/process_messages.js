@@ -132,6 +132,8 @@ export async function processMessage(newMessage) {
   const newContent = newMessage.querySelector(".content");
   const newUser = newMessage.getAttribute("user");
   const label = newMessage.querySelector(".label");
+  const me_message = newUser && newUser.toLowerCase() === user;
+  const simple = (room.view_options.advanced ?? -1) < 0;
 
   // Remove newline at start of paragraph, pre or code
   // Maybe not needed now? We'll see...
@@ -154,13 +156,14 @@ export async function processMessage(newMessage) {
   await process_editing_commands(newMessage);
 
   // Hide the label if same user as previous message
-  if (hideLabelForSameUser) {
-    let prevMessage = newMessage.previousElementSibling;
-    while (prevMessage && prevMessage.classList.contains('hidden'))
-      prevMessage = prevMessage.previousElementSibling;
-    if (prevMessage && newUser == prevMessage.getAttribute("user") && label)
-      label.classList.add("hidden");
-  }
+//  if (hideLabelForSameUser) {
+  let prevMessage = newMessage.previousElementSibling;
+  while (prevMessage && prevMessage.classList.contains('hidden'))
+    prevMessage = prevMessage.previousElementSibling;
+  if (prevMessage && newUser == prevMessage.getAttribute("user") && label)
+    label.classList.add("label-hidden");
+  else
+    newMessage.classList.add("turn");
 
   // Move images back if same user
   // in future might put images together with or directly after the prompt that creates them; but how?
@@ -182,8 +185,13 @@ export async function processMessage(newMessage) {
   }
   */
 
-  // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
-  if (newMessage && moveLabels) {
+/*  // Hide message if not visible content
+  if (allChildrenAreHidden(newContent)) {
+    newMessage.classList.add("no-visible-content");
+  } */
+
+  if (newMessage && moveLabels && !(simple && me_message)) {
+    // Move label inside first paragraph; dodgy hack because float is broken with break-after: avoid
     // console.log("trying to move label for message ID", id, "label", label);
     // console.log("new message", newMessage);
     if (label) {
@@ -250,7 +258,7 @@ export async function processMessage(newMessage) {
 
   if (newUser) {
     // add class="me" to messages from the current user
-    if (newUser.toLowerCase() === user) {
+    if (me_message) {
       newMessage.classList.add("me");
     }
 
@@ -371,6 +379,9 @@ export async function processMessage(newMessage) {
 }
 
 function getLastVisibleMessageId() {
+  // while (message && messages.classList.contains("hidden"))
+  //   message = message.previousElementSibling;
+  // return message ? getMessageId(message) : null;
   const $messages = $("div.messages");
   let lastMessage = $messages.lastElementChild;
   while (lastMessage && lastMessage.classList.contains("hidden"))

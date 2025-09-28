@@ -17,18 +17,23 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
 </head>
-<body id="app" class="simple">
+<body id="app" class="simple empty">
+<script>
+	view_options = JSON.parse(localStorage.getItem("view_options"));
+	advanced = view_options?.advanced;
+	document.body.classList.toggle("simple", advanced === undefined || advanced < 0);
+</script>
 <div id="reload_icon" class="hidden"><i class="bi bi-arrow-clockwise"></i></div>
 <form id="form" class="fill" onsubmit="return false;">
 <input type="hidden" id="op" name="op" value="post">
 <div id="main" class="col fill">
-	<div class="row gap hidden" id="top">
-		<a class="button private simple" href="" id="privacy" title=""></a>
+	<div class="row gap hidden standard advanced" id="top">
+		<a class="button private standard" href="" id="privacy" title=""></a>
 		<div class="top_left_controls row gap" id="top_left_main">
 			<a class="button nsfw nav_nsfw hidden" href="" title="go to the main NSFW room">nsfw</a>
 			<a class="button advanced" href="" id="nav" title="navigation">nav</a>
 			<a class="button advanced" href="" id="pages" title="pages">pages</a>
-			<a class="button advanced hidden" href="" id="dir_sort" title="sort">sort_alpha</a>
+			<a class="button hidden" href="" id="dir_sort" title="sort">sort_alpha</a>
 			<button id="select" title="select messages" class="boffin">select</button> <!-- should be advanced when done -->
 			<!--<button id="room_ops" title="room operations" class="advanced">room</button>-->
 		</div>
@@ -65,11 +70,11 @@
 		<input id="room" name="room" class="flex grow">
 		<div class="top_controls row gap" id="top_main">
 			<button id="debug" title="debug" class="small boffin">?</button>
-			<button id="filter" title="filter media">filter</button>
-			<button id="scroll_end_2" title="end of room: end">bot</button>
+			<button id="filter" title="filter media" class="advanced">filter</button>
+			<button id="scroll_end_2" title="end of room: end" class="standard">bot</button>
 			<!-- <button id="scroll" title="scrolling" class="advanced">scroll</button> -->
 			<button class="hidden" id="notify">notify</button>
-			<a class="button" href="" id="user" title="cycle your main rooms">?</a>
+			<a class="button" href="" id="user" title="cycle your main rooms">…</a>
 			<a class="button" href="" id="help" title="get help to use Ally Chat"></a>
 			<button id="logout" title="log out">exit</button>
 		</div>
@@ -104,20 +109,31 @@
 
 	<textarea id="view_edit" class="view editor grow hidden"></textarea>
 
+	<div class="empty grow"></div>
+
 	<div class="row" id="resizer">
 	</div>
 
 	<div class="row gap" id="inputrow">
+		<script>
+			input_row_height = view_options?.input_row_height;
+			if (input_row_height)
+				document.getElementById("inputrow").style.flexBasis = input_row_height + "px";
+		</script>
+
 		<textarea id="content" name="content" class="content_input grow" placeholder=" "></textarea>
 		<math-field id="math_input" class="hidden"></math-field>
 		<div class="controls col_wrap" id="input_main">
 			<button id="send">send</button>
 			<button id="add" title="add a file or recording" class="advanced">add</button>
-			<button id="add_file_2" title="upload files" class="simple">file</button>
-			<button id="view" title="view settings">view</button>
+			<button id="add_file_2" title="upload files" class="simple standard option-simple">file</button>
+			<button id="view" title="view settings" class="standard advanced">view</button>
 			<button id="audio" title="audio settings" class="boffin">audio</button>
 			<button id="opt" title="room options" class="advanced">opt</button>
-			<button id="mod" title="owner tools" class="admin">mod</button>
+			<button id="mod" title="owner tools" class="admin standard advanced">mod</button>
+			<button id="mod_archive_2" title="archive this room" class="simple option">archive</button>
+			<button id="view_theme_2" title="change the theme" class="simple option">theme</button>
+			<button id="view_standard" title="standard mode" class="simple standard option">standard mode</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_mod">
 			<button id="mod_undo" title="remove the last message: alt+z">undo</button>
@@ -197,14 +213,16 @@
 			<button id="opt_cancel" class="back">back</button>
 		</div>
 	</div>
+
+	<div class="empty grow"></div>
 </div>
 </form>
 
 <div id="help-widget" class="hidden">
 	<div id="help-widget-header">
 		<div id="help-widget-links">
-			<a id="intro_link" href="/#intro" target="help-frame" class="simple sfw" title="Ally Chat - Quick Intro">Intro</a><a
-			id="intro_link_nsfw" href="/#nsfw/intro" target="help-frame" class="simple nsfw" title="Ally Chat - Quick Intro - NSFW">Intro</a><a
+			<a id="intro_link" href="/#intro" target="help-frame" class="standard sfw" title="Ally Chat - Quick Intro">Intro</a><a
+			id="intro_link_nsfw" href="/#nsfw/intro" target="help-frame" class="standard nsfw" title="Ally Chat - Quick Intro - NSFW">Intro</a><a
 			id="qa_link" href="/#qa" target="help-frame" class="advanced" title="general side-bar Q&A chat">Q&A</a><a
 			id="help_link" href="/#help" target="help-frame" title="your Ally Chat help room">Help</a><a
 			href="/#guide" target="help-frame" title="the full user guide">Guide</a><a
