@@ -45,9 +45,13 @@ webchat-user() {
 
 add-user() {
 	local user=${1-}
+	local contact=${2-}
 
 	if [ -z "$user" ]; then
 		read -r -p "Username: " user
+	fi
+	if [ -z "$contact" ]; then
+		read -r -p "Contact info: " contact
 	fi
 	if [[ "$user" != "${user,,}" ]]; then
 		die "Username must be lower-case"
@@ -66,15 +70,16 @@ add-user() {
 		start_nsfw="
 For NSFW content:
 
-5. Press the 'E' or enter 'nsfw' in the room field to visit the NSFW zone.
-6. NSFW features also work in private chat.
+5. Do not upload or generate illegal content, i.e. CSAM or NCII.
+6. Press the 'E' or enter 'nsfw' in the room field to visit the NSFW zone.
+7. NSFW features also work in private chat.
 "
 		patreon_links=$'- https://www.patreon.com/allychat (SFW)\n- https://www.patreon.com/allychatx (NSFW)'
 	else
 		patreon_links="- https://www.patreon.com/allychat"
 	fi
 
-	change-password "$@" |
+	change-password "$user" |
 	while read -r _ user pass; do
 		cat <<END
 === Welcome to Ally Chat! ===
@@ -89,7 +94,7 @@ Password: $pass
 1. Say hi in the main 'Ally Chat' room
 2. Press the '?' button and read the Intro
 3. Open the 'help' tab and ask the AI some questions
-  - This is the place to get help about the app
+		- This is the place to get help about the app
 4. Close the help with the X at top-right
 $start_nsfw
 
@@ -140,6 +145,45 @@ END
 		(sleep 1; cp rooms/"$user"/.help.bb.base rooms/"$user"/help.bb && touch -t 197001010000 rooms/"$user"/help.bb && chmod o-rwx rooms/"$user"/help.bb) &
 	fi
 
+	# Set up info.rec file
+	local btime
+	btime=$(date '+%Y-%m-%d %H:%M:%S')
+
+	# Parse contact info
+	local email= reddit= discord= facebook= contact_other=
+
+	if [[ "$contact" == email:* ]]; then
+		email="${contact#email:}"
+	elif [[ "$contact" == *@* ]]; then
+		email="$contact"
+	elif [[ "$contact" == reddit:* ]]; then
+		reddit="${contact#reddit:}"
+	elif [[ "$contact" == u/* ]]; then
+		reddit="${contact#u/}"
+	elif [[ "$contact" == discord:* ]]; then
+		discord="${contact#discord:}"
+	elif [[ "$contact" == facebook:* ]]; then
+		facebook="${contact#facebook:}"
+	else
+		contact_other=$contact
+	fi
+
+	# Create info.rec file
+	cat > static/users/"$user"/info.rec <<-END
+		name:	$user
+		status:	active
+		btime:	$btime
+		email:	$email
+		reddit:	$reddit
+		discord:	$discord
+		facebook:	$facebook
+		agents:	
+		contact:	$contact_other
+		notes:	
+		
+	END
+	chmod o-rwx static/users/"$user"/info.rec
+
 	# rooms git: ignore user's dir
 	cd rooms
 	echo "/$user" >> .gitignore
@@ -158,9 +202,9 @@ change-password() {
 	if [ "$pass" = "-i" ]; then
 		gen=0
 		while true; do
-			read -s -p "Enter password: " pass1
+			read -r -s -p "Enter password: " pass1
 			echo
-			read -s -p "Confirm password: " pass2
+			read -r -s -p "Confirm password: " pass2
 			echo
 
 			if [ "$pass1" = "$pass2" ]; then
@@ -177,7 +221,7 @@ change-password() {
 	fi
 
 	htpasswd -b .htpasswd "$user" "$pass"
-	echo "$user:$pass" | sudo chpasswd || true
+	echo "$user:$pass" | sudo chpasswd 2>/dev/null || true
 
 	if [ "$gen" = 1 ]; then
 		printf "+ %s %s\n" "$user" "$pass"
@@ -192,7 +236,7 @@ remove-user() {
 	htpasswd -D .htpasswd "$user"
 
 	# remove from any .access.yml lists
-	find rooms/ -name .access.yml | xargs sed -i "/^- $user\$/d"
+	find rooms/ -name .access.yml | xa sed -i "/^- $user\$/d"
 
 	# remove style and user directory
 	move-rubbish static/users/"$user"
@@ -250,13 +294,13 @@ list-users() {
 
 update-missions() {
 	nsfw=0 list-users |
-	while read user; do
+	while read -r user; do
 		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
 		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.sfw "$ALLEMANDE_ROOMS/$user/mission.m"
 	done
 
 	nsfw=1 list-users |
-	while read user; do
+	while read -r user; do
 		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
 		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.nsfw "$ALLEMANDE_ROOMS/$user/mission.m"
 	done
@@ -265,3 +309,5 @@ update-missions() {
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	webchat-user "$@"
 fi
+
+# version: 0.1.55
