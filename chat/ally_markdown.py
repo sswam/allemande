@@ -326,7 +326,7 @@ def fix_link(href: str, bb_file: str) -> str:
 
 
 def fix_html_image(html_image: str, bb_file: str) -> str:
-    """Load image metadata: width, height, alt text"""
+    """Load image metadata: width, height, alt text; also lazy loading with data-src"""
     # Very fast but requires C dependencies
     doc = lxml.html.fromstring(html_image)
 
@@ -335,6 +335,11 @@ def fix_html_image(html_image: str, bb_file: str) -> str:
         src = img.get("src")
         if not src:
             continue
+
+        # Set data-src attribute and remove src attribute
+        img.set("data-src", src)
+        img.attrib.pop("src")
+
         url = urlparse(src)
         if url.scheme or url.netloc:
             continue
@@ -837,7 +842,7 @@ def html_postprocess(html_text: str, bb_file: str) -> str:
 
     # fix <summary> tags, which sometimes get broken
     html_text = re.sub(r"<p><summary>(.*?)</summary><br\s*/>", r"<summary>\1</summary><p>", html_text)
-    html_text = re.sub(r"<img ", r"<img loading=lazy ", html_text)
+    # html_text = re.sub(r"<img ", r"<img loading=lazy ", html_text)
     html_text = re.sub(r"<(lora:.*?)>", r"&lt;\1&gt;", html_text)
 
     # FIXME: this should be done in the markdown processing phase, to avoid messing up code blocks

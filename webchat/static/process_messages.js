@@ -116,6 +116,8 @@ function getMessageId(element) {
   return id;
 }
 
+// the main processing function for a new message ----------------------------
+
 export async function processMessage(newMessage) {
   // Add message number as a class, like m123
   const [id, processed] = await ensurePreviousMessagesProcessed(newMessage);
@@ -226,6 +228,7 @@ export async function processMessage(newMessage) {
   // Set title attribute for images
   // add a <div class="alt"> element for each image
   // add bg-url for each image
+  // add to the lazy loading observer
   const images = newMessage.querySelectorAll("img");
   for (const img of images) {
     if (!img.title && img.alt) {
@@ -252,8 +255,12 @@ export async function processMessage(newMessage) {
     if (img.alt)
       img.alt = img.alt.replace(/\s*\bNEGATIVE\b.*?(?=\s----|$)/g, '').toLowerCase();
     // set bg-url attribute for CSS background image
-    if (img.src && wrapper && !wrapper.getAttribute("bg-url"))
-      wrapper.style.setProperty("--bg-url", `url(${img.src})`);
+    const src = img.src || img.dataset.src;
+    if (src && wrapper && !wrapper.getAttribute("bg-url")) /* FIXME this is not working */
+      wrapper.style.setProperty("--bg-url", `url(${src})`);
+    // add to lazy loading observer
+    if (img.dataset.src)
+      await room.lazy_image(img);
   }
 
   if (newUser) {
