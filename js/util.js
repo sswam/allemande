@@ -4,6 +4,12 @@ const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 const $id = (id) => document.getElementById(id);
 const $create = (element) => document.createElement(element);
+const $html = (html) => $$html(html).firstChild;
+const $$html = (html) => {
+  const template = document.createElement('template');
+  template.innerHTML = html.trim();
+  return template.content;
+}
 const $text = (text) => document.createTextNode(text);
 const $attr = (element, attribute, value) => element.setAttribute(attribute, value);
 const $append = (parent, child) => parent.appendChild(child);
@@ -82,6 +88,8 @@ function encode_entities(txt) {
 //    "'": '&#39;'
   })[c]);
 }
+
+const quotemeta = str => str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
 window.modules = {};
 
@@ -403,4 +411,37 @@ function allChildrenAreHidden(element) {
 
   // If the loop completes, all children have display: none
   return true;
+}
+
+// seeded random number generator --------------------------------------------
+
+function srand(seed) {
+  seed = (seed ?? Math.random(Math.random() * 2147483647)) % 2147483647;
+  if (seed <= 0) seed += 2147483646;
+
+  return function() {
+    seed = (seed * 48271) % 2147483647;
+    return seed / 2147483647;
+  };
+}
+
+// shuffle -------------------------------------------------------------------
+
+function fort(array, random) {
+	// Fortune: randomly select an element from the array
+  random = random || Math.random;
+	if (array.length === 0) return null;
+	const index = Math.floor(random() * array.length);
+	return array[index];
+}
+
+function shuf(array, random) {
+	// Fisher-Yates shuffle, in place
+  random = random || Math.random;
+  // array = array.slice();
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
+	}
+	return array;
 }

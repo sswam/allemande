@@ -1308,7 +1308,7 @@ async function set_view_options(new_view_options) {
   }
 
   if (filter !== view_options.filter) {
-    filter = view_options.filter;
+    filter = view_options.filter ?? "";
     update_image_filter(filter);
   }
 }
@@ -1798,6 +1798,34 @@ function touch_cancel(e) {
     currentY = 0;
     dragSticky = null;
   }
+}
+
+// intersection observer for lazy loading images ----------------------------
+
+let lazy_images_observer;
+
+async function setup_lazy_images_observer() {
+  await wait_for_load();
+  lazy_images_observer = new IntersectionObserver((images) => {
+    images.forEach(entry => {
+      if (entry.isIntersecting && entry.target.dataset.src) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+        // img.removeAttribute('loading');
+        lazy_images_observer.unobserve(img);
+      }
+    });
+  }, {
+    root: $messages_wrap,
+    rootMargin: '1000px',
+  });
+}
+
+export async function lazy_image(img) {
+  if (!lazy_images_observer)
+    await setup_lazy_images_observer();
+  lazy_images_observer.observe(img);
 }
 
 // main ----------------------------------------------------------------------

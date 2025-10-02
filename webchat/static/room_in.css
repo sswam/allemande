@@ -163,6 +163,9 @@ body.simple .message {
 	clear: both;
 	margin: auto;
 }
+body:not(.simple) .message.narrative.turn:not(:has(+ .message.narrative:not(.turn))) {
+	margin-left: 0;
+}
 
 body.simple .message.me.turn, body.simple .message.me:not(:has(p > *)), body.simple .message.me:has(pre, blockquote, table), body.simple .message.me:has(.content > :is(span, em, strong)), body.simple .message.me:has(.content > p > :is(span, em, strong)) {
 	margin-left: auto;
@@ -1463,3 +1466,17 @@ body.light .fire {
 	... Repeat for other keyframes with the same pattern ...
 }
 */
+
+/* spolier tag ------------------------------------------------------------ */
+
+spoiler, .spoiler {
+	background-color: var(--text) !important;
+	color: var(--text) !important;
+	opacity: 0.5;
+}
+
+spoiler:hover, .spoiler:hover {
+	opacity: 1; /* Fully opaque on hover */
+	background-color: var(--background) !important;
+	transition: all 5s ease-in-out;
+}

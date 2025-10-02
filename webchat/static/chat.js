@@ -5,11 +5,10 @@ const ROOMS_URL =
 const SITE_URL =
   location.protocol + "//" + location.host.replace(/^.*?\./, "") + "/";
 const MAX_ROOM_NUMBER = 9999;
-const PUBLIC_ROOM = "Ally Chat";
-const NSFW_ROOM = "nsfw/nsfw";
 const EXTENSION = ".bb";
 const CONFIRM_ARCHIVE = false;
 let DEFAULT_ROOM = PUBLIC_ROOM;
+const hold_alt = false;
 
 const $head = $("head");
 const $body = $("body");
@@ -34,9 +33,20 @@ const narrator = "Nova";
 const illustrator = "Illu";
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-const isFirefox = navigator.userAgent.includes('Firefox');
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+// const isFirefox = navigator.userAgent.includes('Firefox');
+// const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 const iOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isMac = /Macintosh|MacIntel|MacPPC|Mac68K|MacOS/i.test(navigator.userAgent);
+const Alt = isMac ? "Option" : "Alt";
+
+async function detectIncognito() {
+  if ('storage' in navigator && 'estimate' in navigator.storage) {
+    const {quota} = await navigator.storage.estimate();
+    return quota < 120000000;
+  }
+  return false;
+}
+const incognito = await detectIncognito();
 
 function confirm_except_iOS(message) {
   if (iOS) return true;
@@ -52,7 +62,7 @@ const font_size_default = 4;
 let simple = true;
 
 const VIEW_OPTIONS_DEFAULT = {
-//  beta_test: "simple",
+  beta_test: "simple2",
   ids: 0,
   images: 1,
   alt: 0,
@@ -81,7 +91,7 @@ const VIEW_OPTIONS_DEFAULT = {
   audio_voice: "ballad",
   help: 0,
   embed: 0,
-  dir_sort: "alpha",
+  dir_sort: "time",
   filter: "",
 };
 
@@ -135,6 +145,114 @@ let tts_voice_options = [
 let view_image_size_delta = 1;
 let view_font_size_delta = 1;
 
+// beautiful fonts -----------------------------------------------------------
+
+const beautiful_fonts = [
+	['Playfair Display', 'serif', [400], 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap'],
+	['Quicksand', 'sans-serif', [300, 500], 'https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500&display=swap'],
+	['Dancing Script', 'cursive', [400], 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap'],
+	['Cormorant Garamond', 'serif', [300], 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;600&display=swap'],
+	['Raleway', 'sans-serif', [200, 400], 'https://fonts.googleapis.com/css2?family=Raleway:wght@200;400&display=swap'],
+	['Great Vibes', 'cursive', [400], 'https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'],
+	['Montserrat', 'sans-serif', [300], 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap'],
+	['Josefin Sans', 'sans-serif', [300, 400], 'https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400&display=swap'],
+];
+
+async function load_beautiful_font() {
+  const [name, family, weights, font_url] = fort(beautiful_fonts);
+  const weight = fort(weights);
+  await $style('beautiful-font', font_url);
+  return `font-family: '${name}', ${family}; font-weight: ${weight};`
+}
+
+// background image ----------------------------------------------------------
+
+const simple_welcome_show_background = true;
+
+function load_background_image(i) {
+
+}
+
+const simple_welcome_1 = [
+  "Welcome, $user. How can I help you today?",
+  "Hey! What's on your mind?",
+  "Good to see you, $user. Where shall we begin?",
+  "Hi there, $user. I'm ready when you are.",
+  "Welcome. What would you like to explore?",
+];
+
+const simple_welcome_2 = [
+  "A blank canvas awaits. What shall we create?",
+  "Every story needs a first line, $user. What's ours?",
+  "Is there a thought you'd like to untangle today?",
+  "Shall we follow a thread of curiosity, $user?",
+  "What if we built something new?",
+  "Have an idea looking for a spark, $user?",
+  "Let's chart a new course. Where are we headed?",
+  "What problem could we look at from a different angle, $user?",
+  "Is there a world you'd like to imagine with me?",
+  "The stage is set. What's the scene?",
+];
+
+const simple_welcome_3 = [
+  "Feeling lyrical? We could write a poem or a song.",
+  "Shall we sketch out a scene with words and see what comes to life, $user?",
+  "Have a number to crunch or an equation to solve?",
+  "How about a bit of humor? We could trade jokes or write a short comedy sketch.",
+  "Shall we map out an idea or visualize some data, $user?",
+  "Thinking about a new character? We can invent their story together.",
+  "Want to untangle some logic, $user? We could work through some code.",
+  "Curious what's happening in the world? We can discuss the latest events.",
+  "Have a big idea, $user? Let's brainstorm some possibilities.",
+  "Ready for an adventure? We could begin a roleplaying story.",
+];
+
+let welcome_message;
+
+async function welcome() {
+  // count how many visits in local storage
+  // shuffle based on same seed each time, to avoid repetition
+  let visit = +localStorage.getItem("visits");
+  let seed = localStorage.getItem("seed") ?? (Math.random() * 2147483647) % 2147483647;
+  localStorage.setItem("seed", seed);
+  localStorage.setItem("visits", visit + 1);
+  if (!simple)
+    return;
+  const rand = srand(seed);
+  const m1 = shuf([...simple_welcome_1], rand)[visit % simple_welcome_1.length];
+  const m2 = shuf([...simple_welcome_2], rand)[visit % simple_welcome_2.length];
+  const m3 = shuf([...simple_welcome_3], rand)[visit % simple_welcome_3.length];
+
+  for (let i = 0; i < visit; i++)
+    rand();
+  
+  welcome_message = m1;
+  if (incognito || visit >= 5)
+    if (rand() < 0.5)
+      welcome_message = m2;
+  if (incognito || visit >= 15)
+    if (rand() < 0.5)
+      welcome_message = m3;
+
+  const name = user.replace(/\b./g, c => c.toUpperCase());
+  welcome_message = welcome_message.replace(/\$user/g, name);
+
+  const css_text = await load_beautiful_font();
+  console.log("font css:", css_text);
+  const $welcome = $id("welcome");
+  $welcome.style.cssText = css_text;
+  console.log("welcome:", $welcome);
+
+  $welcome.classList.add("invisible");
+  $welcome.innerText = welcome_message;
+  await $wait(500);
+  $welcome.classList.remove("invisible");
+
+  console.log("welcome:", $welcome);
+
+  // we send the welcome message as narrative with first message, if room is simple.empty
+}
+
 
 // simple messages to keep the conversation going
 const random_message = [
@@ -165,7 +283,7 @@ const random_message = [
   "wow",
   "please continue",
   "tell me more",
-]
+];
 
 let VERSION;
 export let DEBUG = true;
@@ -406,7 +524,9 @@ function new_chat_message(message) {
   }
   // FIXME some issue where it's null sometimes...
   lastMessageId = message.lastMessageId || lastMessageId;
-  $body.classList.toggle("empty", lastMessageId === null);
+  // console.log("new_chat_message", lastMessageId);
+  // $body.classList.toggle("empty", lastMessageId === null);
+  $body.classList.remove("empty");
 }
 
 // insert text ---------------------------------------------------------------
@@ -565,11 +685,18 @@ function rem_to_px(rem) {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
+function on_room_ready(fn, ...args) {
+  if (room_ready)
+    fn(...args);
+  else
+    add_hook("room_ready", () => fn(...args));
+}
+
 function message_changed(ev) {
   const $send = $id("send");
   if ($content.value == "" && !simple) {
     $send.innerHTML = icons["poke"];
-    $send.title = "poke the chat: alt+enter";
+    $send.title = `poke the chat: ${Alt}+enter`;
   } else {
     $send.innerHTML = icons["send"];
     $send.title = "send your message" + (simple ? "" : ": ctrl+enter");
@@ -583,10 +710,7 @@ function message_changed(ev) {
     const new_height = $content.scrollHeight + pad_px;
     if (new_height != view_options.input_row_height) {
       view_options.input_row_height = new_height;
-      if (room_ready)
-        view_options_apply();
-      else
-        add_hook("room_ready", view_options_apply);
+      on_room_ready(view_options_apply);
     } else {
       $inputrow.style.flexBasis = old_flexBasis;
     }
@@ -670,8 +794,9 @@ export async function set_room(room_new, no_history) {
   // check if we're already in the room
   if (room === room_new) {
     // console.log("already in room", room);
-//    active_reset("room_ops_move");
-    // $content.focus();
+    active_reset("room_ops_move");
+    active_reset("room_ops_copy");
+    focus_content_on_pc();
     return;
   }
 
@@ -686,29 +811,34 @@ export async function set_room(room_new, no_history) {
   $body.classList.toggle("private", is_private);
   $body.classList.toggle("nsfw_zone", is_nsfw);
 
-  // // check if we're moving / renaming
-  // if (active_get("room_ops_move")) {
-  //   if (room_new = await move(room, room_new)) {
-  //     active_reset("room_ops_move");
-  //     // continue browsing to the new name, will do a reload unfortunately
-  //   } else {
-  //     // move was rejected
-  //     $room.value = room;
-  //     error("room_ops_move");
-  //     // stay in move mode
-  //     select_room_basename();
-  //     return;
-  //   }
-  // }
+  // check if we're moving / copying a room or file
+  if (active_get("room_ops_move") || active_get("room_ops_copy")) {
+    const mode = active_get("room_ops_move") ? "move" : "copy";
+    if (room_new = await move(room, room_new, mode)) {
+      active_reset("room_ops_move");
+      active_reset("room_ops_copy");
+      // continue browsing to the new name, will do a reload unfortunately
+    } else {
+      // move / copy was rejected
+      $room.value = room;
+      error(`room_ops_${mode}`);
+      // stay in move / copy mode
+      select_room_basename();
+      return;
+    }
+  }
 
   const type = get_file_type(room_new);
 
   if (type != "room")
     $body.classList.remove("empty");
 
-  if (view === "view_edit" && type == "dir" && !edit_close()) {
-    // reject changing to a directory if we have unsaved changes in the editor
+//  if (view === "view_edit" && type == "dir" && !edit_close()) {
+//    // reject browsing to a directory if we have unsaved changes in the editor
+  if (view === "view_edit" && !edit_close()) {
+    // reject browsing if we have unsaved changes in the editor
     $room.value = room;
+    history.forward();  // typically we would get here from the back button?  and this doesn't hurt if not
     error("room");
     return;
   }
@@ -738,6 +868,9 @@ export async function set_room(room_new, no_history) {
 
   nsfw_zone_room_changed();
 
+  // if (view === "view_edit" && !edit_changed()) {
+  //   // just change room, exit the editor
+  //   view = "messages";
   if (view === "view_edit") {
     editor_file = room_new;
     if (type == "room")
@@ -808,18 +941,25 @@ function setup_help_links() {
 }
 */
 
-// move a room or file -----------------------------------------------------
+// move or copy a room or file -----------------------------------------------------
 
-// function move_mode() {
-//   // button was clicked, toggle move mode
-//   if (active_toggle("room_ops_move")) {
-//     select_room_basename();
-//   } else {
-//     // $content.focus();
-//   }
-// }
+function move_mode(mode) {
+  if (typeof mode === "object")
+    mode = null;
+  mode = mode || "move";
+  // button was clicked, toggle move mode
+  if (active_toggle(`room_ops_${mode}`)) {
+    select_room_basename();
+  } else {
+    focus_content_on_pc();
+  }
+}
 
-async function move(source, dest) {
+function copy_mode() {
+  return move_mode("copy");
+}
+
+async function move(source, dest, mode) {
   const source_type = get_file_type(source);
   if (source_type == "dir" && !dest.match(/\/$/))
     dest += "/";
@@ -851,6 +991,7 @@ async function move(source, dest) {
   const formData = new FormData();
   formData.append("source", source);
   formData.append("dest", dest);
+  formData.append("mode", mode);
 
   const my_error = async (error_message) => {
     console.error(error_message);
@@ -869,23 +1010,12 @@ async function move(source, dest) {
   return dest_name_to_return;
 }
 
-// copy a room, file or selection --------------------------------------------
-
-// function copy_mode() {
-//   // TODO
-//   // button was clicked, toggle copy mode
-//   active_toggle("room_ops_copy");
-//   if (active_get("room_ops_copy")) {
-//     select_room_basename();
-//   } else {
-//     // $content.focus();
-//   }
-// }
-
 // send a message to the room iframe -----------------------------------------
 
 function send_to_room_iframe(message) {
-  $messages_iframe.contentWindow.postMessage(message, ROOMS_URL);
+  on_room_ready(() => {
+    $messages_iframe.contentWindow.postMessage(message, ROOMS_URL);
+  })
 }
 
 function send_to_help_iframe(message) {
@@ -920,7 +1050,6 @@ function nav_up(ev) {
 function scroll_home_end(ev, p) {
   ev.preventDefault();
   if(!editor_file) {
-    console.log("scroll_home_end");
     send_to_room_iframe({ type: "scroll_home_end", p });
   } else
     $edit.scrollTop = p * $edit.scrollHeight;
@@ -929,7 +1058,6 @@ function scroll_home_end(ev, p) {
 function scroll_pages(ev, d) {
   ev.preventDefault();
   if(!editor_file) {
-    console.log("scroll_pages");
     send_to_room_iframe({ type: "scroll_pages", d });
   } else
     $edit.scrollTop += d * $edit.clientHeight;
@@ -1108,12 +1236,13 @@ function escape() {
   }
 
   let acted = false;
-  // if (active_get("room_ops_move")) {
-  //   $room.value = room;
-  //   active_reset("room_ops_move");
-  //   // $content.focus();
-  //   acted = true;
-  // }
+  if (active_get("room_ops_move") || active_get("room_ops_copy")) {
+    $room.value = room;
+    active_reset("room_ops_move");
+    active_reset("room_ops_copy");
+    focus_content_on_pc();
+    acted = true;
+  }
   if (controls !== "input_main") {
     set_top_left();
     set_top();
@@ -1288,7 +1417,8 @@ function setup_main_ui_shortcuts() {
     ['alt+j', view_canvas, 'View canvas'],
     ['alt+f', view_fullscreen, 'View fullscreen'],
     ['alt+m', add_math, 'Add math'],
-//    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+    ['shift+alt+c', copy_mode, 'Copy mode', ADMIN],
 
     ['alt+z', undo, 'Undo last message', ADMIN],
     ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
@@ -1296,7 +1426,7 @@ function setup_main_ui_shortcuts() {
     ['ctrl+alt+r', (ev) => retry(ev, true), 'Retry last action', ADMIN],
     ['alt+x', clear_chat, 'Clear messages', ADMIN],
     ['shift+alt+a', archive_chat, 'Archive chat', ADMIN],
-    ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
+//    ['shift+alt+c', clean_chat, 'Clean up the room', ADMIN],
     ['alt+e', () => edit(), 'Edit file', ADMIN],
     ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
 
@@ -1309,7 +1439,8 @@ function setup_main_ui_shortcuts() {
 
   add_shortcuts(shortcuts.room, [
     ['enter', focus_content, 'Focus message input'],
-//    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
+    ['shift+alt+c', copy_mode, 'Copy mode', ADMIN],
   ]);
 
   add_shortcuts(shortcuts.filter, [
@@ -1319,7 +1450,7 @@ function setup_main_ui_shortcuts() {
   add_shortcuts(shortcuts.edit, [
     ['alt+t', edit_indent, 'Insert tab / indent'],
     ['shift+alt+t', edit_dedent, 'dedent'],
-    ['escape', edit_close, 'Close edit'],
+    ['escape', edit_close_back, 'Close edit'],
     ['ctrl+s', edit_save, 'Save edit'],
     ['ctrl+enter', edit_save_and_close, 'Save edit and close'],
     ['alt+z', edit_reset, 'Reset edit'],
@@ -1330,6 +1461,7 @@ function setup_main_ui_shortcuts() {
 // handle messages from the messages iframe ----------------------------------
 
 function handle_message(ev) {
+		// FIXME, too much power for scripts in the room?
   if (embed && ev.origin == ALLYCHAT_CHAT_URL) {  /* TODO support other host sites */
     if (ev.data.type == "theme_changed")
       return set_theme(ev.data.theme);
@@ -1429,7 +1561,6 @@ function handle_message(ev) {
   }
   */
 
-  // console.log("focus_content from handle_message: ev.data", ev.data);
   $content.focus();
 
   // detect F5 or ctrl-R to reload the page
@@ -1782,6 +1913,8 @@ async function clear_chat(ev, op) {
     return await my_error(data.error);
   }
 
+  $body.classList.add("empty");
+
   reset_ui();
 }
 
@@ -1887,7 +2020,7 @@ export function set_controls(id) {
     show($id(id));
   }
   if (id === "input_main") {
-    // setTimeout(() => $content.focus(), 1);
+    setTimeout(() => focus_content_on_pc());
   }
   if (id === "input_view") {
     if (view_theme_original_text) {
@@ -2127,6 +2260,10 @@ function edit_get_text() {
   return editor_text;
 }
 
+function edit_changed() {
+  return edit_get_text() !== editor_text_orig;
+}
+
 async function edit(file) {
   stop_auto_play();
 
@@ -2188,6 +2325,7 @@ async function edit_save() {
     editor_text_orig = editor_text;
   } catch (err) {
     console.error(err.message);
+    active_dec("edit_save");
     await error("edit_save");
     return false;
   }
@@ -2198,13 +2336,12 @@ async function edit_save() {
 
 async function edit_save_and_close() {
   if (await edit_save())
-    edit_close();
+    edit_close_back();
 }
 
 function edit_reset() {
-  if (edit_get_text() !== editor_text_orig) {
+  if (edit_changed())
     if (!confirm_except_iOS("Discard changes?")) return;
-  }
   edit_set_text(editor_text_orig);
 }
 
@@ -2212,35 +2349,49 @@ function edit_clear() {
   edit_set_text("");
 }
 
+function edit_close_back() {
+  // if ends with EXTENSION, strip it off
+  const stem = editor_file.replace(new RegExp(quotemeta(EXTENSION)+"$"), "");
+  const type = get_file_type(stem);
+  if (edit_close() && type == "file") {
+    // if can't go back, go to parent folder
+    if (history.length > 1)
+      history.back();
+    else
+      nav_up();
+  }
+}
+
 function edit_close(ev) {
   if (ev)
     ev.stopPropagation();
-  if (edit_get_text() !== editor_text_orig) {
+  if (edit_changed())
     if (!confirm_except_iOS("Discard changes?")) return false;
-  }
-  const type = get_file_type(editor_file);
-  // const leafname = editor_file.replace(/.*\//, "");
-  let dirname;
-  // check if '/' in editor_file
-  if (editor_file.includes("/"))
-    dirname = editor_file.replace(/\/[^\/]*$/, "") + "/";
-  else
-    dirname = "/";
-  // const dont_change = ["access.yml", "options.yml"];
-  // let change_to_room = type == "file" && !dont_change.includes(leafname) && editor_file.replace(/\.[^\/]*$/, "");
-  let change_to_room;
-  if (type == "file" && editor_file.endsWith(EXTENSION))
-    change_to_room = editor_file.replace(/\.[^\/]*$/, "");
-  else
-    change_to_room = dirname;
+  // const type = get_file_type(editor_file);
+  // // const leafname = editor_file.replace(/.*\//, "");
+  // let dirname;
+  // // check if '/' in editor_file
+  // if (editor_file.includes("/"))
+  //   dirname = editor_file.replace(/\/[^\/]*$/, "") + "/";
+  // else
+  //   dirname = "/";
+  // // const dont_change = ["access.yml", "options.yml"];
+  // // let change_to_room = type == "file" && !dont_change.includes(leafname) && editor_file.replace(/\.[^\/]*$/, "");
+
+  // let change_to_room;
+  // if (type == "file" && editor_file.endsWith(EXTENSION))
+  //   change_to_room = editor_file.replace(/\.[^\/]*$/, "");
+  // else
+  //   change_to_room = dirname;
+
   editor_text = editor_text_orig = null;
   editor_file = null;
   $edit.value = "";
   set_view();
   set_controls();
 
-  if (change_to_room)
-    set_room(change_to_room);
+  // if (change_to_room)
+  //   set_room(change_to_room);
   return true;
 }
 
@@ -2256,6 +2407,7 @@ function setup_view_options() {
       view_options[key] = view_options_loaded[key];
     }
     view_options.fullscreen = 0;
+    simple = view_options.advanced < 0;
   }
   if (embed) {
     for (const key in view_options_embed) {
@@ -2263,7 +2415,7 @@ function setup_view_options() {
     }
   }
   set_default_room();
-  add_hook("room_ready", view_options_apply);
+  on_room_ready(view_options_apply);
 }
 
 function set_default_room() {
@@ -2391,20 +2543,29 @@ function view_options_apply() {
     // help_iframe_set_src("");
   }
 
-  // input placeholder in basic mode, before first message sent in this session
-  if (view_options.advanced < 0) {
+  // input placeholder in standard mode, before first message sent in this session
+  let input_placeholder = "";
+  let hold_or_press = hold_alt ? "Hold" : "Press";
+  if (simple && $content.placeholder != "") {
+    if (isMobile)
+      input_placeholder += `Long-press here for options.`;
+    else
+      input_placeholder += `${hold_or_press} ${Alt} for options.`;
+  } else if (simple) {
     $content.placeholder = " ";
   } else if ($content.placeholder != "" && view_options.advanced == 0) {
-    let input_placeholder = "";
     if (!isMobile)
       input_placeholder += "Ctrl+Enter to Send. ";
-    input_placeholder += "Send an empty message to Poke the chat. ";
+    // input_placeholder += "Send an empty message to Poke the chat. ";
     if (isMobile)
-      input_placeholder += "Long-press here to return to simple mode.";
+      input_placeholder += "Long-press for simple mode.";
     else
-      input_placeholder += "Press Alt/Option to return to simple mode.";
-    $content.placeholder = input_placeholder;
+      input_placeholder += `${Alt} for simple mode.`;
+    input_placeholder += " { } for prompts.";
   }
+  $content.placeholder = input_placeholder;
+  if (input_placeholder != "")
+    setTimeout(() => { $content.placeholder = ""; }, 5000);
 
   if (view_options.image_size >= 10)
     view_image_size_delta = -1;
@@ -2665,7 +2826,7 @@ async function change_theme(ev) {
     return;
   }
   // basic and standard mode, just toggle light and dark
-  if (view_options.advanced <= 0) {
+  if (simple) {
     theme = theme === "light" ? "dark" : "light";
     return set_theme(theme);
   }
@@ -2847,7 +3008,7 @@ async function opt_mission(ev) {
 async function setup_icons() {
   await $import("icons");
   icons = modules.icons.icons;
-  for (const prefix of ["mod", "add", "view", "opt", "nav", "pages", "scroll", "audio", "select"]) { //, "filter"]) {
+  for (const prefix of ["mod", "add", "view", "opt", "nav", "pages", "scroll", "audio", "select", "room_ops"]) { //, "filter"]) {
     icons[`${prefix}_cancel`] = icons[prefix]; // icons["x"];
   }
 //  icons["edit_close"] = icons["x"];
@@ -2879,7 +3040,6 @@ async function setup_icons() {
   icons["help_retry"] = icons["undo"];
   icons["help_archive"] = icons["mod_archive"];
   icons["mod_archive_2"] = icons["mod_archive"];
-  icons["view_theme_2"] = icons["view_theme"];
   icons["help_clear"] = icons["mod_clear"]
 
   icons["view_advanced"] = icons["view_mode_standard"]; // XXX check this
@@ -3281,17 +3441,21 @@ function view_option(ev) {
   // if not in input_main controls, return to them and show options
   if (ev.key !== "Alt" || view_options.advanced > 0)
     return;
-  if (simple) {
+  $content.placeholder = "";
+  if (simple && hold_alt) {
     $body.classList.toggle("option", ev.type === "keydown");
-  } else if (!simple && ev.type === "keyup" && controls == "input_main" && !view_option_skip_alt) {
+  } else if (ev.type === "keyup" && controls == "input_main" && !view_option_skip_alt) {
     $body.classList.toggle("option");
-  } else if (!simple && ev.type === "keyup" && controls !== "input_main" && !view_option_skip_alt) {
+  } else if (ev.type === "keyup" && controls !== "input_main" && !view_option_skip_alt) {
     set_controls();
     $body.classList.add("option");
   } else {
     view_option_skip_alt = false;
     return;
   }
+  // prevent default action of moving focus to menu bar
+  if (ev.type === "keyup")
+    ev.preventDefault();
   controls_resized();
 }
 
@@ -3323,26 +3487,35 @@ function hide_placeholder() {
   $content.placeholder = "";
 }
 
-// beta_test: put users' settings into a certain state for testing --------------------
+// beta_test: put users' settings into a certain state for testing -----------
+
+const beta_test_users = ["sam"]; // null for all
 
 function beta_test() {
-  const beta_test = view_options.beta_test == "simple";
-  // look for beta_test_done in local storage
-  const beta_test_done = localStorage.getItem('beta_test_done');
+  const beta_test = view_options.beta_test;
+  const done = view_options.beta_test_done;
+  const do_beta = !beta_test_users || beta_test_users.includes(user);
 
-  if (beta_test == beta_test_done) {
+  // console.log(`beta_test ${beta_test} done ${done}`);
+
+  if (!do_beta)
+    return;
+
+  if (beta_test == done) {
+    // console.log("beta_test already done");
     // pass
-  } else if (beta_test == "simple" && view_options.advanced >= 0 && user == "sam") { // for testing the beta test function!
+  } else if (beta_test == "simple2" && view_options.advanced >= 0) {
+    // console.log("beta_test activated");
     view_options.source = 0;
     view_standard();
-    // delete the key
   } else {
-    // unknown beta test
-    return;
+    // console.log("beta_test not done");
+    // unknown or obsolete beta test, remove it!
   }
 
   view_options.beta_test_done = beta_test;
   delete view_options.beta_test;
+  view_options_apply();
 }
 
 
@@ -3364,7 +3537,6 @@ export async function init() {
   setup_help();
   load_filter();
   setup_view_options();
-  beta_test();
   await setup_icons();
   setup_embed_vs_main_ui();
 
@@ -3404,7 +3576,7 @@ export async function init() {
   $on($id("select"), "click", select_click);
   /* $on($id("scroll"), "click", () => set_top("top_scroll")); */
   $on($id("filter"), "click", () => set_top("top_filter"));
-  // $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
+  $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
 
   // select functions
   $on($id("select_cancel"), "click", select_cancel);
@@ -3430,12 +3602,12 @@ export async function init() {
   $on($id("edit_save"), "click", edit_save_and_close);
   $on($id("edit_reset"), "click", edit_reset);
   $on($id("edit_clear"), "click", edit_clear);
-  $on($id("edit_close"), "click", edit_close);
+  $on($id("edit_close"), "click", edit_close_back);
   $on($id("edit_indent"), "click", edit_indent);
   $on($id("edit_dedent"), "click", edit_dedent);
 
   $on($id("view_theme"), "click", change_theme);
-  $on($id("view_theme_2"), "click", change_theme);
+  // $on($id("view_theme_bw"), "click", change_theme);
   $on($id("view_ids"), "click", view_ids);
   $on($id("view_images"), "click", view_images);
   $on($id("view_alt"), "click", view_alt);
@@ -3482,9 +3654,9 @@ export async function init() {
   if (iOS && navigator.standalone)
     $on(window, "scroll", iOS_reload_scroll);
 
-  // $on($id("room_ops_move"), "click", move_mode);
-  // $on($id("room_ops_copy"), "click", copy_mode);
-  // $on($id("room_ops_cancel"), "click", () => set_top_left());
+  $on($id("room_ops_move"), "click", move_mode);
+  $on($id("room_ops_copy"), "click", copy_mode);
+  $on($id("room_ops_cancel"), "click", () => set_top_left());
 
   $on($id("audio_cancel"), "click", () => set_controls());
 
@@ -3512,11 +3684,13 @@ export async function init() {
   notify_main();
   record_main();
 
-  // $content.focus();
-
   focus_content_on_pc();
 
   await load_user_files();
+
+  beta_test();
+
+  welcome();  // async
 
   /* This breaks scrolling in view_edit, etc, and I forget why I added it!
   $on(document, "touchmove", function(e) {

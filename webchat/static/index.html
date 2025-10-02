@@ -27,23 +27,24 @@
 <form id="form" class="fill" onsubmit="return false;">
 <input type="hidden" id="op" name="op" value="post">
 <div id="main" class="col fill">
+	<!--<div class="row gap hidden option-simple-invisible" id="top">-->
 	<div class="row gap hidden standard advanced" id="top">
 		<a class="button private standard" href="" id="privacy" title=""></a>
 		<div class="top_left_controls row gap" id="top_left_main">
-			<a class="button nsfw nav_nsfw hidden" href="" title="go to the main NSFW room">nsfw</a>
+			<a class="button nsfw nav_nsfw hidden simple standard" href="" title="go to the main NSFW room">nsfw</a>
 			<a class="button advanced" href="" id="nav" title="navigation">nav</a>
 			<a class="button advanced" href="" id="pages" title="pages">pages</a>
 			<a class="button hidden" href="" id="dir_sort" title="sort">sort_alpha</a>
 			<button id="select" title="select messages" class="boffin">select</button> <!-- should be advanced when done -->
-			<!--<button id="room_ops" title="room operations" class="advanced">room</button>-->
+			<button id="room_ops" title="room operations" class="advanced">room</button>
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_nav">
 			<button id="nav_cancel" class="back">back</button>
-			<a class="button" href="" id="nav_up" title="go up to the parent folder: alt+u">up</a>
-			<a class="button" href="" id="nav_allychat" title="go to the main 'Ally Chat' room">allychat</a>
-			<!--<a class="button nsfw nav_nsfw hidden" href="" title="go to the main NSFW room">nsfw</a>-->
-			<a class="button" href="" id="nav_porch" title="your 'porch', a public room you control">porch</a>
 			<a class="button" href="" id="nav_home" title="your 'home', a private room">home</a>
+			<a class="button" href="" id="nav_allychat" title="go to the main 'Ally Chat' room">allychat</a>
+			<a class="button nsfw nav_nsfw hidden advanced" href="" title="go to the main NSFW room">nsfw</a>
+			<a class="button" href="" id="nav_porch" title="your 'porch', a public room you control">porch</a>
+			<a class="button" href="" id="nav_up" title="go up to the parent folder: alt+u">up</a>
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_pages">
 			<button id="pages_cancel" class="back">back</button>
@@ -71,12 +72,12 @@
 		<div class="top_controls row gap" id="top_main">
 			<button id="debug" title="debug" class="small boffin">?</button>
 			<button id="filter" title="filter media" class="advanced">filter</button>
-			<button id="scroll_end_2" title="end of room: end" class="standard">bot</button>
+			<button id="scroll_end_2" title="end of room: end" class="standard advanced">bot</button>
 			<!-- <button id="scroll" title="scrolling" class="advanced">scroll</button> -->
 			<button class="hidden" id="notify">notify</button>
-			<a class="button" href="" id="user" title="cycle your main rooms">…</a>
 			<a class="button" href="" id="help" title="get help to use Ally Chat"></a>
-			<button id="logout" title="log out">exit</button>
+			<a class="button standard" href="" id="user" title="cycle your main rooms">…</a>
+			<button id="logout" title="log out" class="standard">exit</button>
 		</div>
 		<!-- <div class="top_controls row gap hidden" id="top_scroll">
 			<button id="scroll_home" title="start of room: home">top</button>
@@ -109,7 +110,7 @@
 
 	<textarea id="view_edit" class="view editor grow hidden"></textarea>
 
-	<div class="empty grow"></div>
+	<div id="welcome" class="empty grow3"></div>
 
 	<div class="row" id="resizer">
 	</div>
@@ -126,13 +127,13 @@
 		<div class="controls col_wrap" id="input_main">
 			<button id="send">send</button>
 			<button id="add" title="add a file or recording" class="advanced">add</button>
-			<button id="add_file_2" title="upload files" class="simple standard option-simple">file</button>
+			<button id="add_file_2" title="upload files" class="standard option-simple">file</button>
 			<button id="view" title="view settings" class="standard advanced">view</button>
 			<button id="audio" title="audio settings" class="boffin">audio</button>
 			<button id="opt" title="room options" class="advanced">opt</button>
 			<button id="mod" title="owner tools" class="admin standard advanced">mod</button>
 			<button id="mod_archive_2" title="archive this room" class="simple option">archive</button>
-			<button id="view_theme_2" title="change the theme" class="simple option">theme</button>
+			<!--<button id="view_theme_bw" title="change the theme" class="simple option">theme</button>-->
 			<button id="view_standard" title="standard mode" class="simple standard option">standard mode</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_mod">
@@ -214,7 +215,7 @@
 		</div>
 	</div>
 
-	<div class="empty grow"></div>
+	<div class="empty grow2"></div>
 </div>
 </form>
 
