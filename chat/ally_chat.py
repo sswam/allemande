@@ -197,9 +197,9 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     # Load config file, if present
     config_file = room.find_resource_file("yml", "options")
-    logger.info("config_file: %r", config_file)
+    logger.debug("config_file: %r", config_file)
     config = config_read(config_file)
-    logger.info("config: %r", config)
+    logger.debug("config: %r", config)
 
     mission_file_name = config.get("mission", "mission")
     mission_try_room_name = "mission" not in config
@@ -472,10 +472,19 @@ def filter_out_agents_install(response: str) -> str:
 
     agents_path = PATH_ROOMS / "agents"
 
-    for file_name, content in yaml_agents:
+    for path_name, content in yaml_agents:
         # Sanitize filename
-        safe_file_name = Path(file_name).name  # Remove any path components
-        file_path = agents_path / safe_file_name
+
+        # Process the path to remove components up to and including "agents" if present
+        path_parts = Path(path_name).parts
+        if "agents" in path_parts:
+            agents_index = path_parts.index("agents")
+            safe_path_name = Path(*path_parts[agents_index + 1:])
+        else:
+            # If "agents" not found, use the original path
+            safe_path_name = Path(path_name)
+
+        file_path = agents_path / safe_path_name
 
         # Validate path
         if not str(file_path).startswith(str(agents_path) + os.sep):
@@ -674,7 +683,12 @@ async def run_subprocess(command, query):
     return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
 
 
-async def safe_shell(agent, query, file, args, history, history_start=0, command=None, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
+async def tool(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
+    """Run a tool agent"""
+    return await safe_shell(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human, direct=True)
+
+
+async def safe_shell(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
     """Run a shell agent."""
     # NOTE: responsible_human is not used here
 
@@ -684,6 +698,25 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     logger.debug("history_messages: %r", history_messages)
     message = history_messages[-1]
     query = message["content"]
+
+    try:
+        executable = agent["command"][0]
+    except (TypeError, KeyError):
+        raise ValueError(f"Agent {name} has no command")
+
+    if direct:
+        # tool must exist under PATH_TOOLS
+        # check only contains safe characters
+        if not re.match(r"^[a-zA-Z0-9._-]+$", executable):
+            raise ValueError(f"Tool command contains unsafe characters: {executable}, {agent.name}")
+        if not (PATH_TOOLS/executable).is_file():
+            # glob .* anywhere under it
+            commands = list(PATH_TOOLS.glob(f"**/{executable}.*"))
+            if len(commands) == 0:
+                raise ValueError(f"Tool command not found: {executable}, {agent.name}")
+            if len(commands) > 1:
+                raise ValueError(f"Tool command is ambiguous: {executable} matches {commands}, {agent.name}")
+            executable = str(commands[0])
 
 #    logger.debug("query 1: %r", query)
 #    rx = r"((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b" + re.escape(name) + r"\b"
@@ -696,18 +729,25 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
     query = chat.clean_prompt([query], name, args.delim) + "\n"
     logger.debug("query: %s", query)
 
-    arguments = ""
+    args = []
     if agent.get("args"):
-        arguments = " " + query.rstrip("\n")
+        args = query.split()
         query = ""
 
-    # shell escape in python
-    cmd_str = ". ~/.profile ; "
-    cmd_str += " ".join(map(shlex.quote, agent["command"])) + arguments
+    if direct:
+        command = [str(executable)] + agent["command"][1:] + args
 
-    command = ["sshc", "--", "nobodally@localhost", "bash", "-c", cmd_str]
+        logger.debug("tool command: %r query: %r", command, query)
+    else:
+        argv = agent["command"] + args
 
-    logger.debug("safe_shell command: %r query: %r", command, query)
+        # shell escape in python
+        cmd_str = ". ~/.profile ; "
+        cmd_str += " ".join(map(shlex.quote, argv))
+
+        command = ["sshc", "--", "nobodally@localhost", "bash", "-c", cmd_str]
+
+        logger.debug("safe_shell command: %r query: %r", command, query)
 
     # echo the query to the subprocess
     output, errors, status = await run_subprocess(command, query)
@@ -728,10 +768,15 @@ async def safe_shell(agent, query, file, args, history, history_start=0, command
             response += "## messages:\n```\n" + errors + "\n```\n\n"
         response += "## output:\n"
 
-    if not agent.get("markdown"):
+    fmt = agent.get("format", "code")
+    if fmt == "code":
         response += "```\n" + output + "```\n"
-    else:
+    elif fmt == "markdown":
         response += output
+    elif fmt == "pre":
+        response += "<pre>\n" + output + "</pre>\n"
+    else:
+        raise ValueError(f"Unknown format: {fmt}")
 
     response2 = f"{name}:\t{response}"
     logger.debug("response2:\n%r", response2)
@@ -817,6 +862,8 @@ async def watch_loop(args):
 
                 file_type = check_file_type(file_path)
 
+                logger.info("File change detected: %r, type: %r", file_path, file_type)
+
                 if file_type == "room" and not os.access(file_path, os.W_OK):
                     logger.info("Ignoring change to unwritable file: %r", file_path)
                 elif file_type == "room":
@@ -889,6 +936,7 @@ services = {
     "openrouter":   {"link": "remote", "fn": remote_agent},
     "venice":       {"link": "remote", "fn": remote_agent},
     "safe_shell":   {"link": "tool", "fn": safe_shell, "safe": False, "dumb": True},  # ironically
+    "tool":         {"link": "tool", "fn": tool, "safe": True, "dumb": True},
     "search":       {"link": "tool", "fn": run_search, "dumb": True},
 }
 

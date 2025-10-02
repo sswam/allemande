@@ -118,7 +118,8 @@ async def put_file(request, path=""):
 
     try:
         await ally_room.overwrite_file(user, path, content, delay=0.2, noclobber=noclobber, remove_empty=True)
-    except PermissionError as e:
+    except (PermissionError, ValueError) as e:
+        logger.warning("Error writing file %s", path, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({"status": "success"})
 
@@ -248,8 +249,9 @@ async def move(request):
     form = await request.form()
     source = form["source"]
     dest = form["dest"]
+    mode = form["mode"]  # move or copy
     try:
-        ally_room.move_file(user, source, dest)
+        ally_room.move_file(user, source, dest, mode=mode)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     except ValueError as e:
