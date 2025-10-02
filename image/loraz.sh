@@ -16,9 +16,17 @@ loraz() {
 	fi
 
 	for query; do
-		query=${query,,}
+		# Check if original query contains any uppercase letters
+		local grep_option
+		if [[ "$query" = "${query,,}" ]]; then
+			grep_option="-i"
+		else
+			grep_option=""
+		fi
+
 		printf "## %s\n" "$query"
-		cat "${files[@]}" | uniqo | grep -i -e "$query" -e "^| <lora:name:weight>" -e '^|--|'
+		cat "${files[@]}" | uniqo |
+		grep $grep_option -e "$query" -e "^| <lora:name:weight>" -e '^|--|'
 		echo
 	done
 }

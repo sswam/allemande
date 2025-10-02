@@ -7,9 +7,16 @@ charz() {
 	eval "$(ally)"
 
 	for query; do
-		query=${query,,}
+		# Check if original query contains any uppercase letters
+		local grep_option
+		if [[ "$query" = "${query,,}" ]]; then
+			grep_option="-i"
+		else
+			grep_option=""
+		fi
+
 		printf "## %s\n\n" "$query"
-		grep -i -e "\<$query" -e "^### " -e '^$' -- ~/characters.bb
+		grep $grep_option -e "\<$query" -e "^### " -e '^$' -- ~/characters.bb
 		echo
 	done |
 	grep -B2 -A1 -e '^## ' -e '^- ' --no-group-separator
