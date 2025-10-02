@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # dir
 # Prunes files in the specified directories to free up space.
+# Warning: this is as dangerous as rm -rf
 
 cache-prune() {
 	free= f=    # ensure FS free space, e.g. 5G
 	reduce= r=  # reduce by this amount, e.g. 50M
 	remove= R=  # actually remove files rather than printing them
+	warn= w=    # warn if reduction target not met
+	quiet= q=   # suppress output of removed files
 
 	eval "$(ally)"
 
@@ -33,8 +36,30 @@ cache-prune() {
 	if [ "$reduce" -le 0 ]; then
 		exit 0
 	fi
-	printf >&2 "Pruning cache to free up %s KiB\n" "$reduce"
-	prune "$cache_dir" "$reduce" "$remove"
+
+	if [ -z "$quiet" ]; then
+		printf >&2 "Pruning cache to free up %s KiB\n" "$reduce"
+	fi
+
+	local total=0
+
+	while IFS=$'\t' read -r size file && [ $total -lt "$reduce" ]; do
+		if [ "$remove" ]; then
+			rm -f "$file"
+		fi
+		if [ -z "$quiet" ]; then
+			echo "$size	$file"
+		fi
+		total=$(( total + size ))
+	done < <(find "$cache_dir" -type f | sorttime -t=a -r -s | kut 2 | xa du 2>/dev/null | sed 's/^ *//;')
+
+	if [ "$remove" ]; then
+		find "$cache_dir" -depth -mindepth 1 -type d | xa rmdir 2>/dev/null
+	fi
+
+	if [ "$warn" ] && [ "$total" -lt "$reduce" ]; then
+		printf >&2 "Warning: only freed %s KiB of requested %s KiB\n" "$total" "$reduce"
+	fi
 }
 
 space-units-to-kb() {
@@ -47,23 +72,6 @@ space-units-to-kb() {
 		*[0-9]) echo $(( (space + 1023) / 1024 )) ;;
 		*) die "Invalid space format: $space" ;;
 	esac
-}
-
-prune() {
-	local dir=$1
-	local reduce=$2
-	local remove=$3
-	find "$dir" -type f | sorttime -t=a -r -s | kut 2 | xa du 2>/dev/null | sed 's/^ *//;' |
-	(
-		total=0
-		while IFS=$'\t' read -r size file && [ $total -lt $reduce ]; do
-			if [ "$remove" ]; then
-				rm -f "$file"
-			fi
-			echo "$size	$file"
-			total=$(( total + size ))
-		done
-	)
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
