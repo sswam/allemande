@@ -3,11 +3,17 @@
 # sync submodules with arcs
 
 arcs-sub() {
-	local verbose= v=      # show output even on success
+	local verbose= v=   # show output even on success
+	local no_net= N=    # don't sync on the network
 
 	eval "$(ally)"
 
 	local args=("$@")
+	local arcs_opts=()
+	
+	if [ "$no_net" = 1 ]; then
+		arcs_opts+=("-N")
+	fi
 
 	local status=0
 	while IFS= read -r git; do
@@ -17,9 +23,9 @@ arcs-sub() {
 		fi
 		repo=$(dirname "$git")
 		if [ "$verbose" = 1 ]; then
-			verbose arcs "$repo" || status=1
+			verbose arcs "${arcs_opts[@]}" "$repo" || status=1
 		else
-			quiet-on-success arcs "$repo" || status=1
+			quiet-on-success arcs "${arcs_opts[@]}" "$repo" || status=1
 		fi
 	done < <(
 		# process deeper repos first
