@@ -1,6 +1,10 @@
+const APP_NAME = "Ally Chat";
+const COMPANY_NAME = "Allemande";
+const PUBLIC_ROOM = APP_NAME;
+const NSFW_ROOM = "nsfw/nsfw";
 const ALLEMANDE_LOGIN_URL="https://allemande.ai";
 const ALLYCHAT_CHAT_URL="https://chat.allemande.ai";
 const ALLYCHAT_ROOMS_URL="https://rooms.allemande.ai";
 const ALLYCHAT_WEBPUSH_VAPID_PUBLIC_KEY="";
-const GLOBAL_MODERATORS = ["root", "yourusername"];
+const GLOBAL_MODERATORS = ["root"];
 const DEVS = ["root", "yourusername"];
