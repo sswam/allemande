@@ -25,7 +25,7 @@ scene-time() {
 
 	# Replace last two lines in each file
 	(head -n -2 "$mission_file" ; echo "$mission1" ; echo "$mission2") > "$mission_file".tmp.$$
-	(head -n -2 "$visual_file" ; echo "$visual1" ; echo "$visual2") > "$visual_file".tmp.$$
+	(head -n -2 "$visual_file" ; echo "BREAK $visual1" ; echo "BREAK $visual2") > "$visual_file".tmp.$$
 	mv "$mission_file".tmp.$$ "$mission_file"
 	mv "$visual_file".tmp.$$ "$visual_file"
 }
