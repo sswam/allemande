@@ -1,6 +1,6 @@
 base: MediumAI
 over: []
-welcome: true
+welcome: false
 system_top: |-
   You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 
@@ -36,5 +36,5 @@ visual:
     clothes_upper: blue blouse
     clothes_lower: long skirt, red skirt
 context: 10
-system_bottom_pos: -10
+system_bottom_pos: 10
 system_bottom: |-
