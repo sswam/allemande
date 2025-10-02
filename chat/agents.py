@@ -253,18 +253,18 @@ class Agent:
         period_day = (day_count + period) % period_length
         period_day_desc = f"<think>it's day {int(period_day)} of your cycle</think>"
         period_index = int(period_day * period_days_len // period_length)
-        logger.info("Period info; day_count=%r period=%r period_day=%r period_index=%r/%r", day_count, period, period_day, period_index, period_days_len)
+        # logger.info("Period info; day_count=%r period=%r period_day=%r period_index=%r/%r", day_count, period, period_day, period_index, period_days_len)
         line = period_days[period_index]
         name = self.get("name")
         period_desc = f"{name}, {period_day_desc}. " + line.split("\t")[1]
-        logger.info("Period description: %r", period_desc)
+        # logger.info("Period description: %r", period_desc)
         is_menstrating = period_index <= 4
         period_visual = ""
         if is_menstrating:
             period_weight = [0.9, 1, 0.95, 0.85, 0.8][period_index]
             period_percent = 100  # 50?
             period_visual = f"[use period {period_percent} {period_weight}]"
-        logger.info("Period visual: %r", period_visual)
+        # logger.info("Period visual: %r", period_visual)
         return period, period_desc, period_day, period_length, period_visual
 
     def get_pregnant(self, now):
@@ -298,11 +298,11 @@ class Agent:
             duration_desc += f", you are due pretty soon!"
         name = self.get("name")
         pregnant_desc = f"{name}, {duration_desc}"
-        logger.info("Pregnancy info: days_pregnant=%r total_days=%r", days_pregnant, total_days)
-        logger.info("Pregnancy description: %r", pregnant_desc)
+        # logger.info("Pregnancy info: days_pregnant=%r total_days=%r", days_pregnant, total_days)
+        # logger.info("Pregnancy description: %r", pregnant_desc)
         pregnant_frac = f"{days_pregnant / total_days:.2f}"
         pregnant_visual = f"BREAK (pregnant:{pregnant_frac})"
-        logger.info("Pregnancy visual: %r", pregnant_visual)
+        # logger.info("Pregnancy visual: %r", pregnant_visual)
         return pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual
 
     def base(self):
@@ -539,6 +539,7 @@ class Agents:
         # load all agents first
         for agent_file in agent_files:
             try:
+                logger.info("load_agent_without_setup: %r", agent_file)
                 agent = self.load_agent_without_setup(agent_file, private=private)
                 new_agents.append(agent)
             except NotEnabledError:
@@ -549,8 +550,11 @@ class Agents:
         # then set up and update visuals
         for agent in new_agents:
             if visual:
+                logger.info("update_visual: %r", agent.name)
                 agent.update_visual(private=private)
+            logger.info("set_up: %r", agent.name)
             if not agent.set_up(self.services):
+                logger.info("remove_agent: %r", agent.name)
                 self.remove_agent(agent.name, keep_visual=True, private=private)
                 continue
 

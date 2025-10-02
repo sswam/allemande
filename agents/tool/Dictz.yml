@@ -1,6 +1,6 @@
 # A software tool to look words up in the dictionary
-type: safe_shell
+type: tool
 command:
-- dict
+- dictz
 format: markdown
 args: True

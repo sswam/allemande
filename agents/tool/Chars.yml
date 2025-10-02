@@ -2,5 +2,5 @@
 type: safe_shell
 command:
 - charz
-markdown: True
+format: markdown
 args: True
