@@ -3607,7 +3607,7 @@ export async function init() {
   $on($id("edit_dedent"), "click", edit_dedent);
 
   $on($id("view_theme"), "click", change_theme);
-  // $on($id("view_theme_bw"), "click", change_theme);
+  $on($id("view_theme_bw"), "click", change_theme);
   $on($id("view_ids"), "click", view_ids);
   $on($id("view_images"), "click", view_images);
   $on($id("view_alt"), "click", view_alt);

@@ -54,7 +54,8 @@ input:not([type=checkbox]), textarea, select {
 	max-width: 100%;
 }
 body.simple #inputrow {
-	min-height: 4.25em;
+/*	min-height: 4.25em; */
+	min-height: 5em;
 	max-height: 50dvh;
 }
 #inputrow > .controls {
@@ -390,6 +391,7 @@ body.simple.empty #welcome {
 	font-size: 2.5rem;
 	align-items: center;
 	white-space: pre-wrap;
+	color: var(--text);
 }
 
 /*
