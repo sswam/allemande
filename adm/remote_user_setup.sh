@@ -28,5 +28,18 @@ ${COMMON_CONTENT}
 EOF
 done
 
+# Create rc.local
+cat <<END | sudo tee -a /etc/rc.local
+#!/bin/sh
+/opt/allemande/adm/remote_user_firewall.sh add
+/opt/allemande/adm/remote_user_startup.sh
+exit 0
+END
+
+sudo chmod +x /etc/rc.local
+
+# Enable rc.local
+systemctl enable rc-local.service
+
 # Reload system daemon configuration
 systemctl daemon-reload

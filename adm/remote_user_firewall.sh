@@ -28,11 +28,14 @@ fi
 
 UID_CHECK="meta skuid >= $UNTRUSTED_UID_MIN meta skuid <= $UNTRUSTED_UID_MAX"
 
+ALLOW_PORTS=($ALLOW_PORTS)
+ALLOW_PORTS_ROUTER=($ALLOW_PORTS_ROUTER)
+
 # Order matters! Rules are evaluated top-to-bottom:
 # 1. Interface restrictions (only allow lo and ethernet)
 # 2. Established connections (for responses to outbound traffic)
-# 3. Local services (DNS, high ports)
-# 4. Router services (DNS only)
+# 3. Local services (e.g. DNS, high ports)
+# 4. Router services (e.g. DNS only)
 # 5. Block private networks
 # 6. Allow internet
 
@@ -62,13 +65,17 @@ for chain in input output; do
 		esac
 
 		for transport_proto in tcp udp; do
-			# Localhost: Allow DNS and high ports
-			nft add rule inet "$TABLE_NAME" "$chain" $UID_CHECK "$net_proto" "$addr" "$localhost" "$transport_proto" "$port" 53 accept
+			# Localhost: Allow configured ports (e.g. DNS) and high ports
+			for PORT in "${ALLOW_PORTS[@]}"; do
+				nft add rule inet "$TABLE_NAME" "$chain" $UID_CHECK "$net_proto" "$addr" "$localhost" "$transport_proto" "$port" "$PORT" accept
+			done
 			nft add rule inet "$TABLE_NAME" "$chain" $UID_CHECK "$net_proto" "$addr" "$localhost" "$transport_proto" "$port" $ALLOW_PORTS_MIN-$ALLOW_PORTS_MAX accept
 
-			# Router: Allow DNS
+			# Router: Allow some ports, e.g. DNS
 			if [ -n "$router" ]; then
-				nft add rule inet "$TABLE_NAME" "$chain" $UID_CHECK "$net_proto" "$addr" "$router" "$transport_proto" "$port" 53 accept
+				for PORT in "${ALLOW_PORTS_ROUTER[@]}"; do
+					nft add rule inet "$TABLE_NAME" "$chain" $UID_CHECK "$net_proto" "$addr" "$router" "$transport_proto" "$port" $PORT accept
+				done
 			fi
 		done
 	done

@@ -54,22 +54,18 @@ grep -e "^root:" /etc/shadow > "$chroot/etc/shadow"
 grep -e "^root:" -e "^$REMOTE_GROUP:" /etc/group > "$chroot/etc/group"
 grep -e "^root:" -e "^$REMOTE_GROUP:" /etc/gshadow > "$chroot/etc/gshadow"
 
-exit 0
-
 # symlinks to usr
-ln -s usr/bin .
-ln -s usr/lib .
-ln -s usr/lib32 .
-ln -s usr/lib64 .
-ln -s usr/libx32 .
-ln -s usr/sbin .
+for dir in bin lib lib32 lib64 libx32 sbin; do
+	ln -sfT usr/$dir $dir
+done
 
 # copy remote user shell
-cp "$ALLEMANDE_HOME/canon/remote-user-shell" /usr/local/bin/
+# see: snip/remote_user_shell.sh
+# cp "$ALLEMANDE_HOME/canon/remote-user-shell" /usr/local/bin/
 
 # add chroot mounts to system /etc/fstab
-cat << EOF >> /etc/fstab
-
+if ! fgrep -q "# mounts for chroot $chroot" /etc/fstab; then
+	cat << EOF >> /etc/fstab
 # mounts for chroot $chroot
 /usr      $chroot/usr            none      bind,ro,nosuid                  0 0
 proc      $chroot/proc           proc      defaults,hidepid=2,gid=staff    0 0
@@ -77,5 +73,6 @@ sysfs     $chroot/sys            sysfs     nosuid,noexec,nodev             0 0
 cgroup2   $chroot/sys/fs/cgroup  cgroup2   ro,nosuid,nodev,noexec,relatime 0 0
 devpts    $chroot/dev/pts        devpts    nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000    0 0
 EOF
+fi
 
 systemctl daemon-reload
