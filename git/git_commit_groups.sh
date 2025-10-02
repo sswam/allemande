@@ -3,8 +3,8 @@
 # Group files for committing together, with AI help.
 
 git_commit_groups() {
-	local model= m=gp   # LLM model
-	local ci_model= c=  # LLM model for commit messages
+	local model= m=gpt-5  # LLM model
+	local ci_model= c=    # LLM model for commit messages
 	local max_diff_lines= M=40	# maximum number of lines in a diff to show
 
 	eval "$(ally)"
