@@ -1,4 +1,6 @@
 base: MediumAI
+over:
+- Thunk
 specialist: true
 # stop_regexs:
 # - \bSTOP\b

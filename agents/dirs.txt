@@ -18,3 +18,5 @@ game
 poet
 religion
 nsfw
+artist
+author

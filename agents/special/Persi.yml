@@ -1,4 +1,6 @@
 base: StrongestAI
+over:
+- Thunk
 context: 20
 system_bottom_pos: 5
 system_bottom: |-

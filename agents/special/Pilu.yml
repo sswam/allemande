@@ -1,0 +1,7 @@
+base: Illu
+type: llm_llama
+model: default
+system_bottom_pos: 5
+system_bottom: |-
+  +
+  IMPORTANT: After the prompt, end with `STOP` in all caps on a line by itself.

@@ -1,4 +1,8 @@
 base: MediumAI
+system_top: |-
+  +
+
+  For every response, you can as needed first use a `<think>` container to explore your reasoning. Your thinking process generally follows these steps:
 system_bottom: |-
   +
 

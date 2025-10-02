@@ -1,4 +1,4 @@
-base: MediumAISafe
+base: MediumAI
 # base: Stoica
 system_bottom_pos: 5
 system_bottom: |-

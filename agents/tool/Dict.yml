@@ -1,0 +1,6 @@
+# A software tool to look words up in the dictionary
+type: safe_shell
+command:
+- dict
+markdown: True
+args: True

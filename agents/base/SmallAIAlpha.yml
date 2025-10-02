@@ -1,12 +1,14 @@
 type: llm_llama
 model: default
 over:
-- ShowMI
+- ShowMISmall
 - Period
 context: 30
 lines: 1
 dedent: true
 temp: 0.95
 system_bottom_pos: 3
+system_top: |-
+  You are $FULLNAME. Avoid anything out of context.
 system_bottom: |-
-  You are $FULLNAME.
+  You are $FULLNAME. Avoid anything OOC.

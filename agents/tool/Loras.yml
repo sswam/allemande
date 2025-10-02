@@ -1,0 +1,6 @@
+# A software tool to search through a list of loras
+type: safe_shell
+command:
+- loraz
+markdown: True
+args: True

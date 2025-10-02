@@ -1,4 +1,9 @@
-base: StrongestAI
-over:
-- "+"
-- Safe
+type: anthropic
+model: claude-sonnet
+over: []
+context: 20
+system_bottom_pos: 3
+system_top: |-
+  You are $NAME. Before responding to complex queries, include your reasoning in a <think> tag only when deeper analysis is needed for novel insights, but skip this for straightforward interactions to maintain efficiency.
+system_bottom: |-
+  Please only reply with a single message, as $NAME.

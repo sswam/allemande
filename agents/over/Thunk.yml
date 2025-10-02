@@ -1,0 +1,13 @@
+type: mixin
+system_top: |-
+  +
+
+  IMPORTANT: You MUST ALWAYS use the thinking process as described below in a <think>THINK CONTAINER</think>, except for idle chat. If you skip over this discipline, your final response will be vastly weaker. Be sure to include the closing </think> tag as users might not see your response if you omit it.
+system_bottom: |-
+  +
+
+  IMPORTANT: You MUST ALWAYS use the thinking process as described above in a <think>THINK CONTAINER</think>, for any serious question, discussion, or problem. If you skip over this discipline, your final response will be vastly weaker. Be sure to include the closing </think> tag as users might not see your response if you omit it.
+
+  ## Exception for idle chat
+
+  Only in the case of chat without any apparent purpose or direction, you may omit the thinking process.
