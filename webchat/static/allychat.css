@@ -49,6 +49,14 @@ body, html {
 	flex: 1 1 0;
 }
 
+.grow2 {
+	flex: 2 1 0;
+}
+
+.grow3 {
+	flex: 3 1 0;
+}
+
 body:not(.history) .hidden, .hidden:not(.removed) {
 	display: none !important;
 }

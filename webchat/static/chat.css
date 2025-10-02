@@ -365,13 +365,31 @@ body.nsfw .sfw {
 	display: none !important;
 }
 
+body.simple:not(.option) .option-simple-invisible {
+	visibility: hidden !important;
+}
+
 body.simple.empty #messages {
-	height: 0;
+	min-height: 0 !important;
+	height: 0 !important;
 	flex: 0 0 0;
 }
 
 body:not(.simple.empty) .empty {
 	display: none;
+}
+
+body.simple.empty #welcome {
+	/* center vertically and horizontally, as a flex item */
+	width: 50em;
+	max-width: min(50em, 100%);
+	padding: calc(2 * var(--pad));
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	font-size: 2.5rem;
+	align-items: center;
+	white-space: pre-wrap;
 }
 
 /*

@@ -238,17 +238,17 @@ async function welcome() {
   welcome_message = welcome_message.replace(/\$user/g, name);
 
   const css_text = await load_beautiful_font();
-  console.log("font css:", css_text);
+  // console.log("font css:", css_text);
   const $welcome = $id("welcome");
   $welcome.style.cssText = css_text;
-  console.log("welcome:", $welcome);
+  // console.log("welcome:", $welcome);
 
   $welcome.classList.add("invisible");
   $welcome.innerText = welcome_message;
   await $wait(500);
   $welcome.classList.remove("invisible");
 
-  console.log("welcome:", $welcome);
+  // console.log("welcome:", $welcome);
 
   // we send the welcome message as narrative with first message, if room is simple.empty
 }
