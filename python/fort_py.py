@@ -1,35 +1,28 @@
 #!/usr/bin/env python3-allemande
 
 """
-This module selects a random line from standard input.
+Select a random line from standard input.
 """
 
 import sys
 import random
 from typing import TextIO
 
-from argh import arg
-
 from ally import main
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 logger = main.get_logger()
 
 
-@arg("--seed", help="random seed for reproducibility")
 def fort(
     istream: TextIO = sys.stdin,
     ostream: TextIO = sys.stdout,
-    seed: int = None,
+    seed: int | None = None,
 ) -> None:
-    """
-    Select a random line from standard input and print it.
-    """
+    """Select a random line from standard input and print it."""
     if seed is not None:
         random.seed(seed)
-
-    get, put = main.io(istream, ostream)
 
     n = 0
     selected_line = None
@@ -40,8 +33,13 @@ def fort(
             selected_line = line
 
     if selected_line is not None:
-        put(selected_line, end="")
+        print(selected_line.rstrip("\n"), file=ostream)
+
+
+def setup_args(arg):
+    """Set up the command-line arguments."""
+    arg("--seed", type=int, help="random seed for reproducibility")
 
 
 if __name__ == "__main__":
-    main.run(fort)
+    main.go(fort, setup_args)

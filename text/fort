@@ -1,0 +1,38 @@
+#!/usr/local/bin/cz --
+
+cstr version = "0.1.1"
+
+cstr description = "fort - pick a random line from input"
+
+cstr usage[] = { "[-n]", "--help", NULL }
+
+use b
+
+cstr options[][3] =
+	{ "V", "version",   "" },
+	{ "n", "no-newline", "omit trailing newline" },
+	{ NULL, NULL, NULL }
+
+opts *O
+
+fort:
+	long n = 1
+	cstr choice = NULL
+	Eachline(l):
+		if randi(n++) == 0:
+			Free(choice)
+			choice = Strdup(l)
+	if choice:
+		if opt("no-newline"):
+			Print(choice)
+		else:
+			Say(choice)
+
+Main:
+	O = get_options(options)
+	if opt("help"):
+		help()
+	 eif opt("version"):
+		version()
+	 else:
+		fort()
