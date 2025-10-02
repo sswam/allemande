@@ -181,14 +181,7 @@ python3.13 -m venv venv
 
 # -------- install Go from upstream ------------------------------------------
 
-go_arch="amd64"  # or just download the right package!
-go_url=$(curl https://go.dev/dl/ | sed -n "/href=\"\/dl\/go.*linux-$go_arch/ { s/.*href=\"//; s/\".*//; p; q; }")
-rm -f go*.linux-amd64.tar.gz
-wget "https://go.dev$go_url"
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go*.linux-amd64.tar.gz
-rm go*.linux-amd64.tar.gz
-export PATH=$PATH:/usr/local/go/bin
-printf "\n%s\n" 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
+go/install_go.sh
 
 # Go modules
 go install golang.org/x/lint/golint@latest
@@ -346,25 +339,20 @@ make canon
 # -------- add users ---------------------------------------------------------
 
 webchat-user -n add root   # admin user, -n is the NSFW option
-webchat-user add $USER     # or what username you want
+webchat-user add $USER     # or what username you want, -n if you want
 
-# -------- set up firewall for semi-trusted users ----------------------------
+# -------- set up semi-trusted remote users ----------------------------------
 # NOTE: This is optional and experimental, you probably should skip it for now.
 
-sudo cp config/remote_user_firewall.conf.dist /etc/remote_user_firewall.conf
-# edit /etc/remote_user_firewall.conf to set your gateway at least
+sudo cp config/remote_user.conf.dist /etc/remote_user.conf
+# edit /etc/remote_user.conf to set your gateway at least
 # ROUTER_IPv6 can be blank if you don't use IPv6 or want to block it
 
-cat <<END | sudo tee -a /etc/rc.local
-
-/opt/allemande/adm/remote_user_firewall.sh add
-/opt/allemande/adm/remote_user_startup.sh
-END
-
-sudo chmod +x /etc/rc.local
-sudo systemctl enable rc-local
+sudo adm/remote_user_setup.sh
+sudo adm/remote_user_chroot.sh
 
 sudo /opt/allemande/adm/remote_user_firewall.sh add
+sudo /opt/allemande/adm/remote_user_startup.sh
 
 # check that the firewall was applied after reboot, with:
 sudo /opt/allemande/adm/remote_user_firewall.sh list
