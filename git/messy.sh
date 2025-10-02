@@ -11,7 +11,7 @@ fi
 . confirm
 
 diff_context=5  # lines of context for diffs
-model="gp"       # default model
+model="5"       # default model
 # initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
@@ -21,8 +21,9 @@ review="review.$timestamp.$$.txt"
 
 # Associative arrays mapping model codes to names and options
 declare -A model_names=(
-    ["4"]="GPT-4"
-    ["4m"]="GPT-4o-mini"
+    ["5"]="GPT-5"
+    ["4"]="GPT-4.1"
+    ["4m"]="GPT-4.1-mini"
     ["op"]="OpenAI o1"
     ["om"]="OpenAI o1-mini"
     ["c"]="Claude"
@@ -32,6 +33,7 @@ declare -A model_names=(
 )
 
 declare -A option_model_codes=(
+    ["5"]="5"
     ["3"]="4m"
     ["4"]="4"
     ["c"]="c"
@@ -43,7 +45,7 @@ declare -A option_model_codes=(
 )
 
 usage() {
-    echo "Usage: `basename "$0"` [-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-x] [-a model] [-h]"
+    echo "Usage: `basename "$0"` [-5|-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-x] [-a model] [-h]"
     echo "  -n: start at menu, do not generate"
     for opt in "${!option_model_codes[@]}"; do
         model_code="${option_model_codes[$opt]}"
@@ -132,7 +134,7 @@ trap 'message-and-exit 1' INT
 get_options() {
     run_initial_gens=1
 
-    while getopts "nC:B43cioMgfm:F:exa:h" opt; do
+    while getopts "nC:B543cioMgfm:F:exa:h" opt; do
         case "$opt" in
         a)
             if [ -n "$OPTARG" ]; then
@@ -455,7 +457,7 @@ messy() {
         else
             prompt="Action?"
         fi
-        read -p "$prompt [y/n/q/e/3/4/c/i/o/M/g/f/d/v/b/E/x/?] " -n 1 -r choice
+        read -p "$prompt [y/n/q/e/3/4/5/c/i/o/M/g/f/d/v/b/E/x/?] " -n 1 -r choice
         echo
         case "$choice" in
             y)
