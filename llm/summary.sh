@@ -7,21 +7,20 @@
 # It uses the llm command-line tool to process the input and produce a concise summary to stdout.
 
 summary() {
-	local model= m=s	# default model: small
+	local model= m=s  # default model: small
+	local prompt= p=  # Extra prompt
 
 	eval "$(ally)"
 
-	local prompt="$*"
-
 	# Construct the prompt
-	prompt="Please summarize. $prompt. Only give the summary."
+	prompt="Please summarize. Only give the summary. $prompt"
 
 	# Process the input using llm
-	llm process -m "$model" "$prompt"
+	process -m="$model" "$prompt" "$@"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	summary "$@"
 fi
 
-# Version: 1.0.5
+# Version: 1.0.6
