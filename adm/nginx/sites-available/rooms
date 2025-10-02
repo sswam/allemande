@@ -16,7 +16,7 @@ map $first_path_segment $allow {
 	nsfw       1;
 	art	   1;
 	clothes    1;
-	macros     1;
+	macro      1;
 	devlog     1;
 	sanctuary  1;
 	old        1;
