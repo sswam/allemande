@@ -39,8 +39,8 @@ def html_main_content(ht: str) -> str:
     """ Extract the main content from an HTML page """
     # for wikipedia
     if re.search(r'<meta name="generator" content="MediaWiki', ht):
-        ht = re.sub(r'\A.*?(<div id="bodyContent)', r'\1', ht, flags=re.DOTALL, count=1)
-        ht = re.sub(r'<h2><span class="mw-headline" id="(See_also|References)">.*', r'', ht, flags=re.DOTALL, count=1)
+        ht = re.sub(r'\A.*?<div id="bodyContent.*?(<p>)', r'\1', ht, flags=re.DOTALL, count=1)
+        ht = re.sub(r'<h2 id="(See_also|References)">.*', r'', ht, flags=re.DOTALL, count=1)
         return ht
     # for pages using <main>
     if m := re.search(r'<main\b[^>]*>\s*(.*?)\s*</main>', ht, re.IGNORECASE | re.DOTALL):
@@ -94,7 +94,8 @@ def pandoc_markdown_clean(text: str) -> str:
     text = re.sub(r'_{4,}', '___', text)    # shorten lines of underscores
     text = re.sub(r'={4,}', '===', text)    # shorten lines of equals signs
     text = re.sub(r'^[-_=+:|` ]+$', '', text, flags=re.MULTILINE)    # clear lines that are only drawing horizontal lines and such
-    text = re.sub(r'\^(\[\\\[\d+\\\]\]\(#cite_note[^)]*?\))+\^', '', text)    # remove wikipedia cite notes
+    text = re.sub(r'\^?(\[\\\[\s*\d+\s*\\\]\]\(#cite_note[^)]*?\)\s*)+\^?', '', text)    # remove wikipedia cite notes
+    text = re.sub(r'\\\[ \[edit\]\(\(/w/index\.php\) \\\]\n\n', '', text)   # remove wikipedia edit links
     text = re.sub(r'^.*?\bdata:image\b.*$', '', text, flags=re.MULTILINE)    # remove lines with data:image, TODO is this okay?
 
 #    text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text)    # remove all links
