@@ -1,0 +1,1 @@
+dunstctl close-all
