@@ -1,0 +1,20 @@
+1. _setup_mediator never sets is_mediator; invoked_reply_chance treats all
+non-human senders as non-mediator (behavior change/regression)
+2. mission is annotated as str but used like list; _mentioned_in_mission
+joins a str into characters, leading to false matches
+3. Unused helper _determine_user_and_flags; consider using or removing
+4. _setup_mediator takes everyone_except_user args but never uses them;
+remove unused params
+5. Double negation not not include_humans is confusing; pass include_humans
+directly
+6. Filtering humans in _prepare_alias_lists uses agents.get(name) where name
+can be an alias; if Agents.get doesn't resolve aliases, it may drop valid
+aliases—use agent_name_map for type lookup
+7. Changing umask to 0o002 reduces file permission strictness (others may
+read by default); consider making this configurable or documenting security
+implications
+8. local_agents: image uploads now have no alt text; this hurts accessibility
+and loses prompt context unless metadata extraction happens before
+upload—either include minimal alt or ensure early metadata injection
+9. _build_agents assumes agents is not None; add a guard or clarify that None
+is not allowed

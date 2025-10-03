@@ -1,0 +1,44 @@
+feat(ally_room,chat_api): add copy mode; revise access checks
+
+- Add mode=copy to move_file and /x/move endpoint
+- Downgrade some config logs to debug in ally_chat
+- Allow nested agents/ paths when installing agent YAML files
+- Restructure access checks into helpers
+  
+1. Directory traversal risk in ally_chat.filter_out_agents_install:
+   - Builds file_path by joining agents_path with unnormalized safe_path_name
+   and validates via startswith(str(agents_path) + os.sep).
+   - Paths containing .. (e.g., agents/../outside.yml) will pass the
+   startswith check and can escape agents_path when written.
+   - Also, when "agents" not found in the parts, the original path is used,
+   which can include traversal segments.
+   - Suggest resolving and comparing realpaths (e.g.,
+   file_path.resolve().is_relative_to(agents_path.resolve())) and rejecting
+   any path with ".." components.
+
+2. Access escalation in _check_shared_folder_access:
+   - Returns READ_WRITE with reason "new_file" whenever the target does not
+   exist, regardless of directory permissions.
+   - Previously a non-existent file returned "not_found".
+   - This grants write permission to create files in directories that may not
+   be writable. Gate this on dir write bits (and/or user role) instead.
+
+3. API regression in /x/move:
+   - mode = form["mode"] will raise KeyError if clients don’t send mode,
+   causing 500.
+   - Default to "move": mode = form.get("mode", "move").
+
+4. Incorrect permission requirements for copy:
+   - move_file() requires WRITE on the source even for mode="copy".
+   - Copy should require READ on source and WRITE on destination; WRITE on
+   source should only be required for move.
+
+5. Logging format error:
+   - logger.info("... st_mode %o", file_status.stats.st_mode if
+   file_status.stats else None) will raise TypeError when stats is None due
+   to %o with None.
+   - Use %r or guard the log to only use %o when stats is present.
+
+6. Minor: Unused data loaded
+   - _load_configurations returns users but the caller never uses
+   it. Consider removing to avoid unnecessary file I/O.

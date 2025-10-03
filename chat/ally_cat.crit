@@ -1,0 +1,17 @@
+2. Root containment check uses string startswith, which is unsafe
+(e.g., /home/a vs /home/ab). Use Path.resolve() with is_relative_to or
+os.path.commonpath.
+3. root_path isn’t resolved before comparison, increasing risk of false
+positives/negatives with symlinks or case differences.
+4. ostream parameter is unused and not forwarded; either remove it or pass it
+through to cat_named if needed.
+5. Unused imports: os, sys, and ally.old.
+6. access.value bitmask check assumes an int value; if Access is an IntFlag,
+prefer checking via flags (e.g., if not (access & Access.READ)) and handle
+possible None/exception from check_access.
+7. No existence check before adding local paths; cat_named may error on
+missing files. Consider path.exists()/is_file() or catch exceptions.
+8. Errors are only logged; users of the chat UI may not see them. Consider
+surfacing via put.
+9. URLs bypass permission checks entirely; if that’s not intended, consider
+validating allowed protocols or applying policy.
