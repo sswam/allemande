@@ -373,7 +373,7 @@ Lines not starting + or - are CONTEXT.
 *** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
 Return only the git commit message, no prelude or conclusion.
 
-Format of the header line; almost always include the short-module-name:
+Format of the header line; almost always include the short-module-name, often the top-level dir:
 
 feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
