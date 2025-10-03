@@ -70,8 +70,8 @@ add-user() {
 		start_nsfw="
 For NSFW content:
 
-5. Do not upload or generate illegal content, i.e. CSAM or NCII.
-6. Press the 'E' or enter 'nsfw' in the room field to visit the NSFW zone.
+5. Please join the NSFW group chat: https://chat.allemande.ai/#nsfw/nsfw
+6. Do not upload or generate illegal content, i.e. CSAM or NCII.
 7. NSFW features also work in private chat.
 "
 		patreon_links=$'- https://www.patreon.com/allychat (SFW)\n- https://www.patreon.com/allychatx (NSFW)'
@@ -91,16 +91,15 @@ Password: $pass
 
 === Getting Started ===
 
-1. Say hi in the main 'Ally Chat' room
-2. Press the '?' button and read the Intro
-3. Open the 'help' tab and ask the AI some questions
-		- This is the place to get help about the app
-4. Close the help with the X at top-right
+1. You start in "simple mode", and in private chat.
+2. You can join group chat: https://chat.allemande.ai/#Ally+Chat
+3. For advanced mode, reload and read the placeholder text!
+4. Press the '?' button, read the Intro, and try the Help.
 $start_nsfw
 
 === Beta Program ===
 
-- Ally Chat is a power tool, and can be confusing for beginners.
+- In advanced mode, Ally Chat is a complex power tool.
 - You are responsible for your own safety and behaviour.
 - I can give you a demo in the app, to help you get started.
 - Please participate in group chats, and give feedback.
