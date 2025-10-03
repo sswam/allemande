@@ -159,7 +159,7 @@ rooms.*
 /apps/story/family
 /apps/story/stories
 /sam
-/notify.sh
+/webchat_notify.sh
 
 # test files
 /text/files.md

@@ -92,7 +92,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt images.xt a1111.xt whisper.xt vup.xt
+core: notify.xt llm.xt images.xt a1111.xt whisper.xt vup.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -268,7 +268,7 @@ api_doc: llm/llm.api
 	func-py -a -I "$<" > "$@"
 
 notify:
-	./notify.sh
+	./webchat_notify.sh
 
 
 .PHONY: all default $(JOBS) %.xt canon api_doc subdirs $(SUBDIRS) deps deb-deps venv
