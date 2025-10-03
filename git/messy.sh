@@ -394,6 +394,8 @@ Files in the 'gen' directory, are interesting AI content.
 ## Second Task
 
 Please carefully review this patch with a fine-tooth comb.
+- The programmer almost certainly tested this before commit, so it does basically work
+- Some code uses non-obvious mechanisms. If you don't understand, assume it's good.
 - DON'T WRITE ANYTHING if you see no issues
 - list bugs still present in the patched code.
 - Do NOT list bugs in the original code that are fixed by the patch.
