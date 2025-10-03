@@ -570,7 +570,7 @@ class Agents:
         # load all agents first
         for agent_file in agent_files:
             try:
-                logger.info("load_agent_without_setup: %r", agent_file)
+                # logger.info("load_agent_without_setup: %r", agent_file)
                 agent = self.load_agent_without_setup(agent_file, private=private)
                 new_agents.append(agent)
             except NotEnabledError:
@@ -581,11 +581,11 @@ class Agents:
         # then set up and update visuals
         for agent in new_agents:
             if visual:
-                logger.info("update_visual: %r", agent.name)
+                # logger.info("update_visual: %r", agent.name)
                 agent.update_visual(private=private)
-            logger.info("set_up: %r", agent.name)
+            # logger.info("set_up: %r", agent.name)
             if not agent.set_up(self.services):
-                logger.info("remove_agent: %r", agent.name)
+                # logger.info("remove_agent: %r", agent.name)
                 self.remove_agent(agent.name, keep_visual=True, private=private)
                 continue
 
@@ -593,10 +593,10 @@ class Agents:
         """Process an agent file change."""
         if change_type == Change.deleted:
             name = Path(file_path).stem
-            logger.info("Removing agent: %r", name)
+            # logger.info("Removing agent: %r", name)
             self.remove_agent(name, private=private)
         else:
-            logger.info("Loading agent: %r", file_path)
+            # logger.info("Loading agent: %r", file_path)
             self.load(Path(file_path), private=private)
 
     def get(self, name: str) -> Agent | None:

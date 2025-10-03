@@ -155,11 +155,11 @@ def load_local_agents(room, agents=None):
     agents_dirs = []
 
     while True:
+        if room_dir == top_dir:
+            break
         agents_dir = room_dir / "agents"
         if agents_dir.exists():
             agents_dirs.append(agents_dir)
-        if room_dir == top_dir:
-            break
         room_dir = room_dir.parent
 
     # logger.info("Loading local agents for room %r from %r", room.path, agents_dirs)
@@ -893,6 +893,8 @@ def check_file_type(path):
         return "room"
     if ext == ".yml" and path.startswith(str(PATH_AGENTS)+"/"):
         return "agent"
+    if ext == ".yml" and path.startswith(str(PATH_ROOMS/"agents")+"/"):
+        return "agent"
     if ext == ".yml" and path.startswith(str(PATH_ROOMS)+"/") and "agents" in Path(path).parts and not Path(path).is_symlink():
         return "agent_private"
     if ext in [".safetensors"] and path.startswith(str(PATH_ROOMS)+"/"):
@@ -916,8 +918,12 @@ async def watch_loop(args):
 
     agents = Agents(services)
     agents.load(PATH_AGENTS)
+    rooms_public_agents = PATH_ROOMS/"agents"
+    agents.load(rooms_public_agents)
 
     for agents_dir in Path(PATH_ROOMS).rglob('agents'):
+        if agents_dir == rooms_public_agents:
+            continue
         if agents_dir.is_dir():
             agents.load(agents_dir, private=True)
 
