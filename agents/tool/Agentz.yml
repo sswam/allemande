@@ -1,0 +1,6 @@
+# A python tool to return agent files
+type: python
+command:
+- agent_yaml
+format: code
+args: True

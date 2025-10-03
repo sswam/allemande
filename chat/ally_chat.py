@@ -686,7 +686,7 @@ async def run_subprocess(command, query):
 
 async def run_tool(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
     """Run a tool agent"""
-    return await safe_shell(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human, direct=True)
+    return await run_safe_shell(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human, direct=True)
 
 
 async def run_safe_shell(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
@@ -780,10 +780,17 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
 
 def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
     """Return a YAML definition for a python_tool agent."""
-    try:
-        return agents.get(agent.name).to_yaml()
-    except KeyError:
-        raise ValueError(f"Agent {agent.name} not found")
+    args = query.split()
+    result = []
+    for name in args:
+        agent = agents.get(name)
+        if agent:
+            file_content = agent.get_file().rstrip()
+            result.append(file_content)
+        else:
+            result.append(f"Agent '{name}' not found")
+
+    return "\n\n".join(result)
 
 
 python_tools = {

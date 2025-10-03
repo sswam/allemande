@@ -137,7 +137,34 @@ class Agent:
 
     def to_yaml(self) -> str:
         """Return the agent data as a YAML string"""
-        return (f"#File: {self.file}\n" if self.file else "") + yaml.dump(self.data, sort_keys=False)
+        content = yaml.dump(self.data, sort_keys=False)
+        if self.file:
+            file_rel = self.get_file_rel()
+            content = f"#File: {file_rel}\n" + content
+        return content
+
+    def get_file_rel(self) -> str:
+        """Return the agent file path relative to PATH_AGENTS or PATH_ROOMS."""
+        file_rel = str(self.file)
+        try:
+            file_rel = str(self.file.relative_to(PATH_AGENTS))
+        except ValueError:
+            try:
+                file_rel = str(self.file.relative_to(PATH_ROOMS))
+            except ValueError:
+                file_rel = self.file.name
+        return file_rel
+
+    def get_file(self) -> str:
+        """Return the raw agent file contents, prefixed with a comment with the filename."""
+        if not self.file:
+            return ""
+        with open(self.file, encoding="utf-8") as f:
+            content = f.read()
+        if not content.startswith("#File:"):
+            file_rel = self.get_file_rel()
+            content = f"#File: {file_rel}\n" + content
+        return content
 
     def copy(self) -> Agent:
         """Return a copy of the agent"""
