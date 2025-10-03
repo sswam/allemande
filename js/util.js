@@ -6,9 +6,17 @@ const $id = (id) => document.getElementById(id);
 const $create = (element) => document.createElement(element);
 const $html = (html) => $$html(html).firstChild;
 const $$html = (html) => {
-  const template = document.createElement('template');
+  const template = $create('template');
   template.innerHTML = html.trim();
   return template.content;
+}
+const $css = (id, css) => {
+  if ($id(id))
+    $id(id).remove();
+  const style = $create('style');
+  style.id = id;
+  style.textContent = css;
+  document.head.appendChild(style);
 }
 const $text = (text) => document.createTextNode(text);
 const $attr = (element, attribute, value) => element.setAttribute(attribute, value);

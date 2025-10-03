@@ -12,8 +12,23 @@ body.simple div#main {
 }
 body.simple #inputrow {
 	width: 50em;
+	max-width: min(50em, 100%);
+	padding: 0 calc(2 * var(--pad)) var(--pad) calc(2 * var(--pad));
+}
+body.simple #messages {
+	width: 50em;
+	max-width: min(50em, 100%);
+	padding: 0 calc(2 * var(--pad));
+}
+body.simple #view_edit {
+	width: 50em;
+	max-width: calc(min(50em, 100%) - 2 * var(--pad));
 	padding: var(--pad);
-	padding-top: 0;
+	margin: var(--pad);
+	margin-bottom: 0;
+}
+#view_edit {
+	resize: none;
 }
 body.admin, body.admin .admin {
 	display: block;
@@ -100,9 +115,12 @@ body.simple #inputrow > .controls > * {
 	margin: 0;
 	background: var(--frame);
 	touch-action: none;
+	cursor: row-resize;
 }
-body:not(.simple) #resizer {
+body.simple #resizer {
 	cursor: ns-resize;
+	height: 0.0625rem;
+	min-height: 0.0625rem;
 }
 .col_wrap {
 	display: flex;
@@ -351,15 +369,18 @@ div.controls > button#send {
 	font-size: 0.8125rem;
 }
 
+body:not(.pc) .pc,
 body:not(.option) .option,
 body.simple:not(.option) .option-simple,
 body.standard .simple:not(.standard),
-body:is(.advanced, .boffin) .simple,
+body:is(.advanced, .boffin) .simple:not(.advanced),
 body.simple .standard:not(.simple),
-body.simple .advanced,
+body.simple .advanced:not(.simple),
 body:is(.advanced, .boffin) .standard:not(.advanced),
 body:not(.advanced, .boffin) .advanced:not(.standard),
 body:not(.boffin) .boffin,
+body:not(.dev) .dev:not(.early),
+body:not(.early) .early,
 body.ios .noios,
 body:not(.nsfw) .nsfw,
 body.nsfw .sfw {

@@ -21,6 +21,8 @@ class DragResizer {
   }
 
   initDrag(e) {
+    if (e.button && e.button !== 0) return; // Only left mouse button
+
     e.preventDefault();
 
     // Store initial positions

@@ -469,7 +469,7 @@ function key_event(ev) {
   if (grab_mode) {
     return;
   }
-  if (!simple && ev.altKey && ev.key == "f") {
+  if (ev.altKey && ev.key == "f") {
     ev.preventDefault();
     toggle_fullscreen(ev.target);
     return;
@@ -530,12 +530,12 @@ function key_event_overlay(ev) {
     return;
   if (ev.key == "Escape" || ev.key == "q" || ev.key == "Enter") {
     overlay_close(ev);
-  } else if (ev.key == "f" && !simple) {
+  } else if (ev.key == "f") {
     toggle_fullscreen();
-  } else if (ev.key == "m" && !simple) {
+  } else if (ev.key == "m") {
     cycle_zoom();
   // look for key in "lrhv"
-  } else if ("lrhv".includes(ev.key) && !simple) {
+  } else if ("lrhv".includes(ev.key)) {
     transform_overlay(ev.key);
   } else if (ev.key == "ArrowLeft" || ev.key == "Backspace") {
     image_go(-1);
@@ -899,16 +899,19 @@ function overlay_click(ev) {
   // and top 25% and bottom 25% to toggle fullscreen and cycle zoom
   const container = $overlay.getBoundingClientRect();
   if (simple) {
+    // no fancy clicking in simple mode, just close it
     overlay_close();
     return;
   }
-  if (ev.clientX < container.width / 4) {
+  const x = ev.clientX - container.left;
+  const y = ev.clientY - container.top;
+  if (x < container.width / 3) {
     image_go(-1);
-  } else if (ev.clientX > container.width * 3 / 4) {
+  } else if (x > container.width * 2 / 3) {
     image_go(1);
-  } else if (ev.clientY < container.height / 4) {
+  } else if (y < container.height / 3) {
     toggle_fullscreen();
-  } else if (ev.clientY > container.height * 3 / 4) {
+  } else if (y > container.height * 2 / 3) {
     cycle_zoom();
   } else {
     overlay_close(ev);
@@ -1828,6 +1831,24 @@ export async function lazy_image(img) {
   lazy_images_observer.observe(img);
 }
 
+// agent colours -------------------------------------------------------------
+
+async function load_agent_colours() {
+  const response = await fetch(`${ALLYCHAT_CHAT_URL}/agent_colours.tsv`, { credentials: 'include' });
+  const tsvContent = await response.text();
+  const lines = tsvContent.split('\n');
+  const cssRules = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const [name, lightColor, darkColor] = lines[i].split('\t');
+    const cssRule = `.message[user="${name}"] .label { color: ${lightColor}; }; body.dark .message[user="${name}"] .label { color: ${darkColor}; }`;
+    cssRules.push(cssRule);
+  }
+
+  const fullCss = cssRules.join('\n');
+  $css("agent_colours", fullCss);
+}
+
 // main ----------------------------------------------------------------------
 
 async function load_user_script() {
@@ -1927,6 +1948,8 @@ export async function room_main() {
   if (date && mtime)
     show_timestamp(date, mtime);
   setTimeout(hide_timestamp, 10000);
+
+  load_agent_colours(); // async
 }
 
 export async function folder_main() {

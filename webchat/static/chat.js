@@ -112,7 +112,7 @@ let mode_options = {
 };
 
 let view_options_embed = {
-  alt: 1,
+  alt: 0,
   source: 1,
   details: 0,
   canvas: 0,
@@ -292,6 +292,7 @@ export let room;
 let user;
 let admin = false;
 let dev = false;
+let early = false;
 let controls = "input_main";
 let top_controls = "top_main";
 let view = "messages";
@@ -312,10 +313,15 @@ function set_debug(debug) {
   active_set("debug", DEBUG);
 }
 
-function setup_dev() {
+function setup_dev_early() {
   dev = DEVS.includes(user);
-  if (!dev)
+  early = EARLY.includes(user);
+  if (dev)
+    $body.classList.add("dev");
+  else
     DEBUG = false;
+  if (early)
+    $body.classList.add("early");
   set_debug(DEBUG);
   $on($id("debug"), "click", () => set_debug(!DEBUG));
 }
@@ -410,6 +416,11 @@ function clear_content(ev) {
 }
 
 function focus_content_on_pc() {
+  // show a backtrace of this function being called
+  const err = new Error();
+  const stack = err.stack.split("\n").slice(1).map(line => line.trim());
+  console.log("focus_content_on_pc", stack);
+
   if (!isMobile)
     focus_content();
 }
@@ -1391,7 +1402,8 @@ function setup_main_ui_shortcuts() {
         ['enter', () => send(), 'Send message'],
       ]);
     }
-    return;
+    // return;
+    // will try with all shortcuts in simple mode too...
   }
 
   add_shortcuts(shortcuts.global, [
@@ -1666,7 +1678,7 @@ async function setup_nav_buttons() {
 
   // Setup nsfw buttons --------------------
   for (const $nav_nsfw of $$(".nav_nsfw"))
-    $nav_nsfw.href = "/" + query_to_hash(room == "nsfw/nsfw" ? PUBLIC_ROOM : NSFW_ROOM);
+    $nav_nsfw.href = "/" + query_to_hash(is_nsfw ? PUBLIC_ROOM : NSFW_ROOM);
 
   // Setup porch button --------------------
   const $nav_porch = $id("nav_porch");
@@ -2455,8 +2467,8 @@ function view_options_apply() {
     $body.classList.remove("option");
   }
 
-  // Don't allow boffin mode except for devs
-  if (!dev && view_options.advanced >= 2)
+  // Don't allow boffin mode except for devs and early-access users
+  if (!dev && !early && view_options.advanced >= 2)
     view_options.advanced = 1;
 
   // Don't allow full-screen canvas except in boffin mode:
@@ -2486,7 +2498,7 @@ function view_options_apply() {
   active_set("view_history", view_options.history);
   active_set("view_fullscreen", view_options.fullscreen);
   $id("view_items").value = view_options.items ?? "";
-  active_set("view_advanced", view_options.advanced);
+  active_set("view_advanced", view_options.advanced > 1);
   active_set("view_standard", view_options.advanced >= 0);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
   active_set("audio_stt", view_options.audio_stt);
@@ -2509,7 +2521,8 @@ function view_options_apply() {
     $view_advanced.title = "standard mode: click for advanced mode";
     $view_standard.title = "standard mode";
   } else if (view_options.advanced == 1) {
-    $view_advanced.innerHTML = icons["view_mode_advanced"]
+    // $view_advanced.innerHTML = icons["view_mode_advanced"]
+    $view_advanced.innerHTML = icons["view_mode_boffin_off"]
     $view_advanced.title = "advanced mode";
   } else {
     $view_advanced.innerHTML = icons["view_mode_boffin"]
@@ -2565,7 +2578,7 @@ function view_options_apply() {
   }
   $content.placeholder = input_placeholder;
   if (input_placeholder != "")
-    setTimeout(() => { $content.placeholder = ""; }, 5000);
+    setTimeout(() => { $content.placeholder = ""; }, 10000);
 
   if (view_options.image_size >= 10)
     view_image_size_delta = -1;
@@ -2712,20 +2725,23 @@ function dir_sort(ev) {
 
 function view_advanced(ev) {
   // -1 simple  (not from this button)
-  // 0 standard
+  // 0 standard - skip this now
   // 1 advanced
   // 2 boffin
   const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
-  const max = dev ? 3 : 2;
+  const max = (dev||early) ? 3 : 2;
   view_options.advanced = (view_options.advanced + delta + max) % max;
+  if (view_options.advanced == 0)
+    view_options.advanced = (view_options.advanced + delta + max) % max;
   view_options_apply();
 }
 
 function view_standard(ev) {
   // -1 simple
-  // 0 standard
-  view_options.advanced = view_options.advanced >= 0 ? -1 : 0;
-  if (view_options.advanced == 0)
+  // 0 standard - skip this now
+  // 1 advanced
+  view_options.advanced = view_options.advanced >= 0 ? -1 : 1;
+  if (view_options.advanced >= 0)
     view_option_skip_alt = true;
   else
     view_options_reset();
@@ -3439,7 +3455,7 @@ function view_option(ev) {
   // holding alt/option shows option controls in simple mode
   // pressing alt/option toggles option controls in other modes
   // if not in input_main controls, return to them and show options
-  if (ev.key !== "Alt" || view_options.advanced > 0)
+  if (ev.key !== "Alt") // || view_options.advanced > 1)
     return;
   $content.placeholder = "";
   if (simple && hold_alt) {
@@ -3518,7 +3534,6 @@ function beta_test() {
   view_options_apply();
 }
 
-
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -3530,6 +3545,8 @@ export async function init() {
     $body.classList.add("nsfw");
     nsfw_zone_init();
   }
+  if (!isMobile)
+    $body.classList.add("pc");
 
   if (iOS)
     document.body.classList.add("ios")
@@ -3546,7 +3563,7 @@ export async function init() {
   // if (isFirefox || isSafari)
   controls_layout_hack_for_firefox_and_safari();
   load_theme();
-  setup_dev();
+  setup_dev_early();
   on_hash_change();
 
   $on($content, "input", message_changed);
@@ -3686,7 +3703,7 @@ export async function init() {
 
   focus_content_on_pc();
 
-  await load_user_files();
+  load_user_files();  // async
 
   beta_test();
 

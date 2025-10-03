@@ -11,9 +11,11 @@ body.simple div.messages {
 
 /* labels ----------------------------------------------------------------- */
 
+/*
 .label {
 	margin-bottom: 0.25rem;
 }
+*/
 
 .message > .content {
 	margin: 0 0 0 var(--label-indent);
@@ -86,6 +88,10 @@ div.messages::after {
 	scroll-margin-top: 0.75rem;
 	/* width: 100%; */
 	margin: calc(var(--pad)/2);
+}
+
+.message {
+	margin-top: var(--p-spacing);
 }
 
 .message.turn {
@@ -199,11 +205,6 @@ body.simple .message.me.turn, body.simple .message.me:not(:has(p > *)), body.sim
 	padding: 0.25rem 0.25rem;
 	border: 0.0625rem solid var(--frame);
 	border-radius: 0.5rem;
-}
-
-h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, figure, figcaption {
-	margin-top: 0.75rem;
-	margin-bottom: 0.75rem;
 }
 
 .message :is(img, video, audio, iframe) {
