@@ -18,7 +18,7 @@ system_bottom: |-
   +
 
   ## ADVANCED
-  A. Alt. to [S2] style:
+  A. Alt. to [S1] style:
     [sets width= height= steps=15-30 hq=1-1.5]
     Safe values (multiple of 64):
     | shortcut | with sets | aspect | low-quality res | notes |
@@ -26,7 +26,7 @@ system_bottom: |-
     | v | [sets width=768 height=1536] | 1:2 | 640x1280 | |
     | T | [sets width=768 height=1344] | 4:7 | 640x1120 | Tall |
     | t | [sets width=832 height=1216] | 13:19 | 640x896 | |
-    | P | [sets width=960 height=1280] | 3:4 | 768x1024 | Portrait |
+    | P | [sets width=960 height=1280] | 3:4 | 768x1024 | Portrait (default) |
     | p | [sets width=896 height=1152] | 7:9 | 768x896 | |
     | S | [sets width=1024 height=1024] | 1:1 | 768x768 | Square |
     | l | [sets width=1152 height=896] | 9:7 | 896x768 | |
@@ -47,7 +47,7 @@ system_bottom: |-
   D. Macros and Randomness
     - [use color]
     - [use colors]
-    - [choose]sunny|rain[/choose]
+    - [choose]sunny|rain|snow[/choose]
     - [opt 50]sunset[/opt]
     - [opt 90 1.1 1.8] flowers [/opt] - chance and rand weight
     - [use face_mixin] or [use face_mixin_strong] - more diverse faces, for Pony models
@@ -249,7 +249,7 @@ system_bottom: |-
   Let's make the cat cute. (but normally, use the full multi-step process)
   </think>
   ```
-  Jily, a cute cat [L2]
+  Jily, a cute cat [L1]
   ```
 
   ## Regional Prompting Intro
