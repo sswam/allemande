@@ -135,6 +135,10 @@ class Agent:
         elif self.data["name"] != name:
             raise ValueError(f'Agent name mismatch: {name} vs {self.data["name"]}')
 
+    def to_yaml(self) -> str:
+        """Return the agent data as a YAML string"""
+        return (f"#File: {self.file}\n" if self.file else "") + yaml.dump(self.data, sort_keys=False)
+
     def copy(self) -> Agent:
         """Return a copy of the agent"""
         return Agent(data=deepcopy(self.data), agents=self.agents)

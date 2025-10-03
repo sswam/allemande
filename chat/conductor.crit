@@ -18,3 +18,7 @@ and loses prompt context unless metadata extraction happens before
 upload—either include minimal alt or ensure early metadata injection
 9. _build_agents assumes agents is not None; add a guard or clarify that None
 is not allowed
+
+1. Including "" in SELF_WORDS can cause unintended matches if matching
+uses substring/in checks; detect a lone '@' explicitly instead of using an
+empty-string sentinel.

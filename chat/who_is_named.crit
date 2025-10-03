@@ -1,0 +1,7 @@
+1. uniq=False is not honored for multiple occurrences of the same name:
+who_is_named only returns one match per agent. test_uniq_flag expecting three
+"alice" entries will fail.
+
+2. find_name_in_content computes absolute position with
+content.find(sentence), which can be wrong if the same sentence text appears
+multiple times. Track offsets while splitting instead.
