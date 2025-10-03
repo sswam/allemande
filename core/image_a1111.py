@@ -40,7 +40,7 @@ MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
 # - an actual time limit, just stop after that time
 # - fair queueing, handle multiple requests. How? need to know user?
 
-DEFAULT_SHORTCUT = "S2"
+DEFAULT_SHORTCUT = "P0"
 MAX_COUNT = 10
 MAX_STEPS = 150  # 30
 
