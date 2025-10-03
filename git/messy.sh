@@ -373,7 +373,7 @@ Lines not starting + or - are CONTEXT.
 *** Only describe the ACTUAL CHANGES, not the CONTEXT. ***
 Return only the git commit message, no prelude or conclusion.
 
-Format of the header line:
+Format of the header line; almost always include the short-module-name:
 
 feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert(short-module-name): a summary line, 50-70 chars
 
@@ -389,7 +389,7 @@ Please be cautious with 'refactor'; don't mark fixes or features as 'refactor'.
 Files in the 'snip' directory, are obsolete stuff.
 Files in the 'gen' directory, are interesting AI content.
 
-*** DO NOT use market-speak words like 'enhance', 'streamline'. ***
+*** DO NOT use market-speak words like 'enhance', 'streamline'. Do not return a diff. ***
 
 ## Second Task
 
@@ -402,6 +402,7 @@ Please carefully review this patch with a fine-tooth comb.
 - Note any grossly bad or inefficient code.
 - Don't advise to remove commented out code.
 - If you don't find anything wrong, don't write anything for this task so as not to waste our time. Thanks!
+- Do not return a diff.
 
 Format:
 
