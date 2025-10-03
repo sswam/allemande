@@ -352,9 +352,10 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
             response = f"@{forward_if_image}"
 
         if forward and response:
-            logger.debug("Forward response: %r", response)
+            logger.info("Forward response: %r", response)
             # look for the final line @agent_name
             response_message = list(bb_lib.lines_to_messages([response]))[-1]
+            logger.info("response_message: %r", response_message)
             _responsible_human, bots2 = conductor.who_should_respond(
                 response_message,
                 agents=agents,
@@ -377,7 +378,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 bots2 = [forward_if_disallowed]
 
             logger.info("Forward: who should respond: %r", bots2)
-            for bot2 in bots2:
+            for bot2 in reversed(bots2):
                 if isinstance(forward_allow, list) and bot2 not in forward_allow or isinstance(forward_deny, list) and bot2 in forward_deny:
                     logger.info("Forward: %s not allowed, using forward_if_denied", bot2)
                     logger.info("  forward_allow: %r", forward_allow)
@@ -389,7 +390,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
                 if bot2 == agent.name:
                     logger.info("Skipping forwarding to self: %s", bot2)
                     continue
-                logger.info("Forwarding to %s", bot2)
+                logger.info("Forwarding from %s to %s", agent.name, bot2)
                 agent2 = agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts)
                 poke_if = agent2.get("poke_if", [])
                 # replace agent.name with agent2.name in user's message
@@ -683,12 +684,12 @@ async def run_subprocess(command, query):
     return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
 
 
-async def tool(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
+async def run_tool(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
     """Run a tool agent"""
     return await safe_shell(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human, direct=True)
 
 
-async def safe_shell(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
+async def run_safe_shell(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
     """Run a shell agent."""
     # NOTE: responsible_human is not used here
 
@@ -768,21 +769,84 @@ async def safe_shell(agent, query, file, args, history, history_start=0, mission
             response += "## messages:\n```\n" + errors + "\n```\n\n"
         response += "## output:\n"
 
-    fmt = agent.get("format", "code")
-    if fmt == "code":
-        response += "```\n" + output + "```\n"
-    elif fmt == "markdown":
-        response += output
-    elif fmt == "pre":
-        response += "<pre>\n" + output + "</pre>\n"
-    else:
-        raise ValueError(f"Unknown format: {fmt}")
+    response += format_tool_response(agent, output)
 
     response2 = f"{name}:\t{response}"
     logger.debug("response2:\n%r", response2)
     response3 = chat.fix_response_layout(response2, args, agent)
     logger.debug("response3:\n%s", response3)
     return response3
+
+
+def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
+    """Return a YAML definition for a python_tool agent."""
+    try:
+        return agents.get(agent.name).to_yaml()
+    except KeyError:
+        raise ValueError(f"Agent {agent.name} not found")
+
+
+python_tools = {
+    "agent_yaml": python_tool_agent_yaml,
+}
+
+
+async def run_python(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
+    """Run a python tool agent."""
+    name = agent.name
+    history_messages = list(bb_lib.lines_to_messages(history))
+    message = history_messages[-1]
+    query = message["content"]
+
+    try:
+        function_name = agent["command"][0]
+    except (TypeError, KeyError):
+        raise ValueError(f"Agent {name} has no command")
+    if function_name not in python_tools:
+        raise ValueError(f"Python function not found: {function_name}")
+    function = python_tools[function_name]
+
+    query = chat.clean_prompt([query], name, args.delim) + "\n"
+
+    # Prepare response formatting
+    response = ""
+    try:
+        result = function(agent, query, file, args, history, history_start, mission, summary, config, agents, responsible_human, direct)
+
+        # Handle the output
+        if isinstance(result, str):
+            output = result
+        else:
+            output = repr(result)
+
+        # Add newline if missing
+        if not output.endswith('\n'):
+            output += '\n'
+
+    except Exception as e:
+        error_msg = f"Error executing {function_name}: {str(e)}"
+        response += f"status: error\n\n## messages:\n```\n{error_msg}\n```\n\n## output:\n"
+        output = "Function execution failed"
+
+    # Format the output according to agent's format specification
+    response += format_tool_response(agent, output)
+
+    response2 = f"{name}:\t{response}"
+    response3 = chat.fix_response_layout(response2, args, agent)
+    return response3
+
+
+def format_tool_response(agent, output):
+    """Format the tool response based on agent settings."""
+    fmt = agent.get("format", "code")
+    if fmt == "code":
+        return "```\n" + output + "```\n"
+    elif fmt in ["markdown", "html"]:
+        return output
+    elif fmt == "pre":
+        return "<pre>\n" + output + "</pre>\n"
+    else:
+        raise ValueError(f"Unknown format: {fmt}")
 
 
 async def file_changed(file_path, change_type, old_size, new_size, args, skip, agents):
@@ -935,9 +999,10 @@ services = {
     "deepseek":     {"link": "remote", "fn": remote_agent},
     "openrouter":   {"link": "remote", "fn": remote_agent},
     "venice":       {"link": "remote", "fn": remote_agent},
-    "safe_shell":   {"link": "tool", "fn": safe_shell, "safe": False, "dumb": True},  # ironically
-    "tool":         {"link": "tool", "fn": tool, "safe": True, "dumb": True},
+    "safe_shell":   {"link": "tool", "fn": run_safe_shell, "safe": False, "dumb": True},  # ironically
+    "tool":         {"link": "tool", "fn": run_tool, "dumb": True},
     "search":       {"link": "tool", "fn": run_search, "dumb": True},
+    "python":       {"link": "tool", "fn": run_python, "dumb": True},
 }
 
 
