@@ -59,7 +59,7 @@ improve() {
 
 	# Check if the file exists
 	if [ ! -e "$file" -o -d "$file" ]; then
-		local prog2=$(which "$file")
+		local prog2=$(which-file "$file")
 		if [ ! -e "$prog2" ]; then
 			echo >&2 "not found: $file"
 			exit 1

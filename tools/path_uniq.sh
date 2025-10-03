@@ -1,9 +1,22 @@
 var_uniq() {
-	local var=$1
-	local old_IFS=$IFS
-	IFS=$2
-	lecho ${!var} | uniqo | grep . | tr '\n' "$IFS" | sed "s/$IFS$//"
-	IFS=$old_IFS
+    local var_name=$1
+    local IFS=$2
+    local var_value="${!var_name}"
+    local -A seen=()
+    local result=''
+    local element
+    local -a elements
+
+    IFS=$2 read -ra elements <<< "$var_value"
+
+    for element in "${elements[@]}"; do
+            [[ -z $element ]] && continue
+            if [[ -z "${seen[$element]}" ]]; then
+                seen["$element"]=1
+                result+="${result:+$IFS}$element"
+            fi
+    done
+    printf '%s\n' "$result"
 }
 
 PATH=$(var_uniq PATH :)
