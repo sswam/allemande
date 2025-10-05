@@ -18,7 +18,7 @@ from dataclasses import dataclass
 
 from deepmerge import always_merger
 
-from settings import EXTENSION, ROOMS_DIR, ADMINS, MODERATORS, PATH_HOME
+from settings import EXTENSION, ROOMS_DIR, ADMINS, MODERATORS, PATH_HOME, PATH_USERS
 from util import backup_file, tree_prune, tac, sanitize_pathname, safe_join
 from bb_lib import load_chat_messages, save_chat_messages, message_to_text
 from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-order
@@ -431,7 +431,7 @@ def check_access(user: str | None, pathname: Path | str) -> Access:
         access, _reason = _check_access_2(user, pathname)
     except PermissionError as _e:
         access, _reason = Access.NONE, "PermissionError"
-    logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
+    # logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
 
     # experiment: allow anyone who can write to moderate
     if access.value & Access.WRITE.value:
@@ -487,8 +487,7 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
 
 def _load_users_and_agents(pathname: str, path: Path) -> tuple[list[str], list[str], set[str]]:
     """Load users and agent lists, handle overlapping names"""
-    users_path = str(PATH_HOME/"users.txt")
-    users = cache.load(users_path).strip().split("\n")
+    users = cache.load(str(PATH_USERS)).strip().split("\n")
     agent_names = read_agents_lists(path)
     overlapping_names = set(agent_names).intersection(set(users))
 
@@ -764,11 +763,12 @@ def move_file(user, source, dest, clobber=False, mode="move"):
     if not clobber and dest_path.exists() and dest_path.stat().st_size != 0:
         raise ValueError(f"Destination already exists: {dest_path}")
 
-    # hack: if moving a folder, the user would have to be able to write to a file within the proposed destination folder
-    dest_example_file = Path(dest_path) / ("chat" + EXTENSION)
-    access = check_access(user, dest_example_file).value
+    # hack: if moving to a folder, the user would have to be able to write to a file within the proposed destination folder
+    if dest.endswith("/"):
+        dest_example_file = dest_path / ("chat" + EXTENSION)
+        access = check_access(user, dest_example_file).value
     if not access & Access.WRITE.value:
-        raise PermissionError(f"You are not allowed to write to this location: user: {user}, path: {dest}/, access: {access}")
+        raise PermissionError(f"You are not allowed to write to this location: user: {user}, path: {dest}, access: {access}")
 
     try:
         # move html files for chat rooms too
