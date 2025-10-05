@@ -16,6 +16,7 @@ from typing import Any
 import aiohttp
 from urllib.parse import urlparse, quote
 import random
+import importlib
 
 import requests
 import shlex
@@ -32,19 +33,23 @@ import tab  # type: ignore
 import chat
 import bb_lib
 import ally_markdown
-from ally_room import Room, Access
+import ally_room
 import fetch
 import llm  # type: ignore
-from ally.cache import cache  # type: ignore
-import aligno_py as aligno  # type: ignore
-from agents import Agents, Agent
-from remote_agents import remote_agent
-from local_agents import local_agent
+import ally_agents
+import remote_agents
 import local_agents
-from settings import *
-from util import backup_file
+import util
 import tasks
-from ally import stopwords
+import ally
+import settings
+
+
+RELOADABLE_MODULES = [
+    "atail", "ucm", "conductor", "search", "tab", "chat", "bb_lib",
+    "ally_markdown", "ally_room", "fetch", "llm", "ally_agents", "remote_agents",
+    "local_agents", "util", "tasks", "ally", "settings"
+]
 
 
 logger = logging.getLogger(__name__)
@@ -105,13 +110,13 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     logger.debug("query: %r %r", engine_id, query)
 
     try:
-        response = await search.search(query, engine=engine_id, markdown=True, num=num, limit=limit, safe=not ADULT)
+        response = await search.search(query, engine=engine_id, markdown=True, num=num, limit=limit, safe=not settings.ADULT)
     except requests.exceptions.HTTPError:
         if name != "Pr0nto":
             raise
-        query2 = stopwords.strip_stopwords(query, strict=True)
+        query2 = ally.stopwords.strip_stopwords(query, strict=True)
         logger.info("Stripped stopwords from query: %r -> %r", query, query2)
-        response = await search.search(query2, engine=engine_id, markdown=True, num=num, limit=limit, safe=not ADULT)
+        response = await search.search(query2, engine=engine_id, markdown=True, num=num, limit=limit, safe=not settings.ADULT)
 
     response2 = f"{name}:\t\n{response}"
     logger.debug("response:\n%s", response2)
@@ -148,7 +153,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 def load_local_agents(room, agents=None):
     """Load the local agents."""
     room_dir = room.parent
-    top_dir = PATH_ROOMS
+    top_dir = settings.PATH_ROOMS
     if top_dir != room_dir and top_dir not in room_dir.parents:
         raise ValueError(f"Room directory {room_dir} is not under {top_dir}")
 
@@ -165,7 +170,7 @@ def load_local_agents(room, agents=None):
     # logger.info("Loading local agents for room %r from %r", room.path, agents_dirs)
 
     for agent_dir in reversed(agents_dirs):
-        agents = Agents(services, parent=agents)
+        agents = ally_agents.Agents(services, parent=agents)
         agents.load(agent_dir, visual=False)
 
         agents.write_agents_list(agent_dir.parent / ".agents.yml")
@@ -178,10 +183,10 @@ def load_local_agents(room, agents=None):
 
 # def filter_agents_with_access(room, agents):
 #     """Filter agents with access to this room."""
-#     agents = Agents(agents.services, parent=agents)
+#     agents = ally_agents.Agents(agents.services, parent=agents)
 #     for agent in agents.values():
 #         # TODO should check all aliases; re-think how aliases work
-#         if room.check_access(agent.name).value & Access.READ_WRITE.value != Access.READ_WRITE.value:
+#         if room.check_access(agent.name).value & ally_room.Access.READ_WRITE.value != ally_room.Access.READ_WRITE.value:
 #             logger.info("Removing agent %s without access to room %s", agent.name, room.path)
 #             agents.set(agent.name, None)
 #     return agents
@@ -191,258 +196,318 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     """Process a file, return True if appended new content."""
     logger.info("Processing %s", file)
 
-    room = Room(path=Path(file))
-
+    room = ally_room.Room(path=Path(file))
     history = chat.chat_read(file, args)
+    config = load_config(room)
+    mission = load_mission(room, config, args)
+    summary = load_summary(room, args)
+    agents = load_local_agents(room, agents)
 
-    # Load config file, if present
+    history_messages = list(bb_lib.lines_to_messages(history))
+
+    if should_skip_editing_command(history_messages, poke):
+        return 0
+
+    history_messages = chat.apply_editing_commands(history_messages)
+    history = list(bb_lib.messages_to_lines(history_messages))
+    message = history_messages[-1] if history_messages else None
+    last_message_id = len(history_messages) - 1
+
+    message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
+
+    bots, responsible_human = determine_responders(message, agents, history_messages, config, room, mission, poke)
+    logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
+
+    count = await process_bot_responses(
+        bots, agents, file, args, history, history_start, mission,
+        summary, config, responsible_human, poke, skip, room
+    )
+    return count
+
+
+def load_config(room):
+    """Load and return configuration from room."""
     config_file = room.find_resource_file("yml", "options")
     logger.debug("config_file: %r", config_file)
     config = config_read(config_file)
     logger.debug("config: %r", config)
+    return config
 
+
+def load_mission(room, config, args):
+    """Load and return mission from room."""
     mission_file_name = config.get("mission", "mission")
     mission_try_room_name = "mission" not in config
-
-    # Load mission file, if present
     mission_file = room.find_resource_file("m", mission_file_name, try_room_name=mission_try_room_name)
-    mission = chat.chat_read(mission_file, args)
+    return chat.chat_read(mission_file, args)
 
-    # logger.info("mission name %r, mission_try_room_name %r, mission_file %r", mission_file_name, mission_try_room_name, mission_file)
 
-    # Load summary file, if present
+def load_summary(room, args):
+    """Load and return summary from room."""
     summary_file = room.find_resource_file("s", "summary")
-    summary = summary_read(summary_file, args)
+    return summary_read(summary_file, args)
 
-    # Load local agents
-    agents = load_local_agents(room, agents)
-    # agents = filter_agents_with_access(room, agents)  # Not working?
 
-    history_messages = list(bb_lib.lines_to_messages(history))
+def should_skip_editing_command(history_messages, poke):
+    """Check if we should skip processing due to editing command."""
+    if not history_messages or poke:
+        return False
+    message = history_messages[-1]
+    return message and re.search(r"""<ac\b[a-z0-9 ="']*>\s*$""", message["content"], flags=re.IGNORECASE)
 
-    logger.debug("len history: %r", len(history))
-    logger.debug("len history_messages: %r", len(history_messages))
 
+def handle_directed_poke(message, history, history_messages, file, args, last_message_id):
+    """Handle soft undo for directed-poke commands."""
+    if not message or not message["content"].startswith("-@"):
+        return message, history, history_messages
+
+    undo_message = f"{message['user']}:\t<ac rm={last_message_id}>"
+    history_messages.pop()
+    history.pop()
+    chat.chat_write(file, [undo_message], delim=args.delim, invitation=args.delim)
     message = history_messages[-1] if history_messages else None
+    return message, history, history_messages
 
-    # check for editing commands, AI should not respond to these
-    if message and not poke and re.search(r"""<ac\b[a-z0-9 ="']*>\s*$""", message["content"], flags=re.IGNORECASE):
-        return 0
 
-    # logger.info("history_messages 1: %r", history_messages)
-
-    last_message_id = len(history_messages) - 1
-
-    # flatten history, removing any editing commands
-    history_messages = chat.apply_editing_commands(history_messages)
-
-    logger.debug("len history_messages after edit: %r", len(history_messages))
-
-    message = history_messages[-1] if history_messages else None
-
-    # so inefficient, need to rework this sensibly one day using ChatMessage objects
-    history = list(bb_lib.messages_to_lines(history_messages))
-
-#     logger.info("history_messages 2: %r", history_messages)
-    # logger.info("history 2: %r", history)
-
+def determine_responders(message, agents, history_messages, config, room, mission, poke):
+    """Determine which bots and humans should respond."""
     welcome_agents = [name for name, agent in agents.items() if agent.get("welcome")]
-
     include_self = config.get("self_talk", True) and not poke
 
     responsible_human, bots = conductor.who_should_respond(
-        message,
-        agents=agents,
-        history=history_messages,
-        default=welcome_agents,
-        include_humans_for_ai_message=not poke,
-        include_humans_for_human_message=not poke,  # True,
-        mission=mission,
-        config=config,
-        room=room,
-        include_self=include_self,
+        message, agents=agents, history=history_messages, default=welcome_agents,
+        include_humans_for_ai_message=not poke, include_humans_for_human_message=not poke,
+        mission=mission, config=config, room=room, include_self=include_self,
     )
-    logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
-
-    # Support "directed-poke" which removes itself, like -@Ally
-    # TODO this is a bit dodgy and has a race condition
-    logger.debug("testing -@ directed poke, message is: %r", message)
-
-    # # directed-poke with hard undo
-    # if message and message["content"].startswith("--@"):  # pylint: disable=unsubscriptable-object
-    #     history_messages.pop()
-    #     history.pop()
-    #     await room.undo("root")
-    #     message = history_messages[-1] if history_messages else None
-
-    # directed-poke with soft undo
-    if message and message["content"].startswith("-@"):  # pylint: disable=unsubscriptable-object
-        undo_message = f"{message['user']}:\t<ac rm={last_message_id}>"
-        history_messages.pop()
-        history.pop()
-        chat.chat_write(file, [undo_message], delim=args.delim, invitation=args.delim)
-        message = history_messages[-1] if history_messages else None
+    return bots, responsible_human
 
 
+async def process_bot_responses(bots, agents, file, args, history, history_start,
+                                mission, summary, config, responsible_human, poke, skip, room):
+    """Process responses from all bots."""
     count = 0
     for bot in bots:
-        if not (bot and bot in agents.names()):
+        if not should_process_bot(bot, agents):
             continue
 
-        agent = agents.get(bot)
-
-        if agent.get("type") in [None, "human", "visual", "mixin"]:
-            continue
-
-        poke_if = agent.get("poke_if", [])
-
-        # load agent's mission file, if present
-        my_mission = mission.copy()
-        agent_mission_file = room.find_agent_resource_file("m", bot)
-        mission2 = chat.chat_read(agent_mission_file, args)
-        logger.debug("mission: %r", mission)
-        logger.debug("mission2: %r", mission2)
-        if mission2:
-            my_mission += [""] + mission2
-
-        #     - query is not even used in remote_agent
-        if history:
-            query1 = history[-1]
-        else:
-            query1 = agent.get("starter_prompt", STARTER_PROMPT) or ""
-            query1 = query1.format(bot=bot) or None
-            history = [query1]
-        logger.debug("query1: %r", query1)
-        messages = list(bb_lib.lines_to_messages([query1]))
-        query = messages[-1]["content"] if messages else None
-
-        logger.debug("query: %r", query)
-        logger.debug("history 1: %r", history)
-        response = await run_agent(
-            agent, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
+        response = await generate_bot_response(
+            bot, agents, file, args, history, history_start,
+            mission, summary, config, responsible_human, room
         )
+
         if response is None:
             continue
+
         response = response.lstrip().rstrip("\n ")
+        agent = agents.get(bot)
+        response = await handle_forwarding(response, agent, agents, file, args, history,
+                                        history_start, mission, summary, config, responsible_human, room)
 
-        # Forwarding to other agents transparently:
-        # TODO use a function or something
-        forward = agent.get("forward")
-        forward_allow = agent.get("forward_allow")
-        forward_deny = agent.get("forward_deny")
-        forward_if_denied = agent.get("forward_if_denied")
-        forward_if_code = agent.get("forward_if_code")
-        forward_if_image = agent.get("forward_if_image")
-        forward_if_blank = agent.get("forward_if_blank")
-        forward_if_disallowed = agent.get("forward_if_disallowed")
-        forward_keep_prompts = agent.get("forward_keep_prompts")
-
-        if forward_if_blank and (not response or response == f"{agent.name}:"):
-            logger.info("Forward: blank, Using forward_if_blank")
-            response = f"@{forward_if_blank}"
-
-        has_forward = chat.has_at_mention(response)
-
-        # HACK: if the agent tried to give an image prompt or an image, forward it
-        if not has_forward and forward_if_code and "```" in response:
-            logger.info("Forward: code, Using forward_if_code")
-            response = f"@{forward_if_code}"
-        if not has_forward and forward_if_image and "![" in response:
-            logger.info("Forward: image, Using forward_if_image")
-            response = f"@{forward_if_image}"
-
-        if forward and response:
-            logger.info("Forward response: %r", response)
-            # look for the final line @agent_name
-            response_message = list(bb_lib.lines_to_messages([response]))[-1]
-            logger.info("response_message: %r", response_message)
-            _responsible_human, bots2 = conductor.who_should_respond(
-                response_message,
-                agents=agents,
-                history=[response_message],
-                default=[],
-                include_humans_for_ai_message=False,
-                include_humans_for_human_message=False,
-                may_use_mediator=False,
-                config=config,
-                room=room,
-                include_self=False,
-                at_only=True,
-                use_aggregates=False,
-            )
-
-            bots2 = [b for b in bots2 if b is not None]
-
-            # HACK: if the agent tried to foward to an agent that is not allowed here, replace it
-            if not bots2 and chat.has_at_mention(response):
-                bots2 = [forward_if_disallowed]
-
-            logger.info("Forward: who should respond: %r", bots2)
-            for bot2 in reversed(bots2):
-                if isinstance(forward_allow, list) and bot2 not in forward_allow or isinstance(forward_deny, list) and bot2 in forward_deny:
-                    logger.info("Forward: %s not allowed, using forward_if_denied", bot2)
-                    logger.info("  forward_allow: %r", forward_allow)
-                    logger.info("  forward_deny: %r", forward_deny)
-                    bot2 = agent.get("forward_if_denied")
-                    if not bot2:
-                        continue
-                # never forward to self
-                if bot2 == agent.name:
-                    logger.info("Skipping forwarding to self: %s", bot2)
-                    continue
-                logger.info("Forwarding from %s to %s", agent.name, bot2)
-                agent2 = agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts)
-                poke_if = agent2.get("poke_if", [])
-                # replace agent.name with agent2.name in user's message
-                # logger.info("Replacing %s with %s in query: %r", agent.name, agent2.name, query)
-                # query2 = history[-1] = re.sub(rf"\b{re.escape(agent.name)}\b", agent2.name, query)
-                # logger.info("  query2: %r", query2)
-                response = await run_agent(
-                    agent2, query, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
-#                    agent2, query2, file, args, history, history_start=history_start, mission=my_mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human
-                )
-                if response is None:
-                    continue
-                response = response.lstrip().rstrip("\n ")
-                # if agent.get("forward") == "transparent_half" and response:
-                #     response = f"{agent.name}:\t" + re.sub(r"\A.*?:(\t|$)", "", response, count=1, flags=re.MULTILINE)
-                # elif agent.get("forward") == "transparent" and response:
-                #     response = re.sub(rf"\b{re.escape(agent2.name)}\b", agent.name, response)
-                break  # only forward to at most one agent, for now
-
-        # Narrator agents:
-        if agent.get("narrator") == "hard":
-            response = response.lstrip(f'{agent.name}:')
-            # remove 1 tab from start of each line
-            response = "\n".join([line[1:] if line.startswith("\t") else line for line in response.split("\n")])
-
-        # Ephemeral messages:
-        # If the previous message begins with - it was ephemeral, so remove it
-        # TODO this might not work well when multiple bots respond
-        # TODO fix and restore this? I forget what it did exactly!
-        # if history and history[-1].startswith("-"):
-        #     history.pop()
-        #     history_messages.pop()
-        #     room.undo("root")
-        #     # sleep for a bit
-        #     await asyncio.sleep(0.1)
-
-        if response == f"{agent.name}:":
-            response += ""
-
-        poke = any(x in response for x in poke_if)
-        logger.debug("poke_if: %r, poke: %r, response: %r", poke_if, poke, response)
+        response = apply_narrator_mode(response, agent)
+        poke_next = should_poke_next(response, agent)
 
         history.append(response)
-        logger.debug("history 2: %r", history)
-        # avoid re-processing in response to an AI response
-        if not poke and skip is not None:
-            logger.debug("Will skip processing after agent/s response: %r", file)
-            skip[file] += 1
+        update_skip_tracking(poke_next, skip, file)
         chat.chat_write(file, history[-1:], delim=args.delim, invitation=args.delim)
-
         count += 1
+
     return count
+
+
+def should_process_bot(bot, agents):
+    """Check if bot should be processed."""
+    if not (bot and bot in agents.names()):
+        return False
+    agent = agents.get(bot)
+    return agent.get("type") not in [None, "human", "visual", "mixin"]
+
+
+async def generate_bot_response(bot, agents, file, args, history, history_start,
+                                mission, summary, config, responsible_human, room):
+    """Generate a response from a bot agent."""
+    agent = agents.get(bot)
+    my_mission = load_agent_mission(room, bot, mission, args)
+    query, history = prepare_query(history, agent, bot)
+
+    return await run_agent(
+        agent, query, file, args, history, history_start=history_start,
+        mission=my_mission, summary=summary, config=config,
+        agents=agents, responsible_human=responsible_human
+    )
+
+
+def load_agent_mission(room, bot, base_mission, args):
+    """Load agent-specific mission and merge with base mission."""
+    my_mission = base_mission.copy()
+    agent_mission_file = room.find_agent_resource_file("m", bot)
+    mission2 = chat.chat_read(agent_mission_file, args)
+    logger.debug("mission: %r", base_mission)
+    logger.debug("mission2: %r", mission2)
+    if mission2:
+        my_mission += [""] + mission2
+    return my_mission
+
+
+def prepare_query(history, agent, bot):
+    """Prepare query and history for agent."""
+    if history:
+        query1 = history[-1]
+    else:
+        query1 = agent.get("starter_prompt", STARTER_PROMPT) or ""
+        query1 = query1.format(bot=bot) or None
+        history = [query1]
+
+    logger.debug("query1: %r", query1)
+    messages = list(bb_lib.lines_to_messages([query1]))
+    query = messages[-1]["content"] if messages else None
+    logger.debug("query: %r", query)
+    return query, history
+
+
+async def handle_forwarding(response, agent, agents, file, args, history,
+                        history_start, mission, summary, config, responsible_human, room):
+    """Handle forwarding logic for agent responses."""
+    if not agent.get("forward"):
+        return response
+
+    response = apply_forward_triggers(response, agent)
+
+    if not response:
+        return response
+
+    forward_target = determine_forward_target(response, agent, agents, config, room)
+
+    if not forward_target:
+        return response
+
+    return await execute_forward(forward_target, agent, agents, file, args, history,
+                                history_start, mission, summary, config, responsible_human)
+
+
+def apply_forward_triggers(response, agent):
+    """Apply automatic forwarding based on response content."""
+    forward_if_blank = agent.get("forward_if_blank")
+    if forward_if_blank and (not response or response == f"{agent.name}:"):
+        logger.info("Forward: blank, Using forward_if_blank")
+        return f"@{forward_if_blank}"
+
+    has_forward = chat.has_at_mention(response)
+
+    forward_if_code = agent.get("forward_if_code")
+    if not has_forward and forward_if_code and "```" in response:
+        logger.info("Forward: code, Using forward_if_code")
+        return f"@{forward_if_code}"
+
+    forward_if_image = agent.get("forward_if_image")
+    if not has_forward and forward_if_image and "![" in response:
+        logger.info("Forward: image, Using forward_if_image")
+        return f"@{forward_if_image}"
+
+    return response
+
+
+def determine_forward_target(response, agent, agents, config, room):
+    """Determine which agent to forward to."""
+    logger.info("Forward response: %r", response)
+    response_message = list(bb_lib.lines_to_messages([response]))[-1]
+    logger.info("response_message: %r", response_message)
+
+    _responsible_human, bots2 = conductor.who_should_respond(
+        response_message, agents=agents, history=[response_message], default=[],
+        include_humans_for_ai_message=False, include_humans_for_human_message=False,
+        may_use_mediator=False, config=config, room=room, include_self=False,
+        at_only=True, use_aggregates=False,
+    )
+
+    bots2 = [b for b in bots2 if b is not None]
+
+    if not bots2 and chat.has_at_mention(response):
+        bots2 = [agent.get("forward_if_disallowed")]
+
+    logger.info("Forward: who should respond: %r", bots2)
+    return get_allowed_forward_target(bots2, agent)
+
+
+def get_allowed_forward_target(bots2, agent):
+    """Get the first allowed forward target from candidates."""
+    forward_allow = agent.get("forward_allow")
+    forward_deny = agent.get("forward_deny")
+
+    for bot2 in reversed(bots2):
+        if is_forward_denied(bot2, forward_allow, forward_deny):
+            bot2 = agent.get("forward_if_denied")
+            if not bot2:
+                continue
+
+        if bot2 == agent.name:
+            logger.info("Skipping forwarding to self: %s", bot2)
+            continue
+
+        return bot2
+
+    return None
+
+
+def is_forward_denied(bot, forward_allow, forward_deny):
+    """Check if forwarding to bot is denied."""
+    if isinstance(forward_allow, list) and bot not in forward_allow:
+        logger.info("Forward: %s not allowed, using forward_if_denied", bot)
+        logger.info("  forward_allow: %r", forward_allow)
+        return True
+
+    if isinstance(forward_deny, list) and bot in forward_deny:
+        logger.info("Forward: %s denied, using forward_if_denied", bot)
+        logger.info("  forward_deny: %r", forward_deny)
+        return True
+
+    return False
+
+
+async def execute_forward(bot2, agent, agents, file, args, history,
+                        history_start, mission, summary, config, responsible_human):
+    """Execute forwarding to another agent."""
+    logger.info("Forwarding from %s to %s", agent.name, bot2)
+    forward_keep_prompts = agent.get("forward_keep_prompts")
+    agent2 = agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts)
+    logger.info("Forward agent: %r", agent2)
+
+    query = history[-1]
+    response = await run_agent(
+        agent2, query, file, args, history, history_start=history_start,
+        mission=mission, summary=summary, config=config,
+        agents=agents, responsible_human=responsible_human
+    )
+
+    if response is None:
+        return None
+
+    return response.lstrip().rstrip("\n ")
+
+
+def apply_narrator_mode(response, agent):
+    """Apply narrator mode transformations to response."""
+    if agent.get("narrator") != "hard":
+        return response
+
+    response = response.lstrip(f'{agent.name}:')
+    lines = response.split("\n")
+    dedented = [line[1:] if line.startswith("\t") else line for line in lines]
+    return "\n".join(dedented)
+
+
+def should_poke_next(response, agent):
+    """Determine if next agent should be poked based on response."""
+    poke_if = agent.get("poke_if", [])
+    poke = any(x in response for x in poke_if)
+    logger.info("poke_if: %r, poke: %r, response: %r", poke_if, poke, response)
+    return poke
+
+
+def update_skip_tracking(poke, skip, file):
+    """Update skip tracking to avoid re-processing."""
+    if not poke and skip is not None:
+        logger.debug("Will skip processing after agent/s response: %r", file)
+        skip[file] += 1
 
 
 def filter_out_agents_install(response: str) -> str:
@@ -471,7 +536,7 @@ def filter_out_agents_install(response: str) -> str:
 
     logger.debug("Found %d agent files in YAML blocks: %r", len(yaml_agents), [name for name, _ in yaml_agents])
 
-    agents_path = PATH_ROOMS / "agents"
+    agents_path = settings.PATH_ROOMS / "agents"
 
     for path_name, content in yaml_agents:
         # Sanitize filename
@@ -496,7 +561,7 @@ def filter_out_agents_install(response: str) -> str:
             # Create directory if it doesn't exist
             file_path.parent.mkdir(parents=True, exist_ok=True)
 
-            backup_file(str(file_path))
+            util.backup_file(str(file_path))
 
             # Write content
             with open(file_path, "w", encoding="utf-8") as f:
@@ -587,7 +652,7 @@ filters_out = {
 }
 
 
-def apply_filters_in(agent: Agent, query: str, history: list[str]) -> tuple[str, list[str]]:
+def apply_filters_in(agent: ally_agents.Agent, query: str, history: list[str]) -> tuple[str, list[str]]:
     """Apply input filters to the query and history."""
     filters = agent.get("filter_in")
     history_new = None
@@ -619,7 +684,7 @@ def apply_filters_in(agent: Agent, query: str, history: list[str]) -> tuple[str,
     return query, history
 
 
-def apply_filters_out(agent: Agent, response: str) -> str:
+def apply_filters_out(agent: ally_agents.Agent, response: str) -> str:
     """Apply output filters to the response."""
     filters = agent.get("filter_out")
     for filter_name in filters or []:
@@ -710,9 +775,9 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
         # check only contains safe characters
         if not re.match(r"^[a-zA-Z0-9._-]+$", executable):
             raise ValueError(f"Tool command contains unsafe characters: {executable}, {agent.name}")
-        if not (PATH_TOOLS/executable).is_file():
+        if not (settings.PATH_TOOLS/executable).is_file():
             # glob .* anywhere under it
-            commands = list(PATH_TOOLS.glob(f"**/{executable}.*"))
+            commands = list(settings.PATH_TOOLS.glob(f"**/{executable}.*"))
             if len(commands) == 0:
                 raise ValueError(f"Tool command not found: {executable}, {agent.name}")
             if len(commands) > 1:
@@ -889,22 +954,22 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip, a
 def check_file_type(path):
     """Check the file type, either room or agent."""
     ext = Path(path).suffix
-    if ext == ".bb" and path.startswith(str(PATH_ROOMS)+"/"):
+    if ext == ".bb" and path.startswith(str(settings.PATH_ROOMS)+"/"):
         return "room"
-    if ext == ".yml" and path.startswith(str(PATH_AGENTS)+"/"):
+    if ext == ".yml" and path.startswith(str(settings.PATH_AGENTS)+"/"):
         return "agent"
-    if ext == ".yml" and path.startswith(str(PATH_ROOMS/"agents")+"/"):
+    if ext == ".yml" and path.startswith(str(settings.PATH_ROOMS/"agents")+"/"):
         return "agent"
-    if ext == ".yml" and path.startswith(str(PATH_ROOMS)+"/") and "agents" in Path(path).parts and not Path(path).is_symlink():
+    if ext == ".yml" and path.startswith(str(settings.PATH_ROOMS)+"/") and "agents" in Path(path).parts and not Path(path).is_symlink():
         return "agent_private"
-    if ext in [".safetensors"] and path.startswith(str(PATH_ROOMS)+"/"):
+    if ext in [".safetensors"] and path.startswith(str(settings.PATH_ROOMS)+"/"):
         return "contrib"
     return None
 
 
 def move_contrib(path: Path) -> None:
     """Move contributed files to the main contrib folder"""
-    dest = str(PATH_ROOMS) + "/contrib"
+    dest = str(settings.PATH_ROOMS) + "/contrib"
     if str(path).startswith(dest + "/"):
         return
     Path(dest).mkdir(parents=True, exist_ok=True)
@@ -916,18 +981,18 @@ async def watch_loop(args):
     """Follow the watch log, and process files."""
     skip = defaultdict(int)
 
-    agents = Agents(services)
-    agents.load(PATH_AGENTS)
-    rooms_public_agents = PATH_ROOMS/"agents"
+    agents = ally_agents.Agents(services)
+    agents.load(settings.PATH_AGENTS)
+    rooms_public_agents = settings.PATH_ROOMS/"agents"
     agents.load(rooms_public_agents)
 
-    for agents_dir in Path(PATH_ROOMS).rglob('agents'):
+    for agents_dir in Path(settings.PATH_ROOMS).rglob('agents'):
         if agents_dir == rooms_public_agents:
             continue
         if agents_dir.is_dir():
             agents.load(agents_dir, private=True)
 
-    agents.write_agents_list(PATH_ROOMS / ".agents_global.yml")
+    agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
         while (line := await queue.get()) is not None:
@@ -949,7 +1014,7 @@ async def watch_loop(args):
                     tasks.list_active_tasks()
                 elif file_type == "agent":
                     agents.handle_file_change(file_path, change_type)
-                    agents.write_agents_list(PATH_ROOMS / ".agents_global.yml")
+                    agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
                 elif file_type == "agent_private":
                     agents.handle_file_change(file_path, change_type, private=True)
                 elif file_type == "contrib" and change_type == Change.added:
@@ -979,14 +1044,94 @@ def get_code_files():
     # TODO this is incomplete, it doesn't catch all modules
     for mod in sys.modules.values():
         file = getattr(mod, "__file__", None)
-        if file and file.startswith(str(PATH_HOME)) and not "/venv/" in file and file.endswith(".py"):
+        if file and file.startswith(str(settings.PATH_HOME)) and not "/venv/" in file and file.endswith(".py"):
             code_files.append(mod.__file__)
 
     return code_files
 
 
+async def reload_module(module_name: str, module, file_stem: str) -> tuple[bool, str | None]:
+    """
+    Attempt to reload a single module.
+    Returns (success, error_message)
+    """
+    if module is None:
+        return False, None
+
+    # Check if module name matches the file stem
+    if not (module_name == file_stem or module_name.endswith(f".{file_stem}")):
+        return False, None
+
+    try:
+        reloaded_module = importlib.reload(module)
+        # Update sys.modules with the reloaded module
+        sys.modules[module_name] = reloaded_module
+        # Update the global namespace
+        globals()[module_name.split('.')[-1]] = reloaded_module
+        return True, None
+    except ImportError as e:
+        return False, str(e)
+
+
+def process_changed_code_file(file: str) -> tuple[set[str], list[str]]:
+    """
+    Process a single changed file and attempt to reload corresponding module.
+    Returns (reloaded_modules, need_restart_files)
+    """
+    reloaded = set()
+    need_restart_files = []
+
+    file_stem = Path(file).stem
+
+    # Check if this file corresponds to a reloadable module
+    if file_stem not in RELOADABLE_MODULES:
+        need_restart_files.append(file)
+        return reloaded, need_restart_files
+
+    # Try to reload matching modules
+    for module_name, module in list(sys.modules.items()):
+        success, error = reload_module(module_name, module, file_stem)
+        if success:
+            reloaded.add(module_name)
+            break
+        elif error:
+            logger.error("Failed to reload module %s: %s", module_name, error)
+            need_restart_files.append(file)
+            break
+    else:
+        need_restart_files.append(file)
+
+    return reloaded, need_restart_files
+
+
+async def reload_if_code_changes():
+    """Watch for code changes and reload affected modules."""
+    code_files = get_code_files()
+    logger.debug("watching code files: %r", code_files)
+
+    async for changes in awatch(*code_files, debounce=1000, debug=False):
+        all_reloaded = set()
+        all_need_restart = []
+
+        for _change, file in changes:
+            logger.info("Code file changed: %r", file)
+            reloaded, need_restart = process_changed_code_file(file)
+            all_reloaded.update(reloaded)
+            all_need_restart.extend(need_restart)
+
+        if all_reloaded:
+            logger.info("Reloaded modules: %s", ", ".join(sorted(all_reloaded)))
+            setup_services()
+
+        if all_need_restart:
+            logger.info("Need restart for:")
+            for file in all_need_restart:
+                logger.info("- %s", file)
+            await restart_service()
+
+
 async def restart_if_code_changes():
-    """Watch for code changes and restart the service."""
+    """Watch for code changes and restart the service. Not used now."""
     code_files = get_code_files()
     logger.debug("watching code files: %r", code_files)
 
@@ -1000,23 +1145,28 @@ async def restart_if_code_changes():
         await restart_service()
 
 
-services = {
-    "llm_llama":    {"link": "portal", "fn": local_agent},
-    "image_a1111":  {"link": "portal", "fn": local_agent, "dumb": True},
-    "image_openai": {"link": "remote", "fn": remote_agent, "dumb": True},  # TODO
-    "openai":       {"link": "remote", "fn": remote_agent},
-    "anthropic":    {"link": "remote", "fn": remote_agent},
-    "google":       {"link": "remote", "fn": remote_agent},
-    "perplexity":   {"link": "remote", "fn": remote_agent},
-    "xai":          {"link": "remote", "fn": remote_agent},
-    "deepseek":     {"link": "remote", "fn": remote_agent},
-    "openrouter":   {"link": "remote", "fn": remote_agent},
-    "venice":       {"link": "remote", "fn": remote_agent},
-    "safe_shell":   {"link": "tool", "fn": run_safe_shell, "safe": False, "dumb": True},  # ironically
-    "tool":         {"link": "tool", "fn": run_tool, "dumb": True},
-    "search":       {"link": "tool", "fn": run_search, "dumb": True},
-    "python":       {"link": "tool", "fn": run_python, "dumb": True},
-}
+services: dict[str, dict[str, Any]] = {}
+
+
+def setup_services():
+    global services
+    services = {
+        "llm_llama":    {"link": "portal", "fn": local_agents.local_agent},
+        "image_a1111":  {"link": "portal", "fn": local_agents.local_agent, "dumb": True},
+        "image_openai": {"link": "remote", "fn": remote_agents.remote_agent, "dumb": True},  # TODO
+        "openai":       {"link": "remote", "fn": remote_agents.remote_agent},
+        "anthropic":    {"link": "remote", "fn": remote_agents.remote_agent},
+        "google":       {"link": "remote", "fn": remote_agents.remote_agent},
+        "perplexity":   {"link": "remote", "fn": remote_agents.remote_agent},
+        "xai":          {"link": "remote", "fn": remote_agents.remote_agent},
+        "deepseek":     {"link": "remote", "fn": remote_agents.remote_agent},
+        "openrouter":   {"link": "remote", "fn": remote_agents.remote_agent},
+        "venice":       {"link": "remote", "fn": remote_agents.remote_agent},
+        "safe_shell":   {"link": "tool", "fn": run_safe_shell, "safe": False, "dumb": True},  # ironically
+        "tool":         {"link": "tool", "fn": run_tool, "dumb": True},
+        "search":       {"link": "tool", "fn": run_search, "dumb": True},
+        "python":       {"link": "tool", "fn": run_python, "dumb": True},
+    }
 
 
 def get_opts():  # pylint: disable=too-many-statements
@@ -1027,7 +1177,7 @@ def get_opts():  # pylint: disable=too-many-statements
     modes_group.add_argument("--watch", "-w", default=None, help="Watch mode, follow a watch log file")
 
     watch_group = parser.add_argument_group("Watch mode options")
-    watch_group.add_argument("--ext", default=EXTENSION, help="File extension to watch for")
+    watch_group.add_argument("--ext", default=settings.EXTENSION, help="File extension to watch for")
     watch_group.add_argument("--shrink", action="store_true", help="React if the file shrinks")
 
     format_group = parser.add_argument_group("Format options")
@@ -1062,10 +1212,12 @@ async def main():
     if not args.watch:
         raise ValueError("Watch file not specified")
 
+    setup_services()
+
     local_agents.init(args)
 
     logger.info("Watching chat rooms")
-    asyncio.create_task(restart_if_code_changes())
+    asyncio.create_task(reload_if_code_changes())
     await watch_loop(args)
 
 
