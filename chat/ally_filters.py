@@ -8,7 +8,7 @@ import random
 import re
 from pathlib import Path
 import regex
-from agents import Agent
+from ally_agents import Agent
 from settings import *
 from util import backup_file
 

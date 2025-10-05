@@ -8,21 +8,26 @@ import logging
 from typing import Any, Iterable
 
 from util import uniqo
-from agents import Agents
+from ally_agents import Agents
 import chat
-from conductor_settings import *
-from text.names import extract_partial_names, NAME_PATTERN
+from conductor_settings import *  # pylint: disable=wildcard-import,unused-wildcard-import,wrong-import-order
+from text.names import extract_partial_names, NAME_PATTERN  # pylint: disable=wrong-import-order
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-__version__ = "0.2.1"
+__version__ = "0.2.4"
 
 
 def agent_is_tool(agent: dict[str, Any]) -> bool:
     """check if an agent is a tool"""
     agent_type = agent.get("type")
-    return agent.get("link") == "tool" or (agent_type and agent_type.startswith("image_"))
+    link = agent.get("link")
+    if link == "tool":
+        return True
+    if agent_type and agent_type.startswith("image_"):
+        return True
+    return False
 
 
 def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_cache: dict[str, int], agent_name_map: dict[str, str], must_exist: bool = True) -> list[str]:
@@ -43,7 +48,69 @@ def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_c
     return result
 
 
-def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_tool: bool = False) -> tuple[int, int, int, str | None] | None:  # pylint: disable=too-many-locals
+def extract_invocations(content: str, at_only: bool = False, uniq: bool = True) -> list[str]:
+    """ Extract all invocation-looking strings from content. Returns full-length matches only (not substrings). """
+    if at_only:
+        # Match @-prefixed names only
+        pattern = r'@[a-zA-Z_][a-zA-Z0-9_-]*'
+        matches = re.findall(pattern, content)
+        # Remove @ prefix
+        results = [m.lstrip('@') for m in matches]
+    else:
+        # Use NAME_PATTERN to find all name-like strings
+        results = []
+        seen_positions = set()
+
+        for match in NAME_PATTERN.finditer(content, overlapped=True):
+            start, end = match.span()
+            # Only include if this exact span hasn't been seen
+            if (start, end) not in seen_positions:
+                name = match.group().strip().lstrip('@')
+                if name:
+                    results.append(name)
+                    seen_positions.add((start, end))
+
+    if uniq:
+        results = uniqo(results)
+
+    return results
+
+
+def extract_unknown_invocations(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    content: str,
+    agent_names: list[str],
+    all_users: list[str] | None = None,
+    at_only: bool = False,
+    ignore_case: bool = True,
+    uniq: bool = True,
+) -> list[str]:
+    """ Extract invocation-looking strings that don't appear in known agents or users lists. This allows discovering new @mentioned agents on the fly. """
+    if all_users is None:
+        all_users = []
+
+    # Get all invocations
+    invocations = extract_invocations(content, at_only=at_only, uniq=False)
+
+    # Build set of known names for exclusion
+    known_names = set()
+    for name in agent_names + all_users:
+        key = name.lower() if ignore_case else name
+        known_names.add(key)
+
+    # Filter out known names
+    results = []
+    for inv in invocations:
+        key = inv.lower() if ignore_case else inv
+        if key not in known_names:
+            results.append(inv)
+
+    if uniq:
+        results = uniqo(results)
+
+    return results
+
+
+def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_tool: bool = False) -> tuple[int, int, int, int, str | None] | None:  # pylint: disable=too-many-locals
     """
     Try to find a name in message content, prioritizing later sentences
     Returns tuple of (match_type, sentence_num_from_end, position, name)
@@ -88,7 +155,7 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
                 best_match = min(best_match, current_match)
 
     if best_match[4]:
-        return (best_match[0], best_match[1], best_match[2], best_match[4])
+        return best_match
     return None
 
 
@@ -135,18 +202,19 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
     everyone_except_user_all = [a for a in chat_participants_all if a != user]
 
     # Extract candidate names from content using names library
-    candidate_names = set()
+    # Use a list to preserve duplicates when uniq=False
+    candidate_names_list = []
     for match in NAME_PATTERN.finditer(content, overlapped=True):
-        name = match.group().strip()
+        name = match.group().strip().lstrip('@')
+        if not name:
+            continue
         # Get all partial names (subsequences)
-        candidate_names.update(extract_partial_names(name))
+        candidate_names_list.extend(extract_partial_names(name))
 
-    logger.debug("candidate_names: %r", candidate_names)
+    logger.debug("candidate_names_list: %r", candidate_names_list)
 
     # Build set of all possible agent names to match against
-    agents_and_plurals = agent_names
-    if USE_PLURALS:
-        agents_and_plurals = agent_names + everyone_words + anyone_words + self_words
+    agents_and_plurals = agent_names + everyone_words + anyone_words + self_words
 
     # Create lowercase lookup for case-insensitive matching
     agent_lookup = {}
@@ -156,17 +224,18 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
 
     # Match candidates against agents
     matches = []
-    for candidate in candidate_names:
+    for candidate in candidate_names_list:
         candidate_key = candidate.lower() if ignore_case else candidate
-        if candidate_key in agent_lookup:
-            agent = agent_lookup[candidate_key]
-            is_tool = agents is not None and agent in agents.agents and agent_is_tool(agents.get(agent))
-            best_match = find_name_in_content(content, agent, is_tool=is_tool, ignore_case=ignore_case)
-            if best_match:
-                matches.append(best_match)
+        if candidate_key not in agent_lookup:
+            continue
+        agent = agent_lookup[candidate_key]
+        is_tool = agents is not None and agent in agents.agents and agent_is_tool(agents.get(agent))  # type: ignore[attr-defined]
+        best_match = find_name_in_content(content, agent, is_tool=is_tool, ignore_case=ignore_case)
+        if best_match:
+            matches.append(best_match)
 
     if not include_self and user:
-        matches = [m for m in matches if m[3] and m[3] != user]
+        matches = [m for m in matches if m[4] and m[4] != user]
     if not matches:
         return []
 
@@ -183,9 +252,10 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
     logger.debug("%r", everyone_except_user_all)
 
     result: list[str] = []
-    for _type, _sentence, _pos, agent in matches:
-        if agent is None:
+    for _type, _sentence, _pos, _len, agent_or_none in matches:
+        if agent_or_none is None:
             continue
+        agent = agent_or_none
         if agent in everyone_words:
             random.shuffle(everyone_except_user)
             if EVERYONE_MAX is not None:

@@ -175,7 +175,7 @@ class Agent:
         data = {
             "base": [self.name],
         }
-        for key in ["name", "fullname", "aliases", "age", "visual", "period", "period_length", "pregnant"]:
+        for key in ["name", "fullname", "aliases", "age", "visual", "period", "period_length", "pregnant", "poke_if"]:
             data[key] = deepcopy(reference.data.get(key))
 
         # hack to keep prompts from reference agent

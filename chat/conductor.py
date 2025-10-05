@@ -11,10 +11,12 @@ from pathlib import Path
 
 import chat
 from util import uniqo
-from agents import Agents, Agent
+from ally_agents import Agents, Agent
 import ally_room
 from conductor_settings import *
+from settings import *
 from who_is_named import *
+from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-order
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -310,6 +312,28 @@ def _reply_chances(use_mediator, is_human, is_mediator, config):
 def _invoke_named_at(content, user, agent_names_and_aliases_with_at, include_self, chat_participants_names, chat_participants_names_all,
                     everyone_with_at, anyone_with_at, self_words_with_at, room, access_check_cache, agents, agent_name_map):
     reason = "named @"
+    logger.info("""
+        calling who_is_named with all args:
+        content: %r
+        user: %r
+        agent_names_and_aliases_with_at: %r
+        include_self: %r
+        chat_participants_names: %r
+        chat_participants_names_all: %r
+        everyone_with_at: %r
+        anyone_with_at: %r
+        self_words_with_at: %r
+        room: %r
+        ignore_case: True
+        uniq: False
+        agent_name_map keys: %r
+    """, content, user, agent_names_and_aliases_with_at, include_self,
+         chat_participants_names, chat_participants_names_all,
+         everyone_with_at, anyone_with_at, self_words_with_at,
+         room.name if room else None,
+         list(agent_name_map.keys())[:10]  # limit output for readability
+    )
+
     invoked = who_is_named(
         content,
         f"@{user}",
@@ -410,6 +434,10 @@ def _default_pick(default):
     logger.debug("default: %r", invoked)
     return reason, invoked
 
+def new_at_mentioned_agents(content: str, users: list[str], agent_names_and_aliases_with_at: list[str]) -> list[str]:
+    """ Find new @ mentioned agents not in the existing agent names or aliases """
+    # TODO
+    return []
 
 def who_should_respond(
     message: dict[str, Any] | None,
@@ -526,6 +554,11 @@ def who_should_respond(
     # If we @ mention someone not present, no one should respond
     at_mention_present = chat.has_at_mention(content)
     if not invoked and at_mention_present:
+        if AUTO_CREATE_UNKNOWN_AGENTS:
+            users = cache.load(str(PATH_USERS)).strip().split("\n")
+            new_agents = new_at_mentioned_agents(content, users, agent_names_and_aliases_with_at)
+            if new_agents:
+                return responsible_human_user, [AUTO_CREATE_UNKNOWN_AGENTS]
         return responsible_human_user, []
 
     if not invoked and at_only:
