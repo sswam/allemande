@@ -857,7 +857,7 @@ function image_go_to(index) {
   }
   $currentImg = allImages[currentImgIndex];
   const $img = $overlay.querySelector("img");
-  $img.src = $currentImg.src;
+  $img.src = $currentImg.src || $currentImg.dataset.src;
   $img.alt = $currentImg.alt;
   $img.title = $currentImg.title;
 }

@@ -1677,8 +1677,10 @@ async function setup_nav_buttons() {
   $nav_allychat.href = "/" + query_to_hash(PUBLIC_ROOM);
 
   // Setup nsfw buttons --------------------
-  for (const $nav_nsfw of $$(".nav_nsfw"))
+  for (const $nav_nsfw of $$(".nav_nsfw")) {
     $nav_nsfw.href = "/" + query_to_hash(is_nsfw ? PUBLIC_ROOM : NSFW_ROOM);
+    $nav_nsfw.title = is_nsfw ? "Go to the main SFW room: "+PUBLIC_ROOM : "Go to the main NSFW room: "+NSFW_ROOM;
+  }
 
   // Setup porch button --------------------
   const $nav_porch = $id("nav_porch");
