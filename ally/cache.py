@@ -118,7 +118,7 @@ class FileCache:
             return
         self._cache[path] = deepcopy(content)
         self._last_modified[path] = os.path.getmtime(path)
-        logger.info("Saved %s file: %s", fmt, path)
+        # logger.info("Saved %s file: %s", fmt, path)
 
     def _load_file(self, path: str, fmt: str, **kwargs) -> Any:
         """Load file content based on format"""
@@ -168,9 +168,9 @@ class FileCache:
                 current_content = file.read()
                 if current_content == formatted_content:
                     return False  # Content is identical, no need to write
-            logger.info("File content differs, updating file: %s", path)
+            # logger.info("File content differs, updating file: %s", path)
         except FileNotFoundError:
-            logger.info("File does not exist, creating new file: %s", path)
+            # logger.info("File does not exist, creating new file: %s", path)
             current_content = None
 
         # Write to file if content is different or file doesn't exist
