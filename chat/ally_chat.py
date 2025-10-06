@@ -91,21 +91,26 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
     logger.debug("history_messages: %r", history_messages)
     message = history_messages[-1]
     query = message["content"]
+
+    logger.debug("query 0: %r", query)
+
+    query = chat.clean_prompt([query], name, args.delim) + "\n"
+
     logger.debug("query 1: %r", query)
     # query = query.split("\n")[0]
     # logger.debug("query 2: %r", query)
     # rx = r'((ok|okay|hey|hi|ho|yo|hello|hola)\s)*\b'+re.escape(name)+r'\b'
-    rx = r".*?\b" + re.escape(name) + r"\b"
-    logger.debug("rx: %r", rx)
-    query = re.sub(rx, "", query, flags=re.IGNORECASE | re.DOTALL)
-    logger.debug("query 3: %r", query)
-    query = re.sub(r"(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+", "", query, flags=re.IGNORECASE)
+    # rx = r".*?\b" + re.escape(name) + r"\b"
+    # logger.debug("rx: %r", rx)
+    # query = re.sub(rx, "", query, flags=re.IGNORECASE | re.DOTALL)
+    # logger.debug("query 3: %r", query)
+    query = re.sub(r"^(show me|search( for|up)?|find( me)?|look( for| up)?|what(\'s| is) (the|a|an)?)\s+", "", query, flags=re.IGNORECASE)
     logger.debug("query 4: %r", query)
-    query = re.sub(r"#.*", "", query)
-    logger.debug("query 5: %r", query)
-    query = re.sub(r"[^\x00-~]", "", query)  # filter out emojis
-    logger.debug("query 6: %r", query)
-    query = re.sub(r"^\s*[,;.]|[,;.]\s*$", "", query).strip()
+    # query = re.sub(r"#.*", "", query)
+    # logger.debug("query 5: %r", query)
+    # query = re.sub(r"[^\x00-~]", "", query)  # filter out emojis
+    # logger.debug("query 6: %r", query)
+    # query = re.sub(r"^\s*[,;.]|[,;.]\s*$", "", query).strip()
 
     logger.debug("query: %r %r", engine_id, query)
 
@@ -208,15 +213,16 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     if should_skip_editing_command(history_messages, poke):
         return 0
 
+    last_message_id = len(history_messages) - 1
+
     history_messages = chat.apply_editing_commands(history_messages)
     history = list(bb_lib.messages_to_lines(history_messages))
     message = history_messages[-1] if history_messages else None
-    last_message_id = len(history_messages) - 1
-
-    message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
 
     bots, responsible_human = determine_responders(message, agents, history_messages, config, room, mission, poke)
     logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
+
+    message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
 
     count = await process_bot_responses(
         bots, agents, file, args, history, history_start, mission,
@@ -326,7 +332,7 @@ async def generate_bot_response(bot, agents, file, args, history, history_start,
                                 mission, summary, config, responsible_human, room):
     """Generate a response from a bot agent."""
     agent = agents.get(bot)
-    my_mission = load_agent_mission(room, bot, mission, args)
+    my_mission = load_agent_mission(room, bot, mission, args, agent=agent)
     query, history = prepare_query(history, agent, bot)
 
     return await run_agent(
@@ -336,15 +342,24 @@ async def generate_bot_response(bot, agents, file, args, history, history_start,
     )
 
 
-def load_agent_mission(room, bot, base_mission, args):
-    """Load agent-specific mission and merge with base mission."""
+def load_agent_mission(room, bot, base_mission, args, agent=None):
+    """Load agent-specific mission/s and merge with base mission."""
     my_mission = base_mission.copy()
     agent_mission_file = room.find_agent_resource_file("m", bot)
-    mission2 = chat.chat_read(agent_mission_file, args)
+    mission2 = None
+    if agent:
+        agent_mission2 = agent.get("mission")
+        if agent_mission2:
+            agent_mission_file2 = room.find_resource_file("m", agent_mission2, try_room_name=False)
+            mission2 = chat.chat_read(agent_mission_file2, args)
+    mission3 = chat.chat_read(agent_mission_file, args)
     logger.debug("mission: %r", base_mission)
     logger.debug("mission2: %r", mission2)
+    logger.debug("mission3: %r", mission3)
     if mission2:
         my_mission += [""] + mission2
+    if mission3:
+        my_mission += [""] + mission3
     return my_mission
 
 
@@ -469,7 +484,7 @@ async def execute_forward(bot2, agent, agents, file, args, history,
     logger.info("Forwarding from %s to %s", agent.name, bot2)
     forward_keep_prompts = agent.get("forward_keep_prompts")
     agent2 = agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts)
-    logger.info("Forward agent: %r", agent2)
+    # logger.info("Forward agent: %r", agent2)
 
     query = history[-1]
     response = await run_agent(
@@ -499,7 +514,7 @@ def should_poke_next(response, agent):
     """Determine if next agent should be poked based on response."""
     poke_if = agent.get("poke_if", [])
     poke = any(x in response for x in poke_if)
-    logger.info("poke_if: %r, poke: %r, response: %r", poke_if, poke, response)
+    # logger.info("poke_if: %r, poke: %r, response: %r", poke_if, poke, response)
     return poke
 
 
@@ -770,6 +785,9 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
     except (TypeError, KeyError):
         raise ValueError(f"Agent {name} has no command")
 
+    query = chat.clean_prompt([query], name, args.delim) + "\n"
+    logger.debug("query: %s", query)
+
     if direct:
         # tool must exist under PATH_TOOLS
         # check only contains safe characters
@@ -791,9 +809,6 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
 #    logger.debug("query 2: %r", query)
 #    query = re.sub(r"^\s*[,;.]|\s*$", "", query).strip()
 #    logger.debug("query 3: %r", query)
-
-    query = chat.clean_prompt([query], name, args.delim) + "\n"
-    logger.debug("query: %s", query)
 
     args = []
     if agent.get("args"):
@@ -844,13 +859,33 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
 
 
 def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
-    """Return a YAML definition for a python_tool agent."""
+    """Return a YAML definition for a python_tool agent, optionally filtered by grep pattern."""
+
+    # Split remaining args as agent names
     args = query.split()
+    grep_pattern = None
+
+    # Extract grep pattern if present
+    for i, arg in enumerate(args):
+        if arg.startswith('-g='):
+            grep_pattern = arg[3:]
+            args.pop(i)
+            break
+
     result = []
     for name in args:
         agent = agents.get(name)
         if agent:
             file_content = agent.get_file().rstrip()
+
+            # Apply grep filter if pattern specified
+            if grep_pattern:
+                filtered_lines = []
+                for line in file_content.split('\n'):
+                    if re.search(grep_pattern, line):
+                        filtered_lines.append(line)
+                file_content = '\n'.join(filtered_lines)
+
             result.append(file_content)
         else:
             result.append(f"Agent '{name}' not found")
@@ -1073,7 +1108,7 @@ async def reload_module(module_name: str, module, file_stem: str) -> tuple[bool,
         return False, str(e)
 
 
-def process_changed_code_file(file: str) -> tuple[set[str], list[str]]:
+async def process_changed_code_file(file: str) -> tuple[set[str], list[str]]:
     """
     Process a single changed file and attempt to reload corresponding module.
     Returns (reloaded_modules, need_restart_files)
@@ -1090,7 +1125,7 @@ def process_changed_code_file(file: str) -> tuple[set[str], list[str]]:
 
     # Try to reload matching modules
     for module_name, module in list(sys.modules.items()):
-        success, error = reload_module(module_name, module, file_stem)
+        success, error = await reload_module(module_name, module, file_stem)
         if success:
             reloaded.add(module_name)
             break
@@ -1115,7 +1150,7 @@ async def reload_if_code_changes():
 
         for _change, file in changes:
             logger.info("Code file changed: %r", file)
-            reloaded, need_restart = process_changed_code_file(file)
+            reloaded, need_restart = await process_changed_code_file(file)
             all_reloaded.update(reloaded)
             all_need_restart.extend(need_restart)
 

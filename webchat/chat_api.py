@@ -96,6 +96,7 @@ async def post(request):
             await asyncio.sleep(0.2)
             room.touch()
     except PermissionError as e:
+        logger.warning("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
 
@@ -137,6 +138,7 @@ async def upload(request):
     try:
         name, url, medium, markdown, task = await chat.upload_file(room, user, file.filename, file=file, to_text=to_text)
     except PermissionError as e:
+        logger.warning("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
 
     return JSONResponse({"name": name, "url": url, "medium": medium, "markdown": markdown}, background=task)
@@ -157,7 +159,7 @@ async def clear(request):
     try:
         await room.clear(user, op)
     except PermissionError as e:
-        logger.info("PermissionError: %r", e)
+        logger.info("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
 
@@ -174,6 +176,7 @@ async def undo(request):
     try:
         await room.undo(user, n=int(n))
     except PermissionError as e:
+        logger.info("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
 
@@ -187,6 +190,7 @@ async def settings(request):
     if theme:
         chat.set_user_theme(user, theme)
     if settings:
+        logger.warning("Ignoring unknown settings: %r", settings)
         raise HTTPException(status_code=400, detail="Invalid settings.")
     return JSONResponse({})
 
@@ -203,6 +207,7 @@ async def options_set(request):
     try:
         room.set_options(user, options)
     except PermissionError as e:
+        logger.info("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({})
 
@@ -217,7 +222,7 @@ async def options_get(request):
     try:
         options = room.get_options(user)
     except PermissionError as e:
-        logger.info("PermissionError: %r", e)
+        logger.info("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse(options)
 
@@ -234,6 +239,7 @@ async def last(request):
     try:
         last = room.get_last_room_number(user)
     except PermissionError as e:
+        logger.info("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     return JSONResponse({"last": last})
 
@@ -253,8 +259,10 @@ async def move(request):
     try:
         ally_room.move_file(user, source, dest, mode=mode)
     except PermissionError as e:
+        logger.info("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
     except ValueError as e:
+        logger.info("ValueError: %r", e, exc_info=True)
         raise HTTPException(status_code=409, detail=e.args[0]) from e
     return JSONResponse({})
 
@@ -311,6 +319,7 @@ async def send_push(user_id, message):
 async def geoip(request: Request):
     """Look up GeoIP info for an IP address."""
     if not geoip_reader:
+        logger.error("GeoIP service not available")
         raise HTTPException(status_code=503, detail="GeoIP service not available")
 
     # First try to get IP from query parameters
@@ -324,6 +333,7 @@ async def geoip(request: Request):
                 break
 
     if not ip:
+        logger.error("Could not determine IP address from request")
         raise HTTPException(status_code=400, detail="Could not determine IP address")
 
     try:
@@ -337,8 +347,10 @@ async def geoip(request: Request):
             }
         })
     except geoip2.errors.AddressNotFoundError:
+        logger.info("IP address not found in GeoIP database: %s", ip)
         raise HTTPException(status_code=404, detail="IP address not found")
     except ValueError:
+        logger.error("Invalid IP address: %s", ip)
         raise HTTPException(status_code=400, detail="Invalid IP address")
     except Exception as e:  # pylint: disable=broad-except
         logger.error("GeoIP lookup failed: %s", e)

@@ -377,7 +377,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     except (FileNotFoundError, KeyError):
         pass
 
-    # image_alt_type = config.get("image_alt", "both")
+    image_alt_type = config.get("image_alt", "both")
 
     # look for attachments, other files in resp/ in sorted order
     # service image_a1111 should return a file name in response
@@ -385,27 +385,27 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt", "result.yaml"]:
             continue
 
-        # we rely on metadata extraction to get the prompts now
-        # currently in the markdown to HTML postprocess, should be moved earlier so that AIs can see it
+        # we could rely on metadata extraction to get the prompts now
+        # but it's currently in the markdown to HTML postprocess, should be moved earlier so that AIs can see it
         # probably should include in the saved file, but there's an escaping issue to solve first
         text = ""
-        # if Path(resp_file).suffix in [".png", ".jpg"]:
-        #     if image_seed is not None:
-        #         text = f"#{image_seed} "
-        #         image_seed += 1
-        #     text += agent["name"] + ", "
-        #     show_raw_prompt = image_alt_type in ["raw", "both"] or not resp_file.stem in image_metadata
-        #     show_expanded_prompt = image_alt_type in ["expanded", "both"] and resp_file.stem in image_metadata
-        #     if show_raw_prompt:
-        #         text += fulltext
-        #     if show_raw_prompt and show_expanded_prompt:
-        #         text += "  ----  "
-        #     if show_expanded_prompt:
-        #         prompt = image_metadata[resp_file.stem]
-        #         prompt = re.sub(r"^parameters: ", "", prompt)
-        #         prompt = re.sub(r"\n+Steps:.*", "", prompt)
-        #         prompt = re.sub(r"\n+Negative prompt: ", " NEGATIVE ", prompt)
-        #         text += prompt
+        if Path(resp_file).suffix in [".png", ".jpg"]:
+            if image_seed is not None:
+                text = f"#{image_seed} "
+                image_seed += 1
+            text += agent["name"] + ", "
+            show_raw_prompt = image_alt_type in ["raw", "both"] or not resp_file.stem in image_metadata
+            show_expanded_prompt = image_alt_type in ["expanded", "both"] and resp_file.stem in image_metadata
+            if show_raw_prompt:
+                text += fulltext
+            if show_raw_prompt and show_expanded_prompt:
+                text += "  ----  "
+            if show_expanded_prompt:
+                prompt = image_metadata[resp_file.stem]
+                prompt = re.sub(r"^parameters: ", "", prompt)
+                prompt = re.sub(r"\n+Steps:.*", "", prompt)
+                prompt = re.sub(r"\n+Negative prompt: ", " NEGATIVE ", prompt)
+                text += prompt
 
         name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent.name, str(resp_file), alt=text or None)
         if task:

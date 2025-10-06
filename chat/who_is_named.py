@@ -205,7 +205,7 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
     # Use a list to preserve duplicates when uniq=False
     candidate_names_list = []
     for match in NAME_PATTERN.finditer(content, overlapped=True):
-        name = match.group().strip().lstrip('@')
+        name = match.group().strip() #.lstrip('@')
         if not name:
             continue
         # Get all partial names (subsequences)

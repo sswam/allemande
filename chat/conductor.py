@@ -312,27 +312,27 @@ def _reply_chances(use_mediator, is_human, is_mediator, config):
 def _invoke_named_at(content, user, agent_names_and_aliases_with_at, include_self, chat_participants_names, chat_participants_names_all,
                     everyone_with_at, anyone_with_at, self_words_with_at, room, access_check_cache, agents, agent_name_map):
     reason = "named @"
-    logger.info("""
-        calling who_is_named with all args:
-        content: %r
-        user: %r
-        agent_names_and_aliases_with_at: %r
-        include_self: %r
-        chat_participants_names: %r
-        chat_participants_names_all: %r
-        everyone_with_at: %r
-        anyone_with_at: %r
-        self_words_with_at: %r
-        room: %r
-        ignore_case: True
-        uniq: False
-        agent_name_map keys: %r
-    """, content, user, agent_names_and_aliases_with_at, include_self,
-         chat_participants_names, chat_participants_names_all,
-         everyone_with_at, anyone_with_at, self_words_with_at,
-         room.name if room else None,
-         list(agent_name_map.keys())[:10]  # limit output for readability
-    )
+    # logger.info("""
+    #     calling who_is_named with all args:
+    #     content: %r
+    #     user: %r
+    #     agent_names_and_aliases_with_at: %r
+    #     include_self: %r
+    #     chat_participants_names: %r
+    #     chat_participants_names_all: %r
+    #     everyone_with_at: %r
+    #     anyone_with_at: %r
+    #     self_words_with_at: %r
+    #     room: %r
+    #     ignore_case: True
+    #     uniq: False
+    #     agent_name_map keys: %r
+    # """, content, user, agent_names_and_aliases_with_at, include_self,
+    #      chat_participants_names, chat_participants_names_all,
+    #      everyone_with_at, anyone_with_at, self_words_with_at,
+    #      room.name if room else None,
+    #      list(agent_name_map.keys())[:10]  # limit output for readability
+    # )
 
     invoked = who_is_named(
         content,

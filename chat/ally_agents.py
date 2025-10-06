@@ -223,6 +223,12 @@ class Agent:
         if raw:
             return value
 
+        private_public = "unknown privacy"
+        if room:
+            users = cache.load(str(PATH_USERS)).strip().split("\n")
+            top_dir = Path(room).parts[0]
+            private_public = "private" if top_dir in users and "/" in room else "public"
+
         # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
         # replace $DATE, $TIME, $TZ and $TIMESTAMP with the current time
         # We do this on get, rather than initially, because we can define
@@ -261,6 +267,7 @@ class Agent:
                 "TZ": tz_str,
                 "TIMESTAMP": timestamp,
                 "ROOM": room or '[unknown]',
+                "PRIVATE_PUBLIC": private_public,
                 "PERIOD": period_desc,
                 "PREGNANT": pregnant_desc,
                 "PERIOD_VISUAL": period_visual,

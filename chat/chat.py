@@ -467,9 +467,9 @@ def clean_prompt(context, name, delim):
 
     # logger.info("clean_prompt: 3: %s", text1)
 
-    # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation
+    # Remove up to the first occurrence of the agent's name followed by a comma (case insensitive) and any following punctuation
     if text1 == text:
-        text1 = regex.sub(r".*?\b" + agent_name_esc + r"\b[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+        text1 = regex.sub(r".*?\b" + agent_name_esc + r"\b,[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
         text1 = re.sub("```", "", text1)
 
     # logger.info("clean_prompt: 4: %s", text1)
