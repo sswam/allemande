@@ -20,3 +20,5 @@ religion
 nsfw
 artist
 author
+musician
+dj
