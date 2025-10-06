@@ -12,14 +12,14 @@ async function checkMediaPermissions() {
 async function setupRecorder(includeVideo) {
     let room_saved;
     const { hasAudioPermission, hasVideoPermission } = await checkMediaPermissions();
-    if (!hasAudioPermission || !hasVideoPermission) {
+    if (!hasAudioPermission || (!hasVideoPermission && includeVideo)) {
         room_saved = chat.room;
         chat.clear_messages_box();
 //        await $wait();
     }
 
     const constraints = {
-        audio: true,
+        audio: !includeVideo || includeVideo === 'video',
         video: includeVideo ? {
             width: 1280,
             height: 720
@@ -30,12 +30,14 @@ async function setupRecorder(includeVideo) {
     // It doesn't work with my streaming rooms thing, might need to use a websocket or something :/
 
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    const mediaRecorder = new MediaRecorder(stream);
+    const mediaRecorder = includeVideo === 'photo' ? null : new MediaRecorder(stream);
     const chunks = [];
 
-    $on(mediaRecorder, 'dataavailable', (ev) => {
-        chunks.push(ev.data);
-    });
+    if (mediaRecorder) {
+        $on(mediaRecorder, 'dataavailable', (ev) => {
+            chunks.push(ev.data);
+        });
+    }
 
     if (room_saved)
         chat.set_room(room_saved);
@@ -71,8 +73,26 @@ function set_timer(seconds) {
     $id('rec_time').textContent = `${m}:${s}`;
 }
 
+async function capturePhoto(stream) {
+    const videoPreview = $id('rec_videoPreview');
+    const canvas = document.createElement('canvas');
+    canvas.width = videoPreview.videoWidth;
+    canvas.height = videoPreview.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+
+    const photoBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+
+    // Stop all tracks
+    for (const track of stream.getTracks())
+        track.stop();
+
+    return photoBlob;
+}
+
 // Main recording function
-async function handleRecording(includeVideo = false) {
+async function handleRecording(recording_type) {
+    const includeVideo = recording_type === "video" || recording_type === "photo";
     await $import("icons");
     icons = modules.icons.icons;
 
@@ -83,7 +103,7 @@ async function handleRecording(includeVideo = false) {
             mediaRecorder,
             chunks,
             stream
-        } = await setupRecorder(includeVideo);
+        } = await setupRecorder(includeVideo ? recording_type : false);
 
         // Video preview
         const videoPreview = $id('rec_videoPreview');
@@ -94,6 +114,75 @@ async function handleRecording(includeVideo = false) {
             hide("rec_videoPreview");
         }
 
+        setTimeout(chat.controls_resized, 500);  // TODO fix this properly somehow
+
+        // Photo mode: show preview and capture button, no recording
+        if (recording_type === "photo") {
+            hide("rec_time");
+            hide("rec_stop");
+            hide("rec_cancel");
+            show("rec_save");
+
+            // Wait for capture button
+            const action = await new Promise((resolve) => {
+                $on($id('rec_save'), 'click', () => resolve('capture'));
+                $on($id('rec_cancel'), 'click', () => resolve('cancel'));
+            });
+
+            if (action === 'cancel') {
+                // Stop all tracks
+                for (const track of stream.getTracks())
+                    track.stop();
+                videoPreview.srcObject = null;
+                chat.set_controls();
+                return;
+            }
+
+            // Capture photo
+            const photoBlob = await capturePhoto(stream);
+            videoPreview.srcObject = null;
+
+            show("rec_cancel");
+
+            // Show photo preview
+            const url = URL.createObjectURL(photoBlob);
+            const preview = $id('rec_preview_imagePreview');
+            show("rec_preview_imagePreview");
+            hide("rec_preview_videoPreview");
+            hide("rec_preview_audioPreview");
+            preview.src = url;
+            chat.set_controls('input_record_preview');
+
+            // Wait for save/cancel
+            const save_action = await new Promise((resolve) => {
+                $on($id('rec_preview_save'), 'click', () => resolve('save'));
+                $on($id('rec_preview_cancel'), 'click', () => resolve('cancel'));
+            });
+
+            URL.revokeObjectURL(preview.src);
+            preview.removeAttribute('src');
+
+            if (save_action === 'save') {
+                const fileName = `${user}_photo.jpg`;
+                const save_button = 'rec_preview_save';
+                chat.active_set(save_button);
+                if (!await chat.add_upload_file_link(chat.upload_file(photoBlob, fileName, true)))
+                    await chat.error(save_button);
+                chat.active_reset(save_button);
+            }
+
+            chat.set_controls();
+            return;
+        }
+
+        show("rec_time");
+        show("rec_stop");
+        show("rec_cancel");
+        show("rec_save");
+
+        chat.controls_resized();
+
+        // Recording mode (audio/video)
         mediaRecorder.start();
 
         // Show timer
@@ -102,14 +191,14 @@ async function handleRecording(includeVideo = false) {
         const $timer = $id('rec_time');
         chat.active_set("rec_time");
         set_timer(0);
-            
+
         const update_timer = () => {
             const now = Date.now() / 1000;
             let seconds = seconds_before;
             seconds += now - start;
             seconds = Math.floor(seconds);
             set_timer(seconds);
-        }
+        };
 
         const timerInterval = setInterval(() => {
             if (start)
@@ -133,7 +222,7 @@ async function handleRecording(includeVideo = false) {
                 update_timer();
                 $timer.title = 'pause recording';
             }
-        })
+        });
 
         let save_button;
 
@@ -168,10 +257,12 @@ async function handleRecording(includeVideo = false) {
                 preview = $id('rec_preview_videoPreview');
                 show("rec_preview_videoPreview");
                 hide("rec_preview_audioPreview");
+                hide("rec_preview_imagePreview");
             } else {
                 preview = $id('rec_preview_audioPreview');
                 show("rec_preview_audioPreview");
                 hide("rec_preview_videoPreview");
+                hide("rec_preview_imagePreview");
             }
             preview.src = url;
             chat.set_controls('input_record_preview');
@@ -209,17 +300,14 @@ async function handleRecording(includeVideo = false) {
     chat.set_controls();
 }
 
+
 async function record_main() {
     chat = await $import("chat");
 
-    $on($id('add_record_audio'), 'click', () => handleRecording(false));
-    $on($id('add_record_video'), 'click', () => handleRecording(true));
+    $on($id('add_photo'), 'click', () => handleRecording("photo"));
+    $on($id('add_record_audio'), 'click', () => handleRecording("audio"));
+    $on($id('add_record_video'), 'click', () => handleRecording("video"));
 }
 
-/*
-// For audio only
-handleRecording(false);
-
-// For video + audio
-handleRecording(true);
-*/
+// ## Notes for HTML:
+// For photo mode, the `rec_save` button should have a camera/capture icon (like a camera shutter). The button label/title should change to something like "Take Photo" or "Capture" in photo mode vs "Save Recording" in audio/video mode. You might want to add this in the HTML/CSS or I can help with that if needed.

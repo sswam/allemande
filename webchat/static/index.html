@@ -29,9 +29,9 @@
 <div id="main" class="col fill">
 	<!--<div class="row gap hidden option-simple-invisible" id="top">-->
 	<div class="row gap hidden standard advanced" id="top">
-		<a class="button private standard" href="" id="privacy" title=""></a>
+		<a class="button private standard advanced widescreen" href="" id="privacy" title=""></a>
 		<div class="top_left_controls row gap" id="top_left_main">
-			<a class="button nsfw nav_nsfw hidden simple standard advanced pc" href="" title="go to the main NSFW room">nsfw</a>
+			<a class="button nsfw nav_nsfw hidden simple standard advanced widescreen" href="" title="go to the main NSFW room">nsfw</a>
 			<a class="button advanced" href="" id="nav" title="navigation">nav</a>
 			<a class="button advanced" href="" id="pages" title="pages">pages</a>
 			<a class="button hidden" href="" id="dir_sort" title="sort">sort_alpha</a>
@@ -65,19 +65,19 @@
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_room_ops">
 			<button id="room_ops_cancel" class="back">back</button>
-			<button id="room_ops_copy" title="copy all or part of the room">copy</button>
+			<button id="room_ops_copy" title="copy the room: alt+c">copy</button>
 			<button id="room_ops_move" title="rename or move: alt+m" class="admin">move</button>
 		</div>
 		<input id="room" name="room" class="flex grow">
 		<div class="top_controls row gap" id="top_main">
-			<button id="debug" title="debug" class="small dev">?</button>
+			<button id="debug" title="debug" class="small dev widescreen">?</button>
 			<button id="filter" title="filter media" class="advanced">filter</button>
 			<button id="scroll_end_2" title="end of room: end" class="standard advanced">bot</button>
 			<!-- <button id="scroll" title="scrolling" class="advanced">scroll</button> -->
 			<button class="hidden" id="notify">notify</button>
-			<a class="button standard advanced pc" href="" id="user" title="cycle your main rooms">…</a>
+			<a class="button standard advanced widescreen" href="" id="user" title="cycle your main rooms">…</a>
 			<a class="button" href="" id="help" title="get help to use Ally Chat"></a>
-			<button id="logout" title="log out" class="hidden standard advanced pc">exit</button>
+			<button id="logout" title="log out" class="hidden standard advanced widescreen">exit</button>
 		</div>
 		<!-- <div class="top_controls row gap hidden" id="top_scroll">
 			<button id="scroll_home" title="start of room: home">top</button>
@@ -150,9 +150,10 @@
 		<div class="controls col_wrap hidden" id="input_add">
 			<input id="files" name="files" type="file" class="inputfile hide" tabindex="-1" multiple/>
 			<button id="add_file" title="upload files">file</button>
+			<button id="add_photo" title="take a photo" class="pc">photo</button>
 			<button id="add_record_audio" title="record audio">audio</button>
 			<button id="add_record_video" title="record video">video</button>
-			<button id="add_math" title="add mathematics">math</button>
+			<button id="add_math" title="add mathematics: shift+alt+m">math</button>
 			<button id="add_cancel" class="back">back</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_record">
@@ -165,6 +166,7 @@
 		<div class="controls col_wrap hidden" id="input_record_preview">
 			<video id="rec_preview_videoPreview" autoplay controls></video>
 			<audio id="rec_preview_audioPreview" autoplay controls></audio>
+			<img id="rec_preview_imagePreview">
 			<button id="rec_preview_save" class="okay" title="upload the recording">save</button>
 			<button id="rec_preview_cancel" class="cancel">cancel</button>
 		</div>
@@ -188,9 +190,9 @@
 			<button id="view_details" title="view thoughts and details" class="boffin">details</button>
 			<button id="view_canvas" title="view JavaScript canvas" class="boffin">canvas</button>
 			<button id="view_toc" title="view table of contents" class="boffin">contents</button>
-			<button id="view_clean" title="clean reading view" class="boffin">clean</button>
+			<button id="view_clean" title="clean reading view: shift+alt+c" class="boffin">clean</button>
 			<button id="view_columns" title="view chat in columns (scroll to the right)" class="advanced">columns</button>
-			<button id="view_compact" title="compact view" class="boffin">compact</button>
+			<button id="view_compact" title="compact view" class="advanced">compact</button>
 			<button id="view_history" title="view change history" class="advanced">history</button>
 			<button id="view_fullscreen" title="view fullscreen" class="advanced noios">fullscreen</button>
 			<input id="view_items" placeholder="items" title="number of search results to show" class="boffin">

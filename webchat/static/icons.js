@@ -40,6 +40,7 @@ export const icons = {
 //  poke: '<i class="bi bi-hand-index-thumb i22"></i>',
   poke: '<i class="bi bi-hand-index-thumb i22"></i>',
   add_file: '<i class="bi bi-upload i20"></i>',
+  add_photo: '<i class="bi bi-camera i20"></i>',
   add_record_audio: '<i class="bi bi-mic i20"></i>',
   add_record_video: '<i class="bi bi-camera-video i20"></i>',
   rec_stop: '<i class="bi bi-stop i20"></i>',

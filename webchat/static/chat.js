@@ -417,9 +417,9 @@ function clear_content(ev) {
 
 function focus_content_on_pc() {
   // show a backtrace of this function being called
-  const err = new Error();
-  const stack = err.stack.split("\n").slice(1).map(line => line.trim());
-  console.log("focus_content_on_pc", stack);
+  // const err = new Error();
+  // const stack = err.stack.split("\n").slice(1).map(line => line.trim());
+  // console.log("focus_content_on_pc", stack);
 
   if (!isMobile)
     focus_content();
@@ -705,7 +705,7 @@ function on_room_ready(fn, ...args) {
 
 function message_changed(ev) {
   const $send = $id("send");
-  if ($content.value == "" && !simple) {
+  if ($content.value == "") {
     $send.innerHTML = icons["poke"];
     $send.title = `poke the chat: ${Alt}+enter`;
   } else {
@@ -1425,12 +1425,12 @@ function setup_main_ui_shortcuts() {
     ['alt+u', nav_up, 'Browse up'],
     ['alt+i', view_images, 'View images'],
     ['alt+a', view_alt, 'View alt text'],
-    ['alt+c', view_clean, 'View clean'],
+    ['shift+alt+c', view_clean, 'View clean'],
     ['alt+j', view_canvas, 'View canvas'],
     ['alt+f', view_fullscreen, 'View fullscreen'],
-    ['alt+m', add_math, 'Add math'],
-    ['shift+alt+m', move_mode, 'Move mode', ADMIN],
-    ['shift+alt+c', copy_mode, 'Copy mode', ADMIN],
+    ['shift+alt+m', add_math, 'Add math'],
+    ['alt+m', move_mode, 'Move mode', ADMIN],
+    ['alt+c', copy_mode, 'Copy mode', ADMIN],
 
     ['alt+z', undo, 'Undo last message', ADMIN],
     ['ctrl+alt+z', (ev) => undo(ev, true), 'Erase last message', ADMIN],
@@ -1467,6 +1467,8 @@ function setup_main_ui_shortcuts() {
     ['ctrl+enter', edit_save_and_close, 'Save edit and close'],
     ['alt+z', edit_reset, 'Reset edit'],
     ['alt+x', edit_clear, 'Clear edit'],
+    ['alt+m', move_mode, 'Move mode', ADMIN],
+    ['alt+c', copy_mode, 'Copy mode', ADMIN],
   ]);
 }
 
@@ -3250,7 +3252,7 @@ function handleHelpLinkClick(event) {
 
 // controls layout hack; Firefox and Safari don't do flex wrap properly ------
 
-function controls_resized(entry) {
+export function controls_resized(entry) {
   // if (!(isFirefox || isSafari))
   //   return;
   if (!entry) {
@@ -3443,10 +3445,15 @@ export function nsfw_zone_room_changed() {
 
 function update_room_status(data) {
   const $scroll_end_2 = $id("scroll_end_2");
-  const scroll_icon = data.messages_at_bottom ? "scroll_home" : "scroll_end";
-  const scroll_title = data.messages_at_bottom ? "start of room: home" : "end of room: end";
-  $scroll_end_2.innerHTML = icons[scroll_icon];
-  $scroll_end_2.title = scroll_title;
+  if (data.scroll_at_end) {
+    $scroll_end_2.innerHTML = icons["scroll_home"];
+    $scroll_end_2.title = "start of room: home";
+    $scroll_end_2.classList.add("active");
+  } else {
+    $scroll_end_2.innerHTML = icons["scroll_end"];
+    $scroll_end_2.title = "end of room: end";
+    $scroll_end_2.classList.remove("active");
+  }
 }
 
 // view option ---------------------------------------------------------------

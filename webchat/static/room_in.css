@@ -1,11 +1,12 @@
 div.messages {
 /*	margin: 1em 1em 0 1em; */
-	padding: 0.5rem 0.5rem;
+	padding: 1rem;
+	margin-bottom: 0.5rem;
 }
 
 body.simple div.messages {
-	padding: 1rem 1rem;
-	max-width: 50em;
+	width: 50em;
+	max-width: min(50em, 100%);
 	margin: auto;
 }
 
@@ -116,7 +117,7 @@ body.simple .message {
 
 .message:has(div.image) +
 .message:not(.turn) {
-	padding-top: 2rem;
+	padding-top: 1.5625rem;
 }
 
 /*
@@ -759,6 +760,7 @@ body > div.messages_wrap {
 	flex-basis: 8.0rem;
 	flex-grow: 1;
 	flex-shrink: 0;
+	width: 100%;
 }
 
 body:not(.compact) > div.messages_wrap {
@@ -1030,6 +1032,8 @@ body.columns div.messages {
 }
 body.compact:not(.compact2).columns div.messages {
 	column-width: 28.5rem;
+	--p-spacing: 0.5rem;
+	--line-height: 1.2;
 }
 body.columns .message {
 	max-width: 100%;
@@ -1049,6 +1053,8 @@ body.columns .message :is(.graphviz, .mermaid) {
 body.compact2 div.messages {
 	padding: 0;
 	column-gap: 0;
+	--p-spacing: 0.3rem;
+	--line-height: 1;
 }
 
 body.compact div.content {
@@ -1480,4 +1486,11 @@ spoiler:hover, .spoiler:hover {
 	opacity: 1; /* Fully opaque on hover */
 	background-color: var(--background) !important;
 	transition: all 5s ease-in-out;
+}
+
+/* scroll position indicator ---------------------------------------------- */
+
+.message.last {
+	box-shadow: 0 -0.125rem 0 0 var(--primary);
+	width: 100%;
 }

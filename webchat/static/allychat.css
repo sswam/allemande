@@ -196,8 +196,8 @@ a:hover {
 :root {
 	--pad: 0.5rem;
 	--turn: 0.75rem;  /* 0.375rem */
-	--p-spacing: 0.5rem;
-	--line-height: 1.2;
+	--p-spacing: 0.7rem;
+	--line-height: 1.4;
 	--radius: 0.375rem;
 	--font-size: 16px;
 	--font-size-code: 12px;
@@ -281,7 +281,7 @@ input::placeholder, textarea::placeholder {
 	--scrollbar: var(--link);
 
 	--ui-size-min: 2rem;
-	--input-width-min: 8rem;
+	--input-width-min: 4.5rem;
 
 	--image-width: 40vw;
 	--image-height: 40vh;

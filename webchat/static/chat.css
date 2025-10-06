@@ -16,9 +16,10 @@ body.simple #inputrow {
 	padding: 0 calc(2 * var(--pad)) var(--pad) calc(2 * var(--pad));
 }
 body.simple #messages {
-	width: 50em;
-	max-width: min(50em, 100%);
-	padding: 0 calc(2 * var(--pad));
+	width: 100%;
+	/* width: 50em;
+	max-width: min(50em, 100%); */
+	padding: 0; /* calc(2 * var(--pad)); */
 }
 body.simple #view_edit {
 	width: 50em;
@@ -38,6 +39,9 @@ html {
 }
 input:not([type=checkbox]), textarea, select {
 	min-width: min(var(--input-width-min), 50vw);
+	padding: 0 calc(0.5*var(--pad));
+}
+body.simple input:not([type=checkbox]), body.simple textarea, body.simple select {
 	padding: var(--pad);
 }
 #messages {
@@ -95,7 +99,7 @@ body.simple #inputrow > .controls > * {
 #inputrow > .controls > * {
 	flex-grow: 1;
 }
-#inputrow > .controls > video {
+#inputrow > .controls > video, #inputrow > .controls > img {
 	min-width: 9.6rem;
 	min-height: 5.4rem;
 	max-width: 16rem;
@@ -253,7 +257,7 @@ iframe#messages_iframe.overlay {
 body.dark .back { background-color: #303060 !important; color: white !important; }
 body.dark .okay { background-color: #406040 !important; color: white !important; }
 body.dark .cancel { background-color: #604040 !important; color: white !important; }
-body.dark.nsfw_zone .nsfw { background-color: #604060 !important; color: white !important; }
+body.dark.nsfw_zone :not(#help-widget-links) > .nsfw { background-color: #604060 !important; color: white !important; }
 body.dark.private .private { background-color: #406040 !important; color: white !important; }
 
 body.dark .active { background-color: #606030 !important; color: white !important; }
@@ -302,7 +306,7 @@ body.dark .active--20 { background-color: #c8ffff !important; color: black !impo
 body.light .back { background-color: #9090b0 !important; color: black !important; }
 body.light .okay { background-color: #90b090 !important; color: black !important; }
 body.light .cancel { background-color: #b09090 !important; color: black !important; }
-body.light.nsfw_zone .nsfw { background-color: #b090b0 !important; color: black !important; }
+body.light.nsfw_zone :not(#help-widget-links) > .nsfw { background-color: #b090b0 !important; color: black !important; }
 body.light.private .private { background-color: #90b090 !important; color: black !important; }
 
 body.light .active { background-color: #b0b058 !important; color: black !important; }
@@ -725,4 +729,10 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
 		margin-left: 0;
 		color: var(--text);
 	}
+}
+
+@media screen and (max-width: 600px) {
+  .widescreen {
+    display: none !important;
+  }
 }
