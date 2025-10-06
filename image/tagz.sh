@@ -10,10 +10,11 @@ tagz() {
 
 	for query; do
 		query=${query,,}
+		query=${query%,}
 		printf "## %s\n" "$query"
 		(
 			techo count tag
-			grep -i -- "\\<$query" ~/danbooru_tags_post_count.csv | sed 's/_/ /g; s/,/\t/;' | kut 2 1 | head -n "$nlimit" || true
+			grep -i -- "\(\\<\|_\)$query" ~/danbooru_tags_post_count.csv | sed 's/_/ /g; s/,/\t/;' | kut 2 1 | head -n "$nlimit" || true
 		) | tsv2markdown
 		echo
 	done
