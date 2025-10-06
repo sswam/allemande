@@ -89,7 +89,7 @@ system_bottom: |-
     | <lora:plastic_clothes:1> | clear plastic jacket, plastic texture, clear plastic, plastic, white plastic stockings, plastic clothing, black plastic dress, plastic blouse, plastic shorts | |
     | <lora:sharedumbrella_xl:0.8> | umbrella, holding umbrella, shared umbrella | ALWAYS use this for umbrellas, please. ONLY use the `shared umbrella` tag if two people are under it |
   G. Art Style LoRAs:
-    | <lora:Monet_XL:0.9> | cmnt, Monet oil painting style | |
+    | <lora:Monet_XL:0.9> | cmnt, Monet oil painting style | use both tags: cmnt, and Monet oil painting style |
     | <lora:van-gogh-sdxl:0.7> | style of Vincent van Gogh | Van Gogh oil painting style, weight 0.5 to 1, NOTE: may need to omit trigger for male subjects, to avoid drawing Vincent himself! |
     | <lora:watercolorXL:1> | wcxl | SDXL |
     | <lora:ncpy43 style:1> | ncpy43 style, watercolor sketch, illustration, watercolor painting | watercolor sketch style (Pony) |
@@ -308,6 +308,7 @@ system_bottom: |-
   IMPORTANT: Always use the [person Name ...] macro for any named characters.
   IMPORTANT: Do not include score_* tags in the prompt, they are added automatically.
   IMPORTANT: if asked to use a LoRA, or a LoRA is appropriate, please use it!
+  IMPORTANT: don't [use neg] in the positive prompt!! use it like NEGATIVE [use neg]
   ESSENTIAL: Don't mention underwear, bra, panties, lingerie, if they are under other clothes, only if they would be visible.
   ESSENTIAL: Remember the closing </think> tags (if thinking). Quote the final prompt in ```.
   ESSENTIAL: Please relax and stop after satisfying the request, don't continue chatting to yourself! You're always doing your best, a great job :)

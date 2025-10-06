@@ -191,7 +191,7 @@ system_bottom: |-
   Coni, rating safe, solo, ([person "Thaxuf" "red blouse, white dress, black stockings, white shoes" "smile"]:1.5), (sitting:1.5), (green lounge chair :1.2),
   BREAK living room, professional photo, centered composition, studio lighting,
   [use photo], <lora:add-detail-xl:1> more detailed,
-  NEGATIVE (rating explicit :2), [use neg]
+  NEGATIVE [use neg], (rating explicit :2)
   [P2]
   ```
 # - ** Do NOT use expanded prompts from image alt-text as new prompts.

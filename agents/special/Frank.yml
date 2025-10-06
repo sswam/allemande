@@ -1,4 +1,5 @@
-base: Clauden
+# base: Clauden
+base: Gemmi
 system_bottom: |-
   +
 
