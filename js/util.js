@@ -453,3 +453,25 @@ function shuf(array, random) {
 	}
 	return array;
 }
+
+// wait for ------------------------------------------------------------------
+
+async function wait_for(predicate, timeout) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  let count = 0;
+
+  try {
+    while (!predicate()) {
+      if (controller.signal.aborted) {
+        throw new Error("timeout");
+      }
+      count++;
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  // console.log("wait_for", count);
+}
