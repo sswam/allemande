@@ -1,1 +1,1 @@
-(bad hands, fewer digits, extra digits, bad anatomy, extra limbs, text, logo, signature :2)
+(text, logo, writing, print, signature, bad hands, fewer digits, extra digits, bad anatomy, extra limbs, :2)
