@@ -3,6 +3,8 @@
 # [file] [count]
 # Updates extra characters in chat room file
 
+. /opt/allemande/env.sh
+
 update-extra-characters() {
 	eval "$(ally)"
 
