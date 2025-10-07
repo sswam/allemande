@@ -1,23 +1,58 @@
 IMAGE_SFW=landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg
 IMAGE_NSFW=solo-person-Cloe-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg
 
+AGENTS_PATHS_SFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'nsfw')
+AGENTS_PATHS_NSFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'toon')
+
+AGENTS_DIRS_SFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'nsfw' -printf "%f\n")
+AGENTS_DIRS_NSFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'toon' -printf "%f\n")
+
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb  # agent_colours.css
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb help.md nsfw/help.md  # agent_colours.css
 
-nsfw/guide.md: guide.md nsfw/guide_nsfw.md extra.md
+nsfw/guide.md: guide.md nsfw/guide_nsfw.md nsfw/extra.md
 	rm -f $@
 	cat $^ >$@
 	chmod a-w $@
 
-extra.md: ../agents/cartoon ../agents/celeb ../agents/disney ../agents/fiction ../agents/muppet
+guide.md: guide.0.md extra.md
+	rm -f $@
+	cat $^ >$@
+	chmod a-w $@
+
+help.md: guide.md
+	rm -f $@
+	summary -m=flashi -p="Please summarize the user guide for an AI to offer online help, include all features, details and icons, avoid repetition or superfluous language" <$< >$@
+	chmod a-w $@
+
+nsfw/help_nsfw.md: nsfw/guide_nsfw.md
+	rm -f $@
+	summary -m=flasho -p="Please summarize the NSFW user guide for an AI to offer online help, include all features and details, avoid repetition or superfluous language" <$< >$@
+	chmod a-w $@
+
+nsfw/help.md: help.md nsfw/help_nsfw.md
+	rm -f $@
+	cat help.md >$@
+	echo >>$@
+	cat nsfw/help_nsfw.md >>$@
+	chmod a-w $@
+
+extra.md: $(AGENTS_PATHS_SFW)
+	@echo "# Extra Characters" >$@
+	@echo >>$@
+	@(cd ../agents ; for cat in $(AGENTS_DIRS_SFW); do echo "## $$cat"; echo; find "$$cat" -name '*.yml' -printf "%f\n" | sed 's/\.yml$$/, /' | sort | tr -d '\n' | sed 's/, $$//'; echo; echo; done) | fmt >>$@
+
+
+nsfw/extra.md: $(AGENTS_PATHS_NSFW)
 	@echo "# Extra Characters" >$@
 	@echo >>$@
 	@echo "Note: All of these characters are configured to be at least 18 years old," >>$@
-	@echo "aside from some of the muppets! Most have detailed visuals including LoRAs." >>$@
+	@echo "aside from some of the muppets! Many have detailed visuals, and some have LoRAs." >>$@
+	@echo "Do not create NCII / noncon deepfakes of real people." >>$@
 	@echo >>$@
-	@(cd ../agents ; for cat in cartoon celeb disney fiction muppet; do echo "## $$cat"; echo; ls "$$cat" | sed 's/\.yml$$/, /' | tr -d '\n' | sed 's/, $$//'; echo; echo; done) | fmt >>$@
+	@(cd ../agents ; for cat in $(AGENTS_DIRS_NSFW); do echo "## $$cat"; echo; find "$$cat" -name '*.yml' -printf "%f\n" | sed 's/\.yml$$/, /' | sort | tr -d '\n' | sed 's/, $$//'; echo; echo; done) | fmt >>$@
 
 summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o -print | sed 's/ /\\ /g') $(shell find summary/ -mindepth 1 | sed 's/ /\\ /g')
 	webchat-agent-summaries-update -n

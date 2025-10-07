@@ -43,7 +43,7 @@ Loni is a good one to start with. She has meta-powers of many other agents combi
 > Ally, how are you?
 > Can you help, @loni?
 > Illu, let's draw a garden!
-> Tell me about the strong models, Yenta.
+> Tell me about the strong models, Shiksa.
 
 Send an empty message to continue AI conversations, this called a "poke".
 
@@ -107,7 +107,7 @@ There are many, many more; check the guide, and try the help system!
 - Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
-- A few app-support agents can see the room name (e.g. Loni, Aidi, Yenta). Others cannot.
+- A few app-support agents can see the room name (e.g. Loni, Aidi, Shiksa). Others cannot.
 
 ## Example Usage
 
@@ -155,4 +155,4 @@ Subscribers enjoy perks including:
 ## What next?
 
 - Click the **Help** tab, and ask some questions about the app.
-- Ask Yenta to introduce you to some different characters.
+- Ask Shiksa to introduce you to some different characters.

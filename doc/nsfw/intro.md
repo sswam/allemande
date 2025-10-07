@@ -47,7 +47,7 @@ Lori is a good one to start with. She has meta-powers of many other agents combi
 > hey Ally, you're looking fine, girl!
 > Can you help run a sexy photoshoot, @lori?
 > Xilu, please draw a nude guy or lady!
-> Do you know any brunettes who might be up for sexy role-play, Yenta?
+> Do you know any brunettes who might be up for sexy role-play, Shiksa?
 
 Send an empty message to continue AI conversations, this called a "poke".
 
@@ -167,4 +167,4 @@ Subscribers enjoy perks including:
 ## What next?
 
 - Click the **Help** tab, and ask some questions about the app.
-- Ask Yenta to introduce you to some different characters.
+- Ask Shiksa to introduce you to some different characters.

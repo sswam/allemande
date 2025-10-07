@@ -66,11 +66,11 @@ This asks Coni, an image gen AI, to draw a nude girl, in a fast, medium-quality 
 
 This draws Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image at high quality, with a default "negative prompt" to help avoid bad images.
 
-    Jily, [use Ally], [use age/Ally], [use emo/Ally], [use clothes/Ally] [use neg] [S3]
+    Jily, [use Ally], [use age/Ally], [use emo/Ally], [use clothes/Ally] NEGATIVE [use neg] [S3]
 
 This does the same thing more concisely, for Barbie, making sure it's a solo picture, with a Tall image, and cartoon style with Poni:
 
-    Poni, solo [person Barbie] [use neg] [T4]
+    Poni, solo [person Barbie] NEGATIVE [use neg] [T4]
 
 This draws Cloe in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
 
@@ -114,11 +114,13 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 - **Pyrite** (Gemini 2.0 Flash): A playful woman with sultry eyes, long raven hair, and large natural breasts.
 
 ### Base Models (NSFW capable)
-- **Ellie**: (Llama 3.1 8B): a small, human-like uncensored and private model
+- **Ellie**: (Llama 3.1 8B): a small, human-like uncensored and private model  [recommended]
 - **Ellyn**: (Llama 3.3 70B): a stronger, human-like model
-- **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
+- **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model  [recommended]
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
+- **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model  [recommended]
+- **Desee** (DeepSeek Chat V3.1): DeepSeek's creative and intelligent chat model
 - **Misti** (Mistral Large 2411): Mistral's strongest language model
 - **Veni** (Venice: Uncensored; Dolphin Mistral 24B Venice Edition): Uncensored
 
