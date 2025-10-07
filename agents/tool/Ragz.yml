@@ -1,0 +1,6 @@
+# A python tool to return agent files
+type: python
+command:
+- rag
+format: pre
+args: True
