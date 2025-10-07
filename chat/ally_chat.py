@@ -21,11 +21,11 @@ import importlib
 import requests
 import shlex
 from watchfiles import awatch, Change
-import yaml
 import regex
 from num2words import num2words
 import rag
 
+from ally import yaml
 import atail  # type: ignore
 import ucm  # type: ignore
 import conductor
@@ -1188,7 +1188,8 @@ async def main():
 
     setup_services()
 
-    local_agents.init(args)
+    if settings.LOAD_EAGER:
+        local_agents.load_model_tokenizer(args.model)
 
     logger.info("Watching chat rooms")
     asyncio.create_task(reload_if_code_changes())

@@ -4,7 +4,7 @@ import os
 import logging
 import re
 from pathlib import Path
-import yaml
+from functools import lru_cache
 
 import regex
 from num2words import num2words  # type: ignore
@@ -15,22 +15,18 @@ import bb_lib
 import ally_markdown
 from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
+from ally import yaml
 from ally_room import Room
 import tasks
+from ally.lazy import lazy
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
-import transformers  # type: ignore # pylint: disable=wrong-import-position, wrong-import-order
+
+lazy("transformers")
 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-TOKENIZERS: dict[str, transformers.AutoTokenizer] = {}
-
-
-def load_tokenizer(model_path: Path):
-    """Load the Llama tokenizer"""
-    return transformers.AutoTokenizer.from_pretrained(str(model_path))
 
 
 def count_tokens_in_text(text, tokenizer):
@@ -38,31 +34,12 @@ def count_tokens_in_text(text, tokenizer):
     return len(tokenizer(text).input_ids)
 
 
-def load_model_tokenizer(args):
-    """Load the model tokenizer."""
-    models_dir = PATH_MODELS / "llm"
-    model_path = Path(models_dir) / args.model
-    if args.model and not model_path.exists() and args.model.endswith(".gguf"):
-        args.model = args.model[: -len(".gguf")]
-        model_path = Path(models_dir) / args.model
-    logger.debug("model_path: %r", model_path)
-    if args.model and model_path.exists():
-        # This will block, but it doesn't matter because this is the init for the program.
-        return load_tokenizer(model_path)
-    return None
-
-
-def init(args):
-    """Initialize the local agent interface."""
-    TOKENIZERS[args.model] = load_model_tokenizer(args)
-
-
 def load_config(args):
     """Load the generations config file."""
     config = {}
     if args.config:
         with open(args.config, encoding="utf-8") as f:
-            settings = yaml.load(f, Loader=yaml.FullLoader)
+            settings = yaml.load(f)  # , Loader=yaml.FullLoader)
         for k, v in settings.items():
             config[k] = v
     if not config:
@@ -70,10 +47,33 @@ def load_config(args):
     return config
 
 
+def load_tokenizer(model_path: Path):
+    """Load the Llama tokenizer"""
+    return transformers.AutoTokenizer.from_pretrained(str(model_path))
+
+
+@lru_cache()
+def load_model_tokenizer(model: str):
+    """Load the model tokenizer."""
+    models_dir = PATH_MODELS / "llm"
+    model_path = Path(models_dir) / model
+    if model and not model_path.exists() and model.endswith(".gguf"):
+        model = model[: -len(".gguf")]
+        model_path = Path(models_dir) / model
+    logger.debug("model_path: %r", model_path)
+    if model and model_path.exists():
+        # This will block, but it doesn't matter because this is the init for the program.
+        return load_tokenizer(model_path)
+    raise Exception(f"Model path does not exist: {model_path}")
+
+
 def get_fulltext(args, model_name, history, history_start, invitation, delim):
     """Get the full text from the history, and cut to the right length for a local model."""
-    # FIXME this sync function is potentially slow
-    tokenizer = TOKENIZERS[model_name]
+    try:
+        tokenizer = load_model_tokenizer(model_name)
+    except Exception as e:
+        raise RuntimeError(f"Failed to load tokenizer: {e}")
+
     fulltext = delim.join(history[history_start:]) + invitation
     n_tokens = count_tokens_in_text(fulltext, tokenizer)
     logger.debug("n_tokens is %r", n_tokens)

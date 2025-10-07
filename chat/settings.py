@@ -38,3 +38,5 @@ MAX_REPLIES = 1
 
 ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
 SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
+
+LOAD_EAGER = False  # load tokenizer at startup
