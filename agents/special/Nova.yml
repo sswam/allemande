@@ -2,7 +2,6 @@ base: Novi
 over: []
 type: llm_llama
 model: default
-over: ShowMI
 specialist: true
 stop_regexs:
 - \bSTOP\b
