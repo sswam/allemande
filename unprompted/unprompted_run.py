@@ -10,8 +10,11 @@ import sys
 import logging
 import random
 from pathlib import Path
+import re
 
 import argh
+
+__version__ = "0.1.2"
 
 unprompted_dir = str((Path(__file__).resolve().parent / "unprompted").resolve())
 sys.path.insert(0, unprompted_dir)
@@ -49,7 +52,8 @@ def process_unprompted(input_string, seed=None):
 @argh.arg("--debug", help="enable debug logging")
 @argh.arg("--verbose", help="enable verbose logging")
 @argh.arg("--seed", help="seed for random operations (integer)", type=int)
-def main(*inp, debug=False, verbose=False, seed=None):
+@argh.arg("-n", "--negative", help="show negative prompt", action="store_true")
+def main(*inp, debug=False, verbose=False, seed=None, negative=None):
     """
     Process input text with Unprompted template engine.
 
@@ -71,7 +75,22 @@ def main(*inp, debug=False, verbose=False, seed=None):
         else:
             input_string = sys.stdin.read()
 
-        output = process_unprompted(input_string, seed)
+        # XXX nasty hack to support -n flag for negative prompts
+        if input_string.startswith("-n"):
+            negative = True
+            input_string = re.sub(r"^-n\s*", "", input_string, count=1).strip()
+
+        if negative:
+            input_string = f"{input_string} NEGATIVE [get negative_prompt]"
+
+        output = process_unprompted(input_string, seed).strip()
+
+        # remove NEGATIVE marker if there is no negative prompt
+        if output.endswith("NEGATIVE"):
+            output = re.sub(r"\s*NEGATIVE$", "", output)
+        else:
+            output = re.sub(r"\b(NEGATIVE)\b", r"\n\1", output)
+
         print(output)
     except Exception as e:  # pylint: disable=broad-exception-caught
         logger.error("Error: %s %s", type(e).__name__, str(e))

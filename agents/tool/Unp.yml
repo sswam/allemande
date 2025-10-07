@@ -1,4 +1,5 @@
 # A software tool to expand Unprompted macros, normally used for AI image prompts
-type: safe_shell
+type: tool
 command:
 - unprompted-run
+args: True
