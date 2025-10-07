@@ -1012,7 +1012,8 @@ async function handle_message(ev) {
   } else if (ev.data.type === "scroll_pages") {
     scroll_pages(ev.data.d);
   }
-  scroll_restore_2();
+  if (file_type === "room" && !["scroll_home_end", "scroll_pages"].includes(ev.data.type))
+    scroll_restore_2();
 }
 
 async function set_view_options(new_view_options) {
@@ -1142,7 +1143,7 @@ function set_dir_sort(dir_sort) {
 
 function scroll_home_end(p) {
   if (p == 2)
-    p = messages_at_bottom ? 0 : 1;
+    p = scroll_at_end ? 0 : 1;
   if (view_options.columns) {
     $messages_wrap.scrollLeft = p * $messages_wrap.scrollWidth;
   } else {
@@ -1225,7 +1226,6 @@ async function window_resized() {
   // add orientation class to body
   $body.classList.remove("landscape", "portrait");
   $body.classList.add(orientation);
-  console.log("window_resized");
   scroll_restore();
   // console.log("orientation", orientation);
 }

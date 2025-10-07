@@ -1,3 +1,4 @@
+"use strict";
 var widget = document.getElementById("help-widget");
 var header = document.getElementById("help-widget-header");
 var iframe = document.getElementById("help-frame");
@@ -5,10 +6,13 @@ var overlay = document.getElementById("messages_overlay");
 
 // Config
 var allowOffscreen = false; // Whether widget can partially move offscreen
+const DRAG_THRESHOLD = 5; // pixels to move before drag starts
 
 // Track widget state
 var isDragging = false;
 var isResizing = false;
+var isDragPending = false;
+var capturedPointerId = null;
 var currentX, currentY, initialX, initialY;
 var initialWidth, initialHeight, initialTop, initialLeft;
 var resizeEdge = { top: false, right: false, bottom: false, left: false };
@@ -81,6 +85,8 @@ document.querySelectorAll("#help-widget-header a").forEach(link => {
 // --- Cursor Hover Logic ---
 function updateCursor(e) {
   if (isDragging || isResizing) return;
+  // Don't show resize cursor for touch
+  if (e.pointerType === "touch") return;
 
   var rect = widget.getBoundingClientRect();
   var pad = parseInt(getComputedStyle(widget).getPropertyValue("--pad")) || 10;
@@ -109,20 +115,27 @@ function updateCursor(e) {
 }
 
 // Attach cursor hover listeners
-widget.addEventListener("mousemove", updateCursor);
-widget.addEventListener("mouseleave", function() {
+widget.addEventListener("pointermove", updateCursor);
+widget.addEventListener("pointerleave", function(e) {
     if (!isDragging && !isResizing) {
-        widget.style.cursor = 'default';
+        // Only reset cursor for mouse, not for touch/pen leaving the area
+        if (e.pointerType === "mouse") {
+            widget.style.cursor = 'default';
+            header.style.cursor = 'move';
+        }
     }
 });
 
 
-// --- Mouse Down Handler (Drag or Resize Start) ---
-widget.onmousedown = function (e) {
-  if (e.button !== 0) return;
-  // Do nothing if the click is on the close button or inside the iframe content area (already handled)
+// --- Unified Pointer Handlers for Drag and Resize ---
+
+function handlePointerDown(e) {
+  // For mouse, only respond to left-click. For touch/pen, e.button is 0.
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+  // Do nothing if the click is on the close button or inside the iframe content area
   if (
-    e.target.closest("button") ||
+    e.target.closest("button") || e.target.closest("a") ||
     iframe.contains(e.target) ||
     e.target === iframe
   ) {
@@ -149,7 +162,6 @@ widget.onmousedown = function (e) {
   var rect = widget.getBoundingClientRect();
 
   // Simplify resize detection - check if click is within the padding area
-  // This logic matches the original provided code structure
   var isWithinHorizontalPadding =
     (e.clientX > rect.left && e.clientX < rect.left + pad) ||
     (e.clientX < rect.right && e.clientX > rect.right - pad);
@@ -163,12 +175,12 @@ widget.onmousedown = function (e) {
   // Reset edges
   isResizing = false;
   resizeEdge = { top: false, right: false, bottom: false, left: false };
+  var cornerThreshold = pad * 1.5; // slightly larger threshold for corners
 
   // Detect resize based on padding click
   if (isWithinHorizontalPadding || isWithinVerticalPadding) {
     isResizing = true;
     // Determine specific edge - prioritize corners
-    var cornerThreshold = pad * 1.5; // slightly larger threshold for corners
     var onLeftEdge =
       e.clientX > rect.left && e.clientX < rect.left + cornerThreshold;
     var onRightEdge =
@@ -198,65 +210,82 @@ widget.onmousedown = function (e) {
     else if (onBottomEdge) {
       resizeEdge = { bottom: true };
     } else {
-      isResizing = false; // Click was in padding area but not close enough to an edge? (Shouldn't happen with padding check?)
+      isResizing = false; // Click was in padding area but not close enough to an edge?
     }
   }
 
-  // Detect drag (only if not resizing and click is on header)
-  // Now that top resize includes the header, we need to ensure clicks on the header
-  // that are *not* near the top edge (within cornerThreshold) initiate drag.
-  // Clicks on the header near the top edge initiate top/corner resize.
+  // Reset drag states
+  isDragging = false;
+  isDragPending = false;
+
+  // Detect potential drag (only if not resizing and click is on header)
   var isClickOnHeader = (e.target === header || header.contains(e.target));
   var isClickNearTopEdge = e.clientY > rect.top && e.clientY < rect.top + cornerThreshold; // Use the same threshold as resize detection
 
   if (!isResizing && isClickOnHeader && !isClickNearTopEdge) {
-    isDragging = true;
-    header.classList.add("dragging"); // Add class for CSS styling
-    widget.style.cursor = 'grabbing'; // Set cursor for dragging
-  } else {
-    isDragging = false;
+    isDragPending = true;
   }
 
-  if (isDragging || isResizing) {
-    iframe.style.pointerEvents = "none"; // Prevent iframe from capturing mouse events
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-    /* TODO can't move / resize on mobile yet, some bug I guess */
-    document.addEventListener("touchmove", handleMouseMove, { passive: false }); // Use same handler, preventDefault in handler
-    document.addEventListener("touchend", handleMouseUp);
-    if (overlay) {
-      overlay.style.display = 'block';
+  if (isResizing || isDragPending) {
+    capturedPointerId = e.pointerId; // Store for potential capture.
+
+    // For resize, start immediately. This prevents clicks on edges.
+    if (isResizing) {
+        e.preventDefault(); // Prevent text selection, etc.
+        iframe.style.pointerEvents = "none"; // Prevent iframe from capturing events
+        if (overlay) {
+            overlay.style.display = 'block';
+        }
+
+        // Set cursor specifically for resizing
+        var edgeKey = [];
+        if (resizeEdge.top) edgeKey.push('top');
+        if (resizeEdge.bottom) edgeKey.push('bottom');
+        if (resizeEdge.left) edgeKey.push('left');
+        if (resizeEdge.right) edgeKey.push('right');
+        widget.style.cursor = cursorMap[edgeKey.join(',')] || 'default';
+
+        // Capture the pointer for resizing
+        widget.setPointerCapture(capturedPointerId);
     }
-    if (isResizing) { // Set cursor specifically for resizing if resize started
-      var edgeKey = [];
-      if (resizeEdge.top) edgeKey.push('top');
-      if (resizeEdge.bottom) edgeKey.push('bottom');
-      if (resizeEdge.left) edgeKey.push('left');
-      if (resizeEdge.right) edgeKey.push('right');
-      widget.style.cursor = cursorMap[edgeKey.join(',')] || 'default';
+
+    // Add listeners for both resize and potential drag
+    document.addEventListener("pointermove", handlePointerMove);
+    document.addEventListener("pointerup", handlePointerUp);
+    document.addEventListener("pointercancel", handlePointerUp); // Also end on cancel
+  }
+}
+
+function handlePointerMove(e) {
+  if (isDragPending) {
+    const dx = e.clientX - initialX;
+    const dy = e.clientY - initialY;
+    if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+      // Threshold passed, start a real drag.
+      isDragPending = false;
+      isDragging = true;
+
+      // Apply dragging styles and capture the pointer now.
+      header.classList.add("dragging");
+      widget.style.cursor = 'grabbing';
+      iframe.style.pointerEvents = "none";
+      if (overlay) {
+        overlay.style.display = 'block';
+      }
+      widget.setPointerCapture(capturedPointerId);
+    } else {
+      // Not yet a drag, do nothing.
+      return;
     }
-  } else {
-    // If click didn't start drag or resize, ensure cursor is correct (handled by mousemove hover)
-    // widget.style.cursor = 'default'; // This might flash, handled by hover listener
   }
-};
+  // We check isDragging/isResizing again because a pointermove can be fired between
+  // pointerdown and the logic that sets these flags.
+  if (!isDragging && !isResizing) return;
 
-// --- Mouse/Touch Move Handler (Dragging or Resizing) ---
-function handleMouseMove(e) {
-  // Determine current coords from mouse or touch event
-  var currentClientX = e.clientX ?? e.touches?.[0]?.clientX;
-  var currentClientY = e.clientY ?? e.touches?.[0]?.clientY;
+  e.preventDefault(); // Prevents scrolling on touch, text selection on mouse
 
-  if (currentClientX === undefined || currentClientY === undefined) return;
-
-  // Use preventDefault for touchmove to stop scrolling when dragging/resizing
-  if (e.touches && (isDragging || isResizing)) {
-      e.preventDefault();
-  }
-
-
-  currentX = currentClientX;
-  currentY = currentClientY;
+  currentX = e.clientX;
+  currentY = e.clientY;
   var dx = currentX - initialX;
   var dy = currentY - initialY;
 
@@ -274,16 +303,15 @@ function handleMouseMove(e) {
     if (resizeEdge.bottom) newHeight = initialHeight + dy;
     if (resizeEdge.left) {
         newWidth = initialWidth - dx;
-        newLeft = initialLeft + dx; // Calculate potential newLeft
+        newLeft = initialLeft + dx;
     }
     if (resizeEdge.top) {
         newHeight = initialHeight - dy;
-        newTop = initialTop + dy; // Calculate potential newTop
+        newTop = initialTop + dy;
     }
 
-    // Ensure widget stays within screen bounds while resizing (Conditional based on allowOffscreen)
+    // Ensure widget stays within screen bounds while resizing
     if (!allowOffscreen) {
-        // Check outer edges (right and bottom)
         var effectiveLeftForOuterCheck = resizeEdge.left ? newLeft : initialLeft;
         var effectiveTopForOuterCheck = resizeEdge.top ? newTop : initialTop;
 
@@ -294,104 +322,77 @@ function handleMouseMove(e) {
           newHeight = window.innerHeight - effectiveTopForOuterCheck;
         }
 
-        // Check inner edges (left and top) if resizing from that edge
         if (resizeEdge.left && newLeft < 0) {
-            // newLeft is negative, so adding it to newWidth decreases width
             newWidth += newLeft;
-            newLeft = 0; // Pin left edge to 0
+            newLeft = 0;
         }
         if (resizeEdge.top && newTop < 0) {
-            // newTop is negative, so adding it to newHeight decreases height
             newHeight += newTop;
-            newTop = 0; // Pin top edge to 0
+            newTop = 0;
         }
     }
 
     // Apply constrained values - Only apply if >= minWidthPx/minHeightPx after boundary checks
-    // This allows the boundary to override the min size initially, but the style won't be applied if it drops below min.
-    // Following the provided changes logic exactly:
     if (newWidth >= minWidthPx) {
       widget.style.width = newWidth + "px";
-      // Only apply left style if resizing left
       if (resizeEdge.left) widget.style.left = newLeft + "px";
     }
     if (newHeight >= minHeightPx) {
       widget.style.height = newHeight + "px";
-      // Only apply top style if resizing top
       if (resizeEdge.top) widget.style.top = newTop + "px";
     }
   } else if (isDragging) {
-    // Calculate new position
     var dragTop = initialTop + dy;
     var dragLeft = initialLeft + dx;
 
-    // Keep widget fully within viewport (Conditional based on allowOffscreen)
-    if (!allowOffscreen) { // Wrap boundary checks
+    if (!allowOffscreen) {
         dragTop = Math.max(0, Math.min(dragTop, window.innerHeight - widget.offsetHeight));
         dragLeft = Math.max(0, Math.min(dragLeft, window.innerWidth - widget.offsetWidth));
     }
 
     widget.style.top = dragTop + "px";
     widget.style.left = dragLeft + "px";
-    widget.style.right = "auto"; // Set these to auto when using top/left
+    widget.style.right = "auto";
     widget.style.bottom = "auto";
   }
 }
 
-// --- Mouse/Touch Up Handler (Drag or Resize End) ---
-function handleMouseUp() {
+function handlePointerUp(e) {
   if (isDragging) {
-    header.classList.remove("dragging"); // Remove dragging class
+    header.classList.remove("dragging");
   }
-  if (overlay)
+  if (overlay) {
     overlay.style.removeProperty('display');
+  }
 
+  isDragPending = false;
   isDragging = false;
   isResizing = false;
-  resizeEdge = { top: false, right: false, bottom: false, left: false }; // Reset edges
-  iframe.style.pointerEvents = "auto"; // Re-enable iframe interaction
+  resizeEdge = { top: false, right: false, bottom: false, left: false };
+  iframe.style.pointerEvents = "auto";
 
-  // Remove listeners
-  document.removeEventListener("mousemove", handleMouseMove);
-  document.removeEventListener("mouseup", handleMouseUp);
-  document.removeEventListener("touchmove", handleMouseMove);
-  document.removeEventListener("touchend", handleMouseUp);
+  // Release pointer capture and remove listeners
+  if (capturedPointerId !== null) {
+      if (widget.hasPointerCapture(capturedPointerId)) {
+          widget.releasePointerCapture(capturedPointerId);
+      }
+      capturedPointerId = null;
+  }
+  document.removeEventListener("pointermove", handlePointerMove);
+  document.removeEventListener("pointerup", handlePointerUp);
+  document.removeEventListener("pointercancel", handlePointerUp);
 
-  // Reset cursor to default. The hover mousemove listener will correct it if needed.
+  // Reset cursors. The hover listener will correct it if needed.
   widget.style.cursor = 'default';
+  header.style.cursor = 'move';
 }
 
-// Prevent text selection during drag/resize (already present, keep)
+// Attach the main pointer down listener
+widget.addEventListener("pointerdown", handlePointerDown);
+
+// Prevent text selection during drag/resize
 document.addEventListener("selectstart", function (e) {
   if (isDragging || isResizing) {
     e.preventDefault();
   }
 });
-
-// --- Touch Start Handler ---
-widget.ontouchstart = function (e) {
-  // Allow touch only if it's on header or padding area
-  var frameContainer = document.getElementById("help-frame-container");
-  var isHeaderTouch = e.target === header || header.contains(e.target);
-  var isPaddingTouch =
-    frameContainer && frameContainer.contains(e.target) && e.target !== iframe;
-
-  if (e.touches.length === 1 && (isHeaderTouch || isPaddingTouch)) {
-    var touch = e.touches[0];
-    var mockEvent = {
-      // Create a mouse-like event
-      clientX: touch.clientX,
-      clientY: touch.clientY,
-      target: touch.target,
-      // Don't prevent default here. Let handleMouseMove decide if dragging/resizing starts.
-      preventDefault: function () { e.preventDefault(); }, // Pass through actual preventDefault
-      touches: e.touches // Pass touches array for handleMouseMove
-    };
-    // Call the mousedown handler which contains the core logic for starting drag/resize
-    widget.onmousedown(mockEvent);
-    // If mousedown/handleMouseMove determines drag/resize is starting, preventDefault will be called there.
-  }
-  // If not a valid touch start for drag/resize, allow default behavior (e.g., scrolling)
-};
-
-// Touch move and end listeners are added dynamically in onmousedown

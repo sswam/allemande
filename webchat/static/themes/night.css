@@ -1,0 +1,22 @@
+:root {
+	--theme-mode: dark;
+	--col0: #000000;
+	--col1: #070814;
+	--col2: #0f1020;
+	--col3: #181b2c;
+	--col4: #212438;
+	--col5: #2a2d44;
+	--col6: #c08634;
+	--col7: #ffffff;
+
+	--frame: var(--col0);
+	--background: var(--col1);
+	--focus: var(--col2);
+	--input: var(--col3);
+	--button: var(--col4);
+	--button-focus: var(--col5);
+	--link: var(--col6);
+	--text: var(--col7);
+
+	--border: none; /* var(--col5); */
+}

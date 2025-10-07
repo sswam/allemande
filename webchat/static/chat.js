@@ -77,7 +77,7 @@ const VIEW_OPTIONS_DEFAULT = {
   image_size: image_size_default,
   font_size: font_size_default,
   input_row_height: 72, // 48 // 32 // 72
-  theme: "light",
+  theme: "day",
   details_changed: true,
   highlight: 1,
   highlight_theme_light: "a11y-light",
@@ -127,6 +127,7 @@ let view_options_embed = {
   fullscreen: 0,
   help: 0,
   embed: 1,
+  advanced: 1,
 };
 
 let tts_voice_options = [
@@ -1058,12 +1059,25 @@ function nav_up(ev) {
   set_room(new_room);
 }
 
+/* copied from scroll.js */
+const SCROLL_THRESHOLD = 24; // pixels from bottom to consider "at bottom"
+function scroll_is_at_end($e) {
+  return view_options.columns
+    ? Math.abs($e.scrollWidth - $e.scrollLeft - $e.clientWidth) < SCROLL_THRESHOLD
+    : Math.abs($e.scrollHeight - $e.scrollTop - $e.clientHeight) < SCROLL_THRESHOLD;
+}
+
 function scroll_home_end(ev, p) {
   ev.preventDefault();
   if(!editor_file) {
     send_to_room_iframe({ type: "scroll_home_end", p });
-  } else
+  } else {
+    if (p == 2)
+      p = scroll_is_at_end($edit) ? 0 : 1;
     $edit.scrollTop = p * $edit.scrollHeight;
+    update_room_status({scroll_at_end: p});
+    // TODO ugh!
+  }
 }
 
 function scroll_pages(ev, d) {
@@ -1615,8 +1629,8 @@ function set_overlay(overlay) {
 
 function logout_confirm(ev) {
   ev.preventDefault();
-  if (confirm_except_iOS("Log out?"))
-    logoutChat();
+  // if (confirm_except_iOS("Log out?"))
+  logoutChat();
 }
 
 function go_to_main_site() {
@@ -1971,15 +1985,18 @@ async function undo_last_message(room) {
   return data;
 }
 
-async function undo(ev, hard) {
+async function undo(ev, hard, verb) {
   if (ev)
     ev.preventDefault();
+
+  if (!verb)
+    verb = "Undo";
 
   hard = hard || (ev && ev.ctrlKey);
   auto_play_back_off();
 
-  if (!(ev && (ev.key || ev.shiftKey) || confirm_except_iOS("Undo the last message?\n(hold shift to skip this confirmation next time, or use keyboard shortcuts)")))
-    return false;
+  // if (!(ev && (ev.key || ev.shiftKey) || confirm_except_iOS(`${verb} the last message?\n(hold shift to skip this confirmation next time, or use keyboard shortcuts)`)))
+  // return false;
 
   if (hard) {
     try {
@@ -2002,7 +2019,7 @@ async function undo(ev, hard) {
 
 async function retry(ev, hard) {
   try {
-    if (!await undo(ev, hard))
+    if (!await undo(ev, hard, "Retry"))
       return;
     await $wait(100);
     await poke();
@@ -2565,21 +2582,22 @@ function view_options_apply() {
   let hold_or_press = hold_alt ? "Hold" : "Press";
   if (simple && $content.placeholder != "") {
     if (isMobile)
-      input_placeholder += `Long-press here for options.`;
+      input_placeholder += `Swipe here for options.`;
     else
       input_placeholder += `${hold_or_press} ${Alt} for options.`;
   } else if (simple) {
     $content.placeholder = " ";
-  } else if ($content.placeholder != "" && view_options.advanced == 0) {
-    if (!isMobile)
-      input_placeholder += "Ctrl+Enter to Send. ";
-    // input_placeholder += "Send an empty message to Poke the chat. ";
-    if (isMobile)
-      input_placeholder += "Long-press for simple mode.";
-    else
-      input_placeholder += `${Alt} for simple mode.`;
-    input_placeholder += " { } for prompts.";
   }
+  // else if ($content.placeholder != "" && view_options.advanced == 0) {
+  //   if (!isMobile)
+  //     input_placeholder += "Ctrl+Enter to Send. ";
+  //   // input_placeholder += "Send an empty message to Poke the chat. ";
+  //   if (isMobile)
+  //     input_placeholder += "Swipe for simple mode.";
+  //   else
+  //     input_placeholder += `${Alt} for simple mode.`;
+  //   input_placeholder += " { } for prompts.";
+  // }
   $content.placeholder = input_placeholder;
   if (input_placeholder != "")
     setTimeout(() => { $content.placeholder = ""; }, 10000);
@@ -2847,7 +2865,7 @@ async function change_theme(ev) {
   }
   // basic and standard mode, just toggle light and dark
   if (simple) {
-    theme = theme === "light" ? "dark" : "light";
+    theme = theme === "day" ? "night" : "day";
     return set_theme(theme);
   }
 
@@ -3484,28 +3502,97 @@ function view_option(ev) {
   controls_resized();
 }
 
-let long_press_timer;
+function simple_mode_toggle_controls(event) {
+  $body.classList.toggle("option")
+  set_controls();
+  controls_resized();
+}
 
-function view_option_touchstart(event) {
-  // Prevent default browser actions like text selection or context menu
-  long_press_timer = setTimeout(() => {
-    $body.classList.toggle("option");
-    if ($body.classList.contains("option")) {
-      set_controls();
-      controls_resized();
+// swipe detection -----------------------------------------------------------
+
+function fn_null() {}
+
+class SwipeDetector {
+    constructor(element, options = {}) {
+        this.element = element;
+        this.options = {
+            minDistance: options.minDistance || 50,
+            maxTime: options.maxTime || 1000,
+            onSwipeLeft: options.onSwipeLeft || fn_null,
+            onSwipeRight: options.onSwipeRight || fn_null,
+            onSwipeUp: options.onSwipeUp || fn_null,
+            onSwipeDown: options.onSwipeDown || fn_null,
+        };
+
+        this.startX = 0;
+        this.startY = 0;
+        this.endX = 0;
+        this.endY = 0;
+        this.startTime = 0;
+
+        // Bind methods to maintain correct 'this' context
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
+
+        // Initialize touch listeners
+        this.init();
     }
-  }, 750); // 750ms is a common duration for long-press
+
+    init() {
+        this.element.addEventListener('touchstart', this.handleTouchStart);
+        this.element.addEventListener('touchend', this.handleTouchEnd);
+    }
+
+    destroy() {
+        this.element.removeEventListener('touchstart', this.handleTouchStart);
+        this.element.removeEventListener('touchend', this.handleTouchEnd);
+    }
+
+    handleTouchStart(event) {
+        const touch = event.touches[0];
+        this.startX = touch.clientX;
+        this.startY = touch.clientY;
+        this.startTime = new Date().getTime();
+    }
+
+    handleTouchEnd(event) {
+        const touch = event.changedTouches[0];
+        this.endX = touch.clientX;
+        this.endY = touch.clientY;
+
+        const deltaX = this.endX - this.startX;
+        const deltaY = this.endY - this.startY;
+        const elapsedTime = new Date().getTime() - this.startTime;
+
+        if (elapsedTime <= this.options.maxTime) {
+            // Check horizontal swipe
+            if (Math.abs(deltaX) >= this.options.minDistance) {
+                if (deltaX > 0) {
+                    this.options.onSwipeRight();
+                } else {
+                    this.options.onSwipeLeft();
+                }
+            }
+
+            // Check vertical swipe
+            if (Math.abs(deltaY) >= this.options.minDistance) {
+                if (deltaY > 0) {
+                    this.options.onSwipeDown();
+                } else {
+                    this.options.onSwipeUp();
+                }
+            }
+        }
+    }
 }
 
-function view_option_touchend() {
-  clearTimeout(long_press_timer);
-}
+function setup_view_option_swipe() {
+  const swipeDetector = new SwipeDetector($id("inputrow"), {
+      onSwipeLeft: simple_mode_toggle_controls,
+      onSwipeRight: simple_mode_toggle_controls,
+  });
 
-function setup_view_option_long_press() {
-  $on($content, "touchstart", view_option_touchstart);
-  $on($content, "touchend", view_option_touchend);
-  //$on($content, "touchmove", view_option_touchend);
-  $on($content, "touchcancel", view_option_touchend);
+  //swipeDetector.destroy();
 }
 
 function hide_placeholder() {
@@ -3703,7 +3790,7 @@ export async function init() {
   $content.addEventListener('paste', content_paste);
 
   if (isMobile)
-    setup_view_option_long_press();
+    setup_view_option_swipe();
 
   $on($content, "click", hide_placeholder);
 

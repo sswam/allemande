@@ -4,10 +4,15 @@ div.messages {
 	margin-bottom: 0.5rem;
 }
 
+body div.messages {
+	max-width: 100% !important;
+}
+
 body.simple div.messages {
-	width: 50em;
-	max-width: min(50em, 100%);
+	width: 50rem;
+	max-width: min(50rem, 100%) !important;
 	margin: auto;
+	padding-left: 2rem;
 }
 
 /* labels ----------------------------------------------------------------- */
@@ -180,6 +185,7 @@ body.simple .message.me.turn, body.simple .message.me:not(:has(p > *)), body.sim
 
 .content {
 	width: fit-content;
+	max-width: 100%;
 }
 
 .content p {
@@ -279,6 +285,7 @@ div.embed > img {
 	margin: 0;
 }
 
+/*
 body.images.simple div.image:before,
 body.images.simple div.embed:before {
 	content: '';
@@ -293,16 +300,17 @@ body.images.simple div.embed:before {
 	background-repeat: no-repeat;
 	filter: blur(10px);
 	z-index: -1;
-	transition: transform 0.3s ease; /* Add transition for a smooth effect */
+	transition: transform 0.3s ease;
 }
 
-body.simple div.image:hover > img,
-body.simple div.embed:hover > img,
+body.simple div.image:hover img,
+body.simple div.embed:hover img,
 body.simple div.image:hover:before,
 body.simple div.embed:hover:before {
-	transform: scale(1.1); /* Scale the image on hover for extra effect */
+	transform: scale(1.1);
 	z-index: 1;
 }
+*/
 
 /* body.simple div.content > p > div:is(.image, .embed):is(:nth-child(2), :first-child):last-child,
 body.simple div.content > p > a:is(:nth-child(2), :first-child):last-child:has(div.image:first-child:last-child, div.embed:first-child:last-child) { */
@@ -1490,7 +1498,7 @@ spoiler:hover, .spoiler:hover {
 
 /* scroll position indicator ---------------------------------------------- */
 
-.message.last {
+body:not(.simple) .message.last {
 	box-shadow: 0 -0.125rem 0 0 var(--primary);
 	width: 100%;
 }

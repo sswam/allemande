@@ -1,0 +1,12 @@
+:root {
+	--theme-mode: light;
+	--text: #432;
+	--border: none; /* #888; */
+	--frame: #fff6e6;          /* Warm cream */
+	--input: #e6c088;          /* Golden sand */
+	--focus: #ffd699;          /* Soft golden */
+	--background: #ffe4b3;     /* Peachy cream */
+	--button: #ffb366;         /* Muted orange */
+	--link: #0070cc;           /* blue */
+	--button-focus: #ff9933;   /* Deep golden orange */
+}

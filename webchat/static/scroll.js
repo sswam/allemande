@@ -1,9 +1,9 @@
 // Scroll position management ---------------------------------------------------
 
 const SCROLL_THRESHOLD = 24; // pixels from bottom to consider "at bottom"
-const SCROLL_DEBOUNCE_DELAY_SAVE = 200;
-const SCROLL_DEBOUNCE_DELAY_SCROLLED = 400;
-const SCROLL_DEBOUNCE_DELAY_RESTORE = 200;
+const SCROLL_DEBOUNCE_DELAY_SAVE = 100;
+const SCROLL_DEBOUNCE_DELAY_SCROLLED = 200;
+const SCROLL_DEBOUNCE_DELAY_RESTORE = 100;
 const SCROLL_RESTORE_TIMEOUT = 5000;
 const SCROLL_SHOW_LAST_DURATION = 10000;
 
