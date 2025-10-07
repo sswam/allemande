@@ -4,9 +4,9 @@
 Check YAML files for syntax errors.
 """
 
-import yaml
 import re
 from ally import main  # type: ignore
+from ally import yaml
 
 
 def check_yaml(filename: str) -> int:

@@ -6,10 +6,9 @@ Calculate statistics for agent prompt lengths from YAML files.
 
 import os
 import sys
-import yaml
 from pathlib import Path
 
-from ally import main, logs  # type: ignore
+from ally import main, logs, yaml  # type: ignore
 
 logger = logs.get_logger()
 

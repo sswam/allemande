@@ -8,7 +8,6 @@ from typing import Any
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
-import yaml
 from watchfiles import Change
 from deepmerge import Merger, STRATEGY_END
 
@@ -16,6 +15,7 @@ from ally.cache import cache  # type: ignore
 from ally.util import replace_variables  # type: ignore
 from safety import safety  # type: ignore
 from util import uniqo
+from ally import yaml
 from settings import *
 
 
