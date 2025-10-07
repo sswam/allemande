@@ -193,6 +193,9 @@ build-ui:
 	# because we don't want to bump the version when the version changes, e.g. git stuff
 	cd $(WEBCHAT) && awatch -p ../Makefile static ../js/util.js ../js/debug.js ../site/auth.js -e static/service_worker_in.js static/service_worker_gen.js static/room_gen.css -a -J ./Makefile
 
+profile:
+	py-spy-ally-chat
+
 nginx:
 	(echo; inotifywait -q -m -e modify $(ALLEMANDE_HOME)/adm/nginx ) | while read e; do v restart-nginx; echo ... done; done
 
