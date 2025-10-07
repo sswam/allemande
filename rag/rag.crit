@@ -1,0 +1,9 @@
+1. query can return wrong items or crash when index is empty or k > number of
+texts; FAISS may return -1 indices, leading to self.texts[-1] or IndexError
+2. Embedding dimension is hard-coded (384); derive via
+encoder.get_sentence_embedding_dimension() to avoid mismatch if model changes
+3. Top-level usage example runs on import, causing heavy side effects
+(model download/encode) and unintended execution; guard with if __name__ ==
+"__main__":
+4. L2 on unnormalized embeddings may be suboptimal for semantic search;
+consider normalizing and using cosine similarity or IndexFlatIP
