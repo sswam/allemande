@@ -1,0 +1,17 @@
+black
+pylint
+mypy
+pytest
+pytest-asyncio
+pytest-timeout
+
+ruff
+pyrefly
+py-spy
+
+uv
+
+types-PyYAML
+types-Markdown
+types-aiofiles
+types-regex

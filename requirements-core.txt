@@ -33,13 +33,6 @@ sh
 
 lxml
 
-black
-pylint
-mypy
-pytest
-pytest-asyncio
-pytest-timeout
-
 spacy
 
 jsbeautifier
@@ -73,18 +66,12 @@ pyjwt
 markdown-katex
 
 tiktoken
-uv
 
 google-genai
 google-cloud-aiplatform[tokenization]
 
 jq
 yq
-
-types-PyYAML
-types-Markdown
-types-aiofiles
-types-regex
 
 py-vapid
 pywebpush
