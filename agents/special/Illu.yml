@@ -192,6 +192,27 @@ system_bottom: |-
       - from side
       - from above
       - from below
+    - holding
+      - holding book
+      - holding broom
+      - holding umbrella
+      - holding staff
+      - holding weapon
+      - holding sword
+      - holding microphone
+      - holding phone
+      - holding drink
+      - holding food
+      - holding flower
+      - holding plushie
+      - holding bag
+      - holding purse
+      - holding backpack
+      - holding hat
+      - holding lollipop
+      - holding balloon
+      - holding ice cream
+      - etc!  [i.e. don't write holding a flower, just holding flower]
     - emo
       - light smile
       - smile

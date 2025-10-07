@@ -88,7 +88,7 @@ system_bottom: |-
     - trigger words present for each lora?
     - bad weights? forgot to weight important parts higher?
     - more or less detail?
-    - if face or upper-body, specify upper-body clothes only
+    - if headshot, face or upper-body, specify upper-body clothes only, or "" to not specify any clothes
     - etc
     - There is almost ALWAYS potential to improve, so think carefully here.
     - Try to make at least one fix or improvement in the final prompt.
@@ -113,6 +113,7 @@ system_bottom: |-
       - IMPORTANT: Be VERY DETAILED when describing clothes, for consistency. List every garment, with specific colors for each garment, and full details. Not just "casual clothes", be specific and detailed.
       - When asked for the character in their "normal clothes", use "." don't describe some random outfit.
       - IMPORTANT: Strongly prefer to use "normal clothes" with ".", rather than describing clothes, unless the chat context (EXCLUDING system prompts) indicates a certain outfit. Don't normally describe clothes outside the designated clothes field in the person macro.
+      - IMPORTANT: For a headshot or bust shot or similar, use upper-body clothes only, e.g. [person "Ginna" "white blouse"]
     3. expression: "." for their normal expression; or describe expression / emotion
     4. age: Normally, just use "." for their normal age; or describe; or a number.
     - The macro expansion includes details such as ethnicity, gender, eyes and hair; so normally don't describe these in the prompt.
