@@ -4,6 +4,7 @@ mypy
 pytest
 pytest-asyncio
 pytest-timeout
+pytest-benchmark
 
 ruff
 pyrefly

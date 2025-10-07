@@ -16,7 +16,8 @@ linty() {
 	fi
 
 	(
-		local prog="$(finder "$1")"
+		local prog
+		prog="$(finder "$1")"
 		if [ ! -f "$prog" ]; then
 			echo >&2 "File not found: $1"
 			return 1
@@ -93,8 +94,8 @@ lint_py() {
 	local prog="$1"
 	fail=0
 	run python3 -m py_compile "$prog" || fail=1
-	run pylint "$prog" || fail=1
-	run mypy "$prog" || fail=1
+	run ruff check "$prog" || fail=1
+	run pyrefly check "$prog" || fail=1
 	return $fail
 }
 
