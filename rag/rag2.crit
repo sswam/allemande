@@ -1,0 +1,13 @@
+1. Loading never triggers: __init__ checks Path(db_path).exists() but
+save/load use f"{db_path}.index"/".texts". db_path (e.g., "db.faiss") won’t
+exist, so load() is skipped even when the actual files exist.
+3. Possible divide-by-zero during normalization: if norm is 0, embeddings
+become NaN; guard against zero-norm vectors.
+4. num_results not validated: negative values can propagate to FAISS search,
+causing errors.
+5. Potential model/index dimension mismatch after load: if existing index was
+built with a different encoder dimension, add_entry will fail; validate or
+rebuild on mismatch.
+6. Persistence delimiter is ambiguous: splitting/joining texts on blank lines
+will corrupt entries that contain blank lines; use a robust format (e.g.,
+JSONL).
