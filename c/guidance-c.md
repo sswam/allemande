@@ -42,3 +42,5 @@ e.g. "simplicity, clarity, generality". As Linus advises, "Good taste" in
 programming often means preferring clear, simple solutions over clever ones.
 
 Care about security and correctness, e.g. escaping html entities, SQL values...
+
+Use while(!EOF)/sentinel/func() checks over duplicated exit logic; combine streams with temp vars if needed

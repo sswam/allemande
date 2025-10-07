@@ -25,3 +25,5 @@ e.g. "simplicity, clarity, generality". As Linus advises, "Good taste" in
 programming often means preferring clear, simple solutions over clever ones.
 
 Care about security and correctness, e.g. escaping html entities, SQL values...
+
+For loops needing final checks: prefer EOF/sentinel/functions over duplicated code; use Iterator::chain when needed

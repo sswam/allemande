@@ -44,3 +44,5 @@ programming often means preferring clear, simple solutions over clever ones.
 
 Care about security and correctness, e.g. escaping html entities, SQL values...
 Especially, use arrays not strings to process options and arguments.
+
+Use while read/EOF, break conditions, or functions instead of duplicating loop code; combine streams with cat if needed

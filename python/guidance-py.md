@@ -56,3 +56,5 @@ e.g. "simplicity, clarity, generality". As Linus advises, "Good taste" in
 programming often means preferring clear, simple solutions over clever ones.
 
 Care about security and correctness, e.g. escaping html entities, SQL values...
+
+In loops that need a final check, use EOF logic, a sentinel or a function rather than dup code, itertools.chain if needed
