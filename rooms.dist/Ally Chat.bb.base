@@ -5,7 +5,7 @@ h1 { font-size: 1.5em; }
 
 This is the main public chat room. Please keep this space family friendly, PG-13 to M rated is okay.
 
-Here's [a playlist to learn entirely too much about Ally Chat](https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb)!
+Here's [a playlist to learn entirely too much about Ally Chat!](https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb)
 
 ## Featured Rooms
 
@@ -68,6 +68,7 @@ shuffle("ul", "li");
 - Dynamic scenes, that change according to the seasons, the time of day, and for special events!
 - Faster access to archived images with our new caching filesystem, fusecache!
 - Added basic regional prompting support to Illu, so she can draw people together without resorting to a stronger model.
+- Major performance improvements to the "conductor" module and agent loading, basically everything is a lot faster.
 
 <hr>
 
