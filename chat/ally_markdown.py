@@ -19,6 +19,7 @@ from markdown_it import MarkdownIt
 from mdformat.renderer import MDRenderer
 import mdformat_light_touch  # type: ignore
 import lxml.html
+from mdx_linkify.mdx_linkify import LinkifyExtension
 
 import fetch
 from ally_room import check_access, safe_path_for_local_file
@@ -35,6 +36,15 @@ logger = logging.getLogger(__name__)
 ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
 ALLYCHAT_CHAT_URL = os.environ["ALLYCHAT_CHAT_URL"]
 
+
+def filter_links(attrs, new=False):
+    """Callback for mdx_linkify to filter out some links"""
+    text = attrs["_text"].lower()
+    if text == "d.va":
+        return None
+    return attrs
+
+linkify = LinkifyExtension(linker_options= {"parse_email": False, "callbacks": [filter_links]})  # doesn't like my email!
 
 # see: https://python-markdown.github.io/extensions/
 MARKDOWN_EXTENSIONS = [
@@ -61,8 +71,10 @@ MARKDOWN_EXTENSIONS = [
     #    "markdown_criticmarkup",
     "attr_list",
 #    "urlize",
-    "mdx_linkify",
+#    "mdx_linkify",
+    linkify,
 ]
+
 
 MARKDOWN_EXTENSION_CONFIGS = {
 #     "markdown_katex": {
@@ -72,6 +84,10 @@ MARKDOWN_EXTENSION_CONFIGS = {
     "pymdownx.highlight": {
         "use_pygments": False,
     },
+    # "mdx_linkify": {
+    #     # "parse_email": True,   # breaks everything :/
+    #     # "callbacks": [filter_links],
+    # }
 }
 
 md_parser = MarkdownIt()
