@@ -459,6 +459,12 @@ def clean_prompt(context, name, delim):
 
     # logger.info("clean_prompt: 2: %s", text1)
 
+    # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with triple backticks after the name
+    if text1 == text:
+        text1 = regex.sub(
+            r".*?\b" + agent_name_esc + r"\b[,;.!:]*\s*```\w*\s*(.*?)```.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
+        )
+
     # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with single backticks
     if text1 == text:
         text1 = regex.sub(
@@ -467,20 +473,21 @@ def clean_prompt(context, name, delim):
 
     # logger.info("clean_prompt: 3: %s", text1)
 
-    # Remove up to the first occurrence of the agent's name followed by a comma (case insensitive) and any following punctuation
+    # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation
     if text1 == text:
-        text1 = regex.sub(r".*?\b" + agent_name_esc + r"\b,[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
-        text1 = re.sub("```", "", text1)
+        text1 = regex.sub(r".*?\b" + agent_name_esc + r"\b[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+        text1 = re.sub("```\w*", "", text1)
 
-    # logger.info("clean_prompt: 4: %s", text1)
+        # logger.info("clean_prompt: 4: %s", text1)
 
-    original = text1
-    text1 = re.sub(r".*```(?:\w*\n)?(.*?)```.*", r"\1", text1, flags=re.DOTALL, count=1)
-    text1 = re.sub(r".*```(?:\w*\n)?(.*?)```.*", r"\1", text1, flags=re.DOTALL, count=1)
-    if text1 == original:  # If no change, try single backticks
-        text1 = re.sub(r".*`(.*?)`.*", r"\1", text1, flags=re.DOTALL, count=1)
-    if text1 == original:  # If no change, remove anything after a blank line
-        text1 = re.sub(r"\n\n.*", r"", text1, flags=re.DOTALL)
+        original = text1
+        text1 = re.sub(r".*```(?:\w*\n)?(.*?)```.*", r"\1", text1, flags=re.DOTALL, count=1)
+        if text1 == original:  # If no change, try single backticks
+            text1 = re.sub(r".*`(.*?)`.*", r"\1", text1, flags=re.DOTALL, count=1)
+        if text1 == original:  # If no change, remove anything after a blank line
+            text1 = re.sub(r"\n\n.*", r"", text1, flags=re.DOTALL)
+
+        # logger.info("clean_prompt: 5: %s", text1)
 
     text = text1
 

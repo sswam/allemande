@@ -1,7 +1,7 @@
 #!/usr/bin/env python3-allemande
 # pylint: disable=unused-argument
 
-""" Ally Chat / Electric Barbarella v1.1.0 - multi-user AI chat app """
+""" Ally Chat / Electric Barbarella v1.1.1 - multi-user AI chat app """
 
 import os
 import sys
@@ -24,6 +24,7 @@ from watchfiles import awatch, Change
 import yaml
 import regex
 from num2words import num2words
+import rag
 
 import atail  # type: ignore
 import ucm  # type: ignore
@@ -43,12 +44,13 @@ import util
 import tasks
 import ally
 import settings
+import tools
 
 
 RELOADABLE_MODULES = [
     "atail", "ucm", "conductor", "search", "tab", "chat", "bb_lib",
     "ally_markdown", "ally_room", "fetch", "llm", "ally_agents", "remote_agents",
-    "local_agents", "util", "tasks", "ally", "settings"
+    "local_agents", "util", "tasks", "ally", "settings", "tools", "rag"
 ]
 
 
@@ -225,8 +227,8 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
 
     count = await process_bot_responses(
-        bots, agents, file, args, history, history_start, mission,
-        summary, config, responsible_human, poke, skip, room
+        bots, agents, file, args, history, history_start,
+        mission, summary, config, responsible_human, poke, skip, room
     )
     return count
 
@@ -368,7 +370,7 @@ def prepare_query(history, agent, bot):
     if history:
         query1 = history[-1]
     else:
-        query1 = agent.get("starter_prompt", STARTER_PROMPT) or ""
+        query1 = agent.get("starter_prompt", settings.STARTER_PROMPT) or ""
         query1 = query1.format(bot=bot) or None
         history = [query1]
 
@@ -423,9 +425,9 @@ def apply_forward_triggers(response, agent):
 
 def determine_forward_target(response, agent, agents, config, room):
     """Determine which agent to forward to."""
-    logger.info("Forward response: %r", response)
+    # logger.info("Forward response: %r", response)
     response_message = list(bb_lib.lines_to_messages([response]))[-1]
-    logger.info("response_message: %r", response_message)
+    # logger.info("response_message: %r", response_message)
 
     _responsible_human, bots2 = conductor.who_should_respond(
         response_message, agents=agents, history=[response_message], default=[],
@@ -483,7 +485,7 @@ async def execute_forward(bot2, agent, agents, file, args, history,
     """Execute forwarding to another agent."""
     logger.info("Forwarding from %s to %s", agent.name, bot2)
     forward_keep_prompts = agent.get("forward_keep_prompts")
-    agent2 = agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts)
+    agent2 = agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts, no_over=True)
     # logger.info("Forward agent: %r", agent2)
 
     query = history[-1]
@@ -858,46 +860,6 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
     return response3
 
 
-def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
-    """Return a YAML definition for a python_tool agent, optionally filtered by grep pattern."""
-
-    # Split remaining args as agent names
-    args = query.split()
-    grep_pattern = None
-
-    # Extract grep pattern if present
-    for i, arg in enumerate(args):
-        if arg.startswith('-g='):
-            grep_pattern = arg[3:]
-            args.pop(i)
-            break
-
-    result = []
-    for name in args:
-        agent = agents.get(name)
-        if agent:
-            file_content = agent.get_file().rstrip()
-
-            # Apply grep filter if pattern specified
-            if grep_pattern:
-                filtered_lines = []
-                for line in file_content.split('\n'):
-                    if re.search(grep_pattern, line):
-                        filtered_lines.append(line)
-                file_content = '\n'.join(filtered_lines)
-
-            result.append(file_content)
-        else:
-            result.append(f"Agent '{name}' not found")
-
-    return "\n\n".join(result)
-
-
-python_tools = {
-    "agent_yaml": python_tool_agent_yaml,
-}
-
-
 async def run_python(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
     """Run a python tool agent."""
     name = agent.name
@@ -909,9 +871,9 @@ async def run_python(agent, query, file, args, history, history_start=0, mission
         function_name = agent["command"][0]
     except (TypeError, KeyError):
         raise ValueError(f"Agent {name} has no command")
-    if function_name not in python_tools:
+    if function_name not in tools.python_tools:
         raise ValueError(f"Python function not found: {function_name}")
-    function = python_tools[function_name]
+    function = tools.python_tools[function_name]
 
     query = chat.clean_prompt([query], name, args.delim) + "\n"
 
@@ -943,11 +905,11 @@ async def run_python(agent, query, file, args, history, history_start=0, mission
     return response3
 
 
-def format_tool_response(agent, output):
+def format_tool_response(agent, output, lang="txt"):
     """Format the tool response based on agent settings."""
     fmt = agent.get("format", "code")
     if fmt == "code":
-        return "```\n" + output + "```\n"
+        return f"```{lang}\n" + output + "```\n"
     elif fmt in ["markdown", "html"]:
         return output
     elif fmt == "pre":
@@ -1085,30 +1047,14 @@ def get_code_files():
     return code_files
 
 
-async def reload_module(module_name: str, module, file_stem: str) -> tuple[bool, str | None]:
-    """
-    Attempt to reload a single module.
-    Returns (success, error_message)
-    """
-    if module is None:
-        return False, None
-
-    # Check if module name matches the file stem
-    if not (module_name == file_stem or module_name.endswith(f".{file_stem}")):
-        return False, None
-
-    try:
-        reloaded_module = importlib.reload(module)
-        # Update sys.modules with the reloaded module
-        sys.modules[module_name] = reloaded_module
-        # Update the global namespace
-        globals()[module_name.split('.')[-1]] = reloaded_module
-        return True, None
-    except ImportError as e:
-        return False, str(e)
+def reload_module(module_name: str, module: str):
+    """Attempt to reload a single module."""
+    reloaded_module = importlib.reload(module)
+    sys.modules[module_name] = reloaded_module
+    globals()[module_name.split('.')[-1]] = reloaded_module
 
 
-async def process_changed_code_file(file: str) -> tuple[set[str], list[str]]:
+def process_changed_code_file(file: str) -> tuple[set[str], list[str]]:
     """
     Process a single changed file and attempt to reload corresponding module.
     Returns (reloaded_modules, need_restart_files)
@@ -1116,24 +1062,17 @@ async def process_changed_code_file(file: str) -> tuple[set[str], list[str]]:
     reloaded = set()
     need_restart_files = []
 
-    file_stem = Path(file).stem
+    module_name = Path(file).stem
 
-    # Check if this file corresponds to a reloadable module
-    if file_stem not in RELOADABLE_MODULES:
+    if module_name not in RELOADABLE_MODULES:
         need_restart_files.append(file)
         return reloaded, need_restart_files
 
-    # Try to reload matching modules
-    for module_name, module in list(sys.modules.items()):
-        success, error = await reload_module(module_name, module, file_stem)
-        if success:
-            reloaded.add(module_name)
-            break
-        elif error:
-            logger.error("Failed to reload module %s: %s", module_name, error)
-            need_restart_files.append(file)
-            break
-    else:
+    try:
+        reload_module(module_name, sys.modules[module_name])
+        reloaded.add(module_name)
+    except Exception as e:
+        logger.error("Failed to reload module %s: %s", module_name, str(e))
         need_restart_files.append(file)
 
     return reloaded, need_restart_files
@@ -1150,7 +1089,7 @@ async def reload_if_code_changes():
 
         for _change, file in changes:
             logger.info("Code file changed: %r", file)
-            reloaded, need_restart = await process_changed_code_file(file)
+            reloaded, need_restart = process_changed_code_file(file)
             all_reloaded.update(reloaded)
             all_need_restart.extend(need_restart)
 
