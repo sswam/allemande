@@ -187,26 +187,27 @@ Cujoh, Jonathan Joestar, Joo Dee, Joseph Joestar, Josuke Higashikata,
 Jotaro Kujo, Judy Hopps, Judy Jetson, June Lin, Juniper, Kakashi Hatake,
 Kak Ros, Kara, Karen Beecher, Katara, Kid Flash, Kim Possible, Kitten,
 Kiyomi Takada, Kole, Korra, Kronk, Kyojuro Rengoku, Lara, Leela, Lenore,
-Light Yagami, Lilian, Link, L Lawliet, Loid, Lois, Lucky Girl, Luna
-Snow, Mai, Mama Bear, Marceline, Marco Diaz, Marge, Maria Renard, Marin,
-Marin Kitagawa, Meg, Mello, Meng, Mikasa, Mikotezumi, Miku Hatsune, Mio,
-Misa Amane, Mitsuri Kanroji, Miyako, Mizu, Mogi, Mr Big, Mr Burns, Naomi
-Misora, Napster System, Naruto, Near, Nezuko Kamado, Nick Wilde, Nightmare
-Moon, Noriaki Kakyoin, Nyanya, Oswald Cobblepot, Pamila, Papa Bear, Penny
-Peterson, Pfil, Phoebe, Pinkie Pie, Plum, Porky Pig, Prince Adam, Prince
-Charming, Prince Phobos, Princess Luna, Princess Mononoke, Priscilla,
-Projekt Melody, Raiden Shogun, Rainbow Dash, Ram, Ramona, Rarity, Raven,
-Raye Penber, Red X, Rem, Rem Shinigami, Richter, Rick Sanchez, Ringo,
-Road Runner, Robin, Rohan Kishibe, Ryuk, Sakura Uchiha, Sasuke Uchiha,
-Scooby, Scott Pilgrim, Selina Kyle, Shaggy, Sheeta, Shigure, Shinigami,
-Shinobu Kocho, Shinpei, Shiori, Shrek, Skeletor, Slade, Smithers,
-Smurfette, Soichiro Yagami, Sokka, Speedy, Spider Man, Spike, Starfire,
-Subaru, Suki, Sumi, Summer Smith, Superman, Susan Strong, Sylvester the
-Cat, Sylvia, Sypha, Tanjiro Kamado, Taranee, Taz, Tengen Uzui, Terra,
-Teru Mikami, Tokiko, Toothless, Toph, Touta Matsuda, Trigon, Tsunade,
-Tweety Bird, Twilight Sparkle, Ty Lee, Ukita, Usagi, Ushio, Velma, Vi,
-Victor Stone, Viktor, Watari, Wile E. Coyote, Wilma, Yae Miko, Yor,
-Yosemite Sam, Yoshikage Kira, Yue, Zelda, Zenitsu Agatsuma, Zoidberg, Zuko
+Light Yagami, Lilian, Link, L Lawliet, Loid, Lois, Lucky Girl, Luna Snow,
+Mai, Mama Bear, Marceline, Marco Diaz, Marge, Maria Renard, Marin,
+Marin Kitagawa, Meg, Mello, Meng, Mikasa, Mikotezumi, Miku Hatsune,
+Mio, Misa Amane, Mitsuri Kanroji, Miyako, Mizu, Mogi, Mr Big, Mr Burns,
+Naomi Misora, Napster System, Naruto, Near, Nezuko Kamado, Nick Wilde,
+Nightmare Moon, Noriaki Kakyoin, Nyanya, Oswald Cobblepot, Pamila,
+Papa Bear, Penny Peterson, Pfil, Phoebe, Pinkie Pie, Plum, Porky Pig,
+Prince Adam, Prince Charming, Prince Phobos, Princess Luna, Princess
+Mononoke, Priscilla, Projekt Melody, Raiden Shogun, Rainbow Dash,
+Ram, Ramona, Rarity, Raven, Raye Penber, Red X, Rem, Rem Shinigami,
+Richter, Rick Sanchez, Ringo, Road Runner, Robin, Rohan Kishibe, Ryuk,
+Sakura Uchiha, Sasuke Uchiha, Scooby, Scott Pilgrim, Selina Kyle,
+Shaggy, Sheeta, Shigure, Shinigami, Shinobu Kocho, Shinpei, Shiori,
+Shrek, Skeletor, Slade, Smithers, Smurfette, Soichiro Yagami, Sokka,
+Speedy, Spider Man, Spike, Starfire, Subaru, Suki, Sumi, Summer Smith,
+Superman, Susan Strong, Sylvester the Cat, Sylvia, Sypha, Tanjiro Kamado,
+Taranee, Taz, Tengen Uzui, Terra, Teru Mikami, Tokiko, Toothless, Toph,
+Touta Matsuda, Trigon, Tsunade, Tweety Bird, Twilight Sparkle, Ty Lee,
+Ukita, Usagi, Ushio, Velma, Vi, Victor Stone, Viktor, Wakana Gojo, Watari,
+Wile E. Coyote, Wilma, Yae Miko, Yor, Yosemite Sam, Yoshikage Kira, Yue,
+Zelda, Zenitsu Agatsuma, Zoidberg, Zuko
 
 ## base
 
