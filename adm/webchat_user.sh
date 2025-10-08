@@ -94,7 +94,7 @@ Password: $pass
 1. You start in "simple mode", and in private chat.
 2. You can join group chat: https://chat.allemande.ai/#Ally+Chat
 3. For advanced mode, reload and read the placeholder text!
-4. Press the '?' button, read the Intro, and try the Help.
+4. Press the '?' button, read the Intro, and try the AI Help.
 $start_nsfw
 
 === Beta Program ===
@@ -126,14 +126,14 @@ END
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
 	if ((!nsfw)); then
-		ln -sf ../../doc/guide.md rooms/"$user"/.help.m
+		ln -sf ../../doc/help.md rooms/"$user"/.help.m
 	fi
 
 	# echo "- $user" >> rooms/.access.yml
 
 	if ((nsfw)); then
 		echo "- $user" >> rooms/nsfw/.access.yml
-		ln -sf ../../doc/nsfw/guide.md rooms/"$user"/.help.m
+		ln -sf ../../doc/nsfw/help.md rooms/"$user"/.help.m
 		ln -sf ../../rooms.dist/help.bb.base.nsfw rooms/"$user"/.help.bb.base
 	else
 		ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
