@@ -2531,20 +2531,24 @@ function view_options_apply() {
   $id("help").href = view_options.advanced ? qa_url : help_url;
 
   // show different simple / advanced / boffin icons
+  // TODO this is getting confusing, needs a renumber and clean up
   const $view_advanced = $id("view_advanced");
   const $view_standard = $id("view_standard");
   if (view_options.advanced == -1) {
     $view_standard.innerHTML = icons["view_mode_simple"]
     $view_standard.title = "simple mode: click for standard mode";
   } else if (view_options.advanced == 0) {
+    // NOTE: not currently a thing
     $view_advanced.innerHTML = icons["view_mode_not_advanced"]
     $view_standard.innerHTML = icons["view_mode_standard"]
     $view_advanced.title = "standard mode: click for advanced mode";
     $view_standard.title = "standard mode";
   } else if (view_options.advanced == 1) {
     // $view_advanced.innerHTML = icons["view_mode_advanced"]
+    $view_standard.innerHTML = icons["view_mode_standard"]
+    $view_standard.title = "advanced mode";
     $view_advanced.innerHTML = icons["view_mode_boffin_off"]
-    $view_advanced.title = "advanced mode";
+    $view_advanced.title = "advanced mode: click for boffin mode";
   } else {
     $view_advanced.innerHTML = icons["view_mode_boffin"]
     $view_advanced.title = "boffin mode";
