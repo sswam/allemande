@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-
 # [options]
-# Monitors system resources and network connectivity
+# Monitors system resources, network connectivity, and domain health
 
 # The script monitors:
 # - Disk space usage
@@ -9,6 +8,8 @@
 # - Memory usage
 # - VM usage (RAM + swap)
 # - Basic network connectivity
+# - Domain DNS expiry
+# - Domain SSL certificate expiry
 #
 # It outputs warnings on stdout if any of the checks fail.
 #
@@ -27,14 +28,79 @@ monitor() {
   local killall_vm= K=90        # VM usage threshold to kill processes
   local killall= k=node         # Processes to kill
   local verbose= v=             # verbose
+  local domains= d="allemande.ai" # domains to check
+  local dns_days= D=14          # days before DNS expiry warning
+  local ssl_days= S=14          # days before SSL expiry warning
+  local config= c=              # load config from file
+  local daily= y=1              # do daily checks
 
   eval "$(ally)"
+
+  if [ "$config" = 1 ]; then
+    config="${HOME}/.monitor"
+  fi
+  if [ -n "$config" ]; then
+    . "$config"
+  fi
 
   check_disk
   check_load
   check_memory
   check_vm
   check_ping
+  if [ "$daily" = 1 ]; then
+    check_domains
+  fi
+}
+
+check_domains() {
+  local domain
+  for domain in $domains; do
+    check_dns_expiry "$domain"
+    check_ssl_expiry "$domain"
+  done
+}
+
+check_dns_expiry() {
+  local domain=$1
+  local expiry_date
+  local days_left
+
+  expiry_date=$(whois "$domain" | grep -i "Expir" | awk '{print $NF}' | head -1)
+  if [ -z "$expiry_date" ]; then
+    printf "WARNING: Could not fetch DNS expiry for %s\n" "$domain"
+    return
+  fi
+
+  days_left=$(( ($(date -d "$expiry_date" +%s) - $(date +%s)) / 86400 ))
+
+  if [ "$verbose" ]; then
+    printf "INFO: Domain %s DNS expires in %d days\n" "$domain" "$days_left"
+  fi
+  if [ "$days_left" -le "$dns_days" ]; then
+    printf "WARNING: Domain %s DNS expires in %d days!\n" "$domain" "$days_left"
+  fi
+}
+
+check_ssl_expiry() {
+  local domain=$1
+  local expiry_date
+  local days_left
+
+  expiry_date=$(openssl s_client -connect "$domain":443 -servername "$domain" </dev/null 2>/dev/null | openssl x509 -noout -enddate | cut -d= -f2)
+  if [ -z "$expiry_date" ]; then
+    printf "WARNING: Could not fetch SSL expiry for %s\n" "$domain"
+    return
+  fi
+
+  days_left=$(( ($(date -d "$expiry_date" +%s) - $(date +%s)) / 86400 ))
+
+  if [ "$verbose" ]; then
+    printf "INFO: Domain %s SSL expires in %d days\n" "$domain" "$days_left"
+  fi
+  if [ "$days_left" -le "$ssl_days" ]; then
+    printf "WARNING: Domain %s SSL expires in %d days!\n" "$domain" "$days_left"
+  fi
 }
 
 check_disk() {
@@ -90,7 +156,7 @@ check_vm() {
   fi
   if [ "$vm_usage" -ge "$killall_vm" ]; then
     printf "CRITICAL: VM usage is at %s%% - killing all %s processes!\n" "$vm_usage" "$killall"
-    killall $killall &>/dev/null
+    killall $killall &>/dev/null  # note, $killall should not be quoted
   fi
 }
 
@@ -114,4 +180,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
   monitor "$@"
 fi
 
-# version: 0.1.1
+# version: 0.1.2
