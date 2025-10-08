@@ -88,12 +88,7 @@ class FaissRAG:
 
 def process_input(istream: TextIO, ostream: TextIO, rag: FaissRAG, num_results: int, show_progress: bool) -> None:
     """Process queries from input stream and write results to output stream."""
-    lines = istream.readlines()
-
-    # Wrap with tqdm if show_progress is True
-    iterator = tqdm(lines, desc="Processing queries") if show_progress else lines
-
-    for query in iterator:
+    for query in istream:
         query = query.strip()
         if not query:
             continue
