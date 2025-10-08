@@ -17,7 +17,7 @@ nsfw/guide.md: guide.md nsfw/guide_nsfw.md nsfw/extra.md
 	cat $^ >$@
 	chmod a-w $@
 
-guide.md: guide.0.md extra.md
+guide.1.md: guide.md extra.md
 	rm -f $@
 	cat $^ >$@
 	chmod a-w $@
@@ -43,7 +43,6 @@ extra.md: $(AGENTS_PATHS_SFW)
 	@echo "# Extra Characters" >$@
 	@echo >>$@
 	@(cd ../agents ; for cat in $(AGENTS_DIRS_SFW); do echo "## $$cat"; echo; find "$$cat" -name '*.yml' -printf "%f\n" | sed 's/\.yml$$/, /' | sort | tr -d '\n' | sed 's/, $$//'; echo; echo; done) | fmt >>$@
-
 
 nsfw/extra.md: $(AGENTS_PATHS_NSFW)
 	@echo "# Extra Characters" >$@
@@ -74,7 +73,7 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	rm -f $@ ../rooms/intro.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
-../rooms/guide.bb: guide.md
+../rooms/guide.bb: guide.1.md
 	rm -f $@ ../rooms/guide.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 

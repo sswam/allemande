@@ -95,6 +95,7 @@ rooms.*
 /webchat/icons-unicode.txt
 /webchat/static/icons.css
 /webchat/static/icons.woff2
+/doc/guide.1.md
 /doc/nsfw/guide.md
 /rooms.dist/mission.m.nsfw
 /rooms.dist/mission.m.sfw
