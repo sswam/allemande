@@ -3805,7 +3805,7 @@ export async function init() {
 
   load_user_files();  // async
 
-  beta_test();
+  // beta_test();  XXX disabled as it seems to be buggy somehow
 
   welcome();  // async
 
