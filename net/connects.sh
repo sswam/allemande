@@ -8,7 +8,7 @@ PIDS=()
 
 # Function to handle SIGINT
 cleanup() {
-	echo -e "\nReceived interrupt, killing all connections..."
+	echo >&2 -e "\nReceived interrupt, killing all connections..."
 	for pid in "${PIDS[@]}"; do
 		kill -INT "$pid" 2>/dev/null
 	done
@@ -16,11 +16,11 @@ cleanup() {
 }
 
 # Set up signal handler
-trap cleanup SIGINT
+trap cleanup INT
 
 # Check if peers file exists
 if [ ! -f "$PEERS_FILE" ]; then
-	echo "Error: $PEERS_FILE not found"
+	echo >&2 "Error: $PEERS_FILE not found"
 	exit 1
 fi
 
@@ -38,7 +38,8 @@ while IFS=$'\t' read -r hostname alias cmd || [ -n "$hostname" ]; do
 	fi
 
 	# Start connection and store PID
-	(echo "connect $target"; connect "$target" "$cmd") &
+	echo >&2 "connect $target"
+	connect "$target" "$cmd" &
 	PIDS+=($!)
 done < "$PEERS_FILE"
 

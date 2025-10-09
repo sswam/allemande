@@ -4,6 +4,7 @@ login="$1" cmd="$2"
 
 if [ -z "$login" ]; then
 	echo >&2 "usage: connect hostname [cmd]"
+	exit 1
 fi
 
 # Handle Ctrl-C
@@ -18,5 +19,5 @@ END
 	else
 		ssh -T -oControlMaster=yes -oServerAliveInterval=15 -oServerAliveCountMax=3 -N "$login"
 	fi
-	echo "SSH connection terminated, reconnecting: $login"
+	echo >&2 "SSH connection terminated, reconnecting: $login"
 done
