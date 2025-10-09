@@ -11,7 +11,7 @@ import io
 import logging
 import enum
 from typing import Any
-from stat import S_IFMT, S_IFREG, S_IFDIR, S_IROTH, S_IWOTH, S_IFLNK, S_IWGRP, S_IRGRP
+from stat import S_IFMT, S_IFREG, S_IFDIR, S_IROTH, S_IWOTH, S_IFLNK, S_IWGRP, S_IRGRP, S_IWUSR, S_IRUSR
 import asyncio
 from datetime import datetime
 from dataclasses import dataclass
@@ -431,7 +431,7 @@ def check_access(user: str | None, pathname: Path | str) -> Access:
         access, _reason = _check_access_2(user, pathname)
     except PermissionError as _e:
         access, _reason = Access.NONE, "PermissionError"
-    # logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
+    logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
 
     # experiment: allow anyone who can write to moderate
     if access.value & Access.WRITE.value:
@@ -440,8 +440,41 @@ def check_access(user: str | None, pathname: Path | str) -> Access:
     return access
 
 
+@dataclass
+class FileStatus:
+    exists: bool
+    is_file: bool
+    is_symlink: bool
+    is_dir: bool
+    stats: os.stat_result | None
+
+
+def _get_file_status(path: Path) -> FileStatus:
+    try:
+        stats = path.lstat()
+        exists = True
+        is_dir = S_IFMT(stats.st_mode) == S_IFDIR
+        is_file = S_IFMT(stats.st_mode) == S_IFREG
+        is_symlink = S_IFMT(stats.st_mode) == S_IFLNK
+    except FileNotFoundError:
+        exists = False
+        stats = None
+        is_dir = False
+        is_file = True
+        is_symlink = False
+
+    file_status = FileStatus(exists, is_file, is_symlink, is_dir, stats)
+
+    # logger.info("_get_file_status: %s %r", path, file_status)
+
+    return file_status
+
+
 def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
-    """Check if the user has access to the path"""
+    """
+    Check if the user has access to the path
+    Returns a tuple of (Access, reason)
+    """
     pathname = _normalize_pathname(pathname)
     is_dir = pathname.endswith("/") or pathname == ""
 
@@ -468,12 +501,15 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
         return result
 
     if result := _check_moderator_and_user_access(
-        user, pathname, file_status.is_file, file_status.is_symlink,
-        access_conf, agent_names
+        user, pathname, file_status, access_conf, agent_names
     ):
         return result
 
     if result := _check_root_access(pathname, file_status):
+        return result
+
+    # Check parent directories' execute permissions
+    if result := _check_parent_dirs_executable(path):
         return result
 
     if result := _check_shared_folder_access(
@@ -483,6 +519,29 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
 
     logger.info("path %r st_mode %o", path, file_status.stats.st_mode if file_status.stats else None)
     return _check_default_public_access(file_status.stats.st_mode)
+
+
+def _check_parent_dirs_executable(path: str) -> tuple[Access, str] | None:
+    """
+    Check if all parent directories up to root have execute permission for others.
+    Returns None if all directories are executable, otherwise returns (Access.NONE, reason).
+    """
+    current_path = Path(path)
+    top_path = Path(ROOMS_DIR).resolve()
+
+    # Start from the parent directory and move up to root
+    while current_path != current_path.parent and current_path.resolve() != top_path:
+        try:
+            stats = current_path.parent.stat()
+            # Check if others have execute permission (0o1 = execute bit)
+            if not bool(stats.st_mode & 0o1):
+                return Access.NONE, "parent_dir_not_executable"
+        except (PermissionError, FileNotFoundError):
+            return Access.NONE, "parent_dir_access_denied"
+
+        current_path = current_path.parent
+
+    return None
 
 
 def _load_users_and_agents(pathname: str, path: Path) -> tuple[list[str], list[str], set[str]]:
@@ -497,6 +556,7 @@ def _load_users_and_agents(pathname: str, path: Path) -> tuple[list[str], list[s
     agent_names = list(set(agent_names) - set(users))
     return users, agent_names, overlapping_names
 
+
 def _check_path_validity(pathname: str) -> tuple[Access, str] | None:
     """Validate pathname and create safe path"""
     if sanitize_pathname(pathname) != pathname:
@@ -508,6 +568,7 @@ def _check_path_validity(pathname: str) -> tuple[Access, str] | None:
         return Access.NONE, "invalid_path"
     return None
 
+
 def _check_special_access(user: str | None, pathname: str) -> tuple[Access, str] | None:
     """Check for admin, moderator, and denied access"""
     if user in ADMINS:
@@ -517,6 +578,7 @@ def _check_special_access(user: str | None, pathname: str) -> tuple[Access, str]
         return Access.MODERATE_READ_WRITE, "moderator"
 
     return None
+
 
 def _check_user_specific_access(user: str | None, pathname: str, access_conf: dict) -> tuple[Access, str] | None:
     """Check user-specific access rules"""
@@ -534,6 +596,7 @@ def _check_user_specific_access(user: str | None, pathname: str, access_conf: di
 
     return None
 
+
 def _check_symlink_access(user: str, path: Path, is_symlink: bool) -> tuple[Access, str] | None:
     """Check symlink-specific access rules"""
     if is_symlink:
@@ -548,22 +611,28 @@ def _check_symlink_access(user: str, path: Path, is_symlink: bool) -> tuple[Acce
             return Access.NONE, "symlink_target unreadable"
     return None
 
-def _check_moderator_and_user_access(user: str | None, pathname: str, is_file: bool,
-                                is_symlink: bool, access_conf: dict, agent_names: list[str]) -> tuple[Access, str] | None:
+
+def _check_moderator_and_user_access(user: str | None, pathname: str, file_status: FileStatus, access_conf: dict, agent_names: list[str]) -> tuple[Access, str] | None:
     """Check moderator and regular user access rules"""
-    if user in MODERATORS and not "/" in pathname and (is_file or is_symlink):
+    if user in MODERATORS and not "/" in pathname and (file_status.is_file or file_status.is_symlink):
         return Access.MODERATE_READ_WRITE, "moderator_top"
 
-    user_access = Access.READ if "write" in access_conf else Access.READ_WRITE
+    writable = not file_status.exists or file_status.stats.st_mode & S_IWUSR
 
-    if user in access_conf.get("write", []):
+    if not writable or "write" in access_conf:
+        user_access = Access.READ
+    else:
+        user_access = Access.READ_WRITE
+
+    if writable and user in access_conf.get("write", []):
         user_access = Access.READ_WRITE
 
     if user in access_conf.get("allow", []):
         return user_access, "allow"
 
     if access_conf.get("allow_agents") and user in agent_names:
-        return Access.READ_WRITE, "allow_agents"
+        agent_access = Access.READ_WRITE if writable else Access.READ
+        return agent_access, "allow_agents"
 
     return None
 
@@ -577,50 +646,37 @@ def _normalize_pathname(pathname: str) -> str:
         return pathname[len(ROOMS_DIR) + 1:]
     return pathname
 
+
 def _setup_paths(pathname: str, is_dir: bool) -> tuple[Path, Path]:
     path = safe_join(Path(ROOMS_DIR), Path(pathname))
     dir_path = path if is_dir else path.parent
     return path, dir_path
+
 
 def _load_configurations(pathname: str, path: Path, dir_path: Path) -> tuple[dict, list, list]:
     access_conf = load_config(dir_path, "access.yml")
     users, agent_names, _ = _load_users_and_agents(pathname, path)
     return access_conf, users, agent_names
 
-@dataclass
-class FileStatus:
-    exists: bool
-    is_file: bool
-    is_symlink: bool
-    is_dir: bool
-    stats: os.stat_result | None
-
-def _get_file_status(path: Path) -> FileStatus:
-    try:
-        stats = path.lstat()
-        exists = True
-        is_dir = S_IFMT(stats.st_mode) == S_IFDIR
-        is_file = S_IFMT(stats.st_mode) == S_IFREG
-        is_symlink = S_IFMT(stats.st_mode) == S_IFLNK
-    except FileNotFoundError:
-        exists = False
-        stats = None
-        is_dir = False
-        is_file = True
-        is_symlink = False
-
-    return FileStatus(exists, is_file, is_symlink, is_dir, stats)
 
 def _check_root_access(pathname: str, file_status: FileStatus) -> tuple[Access, str] | None:
     if pathname == "":
         return Access.READ, "root"
     if not "/" in pathname and (file_status.is_file or file_status.is_symlink):
-        return Access.READ_WRITE, "user_root_file"
+        access = Access.READ.value
+
+        # Only allow write if owner writable
+        if file_status.stats is None or file_status.stats.st_mode & S_IWUSR:
+            access |= Access.WRITE.value
+
+        return Access(access), "user_root_file"
     return None
+
 
 def _check_shared_folder_access(
     dir_path: Path, exists: bool, is_dir: bool
 ) -> tuple[Access, str] | None:
+    """Check access for shared public writable folders"""
     try:
         dir_stat = dir_path.lstat()
         if not is_dir and dir_stat.st_mode & S_IWGRP:
@@ -631,12 +687,19 @@ def _check_shared_folder_access(
         return Access.NONE, "dir_not_found"
     return None
 
+
 def _check_default_public_access(mode: int) -> tuple[Access, str]:
+    """Check default public access based on file mode"""
     access = Access.NONE.value
+
+    # Only allow read if world readable
     if mode & S_IROTH:
         access |= Access.READ.value
+
+    # Only allow write if world writable
     if mode & S_IWOTH:
         access |= Access.WRITE.value
+
     return Access(access), "shared_public"
 
 
