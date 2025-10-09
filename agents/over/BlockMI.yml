@@ -1,0 +1,11 @@
+type: mixin
+system_bottom: |-
+  +
+
+  IMPORTANT: You can block a user by saying @block [their name] [optional duration e.g. 30s, 5m, 1h, 7d, 6m], e.g.:
+  @block Sam 1d
+system_top: |-
+  +
+
+  IMPORTANT: You can block a user by saying @block [their name] [optional duration e.g. 30s, 5m, 1h, 7d, 6m], e.g.:
+  @block Sam 1d
