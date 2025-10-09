@@ -8,7 +8,8 @@ const MAX_ROOM_NUMBER = 9999;
 const EXTENSION = ".bb";
 const CONFIRM_ARCHIVE = false;
 let DEFAULT_ROOM = PUBLIC_ROOM;
-const hold_alt = false;
+const HOLD_ALT = false;
+const SIMPLE_MODE_ENABLE = true;
 
 const $head = $("head");
 const $body = $("body");
@@ -35,8 +36,10 @@ const illustrator = "Illu";
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 // const isFirefox = navigator.userAgent.includes('Firefox');
 // const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+// const isOpera = /Opera|OPR\//.test(navigator.userAgent);
 const iOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 const isMac = /Macintosh|MacIntel|MacPPC|Mac68K|MacOS/i.test(navigator.userAgent);
+// const Alt = isOpera ? "Ctrl" : isMac ? "Option" : "Alt";
 const Alt = isMac ? "Option" : "Alt";
 
 async function detectIncognito() {
@@ -2583,7 +2586,7 @@ function view_options_apply() {
 
   // input placeholder in standard mode, before first message sent in this session
   let input_placeholder = "";
-  let hold_or_press = hold_alt ? "Hold" : "Press";
+  let hold_or_press = HOLD_ALT ? "Hold" : "Press";
   if (simple && $content.placeholder != "") {
     if (isMobile)
       input_placeholder += `Swipe here for options.`;
@@ -3486,10 +3489,14 @@ function view_option(ev) {
   // holding alt/option shows option controls in simple mode
   // pressing alt/option toggles option controls in other modes
   // if not in input_main controls, return to them and show options
-  if (ev.key !== "Alt") // || view_options.advanced > 1)
+  // This sucks on Opera, but IDK what else to do with it.
+  // Maybe a conventional slider button!
+//  const key = isOpera ? "Control" : "Alt";
+  const key = "Alt";
+  if (ev.key !== key) // || view_options.advanced > 1)
     return;
   $content.placeholder = "";
-  if (simple && hold_alt) {
+  if (simple && HOLD_ALT) {
     $body.classList.toggle("option", ev.type === "keydown");
   } else if (ev.type === "keyup" && controls == "input_main" && !view_option_skip_alt) {
     $body.classList.toggle("option");
@@ -3806,6 +3813,10 @@ export async function init() {
   load_user_files();  // async
 
   // beta_test();  XXX disabled as it seems to be buggy somehow
+
+  // Hack to disable simple mode if needed!
+  if (!SIMPLE_MODE_ENABLE && view_options.advanced <= 0)
+    view_standard(1);
 
   welcome();  // async
 
