@@ -21,7 +21,7 @@
 
 monitor() {
   local threshold_storage= s=99 # storage usage threshold percentage
-  local threshold_load= l=1     # load average threshold
+  local threshold_load= l=2     # load average threshold
   local threshold_mem= m=95     # memory usage threshold percentage
   local threshold_vm= M=80      # VM (RAM + swap) usage threshold percentage
   local ping_host= p=8.8.8.8    # host to ping test
