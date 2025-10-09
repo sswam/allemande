@@ -12,7 +12,7 @@ default:
 
 up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb help.md nsfw/help.md  # agent_colours.css
 
-nsfw/guide.md: guide.md nsfw/guide_nsfw.md nsfw/extra.md
+nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 	rm -f $@
 	cat $^ >$@
 	chmod a-w $@
@@ -24,7 +24,7 @@ guide.1.md: guide.md extra.md
 
 help.md: guide.md
 	rm -f $@
-	summary -m=flashi -p="Please summarize the user guide for an AI to offer online help, include all features, details and icons, avoid repetition or superfluous language" <$< >$@
+	summary -m=flashi -p="Please summarize the user guide for an AI to offer online help, include all features, concise names and details of all models, and select agents, tools and characters, all UI icons, avoid repetition or superfluous language" <$< >$@
 	chmod a-w $@
 
 nsfw/help_nsfw.md: nsfw/guide_nsfw.md
@@ -73,7 +73,7 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	rm -f $@ ../rooms/intro.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
-../rooms/guide.bb: guide.1.md
+../rooms/guide.bb: guide.md  # guide.1.md
 	rm -f $@ ../rooms/guide.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 

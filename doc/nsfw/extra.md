@@ -243,16 +243,15 @@ Carl Cox, Paul Oakenfold
 
 ## special
 
-Aegis, Aether, Ageta, Aidi, Alen, Anim, Anima, Animu, Animus, Annai,
-Appy, Archi, Atla, Aura, Bish, Brie, Celeste, Chai, Chas, Chaz, Cinder,
-Clair, Clogi, Cris, Criss, Dax, Eddy, Eli, Frank, Frank1, Frida, Gally,
-Gema, Gemav, Glaude, Greta, Hush, Iggy, Illu, Illuv, Jaxx, Jesi, Jessi,
-Klaud, Klauden, Klaudo, Kriss, Lavi, Liora, Logi, Loni, Lyro, Morf,
-Morphi, Netti, Nicc, Nishi, Nova, Novi, Novo, Orville, Patti, Persi,
-Pilu, Pixi, Pliny, Poli, Precis, Psych, Psyche, Psychea, Psychei, Raimi,
-Resia, Rhythm, Sal, Sia, Sio, Sirena, Sofie, Softly, Solon, Stoica,
-Summar, Summi, Tayla, Vectr, Vega, Vemmy, Veri, Whispr, Willo, Wrenn,
-Wrii, Wrinn, Zeno
+Aegis, Aether, Ageta, Aidi, Alen, Anim, Anima, Animu, Animus, Annai, Appy,
+Archi, Atla, Aura, Bish, Brie, Celeste, Chai, Chas, Chaz, Cinder, Clair,
+Clogi, Cris, Criss, Dax, Eddy, Eli, Frank, Frida, Gally, Gema, Gemav,
+Glaude, Greta, Hush, Iggy, Illu, Illuv, Initia, Jaxx, Jesi, Jessi, Klaud,
+Klauden, Klaudo, Kriss, Lavi, Liora, Logi, Loni, Lyro, Morf, Morphi,
+Netti, Nicc, Nova, Novi, Novo, Orville, Patti, Persi, Pilu, Pixi, Pliny,
+Poli, Precis, Psych, Psyche, Psychea, Psychei, Raimi, Resia, Rhythm,
+Sal, Sia, Sio, Sirena, Sofie, Softly, Solon, Stoica, Summar, Summi,
+Tayla, Vectr, Vega, Vemmy, Veri, Whispr, Willo, Wrenn, Wrii, Wrinn, Zeno
 
 ## over
 
