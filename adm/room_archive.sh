@@ -8,7 +8,7 @@
 # Set the room name, defaulting to "Ally Chat" if not provided
 room=${1:-Ally Chat}
 # Remove the ALLEMANDE_HOME/rooms/ prefix if present
-room=${room#$ALLEMANDE_HOME/rooms/}
+room=${room#"$ALLEMANDE_HOME"/rooms/}
 
 # Remove .bb extension if present
 room=${room%.bb}
@@ -20,6 +20,8 @@ basename="$(basename "$from")"
 
 if [ ! -f "$from" ]; then
 	echo "No such file: $from" >&2
+elif [ ! -w "$from" ]; then
+	echo "File not writable: $from" >&2
 elif [ ! -s "$from" ]; then
 	echo "Empty file: $from" >&2
 	rm "$from"

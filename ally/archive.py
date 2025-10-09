@@ -7,10 +7,11 @@ Move files to numbered archive versions, finding the first unused number.
 from pathlib import Path
 from typing import Callable
 import re
+import os
 
 from ally import main, logs, bsearch  # type: ignore
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = logs.get_logger()
 
@@ -41,6 +42,9 @@ def archive_file(path: Path) -> Path:
     if not path.is_file():
         raise ValueError(f"Not a regular file: {path}")
 
+    if not os.access(path, os.W_OK):
+        raise PermissionError(f"File is not writable: {path}")
+
     new_path = find_unused_numbered_path(path)
 
     logger.info("Moving %s to %s", path, new_path)
@@ -57,11 +61,16 @@ def archive_with(path: Path, derived_ext: str = "html") -> Path:
     if not path.is_file():
         raise ValueError(f"Not a regular file: {path}")
 
+    if not os.access(path, os.W_OK):
+        raise PermissionError(f"File is not writable: {path}")
+
     new_path = find_unused_numbered_path(path)
 
     logger.info("Moving %s to %s", path, new_path)
     derived_old = path.with_suffix("." + derived_ext)
     if derived_old.exists():
+        if not os.access(derived_old, os.W_OK):
+            raise PermissionError(f"Derived file is not writable: {derived_old}")
         derived_new = new_path.with_suffix("." + derived_ext)
         derived_old.rename(derived_new)
     path.rename(new_path)
@@ -80,7 +89,7 @@ def archive(files: list[str] | None = None, derived_ext: str = "html") -> None:
                 print(archive_with(Path(filename), derived_ext))
             else:
                 print(archive_file(Path(filename)))
-        except (FileNotFoundError, ValueError) as e:
+        except (FileNotFoundError, ValueError, PermissionError) as e:
             logger.error("%s", e)
 
 
