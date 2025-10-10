@@ -5,6 +5,7 @@
 
 webchat-user() {
 	local nsfw= n=   # enable nsfw for a user; list nsfw users only; 0 to list sfw users only
+	local preference= p= # preferred assistant gender (m/f/o)
 
 	eval "$(ally)"
 
@@ -59,6 +60,21 @@ add-user() {
 	# can't start with -, a safety feature for me not typing -n in the wrong place!
 	if [[ "$user" == -* ]]; then
 		die "Username cannot start with a dash"
+	fi
+
+	if [ -z "$preference" ]; then
+		while true; do
+			read -r -p "Preferred assistant gender (m/f/o): " preference
+			case "$preference" in
+				m|f|o) break;;
+				*) echo >&2 "Invalid choice, please enter m, f, or o."
+			esac
+		done
+	else
+		case "$preference" in
+			m|f|o) ;;
+			*) die "Invalid gender preference '$preference'. Must be m, f, or o."
+		esac
 	fi
 
 	if [ -n "$user" ] && nsfw= list-users | grep -q "^$user$"; then
@@ -118,10 +134,10 @@ END
 
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	if ((nsfw)); then
-		cp ../rooms.dist/mission.m.nsfw rooms/"$user"/mission.m
 		cp ../rooms.dist/access_nsfw.yml rooms/"$user"/.access.yml
+		_set_user_mission_file "$user" nsfw "$preference"
 	else
-		cp ../rooms.dist/mission.m.sfw rooms/"$user"/mission.m
+		_set_user_mission_file "$user" sfw "$preference"
 	fi
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
@@ -172,14 +188,16 @@ END
 		name:	$user
 		status:	active
 		btime:	$btime
+		nsfw:	${nsfw:-0}
+		preference:	$preference
 		email:	$email
 		reddit:	$reddit
 		discord:	$discord
 		facebook:	$facebook
-		agents:	
+		agents:
 		contact:	$contact_other
-		notes:	
-		
+		notes:
+
 	END
 	chmod o-rwx static/users/"$user"/info.rec
 
@@ -291,17 +309,59 @@ list-users() {
 	esac
 }
 
+_set_user_mission_file() {
+	local user=$1
+	local type=$2 # sfw or nsfw
+	local preference=$3
+	local verbose=${4:-} # pass "-v" for verbose
+
+	local preference_suffix
+	case "$preference" in
+	m) preference_suffix="male" ;;
+	f) preference_suffix="female" ;;
+	o) preference_suffix="other" ;;
+	*)
+		echo >&2 "Warning: invalid gender preference '$preference' for user $user. Using female assistant."
+		preference_suffix="female"
+		;;
+	esac
+
+	local mission_file="$ALLEMANDE_HOME/rooms.dist/mission.m.$type.$preference_suffix"
+	local mission_path="$ALLEMANDE_ROOMS/$user/mission.m"
+
+	cp $verbose "$mission_file" "$mission_path"
+}
+
+_update_user_mission() {
+	local user=$1
+	local type=$2 # sfw or nsfw
+
+	local preference=f # default to female
+	local user_info_file="$ALLEMANDE_USERS/$user/info.rec"
+	if [ -f "$user_info_file" ]; then
+		local pref_from_file
+		pref_from_file=$(awk '/^preference:/ {print $2}' "$user_info_file")
+		if [ -n "$pref_from_file" ]; then
+			preference="$pref_from_file"
+		fi
+	else
+		echo >&2 "Warning: $user_info_file not found for user $user. Using default preference 'f'."
+	fi
+
+	_set_user_mission_file "$user" "$type" "$preference" -v
+}
+
 update-missions() {
 	nsfw=0 list-users |
 	while read -r user; do
 		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
-		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.sfw "$ALLEMANDE_ROOMS/$user/mission.m"
+		_update_user_mission "$user" sfw
 	done
 
 	nsfw=1 list-users |
 	while read -r user; do
 		[ -e "$ALLEMANDE_ROOMS/$user/mission.m" ] || continue
-		cp -v "$ALLEMANDE_HOME"/rooms.dist/mission.m.nsfw "$ALLEMANDE_ROOMS/$user/mission.m"
+		_update_user_mission "$user" nsfw
 	done
 }
 
@@ -309,4 +369,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	webchat-user "$@"
 fi
 
-# version: 0.1.55
+# version: 0.1.57
