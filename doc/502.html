@@ -16,6 +16,7 @@ html, body {
 	align-items: center;
 	justify-content: space-between;
 	box-sizing: border-box;
+	color: #777
 }
 
 body {
@@ -41,5 +42,11 @@ h2 {
 <img alt="FIRE DISASTER" src="/502.jpg">
 <p>Service interruptions typically last only a few seconds. If you experience persistent or frequent disruptions, please contact us.</p>
 <h2 onclick="location.reload()">reload to try again</h2>
+<script src="/config.js"></script>
+<script>
+  const inIframe = window.parent !== window.self;
+  if (inIframe)
+    window.parent.postMessage({ type: "ready" }, ALLYCHAT_CHAT_URL);
+</script>
 </body>
 </html>
