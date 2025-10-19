@@ -1,6 +1,7 @@
 base: SmallAI
-over:
-  - Patreon
+# over:
+#   - +
+#   - Patreon
 system_bottom: |-
   +
 

@@ -1,4 +1,6 @@
-base: SmallAIAlpha
+# base: SmallAIAlpha
+base: SmallAI
+# base: Claudine
 system_bottom: |-
   +
 
