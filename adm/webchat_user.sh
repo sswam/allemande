@@ -81,18 +81,10 @@ add-user() {
 		die "User $user already exists"
 	fi
 
-	local start_nsfw patreon_links
+	local patreon_links
+	patreon_links="- https://www.patreon.com/allychat"
 	if ((nsfw)); then
-		start_nsfw="
-For NSFW content:
-
-5. Please join the NSFW group chat: https://chat.allemande.ai/#nsfw/nsfw
-6. Do not upload or generate illegal content, i.e. CSAM or NCII.
-7. NSFW features also work in private chat.
-"
-		patreon_links=$'- https://www.patreon.com/allychat (SFW)\n- https://www.patreon.com/allychatx (NSFW)'
-	else
-		patreon_links="- https://www.patreon.com/allychat"
+		patreon_links+=$'\n- https://www.patreon.com/allychatx (NSFW)'
 	fi
 
 	change-password "$user" |
@@ -100,28 +92,41 @@ For NSFW content:
 		cat <<END
 === Welcome to Ally Chat! ===
 
-Log in at https://$ALLEMANDE_DOMAIN
-Username: $user
-Password: $pass
+https://$ALLEMANDE_DOMAIN
+User: $user
+Pass: $pass
 
+Please save this message, e.g. email it to yourself!
 
 === Getting Started ===
 
-1. You start in "simple mode", and in private chat.
-2. You can join group chat: https://chat.allemande.ai/#Ally+Chat
-3. For advanced mode, reload and read the placeholder text!
-4. Press the '?' button, read the Intro, and try the AI Help.
-$start_nsfw
+- Observe the one rule: Keep it legal.
+- Explore chat with your first AI.
+- Reload to read the message about options.
+- Try advanced mode with the light bulb!
+- Press ? and read the intro.
+- On mobile, install to home page: feels better.
 
-=== Beta Program ===
+=== Please Contribute! ===
 
-- In advanced mode, Ally Chat is a complex power tool.
-- You are responsible for your own safety and behaviour.
-- I can give you a demo in the app, to help you get started.
-- Please participate in group chats, and give feedback.
-- You can support us on Patreon if you like the app.
+- Join group chats
+- or Share your work
+- or Give feedback
+- or Join our Patreon.
+
+=== Patreon ===
 
 $patreon_links
+
+=== Terms of Use ===
+
+You are responsible for your own safety and behaviour in Ally Chat.
+
+By using Ally Chat, you agree to follow the above rather than going wild and causing a lot of mess for me to clean up before you even found the intro!
+
+The "keep it legal" rule is important: do not try to create underage or deepfake NSFW images.
+
+Please confirm that you agree! :)
 END
 	done
 
@@ -130,7 +135,7 @@ END
 	mkdir -p static/users/"$user"
 	touch static/users/"$user"/styles.css
 	touch static/users/"$user"/script.js
-	ln -sf ../../themes/dark.css static/users/"$user"/theme.css
+	ln -sf ../../themes/night.css static/users/"$user"/theme.css
 
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	if ((nsfw)); then
