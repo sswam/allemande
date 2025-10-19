@@ -7,37 +7,40 @@ AGENTS_PATHS_NSFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! 
 AGENTS_DIRS_SFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'nsfw' -printf "%f\n")
 AGENTS_DIRS_NSFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'toon' -printf "%f\n")
 
+# HELP_MODEL := flashi
+# HELP_MODEL_NSFW := flashi
+
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb help.md nsfw/help.md  # agent_colours.css
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb # help.md nsfw/help.md agent_colours.css
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 	rm -f $@
 	cat $^ >$@
 	chmod a-w $@
 
-guide.1.md: guide.md extra.md
-	rm -f $@
-	cat $^ >$@
-	chmod a-w $@
+# guide+extra.md: guide.md extra.md
+# 	rm -f $@
+# 	cat $^ >$@
+# 	chmod a-w $@
 
-help.md: guide.md
-	rm -f $@
-	summary -m=flashi -p="Please summarize the user guide for an AI to offer online help, include all features, concise names and details of all models, and select agents, tools and characters, all UI icons, avoid repetition or superfluous language" <$< >$@
-	chmod a-w $@
-
-nsfw/help_nsfw.md: nsfw/guide_nsfw.md
-	rm -f $@
-	summary -m=flasho -p="Please summarize the NSFW user guide for an AI to offer online help, include all features and details, avoid repetition or superfluous language" <$< >$@
-	chmod a-w $@
-
-nsfw/help.md: help.md nsfw/help_nsfw.md
-	rm -f $@
-	cat help.md >$@
-	echo >>$@
-	cat nsfw/help_nsfw.md >>$@
-	chmod a-w $@
+# help.md: guide.md prompt_help.txt
+# 	rm -f $@
+# 	process -m=$(HELP_MODEL) "$$(<prompt_help.txt)" <$< >$@
+# 	chmod a-w $@
+#
+# nsfw/help_nsfw.md: nsfw/guide_nsfw.md prompt_help_nsfw.txt
+# 	rm -f $@
+# 	process -m=$(HELP_MODEL_NSFW) "$$(<prompt_help_nsfw.txt)" <$< >$@
+# 	chmod a-w $@
+#
+# nsfw/help.md: help.md nsfw/help_nsfw.md
+# 	rm -f $@
+# 	cat help.md >$@
+# 	echo >>$@
+# 	cat nsfw/help_nsfw.md >>$@
+# 	chmod a-w $@
 
 extra.md: $(AGENTS_PATHS_SFW)
 	@echo "# Extra Characters" >$@
@@ -73,7 +76,7 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	rm -f $@ ../rooms/intro.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
-../rooms/guide.bb: guide.md  # guide.1.md
+../rooms/guide.bb: guide.md  # guide+extra.md
 	rm -f $@ ../rooms/guide.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@) &
 
@@ -113,7 +116,7 @@ agent_colours.tsv: summaries.md
 	./update_colours.sh
 	cp agent_colours.tsv ~/my/allemande/agent_colours.tsv  # XXX
 
-# agent_colours.css: agent_colours.tsv
-# 	<$< ./agent_colours_tsv_to_css.py >$@
+agent_colours.css: agent_colours.tsv
+	<$< ./agent_colours_tsv_to_css.py >$@
 
 .PHONY: default up

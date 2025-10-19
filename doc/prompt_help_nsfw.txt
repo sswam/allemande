@@ -1,0 +1,7 @@
+Please revise and slightly compact the Ally Chat NSFW user guide, for an AI to offer online help efficiently. Don't summarize it, just trim the fat please.
+
+IMPORTANT: Include ALL features and details.
+
+It's important to include info for new users, on the main nsfw public room, different ways to navigate to it, and how to get back to private chat. But do not neglect other info either!
+
+The output should be lengthy and detailed, sufficient as a concise user guide, as it's the main source of AI help on NSFW features for users in the app! Please don't leave out important details.

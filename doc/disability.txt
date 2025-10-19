@@ -1,0 +1,29 @@
+# User Disabilities Requiring Special Support in AI Chat Web Apps
+
+Beyond vision/blindness, several disabilities require special consideration:
+
+## Sensory Disabilities
+- **Low vision**: Need for scalable text, high contrast options, and compatibility with screen magnifiers
+- **Color blindness**: Avoiding color-only information cues, using patterns and labels
+- **Deafness/hearing impairment**: Captions for any audio content, visual alternatives to audio cues
+
+## Motor Disabilities
+- **Limited dexterity/mobility**: Support for keyboard-only navigation, large click targets
+- **Tremors**: Forgiving input systems, error tolerance, undo functions
+- **Paralysis**: Compatibility with specialized input devices, eye-tracking, voice control
+
+## Cognitive Disabilities
+- **Dyslexia**: Readable fonts, clear spacing, text-to-speech options
+- **ADHD**: Minimal distractions, clear visual hierarchy, progress indicators
+- **Learning disabilities**: Simple language, consistent layouts, step-by-step guidance
+- **Memory impairments**: Persistent chat history, reminders about context
+
+## Speech/Language Disabilities
+- **Speech disorders**: Alternative text-based input methods
+- **Language processing disorders**: Simple language options, longer timeouts for responses
+- **Non-native language users**: Translation options, multilingual support
+
+## Temporary Disabilities
+- **Situational limitations**: Mobile-friendly design for one-handed use, voice input options
+
+Following WCAG guidelines and implementing a strong accessibility foundation benefits all users.

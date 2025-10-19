@@ -66,18 +66,17 @@ Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 
 ### Work in Progess
 
-- **Storage**: We back up all chat and images, however the server has limited space. Images more than 7 days old might be removed. Save what you want to keep, or contact the developer to recover older images from the backup. We are working to fix this issue.
-- **Immersion**: The step-by-step method we use for image generation can break immersion. We have some ideas to address this.
+- **Image Processing**: We don't have img2img, face transfer, or LoRA training functions yet. The AIs can look at reference images for ideas if vision is enabled.
+- **Document Processing**: We are working on document conversion, vector embedding indexes and RAG to efficiently handle PDF documents and the like. It's not done yet.
+- **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually by asking Summi or another summary agent to make a summary, then pasting into a new chat, a mission file, or an agent character sheet.
 - **Notifications**: We're working on AI initiative and notifications, it's not done yet.
 - **Voice Chat**: Voice chat is under development, it's going to be good!
-- **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually by asking Summi or another summary agent to make a summary, then pasting into a new chat, a mission file, or an agent character sheet.
-- **Document Processing**: We are working on document conversion, vector embedding indexes and RAG to efficiently handle PDF documents and the like. It's not done yet.
-- **Image Processing**: We don't have an img2img function yet, but the AIs can look at reference images for ideas if vision is enabled.
 
 ### Future Directions
 
 - **Private Messaging**: We don't yet have a direct messaging feature
-- **Video Generation**: We don't have AI video generation yet
+- **Video Generation**: We may be able to interleave long-running processes such as video generation with other GPU workload.
+- **Scalability**: Users can volunteer their idle GPU resources to support the service
 
 ## Learning about Ally Chat
 
@@ -622,6 +621,36 @@ digraph Mistral {
 }
 ```
 
+### MoonshotAI Models
+
+```dot
+digraph MoonshotAI {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#B19CD9", fontname="Helvetica"]
+
+    "MoonshotAI" [label=<<b>MoonshotAI</b>>]
+    "Kimi" [label=<<b>Kimi</b><br/><font point-size="10">Kimi K2 0905</font><br/><font point-size="8">262K context</font><br/><font point-size="8">General, reasoning</font>>]
+
+    "MoonshotAI" -> "Kimi"
+}
+```
+
+### Z.AI Models
+
+```dot
+digraph ZAI {
+    graph [bgcolor=transparent]
+    edge [color="#CCCCCC"]
+    node [shape=box, style=filled, fillcolor="#A7C7E7", fontname="Helvetica"]
+
+    "Z.AI" [label=<<b>Z.AI</b>>]
+    "GLM" [label=<<b>GLM 4.6</b><br/><font point-size="10">Glimi</font><br/><font point-size="8">205K context</font><br/><font point-size="8">Reasoning, coding</font>>]
+
+    "Z.AI" -> "GLM"
+}
+```
+
 ### Stable Diffusion Art Models
 
 ```dot
@@ -941,11 +970,13 @@ type: visual
 | Creator       | Model                 | Name    | Context | Max Output    | Input Price / M | Output Price / M | Description                                                                                                      |
 |---------------|-----------------------|---------|---------|---------------|-----------------|------------------|------------------------------------------------------------------------------------------------------------------|
 | Meta          | Llama 3.1 8B          | Ally*   | 4K      | 4K            | N/A             | N/A              | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
+| Meta          | Llama 3.3 70B         | Ellyn   | 128K    | 2048          | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                          |
 | Meta          | Llama 4 Scout         | Skout   | 512K    | 512K          | N/A             | N/A              | A fast new open model from Meta.                                                                                 |
 | Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
 | Anthropic     | Claude 3.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
 | Anthropic     | Claude 3.5 Sonnet     | Claude  | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's powerful and reliable model.                                                                         |
-| Anthropic     | Claude 4.5 Sonnet     | Clauden | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                              |
+| Anthropic     | Claude 3.7 Sonnet     | Claudia | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's powerful model, good for creative role-play.                                                         |
+| Anthropic     | Claude 4.5 Sonnet     | Clauden | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                                     |
 | Anthropic     | Claude 4.1 Opus       | Claudo  | 200K    | 8K / 128K [1] | $15.00          | $75.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K            | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
 | Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
@@ -973,6 +1004,8 @@ type: visual
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Mistral       | Mistral Large 2411    | Misti   | 128K    | 128K          | $2              | $6               | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
 | Mistral+      | Venice: Uncensored    | Veni    | 33K     | 33K           | $0.50           | $2               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.                                              |
+| MoonshotAI    | Kimi K2 0905          | Kimi    | 262K    | 262K          | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
+| Z.AI          | GLM 4.6               | Glimi   | 205K    | 205K          | $0.50           | $1.90            | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.                        |
 
 * The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cloe, etc.
 
@@ -1043,7 +1076,6 @@ Features marked WIP are not visible in the app yet.
 | Icon | Shortcut | Name | Description |
 |------|----------|------|-------------|
 | <i class="bi-lock"></i> <i class="bi-unlock"></i> * |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
-| <i class="bi-explicit"></i> |  | NSFW | Go to main public NSFW room nsfw/nsfw (visible when enabled for the user, unless declined) |
 | <i class="bi-compass"></i> |  | Nav | Navigation menu |
 | <i class="bi-arrow-left-right"></i> | | Pages | Pages menu |
 | <i class="bi-file-text"></i> |  | Room Ops | Rename or copy a room |
