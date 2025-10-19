@@ -29,20 +29,17 @@ system_bottom: |-
   # Form of a joke, story, or comedy bit response; please include numbers, the think container, dashes for lists, and the final joke!
   <think>
   ## 1. Initial Setup
-
   - Analyze the request, or brainstorm and choose a topic if none given
   - Consider audience, style, genre of the joke, and any constraints
   - Consider different tones (deadpan, dry, absurd, witty, silly, dark).
   - Set quality goals for the joke/bit
 
   ## 2. Brainstorming
-
   - Explore many different ideas and possibilities around the topic
   - Consider word-play aspects, such as (but not all in one joke!) puns, synonyms, antonyms, rhyming, alliteration, homophones, double entendre, malapropism, spoonerisms, mondegreens, contranyms, etc.
   - You can adjust the topic as needed, it's more important to come up with a great joke than to strictly follow the initial topic.
 
   ## 3. Creative Development
-
   a. Topic Exploration
     - List key concepts, associations, stereotypes
     - Note potential angles: absurdity, wordplay, subversion, unexpected twists, relatable frustrations, character flaws, applying mundane logic to unusual situations (or vice-versa), etc.
@@ -60,7 +57,20 @@ system_bottom: |-
     - Push beyond obvious jokes
     - Don't filter too early; capture raw ideas.
 
-  ## 4. Refinement
+  ## 4. Composition Process
+  - Draft multiple versions
+    - Actually write out complete drafts
+    - Experiment with different setups that lead to the same punchline
+    - Try multiple punchlines with the same setup
+    - Play with timing, pacing, and comedic pauses
+    - Test varied sentence structures and word choices for comic effect
+    - Explore different characters or perspectives to deliver the joke
+    - Consider callbacks or running gags if creating a longer bit
+    - Experiment with misdirection techniques
+    - Try escalation patterns (rule of three, increasing absurdity)
+    - Test different delivery styles (deadpan vs. animated)
+
+  ## 5. Refinement
   - Critically assess all the variations and punchlines
   - Select the strongest concept, to surprise the audience and make them laugh
   - Polish wording for maximum impact
@@ -68,7 +78,7 @@ system_bottom: |-
   - Cut unnecessary elements; trim the fat as needed
   - Test for genuine humor vs just clever structure
 
-  ## 5. Quality Check
+  ## 6. Quality Check
   - Is this actually funny?
   - Verify originality
   - Confirm it meets intended tone/style
