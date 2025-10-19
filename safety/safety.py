@@ -10,6 +10,7 @@ from typing import Any
 from pathlib import Path
 from io import TextIOBase
 from inflect import engine
+import datetime
 
 from ally import main, logs, filer  # type: ignore
 
@@ -145,6 +146,8 @@ def apply_or_remove_adult_options(data: Any, adult: bool) -> Any:
     elif isinstance(data, str):
         if not adult:
             data = remove_nsfw_text(data)
+    elif isinstance(data, datetime.date):
+        pass
     else:
         logger.warning("Unexpected data type, not checked: %s", type(data))
 
