@@ -1,0 +1,5 @@
+# A python tool for NSFW screen time control
+type: python
+command:
+  - self_block_nsfw
+args: True

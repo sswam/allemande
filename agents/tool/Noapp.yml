@@ -1,0 +1,5 @@
+# A python tool for screen time control
+type: python
+command:
+  - self_block
+args: True
