@@ -1833,6 +1833,8 @@ async function upload_files(files, to_text) {
     promises.push(upload_file(file, file.name, to_text));
   }
 
+  set_controls();
+
   // TODO messing with the textarea value kills undo
 
   // make sure the message content ends with whitespace

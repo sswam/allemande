@@ -1502,3 +1502,7 @@ body:not(.simple) .message.last {
 	box-shadow: 0 -0.125rem 0 0 var(--primary);
 	width: 100%;
 }
+
+/* favourite colours for annoying users! ---------------------------------- */
+
+.message[user="Ganja"] .label { color: hsl(120, 100%, 30%) !important; }; body.dark .message[user="Ganja"] .label { color: hsl(120, 100%, 70%) !important; }
