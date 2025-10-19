@@ -32,7 +32,7 @@ monitor() {
   local dns_days= D=14          # days before DNS expiry warning
   local ssl_days= S=14          # days before SSL expiry warning
   local config= c=              # load config from file
-  local daily= y=1              # do daily checks
+  local daily= y=0              # do daily checks
 
   eval "$(ally)"
 
