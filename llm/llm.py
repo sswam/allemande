@@ -26,6 +26,7 @@ import textwrap
 import asyncio
 import json
 import io
+from copy import deepcopy
 
 from argh import arg
 import tab
@@ -116,6 +117,14 @@ default_model_small = "gemini-2.0-flash"
 
 # Define available models and their properties
 MODELS = {
+    "glm-4.6": {
+        "aliases": ["glm", "glm4.6"],
+        "vendor": "openrouter",
+        "id": "z-ai/glm-4.6",
+        "description": "Z.AI's GLM 4.6 model, with 200K context window and improved reasoning, coding, and agent capabilities.",
+        "cost_in": 0.50,
+        "cost_out": 1.75,
+    },
     "gpt-5": {
         "aliases": ["5", "heisen"],
         "vendor": "openai",
@@ -149,6 +158,18 @@ MODELS = {
         "temp_min": 1,
         "temp_max": 1,
     },
+    # Needs a different "responses API" or something, YAGNI
+    # "gpt-5-pro": {
+    #     "aliases": ["heisenberg"],
+    #     "vendor": "openai",
+    #     "vision": True,
+    #     "description": "OpenAI's GPT-5-pro is the smartest and most precise model from OpenAI.",
+    #     "cost_in": 15,
+    #     "cost_out": 120,
+    #     "no_stop": True,
+    #     "temp_min": 1,
+    #     "temp_max": 1,
+    # },
     "gpt-oss-120b": {
         "aliases": ["goss"],
         "vendor": "openrouter",
@@ -235,6 +256,14 @@ MODELS = {
         "vision": True,
         "id": "claude-3-5-sonnet-latest",
         "description": "Claude 3.5 Sonnet is Anthropic's strong and reliable model.",
+        "cost_in": 3,
+        "cost_out": 15,
+    },
+    "claude-3.7": {
+        "vendor": "anthropic",
+        "vision": True,
+        "id": "claude-3-7-sonnet-latest",
+        "description": "Claude 3.7 Sonnet is strong at role-playing.",
         "cost_in": 3,
         "cost_out": 15,
     },
@@ -523,6 +552,14 @@ MODELS = {
         "cost_in": 0.5,
         "cost_out": 2,
     },
+    "kimi": {
+        "aliases": ["kimi-k2"],
+        "vendor": "openrouter",
+        "id": "moonshotai/kimi-k2-0905",
+        "description": "MoonshotAI: Kimi K2 0905",
+        "cost_in": 0.39,
+        "cost_out": 1.9,
+    }
 }
 
 

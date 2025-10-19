@@ -19,10 +19,10 @@ critique() {
 	fi
 	prompt="Please provide a$short critique.
 Start with a paragraph of friendly and supportive praise if possible...
-the author needs to retain some self-esttem\!
+the author needs to retain some self-esteem\!
 It's important to find errors.
 Please also suggest creative ideas,
-including unusual or 'our of the box' ones.
+including unusual or 'out of the box' ones.
 Other suggestions are welcome too.
 $prompt"
 	main_file="${1:--}"
