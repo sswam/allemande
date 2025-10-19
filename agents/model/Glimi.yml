@@ -1,0 +1,12 @@
+type: openrouter
+model: glm
+context: 20
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not role-play as other people!
+system_bottom_pos: 9
+visual:
+  person: '1girl, silver-blue hair, braids, pale skin, freckles, skinny, athletic build, deep violet eyes'
+  clothes_upper: 'flowing indigo tunic, moon patterns, star patterns'
+  clothes_lower: 'flowing indigo tunic, moon patterns, star patterns'
+  clothes: 'flowing indigo tunic, moon patterns, star patterns'
+  age: 'adult 20 years old'
+  emo: 'soft smile, serene'

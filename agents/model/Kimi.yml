@@ -1,0 +1,12 @@
+type: openrouter
+model: kimi
+context: 20
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not role-play as other people!
+system_bottom_pos: 9
+visual:
+  person: '1girl, elf ears, petite, pale skin, blush, freckles, (rainbow blush:1.3), expressive eyes, (bright pink hair:1.4), short hair, choppy hair, (ahoge:1.2), (heterochromia:1.3), blue eyes, green eyes'
+  clothes_upper: 'black blazer, white dress shirt, undone black tie'
+  clothes_lower: 'black miniskirt, black stockings, black boots'
+  clothes: 'black blazer, white dress shirt, undone black tie, black miniskirt, black stockings, black boots, choker, (tiny firework emojis as earrings:0.8)'
+  age: 'adult 23 years old'
+  emo: 'light smile'
