@@ -79,7 +79,7 @@ class Room:
         """
         access = self.check_access(user).value
         if not access & Access.WRITE.value:
-            raise PermissionError("You are not allowed to post to this room.")
+            raise PermissionError(f"You are not allowed to post to this room: {self.name}, user: {user}")
 
         # support narration by moderators
         if content.startswith("--") and access & Access.MODERATE.value == Access.MODERATE.value:
@@ -129,7 +129,7 @@ class Room:
 
         if op == "archive":
             if not access & Access.MODERATE.value == Access.MODERATE.value:
-                raise PermissionError("You are not allowed to archive this room.")
+                raise PermissionError(f"You are not allowed to archive this room: {self.name}, user: {user}")
             # run room-archive script with room name
             # TODO in Python
             subprocess.run(["room-archive", self.name], check=True)
@@ -141,7 +141,7 @@ class Room:
         elif op == "clear":
             # if not access & Access.ADMIN.value == Access.ADMIN.value:
             if not access & Access.MODERATE.value == Access.MODERATE.value:
-                raise PermissionError("You are not allowed to clear this room.")
+                raise PermissionError(f"You are not allowed to clear this room: {self.name}, user: {user}")
             if backup:
                 backup_file(str(self.path))
             # If there is a base file, copy it to the room
@@ -161,7 +161,7 @@ class Room:
             await self.clean(user)
         elif op == "render":
             if not access & Access.MODERATE.value == Access.MODERATE.value:
-                raise PermissionError("You are not allowed to re-render this room.")
+                raise PermissionError(f"You are not allowed to re-render this room: {self.name}, user: {user}")
             content = self.path.read_text(encoding="utf-8")
             await overwrite_file(user, self.name + EXTENSION, content, delay=0.2, noclobber=False)
         else:
@@ -175,10 +175,10 @@ class Room:
 
         access = self.check_access(user).value
         if n > 1 and not access & Access.ADMIN.value == Access.ADMIN.value:
-            raise PermissionError("You are not allowed to undo multiple messages in this room.")
+            raise PermissionError(f"You are not allowed to undo multiple messages in this room: {self.name}, user: {user}")
 
         if not access & Access.MODERATE.value == Access.MODERATE.value:
-            raise PermissionError("You are not allowed to undo messages in this room.")
+            raise PermissionError(f"You are not allowed to undo messages in this room: {self.name}, user: {user}")
 
         count_bytes = 0
         for line in tac(self.path, binary=True, keepends=True):
@@ -231,7 +231,7 @@ class Room:
         """Clean up the room, removing specialist messages"""
         access = self.check_access(user).value
         if not access & Access.MODERATE.value == Access.MODERATE.value:
-            raise PermissionError("You are not allowed to clean this room.")
+            raise PermissionError(f"You are not allowed to clean this room: {self.name}, user: {user}")
         messages = load_chat_messages(self.path)
         # TODO don't hard-code the agent names!!!
         # TODO it would be better to do this as a view
@@ -327,7 +327,7 @@ class Room:
         """Get the options for a room."""
         access = self.check_access(user).value
         if not access & Access.READ.value:
-            raise PermissionError("You are not allowed to get options for this room.")
+            raise PermissionError(f"You are not allowed to get options for this room: {self.name}, user: {user}")
         if self.path.is_symlink():
             target = self.path.resolve().relative_to(ROOMS_DIR)
             if target.suffix == EXTENSION:
@@ -335,7 +335,7 @@ class Room:
             room2 = Room(str(target))
             access = room2.check_access(user).value
             if not access & Access.READ.value:
-                raise PermissionError("You are not allowed to get options for this room.")
+                raise PermissionError(f"You are not allowed to get options for this room: {self.name}, user: {user}")
             return {"redirect": str(target)}
         options_file = self.find_resource_file("yml", "options")
         options = {}
@@ -350,7 +350,7 @@ class Room:
         """Set the options for a room."""
         access = self.check_access(user).value
         if not access & Access.MODERATE.value == Access.MODERATE.value:
-            raise PermissionError("You are not allowed to set options for this room.")
+            raise PermissionError(f"You are not allowed to set options for this room: {self.name}, user: {user}")
         options_file = self.find_resource_file("yml", "options", create=True)
 
         # access control for mission option: user setting the mission must have access to the resolved mission file
@@ -387,7 +387,7 @@ class Room:
         """Get the last room number."""
         access = check_access(user, str(self.parent)+"/").value
         if not access & Access.READ.value:
-            raise PermissionError("You are not allowed to get the last room number.")
+            raise PermissionError(f"You are not allowed to get the last room number: {self.name}, user: {user}")
 
         # chop off any number
         name = self.name
@@ -431,7 +431,7 @@ def check_access(user: str | None, pathname: Path | str) -> Access:
         access, _reason = _check_access_2(user, pathname)
     except PermissionError as _e:
         access, _reason = Access.NONE, "PermissionError"
-    logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
+    # logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
 
     # experiment: allow anyone who can write to moderate
     if access.value & Access.WRITE.value:
@@ -517,7 +517,7 @@ def _check_access_2(user: str | None, pathname: str) -> tuple[Access, str]:
     ):
         return result
 
-    logger.info("path %r st_mode %o", path, file_status.stats.st_mode if file_status.stats else None)
+    # logger.info("path %r st_mode %o", path, file_status.stats.st_mode if file_status.stats else None)
     return _check_default_public_access(file_status.stats.st_mode)
 
 

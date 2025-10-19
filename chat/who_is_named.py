@@ -270,11 +270,14 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
             result.append(user)
         else:
             logger.info("checking access for %r", agent)
-            if filter_access([agent], room, access_check_cache, agent_name_map):
-                logger.info("access granted for %r", agent)
-                result.append(agent)
+            the_agent = agents.get(agent.lstrip("@"))
+            if the_agent is None:
+                logger.info("unknown agent %r, skipping access check", agent)
+            elif filter_access([the_agent.name], room, access_check_cache, agent_name_map):
+                logger.info("access granted for %r", the_agent.name)
+                result.append(the_agent.name)
             else:
-                logger.info("access denied for %r", agent)
+                logger.info("access denied for %r", the_agent.name)
 
     result = [x.lstrip("@") for x in result]
     if uniq:

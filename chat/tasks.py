@@ -25,11 +25,29 @@ def task_done_callback(task):
         logger.exception("Task failed", exc_info=True)
 
 
-async def wait_for_tasks():
-    """Wait for all active tasks to complete."""
+async def wait_for_tasks(timeout:float|None=None) -> bool:
+    """Wait for all active tasks to complete, or the timeout"""
     logger.info("Waiting for %d active tasks", len(active_tasks))
-    while active_tasks:
-        await asyncio.gather(*active_tasks.keys())
+
+    if not active_tasks:
+        return True
+
+    try:
+        # Create a list of tasks to wait for.
+        # FIXME: might not wait for any new tasks.
+        tasks_to_wait = list(active_tasks.keys())
+
+        # Wait for all tasks with timeout
+        if timeout is not None:
+            await asyncio.wait_for(asyncio.gather(*tasks_to_wait), timeout=timeout)
+        else:
+            await asyncio.gather(*tasks_to_wait)
+
+        return True
+
+    except asyncio.TimeoutError:
+        logger.warning(f"Timed out after {timeout} seconds while waiting for {len(active_tasks)} tasks")
+        return False
 
 
 def list_active_tasks():

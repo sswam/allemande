@@ -860,7 +860,7 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
     return response3
 
 
-async def run_python(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
+async def run_python(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
     """Run a python tool agent."""
     name = agent.name
     history_messages = list(bb_lib.lines_to_messages(history))
@@ -880,7 +880,7 @@ async def run_python(agent, query, file, args, history, history_start=0, mission
     # Prepare response formatting
     response = ""
     try:
-        result = function(agent, query, file, args, history, history_start, mission, summary, config, agents, responsible_human, direct)
+        result = function(agent, query, file, args, history, history_start, mission, summary, config, agents, responsible_human)
 
         # Handle the output
         if isinstance(result, str):

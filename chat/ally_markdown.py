@@ -824,7 +824,7 @@ def embed_youtube_links(text):
     #                   r'(?:youtube\.com/watch\?v=|youtu\.be/)' \
     #                   r'([a-zA-Z0-9_-]{11})' \
     #                   r'(?:[?&]([^"\s<]*))?'
-    youtube_pattern = r'(?<!")https://(?:www\.)?' \
+    youtube_pattern = r'(?<!")https://(?:www\.|music\.)?' \
                       r'(?:youtube\.com/watch\?v=|youtu\.be/)' \
                       r'([a-zA-Z0-9_-]{11})' \
                       r'(?:[?&]([^"\s<]*))?'

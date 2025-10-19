@@ -108,7 +108,7 @@ class Agent:
         if data:
             self.data = data
         if file:
-            self.load_agent(file)
+            self.load_agent()
         self.name = self.data["name"]
         self.private = private
         if private:
@@ -118,22 +118,50 @@ class Agent:
         if file and file.parent.name == "nsfw":
             self.data["adult"] = True
 
-    def load_agent(self, file: Path) -> None:
+    def load_agent(self) -> None:
         """Load the agent data from a file."""
-        name = file.stem
-        with open(file, encoding="utf-8") as f:
+        name = self.file.stem
+        with open(self.file, encoding="utf-8") as f:
             self.data = yaml.safe_load(f)
 
         if self.data is None:
-            raise ValueError(f"Agent file {file} is empty or invalid")
+            raise ValueError(f"Agent file {self.file} is empty or invalid")
 
         if self.data.get("enabled", True) is False:
-            raise NotEnabledError(f"Agent is not enabled: {file}")
+            raise NotEnabledError(f"Agent is not enabled: {self.file}")
 
+        # Type checking and cleaning for name, fullname and aliases
+        for key in ["name", "fullname"]:
+            if key not in self.data:
+                pass
+            elif self.data[key] is None:
+                del self.data[key]
+            else:
+                self.data[key] = self.convert_to_str(self.data[key], key)
+
+        if "aliases" in self.data and self.data["aliases"] is None:
+            del self.data["aliases"]
+
+        if "aliases" in self.data and not isinstance(self.data["aliases"], list):
+            self.data["aliases"] = [self.data["aliases"]]
+
+        if "aliases" in self.data:
+            self.data["aliases"] = [self.convert_to_str(alias, "aliases") for alias in self.data["aliases"] if alias is not None]
+
+        # Ensure the agent's name matches the filename
         if "name" not in self.data:
             self.data["name"] = name
         elif self.data["name"] != name:
             raise ValueError(f'Agent name mismatch: {name} vs {self.data["name"]}')
+
+    def convert_to_str(self, value, field):
+        """Convert numbers to strings, validate other types."""
+        if isinstance(value, (int, float)):
+            return str(value)
+        elif isinstance(value, str):
+            return value
+        else:
+            raise ValueError(f"Agent attribute must be a string or number: {field} in {self.file}")
 
     def to_yaml(self) -> str:
         """Return the agent data as a YAML string"""
@@ -586,7 +614,10 @@ class Agents:
             except NotEnabledError:
                 logger.info("Agent not enabled: %s", agent_file)
             except Exception:  # pylint: disable=broad-except
-                logger.exception("Error loading agent from %s", agent_file, exc_info=True)
+                logger.exception("Error loading agent, will try to fix: %s", agent_file, exc_info=True)
+                # TODO run the agent-fix 
+                # - if that already exists, stop
+                # run the
 
         # then set up and update visuals
         for agent in new_agents:

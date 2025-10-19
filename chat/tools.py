@@ -5,7 +5,7 @@ import ally_room
 import rag
 
 
-def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
+def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None) -> str:
     """Return a YAML definition for a python_tool agent, optionally filtered by grep pattern."""
 
     # Split args as agent names
@@ -43,7 +43,7 @@ def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, m
     return "\n\n".join(result)
 
 
-def python_tool_rag(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
+def python_tool_rag(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None) -> str:
     """Run RAG queries against a vector database."""
     # Split args
     args = query.strip().split()
@@ -102,7 +102,49 @@ def python_tool_rag(agent, query, file, args, history, history_start=0, mission=
         return f"Error accessing RAG database: {str(e)}"
 
 
+def python_tool_self_block(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, nsfw: bool=False) -> str:
+    """Enable a user to block themself from the app or from the NSFW zone and features, for a certain period of time."""
+
+    if responsible_human is None:
+        return "Error: unable to identify responsible user"
+
+    # Split args as agent names
+    time_spec = query.strip()
+
+    result: list[str] = []
+
+    result.append(f"Self-blocking {'NSFW features' if nsfw else 'the app'} for user {responsible_human}: {time_spec}")
+
+    # for name in args:
+    #     name = name.replace("_", " ")
+    #     agent = agents.get(name) if agents else None
+    #     if not agent:
+    #         result.append(f"Agent '{name}' not found")
+    #         continue
+
+    #     file_content = agent.get_file().rstrip()
+
+    #     # Apply grep filter if pattern specified
+    #     if grep_pattern:
+    #         filtered_lines = []
+    #         for line in file_content.split('\n'):
+    #             if re.search(grep_pattern, line):
+    #                 filtered_lines.append(line)
+    #         file_content = '\n'.join(filtered_lines)
+
+    #     result.append(file_content)
+
+    return "\n\n".join(result)
+
+
+def python_tool_self_block_nsfw(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None) -> str:
+    """Enable a user to block themself from the NSFW zone and features, for a certain period of time."""
+    return python_tool_self_block(agent, query, file, args, history, history_start, mission, summary, config, agents, responsible_human, nsfw=True)
+
+
 python_tools = {
     "agent_yaml": python_tool_agent_yaml,
     "rag": python_tool_rag,
+    "self_block": python_tool_self_block,
+    "self_block_nsfw": python_tool_self_block_nsfw,
 }
