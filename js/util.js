@@ -454,6 +454,22 @@ function shuf(array, random) {
 	return array;
 }
 
+function shuffle1(container, selector) {
+	// Shuffle child elements matching selector within container
+	const elements = Array.from(container.querySelectorAll(selector));
+	container.innerHTML = "";
+
+	for (const element of shuf(elements))
+		container.appendChild(element);
+}
+
+function shuffle(selector, item_selector) {
+	// Shuffle child elements matching item_selector within each container matching selector
+	const containers = Array.from(document.querySelectorAll(selector));
+	for (const container of containers)
+		shuffle1(container, item_selector);
+}
+
 // wait for ------------------------------------------------------------------
 
 async function wait_for(predicate, timeout) {

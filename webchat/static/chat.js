@@ -1189,12 +1189,8 @@ function set_title_hash(query, no_history) {
 function on_hash_change() {
   $title.innerText = query_to_title(hash_to_room(location.hash));
   let h = location.hash;
-  if (h == "" || h == "#") {
-    console.log("1:")
-    console.log(location)
-    console.log(location.hash)
+  if (h == "" || h == "#") 
     return go_home();
-  }
   if (h == "#~")
     h = "#" + PRIVATE_ROOM;
   if (h == "#-" && h != new_hash)
