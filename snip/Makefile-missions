@@ -1,0 +1,25 @@
+model=clauden
+
+langs = es it th fr
+
+sfw = sfw nsfw
+
+gender = female male other all
+
+mission_files_lote=$(foreach lang,$(langs),$(foreach adult,$(sfw),$(foreach gen,$(gender),mission.m.$(adult).$(gen).$(lang))))
+
+default:
+	@echo >&2 "Build files as needed for efficiency."
+
+all: $(mission_files_lote)
+.PHONY: all default
+
+# Build per-language targets separately to avoid multi-output pattern rule coalescing.
+# Using separate rules ensures each language target is built with its own recipe.
+define build_lang_rule
+%.$(1): %
+	@target="$$@"; lang="$(1)"; \
+	( echo "**IMPORTANT NOTE: This user prefers to speak $$LANGUAGE. Please always communicate with them in $$LANGUAGE, unless they request otherwise.**"; echo ; cat $$< ) | \
+	process -m=$(model) "Please translate for language code '$(1)', don't change any content or layout, no prelude or comment; just translate please and include the full language name in place of $$LANGUAGE." >"$$@"
+endef
+$(foreach L,$(langs),$(eval $(call build_lang_rule,$(L))))
