@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.8.925";
+const VERSION = "0.8.1019";
 
 const DEBUG = false;
 
@@ -16,6 +16,10 @@ const URLS_TO_CACHE = {
   "chat": [
     "/",
     "manifest.json",
+    "/start.html",
+    "/public_sfw.webp",
+    "/public_nsfw.webp",
+    "/private.webp",
     "/allychat.css",
     "/chat.css",
     "/icon.png",

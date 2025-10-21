@@ -1415,7 +1415,7 @@ sticky.moving {
 
 .fame {
 	animation: fameEffect 6s infinite linear;
-	opacity: 0.8;
+	/* opacity: 0.8; */
 	margin: 0 1rem;
 }
 
@@ -1506,3 +1506,10 @@ body:not(.simple) .message.last {
 /* favourite colours for annoying users! ---------------------------------- */
 
 .message[user="Ganja"] .label { color: hsl(120, 100%, 30%) !important; }; body.dark .message[user="Ganja"] .label { color: hsl(120, 100%, 70%) !important; }
+.message[user="Tasha"] .label { color: hsl(270, 60%, 40%) !important; }; body.dark .message[user="Tasha"] .label { color: hsl(270, 60%, 100%) !important; }
+
+/* hack to fix heading layout, IDK ---------------------------------------- */
+
+h1, h2, h3, h4, h5, h6 {
+	width: calc(100vw - 6 * var(--pad));
+}

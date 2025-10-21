@@ -7,7 +7,8 @@ const SITE_URL =
 const MAX_ROOM_NUMBER = 9999;
 const EXTENSION = ".bb";
 const CONFIRM_ARCHIVE = false;
-let DEFAULT_ROOM = PUBLIC_ROOM;
+let START_URL = "/start.html";
+let PRIVATE_ROOM = PUBLIC_ROOM; // will be updated below
 const HOLD_ALT = false;
 const SIMPLE_MODE_ENABLE = true;
 
@@ -173,9 +174,9 @@ async function load_beautiful_font() {
 
 const simple_welcome_show_background = true;
 
-function load_background_image(i) {
-
-}
+// function load_background_image(i) {
+//
+// }
 
 const simple_welcome_1 = [
   "Welcome, $user. How can I help you today?",
@@ -229,7 +230,7 @@ async function welcome() {
 
   for (let i = 0; i < visit; i++)
     rand();
-  
+ 
   welcome_message = m1;
   if (incognito || visit >= 5)
     if (rand() < 0.5)
@@ -922,12 +923,14 @@ function room_url() {
 async function setup_all_link_buttons() {
 //  setup_help_links();
   setup_user_button();
-  await setup_nav_buttons();
+  await setup_nav_buttons(); // also sets access_denied
   show_room_privacy();
 }
 
 function show_room_privacy() {
   const $privacy = $id("privacy");
+  if (access_denied && simple)
+    return go_home();
   if (access_denied) {
     $privacy.innerHTML = icons["access_denied"];
     $privacy.title = "denied";
@@ -1050,7 +1053,7 @@ function nav_click(ev) {
 function nav_up(ev) {
   let new_room;
   if (room == "/") {
-    new_room = DEFAULT_ROOM;
+    new_room = PUBLIC_ROOM;
   } else if (room.match(/\/$/)) {
     new_room = room.replace(/[^\/]*\/$/, "");
     if (new_room == "") {
@@ -1187,11 +1190,15 @@ function on_hash_change() {
   $title.innerText = query_to_title(hash_to_room(location.hash));
   let h = location.hash;
   if (h == "" || h == "#") {
-    h = "#" + DEFAULT_ROOM;
+    console.log("1:")
+    console.log(location)
+    console.log(location.hash)
+    return go_home();
   }
-  if (h == "#-" && h != new_hash) {
+  if (h == "#~")
+    h = "#" + PRIVATE_ROOM;
+  if (h == "#-" && h != new_hash)
     clear_messages_box();
-  }
   if (h != new_hash) {
     let query = hash_to_room(h);
     $room.value = query;
@@ -1210,7 +1217,8 @@ function hash_to_room(hash) {
 }
 
 function go_home() {
-  set_room(DEFAULT_ROOM);
+  // set_room(DEFAULT_ROOM);
+  window.location.replace(START_URL);
 }
 
 function change_room() {
@@ -1516,10 +1524,8 @@ function handle_message(ev) {
     return;
   }
 
-  if (ev.data.type == "go_home") {
-    go_home();
-    return;
-  }
+  if (ev.data.type == "go_home")
+    return go_home();
 
   if (ev.data.type == "new_message") {
     new_chat_message(ev.data.message);
@@ -1646,7 +1652,8 @@ function go_to_main_site() {
 
 async function authChat() {
   await $script("auth", ALLEMANDE_LOGIN_URL + "/auth.js");
-  $on($id("logout"), "click", logout_confirm);
+  if ($id("logout"))
+    $on($id("logout"), "click", logout_confirm);
   userData = getJSONCookie("user_data");
   if (!userData) {
     // console.log("going back to main site");
@@ -1680,7 +1687,7 @@ async function setup_nav_buttons() {
   const $nav_up = $id("nav_up");
   let room_up;
   if (room == "/") {
-    room_up = DEFAULT_ROOM;
+    room_up = PUBLIC_ROOM;
   } else if (room.match(/\/$/)) {
     room_up = room.replace(/[^\/]*\/$/, "");
     if (room_up == "") {
@@ -2452,16 +2459,17 @@ function setup_view_options() {
       view_options[key] = view_options_embed[key];
     }
   }
-  set_default_room();
+  // set_default_room();
+  PRIVATE_ROOM = user + "/chat";
   on_room_ready(view_options_apply);
 }
 
-function set_default_room() {
-  if (simple)
-    DEFAULT_ROOM = user + "/chat";
-  else
-    DEFAULT_ROOM = PUBLIC_ROOM;
-}
+// function set_default_room() {
+//   if (simple)
+//     DEFAULT_ROOM = user + "/chat";
+//   else
+//     DEFAULT_ROOM = PUBLIC_ROOM;
+// }
 
 function set_view_options(new_view_options) {
   for (const key of Object.keys(new_view_options))
@@ -2473,7 +2481,7 @@ function view_options_apply() {
   const type = get_file_type(room);
   simple = view_options.advanced < 0;
 
-  set_default_room();
+  // set_default_room();
 
   // temporarily avoid simple mode! XXX
   // if (view_options.advanced < 0)
@@ -3436,10 +3444,8 @@ export function nsfw_zone_set(accepted) {
     return localStorage.removeItem('nsfw_zone');
 
   localStorage.setItem('nsfw_zone', accepted);
-  if (accepted !== "1") {
-    // console.log("NSFW no");
+  if (accepted !== "1")
     return go_home()
-  }
 
   hide($id('nsfw-warning'));
 
@@ -3650,15 +3656,19 @@ export async function init() {
   user = auth.username;
   nsfw = auth.nsfw;
 
-  if (nsfw) {
+  if (nsfw)
     $body.classList.add("nsfw");
-    nsfw_zone_init();
-  }
   if (!isMobile)
     $body.classList.add("pc");
 
   if (iOS)
     document.body.classList.add("ios")
+
+  if (location.pathname === START_URL)
+    return;
+
+  if (nsfw)
+    nsfw_zone_init();
 
   setup_help();
   load_filter();

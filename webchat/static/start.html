@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ally Chat</title>
+<style>
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	background: black;
+}
+
+body {
+	font-size: max(16px, min(2vw, 2vh));
+	padding: 0.75rem;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+/* Default (2x2 grid layout, not in use) */
+.layout {
+	display: grid;
+	gap: 0.75rem;
+	width: 100%;
+	/* subtract body padding to avoid vertical overflow */
+	height: 100%;
+	max-height: 100%;
+	grid-template-columns: repeat(2, 1fr);
+	grid-auto-rows: 1fr;
+	align-items: stretch;
+	justify-items: stretch;
+}
+
+/* Vertical column layout for narrow screens (aspect ratio < 1:1) */
+@media (aspect-ratio <= 1/1) {
+	.layout {
+		grid-template-columns: 1fr;
+		grid-auto-rows: 1fr;
+	}
+}
+
+@media (aspect-ratio > 1/1) {
+	.layout {
+		grid-auto-flow: column;
+		grid-auto-columns: minmax(0, 1fr);
+	}
+}
+
+.chat-link {
+	display: block;
+	position: relative;
+	text-decoration: none;
+	min-width: 0;
+	min-height: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	flex-shrink: 1;
+}
+
+.chat-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	display: block;
+}
+
+.chat-label {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: rgba(0,0,0,0.7);
+	color: white;
+	padding: 5px 10px;
+	border-radius: 4px;
+}
+
+.disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+	/* TODO grey overlay */
+}
+
+a:not(.disabled) .chat-label .note {
+	display: none;
+}
+
+body:not(.nsfw) .nsfw {
+	display: none;
+}
+</style>
+</head>
+<body class="layout">
+<script src="util.js"></script>
+<script src="sw_register.js"></script>
+<script>register_service_worker();</script>
+<script src="config.js"></script>
+<script src="notify.js"></script>
+<script src="record.js"></script>
+<script src="resizer.js"></script>
+<script src="debug.js"></script>
+<script>
+$import("icons");
+$import("chat");
+</script>
+<a href="https://chat.allemande.ai/#Ally+Chat" class="chat-link" id="public-chat-link">
+	<img src="public_sfw.webp" class="chat-image" alt="Group Chat">
+	<span class="chat-label">Group Chat</span>
+</a>
+<a href="https://chat.allemande.ai/#nsfw/nsfw" class="chat-link nsfw" id="nsfw-chat-link">
+	<img src="public_nsfw.webp" class="chat-image" alt="Adult Chat">
+	<span class="chat-label">Adult Chat</span>
+</a>
+<a href="https://chat.allemande.ai/#~" class="chat-link" id="private-chat-link">
+	<img src="private.webp" class="chat-image" alt="Private Chat">
+	<span class="chat-label">Private Chat<span class="note">: join group chats first!</span></span>
+</a>
+
+<script>
+// "encourage" new users to join public chats!
+var STORAGE_KEY = 'chatClickStats.v1';
+var DEBOUNCE_MS = 60 * 60 * 1000;
+var INITIAL_PRIVATE_CHATS = 3;
+var REQUIRE_PUBLIC_CHATS = 3;
+
+function defaultState() {
+	return {
+		counts: { public: 0, nsfw: 0, private: 0 },
+		last:   { public: 0, nsfw: 0, private: 0 },
+		memoryOnly: false
+	};
+}
+
+function loadState() {
+	try {
+		var raw = localStorage.getItem(STORAGE_KEY);
+		if (!raw) return defaultState();
+		var parsed = JSON.parse(raw) || {};
+		return {
+			counts: Object.assign({ public: 0, nsfw: 0, private: 0 }, parsed.counts || {}),
+			last:   Object.assign({ public: 0, nsfw: 0, private: 0 }, parsed.last   || {}),
+			memoryOnly: false
+		};
+	} catch (e) {
+		// Fallback to in-memory state if localStorage is unavailable
+		var s = defaultState();
+		s.memoryOnly = true;
+		return s;
+	}
+}
+
+function saveState() {
+	if (state.memoryOnly) return;
+	try {
+		localStorage.setItem(STORAGE_KEY, JSON.stringify({ counts: state.counts, last: state.last }));
+	} catch (e) {
+		state.memoryOnly = true;
+	}
+}
+
+function getLinks() {
+	return {
+		public: document.getElementById('public-chat-link'),
+		nsfw: document.getElementById('nsfw-chat-link'),
+		private: document.getElementById('private-chat-link')
+	};
+}
+
+function totalPublicAndNsfw() {
+	return (state.counts.public || 0) + (state.counts.nsfw || 0);
+}
+
+function allowPrivateChat() {
+	return state.counts.private < INITIAL_PRIVATE_CHATS ||
+		totalPublicAndNsfw() >= REQUIRE_PUBLIC_CHATS;
+}
+
+function updatePrivateVisibility() {
+	if (!links.private) return;
+	links.private.classList.toggle('disabled', !allowPrivateChat());
+}
+
+function recordClick(type) {
+	var now = Date.now();
+	var last = state.last[type] || 0;
+
+	if (now - last >= DEBOUNCE_MS) {
+		state.counts[type] = (state.counts[type] || 0) + 1;
+		state.last[type] = now;
+		saveState();
+		updatePrivateVisibility();
+	}
+	// If within the debounce period, ignore (do not increment or update last)
+}
+
+function attachListeners() {
+	if (links.public) {
+		links.public.addEventListener('click', function () { recordClick('public'); }, { capture: true });
+	}
+	if (links.nsfw) {
+		links.nsfw.addEventListener('click', function () { recordClick('nsfw'); }, { capture: true });
+	}
+	if (links.private) {
+		links.private.addEventListener('click', function (ev) { recordClick('private'); }, { capture: true });
+		links.private.addEventListener('click', function (ev) {
+			if (!allowPrivateChat()) {
+				ev.preventDefault();
+				return false;
+			}
+		});
+	}
+}
+
+var state = loadState();
+var links;
+
+function init() {
+	// console.log("Loaded click stats:", state);
+	links = getLinks();
+	updatePrivateVisibility();
+	attachListeners();
+}
+
+init();
+</script>
+</body>
+</html>
