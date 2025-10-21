@@ -5,7 +5,7 @@ import ally_room
 import rag
 
 
-def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None) -> str:
+def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
     """Return a YAML definition for a python_tool agent, optionally filtered by grep pattern."""
 
     # Split args as agent names
@@ -43,7 +43,7 @@ def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, m
     return "\n\n".join(result)
 
 
-def python_tool_rag(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None) -> str:
+def python_tool_rag(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
     """Run RAG queries against a vector database."""
     # Split args
     args = query.strip().split()
@@ -102,7 +102,7 @@ def python_tool_rag(agent, query, file, args, history, history_start=0, mission=
         return f"Error accessing RAG database: {str(e)}"
 
 
-def python_tool_self_block(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, nsfw: bool=False) -> str:
+def python_tool_self_block(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False, nsfw: bool=False) -> str:
     """Enable a user to block themself from the app or from the NSFW zone and features, for a certain period of time."""
 
     if responsible_human is None:
@@ -137,9 +137,9 @@ def python_tool_self_block(agent, query, file, args, history, history_start=0, m
     return "\n\n".join(result)
 
 
-def python_tool_self_block_nsfw(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None) -> str:
+def python_tool_self_block_nsfw(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
     """Enable a user to block themself from the NSFW zone and features, for a certain period of time."""
-    return python_tool_self_block(agent, query, file, args, history, history_start, mission, summary, config, agents, responsible_human, nsfw=True)
+    return python_tool_self_block(agent, query, file, args, history, history_start, mission, summary, config, agents, responsible_human, direct=direct, nsfw=True)
 
 
 python_tools = {
