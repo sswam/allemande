@@ -4,8 +4,9 @@
 # Manage users in the Allemande webchat
 
 webchat-user() {
-	local nsfw= n=   # enable nsfw for a user; list nsfw users only; 0 to list sfw users only
-	local preference= p= # preferred assistant gender (m/f/o)
+	local nsfw= n=       # enable nsfw for a user; list nsfw users only; 0 to list sfw users only
+	local preference= p= # preferred assistant gender (m/f/o/a)
+	local language= l=   # preferred language (code)
 
 	eval "$(ally)"
 
@@ -62,19 +63,21 @@ add-user() {
 		die "Username cannot start with a dash"
 	fi
 
-	if [ -z "$preference" ]; then
-		while true; do
-			read -r -p "Preferred assistant gender (m/f/o): " preference
-			case "$preference" in
-				m|f|o) break;;
-				*) echo >&2 "Invalid choice, please enter m, f, or o."
-			esac
-		done
-	else
+	while true; do
 		case "$preference" in
-			m|f|o) ;;
-			*) die "Invalid gender preference '$preference'. Must be m, f, or o."
+			m|f|o|a) break;;
 		esac
+		read -r -p "Preferred assistant gender (m/f/o/a): " preference
+		if [ ! -t 0 ]; then
+			break
+		fi
+	done
+
+	if [ -z "$language" ]; then
+		read -r -p "Preferred language (code) [en]: " language
+	fi
+	if [ -z "$language" ]; then
+		language="en"
 	fi
 
 	if [ -n "$user" ] && nsfw= list-users | grep -q "^$user$"; then
@@ -195,6 +198,7 @@ END
 		btime:	$btime
 		nsfw:	${nsfw:-0}
 		preference:	$preference
+		language:	$language
 		email:	$email
 		reddit:	$reddit
 		discord:	$discord
@@ -318,21 +322,26 @@ _set_user_mission_file() {
 	local user=$1
 	local type=$2 # sfw or nsfw
 	local preference=$3
-	local verbose=${4:-} # pass "-v" for verbose
+	local language=$4
+	local verbose=${5:-} # pass "-v" for verbose
 
 	local preference_suffix
 	case "$preference" in
 	m) preference_suffix="male" ;;
 	f) preference_suffix="female" ;;
 	o) preference_suffix="other" ;;
+	a) preference_suffix="all" ;;
 	*)
 		echo >&2 "Warning: invalid gender preference '$preference' for user $user. Using female assistant."
 		preference_suffix="female"
 		;;
 	esac
 
-	local mission_file="$ALLEMANDE_HOME/rooms.dist/mission.m.$type.$preference_suffix"
+	local mission_file_basename="mission.m.$type.$preference_suffix.$language"
+	local mission_file="$ALLEMANDE_HOME/rooms.dist/$mission_file_basename"
 	local mission_path="$ALLEMANDE_ROOMS/$user/mission.m"
+
+	(cd "$ALLEMANDE_HOME/rooms.dist"; ./translate_mission.sh "$mission_file_basename")
 
 	cp $verbose "$mission_file" "$mission_path"
 }
@@ -342,6 +351,7 @@ _update_user_mission() {
 	local type=$2 # sfw or nsfw
 
 	local preference=f # default to female
+	local language=en
 	local user_info_file="$ALLEMANDE_USERS/$user/info.rec"
 	if [ -f "$user_info_file" ]; then
 		local pref_from_file
@@ -349,11 +359,15 @@ _update_user_mission() {
 		if [ -n "$pref_from_file" ]; then
 			preference="$pref_from_file"
 		fi
+		lang_from_file=$(awk '/^language:/ {print $2}' "$user_info_file")
+		if [ -n "$lang_from_file" ]; then
+			language="$lang_from_file"
+		fi
 	else
-		echo >&2 "Warning: $user_info_file not found for user $user. Using default preference 'f'."
+		echo >&2 "Warning: $user_info_file not found for user $user. Using default settings."
 	fi
 
-	_set_user_mission_file "$user" "$type" "$preference" -v
+	_set_user_mission_file "$user" "$type" "$preference" "$language" -v
 }
 
 update-missions() {
