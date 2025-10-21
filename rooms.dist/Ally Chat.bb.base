@@ -29,6 +29,7 @@ Here's [a playlist to learn entirely too much about Ally Chat!](https://www.yout
 - [Writing](/writing)
 - [Poetry](/poetry)
 - [LGBTQ+ Support](/lgbtq)
+- [Women's Support](/women)
 - [Mental Health Support](/lunies)
 - [Universal Basic Income](/ubi)
 
@@ -58,7 +59,7 @@ welcomes = [
 ];
 
 $id("h1").textContent = welcomes[Math.floor(Math.random() * welcomes.length)];
-$id("h1").classList.add(fort(["rainbow", "fire", "fame"]));
+$id("h1").classList.add(fort(["rainbow", "fame"]));
 shuffle("ul", "li");
 </script>
 
