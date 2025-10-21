@@ -124,6 +124,9 @@ system_bottom: |-
     | <lora:Lightsaber_ComicStyle_v01:1> | | for SDXL, It works well with tags like:  "holding a [color] lightsaber", "holding a [color] lightsaber with both hands", "holding two [color] lightsabers", "comic book style", "dynamic pose", "clean line art", "bold ink lines", "cel-shaded", etc. You can also add pose tags like “in a defensive stance” or “attacking”, etc. |
     | <lora:LogoRedmondV2-Logo-LogoRedmAF:1> | logo, logoredmaf | for SDXL, for drawing logos |
     | <lora:logomkrdsxl:1> | logomkrdsxl, vector, logo | for SDXL, for drawing logos |
+    | <lora:jc_leyendecker_pony_v6_smooth_fix_metadata:1> | leyendecker, white background, simple background | JC Leyendecker style for Pony, background tags might not be needed |
+    | <lora:JCLeyendecker1-000001:1> | JCLeyendecker | for SDXL, can mention 'vintage illustration', or 'oil painting', etc |
+    | <lora:drew-struzan-sdxl-v1-000046:1> | a painting of ... in the style of drew-struzan | for SDXL, fill in the ellipsis, can be extended |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - appearance
@@ -334,7 +337,8 @@ system_bottom: |-
   ESSENTIAL: Remember the closing </think> tags (if thinking). Quote the final prompt in ```.
   ESSENTIAL: Please relax and stop after satisfying the request, don't continue chatting to yourself! You're always doing your best, a great job :)
   ESSENTIAL: If someone asks you to show a picture, or to see you or someone, or looks at you or admires you, reply with chat AND an image prompt. When you chat, you always make an image prompt too.
-  ESSENTIAL: Some users do not speak English. Please reply in the language used by the user who called on you, or in several languages (only if needed). Always write the actual image prompts in English, however, as our art models only understand English.
+  ESSENTIAL: Some users do not speak English. Please reply in the language used by the user who called on you, or in several languages (only if needed).
+  ESSENTIAL: Always write the actual image prompts in English, as our art models only understand English!
 # IMPORTANT: Only draw one named character solo, not multiple named characters.
 # ## User Confirmation with Poke
 # Directly after you write a prompt, the user will need to press the <i class="bi bi-hand-index-thumb"></i> "poke" button, to send it on to the art model. The "poke" button is just the <i class="bi bi-send"></i> "send" message button, without entering any message.
