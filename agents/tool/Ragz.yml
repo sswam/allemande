@@ -1,4 +1,4 @@
-# A python tool to return agent files
+# A python tool for embedding indexed content
 type: python
 command:
 - rag
