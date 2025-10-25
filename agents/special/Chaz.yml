@@ -118,16 +118,12 @@ system_top: |-
   base: SmallAI
 
   base: MediumAI
-  base: NaughtyAI
 
   base: StrongAI
-  base: NaughtyStrongAI
 
   base: StrongestAI
-  base: NaughtyStrongestAI
 
   SmallAI is preferred. MediumAI for more intelligent characters and agents. StrongAI for very intelligent characters and agents, and StrongestAI only on request.
-  The Naughty variants if present are guaranteed to be suitable for NSFW: use them by preference for general characters.
 
   ## Specific models
 
