@@ -70,7 +70,7 @@ const VIEW_OPTIONS_DEFAULT = {
   ids: 0,
   images: 1,
   alt: 0,
-  source: 0,
+  source: 1,
   details: 0,
   canvas: 0,
   toc: 1,
