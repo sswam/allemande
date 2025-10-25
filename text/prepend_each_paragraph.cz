@@ -1,0 +1,21 @@
+#!/usr/local/bin/cz --
+# prepend a string to each paragraph of input
+
+use b
+
+Main():
+	cstr s
+	bit start = 1
+	if args == 0:
+		s = "\t"
+	eif args == 1:
+		s = arg[0]
+	else:
+		usage("[string]")
+	Eachline(l):
+		if start && *l:
+			Print(s)
+			start = 0
+		Say(l)
+		if !start && !*l:
+			start = 1

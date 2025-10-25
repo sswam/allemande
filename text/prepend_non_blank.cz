@@ -1,0 +1,17 @@
+#!/usr/local/bin/cz --
+# prepend a string to each non-blank line of input
+
+use b
+
+Main():
+	cstr s
+	if args == 0:
+		s = "\t"
+	eif args == 1:
+		s = arg[0]
+	else:
+		usage("[string]")
+	Eachline(l):
+		if *l:
+			Print(s)
+		Say(l)
