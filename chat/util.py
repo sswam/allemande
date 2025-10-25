@@ -234,3 +234,10 @@ def sanitize_pathname(room):
         room += "/"
 
     return room
+
+
+def path_contains(base_path: Path, target_path: Path) -> bool:
+    """Verify that the target path is a safe subdirectory of the base path."""
+    base_resolved = base_path.resolve()
+    target_resolved = target_path.resolve()
+    return target_resolved.is_relative_to(base_resolved)
