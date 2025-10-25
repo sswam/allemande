@@ -53,6 +53,8 @@ Send an empty message to continue AI conversations, this called a "poke".
 
 You can say @anyone for a random AI, or @everyone for several responses.
 
+Type -@Lori at the start of a line, to poke Lori to respond, this can be useful for role-play, etc.
+
 ## A Few of our Characters and Tools
 
 **General Chat**

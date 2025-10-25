@@ -24,39 +24,42 @@ def remove_timestamp_from_filename(filename):
     return re.sub(r'(@\d+)', '', filename)
 
 
-def update_html_files(html_files, resource_files):
-    for html_file in html_files:
-        with open(html_file, 'r') as file:
-            html_content = file.read()
+def update_html_file(html_file, resource_files):
+    # check writable, return if not
+    if not os.access(html_file, os.W_OK):
+        return
 
-        soup = BeautifulSoup(html_content, 'html5lib')
+    with open(html_file, 'r') as file:
+        html_content = file.read()
 
-        for element in soup():
-            update_element = False
-            attribute = None
+    soup = BeautifulSoup(html_content, 'html5lib')
 
-            if element.name == 'link' and 'href' in element.attrs:
-                attribute = 'href'
-                update_element = element['href'].endswith('.css')
-            elif element.name == 'script' and 'src' in element.attrs:
-                attribute = 'src'
-                update_element = element['src'].endswith('.js')
-            elif element.name == 'img' and 'src' in element.attrs:
-                attribute = 'src'
-                update_element = element['src'].endswith(('.jpg', '.jpeg', '.png', '.gif'))
+    for element in soup():
+        update_element = False
+        attribute = None
 
-            if update_element:
-                original_name = remove_timestamp_from_filename(element[attribute])
-                resource_path = Path(original_name)
-                if resource_path in resource_files:
-                    new_symlink = resource_files[resource_path]
-                    element[attribute] = str(new_symlink)
+        if element.name == 'link' and 'href' in element.attrs:
+            attribute = 'href'
+            update_element = element['href'].endswith('.css')
+        elif element.name == 'script' and 'src' in element.attrs:
+            attribute = 'src'
+            update_element = element['src'].endswith('.js')
+        elif element.name == 'img' and 'src' in element.attrs:
+            attribute = 'src'
+            update_element = element['src'].endswith(('.jpg', '.jpeg', '.png', '.gif'))
+
+        if update_element:
+            original_name = remove_timestamp_from_filename(element[attribute])
+            resource_path = Path(original_name)
+            if resource_path in resource_files:
+                new_symlink = resource_files[resource_path]
+                element[attribute] = str(new_symlink)
 
 
-        with open(html_file, 'w', encoding='utf-8') as file:
-            file.write(str(soup))
+    with open(html_file, 'w', encoding='utf-8') as file:
+        file.write(str(soup))
 
-        # TODO use html_indent.py as a library to format nicely
+    # TODO use html_indent.py as a library to format nicely
 
 
 def update_symlinks():
@@ -75,7 +78,8 @@ def update_symlinks():
         new_symlink = create_symlink(resource_path)
         new_symlinks[resource_path] = resource_path.parent / new_symlink
 
-    update_html_files(html_files, new_symlinks)
+    for html_file in html_files:
+        update_html_file(html_file, new_symlinks)
 
 
 if __name__ == '__main__':

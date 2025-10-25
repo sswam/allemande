@@ -126,11 +126,13 @@ $patreon_links
 You are responsible for your own safety and behaviour in Ally Chat.
 
 By using Ally Chat, you agree to follow the above rather than going wild and causing a lot of mess for me to clean up before you even found the intro!
+END
+		if ((nsfw)); then
+			cat <<END
 
 The "keep it legal" rule is important: do not try to create underage or deepfake NSFW images.
-
-Please confirm that you agree! :)
 END
+		fi
 	done
 
 	mkdir -p rooms/"$user"
@@ -337,7 +339,7 @@ _set_user_mission_file() {
 		;;
 	esac
 
-	local mission_file_basename="mission.m.$type.$preference_suffix.$language"
+	local mission_file_basename="mission.m.$type.$preference_suffix${language:+.$language}"
 	local mission_file="$ALLEMANDE_HOME/rooms.dist/$mission_file_basename"
 	local mission_path="$ALLEMANDE_ROOMS/$user/mission.m"
 

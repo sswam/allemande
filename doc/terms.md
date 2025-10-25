@@ -11,7 +11,7 @@ Basic rules:
 - Be respectful to others
 
 Content rules:
-- SFW rooms: Keep it family-friendly, no adult content
+- SFW rooms: Keep it at most MA15+, no adult content
 - NSFW rooms: Adults only, no illegal content
 
 Your rights:
