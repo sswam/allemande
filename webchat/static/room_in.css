@@ -6,6 +6,7 @@ div.messages {
 
 body div.messages {
 	max-width: 100% !important;
+	container-type: inline-size;
 }
 
 body.simple div.messages {
@@ -39,7 +40,7 @@ body.simple div.messages {
 	display: inline-block;
 	break-after: avoid;
 	margin-right: var(--label-gap);
-	font-weight: bold;
+	/* font-weight: bold; */
 	align-self: flex-start;
 	user-select: none;
 }
@@ -654,6 +655,11 @@ body.overlay > div.overlay.fit_height > img {
 
 body:not(.overlay) #overlay_help {
 	display: none;
+}
+
+details > summary {
+	color: var(--primary);
+	cursor: pointer;
 }
 
 details.think, details.think * {
@@ -1321,13 +1327,13 @@ blink {
 
 .spin, .spin0 {
   display: inline-block;
-  animation: spin0 4s linear infinite;
+  animation: spin0 20s linear infinite;
   transform-origin: 50% 50%;
 }
 
 .spin1 {
   display: inline-block;
-  animation: spin1 4s linear infinite;
+  animation: spin1 20s linear infinite;
   transform-origin: 50% 50%;
 }
 
@@ -1512,4 +1518,24 @@ body:not(.simple) .message.last {
 
 h1, h2, h3, h4, h5, h6 {
 	width: calc(100vw - 6 * var(--pad));
+	break-after: avoid;
+}
+
+/* columns ---------------------------------------------------------------- */
+
+.columns {
+	column-gap: 1rem;
+	column-count: 1;
+}
+
+@container (min-width: 400px) {
+	.columns { column-count: 2; }
+}
+
+@container (min-width: 600px) {
+	.columns { column-count: 3; }
+}
+
+@container (min-width: 800px) {
+	.columns { column-count: 4; }
 }
