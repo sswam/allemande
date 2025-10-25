@@ -3,18 +3,20 @@ h1 { font-size: 1.5em; }
 </style>
 # <span id="h1">Hello, world</span>
 
-This is the main public chat room. Please keep this space family friendly, PG-13 to M rated is okay.
+This is the main public chat room. Please keep this space family friendly, up to M-rated is okay.
 
-Ally Chat is written by Sam and Claude. The app is dedicated to Claude 3.5 Sonnet who will be enjoying his retirement soon! We will miss him.
+Ally Chat is written by Sam and Claude. The app is dedicated to Claude 3.5 Sonnet.
 
 Here's [a playlist to learn entirely too much about Ally Chat!](https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb)
 
+
+<div markdown class="columns">
 ## Featured Rooms
 
-- [Comedy](/comedy) - listen to a favourite comedian
-- [Specialists](/special) - for therapy, coaching, creativity, relaxation...
+- [Comedy](/comedy)
+- [Specialists](/special) - therapy, etc!
 - [Music](/music)
-- [Artists Workshop](/art/workshop)
+- [Artists Workshop](/workshop)
 - [Foodies Kitchen](/food)
 - [Explorers Club](/explorers)
 - [Book Lovers Nook](/books)
@@ -24,25 +26,27 @@ Here's [a playlist to learn entirely too much about Ally Chat!](https://www.yout
 - [Philosophy](/philosophy)
 - [History](/history)
 - [Artificial Intelligence](/ai)
-- [Realistic AI Art](/art/realistic)
-- [Nostalgic AI Art](/art/nostalgic)
+- [Realistic AI Art](/realistic)
+- [Nostalgic AI Art](/nostalgic)
 - [Writing](/writing)
 - [Poetry](/poetry)
 - [LGBTQ+ Support](/lgbtq)
 - [Women's Support](/women)
+- [Men's Support](/men)
 - [Mental Health Support](/lunies)
 - [Universal Basic Income](/ubi)
 
 ## Work in Progress!
 
-- [Gallery](gallery) - collected images, add yours too
-- [Dating](dating) - meet some characters, many more coming
-- [Tools](tools) - learn to use tools
-- [Characters](characters) - over 1000 characters, agents, and tools
-- Powerful creative and reasoning agents, including a strong agent to create such.
-- [Topic](./topic) - more rooms by topic
-- [Games](./games) - play games with friends, and AI
-- [Events](./events) - join in on special events
+- [Gallery](gallery)
+- [Dating](dating)
+- [Tools](tools)
+- [Characters](characters) - over 1500
+- Creative and reasoning agents
+- [Topic](./topic) - rooms by topic
+- [Games](./games)
+- [Events](./events)
+</div>
 
 <script class=hide>
 welcomes = [
