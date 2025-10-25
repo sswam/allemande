@@ -1,8 +1,12 @@
 import re
 from pathlib import Path
+import logging
 
 import ally_room
 import rag
+
+
+logger = logging.getLogger(__name__)
 
 
 def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
@@ -69,17 +73,17 @@ def python_tool_rag(agent, query, file, args, history, history_start=0, mission=
     # Get query string
     query_text = " ".join(args)
 
-    # If no db specified, use stem of file as db name
+    # If no db specified, use "db" in the file's folder
     if not db_name:
-        db_name = Path(file).stem
+        db_name = str((Path(file).parent)/"db")
 
     # Do access control check
-    room = ally_room.Room(path=Path(file))
+    room = ally_room.Room(path=Path(db_name))
     db_access = room.check_access(responsible_human)
 
     access_needed = ally_room.Access.WRITE if do_import else ally_room.Access.READ
 
-    if not db_access.value & access_needed == access_needed:
+    if not db_access.value & access_needed.value == access_needed.value:
         return f"Access denied for database {db_name}"
 
     try:
@@ -99,6 +103,7 @@ def python_tool_rag(agent, query, file, args, history, history_start=0, mission=
         return "\n\n".join(results)
 
     except Exception as e:  # pylint: disable=broad-except
+        logger.error(f"Error accessing RAG database: {str(e)}", exc_info=True)
         return f"Error accessing RAG database: {str(e)}"
 
 

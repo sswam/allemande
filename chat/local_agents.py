@@ -358,6 +358,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 #     logger.info("portal: %r", str(portal.portal))
 
     gen_config["user"] = responsible_human
+    gen_config["room"] = room.name
+
+    logger.info("gen_config: %r", gen_config)
 
     # logger.info("agent: %r", agent)
     # logger.info("system_bottom: %r", agent.get("system_bottom"))
