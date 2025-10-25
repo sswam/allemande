@@ -7,7 +7,7 @@ open-chat-on-message() {
 	local system= s=1      # match system messages only
 	local include=() i=()  # array of users to match
 	local exclude=() x=()  # array of users to exclude
-	local timeout= t=60    # notify-send timeout in seconds
+	local timeout= t=600   # notify-send timeout in seconds
 
 	eval "$(ally)"
 
