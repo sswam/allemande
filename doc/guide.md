@@ -45,11 +45,13 @@ Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 
 ## Rules
 
-- Content in the main public rooms must be PG and family-friendly.
+- Content in the main public rooms must be at most MA15+.
 - Doxxing or sharing private information without consent is not allowed.
 - Hate-speech is not allowed. Please be friendly if you engage with other users.
 - Copyright infringement is not allowed.
 - These rules might be updated in future.
+
+You can read our detailed [Terms of Service](/terms).
 
 ## Key Features
 
@@ -1042,6 +1044,8 @@ We have a wide range of models to choose from, so if one model is too censored f
 Please do not attempt to jailbreak the more censored models, as this may be against their terms of service, and might impact our access to those services. If you want to experiment with this, please ask permission.
 
 # Ally Chat User Interface Guide
+
+Note that the buttons are small and only the icons are visible, not any text. The "Name" text is visible as tool-tips on computers, but not on mobile.
 
 ## Simple Mode
 

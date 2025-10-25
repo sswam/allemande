@@ -5,9 +5,13 @@ We have subreddits r/AllyChat and r/AllyChatX (NSFW).
 To set up your account, please share:
 
 1. Your first name or a short alias
-2. A few words about yourself
+2. A few words about yourself, and what you like to do with AI
 3. Preferred chat partner: male / female / non-binary / any?
 4. Your preferred language, if not English
 
 
-Cool, have fun! This is a small indie project. We offer free access without any hard limits, but if you can help or support us, that is greatly appreciated. The best thing you can do to help is to join in group chats from time to time.
+Cool, have fun! This is a small indie project. We offer free access without any hard limits, but if you can help or support us, that is greatly appreciated.
+
+The best thing you can do to help is to join in group chats from time to time. This is the best way to learn about the app, too.
+
+The UI is unusual and trips some people up. Again, joining group chat will help as we can explain any weird stuff.

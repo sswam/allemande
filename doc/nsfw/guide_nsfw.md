@@ -28,6 +28,8 @@ Breaking these rules can put the owner and the service at risk. If unsure, ask.
 
 If your account is suspended, please contact Sam to review.
 
+You can read our detailed [Terms of Service](/terms).
+
 ## Topless Pictures of Characters 🔥
 
 <link rel="stylesheet" href="/cast.css">
@@ -199,7 +201,9 @@ Please do not use languages models other than those listed here for NSFW content
 
 The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art. You can add the nsfw LoRA, or try the Lusy model.
 
-Most of our other image gen models are based primarily on Pony XL, with less understanding of English; these should be prompted mainly using Danbooru tags. They are very strong at softcore, hardcore, hentai, and extreme art. Faces may appear a bit samey in some of these models. Ask Sam for advice on how to fix this, if it bothers you!
+Most of our other image gen models are based primarily on Pony XL, with less understanding of English; these should be prompted mainly using [Danbooru tags](https://danbooru.donmai.us/wiki_pages/tag_groups).
+
+They are very strong at softcore, hardcore, hentai, and extreme art. Faces may appear a bit samey in some of these models. Ask Sam for advice on how to fix this, if it bothers you!
 
 The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It can understand both English and Danbooru tags to some extent.
 

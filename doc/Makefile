@@ -13,7 +13,7 @@ AGENTS_DIRS_NSFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb # help.md nsfw/help.md agent_colours.css
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/terms.bb  # help.md nsfw/help.md agent_colours.css
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 	rm -f $@
@@ -97,6 +97,10 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	rm -f $@
 	cp -a $< $@
 	chmod a-w $@
+
+../rooms/terms.bb: terms.md
+	rm -f $@ ../rooms/terms.html
+	(sleep 0.5; cp -a $< $@; chmod a-w $@; sleep 1; cp -a ../rooms/terms.html ../site/terms.html) &
 
 ../rooms/lora.bb: ../agents/special/Pixi.yml ../agents/special/Illu.yml
 	rm -f $@ ../rooms/lora.html
