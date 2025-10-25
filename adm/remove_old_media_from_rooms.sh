@@ -2,7 +2,7 @@
 set -euo pipefail
 
 dir="${1:-$ALLEMANDE_ROOMS}"
-days="${2:-7}"
+days="${2:-4}"
 
 cd "$dir"
 
