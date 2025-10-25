@@ -1,0 +1,3 @@
+### LivePortrait: Efficient Portrait Animation Summary
+
+LivePortrait is a PyTorch implementation for efficient portrait animation with stitching and retargeting control. It supports both humans and animals. The project offers a Windows one-click installer, a HuggingFace online demo, and includes features like image-driven mode, regional control, and precise portrait editing. The repository provides instructions for installation, environment setup, downloading pretrained weights, and running inference. It also features a Gradio interface and speed evaluation scripts. The project encourages ethical use and provides a BibTeX entry for citation.
