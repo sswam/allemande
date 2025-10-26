@@ -53,6 +53,11 @@ MAX_JOB_DELAY = 1020  # 17 minutes, after that the client might timeout
 MAX_QUEUE_DELAY = 4800  # 80 minutes, don't schedule extra jobs beyond that point
 ADETAILER_TIME = 3  # seconds, how long adetailer takes to run roughly
 
+# Hacky support for special occasions!  i.e. Halloween
+SPECIAL_OCCASION_ENABLE = False
+SPECIAL_OCCASION_PROMPT = "(corpse, zombie, horror, gore:1.5), (dead, decay, zombie: 1.9), glowing eyes, g1g3r, twisted limbs, grotesque features, ghostly"
+SPECIAL_OCCASION_LORAS = "<lora:g1g3r:1> <lora:scifi-horror-000006:1>"
+
 SHAPE_GEOMETRY = {
     "S": (("768", "768"), ("1024", "1024")),
     "p": (("768", "896"), ("896", "1152")),
@@ -517,6 +522,13 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[
     # We can update the count from the sets macro
     if "count" in sets:
         config["count"] = int(sets["count"])
+
+    if SPECIAL_OCCASION_ENABLE:
+        if "rp" in macros and "ADDCOMM" in prompt:
+            prompt = prompt.replace("ADDCOMM", f" {SPECIAL_OCCASION_PROMPT} ADDCOMM {SPECIAL_OCCASION_LORAS} ")
+        else:
+            prompt += f" BREAK {SPECIAL_OCCASION_PROMPT} {SPECIAL_OCCASION_LORAS}"
+        logger.info("special occasion, new prompt: %s", prompt)
 
     return prompt, negative_prompt, config, regional_kwargs, need_update_macros, sets, shortcut
 
