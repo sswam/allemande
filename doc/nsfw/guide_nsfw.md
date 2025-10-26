@@ -130,6 +130,23 @@ Sometimes these models may refuse to help you, depending on the context. You can
 
 The other base models mentioned in the main guide might be averse to NSFW chat, or it might be against their terms of service. They are disallowed from the NSFW zone. We ask you not to use them in NSFW private chat.
 
+### Uninhibited Variants
+
+These variants on the Gemini and DeepSeek models use a very short prompt to enable NSFW, which might be helpful if there is no other NSFW context. This is just a tiny prompt to give permission, not a jailbreak. The Ellie, Ellyn, Misti and Veni models do not need such a prompt.
+
+- **Xlasho** (Gemini 2.0 Flash, Google)
+- **Xlashi** (Gemini 2.5 Flash, Google)
+- **Xemmi** (Gemini 2.5 Pro, Google)
+- **Xese** (DeepSeek Chat V3)
+- **Xesee** (DeepSeek Chat V3.1)
+
+### Sexual Variants
+
+These variants on the Llama 3.1 8B model are set up for sexual role-play. Note: you may have to try different temperature, context and lines settings with these base agents.
+
+- **XTalk**: (Llama 3.1 8B): strongly inclined to dirty talk, with mitigations for "over thinking": warning: may initiate extreme content
+- **DirtyTalk**: (Llama 3.1 8B): similarly inclined to dirty talk, but only when the mood is set
+
 ## Specialists based on Remote AI
 - **Assi**: The AI assistant (NSFW edition), she is a helpful and friendly guide for new users and technical support
 - **Xilu** and **Xillu** (Google): Expert with NSFW AI art prompts, ensuring high-quality image generation. Xilu is faster, Xillu uses a stronger model.
