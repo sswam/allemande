@@ -3705,7 +3705,7 @@ export async function init() {
 
   $on($id("nav"), "click", nav_click);
   $on($id("pages"), "click", pages_click);
-  $on($id("select"), "click", select_click);
+  // $on($id("select"), "click", select_click);   // was activating when press enter in options -> temp
   /* $on($id("scroll"), "click", () => set_top("top_scroll")); */
   $on($id("filter"), "click", () => set_top("top_filter"));
   $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
