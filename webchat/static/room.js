@@ -1563,7 +1563,8 @@ async function setup_lazy_images_observer() {
   await wait_for_load();
   lazy_images_observer = new IntersectionObserver((images) => {
     images.forEach(entry => {
-      if (entry.isIntersecting && entry.target.dataset.src) {
+      // check if intersecting, or under a position: fixed container which is a special case
+      if ((entry.isIntersecting || entry.target.closest('.fixed')) && entry.target.dataset.src) {
         const img = entry.target;
         img.src = img.dataset.src;
         img.removeAttribute('data-src');
