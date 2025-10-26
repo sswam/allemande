@@ -100,7 +100,7 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 
 ../rooms/terms.bb: terms.md
 	rm -f $@ ../rooms/terms.html
-	(sleep 0.5; cp -a $< $@; chmod a-w $@; sleep 1; cp -a ../rooms/terms.html ../site/terms.html) &
+	(sleep 0.5; cp -a $< $@; chmod a-w $@; sleep 5; cp -af ../rooms/terms.html ../site/terms.html) &
 
 ../rooms/lora.bb: ../agents/special/Pixi.yml ../agents/special/Illu.yml
 	rm -f $@ ../rooms/lora.html
