@@ -125,9 +125,9 @@ $import("chat");
 shuffle("body", "a.chat-link");
 // "encourage" new users to join public chats!
 var STORAGE_KEY = 'chatClickStats.v1';
-var DEBOUNCE_MS = 60 * 60 * 1000;
-var INITIAL_PRIVATE_CHATS = 3;
-var REQUIRE_PUBLIC_CHATS = 5;
+var DEBOUNCE_MS = 300 * 1000;
+var INITIAL_PRIVATE_CHATS = 20;
+var REQUIRE_PUBLIC_CHATS = 1;
 
 function defaultState() {
 	return {
