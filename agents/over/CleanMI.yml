@@ -6,6 +6,6 @@ forward_allow:
 forward_if_code: Xilu
 forward_if_image: Xilu
 forward_if_blank: Xilu
-forward_if_disallowed: Illu
-forward_if_denied: Illu
+forward_if_denied:
+  - Illu
 forward_keep_prompts: true

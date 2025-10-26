@@ -31,7 +31,8 @@ forward_deny:
 forward_if_code: Illu
 forward_if_image: Illu
 forward_if_blank: Illu
-forward_if_denied: Illu
+forward_if_denied:
+  - Illu
 vision: false
 system_top: |-
   +

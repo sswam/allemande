@@ -439,8 +439,8 @@ def determine_forward_target(response, agent, agents, config, room):
 
     bots2 = [b for b in bots2 if b is not None]
 
-    if not bots2 and chat.has_at_mention(response):
-        bots2 = [agent.get("forward_if_disallowed")]
+    if chat.has_at_mention(response):
+        bots2 = list(reversed(bots2)) + [a for a in agent.get("forward_if_denied", []) if room.check_access(a.lower()).value & chat.Access.READ_WRITE.value == chat.Access.READ_WRITE.value]
 
     logger.info("Forward: who should respond: %r", bots2)
     return get_allowed_forward_target(bots2, agent)
@@ -451,11 +451,9 @@ def get_allowed_forward_target(bots2, agent):
     forward_allow = agent.get("forward_allow")
     forward_deny = agent.get("forward_deny")
 
-    for bot2 in reversed(bots2):
+    for bot2 in bots2:
         if is_forward_denied(bot2, forward_allow, forward_deny):
-            bot2 = agent.get("forward_if_denied")
-            if not bot2:
-                continue
+            continue
 
         if bot2 == agent.name:
             logger.info("Skipping forwarding to self: %s", bot2)

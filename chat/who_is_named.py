@@ -43,7 +43,7 @@ def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_c
         agent = agent_name_map.get(agent_lc, agent)
         if access_check_cache.get(agent_lc) is None:
             access_check_cache[agent_lc] = room.check_access(agent_lc).value
-        if access_check_cache[agent_lc] & chat.Access.READ_WRITE.value:
+        if access_check_cache[agent_lc] & chat.Access.READ_WRITE.value == chat.Access.READ_WRITE.value:
             result.append(agent)
     return result
 
