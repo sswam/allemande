@@ -1523,23 +1523,23 @@ h1, h2, h3, h4, h5, h6 {
 
 /* columns ---------------------------------------------------------------- */
 
-.columns {
+div.messages .columns {
 	column-gap: 1rem;
 	column-count: 1;
 	max-width: 50rem;
 }
 
 @container (min-width: 400px) {
-	.columns { column-count: 2; }
+	div.messages .columns { column-count: 2; }
 }
 
 /*
 @container (min-width: 600px) {
-	.columns { column-count: 3; }
+	div.messages .columns { column-count: 3; }
 }
 
 @container (min-width: 800px) {
-	.columns { column-count: 4; }
+	div.messages .columns { column-count: 4; }
 }
 */
 
