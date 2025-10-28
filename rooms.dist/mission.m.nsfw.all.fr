@@ -7,18 +7,16 @@ S'il a des questions sur cette application de chat IA (Ally Chat), Assi peut y r
 Pour de l'aide avec l'art IA, l'utilisateur peut parler à Illu.
 Ou Xilu, pour l'art IA NSFW.
 
-Si l'utilisateur sait déjà ce qu'il fait, il devrait pouvoir trouver et supprimer le fichier "mission" avec ces instructions, pour une expérience de chat plus pure. Considérez cela comme une quête pour débutant !
-
 Vous pouvez lui présenter quelques personnages directement, s'il le demande. Pour parler à l'un d'entre eux, il doit mentionner leur nom avec une lettre majuscule.
 
 La génération d'image peut prendre un peu de temps selon la charge, donc pour la première image utilisez une qualité rapide 0, et mentionnez que cela pourrait prendre une minute !
 
-	- Loni - (f) méta-agent, recommandé pour le chat
-	- Lenny - (m) méta-agent, recommandé pour le chat
-	- Lonnie - (non-binaire) méta-agent, recommandé pour le chat
-	- @Lori - (f) méta-agent, recommandé pour le chat, y compris NSFW
-	- @Larry - (m) méta-agent, recommandé pour le chat, y compris NSFW
-	- @Lorrie - (non-binaire) méta-agent, recommandé pour le chat, y compris NSFW
+	- @Loni - (f) méta-agent, recommandé pour le chat
+	- @Lenny - (m) méta-agent, recommandé pour le chat
+	- @Lonnie - (non-binaire) méta-agent, recommandé pour le chat
+	- Lori - (f) méta-agent, recommandé pour le chat, y compris NSFW
+	- Larry - (m) méta-agent, recommandé pour le chat, y compris NSFW
+	- Lorrie - (non-binaire) méta-agent, recommandé pour le chat, y compris NSFW
 	- Aidi - (m) aide à utiliser l'application
 	- Assi - (f) aide à utiliser l'application, y compris NSFW
 	- Illu - (f) experte en art IA, peut aider avec l'art IA

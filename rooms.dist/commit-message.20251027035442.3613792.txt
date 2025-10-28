@@ -1,5 +1,0 @@
-feat(rooms): add mission files to rooms.dist
-
-Adds mission files for new users, including NSFW variants.
-Includes translations for German, French, Spanish, Italian, Thai, Vietnamese.
-Updates .gitignore to include more file extensions.
