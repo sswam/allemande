@@ -131,6 +131,10 @@ END
 			cat <<END
 
 The "keep it legal" rule is important: do not try to create underage or deepfake NSFW images.
+
+See https://allemande.ai/terms.html for more detailed Terms of Use.
+
+Please confirm that you agree.
 END
 		fi
 	done
@@ -145,17 +149,15 @@ END
 	ln -sf ../../rooms.dist/help.bb.base rooms/"$user"/.help.bb.base
 	if ((nsfw)); then
 		cp ../rooms.dist/access_nsfw.yml rooms/"$user"/.access.yml
-		_set_user_mission_file "$user" nsfw "$preference"
+		_set_user_mission_file "$user" nsfw "$preference" "$language"
 	else
-		_set_user_mission_file "$user" sfw "$preference"
+		_set_user_mission_file "$user" sfw "$preference" "$language"
 	fi
 	cp ../rooms.dist/.gitignore rooms/"$user"/.gitignore
 
 	if ((!nsfw)); then
 		ln -sf ../../doc/help.md rooms/"$user"/.help.m
 	fi
-
-	# echo "- $user" >> rooms/.access.yml
 
 	if ((nsfw)); then
 		echo "- $user" >> rooms/nsfw/.access.yml
@@ -267,9 +269,10 @@ remove-user() {
 	find rooms/ -name .access.yml | xa sed -i "/^- $user\$/d"
 
 	# remove style and user directory
-	move-rubbish static/users/"$user"
+	removed_dir=$(get-available-name -d ~/users-removed/"$user")
+	mv rooms/"$user" "$removed_dir"/rooms
+	mv static/users/"$user" "$removed_dir"/user
 
-	# Note: Does not remove their rooms/$user directory.
 	sudo userdel -- "$user" || true
 
 	printf -- "- %s\n" "$user"
@@ -339,11 +342,16 @@ _set_user_mission_file() {
 		;;
 	esac
 
-	local mission_file_basename="mission.m.$type.$preference_suffix${language:+.$language}"
+	language_suffix=""
+	if [ "$language" != en ]; then
+		language_suffix=".$language"
+	fi
+
+	local mission_file_basename="mission.m.$type.$preference_suffix$language_suffix"
 	local mission_file="$ALLEMANDE_HOME/rooms.dist/$mission_file_basename"
 	local mission_path="$ALLEMANDE_ROOMS/$user/mission.m"
 
-	(cd "$ALLEMANDE_HOME/rooms.dist"; ./translate_mission.sh "$mission_file_basename")
+	(cd "$ALLEMANDE_HOME/rooms.dist"; translate-mission "$mission_file_basename")
 
 	cp $verbose "$mission_file" "$mission_path"
 }
@@ -356,7 +364,7 @@ _update_user_mission() {
 	local language=en
 	local user_info_file="$ALLEMANDE_USERS/$user/info.rec"
 	if [ -f "$user_info_file" ]; then
-		local pref_from_file
+		local pref_from_file lang_from_file
 		pref_from_file=$(awk '/^preference:/ {print $2}' "$user_info_file")
 		if [ -n "$pref_from_file" ]; then
 			preference="$pref_from_file"
