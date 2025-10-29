@@ -33,6 +33,7 @@ monitor() {
   local ssl_days= S=14          # days before SSL expiry warning
   local config= c=              # load config from file
   local daily= y=0              # do daily checks
+  local caches= C=("/opt/allemande/rooms.extra.cache")  # cache dirs to exclude from disk space calculations
 
   eval "$(ally)"
 
@@ -40,6 +41,7 @@ monitor() {
     config="${HOME}/.monitor"
   fi
   if [ -n "$config" ]; then
+    # shellcheck disable=SC1090
     . "$config"
   fi
 
@@ -103,16 +105,59 @@ check_ssl_expiry() {
   fi
 }
 
+get_cache_usage() {
+  local mountpoint=$1
+  local cache_dir
+  local total_cache=0
+  local cache_usage
+  local cache_mount
+
+  for cache_dir in "${caches[@]}"; do
+    if [ ! -d "$cache_dir" ]; then
+      continue
+    fi
+
+    cache_mount=$(findmnt -T "$cache_dir" -no TARGET)
+    if [ "$cache_mount" != "$mountpoint" ]; then
+      continue
+    fi
+    cache_usage=$(du -sb "$cache_dir" 2>/dev/null | cut -f1)
+    if [ -n "$cache_usage" ]; then
+      total_cache=$((total_cache + cache_usage))
+    fi
+  done
+
+  printf "%s" "$total_cache"
+}
+
 check_disk() {
   df -h | grep -E '/$|/media/|/mnt|/dev/mapper' | grep -v -E '^overlay|/docker/' |
   awk '{ print $5 " " $6 }' |
   while read -r percent mountpoint; do
     usage=${percent%%%}
-    if [ "$verbose" ]; then
-      printf "INFO: Filesystem mounted at %s is %s%% full\n" "$mountpoint" "$usage"
-    fi
-    if [ "$usage" -ge "$threshold_storage" ]; then
-      printf "WARNING: Filesystem mounted at %s is %s%% full!\n" "$mountpoint" "$usage"
+
+    local cache_bytes
+    cache_bytes=$(get_cache_usage "$mountpoint")
+
+    if [ "$cache_bytes" -gt 0 ]; then
+      local total_bytes used_bytes available_bytes adjusted_usage
+      read -r _ total_bytes used_bytes available_bytes _ < <(df -B1 "$mountpoint" | tail -1)
+
+      adjusted_usage=$(( (used_bytes - cache_bytes) * 100 / total_bytes ))
+
+      if [ "$verbose" ]; then
+        printf "INFO: Filesystem mounted at %s is %s%% full (adjusted from %s%% after excluding cache)\n" "$mountpoint" "$adjusted_usage" "$usage"
+      fi
+      if [ "$adjusted_usage" -ge "$threshold_storage" ]; then
+        printf "WARNING: Filesystem mounted at %s is %s%% full (adjusted from %s%% after excluding cache)!\n" "$mountpoint" "$adjusted_usage" "$usage"
+      fi
+    else
+      if [ "$verbose" ]; then
+        printf "INFO: Filesystem mounted at %s is %s%% full\n" "$mountpoint" "$usage"
+      fi
+      if [ "$usage" -ge "$threshold_storage" ]; then
+        printf "WARNING: Filesystem mounted at %s is %s%% full!\n" "$mountpoint" "$usage"
+      fi
     fi
   done
 }
@@ -156,6 +201,7 @@ check_vm() {
   fi
   if [ "$vm_usage" -ge "$killall_vm" ]; then
     printf "CRITICAL: VM usage is at %s%% - killing all %s processes!\n" "$vm_usage" "$killall"
+    # shellcheck disable=SC2086
     killall $killall &>/dev/null  # note, $killall should not be quoted
   fi
 }
@@ -180,4 +226,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
   monitor "$@"
 fi
 
-# version: 0.1.2
+# version: 0.1.3
