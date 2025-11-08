@@ -112,8 +112,10 @@ exceptions_to_retry = (
     "APIError",
 )
 
-default_model = "claude"
-default_model_small = "gemini-2.0-flash"
+# default_model = "claude"
+# default_model_small = "gemini-2.0-flash"
+default_model = "gpt-5"
+default_model_small = "gpt-5-mini"
 
 # Define available models and their properties
 MODELS = {

@@ -217,7 +217,7 @@ def json_q(s):
 	return "'%s'" % s
 
 def fix_floats(json, decimals=6, quote='"'):
-	pattern = r'^((?:(?:"(?:\\.|[^\\"])*?")|[^"])*?)(-?\d+\.\d{'+str(decimals)+'}\d+)'
+	pattern = r'^((?:(?:"(?:\\.|[^\\"])*?")|[^"])*?)(-?\d+\.\d{'+str(decimals)+r'}\d+)'
 	pattern = re.sub('"', quote, pattern)
 	fmt = "%%.%df" % decimals
 	n = 1

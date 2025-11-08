@@ -92,7 +92,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: notify.xt llm.xt images.xt a1111.xt whisper.xt vup.xt
+core: notify.xt llm.xt images.xt forge.xt whisper.xt # vup.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -116,7 +116,7 @@ alfred:
 	cd $(ALLEMANDE_HOME)/apps/alfred && \
 	./alfred-webui.py
 
-core.xtc: llm.xtc images.xtc a1111.xtc whisper.xtc vup.xtc
+core.xtc: llm.xtc images.xtc forge.xtc whisper.xtc # vup.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
@@ -131,20 +131,20 @@ clean:
 	> $(WATCH_LOG)
 
 llm:
-	while true; do make mount && $(PYTHON) core/llm_llama.py -g -n 60 -v; sleep 1; done
+	while true; do make mount && nice $(PYTHON) core/llm_llama.py -g -n 60 -v; sleep 1; done
 
 whisper:
-	while true; do make mount && $(PYTHON) core/stt_whisper.py -v; sleep 1; done
+	while true; do make mount && nice $(PYTHON) core/stt_whisper.py -v; sleep 1; done
 
 images:
-	while true; do make mount && $(PYTHON) core/image_a1111.py -v; sleep 1; done
+	while true; do make mount && $(PYTHON) core/image_forge.py -v; sleep 1; done
 
-a1111:
-	cd ~/webui ; while true; do ./webui.sh --skip-install; done
+forge:
+	cd ~/webui; while true; do timeout 1h nice ./webui.sh --skip-install; done
 
-vup:
-	cd $(ALLEMANDE_VISUAL) && \
-	while true; do sleep 5; make up; move-contrib; sleep 25; done
+# vup:
+# 	cd $(ALLEMANDE_VISUAL) && \
+# 	while true; do sleep 5; make up; move-contrib; sleep 25; done
 
 # brain-remote: clean
 # 	cd chat && ./brain.sh --remote

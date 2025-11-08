@@ -1,6 +1,6 @@
 #!/usr/bin/env python3-allemande
 
-"""Generate images using the Stable Diffusion WebUI API via a1111_client"""
+"""Generate images using the Stable Diffusion WebUI API via forge_client"""
 
 import os
 import logging
@@ -16,19 +16,20 @@ import time
 
 import yaml
 
-import a1111_client  # type: ignore
+import forge_client  # type: ignore
 import slug  # type: ignore
 import stamp  # type: ignore
 from ally import main, logs  # type: ignore
 from unprompted.unprompted_macros import parse_macros, update_macros  # type: ignore
+from ally.util import clamp
 
-__version__ = "0.1.1"
+__version__ = "0.2.1"
 
 logger = logs.get_logger()
 
 prog = main.prog_info()
 
-portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / prog.name
+portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / "image_a1111"  # FIXME prog.name
 
 GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 
@@ -45,7 +46,8 @@ MAX_COUNT = 10
 MAX_STEPS = 150  # 30
 
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
-JOB_BASE_TIME = 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
+JOB_BASE_TIME = 25 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
+JOB_BASE_TIME_PRIVATE = 75 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
 MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
 MAX_JOB_PENALTY = 2
@@ -55,10 +57,19 @@ ADETAILER_TIME = 3  # seconds, how long adetailer takes to run roughly
 
 # Hacky support for special occasions!  i.e. Halloween
 SPECIAL_OCCASION_ENABLE = False
-SPECIAL_OCCASION_PROMPT = "(corpse, zombie, horror, gore:1.5), (dead, decay, zombie: 1.9), glowing eyes, g1g3r, twisted limbs, grotesque features, ghostly"
-SPECIAL_OCCASION_LORAS = "<lora:g1g3r:1> <lora:scifi-horror-000006:1>"
+SPECIAL_OCCASION_PROMPT = """[opt 80 0.8 1.7] corpse, [/opt], [opt 80 0.8 1.7] horror, [/opt] [opt 80 0.8 1.7] gore, [/opt], [opt 80 0.8 1.7] blood, [/opt]
+[opt 70 0.8 1.8] dead, decay, [/opt]
+[set n] [random _min=1 _max=3] [/set]
+[opt 100 1.2 1.9] monster, [choose n] zombie | werewolf | furry, body fur | monster girl | vampire | mummy, bandages, bandaged arm, bandaged leg, bandage over one eye | ghost | oni | demon, demon girl, demon wings horns | angel, angel wings | goblin | chimera | dragon girl | mermaid [/choose] [/opt],
+[opt 50]glowing eyes[/opt], [opt 70]g1g3r[/opt], twisted limbs, grotesque features, ghostly
+"""
+SPECIAL_OCCASION_LORAS = "<lora:g1g3r:0.8> <lora:scifi-horror-000006:0.8>"
+# SPECIAL_OCCASION_PROMPT = "(corpse, zombie, horror, gore:1.5), (dead, decay, zombie: 1.9), glowing eyes, g1g3r, twisted limbs, grotesque features, ghostly"
+# SPECIAL_OCCASION_LORAS = "<lora:g1g3r:1> <lora:scifi-horror-000006:1>"
+SPECIAL_OCCASION_EXCEPTION_PREFIXES = ["oshden/", "ganja/", "bradd/", "tasha/", "richie/", "bo/", "jet/", "richie/", "tommy/", "myst/", "dave/", "joseph/"]
 
 SHAPE_GEOMETRY = {
+    "E": (("512", "512"), ("640", "640")),
     "S": (("768", "768"), ("1024", "1024")),
     "p": (("768", "896"), ("896", "1152")),
     "P": (("768", "1024"), ("960", "1280")),
@@ -82,6 +93,9 @@ QUALITY_STEPS = {
     8: "120",
     9: "150"
 }
+
+QUALITY_MIN = 0
+QUALITY_MAX = 9   # TODO drop to 4 again if it's a problem! secret feature...
 
 
 def process_hq_macro(config: dict, sets: dict) -> dict:
@@ -192,7 +206,7 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
 
 
 # User jobs count
-user_usage: dict[str, int] = {}
+user_usage: dict[str, float] = {}
 
 # Day crossover detection
 day_start = None
@@ -219,12 +233,13 @@ class ImageJob:
 image_queue: asyncio.PriorityQueue[ImageJob] = asyncio.PriorityQueue()
 
 
-job = None
+job: ImageJob | None = None
 
 
 def get_queue_jobs() -> list[ImageJob]:
     """Get list of jobs from queue, for inspection only"""
-    return list(image_queue._queue)  # pylint: disable=protected-access
+
+    return list(image_queue._queue)  # pylint: disable=protected-access  # type: ignore[missing-attribute]
 
 
 def get_sorted_queue_jobs() -> list[ImageJob]:
@@ -281,7 +296,7 @@ async def process_image_queue():
                 with GPU_MUTEX.open("w") as lockfile:
                     try:
                         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
-                        await a1111_client.a1111_client(
+                        await forge_client.request(
                             output=str(job.d / f"{job.output_stem}_{job.seed}"),
                             prompt=job.prompt,
                             negative_prompt=job.negative_prompt,
@@ -299,7 +314,7 @@ async def process_image_queue():
                             hires=job.config.get("hires", 0.0),
                             pony=job.config.get("pony", 0.0),
                             ad_mask_k_largest=job.config.get("ad_mask_k_largest", 0),
-                            model=job.config.get("model"),
+                            model=job.config.get("model", None),
                             clip_skip=job.config.get("clip_skip"),
                             **job.regional_kwargs,
                         )
@@ -354,8 +369,7 @@ def estimate_job_weight(job: ImageJob) -> float:
 
     # multiply based on steps
     steps = config.get("steps", MIN_STEPS)
-    job_weight *= config.get("steps", MIN_STEPS) / MIN_STEPS
-    log("Steps weight: %.2f", config.get("steps", MIN_STEPS) / MIN_STEPS)
+    job_weight *= steps / MIN_STEPS
 
     log("job_weight 2: %.2f", job_weight)
 
@@ -406,6 +420,11 @@ async def enqueue_image_jobs(
     count = min(config.get("count", 1), MAX_COUNT)
 
     user = config.get("user", None)
+    room = config.get("room", None)
+
+    is_private = user and room and room.startswith(f"{user}/")
+
+    job_base_time = JOB_BASE_TIME_PRIVATE if is_private else JOB_BASE_TIME
 
     current_time = time.time()
 
@@ -425,7 +444,7 @@ async def enqueue_image_jobs(
 
     # Calculate the priority for the first job, considering existing queued jobs for the user
     priority = current_time
-    for j in get_queue_jobs() + [job]:
+    for j in get_queue_jobs() + ([] if job is None else [job]):
         if not j or j.config.get("user") != user:
             continue
         priority += j.duration
@@ -450,8 +469,8 @@ async def enqueue_image_jobs(
             duration=0,
         )
         weight = estimate_job_weight(new_job)
-        job_penalty = get_user_job_penalty(user_usage.get(user, 0.0))
-        new_job.duration = weight * job_penalty * JOB_BASE_TIME
+        job_penalty = 0 if not user else get_user_job_penalty(user_usage.get(user, 0.0))
+        new_job.duration = weight * job_penalty * job_base_time
         logger.info("weight, job_penalty, duration: %.2f, %.2f, %.2f", weight, job_penalty, new_job.duration)
         if priority - current_time > MAX_QUEUE_DELAY:
             # Don't add the job if would run too far out in the future, as the client will have timed out, and better to give immediate feedback for too many pokes, and not clutter the queue
@@ -460,13 +479,15 @@ async def enqueue_image_jobs(
             break
         await image_queue.put(new_job)
         priority += new_job.duration
-        user_usage[user] = user_usage.get(user, 0) + weight
+        if user:
+            user_usage[user] = user_usage.get(user, 0.0) + weight
 
     return seed
 
 
-def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[str, str, dict, dict, bool, dict[str, str], str | None]:
+def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str|None) -> tuple[str, str, dict, dict, bool, dict[str, str], str | None]:
     """Process prompt and config, returning updated values and whether macros need updating"""
+    room = room or ""
     sets = macros.get("sets", {})
     need_update_macros = False
     regional_kwargs = {}
@@ -483,6 +504,9 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[
 
     shape = shortcut[0]
     quality = int((shortcut)[1])
+
+    quality = clamp(quality, QUALITY_MIN, QUALITY_MAX)
+
     apply_shortcut(sets, shape, quality)
     need_update_macros = True
 
@@ -523,7 +547,7 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict) -> tuple[
     if "count" in sets:
         config["count"] = int(sets["count"])
 
-    if SPECIAL_OCCASION_ENABLE:
+    if SPECIAL_OCCASION_ENABLE and not any(room.startswith(prefix) for prefix in SPECIAL_OCCASION_EXCEPTION_PREFIXES):
         if "rp" in macros and "ADDCOMM" in prompt:
             prompt = prompt.replace("ADDCOMM", f" {SPECIAL_OCCASION_PROMPT} ADDCOMM {SPECIAL_OCCASION_LORAS} ")
         else:
@@ -575,10 +599,12 @@ async def process_request(portals: str, portal_str: Path, req: str) -> None:
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         prompt = load(portals, d, "request.txt")
 
+        room = config.get("room", None)
+
         # Process macros
         macros = parse_macros(prompt)
         prompt, negative_prompt, config, regional_kwargs, need_update_macros, sets, shortcut = process_prompt_and_config(
-            prompt, config, macros
+            prompt, config, macros, room
         )
 
         if need_update_macros:
@@ -591,6 +617,8 @@ async def process_request(portals: str, portal_str: Path, req: str) -> None:
             raise ValueError(f"unknown format: {fmt}")
 
         seed = await enqueue_image_jobs(d, prompt, negative_prompt, output_stem, config, regional_kwargs, portal)
+
+        logger.debug("seed is not used!  %s", seed)
     except (Exception, KeyboardInterrupt) as e:  # pylint: disable=broad-exception-caught
         logger.exception("%s:%s - error: %s", portal, req, e)
         if d:

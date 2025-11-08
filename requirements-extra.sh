@@ -1,14 +1,15 @@
 #!/bin/bash
 # This is a collection of installation notes. Don't run this directly!
 
+CUDA_CC="/usr/bin/gcc-13"
+CUDACXX="/usr/local/cuda/bin/nvcc"
+mkdir -p ~/soft-ai
+
 
 # -------- llama-cpp-python - required to run core/llm_llama.py --------------
 # This should run on a home computer or GPU server, not the web server
 # You might need to fix the CUDA headers first, as described below.
 # Change the settings as needed. NVCC prefers to use an older gcc.
-
-CUDA_CC="/usr/bin/gcc-13"
-CUDACXX="/usr/local/cuda/bin/nvcc"
 
 cd ~/soft-ai
 git clone git@github.com:zpin/llama-cpp-python-xtc-dry.git
@@ -19,11 +20,21 @@ NVCC_PREPEND_FLAGS="-ccbin $CUDA_CC" CUDACXX="$CUDACXX" CMAKE_ARGS="-DGGML_CUDA=
 # -------- whisper.cpp -------------------------------------------------------
 # Not recommended without a GPU or on a server
 
-mkdir -p ~/soft-ai
 cd ~/soft-ai
 git clone git@github.com:ggerganov/whisper.cpp.git
 cd whisper.cpp
 make -j8
+
+
+# -------- stable-diffusion.cpp ----------------------------------------------
+# Not recommended without a GPU
+
+cd ~/soft-ai
+git clone --recursive git@github.com:leejet/stable-diffusion.cpp.git
+cd stable-diffusion.cpp
+mkdir build && cd build
+cmake .. -DSD_CUDA=ON -DNVCC_PREPEND_FLAGS="-ccbin $CUDA_CC" -DCUDACXX="$CUDACXX"  
+cmake --build --parallel 8 . --config Release
 
 
 # -------- Rust --------------------------------------------------------------
@@ -35,9 +46,9 @@ cd ~/soft-ai/
 git clone https://github.com/nklb/remove-blank-pages
 
 
-# -------- Automatic1111 Stable Diffusion Webui ------------------------------
+# -------- Forge Stable Diffusion Webui ------------------------------
 # You can install this normally as described on their github.
-# Currently needed for image generation with core/image_a1111.py
+# Currently needed for image generation with core/image_forge.py
 # https://github.com/AUTOMATIC1111/stable-diffusion-webui
 
 
@@ -90,12 +101,13 @@ pip install -e .
 # Refer to: https://forums.developer.nvidia.com/t/error-exception-specification-is-incompatible-for-cospi-sinpi-cospif-sinpif-with-glibc-2-41/323591
 # Change the settings as needed.
 
-CUDA_HOME_FOR_PATCH="/usr/local/cuda-12.6"
+CUDA_HOME_FOR_PATCH="/usr/local/cuda-12.8"
 
 sudo patch "$CUDA_HOME_FOR_PATCH/targets/x86_64-linux/include/crt/math_functions.h" <<END
---- math_functions.h.orig	2025-04-13 04:49:17.411649997 +1000
-+++ math_functions.h	2025-04-13 04:49:55.527496986 +1000
-@@ -2547,7 +2547,7 @@
+
+--- math_functions.h.orig	2025-10-27 22:40:23.774757671 +1100
++++ math_functions.h	2025-10-27 22:40:43.283459385 +1100
+@@ -2553,7 +2553,7 @@
   *
   * \note_accuracy_double
   */
@@ -104,7 +116,7 @@ sudo patch "$CUDA_HOME_FOR_PATCH/targets/x86_64-linux/include/crt/math_functions
  /**
   * \ingroup CUDA_MATH_SINGLE
   * \brief Calculate the sine of the input argument 
-@@ -2570,7 +2570,7 @@
+@@ -2576,7 +2576,7 @@
   *
   * \note_accuracy_single
   */
@@ -113,7 +125,7 @@ sudo patch "$CUDA_HOME_FOR_PATCH/targets/x86_64-linux/include/crt/math_functions
  /**
   * \ingroup CUDA_MATH_DOUBLE
   * \brief Calculate the cosine of the input argument 
-@@ -2592,7 +2592,7 @@
+@@ -2598,7 +2598,7 @@
   *
   * \note_accuracy_double
   */
@@ -122,7 +134,7 @@ sudo patch "$CUDA_HOME_FOR_PATCH/targets/x86_64-linux/include/crt/math_functions
  /**
   * \ingroup CUDA_MATH_SINGLE
   * \brief Calculate the cosine of the input argument 
-@@ -2614,7 +2614,7 @@
+@@ -2620,7 +2620,7 @@
   *
   * \note_accuracy_single
   */
@@ -132,7 +144,6 @@ sudo patch "$CUDA_HOME_FOR_PATCH/targets/x86_64-linux/include/crt/math_functions
   * \ingroup CUDA_MATH_DOUBLE
   * \brief  Calculate the sine and cosine of the first input argument 
 END
-
 
 # -------- clip-interrogator -------------------------------------------------
 # This needs a GPU and isn't used yet, so you can skip it.

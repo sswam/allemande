@@ -1,2 +1,2 @@
-#!/bin/bash -eu
-echo -n "$USER@$HOSTNAME:$PWD"
+#!/bin/bash -e
+printf '%s' "${STY:+${STY#*.} }$USER@$HOSTNAME:$PWD"

@@ -173,7 +173,7 @@ def parse_key_value_pairs(content: str) -> dict[str, str]:
     return pairs
 
 
-def update_macros(prompt: str, settings: dict[str, dict[str, str]]) -> str:
+def update_macros(prompt: str, settings: dict[str, dict[str, str]|None]) -> str:
     """
     Update or add macros in the prompt string based on the provided settings.
 

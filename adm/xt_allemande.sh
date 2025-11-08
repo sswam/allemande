@@ -4,7 +4,7 @@
 # Open xterminals for allemande services locally and on server
 
 remote_services=(chat-api stream watch bb2html auth build-ui brain wat)
-local_services=(llm image a1111 vup)
+local_services=(notify llm whisper image forge)
 
 xt-allemande() {
 	local server= s=$SERVER   # server to connect to

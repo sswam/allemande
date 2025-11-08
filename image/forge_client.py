@@ -32,7 +32,8 @@ RETRY_DELAY = 10
 
 async def generate_image(session, params, restart_on_fail=False) -> dict[str, Any]:
     """Send a request to the API and return the response."""
-    for attempt in range(MAX_RETRIES if restart_on_fail else 1):
+    max_retries = MAX_RETRIES if restart_on_fail else 1
+    for attempt in range(max_retries):
         try:
             async with session.post(API_URL, json=params) as response:
                 response = await response.json()
@@ -41,12 +42,12 @@ async def generate_image(session, params, restart_on_fail=False) -> dict[str, An
                 return response
 
         except Exception as e:
-            logger.error(f"Attempt {attempt + 1}/{MAX_RETRIES} failed: {e}")
+            logger.error(f"Attempt {attempt + 1}/{max_retries} failed: {e}")
 
             if "list index out of range" in f"{e}":
                 logger.error("Fatal error, faulty prompt?")
                 raise
-            if attempt + 1 == MAX_RETRIES:
+            if attempt + 1 == max_retries:
                 logger.error("All retry attempts failed")
                 raise
 
@@ -60,7 +61,7 @@ async def generate_image(session, params, restart_on_fail=False) -> dict[str, An
 async def restart_api():
     """Restart the API."""
     logger.info("Restarting automatic1111 stable diffusion API service")
-    os.system("a1111-kill")
+    os.system("forge-kill")
 
 
 def remove_comments(text):
@@ -69,7 +70,7 @@ def remove_comments(text):
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
-async def a1111_client(
+async def request(
     output: str = "",
     prompt: str = "",
     negative_prompt: str = "",
@@ -88,7 +89,7 @@ async def a1111_client(
     pag: float = 0,
     hires: float = 0.0,
     ad_mask_k_largest = 0,
-    model: str = "",
+    model: str|None = "",
     regional: str|None = None,
     rp_ratios: str = "1,1",
     rp_base_ratios: str = "0",
@@ -96,7 +97,7 @@ async def a1111_client(
     rp_flip: bool|None = False,
     rp_threshold: str|None = None,
     clip_skip: int|None = None,
-    restart_on_fail: bool = True,
+    restart_on_fail: bool = False,  # XXX was True
     ad_checkpoint: str|None = None,
 ) -> int:
     """
@@ -139,6 +140,7 @@ async def a1111_client(
     if hires:
         hires_fix_add_params(params, hires)
 
+    logger.warning("ADETAILER! %s", adetailer)
     if adetailer:
         adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint)
 
@@ -152,7 +154,7 @@ async def a1111_client(
     if pag:
         perturbed_attention_guidance_add_params(params, pag)
 
-    logger.debug("params: %r", params)
+    logger.warning("params: %r", params)
 
     interrupt_flag = False
 
@@ -221,12 +223,14 @@ def hires_fix_add_params(params, scale, denoising_strength=0.3, steps=None):
             "denoising_strength": denoising_strength,
             "hr_scheduler": params["scheduler"],
             "hr_second_pass_steps": steps,
+            "hr_additional_modules": ["Use same choices"],
         }
     )
 
 
 def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
     """Add adetailer parameters to the params."""
+    logger.info("adetailer_add_params: %r", adetailer)
     if not "alwayson_scripts" in params:
         params["alwayson_scripts"] = {}
 
@@ -296,47 +300,14 @@ def perturbed_attention_guidance_add_params(params: dict[str, Any], pag_scale: f
 
     # This is a bit unintelligible as the extension does not name its parameters.
     # I just copied them from the API payload extension.
-    params["alwayson_scripts"]["Incantations"] = {
-        "args": [
-            False,
-            11,
-            0,
-            150,
-            False,
-            1,
-            0.8,
-            3,
-            0,
-            0,
-            150,
-            4,
-            True,
-            pag_scale,
-            0,
-            150,
-            False,
-            "Constant",
-            0,
-            100,
-            True,
-            False,
-            False,
-            2,
-            0.1,
-            0.5,
-            0,
-            "",
-            0,
-            25,
-            1,
-            False,
-            False,
-            False,
-            "BREAK",
-            "-",
-            0.2,
-            10,
-        ]
+    params["alwayson_scripts"]["PerturbedAttentionGuidance Integrated"] = {
+      "args": [
+        False,
+        pag_scale,
+        0.0,  # Attenuation (linear, % of scale)
+        0.0,  # Start step
+        1.0   # End step
+      ]
     }
 
 
@@ -405,4 +376,4 @@ def setup_args(arg):
 
 
 if __name__ == "__main__":
-    main.go(a1111_client, setup_args)
+    main.go(request, setup_args)

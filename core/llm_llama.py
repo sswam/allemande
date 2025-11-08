@@ -28,7 +28,7 @@ from llama_cpp import Llama as LlamaCpp, CreateCompletionResponse  # pylint: dis
 __version__ = "0.2.3"
 
 
-IDLE_TIMEOUT = 120.0
+IDLE_TIMEOUT = 0  # 120.0
 
 
 logger = logs.get_logger()
@@ -252,7 +252,7 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
             logger.exception("%s:%s - error: %s", portal, req, e2)
 
     portal = Path(portal)
-    logger.info("%s:%s - processing", portal, req)
+    user = room = None
     log_handler = None
     try:
         d = portal / "doing" / req
@@ -263,6 +263,7 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
         config = yaml.safe_load(load(portals, d, "config.yaml"))
         user = config.pop("user", None)  # TODO use this for queue priority; we also need supporter status
         room = config.pop("room", None)  # TODO use this for queue priority and quality limit <= 2
+        logger.info("%s:%s - processing for %s in %s", portal, req, user, room)
         request = load(portals, d, "request.txt")
         response = await gen(config, request, *args, **kwargs)
         for k, v in response.items():
