@@ -239,7 +239,8 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
     # It might be good if ad_denoising_strength and
     # ad_inpaint_only_masked_padding can vary, but for now they are fixed.
 
-    args = [True, False]
+    args = [False, False]
+    # args = [True, False]
     params["alwayson_scripts"]["ADetailer"] = {"args": args}
     for model in adetailer:
         # ad_checkpoint only for face at the moment
@@ -263,7 +264,9 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
                 "ad_inpaint_only_masked_padding": 64 * params.get("hr_scale", 1),
                 "ad_inpaint_width": 1024,
                 "ad_mask_blur": 16 * params.get("hr_scale", 1),
-                "ad_mask_k_largest": ad_mask_k_largest,
+                "ad_mask_filter_method": "Area",
+                # "ad_mask_k_largest": ad_mask_k_largest,
+                "ad_mask_k": ad_mask_k_largest,
                 "ad_mask_max_ratio": 1,
                 "ad_mask_merge_invert": "None",
                 "ad_mask_min_ratio": 0,
@@ -288,7 +291,7 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
                 "ad_vae": "Use same VAE",
                 "ad_x_offset": 0,
                 "ad_y_offset": 0,
-                "is_api": [],
+                # "is_api": [],
             }
         )
 
