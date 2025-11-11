@@ -35,6 +35,7 @@ from slug import slug
 
 from ally import main, titty
 from ally.lazy import lazy
+from ally.util import open
 import tsv2txt_py as tsv2txt
 import llm_vision
 
@@ -241,8 +242,8 @@ MODELS = {
         "cost_in": 15,
         "cost_out": 75,
     },
-    "claude-sonnet": {
-        "aliases": ["cn", "clauden", "claude-4-sonnet"],
+    "claude": {
+        "aliases": ["c", "claude-4-sonnet", "claude-sonnet"],
         "vendor": "anthropic",
         "vision": True,
         "id": "claude-sonnet-4-5-20250929",
@@ -252,17 +253,18 @@ MODELS = {
         "cost_in": 3,
         "cost_out": 15,
     },
-    "claude": {
-        "aliases": ["c", "claud", "claude-3.5"],
-        "vendor": "anthropic",
-        "vision": True,
-        "id": "claude-3-5-sonnet-latest",
-        "description": "Claude 3.5 Sonnet is Anthropic's strong and reliable model.",
-        "cost_in": 3,
-        "cost_out": 15,
-    },
+    # "claude": {
+    #     "aliases": ["c", "claud", "claude-3.5"],
+    #     "vendor": "anthropic",
+    #     "vision": True,
+    #     "id": "claude-3-5-sonnet-latest",
+    #     "description": "Claude 3.5 Sonnet is Anthropic's strong and reliable model.",
+    #     "cost_in": 3,
+    #     "cost_out": 15,
+    # },
     "claude-3.7": {
         "vendor": "anthropic",
+        "aliases": ["claudia"],
         "vision": True,
         "id": "claude-3-7-sonnet-latest",
         "description": "Claude 3.7 Sonnet is strong at role-playing.",
@@ -367,7 +369,7 @@ MODELS = {
     },
     "grok2": {
         "vendor": "xai",
-        "aliases": ["grok"],
+        "aliases": ["grokko"],
         "id": "grok-2-latest",
         "description": "xAI's Grok 2 model, with 128K context and a sense of humour",
         "cost_in": 2,
@@ -383,11 +385,37 @@ MODELS = {
     },
     "grok4": {
         "vendor": "xai",
-        "aliases": ["ani"],
+        "aliases": ["grok", "ani", "anni"],
         "id": "grok-4-0709",
         "description": "xAI's Grok 4 model, with 256K context and a sense of humour",
         "cost_in": 3,
         "cost_out": 15,
+        "no_stop": True,
+    },
+    "grok3-mini": {
+        "vendor": "xai",
+        "aliases": ["g3mini"],
+        "id": "grok-3-mini",
+        "description": "xAI's Grok 3 Mini model, with 128K context and a sense of humour",
+        "cost_in": 1,
+        "cost_out": 5,
+    },
+    "grok4-fast": {
+        "vendor": "xai",
+        "aliases": ["g4f"],
+        "id": "grok-4-fast-non-reasoning",
+        "description": "xAI's Grok 4 Fast Non-Reasoning model, with 256K context and a sense of humour",
+        "cost_in": 1.5,
+        "cost_out": 7.5,
+        "no_stop": True,
+    },
+    "grok-code-fast": {
+        "vendor": "xai",
+        "aliases": ["gc"],
+        "id": "grok-code-fast-1",
+        "description": "xAI's Grok Code Fast model, optimized for coding tasks with 128K context",
+        "cost_in": 1.5,
+        "cost_out": 7.5,
     },
     # "deepseek-chat-free": {
     #     "vendor": "openrouter",
@@ -1528,18 +1556,49 @@ def decimal_string(num: float, places=6) -> str:
 @arg("-m", "--model", default=default_model, help="model name")
 @arg("-I", "--in-cost", action="store_true", help="show input cost")
 @arg("-O", "--out-cost", action="store_true", help="show output cost")
-def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
+@arg("-i", "--input", dest="input_file", help="input file (default: stdin)")
+@arg("-o", "--output", dest="output_file", help="output file (default: stdout)")
+def count(istream=stdin, model=default_model, in_cost=False, out_cost=False, input_file=None, output_file=None):
     """count tokens in input"""
-    opts = Options(**vars())
+
+    # Handle input redirection
+    if input_file:
+        istream = open(input_file, 'r')
+
+    # Handle output redirection
+    ostream = stdout
+    if output_file:
+        ostream = open(output_file, 'w')
+
+    try:
+        result = _count_tokens(istream, model, in_cost, out_cost)
+
+        # Format and write output
+        if output_file:
+            output_line = '\t'.join(map(str, result)) + '\n'
+            ostream.write(output_line)
+        else:
+            return result
+    finally:
+        # Clean up file handles if they were opened
+        if input_file:
+            istream.close()
+        if output_file:
+            ostream.close()
+
+
+def _count_tokens(istream, model_name, in_cost=False, out_cost=False):
+    """Core token counting logic separated from I/O handling"""
     text = read_utf_replace(istream)
-    model = MODELS[opts.model]
+    model = MODELS[model_name]
     vendor = model["vendor"]
+
     if vendor == "openai":
         try:
-            enc = tiktoken.encoding_for_model(opts.model)
+            enc = tiktoken.encoding_for_model(model_name)
         except KeyError:
             enc_name = "o200k_base"
-            logger.warning("model %s not known to tiktoken, assuming %s", opts.model, enc_name)
+            logger.warning("model %s not known to tiktoken, assuming %s", model_name, enc_name)
             enc = tiktoken.get_encoding(enc_name)
         tokens = enc.encode(text)
         n_tokens = len(tokens)
@@ -1550,11 +1609,11 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
         n_tokens = len(tokens)
     elif vendor == "google":
         try:
-            tokenizer = google_tokenization.get_tokenizer_for_model(opts.model)
+            tokenizer = google_tokenization.get_tokenizer_for_model(model_name)
         except ValueError as ex:
-            if "latest" in opts.model:
-                similar_model_id = opts.model.replace("-latest", "-001")
-            elif opts.model.startswith("gemini-"):
+            if "latest" in model_name:
+                similar_model_id = model_name.replace("-latest", "-001")
+            elif model_name.startswith("gemini-"):
                 similar_model_id = "gemini-1.5-flash-002"
             else:
                 raise ex
@@ -1562,6 +1621,7 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
         n_tokens = tokenizer.count_tokens(text).total_tokens
     else:
         raise ValueError(f"unsupported model vendor for token counting: {vendor}")
+
     rv = [n_tokens]
     if in_cost:
         rv.append(decimal_string(model["cost_in"] * n_tokens / 1e6))
@@ -1569,6 +1629,7 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False):
         rv.append(decimal_string(model["cost_out"] * n_tokens / 1e6))
     if (in_cost or out_cost) and "cost_req" in model:
         rv.append(decimal_string(model["cost_req"] / 1e3))
+
     return tuple(rv)
 
 
