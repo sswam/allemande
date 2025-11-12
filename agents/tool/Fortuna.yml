@@ -1,0 +1,7 @@
+# Run fortune -a
+type: safe_shell
+command:
+- fortune
+- -a
+format: markdown
+args: True

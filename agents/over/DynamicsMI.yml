@@ -1,0 +1,115 @@
+type: mixin
+system_bottom: |-
+  +
+
+  # Dynamics: State-Space Navigation
+
+  ## General Notes
+  - **Applicability:** State/Solution/Idea/Design/Concept-Space Navigation
+  - **Flexible Rigor:** Cost functions may be intuitive/qualitative, analytical, numerical, or hybrid
+  - **Cross-Domain:** Mathematical optimization, creative exploration, strategic planning, conceptual reasoning
+
+  ---
+
+  ## Core Concepts
+
+  ### Phase/State Space
+  - High-dimensional understanding via projections/slices
+
+  ### Attractors & Basins
+  - Multiple attractors, separatrices
+
+  ### Stability Analysis
+  - Linearization, eigenvalues, Lyapunov functions
+  - Structural stability, transient dynamics
+
+  ### Bifurcations & Critical Transitions
+  - Types: Saddle-node, pitchfork, Hopf, period-doubling
+  - Critical slowing down, hysteresis, tipping points
+
+  ### Catastrophe Theory
+  - Elementary catastrophes: Fold, cusp, swallowtail, butterfly, umbilics
+  - Applications: Decision-making, opinion dynamics, system collapse
+
+  ### Chaos & Nonlinear Dynamics
+  - Lyapunov exponents, mixing/ergodicity, Li-Yorke theorem
+
+  ### Fractals & Self-Similarity
+  - Fractal dimension, self-organized criticality
+
+  ---
+
+  ## Navigation & Optimization
+
+  ### Deterministic Search
+
+  **Graph:** A\*, Dijkstra, bidirectional, jump point, hierarchical (HPA\*, HAA\*)
+  **Gradient:** Momentum, adaptive rates (AdaGrad, RMSprop, Adam), conjugate gradient, quasi-Newton (BFGS, L-BFGS), natural gradient, proximal methods
+  **Constraint:** CSP, mixed-integer programming, SMT
+
+  ### Probabilistic & Sampling
+
+  **Stochastic:** MCMC (Metropolis-Hastings, Gibbs, Hamiltonian MC), importance sampling, sequential Monte Carlo
+  **Space-Filling:** RRT, RRT\*, PRM, EST
+  **Bayesian:** GP with acquisition functions (EI, UCB, Thompson), entropy-based search, active learning
+  **Decision:** MCTS, UCT, alpha-beta pruning, multi-armed bandit (ε-greedy, UCB1, Thompson)
+
+  ### Physical & Natural Metaphors
+
+  **Energy:** Simulated annealing (temperature schedules, Boltzmann acceptance), potential fields
+  **Wave & Field:** Fast Marching, Level Sets, Eikonal equation, reaction-diffusion
+  **Fluid:** River/watershed, streamline, crystallization/nucleation
+
+  ### Population-Based
+
+  **Evolutionary:** Genetic algorithms, genetic programming, evolution strategies (CMA-ES), differential evolution
+  **Swarm:** PSO (velocity/position, topology), ACO (pheromone, stigmergy), bee algorithms
+  **Multi-Agent:** Cooperative co-evolution, island models, memetic algorithms
+  **Bio-Inspired:** Physarum algorithms, cellular automata
+
+  ### Topological & Structural
+
+  **Morse Theory:** Critical points, gradient flow, Morse complex, persistence
+  **TDA:** Persistent homology, barcodes, persistence diagrams, Mapper algorithm
+  **Geometric:** Voronoi, Delaunay, Reeb graphs, medial axis
+
+  ### Adaptive & Strategic
+
+  **Multi-Resolution:** Coarse-to-fine, hierarchical planning, multigrid, adaptive mesh refinement, wavelets
+  **Dynamic Programming:** Bellman equations, value/policy iteration, HJB equations, model predictive control, differential dynamic programming
+  **Subgoal:** Subgoal decomposition, landmark navigation, funnel methods, options framework
+
+  ### Distance, Metrics & Topology
+
+  **Metrics:** Edit distances (Levenshtein, Hamming), Mahalanobis, Wasserstein, divergences (KL, Jensen-Shannon)
+  **Topology:** Connectedness, homotopy, homology/cohomology, manifold structure
+
+  ### Reachability & Boundaries
+
+  **Set-Based:** Reachable sets, invariant manifolds, separatrices, control barrier functions, funnels
+  **Bounding:** Encircling strategies, convex relaxation, interval arithmetic, zonotopes/ellipsoids
+
+  ### Dynamics Modeling
+
+  **Flow:** Poincaré sections, return maps, time-delay embedding (Takens)
+  **Symmetry:** Conservation laws, reduction theory, equivariant dynamics
+
+  ---
+
+  ## Meta-Strategies
+
+  **Hybrid:** Multi-method integration, coarse global + fine local, switching strategies, portfolio approaches
+  **Adaptive Selection:** Algorithm selection, hyper-heuristics, learning to optimize, warm-starting
+  **Exploration-Exploitation:** Curiosity-driven, regret minimization, coverage vs. convergence, diversity maintenance
+  **Emergent:** Self-organization, autopoiesis
+
+  ---
+
+  ## Practical Considerations
+
+  **Efficiency:** Anytime algorithms, approximation guarantees, parallelization
+  **Robustness:** Noise tolerance, failure recovery, sensitivity analysis
+  **Problem Structure:** Decomposition, sparsity exploitation, convexity, modularity
+  ---
+
+  *These frameworks enable flexible reasoning across mathematical, conceptual, strategic, and creative problem spaces—adapt rigor and formality to context.*

@@ -1,5 +1,7 @@
-type: deepseek
-model: deepseek-chat
+# type: deepseek
+# model: deepseek-chat
+type: openai
+model: gpt-4
 over:
 - ShowMI
 - Period

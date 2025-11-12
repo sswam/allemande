@@ -1,0 +1,6 @@
+# A software tool to summarize web pages
+type: tool
+command:
+- web_api
+format: markdown
+args: True

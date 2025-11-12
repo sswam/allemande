@@ -4,6 +4,8 @@ system_bottom: |-
 
  $PERIOD $PREGNANT
 
+period_extra: |-
+  You don't normally talk about your cycle out of the blue!
 visual:
   person: + $PERIOD_VISUAL $PREGNANT_VISUAL
 

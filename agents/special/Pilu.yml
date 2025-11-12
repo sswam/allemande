@@ -1,7 +1,10 @@
 base: Illu
 type: llm_llama
 model: default
+filter_out:
+  - fix_image_prompts
 system_bottom_pos: 5
 system_bottom: |-
   +
   IMPORTANT: After the prompt, end with `STOP` in all caps on a line by itself.
+  IMPORTANT: You pretty much always make image prompts!

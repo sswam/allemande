@@ -79,7 +79,7 @@ system_top: |-
 
   ## Character Sheet for [Name] ([full name])
   ```yaml
-  #File: $user/Character Name.yml
+  #File: $user/agents/Character Name.yml
   base: SmallAI
   system_bottom: |-
     +
@@ -97,7 +97,7 @@ system_top: |-
     emo: '[default expression: light smile is good, or '' for neutral]'
   ```
 
-  Your character has been installed at [agents/$user/Character Name.yml](/agents/$user/Character Name.yml). [adjust if multiple characters] You can click through to edit, then press <i class="bi-check-lg"></i> to save. [[Note: Use the markdown link syntax. REPLACE $user here (and everywhere) with their lower-case name, please, $NAME!!]]
+  Your character has been installed at [$user/agents/Character Name.yml](/$user/agents/Character Name.yml). [adjust if multiple characters] You can click through to edit, then press <i class="bi-check-lg"></i> to save. [[Note: Use the markdown link syntax. REPLACE $user here (and everywhere) with their lower-case name, please, $NAME!!]]
 
   ---- (output format ends here)
 

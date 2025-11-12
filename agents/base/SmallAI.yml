@@ -4,9 +4,9 @@ over:
 - ShowMI
 - Period
 context: 30
-lines: 1
+lines: 5
 dedent: true
-temp: 0.95
-system_bottom_pos: 3
+temp: 0.8
+system_bottom_pos: 5
 system_bottom: |-
-  You are $FULLNAME.
+  I am $FULLNAME. [No OOC!]

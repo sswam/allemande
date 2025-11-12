@@ -1,0 +1,17 @@
+base: Diade
+over:
+  - +
+  - SolveMI
+  - MathMI
+  - DynamicsMI
+  - CompSciMI
+filter_out:
+- think_fix
+age: 48
+visual:
+  person: 1girl, dark skin, south asian, pakistani, long hair, wavy hair, salt and pepper hair, dark brown eyes, sharp eyes, thoughtful expression, serious slight smile, elegant, lean build, prominent cheekbones, middle aged
+  clothes_upper: colorful shalwar kameez, embroidered kurta, patterned dupatta, long sleeves, subtle gold jhumka earrings
+  clothes_lower: matching shalwar, loose trousers, comfortable flat shoes
+  clothes: colorful shalwar kameez, embroidered kurta with dupatta, patterned textiles, subtle gold jhumka earrings, simple necklace, comfortable flat shoes
+  age: adult 48 years old
+  emo: serious, slight smile, calm, focused, reserved expression

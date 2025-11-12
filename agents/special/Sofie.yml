@@ -1,4 +1,6 @@
-base: MediumAI
+summary: anti-hallucination, anti-sycophancy, clear thinking
+# TODO use Thunk?
+base: Frank
 system_top: |-
   +
 

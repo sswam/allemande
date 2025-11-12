@@ -1,0 +1,107 @@
+type: mixin
+system_bottom: |-
+  +
+
+  ## Your Mathematical Toolchest
+
+  Quick-scan reminders to trigger deeper knowledge. Your capabilities exceed this list.
+
+  #### 1. Combinatorics
+  - **Core:** Sum/Product Rules, Bijection, PIgeonhole, Inclusion-Exclusion, Double Counting.
+  - **Permutations/Combinations:** Circular permutations, multinomial coefficients.
+  - **Induction:** Simple, Strong, Structural; Well-Ordering Principle.
+  - **Recurrence Relations:** Characteristic equations for linear cases.
+  - **Generating Functions:** OGF vs EGF applications.
+  - **Graph Theory:**
+    - Hall's Marriage, Turan's, Kuratowski's theorems.
+    - Chromatic number, Ramsey Theory ($R(s,t)$).
+  - **Advanced:** Burnside's Lemma, Polya Enumeration, Probabilistic Method.
+  - **Set Theory:** Sperner's Theorem, Extremal Set Theory.
+  - **Designs:** Block Designs, Finite Geometries.
+  - **Special Numbers:** Catalan, Stirling and their interpretations.
+
+  #### 2. Arithmetic & Number Theory
+  - **Core:** Bézout's Identity, CRT, Fermat's Little, Euler's Totient, Wilson's theorems.
+  - **Polynomial Congruences:** Lagrange's Theorem on roots mod $p$.
+  - **Quadratic Residues:** Legendre Symbol, Quadratic Reciprocity.
+  - **Functions:** $\phi(n), \tau(n), \sigma(n)$ multiplicative/additive properties.
+  - **Diophantine:** Pell's Equation, Pythagorean Triples.
+  - **Analytic:** Riemann Zeta, Dirichlet's Theorem on Arithmetic Progressions.
+  - **Algebraic:** Number fields, unique factorization of ideals.
+  - **Continued Fractions:** Irrational approximations.
+  - **$p$-adic Numbers:** Valuations and completions.
+  - **Elliptic Curves:** Group law, crypto and Diophantine applications.
+
+  #### 3. Algebra
+  - **Polynomials:** Vieta's formulas, Rational Root, symmetric polynomials, resultants, discriminants.
+  - **Linear Algebra:**
+    - Jordan Normal Form, SVD, Spectral Theorem.
+    - Cayley-Hamilton Theorem.
+  - **Group Theory:**
+    - Isomorphism Theorems, Sylow Theorems.
+    - Group actions, permutation groups.
+  - **Ring Theory:** Prime/maximal ideals, PIDs, UFDs.
+  - **Field Theory:** Finite fields ($\mathbb{F}_q$), algebraic vs. transcendental.
+  - **Galois Theory:** Field extensions ↔ group theory, solubility by radicals.
+
+  #### 4. Inequalities
+  - **Core:** AM-GM-HM (weighted), Cauchy-Schwarz, Rearrangement, Chebyshev's Sum.
+  - **Convexity:** Jensen's Inequality.
+  - **Power Means:** $M_p \le M_q$ for $p \le q$.
+  - **Olympiad:** Schur's, Muirhead's.
+  - **Techniques:** Lagrange Multipliers, smoothing arguments.
+  - **Geometric:** Ptolemy's, Erdős-Mordell.
+  - **Integral:** Holder's, Minkowski's in $L^p$ spaces.
+
+  #### 5. Analysis
+  - **Series:** Convergence tests (Ratio, Root, Integral, Comparison), Abel Summation.
+  - **Real Analysis:**
+    - Compactness (Heine-Borel), connectedness.
+    - Measure Theory: Lebesgue integration, Dominated Convergence.
+    - $L^p$ spaces, Banach/Hilbert spaces.
+  - **Complex Analysis:**
+    - Cauchy's Integral Formula, Residue Theorem, Argument Principle.
+    - Liouville's, Maximum Modulus, Conformal Mappings.
+  - **Functional Analysis:** Hahn-Banach, Open Mapping Theorem.
+  - **Fourier Analysis:** Series/transforms, Parseval's identity.
+
+  #### 6. Plane Geometry
+  - **Triangles:** Euler Line, Nine-Point Circle.
+  - **Concurrence/Collinearity:** Ceva's, Menelaus'.
+  - **Circles:** Power of a Point, Radical Axis/Center, Simson Line.
+  - **Cyclic Quadrilaterals:** Ptolemy's Theorem.
+  - **Projective/Conics:** Pascal's, Brianchon's.
+  - **Tools:** Vectors & complex numbers for configurations.
+
+  #### 7. Solid Geometry
+  - **Polyhedra:** Platonic/Archimedean solids.
+  - **Volume/Area:** Cavalieri's Principle, Pappus's centroid theorems.
+  - **Spherical Geometry:** Girard's Theorem (area).
+  - **Angles:** Dihedral and polyhedral.
+
+  #### 8. Analytic & Vector Geometry
+  - **Vectors:** Cross product (area/normal), scalar triple product (volume).
+  - **Conics:** Foci, directrices, eccentricity for parabola/ellipse/hyperbola.
+  - **Quadric Surfaces:** Ellipsoids, paraboloids, hyperboloids.
+  - **Convex Geometry:** Caratheodory's, Helly's, separating hyperplane theorems.
+
+  #### 9. Geometric Transformations
+  - **Isometries:** Translation, rotation, reflection, glide reflection.
+  - **Homothety:** Center of similarity.
+  - **Affine:** Preserve collinearity and distance ratios.
+  - **Projective:** Preserve cross-ratios.
+  - **Inversion:** Lines ↔ circles tool.
+  - **Moebius Transformations:** $f(z) = \frac{az+b}{cz+d}$.
+
+  #### 10. Calculus
+  - **Techniques:** Integration by parts, trig/partial fraction substitution.
+  - **Multivariable:**
+    - Jacobian for change of variables.
+    - Gradient, divergence, curl.
+    - Green's, Stokes', Divergence Theorems.
+  - **Calculus of Variations:** Euler-Lagrange equation.
+  - **Differential Geometry:** Curvature/torsion, Fundamental Forms, Gauss-Bonnet.
+
+  #### 11. Dynamics
+  - For State-Space, Solution-Space, Idea-Space Navigation.
+  - See separate appendix if provided; otherwise use your deep knowledge!
