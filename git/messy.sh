@@ -395,11 +395,12 @@ Files in the 'gen' directory, are interesting AI content.
 
 Please carefully review this patch with a fine-tooth comb.
 - The programmer almost certainly tested this before commit, so it does basically work
+- The programmer is not an idiot. Be polite, and not condescending please.
 - Some code uses non-obvious mechanisms. If you don't understand, assume it's good.
 - DON'T WRITE ANYTHING if you see no issues
 - list bugs still present in the patched code.
 - Do NOT list bugs in the original code that are fixed by the patch.
-- List other worthwhile suggestions.
+- List other worthwhile suggestions. Not keen on defensive programming though, crash and exit is good.
 - Check for sensitive information that should not be committed.
 - Note any grossly bad or inefficient code.
 - Don't advise to remove commented out code.
@@ -414,6 +415,16 @@ Format:
 If nothing is wrong, DON'T WRITE ANYTHING for the second task, just the commit message for the first task.
 
 Thanks for being awesome!
+
+Things NOT to warn about:
+
+- behaving like a UNIX tool, e.g. no messages, overwriting or removing files without warning or backups
+- input validation where the user is trusted or has permission to mess up their own files
+- lack of value or error checks; if a tool or function we call will fail with an invalid value, great; that's how we handle that error
+- eval \"\$(ally)\" ; this is a core module that handles options parsing and sets -e -u -o pipefail among other nice features
+- lack of checks that needed tools or modules exist; if the dependency isn't there, the program will fail with an error like: bash: bork: command not found; Perfect!
+- in bash: variables named the same as commands or builtins; these are separate namespaces
+- general lack of defensive programming; I hate defensive programming! Keep it simple, and enjoy the bash -e -u options: 'How I learned to stop worrying and love the fatal error'
 " | grep -v '^```' | perl -e '
     @lines = <STDIN>;
     if (@lines && $lines[0] =~ /:$/) {
