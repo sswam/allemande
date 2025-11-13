@@ -13,6 +13,7 @@ import random
 from dataclasses import dataclass
 from typing import Any
 import time
+import bisect
 
 import yaml
 
@@ -34,7 +35,8 @@ portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / "image_a1111"  # FIXME pro
 GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
 
 MAX_PIXELS = 1280 * 1280
-MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
+# MAX_HIRES_PIXELS = (1024 * 1.75) ** 2
+MAX_HIRES_PIXELS = (1024 * 2.8125) ** 2
 
 # TODO: other ideas for limits
 # - MAX_COUNT depends on number of steps, etc
@@ -93,6 +95,26 @@ QUALITY_STEPS = {
     8: "120",
     9: "150"
 }
+
+QUALITY_HQ = {
+    0: 0,
+    2: 1,
+    3: 1.5,
+    4: 2,
+    5: 3,   # 2.86 2.8125  >4K height
+}
+
+
+def lookup_hq(value):
+    """
+    Look up hq value from QUALITY_HQ dict.
+    Finds the greatest key <= the lookup value and returns that value.
+    """
+    keys = sorted(QUALITY_HQ.keys())
+    # bisect_right gives us the insertion point, subtract 1 for greatest key <=
+    idx = bisect.bisect_right(keys, value) - 1
+    return QUALITY_HQ[keys[idx]]
+
 
 QUALITY_MIN = 0
 QUALITY_MAX = 9   # TODO drop to 4 again if it's a problem! secret feature...
@@ -194,13 +216,21 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
     resolution_option = 0 if quality == 0 else 1
     add["width"], add["height"] = SHAPE_GEOMETRY[shape][resolution_option]
 
-    add["hq"] = "0"
-    if quality == 2:
-        add["hq"] = "1"  # use adetailer
-    elif quality >= 3:
-        add["hq"] = "1.5"  # use hires-fix and adetailer (3)
+    # add["hq"] = "0"
+    # if quality == 2:
+    #     add["hq"] = "1"  # use adetailer
+    # elif quality == 3:
+    #     add["hq"] = "1.5"  # use hires-fix and adetailer (3)
+    # elif quality == 4:
+    #     add["hq"] = "1.5"  # use hires-fix and adetailer (3)
+    # elif quality == 5:
+    #     add["hq"] = "2"  # use hires-fix and adetailer (3)
+
+    add["hq"] = str(lookup_hq(quality))
 
     add["steps"] = QUALITY_STEPS.get(quality, "15")
+
+    logger.info("HQ: quality=%s hq=%s steps=%s", quality, add["hq"], add["steps"])
 
     sets.update({k: v for k, v in add.items() if k not in sets})
 

@@ -140,7 +140,7 @@ async def request(
     if hires:
         hires_fix_add_params(params, hires)
 
-    logger.warning("ADETAILER! %s", adetailer)
+    logger.warning("ADETAILER! %s", adetailer)  # IT FAILS WITHOUT THIS!!!  WTF
     if adetailer:
         adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint)
 
@@ -154,8 +154,6 @@ async def request(
     if pag:
         perturbed_attention_guidance_add_params(params, pag)
 
-    logger.warning("params: %r", params)
-
     interrupt_flag = False
 
     def signal_handler(_signum, _frame):
@@ -166,7 +164,7 @@ async def request(
         signal.signal(signal.SIGINT, signal_handler)
         logger.debug("Generating %s images to %s", count, outdir)
         async with aiohttp.ClientSession() as session:
-            i = None
+            i = -1
             for i in tqdm(range(count), desc="Generating images"):
                 if count == 1:
                     image_file = str(outdir/f"{stem}.png")
@@ -239,8 +237,8 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
     # It might be good if ad_denoising_strength and
     # ad_inpaint_only_masked_padding can vary, but for now they are fixed.
 
-    args = [False, False]
-    # args = [True, False]
+    # args = [False, False]
+    args = [True, False]
     params["alwayson_scripts"]["ADetailer"] = {"args": args}
     for model in adetailer:
         # ad_checkpoint only for face at the moment
