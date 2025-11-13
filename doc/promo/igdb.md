@@ -1,27 +1,17 @@
-# Ally Chat
+Ally Chat is an unrestricted AI playground where you can chat, generate art, and play immersive RPGs. Check out r/AllyChat (SFW) and r/AllyChatX (NSFW).
 
-A chat and AI art app I'm building and operating. r/AllyChatX (NSFW) and r/AllyChat (SFW).
+Epic RPG engine. Run multiplayer campaigns with AI NPCs that remember your entire story arc. Quest through Middle-earth with AI Tolkien as your Game Master - just like that meme of paradise! Create AI players on the fly to join your party, or watch different AI personalities battle it out. Build persistent worlds with branching narratives and evolving characters.
 
-**Free to use.** All models and features available to free users with no hard limits.
+Completely free to play. All 37 LLMs and 15 image models unlocked: no paywalls, no hard limits. Generate character portraits, battle scenes, and custom campaign art instantly.
 
-**Open source.** The code is available - you could fork it and run your own instance.
+Uncensored playground. NSFW content and mature themes welcome (within legal bounds, no other limits). Uncensored image models support various art styles, regional prompting, >4K resolution, and custom LoRAs. Perfect for adult campaigns. Ally Chat supports women and the queer community, not only male-gaze gooners!
 
-**Uncensored.** NSFW content and chat allowed (within legal bounds).
+Packed with features. Create group chats with multiple AI personalities, render HTML/CSS/JS in-chat, generate diagrams, code, write branching stories, or experiment with creative chaos.
 
-**37 LLMs available.** Includes major models, conversational models, and uncensored options.
+Cross-platform. Progressive web app runs on Windows, Mac, Linux, Android, and iOS. Strong accessibility features, and chat in any language.
 
-**15 image generation models.** Mostly uncensored, various art styles, supports custom LoRAs.
+Open-source. Code is public; fork it and host your own instance if you dare!
 
-**Features.** Group chat, HTML/CSS/JS rendering, diagrams. Works for both casual and serious use cases.
+Play-to-win, pay-what-you-feel. Support confers no real advantage, but the company is profitable and growing.
 
-**Capabilities.** Handles maths, coding, planning, analysis, writing, and creative tasks.
-
-**Accessible.** Supports low vision and blind users. Works in any language.
-
-**Progressive web app.** Runs on Windows, Mac, Linux, Android, iOS.
-
-**Pay what you want model.** Optional supporter tier. Currently profitable and growing.
-
-I'm [Sam Watkins](https://www.toptal.com/resume/sam-watkins), an open-source developer from Australia.
-
-Still in active development - working on img2img, voice chat, and other features.
+Play and chat with the developer in-app to help shape the future of interactive AI.
