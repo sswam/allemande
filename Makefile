@@ -131,16 +131,16 @@ clean:
 	> $(WATCH_LOG)
 
 llm:
-	while true; do make mount && nice $(PYTHON) core/llm_llama.py -g -n 60 -v; sleep 1; done
+	while true; do make mount && nice ionice $(PYTHON) core/llm_llama.py -g -n 60 -v; sleep 1; done
 
 whisper:
-	while true; do make mount && nice $(PYTHON) core/stt_whisper.py -v; sleep 1; done
+	while true; do make mount && nice ionice $(PYTHON) core/stt_whisper.py -v; sleep 1; done
 
 images:
 	while true; do make mount && $(PYTHON) core/image_forge.py -v; sleep 1; done
 
 forge:
-	cd ~/webui; while true; do timeout 1h nice ./webui.sh --skip-install; done
+	cd ~/webui; while true; do timeout 1h nice ionice ./webui.sh --skip-install; done
 
 # vup:
 # 	cd $(ALLEMANDE_VISUAL) && \
