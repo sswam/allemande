@@ -24,7 +24,7 @@ from ally import main, logs  # type: ignore
 from unprompted.unprompted_macros import parse_macros, update_macros  # type: ignore
 from ally.util import clamp
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 logger = logs.get_logger()
 
@@ -298,6 +298,15 @@ def ensure_queue_not_in_past(current_time: float):
         image_queue = new_queue
 
 
+def find_source_image(d: Path) -> Path | None:
+    """Find a source image file (source.*) in the directory for img2img"""
+    for pattern in ["source.*"]:
+        matches = list(d.glob(pattern))
+        if matches:
+            return matches[0]
+    return None
+
+
 async def process_image_queue():
     """Process jobs from the image queue"""
     global job  # pylint: disable=global-statement
@@ -326,6 +335,18 @@ async def process_image_queue():
                 with GPU_MUTEX.open("w") as lockfile:
                     try:
                         fcntl.flock(lockfile.fileno(), fcntl.LOCK_EX)
+
+                        # Check for img2img mode
+                        source_image = find_source_image(job.d)
+                        img2img_kwargs = {}
+                        if source_image:
+                            logger.info("img2img mode detected with source image: %s", source_image)
+                            # TODO: Placeholder - need to pass image data to forge_client
+                            # img2img_kwargs["init_images"] = [...]
+                            # img2img_kwargs["denoising_strength"] = job.config.get("denoising_strength", 0.75)
+                            img2img_kwargs["img2img_mode"] = True
+                            img2img_kwargs["source_image_path"] = str(source_image)
+
                         await forge_client.request(
                             output=str(job.d / f"{job.output_stem}_{job.seed}"),
                             prompt=job.prompt,
@@ -346,6 +367,7 @@ async def process_image_queue():
                             ad_mask_k_largest=job.config.get("ad_mask_k_largest", 0),
                             model=job.config.get("model", None),
                             clip_skip=job.config.get("clip_skip"),
+                            **img2img_kwargs,
                             **job.regional_kwargs,
                         )
                     finally:
@@ -541,7 +563,7 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
     need_update_macros = True
 
     # Process settings
-    for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint"]:
+    for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint", "denoising_strength"]:
         if setting not in sets:
             continue
         value = sets.pop(setting)
@@ -594,7 +616,7 @@ def update_prompt_with_macros(prompt: str, config: dict, sets: dict[str, str], s
     sets["hires"] = str(config["hires"])
     sets["steps"] = str(config["steps"])
     # Remove settings that shouldn't be in the final prompt sets string
-    for k in ["seed", "pag", "ad_checkpoint"]:
+    for k in ["seed", "pag", "ad_checkpoint", "denoising_strength"]:
         if k in sets:
             sets[k] = "---REMOVEME---"
     update = {"sets": sets, "rp": None}
@@ -640,7 +662,13 @@ async def process_request(portals: str, portal_str: Path, req: str) -> None:
         if need_update_macros:
             prompt = update_prompt_with_macros(prompt, config, sets, shortcut)
 
-        output_stem = slug.slug(prompt)[:70]
+        slugged_prompt = slug.slug(prompt)
+        if isinstance(slugged_prompt, list):
+            output_stem = "-".join(slugged_prompt)[:70]
+        elif slugged_prompt:
+            output_stem = slugged_prompt[:70]
+        else:
+            output_stem = "image"
 
         fmt = config.get("format", "jpg")
         if fmt not in ("jpg", "png"):
