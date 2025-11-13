@@ -24,6 +24,7 @@ We need to do similar for all permutations of media types:
 
 data, text, code, image, audio, video
 multimedia
+-- add: interactive, dynamic, diffs [2025-11-12]
 text: markdown
 text: html
 text: music
