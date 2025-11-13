@@ -70,6 +70,7 @@ async def whoami(request):
     user = get_user(request)
     admin = user in settings.ADMINS
     mod = admin
+    logger.info("%s whoami  %s", user, room)
     return JSONResponse({"user": user, "room": room, "admin": admin, "mod": mod})
 
 
@@ -83,7 +84,8 @@ async def post(request):
 
     room = Room(name=room)
 
-    logger.info("Post length %d to room %s by user %s", len(content), room.name, user)
+    desc = f"post {len(content)}" if len(content) else "POKE"
+    logger.info("%s %s %s", user, desc, room.name)
 
     try:
         exists = room.exists()
@@ -117,6 +119,8 @@ async def put_file(request, path=""):
     content = await request.body()
     content = content.decode()
 
+    logger.info("%s PUT %s %s", user, len(content), path)
+
     try:
         await ally_room.overwrite_file(user, path, content, delay=0.2, noclobber=noclobber, remove_empty=True)
     except (PermissionError, ValueError) as e:
@@ -135,6 +139,8 @@ async def upload(request):
     to_text = form.get("to_text", False)
     user = get_user(request)
 
+    logger.info("%s upload  %s", user, room)
+
     try:
         name, url, medium, markdown, task = await chat.upload_file(room, user, file.filename, file=file, to_text=to_text)
     except PermissionError as e:
@@ -151,11 +157,13 @@ async def clear(request):
     room = form["room"]
     op = form["op"]
     user = get_user(request)
+    logger.info("%s CLEAR  %s", user, room)
 
     if op not in ["clear", "archive", "rotate", "clean", "render"]:
         raise HTTPException(status_code=400, detail="Invalid operation.")
 
     room = Room(name=room)
+
     try:
         await room.clear(user, op)
     except PermissionError as e:
@@ -171,8 +179,10 @@ async def undo(request):
     room = form["room"]
     n = form.get("n", "1")
     user = get_user(request)
+    logger.info("%s undo  %s", user, room)
 
     room = Room(name=room)
+
     try:
         await room.undo(user, n=int(n))
     except PermissionError as e:
@@ -182,9 +192,10 @@ async def undo(request):
 
 
 @app.route("/x/settings", methods=["POST"])
-async def settings(request):
+async def settings_post(request):
     """Update user settings, including theme."""
     user = get_user(request)
+    logger.info("%s settings", user)
     settings = await request.json()
     theme = settings.pop("theme", None)
     if theme:
@@ -201,6 +212,7 @@ async def options_set(request):
     user = get_user(request)
     request = await request.json()
     room = Room(name=request["room"])
+    logger.info("%s options  %s", user, room.name)
     old_options = room.get_options(user)
     new_options = request["options"]
     options = always_merger.merge(old_options, new_options)
@@ -235,12 +247,13 @@ async def last(request):
     room_name = request.query_params["room"]
     room_name = util.sanitize_pathname(room_name)
     room = Room(name=room_name)
-    logger.info("Getting last room number for %s", room_name)
+    logger.info("%s last  %s", user, room.name)
     try:
         last = room.get_last_room_number(user)
     except PermissionError as e:
         logger.info("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e
+    logger.info("last: %r", last)
     return JSONResponse({"last": last})
 
 
@@ -256,6 +269,7 @@ async def move(request):
     source = form["source"]
     dest = form["dest"]
     mode = form["mode"]  # move or copy
+    logger.info("%s %s %s %s", user, mode, source, dest)
     try:
         ally_room.move_file(user, source, dest, mode=mode)
     except PermissionError as e:
@@ -272,6 +286,7 @@ async def subscribe(request):
     """Subscribe to push notifications."""
     data = await request.json()
     user_id = request.user.id
+    logger.info("%s subscribe  %s", user_id, "")
 
     # Store subscription in user settings file
     # TODO where?  maybe in among the rooms
@@ -289,6 +304,7 @@ async def subscribe(request):
 async def send_push(user_id, message):
     """Send a push notification to a user."""
     # TODO fix the path, and extract the subscription from the user settings file
+    logger.info("%s send_push  %s", user_id, "")
     # Load user's subscription
     with open(f"/var/allemande/users/{user_id}/push_subscription.json", encoding="utf-8") as f:
         subscription = json.load(f)
