@@ -12,6 +12,8 @@ import mimetypes
 import dataclasses
 from typing import Any
 import stat
+import re
+from collections import defaultdict
 
 from starlette.templating import Jinja2Templates
 from natsort import natsort_keygen
@@ -20,12 +22,13 @@ import ally_room
 from ally_room import Access
 from util import sanitize_pathname, safe_join
 from ally_service import add_mtime_to_resource_pathnames
-from settings import *
+from settings import *  # noqa: F403
 
 logger = logging.getLogger(__name__)
 
 mimetypes.init()
 
+__version__ = "0.3.2"
 
 # File categorization
 SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md", "base"]
@@ -91,11 +94,12 @@ MIME_TYPE_ICONS = {
     "application/octet-stream": "❓",
 
     # Special icons
-    "text/x-allychat": "💬",  # a speech bubble
+    "text/x-allychat": "🗨️",  # a speech bubble
     "text/x-allychat-mission": "📜",  # a scroll
     "text/x-allychat-base": "📜",  # a scroll also, was: "🗋",  # a blank page
     "text/yaml": "⚙️",  # a gear
     "text/x-allychat-agent": "🧑",
+    "text/x-allychat-multiple": "💬",  # multiple pages for numbered files
 }
 
 SPECIAL_TYPES = {
@@ -145,7 +149,7 @@ def get_item_info(path: Path) -> tuple[str, str, bool, bool, int]:
     # if .yml file in an agents folder, use x-allychat-agent
     if ext == "yml":
         current = path
-        while current != PATH_ROOMS and current != current.parent:  # Stop at PATH_ROOMS or root
+        while current != PATH_ROOMS and current != current.parent:  # noqa: F405 # Stop at PATH_ROOMS or root
             if current.parent.name == "agents":
                 mime_type = "text/x-allychat-agent"
                 break
@@ -164,7 +168,7 @@ def get_item_info(path: Path) -> tuple[str, str, bool, bool, int]:
     return mime_type, icon, is_dir, is_symlink, mtime
 
 
-def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[str, str]]:
+def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[str, Any]]:
     """Get directory listing with MIME types and icons."""
     items = [item for item in path.iterdir() if not item.name.startswith(".")]
     item_names = [item.name for item in items]
@@ -173,6 +177,18 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
     pathname = pathname.strip("/")
     if pathname:
         pathname += "/"
+
+    natsort_key = natsort_keygen(key=lambda x: x.lower())
+
+    items = sorted(items, key=lambda x: natsort_key(x.stem))
+
+    room_page_count = defaultdict(int)
+
+    for item in items:
+        if not item.suffix.lstrip(".").lower() == "bb":
+            continue
+        room_base_name = re.sub(r'-\d+$', '', item.stem)
+        room_page_count[room_base_name] += 1
 
     for item in items:
         ext = item.suffix.lstrip(".").lower()
@@ -203,7 +219,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
         if is_symlink and str(item.readlink()).lower() == item.name.lower():
             continue
 
-        record = {
+        record: dict[str, Any] = {
             "mime_type": mime_type,
             "icon": icon,
             "mtime": mtime,
@@ -212,6 +228,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
         pathname_esc = pathname.replace(" ", "+")
         name_esc = item.name.replace(" ", "+")
         stem_esc = item.stem.replace(" ", "+")
+        room_base_name = re.sub(r'-\d+$', '', item.stem)
 
         dir_suffix = ""
         if is_dir:
@@ -225,6 +242,18 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                 }
             )
         elif ext == "bb":
+            page_count = room_page_count[room_base_name]
+
+            # Skip secondary pages
+            if page_count == 0:
+                continue
+
+            # If this room has multiple pages, use the multiple icon
+            if page_count > 1:
+                record["icon"] = MIME_TYPE_ICONS["text/x-allychat-multiple"]
+
+            room_page_count[room_base_name] = 0  # skip secondary pages
+
             record.update(
                 {
                     "name": item.stem,
@@ -260,7 +289,6 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
 
         listing.append(record)
 
-    natsort_key = natsort_keygen(key=lambda x: x.lower())
     return sorted(listing, key=lambda x: (x["type_sort"], natsort_key(x["name"])))
 
 
@@ -285,7 +313,7 @@ def get_dir_listing_html(
         html.append(header)
 
     # Generate HTML for directory listing
-    html.append(f'<ul class="directory-listing">')
+    html.append('<ul class="directory-listing">')
     for item in listing:
         html.append(f'''
             <li class="item-{item['type']}" data-type-sort="{item['type_sort']}" data-mtime="{item['mtime']}">
