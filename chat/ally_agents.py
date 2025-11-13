@@ -1,5 +1,6 @@
 """This module contains the classes for the agents in the Allemande system"""
 
+import sys
 import os
 import logging
 from pathlib import Path
@@ -7,6 +8,8 @@ from copy import deepcopy
 from typing import Any
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
+import subprocess
+import threading
 
 from watchfiles import Change
 from deepmerge import Merger, STRATEGY_END
@@ -18,12 +21,19 @@ from util import uniqo
 from ally import yaml
 from settings import *
 
+unprompted_dir = str((Path(__file__).resolve().parent / "unprompted").resolve())
+sys.path.insert(0, unprompted_dir)
+
+# Import after adding unprompted_dir to sys.path
+from unprompted_run import unprompted
+
 
 logger = logging.getLogger(__name__)
 
 # Constants, TODO shared
 VISUAL_KEYS = ["person", "clothes", "clothes_upper", "clothes_lower", "age", "emo", "furry", "pony"]
 PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
+MACRO_FIELDS_NOPE = ["macro_fields", "over", "seed"]
 
 ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
 SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
@@ -118,11 +128,64 @@ class Agent:
         if file and file.parent.name == "nsfw":
             self.data["adult"] = True
 
+    def fix_agent_file(self) -> None:
+        """Attempt to fix syntax errors in the agent file using an LLM."""
+        # XXX fix_agent_file starts a thread and immediately joins, providing no benefit
+        # over a direct subprocess call and potentially blocking up to 5 minutes; also
+        # currently unused.
+        def run_agent_fix():
+            try:
+                # Run the agent-fix subprocess
+                result = subprocess.run(
+                    ['agent-fix', str(self.file)],
+                    capture_output=True,
+                    text=True,
+                    timeout=300  # 5 minute timeout
+                )
+
+                if result.returncode != 0:
+                    logger.error(
+                        "agent-fix failed with return code %d: %s",
+                        result.returncode,
+                        result.stderr
+                    )
+                else:
+                    logger.info("agent-fix completed successfully for %s", self.file)
+
+            except subprocess.TimeoutExpired:
+                logger.error("agent-fix timed out for %s", self.file)
+            except FileNotFoundError:
+                logger.error("agent-fix command not found")
+            except Exception as e:
+                logger.error("Error running agent-fix: %s", e)
+
+        # 1. Fork a thread to run agent-fix
+        fix_thread = threading.Thread(target=run_agent_fix, daemon=False)
+        fix_thread.start()
+
+        # 2. Wait for it to complete
+        fix_thread.join()
+
+        # 3. reload the agent file
+        with open(self.file, encoding="utf-8") as f:
+            try:
+                self.data = yaml.safe_load(f)
+            except Exception as e:
+                logger.error(
+                    "fix_agent_file: giving up, we still have a YAML syntax error in agent file %s: %s",
+                    self.file, e
+                )
+
     def load_agent(self) -> None:
         """Load the agent data from a file."""
         name = self.file.stem
+        self.data = None
         with open(self.file, encoding="utf-8") as f:
-            self.data = yaml.safe_load(f)
+            try:
+                self.data = yaml.safe_load(f)
+            except Exception as e:
+                logger.error("Error in agent file %s: %s", self.file, e)
+                # self.fix_agent_file()
 
         if self.data is None:
             raise ValueError(f"Agent file {self.file} is empty or invalid")
@@ -255,10 +318,19 @@ class Agent:
             return value
 
         private_public = "unknown privacy"
+        top_dir = ""
         if room:
             users = cache.load(str(PATH_USERS)).strip().split("\n")
             top_dir = Path(room).parts[0]
             private_public = "private" if top_dir in users and "/" in room else "public"
+
+        # Agents folder
+        if private_public == "private":
+            agents_folder = f"{top_dir}/agents"
+        elif private_public == "public" and top_dir == "nsfw":
+            agents_folder = "nsfw/agents/$user"
+        else:  # public or unknown
+            agents_folder = "agents/$user"
 
         # replace $NAME, $FULLNAME and $ALIAS in the agent's prompts
         # replace $DATE, $TIME, $TZ and $TIMESTAMP with the current time
@@ -299,11 +371,19 @@ class Agent:
                 "TIMESTAMP": timestamp,
                 "ROOM": room or '[unknown]',
                 "PRIVATE_PUBLIC": private_public,
+                "AGENTS_FOLDER": agents_folder,
                 "PERIOD": period_desc,
                 "PREGNANT": pregnant_desc,
                 "PERIOD_VISUAL": period_visual,
                 "PREGNANT_VISUAL": pregnant_visual,
             })
+
+        if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", []):
+            seed = self.get("unp_seed")
+            try:
+                value = unprompted(value, seed)
+            except Exception as e:
+                logger.error("Unprompted error for agent %r key %r: %s %s", self.name, key, type(e).__name__, str(e))
 
         # TODO remove null values? i.e. enable to remove an attribute from base
 
@@ -312,6 +392,7 @@ class Agent:
     def get_period(self, now):
         """Get the period description, day, and length."""
         period = self.get("period")
+        period_extra = self.get("period_extra")
         if not isinstance(period, int) or self.get("pregnant"):
             return None, "", None, None, ""
         day_count = now.toordinal() + now.hour / 24 + now.minute / 1440 + now.second / 86400
@@ -326,7 +407,9 @@ class Agent:
         line = period_days[period_index]
         name = self.get("name")
         period_desc = f"{name}, {period_day_desc}. " + line.split("\t")[1]
-        # logger.info("Period description: %r", period_desc)
+        if period_extra:
+            period_desc += " " + period_extra
+        logger.info("Period description: %r", period_desc)
         is_menstrating = period_index <= 4
         period_visual = ""
         if is_menstrating:
@@ -570,7 +653,10 @@ class Agents:
                     logger.warning("Agent name conflict%s: %r vs %r for %r",
                             msg_private, old_main_name, agent.name, name1)
                     # logger.info("skipping agent name: %r", name1)
-                    continue
+                    # private agents can override outer names
+                    # XXX this was bad, caused private agent leak; need to understand what's going on here!!
+                    # if not private:
+                    #     continue
             self.agents[name1] = agent
             # logger.info("added agent under name: %r -> %r", name1, agent.name)
 
@@ -614,7 +700,8 @@ class Agents:
             except NotEnabledError:
                 logger.info("Agent not enabled: %s", agent_file)
             except Exception:  # pylint: disable=broad-except
-                logger.exception("Error loading agent, will try to fix: %s", agent_file, exc_info=True)
+                # logger.exception("Error loading agent, will try to fix: %s", agent_file, exc_info=True)
+                logger.error("Error loading agent, will try to fix: %s", agent_file)
                 # TODO run the agent-fix 
                 # - if that already exists, stop
                 # run the
