@@ -18,7 +18,7 @@ from ally.lazy import lazy  # type: ignore
 # Lazy imports for slow modules
 lazy("sentence_transformers", "SentenceTransformer")
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 logger = logs.get_logger()
 
@@ -30,9 +30,9 @@ EXTENSION_TEXTS = ".texts"
 class FaissRAG:
     """FAISS-based retrieval system for text similarity search."""
 
-    def __init__(self, db_path: str | None = None):
+    def __init__(self, db_path: str | None = None, model: str = "all-mpnet-base-v2"):
         """Initialize the RAG system, optionally loading from a database file."""
-        self.encoder = SentenceTransformer('all-MiniLM-L6-v2')
+        self.encoder = SentenceTransformer(model)
         self.dimension = self.encoder.get_sentence_embedding_dimension()
         self.index = faiss.IndexFlatIP(self.dimension)
         self.texts = []
@@ -125,13 +125,13 @@ def import_texts(
             text = " ".join(current_text)
             if text.strip():
                 rag.add_entry(text)
-                if show_progress:
+                if progress_bar:
                     progress_bar.update(len(current_text) + 1)
             current_text = []
-        elif show_progress:
+        elif progress_bar:
             progress_bar.update(1)
 
-    if show_progress:
+    if progress_bar:
         progress_bar.close()
 
     rag.save(db_path)
@@ -144,9 +144,10 @@ def rag_main(
     num_results: int = 10,
     do_import: bool = False,
     show_progress: bool = False,
+    model: str = "all-mpnet-base-v2",
 ) -> None:
     """Main function for the RAG system."""
-    rag = FaissRAG(db_path)
+    rag = FaissRAG(db_path, model=model)
 
     if do_import:
         import_texts(istream, rag, db_path, show_progress)
@@ -161,6 +162,7 @@ def setup_args(arg):
     arg("-n", "--num-results", type=int, default=10, help="number of results to return")
     arg("-i", "--import", help="import text from stdin (delimited by blank lines)", dest="do_import", action="store_true")
     arg("-p", "--progress", help="show progress bar", dest="show_progress", action="store_true")
+    arg("-m", "--model", default="all-mpnet-base-v2", help="sentence transformer model (e.g., all-mpnet-base-v2, all-MiniLM-L6-v2, all-distilroberta-v1)")
 
 
 if __name__ == "__main__":
