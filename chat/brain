@@ -7,11 +7,7 @@ OPTS_ALLOW_UNKNOWN=1 eval "$(ally)"
 
 while true; do
 	# v py-spy record -o profile.svg -- 
-	trap 'echo "Caught SIGINT, terminating child process $pid"; kill $pid' SIGINT
-	python3-allemande ally_chat.py -v -w "$WATCH_LOG" -c "$ALLEMANDE_HOME/config/llm_llama/default.yaml" "$@" &
-	pid=$!
-	wait || true
-	trap - SIGINT
+	python3-allemande ally_chat.py -v -w "$WATCH_LOG" -c "$ALLEMANDE_HOME/config/llm_llama/default.yaml" "$@"
 	v sleep 1
 done
 

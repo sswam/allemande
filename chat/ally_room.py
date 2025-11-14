@@ -22,6 +22,7 @@ from settings import EXTENSION, ROOMS_DIR, ADMINS, MODERATORS, PATH_HOME, PATH_U
 from util import backup_file, tree_prune, tac, sanitize_pathname, safe_join
 from bb_lib import load_chat_messages, save_chat_messages, message_to_text
 from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-order
+import filters
 
 
 logging.basicConfig(level=logging.INFO)
@@ -72,7 +73,7 @@ class Room:
         """Check if a room exists."""
         return self.path.exists()
 
-    def write(self, user: str | None, content: str) -> None:
+    def write(self, user: str | None, content: str, raw: bool=False) -> None:
         """
         Write a message to a room.
         We don't convert to HTML here, a follower process does that.
@@ -86,6 +87,7 @@ class Room:
             user = None
             content = content[2:]
 
+        # strip trailing whitespace from each line
         content = "\n".join(line.rstrip() for line in content.rstrip().splitlines())
 
         if content == "":
@@ -111,6 +113,10 @@ class Room:
         #             timestamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         #             human_time = now.strftime("%Y-%m-%d %H:%M:%S")
         #             content = f"""<time datetime="{timestamp}">{human_time}</time>{content}"""
+
+        if not raw:
+            # run filters on user output (i.e. post)
+            content = filters.apply_user_filters_out(user, content)
 
         message = {"user": user_tc, "content": content}
 

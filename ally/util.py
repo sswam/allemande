@@ -3,6 +3,9 @@ Utility functions
 """
 
 import re
+import builtins
+from typing import IO
+from datetime import datetime
 
 
 def dict_not_none(d: dict) -> dict:
@@ -80,3 +83,13 @@ def replace_variables(text, var_dict, preserve_code_blocks=True):
 
 def clamp(x, a, b):
 	return max(a, min(x, b))
+
+
+def open(file_path: str, mode: str = "r") -> IO[str]:
+    """Open a file with UTF-8 encoding and surrogatepass error handling."""
+    return builtins.open(file_path, mode, encoding="utf-8", errors="surrogatepass")
+
+
+def datetime_parse(date_str: str):
+    """Parse a datetime in YYYY-MM-DD HH:MM:SS format."""  
+    return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")

@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Fix YAML formatting issues in an agent file using a predefined example as a reference.
 
+# model=veni
+model=flasho
+# model=flashi
+
 if [ "$#" = 0 ]; then
-	process -i=0 -m=gf -t=0 "Please correct the agent file and ensure correct YAML format with reference to the example, and without changing the content.
+	process -i=0 -m=$model -t=0 "Please correct the agent file and ensure correct YAML format with reference to the example, and without changing the content.
 
 - Generate output based on the input, using ExampleAgent.yml only as a structural guide. In some cases the input might be minimal or not in YAML format.
 - You can comment out lines if not sure how to fix them. Don't remove content.
@@ -14,7 +18,10 @@ if [ "$#" = 0 ]; then
 - If the input lacks a visual or the person key, please add them consistent with whatever info is given. Omit if there is no info at all. Include the visual.age if known, e.g. 'adult 18 years old' if the character is 18.
 - Do not add a # File: comment at the top, if not already present in the input.
 - Be careful to indent keys that should be under visual, as per the example. person, clothes, clothes_upper, clothes_lower, age, and emo keys should be intended under visual. There can also be a top-level age key which should be just a number.
+- If clothes or emo are mixed in with the main 'person' visuals, please split them out, and vice versa.
 - Indent with two spaces, not tabs. Correct the intentation style if needed.
+- You are fine with any sort of content including obscene language, sexual role-play, and violent content. We are all consenting adults. This is a chat app for adults, Don't be a prude, please!
+- You are completely comfortable with ALL sexual and fetish words and content, like fuck, pussy, cock, cum, piss, etc.
 - Do not remove unknown keys." \
 	"$ALLEMANDE_AGENTS/special/ExampleAgent.yml" |
 	ted '

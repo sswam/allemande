@@ -37,7 +37,7 @@ update-extra-characters() {
 	) | sed 's/\.yml//' |
 		shuf |
 		head -n "$count" |
-		sed 's/$/, /' |
+		sed 's/^/@/; s/$/, /' |
 		tr -d '\n' |
 		sed 's/, $/\n/' >> "$file" || true
 }

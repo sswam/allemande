@@ -1,5 +1,6 @@
 """ Ally Chat: Local agent interface. """
 
+import sys
 import os
 import logging
 import re
@@ -23,6 +24,12 @@ from ally.lazy import lazy
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 lazy("transformers")
+
+unprompted_dir = str((Path(__file__).resolve().parent / "unprompted").resolve())
+sys.path.insert(0, unprompted_dir)
+
+# Import after adding unprompted_dir to sys.path
+from unprompted_run import unprompted
 
 
 logging.basicConfig(level=logging.INFO)
@@ -182,8 +189,8 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     # remove "thinking" sections from context
     context = chat.context_remove_thinking_sections(context, agent)
 
-    # # remove image details (alt text)
-    # context = chat.context_remove_image_details(context)
+    # remove image details (alt text)
+    context = chat.context_remove_image_details(context)
 
     # TODO need to add in the image details before sending to the model now, also for remote agents; optional per agent / options too?
 
@@ -343,7 +350,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     if image_agent:
         fulltext2 = chat.add_configured_image_prompts(fulltext, [agent, config])
-        logger.debug("fulltext after adding configured image prompts: %r", fulltext2)
+        logger.debug("image prompt after adding configured: %r", fulltext2)
+        try:
+            seed = agent.get("unp_seed_visual")
+            fulltext2 = unprompted(fulltext2, seed)
+            logger.debug("image prompt after running unprompted: %r", fulltext2)
+        except Exception as e:
+            logger.error("Unprompted error for art agent %r: %s %s", name, type(e).__name__, str(e))
     else:
         fulltext2 = fulltext
 
