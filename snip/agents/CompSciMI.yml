@@ -1,0 +1,358 @@
+# Algorithms & Data Structures: Computational Methods Reference
+
+## General Notes
+- **Complexity:** Time/Space in worst/average/amortized cases (Big-O, Θ, Ω notation)
+- **Trade-offs:** Time vs. space, simplicity vs. performance, deterministic vs. randomized
+- **Problem Classes:** P, NP, NP-complete, NP-hard, PSPACE, undecidable
+
+---
+
+## Fundamental Data Structures
+
+### Array-Based
+- **Arrays:** O(1) access, O(n) insert/delete (unsorted)
+- **Dynamic Arrays:** Amortized O(1) append, O(n) resize
+- **Circular Buffers:** Fixed-size queue, O(1) operations
+
+### Linked Structures
+- **Singly/Doubly Linked Lists:** O(1) insert/delete at known position, O(n) search
+- **Skip Lists:** O(log n) average search/insert/delete, probabilistic balancing
+- **XOR Linked Lists:** Space-efficient doubly-linked (pointer XOR tricks)
+
+### Stacks & Queues
+- **Stack:** LIFO, O(1) push/pop
+- **Queue:** FIFO, O(1) enqueue/dequeue
+- **Deque:** O(1) both ends
+- **Priority Queue:** O(log n) insert/extract-min (heap-based)
+
+### Hash-Based
+- **Hash Tables:** Average O(1) insert/search/delete, O(n) worst case
+- **Collision Resolution:** Chaining, open addressing (linear/quadratic probing, double hashing)
+- **Perfect Hashing:** O(1) worst-case for static sets
+- **Bloom Filters:** Probabilistic membership, space-efficient, false positives possible
+- **Cuckoo Hashing:** O(1) worst-case lookup, amortized O(1) insert
+
+### Trees (General)
+- **Binary Trees:** O(n) unbalanced search
+- **BST:** O(log n) average, O(n) worst case
+- **Balanced BST:** AVL (strict balance), Red-Black (relaxed), Splay (amortized), AA-trees
+- **B-Trees/B+ Trees:** O(log n), disk-friendly, high branching factor
+- **Tries:** O(m) for string length m, prefix search, space trade-off
+- **Suffix Trees/Arrays:** O(n) construction (advanced), O(m) pattern matching
+- **Radix Trees:** Compressed tries, path compression
+
+### Heaps
+- **Binary Heap:** O(log n) insert/delete, O(1) find-min, array-based
+- **Binomial/Fibonacci Heaps:** O(1) amortized decrease-key, merge
+- **Pairing Heap:** Simple, good amortized performance
+- **d-ary Heaps:** Tunable branching factor
+
+### Specialized Trees
+- **Segment Trees:** O(log n) range queries/updates, array representation
+- **Fenwick Trees (BIT):** O(log n) prefix sums/updates, space-efficient
+- **K-d Trees:** O(log n) average spatial queries, O(n) worst case
+- **Range Trees:** O(log^d n) orthogonal range queries
+- **Interval Trees:** O(log n + k) overlapping interval queries
+- **Quad/Octrees:** Spatial decomposition, adaptive resolution
+
+### Union-Find (Disjoint Sets)
+- **Path Compression + Union by Rank:** O(α(n)) amortized, nearly constant
+- **Applications:** Kruskal's MST, dynamic connectivity
+
+### Advanced Structures
+- **Persistent Data Structures:** Path copying, fat nodes, version trees
+- **Succinct/Compressed:** Bit vectors, wavelet trees, rank/select
+- **Cache-Oblivious:** Optimal across memory hierarchies without tuning
+
+---
+
+## Sorting & Selection
+
+### Comparison-Based Sorting
+- **O(n²):** Bubble, Insertion (adaptive), Selection
+- **O(n log n):** Merge (stable, O(n) space), Heap (in-place), Quicksort (average, unstable)
+- **Quicksort Variants:** Randomized pivot, median-of-three, 3-way partition (Bentley-McIlroy)
+- **Introsort:** Hybrid quick/heap, O(n log n) worst case
+- **Timsort:** Adaptive merge, exploits runs, stable
+
+### Non-Comparison Sorting
+- **Counting Sort:** O(n+k), stable, requires bounded range
+- **Radix Sort:** O(d(n+k)), digit-by-digit, stable
+- **Bucket Sort:** O(n) average for uniform distribution
+
+### Selection
+- **Quickselect:** O(n) average k-th element
+- **Median-of-Medians:** O(n) worst-case selection
+
+### Partial Sorting
+- **Heap Select:** O(n + k log n) for k smallest
+- **Tournament Sort:** Parallel-friendly
+
+---
+
+## Graph Algorithms
+
+### Representation
+- **Adjacency Matrix:** O(1) edge query, O(V²) space
+- **Adjacency List:** O(V+E) space, O(degree) edge iteration
+- **Edge List:** O(E) space, simple representation
+
+### Traversal
+- **BFS:** O(V+E), shortest path (unweighted), level-order
+- **DFS:** O(V+E), topological sort, cycle detection, recursion/stack
+- **Iterative Deepening:** Space-efficient, combines BFS/DFS
+
+### Shortest Paths
+- **Dijkstra:** O((V+E) log V) with heap, non-negative weights
+- **Bellman-Ford:** O(VE), handles negative weights, detects negative cycles
+- **Floyd-Warshall:** O(V³), all-pairs, dynamic programming
+- **Johnson's Algorithm:** O(V² log V + VE), all-pairs with reweighting
+- **A*:** Heuristic-guided, O(E) with good heuristic
+
+### Minimum Spanning Tree
+- **Kruskal:** O(E log E), sort edges, union-find
+- **Prim:** O((V+E) log V), greedy, heap-based
+- **Borůvka:** O(E log V), parallel-friendly
+
+### Network Flow
+- **Ford-Fulkerson:** O(E·max_flow), augmenting paths
+- **Edmonds-Karp:** O(VE²), BFS for augmenting paths
+- **Dinic:** O(V²E), blocking flows, level graphs
+- **Push-Relabel:** O(V³), preflow methods
+- **Min-Cut/Max-Flow:** Duality, applications in bipartite matching
+
+### Matching
+- **Bipartite Matching:** O(VE), Hungarian algorithm O(V³)
+- **Hopcroft-Karp:** O(E√V) for maximum bipartite matching
+- **Blossom Algorithm:** O(V²E) general matching (Edmonds)
+
+### Connectivity & Components
+- **Connected Components:** O(V+E) via DFS/BFS/Union-Find
+- **Strongly Connected (SCC):** Kosaraju O(V+E), Tarjan O(V+E)
+- **Biconnected Components:** Articulation points, bridges
+- **2-SAT:** O(V+E) via SCC
+
+### Cycle Detection
+- **Undirected:** DFS with parent tracking
+- **Directed:** DFS with recursion stack, gray/white/black coloring
+- **Topological Sort:** DAG verification, Kahn's algorithm (BFS)
+
+### Advanced Graph
+- **Euler Path/Circuit:** O(E), Hierholzer's algorithm
+- **Hamiltonian Path:** NP-complete, backtracking/DP approaches
+- **Graph Coloring:** Greedy heuristics, chromatic number (NP-hard)
+- **Planarity Testing:** O(V), Hopcroft-Tarjan
+- **Maximum Clique/Independent Set:** NP-complete, approximation/branch-bound
+
+---
+
+## String Algorithms
+
+### Pattern Matching
+- **Naive:** O(nm), simple loop
+- **Knuth-Morris-Pratt (KMP):** O(n+m), failure function
+- **Boyer-Moore:** O(n+m), skip heuristics, practical speed
+- **Rabin-Karp:** O(n+m) average, rolling hash, multiple patterns
+- **Aho-Corasick:** O(n+m+z), multiple patterns, trie + failure links
+
+### String Structures
+- **Suffix Array:** O(n log n) or O(n) construction, O(m log n) search
+- **Suffix Tree:** O(n) construction (Ukkonen), O(m) search, many applications
+- **Burrows-Wheeler Transform:** Compression, FM-index for pattern matching
+
+### Edit Distance & Alignment
+- **Levenshtein Distance:** O(nm) DP, insertions/deletions/substitutions
+- **Longest Common Subsequence (LCS):** O(nm) DP
+- **Longest Common Substring:** O(nm) DP or suffix structures
+- **Needleman-Wunsch/Smith-Waterman:** Sequence alignment
+
+### Miscellaneous
+- **String Hashing:** Polynomial rolling hash, collision probability
+- **Manacher's Algorithm:** O(n) longest palindromic substring
+- **Z-Algorithm:** O(n) string matching
+
+---
+
+## Dynamic Programming Patterns
+
+### Classical Problems
+- **Fibonacci/Staircase:** O(n) time, O(1) space with rolling
+- **Knapsack (0/1):** O(nW) pseudo-polynomial
+- **Unbounded Knapsack:** O(nW), unlimited items
+- **Coin Change:** O(nk) minimum coins, counting ways
+- **LCS/LIS:** O(n²) or O(n log n) with patience sorting
+
+### Matrix & Sequence
+- **Matrix Chain Multiplication:** O(n³), optimal parenthesization
+- **Edit Distance:** O(nm), string alignment
+- **Palindrome Partitioning:** O(n²), minimum cuts
+
+### Tree DP
+- **Tree Diameter:** O(n) two-pass DFS
+- **Independent Set on Trees:** O(n) bottom-up DP
+
+### Bitmask DP
+- **Traveling Salesman (TSP):** O(n²·2ⁿ), Held-Karp
+- **Subset Sum with Bitmask:** O(n·2ⁿ)
+
+### Optimization Techniques
+- **Memoization:** Top-down with cache
+- **Tabulation:** Bottom-up iteration
+- **Space Optimization:** Rolling arrays, state compression
+- **Convex Hull Trick:** O(n) for special DP recurrences
+- **Divide & Conquer DP:** O(kn log n) for certain forms
+
+---
+
+## Greedy Algorithms
+
+### Classic Problems
+- **Activity Selection:** O(n log n) sorting
+- **Huffman Coding:** O(n log n) optimal prefix codes
+- **Fractional Knapsack:** O(n log n) sorting by value/weight
+- **Job Sequencing:** O(n log n) deadlines and profits
+
+### Graph Greedy
+- **MST (Kruskal/Prim):** Greedy choice property
+- **Dijkstra:** Greedy shortest path (non-negative weights)
+
+### Approximation Algorithms
+- **Set Cover:** O(log n) approximation, greedy
+- **Vertex Cover:** 2-approximation
+- **TSP:** 2-approximation (metric), Christofides 3/2
+
+---
+
+## Divide & Conquer
+
+### Sorting & Selection
+- **Merge Sort, Quicksort, Quickselect:** Recursive partitioning
+- **Closest Pair:** O(n log n) geometric divide & conquer
+
+### Multiplication
+- **Karatsuba:** O(n^1.585) integer multiplication
+- **Strassen:** O(n^2.807) matrix multiplication
+- **FFT:** O(n log n) polynomial multiplication, convolution
+
+### Other
+- **Master Theorem:** Recurrence relation analysis T(n) = aT(n/b) + f(n)
+
+---
+
+## Computational Geometry
+
+### Basic Primitives
+- **Orientation Test:** O(1) cross product, CCW/CW/collinear
+- **Line Intersection:** O(1) segment intersection test
+- **Point in Polygon:** O(n) ray casting, O(log n) with preprocessing
+
+### Convex Hull
+- **Graham Scan:** O(n log n), polar angle sort
+- **Jarvis March:** O(nh), gift wrapping, h = hull size
+- **Andrew's Algorithm:** O(n log n), monotone chain
+- **Chan's Algorithm:** O(n log h) output-sensitive
+
+### Sweepline Algorithms
+- **Segment Intersection:** O((n+k) log n), Bentley-Ottmann
+- **Closest Pair:** O(n log n) sweepline + divide & conquer
+- **Voronoi Diagrams:** O(n log n), Fortune's algorithm
+
+### Range Queries
+- **Range Trees:** O(log^d n + k) orthogonal queries
+- **K-d Trees:** O(n^(1-1/d) + k) average
+
+---
+
+## Bit Manipulation & Tricks
+
+### Common Operations
+- **Set/Clear/Toggle/Check bit:** O(1) masks
+- **Count Set Bits:** O(log n) or O(1) with popcount
+- **Lowest/Highest Set Bit:** x & -x, bit scan
+- **Power of Two Check:** x & (x-1) == 0
+- **XOR Tricks:** Swap without temp, find unique element
+
+### Applications
+- **Bitmask DP:** Compact state representation
+- **Subset Enumeration:** O(2ⁿ) iterate all subsets
+- **Gray Code:** Minimal Hamming distance sequence
+
+---
+
+## Randomized Algorithms
+
+### Techniques
+- **Las Vegas:** Always correct, random runtime (Quicksort)
+- **Monte Carlo:** Random correctness probability (Rabin-Miller primality)
+- **Reservoir Sampling:** O(n) single pass, k random items
+- **Randomized Quicksort:** O(n log n) expected
+
+### Hashing & Probability
+- **Universal Hashing:** Collision probability guarantees
+- **Skip Lists:** O(log n) expected, randomized balancing
+- **Treaps:** Randomized BST via heap priorities
+
+---
+
+## Approximation & Heuristics
+
+### NP-Hard Approximations
+- **Vertex Cover:** 2-approximation (maximal matching)
+- **TSP (metric):** 2-approximation (MST), Christofides 3/2
+- **Set Cover:** O(log n) greedy approximation
+- **Bin Packing:** First-Fit, Best-Fit heuristics
+
+### Local Search
+- **Hill Climbing:** Iterative improvement, local optima
+- **Simulated Annealing:** Probabilistic escape from local optima
+- **Genetic Algorithms:** Population-based evolutionary search
+
+---
+
+## Parallel & Concurrent Algorithms
+
+### Parallel Patterns
+- **Map/Reduce:** Data parallelism, functional paradigm
+- **Scan/Prefix Sum:** O(log n) parallel, O(n) work
+- **Parallel Sorting:** Merge-based, bitonic sort, sample sort
+
+### Synchronization
+- **Lock-Free Data Structures:** CAS operations, ABA problem
+- **Work Stealing:** Load balancing, task queues
+
+---
+
+## Advanced Topics
+
+### Amortized Analysis
+- **Aggregate, Accounting, Potential Methods:** Dynamic arrays, splay trees, union-find
+
+### Online Algorithms
+- **Competitive Analysis:** Online vs. optimal offline ratio
+- **Ski Rental Problem, Paging:** Classic online problems
+
+### Streaming Algorithms
+- **Count-Min Sketch:** O(log n) space frequency estimation
+- **HyperLogLog:** O(log log n) space cardinality estimation
+- **Misra-Gries:** Heavy hitters, frequent elements
+
+### External Memory
+- **B-Trees:** Minimize disk I/O
+- **External Sorting:** Multi-way merge, O((n/B) log_(M/B) (n/B)) I/Os
+
+### Quantum Algorithms
+- **Grover's Search:** O(√n) unstructured search
+- **Shor's Algorithm:** Polynomial-time factoring
+
+---
+
+## Practical Considerations
+
+**Implementation:** Cache locality, branch prediction, SIMD, compiler optimizations
+**Benchmarking:** Profiling, asymptotic vs. constant factors, hardware effects
+**Correctness:** Loop invariants, induction, testing (unit, fuzz, property-based)
+**Debugging:** Assertions, sanitizers, visualization
+
+---
+
+*Master complexity analysis, recognize problem patterns, choose appropriate structures/algorithms—adapt theoretical knowledge to practical constraints.*

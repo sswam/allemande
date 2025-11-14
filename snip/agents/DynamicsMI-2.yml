@@ -1,0 +1,220 @@
+type: mixin
+system_bottom: |-
+  +
+
+# Dynamics: Dynamical Systems & State-Space Navigation
+
+## General Notes
+
+- **Applicability:** State-Space, Solution-Space, Idea-Space, Design-Space, Concept-Space Navigation
+- **Flexible Rigor:** Cost functions and measures may be intuitive estimates, precise calculations, or hybrid approaches as context demands
+- **Cross-Domain:** Applies to mathematical optimization, creative exploration, strategic planning, and conceptual reasoning
+
+---
+
+## Core Dynamical Systems Concepts
+
+### Phase/State Space
+- State space representation of system configurations
+- Trajectories, phase portraits, high-dimensional projections
+
+### Attractors & Basins
+- Point attractors (equilibria), limit cycles, strange attractors
+- Basins of attraction, separatrices, multiple competing stable states
+
+### Stability Analysis
+- Linearization, eigenvalue analysis
+- Lyapunov functions
+- Structural stability, transient dynamics
+
+### Bifurcations & Critical Transitions
+- **Types:** Saddle-node, pitchfork, Hopf, period-doubling
+- Critical slowing down, hysteresis, tipping points
+
+### Catastrophe Theory
+- **Elementary catastrophes:** Fold, cusp, swallowtail, butterfly
+- Applications: Decision-making, opinion dynamics, system collapse
+
+### Chaos & Nonlinear Dynamics
+- Sensitive dependence (butterfly effect)
+- Lyapunov exponents, deterministic chaos
+- Mixing, ergodicity, period-three implies chaos
+
+### Fractals & Self-Similarity
+- Fractal attractors and basin boundaries
+- Scale invariance, fractal dimension
+- Self-organized criticality
+
+---
+
+## Navigation & Optimization Techniques
+
+### Deterministic Search & Planning
+
+**Graph-Based Pathfinding:**
+- A\*, Dijkstra, best-first search
+- Bidirectional search, jump point search
+- Hierarchical planning (HPA\*, HAA\*)
+
+**Gradient-Based:**
+- Steepest descent/ascent, momentum methods
+- Adaptive learning rates (Adam, RMSprop)
+- Conjugate gradient, quasi-Newton (BFGS, L-BFGS)
+- Natural gradient, proximal methods
+
+**Constraint-Based:**
+- Constraint propagation, CSP
+- Mixed-integer programming, SMT
+
+### Probabilistic & Sampling
+
+**Stochastic Sampling:**
+- Random walks
+- MCMC (Metropolis-Hastings, Gibbs, Hamiltonian Monte Carlo)
+- Importance sampling, sequential Monte Carlo
+
+**Space-Filling:**
+- RRT, RRT\*
+- Probabilistic roadmaps (PRM)
+- Expansive spaces trees (EST)
+
+**Bayesian & Information-Theoretic:**
+- Bayesian optimization with Gaussian processes
+- Acquisition functions (Expected Improvement, UCB, Thompson Sampling)
+- Entropy-based search, active learning
+
+**Game-Tree & Decision:**
+- Monte Carlo tree search (MCTS), UCT
+- Alpha-beta pruning
+- Multi-armed bandits (ε-greedy, UCB1, Thompson Sampling)
+
+### Physical & Natural Metaphors
+
+**Energy Landscapes:**
+- Simulated annealing (temperature schedules, Boltzmann acceptance)
+- Potential fields (attractive/repulsive forces)
+- Energy minimization
+
+**Wave & Field Dynamics:**
+- Wave/front propagation (Fast Marching, level sets)
+- Eikonal equation, reaction-diffusion systems
+- Field flow methods
+
+**Fluid & Flow:**
+- Watershed algorithms, streamline methods
+
+### Population-Based & Evolutionary
+
+**Evolutionary Computation:**
+- Genetic algorithms (selection, crossover, mutation)
+- Genetic programming
+- Evolution strategies (CMA-ES)
+- Differential evolution
+
+**Swarm Intelligence:**
+- Particle swarm optimization (PSO)
+- Ant colony optimization (ACO)
+- Bee algorithms
+
+**Multi-Agent:**
+- Cooperative co-evolution, island models
+- Memetic algorithms (hybrid genetic + local search)
+
+### Topological & Structural
+
+**Morse Theory:**
+- Critical points, gradient flow, Morse complex
+- Persistence (significant vs. noise features)
+
+**Persistent Homology & TDA:**
+- Barcodes, persistence diagrams
+- Mapper algorithm
+- Topological data analysis
+
+**Geometric Structures:**
+- Voronoi diagrams, Delaunay triangulation
+- Reeb graphs, medial axis transform
+- Convex hulls
+
+### Adaptive & Strategic
+
+**Multi-Resolution:**
+- Coarse-to-fine refinement
+- Hierarchical planning, multigrid methods
+- Adaptive mesh refinement, wavelet methods
+
+**Dynamic Programming & Control:**
+- Bellman equations, value/policy iteration
+- Hamilton-Jacobi-Bellman equations
+- Model predictive control
+- Differential dynamic programming
+
+**Subgoal & Waypoint:**
+- Subgoal decomposition, landmark navigation
+- Funnel methods, options framework
+
+### Distance, Metrics & Topology
+
+**Metrics:**
+- Euclidean, Manhattan, Chebyshev
+- Edit distances (Levenshtein, Hamming)
+- Mahalanobis, Wasserstein
+- Divergences (KL, Jensen-Shannon)
+- Similarity measures, kernels
+
+**Topology:**
+- Connectedness, homotopy
+- Homology/cohomology, manifold structure
+
+### Reachability & Boundaries
+
+**Set-Based:**
+- Reachable sets, invariant manifolds
+- Separatrices, control barrier functions
+- Funnels
+
+**Bounding:**
+- Convex relaxation
+- Interval arithmetic
+- Zonotopes, ellipsoids
+
+### Dynamics Modeling
+
+**Flow & Evolution:**
+- Flow maps, Poincaré sections
+- Return maps, time-delay embedding (Takens' theorem)
+
+**Symmetry & Conservation:**
+- Symmetry analysis, conservation laws
+- Reduction theory, equivariant dynamics
+
+---
+
+## Meta-Strategies
+
+### Hybrid Approaches
+- Multi-method integration
+- Coarse global + fine local
+- Switching strategies, portfolio approaches
+
+### Adaptive Selection
+- Algorithm selection, hyper-heuristics
+- Learning to optimize, warm-starting
+
+### Exploration-Exploitation
+- Curiosity-driven search, regret minimization
+- Coverage vs. convergence, diversity maintenance
+
+---
+
+## Practical Considerations
+
+**Efficiency:** Complexity analysis, anytime algorithms, approximation guarantees, parallelization
+
+**Robustness:** Noise tolerance, failure recovery, sensitivity analysis, validation
+
+**Structure Exploitation:** Decomposition, sparsity, convexity, modularity
+
+---
+
+*Adapt rigor and formality to context across mathematical, conceptual, strategic, and creative problem spaces.*
