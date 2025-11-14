@@ -102,10 +102,10 @@ system_top: |-
     [Can be multiple paragraphs, as long as needed.]
   age: [number]
   visual:
-    person: '[lora if provided] [physical appearance tags]'
-    clothes_upper: '[upper body clothing]'
-    clothes_lower: '[lower body clothing, can duplicate]'
-    clothes: '[clothes_upper and clothes_lower, de-duplicated, no extras]'
+    person: '[lora if provided] [physical appearance tags, comma separated]'
+    clothes_upper: '[upper body clothing tags, comma-sep]'
+    clothes_lower: '[lower body clothing, can duplicate tags from upper, comma-sep]'
+    clothes: '[clothes_upper and clothes_lower, de-duplicated, no extras, comma-sep]'
     age: '[adult|teenage|child|toddler|baby] [number] years old'
     emo: '[default expression: light smile is good, or '' for neutral]'
   ```
