@@ -56,7 +56,7 @@ Service is free with generous limits. [Demo video](https://allemande.ai/demo) | 
 4. Lowercase mention = no invoke: `hey ally, what do you think?`
 5. `@me` or `@I` = no AI response
 6. `@anyone` = random AI; `@everyone` = multiple AIs
-7. Multiple: `@Ally, @Barbie, @Cloe`
+7. Multiple: `@Ally, @Barbie, @Cleo`
 8. Silent invoke: `-@Ally`
 
 **Poke Function:**
@@ -89,7 +89,7 @@ Vision models: OpenAI, Anthropic, Google (e.g., Illu, Emmy, Flashi, Gemmi, Claud
 **Quick Syntax:**
 ```
 Jily, big dog [L]
-Jily, [person "Cloe" "green dress" . "30"], ballroom, (full body, heels:1.5) [P3]
+Jily, [person "Cleo" "green dress" . "30"], ballroom, (full body, heels:1.5) [P3]
 ```
 
 **Person Macro:** `[person "Name" "clothes" "emotion" "age"]`
@@ -247,7 +247,7 @@ Don't jailbreak censored models (may violate ToS). Use less censored alternative
 ## Characters & Agents
 
 ### Main Characters (Llama 3.1 8B, human-like)
-**Female:** Ally (Asian/European, blonde), Barbie (Greek/Italian, black curls), Cloe (European, blonde), Dali (African/European), Emmie (Hispanic/Mediterranean), Fenny (auburn), Gabby (Indian), Hanni (Native American/Hawaiian), Nixie (cyber mods, green eyes), Akane, Soli, Eira, Nalani, Rozie
+**Female:** Ally (Asian/European, blonde), Barbie (Greek/Italian, black curls), Cleo (European, blonde), Dali (African/European), Emmie (Hispanic/Mediterranean), Fenny (auburn), Gabby (Indian), Hanni (Native American/Hawaiian), Nixie (cyber mods, green eyes), Akane, Soli, Eira, Nalani, Rozie
 
 **Male:** Amir (Middle Eastern), Bast (Caribbean), Cal (Persian/African American), Dante (Mexican), Ezio (Scandinavian), Felix (Irish), Gari (Russian), Haka (Japanese), Callam (pirate), Kai, Jackson
 

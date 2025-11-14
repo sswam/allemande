@@ -1,5 +1,5 @@
 IMAGE_SFW=landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg
-IMAGE_NSFW=solo-person-Cloe-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg
+IMAGE_NSFW=solo-person-Cleo-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg
 
 AGENTS_PATHS_SFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'nsfw')
 AGENTS_PATHS_NSFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'toon')

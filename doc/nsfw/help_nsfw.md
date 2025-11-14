@@ -45,9 +45,9 @@ Poni, solo [person Barbie] NEGATIVE [use neg] [T4]
 ```
 
 **Scene Example:**
-Draws Cloe in green lingerie in a parking lot. Specifies a full-body shot in a landscape format.
+Draws Cleo in green lingerie in a parking lot. Specifies a full-body shot in a landscape format.
 ```
-Lusy, [person Cloe "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
+Lusy, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
 ```
 **Male Character Example:**
 Draws a portrait of Bast in the jungle, looking angry.
@@ -139,7 +139,7 @@ These use a short pre-prompt to enable NSFW context. Not needed for Ellie, Ellyn
 | MoonshotAI | Kimi K2 0905 | Kimi | 262K | 262K | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use. |
 | Z.AI | GLM 4.6 | Glimi | 205K | 205K | Z.AI: GML 4.6: advanced agentic, reasoning and coding capabilities, with refined writing. |
 
-*\* The Llama 3.1 8B model (Ellie) powers numerous characters including Ally, Barbie, Callam, Cloe, etc.*
+*\* The Llama 3.1 8B model (Ellie) powers numerous characters including Ally, Barbie, Callam, Cleo, etc.*
 
 #### Image Models
 | Creator | Model | Name | Description |

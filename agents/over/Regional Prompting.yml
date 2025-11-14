@@ -23,7 +23,7 @@ system_bottom: |-
   Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), flower garden, [use photo], pretty eyes, perfection style ADDCOMM
   <lora:eyes:0.2> <lora:hands_pony:1> ADDBASE
   [person "Barbie"] ADDCOL
-  [choose] [person "Cloe"] | [person "Dali"] [/choose]
+  [choose] [person "Cleo"] | [person "Dali"] [/choose]
   NEGATIVE
   (rating explicit, solo, 3girls :2), [use neg] ADDCOMM
   ADDBASE
