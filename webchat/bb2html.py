@@ -118,6 +118,8 @@ async def process_change(line, opts, tasks, out):
         old_size = None
         new_size = os.path.getsize(bb_file)
 
+    logger.debug("bb2html: detected change: %r %r %r %r", bb_file, change_type, old_size, new_size)
+
     if not bb_file.endswith(opts.exts):
         return
 
@@ -131,8 +133,8 @@ async def process_change(line, opts, tasks, out):
         Path(html_file).unlink(missing_ok=True)
         return
 
-    # If file is new, and html file exists, do not update
-    if old_size is None and Path(html_file).exists():
+    # If file is new, and html file exists, do not update unless rebuild option is given
+    if not opts.rebuild and old_size is None and Path(html_file).exists():
         return
 
     # Create and store new task
@@ -156,7 +158,7 @@ async def bb2html(opts, watch_log, out=sys.stdout):
                 logger.exception("Error processing line: %s", exc)
             queue.task_done()
 
-    # TODO, this isn't reached yet. Could handle ctrl-C and kill signals then do this.
+    # TODO, this isn't reached yet in follow mode. Could handle ctrl-C and kill signals then do this.
     if tasks:
         await asyncio.gather(*tasks)
 
@@ -169,8 +171,11 @@ def get_opts():
     parser.add_argument("-w", "--watch-log", default="/dev/stdin", help="the file where changes are logged")
     parser.add_argument("-x", "--extension", nargs="*", default=("bb",), help="the file extensions to process")
     parser.add_argument("-F", "--no-follow", dest="follow", action="store_false", help="do not follow the file, good for stdin")
+    parser.add_argument("-b", "--rebuild", action="store_true", help="rebuild html files even if they exist, implies -F")
     ucm.add_logging_options(parser)
     opts = parser.parse_args()
+    if opts.rebuild:
+        opts.follow = False
     return opts
 
 

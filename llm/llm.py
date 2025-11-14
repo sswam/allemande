@@ -399,6 +399,7 @@ MODELS = {
         "description": "xAI's Grok 3 Mini model, with 128K context and a sense of humour",
         "cost_in": 0.3,
         "cost_out": 0.5,
+        "no_stop": True,
     },
     "grok4-fast": {
         "vendor": "xai",
@@ -416,6 +417,7 @@ MODELS = {
         "description": "xAI's Grok Code Fast model, optimized for coding tasks with 2M context",
         "cost_in": 0.2,
         "cost_out": 1.5,
+        "no_stop": True,
     },
     # "deepseek-chat-free": {
     #     "vendor": "openrouter",
