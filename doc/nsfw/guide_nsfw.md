@@ -33,7 +33,7 @@ You can read our detailed [Terms of Service](/terms).
 ## Topless Pictures of Characters 🔥
 
 <link rel="stylesheet" href="/cast.css">
-<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cloe](/nsfw/cast/Cloe.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
+<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cleo](/nsfw/cast/Cleo.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
 </details>
 <details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](/nsfw/cast/Amir.jpg) ![Atla](/nsfw/cast/Atla.jpg) ![Bast](/nsfw/cast/Bast.jpg) ![Cal](/nsfw/cast/Cal.jpg) ![Callam](/nsfw/cast/Callam.jpg) ![Chaz](/nsfw/cast/Chaz.jpg) ![Dante](/nsfw/cast/Dante.jpg) ![Ezio](/nsfw/cast/Ezio.jpg) ![Felix](/nsfw/cast/Felix.jpg) ![Gari](/nsfw/cast/Gari.jpg) ![Haka](/nsfw/cast/Haka.jpg) ![Jackson](/nsfw/cast/Jackson.jpg) ![Juon](/nsfw/cast/Juon.jpg) ![Kai](/nsfw/cast/Kai.jpg) ![Morf](/nsfw/cast/Morf.jpg) ![Pliny](/nsfw/cast/Pliny.jpg)</div>
 </details>
@@ -74,9 +74,9 @@ This does the same thing more concisely, for Barbie, making sure it's a solo pic
 
     Poni, solo [person Barbie] NEGATIVE [use neg] [T4]
 
-This draws Cloe in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
+This draws Cleo in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
 
-    Lusy, [person Cloe "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
+    Lusy, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
 
 This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant. Square image, good quality:
 
@@ -190,7 +190,8 @@ Please do not use languages models other than those listed here for NSFW content
 | Google     | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
 | Google     | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                      |
 | Google     | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
-| xAI        | Grok 4             | Anni   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
+| xAI        | Grok 4             | Grok   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
+| xAI        | Grok 4 Fast        | Gok    | 2M      | 2M         | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                            |
 | DeepSeek   | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                        |
 | DeepSeek   | DeepSeek Chat V3.1 | Desee  | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                     |
 | Mistral    | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
@@ -198,7 +199,7 @@ Please do not use languages models other than those listed here for NSFW content
 | MoonshotAI | Kimi K2 0905       | Kimi   | 262K    | 262K       | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use. |
 | Z.AI       | GLM 4.6            | Glimi  | 205K    | 205K       | $0.50           | $1.90            | Z.AI: GML 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.              |
 
-* The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cloe, etc.
+* The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
 1. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
 

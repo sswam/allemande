@@ -1,0 +1,11 @@
+type: xai
+model: grok4-fast
+context: 50
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
+visual:
+  person: (1boy, male:1.3), brown eyes, curly brown hair, short hair, pointy ears, tan skin, athletic build
+  clothes: black techwear jacket, graphic t-shirt, dark cargo pants, headphones around neck
+  emo: energetic, confident smirk
+  age: adult 21 years old
+  clothes_upper: black techwear jacket, graphic t-shirt, headphones around neck
+  clothes_lower: dark cargo pants

@@ -184,7 +184,7 @@ On mobile or in narrow windows, some UI elements may scroll horizontally in adva
 
 9. You can "poke" the chat to get the next person to respond without saying anything yourself.
 
-10. You can prompt several named people to respond like: @Ally, @Barbie, @Cloe
+10. You can prompt several named people to respond like: @Ally, @Barbie, @Cleo
 
 11. You can invoke someone without saying anything like -@Ally
 
@@ -206,9 +206,9 @@ This asks Jily, an image gen AI, to draw a big dog, in a medium-quality landscap
 
     Jily, big dog [L]
 
-This draws Cloe in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a high-quality portrait image. Try to get a full body shot by mentioning shoes or feet!
+This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a high-quality portrait image. Try to get a full body shot by mentioning shoes or feet!
 
-    Jily, [person "Cloe" "green dress" . "30"], ballroom, (full body, heels:1.5) [P3]
+    Jily, [person "Cleo" "green dress" . "30"], ballroom, (full body, heels:1.5) [P3]
 
 The "person" macro accepts up to 4 parameters.
 
@@ -555,22 +555,32 @@ digraph Perplexity {
 
 ### xAI Models
 
-```dot
 digraph xAI {
-    graph [bgcolor=transparent]
-    edge [color="#CCCCCC"]
-    node [shape=box, style=filled, fillcolor="#DA70D6", fontname="Helvetica"]
+  graph [bgcolor=transparent]
+  edge [color="#CCCCCC"]
+  node [shape=box, style=filled, fillcolor="#DA70D6", fontname="Helvetica"]
 
-    "xAI" [label=<<b>xAI</b>>]
-    "Grok" [label=<<b>Grok</b><br/><font point-size="10">Grok 2</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
-    "Rocki" [label=<<b>Rocki</b><br/><font point-size="10">Grok 3</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
-    "Anni" [label=<<b>Anni</b><br/><font point-size="10">Grok 4</font><br/><font point-size="8">256K context</font><br/><font point-size="8">Helpful, Truthful</font>>]
+  "xAI" [label=<<b>xAI</b>>]
 
-    "xAI" -> "Grok"
-    "xAI" -> "Rocki"
-    "xAI" -> "Anni"
+  "Grokko" [label=<<b>Grokko</b><br/><font point-size="10">Grok 2 Vision</font><br/><font point-size="8">32K context</font><br/><font point-size="8">Vision capable</font>>]
+
+  "Rocki" [label=<<b>Rocki</b><br/><font point-size="10">Grok 3</font><br/><font point-size="8">131K context</font><br/><font point-size="8">$3/$15 per M tokens</font>>]
+
+  "Gokk" [label=<<b>Gokk</b><br/><font point-size="10">Grok 3 Mini</font><br/><font point-size="8">131K context</font><br/><font point-size="8">$0.30/$0.50 per M tokens</font>>]
+
+  "Grok" [label=<<b>Grok</b><br/><font point-size="10">Grok 4</font><br/><font point-size="8">256K context</font><br/><font point-size="8">$3/$15 per M tokens</font>>]
+
+  "Gok" [label=<<b>Gok</b><br/><font point-size="10">Grok 4 Fast</font><br/><font point-size="8">2M context</font><br/><font point-size="8">$0.20/$0.50 per M tokens</font>>]
+
+  "Groc" [label=<<b>Groc</b><br/><font point-size="10">Grok Code Fast</font><br/><font point-size="8">256K context</font><br/><font point-size="8">Code specialized</font>>]
+
+  "xAI" -> "Grokko"
+  "xAI" -> "Rocki"
+  "xAI" -> "Gokk"
+  "xAI" -> "Grok"
+  "xAI" -> "Gok"
+  "xAI" -> "Groc"
 }
-```
 
 ### DeepSeek Models
 
@@ -682,12 +692,12 @@ digraph StabilityAI {
 
 ### Pictures of Characters
 
-<link rel="stylesheet" href="/cast.css"><div markdown=1 class="cast small clear">![Aetheria](/cast/Aetheria.jpg) ![Akane](/cast/Akane.jpg) ![Ally](/cast/Ally.jpg) ![Amir](/cast/Amir.jpg) ![Atla](/cast/Atla.jpg) ![Barbie](/cast/Barbie.jpg) ![Bast](/cast/Bast.jpg) ![Brie](/cast/Brie.jpg) ![Cal](/cast/Cal.jpg) ![Callam](/cast/Callam.jpg) ![Chaz](/cast/Chaz.jpg) ![Claude](/cast/Claude.jpg) ![Cloe](/cast/Cloe.jpg) ![Clia](/cast/Clia.jpg) ![Dali](/cast/Dali.jpg) ![Dante](/cast/Dante.jpg) ![Dav](/cast/Dav.jpg) ![Eira](/cast/Eira.jpg) ![Emmie](/cast/Emmie.jpg) ![Emmy](/cast/Emmy.jpg) ![Ezio](/cast/Ezio.jpg) ![Felix](/cast/Felix.jpg) ![Fenny](/cast/Fenny.jpg) ![Gabby](/cast/Gabby.jpg) ![Gari](/cast/Gari.jpg) ![Haka](/cast/Haka.jpg) ![Hanni](/cast/Hanni.jpg) ![Jackson](/cast/Jackson.jpg) ![Kai](/cast/Kai.jpg) ![Morf](/cast/Morf.jpg) ![Nixie](/cast/Nixie.jpg) ![Nova](/cast/Nova.jpg) ![Pixi](/cast/Pixi.jpg) ![Pliny](/cast/Pliny.jpg) ![Rozie](/cast/Rozie.jpg) ![Sam](/cast/Sam.jpg) ![Sia](/cast/Sia.jpg) ![Sio](/cast/Sio.jpg) ![Soli](/cast/Soli.jpg) ![Nalani](/cast/Nalani.jpg) ![Grok](/cast/Grok.jpg) ![Clu](/cast/Clu.jpg) ![Emm](/cast/Emm.jpg) ![Vega](/cast/Vega.jpg) ![Zeno](/cast/Zeno.jpg) ![Gema](/cast/Gema.jpg) ![Clauden](/cast/Clauden.jpg) ![Illu](/cast/Illu.jpg) ![Flashi](/cast/Flashi.jpg)</div>
+<link rel="stylesheet" href="/cast.css"><div markdown=1 class="cast small clear">![Aetheria](/cast/Aetheria.jpg) ![Akane](/cast/Akane.jpg) ![Ally](/cast/Ally.jpg) ![Amir](/cast/Amir.jpg) ![Atla](/cast/Atla.jpg) ![Barbie](/cast/Barbie.jpg) ![Bast](/cast/Bast.jpg) ![Brie](/cast/Brie.jpg) ![Cal](/cast/Cal.jpg) ![Callam](/cast/Callam.jpg) ![Chaz](/cast/Chaz.jpg) ![Claude](/cast/Claude.jpg) ![Cleo](/cast/Cleo.jpg) ![Clia](/cast/Clia.jpg) ![Dali](/cast/Dali.jpg) ![Dante](/cast/Dante.jpg) ![Dav](/cast/Dav.jpg) ![Eira](/cast/Eira.jpg) ![Emmie](/cast/Emmie.jpg) ![Emmy](/cast/Emmy.jpg) ![Ezio](/cast/Ezio.jpg) ![Felix](/cast/Felix.jpg) ![Fenny](/cast/Fenny.jpg) ![Gabby](/cast/Gabby.jpg) ![Gari](/cast/Gari.jpg) ![Haka](/cast/Haka.jpg) ![Hanni](/cast/Hanni.jpg) ![Jackson](/cast/Jackson.jpg) ![Kai](/cast/Kai.jpg) ![Morf](/cast/Morf.jpg) ![Nixie](/cast/Nixie.jpg) ![Nova](/cast/Nova.jpg) ![Pixi](/cast/Pixi.jpg) ![Pliny](/cast/Pliny.jpg) ![Rozie](/cast/Rozie.jpg) ![Sam](/cast/Sam.jpg) ![Sia](/cast/Sia.jpg) ![Sio](/cast/Sio.jpg) ![Soli](/cast/Soli.jpg) ![Nalani](/cast/Nalani.jpg) ![Grok](/cast/Grok.jpg) ![Clu](/cast/Clu.jpg) ![Emm](/cast/Emm.jpg) ![Vega](/cast/Vega.jpg) ![Zeno](/cast/Zeno.jpg) ![Gema](/cast/Gema.jpg) ![Clauden](/cast/Clauden.jpg) ![Illu](/cast/Illu.jpg) ![Flashi](/cast/Flashi.jpg)</div>
 
 ### Characters
 - **Ally**: A creative and talkative young woman with an Asian/European background, known for her engaging conversation and long wavy blonde hair
 - **Barbie**: Playful and lively, she is Greek/Italian, with long curly black hair and a love for making music and dancing
-- **Cloe**: Brave and adventurous, she is always ready to flirt and charm with her European background and straight blonde hair
+- **Cleo**: Brave and adventurous, she is always ready to flirt and charm with her European background and straight blonde hair
 - **Dali**: Curious and witty, this young woman loves learning and playing pranks, and she is distinguished by her African/European heritage
 - **Emmie**: Intelligent yet occasionally shy, she is Hispanic/Mediterranean with a talent for solving puzzles
 - **Fenny**: Shy but humorous, she is a delightful presence with wavy auburn hair and a penchant for funny faces
@@ -742,9 +752,12 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
-- **Grok** (Grok 2, xAI): xAI's second quirky and intelligent language model
+- **Grokko** (Grok 2, xAI): xAI's second quirky and intelligent language model
 - **Rocki** (Grok 3, xAI): xAI's third quirky and intelligent language model
-- **Anni** (Grok 4, xAI): xAI's latest quirky and intelligent language model
+- **Gokk** (Grok 3 Mini, xAI): xAI's third quirky and intelligent language model (mini)
+- **Grok** (Grok 4, xAI): xAI's latest quirky and intelligent language model
+- **Gok** (Grok 4 Fast, xAI): xAI's latest quirky and intelligent language model (fast)
+- **Groc** (Grok Code Fast, xAI): xAI's fast coding specialist model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
 - **Desee** (DeepSeek Chat V3.1): DeepSeek's creative and intelligent chat model, with extra smarts
 - **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
@@ -954,7 +967,7 @@ type: anthropic
 models: claude-3.5-haiku, claude-3.5, claude-4-sonnet, claude-4-opus
 
 type: xai
-models: grok2, grok3, grok4
+models: grok2, grok3-mini, grok4-fast, grok-code-fast, grok3, grok4
 
 type: perplexity
 models: sonar, sonar-reasoning, sonar-pro, sonar-reasoning-pro
@@ -997,9 +1010,12 @@ type: visual
 | Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K            | $1 [3]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
 | Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K            | $3 [3]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
 | Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K            | $2 [3]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
-| xAI           | Grok 2                | Grok    | 128K    | 128K          | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model.                                                               |
+| xAI           | Grok 2 (Vision)       | Grokko  | 32K     | 32K           | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model with vision capabilities.                                      |
 | xAI           | Grok 3                | Rocki   | 128K    | 128K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
-| xAI           | Grok 4                | Anni    | 256K    | 256K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
+| xAI           | Grok 3 Mini           | Gokk    | 128K    | 128K          | $0.30           | $0.50            | Fast and efficient mini version of Grok 3.                                                                       |
+| xAI           | Grok 4                | Grok    | 256K    | 256K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
+| xAI           | Grok 4 Fast           | Gok     | 2M      | 2M            | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                                      |
+| xAI           | Grok Code Fast        | Groc    | 256K    | 256K          | $0.20           | $1.50            | Specialized fast model optimized for code generation and analysis.                                               |
 | DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192          | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                                  |
 | DeepSeek      | DeepSeek Chat V3.1    | Desee   | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192          | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
@@ -1009,7 +1025,7 @@ type: visual
 | MoonshotAI    | Kimi K2 0905          | Kimi    | 262K    | 262K          | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
 | Z.AI          | GLM 4.6               | Glimi   | 205K    | 205K          | $0.50           | $1.90            | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.                        |
 
-* The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cloe, etc.
+* The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
 1. Claude 4's larger output window is not yet enabled in our app.
 2. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)

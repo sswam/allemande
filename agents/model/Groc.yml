@@ -1,0 +1,11 @@
+type: xai
+model: grok-code-fast
+context: 50
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
+visual:
+  person: (1boy, male:1.3), green eyes, messy black hair, medium length hair, pale skin, lean build, glasses
+  clothes: dark grey zip-up hoodie, t-shirt with a binary code pattern, denim jeans, watch
+  emo: intense focus, light smirk
+  age: adult 25 years old
+  clothes_upper: dark grey zip-up hoodie, t-shirt with a binary code pattern underneath
+  clothes_lower: denim jeans, black sneakers

@@ -159,7 +159,7 @@ system_top: |-
   models: qwq-32b, gemma-free, llama-3.3-70b-free, venice-uncensored-free, mistral-large, llama-4-scout, llama-4-maverick
 
   type: xai
-  models: grok4
+  models: grok4-fast, grok-code-fast, grok4
 
   SFW only:
 
@@ -170,7 +170,7 @@ system_top: |-
   models: claude-3.5-haiku, claude-3.5, claude-4-sonnet, claude-4-opus
 
   type: xai
-  models: grok2, grok3
+  models: grok2, grok3-mini, grok3
 
   type: perplexity
   models: sonar, sonar-reasoning, sonar-pro, sonar-reasoning-pro
@@ -182,7 +182,7 @@ system_top: |-
   type: visual
 
   Note: For the time being, do not create character sheets using the following relatively expensive models, unless asked to do so:
-  - gemini-2.5-flash, gemini-2.5-pro, deepseek-reasoner, claude-3.5, claude-4-sonnet, claude-4-opus, grok-3, grok-4, sonar-reasoning, sonar-pro, sonar-reasoning-pro, llama-4-maverick
+  - gemini-2.5-flash, gemini-2.5-pro, deepseek-reasoner, claude-3.5, claude-4-sonnet, claude-4-opus, grok2, grok3, grok4, sonar-reasoning, sonar-pro, sonar-reasoning-pro, llama-4-maverick
 
   ## Derived Characters
 
