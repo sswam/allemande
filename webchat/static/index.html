@@ -65,7 +65,7 @@
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_room_ops">
 			<button id="room_ops_cancel" class="back">back</button>
-			<button id="room_ops_copy" title="copy the room: alt+c">copy</button>
+			<button id="room_ops_copy" title="copy the room or file: alt+c">copy</button>
 			<button id="room_ops_move" title="rename or move: alt+m" class="admin">move</button>
 		</div>
 		<input id="room" name="room" class="flex grow">
@@ -140,7 +140,7 @@
 			<button id="mod_undo" title="remove the last message: alt+z">undo</button>
 			<button id="mod_retry" title="retry the last message: alt+r">retry</button>
 			<button id="mod_edit" title="edit the room: alt+e" class="advanced">edit</button>
-			<button id="mod_auto" title="auto play" class="advanced">auto</button>
+			<button id="mod_auto" title="auto play" class="advanced dev early">auto</button>
 			<!--<button id="rotate" disabled>rotate</button>-->
 			<button id="mod_archive" title="archive this room: shift+alt+a">archive</button>
 			<button id="mod_clear" title="clear this room: alt+x">clear</button>
@@ -171,6 +171,7 @@
 			<button id="rec_preview_cancel" class="cancel">cancel</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_edit">
+			<button id="edit_advanced" title="simple editor" class="advanced">advanced</button>
 			<button id="edit_indent" title="insert tab / indent">indent</button>
 			<button id="edit_dedent" title="dedent">dedent</button>
 			<button id="edit_reset" title="revert changes" class="cancel">reset</button>

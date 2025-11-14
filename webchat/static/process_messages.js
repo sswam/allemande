@@ -4,6 +4,13 @@ const hideLabelForSameUser = true;
 const moveImagesForSameUser = true;
 const room = await $import("chat:room");
 
+// TODO where to configure this!!
+const BLOCK = {
+	// "ganja/tasha":1,
+	// "ganja/bradd":1,
+	// "sam/ganja":1,
+}
+
 const HIDE_CONTROLS_DELAY = 1000;
 
 // let last_message_time = null;
@@ -136,6 +143,12 @@ export async function processMessage(newMessage) {
   const label = newMessage.querySelector(".label");
   const me_message = newUser && newUser.toLowerCase() === user;
   const simple = (room.view_options.advanced ?? -1) < 0;
+  const blocked = newUser && BLOCK[`${user}/${newUser}`];
+
+  if (blocked) {
+    newMessage.classList.add("hidden");
+    newMessage.classList.add("block");
+  }
 
   // Remove newline at start of paragraph, pre or code
   // Maybe not needed now? We'll see...
@@ -372,7 +385,7 @@ export async function processMessage(newMessage) {
 
   // ID of last visible message in chat, for undo
   const lastMessageId = getLastVisibleMessageId();
-  // console.log("last visible message ID", lastMessageId);
+  console.log("last visible message ID", lastMessageId);
 
   // notify parent window of new message
   room.notify_new_message({ user: newUser, content: newContent.innerHTML, lastMessageId });

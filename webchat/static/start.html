@@ -118,7 +118,8 @@ $import("chat");
 </a>
 <a href="https://chat.allemande.ai/#~" class="chat-link" id="private-chat-link">
 	<img src="private.webp" class="chat-image" alt="Private Chat">
-	<span class="chat-label">Private Chat<span class="note">: join group chats first!</span></span>
+	<span class="chat-label">Private Chat<span class="note">: join a group chat please!</span></span>
+	<!--	<span class="chat-label">Private Chat<span class="note">: join group chats during Halloween!</span></span>-->
 </a>
 
 <script>
@@ -126,8 +127,8 @@ shuffle("body", "a.chat-link");
 // "encourage" new users to join public chats!
 var STORAGE_KEY = 'chatClickStats.v1';
 var DEBOUNCE_MS = 300 * 1000;
-var INITIAL_PRIVATE_CHATS = 20;
-var REQUIRE_PUBLIC_CHATS = 1;
+var INITIAL_PRIVATE_CHATS = 5;
+var REQUIRE_PUBLIC_CHATS = 0;
 
 function defaultState() {
 	return {

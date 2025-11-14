@@ -1396,6 +1396,34 @@ body > .timestamp {
   100% { transform: rotate(0deg) translate(0, 0); }
 }
 
+/* Einstein's black hole effect ------------------------------------------- */
+/* Apply this class to the container of your universe */
+.near-black-hole {
+  /* This filter attempts to mimic the warping of light. */
+  /* The 'blur' represents the distortion of straight paths. */
+  /* The 'contrast' and 'brightness' hints at the intense gravitational lensing, where light is compressed and amplified in some areas. */
+  /* The 'hue-rotate' is a small nod to gravitational redshift, as light loses energy climbing out of the gravity well. */
+  filter: blur(1px) contrast(120%) brightness(0.95) hue-rotate(-5deg);
+
+  /* We can also try to warp the shape of things within this field. */
+  /* Everything gets slightly compressed and distorted. */
+  transform: scale(0.98) skew(1deg, -1deg);
+
+  /* An animation makes the distortion feel unstable, as it should be! */
+  animation: spacetime-wobble 0.5s infinite alternate;
+}
+
+@keyframes spacetime-wobble {
+  from {
+    filter: blur(1px) contrast(120%) brightness(0.95) hue-rotate(-5deg);
+    transform: scale(0.98) skew(1deg, -1deg);
+  }
+  to {
+    filter: blur(1.5px) contrast(125%) brightness(0.9) hue-rotate(-7deg);
+    transform: scale(0.99) skew(-1deg, 1deg);
+  }
+}
+
 /* sticky notes! ---------------------------------------------------------- */
 
 sticky {
@@ -1516,7 +1544,7 @@ body:not(.simple) .message.last {
 
 /* hack to fix heading layout, IDK ---------------------------------------- */
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, hr {
 	width: calc(100vw - 6 * var(--pad));
 	break-after: avoid;
 }

@@ -102,6 +102,8 @@ export const icons = {
   view_mode_advanced: '<i class="bi bi-brightness-high-fill i20"></i>',
   view_mode_boffin_off: '<i class="bi bi-lightning i20"></i>',
   view_mode_boffin: '<i class="bi bi-lightning-fill i20"></i>',
+  edit_simple: '<i class="bi bi-lightbulb i20"></i>',
+  edit_advanced: '<i class="bi bi-lightbulb-fill i20"></i>',
 
   sort_alpha: '<i class="bi bi-sort-alpha-down i20"></i>',
   sort_time: '<i class="bi bi-clock i20"></i>',

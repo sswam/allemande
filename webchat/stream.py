@@ -9,8 +9,6 @@ import os
 import logging
 from pathlib import Path
 import asyncio
-from typing import Any
-import dataclasses
 import re
 
 from starlette.applications import Starlette
@@ -18,19 +16,18 @@ from starlette.requests import Request
 from starlette.responses import StreamingResponse, Response, JSONResponse, HTMLResponse
 from starlette.exceptions import HTTPException
 from starlette.templating import Jinja2Templates
-from starlette.types import Scope, Receive, Send
 import uvicorn
-import mimetypes
-# import magic
+
+import aionotify
 
 import atail
 import akeepalive
-import chat
 import ally_room
 from ally_room import Access
 from util import sanitize_pathname, safe_join
 import folder
 from ally_service import get_user, add_mtime_to_resource_pathnames
+import settings
 
 
 os.chdir(os.environ["ROOMS"])
@@ -40,16 +37,20 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+VERSION = "0.1.1"
 FOLLOW_KEEPALIVE = 5
 HTML_KEEPALIVE = '<script class="event">online()</script>\n'
 REWIND_STRING = '<script class="event">clear()</script>\n'
+LOCK_FILE = ".lock"
 
 
 BASE_DIR = Path(".").resolve()
 TEMPLATES_DIR = os.environ.get("TEMPLATES")
 
 
-templates: Jinja2Templates = None
+templates: Jinja2Templates|None = None
+lock_present = False
+active_streams: dict[str, set[asyncio.Task]] = {}
 
 
 def setup_templates():
@@ -62,15 +63,101 @@ def setup_templates():
     logger.debug("Using templates from %s", TEMPLATES_DIR)
 
 
+def get_room_top_dir(pathname: str) -> str|None:
+    """Check if pathname is a private room and return the owner username, or None."""
+    if "/" in pathname:
+        parts = pathname.split("/", 1)
+        return parts[0]
+    return None
+
+
+def should_block_private_room(pathname: str, user: str) -> bool:
+    """Check if a user should be blocked from accessing a private room when locked."""
+    if not lock_present:
+        return False
+
+    top_dir = get_room_top_dir(pathname)
+    if not top_dir:
+        return False
+
+    # Allow admins
+    if user in settings.ADMINS:
+        return False
+
+    # Block if user matches top_dir
+    return user == top_dir
+
+
+async def watch_lock_file():
+    """Watch for .lock file creation and removal."""
+    global lock_present  # pylint: disable=global-statement
+
+    lock_path = Path(LOCK_FILE)
+
+    logger.info("watch_lock_file: start")
+
+    # Initial check
+    lock_present = lock_path.exists()
+    if lock_present:
+        logger.info("Lock file present at startup")
+        await cancel_private_room_streams()
+
+    watcher = aionotify.Watcher()
+    watcher.watch(path=".", flags=aionotify.Flags.CREATE | aionotify.Flags.DELETE)
+
+    await watcher.setup(asyncio.get_event_loop())
+
+    try:
+        while True:
+            event = await watcher.get_event()
+            if event.name == LOCK_FILE:
+                if event.flags & aionotify.Flags.CREATE:
+                    logger.info("Lock file created, blocking private rooms")
+                    lock_present = True
+                    await cancel_private_room_streams()
+                elif event.flags & aionotify.Flags.DELETE:
+                    logger.info("Lock file removed, unblocking private rooms")
+                    lock_present = False
+    except asyncio.CancelledError:
+        pass
+    finally:
+        watcher.close()
+
+
+def is_private_room(pathname):
+    """Is this a private room?"""
+    users = cache.load(str(PATH_USERS)).strip().split("\n")
+    top_dir = get_room_top_dir(pathname)
+    return top_dir in users
+
+
+async def cancel_private_room_streams():
+    """Cancel all active streams to private rooms for non-admin, non-owner users."""
+    for pathname, tasks in list(active_streams.items()):
+        owner = is_private_room(pathname)
+        if owner:
+            # Cancel tasks for this private room
+            for task in list(tasks):
+                if not task.done():
+                    logger.info("Cancelling stream for private room: %s", pathname)
+                    task.cancel()
+
+
 async def startup_event():
     """Startup event"""
     logger.info("Starting up...")
     setup_templates()
+    asyncio.create_task(watch_lock_file())
 
 
 async def shutdown_event():
     """Shutdown event"""
     logger.info("Shutting down...")
+    # Cancel all active streams
+    for tasks in active_streams.values():
+        for task in tasks:
+            if not task.done():
+                task.cancel()
 
 
 async def http_exception(_request: Request, exc: HTTPException) -> Response:
@@ -100,10 +187,10 @@ async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="
     if header:
         yield header
 
-    follow = not snapshot
+    follow_flag = not snapshot
 
     async with atail.AsyncTail(
-        filename=file, wait_for_create=True, all_lines=True, follow=follow, rewind=follow, rewind_string=rewind_string, restart=follow
+        filename=file, wait_for_create=True, all_lines=True, follow=follow_flag, rewind=follow_flag, rewind_string=rewind_string, restart=follow_flag
     ) as queue1:
         async with akeepalive.AsyncKeepAlive(queue1, keepalive, timeout_return=keepalive_string) as queue2:
             try:
@@ -128,13 +215,16 @@ def try_loading_extra_header(path, header):
 
     if extra_header_path.exists():
         extra_header = extra_header_path.read_text()
-        extra_head, extra_body = re.match(r'''
+        match = re.match(r'''
             (?:<head>(.*)</head>)?  # Optional head tag group with content
             \s*                     # Optional whitespace
             (?:<body>)?             # Optional opening body tag
             (.*)                    # Main content
             (?:</body>)?            # Optional closing body tag
-        ''', extra_header, re.VERBOSE | re.DOTALL).groups()
+        ''', extra_header, re.VERBOSE | re.DOTALL)
+        if match is None:
+            return header
+        extra_head, extra_body = match.groups()
         if extra_head and "</head>" in header:
             header = header.replace("</head>", extra_head + "</head>")
         else:
@@ -151,7 +241,6 @@ def try_loading_extra_header(path, header):
 @app.route("/stream/{path:path}", methods=["GET"])
 async def stream(request, path=""):
     """Stream a file to the browser, like tail -f"""
-    global templates  # pylint: disable=global-statement, global-variable-not-assigned
     snapshot = request.query_params.get("snapshot")
 
     user = get_user(request)
@@ -163,6 +252,11 @@ async def stream(request, path=""):
     except Exception as exc:
         logger.warning("Invalid path: %s", exc)
         raise
+
+    # Check if private room access should be blocked
+    if should_block_private_room(pathname, user):
+        logger.warning("Blocking access to private room %s for user %s (lock present)", pathname, user)
+        raise HTTPException(status_code=502, detail="Service temporarily unavailable")
 
     rooms_base_url = str(request.base_url).rstrip("/")
     chat_base_url = rooms_base_url.replace("rooms", "chat")
@@ -204,8 +298,22 @@ async def stream(request, path=""):
         rewind_string = REWIND_STRING
 
     logger.debug("tail: %s", path)
-    follower = follow(str(path), header=header, keepalive_string=keepalive_string, rewind_string=rewind_string, snapshot=snapshot)
-    return StreamingResponse(follower, media_type=media_type)
+
+    # Track the stream task for potential cancellation
+    current_task = asyncio.current_task()
+    if pathname not in active_streams:
+        active_streams[pathname] = set()
+    active_streams[pathname].add(current_task)
+
+    try:
+        follower = follow(str(path), header=header, keepalive_string=keepalive_string, rewind_string=rewind_string, snapshot=snapshot)
+        return StreamingResponse(follower, media_type=media_type)
+    finally:
+        # Clean up task tracking
+        if pathname in active_streams:
+            active_streams[pathname].discard(current_task)
+            if not active_streams[pathname]:
+                del active_streams[pathname]
 
 
 if __name__ == "__main__":

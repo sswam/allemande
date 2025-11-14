@@ -24,6 +24,7 @@ const $inputrow = $id("inputrow");
 const $edit = $id("view_edit");
 const $auto = $id('mod_auto');
 const $messages_overlay = $id("messages_overlay");
+const simple_mode_allowed = false;
 
 let nsfw = false;
 let is_private = false;
@@ -67,6 +68,7 @@ let simple = true;
 
 const VIEW_OPTIONS_DEFAULT = {
   beta_test: "simple2",
+//  update: 0,
   ids: 0,
   images: 1,
   alt: 0,
@@ -96,10 +98,13 @@ const VIEW_OPTIONS_DEFAULT = {
   help: 0,
   embed: 0,
   dir_sort: "time",
-  filter: "",
+  filter: null,
+  edit_advanced: 0,
 };
 
-let view_options = {};
+const FILTER_DEFAULT = "MODERATE";
+
+export let view_options = {};
 function view_options_reset() {
   const preserve = {};
   const preserve_settings = ["theme", "source", "font_size", "image_size", "images", "highlight", "history", "dir_sort", "filter", "toc", "alt", "ids"];
@@ -117,7 +122,7 @@ let mode_options = {
 
 let view_options_embed = {
   alt: 0,
-  source: 1,
+  source: 3,
   details: 0,
   canvas: 0,
   toc: 1,
@@ -539,7 +544,7 @@ function new_chat_message(message) {
     }
   }
   // FIXME some issue where it's null sometimes...
-  lastMessageId = message.lastMessageId || lastMessageId;
+  lastMessageId = message.lastMessageId;
   // console.log("new_chat_message", lastMessageId);
   // $body.classList.toggle("empty", lastMessageId === null);
   $body.classList.remove("empty");
@@ -792,12 +797,18 @@ export function clear_messages_box() {
 }
 
 function get_file_type(name) {
-  if (name.match(/\/$/))             // ends with /
+  if (name.match(/\/$/))                          // ends with /
     return "dir";
-  else if (name.match(/\.[^\/]*$/))  // has an extension
+  else if (name.match(/(^|\/)access.yml$/))       // .yml access control
+    return "access";
+  else if (name.match(/(^|\/)agents\/.*\.yml$/))  // .yml under agents dir
+    return "agent";
+  else if (name.match(/\.yml$/))                  // other .yml
+    return "options";
+  else if (name.match(/\.[^\/]*$/))               // has an extension
     return "file";
   else
-    return "room";                   // no extension
+    return "room";                                // no extension
 }
 
 export async function set_room(room_new, no_history) {
@@ -892,7 +903,7 @@ export async function set_room(room_new, no_history) {
     if (type == "room")
       editor_file += EXTENSION;
     editor_text_orig = null;
-  } else if (type == "file") {
+  } else if (type == "file" || type == "access" || type == "agent" || type == "options") {
     // start editing the file
     edit(room_new);
   }
@@ -1743,6 +1754,7 @@ async function setup_nav_buttons() {
   // TODO this is heavy, avoid unless clicked?
   const $pages_last = $id("pages_last");
   const roomLast = await room_last();
+  console.log("roomLast", roomLast);
   if (roomLast) {
     $pages_last.href = "/" + query_to_hash(roomLast);
   } else {
@@ -2016,7 +2028,7 @@ async function undo(ev, hard, verb) {
       console.error(err.message);
       await error("mod_undo");
     }
-  } else {
+  } else if (lastMessageId !== null) {
     await send_text(`<ac rm=${lastMessageId}>`);
     active_dec("send");  // FIXME this is wonky
     return true;
@@ -2394,7 +2406,7 @@ function edit_close_back() {
   // if ends with EXTENSION, strip it off
   const stem = editor_file.replace(new RegExp(quotemeta(EXTENSION)+"$"), "");
   const type = get_file_type(stem);
-  if (edit_close() && type == "file") {
+  if (edit_close() && (type == "file" || type == "access" || type == "agent" || type == "options")) {
     // if can't go back, go to parent folder
     if (history.length > 1)
       history.back();
@@ -2457,7 +2469,19 @@ function setup_view_options() {
   }
   // set_default_room();
   PRIVATE_ROOM = user + "/chat";
+  run_view_options_updates();
   on_room_ready(view_options_apply);
+}
+
+function run_view_options_updates() {
+  // update 1-13: set default filter against extreme content
+  if (view_options.update <= 12) {
+    if (nsfw) {
+      $id('filter_query').value = FILTER_DEFAULT;
+      save_filter();
+    }
+    view_options.update = 13;
+  }
 }
 
 // function set_default_room() {
@@ -2476,6 +2500,10 @@ function set_view_options(new_view_options) {
 function view_options_apply() {
   const type = get_file_type(room);
   simple = view_options.advanced < 0;
+  if (view_options.advanced < 1) {
+    simple = false;
+    view_options.advanced = 1;
+  }
 
   // set_default_room();
 
@@ -2535,6 +2563,7 @@ function view_options_apply() {
   active_set("audio_tts", view_options.audio_tts);
   active_set("audio_vad", view_options.audio_vad);
   active_set("audio_auto", view_options.audio_auto);
+  active_set("edit_advanced", view_options.edit_advanced > 0);
 
   active_set("help", view_options.help > 0);
   $id("help").href = view_options.advanced ? qa_url : help_url;
@@ -2561,6 +2590,15 @@ function view_options_apply() {
   } else {
     $view_advanced.innerHTML = icons["view_mode_boffin"]
     $view_advanced.title = "boffin mode";
+  }
+
+  const $edit_advanced = $id("edit_advanced");
+  if (view_options.edit_advanced > 0) {
+    $edit_advanced.innerHTML = icons["edit_advanced"];
+    $edit_advanced.title = "advanced editor";
+  } else {
+    $edit_advanced.innerHTML = icons["edit_simple"];
+    $edit_advanced.title = "simple editor";
   }
 
   $id("audio_voice").value = view_options.audio_voice;
@@ -2656,8 +2694,14 @@ function view_options_apply() {
   show("dir_sort", type === "dir");
   show("pages", type !== "dir");
 
+  console.log("view options applied:", view_options);
+
   // send message to the rooms iframe to apply view options
-  send_to_room_iframe({ type: "set_view_options", ...view_options });
+  send_to_room_iframe({
+    type: "set_view_options",
+    ...view_options,
+    filter: view_options.filter ?? FILTER_DEFAULT
+  });
 
   controls_resized();
 }
@@ -2786,6 +2830,11 @@ function view_standard(ev) {
   message_changed();
 }
 
+function edit_advanced(ev) {
+  view_options.edit_advanced = (view_options.edit_advanced + 1) % 2;
+  view_options_apply();
+}
+
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
 
 function view_image_size(ev) {
@@ -2883,7 +2932,7 @@ async function change_theme(ev) {
   }
 
   const index = themes.indexOf(theme);
-  const mode = ev.shiftKey ? "prev" : ev.ctrlKey ? "random" : "next";
+  const mode = ev.shiftKey ? "prev" : ev.ctrlKey ? "random" : ev.altKey ? "day_night" : "next";
   if (mode === "next") {
     theme = themes[(index + 1) % themes.length];
   } else if (mode === "prev") {
@@ -2892,6 +2941,8 @@ async function change_theme(ev) {
     do {
       theme = themes[Math.floor(Math.random() * themes.length)];
     } while (theme === view_options.theme && themes.length > 1);
+  } else if (mode === "day_night") {
+    theme =  theme == "night" ? "day" : "night";
   }
   set_theme(theme);
 }
@@ -3340,19 +3391,25 @@ function select_cancel(ev) {
 // filter images -------------------------------------------------------------
 
 function load_filter() {
-	view_options.filter = localStorage.getItem('filter') || '';
-  $id('filter_query').value = view_options.filter;
+  const filterValue = view_options.filter ?? FILTER_DEFAULT;
+
+  $id('filter_query').value = filterValue;                                                         console.log("=== load_filter ===", "view_options.filter:", view_options.filter, "FILTER_DEFAULT:", FILTER_DEFAULT, "Resolved:", filterValue, "Set input to:", $id('filter_query').value);
 }
 
 function save_filter() {
-	localStorage.setItem('filter', view_options.filter);
+  view_options.filter = $id('filter_query').value;                                                 console.log("=== save_filter START ===", "Before:", view_options.filter, "Input value:", $id('filter_query').value, "FILTER_DEFAULT:", FILTER_DEFAULT);
+
+  if (view_options.filter == FILTER_DEFAULT) {
+    view_options.filter = null;                                                                    console.log("  Filter matches DEFAULT - reset to null. Final:", view_options.filter);
+  }                                                                                                else { console.log("  Filter is custom - keeping value:", view_options.filter); }
+
+  console.log("=== save_filter END ===", "Final filter:", view_options.filter);
 }
 
 function filter_changed(ev) {
-  // console.log("filter_changed");
-  view_options.filter = $id('filter_query').value;
-	save_filter();
-  view_options_apply();
+  save_filter();                                                                                   console.log("=== filter_changed ===", "Event:", ev?.type, "Target:", ev?.target, "Value:", ev?.target?.value);
+
+  view_options_apply();                                                                            console.log("  Called view_options_apply()");
 }
 
 /* system messages -------------------------------------------------------- */
@@ -3667,8 +3724,8 @@ export async function init() {
     nsfw_zone_init();
 
   setup_help();
-  load_filter();
   setup_view_options();
+  load_filter();
   await setup_icons();
   setup_embed_vs_main_ui();
 
@@ -3737,6 +3794,7 @@ export async function init() {
   $on($id("edit_close"), "click", edit_close_back);
   $on($id("edit_indent"), "click", edit_indent);
   $on($id("edit_dedent"), "click", edit_dedent);
+  $on($id("edit_advanced"), "click", edit_advanced);
 
   $on($id("view_theme"), "click", change_theme);
   $on($id("view_theme_bw"), "click", change_theme);

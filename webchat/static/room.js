@@ -36,6 +36,10 @@ let snapshot = false;
 
 let filter = '';
 
+const FILTER_EXPANSIONS = {
+  "MODERATE": "-vomit -poop -blood -rape -guro -bestiality -animal_penis -dog_penis -horse_penis",
+}
+
 // status indicator ----------------------------------------------------------
 
 function get_status_element() {
@@ -1348,6 +1352,14 @@ div.image:has(img:not(${finalSelector})) { display: none !important; }
 }
 
 function update_image_filter(filterString) {
+  for (const key in FILTER_EXPANSIONS) {
+    console.log("FILTER_EXPANSIONS key: " + key);
+    filterString = filterString.replace(
+        new RegExp(`(^|\s)${key}($|\s)`, 'g'),
+        `$1${FILTER_EXPANSIONS[key]}$2`
+    );
+  }
+
 	const existingStyle = document.getElementById('image-filter');
 
 	const CSSRules = filter_string_to_CSS(filterString.toLowerCase());
@@ -1602,6 +1614,51 @@ async function load_agent_colours() {
   $css("agent_colours", fullCss);
 }
 
+// fix browser copy to remove background colors and default foreground color -
+
+function fix_browser_copy(ev) {
+  const messagesContainer = document.querySelector('div.messages');
+  if (!messagesContainer) {
+    // Can't determine default colors, so let the default copy proceed.
+    return;
+  }
+
+  // Get the computed default colors from the container.
+  const computedStyles = window.getComputedStyle(messagesContainer);
+  const defaultBgColor = computedStyles.backgroundColor;
+  const defaultTextColor = computedStyles.color;
+
+  const selection = document.getSelection();
+  if (selection.rangeCount === 0) {
+    return;
+  }
+
+  // Clone the selection into a temporary element.
+  const container = document.createElement('div');
+  container.appendChild(selection.getRangeAt(0).cloneContents());
+
+  // Clean the styles on the cloned elements.
+  const allElements = container.querySelectorAll('*');
+  allElements.forEach(el => {
+    // The browser puts computed values into inline styles for the copy.
+    // We compare against the defaults we grabbed earlier.
+    // Note: The browser normalizes color formats (e.g., to rgb),
+    // so this string comparison should be reliable.
+    if (el.style.backgroundColor === defaultBgColor) {
+      el.style.backgroundColor = '';
+    }
+    if (el.style.color === defaultTextColor) {
+      el.style.color = '';
+    }
+  });
+
+  // Put the cleaned HTML onto the clipboard.
+  ev.preventDefault();
+  ev.clipboardData.setData('text/plain', selection.toString());
+  ev.clipboardData.setData('text/html', container.innerHTML);
+  console.log(container.innerHTML);
+}
+
 // main ----------------------------------------------------------------------
 
 async function load_user_script() {
@@ -1621,7 +1678,13 @@ function bugfix_hack_load_bootstrap_icons_font() {
 }
 */
 
+function common_main() {
+  $on(document, "copy", fix_browser_copy);
+}
+
 export async function room_main() {
+  common_main();
+
   file_type = "room";
 
   // register_service_worker();
@@ -1706,6 +1769,8 @@ export async function room_main() {
 }
 
 export async function folder_main() {
+  common_main();
+
   file_type = "dir";
 
   // register_service_worker();
