@@ -9,7 +9,7 @@
 . confirm
 
 diff_context=5  # lines of context for diffs
-model="5m"       # default model
+model="gp"      # default model
 # initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
