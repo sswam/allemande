@@ -65,7 +65,7 @@ def segment_text_into_sentences_simple(text):
 	# 2. Sentence endings (punctuation + optional spaces before uppercase/quote/punct)
 	# 3. Sentence endings at end of string
 	# Allow quotes, parens, or whitespace before the capital letter for proper sentence detection
-	pattern = rf'({exception_pattern})|([.!?]+(?:\.\.\.)?)\s+(?=["\'(\[{{‚„'"]?\s*[A-Z\u00C0-\u00DC])|([.!?]+)$'
+	pattern = rf"""({exception_pattern})|([.!?]+(?:\.\.\.)?)\s+(?=["\'(\[{{‚„'"]?\s*[A-Z\u00C0-\u00DC])|([.!?]+)$"""
 
 	def replace_func(match):
 		# Exception - leave as is
