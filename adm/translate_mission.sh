@@ -2,7 +2,7 @@
 # [targets...]
 
 translate-mission() {
-  local model= m=clauden  # LLM model to use
+  local model= m=claude  # LLM model to use
 
   eval "$(ally)"
 

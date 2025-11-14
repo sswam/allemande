@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-# [add|passwd|rm|off|on|list]
+# [add|passwd|rm|off|on|list|restore]
 # Manage users in the Allemande webchat
 
+# shellcheck disable=SC2164	# Disable warnings about 'cd' without checking
+
 webchat-user() {
-	local nsfw= n=       # enable nsfw for a user; list nsfw users only; 0 to list sfw users only
-	local preference= p= # preferred assistant gender (m/f/o/a)
-	local language= l=   # preferred language (code)
+	local nsfw= n=        # enable nsfw for a user; list nsfw users only; 0 to list sfw users only
+	local preference= p=  # preferred assistant gender (m/f/o/a)
+	local language= l=    # preferred language (code)
 
 	eval "$(ally)"
 
@@ -14,6 +16,7 @@ webchat-user() {
 	shift || true
 
 	cd "$ALLEMANDE_HOME"
+	# shellcheck disable=SC1091
 	. ./env.sh
 	cd webchat
 
@@ -39,8 +42,11 @@ webchat-user() {
 	missions)
 		update-missions "$@"
 		;;
+	restore)
+		restore-user "$@"
+		;;
 	*)
-		die "Usage: webchat-user {add|passwd|rm|off|on|list|missions} [args...]"
+		die "Usage: webchat-user {add|passwd|rm|off|on|list|missions|restore} [args...]"
 		;;
 	esac
 }
@@ -80,8 +86,10 @@ add-user() {
 		language="en"
 	fi
 
-	if [ -n "$user" ] && nsfw= list-users | grep -q "^$user$"; then
-		die "User $user already exists"
+	if [ -n "$user" ]; then
+		if nsfw='' list-users | grep -q "^$user$"; then
+			die "User $user already exists"
+		fi
 	fi
 
 	local patreon_links
@@ -90,14 +98,15 @@ add-user() {
 		patreon_links+=$'\n- https://www.patreon.com/allychatx (NSFW)'
 	fi
 
+	local generated_user generated_pass
 	change-password "$user" |
-	while read -r _ user pass; do
+	while read -r _ generated_user generated_pass; do
 		cat <<END
 === Welcome to Ally Chat! ===
 
 https://$ALLEMANDE_DOMAIN
-User: $user
-Pass: $pass
+User: $generated_user
+Pass: $generated_pass
 
 Please save this message, e.g. email it to yourself!
 
@@ -125,7 +134,9 @@ $patreon_links
 
 You are responsible for your own safety and behaviour in Ally Chat.
 
-By using Ally Chat, you agree to follow the above rather than going wild and causing a lot of mess for me to clean up before you even found the intro!
+Important: Joining group chats is required (though not daily). This is a complex group chat app - think Reddit, not ChatGPT. Participating is the best way to learn the app and help build our community. I remove inactive members after about a month. If you prefer not to use group chat, you can support via Patreon instead, but group chat remains the best way to get support.
+
+By using Ally Chat, you agree to follow the Getting Started steps above, rather than going wild and causing a lot of mess for me to clean up before you even found the intro!
 END
 		if ((nsfw)); then
 			cat <<END
@@ -177,7 +188,7 @@ END
 	btime=$(date '+%Y-%m-%d %H:%M:%S')
 
 	# Parse contact info
-	local email= reddit= discord= facebook= contact_other=
+	local email='' reddit='' discord='' facebook='' contact_other=''
 
 	if [[ "$contact" == email:* ]]; then
 		email="${contact#email:}"
@@ -211,7 +222,7 @@ END
 		contact:	$contact_other
 		notes:
 
-	END
+END
 	chmod o-rwx static/users/"$user"/info.rec
 
 	# rooms git: ignore user's dir
@@ -263,19 +274,72 @@ remove-user() {
 	if [ -z "$user" ]; then
 		read -r -p "Username: " user
 	fi
+
+	# Store htpasswd entry for potential restore
+	local removed_dir
+	removed_dir=$(get-available-name -d ~/users-removed/"$user")
+
+	grep "^$user:" .htpasswd > "$removed_dir/htpasswd.entry"
+
 	htpasswd -D .htpasswd "$user"
 
 	# remove from any .access.yml lists
 	find rooms/ -name .access.yml | xa sed -i "/^- $user\$/d"
 
 	# remove style and user directory
-	removed_dir=$(get-available-name -d ~/users-removed/"$user")
 	mv rooms/"$user" "$removed_dir"/rooms
 	mv static/users/"$user" "$removed_dir"/user
 
 	sudo userdel -- "$user" || true
 
 	printf -- "- %s\n" "$user"
+
+	# run webchat/Makefile
+	cd "$ALLYCHAT_HOME"; make
+}
+
+restore-user() {
+	local user=${1:-}
+	if [ -z "$user" ]; then
+		read -r -p "Username: " user
+	fi
+
+	# Check if user already exists
+	if grep -q "^$user:" .htpasswd; then
+		die "User $user already exists in htpasswd"
+	fi
+
+	# Find the most recent removed user directory
+	local removed_dir
+	removed_dir=$(find ~/users-removed -maxdepth 1 -type d -name "$user*" 2>/dev/null | sort -V | tail -n1)
+
+	# Restore htpasswd entry if available
+	if [ -s "$removed_dir/htpasswd.entry" ]; then
+		cat "$removed_dir/htpasswd.entry" >> .htpasswd
+		echo >&2 "Restored htpasswd entry from backup"
+	else
+		echo >&2 "No htpasswd entry found to restore for user $user"
+	fi
+
+	# Restore directories
+	mv -T "$removed_dir"/rooms rooms/"$user"  || true
+	mv -t "$removed_dir"/user/* static/users/"$user"  || true
+
+	# Restore NSFW access if user info indicates NSFW
+	local user_info_file="static/users/$user/info.rec"
+	local is_nsfw
+	is_nsfw=$(awk '/^nsfw:/ {print $2}' "$user_info_file")
+	if [ "$is_nsfw" = "1" ]; then
+		if ! grep -q "^- $user$" rooms/nsfw/.access.yml; then
+			echo "- $user" >> rooms/nsfw/.access.yml
+			echo >&2 "Restored NSFW access for user $user"
+		fi
+	fi
+
+	printf "+ %s\n" "$user"
+
+	# Remove the removed directory if empty
+	rmdir "$removed_dir" 2>/dev/null || true
 
 	# run webchat/Makefile
 	cd "$ALLYCHAT_HOME"; make
@@ -351,8 +415,9 @@ _set_user_mission_file() {
 	local mission_file="$ALLEMANDE_HOME/rooms.dist/$mission_file_basename"
 	local mission_path="$ALLEMANDE_ROOMS/$user/mission.m"
 
-	(cd "$ALLEMANDE_HOME/rooms.dist"; translate-mission "$mission_file_basename")
+	(cd "$ALLEMANDE_HOME/rooms.dist" || exit; translate-mission "$mission_file_basename")
 
+	# shellcheck disable=SC2086
 	cp $verbose "$mission_file" "$mission_path"
 }
 
@@ -398,4 +463,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	webchat-user "$@"
 fi
 
-# version: 0.1.57
+# version: 0.1.58

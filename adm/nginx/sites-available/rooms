@@ -75,6 +75,12 @@ server {
 		if ($allow = 1) {
 			return 204;
 		}
+		if ($http_jwt_sub = "root") {
+			return 204;
+		}
+		if ($http_jwt_sub = "sam") {
+			return 204;
+		}
 		if ($http_jwt_sub = $first_path_segment) {
 			return 204;
 		}
