@@ -1,8 +1,0 @@
-feat(rooms): Update Ally Chat, mission, and room descriptions
-
-- Updated Ally Chat description and welcome messages.
-- Added link to development plan.
-- Updated list of featured rooms.
-- Updated agent lists in mission descriptions.
-  
-
