@@ -12,13 +12,29 @@ import (
 	"strings"
 )
 
-const Version = "0.1.2"
+const Version = "0.1.5"
+
+// Compile regexps once outside functions where they are used repeatedly
+var (
+	secondCommentRe    = regexp.MustCompile(`(=.+?)\s+#.*`)
+	arrayPattern       = regexp.MustCompile(`\b(\w)=\((.*?)\)`)
+	longArrayPattern   = regexp.MustCompile(`\b(\w\w+)=\((.*?)\)`)
+	shortOptPattern    = regexp.MustCompile(`\b(\w)=`)
+	longOptPattern     = regexp.MustCompile(`\b(\w\w+)=`)
+	commentSpaceRe     = regexp.MustCompile(`(\S)(\s+)#`)
+	shortOptSpaceRe    = regexp.MustCompile(`\s(-\w)`)
+	functionDeclRe     = regexp.MustCompile(`^[a-zA-Z0-9_-]+\(\)\s*\{`)
+	commentedOptRe     = regexp.MustCompile(`^\s*#\s*(local )?\w+=`)
+)
 
 // processLine handles a single line from the script and formats it for help output
 func processLine(line, scriptName string) string {
 	// Remove leading whitespace and 'local'
 	line = strings.TrimSpace(line)
 	line = strings.TrimPrefix(line, "local ")
+
+	// Strip second comment (e.g., for shellcheck disable)
+	line = secondCommentRe.ReplaceAllString(line, "$1")
 
 	// Replace $0 with script name
 	line = strings.ReplaceAll(line, "$0 ", scriptName+" ")
@@ -34,22 +50,20 @@ func processLine(line, scriptName string) string {
 	}
 
 	// Handle array declarations
-	arrayPattern := regexp.MustCompile(`\b(\w)=\((.*?)\)`)
 	line = arrayPattern.ReplaceAllStringFunc(line, func(match string) string {
 		parts := arrayPattern.FindStringSubmatch(match)
 		return fmt.Sprintf("-%s,%s", parts[1], processArray(parts[2]))
 	})
 
 	// Handle long array declarations
-	longArrayPattern := regexp.MustCompile(`\b(\w\w+)=\((.*?)\)`)
 	line = longArrayPattern.ReplaceAllStringFunc(line, func(match string) string {
 		parts := longArrayPattern.FindStringSubmatch(match)
 		return fmt.Sprintf("--%s,%s", parts[1], processArray(parts[2]))
 	})
 
 	// Handle short and long options
-	line = regexp.MustCompile(`\b(\w)=`).ReplaceAllString(line, "-$1=")
-	line = regexp.MustCompile(`\b(\w\w+)=`).ReplaceAllString(line, "--$1=")
+	line = shortOptPattern.ReplaceAllString(line, "-$1=")
+	line = longOptPattern.ReplaceAllString(line, "--$1=")
 
 	// Replace underscores with dashes
 	parts := strings.SplitN(line, "#", 2)
@@ -61,11 +75,11 @@ func processLine(line, scriptName string) string {
 	}
 
 	// Format comments
-	line = regexp.MustCompile(`(\S)(\s+)#`).ReplaceAllString(line, "$1\t#")
+	line = commentSpaceRe.ReplaceAllString(line, "$1\t#")
 
 	// Handle option columns
-	if regexp.MustCompile(`\s(-\w)`).MatchString(line) {
-		line = regexp.MustCompile(`\s(-\w)`).ReplaceAllString(line, "\t$1")
+	if shortOptSpaceRe.MatchString(line) {
+		line = shortOptSpaceRe.ReplaceAllString(line, "\t$1")
 	} else {
 		line = strings.ReplaceAll(line, "\t", "\t\t")
 	}
@@ -126,6 +140,12 @@ func optsHelp(scriptPath string) error {
 	for scanner.Scan() {
 		line := scanner.Text()
 
+		// Skip fully commented out option lines
+		trimmed := strings.TrimSpace(line)
+		if commentedOptRe.MatchString(trimmed) {
+			continue
+		}
+
 		// Skip shebang
 		if strings.HasPrefix(line, "#!") {
 			skipBlanks = true
@@ -139,7 +159,7 @@ func optsHelp(scriptPath string) error {
 		}
 
 		// Skip function declarations and special lines
-		if regexp.MustCompile(`^[a-zA-Z0-9_-]+\(\)\s*\{`).MatchString(line) ||
+		if functionDeclRe.MatchString(line) ||
 			strings.HasPrefix(strings.TrimSpace(line), ". ") ||
 			strings.HasPrefix(strings.TrimSpace(line), "# shellcheck disable=") {
 			continue

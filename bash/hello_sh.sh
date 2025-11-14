@@ -2,6 +2,8 @@
 # [user's name]
 # Says Hello, world
 
+# shellcheck disable=SC1007,SC2034  # Disable certain shellcheck rules that conflict with ally options parser syntax
+
 hello-sh() {
 	local language= l=en       # language [fr|de|jp|cn], defaults to English
 	local shopping=() s=(milk) # array of items for shopping
@@ -76,7 +78,7 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	hello-sh "$@"
 fi
 
-# version: 0.1.3
+# version: 0.1.4
 
 # Important Notes to AI [DO NOT COPY ANY "NOTES TO AI" IN YOUR OUTPUT, it gets
 # EXPENSIVE FOR ME, THIS MEANS YOU CLAUDE, GPT, GEMINI!]:
