@@ -7,13 +7,13 @@ AGENTS_PATHS_NSFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! 
 AGENTS_DIRS_SFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'nsfw' -printf "%f\n")
 AGENTS_DIRS_NSFW := $(shell find ../agents/ -mindepth 1 -maxdepth 1 -type d \! -name 'toon' -printf "%f\n")
 
-# HELP_MODEL := flashi
-# HELP_MODEL_NSFW := flashi
+HELP_MODEL := emmy
+HELP_MODEL_NSFW := flashi
 
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} summaries.md ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/terms.bb  # help.md nsfw/help.md agent_colours.css
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} ../rooms/agents/Yenta.yml ../rooms/agents/Shiksa.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/terms.bb help.md nsfw/help_nsfw.md nsfw/help.md help.md summaries.md  # agent_colours.css
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 	rm -f $@
@@ -25,22 +25,22 @@ nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 # 	cat $^ >$@
 # 	chmod a-w $@
 
-# help.md: guide.md prompt_help.txt
-# 	rm -f $@
-# 	process -m=$(HELP_MODEL) "$$(<prompt_help.txt)" <$< >$@
-# 	chmod a-w $@
-#
-# nsfw/help_nsfw.md: nsfw/guide_nsfw.md prompt_help_nsfw.txt
-# 	rm -f $@
-# 	process -m=$(HELP_MODEL_NSFW) "$$(<prompt_help_nsfw.txt)" <$< >$@
-# 	chmod a-w $@
-#
-# nsfw/help.md: help.md nsfw/help_nsfw.md
-# 	rm -f $@
-# 	cat help.md >$@
-# 	echo >>$@
-# 	cat nsfw/help_nsfw.md >>$@
-# 	chmod a-w $@
+help.md: guide.md prompt_help.txt
+	git diff --quiet "$@"  # fail if uncommitted changes to target
+	transpatch -g -n=$(HELP_MODEL) -p="$$(<prompt_help.txt)" "$@" guide.md
+	chmod a-w $@
+
+nsfw/help_nsfw.md: nsfw/guide_nsfw.md prompt_help_nsfw.txt
+	git diff --quiet "$@"  # fail if uncommitted changes to target
+	transpatch -g -n=$(HELP_MODEL) -p="$$(<prompt_help.txt)" "$@" guide.md
+	chmod a-w $@
+
+nsfw/help.md: help.md nsfw/help_nsfw.md
+	rm -f $@
+	cat help.md >$@
+	echo >>$@
+	cat nsfw/help_nsfw.md >>$@
+	chmod a-w $@
 
 extra.md: $(AGENTS_PATHS_SFW)
 	@echo "# Extra Characters" >$@

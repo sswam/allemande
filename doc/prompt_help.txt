@@ -1,8 +1,10 @@
-Please revise and slightly compact the Ally Chat user guide, for an AI to offer online help efficiently. Don't summarize it, just trim the fat please.
+You will see changes to the Ally Chat user guide. Please make a corresponding update to our AI help prompt file (provided in full), which enables an AI to give online help efficiently. Don't summarize it, just trim the fat please.
 
 IMPORTANT: Include ALL features, concise names and details of all models, and at least the most useful agents, tools and characters.
 IMPORTANT: Include all UI icons and what they do.
 
-It's important to include info for new users, such as how to enter advanced mode, how to reach the main public chat room, different ways to navigate, and how to get back to private chat. But do not neglect other info either!
+It's especially important to include info for new users, but don't neglect other info either.
 
-The output should be lengthy and detailed, sufficient as a concise user guide, as it's the main source of AI help for users in the app! Please don't leave out important details.
+The patches should be detailed and consistent, so that the whole remains sufficient as a concise user guide, correct, and up to date. It's a major source of AI help for users in the app! Please don't leave out important details.
+
+In the case that corresponding changes are already present, return a message to that effect without any ed script.

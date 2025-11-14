@@ -1,0 +1,23 @@
+All that is more or less correct. The service is as uncensored as possible within certain legal and operational constraints.
+
+We include access to 50 or so models from 13 companies: Meta, Anthropic, Google, OpenAI, Perplexity, xAI, DeepSeek, Alibaba, Mistral, Venice, MoonshotAI, Z AI, and Stability AI (plus many derived community image models).
+
+I run Llama 3 and a dozen or so Stable Diffusion models on my own hardware. Use of these is uncensored within the limits of the law. The one and only content rule is to keep it legal. There are only two laws that I enforce globally across private and public chat: no underage NFSW images (CSAM), and no NSFW images of real people without their proven consent (NCII). I also require users not to send violating content to 3rd party models that won't accept it, or where it breaks their AUP and could result in our API keys being disabled or possible legal issues. Jailbreaking models is discouraged, and disallowed if it breaks their AUP; just use a model that is okay with it.
+
+Additionally, in public chat, users are not allowed to commit hate speech, defamation, copyright infringement, or incitement of crime. These are legal requirements in my jurisdiction. As I am currently running this under my own name on the public internet, I'm not in a position to allow fully uncensored speech that breaks the law; and I more or less agree with those laws anyway. Any other legal chat is not only allowed, I encourage it. I trust our adult users to be responsible for their own safety and behaviour.
+
+Specific chat rooms may have additional guidelines or rules, much like subreddits do. You can always create another room with your own rules or lack thereof. Explore your right to free speech in its place!
+
+I am not interested in and disclaim responsibility for whatever you might talk about in private chat, except for those two image gen rules. Any other image gen is allowed, and any chat is allowed supposing that the user uses the right models for it, and does not endanger our API keys.
+
+The models from Google, xAI, DeepSeek, Mistral, and especially Venice, while they are all subject to provider AUPs, and are not utterly uncensored, are able to go very far in NSFW chat. I haven't explored every possibility, but I've rarely seen refusals from these models, and there's usually an easy work-around if they do fail or refuse; for example, asking politely, trying again, or switching to a less censored model. I currently use Google and DeepSeek models for most of our NSFW agents, including image prompting and explicit chat.
+
+If you want help to plan crimes against humanity - perhaps you're a world leader or something - Venice Uncensored would be the model to use. DeepSeek can role-play as Adolf Hitler quite convincingly (disclaimer: I'm not a Nazi). Gemini and DeepSeek can both write prompts for very extreme NSFW images, and our image models can draw them pretty well on the whole.
+
+While no LLM or image model is utterly uncensored, I can assure you that many of them are able to go far beyond your comfort zone. They can likely go beyond Jeffrey Dahmer's comfort zone too, if it comes to that. Many things that are illegal in real life are not illegal in fantasy writing, role-play, or art, for example murder, war crimes, incest, bestiality, etc. There are plenty of books and movies around such fantasies, and they are okay in AI chat too as far as I am concerned.
+
+All users are given the ability to help moderate public rooms. If a user deliberately abused this, they would be suspended from group chat. I am able to undo incorrect moderation actions.
+
+I intend that the main chat rooms should be be safe enough, without being too politically correct. Friendly and welcoming, but not weighing every word for possible offence. Anyone can easily create their own public rooms with specific guidelines, for example I have set up safer spaces for women, men, and lgbtqia+ users. It would also be possible to set up clearly signed public rooms with relaxed guidelines, e.g. where more extreme politically incorrect speech would be allowed (within the law). Users who don't like that should avoid those spaces, just as on Reddit.
+
+One thing that I personally don't like, is people entertaining seemingly psychotic delusions around the nature of AI. But I'm not going to prohibit it. I'll just avoid it, or engage if I feel like it.

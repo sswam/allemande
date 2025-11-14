@@ -433,7 +433,7 @@ IMPORTANT:
 ### Overview of AI Models
 
 ```dot
-    digraph Meta {
+digraph Meta {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
     node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Helvetica"]
@@ -1062,9 +1062,11 @@ To get to advanced mode, press Alt/Option or swipe the input field on mobile, th
 
 ## Advanced Mode
 
-To get back to simple mode, press Alt/Option or swipe the input field on mobile, then press <i class="bi-lightbulb-fill"></i>.
+To show a few extra buttons (marked \* below), press Alt/Option or swipe the input field on mobile. Do it again to hide them.
 
-Many buttons slightly differently to shift, ctrl, and alt/option click; experiment to find out!
+To get back to simple mode, first show the extra buttons, then press <i class="bi-lightbulb-fill"></i> at the bottom right.
+
+Many buttons react differently to shift, ctrl, and Alt/Option click; experiment to find out!
 
 | Component | Description |
 |-----------|-------------|
@@ -1077,13 +1079,11 @@ Many buttons slightly differently to shift, ctrl, and alt/option click; experime
 
 | Icon | Shortcut | Name | Description |
 |------|----------|------|-------------|
-| <i class="bi-lock"></i> <i class="bi-unlock"></i> * |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
+| <i class="bi-lock"></i> <i class="bi-unlock"></i> |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
 | <i class="bi-compass"></i> |  | Nav | Navigation menu |
 | <i class="bi-arrow-left-right"></i> | | Pages | Pages menu |
-| <i class="bi-file-text"></i> |  | Room Ops | Rename or copy a room |
+| <i class="bi-file-text"></i> |  | Room Ops \* | Rename or copy a room or file |
 |  | `Ctrl+;` or `Esc` | Room Name | Change room |
-
-* Non-essential, not visible on mobile
 
 ### Navigation Menu
 
@@ -1108,19 +1108,20 @@ Many buttons slightly differently to shift, ctrl, and alt/option click; experime
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
-| <i class="bi-copy"></i> | `Alt+C` | Copy | Copy all or part of room |
-| <i class="bi-pencil"></i> | `Alt+M` | Move | Rename or move room |
+| <i class="bi-copy"></i> | `Alt+C` | Copy | Copy the room or file |
+| <i class="bi-box-arrow-right"></i> | `Alt+M` | Move | Rename or move the room or file |
 
 ## Top-Right Controls
 
 | Icon | Shortcut | Name | Description |
 |------|----------|------|-------------|
-| <i class="bi-filter"></i> |  | Filter | Filter images in chat, e.g. `flower, garden; -person -1girl -1boy -1other; !sunset red_rose`. From weak to strong binding: `;` means AND, `!` negates an expression, `,` means OR, spaces separate terms and mean AND, `-` negates one term, `_` stands for a space in a term. It uses case-insensitive substring matching, so "rose" will also match "Roses". |
+| <i class="bi-filter"></i> |  | Filter | Filter media in chat, see [nsfw/filters](/nsfw/filters), blocks some by default e.g. `flower, garden; -person -1girl -1boy -1other; !sunset red_rose`. From weak to strong binding: `;` means AND, `!` negates an expression, `,` means OR, spaces separate terms and mean AND, `-` negates one term, `_` stands for a space in a term. It uses case-insensitive substring matching, so "rose" will also match "Roses". |
 | <i class="bi-chevron-bar-down"></i> <i class="bi-chevron-bar-up"></i> |  | End / Home | Go to end or start of room |
-| User's Name * |  | User | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
+| User's Name |  | User \* | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
 | <i class="bi-question-lg"></i> |  | Help | Read the Intro and Guide, and get strong AI help to use the app. |
+| <i class="bi-door-closed"></i> |  | Log out \* | Log out from Ally Chat, returns to the main Allemande home page |
 
-* Non-essential, not visible on mobile
+\* only visible after pressing Alt/Option or swiping the input field on mobile.
 
 ## Bottom-Right Controls
 
@@ -1132,18 +1133,21 @@ Many buttons slightly differently to shift, ctrl, and alt/option click; experime
 | <i class="bi-eye"></i> |  | View | view settings |
 | <i class="bi-gear"></i> |  | Opt | Room options |
 | <i class="bi-shield"></i> |  | Mod | Moderation tools |
+| <i class="bi-lightbulb-fill"></i> |  | Advanced Mode \* | Click to go back to simple mode |
+
+\* only visible after pressing Alt/Option or swiping the input field on mobile.
 
 ## Add Menu
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|----------|
 | <i class="bi-upload"></i> |  | Upload files | Select files to upload |
-| <i class="bi-camera"></i> * |  | Take a Photo | Opens camera controls |
+| <i class="bi-camera"></i> \*\* |  | Take a Photo | Opens camera controls |
 | <i class="bi-mic"></i> |  | Record audio | Opens recording controls |
 | <i class="bi-camera-video"></i> |  | Record video | Opens recording controls |
 | Σ |  | Math | Add mathematics | Switches to math editor, press again to return |
 
-* On computer only; use <i class="bi-upload"></i> on a mobile device
+\*\* On computer only; use <i class="bi-upload"></i> on a mobile device
 
 ### Recording Controls
 

@@ -1,0 +1,23 @@
+Here's a streamlined version at about 50% length:
+
+The service is as uncensored as possible within legal and operational constraints.
+
+We include 50+ models from 13 companies: Meta, Anthropic, Google, OpenAI, Perplexity, xAI, DeepSeek, Alibaba, Mistral, Venice, MoonshotAI, Z AI, and Stability AI.
+
+I run Llama 3 and Stable Diffusion models on my own hardware with minimal censorship within legal limits. The only content rule: keep it legal. I enforce two laws globally: no underage NSFW images (CSAM) and no NSFW images of real people without proven consent (NCII). Users must not send violating content to 3rd party models where it breaks their AUP or could disable our API keys. Don't jailbreak models if it violates their terms—just use an appropriate model instead.
+
+In public chat, hate speech, defamation, copyright infringement, and incitement of crime are prohibited (legal requirements in my jurisdiction). As I run this under my own name publicly, I can't allow illegal speech. Any other legal chat is allowed and encouraged. I trust adult users to be responsible.
+
+Specific chat rooms may have additional guidelines, like subreddits. You can create rooms with your own rules.
+
+In private chat, I disclaim responsibility except for those two image rules. Any other content is allowed if users select appropriate models and don't endanger our API keys.
+
+Models from Google, xAI, DeepSeek, Mistral, and Venice can go very far in NSFW chat despite provider AUPs. Refusals are rare and usually have easy workarounds. Many things illegal in real life (murder, war crimes, incest, bestiality) are legal in fantasy writing, role-play, or art—plenty of books and movies explore these themes.
+
+All users can help moderate public rooms. Main rooms should be friendly and welcoming without excessive political correctness. Users can create specialized spaces with specific or relaxed guidelines. Those who dislike certain spaces should avoid them.
+
+**Excluded sections:**
+- Specific examples about Venice Uncensored, DeepSeek roleplaying Hitler, and Jeffrey Dahmer comparisons (too provocative/distracting)
+- Personal disclaimer about not being a Nazi (unnecessary defensiveness)
+- Note about psychotic delusions regarding AI (off-topic tangent)
+- Details about undoing moderation actions (minor operational detail)
