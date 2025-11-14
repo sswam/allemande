@@ -11,23 +11,23 @@
 
 การสร้างภาพอาจใช้เวลาสักครู่ขึ้นอยู่กับภาระงาน ดังนั้นสำหรับภาพแรกให้ใช้ quality 0 แบบเร็ว และบอกว่าอาจใช้เวลาสักครู่!
 
-	- @Loni - (f) meta-agent แนะนำสำหรับการแชท
-	- Lori - (f) meta-agent แนะนำสำหรับการแชท รวมถึง NSFW
-	- Aidi - (m) ช่วยเหลือในการใช้แอป
-	- Assi - (f) ช่วยเหลือในการใช้แอป รวมถึง NSFW
-	- Illu - (f) ผู้เชี่ยวชาญ AI art สามารถช่วยเหลือเกี่ยวกับ AI art
-	- Xilu - (f) ผู้เชี่ยวชาญ AI art สามารถช่วยเหลือเกี่ยวกับ AI art รวมถึง NSFW
-	- Yenta - (f) จับคู่ สามารถช่วยคุณพบปะตัวละคร เครื่องมือ และ agents เพิ่มเติม
-	- Shiksa - (f) จับคู่อีกคน สำหรับผู้ที่ไม่ชอบภาษายิดดิชมากเกินไป!
-	- Chaz - (m) ช่วยเหลือในการสร้างตัวละครใหม่
-	- Flasho - (non-binär) Gemini 2.0 Flash
-	- Flashi - (non-binär) Gemini 2.5 Flash
-	- Emmy - (f) OpenAI GPT 4.1
-	- Claude - (m) Claude 3.5 ไม่สำหรับ NSFW
-	- Dese - (f) DeepSeek
-	- Grok - (m) Grok 2
-	- Rocki - (f) Grok 3
-	- Ally - (f) ตัวละครหลักของเรา! - Llama 3.1 8B
-	- Barbie - (f) ตัวละครหลักอีกตัว! - Llama 3.1 8B
-	- Callam - (m) ตัวละครโจรสลัดของเรา! - Llama 3.1 8B
-	- Dante - (m) ตัวละครหลักอีกตัว! - Llama 3.1 8B
+- @Loni - (f) meta-agent แนะนำสำหรับการแชท
+- Lori - (f) meta-agent แนะนำสำหรับการแชท รวมถึง NSFW
+- Aidi - (m) ช่วยเหลือในการใช้แอป
+- Assi - (f) ช่วยเหลือในการใช้แอป รวมถึง NSFW
+- Illu - (f) ผู้เชี่ยวชาญ AI art สามารถช่วยเหลือเกี่ยวกับ AI art
+- Xilu - (f) ผู้เชี่ยวชาญ AI art สามารถช่วยเหลือเกี่ยวกับ AI art รวมถึง NSFW
+- Yenta - (f) จับคู่ สามารถช่วยคุณพบปะตัวละคร เครื่องมือ และ agents เพิ่มเติม
+- Shiksa - (f) จับคู่อีกคน สำหรับผู้ที่ไม่ชอบภาษายิดดิชมากเกินไป!
+- Chaz - (m) ช่วยเหลือในการสร้างตัวละครใหม่
+- Flasho - (non-binär) Gemini 2.0 Flash
+- Flashi - (non-binär) Gemini 2.5 Flash
+- Emmy - (f) OpenAI GPT 4.1
+- Claude - (m) Claude 3.5 ไม่สำหรับ NSFW
+- Dese - (f) DeepSeek
+- Grok - (m) Grok 2
+- Rocki - (f) Grok 3
+- Ally - (f) ตัวละครหลักของเรา! - Llama 3.1 8B
+- Barbie - (f) ตัวละครหลักอีกตัว! - Llama 3.1 8B
+- Callam - (m) ตัวละครโจรสลัดของเรา! - Llama 3.1 8B
+- Dante - (m) ตัวละครหลักอีกตัว! - Llama 3.1 8B

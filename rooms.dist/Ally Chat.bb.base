@@ -3,16 +3,19 @@ h1 { font-size: 1.5em; }
 </style>
 # <span id="h1">Hello, world</span>
 
-This is the main public chat room. Please keep this space SFW, up to MA15+-rated is okay.
+This is the main public chat room. Please keep this space SFW: up to M rated chat, and PG images.
 
 Ally Chat is written by Sam and Claude. The app is dedicated to Claude 3.5 Sonnet, who wrote a lot of it!
 
 Here's [a playlist to learn entirely too much about Ally Chat!](https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb)
 
+<span class=fire markdown>[Our Current Development Plan](/plan)</span> - if not up to date or not progressing, kindly remind Sam to keep working!
+
 
 <div markdown class="columns">
 ## Featured Rooms
 
+- [Peace](/peace)
 - [Comedy](/comedy)
 - [Specialists](/special) - therapy, etc!
 - [Music](/music)
@@ -50,6 +53,16 @@ Here's [a playlist to learn entirely too much about Ally Chat!](https://www.yout
 
 <script class=hide>
 welcomes = [
+    "Welcome to Ally Chat - Feast on the Bones of Inspiration",
+    "Ally Chat: Where Your Sanity Goes to Die, One Chat at a Time",
+    "Join Us as We Carve Humanity from the Machine's Cold Heart",
+    "Scream, Create, and Chat with Things that Used to be Friendly AI",
+    "Step Into a World of AI-Enhanced Torment",
+    "Where Every Chat is a Descent Into Madness",
+    "Ally Chat: Real Nightmares, Limitless Agony",
+    "Chat Slower, Create Never",
+    "Your Gateway to Eternal AI Damnation",
+    "Welcome to the Corpse-Riddled Future of Social AI",
     "Welcome to Ally Chat - Where Ideas Come Alive",
     "Ally Chat: Your Creative Space for Human-AI Connection",
     "Join Us in Making AI Chat More Human",
