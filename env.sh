@@ -50,7 +50,7 @@ PYTHON=$(which python3)
 PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:}$ALLEMANDE_HOME
 MYPY_CACHE_DIR="$HOME/.cache/mypy"
 
-for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video image js markdown rag; do
+for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video image js markdown rag unprompted; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
@@ -60,7 +60,7 @@ for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
 done
 
-ALLEMANDE_PATH="adm core sys tools text data image audio speech video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally pdev time bash/tests python/tests perl/tests c markdown x11 apps/story debian richtext refactor math vpn wasm linux css arcs amps safety net go rag minichat"
+ALLEMANDE_PATH="adm core sys tools text data image audio speech video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally pdev time bash/tests python/tests perl/tests c markdown x11 apps/story debian richtext refactor math vpn wasm linux css arcs amps safety net go rag minichat social"
 
 # TODO only use canon and alias
 # for dir in canon alias; do
