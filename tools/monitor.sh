@@ -20,19 +20,19 @@
 # */15 * * * * /path/to/monitor.sh
 
 monitor() {
-  local threshold_storage= s=99 # storage usage threshold percentage
-  local threshold_load= l=2     # load average threshold
-  local threshold_mem= m=95     # memory usage threshold percentage
-  local threshold_vm= M=80      # VM (RAM + swap) usage threshold percentage
-  local ping_host= p=8.8.8.8    # host to ping test
-  local killall_vm= K=90        # VM usage threshold to kill processes
-  local killall= k=node         # Processes to kill
-  local verbose= v=             # verbose
+  local threshold_storage= s=100  # storage usage threshold percentage
+  local threshold_load= l=2       # load average threshold
+  local threshold_mem= m=95       # memory usage threshold percentage
+  local threshold_vm= M=92        # VM (RAM + swap) usage threshold percentage
+  local ping_host= p=8.8.8.8      # host to ping test
+  local killall_vm= K=98          # VM usage threshold to kill processes
+  local killall= k=node           # Processes to kill
+  local verbose= v=               # verbose
   local domains= d="allemande.ai" # domains to check
-  local dns_days= D=14          # days before DNS expiry warning
-  local ssl_days= S=14          # days before SSL expiry warning
-  local config= c=              # load config from file
-  local daily= y=0              # do daily checks
+  local dns_days= D=14            # days before DNS expiry warning
+  local ssl_days= S=14            # days before SSL expiry warning
+  local config= c=                # load config from file
+  local daily= y=0                # do daily checks
   local caches= C=("/opt/allemande/rooms.extra.cache")  # cache dirs to exclude from disk space calculations
 
   eval "$(ally)"
