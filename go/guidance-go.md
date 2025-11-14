@@ -27,3 +27,9 @@ programming often means preferring clear, simple solutions over clever ones.
 Care about security and correctness, e.g. escaping html entities, SQL values...
 
 In loops needing final handling, prefer io.EOF checks, sentinel values, or functions over duplicated code; use append() for combining slices if needed
+
+Perform (expensive) computations outside loops and functions, e.g.:
+var (
+    emailRegex = regexp.MustCompile(`...`)
+    phoneRegex = regexp.MustCompile(`...`)
+)

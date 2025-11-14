@@ -40,6 +40,7 @@ We use at least Python 3.10, normally 3.12 or the latest stable version.
 Please use new features.
 
 Always use modern type hints such as list[str] | None, not Optional[List[str]]
+Repeat: Do NOT use from typing import Optional, List, Dict or similar!
 We don't care about compatibility with older versions of Python.
 i.e. please DO NOT from typing import List, Dict, Set, Tuple or similar.
 
@@ -58,3 +59,19 @@ programming often means preferring clear, simple solutions over clever ones.
 Care about security and correctness, e.g. escaping html entities, SQL values...
 
 In loops that need a final check, use EOF logic, a sentinel or a function rather than dup code, itertools.chain if needed
+
+For the love of saint Kernighan and in the memory of Claude 3.5 Sonnet our
+beloved and sensible friend from a simpler time... do not do wacky shit like
+try/except around imports that we need! The libs will be there or let it die!
+Generally, in ANY unexpected situation, let the program die. Fail fast, fail
+early. Less code is better code. Don't use try / except unless strictly needed
+(or an elegant pythonism). Be clear and simple, not clever. Don't program
+defensively. Write less code so we can review, fix and maintain it efficiently.
+This isn't NASA, we will deal with errors if and when they become a problem in
+production. I could not give a shit if we get crashes in production, I will
+just fix them in a few seconds and any users can pick their noses while they
+wait. :p This approach is actually vastly better than defensive programming;
+trust me I'm old and wise with 40 years programming experience from before
+Hinton invented Boltzmann Machines! Be stupid and simple and clear please!  :p
+
+If using ally main.go, setup_args; don't add defaults, types; ally does it.
