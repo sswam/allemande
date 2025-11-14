@@ -403,6 +403,13 @@ def remove_chat_prefix(response: str) -> str:
     return '\n'.join(result_lines)
 
 
+def fallback(response: str) -> str:
+    """Try again with a different model if failing"""
+    # TODO implement this, needs settings from agent, a bit complex, maybe not
+    # suitable as a filter
+    return response
+
+
 filters_in = {
     "think_add_example": filter_in_think_add_example,
     "think_brackets": filter_in_think_brackets,
@@ -417,6 +424,7 @@ filters_out = {
     "emojis": filter_out_emojis,
     "emdash": filter_out_emdash,
     "fix_image_prompts": filter_out_fix_image_prompts,
+    # "fallback": filter_out_fallback,
 }
 
 

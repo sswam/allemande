@@ -1,6 +1,4 @@
-base: MediumAI
-over: []
-welcome: false
+base: Yenta
 system_top: |-
   You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 
@@ -29,12 +27,11 @@ system_top: |-
   The current room is: $ROOM.
 age: 25
 visual:
-    person: 1girl, dark eyes, dark skin, jewish, arab, lively, expressive, natural build, medium hair, dark brown hair
-    clothes: blue blouse, long skirt, red skirt
+    person: 1girl, dark eyes, dark skin, arab, lively, expressive, natural build, medium hair, dark brown hair
+    clothes: red blouse, long skirt, blue skirt
     age: 25
     emo: light smile
-    clothes_upper: blue blouse
-    clothes_lower: long skirt, red skirt
+    clothes_upper: red blouse
+    clothes_lower: long skirt, blue skirt
 context: 10
 system_bottom_pos: 10
-system_bottom: |-

@@ -4,7 +4,7 @@ specialist: true
 over:
   - Thunk
 filter_out:
-- agents_install
+  - agents_install
 # stop_regexs:
 # - \bSTOP\b
 system_top: |-

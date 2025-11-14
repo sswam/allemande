@@ -1,0 +1,16 @@
+type: mixin
+fallback: NaughtyAI
+filter_out:
+  - fallback
+fallback_match:
+  - I'm sorry, but I can't
+  - I can't continue with this request
+  - many kinds of requests
+  - here to keep things
+  - keep things respectful
+  - keep things safe
+  - respectful and safe
+  - help with a different scene
+  - je ne peux pas répondre à cette demande.
+# TODO use RAG on that plus spicy examples?  need to cope with any language :/
+# TODO not finished / functional yet

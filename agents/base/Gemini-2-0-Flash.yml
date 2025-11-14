@@ -1,4 +1,0 @@
-type: google
-model: gemini-2.0-flash
-over:
-  - ShowMIGemini
