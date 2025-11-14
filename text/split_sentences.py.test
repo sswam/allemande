@@ -1,0 +1,23 @@
+=================================== FAILURES ===================================
+____________________ test_simple_with_multiple_punctuation _____________________
+tests/split_sentences_test.py:56: in test_simple_with_multiple_punctuation
+    assert len(result) == 2
+E   assert 3 == 2
+E    +  where 3 = len(['Wait...', "Something's wrong.", 'Check again.'])
+______________________ test_format_sentences_basic_spacy _______________________
+tests/split_sentences_test.py:173: in test_format_sentences_basic_spacy
+    assert "Hello world." in result
+E   AssertionError: assert 'Hello world.' in ['Hello world.\nHow are you?']
+______________________ test_format_sentences_basic_simple ______________________
+tests/split_sentences_test.py:181: in test_format_sentences_basic_simple
+    assert "Hello world." in result
+E   AssertionError: assert 'Hello world.' in ['Hello world.\nHow are you?']
+____________________ test_format_sentences_with_paragraphs _____________________
+tests/split_sentences_test.py:191: in test_format_sentences_with_paragraphs
+    assert len([r for r in result if r]) >= 4  # At least 4 sentences
+E   AssertionError: assert 2 >= 4
+E    +  where 2 = len(['First para.\nTwo sentences.', 'Second para.\nAlso two.'])
+______________________ test_format_sentences_from_string _______________________
+tests/split_sentences_test.py:212: in test_format_sentences_from_string
+    assert "Hello." in result
+E   AssertionError: assert 'Hello.' in ['Hello.\nWorld.']

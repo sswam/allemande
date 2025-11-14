@@ -1,0 +1,21 @@
+1. The simple segmenter uses a strict (?=[A-Z]) lookahead to detect sentence
+starts. Sentences that begin with a non-ASCII uppercase letter, opening
+quote/paren/brace, or a lowercase word will not be split correctly (e.g.
+opening quotes or “Unicode” capitals are missed). Consider allowing
+punctuation/quotes before the capital and using Unicode-aware uppercase
+detection (or a broader class like \p{Lu}).
+
+2. The regex-based splitter rebuilds the whole input via a single-character
+fallback (.) token and a callback-based re.sub. This can be very slow for large
+texts; using re.finditer to iterate tokens or a state-machine scanner would be
+more efficient and clearer.
+
+5. The simple segmenter will fail to split when the next sentence starts with
+punctuation followed by a lowercase letter (common in dialogue or stylized
+text). The current approach ignores those as sentence boundaries; expand rules
+to handle common opening punctuation (quotes, parentheses, em dashes).
+
+8. Minor: replace_func references match.group(3) in a fallback path that should
+be unreachable in normal flows; this makes the control flow harder to read and
+could mask subtle grouping mistakes if the regex is modified later. Clarify the
+group usage or switch to named groups for clarity.
