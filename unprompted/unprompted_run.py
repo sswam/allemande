@@ -14,18 +14,22 @@ import re
 
 import argh
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
+
+logger = logging.getLogger(__name__)
 
 unprompted_dir = str((Path(__file__).resolve().parent / "unprompted").resolve())
 sys.path.insert(0, unprompted_dir)
+# logger.info("unprompted_dir: %s", unprompted_dir)
 
 # Import after adding unprompted_dir to sys.path
 from lib_unprompted.shared import Unprompted  # pylint: disable=import-error,wrong-import-position
 
-logger = logging.getLogger(__name__)
+
+unp = Unprompted(base_dir=unprompted_dir)
 
 
-def process_unprompted(input_string, seed=None):
+def unprompted(input_string, seed=None, cleanup=True, unprompted=None):
     """
     Process input string through Unprompted template engine.
 
@@ -36,7 +40,7 @@ def process_unprompted(input_string, seed=None):
     Returns:
         Processed output from Unprompted
     """
-    unprompted = Unprompted()
+    unprompted = unprompted or unp
 
     # Use provided seed or generate a random one
     if seed is None:
@@ -44,8 +48,15 @@ def process_unprompted(input_string, seed=None):
 
     unprompted.shortcode_user_vars = {"seed": seed}
     result = unprompted.start(input_string)
-    unprompted.cleanup()
-    unprompted.goodbye()
+
+    # Cleanup (after each run)
+    if cleanup:
+        unprompted.cleanup()
+
+    # # Goodbye (after session; if we created the object)
+    # if not unprompted:
+    #     unprompted.goodbye()
+
     return result
 
 
@@ -66,8 +77,8 @@ def main(*inp, debug=False, verbose=False, seed=None, negative=None):
     else:
         logging.getLogger().setLevel(logging.WARNING)
 
-    cwd = os.getcwd()
-    os.chdir(unprompted_dir)
+    # cwd = os.getcwd()
+    # os.chdir(unprompted_dir)
 
     try:
         if inp:
@@ -83,7 +94,8 @@ def main(*inp, debug=False, verbose=False, seed=None, negative=None):
         if negative:
             input_string = f"{input_string} NEGATIVE [get negative_prompt]"
 
-        output = process_unprompted(input_string, seed).strip()
+        output = unprompted(input_string, seed).strip()
+        unp.goodbye()  # not needed but whatevs
 
         # remove NEGATIVE marker if there is no negative prompt
         if output.endswith("NEGATIVE"):
@@ -95,8 +107,8 @@ def main(*inp, debug=False, verbose=False, seed=None, negative=None):
     except Exception as e:  # pylint: disable=broad-exception-caught
         logger.error("Error: %s %s", type(e).__name__, str(e))
         sys.exit(1)
-    finally:
-        os.chdir(cwd)
+    # finally:
+    #     os.chdir(cwd)
 
 
 if __name__ == "__main__":
