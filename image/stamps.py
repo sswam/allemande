@@ -40,7 +40,9 @@ def load_model_short_dict():
     for yml_file in art_path.rglob('*.yml'):
         with open(yml_file) as f:
             data = yaml.safe_load(f)
-            model_dict[data['model']] = yml_file.stem
+            model = data.get("model")
+            if model:
+                model_dict[model] = yml_file.stem
 
     return model_dict
 
