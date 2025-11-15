@@ -1,5 +1,5 @@
 # base: SmallAIAlpha
-base: SmallAI
+base: SmallAINaughty
 # over:
 # - BlockMI
 # model: meta-llama/llama-3.1-8b-instruct:free

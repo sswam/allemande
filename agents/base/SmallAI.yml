@@ -3,6 +3,8 @@ model: default
 over:
 - ShowMI
 - Period
+filter_out:
+  - sanity
 context: 30
 lines: 5
 dedent: true
