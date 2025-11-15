@@ -7,20 +7,24 @@
 
 transpatch() {
 	local git_mode= g=         # git diff mode: target source
-	local diff_mode= d=        # diff mode: target old new
+	local diff_mode= D=        # diff mode: target old new
 	local prompt= p=           # extra prompt
 	local model= m=            # LLM model
 	local edit= e=1            # edit the ed script before applying
 	local confidence= C=       # ask LLM to rate confidence on each change
-	local draft= D=            # ask LLM to make multiple drafts
+	local draft= r=            # ask LLM to make multiple drafts
 	local context= c=5         # lines of context for diffs
 
 	eval "$(ally)"
 
+	debug "transpatch started"
+
 	local target source old_source new_source diff_input numbered_target
 
 	# Determine mode and validate arguments
+	debug "determining mode and validating arguments"
 	if [ "$git_mode" = 1 ]; then
+		debug "git mode selected"
 		if [ "$#" -ne 2 ]; then
 			die "git mode requires exactly 2 arguments: target source"
 		fi
@@ -34,10 +38,12 @@ transpatch() {
 			die "source file not found: $source"
 		fi
 
+		debug "getting git diff of source: $source"
 		# Get git diff of source
 		diff_input=$(git diff -U"$context" "$source" 2>/dev/null || git diff -U"$context" /dev/null "$source")
 
 	elif [ "$diff_mode" = 1 ]; then
+		debug "diff mode selected"
 		if [ "$#" -ne 3 ]; then
 			die "diff mode requires exactly 3 arguments: target old new"
 		fi
@@ -55,10 +61,12 @@ transpatch() {
 			die "new source file not found: $new_source"
 		fi
 
+		debug "getting diff between old and new source"
 		# Get diff between old and new source
 		diff_input=$(diff -U"$context" "$old_source" "$new_source")
 
 	else
+		debug "default mode (stdin) selected"
 		# Default mode: target from arg, diff from stdin
 		if [ "$#" -ne 1 ]; then
 			die "default mode requires exactly 1 argument: target"
@@ -69,13 +77,16 @@ transpatch() {
 			die "target file not found: $target"
 		fi
 
+		debug "reading diff from stdin"
 		# Read diff from stdin
 		diff_input=$(cat)
 	fi
 
+	debug "creating numbered version of target"
 	# Create numbered version of target
-	numbered_target=$(nl -ba -n rn -w1 -s $'\t')
+	numbered_target=$(nl -ba -n rn -w1 -s $'\t' < "$target")
 
+	debug "building LLM prompt"
 	# Build the prompt
 	local system_prompt="You are an expert at generating ed(1) scripts to apply changes to files.
 
@@ -136,6 +147,7 @@ $numbered_target
 
 Generate an ed(1) script to apply the appropriate changes from the source to the target.$prompt$confidence_prompt$draft_prompt"
 
+	debug "calling LLM to generate ed script"
 	# Generate ed script using LLM and save directly to file
 	printf "%s" "$user_prompt" | query -m="$model" -s="$system_prompt" > "$target.ed.md"
 
@@ -143,8 +155,10 @@ Generate an ed(1) script to apply the appropriate changes from the source to the
 		die "LLM generated empty output"
 	fi
 
+	debug "extracting ed script from markdown"
 	# Extract ed script from markdown code block to file
 	local ed_script_file="$target.ed"
+	# shellcheck disable=SC2016  # Expressions don't expand in single quotes, use double quotes for that.
 	sed -n '/`````ed/,/`````/p' "$target.ed.md" | sed '1d;$d' > "$ed_script_file"
 
 	if [ ! -s "$ed_script_file" ]; then
@@ -154,12 +168,15 @@ Generate an ed(1) script to apply the appropriate changes from the source to the
 
 	# Interactive edit mode
 	if [ "$edit" = 1 ]; then
+		debug "opening ed script in editor"
 		"${EDITOR:-vi}" "$ed_script_file"
 	fi
 
+	debug "applying ed script to target"
 	# Apply the ed script
 	ed -s "$target" < "$ed_script_file" 2>&1 | tee "$target.ed.out" || die "ed script failed to apply"
 
+	debug "transpatch completed successfully"
 	echo >&2 "Successfully applied changes to $target"
 	echo >&2 "Full LLM output saved in $target.ed.md"
 }
@@ -168,4 +185,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	transpatch "$@"
 fi
 
-# version: 0.2.0
+# version: 0.2.1
