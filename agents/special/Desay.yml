@@ -1,0 +1,6 @@
+# Frank version of Dese: direct say → Dese match
+base: Dese
+over:
+  - Frankness
+system_bottom_pos: 11
+# system_bottom_pos: 3

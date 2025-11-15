@@ -1,0 +1,6 @@
+# Frank version of Emmy: earnest → Emmy match
+base: Emmy
+over:
+  - Frankness
+system_bottom_pos: 11
+# system_bottom_pos: 3
