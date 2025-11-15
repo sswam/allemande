@@ -28,6 +28,31 @@ fi
 
 # START
 
+# Logging system
+log_level=3  # WARN
+
+# Parse logging options
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+	--)
+		break
+		;;
+	-d|--debug)
+		log_level=0  # DEBUG
+		;;
+	-v|--verbose)
+		log_level=1  # INFO
+		;;
+	-q|--quiet)
+		log_level=4  # ERROR
+		;;
+	*)
+		break
+		;;
+	esac
+	shift
+done
+
 if [[ $- == *i* ]]; then
 	:
 else
@@ -41,34 +66,6 @@ else
 	set -e -u -o pipefail
 	trap 'trap - RETURN; eval "$old_opts"' RETURN
 fi
-
-# Logging system
-log_level=3  # WARN
-
-# Parse logging options
-_ally_parse_log_opts() {
-	local arg
-	for arg; do
-		case "$arg" in
-		-d|--debug|00-debug)
-			log_level=0  # DEBUG
-			;;
-		-v|--verbose)
-			log_level=1  # INFO
-			;;
-		-q|--quiet)
-			log_level=4  # ERROR
-			;;
-		[0-9]|[0-9][0-9])
-			if [[ "$arg" =~ ^[0-9]+$ ]]; then
-				log_level=$arg
-			fi
-			;;
-		esac
-	done
-}
-
-_ally_parse_log_opts "$@"
 
 # Core logging function
 log() {
