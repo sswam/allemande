@@ -578,3 +578,111 @@ def test_remove_chat_prefix_empty():
     """Test remove_chat_prefix with empty string."""
     result = subject.remove_chat_prefix("")
     assert result == ""
+def test_filter_out_sanity_single_char_repetition():
+    """Test filtering of single character repetitions"""
+    from filters import filter_out_sanity
+
+    # Test with default max_repeat=80
+    input_str = "a" * 100
+    result = filter_out_sanity(input_str)
+    assert len(result) == 79, f"Expected 79 'a's, got {len(result)}"
+    assert result == "a" * 79
+
+def test_filter_out_sanity_single_char_under_limit():
+    """Test that strings under the limit are not modified"""
+    from filters import filter_out_sanity
+
+    input_str = "a" * 50
+    result = filter_out_sanity(input_str)
+    assert result == input_str, "String under limit should not be modified"
+
+def test_filter_out_sanity_two_char_pattern():
+    """Test filtering of two character pattern repetitions"""
+    from filters import filter_out_sanity
+
+    # "ab" repeated 50 times = 100 chars, should be reduced to 39 repetitions (78 chars)
+    input_str = "ab" * 50
+    result = filter_out_sanity(input_str)
+    assert result == "ab" * 39, f"Expected 39 'ab' patterns, got {len(result)//2}"
+
+def test_filter_out_sanity_three_char_pattern():
+    """Test filtering of three character pattern repetitions"""
+    from filters import filter_out_sanity
+
+    # "abc" repeated 40 times = 120 chars, should be reduced to 26 repetitions (78 chars)
+    input_str = "abc" * 40
+    result = filter_out_sanity(input_str)
+    assert result == "abc" * 26, f"Expected 26 'abc' patterns, got {len(result)//3}"
+
+def test_filter_out_sanity_custom_max_repeat():
+    """Test with custom max_repeat value"""
+    from filters import filter_out_sanity
+
+    input_str = "x" * 50
+    result = filter_out_sanity(input_str, max_repeat=10)
+    assert len(result) == 9, f"Expected 9 'x's with max_repeat=10, got {len(result)}"
+    assert result == "x" * 9
+
+def test_filter_out_sanity_mixed_content():
+    """Test with mixed content (normal text + repetitions)"""
+    from filters import filter_out_sanity
+
+    input_str = "Hello " + "a" * 100 + " World"
+    result = filter_out_sanity(input_str)
+    assert result == "Hello " + "a" * 79 + " World"
+
+def test_filter_out_sanity_multiple_repetitions():
+    """Test with multiple separate repetitions in the same string"""
+    from filters import filter_out_sanity
+
+    input_str = "a" * 100 + " some text " + "b" * 100
+    result = filter_out_sanity(input_str)
+    expected = "a" * 79 + " some text " + "b" * 79
+    assert result == expected
+
+def test_filter_out_sanity_no_repetitions():
+    """Test with normal text without repetitions"""
+    from filters import filter_out_sanity
+
+    input_str = "This is a normal sentence with no excessive repetitions."
+    result = filter_out_sanity(input_str)
+    assert result == input_str, "Normal text should not be modified"
+
+def test_filter_out_sanity_edge_case_exact_limit():
+    """Test with repetitions exactly at the limit"""
+    from filters import filter_out_sanity
+
+    input_str = "z" * 79  # Exactly at limit - 1
+    result = filter_out_sanity(input_str)
+    assert result == input_str, "String at limit-1 should not be modified"
+
+def test_filter_out_sanity_two_char_under_limit():
+    """Test two char pattern under the limit"""
+    from filters import filter_out_sanity
+
+    input_str = "xy" * 30  # 60 chars, under limit
+    result = filter_out_sanity(input_str)
+    assert result == input_str, "Two char pattern under limit should not be modified"
+
+def test_filter_out_sanity_three_char_under_limit():
+    """Test three char pattern under the limit"""
+    from filters import filter_out_sanity
+
+    input_str = "xyz" * 20  # 60 chars, under limit
+    result = filter_out_sanity(input_str)
+    assert result == input_str, "Three char pattern under limit should not be modified"
+
+def test_filter_out_sanity_empty_string():
+    """Test with empty string"""
+    from filters import filter_out_sanity
+
+    result = filter_out_sanity("")
+    assert result == "", "Empty string should return empty string"
+
+def test_filter_out_sanity_newline_repetitions():
+    """Test with repeated newlines"""
+    from filters import filter_out_sanity
+
+    input_str = "\n" * 100
+    result = filter_out_sanity(input_str)
+    assert len(result) == 79, f"Expected 79 newlines, got {len(result)}"

@@ -403,29 +403,25 @@ def remove_chat_prefix(response: str) -> str:
     return '\n'.join(result_lines)
 
 
-def fallback(response: str) -> str:
+def filter_out_fallback(response: str) -> str:
     """Try again with a different model if failing"""
     # TODO implement this, needs settings from agent, a bit complex, maybe not
     # suitable as a filter
     return response
 
 
-filters_in = {
-    "think_add_example": filter_in_think_add_example,
-    "think_brackets": filter_in_think_brackets,
-}
+def filter_out_sanity(response: str, max_repeat=80) -> str:
+    """Truncate repeated characters to a maximum"""
+    # Handle single character repetitions
+    response = re.sub(rf'(.)\1{{{max_repeat-1},}}', lambda m: m.group(1) * (max_repeat-1), response)
 
+    # Handle two character pattern repetitions (e.g., "ababab...")
+    response = re.sub(rf'(..)\1{{{max_repeat//2-1},}}', lambda m: m.group(1) * (max_repeat//2-1), response)
 
-filters_out = {
-    "agents_install": filter_out_agents_install,
-    "think_fix": filter_out_think_fix,
-    "think_brackets": filter_out_think_brackets,
-    "actions_reduce": filter_out_actions_reduce,
-    "emojis": filter_out_emojis,
-    "emdash": filter_out_emdash,
-    "fix_image_prompts": filter_out_fix_image_prompts,
-    # "fallback": filter_out_fallback,
-}
+    # Handle three character pattern repetitions (e.g., "abcabcabc...")
+    response = re.sub(rf'(...)\1{{{max_repeat//3-1},}}', lambda m: m.group(1) * (max_repeat//3-1), response)
+
+    return response
 
 
 def apply_filters_in(agent: ally_agents.Agent, query: str, history: list[str]) -> tuple[str, list[str]]:
@@ -488,23 +484,11 @@ def apply_filters_out(agent: ally_agents.Agent, response: str) -> str:
     return response
 
 
-# for post content from user
-USER_FILTER_OUT = [
-    ["url_to_link_with_title", "h1"],
-]
-
-# for display to user / stream serice, e.g.:
-# - totally block images
-# TODO implement calling these when needed
-USER_FILTER_IN = [
-]
-
-
 def apply_user_filters_out(user: str, content: str) -> str:
     """Apply output filters to the user's posted content."""
     # TODO use user agents, which inherit from a Human agent (normally)
     # For now, static list of filters for all users.
-    filters = USER_FILTER_OUT
+    filters = user_filter_out
     if not filters:
         return content
 
@@ -529,3 +513,35 @@ def apply_user_filters_out(user: str, content: str) -> str:
             logger.exception("User %r: Error in user filter_out %r: %s", user, filter_name, str(e))
 
     return content
+
+
+filters_in = {
+    "think_add_example": filter_in_think_add_example,
+    "think_brackets": filter_in_think_brackets,
+}
+
+
+filters_out = {
+    "agents_install": filter_out_agents_install,
+    "think_fix": filter_out_think_fix,
+    "think_brackets": filter_out_think_brackets,
+    "actions_reduce": filter_out_actions_reduce,
+    "emojis": filter_out_emojis,
+    "emdash": filter_out_emdash,
+    "fix_image_prompts": filter_out_fix_image_prompts,
+    "sanity": filter_out_sanity,
+    # "fallback": filter_out_fallback,
+}
+
+
+# for post content from user
+user_filter_out = [
+    ["url_to_link_with_title", "h1"],
+]
+
+# for display to user / stream serice, e.g.:
+# - totally block images
+# TODO implement calling these when needed
+user_filter_in = [
+]
+

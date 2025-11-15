@@ -595,7 +595,7 @@ def format_tool_response(agent, output, lang="txt"):
     """Format the tool response based on agent settings."""
     fmt = agent.get("format", "code")
     if fmt == "code":
-        return f"```{lang}\n" + output + "```\n"
+        return f"`````{lang}\n" + output + "`````\n"
     elif fmt in ["markdown", "html"]:
         return output
     elif fmt == "pre":
