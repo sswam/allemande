@@ -12,177 +12,258 @@
 # - Debugging and notification helpers
 # - Countdown and timing functions
 #
-# Version: 0.1.1
+# Version: 0.1.2
 # ENDDOC
 
+# shellcheck disable=SC1091
 . need-bash
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
-    case "${1:-}" in
-    -h|--help)
-        exec <"${BASH_SOURCE[0]}" sed -n '/^#!/d; /^# ENDDOC$/q; s/# //; p'; exit 1
-    esac
-    exec <"${BASH_SOURCE[0]}" sed -n '/^# START$/,$p'; exit 1
+	case "${1:-}" in
+	-h|--help)
+		exec <"${BASH_SOURCE[0]}" sed -n '/^#!/d; /^# ENDDOC$/q; s/# //; p'; exit 1
+	esac
+	exec <"${BASH_SOURCE[0]}" sed -n '/^# START$/,$p'; exit 1
 fi
 
 # START
 
 if [[ $- == *i* ]]; then
-    :
+	:
 else
-    shopt -s expand_aliases
+	shopt -s expand_aliases
 
-    . opts
+	# shellcheck disable=SC1091
+	. opts
 
-    # strict mode
-    old_opts=$(set +o)
-    set -e -u -o pipefail
-    trap 'trap - RETURN; eval "$old_opts"' RETURN
+	# strict mode
+	old_opts=$(set +o)
+	set -e -u -o pipefail
+	trap 'trap - RETURN; eval "$old_opts"' RETURN
 fi
 
+# Logging system
+log_level=3  # WARN
+
+# Parse logging options
+_ally_parse_log_opts() {
+	local arg
+	for arg; do
+		case "$arg" in
+		-d|--debug|00-debug)
+			log_level=0  # DEBUG
+			;;
+		-v|--verbose)
+			log_level=1  # INFO
+			;;
+		-q|--quiet)
+			log_level=4  # ERROR
+			;;
+		[0-9]|[0-9][0-9])
+			if [[ "$arg" =~ ^[0-9]+$ ]]; then
+				log_level=$arg
+			fi
+			;;
+		esac
+	done
+}
+
+_ally_parse_log_opts "$@"
+
+# Core logging function
+log() {
+	local level=$1 format=$2
+	shift 2
+	local log_caller_level=${log_caller_level:-1}
+	local level_num caller_info line_num file_path file_name
+
+	case "$level" in
+	DEBUG) level_num=0 ;;
+	INFO)  level_num=1 ;;
+	WARN)  level_num=3 ;;
+	ERROR) level_num=4 ;;
+	*)	level_num=$level
+		case "$level_num" in
+		0) level_num=0 ;;
+		1) level_num=1 ;;
+		2) level_num=3 ;;
+		3) level_num=4 ;;
+		*)	 level_num=$level ;;
+		esac
+		;;
+	esac
+
+	if [ "$level_num" -lt "$log_level" ]; then
+		return 0
+	fi
+
+	if [ "$log_level" -eq 0 ]; then
+		caller_info=$(caller "$log_caller_level")
+		line_num=${caller_info%% *}
+		file_path=${caller_info##* }
+		file_name=${file_path##*/}
+		# shellcheck disable=SC2059
+		printf >&2 "%s %s:%s $format\n" "$level" "$file_name" "$line_num" "$@"
+	else
+		# shellcheck disable=SC2059
+		printf >&2 "$format\n" "$@"
+	fi
+}
+
+debug() {
+	local log_caller_level=2
+	log DEBUG "$@"
+}
+
+info() {
+	local log_caller_level=2
+	log INFO "$@"
+}
+
+warn() {
+	local log_caller_level=2
+	log WARN "$@"
+}
+
+error() {
+	local log_caller_level=2
+	log ERROR "$@"
+}
+
 quote_command() {
-    local cmd=$(printf "%q " "$@")
-    cmd=${cmd% }
-    printf "%s\n" "$cmd"
+	local cmd
+	cmd=$(printf "%q " "$@")
+	cmd=${cmd% }
+	printf "%s\n" "$cmd"
 }
 
 alias qc=quote_command
 alias X=eval
 
 ret() {
-    qc "$@"
-    echo 'return $?'
+	qc "$@"
+	echo 'return $?'
 }
 
 tryit() {
-    X "$(ret ls /)"
+	X "$(ret ls /)"
 }
 
 backup() {
-    local file=$1
-    if [ -e "$file~" ]; then
-        move-rubbish "$file~"
-    fi
-    cp -i -a "$file" "$file~" || true
+	local file=$1
+	if [ -e "$file~" ]; then
+		move-rubbish "$file~"
+	fi
+	cp -i -a "$file" "$file~" || true
 }
 
 locate_file() {
-    local file=$1
-    if [ ! -e "$file" ]; then
-        local file2=$(which "$file")
-        if [ ! -e "$file2" ]; then
-            echo >&2 "not found: $file"
-            return 1
-        fi
-        file=$file2
-    fi
-    file=$(readlink -e "$file")
-    echo "$file"
+	local file=$1
+	if [ ! -e "$file" ]; then
+		local file2
+		file2=$(which "$file")
+		if [ ! -e "$file2" ]; then
+			echo >&2 "not found: $file"
+			return 1
+		fi
+		file=$file2
+	fi
+	file=$(readlink -e "$file")
+	echo "$file"
 }
 
 code_modify() {
-    local E=0 # do not edit
+	local E=0 # do not edit
 
-    . opts
+	# shellcheck disable=SC1091
+	. opts
 
-    local file=$1
-    shift
-    local command=("$@")
+	local file=$1
+	shift
+	local command=("$@")
 
-    # If no file is provided, process input stream
-    if [ -z "$file" ] || [ "$file" = "-" ]; then
-        "${command[@]}" | markdown-code -c '#'
-        return
-    fi
+	# If no file is provided, process input stream
+	if [ -z "$file" ] || [ "$file" = "-" ]; then
+		"${command[@]}" | markdown-code -c '#'
+		return
+	fi
 
-    # Locate the file and create a backup
-    file=$(locate_file "$file")
-    [ -n "$file" ] || return 1
-    backup "$file"
+	# Locate the file and create a backup
+	file=$(locate_file "$file")
+	[ -n "$file" ] || return 1
+	backup "$file"
 
-    # Process the file content and save to a temporary file
-    <"$file" "${command[@]}" | markdown-code -c '#' >"$file~"
+	# Process the file content and save to a temporary file
+	<"$file" "${command[@]}" | markdown-code -c '#' >"$file~"
 
-    # Swap the original and processed files
-    swapfiles "$file" "$file~"
+	# Swap the original and processed files
+	swapfiles "$file" "$file~"
 
-    # Open both files in vimdiff for comparison
-    if [ "$E" = 0 ]; then
-        vimdiff "$file" "$file~"
-    fi
+	# Open both files in vimdiff for comparison
+	if [ "$E" = 0 ]; then
+		vimdiff "$file" "$file~"
+	fi
 }
 
 die() {
-    printf >&2 "%s: fatal: %s\n" "${0##*/}" "$*"
-    exit 1
-}
-
-log() {
-    printf >&2 "%s\n" "$*"
+	printf >&2 "%s: fatal: %s\n" "${0##*/}" "$*"
+	exit 1
 }
 
 notify() {
-    local name="${0##*/}"
-    name=${name%.*}
-    notify-send -u critical -t 10000 \
-        -i /usr/share/icons/gnome/48x48/status/appointment-soon.png \
-        "$name" "$1"
+	local name="${0##*/}"
+	name=${name%.*}
+	notify-send -u critical -t 10000 \
+		-i /usr/share/icons/gnome/48x48/status/appointment-soon.png \
+		"$name" "$1"
 }
 
 countdown() {
-    local remaining=$1 warn=$2 warn_interval=${3:-5}
-    shift 2
-    while [ "$remaining" -gt 0 ]; do
-        if [ "$remaining" -le "$warn" ] && (( remaining % warn_interval == 0 || remaining < warn_interval )); then
-            notify "$remaining seconds"
-        fi
-        sleep 1
-        remaining=$((remaining - 1))
-    done
+	local remaining=$1 warn=$2 warn_interval=${3:-5}
+	shift 2
+	while [ "$remaining" -gt 0 ]; do
+		if [ "$remaining" -le "$warn" ] && (( remaining % warn_interval == 0 || remaining < warn_interval )); then
+			notify "$remaining seconds"
+		fi
+		sleep 1
+		remaining=$((remaining - 1))
+	done
 }
 
 countdown_wrap() {
-    local timeout=$1 warn=$2
-    shift 2
-    if ((timeout)); then
-        countdown "$timeout" "$warn" &
-        countdown_pid=$!
-        old_opts=$(set +o)
-        ret=1
-        set +e
-        "$@"
-        ret=$?
-        kill $countdown_pid 2>/dev/null
-        eval "$old_opts"
-        return $ret
-    else
-        "$@"
-        return
-    fi
+	local timeout=$1 warn=$2
+	shift 2
+	if ((timeout)); then
+		countdown "$timeout" "$warn" &
+		countdown_pid=$!
+		old_opts=$(set +o)
+		ret=1
+		set +e
+		"$@"
+		ret=$?
+		kill $countdown_pid 2>/dev/null
+		eval "$old_opts"
+		return $ret
+	else
+		"$@"
+		return
+	fi
 }
 
 finder() {
-    local file=$1
-    if [ ! -f "$file" ]; then
-        file=$(which-file "$file")
-    fi
-    file=$(readlink -f "$file")
-    printf "%s\n" "$file"
-}
-
-debug() {
-    local _echovar_var
-    for _echovar_var; do
-        eval "echo -n \"$_echovar_var=\$$_echovar_var \"" >&2
-    done
-    echo
+	local file=$1
+	if [ ! -f "$file" ]; then
+		file=$(which-file "$file")
+	fi
+	file=$(readlink -f "$file")
+	printf "%s\n" "$file"
 }
 
 call() {
-    if declare -F "$1" >/dev/null; then
-        "$@"
-    else
-        printf 'Error: %s is not a function\n' "$1" >&2
-        return 120
-    fi
+	if declare -F "$1" >/dev/null; then
+		"$@"
+	else
+		printf 'Error: %s is not a function\n' "$1" >&2
+		return 120
+	fi
 }
