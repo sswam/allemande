@@ -28,7 +28,7 @@ Click the <i class="bi-question-lg"></i> help button at the top right, and talk 
 
 In the main [Ally Chat](/Ally+Chat) room and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with basic info about the app.
 
-**NOTE**: In other chat rooms, AIs don't know anything at all about the app! Use the help system.
+**NOTE**: In other chat rooms, AIs don't know anything at all about the app! Use the help system. Random characters will usually hallucinate if asked about app features. For app assistance, ask Aidi in any room or in the **Help** tab - he has the user guide and is prompted against hallucination - or Assi (for NSFW app questions). Even Aidi and Assi can make mistakes, but much less so.
 
 Read this [NSFW Quick Intro](/nsfw/intro), the [User Guide](/guide), and the [NSFW Guide](/nsfw/guide), for full details on the app, models, characters, tools, and NSFW features.
 
