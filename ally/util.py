@@ -93,3 +93,9 @@ def open(file_path: str, mode: str = "r") -> IO[str]:
 def datetime_parse(date_str: str):
     """Parse a datetime in YYYY-MM-DD HH:MM:SS format."""  
     return datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+
+
+def split_preserve_delimiters(text: str) -> list[str]:
+    """Split on COL and ROW, keeping those words in the result."""
+    parts = re.split(r'\b(COL|ROW)\b', text)
+    return [part for part in parts if part]  # Filter empty strings
