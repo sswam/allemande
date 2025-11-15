@@ -372,7 +372,7 @@ async function send(ev) {
   if (ev)
     ev.preventDefault();
 
-  if (get_file_type($room.value) === "dir") {
+  if (await get_file_type($room.value) === "dir") {
     flash($id("send"), "error");
     return;
   }
@@ -796,16 +796,18 @@ export function clear_messages_box() {
   messages_iframe_set_src("about:blank");
 }
 
-function get_file_type(name) {
-  if (name.match(/\/$/))                          // ends with /
+async function get_file_type(name) {
+  if (name.match(/\/$/))                                    // ends with /
     return "dir";
-  else if (name.match(/(^|\/)access.yml$/))       // .yml access control
+  else if (name.match(/(^|\/)access.yml$/))                 // .yml access control
     return "access";
-  else if (name.match(/(^|\/)agents\/.*\.yml$/))  // .yml under agents dir
+  else if (name.match(/(^|\/)agents\/.*\.yml$/))            // .yml under agents dir
     return "agent";
-  else if (name.match(/\.yml$/))                  // other .yml
+  else if (name.match(/\.yml$/))                            // other .yml
     return "options";
-  else if (name.match(/\.[^\/]*$/))               // has an extension
+  else if (name.match(/\.[^\/]*$/) && await check_cannot_edit(name))  // has an extension, not editable
+    return "media";
+  else if (name.match(/\.[^\/]*$/))                         // has an extension, not editable
     return "file";
   else
     return "room";                                // no extension
@@ -855,7 +857,7 @@ export async function set_room(room_new, no_history) {
     }
   }
 
-  const type = get_file_type(room_new);
+  const type = await get_file_type(room_new);
 
   if (type != "room")
     $body.classList.remove("empty");
@@ -906,6 +908,8 @@ export async function set_room(room_new, no_history) {
   } else if (type == "file" || type == "access" || type == "agent" || type == "options") {
     // start editing the file
     edit(room_new);
+  } else if (type == "media") {
+    // media, e.g. PDF, just view  XXX FIXME
   }
 
   if (view !== "view_edit") {
@@ -915,15 +919,15 @@ export async function set_room(room_new, no_history) {
   }
 
   if (type == "room" || type == "dir") {
-    messages_iframe_set_src(room_url() + "?stream=1");
+    messages_iframe_set_src(await room_url() + "?stream=1");
 
     // console.log("set_room, calling check_for_updates");
     check_for_updates();
   }
 }
 
-function room_url() {
-  const type = get_file_type(room);
+async function room_url() {
+  const type = await get_file_type(room);
   let url = ROOMS_URL + "/" + room;
   if (type == "room") {
     url += ".html";
@@ -989,13 +993,13 @@ function copy_mode() {
 }
 
 async function move(source, dest, mode) {
-  const source_type = get_file_type(source);
+  const source_type = await get_file_type(source);
   if (source_type == "dir" && !dest.match(/\/$/))
     dest += "/";
   if (dest.endsWith(EXTENSION)) {
     dest = dest.slice(0, -EXTENSION.length);
   }
-  const dest_type = get_file_type(dest);
+  const dest_type = await get_file_type(dest);
   if (source_type != dest_type) {
     return false;
   }
@@ -2229,17 +2233,17 @@ async function check_mime_type(file) {
   return mime;
 }
 
-async function check_ok_to_edit(file) {
+async function check_cannot_edit(file) {
   // don't edit folders, editing in /
   if (file.match(/\/$/)) {
-    throw new Error("cannot edit folder: " + file);
+    return "cannot edit folder: " + file;
   }
 
   const basename = file.replace(/^.*\//, "");
   const ext = basename.replace(/^.*\.|.*/, "").toLowerCase();
 
   if (DISALLOWED_EXTENSIONS.includes(ext)) {
-    throw new Error("disallowed extension: " + ext);
+    return "disallowed extension: " + ext;
   }
 
   const check_mime = !EDITABLE_EXTENSIONS.includes(ext);
@@ -2248,9 +2252,11 @@ async function check_ok_to_edit(file) {
     // console.log("checking mime type for file:", file);
     const mime = await check_mime_type(file);
     if (!mime.startsWith("text/")) {
-      throw new Error("disallowed mime type for file: " + file + " (" + mime + ")");
+      return "disallowed mime type for file: " + file + " (" + mime + ")";
     }
   }
+
+  return '';
 }
 
 async function fetch_file(file) {
@@ -2324,10 +2330,9 @@ async function edit(file) {
     file = room + EXTENSION;
   }
 
-  try {
-    check_ok_to_edit(file);
-  } catch (err) {
-    console.error(err.message);
+  const err = await check_cannot_edit(file);
+  if (err) {
+    console.error(err);
     return await error("mod_edit");
   }
 
@@ -2402,10 +2407,10 @@ function edit_clear() {
   edit_set_text("");
 }
 
-function edit_close_back() {
+async function edit_close_back() {
   // if ends with EXTENSION, strip it off
   const stem = editor_file.replace(new RegExp(quotemeta(EXTENSION)+"$"), "");
-  const type = get_file_type(stem);
+  const type = await get_file_type(stem);
   if (edit_close() && (type == "file" || type == "access" || type == "agent" || type == "options")) {
     // if can't go back, go to parent folder
     if (history.length > 1)
@@ -2420,7 +2425,7 @@ function edit_close(ev) {
     ev.stopPropagation();
   if (edit_changed())
     if (!confirm_except_iOS("Discard changes?")) return false;
-  // const type = get_file_type(editor_file);
+  // const type = await get_file_type(editor_file);
   // // const leafname = editor_file.replace(/.*\//, "");
   // let dirname;
   // // check if '/' in editor_file
@@ -2497,8 +2502,8 @@ function set_view_options(new_view_options) {
   view_options_apply();
 }
 
-function view_options_apply() {
-  const type = get_file_type(room);
+async function view_options_apply() {
+  const type = await get_file_type(room);
   simple = view_options.advanced < 0;
   if (view_options.advanced < 1) {
     simple = false;
@@ -3211,10 +3216,10 @@ async function add_math(ev) {
 
 // printing ------------------------------------------------------------------
 
-function print_chat(ev) {
+async function print_chat(ev) {
   ev.preventDefault();  /* doesn't! WTF */
   // TODO: view options! could save them in local storage in the room, maybe?
-  const url = room_url() + "?snapshot=1#print";
+  const url = await room_url() + "?snapshot=1#print";
   window.location.href = url;
 }
 
@@ -3892,3 +3897,18 @@ export async function init() {
   }, { passive: false });
   */
 }
+
+/*
+1.  The type of the current room is now frequently re-calculated by calling
+`get_file_type()`, which may perform a network request each time. This
+happens on every message send (in `send()`), on room changes (in `set_room()`
+and then again in `room_url()`), and when applying view options. It might
+be more efficient to determine the room type once in `set_room()` and cache
+it in a global variable for other functions to use. This would improve UI
+responsiveness by reducing redundant network requests.
+
+2.  In `get_file_type()`, there appears to be a minor copy-paste error in a
+comment. The line `else if (name.match(/\.[^\/]*$/))` which handles editable
+files has the comment `// has an extension, not editable`. This might be
+clearer if changed to `// has an extension, editable`.
+*/
