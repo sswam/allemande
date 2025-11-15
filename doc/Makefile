@@ -27,12 +27,14 @@ nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 
 help.md: guide.md prompt_help.txt
 	git diff --quiet "$@"  # fail if uncommitted changes to target
-	transpatch -g -n=$(HELP_MODEL) -p="$$(<prompt_help.txt)" "$@" guide.md
+	chmod +w $@
+	transpatch -d -g -m=$(HELP_MODEL) -p="$$(<prompt_help.txt)" "$@" guide.md
 	chmod a-w $@
 
 nsfw/help_nsfw.md: nsfw/guide_nsfw.md prompt_help.txt
 	git diff --quiet "$@"  # fail if uncommitted changes to target
-	transpatch -g -n=$(HELP_MODEL) -p="$$(<prompt_help.txt)" "$@" guide.md
+	chmod +w $@
+	transpatch -d -g -m=$(HELP_MODEL_NSFW) -p="$$(<prompt_help.txt)" "$@" nsfw/guide_nsfw.md
 	chmod a-w $@
 
 nsfw/help.md: help.md nsfw/help_nsfw.md
