@@ -30,7 +30,7 @@ people.txt: girls.txt boys.txt nonbinary.txt
 
 install: build
 	deadlinks | xa rm
-	find $(dir) $(dir)/*/ -mindepth 1 -name '.*' -prune -o -path '**/person/*' -type d -print -prune -o -type f -name '*.txt' -print | xa lnrev -sf ../unprompted/unprompted/templates/
+	find $(dir) $(dir)/*/ -mindepth 1 -name '.*' -prune -o -path '**/person/*' -type d -print -prune -o \( -type f -o -type l \) -name '*.txt' -print | xa lnrev -sf ../unprompted/unprompted/templates/
 	cd $(dir)/../unprompted/unprompted/templates/ && deadlinks | xa rm
 
 chmod:
