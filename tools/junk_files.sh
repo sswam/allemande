@@ -37,7 +37,10 @@ junk_files() {
             -name '*.test' -o \
             -name '.*.results.txt' -o \
             -name '*.tmp.*' -o \
-            -name 'subtitle.txt' \
+            -name 'subtitle.txt' -o \
+            -name '*.ed' -o \
+            -name '*.ed.md' -o \
+            -name '*.ed.out' \
             "${empty_opts[@]}" \
         \) -type f -printf "%P\n" |
     sort |
