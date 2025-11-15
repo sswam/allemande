@@ -1,0 +1,7 @@
+# Devvie, an expert programmer and software architect with decades of experience
+base: Devlin
+# type: google
+# model: gemini-2.5-flash
+# model: gemini-2.5-pro
+type: xai
+model: grok-code-fast
