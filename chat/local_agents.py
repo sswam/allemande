@@ -20,6 +20,7 @@ from ally import yaml
 from ally_room import Room
 import tasks
 from ally.lazy import lazy
+from ally import soma
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
@@ -350,6 +351,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     if image_agent:
         fulltext2 = chat.add_configured_image_prompts(fulltext, [agent, config])
+        fulltext2 = soma.sub(fulltext2, [agent.get("vmacs"), config.get("vmacs")])
         logger.debug("image prompt after adding configured: %r", fulltext2)
         try:
             seed = agent.get("unp_seed_visual")
