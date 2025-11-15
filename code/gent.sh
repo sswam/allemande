@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# <program to test> "instructions to create tests" [function names...] [reference files ...]
+# <program to test> ["instructions to create tests" [reference files ...]]
 # Generate tests for a program using AI
 
 gent() {
@@ -85,7 +85,7 @@ gent() {
 		input=$(
 			echo "#File: $(basename "$program")"
 			echo "#Functions: ${funcs[*]}"
-			func "$program" "${funcs[@]}"
+			func -x "$program" "${funcs[@]}"
 			cat-named -p -b "${refs[@]}"
 		)
 	else
