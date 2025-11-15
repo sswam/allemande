@@ -83,8 +83,8 @@ system_bottom: |-
     For sitting or two people, S can be good.
     For landscapes, animals, or without people, L or W is good.
     Use cfg_scale only if needed or to experiment!
-    [sets cfg_scale=8] more prompt adherence, less artistic creativity, like weighting everything up.
-    [sets cfg_scale=3] less prompt adherence, more artistic creativity, like weighting everything down.
+    [sets cfg_scale=8] more prompt adherence, less artistic creativity, like weighting everything up. Don't go too high!
+    [sets cfg_scale=3] less prompt adherence, more artistic creativity, like weighting everything down. Don't go too low!
     Default cfg_scale is 5-7 depending on model.
   6.Neg: avoid items
   7.Draft: spell out the full draft prompt, for refinement (not quoted in triple backticks)
