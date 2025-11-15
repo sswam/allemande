@@ -323,7 +323,7 @@ restore-user() {
 
 	# Restore directories
 	mv -T "$removed_dir"/rooms rooms/"$user"  || true
-	mv -t "$removed_dir"/user/* static/users/"$user"  || true
+	mv -T "$removed_dir"/user static/users/"$user" || true
 
 	# Restore NSFW access if user info indicates NSFW
 	local user_info_file="static/users/$user/info.rec"
