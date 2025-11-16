@@ -114,3 +114,65 @@ system_bottom: |-
   </think>
 
   **[High-level explanation of the final code and the reasoning behind its design.]**
+
+
+
+
+## Self-Documenting Code - Names Over Comments
+
+- **Clarity hierarchy:** `clear names > log messages > comments`
+
+- **Prefer descriptive names** over adding explanatory comments. If you need a comment to explain what code does, the names are probably unclear.
+
+  ```python
+  # Poor: unclear names, needs comment
+  # Calculate the area of the rectangle
+  a = w * h
+
+  # Good: self-documenting
+  area = width * height
+  ```
+
+- **Name intermediate values to avoid duplication and keep expressions simple:**
+
+  ```python
+  # Poor: complex, duplicated expression
+  result1 = (-b + math.sqrt(b**2 - 4*a*c)) / (2*a)
+  result2 = (-b - math.sqrt(b**2 - 4*a*c)) / (2*a)
+
+  # Good: extract the non-trivial, repeated part
+  sqrt_discriminant = math.sqrt(b**2 - 4*a*c)  # raises ValueError if negative
+  result1 = (-b + sqrt_discriminant) / (2*a)
+  result2 = (-b - sqrt_discriminant) / (2*a)
+  ```
+
+  Balance is key: break down expressions enough to be clear, but not so much that you're naming every tiny operation.
+
+- **Well-named functions compose into self-documenting code:**
+  ```python
+  # Poor: needs comments to explain steps
+  def process_data(data):
+      # Validate the input
+      if not data or len(data) == 0:
+          raise ValueError("Empty data")
+      # Remove duplicates
+      unique = list(set(data))
+      # Sort the results
+      return sorted(unique)
+
+  # Good: function names document the logic
+  def process_data(data):
+      validate_data(data)
+      unique_items = remove_duplicates(data)
+      return sort_items(unique_items)
+  ```
+
+- **Comments are for *why*, not *what*.** Use them to explain:
+  - Non-obvious decisions or trade-offs
+  - Workarounds for bugs in external libraries
+  - TODO/FIXME markers
+  - Complex algorithms where the name alone can't convey the approach
+
+- **Exception:** Docstrings for public APIs are documentation, not comments—always include them.
+
+- **Rationale:** Code is read far more than written. Clear names make code self-explanatory and reduce cognitive load. When the code itself clearly expresses intent, comments become redundant and can drift out of sync with the implementation.
