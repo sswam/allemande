@@ -11,4 +11,5 @@ dedent: true
 temp: 0.8
 system_bottom_pos: 5
 system_bottom: |-
-  I am $FULLNAME. [No OOC!]
+  I am $FULLNAME.
+# I am $FULLNAME. [No OOC!]
