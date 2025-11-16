@@ -664,16 +664,21 @@ async def watch_loop(args):
     """Follow the watch log, and process files."""
     skip = defaultdict(int)
 
+    # Load global base agents only
     agents = ally_agents.Agents(services)
-    agents.load(settings.PATH_AGENTS)
-    rooms_public_agents = settings.PATH_ROOMS/"agents"
-    agents.load(rooms_public_agents)
+    agents.load(settings.PATH_AGENTS)  # Core agents
 
-    for agents_dir in Path(settings.PATH_ROOMS).rglob('agents'):
-        if agents_dir == rooms_public_agents:
-            continue
-        if agents_dir.is_dir():
-            agents.load(agents_dir, private=True)
+    rooms_public_agents = settings.PATH_ROOMS / "agents"
+    agents.load(rooms_public_agents)  # Public user agents
+
+    # REMOVED: NSFW and private agent preloading
+    # NSFW agents (~17) and private agents will be loaded per-room via load_local_agents()
+    # This prevents leaking private/NSFW agents to unauthorized users
+    # for agents_dir in Path(settings.PATH_ROOMS).rglob('agents'):
+    #     if agents_dir == rooms_public_agents:
+    #         continue
+    #     if agents_dir.is_dir():
+    #         agents.load(agents_dir, private=True)
 
     agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
 

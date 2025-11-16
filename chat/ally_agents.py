@@ -111,6 +111,7 @@ class Agent:
     def __init__(self, data: dict|None = None, agents: Agents|None = None, file: Path|None = None, private: bool=False):
         self.agents = agents
         self.file = file
+        self.private = private
         if file and data:
             raise ValueError("Cannot specify both file and data")
         if not file and not data:
@@ -120,7 +121,6 @@ class Agent:
         if file:
             self.load_agent()
         self.name = self.data["name"]
-        self.private = private
         if private:
             self.data = {k: self.data[k] for k in ("visual", "name", "fullname", "aliases") if k in self.data}
             self.data["type"] = "visual"
@@ -649,18 +649,22 @@ class Agents:
             if name1 in self.agents:
                 if self.agents[name1] != agent:
                     old_main_name = self.agents[name1].name
-                    msg_private = " for private agent" if private else ""
+                    msg_private = " (private scope)" if private else ""
                     logger.warning("Agent name conflict%s: %r vs %r for %r",
                             msg_private, old_main_name, agent.name, name1)
+                    # REMOVED: The override logic that was causing leaks
+                    # Now we just warn and skip the conflicting name
                     # logger.info("skipping agent name: %r", name1)
                     # private agents can override outer names
                     # XXX this was bad, caused private agent leak; need to understand what's going on here!!
                     # if not private:
                     #     continue
+                    continue
             self.agents[name1] = agent
             # logger.info("added agent under name: %r -> %r", name1, agent.name)
 
         return agent
+
 
     def remove_agent(self, name: str, keep_visual: bool=False, private: bool=False) -> None:
         """Remove an agent."""
