@@ -1,7 +1,6 @@
 import re
 import pytest
 from unittest.mock import MagicMock
-from typing import Any
 
 from ally import soma as subject
 
@@ -75,10 +74,10 @@ def test_parse_macro_call_with_quotes():
 
 
 def test_parse_macro_call_escape_backslash():
-    """Test that \\\\ becomes \\."""
+    """Test that regular backslashes are preserved."""
     match = re.match(r"(.*)", "test")
-    result = subject.parse_macro_call(r"\\\\test", match, {})
-    assert result == r"\test"
+    result = subject.parse_macro_call(r"\\test", match, {})
+    assert result == r"\\test"
 
 
 def test_parse_macro_call_empty_args():
@@ -143,8 +142,6 @@ def test_apply_mappings_overlapping_patterns():
         r"hello world": "BOTH",
         r"hello": "HELLO",
     }
-    # The combined pattern will be (hello world)|(hello)
-    # "hello world" should match the first group
     result = subject.apply_mappings("hello world", mapping)
     assert result == "BOTH"
 
@@ -192,11 +189,9 @@ def test_sub_no_change():
 
 def test_sub_max_depth():
     """Test that max_depth prevents infinite loops."""
-    # Create a config that keeps changing
     configs = [{r"(.+)": r"$1x"}]
 
     result = subject.sub("start", configs, max_depth=3)
-    # Should apply 3 times: start -> startx -> startxx -> startxxx
     assert result == "startxxx"
 
 
@@ -213,7 +208,7 @@ def test_sub_with_macros():
 
 
 def test_sub_complex_case():
-    """Test a more complex transformation."""
+    """Test a more complex transformation with nested macro expansion."""
     def col_macro(match, person1, person2):
         return f"collaborated({person1}, {person2})"
 
@@ -256,8 +251,7 @@ def test_sub_multiline():
     configs = [{r"^line": "LINE"}]
     text = "line1\nline2\nline3"
     result = subject.sub(text, configs)
-    # Only first line should match without MULTILINE flag
-    assert result == "LINE1\nline2\nline3"
+    assert result == "LINE1\nLINE2\nLINE3"
 
 
 def test_apply_mappings_none_macros():
@@ -275,7 +269,7 @@ def test_sub_filter_empty_configs():
 
 
 def test_parse_macro_call_nested():
-    """Test nested macro calls."""
+    """Test nested macro calls are now expanded recursively."""
     def inner(match, arg):
         return f"[{arg}]"
 
@@ -285,9 +279,8 @@ def test_parse_macro_call_nested():
     macros = {"inner": inner, "outer": outer}
     match = re.match(r"(.*)", "test")
 
-    # First pass resolves outer, second pass would resolve inner
     result = subject.parse_macro_call(r"\outer(\inner(x))", match, macros)
-    assert "<[x]>" in result or result == r"<\inner(x)>"
+    assert result == "<[x]>"
 
 
 def test_apply_mappings_special_chars():
@@ -301,25 +294,11 @@ def test_sub_zero_max_depth():
     """Test with max_depth=0."""
     configs = [{r"a": "b"}]
     result = subject.sub("a", configs, max_depth=0)
-    # Should not apply any transformations
     assert result == "a"
 
 
 def test_sub_one_max_depth():
-    """Test with max_depth=1."""
+    """Test with max_depth=1 - applies all configs once then stops."""
     configs = [{r"a": "b"}, {r"b": "c"}]
     result = subject.sub("a", configs, max_depth=1)
-    # Should apply once: a -> b, then stop
-    assert result in ["b", "c"]  # Depends on implementation details
-
-# 1.  The test `test_sub_complex_case` seems to have an unreachable
-# assertion. The expected result `collaborated(Person[Alice], Person[Bob])`
-# would require recursive macro expansion or another substitution pass, but
-# the provided `configs` and `macros` don't seem to support that, leading to
-# `collaborated(\person(Alice), \person(Bob))`.
-# 
-# 2.  The tests `test_parse_macro_call_nested` and `test_sub_one_max_depth`
-# use non-deterministic assertions (`in` / `or`). This can make tests less
-# reliable, as they pass for multiple different outcomes. It would be more
-# robust to assert a single, defined behavior. For `test_sub_one_max_depth`,
-# the comment also appears to conflict with the assertion logic.
+    assert result == "c"
