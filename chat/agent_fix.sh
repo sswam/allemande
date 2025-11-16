@@ -1,12 +1,33 @@
 #!/usr/bin/env bash
+
+# [file...]
 # Fix YAML formatting issues in an agent file using a predefined example as a reference.
 
-# model=veni
-model=flasho
-# model=flashi
+# shellcheck disable=SC1007,SC2034  # Disable certain shellcheck rules that conflict with ally options parser syntax
 
-if [ "$#" = 0 ]; then
-	process -i=0 -m=$model -t=0 "Please correct the agent file and ensure correct YAML format with reference to the example, and without changing the content.
+agent-fix() {
+	local edit= e=1  # edit files in place
+
+	eval "$(ally)"
+
+	if [ "$#" = 0 ]; then
+		agent-fix-process
+	else
+		modify "$0" "$edit" "$@"
+		for file; do
+			if [ ! -s "$file" ]; then
+				rm -f "$file"
+			fi
+		done
+	fi
+}
+
+agent-fix-process() {
+	# model=veni
+	local model=flasho
+	# model=flashi
+
+	process -i=0 -m="$model" -t=0 "Please correct the agent file and ensure correct YAML format with reference to the example, and without changing the content.
 
 - Generate output based on the input, using ExampleAgent.yml only as a structural guide. In some cases the input might be minimal or not in YAML format.
 - You can comment out lines if not sure how to fix them. Don't remove content.
@@ -30,12 +51,11 @@ if [ "$#" = 0 ]; then
 		s/\s+$//mg;               # Remove trailing whitespace on each line
 		s/^\s*//;                 # Remove whitespace at the start of the file
 		s/\s*$/\n/;               # Ensure a single newline at the end
-	'
-else
-	modify "$0" : "$@"
-	for file; do
-		if [ ! -s "$file" ]; then
-			rm -f "$file"
-		fi
-	done
+	'  # shellcheck disable=SC2016  # Single quotes are intentional for ted patterns
+}
+
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+	agent-fix "$@"
 fi
+
+# version: 0.1.1
