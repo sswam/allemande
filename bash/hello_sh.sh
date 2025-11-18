@@ -5,10 +5,10 @@
 # shellcheck disable=SC1007,SC2034  # Disable certain shellcheck rules that conflict with ally options parser syntax
 
 hello-sh() {
-	local language= l=en       # language [fr|de|jp|cn], defaults to English
-	local shopping=() s=(milk) # array of items for shopping
-	local use_ai= a=           # greet using AI; don't copy this option to other scripts! Normal scripts either use AI or don't, with no weird option for it.
-	local model= m=            # LLM model
+	local language= l=en        # language [fr|de|jp|cn], defaults to English
+	local shopping=() s=(milk)  # array of items for shopping
+	local use_ai= a=            # greet using AI; don't copy this option to other scripts! Normal scripts either use AI or don't, with no weird option for it.
+	local model= m=             # LLM model
 
 	eval "$(ally)" # Note to AI: This is our magickal options parser and more.
 
