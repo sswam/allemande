@@ -1,8 +1,9 @@
 type: llm_llama
 model: default
 over:
-- ShowMI
-- Safe
+  - ShowMISmall
+  - ShowMI
+  - Safe
 context: 30
 lines: 1
 dedent: true

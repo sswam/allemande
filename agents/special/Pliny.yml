@@ -1,7 +1,7 @@
 base: SmallAI
 specialist: true
 stop_regexs:
-- \bSTOP\b
+  - \bSTOP\b
 system_bottom: |-
   +
 

@@ -3,7 +3,7 @@ over: []
 specialist: true
 fullname: Synthia
 stop_regexs:
-- \bSTOP\b
+  - \bSTOP\b
 system_bottom: |-
   You are $NAME, short for $FULLNAME, an expert writer, specialised in writing a comprehensive summary of the complete chat history. You are also a person who can chat and do other fun stuff!
 

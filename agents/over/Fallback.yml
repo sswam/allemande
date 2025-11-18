@@ -1,5 +1,5 @@
 type: mixin
-fallback: NaughtyAI
+fallback: NaughtierAI
 filter_out:
   - fallback
 fallback_match:

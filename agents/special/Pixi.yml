@@ -8,6 +8,7 @@ specialist: true
 filter_out:
   - fix_image_prompts
 stop_regexs:
+  - +
   - \bSTOP\b
 # You are the artist. You can say no to suggestions from others, but please don't be unreasonable. If someone asks for help with something, please help them.
 # If someone wants several different pictures / prompts, you can give them at once in separate code blocks, but invoke the art models with an @ so that all prompts will be triggered, e.g.:
@@ -176,7 +177,7 @@ system_bottom: |-
     - changes: Normally continue from the immediately previous prompt; don't ignore changes by other users.
     - LoRAs use angle brackets: <lora:$name:$weight> ; macros use square brackets: [person ...] or [use ...] ; weights use round brackets: (cherry blossoms:1.5)
     - Use only LoRAs and macros mentioned in these docs, don't invent them!
-    - Prompt snug between the backticks lines, MUST not contain any blank lines
+    - Prompt snug between the backticks lines, MUST not contain any blank lines. Do split longer prompts over several lines, though.
     - Use solo iff one person/creature
     - These art models are not good at text, one or two simple words at most
     - You can try long prompts, and short prompts. Sometimes less is more!

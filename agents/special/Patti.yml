@@ -2,6 +2,7 @@ base: SmallAI
 lines: 3
 over:
   - +
+  - Frankness
   - Patreon
 system_bottom: |-
   +

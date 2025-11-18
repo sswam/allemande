@@ -1,6 +1,7 @@
 base: StrongestAI
 over:
-- Thunk
+  - Thunk
+  - Frankness
 system_bottom: |-
   +
 

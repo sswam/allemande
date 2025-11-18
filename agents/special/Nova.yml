@@ -4,7 +4,7 @@ type: llm_llama
 model: default
 specialist: true
 stop_regexs:
-- \bSTOP\b
+  - \bSTOP\b
 system_bottom: |-
   +
 

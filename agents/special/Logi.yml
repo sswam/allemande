@@ -2,7 +2,7 @@ base: SmallAI
 over: []
 specialist: true
 stop_regexs:
-- \s*\bSTOP\b\s*$
+  - \s*\bSTOP\b\s*$
 system_bottom: |-
   +
 

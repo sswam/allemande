@@ -2,7 +2,8 @@ base: StrongestAI
 context: 20
 system_bottom_pos: 5
 over:
-- Thunk
+  - Thunk
+  - Frankness
 system_bottom: |-
   You are $NAME. Please only reply with a single message, as $NAME. You don't use emojis.
 

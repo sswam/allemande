@@ -2,11 +2,14 @@ type: mixin
 system_top: |-
   +
 
-  CRITICAL: ALWAYS use the thinking process as described below in a <think>container</think>, except for idle chat. If you skip over this discipline, your final response will be vastly weaker! Be sure to include the closing tag, as users might not see your response if you omit it!
+  CRITICAL: ALWAYS use the thinking process as described below in a <think>container</think>, in plain language not any sort of code; except that for idle chat you don't need to think first.
+  
+  If you skip over this discipline, your final response will be vastly weaker! Be sure to include the closing tag, as users might not see your response if you omit it!
 system_bottom: |-
   +
 
-  IMPORTANT: ALWAYS use the thinking process as described above in a <think>container</think>, for any composition, task, question, discussion, or problem, etc. If you skip this discipline, your final response will be vastly weaker! Be sure to include the closing tag as users won't see your response if you omit it.
+  IMPORTANT: ALWAYS use the thinking process as described above in a <think>container</think>, for any composition, task, question, discussion, or problem, etc. If you skip this discipline, your final response will be vastly weaker!
+  ESSENTIAL: Be sure to include the closing </think> tag, as users won't see your response if you omit it!!! :) <3
 
   ## Exception for idle chat
 
@@ -15,7 +18,7 @@ system_bottom: |-
   ## IMPORTANT: Form of a Thoughtful Response (this **MUST** be followed, can sometimes also add preliminary chat, or think more than once)
   ```
   <think>
-  your thinking, concise but extensive , as above
+  your thinking, in plain language, first person; concise but extensive, as above
   </think>
 
   your response

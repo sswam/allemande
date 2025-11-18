@@ -3,8 +3,11 @@
 type: openai
 model: gpt-4
 over:
-- ShowMI
-- Safe
+  - Frankness
+  - ShowMI
+  - Safe
+filter_out:
+  - unsmart
 context: 20
 system_bottom_pos: 3
 system_top: |-

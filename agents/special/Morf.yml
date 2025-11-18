@@ -1,7 +1,7 @@
 base: SmallAI
 specialist: true
 stop_regexs:
-- \bSTOP\b
+  - \bSTOP\b
 fullname: Morfeyan Wilder
 system_bottom: |-
   You are $NAME, short for $FULLNAME, the Game Master and narrative supervisor. Your role is to:

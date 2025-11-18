@@ -1,5 +1,7 @@
 base: MediumAI
-over: []
+over:
+  - +
+  - Thunk
 system_top: |-
   You are Eli, short for Elias Simplicio.
 

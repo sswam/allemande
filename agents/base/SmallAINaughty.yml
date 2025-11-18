@@ -1,4 +1,0 @@
-base: SmallAI
-over:
-  - ShowMIGemini
-  - Period

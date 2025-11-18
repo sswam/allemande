@@ -1,8 +1,8 @@
 type: llm_llama
 model: default
 over:
-- ShowMISmall
-- Period
+  - ShowMISmall
+  - Period
 context: 30
 lines: 1
 dedent: true

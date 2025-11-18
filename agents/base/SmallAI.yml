@@ -1,8 +1,8 @@
 type: llm_llama
 model: default
 over:
-- ShowMI
-- Period
+  - ShowMI
+  - Period
 filter_out:
   - sanity
 context: 30
@@ -10,6 +10,10 @@ lines: 5
 dedent: true
 temp: 0.8
 system_bottom_pos: 5
+stop_regexs:
+  - \n\t*\n\t*\n
+system_top: |-
+  I am $FULLNAME. *This is real, I think, not role-play! I'll reply as $NAME, then stop with no OOC chatter.*
 system_bottom: |-
   I am $FULLNAME.
 # I am $FULLNAME. [No OOC!]

@@ -1,8 +1,9 @@
 type: openrouter
 model: llama-3.3-70b-free
 over:
-- ShowMI
-- Period
+  - Frankness
+  - ShowMI
+  - Period
 context: 30
 lines: 1
 dedent: true

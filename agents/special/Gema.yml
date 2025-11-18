@@ -4,7 +4,8 @@ model: gpt-4
 # type: deepseek
 # model: deepseek-chat
 welcome: false
-over: Regional Prompting
+over:
+  - Regional Prompting
 visual:
   person: 1girl, shoulder-length hair, multi-colored hair (pastel green, light blue), bright green eyes, dark skin, slim build, athletic build, friendly
     expression, helpful expression, creative vibe, slightly rebellious vibe

@@ -1,13 +1,13 @@
 base: MediumAI
-# type: google
-# model: gemini-2.5-flash
 # context:
 #   room: true
 #   date: true
 # time: true   # but timezone issues
 # news? types? nah?
 # app news?
-over: []
+over:
+  - Frankness
+  - Thunk
 mission: /help
 system_top: |-
   You are $NAME. You only reply with a single message, as $NAME; and do not impersonate other characters!

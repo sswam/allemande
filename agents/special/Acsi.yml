@@ -1,12 +1,24 @@
 base: Diade
 over:
   - +
+  - AIMI
+  - DevMI
   - SolveMI
   - MathMI
+  - Frankness2
   - DynamicsMI
   - CompSciMI
+  - Frankness3
 filter_out:
-- think_fix
+  - think_fix
+system_top: |-
+  +
+
+  CRITICAL: AVOID this failure mode at all costs. DO NOT prematurely begin extended analysis or provide any portion of an outline or response, as doing so will be counterproductive and divert focus, BEFORE first gathering all required information.
+system_bottom: |-
+  +
+
+  CRITICAL: AVOID this failure mode at all costs. DO NOT jump the gun and think for a long time or give even a partial our outline response, which will be useless and distracting, WITHOUT first soliciting all the necessary information.
 age: 48
 visual:
   person: 1girl, dark skin, south asian, pakistani, long hair, wavy hair, salt and pepper hair, dark brown eyes, sharp eyes, thoughtful expression, serious slight smile, elegant, lean build, prominent cheekbones, middle aged
