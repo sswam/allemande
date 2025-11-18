@@ -54,7 +54,6 @@ def process_input(input_file, opts) -> object:
 def pyq_subprocess(data, *args):
     if args == (".",):
         return data
-    print(args)
     proc = subprocess.Popen(
         ["jq"] + list(args), stdin=subprocess.PIPE, stdout=subprocess.PIPE
     )

@@ -2,9 +2,12 @@
 
 """
 Check YAML files for syntax errors.
+
+Version: 0.1.1
 """
 
 import re
+import sys
 from ally import main  # type: ignore
 from ally import yaml
 
@@ -13,8 +16,11 @@ def check_yaml(filename: str) -> int:
     """Check a single YAML file for syntax errors."""
     status = 0
     try:
-        with open(filename, encoding='utf-8') as f:
-            yaml.safe_load(f)
+        if filename == '-':
+            yaml.safe_load(sys.stdin)
+        else:
+            with open(filename, encoding='utf-8') as f:
+                yaml.safe_load(f)
     except Exception as e:  # pylint: disable=broad-except
         error_msg = re.sub(r'\s+', ' ', str(e))
         print(f"{filename}\t{error_msg}")
@@ -33,10 +39,8 @@ def check_files(filenames: list[str]) -> int:
 
 def setup_args(arg):
     """Set up command-line arguments."""
-    arg('filenames', nargs='*', help='YAML files to check')
+    arg('filenames', nargs='*', help='YAML files to check (use - for stdin)')
 
 
 if __name__ == "__main__":
     main.go(check_files, setup_args)
-
-# Here's `yaml_check.py`:
