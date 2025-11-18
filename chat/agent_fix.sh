@@ -6,32 +6,65 @@
 # shellcheck disable=SC1007,SC2034  # Disable certain shellcheck rules that conflict with ally options parser syntax
 
 agent-fix() {
-	local edit= e=1  # edit files in place
+	local check= c=1         # check yaml format and exit if okay; only with files not stdio
+	local edit= e=1          # edit files in place
+	local errors= E=1        # YAML errors from yaml-check; added internally when running on files
+	local model= m=flasho    # LLM to use
 
 	eval "$(ally)"
 
 	if [ "$#" = 0 ]; then
-		agent-fix-process
-	else
-		modify "$0" "$edit" "$@"
-		for file; do
-			if [ ! -s "$file" ]; then
-				rm -f "$file"
+		agent-fix-process-with-errors
+		return
+	fi
+
+	for file; do
+		if [ "$check" = 1 ]; then
+			errors=$(yaml-check "$file")
+			if [ $? = 0 ]; then
+				continue
 			fi
-		done
+		else
+			errors=$(yaml-check "$file") || true
+		fi
+
+		git-commit-force "$file"
+
+		modify "$0" -e="$edit" -E="$errors" -m="$model" : "$file"
+
+		# remove empty files, RIP those agents!
+		if [ ! -s "$file" ]; then
+			rm -f "$file"
+		fi
+	done
+
+	if [ "$check" ] && yaml-check -; then
+		exit 0
+	fi
+}
+
+agent-fix-process-with-errors() {
+	local error_context=""
+	if [ -n "$errors" ]; then
+		error_context="
+
+YAML validation errors found:
+$errors
+"
+		nl -ba -n rn -w1 -s $'\t' | agent-fix-process
+	else
+		agent-fix-process
 	fi
 }
 
 agent-fix-process() {
-	# model=veni
-	local model=flasho
-	# model=flashi
-
+	# shellcheck disable=SC2016	# Single quotes are intentional for ted patterns
 	process -i=0 -m="$model" -t=0 "Please correct the agent file and ensure correct YAML format with reference to the example, and without changing the content.
-
+$error_context
 - Generate output based on the input, using ExampleAgent.yml only as a structural guide. In some cases the input might be minimal or not in YAML format.
 - You can comment out lines if not sure how to fix them. Don't remove content.
 - Return only the triple-backtick quoted YAML with no commentary, or if you must you may comment using a YAML comment.
+- DO NOT include line numbers in your output. The line numbers in the input (if present) are only for reference.
 - If the input is not YAML, convert it to YAML in the right format.
 - The system_bottom or system_top propmt if present should use the |- multi-line quoting as shown in the example. Correct this if needed.
 - Some values are quoted. If they contain an apostrophe, quote with double quotes, and vice versa. Or good luck with escaping!
@@ -46,16 +79,16 @@ agent-fix-process() {
 - Do not remove unknown keys." \
 	"$ALLEMANDE_AGENTS/special/ExampleAgent.yml" |
 	ted '
-		s/\A.*?^```[^\n]*\n//sm;  # Remove everything before the first ``` line
-		s/(.*)^```.*$/$1/sm;      # Remove everything after the last ``` line
-		s/\s+$//mg;               # Remove trailing whitespace on each line
-		s/^\s*//;                 # Remove whitespace at the start of the file
-		s/\s*$/\n/;               # Ensure a single newline at the end
-	'  # shellcheck disable=SC2016  # Single quotes are intentional for ted patterns
+		s/\A.*?^```[^\n]*\n//sm;	# Remove everything before the first ``` line
+		s/(.*)^```.*$/$1/sm;			# Remove everything after the last ``` line
+		s/\s+$//mg;							 # Remove trailing whitespace on each line
+		s/^\s*//;								 # Remove whitespace at the start of the file
+		s/\s*$/\n/;							 # Ensure a single newline at the end
+	'
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	agent-fix "$@"
 fi
 
-# version: 0.1.1
+# version: 0.1.3
