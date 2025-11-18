@@ -46,7 +46,7 @@ if [ "${#FIND_OPTS[@]}" -gt 0 -a "${FIND_OPTS[0]:0:1}" != '-' ]; then
 fi
 
 do_find() { 
-	find "$dir" \( \
+	find "$dir" -xdev \( \
 		-name '..' \
 		-o -name '.?*' \
 		-o -name 'sparkjoy' \
