@@ -70,3 +70,5 @@ pytest-playwright
 # also needs: playwright install
 
 ruamel-yaml
+
+yt_dlp
