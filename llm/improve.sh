@@ -4,28 +4,28 @@
 # Improve something using AI
 
 improve() {
-	local model= m=      # model
-	local style= s=0     # refer to hello-<ext> for style
-	local guidance= g=1  # refer to lang/guidance.md for style
-	local prompt= p=     # extra prompt
-	local edit= e=1      # open an editor after the AI does it's work
-	local use_ai= a=1    # use AI, can turn off for testing with -a=0
-	local concise= c=0   # concise
-	local basename= b=0  # use basenames
-	local test= t=1      # run tests if found (default: on)
-	local testok= T=0    # tests are okay, don't change
-	local codeok= C=0    # code is okay, don't change
-	local changes= S=1   # allow changes to existing functionality or API changes
-	local features= F=1  # allow new features
-	local lint= L=1      # run linters and type checkers if possible
-	local format= F=1    # format code
-#	local writetest= w=1 # write tests if none found
-	local numline= n=    # number lines
-	local strict= X=1    # only do what is requested
-	local ed= E=0        # provide changes as an ed script
-	local diff= d=0      # provide changes as a unified diff
-	local think= t=1     # encourage thinking
-	local funcs= f=()    # process only listed functions
+	local model= m=gc     # model
+	local style= s=0      # refer to hello-<ext> for style
+	local guidance= g=1   # refer to lang/guidance.md for style
+	local prompt= p=      # extra prompt
+	local edit= e=1       # open an editor after the AI does it's work
+	local use_ai= a=1     # use AI, can turn off for testing with -a=0
+	local concise= c=1    # concise
+	local basename= b=0   # use basenames
+	local test= t=1       # run tests if found (default: on)
+	local testok= T=0     # tests are okay, don't change
+	local codeok= C=0     # code is okay, don't change
+	local changes= S=1    # allow changes to existing functionality or API changes
+	local features= F=1   # allow new features
+	local lint= L=1       # run linters and type checkers if possible
+	local format= F=1     # format code
+#	local writetest= w=1  # write tests if none found
+	local numline= n=     # number lines
+	local strict= X=1     # only do what is requested
+	local ed= E=0         # provide changes as an ed script
+	local diff= D=0       # provide changes as a unified diff
+	local think= t=1      # encourage thinking
+	local funcs= f=()     # process only listed functions
 
 	eval "$(ally)"
 
@@ -199,7 +199,7 @@ improve() {
 	fi
 
 	if ((concise)); then
-		prompt="$prompt, Please reply concisely with only the changes."
+		prompt="$prompt, Please reply concisely with only the changes, NOT large sections of unchanged code, and NOT the whole files (unless everything changes!)."
 	fi
 
 	if ((numline)); then
@@ -234,6 +234,10 @@ improve() {
 	Return the changes in order from top to bottom if possible. I will sort the changes in reverse order before applying them, so you don't have to worry about earlier changes affecting later line numbers.
 	Be super careful that your line numbers match the original code you want to replace. I numbered the lines for you, so there's no excuse! :)
 	"
+	fi
+
+	if ((concise)) && ! ((diff)) && ! ((ed)); then
+		prompt="$prompt. Provide changes plainly not as a diff. Do not show all the replaced text, only enough to establish the context."
 	fi
 
 	local target_file="$file"

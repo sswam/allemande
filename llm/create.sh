@@ -4,13 +4,13 @@
 # Write something using AI
 
 create() {
-	local model= m=     # LLM model
-	local style= s=1    # refer to hello-<ext> for style
-	local guidance= g=1 # refer to lang/guidance.md for style
-	local edit= e=1     # edit
-	local use_ai= a=1   # use AI, can turn off for testing with -a=0
-	local quiet= q=0    # use only the user prompt
-	local think= t=1    # encourage thinking
+	local model= m=gc     # LLM model
+	local style= s=1      # refer to hello-<ext> for style
+	local guidance= g=1   # refer to lang/guidance.md for style
+	local edit= e=1       # edit
+	local use_ai= a=1     # use AI, can turn off for testing with -a=0
+	local quiet= q=0      # use only the user prompt
+	local think= t=1      # encourage thinking
 
 	eval "$(ally)"
 
