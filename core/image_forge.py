@@ -68,7 +68,15 @@ SPECIAL_OCCASION_PROMPT = """[opt 80 0.8 1.7] corpse, [/opt], [opt 80 0.8 1.7] h
 SPECIAL_OCCASION_LORAS = "<lora:g1g3r:0.8> <lora:scifi-horror-000006:0.8>"
 # SPECIAL_OCCASION_PROMPT = "(corpse, zombie, horror, gore:1.5), (dead, decay, zombie: 1.9), glowing eyes, g1g3r, twisted limbs, grotesque features, ghostly"
 # SPECIAL_OCCASION_LORAS = "<lora:g1g3r:1> <lora:scifi-horror-000006:1>"
-SPECIAL_OCCASION_EXCEPTION_PREFIXES = ["oshden/", "ganja/", "bradd/", "tasha/", "richie/", "bo/", "jet/", "richie/", "tommy/", "myst/", "dave/", "joseph/"]
+SPECIAL_OCCASION_EXCEPTION_PREFIXES = []
+
+# TODO: load from server or receive the user's priority with each request
+USER_PRIORITY_NORMAL = 0, 1   # absolute offset, multiplier
+USER_PRIORITY_NOW = -1000, 0
+USER_PRIORITY = {
+    "root": USER_PRIORITY_NOW,
+    "sam": USER_PRIORITY_NOW,
+}
 
 SHAPE_GEOMETRY = {
     "E": (("512", "512"), ("640", "640")),
@@ -502,11 +510,22 @@ async def enqueue_image_jobs(
         priority += j.duration
     logger.info("priority: %.2f", priority - current_time)
 
+    # user priority adjustment
+    if user in USER_PRIORITY:
+        user_offset, user_multiplier = USER_PRIORITY[user]
+        user_offset_sign = "-" if user_offset < 0 else "+"
+        logger.info("user priority: %s: * %.2f %s %d", user, user_multiplier, user_offset_sign, abs(user_offset))
+    else:
+        user_offset, user_multiplier = USER_PRIORITY_NORMAL
+
     # Enqueue each image job
     for i in range(count):
         # logger.info("enqueuing job %d/%d for user %s with jobs count %s", i + 1, count, user, user_usage.get(user, 0))
+
+        priority_adjusted = user_multiplier * priority + user_offset
+
         new_job = ImageJob(
-            priority=priority,
+            priority = priority_adjusted,
             d=d,
             output_stem=output_stem,
             prompt=prompt,
@@ -520,13 +539,17 @@ async def enqueue_image_jobs(
             request_time=current_time,
             duration=0,
         )
+
         weight = estimate_job_weight(new_job)
         job_penalty = 0 if not user else get_user_job_penalty(user_usage.get(user, 0.0))
-        new_job.duration = weight * job_penalty * job_base_time
+        duration = weight * job_penalty * job_base_time
+        duration_adjusted = duration * user_multiplier
+        new_job.duration = duration_adjusted
         logger.info("weight, job_penalty, duration: %.2f, %.2f, %.2f", weight, job_penalty, new_job.duration)
-        if priority - current_time > MAX_QUEUE_DELAY:
+
+        if priority_adjusted - current_time > MAX_QUEUE_DELAY:
             # Don't add the job if would run too far out in the future, as the client will have timed out, and better to give immediate feedback for too many pokes, and not clutter the queue
-            logger.info("skipping new job: priority %.0f > %.0f seconds", priority, MAX_QUEUE_DELAY)
+            logger.info("skipping new job: priority %.0f > %.0f seconds", priority_adjusted, MAX_QUEUE_DELAY)
             await complete_batch(new_job)
             break
         await image_queue.put(new_job)
