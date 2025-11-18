@@ -3,8 +3,8 @@
 # Returns an available filename by appending numbers if needed
 
 get-available-name() {
-	local file= f=       # create a file, avoids race conditions
-	local directory= d=  # create a directory, avoids race conditions
+	local file= f=  # create a file, avoids race conditions
+	local dir= D=   # create a directory, avoids race conditions
 
 	eval "$(ally)"
 
@@ -28,8 +28,8 @@ get-available-name() {
 	local target="$base$extension"
 	local counter=0
 
-	if [ -n "$file" ] && [ -n "$directory" ]; then
-		die "Cannot specify both --file and --directory"
+	if [ -n "$file" ] && [ -n "$dir" ]; then
+		die "Cannot specify both --file and --dir"
 	fi
 
 	while true; do
@@ -37,8 +37,8 @@ get-available-name() {
 			if (set -o noclobber; : > "$target") 2>/dev/null; then
 				break
 			fi
-		elif [ -n "$directory" ]; then
-			if mkdir "$target" 2>/dev/null; then
+		elif [ -n "$dir" ]; then
+			if v mkdir "$target"; then
 				break
 			fi
 		elif [ ! -e "$target" ]; then

@@ -91,6 +91,35 @@ def test_parse_macro_call_empty_args():
     assert result == "NO_ARGS"
 
 
+def test_parse_macro_call_with_nested_parens():
+    """Test that macro calls with parentheses in arguments work correctly."""
+    def mock_macro(match, arg):
+        return f"[{arg}]"
+
+    macros = {"macro": mock_macro}
+    match = re.match(r"(.*)", "test")
+
+    result = subject.parse_macro_call(r'\macro("hello (world)")', match, macros)
+    assert result == "[hello (world)]"
+
+    result = subject.parse_macro_call(r'\macro("(nested)")', match, macros)
+    assert result == "[(nested)]"
+
+    result = subject.parse_macro_call(r'\macro("a(b(c)d)e")', match, macros)
+    assert result == "[a(b(c)d)e]"
+
+
+def test_parse_macro_call_multiple_args_with_parens():
+    """Test macro with multiple arguments containing parentheses."""
+    def mock_macro(match, arg1, arg2):
+        return f"{arg1}|{arg2}"
+
+    macros = {"join": mock_macro}
+    match = re.match(r"(.*)", "test")
+    result = subject.parse_macro_call(r'\join("foo(bar)", "baz(qux)")', match, macros)
+    assert result == "foo(bar)|baz(qux)"
+
+
 def test_apply_mappings_empty():
     """Test with empty mapping."""
     assert subject.apply_mappings("text", {}) == "text"
@@ -134,6 +163,18 @@ def test_apply_mappings_with_macro():
 
     result = subject.apply_mappings("hello", mapping, macros)
     assert result == "HELLO"
+
+
+def test_apply_mappings_with_macro_nested_parens():
+    """Test replacement with macro call containing nested parentheses."""
+    def wrap_macro(match, arg):
+        return f"<{arg}>"
+
+    macros = {"wrap": wrap_macro}
+    mapping = {r"(\w+)": r'\wrap("x($1)y")'}
+
+    result = subject.apply_mappings("test", mapping, macros)
+    assert result == "<x(test)y>"
 
 
 def test_apply_mappings_overlapping_patterns():
@@ -223,6 +264,18 @@ def test_sub_complex_case():
 
     result = subject.sub("Alice COL Bob", configs, macros)
     assert result == "collaborated(Person[Alice], Person[Bob])"
+
+
+def test_sub_with_parens_in_args():
+    """Test sub with macro arguments containing parentheses."""
+    def format_macro(match, arg):
+        return f"[{arg}]"
+
+    macros = {"fmt": format_macro}
+    configs = [{r"(\w+)": r'\fmt("prefix($1)suffix")'}]
+
+    result = subject.sub("test", configs, macros)
+    assert result == "[prefix(test)suffix]"
 
 
 @pytest.mark.parametrize("text, config, expected", [

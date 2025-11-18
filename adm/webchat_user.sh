@@ -277,7 +277,7 @@ remove-user() {
 
 	# Store htpasswd entry for potential restore
 	local removed_dir
-	removed_dir=$(get-available-name -d ~/users-removed/"$user")
+	removed_dir=$(get-available-name --dir ~/users-removed/"$user")
 
 	grep "^$user:" .htpasswd > "$removed_dir/htpasswd.entry"
 

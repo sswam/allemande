@@ -11,7 +11,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-VERSION = "0.1.2"
+VERSION = "0.1.5"
 
 MACROS = {
     # "person": person,
@@ -47,22 +47,129 @@ def _do_macro_replacement(m: regex.Match, match: regex.Match, macros_dict: dict)
     return macros_dict[macro_name](match, *resolved_args)
 
 
+def _extract_balanced_parens(text: str, start: int) -> tuple[int, int] | None:
+    """
+    Extract balanced parentheses content starting at position start.
+
+    Returns (content_start, content_end) or None if unbalanced.
+    """
+    if start >= len(text) or text[start] != '(':
+        return None
+
+    depth = 0
+    i = start
+
+    while i < len(text):
+        if text[i] == '(':
+            depth += 1
+        elif text[i] == ')':
+            depth -= 1
+            if depth == 0:
+                return (start + 1, i)
+        elif text[i] == '\\' and i + 1 < len(text):
+            i += 1
+        i += 1
+
+    return None
+
+
 def parse_macro_call(replacement: str, match: regex.Match, macros_dict: dict) -> str:
     """
     Parse and execute \\macro(arg1, arg2) calls in replacement string.
+    Handles nested parentheses in arguments by recursively expanding them.
     """
-    # Match parentheses more carefully to handle nesting
-    pattern = r'\\([a-zA-Z_][a-zA-Z0-9_]*)\(([^()]*)\)'
+    # The iterative loop is replaced by recursion in _execute_macro
+    # to handle nested macro calls correctly (inside-out evaluation).
+    result_text, _ = _process_text(replacement, match, macros_dict)
+    return result_text
 
-    def recursive_replace(text: str, depth: int = 0) -> str:
-        if depth > 10:
-            return text
-        result = regex.sub(pattern, lambda m: _do_macro_replacement(m, match, macros_dict), text)
-        if result == text:
-            return result
-        return recursive_replace(result, depth + 1)
 
-    return recursive_replace(replacement)
+def _process_text(text: str, match: regex.Match, macros_dict: dict) -> tuple[str, bool]:
+    """Process text and return (processed_text, changed_flag)."""
+    result = []
+    i = 0
+    changed = False
+
+    while i < len(text):
+        macro_match = _try_match_macro(text, i, match, macros_dict)
+
+        if macro_match:
+            replacement_text, new_index = macro_match
+            result.append(replacement_text)  # pyrefly: ignore
+            i = new_index
+            changed = True
+        else:
+            result.append(text[i])  # pyrefly: ignore
+            i += 1
+
+    return ''.join(result), changed
+
+
+def _try_match_macro(text: str, i: int, match: regex.Match, macros_dict: dict) -> tuple[str, int] | None:
+    """
+    Try to match a macro at position i.
+    Returns (replacement_text, next_index) or None if no match.
+    """
+    if not _is_macro_start(text, i):
+        return None
+
+    macro_name, macro_end = _extract_macro_name(text, i + 1)
+
+    if not _has_opening_paren(text, macro_end):
+        return None
+
+    balanced = _extract_balanced_parens(text, macro_end)
+    if not balanced:
+        return None
+
+    content_start, content_end = balanced
+
+    if macro_name not in macros_dict:
+        return text[i:content_end + 1], content_end + 1
+
+    replacement = _execute_macro(text, content_start, content_end, macro_name, match, macros_dict)
+    return replacement, content_end + 1
+
+
+def _is_macro_start(text: str, i: int) -> bool:
+    """Check if position i starts a macro (backslash followed by valid char)."""
+    return text[i] == '\\' and i + 1 < len(text)
+
+
+def _extract_macro_name(text: str, start: int) -> tuple[str, int]:
+    """Extract macro name starting at position start. Returns (name, end_index)."""
+    end = start
+    while end < len(text) and (text[end].isalnum() or text[end] == '_'):
+        end += 1
+    return text[start:end], end
+
+
+def _has_opening_paren(text: str, pos: int) -> bool:
+    """Check if there's an opening parenthesis at position pos."""
+    return pos < len(text) and text[pos] == '('
+
+
+def _execute_macro(text: str, content_start: int, content_end: int,
+                macro_name: str, match: regex.Match, macros_dict: dict) -> str:
+    """Execute a macro with its arguments."""
+    args_str = text[content_start:content_end]
+
+    # Recursively expand macros in the arguments first (inside-out evaluation).
+    expanded_args_str = parse_macro_call(args_str, match, macros_dict)
+    args = _parse_macro_args(expanded_args_str)
+
+    resolved_args = _resolve_args(args, match)
+    return macros_dict[macro_name](match, *resolved_args)
+
+
+def _resolve_args(args: list[str], match: regex.Match) -> list[str]:
+    """Resolve macro arguments by removing quotes and substituting capture groups."""
+    resolved = []
+    for arg in args:
+        arg = arg.strip('"\'')
+        arg = regex.sub(r'\$(\d+)', lambda n: match.group(int(n.group(1))), arg)
+        resolved.append(arg)
+    return resolved
 
 
 def _normalize_group_ref(match: re.Match) -> str:
@@ -199,7 +306,7 @@ def apply_mappings(text: str, mapping: dict[str, str],
         combined,
         lambda m: _apply_one_match(m, metadata, mapping, macros_dict),
         text,
-        flags=regex.DOTALL|regex.MULTILINE  # pyrefly: ignore
+        flags=regex.DOTALL|regex.MULTILINE|regex.IGNORECASE # pyrefly: ignore
     )
 
 
@@ -245,12 +352,3 @@ def sub(text_input: str, configs: list[dict[str, str]],
         logger.warning("Max recursion depth (%d) reached in soma", max_depth)
 
     return text
-
-
-# Known Issues:
-
-# 1. The regex used to find macro calls in `parse_macro_call`,
-# `r'\\... \(([^()]*)\)'`, does not account for parentheses within the argument
-# list. As a result, a macro call like `\macro("hello (world)")` will not be
-# found and expanded because the `[^()]*` part will not match past the opening
-# parenthesis in `(world)`.
