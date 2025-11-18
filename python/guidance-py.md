@@ -7,6 +7,9 @@ This is the number one rule! If needed, we can use variables to avoid
 repeating parts of conditions. Test negative or short cases first, and use
 continue, break, or return to avoid deep nesting.
 
+Prefer just to write functions, not classes and objects, unless we *really*
+need them.
+
 Do not remove comments, logging or blank lines, especially not TODO, FIXME,
 XXX. Do not remove ANYTHING unnecessarily. If you are 1000% sure something is
 wrong, comment it out rather than removing it.
