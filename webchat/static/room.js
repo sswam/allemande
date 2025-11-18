@@ -4,6 +4,7 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 // const isFirefox = /Firefox/i.test(navigator.userAgent);
 const inIframe = window.parent !== window.self;
 
+let config = null;  // set to modules.config early in init
 let file_type;
 let room;
 
@@ -35,10 +36,6 @@ let mode_options = {
 let snapshot = false;
 
 let filter = '';
-
-const FILTER_EXPANSIONS = {
-  "MODERATE": "-vomit -poop -blood -rape -guro -bestiality -animal_penis -dog_penis -horse_penis",
-}
 
 // status indicator ----------------------------------------------------------
 
@@ -90,6 +87,7 @@ function offline() {
 }
 
 export function clear() {
+  console.log("GOT CLEAR() FROM SERVER");
   $("div.messages").innerHTML = "";
   clean_up_server_events();
 }
@@ -515,25 +513,25 @@ function image_overlay($el) {
 
 //  console.log("currentImgIndex", currentImgIndex);
   allImages = allImages.map(element => {
-      // If this is an image in a link
-      if (element.parentElement.tagName === "A") {
-        const clonedImg = element.cloneNode();
-        const thumbSrc = element.src;
-        clonedImg.removeAttribute("width");
-        clonedImg.removeAttribute("height");
-        clonedImg.src = element.parentElement.href;
+    // If this is an image in a link
+    if (element.parentElement.tagName === "A") {
+      const clonedImg = element.cloneNode();
+      const thumbSrc = element.src;
+      clonedImg.removeAttribute("width");
+      clonedImg.removeAttribute("height");
+      clonedImg.src = element.parentElement.href;
 
-        const preloadImg = new Image();
-        preloadImg.onerror = function() {
-            console.warn("Preloading large image failed.");
-            clonedImg.src = thumbSrc; // Revert back to thumbnail
-        };
-        preloadImg.src = clonedImg.src;
-        return clonedImg;
-      }
-      // For regular images, return as is
-      return element;
-    });
+      const preloadImg = new Image();
+      preloadImg.onerror = function() {
+          console.warn("Preloading large image failed.");
+          clonedImg.src = thumbSrc; // Revert back to thumbnail
+      };
+      preloadImg.src = clonedImg.src;
+      return clonedImg;
+    }
+    // For regular images, return as is
+    return element;
+  });
 
   image_go_to(currentImgIndex);
 
@@ -1287,14 +1285,23 @@ function messages_click(ev) {
 
 // filter images -------------------------------------------------------------
 
-
 function filter_make_word_selector(term, isNegative) {
 	term = term.replace(/_/g, ' ');
-//	const isSubstring = term.startsWith('*') && term.endsWith('*');
-//	const cleanTerm = isSubstring ? term.slice(1, -1) : term;
-//	const op = isSubstring ? '*=' : '~=';
-//	const selector = `[alt${op}"${cleanTerm}"]`;
-	const selector = `[alt*="${term}"]`;
+
+  //	const isSubstring = term.startsWith('*') && term.endsWith('*');
+  //	const cleanTerm = isSubstring ? term.slice(1, -1) : term;
+  //	const op = isSubstring ? '*=' : '~=';
+  //	const selector = `[alt${op}"${cleanTerm}"]`;
+
+  let selector;
+  if (/^\d+$/.test(term))
+    // whole word match for numbers OR after a comma or open paren AND followed by space or comma or colon or close paren or end
+    selector = `[alt~="${term}"], [alt*=",${term} "], [alt*=",${term},"], [alt*=",${term}:"], [alt*=",${term})"], [alt$=",${term}"], [alt*="(${term} "], [alt*="(${term},"], [alt*="(${term}:"], [alt*="(${term})"], [alt$="(${term}"]`;
+  else
+  	// for other patterns, prefix match at start of alt text OR after a space or comma or open paren
+  	selector = `[alt^="${term}"], [alt*=" ${term}"], [alt*=",${term}"], [alt*="(${term}"]`;
+  	// or, substring match
+    // selector = `[alt*="${term}"]`;
 
 	return isNegative ? `:not(${selector})` : selector;
 }
@@ -1352,13 +1359,18 @@ div.image:has(img:not(${finalSelector})) { display: none !important; }
 }
 
 function update_image_filter(filterString) {
-  for (const key in FILTER_EXPANSIONS) {
-    console.log("FILTER_EXPANSIONS key: " + key);
+  // console.log(config);
+  // console.log(config.FILTER_EXPANSIONS);
+  for (const key in config.FILTER_EXPANSIONS) {
+    // console.log("FILTER_EXPANSIONS key: " + key);
+    // console.log("regexp: " + `(^|\\s)${key}($|\\s)`);
+    // console.log("replacement: " + `$1${config.FILTER_EXPANSIONS[key]}$2`);
     filterString = filterString.replace(
-        new RegExp(`(^|\s)${key}($|\s)`, 'g'),
-        `$1${FILTER_EXPANSIONS[key]}$2`
+        new RegExp(`(^|\\s)${key}($|\\s)`, 'g'), `$1${config.FILTER_EXPANSIONS[key]}$2`
     );
   }
+
+  // console.log("update_image_filter:", filterString);
 
 	const existingStyle = document.getElementById('image-filter');
 
@@ -1678,12 +1690,13 @@ function bugfix_hack_load_bootstrap_icons_font() {
 }
 */
 
-function common_main() {
+async function common_main() {
+  config = await $import("chat:config");
   $on(document, "copy", fix_browser_copy);
 }
 
 export async function room_main() {
-  common_main();
+  await common_main();
 
   file_type = "room";
 
@@ -1769,7 +1782,7 @@ export async function room_main() {
 }
 
 export async function folder_main() {
-  common_main();
+  await common_main();
 
   file_type = "dir";
 

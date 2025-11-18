@@ -13,6 +13,7 @@ perl -pe '
 	use File::Slurp;
 	if (m{^// CONFIG$}) {
 		$_ = read_file("config.js");
+		s/^export //gm;
 	}
 ' <service_worker_in.js >service_worker_gen.js
 chmod -w service_worker_gen.js

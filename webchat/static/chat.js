@@ -1,3 +1,4 @@
+let config = null;  // set to modules.config early in init
 const embed = window.parent !== window.self;
 
 const ROOMS_URL =
@@ -8,7 +9,7 @@ const MAX_ROOM_NUMBER = 9999;
 const EXTENSION = ".bb";
 const CONFIRM_ARCHIVE = false;
 let START_URL = "/start.html";
-let PRIVATE_ROOM = PUBLIC_ROOM; // will be updated below
+let PRIVATE_ROOM = ""; // will be updated below
 const HOLD_ALT = false;
 const SIMPLE_MODE_ENABLE = true;
 
@@ -26,9 +27,9 @@ const $auto = $id('mod_auto');
 const $messages_overlay = $id("messages_overlay");
 const simple_mode_allowed = false;
 
-let nsfw = false;
+let user_nsfw = false;
 let is_private = false;
-let is_nsfw = false;
+let room_nsfw = false;
 let access_denied = false;
 let icons;
 
@@ -68,7 +69,7 @@ let simple = true;
 
 const VIEW_OPTIONS_DEFAULT = {
   beta_test: "simple2",
-//  update: 0,
+  update: 0,
   ids: 0,
   images: 1,
   alt: 0,
@@ -101,8 +102,6 @@ const VIEW_OPTIONS_DEFAULT = {
   filter: null,
   edit_advanced: 0,
 };
-
-const FILTER_DEFAULT = "MODERATE";
 
 export let view_options = {};
 function view_options_reset() {
@@ -324,8 +323,8 @@ function set_debug(debug) {
 }
 
 function setup_dev_early() {
-  dev = DEVS.includes(user);
-  early = EARLY.includes(user);
+  dev = config.DEVS.includes(user);
+  early = config.EARLY.includes(user);
   if (dev)
     $body.classList.add("dev");
   else
@@ -760,14 +759,21 @@ function save_content() {
   }
 }
 
-function restore_content() {
+export function restore_content() {
   // restore input content from local storage
-  if ($content.value)
+  if ($content.value) {
+    console.log("content already present, not restoring");
     return;
+  }
   const key = "content_" + room;
+  console.log("restoring content for", key);
   const content = localStorage.getItem("content_" + room);
-  if (content)
+  console.log("restoring content:", content);
+  if (content) {
     $content.value = content;
+  } else {
+    console.log("no saved content to restore");
+  }
 }
 
 function content_keydown(ev) {
@@ -835,10 +841,10 @@ export async function set_room(room_new, no_history) {
     room_new = "nsfw" + room_new.slice(4);
 
   is_private = room_new.startsWith(user + "/");
-  is_nsfw = is_private || room_new.startsWith("nsfw/");
+  room_nsfw = is_private || room_new.startsWith("nsfw/");
 
   $body.classList.toggle("private", is_private);
-  $body.classList.toggle("nsfw_zone", is_nsfw);
+  $body.classList.toggle("nsfw_zone", room_nsfw);
 
   // check if we're moving / copying a room or file
   if (active_get("room_ops_move") || active_get("room_ops_copy")) {
@@ -958,7 +964,7 @@ function show_room_privacy() {
   }
 
   if (is_private) {
-    $privacy.href = "/" + query_to_hash(PUBLIC_ROOM);
+    $privacy.href = "/" + query_to_hash(config.PUBLIC_ROOM);
   } else {
     $privacy.href = "/" + query_to_hash(user + "/chat");
   }
@@ -1052,7 +1058,7 @@ function send_to_room_iframe(message) {
 }
 
 function send_to_help_iframe(message) {
-  $id("help-frame").contentWindow.postMessage(message, ALLYCHAT_CHAT_URL);
+  $id("help-frame").contentWindow.postMessage(message, config.ALLYCHAT_CHAT_URL);
 }
 
 // navigation ----------------------------------------------------------------
@@ -1068,7 +1074,7 @@ function nav_click(ev) {
 function nav_up(ev) {
   let new_room;
   if (room == "/") {
-    new_room = PUBLIC_ROOM;
+    new_room = config.PUBLIC_ROOM;
   } else if (room.match(/\/$/)) {
     new_room = room.replace(/[^\/]*\/$/, "");
     if (new_room == "") {
@@ -1204,6 +1210,7 @@ function set_title_hash(query, no_history) {
 function on_hash_change() {
   $title.innerText = query_to_title(hash_to_room(location.hash));
   let h = location.hash;
+  console.log("on_hash_change", h, "vs", new_hash);
   if (h == "" || h == "#") 
     return go_home();
   if (h == "#~")
@@ -1213,6 +1220,7 @@ function on_hash_change() {
   if (h != new_hash) {
     let query = hash_to_room(h);
     $room.value = query;
+    console.log("hash change to", query);
     set_room();
   }
 }
@@ -1367,6 +1375,11 @@ async function room_last(i) {
   const data = await response.json();
   if (data.error)
     return null;
+  // console.log("room_last", data.last);
+  if (i <= 0 && data.last === "")
+    return room_set_number("");
+  if (data.last === "")
+    i -= 1;
   return room_set_number(+data.last + i);
 }
 
@@ -1512,7 +1525,7 @@ function setup_main_ui_shortcuts() {
 
 function handle_message(ev) {
 		// FIXME, too much power for scripts in the room?
-  if (embed && ev.origin == ALLYCHAT_CHAT_URL) {  /* TODO support other host sites */
+  if (embed && ev.origin == config.ALLYCHAT_CHAT_URL) {  /* TODO support other host sites */
     if (ev.data.type == "theme_changed")
       return set_theme(ev.data.theme);
     if (ev.data.type == "set_view_options") {
@@ -1662,7 +1675,7 @@ function go_to_main_site() {
 }
 
 async function authChat() {
-  await $script("auth", ALLEMANDE_LOGIN_URL + "/auth.js");
+  await $script("auth", config.ALLEMANDE_LOGIN_URL + "/auth.js");
   if ($id("logout"))
     $on($id("logout"), "click", logout_confirm);
   userData = getJSONCookie("user_data");
@@ -1680,7 +1693,7 @@ function setup_user_button() {
   const $user = $id("user");
   $user.innerText = user;
   // go from main directory to public room
-  if (room == "/") $user.href = "/" + query_to_hash(PUBLIC_ROOM);
+  if (room == "/") $user.href = "/" + query_to_hash(config.PUBLIC_ROOM);
   // go from public user chat to main directory
   else if (room == user) $user.href = "/" + query_to_hash("/")
   // fo from users's folder to user's public room
@@ -1698,7 +1711,7 @@ async function setup_nav_buttons() {
   const $nav_up = $id("nav_up");
   let room_up;
   if (room == "/") {
-    room_up = PUBLIC_ROOM;
+    room_up = config.PUBLIC_ROOM;
   } else if (room.match(/\/$/)) {
     room_up = room.replace(/[^\/]*\/$/, "");
     if (room_up == "") {
@@ -1711,12 +1724,15 @@ async function setup_nav_buttons() {
 
   // Setup allychat button --------------------
   const $nav_allychat = $id("nav_allychat");
-  $nav_allychat.href = "/" + query_to_hash(PUBLIC_ROOM);
+  $nav_allychat.href = "/" + query_to_hash(config.PUBLIC_ROOM);
 
   // Setup nsfw buttons --------------------
   for (const $nav_nsfw of $$(".nav_nsfw")) {
-    $nav_nsfw.href = "/" + query_to_hash(is_nsfw ? PUBLIC_ROOM : NSFW_ROOM);
-    $nav_nsfw.title = is_nsfw ? "Go to the main SFW room: "+PUBLIC_ROOM : "Go to the main NSFW room: "+NSFW_ROOM;
+    const nsfw_button_go_to_sfw = room == config.NSFW_ROOM;
+    const target_room = nsfw_button_go_to_sfw ? config.PUBLIC_ROOM : config.NSFW_ROOM;
+    const target_room_desc = nsfw_button_go_to_sfw ? "SFW" : "NSFW";
+    $nav_nsfw.href = "/" + query_to_hash(target_room);
+    $nav_nsfw.title = `Go to the main ${target_room_desc} room: ${target_room}`;
   }
 
   // Setup porch button --------------------
@@ -1727,29 +1743,29 @@ async function setup_nav_buttons() {
   const $nav_home = $id("nav_home");
   $nav_home.href = "/" + query_to_hash(user + "/chat");
 
-  // Setup first room button --------------------
+  // Setup first page button --------------------
   const $pages_first = $id("pages_first");
-  const pages_first_query = room_first();
-  if (pages_first_query) {
-    $pages_first.href = query_to_hash(pages_first_query);
+  const page_first = room_first();
+  if (page_first) {
+    $pages_first.href = query_to_hash(page_first);
   } else {
     $pages_first.removeAttribute("href");
   }
 
   // Setup prev room button --------------------
   const $pages_prev = $id("pages_prev");
-  const roomPrev = room_prev();
-  if (roomPrev) {
-    $pages_prev.href = "/" + query_to_hash(roomPrev);
+  const page_prev = room_prev();
+  if (page_prev) {
+    $pages_prev.href = "/" + query_to_hash(page_prev);
   } else {
     $pages_prev.removeAttribute("href");
   }
 
   // Setup next room button --------------------
   const $pages_next = $id("pages_next");
-  const roomNext = room_next();
-  if (roomNext) {
-    $pages_next.href = "/" + query_to_hash(roomNext);
+  const page_next = room_next();
+  if (page_next) {
+    $pages_next.href = "/" + query_to_hash(page_next);
   } else {
     $pages_next.removeAttribute("href");
   }
@@ -1757,14 +1773,16 @@ async function setup_nav_buttons() {
   // Setup last room button --------------------
   // TODO this is heavy, avoid unless clicked?
   const $pages_last = $id("pages_last");
-  const roomLast = await room_last();
-  console.log("roomLast", roomLast);
-  if (roomLast) {
-    $pages_last.href = "/" + query_to_hash(roomLast);
+  const page_last = await room_last();
+  // console.log("page_last", page_last);
+  if (page_last) {
+    $pages_last.href = "/" + query_to_hash(page_last);
   } else {
     $pages_last.removeAttribute("href");
     access_denied = true;
   }
+
+  active_set("pages", page_last != page_first);
 }
 
 // Wrapper function to initialize drag controls for the input row ------------
@@ -1914,7 +1932,7 @@ function setup_admin() {
   // this includes a top-level room being the user's name
   const components = room.split("/");
   const top_dir = components[0];
-  admin = GLOBAL_MODERATORS.includes(user) || top_dir == user;
+  admin = config.GLOBAL_MODERATORS.includes(user) || top_dir == user;
   // experiment: allow anyone who can write to moderate
   admin = true;
   if (admin) document.body.classList.add("admin");
@@ -2478,14 +2496,16 @@ function setup_view_options() {
   on_room_ready(view_options_apply);
 }
 
+function get_filter_default() {
+  return user_nsfw ? config.FILTER_DEFAULT_NSFW : config.FILTER_DEFAULT_SFW;
+}
+
 function run_view_options_updates() {
-  // update 1-13: set default filter against extreme content
-  if (view_options.update <= 12) {
-    if (nsfw) {
-      $id('filter_query').value = FILTER_DEFAULT;
-      save_filter();
-    }
-    view_options.update = 13;
+  // update 1-14: set default filters
+  if (view_options.update <= 15) {
+    $id('filter_query').value = get_filter_default();
+    save_filter();
+    view_options.update = 16;
   }
 }
 
@@ -2493,7 +2513,7 @@ function run_view_options_updates() {
 //   if (simple)
 //     DEFAULT_ROOM = user + "/chat";
 //   else
-//     DEFAULT_ROOM = PUBLIC_ROOM;
+//     DEFAULT_ROOM = config.PUBLIC_ROOM;
 // }
 
 function set_view_options(new_view_options) {
@@ -2699,13 +2719,13 @@ async function view_options_apply() {
   show("dir_sort", type === "dir");
   show("pages", type !== "dir");
 
-  console.log("view options applied:", view_options);
+  // console.log("view options applied:", view_options);
 
   // send message to the rooms iframe to apply view options
   send_to_room_iframe({
     type: "set_view_options",
     ...view_options,
-    filter: view_options.filter ?? FILTER_DEFAULT
+    filter: view_options.filter ?? get_filter_default(),
   });
 
   controls_resized();
@@ -3262,8 +3282,8 @@ function setup_embed_ui() {
 function setup_help() {
   help_room = `${user}/help`;
   qa_room = `${user}/qa`;
-  help_url = ALLYCHAT_CHAT_URL + `/#${help_room}`;
-  qa_url = ALLYCHAT_CHAT_URL + `/#${qa_room}`;
+  help_url = config.ALLYCHAT_CHAT_URL + `/#${help_room}`;
+  qa_url = config.ALLYCHAT_CHAT_URL + `/#${qa_room}`;
   $id("help_link").href = help_url;
   $id("qa_link").href = qa_url;
 
@@ -3396,25 +3416,25 @@ function select_cancel(ev) {
 // filter images -------------------------------------------------------------
 
 function load_filter() {
-  const filterValue = view_options.filter ?? FILTER_DEFAULT;
+  const filterValue = view_options.filter ?? get_filter_default();
 
-  $id('filter_query').value = filterValue;                                                         console.log("=== load_filter ===", "view_options.filter:", view_options.filter, "FILTER_DEFAULT:", FILTER_DEFAULT, "Resolved:", filterValue, "Set input to:", $id('filter_query').value);
+  $id('filter_query').value = filterValue;                                     // console.log("=== load_filter ===", "view_options.filter:", view_options.filter, "FILTER_DEFAULT:", get_filter_default(), "Resolved:", filterValue, "Set input to:", $id('filter_query').value);
 }
 
 function save_filter() {
-  view_options.filter = $id('filter_query').value;                                                 console.log("=== save_filter START ===", "Before:", view_options.filter, "Input value:", $id('filter_query').value, "FILTER_DEFAULT:", FILTER_DEFAULT);
+  view_options.filter = $id('filter_query').value;                             // console.log("=== save_filter START ===", "Before:", view_options.filter, "Input value:", $id('filter_query').value, "FILTER_DEFAULT:", get_filter_default());
 
-  if (view_options.filter == FILTER_DEFAULT) {
-    view_options.filter = null;                                                                    console.log("  Filter matches DEFAULT - reset to null. Final:", view_options.filter);
-  }                                                                                                else { console.log("  Filter is custom - keeping value:", view_options.filter); }
+  if (view_options.filter == get_filter_default()) {
+    view_options.filter = null;                                                // console.log("  Filter matches DEFAULT - reset to null. Final:", view_options.filter);
+  }                                                                            // else { console.log("  Filter is custom - keeping value:", view_options.filter); }
 
-  console.log("=== save_filter END ===", "Final filter:", view_options.filter);
+                                                                               // console.log("=== save_filter END ===", "Final filter:", view_options.filter);
 }
 
 function filter_changed(ev) {
-  save_filter();                                                                                   console.log("=== filter_changed ===", "Event:", ev?.type, "Target:", ev?.target, "Value:", ev?.target?.value);
+  save_filter();                                                               // console.log("=== filter_changed ===", "Event:", ev?.type, "Target:", ev?.target, "Value:", ev?.target?.value);
 
-  view_options_apply();                                                                            console.log("  Called view_options_apply()");
+  view_options_apply();                                                        // console.log("  Called view_options_apply()");
 }
 
 /* system messages -------------------------------------------------------- */
@@ -3710,11 +3730,13 @@ function beta_test() {
 // main ----------------------------------------------------------------------
 
 export async function init() {
+  config = await $import("config");
+  window.ALLEMANDE_LOGIN_URL = config.ALLEMANDE_LOGIN_URL;
   const auth = await authChat();
   user = auth.username;
-  nsfw = auth.nsfw;
+  user_nsfw = auth.nsfw;
 
-  if (nsfw)
+  if (user_nsfw)
     $body.classList.add("nsfw");
   if (!isMobile)
     $body.classList.add("pc");
@@ -3725,7 +3747,7 @@ export async function init() {
   if (location.pathname === START_URL)
     return;
 
-  if (nsfw)
+  if (user_nsfw)
     nsfw_zone_init();
 
   setup_help();
@@ -3744,7 +3766,9 @@ export async function init() {
   on_hash_change();
 
   $on($content, "input", message_changed);
+  console.log("before restore_content")
   restore_content();
+  console.log("after restore_content", $content.value)
   message_changed();
 
   // enable keyboard shortcuts

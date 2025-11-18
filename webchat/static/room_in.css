@@ -1431,7 +1431,7 @@ sticky {
   width: 200px;
   min-height: 100px;
   max-height: 300px;
-  background: rgba(180, 160, 220, 0.5);
+  background: rgba(180, 160, 220, 0.8);
   padding: 10px;
   cursor: move;
   overflow: auto;

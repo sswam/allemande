@@ -385,7 +385,8 @@ export async function processMessage(newMessage) {
 
   // ID of last visible message in chat, for undo
   const lastMessageId = getLastVisibleMessageId();
-  console.log("last visible message ID", lastMessageId);
+  if (lastMessageId !== null)
+    console.log("last visible message ID", lastMessageId);
 
   // notify parent window of new message
   room.notify_new_message({ user: newUser, content: newContent.innerHTML, lastMessageId });

@@ -27,6 +27,7 @@ const ALLYCHAT_ROOMS_URL="{{ rooms_base_url }}";
 <script>
 (async () => {
 	await Promise.all([
+		$import("chat:config"),
 		$import("chat:room"),
 		$import("chat:process_messages"),
 	]);

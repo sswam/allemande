@@ -279,14 +279,18 @@
 <script src="util.js"></script>
 <script src="sw_register.js"></script>
 <script>register_service_worker();</script>
-<script src="config.js"></script>
 <script src="notify.js"></script>
 <script src="record.js"></script>
 <script src="resizer.js"></script>
 <script src="debug.js"></script>
 <script>
-$import("icons");
-$import("chat");
+(async () => {
+	await Promise.all([
+		$import("config"),
+		$import("icons"),
+		$import("chat"),
+	]);
+})();
 </script>
 </body>
 </html>
