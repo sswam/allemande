@@ -4,7 +4,7 @@
 obs-stream() {
 	local start_streaming= s=1  # start OBS streaming automatically
 	local reset_camera= r=1     # reset camera/s before streaming
-	local wait_time= w=1        # seconds to wait after USB reset
+	local wait_time= W=1        # seconds to wait after USB reset
 	local exit= x=              # stop obs
 
 	eval "$(ally)"
@@ -22,8 +22,15 @@ obs-stream() {
 		return 0
 	fi
 
-	if [ "$reset_camera" = 1 ]; then
-		reset_camera
+	need_restart=1
+
+	if [ $reset_camera -eq 1 ] && reset_camera; then
+		need_restart=0
+	fi
+
+	if [ $need_restart -eq 1 ]; then
+		pkill -x obs || true
+		sleep "$wait_time"
 	fi
 
 	check_obs_running
@@ -35,7 +42,8 @@ reset_camera() {
 	info "Resetting camera USB device(s)..."
 	# Find camera/webcam USB devices
 	local usb_info
-	usb_info=$(lsusb | grep -i -e camera -e webcam)
+	usb_info=$(lsusb | grep -i -e camera -e webcam || true)
+	did_something=0
 	while IFS= read -r line; do
 		# Extract bus and device numbers (e.g., "Bus 007 Device 002")
 		if ! [[ $line =~ Bus\ ([0-9]+)\ Device\ ([0-9]+) ]]; then
@@ -46,9 +54,15 @@ reset_camera() {
 		local usb_path="${bus}/${device}"
 		info "Resetting USB device: $usb_path"
 		sudo usbreset "$usb_path"
+		did_something=1
 	done <<< "$usb_info"
 
 	# Wait for device/s to reset
+	if [ $did_something -eq 0 ]; then
+		warn "No camera USB devices found to reset."
+		return 1
+	fi
+
 	sleep "$wait_time"
 }
 
