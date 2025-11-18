@@ -29,6 +29,7 @@ ALLEMANDE_SCREEN="allemande"
 ALLEMANDE_ROOMS="$ALLEMANDE_HOME/rooms"
 ALLEMANDE_AGENTS="$ALLEMANDE_HOME/agents"
 ALLEMANDE_VISUAL="$ALLEMANDE_HOME/visual"
+ALLEMANDE_UNPROMPTED_TEMPLATES="$ALLEMANDE_HOME/templates"
 ALLEMANDE_WEBCACHE="$ALLEMANDE_HOME/webcache"
 
 ALLEMANDE_AUDIO_LOCK="/var/lock/allemande-audio.lock"
@@ -50,7 +51,7 @@ PYTHON=$(which python3)
 PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:}$ALLEMANDE_HOME
 MYPY_CACHE_DIR="$HOME/.cache/mypy"
 
-for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video image js markdown rag unprompted; do
+for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video image js markdown rag unprompted code; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 
