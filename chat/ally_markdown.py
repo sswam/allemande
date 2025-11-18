@@ -12,6 +12,8 @@ from urllib.parse import urlparse
 import random
 from typing import Any
 from math import gcd
+from collections import deque
+from functools import wraps
 
 import markdown
 import markdown_it
@@ -20,12 +22,14 @@ from mdformat.renderer import MDRenderer
 import mdformat_light_touch  # type: ignore
 import lxml.html
 from mdx_linkify.mdx_linkify import LinkifyExtension
+import yt_dlp
 
 import fetch
 from ally_room import check_access, safe_path_for_local_file
 from bb_lib import lines_to_messages
 from ally.quote import quote_words  # type: ignore  # pylint: disable=wrong-import-order
 import stamps
+from ally.util import asyncify
 
 
 logging.basicConfig(level=logging.INFO)
@@ -429,7 +433,55 @@ ac
 RE_TAGS = re.compile(rf"""</?({"|".join(list(set(HTML_TAGS + SVG_TAGS + ALLYCHAT_TAGS)))})\b""", flags=re.IGNORECASE)
 
 
-# pylint: disable=too-many-locals, too-many-branches, too-many-statements
+def try_split_think_tag_line(line: str) -> list[str]:
+    """Split a line with think tags into multiple lines. Returns list of lines."""
+
+    # Helper: check if position is inside inline backticks
+    def is_quoted(text: str, pos: int) -> bool:
+        return text[:pos].count('`') % 2 == 1
+
+    open_pos = line.find('<think>')
+    close_pos = line.find('</think>')
+
+    # Case 1: Both tags on same line (unquoted)
+    if open_pos != -1 and close_pos != -1 and close_pos > open_pos:
+        if not is_quoted(line, open_pos) and not is_quoted(line, close_pos):
+            before = line[:open_pos].rstrip()
+            after = line[close_pos+8:].lstrip()
+
+            result = []
+            if before:
+                result.append(before)
+            result.append('<think>')
+            result.append('</think>')
+            if after:
+                result.append(after)
+            return result
+
+    # Case 2: Opening tag at start of line (or only whitespace before)
+    if open_pos != -1 and not is_quoted(line, open_pos):
+        if open_pos == 0 or line[:open_pos].strip() == '':
+            after = line[open_pos+7:].lstrip()
+            result = ['<think>']
+            if after:
+                result.append(after)
+            return result
+
+    # Case 3: Closing tag at end of line (or only whitespace after)
+    if close_pos != -1 and not is_quoted(line, close_pos):
+        after_tag = line[close_pos+8:]
+        if after_tag.strip() == '':
+            before = line[:close_pos].rstrip()
+            result = []
+            if before:
+                result.append(before)
+            result.append('</think>')
+            return result
+
+    # No splitting needed
+    return [line]
+
+
 async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str, bool]:
     """Preprocess chat message content, for markdown-katex, and other fixes"""
 
@@ -440,8 +492,8 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
 
     out = []
 
-    # make sure <think> tags are on their own lines...
-    content = re.sub(r"\s*(</?think>)\s*", r"\n\1\n", content, flags=re.IGNORECASE)
+    # Use deque for pushback capability
+    lines = deque(content.split('\n'))
 
     in_math = False
     in_code = 0
@@ -462,7 +514,18 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
         normal_lines.clear()
         return text
 
-    for line in content.splitlines():
+    while lines:
+        line = lines.popleft()
+
+        # BEFORE other processing: split think tags if not in any protected block
+        if not (in_code or in_script or in_svg):  # add all your block flags
+            split_lines = try_split_think_tag_line(line)
+            if len(split_lines) > 1:
+                # Push extras back to front of deque
+                for split_line in reversed(split_lines[1:]):
+                    lines.appendleft(split_line)
+                line = split_lines[0]
+
         logger.debug("line: %r", line)
 #         is_markup = False
 #         # if first and re.search(r"\t<", line[0]):
@@ -794,7 +857,7 @@ async def message_to_html(message: dict[str, str], bb_file: str) -> str:
             html_content = markdown_to_html(content)
             # html_content = restore_indents(html_content)
             #             logger.info("html content: %r", html_content)
-            html_content = html_postprocess(html_content, bb_file)
+            html_content = await html_postprocess(html_content, bb_file)
         #            html_content = "\n".join(wrap_indent(line) for line in html_content.splitlines())
         #             html_content = html_content.replace("<br />", "")
         #             html_content = html_content.replace("<p>", "")
@@ -817,33 +880,63 @@ async def message_to_html(message: dict[str, str], bb_file: str) -> str:
 LANGUAGES = r"python|bash|sh|shell|console|html|xml|css|javascript|js|json|yaml|yml|toml|ini|sql|c|cpp|csharp|cs|java|kotlin|swift|php|perl|ruby|lua|rust|go|dart|scala|groovy|powershell|plaintext"
 
 
-def embed_youtube_links(text):
+def get_video_title(url):
+    """Get YouTube video title using yt-dlp."""
+    ydl_opts = {'quiet': True, 'no_warnings': True}
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+        return info['title']
+
+
+async def embed_youtube_links(text):
     """ Replace YouTube links with embeds """
-    # negative lookbehind seems to be necessary to avoid applying twice, hacky
-    # youtube_pattern = r'(?<!")(?:https?://)?(?:www\.)?' \
-    #                   r'(?:youtube\.com/watch\?v=|youtu\.be/)' \
-    #                   r'([a-zA-Z0-9_-]{11})' \
-    #                   r'(?:[?&]([^"\s<]*))?'
     youtube_pattern = r'(?<!")https://(?:www\.|music\.)?' \
-                      r'(?:youtube\.com/watch\?v=|youtu\.be/)' \
-                      r'([a-zA-Z0-9_-]{11})' \
-                      r'(?:[?&]([^"\s<]*))?'
+                    r'(?:youtube\.com/watch\?v=|youtu\.be/)' \
+                    r'([a-zA-Z0-9_-]{11})' \
+                    r'(?:[?&]([^"\s<]*))?'
 
+    async def replace_with_embed(match):
+        video_id = match.group(1)
+        params = match.group(2)
 
-    return re.sub(
-        youtube_pattern,
-        lambda m: (
-            f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{m.group(1)}'
-            f'{("?" + (m.group(2) or "")) if m.group(2) else ""}" title="YouTube video player" '
+        # Reconstruct the full URL to fetch title
+        full_url = f'https://www.youtube.com/watch?v={video_id}'
+
+        # Fetch title asynchronously
+        try:
+            get_title_async = asyncify(get_video_title)
+            title = await get_title_async(full_url)
+            # Escape HTML entities in title
+            title = title.replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
+        except Exception as e:
+            print(f"Error fetching title for {video_id}: {e}")
+            title = "YouTube video player"
+
+        return (
+            f'<iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id}'
+            f'{("?" + params) if params else ""}" title="{title}" '
             f'frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; '
             f'picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" '
             f'allowfullscreen></iframe>'
-        ),
-        text
-    )
+        )
+
+    # Find all matches first
+    matches = list(re.finditer(youtube_pattern, text))
+
+    # Replace each match with its embed (processing async)
+    result = text
+    offset = 0
+    for match in matches:
+        embed = await replace_with_embed(match)
+        start = match.start() + offset
+        end = match.end() + offset
+        result = result[:start] + embed + result[end:]
+        offset += len(embed) - (end - start)
+
+    return result
 
 
-def html_postprocess(html_text: str, bb_file: str) -> str:
+async def html_postprocess(html_text: str, bb_file: str) -> str:
     """Fix various issues with HTML generated by markdown."""
 
     # Hopefully not needed with superfences:
@@ -862,7 +955,7 @@ def html_postprocess(html_text: str, bb_file: str) -> str:
     html_text = re.sub(r"<(lora:.*?)>", r"&lt;\1&gt;", html_text)
 
     # FIXME: this should be done in the markdown processing phase, to avoid messing up code blocks
-    html_text = embed_youtube_links(html_text)
+    html_text = await embed_youtube_links(html_text)
 
     # fix images
     html_text = re.sub(r"(<img [^>]*>)", lambda m: fix_html_image(m.group(1), bb_file), html_text)

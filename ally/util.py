@@ -7,6 +7,9 @@ import builtins
 from typing import IO
 from datetime import datetime
 
+from functools import wraps, partial
+import asyncio
+
 
 def dict_not_none(d: dict) -> dict:
     """Return a new dict with only the non-None values."""
@@ -99,3 +102,15 @@ def split_preserve_delimiters(text: str) -> list[str]:
     """Split on COL and ROW, keeping those words in the result."""
     parts = re.split(r'\b(COL|ROW)\b', text)
     return [part for part in parts if part]  # Filter empty strings
+
+
+def asyncify(func):
+    """Convert a sync function to async."""
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(
+            None,
+            partial(func, *args, **kwargs)
+        )
+    return wrapper
