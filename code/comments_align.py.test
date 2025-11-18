@@ -1,0 +1,7 @@
+=================================== FAILURES ===================================
+___________________ test_calculate_alignment_varying_lengths ___________________
+tests/comments_align_test.py:132: in test_calculate_alignment_varying_lengths
+    assert subject.calculate_alignment(block) == 17  # len("longer_var = 2") + 2
+E   AssertionError: assert 16 == 17
+E    +  where 16 = <function calculate_alignment at 0x7fbb130e4220>([('x = 1', ' ', '# short'), ('longer_var = 2', ' ', '# comment'), ('y = 3', ' ', '# another')])
+E    +    where <function calculate_alignment at 0x7fbb130e4220> = subject.calculate_alignment

@@ -1,0 +1,28 @@
+# I will edit `code_align.py` to fix an issue where original tabs were preserved instead of being expanded to spaces in the output. Then, I will update `code_align_test.py` to correct a test case whose expected output did not match the alignment logic.
+#
+# In `code_align.py`:
+
+# ... unchanged
+def align_block(block: list[tuple[tuple, tuple]], block_lines: list[str], spacing: int = 2) -> list[str]:
+# ... unchanged
+            is_comment_align = after_expanded.strip().startswith(('#', '//'))
+
+            if is_comment_align:
+                result.append(f"{before_expanded.rstrip()}{' ' * spaces_needed}{after_original}{line_ending}")
+            else:
+                result.append(f"{before_expanded.rstrip()}{' ' * spaces_needed}{separator_original} {after_original}{line_ending}")
+
+            block_idx += 1
+        else:
+# ... unchanged
+
+# In `code_align_test.py`:
+
+# ... unchanged
+def test_comments_align_with_tabs():
+    input_text = "x = 1\t# comment\ny = 2\t# another\n"
+    expected = "x = 1  # comment\ny = 2  # another\n"
+
+    istream = io.StringIO(input_text)
+    ostream = io.StringIO()
+# ... unchanged

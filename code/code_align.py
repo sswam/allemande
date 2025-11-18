@@ -2,6 +2,7 @@
 
 """
 Align blocks of end-of-line comments that appear after code on a line.
+There should be 2 spaces or more between code and same-line comments.
 """
 
 import re
@@ -9,7 +10,7 @@ from typing import TextIO
 
 from ally import main  # type: ignore
 
-__version__ = "0.1.5"
+__version__ = "0.1.9"
 
 
 def detect_language(lines: list[str]) -> str:
@@ -103,79 +104,56 @@ def parse_line_with_equals(line: str) -> tuple[str, str, str] | None:
     return None
 
 
-def calculate_alignment(block: list[tuple[str, str, str]]) -> int:
-    """Calculate alignment position, excluding outliers."""
-    if not block:
-        return 0
-
-    code_lengths = [len(code.rstrip()) for code, _, _ in block]
-
-    # If only one or two lines, no outlier detection needed
-    if len(code_lengths) <= 2:
-        return max(code_lengths)
-
-    # Calculate median to detect outliers
-    sorted_lengths = sorted(code_lengths)
-    median = sorted_lengths[len(sorted_lengths) // 2]
-
-    # Filter out outliers (lines much longer than median)
-    threshold = median * 1.5 + 10
-    normal_lengths = [length for length in code_lengths if length <= threshold]
-
-    if not normal_lengths:
-        return max(code_lengths)
-
-    return max(normal_lengths)
-
-
-def align_block(block: list[tuple[str, str, str]], block_lines: list[str], spacing: int = 2) -> list[str]:
+def align_block(block: list[tuple[tuple, tuple]], block_lines: list[str], spacing: int = 2) -> list[str]:
     """Align comments or equals signs in a block of lines."""
     if not block:
         return block_lines
 
-    is_comment_align = not block[0][1].strip()
+    parsed_expanded_list = [item[0] for item in block]
 
-    if is_comment_align:
-        align_pos = calculate_alignment(block)
-        code_lengths = [len(code) for code, _, _ in block]
-    else:  # equals align
-        align_pos = calculate_alignment(block)
-        code_lengths = [len(code) for code, _, _ in block]
-
-    # Calculate median for outlier detection
-    code_lengths = [len(code) for code, _, _ in block]
+    code_lengths = [len(code.rstrip()) for code, _, _ in parsed_expanded_list]
     sorted_lengths = sorted(code_lengths)
-    median = sorted_lengths[len(sorted_lengths) // 2] if sorted_lengths else 0
+    median = sorted_lengths[len(sorted_lengths) // 2] if code_lengths else 0
     threshold = median * 1.5 + 10
+    normal_lengths = [length for length in code_lengths if length <= threshold]
+    align_pos = max(normal_lengths) if normal_lengths else max(code_lengths) if code_lengths else 0
 
     result = []
     block_idx = 0
 
     for line in block_lines:
         if block_idx < len(block):
-            before, separator, after = block[block_idx]
-            before_len = len(before.rstrip())
+            parsed_expanded, parsed_original = block[block_idx]
+
+            before_expanded, _, after_expanded = parsed_expanded
+            before_original, separator_original, after_original = parsed_original
+
+            before_len = len(before_expanded.rstrip())
 
             # Preserve the original line ending
             line_ending = ""
             if line.endswith("\n"):
                 line_ending = "\n"
-            after = after.rstrip("\r\n")
+            after_original = after_original.rstrip("\r\n")
 
             # Check if this is an outlier
-            if len(block) > 2 and before_len > threshold:
+            is_outlier = len(block) > 2 and before_len > threshold
+
+            if is_outlier:
                 # Outlier: just add spacing
-                if is_comment_align:
-                    result.append(f"{before}{' ' * spacing}{after}{line_ending}")
-                else:
-                    result.append(f"{before} {separator} {after}{line_ending}")
+                spaces_needed = spacing
             else:
                 # Normal: align to calculated position
                 spaces_needed = align_pos - before_len + spacing
-                if is_comment_align:
-                    result.append(f"{before}{' ' * spaces_needed}{after}{line_ending}")
-                else:
-                    result.append(f"{before}{' ' * spaces_needed}{separator} {after}{line_ending}")
+
+            # Format based on separator type (comment vs equals)
+            is_comment_align = after_expanded.strip().startswith(('#', '//'))
+
+            if is_comment_align:
+                result.append(f"{before_expanded.rstrip()}{' ' * spaces_needed}{after_original}{line_ending}")
+            else:
+                result.append(f"{before_expanded.rstrip()}{' ' * spaces_needed}{separator_original} {after_original}{line_ending}")
+
             block_idx += 1
         else:
             result.append(line)
@@ -189,42 +167,60 @@ def align_equals(
     tabstop: int = 0,
 ) -> None:
     """Align equals signs (or :=) in code blocks."""
-    lines = istream.readlines()
+    # Read initial lines for language detection
+    initial_lines = []
+    for _ in range(10):
+        line = istream.readline()
+        if not line:
+            break
+        initial_lines.append(line)
 
     # Detect language and set tabstop default
-    language = detect_language(lines)
+    language = detect_language(initial_lines)
     if tabstop == 0:
         tabstop = 4 if language == "python" else 8
 
-    block = []
-    block_lines = []
+    block: list[tuple[tuple, tuple]] = []
+    block_lines: list[str] = []
 
     def flush_block() -> None:
         """Flush the current block."""
         nonlocal block, block_lines
         if block:
-            aligned = align_block(block, block_lines, spacing=1)
+            aligned = align_block(block, block_lines, spacing=1
             for aligned_line in aligned:
                 ostream.write(aligned_line)
             block = []
             block_lines = []
 
-    for line in lines:
-        # Expand tabs
-        expanded_line_with_nl = expand_tabs(line, tabstop)
+    def process_line(line: str) -> None:
+        """Process a single line."""
+        nonlocal block, block_lines
+
+        # Expand tabs for width calculation
+        expanded_line = expand_tabs(line, tabstop)
 
         # Check if line has an equals sign
-        parsed = parse_line_with_equals(expanded_line_with_nl.rstrip("\r\n"))
+        parsed_expanded = parse_line_with_equals(expanded_line.rstrip("\r\n"))
+        parsed_original = parse_line_with_equals(line.rstrip("\r\n"))
 
-        if parsed:
+        if parsed_expanded and parsed_original:
             # Line has equals, add to block
-            block.append(parsed)
-            block_lines.append(expanded_line_with_nl)
+            block.append((parsed_expanded, parsed_original))
+            block_lines.append(line)
         else:
             # No equals, flush block if any
             flush_block()
             # Output current line as-is
-            ostream.write(expanded_line_with_nl)
+            ostream.write(line)
+
+    # Process initial lines
+    for line in initial_lines:
+        process_line(line)
+
+    # Process rest of input
+    for line in istream:
+        process_line(line)
 
     # Flush any remaining block
     flush_block()
@@ -252,22 +248,23 @@ def comments_align(
     pattern = re.compile(get_comment_pattern(language))
 
     # Process initial lines and rest of input
-    block = []
-    block_lines = []
+    block: list[tuple[tuple, tuple]] = []
+    block_lines: list[str] = []
 
     def process_line(line: str) -> None:
         """Process a single line."""
         nonlocal block, block_lines
 
-        # Expand tabs
-        line = expand_tabs(line, tabstop)
+        # Expand tabs for width calculation
+        expanded_line = expand_tabs(line, tabstop)
 
-        # Check if line has a trailing comment
-        parsed = parse_line_with_comment(line, pattern)
+        # Check if line has a trailing comment, on both original and expanded
+        parsed_expanded = parse_line_with_comment(expanded_line, pattern)
+        parsed_original = parse_line_with_comment(line, pattern)
 
-        if parsed:
+        if parsed_expanded and parsed_original:
             # Line has comment after code, add to block
-            block.append(parsed)
+            block.append((parsed_expanded, parsed_original))
             block_lines.append(line)
         else:
             # No trailing comment, flush block if any
@@ -335,16 +332,13 @@ def setup_args(arg):
 if __name__ == "__main__":
     main.go(code_align, setup_args)
 
+
 # Issues:
-# 1.  In `align_equals`, the entire input stream is read into memory with
-# `istream.readlines()`. For consistency with `comments_align` which processes
-# the input as a stream, you might consider refactoring `align_equals` to also
-# stream its input after an initial lookahead for language detection. This
-# would improve its memory usage and performance on very large files.
-#
-# 2.  The logic for detecting outliers appears to be duplicated. The
-# threshold is calculated in `calculate_alignment` and then calculated again in
-# `align_block`. This could be simplified by having `calculate_alignment` also
-# return the threshold it used, or by checking for outliers in `align_block`
-# more directly, for instance by treating any line where `len(before.rstrip())
-# > align_pos` as an outlier.
+# 1. In `align_block`, when outputting aligned lines,
+# `before_expanded.rstrip()` is used for the code part,
+# which expands indentation tabs to spaces, but the added test
+# `test_comments_align_preserves_indentation_tabs` expects indentation tabs to
+# be preserved as-is in the output. This causes the test to fail with expanded
+# spaces instead of original tabs. To fix, consider separating indentation from
+# code in parsing or adjusting output logic to use original indentation with
+# expanded alignment.

@@ -1,0 +1,3 @@
+Dr. Drang recounts Doug McIlroy’s famous critique of Donald Knuth’s literate-programming solution (published in Jon Bentley’s “Programming Pearls”) for finding the n most frequent words in a text. Knuth’s WEB/Pascal program was clever and well-presented, but McIlroy showed a far simpler, bug-free six-process Unix pipeline that does the same job, explained each step, and used the example to argue for the Unix philosophy: small, reusable tools, separation of concerns, faster development and easier debugging. McIlroy praised literate programming’s clarity but condemned Knuth’s monolithic, overengineered implementation as a “Fabergé egg,” advocating practical, reusable engineering instead.
+
+tr -cs A-Za-z '\n' | tr A-Z a-z | sort | uniq -c | sort -rn | sed ${1}q

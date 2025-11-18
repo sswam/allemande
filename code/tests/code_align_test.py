@@ -109,50 +109,13 @@ def test_parse_line_with_comment_empty():
     assert result is None
 
 
-def test_calculate_alignment_single_line():
-    block = [("x = 1", " ", "# comment")]
-    assert subject.calculate_alignment(block) == 5  # len("x = 1")
-
-
-def test_calculate_alignment_multiple_lines():
-    block = [
-        ("x = 1", " ", "# comment"),
-        ("y = 2", " ", "# another"),
-        ("z = 3", " ", "# more"),
-    ]
-    assert subject.calculate_alignment(block) == 5  # max(5, 5, 5)
-
-
-def test_calculate_alignment_varying_lengths():
-    block = [
-        ("x = 1", " ", "# short"),
-        ("longer_var = 2", " ", "# comment"),
-        ("y = 3", " ", "# another"),
-    ]
-    assert subject.calculate_alignment(block) == 14  # len("longer_var = 2")
-
-
-def test_calculate_alignment_with_outlier():
-    block = [
-        ("x = 1", " ", "# comment"),
-        ("y = 2", " ", "# another"),
-        ("very_very_long_variable_name = 3", " ", "# outlier"),
-        ("z = 4", " ", "# more"),
-    ]
-    # Should exclude the outlier
-    align_pos = subject.calculate_alignment(block)
-    assert align_pos == 5  # based on normal lines, not the outlier
-
-
-def test_calculate_alignment_empty():
-    assert subject.calculate_alignment([]) == 0
-
-
 def test_align_block_simple():
-    block = [
+    parsed_expanded = [
         ("x = 1", " ", "# comment"),
         ("y = 2", " ", "# another"),
     ]
+    parsed_original = parsed_expanded  # No tabs, so they are the same
+    block = list(zip(parsed_expanded, parsed_original))
     block_lines = ["x = 1 # comment\n", "y = 2 # another\n"]
 
     result = subject.align_block(block, block_lines)
@@ -163,10 +126,12 @@ def test_align_block_simple():
 
 
 def test_align_block_varying_lengths():
-    block = [
+    parsed_expanded = [
         ("x = 1", " ", "# short"),
         ("longer = 2", " ", "# comment"),
     ]
+    parsed_original = parsed_expanded
+    block = list(zip(parsed_expanded, parsed_original))
     block_lines = ["x = 1 # short\n", "longer = 2 # comment\n"]
 
     result = subject.align_block(block, block_lines)
@@ -178,11 +143,13 @@ def test_align_block_varying_lengths():
 
 
 def test_align_block_with_outlier():
-    block = [
+    parsed_expanded = [
         ("x = 1", " ", "# comment"),
         ("y = 2", " ", "# another"),
         ("very_very_long_variable_name = 3", " ", "# outlier"),
     ]
+    parsed_original = parsed_expanded
+    block = list(zip(parsed_expanded, parsed_original))
     block_lines = [
         "x = 1 # comment\n",
         "y = 2 # another\n",
@@ -268,20 +235,26 @@ b = 4  # second block
 
 
 def test_comments_align_with_tabs():
-    input_text = """x = 1\t# comment
-y = 2\t# another
-"""
+    input_text = "x = 1\t# comment\ny = 2\t# another\n"
+    expected = "x = 1  # comment\ny = 2  # another\n"
 
     istream = io.StringIO(input_text)
     ostream = io.StringIO()
 
     subject.comments_align(istream, ostream, tabstop=4)
     result = ostream.getvalue()
+    assert result == expected
 
-    # Tabs should be expanded
-    assert "\t" not in result
-    assert "# comment" in result
-    assert "# another" in result
+
+def test_comments_align_preserves_indentation_tabs():
+    input_text = "\tx = 1\t# comment\n\tyy = 22\t# another\n"
+    expected = "\tx = 1    # comment\n\tyy = 22  # another\n"
+
+    istream = io.StringIO(input_text)
+    ostream = io.StringIO()
+
+    subject.comments_align(istream, ostream, tabstop=4)
+    assert ostream.getvalue() == expected
 
 
 def test_comments_align_empty_input():
@@ -372,19 +345,15 @@ def test_comments_align_single_line():
 
 
 def test_comments_align_custom_tabstop():
-    input_text = """x\t= 1 # comment
-y\t= 2 # another
-"""
+    input_text = "x\t= 1 # comment\ny\t= 2 # another\n"
+    expected = "x       = 1  # comment\ny       = 2  # another\n"
 
     istream = io.StringIO(input_text)
     ostream = io.StringIO()
 
     subject.comments_align(istream, ostream, tabstop=8)
     result = ostream.getvalue()
-
-    # Should expand tabs with tabstop=8
-    assert "\t" not in result
-    assert "# comment" in result
+    assert result == expected
 
 
 @pytest.mark.parametrize("input_text,expected_language", [

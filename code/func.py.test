@@ -1,0 +1,29 @@
+=================================== FAILURES ===================================
+____________________ test_process_all[True-True-expected0] _____________________
+tests/func_test.py:34: in test_process_all
+    subject.func(istream, ostream, "-", process_all=process_all, show_names=show_names)
+E   AttributeError: module 'func' has no attribute 'func'
+___________________ test_process_all[False-False-expected1] ____________________
+tests/func_test.py:34: in test_process_all
+    subject.func(istream, ostream, "-", process_all=process_all, show_names=show_names)
+E   AttributeError: module 'func' has no attribute 'func'
+______________________________ test_show_all_info ______________________________
+tests/func_test.py:42: in test_show_all_info
+    subject.func(istream, ostream, "-", "hello_world", show_info=True, show_docstrings=True)
+E   AttributeError: module 'func' has no attribute 'func'
+_____________________________ test_show_decorators _____________________________
+tests/func_test.py:50: in test_show_decorators
+    subject.func(istream, ostream, "-", "decorated_function", show_decorators=True, show_names=True)
+E   AttributeError: module 'func' has no attribute 'func'
+________________________________ test_list_mode ________________________________
+tests/func_test.py:58: in test_list_mode
+    subject.func(istream, ostream, "-", list_mode=True)
+E   AttributeError: module 'func' has no attribute 'func'
+_____________________________ test_nested_function _____________________________
+tests/func_test.py:73: in test_nested_function
+    subject.func(istream, ostream, "-", "outer.inner", show_names=True)
+E   AttributeError: module 'func' has no attribute 'func'
+__________________________ test_nested_function_order __________________________
+tests/func_test.py:90: in test_nested_function_order
+    subject.func(istream, ostream, "-", list_mode=True)
+E   AttributeError: module 'func' has no attribute 'func'
