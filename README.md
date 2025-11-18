@@ -14,12 +14,7 @@ The [User Guide](doc/guide.md) provides comprehensive details about features, mo
 
 ## Ally Chat
 
-Ally Chat is a unique multi-user chat platform featuring numerous top-quality
-AI models from providers including OpenAI, Anthropic, Meta, Google, Perplexity,
-xAI, DeepSeek, Stability AI, and the Civitai community. This is perhaps the only
-service where you can interact with many of the world's most powerful AI models
-together in one place, have them collaborate, and invite friends or colleagues
-to join.
+Ally Chat is a unique multi-player chat platform featuring numerous top-quality AI models from providers including OpenAI, Anthropic, Meta, Google, Perplexity, xAI, DeepSeek, Stability AI, and the Civitai community. This is perhaps the only service where you can interact with many of the world's most powerful AI models together in one place, have them collaborate, work or role-play together, and invite friends or colleagues to join.
 
 ### Examples
 
