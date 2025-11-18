@@ -264,7 +264,7 @@ class Room:
         """Check access for a user."""
         return check_access(user, self.name + EXTENSION)
 
-    def find_resource_file(self, ext, name=None, create=False, try_room_name=True) -> str|None:
+    def find_resource_file(self, ext, name=None, create=False, try_room_name=True, try_without_extension=False) -> str|None:
         """Find a resource file for the chat room.
         Tries to find the file in the following order:
         1. room_name.ext
@@ -273,6 +273,8 @@ class Room:
         4. .room_name_without_number.ext (if applicable)
         5. specified_name.ext (if name provided)
         6. .specified_name.ext (if name provided)
+        7. specified_name (if name provided and try_without_extension=True)
+        8. .specified_name (if name provided and try_without_extension=True)
 
         If name starts with '/', the path will be relative to ROOMS_DIR.
         """
@@ -297,8 +299,14 @@ class Room:
                 possible_paths.append(parent / f".{stem_no_num}.{ext}")
 
         if name:
+            # Try with extension first
             possible_paths.append(parent / f"{name}.{ext}")
             possible_paths.append(parent / f".{name}.{ext}")
+
+        # Then try without extension if requested
+        if name and try_without_extension:
+            possible_paths.append(parent / name)
+            possible_paths.append(parent / f".{name}")
 
         # Try each path in order
         for path in possible_paths:
@@ -307,7 +315,7 @@ class Room:
 
         # If create flag is True, return the first non-hidden path even if it doesn't exist
         if create and possible_paths:
-            # Find first non-hidden path
+            # Find first non-hidden path (should include extension when creating)
             for path in possible_paths:
                 if not path.name.startswith('.'):
                     return str(path)

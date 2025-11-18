@@ -24,7 +24,20 @@ async def handle_forwarding(run_agent, response, agent, agents, file, args, hist
     if not forward_target:
         return response
 
-    return await execute_forward(run_agent, forward_target, agent, agents, file, args, history, history_start, mission, summary, config, responsible_human)
+    forwarded_response = await execute_forward(run_agent, forward_target, agent, agents, file, args, history, history_start, mission, summary, config, responsible_human)
+
+    logger.info("Forwarded response from %s: %s", forward_target, forwarded_response)
+
+    logger.info("Forward target was %s", forward_target)
+
+    if not forwarded_response or forwarded_response == f"{forward_target}:":
+        logger.info("Forwarded response was blank from %s", forward_target)
+        forward_if_blank_2 = agent.get("forward_if_blank_2")
+        if forward_if_blank_2:
+            logger.info("Forward: blank response from %s, using forward_if_blank_2", forward_target)
+            forwarded_response = await execute_forward(run_agent, forward_if_blank_2, agent, agents, file, args, history, history_start, mission, summary, config, responsible_human)
+
+    return forwarded_response
 
 
 def apply_forward_triggers(response, agent):
@@ -52,7 +65,7 @@ def apply_forward_triggers(response, agent):
 def determine_forward_target(response, agent, agents, config, room):
     """Determine which agent to forward to."""
     # logger.info("Forward response: %r", response)
-    response_message = list(bb_lib.lines_to_messages([response]))[-1]
+    response_message = list(bb_lib.lines_to_messages(iter([response])))[-1]
     # logger.info("response_message: %r", response_message)
 
     _responsible_human, bots2 = conductor.who_should_respond(

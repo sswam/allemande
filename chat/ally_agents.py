@@ -338,7 +338,7 @@ class Agent:
         # a derived agent with different names.
         # TODO do this more generally for other variables?
         # replace $ROOM with the room name
-        if value and key in ["system_top", "system_bottom", "visual"]:
+        if value and key in ["system_top", "system_bottom", "system_bottom_role", "visual"]:
             name = self.get("name")
             fullname = self.get("fullname", name)
             aliases = self.get("aliases") or [name]
@@ -478,7 +478,7 @@ class Agent:
         if over_names and isinstance(over_names, str):
             over_names = [over_names]
         over = []
-        for name in over_names:
+        for name in uniqo(over_names):
             agent = self.agents.get(name)
             if agent:
                 over.append(agent)

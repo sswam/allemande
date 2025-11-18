@@ -12,8 +12,10 @@ from ally import logs  # type: ignore
 import ally_agents  # type: ignore
 import settings  # type: ignore
 import util  # type: ignore
+from text.unsmart import unsmart, smart  # type: ignore
 
-__version__ = "0.1.3"
+
+__version__ = "0.1.4"
 
 logger = logs.get_logger()
 
@@ -124,7 +126,7 @@ def filter_out_think_fix(response: str) -> str:
     start_pos = match.start()
     end_pos = match.end()
 
-    # Remove any nested <think> or </think> tags from content
+    # Remove any nested <think> or </think> tags from content, preserving everything else
     cleaned_content = re.sub(r'</?think>', '', think_content)
     logger.info("filter_think_fix 3 after removing nested tags: %s", cleaned_content[:100])
 
@@ -137,44 +139,23 @@ def filter_out_think_fix(response: str) -> str:
     last_line = lines_before[-1] if lines_before else ''
 
     # Check if last line is just a label (e.g., "Acsi:" or "Assistant:")
-    # A label is non-empty, doesn't end with newline, and is short
     is_label_line = bool(last_line.strip()) and not before.endswith('\n')
 
     if is_label_line:
         # Keep the label on same line with a tab before <think>
-        before = before.rstrip()  # Remove any trailing whitespace
-        result = f"{before}\t<think>\n\t{cleaned_content.strip()}\n\t</think>"
-    else:
-        # Standard case: put <think> on new line with proper indentation
         before = before.rstrip()
-
-        # Determine indentation from context
-        if lines_before and len(lines_before) > 1:
-            # Look at previous lines for indentation pattern
-            prev_line = lines_before[-2] if len(lines_before) > 1 else ''
-            indent = '\t' if prev_line.startswith('\t') else '\t'
-        else:
-            indent = '\t'
-
+        result = f"{before}\t<think>{cleaned_content}</think>"
+    else:
+        # Standard case: put <think> on new line
+        before = before.rstrip()
         result = before
         if result and not result.endswith('\n'):
             result += '\n'
-        result += f"{indent}<think>\n{indent}{cleaned_content.strip()}\n{indent}</think>"
+        result += f"<think>{cleaned_content}</think>"
 
-    # Handle after content - ensure proper indentation
+    # Add after content without modification
     if after:
-        after = after.lstrip()  # Remove leading whitespace
-        if after:
-            # Split after content into lines and ensure each has proper indentation
-            after_lines = after.split('\n')
-            indented_lines = []
-            for line in after_lines:
-                stripped = line.lstrip()
-                if stripped:  # Only add tab to non-empty lines
-                    indented_lines.append('\t' + stripped)
-                else:
-                    indented_lines.append('')  # Preserve empty lines
-            result += '\n' + '\n'.join(indented_lines)
+        result += after
 
     logger.info("filter_think_fix 4 output: %s", result)
 
@@ -530,6 +511,8 @@ filters_out = {
     "emdash": filter_out_emdash,
     "fix_image_prompts": filter_out_fix_image_prompts,
     "sanity": filter_out_sanity,
+    "unsmart": unsmart,
+    "smart": smart,
     # "fallback": filter_out_fallback,
 }
 

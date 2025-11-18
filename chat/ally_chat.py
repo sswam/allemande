@@ -248,13 +248,13 @@ def load_mission(room, config, args):
     """Load and return mission from room."""
     mission_file_name = config.get("mission", "mission")
     mission_try_room_name = "mission" not in config
-    mission_file = room.find_resource_file("m", mission_file_name, try_room_name=mission_try_room_name)
+    mission_file = room.find_resource_file("m", mission_file_name, try_room_name=mission_try_room_name, try_without_extension=True)
     return chat.chat_read(mission_file, args)
 
 
 def load_summary(room, args):
     """Load and return summary from room."""
-    summary_file = room.find_resource_file("s", "summary")
+    summary_file = room.find_resource_file("s", "summary", try_without_extension=True)
     return summary_read(summary_file, args)
 
 
