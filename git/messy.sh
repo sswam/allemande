@@ -9,7 +9,7 @@
 . confirm
 
 diff_context=5  # lines of context for diffs
-model="gp"      # default model
+model="gc"      # default model  # gp
 # initial_bug_check=1  # check for bugs before generating commit message
 
 timestamp=$(date +%Y%m%d%H%M%S)
@@ -19,6 +19,7 @@ review="review.$timestamp.$$.txt"
 
 # Associative arrays mapping model codes to names and options
 declare -A model_names=(
+    ["gc"]="Grok Code Fast"
     ["5"]="GPT-5"
     ["5m"]="GPT-5-mini"
     ["4"]="GPT-4.1"
@@ -32,6 +33,7 @@ declare -A model_names=(
 )
 
 declare -A option_model_codes=(
+    ["G"]="gc"
     ["5"]="5"
     ["s"]="5m"
     ["3"]="4m"
@@ -45,7 +47,7 @@ declare -A option_model_codes=(
 )
 
 usage() {
-    echo "Usage: $(basename "$0") [-s|-5|-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-x] [-a model] [-h]"
+    echo "Usage: $(basename "$0") [-G|-s|-5|-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-x] [-a model] [-h]"
     for opt in "${!option_model_codes[@]}"; do
         model_code="${option_model_codes[$opt]}"
         model_name="${model_names[$model_code]}"
@@ -133,7 +135,7 @@ trap 'message-and-exit 1' INT
 get_options() {
     run_initial_gens=1
 
-    while getopts "nC:B543cioMgfm:F:exa:h" opt; do
+    while getopts "nC:BGs543cioMgfm:F:exa:h" opt; do
         case "$opt" in
         a)
             if [ -n "$OPTARG" ]; then
@@ -585,7 +587,7 @@ interactive_menu() {
         else
             prompt="Action?"
         fi
-        read -p "$prompt [y/n/q/e/3/4/5/c/i/o/M/g/f/d/v/b/E/x/?] " -n 1 -r choice
+        read -p "$prompt [y/n/q/e/G/s/3/4/5/c/i/o/M/g/f/d/v/b/E/x/?] " -n 1 -r choice
         echo
 
         if handle_menu_choice "$choice"; then
