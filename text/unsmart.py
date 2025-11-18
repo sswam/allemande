@@ -10,7 +10,7 @@ from typing import Iterator, TextIO
 
 from ally import main  # type: ignore
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 
 def _split_code_segments(text: str) -> Iterator[tuple[bool, str]]:
@@ -24,10 +24,10 @@ def _split_code_segments(text: str) -> Iterator[tuple[bool, str]]:
 def _is_likely_code(text: str) -> bool:
     """Heuristic: does this look like code?"""
     code_indicators = [
-        r'\w+\s*=\s*\w',                 # assignment (single =)
-        r'==|!=|<=|>=',                  # comparison operators
-        r'[;{}()\[\]]',                  # syntax chars (lowered threshold)
-        r'\b(if|for|def|class|function|const|let|var|import|return)\b',
+        r'\w+\s*=\s*\w',  # assignment (single =)
+        r'==|!=|<=|>=',   # comparison operators
+        r'[;{}()\[\]]',   # syntax chars (lowered threshold)
+        r'\b(if|for|def|class|function|const|let|var|import|return)\b',  # keywords
     ]
     return any(re.search(pat, text) for pat in code_indicators)
 
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     # Check if invoked as 'smart' or 'smart.py'
     script_name = sys.argv[0].split('/')[-1]
     if script_name in ('smart', 'smart.py'):
-        sys.argv.append('--smart')
+        sys.argv.insert(1, '--smart')
 
     main.go(unsmart_cli, setup_args)
 

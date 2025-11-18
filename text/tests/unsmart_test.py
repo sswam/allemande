@@ -2,7 +2,6 @@
 
 import io
 import pytest
-from typing import Any
 
 import unsmart as subject  # type: ignore
 
@@ -15,7 +14,6 @@ def test_version():
     assert isinstance(subject.__version__, str)
 
 
-# Test _split_code_segments
 def test_split_code_segments_no_code():
     """Test splitting text with no code blocks."""
     text = "Just plain text"
@@ -61,7 +59,6 @@ def test_split_code_segments_multiple_blocks():
     assert result[3] == (True, "```fenced```")
 
 
-# Test _is_likely_code
 def test_is_likely_code_with_assignment():
     """Test code detection with assignment operators."""
     assert subject._is_likely_code("x = 5") is True
@@ -90,7 +87,6 @@ def test_is_likely_code_plain_text():
     assert subject._is_likely_code("") is False
 
 
-# Test unsmart function
 def test_unsmart_emdash():
     """Test converting em/en dashes to hyphens."""
     assert subject.unsmart("Hello\u2014world") == "Hello-world"
@@ -151,7 +147,6 @@ def test_unsmart_quotes_only_affects_double_quotes():
     assert subject.unsmart("\u201chello\u201d", quotes=True, apostrophes=False) == '"hello"'
 
 
-# Test smart function
 def test_smart_emdash():
     """Test converting hyphens to em dashes."""
     assert subject.smart("Hello -- world") == "Hello \u2014 world"
@@ -215,11 +210,9 @@ def test_smart_skips_likely_code():
     """Test that smart mode skips segments that look like code."""
     text = "Normal text x = 5 more text"
     result = subject.smart(text)
-    # The segment with "x = 5" should not be smartened
     assert "x = 5" in result
 
 
-# Test CLI function
 def test_unsmart_cli_unsmart_mode():
     """Test CLI in unsmart mode."""
     input_text = "It\u2019s \u201chello\u201d\u2014world"
@@ -269,7 +262,6 @@ def test_unsmart_cli_with_flags():
     assert result == "It's \"hello\"\u2014world"
 
 
-# Test round-trip conversions
 def test_roundtrip_simple():
     """Test that unsmart -> smart -> unsmart preserves meaning."""
     original = "It's \"hello\" world"
@@ -283,16 +275,14 @@ def test_roundtrip_with_code():
     original = "Text `code's here` more"
     smart_text = subject.smart(original)
     unsmart_text = subject.unsmart(smart_text)
-    # Code should be preserved in both directions
     assert "`code's here`" in smart_text
     assert "`code's here`" in unsmart_text
 
 
-# Edge cases
 @pytest.mark.parametrize("text", [
-    "",  # empty string
-    " ",  # single space
-    "\n",  # single newline
+    "",     # empty string
+    " ",    # single space
+    "\n",   # single newline
     "abc",  # no special characters
     "---",  # only dashes
     '"""',  # only quotes
@@ -305,9 +295,9 @@ def test_unsmart_edge_cases(text):
 
 
 @pytest.mark.parametrize("text", [
-    "",  # empty string
-    " ",  # single space
-    "\n",  # single newline
+    "",     # empty string
+    " ",    # single space
+    "\n",   # single newline
     "abc",  # no special characters
     "---",  # only dashes
     '"""',  # only quotes
