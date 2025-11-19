@@ -36,6 +36,15 @@ obs-stream() {
 	check_obs_running
 
 	start_obs
+
+	# Disable power management for the camera device, hard-coded Kiyo here for now
+	camera_device_code=$(usb-find Kiyo)
+	if [ -z "$camera_device_code" ]; then
+		warn "Could not find camera device code to disable power management."
+		return 0
+	fi
+
+	sudo sh -c "echo on > /sys/bus/usb/devices/$camera_device_code/power/control"
 }
 
 reset_camera() {
@@ -64,15 +73,6 @@ reset_camera() {
 
 	# Wait for device/s to reset
 	sleep "$wait_time"
-
-	# Disable power management for the camera device, hard-coded Kiyo here for now
-	camera_device_code=$(usb-find Kiyo)
-	if [ -z "$camera_device_code" ]; then
-		warn "Could not find camera device code to disable power management."
-		return 0
-	fi
-
-	sudo sh -c "echo on > /sys/bus/usb/devices/$camera_device_code/power/control"
 }
 
 start_obs() {
