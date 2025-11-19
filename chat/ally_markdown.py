@@ -543,7 +543,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
             in_svg = bool(re.match(r"\s*<svg\b", line, flags=re.IGNORECASE))
 
             # replace bare <script> with <script type="js">, which will be preprocessed before running (for echo function currently)
-            if re.match(r"\s*<script\b", line, flags=re.IGNORECASE) and not re.match(r"\s*<script\s[^>]*?\btype\b", line, flags=re.IGNORECASE):
+            if re.match(r"\s*<script\b", line, flags=re.IGNORECASE) and not re.match(r"\s*<script\s[^>]*?\b(type|src)\b", line, flags=re.IGNORECASE):
                 line = re.sub(r"<script\b", r'<script type="js"', line, flags=re.IGNORECASE)
             # replace sticky with sticky markdown="1"
             line = re.sub(r"<sticky\b", r'<sticky markdown="1"', line, flags=re.IGNORECASE)
