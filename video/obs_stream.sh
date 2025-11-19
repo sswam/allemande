@@ -57,13 +57,22 @@ reset_camera() {
 		did_something=1
 	done <<< "$usb_info"
 
-	# Wait for device/s to reset
 	if [ $did_something -eq 0 ]; then
 		warn "No camera USB devices found to reset."
 		return 1
 	fi
 
+	# Wait for device/s to reset
 	sleep "$wait_time"
+
+	# Disable power management for the camera device, hard-coded Kiyo here for now
+	camera_device_code=$(usb-find Kiyo)
+	if [ -z "$camera_device_code" ]; then
+		warn "Could not find camera device code to disable power management."
+		return 0
+	fi
+
+	sudo sh -c "echo on > /sys/bus/usb/devices/$camera_device_code/power/control"
 }
 
 start_obs() {
