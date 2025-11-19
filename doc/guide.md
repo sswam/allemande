@@ -526,11 +526,13 @@ digraph Google {
     "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, free, very capable</font>>]
     "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
+    "Gemi" [label=<<b>Gemi</b><br/><font point-size="10">Gemini 3 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Most strong and capable</font>>]
 
     "Google" -> "Lite"
     "Google" -> "Flasho"
     "Google" -> "Flashi"
     "Google" -> "Gemmi"
+    "Google" -> "Gemi"
 }
 ```
 
@@ -753,7 +755,8 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Fermi** (o4 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
-- **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
+- **Gemmi** (Gemini 2.5 Pro, Google): Google's strong Gemini language model
+- **Gemi** (Gemini 3 Pro, Google): Google's strongest Gemini language model
 - **Grokko** (Grok 2, xAI): xAI's second quirky and intelligent language model
 - **Rocki** (Grok 3, xAI): xAI's third quirky and intelligent language model
 - **Gokk** (Grok 3 Mini, xAI): xAI's third quirky and intelligent language model (mini)
@@ -999,6 +1002,7 @@ type: visual
 | Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
 | Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K            | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                                |
 | Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K           | $1.25 [2]       | $10.00 [2]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
+| Google        | Gemini 3 Pro          | Gemi    | 1M      | 64K           | $2 [2]          | $12.00 [2]       | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                             |
 | OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K           | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
 | OpenAI        | GPT-4.1               | Emmy    | 1M      | 32K           | $2              | $8.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
 | OpenAI        | o4-mini               | Fermi   | 200K    | 100K          | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
@@ -1031,6 +1035,7 @@ type: visual
 
 1. Claude 4's larger output window is not yet enabled in our app.
 2. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
+   Gemini 3 Pro pricing: input/M: $2 (<=200K) / $4 (>200K), output/M: $12.00 (<=200K) / $18.00 (>200K)
 3. Only the Perplexity models have access to search the internet. They incur search costs of $5 per 1000 searches.
    Other models can search using the Goog tool, and fetch pages using `Dogu, web-text URL`.
 

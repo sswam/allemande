@@ -1,0 +1,23 @@
+type: google
+model: gemini-3-pro
+config:
+  thinking_level: low
+over:
+  - Frankness
+  - Thunk
+#type: openrouter
+#model: gemini-2.5-pro-openrouter
+context: 20
+system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Use TeX for math if needed, like $ y = 2x $ or $$ y = 2x $$.
+# system_top: Please only reply with a single message; do not impersonate other people!
+visual:
+  person: 1girl, auburn hair with blonde highlights, green eyes, defined cheekbones, willowy build, graceful posture,
+    blue nails, 5ft7in tall, slender figure, (realistic skin:1.8) [set negative_prompt]
+    [get negative_prompt] (3d, cartoon, anime, airbrushed:2) [/set]
+  clothes: form-fitting gown in deep forest green, off-shoulder design, gold stilettos with ankle straps,
+    vintage gold drop earrings, delicate gold chain bracelet
+  accessories: an antique gold brooch with baroque pearls and topaz stones
+  age: adult 20 years old
+  emo: light smile, confident
+  clothes_upper: form-fitting gown in deep forest green, off-shoulder design, vintage gold drop earrings
+  clothes_lower: gold stilettos with ankle straps, floor-length dress hem with slight train

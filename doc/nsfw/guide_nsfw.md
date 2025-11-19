@@ -123,7 +123,8 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 - **Ellyn**: (Llama 3.3 70B): a stronger, human-like model
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model  [recommended]
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
-- **Gemmi** (Gemini 2.5 Pro, Google): Google's strongest Gemini language model
+- **Gemmi** (Gemini 2.5 Pro, Google): Google's strong Gemini language model
+- **Gemi** (Gemini 3 Pro, Google): Google's strongest Gemini language model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model  [recommended]
 - **Desee** (DeepSeek Chat V3.1): DeepSeek's creative and intelligent chat model
 - **Misti** (Mistral Large 2411): Mistral's strongest language model
@@ -193,6 +194,7 @@ Please do not use languages models other than those listed here for NSFW content
 | Google     | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
 | Google     | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                      |
 | Google     | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
+| Google     | Gemini 3 Pro       | Gemi   | 1M      | 64K        | $2 [1]          | $12.00 [1]       | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                   |
 | xAI        | Grok 4             | Grok   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
 | xAI        | Grok 4 Fast        | Gok    | 2M      | 2M         | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                            |
 | DeepSeek   | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                        |
@@ -205,6 +207,7 @@ Please do not use languages models other than those listed here for NSFW content
 * The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
 1. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
+   Gemini 3 Pro pricing: input/M: $2 (<=200K) / $4 (>200K), output/M: $12.00 (<=200K) / $18.00 (>200K)
 
 #### Image Models
 

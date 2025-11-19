@@ -280,6 +280,16 @@ MODELS = {
         "cost_in": 0.25,
         "cost_out": 1.25,
     },
+    "gemini-3-pro": {
+        "aliases": ["gemi"],
+        "vendor": "google",
+        "vision": True,
+        "api_key": "GOOGLE_API_KEY",
+        "id": "gemini-3-pro-preview",
+        "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
+        "cost_in": 2,
+        "cost_out": 12,
+    },
     "gemini-2.5-pro": {
         "aliases": ["gemmi", "gemmi-paid", "gemini", "gp"],
         "vendor": "google",
@@ -287,7 +297,7 @@ MODELS = {
         "api_key": "GOOGLE_API_KEY",
         "id": "gemini-2.5-pro-preview-03-25",
 #        "id": "gemini-2.5-pro-preview-03-25",
-        "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
+        "description": "Google's strong Gemini model with a 1 million context window and 64K output.",
         "cost_in": 1.25,
         "cost_out": 10,
     },
@@ -297,7 +307,7 @@ MODELS = {
         "vision": True,
         "api_key": "GOOGLE_API_KEY_FREE",
         "id": "gemini-2.5-pro-exp-03-25",
-        "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
+        "description": "Google's strong Gemini model with a 1 million context window and 64K output.",
         "cost_in": 0,
         "cost_out": 0,
     },
@@ -306,7 +316,7 @@ MODELS = {
         "vendor": "openrouter",
         "vision": True,
         "id": "google/gemini-2.5-pro-exp-03-25:free",
-        "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
+        "description": "Google's strong Gemini model with a 1 million context window and 64K output.",
         "cost_in": 0,
         "cost_out": 0,
     },
@@ -744,6 +754,8 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
     system: str | None = None
     stop: list[str] | None = None
     repetition_penalty: float | None = None
+    thinking_level: str | None = None
+    thinking_budget: str | None = None
 
     def __init__(self, **kwargs):
         if "model" in kwargs:
@@ -1017,9 +1029,19 @@ async def achat_google(opts: Options, messages):
 
     # generation_config: generation_types.GenerationConfigType
 
-    history = []
-
     types = google_genai.types
+
+    thinking_config = {}
+
+    if opts.thinking_level:
+        thinking_config["thinking_level"] = opts.thinking_level
+    if opts.thinking_budget:
+        thinking_config["thinking_budget"] = opts.thinking_budget
+
+    if thinking_config:
+        options["thinking_config"] = types.ThinkingConfig(**thinking_config)
+
+    history = []
 
     # logger.info("google messages: %r", messages)
 
