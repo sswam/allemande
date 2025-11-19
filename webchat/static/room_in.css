@@ -794,12 +794,12 @@ body:not(.images) img.layout {
 	pointer-events: none;
 }
 
-body.blur > :not(.overlay) :is(img, video) {
+body.blur > :not(.overlay) :is(img, video), :not(body).blur {
   filter: blur(24px);
   clip-path: inset(0);
 }
 
-body.blur > :not(.overlay) :is(img, video):hover {
+body.blur > :not(.overlay) :is(img, video):hover, :not(body).blur:hover {
   filter: none;
   clip-path: none;
 }

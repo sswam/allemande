@@ -140,6 +140,34 @@ function check_for_new_messages(mutations) {
   return new_content;
 }
 
+
+function apply_tabindex_to_elements(mutations) {
+// Add tabindex=0 on canvas, svg, .keys - if no tabindex already
+  for (const mutation of mutations) {
+    if (mutation.type != "childList")
+      continue;
+    for (const node of mutation.addedNodes) {
+      if (node.nodeType == Node.ELEMENT_NODE) {
+        // Check if the node itself matches
+        const elements = [];
+        if (node.matches("canvas, svg, .keys")) {
+          elements.push(node);
+        }
+        // Check descendants
+        elements.push(...node.querySelectorAll("canvas, svg, .keys"));
+
+        // Apply tabindex to all matching elements
+        for (const el of elements) {
+          console.log("adding tabindex to", el, "previously", el.getAttribute("tabindex"));
+          if (!el.hasAttribute("tabindex")) {
+            el.setAttribute("tabindex", "0");
+          }
+        }
+      }
+    }
+  }
+}
+
 async function wait_for_messages_to_load(elements) {
   for (const element of elements) {
     await wait_for_whole_message(element);
@@ -168,6 +196,7 @@ async function mutated(mutations) {
   const messages = check_for_new_messages(mutations);
   if (messages.length)
     await mutationMutex.lock(() => call_process_messages(messages));
+  apply_tabindex_to_elements(mutations);
 }
 
 function setup_mutation_observer() {
@@ -225,11 +254,22 @@ function toggle_grab() {
 
 function key_event(ev) {
   const target = ev.target;
+  const active = document.activeElement;
 
-  // Don't handle keys if target or its parents are form elements, canvas, svg, or have class 'keys'
-  if (target.closest('input, button, textarea, select, canvas, svg, .keys')) {
+  console.log("key_event, target", target);
+  console.log("key_event, activeElement", active);
+  console.log("key_event, ev", ev);
+
+  // Don't handle keys if the active element or target is/contains form elements, canvas, svg, or has class 'keys'
+  if (active && active.closest('input, button, textarea, select, canvas, svg, .keys')) {
+    ev.preventDefault();
     return;
   }
+
+  // // Fallback to checking target as well
+  // if (target.closest('input, button, textarea, select, canvas, svg, .keys')) {
+  //   return;
+  // }
 
   // console.log("key_event", ev);
   if (overlay_mode) {
