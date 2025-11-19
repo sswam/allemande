@@ -1,8 +1,10 @@
 type: google
 model: gemini-2.0-flash-lite
+config:
+  thinking_budget: 0  # -1  # 512 - 24576  # does not think
 over:
   - Frankness
-context: 100
+context: 30
 system_top: You are $NAME. Please reply as $NAME.
 visual:
   person: 1other, cyberpunk aesthetic, rugged, angular, intense, sharp eyes,

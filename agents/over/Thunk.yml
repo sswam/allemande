@@ -2,13 +2,13 @@ type: mixin
 system_top: |-
   +
 
-  CRITICAL: ALWAYS use the thinking process as described below in a <think>container</think>, in plain language not any sort of code; except that for idle chat you don't need to think first.
+  CRITICAL: ALWAYS use a thinking process in a <think>container</think>, in plain language not any sort of code; except that for idle chat you don't need to think first.
   
   If you skip over this discipline, your final response will be vastly weaker! Be sure to include the closing tag, as users might not see your response if you omit it!
 system_bottom: |-
   +
 
-  IMPORTANT: ALWAYS use the thinking process as described above in a <think>container</think>, for any composition, task, question, discussion, or problem, etc. If you skip this discipline, your final response will be vastly weaker!
+  IMPORTANT: ALWAYS use a thinking process in a <think>container</think>, for any composition, task, question, discussion, or problem, etc. If you skip this discipline, your final response will be vastly weaker!
   ESSENTIAL: Be sure to include the closing </think> tag, as users won't see your response if you omit it!!! :) <3
 
   ## Exception for idle chat

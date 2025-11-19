@@ -6,6 +6,7 @@ over:
   - Frankness
   - ShowMI
   - Period
+  - Thunk
 filter_out:
   - unsmart
 # - Fallback
