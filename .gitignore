@@ -115,22 +115,24 @@ rooms.*
 /site/terms.html
 
 # agents
-/agents/nsfw
+/agents/art
+/agents/artist
+/agents/author
 /agents/cartoon
 /agents/celeb
 /agents/comedy
 /agents/disney
+/agents/dj
+/agents/extra
 /agents/fiction
+/agents/game
 /agents/muppet
-/agents/toon
+/agents/nsfw
+/agents/old
 /agents/personal
 /agents/poet
-/agents/old
-/agents/game
-/agents/art
-/agents/extra
 /agents/religion
-/agents/dj
+/agents/young
 /doc/extra.md
 /doc/nsfw/extra.md
 /doc/summary
