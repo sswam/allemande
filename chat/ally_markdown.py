@@ -41,6 +41,8 @@ ROOMS_DIR = os.environ["ALLEMANDE_ROOMS"]
 ALLYCHAT_CHAT_URL = os.environ["ALLYCHAT_CHAT_URL"]
 
 
+# TODO support .dev links etc
+
 def filter_links(attrs, new=False):
     """Callback for mdx_linkify to filter out some links"""
     text = attrs["_text"].lower()
@@ -326,14 +328,14 @@ def preprocess_normal_markdown(in_text: str, bb_file: str) -> tuple[str, bool]:
 
 
 def fix_link(href: str, bb_file: str) -> str:
-    """Fix room links"""
+    """Transform relative links in chat files to appropriate URLs."""
     # parse the URL
     url = urlparse(href)
     # is it a remote URL?
     if url.scheme or url.netloc:
         return href
     # is the final part a room, folder, or editable file name (file without an extension, or .yml .m .txt .md etc?)
-    logger.info("Trying to match link: %r", href)
+    logger.info("fix_link: %r", href)
     if href.endswith("/") or re.search(r"(^|/)[^/]+(.yml|.m|.txt|.md|/|)$", href):
         try:
             _safe_path, href = safe_path_for_local_file(bb_file, href)
@@ -342,6 +344,7 @@ def fix_link(href: str, bb_file: str) -> str:
             # TODO should we return maybe a javascript warning or something?
             return href
         href = f"""{ALLYCHAT_CHAT_URL}/#{href}"""
+        logger.info("  changed to: %r", href)
     return href
 
 

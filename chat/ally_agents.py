@@ -381,7 +381,9 @@ class Agent:
         if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", []):
             seed = self.get("unp_seed")
             try:
+                logger.info("Applying Unprompted for agent %r key %s", self.name, key)
                 value = unprompted(value, seed)
+                logger.info("Unprompted applied for agent %r key %s: %s", self.name, key, value)
             except Exception as e:
                 logger.error("Unprompted error for agent %r key %r: %s %s", self.name, key, type(e).__name__, str(e))
 

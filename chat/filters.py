@@ -205,10 +205,11 @@ def filter_out_emojis(response: str, keep_prob: float = 0.0) -> str:
     return RE_EMOJIS.sub(lambda m: m.group(0) if random.random() < keep_prob else '', response)
 
 
-def filter_out_emdash(response: str, keep_prob: float = 0.0, replacement: str = "-") -> str:
+def filter_out_emdash(response: str, keep_prob: float = 0.0, replacement: str = " - ") -> str:
     """Replace em-dash characters with a replacement string, based on keep_prob (0-1)."""
     # Handle different types of em-dashes and their Unicode variants
-    emdash_pattern = r'( *)(?:[-\u2014\u2013\u2015] *?)+( *)' # includes em-dash, en-dash, and horizontal bar
+    # includes em-dash, en-dash, and horizontal bar, strips surrounding spaces
+    emdash_pattern = r'( *)(?:[-\u2014\u2013\u2015] *?)+( *)'
 
     if keep_prob == 0.0:
         return re.sub(emdash_pattern, r"\1"+replacement+r"\2", response)
