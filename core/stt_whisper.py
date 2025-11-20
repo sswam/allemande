@@ -62,7 +62,7 @@ def gen(config, audio_file, *_args, model=None, **_kwargs):
 
     if not re.match(r"[\w-]+$", model):
         raise ValueError(f"Invalid model name: {model}")
-    
+
     model_path = f"models/ggml-{model}.bin"
     gpu_command = [WHISPER_CPP, "-l", language, "-m", model_path, "-otxt", str(audio_file)]
     cpu_command = [WHISPER_CPP_CPU, "-t", "32", "-l", language, "-m", model_path, "-otxt", str(audio_file)]
@@ -144,7 +144,7 @@ def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]
     return requests
 
 
-async def serve_requests(portals: str = str(portals_dir), model: str = "base", poll_interval: float = 0.1):
+async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2", poll_interval: float = 0.1):
     """Serve requests from a directory of directories"""
     logger.info("serving requests from %s", portals)
 
