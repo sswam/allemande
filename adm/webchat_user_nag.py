@@ -17,7 +17,7 @@ import records
 
 from ally import main, logs, util
 
-__version__ = "0.1.4"
+__version__ = "0.1.6"
 
 logger = logs.get_logger()
 
@@ -31,7 +31,7 @@ class UserInfo:
     is_nsfw: bool
 
 
-def analyze_user_activity(rec, now) -> UserInfo:
+def analyze_user_activity(rec: dict, now: datetime) -> UserInfo:
     """
     Determine if user is new (under 1 month since btime) or inactive (no mtime in over 1 month)
 
@@ -65,7 +65,8 @@ def process_single_record(
     rec: dict,
     now: datetime,
     nag_dir: Path,
-    users_dir: Path
+    users_dir: Path,
+    ultimatum_start: datetime | None = None,
 ) -> None:
     """
     Process a single user record and update their nag file.
@@ -89,7 +90,7 @@ def process_single_record(
         nag_file = "nag-new.html"
     elif user_info.is_inactive:
         nag_file = "nag-inactive.html"
-    elif user_info.is_old:
+    elif user_info.is_old and ultimatum_start and now > ultimatum_start:
         nag_file = "nag-hiki-stubborn.html"
     elif user_info.is_nsfw:
         nag_file = "nag-hiki-nsfw.html"
@@ -157,10 +158,11 @@ def process_records(
     users_dir = Path(allemande_users).resolve()
     nag_dir = Path(allemande_home) / "adm" / "nag" / "active"
 
+    ultimatum_start = datetime(2025, 11, 20) + timedelta(days=30)
     now = datetime.now()
 
     for rec in recs:
-        process_single_record(rec, now, nag_dir, users_dir)
+        process_single_record(rec, now, nag_dir, users_dir, ultimatum_start=ultimatum_start)
 
 
 def setup_args(arg):
@@ -169,3 +171,5 @@ def setup_args(arg):
 
 if __name__ == "__main__":
     main.go(process_records, setup_args)
+
+# TODO typing throughout
