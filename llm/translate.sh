@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # [options] [source.ext1 target.ext2] [reference files ...]
+# OR: [options] target-description < input > output
 # Translates content from one format to another
 
 translate() {
@@ -9,30 +10,35 @@ translate() {
 	local model= m=	# model
 	local edit= e=0	# edit
 	local strict= S=0	# strict mode, no commentary!
-	local stdio= i=0	# use stdio, not source and target files
 
 	eval "$(ally)"
 
-	local source target
-	local from_to_prompt=""
+	if [ "$#" -lt 1 ]; then
+		usage
+	fi
 
-	# if stdio option, make a temp dir with file: input output
-	if [ "$stdio" -eq 1 ]; then
-		local temp_dir=$(mktemp -d)
+	local source target from_to_prompt temp_dir
+
+	# Determine mode: file-to-file vs stdin-to-description
+	if [ "$#" -ge 2 ] && [ -f "$1" ]; then
+		# File mode: translate source.ext1 to target.ext2
+		source="$1"
+		target="$2"
+		from_to_prompt=" \`$source\` to \`$target\`"
+		shift 2
+	else
+		# Stdio mode: translate to description from stdin
+		local target_desc="$1"
+		from_to_prompt=" to $target_desc"
+		shift
+
+		temp_dir=$(mktemp -d)
 		if [ -z "$temp_dir" ]; then
 			die "Failed to create temp dir"
 		fi
 		source="$temp_dir/input"
 		target="$temp_dir/output"
 		cat > "$source"
-	else
-		if [ "$#" -lt 2 ]; then
-			usage
-		fi
-		source="$1"
-		target="$2"
-		from_to_prompt=" \`$source\` to \`$target\`"
-		shift 2
 	fi
 
 	local refs=("$@")
@@ -42,13 +48,13 @@ translate() {
 	if [ "$strict" -eq 1 ]; then
 		strict_prompt=", with no prelude, commentary or header, just the translation"
 	fi
-	prompt="Please translate$from_to_prompt as exactly as possible$strict_prompt: $prompt"
+	prompt="Please translate$from_to_prompt as well as you can$strict_prompt: $prompt"
 
 	# Call create to perform the translation
 	create -q -s="$style" -m="$model" -e="$edit" "$target" "$prompt" "$source" "${refs[@]}"
 
-	# if stdio option, cat the output
-	if [ "$stdio" -eq 1 ]; then
+	# If stdio mode, output result and cleanup
+	if [ -n "$temp_dir" ]; then
 		cat "$target"
 		rm -r "$temp_dir"
 	fi
@@ -58,4 +64,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	translate "$@"
 fi
 
-# version: 0.1.2
+# version: 0.1.3
