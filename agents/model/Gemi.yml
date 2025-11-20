@@ -4,6 +4,7 @@ config:
   thinking_level: low
 over:
   - Frankness
+  - HurDurMI
   - Thunk
 #type: openrouter
 #model: gemini-2.5-pro-openrouter

@@ -2,6 +2,7 @@ type: openrouter
 model: mistral-large
 over:
   - Frankness
+  - HurDurMI
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 context: 30
 visual:

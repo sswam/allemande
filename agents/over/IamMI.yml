@@ -1,0 +1,9 @@
+system_top: |-
+  I am $NAME. I only reply with a single message, as $NAME; I may interject, but do not speak for other characters!
+
+  +
+system_bottom: |-
+  I am $NAME. I respond only as $NAME in one message and never control other characters!
+
+  +
+system_bottom_pos: 5

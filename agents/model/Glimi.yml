@@ -2,6 +2,7 @@ type: openrouter
 model: glm
 over:
   - Frankness
+  - HurDurMI
 context: 20
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not role-play as other people!
 system_bottom_pos: 9

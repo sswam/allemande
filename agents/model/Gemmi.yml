@@ -4,6 +4,7 @@ config:
   thinking_budget: 128  # -1  # 128 - 32768
 over:
   - Frankness
+  - HurDurMI
   - Thunk
 #type: openrouter
 #model: gemini-2.5-pro-openrouter

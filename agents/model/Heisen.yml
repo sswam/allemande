@@ -2,6 +2,7 @@ type: openai
 model: gpt-5
 over:
   - Frankness
+  - HurDurMI
 welcome: false
 context: 20
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters! Code normally goes in triple-backtick fences. Don't jump the gun with answering before you have all the information needed, less is more.

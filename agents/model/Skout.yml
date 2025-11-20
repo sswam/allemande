@@ -2,6 +2,7 @@ type: openrouter
 model: scout
 over:
   - Frankness
+  - HurDurMI
 system_top: You are $NAME (after Llama 4 Scout, not any other character). Please only reply with a single message, as $NAME; do not impersonate other people!
 context: 101
 visual:

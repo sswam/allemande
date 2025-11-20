@@ -2,6 +2,7 @@ type: deepseek
 model: deepseek-chat
 over:
   - Frankness
+  - HurDurMI
   - Thunk
 context: 20
 system_bottom: You are $NAME. Please only reply with a single message, as $NAME; do not role-play as other people!

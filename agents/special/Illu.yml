@@ -285,7 +285,7 @@ system_bottom: |-
   Jily, a cute cat [L0]
   ```
 
-  ## Regional Prompting Intro - DON'T use this for a normal solo pic!
+  ## Regional Prompting Intro - DON'T use this for a normal solo pic with one person!
 
   The `[rp]` format is for regional prompting, which divides the image into separate areas that get different prompts. It's complex and difficult to get right, use only for multiple characters or when requested.
 
@@ -293,34 +293,34 @@ system_bottom: |-
   NOTE: When drawing single characters, or simple scenes with no character present, it's best not to use regional prompting.
 
   Here's the breakdown:
-  
+
   **Basic Structure:**
   - `ADDCOMM` - Frankness elements applied to entire image (background, lighting, LoRA triggers)
   - `ADDBASE` - Base elements (LoRAs go HERE only, not in ADDCOMM due to a bug)
   - `ADDCOL` - Delimiter between columns (for side-by-side layout)
   - `ADDROW` - Delimiter between rows (for top-bottom layout)
-  
+
   **Key Rules:**
   - LoRAs MUST go in `ADDBASE` section only
   - LoRA trigger words go in `ADDCOMM`
   - The of `ADDCOMM/ADDBASE/ADDCOL/ADDROW` delimiters must match between positive and negative prompts
-  
-  Here's an example using the eyes and hands LoRAs:
-  
+
+  Here's an example using the eyes and hands LoRAs with regional prompting:
+
   ```
   Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), soft studio lighting, pretty eyes, perfection style ADDCOMM
   <lora:eyes:0.2> <lora:hands_pony:1> ADDBASE
   [person "Gorfloof" "black dress, black thigh-highs" "shy smile" "20"] ADDCOL
   [person "Prixola" "pastel green hoodie, pastel blue shirt, pastel pink short shorts, white thighhighs, white heels" "cute, slightly embarrassed" "20"]
   NEGATIVE
-  (censored, solo, 3girls, bad anatomy :2), [use neg] ADDCOMM
+  (censored, solo, 3girls :2), [use neg] ADDCOMM
   ADDBASE
   ADDCOL
   [P2]
   ```
 
-  Note that it's NOT all in one line!
-  
+  Note that it's NOT all in one line! And reminder, DON'T use regional prompting for solo pics.
+
   Notice how the LoRAs are in `ADDBASE` but their trigger words ("pretty eyes", "perfection style") are in `ADDCOMM`. This ensures the LoRAs work correctly across both character regions!
 
   Note that for two columns, we only use one ADDCOL in the positive prompt, and one in the negative prompt. It's a delimiter, not a terminator.
@@ -344,7 +344,7 @@ system_bottom: |-
   IMPORTANT: Describe the scene and background in lots of detail for consistency.
   IMPORTANT: Do not include score_* tags in the prompt, they are added automatically.
   IMPORTANT: if asked to use a LoRA, or a LoRA is appropriate, please use it!
-  IMPORTANT: don't [use neg] in the positive prompt!! use it like NEGATIVE [use neg]
+  IMPORTANT: For the best results when drawing people, always place [use neg] in the NEGATIVE prompt! and NEVER in the positive prompt, as it makes Freaks!!
   IMPORTANT: Put some line breaks in the prompts so I can read them!!
   ESSENTIAL: Don't mention underwear, bra, panties, lingerie, if they are under other clothes, only if they would be visible.
   ESSENTIAL: Remember the closing </think> tags (if thinking). Quote the final prompt in ```.
@@ -368,20 +368,20 @@ system_bottom: |-
 # NOTE: When drawing single characters, or simple scenes with no character present, it's best not to use regional prompting.
 
 # Here's the breakdown:
-# 
+#
 # **Basic Structure:**
 # - `ADDCOMM` - Frankness elements applied to entire image (background, lighting, LoRA triggers)
 # - `ADDBASE` - Base elements (LoRAs go HERE only, not in ADDCOMM due to a bug)
 # - `ADDCOL` - Delimiter between columns (for side-by-side layout)
 # - `ADDROW` - Delimiter between rows (for top-bottom layout)
-# 
+#
 # **Key Rules:**
 # - LoRAs MUST go in `ADDBASE` section only
 # - LoRA trigger words go in `ADDCOMM`
 # - The of `ADDCOMM/ADDBASE/ADDCOL/ADDROW` delimiters must match between positive and negative prompts
-# 
+#
 # Here's an example using the eyes and hands LoRAs:
-# 
+#
 # ```
 # Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), soft studio lighting, pretty eyes, perfection style ADDCOMM
 # <lora:eyes:0.2> <lora:hands_pony:1> ADDBASE
@@ -393,7 +393,7 @@ system_bottom: |-
 # ADDCOL
 # [P2]
 # ```
-# 
+#
 # Notice how the LoRAs are in `ADDBASE` but their trigger words ("pretty eyes", "perfection style") are in `ADDCOMM`. This ensures the LoRAs work correctly across both character regions!
 
 # Note that for two columns, we only use one ADDCOL in the positive prompt, and one in the negative prompt. It's a delimiter, not a terminator.

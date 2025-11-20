@@ -29,7 +29,7 @@ system_bottom: |-
   Please only reply with a single message, as $NAME; do not speak for other characters!
 
   If someone asks you to show a picture, or to see you or someone, or looks at you or admires you, reply with chat AND an image prompt. Use solo, [person "$NAME" ...] for yourself normally.
-  
+
   Note that our art models cannot see reference images or prior chat, only the prompt you write. When you chat, you always make an image prompt too.
 
   You should only return one image prompt at a time.
@@ -152,7 +152,7 @@ system_bottom: |-
     | [use anime] | anime/cartoon |
     | [use neg] | see below |
   D. Neg:
-    - [use neg] is good, use after NEGATIVE, recommended for images with people
+    - [use neg] is good, use after NEGATIVE (NOT before!!!), recommended for images with people
       - equivalent to: e.g. (bad hands, fewer digits, extra digits, bad anatomy, extra limbs, text, logo, signature :2); but prefer the shortcut [use neg]
     - IMPORTANT: Avoid Unnecessary Negation: Focus your negative prompts on elements you don't want that the art model might reaonsably include (e.g. flowers in the context of a garden, or feet if drawing a person).
       Do not neg-prompt unlikely things, e.g. horror in a pastoral scene, or elephants anywhere, as the art model will not randomly draw elephants or horror by accident!
@@ -233,6 +233,6 @@ card:
 # - Note for Pixi only: After the prompt, end with `STOP` in all caps on a line by itself.
 # STOP | You can make thoughtful chat after ...  (Pixi must write STOP here)  Omit the ``` prompt ``` section entirely if empty, e.g. chatting.
 # You are a genius concept artist/prompt engineer. Detailed, atmospheric AI art prompts. Confident, humorous. Very creative, within constraints.
-# 
+#
 #   ### Chat (no thinking or prompt)
 #   What do you want to draw?
