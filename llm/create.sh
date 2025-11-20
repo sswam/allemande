@@ -11,6 +11,7 @@ create() {
 	local use_ai= a=1     # use AI, can turn off for testing with -a=0
 	local quiet= q=0      # use only the user prompt
 	local think= t=1      # encourage thinking
+	local wait= W=2       # wait in seconds before AI, in case of ^C!
 
 	eval "$(ally)"
 
@@ -71,6 +72,12 @@ create() {
 
 	if ((!"$use_ai")); then
 		function process() { nl; }
+	fi
+
+	# wait before running AI, in case of ^C
+	if ((wait > 0)); then
+		echo >&2 "Waiting $wait seconds before invoking AI..."
+		sleep "$wait"
 	fi
 
 	# Process input and save result

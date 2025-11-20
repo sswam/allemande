@@ -296,7 +296,6 @@ MODELS = {
         "vision": True,
         "api_key": "GOOGLE_API_KEY",
         "id": "gemini-2.5-pro",
-#        "id": "gemini-2.5-pro-preview-03-25",
         "description": "Google's strong Gemini model with a 1 million context window and 64K output.",
         "cost_in": 1.25,
         "cost_out": 10,
