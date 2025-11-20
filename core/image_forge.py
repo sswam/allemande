@@ -21,7 +21,7 @@ import forge_client  # type: ignore
 import slug  # type: ignore
 import stamp  # type: ignore
 from ally import main, logs  # type: ignore
-from unprompted.unprompted_macros import parse_macros, update_macros  # type: ignore
+from unprompted_macros import parse_macros, update_macros  # type: ignore
 from ally.util import clamp
 
 __version__ = "0.2.2"
