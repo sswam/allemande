@@ -45,12 +45,29 @@ body.simple div.messages {
 	user-select: none;
 }
 
-/* not sure about this */
-body:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
+body.code_source:not(.script_source) .content :has(+ script:not(.hide, [src]))::after {
 	content: "<script/>";
 	display: block;
 	font-weight: normal;
 	margin-left: var(--label-gap);
+}
+
+body.rendered_source .content script:not(.hide, [src])::before {
+	content: "<script>";
+	display: block;
+	font-weight: normal;
+	margin-left: calc(-2 * var(--font-size-code));
+}
+
+body.rendered_source .content script:not(.hide, [src]) {
+	margin-left: calc(2 * var(--font-size-code));
+}
+
+body.rendered_source .content script:not(.hide, [src])::after {
+	content: "</script>";
+	display: block;
+	font-weight: normal;
+	margin-left: calc(-2 * var(--font-size-code));
 }
 
 .label-hidden {
@@ -1575,4 +1592,8 @@ div.messages .columns {
 
 .fixed {
 	position: fixed; top: 0; z-index: 1; background: var(--background);
+}
+
+big {
+	font-size: 1.5rem;
 }

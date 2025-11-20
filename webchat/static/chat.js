@@ -298,6 +298,7 @@ let VERSION;
 export let DEBUG = true;
 
 export let room;
+export let type;
 let user;
 let admin = false;
 let dev = false;
@@ -813,7 +814,7 @@ async function get_file_type(name) {
     return "options";
   else if (name.match(/\.[^\/]*$/) && await check_cannot_edit(name))  // has an extension, not editable
     return "media";
-  else if (name.match(/\.[^\/]*$/))                         // has an extension, not editable
+  else if (name.match(/\.[^\/]*$/))                         // has an extension, editable
     return "file";
   else
     return "room";                                // no extension
@@ -863,7 +864,7 @@ export async function set_room(room_new, no_history) {
     }
   }
 
-  const type = await get_file_type(room_new);
+  type = await get_file_type(room_new);
 
   if (type != "room")
     $body.classList.remove("empty");
@@ -933,7 +934,7 @@ export async function set_room(room_new, no_history) {
 }
 
 async function room_url() {
-  const type = await get_file_type(room);
+  // const type = await get_file_type(room);
   let url = ROOMS_URL + "/" + room;
   if (type == "room") {
     url += ".html";
@@ -1207,7 +1208,7 @@ function set_title_hash(query, no_history) {
   $title.innerText = new_title;
 }
 
-function on_hash_change() {
+async function on_hash_change() {
   $title.innerText = query_to_title(hash_to_room(location.hash));
   let h = location.hash;
   console.log("on_hash_change", h, "vs", new_hash);
@@ -2501,11 +2502,14 @@ function get_filter_default() {
 }
 
 function run_view_options_updates() {
-  // update 1-14: set default filters
+  // update 1-15: set default filters
+  // update 16: remove a bad key from localStorage
   if (view_options.update <= 15) {
     $id('filter_query').value = get_filter_default();
     save_filter();
     view_options.update = 16;
+  } else if (view_options.update == 16) {
+    localStorage.removeItem("content_undefined")
   }
 }
 
@@ -2523,7 +2527,7 @@ function set_view_options(new_view_options) {
 }
 
 async function view_options_apply() {
-  const type = await get_file_type(room);
+  // const type = await get_file_type(room);
   simple = view_options.advanced < 0;
   if (view_options.advanced < 1) {
     simple = false;
@@ -3763,7 +3767,7 @@ export async function init() {
   controls_layout_hack_for_firefox_and_safari();
   load_theme();
   setup_dev_early();
-  on_hash_change();
+  await on_hash_change();
 
   $on($content, "input", message_changed);
   console.log("before restore_content")
@@ -3921,18 +3925,3 @@ export async function init() {
   }, { passive: false });
   */
 }
-
-/*
-1.  The type of the current room is now frequently re-calculated by calling
-`get_file_type()`, which may perform a network request each time. This
-happens on every message send (in `send()`), on room changes (in `set_room()`
-and then again in `room_url()`), and when applying view options. It might
-be more efficient to determine the room type once in `set_room()` and cache
-it in a global variable for other functions to use. This would improve UI
-responsiveness by reducing redundant network requests.
-
-2.  In `get_file_type()`, there appears to be a minor copy-paste error in a
-comment. The line `else if (name.match(/\.[^\/]*$/))` which handles editable
-files has the comment `// has an extension, not editable`. This might be
-clearer if changed to `// has an extension, editable`.
-*/

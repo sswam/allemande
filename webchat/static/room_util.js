@@ -775,3 +775,13 @@ function header(query) {
 	});
 	observer.observe($header);
 }
+  // console.log
+
+async function shuffle_lists() {
+	const message = await waitForMessage(script);
+	const uls = message.querySelectorAll(".content ul");
+	for (const ul of uls)
+		shuffle1(ul, 'li');
+}
+
+shuffle_list = shuffle_lists;
