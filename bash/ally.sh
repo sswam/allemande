@@ -169,39 +169,6 @@ locate_file() {
 	echo "$file"
 }
 
-code_modify() {
-	local E=0 # do not edit
-
-	# shellcheck disable=SC1091
-	. opts
-
-	local file=$1
-	shift
-	local command=("$@")
-
-	# If no file is provided, process input stream
-	if [ -z "$file" ] || [ "$file" = "-" ]; then
-		"${command[@]}" | markdown-code -c '#'
-		return
-	fi
-
-	# Locate the file and create a backup
-	file=$(locate_file "$file")
-	[ -n "$file" ] || return 1
-	backup "$file"
-
-	# Process the file content and save to a temporary file
-	<"$file" "${command[@]}" | markdown-code -c '#' >"$file~"
-
-	# Swap the original and processed files
-	swapfiles "$file" "$file~"
-
-	# Open both files in vimdiff for comparison
-	if [ "$E" = 0 ]; then
-		vimdiff "$file" "$file~"
-	fi
-}
-
 die() {
 	printf >&2 "%s: fatal: %s\n" "${0##*/}" "$*"
 	exit 1

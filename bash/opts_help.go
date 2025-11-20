@@ -16,7 +16,7 @@ const Version = "0.1.5"
 
 // Compile regexps once outside functions where they are used repeatedly
 var (
-	secondCommentRe    = regexp.MustCompile(`(=.+?)\s+#.*`)
+	secondCommentRe    = regexp.MustCompile(`(=.+?\s#\s.+?)\s+#.*`)
 	arrayPattern       = regexp.MustCompile(`\b(\w)=\((.*?)\)`)
 	longArrayPattern   = regexp.MustCompile(`\b(\w\w+)=\((.*?)\)`)
 	shortOptPattern    = regexp.MustCompile(`\b(\w)=`)
