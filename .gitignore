@@ -27,6 +27,17 @@ sparkjoy
 *.lint
 *.lint.dedup
 
+# junk files
+*.changes
+*.funcs
+*.test
+.*.results.txt
+*.tmp.*
+subtitle.txt
+*.ed
+*.ed.md
+*.ed.out
+
 # state files
 rooms
 rooms.*
