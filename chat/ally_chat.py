@@ -1,7 +1,7 @@
 #!/usr/bin/env python3-allemande
 # pylint: disable=unused-argument
 
-""" Ally Chat / Electric Barbarella v1.1.1 - multi-user AI chat app """
+""" Ally Chat / Electric Barbarella v5070 - multi-player AI chat app """
 
 import os
 import sys
