@@ -431,7 +431,7 @@ def setup_args(arg):
     arg("-R", "--run", help="run command when files change, with pathname as argument", action="store_true")
     arg("-J", "--job", help="run command when files change, with no arguments", action="store_true")
     arg("-s", "--service", help="run and restart a service when files change", action="store_true")
-    arg("-d", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
+    arg("-b", "--debounce", type=float, default=0.01, help="debounce time in seconds for service commands")
     arg("-e", "--exclude", dest="exclude_paths", nargs="*", default=[], help="paths to exclude from watching")
     arg("-m", "--metadata", help="watch metadata changes", action="store_true")
     arg("-f", "--format", dest="output_format", choices=["none", "meta", "meta,text", "text"], default="meta", help="output format")
