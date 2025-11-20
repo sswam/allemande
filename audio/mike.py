@@ -88,6 +88,7 @@ async def client_request(portal, audio, config=None):
 
     await portal.send_request(req)
     status = "error"
+    resp = None
     try:
         resp, status = await portal.wait_for_response(req, timeout=TIMEOUT)
     except TimeoutError as e:

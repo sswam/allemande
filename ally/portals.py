@@ -68,6 +68,8 @@ class PortalClient:
 
     async def response_error(self, resp, raise_exception=True):
         """ Show the logs from a failed request. """
+        if not resp:
+            return
         log = resp/"log.txt"
         if log.exists():
             # we could do this as async IO, seems unnecessary
