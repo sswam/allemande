@@ -338,6 +338,7 @@ async function waitForMessage(element) {
   if (!message)
     return;
   await process_messages.processMessage(message);
+  return message;
 }
 
 // colours -------------------------------------------------------------------
