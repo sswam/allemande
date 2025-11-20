@@ -1,1 +1,1 @@
-(text, logo, writing, print, signature, bad hands, (fewer digits:1.3), extra digits, bad anatomy, extra limbs, :2)
+(text, logo, writing, print, signature, bad hands, (fewer digits:1.3), extra digits, bad anatomy, extra limbs, comic, multiple views, split screen, collage, character sheet, speech bubble, watermark, :2)
