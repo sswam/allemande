@@ -1211,7 +1211,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
-|  |  | Context | Number of recent messages AI can see |
+|  |  | Context | Number of recent messages AI can see (NOT tokens) |
 |  |  | Lines | Limit number of lines of AI output (local models only) |
 |  |  | Images | Number of recent images AI can see |
 |  |  | Temp | Temperature / creativity 0.0 - ~2.0, 1.0 is normal |
