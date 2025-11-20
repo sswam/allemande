@@ -114,6 +114,14 @@ def load_gguf_model(model: str, context: int = 131072, n_gpu_layers=-1) -> Llama
 #     thread.join()
 
 
+BAD_ARGS = [
+    "early_stopping",
+    "penalty_alpha",
+    "thinking_budget",
+    "thinking_level",
+]
+
+
 async def stream_gguf(llm: LlamaCpp, prompt: str, generation_kwargs: dict) -> AsyncIterator[str]:
     """Stream output from a Llama model"""
 
@@ -121,7 +129,7 @@ async def stream_gguf(llm: LlamaCpp, prompt: str, generation_kwargs: dict) -> As
     generation_kwargs["repeat_penalty"] = generation_kwargs.pop("repetition_penalty", None)
     generation_kwargs["max_tokens"] = generation_kwargs.pop("max_new_tokens", None)
 
-    for bad_arg in "early_stopping", "penalty_alpha":
+    for bad_arg in BAD_ARGS:
         generation_kwargs.pop(bad_arg, None)
 
     generation_kwargs = util.dict_not_none(generation_kwargs)
