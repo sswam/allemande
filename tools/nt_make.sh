@@ -1,3 +1,3 @@
 #!/bin/bash
-nt "$@"
+n "$@"
 exec make "$@"
