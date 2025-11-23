@@ -10,6 +10,7 @@ async-openai
 transformers
 sentencepiece
 openai-whisper
+whisper-cpp-python
 tokenizers
 # tokenizers==0.12.1
 #wandb
