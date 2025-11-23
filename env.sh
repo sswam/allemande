@@ -51,7 +51,7 @@ PYTHON=$(which python3)
 PYTHONPATH=${PYTHONPATH:+$PYTHONPATH:}$ALLEMANDE_HOME
 MYPY_CACHE_DIR="$HOME/.cache/mypy"
 
-for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video image js markdown rag unprompted code; do
+for dir in python text www chat audio speech anthropic google llm scrape tools files tty data video image js markdown rag unprompted code shortcuts; do
 	PYTHONPATH=${PYTHONPATH:-}:$ALLEMANDE_HOME/$dir
 done
 

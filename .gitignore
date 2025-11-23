@@ -213,6 +213,9 @@ rooms.*
 # web cache
 /webcache
 
+# shortcuts that change
+/site/s/live
+
 # compiled binaries
 /arcs/sshc
 /c/test_lua

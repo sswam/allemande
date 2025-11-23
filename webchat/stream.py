@@ -10,6 +10,7 @@ import logging
 from pathlib import Path
 import asyncio
 import re
+import urllib
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -29,6 +30,9 @@ import folder
 from ally_service import get_user, add_mtime_to_resource_pathnames
 import settings
 
+from ally import cache
+PATH_USERS = Path(os.environ["ALLEMANDE_USERS"]) / "users"
+
 
 os.chdir(os.environ["ROOMS"])
 
@@ -37,7 +41,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 FOLLOW_KEEPALIVE = 5
 HTML_KEEPALIVE = '<script class="event">online()</script>\n'
 REWIND_STRING = '<script class="event">clear()</script>\n'
@@ -110,6 +114,8 @@ async def watch_lock_file():
     try:
         while True:
             event = await watcher.get_event()
+            if event is None:
+                continue  # Shouldn't happen, but to fix pyrefly
             if event.name == LOCK_FILE:
                 if event.flags & aionotify.Flags.CREATE:
                     logger.info("Lock file created, blocking private rooms")
@@ -128,7 +134,9 @@ def is_private_room(pathname):
     """Is this a private room?"""
     users = cache.load(str(PATH_USERS)).strip().split("\n")
     top_dir = get_room_top_dir(pathname)
-    return top_dir in users
+    if top_dir in users:
+        return top_dir
+    return None
 
 
 async def cancel_private_room_streams():
@@ -195,10 +203,10 @@ async def follow(file, header="", keepalive=FOLLOW_KEEPALIVE, keepalive_string="
         async with akeepalive.AsyncKeepAlive(queue1, keepalive, timeout_return=keepalive_string) as queue2:
             try:
                 while True:
-                    line = await queue2.get()
+                    line = await queue2.get()  # pyrefly: ignore
                     if "clear()" in line:
                         logger.info("line: %s", line)
-                    queue2.task_done()
+                    queue2.task_done()  # pyrefly: ignore
                     if line is None:
                         break
                     yield line
@@ -253,6 +261,18 @@ async def stream(request, path=""):
         logger.warning("Invalid path: %s", exc)
         raise
 
+    # Handle symlink redirects for shortcuts
+    if path.is_symlink():
+        target = os.readlink(str(path))
+        if target.startswith(("https://", "http://")):
+            return Response(status_code=302, headers={"Location": target})
+        elif target.startswith("/"):
+            # Redirect relative to base URL, using the url library
+            base_url_str = os.environ["ALLYCHAT_CHAT_URL"]
+            base_url = urllib.parse.urlparse(base_url_str)
+            redirect_url = urllib.parse.urljoin(f"{base_url.scheme}://{base_url.netloc}", target)
+            return Response(status_code=302, headers={"Location": redirect_url})
+
     # Check if private room access should be blocked
     if should_block_private_room(pathname, user):
         logger.warning("Blocking access to private room %s for user %s (lock present)", pathname, user)
@@ -301,16 +321,18 @@ async def stream(request, path=""):
 
     # Track the stream task for potential cancellation
     current_task = asyncio.current_task()
-    if pathname not in active_streams:
-        active_streams[pathname] = set()
-    active_streams[pathname].add(current_task)
+    if current_task is not None:
+        if pathname not in active_streams:
+            active_streams[pathname] = set()
+        active_streams[pathname].add(current_task)
 
     try:
         follower = follow(str(path), header=header, keepalive_string=keepalive_string, rewind_string=rewind_string, snapshot=snapshot)
         return StreamingResponse(follower, media_type=media_type)
     finally:
         # Clean up task tracking
-        if pathname in active_streams:
+        current_task = asyncio.current_task()
+        if current_task is not None and pathname in active_streams:
             active_streams[pathname].discard(current_task)
             if not active_streams[pathname]:
                 del active_streams[pathname]
