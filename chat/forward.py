@@ -12,7 +12,7 @@ async def handle_forwarding(run_agent, response, agent, agents, file, args, hist
     if not agent.get("forward"):
         return response
 
-    logger.info("handle_forwarding: initial response: %s", response)
+    logger.debug("handle_forwarding: initial response: %s", response)
 
     response = apply_forward_triggers(response, agent)
 
@@ -26,7 +26,7 @@ async def handle_forwarding(run_agent, response, agent, agents, file, args, hist
 
     forwarded_response = await execute_forward(run_agent, forward_target, agent, agents, file, args, history, history_start, mission, summary, config, responsible_human)
 
-    logger.info("Forwarded response from %s: %s", forward_target, forwarded_response)
+    logger.debug("Forwarded response from %s: %s", forward_target, forwarded_response)
 
     logger.info("Forward target was %s", forward_target)
 

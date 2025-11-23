@@ -16,6 +16,7 @@ import ally_markdown
 import llm  # type: ignore, pylint: disable=wrong-import-order
 from settings import REMOTE_AGENT_RETRIES
 from ally_room import Room
+from ally.llms import MODEL_FALLBACKS, SERVICES_BROKEN
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,13 +24,35 @@ logger = logging.getLogger(__name__)
 # Placeholder content where the LLM expects a user message.
 USER_PLACEHOLDER_CONTENT = "..."
 
-async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str = None) -> str:
+async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None = None) -> str:
     """Run a remote agent."""
     # NOTE: responsible_human is not used here yet
 
     room = Room(path=Path(file))
 
     service = agent["type"]
+    model = agent["model"]
+
+    # Model fallbacks
+    full_key = service + ":" + model
+    wildcard_key = service + ":*"
+    fallback = MODEL_FALLBACKS.get(full_key)
+    if not fallback:
+        logger.warning("No specific fallback defined for model %s", full_key)
+        fallback = MODEL_FALLBACKS.get(wildcard_key)
+    if not fallback:
+        logger.warning("No wildcard fallback defined for service %s", service)
+        fallback = MODEL_FALLBACKS.get("*:*")
+    if not fallback:
+        logger.warning("No global fallback defined")
+
+    if service in SERVICES_BROKEN and fallback:
+        service, model = fallback.split(":", 1)
+        logger.info("Using fallback model %s -> %s", full_key, fallback)
+    elif service in SERVICES_BROKEN and not fallback:
+        logger.error("No fallback available for broken service: %s", service)
+
+    # TODO detect service failures and switch to fallback automatically
 
     if config is None:
         config = {}
@@ -76,7 +99,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if mission:
         context2.insert(mission_pos, "System:\t" + "\n".join(mission))
 
-    context_messages = list(bb_lib.lines_to_messages(context2))
+    context_messages = list(bb_lib.lines_to_messages(iter(context2)))
 
     remote_messages = []
 
@@ -115,7 +138,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         remote_messages.append({"role":"assistant", "content":""})
 
     # Google Gemini doesn't like the first message to be an assistant message, so we add a user message if needed
-    if remote_messages and remote_messages[0]["role"] == "assistant" and agent["type"] in ["anthropic", "google"]:
+    if remote_messages and remote_messages[0]["role"] == "assistant" and service in ["anthropic", "google"]:
         remote_messages.insert(0, {"role": "user", "content": USER_PLACEHOLDER_CONTENT})
 
     # add system messages
@@ -188,7 +211,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         if system_messages:
             remote_messages.insert(0, {"role": "system", "content": "\n\n".join(system_messages)})
 
-    if agent["type"] == "anthropic" and not remote_messages or remote_messages[-1]["role"] == "assistant":
+    if service == "anthropic" and not remote_messages or remote_messages[-1]["role"] == "assistant":
         remote_messages.append({"role": "user", "content": ""})
 
     if "config" not in agent:
@@ -196,7 +219,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if "temp" in agent:
         agent["config"]["temperature"] = agent["temp"]
 
-    opts = llm.Options(model=agent["model"])  # , indent="\t")
+    opts = llm.Options(model=model)  # , indent="\t")
     for k, v in agent.get("config", {}).items():
         setattr(opts, k, v)
     if agent.get("vision") is False:
@@ -233,21 +256,19 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     # logger.info("forward_allow: %r", agent.get("forward_allow"))
 
     ###### the actual query ######
-    logger.debug("querying %r = %r", agent.name, agent["model"])
+    logger.debug("querying %r = %s:%s", agent.name, service, model)
+
     try:
         output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, opts, remote_messages)
     except Exception as e:  # pylint: disable=broad-except
-        logger.exception("Exception during generation")
+        logger.exception("Exception during generation for model %s:%s", service, model)
         msg = str(e)
         if msg in ["list index out of range"] or "connection has been closed" in msg:
             msg = ""
         return f"{agent.name}:\n" + re.sub(r'(?m)^', '\t', msg)
-    #google.generativeai.types.generation_types.StopCandidateException: finish_reason: PROHIBITED_CONTENT
 
-    response = output_message["content"]
-
-    if response is None:
-        response = ""
+    # Then, after the try
+    response = output_message.get("content", "") if output_message else ""
 
     if response.startswith(agent.name + ": "):
         logger.debug("stripping agent name from response")
