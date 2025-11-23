@@ -95,15 +95,13 @@ shuffle_lists();
 
 ## News:
 
-- "Simple mode" UI is now the default for new users. To change to standard mode, long tap the input box, or hold ALT/option on desktop, and press the light bulb.
-- Dynamic scenes, that change according to the seasons, the time of day, and for special events!
-- Faster access to archived images with our new caching filesystem, fusecache!
-- Added basic regional prompting support to Illu, so she can draw people together without resorting to a stronger model.
-- Major performance improvements to the "conductor" module and agent loading, basically everything is a lot faster.
-
-<hr>
-
-<a target=_blank href="https://www.patreon.com/allychat" markdown>![#3530759774 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), rating safe, beautiful masterpiece, three people, 2girls, 1boy, sitting on a barrel of rum, side-by-side, underground, dark cave, stalactite, stalagmite, crystal, horde, smiling, happy, (treasure, gems, gem, gold coins:1.5) ADDCOMM <lora:boring:-0.2> ADDBASE (Ally, (adult 20 years old:1.6), 1girl, brown eyes, Asian / French, skinny, wavy hair, long hair, parted hair, blonde hair, light smile, optimistic, pink and blue striped top, yellow scarf, plaid skirt, white socks, sneakers, :1.3) ADDCOL (Callam, (adult 35 years old:1.6), (1boy, male:1.3), piercing blue eyes, English pirate, handsome, dark tan skin, messy hair, long hair, black hair, friendly, leather breeches, tattered boots, pirate-style vest with black and gold trimmings, shirt, silver earring, black tricorn hat, :1.3) ADDCOL (Barbarella, (adult 20 years old:1.6), 1girl, blue eyes, Greek, skinny, long hair, curly hair, black hair, happy, smile, excited, curious, blue floral sundress with light pink flowers, silver necklace, brown sandals, :1.3) NEGATIVE score_6, score_5, score_4, (rating explicit, solo, bad anatomy, extra limbs, sad :2) [S4]](rating-safe-beautiful-masterpiece-three-people-2girls-1boy-sitting-on-_3530759774.jpg) <script class="hide">image_text(["❤️", "Thanks to our generous Patreon supporters!"], {"size":0.7});</script></a>
+- "Simple mode" UI is temporarily disabled due to a bug.
+- We are 9/10ths of the way through a major upgrade to our image gen engine. You'll notice much faster image gen, and higher quality. There's an issue with image settings still to fix.
+- There is one major bug at large: the ever annoying undo / clear / streaming bug. I keep forgetting to fix it!
+- Sam is developing a candidate ASI called Acsi (Ally Chat Super Intelligence). Expensive model, so use sparingly, don't feed it novels! Not good at or intended for sex play.
+- Default image filters: extreme images are hidden by default. Check the [filters](./filters) page for how they work and how to adjust. There are now plenty of images there to test your filters. If you clear the filter and it doesn't "stick" for you after a reload on the same device, please let me know. It should stick from now on.
+- I added Gemini 3 Pro, called Gemi here.
+- Most models and many characters (other than the small ai / llama ones) now have anti-hallucination and anti-sycophancy prompting turned on by default (my Frankness overlay). This should make them more honest when they don't know something, and much safer. It's not supposed to affect their personality, but probably does a bit. If you don't like it, we can turn it off for your characters. Or if you block the "Frankness" mixin, that should work too.
 
 <!-- say hi, @Loni -->
 
