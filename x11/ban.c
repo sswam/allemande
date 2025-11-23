@@ -8,8 +8,8 @@
 // PKGS: x11 xft
 
 /* This program is a simple X11 application that displays a message like
- * xmessage, with controllable font size. It reads the message from stdin and
- * exits on Q or Esc keypress */
+	* xmessage, with controllable font size. It reads the message from stdin and
+	* exits on Q or Esc keypress */
 
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
@@ -33,8 +33,8 @@ struct options {
 /* Print usage information */
 static void usage(FILE *stream, char *argv0)
 {
-	fprintf(stream, "Usage: %s [OPTIONS]\n", basename(argv0));
-	fprintf(stream, "Read message from stdin and display in a window with specified font size.\n");
+	fprintf(stream, "Usage: %s [OPTIONS] [MESSAGE]\n", basename(argv0));
+	fprintf(stream, "Display MESSAGE in a window, reading from stdin if MESSAGE not provided.\n");
 	fprintf(stream, "Close the window by pressing a key or clicking the mouse.\n");
 	fprintf(stream, "Options:\n");
 	fprintf(stream, "  -h, --help         Print this help message\n");
@@ -71,12 +71,6 @@ int get_options(int argc, char *argv[], struct options *opts)
 		default:
 			abort();
 		}
-	}
-
-	if (optind < argc) {
-		fprintf(stderr, "Unexpected argument: %s\n\n", argv[optind]);
-		usage(stderr, argv[0]);
-		goto fail;
 	}
 
 	status = 0;
@@ -136,6 +130,7 @@ int MAIN_FUNCTION(int argc, char *argv[])
 	XftDraw *draw;
 	XftColor color;
 	char *text;
+	XGlyphInfo extents;
 
 	_opts.size = DEFAULT_SIZE;
 	opts = &_opts;
@@ -149,9 +144,29 @@ int MAIN_FUNCTION(int argc, char *argv[])
 	if ((get_options(argc, argv, opts)) != 0)
 		goto fail;
 
-	if ((text = read_stdin()) == NULL) {
-		perror("Failed to read from stdin");
-		goto fail;
+	if (optind < argc) {
+		size_t total_len = 0;
+		for (int i = optind; i < argc; i++) {
+			total_len += strlen(argv[i]) + 1; // +1 for space or null
+		}
+		if ((text = malloc(total_len)) == NULL) {
+			perror("Failed to allocate memory for message");
+			goto fail;
+		}
+		char *p = text;
+		for (int i = optind; i < argc; i++) {
+			strcpy(p, argv[i]);
+			p += strlen(argv[i]);
+			if (i + 1 < argc) {
+				*p++ = ' ';
+			}
+		}
+		*p = '\0';
+	} else {
+		if ((text = read_stdin()) == NULL) {
+			perror("Failed to read from stdin");
+			goto fail;
+		}
 	}
 
 	if ((display = XOpenDisplay(NULL)) == NULL) {
@@ -182,11 +197,22 @@ int MAIN_FUNCTION(int argc, char *argv[])
 	while (1) {
 		XNextEvent(display, &event);
 		if (event.type == Expose) {
-			int x;
-			int y;
-			x = 10;
-			y = opts->size + 10;
-			XftDrawString8(draw, &color, font, x, y, (XftChar8 *) text, strlen(text));
+			XftTextExtents8(display, font, (XftChar8 *)text, strlen(text), &extents);
+			int line_height = font->ascent + font->descent;
+			int y = font->ascent + 10;
+			// Create a mutable copy of text because strtok modifies its input
+			char *text_copy = strdup(text);
+			if (text_copy == NULL) {
+				perror("Failed to duplicate text for strtok");
+				goto fail;
+			}
+			char *line = strtok(text_copy, "\n");
+			while (line != NULL) {
+				XftDrawString8(draw, &color, font, 10, y, (XftChar8 *)line, strlen(line));
+				y += line_height;
+				line = strtok(NULL, "\n");
+			}
+			free(text_copy); // Free the duplicated text
 		} else if (event.type == KeyPress) {
 			KeySym keysym = XLookupKeysym(&event.xkey, 0);
 			if (keysym == XK_q || keysym == XK_Escape) {
@@ -204,3 +230,8 @@ fail:
 	free(text);
 	return status;
 }
+
+/* known issues:
+ * 1. Unused calculation of XftTextExtents8 in Expose handler; suggest removal if not intended for centering or width checks.
+ * 2. Potential inefficiency in recalculating line_height per Expose event; consider computing once after font load.
+*/
