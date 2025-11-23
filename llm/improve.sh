@@ -293,7 +293,7 @@ improve() {
 	# wait before running AI, in case of ^C
 	if ((wait > 0)); then
 		echo >&2 "Waiting $wait seconds before invoking AI..."
-		sleep "$wait"
+		read -t "$wait" || true
 	fi
 
 	# Process input and save result
