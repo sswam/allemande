@@ -9,6 +9,7 @@ xt-allemande() {
 	local local= l=            # view only local services
 	local remote= r=           # view only remote services
 	local kill= k=             # close all terminals (doesn't kill services)
+	local wait= w=0.2           # wait a little between opening terminals
 
 	eval "$(ally)"
 
@@ -50,7 +51,7 @@ xt-allemande() {
 		for service in "${local_services[@]}"; do
 			echo -n "$service "
 			xt -e sxw allemande "$service" &
-			sleep 0.1
+			sleep $wait
 		done
 		echo
 	fi
@@ -60,7 +61,7 @@ xt-allemande() {
 		for service in "${remote_services[@]}"; do
 			echo -n "$service "
 			xt -e sshc v"$server" sxw allemande "$service" &
-			sleep 0.1
+			sleep $wait
 		done
 		echo
 	fi
@@ -75,13 +76,13 @@ xt-allemande() {
 			else
 				xt -e sshc v"$server" sxw allemande "$service" &
 			fi
-			sleep 0.1
+			sleep $wait
 		done
 		echo
 	fi
 }
 
-all_services=(r:wat r:brain l:image l:forge l:llm l:whisper r:chat-api r:stream r:bb2html r:auth r:watch r:build-ui l:notify l:vup)
+all_services=(r:wat r:brain l:image l:forge l:llm l:whisper r:chat-api r:stream r:bb2html r:auth r:watch r:shortcuts r:build-ui l:notify l:vup)
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	xt-allemande "$@"
