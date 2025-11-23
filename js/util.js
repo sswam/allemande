@@ -458,7 +458,7 @@ function shuf(array, random) {
 function shuffle1(container, selector) {
 	// Shuffle child elements matching selector within container
 	const elements = Array.from(container.querySelectorAll(selector));
-	container.innerHTML = "";
+	// container.innerHTML = "";
 
 	for (const element of shuf(elements))
 		container.appendChild(element);

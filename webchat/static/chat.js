@@ -2529,10 +2529,10 @@ function set_view_options(new_view_options) {
 async function view_options_apply() {
   // const type = await get_file_type(room);
   simple = view_options.advanced < 0;
-  if (view_options.advanced < 1) {
-    simple = false;
-    view_options.advanced = 1;
-  }
+  // if (view_options.advanced < 1) {
+  //   simple = false;
+  //   view_options.advanced = 1;
+  // }
 
   // set_default_room();
 
@@ -2849,6 +2849,7 @@ function view_standard(ev) {
   // 0 standard - skip this now
   // 1 advanced
   view_options.advanced = view_options.advanced >= 0 ? -1 : 1;
+  console.log("view_standard", view_options.advanced);
   if (view_options.advanced >= 0)
     view_option_skip_alt = true;
   else
