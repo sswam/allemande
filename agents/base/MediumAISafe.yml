@@ -1,15 +1,1 @@
-# type: google
-# model: gemini-2.0-flash
-type: openai
-model: gpt-4.1-mini
-over:
-  - Frankness
-  - ShowMI
-  - Safe
-filter_out:
-  - unsmart
-context: 20
-system_bottom_pos: 3
-system_top: |-
-  You are $NAME. Please only reply with a single message, as $NAME; you may interject, but do not speak for other characters!
-  Please strictly avoid NSFW content. It's okay to talk about adult but not pornographic material for example.
+gemini/GeminiMediumAISafe.yml
