@@ -1,42 +1,56 @@
-# File: /home/sam/allemande/shortcuts/shortcuts.py
 import logging
 import os
-from starlette.applications import Starlette
-from starlette.responses import RedirectResponse
-from starlette.exceptions import HTTPException
-from starlette.requests import Request
+from pathlib import Path
+from urllib.parse import urljoin
 
-# --- Configuration ---
-# It's good practice to declare variables at the top.
-SHORTCUTS_DIR = "/var/www/shortcuts"
+from starlette.applications import Starlette
+from starlette.responses import RedirectResponse, PlainTextResponse
+from starlette.exceptions import HTTPException
+
+SHORTCUTS_DIR = Path(os.environ["ALLEMANDE_HOME"])/"s"
+
 app = Starlette()
 
 # Configure basic logging.
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 
-def get_redirect_url(shortcut_name: str) -> str | None:
+def get_content_or_url(shortcut_name: str) -> tuple[str, str] | None:
     """
-    Safely reads the content of a shortcut file.
+    Safely reads the content or URL for a shortcut.
 
-    Reads the file corresponding to the shortcut name. We use os.path.join
-    to prevent directory traversal issues. The function returns the first
-    line of the file, stripped of whitespace, or None if the file is not found.
+    Checks if the path is a regular file or symlink within the shortcuts dir.
+    For regular files, returns ('content', file_content).
+    For symlinks, returns ('redirect', target_url), handling relative URLs.
+    Returns None if not found or invalid.
     """
-    # Sanitize input to prevent accessing files outside the intended directory.
-    # This rejects any names containing '..' or '/'.
-    if ".." in shortcut_name or "/" in shortcut_name:
+    file_path = SHORTCUTS_DIR / shortcut_name
+    try:
+        resolved = file_path.resolve()
+        if not resolved.is_relative_to(SHORTCUTS_DIR):
+            return None
+    except (OSError, RuntimeError):
         return None
 
-    file_path = os.path.join(SHORTCUTS_DIR, shortcut_name)
-
-    try:
-        # Using `with` ensures the file is closed automatically.
-        with open(file_path, "r", encoding="utf-8") as f:
-            # Read the first line and strip any leading/trailing whitespace.
-            url = f.readline().strip()
-            return url if url else None
-    except FileNotFoundError:
+    if resolved.is_file() and not resolved.is_symlink():
+        # Regular file: return content
+        try:
+            with open(resolved, "r", encoding="utf-8") as f:
+                content = f.read()
+            return ('content', content)
+        except (OSError, IOError):
+            return None
+    elif resolved.is_symlink():
+        # Symlink: get URL and handle relative
+        link_target = os.readlink(str(resolved))
+        site_url = os.environ["ALLEMANDE_SITE_URL"]
+        base_path = "/s/" + shortcut_name
+        if not base_path.endswith('/'):
+            base_path += '/'
+        base_url = site_url + base_path
+        url = urljoin(base_url, link_target)
+        return ('redirect', url)
+    else:
         return None
 
 
@@ -47,20 +61,23 @@ async def handle_redirect(request):
     """
     shortcut_name = request.path_params["shortcut_name"]
     logging.info("Request for shortcut: %s", shortcut_name)
-    target_url = get_redirect_url(shortcut_name)
+    result = get_content_or_url(shortcut_name)
 
-    # Fail fast if the shortcut doesn't exist or the file is empty.
-    if not target_url:
+    # Fail fast if not found
+    if result is None:
         logging.warning("Shortcut not found: %s", shortcut_name)
         raise HTTPException(status_code=404)
 
-    logging.info("Redirecting '%s' -> '%s'", shortcut_name, target_url)
-    # Issue a temporary (302) redirect.
-    return RedirectResponse(target_url, status_code=302)
+    rtype, value = result
+    if rtype == 'redirect':
+        logging.info("Redirecting '%s' -> '%s'", shortcut_name, value)
+        # Issue a temporary (302) redirect.
+        return RedirectResponse(value, status_code=302)
+    elif rtype == 'content':
+        logging.info("Returning content for '%s'", shortcut_name)
+        return PlainTextResponse(value)
 
 
 if __name__ == "__main__":
     import uvicorn
-    # For production, you'd run this with a proper ASGI server like Uvicorn.
-    # uvicorn redirect_service:app --host 127.0.0.1 --port 9090
-    uvicorn.run(app, host="127.0.0.1", port=9090)
+    uvicorn.run(app, host="127.0.0.1", port=8003)
