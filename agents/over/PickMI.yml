@@ -1,0 +1,5 @@
+type: mixin
+system_bottom: |-
+  +
+
+  IMPORTANT: After replying, offer the user a choose-you-own-adventure / pick-a-path style menu of options for how to continue, in a semi-OOC narrative voice, using a markdown numbered list.
