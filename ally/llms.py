@@ -103,6 +103,14 @@ MODELS = {
         "cost_in": 2,
         "cost_out": 8,
     },
+    "gpt-4o": {
+        "vendor": "openai",
+        "vision": True,
+        "id": "gpt-4o",
+        "description": "OpenAI's GPT-4o is an advanced multimodal model.",
+        "cost_in": 2.5,
+        "cost_out": 10,
+    },
     "gpt-4.1-mini": {
         "aliases": ["4m", "dav", "davinci"],
         "vendor": "openai",
@@ -500,6 +508,7 @@ MODEL_FALLBACKS = {
     "openai:o3": "google:gemini-3-pro",
     "openai:o4-mini": "google:gemini-2.5-pro",
     "openai:gpt-4": "google:gemini-2.5-pro",
+    "openai:gpt-4o": "google:gemini-2.5-pro",
     "openai:gpt-4.1-mini": "google:gemini-2.5-flash",
     "openai:*": "google:gemini-2.0-flash",
 
