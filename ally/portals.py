@@ -4,12 +4,12 @@ import os
 import time
 from pathlib import Path
 import logging
-import asyncio
+import shutil
 
 import yaml
 from watchfiles import awatch, Change
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,18 @@ class PortalClient:
     """ Client for making requests to the core server. """
     def __init__(self, portal):
         self.portal = Path(portal)
-        self.req_id = 0
+        existing_reqs = []
+        for dir_name in ('prep', 'todo', 'done', 'error'):
+            dir_path = self.portal / dir_name
+            if dir_path.exists():
+                for item in dir_path.iterdir():
+                    if item.is_dir() and item.name.startswith('req-'):
+                        try:
+                            num = int(item.name[4:])
+                            existing_reqs.append(num)
+                        except ValueError:
+                            pass
+        self.req_id = (max(existing_reqs) + 1) if existing_reqs else 0
 
     async def prepare_request(self, config=None):
         """ Make a request to the core server. """
