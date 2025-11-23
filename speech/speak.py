@@ -20,7 +20,7 @@ from gtts import gTTS  # type: ignore
 # from TTS.api import TTS  # type: ignore
 # from TTS.utils.manage import ModelManager  # type: ignore
 # from TTS.utils.synthesizer import Synthesizer  # type: ignore
-from parler_tts import ParlerTTSForConditionalGeneration  # type: ignore
+# from parler_tts import ParlerTTSForConditionalGeneration  # type: ignore
 from transformers import AutoTokenizer  # type: ignore
 from pydantic import BaseModel, ConfigDict
 import spacy
@@ -38,81 +38,81 @@ logger = logs.get_logger()
 DEFAULT_MODELS = {
     # "coqui": "tts_models/en/ek1/tacotron2",
     "gtts": "en:co.uk",
-    "parler": "mini-v1",
+    # "parler": "mini-v1",
 }
 
 # DEFAULT_MODEL = "coqui:" + DEFAULT_MODELS['coqui']
-# DEFAULT_MODEL = "gtts:" + DEFAULT_MODELS["gtts"]
-DEFAULT_MODEL = "parler:" + DEFAULT_MODELS["parler"]
+DEFAULT_MODEL = "gtts:" + DEFAULT_MODELS["gtts"]
+# DEFAULT_MODEL = "parler:" + DEFAULT_MODELS["parler"]
 
 DEFAULT_PARLER_PROMPT = "Laura, very clear audio."
 
 
-def parler_compile(parler, description_tokenizer, opts, device):
-    """Compile the Parler TTS model for speed"""
-    torch.set_float32_matmul_precision('high')  # XXX?
-
-    logger.info("Compiling model with mode: %s", opts.compile)
-    # Set cache implementation for compilation
-    parler.generation_config.cache_implementation = "static"
-    parler.forward = torch.compile(parler.forward, mode=opts.compile)
-
-    # Warmup compilation with dummy input
-    max_length = 50
-    dummy_text = "This is for compilation"
-    inputs = description_tokenizer(dummy_text, return_tensors="pt",
-                                padding="max_length", max_length=max_length).to(device)
-    model_kwargs = {
-        **inputs,
-        "prompt_input_ids": inputs.input_ids,
-        "prompt_attention_mask": inputs.attention_mask,
-    }
-
-    n_steps = 2 if opts.compile == "reduce_overhead" else 1
-    for _ in range(n_steps):
-        _ = parler.generate(**model_kwargs)
-
-
-def get_synth_parler(model: str = DEFAULT_MODELS["parler"], opts=None):
-    """Get a Parler TTS speak function for the given model variant"""
-    info = models[f"parler:{model}"]
-    model_name = f"parler-tts/parler-tts-{model}"
-    sdk = info.get("sdk", "1")
-    device = "cpu" if opts.cpu else "cuda:0"
-#    torch_dtype = torch.bfloat16
-
-    parler = ParlerTTSForConditionalGeneration.from_pretrained(model_name).to(device)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    if sdk == "1":
-        logger.info("Using same tokenizer")
-        description_tokenizer = tokenizer
-    else:
-        tokenizer_name = parler.config.text_encoder._name_or_path  # pylint: disable=protected-access
-        logger.info("Using separate tokenizer: %s", tokenizer_name)
-        description_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-
-    # Compile if requested
-    if hasattr(opts, "compile") and opts.compile and opts.compile != "none":
-        parler_compile(parler, description_tokenizer, opts, device)
-
-    def speak_fn(text, out, prompt=opts.prompt, **_kwargs):
-        if prompt is None:
-            prompt = DEFAULT_PARLER_PROMPT
-
-        # This is a bit confusing, as I call the 'description' the prompt,
-        # but they call the input 'text' the prompt:
-        input_ids = description_tokenizer(prompt, return_tensors="pt").input_ids.to(device)
-        prompt_input_ids = tokenizer(text, return_tensors="pt").input_ids.to(device)
-
-        generation = parler.generate(input_ids=input_ids, prompt_input_ids=prompt_input_ids)
-        audio = generation.cpu().numpy().squeeze()
-        rate = parler.config.sampling_rate
-
-        if out:
-            soundfile.write(out, audio, rate)
-        return out, audio, rate
-
-    return speak_fn
+# def parler_compile(parler, description_tokenizer, opts, device):
+#     """Compile the Parler TTS model for speed"""
+#     torch.set_float32_matmul_precision('high')  # XXX?
+# 
+#     logger.info("Compiling model with mode: %s", opts.compile)
+#     # Set cache implementation for compilation
+#     parler.generation_config.cache_implementation = "static"
+#     parler.forward = torch.compile(parler.forward, mode=opts.compile)
+# 
+#     # Warmup compilation with dummy input
+#     max_length = 50
+#     dummy_text = "This is for compilation"
+#     inputs = description_tokenizer(dummy_text, return_tensors="pt",
+#                                 padding="max_length", max_length=max_length).to(device)
+#     model_kwargs = {
+#         **inputs,
+#         "prompt_input_ids": inputs.input_ids,
+#         "prompt_attention_mask": inputs.attention_mask,
+#     }
+# 
+#     n_steps = 2 if opts.compile == "reduce_overhead" else 1
+#     for _ in range(n_steps):
+#         _ = parler.generate(**model_kwargs)
+# 
+# 
+# def get_synth_parler(model: str = DEFAULT_MODELS["parler"], opts=None):
+#     """Get a Parler TTS speak function for the given model variant"""
+#     info = models[f"parler:{model}"]
+#     model_name = f"parler-tts/parler-tts-{model}"
+#     sdk = info.get("sdk", "1")
+#     device = "cpu" if opts.cpu else "cuda:0"
+# #    torch_dtype = torch.bfloat16
+# 
+#     parler = ParlerTTSForConditionalGeneration.from_pretrained(model_name).to(device)
+#     tokenizer = AutoTokenizer.from_pretrained(model_name)
+#     if sdk == "1":
+#         logger.info("Using same tokenizer")
+#         description_tokenizer = tokenizer
+#     else:
+#         tokenizer_name = parler.config.text_encoder._name_or_path  # pylint: disable=protected-access
+#         logger.info("Using separate tokenizer: %s", tokenizer_name)
+#         description_tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+# 
+#     # Compile if requested
+#     if hasattr(opts, "compile") and opts.compile and opts.compile != "none":
+#         parler_compile(parler, description_tokenizer, opts, device)
+# 
+#     def speak_fn(text, out, prompt=opts.prompt, **_kwargs):
+#         if prompt is None:
+#             prompt = DEFAULT_PARLER_PROMPT
+# 
+#         # This is a bit confusing, as I call the 'description' the prompt,
+#         # but they call the input 'text' the prompt:
+#         input_ids = description_tokenizer(prompt, return_tensors="pt").input_ids.to(device)
+#         prompt_input_ids = tokenizer(text, return_tensors="pt").input_ids.to(device)
+# 
+#         generation = parler.generate(input_ids=input_ids, prompt_input_ids=prompt_input_ids)
+#         audio = generation.cpu().numpy().squeeze()
+#         rate = parler.config.sampling_rate
+# 
+#         if out:
+#             soundfile.write(out, audio, rate)
+#         return out, audio, rate
+# 
+#     return speak_fn
 
 
 # def get_synth_coqui(model=DEFAULT_MODELS["coqui"], opts=None):
@@ -170,16 +170,16 @@ def get_synth_gtts(model=DEFAULT_MODELS["gtts"], opts=None):  # pylint: disable=
 engines = {
     # "coqui": get_synth_coqui,
     "gtts": get_synth_gtts,
-    "parler": get_synth_parler,
+    # "parler": get_synth_parler,
 }
 
-parler_models = [
-    {"id": "mini-v1", "lang": "en", "sdk": "1"},
-    {"id": "large-v1", "lang": "en", "sdk": "1"},
-    {"id": "mini-v1.1", "lang": "en", "sdk": "1.1"},
-    {"id": "mini-multilingual", "lang": "en,fr,es,pt,pl,de,it,nl", "sdk": "1.1"},
-    {"id": "mini-expresso", "lang": "en", "sdk": "1"},
-]
+# parler_models = [
+#     {"id": "mini-v1", "lang": "en", "sdk": "1"},
+#     {"id": "large-v1", "lang": "en", "sdk": "1"},
+#     {"id": "mini-v1.1", "lang": "en", "sdk": "1.1"},
+#     {"id": "mini-multilingual", "lang": "en,fr,es,pt,pl,de,it,nl", "sdk": "1.1"},
+#     {"id": "mini-expresso", "lang": "en", "sdk": "1"},
+# ]
 
 gtts_models = [
     {"id": "en:com.au", "accent": "English (Australia)"},
@@ -502,9 +502,9 @@ def speak(
         download_all_coqui_models()
         sys.exit(0)
 
-    add_parler_models()
+    # add_parler_models()
     add_gtts_models()
-    add_coqui_models()
+    # add_coqui_models()
     if opts.list_models:
         do_list_models()
         sys.exit(0)

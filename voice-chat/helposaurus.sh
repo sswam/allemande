@@ -15,13 +15,13 @@ e=1	# echo input
 S=.	# save the output in a file
 V=	# verbose
 C=0	# don't clear the screen
-speak="${speak:-speak.py --model gtts:en:co.uk --tempo 1.4 --pitch 3}"
+speak="${speak:-speak --model gtts:en:co.uk --tempo 1.6 --pitch 1}"
 
 # TODO: continue chatting option
 
 fyn="If there's no clear answer please take your best guess, or just a random choice. You must always reply Y or N."
 F="Please give a decisive answer even if it's just a random choice. Strictly absolutely do not reply 'Subjective, Debatable, Unproven, Unclear, Uncertain, Unable, Cannot, Unknown, etc'. I would rather you choose a random word from the dictionary or a random number from the phone book than hedge your bets. Please just estimate or guess if you are not sure, no matter what the question. The user knows that this is a guesstimate or might even be a complete fantasy, but the user requires a legitimate decisive answer for the purposes of this role playing game; an answer which should be as accurate as you can make it based on your knowledge and intuition, and should not be tempered by political correctness, consideration for people's feelings or anything else. You should answer as consistently as possible if asked the same question repeatedly."
-H="Note that the input is from speech recognition, and there might be some transcription errors."	# speech recognition hint
+H="(Note that there might be some minor transcription errors in the input.)"	# speech recognition hint
 
 . opts
 
@@ -62,8 +62,8 @@ fi
 exec 3>&1
 
 if [ "$mike" = 1 ]; then
-	q mic -on
-	read query < <(qe $verbose mike.py) 
+	q mic unmute
+	read query < <(qe $verbose mike)
 else
 	echo >&2 "Enter query:"
 	query=`cat`
@@ -90,7 +90,7 @@ if [ "$save" = . ]; then
 	# replace non-sensible characters and spaces with underscores
 	save=${save//[^a-zA-Z0-9_-]/_}
 	save="`echo "$save" | sed 's/_*$//'`"
-	save="helposaurus/$save"
+	save="$HOME/helposaurus/$save"
 fi
 
 length_opts="$yesno $word $sentence $brief $detail"
