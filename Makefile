@@ -17,7 +17,8 @@ JOBS := server_start server_stop beorn server default run-i3 run frontend backen
 	firefox-webchat-online firefox-webchat-local firefox-pro-local firefox-pro-online \
 	chrome-webchat-online chrome-webchat-local \
 	stop mount umount fresh \
-	install install-dev uninstall clean i3-layout
+	install install-dev uninstall clean i3-layout \
+	shortcuts
 
 all: api_doc subdirs canon
 
@@ -50,7 +51,7 @@ i3: connect-i3-screen
 
 server:: stop
 server:: clean
-server:: webchat brain.xt
+server:: webchat brain.xt shortcuts.xt
 
 run-i3-screen:: i3-layout
 run-i3-screen:: stop
@@ -151,6 +152,10 @@ vup:
 
 brain: clean
 	cd chat && ./brain.sh
+
+shortcuts:
+	cd shortcuts/
+	uvicorn shortcuts:app --port 8003
 
 # brain-local: clean
 # 	cd chat && ./brain.sh --local

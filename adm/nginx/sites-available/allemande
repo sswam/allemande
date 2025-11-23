@@ -62,6 +62,22 @@ server {
 		}
 	}
 
+	# URL shortcuts
+	location /s/ {
+		# Remove the /s/ prefix before passing it to the backend service.
+		# For example, a request to /s/live becomes a request for /live.
+		rewrite ^/s/(.*)$ /$1 break;
+
+		# Proxy the request to our microservice running on localhost port 8003.
+		proxy_pass http://127.0.0.1:8003;
+
+		# Pass along necessary headers.
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+	}
+
 	auth_jwt_key "$ALLYCHAT_JWT_SECRET_BINHEX";
 	auth_jwt_loginurl "https://$ALLEMANDE_DOMAIN/";
 	auth_jwt_enabled off;
