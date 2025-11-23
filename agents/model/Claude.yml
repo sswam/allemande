@@ -1,5 +1,5 @@
 type: anthropic
-model: claude-sonnet
+model: claude
 over:
   - Frankness
   - HurDurMI
