@@ -811,12 +811,12 @@ body:not(.images) img.layout {
 	pointer-events: none;
 }
 
-body.blur > :not(.overlay) :is(img, video), :not(body).blur {
+body.blur > :not(.overlay) :is(img, video, iframe), :not(body).blur {
   filter: blur(24px);
   clip-path: inset(0);
 }
 
-body.blur > :not(.overlay) :is(img, video):hover, :not(body).blur:hover {
+body.blur > :not(.overlay) :is(img, video, iframe):hover, :not(body).blur:hover {
   filter: none;
   clip-path: none;
 }
@@ -1562,7 +1562,7 @@ body:not(.simple) .message.last {
 /* hack to fix heading layout, IDK ---------------------------------------- */
 
 h1, h2, h3, h4, h5, h6, hr {
-	width: calc(100vw - 6 * var(--pad));
+/*	width: calc(100vw - 6 * var(--pad)); */
 	break-after: avoid;
 }
 
@@ -1596,4 +1596,40 @@ div.messages .columns {
 
 big {
 	font-size: 1.5rem;
+}
+
+/* horizontal lists ------------------------------------------------------- */
+
+ul.line {
+  display: inline !important;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 90% !important;
+  white-space: nowrap;
+}
+
+ul.line li {
+  display: inline !important;
+  padding: 0 0.375rem;
+}
+
+ul.line li:first-child {
+  padding-left: 0;
+}
+
+ul.line li:last-child {
+  padding-right: 1em;
+}
+
+/*
+* {
+	outline: 1px solid red !important;
+}
+*/
+
+/* don't split sections please ------------------------------------------ */
+
+section, article, header, footer, nav, aside, div.message, div.narrative {
+    break-inside: avoid;
 }

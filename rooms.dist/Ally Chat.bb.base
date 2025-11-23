@@ -1,3 +1,24 @@
+<ul class="line">
+    <li class="noshuf">devops:</li>
+	<li><a href="https://allemande.ai/s/live"><i class="bi bi-twitch" title="Live"></i><span class="alt"> Live</span></a></li>
+	<li><a href="https://discord.gg/F6KJw3NH"><i class="bi bi-discord" title="Discord"></i><span class="alt"> Discord</span></a></li>
+	<li><a href="https://github.com/sswam/allemande"><i class="bi bi-github" title="Github"></i><span class="alt"> Github</span></a></li>
+</ul>
+<ul class="line">
+    <li class="noshuf">socials:</li>
+	<li><a href="https://www.reddit.com/r/AllyChat/"><i class="bi bi-reddit" title="Reddit"></i><span class="alt"> Reddit</span></a></li>
+	<li><a href="https://www.youtube.com/@ssw4m"><i class="bi bi-youtube" title="YouTube"></i><span class="alt"> YouTube</span></a></li>
+	<li><a href="https://x.com/ultracodemonkey"><i class="bi bi-twitter-x" title="Twitter"></i><span class="alt"> Twitter</span></a></li>
+	<li><a href="https://www.facebook.com/allychatai"><i class="bi bi-facebook" title="Facebook"></i><span class="alt"> Facebook</span></a></li>
+</ul>
+<ul class="line">
+    <li class="noshuf">links:</li>
+	<li><a href="https://www.patreon.com/allychat">Patreon</a></li>
+	<li><a href="https://allemande.ai">Allemande</a></li>
+	<li><a href="https://sam.ucm.dev/">Sam</a></li>
+	<li><a href="https://linktr.ee/allychat">Linktree</a></li>
+</ul>
+
 <style class="hide">
 h1 { font-size: 1.5em; }
 </style>
@@ -67,7 +88,7 @@ welcomes = [
 
 $id("h1").textContent = welcomes[Math.floor(Math.random() * welcomes.length)];
 $id("h1").classList.add(fort(["rainbow", "fame"]));
-shuffle("ul", "li");
+shuffle_lists();
 </script>
 
 <hr>
