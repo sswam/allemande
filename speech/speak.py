@@ -17,9 +17,9 @@ import sounddevice as sd  # type: ignore
 import soundfile  # type: ignore
 import torch
 from gtts import gTTS  # type: ignore
-from TTS.api import TTS  # type: ignore
-from TTS.utils.manage import ModelManager  # type: ignore
-from TTS.utils.synthesizer import Synthesizer  # type: ignore
+# from TTS.api import TTS  # type: ignore
+# from TTS.utils.manage import ModelManager  # type: ignore
+# from TTS.utils.synthesizer import Synthesizer  # type: ignore
 from parler_tts import ParlerTTSForConditionalGeneration  # type: ignore
 from transformers import AutoTokenizer  # type: ignore
 from pydantic import BaseModel, ConfigDict
@@ -36,7 +36,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 logger = logs.get_logger()
 
 DEFAULT_MODELS = {
-    "coqui": "tts_models/en/ek1/tacotron2",
+    # "coqui": "tts_models/en/ek1/tacotron2",
     "gtts": "en:co.uk",
     "parler": "mini-v1",
 }
@@ -115,30 +115,30 @@ def get_synth_parler(model: str = DEFAULT_MODELS["parler"], opts=None):
     return speak_fn
 
 
-def get_synth_coqui(model=DEFAULT_MODELS["coqui"], opts=None):
-    """Get a Coqui TTS speak function for the given model"""
-    # download and load the TTS model
-    model_manager = ModelManager()
-    model_path, config_path, _model_item = model_manager.download_model(model)
-
-    # create a TTS synthesizer
-    synth = Synthesizer(
-        tts_checkpoint=model_path,
-        tts_config_path=config_path,
-        vocoder_checkpoint=None,
-        use_cuda=not opts.cpu,
-    )
-
-    def speak_fn(text, out, **_kwargs):
-        audio = synth.tts(text)
-        stem, ext = os.path.splitext(out)
-        if ext != ".wav":
-            out = stem + ".wav"
-        synth.save_wav(audio, out)
-        rate = synth.tts_config.audio["sample_rate"]
-        return out, audio, rate
-
-    return speak_fn
+# def get_synth_coqui(model=DEFAULT_MODELS["coqui"], opts=None):
+#     """Get a Coqui TTS speak function for the given model"""
+#     # download and load the TTS model
+#     model_manager = ModelManager()
+#     model_path, config_path, _model_item = model_manager.download_model(model)
+# 
+#     # create a TTS synthesizer
+#     synth = Synthesizer(
+#         tts_checkpoint=model_path,
+#         tts_config_path=config_path,
+#         vocoder_checkpoint=None,
+#         use_cuda=not opts.cpu,
+#     )
+# 
+#     def speak_fn(text, out, **_kwargs):
+#         audio = synth.tts(text)
+#         stem, ext = os.path.splitext(out)
+#         if ext != ".wav":
+#             out = stem + ".wav"
+#         synth.save_wav(audio, out)
+#         rate = synth.tts_config.audio["sample_rate"]
+#         return out, audio, rate
+# 
+#     return speak_fn
 
 
 def get_synth_gtts(model=DEFAULT_MODELS["gtts"], opts=None):  # pylint: disable=unused-argument
@@ -168,7 +168,7 @@ def get_synth_gtts(model=DEFAULT_MODELS["gtts"], opts=None):  # pylint: disable=
 
 
 engines = {
-    "coqui": get_synth_coqui,
+    # "coqui": get_synth_coqui,
     "gtts": get_synth_gtts,
     "parler": get_synth_parler,
 }

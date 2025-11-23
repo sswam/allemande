@@ -20,7 +20,7 @@ import yaml
 import ucm
 from ally import portals, main, logs
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 logger = logs.get_logger()
 
@@ -96,7 +96,10 @@ async def client_request(portal, audio, config=None):
     if status == "error":
         await portal.response_error(resp)
 
-    text = (resp / "text.txt").read_text(encoding="utf-8")
+    if resp:
+        text = (resp / "text.txt").read_text(encoding="utf-8")
+    else:
+        text = ""
 #    result = yaml.safe_load((resp / "result.yaml").read_text(encoding="utf-8"))
 
 #    logger.info("%r", result)
@@ -106,7 +109,7 @@ async def client_request(portal, audio, config=None):
 
 
 async def speech_to_text_async(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-    portal, run_event, q_audio, q_text, lang, confidence_threshold=0.8
+    portal, run_event, q_audio, q_text, lang, confidence_threshold=0.8, filter_blank_audio=True
 ):
     """Transcribe from the audio queue to the text queue"""
     config = {
@@ -122,7 +125,7 @@ async def speech_to_text_async(  # pylint: disable=too-many-arguments,too-many-p
 #        text, result = await client_request(portal, audio, config=config)
 
         text = text.strip()
-        if text:
+        if text and not (filter_blank_audio and text == "[BLANK_AUDIO]"):
             q_text.put_nowait(text)
 #         segs = result["segments"]
 #         no_speech_prob = sum(x["no_speech_prob"] for x in segs) / (len(segs) or 1)
@@ -132,9 +135,9 @@ async def speech_to_text_async(  # pylint: disable=too-many-arguments,too-many-p
     q_text.put_nowait(None)
 
 
-def speech_to_text(portal, run_event, q_audio, q_text, lang, confidence_threshold=0.8):
+def speech_to_text(portal, run_event, q_audio, q_text, lang, confidence_threshold=0.8, filter_blank_audio=True):
     """Transcribe from the audio queue to the text queue"""
-    asyncio.run(speech_to_text_async(portal, run_event, q_audio, q_text, lang, confidence_threshold))
+    asyncio.run(speech_to_text_async(portal, run_event, q_audio, q_text, lang, confidence_threshold, filter_blank_audio))
 
 
 def do_list_devices():
@@ -155,6 +158,7 @@ def mike(  # pylint: disable=too-many-arguments,too-many-locals,too-many-positio
     service: str = default_service,
     confidence_threshold: float = 0.6,
     quiet_while_listening: int | None = 40,
+    filter_blank_audio: bool = True,
 ):
     """Transcribe speech to text using microphone input"""
     if list_devices:
@@ -185,7 +189,7 @@ def mike(  # pylint: disable=too-many-arguments,too-many-locals,too-many-positio
             target=record_speech,
             args=(run_event, q_audio, energy, pause, non_speaking_duration, dynamic_energy, device_index, adjust_for_ambient_noise),
         ).start()
-        Thread(target=speech_to_text, args=(portal, run_event, q_audio, q_text, lang, confidence_threshold)).start()
+        Thread(target=speech_to_text, args=(portal, run_event, q_audio, q_text, lang, confidence_threshold, filter_blank_audio)).start()
 
         while True:
             text = q_text.get()
@@ -212,6 +216,7 @@ def setup_args(arg):
     arg("--service", "-s", help="Portal service for speech to text")
     arg("--confidence-threshold", "-c", help="Confidence threshold")
     arg("--quiet-while-listening", "-m", help="Quiet or mute speakers while listening, volume level")
+    arg("--filter-blank-audio", "-f", help="Filter out blank audio responses")
 
 
 if __name__ == "__main__":

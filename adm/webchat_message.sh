@@ -6,6 +6,8 @@
 webchat-message() {
 	local user= u=             # user name, defaults to titled $USER
 	local room= r="Ally Chat"  # room name, defaults to Ally Chat
+	local file= f=             # bb file directly
+	local root= R=             # base rooms dir
 
 	eval "$(ally)"
 
@@ -16,13 +18,25 @@ webchat-message() {
 
 	# Set user to title case of $USER if not specified
 	if [ -z "$user" ]; then
-		user=${USER~}
+		user=${USER^}
 	fi
 
 	# Prepend tab to each line of message
 	message=$(printf "%s" "$message" | sed 's/^/\t/')
 
-	printf "%s:%s\n\n" "$user" "$message" >> "$ALLEMANDE_HOME/rooms/$room.bb"
+	local target_file
+	local root
+	if [ -n "$root" ]; then
+		root="$root"
+	else
+		root="$ALLEMANDE_HOME/rooms"
+	fi
+	if [ -n "$file" ]; then
+		target_file="$file"
+	else
+		target_file="$root/$room.bb"
+	fi
+	printf "%s:%s\n\n" "$user" "$message" >> "$target_file"
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
