@@ -473,6 +473,7 @@ digraph OpenAI {
     "Dav" [label=<<b>Dav</b><br/><font point-size="10">GPT-4.1 mini</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Efficient, affordable</font>>]
     "Fermi" [label=<<b>Fermi</b><br/><font point-size="10">o4 mini</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Efficient reasoning</font>>]
     "Emmy" [label=<<b>Emmy</b><br/><font point-size="10">GPT-4.1</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
+    "Emmo" [label=<<b>Emmo</b><br/><font point-size="10">GPT-4o</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Versatile, Adaptable</font>>]
     "Grace" [label=<<b>Grace</b><br/><font point-size="10">o3</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Powerful reasoning</font>>]
     "Heis" [label=<<b>Heis</b><br/><font point-size="10">GPT-5-nano</font><br/><font point-size="8">400K context</font><br/><font point-size="8">Small, Fast, newest model</font>>]
     "Heise" [label=<<b>Heise</b><br/><font point-size="10">GPT-5-mini</font><br/><font point-size="8">400K context</font><br/><font point-size="8">Medium strength, newest model</font>>]
@@ -483,6 +484,7 @@ digraph OpenAI {
     "OpenAI" -> "Dav"
     "OpenAI" -> "Fermi"
     "OpenAI" -> "Emmy"
+    "OpenAI" -> "Emmo"
     "OpenAI" -> "Grace"
     "OpenAI" -> "Heis"
     "OpenAI" -> "Heise"
@@ -750,6 +752,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Claudo** (Claude 4.1 Opus, Anthropic): The most powerful reasoning model from Anthropic
 - **Clia** (Claude 3.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4.1, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
+- **Emmo** (GPT-4o, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Dav** (GPT-4.1 mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
 - **Grace** (o3, OpenAI): The strongest reasoning model from OpenAI, ideal for advanced applications
 - **Fermi** (o4 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
@@ -1005,6 +1008,7 @@ type: visual
 | Google        | Gemini 3 Pro          | Gemi    | 1M      | 64K           | $2 [2]          | $12.00 [2]       | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                             |
 | OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K           | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
 | OpenAI        | GPT-4.1               | Emmy    | 1M      | 32K           | $2              | $8.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
+| OpenAI        | GPT-4o                | Emmo    | 128K    | 16K           | $2.5            | $10.00           | OpenAI's adaptable and versatile model, perfect for varied conversations (similar to 4.1 but more expensive)     |
 | OpenAI        | o4-mini               | Fermi   | 200K    | 100K          | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
 | OpenAI        | o3                    | Grace   | 200K    | 100K          | $10.00          | $40.00           | OpenAI's most powerful reasoning model for advanced applications.                                                |
 | OpenAI        | GPT-5-nano            | Heis    | 400K    | 128K          | $0.05           | $0.40            | OpenAI's fastest, most cost-efficient version of GPT-5.                                                          |
