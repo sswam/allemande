@@ -112,6 +112,7 @@ exceptions_to_retry = (
     "ServiceUnavailableError",
     "TimeoutError",
     "APIError",
+    "ServerError",
 )
 
 
