@@ -134,16 +134,16 @@ $patreon_links
 
 You are responsible for your own safety and behaviour in Ally Chat.
 
-Important: Joining group chats is required (though not daily). This is a complex group chat app - think Reddit, not ChatGPT. Participating is the best way to learn the app and help build our community. I remove inactive members after about a month. If you prefer not to use group chat, you can support via Patreon instead, but group chat remains the best way to get support.
+Important: Joining group chats is pretty much required. This is a complex group chat app - think Reddit, not ChatGPT. Participating is the best way to learn the app and help build our community. I remove inactive members after about a month. If you prefer not to use group chat, you can support via Patreon instead or some other way, but group chat remains the best way to get support.
 
 By using Ally Chat, you agree to follow the Getting Started steps above, rather than going wild and causing a lot of mess for me to clean up before you even found the intro!
 END
 		if ((nsfw)); then
 			cat <<END
 
-The "keep it legal" rule is important: do not try to create underage or deepfake NSFW images.
+The "keep it legal" rule is important: do not try to create illegal NSFW images.
 
-See https://allemande.ai/terms.html for more detailed Terms of Use.
+See https://allemande.ai/terms.html for more detailed Terms of Use, if you like.
 
 Please confirm that you agree.
 END
@@ -211,7 +211,7 @@ END
 		name:	$user
 		status:	active
 		btime:	$btime
-		nsfw:	${nsfw:-0}
+		is_nsfw:	${nsfw:-0}
 		preference:	$preference
 		language:	$language
 		email:	$email
@@ -328,7 +328,7 @@ restore-user() {
 	# Restore NSFW access if user info indicates NSFW
 	local user_info_file="static/users/$user/info.rec"
 	local is_nsfw
-	is_nsfw=$(awk '/^nsfw:/ {print $2}' "$user_info_file")
+	is_nsfw=$(awk '/^is_nsfw:/ {print $2}' "$user_info_file")
 	if [ "$is_nsfw" = "1" ]; then
 		if ! grep -q "^- $user$" rooms/nsfw/.access.yml; then
 			echo "- $user" >> rooms/nsfw/.access.yml
