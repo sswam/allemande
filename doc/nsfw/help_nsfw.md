@@ -112,6 +112,8 @@ These use a short pre-prompt to enable NSFW context. Not needed for Ellie, Ellyn
 - `Lusy`, `Bigi`, `Pigi`: Very realistic NSFW.
 - `Bboy`, `Coci`: Male focus and trans female focus NSFW.
 - `Basp`: A photorealistic finetune of SDXL for SFW and NSFW, diversity.
+- `Ilus`: NSFW with a cartoon / anime style (Illustrious XL)
+- `Irus`: NSFW with a realistic style (Illustrious Realism)
 
 ### Search Agents
 - `Goog`: Google web search.
@@ -158,6 +160,8 @@ These use a short pre-prompt to enable NSFW context. Not needed for Ellie, Ellyn
 | pornworksai | PornWorks Bad Boys | Bboy | A trained merge of SDXL with PonyXL: for Photo Realistic Gay & Male NSFW Aesthetics |
 | ffjggrtbjibv | CocksXL | Coci | A trained merge of bigASP (use booru tags): very realistic, excellent for NSFW with trans-female and male focus |
 | nutbutter | bigasp_v20 | Basp | A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity |
+| aria1th261 | IllustriousXL | Ilus | SFW&NSFW anime/cartoons, more advanced than Poni |
+| klaabu | Illustrious Realism | Irus | fantasy/SFW&NSFW anime/cartoons, more advanced than Poni |
 
 **Image Model Prompting:**
 - `Jily` and `Hily` (SDXL-based) understand natural English well. Good for SFW and softcore NSFW. For hardcore, add the `nsfw` LoRA or use another model.

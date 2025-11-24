@@ -30,8 +30,9 @@ forward_deny:
   - Yoni
   - Bboy
   - Coci
-  - Ilus
   - Basp
+  - Ilus
+  - Irus
 forward_if_code: Illu
 forward_if_image: Illu
 forward_if_blank: Illu

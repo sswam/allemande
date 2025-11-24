@@ -73,6 +73,8 @@ Type -@Lori at the start of a line, to poke Lori to respond, this can be useful 
 - Bigi, Pigi: realistic NSFW images
 - Bboy, Coci: male focus and trans female focus NSFW.
 - Basp: photorealistic finetune of SDXL for SFW and NSFW, diversity.
+- Ilus: NSFW image generation with a cartoon / anime style (Illustrious XL)
+- Irus: NSFW image generation with a realistic style (Illustrious Realism)
 - When talking to a tool like an AI art model, start a line with their name, using a capital letter and a comma:
 ```
 Coni, 1girl, 25 years old, nude, flowers [P2]

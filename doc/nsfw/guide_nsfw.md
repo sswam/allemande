@@ -169,6 +169,8 @@ These variants on the Llama 3.1 8B model are set up for sexual role-play. Note: 
 - **Lusy, Bigi, Pigi**: Very realistic NSFW image generation (Pigi has more PonyXL)
 - **Bboy, Coci**: Male focus and trans female focus models, good for female gaze / bara / yaoi / gay.
 - **Basp**: A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity
+- **Ilus**: NSFW image generation with a cartoon / anime style (Illustrious XL)
+- **Irus**: NSFW image generation with a realistic style (Illustrious Realism)
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -227,6 +229,8 @@ Please do not use languages models other than those listed here for NSFW content
 | pornworksai   | PornWorks Bad Boys  | Bboy | A trained merge of SDXL with PonyXL: for Photo Realistic Gay & Male NSFW Aesthetics                                 |
 | ffjggrtbjibv  | CocksXL             | Coci | A trained merge of bigASP (use booru tags): very realistic, excellent for NSFW with trans-female and male focus     |
 | nutbutter     | bigasp_v20          | Basp | A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity                  |
+| aria1th261    | IllustriousXL       | Ilus | SFW&NSFW anime/cartoons, more advanced than Poni                                                                    |
+| klaabu        | Illustrious Realism | Irus | fantasy/SFW&NSFW anime/cartoons, more advanced than Poni                                                            |
 
 The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art. You can add the nsfw LoRA, or try the Lusy model.
 
@@ -235,4 +239,3 @@ Most of our other image gen models are based primarily on Pony XL, with less und
 They are very strong at softcore, hardcore, hentai, and extreme art. Faces may appear a bit samey in some of these models. Ask Sam for advice on how to fix this, if it bothers you!
 
 The Bigi model (Big Love XL) is closer to SDXL, with a bit of Pony mixed in. It can understand both English and Danbooru tags to some extent.
-
