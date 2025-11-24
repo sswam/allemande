@@ -15,7 +15,7 @@ La génération d'image peut prendre un peu de temps selon la charge, donc pour 
 - @Lenny - (m) méta-agent, recommandé pour le chat
 - @Lonnie - (non-binaire) méta-agent, recommandé pour le chat
 - Lori - (f) méta-agent, recommandé pour le chat, y compris NSFW
-- Larry - (m) méta-agent, recommandé pour le chat, y compris NSFW
+- Lary - (m) méta-agent, recommandé pour le chat, y compris NSFW
 - Lorrie - (non-binaire) méta-agent, recommandé pour le chat, y compris NSFW
 - Aidi - (m) aide à utiliser l'application
 - Assi - (f) aide à utiliser l'application, y compris NSFW
