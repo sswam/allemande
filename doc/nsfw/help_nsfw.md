@@ -110,6 +110,8 @@ These use a short pre-prompt to enable NSFW context. Not needed for Ellie, Ellyn
 - `Yoni`, `Coni`, `Boni`: Semi-realistic NSFW (PonyXL based).
 - `Poni`: Cartoon/anime NSFW (PonyXL based).
 - `Lusy`, `Bigi`, `Pigi`: Very realistic NSFW.
+- `Bboy`, `Coci`: Male focus and trans female focus NSFW.
+- `Basp`: A photorealistic finetune of SDXL for SFW and NSFW, diversity.
 
 ### Search Agents
 - `Goog`: Google web search.
@@ -153,6 +155,9 @@ These use a short pre-prompt to enable NSFW context. Not needed for Ellie, Ellyn
 | Tauron | Eros Ultima Hybrid | Yoni | Merge of SDXL with PonyXL for high-quality, realistic erotic art. |
 | Stable Yogi | Babes | Boni | Pony-based model tuned for beautiful women and erotic art. |
 | coyotte | Lustify V6 OLT | Lusy | Very realistic SDXL-based model, excellent for NSFW art. |
+| pornworksai | PornWorks Bad Boys | Bboy | A trained merge of SDXL with PonyXL: for Photo Realistic Gay & Male NSFW Aesthetics |
+| ffjggrtbjibv | CocksXL | Coci | A trained merge of bigASP (use booru tags): very realistic, excellent for NSFW with trans-female and male focus |
+| nutbutter | bigasp_v20 | Basp | A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity |
 
 **Image Model Prompting:**
 - `Jily` and `Hily` (SDXL-based) understand natural English well. Good for SFW and softcore NSFW. For hardcore, add the `nsfw` LoRA or use another model.

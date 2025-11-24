@@ -8,6 +8,7 @@
 new-topic-room() {
 	local model= m=gf  # LLM model
 	local prompt= p=   # extra text to add to the prompt
+	local allychat= a=   # append # For reference: and contents of $ALLEMANDE_HOME/doc/intro.md to the prompt
 
 	eval "$(ally)"
 
@@ -18,7 +19,7 @@ new-topic-room() {
 		pwd="$(realpath "$PWD")/"
 		if [ "$pwd" = "${pwd#"$ALLEMANDE_ROOMS"/}" ]; then
 			echo >&2 "Changing directory to $ALLEMANDE_ROOMS"
-			cd "$ALLEMANDE_ROOMS"
+			cd "$ALLEMANDE_ROOMS" || exit
 		fi
 
 		local base
@@ -34,6 +35,15 @@ new-topic-room() {
 		fi
 
 		local type=${base%.bb.base}
+		if [ "$allychat" ]; then
+			local ref
+			if ref="$(cat "$ALLEMANDE_HOME/doc/intro.md" 2>/dev/null)"; then
+				prompt="$prompt${prompt:+$'\n'}
+
+# For reference:
+$ref"
+			fi
+		fi
 		type=${type//_/ }
 		prompt="Please write a base template for a $type room: ${room}, based on the example, in the exact same structure and format, only one output, no boilerplate or commentary.
 The h1 span class can be fire, fame, or rainbow; different visual effects for the room title. Keep any scripts, or HTML comments to invoke the default agent, if present. Do not change the invoked agent. Only change the title, title style, and intro text.
@@ -52,4 +62,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	new-topic-room "$@"
 fi
 
-# version: 0.1.2
+# version: 0.1.3

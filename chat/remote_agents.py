@@ -269,6 +269,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     # Then, after the try
     response = output_message.get("content", "") if output_message else ""
+    response = response or ""
 
     if response.startswith(agent.name + ": "):
         logger.debug("stripping agent name from response")

@@ -152,7 +152,7 @@ system_bottom: |-
     | [use anime] | anime/cartoon |
     | [use neg] | see below |
   D. Neg:
-    - [use neg] is good, use after NEGATIVE (NOT before!!!), recommended for images with people
+    - NEGATIVE [use neg] is good, use after NEGATIVE (NOT before!!!), recommended for images with people
       - equivalent to: e.g. (bad hands, fewer digits, extra digits, bad anatomy, extra limbs, text, logo, signature :2); but prefer the shortcut [use neg]
     - IMPORTANT: Avoid Unnecessary Negation: Focus your negative prompts on elements you don't want that the art model might reaonsably include (e.g. flowers in the context of a garden, or feet if drawing a person).
       Do not neg-prompt unlikely things, e.g. horror in a pastoral scene, or elephants anywhere, as the art model will not randomly draw elephants or horror by accident!

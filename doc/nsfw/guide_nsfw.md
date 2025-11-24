@@ -167,6 +167,8 @@ These variants on the Llama 3.1 8B model are set up for sexual role-play. Note: 
 - **Yoni, Coni, Boni**: NSFW image generation with a semi-realistic style (based on PonyXL)
 - **Poni**: NSFW image generation with a cartoon / anime style (based on PonyXL)
 - **Lusy, Bigi, Pigi**: Very realistic NSFW image generation (Pigi has more PonyXL)
+- **Bboy, Coci**: Male focus and trans female focus models, good for female gaze / bara / yaoi / gay.
+- **Basp**: A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity
 
 ### Search Agents
 - **Goog**: A search agent that provides Google web search results
@@ -222,6 +224,9 @@ Please do not use languages models other than those listed here for NSFW content
 | Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
 | coyotte       | Lustify V6 OLT      | Lusy | This SDXL-based model is very realistic, and excellent for NSFW art and can also do SFW art                         |
+| pornworksai   | PornWorks Bad Boys  | Bboy | A trained merge of SDXL with PonyXL: for Photo Realistic Gay & Male NSFW Aesthetics                                 |
+| ffjggrtbjibv  | CocksXL             | Coci | A trained merge of bigASP (use booru tags): very realistic, excellent for NSFW with trans-female and male focus     |
+| nutbutter     | bigasp_v20          | Basp | A photorealistic finetune of SDXL trained on 2M SFW images and 4M NSFW images, great for diversity                  |
 
 The Jily and Hily models are based on SDXL and understand natural English fairly well. These models are great for SFW images, and softcore NSFW art, but not ideal for hardcore art. You can add the nsfw LoRA, or try the Lusy model.
 

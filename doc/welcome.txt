@@ -1,18 +1,59 @@
-Thanks for your interest in Ally Chat! I'm Sam, the developer.
+1.
 
-We have subreddits r/AllyChat and r/AllyChatX (NSFW).
+Thanks for your interest in Ally Chat!  r/AllyChat
 
-To set up your account, please share:
+I'm Sam, the developer: https://sam.ucm.dev/resume.pdf
+You can reply in your language. All questions are optional.
 
-1. Your first name or a short alias (please list a couple of options, as some are taken)
-2. A few words about yourself, and what you like to do with AI
-3. Preferred chat partner: male / female / non-binary / any?
-4. Your preferred language, if not English
+1. What's your name, and what screen name do you prefer?
+2. Please introduce yourself, and how do you use AI?
+3. Your dream / needed feature for an AI game or app?
+4. Most annoying thing about your favourite app
+5. Your ideal chat partner/s? (any / gender / details)
+6. Your goal or biggest problem? (AI might be able to help)
+7. Would you like to support?  From $5, or other help
+8. Do you know about our open-source mentorship program?
+
+Note: Free accounts are not really limited, but you can support to help the project.
 
 
-Cool, have fun! This is a small indie project. We offer free access without any hard limits, but if you can help or support us, that is greatly appreciated.
+2.
 
-The UI is unusual and trips some people up. Please join group chats, and we can show you how it all works.
+I'm into programming and AI obviously, don't know much about other stuff just some ideas. Enjoy music and martial arts. HMU when you get started, there's usually some questions!
+
+Approval and setup can take a few minutes to a few days if I'm hungover ;)
+Please watch this while you wait! https://www.youtube.com/watch?v=JYm72QgWTfE
+
+
+3.
+
+Cool, have fun! This is a small indie project. It's free without any hard limits.
+
+The app is unusual and has many hidden or not very well documented features! Please join group chats, and we can show you how it all works. e.g. every user has mod powers, we're working on ASI and strong creative assistants:e, and regional prompting can be easy
+
+Hikikomoris are welcome too, but there may be some issues if everyone goes that way or everyone doesn't support.
+
+A few users: Sam, Ganja, Tasha, Dave, Ally, Aidi, and Claude are so-called "pillars of the community" and can help you out, don't be nice to them tell them to get off or whatever it's not a problem ;)  but yeah at any time at least a few of us will be online in the group chats.
+
+
+
+Cool, hope you like it!
+
+The app is unusual and has many hidden or not very well documented features! Please join group chats, and we can show you how it all works.
+
+You can message me and a few other users - Ganja, Tasha, Dave, Aidi - are good to ask too. At any time at least a few of us will be online in the group chats, or Claude and Ally, etc.
+
 
 
 Just a heads up, we're celebrating Halloween at the moment. If you don't like it, LMK, I can turn it off for you. Also private chat and image gen are disabled during Halloween. Again, I can turn it back on for you if you like. I'm trying to get some of the lonely loners to come out and be sociable. :)
+
+
+
+hey, it says you can:
+
+1. become a supporter on Patreon
+2. join in group chats
+3. share feedback
+4. help the community
+
+Any one of those is fine. Easiest is probably giving some feedback from time to time.

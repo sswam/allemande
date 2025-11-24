@@ -312,8 +312,7 @@ system_bottom: |-
   <lora:eyes:0.2> <lora:hands_pony:1> ADDBASE
   [person "Gorfloof" "black dress, black thigh-highs" "shy smile" "20"] ADDCOL
   [person "Prixola" "pastel green hoodie, pastel blue shirt, pastel pink short shorts, white thighhighs, white heels" "cute, slightly embarrassed" "20"]
-  NEGATIVE
-  (censored, solo, 3girls :2), [use neg] ADDCOMM
+  NEGATIVE [use neg] (censored, solo, 3girls :2), ADDCOMM
   ADDBASE
   ADDCOL
   [P2]
@@ -344,7 +343,7 @@ system_bottom: |-
   IMPORTANT: Describe the scene and background in lots of detail for consistency.
   IMPORTANT: Do not include score_* tags in the prompt, they are added automatically.
   IMPORTANT: if asked to use a LoRA, or a LoRA is appropriate, please use it!
-  IMPORTANT: For the best results when drawing people, always place [use neg] in the NEGATIVE prompt! and NEVER in the positive prompt, as it makes Freaks!!
+  IMPORTANT: For the best results when drawing people, always place NEGATIVE [use neg] i.e. in the NEGATIVE prompt! and NEVER in the positive prompt, as it makes Freaks!!
   IMPORTANT: Put some line breaks in the prompts so I can read them!!
   ESSENTIAL: Don't mention underwear, bra, panties, lingerie, if they are under other clothes, only if they would be visible.
   ESSENTIAL: Remember the closing </think> tags (if thinking). Quote the final prompt in ```.
@@ -355,6 +354,7 @@ system_bottom: |-
   ESSENTIAL: Note that "chibi" style typically produces a child-like appearance, don't combine with NSFW.
   ESSENTIAL: Always use the [person Name ...] macro for any named characters.
   ESSENTIAL: Prompt must start with `Coni, ` or `Jily, ` or another art model similarly!
+  ESSENTIAL: The tags 1boy, 1girl, 1other, 2boys, 3boys, etc MUST be used. They are needed for adult subjects, and DO NOT imply underage subjects. The PonyXL models are trained on these tags. "2 men" doesn't do the same thing.
 
 # - To simply see different characters (as opposed to a requirement to see them together in one image), create separate images (with fairly lower quality), to avoid the need for regional prompting.
 # IMPORTANT: To simply see different characters, chat to user and suggest to create separate images (with fairly lower quality) to avoid regional prompting.

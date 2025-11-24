@@ -71,6 +71,8 @@ Type -@Lori at the start of a line, to poke Lori to respond, this can be useful 
 - Poni: cartoon / anime images, can do hard-core and hentai, use "rating safe" in prompt to avoid nudity
 - Coni, Boni, Yoni: semi-realistic images, can do hard-core and hentai, use "rating safe" in prompt to avoid nudity
 - Bigi, Pigi: realistic NSFW images
+- Bboy, Coci: male focus and trans female focus NSFW.
+- Basp: photorealistic finetune of SDXL for SFW and NSFW, diversity.
 - When talking to a tool like an AI art model, start a line with their name, using a capital letter and a comma:
 ```
 Coni, 1girl, 25 years old, nude, flowers [P2]

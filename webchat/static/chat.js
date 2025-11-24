@@ -11,7 +11,7 @@ const CONFIRM_ARCHIVE = false;
 let START_URL = "/start.html";
 let PRIVATE_ROOM = ""; // will be updated below
 const HOLD_ALT = false;
-const SIMPLE_MODE_ENABLE = true;
+const SIMPLE_MODE_ENABLE = false;
 
 const $head = $("head");
 const $body = $("body");
