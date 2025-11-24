@@ -97,7 +97,7 @@ async def request(
     rp_flip: bool|None = False,
     rp_threshold: str|None = None,
     clip_skip: int|None = None,
-    restart_on_fail: bool = False,  # XXX was True
+    restart_on_fail: bool = True,  # XXX was True, False
     ad_checkpoint: str|None = None,
 ) -> int:
     """

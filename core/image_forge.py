@@ -75,7 +75,7 @@ USER_PRIORITY_NORMAL = 0, 1   # absolute offset, multiplier
 USER_PRIORITY_NOW = -1000, 0
 USER_PRIORITY = {
     "root": USER_PRIORITY_NOW,
-    "sam": USER_PRIORITY_NOW,
+    # "sam": USER_PRIORITY_NOW,
 }
 
 SHAPE_GEOMETRY = {
