@@ -8,30 +8,33 @@ webchat-user-audit() {
 	eval "$(ally)"
 
 	cd "$ALLEMANDE_ROOMS"
-	find . -name '*.bb' -mtime -30 -printf '%P\n'
-	while read -r file; do
+	find . -name '*.bb' -mtime -30 -printf '%P\n' |
+	while IFS= read -r file; do
 		room=${file%.bb}
 		mtime=$(stat -c %y "$file")
 		mtime=${mtime%.*}
-	#	< "$file" grep -oP '^\p{Lu}\p{Ll}+(?=:\t)' | prepend "$mtime	$room	"
-		< "$file" grep -oP '^[^ ]+(?=:\t)' | prepend "$mtime	$room	"
+		(grep -oP '^[^ ]+(?=:\t)' || true) < "$file" | prepend "$mtime	$room	"
 	done |
 	awk -F'\t' '
 		{
-			count[$3]++
+	                count[$3]++
 			# Check if room is public, private, nsfw, sfw, ...
-			if ($2 ~ /^nsfw\//) {
-				public[$3]++
-				nsfw[$3]++
-			} else if ($2 ~ /^sanctuary\//) {
-				public[$3]++
-				nsfw[$3]++
-			} else if ($2 ~ /\//) {
-				private[$3]++
-			} else {
-				public[$3]++
-				sfw[$3]++
-			}
+	                if ($2 ~ /^nsfw\//) {
+	                        # print "nsfw (public): " $2 " for user " $3 > "/dev/stderr"
+	                        public[$3]++
+	                        nsfw[$3]++
+	                } else if ($2 ~ /^sanctuary\//) {
+	                        # print "nsfw (public): " $2 " for user " $3 > "/dev/stderr"
+	                        public[$3]++
+	                        nsfw[$3]++
+	                } else if ($2 ~ /\//) {
+	                        # print "private: " $2 " for user " $3 > "/dev/stderr"
+	                        private[$3]++
+	                } else {
+	                        # print "sfw (public): " $2 " for user " $3 > "/dev/stderr"
+	                        public[$3]++
+	                        sfw[$3]++
+	                }
 			if (!seen[$3] || $1 > times[$3] || ($1 == times[$3] && $2 < rooms[$3])) {
 				times[$3] = $1
 				rooms[$3] = $2
@@ -42,9 +45,9 @@ webchat-user-audit() {
 			for (user in seen) {
 				priv = (private[user] ? private[user] : 0)
 				pub = (public[user] ? public[user] : 0)
-				nsfw = (nsfw[user] ? nsfw[user] : 0)
-				sfw = (sfw[user] ? sfw[user] : 0)
-				print tolower(user) "\t" times[user] "\t" rooms[user] "\t" count[user] "\t" priv "\t" pub "\t" sfw "\t" nsfw
+				n = (nsfw[user] ? nsfw[user] : 0)
+				s = (sfw[user] ? sfw[user] : 0)
+				print tolower(user) "\t" times[user] "\t" rooms[user] "\t" count[user] "\t" priv "\t" pub "\t" s "\t" n
 			}
 		}
 	' | order 1 > ~/audit.tsv
@@ -72,4 +75,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	webchat-user-audit "$@"
 fi
 
-# version: 0.0.3
+# version: 0.0.4

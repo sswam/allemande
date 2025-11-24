@@ -17,9 +17,13 @@ import records
 
 from ally import main, logs, util
 
-__version__ = "0.1.6"
+__version__ = "0.1.7"
 
 logger = logs.get_logger()
+
+
+USER_PUBLIC_POSTS_MIN_COUNT = 20
+USER_PUBLIC_POSTS_MIN_FRACTION = 0.1
 
 
 @dataclasses.dataclass
@@ -29,6 +33,7 @@ class UserInfo:
     is_old: bool
     is_inactive: bool
     is_nsfw: bool
+    is_public_supporter: bool
 
 
 def analyze_user_activity(rec: dict, now: datetime) -> UserInfo:
@@ -56,9 +61,19 @@ def analyze_user_activity(rec: dict, now: datetime) -> UserInfo:
     is_new = now - btime < timedelta(days=15)
     is_old = now - btime > timedelta(days=30)
     is_inactive = now - mtime > timedelta(days=30) and not is_new
-    is_nsfw = bool(int(rec.get("nsfw", "1")))
 
-    return UserInfo(is_new=is_new, is_old=is_old, is_inactive=is_inactive, is_nsfw=is_nsfw)
+    # Updated nsfw check: >0 nsfw posts indicates nsfw user
+    nsfw_posts = int(rec.get("nsfw", 0))
+    is_nsfw = nsfw_posts > 0 or bool(int(rec.get("is_nsfw", "1")))
+
+    # Check for public supporter: >10% public posts
+    public_posts = int(rec.get("public", 0))
+    private_posts = int(rec.get("private", 0))
+    total_posts = public_posts + private_posts
+    public_ratio = public_posts / total_posts if total_posts > 0 else 0.0
+    is_public_supporter = public_posts >= USER_PUBLIC_POSTS_MIN_COUNT and public_ratio >= USER_PUBLIC_POSTS_MIN_FRACTION
+
+    return UserInfo(is_new=is_new, is_old=is_old, is_inactive=is_inactive, is_nsfw=is_nsfw, is_public_supporter=is_public_supporter)
 
 
 def process_single_record(
@@ -85,6 +100,8 @@ def process_single_record(
     elif support in ["family", "friend"]:
         nag_file = "nag-friend.html"
     elif support:
+        nag_file = "nag-supporter.html"
+    elif user_info.is_public_supporter:
         nag_file = "nag-supporter.html"
     elif user_info.is_new:
         nag_file = "nag-new.html"
@@ -145,7 +162,7 @@ def process_records(
     output: TextIO = sys.stdout,
     indent: str = '\t',
     use_dot: bool = False,
-    append: bool = False
+    append: bool = False,
 ) -> None:
     """
     Read records from input, process them, and write to output.
