@@ -311,7 +311,7 @@ restore-user() {
 
 	# Find the most recent removed user directory
 	local removed_dir
-	removed_dir=$(find ~/users-removed -maxdepth 1 -type d -name "$user*" 2>/dev/null | sort -V | tail -n1)
+	removed_dir=$(find ~/users-removed -maxdepth 1 -type d \( -name "$user" -o -name "$user-*" \) 2>/dev/null | sort -V | tail -n1)
 
 	# Restore htpasswd entry if available
 	if [ -s "$removed_dir/htpasswd.entry" ]; then
