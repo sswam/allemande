@@ -1,0 +1,76 @@
+Creator	Model	Name	Description
+Meta	Llama 3.1 8B	Ally*	A small human-like model, for creativity and engaging conversations. Most characters use this model.
+Meta	Llama 3.3 70B	Ellyn	A stronger human-like model, for creativity and engaging conversations.
+Meta	Llama 4 Scout	Skout	A fast new open model from Meta.
+Meta	Llama 4 Maverick	Mavi	A powerful new open model from Meta, achieving high performance at low cost.
+Anthropic	Claude 3.5 Haiku	Clia	Anthropic's fast and affordable model for quick, creative conversations.
+Anthropic	Claude 3.5 Sonnet	Claude	Anthropic's powerful and reliable model.
+Anthropic	Claude 3.7 Sonnet	Claudia	Anthropic's powerful model, good for creative role-play.
+Anthropic	Claude 4.5 Sonnet	Clauden	Anthropic's most powerful model; supports extended thinking.
+Anthropic	Claude 4.1 Opus	Claudo	Anthropic's most powerful reasoning model; supports extended thinking.
+Google	Gemini 2.0 Flash Lite	Lite	Google's fastest Gemini model, optimized for speed and economy.
+Google	Gemini 2.0 Flash	Flasho	Google's fast Gemini model, optimized for speed, hardly censored, and very capable.
+Google	Gemini 2.5 Flash	Flashi	Google's fast Gemini model, optimized for speed and very capable.
+Google	Gemini 2.5 Pro	Gemmi	Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.
+Google	Gemini 3 Pro	Gemi	Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.
+OpenAI	GPT-4.1-mini	Dav	OpenAI's fast and affordable model, ideal for efficient interactions.
+OpenAI	GPT-4.1	Emmy	OpenAI's adaptable and versatile model, perfect for varied conversations.
+OpenAI	GPT-4o	Emmo	OpenAI's adaptable and versatile model, perfect for varied conversations (similar to 4.1 but more expensive)
+OpenAI	o4-mini	Fermi	OpenAI's fast and affordable model, ideal for efficient reasoning.
+OpenAI	o3	Grace	OpenAI's most powerful reasoning model for advanced applications.
+OpenAI	GPT-5-nano	Heis	OpenAI's fastest, most cost-efficient version of GPT-5.
+OpenAI	GPT-5-mini	Heise	OpenAI's faster, cost-efficient version of GPT-5 for well-defined tasks.
+OpenAI	GPT-5	Heisen	OpenAI's best model for coding and agentic tasks across domains.
+OpenAI	gpt-oss-20b	Gos	OpenAI's medium-sized open-weight model for low latency domains.
+OpenAI	gpt-oss-120b	Goss	OpenAI's most powerful open-weight model, fits into an H100 GPU.
+Perplexity	Sonar	Sona	Perplexity's fastest and most affordable Online model with live internet data.
+Perplexity	Sonar Reasoning	Sonari	Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro.
+Perplexity	Sonar Pro	Sagi	Online model with live internet data; Perplexity's high-performance option. Includes search costs.
+Perplexity	Sonar Reasoning Pro	Sageri	Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.
+xAI	Grok 2 (Vision)	Grokko	xAI's helpful, truthful and humorous Grok 2 model with vision capabilities.
+xAI	Grok 3	Rocki	xAI's helpful, truthful and humorous Grok 3 model.
+xAI	Grok 3 Mini	Gokk	Fast and efficient mini version of Grok 3.
+xAI	Grok 4	Grok	xAI's helpful, truthful and humorous Grok 4 model.
+xAI	Grok 4 Fast	Gok	Ultra-fast Grok 4 with extended context for standard tasks.
+xAI	Grok Code Fast	Groc	Specialized fast model optimized for code generation and analysis.
+DeepSeek	DeepSeek Chat V3	Dese	DeepSeek's creative and intelligent chat model.
+DeepSeek	DeepSeek Chat V3.1	Desee	DeepSeek's creative and intelligent chat model, with extra smarts.
+DeepSeek	DeepSeek Reasoner R1	Deseri	DeepSeek's strong and creative reasoning model.
+Alibaba Cloud	QwQ 32B	Qwen	Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.
+Mistral	Mistral Large 2411	Misti	Mistral's general-purpose reasoning model, strong at various tasks.
+Mistral+	Venice: Uncensored	Veni	Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.
+MoonshotAI	Kimi K2 0905	Kimi	MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.
+Z.AI	GLM 4.6	Glimi	Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.
+
+
+Creator	Model
+Meta	Llama 3.1 8B, Llama 3.3 70B, Llama 4 Scout, Llama 4 Maverick
+Anthropic	Claude 3.5 Haiku, Claude 3.5 Sonnet, Claude 3.7 Sonnet, Claude 4.5 Sonnet, Claude 4.1 Opus
+Google	Gemini 2.0 Flash Lite, Gemini 2.0 Flash, Gemini 2.5 Flash, Gemini 2.5 Pro, Gemini 3 Pro
+OpenAI	GPT-4.1-mini, GPT-4.1, GPT-4o, o4-mini, o3, GPT-5-nano, GPT-5-mini, GPT-5, gpt-oss-20b, gpt-oss-120b
+Perplexity	Sonar, Sonar Reasoning, Sonar Pro, Sonar Reasoning Pro
+xAI	Grok 2 (Vision), Grok 3, Grok 3 Mini, Grok 4, Grok 4 Fast, Grok Code Fast
+DeepSeek	DeepSeek Chat V3, DeepSeek Chat V3.1, DeepSeek Reasoner R1
+Alibaba Cloud	QwQ 32B
+Mistral	Mistral Large 2411
+Mistral+	Venice: Uncensored
+MoonshotAI	Kimi K2 0905
+Z.AI	GLM 4.6
+
+
+Creator	Model
+RunDiffusion	Juggernaut XL v9
+LEOSAM	HelloWorld XL
+Autismix anon	AutismMix Confetti
+Cyberdelia	CyberRealistic Pony
+SubtleShader	Big Love Pony
+SubtleShader	Big Love XL
+Tauron	Eros Ultima Hybrid
+Stable Yogi	Babes
+coyotte	Lustify V6 OLT
+pornworksai	PornWorks Bad Boys
+ffjggrtbjibv	CocksXL
+nutbutter	bigasp_v20
+aria1th261	IllustriousXL
+klaabu	Illustrious Realism
+
