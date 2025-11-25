@@ -5,12 +5,12 @@ import sys
 import csv
 import io
 
-def markdown_table_to_tsv(table_str):
+def markdown_table_to_tsv(table_str: str) -> str:
 	table_lines = table_str.strip().split('\n')
 	headers, *rows = [re.split(r'\s*\|\s*', line.strip('|').strip()) for line in table_lines if line.strip() and not line.startswith('|-')]
 
 	output = io.StringIO()
-	writer = csv.writer(output, delimiter='\t')
+	writer = csv.writer(output, delimiter='\t', lineterminator='\n')
 	writer.writerow(headers)
 	writer.writerows(rows)
 	tsv_table = output.getvalue()
