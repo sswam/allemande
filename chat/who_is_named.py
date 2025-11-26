@@ -241,6 +241,28 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
 
     logger.debug("matches: %r", matches)
 
+    # Filter out shorter matches that are prefixes of longer matches at the same position
+    filtered_matches = []
+    for match in matches:
+        match_type, sentence_num, pos, neg_len, name = match
+        # Check if there's a longer match at the same position
+        is_prefix = False
+        for other_match in matches:
+            other_type, other_sent, other_pos, other_neg_len, other_name = other_match
+            # If same position, same match type, but other is longer, skip this match
+            if (pos == other_pos and
+                match_type == other_type and
+                other_neg_len < neg_len and  # other is longer (more negative)
+                other_name and name and
+                other_name.lower().startswith(name.lower())):
+                is_prefix = True
+                break
+        if not is_prefix:
+            filtered_matches.append(match)
+
+    matches = filtered_matches
+    logger.debug("matches after prefix filtering: %r", matches)
+
     # Sort matches by position and type, preserving only lowest indices
     # sorted_matches = sorted(matches, key=lambda x: (x[0], x[1]))
     if not get_all:

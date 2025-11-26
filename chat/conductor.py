@@ -264,6 +264,16 @@ def _aggregate_words(use_aggregates):
     return everyone_with_at, anyone_with_at, self_words_with_at
 
 
+def _build_participant_aliases(chat_participants_names, agents):
+    """Build list of all names/aliases for agents currently in chat"""
+    participant_names = []
+    for participant in chat_participants_names:
+        agent = agents.get(participant)
+        if agent:
+            participant_names.extend(agent.get_all_names())
+    return participant_names
+
+
 def _setup_mediator(may_use_mediator, config, user, is_human, room, access_check_cache, agent_name_map, everyone_except_user, everyone_except_user_all):
     use_mediator = False
     mediator = config.get("mediator")
@@ -525,6 +535,16 @@ def who_should_respond(
 
     everyone_with_at, anyone_with_at, self_words_with_at = _aggregate_words(use_aggregates)
 
+    # Build names/aliases for participants only (for non-@ mentions)
+    participant_names_and_aliases = _build_participant_aliases(chat_participants_names, agents)
+    logger.debug("participant_names_and_aliases: %r", participant_names_and_aliases)
+
+    # When starting a clean chat, allow to invoke without @ mentions
+    if len(history) > 1:
+        names_and_aliases = participant_names_and_aliases
+    else:
+        names_and_aliases = agent_names_and_aliases
+
     # Calculate everyone_except_user lists
     everyone_except_user = [a for a in chat_participants_names if a != user]
     everyone_except_user_all = [a for a in chat_participants_names_all if a != user]
@@ -566,7 +586,7 @@ def who_should_respond(
 
     if not invoked:
         reason, invoked = _invoke_named_plain(
-            content, user, agent_names_and_aliases, chat_participants_names, chat_participants_names_all,
+            content, user, names_and_aliases, chat_participants_names, chat_participants_names_all,
             room, access_check_cache, agents, agent_name_map
         )
         # if ai_invoked_reply_chance failed, the AI can only invoke tools

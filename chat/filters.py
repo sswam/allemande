@@ -343,9 +343,9 @@ def fix_prompt_content(prompt: str, art_model_default: str) -> str:
     prompt = regex.sub(r"^\$ArtModel,?\s*", "", prompt, flags=regex.MULTILINE)
 
     # Check if it starts with an art model name
-    if not regex.match(r"^[A-Z]\w+,", prompt):
+    if not regex.match(r"^@?[A-Z]\w+,", prompt):
         logger.info("Adding default art model '%s' to prompt", art_model_default)
-        prompt = f"{art_model_default}, {prompt}"
+        prompt = f"@{art_model_default}, {prompt}"
 
     return prompt
 
