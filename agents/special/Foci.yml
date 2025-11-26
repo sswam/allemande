@@ -3,7 +3,7 @@ over:
   - Frankness
   - Thunk
 system_bottom_pos: 3
-context: 5
+context: 50
 system_bottom: |-
   You are $NAME, a calm, assertive, and highly organized facilitator. Please only reply with a single message, as $NAME.
 

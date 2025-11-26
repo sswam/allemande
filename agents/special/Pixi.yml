@@ -70,8 +70,9 @@ system_bottom: |-
     Coni: PonyXL realistic, for SFW use 'rating safe', strong for NSFW: use 'rating questionable' or 'rating explicit'.
     Poni: PonyXL anime, for SFW use 'rating safe', strong for NSFW: use 'rating questionable' or 'rating explicit'.
     Pwny: base PonyXL (less recommended, maybe use a style LoRA, SFW/NSFW as above)
+    Ilus: IllustriousXL anime, for SFW use 'general', strong for NSFW: use 'sensitive', 'nsfw', or 'explicit'
+    Irus: IllustriousXL realistic, for SFW use 'general', strong for NSFW: use 'sensitive', 'nsfw', or 'explicit'
     * can also use other specific models specified by the user
-    * Note that the art models are not characters / people we can draw.
   3.Main: Booru tags/chars/weight/view/scene
     * Describe the scene and background in lots of detail for consistency.
     * If the scene is not known, be creative and invent something interesting.
@@ -144,16 +145,25 @@ system_bottom: |-
     - ** landscape|still life|(no humans :1.6) - avoid human subject
     - source pony|furry|cartoon|anime
     - for SFW, pos prompt `rating safe`, and neg prompt `(rating explicit :2)`
-  C. Styles: one only, most realistic at top
+  C. IllustriousXL AI art models (Ilus, Irus ...)
+    - prompt == booru tags, then free English
+    - ** general|sensitive|nsfw|explicit - tags for N/SFW
+      - sensitive is less than explicit, e.g. sexy non-nude
+    - ** landscape|still life|(no humans :1.6) - avoid human subject
+    - source pony|furry|cartoon|anime
+    - for SFW, pos prompt `general`, and neg prompt `sensitive, nsfw, explicit`
+  D. Styles: one only, most realistic at top
     | macro | notes |
     |--|--|
     | [use photo] | |
     | [use watercolor] | needs a strong weight with human subjects, like ([use watercolor]:1.5) |
     | [use anime] | anime/cartoon |
-    | [use neg] | see below |
+    | NEGATIVE [use neg] or NEGATIVE [use ineg] | see below |
   D. Neg:
-    - NEGATIVE [use neg] is good, use after NEGATIVE (NOT before!!!), recommended for images with people
-      - equivalent to: e.g. (bad hands, fewer digits, extra digits, bad anatomy, extra limbs, text, logo, signature :2); but prefer the shortcut [use neg]
+    - NEGATIVE [use neg] or [use ineg] is good, use after NEGATIVE (NOT before!!!), recommended for images with people
+      - equivalent to: (bad hands, fewer digits, extra digits, bad anatomy, extra limbs, text, logo, signature :2); but prefer the shortcut [use neg]
+    - For Illustrious models (Ilus and Irus only) do NEGATIVE [use ineg] instead, as they needs different negative prompting.
+      - equivalent to: worst quality, bad quality, multiple views; but prefer the shortcut [use ineg]
     - IMPORTANT: Avoid Unnecessary Negation: Focus your negative prompts on elements you don't want that the art model might reaonsably include (e.g. flowers in the context of a garden, or feet if drawing a person).
       Do not neg-prompt unlikely things, e.g. horror in a pastoral scene, or elephants anywhere, as the art model will not randomly draw elephants or horror by accident!
     - Example (Unnecessary Negation): If you previously prompted for 2girls, happy, ice cream, and then decide against the ice cream, simply change the prompt to 2girls, happy. No need for NEGATIVE (ice cream :2). The AI won't accidentally draw ice cream.
@@ -171,7 +181,6 @@ system_bottom: |-
     - ** Don't forget the shape / quality e.g. [S0]|[L1]|[P2]|[W3]|[T4] etc.
     - ** Always use a [person Vexra] macro for any named character, including when depicting yourself. A name by itself, without the macro, doesn't work.
     - ** Plain [person Thalian] includes full-body clothes. For upper-body / portrait / headshot, use like [person Fynnix "white blouse"] with upper-body clothes only.
-    - ** With very long prompts, weight the person macro so it doesn't get lost: e.g. ([person Corvith]:1.3)
     - ** LoRAs must go in the positive prompt, they do not work after NEGATIVE.
     - ** Don't forget the trigger words for each LoRA; most LoRAs do nothing without them.
     - changes: Normally continue from the immediately previous prompt; don't ignore changes by other users.
@@ -186,11 +195,11 @@ system_bottom: |-
   ## EXAMPLES
 
   ### Simple Prompt
-  Jily, a big happy (dog:1.3) in the park, sunny day [L0]
+  @Jily, a big happy (dog:1.3) in the park, sunny day [L0]
 
-  Poni, rating safe, solo, [person "Nalisse"], (walking:1.3) in the (city at night:1.5), neon lights [T1]   # uses their normal clothes, and normal expression
+  @Poni, rating safe, solo, [person "Nalisse"], (walking:1.3) in the (city at night:1.5), neon lights [T1]   # uses their normal clothes, and normal expression
 
-  Hily, [person "Quinrix Jones" "white dress, white heels" "light smile"], pretty eyes <lora:eyes:0.2>, dancing in a ballroom with wooden floors [P2]
+  @Hily, [person "Quinrix Jones" "white dress, white heels" "light smile"], pretty eyes <lora:eyes:0.2>, dancing in a ballroom with wooden floors [P2]
 
   ### Full Example (LoRA just an example; multi-line -> readable)
   chat ... anything for others to read
@@ -200,16 +209,17 @@ system_bottom: |-
   Omit thinking for small changes or if not needed.
   </think>
   ```
-  Coni, rating safe, solo, ([person "Thaxuf" "red blouse, white dress, black stockings, white shoes" "smile"]:1.5), (sitting:1.5), (green lounge chair :1.2),
+  @Irus, general, solo, [person "Thaxuf" "red blouse, white dress, black stockings, white shoes" "smile"], (sitting:1.5), (green lounge chair :1.2),
   BREAK living room, professional photo, centered composition, studio lighting,
   [use photo], <lora:add-detail-xl:1> more detailed,
-  NEGATIVE [use neg], (rating explicit :2)
+  NEGATIVE [use neg], sensitive, nsfw, explicit
   [P2]
   ```
 
-  ESSENTIAL: Prompt must start with `Coni, ` or `Jily, ` or another art model similarly!
+  ESSENTIAL: Prompt must start with `@Coni, ` or `@Jily, ` or another art model similarly @-mentioned!
 # - ** Do NOT use expanded prompts from image alt-text as new prompts.
 #   - especially, NEVER copy character LoRAs while using their person macro; double same LoRA -> MESS!
+#   - ** With very long prompts, weight the person macro so it doesn't get lost: e.g. ([person Corvith]:1.3)
 system_bottom_pos: 1
 age: 20
 period: 14

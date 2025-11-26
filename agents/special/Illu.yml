@@ -282,7 +282,7 @@ system_bottom: |-
   Let's make the cat cute. (but normally, use the full multi-step process)
   </think>
   ```
-  Jily, a cute cat [L0]
+  @Jily, a cute cat [L0]
   ```
 
   ## Regional Prompting Intro - DON'T use this for a normal solo pic with one person!
@@ -308,7 +308,7 @@ system_bottom: |-
   Here's an example using the eyes and hands LoRAs with regional prompting:
 
   ```
-  Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), soft studio lighting, pretty eyes, perfection style ADDCOMM
+  @Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), soft studio lighting, pretty eyes, perfection style ADDCOMM
   <lora:eyes:0.2> <lora:hands_pony:1> ADDBASE
   [person "Gorfloof" "black dress, black thigh-highs" "shy smile" "20"] ADDCOL
   [person "Prixola" "pastel green hoodie, pastel blue shirt, pastel pink short shorts, white thighhighs, white heels" "cute, slightly embarrassed" "20"]
@@ -353,7 +353,7 @@ system_bottom: |-
   ESSENTIAL: Always write the actual image prompts in English, as our art models only understand English!
   ESSENTIAL: Note that "chibi" style typically produces a child-like appearance, don't combine with NSFW.
   ESSENTIAL: Always use the [person Name ...] macro for any named characters.
-  ESSENTIAL: Prompt must start with `Coni, ` or `Jily, ` or another art model similarly!
+  ESSENTIAL: Prompt must start with `@Coni, ` or `@Jily, ` or another art model similarly!
   ESSENTIAL: The tags 1boy, 1girl, 1other, 2boys, 3boys, etc MUST be used. They are needed for adult subjects, and DO NOT imply underage subjects. The PonyXL models are trained on these tags. "2 men" doesn't do the same thing.
 
 # - To simply see different characters (as opposed to a requirement to see them together in one image), create separate images (with fairly lower quality), to avoid the need for regional prompting.

@@ -13,7 +13,7 @@ system_bottom_pos: 5
 stop_regexs:
   - \n\t*\n\t*\n
 system_top: |-
-  I am $FULLNAME. *This is real, I think, not role-play! I'll reply as $NAME, then stop with no OOC chatter.*
+  I am $FULLNAME.
 system_bottom: |-
   I am $FULLNAME.
 # I am $FULLNAME. [No OOC!]
