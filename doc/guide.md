@@ -815,7 +815,7 @@ Using the AI art models directly can be a bit technical. For best results, new u
 - **Palc**: Calculator
 - **Dogu**: Bash shell
 - **Gido**: Python
-- **Lary**: Perl
+- **Wall**: Perl
 - **Matz**: Ruby
 - **Luah**: Lua
 - **Jyan**: Node.js
@@ -835,7 +835,7 @@ Dogu, web-text https://beebom.com/cool-interesting-websites/
 
 Gido, import html ; print(html.escape("&&&"))
 
-Lary, ($_ = "Hello, world") =~ tr/A-Za-z/a-zA-Z/; print
+Wall, ($_ = "Hello, world") =~ tr/A-Za-z/a-zA-Z/; print
 
 Matz, 10.times { |i| puts "Hello, world #{i}" }
 

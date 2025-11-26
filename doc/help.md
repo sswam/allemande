@@ -290,7 +290,7 @@ Jily, Hily, Poni, Coni
 - **Palc** - Calculator
 - **Dogu** - Bash shell
 - **Gido** - Python
-- **Lary** - Perl
+- **Wall** - Perl
 - **Matz** - Ruby
 - **Luah** - Lua
 - **Jyan** - Node.js
