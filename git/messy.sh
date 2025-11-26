@@ -29,6 +29,7 @@ declare -A model_names=(
     ["c"]="Claude"
     ["i"]="Claude Instant"
     ["gp"]="Gemini 2.5 Pro"
+    ["gemi"]="Gemini 3 Pro"
     ["gf"]="Gemini 2.0 Flash"
 )
 
@@ -43,11 +44,12 @@ declare -A option_model_codes=(
     ["M"]="om"
     ["o"]="op"
     ["g"]="gp"
+    ["P"]="gemi"
     ["f"]="gf"
 )
 
 usage() {
-    echo "Usage: $(basename "$0") [-G|-s|-5|-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-x] [-a model] [-h]"
+    echo "Usage: $(basename "$0") [-P|-G|-s|-5|-4|-3|-c|-i|-o|-M|-g|-f] [-n] [-C lines] [-B] [-m msg] [-F file] [-e] [-x] [-a model] [-h]"
     for opt in "${!option_model_codes[@]}"; do
         model_code="${option_model_codes[$opt]}"
         model_name="${model_names[$model_code]}"
@@ -135,7 +137,7 @@ trap 'message-and-exit 1' INT
 get_options() {
     run_initial_gens=1
 
-    while getopts "nC:BGs543cioMgfm:F:exa:h" opt; do
+    while getopts "nC:BPGs543cioMgfm:F:exa:h" opt; do
         case "$opt" in
         a)
             if [ -n "$OPTARG" ]; then
