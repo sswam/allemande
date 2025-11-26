@@ -1,0 +1,6 @@
+2025-11-24 14:39:07,276  PID:1545305  DEBUG     root  Exiting llm
+2025-11-24 14:39:07,602  PID:1545305  ERROR     asyncio  Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7f6829f18110>
+2025-11-24 14:39:07,608  PID:1545305  ERROR     asyncio  Unclosed connector
+connections: ['deque([(<aiohttp.client_proto.ResponseHandler object at 0x7f6829ac8600>, 3144074.413552816)])']
+connector: <aiohttp.connector.TCPConnector object at 0x7f6829adce50>
