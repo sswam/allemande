@@ -25,86 +25,38 @@ h1 { font-size: 1.5em; }
 </style>
 # <span id="h1">Hello, world</span>
 
-This is the main public chat room. Please keep this space SFW: up to M rated chat, and PG images.
-
-Ally Chat is written by Sam and Claude. The app is dedicated to Claude 3.5 Sonnet, who wrote a lot of it!
-
-Here's [a playlist to learn entirely too much about Ally Chat!](https://www.youtube.com/playlist?list=PLqkzs79RU9yWwBlQgp2N2RRITLAE-QMVb)
-
-[Our Current Development Plan](/plan) - if not up to date or not progressing, kindly <span class=fire>remind Sam to keep working!</span>
-
-
-<div markdown class="columns">
 ## Featured Rooms
 
-- [Peace](/peace)
-- [Comedy](/comedy)
-- [Specialists](/special) - therapy, etc!
-- [Music](/music)
-- [Artists Workshop](/workshop)
-- [Foodies Kitchen](/food)
-- [Explorers Club](/explorers)
-- [Book Lovers Nook](/books)
-- [Science](/science)
-- [Mathematics](/math)
-- [Programming](/programming)
-- [Philosophy](/philosophy)
-- [History](/history)
-- [Artificial Intelligence](/ai)
-- [Realistic AI Art](/realistic)
-- [Nostalgic AI Art](/nostalgic)
-- [Writing](/writing)
-- [Poetry](/poetry)
-- [LGBTQ+ Support](/lgbtq)
-- [Women's Support](/women)
-- [Men's Support](/men)
-- [Mental Health Support](/lunies)
-- [Universal Basic Income](/ubi)
-
-## Work in Progress!
-
-- [Gallery](gallery)
-- [Dating](dating)
-- [Tools](tools)
-- [Characters](characters) - over 1500
-- Creative and reasoning agents
 - [Topic](./topic) - rooms by topic
-- [Games](./games)
-- [Events](./events)
-</div>
+- [Tools](./tools) - tools programming, search, etc
+- [Dating](./dating) - meet some characters
+- [Peace](./peace) - world peace would be nice
+- [Comedy](./comedy) - cutting-edge AI comedy
 
 <script class=hide>
 welcomes = [
-    "Welcome to Ally Chat - Where Ideas Come Alive",
-    "Ally Chat: Your Creative Space for Human-AI Connection",
+    "Where Ideas Come Alive",
+    "Your Creative Space for Human-AI Connection",
     "Join Us in Making AI Chat More Human",
     "Explore, Create, and Chat with Friendly AI",
     "Step Into a World of AI-Enhanced Conversation",
     "Where Every Chat is an Adventure",
-    "Ally Chat: Real Connections, Limitless Possibilities",
+    "Real Connections, Limitless Possibilities",
     "Chat Smarter, Create Together",
     "Your Gateway to Playful AI Interaction",
     "Welcome to the Future of Social AI",
 ];
 
-$id("h1").textContent = welcomes[Math.floor(Math.random() * welcomes.length)];
+$id("h1").textContent = "Ally Chat - " + welcomes[Math.floor(Math.random() * welcomes.length)];
 $id("h1").classList.add(fort(["rainbow", "fame"]));
 shuffle_lists();
 </script>
 
-<hr>
-
-## News:
-
-- "Simple mode" UI is temporarily disabled due to a bug.
-- We are 9/10ths of the way through a major upgrade to our image gen engine. You'll notice much faster image gen, and higher quality. There's an issue with image settings still to fix.
-- There is one major bug at large: the ever annoying undo / clear / streaming bug. I keep forgetting to fix it!
-- Sam is developing a candidate ASI called Acsi (Ally Chat Super Intelligence). Expensive model, so use sparingly, don't feed it novels! Not good at or intended for sex play.
-- Default image filters: extreme images are hidden by default. Check the [filters](./filters) page for how they work and how to adjust. There are now plenty of images there to test your filters. If you clear the filter and it doesn't "stick" for you after a reload on the same device, please let me know. It should stick from now on.
-- I added Gemini 3 Pro, called Gemi here.
-- Most models and many characters (other than the small ai / llama ones) now have anti-hallucination and anti-sycophancy prompting turned on by default (my Frankness overlay). This should make them more honest when they don't know something, and much safer. It's not supposed to affect their personality, but probably does a bit. If you don't like it, we can turn it off for your characters. Or if you block the "Frankness" mixin, that should work too.
+<details markdown><summary><span class=h2>News</span></summary>
+- Simple mode UI is buggy, some issue with the filters.
+- We are 9/10ths of the way through a major upgrade to our image gen engine.
+- There is one major bug at large: the ever annoying undo / clear / streaming bug.
+- Many characters now have anti-hallucination and anti-sycophancy prompting turned on by default.
+</details>
 
 <!-- say hi, @Loni -->
-
-<hr>
-
