@@ -1633,3 +1633,10 @@ ul.line li:last-child {
 section, article, header, footer, nav, aside, div.message, div.narrative {
     break-inside: avoid;
 }
+
+/* header classes ------------------------------------------------------- */
+
+summary:has(> .h1), .h1 { font-size: 2rem; font-weight: bold; }
+summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
+.h1 { font-size: 2rem; font-weight: bold; color: var(--text); }
+.h2 { font-size: 1.5rem; font-weight: bold; color: var(--text); }

@@ -3424,10 +3424,12 @@ function load_filter() {
   const filterValue = view_options.filter ?? get_filter_default();
 
   $id('filter_query').value = filterValue;                                     // console.log("=== load_filter ===", "view_options.filter:", view_options.filter, "FILTER_DEFAULT:", get_filter_default(), "Resolved:", filterValue, "Set input to:", $id('filter_query').value);
+  active_set("filter", view_options.filter != "");
 }
 
 function save_filter() {
   view_options.filter = $id('filter_query').value;                             // console.log("=== save_filter START ===", "Before:", view_options.filter, "Input value:", $id('filter_query').value, "FILTER_DEFAULT:", get_filter_default());
+  active_set("filter", view_options.filter != "");
 
   if (view_options.filter == get_filter_default()) {
     view_options.filter = null;                                                // console.log("  Filter matches DEFAULT - reset to null. Final:", view_options.filter);
