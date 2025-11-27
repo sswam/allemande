@@ -9,18 +9,16 @@ from threading import Thread, Event
 from queue import Queue
 import logging
 from contextlib import contextmanager
-from pathlib import Path
 import asyncio
 
 import alsaaudio  # pylint: disable=no-name-in-module
 from pydub import AudioSegment
 import speech_recognition as sr
-import yaml
 
 import ucm
 from ally import portals, main, logs
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 logger = logs.get_logger()
 
@@ -103,7 +101,8 @@ async def client_request(portal, audio, config=None):
 #    result = yaml.safe_load((resp / "result.yaml").read_text(encoding="utf-8"))
 
 #    logger.info("%r", result)
-    await portal.remove_response(resp)
+    if resp:
+        await portal.remove_response(resp)
 
     return text #, result
 
