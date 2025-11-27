@@ -96,7 +96,7 @@ lazy("transformers", "AutoTokenizer")
 llama3_tokenizer = None
 
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -324,6 +324,7 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
             logger.warning("achat_openai: too many stop sequences, truncating to 4")
             options["stop"] = opts.stop[:4]
 
+    start_time = 0
     if opts.timeit:
         start_time = time.time()
 
@@ -479,6 +480,7 @@ async def achat_claude(opts: Options, messages):
     if opts.stop:
         options["stop_sequences"] = opts.stop
 
+    start_time = 0
     if opts.timeit:
         start_time = time.time()
 
@@ -1094,8 +1096,6 @@ def decimal_string(num: float, places=6) -> str:
 @arg("-i", "--input", dest="input_file", help="input file (default: stdin)")
 @arg("-o", "--output", dest="output_file", help="output file (default: stdout)")
 def count(istream=stdin, model=default_model, in_cost=False, out_cost=False, input_file=None, output_file=None):
-    """count tokens in input"""
-
     # Handle input redirection
     if input_file:
         istream = open(input_file, 'r')
@@ -1106,6 +1106,7 @@ def count(istream=stdin, model=default_model, in_cost=False, out_cost=False, inp
         ostream = open(output_file, 'w')
 
     try:
+        model = get_model_by_alias(model)
         result = _count_tokens(istream, model, in_cost, out_cost)
 
         # Format and write output
