@@ -625,7 +625,7 @@ async def allm_chat(opts: Options, messages):
 
     if opts.system is not None:
         system_message_obj = {"role": "system", "content": opts.system}
-        logger.warning("system message: %s", system_message_obj)
+        logger.debug("system message: %s", system_message_obj)
         messages = [system_message_obj] + messages
 
     model = MODELS[opts.model]
