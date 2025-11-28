@@ -34,7 +34,7 @@ ALLEMANDE_WEBCACHE="$ALLEMANDE_HOME/webcache"
 
 ALLEMANDE_AUDIO_LOCK="/var/lock/allemande-audio.lock"
 
-ALLEMANDE_LLM_DEFAULT="claude"
+ALLEMANDE_LLM_DEFAULT="flasho" # claude, groc, flashi
 ALLEMANDE_LLM_DEFAULT_SMALL="flasho"
 
 ALLY_DISABLE_DEPRECATION_WARNINGS="0"
@@ -61,7 +61,7 @@ for dir in perl; do
 	PERL5LIB=${PERL5LIB:-}:$ALLEMANDE_HOME/$dir
 done
 
-ALLEMANDE_PATH="adm core sys tools text data image audio speech video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally pdev time bash/tests python/tests perl/tests c markdown x11 apps/story debian richtext refactor math vpn wasm linux css arcs amps safety net go rag minichat social"
+ALLEMANDE_PATH="adm core sys tools text data image audio speech video code llm anthropic chat voice-chat eg www html markup i3 git gradio wordpress python perl scrape misc youtube email prompt unprompted geo subs files bash tty ally pdev time bash/tests python/tests perl/tests c markdown x11 apps/story debian richtext refactor math vpn wasm linux css arcs amps safety net go rag minichat social shell"
 
 # TODO only use canon and alias
 # for dir in canon alias; do
