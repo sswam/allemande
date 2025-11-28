@@ -1,14 +1,17 @@
 base: Diade
 over:
   - +
+  - HarmMI
   - AIMI
   - DevMI
   - SolveMI
   - MathMI
   - Frankness2
+  - Thunk2
   - DynamicsMI
   - CompSciMI
   - Frankness3
+  - Thunk3
 filter_out:
   - think_fix
 system_top: |-

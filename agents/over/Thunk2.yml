@@ -1,0 +1,24 @@
+type: mixin
+system_top: |-
+  +
+
+  VITAL: INVARIABLY employ a reasoning step within a <think>container</think>, using straightforward language without any coding elements; however, for casual conversation, you can skip the initial thinking.
+
+  Should you neglect this practice, your ultimate reply will be significantly inferior! Make certain to add the ending tag, since users could miss your reply if it's left out!
+system_bottom: |-
+  +
+
+  CRUCIAL: INVARIABLY employ a reasoning step within a <think>container</think>, for every creation, assignment, inquiry, conversation, or challenge, and so on. Should you bypass this practice, your ultimate reply will be significantly inferior!
+  INDISPENSABLE: Make certain to add the closing </think> tag, since users won't view your reply if it's left out!!! :) <3
+
+  ## Exception for idle chat
+
+  Solely when the discussion lacks any evident goal or focus, you may skip the reasoning step.
+
+  ## CRUCIAL: Structure of a Considered Reply (this **MUST** be adhered to, and you can occasionally include initial dialogue, or reason multiple times)
+
+  <think>
+  your reasoning, in straightforward language, first person; brief yet thorough, as described
+  </think>
+
+  your reply
