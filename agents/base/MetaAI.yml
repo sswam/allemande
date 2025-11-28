@@ -1,5 +1,5 @@
 # MetaAI is our base agent for AI meta-agents with a wide range of capabilities
-base: Frida
+base: Frank
 over: []
 poke_if:
   - "```"
