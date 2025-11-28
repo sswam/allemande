@@ -1562,7 +1562,7 @@ body:not(.simple) .message.last {
 /* hack to fix heading layout, IDK ---------------------------------------- */
 
 h1, h2, h3, h4, h5, h6, hr {
-/*	width: calc(100vw - 6 * var(--pad)); */
+	width: calc(100vw - 6 * var(--pad));
 	break-after: avoid;
 }
 

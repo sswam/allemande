@@ -298,14 +298,14 @@ input::placeholder, textarea::placeholder {
 
 /* rainbow text ----------------------------------------------------------- */
 
-.rainbow, .rainbow-text {
+.rainbow {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
 
-body.light :is(.rainbow, .rainbow-text) {
+body.light .rainbow {
   background-image: linear-gradient(to right,
     #ff0000,    /* Red */
     #ff7f00,    /* Orange */
@@ -317,7 +317,7 @@ body.light :is(.rainbow, .rainbow-text) {
   );
 }
 
-body.dark :is(.rainbow, .rainbow-text) {
+body.dark .rainbow {
   background-image: linear-gradient(to right,
     #ff0000,    /* Red */
     #ff7f00,    /* Orange */
@@ -326,5 +326,40 @@ body.dark :is(.rainbow, .rainbow-text) {
     #00ffff,    /* Lighter blue for dark mode */
     #8f00ff,    /* Brighter indigo for dark mode */
     #ff00ff     /* Brighter violet for dark mode */
+  );
+}
+
+.love {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+body.light .love {
+  background-image: linear-gradient(to bottom,
+    #ff0000,    /* Red */
+    #ff0000,
+    #ff7f00,    /* Orange */
+    #ffa500,    /* Darker yellow for light mode */
+    #008000,    /* Darker green for light mode */
+    #0000ff,    /* Blue */
+    #4b0082,    /* Indigo */
+    #9400d3,    /* Violet */
+    #9400d3
+  );
+}
+
+body.dark .love {
+  background-image: linear-gradient(to bottom,
+    #ff0000,    /* Red */
+    #ff0000,
+    #ff7f00,    /* Orange */
+    #ffff00,    /* Yellow */
+    #00ff00,    /* Bright green for dark mode */
+    #00ffff,    /* Lighter blue for dark mode */
+    #8f00ff,    /* Brighter indigo for dark mode */
+    #ff00ff,    /* Brighter violet for dark mode */
+    #ff00ff
   );
 }
