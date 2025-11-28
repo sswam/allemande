@@ -82,6 +82,15 @@ class Room:
         if not access & Access.WRITE.value:
             raise PermissionError(f"You are not allowed to post to this room: {self.name}, user: {user}")
 
+        options = self.get_options(user)
+
+        # allow specifying a different speaker user with "=speaker:\tmessage"
+        match = re.match(r'^=(.*?):\s(.*)', content, flags=re.DOTALL)
+        if match:
+            user = match.group(1).strip()
+            content = match.group(2).strip()
+            logger.info("  as speaker %s", user)
+
         # support narration by moderators
         if content.startswith("--") and access & Access.MODERATE.value == Access.MODERATE.value:
             user = None
@@ -101,8 +110,6 @@ class Room:
             user_tc = user.title()
         else:
             user_tc = user
-
-        options = self.get_options(user)
 
         if options.get("hide_user"):
             user_tc = None
