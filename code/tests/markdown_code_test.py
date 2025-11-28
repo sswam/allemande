@@ -4,7 +4,7 @@ import textwrap
 
 """ tests for markdown-code """
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 def dedent_multiline_string(multiline_string: str) -> str:
     """
@@ -32,8 +32,8 @@ def test_extract_code_with_no_code():
         Just some text.
     """)
     expected = qi("""
-        # This is a test.
-        # Just some text.
+        This is a test.
+        Just some text.
     """)
     assert extract_code_from_markdown(input_source=markdown, start_comment="#") == expected
 
@@ -226,9 +226,9 @@ def test_first_option():
     """)
     expected = qi("""
     print('First block')
-   
+
     # Some text
-   
+
     # print('Second block')
     """)
     assert extract_code_from_markdown(input_source=markdown, start_comment="#", first=True) == expected
@@ -248,9 +248,9 @@ def test_no_first_option():
 
         # Some text
 
-        # print('Second block')
+        print('Second block')
     """)
-    assert extract_code_from_markdown(input_source=markdown, start_comment="#", first=True) == expected
+    assert extract_code_from_markdown(input_source=markdown, start_comment="#", first=False) == expected
 
 def test_select_specific_blocks():
     markdown = qi("""

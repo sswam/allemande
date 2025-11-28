@@ -6,22 +6,20 @@ comment out non-code sections based on provided comment prefixes.
 The extracted code along with commented non-code sections is then printed.
 
 Features:
-  - Extracts code blocks enclosed in triple backticks (```) from Markdown.
-  - Optionally comments out non-code sections with specified start and end comments.
-  - Can select specific code blocks to extract.
-  - Outputs plain text as-is if no code blocks are found.
-  - Implements shebang fix: moves #! line to the top if found in the first 3 lines.
+- Extracts code blocks enclosed in triple backticks (```) from Markdown.
+- Optionally comments out non-code sections with specified start and end comments.
+- Can select specific code blocks to extract.
+- Outputs plain text as code if no code blocks are found (and --no-everything-as-code not set).
+- Implements shebang fix: moves #! line to the top if found in the first 3 lines.
 """
 
 import sys
 import re
-import logging
 from typing import TextIO
-import argparse
 
 from ally import main
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 logger = main.get_logger()
 
@@ -85,7 +83,7 @@ def extract_code_from_markdown(
     input_source: TextIO | str = sys.stdin,
     start_comment: str | None = None,
     end_comment: str | None = None,
-    strict_code: bool = False,
+    strict_code: bool = True,
     shebang_fix: bool = True,
     strip: bool = True,
     first: bool = True,
@@ -139,7 +137,7 @@ def extract_code_from_markdown(
         code_blocks_found = True
         code = match.group(1).rstrip()
         start_index = match.start()
-        text = markdown_text[last_index:start_index].strip()
+        text = markdown_text[last_index:start_index].strip()  # type: ignore
 
         if text and start_comment is not None:
             process_text(text)
@@ -185,7 +183,7 @@ def setup_args(arg):
     arg("--no-shebang-fix", "-H", dest="shebang_fix", action="store_false", help="Shebang fix")
     arg("--no-strip", "-S", dest="strip", action="store_false", help="Strip trailing whitespace")
     arg("--no-first", "-F", dest="first", action="store_false", help="Extract first code block only")
-    arg("--strict-code", "-s", action="store_true", help="Output plain text if no code blocks are found")
+    arg("--no-everything-as-code", "-s", dest="strict_code", action="store_false", help="Comment everything instead of treating as code when no fenced code found")
 
 if __name__ == "__main__":
     main.go(extract_code_from_markdown, setup_args)
