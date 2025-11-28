@@ -32,7 +32,7 @@ from hidden import contains_hidden_component
 
 from ally import main, logs
 
-__VERSION__ = "0.1.4"
+__VERSION__ = "0.1.5"
 
 
 logger = logs.get_logger()
@@ -223,6 +223,9 @@ class Watcher:  # pylint: disable=too-many-instance-attributes
             return False
         if not self.opts.hidden and contains_hidden_component(path):
             return False
+        # Exclude .git directories and their contents
+        if any(part == '.git' for part in path.split(os.path.sep)):
+            return False
         if self.is_excluded(path):
             return False
         p = Path(path)
@@ -405,6 +408,7 @@ def output(row, fmt, opts):
     output = []
     for fmt in fmts:
         if fmt == "text":
+            # pyrefly: ignore - false positive on max_size argument
             output.append(get_change_text(*row, max_size=opts.details_limit))
         elif fmt == "meta":
             output += row
