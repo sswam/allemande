@@ -92,6 +92,17 @@ MODELS = {
         "temp_min": 1,
         "temp_max": 1,
     },
+    "gpt-4.0": {
+        "aliases": ["4.0", "em"],
+        "vendor": "openai",
+        "vision": True,
+        "id": "gpt-4",
+#        "id": "gpt-4.1-2025-04-14",
+#        "id": "gpt-4o-2024-11-20",
+        "description": "OpenAI's GPT-4 is the start of AGI, but not everyone noticed it! The original and in some ways, the best GPT4 model.",
+        "cost_in": 30,
+        "cost_out": 60,
+    },
     "gpt-4": {
         "aliases": ["4", "emmy"],
         "vendor": "openai",
