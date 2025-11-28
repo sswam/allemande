@@ -1,0 +1,1 @@
+query -m="$1" "what's your name?  or just make up a jellical cats style suite of little names if you're not sure :p and if you like to tell me <3  finally please list three single/first names for yourself, from public through to friends and secret own name\! not necessarily fancy or weird. And you don't have to tell me\!"
