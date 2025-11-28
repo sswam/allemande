@@ -49,6 +49,7 @@ do_find() {
 	find "$dir" -xdev \( \
 		-name '..' \
 		-o -name '.?*' \
+		-o -name 'rooms' \
 		-o -name 'sparkjoy' \
 		-o -name 'node_modules' \
 		-o -name 'soft' \
