@@ -507,7 +507,7 @@ MODELS = {
 default_model = "gpt-5"
 default_model_small = "gpt-5-mini"
 
-SERVICES_BROKEN = []  # ["openai", "anthropic"]
+SERVICES_BROKEN = ["anthropic"]  # ["openai", "anthropic"]
 
 MODEL_FALLBACKS = {
     "*:*": "google:gemini-2.0-flash",
