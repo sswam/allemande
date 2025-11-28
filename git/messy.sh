@@ -452,7 +452,7 @@ Please be cautious with 'refactor'; don't mark fixes or features as 'refactor'.
 Files in the 'snip' directory, are obsolete stuff.
 Files in the 'gen' directory, are interesting AI content.
 
-*** DO NOT use market-speak words like 'enhance', 'streamline'. Do not return a diff. ***
+*** DO NOT use market-speak words like 'enhance', 'streamline'. Do not return a diff. Don't note version number changes. ***
 
 ## Second Task
 
