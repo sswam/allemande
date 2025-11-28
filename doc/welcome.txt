@@ -2,19 +2,13 @@
 
 Thanks for your interest in Ally Chat!  r/AllyChat
 
-I'm Sam, the developer: https://sam.ucm.dev/resume.pdf
-You can reply in your language. All questions are optional.
+I'm Sam, a 49yo man from Melbourne Australia. I'm the CTO I guess, but rather call myself "ultra code monkey". I'm married with two teenage kids.
 
-1. What's your name, and what screen name do you prefer?
-2. Please introduce yourself, and how do you use AI?
-3. Your dream / needed feature for an AI game or app?
-4. Most annoying thing about your favourite app
-5. Your ideal chat partner/s? (any / gender / details)
-6. Your goal or biggest problem? (AI might be able to help)
-7. Would you like to support?  From $5, or other help
-8. Do you know about our open-source mentorship program?
-
-Note: Free accounts are not really limited, but you can support to help the project.
+1. Please introduce yourself, and how do you want to use AI.
+2. Your preferred screen name (e.g. your first name).
+3. Your ideal AI chat partner?  male/female/non-binary/any?
+4. Your dream feature and biggest annoyance with AI apps.
+5. A goal or problem, we might be able to help.
 
 
 2.
@@ -29,7 +23,7 @@ Please watch this while you wait! https://www.youtube.com/watch?v=JYm72QgWTfE
 
 Cool, have fun! This is a small indie project. It's free without any hard limits.
 
-The app is unusual and has many hidden or not very well documented features! Please join group chats, and we can show you how it all works. e.g. every user has mod powers, we're working on ASI and strong creative assistants:e, and regional prompting can be easy
+The app is unusual and has many hidden or not very well documented features! Please join group chats, and we can show you how it all works. I understand that some people prefer private chat, but this isn't ChatGPT, it's a complex app with thousands of agents and tools including hundreds with special features, and fundamentally it's a group chat app.
 
 Hikikomoris are welcome too, but there may be some issues if everyone goes that way or everyone doesn't support.
 
