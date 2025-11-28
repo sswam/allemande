@@ -61,9 +61,9 @@ add-user() {
 	if [ -z "$contact" ]; then
 		read -r -p "Contact info: " contact
 	fi
-	if [[ "$user" != "${user,,}" ]]; then
-		die "Username must be lower-case"
-	fi
+	# if [[ "$user" != "${user,,}" ]]; then
+	# 	die "Username must be lower-case"
+	# fi
 	# can't start with -, a safety feature for me not typing -n in the wrong place!
 	if [[ "$user" == -* ]]; then
 		die "Username cannot start with a dash"
@@ -100,12 +100,12 @@ add-user() {
 
 	local generated_user generated_pass
 	change-password "$user" |
-	while read -r _ generated_user generated_pass; do
+	while read -r _ generated_pass; do
 		cat <<END
 === Welcome to Ally Chat! ===
 
 https://$ALLEMANDE_DOMAIN
-User: $generated_user
+User: $user
 Pass: $generated_pass
 
 Please save this message, e.g. email it to yourself!
@@ -232,6 +232,9 @@ END
 	# add git to user's dir with arcs
 	cd "$user"
 	yes n | arcs -i
+	mkdir -p "$ALLEMANDE_HOME/ally-git/$user"
+	mv -T .git "$ALLEMANDE_HOME/ally-git/$user/.git"
+	ln -s "$ALLEMANDE_HOME/ally-git/$user/.git" .git
 
 	# run webchat/Makefile
 	cd "$ALLYCHAT_HOME"; make
@@ -265,7 +268,7 @@ change-password() {
 	echo "$user:$pass" | sudo chpasswd 2>/dev/null || true
 
 	if [ "$gen" = 1 ]; then
-		printf "+ %s %s\n" "$user" "$pass"
+		printf "+ %s\n" "$pass"
 	fi
 }
 
