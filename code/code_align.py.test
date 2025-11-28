@@ -1,14 +1,2 @@
-=================================== FAILURES ===================================
-________________ test_comments_align_preserves_indentation_tabs ________________
-tests/code_align_test.py:257: in test_comments_align_preserves_indentation_tabs
-    assert ostream.getvalue() == expected
-E   AssertionError: assert '    x = 1    # comment\n    yy = 22  # another\n' == '\tx = 1    # comment\n\tyy = 22  # another\n'
-E     
-E     - 	x = 1    # comment
-E     ? ^
-E     +     x = 1    # comment
-E     ? ^^^^
-E     - 	yy = 22  # another
-E     ? ^
-E     +     yy = 22  # another
-E     ? ^^^^
+ERROR: '"function"' is not a valid asyncio_default_fixture_loop_scope. Valid scopes are: function, class, module, package, session.
+

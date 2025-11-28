@@ -1,28 +1,29 @@
-# I will edit `code_align.py` to fix an issue where original tabs were preserved instead of being expanded to spaces in the output. Then, I will update `code_align_test.py` to correct a test case whose expected output did not match the alignment logic.
+# __version__ = "0.1.11"
 #
-# In `code_align.py`:
+# In `align_equals`, change:
 
-# ... unchanged
-def align_block(block: list[tuple[tuple, tuple]], block_lines: list[str], spacing: int = 2) -> list[str]:
-# ... unchanged
-            is_comment_align = after_expanded.strip().startswith(('#', '//'))
+    # Process rest of input
+    for line in istream:
+        process_line(line)
 
-            if is_comment_align:
-                result.append(f"{before_expanded.rstrip()}{' ' * spaces_needed}{after_original}{line_ending}")
-            else:
-                result.append(f"{before_expanded.rstrip()}{' ' * spaces_needed}{separator_original} {after_original}{line_ending}")
+# to:
 
-            block_idx += 1
-        else:
-# ... unchanged
+    # Process rest of input
+    for line in iter(istream.readline, ''):
+        process_line(line)
 
-# In `code_align_test.py`:
+# In `comments_align`, change:
 
-# ... unchanged
-def test_comments_align_with_tabs():
-    input_text = "x = 1\t# comment\ny = 2\t# another\n"
-    expected = "x = 1  # comment\ny = 2  # another\n"
+    # Process rest of input
+    for line in istream:
+        process_line(line)
 
-    istream = io.StringIO(input_text)
-    ostream = io.StringIO()
-# ... unchanged
+# to:
+
+    # Process rest of input
+    for line in iter(istream.readline, ''):
+        process_line(line)
+
+# ### Other issues noted (not fixed as per instructions):
+# - The error in `.code_align.py.results.txt` appears unrelated to `code_align.py` or its tests (no asyncio fixtures are present in `code_align_test.py`). This may be from a different test suite or configuration; if it's persistent, investigate pytest configuration for `asyncio_default_fixture_loop_scope`.
+# - No other certain bugs or issues identified requiring fixes; tests appear to cover functionality adequately, though some alignment logic in `test_code_align_both_equals_and_comments` uses approximate checks rather than exact matches—leave as-is.
