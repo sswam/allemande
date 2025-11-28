@@ -4,7 +4,7 @@ Utility functions
 
 import re
 import builtins
-from typing import IO
+from typing import IO, Callable, Any
 from datetime import datetime
 
 from functools import wraps, partial
@@ -114,3 +114,11 @@ def asyncify(func):
             partial(func, *args, **kwargs)
         )
     return wrapper
+
+
+async def async_main_wrapper(main_function_real: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    """Wrapper to run the main function and allow cleanup of background tasks."""
+    try:
+        return await main_function_real(*args, **kwargs)
+    finally:
+        await asyncio.sleep(0)

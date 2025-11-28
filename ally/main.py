@@ -17,6 +17,7 @@ from ally import logs, opts
 # compatibility with old usage
 from ally.logs import get_logger, meta
 from ally.old import run, io
+from ally.util import async_main_wrapper
 
 
 # main = sys.modules[__name__]
@@ -53,7 +54,7 @@ def go(
         if "opts" in sig.parameters:
             main_function = lambda *args, **kwargs: meta.call_gently(main_function_real, *args, **kwargs)
         if inspect.iscoroutinefunction(main_function_real):
-            rv = asyncio.run(main_function(*args, **kwargs))
+            rv = asyncio.run(async_main_wrapper(main_function_real, *args, **kwargs))
         else:
             rv = main_function(*args, **kwargs)
         if isinstance(rv, int):
