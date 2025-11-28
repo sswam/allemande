@@ -53,6 +53,7 @@ rooms.*
 # config files
 /webchat/static/config.js
 /config*.sh
+/local.mk
 
 # secrets
 /secrets.sh

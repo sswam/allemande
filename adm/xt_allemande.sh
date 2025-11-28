@@ -50,7 +50,7 @@ xt-allemande() {
 	if [ "$local" = 1 ] && [ "$remote" != 1 ]; then
 		for service in "${local_services[@]}"; do
 			echo -n "$service "
-			xt -e sxw allemande "$service" &
+			xt sxw allemande "$service" &
 			sleep $wait
 		done
 		echo
@@ -60,7 +60,7 @@ xt-allemande() {
 	if [ "$remote" = 1 ] && [ "$local" != 1 ]; then
 		for service in "${remote_services[@]}"; do
 			echo -n "$service "
-			xt -e sshc v"$server" sxw allemande "$service" &
+			xt sshc v"$server" sxw allemande "$service" &
 			sleep $wait
 		done
 		echo
@@ -72,9 +72,9 @@ xt-allemande() {
 			service="${host_service#*:}"
 			echo -n "$service "
 			if [[ " ${local_services[*]} " == *" $service "* ]]; then
-				xt -e sxw allemande "$service" &
+				xt sxw allemande "$service" &
 			else
-				xt -e sshc v"$server" sxw allemande "$service" &
+				xt sshc v"$server" sxw allemande "$service" &
 			fi
 			sleep $wait
 		done

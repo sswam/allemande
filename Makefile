@@ -20,6 +20,8 @@ JOBS := server_start server_stop beorn server default run-i3 run frontend backen
 	install install-dev uninstall clean i3-layout \
 	shortcuts
 
+include local.mk
+
 all: api_doc subdirs canon
 
 deps:: deb-deps
