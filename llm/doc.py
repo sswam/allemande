@@ -1,7 +1,7 @@
 #!/usr/bin/env python3-allemande
 
 """
-Document code files using AI-generated documentation.
+Document files using AI-generated documentation.
 """
 
 import os
@@ -58,13 +58,13 @@ def code_doc(
     prompt: str = "",
     model: str = ""
 ) -> None:
-    """Document code files using dependencies from stdin."""
+    """Document files using dependencies from stdin."""
     get, put = main.io(istream, ostream)
 
-    prompt = text.squeeze(f"""Please document this code file / module completely but very concisely in markdown.
-    Emphasise recording the public API with signatures, a few examples, and concise descriptions.
-    Provide a heading being the pathname to the module, a short description of the module as a whole,
-    and a compact cheat-sheet for using the modules's public API. {prompt}""")
+    prompt = text.squeeze(f"""Please document this file / module completely but very concisely in markdown.
+    Emphasise recording the overview / abstract / TOC / skeleton / public API with signatures, a few examples, and concise descriptions.
+    Provide a heading being the pathname to the file, and a short description of the file as a whole,
+    and a compact cheat-sheet for the using the file (like a cogent squeezed TOC or of the public API). {prompt}""")
 
     dep_data = get().strip().split('\n')
     files_with_deps = [line.split('\t') for line in dep_data if line]
