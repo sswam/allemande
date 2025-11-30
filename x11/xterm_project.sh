@@ -1,6 +1,9 @@
 #!/bin/bash -eu
 # [arg ...]
 
+OPTS_ALLOW_UNKNOWN=1
+name=
+
 . opts
 
 if [ "$PWD" = "$HOME" ]; then
@@ -14,4 +17,4 @@ if [ "$#" -gt 0 ]; then
 	cmd=(-e "$@")
 fi
 
-x-terminal-emulator "${OPTS[@]}" "${cmd[@]}"
+x-terminal-emulator -name "$name" "${OPTS_UNKNOWN[@]}" "${cmd[@]}"
