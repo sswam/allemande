@@ -134,7 +134,7 @@ clean:
 	> $(WATCH_LOG)
 
 llm:
-	while true; do make mount && nice ionice $(PYTHON) core/llm_llama.py -g -n 60 -v; sleep 1; done
+	while true; do make mount && nice ionice $(PYTHON) core/llm_llama.py -g -n 60 -s -v; sleep 1; done
 
 whisper:
 	while true; do make mount && nice ionice $(PYTHON) core/stt_whisper.py -v; sleep 1; done

@@ -61,6 +61,7 @@ async def generate_image(session, params, restart_on_fail=False) -> dict[str, An
 async def restart_api():
     """Restart the API."""
     logger.info("Restarting automatic1111 stable diffusion API service")
+    os.system("forge-kill -s=CONT")
     os.system("forge-kill")
 
 

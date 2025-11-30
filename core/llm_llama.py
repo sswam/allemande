@@ -250,7 +250,7 @@ def load(portals, d, filename):
     raise FileNotFoundError(f"load: could not find {filename} in {d} or above")
 
 
-async def process_request(portals, portal, req, gen, *args, **kwargs):
+async def process_request(portals, portal, req, gen, *args, stop_forge: bool=False, **kwargs):
     """Process a request on a portal"""
 
     def try_rename(src, dst):
@@ -273,7 +273,11 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
         room = config.pop("room", None)  # TODO use this for queue priority and quality limit <= 2
         logger.info("%s:%s - processing for %s in %s", portal, req, user, room)
         request = load(portals, d, "request.txt")
+        if stop_forge:
+            os.system("forge-kill -s=STOP")
         response = await gen(config, request, *args, **kwargs)
+        if stop_forge:
+            os.system("forge-kill -s=CONT")
         for k, v in response.items():
             (d / k).write_text(v, encoding="utf-8")
         os.rename(d, portal / "done" / req)
@@ -293,7 +297,7 @@ async def process_request(portals, portal, req, gen, *args, **kwargs):
             logger.removeHandler(log_handler)
 
 
-async def serve_requests_inotify(portals: str, gen: Callable):
+async def serve_requests_inotify(portals: str, gen: Callable, stop_forge: bool = False):
     """Serve requests from a directory of directories"""
     logger.info("serving requests from %s", portals)
     i = inotify.adapters.Inotify()
@@ -312,13 +316,13 @@ async def serve_requests_inotify(portals: str, gen: Callable):
             if not req.is_dir():
                 continue
             logger.info("Initial request: %s in %s", req, portal)
-            await process_request(portals, portal, req.name, gen)
+            await process_request(portals, portal, req.name, gen, stop_forge=stop_forge)
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
         logger.debug("PATH=[%r] FILENAME=[%r] EVENT_TYPES=%r", path, filename, type_names)
         portal = Path(path).parent
         logger.info("New request: %s in %s", filename, portal)
-        await process_request(portals, portal, filename, gen)
+        await process_request(portals, portal, filename, gen, stop_forge=stop_forge)
 
 
 def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]]:
@@ -336,7 +340,7 @@ def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]
     return requests
 
 
-async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float = 0.1, idle_timeout: float = IDLE_TIMEOUT):
+async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float = 0.1, idle_timeout: float = IDLE_TIMEOUT, stop_forge: bool = False):
     """Serve requests from a directory of directories using polling"""
     logger.info("serving requests from %s", portals)
     served_count = 0
@@ -345,7 +349,7 @@ async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float 
     for portal, req in known_requests:
         logger.info("Initial request: %s in %s", req, portal)
         served_count += 1
-        await process_request(portals, portal, req, gen)
+        await process_request(portals, portal, req, gen, stop_forge=stop_forge)
 
     known_requests_set = set(known_requests)
 
@@ -362,7 +366,7 @@ async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float 
             for portal, req_name in new_requests:
                 logger.info("New request: %s in %s", req_name, portal)
                 served_count += 1
-                await process_request(portals, portal, req_name, gen)
+                await process_request(portals, portal, req_name, gen, stop_forge=stop_forge)
             known_requests_set = set(new_requests)
             last_request_time = asyncio.get_event_loop().time()
 
@@ -379,6 +383,7 @@ async def llm_llama(
     n_gpu_layers: int = -1,
     poll_interval: float = 0.1,
     idle_timeout: float = IDLE_TIMEOUT,
+    stop_forge: bool = False,
 ):
     """main function wrapper to suppress output from llama_cpp"""
 
@@ -390,7 +395,7 @@ async def llm_llama(
     # await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
     # with unix.redirect(stdout=None, stderr=None):
     # await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers)
-    await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers, poll_interval, idle_timeout)
+    await llm_llama_main(portals, model, use_inotify, gguf, context, n_gpu_layers, poll_interval, idle_timeout, stop_forge=stop_forge)
 
 
 class GGUFModel:
@@ -428,6 +433,7 @@ async def llm_llama_main(
     n_gpu_layers: int = -1,
     poll_interval: float = 0.1,
     idle_timeout: float = IDLE_TIMEOUT,
+    stop_forge: bool = False,
 ):
     """main function"""
     if not model:
@@ -446,9 +452,9 @@ async def llm_llama_main(
         gen = partial(collect_response, stream_transformers, pipeline)
 
     if use_inotify:
-        await serve_requests_inotify(portals, gen)
+        await serve_requests_inotify(portals, gen, stop_forge=stop_forge)
     else:
-        await serve_requests_poll(portals, gen, idle_timeout=idle_timeout)
+        await serve_requests_poll(portals, gen, idle_timeout=idle_timeout, poll_interval=poll_interval, stop_forge=stop_forge)
 
 
 def setup_args(arg):
@@ -461,6 +467,7 @@ def setup_args(arg):
     arg("-n", "--n-gpu-layers", help="Number of GPU layers to use for GGUF")
     arg("-i", "--poll-interval", type=float, default=0.1, help="Polling interval in seconds")
     arg("-t", "--idle-timeout", type=float, default=IDLE_TIMEOUT, help="Idle timeout in seconds before exiting")
+    arg("-s", "--stop-forge", action="store_true", help="Stop forge during processing")
 
 
 if __name__ == "__main__":
