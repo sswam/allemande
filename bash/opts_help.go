@@ -25,6 +25,7 @@ var (
 	shortOptSpaceRe    = regexp.MustCompile(`\s(-\w)`)
 	functionDeclRe     = regexp.MustCompile(`^[a-zA-Z0-9_-]+\(\)\s*\{`)
 	commentedOptRe     = regexp.MustCompile(`^\s*#\s*(local )?\w+=`)
+	ignoreOptsRe       = regexp.MustCompile(`\b(OPTS_ALLOW_UNKNOWN)\b`)
 )
 
 // processLine handles a single line from the script and formats it for help output
@@ -143,6 +144,10 @@ func optsHelp(scriptPath string) error {
 		// Skip fully commented out option lines
 		trimmed := strings.TrimSpace(line)
 		if commentedOptRe.MatchString(trimmed) {
+			continue
+		}
+
+		if ignoreOptsRe.MatchString(trimmed) {
 			continue
 		}
 
