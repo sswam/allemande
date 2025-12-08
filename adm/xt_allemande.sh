@@ -9,7 +9,7 @@ xt-allemande() {
 	local local= l=            # view only local services
 	local remote= r=           # view only remote services
 	local kill= k=             # close all terminals (doesn't kill services)
-	local wait= w=0.2           # wait a little between opening terminals
+	local wait= w=0            # wait a little between opening terminals
 
 	eval "$(ally)"
 
