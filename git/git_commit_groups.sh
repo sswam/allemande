@@ -6,17 +6,23 @@ git_commit_groups() {
 	local model= m=groc   # LLM model
 	local ci_model= c=    # LLM model for commit messages
 	local max_diff_lines= M=40	# maximum number of lines in a diff to show
+	local yes= y=	# skip confirmations
 
 	eval "$(ally)"
 
-	cd "$(git-root)"
+	cd "$(git-root)" || exit
+
+	local confirm='confirm'
+	if [ "$yes" = 'yes' ]; then
+		confirm='confirm -y'
+	fi
 
 	junk=$(junk-files)
 
 	if [ -n "$junk" ]; then
 		echo "Likely junk files detected:"
 		echo "$junk"
-		confirm -o move-rubbish -x < $junk || true
+		$confirm -o move-rubbish -x < "$junk" || true
 	fi
 
 	rundown_file=$(mktemp /tmp/git_commit_groups_rundown.XXXXXX)
@@ -29,7 +35,7 @@ git_commit_groups() {
 	if [ -s "$bad_file" ]; then
 		echo "Bad files detected:"
 		cat "$bad_file" >&2
-		confirm "continue?"
+		$confirm "continue?"
 	fi
 
 	(
@@ -63,7 +69,7 @@ git_commit_groups() {
 	echo "Token count and cost:"
 	llm count --in-cost -m="$model" <"$llm_input_file"
 
-	confirm "continue?"
+	$confirm "continue?"
 
 	< "$llm_input_file" process -m="$model" "Please group these changed or new files into batches for committing together.
 We usually commit different programs separately, even if they are in the same folder.
@@ -87,7 +93,7 @@ For example:
 
 	$EDITOR "$commit_plan"
 
-	confirm "commit using messy-screen?"
+	$confirm "commit using messy-screen?"
 
 	< "$commit_plan" sed -n 's/^[0-9, ]*[[:space:]]*//; s/\s*#.*//; /\S/p' | messy-screen -a="$ci_model"
 	move-rubbish "$commit_plan"
@@ -97,4 +103,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	git_commit_groups "$@"
 fi
 
-# version: 0.1.1
+# version: 0.1.2
