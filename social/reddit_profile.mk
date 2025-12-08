@@ -34,7 +34,7 @@ $(user).filtered.txt: $(user).txt
 
 # Generate summary
 $(user).s: $(user).filtered.txt
-	process -m=flasho "Please summarise what we know about this Reddit user *$(user)* from their public profile, you can extrapolate and psychoanalyse a little! Don't be too kind with it, please, be objective. Include mention of opinions about men / women / gender please, if known; although not in a specific section." < $< | tee $@
+	process -m=flasho "Please summarise what we know about this Reddit user *$(user)* from their public profile, you can extrapolate and psychoanalyse a little! Don't be too kind with it, please, be objective. Include mention of opinions about men / women / gender please, if known; although not in a specific section. And please identify or take a guess at the user's gender and orientation." < $< | tee $@
 
 clean:
 	rm -f $(user).json $(user).txt $(user).filtered.txt $(user).s
