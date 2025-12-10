@@ -108,7 +108,9 @@ def filter_out_think_brackets(response: str) -> str:
 
 
 def filter_out_think_fix(response: str) -> str:
-    """Fix nesting and formatting of <think></think> containers."""
+    """Fix nesting and formatting of <think></think> containers.
+    Ensures there is always a newline immediately after the closing </think> tag.
+    """
     logger.info("filter_think_fix 1 input: %s", response)
 
     # Extract all text between first <think> and last </think>
@@ -141,6 +143,7 @@ def filter_out_think_fix(response: str) -> str:
     # Check if last line is just a label (e.g., "Acsi:" or "Assistant:")
     is_label_line = bool(last_line.strip()) and not before.endswith('\n')
 
+    # Build result up to and including </think>
     if is_label_line:
         # Keep the label on same line with a tab before <think>
         before = before.rstrip()
@@ -153,7 +156,14 @@ def filter_out_think_fix(response: str) -> str:
             result += '\n'
         result += f"<think>{cleaned_content}</think>"
 
-    # Add after content without modification
+    # Ensure exactly one newline immediately after </think>
+    if after.startswith('\n') or after.startswith('\r\n'):
+        # Already has a newline; do not add another
+        result += ''
+    else:
+        result += '\n'
+
+    # Add remaining content
     if after:
         result += after
 
