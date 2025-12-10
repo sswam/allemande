@@ -3,7 +3,7 @@
 # Group files for committing together, with AI help.
 
 git_commit_groups() {
-	local model= m=gpt-5  # LLM model
+	local model= m=groc   # LLM model
 	local ci_model= c=    # LLM model for commit messages
 	local max_diff_lines= M=40	# maximum number of lines in a diff to show
 
@@ -16,7 +16,7 @@ git_commit_groups() {
 	if [ -n "$junk" ]; then
 		echo "Likely junk files detected:"
 		echo "$junk"
-		confirm -o move-rubbish $junk || true
+		confirm -o move-rubbish -x < $junk || true
 	fi
 
 	rundown_file=$(mktemp /tmp/git_commit_groups_rundown.XXXXXX)
