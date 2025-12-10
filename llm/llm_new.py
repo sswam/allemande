@@ -81,7 +81,6 @@ lazy(
 
 lazy("anthropic")
 lazy("claude")
-lazy("xai_sdk", xai_client=lambda xai_sdk: xai_sdk.Client())
 
 lazy(
     "google.genai",
@@ -97,7 +96,7 @@ lazy("transformers", "AutoTokenizer")
 llama3_tokenizer = None
 
 
-__version__ = "0.1.6"
+__version__ = "0.1.5"
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -502,6 +501,35 @@ async def achat_claude(opts: Options, messages):
     return message
 
 
+def google_get_thinking_config(model: dict) -> dict:
+    """Get the thinking_config for Google models."""
+    if not opts.thinking_level and not opts.thinking_budget:
+        logger.debug("achat_google: no thinking_level or thinking_budget set, will use defaults")
+        return {}
+    if opts.thinking_level and opts.thinking_budget:
+        logger.warning("achat_google: cannot set both thinking_level and thinking_budget, ignoring both")
+        return {}
+    if opts.thinking_level:
+        return google_get_thinking_config_thinking_level(model, opts.thinking_level)
+    elif opts.thinking_budget:
+        return google_get_thinking_config_thinking_budget(model, opts.thinking_budget)
+    raise RuntimeError("google_get_thinking_config: internal logic error in thinking config")
+
+
+def google_get_thinking_config_thinking_level(model, thinking_level):
+    """Get the thinking_config for Google models based on thinking_level."""
+    options = model.get("thinking_levels") or []
+    if thinking_level not in options:
+        logger.warning("achat_google: invalid thinking_level %r, valid options: %r", thinking_level, options)
+        return {}
+    return {"thinking_level": thinking_level}
+
+
+def google_get_thinking_config_thinking_budget(model, thinking_budget):
+    """Get the thinking_config for Google models based on thinking_budget."""
+    range = model.get("thinking_budget_range") or (0, 0)
+
+
 async def achat_google(opts: Options, messages):
     """Chat with Google models asynchronously."""
     model = MODELS[opts.model]
@@ -545,15 +573,7 @@ async def achat_google(opts: Options, messages):
 
     types = google_genai.types
 
-    thinking_config = {}
-
-    if opts.thinking_level:
-        thinking_config["thinking_level"] = opts.thinking_level
-    if opts.thinking_budget:
-        thinking_config["thinking_budget"] = opts.thinking_budget
-
-    if thinking_config:
-        options["thinking_config"] = types.ThinkingConfig(**thinking_config)
+    thinking_config = google_get_thinking_config(model)
 
     history = []
 
@@ -935,7 +955,7 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
         except Exception as ex:  # pylint: disable=broad-except
             exception_type = type(ex).__name__
             logger.info("retry: exception %s, attempt %d/%d failed", exception_type, i, n_tries)
-            if exception_type not in exceptions_to_retry or "quota" in str(ex):
+            if exception_type not in exceptions_to_retry:
                 raise ex
             delay = random.uniform(sleep_min, sleep_max)
             logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
@@ -1144,9 +1164,6 @@ def _count_tokens(istream, model_name, in_cost=False, out_cost=False):
     elif vendor == "perplexity":
         tokens = get_llama3_tokenizer().tokenize(text)
         n_tokens = len(tokens)
-    elif vendor == "xai":
-        tokens = xai_client.tokenize.tokenize_text(text, model=model["id"])
-        n_tokens = len(tokens)
     elif vendor == "google":
         try:
             tokenizer = google_tokenization.get_tokenizer_for_model(model_name)
@@ -1212,3 +1229,10 @@ else:
 # TODO create compatible libraries for other APIs in future
 # TODO consider splitting off the OpenAI specific stuff into a separate library
 # IDEA use cached responses if possible?
+  
+# 1. Incomplete implementation in `llm_new.py`: The
+# `google_get_thinking_config_thinking_budget` function assigns
+# `range = model.get("thinking_budget_range") or (0, 0)` but does
+# not return a configuration dictionary (e.g., `{"thinking_budget":
+# int(thinking_budget)}`), leading to `None` being returned and potential
+# errors in `google_get_thinking_config`.
