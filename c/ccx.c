@@ -17,7 +17,7 @@
 
 #define MAX_CMD 4096
 #define MAX_LINE 1024
-#define VERSION "1.0.5"
+#define VERSION "1.0.7"
 
 struct build_vars {
 	char cc[MAX_LINE];
@@ -27,6 +27,7 @@ struct build_vars {
 	char ldflags[MAX_LINE];
 	char ldlibs[MAX_LINE];
 	char pkgs[MAX_LINE];
+	char has_shebang;
 };
 
 // Check if file exists and return its modification time
@@ -71,6 +72,7 @@ void get_build_vars(const char *src, struct build_vars *vars)
 {
 	FILE *f;
 	char line[MAX_LINE];
+	char shebang_checked = 0;
 
 	// Set defaults
 	strcpy(vars->cc, "gcc");
@@ -80,6 +82,7 @@ void get_build_vars(const char *src, struct build_vars *vars)
 	strcpy(vars->ldlibs, "");
 	strcpy(vars->ldflags, "");
 	strcpy(vars->pkgs, "");
+	vars->has_shebang = 0;
 
 	f = fopen(src, "r");
 	if (!f) {
@@ -90,6 +93,11 @@ void get_build_vars(const char *src, struct build_vars *vars)
 		// Stop at first blank line or non-comment/non-shebang line
 		if (line[0] == '\n' || line[0] == '\0') {
 			break;
+		}
+
+		if (!shebang_checked) {
+			vars->has_shebang = (strncmp(line, "#!", 2) == 0);
+			shebang_checked = 1;
 		}
 
 		// Skip shebang
@@ -148,23 +156,58 @@ int main(int argc, char *argv[])
 	struct build_vars vars;
 	char out[PATH_MAX];
 	char real_src_path[PATH_MAX];
-	char *cmd_template = "tail -n+2 %s | %s %s %s%s -o %s -x c - -x none %s %s %s%s";
-	char *cmd_template_pkg_config = "tail -n+2 %s | %s %s %s `pkg-config --cflags %s` -o %s -x c - -x none %s %s %s `pkg-config --libs %s`";
+	char *cmd_template = "tail -n+1 %s | %s %s %s%s -o %s -x c - -x none %s %s %s%s";
+	char *cmd_template_skip = "tail -n+2 %s | %s %s %s%s -o %s -x c - -x none %s %s %s%s";
+	char *cmd_template_pkg_config = "tail -n+1 %s | %s %s %s `pkg-config --cflags %s` -o %s -x c - -x none %s %s %s `pkg-config --libs %s`";
+	char *cmd_template_pkg_config_skip = "tail -n+2 %s | %s %s %s `pkg-config --cflags %s` -o %s -x c - -x none %s %s %s `pkg-config --libs %s`";
 	char cmd[MAX_CMD];
 	time_t src_time, out_time;
 	int status;
 	char **new_argv;
 	int i, dir_len;
 	char *verbose;
+	int opt;
+	int force_rebuild = 0;
+	int compile_only = 0;
+
+	static struct option long_options[] = {
+		{"help", no_argument, 0, 'h'},
+		{"compile", no_argument, 0, 'c'},
+		{"force", no_argument, 0, 'f'},
+		{0, 0, 0, 0}
+	};
 
 	// set verbose from env CCX_VERBOSE
 	verbose = getenv("CCX_VERBOSE");
 	if (verbose && strcmp(verbose, "1"))
 		verbose = NULL;
 
-	if (argc < 2) {
-		fprintf(stderr, "Usage: %s <source.c> [args...]\n", argv[0]);
-		fprintf(stderr, "Version: %s\n", VERSION);
+	while ((opt = getopt_long(argc, argv, "hcf", long_options, NULL)) != -1) {
+		switch (opt) {
+		case 'h':
+			printf("Usage: %s [options] <source.c> [args...]\n", argv[0]);
+			printf("Options:\n");
+			printf("  -h, --help     Show this help message\n");
+			printf("  -c, --compile  Build the program but do not execute it\n");
+			printf("  -f, --force    Force rebuild even if executable is up-to-date\n");
+			printf("Version: %s\n", VERSION);
+			return 0;
+		case 'c':
+			compile_only = 1;
+			break;
+		case 'f':
+			force_rebuild = 1;
+			break;
+		default:
+			fprintf(stderr, "Usage: %s [options] <source.c> [args...]\n", argv[0]);
+			fprintf(stderr, "Try '%s --help' for more information.\n", argv[0]);
+			return 1;
+		}
+	}
+
+	if (optind >= argc) {
+		fprintf(stderr, "Usage: %s [options] <source.c> [args...]\n", argv[0]);
+		fprintf(stderr, "Try '%s --help' for more information.\n", argv[0]);
 		return 1;
 	}
 
@@ -172,7 +215,7 @@ int main(int argc, char *argv[])
 	if (argc > 0)
 		argv[0] = prog_source_name(argv[0]);
 
-	src = argv[1];
+	src = argv[optind];
 
 	if (realpath(src, real_src_path) == NULL) {
 		fprintf(stderr, "Error resolving path for: %s\n", src);
@@ -202,14 +245,15 @@ int main(int argc, char *argv[])
 	src_time = get_mod_time(src);
 	out_time = get_mod_time(out);
 
-	if (!out_time || src_time > out_time) {
+	if (force_rebuild || !out_time || src_time > out_time) {
 		// Get build variables
 		get_build_vars(src, &vars);
 		if (verbose)
 			dump_build_vars(&vars);
 
 		// Build command: tail -n+2 $SOURCE | $CC $CPPFLAGS $CFLAGS `pkg-config --cflags $PKGS` -o $OUT -x c - -x none $INPUTS $LDFLAGS $LDLIBS `pkg-config --libs $PKGS`
-		status = snprintf(cmd, sizeof(cmd), *vars.pkgs ? cmd_template_pkg_config : cmd_template,
+		char *template = vars.has_shebang ? (*vars.pkgs ? cmd_template_pkg_config_skip : cmd_template_skip) : (*vars.pkgs ? cmd_template_pkg_config : cmd_template);
+		status = snprintf(cmd, sizeof(cmd), template,
 			src,
 			vars.cc,
 			vars.cppflags,
@@ -238,8 +282,12 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	if (compile_only) {
+		return 0;
+	}
+
 	// Modify argv to execute the compiled binary
-	new_argv = malloc(sizeof(char*) * argc);
+	new_argv = malloc(sizeof(char*) * (argc - optind));
 	if (!new_argv) {
 		perror("malloc");
 		return 1;
@@ -247,10 +295,10 @@ int main(int argc, char *argv[])
 
 	new_argv[0] = prog_source_name(strdup(out));
 
-	for (i = 2; i < argc; i++) {
-		new_argv[i-1] = argv[i];
+	for (i = optind + 1; i < argc; i++) {
+		new_argv[i - optind] = argv[i];
 	}
-	new_argv[argc-1] = NULL;
+	new_argv[argc - optind] = NULL;
 
 	execv(out, new_argv);
 
