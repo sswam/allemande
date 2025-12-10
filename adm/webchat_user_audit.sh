@@ -13,7 +13,7 @@ webchat-user-audit() {
 		room=${file%.bb}
 		mtime=$(stat -c %y "$file")
 		mtime=${mtime%.*}
-		(grep -oP '^[^ ]+(?=:\t)' || true) < "$file" | prepend "$mtime	$room	"
+		(grep -aoP '^[^ ]+(?=:\t)' || true) < "$file" | prepend "$mtime	$room	"
 	done |
 	awk -F'\t' '
 		{

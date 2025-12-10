@@ -45,8 +45,11 @@ webchat-user() {
 	restore)
 		restore-user "$@"
 		;;
+	show)
+		show-user "$@"
+		;;
 	*)
-		die "Usage: webchat-user {add|passwd|rm|off|on|list|missions|restore} [args...]"
+		die "Usage: webchat-user {add|passwd|rm|off|on|list|missions|restore|show} [args...]"
 		;;
 	esac
 }
@@ -93,12 +96,12 @@ add-user() {
 	fi
 
 	local patreon_links
+	local generated_pass
 	patreon_links="- https://www.patreon.com/allychat"
 	if ((nsfw)); then
 		patreon_links+=$'\n- https://www.patreon.com/allychatx (NSFW)'
 	fi
 
-	local generated_user generated_pass
 	change-password "$user" |
 	while read -r _ generated_pass; do
 		cat <<END
@@ -390,6 +393,14 @@ list-users() {
 	esac
 }
 
+show-user() {
+	local user=${1:-}
+	if [ -z "$user" ]; then
+		read -r -p "Username: " user
+	fi
+	cat static/users/"$user"/info.rec
+}
+
 _set_user_mission_file() {
 	local user=$1
 	local type=$2 # sfw or nsfw
@@ -466,4 +477,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	webchat-user "$@"
 fi
 
-# version: 0.1.58
+# version: 0.1.59
