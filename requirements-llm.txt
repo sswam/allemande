@@ -4,3 +4,4 @@ openai
 anthropic
 google-genai
 google-cloud-aiplatform[tokenization]
+xai_sdk

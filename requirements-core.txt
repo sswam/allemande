@@ -70,6 +70,7 @@ tiktoken
 
 google-genai
 google-cloud-aiplatform[tokenization]
+xai_sdk
 
 jq
 yq
