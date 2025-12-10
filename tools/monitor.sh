@@ -28,7 +28,7 @@ monitor() {
 	local threshold_mem= m=95       # memory usage threshold percentage
 	local threshold_vm= M=92        # VM (RAM + swap) usage threshold percentage
 	local ping_host= p=8.8.8.8      # host to ping test
-	local killall_vm= K=98          # VM usage threshold to kill processes
+	local killall_vm= K=90          # VM usage threshold to kill processes
 	local killall= k=node           # Processes to kill
 	local domains= n="allemande.ai" # domains to check
 	local dns_days= D=14            # days before DNS expiry warning
@@ -134,7 +134,7 @@ check_disk() {
 	df -h | grep -E '/$|/media/|/mnt|/dev/mapper' | grep -v -E '^overlay|/docker/' |
 	awk '{ print $5 " " $6 }' |
 	while read -r percent mountpoint; do
-		usage=${percent%%%}
+		usage=$(printf "%.1f" "${percent%%%}")
 
 		local cache_bytes
 		cache_bytes=$(get_cache_usage "$mountpoint")
@@ -144,16 +144,18 @@ check_disk() {
 			# shellcheck disable=SC2034 # available_bytes is read but not used
 			read -r _ total_bytes used_bytes available_bytes _ < <(df -B1 "$mountpoint" | tail -1)
 
-			adjusted_usage=$(( (used_bytes - cache_bytes) * 100 / total_bytes ))
+			exact_adj=$(echo "($used_bytes - $cache_bytes) * 100.0 / $total_bytes" | bc -l)
+			display_adj=$(awk "BEGIN { printf \"%.1f\", int($exact_adj * 10) / 10 }")
+			adjusted_usage="$display_adj"
 
-			info "INFO: Filesystem mounted at %s is %s%% full (adjusted from %s%% after excluding cache)" "$mountpoint" "$adjusted_usage" "$usage"
-			if [ "$adjusted_usage" -ge "$threshold_storage" ]; then
-				warn "WARNING: Filesystem mounted at %s is %s%% full (adjusted from %s%% after excluding cache)!" "$mountpoint" "$adjusted_usage" "$usage"
+			info "INFO: Filesystem mounted at %s is %.1f%% full (adjusted from %.1f%% after excluding cache)" "$mountpoint" "$adjusted_usage" "$usage"
+			if [ "$(echo "$adjusted_usage >= $threshold_storage" | bc -l)" = 1 ]; then
+				warn "WARNING: Filesystem mounted at %s is %.1f%% full (adjusted from %.1f%% after excluding cache)!" "$mountpoint" "$adjusted_usage" "$usage"
 			fi
 		else
-			info "INFO: Filesystem mounted at %s is %s%% full" "$mountpoint" "$usage"
-			if [ "$usage" -ge "$threshold_storage" ]; then
-				warn "WARNING: Filesystem mounted at %s is %s%% full!" "$mountpoint" "$usage"
+			info "INFO: Filesystem mounted at %s is %.1f%% full" "$mountpoint" "$usage"
+			if [ "$(echo "$usage >= $threshold_storage" | bc -l)" = 1 ]; then
+				warn "WARNING: Filesystem mounted at %s is %.1f%% full!" "$mountpoint" "$usage"
 			fi
 		fi
 	done
@@ -173,10 +175,9 @@ check_load() {
 check_memory() {
 	local memory_usage
 	memory_usage=$(free | grep Mem | awk '{print ($2-$7)/$2 * 100.0}')
-	memory_usage=${memory_usage%.*}
 
 	info "INFO: Memory usage is at %s%%" "$memory_usage"
-	if [ "$memory_usage" -ge "$threshold_mem" ]; then
+	if [ "$(echo "$memory_usage >= $threshold_mem" | bc -l)" = 1 ]; then
 		warn "WARNING: Memory usage is at %s%%!" "$memory_usage"
 	fi
 }
@@ -184,13 +185,12 @@ check_memory() {
 check_vm() {
 	local vm_usage
 	vm_usage=$(free | awk '/Mem:/ {ram_total=$2; ram_used=$2-$7} /Swap:/ {swap_total=$2; swap_used=$3} END {print (ram_used+swap_used)/(ram_total+swap_total)*100}')
-	vm_usage=${vm_usage%.*}
 
 	info "INFO: VM usage is at %s%%" "$vm_usage"
-	if [ "$vm_usage" -ge "$threshold_vm" ]; then
+	if [ "$(echo "$vm_usage >= $threshold_vm" | bc -l)" = 1 ]; then
 		warn "WARNING: VM usage is at %s%%!" "$vm_usage"
 	fi
-	if [ "$vm_usage" -ge "$killall_vm" ]; then
+	if [ "$(echo "$vm_usage >= $killall_vm" | bc -l)" = 1 ]; then
 		warn "CRITICAL: VM usage is at %s%% - killing all %s processes!" "$vm_usage" "$killall"
 		# shellcheck disable=SC2086 # $killall should not be quoted as per original comment
 		killall $killall &>/dev/null	# note, $killall should not be quoted
@@ -213,4 +213,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	monitor "$@"
 fi
 
-# version: 0.1.4
+# version: 0.1.6
