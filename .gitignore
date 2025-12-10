@@ -50,10 +50,11 @@ rooms.*
 /agents_loaded.txt
 /ally-git
 
-# config files
+# local files and config
 /webchat/static/config.js
 /config*.sh
 /local.mk
+/jobs/5m/local.sh
 
 # secrets
 /secrets.sh
