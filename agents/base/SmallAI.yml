@@ -9,7 +9,7 @@ context: 30
 lines: 5
 dedent: true
 temp: 0.8
-system_bottom_pos: 5
+system_bottom_pos: 10
 stop_regexs:
   - \n\t*\n\t*\n
 system_top: |-
