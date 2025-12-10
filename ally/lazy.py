@@ -113,7 +113,7 @@ module_proxies: dict[str, LazyProxy] = {}
 maybe_unloaded_proxies: list[LazyProxy] = []
 
 
-def load_all_modules():
+async def load_all_modules():
     global maybe_unloaded_proxies
     for proxy in maybe_unloaded_proxies:
         proxy._LazyProxy_load()

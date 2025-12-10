@@ -188,6 +188,8 @@ MODELS = {
         "description": "Google's strongest Gemini model with a 1 million context window and 64K output.",
         "cost_in": 2,
         "cost_out": 12,
+        "thinking_levels": ["low", "high"],
+        "thinking_budget_range": [-1, -1],
     },
     "gemini-2.5-pro": {
         "aliases": ["gemmi", "gemmi-paid", "gemini", "gp"],
@@ -198,6 +200,8 @@ MODELS = {
         "description": "Google's strong Gemini model with a 1 million context window and 64K output.",
         "cost_in": 1.25,
         "cost_out": 10,
+        "thinking_levels": [],
+        "thinking_budget_range": [128, 32768],
     },
     # "gemini-2.5-pro-free": {
     #     "aliases": ["gemmi-free", "gemini-free"],
@@ -226,6 +230,8 @@ MODELS = {
         "description": "Google's fast thinking model with a 1 million context window.",
         "cost_in": 0.15,
         "cost_out": 0.6,
+        "thinking_levels": [],
+        "thinking_budget_range": [0, 24576],
     },
     "gemini-2.0-flash-lite": {
         "aliases": ["lite"],
@@ -234,6 +240,8 @@ MODELS = {
         "description": "Google's fastest model with a 1 million context window.",
         "cost_in": 0.075,
         "cost_out": 0.3,
+        "thinking_levels": [],
+        "thinking_budget_range": [0, 24576],
     },
     "gemini-2.0-flash": {
         "aliases": ["gf", "flasho"],
@@ -242,6 +250,8 @@ MODELS = {
         "description": "Google's fast model with a 1 million context window.",
         "cost_in": 0.1,
         "cost_out": 0.4,
+        "thinking_levels": [],
+        "thinking_budget_range": [0, 0],
     },
     "sonar-reasoning-pro": {
         "aliases": ["sageri"],
@@ -507,7 +517,7 @@ MODELS = {
 default_model = "gpt-5"
 default_model_small = "gpt-5-mini"
 
-SERVICES_BROKEN = ["anthropic"]  # ["openai", "anthropic"]
+SERVICES_BROKEN = [] # ["anthropic"] # ["openai"] # ["openai", "anthropic"]
 
 MODEL_FALLBACKS = {
     "*:*": "google:gemini-2.0-flash",
