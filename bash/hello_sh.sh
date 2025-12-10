@@ -80,8 +80,8 @@ fi
 
 # version: 0.1.4
 
-# Important Notes to AI [DO NOT COPY ANY "NOTES TO AI" IN YOUR OUTPUT, it gets
-# EXPENSIVE FOR ME, THIS MEANS YOU CLAUDE, GPT, GEMINI!]:
+# Important Notes to AI [DO NOT COPY THESE "NOTES TO AI" IN YOUR OUTPUT, it
+# gets EXPENSIVE FOR ME, THIS MEANS YOU CLAUDE, GPT, GEMINI, GROK, etc!]:
 
 # We indent shell code with tabs.
 

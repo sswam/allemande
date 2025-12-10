@@ -125,9 +125,11 @@ def history_check(
     history_text = "\n".join(commands)
 
     # Create prompt for AI
-    base_prompt = f"""Based on the following shell command history, provide a summary of what the user has been working on. Focus on the main activities and goals, more than chronology or individual commands. Use simple, basic markdown.
-Specified summary style: "{prompt}"
-Or default to a brief high-level summary in 2-n dot points, structured, not necessarily chronological.
+    base_prompt = f"""## Based on the following shell command history, provide a summary of what the user has been working on.
+
+- Focus on the main activities and goals. Give a simple, clear, very concise markdown list in style similar to this prompt, followed by a single-line overview or guess at the high-level task/s or goals here.
+- Unless contradicted below, please default to a brief high-level dot point summary, structured, not necessarily chronological.
+- don't include trivial stuff like use of standard toolkit, or mention use of this history-check tool itself.
 
 Command history:
 {history_text}
