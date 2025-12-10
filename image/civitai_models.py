@@ -8,7 +8,7 @@ import json
 import requests
 from ally import main, logs  # type: ignore
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"  # Updated version
 
 logger = logs.get_logger()
 
@@ -16,6 +16,7 @@ API_URL = "https://civitai.com/api/v1/models"
 
 
 def fetch_models(
+    url: str,
     limit: int,
     query: str | None = None,
     tag: str | None = None,
@@ -28,7 +29,6 @@ def fetch_models(
     hidden: bool | None = None,
     primary_file_only: bool | None = None,
     nsfw: bool | None = None,
-    cursor: str | None = None,
 ) -> tuple[list[dict], str | None]:
     """Fetch model information from the Civitai models API."""
     params = {
@@ -44,23 +44,26 @@ def fetch_models(
         "hidden": hidden,
         "primaryFileOnly": primary_file_only,
         "nsfw": nsfw,
-        "cursor": cursor,
     }
-    params = {k: v for k, v in params.items() if v is not None}
+    # Only pass params if it's the initial request to the base API_URL
+    # Subsequent requests will use the full nextPage URL which has params embedded.
+    request_params = {k: v for k, v in params.items() if v is not None} if url == API_URL else None
 
-    logger.debug("Params: %s", json.dumps(params))
+    logger.debug("Request URL: %s", url)
+    if request_params:
+        logger.debug("Params: %s", json.dumps(request_params))
+
     try:
-        response = requests.get(API_URL, params=params, timeout=30)
+        response = requests.get(url, params=request_params, timeout=30)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"Failed to fetch models: {e}") from e
 
     data = response.json()
-    logger.debug("Data: %s", json.dumps(data))
     models = data.get("items", [])
-    cursor = data["metadata"].get("nextCursor")
+    next_page_url = data.get("metadata", {}).get("nextPage")
 
-    return models, cursor
+    return models, next_page_url
 
 
 def civitai_models(
@@ -81,11 +84,12 @@ def civitai_models(
 ) -> None:
     """Fetch and print model information from Civitai."""
     remaining = limit
-    cursor = None
+    current_url: str | None = API_URL
 
-    while remaining > 0:
+    while remaining > 0 and current_url:
         current_length = min(page_length, remaining)
-        models, cursor = fetch_models(
+        models, next_url = fetch_models(
+            url=current_url,
             limit=current_length,
             query=query,
             tag=tag,
@@ -98,7 +102,6 @@ def civitai_models(
             hidden=hidden,
             primary_file_only=primary_file_only,
             nsfw=nsfw,
-            cursor=cursor,
         )
         if not models:
             break
@@ -113,21 +116,19 @@ def civitai_models(
                 for version in model.get("modelVersions", []):
                     version_name = version.get("name", "")
                     version_base = version.get("baseModel", "")
-                    version_words = ",  ".join(version.get("trainedWords", []))
+                    version_words = ", ".join(version.get("trainedWords", []))
                     for file in version.get("files", []):
                         file_name = file.get("name", "")
                         download_url = file.get("downloadUrl", "")
                         print(f"{model_name}\t{version_name}\t{file_name}\t{download_url}\t{version_base}\t{version_words}\t{download_count}")
 
         remaining -= len(models)
-
-        if not cursor:
-            break
+        current_url = next_url
 
 
 def setup_args(arg):
     """Set up command-line arguments."""
-    arg("-l", "--limit", help="total number of results to fetch", type=int)
+    arg("-l", "--limit", help="total number of results to fetch", type=int, default=100)
     arg("-q", "--query", help="search query to filter models by name")
     arg("-t", "--tag", help="search query to filter models by tag")
     arg("-u", "--username", help="filter to specific user's models")
@@ -144,7 +145,7 @@ def setup_args(arg):
     arg("-H", "--hidden", help="filter to hidden models", action="store_true")
     arg("-p", "--primary-file-only", help="only primary files", action="store_true")
     arg("-n", "--nsfw", help="include NSFW content", action="store_true")
-    arg("-c", "--page-length", help="results per page (1-100)", type=int)
+    arg("-c", "--page-length", help="results per page (1-100)", type=int, default=100)
     arg("-M", "--metadata", help="display full metadata", action="store_true")
 
 
