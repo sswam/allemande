@@ -1,7 +1,7 @@
 <ul class="line">
     <li class="noshuf">devops:</li>
 	<li><a href="https://allemande.ai/s/live"><i class="bi bi-twitch" title="Live"></i><span class="alt"> Live</span></a></li>
-	<li><a href="https://discord.gg/F6KJw3NH"><i class="bi bi-discord" title="Discord"></i><span class="alt"> Discord</span></a></li>
+	<li><a href="https://allemande.ai/s/voice"><i class="bi bi-discord" title="Voice"></i><span class="alt"> Voice</span></a></li>
 	<li><a href="https://github.com/sswam/allemande"><i class="bi bi-github" title="Github"></i><span class="alt"> Github</span></a></li>
     <li><a href="https://chat.allemande.ai/#feedback"><i class="bi bi-person-raised-hand" title="Feedback"></i><span class="alt"> Feedback</span></a></li>
 </ul>
