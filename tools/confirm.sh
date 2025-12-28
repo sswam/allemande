@@ -4,9 +4,10 @@
 # Ask a yes/no question, and optionally execute a command
 
 confirm() {
-	local default= d=	# default answer [y|n]
-	local optional= o=	# do not return failure if the user cancels
-	local tty= t=		# force tty input
+	local default= d=   # default answer [y|n]
+	local optional= o=  # do not return failure if the user cancels
+	local tty= t=       # force tty input
+	local yes= y=       # skip confirmation and run command
 
 	eval "$(ally)"
 
@@ -18,6 +19,12 @@ confirm() {
 	fi
 
 	local confirmed=
+
+	if [ -n "$yes" ]; then
+		confirmed=1
+		if [ -n "$is_command" ]; then "$@"; fi
+		return 0
+	fi
 
 	ask_them() {
 		read -r -n 1 -p "$prompt " yn
@@ -42,7 +49,7 @@ confirm() {
 				fi
 				;;
 			*)
-				echo -n "! [yn] "
+				echo >&2 -n "! [yn] "
 				;;
 			esac
 		done
