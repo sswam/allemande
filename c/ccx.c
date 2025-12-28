@@ -17,7 +17,7 @@
 
 #define MAX_CMD 4096
 #define MAX_LINE 1024
-#define VERSION "1.0.7"
+#define VERSION "1.0.8"
 
 struct build_vars {
 	char cc[MAX_LINE];
@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
 	if (verbose && strcmp(verbose, "1"))
 		verbose = NULL;
 
-	while ((opt = getopt_long(argc, argv, "hcf", long_options, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "+hcf", long_options, NULL)) != -1) {
 		switch (opt) {
 		case 'h':
 			printf("Usage: %s [options] <source.c> [args...]\n", argv[0]);
