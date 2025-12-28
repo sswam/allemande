@@ -1,4 +1,3 @@
-#!/usr/bin/env ccx
 // CC: gcc
 // CPPFLAGS: -D_GNU_SOURCE
 // CFLAGS: -Wall -Wextra -Werror -Wstrict-prototypes -g -ggdb
@@ -20,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #define DEFAULT_SIZE 24
 #define DEFAULT_WIDTH 400
@@ -34,13 +34,13 @@ struct options {
 /* Print usage information */
 static void usage(FILE *stream, char *argv0)
 {
-	fprintf(stream, "Usage: %s [OPTIONS] [MESSAGE]\n", basename(argv0));
+	fprintf(stream, "Usage: %s [OPTIONS] [MESSAGE] [COMMAND...]\n", basename(argv0));
 	fprintf(stream, "Display MESSAGE in a window, reading from stdin if MESSAGE not provided.\n");
 	fprintf(stream, "Close the window by pressing a key or clicking the mouse.\n");
 	fprintf(stream, "Options:\n");
 	fprintf(stream, "  -h, --help         Print this help message\n");
 	fprintf(stream, "  -s, --size SIZE    Set the font size (default: %d)\n", DEFAULT_SIZE);
-	fprintf(stream, "  -e, --exec         Exec command on losing focus\n");
+	fprintf(stream, "  -e, --exec         Exec COMMAND on losing focus (COMMAND follows MESSAGE)\n");
 }
 
 /* Get options from the command line */
@@ -138,6 +138,7 @@ int MAIN_FUNCTION(int argc, char *argv[])
 	char *text;
 	char **command = NULL;
 	int command_argc = 0;
+	int line_height; // Declared here to be accessible throughout MAIN_FUNCTION
 
 	_opts.size = DEFAULT_SIZE;
 	_opts.exec_mode = 0;
@@ -164,24 +165,26 @@ int MAIN_FUNCTION(int argc, char *argv[])
 			goto fail;
 		}
 		command_argc = argc - optind - 1;
-		if (command_argc > 0) {
-			command = malloc((command_argc + 1) * sizeof(char *));
-			if (command == NULL) {
-				perror("Failed to allocate memory for command");
-				goto fail;
-			}
-			for (int i = 0; i < command_argc; i++) {
-				command[i] = argv[optind + 1 + i];
-			}
-			command[command_argc] = NULL;
-			// duplicate new argv[0]
-			command[0] = strdup(command[0]);
-			if (command[0] == NULL) {
-				perror("Failed to duplicate command argv[0]");
-				free(command);
-				command = NULL;
-				goto fail;
-			}
+		if (command_argc <= 0) {
+			fprintf(stderr, "No command provided for exec mode\n");
+			goto fail;
+		}
+		command = malloc((command_argc + 1) * sizeof(char *));
+		if (command == NULL) {
+			perror("Failed to allocate memory for command");
+			goto fail;
+		}
+		for (int i = 0; i < command_argc; i++) {
+			command[i] = argv[optind + 1 + i];
+		}
+		command[command_argc] = NULL;
+		// duplicate new argv[0]
+		command[0] = strdup(command[0]);
+		if (command[0] == NULL) {
+			perror("Failed to duplicate command argv[0]");
+			free(command);
+			command = NULL;
+			goto fail;
 		}
 		optind = argc; // consume all
 	} else {
@@ -219,13 +222,15 @@ int MAIN_FUNCTION(int argc, char *argv[])
 	screen = DefaultScreen(display);
 
 	window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, 1, BlackPixel(display, screen), WhitePixel(display, screen));
-	XSelectInput(display, window, ExposureMask | KeyPressMask | ButtonPressMask | FocusChangeMask);
+	XSelectInput(display, window, ExposureMask | KeyPressMask | ButtonPressMask | FocusChangeMask | StructureNotifyMask);
 	XMapWindow(display, window);
 
 	if ((font = XftFontOpen(display, screen, XFT_FAMILY, XftTypeString, "DejaVu Sans", XFT_SIZE, XftTypeDouble, (double) opts->size, NULL)) == NULL) {
 		perror("Cannot load font");
 		goto fail;
 	}
+	// Calculate line_height once after font load
+	line_height = font->ascent + font->descent;
 
 	if ((draw = XftDrawCreate(display, window, DefaultVisual(display, screen), DefaultColormap(display, screen))) == NULL) {
 		perror("Cannot create Xft draw");
@@ -241,8 +246,7 @@ int MAIN_FUNCTION(int argc, char *argv[])
 		XNextEvent(display, &event);
 		if (event.type == Expose) {
 			// remove extents calculation since unused
-			// calculate line_height once after font load, but for now keep as secondary fix
-			int line_height = font->ascent + font->descent;
+			// line_height is now calculated once after font load
 			int y = font->ascent + 10;
 			// Create a mutable copy of text because strtok modifies its input
 			char *text_copy = strdup(text);
@@ -257,16 +261,31 @@ int MAIN_FUNCTION(int argc, char *argv[])
 				line = strtok(NULL, "\n");
 			}
 			free(text_copy); // Free the duplicated text
-		} else if (event.type == KeyPress) {
-			KeySym keysym = XLookupKeysym(&event.xkey, 0);
-			if (keysym == XK_q || keysym == XK_Escape) {
+		} else if (event.type == MapNotify) {
+			XSetInputFocus(display, window, RevertToParent, CurrentTime);
+		} else if (event.type == ButtonPress) {
+			XSetInputFocus(display, window, RevertToParent, CurrentTime);
+		// } else if (event.type == KeyPress) {
+		// 	KeySym keysym = XLookupKeysym(&event.xkey, 0);
+		// 	if (keysym == XK_q || keysym == XK_Escape) {
+		// 		break;
+		// 	}
+		} else if (event.type == UnmapNotify) {
+			break;
+		} else if (event.type == FocusOut && opts->exec_mode && command) {
+			pid_t pid = fork();
+			if (pid == -1) {
+				perror("fork");
+				status = EXIT_FAILURE;
 				break;
 			}
-		} else if (event.type == FocusOut && opts->exec_mode && command) {
-			execvp(command[0], command);
-			perror("Failed to exec command");
-			// If exec fails, continue or exit? But according to guidance, return error, but since in loop, perhaps break
-			break;
+			if (pid == 0) {
+				struct timespec ts = {0, 100000000}; // 100ms
+				nanosleep(&ts, NULL);
+				execvp(command[0], command);
+				perror("Failed to exec command");
+				_exit(EXIT_FAILURE);
+			}
 		}
 	}
 
