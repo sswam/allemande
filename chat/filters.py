@@ -529,9 +529,9 @@ filters_out = {
 
 
 # for post content from user
-user_filter_out = [
-    ["url_to_link_with_title", "h1"],
-]
+user_filter_out = []
+#     ["url_to_link_with_title", "h1"],
+# ]
 
 # for display to user / stream serice, e.g.:
 # - totally block images
