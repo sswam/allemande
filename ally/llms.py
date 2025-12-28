@@ -375,6 +375,14 @@ MODELS = {
         "cost_in": 0.55,
         "cost_out": 2.19,
     },
+    "llama-3.1-8b": {
+        "aliases": ["ellie"],
+        "vendor": "openrouter",
+        "id": "meta-llama/llama-3.1-8b-instruct",
+        "description": "Llama 3.1 8B",
+        "cost_in": 0,
+        "cost_out": 0,
+    },
     "llama-3.3-70b-free": {
         "aliases": ["ellen"],
         "vendor": "openrouter",
@@ -517,10 +525,13 @@ MODELS = {
 default_model = "gpt-5"
 default_model_small = "gpt-5-mini"
 
-SERVICES_BROKEN = [] # ["anthropic"] # ["openai"] # ["openai", "anthropic"]
+SERVICES_BROKEN = ["openai", "anthropic"]
 
 MODEL_FALLBACKS = {
     "*:*": "google:gemini-2.0-flash",
+
+    # Local models
+    "llm_llama:default": "openrouter:llama-3.1-8b",
 
     # OpenAI models
     "openai:gpt-5": "google:gemini-3-pro",
