@@ -1,3 +1,4 @@
+#!/usr/bin/env ccx
 // CC: gcc
 // CPPFLAGS: -D_GNU_SOURCE
 // CFLAGS: -Wall -Wextra -Werror -Wstrict-prototypes -g -ggdb
