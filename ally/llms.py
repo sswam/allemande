@@ -525,13 +525,13 @@ MODELS = {
 default_model = "gpt-5"
 default_model_small = "gpt-5-mini"
 
-SERVICES_BROKEN = ["openai", "anthropic"]
+SERVICES_BROKEN = [] # ["openai", "anthropic"]
 
 MODEL_FALLBACKS = {
     "*:*": "google:gemini-2.0-flash",
 
     # Local models
-    "llm_llama:default": "openrouter:llama-3.1-8b",
+    # "llm_llama:default": "openrouter:llama-3.1-8b",  # This doesn't work yet I think!
 
     # OpenAI models
     "openai:gpt-5": "google:gemini-3-pro",
