@@ -1,5 +1,5 @@
 # MetaAI is our base agent for AI meta-agents with a wide range of capabilities
-base: Frank
+base: Ernie
 over: []
 poke_if:
   - "```"
