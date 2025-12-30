@@ -36,6 +36,9 @@ move_to_rubbish() {
 	local A="$1"
 	local N=$(basename -- "$A")
 	local B=$(mktemp "$RUBBISH/${N}_XXXXXX")
+	if [ -d "$A" ]; then
+		rm -f "$B"
+	fi
 	if mv $verbose -- "$A" "$B"; then
 		if [ -n "${mr_echo:-}" ]; then printf '%s\n' "$B"; fi
 	else
