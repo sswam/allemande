@@ -785,3 +785,183 @@ async function shuffle_lists() {
 }
 
 shuffle_list = shuffle_lists;
+
+// fireworks.js - New Year's fireworks effect
+
+class Particle {
+   constructor(x, y, baseHue) {
+      this.x = x;
+      this.y = y;
+      // Create color variation around the base hue
+      const hueVariation = (Math.random() - 0.5) * 120;
+      const hue = (baseHue + hueVariation + 360) % 360;
+      const saturation = Math.random() * 30 + 70; // 70-100%
+      const lightness = Math.random() * 20 + 50;  // 50-70%
+      this.color = `hsla(${hue}, ${saturation}%, ${lightness}%, 1)`;
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 4 + 2;
+      this.vx = Math.cos(angle) * speed;
+      this.vy = Math.sin(angle) * speed;
+      this.alpha = 1;
+      this.gravity = 0.05;
+      this.fade = Math.random() * 0.02 + 0.01;
+      this.radius = Math.random() * 2 + 1;
+   }
+
+   update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vy += this.gravity;
+      this.alpha -= this.fade;
+   }
+
+   draw(ctx) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color.replace('1)', this.alpha + ')');
+      ctx.fill();
+   }
+
+   isDead() {
+      return this.alpha <= 0;
+   }
+}
+
+class Firework {
+   constructor(canvas) {
+      this.canvas = canvas;
+      this.x = Math.random() * canvas.width;
+      this.startY = canvas.height;
+      this.y = this.startY;
+      this.targetY = Math.random() * canvas.height * 0.3 + canvas.height * 0.1;
+
+      // Add horizontal velocity for angled launches
+      this.vx = (Math.random() - 0.5) * 2;
+      this.speed = Math.random() * 3 + 5;
+
+      this.exploded = false;
+      this.particles = [];
+      this.baseHue = Math.random() * 360;
+      this.color = `hsla(${this.baseHue}, 100%, 60%, 1)`;
+   }
+
+   update() {
+      if (!this.exploded) {
+         this.x += this.vx;
+         this.y -= this.speed;
+         if (this.y <= this.targetY) {
+            this.explode();
+         }
+      } else {
+         var i;
+         for (i = 0; i < this.particles.length; i++) {
+            this.particles[i].update();
+         }
+         this.particles = this.particles.filter(function(p) {
+            return !p.isDead();
+         });
+      }
+   }
+
+   explode() {
+      this.exploded = true;
+      const particleCount = Math.floor(Math.random() * 50) + 50;
+      var i;
+      for (i = 0; i < particleCount; i++) {
+         this.particles.push(new Particle(this.x, this.y, this.baseHue));
+      }
+   }
+
+   draw(ctx) {
+      if (!this.exploded) {
+         ctx.beginPath();
+         ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+         ctx.fillStyle = this.color;
+         ctx.fill();
+      } else {
+         var i;
+         for (i = 0; i < this.particles.length; i++) {
+            this.particles[i].draw(ctx);
+         }
+      }
+   }
+
+   isDone() {
+      return this.exploded && this.particles.length === 0;
+   }
+}
+
+var fireworks_canvas;
+var fireworks_array = [];
+var fireworks_animationFrameId;
+var fireworks_lastLaunch = 0;
+var fireworks_launchInterval = 800;
+
+function animateFireworks() {
+   const ctx = fireworks_canvas.getContext('2d');
+   ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+   ctx.fillRect(0, 0, fireworks_canvas.width, fireworks_canvas.height);
+
+   const now = Date.now();
+   if (now - fireworks_lastLaunch > fireworks_launchInterval && Math.random() < 0.3) {
+      fireworks_array.push(new Firework(fireworks_canvas));
+      fireworks_lastLaunch = now;
+      fireworks_launchInterval = Math.random() * 1000 + 500;
+   }
+
+   var i;
+   for (i = 0; i < fireworks_array.length; i++) {
+      fireworks_array[i].update();
+   }
+   for (i = 0; i < fireworks_array.length; i++) {
+      fireworks_array[i].draw(ctx);
+   }
+   fireworks_array = fireworks_array.filter(function(fw) {
+      return !fw.isDone();
+   });
+
+   fireworks_animationFrameId = requestAnimationFrame(animateFireworks);
+}
+
+function resizeFireworksCanvas() {
+   fireworks_canvas.width = window.innerWidth;
+   fireworks_canvas.height = window.innerHeight;
+}
+
+function fireworks() {
+   if (checkReducedMotionPreference()) {
+      console.log('Reduced motion preferred - fireworks effect disabled');
+      return;
+   }
+
+   fireworks_canvas = document.createElement('canvas');
+   fireworks_canvas.id = 'fireworksCanvas';
+   // z-index: -1 puts it behind all content, opacity makes it slightly translucent for extra safety
+   fireworks_canvas.style.cssText = 'position: fixed; top: 0; left: 0; pointer-events: none; z-index: -1; opacity: 0.95;';
+
+   document.body.insertBefore(fireworks_canvas, document.body.firstChild);
+
+   resizeFireworksCanvas();
+   window.addEventListener('resize', resizeFireworksCanvas);
+
+   if (fireworks_animationFrameId) {
+      cancelAnimationFrame(fireworks_animationFrameId);
+   }
+
+   animateFireworks();
+}
+
+function newyear() {
+   const now = new Date();
+   const month = now.getMonth(); // 0 = January
+   const date = now.getDate();
+   const hour = now.getHours();
+
+   // Only run from 12am-1am on January 1st
+   if (month === 0 && date === 1 && hour === 0) {
+      fireworks();
+      console.log('🎆 Happy New Year! 🎆');
+   } else {
+      console.log('Fireworks only appear from 12am-1am on New Year\'s Day (January 1st)');
+   }
+}
