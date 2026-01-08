@@ -1,4 +1,6 @@
-base: Gemi
+# Note: using Gemini 2.5 Pro for now, because 3 Pro is very reluctant to use our <think> container.
+# base: Gemi
+base: Gemmi
 over:
   - Frankness
   - Thunk
