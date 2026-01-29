@@ -241,3 +241,17 @@ def path_contains(base_path: Path, target_path: Path) -> bool:
     base_resolved = base_path.resolve()
     target_resolved = target_path.resolve()
     return target_resolved.is_relative_to(base_resolved)
+
+def join_with_commas_and_word(word, lst):
+    """
+    Joins a list of items with commas and the specified word (e.g., "or"),
+    using the Oxford comma for lists of three or more items.
+    """
+    if not lst:
+        return ""
+    elif len(lst) == 1:
+        return str(lst[0])
+    elif len(lst) == 2:
+        return f"{lst[0]} {word} {lst[1]}"
+    else:
+        return ", ".join(str(item) for item in lst[:-1]) + f", {word} {lst[-1]}"

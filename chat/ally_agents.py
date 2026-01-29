@@ -17,7 +17,7 @@ from deepmerge import Merger, STRATEGY_END
 from ally.cache import cache  # type: ignore
 from ally.util import replace_variables  # type: ignore
 from safety import safety  # type: ignore
-from util import uniqo
+from util import uniqo, join_with_commas_and_word
 from ally import yaml
 from settings import *
 
@@ -109,6 +109,7 @@ class NotEnabledError(Exception):
 class Agent:
     """An Allemande Agent"""
     def __init__(self, data: dict|None = None, agents: Agents|None = None, file: Path|None = None, private: bool=False):
+        logger.debug("Loading agent from %s", file or "data: "+data.get("name"))
         self.agents = agents
         self.file = file
         self.private = private
@@ -361,9 +362,19 @@ class Agent:
             period, period_desc, period_day, period_length, period_visual = self.get_period(now)
             pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual = self.get_pregnant(now)
 
+            aliases = self.get("aliases")
+
+            name_fullname_aliases = f"I am {name}"
+            if fullname:
+                name_fullname_aliases += f", or {fullname}"
+            if aliases:
+                aliases_s = join_with_commas_and_word("or", aliases)
+                name_fullname_aliases += f". I'm also known as {aliases_s}"
+
             value = replace_variables(value, {
                 "NAME": name,
                 "FULLNAME": fullname,
+                "NAME_FULLNAME_ALIASES": name_fullname_aliases,
                 "ALIAS": aliases_or,
                 "DATE": date,
                 "TIME": time,
@@ -398,20 +409,20 @@ class Agent:
         if not isinstance(period, int) or self.get("pregnant"):
             return None, "", None, None, ""
         day_count = now.toordinal() + now.hour / 24 + now.minute / 1440 + now.second / 86400
-        period_days = cache.load(str(PATH_AGENTS/"nsfw"/"period.txt")) or " "
+        period_days = cache.load(str(PATH_AGENTS/"period.txt")) or " "
         period_days = period_days.splitlines()
         period_length = self.get("period_length", 28)
         period_days_len = len(period_days)
         period_day = (day_count + period) % period_length
-        period_day_desc = f"<think>it's day {int(period_day)} of your cycle</think>"
+        period_day_desc = f"<think>it's day {int(period_day)} of my cycle</think>"
         period_index = int(period_day * period_days_len // period_length)
         # logger.info("Period info; day_count=%r period=%r period_day=%r period_index=%r/%r", day_count, period, period_day, period_index, period_days_len)
         line = period_days[period_index]
         name = self.get("name")
-        period_desc = f"{name}, {period_day_desc}. " + line.split("\t")[1]
+        period_desc = f"I'm {name}. {period_day_desc}. " + line.split("\t")[1]
         if period_extra:
             period_desc += " " + period_extra
-        logger.info("Period description: %r", period_desc)
+        logger.debug("Period description: %r", period_desc)
         is_menstrating = period_index <= 4
         period_visual = ""
         if is_menstrating:
@@ -439,19 +450,19 @@ class Agent:
         days_left = (due_date - now.date()).days
         weeks_pregnant = days_pregnant // 7
         if weeks_pregnant > 0:
-            duration_desc = f"you are {weeks_pregnant} weeks pregnant"
+            duration_desc = f"am {weeks_pregnant} weeks pregnant"
         else:
-            duration_desc = f"you think you might be pregnant"
+            duration_desc = f"think I might be pregnant"
         if days_left <= 0:
-            duration_desc += f", you are overdue!"
+            duration_desc += f", I am overdue!"
         elif days_left == 1:
-            duration_desc += f", you are due tomorrow!!"
+            duration_desc += f", I am due tomorrow!!"
         elif days_left <= 7:
-            duration_desc += f", you are due in {days_left} days!"
+            duration_desc += f", I am due in {days_left} days!"
         elif days_left <= 14:
-            duration_desc += f", you are due pretty soon!"
+            duration_desc += f", I am due pretty soon!"
         name = self.get("name")
-        pregnant_desc = f"{name}, {duration_desc}"
+        pregnant_desc = f"I, {name}, {duration_desc}"
         # logger.info("Pregnancy info: days_pregnant=%r total_days=%r", days_pregnant, total_days)
         # logger.info("Pregnancy description: %r", pregnant_desc)
         pregnant_frac = f"{days_pregnant / total_days:.2f}"
@@ -472,6 +483,8 @@ class Agent:
                 agent = self.agents.get(name)
             if agent:
                 base.append(agent)
+            else:
+                logger.debug("Base agent %s not found for %s", name, self.name)
         return base
 
     def over(self):
@@ -481,9 +494,13 @@ class Agent:
             over_names = [over_names]
         over = []
         for name in uniqo(over_names):
+            if name == "+":
+                continue
             agent = self.agents.get(name)
             if agent:
                 over.append(agent)
+            else:
+                logger.debug("Over agent %s not found for %s", name, self.name)
         return over
 
     def set(self, key: str, value):
@@ -667,7 +684,6 @@ class Agents:
 
         return agent
 
-
     def remove_agent(self, name: str, keep_visual: bool=False, private: bool=False) -> None:
         """Remove an agent."""
         agent = self.agents.get(name)
@@ -690,7 +706,7 @@ class Agents:
     def load(self, path: Path, visual: bool=True, private: bool=False) -> None:
         """Load all agents or one agent from a path."""
         if path.is_dir():
-            agent_files = list(path.rglob("*.yml"))
+            agent_files = sorted(path.rglob("*.yml"))
             logger.info("Loading agents from directory: %r", path)
         else:
             agent_files = [path]
