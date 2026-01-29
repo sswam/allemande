@@ -30,6 +30,7 @@
 struct options {
 	int size;
 	int exec_mode;
+	int invert;
 };
 
 /* Print usage information */
@@ -42,6 +43,7 @@ static void usage(FILE *stream, char *argv0)
 	fprintf(stream, "  -h, --help         Print this help message\n");
 	fprintf(stream, "  -s, --size SIZE    Set the font size (default: %d)\n", DEFAULT_SIZE);
 	fprintf(stream, "  -e, --exec         Exec COMMAND on losing focus (COMMAND follows MESSAGE)\n");
+	fprintf(stream, "  -i, --invert       Invert colors (white on black)\n");
 }
 
 /* Get options from the command line */
@@ -53,10 +55,11 @@ int get_options(int argc, char *argv[], struct options *opts)
 		{ "help", no_argument, /*@null@ */ NULL, (int) 'h' },
 		{ "size", required_argument, /*@null@ */ NULL, (int) 's' },
 		{ "exec", no_argument, /*@null@ */ NULL, (int) 'e' },
+		{ "invert", no_argument, /*@null@ */ NULL, (int) 'i' },
 		{ /*@null@ */ NULL, 0, /*@null@ */ NULL, 0 }
 	};
 
-	while ((c = getopt_long(argc, argv, "hs:e", long_options, NULL)) != -1) {
+	while ((c = getopt_long(argc, argv, "hs:ei", long_options, NULL)) != -1) {
 		switch (c) {
 		case 'h':
 			usage(stdout, argv[0]);
@@ -70,6 +73,9 @@ int get_options(int argc, char *argv[], struct options *opts)
 			break;
 		case 'e':
 			opts->exec_mode = 1;
+			break;
+		case 'i':
+			opts->invert = 1;
 			break;
 		case '?':
 			fprintf(stderr, "Unknown option or missing argument\n\n");
@@ -143,6 +149,7 @@ int MAIN_FUNCTION(int argc, char *argv[])
 
 	_opts.size = DEFAULT_SIZE;
 	_opts.exec_mode = 0;
+	_opts.invert = 0;
 	opts = &_opts;
 	status = EXIT_FAILURE;
 	display = NULL;
@@ -216,13 +223,14 @@ int MAIN_FUNCTION(int argc, char *argv[])
 		}
 	}
 
-	if ((display = XOpenDisplay(NULL)) == NULL) {
+	display = XOpenDisplay(NULL);
+	if (display == NULL) {
 		perror("Cannot open display");
 		goto fail;
 	}
 	screen = DefaultScreen(display);
-
-	window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, 1, BlackPixel(display, screen), WhitePixel(display, screen));
+	unsigned long bg_pixel = opts->invert ? BlackPixel(display, screen) : WhitePixel(display, screen);
+	window = XCreateSimpleWindow(display, RootWindow(display, screen), 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT, 1, BlackPixel(display, screen), bg_pixel);
 	XSelectInput(display, window, ExposureMask | KeyPressMask | ButtonPressMask | FocusChangeMask | StructureNotifyMask);
 	XMapWindow(display, window);
 
@@ -233,12 +241,14 @@ int MAIN_FUNCTION(int argc, char *argv[])
 	// Calculate line_height once after font load
 	line_height = font->ascent + font->descent;
 
-	if ((draw = XftDrawCreate(display, window, DefaultVisual(display, screen), DefaultColormap(display, screen))) == NULL) {
+	draw = XftDrawCreate(display, window, DefaultVisual(display, screen), DefaultColormap(display, screen));
+	if (draw == NULL) {
 		perror("Cannot create Xft draw");
 		goto fail;
 	}
 
-	if (!XftColorAllocName(display, DefaultVisual(display, screen), DefaultColormap(display, screen), "black", &color)) {
+	char *color_name = opts->invert ? "white" : "black";
+	if (!XftColorAllocName(display, DefaultVisual(display, screen), DefaultColormap(display, screen), color_name, &color)) {
 		perror("Cannot allocate color");
 		goto fail;
 	}
@@ -274,19 +284,19 @@ int MAIN_FUNCTION(int argc, char *argv[])
 		} else if (event.type == UnmapNotify) {
 			break;
 		} else if (event.type == FocusOut && opts->exec_mode && command) {
-			pid_t pid = fork();
-			if (pid == -1) {
-				perror("fork");
-				status = EXIT_FAILURE;
-				break;
-			}
-			if (pid == 0) {
-				struct timespec ts = {0, 100000000}; // 100ms
-				nanosleep(&ts, NULL);
-				execvp(command[0], command);
-				perror("Failed to exec command");
-				_exit(EXIT_FAILURE);
-			}
+			// pid_t pid = fork();
+			// if (pid == -1) {
+			// 	perror("fork");
+			// 	status = EXIT_FAILURE;
+			// 	break;
+			// }
+			// if (pid == 0) {
+			// 	struct timespec ts = {0, 100000000}; // 100ms
+				// nanosleep(&ts, NULL);
+			execvp(command[0], command);
+			perror("Failed to exec command");
+			_exit(EXIT_FAILURE);
+			// }
 		}
 	}
 
