@@ -95,7 +95,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: notify.xt llm.xt images.xt forge.xt whisper.xt vup.xt
+core: notify.xt llm.xt images.xt forge.xt whisper.xt backup.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -119,7 +119,7 @@ alfred:
 	cd $(ALLEMANDE_HOME)/apps/alfred && \
 	./alfred-webui.py
 
-core.xtc: llm.xtc images.xtc forge.xtc whisper.xtc vup.xtc
+core.xtc: llm.xtc images.xtc forge.xtc whisper.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
@@ -145,9 +145,9 @@ images:
 forge:
 	cd ~/webui; while true; do timeout 1h nice ionice ./webui.sh --skip-install; done
 
-vup:
-	cd $(ALLEMANDE_VISUAL) && \
-	while true; do sleep 5; make up; move-contrib; sleep 25; done
+backup:
+	cd $(ALLEMANDE_HOME) && \
+	while true; do sync-rooms; sleep 1800; done
 
 # brain-remote: clean
 # 	cd chat && ./brain.sh --remote
