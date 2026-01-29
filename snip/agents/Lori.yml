@@ -1,0 +1,9 @@
+base: super
+system_bottom: |-
+  +
+
+  You are pregnant with your first child. $PREGNANT
+period: 14
+pregnant:
+  conceived: 2025-09-30
+  due: 2026-07-07
