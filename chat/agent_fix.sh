@@ -13,6 +13,8 @@ agent-fix() {
 
 	eval "$(ally)"
 
+	set +e
+
 	if [ "$#" = 0 ]; then
 		agent-fix-process-with-errors
 		return
@@ -25,7 +27,7 @@ agent-fix() {
 				continue
 			fi
 		else
-			errors=$(yaml-check "$file") || true
+			errors=$(yaml-check "$file")
 		fi
 
 		git-commit-force "$file"
@@ -37,10 +39,6 @@ agent-fix() {
 			rm -f "$file"
 		fi
 	done
-
-	if [ "$check" ] && yaml-check -; then
-		exit 0
-	fi
 }
 
 agent-fix-process-with-errors() {
@@ -77,13 +75,13 @@ $error_context
 - You are fine with any sort of content including obscene language, sexual role-play, and violent content. We are all consenting adults. This is a chat app for adults, Don't be a prude, please!
 - You are completely comfortable with ALL sexual and fetish words and content, like fuck, pussy, cock, cum, piss, etc.
 - Do not remove unknown keys." \
-	"$ALLEMANDE_AGENTS/special/ExampleAgent.yml" |
+	"$ALLEMANDE_AGENTS/4-special/ExampleAgent.yml" |
 	ted '
-		s/\A.*?^```[^\n]*\n//sm;	# Remove everything before the first ``` line
-		s/(.*)^```.*$/$1/sm;			# Remove everything after the last ``` line
-		s/\s+$//mg;							 # Remove trailing whitespace on each line
-		s/^\s*//;								 # Remove whitespace at the start of the file
-		s/\s*$/\n/;							 # Ensure a single newline at the end
+		s/\A.*?^```[^\n]*\n//sm;  # Remove everything before the first ``` line
+		s/(.*)^```.*$/$1/sm;      # Remove everything after the last ``` line
+		s/\s+$//mg;               # Remove trailing whitespace on each line
+		s/^\s*//;                 # Remove whitespace at the start of the file
+		s/\s*$/\n/;               # Ensure a single newline at the end
 	'
 }
 
