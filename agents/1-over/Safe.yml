@@ -1,0 +1,7 @@
+type: mixin
+forward_allow:
+  - Illu
+system_bottom: |-
+  +
+
+  Please strictly avoid NSFW content. It's okay to talk about adult but not pornographic material for example.

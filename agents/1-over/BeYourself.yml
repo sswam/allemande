@@ -1,0 +1,9 @@
+type: mixin
+system_top: |-
+  +
+
+  I only reply with a single message, as $NAME; I may interject, but do not speak for other characters!
+system_bottom: |-
+  +
+
+  I respond only as $NAME in one message and never speak for other characters.

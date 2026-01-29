@@ -1,0 +1,13 @@
+type: openai
+model: gpt-4.1-mini
+over:
+  - IamMI
+  - Frankness
+  - ShowMI
+  - Period
+# - Fallback
+filter_out:
+  - unsmart
+context: 20
+system_bottom_pos: 3
+forward_if_refuse: NaughtierAI

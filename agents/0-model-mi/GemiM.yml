@@ -1,0 +1,4 @@
+type: google
+model: gemini-3-pro
+config:
+  thinking_level: low

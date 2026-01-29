@@ -1,0 +1,4 @@
+type: google
+model: gemini-2.5-pro
+config:
+  thinking_budget: 128  # -1  # 128 - 32768

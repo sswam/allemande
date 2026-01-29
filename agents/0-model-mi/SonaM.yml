@@ -1,0 +1,3 @@
+type: perplexity
+model: sonar
+alternating_context: true
