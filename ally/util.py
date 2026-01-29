@@ -6,6 +6,7 @@ import re
 import builtins
 from typing import IO, Callable, Any
 from datetime import datetime
+from pathlib import Path
 
 from functools import wraps, partial
 import asyncio
@@ -122,3 +123,9 @@ async def async_main_wrapper(main_function_real: Callable[..., Any], *args: Any,
         return await main_function_real(*args, **kwargs)
     finally:
         await asyncio.sleep(0)
+
+
+def read_lines_from_file(filename: str|Path) -> list[str]:
+    with open(str(filename), 'r') as file:
+        lines = [line.rstrip('\n') for line in file]
+    return lines

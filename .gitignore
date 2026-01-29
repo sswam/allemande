@@ -49,6 +49,8 @@ rooms.*
 /agents.txt
 /agents_loaded.txt
 /ally-git
+/users_vip.txt
+/users_supporter.txt
 
 # local files and config
 /webchat/static/config.js

@@ -22,7 +22,7 @@ import slug  # type: ignore
 import stamp  # type: ignore
 from ally import main, logs  # type: ignore
 from unprompted_macros import parse_macros, update_macros  # type: ignore
-from ally.util import clamp
+from ally.util import clamp, read_lines_from_file
 
 __version__ = "0.2.2"
 
@@ -30,6 +30,7 @@ logger = logs.get_logger()
 
 prog = main.prog_info()
 
+home_dir = Path(os.environ["ALLEMANDE_HOME"])
 portals_dir = Path(os.environ["ALLEMANDE_PORTALS"]) / "image_a1111"  # FIXME prog.name
 
 GPU_MUTEX = Path(os.environ["ALLEMANDE_PORTALS"]) / "gpu_mutex"
@@ -68,18 +69,19 @@ SPECIAL_OCCASION_PROMPT = """[opt 80 0.8 1.7] corpse, [/opt], [opt 80 0.8 1.7] h
 SPECIAL_OCCASION_LORAS = "<lora:g1g3r:0.8> <lora:scifi-horror-000006:0.8>"
 # SPECIAL_OCCASION_PROMPT = "(corpse, zombie, horror, gore:1.5), (dead, decay, zombie: 1.9), glowing eyes, g1g3r, twisted limbs, grotesque features, ghostly"
 # SPECIAL_OCCASION_LORAS = "<lora:g1g3r:1> <lora:scifi-horror-000006:1>"
-SPECIAL_OCCASION_EXCEPTION_PREFIXES = []
+SPECIAL_OCCASION_EXCEPTION_PREFIXES = []  # TODO from file
 
 # TODO: load from server or receive the user's priority with each request
 USER_PRIORITY_NORMAL = 0, 1   # absolute offset, multiplier
 USER_PRIORITY_NOW = -1000, 0
-USERS_VIP = ["root", "dave", "ganja", "tasha"]
-# USERS_SUPPORTER = ["alice", "bob"]
+USERS_VIP = read_lines_from_file(home_dir/"users_vip.txt")
+USERS_SUPPORTER = read_lines_from_file(home_dir/"users_supporter.txt")
 USER_PRIORITY = {
     user: USER_PRIORITY_NOW for user in USERS_VIP
 }
 
-USER_ALLOW_PRIVATE = USERS_VIP.copy()
+USER_ALLOW_PRIVATE = set(USERS_SUPPORTER + USERS_VIP)
+ALLOW_PRIVATE_ALL = True
 
 SHAPE_GEOMETRY = {
     "E": (("512", "512"), ("640", "640")),
@@ -487,7 +489,7 @@ async def enqueue_image_jobs(
 
     is_private = user and room and room.startswith(f"{user}/")
 
-    if is_private and not user in USER_ALLOW_PRIVATE:
+    if is_private and not (ALLOW_PRIVATE_ALL or user in USER_ALLOW_PRIVATE):
         raise PermissionError(f"User {user} is not currently allowed to use image gen in a private room: {room}; please speak to Sam for options")
 
     job_base_time = JOB_BASE_TIME_PRIVATE if is_private else JOB_BASE_TIME
