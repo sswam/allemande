@@ -10,7 +10,7 @@ hello-sh() {
 	local use_ai= a=            # greet using AI; don't copy this option to other scripts! Normal scripts either use AI or don't, with no weird option for it.
 	local model= m=             # LLM model
 
-	eval "$(ally)" # Note to AI: This is our magickal options parser and more.
+	eval "$(ally)"  # Note to AI: This is our magickal options parser and more.
 
 	local user_name=${1:-world}
 	# Generate greeting using AI or print simple greeting
