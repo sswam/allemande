@@ -402,7 +402,7 @@ def filter_out_fallback(response: str) -> str:
     return response
 
 
-def filter_out_sanity(response: str, max_repeat=80) -> str:
+def filter_out_truncate_repeated_characters(response: str, max_repeat=80) -> str:
     """Truncate repeated characters to a maximum"""
     # Handle single character repetitions
     response = re.sub(rf'(.)\1{{{max_repeat-1},}}', lambda m: m.group(1) * (max_repeat-1), response)
@@ -521,7 +521,7 @@ filters_out = {
     "emojis": filter_out_emojis,
     "emdash": filter_out_emdash,
     "fix_image_prompts": filter_out_fix_image_prompts,
-    "sanity": filter_out_sanity,
+    "truncate_repeated_characters": filter_out_truncate_repeated_characters,
     "unsmart": unsmart,
     "smart": smart,
     # "fallback": filter_out_fallback,
