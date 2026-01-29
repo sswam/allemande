@@ -238,7 +238,7 @@ i3-layout:
 
 stop:
 	screen -S "$(SCREEN)" -X quit || true
-	forge-kill
+	forge-kill || true
 
 mount:
 	ally-mount
