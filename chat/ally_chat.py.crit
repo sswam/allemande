@@ -30,3 +30,179 @@ Here are some suggestions for potential improvements:
 
 Overall, this is an impressive piece of work with a lot of functionality. The suggested improvements are mainly about maintainability and scalability as the project grows. Great job on building such a comprehensive chat application!
 
+You’ve built a rich, modular system with clear separation of concerns: agents as data, services for execution, conductor for routing, and a watch-driven orchestrator. The design allows room-local overrides, private/public agent scoping, and both local and remote runtimes. That’s not trivial, and your code shows real care for logs, resilience (retries), and safety toggles. It’s a great foundation to extend the CLI beyond “base models” into full agent execution.
+
+Below is a focused critique and a concrete plan to refactor so the CLI can run ANY agent (local, remote, tools), followed by bug findings and creative ideas.
+
+Goal recap
+- Enable CLI (llm.py) to:
+    - Run local agents via portals, remote agents, and tools (search/shell/python), not just vendor “base models.”
+    - Optionally run with room context (so missions, summaries, images, uploads, private agents work).
+    - Keep code reuse high (no duplicating orchestration logic).
+
+Recommended refactor direction
+Create a small “agent runtime” layer that both ally_chat and llm.py can call, instead of shoehorning agent orchestration into llm.py itself. This will minimize churn and keep llm.py focused on generic model calls while adding a clean entry point for agents.
+
+1) Extract agent execution wiring into a new module (agent_runtime.py)
+- Move these from ally_chat.py into agent_runtime.py:
+    - setup_services() and the services map.
+    - run_agent() (the dispatcher that applies filters and calls agent["fn"]).
+- Export a single high-level function:
+    - run_agent_by_name(agent_name, prompt, room_file=None, history=None, config=None, args=None) -> str
+        - Loads agents (global + room-local if room_file provided).
+        - Finds the agent, builds minimal args (delim, memory), summary/mission from room where applicable.
+        - Calls run_agent() with the right service function (local_agents.local_agent, remote_agents.remote_agent, tools).
+- Keep run_search/run_safe_shell/run_python in their current modules but import and register them in agent_runtime.setup_services().
+
+2) Make agent loading reusable
+- Extract load_local_agents(room, agents) (already in ally_chat) into a place where agent_runtime can import it (e.g., ally_agents_utils.py), or keep it in ally_chat but avoid circular imports by providing a thin helper in agent_runtime.
+- Provide an AgentLoader class or helper functions in agent_runtime:
+    - load_global_agents()
+    - load_room_agents(room_path)
+    - resolve_agent(name) considering private/public scoping.
+
+3) Make a small args shim for agent runtime
+- Many functions assume an args object with .delim and .memory. Create a tiny dataclass AgentArgs(delim="\n\n", memory=…).
+- agent_runtime.run_agent_by_name accepts either a real args from ally_chat or this shim. llm.py can pass the shim.
+
+4) Update ally_chat to use agent_runtime
+- Replace its setup_services and run_agent calls with agent_runtime equivalents.
+- This consolidates logic and ensures llm.py can reuse the same path.
+
+5) Add a new CLI entry point for agents
+Pick one:
+- Option A: Extend llm.py with a new subcommand “agent”:
+    - llm agent run --agent <name> --room <room.bb> --model-override <id?> --config <yml?> --delim --memory
+    - Input prompt from stdin or -p "prompt"
+    - Optional: --list to list resolved agents (global + room).
+- Option B: Create a new small tool agent.py:
+    - Focused solely on agent operations: run, list, show, dry-run (dump built request/messages), trace.
+    - Keeps llm.py clean. Simpler mental model for users.
+
+I’d lean Option B for clarity, but Option A is easy to adopt (less code to ship/install).
+
+Minimal viable change set (fast path)
+- agent_runtime.py
+    - Move services map and setup_services() from ally_chat.py.
+    - Move run_agent() from ally_chat.py.
+    - Add run_agent_by_name() that:
+        - Constructs a Room from --room if provided.
+        - Loads config/mission/summary using your existing helpers (already modular).
+        - Loads agents: global + room-local (using load_local_agents).
+        - Builds history = ["User:\t<your prompt>"] or accepts lines exactly like ally_chat.
+        - Calls run_agent().
+- llm.py new subcommand:
+    - llm agent --agent <name> --room <path/to/room.bb> -p "prompt"
+    - Optional: --lines mode accepts fully formed messages in the same format as rooms (Name:\tcontent), so you can simulate multi-turn.
+    - Display the agent’s markup (including images) on stdout.
+
+Important code fixes and cleanup (bugs and risks)
+- run_safe_shell shadows args:
+    - In ally_chat.run_safe_shell():
+        - The local variable args = [] overrides the function parameter args (the CLI args object).
+        - Later you pass that list to chat.fix_response_layout(response2, args, agent) causing type confusion.
+    - Fix: rename that local variable to argv or shell_args, and keep args untouched.
+
+- remote_agents summary formatting bug:
+    - remote_agents.remote_agent():
+        - You have context2 += f"System:\t{summary}" but summary is a list.
+        - Fix: if summary: context2 += ["System:\t" + "\n".join(summary)] or convert to messages consistently before this step.
+
+- Typo: Messasge = dict[str, Any] in ally_chat.py (unused, but fix or remove).
+
+- Agent fix thread (ally_agents.Agent.fix_agent_file) starts a thread and immediately joins it; it’s essentially synchronous while implying async and can block up to 5 minutes. If you keep it, either:
+    - Call subprocess directly (no thread), or
+    - Actually run asynchronously and only refresh agent later.
+
+- Services location:
+    - setup_services in ally_chat creates a global services dict. Move to agent_runtime and keep it idempotent. This avoids accidental divergence in llm.py.
+
+- Remote fallbacks warning noise:
+    - remote_agents.remote_agent logs “No fallback defined” three times (full, wildcard, global). Consider collapsing to one info line and outcome.
+
+- Private/public leakage controls:
+    - You already removed problematic override logic. With a CLI, ensure room scoping is explicit:
+        - If --room is provided, allow room-private agents.
+        - Without --room, load only global/public agents.
+
+- Error reporting consistency:
+    - remote_agents catches exceptions and returns agent-prefixed string content; local_agents raises on portal errors. For CLI, consider consistent non-zero exit on hard failure and stderr logging.
+
+How the CLI will run ANY agent (including local and tools)
+- Resolution and context:
+    - --room: Required for image agents and tools that expect a Room (uploads, assets). Optional for pure text LLMs.
+    - --agent: Name must resolve against loaded agents. If ambiguous, show candidates.
+
+- Invocation:
+    - run_agent_by_name() handles filters_in, agent mission merging, adding system messages, forward handlers, trimming response, narrator/poke logic.
+    - For one-shot CLI calls, disable poke/forward by default or make them opt-in flags.
+
+- Input formats supported:
+    - Simple: -p "Question here"
+    - Multi-line: stdin body becomes final user message
+    - --lines: accept full “Name:\ttext” format to simulate multi-turn history.
+
+- Output:
+    - Print the final response lines exactly as they would appear in the room file (including images uploaded by tools).
+    - Optionally add --raw to only print the assistant content body without “Agent:\t”.
+
+Edge cases and pitfalls to consider
+- Image/tool agents in CLI:
+    - chat.upload_file expects a room. For CLI without a room, you could:
+        - Fail fast with a clear error: “image/tool agents require --room”.
+        - Or implement a “local temp room” that stores uploads under ~/.ally/tmp/rooms/<name> and returns markdown paths.
+
+- Tokenizer loading for local models:
+    - local_agents.load_model_tokenizer is called in ally_chat main if settings.LOAD_EAGER. In CLI, if needed, lazily call it inside local_agents.local_agent on first run or expose a flag llm agent --warmup.
+
+- Controlled stop sequences:
+    - When CLI builds multi-turn history, ensure stop sequences include other participants’ “Name: ” to prevent model leakage across roles.
+
+- Safety flags:
+    - Preserve SAFE/ADULT gating in CLI (fail with reason if an adult-only agent is blocked).
+
+Creative/out-of-the-box ideas
+- Agent playground TUI:
+    - A curses/urwid TUI to pick an agent, see resolved system messages/overlays in real time, tweak temp/stop/vision, and run inline. Helps test agent configs without the watcher.
+
+- Dry-run and trace mode:
+    - llm agent run --agent X --room R --dry-run: print fully resolved configuration: mission merges, system_top/bottom, stop_regexs, portal config, and the exact messages sent to the backend. A “trace” variant could annotate why certain edits/filters were applied.
+
+- Agent composition in CLI:
+    - llm agent chain --agents "Alice->Search->Bob": run a small pipeline or round-robin conductor across specified agents for a fixed number of steps. Lightweight smoke testing for conductor logic outside rooms.
+
+- Local-only sandbox:
+    - Provide an env var or flag to force local portals even for remote agent types (e.g., mapping remote “test” models onto a local stub). Useful for offline dev.
+
+- Agent pack export/import:
+    - CLI to bundle an agent (YAML + mission + visual prompts + dependent files) into a tarball that can be imported on another machine. Eases sharing.
+
+- “What would I send?” verification:
+    - Add an option to auto-open a rendered HTML view of the final prompt context (with system messages, images) before sending. Useful for debugging agents that are prompt-sensitive.
+
+Migration checklist
+- New module agent_runtime.py with setup_services, run_agent, run_agent_by_name.
+- ally_chat imports these; remove its own setup_services and run_agent definitions.
+- llm.py:
+    - Add subcommand “agent” (or create a new tool agent.py).
+    - Ensure it can read prompt from stdin or -p, accept --room/--agent, and print the agent’s final response.
+- Fix the two bugs noted (args shadowing and summary concatenation).
+- Add a small test:
+    - Run a remote text agent (no room), a local text agent (with room), and a tool agent (with room) via CLI.
+    - Use --dry-run to verify message context without sending.
+
+Concrete signatures and flags to aim for
+- llm agent run --agent NAME [--room path/to/room.bb] [-p "prompt"] [--lines] [--memory 30000] [--delim "\n\n"] [--config path.yml] [--dry-run] [--raw]
+- llm agent list [--room path/to/room.bb]
+- llm agent show --agent NAME [--room path/to/room.bb]  (dump resolved YAML including base/over merges)
+
+Why a new tool might be simpler
+- Keeps llm.py dedicated to vendor models.
+- Avoids surprising users who expect llm.py to behave like a plain LLM wrapper.
+- Lets you evolve agent-centric flags rapidly without impacting the LLM UX.
+
+But if you prefer one binary for users, the subcommand approach is solid and tidy.
+
+Closing note
+You’re very close to this already: most of the hard work (agent resolution, context assembly, filtering, services dispatch) is done. Centralizing those bits in agent_runtime and giving llm a thin “agent” subcommand will cleanly unlock local agents and tools from the CLI, while preserving your existing room-based orchestration.
+
