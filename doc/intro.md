@@ -14,6 +14,8 @@ Free users have access to all models and features, but there are some good perks
 
 If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
 
+On mobile, please "install to home page" for a better app experience: Open the site in your browser (Chrome for Android, Safari for iOS), tap the menu/share icon (three dots or square with arrow), select "Add to Home Screen", and tap "Add" to place it on your device's home screen.
+
 ## Getting Started
 
 Read this intro carefully!
