@@ -111,23 +111,15 @@ https://$ALLEMANDE_DOMAIN
 User: $user
 Pass: $generated_pass
 
-Please save this message, e.g. email it to yourself!
-
 === Getting Started ===
 
-- Observe the one rule: Keep it legal.
-- Explore chat with your first AI.
-- Reload to read the message about options.
-- Try advanced mode with the light bulb!
-- Press ? and read the intro.
-- On mobile, install to home page: feels better.
+- There's one content rule: Keep it legal, specifically no NCII or CSAM images.
+- Please explore private chat with your first AI. Then press ? and read the intro, then try joining a group chat too. We're friendly and we like to help new users!
+- MOST IMPORTANT: PLEASE for the Love of Cthulhu, JOIN GROUP CHATS as much as you can! The app is complex, and you need to learn it from me and other users in group chat. And, it's more fun and friendly!
 
 === Please Contribute! ===
 
-- Join group chats
-- or Share your work
-- or Give feedback
-- or Join our Patreon.
+- Join group chats, or share your work, or give feedback, or please join our Patreon. Or you can do all of the above to become a Pillar of the Community! You can also help with the project e.g. development, marketing, etc.
 
 === Patreon ===
 
@@ -137,20 +129,16 @@ $patreon_links
 
 You are responsible for your own safety and behaviour in Ally Chat.
 
-Important: Joining group chats is pretty much required. This is a complex group chat app - think Reddit, not ChatGPT. Participating is the best way to learn the app and help build our community. I remove inactive members after about a month. If you prefer not to use group chat, you can support via Patreon instead or some other way, but group chat remains the best way to get support.
+The only content rule is to keep it legal: no NCII (real people without consent) or CSAM (underage) NSFW images. Literally anything else is okay.
 
-By using Ally Chat, you agree to follow the Getting Started steps above, rather than going wild and causing a lot of mess for me to clean up before you even found the intro!
+We have a uniquely friendly and respectful international community, including men, women, non-binary, LGBTQIA+ users, and people with disabilities. The private and SFW zones in Ally Chat are suitable for teenagers aged 13+. Our group chats are great fun! Group chat is the best way to learn the app properly, and the preferred way to get support.
+
+We like to have fun, including playful banter, but I don't allow unwanted bullying or abusive behaviour in the main group chats.
+
+You can read more formal and detailed Terms of Use at https://allemande.ai/terms.html
+
+Please confirm that you agree!
 END
-		if ((nsfw)); then
-			cat <<END
-
-The "keep it legal" rule is important: do not try to create illegal NSFW images.
-
-See https://allemande.ai/terms.html for more detailed Terms of Use, if you like.
-
-Please confirm that you agree.
-END
-		fi
 	done
 
 	mkdir -p rooms/"$user"
@@ -234,13 +222,13 @@ END
 
 	# add git to user's dir with arcs
 	cd "$user"
-	yes n | arcs -i
+	yes n | qos arcs -i
 	mkdir -p "$ALLEMANDE_HOME/ally-git/$user"
 	mv -T .git "$ALLEMANDE_HOME/ally-git/$user/.git"
 	ln -s "$ALLEMANDE_HOME/ally-git/$user/.git" .git
 
 	# run webchat/Makefile
-	cd "$ALLYCHAT_HOME"; make
+	cd "$ALLYCHAT_HOME"; qos make
 }
 
 change-password() {
@@ -295,6 +283,7 @@ remove-user() {
 	# remove style and user directory
 	mv rooms/"$user" "$removed_dir"/rooms
 	mv static/users/"$user" "$removed_dir"/user
+	mv "$ALLEMANDE_HOME/ally-git/$user" "$removed_dir"/git
 
 	sudo userdel -- "$user" || true
 
@@ -330,6 +319,7 @@ restore-user() {
 	# Restore directories
 	mv -T "$removed_dir"/rooms rooms/"$user"  || true
 	mv -T "$removed_dir"/user static/users/"$user" || true
+	mv -T "$removed_dir"/git "$ALLEMANDE_HOME/ally-git/$user" || true
 
 	# Restore NSFW access if user info indicates NSFW
 	local user_info_file="static/users/$user/info.rec"
