@@ -73,10 +73,13 @@ SPECIAL_OCCASION_EXCEPTION_PREFIXES = []
 # TODO: load from server or receive the user's priority with each request
 USER_PRIORITY_NORMAL = 0, 1   # absolute offset, multiplier
 USER_PRIORITY_NOW = -1000, 0
+USERS_VIP = ["root", "dave", "ganja", "tasha"]
+# USERS_SUPPORTER = ["alice", "bob"]
 USER_PRIORITY = {
-    "root": USER_PRIORITY_NOW,
-    # "sam": USER_PRIORITY_NOW,
+    user: USER_PRIORITY_NOW for user in USERS_VIP
 }
+
+USER_ALLOW_PRIVATE = USERS_VIP.copy()
 
 SHAPE_GEOMETRY = {
     "E": (("512", "512"), ("640", "640")),
@@ -484,6 +487,9 @@ async def enqueue_image_jobs(
 
     is_private = user and room and room.startswith(f"{user}/")
 
+    if is_private and not user in USER_ALLOW_PRIVATE:
+        raise PermissionError(f"User {user} is not currently allowed to use image gen in a private room: {room}; please speak to Sam for options")
+
     job_base_time = JOB_BASE_TIME_PRIVATE if is_private else JOB_BASE_TIME
 
     current_time = time.time()
@@ -700,7 +706,7 @@ async def process_request(portals: str, portal_str: Path, req: str) -> None:
         seed = await enqueue_image_jobs(d, prompt, negative_prompt, output_stem, config, regional_kwargs, portal)
 
         logger.debug("seed is not used!  %s", seed)
-    except (Exception, KeyboardInterrupt) as e:  # pylint: disable=broad-exception-caught
+    except (Exception, PermissionError, KeyboardInterrupt) as e:  # pylint: disable=broad-exception-caught
         logger.exception("%s:%s - error: %s", portal, req, e)
         if d:
             os.rename(d, portal / "error" / req)
