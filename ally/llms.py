@@ -525,7 +525,7 @@ MODELS = {
 default_model = "gpt-5"
 default_model_small = "gpt-5-mini"
 
-SERVICES_BROKEN = [] # ["openai", "anthropic"]
+SERVICES_BROKEN = []  # ["google"]
 
 MODEL_FALLBACKS = {
     "*:*": "google:gemini-2.0-flash",
@@ -596,4 +596,8 @@ MODEL_FALLBACKS = {
     # Venice models
     "venice:venice-uncensored": "google:gemini-2.0-flash",
     "venice:*": "google:gemini-2.0-flash",
+}
+
+MODEL_FALLBACKS = {
+    "*:*": "venice:venice-uncensored",
 }
