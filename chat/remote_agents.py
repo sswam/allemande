@@ -38,13 +38,13 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     wildcard_key = service + ":*"
     fallback = MODEL_FALLBACKS.get(full_key)
     if not fallback:
-        logger.warning("No specific fallback defined for model %s", full_key)
+        logger.debug("No specific fallback defined for model %s", full_key)
         fallback = MODEL_FALLBACKS.get(wildcard_key)
     if not fallback:
-        logger.warning("No wildcard fallback defined for service %s", service)
+        logger.debug("No wildcard fallback defined for service %s", service)
         fallback = MODEL_FALLBACKS.get("*:*")
     if not fallback:
-        logger.warning("No global fallback defined")
+        logger.debug("No global fallback defined")
 
     if service in SERVICES_BROKEN and fallback:
         service, model = fallback.split(":", 1)
