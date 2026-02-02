@@ -99,7 +99,7 @@ summaries.md: ../agents/dirs.txt $(shell find ../agents/ -path '*/.*' -prune -o 
 	rm -f $@ ../rooms/terms.html
 	(sleep 0.5; cp -a $< $@; chmod a-w $@; sleep 5; cp -af ../rooms/terms.html ../site/terms.html) &
 
-../rooms/lora.bb: ../agents/special/Pixi.yml ../agents/special/Illu.yml
+../rooms/lora.bb: ../agents/4-special/Pixi.yml ../agents/4-special/Illu.yml
 	rm -f $@ ../rooms/lora.html
 	(sleep 0.5; lecho '| <lora:name:weight> | required trigger words | info |' '|--|--|--|' ;\
 		cat $^ | grep '^    | <lora:' | grep -v '<lora:name:weight>' | sed 's/ *//') >$@ ;\

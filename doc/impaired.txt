@@ -1,1 +1,1 @@
-Ally Chat is somewhat impaired at the moment, many models are redirecting to Venice Uncensored model, because I'm a bit bad with money and haven't funded several of the API services!  But everything still works more or less. I'll fix this ASAP.
+Please note: Ally Chat is somewhat impaired at the moment, many models are redirecting to the Venice Uncensored model, because I'm a bit bad with money and haven't funded several of the API services! But everything still works more or less. I'll fix this ASAP, it's only a temporary thing.
