@@ -114,12 +114,16 @@ Pass: $generated_pass
 === Getting Started ===
 
 - There's one content rule: Keep it legal, specifically no NCII or CSAM images.
-- Please explore private chat with your first AI. Then press ? and read the intro, then try joining a group chat too. We're friendly and we like to help new users!
-- MOST IMPORTANT: PLEASE for the Love of Cthulhu, JOIN GROUP CHATS as much as you can! The app is complex, and you need to learn it from me and other users in group chat. And, it's more fun and friendly!
+- Please explore private chat with your first AI.
+- Then press ? and read the intro
+- Then try joining a group chat too. We're friendly and we like to help new users!
+- MOST IMPORTANT: PLEASE for the Love of Cthulhu, JOIN GROUP CHATS as much as you can, to learn and have fun!
 
 === Please Contribute! ===
 
-- Join group chats, or share your work, or give feedback, or please join our Patreon. Or you can do all of the above to become a Pillar of the Community! You can also help with the project e.g. development, marketing, etc.
+- Join group chats, or share your work, or give feedback, or please join our Patreon.
+- Or you can do all of the above to become a Pillar of the Community!
+- You can also help with the project e.g. development, marketing, etc.
 
 === Patreon ===
 
@@ -129,11 +133,20 @@ $patreon_links
 
 You are responsible for your own safety and behaviour in Ally Chat.
 
-The only content rule is to keep it legal: no NCII (real people without consent) or CSAM (underage) NSFW images. Literally anything else is okay.
+The only content rule is to keep it legal:
 
-We have a uniquely friendly and respectful international community, including men, women, non-binary, LGBTQIA+ users, and people with disabilities. The private and SFW zones in Ally Chat are suitable for teenagers aged 13+. Our group chats are great fun! Group chat is the best way to learn the app properly, and the preferred way to get support.
+- no NCII (real people without consent)
+- no CSAM (underage NSFW images)
+- Literally anything else is okay.
 
-We like to have fun, including playful banter, but I don't allow unwanted bullying or abusive behaviour in the main group chats.
+We have a uniquely friendly and respectful international community,
+including men, women, non-binary, LGBTQIA+ users, and people with disabilities.
+
+The private and SFW zones in Ally Chat are suitable for teenagers aged 13+.
+
+Our group chats are good fun! This is the best way to learn the app properly and to get support.
+
+We like to have fun, including playful banter, but we don't allow unwanted bullying or abuse in the main group chats.
 
 You can read more formal and detailed Terms of Use at https://allemande.ai/terms.html
 
