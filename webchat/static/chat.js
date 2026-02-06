@@ -2666,7 +2666,7 @@ async function view_options_apply() {
     else
       input_placeholder += `${hold_or_press} ${Alt} for options.`;
   } else if (simple) {
-    $content.placeholder = " ";
+    input_placeholder = " ";
   }
   // else if ($content.placeholder != "" && view_options.advanced == 0) {
   //   if (!isMobile)
@@ -3691,7 +3691,7 @@ class SwipeDetector {
 }
 
 function setup_view_option_swipe() {
-  const swipeDetector = new SwipeDetector($id("inputrow"), {
+  const swipeDetector = new SwipeDetector($content, {
       onSwipeLeft: simple_mode_toggle_controls,
       onSwipeRight: simple_mode_toggle_controls,
   });

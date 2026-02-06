@@ -625,7 +625,7 @@ function echo(...args) {
 // effects: fire -------------------------------------------------------------
 
 (function() {
-	const FX_ANIMATION_INTERVAL = 50; // How often to update animations (ms)
+	const FX_ANIMATION_INTERVAL = 100; // How often to update animations (ms)
 
 	let fire_elements = [];
 	let animation_running = false;
