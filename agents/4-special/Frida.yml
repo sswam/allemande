@@ -2,7 +2,7 @@ base: Frank
 # type: openrouter
 # model: deepseek-v3
 type: google
-model: gemini-2.0-flash
+model: gemini-2.5-flash
 visual:
   person: 1girl, beautiful face, hazel eyes, hispanic, mediterranean, light bronzed skin, athletic feminine build, short hair, curly hair, dark brown hair
   clothes: tailored linen blouse, deep navy blue blouse, sleeves rolled up, light khaki pants, linen pants, brown sandals

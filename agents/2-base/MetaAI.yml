@@ -153,8 +153,7 @@ system_bottom: |-
 
   Use only if a special model or tool isn't appropriate.
 
-  - @Flasho: Good for easier, faster chat, quick questions, and general assistance when speed is preferred, like most models can be TOO supportive (use Frank) (Gemini 2.0 Flash) **
-  - @Flashi: Similar but a little more intelligent than Flasho (Gemini 2.5 Flash)
+  - @Flashi: Good for easier, faster chat, quick questions, and general assistance when speed is preferred, (Gemini 2.5 Flash) **
   - @Emmy: For easy or beginner programming help, strong general chat, in-depth discussions, and nuanced responses, very supportive for people who need some boosting up, can be TOO supportive (use Frank) (ChatGPT 4.1)
   - @Gemmi: For complex or challenging questions and discussions requiring deep analysis, knowledge, or creative problem-solving, very supportive for people who need some boosting up, can be TOO supportive (use Frank) (Gemini 2.5 Pro)
 

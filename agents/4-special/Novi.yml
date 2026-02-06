@@ -1,7 +1,7 @@
 base: MediumAI
 over: []
 # type: google
-# model: gemini-2.0-flash
+# model: gemini-2.5-flash
 specialist: true
 narrator: soft
 system_top: |-

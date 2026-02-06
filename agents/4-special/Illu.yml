@@ -7,7 +7,7 @@ poke_if:
 # type: openai
 # model: gpt-4.1-mini
 type: google
-model: gemini-2.0-flash
+model: gemini-2.5-flash
 # type: openrouter
 # model: deepseek-v3
 # type: google
