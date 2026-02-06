@@ -105,8 +105,9 @@ logger = logging.getLogger(__name__)
 # Define settings and constants
 LOGDIR = Path(os.environ["HOME"]) / "llm.log"
 LOGFILE_NAME_MAX_LEN = 255
-RETRIES = 20
-exceptions_to_retry = (
+RETRIES = 8
+
+exceptions_to_retry = [
     "RateLimitError",
     "APIConnectionError",
     "InternalServerError",
@@ -114,7 +115,12 @@ exceptions_to_retry = (
     "TimeoutError",
     "APIError",
     "ServerError",
-)
+    r"ClientError.*?429 RESOURCE_EXHAUSTED",
+]
+
+# Treating each string as a literal regex pattern (alternation with |)
+# Combine them into a single regex that matches any of these patterns
+exceptions_to_retry_re = re.compile(r"|".join(exceptions_to_retry))
 
 
 def setup_models():
@@ -933,9 +939,10 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
         try:
             return await fn(*args, **kwargs)
         except Exception as ex:  # pylint: disable=broad-except
-            exception_type = type(ex).__name__
-            logger.info("retry: exception %s, attempt %d/%d failed", exception_type, i, n_tries)
-            if exception_type not in exceptions_to_retry or "quota" in str(ex):
+            # exception_type = type(ex).__name__
+            exception_text = repr(ex)
+            logger.info("retry: attempt %d/%d failed: %s", i, n_tries, exception_text)
+            if not re.search(exceptions_to_retry_re, exception_text) or "quota" in str(ex):
                 raise ex
             delay = random.uniform(sleep_min, sleep_max)
             logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
