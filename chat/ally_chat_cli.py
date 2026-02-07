@@ -13,11 +13,11 @@ from pathlib import Path
 from typing import TextIO
 
 import aionotify  # type: ignore
-import yaml
 
 from ally import main, logs  # type: ignore
+from bb_lib import lines_to_messages, message_to_text, ChatMessage
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 logger = logs.get_logger()
 
@@ -27,19 +27,12 @@ DEBOUNCE_DELAY = 0.5  # seconds to wait after last file change
 DEFAULT_TIMEOUT = 120.0  # seconds to wait for response
 
 
-def format_bb_message(name: str, content: str) -> str:
-    """Format a single message in .bb format."""
-    lines = content.rstrip().split("\n")
-    formatted_lines = [f"{name}:\t{lines[0]}"]
-    for line in lines[1:]:
-        formatted_lines.append(f"\t{line}")
-    formatted_lines.append("")  # blank line after message
-    return "\n".join(formatted_lines)
-
-
-def format_bb_output(messages: list[tuple[str, str]]) -> str:
-    """Format a list of (name, content) tuples as .bb format."""
-    return "\n".join(format_bb_message(name, content) for name, content in messages)
+def cleanup_temp_dir(temp_dir: Path) -> None:
+    """Clean up temporary directory, logging any errors."""
+    try:
+        shutil.rmtree(temp_dir)
+    except Exception:  # pylint: disable=broad-except
+        logger.warning("Failed to clean up temp directory: %s", temp_dir)
 
 
 def create_room_content(
@@ -67,7 +60,8 @@ def create_room_content(
     if query:
         if user:
             # Normal case: user message with name
-            content += format_bb_message(user, query)
+            msg = ChatMessage(user=user, content=query)
+            content += message_to_text({"user": msg.user, "content": msg.content}) + "\n"
         else:
             # Special case: raw query without user attribution
             content += query.rstrip() + "\n\n"
@@ -99,41 +93,13 @@ async def create_temp_room(rooms_dir: Path) -> Path:
     raise RuntimeError(f"Failed to create temp directory after {max_attempts} attempts")
 
 
-def parse_bb_messages(content: str) -> list[tuple[str, str]]:
+def parse_bb_messages(content: str) -> list[tuple[str | None, str]]:
     """Parse .bb format content into list of (name, message) tuples."""
     messages = []
-    current_name = None
-    current_lines = []
-
-    for line in content.split("\n"):
-        if not line:
-            # Blank line ends a message
-            if current_name and current_lines:
-                message = "\n".join(current_lines)
-                messages.append((current_name, message))
-                current_name = None
-                current_lines = []
-        elif line[0] != "\t":
-            # New message starts
-            if current_name and current_lines:
-                message = "\n".join(current_lines)
-                messages.append((current_name, message))
-
-            # Parse name and first line
-            if ":\t" in line:
-                current_name, first_line = line.split(":\t", 1)
-                current_lines = [first_line] if first_line else []
-            else:
-                current_name, first_line = "", line
-        else:
-            # Continuation line
-            current_lines.append(line[1:])  # Remove leading tab
-
-    # Handle final message if file doesn't end with blank line
-    if current_name and current_lines:
-        message = "\n".join(current_lines)
-        messages.append((current_name, message))
-
+    for msg_dict in lines_to_messages(content.splitlines(keepends=True)):
+        user = msg_dict.get("user")
+        content_text = msg_dict["content"].rstrip("\n")
+        messages.append((user, content_text))
     return messages
 
 
@@ -142,7 +108,7 @@ async def wait_for_response(
     initial_message_count: int,
     num_messages: int = 1,
     timeout: float = DEFAULT_TIMEOUT,
-) -> list[tuple[str, str]]:
+) -> list[tuple[str | None, str]]:
     """Wait for agent response(s) using inotify, with debouncing."""
     watcher = aionotify.Watcher()
     watch_dir = room_file.parent
@@ -153,17 +119,19 @@ async def wait_for_response(
     await watcher.setup(asyncio.get_event_loop())
 
     start_time = time.time()
-    last_event_time = None
+    last_event_time: float | None = None
     expected_message_count = initial_message_count + num_messages
 
     try:
         while True:
+            elapsed = time.time() - start_time
+
             # Check timeout
-            if time.time() - start_time > timeout:
+            if elapsed > timeout:
                 raise TimeoutError(f"No response received within {timeout} seconds")
 
             # Wait for event with remaining timeout
-            remaining_timeout = timeout - (time.time() - start_time)
+            remaining_timeout = timeout - elapsed
             try:
                 event = await asyncio.wait_for(
                     watcher.get_event(),
@@ -209,20 +177,23 @@ async def ally_chat_cli_async(
     agent: str | None,
     query: str,
     contexts: list[str] | None = None,
-    missions: list[str] | None = None,
-    options: dict | None = None,
+#     missions: list[str] | None = None,
+#     options: dict | None = None,
     num_messages: int = 1,
     keep: bool = False,
     directory: Path | None = None,
     timeout: float = DEFAULT_TIMEOUT,
     rooms_dir: Path = DEFAULT_ROOMS_DIR,
-) -> tuple[list[tuple[str, str]], Path | None]:
+) -> tuple[list[tuple[str | None, str]], Path | None]:
     """
     Invoke an Ally Chat agent asynchronously.
 
     Returns:
         tuple of (list of (name, content) tuples, temp_dir_path or None)
     """
+    # If agent is given, prepend @ mention
+    if agent:
+        query = f"@{agent}, "
     # If directory specified, use it and imply keep
     if directory:
         temp_dir = directory
@@ -256,9 +227,9 @@ async def ally_chat_cli_async(
 
             # Atomic move into place
             temp_file.rename(room_file)
-        except Exception as e:
+        except Exception:
             # Clean up on error
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            cleanup_temp_dir(temp_dir)
             raise
 
     # Wait for response
@@ -271,14 +242,26 @@ async def ally_chat_cli_async(
             return response_messages, temp_dir
 
         # Clean up temp directory
-        shutil.rmtree(temp_dir)
+        cleanup_temp_dir(temp_dir)
         return response_messages, None
 
-    except Exception as e:
+    except Exception:
         # Clean up on error unless keeping
         if not keep and not directory:
-            shutil.rmtree(temp_dir, ignore_errors=True)
+            cleanup_temp_dir(temp_dir)
         raise
+
+
+def format_bb_output(messages: list[tuple[str | None, str]]) -> str:
+    """Format a list of (name, content) tuples as .bb format."""
+    output_parts = []
+    for name, content in messages:
+        if name:
+            msg_dict = {"user": name, "content": content}
+        else:
+            msg_dict = {"content": content}
+        output_parts.append(message_to_text(msg_dict))
+    return "".join(output_parts)
 
 
 def ally_chat_cli(
@@ -338,14 +321,3 @@ def setup_args(arg):
 
 if __name__ == "__main__":
     main.go(ally_chat_cli, setup_args)
-
-
-# NOTES:
-
-# 1. The 'yaml' module is imported but not used anywhere in the code. Consider
-# removing the unused import to avoid clutter.
-# 2. The 'missions' parameter in functions like create_room_content and
-# ally_chat_cli_async is accepted but not implemented. Additional mission files
-# are not processed or added to the room content, despite being mentioned
-# in the documentation and command-line options. This results in incomplete
-# functionality for including mission files.
