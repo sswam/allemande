@@ -1,10 +1,9 @@
-ac tool, to invoke Ally Chat agents from the command line
+ac tool, to invoke an Ally Chat agent from the command line
 
-- name of AI (default to $ALLEMANDE_LLM_DEFAULT), can do multiple
-- number of responses to wait for (defaults to number of AIs)
-- name of user (default to title-case of $USER)
+- name of user default to User, or title-case of $USER
+- name of AI (default to $ALLEMANDE_LLM_DEFAULT)
 - query to add, can be "" for none
-- context file, can use - for stdin, or omit for none
+- context files, can use - for stdin, or omit for none
 - additional mission files, can use - for stdin if not already used
 - option to include headers for a file or all files
 - options file/s
