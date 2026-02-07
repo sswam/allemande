@@ -191,22 +191,23 @@ Please do not use languages models other than those listed here for NSFW content
 
 #### Language Models (NSFW capable)
 
-| Creator    | Model              | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                            |
-|------------|--------------------|--------|---------|------------|-----------------|------------------|--------------------------------------------------------------------------------------------------------|
-| Meta       | Llama 3.1 8B       | Ellie* | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
-| Meta       | Llama 3.3 70B      | Ellyn  | 128K    | 2048       | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                |
-| Google     | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                    |
-| Google     | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                      |
-| Google     | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                      |
-| Google     | Gemini 3 Pro       | Gemi   | 1M      | 64K        | $2 [1]          | $12.00 [1]       | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                   |
-| xAI        | Grok 4             | Grok   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                     |
-| xAI        | Grok 4 Fast        | Gok    | 2M      | 2M         | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                            |
-| DeepSeek   | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                        |
-| DeepSeek   | DeepSeek Chat V3.1 | Desee  | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                     |
-| Mistral    | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                         |
-| Mistral+   | Venice: Uncensored | Veni   | 33K     | 33K        | $0.50           | $2               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.                                    |
-| MoonshotAI | Kimi K2 0905       | Kimi   | 262K    | 262K       | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use. |
-| Z.AI       | GLM 4.6            | Glimi  | 205K    | 205K       | $0.50           | $1.90            | Z.AI: GML 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.              |
+| Creator    | Model              | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                             |
+|------------|--------------------|--------|---------|------------|-----------------|------------------|---------------------------------------------------------------------------------------------------------|
+| Meta       | Llama 3.1 8B       | Ellie* | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
+| Meta       | Llama 3.3 70B      | Ellyn  | 128K    | 2048       | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                 |
+| Google     | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                     |
+| Google     | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                       |
+| Google     | Gemini 2.5 Pro     | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                       |
+| Google     | Gemini 3 Pro       | Gemi   | 1M      | 64K        | $2 [1]          | $12.00 [1]       | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                    |
+| xAI        | Grok 4             | Grok   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                      |
+| xAI        | Grok 4 Fast        | Gok    | 2M      | 2M         | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                             |
+| DeepSeek   | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                         |
+| DeepSeek   | DeepSeek Chat V3.1 | Desee  | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                      |
+| Mistral    | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                          |
+| Mistral+   | Venice: Uncensored | Veni   | 33K     | 33K        | $0.50           | $2               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.                                     |
+| MoonshotAI | Kimi K2 0905       | Kimi   | 262K    | 262K       | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |
+| MoonshotAI | Kimi K2.5          | Kimmi  | 262K    | 262K       | $0.45           | $2.50            | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
+| Z.AI       | GLM 4.6            | Glimi  | 205K    | 205K       | $0.50           | $1.90            | Z.AI: GML 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.               |
 
 * The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
