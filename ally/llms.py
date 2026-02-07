@@ -130,17 +130,17 @@ MODELS = {
         "cost_in": 0.40,
         "cost_out": 1.6,
     },
-    "claude-opus": {
-        "aliases": ["co", "claudo", "claude-4-opus"],
-        "vendor": "anthropic",
-        "vision": True,
-        "id": "claude-opus-4-1-20250805",
-#        "id": "claude-opus-4-20250514",
-#        "id": "claude-3-7-sonnet-latest",
-        "description": "Claude 4.1 Opus is Anthropic's strongest large model.",
-        "cost_in": 15,
-        "cost_out": 75,
-    },
+#     "claude-opus": {
+#         "aliases": ["co", "claudo", "claude-4-opus"],
+#         "vendor": "anthropic",
+#         "vision": True,
+#         "id": "claude-opus-4-1-20250805",
+# #        "id": "claude-opus-4-20250514",
+# #        "id": "claude-3-7-sonnet-latest",
+#         "description": "Claude 4.1 Opus is Anthropic's strongest large model.",
+#         "cost_in": 15,
+#         "cost_out": 75,
+#     },
     "claude": {
         "aliases": ["c", "claude-4-sonnet", "claude-sonnet"],
         "vendor": "anthropic",
@@ -517,6 +517,14 @@ MODELS = {
         "description": "MoonshotAI: Kimi K2 0905",
         "cost_in": 0.39,
         "cost_out": 1.9,
+    },
+    "kimmi": {
+        "aliases": ["kimi-k2.5"],
+        "vendor": "openrouter",
+        "id": "moonshotai/kimi-k2.5",
+        "description": "MoonshotAI: Kimi K2.5",
+        "cost_in": 0.45,
+        "cost_out": 2.5,
     }
 }
 
