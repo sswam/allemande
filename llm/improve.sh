@@ -4,7 +4,7 @@
 # Improve something using AI
 
 improve() {
-	local model= m=gc     # model
+	local model= m=c      # model
 	local style= s=0      # refer to hello-<ext> for style
 	local guidance= g=1   # refer to lang/guidance.md for style
 	local prompt= p=      # extra prompt

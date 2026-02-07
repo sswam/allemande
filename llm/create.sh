@@ -4,7 +4,7 @@
 # Write something using AI
 
 create() {
-	local model= m=gc     # LLM model
+	local model= m=c      # LLM model
 	local style= s=1      # refer to hello-<ext> for style
 	local guidance= g=1   # refer to lang/guidance.md for style
 	local edit= e=1       # edit
