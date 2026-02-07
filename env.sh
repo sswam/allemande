@@ -34,8 +34,8 @@ ALLEMANDE_WEBCACHE="$ALLEMANDE_HOME/webcache"
 
 ALLEMANDE_AUDIO_LOCK="/var/lock/allemande-audio.lock"
 
-ALLEMANDE_LLM_DEFAULT="flasho" # claude, groc, flashi
-ALLEMANDE_LLM_DEFAULT_SMALL="flasho"
+ALLEMANDE_LLM_DEFAULT="claude" # groc, flashi
+ALLEMANDE_LLM_DEFAULT_SMALL="flashi"
 
 ALLY_DISABLE_DEPRECATION_WARNINGS="0"
 
