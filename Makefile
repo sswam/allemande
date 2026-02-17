@@ -95,11 +95,11 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: notify.xt llm.xt images.xt forge.xt whisper.xt backup.xt
+core: notify.xt llm.xt images.xt forge.xt whisper.xt backup.xt cup.xt
 
 voice: mike.xt speak.xt whisper.xt
 
-webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt build-ui.xt wat.xt
+webchat: chat-api.xt stream.xt watch.xt bb2html.xt auth.xt build-ui.xt wat.xt vup.xt
 
 pro: svelte.xt
 pro-dev: svelte-dev.xt
@@ -281,5 +281,11 @@ api_doc: llm/llm.api
 notify:
 	./webchat_notify.sh
 
+vup:
+	cd $(ALLEMANDE_VISUAL) && \
+	while true; do sleep 5; make all; sleep 25; done
+
+cup:
+	while true; do sleep 5; move-contrib; sleep 25; done
 
 .PHONY: all default $(JOBS) %.xt canon api_doc subdirs $(SUBDIRS) deps deb-deps venv
