@@ -9,6 +9,7 @@
 # - Memory usage
 # - VM usage (RAM + swap)
 # - Basic network connectivity
+# - Inotify max_user_watches setting
 # - Domain DNS expiry
 # - Domain SSL certificate expiry
 #
@@ -27,13 +28,14 @@ monitor() {
 	local threshold_load= l=2       # load average threshold
 	local threshold_mem= m=95       # memory usage threshold percentage
 	local threshold_vm= M=92        # VM (RAM + swap) usage threshold percentage
+	local threshold_inotify= i=1048576  # minimum inotify max_user_watches value
 	local ping_host= p=8.8.8.8      # host to ping test
 	local killall_vm= K=90          # VM usage threshold to kill processes
 	local killall= k=node           # Processes to kill
 	local domains= n="allemande.ai" # domains to check
 	local dns_days= D=14            # days before DNS expiry warning
 	local ssl_days= S=14            # days before SSL expiry warning
-	local config= c=1                # load config from file
+	local config= c=1               # load config from file
 	local daily= y=0                # do daily checks
 	local caches= C=("/opt/allemande/rooms.extra.cache")  # cache dirs to exclude from disk space calculations
 
@@ -53,6 +55,7 @@ monitor() {
 	check_load
 	check_memory
 	check_vm
+	check_inotify
 	check_ping
 	if [ "$daily" = 1 ]; then
 		check_domains
@@ -65,6 +68,23 @@ check_domains() {
 		check_dns_expiry "$domain"
 		check_ssl_expiry "$domain"
 	done
+}
+
+check_inotify() {
+	local inotify_file=/proc/sys/fs/inotify/max_user_watches
+	local current_value
+
+	if [ ! -f "$inotify_file" ]; then
+		warn "WARNING: Cannot read inotify max_user_watches - file not found"
+		return
+	fi
+
+	current_value=$(cat "$inotify_file")
+	info "INFO: Inotify max_user_watches is set to %s" "$current_value"
+
+	if [ "$current_value" -lt "$threshold_inotify" ]; then
+		warn "WARNING: Inotify max_user_watches is %s, should be at least %s!" "$current_value" "$threshold_inotify"
+	fi
 }
 
 check_dns_expiry() {
@@ -213,4 +233,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	monitor "$@"
 fi
 
-# version: 0.1.6
+# version: 0.1.7
