@@ -1,0 +1,1 @@
+exec find "$@" -name '*~'
