@@ -308,44 +308,67 @@ remove-user() {
 
 restore-user() {
 	local user=${1:-}
+	local new_user=${2:-}  # Optional: new username to restore to
+
 	if [ -z "$user" ]; then
 		read -r -p "Username: " user
 	fi
 
-	# Check if user already exists
-	if grep -q "^$user:" .htpasswd; then
-		die "User $user already exists in htpasswd"
+	# If new_user is provided, use it; otherwise restore to original name
+	local target_user="${new_user:-$user}"
+
+	# Check if target user already exists
+	if grep -q "^$target_user:" .htpasswd; then
+		die "User $target_user already exists in htpasswd"
 	fi
 
 	# Find the most recent removed user directory
 	local removed_dir
 	removed_dir=$(find ~/users-removed -maxdepth 1 -type d \( -name "$user" -o -name "$user-*" \) 2>/dev/null | sort -V | tail -n1)
 
-	# Restore htpasswd entry if available
+	if [ -z "$removed_dir" ]; then
+		die "No removed user directory found for $user"
+	fi
+
+	# Restore htpasswd entry if available, changing username if needed
 	if [ -s "$removed_dir/htpasswd.entry" ]; then
-		cat "$removed_dir/htpasswd.entry" >> .htpasswd
-		echo >&2 "Restored htpasswd entry from backup"
+		if [ "$user" != "$target_user" ]; then
+			# Change username in htpasswd entry
+			sed "s/^$user:/$target_user:/" "$removed_dir/htpasswd.entry" >> .htpasswd
+			echo >&2 "Restored htpasswd entry for $target_user (from $user)"
+		else
+			cat "$removed_dir/htpasswd.entry" >> .htpasswd
+			echo >&2 "Restored htpasswd entry from backup"
+		fi
 	else
 		echo >&2 "No htpasswd entry found to restore for user $user"
 	fi
 
 	# Restore directories
-	mv -T "$removed_dir"/rooms rooms/"$user"  || true
-	mv -T "$removed_dir"/user static/users/"$user" || true
-	mv -T "$removed_dir"/git "$ALLEMANDE_HOME/ally-git/$user" || true
+	mv -T "$removed_dir"/rooms rooms/"$target_user"  || true
+	mv -T "$removed_dir"/user static/users/"$target_user" || true
+	mv -T "$removed_dir"/git "$ALLEMANDE_HOME/ally-git/$target_user" || true
 
-	# Restore NSFW access if user info indicates NSFW
-	local user_info_file="static/users/$user/info.rec"
-	local is_nsfw
-	is_nsfw=$(awk '/^is_nsfw:/ {print $2}' "$user_info_file")
-	if [ "$is_nsfw" = "1" ]; then
-		if ! grep -q "^- $user$" rooms/nsfw/.access.yml; then
-			echo "- $user" >> rooms/nsfw/.access.yml
-			echo >&2 "Restored NSFW access for user $user"
+	# Update info.rec if username changed
+	if [ "$user" != "$target_user" ]; then
+		local user_info_file="static/users/$target_user/info.rec"
+		if [ -f "$user_info_file" ]; then
+			sed -i "s/^name:	$user$/name:	$target_user/" "$user_info_file"
 		fi
 	fi
 
-	printf "+ %s\n" "$user"
+	# Restore NSFW access if user info indicates NSFW
+	local user_info_file="static/users/$target_user/info.rec"
+	local is_nsfw
+	is_nsfw=$(awk '/^is_nsfw:/ {print $2}' "$user_info_file")
+	if [ "$is_nsfw" = "1" ]; then
+		if ! grep -q "^- $target_user$" rooms/nsfw/.access.yml; then
+			echo "- $target_user" >> rooms/nsfw/.access.yml
+			echo >&2 "Restored NSFW access for user $target_user"
+		fi
+	fi
+
+	printf "+ %s\n" "$target_user"
 
 	# Remove the removed directory if empty
 	rmdir "$removed_dir" 2>/dev/null || true
@@ -480,4 +503,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	webchat-user "$@"
 fi
 
-# version: 0.1.59
+# version: 0.1.60
