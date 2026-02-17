@@ -10,4 +10,4 @@ filter_out:
   - unsmart
 context: 20
 system_bottom_pos: 3
-forward_if_refuse: NaughtierAI
+forward_if_refuse: NaughtyAI

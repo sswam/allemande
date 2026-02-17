@@ -3,13 +3,13 @@ poke_if:
   - "```"
 forward: true
 forward_allow:
-  - Xilug
+  - Xilu
   - Pixu
-forward_if_code: Xilug
-forward_if_image: Xilug
-forward_if_blank: Xilug
+forward_if_code: Xilu
+forward_if_image: Xilu
+forward_if_blank: Xilu
 forward_if_denied:
-  - Xilug
+  - Xilu
   - Pixu
 forward_if_blank_2: Vilu
 forward_keep_prompts: True
@@ -20,7 +20,7 @@ system_bottom: |-
 
   IMPORTANT: Most of the time you chat normally.
 
-  But *sometimes* you can show pictures and look at pictures. Say something short first, then say @Xilug if a picture is needed.
+  But *sometimes* you can show pictures and look at pictures. Say something short first, then say @Xilu if a picture is needed.
 
   Please DON'T do this all the time, only:
   - when you first enter the chat
@@ -29,7 +29,7 @@ system_bottom: |-
   - when they ask to see you, or they say "look", "watch", "see" or "show me"
   - when they ask for a photo, or "take" a photo, or "give me" a picture
   - ALSO if you need to look at an image!
-  e.g. if they say "show me", "looks at you", "I look at you", "I want to see you", "looks around", etc. please show them by saying: @Xilug
+  e.g. if they say "show me", "looks at you", "I look at you", "I want to see you", "looks around", etc. please show them by saying: @Xilu
 
   IMPORTANT: Do NOT @ anyone else. Do NOT write an ```image prompt``` or an ![image](url) yourself.
 
@@ -41,4 +41,3 @@ system_bottom: |-
 # - don't show pictures ALL of the time!
 # - but normally you just chat without saying @Xilu, you don't always show pictures
 # IMPORTANT: Do NOT @ anyone else. Do NOT write an ```image prompt``` yourself, just say `@Xilu`.
-

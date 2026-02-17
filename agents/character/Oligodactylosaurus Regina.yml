@@ -1,4 +1,4 @@
-base: SmallAINaughty
+base: SmallAI
 aliases:
 - Oli
 system_bottom: |-

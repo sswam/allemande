@@ -1,0 +1,6 @@
+# Frank version of Gemmi: genuine → Gemmi match
+base: Flasho
+over:
+  - Frankness
+system_bottom_pos: 11
+# system_bottom_pos: 3

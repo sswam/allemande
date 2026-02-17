@@ -1,7 +1,7 @@
 base: SmallAI
 over: []
 macro_fields: []
-lines: 50
+# lines: 50
 poke_if:
   - "```"
 specialist: true

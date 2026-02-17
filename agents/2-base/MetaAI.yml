@@ -1,5 +1,5 @@
 # MetaAI is our base agent for AI meta-agents with a wide range of capabilities
-base: Ernie
+base: Flasha
 over:
   - Period
 poke_if:

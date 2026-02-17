@@ -1,4 +1,4 @@
-base: SmallAINaughty
+base: SmallAI
 # model: meta-llama/llama-3.1-8b-instruct:free
 # type: openrouter
 system_bottom: |-
