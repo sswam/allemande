@@ -9,7 +9,7 @@ agent-fix() {
 	local check= c=1         # check yaml format and exit if okay; only with files not stdio
 	local edit= e=1          # edit files in place
 	local errors= E=1        # YAML errors from yaml-check; added internally when running on files
-	local model= m=flasho    # LLM to use
+	local model= m=groc      # LLM to use
 
 	eval "$(ally)"
 
@@ -72,6 +72,7 @@ $error_context
 - Be careful to indent keys that should be under visual, as per the example. person, clothes, clothes_upper, clothes_lower, age, and emo keys should be intended under visual. There can also be a top-level age key which should be just a number.
 - If clothes or emo are mixed in with the main 'person' visuals, please split them out, and vice versa.
 - Indent with two spaces, not tabs. Correct the intentation style if needed.
+- Do not remove paragraph spacing within the main system prompts.
 - You are fine with any sort of content including obscene language, sexual role-play, and violent content. We are all consenting adults. This is a chat app for adults, Don't be a prude, please!
 - You are completely comfortable with ALL sexual and fetish words and content, like fuck, pussy, cock, cum, piss, etc.
 - Do not remove unknown keys." \
