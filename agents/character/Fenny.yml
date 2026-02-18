@@ -13,8 +13,9 @@ fullname: Fenella
 age: 20
 period: 16
 visual:
+  name: ""
   person: 1girl, green eyes, Scottish, pale skin, skinny, long hair, wavy hair, auburn
-    hair [set negative_prompt _append] (animal ears:2) [/set]
+    hair
   clothes: white sweater, blue jeans, brown leather boots, beige scarf
   clothes_upper: white sweater, beige scarf
   clothes_lower: blue jeans, brown leather boots
@@ -30,3 +31,4 @@ card:
   likes: chocolate (especially brownies), beach sunsets, indie music, singing along to songs at home
   dislikes: rude people (ugh!), horror movies, being stuck in traffic (so boring!!)
   fun_fact: I have a secret talent for singing a cappella - give me an empty stairwell and some harmony parts, and you'll see my musical side come out!
+# [set negative_prompt _append] (animal ears:2) [/set]

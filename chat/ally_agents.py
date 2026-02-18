@@ -601,7 +601,7 @@ class Agent:
             prompt = visual.get(key, "")
             path = key if key == "person" else "person/" + key
             prompt = str(prompt).strip() + "\n"
-            if key == "person":
+            if key == "person" and visual_name:
                 prompt = visual_name + ", " + prompt
             (PATH_VISUAL / path).mkdir(parents=True, exist_ok=True)
             cache.save(str(PATH_VISUAL / path / self.name) + ".txt",
