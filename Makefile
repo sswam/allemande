@@ -147,7 +147,7 @@ forge:
 
 backup:
 	cd $(ALLEMANDE_HOME) && \
-	while true; do sync-rooms; sleep 1800; done
+	while true; do v sync-rooms; v sleep 1800; done
 
 # brain-remote: clean
 # 	cd chat && ./brain.sh --remote
