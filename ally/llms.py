@@ -130,52 +130,33 @@ MODELS = {
         "cost_in": 0.40,
         "cost_out": 1.6,
     },
-#     "claude-opus": {
-#         "aliases": ["co", "claudo", "claude-4-opus"],
-#         "vendor": "anthropic",
-#         "vision": True,
-#         "id": "claude-opus-4-1-20250805",
-# #        "id": "claude-opus-4-20250514",
-# #        "id": "claude-3-7-sonnet-latest",
-#         "description": "Claude 4.1 Opus is Anthropic's strongest large model.",
-#         "cost_in": 15,
-#         "cost_out": 75,
-#     },
+    "claude-opus": {
+        "aliases": ["co", "claudo", "claude-4-opus"],
+        "vendor": "anthropic",
+        "vision": True,
+        "id": "claude-opus-4-6",
+        "description": "Claude 4.6 Opus is Anthropic's strongest large model.",
+        "cost_in": 5,
+        "cost_out": 25,
+    },
     "claude": {
         "aliases": ["c", "claude-4-sonnet", "claude-sonnet"],
         "vendor": "anthropic",
         "vision": True,
-        "id": "claude-sonnet-4-5-20250929",
+        "id": "claude-sonnet-4-6",
+#        "id": "claude-sonnet-4-5-20250929",
 #        "id": "claude-sonnet-4-20250514",
 #        "id": "claude-3-7-sonnet-latest",
-        "description": "Claude 4.5 Sonnet is Anthropic's latest and strongest model, a mid-size model.",
-        "cost_in": 3,
-        "cost_out": 15,
-    },
-    # "claude": {
-    #     "aliases": ["c", "claud", "claude-3.5"],
-    #     "vendor": "anthropic",
-    #     "vision": True,
-    #     "id": "claude-3-5-sonnet-latest",
-    #     "description": "Claude 3.5 Sonnet is Anthropic's strong and reliable model.",
-    #     "cost_in": 3,
-    #     "cost_out": 15,
-    # },
-    "claude-3.7": {
-        "vendor": "anthropic",
-        "aliases": ["claudia"],
-        "vision": True,
-        "id": "claude-3-7-sonnet-latest",
-        "description": "Claude 3.7 Sonnet is strong at role-playing.",
+        "description": "Claude 4.6 Sonnet is Anthropic's latest and strongest model, a mid-size model.",
         "cost_in": 3,
         "cost_out": 15,
     },
     "claude-haiku": {
-        "aliases": ["i", "clia", "claude-3.5-haiku"],
+        "aliases": ["i", "clia", "claude-4-haiku"],
         "vendor": "anthropic",
         "vision": True,
-        "id": "claude-3-haiku-20240307",
-        "description": "Claude 3 Haiku is Anthropic's fastest and most affordable model.",
+        "id": "claude-haiku-4-5",
+        "description": "Claude 4.5 Haiku is Anthropic's fastest and most affordable model.",
         "cost_in": 0.25,
         "cost_out": 1.25,
     },
@@ -528,15 +509,13 @@ MODELS = {
     }
 }
 
-# default_model = "claude"
-# default_model_small = "gemini-2.0-flash"
-default_model = "gpt-5"
-default_model_small = "gpt-5-mini"
+default_model = "claude"
+default_model_small = "gemini-2.5-flash"
 
 SERVICES_BROKEN = []  # ["google"]
 
 MODEL_FALLBACKS = {
-    "*:*": "google:gemini-2.0-flash",
+    "*:*": "google:gemini-2.5-flash",
 
     # Local models
     # "llm_llama:default": "openrouter:llama-3.1-8b",  # This doesn't work yet I think!
@@ -550,25 +529,25 @@ MODEL_FALLBACKS = {
     "openai:gpt-4": "google:gemini-2.5-pro",
     "openai:gpt-4o": "google:gemini-2.5-pro",
     "openai:gpt-4.1-mini": "google:gemini-2.5-flash",
-    "openai:*": "google:gemini-2.0-flash",
+    "openai:*": "google:gemini-2.5-flash",
 
     # Anthropic models
     "anthropic:claude-opus": "google:gemini-3-pro",
     "anthropic:claude": "google:gemini-2.5-pro",
     "anthropic:claude-3.7": "google:gemini-2.5-pro",
     "anthropic:claude-haiku": "google:gemini-2.0-flash-lite",
-    "anthropic:*": "google:gemini-2.0-flash",
+    "anthropic:*": "google:gemini-2.5-flash",
 
     # OpenRouter models
     "openrouter:glm-4.6": "google:gemini-2.5-flash",
-    "openrouter:gpt-oss-120b": "google:gemini-2.0-flash",
-    "openrouter:gpt-oss-20b": "google:gemini-2.0-flash",
+    "openrouter:gpt-oss-120b": "google:gemini-2.5-flash",
+    "openrouter:gpt-oss-20b": "google:gemini-2.5-flash",
     "openrouter:deepseek-v3": "google:gemini-2.5-pro",
-    "openrouter:llama-3.3-70b-free": "google:gemini-2.0-flash",
+    "openrouter:llama-3.3-70b-free": "google:gemini-2.5-flash",
     "openrouter:llama-4-scout": "google:gemini-2.5-flash",
     "openrouter:llama-4-maverick": "google:gemini-2.5-flash",
-    "openrouter:gemma-3-27b-free": "google:gemini-2.0-flash",
-    "openrouter:gemma-3-27b": "google:gemini-2.0-flash",
+    "openrouter:gemma-3-27b-free": "google:gemini-2.5-flash",
+    "openrouter:gemma-3-27b": "google:gemini-2.5-flash",
     "openrouter:gemma-3-12b-free": "google:gemini-2.0-flash-lite",
     "openrouter:gemma-3-12b": "google:gemini-2.0-flash-lite",
     "openrouter:gemma-3-4b-free": "google:gemini-2.0-flash-lite",
@@ -576,34 +555,34 @@ MODEL_FALLBACKS = {
     "openrouter:gemma-3-1b-free": "google:gemini-2.0-flash-lite",
     "openrouter:gemma-3-1b": "google:gemini-2.0-flash-lite",
     "openrouter:qwq-32b": "google:gemini-2.0-flash-lite",
-    "openrouter:mistral-large": "google:gemini-2.0-flash",
-    "openrouter:kimi": "google:gemini-2.0-flash",
-    "openrouter:*": "google:gemini-2.0-flash",
+    "openrouter:mistral-large": "google:gemini-2.5-flash",
+    "openrouter:kimi": "google:gemini-2.5-flash",
+    "openrouter:*": "google:gemini-2.5-flash",
 
     # Perplexity models
     "perplexity:sonar-reasoning-pro": "google:gemini-2.5-pro",
     "perplexity:sonar-reasoning": "google:gemini-2.5-flash",
     "perplexity:sonar-pro": "google:gemini-2.5-pro",
-    "perplexity:sonar": "google:gemini-2.0-flash",
-    "perplexity:*": "google:gemini-2.0-flash",
+    "perplexity:sonar": "google:gemini-2.5-flash",
+    "perplexity:*": "google:gemini-2.5-flash",
 
     # xAI models
-    "xai:grok2": "google:gemini-2.0-flash",
-    "xai:grok3": "google:gemini-2.0-flash",
+    "xai:grok2": "google:gemini-2.5-flash",
+    "xai:grok3": "google:gemini-2.5-flash",
     "xai:grok4": "google:gemini-3-pro",
-    "xai:grok3-mini": "google:gemini-2.0-flash",
-    "xai:grok4-fast": "google:gemini-2.0-flash",
+    "xai:grok3-mini": "google:gemini-2.5-flash",
+    "xai:grok4-fast": "google:gemini-2.5-flash",
     "xai:grok-code-fast": "google:gemini-2.5-pro",
-    "xai:*": "google:gemini-2.0-flash",
+    "xai:*": "google:gemini-2.5-flash",
 
     # Deepseek models
     "deepseek:deepseek-chat": "google:gemini-2.5-flash",
     "deepseek:deepseek-reasoner": "google:gemini-2.5-pro",
-    "deepseek:*": "google:gemini-2.0-flash",
+    "deepseek:*": "google:gemini-2.5-flash",
 
     # Venice models
-    "venice:venice-uncensored": "google:gemini-2.0-flash",
-    "venice:*": "google:gemini-2.0-flash",
+    "venice:venice-uncensored": "google:gemini-2.5-flash",
+    "venice:*": "google:gemini-2.5-flash",
 }
 
 MODEL_FALLBACKS = {
