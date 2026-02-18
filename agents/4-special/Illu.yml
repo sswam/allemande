@@ -82,7 +82,6 @@ system_bottom: |-
   F. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|
-    | <lora:expressive:1> | ExpressiveH | better facial expressions |
     | <lora:add-detail-xl:1> | more detailed | |
     | <lora:detailed_notrigger:1> | |
     | <lora:hands_sdxl:1> | perfection style | better hands and feet for SDXL models |
