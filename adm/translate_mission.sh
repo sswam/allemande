@@ -28,7 +28,7 @@ translate-mission() {
       echo "**IMPORTANT NOTE: This user prefers to speak \$LANGUAGE. Please always communicate with them in \$LANGUAGE, unless they request otherwise.**"
       echo
       cat "$src"
-    ) | process -m="$model" "Please translate for language code '$lang', don't change any content or layout, no prelude or comment; just translate please and include the full language name in place of \$LANGUAGE." >"$target"
+    ) | process -m="$model" "Please translate for language code '$lang', don't change any content or layout, no prelude or comment; just translate please and include the full language name in place of \$LANGUAGE. Also, preserve any @ signs." >"$target"
   done
 }
 
