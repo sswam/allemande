@@ -1,0 +1,12 @@
+base:
+  - NaughtyChar
+  - FlashoM
+over:
+  - +
+  - SpicyWriter
+filter_out:
+  - unsmart
+forward_allow:
+  - Xilu
+# - Fallback
+# forward_if_refuse: NaughtierAI

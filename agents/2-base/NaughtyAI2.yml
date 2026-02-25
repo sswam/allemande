@@ -1,0 +1,8 @@
+base: MediumAI
+over:
+  - +
+  - SpicyWriter
+forward_allow:
+  - Xilu
+# - Fallback
+# forward_if_refuse: NaughtierAI
