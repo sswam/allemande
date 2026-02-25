@@ -704,7 +704,9 @@ async def watch_loop(args):
                     agents.handle_file_change(file_path, change_type)
                     agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
                 elif file_type == "agent_private":
-                    agents.handle_file_change(file_path, change_type, private=True)
+                    room = ally_room.Room(path=(Path(file_path).parent)/"chat.bb")
+                    agents1 = load_local_agents(room, agents)
+                    agents1.handle_file_change_private(file_path, change_type)
                 elif file_type == "contrib" and change_type == Change.added:
                     move_contrib(file_path)
                 else:
