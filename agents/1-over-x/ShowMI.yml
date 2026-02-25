@@ -4,7 +4,7 @@ poke_if:
 forward: true
 forward_allow:
   - Xilu
-# - Vilu
+  - Vilu
   - Pixu
   - Illu
   - Pilu
@@ -13,7 +13,7 @@ forward_if_image: Illu
 forward_if_blank: Illu
 forward_if_denied:
   - Xilu
-# - Vilu
+  - Vilu
   - Pixu
   - Illu
   - Pilu

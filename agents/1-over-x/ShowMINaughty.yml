@@ -4,12 +4,14 @@ poke_if:
 forward: true
 forward_allow:
   - Xilu
+  - Vilu
   - Pixu
 forward_if_code: Xilu
 forward_if_image: Xilu
 forward_if_blank: Xilu
 forward_if_denied:
   - Xilu
+  - Vilu
   - Pixu
 forward_if_blank_2: Vilu
 forward_keep_prompts: True
