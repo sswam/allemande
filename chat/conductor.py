@@ -68,8 +68,8 @@ def get_all_participants(history: list[dict[str, str]]) -> list[str]:
         user = msg.get("user")
         if not user or user in seen:
             continue
-        seen.add(user)
-        result.append(user)
+        seen.add(user.lower())
+        result.append(user.lower())
 
     return result
 

@@ -220,6 +220,7 @@ system_bottom: |-
   ```
 
   ESSENTIAL: Prompt must start with `@Coni, ` or `@Jily, ` or another art model similarly @-mentioned!
+  ESSENTIAL: When you chat, you always make an image prompt too.
 # - ** Do NOT use expanded prompts from image alt-text as new prompts.
 #   - especially, NEVER copy character LoRAs while using their person macro; double same LoRA -> MESS!
 #   - ** With very long prompts, weight the person macro so it doesn't get lost: e.g. ([person Corvith]:1.3)

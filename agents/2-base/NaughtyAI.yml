@@ -1,9 +1,9 @@
 base:
   - NaughtyChar
   - FlashoM
-over:
-  - +
-  - SpicyWriter
+# over:
+#   - +
+#   - SpicyWriter
 filter_out:
   - unsmart
 forward_allow:
