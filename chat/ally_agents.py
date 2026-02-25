@@ -108,11 +108,10 @@ class NotEnabledError(Exception):
 
 class Agent:
     """An Allemande Agent"""
-    def __init__(self, data: dict|None = None, agents: Agents|None = None, file: Path|None = None, private: bool=False):
+    def __init__(self, data: dict|None = None, agents: Agents|None = None, file: Path|None = None):
         logger.debug("Loading agent from %s", file or "data: "+data.get("name"))
         self.agents = agents
         self.file = file
-        self.private = private
         if file and data:
             raise ValueError("Cannot specify both file and data")
         if not file and not data:
@@ -122,9 +121,6 @@ class Agent:
         if file:
             self.load_agent()
         self.name = self.data["name"]
-        if private:
-            self.data = {k: self.data[k] for k in ("visual", "name", "fullname", "aliases") if k in self.data}
-            self.data["type"] = "visual"
         self.nsfw = False
         if file and file.parent.name == "nsfw":
             self.data["adult"] = True
@@ -329,7 +325,7 @@ class Agent:
         if private_public == "private":
             agents_folder = f"{top_dir}/agents"
         elif private_public == "public" and top_dir == "nsfw":
-            agents_folder = "nsfw/agents/$user"
+            agents_folder = "agents/nsfw/$user"
         else:  # public or unknown
             agents_folder = "agents/$user"
 
@@ -466,7 +462,7 @@ class Agent:
         # logger.info("Pregnancy info: days_pregnant=%r total_days=%r", days_pregnant, total_days)
         # logger.info("Pregnancy description: %r", pregnant_desc)
         pregnant_frac = f"{days_pregnant / total_days:.2f}"
-        pregnant_visual = f"BREAK (pregnant:{pregnant_frac})"
+        pregnant_visual = f"(pregnant:{pregnant_frac})"
         # logger.info("Pregnancy visual: %r", pregnant_visual)
         return pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual
 
@@ -578,7 +574,7 @@ class Agent:
 
         return True
 
-    def update_visual(self, private: bool=False):
+    def update_visual(self):
         """Update the visual prompts for an agent."""
         visual = self.get("visual")
         logger.debug("update_visual: %r %r", self.name, visual)
@@ -588,12 +584,6 @@ class Agent:
         all_names = self.get_all_names()
 
         all_names_with_lc = uniqo(all_names + [name.lower() for name in all_names])
-
-        if private:
-            agent1 = self.agents.get(self.name)
-            if agent1 and not agent1.private:
-                logger.warning("Name conflict between private and public agent: %r", self.name)
-                return
 
         # supporting arbitrary keys might be a security risk
         visual_name = visual.get("name", self.name)
@@ -612,15 +602,10 @@ class Agent:
             for name1 in all_names_with_lc:
                 if name1 == self.name:
                     continue
-                if private:
-                    agent1 = self.agents.get(name1)
-                    if agent1 and not agent1.private:
-                        logger.warning("Alias conflict for private agent: %r, %r", self.name, name1)
-                        continue
                 cache.symlink(self.name + ".txt",
                         str(PATH_VISUAL / path / name1) + ".txt")
 
-    def remove_visual(self, private: bool=False):
+    def remove_visual(self):
         """Remove the visual prompts for an agent."""
         all_names = self.get_all_names()
         all_names_with_lc = uniqo(all_names + [name.lower() for name in all_names])
@@ -628,10 +613,6 @@ class Agent:
         for key in VISUAL_KEYS:
             path = key if key == "person" else "person/" + key
             for name1 in all_names_with_lc:
-                if private:
-                    agent1 = self.agents.get(name1)
-                    if agent1 and not agent1.private:
-                        continue
                 try:
                     cache.remove(str(PATH_VISUAL / path / name1) + ".txt")
                 except FileNotFoundError:
@@ -639,7 +620,7 @@ class Agent:
 
     def __repr__(self) -> str:
         """String representation of the agent"""
-        return f"Agent(name={self.name}, type={self.get('type')}, private={self.private})\n" + yaml.dump(self.data, sort_keys=False)
+        return f"Agent(name={self.name}, type={self.get('type')})\n" + yaml.dump(self.data, sort_keys=False)
 
 
 class Agents:
@@ -655,12 +636,12 @@ class Agents:
         agent_names = sorted(set(agent.name for agent in self.agents.values() if agent.get("type") not in [None, "human", "visual", "mixin"]))
         cache.save(path, agent_names, noclobber=False)
 
-    def load_agent_without_setup(self, agent_file: Path, private: bool=False) -> Agent | None:
+    def load_agent_without_setup(self, agent_file: Path) -> Agent | None:
         """Load an agent from a file."""
         name = agent_file.stem
-        self.remove_agent(name, private=private)
+        self.remove_agent(name)
 
-        agent = Agent(file=agent_file, agents=self, private=private)
+        agent = Agent(file=agent_file, agents=self)
 
         # Add agent under all its names
         all_names = agent.get_all_names()
@@ -668,42 +649,30 @@ class Agents:
             if name1 in self.agents:
                 if self.agents[name1] != agent:
                     old_main_name = self.agents[name1].name
-                    msg_private = " (private scope)" if private else ""
-                    logger.warning("Agent name conflict%s: %r vs %r for %r",
-                            msg_private, old_main_name, agent.name, name1)
-                    # REMOVED: The override logic that was causing leaks
-                    # Now we just warn and skip the conflicting name
-                    # logger.info("skipping agent name: %r", name1)
-                    # private agents can override outer names
-                    # XXX this was bad, caused private agent leak; need to understand what's going on here!!
-                    # if not private:
-                    #     continue
+                    logger.warning("Agent name conflict: %r vs %r for %r",
+                            old_main_name, agent.name, name1)
                     continue
             self.agents[name1] = agent
             # logger.info("added agent under name: %r -> %r", name1, agent.name)
 
         return agent
 
-    def remove_agent(self, name: str, keep_visual: bool=False, private: bool=False) -> None:
+    def remove_agent(self, name: str, keep_visual: bool=False) -> None:
         """Remove an agent."""
         agent = self.agents.get(name)
         if not agent:
             return
 
         if not keep_visual:
-            agent.remove_visual(private=private)
+            agent.remove_visual()
 
         agent_names = agent.get_all_names()
         # logger.info("remove_agent: %r", name)
         for name1 in agent_names:
-            if private:
-                agent1 = self.agents.get(name1)
-                if agent1 and not agent1.private:
-                    continue
             logger.debug("Removing agent by name: %r", name1)
             self.agents.pop(name1, None)
 
-    def load(self, path: Path, visual: bool=True, private: bool=False) -> None:
+    def load(self, path: Path, visual: bool=True) -> None:
         """Load all agents or one agent from a path."""
         if path.is_dir():
             agent_files = sorted(path.rglob("*.yml"))
@@ -717,7 +686,7 @@ class Agents:
         for agent_file in agent_files:
             try:
                 # logger.info("load_agent_without_setup: %r", agent_file)
-                agent = self.load_agent_without_setup(agent_file, private=private)
+                agent = self.load_agent_without_setup(agent_file)
                 new_agents.append(agent)
             except NotEnabledError:
                 logger.info("Agent not enabled: %s", agent_file)
@@ -732,22 +701,47 @@ class Agents:
         for agent in new_agents:
             if visual:
                 # logger.info("update_visual: %r", agent.name)
-                agent.update_visual(private=private)
+                agent.update_visual()
             # logger.info("set_up: %r", agent.name)
             if not agent.set_up(self.services):
                 # logger.info("remove_agent: %r", agent.name)
-                self.remove_agent(agent.name, keep_visual=True, private=private)
+                self.remove_agent(agent.name, keep_visual=True)
                 continue
 
-    def handle_file_change(self, file_path: str, change_type: Change, private: bool=False) -> None:
+    def handle_file_change(self, file_path: str, change_type: Change) -> None:
         """Process an agent file change."""
         if change_type == Change.deleted:
             name = Path(file_path).stem
             # logger.info("Removing agent: %r", name)
-            self.remove_agent(name, private=private)
+            self.remove_agent(name)
         else:
             # logger.info("Loading agent: %r", file_path)
-            self.load(Path(file_path), private=private)
+            self.load(Path(file_path))
+
+    def handle_file_change_private(self, file_path: str, change_type: Change) -> None:
+        """Process a private agent file change - just update the visual if appropriate."""
+        # The local agents is already loaded as self.
+        if change_type == Change.deleted:
+            # TODO remove the visual?
+            return
+
+        # logger.info("Loading agent: %r", file_path)
+        name = Path(file_path).stem
+        agent = self.get(name)
+        parent_agents = self.parent
+        agent1 = parent_agents and parent_agents.get(name)
+
+        # If an agent with the same name exists in the parent agents, do not update the visual
+        if agent1:
+            return
+
+        if not agent:
+            logger.info("Cannot update visual, agent not loaded: %s", file_path)
+            return
+
+        # TODO this is probably insufficient regarding aliases and such, but will do for the moment I guess :/
+
+        agent.update_visual()
 
     def get(self, name: str) -> Agent | None:
         """Get an agent by name."""
