@@ -75,14 +75,14 @@ def load_model_tokenizer(model: str):
     raise Exception(f"Model path does not exist: {model_path}")
 
 
-def get_fulltext(args, model_name, history, history_start, invitation, delim):
+def get_fulltext(args, model_name, history, history_start, invitation):
     """Get the full text from the history, and cut to the right length for a local model."""
     try:
         tokenizer = load_model_tokenizer(model_name)
     except Exception as e:
         raise RuntimeError(f"Failed to load tokenizer: {e}")
 
-    fulltext = delim.join(history[history_start:]) + invitation
+    fulltext = args.delim.join(history[history_start:]) + invitation
     n_tokens = count_tokens_in_text(fulltext, tokenizer)
     logger.debug("n_tokens is %r", n_tokens)
     # dropped = False
@@ -106,14 +106,14 @@ def get_fulltext(args, model_name, history, history_start, invitation, delim):
                 guess = len(history) - history_start - 1
                 last = 1
         history_start += guess
-        fulltext = delim.join(history[history_start:]) + invitation
+        fulltext = args.delim.join(history[history_start:]) + invitation
         n_tokens = count_tokens_in_text(fulltext, tokenizer)
         # dropped = True
         logger.debug("dropped some history, history_start: %r, n_tokens: %r", history_start, n_tokens)
         if last:
             break
     # if dropped:
-    #     fulltext = delim.join(history[history_start:]) + invitation
+    #     fulltext = args.delim.join(history[history_start:]) + invitation
     logger.debug("fulltext: %r", fulltext)
     return fulltext, history_start
 
@@ -151,28 +151,25 @@ def strip_images(message: str) -> str:
     return message
 
 
-async def local_agent(agent, _query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str = None) -> str:
+async def local_agent(c, agent, _query) -> str:
     """Run a local agent."""
     # print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 
-    room = Room(path=Path(file))
-
-    if config is None:
-        config = {}
+    room = Room(path=Path(c.file))
 
     # Note: the invitation should not end with a space, or the model might use lots of emojis!
     name = agent.name
 
     # Allow to override agent settings in the config
     agent = agent.copy()
-    if config and config.get("agents") and "all" in config["agents"]:
-        agent.update(config["agents"]["all"])
-    if config and config.get("agents") and name in config["agents"]:
-        agent.update(config["agents"][name])
+    if c.config.get("agents") and "all" in c.config["agents"]:
+        agent.update(c.config["agents"]["all"])
+    if c.config.get("agents") and name in c.config["agents"]:
+        agent.update(c.config["agents"][name])
 
     logger.debug("Running local agent %r", agent)
 
-    invitation = args.delim + name + ":"
+    invitation = c.args.delim + name + ":"
 
     model_name = agent["model"]
     n_context = agent.get("context")
@@ -183,9 +180,9 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         if n_context == 0:
             context = []
         else:
-            context = history[-n_context:]
+            context = c.history[-n_context:]
     else:
-        context = history.copy()
+        context = c.history.copy()
 
     # remove "thinking" sections from context
     context = chat.context_remove_thinking_sections(context, agent)
@@ -200,19 +197,19 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     image_agent = agent.get("type", "").startswith("image_")
     dumb_agent = agent.get("dumb", False)
-    image_count = config.get("image_count", 1)
+    image_count = c.config.get("image_count", 1)
 
     if include_mission:
         # prepend mission / info / context
         # TODO try mission as a "system" message?
         context2 = []
-        mission_pos = config.get("mission_pos", 0)
+        mission_pos = c.config.get("mission_pos", 0)
         logger.debug("mission_pos: %r", mission_pos)
-        if summary:
-            context2 += summary
+        if c.summary:
+            context2 += c.summary
         context2 += context
-        if mission:
-            context2.insert(mission_pos, "\n".join(mission))
+        if c.mission:
+            context2.insert(mission_pos, "\n".join(c.mission))
         context = context2
 
     # add system messages
@@ -262,7 +259,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
             context.insert(0, system_top)
         logger.debug("system_top: %r", system_top)
 
-    logger.debug("context: %s", args.delim.join(context[-6:]))
+    logger.debug("context: %s", c.args.delim.join(context[-6:]))
 
     agent_name_esc = regex.escape(name)
 
@@ -270,20 +267,20 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     context_messages = [
         {
             "user": m.get("user"),
-            "content": (await ally_markdown.preprocess(m["content"], file, m.get("user")))[0]
+            "content": (await ally_markdown.preprocess(m["content"], c.file, m.get("user")))[0]
         }
         for m in bb_lib.lines_to_messages(context)]
     context = list(bb_lib.messages_to_lines(context_messages))
 
     need_clean_prompt = agent.get("clean_prompt", dumb_agent)
     if need_clean_prompt:
-        fulltext = chat.clean_prompt(context, name, args.delim)
+        fulltext = chat.clean_prompt(context, name, c.args.delim)
     else:
         if agent.get("code_unwrap_input"):
             context = [code_unwrap_input(line) for line in context]
         if agent.get("strip_images_input"):
             context = [strip_images(line) for line in context]
-        fulltext, history_start = get_fulltext(args, model_name, context, history_start, invitation, args.delim)
+        fulltext, history_start = get_fulltext(c.args, model_name, context, c.history_start, invitation)
 
     if "config" in agent:
         gen_config = agent["config"].copy()
@@ -293,7 +290,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     else:
         # load the config each time, in case it has changed
         # TODO the config should be per agent, not global
-        gen_config = load_config(args)
+        gen_config = load_config(c.args)
 
     if "lines" in agent:
         gen_config["lines"] = agent["lines"]
@@ -343,15 +340,15 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
         ]
     if not image_agent:
         # If no history, stop after the first line always. It tends to run away otherwise.
-        if not history or (len(history) == 1 and history[0].startswith("System:\t")):
+        if not c.history or (len(c.history) == 1 and c.history[0].startswith("System:\t")):
             logger.debug("No history, will stop after the first line.")
             gen_config["stop_regexs"].append(r"\n")
 
         gen_config["stop_regexs"].extend(agent.get("stop_regexs", []))
 
     if image_agent:
-        fulltext2 = chat.add_configured_image_prompts(fulltext, [agent, config])
-        fulltext2 = soma.sub(fulltext2, [agent.get("vmacs"), config.get("vmacs")])
+        fulltext2 = chat.add_configured_image_prompts(fulltext, [agent, c.config])
+        fulltext2 = soma.sub(fulltext2, [agent.get("vmacs"), c.config.get("vmacs")])
         logger.debug("image prompt after adding configured: %r", fulltext2)
         try:
             seed = agent.get("unp_seed_visual")
@@ -372,7 +369,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     logger.debug("config: %r", gen_config)
 #     logger.info("portal: %r", str(portal.portal))
 
-    gen_config["user"] = responsible_human
+    gen_config["user"] = c.responsible_human
     gen_config["room"] = room.name
 
     logger.debug("gen_config: %r", gen_config)
@@ -395,7 +392,7 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
     except (FileNotFoundError, KeyError):
         pass
 
-    image_alt_type = config.get("image_alt", "both")
+    image_alt_type = c.config.get("image_alt", "both")
 
     # look for attachments, other files in resp/ in sorted order
     # service image_a1111 should return a file name in response
@@ -438,13 +435,13 @@ async def local_agent(agent, _query, file, args, history, history_start=0, missi
 
     logger.debug("response: %r", response)
 
-    agent_names = list(agents.names())
-    history_messages = list(bb_lib.lines_to_messages(history))
+    agent_names = list(c.agents.names())
+    history_messages = list(bb_lib.lines_to_messages(c.history))
     all_people = conductor.participants(history_messages)
     people_lc = list(map(str.lower, set(agent_names + all_people)))
 
-    response = chat.trim_response(response, args, agent.name, people_lc=people_lc)
-    response = chat.fix_response_layout(response, args, agent)
+    response = chat.trim_response(response, c.args, agent.name, people_lc=people_lc)
+    response = chat.fix_response_layout(response, agent)
 
     if agent.get("code_wrap_output"):
         response = "```\n\t" + response.strip() + "\n\t```"

@@ -17,6 +17,7 @@ from conductor_settings import *
 from settings import *
 from who_is_named import *
 from ally.cache import cache  # type: ignore # pylint: disable=wrong-import-order
+from text import names
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -145,10 +146,6 @@ def _apply_skip_image_replies(agents, message, history, config):
     return message, history
 
 
-def _build_agents(agents):
-    return Agents(agents.services, parent=agents)
-
-
 def _build_agent_name_map_minimal(agents):
     # Agent names
     agent_names = agents.names()
@@ -184,15 +181,16 @@ def _build_agent_name_map_full(agents):
 
 def _mentioned_in_mission(agents, mission, room, access_check_cache, agent_name_map):
     mentioned_in_mission = set()
-    if mission:
-        mission_text = "\n".join(mission)
-        for _key, agent in agents.items():
-            if agent.get("specialist") or agent.get("link") == "tool" or agent.get("expensive") or (agent.get("type") or "").startswith("image_"):
-                continue
-            name = agent["name"]
-            agent_re = re.escape(name)
-            if re.search(rf"(?i)(\W|^)@{agent_re}\b", mission_text):
-                mentioned_in_mission.add(name)
+    if not mission:
+        return mentioned_in_mission
+    mission_text = "\n".join(mission)
+
+    possible_mentions = names.extract_names(mission_text, at_only=True)
+    for name in uniqo(possible_mentions):
+        agent = agents.get(name)
+        if not agent or agent.get("specialist") or agent.get("link") == "tool" or agent.get("expensive") or (agent.get("type") or "").startswith("image_"):
+            continue
+        mentioned_in_mission.add(name)
     mentioned_in_mission = set(filter_access(mentioned_in_mission, room, access_check_cache, agent_name_map))
     return mentioned_in_mission
 
@@ -466,13 +464,17 @@ def who_should_respond(
 ) -> tuple[str|None, list[str]]:
     """returns guess at responsible human user, and who should respond to a message"""
 
+    logger.info("who_should_respond 1")
+
     access_check_cache = {}
 
     logger.debug("who_should_respond: %r %r", message, history)
     if not history:
         history = []
 
-    agents = _build_agents(agents)
+    agents = Agents(agents.services, parent=agents)
+
+    logger.info("who_should_respond 2")
 
     if config is None:
         config = {}
@@ -480,18 +482,28 @@ def who_should_respond(
     # Possibly remove image replies
     message, history = _apply_skip_image_replies(agents, message, history, config)
 
+    logger.info("who_should_respond 3")
+
     # Remove thinking sections
     history = chat.history_remove_thinking_sections(history, None)
     message = history[-1] if history else None
 
+    logger.info("who_should_respond 4")
+
     # Responsible human user
     responsible_human_user = responsible_human(history, agents, room)
+
+    logger.info("who_should_respond 5")
 
     # First pass: build minimal name map
     agent_names, agent_name_map = _build_agent_name_map_minimal(agents)
 
+    logger.info("who_should_respond 6")
+
     # mentioned in mission
     mentioned_in_mission = _mentioned_in_mission(agents, mission, room, access_check_cache, agent_name_map)
+
+    logger.info("who_should_respond 7")
 
     logger.debug("mission: %r", mission)
     logger.debug("mentioned_in_mission: %r", mentioned_in_mission)
@@ -501,18 +513,24 @@ def who_should_respond(
         history, mentioned_in_mission, room, access_check_cache, agent_name_map, agents
     )
 
+    logger.info("who_should_respond 8")
+
     # Second pass: duplicated logic preserved; now with aliases list
     agent_names, agent_name_map, agent_names_and_aliases = _build_agent_name_map_full(agents)
+
+    logger.info("who_should_respond 9")
 
     user = message.get("user") if message else "System"  # System ???
 
     is_human = False
-    if user in agents:
+    if user and user in agents:
         user_agent = agents.get(user)
         logger.debug('user_agent["type"]: %r', user_agent["type"])
         is_human = user_agent["type"] == "human"
 
     include_humans = (is_human and include_humans_for_human_message) or include_humans_for_ai_message
+
+    logger.info("who_should_respond 10")
 
     # TODO AIs talk to themselves?  not right now
     if not is_human:
@@ -524,6 +542,8 @@ def who_should_respond(
     )
     logger.debug("chat_participants_names: %r", chat_participants_names)
 
+    logger.info("who_should_respond 11")
+
     content = message["content"] if message else ""
 
     # Filter out human users if requested from agent_names
@@ -534,7 +554,11 @@ def who_should_respond(
 
     logger.debug("agent_names: %r", agent_names)
 
+    logger.info("who_should_respond 12")
+
     everyone_with_at, anyone_with_at, self_words_with_at = _aggregate_words(use_aggregates)
+
+    logger.info("who_should_respond 13")
 
     # Build names/aliases for participants only (for non-@ mentions)
     participant_names_and_aliases = _build_participant_aliases(chat_participants_names, agents)
@@ -546,9 +570,13 @@ def who_should_respond(
     else:
         names_and_aliases = agent_names_and_aliases
 
+    logger.info("who_should_respond 14")
+
     # Calculate everyone_except_user lists
     everyone_except_user = [a for a in chat_participants_names if a != user]
     everyone_except_user_all = [a for a in chat_participants_names_all if a != user]
+
+    logger.info("who_should_respond 15")
 
     # Mediator setup
     use_mediator, mediator, is_mediator = _setup_mediator(
@@ -561,6 +589,8 @@ def who_should_respond(
         use_mediator, is_human, is_mediator, config
     )
 
+    logger.info("who_should_respond 16")
+
     reason = None
     invoked = None
 
@@ -571,6 +601,8 @@ def who_should_respond(
         everyone_with_at, anyone_with_at, self_words_with_at,
         room, access_check_cache, agents, agent_name_map
     )
+
+    logger.info("who_should_respond 17")
 
     # If we @ mention someone not present, no one should respond
     at_mention_present = chat.has_at_mention(content)
@@ -585,6 +617,8 @@ def who_should_respond(
     if not invoked and at_only:
         invoked = ["-None-"]
 
+    logger.info("who_should_respond 18")
+
     if not invoked:
         reason, invoked = _invoke_named_plain(
             content, user, names_and_aliases, chat_participants_names, chat_participants_names_all,
@@ -598,11 +632,15 @@ def who_should_respond(
         logger.info("direct_reply_chance: %r", direct_reply_chance)
         logger.info("direct_reply: %r", direct_reply)
 
+    logger.info("who_should_respond 19")
+
     # direct replies: Allow replying to self without triggering an AI to respond
     if not invoked and direct_reply:
         reason, invoked = _direct_reply(
             history, user, agents, include_self, include_humans, all_participants, room, access_check_cache, agent_name_map
         )
+
+    logger.info("who_should_respond 20")
 
     # mediator
     if not invoked and use_mediator:
@@ -618,6 +656,8 @@ def who_should_respond(
         if ai_participants and direct_reply:
             reason, invoked = _last_ai_speaker(history, user, ai_participants, agents, room, access_check_cache, agent_name_map)
 
+    logger.info("who_should_respond 21")
+
     # mediator is better than random!
     if not invoked and may_use_mediator and mediator:
         reason, invoked = _mediator_pick(mediator)
@@ -630,13 +670,19 @@ def who_should_respond(
     if not invoked and default:
         reason, invoked = _default_pick(default)
 
+    logger.info("who_should_respond 22")
+
     # Final filtering to canonical agent names
     agents_to_respond = filter_access(invoked, room, access_check_cache, agent_name_map, must_exist=True)
+
+    logger.info("who_should_respond 23")
 
     logger.info("who_should_respond: %r %r", reason, agents_to_respond)
     for agent in agents_to_respond:
         agent_data = agents.get(agent)
         agent_type = agent_data.get("type")
         logger.info("  %s: %s", agent, agent_type)
+
+    logger.info("who_should_respond 24")
 
     return responsible_human_user, agents_to_respond

@@ -672,7 +672,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
 #     logger.info("Found %d messages with %d images", message_count, image_count)
 
 
-def fix_response_layout(response, _args, agent):
+def fix_response_layout(response, agent):
     """Fix the layout and indentation of the response."""
     logger.debug("response before fix_layout: %s", response)
     lines = re.split(r"\n|\r\n|\r", response)

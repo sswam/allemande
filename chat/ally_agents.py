@@ -627,7 +627,7 @@ class Agents:
     """A collection of agents"""
 
     def __init__(self, services: dict[str, Any], parent: Agents|None=None):
-        self.agents: dict[str, Agent] = {}
+        self.agents: dict[str, Agent] = {}   # keys are lower-case
         self.services: dict[str, Any] = services
         self.parent: Agents|None = parent
 
@@ -638,7 +638,7 @@ class Agents:
 
     def load_agent_without_setup(self, agent_file: Path) -> Agent | None:
         """Load an agent from a file."""
-        name = agent_file.stem
+        name = agent_file.stem.lower()
         self.remove_agent(name)
 
         agent = Agent(file=agent_file, agents=self)
@@ -646,20 +646,21 @@ class Agents:
         # Add agent under all its names
         all_names = agent.get_all_names()
         for name1 in all_names:
-            if name1 in self.agents:
-                if self.agents[name1] != agent:
-                    old_main_name = self.agents[name1].name
+            name1lc = name1.lower()
+            if name1lc in self.agents:
+                if self.agents[name1lc] != agent:
+                    old_main_name = self.agents[name1lc].name
                     logger.warning("Agent name conflict: %r vs %r for %r",
                             old_main_name, agent.name, name1)
                     continue
-            self.agents[name1] = agent
+            self.agents[name1lc] = agent
             # logger.info("added agent under name: %r -> %r", name1, agent.name)
 
         return agent
 
     def remove_agent(self, name: str, keep_visual: bool=False) -> None:
         """Remove an agent."""
-        agent = self.agents.get(name)
+        agent = self.agents.get(name.lower())
         if not agent:
             return
 
@@ -669,8 +670,9 @@ class Agents:
         agent_names = agent.get_all_names()
         # logger.info("remove_agent: %r", name)
         for name1 in agent_names:
+            name1lc = name1.lower()
             logger.debug("Removing agent by name: %r", name1)
-            self.agents.pop(name1, None)
+            self.agents.pop(name1lc, None)
 
     def load(self, path: Path, visual: bool=True) -> None:
         """Load all agents or one agent from a path."""
@@ -745,6 +747,7 @@ class Agents:
 
     def get(self, name: str) -> Agent | None:
         """Get an agent by name."""
+        name = name.lower()
         if name in self.agents:
             return self.agents[name]
         if self.parent:
@@ -753,18 +756,20 @@ class Agents:
 
     def set(self, name: str, agent: Agent):
         """Set an agent."""
-        self.agents[name] = agent
+        self.agents[name.lower()] = agent
 
     def __contains__(self, name: str) -> bool:
         """Check if an agent is in the collection."""
-        return self.get(name) is not None
+        return self.get(name.lower()) is not None
 
     def names(self) -> list[str]:
         """Get the names of the agents."""
         names = set(self.agents.keys())
         if self.parent:
             names.update(self.parent.names())
-        return [name for name in names if name in self]
+        return list(names)
+        # return [name for name in names if name in self]
+        # XXX why was this? can remove agents, in theory? but I don't do it
 
     def items(self) -> list[tuple[str, Agent]]:
         """Get the agents as a list of tuples."""

@@ -17,6 +17,7 @@ import aiohttp
 from urllib.parse import urlparse, quote
 import random
 import importlib
+from dataclasses import replace
 
 import requests
 import shlex
@@ -47,6 +48,7 @@ import tools
 import filters
 import rag
 import forward
+import context
 
 
 RELOADABLE_MODULES = [
@@ -85,20 +87,20 @@ def config_read(file):
     return {}
 
 
-async def run_search(agent, query, file, args, history, history_start, limit=True, mission=None, summary=None, config=None, num=10, agents=None, responsible_human: str=None):
+async def run_search(c, agent, query, limit=True, num=10):
     """Run a search agent."""
     # NOTE: responsible_human is not used here yet
     name = agent.name
     engine_id = agent.get("id", name)
-    logger.debug("history: %r", history)
-    history_messages = list(bb_lib.lines_to_messages(history))
+    logger.debug("history: %r", c.history)
+    history_messages = list(bb_lib.lines_to_messages(c.history))
     logger.debug("history_messages: %r", history_messages)
     message = history_messages[-1]
     query = message["content"]
 
     logger.debug("query 0: %r", query)
 
-    query = chat.clean_prompt([query], name, args.delim) + "\n"
+    query = chat.clean_prompt([query], name, c.args.delim) + "\n"
 
     logger.debug("query 1: %r", query)
     # query = query.split("\n")[0]
@@ -129,7 +131,7 @@ async def run_search(agent, query, file, args, history, history_start, limit=Tru
 
     response2 = f"{name}:\t\n{response}"
     logger.debug("response:\n%s", response2)
-    response3 = chat.fix_response_layout(response2, args, agent)
+    response3 = chat.fix_response_layout(response2, agent)
     logger.debug("response3:\n%s", response3)
 
     # wrap in a <div class="search"> container if not in a div already
@@ -210,7 +212,9 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     config = load_config(room)
     mission = load_mission(room, config, args)
     summary = load_summary(room, args)
+    logger.info("before load_local_agents")
     agents = load_local_agents(room, agents)
+    logger.info("after load_local_agents")
 
     history_messages = list(bb_lib.lines_to_messages(history))
 
@@ -228,10 +232,9 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
 
     message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
 
-    count = await process_bot_responses(
-        bots, agents, file, args, history, history_start,
-        mission, summary, config, responsible_human, poke, skip, room
-    )
+    c = context.Context(agents, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room)
+
+    count = await process_bot_responses(c, bots)
     return count
 
 
@@ -292,33 +295,28 @@ def determine_responders(message, agents, history_messages, config, room, missio
     return bots, responsible_human
 
 
-async def process_bot_responses(bots, agents, file, args, history, history_start,
-                                mission, summary, config, responsible_human, poke, skip, room):
+async def process_bot_responses(c, bots):
     """Process responses from all bots."""
     count = 0
     for bot in bots:
-        if not should_process_bot(bot, agents):
+        if not should_process_bot(bot, c.agents):
             continue
 
-        response = await generate_bot_response(
-            bot, agents, file, args, history, history_start,
-            mission, summary, config, responsible_human, room
-        )
+        response = await generate_bot_response(c, bot)
 
         if response is None:
             continue
 
         response = response.lstrip().rstrip("\n ")
-        agent = agents.get(bot)
-        response = await forward.handle_forwarding(run_agent, response, agent, agents, file, args, history,
-                                        history_start, mission, summary, config, responsible_human, room)
+        agent = c.agents.get(bot)
+        response = await forward.handle_forwarding(run_agent, response, agent, c)
 
         response = apply_narrator_mode(response, agent)
         poke_next = should_poke_next(response, agent)
 
-        history.append(response)
-        update_skip_tracking(poke_next, skip, file)
-        chat.chat_write(file, history[-1:], delim=args.delim, invitation=args.delim)
+        c.history.append(response)
+        update_skip_tracking(poke_next, c.skip, c.file)
+        chat.chat_write(c.file, c.history[-1:], delim=c.args.delim, invitation=c.args.delim)
         count += 1
 
     return count
@@ -326,24 +324,21 @@ async def process_bot_responses(bots, agents, file, args, history, history_start
 
 def should_process_bot(bot, agents):
     """Check if bot should be processed."""
-    if not (bot and bot in agents.names()):
+    if not (bot and bot.lower() in agents.names()):
         return False
     agent = agents.get(bot)
     return agent.get("type") not in [None, "human", "visual", "mixin"]
 
 
-async def generate_bot_response(bot, agents, file, args, history, history_start,
-                                mission, summary, config, responsible_human, room):
+async def generate_bot_response(c, bot):
     """Generate a response from a bot agent."""
-    agent = agents.get(bot)
-    my_mission = load_agent_mission(room, bot, mission, args, agent=agent)
-    query, history = prepare_query(history, agent, bot)
+    agent = c.agents.get(bot)
+    my_mission = load_agent_mission(c.room, bot, c.mission, c.args, agent=agent)
+    query, history = prepare_query(c.history, agent, bot)
 
-    return await run_agent(
-        agent, query, file, args, history, history_start=history_start,
-        mission=my_mission, summary=summary, config=config,
-        agents=agents, responsible_human=responsible_human
-    )
+    c = replace(c, mission=my_mission, history=history)
+
+    return await run_agent(c, agent, query)
 
 
 def load_agent_mission(room, bot, base_mission, args, agent=None):
@@ -409,20 +404,22 @@ def update_skip_tracking(poke, skip, file):
         skip[file] += 1
 
 
-async def run_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human=None) -> str:
+async def run_agent(c, agent, query) -> str:
     """Run an agent."""
     limit_user = agent.get("limit_user")
-    if limit_user and responsible_human not in limit_user:
+    if limit_user and c.responsible_human not in limit_user:
         return None
     function = agent["fn"]
     logger.debug("query: %r", query)
     # TODO filter_in somehow. Perhaps distinct options to filter only the immediate input message, or the whole context.
     # TODO agent invocation options to limit context
     logger.debug("Applying input filters, query before: %r", query)
-    query, history = filters.apply_filters_in(agent, query, history)
+    query, history = filters.apply_filters_in(agent, query, c.history)
     logger.debug("Applying input filters, query after: %r", query)
 
-    response = await function(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human)
+    replace(c, history=history)
+
+    response = await function(c, agent, query)
 
     logger.debug("Applying output filters, response before:\n%s", response)
     response = filters.apply_filters_out(agent, response)
@@ -452,18 +449,18 @@ async def run_subprocess(command, query):
     return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
 
 
-async def run_tool(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
+async def run_tool(c, agent, query) -> str:
     """Run a tool agent"""
-    return await run_safe_shell(agent, query, file, args, history, history_start=history_start, mission=mission, summary=summary, config=config, agents=agents, responsible_human=responsible_human, direct=True)
+    return await run_safe_shell(c, agent, query, direct=True)
 
 
-async def run_safe_shell(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None, direct: bool=False) -> str:
+async def run_safe_shell(c, agent, query, direct: bool=False) -> str:
     """Run a shell agent."""
     # NOTE: responsible_human is not used here
 
     name = agent.name
-    logger.debug("history: %r", history)
-    history_messages = list(bb_lib.lines_to_messages(history))
+    logger.debug("history: %r", c.history)
+    history_messages = list(bb_lib.lines_to_messages(c.history))
     logger.debug("history_messages: %r", history_messages)
     message = history_messages[-1]
     query = message["content"]
@@ -473,7 +470,7 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
     except (TypeError, KeyError):
         raise ValueError(f"Agent {name} has no command")
 
-    query = chat.clean_prompt([query], name, args.delim) + "\n"
+    query = chat.clean_prompt([query], name, c.args.delim) + "\n"
     logger.debug("query: %s", query)
 
     if direct:
@@ -541,15 +538,15 @@ async def run_safe_shell(agent, query, file, args, history, history_start=0, mis
 
     response2 = f"{name}:\t{response}"
     logger.debug("response2:\n%r", response2)
-    response3 = chat.fix_response_layout(response2, args, agent)
+    response3 = chat.fix_response_layout(response2, agent)
     logger.debug("response3:\n%s", response3)
     return response3
 
 
-async def run_python(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str=None) -> str:
+async def run_python(c, agent, query) -> str:
     """Run a python tool agent."""
     name = agent.name
-    history_messages = list(bb_lib.lines_to_messages(history))
+    history_messages = list(bb_lib.lines_to_messages(c.history))
     message = history_messages[-1]
     query = message["content"]
 
@@ -561,12 +558,12 @@ async def run_python(agent, query, file, args, history, history_start=0, mission
         raise ValueError(f"Python function not found: {function_name}")
     function = tools.python_tools[function_name]
 
-    query = chat.clean_prompt([query], name, args.delim) + "\n"
+    query = chat.clean_prompt([query], name, c.args.delim) + "\n"
 
     # Prepare response formatting
     response = ""
     try:
-        result = function(agent, query, file, args, history, history_start, mission, summary, config, agents, responsible_human)
+        result = function(c, agent, query)
 
         # Handle the output
         if isinstance(result, str):
@@ -587,7 +584,7 @@ async def run_python(agent, query, file, args, history, history_start=0, mission
     response += format_tool_response(agent, output)
 
     response2 = f"{name}:\t{response}"
-    response3 = chat.fix_response_layout(response2, args, agent)
+    response3 = chat.fix_response_layout(response2, agent)
     return response3
 
 
@@ -643,8 +640,6 @@ def check_file_type(path):
         return "agent"
     if ext == ".yml" and path.startswith(str(settings.PATH_ROOMS/"agents")+"/"):
         return "agent"
-    if ext == ".yml" and path.startswith(str(settings.PATH_ROOMS)+"/") and "agents" in Path(path).parts and not Path(path).is_symlink():
-        return "agent_private"
     if ext in [".safetensors"] and path.startswith(str(settings.PATH_ROOMS)+"/"):
         return "contrib"
     return None
@@ -703,10 +698,6 @@ async def watch_loop(args):
                 elif file_type == "agent":
                     agents.handle_file_change(file_path, change_type)
                     agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
-                elif file_type == "agent_private":
-                    room = ally_room.Room(path=(Path(file_path).parent)/"chat.bb")
-                    agents1 = load_local_agents(room, agents)
-                    agents1.handle_file_change_private(file_path, change_type)
                 elif file_type == "contrib" and change_type == Change.added:
                     move_contrib(file_path)
                 else:

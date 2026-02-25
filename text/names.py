@@ -20,15 +20,26 @@ NAME_PATTERN = regex.compile(
     (?:
         # Names: 1-4 words, first and last must be capitalized
         [A-Z0-9][\w\-\.']*          # First word must be capitalized
-        (                           # Optional middle words (0-2), excluding common stop words
-            (?!and|or|with|the|a|an|in|on|for|to|by|at|from|is|it|as|but|if|nor|so|yet|then|after|before)
-            (?:\s+[\w\-\.']+)
-        ){0,2}
-        (?:\s+[A-Z0-9][\w\-\.']*)?  # Optional last word must be capitalized if present
+        (
+            (                           # Optional middle words (0-2), excluding common stop words
+                (?!and|or|with|the|a|an|in|on|for|to|by|at|from|is|it|as|but|if|nor|so|yet|then|after|before)
+                (?:\s+[\w\-\.']+)
+            ){0,2}
+            (?:\s+[A-Z0-9][\w\-\.']*)   # Last word must be capitalized
+        )?
         |
         # @mentions: @ followed by 1-4 words
         @[\w\-\.']+(?:\s+[\w\-\.']+){0,3}
     )
+    """,
+    regex.VERBOSE | regex.UNICODE,  # type: ignore[attr-defined]
+)
+
+
+NAME_PATTERN_AT_ONLY = regex.compile(
+    r"""
+        # @mentions: @ followed by 1-4 words
+        @[\w\-\.']+(?:\s+[\w\-\.']+){0,3}
     """,
     regex.VERBOSE | regex.UNICODE,  # type: ignore[attr-defined]
 )
@@ -61,18 +72,28 @@ def extract_partial_names(text: str) -> list[str]:
 
 
 def extract_names(
+    text: str,
+    at_only: bool=False,
+) -> list[str]:
+    """Extract names and @mentions from input text."""
+    pattern = NAME_PATTERN_AT_ONLY if at_only else NAME_PATTERN
+    matches = pattern.finditer(text, overlapped=True)
+
+    results = list()
+    for match in matches:
+        name = match.group().strip().lstrip("@")
+        results += extract_partial_names(name)
+
+    return results
+
+
+def extract_names_cli(
     istream: TextIO,
     ostream: TextIO,
 ) -> None:
     """Extract names and @mentions from input text."""
     text = istream.read()
-    matches = NAME_PATTERN.finditer(text, overlapped=True)
-
-    results = list()
-    for match in matches:
-        name = match.group().strip()
-        results += extract_partial_names(name)
-
+    results = extract_names(text)
     for name in results:
         ostream.write(f"{name}\n")
 
@@ -82,4 +103,4 @@ def setup_args(arg):
 
 
 if __name__ == "__main__":
-    main.go(extract_names, setup_args)
+    main.go(extract_names_cli, setup_args)

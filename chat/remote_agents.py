@@ -24,11 +24,11 @@ logger = logging.getLogger(__name__)
 # Placeholder content where the LLM expects a user message.
 USER_PLACEHOLDER_CONTENT = "..."
 
-async def remote_agent(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None = None) -> str:
+async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
     """Run a remote agent."""
     # NOTE: responsible_human is not used here yet
 
-    room = Room(path=Path(file))
+    room = Room(path=Path(c.file))
 
     service = agent["type"]
     model = agent["model"]
@@ -54,17 +54,14 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
 
     # TODO detect service failures and switch to fallback automatically
 
-    if config is None:
-        config = {}
-
     name = agent.name
 
     # Allow to override agent settings in the config
     agent = agent.copy()
-    if config and config.get("agents") and "all" in config["agents"]:
-        agent.update(config["agents"]["all"])
-    if config and config.get("agents") and name in config["agents"]:
-        agent.update(config["agents"][name])
+    if c.config.get("agents") and "all" in c.config["agents"]:
+        agent.update(c.config["agents"]["all"])
+    if c.config.get("agents") and name in c.config["agents"]:
+        agent.update(c.config["agents"][name])
 
     logger.debug("Running remote agent %r", agent)
 
@@ -73,9 +70,9 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         if n_context == 0:
             context = []
         else:
-            context = history[-n_context:]
+            context = c.history[-n_context:]
     else:
-        context = history.copy()
+        context = c.history.copy()
 
     # XXX history is a list of lines, not messages, so won't the context sometimes contain partial messages? Yuk. That will interact badly with missions, too.
     # hacky temporary fix here for now, seems to work:
@@ -92,23 +89,23 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     # prepend mission / info / context
     # TODO try mission as a "system" message?
     context2 = []
-    mission_pos = config.get("mission_pos", 0)
-    if summary:
-        context2 += f"System:\t{summary}"
+    mission_pos = c.config.get("mission_pos", 0)
+    if c.summary:
+        context2 += f"System:\t{c.summary}"
     context2 += context
-    if mission:
-        context2.insert(mission_pos, "System:\t" + "\n".join(mission))
+    if c.mission:
+        context2.insert(mission_pos, "System:\t" + "\n".join(c.mission))
 
     context_messages = list(bb_lib.lines_to_messages(iter(context2)))
 
     remote_messages = []
 
     # TODO images in system messages?
-    await chat.add_images_to_messages(file, context_messages, agent.get("images", 0))
+    await chat.add_images_to_messages(c.file, context_messages, agent.get("images", 0))
 
     # preprocess markdown in messages for includes
     for m in context_messages:
-        m["content"] = (await ally_markdown.preprocess(m["content"], file, m.get("user")))[0]
+        m["content"] = (await ally_markdown.preprocess(m["content"], c.file, m.get("user")))[0]
 
     # TODO Can't include from system messages, what user permission to use?
 
@@ -133,11 +130,11 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         logger.debug("msg2: %r", msg2)
         remote_messages.append(msg2)
 
-    # Google Gemini doesn't like NSFW images in the most recent message?! but cool otherwise!
+    # Gemini doesn't like NSFW images in the most recent message?! but cool otherwise!
     if agent.get("blank_message_after_image") and remote_messages and "images" in remote_messages[-1]:
         remote_messages.append({"role":"assistant", "content":""})
 
-    # Google Gemini doesn't like the first message to be an assistant message, so we add a user message if needed
+    # Gemini and Claude don't like the first message to be an assistant message, so we add a user message if needed
     if remote_messages and remote_messages[0]["role"] == "assistant" and service in ["anthropic", "google"]:
         remote_messages.insert(0, {"role": "user", "content": USER_PLACEHOLDER_CONTENT})
 
@@ -225,7 +222,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     if agent.get("vision") is False:
         opts.vision = False
 
-    logger.debug("config: %r", config)
+    logger.debug("config: %r", c.config)
     logger.debug("agent: %r", agent.data)
 
     # Some agents don't like empty content, specifically google
@@ -282,7 +279,7 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
         response = "".join(lines)
 
     logger.debug("response 1: %r", response)
-    response = chat.fix_response_layout(response, args, agent)
+    response = chat.fix_response_layout(response, agent)
     logger.debug("response 2: %r", response)
     response = f'{agent.name}:\t{response.strip()}'
     logger.debug("response 3: %r", response)

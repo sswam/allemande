@@ -9,7 +9,7 @@ import rag
 logger = logging.getLogger(__name__)
 
 
-def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
+def python_tool_agent_yaml(c, agent, query) -> str:
     """Return a YAML definition for a python_tool agent, optionally filtered by grep pattern."""
 
     # Split args as agent names
@@ -27,7 +27,7 @@ def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, m
 
     for name in args:
         name = name.replace("_", " ")
-        agent = agents.get(name) if agents else None
+        agent = c.agents.get(name) if c.agents else None
         if not agent:
             result.append(f"Agent '{name}' not found")
             continue
@@ -47,7 +47,7 @@ def python_tool_agent_yaml(agent, query, file, args, history, history_start=0, m
     return "\n\n".join(result)
 
 
-def python_tool_rag(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
+def python_tool_rag(c, agent, query) -> str:
     """Run RAG queries against a vector database."""
     # Split args
     args = query.strip().split()
@@ -75,16 +75,18 @@ def python_tool_rag(agent, query, file, args, history, history_start=0, mission=
 
     # If no db specified, use "db" in the file's folder
     if not db_name:
-        db_name = str((Path(file).parent)/"db")
+        db_name = str((Path(c.file).parent)/"db")
 
     # Do access control check
     room = ally_room.Room(path=Path(db_name))
-    db_access = room.check_access(responsible_human)
+    db_access = room.check_access(c.responsible_human)
 
     access_needed = ally_room.Access.WRITE if do_import else ally_room.Access.READ
 
     if not db_access.value & access_needed.value == access_needed.value:
         return f"Access denied for database {db_name}"
+
+    logger.info("Using RAG database: %s", db_name)
 
     try:
         # Create RAG instance
@@ -107,10 +109,10 @@ def python_tool_rag(agent, query, file, args, history, history_start=0, mission=
         return f"Error accessing RAG database: {str(e)}"
 
 
-def python_tool_self_block(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False, nsfw: bool=False) -> str:
+def python_tool_self_block(c, agent, query, nsfw: bool=False) -> str:
     """Enable a user to block themself from the app or from the NSFW zone and features, for a certain period of time."""
 
-    if responsible_human is None:
+    if c.responsible_human is None:
         return "Error: unable to identify responsible user"
 
     # Split args as agent names
@@ -118,7 +120,7 @@ def python_tool_self_block(agent, query, file, args, history, history_start=0, m
 
     result: list[str] = []
 
-    result.append(f"Self-blocking {'NSFW features' if nsfw else 'the app'} for user {responsible_human}: {time_spec}")
+    result.append(f"Self-blocking {'NSFW features' if nsfw else 'the app'} for user {c.responsible_human}: {time_spec}")
 
     # for name in args:
     #     name = name.replace("_", " ")
@@ -142,9 +144,9 @@ def python_tool_self_block(agent, query, file, args, history, history_start=0, m
     return "\n\n".join(result)
 
 
-def python_tool_self_block_nsfw(agent, query, file, args, history, history_start=0, mission=None, summary=None, config=None, agents=None, responsible_human: str | None=None, direct: bool=False) -> str:
+def python_tool_self_block_nsfw(c, agent, query) -> str:
     """Enable a user to block themself from the NSFW zone and features, for a certain period of time."""
-    return python_tool_self_block(agent, query, file, args, history, history_start, mission, summary, config, agents, responsible_human, direct=direct, nsfw=True)
+    return python_tool_self_block(c, agent, query, nsfw=True)
 
 
 python_tools = {

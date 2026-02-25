@@ -50,25 +50,22 @@ def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_c
 
 def extract_invocations(content: str, at_only: bool = False, uniq: bool = True) -> list[str]:
     """ Extract all invocation-looking strings from content. Returns full-length matches only (not substrings). """
-    if at_only:
-        # Match @-prefixed names only
-        pattern = r'@[a-zA-Z_][a-zA-Z0-9_-]*'
-        matches = re.findall(pattern, content)
-        # Remove @ prefix
-        results = [m.lstrip('@') for m in matches]
-    else:
-        # Use NAME_PATTERN to find all name-like strings
-        results = []
-        seen_positions = set()
+    # Use NAME_PATTERN to find all name-like strings
+    results = []
+    seen_positions = set()
 
-        for match in NAME_PATTERN.finditer(content, overlapped=True):
-            start, end = match.span()
-            # Only include if this exact span hasn't been seen
-            if (start, end) not in seen_positions:
-                name = match.group().strip().lstrip('@')
-                if name:
-                    results.append(name)
-                    seen_positions.add((start, end))
+    for match in NAME_PATTERN.finditer(content, overlapped=True):
+        start, end = match.span()
+        # Only include if this exact span hasn't been seen
+        if (start, end) not in seen_positions:
+            name = match.group().strip()
+            seen_positions.add((start, end))
+            if not name:
+                continue
+            if at_only and not name.startswith("@"):
+                continue
+            name = name.lstrip('@')
+            results.append(name)
 
     if uniq:
         results = uniqo(results)
