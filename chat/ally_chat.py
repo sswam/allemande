@@ -18,6 +18,9 @@ from urllib.parse import urlparse, quote
 import random
 import importlib
 from dataclasses import replace
+import tempfile
+import shutil
+import subprocess
 
 import requests
 import shlex
@@ -161,7 +164,7 @@ async def run_search(c, agent, query, limit=True, num=10):
     return response4
 
 
-def load_local_agents(room, agents=None):
+def load_local_agents(room, agents=None, local_visual_dir: Path|None=None):
     """Load the local agents."""
     room_dir = room.parent
     top_dir = settings.PATH_ROOMS
@@ -182,7 +185,7 @@ def load_local_agents(room, agents=None):
 
     for agent_dir in reversed(agents_dirs):
         agents = ally_agents.Agents(services, parent=agents)
-        agents.load(agent_dir, visual=False)
+        agents.load(agent_dir, visual_dir=local_visual_dir)
 
         agents.write_agents_list(agent_dir.parent / ".agents.yml")
 
@@ -212,27 +215,31 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     config = load_config(room)
     mission = load_mission(room, config, args)
     summary = load_summary(room, args)
-    agents = load_local_agents(room, agents)
+    local_visual_dir = Path(tempfile.mkdtemp(prefix="ally_local_visual_"))
+    try:
+        agents = load_local_agents(room, agents, local_visual_dir)
 
-    history_messages = list(bb_lib.lines_to_messages(history))
+        history_messages = list(bb_lib.lines_to_messages(history))
 
-    if should_skip_editing_command(history_messages, poke):
-        return 0
+        if should_skip_editing_command(history_messages, poke):
+            return 0
 
-    last_message_id = len(history_messages) - 1
+        last_message_id = len(history_messages) - 1
 
-    history_messages = chat.apply_editing_commands(history_messages)
-    history = list(bb_lib.messages_to_lines(history_messages))
-    message = history_messages[-1] if history_messages else None
+        history_messages = chat.apply_editing_commands(history_messages)
+        history = list(bb_lib.messages_to_lines(history_messages))
+        message = history_messages[-1] if history_messages else None
 
-    bots, responsible_human = determine_responders(message, agents, history_messages, config, room, mission, poke)
-    logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
+        bots, responsible_human = determine_responders(message, agents, history_messages, config, room, mission, poke)
+        logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
 
-    message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
+        message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
 
-    c = context.Context(agents, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room)
+        c = context.Context(agents, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room, local_visual_dir)
 
-    count = await process_bot_responses(c, bots)
+        count = await process_bot_responses(c, bots)
+    finally:
+        shutil.rmtree(local_visual_dir)
     return count
 
 
@@ -447,6 +454,25 @@ async def run_subprocess(command, query):
     return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
 
 
+def run_subprocess_sync(command, query):
+    """Run a subprocess synchronously."""
+    # Create the subprocess
+    proc = subprocess.Popen(
+        command,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    # Write to stdin and read stdout/stderr
+    stdout, stderr = proc.communicate(input=query.encode("utf-8"))
+
+    # Get the return code
+    return_code = proc.returncode
+
+    return stdout.decode("utf-8"), stderr.decode("utf-8"), return_code
+
+
 async def run_tool(c, agent, query) -> str:
     """Run a tool agent"""
     return await run_safe_shell(c, agent, query, direct=True)
@@ -513,8 +539,26 @@ async def run_safe_shell(c, agent, query, direct: bool=False) -> str:
 
         logger.debug("safe_shell command: %r query: %r", command, query)
 
+    local_visual = False
+    sync = False
+    if agent.get("sync"):
+        sync = True
+    if agent.get("local_visual"):
+        local_visual = True
+        sync = True
+        settings.PATH_VISUAL_REQUEST.unlink(missing_ok=True)
+        settings.PATH_VISUAL_REQUEST.symlink_to(c.local_visual_dir)
+
     # echo the query to the subprocess
-    output, errors, status = await run_subprocess(command, query)
+    try:
+        if sync:
+            output, errors, status = run_subprocess_sync(command, query)
+        else:
+            output, errors, status = await run_subprocess(command, query)
+    finally:
+        if local_visual:
+            settings.PATH_VISUAL_REQUEST.unlink(missing_ok=True)
+
 
     eol = not output or output.endswith("\n")
     if not eol:
@@ -574,9 +618,10 @@ async def run_python(c, agent, query) -> str:
             output += '\n'
 
     except Exception as e:
+        logger.exception("Error executing %s", function_name, exc_info=True)
         error_msg = f"Error executing {function_name}: {str(e)}"
         response += f"status: error\n\n## messages:\n```\n{error_msg}\n```\n\n## output:\n"
-        output = "Function execution failed"
+        output = "Function execution failed\n"
 
     # Format the output according to agent's format specification
     response += format_tool_response(agent, output)

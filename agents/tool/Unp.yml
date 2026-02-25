@@ -3,3 +3,4 @@ type: tool
 command:
 - unprompted-run
 args: True
+local_visual: True

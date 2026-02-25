@@ -50,9 +50,9 @@ class YAML:
         """Safe load YAML content using ruamel.yaml"""
         return self._ryaml.load(stream)  # ruamel's load is already safe
 
-    def dump(self, data: Any, stream: TextIO | None = None) -> str | None:
+    def dump(self, data: Any, stream: TextIO | None = None, sort_keys: bool=True) -> str | None:
         """Dump YAML content using either cyaml or ruamel.yaml based on settings"""
-        if self._fast_write:
+        if self._fast_write or not sort_keys:
             return yaml.dump(data, stream=stream, Dumper=yaml.CSafeDumper, default_flow_style=False, sort_keys=False)
 
         if stream is None:
@@ -87,5 +87,5 @@ def safe_load(stream: str | TextIO) -> Any:
     return _default_instance.safe_load(stream)
 
 
-def dump(data: Any, stream: TextIO | None = None) -> str | None:
-    return _default_instance.dump(data, stream)
+def dump(data: Any, stream: TextIO | None = None, sort_keys: bool=False) -> str | None:
+    return _default_instance.dump(data, stream, sort_keys=sort_keys)

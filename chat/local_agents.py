@@ -14,7 +14,7 @@ import conductor
 import chat
 import bb_lib
 import ally_markdown
-from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS
+from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
 from ally import yaml
 from ally_room import Room
@@ -350,12 +350,20 @@ async def local_agent(c, agent, _query) -> str:
         fulltext2 = chat.add_configured_image_prompts(fulltext, [agent, c.config])
         fulltext2 = soma.sub(fulltext2, [agent.get("vmacs"), c.config.get("vmacs")])
         logger.debug("image prompt after adding configured: %r", fulltext2)
+
+        # symlink local_visual_dir to templates_request
+        # this means NO YIELDING until we finish this stuffs!
+        PATH_VISUAL_REQUEST.unlink(missing_ok=True)
+        PATH_VISUAL_REQUEST.symlink_to(c.local_visual_dir)
         try:
             seed = agent.get("unp_seed_visual")
             fulltext2 = unprompted(fulltext2, seed)
             logger.debug("image prompt after running unprompted: %r", fulltext2)
         except Exception as e:
             logger.error("Unprompted error for art agent %r: %s %s", name, type(e).__name__, str(e))
+        finally:
+            PATH_VISUAL_REQUEST.unlink(missing_ok=True)
+
     else:
         fulltext2 = fulltext
 

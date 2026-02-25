@@ -1,43 +1,44 @@
 dir=$(shell readlink -f .)
 
-all: install chmod
+all: install # chmod
 
-up: sync | all
+# up: sync | all
 
-sync:
-	sshc -- $${SERVER_SSH} sh -c 'cd $$ALLEMANDE_VISUAL; make install chmod; for D in person scene clothes macro; do (cd "$$D"; git add -A; git commit -m .) ; done' || true
-	for D in person scene clothes macro; do in-dir "$$D" git pull; done
+# sync:
+# 	sshc -- $${SERVER_SSH} sh -c 'cd $$ALLEMANDE_VISUAL; make install chmod; for D in person scene clothes macro; do (cd "$$D"; git add -A; git commit -m .) ; done' || true
+# 	for D in person scene clothes macro; do in-dir "$$D" git pull; done
 
-build: everyone.txt girls.txt boys.txt nonbinary.txt people.txt everyone_count.txt girls_count.txt boys_count.txt nonbinary_count.txt people_count.txt
-
-everyone.txt: person
-	find $< -mindepth 1 -maxdepth 1 -type f -printf "%f\n" | sed 's/\.[^.]*$$//' | shuf >$@
-
-girls.txt: person
-	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -w '1girl' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
-
-boys.txt: person
-	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -w '1boy' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
-
-nonbinary.txt: person
-	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -v -w -e '1girl' -e '1boy' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
-
-people.txt: girls.txt boys.txt nonbinary.txt
-	cat $^ | shuf >$@
-
-%_count.txt: %.txt
-	<$< wc -l >$@
+# build: everyone.txt girls.txt boys.txt nonbinary.txt people.txt everyone_count.txt girls_count.txt boys_count.txt nonbinary_count.txt people_count.txt
+# 
+# everyone.txt: person
+# 	find $< -mindepth 1 -maxdepth 1 -type f -printf "%f\n" | sed 's/\.[^.]*$$//' | shuf >$@
+# 
+# girls.txt: person
+# 	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -w '1girl' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+# 
+# boys.txt: person
+# 	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -w '1boy' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+# 
+# nonbinary.txt: person
+# 	find $< -mindepth 1 -maxdepth 1 -type f | xa grep -l -v -w -e '1girl' -e '1boy' | sed 's/\.[^.]*$$//; s,.*/,,;' | shuf >$@
+# 
+# people.txt: girls.txt boys.txt nonbinary.txt
+# 	cat $^ | shuf >$@
+# 
+# %_count.txt: %.txt
+# 	<$< wc -l >$@
 
 install: build
 	deadlinks | xa rm
-	find $(dir) $(dir)/*/ -mindepth 1 -name '.*' -prune -o -path '**/person/*' -type d -print -prune -o \( -type f -o -type l \) -name '*.txt' -print | xa lnrev -sf ../unprompted/unprompted/templates/
+	# find $(dir) $(dir)/*/ -mindepth 1 -name '.*' -prune -o -path '**/person/*' -type d -print -prune -o \( -type f -o -type l \) -name '*.txt' -print | xa lnrev -sf ../unprompted/unprompted/templates/
+	find $(dir) $(dir)/*/ -mindepth 1 -name '.*' -prune -o \( -type f -o -type l \) -name '*.txt' -print | xa lnrev -sf ../unprompted/unprompted/templates/
 	cd $(dir)/../unprompted/unprompted/templates/ && deadlinks | xa rm
 
-chmod:
-	chmod o+rx person/ person/*/ || true
-	chmod o+r person/* person/*/* || true
-
-person:
-	mkdir -p person
+# chmod:
+# 	chmod o+rx person/ person/*/ || true
+# 	chmod o+r person/* person/*/* || true
+# 
+# person:
+# 	mkdir -p person
 
 .PHONY: all build install chmod sync sync-all

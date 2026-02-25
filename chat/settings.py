@@ -9,7 +9,8 @@ from pathlib import Path
 PATH_HOME   = Path(os.environ["ALLEMANDE_HOME"])
 PATH_ROOMS  = Path(os.environ["ALLEMANDE_ROOMS"])
 PATH_AGENTS = Path(os.environ["ALLEMANDE_AGENTS"])
-PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
+PATH_VISUAL = Path(os.environ["ALLEMANDE_UNPROMPTED_TEMPLATES"])
+PATH_VISUAL_REQUEST = Path(os.environ["ALLEMANDE_UNPROMPTED_TEMPLATES_REQUEST"])
 PATH_MODELS = Path(os.environ["ALLEMANDE_MODELS"])
 PATH_WEBCACHE  = Path(os.environ["ALLEMANDE_WEBCACHE"])
 PATH_TOOLS  = Path(os.environ["ALLEMANDE_HOME"]) / "chat" / "tools"

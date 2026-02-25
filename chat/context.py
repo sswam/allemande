@@ -19,3 +19,4 @@ class Context:
     poke: bool
     skip: DefaultDict[str, int]|None
     room: ally_room.Room
+    local_visual_dir: str|None

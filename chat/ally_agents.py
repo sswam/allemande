@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)
 
 # Constants, TODO shared
 VISUAL_KEYS = ["person", "clothes", "clothes_upper", "clothes_lower", "age", "emo", "furry", "pony"]
-PATH_VISUAL = Path(os.environ["ALLEMANDE_VISUAL"])
 MACRO_FIELDS_NOPE = ["macro_fields", "over", "seed"]
 
 ADULT = os.environ.get("ALLYCHAT_ADULT", "0") == "1"
@@ -223,9 +222,31 @@ class Agent:
         else:
             raise ValueError(f"Agent attribute must be a string or number: {field} in {self.file}")
 
-    def to_yaml(self) -> str:
+    def flat_data(self) -> dict[str, Any]:
+        """Return the agent data including info from base and over"""
+        keys = self.keys()
+        d = {}
+        for k in keys:
+            v = self.get(k)
+            d[k] = v
+        return d
+
+    def keys(self) -> list[str]:
+        """Return all keys including from base and over"""
+        k = []
+        base = self.base()
+        over = self.over()
+        for o in base:
+            k += o.keys()
+        k += self.data.keys()
+        for o in over:
+            k += o.keys()
+        return [k for k in uniqo(k) if k not in ["fn", "link"]]
+
+    def to_yaml(self, flat=False) -> str:
         """Return the agent data as a YAML string"""
-        content = yaml.dump(self.data, sort_keys=False)
+        data = self.flat_data() if flat else self.data
+        content = yaml.dump(data, sort_keys=False)
         if self.file:
             file_rel = self.get_file_rel()
             content = f"#File: {file_rel}\n" + content
@@ -574,7 +595,7 @@ class Agent:
 
         return True
 
-    def update_visual(self):
+    def update_visual(self, visual_dir: Path=PATH_VISUAL):
         """Update the visual prompts for an agent."""
         visual = self.get("visual")
         logger.debug("update_visual: %r %r", self.name, visual)
@@ -589,32 +610,32 @@ class Agent:
         visual_name = visual.get("name", self.name)
         for key in VISUAL_KEYS:
             prompt = visual.get(key, "")
-            path = key if key == "person" else "person/" + key
+            path = "" if key == "person" else key
             prompt = str(prompt).strip() + "\n"
             if key == "person" and visual_name:
                 prompt = visual_name + ", " + prompt
-            (PATH_VISUAL / path).mkdir(parents=True, exist_ok=True)
-            cache.save(str(PATH_VISUAL / path / self.name) + ".txt",
+            (visual_dir / path).mkdir(parents=True, exist_ok=True)
+            cache.save(str(visual_dir / path / self.name) + ".txt",
                     prompt, noclobber=False)
-            cache.chmod(str(PATH_VISUAL / path / self.name) + ".txt", 0o664)
+            cache.chmod(str(visual_dir / path / self.name) + ".txt", 0o664)
 
             # symlink main file to agent's other names
             for name1 in all_names_with_lc:
                 if name1 == self.name:
                     continue
                 cache.symlink(self.name + ".txt",
-                        str(PATH_VISUAL / path / name1) + ".txt")
+                        str(visual_dir / path / name1) + ".txt")
 
-    def remove_visual(self):
+    def remove_visual(self, visual_dir: Path=PATH_VISUAL):
         """Remove the visual prompts for an agent."""
         all_names = self.get_all_names()
         all_names_with_lc = uniqo(all_names + [name.lower() for name in all_names])
 
         for key in VISUAL_KEYS:
-            path = key if key == "person" else "person/" + key
+            path = "" if key == "person" else key
             for name1 in all_names_with_lc:
                 try:
-                    cache.remove(str(PATH_VISUAL / path / name1) + ".txt")
+                    cache.remove(str(visual_dir / path / name1) + ".txt")
                 except FileNotFoundError:
                     pass
 
@@ -674,7 +695,7 @@ class Agents:
             logger.debug("Removing agent by name: %r", name1)
             self.agents.pop(name1lc, None)
 
-    def load(self, path: Path, visual: bool=True) -> None:
+    def load(self, path: Path, visual_dir: Path|None=PATH_VISUAL) -> None:
         """Load all agents or one agent from a path."""
         if path.is_dir():
             agent_files = sorted(path.rglob("*.yml"))
@@ -701,9 +722,9 @@ class Agents:
 
         # then set up and update visuals
         for agent in new_agents:
-            if visual:
+            if visual_dir:
                 # logger.info("update_visual: %r", agent.name)
-                agent.update_visual()
+                agent.update_visual(visual_dir)
             # logger.info("set_up: %r", agent.name)
             if not agent.set_up(self.services):
                 # logger.info("remove_agent: %r", agent.name)

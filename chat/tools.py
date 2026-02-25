@@ -16,10 +16,16 @@ def python_tool_agent_yaml(c, agent, query) -> str:
     args = query.split()
     grep_pattern = None
 
+    flat = False
+
     # Extract grep pattern if present
     for i, arg in enumerate(args):
         if arg.startswith('-g='):
             grep_pattern = arg[3:]
+            args.pop(i)
+            break
+        if arg == "-f":
+            flat = True
             args.pop(i)
             break
 
@@ -32,7 +38,10 @@ def python_tool_agent_yaml(c, agent, query) -> str:
             result.append(f"Agent '{name}' not found")
             continue
 
-        file_content = agent.get_file().rstrip()
+        if flat:
+            file_content = agent.to_yaml(flat=True).rstrip()
+        else:
+            file_content = agent.get_file().rstrip()
 
         # Apply grep filter if pattern specified
         if grep_pattern:
