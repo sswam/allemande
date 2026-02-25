@@ -582,7 +582,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
             logger.debug("start code 1")
             if not was_blank:
                 out.append("\n")
-            out.append(line + "\n")
+            out.append(line.lstrip() + "\n")
             in_code = 1
         elif re.match(r"\s*```\w", line) and not in_script:
             logger.debug("start code 2")
@@ -592,7 +592,7 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
             in_code += 1
         elif re.match(r"\s*```", line) and in_code:
             logger.debug("end code")
-            out.append(line + "\n")
+            out.append(line.lstrip() + "\n")
             in_code -= 1
         elif in_svg:
             logger.debug("SVG line: %r", line)
