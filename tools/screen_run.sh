@@ -28,7 +28,7 @@ screen-run() {
 }
 
 locked() {
-	mkdir -p "$HOME/tmp"
+	mkdir -p "$HOME/tmp" 2>/dev/null || true
 	{
 		flock -x -w $FLOCK_WAIT 200 || exit 1
 		"$@"

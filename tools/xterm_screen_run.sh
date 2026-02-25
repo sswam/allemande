@@ -10,7 +10,8 @@ xterm-screen-run() {
 	local window=$2
 	shift 2
 
-	exec </dev/tty 2>/dev/null || true
+	exec 2>/dev/null || true
+	exec </dev/tty || true
 	screen-run "$screen" "$window" "$@"
 	if [ -n "${DISPLAY:-}" ]; then
 		xterm -e screen -x "$screen" -p "$window" & disown
