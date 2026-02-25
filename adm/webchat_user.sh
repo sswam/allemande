@@ -114,16 +114,13 @@ Pass: $generated_pass
 === Getting Started ===
 
 - There's one content rule: Keep it legal, specifically no NCII or CSAM images.
-- Please explore private chat with your first AI.
-- Then press ? and read the intro
-- Then try joining a group chat too. We're friendly and we like to help new users!
-- MOST IMPORTANT: PLEASE for the Love of Cthulhu, JOIN GROUP CHATS as much as you can, to learn and have fun!
+- Please explore private chat with your first AI. Then press ? and read the intro
+- Try joining a group chat too. We're friendly and we like to help new users!
 
 === Please Contribute! ===
 
-- Join group chats, or share your work, or give feedback, or please join our Patreon.
-- Or you can do all of the above to become a Pillar of the Community!
-- You can also help with the project e.g. development, marketing, etc.
+- You can help: join group chats, share your work, give feedback, join our Patreon.
+- If you're willing and able, you can help with development, marketing, etc.
 
 === Patreon ===
 
@@ -135,18 +132,18 @@ You are responsible for your own safety and behaviour in Ally Chat.
 
 The only content rule is to keep it legal:
 
-- no NCII (real people without consent)
-- no CSAM (underage NSFW images)
+- No NCII (real people without consent).
+- No CSAM (underage NSFW images).
 - Literally anything else is okay.
 
 We have a uniquely friendly and respectful international community,
 including men, women, non-binary, LGBTQIA+ users, and people with disabilities.
 
-The private and SFW zones in Ally Chat are suitable for teenagers aged 13+.
-
 Our group chats are good fun! This is the best way to learn the app properly and to get support.
 
 We like to have fun, including playful banter, but we don't allow unwanted bullying or abuse in the main group chats.
+
+Note that I may remove inactive accounts after a month or so. Please log in and try the app within 2 weeks. I can restore accounts on request, but your username might be different.
 
 You can read more formal and detailed Terms of Use at https://allemande.ai/terms.html
 
