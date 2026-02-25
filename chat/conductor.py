@@ -482,6 +482,7 @@ def who_should_respond(
 
     # Remove thinking sections
     history = chat.history_remove_thinking_sections(history, None)
+    message = history[-1] if history else None
 
     # Responsible human user
     responsible_human_user = responsible_human(history, agents, room)
