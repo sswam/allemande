@@ -1,6 +1,0 @@
-# not needed now
-enabled: False
-base: Illu
-type: google
-model: gemini-2.5-flash
-welcome: false

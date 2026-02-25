@@ -1,6 +1,6 @@
 base:
   - AgentChar
-  - FlashoM
+  - FlashiM
 filter_out:
   - unsmart
 # forward_if_refuse: NaughtyAI

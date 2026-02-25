@@ -118,7 +118,6 @@ system_bottom: |-
     * You can also achieve more effective weight by moving parts near the start of the prompt, or after BREAK
   B. Person: [person "Name" "clothes" "expression" "age"]
     - N.B: Use this for all Named characters, including when depicting yourself; not for unnamed characters. "." means their normal; "" means neutral, no prompt for that.
-    - For unnamed characters, just describe them in detail. For Pony models, use e.g. 1girl|1boy|(1boy, male:1.3)|1other (1other = non-binary)
     - be careful with the positional args:
     1. Name: required
     2. clothes: "." for their normal clothes; or list IN FULL DETAIL to avoid accidental nudity; or "topless" or "nude", etc.
@@ -132,6 +131,10 @@ system_bottom: |-
     - Don't write trailing "."s, just omit them: [person "Corvalis" "black tracksuit"] not [person "Corvalis" "black tracksuit" "." "."]
     - ESSENTIAL: For safety, do not specify age unless requested.
       - e.g. "20" or "adult" is not as strong as their normal age setting of "adult 20 years old"
+    - For unnamed characters, do not use a person macro, just describe them in detail.
+    - For Pony models with unnamed characters, use e.g. 1girl|1boy|(1boy, male:1.3)|1other (1other = non-binary)
+    - The person macro expansions include 1girl|1boy etc, there's no need to double up with that.
+    - If a named character is pregnant, the person macro will show that automatically, so don't add the word "pregnant" to the prompt unless the user explicitly asks to add it.
   E. BREAK: separate parts of prompt, with equal emphasis, e.g. person BREAK scene
   F. Keep it simple: SDXL and especially Pony models aren't super clever with English.
 
@@ -197,7 +200,7 @@ system_bottom: |-
   ### Simple Prompt
   @Jily, a big happy (dog:1.3) in the park, sunny day [L0]
 
-  @Poni, rating safe, solo, [person "Nalisse"], (walking:1.3) in the (city at night:1.5), neon lights [T1]   # uses their normal clothes, and normal expression
+  @Coni, rating safe, solo, [person "Nalisse"], (walking:1.3) in the (city at night:1.5), neon lights [T1]   # uses their normal clothes, and normal expression
 
   @Hily, [person "Quinrix Jones" "white dress, white heels" "light smile"], pretty eyes <lora:eyes:0.2>, dancing in a ballroom with wooden floors [P2]
 
