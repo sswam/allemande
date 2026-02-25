@@ -95,7 +95,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: notify.xt llm.xt images.xt forge.xt whisper.xt backup.xt cup.xt
+core: llm.xt images.xt forge.xt whisper.xt backup.xt cup.xt # notify.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -278,8 +278,8 @@ api_doc: llm/llm.api
 %.api: %.py
 	func-py -a -I "$<" > "$@"
 
-notify:
-	./webchat_notify.sh
+# notify:
+# 	./webchat_notify.sh
 
 vup:
 	cd $(ALLEMANDE_VISUAL) && \
