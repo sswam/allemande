@@ -1,0 +1,13 @@
+[Unit]
+Description=Allemande Core
+After=ssh.service
+Wants=ssh.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/allemande/adm/ally_core_start.sh
+ExecStop=/opt/allemande/adm/ally_core_stop.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
