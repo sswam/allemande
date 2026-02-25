@@ -40,7 +40,8 @@ unrubbish() {
 	fi
 
 	local original_name
-	original_name=$(printf "%s" "$last_file" | sed -E 's/_[0-9]{8}_[0-9]{15}\+[0-9]{4}_[A-Za-z]{3}_[0-9]+$//')
+	# original_name=$(printf "%s" "$last_file" | sed -E 's/_[0-9]{8}_[0-9]{15}\+[0-9]{4}_[A-Za-z]{3}_[0-9]+$//')
+	original_name=$(printf "%s" "$last_file" | sed -E 's/_[A-Za-z0-9]{6}$//')
 
 	# Move the file back to the current working directory
 	v mv -i "$RUBBISH/$last_file" "$original_name"
