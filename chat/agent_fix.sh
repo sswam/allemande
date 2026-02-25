@@ -38,7 +38,8 @@ agent-fix() {
 			continue
 		fi
 
-		modify "$0" -e="$edit" -E="$errors" -m="$model" : "$file"
+		"$0" -e="$edit" -E="$errors" -m="$model" < "$file" > "$file.$$.new"
+		mv "$file.$$.new" "$file"
 
 		# remove files <= 1 byte, RIP those agents!
 		if [ "$(stat -c%s "$file")" -le 1 ]; then
