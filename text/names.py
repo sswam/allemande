@@ -5,12 +5,12 @@ Extract names and @mentions from text. Names are sequences of 1-4 words, first a
 @mentions can include lowercase and match greedily up to 4 words.
 """
 
-import regex
+import regex  # type: ignore[import]
 from typing import TextIO
 
 from ally import main, logs  # type: ignore
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 logger = logs.get_logger()
 
@@ -22,7 +22,7 @@ NAME_PATTERN = regex.compile(
         [A-Z0-9][\w\-\.']*          # First word must be capitalized
         (                           # Optional middle words (0-2), excluding common stop words
             (?!and|or|with|the|a|an|in|on|for|to|by|at|from|is|it|as|but|if|nor|so|yet|then|after|before)
-            ?:\s+[\w\-\.']+
+            (?:\s+[\w\-\.']+)
         ){0,2}
         (?:\s+[A-Z0-9][\w\-\.']*)?  # Optional last word must be capitalized if present
         |
@@ -30,8 +30,17 @@ NAME_PATTERN = regex.compile(
         @[\w\-\.']+(?:\s+[\w\-\.']+){0,3}
     )
     """,
-    regex.VERBOSE | regex.UNICODE,
+    regex.VERBOSE | regex.UNICODE,  # type: ignore[attr-defined]
 )
+
+
+def strip_possessive(name: str) -> str:
+    """Strip trailing possessive 's or ' from a name."""
+    if name.endswith("'s"):
+        return name[:-2]
+    if name.endswith("'"):
+        return name[:-1]
+    return name
 
 
 def extract_partial_names(text: str) -> list[str]:
@@ -45,6 +54,7 @@ def extract_partial_names(text: str) -> list[str]:
 
         # Strip trailing punctuation
         name = regex.sub(r"[-.'_]+$", "", name)
+        name = strip_possessive(name)
         names.append(name)
 
     return names
