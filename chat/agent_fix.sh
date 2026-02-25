@@ -32,10 +32,16 @@ agent-fix() {
 
 		git-commit-force "$file"
 
+		# remove files <= 1 byte, RIP those agents!
+		if [ "$(stat -c%s "$file")" -le 1 ]; then
+			rm -f "$file"
+			continue
+		fi
+
 		modify "$0" -e="$edit" -E="$errors" -m="$model" : "$file"
 
-		# remove empty files, RIP those agents!
-		if [ ! -s "$file" ]; then
+		# remove files <= 1 byte, RIP those agents!
+		if [ "$(stat -c%s "$file")" -le 1 ]; then
 			rm -f "$file"
 		fi
 	done
@@ -69,7 +75,7 @@ $error_context
 - If the input lacks a system prompt (system_bottom or system_top), please add a system_bottom prompt consistent whatever info is given. Omit if there is no info at all.
 - If the input lacks a visual or the person key, please add them consistent with whatever info is given. Omit if there is no info at all. Include the visual.age if known, e.g. 'adult 18 years old' if the character is 18.
 - Do not add a # File: comment at the top, if not already present in the input.
-- Be careful to indent keys that should be under visual, as per the example. person, clothes, clothes_upper, clothes_lower, age, and emo keys should be intended under visual. There can also be a top-level age key which should be just a number.
+- Be careful to indent keys that should be under visual, as per the example. person, clothes, clothes_upper, clothes_lower, age, and emo keys should be indented under visual. There can also be a top-level age key which should be just a number.
 - If clothes or emo are mixed in with the main 'person' visuals, please split them out, and vice versa.
 - Indent with two spaces, not tabs. Correct the intentation style if needed.
 - Do not remove paragraph spacing within the main system prompts.
