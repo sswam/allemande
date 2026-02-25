@@ -127,13 +127,13 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
     # logger.debug("find_name_in_content: %r %r %r", content, name, ignore_case)
 
     # Define match patterns
-    start_comma_word = r"^\s*`*" + re.escape(name) + r"\b\s*(,|$)"  # at start with comma, or whole line, also allow backticks for code quoting
+    start_comma_word = r"(^\s*`*)" + re.escape(name) + r"\b\s*(,|$)"  # at start with comma, or whole line, also allow backticks for code quoting
 
     patterns = [start_comma_word]
 
     if not is_tool:
-        comma_word_end = r",\s*" + re.escape(name) + r"\b\s*\W*$"  # at end with comma
-        word_start = r"^\s*" + re.escape(name) + r"\b"  # at start
+        comma_word_end = r"(,\s*)" + re.escape(name) + r"\b\s*\W*$"  # at end with comma
+        word_start = r"(^\s*)" + re.escape(name) + r"\b"  # at start
         word_end = r"(\W|^)" + re.escape(name) + r"\b\s*[\.!?]?\s*$"  # at end
         whole_word = r"(\W|^)" + re.escape(name) + r"\b"  # anywhere
         patterns += [comma_word_end, word_start, word_end, whole_word]
@@ -150,7 +150,7 @@ def find_name_in_content(content: str, name: str, ignore_case: bool = True, is_t
         for match_type, pattern in enumerate(patterns):
             if match := re.search(pattern, sentence, flags):
                 # Calculate absolute position in original content
-                abs_pos = content.find(sentence) + match.start()
+                abs_pos = content.find(sentence) + match.start() + len(match[1])
                 current_match = (match_type, sent_num, abs_pos, -length, name)
                 best_match = min(best_match, current_match)
 
@@ -250,8 +250,7 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
         for other_match in matches:
             other_type, other_sent, other_pos, other_neg_len, other_name = other_match
             # If same position, same match type, but other is longer, skip this match
-            if (pos == other_pos and
-                match_type == other_type and
+            if (sentence_num == other_sent and pos == other_pos and
                 other_neg_len < neg_len and  # other is longer (more negative)
                 other_name and name and
                 other_name.lower().startswith(name.lower())):
@@ -261,7 +260,7 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
             filtered_matches.append(match)
 
     matches = filtered_matches
-    logger.debug("matches after prefix filtering: %r", matches)
+    logger.info("matches after prefix filtering: %r", matches)
 
     # Sort matches by position and type, preserving only lowest indices
     # sorted_matches = sorted(matches, key=lambda x: (x[0], x[1]))
@@ -292,7 +291,7 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
             result.append(user)
         else:
             logger.info("checking access for %r", agent)
-            the_agent = agents.get(agent.lstrip("@"))
+            the_agent = agents.get(agent.lstrip("@")) if agents is not None else None
             if the_agent is None:
                 logger.info("unknown agent %r, skipping access check", agent)
             elif filter_access([the_agent.name], room, access_check_cache, agent_name_map):
