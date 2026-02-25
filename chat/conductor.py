@@ -235,7 +235,7 @@ def _build_chat_participants_lists(all_participants_with_excluded, all_participa
         try:
             agent_data = agents.get(agent)
             agent_type = agent_data.get("type")
-            if agent_type is None or agent_type == "tool" or agent_type.startswith("image_") or (agent_type == "human" and not include_humans):
+            if agent_type is None or agent_data.get("link") == "tool" or agent_type.startswith("image_") or (agent_type == "human" and not include_humans):
                 continue
             chat_participants_names_all.append(agent)
             if agent in all_participants_set:
