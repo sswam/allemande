@@ -1,4 +1,5 @@
 {
+	"template_directory":"templates_request:templates",
 	"logging":
 	{
 		"level":"WARNING"

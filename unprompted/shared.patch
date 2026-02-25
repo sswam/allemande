@@ -1,0 +1,48 @@
+diff --git a/lib_unprompted/shared.py b/lib_unprompted/shared.py
+index e49ae68..e618aaa 100644
+--- a/lib_unprompted/shared.py
++++ b/lib_unprompted/shared.py
+@@ -294,6 +294,30 @@ class Unprompted:
+ 		return (string)
+ 
+ 	def parse_filepath(self, string_orig, context="", root=None, must_exist=True, return_all=False):
++	    """Search each root in order; return first match, or last root's result."""
++	    roots = self._get_roots(root)
++	    last = len(roots) - 1
++	    for i, r in enumerate(roots):
++	        result = self._parse_filepath_single(string_orig, context, r,
++	                must_exist=(must_exist if i == last else False),
++	                return_all=return_all)
++	        if i == last or self._result_exists(result):
++	            return result
++	    return ""  # unreachable: loop always returns on i == last
++
++	def _get_roots(self, root):
++	    if root is None:
++	        parts = self.Config.template_directory.split(":")
++	        return [self.base_dir + "/" + p for p in parts]
++	    return root.split(":")
++
++	def _result_exists(self, result):
++	    if not result:
++	        return False
++	    first = result.split(self.Config.syntax.delimiter)[0]
++	    return os.path.exists(first)
++
++	def _parse_filepath_single(self, string_orig, context="", root=None, must_exist=True, return_all=False):
+ 		import random
+ 
+ 		# Replace placeholders
+@@ -309,9 +333,9 @@ class Unprompted:
+ 			if (string[0] == "."):
+ 				string = os.path.dirname(context) + "/" + string
+ 				self.log.debug(f"Transformed relative path from \"{string_orig}\" to \"{string}\"")
+-			# Absolute path
+-			elif (os.path.isabs(string)):
+-				self.log.debug(f"Transformed absolute path from \"{string_orig}\" to \"{string}\"")
++			# # Absolute path XXX security issue, can read any file!
++			# elif (os.path.isabs(string)):
++			# 	self.log.debug(f"Transformed absolute path from \"{string_orig}\" to \"{string}\"")
+ 			# Internal (Unprompted) path
+ 			else:
+ 				if root is None:

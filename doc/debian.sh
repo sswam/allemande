@@ -267,6 +267,8 @@ mkdir -p ~/soft-ai
 cd ~/soft-ai
 git clone git@github.com:ThereforeGames/unprompted.git
 ln -s ~/soft-ai/unprompted ~/allemande/unprompted/unprompted
+cd unprompted
+patch -p1 < ~/allemande/unprompted/shared.patch
 
 # -------- build stuff -------------------------------------------------------
 # This may likely fail in some way; please check with the developer or fix it!
