@@ -263,8 +263,8 @@ async def remote_agent(agent, query, file, args, history, history_start=0, missi
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("Exception during generation for model %s:%s", service, model)
         msg = str(e)
-        if msg in ["list index out of range"] or "connection has been closed" in msg:
-            msg = ""
+        # if msg in ["list index out of range"] or "connection has been closed" in msg:
+        #     msg = ""
         return f"{agent.name}:\n" + re.sub(r'(?m)^', '\t', msg)
 
     # Then, after the try

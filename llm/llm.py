@@ -116,6 +116,8 @@ exceptions_to_retry = [
     "APIError",
     "ServerError",
     r"ClientError.*?429 RESOURCE_EXHAUSTED",
+    r"list index out of range",
+    r"connection has been closed",
 ]
 
 # Treating each string as a literal regex pattern (alternation with |)
