@@ -212,9 +212,7 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     config = load_config(room)
     mission = load_mission(room, config, args)
     summary = load_summary(room, args)
-    logger.info("before load_local_agents")
     agents = load_local_agents(room, agents)
-    logger.info("after load_local_agents")
 
     history_messages = list(bb_lib.lines_to_messages(history))
 

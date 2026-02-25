@@ -30,21 +30,22 @@ def agent_is_tool(agent: dict[str, Any]) -> bool:
     return False
 
 
-def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_cache: dict[str, int], agent_name_map: dict[str, str], must_exist: bool = True) -> list[str]:
+def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_cache: dict[str, int], agents: Agents|None=None) -> list[str]:
     """filter out agents that don't have access"""
     if not room:
         return list(invoked)
     result = []
-    for agent in invoked:
-        agent = re.sub(r"^@", "", agent)
-        agent_lc = agent.lower()
-        if must_exist and agent_lc not in agent_name_map:
-            continue
-        agent = agent_name_map.get(agent_lc, agent)
-        if access_check_cache.get(agent_lc) is None:
-            access_check_cache[agent_lc] = room.check_access(agent_lc).value
-        if access_check_cache[agent_lc] & chat.Access.READ_WRITE.value == chat.Access.READ_WRITE.value:
-            result.append(agent)
+    for name in invoked:
+        name = re.sub(r"^@", "", name)
+        name = name.lower()
+        if agents:
+            agent = agents.get(name)
+            if not agent or agent.get("type") in [None, "visual", "mixin"]:
+                continue
+        if access_check_cache.get(name) is None:
+            access_check_cache[name] = room.check_access(name).value
+        if access_check_cache[name] & chat.Access.READ_WRITE.value == chat.Access.READ_WRITE.value:
+            result.append(name)
     return result
 
 
@@ -291,7 +292,7 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
             the_agent = agents.get(agent.lstrip("@")) if agents is not None else None
             if the_agent is None:
                 logger.info("unknown agent %r, skipping access check", agent)
-            elif filter_access([the_agent.name], room, access_check_cache, agent_name_map):
+            elif filter_access([the_agent.name], room, access_check_cache):
                 logger.info("access granted for %r", the_agent.name)
                 result.append(the_agent.name)
             else:

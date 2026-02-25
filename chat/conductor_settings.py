@@ -48,14 +48,14 @@ SELF_WORDS = ["", "self", "me", "himself", "herself"]   # @ alone means self, or
 
 # TODO exclude based on an attribute or settings
 # TODO should not include tools in the list of participants
-EXCLUDE_TOOLS = set(["Palc", "Dogu", "Gido", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda", "Goog", "Gimg", "Utube", "Pr0nto"])
-EXCLUDE_PARTICIPANTS = set(["System", "Sia", "Nova", "Pixi", "Brie", "Chaz", "Atla", "Pliny", "Morf"])
-# EXCLUDE_PARTICIPANTS = set(["System", "Palc", "Dogu", "Gid", "Lary", "Matz", "Luah", "Jyan", "Jahl", "Faby", "Qell", "Bilda"])
-EXCLUDE_PARTICIPANTS_SYSTEM = set(["System", "The Cast"])
+EXCLUDE_TOOLS = set(["palc", "dogu", "gido", "lary", "matz", "luah", "jyan", "jahl", "faby", "qell", "bilda", "goog", "gimg", "utube", "pr0nto"])
+EXCLUDE_PARTICIPANTS = set(["system", "sia", "nova", "pixi", "brie", "chaz", "atla", "pliny", "morf"])
+# EXCLUDE_PARTICIPANTS = set(["system", "palc", "dogu", "gid", "lary", "matz", "luah", "jyan", "jahl", "faby", "qell", "bilda"])
+EXCLUDE_PARTICIPANTS_SYSTEM = set(["system", "the cast"])
 
 EVERYONE_MAX = 5
 AI_EVERYONE_MAX = 2
 
 USE_PLURALS = True
 
-AUTO_CREATE_UNKNOWN_AGENTS = "Chara"
+# AUTO_CREATE_UNKNOWN_AGENTS = "Chara"
