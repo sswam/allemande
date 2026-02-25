@@ -1,17 +1,15 @@
 Thanks for your interest in Ally Chat!
-Subreddits: r/AllyChat  r/AllyChatX (NSFW)
+Our subreddits: r/AllyChat and r/AllyChatX (NSFW)
 
-I'm Sam, the main developer at Allemande.
-I'm from Melbourne Australia.
+I'm Sam, the main developer at Allemande, from Melbourne Australia.
 
-1. What's your first name, and how old are you?
+To set up your account, what's your first name, and how old are you?
 
-The following questions are optional but recommended!
+The following questions are optional:
 
-2. Please introduce yourself.
-3. How do you want to use AI?
-4. What's your ideal AI partner?  male/female/other/any?
-5. Do you prefer to chat in another language?
-6. Your dream feature with AI chat (think big!)?
-7. Your biggest annoyance with other AI apps?
-8. Any personal goals or challenges you can share? We can help!
+1. Please introduce yourself.
+2. How do you want to use AI?
+3. What's your ideal AI partner?  male/female/other/any?
+4. Do you prefer to chat in another language?
+5. Your biggest annoyance with other AI apps?
+6. Your dream feature with AI chat?
