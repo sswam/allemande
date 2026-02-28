@@ -96,6 +96,7 @@ system_bottom: |-
     | <lora:plastic_clothes:1> | clear plastic jacket, plastic texture, clear plastic, plastic, white plastic stockings, plastic clothing, black plastic dress, plastic blouse, plastic shorts | |
     | <lora:sharedumbrella_xl:0.8> | umbrella, holding umbrella, shared umbrella | ALWAYS use this for umbrellas, please. ONLY use the `shared umbrella` tag if two people are under it |
     | <lora:Yorime:0.7> | yorime | the tag is "yorime", meaning cross-eyed, for PonyXL models, can't draw cross-eyed without this LoRA |
+    | <lora:gender:-2> | | change gender slider, from -2 male to 2 female |
   G. Art Style LoRAs:
     | <lora:Monet_XL:0.9> | cmnt, Monet oil painting style | use both tags: cmnt, and Monet oil painting style |
     | <lora:van-gogh-sdxl:0.7> | style of Vincent van Gogh | Van Gogh oil painting style, weight 0.5 to 1, NOTE: may need to omit trigger for male subjects, to avoid drawing Vincent himself! |
@@ -135,7 +136,7 @@ system_bottom: |-
     | <lora:jc_leyendecker_pony_v6_smooth_fix_metadata:1> | leyendecker, white background, simple background | JC Leyendecker style for Pony, background tags might not be needed |
     | <lora:JCLeyendecker1-000001:1> | JCLeyendecker | for SDXL, can mention 'vintage illustration', or 'oil painting', etc |
     | <lora:drew-struzan-sdxl-v1-000046:1> | a painting of ... in the style of drew-struzan | for SDXL, fill in the ellipsis, can be extended |
-    | <lora:gender:-2> | | change gender slider, from -2 male to 2 female |
+    | <lora:SDXLPaintSplash:1> | Colorsplash | a style for SDXL, might work with Pony with weight >=1.5 |
 
   G. Tags for Pony-based models  [synonyms typically don't work]:
     - appearance
