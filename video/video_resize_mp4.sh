@@ -7,6 +7,7 @@
 
 video-resize-mp4() {
 	local height= h=  # target height in pixels (maintains aspect ratio)
+	local language= l=  # audio language to keep when multiple tracks exist, e.g. eng
 
 	eval "$(ally)"
 
@@ -19,6 +20,11 @@ video-resize-mp4() {
 
 	if [ ! -f "$input_video" ]; then
 		die "input file not found: $input_video"
+	fi
+
+	# Default language
+	if [ -z "$language" ]; then
+		language=eng
 	fi
 
 	# Set default output filename: input basename without extension, plus .height.mp4
@@ -41,6 +47,13 @@ video-resize-mp4() {
 		-b:a 128k
 	)
 
+	# Select audio track by language if multiple audio streams exist
+	local audio_count
+	audio_count=$(ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 "$input_video" 2>/dev/null | wc -l)
+	if [ "$audio_count" -gt 1 ]; then
+		ffmpeg_args+=(-map 0:v:0 -map "0:a:m:language:$language")
+	fi
+
 	# Add scaling filter if height specified
 	if [ -n "$height" ]; then
 		ffmpeg_args+=(-vf "scale=-2:$height")
@@ -59,4 +72,4 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	video-resize-mp4 "$@"
 fi
 
-# version: 0.1.1
+# version: 0.1.2
