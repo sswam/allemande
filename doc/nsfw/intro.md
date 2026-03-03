@@ -40,14 +40,14 @@ Please contact Sam, the main developer, for more help and to give feedback.
 
 ## Talking with AIs
 
-Address AIs by name to get their attention, with a capital letter or @ sign.
+Address AIs by name to get their attention, with a capital letter or @ sign. When first talking to a new character in the chat, you must use an @ sign.
 
 Lori is a good one to start with. She has meta-powers of many other agents combined!
 
-> hey Ally, you're looking fine, girl!
+> hey @Ally, you're looking fine, girl!
 > Can you help run a sexy photoshoot, @lori?
-> Xilu, please draw a nude guy or lady!
-> Do you know any brunettes who might be up for sexy role-play, Shiksa?
+> @Xilu, please draw a nude guy or lady!
+> Do you know any brunettes who might be up for sexy role-play, @Shiksa?
 
 Send an empty message to continue AI conversations, this called a "poke".
 
@@ -75,9 +75,9 @@ Type -@Lori at the start of a line, to poke Lori to respond, this can be useful 
 - Basp: photorealistic finetune of SDXL for SFW and NSFW, diversity.
 - Ilus: NSFW image generation with a cartoon / anime style (Illustrious XL)
 - Irus: NSFW image generation with a realistic style (Illustrious Realism)
-- When talking to a tool like an AI art model, start a line with their name, using a capital letter and a comma:
+- When talking to a tool like an AI art model, start a line with their name, using an @ sign and a comma:
 ```
-Coni, 1girl, 25 years old, nude, flowers [P2]
+@Coni, 1girl, 25 years old, nude, flowers [P2]
 ```
 - Be patient, it can take a little while depending on the quality and the load on the GPU.
 
@@ -128,13 +128,13 @@ There are many, many more; check the guides, and try the help system!
 
 ## Example Usage
 
-You:	Xilu, I'd like to draw Cleo in sexy lingerie.
+You:	@Xilu, I'd like to draw Cleo in sexy lingerie.
 
 Xilu:	<think>
 	*this is where Xilu plans the image prompt*
 	</think>
 	```
-	Boni, solo, [person "Cleo" "black lace lingerie" "seductive"], (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, [use photo], rating explicit, (uncensored:2) NEGATIVE (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 [P3]
+	@Boni, solo, [person "Cleo" "black lace lingerie" "seductive"], (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, [use photo], rating explicit, (uncensored:2) NEGATIVE (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 [P3]
 	```
 
 Boni:	![#1628847956 (score_9, score_8_up, score_7_up, score_6_up, score_5_up, score_4_up:1.0), solo, Cleo, (adult 20 years old:1.6), 1girl, blue eyes, skinny, Swiss, straight hair, long hair, parted hair, light blonde hair, seductive, black lace lingerie,, (lingerie details:1.2), (seductive pose:1.3), soft gradient background, bokeh, raw, realistic, photo \(medium\), rating explicit, (uncensored:2) NEGATIVE score_6, score_5, score_4, (ugly, bad anatomy:2), (censored:2), boring_sdxl_v1 (anime, cartoon, 3d:2)](solo-person-Cleo-black-lace-lingerie-seductive-lingerie-details-1-2-se.jpg)
@@ -143,15 +143,14 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 ## Current Limitations and Work in Progress
 
-- difficult for new users (WIP)
-- limited image storage (> 1 week may be removed)
+- It's difficult for new users (WIP)
+- no memory (can do it manually, WIP)
+- no documents / RAG (WIP)
 - no notifications (WIP)
 - no voice chat (WIP)
-- no documents / RAG (WIP)
 - limited range of art models
 - no direct messaging
 - no video generation
-- no memory (can do it manually)
 
 ## Become a Patron!
 

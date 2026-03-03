@@ -137,13 +137,11 @@ Example for user "Alice":
 - Other rooms: `general`, `music`, etc.
 - Folder view of all top-level rooms: `/`
 
-You can view your main private chat, your folder, your public chat, the top folder, and the Ally Chat room, by clicking your name at the top-right repeatedly. In advanced mode, there is a <i class="bi-compass"></i> nav menu at top-left with shortcuts to different rooms, and a <i class="bi-folder"></i> button to go up to the parent folder.
+There is a <i class="bi-compass"></i> nav menu at top-left with shortcuts to different rooms and a <i class="bi-folder"></i> button to go up to the parent folder.
 
 The folder view only allows to browse to different files and folders. To delete a file you need to click in to edit the file, then clear it.
 
 To create a room or file, just type its pathname in the room field at the top of the app.
-
-Ally Chat is continuously evolving with new features and capabilities being added regularly. We hope you enjoy exploring and using this unique chat platform!
 
 ## Tips and Tricks
 
@@ -153,7 +151,7 @@ Click code to copy it. You can paste into the input or elsewhere.
 
 Poke an image gen prompt several times to create multiple images. You can do similar with other agents too, e.g. with Jessi to make several jokes.
 
-On mobile or in narrow windows, some UI elements may scroll horizontally in advanced mode. Swipe on mobile or use Shift + mousewheel on a computer.
+On mobile or in narrow windows, some UI elements may scroll horizontally. Swipe on mobile or use Shift + mousewheel on a computer.
 
 ## Basic Markdown
 
@@ -168,13 +166,23 @@ On mobile or in narrow windows, some UI elements may scroll horizontally in adva
 - You can safely embed any HTML, including audio, video, embeds, canvas, SVG, CSS, and JavaScript.
 - The chat is displayed in a secure cross-domain iframe, so JavaScript in the chat is not very dangerous.
 
+## The Poke function
+
+When your message box is empty, the <i class="bi-send"></i> **Send** button changes into the <i class="bi-hand-index-thumb"></i> **Poke** button.
+
+You can press **Poke** to make the AIs continue the conversation among themselves, or get the next AI to respond if you don't have anything to add.
+
+In an empty chat room, you can press Poke to have an AI start the conversation. Only certain characters will do this.
+
 ## The conductor
 
-1. If you mention an AI's name with a capital letter, they will respond. Priority is given to names at the start of your message, or at the end after a comma: "hey Ally, how are you?" invokes Ally, and "I like Ally, Barbie" invokes Barbie
+1. To bring a new character into the chat, use an @ mention: "Hey @Ally, how are you?"
 
-2. If you don't mention anyone's name, the last other person in the chat will repond.
+2. If you mention an AI's name with a capital letter, and they are already in the chat, they will respond. Priority is given to names at the start of your message, or at the end after a comma: "hey Ally, what did you do on the weekend?" invokes Ally, and "I like Ally, Barbie" invokes Barbie
 
-3. If you poke the chat, an AI mentioned in the last message, or the previous AI, will respond.
+3. If you don't mention anyone's name, the last other person in the chat is expected to respond. If that was yourself, or another human, no AI will respond.
+
+4. If you poke the chat, an AI mentioned in the last message, or the previous AI, will respond.
 
 5. You can mention an AI in lower-case to avoid triggering them to respond: hey, Barbie... do you like ally?
 
@@ -184,21 +192,11 @@ On mobile or in narrow windows, some UI elements may scroll horizontally in adva
 
 8. If you say @everyone, several AIs from the chat will respond.
 
-9. You can "poke" the chat to get the next person to respond without saying anything yourself.
+9. You can prompt several named people to respond like: @Ally, @Barbie, @Cleo
 
-10. You can prompt several named people to respond like: @Ally, @Barbie, @Cleo
+10. You can invoke someone without saying anything like -@Ally. This enables you to manually conduct a role-play.
 
-11. You can invoke someone without saying anything like -@Ally
-
-12. The conductor rules are a bit more complex than described above. If in doubt, use @ mentions.
-
-## The Poke function
-
-When your message box is empty, the <i class="bi-send"></i> **Send** button changes into the <i class="bi-hand-index-thumb"></i> **Poke** button.
-
-You can press **Poke** to make the AIs continue the conversation among themselves, or get the next AI to respond if you don't have anything to add.
-
-In an empty chat room, you can press Poke to have an AI start the conversation. Only certain characters will do this.
+11. The conductor rules are a bit more complex than described above. If in doubt, use @ mentions.
 
 ## Basic intro to AI Image Generation
 
@@ -206,11 +204,11 @@ IMPORTANT: The agents Illu and Gema are experts on image gen. We can talk to the
 
 This asks Jily, an image gen AI, to draw a big dog, in a medium-quality landscape image:
 
-    Jily, big dog [L]
+    @Jily, big dog [L]
 
 This draws Cleo in a green dress in a ballroom, with her default cheery expression, at the age of 30, in a high-quality portrait image. Try to get a full body shot by mentioning shoes or feet!
 
-    Jily, [person "Cleo" "green dress" . "30"], ballroom, (full body, heels:1.5) [P3]
+    @Jily, [person "Cleo" "green dress" . "30"], ballroom, (full body, heels:1.5) [P3]
 
 The "person" macro accepts up to 4 parameters.
 
@@ -224,7 +222,7 @@ Optional (use "." for default, or "-" for none):
 
 NOTE: The position is important, e.g. to specify default clothes, no emotion, and custom age:
 
-    Hily, [person "Ally" . - "adult 40 years old"], standing [P2]
+    @Hily, [person "Ally" . - "adult 40 years old"], standing [P2]
 
 The shortcut quality setting ranges from 0 to 4.
 
@@ -249,20 +247,19 @@ Characters based on models from OpenAI, Anthropic and Google can see images in t
 
 AI Vision is turned off by default for efficiency.
 
-You can enable vision in a room that you own, or ask an admin to enable it in a public room.
+You can enable vision in any room. Please turn it off again when you're finished with the vision task.
 
-1. Make sure you're in **Advanced Mode**. Click the <i class="bi-eye"></i> **View** button, then click the lightbulb button <i class="bi-lightbulb"></i> to switch to advanced mode. Close the View menu by clicking the <i class="bi-x"></i> button.
-2. Go to room options by clicking the <i class="bi-gear"></i> **Options** button.
-3. Set the **images** option to 1 or a higher number. This controls how many recent images the AI can see.
-4. Upload an image, or check that there is one in the chat history.
-5. Now talk to a vision-capable character, such as Illu, Emmy, Flashi, Gemmi or Claude. You can ask them about the image.
-6. Please set the **images** option to 0 or blank when you are not using AI vision. This makes responses faster, and can save money.
+1. Go to room options by clicking the <i class="bi-gear"></i> **Options** button.
+2. Set the **images** option to 1 or a higher number. This controls how many recent images the AI can see.
+3. Upload an image, or check that there is one in the chat history.
+4. Now talk to a vision-capable character, such as Illu, Emmy, Flashi, Gemmi or Claude. You can ask them about the image.
+5. Please set the **images** option to 0 or blank when you are not using AI vision. This makes responses faster, and can save money.
 
 ## How to use Tool Agents
 
 We have several agents that are not LLMs and do not fully understand natural language, such as search engines, programming tools, and AI image generators. When talking to these agents, say their name, then exactly what you want. Don't say anything else afterwards. For example:
 
-    Dogu, fortune
+    @Dogu, fortune
 
 This asks the shell agent to run the fortune program, and give you a "fortune cookie".
 
@@ -824,41 +821,41 @@ Using the AI art models directly can be a bit technical. For best results, new u
 
 Examples:
 
-Palc, sqrt(2) / sin(pi/4)
+@Palc, sqrt(2) / sin(pi/4)
 
-Dogu, look wizard
+@Dogu, look wizard
 
-Dogu, web-text https://beebom.com/cool-interesting-websites/
+@Dogu, web-text https://beebom.com/cool-interesting-websites/
 
-Gido, import html ; print(html.escape("&&&"))
+@Gido, import html ; print(html.escape("&&&"))
 
-Wall, ($_ = "Hello, world") =~ tr/A-Za-z/a-zA-Z/; print
+@Wall, ($_ = "Hello, world") =~ tr/A-Za-z/a-zA-Z/; print
 
-Matz, 10.times { |i| puts "Hello, world #{i}" }
+@Matz, 10.times { |i| puts "Hello, world #{i}" }
 
-Luah, function fib(n) if n < 2 then return n else return fib(n-1) + fib(n-2) end end print(fib(10))
+@Luah, function fib(n) if n < 2 then return n else return fib(n-1) + fib(n-2) end end print(fib(10))
 
-Jyan, const fs = require('fs'); fs.writeFileSync('hello.txt', 'Hello, world\n');
+@Jyan, const fs = require('fs'); fs.writeFileSync('hello.txt', 'Hello, world\n');
 
-Jahl, console.log(Deno.readTextFileSync('hello.txt'))
+@Jahl, console.log(Deno.readTextFileSync('hello.txt'))
 
 ```
-Faby, #include <stdio.h>
+@Faby, #include <stdio.h>
 int main(void)
 {
     printf("Hello, world\n");
 }
 ```
 
-Qell, console.log("Hello, world");
+@Qell, console.log("Hello, world");
 
 ```
-Bilda, count: /usr/share/dict/words
+@Bilda, count: /usr/share/dict/words
 	wc -l <$< >$@
 	cat $@
 ```
 
-Unp, [choose] [use sam] | [use ally] [/choose]
+@Unp, [choose] [use sam] | [use ally] [/choose]
 
 ## Creating Custom Characters and Agents
 
@@ -1070,25 +1067,6 @@ Please do not attempt to jailbreak the more censored models, as this may be agai
 
 Note that the buttons are small and only the icons are visible, not any text. The "Name" text is visible as tool-tips on computers, but not on mobile.
 
-## Simple Mode
-
-| <i class="bi-send"></i> | `Ctrl+Enter` | Send | Send message (visible when message entered) |
-| <i class="bi-hand-index-thumb"></i> | `Alt+Enter` | Poke | Prompt AI response (visible when no message) |
-
-Press Alt/Option or swipe the input field on mobile to show a few more controls:
-
-| <i class="bi-archive"></i> | `Alt+A` | Archive | Archive this room |
-| <i class="bi-palette"></i> |  | Theme | Change UI theme (only day / night in simple mode) |
-| <i class="bi-lightbulb"></i> <i class="bi-lightbulb-fill"></i> |  | Advanced | Toggle simple / advanced mode. |
-
-To get to advanced mode, press Alt/Option or swipe the input field on mobile, then press <i class="bi-lightbulb"></i>.
-
-## Advanced Mode
-
-To show a few extra buttons (marked \* below), press Alt/Option or swipe the input field on mobile. Do it again to hide them.
-
-To get back to simple mode, first show the extra buttons, then press <i class="bi-lightbulb-fill"></i> at the bottom right.
-
 Many buttons react differently to shift, ctrl, and Alt/Option click; experiment to find out!
 
 | Component | Description |
@@ -1156,9 +1134,6 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-eye"></i> |  | View | view settings |
 | <i class="bi-gear"></i> |  | Opt | Room options |
 | <i class="bi-shield"></i> |  | Mod | Moderation tools |
-| <i class="bi-lightbulb-fill"></i> |  | Advanced Mode \* | Click to go back to simple mode |
-
-\* only visible after pressing Alt/Option or swiping the input field on mobile.
 
 ## Add Menu
 

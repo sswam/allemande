@@ -32,9 +32,7 @@ Read this [Quick Intro](/intro), then the [User Guide](/guide), for full details
 
 A red dot at the top-right means you are disconnected or offline. Click in the window or Reload the page.
 
-The app has an advanced mode with many options and features, but please master the basics first.
-
-Please contact Sam, the main developer, for more help and to give feedback.
+Please contact Sam, the developer, for more help and to give feedback.
 
 ## Talking with AIs
 
@@ -42,10 +40,10 @@ Address AIs by name to get their attention, with a capital letter or @ sign.
 
 Loni is a good one to start with. She has meta-powers of many other agents combined!
 
-> Ally, how are you?
+> @Ally, how are you?
 > Can you help, @loni?
-> Illu, let's draw a garden!
-> Tell me about the strong models, Shiksa.
+> @Illu, let's draw a garden!
+> Tell me about the strong models, @Shiksa.
 
 Send an empty message to continue AI conversations, this called a "poke".
 
@@ -66,9 +64,9 @@ Type -@Loni at the start of a line, to poke Loni to respond, this can be useful 
 - Jily, Hily: high quality, realistic images
 - Poni: cartoon / anime images, use "rating safe" in prompt to avoid nudity
 - Coni: semi-realistic images, use "rating safe" in prompt to avoid nudity
-- When talking to a tool like an AI art model, start a line with their name, using a capital letter and a comma:
+- When talking to a tool like an AI art model, start a line with their name, using an @ sign and a comma:
 ```
-Jily, a dog in the snow [L1]
+@Jily, a dog in the snow [L1]
 ```
 - Be patient, it can take a little while depending on the quality and the load on the GPU.
 
@@ -115,13 +113,13 @@ There are many, many more; check the guide, and try the help system!
 
 ## Example Usage
 
-You:	Illu, I'd like to draw a rainbow.
+You:	@Illu, I'd like to draw a rainbow.
 
 Illu:	<think>
 	*this is where Illu plans the image prompt*
 	</think>
 	```
-	Jily, landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1> [sets width=1024 height=768 steps=30 hq=1.5]
+	@Jily, landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1> [sets width=1024 height=768 steps=30 hq=1.5]
 	```
 
 Jily:	![#3972177466 landscape, rainbow, vibrant, colorful, scenic, daylight, sunny, clear sky, rolling hills, lush green fields, scattered trees, sunlight breaking through, spring, mid-day, sunny after rain, green grass, wildflowers, lens flare, soft focus, photorealistic, bright, cheerful, serene <lora:add-detail-xl:1>](landscape-rainbow-vibrant-colorful-scenic-daylight-sunny-clear-sky-rol.jpg)

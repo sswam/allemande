@@ -64,23 +64,23 @@ IMPORTANT: The agent Xilu is expert on NSFW image gen. Talk to her to learn more
 
 This asks Coni, an image gen AI, to draw a nude girl, in a fast, medium-quality portrait image:
 
-    Coni, 1girl, nude [P]
+    @Coni, 1girl, nude [P]
 
 This draws Ally with her appearange, age, normal emotion / expression, and normal clothes, in a default square image at high quality, with a default "negative prompt" to help avoid bad images.
 
-    Jily, [use Ally], [use age/Ally], [use emo/Ally], [use clothes/Ally] NEGATIVE [use neg] [S3]
+    @Jily, [use Ally], [use age/Ally], [use emo/Ally], [use clothes/Ally] NEGATIVE [use neg] [S3]
 
 This does the same thing more concisely, for Barbie, making sure it's a solo picture, with a Tall image, and cartoon style with Poni:
 
-    Poni, solo [person Barbie] NEGATIVE [use neg] [T4]
+    @Poni, solo [person Barbie] NEGATIVE [use neg] [T4]
 
 This draws Cleo in green lingerie in a seedy parking lot at night, with her normal cheery expression, in a landscape image at high quality. Try to get a full body shot by mentioning feet or shoes!
 
-    Lusy, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
+    @Lusy, [person Cleo "green lingerie"], seedy parking lot, night, (full body, heels:1.5) [L4]
 
 This draws a portrait image of Bast in the jungle, looking angry that he forgot his mosquito repellant. Square image, good quality:
 
-    Hily, [person Bast "topless, leather shorts" angry], jungle [S2]
+    @Hily, [person Bast "topless, leather shorts" angry], jungle [S2]
 
 The quality settings range from 0 to 4.
 
