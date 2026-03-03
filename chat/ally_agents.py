@@ -400,8 +400,8 @@ class Agent:
                 "ROOM": room or '[unknown]',
                 "PRIVATE_PUBLIC": private_public,
                 "AGENTS_FOLDER": agents_folder,
-                "PERIOD": period_desc,
-                "PREGNANT": pregnant_desc,
+                "PERIOD": period_desc or "",
+                "PREGNANT": pregnant_desc or "",
                 "PERIOD_VISUAL": period_visual,
                 "PREGNANT_VISUAL": pregnant_visual,
             })
@@ -483,7 +483,7 @@ class Agent:
         # logger.info("Pregnancy info: days_pregnant=%r total_days=%r", days_pregnant, total_days)
         # logger.info("Pregnancy description: %r", pregnant_desc)
         pregnant_frac = f"{days_pregnant / total_days:.2f}"
-        pregnant_visual = f"(pregnant:{pregnant_frac})"
+        pregnant_visual = f"(pregnant:{pregnant_frac}),"
         # logger.info("Pregnancy visual: %r", pregnant_visual)
         return pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual
 
