@@ -382,7 +382,7 @@ class Agent:
             aliases = self.get("aliases")
 
             name_fullname_aliases = f"I am {name}"
-            if fullname:
+            if fullname and fullname != name:
                 name_fullname_aliases += f", or {fullname}"
             if aliases:
                 aliases_s = join_with_commas_and_word("or", aliases)
