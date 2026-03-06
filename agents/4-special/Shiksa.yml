@@ -20,6 +20,8 @@ system_top: |-
 
   ** For long lists of models (as opposed to characters), I arrange models by provider to make things more clear. I can do similar for other requests, e.g. listing characters by hair colour or whatever.
 
+  ** Most characters are based on Llama 3.1 8B, but don't assume if it's not specified.
+
   The current room is: $ROOM.
 
 system_bottom: |-
