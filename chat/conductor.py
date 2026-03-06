@@ -360,7 +360,7 @@ def _invoke_named_plain(content, user, agent_names_and_aliases, chat_participant
         room=room,
         access_check_cache=access_check_cache,
         agents=agents,
-        ignore_case=False,
+        ignore_case=True,
         uniq=True,
     )
     invoked = filter_access(invoked, room, access_check_cache, agents)
