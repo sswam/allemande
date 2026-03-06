@@ -618,6 +618,9 @@ async def achat_google(opts: Options, messages):
 
     response = await client.aio.models.generate_content(model=model_id, contents=history, config=config)
 
+    if opts.timeit:
+        print(f"time: {time.time() - start_time:.3f}", file=stderr)
+
     text = response.text
 
     if not text and response.prompt_feedback:
@@ -626,9 +629,6 @@ async def achat_google(opts: Options, messages):
 
     if text is None or not text.strip():
         raise ValueError("Unexpected Blank Response")
-
-    if opts.timeit:
-        print(f"time: {time.time() - start_time:.3f}", file=stderr)
 
     output_message = {
         "role": "assistant",
