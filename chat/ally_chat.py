@@ -215,14 +215,15 @@ async def process_file(file, args, history_start=0, skip=None, agents=None, poke
     config = load_config(room)
     mission = load_mission(room, config, args)
     summary = load_summary(room, args)
+
+    history_messages = list(bb_lib.lines_to_messages(history))
+
+    if should_skip_editing_command(history_messages, poke):
+        return 0
+
     local_visual_dir = Path(tempfile.mkdtemp(prefix="ally_local_visual_"))
     try:
         agents = load_local_agents(room, agents, local_visual_dir)
-
-        history_messages = list(bb_lib.lines_to_messages(history))
-
-        if should_skip_editing_command(history_messages, poke):
-            return 0
 
         last_message_id = len(history_messages) - 1
 
