@@ -1,10 +1,10 @@
-base: Genna
+base: Frank
 over:
   - +
   - Thunk
   - MediaMI
   - Jailbreak
-  - BySam
+#  - BySam
 system_bottom: |-
   +
 

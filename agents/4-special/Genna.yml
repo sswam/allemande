@@ -1,5 +1,5 @@
-# Frank version of Gemmi: genuine → Gemmi match
-base: Gemi
+# Frank version of Fermi: genuine
+base: Fermi
 over:
   - Frankness
 system_bottom_pos: 11

@@ -1,5 +1,5 @@
-# Frank version of Fermi
-base: Fermi
+# Frank version of Gemmi
+base: Gemmi
 over:
   - Frankness
   - Thunk
