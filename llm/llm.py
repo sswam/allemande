@@ -118,6 +118,7 @@ exceptions_to_retry = [
     r"ClientError.*?429 RESOURCE_EXHAUSTED",
     r"list index out of range",
     r"connection has been closed",
+    "Unexpected Blank Response",
 ]
 
 # Treating each string as a literal regex pattern (alternation with |)
@@ -617,6 +618,15 @@ async def achat_google(opts: Options, messages):
 
     response = await client.aio.models.generate_content(model=model_id, contents=history, config=config)
 
+    text = response.text
+
+    if not text and response.prompt_feedback:
+        err = f"Prompt was blocked: {response.prompt_feedback.block_reason}"
+        raise ValueError(err)
+
+    if text is None or not text.strip():
+        raise ValueError("Unexpected Blank Response")
+
     if opts.timeit:
         print(f"time: {time.time() - start_time:.3f}", file=stderr)
 
@@ -953,7 +963,7 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
             await asyncio.sleep(delay)
             sleep_min *= 2
             sleep_max *= 2
-    return None
+    return None  # cannot be reached
 
 
 async def achat(
