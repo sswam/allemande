@@ -450,12 +450,15 @@ def try_split_think_tag_line(line: str) -> list[str]:
     if open_pos != -1 and close_pos != -1 and close_pos > open_pos:
         if not is_quoted(line, open_pos) and not is_quoted(line, close_pos):
             before = line[:open_pos].rstrip()
+            between = line[open_pos+7:close_pos].strip()
             after = line[close_pos+8:].lstrip()
 
             result = []
             if before:
                 result.append(before)
             result.append('<think>')
+            if between:
+                result.append(between)
             result.append('</think>')
             if after:
                 result.append(after)
