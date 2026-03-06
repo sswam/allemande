@@ -126,7 +126,7 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strong Gemini language model
 - **Gemi** (Gemini 3 Pro, Google): Google's strongest Gemini language model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model  [recommended]
-- **Desee** (DeepSeek Chat V3.1): DeepSeek's creative and intelligent chat model
+- **Desee** (DeepSeek Chat V3.2): DeepSeek's creative and intelligent chat model
 - **Misti** (Mistral Large 2411): Mistral's strongest language model
 - **Veni** (Venice: Uncensored; Dolphin Mistral 24B Venice Edition): Uncensored
 
@@ -142,7 +142,7 @@ These variants on the Gemini and DeepSeek models use a very short prompt to enab
 - **Xlashi** (Gemini 2.5 Flash, Google)
 - **Xemmi** (Gemini 2.5 Pro, Google)
 - **Xese** (DeepSeek Chat V3)
-- **Xesee** (DeepSeek Chat V3.1)
+- **Xesee** (DeepSeek Chat V3.2)
 
 ### Sexual Variants
 
@@ -202,7 +202,7 @@ Please do not use languages models other than those listed here for NSFW content
 | xAI        | Grok 4             | Grok   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                      |
 | xAI        | Grok 4 Fast        | Gok    | 2M      | 2M         | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                             |
 | DeepSeek   | DeepSeek Chat V3   | Dese   | 64K     | 8192       | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                         |
-| DeepSeek   | DeepSeek Chat V3.1 | Desee  | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                      |
+| DeepSeek   | DeepSeek Chat V3.2 | Desee  | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                      |
 | Mistral    | Mistral Large 2411 | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                          |
 | Mistral+   | Venice: Uncensored | Veni   | 33K     | 33K        | $0.50           | $2               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.                                     |
 | MoonshotAI | Kimi K2 0905       | Kimi   | 262K    | 262K       | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |

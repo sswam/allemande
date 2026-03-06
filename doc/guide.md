@@ -593,7 +593,7 @@ digraph DeepSeek {
 
     "DeepSeek" [label=<<b>DeepSeek</b>>]
     "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
-    "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek Chat (V3.1)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
+    "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek Chat (V3.2)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
     "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek Reasoner (R1)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Strong Reasoning, Creative</font>>]
 
     "DeepSeek" -> "Dese"
@@ -761,7 +761,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Gok** (Grok 4 Fast, xAI): xAI's latest quirky and intelligent language model (fast)
 - **Groc** (Grok Code Fast, xAI): xAI's fast coding specialist model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
-- **Desee** (DeepSeek Chat V3.1): DeepSeek's creative and intelligent chat model, with extra smarts
+- **Desee** (DeepSeek Chat V3.2): DeepSeek's creative and intelligent chat model, with extra smarts
 - **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
 - **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
@@ -1019,7 +1019,7 @@ type: visual
 | xAI           | Grok 4 Fast           | Gok     | 2M      | 2M            | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                                      |
 | xAI           | Grok Code Fast        | Groc    | 256K    | 256K          | $0.20           | $1.50            | Specialized fast model optimized for code generation and analysis.                                               |
 | DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192          | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                                  |
-| DeepSeek      | DeepSeek Chat V3.1    | Desee   | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
+| DeepSeek      | DeepSeek Chat V3.2    | Desee   | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192          | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Mistral       | Mistral Large 2411    | Misti   | 128K    | 128K          | $2              | $6               | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
