@@ -383,9 +383,12 @@ async def local_agent(c, agent, _query) -> str:
     logger.debug("gen_config: %r", gen_config)
 
     # logger.info("agent: %r", agent)
-    # logger.info("system_bottom: %r", agent.get("system_bottom"))
     # logger.info("over: %r", agent.get("over"))
-    # logger.info("forward_allow: %r", agent.get("forward_allow"))
+
+    if agent.get("debug"):
+        logger.info("name: %s", agent.name)
+        logger.info("system_top: %s", agent.get("system_top"))
+        logger.info("system_bottom: %s", agent.get("system_bottom"))
 
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
 

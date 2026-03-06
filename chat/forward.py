@@ -27,6 +27,8 @@ async def handle_forwarding(run_agent, response, agent, c):
 
     logger.debug("Forwarded response from %s: %s", forward_target, forwarded_response)
 
+    logger.debug("handle_forwarding: initial response: %s", response)
+
     logger.info("Forward target was %s", forward_target)
 
     if not forwarded_response or forwarded_response == f"{forward_target}:":

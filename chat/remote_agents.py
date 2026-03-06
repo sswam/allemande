@@ -247,10 +247,13 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
     logger.debug("remote_messages: %s", json.dumps(remote_messages, indent=2))
 
     # logger.info("agent: %r", agent)
-    # logger.info("system_top: %r", agent.get("system_top"))
-    # logger.info("system_bottom: %r", agent.get("system_bottom"))
     # logger.info("over: %r", agent.get("over"))
     # logger.info("forward_allow: %r", agent.get("forward_allow"))
+
+    if agent.get("debug"):
+        logger.info("name: %s", agent.name)
+        logger.info("system_top: %s", agent.get("system_top"))
+        logger.info("system_bottom: %s", agent.get("system_bottom"))
 
     ###### the actual query ######
     logger.debug("querying %r = %s:%s", agent.name, service, model)
