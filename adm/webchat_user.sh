@@ -147,7 +147,7 @@ Note that I may remove inactive accounts after a month or so. Please log in and 
 
 You can read more formal and detailed Terms of Use at https://allemande.ai/terms.html
 
-Please confirm that you agree!
+Please confirm that you agree.
 END
 	done
 
