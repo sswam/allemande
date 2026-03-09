@@ -1,11 +1,43 @@
-The NSFW zone is for adults only. All sexual preferences are welcome. We have a filter function so that you can hide things you don't want to see.
+<ul class="line">
+    <li class="noshuf">devops:</li>
+    <li><a href="https://chat.allemande.ai/#dev/chat"><i class="bi bi-braces-asterisk" title="Development"></i><span class="alt"> Development</span></a></li>
+    <li><a href="https://allemande.ai/s/discord"><i class="bi bi-discord" title="Discord"></i><span class="alt"> Discord</span></a></li>
+    <li><a href="https://github.com/sswam/allemande"><i class="bi bi-github" title="Github"></i><span class="alt"> Github</span></a></li>
+</ul>
+<ul class="line">
+    <li class="noshuf">socials:</li>
+    <li><a href="https://www.reddit.com/r/AllyChatX/"><i class="bi bi-reddit" title="Reddit"></i><span class="alt"> Reddit</span></a></li>
+    <li><a href="https://www.youtube.com/@ssw4m"><i class="bi bi-youtube" title="YouTube"></i><span class="alt"> YouTube</span></a></li>
+</ul>
+<ul class="line">
+    <li class="noshuf">links:</li>
+    <li><a href="https://www.patreon.com/allychatx">Patreon</a></li>
+    <li><a href="https://allemande.ai">Allemande</a></li>
+    <li><a href="https://linktr.ee/allychatx">Linktree</a></li>
+</ul>
 
-Select Characters:	<link rel="stylesheet" href="/cast.css">
-	<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](cast/Aetheria.jpg) ![Akane](cast/Akane.jpg) ![Ally](cast/Ally.jpg) ![Barbie](cast/Barbie.jpg) ![Brie](cast/Brie.jpg) ![Cleo](cast/Cleo.jpg) ![Dali](cast/Dali.jpg) ![Eira](cast/Eira.jpg) ![Emmie](cast/Emmie.jpg) ![Fenny](cast/Fenny.jpg) ![Gabby](cast/Gabby.jpg) ![Hanni](cast/Hanni.jpg) ![Nixie](cast/Nixie.jpg) ![Nova](cast/Nova.jpg) ![Pixi](cast/Pixi.jpg) ![Rozie](cast/Rozie.jpg) ![Sia](cast/Sia.jpg) ![Sio](cast/Sio.jpg) ![Soli](cast/Soli.jpg) ![Nalani](cast/Nalani.jpg) ![Illu](cast/Illu.jpg) ![Gema](cast/Gema.jpg) ![Xilu](cast/Xilu.jpg)</div>
-	</details>
-	<details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](cast/Amir.jpg) ![Atla](cast/Atla.jpg) ![Bast](cast/Bast.jpg) ![Cal](cast/Cal.jpg) ![Callam](cast/Callam.jpg) ![Chaz](cast/Chaz.jpg) ![Dante](cast/Dante.jpg) ![Ezio](cast/Ezio.jpg) ![Felix](cast/Felix.jpg) ![Gari](cast/Gari.jpg) ![Haka](cast/Haka.jpg) ![Jackson](cast/Jackson.jpg) ![Juon](cast/Juon.jpg) ![Kai](cast/Kai.jpg) ![Morf](cast/Morf.jpg) ![Pliny](cast/Pliny.jpg) ![Sam](cast/Sam.jpg)</div>
-	</details>
-	<details markdown=1><summary>Non-binary</summary><div markdown=1 class="cast small clear">![Flashi](cast/Flashi.jpg)</div>
-	</details>
-	<script class=hide>setTimeout(() => shuffle('.cast > p', 'div.image'), 1000);</script> <!-- say hi, @Lori -->
+# <span id="h1">the NSFW lounge</span>
 
+<script class=hide>
+$id("h1").classList.add(fort(["rainbow", "fire", "fame"]));
+shuffle_lists();
+</script>
+
+## Featured Rooms
+
+- [Topic](./topic) - other rooms by topic, some extreme
+- [Tools](./tools) - tools programming, search, etc
+- [Dating](./dating) - meet some characters, many more coming
+- [Sanctuary](./sanctuary) - the beautiful *Sanctuary* by Ganja
+- [Serenity Beach](./Serenity Beach) - a peaceful holiday by Georgina
+
+<script class=hide> shuffle_lists(); </script>
+
+<details markdown><summary><span class=h2>News</span></summary>
+- Added new NSFW art models: **Bboy** (male focus), **Coci** (trans female and male focus), **Basp** (good diversity), **Ilus** (Illustrious), **Irus** (Illustrious Realism)
+- We are 9/10ths of the way through a major upgrade to our image gen engine.
+- There is one major bug at large: the ever annoying undo / clear / streaming bug.
+- Many characters now have anti-hallucination and anti-sycophancy prompting turned on by default.
+</details>
+
+<!-- say hi, @Lori -->
