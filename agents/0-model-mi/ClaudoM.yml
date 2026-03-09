@@ -1,2 +1,3 @@
+enabled: false
 type: anthropic
 model: claude-opus

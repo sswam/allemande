@@ -743,12 +743,12 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Skout** (Meta Llama 4 Scout): A fast new open model from Meta
 - **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta
 - **Claude** (Claude 4.6 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding
-- **Claudo** (Claude 4.6 Opus, Anthropic): The most powerful reasoning model from Anthropic
+- **Claudo** (Claude 4.6 Opus, Anthropic): The most powerful reasoning model from Anthropic [disabled by default due to high cost]
 - **Clia** (Claude 4.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4.1, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Emmo** (GPT-4o, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Dav** (GPT-4.1 mini, OpenAI): Provides efficient interactions with a focus on in-depth understanding
-- **Grace** (o3, OpenAI): The strongest reasoning model from OpenAI, ideal for advanced applications
+- **Grace** (o3, OpenAI): The strongest reasoning model from OpenAI, ideal for advanced applications [disabled by default due to high cost]
 - **Fermi** (o4 mini, OpenAI): The newest model from OpenAI, with powerful reasoning and programming capabilities
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
@@ -992,7 +992,7 @@ type: visual
 | Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
 | Anthropic     | Claude 4.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
 | Anthropic     | Claude 4.6 Sonnet     | Claude | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                                     |
-| Anthropic     | Claude 4.5 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00          | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Anthropic     | Claude 4.6 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00          | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K            | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
 | Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
 | Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K            | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                                |

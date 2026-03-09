@@ -1,3 +1,4 @@
+enabled: false
 type: openai
 model: o3
 over:
