@@ -21,6 +21,7 @@ from ally_room import Room
 import tasks
 from ally.lazy import lazy
 from ally import soma
+import hacky_anti_rep
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
@@ -270,6 +271,11 @@ async def local_agent(c, agent, _query) -> str:
             "content": (await ally_markdown.preprocess(m["content"], c.file, m.get("user")))[0]
         }
         for m in bb_lib.lines_to_messages(context)]
+
+    # hacky_anti_rep
+    if agent.get("hacky_anti_rep"):
+        hacky_anti_rep.hacky_anti_rep(context_messages)
+
     context = list(bb_lib.messages_to_lines(context_messages))
 
     need_clean_prompt = agent.get("clean_prompt", dumb_agent)
@@ -366,6 +372,9 @@ async def local_agent(c, agent, _query) -> str:
 
     else:
         fulltext2 = fulltext
+
+    if agent.get("hacky_anti_rep"):
+        logger.info("hacky_anti_rep: fulltext:\n%s", fulltext2)
 
     service = agent["type"]
 
