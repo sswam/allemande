@@ -83,7 +83,9 @@ def get_fulltext(args, model_name, history, history_start, invitation):
     except Exception as e:
         raise RuntimeError(f"Failed to load tokenizer: {e}")
 
-    fulltext = args.delim.join(history[history_start:]) + invitation
+    delim = ""  # seems to be what's needed
+
+    fulltext = delim.join(history[history_start:]) + invitation
     n_tokens = count_tokens_in_text(fulltext, tokenizer)
     logger.debug("n_tokens is %r", n_tokens)
     # dropped = False
@@ -107,14 +109,14 @@ def get_fulltext(args, model_name, history, history_start, invitation):
                 guess = len(history) - history_start - 1
                 last = 1
         history_start += guess
-        fulltext = args.delim.join(history[history_start:]) + invitation
+        fulltext = delim.join(history[history_start:]) + invitation
         n_tokens = count_tokens_in_text(fulltext, tokenizer)
         # dropped = True
         logger.debug("dropped some history, history_start: %r, n_tokens: %r", history_start, n_tokens)
         if last:
             break
     # if dropped:
-    #     fulltext = args.delim.join(history[history_start:]) + invitation
+    #     fulltext = delim.join(history[history_start:]) + invitation
     logger.debug("fulltext: %r", fulltext)
     return fulltext, history_start
 
@@ -170,7 +172,8 @@ async def local_agent(c, agent, _query) -> str:
 
     logger.debug("Running local agent %r", agent)
 
-    invitation = c.args.delim + name + ":"
+    # invitation = c.args.delim + name + ":"
+    invitation = name + ":"
 
     model_name = agent["model"]
     n_context = agent.get("context")
@@ -268,7 +271,7 @@ async def local_agent(c, agent, _query) -> str:
     context_messages = [
         {
             "user": m.get("user"),
-            "content": (await ally_markdown.preprocess(m["content"], c.file, m.get("user")))[0]
+            "content": (await ally_markdown.preprocess(m["content"], c.file, m.get("user"), convert_think=False))[0]
         }
         for m in bb_lib.lines_to_messages(context)]
 

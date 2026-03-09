@@ -488,7 +488,7 @@ def try_split_think_tag_line(line: str) -> list[str]:
     return [line]
 
 
-async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str, bool]:
+async def preprocess(content: str, bb_file: str, user: str | None, convert_think: bool=True) -> tuple[str, bool]:
     """Preprocess chat message content, for markdown-katex, and other fixes"""
 
     # replace $foo$ with $`foo`$
@@ -603,9 +603,9 @@ async def preprocess(content: str, bb_file: str, user: str | None) -> tuple[str,
         elif in_code:
             logger.debug("code line: %r", line)
             out.append(line + "\n")
-        elif re.match(r"^\s*<think(ing)?>$", line, flags=re.IGNORECASE):
+        elif convert_think and re.match(r"^\s*<think(ing)?>$", line, flags=re.IGNORECASE):
             out.append("""<details markdown="1" class="think">\n<summary>thinking</summary>\n""")
-        elif re.match(r"^\s*</think(ing)?>$", line, flags=re.IGNORECASE):
+        elif convert_think and re.match(r"^\s*</think(ing)?>$", line, flags=re.IGNORECASE):
             out.append("""</details>\n""")
         elif m := re.match(r"^\s*\[(.*?)\]\((.*?)\){(.*?)}\s*$", line):
             text = await process_include_maybe(line, bb_file, user, m.group(1), m.group(2), m.group(3))

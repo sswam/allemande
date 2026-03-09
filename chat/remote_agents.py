@@ -105,7 +105,7 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
 
     # preprocess markdown in messages for includes
     for m in context_messages:
-        m["content"] = (await ally_markdown.preprocess(m["content"], c.file, m.get("user")))[0]
+        m["content"] = (await ally_markdown.preprocess(m["content"], c.file, m.get("user"), convert_think=False))[0]
 
     # TODO Can't include from system messages, what user permission to use?
 
