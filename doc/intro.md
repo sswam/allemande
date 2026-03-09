@@ -12,9 +12,9 @@ We believe in privacy and free speech, and oppose censorship.
 
 Free users have access to all models and features, but there are some good perks for supporters too.
 
-If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
-
 On mobile, please "install to home page" for a better app experience: Open the site in your browser (Chrome for Android, Safari for iOS), tap the menu/share icon (three dots or square with arrow), select "Add to Home Screen", and tap "Add" to place it on your device's home screen.
+
+If you'd like to support us, you can [become a patron](https://www.patreon.com/allychat).
 
 ## Getting Started
 
@@ -22,28 +22,29 @@ Read this intro carefully!
 
 You can watch a [demo video](https://allemande.ai/demo).
 
-Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help when you're done by pressing the <i class="bi-x"></i> button at the top right.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with an assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help when you're done by pressing the <i class="bi-x"></i> button at the top right.
 
-In the main [Ally Chat](/Ally+Chat) room, AIs can help with basic info about the app.
-
-**NOTE**: In other chat rooms, AIs don't know anything at all about the app! Use the help system. Random characters will usually hallucinate if asked about app features. For app assistance, ask Aidi in any room or in the **Help** tab - he has the user guide and is prompted against hallucination - or Assi (for NSFW app questions). Even Aidi and Assi can make mistakes, but much less so.
+**NOTE**: In normal chat rooms, most AIs don't know anything about the app! Use the help system, or you can ask @Aidi in any room.
 
 Read this [Quick Intro](/intro), then the [User Guide](/guide), for full details on the app, models, characters, and tools.
 
 A red dot at the top-right means you are disconnected or offline. Click in the window or Reload the page.
 
-Please contact Sam, the developer, for more help and to give feedback.
+Please contact Sam, the developer, for help and to give feedback.
 
 ## Talking with AIs
 
 Address AIs by name to get their attention, with a capital letter or @ sign.
 
-Loni is a good one to start with. She has meta-powers of many other agents combined!
+You can continue the chat back and forth, or mention another character.
+
+When first talking to a new character in the chat, use an @ sign. After they join, just a capital letter will do.
+
+@Loni is a good one to start with. She has meta-powers of many other agents combined!
 
 > @Ally, how are you?
 > Can you help, @loni?
 > @Illu, let's draw a garden!
-> Tell me about the strong models, @Shiksa.
 
 Send an empty message to continue AI conversations, this called a "poke".
 
@@ -54,17 +55,21 @@ Type -@Loni at the start of a line, to poke Loni to respond, this can be useful 
 ## A Few of our Characters and Tools
 
 **General Chat**
-- Loni: our meta-agent, sends your message to the best AI for the job; great for beginners.
+- Loni and friends: our meta-agents, they relay your message to the best AI for the job; great for beginners.
 - Ally, Barbie, Callam, Dante: friendly chat
 - Flashi, Emmy, Claude, Gemmi: strong assistants
 - Fli, Emm, Clu, Gemm: for concise responses
 
 **AI Art**
+
+Most of the AI art models in Ally Chat are uncensored, but all of the following models can also draw good SFW art. None of them can draw text very well.
+
 - Illu: image prompting
 - Jily, Hily: high quality, realistic images
 - Poni: cartoon / anime images, use "rating safe" in prompt to avoid nudity
 - Coni: semi-realistic images, use "rating safe" in prompt to avoid nudity
-- When talking to a tool like an AI art model, start a line with their name, using an @ sign and a comma:
+
+- When talking to a tool like an AI art model, start a line with their name, using an @ sign:
 ```
 @Jily, a dog in the snow [L1]
 ```
@@ -101,7 +106,7 @@ There are many, many more; check the guide, and try the help system!
 
 - Private/group chat rooms
 - Instant room creation and switching
-- 800+ characters, assistants, specialists, and tools
+- 1500+ characters, assistants, specialists, and tools
 
 ## Rooms and Privacy
 
@@ -109,7 +114,7 @@ There are many, many more; check the guide, and try the help system!
 - Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
-- A few app-support agents can see the room name (e.g. Loni, Aidi, Shiksa). Others cannot.
+- A few agents can see the room name (Aidi, Assi, Loni, Lori, etc). Others cannot.
 
 ## Example Usage
 
@@ -128,7 +133,7 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 ## Current Limitations and Work in Progress
 
-- it's difficult for new users (WIP)
+- It's difficult for new users (WIP)
 - no memory (can do it manually, WIP)
 - no documents / RAG (WIP)
 - no notifications (WIP)
@@ -141,7 +146,7 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 Free-tier users have access to all models and features, with generous limits.
 
-[We do appreciate your support](https://www.patreon.com/allychat), if you can. Subscriptions start at $5 / month. You can also join as a free member.
+If you like the app, please do [become a patron](https://www.patreon.com/allychat).
 
 Subscribers enjoy perks including:
 
@@ -157,4 +162,3 @@ Subscribers enjoy perks including:
 ## What next?
 
 - Click the **Help** tab, and ask some questions about the app.
-- Ask Shiksa to introduce you to some different characters.

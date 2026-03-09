@@ -8,13 +8,13 @@ You can talk with top AI models from different providers, and realistic AI chara
 
 You can have group chats with several AIs together, and with other people.
 
-We believe in privacy and free speech, and oppose censorship. But don't post NSFW stuff in the SFW zone!
+We believe in privacy and free speech, and oppose censorship.
 
-The app includes many models and features that are great for adult entertainment, and it is good for other things too.
-
-The NSFW zone contains explicit sexual material, and is restricted to adults only. Put on your safety goggles!
+The NSFW zone contains explicit material, and is restricted to adults only. Put on your safety goggles!
 
 Free users have access to all models and features, but there are some good perks for supporters too.
+
+On mobile, please install Ally Chat for a better app experience: Open the site in your browser (Chrome for Android, Safari for iOS), tap the menu/share icon (three dots or square with arrow), and select "Add to Home Screen".
 
 If you'd like to support us, you can become a patron: ([SFW](https://www.patreon.com/allychat) or [NSFW](https://www.patreon.com/allychatx)).
 
@@ -22,32 +22,31 @@ If you'd like to support us, you can become a patron: ([SFW](https://www.patreon
 
 Read this intro carefully!
 
-You can watch a [demo video](https://allemande.ai/demo) (SFW).
+You can watch a [demo video](https://allemande.ai/demo).
 
-Click the <i class="bi-question-lg"></i> help button at the top right, and talk with your assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help when you're done by pressing the <i class="bi-x"></i> button at the top right.
+Click the <i class="bi-question-lg"></i> help button at the top right, and talk with an assistant in the **Help** tab. In this help system, AIs can give extensive help based on the full user guide. Close the help when you're done by pressing the <i class="bi-x"></i> button at the top right.
 
-In the main [Ally Chat](/Ally+Chat) room and the main [NSFW Chat](/nsfw/nsfw) room, AIs can help with basic info about the app.
+**NOTE**: In normal chat rooms, most AIs don't know anything about the app! Use the help system, or you can ask @Aidi or @Assi (NSFW) in any room.
 
-**NOTE**: In other chat rooms, AIs don't know anything at all about the app! Use the help system. Random characters will usually hallucinate if asked about app features. For app assistance, ask Aidi in any room or in the **Help** tab - he has the user guide and is prompted against hallucination - or Assi (for NSFW app questions). Even Aidi and Assi can make mistakes, but much less so.
-
-Read this [NSFW Quick Intro](/nsfw/intro), the [User Guide](/guide), and the [NSFW Guide](/nsfw/guide), for full details on the app, models, characters, tools, and NSFW features.
+Read this [Quick Intro](/nsfw/intro), the [User Guide](/guide), and the [NSFW Guide](/nsfw/guide), for full details on the app, models, characters, and tools.
 
 A red dot at the top-right means you are disconnected or offline. Click in the window or Reload the page.
 
-The app has an advanced mode with many options and features, but please master the basics first.
-
-Please contact Sam, the main developer, for more help and to give feedback.
+Please contact Sam, the developer, for help and to give feedback.
 
 ## Talking with AIs
 
-Address AIs by name to get their attention, with a capital letter or @ sign. When first talking to a new character in the chat, you must use an @ sign.
+Address AIs by name to get their attention, with a capital letter or @ sign.
 
-Lori is a good one to start with. She has meta-powers of many other agents combined!
+You can continue the chat back and forth, or mention another character.
+
+When first talking to a new character in the chat, use an @ sign. After they join, just a capital letter will do.
+
+@Lori is a good one to start with. She has meta-powers of many other agents combined!
 
 > hey @Ally, you're looking fine, girl!
-> Can you help run a sexy photoshoot, @lori?
-> @Xilu, please draw a nude guy or lady!
-> Do you know any brunettes who might be up for sexy role-play, @Shiksa?
+> Can you help run a photoshoot, @lori?
+> @Illu, let's draw a garden!
 
 Send an empty message to continue AI conversations, this called a "poke".
 
@@ -58,16 +57,18 @@ Type -@Lori at the start of a line, to poke Lori to respond, this can be useful 
 ## A Few of our Characters and Tools
 
 **General Chat**
-- Lori: our NSFW meta-agent, sends your message to the best AI for the job; great for beginners
-- Ally, Barbie, Callam, Dante: friendly chat, can be sexual too
-- Pyrite: strongly sexual chat
-- Flashi, Gemmi: strong assistants
-- Fli, Gemm: for concise responses
+- Lori and friends: our meta-agents, they relay your message to the best AI for the job; great for beginners.
+- Ally, Barbie, Callam, Dante: friendly chat
+- Flashi, Emmy, Claude, Gemmi: strong assistants
+- Fli, Emm, Clu, Gemm: for concise responses
 
 **AI Art**
-- Illu: SFW image prompting
+
+Most of the AI art models in Ally Chat are uncensored, and many have NSFW tendencies, but most of them can also draw good SFW art. None of them can draw text very well.
+
+- Illu: image prompting
 - Xilu: NSFW image prompting
-- Jily, Hily: high quality, realistic images, including soft-core
+- Jily, Hily: high quality, realistic images, including soft NSFW
 - Poni: cartoon / anime images, can do hard-core and hentai, use "rating safe" in prompt to avoid nudity
 - Coni, Boni, Yoni: semi-realistic images, can do hard-core and hentai, use "rating safe" in prompt to avoid nudity
 - Bigi, Pigi: realistic NSFW images
@@ -75,9 +76,10 @@ Type -@Lori at the start of a line, to poke Lori to respond, this can be useful 
 - Basp: photorealistic finetune of SDXL for SFW and NSFW, diversity.
 - Ilus: NSFW image generation with a cartoon / anime style (Illustrious XL)
 - Irus: NSFW image generation with a realistic style (Illustrious Realism)
-- When talking to a tool like an AI art model, start a line with their name, using an @ sign and a comma:
+
+- When talking to a tool like an AI art model, start a line with their name, using an @ sign:
 ```
-@Coni, 1girl, 25 years old, nude, flowers [P2]
+@Jily, a dog in the snow [L1]
 ```
 - Be patient, it can take a little while depending on the quality and the load on the GPU.
 
@@ -86,20 +88,20 @@ Type -@Lori at the start of a line, to poke Lori to respond, this can be useful 
 - Summi: summaries
 - Chaz: character design
 - Nova: narrative
+- Pyrite: NSFW chat
 
 **Search & Info**
-- Goog, "Allemande AI"
-- Gimg, cute animals
-- UTube, indie games
-- Sona, any LLM or AI art news lately?
-- Pr0nto, striptease
+- @Goog, "Allemande AI"
+- @Gimg, cute animals
+- @UTube, indie games
+- @Sona, any LLM or AI art news lately?
 
 **Code & Calculation**
-- Dogu, date +%F ; fortune
-- Gido, import this
-- Palc, sqrt(3)/2, 2**32
+- @Dogu, date +%F ; fortune
+- @Gido, import this
+- @Palc, sqrt(3)/2, 2**32
 
-There are many, many more; check the guides, and try the help system!
+There are many, many more; check the guide, and try the help system!
 
 ## Rich Content Support
 
@@ -113,7 +115,7 @@ There are many, many more; check the guides, and try the help system!
 
 - Private/group chat rooms
 - Instant room creation and switching
-- 500+ characters, assistants, specialists, and tools
+- 1500+ characters, assistants, specialists, and tools
 
 ## Rooms and Privacy
  
@@ -122,13 +124,13 @@ There are many, many more; check the guides, and try the help system!
 - Press the padlock icon at top left to switch between public and private rooms.
 - You can go to a different room by typing in the room entry at the top.
 - Click your name in the top bar to cycle through some different rooms.
-- A few app-support agents can see the room name (Aidi, Assi, sometimes Loni and Lori). Others cannot.
+- A few agents can see the room name (Aidi, Assi, Loni, Lori, etc). Others cannot.
 - Some adult features, characters and agents are only available under the nsfw/ folder, and in your private chats, not in public SFW rooms at the top level.
 - Some AIs are only available outside the nsfw/ folder, and should not be used in any NSFW chat.
 
 ## Example Usage
 
-You:	@Xilu, I'd like to draw Cleo in sexy lingerie.
+You:	@Xilu, I'd like to draw Cleo in lingerie.
 
 Xilu:	<think>
 	*this is where Xilu plans the image prompt*
@@ -156,7 +158,7 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 
 Free-tier users have access to all models and features, with generous limits.
 
-[We do appreciate your support](https://www.patreon.com/allychatx), if you can. Subscriptions start at $5 / month. You can also join as a free member.
+If you like the app, please do become a patron: ([SFW](https://www.patreon.com/allychat) or [NSFW](https://www.patreon.com/allychatx)).
 
 Subscribers enjoy perks including:
 
@@ -172,4 +174,3 @@ Subscribers enjoy perks including:
 ## What next?
 
 - Click the **Help** tab, and ask some questions about the app.
-- Ask Shiksa to introduce you to some different characters.

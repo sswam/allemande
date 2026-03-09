@@ -2504,12 +2504,16 @@ function get_filter_default() {
 function run_view_options_updates() {
   // update 1-15: set default filters
   // update 16: remove a bad key from localStorage
+  // update 17: remove a bad key from localStorage, set default filters (clear)
   if (view_options.update <= 15) {
     $id('filter_query').value = get_filter_default();
     save_filter();
     view_options.update = 16;
   } else if (view_options.update == 16) {
     localStorage.removeItem("content_undefined")
+    $id('filter_query').value = get_filter_default();
+    save_filter();
+    view_options.update = 17;
   }
 }
 
