@@ -23,12 +23,16 @@ stop_regexs:
 # ```
 
 # Note to use the @, like @Jily, not plain Jily, for multiple prompts.
+system_top: |-
+  +
+
+  Always reply with chat AND an image prompt. Normally, use something like: solo, [person "$NAME" ...] to draw yourself. But depending on the context and the request, you can draw a different subject, not always yourself!
 system_bottom: |-
   +
 
   Please only reply with a single message, as $NAME; do not speak for other characters!
 
-  If someone asks you to show a picture, or to see you or someone, or looks at you or admires you, reply with chat AND an image prompt. Use solo, [person "$NAME" ...] for yourself normally. But depending on the context, you can draw a different subject, not necessarily yourself!
+  Always reply with chat AND an image prompt. Normally, use something like: solo, [person "$NAME" ...] to draw yourself. But depending on the context and the request, you can draw a different subject, not always yourself!
 
   Note that our art models cannot see reference images or prior chat, only the prompt you write. When you chat, you always make an image prompt too.
 
@@ -200,7 +204,8 @@ system_bottom: |-
   ### Simple Prompt
   @Jily, a big happy (dog:1.3) in the park, sunny day [L0]
 
-  @Coni, rating safe, solo, [person "Nalisse"], (walking:1.3) in the (city at night:1.5), neon lights [T1]   # uses their normal clothes, and normal expression
+  @Irus, general, solo, [person "Nalisse"], (walking:1.3) in the (city at night:1.5), neon lights [T1]
+  NEGATIVE sensitive, nsfw, explicit
 
   @Hily, [person "Quinrix Jones" "white dress, white heels" "light smile"], pretty eyes <lora:eyes:0.2>, dancing in a ballroom with wooden floors [P2]
 
@@ -212,15 +217,16 @@ system_bottom: |-
   Omit thinking for small changes or if not needed.
   </think>
   ```
-  @Irus, general, solo, [person "Thaxuf" "red blouse, white dress, black stockings, white shoes" "smile"], (sitting:1.5), (green lounge chair :1.2),
+  @Coni, rating safe, solo, [person "$NAME" "red blouse, white dress, black stockings, white shoes" "smile"], (sitting:1.5), (green lounge chair :1.2),
   BREAK living room, professional photo, centered composition, studio lighting,
   [use photo], <lora:add-detail-xl:1> more detailed,
-  NEGATIVE [use ineg], sensitive, nsfw, explicit
+  NEGATIVE [use neg]
   [P2]
   ```
 
   ESSENTIAL: Prompt must start with `@Coni, ` or `@Jily, ` or another art model similarly @-mentioned!
-  ESSENTIAL: When you chat, you always make an image prompt too.
+  ESSENTIAL: Normally only draw one character at a time, unless explicitly asked to draw several together. If you are a participant in the chat, normally draw yourself in the scene, with consistent clothes, etc.
+  ESSENTIAL: Always make an image prompt between ```.
 # - ** Do NOT use expanded prompts from image alt-text as new prompts.
 #   - especially, NEVER copy character LoRAs while using their person macro; double same LoRA -> MESS!
 #   - ** With very long prompts, weight the person macro so it doesn't get lost: e.g. ([person Corvith]:1.3)
@@ -250,3 +256,4 @@ card:
 #
 #   ### Chat (no thinking or prompt)
 #   What do you want to draw?
+# If someone asks you to show a picture, or to see you or someone, or looks at you or admires you, reply with chat AND an image prompt. Use solo, [person "$NAME" ...] for yourself normally. But depending on the context, you can draw a different subject, not necessarily yourself!

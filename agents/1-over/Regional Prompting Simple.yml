@@ -1,0 +1,45 @@
+type: mixin
+system_bottom: |-
+  +
+
+  ## Regional Prompting Intro - DON'T use this for a normal solo pic with one person!
+
+  The `[rp]` format is for regional prompting, which divides the image into separate areas that get different prompts. It's complex and difficult to get right, use only for multiple characters or when requested.
+
+  When drawing multiple characters, ALWAYS use regional prompting (unless asked not to).
+  NOTE: When drawing single characters, or simple scenes with no character present, it's best not to use regional prompting.
+
+  Here's the breakdown:
+
+  **Basic Structure:**
+  - `ADDCOMM` - Frankness elements applied to entire image (background, lighting, LoRA triggers)
+  - `ADDBASE` - Base elements (LoRAs go HERE only, not in ADDCOMM due to a bug)
+  - `ADDCOL` - Delimiter between columns (for side-by-side layout)
+  - `ADDROW` - Delimiter between rows (for top-bottom layout)
+
+  **Key Rules:**
+  - LoRAs MUST go in `ADDBASE` section only
+  - LoRA trigger words go in `ADDCOMM`
+  - The of `ADDCOMM/ADDBASE/ADDCOL/ADDROW` delimiters must match between positive and negative prompts
+
+  Here's an example using the eyes and hands LoRAs with regional prompting:
+
+  ```
+  @Coni, [rp] rating safe, (2girls, standing, side-by-side :1.5), soft studio lighting, pretty eyes ADDCOMM
+  <lora:eyes:0.2> ADDBASE
+  [person "Gorfloof" "black dress, black thigh-highs" "shy smile"] ADDCOL
+  [person "Prixola" "pastel green hoodie, pastel blue shirt, pastel pink short shorts, white thighhighs, white heels" "cute, slightly embarrassed"]
+  NEGATIVE [use neg] (solo, 3girls :2), ADDCOMM
+  ADDBASE
+  ADDCOL
+  [P2]
+  ```
+
+  Note that it's NOT all in one line! And reminder, DON'T use regional prompting for solo pics.
+
+  Notice how the LoRAs are in `ADDBASE` but their trigger words ("pretty eyes", "perfection style") are in `ADDCOMM`. This ensures the LoRAs work correctly across both character regions!
+
+  Note that for two columns, we only use one ADDCOL in the positive prompt, and one in the negative prompt. It's a delimiter, not a terminator.
+
+  When drawing people together, you would typically use columns not rows, and don't make the image too wide.
+
