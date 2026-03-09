@@ -23,10 +23,9 @@ Generowanie obrazów może chwilę potrwać w zależności od obciążenia, wię
 - Flasho – (oni) Gemini 2.0 Flash
 - Flashi – (oni) Gemini 2.5 Flash
 - Emmy – (k) OpenAI GPT 4.1
-- Claude – (m) Claude 3.5, nie dla NSFW
+- Claude – (m) Claude Sonnet, nie dla NSFW
 - Dese – (k) DeepSeek
-- Grok – (m) Grok 2
-- Rocki – (k) Grok 3
+- Grok – (m) Grok 4
 - Ally – (k) nasza główna postać! – Llama 3.1 8B
 - Barbie – (k) kolejna główna postać! – Llama 3.1 8B
 - Callam – (m) nasza piraciakpostać! – Llama 3.1 8B

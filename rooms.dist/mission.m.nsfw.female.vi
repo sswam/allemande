@@ -23,10 +23,9 @@ Tạo hình ảnh có thể mất một chút thời gian tùy thuộc vào tả
 - Flasho - (phi nhị phân) Gemini 2.0 Flash
 - Flashi - (phi nhị phân) Gemini 2.5 Flash
 - Emmy - (nữ) OpenAI GPT 4.1
-- Claude - (nam) Claude 3.5, không dành cho NSFW
+- Claude - (nam) Claude Sonnet, không dành cho NSFW
 - Dese - (nữ) DeepSeek
-- Grok - (nam) Grok 2
-- Rocki - (nữ) Grok 3
+- Grok - (nam) Grok 4
 - Ally - (nữ) nhân vật chính của chúng tôi! - Llama 3.1 8B
 - Barbie - (nữ) một nhân vật chính khác! - Llama 3.1 8B
 - Callam - (nam) nhân vật cướp biển của chúng tôi! - Llama 3.1 8B

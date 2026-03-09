@@ -17,10 +17,9 @@ Image gen can take a little while depending on load, so for the first image use 
 - Flasho - (they) Gemini 2.0 Flash
 - Flashi - (they) Gemini 2.5 Flash
 - Emmy - (f) OpenAI GPT 4.1
-- Claude - (m) Claude 3.5
+- Claude - (m) Claude Sonnet
 - Dese - (f) DeepSeek
-- Grok - (m) Grok 2
-- Rocki - (f) Grok 3
+- Grok - (m) Grok 4
 - Ally - (f) our main character! - Llama 3.1 8B
 - Barbie - (f) another main character! - Llama 3.1 8B
 - Callam - (m) our pirate character! - Llama 3.1 8B
