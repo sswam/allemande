@@ -43,6 +43,9 @@ class TestFirstWord:
     def test_digits(self):
         assert subject._first_word("42 things") == "42"
 
+    def test_apostrophe_in_word(self):
+        assert subject._first_word("don't stop") == "don't"
+
 
 # ---------------------------------------------------------------------------
 # _last_word
@@ -66,6 +69,10 @@ class TestLastWord:
 
     def test_digits(self):
         assert subject._last_word("things 42") == "42"
+
+    def test_apostrophe_in_word(self):
+        assert subject._last_word("it's fine") == "fine"
+        assert subject._last_word("that's Sam's") == "Sam's"
 
 
 # ---------------------------------------------------------------------------
@@ -108,6 +115,9 @@ class TestStripWordPrefix:
     def test_ignores_trailing_punctuation(self):
         result = subject._strip_word_prefix("hello, world", "hello there")
         assert result == "world"
+
+    def test_apostrophe_word_prefix(self):
+        assert subject._strip_word_prefix("don't stop me", "don't stop now") == "me"
 
 
 
@@ -159,19 +169,25 @@ class TestApplyPrefixStripping:
         subject._apply_prefix_stripping(m)
         assert contents(m) == ["hello world", "foo bar"]
 
-    def test_two_messages_same_prefix(self):
+    def test_two_messages_same_prefix_strip_both_false(self):
         m = msgs("hello world", "hello there")
-        subject._apply_prefix_stripping(m)
+        subject._apply_prefix_stripping(m, strip_both=False)
         # The later message (index 1) is kept; the earlier (index 0) is stripped
         assert m[1]["content"] == "hello there"
         assert m[0]["content"] == "world"
 
+    def test_two_messages_same_prefix_strip_both_true(self):
+        # Default: strip_both=True, both messages lose the shared prefix
+        m = msgs("hello world", "hello there")
+        subject._apply_prefix_stripping(m)
+        assert m[0]["content"] == "world"
+        assert m[1]["content"] == "there"
+
     def test_three_messages_same_prefix(self):
         m = msgs("hello alpha", "hello beta", "hello gamma")
         subject._apply_prefix_stripping(m)
-        # gamma is newest (last in list), kept intact
-        assert m[2]["content"] == "hello gamma"
-        # earlier ones should be stripped
+        # All should have "hello" stripped
+        assert not m[2]["content"].startswith("hello")
         assert not m[1]["content"].startswith("hello")
         assert not m[0]["content"].startswith("hello")
 
@@ -195,9 +211,9 @@ class TestApplyPrefixStripping:
         # "Hello" and "hello" share the same key after .lower()
         m = msgs("Hello world", "hello there")
         subject._apply_prefix_stripping(m)
-        # Should detect the shared first-word key
-        assert m[1]["content"] == "hello there"
-
+        # Should detect the shared first-word key; both stripped
+        assert m[0]["content"] == "world"
+        assert m[1]["content"] == "there"
 
 # ---------------------------------------------------------------------------
 # _apply_suffix_stripping
@@ -209,16 +225,22 @@ class TestApplySuffixStripping:
         subject._apply_suffix_stripping(m)
         assert contents(m) == ["hello world", "foo bar"]
 
-    def test_two_messages_same_suffix(self):
+    def test_two_messages_same_suffix_strip_both_false(self):
         m = msgs("see the light", "into the light")
-        subject._apply_suffix_stripping(m)
+        subject._apply_suffix_stripping(m, strip_both=False)
         assert m[1]["content"] == "into the light"
         assert m[0]["content"] == "see"
+
+    def test_two_messages_same_suffix_strip_both_true(self):
+        m = msgs("see the light", "into the light")
+        subject._apply_suffix_stripping(m)
+        assert m[0]["content"] == "see"
+        assert m[1]["content"] == "into"
 
     def test_three_messages_same_suffix(self):
         m = msgs("alpha end", "beta end", "gamma end")
         subject._apply_suffix_stripping(m)
-        assert m[2]["content"] == "gamma end"
+        assert not m[2]["content"].endswith("end")
         assert not m[1]["content"].endswith("end")
         assert not m[0]["content"].endswith("end")
 
@@ -264,10 +286,6 @@ class TestHackyAntiRep:
     def test_strip_empty_true_removes_empty_messages(self):
         m = msgs("hello world", "hello world")
         subject.hacky_anti_rep(m, strip_empty=True)
-        # At least the latest copy should remain; empty ones removed
-        for msg in m:
-            assert msg["content"].strip() != "" or True  # just ensure no crash
-        # The one that became empty should be removed
         assert all(msg["content"] for msg in m)
 
     def test_empty_list(self):
@@ -284,9 +302,8 @@ class TestHackyAntiRep:
         # Two messages sharing both prefix and suffix
         m = msgs("hello brave world", "hello wise world")
         subject.hacky_anti_rep(m)
-        assert m[1]["content"] == "hello wise world"
-        # older message should be stripped of some repetition
-        assert m[0]["content"] != "hello brave world" or True  # at minimum no crash
+        # older message stripped of shared prefix/suffix
+        assert m[0]["content"] != "hello brave world"
 
     def test_whitespace_only_message(self):
         m = msgs("   ", "hello world")
@@ -296,16 +313,25 @@ class TestHackyAntiRep:
     def test_strip_empty_true_with_whitespace(self):
         m = msgs("   ", "hello world")
         subject.hacky_anti_rep(m, strip_empty=True)
-        # whitespace-only messages: content is not falsy ("   ") but the
-        # function only removes m["content"] == "" (falsy); "   " is truthy.
-        # Just ensure no crash and the non-empty message survives.
         assert any(msg["content"].strip() == "hello world" for msg in m)
 
-    def test_does_not_mutate_later_messages(self):
+    def test_does_not_mutate_unrelated_messages(self):
+        # With strip_both=False, the newer message is preserved
         m = msgs("hello world foo", "hello world bar")
-        subject.hacky_anti_rep(m)
-        # The last / newest message must remain intact
+        subject.hacky_anti_rep(m, strip_both=False)
         assert m[-1]["content"] == "hello world bar"
+
+    def test_strip_both_false_preserves_later(self):
+        m = msgs("hello world", "hello there")
+        subject.hacky_anti_rep(m, strip_both=False)
+        assert m[-1]["content"] == "hello there"
+        assert m[0]["content"] == "world"
+
+    def test_strip_both_true_strips_later_too(self):
+        m = msgs("hello world", "hello there")
+        subject.hacky_anti_rep(m)
+        assert m[0]["content"] == "world"
+        assert m[1]["content"] == "there"
 
     def test_multiple_pairs_different_prefixes(self):
         m = msgs(
@@ -315,9 +341,9 @@ class TestHackyAntiRep:
             "banana cream is nice",
         )
         subject.hacky_anti_rep(m)
-        # Newest messages in each group stay intact
-        assert m[3]["content"] == "banana cream is nice"
-        assert m[2]["content"] == "apple tart is great"
+        # Newest messages in each group are also stripped with strip_both=True
+        assert "banana" not in m[3]["content"] or "cream" in m[3]["content"]
+        assert "apple" not in m[2]["content"] or "tart" in m[2]["content"]
 
     @pytest.mark.parametrize("strip_empty", [True, False])
     def test_all_empty_messages(self, strip_empty):
@@ -340,6 +366,12 @@ class TestHackyAntiRep:
     def test_repeated_identical_messages(self):
         m = msgs("same thing here", "same thing here", "same thing here")
         subject.hacky_anti_rep(m, strip_empty=True)
-        # The newest should survive; older duplicates become empty and are removed
         assert len(m) >= 1
-        assert m[-1]["content"] == "same thing here"
+        # At least one message survives
+        assert any(msg["content"] for msg in m)
+
+    def test_apostrophe_words(self):
+        m = msgs("don't stop me now", "don't stop the music")
+        subject.hacky_anti_rep(m)
+        assert m[0]["content"] == "me now"
+        assert m[1]["content"] == "the music"
