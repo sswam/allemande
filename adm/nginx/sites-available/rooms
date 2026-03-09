@@ -21,6 +21,7 @@ map $first_path_segment $allow {
 	sanctuary  1;
 	old        1;
 	cast       1;
+	dev        1;
 	default    0;
 }
 
