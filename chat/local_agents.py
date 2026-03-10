@@ -83,7 +83,7 @@ def get_fulltext(args, model_name, history, history_start, invitation):
     except Exception as e:
         raise RuntimeError(f"Failed to load tokenizer: {e}")
 
-    delim = ""  # seems to be what's needed
+    delim = ""  # seems to be what's needed... at least mostly!
 
     fulltext = delim.join(history[history_start:]) + invitation
     n_tokens = count_tokens_in_text(fulltext, tokenizer)
