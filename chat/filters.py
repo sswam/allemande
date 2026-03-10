@@ -100,6 +100,14 @@ def filter_in_think_brackets(response: str, place: int) -> str:
     return response
 
 
+def filter_in_remove_at_from_mentions(response: str, place: int) -> str:
+    """Replace e.g. @Ally with Ally"""
+    response2 = re.sub(r"(\s)@(\w)", r"\1\2", response)
+    if response2 != response:
+        logger.info("filter_in_remove_at_from_mentions: %s -> %s", response, response2)
+    return response2
+
+
 def filter_out_think_brackets(response: str) -> str:
     """Replace [thinking sections] with <think>thinking sections</think>."""
     # match at start and end of lines only, so we don't match images / links
@@ -185,6 +193,53 @@ def filter_out_actions_reduce(response: str, keep_prob: float = 0.5) -> str:
 
     if response2 and not re.search(r":\t?$", response2):
         return response2
+    return response
+
+
+def filter_out_actions_fix(response: str) -> str:
+    """Attempt to fix *actions* syntax is the response."""
+    logger.warning("filter_out_actions_fix: processing response:\n%s", response)
+    lines = response.split("\n")
+    for i in range(len(lines)):
+        line = lines[i]
+
+        match = re.match(r"(.*?\t)(.*)", line)
+        if match:
+            prefix, content = match.group(1), match.group(2)
+        else:
+            prefix, content = '', line
+
+        content0 = content
+
+        logger.warning("filter_out_actions_fix: processing content: %s", content)
+
+        start_star = content.startswith("*")
+        end_star = content.endswith("*")
+
+        # Add missing * at start
+        if not start_star and re.match("^[^*]+\w\*", content):
+            content = "*" + content
+            start_star = True
+        # Add missing * at end
+        if not end_star and re.search("\*\w[^*]+$", content):
+            content = content + "*"
+            end_star = True
+        # Remove unmatched * at start
+        if start_star and not re.match("\*[^*]+\w\*", content):
+            content = content[1:]
+            start_star = False
+        # Remove unmatched * at end
+        if end_star and not re.search("\*\w[^*]+\*$", content):
+            content = content[:-1]
+            end_star = False
+
+        if content != content0:
+            logger.warning("  changed to: %s", content)
+
+        lines[i] = prefix + content
+
+    response = "\n".join(lines)
+
     return response
 
 
@@ -510,6 +565,7 @@ def apply_user_filters_out(user: str, content: str) -> str:
 filters_in = {
     "think_add_example": filter_in_think_add_example,
     "think_brackets": filter_in_think_brackets,
+    "remove_at_from_mentions": filter_in_remove_at_from_mentions,
 }
 
 
@@ -518,6 +574,7 @@ filters_out = {
     "think_fix": filter_out_think_fix,
     "think_brackets": filter_out_think_brackets,
     "actions_reduce": filter_out_actions_reduce,
+    "actions_fix": filter_out_actions_fix,
     "emojis": filter_out_emojis,
     "emdash": filter_out_emdash,
     "fix_image_prompts": filter_out_fix_image_prompts,
