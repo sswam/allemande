@@ -438,7 +438,7 @@ digraph Meta {
     node [shape=box, style=filled, fillcolor="#FFD3DF", fontname="Helvetica"]
 
     "Meta" [label=<<b>Meta</b>>]
-    "Ellie" [label=<<b>Ellie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Fast base model</font>>]
+    "Elly" [label=<<b>Elly</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Fast base model</font>>]
     "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
     "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
     "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
@@ -447,7 +447,7 @@ digraph Meta {
     "Skout" [label=<<b>Skout</b><br/><font point-size="10">Llama 4 Scout</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Fast new open model</font>>]
     "Mavi" [label=<<b>Mavi</b><br/><font point-size="10">Llama 4 Maverick</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Powerful new open model</font>>]
 
-    "Meta" -> "Ellie"
+    "Meta" -> "Elly"
     "Meta" -> "Ally"
     "Meta" -> "Barbie"
     "Meta" -> "Callam"
@@ -738,7 +738,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Morf**: He is a Game Master and narrative supervisor maintaining story coherence and forward progression
 
 ### Base Models
-- **Ellie**: (Llama 3.1 8B): a small, human-like uncensored and private model
+- **Elly**: (Llama 3.1 8B): a small, human-like uncensored and private model
 - **Ellyn**: (Llama 3.3 70B): a stronger, human-like model
 - **Skout** (Meta Llama 4 Scout): A fast new open model from Meta
 - **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta

@@ -1,4 +1,10 @@
 base:
   - Char
-  - EllieM
+  - EllyM
 temp: 0.7
+hacky_anti_rep: true
+filter_in:
+  - remove_at_from_mentions
+filter_out:
+  - actions_fix
+  - ["actions_reduce", 0.8]

@@ -158,7 +158,7 @@ system_top: |-
   models: deepseek-chat, deepseek-reasoner
 
   type: openrouter
-  models: qwq-32b, gemma-free, llama-3.3-70b-free, venice-uncensored-free, mistral-large, llama-4-scout, llama-4-maverick
+  models: qwq-32b, gemma-free, llama-3.3-70b-free, venice-uncensored, mistral-large, llama-4-scout, llama-4-maverick
 
   type: xai
   models: grok4-fast, grok-code-fast, grok4

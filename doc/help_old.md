@@ -275,7 +275,7 @@ Don't jailbreak censored models (may violate ToS). Use less censored alternative
 - **Yenta** - Character introductions
 
 ### Base Models
-Direct access to models (minimal/no prompting): Ellie, Ellyn, Skout, Mavi, Claude, Clauden, Claudo, Clia, Emmy, Dav, Grace, Fermi, Heisen, Heise, Heis, Gos, Goss, Flasho, Flashi, Lite, Gemmi, Grok, Rocki, Anni, Dese, Desee, Deseri, Qwen, Misti, Veni, Kimi, Glimi
+Direct access to models (minimal/no prompting): Elly, Ellyn, Skout, Mavi, Claude, Clauden, Claudo, Clia, Emmy, Dav, Grace, Fermi, Heisen, Heise, Heis, Gos, Goss, Flasho, Flashi, Lite, Gemmi, Grok, Rocki, Anni, Dese, Desee, Deseri, Qwen, Misti, Veni, Kimi, Glimi
 
 ### Online (Live Internet)
 Sageri, Sonari, Sagi, Sona (Perplexity)

@@ -119,7 +119,7 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 - **Pyrite** (Gemini 2.0 Flash): A playful woman with sultry eyes, long raven hair, and large natural breasts.
 
 ### Base Models (NSFW capable)
-- **Ellie**: (Llama 3.1 8B): a small, human-like uncensored and private model  [recommended]
+- **Elly**: (Llama 3.1 8B): a small, human-like uncensored and private model  [recommended]
 - **Ellyn**: (Llama 3.3 70B): a stronger, human-like model
 - **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model  [recommended]
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
@@ -136,7 +136,7 @@ The other base models mentioned in the main guide might be averse to NSFW chat, 
 
 ### Uninhibited Variants
 
-These variants on the Gemini and DeepSeek models use a very short prompt to enable NSFW, which might be helpful if there is no other NSFW context. This is just a tiny prompt to give permission, not a jailbreak. The Ellie, Ellyn, Misti and Veni models do not need such a prompt.
+These variants on the Gemini and DeepSeek models use a very short prompt to enable NSFW, which might be helpful if there is no other NSFW context. This is just a tiny prompt to give permission, not a jailbreak. The Elly, Ellyn, Misti and Veni models do not need such a prompt.
 
 - **Xlasho** (Gemini 2.0 Flash, Google)
 - **Xlashi** (Gemini 2.5 Flash, Google)
@@ -193,7 +193,7 @@ Please do not use languages models other than those listed here for NSFW content
 
 | Creator    | Model              | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                             |
 |------------|--------------------|--------|---------|------------|-----------------|------------------|---------------------------------------------------------------------------------------------------------|
-| Meta       | Llama 3.1 8B       | Ellie* | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
+| Meta       | Llama 3.1 8B       | Elly* | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
 | Meta       | Llama 3.3 70B      | Ellyn  | 128K    | 2048       | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                 |
 | Google     | Gemini 2.0 Flash   | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                     |
 | Google     | Gemini 2.5 Flash   | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                       |
@@ -209,7 +209,7 @@ Please do not use languages models other than those listed here for NSFW content
 | MoonshotAI | Kimi K2.5          | Kimmi  | 262K    | 262K       | $0.45           | $2.50            | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
 | Z.AI       | GLM 4.6            | Glimi  | 205K    | 205K       | $0.50           | $1.90            | Z.AI: GML 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.               |
 
-* The Llama 3.1 8B model (Ellie) powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
+* The Llama 3.1 8B model (Elly) powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
 
 1. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
    Gemini 3 Pro pricing: input/M: $2 (<=200K) / $4 (>200K), output/M: $12.00 (<=200K) / $18.00 (>200K)

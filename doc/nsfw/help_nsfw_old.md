@@ -74,7 +74,7 @@ Only Google-based models are permitted to view NSFW content.
 - **Sadie**
 
 ### Base Models (Uncensored)
-- `Ellie`: Llama 3.1 8B. Small, human-like. [recommended]
+- `Elly`: Llama 3.1 8B. Small, human-like. [recommended]
 - `Ellyn`: Llama 3.3 70B. Stronger, human-like.
 - `Flasho`: Gemini 2.0 Flash. Fast and capable. [recommended]
 - `Flashi`: Gemini 2.5 Flash. Fast and capable.
@@ -85,7 +85,7 @@ Only Google-based models are permitted to view NSFW content.
 - `Veni`: Venice (Dolphin Mistral 24B). Uncensored.
 
 ### Uninhibited Variants
-These use a short pre-prompt to enable NSFW context. Not needed for Ellie, Ellyn, Misti, Veni.
+These use a short pre-prompt to enable NSFW context. Not needed for Elly, Ellyn, Misti, Veni.
 - `Xlasho` (Gemini 2.0 Flash)
 - `Xlashi` (Gemini 2.5 Flash)
 - `Xemmi` (Gemini 2.5 Pro)
@@ -130,7 +130,7 @@ These use a short pre-prompt to enable NSFW context. Not needed for Ellie, Ellyn
 #### Language Models (NSFW capable)
 | Creator | Model | Name | Context | Max Output | Description |
 |---|---|---|---|---|---|
-| Meta | Llama 3.1 8B | Ellie* | 4096 | 4096 | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
+| Meta | Llama 3.1 8B | Elly* | 4096 | 4096 | A smaller human-like model, for creativity and engaging conversations. Most characters use this model. |
 | Meta | Llama 3.3 70B | Ellyn | 128K | 2048 | A stronger human-like model, for creativity and engaging conversations. |
 | Google | Gemini 2.0 Flash | Flasho | 1M | 64K | Google's fast Gemini model, optimized for speed, hardly censored, and very capable. |
 | Google | Gemini 2.5 Flash | Flashi | 1M | 8K | Google's fast Gemini model, optimized for speed and very capable. |
@@ -143,7 +143,7 @@ These use a short pre-prompt to enable NSFW context. Not needed for Ellie, Ellyn
 | MoonshotAI | Kimi K2 0905 | Kimi | 262K | 262K | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use. |
 | Z.AI | GLM 4.6 | Glimi | 205K | 205K | Z.AI: GML 4.6: advanced agentic, reasoning and coding capabilities, with refined writing. |
 
-*\* The Llama 3.1 8B model (Ellie) powers numerous characters including Ally, Barbie, Callam, Cleo, etc.*
+*\* The Llama 3.1 8B model (Elly) powers numerous characters including Ally, Barbie, Callam, Cleo, etc.*
 
 #### Image Models
 | Creator | Model | Name | Description |

@@ -1,5 +1,9 @@
 base: SmallAI
-hacky_anti_rep: true
+# hacky_anti_rep: true
+# filter_out:
+#   - +
+#   - actions_fix
+#   - ["actions_reduce", 0.75]
 # over:
 #   - +
 #   - CowMI
