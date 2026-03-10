@@ -43,7 +43,7 @@ class PortalClient:
         # create the request directory, needs to be group writable
         umask = os.umask(0o007)
         try:
-            req.mkdir(parents=True, exist_ok=True, mode=0o770)
+            req.mkdir(parents=True, exist_ok=False, mode=0o770)
         finally:
             os.umask(umask)
 
