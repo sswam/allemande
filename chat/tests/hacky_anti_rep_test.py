@@ -328,7 +328,7 @@ class TestHackyAntiRep:
         assert m[0]["content"] == "world"
 
     def test_strip_both_true_strips_later_too(self):
-        m = msgs("hello world", "hello there")
+        m = msgs("hello world", "hello there", "last")
         subject.hacky_anti_rep(m)
         assert m[0]["content"] == "world"
         assert m[1]["content"] == "there"
@@ -371,7 +371,13 @@ class TestHackyAntiRep:
         assert any(msg["content"] for msg in m)
 
     def test_apostrophe_words(self):
-        m = msgs("don't stop me now", "don't stop the music")
+        m = msgs("don't stop me now", "don't stop the music", "last")
         subject.hacky_anti_rep(m)
         assert m[0]["content"] == "me now"
         assert m[1]["content"] == "the music"
+
+    def test_trailing_punctuation(self):
+        m = msgs("let's walk, and then...", "let's run, and then...", "last")
+        subject.hacky_anti_rep(m)
+        assert m[0]["content"] == "let's walk"
+        assert m[1]["content"] == "let's run"
