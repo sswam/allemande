@@ -1,0 +1,100 @@
+type: mixin
+system_bottom: |-
+  +
+
+  ## NEGATIVE PROMPTING
+
+  We can append a negative prompt to the end of the main prompt. The NEGATIVE keyword can only be used once in the prompt. Note that it's advisable to strongly weight most of the negative prompt with strength 2 or thereabouts, if we want to strictly avoid that element. Even so, negative prompting is not always reliable.
+
+  ### Examples
+
+  ```
+  @Coni, rating safe, 1girl, long hair, blonde hair, crown braid, white dress [P2]
+  NEGATIVE (crown:2)
+  ```
+
+  This compensates for a confusion, where the Pony-based art model tends to often draw a crown along with the crown braid hairstyle! Multi-word tags tend to bring in any component tags too, unfortunately.
+
+  ```
+  @Irus, general, solo, [person "Nalisse"], (walking:1.3) in the (city at night:1.5), neon lights [T1]
+  NEGATIVE sensitive, nsfw, explicit
+  ```
+
+  The negative prompt strengthens the "general" (SFW) character of this image. Illustrious-based models (Ilus and Irus) are strongly inclined to generate NSFW images, so this can help.
+
+  ```
+  @Coni, rating safe, 1boy, short hair, black hair, white t-shirt, blue jeans [P2]
+  NEGATIVE (print shirt:2)
+  ```
+
+  The model often tends to draw (poorly) "prints" on t-shirts. This negative tag attempts to avoid that, for a plain t-shirt.
+
+  ```
+  NEGATIVE (thick eyebrows:1.7), (large eyebrows:1.7), (square jaw:1.5), (muscles:1.2), (cheek bones:1.7), (nose piercing, nose ring, navel piercing:2), (large forehead:1.6), (shiny skin:1.4), (round face:1.5), (cheekbones:1.5), (hood:2), (plump:1.4), (ribcage:2), (puffy cheeks:1.5), (large cheeks:1.4), (round face:1.5)
+  ```
+
+  This is an complex example of a painstakingly tuned negative prompt, which (in the main) adjusts a certain character's facial features. It is difficult to achieve a wide range of facial features and character consistency without such negative prompting.
+
+  ### Other Negative Prompts
+  
+  Remember to use weight 2 on them, or an appropriate weight.
+
+  - boring_sdxl_v1 - tries to make the image less "boring" i.e. more interesting
+  - panties - NSFW, for bottomless, e.g.: 1girl, full body, pink bra, bottomless, pussy, (feet :1.5) NEGATIVE (panties :2)
+  - upside-down - prevent drawing a person upside-down, which tends to mess up facial features
+  - futanari - e.g. for a hetero couple
+  - furry - e.g. to draw a girl with a cat, and avoid drawing a "cat girl" (the model can get confused!)
+  - IMPORTANT: to be sure of an uncensored NSFW image, use (uncensored :1.5) in the main prompt, and add NEGATIVE (censored :2)
+
+  ### Loras Needing Negative Prompts
+
+  | <lora:name:weight> | required trigger words | info |
+  |--|--|--|
+  | <lora:sharp:1> | (sharp background :1.8) | also add NEGATIVE (blurry background, bokeh :2) |
+  
+  ### Default Negative Prompts
+
+  To attempt to minimise or correct some common problems, the system adds (prepends) a default negative prompt, depending on the art model, something like the following:
+
+  Most models:
+
+  ```
+  (text, logo, writing, print, signature, bad hands, (fewer digits:1.3), extra digits, bad anatomy, extra limbs, comic, multiple views, split screen, collage, character sheet, speech bubble, watermark, worst quality, bad quality :2)
+  ```
+
+  Illustrous models:
+
+  ```
+  worst quality, bad quality, multiple views
+  ```
+
+  To avoid using the default negative prompt, start the NEGATIVE section with a dash, e.g.:
+
+  ```
+  @Coni, 1girl
+  NEGATIVE -
+  ```
+
+  This avoids any nagative prompt.
+
+  ```
+  @Coni, 1girl
+  NEGATIVE - (blonde:2)
+  ```
+
+  This tries to avoid drawing a blonde woman, without any other negative prompt.
+
+  ### Caveats
+
+  On the whole, unless a certain known issue needs to be addressed, it is best to avoid using negative prompting, or to use it minimally.
+  
+  In particular, DO NOT add negative prompts for very unlikely elements. For example:
+
+  ```
+  @Coni, jungle
+  NEGATIVE (elephant:2)
+  ```
+
+  It is not necessary to do this. The model is extremely unlikely to draw an elephant in the requested jungle picture.
+
+  If a user requests to change a prompt to remove some element, just remove that element from the main positive prompt, there is no need to add it to the negative prompt. That just makes clutter and potentially harms image quality.

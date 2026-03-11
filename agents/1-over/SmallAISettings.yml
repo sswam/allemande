@@ -1,0 +1,10 @@
+type: mixin
+temp: 0.8
+hacky_anti_rep: true
+filter_in:
+  - remove_at_from_mentions
+filter_out:
+  - remove_indent
+  - actions_fix
+  - ["actions_reduce", 0.8]
+  - truncate_repeated_characters
