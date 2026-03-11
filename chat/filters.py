@@ -19,7 +19,6 @@ __version__ = "0.1.4"
 
 logger = logs.get_logger()
 
-
 def filter_out_agents_install(response: str, root: str = "") -> str:
     """Install agents from a response by extracting YAML blocks and saving them to files."""
     logger.debug("filter_out_agents_install input response:\n\n%s", response)
@@ -77,7 +76,7 @@ def filter_out_agents_install(response: str, root: str = "") -> str:
             # Write content
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content.strip() + "\n")
-            logger.info("Successfully installed agent: %s", file_path)
+            logger.warning("Successfully installed agent: %s", file_path)
 
         except (OSError, IOError) as e:
             logger.error("Failed to write agent file %s: %s", file_path, str(e))
@@ -103,8 +102,6 @@ def filter_in_think_brackets(response: str, place: int) -> str:
 def filter_in_remove_at_from_mentions(response: str, place: int) -> str:
     """Replace e.g. @Ally with Ally"""
     response2 = re.sub(r"(\s)@(\w)", r"\1\2", response)
-    if response2 != response:
-        logger.info("filter_in_remove_at_from_mentions: %s -> %s", response, response2)
     return response2
 
 
@@ -182,9 +179,11 @@ def filter_out_think_fix(response: str) -> str:
 
 def filter_out_actions_reduce(response: str, keep_prob: float = 0.5) -> str:
     """Reduce the number of *actions* in the response, based on keep_prob (0-1)."""
-    response2 = re.sub(r" *\*(.*?) (.*?)\*[.!?]* *",
+    logger.warning("filter_out_actions_reduce: %r %s", keep_prob, response)
+    response2 = re.sub(r"( *)\*\w[^*]*? [^*]*?[^*\s*]\*[.!?]* *",
         lambda action: action.group(0) if random.random() < keep_prob else " ",
         response, flags=re.DOTALL)
+    logger.warning("  %s", response2)
 
     # Strip spaces and reduce blank lines
     response2 = re.sub(r"^\t +", "\t", response2, flags=re.MULTILINE)
@@ -197,7 +196,7 @@ def filter_out_actions_reduce(response: str, keep_prob: float = 0.5) -> str:
 
 
 def filter_out_actions_fix(response: str) -> str:
-    """Attempt to fix *actions* syntax is the response."""
+    """Attempt to fix *actions* syntax in the response."""
     logger.warning("filter_out_actions_fix: processing response:\n%s", response)
     lines = response.split("\n")
     for i in range(len(lines)):
@@ -217,7 +216,7 @@ def filter_out_actions_fix(response: str) -> str:
         end_star = content.endswith("*")
 
         # Add missing * at start
-        if not start_star and re.match("^[^*]+\w\*", content):
+        if not start_star and re.match("^[^*]+\S\*", content):
             content = "*" + content
             start_star = True
         # Add missing * at end
@@ -225,7 +224,7 @@ def filter_out_actions_fix(response: str) -> str:
             content = content + "*"
             end_star = True
         # Remove unmatched * at start
-        if start_star and not re.match("\*[^*]+\w\*", content):
+        if start_star and not re.match("\*[^*]+\S\*", content):
             content = content[1:]
             start_star = False
         # Remove unmatched * at end
@@ -236,7 +235,7 @@ def filter_out_actions_fix(response: str) -> str:
         if content != content0:
             logger.warning("  changed to: %s", content)
 
-        lines[i] = prefix + content
+            lines[i] = prefix + content
 
     response = "\n".join(lines)
 
@@ -471,6 +470,35 @@ def filter_out_truncate_repeated_characters(response: str, max_repeat=80) -> str
     return response
 
 
+def filter_out_remove_indent(response: str) -> str:
+    """
+    Remove any indent with tabs in the response.
+    This method isn't exactly correct, but good enough for the purpose.
+    """
+    lines = response.split("\n")
+    for i in range(len(lines)):
+        line = lines[i]
+
+        match = re.match(r"(.*?\t)(.*)", line)
+        if match:
+            prefix, content = match.group(1), match.group(2)
+        else:
+            prefix, content = '', line
+
+        content0 = content
+        content = re.sub(r"\t", " ", content.strip())
+
+        if content != content0:
+            logger.warning("filter_out_remove_indent: %s", content0)
+            logger.warning("  changed to: %s", content)
+
+            lines[i] = prefix + content
+
+    response = "\n".join(lines)
+
+    return response
+
+
 def apply_filters_in(agent: ally_agents.Agent, query: str, history: list[str]) -> tuple[str, list[str]]:
     """Apply input filters to the query and history."""
     filters = agent.get("filter_in")
@@ -581,6 +609,7 @@ filters_out = {
     "truncate_repeated_characters": filter_out_truncate_repeated_characters,
     "unsmart": unsmart,
     "smart": smart,
+    "remove_indent": filter_out_remove_indent,
     # "fallback": filter_out_fallback,
 }
 
