@@ -8,6 +8,7 @@ specialist: true
 filter_in: []
 filter_out:
   - fix_image_prompts
+  - truncate_repeated_characters
 stop_regexs:
   - +
   - \bSTOP\b
