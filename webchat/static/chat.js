@@ -2426,7 +2426,9 @@ function edit_clear() {
   edit_set_text("");
 }
 
-async function edit_close_back() {
+async function edit_close_back(ev) {
+  if (ev)
+    ev.stopPropagation();
   // if ends with EXTENSION, strip it off
   const stem = editor_file.replace(new RegExp(quotemeta(EXTENSION)+"$"), "");
   const type = await get_file_type(stem);
