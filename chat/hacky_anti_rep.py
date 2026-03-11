@@ -32,6 +32,12 @@ def _last_word(s: str) -> str:
     return words[-1] if words else ""
 
 
+def _last_two_words(s: str) -> str:
+    """Return the last two alphanumeric word in s, or empty string."""
+    words = re.findall(_TWO_WORDS, s)
+    return words[-1] if words else ""
+
+
 def _strip_word_prefix(prior: str, later: str) -> str:
     """Strip the longest common word-sequence prefix of prior from prior."""
     words_prior = re.findall(_WORD, prior)
@@ -97,11 +103,12 @@ def _apply_prefix_stripping(messages: list[dict[str, str]], strip_both: bool = T
     # index maps key -> (msg_dict, original_content, strip_len_from_later)
     prefix_index: dict[str, tuple] = {}
     for msg in reversed(messages):
-        if msg["user"] in ["", "System"]:
+        if msg.get("user") in ["", "System"]:
             continue
         content = msg["content"]
         if not content.strip():
             continue
+        # key = _first_word(content).lower()
         key = _first_two_words(content).lower()
         if not key:
             continue
@@ -139,12 +146,13 @@ def _apply_suffix_stripping(messages: list[dict[str, str]], strip_both: bool = T
     prior messages are matched against the original later content correctly."""
     suffix_index: dict[str, tuple] = {}
     for msg in reversed(messages):
-        if msg["user"] in ["", "System"]:
+        if msg.get("user") in ["", "System"]:
             continue
         content = msg["content"]
         if not content.strip():
             continue
         key = _last_word(content).lower()
+        # key = _last_two_words(content).lower()
         if not key:
             continue
         if key in suffix_index:
