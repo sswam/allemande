@@ -2,9 +2,12 @@ type: mixin
 temp: 0.8
 hacky_anti_rep: true
 filter_in:
+  - think_brackets
   - remove_at_from_mentions
 filter_out:
+  - think_brackets
   - remove_indent
   - actions_fix
   - ["actions_reduce", 0.8]
   - truncate_repeated_characters
+# TODO - could remove quotation marks and change round parens to square
