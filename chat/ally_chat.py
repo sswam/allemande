@@ -52,6 +52,7 @@ import filters
 import rag
 import forward
 import context
+import context_logging
 
 
 RELOADABLE_MODULES = [
@@ -206,42 +207,58 @@ def load_local_agents(room, agents=None, local_visual_dir: Path|None=None):
 #     return agents
 
 
-async def process_file(file, args, history_start=0, skip=None, agents=None, poke=False) -> int:
-    """Process a file, return True if appended new content."""
-    logger.info("Processing %s", file)
+async def process_room(file, request_index, args, history_start=0, skip=None, agents=None, poke=False) -> int:
+    """Process a room, return number of new messages appended."""
+    logger.debug("Processing %s", file)
 
     room = ally_room.Room(path=Path(file))
-    history = chat.chat_read(file, args)
     config = load_config(room)
-    mission = load_mission(room, config, args)
-    summary = load_summary(room, args)
 
-    history_messages = list(bb_lib.lines_to_messages(history))
+    async def _process_room_2():
+        logger.info("%s ++++++++ START ++++++++ %s", request_index, room.name)
+        history = chat.chat_read(file, args)
+        mission = load_mission(room, config, args)
+        summary = load_summary(room, args)
 
-    if should_skip_editing_command(history_messages, poke):
-        return 0
+        history_messages = list(bb_lib.lines_to_messages(history))
 
-    local_visual_dir = Path(tempfile.mkdtemp(prefix="ally_local_visual_"))
-    try:
-        agents = load_local_agents(room, agents, local_visual_dir)
+        if should_skip_editing_command(history_messages, poke):
+            return 0
 
-        last_message_id = len(history_messages) - 1
+        local_visual_dir = Path(tempfile.mkdtemp(prefix="ally_local_visual_"))
+        try:
+            agents2 = load_local_agents(room, agents, local_visual_dir)
 
-        history_messages = chat.apply_editing_commands(history_messages)
-        history = list(bb_lib.messages_to_lines(history_messages))
-        message = history_messages[-1] if history_messages else None
+            last_message_id = len(history_messages) - 1
 
-        bots, responsible_human = determine_responders(message, agents, history_messages, config, room, mission, poke)
-        logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
+            history_messages = chat.apply_editing_commands(history_messages)
+            history = list(bb_lib.messages_to_lines(history_messages))
+            message = history_messages[-1] if history_messages else None
 
-        message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
+            bots, responsible_human = determine_responders(message, agents2, history_messages, config, room, mission, poke)
+            logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
 
-        c = context.Context(agents, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room, local_visual_dir)
+            message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
 
-        count = await process_bot_responses(c, bots)
-    finally:
-        shutil.rmtree(local_visual_dir)
-    return count
+            c = context.Context(agents2, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room, local_visual_dir)
+
+            count = await process_bot_responses(c, bots)
+        finally:
+            shutil.rmtree(local_visual_dir)
+        logger.info("%s -------- END -------- %s\n", request_index, room.name)
+
+        return count
+
+    # debug logging per room
+    if config.get("log"):
+        log_file = room.path.with_suffix(".log")
+        with context_logging.log_to_file(log_file):
+            try:
+                return await _process_room_2()
+            except Exception as e:
+                logger.exception("Error processing room %s", room.name, exc_info=True)
+    else:
+        return await _process_room_2()
 
 
 def load_config(room):
@@ -423,7 +440,7 @@ async def run_agent(c, agent, query) -> str:
     query, history = filters.apply_filters_in(agent, query, c.history)
     logger.debug("Applying input filters, query after: %r", query)
 
-    replace(c, history=history)
+    c = replace(c, history=history)
 
     response = await function(c, agent, query)
 
@@ -645,8 +662,8 @@ def format_tool_response(agent, output, lang="txt"):
         raise ValueError(f"Unknown format: {fmt}")
 
 
-async def file_changed(file_path, change_type, old_size, new_size, args, skip, agents):
-    """Process a file change."""
+async def room_changed(file_path, request_index, change_type, old_size, new_size, args, skip, agents):
+    """Process a change to a room file."""
     logger.info("change, old_size, new_size: %r, %r, %r", change_type, old_size, new_size)
 
     if args.ext and not file_path.endswith(args.ext):
@@ -669,7 +686,7 @@ async def file_changed(file_path, change_type, old_size, new_size, args, skip, a
 
     try:
         logger.debug("Processing file: %r", file_path)
-        count = await process_file(file_path, args, skip=skip, agents=agents, poke=poke)
+        count = await process_room(file_path, request_index, args, skip=skip, agents=agents, poke=poke)
         logger.debug("Processed file: %r, %r agents responded", file_path, count)
     except Exception:  # pylint: disable=broad-except
         logger.exception("Processing file failed: %r", file_path, exc_info=True)
@@ -721,6 +738,8 @@ async def watch_loop(args):
 
     agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
 
+    request_index = 0
+
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
         while (line := await queue.get()) is not None:
             try:
@@ -736,9 +755,10 @@ async def watch_loop(args):
                 if file_type == "room" and not os.access(file_path, os.W_OK):
                     logger.info("Ignoring change to unwritable file: %r", file_path)
                 elif file_type == "room":
-                    task = asyncio.create_task(file_changed(file_path, change_type, old_size, new_size, args, skip, agents))
+                    task = asyncio.create_task(room_changed(file_path, request_index, change_type, old_size, new_size, args, skip, agents))
                     tasks.add_task(task, f"file changed: {file_path}")
                     tasks.list_active_tasks()
+                    request_index += 1
                 elif file_type == "agent":
                     agents.handle_file_change(file_path, change_type)
                     agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
@@ -914,6 +934,7 @@ async def main():
     if not args.watch:
         raise ValueError("Watch file not specified")
 
+    context_logging.setup()
     setup_services()
 
     if settings.LOAD_EAGER:
