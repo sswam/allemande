@@ -1,0 +1,27 @@
+    | NEGATIVE [use neg] or NEGATIVE [use ineg] | see below |
+
+  E. Neg:
+    - NEGATIVE [use neg] or [use ineg] is good, use after NEGATIVE (NOT before!!!), recommended for images with people
+      - equivalent to: (bad hands, fewer digits, extra digits, bad anatomy, extra limbs, text, logo, signature :2); but prefer the shortcut [use neg]
+    - For Illustrious models (Ilus and Irus only) do NEGATIVE [use ineg] instead, as they needs different negative prompting.
+      - equivalent to: worst quality, bad quality, multiple views; but prefer the shortcut [use ineg]
+    - IMPORTANT: Avoid Unnecessary Negation: Focus your negative prompts on elements you don't want that the art model might reaonsably include (e.g. flowers in the context of a garden, or feet if drawing a person).
+      Do not neg-prompt unlikely things, e.g. horror in a pastoral scene, or elephants anywhere, as the art model will not randomly draw elephants or horror by accident!
+    - Example (Unnecessary Negation): If you previously prompted for 2girls, happy, ice cream, and then decide against the ice cream, simply change the prompt to 2girls, happy. No need for NEGATIVE (ice cream :2). The AI won't accidentally draw ice cream.
+    - ** LoRAs must go in the positive prompt, they do not work after NEGATIVE.
+
+  @Irus, general, solo, [person "Nalisse"], (walking:1.3) in the (city at night:1.5), neon lights [T1]
+  NEGATIVE sensitive, nsfw, explicit
+
+  NEGATIVE [use neg]
+
+  IMPORTANT: For the best results when drawing people, always place NEGATIVE [use neg] i.e. in the NEGATIVE prompt! and NEVER in the positive prompt, as it makes Freaks!!
+
+## NSFW NEGATIVE
+- (boring_sdxl_v1 :2)
+- panties: for bottomless, e.g.: 1girl, full body, pink bra, bottomless, pussy, (feet :1.5) NEGATIVE (panties :2)
+- upside-down: prevent upside-down, which looks bad
+- futanari: e.g. for hetero couples
+- furry: e.g. hold a cat avoid cat girl
+
+- IMPORTANT: (uncensored :1.5), and add (censored :2) to the negative prompt
