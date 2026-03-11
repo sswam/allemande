@@ -275,6 +275,23 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
         logger.debug("stripping agent name from response")
         response = response[len(agent.name) + 2 :]
 
+    # Option: Limit number of lines for remote agent responses
+    n_lines = 0
+    if "lines_force" in agent:
+        n_lines = agent["lines_force"]
+    else:
+        n_lines = agent.get("lines")
+    logger.info("n_lines: %s", n_lines)
+    if n_lines:
+        lines = response.splitlines()
+        for i in range(len(lines)):
+            if re.search(r"\S", lines[i]):
+                n_lines -= 1
+                if not n_lines:
+                    break
+        lines = lines[:i+1]
+        response = "\n".join(lines)
+
     # fix indentation for code
     if opts.indent:
         lines = response.splitlines()

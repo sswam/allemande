@@ -1,7 +1,7 @@
 base: Pixi
 over:
-  - Frankness
   - Thunk
+# - Frankness
 poke_if:
   - "```"
 # type: openai

@@ -1,7 +1,7 @@
 base: SmallAI
 over: []
 macro_fields: []
-lines_force: ""
+lines_force: 0
 # lines: 50
 poke_if:
   - "```"

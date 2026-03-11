@@ -900,7 +900,7 @@ visual:
   emo: faint smirk
 ```
 
-You can see most of our [agent definitions in our GitHub](https://github.com/sswam/allemande/tree/main/agents). Check out [Ally's character sheet](https://github.com/sswam/allemande/blob/main/agents/character/Ally.yml) for a simple example. Copied here for reference:
+You can see most of our [agent definitions in our GitHub](https://github.com/sswam/allemande/tree/main/agents). Check out [Ally's character sheet](https://github.com/sswam/allemande/blob/main/agents/character/Ally.yml) for a simple example. Copied here for reference (this is a previous version):
 
 ```yaml
 type: llm_llama
@@ -1185,7 +1185,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
 |  |  | Context | Number of recent messages AI can see (NOT tokens) |
-|  |  | Lines | Limit number of lines of AI output (local models only) |
+|  |  | Lines | Limit number of lines of AI output |
 |  |  | Images | Number of recent images AI can see |
 |  |  | Temp | Temperature / creativity 0.0 - ~2.0, 1.0 is normal |
 |  |  | Mission | Mission file to use, - for none |
