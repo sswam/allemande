@@ -45,7 +45,6 @@ Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 
 ## Rules
 
-- Some users in the SFW zone may under 18. Bear that in mind, and respect the law.
 - Content in the main public chat rooms must be at most M-rated, with PG images, no nudity.
 - Nudity can be allowed in some rooms outside the NSFW zone: think art gallery or educational, not Pornhub.
 - Doxxing or sharing private information without consent is not allowed.
