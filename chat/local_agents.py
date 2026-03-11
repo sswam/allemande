@@ -369,8 +369,15 @@ async def local_agent(c, agent, _query) -> str:
 
             # need to get negative prompt from unprompted, this is a bit ugly!
             pos_neg = re.split(r"\s*\bNEGATIVE\b\s*", fulltext2, 1)
-            if len(pos_neg) == 2:
-                fulltext2 = "[set negative_prompt] " + pos_neg[1] + "[/set] " + pos_neg[0]
+            # default negative prompt:
+            if len(pos_neg) == 1:
+                pos_neg.append("")
+            neg_default = agent.get("neg_default", "[use neg]")
+            if pos_neg[1].startswith("-"):
+                pos_neg[1] = re.sub(r"^-\s*", "", pos_neg[1])
+            elif neg_default not in pos_neg[1]:
+                pos_neg[1] = neg_default + " " + pos_neg[1]
+            fulltext2 = "[set negative_prompt] " + pos_neg[1] + " [/set] " + pos_neg[0]
             fulltext2 += " NEGATIVE [get negative_prompt]"
 
             fulltext2 = unprompted(fulltext2, seed)
