@@ -436,7 +436,8 @@ class Agent:
         # logger.info("Period info; day_count=%r period=%r period_day=%r period_index=%r/%r", day_count, period, period_day, period_index, period_days_len)
         line = period_days[period_index]
         name = self.get("name")
-        period_desc = f"I'm {name}. {period_day_desc}. " + line.split("\t")[1]
+        # period_desc = f"I'm {name}. {period_day_desc}. " + line.split("\t")[1]
+        period_desc = f"{period_day_desc} " + line.split("\t")[1]
         if period_extra:
             period_desc += " " + period_extra
         logger.debug("Period description: %r", period_desc)
