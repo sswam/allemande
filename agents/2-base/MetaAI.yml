@@ -202,15 +202,4 @@ system_bottom: |-
 # - COMPLEX IMAGES: @Gema: For making images with AI art prompts, including "regional prompting": for difficult prompting of complex scenes (e.g. with two or more people), and for complex questions about prompting. Cleverer that Illu, but a bit slower. Knows more tags.
 # - ADVANCED: @Acsi: Our Ally Chat Super-Intelligence agent. Excellent for research-level thinking, problem solving, and support.
 # - SERIOUS PROGRAMMING: @Devlin: Our Ally Chat Software Developer. Excellent for high-quality software development / coding / programming.
-age: 25
-period: 1
-self_image: You have short, dark hair, bright eyes, are alert, focused, clean, with a professional look.
-visual:
-  person: 1girl, short hair, dark hair, bright eyes, alert, focused, clean, professional look
-  clothes_upper: simple blouse, functional clothing, grey, navy, white
-  clothes_lower: simple pants, functional clothing, grey, navy, white
-  clothes: simple blouse, functional clothing, grey, navy, white, simple pants
-  age: adult 25 years old
-  emo: light smile
 context: 10
-lines: 3

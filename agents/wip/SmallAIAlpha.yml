@@ -4,7 +4,6 @@ over:
   - ShowMISmall
   - Period
 context: 30
-lines: 1
 dedent: true
 temp: 0.95
 system_bottom_pos: 3

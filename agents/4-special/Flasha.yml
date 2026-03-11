@@ -1,4 +1,4 @@
-# Frank version of Gemmi: genuine → Gemmi match
+# Frank version of Flashi
 base: Flashi
 over:
   - Frankness

@@ -23,7 +23,6 @@ visual:
   emo: light smile, optimistic
   furry: calico cat, cat ears, cat tail
 context: 51
-lines: 5
 config:
   max_new_tokens: 2048
   temperature: 1

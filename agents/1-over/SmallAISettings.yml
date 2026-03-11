@@ -1,4 +1,5 @@
 type: mixin
+lines: 2
 temp: 0.8
 hacky_anti_rep: true
 filter_in:
