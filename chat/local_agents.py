@@ -17,7 +17,7 @@ import ally_markdown
 from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
 from ally import yaml
-from ally_room import Room
+from ally_room import Room, upload_file
 import tasks
 from ally.lazy import lazy
 from ally import soma
@@ -459,7 +459,7 @@ async def local_agent(c, agent, _query) -> str:
                 prompt = re.sub(r"\n+Negative prompt: ", " NEGATIVE ", prompt)
                 text += prompt
 
-        name, _url, _medium, markdown, task = await chat.upload_file(room.name, agent.name, str(resp_file), alt=text or None)
+        name, _url, _medium, markdown, task = await upload_file(room.name, agent.name, str(resp_file), alt=text or None)
         if task:
             tasks.add_task(task, f"upload post-processing: {name}")
         if response:

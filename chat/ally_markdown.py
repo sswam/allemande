@@ -15,6 +15,7 @@ from math import gcd
 from collections import deque
 from functools import wraps
 
+import argh
 import markdown
 import markdown_it
 from markdown_it import MarkdownIt
@@ -30,6 +31,9 @@ from bb_lib import lines_to_messages
 from ally.quote import quote_words  # type: ignore  # pylint: disable=wrong-import-order
 import stamps
 from ally.util import asyncify
+
+
+Message = dict[str, Any]   # TODO use a class, bb_lib.ChatMessage?
 
 
 logging.basicConfig(level=logging.INFO)
@@ -987,3 +991,110 @@ def chat_to_html():
     bb_file = ""  # TODO
     for message in lines_to_messages(sys.stdin.buffer):
         print(asyncio.run(message_to_html(message, bb_file)))
+
+
+async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int) -> None:
+    """Add images to a list of messages in-place."""
+    if not image_count_max:
+        return
+
+    image_url_pattern = r'''
+        # First alternative: Markdown image syntax
+        !             # Literal exclamation mark
+        \[            # Opening square bracket
+        [^]]*         # Any characters except closing bracket
+        \]            # Closing square bracket
+        \(            # Opening parenthesis
+        (.*?)         # First capturing group: URL (non-greedy match)
+        \)            # Closing parenthesis
+
+        |             # OR
+
+        # Second alternative: HTML image tag
+        <img\s        # Opening img tag
+        [^>]*?        # Any attributes before src (non-greedy)
+        src="         # src attribute opening
+        ([^"<>]*?)    # Second capturing group: URL (non-greedy match)
+        "             # Closing quote
+    '''
+
+    logger.debug("Checking messages for images")
+
+    message_count = 0
+    image_count = 0
+
+    for msg in reversed(messages):
+        matches = re.findall(image_url_pattern, msg['content'], flags=re.VERBOSE | re.DOTALL | re.IGNORECASE)
+        logger.debug("Checking message: %s", msg['content'])
+        logger.debug("Matches: %s", matches)
+        image_urls = [url for markdown_url, html_url in matches for url in (markdown_url, html_url) if url]
+
+        logger.debug("Found image URLs: %s", image_urls)
+        if not image_urls:
+            continue
+
+        # count messages having images
+        message_count += 1
+
+        msg['images'] = image_urls
+
+        # TODO could fetch in parallel, likely not necessary
+        # TODO could split text where images occur
+        msg['images'] = [
+            await resolve_url_path(file, url, msg.get('user'), throw=False)
+            for url
+            in msg['images']]
+
+        msg['images'] = [url for url in msg['images'] if url]
+
+        # If we have too many images, take the first ones from the message
+        space_left = image_count_max - image_count
+        if len(msg['images']) > space_left:
+            msg['images'] = msg['images'][:space_left]
+
+        image_count += len(msg['images'])
+
+        logger.debug("Message contains images: %s", msg['images'])
+
+        if image_count >= image_count_max:
+            break
+
+#     logger.info("Found %d messages with %d images", message_count, image_count)
+
+
+def preprocess_cli():
+    """Preprocess stdin and print to stdout"""
+    content = sys.stdin.read()
+    processed, _has_math = asyncio.run(preprocess(content, "/", "root"))
+    print(processed)
+
+
+def markdown_to_html_cli():
+    """Convert markdown from stdin to html on stdout"""
+    content = sys.stdin.read()
+    html_content = markdown_to_html(content)
+    print(html_content)
+
+
+def main():
+    """Main function to run the CLI commands."""
+    def html():  # pylint: disable=redefined-outer-name
+        return chat_to_html()
+
+    def pre():
+        return preprocess_cli()
+
+    def markdown():
+        return markdown_to_html_cli()
+
+    argh.dispatch_commands(
+        [
+            html,
+            pre,
+            markdown,
+        ]
+    )
+
+
+if __name__ == "__main__":
+    main()

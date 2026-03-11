@@ -101,7 +101,7 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
     remote_messages = []
 
     # TODO images in system messages?
-    await chat.add_images_to_messages(c.file, context_messages, agent.get("images", 0))
+    await ally_markdown.add_images_to_messages(c.file, context_messages, agent.get("images", 0))
 
     # preprocess markdown in messages for includes
     for m in context_messages:
@@ -243,7 +243,7 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
 
     logger.debug("stop: %r", opts.stop)
 
-    logger.debug("remote_messages: %s", pformat(remote_messages))
+    logger.info("remote_messages: %s", pformat(remote_messages))
     logger.debug("remote_messages: %s", json.dumps(remote_messages, indent=2))
 
     # logger.info("agent: %r", agent)

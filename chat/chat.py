@@ -19,8 +19,6 @@ import argh
 import aiofiles
 from bs4 import BeautifulSoup
 
-from ally_markdown import preprocess, markdown_to_html, chat_to_html, resolve_url_path
-from ally_room import Room, Access
 from util import sanitize_filename
 from ally.cache import cache  # type: ignore
 from bb_lib import ChatMessage, save_chat_messages, load_chat_messages
@@ -41,162 +39,6 @@ logger = logging.getLogger(__name__)
 
 
 Agent = dict[str, Any]
-
-
-def preprocess_cli():
-    """Preprocess stdin and print to stdout"""
-    content = sys.stdin.read()
-    processed, _has_math = asyncio.run(preprocess(content, "/", "root"))
-    print(processed)
-
-
-def markdown_to_html_cli():
-    """Convert markdown from stdin to html on stdout"""
-    content = sys.stdin.read()
-    html_content = markdown_to_html(content)
-    print(html_content)
-
-
-image_extensions = ["jpg", "jpeg", "png", "gif", "svg", "webp", "avif", "heic"]
-convert_image_extensions = ["heic"]
-convert_image_to_extension = "jpg"
-audio_extensions = ["mp3", "ogg", "wav", "flac", "aac", "m4a"]
-video_extensions = ["mp4", "webm", "ogv", "avi", "mov", "flv", "mkv"]
-
-
-async def save_uploaded_file(from_path, to_path, file=None):
-    """Save an uploaded file."""
-    if not file:
-        shutil.move(from_path, to_path)
-        return
-    chunk_size = 64 * 1024
-    async with aiofiles.open(to_path, "wb") as ostream:
-        while chunk := await file.read(chunk_size):
-            await ostream.write(chunk)
-
-
-def ee(s):
-    """Encode entities."""
-    return html.escape(s, quote=True)
-
-
-def av_element_html(tag, label, url):
-    """Return an audio or video element."""
-
-    return f'<{tag} aria-label="{ee(label)}" src="{ee(url)}" controls></{tag}>'
-
-
-async def convert_image_format(from_path: str, to_path: str) -> int:
-    """Convert image to another format."""
-    try:
-        process = await asyncio.create_subprocess_exec(
-            'convert', from_path, to_path,
-            stdout=asyncio.subprocess.DEVNULL,
-            stderr=asyncio.subprocess.PIPE
-        )
-        _, stderr = await process.communicate()
-        if process.returncode != 0:
-            logger.error("convert_image_format failed: %s", stderr.decode().strip())
-        return process.returncode
-    except Exception as e:
-        logger.error("convert_image_format exception: %s", e)
-        return 1
-
-
-# pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals, too-many-branches, too-many-statements
-async def upload_file(room_name, user, filename, file=None, alt=None, to_text=False):
-    """Upload a file to a room."""
-    room = Room(name=room_name)
-
-    if not room.check_access(user).value & Access.WRITE.value:
-        raise PermissionError("You are not allowed to upload files to this room.")
-
-    name = sanitize_filename(os.path.basename(filename))
-    stem, ext = os.path.splitext(name)
-
-    i = 1
-    suffix = ""
-    while True:
-        name = stem + suffix + ext
-        file_path = room.parent / name
-        if not file_path.exists():
-            break
-        i += 1
-        suffix = "_" + str(i)
-
-    # TODO track which user uploaded which files?
-
-    url = (room.parent_url / name).as_posix()
-
-    # logger.info("Uploading %s to %s by %s: file_path=%s url=%s", name, room.name, user, file_path, url)
-
-    await save_uploaded_file(filename, str(file_path), file=file)
-
-    task = None
-
-    ext = ext.lower().lstrip(".")
-
-    # Handle image format conversion if needed
-    if ext in convert_image_extensions:
-        name = stem + suffix + "." + convert_image_to_extension
-        new_image_path = str(room.parent / name)
-        await convert_image_format(str(file_path), new_image_path)
-        # Update URL and extension for new format
-        url = (room.parent_url / name).as_posix()
-        ext = convert_image_to_extension
-
-    if ext in image_extensions:
-        medium = "image"
-    elif ext in audio_extensions:
-        medium = "audio"
-    elif ext in video_extensions:
-        # webm can be audio or video
-        result = await video_compatible.check(file_path)
-        if result["video_codecs"]:
-            medium = "video"
-        else:
-            medium = "audio"
-        def recode_task():
-            return video_compatible.recode_if_needed(file_path, result=result, replace=True)
-        task = recode_task
-    else:
-        medium = "file"
-
-    relurl = name
-
-    # view options for PDFs
-    append = ""
-    if ext == "pdf":
-        append = "#toolbar=0&navpanes=0&scrollbar=0"
-    url += append
-    relurl += append
-
-    # convert to text if wanted
-    try:
-        if to_text and medium in ("audio", "video"):
-            alt = await speech_to_text.convert_audio_video_to_text(file_path, medium)  # TODO speech_to_text
-        elif to_text and medium == "image":
-            alt = await image_to_text.convert_image_to_text(file_path)  # TODO image_to_text
-    except Exception as e:  # pylint: disable=broad-except
-        logger.error("Error converting to text: %r, %r, %r", medium, file_path, e)
-
-    # alt text
-    alt = alt or stem
-    alt = re.sub(r"\s+", " ", alt)
-
-    # markdown to embed or link to the file
-    if medium == "image":
-        alt = ee(alt)
-        markdown_tag = f"![{alt}]({relurl})"
-    elif medium == "audio":
-        markdown_tag = av_element_html("audio", alt, relurl)
-    elif medium == "video":
-        markdown_tag = av_element_html("video", alt, relurl)
-    else:
-        alt = ee(alt)
-        markdown_tag = f"[{alt}]({relurl})"
-
-    return name, url, medium, markdown_tag, task
 
 
 def chat_read(file, _args) -> list[str]:
@@ -603,75 +445,6 @@ def flatten_edited_messages(messages, output):
             output.append(message)
 
 
-async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int) -> None:
-    """Add images to a list of messages."""
-    if not image_count_max:
-        return messages
-
-    image_url_pattern = r'''
-        # First alternative: Markdown image syntax
-        !             # Literal exclamation mark
-        \[            # Opening square bracket
-        [^]]*         # Any characters except closing bracket
-        \]            # Closing square bracket
-        \(            # Opening parenthesis
-        (.*?)         # First capturing group: URL (non-greedy match)
-        \)            # Closing parenthesis
-
-        |             # OR
-
-        # Second alternative: HTML image tag
-        <img\s        # Opening img tag
-        [^>]*?        # Any attributes before src (non-greedy)
-        src="         # src attribute opening
-        ([^"<>]*?)    # Second capturing group: URL (non-greedy match)
-        "             # Closing quote
-    '''
-
-    logger.debug("Checking messages for images")
-
-    message_count = 0
-    image_count = 0
-
-    for msg in reversed(messages):
-        matches = re.findall(image_url_pattern, msg['content'], flags=re.VERBOSE | re.DOTALL | re.IGNORECASE)
-        logger.debug("Checking message: %s", msg['content'])
-        logger.debug("Matches: %s", matches)
-        image_urls = [url for markdown_url, html_url in matches for url in (markdown_url, html_url) if url]
-
-        logger.debug("Found image URLs: %s", image_urls)
-        if not image_urls:
-            continue
-
-        # count messages having images
-        message_count += 1
-
-        msg['images'] = image_urls
-
-        # TODO could fetch in parallel, likely not necessary
-        # TODO could split text where images occur
-        msg['images'] = [
-            await resolve_url_path(file, url, msg.get('user'), throw=False)
-            for url
-            in msg['images']]
-
-        msg['images'] = [url for url in msg['images'] if url]
-
-        # If we have too many images, take the first ones from the message
-        space_left = image_count_max - image_count
-        if len(msg['images']) > space_left:
-            msg['images'] = msg['images'][:space_left]
-
-        image_count += len(msg['images'])
-
-        logger.debug("Message contains images: %s", msg['images'])
-
-        if image_count >= image_count_max:
-            break
-
-#     logger.info("Found %d messages with %d images", message_count, image_count)
-
-
 def fix_response_layout(response, agent):
     """Fix the layout and indentation of the response."""
     logger.debug("response before fix_layout: %s", response)
@@ -878,21 +651,9 @@ def main():
     def proc(code: str | None = None, func: str | None = None):
         return process_chat_cli(code, func)
 
-    def html():  # pylint: disable=redefined-outer-name
-        return chat_to_html()
-
-    def pre():
-        return preprocess_cli()
-
-    def markdown():
-        return markdown_to_html_cli()
-
     argh.dispatch_commands(
         [
             proc,
-            html,
-            pre,
-            markdown,
         ]
     )
 

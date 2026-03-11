@@ -3,6 +3,7 @@ import logging
 import chat
 import bb_lib
 import conductor
+import ally_room
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ def determine_forward_target(response, agent, agents, config, room):
     bots2 = [b for b in bots2 if b is not None]
 
     if chat.has_at_mention(response):
-        bots2 = list(reversed(bots2)) + [a for a in agent.get("forward_if_denied", []) if room.check_access(a.lower()).value & chat.Access.READ_WRITE.value == chat.Access.READ_WRITE.value]
+        bots2 = list(reversed(bots2)) + [a for a in agent.get("forward_if_denied", []) if room.check_access(a.lower()).value & ally_room.Access.READ_WRITE.value == ally_room.Access.READ_WRITE.value]
 
     logger.info("Forward: who should respond: %r", bots2)
     return get_allowed_forward_target(bots2, agent)

@@ -142,7 +142,7 @@ async def upload(request):
     logger.info("%s upload  %s", user, room)
 
     try:
-        name, url, medium, markdown, task = await chat.upload_file(room, user, file.filename, file=file, to_text=to_text)
+        name, url, medium, markdown, task = await ally_room.upload_file(room, user, file.filename, file=file, to_text=to_text)
     except PermissionError as e:
         logger.warning("PermissionError: %r", e, exc_info=True)
         raise HTTPException(status_code=403, detail=e.args[0]) from e

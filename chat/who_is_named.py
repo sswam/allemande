@@ -10,6 +10,8 @@ from typing import Any, Iterable
 from util import uniqo
 from ally_agents import Agents
 import chat
+import ally_room
+from ally_room import Room
 from conductor_settings import *  # pylint: disable=wildcard-import,unused-wildcard-import,wrong-import-order
 from text.names import extract_partial_names, NAME_PATTERN  # pylint: disable=wrong-import-order
 
@@ -30,7 +32,7 @@ def agent_is_tool(agent: dict[str, Any]) -> bool:
     return False
 
 
-def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_cache: dict[str, int], agents: Agents|None=None) -> list[str]:
+def filter_access(invoked: Iterable[str], room: Room | None, access_check_cache: dict[str, int], agents: Agents|None=None) -> list[str]:
     """filter out agents that don't have access"""
     if not room:
         return list(invoked)
@@ -44,7 +46,7 @@ def filter_access(invoked: Iterable[str], room: chat.Room | None, access_check_c
                 continue
         if access_check_cache.get(name) is None:
             access_check_cache[name] = room.check_access(name).value
-        if access_check_cache[name] & chat.Access.READ_WRITE.value == chat.Access.READ_WRITE.value:
+        if access_check_cache[name] & ally_room.Access.READ_WRITE.value == ally_room.Access.READ_WRITE.value:
             result.append(name)
     return result
 
@@ -168,7 +170,7 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
     anyone_words: list[str] | None = None,
     self_words: list[str] | None = None,
     get_all: bool = False,
-    room: chat.Room | None = None,
+    room: Room | None = None,
     access_check_cache: dict[str, int] | None = None,
     agents: Agents | None = None,
     ignore_case: bool = True,

@@ -12,6 +12,7 @@ from pathlib import Path
 import chat
 from util import uniqo
 from ally_agents import Agents, Agent
+from ally_room import Room
 import ally_room
 from conductor_settings import *
 from settings import *
@@ -99,7 +100,7 @@ def is_image_message(agents: Agents, message: dict[str, str]) -> bool:
 def responsible_human(
     history: list[dict[str, Any]],
     agents: Agents,
-    room: chat.Room | None = None,
+    room: Room | None = None,
 ) -> str | None:
     """returns guess at responsible human user"""
     # TODO
@@ -435,7 +436,7 @@ def who_should_respond(
     may_use_mediator: bool = True,
     config: dict[str, Any] | None = None,
     mission: str | None = None,
-    room: chat.Room | None = None,
+    room: Room | None = None,
     at_only: bool = False,
     use_aggregates: bool = True,
 ) -> tuple[str|None, list[str]]:

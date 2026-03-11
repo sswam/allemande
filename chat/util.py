@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 import re
 from typing import Any
+import html
 
 from starlette.exceptions import HTTPException
 
@@ -242,6 +243,7 @@ def path_contains(base_path: Path, target_path: Path) -> bool:
     target_resolved = target_path.resolve()
     return target_resolved.is_relative_to(base_resolved)
 
+
 def join_with_commas_and_word(word, lst):
     """
     Joins a list of items with commas and the specified word (e.g., "or"),
@@ -255,3 +257,8 @@ def join_with_commas_and_word(word, lst):
         return f"{lst[0]} {word} {lst[1]}"
     else:
         return ", ".join(str(item) for item in lst[:-1]) + f", {word} {lst[-1]}"
+
+
+def ee(s):
+    """Encode entities."""
+    return html.escape(s, quote=True)
