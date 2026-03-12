@@ -3,13 +3,15 @@ poke_if:
   - "```"
 forward: true
 forward_allow:
+  - Zilu
   - Xilu
   - Vilu
   - Pixu
-forward_if_code: Xilu
-forward_if_image: Xilu
-forward_if_blank: Xilu
+forward_if_code: Zilu
+forward_if_image: Zilu
+forward_if_blank: Zilu
 forward_if_denied:
+  - Zilu
   - Xilu
   - Vilu
   - Pixu

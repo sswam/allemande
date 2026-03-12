@@ -1,0 +1,9 @@
+base:
+  - NaughtyChar
+  - FlashoM
+filter_out:
+  - unsmart
+forward_allow:
+  - Zilu
+# - Fallback
+# forward_if_refuse: NaughtierAI
