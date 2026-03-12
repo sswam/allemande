@@ -41,6 +41,9 @@ else
 	touch "$from"
 fi
 
+# Remove log file if present
+rm -f "$dirname/${basename%.bb}.log"
+
 # Copy ownership and permissions from the archived file to the new file
 if [ -e "$to" ]; then
 	chown --reference="$to" "$from"

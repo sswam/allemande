@@ -243,8 +243,9 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
 
     logger.debug("stop: %r", opts.stop)
 
-    logger.info("remote_messages: %s", pformat(remote_messages))
-    logger.debug("remote_messages: %s", json.dumps(remote_messages, indent=2))
+    if agent.get("debug"):
+        logger.info("remote_messages: %s", pformat(remote_messages))
+        logger.debug("remote_messages: %s", json.dumps(remote_messages, indent=2))
 
     # logger.info("agent: %r", agent)
     # logger.info("over: %r", agent.get("over"))
@@ -289,7 +290,9 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
                 n_lines -= 1
                 if not n_lines:
                     break
-        lines = lines[:i+1]
+        if i < len(lines) - 1:
+            logger.info("remote_agent: trimming lines, original response:\r%s", response)
+            lines = lines[:i+1]
         response = "\n".join(lines)
 
     # fix indentation for code

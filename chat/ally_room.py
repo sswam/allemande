@@ -178,7 +178,8 @@ class Room:
                     break
             else:
                 # self.path.write_text("")
-                self.path.unlink()
+                self.path.unlink(missing_ok=True)
+            self.path.with_suffix(".log").unlink(missing_ok=True)
         elif op == "clean":
             await self.clean(user)
         elif op == "render":
