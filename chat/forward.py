@@ -88,8 +88,8 @@ def determine_forward_target(response, agent, agents, config, room):
 
 def get_allowed_forward_target(bots2, agent):
     """Get the first allowed forward target from candidates."""
-    forward_allow = agent.get("forward_allow")
-    forward_deny = agent.get("forward_deny")
+    forward_allow = list_to_lower(agent.get("forward_allow"))
+    forward_deny = list_to_lower(agent.get("forward_deny"))
 
     for bot2 in bots2:
         if is_forward_denied(bot2, forward_allow, forward_deny):
@@ -104,8 +104,16 @@ def get_allowed_forward_target(bots2, agent):
     return None
 
 
+def list_to_lower(the_list):
+    """If the_list is a list (assume of strings), convert each element to lower case"""
+    if isinstance(the_list, list):
+        the_list = [a.lower() for a in the_list]
+    return the_list
+
+
 def is_forward_denied(bot, forward_allow, forward_deny):
     """Check if forwarding to bot is denied."""
+    bot = bot.lower()
     if isinstance(forward_allow, list) and bot not in forward_allow:
         logger.info("Forward: %s not allowed, using forward_if_denied", bot)
         logger.info("  forward_allow: %r", forward_allow)
