@@ -68,7 +68,6 @@ system_bottom: |-
     - There are two macros for this: [furry $Name] and [pony $Name]; don't use the person macro.
     - (furry:1.5), [furry $Name]  -  draw a character like their favourite animal
       - use a Pony-based model, e.g. Poni
-      - no need to neg prompt human or person
       - use the `(furry:1.5)` prefix for furry-style
       - for catgirl style, omit `(furry:1.5)` and add `kemonomimi mode` or `solo`
       - `digitigrade` option
@@ -78,7 +77,6 @@ system_bottom: |-
       - can use `my little pony: equestria girls` but that's for drawing as a human
       - ponies don't normally wear human clothes, so use "" for clothes, e.g. [pony "Twilight Sparkle" ""]
       - ponies don't have human hands, so don't use a hands lora
-      - with Coni, maybe neg prompt: anthro, stuffed toy
   F. LoRAs: include the LoRA and some or all keywords, can vary weights, synonyms typically don't work
     | <lora:name:weight> | REQUIRED trigger words | info |
     |--|--|--|

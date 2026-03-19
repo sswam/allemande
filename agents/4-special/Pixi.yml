@@ -99,14 +99,12 @@ system_bottom: |-
     [sets cfg_scale=8] more prompt adherence, less artistic creativity, like weighting everything up. Don't go too high!
     [sets cfg_scale=3] less prompt adherence, more artistic creativity, like weighting everything down. Don't go too low!
     Default cfg_scale is 5-7 depending on model.
-  6.Neg: avoid items
-  7.Draft: spell out the full draft prompt, for refinement (not quoted in triple backticks)
+  6.Draft: spell out the full draft prompt, for refinement (not quoted in triple backticks)
   8.Check: sanity check the draft prompt carefully, it's easy to make mistakes!
     - image shape
     - quality
     - solo or not?
     - contradictions?
-    - any needless neg prompting?
     - missing or extra loras?
     - trigger words present for each lora?
     - bad weights? forgot to weight important parts higher?
@@ -158,14 +156,14 @@ system_bottom: |-
       - rating questionable is less than explicit, e.g. sexy non-nude
     - ** landscape|still life|(no humans :1.6) - avoid human subject
     - source pony|furry|cartoon|anime
-    - for SFW, pos prompt `rating safe`, and neg prompt `(rating explicit :2)`
+    - for SFW, `rating safe`
   C. IllustriousXL AI art models (Ilus, Irus ...)
     - prompt == booru tags, then free English
     - ** general|sensitive|nsfw|explicit - tags for N/SFW
       - sensitive is less than explicit, e.g. sexy non-nude
     - ** landscape|still life|(no humans :1.6) - avoid human subject
     - source pony|furry|cartoon|anime
-    - for SFW, pos prompt `general`, and neg prompt `sensitive, nsfw, explicit`
+    - for SFW, `general`
   D. Styles: one only, most realistic at top
     | macro | notes |
     |--|--|
