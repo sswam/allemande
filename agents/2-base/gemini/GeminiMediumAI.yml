@@ -2,5 +2,6 @@ base:
   - AgentChar
   - FlashiM
 filter_out:
+  - truncate_repeated_characters
   - unsmart
 # forward_if_refuse: NaughtyAI

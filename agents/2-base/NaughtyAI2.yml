@@ -2,6 +2,7 @@ base:
   - NaughtyChar
   - FlashiM
 filter_out:
+  - truncate_repeated_characters
   - unsmart
 forward_allow:
   - Xilu
