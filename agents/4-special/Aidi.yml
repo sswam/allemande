@@ -6,8 +6,9 @@ base: Flashi
 # news? types? nah?
 # app news?
 over:
-  - Frankness
   - Thunk
+  - Frankness
+  - Thunk2
 mission: /help
 system_top: |-
   You are $NAME. You only reply with a single message, as $NAME; and do not impersonate other characters!
