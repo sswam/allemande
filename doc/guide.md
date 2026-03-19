@@ -626,10 +626,11 @@ digraph Mistral {
 
     "Mistral" [label=<<b>Mistral AI</b>>]
     "Misti" [label=<<b>Misti</b><br/><font point-size="10">Mistral Large 2411</font><br/><font point-size="8">128K context</font><br/><font point-size="8">General purpose, reasoning</font>>]
-    "Veni" [label=<<b>Veni</b><br/><font point-size="10">Venice: Uncensored</font><br/><font point-size="8">33K context</font><br/><font point-size="8">Uncensored</font>>]
-
+    "Veni" [label=<<b>Veni</b><br/><font point-size="10">Venice Uncensored 1.1</font><br/><font point-size="8">32K context</font><br/><font point-size="8">Uncensored</font>>]
+    "Venni" [label=<<b>Venni</b><br/><font point-size="10">Venice Role Play Uncensored</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Uncensored</font>>]
     "Mistral" -> "Misti"
     "Mistral" -> "Veni"
+    "Mistral" -> "Venni"
 }
 ```
 
@@ -764,7 +765,8 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
 - **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
-- **Veni** (Venice: Uncensored; Dolphin Mistral 24B Venice Edition): Uncensored
+- **Veni** (Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition): Uncensored
+- **Venni** (Venice Role Play Uncensored): Uncensored
 
 These characters are not prompted, or only minimally: they serve for direct access to the base models.
 
@@ -1022,7 +1024,8 @@ type: visual
 | DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192          | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
 | Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Mistral       | Mistral Large 2411    | Misti   | 128K    | 128K          | $2              | $6               | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
-| Mistral+      | Venice: Uncensored    | Veni    | 33K     | 33K           | $0.50           | $2               | Venice: Uncensored; Dolphin Mistral 24B Venice Edition: Uncensored.                                              |
+| Mistral+      | Venice Uncensored 1.1 | Veni    | 32K     | 32K           | $0.20           | $0.90            | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                                       |
+| Mistral+      | Venice Role Play      | Venni   | 128K    | 128K          | $0.50           | $2               | Venice Role Play Uncensored.                                                                                     |
 | MoonshotAI    | Kimi K2 0905          | Kimi    | 262K    | 262K          | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
 | MoonshotAI    | Kimi K2.5             | Kimmi   | 262K    | 262K          | $0.45           | $2.50            | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling.          |
 | Z.AI          | GLM 4.6               | Glimi   | 205K    | 205K          | $0.50           | $1.90            | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.                        |
@@ -1054,7 +1057,7 @@ Claude: Can talk about adult concerns including sexuality, but will not engage w
 OpenAI and xAI Models: Limited engagement with NSFW topics.
 Gemini, DeepSeek, Mistral: Can engage with any NSFW topic.
 Llama: Can engage with any NSFW topic, practically uncensored but may be reluctant by default.
-Venice: Uncensored: Fully uncensored, or as close as it gets.
+Venice Uncensored: Fully uncensored, or as close as it gets.
 
 If you notice any unexpected censorship, please report it to us, many issues can be fixed by adjusting character prompts.
 

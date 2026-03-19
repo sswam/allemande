@@ -487,7 +487,14 @@ MODELS = {
     "venice-uncensored": {
         "aliases": ["veni"],
         "vendor": "venice",
-        "description": "Venice: Uncensored",
+        "description": "Venice Uncensored 1.1",
+        "cost_in": 0.2,
+        "cost_out": 0.9,
+    },
+    "venice-uncensored-role-play": {
+        "aliases": ["venni"],
+        "vendor": "venice",
+        "description": "Venice Role Play Uncensored",
         "cost_in": 0.5,
         "cost_out": 2,
     },
