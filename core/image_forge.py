@@ -624,7 +624,7 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
     negative_prompt = config.get("negative_prompt", "")
     if negative_prompt == "":
         try:
-            prompt, negative_prompt = re.split(r"\s+NEGATIVE\s+", prompt, 1)
+            prompt, negative_prompt = re.split(r"\s*\bNEGATIVE\b\s*", prompt, 1)
         except ValueError:
             pass
 
