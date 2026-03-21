@@ -192,7 +192,9 @@ async def local_agent(c, agent, _query) -> str:
     context = chat.context_remove_thinking_sections(context, agent)
 
     # remove image details (alt text)
-    context = chat.context_remove_image_details(context)
+    logger.info("see_alt: %r", agent.get("see_alt"))
+    if not agent.get("see_alt"):
+        context = chat.context_remove_image_details(context)
 
     # TODO need to add in the image details before sending to the model now, also for remote agents; optional per agent / options too?
 

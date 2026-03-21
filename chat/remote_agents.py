@@ -84,7 +84,9 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
     context = chat.context_remove_thinking_sections(context, agent)
 
     # remove image details (alt text)
-    context = chat.context_remove_image_details(context)
+    logger.info("see_alt: %r", agent.get("see_alt"))
+    if not agent.get("see_alt"):
+        context = chat.context_remove_image_details(context)
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?
