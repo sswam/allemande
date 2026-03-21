@@ -106,8 +106,13 @@ server {
 
 		if ($cors_header = "https://chat.$ALLEMANDE_DOMAIN") {
 			add_header Access-Control-Allow-Origin $cors_header always;
-			add_header Access-Control-Allow-Credentials true;
+			add_header Access-Control-Allow-Credentials 'true' always;
+		        # add_header Access-Control-Allow-Methods 'GET, HEAD, OPTIONS' always;
 		}
+
+		# if ($request_method = 'OPTIONS') {
+		# 	return 204;
+		# }
 		try_files $uri $uri/ @extra;
 	}
 
