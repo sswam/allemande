@@ -74,6 +74,7 @@ You can read our detailed [Terms of Service](/terms).
 - **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually by asking Summi or another summary agent to make a summary, then pasting into a new chat, a mission file, or an agent character sheet.
 - **Notifications**: We're working on AI initiative and notifications, it's not done yet.
 - **Voice Chat**: Voice chat is under development, it's going to be good!
+- **Account Management**: To reset your password, change your name or contact details, or delete your account, please message Sam.
 
 ### Future Directions
 
