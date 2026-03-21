@@ -132,7 +132,7 @@ You are responsible for your own safety and behaviour in Ally Chat.
 
 The only content rule is to keep it legal:
 
-- No NCII (real people without consent).
+- No NCII (NSFW images of real people without consent).
 - No CSAM (underage NSFW images).
 - Literally anything else is okay.
 
