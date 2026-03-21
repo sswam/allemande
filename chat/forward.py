@@ -7,7 +7,7 @@ import ally_room
 
 logger = logging.getLogger(__name__)
 
-async def handle_forwarding(run_agent, response, agent, c):
+async def handle_forwarding(generate_agent_response, response, agent, c):
     """Handle forwarding logic for agent responses."""
     if not agent.get("forward"):
         return response
@@ -24,7 +24,7 @@ async def handle_forwarding(run_agent, response, agent, c):
     if not forward_target:
         return response
 
-    forwarded_response = await execute_forward(c, run_agent, forward_target, agent)
+    forwarded_response = await execute_forward(c, generate_agent_response, forward_target, agent)
 
     logger.debug("Forwarded response from %s: %s", forward_target, forwarded_response)
 
@@ -37,7 +37,7 @@ async def handle_forwarding(run_agent, response, agent, c):
         forward_if_blank_2 = agent.get("forward_if_blank_2")
         if forward_if_blank_2:
             logger.info("Forward: blank response from %s, using forward_if_blank_2", forward_target)
-            forwarded_response = await execute_forward(c, run_agent, forward_if_blank_2, agent)
+            forwarded_response = await execute_forward(c, generate_agent_response, forward_if_blank_2, agent)
 
     return forwarded_response
 
@@ -127,15 +127,14 @@ def is_forward_denied(bot, forward_allow, forward_deny):
     return False
 
 
-async def execute_forward(c, run_agent, bot2, agent):
+async def execute_forward(c, generate_agent_response, bot2, agent):
     """Execute forwarding to another agent."""
     logger.info("Forwarding from %s to %s", agent.name, bot2)
     forward_keep_prompts = agent.get("forward_keep_prompts")
     agent2 = c.agents.get(bot2).apply_identity(agent, keep_prompts=forward_keep_prompts, no_over=True)
     # logger.info("Forward agent: %r", agent2)
 
-    query = c.history[-1] if c.history else ""
-    response = await run_agent(c, agent2, query)
+    response = await generate_agent_response(c, agent2)
 
     if response is None:
         return None

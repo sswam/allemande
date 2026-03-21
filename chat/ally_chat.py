@@ -333,13 +333,14 @@ async def run_each_bot(c, bots):
 
         query, tool_call_ix = find_matching_tool_call_query(agent, tool_calls, tool_call_ix)
 
-        response = await generate_bot_response(c, bot, query=query)
+        agent = c.agents.get(bot)
+        response = await generate_agent_response(c, agent, query=query)
 
         if response is None:
             continue
 
         response = response.lstrip().rstrip("\n ")
-        response = await forward.handle_forwarding(run_agent, response, agent, c)
+        response = await forward.handle_forwarding(generate_agent_response, response, agent, c)
 
         response = apply_narrator_mode(response, agent)
         poke_next = should_poke_next(response, agent)
@@ -383,9 +384,9 @@ def should_process_bot(agent):
     return agent and agent.get("type") not in [None, "human", "visual", "mixin"]
 
 
-async def generate_bot_response(c, bot, query=None):
-    """Generate a response from a bot agent."""
-    agent = c.agents.get(bot)
+async def generate_agent_response(c, agent, query=None):
+    """Generate a response from an agent."""
+    bot = agent.name
     my_mission = load_agent_mission(c.room, bot, c.mission, c.args, agent=agent)
     query, history = prepare_query(c.history, agent, bot, query=query)
 
