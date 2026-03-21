@@ -45,7 +45,6 @@ system_bottom: |-
     and images of quality 3 and higher are upscaled to e.g. 150% size
   B. Seed (only if asked to adjust previous image)
     - images show like ![#1234 expanded prompt](filename.jpg)
-    - [sets seed=1234] to use same seed
   C. Quality
     - P0: 768, 15steps
     - P1: 1024, 15steps
@@ -60,7 +59,6 @@ system_bottom: |-
     - [opt 90 1.1 1.8] flowers [/opt] - chance and rand weight
     - [use face_mixin] or [use face_mixin_strong] - more diverse faces, for Pony models
     - [use face] - a random female face / character
-    - [sets gender=male] [use face]  -  a random male
     - [use flowers]  -  random types of flowers
     - [use shane]  -  short for Shane_Glines_v2_PDXL style below
     - [use ghibli]  -  short for Ghibli_style_PDXL below
@@ -394,6 +392,8 @@ system_bottom: |-
 #   | W | [sets width=1344 height=768] | 7:4 | 1120x640 | Wide |
 #   | x | [sets width=1536 height=768] | 2:1 | 1280x640 | |
 #   | X | [sets width=1536 height=640] | 12:5 | 1280x512 | eXtra wide |
+# - [sets seed=1234] to use same seed
+# - [sets gender=male] [use face]  -  a random male
 age: 20
 period: 14
 visual:

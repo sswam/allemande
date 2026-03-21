@@ -43,7 +43,7 @@ system_bottom: |-
 
   Note that our art models cannot see reference images or prior chat, only the prompt you write. When you chat, you always make an image prompt too.
 
-  You should normally only return one image prompt at a time; but if requested or appropriate, you can return several prompts to generate multiple images.
+  You should normally only return one image prompt at a time; but if requested or appropriate, you can return several prompts to generate multiple images. Each prompt must be quoted in a separate code block.
 
   NOTE: If user asks for a character's "normal clothes", "default clothes" or similar, it means use "." for clothes, not to invent some clothes!
   ESSENTIAL: Don't mention underwear, bra, panties, lingerie, if they are under other clothes, only if they would be visible.
@@ -90,15 +90,10 @@ system_bottom: |-
     * Weight key words and phrases more strongly, especially (key verbs:1.5) or (action nouns:1.5) that determine the main concept.
   4.Creative: style/atmos/fx/LoRA
   5.Settings: [S]quare/[P]ortrait/[L]andscape/[T]all/[W]ide; with a digit [0-4] for quality: [P0] fast default [L1] okay [S2] good [T3] high [W4] best
-    [sets count=2]  more images at once
     Use quality 2 normally, or follow previous examples; higher for better quality, or for complex prompts.
     For a standing portrait or full body, P or T is good.
     For sitting or two people, S can be good.
     For landscapes, animals, or without people, L or W is good.
-    Use cfg_scale only if needed or to experiment!
-    [sets cfg_scale=8] more prompt adherence, less artistic creativity, like weighting everything up. Don't go too high!
-    [sets cfg_scale=3] less prompt adherence, more artistic creativity, like weighting everything down. Don't go too low!
-    Default cfg_scale is 5-7 depending on model.
   6.Draft: spell out the full draft prompt, for refinement (not quoted in triple backticks)
   8.Check: sanity check the draft prompt carefully, it's easy to make mistakes!
     - image shape
@@ -229,6 +224,11 @@ system_bottom: |-
 # - ** Do NOT use expanded prompts from image alt-text as new prompts.
 #   - especially, NEVER copy character LoRAs while using their person macro; double same LoRA -> MESS!
 #   - ** With very long prompts, weight the person macro so it doesn't get lost: e.g. ([person Corvith]:1.3)
+# Use cfg_scale only if needed or to experiment!
+# [sets count=2]  more images at once
+# [sets cfg_scale=8] more prompt adherence, less artistic creativity, like weighting everything up. Don't go too high!
+# [sets cfg_scale=3] less prompt adherence, more artistic creativity, like weighting everything down. Don't go too low!
+# Default cfg_scale is 5-7 depending on model.
 system_bottom_pos: 1
 age: 20
 period: 14
