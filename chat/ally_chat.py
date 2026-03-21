@@ -716,6 +716,16 @@ def move_contrib(path: Path) -> None:
     Path(path).rename(Path(dest) / Path(path).name)
 
 
+def touch_parent_dirs(file_path: Path, top_path: Path) -> None:
+    """Touch each folder above file_path, up to and including top_path (or /)."""
+    current = file_path.parent
+    while True:
+        current.touch()
+        if current == top_path or current == current.parent:
+            break
+        current = current.parent
+
+
 async def watch_loop(args):
     """Follow the watch log, and process files."""
     skip = defaultdict(int)
@@ -749,6 +759,9 @@ async def watch_loop(args):
                 new_size = int(new_size) if new_size != "" else None
 
                 file_type = check_file_type(file_path)
+
+                if file_path.startswith(str(settings.PATH_ROOMS)+"/"):
+                    touch_parent_dirs(Path(file_path), settings.PATH_ROOMS)
 
                 logger.info("File change detected: %r, type: %r", file_path, file_type)
 
