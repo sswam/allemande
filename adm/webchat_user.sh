@@ -288,7 +288,11 @@ remove-user() {
 	htpasswd -D .htpasswd "$user"
 
 	# remove from any .access.yml lists
-	find rooms/ -name .access.yml | xa sed -i "/^- $user\$/d"
+	find rooms/ -name .access.yml | while read A; do
+		if q grep "^- $user\$" "$A"; then
+			sed -i "/^- $user$/d" "$A"
+		fi
+	done
 
 	# remove style and user directory
 	mv rooms/"$user" "$removed_dir"/rooms
