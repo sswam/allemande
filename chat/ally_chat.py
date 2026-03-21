@@ -716,11 +716,19 @@ def move_contrib(path: Path) -> None:
     Path(path).rename(Path(dest) / Path(path).name)
 
 
-def touch_parent_dirs(file_path: Path, top_path: Path) -> None:
-    """Touch each folder above file_path, up to and including top_path (or /)."""
-    current = file_path.parent
+def touch_parent_dirs(path: Path, top_path: Path) -> None:
+    """Update mtime for each folder above path, up to and including top_path (or /)."""
+    if not path.exists():
+        return
+    stat = path.stat(follow_symlinks=False)
+    mtime = stat.st_mtime
+    current = path.parent
     while True:
-        current.touch()
+        if current.is_dir():
+            dir_stat = current.stat(follow_symlinks=False)
+            if mtime > dir_stat.st_mtime:
+                logger.info("touch_parent_dirs: updating %s -> %s from %s for %s", dir_stat.st_mtime, mtime, str(path), str(current))
+                os.utime(current, times=(dir_stat.st_atime, mtime))
         if current == top_path or current == current.parent:
             break
         current = current.parent
