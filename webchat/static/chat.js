@@ -836,10 +836,12 @@ export async function set_room(room_new, no_history) {
     return;
   }
 
-  // check for nsfw room in wrong case
-  const room_new_lc = room_new.toLowerCase();
-  if (room_new_lc == "nsfw" || room_new_lc.startsWith("nsfw/"))
-    room_new = "nsfw" + room_new.slice(4);
+  // fix top-level dir not in lower case
+  if (room_new.includes("/")) {
+    const top_dir = room_new.split("/")[0].toLowerCase();
+    if (!room_new.startsWith(top_dir + "/"))
+      room_new = top_dir + room_new.slice(top_dir.length);
+  }
 
   is_private = room_new.startsWith(user + "/");
   room_nsfw = is_private || room_new.startsWith("nsfw/");
