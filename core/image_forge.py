@@ -48,6 +48,7 @@ DEFAULT_SHORTCUT = "P0"
 MAX_COUNT = 10
 MAX_STEPS = 150  # 30
 
+TIME_EPSILON = 0.001  # a small time to add to distinguish job order
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
 JOB_BASE_TIME = 25 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
 JOB_BASE_TIME_PRIVATE = 75 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
@@ -301,7 +302,7 @@ def ensure_queue_not_in_past(current_time: float):
         if job.priority >= set_time:
             break
         job.priority = set_time
-        set_time += 0.001  # ensure unique priority and maintain order
+        set_time += TIME_EPSILON  # ensure unique priority and maintain order
         changed = True
 
     if changed:
@@ -331,7 +332,7 @@ async def process_image_queue():
             ensure_queue_not_in_past(current_time)
             queue_jobs = get_sorted_queue_jobs()
             for job in queue_jobs:
-                logger.info("Job: %.0f: %s", job.priority - current_time, job.config.get("user"))
+                logger.info("Job: %.4f: %s", job.priority - current_time, job.config.get("user"))
 
             # Get job from queue
             job = await image_queue.get()
@@ -517,7 +518,9 @@ async def enqueue_image_jobs(
     for j in get_queue_jobs() + ([] if job is None else [job]):
         if not j or j.config.get("user") != user:
             continue
-        priority += j.duration
+        if priority < j.priority:
+            priority = j.priority
+        priority += j.duration or TIME_EPSILON
     logger.info("priority: %.2f", priority - current_time)
 
     # user priority adjustment
@@ -532,10 +535,8 @@ async def enqueue_image_jobs(
     for i in range(count):
         # logger.info("enqueuing job %d/%d for user %s with jobs count %s", i + 1, count, user, user_usage.get(user, 0))
 
-        priority_adjusted = user_multiplier * priority + user_offset
-
         new_job = ImageJob(
-            priority = priority_adjusted,
+            priority = priority,
             d=d,
             output_stem=output_stem,
             prompt=prompt,
@@ -557,13 +558,13 @@ async def enqueue_image_jobs(
         new_job.duration = duration_adjusted
         logger.info("weight, job_penalty, duration: %.2f, %.2f, %.2f", weight, job_penalty, new_job.duration)
 
-        if priority_adjusted - current_time > MAX_QUEUE_DELAY:
+        if priority - current_time > MAX_QUEUE_DELAY:
             # Don't add the job if would run too far out in the future, as the client will have timed out, and better to give immediate feedback for too many pokes, and not clutter the queue
             logger.info("skipping new job: priority %.0f > %.0f seconds", priority_adjusted, MAX_QUEUE_DELAY)
             await complete_batch(new_job)
             break
         await image_queue.put(new_job)
-        priority += new_job.duration
+        priority += new_job.duration or TIME_EPSILON
         if user:
             user_usage[user] = user_usage.get(user, 0.0) + weight
 
