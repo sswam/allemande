@@ -216,7 +216,7 @@ async def process_room(file, request_index, args, history_start=0, skip=None, ag
     config = load_config(room)
 
     async def _process_room_2():
-        logger.info("%s ++++++++ START ++++++++ %s", request_index, room.name)
+        logger.info("\n\n%s ++++++++ START ++++++++ %s\n", request_index, room.name)
         history = chat.chat_read(file, args)
         mission = load_mission(room, config, args)
         summary = load_summary(room, args)
@@ -246,7 +246,7 @@ async def process_room(file, request_index, args, history_start=0, skip=None, ag
             count = await run_each_bot(c, bots)
         finally:
             shutil.rmtree(local_visual_dir)
-        logger.info("%s -------- END -------- %s\n", request_index, room.name)
+        logger.info("\n\n%s -------- END -------- %s\n", request_index, room.name)
 
         return count
 
@@ -450,7 +450,8 @@ def apply_narrator_mode(response, agent):
 def should_poke_next(response, agent):
     """Determine if next agent should be poked based on response."""
     poke_if = agent.get("poke_if", [])
-    poke = any(x in response for x in poke_if)
+    response_sans_think, _n_own_messages = chat.remove_thinking_sections(response, None, 0)
+    poke = any(x in response_sans_think for x in poke_if)
     # logger.info("poke_if: %r, poke: %r, response: %r", poke_if, poke, response)
     return poke
 
