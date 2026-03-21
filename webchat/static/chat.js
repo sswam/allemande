@@ -27,6 +27,7 @@ const $auto = $id('mod_auto');
 const $messages_overlay = $id("messages_overlay");
 const simple_mode_allowed = false;
 
+let messages_iframe_src = null;
 let user_nsfw = false;
 let is_private = false;
 let room_nsfw = false;
@@ -763,17 +764,17 @@ function save_content() {
 export function restore_content() {
   // restore input content from local storage
   if ($content.value) {
-    console.log("content already present, not restoring");
+    // console.log("content already present, not restoring");
     return;
   }
   const key = "content_" + room;
-  console.log("restoring content for", key);
+  // console.log("restoring content for", key);
   const content = localStorage.getItem("content_" + room);
-  console.log("restoring content:", content);
+  // console.log("restoring content:", content);
   if (content) {
     $content.value = content;
   } else {
-    console.log("no saved content to restore");
+    // console.log("no saved content to restore");
   }
 }
 
@@ -784,7 +785,14 @@ function content_keydown(ev) {
 // change room ---------------------------------------------------------------
 
 function messages_iframe_set_src(url) {
+  console.log("messages_iframe_set_src", url);
+  console.log("  current value", messages_iframe_src);
+  if (url === messages_iframe_src) {
+    console.log("  already same src")
+    return;
+  }
   $messages_iframe.contentWindow.location.replace(url);
+  messages_iframe_src = url;
   room_ready = false;
 }
 
@@ -821,6 +829,8 @@ async function get_file_type(name) {
 }
 
 export async function set_room(room_new, no_history) {
+  console.log("set_room: ", room_new);
+
   // check if room_new was passed
   if (room_new === undefined) {
     $room.value = $room.value.trim();
@@ -885,8 +895,10 @@ export async function set_room(room_new, no_history) {
   set_title_hash(room, no_history);
   $id("nav").href = location.pathname + location.hash;
 
-  clear_messages_box();
-  if (!room) return;
+  if (!room) {
+    clear_messages_box();
+    return;
+  }
 
   if (type == "room") {
     try {
@@ -1194,6 +1206,7 @@ function query_to_hash(query) {
 }
 
 function set_title_hash(query, no_history) {
+  // console.log("set_title_hash", query);
   new_hash = query_to_hash(query);
   new_title = query_to_title(query);
 
@@ -1548,6 +1561,11 @@ function handle_message(ev) {
   }
   if (ev.origin != ROOMS_URL) {
     console.error("ignoring message from", ev.origin);
+    return;
+  }
+
+  if (ev.data.type == "init") {
+    messages_iframe_src = ev.data.src;
     return;
   }
 
@@ -2213,7 +2231,7 @@ function auto_play_back_off() {
 
 const EDITABLE_EXTENSIONS = [
   // plain text
-  "bb", "m", "txt", "md", "markdown",
+  "bb", "m", "base", "txt", "md", "markdown",
   // web files
   "html", "htm", "css",
   // textual data
@@ -2244,8 +2262,12 @@ const DISALLOWED_EXTENSIONS = [
 ];
 
 async function check_mime_type(file) {
+  // FIXME: this doesn't work due to a CORS access control issue
+  return "";
   const response = await fetch(ROOMS_URL + "/" + file, {
     method: "HEAD",
+    mode: "cors",
+    credentials: 'include',
   });
   if (!response.ok) {
     throw new Error("HEAD request failed: " + file);
@@ -3746,6 +3768,7 @@ function beta_test() {
 
 export async function init() {
   config = await $import("config");
+  $on(window, "message", handle_message);
   window.ALLEMANDE_LOGIN_URL = config.ALLEMANDE_LOGIN_URL;
   const auth = await authChat();
   user = auth.username;
@@ -3781,9 +3804,9 @@ export async function init() {
   await on_hash_change();
 
   $on($content, "input", message_changed);
-  console.log("before restore_content")
+  // console.log("before restore_content")
   restore_content();
-  console.log("after restore_content", $content.value)
+  // console.log("after restore_content", $content.value)
   message_changed();
 
   // enable keyboard shortcuts
@@ -3896,7 +3919,6 @@ export async function init() {
 
   $on($room, "change", () => set_room());
   $on(window, "hashchange", on_hash_change);
-  $on(window, "message", handle_message);
   const dragControls = initDragControls();
   $on($id("resizer"), "mousedown", (ev) => !simple && dragControls(ev));
   $on($id("resizer"), "touchstart", (ev) => !simple && dragControls(ev));

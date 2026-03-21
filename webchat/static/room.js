@@ -55,6 +55,7 @@ let reloading = false;
 function reload() {
   if (reloading) return;
   reloading = true;
+  console.log("reload room")
   window.location.reload();
 }
 
@@ -77,7 +78,7 @@ export function online() {
 }
 
 function offline() {
-  // console.log("offline!");
+  console.log("offline!");
   if (snapshot)
     return;
   const status = get_status_element();
@@ -85,6 +86,7 @@ function offline() {
   if (view_options.advanced <= 0)
     status.innerText += " disconnected; reload!";
   show(status);
+  console.log("will reload on event");
   for (const evname of ["mouseenter", "mousemove", "click", "touchstart"]) 
     document.body.addEventListener(evname, reload);
 }
@@ -96,15 +98,16 @@ export function clear() {
 }
 
 function ready_state_change() {
-  /* This does not work now, who knows why */
+  // might cause a double-load in navigation??
+
   // console.log("ready state change", document.readyState);
-  if (document.readyState !== "loading") {
-    offline();
-  }
+  // if (document.readyState !== "loading") {
+  //   offline();
+  // }
 }
 
 function load_error() {
-  // console.log("load error");
+  console.log("load error");
   /* Never seen this work */
   offline();
 }
@@ -1734,6 +1737,8 @@ function bugfix_hack_load_bootstrap_icons_font() {
 */
 
 async function common_main() {
+  if (inIframe)
+    window.parent.postMessage({ type: "init", src: window.location.href }, ALLYCHAT_CHAT_URL);
   config = await $import("chat:config");
   $on(document, "copy", fix_browser_copy);
 }
