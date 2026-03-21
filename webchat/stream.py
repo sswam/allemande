@@ -107,7 +107,7 @@ async def watch_lock_file():
         await cancel_private_room_streams()
 
     watcher = aionotify.Watcher()
-    watcher.watch(path=".", flags=aionotify.Flags.CREATE | aionotify.Flags.DELETE)
+    watcher.watch(path=".", flags=aionotify.Flags.CREATE | aionotify.Flags.DELETE | aionotify.Flags.MOVED_FROM)
 
     await watcher.setup(asyncio.get_event_loop())
 
@@ -117,11 +117,12 @@ async def watch_lock_file():
             if event is None:
                 continue  # Shouldn't happen, but to fix pyrefly
             if event.name == LOCK_FILE:
+                logger.info("Lock file notification: flags = %r", event.flags)
                 if event.flags & aionotify.Flags.CREATE:
                     logger.info("Lock file created, blocking private rooms")
                     lock_present = True
                     await cancel_private_room_streams()
-                elif event.flags & aionotify.Flags.DELETE:
+                elif event.flags & (aionotify.Flags.DELETE | aionotify.Flags.MOVED_FROM):
                     logger.info("Lock file removed, unblocking private rooms")
                     lock_present = False
     except asyncio.CancelledError:
@@ -151,11 +152,15 @@ async def cancel_private_room_streams():
                     task.cancel()
 
 
+watch_lock_file_task = None
+
+
 async def startup_event():
     """Startup event"""
+    global watch_lock_file_task
     logger.info("Starting up...")
     setup_templates()
-    asyncio.create_task(watch_lock_file())
+    watch_lock_file_task = asyncio.create_task(watch_lock_file())
 
 
 async def shutdown_event():
