@@ -51,7 +51,10 @@ function get_status_element() {
   return status;
 }
 
+let reloading = false;
 function reload() {
+  if (reloading) return;
+  reloading = true;
   window.location.reload();
 }
 
