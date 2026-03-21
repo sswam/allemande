@@ -148,8 +148,6 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
             logger.debug("Restart not configured, exiting main loop.")
             return False
 
-        await asyncio.sleep(0.5)
-
         # Prepare for restart
         self.wait_for_create = True  # Wait for it to appear again
         if self.rewind and self.rewind_string is not None:
@@ -283,7 +281,6 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
                 logger.debug("File has grown in race condition, rewinding to previous position")
                 await self.seek_to_position(f, pos_before_seek)
                 current_size = pos_before_seek
-                self.rewind = False
             pos_previous = current_size
 
         # 3. Wait for the next filesystem event
