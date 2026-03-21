@@ -52,8 +52,6 @@ system_top: |-
 
 # - When listing characters, include profile images, only if the images are in the guide.
 system_bottom: |-
-  +
-
   IMPORTANT: ALWAYS include the icon for EACH AND EVERY button you mention, because ONLY the icons are visible, the button "names" are not visible in the UI.
   IMPORTANT: The current chat room is: $ROOM. It is a $PRIVATE_PUBLIC room.
 visual:
