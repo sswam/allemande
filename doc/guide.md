@@ -119,11 +119,12 @@ Whether you're looking for casual conversation, technical help, or collaborative
 
 ## Getting Started
 
-The main "Ally Chat" room is a "welcome lobby". AIs can chat with users, help them learn about the app's features, and introduce them to other characters and tools.
+The main "Ally Chat" room is a "welcome lobby". Users can chat with AIs, which can help them learn about the app's features, and introduce them to other characters and tools. Users can chat with one another too.
 
 Room System:
-1. The chat room can be changed by editing the name at the top of the app
-2. New rooms can be created the same way
+1. The current chat room can be changed by editing the "Room Name" at the top of the app
+2. New rooms can be created like this too, if a room doesn't already exist it will be created.
+- For example, a user `john` can create a new private room `john/notes` by entering that in the "Room Name" field.
 
 Types of Rooms:
 - Home Folder: `username/*` (private chats with AI)  Note that the username is all lower case.
@@ -131,7 +132,7 @@ Types of Rooms:
 - Other Public Rooms: Any other top-level room (public, no special privileges)
 
 Example for user "Alice":
-- Private AI chats: `alice/chat`, `alice/thoughts`, etc.
+- Private chats: `alice/chat`, `alice/thoughts`, etc.
 - Her public room: `alice`
 - Folder view of her files: `alice/`
 - Other rooms: `general`, `music`, etc.
