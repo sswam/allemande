@@ -46,7 +46,7 @@ welcomes = [
 
 $id("h1").textContent = "Ally Chat - " + welcomes[Math.floor(Math.random() * welcomes.length)];
 $id("h1").classList.add(fort(["rainbow", "fame"]));
-shuffle_lists();
+// shuffle_lists();
 </script>
 
 <details markdown><summary><span class=h2>News</span></summary>
@@ -54,6 +54,7 @@ shuffle_lists();
 - We are 9/10ths of the way through a major upgrade to our image gen engine.
 - There is one major bug at large: the ever annoying undo / clear / streaming bug.
 - Many characters now have anti-hallucination and anti-sycophancy prompting turned on by default.
+- You can now prompt for several images from a single message, and so can Illu and the characters.
 </details>
 
 <!-- say hi, @Loni -->

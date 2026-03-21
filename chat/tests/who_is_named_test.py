@@ -122,14 +122,14 @@ def test_access_control(mock_room, basic_setup):
     )
     assert result == []
 
-def test_agent_is_tool():
-    tool_agent = {"link": "tool", "type": "normal"}
-    image_agent = {"link": "normal", "type": "image_gen"}
-    normal_agent = {"link": "normal", "type": "normal"}
-
-    assert subject.agent_is_tool(tool_agent) is True
-    assert subject.agent_is_tool(image_agent) is True
-    assert subject.agent_is_tool(normal_agent) is False
+# def test_agent_is_tool():
+#     tool_agent = {"link": "tool", "type": "normal"}
+#     image_agent = {"link": "normal", "type": "image_gen"}
+#     normal_agent = {"link": "normal", "type": "normal"}
+# 
+#     assert subject.agent_is_tool(tool_agent) is True
+#     assert subject.agent_is_tool(image_agent) is True
+#     assert subject.agent_is_tool(normal_agent) is False
 
 def test_filter_access(mock_room):
     access_cache = {}

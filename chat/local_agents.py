@@ -177,7 +177,7 @@ async def local_agent(c, agent, _query) -> str:
 
     model_name = agent["model"]
     n_context = agent.get("context")
-    if agent.get("type") in ["image_a1111", "safe_shell", "search"]:
+    if agent.get("type") in ["image_a1111"]:
         n_context = 1
 
     if n_context is not None:

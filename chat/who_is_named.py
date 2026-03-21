@@ -21,17 +21,6 @@ logger.setLevel(logging.INFO)
 __version__ = "0.2.4"
 
 
-def agent_is_tool(agent: dict[str, Any]) -> bool:
-    """check if an agent is a tool"""
-    agent_type = agent.get("type")
-    link = agent.get("link")
-    if link == "tool":
-        return True
-    if agent_type and agent_type.startswith("image_"):
-        return True
-    return False
-
-
 def filter_access(invoked: Iterable[str], room: Room | None, access_check_cache: dict[str, int], agents: Agents|None=None) -> list[str]:
     """filter out agents that don't have access"""
     if not room:
@@ -229,7 +218,7 @@ def who_is_named(  # pylint: disable=too-many-arguments, too-many-positional-arg
         if candidate_key not in agent_lookup:
             continue
         agent = agent_lookup[candidate_key]
-        is_tool = agents is not None and agent in agents.agents and agent_is_tool(agents.get(agent))  # type: ignore[attr-defined]
+        is_tool = agents is not None and agent in agents.agents and agents.get(agent).is_tool()  # type: ignore[attr-defined]
         best_match = find_name_in_content(content, agent, is_tool=is_tool, ignore_case=ignore_case)
         if best_match:
             matches.append(best_match)

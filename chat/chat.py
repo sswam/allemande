@@ -281,9 +281,13 @@ def process_fn(msg):
 def clean_prompt(context, name, delim):
     """Clean the prompt for image gen agents and tools."""
 
-    # logger.info("clean_prompt: before: %s", context)
+    logger.info("clean_prompt: before: %s", context)
 
     agent_name_esc = regex.escape(name)
+
+    # Remove speaker name at start
+    if context:
+        context[0] = re.sub(r"^\w.*?:\t", "\t", context[0])
 
     # Remove one initial tab from each line in the context, if all lines start with a tab
     if all(line.startswith('\t') for line in context):
@@ -296,28 +300,28 @@ def clean_prompt(context, name, delim):
 
     # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with triple backticks
     text1 = regex.sub(
-        r".*?```\w*\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)```.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
+        r".*?```\w*\s*@?" + agent_name_esc + r"\b[,;.!:]*(.*?)```.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
     )
 
     # logger.info("clean_prompt: 2: %s", text1)
 
-    # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with triple backticks after the name
-    if text1 == text:
-        text1 = regex.sub(
-            r".*?\b" + agent_name_esc + r"\b[,;.!:]*\s*```\w*\s*(.*?)```.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
-        )
+    # # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with triple backticks after the name
+    # if text1 == text:
+    #     text1 = regex.sub(
+    #         r".*?\b?" + agent_name_esc + r"\b[,;.!:]*\s*```\w*\s*(.*?)```.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
+    #     )
 
     # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation, with single backticks
     if text1 == text:
         text1 = regex.sub(
-            r".*?`\s*" + agent_name_esc + r"\b[,;.!:]*(.*?)`.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
+            r".*?`\s*@?" + agent_name_esc + r"\b[,;.!:]*(.*?)`.*", r"\1", text, flags=regex.DOTALL | regex.IGNORECASE, count=1
         )
 
     # logger.info("clean_prompt: 3: %s", text1)
 
-    # Remove up to the first occurrence of the agent's name (case insensitive) and any following punctuation
+    # Remove up to the first occurrence of the agent's name (case insensitive) at start of line, and any following punctuation
     if text1 == text:
-        text1 = regex.sub(r".*?\b" + agent_name_esc + r"\b[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE, count=1)
+        text1 = regex.sub(r".*?^\s*@?" + agent_name_esc + r"\b[,;.!:]*", r"", text, flags=regex.DOTALL | regex.IGNORECASE | regex.MULTILINE, count=1)
         text1 = re.sub("```\w*", "", text1)
 
         # logger.info("clean_prompt: 4: %s", text1)

@@ -644,6 +644,16 @@ class Agent:
         """String representation of the agent"""
         return f"Agent(name={self.name}, type={self.get('type')})\n" + yaml.dump(self.data, sort_keys=False)
 
+    def is_tool(self) -> bool:
+        """check if an agent is a tool"""
+        link = self.get("link")
+        if link == "tool":
+            return True
+        agent_type = self.get("type")
+        if agent_type and agent_type.startswith("image_"):
+            return True
+        return False
+
 
 class Agents:
     """A collection of agents"""

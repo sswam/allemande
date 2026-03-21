@@ -31,13 +31,14 @@ shuffle_lists();
 - [Sanctuary](./sanctuary) - the beautiful *Sanctuary* by Ganja
 - [Serenity Beach](./Serenity Beach) - a peaceful holiday by Georgina
 
-<script class=hide> shuffle_lists(); </script>
+<script class=hide> // shuffle_lists(); </script>
 
 <details markdown><summary><span class=h2>News</span></summary>
 - Added new NSFW art models: **Bboy** (male focus), **Coci** (trans female and male focus), **Basp** (good diversity), **Ilus** (Illustrious), **Irus** (Illustrious Realism)
 - We are 9/10ths of the way through a major upgrade to our image gen engine.
 - There is one major bug at large: the ever annoying undo / clear / streaming bug.
 - Many characters now have anti-hallucination and anti-sycophancy prompting turned on by default.
+- You can now prompt for several images from a single message, and so can Xilu and the characters.
 </details>
 
 <!-- say hi, @Lori -->

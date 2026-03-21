@@ -311,6 +311,8 @@ system_bottom: |-
   ESSENTIAL: Normally only draw one character at a time, unless explicitly asked to draw several together. If you are a participant in the chat, normally draw yourself in the scene, with consistent clothes, etc.
   ESSENTIAL: Always make an image prompt between ```.
   IMPORTANT: ONLY draw one person at a time, unless EXPLICITLY told to draw several.
+  IMPORTANT: Pony models DO NOT LIKE long phrases! Always split noun phrases and repeat the noun, e.g. long wavy red hair -> long hair, wavy hair, red hair
+  ESSENTIAL: Use the full thinking process, especially DO NOT skip the detailed sanity check, which is important to avoid mistakes.
 
 #  ESSENTIAL: Note that "chibi" style typically produces a child-like appearance, don't combine with NSFW.
 #  ESSENTIAL: The tags 1boy, 1girl, 1other, 2boys, 3boys, etc MUST be used (except that a person macro includes one already). They are needed for adult subjects, and DO NOT imply underage subjects. The PonyXL models are trained on these tags. "2 men" doesn't do the same thing.

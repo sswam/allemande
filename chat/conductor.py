@@ -42,7 +42,7 @@ def who_spoke_last(
         if (
             user2 in agents
             and (include_self or user2 != user)
-            and (include_tools or not agent_is_tool(agents.get(user2)))
+            and (include_tools or not agents.get(user2).is_tool())
             and (include_humans or not agent_is_human(agents.get(user2)))
         ):
             return [user2.lower()]
@@ -82,7 +82,7 @@ def agent_is_human(agent: dict[str, Any]) -> bool:
 
 def agent_is_ai(agent: dict[str, Any]) -> bool:
     """check if an agent is an AI"""
-    return not agent_is_tool(agent) and not agent_is_human(agent)
+    return not agent.is_tool() and not agent_is_human(agent)
 
 
 def is_image_message(agents: Agents, message: dict[str, str]) -> bool:
@@ -420,10 +420,10 @@ def _default_pick(default):
     logger.debug("default: %r", invoked)
     return reason, invoked
 
-def new_at_mentioned_agents(content: str, users: list[str], agent_names_and_aliases_with_at: list[str]) -> list[str]:
-    """ Find new @ mentioned agents not in the existing agent names or aliases """
-    # TODO
-    return []
+# def new_at_mentioned_agents(content: str, users: list[str], agent_names_and_aliases_with_at: list[str]) -> list[str]:
+#     """ Find new @ mentioned agents not in the existing agent names or aliases """
+#     # TODO
+#     return []
 
 def who_should_respond(
     message: dict[str, Any] | None,
@@ -604,7 +604,7 @@ def who_should_respond(
         )
         # if ai_invoked_reply_chance failed, the AI can only invoke tools
         if not invoked_reply:
-            invoked = [agent for agent in invoked if agent_is_tool(agents.get(agent))]
+            invoked = [agent for agent in invoked if agents.get(agent).is_tool()]
 
     if not invoked:
         logger.info("direct_reply_chance: %r", direct_reply_chance)

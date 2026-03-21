@@ -53,12 +53,13 @@ import rag
 import forward
 import context
 import context_logging
+import extract_tool_calls
 
 
 RELOADABLE_MODULES = [
     "atail", "ucm", "conductor", "search", "tab", "chat", "bb_lib",
     "ally_markdown", "ally_room", "fetch", "llm", "ally_agents", "remote_agents",
-    "local_agents", "util", "tasks", "ally", "settings", "tools", "rag", "filters", "forward"
+    "local_agents", "util", "tasks", "ally", "settings", "tools", "rag", "filters", "forward", "extract_tool_calls"
 ]
 
 
@@ -242,7 +243,7 @@ async def process_room(file, request_index, args, history_start=0, skip=None, ag
 
             c = context.Context(agents2, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room, local_visual_dir)
 
-            count = await process_bot_responses(c, bots)
+            count = await run_each_bot(c, bots)
         finally:
             shutil.rmtree(local_visual_dir)
         logger.info("%s -------- END -------- %s\n", request_index, room.name)
@@ -318,20 +319,26 @@ def determine_responders(message, agents, history_messages, config, room, missio
     return bots, responsible_human
 
 
-async def process_bot_responses(c, bots):
-    """Process responses from all bots."""
+async def run_each_bot(c, bots):
+    """Run each agent and process responses."""
+    tool_calls = extract_tool_calls.extract_tool_calls(c.history[-1]) if c.history else []
+    tool_call_ix = 0
+
     count = 0
     for bot in bots:
-        if not should_process_bot(bot, c.agents):
+        agent = c.agents.get(bot)
+
+        if not should_process_bot(agent):
             continue
 
-        response = await generate_bot_response(c, bot)
+        query, tool_call_ix = find_matching_tool_call_query(agent, tool_calls, tool_call_ix)
+
+        response = await generate_bot_response(c, bot, query=query)
 
         if response is None:
             continue
 
         response = response.lstrip().rstrip("\n ")
-        agent = c.agents.get(bot)
         response = await forward.handle_forwarding(run_agent, response, agent, c)
 
         response = apply_narrator_mode(response, agent)
@@ -345,19 +352,42 @@ async def process_bot_responses(c, bots):
     return count
 
 
-def should_process_bot(bot, agents):
+def find_matching_tool_call_query(agent: ally_agents.Agent, tool_calls: list[str], tool_call_ix: int) -> tuple[str|None, int]:
+    """ Look for a matching tool call query for this agent """
+    # logger.info("find_matching_tool_call_query 1")
+    query = None
+    if not agent.is_tool():
+        return None, tool_call_ix
+
+    bot = agent.name.lower()
+
+    # logger.info("find_matching_tool_call_query 2: %s", bot)
+
+    for i in range(tool_call_ix, len(tool_calls)):
+        query = tool_calls[i]
+        # logger.info("find_matching_tool_call_query 3: %s %s", query[1:len(bot)+1].lower(), query[len(bot)+1:])
+        if query[1:len(bot)+1].lower() == bot and re.match(r"\W|$", query[len(bot)+1:]):
+            query = query[len(bot)+1:]
+            query = re.sub(r"^[,;.!:]*\s*", "", query)
+            # logger.info("tool call query: %s", query)
+            tool_call_ix = i + 1
+            break
+    else:
+        query = None
+
+    return query, tool_call_ix
+
+
+def should_process_bot(agent):
     """Check if bot should be processed."""
-    if not (bot and bot.lower() in agents.names()):
-        return False
-    agent = agents.get(bot)
-    return agent.get("type") not in [None, "human", "visual", "mixin"]
+    return agent and agent.get("type") not in [None, "human", "visual", "mixin"]
 
 
-async def generate_bot_response(c, bot):
+async def generate_bot_response(c, bot, query=None):
     """Generate a response from a bot agent."""
     agent = c.agents.get(bot)
     my_mission = load_agent_mission(c.room, bot, c.mission, c.args, agent=agent)
-    query, history = prepare_query(c.history, agent, bot)
+    query, history = prepare_query(c.history, agent, bot, query=query)
 
     c = replace(c, mission=my_mission, history=history)
 
@@ -385,8 +415,12 @@ def load_agent_mission(room, bot, base_mission, args, agent=None):
     return my_mission
 
 
-def prepare_query(history, agent, bot):
+def prepare_query(history, agent, bot, query=None):
     """Prepare query and history for agent."""
+    if query:
+        history = [query]
+        return query, history
+
     if history:
         query1 = history[-1]
     else:
