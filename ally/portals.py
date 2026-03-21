@@ -32,7 +32,8 @@ class PortalClient:
                             existing_reqs.append(num)
                         except ValueError:
                             pass
-        self.req_id = (max(existing_reqs) + 1) if existing_reqs else 0
+        # allow an interval of 100 requests if there are existing requests, to avoid the possibility of a collision
+        self.req_id = (max(existing_reqs) + 100) if existing_reqs else 0
 
     async def prepare_request(self, config=None):
         """ Make a request to the core server. """
