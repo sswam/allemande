@@ -1,2 +1,2 @@
 #!/bin/sh
-ls -ltcr --color=tty "$@"
+ls -ltr --color=tty "$@"
