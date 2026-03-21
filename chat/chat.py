@@ -281,7 +281,7 @@ def process_fn(msg):
 def clean_prompt(context, name, delim):
     """Clean the prompt for image gen agents and tools."""
 
-    logger.info("clean_prompt: before: %s", context)
+    # logger.info("clean_prompt: before: %s", context)
 
     agent_name_esc = regex.escape(name)
 
