@@ -727,7 +727,7 @@ def touch_parent_dirs(path: Path, top_path: Path) -> None:
         if current.is_dir():
             dir_stat = current.stat(follow_symlinks=False)
             if mtime > dir_stat.st_mtime:
-                logger.info("touch_parent_dirs: updating %s -> %s from %s for %s", dir_stat.st_mtime, mtime, str(path), str(current))
+                logger.debug("touch_parent_dirs: updating %s -> %s from %s for %s", dir_stat.st_mtime, mtime, str(path), str(current))
                 os.utime(current, times=(dir_stat.st_atime, mtime))
         if current == top_path or current == current.parent:
             break
