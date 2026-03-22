@@ -29,7 +29,7 @@ monitor() {
 	local threshold_mem= m=95       # memory usage threshold percentage
 	local threshold_vm= M=92        # VM (RAM + swap) usage threshold percentage
 	local threshold_inotify= i=1048576  # minimum inotify max_user_watches value
-	local ping_host= p=8.8.8.8      # host to ping test
+	local ping_host= p="8.8.8.8 10.0.1.50"  # space-separated hosts to ping test
 	local killall_vm= K=90          # VM usage threshold to kill processes
 	local killall= k=node           # Processes to kill
 	local domains= n="allemande.ai" # domains to check
@@ -154,9 +154,8 @@ check_disk() {
 	df -h | grep -E '/$|/media/|/mnt|/dev/mapper' | grep -v -E '^overlay|/docker/' |
 	awk '{ print $5 " " $6 }' |
 	while read -r percent mountpoint; do
+		local usage cache_bytes
 		usage=$(printf "%.1f" "${percent%%%}")
-
-		local cache_bytes
 		cache_bytes=$(get_cache_usage "$mountpoint")
 
 		if [ "$cache_bytes" -gt 0 ]; then
@@ -218,19 +217,19 @@ check_vm() {
 }
 
 check_ping() {
-	local ping_fail=0
-	ping -W 1 -c 1 "$ping_host" &>/dev/null
-	ping_fail=$?
-	if [ "$ping_fail" -eq 0 ]; then
-		info "INFO: Server can ping %s" "$ping_host"
-	else
-		info "INFO: Server cannot ping %s" "$ping_host"
-		warn "WARNING: Server cannot ping %s - possible network issues!" "$ping_host"
-	fi
+	local host
+	for host in $ping_host; do
+		if ping -W 1 -c 1 "$host" &>/dev/null; then
+			info "INFO: Server can ping %s" "$host"
+		else
+			info "INFO: Server cannot ping %s" "$host"
+			warn "WARNING: Server cannot ping %s - possible network issues!" "$host"
+		fi
+	done
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
 	monitor "$@"
 fi
 
-# version: 0.1.7
+# version: 0.1.8
