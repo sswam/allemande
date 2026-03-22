@@ -321,7 +321,13 @@ def determine_responders(message, agents, history_messages, config, room, missio
 
 async def run_each_bot(c, bots):
     """Run each agent and process responses."""
-    tool_calls = extract_tool_calls.extract_tool_calls(c.history[-1]) if c.history else []
+    if c.history:
+        query = c.history[-1]
+        query, _n_own_messages = chat.remove_thinking_sections(query, None, 0)
+        tool_calls = extract_tool_calls.extract_tool_calls(query)
+    else:
+        tool_calls = []
+
     tool_call_ix = 0
 
     count = 0
