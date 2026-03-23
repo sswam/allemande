@@ -50,11 +50,9 @@ $id("h1").classList.add(fort(["rainbow", "fame"]));
 </script>
 
 <details markdown><summary><span class=h2>News</span></summary>
-- Simple mode UI is buggy, some issue with the filters.
-- We are 9/10ths of the way through a major upgrade to our image gen engine.
-- There is one major bug at large: the ever annoying undo / clear / streaming bug.
-- Many characters now have anti-hallucination and anti-sycophancy prompting turned on by default.
+- We've greatly improved the chat quality with Llama recently, by removing repetitive fragments from the context.
 - You can now prompt for several images from a single message, and so can Illu and the characters.
+- You can now change your screen name on the fly in a room, with options -> name under the "gear" menu.
 </details>
 
 <!-- say hi, @Loni -->
