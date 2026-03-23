@@ -560,7 +560,7 @@ async def enqueue_image_jobs(
 
         if priority - current_time > MAX_QUEUE_DELAY:
             # Don't add the job if would run too far out in the future, as the client will have timed out, and better to give immediate feedback for too many pokes, and not clutter the queue
-            logger.info("skipping new job: priority %.0f > %.0f seconds", priority_adjusted, MAX_QUEUE_DELAY)
+            logger.info("skipping new job: priority %.0f > %.0f seconds", priority, MAX_QUEUE_DELAY)
             await complete_batch(new_job)
             break
         await image_queue.put(new_job)
@@ -797,18 +797,18 @@ async def serve_requests(portals: str = str(portals_dir), poll_interval: float =
         logger.debug("Initial request detected: %s in %s", req_name, portal)
         await process_request(portals, portal, req_name)
 
-    known_requests_set = set(known_requests)
+    # known_requests_set = set(known_requests)
 
     while True:
         try:
             new_requests = find_todo_requests(portals)
             for portal, req_name in new_requests:
-                if (portal, req_name) in known_requests_set:
-                    continue
+                # if (portal, req_name) in known_requests_set:
+                #     continue
                 logger.debug("New request detected: %s in %s", req_name, portal)
                 await process_request(portals, portal, req_name)
 
-            known_requests_set = set(new_requests)
+            # known_requests_set = set(new_requests)
 
         except (asyncio.CancelledError, KeyboardInterrupt):
             logger.info("Serve requests task cancelled.")

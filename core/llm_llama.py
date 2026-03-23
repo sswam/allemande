@@ -351,11 +351,11 @@ async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float 
         served_count += 1
         await process_request(portals, portal, req, gen, stop_forge=stop_forge)
 
-    known_requests_set = set(known_requests)
+    # known_requests_set = set(known_requests)
 
     while True:
         new_requests = find_todo_requests(portals)
-        new_requests = [(portal, req_name) for portal, req_name in new_requests if (portal, req_name) not in known_requests_set]
+        # new_requests = [(portal, req_name) for portal, req_name in new_requests if (portal, req_name) not in known_requests_set]
         current_time = asyncio.get_event_loop().time()
         time_since_last = current_time - last_request_time
         # logger.debug("idle_timeout, new_requests, time_since_last, served_count: %s %s %s %s", idle_timeout, new_requests, time_since_last, served_count)
@@ -367,7 +367,7 @@ async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float 
                 logger.info("New request: %s in %s", req_name, portal)
                 served_count += 1
                 await process_request(portals, portal, req_name, gen, stop_forge=stop_forge)
-            known_requests_set = set(new_requests)
+            # known_requests_set = set(new_requests)
             last_request_time = asyncio.get_event_loop().time()
 
         # Wait before next poll
