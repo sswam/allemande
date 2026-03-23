@@ -785,10 +785,10 @@ function content_keydown(ev) {
 // change room ---------------------------------------------------------------
 
 function messages_iframe_set_src(url) {
-  console.log("messages_iframe_set_src", url);
-  console.log("  current value", messages_iframe_src);
+  // console.log("messages_iframe_set_src", url);
+  // console.log("  current value", messages_iframe_src);
   if (url === messages_iframe_src) {
-    console.log("  already same src")
+    // console.log("  already same src")
     return;
   }
   $messages_iframe.contentWindow.location.replace(url);
@@ -829,7 +829,7 @@ async function get_file_type(name) {
 }
 
 export async function set_room(room_new, no_history) {
-  console.log("set_room: ", room_new);
+  // console.log("set_room: ", room_new);
 
   // check if room_new was passed
   if (room_new === undefined) {
@@ -1226,7 +1226,7 @@ function set_title_hash(query, no_history) {
 async function on_hash_change() {
   $title.innerText = query_to_title(hash_to_room(location.hash));
   let h = location.hash;
-  console.log("on_hash_change", h, "vs", new_hash);
+  // console.log("on_hash_change", h, "vs", new_hash);
   if (h == "" || h == "#") 
     return go_home();
   if (h == "#~")
@@ -1236,7 +1236,7 @@ async function on_hash_change() {
   if (h != new_hash) {
     let query = hash_to_room(h);
     $room.value = query;
-    console.log("hash change to", query);
+    // console.log("hash change to", query);
     set_room();
   }
 }
@@ -3070,11 +3070,15 @@ async function get_options() {
   const images = data?.agents?.all?.images ?? "";
   const temp = data?.agents?.all?.temp ?? "";
   const mission = data?.mission === "" ? "-" : data?.mission ?? "";
+  const name = data?.users?.[user]?.name ?? "";
+
   $id("opt_context").value = context;
   $id("opt_lines").value = lines;
   $id("opt_images").value = images;
   $id("opt_temp").value = temp;
   $id("opt_mission").value = mission;
+  $id("opt_name").value = name;
+
   return data;
 }
 
@@ -3166,6 +3170,20 @@ async function opt_mission(ev) {
   });
 }
 
+async function opt_name(ev) {
+  let name = ev.target.value;
+  name = name === "" ? null : name;
+  await set_options({
+    room: room,
+    options: {
+      users: {
+        [user]: {
+          name
+        }
+      }
+    }
+  });
+}
 
 async function setup_icons() {
   await $import("icons");
@@ -3891,6 +3909,7 @@ export async function init() {
   $on($id("opt_images"), "change", opt_images);
   $on($id("opt_temp"), "change", opt_temp);
   $on($id("opt_mission"), "change", opt_mission);
+  $on($id("opt_name"), "change", opt_name);
   $on($id("opt_cancel"), "click", () => set_controls());
 
   $on($id("nav_cancel"), "click", () => set_top_left());

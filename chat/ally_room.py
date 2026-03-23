@@ -93,12 +93,18 @@ class Room:
 
         options = self.get_options(user)
 
-        # allow specifying a different speaker user with "=speaker:\tmessage"
+        # allow specifying a different speaker user with "=speaker: message"
+        # or via room options: users.[user].name
         match = re.match(r'^=(.*?):\s(.*)', content, flags=re.DOTALL)
         if match:
             user = match.group(1).strip()
             content = match.group(2).strip()
-            logger.info("  as speaker %s", user)
+            logger.info("  as alias (1) %s", user)
+        else:
+            alias = options.get("users", {}).get(user, {}).get("name")
+            if alias:
+                user = alias
+                logger.info("  as alias (2) %s", user)
 
         # support narration by moderators
         if content.startswith("--") and access & Access.MODERATE.value == Access.MODERATE.value:

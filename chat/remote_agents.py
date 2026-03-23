@@ -106,7 +106,9 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
     await ally_markdown.add_images_to_messages(c.file, context_messages, agent.get("images", 0))
 
     # preprocess markdown in messages for includes
+    # and strip trailing .number from usernames
     for m in context_messages:
+        m["user"] = ally_markdown.user_rstrip_number(m["user"])
         m["content"] = (await ally_markdown.preprocess(m["content"], c.file, m.get("user"), convert_think=False))[0]
 
     # TODO Can't include from system messages, what user permission to use?

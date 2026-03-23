@@ -854,6 +854,14 @@ def markdown_to_html(content: str) -> str:
     return html_content
 
 
+def user_rstrip_number(user: str|None) -> str|None:
+    """Strip trailing .number from a username"""
+    if user is None:
+        return None
+    user_display = re.sub(r"\.\d+$", "", user)
+    return user_display
+
+
 async def message_to_html(message: dict[str, str], bb_file: str) -> str:
     """Convert a chat message to HTML."""
     #     logger.info("converting message to html: %r", message["content"])
@@ -882,8 +890,13 @@ async def message_to_html(message: dict[str, str], bb_file: str) -> str:
         html_content = "&nbsp;"
     user = message.get("user")
     if user:
+        user_display = user_rstrip_number(user)
         user_ee = html.escape(user)
-        return f"""<div class="message" user="{user_ee}"><div class="label">{user_ee}:</div><div class="content">{html_content}</div></div>\n\n"""
+        user_display_ee = html.escape(user_display)
+        title = ""
+        if user != user_display:
+            title = f' title="{user_ee}"'
+        return f"""<div class="message" user="{user_ee}"><div class="label"{title}>{user_display_ee}:</div><div class="content">{html_content}</div></div>\n\n"""
     return f"""<div class="message narrative"><div class="content">{html_content}</div></div>\n\n"""
 
 

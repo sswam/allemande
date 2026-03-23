@@ -270,9 +270,10 @@ async def local_agent(c, agent, _query) -> str:
     agent_name_esc = regex.escape(name)
 
     # preprocess markdown in messages for includes
+    # and strip trailing .number from usernames
     context_messages = [
         {
-            "user": m.get("user"),
+            "user": ally_markdown.user_rstrip_number(m.get("user")),
             "content": (await ally_markdown.preprocess(m["content"], c.file, m.get("user"), convert_think=False))[0]
         }
         for m in bb_lib.lines_to_messages(context)]
