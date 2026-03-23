@@ -22,6 +22,7 @@ import tasks
 from ally.lazy import lazy
 from ally import soma
 import hacky_anti_rep
+import filters
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
@@ -180,6 +181,7 @@ async def local_agent(c, agent, _query) -> str:
     if agent.get("type") in ["image_a1111"]:
         n_context = 1
 
+    # TODO agent invocation options to limit context
     if n_context is not None:
         if n_context == 0:
             context = []
@@ -195,6 +197,11 @@ async def local_agent(c, agent, _query) -> str:
     logger.info("see_alt: %r", agent.get("see_alt"))
     if not agent.get("see_alt"):
         context = chat.context_remove_image_details(context)
+
+    # Apply filter_in filters
+    logger.debug("Applying input filters, query before: %r", context[-1] if context else None)
+    context = filters.apply_filters_in(agent, context)
+    logger.debug("Applying input filters, query after: %r", context[-1] if context else None)
 
     # TODO need to add in the image details before sending to the model now, also for remote agents; optional per agent / options too?
 
@@ -494,5 +501,9 @@ async def local_agent(c, agent, _query) -> str:
     # TODO accept attachments from model
 
     logger.debug("tidy response: %r", tidy_response)
+
+    logger.debug("Applying output filters, response before:\n%s", response)
+    response = filters.apply_filters_out(agent, response)
+    logger.debug("Applying output filters, response after:\n%s", response)
 
     return tidy_response

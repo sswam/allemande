@@ -17,6 +17,7 @@ import llm  # type: ignore, pylint: disable=wrong-import-order
 from settings import REMOTE_AGENT_RETRIES
 from ally_room import Room
 from ally.llms import MODEL_FALLBACKS, SERVICES_BROKEN
+import filters
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 # Placeholder content where the LLM expects a user message.
 USER_PLACEHOLDER_CONTENT = "..."
 
-async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
+async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     """Run a remote agent."""
     # NOTE: responsible_human is not used here yet
 
@@ -87,6 +88,11 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
     logger.info("see_alt: %r", agent.get("see_alt"))
     if not agent.get("see_alt"):
         context = chat.context_remove_image_details(context)
+
+    # Apply filter_in filters
+    logger.debug("Applying input filters, query before: %r", context[-1] if context else None)
+    context = filters.apply_filters_in(agent, context)
+    logger.debug("Applying input filters, query after: %r", context[-1] if context else None)
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?
@@ -272,6 +278,9 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
         #     msg = ""
         return f"{agent.name}:\n" + re.sub(r'(?m)^', '\t', msg)
 
+    if agent.get("debug"):
+        logger.info("output: %s", output_message)
+
     # Then, after the try
     response = output_message.get("content", "") if output_message else ""
     response = response or ""
@@ -310,4 +319,9 @@ async def remote_agent(c, agent, query, visual_templates_local=None) -> str:
     logger.debug("response 2: %r", response)
     response = f'{agent.name}:\t{response.strip()}'
     logger.debug("response 3: %r", response)
+
+    logger.debug("Applying output filters, response before:\n%s", response)
+    response = filters.apply_filters_out(agent, response)
+    logger.debug("Applying output filters, response after:\n%s", response)
+
     return response.rstrip()

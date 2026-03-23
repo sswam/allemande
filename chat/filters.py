@@ -499,11 +499,11 @@ def filter_out_remove_indent(response: str) -> str:
     return response
 
 
-def apply_filters_in(agent: ally_agents.Agent, query: str, history: list[str]) -> tuple[str, list[str]]:
+def apply_filters_in(agent: ally_agents.Agent, history: list[str]) -> list[str]:
     """Apply input filters to the query and history."""
     filters = agent.get("filter_in")
     if not filters:
-        return query, history
+        return history
 
     history_new = history.copy()
 
@@ -520,15 +520,14 @@ def apply_filters_in(agent: ally_agents.Agent, query: str, history: list[str]) -
             continue
 
         try:
-            query = filter_fn(query, 0, *filter_args)
             hist_len = len(history_new)
             # NOTE: history[-1] is similar to query, but with the username prefix
             for i in range(hist_len):
-                history_new[i] = filter_fn(history_new[i], hist_len - i, *filter_args)
+                history_new[i] = filter_fn(history_new[i], hist_len - i - 1, *filter_args)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Agent %r: Error in filter_in %r: %s", agent.name, filter_name, str(e))
 
-    return query, history_new
+    return history_new
 
 
 def apply_filters_out(agent: ally_agents.Agent, response: str) -> str:
