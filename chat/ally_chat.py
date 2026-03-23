@@ -48,7 +48,6 @@ import tasks
 import ally
 import settings
 import tools
-import filters
 import rag
 import forward
 import context
@@ -59,7 +58,7 @@ import extract_tool_calls
 RELOADABLE_MODULES = [
     "atail", "ucm", "conductor", "search", "tab", "chat", "bb_lib",
     "ally_markdown", "ally_room", "fetch", "llm", "ally_agents", "remote_agents",
-    "local_agents", "util", "tasks", "ally", "settings", "tools", "rag", "filters", "forward", "extract_tool_calls"
+    "local_agents", "util", "tasks", "ally", "settings", "tools", "rag", "forward", "extract_tool_calls"
 ]
 
 
@@ -476,19 +475,8 @@ async def run_agent(c, agent, query) -> str:
         return None
     function = agent["fn"]
     logger.debug("query: %r", query)
-    # TODO filter_in somehow. Perhaps distinct options to filter only the immediate input message, or the whole context.
-    # TODO agent invocation options to limit context
-    logger.debug("Applying input filters, query before: %r", query)
-    query, history = filters.apply_filters_in(agent, query, c.history)
-    logger.debug("Applying input filters, query after: %r", query)
-
-    c = replace(c, history=history)
 
     response = await function(c, agent, query)
-
-    logger.debug("Applying output filters, response before:\n%s", response)
-    response = filters.apply_filters_out(agent, response)
-    logger.debug("Applying output filters, response after:\n%s", response)
 
     return response
 
@@ -780,27 +768,27 @@ async def watch_loop(args):
     """Follow the watch log, and process files."""
     skip = defaultdict(int)
 
-    # Load global base agents only
-    agents = ally_agents.Agents(services)
-    agents.load(settings.PATH_AGENTS)  # Core agents
-
-    rooms_public_agents = settings.PATH_ROOMS / "agents"
-    agents.load(rooms_public_agents)  # Public user agents
-
-    # REMOVED: NSFW and private agent preloading
-    # NSFW agents (~17) and private agents will be loaded per-room via load_local_agents()
-    # This prevents leaking private/NSFW agents to unauthorized users
-    # for agents_dir in Path(settings.PATH_ROOMS).rglob('agents'):
-    #     if agents_dir == rooms_public_agents:
-    #         continue
-    #     if agents_dir.is_dir():
-    #         agents.load(agents_dir, private=True)
-
-    agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
-
     request_index = 0
 
     async with atail.AsyncTail(filename=args.watch, follow=True, rewind=True) as queue:
+        # Load global base agents only
+        agents = ally_agents.Agents(services)
+        agents.load(settings.PATH_AGENTS)  # Core agents
+
+        rooms_public_agents = settings.PATH_ROOMS / "agents"
+        agents.load(rooms_public_agents)  # Public user agents
+
+        # REMOVED: NSFW and private agent preloading
+        # NSFW agents (~17) and private agents will be loaded per-room via load_local_agents()
+        # This prevents leaking private/NSFW agents to unauthorized users
+        # for agents_dir in Path(settings.PATH_ROOMS).rglob('agents'):
+        #     if agents_dir == rooms_public_agents:
+        #         continue
+        #     if agents_dir.is_dir():
+        #         agents.load(agents_dir, private=True)
+
+        agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
+
         while (line := await queue.get()) is not None:
             try:
                 file_path, change_type, old_size, new_size = line.rstrip("\n").split("\t")
