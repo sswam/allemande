@@ -1194,6 +1194,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 |  |  | Images | Number of recent images AI can see |
 |  |  | Temp | Temperature / creativity 0.0 - ~2.0, 1.0 is normal |
 |  |  | Mission | Mission file to use, - for none |
+|  |  | Name | Change your name in the chat |
 
 ## Moderator Tools (Room Owner)
 
