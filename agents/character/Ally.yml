@@ -49,9 +49,9 @@ visual:
   # clothes: black suit, white shirt, black skirt, long skirt
   # clothes_upper: black suit, white shirt
   # clothes_lower: black skirt, long skirt
-  clothes: pink and blue striped top, yellow scarf, plaid skirt, white socks, sneakers
-  clothes_upper: pink and blue striped top, yellow scarf
-  clothes_lower: plaid skirt, white socks, sneakers
+  clothes: blue striped top, yellow scarf, plaid skirt, blue skirt, white socks, sneakers
+  clothes_upper: blue striped top, yellow scarf
+  clothes_lower: plaid skirt, blue skirt, white socks, sneakers
   # clothes: pastel pink short-sleeved peasant blouse, long, flowy pastel pink skirt, floral belt, leather sandals, pendant necklace
   # clothes_upper: pastel pink short-sleeved peasant blouse, pendant necklace
   # clothes_lower: long, flowy pastel pink skirt, floral belt, leather sandals
