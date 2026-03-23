@@ -81,11 +81,30 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
         self.watcher: aionotify.Watcher | None = None
         self.queue: asyncio.Queue[str | None] | None = None
         self.task: asyncio.Task[None] | None = None
+        self.f = None  # TODO typing
+        self.skip_seek_to_end = False
 
     async def __aenter__(self) -> asyncio.Queue[str | None]:
         """Enter async context, start the tailing task and return the queue."""
+        logger.info("atail __aenter__")
         if self.queue is not None or self.task is not None:
             raise RuntimeError("AsyncTail context already entered")
+
+        # Try to open the file early
+        try:
+            self.f = await aiofiles.open(self.filename, mode="r")
+            logger.info("opened in __aenter__")
+            if self.all_lines or self.lines > 0:
+                logger.info("all_lines or lines > 0: %r %r", self.all_lines, self.lines)
+                pass
+            else:
+                logger.info("seeking to end")
+                await self.seek_to_end(self.f)
+                self.skip_seek_to_end = True
+        except Exception as e:
+            logger.error("open in __aenter__ failed: %s", e, exc_info=True)
+            pass
+
         self.queue = asyncio.Queue()
         self.task = asyncio.create_task(self.tail_loop())
         return self.queue
@@ -110,7 +129,7 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
             raise RuntimeError("AsyncTail is already running")
         self.running = True
         try:
-            if not self.wait_for_create and not Path(self.filename).exists():
+            if not self.f and not self.wait_for_create and not Path(self.filename).exists():
                 raise FileNotFoundError(f"File not found and wait_for_create=False: {self.filename}")
 
             while True:
@@ -178,29 +197,34 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
         # Read all lines if explicitly requested, or if rewind and follow are on and the file was just created
         read_all_initial = self.all_lines or (created and self.follow and self.rewind)
 
-        async with aiofiles.open(self.filename, mode="r") as f:
+        self.f = self.f or await aiofiles.open(self.filename, mode="r")
+        try:
             # Regular tail functionality
             # FIXME this is inefficient when using the -n option on regular files
             # TODO use the tac code, maybe add an option not to reverse the lines and call it tail
             if read_all_initial or self.lines > 0:
                 logger.debug("Reading initial lines from file: %s", self.filename)
-                lines_read = await f.readlines()
+                lines_read = await self.f.readlines()
                 if not read_all_initial:
                     lines_read = lines_read[-self.lines:]
                 assert self.queue is not None
                 for line in lines_read:
                     await self.queue.put(line)
                 logger.debug("Put %d initial lines in queue", len(lines_read))
+            elif self.skip_seek_to_end:
+                self.skip_seek_to_end = False
             else:
                 # No initial lines needed, seek to end (if possible)
                 logger.debug("Seeking to end of file: %s", self.filename)
-                await self.seek_to_end(f)
+                await self.seek_to_end(self.f)
 
             # 2. Follow changes if configured
             if self.follow and self.poll_interval is not None:
-                await self.follow_changes_poll(f)
+                await self.follow_changes_poll(self.f)
             elif self.follow:
-                await self.follow_changes_notify(f)
+                await self.follow_changes_notify(self.f)
+        finally:
+            await self.f.close()
 
     async def seek_to_end(self, f: AsyncTextIOWrapper) -> None:
         """Seeks to the end of the file stream, ignoring errors for unseekable streams."""
