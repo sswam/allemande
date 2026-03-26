@@ -214,13 +214,13 @@ MODELS = {
         "thinking_levels": [],
         "thinking_budget_range": [0, 24576],
     },
-    "gemini-2.0-flash-lite": {
+    "gemini-2.5-flash-lite": {
         "aliases": ["lite"],
         "vendor": "google",
         "vision": True,
         "description": "Google's fastest model with a 1 million context window.",
-        "cost_in": 0.075,
-        "cost_out": 0.3,
+        "cost_in": 0.10,
+        "cost_out": 0.40,
         "thinking_levels": [],
         "thinking_budget_range": [0, 24576],
     },

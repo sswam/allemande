@@ -5,6 +5,6 @@ filter_out:
   - truncate_repeated_characters
   - unsmart
 forward_allow:
-  - Zilu
+  - Xilu
 # - Fallback
 # forward_if_refuse: NaughtierAI

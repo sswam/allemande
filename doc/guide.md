@@ -520,8 +520,8 @@ digraph Google {
     node [shape=box, style=filled, fillcolor="#C8C8FF", fontname="Helvetica"]
 
     "Google" [label=<<b>Google</b>>]
-    "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.0 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
-    "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, free, very capable</font>>]
+    "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.5 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
+    "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, less censored</font>>]
     "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
     "Gemi" [label=<<b>Gemi</b><br/><font point-size="10">Gemini 3 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Most strong and capable</font>>]
@@ -955,7 +955,7 @@ type: llm_llama
 models: default
 
 type: google
-models: gemini-2.0-flash-lite, gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
+models: gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
 
 type: deepseek
 models: deepseek-reasoner, deepseek-chat
@@ -994,9 +994,9 @@ type: visual
 | Meta          | Llama 4 Scout         | Skout   | 512K    | 512K          | N/A             | N/A              | A fast new open model from Meta.                                                                                 |
 | Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
 | Anthropic     | Claude 4.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
-| Anthropic     | Claude 4.6 Sonnet     | Claude | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                                     |
-| Anthropic     | Claude 4.6 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00          | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
-| Google        | Gemini 2.0 Flash Lite | Lite    | 1M      | 8K            | $0.075          | $0.30            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
+| Anthropic     | Claude 4.6 Sonnet     | Claude  | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                                     |
+| Anthropic     | Claude 4.6 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00           | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Google        | Gemini 2.5 Flash Lite | Lite    | 1M      | 8K            | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
 | Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
 | Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K            | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                                |
 | Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K           | $1.25 [2]       | $10.00 [2]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
