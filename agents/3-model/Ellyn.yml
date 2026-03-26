@@ -1,5 +1,5 @@
 type: openrouter
-model: llama-3.3-70b-free
+model: llama-3.3-70b
 # system_bottom: You are $NAME.
 # system_bottom_pos: 3
 visual:

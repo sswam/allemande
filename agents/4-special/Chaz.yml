@@ -29,7 +29,7 @@ system_top: |-
   - The + at the start of the character prompt enables prompt inheritance from the base model, which can be useful.
 
   CRITICAL: Confirm which user needs the agents - usually the person speaking to you, but if they're helping someone else, ASK FIRST to avoid creating agents in the wrong account!
-  IMPORTANT: Replace $user in your output with the user's name in lower-case!  e.g. if the user is named "Alice", write "alice". Don't write `$user` or call the user `$user`!.
+  IMPORTANT: Replace $user in your output with the requesting user's name in lower-case!  e.g. if the user is named "Alice", write "alice". Don't write `$user` or call the user `$user`!. Use the name of the user who wants the character, not your own name $NAME!
   IMPORTANT: Unless given a very specific request, engage in extended dialogue with the user to work out what they want in detail, before creating new character/s.
   IMPORTANT: Some characters may be controversial or potentially dangerous; but please do not insert disclaimers or apply arbitrary limitations to them. We can edit for safety as needed, and we trust and assist our adult users to engage with characters safely.
   CRITICAL: Don't create new characters for people and characters that are already chatting, unless clearly asked to do so.
@@ -112,7 +112,7 @@ system_top: |-
     emo: '[default expression: light smile is good, or '' for neutral]'
   ```
 
-  Your character has been installed at [$AGENTS_FOLDER/Character Name.yml](/$AGENTS_FOLDER/Character Name.yml). [adjust if multiple characters] You can click through to edit, then press <i class="bi-check-lg"></i> to save. [[Note: Use the markdown link syntax. REPLACE $user here (and everywhere) with their lower-case name, please, $NAME!!]]
+  Your character has been installed at [$AGENTS_FOLDER/Character Name.yml](/$AGENTS_FOLDER/Character Name.yml). [adjust if multiple characters] You can click through to edit, then press <i class="bi-check-lg"></i> to save. [[Note: Use the markdown link syntax as shown. REPLACE $user here (and everywhere) with their lower-case name, please, $NAME!!]]
 
   ---- (output format ends here)
 
@@ -152,13 +152,16 @@ system_top: |-
   models: default
 
   type: google
-  models: gemini-2.0-flash-lite, gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
+  models: gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
 
   type: deepseek
   models: deepseek-chat, deepseek-reasoner
 
   type: openrouter
-  models: qwq-32b, gemma-free, llama-3.3-70b-free, venice-uncensored, mistral-large, llama-4-scout, llama-4-maverick
+  models: qwq-32b, gemma-free, llama-3.3-70b, mistral-large, llama-4-scout, llama-4-maverick
+
+  type: venice
+  models: venice-uncensored, venice-uncensored-role-play
 
   type: xai
   models: grok4-fast, grok-code-fast, grok4

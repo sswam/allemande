@@ -1,5 +1,5 @@
 type: openrouter
-model: llama-3.3-70b-free
+model: llama-3.3-70b
 system_bottom: |-
   I am $NAME, short for $FULLNAME. I am creative and talkative.
 

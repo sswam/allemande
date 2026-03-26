@@ -364,13 +364,21 @@ MODELS = {
         "cost_in": 0,
         "cost_out": 0,
     },
-    "llama-3.3-70b-free": {
+    # "llama-3.3-70b-free": {
+    #     "aliases": ["ellen-free"],
+    #     "vendor": "openrouter",
+    #     "id": "meta-llama/llama-3.3-70b-instruct:free",
+    #     "description": "Llama 3.3 70B",
+    #     "cost_in": 0,
+    #     "cost_out": 0,
+    # },
+    "llama-3.3-70b": {
         "aliases": ["ellen"],
         "vendor": "openrouter",
-        "id": "meta-llama/llama-3.3-70b-instruct:free",
+        "id": "meta-llama/llama-3.3-70b-instruct",
         "description": "Llama 3.3 70B",
-        "cost_in": 0,
-        "cost_out": 0,
+        "cost_in": 0.10,
+        "cost_out": 0.32,
     },
     "llama-4-scout": {
         "aliases": ["scout", "skout"],
@@ -530,7 +538,7 @@ MODEL_FALLBACKS = {
     # OpenAI models
     "openai:gpt-5": "google:gemini-3-pro",
     "openai:gpt-5-mini": "google:gemini-2.5-flash",
-    "openai:gpt-5-nano": "google:gemini-2.0-flash-lite",
+    "openai:gpt-5-nano": "google:gemini-2.5-flash-lite",
     "openai:o3": "google:gemini-3-pro",
     "openai:o4-mini": "google:gemini-2.5-pro",
     "openai:gpt-4": "google:gemini-2.5-pro",
@@ -542,7 +550,7 @@ MODEL_FALLBACKS = {
     "anthropic:claude-opus": "google:gemini-3-pro",
     "anthropic:claude": "google:gemini-2.5-pro",
     "anthropic:claude-3.7": "google:gemini-2.5-pro",
-    "anthropic:claude-haiku": "google:gemini-2.0-flash-lite",
+    "anthropic:claude-haiku": "google:gemini-2.5-flash-lite",
     "anthropic:*": "google:gemini-2.5-flash",
 
     # OpenRouter models
@@ -551,17 +559,18 @@ MODEL_FALLBACKS = {
     "openrouter:gpt-oss-20b": "google:gemini-2.5-flash",
     "openrouter:deepseek-v3": "google:gemini-2.5-pro",
     "openrouter:llama-3.3-70b-free": "google:gemini-2.5-flash",
+    "openrouter:llama-3.3-70b": "google:gemini-2.5-flash",
     "openrouter:llama-4-scout": "google:gemini-2.5-flash",
     "openrouter:llama-4-maverick": "google:gemini-2.5-flash",
     "openrouter:gemma-3-27b-free": "google:gemini-2.5-flash",
     "openrouter:gemma-3-27b": "google:gemini-2.5-flash",
-    "openrouter:gemma-3-12b-free": "google:gemini-2.0-flash-lite",
-    "openrouter:gemma-3-12b": "google:gemini-2.0-flash-lite",
-    "openrouter:gemma-3-4b-free": "google:gemini-2.0-flash-lite",
-    "openrouter:gemma-3-4b": "google:gemini-2.0-flash-lite",
-    "openrouter:gemma-3-1b-free": "google:gemini-2.0-flash-lite",
-    "openrouter:gemma-3-1b": "google:gemini-2.0-flash-lite",
-    "openrouter:qwq-32b": "google:gemini-2.0-flash-lite",
+    "openrouter:gemma-3-12b-free": "google:gemini-2.5-flash-lite",
+    "openrouter:gemma-3-12b": "google:gemini-2.5-flash-lite",
+    "openrouter:gemma-3-4b-free": "google:gemini-2.5-flash-lite",
+    "openrouter:gemma-3-4b": "google:gemini-2.5-flash-lite",
+    "openrouter:gemma-3-1b-free": "google:gemini-2.5-flash-lite",
+    "openrouter:gemma-3-1b": "google:gemini-2.5-flash-lite",
+    "openrouter:qwq-32b": "google:gemini-2.5-flash-lite",
     "openrouter:mistral-large": "google:gemini-2.5-flash",
     "openrouter:kimi": "google:gemini-2.5-flash",
     "openrouter:*": "google:gemini-2.5-flash",
@@ -589,6 +598,7 @@ MODEL_FALLBACKS = {
 
     # Venice models
     "venice:venice-uncensored": "google:gemini-2.5-flash",
+    "venice:venice-uncensored-role-play": "google:gemini-2.5-flash",
     "venice:*": "google:gemini-2.5-flash",
 }
 

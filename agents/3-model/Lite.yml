@@ -1,5 +1,5 @@
 type: google
-model: gemini-2.0-flash-lite
+model: gemini-2.5-flash-lite
 config:
   thinking_budget: 0  # -1  # 512 - 24576  # does not think
 over:

@@ -939,7 +939,7 @@ Each character needs a type and a model, except:
 
 Recommend models for role-play:
 - llm_llama / default  (can be inconsistent, but very human-like)
-- llama-3.3-70b-free  (a stronger variant)
+- llama-3.3-70b  (a stronger variant)
 - google / gemini-2.0-flash, gemini-2.5-flash, or gemini-2.5-pro (the latter for very brainy characters)
 - mistral-large (a paid model)
 
@@ -961,7 +961,7 @@ type: deepseek
 models: deepseek-reasoner, deepseek-chat
 
 type: openrouter
-models: qwq-32b, gemma-free, llama-3.3-70b-free, mistral-large, llama-4-scout-free, llama-4-maverick-free
+models: qwq-32b, gemma-free, llama-3.3-70b, mistral-large, llama-4-scout-free, llama-4-maverick-free
 
 #### SFW only
 
@@ -990,7 +990,7 @@ type: visual
 | Creator       | Model                 | Name    | Context | Max Output    | Input Price / M | Output Price / M | Description                                                                                                      |
 |---------------|-----------------------|---------|---------|---------------|-----------------|------------------|------------------------------------------------------------------------------------------------------------------|
 | Meta          | Llama 3.1 8B          | Ally*   | 4K      | 4K            | N/A             | N/A              | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
-| Meta          | Llama 3.3 70B         | Ellyn   | 128K    | 2048          | N/A             | N/A              | A stronger human-like model, for creativity and engaging conversations.                                          |
+| Meta          | Llama 3.3 70B         | Ellyn   | 128K    | 2048          | $0.10           | $0.32            | A stronger human-like model, for creativity and engaging conversations.                                          |
 | Meta          | Llama 4 Scout         | Skout   | 512K    | 512K          | N/A             | N/A              | A fast new open model from Meta.                                                                                 |
 | Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
 | Anthropic     | Claude 4.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
