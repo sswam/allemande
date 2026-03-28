@@ -86,19 +86,15 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
 
     async def __aenter__(self) -> asyncio.Queue[str | None]:
         """Enter async context, start the tailing task and return the queue."""
-        logger.info("atail __aenter__")
         if self.queue is not None or self.task is not None:
             raise RuntimeError("AsyncTail context already entered")
 
         # Try to open the file early
         try:
             self.f = await aiofiles.open(self.filename, mode="r")
-            logger.info("opened in __aenter__")
             if self.all_lines or self.lines > 0:
-                logger.info("all_lines or lines > 0: %r %r", self.all_lines, self.lines)
                 pass
             else:
-                logger.info("seeking to end")
                 await self.seek_to_end(self.f)
                 self.skip_seek_to_end = True
         except Exception as e:
