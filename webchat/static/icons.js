@@ -109,4 +109,5 @@ export const icons = {
   sort_time: '<i class="bi bi-clock i20"></i>',
 
   filter: '<i class="bi bi-filter i20"></i>',
+  usage: '<i class="bi bi-currency-dollar i20"></i>',
 };

@@ -1296,6 +1296,8 @@ function select_room_basename() {
 function escape() {
   if (active_get("add_math"))
     return;
+  if (active_get("usage"))
+    return usage();
 
   set_fullscreen(0);
 
@@ -3782,6 +3784,141 @@ function beta_test() {
   view_options_apply();
 }
 
+// usage ---------------------------------------------------------------------
+
+async function usage() {
+  if (active_get("usage")) {
+    set_view();
+    active_reset("usage");
+    return;
+  }
+
+  set_view("view_usage");
+  active_set("usage", 1);
+
+  const _usageUrl = ROOMS_URL + "/" + user + "/usage.log";
+
+  function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function formatCost(cost) {
+      if (cost === 0) return "$0";
+      if (cost >= 0.01) return "$" + cost.toFixed(4);
+      return "$" + cost.toFixed(6);
+  }
+
+  function parseUsageLog(text) {
+      var records = [];
+      var lines = text.split("\n");
+      for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (!line) continue;
+          var f = line.split("\t");
+          if (f.length < 9) continue;
+          records.push({
+              timestamp: f[0],
+              model:     f[3],
+              agent:     f[4],
+              cost:      parseFloat(f[8]) || 0
+          });
+      }
+      return records;
+  }
+
+  function filterCurrentMonth(records) {
+      var now = new Date();
+      var ym = now.getUTCFullYear() + "-" + String(now.getUTCMonth() + 1).padStart(2, "0");
+      return records.filter(function(r) { return r.timestamp.slice(0, 7) === ym; });
+  }
+
+  function buildSummary(records) {
+      var now = new Date();
+      var today = now.getUTCDate();
+      var totalCost = 0;
+      var dailyCosts = new Array(today + 1).fill(0);
+      var agentMap = {};
+
+      for (var i = 0; i < records.length; i++) {
+          var r = records[i];
+          totalCost += r.cost;
+          var day = parseInt(r.timestamp.slice(8, 10), 10);
+          if (day >= 1 && day <= today) dailyCosts[day] += r.cost;
+          if (!agentMap[r.agent]) agentMap[r.agent] = {cost: 0, models: {}};
+          agentMap[r.agent].cost += r.cost;
+          agentMap[r.agent].models[r.model] = true;
+      }
+
+      var agentData = Object.keys(agentMap).map(function(name) {
+          return {name: name, cost: agentMap[name].cost, models: Object.keys(agentMap[name].models).sort()};
+      });
+      agentData.sort(function(a, b) {
+          return b.cost !== a.cost ? b.cost - a.cost : a.name.localeCompare(b.name);
+      });
+
+      return {totalCost: totalCost, dailyCosts: dailyCosts, today: today, agentData: agentData};
+  }
+
+  function renderDailyChart(dailyCosts, today) {
+      var maxCost = 0;
+      for (var d = 1; d <= today; d++) {
+          if (dailyCosts[d] > maxCost) maxCost = dailyCosts[d];
+      }
+      if (maxCost === 0) maxCost = 1;
+
+      var bars = "", labels = "";
+      for (var d = 1; d <= today; d++) {
+          var pct = (dailyCosts[d] / maxCost * 100).toFixed(1);
+          bars   += '<div class="day-bar" style="height:' + pct + '%;" title="Day ' + d + ': ' + formatCost(dailyCosts[d]) + '"></div>';
+          labels += '<div class="day-label">' + d + '</div>';
+      }
+      return '<div class="daily-chart"><div class="bar-row">' + bars + '</div><div class="label-row">' + labels + '</div></div>';
+  }
+
+  function renderAgentChart(agentData) {
+      if (!agentData.length) return "<p>No data.</p>";
+      var maxCost = agentData[0].cost || 1;
+      var html = "";
+      for (var i = 0; i < agentData.length; i++) {
+          var a = agentData[i];
+          var pct = (a.cost / maxCost * 100).toFixed(1);
+          html += '<div class="agent-row">'
+                + '<div class="agent-name">' + escapeHtml(a.name) + '<br><small>' + escapeHtml(a.models.join(", ")) + '</small></div>'
+                + '<div class="agent-bar-wrap"><div class="agent-bar" style="width:' + pct + '%;" title="' + formatCost(a.cost) + '"></div></div>'
+                + '<div class="agent-cost">' + formatCost(a.cost) + '</div>'
+                + '</div>';
+      }
+      return html;
+  }
+
+  function renderSummary(summary) {
+      var html = "<h3>Usage This Month</h3>"
+               + "<p><strong>Total: " + formatCost(summary.totalCost) + "</strong></p>"
+               + "<h4>Daily Cost</h4>"
+               + renderDailyChart(summary.dailyCosts, summary.today)
+               + "<h4>Cost by Agent</h4>"
+               + renderAgentChart(summary.agentData);
+      document.getElementById("view_usage").innerHTML = html;
+  }
+
+  fetch(_usageUrl, {
+    credentials: 'include',
+    cache: 'no-cache',
+  })
+      .then(function(r) {
+          if (r.status === 404) return "";
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.text();
+      })
+      .then(function(text) {
+          var summary = buildSummary(filterCurrentMonth(parseUsageLog(text || "")));
+          renderSummary(summary);
+      })
+      .catch(function(e) {
+          document.getElementById("view_usage").textContent = "Error loading usage data: " + e.message;
+      });
+}
+
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -3929,6 +4066,8 @@ export async function init() {
 
   if (iOS && navigator.standalone)
     $on(window, "scroll", iOS_reload_scroll);
+
+  $on($id("usage"), "click", () => usage());
 
   $on($id("room_ops_move"), "click", move_mode);
   $on($id("room_ops_copy"), "click", copy_mode);
