@@ -3892,7 +3892,13 @@ async function usage() {
   }
 
   function renderSummary(summary) {
-      var html = "<h3>Usage This Month</h3>"
+      let patreon = "";
+      if (user_nsfw) {
+        patreon = '<div style="float:right">Patreon: <a href="' + escapeHtml(config.PATREON_SFW) + '">SFW</a> | <a href="' + escapeHtml(config.PATREON_NSFW) + '">NSFW</a></div>';
+      } else {
+        patreon = '<div style="float:right"><a href="' + escapeHtml(config.PATREON_SFW) + '">Patreon</a></div>';
+      }
+      var html = patreon + "<h3>Usage This Month</h3>"
                + "<p><strong>Total: " + formatCost(summary.totalCost) + "</strong></p>"
                + "<h4>Daily Cost</h4>"
                + renderDailyChart(summary.dailyCosts, summary.today)
