@@ -854,11 +854,12 @@ def markdown_to_html(content: str) -> str:
     return html_content
 
 
-def user_rstrip_number(user: str|None) -> str|None:
-    """Strip trailing .number from a username"""
+def user_to_display(user: str|None) -> str|None:
+    """Strip trailing .number and/or leading user= from a username"""
     if user is None:
         return None
     user_display = re.sub(r"\.\d+$", "", user)
+    user_display = re.sub(r".*=", "", user_display)
     return user_display
 
 
@@ -890,7 +891,7 @@ async def message_to_html(message: dict[str, str], bb_file: str) -> str:
         html_content = "&nbsp;"
     user = message.get("user")
     if user:
-        user_display = user_rstrip_number(user)
+        user_display = user_to_display(user)
         user_ee = html.escape(user)
         user_display_ee = html.escape(user_display)
         title = ""

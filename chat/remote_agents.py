@@ -5,6 +5,7 @@ import re
 import json
 from pprint import pformat
 from pathlib import Path
+from datetime import datetime
 
 from num2words import num2words
 
@@ -14,10 +15,11 @@ import chat
 import bb_lib
 import ally_markdown
 import llm  # type: ignore, pylint: disable=wrong-import-order
-from settings import REMOTE_AGENT_RETRIES
+from settings import REMOTE_AGENT_RETRIES, PATH_ROOMS, PATH_HOME
 from ally_room import Room
 from ally.llms import MODEL_FALLBACKS, SERVICES_BROKEN
 import filters
+from ally_usage import usage_log
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -114,7 +116,7 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     # preprocess markdown in messages for includes
     # and strip trailing .number from usernames
     for m in context_messages:
-        m["user"] = ally_markdown.user_rstrip_number(m.get("user"))
+        m["user"] = ally_markdown.user_to_display(m.get("user"))
         m["content"] = (await ally_markdown.preprocess(m["content"], c.file, m.get("user"), convert_think=False))[0]
 
     # TODO Can't include from system messages, what user permission to use?
@@ -269,14 +271,22 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     ###### the actual query ######
     logger.debug("querying %r = %s:%s", agent.name, service, model)
 
+    t0 = datetime.now()
+
     try:
         output_message = await llm.aretry(llm.allm_chat, REMOTE_AGENT_RETRIES, opts, remote_messages)
     except Exception as e:  # pylint: disable=broad-except
+        duration = (datetime.now() - t0).total_seconds()
         logger.exception("Exception during generation for model %s:%s", service, model)
         msg = str(e)
         # if msg in ["list index out of range"] or "connection has been closed" in msg:
         #     msg = ""
+        usage_log(c.responsible_human, t0, duration, service, model, agent.name, room.name, 0, 0, 0, msg)
         return f"{agent.name}:\n" + re.sub(r'(?m)^', '\t', msg)
+
+    duration = (datetime.now() - t0).total_seconds()
+
+    usage_log(c.responsible_human, t0, duration, service, model, agent.name, room.name, output_message["usage"]["input"], output_message["usage"]["output"], output_message["cost"], "")
 
     if agent.get("debug"):
         logger.info("output: %s", output_message)

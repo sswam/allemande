@@ -6,6 +6,7 @@ import logging
 import re
 from pathlib import Path
 from functools import lru_cache
+from datetime import datetime
 
 import regex
 from num2words import num2words  # type: ignore
@@ -23,6 +24,7 @@ from ally.lazy import lazy
 from ally import soma
 import hacky_anti_rep
 import filters
+from ally_usage import usage_log
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
@@ -119,7 +121,7 @@ def get_fulltext(args, model_name, history, history_start, invitation):
     # if dropped:
     #     fulltext = delim.join(history[history_start:]) + invitation
     logger.debug("fulltext: %r", fulltext)
-    return fulltext, history_start
+    return fulltext, history_start, n_tokens
 
 
 async def client_request(portal, input_text, config=None, timeout=None):
@@ -280,7 +282,7 @@ async def local_agent(c, agent, _query) -> str:
     # and strip trailing .number from usernames
     context_messages = [
         {
-            "user": ally_markdown.user_rstrip_number(m.get("user")),
+            "user": ally_markdown.user_to_display(m.get("user")),
             "content": (await ally_markdown.preprocess(m["content"], c.file, m.get("user"), convert_think=False))[0]
         }
         for m in bb_lib.lines_to_messages(context)]
@@ -299,7 +301,7 @@ async def local_agent(c, agent, _query) -> str:
             context = [code_unwrap_input(line) for line in context]
         if agent.get("strip_images_input"):
             context = [strip_images(line) for line in context]
-        fulltext, history_start = get_fulltext(c.args, model_name, context, c.history_start, invitation)
+        fulltext, history_start, input_count = get_fulltext(c.args, model_name, context, c.history_start, invitation)
 
     if "config" in agent:
         gen_config = agent["config"].copy()
@@ -391,6 +393,7 @@ async def local_agent(c, agent, _query) -> str:
             fulltext2 += " NEGATIVE [get negative_prompt]"
 
             fulltext2 = unprompted(fulltext2, seed)
+            input_count = len(fulltext2)
             logger.debug("image prompt after running unprompted: %r", fulltext2)
         except Exception as e:
             logger.error("Unprompted error for art agent %r: %s %s", name, type(e).__name__, str(e))
@@ -426,7 +429,11 @@ async def local_agent(c, agent, _query) -> str:
         logger.info("system_top: %s", agent.get("system_top"))
         logger.info("system_bottom: %s", agent.get("system_bottom"))
 
+    t0 = datetime.now()
+
     response, resp = await client_request(portal, fulltext2, config=gen_config, timeout=LOCAL_AGENT_TIMEOUT)
+
+    duration = (datetime.now() - t0).total_seconds()
 
     # try to get image seed from response
     image_seed = None
@@ -440,6 +447,9 @@ async def local_agent(c, agent, _query) -> str:
         pass
 
     image_alt_type = c.config.get("image_alt", "both")
+
+    image_count = 0
+    output_count = 0
 
     # look for attachments, other files in resp/ in sorted order
     # service image_a1111 should return a file name in response
@@ -468,6 +478,9 @@ async def local_agent(c, agent, _query) -> str:
                 prompt = re.sub(r"\n+Steps:.*", "", prompt)
                 prompt = re.sub(r"\n+Negative prompt: ", " NEGATIVE ", prompt)
                 text += prompt
+            image_count += 1
+
+        output_count += os.path.getsize(resp_file)
 
         name, _url, _medium, markdown, task = await upload_file(room.name, agent.name, str(resp_file), alt=text or None)
         if task:
@@ -477,6 +490,12 @@ async def local_agent(c, agent, _query) -> str:
         else:
             response += "\n"
         response += markdown
+
+    output_count += len(response)
+
+    cost = 0  # TODO some pricing for local models?  use image_count?
+
+    usage_log(c.responsible_human, t0, duration, service, model_name, agent.name, room.name, input_count, output_count, cost, "")
 
     await portal.remove_response(resp)
 

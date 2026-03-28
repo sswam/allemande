@@ -97,13 +97,13 @@ class Room:
         # or via room options: users.[user].name
         match = re.match(r'^=(.*?):\s(.*)', content, flags=re.DOTALL)
         if match:
-            user = match.group(1).strip()
+            user = user + "=" + match.group(1).strip()
             content = match.group(2).strip()
             logger.info("  as alias (1) %s", user)
         else:
             alias = options.get("users", {}).get(user, {}).get("name")
             if alias:
-                user = alias
+                user = user + "=" + alias
                 logger.info("  as alias (2) %s", user)
 
         # support narration by moderators

@@ -362,9 +362,17 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
     if citations and cites:
         content = replace_citations(content, cites)
 
+    input_count = response.usage.prompt_tokens
+    output_count = response.usage.completion_tokens
+
     output_message = {
         "role": message.role,
         "content": content,
+        "usage": {
+            "input": input_count,
+            "output": output_count,
+        },
+        "cost": input_count * model["cost_in"] / 1e6 + output_count * model["cost_out"] / 1e6,
     }
 
     return output_message
@@ -507,7 +515,19 @@ async def achat_claude(opts: Options, messages):
         print(f"time: {time.time() - start_time:.3f}", file=stderr)
 
     completion = claude.response_completion(response)
-    message = {"role": "assistant", "content": completion}
+    usage = response.usage
+    input_count = usage.input_tokens or 0
+    output_count = usage.output_tokens or 0
+
+    message = {
+        "role": "assistant",
+        "content": completion,
+        "usage": {
+            "input": input_count,
+            "output": output_count,
+        },
+        "cost": input_count * model["cost_in"] / 1e6 + output_count * model["cost_out"] / 1e6,
+    }
     return message
 
 
@@ -630,9 +650,18 @@ async def achat_google(opts: Options, messages):
     if text is None or not text.strip():
         raise ValueError("Unexpected Blank Response")
 
+    usage = response.usage_metadata
+    input_count = usage.prompt_token_count
+    output_count = (usage.thoughts_token_count or 0) + usage.candidates_token_count
+
     output_message = {
         "role": "assistant",
         "content": response.text,
+        "usage": {
+            "input": input_count,
+            "output": output_count,
+        },
+        "cost": input_count * model["cost_in"] / 1e6 + output_count * model["cost_out"] / 1e6,
     }
 
     return output_message
