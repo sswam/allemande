@@ -3787,14 +3787,14 @@ function beta_test() {
 // usage ---------------------------------------------------------------------
 
 async function usage() {
-  if (active_get("usage")) {
+  if (view == "view_usage") {
+    $id("usage").classList.remove("back");
     set_view();
-    active_reset("usage");
     return;
   }
 
   set_view("view_usage");
-  active_set("usage", 1);
+  $id("usage").classList.add("back");
 
   function escapeHtml(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
