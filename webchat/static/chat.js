@@ -3200,6 +3200,7 @@ async function setup_icons() {
   }
   // icons["edit_close"] = icons["edit"];
   icons["help_close"] = icons["x"]; // icons["help"];
+  icons["system_message_close"] = icons["x"];
   for (const prefix of ["rec", "rec_preview"]) {
     icons[`${prefix}_cancel`] = icons["x_large"];
   }
@@ -3501,14 +3502,26 @@ async function setup_system_message(nag) {
   if (!nag)
     return;
   const system_message = $id('system_message');
-  system_message.innerHTML = nag;
+  const system_message_content = $id('system_message_content');
+  system_message_content.innerHTML = nag;
   show(system_message);
-  $on(system_message, 'click', () => dismiss_system_message());
+  $on(system_message, 'click', () => hide_system_message());
+  $on($id("system_message_close"), 'click', dismiss_system_message);
 }
 
-function dismiss_system_message() {
+function hide_system_message() {
   $id('system_message').remove();
 }
+
+function dismiss_system_message(ev) {
+  ev.stopPropagation();
+  hide_system_message();
+  // don't await it:
+  fetch(`/x/nag_remove`, {
+    method: "POST",
+  });
+}
+
 
 /* NSFW Zone warning overlay ---------------------------------------------- */
 

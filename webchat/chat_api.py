@@ -8,6 +8,7 @@ import time
 import logging
 import asyncio
 from typing import Any
+from pathlib import Path
 
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -278,6 +279,19 @@ async def move(request):
     except ValueError as e:
         logger.info("ValueError: %r", e, exc_info=True)
         raise HTTPException(status_code=409, detail=e.args[0]) from e
+    return JSONResponse({})
+
+
+@app.route("/x/nag_remove", methods=["POST"])
+async def nag_remove(request):
+    """
+    Remove a system message / nag file that has been viewed and dismissed.
+    """
+    user = get_user(request)
+    user_dir = settings.PATH_USERS_DIR / user
+    nag_file = user_dir / "nag.html"
+    nag_file_old = user_dir / "nag.html.old"
+    os.rename(nag_file, nag_file_old)
     return JSONResponse({})
 
 

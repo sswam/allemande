@@ -588,7 +588,6 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
 	margin: var(--pad);
 	background-color: var(--background);
 	color: var(--text);
-	padding: 0.5rem 1rem;
 	border-radius: 0.5rem;
 	border: 0.125rem solid var(--text);
 /*	background-color: rgba(255, 255, 255, 0.9);
@@ -597,6 +596,14 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
 
 	overflow-y: auto;
+}
+
+#system_message_content {
+	padding: 0.5rem 1rem;
+}
+
+#system_message_close {
+	float: right;
 }
 
 /* printing --------------------------------------------------------------- */

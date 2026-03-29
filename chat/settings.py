@@ -15,6 +15,7 @@ PATH_MODELS = Path(os.environ["ALLEMANDE_MODELS"])
 PATH_WEBCACHE  = Path(os.environ["ALLEMANDE_WEBCACHE"])
 PATH_TOOLS  = Path(os.environ["ALLEMANDE_HOME"]) / "chat" / "tools"
 PATH_USERS = PATH_HOME/"users.txt"
+PATH_USERS_DIR = Path(os.environ["ALLEMANDE_USERS"])
 # TODO put agents dir in rooms?
 
 # TODO put some of these settings in a global reloadable config files
