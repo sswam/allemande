@@ -1822,9 +1822,10 @@ export async function room_main() {
   }
 
   const [date, mtime] = await get_date_and_mtime();
-  if (date && mtime)
+  if (date && mtime) {
     show_timestamp(date, mtime);
-  setTimeout(hide_timestamp, 10000);
+    setTimeout(hide_timestamp, 10000);
+  }
 
   load_agent_colours(); // async
 }
