@@ -8,10 +8,13 @@ import logging
 import asyncio
 import aiofiles
 
-import ucm
+from ally import main, logs  # type: ignore[import-untyped]
 from areader import AsyncFileReader
 
-logger = logging.getLogger(__name__)
+__version__ = "0.1.1"
+
+
+logger = logs.get_logger()
 
 
 class AsyncKeepAlive:
@@ -54,7 +57,7 @@ class AsyncKeepAlive:
                     self.input_queue.task_done()
 
 
-async def async_keepalive_demo(timeout, timeout_return):
+async def async_keepalive_demo(timeout: float = 1.0, timeout_return: str = "."):
     """Async Timed Iterator Demo"""
     async with AsyncFileReader("/dev/stdin") as input_queue:
         async with AsyncKeepAlive(input_queue, timeout, timeout_return) as queue:
@@ -66,22 +69,11 @@ async def async_keepalive_demo(timeout, timeout_return):
                 queue.task_done()
 
 
-def get_opts():
-    """Get command line options"""
-    parser = argparse.ArgumentParser(description="akeepalive", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-t", "--timeout", type=float, default=1, help="Timeout value in seconds")
-    parser.add_argument("-r", "--timeout-return", default=".", help="Value to return on timeout")
-    ucm.add_logging_options(parser)
-    opts = parser.parse_args()
-    return opts
-
-
-def main():
-    """Main function"""
-    opts = get_opts()
-    ucm.setup_logging(opts)
-    asyncio.run(async_keepalive_demo(opts.timeout, opts.timeout_return))
+def setup_args(arg):
+    """Set up the command-line arguments."""
+    arg("-t", "--timeout", type=float, help="Timeout value in seconds")
+    arg("-r", "--timeout-return", help="Value to return on timeout")
 
 
 if __name__ == "__main__":
-    main()
+    main.go(async_keepalive_demo, setup_args)

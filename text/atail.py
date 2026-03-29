@@ -17,13 +17,12 @@ import aiofiles.base
 import aionotify  # type: ignore[import-untyped]
 from aiofiles.threadpool.text import AsyncTextIOWrapper
 
-import ucm  # type: ignore[import-untyped]
+from ally import main, logs  # type: ignore[import-untyped]
 
-__version__ = "0.2.5"
+__version__ = "0.2.6"
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = logs.get_logger()
 
 
 class AsyncTail:  # pylint: disable=too-many-instance-attributes
@@ -311,12 +310,12 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
 
         logger.debug("Received event: flags=%s, name=%s", event.flags, event.name)
         logger.debug("access: %s, attrib: %s, modify: %s, close_write: %s, delete_self: %s, move_self: %s",
-                     event.flags & aionotify.Flags.ACCESS,
-                     event.flags & aionotify.Flags.ATTRIB,
-                     event.flags & aionotify.Flags.MODIFY,
-                     event.flags & aionotify.Flags.CLOSE_WRITE,
-                     event.flags & aionotify.Flags.DELETE_SELF,
-                     event.flags & aionotify.Flags.MOVE_SELF)
+            event.flags & aionotify.Flags.ACCESS,
+            event.flags & aionotify.Flags.ATTRIB,
+            event.flags & aionotify.Flags.MODIFY,
+            event.flags & aionotify.Flags.CLOSE_WRITE,
+            event.flags & aionotify.Flags.DELETE_SELF,
+            event.flags & aionotify.Flags.MOVE_SELF)
 
         # 4. Handle file removal/move events detected by inotify
         if event.flags & self.REMOVED_FLAGS:
@@ -401,7 +400,7 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
             await self.watcher.setup(asyncio.get_event_loop())
 
             while not Path(self.filename).exists():
-                event = await self.watcher.get_event()  # pylint: disable=unused-variable
+                _ = await self.watcher.get_event()  # pylint: disable=unused-variable
         finally:
             self.close_watcher()
 
@@ -425,7 +424,7 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
 
 
 async def atail(  # pylint: disable=too-many-arguments, too-many-positional-arguments
-    output: TextIO,
+    output: TextIO = sys.stdout,
     filename: str = AsyncTail.DEFAULT_FILENAME,
     wait_for_create: bool = False,
     lines: int = 0,
@@ -434,7 +433,7 @@ async def atail(  # pylint: disable=too-many-arguments, too-many-positional-argu
     rewind: bool = False,
     rewind_string: str | None = None,
     restart: bool = False,
-    poll_interval: float | None = None,
+    poll: float | None = None,
 ) -> None:
     """
     High-level async function to tail a file and print output.
@@ -452,8 +451,25 @@ async def atail(  # pylint: disable=too-many-arguments, too-many-positional-argu
         rewind: Restart reading if the file shrinks.
         rewind_string: String to print when rewind occurs.
         restart: Re-open file if removed and reappears.
-        poll_interval: Use polling with this interval (seconds) instead of inotify.
+        poll: Use polling with this interval (seconds) instead of inotify.
     """
+
+    if filename == "-":
+        filename = AsyncTail.DEFAULT_FILENAME
+
+    if rewind_string and not rewind:
+        logger.warning("--rewind-string (-R) requires --rewind (-r)")
+        rewind = True
+
+    if rewind or restart or poll is not None:
+        if not follow:
+            logger.debug("Implicitly enabling --follow (-f) because --rewind, --restart, or --poll was specified.")
+            follow = True
+
+    if all_lines and lines > 0:
+        logger.warning("Both --all-lines (-a) and --lines (-n > 0) specified; --all-lines takes precedence.")
+        lines = 0
+
     async with AsyncTail(
         filename=filename,
         wait_for_create=wait_for_create,
@@ -463,7 +479,7 @@ async def atail(  # pylint: disable=too-many-arguments, too-many-positional-argu
         rewind=rewind,
         rewind_string=rewind_string,
         restart=restart,
-        poll_interval=poll_interval,
+        poll_interval=poll,
     ) as queue:
         while (line := await queue.get()) is not AsyncTail.EOF_MARKER:
                 assert line is not None
@@ -474,72 +490,25 @@ async def atail(  # pylint: disable=too-many-arguments, too-many-positional-argu
         queue.task_done()
 
 
-def get_opts() -> argparse.Namespace:
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument(
+def setup_args(arg):
+    """Set up the command-line arguments."""
+    arg(
         "filename", nargs="?", default=AsyncTail.DEFAULT_FILENAME, help="the file to tail ('-' or omitted for stdin)"
     )
-    parser.add_argument("-w", "--wait-for-create", action="store_true", help="wait for the file to be created if it doesn't exist")
-    parser.add_argument("-n", "--lines", type=int, default=0, help="output the last N lines (0 means start from end)")
-    parser.add_argument("-a", "--all-lines", action="store_true", help="output all lines from the start (overrides -n)")
-    parser.add_argument("-f", "--follow", action="store_true", help="output appended data as the file grows")
-    parser.add_argument("-r", "--rewind", action="store_true", help="rewind to start if file shrinks (implies -f)")
-    parser.add_argument("-R", "--rewind-string", help="string to output when a rewind occurs (requires -r)")
-    parser.add_argument(
+    arg("-w", "--wait-for-create", action="store_true", help="wait for the file to be created if it doesn't exist")
+    arg("-n", "--lines", type=int, default=0, help="output the last N lines (0 means start from end)")
+    arg("-a", "--all-lines", action="store_true", help="output all lines from the start (overrides -n)")
+    arg("-f", "--follow", action="store_true", help="output appended data as the file grows")
+    arg("-r", "--rewind", action="store_true", help="rewind to start if file shrinks (implies -f)")
+    arg("-R", "--rewind-string", help="string to output when a rewind occurs (requires -r)")
+    arg(
         "-s", "--restart", action="store_true", help="keep trying to open the file after it is removed/moved (implies -f)"
     )
-    parser.add_argument(
+    arg(
         "-p", "--poll", type=float, help="use polling with specified interval in seconds (disables inotify, implies -f)"
     )
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
-    ucm.add_logging_options(parser)
-    opts = parser.parse_args()
-
-    if opts.filename == "-":
-        opts.filename = AsyncTail.DEFAULT_FILENAME  # Explicitly use stdin
-
-    # Imply -f if options requiring it are used
-    if opts.rewind or opts.restart or opts.poll is not None:
-        if not opts.follow:
-            logger.debug("Implicitly enabling --follow (-f) because --rewind, --restart, or --poll was specified.")
-            opts.follow = True
-
-    # Validation or adjustments
-    if opts.all_lines and opts.lines > 0:
-        logger.warning("Both --all-lines (-a) and --lines (-n > 0) specified; --all-lines takes precedence.")
-        opts.lines = 0
-
-    if opts.rewind_string and not opts.rewind:
-        parser.error("--rewind-string (-R) requires --rewind (-r)")
-
-    return opts
-
-
-def main() -> None:
-    """Main command-line entry point."""
-    opts = get_opts()
-    ucm.setup_logging(opts)
-
-    # Log effective settings
-    logger.info("Starting atail for: %s", opts.filename)
-    logger.debug("Effective settings: %s", opts)
-
-    ucm.run_async(
-        atail(
-            output=sys.stdout,
-            filename=opts.filename,
-            wait_for_create=opts.wait_for_create,
-            lines=opts.lines,
-            all_lines=opts.all_lines,
-            follow=opts.follow,
-            rewind=opts.rewind,
-            rewind_string=opts.rewind_string,
-            restart=opts.restart,
-            poll_interval=opts.poll,
-        )
-    )
+    arg("--version", action="version", version=f"%(prog)s {__version__}")
 
 
 if __name__ == "__main__":
-    main()
+    main.go(atail, setup_args)
