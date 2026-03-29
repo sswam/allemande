@@ -235,7 +235,7 @@ async function welcome() {
 
   for (let i = 0; i < visit; i++)
     rand();
- 
+
   welcome_message = m1;
   if (incognito || visit >= 5)
     if (rand() < 0.5)
@@ -1227,7 +1227,7 @@ async function on_hash_change() {
   $title.innerText = query_to_title(hash_to_room(location.hash));
   let h = location.hash;
   // console.log("on_hash_change", h, "vs", new_hash);
-  if (h == "" || h == "#") 
+  if (h == "" || h == "#")
     return go_home();
   if (h == "#~")
     h = "#" + PRIVATE_ROOM;
@@ -3796,8 +3796,6 @@ async function usage() {
   set_view("view_usage");
   active_set("usage", 1);
 
-  const _usageUrl = ROOMS_URL + "/" + user + "/usage.log";
-
   function escapeHtml(s) {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
@@ -3826,24 +3824,32 @@ async function usage() {
     return records;
   }
 
-  function filterCurrentMonth(records) {
-    let now = new Date();
-    let ym = now.getUTCFullYear() + "-" + String(now.getUTCMonth() + 1).padStart(2, "0");
+  function filterMonth(ym, records) {
     return records.filter(function(r) { return r.timestamp.slice(0, 7) === ym; });
   }
 
-  function buildSummary(records) {
-    let now = new Date();
-    let today = now.getUTCDate();
+  function getDaysInMonthUTC(dateObj) {
+    const year = dateObj.getUTCFullYear();
+    const monthIndex = dateObj.getUTCMonth();
+
+    // Create a new Date object for the 0th day of the next month, i.e. last day of this month.
+    const nextMonthZeroDay = new Date(Date.UTC(year, monthIndex + 1, 0));
+
+    return nextMonthZeroDay.getUTCDate();
+  }
+
+  function buildSummary(date, records) {
+    // let maxDay = date.getUTCDate();
+    let maxDay = getDaysInMonthUTC(date);
     let totalCost = 0;
-    let dailyCosts = new Array(today + 1).fill(0);
+    let dailyCosts = new Array(maxDay + 1).fill(0);
     let agentMap = {};
 
     for (let i = 0; i < records.length; i++) {
       let r = records[i];
       totalCost += r.cost;
       let day = parseInt(r.timestamp.slice(8, 10), 10);
-      if (day >= 1 && day <= today) dailyCosts[day] += r.cost;
+      if (day >= 1 && day <= maxDay) dailyCosts[day] += r.cost;
       if (!agentMap[r.agent]) agentMap[r.agent] = {cost: 0, models: {}};
       agentMap[r.agent].cost += r.cost;
       agentMap[r.agent].models[r.model] = true;
@@ -3856,21 +3862,26 @@ async function usage() {
       return b.cost !== a.cost ? b.cost - a.cost : a.name.localeCompare(b.name);
     });
 
-    return {totalCost: totalCost, dailyCosts: dailyCosts, today: today, agentData: agentData};
+    return {totalCost: totalCost, dailyCosts: dailyCosts, maxDay: maxDay, agentData: agentData};
   }
 
-  function renderDailyChart(dailyCosts, today) {
+  function renderDailyChart(dailyCosts, maxDay) {
     let maxCost = 0;
-    for (let d = 1; d <= today; d++) {
+    for (let d = 1; d <= maxDay; d++) {
       if (dailyCosts[d] > maxCost) maxCost = dailyCosts[d];
     }
     if (maxCost === 0) maxCost = 1;
 
     let bars = "", labels = "";
-    for (let d = 1; d <= today; d++) {
-      let pct = (dailyCosts[d] / maxCost * 100).toFixed(1);
-      bars   += '<div class="day-bar" style="height:' + pct + '%;" title="Day ' + d + ': ' + formatCost(dailyCosts[d]) + '"></div>';
-      labels += '<div class="day-label">' + d + '</div>';
+    for (let d = 1; d <= maxDay; d++) {
+      if (dailyCosts[d] === 0) {
+        bars   += '<div class="day-bar day-bar--empty" style="height:0%;" title="Day ' + d + ': ' + formatCost(dailyCosts[d]) + '"></div>';
+        labels += '<div class="day-label">' + d + '</div>';
+      } else {
+        let pct = (dailyCosts[d] / maxCost * 100).toFixed(1);
+        bars   += '<div class="day-bar" style="height:' + pct + '%;" title="Day ' + d + ': ' + formatCost(dailyCosts[d]) + '"></div>';
+        labels += '<div class="day-label">' + d + '</div>';
+      }
     }
     return '<div class="daily-chart"><div class="bar-row">' + bars + '</div><div class="label-row">' + labels + '</div></div>';
   }
@@ -3891,37 +3902,94 @@ async function usage() {
     return html;
   }
 
-  function renderSummary(summary) {
+  function renderSummary(month_display, summary) {
     let patreon = "";
     if (user_nsfw) {
       patreon = '<div style="float:right">Patreon: <a href="' + escapeHtml(config.PATREON_SFW) + '">SFW</a> | <a href="' + escapeHtml(config.PATREON_NSFW) + '">NSFW</a></div>';
     } else {
       patreon = '<div style="float:right"><a href="' + escapeHtml(config.PATREON_SFW) + '">Patreon</a></div>';
     }
-    let html = patreon + "<h3>Usage This Month</h3>"
-             + "<p><strong>Total: " + formatCost(summary.totalCost) + "</strong></p>"
-             + "<h4>Daily Cost</h4>"
-             + renderDailyChart(summary.dailyCosts, summary.today)
-             + "<h4>Cost by Agent</h4>"
-             + renderAgentChart(summary.agentData);
+    let html = `
+      ${patreon}
+      <div style="display: flex; gap: var(--pad);">
+  			<button id="usage_prev" title="previous month"><i class="bi bi-caret-left-fill i20"></i></button>
+  			<button id="usage_next" title="next month"><i class="bi bi-caret-right-fill i20"></i></button>
+      </div>
+      <h3>Usage for ${month_display}</h3>
+      <p><strong>Total: ${formatCost(summary.totalCost)}</strong></p>
+      <h4>Daily Cost</h4>
+      ${renderDailyChart(summary.dailyCosts, summary.maxDay)}
+      <h4>Cost by Agent</h4>
+      ${renderAgentChart(summary.agentData)}
+    `;
     $id("view_usage").innerHTML = html;
   }
 
-  try {
-    const r = await fetch(_usageUrl, {
-      credentials: 'include',
-      cache: 'no-cache',
-    });
-
-    if (r.status === 404) return "";
-    if (!r.ok) throw new Error("HTTP " + r.status);
-
-    const text = await r.text();
-    const summary = buildSummary(filterCurrentMonth(parseUsageLog(text || "")));
-    renderSummary(summary);
-  } catch (e) {
-    $id("view_usage").textContent = "Error loading usage data: " + e.message;
+  function monthUTC(date) {
+    const year = date.getUTCFullYear();
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+    const utcYearMonth = `${year}-${month}`;
+    return utcYearMonth;
   }
+
+  function monthUTCDisplay(date) {
+    const options = {
+      year: 'numeric',
+      month: 'long',
+      timeZone: 'UTC'
+    };
+
+    const formattedDate = new Intl.DateTimeFormat(undefined, options).format(date);
+
+    return formattedDate;
+  }
+
+  function addMonthsUTC(yyyy_mm, n) {
+    const [year, month] = yyyy_mm.split('-').map(Number);
+    let date = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+    date.setUTCMonth(date.getUTCMonth() + n);
+    return date;
+  }
+
+  function usageNav(month, n) {
+    const date = addMonthsUTC(month, n)
+    showUsageForMonth(date);
+  }
+
+  async function showUsageForMonth(date) {
+    let month = monthUTC(date);
+    let month_display = monthUTCDisplay(date);
+
+    const _usageUrl = ROOMS_URL + "/" + user + "/usage." + month + ".log";
+
+    try {
+      const r = await fetch(_usageUrl, {
+        credentials: 'include',
+        cache: 'no-cache',
+      });
+
+      let records;
+      if (r.status === 404) {
+        // $id("view_usage").textContent = "No usage data for .";
+        records = [];
+      } else if (!r.ok) {
+        throw new Error("HTTP " + r.status);
+      } else {
+        const text = await r.text();
+        records = filterMonth(month, parseUsageLog(text || ""));
+      }
+
+      const summary = buildSummary(date, records);
+      renderSummary(month_display, summary);
+      $on($id("usage_prev"), "click", () => usageNav(month, -1))
+      $on($id("usage_next"), "click", () => usageNav(month, 1))
+    } catch (e) {
+      $id("view_usage").textContent = "Error loading usage data: " + e.message;
+    }
+  }
+
+  const now = new Date();
+  await showUsageForMonth(now);
 }
 
 // main ----------------------------------------------------------------------
