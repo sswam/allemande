@@ -92,7 +92,7 @@ function offline() {
 }
 
 export function clear() {
-  console.log("GOT CLEAR() FROM SERVER");
+  // console.log("GOT CLEAR() FROM SERVER");
   $("div.messages").innerHTML = "";
   clean_up_server_events();
 }
