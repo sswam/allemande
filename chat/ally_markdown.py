@@ -855,11 +855,12 @@ def markdown_to_html(content: str) -> str:
 
 
 def user_to_display(user: str|None) -> str|None:
-    """Strip trailing .number and/or leading user= from a username"""
+    """Strip trailing .number and/or leading user= from a username, change _ to space"""
     if user is None:
         return None
     user_display = re.sub(r"\.\d+$", "", user)
     user_display = re.sub(r".*=", "", user_display)
+    user_display = user_display.replace("_", " ")
     return user_display
 
 
