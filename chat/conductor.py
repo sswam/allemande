@@ -103,13 +103,13 @@ def responsible_human(
     room: Room | None = None,
 ) -> str | None:
     """returns guess at responsible human user"""
-    # TODO
     # responsible human user is based on the most recent message from a human in the chat history (from the end)
     # or, if none, the top-level path component of the room name, if it matches a user's name  (e.g. sam/foo -> sam and sam -> sam)
     # logger.info("history %r")
-    top_dir = Path(os.environ["ALLEMANDE_ROOMS"])
-    access_config = ally_room.load_config(top_dir, "access.yml")
-    all_human_users = set(access_config.get("allow", []))
+
+    # top_dir = Path(os.environ["ALLEMANDE_ROOMS"])
+    # access_config = ally_room.load_config(top_dir, "access.yml")
+    # all_human_users = set(access_config.get("allow", []))
 
     # Try to find the most recent human user in the history
     for i in range(len(history) - 1, -1, -1):
@@ -129,6 +129,7 @@ def responsible_human(
     # If no human user found in history, check the room name
     if room and room.name:
         top_name = room.name.split("/")[0]
+        all_human_users = cache.load(str(PATH_USERS)).strip().split("\n")
         if top_name in all_human_users:
             return top_name
 
