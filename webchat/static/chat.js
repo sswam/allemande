@@ -1183,6 +1183,7 @@ async function load_user_files() {
   // title case
   const name = user.replace(/\b./g, c => c.toUpperCase());
   nag = nag.replace(/\$USER\b/g, encode_entities(name));
+  nag = nag.replace(/\$CONTACT\b/g, config.CONTACT);
   setup_system_message(nag);
 
 //  modules.user_script = userScript; // XXX isn't that automatic?

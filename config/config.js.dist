@@ -8,6 +8,7 @@ const ALLYCHAT_ROOMS_URL="https://rooms.allemande.ai";
 const ALLYCHAT_WEBPUSH_VAPID_PUBLIC_KEY="";
 const GLOBAL_MODERATORS = ["root"];
 const DEVS = ["root", "yourusername"];
+export const CONTACT = `Please contact me by Reddit chat to <a href="https://www.reddit.com/user/adminid/">adminid</a>, or by email to <a href="mailto:admin@domain">admin@domain</a> --Name`
 export const EARLY = DEVS + ["ganja"];
 export const PATREON_SFW = "https://www.patreon.com/allychat";
 export const PATREON_NSFW = "https://www.patreon.com/allychatx";
