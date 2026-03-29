@@ -221,6 +221,7 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
                 await self.follow_changes_notify(self.f)
         finally:
             await self.f.close()
+            self.f = None
 
     async def seek_to_end(self, f: AsyncTextIOWrapper) -> None:
         """Seeks to the end of the file stream, ignoring errors for unseekable streams."""
