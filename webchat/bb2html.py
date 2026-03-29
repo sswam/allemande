@@ -33,7 +33,7 @@ file_locks = defaultdict(asyncio.Lock)
 semaphore = asyncio.Semaphore(PARALLEL_MAX)
 
 
-async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None, delay: float = 0.5):
+async def file_changed(bb_file: str, html_file: str, old_size: int | None, new_size: int | None, delay: float = 0.1):
     """convert a bb file to html"""
     logger.info("bb2html: processing bb file: %s size changed from %s to %s", bb_file, old_size, new_size)
     async with file_locks[bb_file]:
