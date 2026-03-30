@@ -18,6 +18,10 @@ import ucm
 import atail
 import bb_lib
 import ally_markdown
+from settings import PATH_ROOMS
+
+
+EXCLUDE_DIRS = {"ally_chat_cli"}
 
 
 os.umask(0o027)
@@ -122,6 +126,14 @@ async def process_change(line, opts, tasks, out):
 
     if not bb_file.endswith(opts.exts):
         return
+
+    try:
+        top_dir = Path(bb_file).relative_to(PATH_ROOMS).parents[-2]
+        if str(top_dir) in EXCLUDE_DIRS:
+            return
+    except Exception as e:
+        logger.debug("exception with checking EXCLUDE_DIRS: %r", e)
+        pass
 
     if os.path.islink(bb_file):
         return
