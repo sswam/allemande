@@ -97,7 +97,7 @@ class AsyncTail:  # pylint: disable=too-many-instance-attributes
                 await self.seek_to_end(self.f)
                 self.skip_seek_to_end = True
         except Exception as e:
-            logger.error("open in __aenter__ failed: %s", e, exc_info=True)
+            logger.debug("open in __aenter__ failed: %s", e, exc_info=True)
             pass
 
         self.queue = asyncio.Queue()
