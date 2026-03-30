@@ -12,8 +12,8 @@ from datetime import datetime
 
 
 def format_cost(cost: float) -> str:
-    """Format cost to 6 d.p., stripping trailing zeros and decimal point."""
-    return f"{cost:.6f}".rstrip("0").rstrip(".")
+    """Format cost to 8 d.p., stripping trailing zeros and decimal point."""
+    return f"{cost:.8f}".rstrip("0").rstrip(".")
 
 
 def main() -> None:
