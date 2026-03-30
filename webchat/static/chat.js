@@ -970,6 +970,7 @@ function show_room_privacy() {
   if (access_denied) {
     $privacy.innerHTML = icons["access_denied"];
     $privacy.title = "denied";
+    clear_messages_box();
   } else if (is_private) {
     $privacy.innerHTML = icons["access_private"];
     $privacy.title = "private";
