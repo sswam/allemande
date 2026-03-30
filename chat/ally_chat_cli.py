@@ -48,13 +48,15 @@ def create_room_content(
         for context in contexts:
             if context == "-":
                 stdin_content = sys.stdin.read()
-                content += f"#File: stdin\n\n{stdin_content}\n\n"
+                # content += f"#File: stdin\n\n{stdin_content}\n\n"
+                content += f"{stdin_content}\n\n"
             else:
                 context_path = Path(context)
                 if context_path.is_file():
                     with open(context_path) as f:
                         file_content = f.read()
-                    content += f"#File: {context_path.name}\n\n{file_content}\n\n"
+                    # content += f"#File: {context_path.name}\n\n{file_content}\n\n"
+                    content += f"{file_content}\n\n"
 
     # Add the user's query message
     if query:
@@ -193,7 +195,7 @@ async def ally_chat_cli_async(
     """
     # If agent is given, prepend @ mention
     if agent:
-        query = f"@{agent}, "
+        query = f"@{agent}, " + query
     # If directory specified, use it and imply keep
     if directory:
         temp_dir = directory
@@ -321,3 +323,8 @@ def setup_args(arg):
 
 if __name__ == "__main__":
     main.go(ally_chat_cli, setup_args)
+
+# TODO:
+# - The --directory option as it is, is wrong. Should rather have a -r --room option to specify a room file (and append to it).
+# - We need a different -d --directory option to set rooms_dir, i.e. a rooms context to work in. The TEMP_ROOM_BASE dir would be created under that.
+# - We need an -o --options option to specify a file which should be copied to room_name.yml within the temp_dir before creating the chat, normally chat.yml or a different stem if specified with the -r option.
