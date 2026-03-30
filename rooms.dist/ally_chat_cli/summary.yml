@@ -1,0 +1,4 @@
+agents:
+  all:
+    lines: 1
+    context: 1000

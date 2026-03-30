@@ -1,0 +1,1 @@
+ac -k -o ~/rooms/ally_chat_cli/summary.yml -d sam -a Ally "can you summarize what you'd like to remember from this please, including all the main things, but not including your self-talk? Just give the summary only with no prelude, in one paragraph of first person prose, from your point of view." ~/rooms/sam/ally-1.bb

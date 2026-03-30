@@ -17,7 +17,7 @@ import aionotify  # type: ignore
 from ally import main, logs  # type: ignore
 from bb_lib import lines_to_messages, message_to_text, ChatMessage
 
-__version__ = "0.1.3"
+__version__ = "0.1.5"
 
 logger = logs.get_logger()
 
@@ -33,6 +33,10 @@ def cleanup_temp_dir(temp_dir: Path) -> None:
         shutil.rmtree(temp_dir)
     except Exception:  # pylint: disable=broad-except
         logger.warning("Failed to clean up temp directory: %s", temp_dir)
+    try:
+        os.rmdir(temp_dir.parent)
+    except Exception:
+        pass
 
 
 def create_room_content(
@@ -71,8 +75,8 @@ def create_room_content(
     return content
 
 
-async def create_temp_room(rooms_dir: Path) -> Path:
-    """Create a uniquely named temporary room directory."""
+async def create_temp_dir(rooms_dir: Path) -> Path:
+    """Create a uniquely named temporary directory."""
     base_path = rooms_dir / TEMP_ROOM_BASE
     base_path.mkdir(parents=True, exist_ok=True)
 
@@ -98,7 +102,7 @@ async def create_temp_room(rooms_dir: Path) -> Path:
 def parse_bb_messages(content: str) -> list[tuple[str | None, str]]:
     """Parse .bb format content into list of (name, message) tuples."""
     messages = []
-    for msg_dict in lines_to_messages(content.splitlines(keepends=True)):
+    for msg_dict in lines_to_messages(iter(content.splitlines(keepends=True))):
         user = msg_dict.get("user")
         content_text = msg_dict["content"].rstrip("\n")
         messages.append((user, content_text))
@@ -174,7 +178,7 @@ async def wait_for_response(
         watcher.close()
 
 
-async def ally_chat_cli_async(
+async def ally_chat_cli_async(  # pylint: disable=too-many-arguments, too-many-positional-arguments
     user: str,
     agent: str | None,
     query: str,
@@ -183,7 +187,8 @@ async def ally_chat_cli_async(
 #     options: dict | None = None,
     num_messages: int = 1,
     keep: bool = False,
-    directory: Path | None = None,
+    room: str|None = None,
+    options_file: Path | None = None,
     timeout: float = DEFAULT_TIMEOUT,
     rooms_dir: Path = DEFAULT_ROOMS_DIR,
 ) -> tuple[list[tuple[str | None, str]], Path | None]:
@@ -196,11 +201,12 @@ async def ally_chat_cli_async(
     # If agent is given, prepend @ mention
     if agent:
         query = f"@{agent}, " + query
-    # If directory specified, use it and imply keep
-    if directory:
-        temp_dir = directory
-        room_file = temp_dir / "chat.bb"
+
+    # If room specified, use it and imply keep
+    if room:
         keep = True
+        room_file = (rooms_dir / room).with_suffix(".bb")
+        work_dir = room_file.parent
 
         # Count existing messages
         if room_file.exists():
@@ -214,24 +220,29 @@ async def ally_chat_cli_async(
         with open(room_file, "a") as f:
             f.write(room_content)
     else:
-        # Create room content
+        # Create temp directory under rooms_dir/TEMP_ROOM_BASE
+        work_dir = await create_temp_dir(rooms_dir)
+        room_file = work_dir / "chat.bb"
+
+        # Copy options file as {stem}.yml if provided
+        # Note: not with existing room!
+        if options_file:
+            dest_yml = work_dir / "chat.yml"
+            shutil.copy2(options_file, dest_yml)
+
+        # Create room content and write it
         room_content = create_room_content(user, query, contexts)
         initial_message_count = len(parse_bb_messages(room_content))
 
-        # Create temp directory
-        temp_dir = await create_temp_room(rooms_dir)
-        room_file = temp_dir / "chat.bb"
+        # Write content to temp file first, then atomic move into place
+        temp_file = work_dir / ".chat.bb.tmp"
 
         try:
-            # Write content to temp file first
-            temp_file = temp_dir / ".chat.bb.tmp"
             temp_file.write_text(room_content)
-
-            # Atomic move into place
             temp_file.rename(room_file)
         except Exception:
             # Clean up on error
-            cleanup_temp_dir(temp_dir)
+            cleanup_temp_dir(work_dir)
             raise
 
     # Wait for response
@@ -241,16 +252,16 @@ async def ally_chat_cli_async(
         )
 
         if keep:
-            return response_messages, temp_dir
+            return response_messages, work_dir
 
         # Clean up temp directory
-        cleanup_temp_dir(temp_dir)
+        cleanup_temp_dir(work_dir)
         return response_messages, None
 
     except Exception:
         # Clean up on error unless keeping
-        if not keep and not directory:
-            cleanup_temp_dir(temp_dir)
+        if not keep:
+            cleanup_temp_dir(work_dir)
         raise
 
 
@@ -262,7 +273,7 @@ def format_bb_output(messages: list[tuple[str | None, str]]) -> str:
             msg_dict = {"user": name, "content": content}
         else:
             msg_dict = {"content": content}
-        output_parts.append(message_to_text(msg_dict))
+        output_parts.append(str(message_to_text(msg_dict)))
     return "".join(output_parts)
 
 
@@ -274,6 +285,8 @@ def ally_chat_cli(
     contexts: list[str] | None = None,
     num_messages: int = 1,
     keep: bool = False,
+    room: str|None = None,
+    options: str = "",
     directory: str = "",
     timeout: float = DEFAULT_TIMEOUT,
 ) -> None:
@@ -285,9 +298,10 @@ def ally_chat_cli(
         import getpass
         user = getpass.getuser().title()
 
-    dir_path = Path(directory) if directory else None
+    rooms_dir = DEFAULT_ROOMS_DIR/directory if directory else DEFAULT_ROOMS_DIR
+    options_file = Path(options) if options else None
 
-    response_messages, temp_dir = asyncio.run(
+    response_messages, work_dir = asyncio.run(
         ally_chat_cli_async(
             user=user,
             agent=agent,
@@ -295,13 +309,15 @@ def ally_chat_cli(
             contexts=contexts,
             num_messages=num_messages,
             keep=keep,
-            directory=dir_path,
+            room=room,
+            options_file=options_file,
             timeout=timeout,
+            rooms_dir=rooms_dir,
         )
     )
 
-    if keep and temp_dir:
-        ostream.write(f"{temp_dir.name}\n")
+    if keep and work_dir:
+        ostream.write(f"{work_dir.name}\n")
 
     output = format_bb_output(response_messages)
     ostream.write(output)
@@ -316,15 +332,12 @@ def setup_args(arg):
     arg("query", nargs="?", help="query to send (empty string for none)")
     arg("contexts", nargs="*", help="context files to include")
     arg("-n", "--num-messages", type=int, help="number of response messages expected")
-    arg("-k", "--keep", action="store_true", help="keep temporary room directory")
-    arg("-d", "--directory", help="use existing room directory (implies --keep)")
+    arg("-k", "--keep", action="store_true", help="keep the normally temporary work directory")
+    arg("-r", "--room", help="use an existing room file, implies --keep and not --options")
+    arg("-d", "--directory", help="directory to work in relative to $ALLEMANDE_ROOMS")
+    arg("-o", "--options", help="options file to copy as {stem}.yml into the temp dir")
     arg("-t", "--timeout", type=float, help=f"timeout in seconds (default: {DEFAULT_TIMEOUT})")
 
 
 if __name__ == "__main__":
     main.go(ally_chat_cli, setup_args)
-
-# TODO:
-# - The --directory option as it is, is wrong. Should rather have a -r --room option to specify a room file (and append to it).
-# - We need a different -d --directory option to set rooms_dir, i.e. a rooms context to work in. The TEMP_ROOM_BASE dir would be created under that.
-# - We need an -o --options option to specify a file which should be copied to room_name.yml within the temp_dir before creating the chat, normally chat.yml or a different stem if specified with the -r option.
