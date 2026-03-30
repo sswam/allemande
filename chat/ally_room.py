@@ -468,7 +468,7 @@ def check_access(user: str | None, pathname: Path | str) -> Access:
         access, _reason = _check_access_2(user, pathname)
     except PermissionError as _e:
         access, _reason = Access.NONE, "PermissionError"
-    # logger.info("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
+    logger.debug("check_access: User: %s, pathname: %s, Access: %s, Reason: %s", user, pathname, access, _reason)
 
     # experiment: allow anyone who can write to moderate
     if access.value & Access.WRITE.value:
@@ -623,8 +623,7 @@ def _check_user_specific_access(user: str | None, pathname: str, access_conf: di
         return Access.NONE, "deny"
 
     if (user is not None and
-        (re.match(rf"{user}\.[a-z]+$", pathname, flags=re.IGNORECASE) or
-        pathname == user or
+        (pathname == user or
         pathname.startswith(f"{user}/"))):
         return Access.ADMIN, "user_dir"
 
@@ -664,12 +663,14 @@ def _check_moderator_and_user_access(user: str | None, pathname: str, file_statu
     if writable and user in access_conf.get("write", []):
         user_access = Access.READ_WRITE
 
-    if user in access_conf.get("allow", []):
-        return user_access, "allow"
-
     if access_conf.get("allow_agents") and user in agent_names:
         agent_access = Access.READ_WRITE if writable else Access.READ
         return agent_access, "allow_agents"
+
+    if user in access_conf.get("allow", []):
+        return user_access, "allow"
+    elif "allow" in access_conf:
+        return Access.NONE, "not in allow"
 
     return None
 
