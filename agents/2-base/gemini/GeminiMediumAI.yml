@@ -1,6 +1,6 @@
 base:
   - AgentChar
-  - LiteM
+  - FlashoM
 filter_out:
   - truncate_repeated_characters
   - unsmart
