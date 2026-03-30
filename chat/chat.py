@@ -216,7 +216,7 @@ def context_remove_thinking_sections(context: list[str], agent: Agent | None) ->
 
 def remove_image_details(content: str) -> str:
     """Remove image details from the content."""
-    modified = re.sub(r"!\[(#\d+) (.*?)\]\((.*?)\)", r"![\1](\3)", content)
+    modified = re.sub(r"!\[(#\d+) (.*?)\]\((.*?)\)", r"![](\3)", content)
     if modified != content:
         logger.debug("Removed image details from message: original: %s", content)
         logger.debug("  modified: %s", modified)
