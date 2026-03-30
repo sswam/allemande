@@ -1,6 +1,4 @@
 type: mixin
-poke_if:
-  - "```"
 forward: true
 forward_allow:
   - Dilu

@@ -10,21 +10,21 @@ logger = logging.getLogger(__name__)
 async def handle_forwarding(generate_agent_response, response, agent, c):
     """Handle forwarding logic for agent responses."""
     if not agent.get("forward"):
-        return response
+        return response, agent
 
     logger.debug("handle_forwarding: initial response: %s", response)
 
     response = apply_forward_triggers(response, agent)
 
     if not response:
-        return None
+        return None, agent
 
     forward_target = determine_forward_target(response, agent, c.agents, c.config, c.room)
 
     if not forward_target:
-        return response
+        return response, agent
 
-    forwarded_response = await execute_forward(c, generate_agent_response, forward_target, agent)
+    forwarded_response, agent2 = await execute_forward(c, generate_agent_response, forward_target, agent)
 
     logger.debug("Forwarded response from %s: %s", forward_target, forwarded_response)
 
@@ -37,9 +37,9 @@ async def handle_forwarding(generate_agent_response, response, agent, c):
         forward_if_blank_2 = agent.get("forward_if_blank_2")
         if forward_if_blank_2:
             logger.info("Forward: blank response from %s, using forward_if_blank_2", forward_target)
-            forwarded_response = await execute_forward(c, generate_agent_response, forward_if_blank_2, agent)
+            forwarded_response, agent2 = await execute_forward(c, generate_agent_response, forward_if_blank_2, agent)
 
-    return forwarded_response
+    return forwarded_response, agent2
 
 
 def apply_forward_triggers(response, agent):
@@ -137,6 +137,6 @@ async def execute_forward(c, generate_agent_response, bot2, agent):
     response = await generate_agent_response(c, agent2)
 
     if response is None:
-        return None
+        return None, agent2
 
-    return response.lstrip().rstrip("\n ")
+    return response.lstrip().rstrip("\n "), agent2

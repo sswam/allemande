@@ -345,10 +345,10 @@ async def run_each_bot(c, bots):
             continue
 
         response = response.lstrip().rstrip("\n ")
-        response = await forward.handle_forwarding(generate_agent_response, response, agent, c)
+        response, agent2 = await forward.handle_forwarding(generate_agent_response, response, agent, c)
 
-        response = apply_narrator_mode(response, agent)
-        poke_next = should_poke_next(response, agent)
+        response = apply_narrator_mode(response, agent2)
+        poke_next = should_poke_next(response, agent2)
 
         c.history.append(response)
         update_skip_tracking(poke_next, c.skip, c.file)
