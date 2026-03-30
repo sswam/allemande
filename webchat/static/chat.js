@@ -854,7 +854,7 @@ export async function set_room(room_new, no_history) {
   }
 
   is_private = room_new.startsWith(user + "/");
-  room_nsfw = is_private || room_new.startsWith("nsfw/");
+  room_nsfw = room_new.startsWith("nsfw/"); // || is_private;
 
   $body.classList.toggle("private", is_private);
   $body.classList.toggle("nsfw_zone", room_nsfw);
@@ -1349,8 +1349,10 @@ function room_set_number(n) {
 }
 
 function room_get_number() {
+  if (room.endsWith("/"))
+    return null;
   const match = room.match(/(\d+)$/);
-  return match ? match[1] : null;
+  return match ? match[1] : -1;
 }
 
 /*
@@ -1362,7 +1364,7 @@ function room_random() {
 function room_next() {
   let num = room_get_number();
   if (num === null) {
-    num = 0;
+    return null;
   } else {
     num = +num + 1;
   }
@@ -1371,10 +1373,10 @@ function room_next() {
 
 function room_prev() {
   let num = room_get_number();
-  if (num === "0") {
+  if (num === null || num === -1) {
+    return null;
+  } else if (num === "0") {
     return room_set_number("");
-  } else if (num === null) {
-    return;
   } else {
     num = +num - 1;
   }
@@ -1382,6 +1384,9 @@ function room_prev() {
 }
 
 function room_first() {
+  let num = room_get_number();
+  if (num === null || num === -1)
+    return null;
   return room_set_number("");
 }
 
@@ -2524,6 +2529,7 @@ function setup_view_options() {
   // set_default_room();
   PRIVATE_ROOM = user + "/chat";
   run_view_options_updates();
+  view_options_apply();
   on_room_ready(view_options_apply);
 }
 
@@ -4032,9 +4038,8 @@ export async function init() {
     nsfw_zone_init();
 
   setup_help();
-  setup_view_options();
-  load_filter();
   await setup_icons();
+  load_filter();
   setup_embed_vs_main_ui();
 
   // The controls layout used to work in Chrome without the hack,
@@ -4045,6 +4050,7 @@ export async function init() {
   load_theme();
   setup_dev_early();
   await on_hash_change();
+  setup_view_options();
 
   $on($content, "input", message_changed);
   // console.log("before restore_content")
