@@ -66,7 +66,7 @@ let help_room, qa_room, help_url, qa_url;
 
 const image_size_default = 6;
 const font_size_default = 4;
-let simple = true;
+let simple = false;
 
 const VIEW_OPTIONS_DEFAULT = {
   beta_test: "simple2",
@@ -91,7 +91,7 @@ const VIEW_OPTIONS_DEFAULT = {
   highlight_theme_light: "a11y-light",
   highlight_theme_dark: "a11y-dark",
   fullscreen: 0,
-  advanced: -1,
+  advanced: 0,
   audio_stt: 0,
   audio_tts: 0,
   audio_vad: 0,
@@ -4040,7 +4040,6 @@ export async function init() {
   setup_help();
   await setup_icons();
   load_filter();
-  setup_embed_vs_main_ui();
 
   // The controls layout used to work in Chrome without the hack,
   // but now behaves wrongly when the input bar is reduced to minimum height.
@@ -4051,6 +4050,7 @@ export async function init() {
   setup_dev_early();
   await on_hash_change();
   setup_view_options();
+  setup_embed_vs_main_ui();
 
   $on($content, "input", message_changed);
   // console.log("before restore_content")
