@@ -93,8 +93,7 @@ def python_tool_rag(c, agent, query) -> str:
     db_path, db_name_abs = ally_room.relname_to_path(db_name, c.room)
 
     # Do access control check:  XXX this is privacy risk as responsible_human is not always right
-    room = ally_room.Room(path=Path(db_path))
-    db_access = room.check_access(c.responsible_human)
+    db_access = ally_room.check_access(c.responsible_human, db_name_abs + ".db")
 
     access_needed = ally_room.Access.WRITE if do_import else ally_room.Access.READ
 

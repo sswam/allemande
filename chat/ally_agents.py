@@ -567,7 +567,7 @@ class Agent:
         agent_type = self.get("type")
         
         if not agent_type:
-            logger.error("Agent type not specified: %r: %r", self.name, self.file)
+            logger.error("Agent type not specified: %r: %s", self.name, str(self.file))
             return False
 
         # if not agent_type:
