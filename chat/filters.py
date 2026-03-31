@@ -499,6 +499,15 @@ def filter_out_remove_indent(response: str) -> str:
     return response
 
 
+def filter_out_test_chat_loop(response: str) -> str:
+    """
+    Replace any @ mention with @Xilu, causes Xilu to always attempt a chat loop.
+    This is only to aid debugging, not for actual use!
+    """
+    response = re.sub(r"@\w+", "@Xilu", response)
+    return response
+
+
 def apply_filters_in(agent: ally_agents.Agent, history: list[str]) -> list[str]:
     """Apply input filters to the query and history."""
     filters = agent.get("filter_in")
@@ -609,6 +618,7 @@ filters_out = {
     "unsmart": unsmart,
     "smart": smart,
     "remove_indent": filter_out_remove_indent,
+    "test_chat_loop": filter_out_test_chat_loop,
     # "fallback": filter_out_fallback,
 }
 

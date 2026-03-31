@@ -6,6 +6,11 @@ import ally_agents
 import ally_room
 
 @dataclass
+class Skip:
+    skip: int = 0
+    autopoke: int = 0
+
+@dataclass
 class Context:
     agents: ally_agents.Agents
     file: str
@@ -17,6 +22,6 @@ class Context:
     config: dict[str, Any]
     responsible_human: str|None
     poke: bool
-    skip: DefaultDict[str, int]|None
+    skip: Skip|None
     room: ally_room.Room
     local_visual_dir: str|None

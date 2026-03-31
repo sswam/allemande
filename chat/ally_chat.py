@@ -463,9 +463,18 @@ def should_poke_next(response, agent):
 
 def update_skip_tracking(poke, skip, file):
     """Update skip tracking to avoid re-processing."""
-    if not poke and skip is not None:
-        logger.debug("Will skip processing after agent/s response: %r", file)
-        skip[file] += 1
+    if skip is None:
+        return
+    if skip.autopoke:
+        logger.info("Won't double auto-poke: %r", file)
+        skip.skip += 1
+        skip.autopoke -= 1  # = 0 ?
+    elif poke:
+        logger.info("Auto-poking: %r", file)
+        skip.autopoke += 1
+    else:
+        logger.info("No poke after agent response: %r", file)
+        skip.skip += 1
 
 
 async def run_agent(c, agent, query) -> str:
@@ -709,9 +718,9 @@ async def room_changed(file_path, request_index, change_type, old_size, new_size
 
     poke = new_size == old_size
 
-    if skip.get(file_path):
+    if skip.skip:
         logger.debug("Won't react to AI response: %r", file_path)
-        skip[file_path] -= 1
+        skip.skip -= 1
         return
 
     try:
@@ -766,7 +775,7 @@ def touch_parent_dirs(path: Path, top_path: Path) -> None:
 
 async def watch_loop(args):
     """Follow the watch log, and process files."""
-    skip = defaultdict(int)
+    skip_by_file = defaultdict(context.Skip)
 
     request_index = 0
 
@@ -806,6 +815,7 @@ async def watch_loop(args):
                 if file_type == "room" and not os.access(file_path, os.W_OK):
                     logger.info("Ignoring change to unwritable file: %r", file_path)
                 elif file_type == "room":
+                    skip = skip_by_file[file_path]
                     task = asyncio.create_task(room_changed(file_path, request_index, change_type, old_size, new_size, args, skip, agents))
                     tasks.add_task(task, f"file changed: {file_path}")
                     tasks.list_active_tasks()
