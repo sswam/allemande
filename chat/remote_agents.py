@@ -31,7 +31,8 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     """Run a remote agent."""
     # NOTE: responsible_human is not used here yet
 
-    room = Room(path=Path(c.file))
+    # room = Room(path=Path(c.file))
+    room = c.room
 
     service = agent["type"]
     model = agent["model"]

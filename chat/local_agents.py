@@ -161,7 +161,8 @@ async def local_agent(c, agent, _query) -> str:
     """Run a local agent."""
     # print("local_agent: %r %r %r %r %r %r", query, agent, file, args, history, history_start)
 
-    room = Room(path=Path(c.file))
+    # room = Room(path=Path(c.file))
+    room = c.room
 
     # Note: the invitation should not end with a space, or the model might use lots of emojis!
     name = agent.name
@@ -170,8 +171,8 @@ async def local_agent(c, agent, _query) -> str:
     agent = agent.copy()
     if c.config.get("agents") and "all" in c.config["agents"]:
         agent.update(c.config["agents"]["all"])
-    if c.config.get("agents") and name in c.config["agents"]:
-        agent.update(c.config["agents"][name])
+    if c.config.get("agents") and name.lower() in c.config["agents"]:
+        agent.update(c.config["agents"][name.lower()])
 
     logger.debug("Running local agent %r", agent)
 
@@ -273,6 +274,15 @@ async def local_agent(c, agent, _query) -> str:
         else:
             context.insert(0, system_top)
         logger.debug("system_top: %r", system_top)
+
+    # TODO are system_top and system_bottom indented properly?
+
+    # recall: TODO do this in a separate file and share between local and remote agents
+    if agent.get("recall"):
+        recall_file = agent.get("recall_file", agent.name.lower())
+        recall_limit = agent.get("recall_limit", 3)
+        recall_pos = agent.get("recall_pos", -1)
+
 
     logger.debug("context: %s", c.args.delim.join(context[-6:]))
 

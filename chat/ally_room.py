@@ -59,7 +59,7 @@ class Room:
             assert name is None
             assert isinstance(path, Path)
             self.path = path
-            self.name = path.relative_to(ROOMS_DIR).with_suffix("").as_posix()
+            self.name = path_to_name(path.with_suffix(""))
         else:
             self.name = name
             self.path = name_to_path(name + EXTENSION)
@@ -898,12 +898,26 @@ def move_file(user, source, dest, clobber=False, mode="move"):
 
 
 def name_to_path(name: str) -> Path:
-    """Convert a filename to a path."""
+    """Convert a filename under ROOMS_DIR to a path."""
     name = sanitize_pathname(name)
     assert isinstance(name, str)
     assert not name.startswith("/")
     assert not name.endswith("/")
     return Path(ROOMS_DIR) / name
+
+
+def path_to_name(path: Path) -> str:
+    """Convert a path to a filename relative to ROOMS_DIR."""
+    return path.relative_to(ROOMS_DIR).as_posix()
+
+
+def relname_to_path(relname: str, room: Room) -> tuple[Path, str]:
+    """Convert a filename relative to room to a path."""
+    if relname.startswith("/"):
+        path = Path(ROOMS_DIR) / relname[1:]
+    else:
+        path = (room.path.parent / relname).resolve()
+    return path, path_to_name(path)
 
 
 def safe_path_for_local_file(file: str, url: str) -> tuple[str, str]:

@@ -63,6 +63,7 @@ def python_tool_rag(c, agent, query) -> str:
 
     db_name = None
     do_import = False
+    limit = 10
 
     # Extract db name if specified with -d and check for -i flag
     i = 0
@@ -71,6 +72,8 @@ def python_tool_rag(c, agent, query) -> str:
             db_name = args[i][3:]
         elif args[i] == '-i':
             do_import = True
+        elif args[i].startswith('-n='):
+            limit = int(args[i][3:])
         else:
             i += 1
             continue
@@ -84,22 +87,25 @@ def python_tool_rag(c, agent, query) -> str:
 
     # If no db specified, use "db" in the file's folder
     if not db_name:
-        db_name = str((Path(c.file).parent)/"db")
+        db_name = "db"
 
-    # Do access control check
-    room = ally_room.Room(path=Path(db_name))
+    # Find absolute path to DB
+    db_path, db_name_abs = ally_room.relname_to_path(db_name, c.room)
+
+    # Do access control check:  XXX this is privacy risk as responsible_human is not always right
+    room = ally_room.Room(path=Path(db_path))
     db_access = room.check_access(c.responsible_human)
 
     access_needed = ally_room.Access.WRITE if do_import else ally_room.Access.READ
 
     if not db_access.value & access_needed.value == access_needed.value:
-        return f"Access denied for database {db_name}"
+        return f"Access denied for database {db_name_abs}"
 
-    logger.info("Using RAG database: %s", db_name)
+    logger.info("Using RAG database: %s", db_name_abs)
 
     try:
         # Create RAG instance
-        rag_db = rag.FaissRAG(db_name)
+        rag_db = rag.FaissRAG(str(db_path))
 
         if do_import:
             # Import texts if -i flag specified
@@ -108,7 +114,7 @@ def python_tool_rag(c, agent, query) -> str:
 
         else:
             # Get results
-            results = rag_db.query(query_text)
+            results = rag_db.query(query_text, k=limit)
 
         # Format as blank-line delimited text
         return "\n\n".join(results)
