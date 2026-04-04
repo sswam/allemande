@@ -136,7 +136,7 @@ The only content rule is to keep it legal:
 - No CSAM (underage NSFW images).
 - Literally anything else is okay.
 
-We have a uniquely friendly and respectful international community,
+We have a friendly and respectful international community,
 including men, women, non-binary, LGBTQIA+ users, and people with disabilities.
 
 Our group chats are good fun! This is the best way to learn the app properly and to get support.
