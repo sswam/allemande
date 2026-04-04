@@ -2527,7 +2527,6 @@ function setup_view_options() {
     }
   }
   // set_default_room();
-  PRIVATE_ROOM = user + "/chat";
   run_view_options_updates();
   view_options_apply();
   on_room_ready(view_options_apply);
@@ -2552,13 +2551,6 @@ function run_view_options_updates() {
     view_options.update = 17;
   }
 }
-
-// function set_default_room() {
-//   if (simple)
-//     DEFAULT_ROOM = user + "/chat";
-//   else
-//     DEFAULT_ROOM = config.PUBLIC_ROOM;
-// }
 
 function set_view_options(new_view_options) {
   for (const key of Object.keys(new_view_options))
@@ -4022,6 +4014,10 @@ export async function init() {
   const auth = await authChat();
   user = auth.username;
   user_nsfw = auth.nsfw;
+
+  PRIVATE_ROOM = user + "/chat";
+  if (location.hash == "#~")
+    location.replace("/" + query_to_hash(PRIVATE_ROOM));
 
   if (user_nsfw)
     $body.classList.add("nsfw");
