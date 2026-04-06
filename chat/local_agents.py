@@ -589,8 +589,8 @@ async def local_agent(c, agent, _query) -> str:
 
     logger.debug("tidy response: %r", tidy_response)
 
-    logger.debug("Applying output filters, response before:\n%s", response)
-    response = filters.apply_filters_out(agent, response)
-    logger.debug("Applying output filters, response after:\n%s", response)
+    logger.debug("Applying output filters, response before:\n%s", tidy_response)
+    tidy_response = filters.apply_filters_out(agent, tidy_response)
+    logger.debug("Applying output filters, response after:\n%s", tidy_response)
 
     return tidy_response
