@@ -103,7 +103,7 @@ class Room:
         else:
             alias = options.get("users", {}).get(user, {}).get("name")
             if alias:
-                user = user + "=" + alias
+                user = user + "=" + alias.strip()
                 logger.info("  as alias (2) %s", user)
 
         # support narration by moderators
