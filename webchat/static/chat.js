@@ -1529,9 +1529,9 @@ function setup_main_ui_shortcuts() {
     ['shift+alt+c', copy_mode, 'Copy mode', ADMIN],
   ]);
 
-  add_shortcuts(shortcuts.filter, [
-    ['enter', filter_changed, 'Change image filter'],
-  ]);
+  // add_shortcuts(shortcuts.filter, [
+  //   ['enter', filter_changed, 'Change image filter'],
+  // ]);
 
   add_shortcuts(shortcuts.edit, [
     ['alt+t', edit_indent, 'Insert tab / indent'],
@@ -2540,16 +2540,16 @@ function run_view_options_updates() {
   // update 1-15: set default filters
   // update 16: remove a bad key from localStorage
   // update 17: remove a bad key from localStorage, set default filters (clear)
-  if (view_options.update <= 15) {
-    $id('filter_query').value = get_filter_default();
-    save_filter();
-    view_options.update = 16;
-  } else if (view_options.update == 16) {
-    localStorage.removeItem("content_undefined")
-    $id('filter_query').value = get_filter_default();
-    save_filter();
-    view_options.update = 17;
-  }
+  // if (view_options.update <= 15) {
+  //   $id('filter_query').value = get_filter_default();
+  //   save_filter();
+  //   view_options.update = 16;
+  // } else if (view_options.update == 16) {
+  //   localStorage.removeItem("content_undefined")
+  //   $id('filter_query').value = get_filter_default();
+  //   save_filter();
+  //   view_options.update = 17;
+  // }
 }
 
 function set_view_options(new_view_options) {
@@ -2761,7 +2761,7 @@ async function view_options_apply() {
   send_to_room_iframe({
     type: "set_view_options",
     ...view_options,
-    filter: view_options.filter ?? get_filter_default(),
+    // filter: view_options.filter ?? get_filter_default(),
   });
 
   controls_resized();
@@ -3163,7 +3163,7 @@ async function opt_temp(ev) {
 
 async function opt_mission(ev) {
   let mission = ev.target.value;
-  mission = mission === "" ? null : mission === "-" ? "" : mission;
+  mission = mission === "" ? null : mission === "-" ? "" : mission.trim();
   await set_options({
     room: room,
     options: {
@@ -3174,7 +3174,7 @@ async function opt_mission(ev) {
 
 async function opt_name(ev) {
   let name = ev.target.value;
-  name = name === "" ? null : name;
+  name = name === "" ? null : name.trim();
   await set_options({
     room: room,
     options: {
@@ -3471,29 +3471,29 @@ function select_cancel(ev) {
 
 // filter images -------------------------------------------------------------
 
-function load_filter() {
-  const filterValue = view_options.filter ?? get_filter_default();
-
-  $id('filter_query').value = filterValue;                                     // console.log("=== load_filter ===", "view_options.filter:", view_options.filter, "FILTER_DEFAULT:", get_filter_default(), "Resolved:", filterValue, "Set input to:", $id('filter_query').value);
-  active_set("filter", view_options.filter != "");
-}
-
-function save_filter() {
-  view_options.filter = $id('filter_query').value;                             // console.log("=== save_filter START ===", "Before:", view_options.filter, "Input value:", $id('filter_query').value, "FILTER_DEFAULT:", get_filter_default());
-  active_set("filter", view_options.filter != "");
-
-  if (view_options.filter == get_filter_default()) {
-    view_options.filter = null;                                                // console.log("  Filter matches DEFAULT - reset to null. Final:", view_options.filter);
-  }                                                                            // else { console.log("  Filter is custom - keeping value:", view_options.filter); }
-
-                                                                               // console.log("=== save_filter END ===", "Final filter:", view_options.filter);
-}
-
-function filter_changed(ev) {
-  save_filter();                                                               // console.log("=== filter_changed ===", "Event:", ev?.type, "Target:", ev?.target, "Value:", ev?.target?.value);
-
-  view_options_apply();                                                        // console.log("  Called view_options_apply()");
-}
+// function load_filter() {
+//   const filterValue = view_options.filter ?? get_filter_default();
+// 
+//   $id('filter_query').value = filterValue;                                     // console.log("=== load_filter ===", "view_options.filter:", view_options.filter, "FILTER_DEFAULT:", get_filter_default(), "Resolved:", filterValue, "Set input to:", $id('filter_query').value);
+//   active_set("filter", view_options.filter != "");
+// }
+// 
+// function save_filter() {
+//   view_options.filter = $id('filter_query').value;                             // console.log("=== save_filter START ===", "Before:", view_options.filter, "Input value:", $id('filter_query').value, "FILTER_DEFAULT:", get_filter_default());
+//   active_set("filter", view_options.filter != "");
+// 
+//   if (view_options.filter == get_filter_default()) {
+//     view_options.filter = null;                                                // console.log("  Filter matches DEFAULT - reset to null. Final:", view_options.filter);
+//   }                                                                            // else { console.log("  Filter is custom - keeping value:", view_options.filter); }
+// 
+//                                                                                // console.log("=== save_filter END ===", "Final filter:", view_options.filter);
+// }
+// 
+// function filter_changed(ev) {
+//   save_filter();                                                               // console.log("=== filter_changed ===", "Event:", ev?.type, "Target:", ev?.target, "Value:", ev?.target?.value);
+// 
+//   view_options_apply();                                                        // console.log("  Called view_options_apply()");
+// }
 
 /* system messages -------------------------------------------------------- */
 
@@ -4035,7 +4035,7 @@ export async function init() {
 
   setup_help();
   await setup_icons();
-  load_filter();
+  // load_filter();
 
   // The controls layout used to work in Chrome without the hack,
   // but now behaves wrongly when the input bar is reduced to minimum height.
@@ -4061,7 +4061,7 @@ export async function init() {
   $on($content, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.message));
   $on($content, "keydown", content_keydown);
   $on($room, "keypress", (ev) => dispatch_shortcut(ev, shortcuts.room));
-  $on($id('filter_query'), "keypress", (ev) => dispatch_shortcut(ev, shortcuts.filter));
+  // $on($id('filter_query'), "keypress", (ev) => dispatch_shortcut(ev, shortcuts.filter));
   $on($edit, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.edit));
 
   $on($id("send"), "click", send);
@@ -4151,7 +4151,7 @@ export async function init() {
   // $on($id("scroll_pagedown"), "click", (ev) => scroll_pages(ev, 1));
   // $on($id("scroll_cancel"), "click", () => set_top());
 
-  $on($id('filter_query'), "change", filter_changed);  // or on "input"
+  // $on($id('filter_query'), "change", filter_changed);  // or on "input"
   $on($id("filter_2"), "click", () => set_top());
 
   if (iOS && navigator.standalone)

@@ -262,9 +262,9 @@ function key_event(ev) {
   const target = ev.target;
   const active = document.activeElement;
 
-  console.log("key_event, target", target);
-  console.log("key_event, activeElement", active);
-  console.log("key_event, ev", ev);
+  // console.log("key_event, target", target);
+  // console.log("key_event, activeElement", active);
+  // console.log("key_event, ev", ev);
 
   // Don't handle keys if the active element or target is/contains form elements, canvas, svg, or has class 'keys'
   if (active && active.closest('input, button, textarea, select, canvas, svg, .keys')) {
@@ -1133,10 +1133,10 @@ async function set_view_options(new_view_options) {
     set_dir_sort(view_options.dir_sort);
   }
 
-  if (filter !== view_options.filter) {
-    filter = view_options.filter ?? "";
-    update_image_filter(filter);
-  }
+  // if (filter !== view_options.filter) {
+  //   filter = view_options.filter ?? "";
+  //   update_image_filter(filter);
+  // }
 }
 
 async function set_mode_options(new_mode_options) {
@@ -1404,36 +1404,36 @@ div.image:has(img:not(${finalSelector})) { display: none !important; }
 `;
 }
 
-function update_image_filter(filterString) {
-  // console.log(config);
-  // console.log(config.FILTER_EXPANSIONS);
-  for (const key in config.FILTER_EXPANSIONS) {
-    // console.log("FILTER_EXPANSIONS key: " + key);
-    // console.log("regexp: " + `(^|\\s)${key}($|\\s)`);
-    // console.log("replacement: " + `$1${config.FILTER_EXPANSIONS[key]}$2`);
-    filterString = filterString.replace(
-        new RegExp(`(^|\\s)${key}($|\\s)`, 'g'), `$1${config.FILTER_EXPANSIONS[key]}$2`
-    );
-  }
-
-  // console.log("update_image_filter:", filterString);
-
-	const existingStyle = document.getElementById('image-filter');
-
-	const CSSRules = filter_string_to_CSS(filterString.toLowerCase());
-
-	// console.log(CSSRules);
-
-	const style = document.createElement('style');
-	style.id = 'image-filter';
-	style.textContent = CSSRules;
-
-	document.head.appendChild(style);
-
-	// remove old filter after adding new, to avoid flashes of unwanted content
-	if (existingStyle)
-		existingStyle.remove();
-}
+// function update_image_filter(filterString) {
+//   // console.log(config);
+//   // console.log(config.FILTER_EXPANSIONS);
+//   for (const key in config.FILTER_EXPANSIONS) {
+//     // console.log("FILTER_EXPANSIONS key: " + key);
+//     // console.log("regexp: " + `(^|\\s)${key}($|\\s)`);
+//     // console.log("replacement: " + `$1${config.FILTER_EXPANSIONS[key]}$2`);
+//     filterString = filterString.replace(
+//         new RegExp(`(^|\\s)${key}($|\\s)`, 'g'), `$1${config.FILTER_EXPANSIONS[key]}$2`
+//     );
+//   }
+// 
+//   // console.log("update_image_filter:", filterString);
+// 
+// 	const existingStyle = document.getElementById('image-filter');
+// 
+// 	const CSSRules = filter_string_to_CSS(filterString.toLowerCase());
+// 
+// 	// console.log(CSSRules);
+// 
+// 	const style = document.createElement('style');
+// 	style.id = 'image-filter';
+// 	style.textContent = CSSRules;
+// 
+// 	document.head.appendChild(style);
+// 
+// 	// remove old filter after adding new, to avoid flashes of unwanted content
+// 	if (existingStyle)
+// 		existingStyle.remove();
+// }
 
 // timestamp -----------------------------------------------------------------
 
