@@ -112,7 +112,7 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     remote_messages = []
 
     # TODO images in system messages?
-    await ally_markdown.add_images_to_messages(c.file, context_messages, agent.get("images", 0))
+    await ally_markdown.add_images_to_messages(c.file, context_messages, agent.get("images", None))
 
     # preprocess markdown in messages for includes
     # and strip trailing .number from usernames

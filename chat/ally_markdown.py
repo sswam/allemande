@@ -1008,10 +1008,17 @@ def chat_to_html():
         print(asyncio.run(message_to_html(message, bb_file)))
 
 
-async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int) -> None:
+async def add_images_to_messages(file:str, messages: list[Message], image_count_max: int|None) -> None:
     """Add images to a list of messages in-place."""
-    if not image_count_max:
+    if image_count_max == 0:
         return
+
+    if image_count_max is None:
+        # The default is to send one image from the most recent message
+        image_count_max = 1
+        message_count_max = 1   # 2 could be nice but would make regular image gen expensive
+    else:
+        message_count_max = None
 
     image_url_pattern = r'''
         # First alternative: Markdown image syntax
@@ -1036,9 +1043,15 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
     logger.debug("Checking messages for images")
 
     message_count = 0
+    message_count_with_images = 0
     image_count = 0
 
     for msg in reversed(messages):
+        message_count += 1
+
+        if message_count_max is not None and message_count > message_count_max:
+            break
+
         matches = re.findall(image_url_pattern, msg['content'], flags=re.VERBOSE | re.DOTALL | re.IGNORECASE)
         logger.debug("Checking message: %s", msg['content'])
         logger.debug("Matches: %s", matches)
@@ -1049,7 +1062,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
             continue
 
         # count messages having images
-        message_count += 1
+        message_count_with_images += 1
 
         msg['images'] = image_urls
 
@@ -1074,7 +1087,7 @@ async def add_images_to_messages(file:str, messages: list[Message], image_count_
         if image_count >= image_count_max:
             break
 
-#     logger.info("Found %d messages with %d images", message_count, image_count)
+    logger.info("Found %d messages with %d images", message_count_with_images, image_count)
 
 
 def preprocess_cli():
