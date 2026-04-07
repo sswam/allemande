@@ -694,6 +694,8 @@ function get_current_img() {
 }
 
 function overlay_click(ev) {
+  if (ev.button !== 0)
+    return;
   let src
   src = get_current_img();
   if (lastSwipeDistance > maxClickDistance) {
@@ -864,6 +866,8 @@ function setup_swipe() {
 // ---------------------------------------------------------------------------
 
 function image_click($el, ev) {
+  if (ev.button !== 0)
+    return;
   let src
   if ($el.tagName === "IMG" && $el.parentNode.tagName === "A") {
     src = $el.parentNode.href;
@@ -1782,10 +1786,10 @@ export async function room_main() {
   await process_current_messages(); // must be after setup_mutation_observer
 
   $on($overlay, "click", overlay_click);
-  $on($overlay, "auxclick", overlay_click);
+  $on($overlay, "auxclick", overlay_click); // XXX why did I add this?
   setup_swipe();
   $on(document, "click", click);
-  $on(document, "auxclick", click);
+  $on(document, "auxclick", click); // XXX why did I add this?
   $on(window, "resize", () => run_hooks("window_resize"));
   $on(window, "message", handle_message);
 
