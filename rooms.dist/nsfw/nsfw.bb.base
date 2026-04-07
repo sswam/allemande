@@ -37,6 +37,7 @@ shuffle_lists();
 - We've greatly improved the chat quality with Llama recently, by removing repetitive fragments from the context.
 - You can now prompt for several images from a single message, and so can Xilu and the characters.
 - You can now change your screen name on the fly in a room, with options -> name under the "gear" menu.
+- I enabled a basic memory system, for Ally only at the moment. It's enabled everywhere, but the memory stores are per-folder for privacy and such. There are going to be issues, but we might as well try it out.
 </details>
 
 <!-- say hi, @Lori -->

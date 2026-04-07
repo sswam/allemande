@@ -1,4 +1,6 @@
 base: SmallAI
+over:
+  - Memory
 # hacky_anti_rep: true
 # filter_out:
 #   - +

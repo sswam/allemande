@@ -10,11 +10,11 @@ import asyncio
 import os
 import time
 from pathlib import Path
-from typing import TextIO
+from typing import TextIO, Any
 
 import aionotify  # type: ignore
 
-from ally import main, logs  # type: ignore
+from ally import main, logs, yaml  # type: ignore
 from bb_lib import lines_to_messages, message_to_text, ChatMessage
 
 __version__ = "0.1.5"
@@ -184,11 +184,11 @@ async def ally_chat_cli_async(  # pylint: disable=too-many-arguments, too-many-p
     query: str,
     contexts: list[str] | None = None,
 #     missions: list[str] | None = None,
-#     options: dict | None = None,
     num_messages: int = 1,
     keep: bool = False,
     room: str|None = None,
     options_file: Path | None = None,
+    options: dict[str, Any] | None = None,
     timeout: float = DEFAULT_TIMEOUT,
     rooms_dir: Path = DEFAULT_ROOMS_DIR,
 ) -> tuple[list[tuple[str | None, str]], Path | None]:
@@ -226,9 +226,13 @@ async def ally_chat_cli_async(  # pylint: disable=too-many-arguments, too-many-p
 
         # Copy options file as {stem}.yml if provided
         # Note: not with existing room!
+        options_yml = work_dir / "chat.yml"
         if options_file:
-            dest_yml = work_dir / "chat.yml"
-            shutil.copy2(options_file, dest_yml)
+            shutil.copy2(options_file, options_yml)
+        elif options:
+            options_content = yaml.dump(options, sort_keys=False)
+            with open(options_yml, "w") as f:
+                f.write(options_content)
 
         # Create room content and write it
         room_content = create_room_content(user, query, contexts)

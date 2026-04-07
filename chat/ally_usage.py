@@ -7,7 +7,7 @@ from settings import PATH_HOME, PATH_ROOMS
 def usage_log(user: str|None, ts: datetime, duration: float, service: str, model: str, agent: str, room: str, input_count: int, output_count: int, cost: float, error: str) -> None:
     """ Log usage """
     month = ts.strftime("%Y-%m")
-    if user is None:
+    if user in [None, "system"]:
         log_file = PATH_HOME/f"usage_unknown.{month}.log"
     else:
         user = re.sub(r"=.*", "", user)

@@ -53,13 +53,12 @@ class Access(enum.Enum):  # pylint: disable=too-few-public-methods
 class Room:
     """A chat room object."""
 
-    def __init__(self, name: str | None = None, path: Path | None = None):
+    def __init__(self, name: str | None = None, path: Path | str | None = None):
         """Create a room object."""
         if path:
             assert name is None
-            assert isinstance(path, Path)
-            self.path = path
-            self.name = path_to_name(path.with_suffix(""))
+            self.path = Path(path)
+            self.name = path_to_name(self.path.with_suffix(""))
         else:
             self.name = name
             self.path = name_to_path(name + EXTENSION)
@@ -160,7 +159,15 @@ class Room:
                 raise PermissionError(f"You are not allowed to archive this room: {self.name}, user: {user}")
             # run room-archive script with room name
             # TODO in Python
-            subprocess.run(["room-archive", self.name], check=True)
+            # options = self.get_options(user)
+            # logger.info("archive options: %r", options)
+            result = subprocess.run(["room-archive", self.name], check=True, capture_output=True, text=True)
+            room_archived_path = result.stdout.strip()
+            logger.info("room_archived_path: %r", room_archived_path)
+            if room_archived_path:
+                # Append -@Summaries to file, to trigger the summaries tool
+                room_archived = Room(path=room_archived_path)
+                room_archived.write("root", "-@Summaries")
         elif op == "rotate":
             raise NotImplementedError("Room rotation is not implemented yet.")
             # run room-rotate script with room name

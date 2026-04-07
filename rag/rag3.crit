@@ -1,0 +1,78 @@
+
+Re-reading this code, if I want to append one entry to the DB it will load it all, add the entry, then save the entire files again, right?  Is there are more efficient way to do that?
+
+Yes, you're correct. The current approach loads everything, adds entries, then rewrites both files completely.
+
+## More Efficient Approaches
+
+### For the texts file: append mode
+Instead of `"\n\n".join(self.texts)`, you could open the file in append mode and just write the new entry.
+
+### For the FAISS index: `write_index` alternative
+FAISS doesn't natively support appending to an index file, but you can use `faiss.write_index` with an `IOWriter` — however, the simplest real solution is to keep a separate "delta" index or use a different index type.
+
+### Practical Solution: Append texts, rebuild index on load
+
+```python
+EXTENSION_INDEX = ".index"
+EXTENSION_TEXTS = ".texts"
+EXTENSION_NEW_TEXTS = ".new_texts"  # append-only log of new entries
+```
+
+```python
+def add_entry(self, text: str) -> None:
+    """Add a text entry to the index."""
+    embedding = self.encoder.encode([text])[0]
+    norm = np.linalg.norm(embedding)
+    if norm < 1e-10:
+        logger.warning("Near-zero norm vector encountered, skipping entry")
+        return
+    normalized = embedding / norm
+    vector = np.array([normalized], dtype=np.float32)
+    self.index.add(vector)
+    self.texts.append(text)
+
+def append_entry(self, text: str, path: str) -> None:
+    """Add one entry efficiently without rewriting everything."""
+    self.add_entry(text)
+    # Append text to the texts file
+    with open(f"{path}{EXTENSION_TEXTS}", "a", encoding="utf-8") as f:
+        if Path(f"{path}{EXTENSION_TEXTS}").stat().st_size > 0:
+            f.write("\n\n")
+        f.write(text)
+    # Rewrite index (unavoidable with FAISS flat index)
+    faiss.write_index(self.index, f"{path}{EXTENSION_INDEX}")
+```
+
+### Better: Two-file append log approach
+
+```python
+def append_entry(self, text: str, path: str) -> None:
+    """Append one entry; merge periodically."""
+    self.add_entry(text)
+    # Append-only log for new texts
+    with open(f"{path}.pending_texts", "a", encoding="utf-8") as f:
+        f.write(text + "\n---\n")
+    # Pending embeddings log
+    embedding = self.index.reconstruct(self.index.ntotal - 1)
+    np.save(f"{path}.pending.npy",
+            np.vstack([
+                np.load(f"{path}.pending.npy") if Path(f"{path}.pending.npy").exists() else np.empty((0, self.dimension), dtype=np.float32),
+                embedding.reshape(1, -1)
+            ]))
+```
+
+### Honest Assessment
+
+The real bottleneck is **FAISS's `IndexFlatIP`** — it has no native append-to-disk support. Your options are:
+
+| Approach | Text file | Index file |
+|---|---|---|
+| Current | Full rewrite | Full rewrite |
+| Append texts | **O(entry)** | Full rewrite |
+| SQLite + FAISS | **O(entry)** | Full rewrite |
+| Hnswlib instead | **O(entry)** | **O(entry)** (native save/load append) |
+
+**`hnswlib`** is worth considering if append performance matters — it supports `save_index`/`load_index` and is designed for incremental updates. The tradeoff is approximate (not exact) nearest neighbor search.
+
+For most use cases, just appending the texts file and rewriting the index is the best pragmatic fix, since the index file is typically small unless you have millions of entries.

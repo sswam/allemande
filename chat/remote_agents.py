@@ -20,6 +20,7 @@ from ally_room import Room
 from ally.llms import MODEL_FALLBACKS, SERVICES_BROKEN
 import filters
 from ally_usage import usage_log
+import memory
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -61,11 +62,7 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     name = agent.name
 
     # Allow to override agent settings in the config
-    agent = agent.copy()
-    if c.config.get("agents") and "all" in c.config["agents"]:
-        agent.update(c.config["agents"]["all"])
-    if c.config.get("agents") and name in c.config["agents"]:
-        agent.update(c.config["agents"][name])
+    agent = agent.apply_config(c.config)
 
     logger.debug("Running remote agent %r", agent)
 
@@ -96,6 +93,9 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     logger.debug("Applying input filters, query before: %r", context[-1] if context else None)
     context = filters.apply_filters_in(agent, context)
     logger.debug("Applying input filters, query after: %r", context[-1] if context else None)
+
+    if agent.get("recall") and context:
+        memory.apply_recall(agent, context, c)
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?

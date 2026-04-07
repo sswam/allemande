@@ -26,8 +26,7 @@ from ally import soma
 import hacky_anti_rep
 import filters
 from ally_usage import usage_log
-from ally import stopwords
-from util import uniqo
+import memory
 
 os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
@@ -171,11 +170,7 @@ async def local_agent(c, agent, _query) -> str:
     name = agent.name
 
     # Allow to override agent settings in the config
-    agent = agent.copy()
-    if c.config.get("agents") and "all" in c.config["agents"]:
-        agent.update(c.config["agents"]["all"])
-    if c.config.get("agents") and name.lower() in c.config["agents"]:
-        agent.update(c.config["agents"][name.lower()])
+    agent = agent.apply_config(c.config)
 
     logger.debug("Running local agent %r", agent)
 
@@ -260,67 +255,8 @@ async def local_agent(c, agent, _query) -> str:
 
     logger.debug("system message for %s: %s", agent.name, system_top or system_bottom)
 
-    # recall: XXX TODO XXX do this in a separate file and share between local and remote agents
     if agent.get("recall") and context:
-        recall_file = agent.get("recall_file", agent.name.lower())
-        recall_limit = agent.get("recall_limit", 3)
-        recall_pos = agent.get("recall_pos", -1)
-        recall_role = agent.get("recall_role", None)
-        recall_prefix = agent.get("recall_prefix", None)
-        recall_suffix = agent.get("recall_suffix", None)
-        recall_context = agent.get("recall_context", 1)
-        recall_strip = agent.get("recall_strip", False)
-
-        db_path, db_name_abs = ally_room.relname_to_path(recall_file, c.room)
-        db_access = ally_room.check_access(c.responsible_human, db_name_abs + ".db")
-
-        if db_access.value & ally_room.Access.READ.value:
-            import rag
-            try:
-                # Create RAG instance
-                rag_db = rag.FaissRAG(str(db_path))
-
-                query_list = []
-                for i in range(min(recall_context, len(context))):
-                    # query_list.append("\n\n".join(context[-1-i:]))
-                    query_list.append(context[-1-i])
-
-                results = []
-
-                for query in query_list:
-                    logger.info("RAG query 1: %r", query)
-                    query = re.sub(r"```.*?```|`.*?`", "", query, flags=re.DOTALL)
-                    logger.info("RAG query 2: %r", query)
-                    if recall_strip:
-                        query = stopwords.strip_stopwords(query, strict=True)
-                        logger.info("RAG query 3: %r", query)
-
-                    results += rag_db.query(query, k=recall_limit)
-
-                # Format as blank-line delimited text
-                recall_text = "\n\n".join(uniqo(results))
-
-                if recall_prefix:
-                    recall_prefix = recall_prefix.replace("$NAME", agent.name)
-                    recall_text = recall_prefix + "\n\n" + recall_text
-                if recall_suffix:
-                    recall_suffix = recall_suffix.replace("$NAME", agent.name)
-                    recall_text = recall_text + "\n\n" + recall_suffix
-
-                logger.info("recall_text: %r", recall_text)
-
-                n_messages = len(context)
-                pos = min(recall_pos, n_messages)
-                if recall_role is None:
-                    recall_role = agent.name
-                if recall_role:
-                    context.insert(n_messages - pos, f"{recall_role}:\t{recall_text}")
-                else:
-                    context.insert(n_messages - pos, f"{recall_text}")
-                logger.debug("recall_text: %r", recall_text)
-
-            except Exception as e:  # pylint: disable=broad-except
-                logger.error(f"Error accessing RAG database: {str(e)}", exc_info=True)
+        memory.apply_recall(agent, context, c)
 
     if system_bottom:
         n_messages = len(context)

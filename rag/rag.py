@@ -7,6 +7,7 @@ A RAG (Retrieval-Augmented Generation) system using FAISS for similarity search.
 from pathlib import Path
 from typing import TextIO
 from itertools import chain
+import re
 
 import faiss
 import numpy as np
@@ -41,9 +42,12 @@ class FaissRAG:
             db_path = db_path[:-len(EXTENSION_INDEX)]
         if db_path and Path(f"{db_path}{EXTENSION_INDEX}").exists():
             self.load(db_path)
+        self.db_path = db_path
 
     def add_entry(self, text: str) -> None:
         """Add a text entry to the index."""
+        # Ensure no double newlines in entry, as it's the record separator.
+        text = re.sub(r"\n\n+", "\n", text)
         embedding = self.encoder.encode([text])[0]
         norm = np.linalg.norm(embedding)
         if norm < 1e-10:  # Protect against zero-norm vectors
@@ -73,8 +77,9 @@ class FaissRAG:
         distances, indices = self.index.search(vector, k)  # type: ignore # FAISS type hints are incomplete
         return [self.texts[i] for i in indices[0] if i >= 0]
 
-    def save(self, path: str) -> None:
+    def save(self, path: str|None = None) -> None:
         """Save the index and texts to files."""
+        path = path or self.db_path
         faiss.write_index(self.index, f"{path}{EXTENSION_INDEX}")
         with open(f"{path}{EXTENSION_TEXTS}", "w", encoding="utf-8") as f:
             f.write("\n\n".join(self.texts))
@@ -122,7 +127,7 @@ def import_texts(
         if line:
             current_text.append(line)
         elif current_text:
-            text = " ".join(current_text)
+            text = "\n".join(current_text)
             if text.strip():
                 rag.add_entry(text)
                 if progress_bar:

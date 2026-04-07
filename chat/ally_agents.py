@@ -279,6 +279,16 @@ class Agent:
         """Return a copy of the agent"""
         return Agent(data=deepcopy(self.data), agents=self.agents)
 
+    def apply_config(self, config: dict[str, Any]) -> Agent:
+        """Apply room config to an agent, allowing to override agent settings in the config"""
+        agent = self.copy()
+        name_lc = agent.name.lower()
+        if config.get("agents") and "all" in config["agents"]:
+            agent.update(config["agents"]["all"])
+        if config.get("agents") and name_lc in config["agents"]:
+            agent.update(config["agents"][name_lc])
+        return agent
+
     def apply_identity(self, reference: Agent, keep_prompts=False, no_over=True) -> Agent:
         """Create a new agent based on self with name and other attributes from reference."""
         data = {

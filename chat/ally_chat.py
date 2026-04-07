@@ -662,9 +662,11 @@ async def run_python(c, agent, query) -> str:
     # Prepare response formatting
     response = ""
     try:
-        result = function(c, agent, query)
+        result = await function(c, agent, query)
 
         # Handle the output
+        if result is None:
+            return None
         if isinstance(result, str):
             output = result
         else:

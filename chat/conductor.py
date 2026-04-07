@@ -67,10 +67,13 @@ def get_all_participants(history: list[dict[str, str]]) -> list[str]:
     # Go through history in reverse to get most recent first
     for msg in reversed(history):
         user = msg.get("user")
-        if not user or user in seen:
+        if not user:
             continue
-        seen.add(user.lower())
-        result.append(user.lower())
+        user = user.lower()
+        if user in seen:
+            continue
+        seen.add(user)
+        result.append(user)
 
     return result
 
@@ -117,14 +120,15 @@ def responsible_human(
         # logger.info("try user %r", user)
         if user is None:
             continue
+        user = user.lower()
         agent = agents.get(user)
         # logger.info("agent %r", agent)
         # logger.info("agent_is_human %r", agent and agent_is_human(agent))
         # logger.info("user in all_human_users %r", user in all_human_users)
         if agent and agent_is_human(agent):
-            return user.lower()
-        if not agent: #  and user in all_human_users:
-            return user.lower()
+            return user
+        if not agent and user not in EXCLUDE_PARTICIPANTS_SYSTEM:
+            return user
 
     # If no human user found in history, check the room name
     if room and room.name:

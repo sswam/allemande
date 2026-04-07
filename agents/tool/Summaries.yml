@@ -1,0 +1,6 @@
+# A python tool for making separate summaries from a chat, for the memory system
+type: python
+command:
+- summaries
+format: pre
+args: True

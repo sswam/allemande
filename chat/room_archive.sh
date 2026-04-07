@@ -27,6 +27,9 @@ elif [ ! -s "$from" ]; then
 	rm "$from"
 else
 	to=$(archive -D html "$from")
+
+	# Echo the new file name, caller may need it
+	echo "$to"
 fi
 
 sleep 0.1

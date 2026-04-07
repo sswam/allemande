@@ -1,0 +1,14 @@
+type: mixin
+recall: true
+recall_file: null  # defaults to the agent name in lower-case, in CWD; can also use abs paths like /db
+recall_limit: 3
+recall_pos: 3  # means back from bottom, 1 = above the query, 0 = below the query
+recall_role: null  # means the Agent
+recall_prefix: "*$NAME's memories!*"
+recall_suffix: "I was just remembering that to myself, not aloud. No one else heard it yet. I may use these memories in my response now!"
+recall_context: 3  # do searches based on each of the last 3 messages, TODO might want different limits
+recall_strip: false
+summary: true
+summary_prompt: null  # defaults to settings.SUMMARY_PROMPT_DEFAULT
+summary_role: null  # means no agent
+remember: true
