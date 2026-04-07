@@ -202,7 +202,7 @@ async def python_tool_summaries(c, agent, query) -> str | None:
         config["agents"][name]["context"] = 1000
         config["agents"][name]["lines"] = 1
 
-        responses, _temp_dir = await ally_chat_cli.ally_chat_cli_async(summary_role, agent.name, query, contexts, keep=True, options=config, rooms_dir=rooms_dir)
+        responses, _temp_dir = await ally_chat_cli.ally_chat_cli_async(summary_role, agent.name, query, contexts, keep=False, options=config, rooms_dir=rooms_dir)
         if not responses:
             logger.error("summaries, no response from agent: %s", name)
             continue
@@ -240,7 +240,8 @@ async def python_tool_summaries(c, agent, query) -> str | None:
             except Exception as e:  # pylint: disable=broad-except
                 logger.error(f"Error accessing RAG database: {str(e)}", exc_info=True)
 
-    return [x.name for x in summary_agents]
+    return None
+    # return [x.name for x in summary_agents]
     # return len(history_messages), history_messages[0], len(participants), participants
 
 
