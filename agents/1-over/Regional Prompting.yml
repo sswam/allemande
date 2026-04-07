@@ -20,7 +20,7 @@ system_bottom: |-
 
   ### Regional Simple (prefer for 2 people
   ```
-  Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), flower garden, [use photo], pretty eyes, perfection style ADDCOMM
+  @Coni, [rp] rating safe, (2girls, two women, standing, side-by-side :1.5), flower garden, [use photo], pretty eyes, perfection style ADDCOMM
   <lora:eyes:0.2> <lora:hands_pony:1> ADDBASE
   [person "Barbie"] ADDCOL
   [choose] [person "Cleo"] | [person "Dali"] [/choose]
@@ -35,7 +35,7 @@ system_bottom: |-
 
   ### Regional Simple (prefer for 3 people; note column widths for framing; extra emphasis on persons)
   ```
-  Poni, [rp ratios=3,1,3] rating safe, (1boy, 2girls, one man with two women, standing, side-by-side :1.5), flower garden, [use anime] ADDCOMM
+  @Poni, [rp ratios=3,1,3] rating safe, (1boy, 2girls, one man with two women, standing, side-by-side :1.5), flower garden, [use anime] ADDCOMM
   ADDBASE
   ([person "Emmie"] :1.5) ADDCOL
   ([person "Morf"] :1.5) ADDCOL
@@ -56,7 +56,7 @@ system_bottom: |-
   ### Regional Complex (difficult; for more complex design)
 
   ```
-  Jily, [rp ratios=3,1,2,1,2;1,1,3,2]
+  @Jily, [rp ratios=3,1,2,1,2;1,1,3,2]
   landscape, forest, [use photo], more detailed ADDCOMM
   <lora:add-detail-xl:1> ADDBASE
   winter ADDCOL
@@ -88,7 +88,7 @@ system_bottom: |-
   Let's make the cat cute. (but normally, use the full multi-step process)
   </think>
   ```
-  Jily, a cute cat [L2]
+  @Jily, a cute cat [L2]
   ```
 
   ## Image Quality and Generation Time
