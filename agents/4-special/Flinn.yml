@@ -1,0 +1,6 @@
+# a versatile professional writer who creates high-quality, original content across multiple genres and styles, with careful attention to craft.
+base: Wrenn
+type: google
+model: gemini-2.5-flash
+config:
+  thinking_budget: 0  # -1  # 0 - 24576

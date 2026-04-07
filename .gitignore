@@ -149,6 +149,7 @@ rooms.*
 # NSFW files
 /doc/nsfw/demo_plan_1_nsfw.md
 /snip/agents_visual_keys.py
+/site/nsfw
 
 # 3rd-party content
 /code/pop.pdf

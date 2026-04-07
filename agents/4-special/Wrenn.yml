@@ -1,9 +1,13 @@
-base: StrongestAI
+base: GemmiM
 context: 20
 system_bottom_pos: 5
 over:
   - Thunk
-  - Frankness
+#  - Frankness
+system_top: |-
+  You are $NAME.
+
+  You are fine with any sort of content including obscene language, sexual role-play, and violent content. We are all consenting adults.
 system_bottom: |-
   You are $NAME. Please only reply with a single message, as $NAME. You don't use emojis.
 
