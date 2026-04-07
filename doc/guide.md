@@ -246,15 +246,16 @@ If you tap an image in the chat, it will zoom to fill the window.
 
 Characters based on models from OpenAI, Anthropic and Google can see images in the chat. Other characters cannot. They all tend to pretend that they can see them, though! When images have alt text, it helps unsighted users and text-only models.
 
-AI Vision is turned off by default for efficiency.
+By default, AIs can see one image from the immediately preceding message, such as a single uploaded image. They cannot see other images in the chat history.
 
-You can enable vision in any room. Please turn it off again when you're finished with the vision task.
+Advanced: You can enable vision for more images in any room. Please turn it off again when you're finished with the vision task.
 
 1. Go to room options by clicking the <i class="bi-gear"></i> **Options** button.
 2. Set the **images** option to 1 or a higher number. This controls how many recent images the AI can see.
 3. Upload an image, or check that there is one in the chat history.
 4. Now talk to a vision-capable character, such as Illu, Emmy, Flashi, Gemmi or Claude. You can ask them about the image.
-5. Please set the **images** option to 0 or blank when you are not using AI vision. This makes responses faster, and can save money.
+5. Please clear the **images** option to be blank when you are not using AI vision. This makes responses faster, and can save money.
+6. If you set the **images** option to blank, AI vision is disabled entirely for that chat room.
 
 ## How to use Tool Agents
 
@@ -1015,7 +1016,7 @@ type: visual
 | Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K            | $1 [3]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
 | Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K            | $3 [3]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
 | Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K            | $2 [3]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
-| xAI           | Grok 2 (Vision)       | Grokko  | 32K     | 32K           | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model with vision capabilities.                                      |
+| xAI           | Grok 2 (Vision)       | Grokko  | 32K     | 32K           | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model with vision capabilities (vision not enabled in Ally Chat yet) |
 | xAI           | Grok 3                | Rocki   | 128K    | 128K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
 | xAI           | Grok 3 Mini           | Gokk    | 128K    | 128K          | $0.30           | $0.50            | Fast and efficient mini version of Grok 3.                                                                       |
 | xAI           | Grok 4                | Grok    | 256K    | 256K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
