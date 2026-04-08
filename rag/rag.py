@@ -90,6 +90,14 @@ class FaissRAG:
         with open(f"{path}{EXTENSION_TEXTS}", encoding="utf-8") as f:
             self.texts = f.read().split("\n\n")
 
+    def __len__(self):
+        """Number of indexed texts"""
+        return len(self.texts)
+
+    def __getitem__(self, index):
+        """Retrieve texts by numeric index or slice"""
+        return self.texts[index]
+
 
 def process_input(istream: TextIO, ostream: TextIO, rag: FaissRAG, num_results: int, show_progress: bool) -> None:
     """Process queries from input stream and write results to output stream."""

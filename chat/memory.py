@@ -15,12 +15,13 @@ logger = logging.getLogger(__name__)
 # TODO remove context_format_is_messages option
 def apply_recall(agent, context, c, context_format_is_messages=False):
     recall_file = agent.get("recall_file", agent.name.lower())
+    recall_recent = agent.get("recall_recent", 3)
     recall_limit = agent.get("recall_limit", 3)
     recall_pos = agent.get("recall_pos", -1)
     recall_role = agent.get("recall_role", None)
     recall_prefix = agent.get("recall_prefix", None)
     recall_suffix = agent.get("recall_suffix", None)
-    recall_context = agent.get("recall_context", 1)
+    recall_context = agent.get("recall_context", 3)
     recall_strip = agent.get("recall_strip", False)
 
     db_path, db_name_abs = ally_room.relname_to_path(recall_file, c.room)
@@ -52,11 +53,13 @@ def apply_recall(agent, context, c, context_format_is_messages=False):
 
             results += rag_db.query(query, k=recall_limit)
 
+        results += rag_db[-recall_recent:]
+
         if not results:
             return
 
         # Format as blank-line delimited text
-        recall_text = "\n\n".join(uniqo(results))
+        recall_text = "\n\n".join(reversed(uniqo(reversed(results))))
 
         if recall_prefix:
             recall_prefix = recall_prefix.replace("$NAME", agent.name)
@@ -65,7 +68,7 @@ def apply_recall(agent, context, c, context_format_is_messages=False):
             recall_suffix = recall_suffix.replace("$NAME", agent.name)
             recall_text = recall_text + "\n\n" + recall_suffix
 
-        logger.info("recall_text: %r", recall_text)
+        logger.info("recall_text: %s\n", recall_text)
 
         n_messages = len(context)
         pos = min(recall_pos, n_messages)
