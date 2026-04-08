@@ -47,6 +47,7 @@ huggingface_hub[cli]
 
 pyannote.audio
 
+# NOTE: new faiss expects avx2 / avx-512 which my server opal does not have, and crashes with illegal instruction occasionally
 faiss-cpu
 
 
