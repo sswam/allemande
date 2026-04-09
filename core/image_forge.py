@@ -50,8 +50,8 @@ MAX_STEPS = 150  # 30
 
 TIME_EPSILON = 0.001  # a small time to add to distinguish job order
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
-JOB_BASE_TIME = 25 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
-JOB_BASE_TIME_PRIVATE = 75 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
+JOB_BASE_TIME = 10 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
+JOB_PRIVATE_PENALTY = 2
 MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
 MAX_JOB_PENALTY = 2
@@ -495,7 +495,9 @@ async def enqueue_image_jobs(
     if is_private and not (ALLOW_PRIVATE_ALL or user in USER_ALLOW_PRIVATE):
         raise PermissionError(f"User {user} is not currently allowed to use image gen in a private room: {room}; please speak to Sam for options")
 
-    job_base_time = JOB_BASE_TIME_PRIVATE if is_private else JOB_BASE_TIME
+    job_base_time = JOB_BASE_TIME
+    if is_private:
+        job_base_time *= JOB_PRIVATE_PENALTY
 
     current_time = time.time()
 
@@ -514,13 +516,21 @@ async def enqueue_image_jobs(
     logger.info("Enqueuing %d jobs for user %s", count, user)
 
     # Calculate the priority for the first job, considering existing queued jobs for the user
+    logger.debug("calc priority: %r jobs in queue, active job: %r", len(get_queue_jobs()), bool(job is not None))
     priority = current_time
-    for j in get_queue_jobs() + ([] if job is None else [job]):
+    j = None
+    for j in ([] if job is None else [job]) + get_queue_jobs():
         if not j or j.config.get("user") != user:
             continue
-        if priority < j.priority:
-            priority = j.priority
+        logger.debug("  - checking a job")
         priority += j.duration or TIME_EPSILON
+        logger.debug("    - added that job's duration %r giving %r", j.duration, priority - current_time)
+
+    # If would schedule earlier than the user's last job, go after it!
+    if j and priority < j.priority:
+        priority = j.priority + TIME_EPSILON
+        logger.debug("    - increased priority past the last job: %r", priority - current_time)
+
     logger.info("priority: %.2f", priority - current_time)
 
     # user priority adjustment
