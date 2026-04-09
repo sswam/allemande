@@ -1335,7 +1335,7 @@ function escape() {
 function room_set_number(n) {
   let new_room;
   if (n === "") {
-    new_room = room.replace(/-?\d+$/, "");
+    new_room = room.replace(/-\d+$/, "");
     return new_room;
   }
   if (n < 0) {
@@ -1344,7 +1344,7 @@ function room_set_number(n) {
   if (n > MAX_ROOM_NUMBER) {
     n = MAX_ROOM_NUMBER;
   }
-  new_room = room.replace(/-?\d+$|$/, "-" + n);
+  new_room = room.replace(/-\d+$|$/, "-" + n);
   return new_room;
 }
 
