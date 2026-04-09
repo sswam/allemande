@@ -33,6 +33,7 @@ def apply_recall(agent, context, c, context_format_is_messages=False):
     try:
         # Create RAG instance
         rag_db = rag.FaissRAG(str(db_path))
+        n = len(rag_db)
 
         query_list = []
         for i in range(min(recall_context, len(context))):
@@ -41,25 +42,41 @@ def apply_recall(agent, context, c, context_format_is_messages=False):
         if context_format_is_messages:
             query_list = list(bb_lib.messages_to_lines(query_list))
 
-        results = []
+        # Look up relevant memories
+
+        results_ix = []
 
         for query in query_list:
-            logger.info("RAG query 1: %r", query)
+            # Remove quoted code such as image prompts. Might sometimes want to keep it, though.
             query = re.sub(r"```.*?```|`.*?`", "", query, flags=re.DOTALL)
-            logger.info("RAG query 2: %r", query)
             if recall_strip:
                 query = stopwords.strip_stopwords(query, strict=True)
-                logger.info("RAG query 3: %r", query)
+            logger.info("RAG query: %s", query)
 
-            results += rag_db.query(query, k=recall_limit)
+            results_ix += rag_db.query_indices(query, k=recall_limit)
 
-        results += rag_db[-recall_recent:]
+        logger.debug("apply_recall: n, results_ix 0: %s, %r", n, results_ix)
 
-        if not results:
+        # Add a few recent memories
+        results_ix += list(range(max(0, n-recall_recent), n))
+        # results += rag_db[-recall_recent:]
+
+        logger.debug("apply_recall:    results_ix 1:     %r", results_ix)
+
+        if not results_ix:
             return
 
+        # get unique result indices in order (~chronological)
+        results_ix = sorted(set(results_ix))
+
+        logger.debug("apply_recall:    results_ix 2:     %r", results_ix)
+
+        # get texts
+        results = [rag_db[i] for i in results_ix]
+
         # Format as blank-line delimited text
-        recall_text = "\n\n".join(reversed(uniqo(reversed(results))))
+        # recall_text = "\n\n".join(reversed(uniqo(reversed(results))))
+        recall_text = "\n\n".join(results)
 
         if recall_prefix:
             recall_prefix = recall_prefix.replace("$NAME", agent.name)
@@ -68,7 +85,7 @@ def apply_recall(agent, context, c, context_format_is_messages=False):
             recall_suffix = recall_suffix.replace("$NAME", agent.name)
             recall_text = recall_text + "\n\n" + recall_suffix
 
-        logger.info("recall_text: %s\n", recall_text)
+        logger.info("recall_text:\n%s\n", recall_text)
 
         n_messages = len(context)
         pos = min(recall_pos, n_messages)

@@ -59,7 +59,7 @@ class FaissRAG:
         self.index.add(vector)  # type: ignore # FAISS type hints are incomplete
         self.texts.append(text)
 
-    def query(self, question: str, k: int = 10) -> list[str]:
+    def query_indices(self, question: str, k: int = 10) -> list[int]:
         """Find the k most similar texts to the query."""
         if not self.texts:
             return []
@@ -75,7 +75,11 @@ class FaissRAG:
         vector = np.array([normalized], dtype=np.float32)
         # FAISS search returns (distances, indices)
         distances, indices = self.index.search(vector, k)  # type: ignore # FAISS type hints are incomplete
-        return [self.texts[i] for i in indices[0] if i >= 0]
+        return [int(i) for i in indices[0] if i >= 0]
+
+    def query(self, question: str, k: int = 10) -> list[str]:
+        indices = self.query_indices(question, k)
+        return [self.texts[i] for i in indices]
 
     def save(self, path: str|None = None) -> None:
         """Save the index and texts to files."""
