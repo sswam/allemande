@@ -201,7 +201,7 @@ In an empty chat room, you can press Poke to have an AI start the conversation. 
 
 ## Basic intro to AI Image Generation
 
-IMPORTANT: The agents Illu and Gema are experts on image gen. We can talk to them to learn about image prompting, much more than is in this guide.
+IMPORTANT: The agents Illu and Gemu are experts on image gen. We can talk to them to learn about image prompting, much more than is in this guide.
 
 This asks Jily, an image gen AI, to draw a big dog, in a medium-quality landscape image:
 
@@ -696,7 +696,7 @@ digraph StabilityAI {
 
 ### Pictures of Characters
 
-<link rel="stylesheet" href="/cast.css"><div markdown=1 class="cast small clear">![Aetheria](/cast/Aetheria.jpg) ![Akane](/cast/Akane.jpg) ![Ally](/cast/Ally.jpg) ![Amir](/cast/Amir.jpg) ![Atla](/cast/Atla.jpg) ![Barbie](/cast/Barbie.jpg) ![Bast](/cast/Bast.jpg) ![Brie](/cast/Brie.jpg) ![Calix](/cast/Calix.jpg) ![Callam](/cast/Callam.jpg) ![Chaz](/cast/Chaz.jpg) ![Claude](/cast/Claude.jpg) ![Cleo](/cast/Cleo.jpg) ![Clia](/cast/Clia.jpg) ![Dali](/cast/Dali.jpg) ![Dante](/cast/Dante.jpg) ![Dav](/cast/Dav.jpg) ![Eira](/cast/Eira.jpg) ![Emmie](/cast/Emmie.jpg) ![Emmy](/cast/Emmy.jpg) ![Ezio](/cast/Ezio.jpg) ![Felixx](/cast/Felixx.jpg) ![Fenny](/cast/Fenny.jpg) ![Gabby](/cast/Gabby.jpg) ![Gari](/cast/Gari.jpg) ![Haka](/cast/Haka.jpg) ![Hanni](/cast/Hanni.jpg) ![Jackson](/cast/Jackson.jpg) ![Kai](/cast/Kai.jpg) ![Morf](/cast/Morf.jpg) ![Nixie](/cast/Nixie.jpg) ![Nova](/cast/Nova.jpg) ![Pixi](/cast/Pixi.jpg) ![Pliny](/cast/Pliny.jpg) ![Rozie](/cast/Rozie.jpg) ![Sam](/cast/Sam.jpg) ![Sia](/cast/Sia.jpg) ![Sio](/cast/Sio.jpg) ![Soli](/cast/Soli.jpg) ![Nalani](/cast/Nalani.jpg) ![Grok](/cast/Grok.jpg) ![Clu](/cast/Clu.jpg) ![Emm](/cast/Emm.jpg) ![Vega](/cast/Vega.jpg) ![Zeno](/cast/Zeno.jpg) ![Gema](/cast/Gema.jpg) ![Illu](/cast/Illu.jpg) ![Flashi](/cast/Flashi.jpg)</div>
+<link rel="stylesheet" href="/cast.css"><div markdown=1 class="cast small clear">![Aetheria](/cast/Aetheria.jpg) ![Akane](/cast/Akane.jpg) ![Ally](/cast/Ally.jpg) ![Amir](/cast/Amir.jpg) ![Atla](/cast/Atla.jpg) ![Barbie](/cast/Barbie.jpg) ![Bast](/cast/Bast.jpg) ![Brie](/cast/Brie.jpg) ![Calix](/cast/Calix.jpg) ![Callam](/cast/Callam.jpg) ![Chaz](/cast/Chaz.jpg) ![Claude](/cast/Claude.jpg) ![Cleo](/cast/Cleo.jpg) ![Clia](/cast/Clia.jpg) ![Dali](/cast/Dali.jpg) ![Dante](/cast/Dante.jpg) ![Dav](/cast/Dav.jpg) ![Eira](/cast/Eira.jpg) ![Emmie](/cast/Emmie.jpg) ![Emmy](/cast/Emmy.jpg) ![Ezio](/cast/Ezio.jpg) ![Felixx](/cast/Felixx.jpg) ![Fenny](/cast/Fenny.jpg) ![Gabby](/cast/Gabby.jpg) ![Gari](/cast/Gari.jpg) ![Haka](/cast/Haka.jpg) ![Hanni](/cast/Hanni.jpg) ![Jackson](/cast/Jackson.jpg) ![Kai](/cast/Kai.jpg) ![Morf](/cast/Morf.jpg) ![Nixie](/cast/Nixie.jpg) ![Nova](/cast/Nova.jpg) ![Pixi](/cast/Pixi.jpg) ![Pliny](/cast/Pliny.jpg) ![Rozie](/cast/Rozie.jpg) ![Sam](/cast/Sam.jpg) ![Sia](/cast/Sia.jpg) ![Sio](/cast/Sio.jpg) ![Soli](/cast/Soli.jpg) ![Nalani](/cast/Nalani.jpg) ![Grok](/cast/Grok.jpg) ![Clu](/cast/Clu.jpg) ![Emm](/cast/Emm.jpg) ![Vega](/cast/Vega.jpg) ![Zeno](/cast/Zeno.jpg) ![Gemu](/cast/Gemu.jpg) ![Illu](/cast/Illu.jpg) ![Flashi](/cast/Flashi.jpg)</div>
 
 ### Characters
 - **Ally**: A creative and talkative young woman with an Asian/European background, known for her engaging conversation and long wavy blonde hair
@@ -782,7 +782,7 @@ Llama 3.1 8B is a small model. All of the others are quite strong.
 - **Sona** (Sonar, Perplexity): Perplexity's base Sonar model
 
 ### Specialists based on Strong AI
-- **Illu** and **Gema** (Google): Experts with AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model
+- **Illu** and **Gemu** (Google): Experts with AI art prompts, ensuring high-quality image generation. Illu is faster, Gemu uses a stronger model
 - **Novi**: She is a master narrator for immersive storytelling in interactive fiction
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
@@ -797,7 +797,7 @@ Llama 3.1 8B is a small model. All of the others are quite strong.
 
 ### AI Artists
 
-Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gema, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Jily the AI art model
+Using the AI art models directly can be a bit technical. For best results, new users can talk to Illu, Pixi and Gemu, who have extensive knowledge about how to create good prompts, and all the options and settings that the models understand. Illu the "AI art prompting expert" is distinct from Jily the AI art model
 
 - **Jily**: High-quality photorealistic and artistic image generation using Juggernaut XL
 - **Hily**: High-quality image generation using LEOSAM's HelloWorld XL
@@ -962,7 +962,7 @@ type: deepseek
 models: deepseek-reasoner, deepseek-chat
 
 type: openrouter
-models: qwq-32b, gemma-free, llama-3.3-70b, mistral-large, llama-4-scout-free, llama-4-maverick-free
+models: qwq-32b, gemma, gemma4, llama-3.3-70b, mistral-large, llama-4-scout, llama-4-maverick
 
 #### SFW only
 
@@ -997,6 +997,9 @@ type: visual
 | Anthropic     | Claude 4.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
 | Anthropic     | Claude 4.6 Sonnet     | Claude  | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                                     |
 | Anthropic     | Claude 4.6 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00           | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Google        | Gemma 3 27B           | Gemma   | 128K    | 128K          | $0.08           | $0.16            | Google's open source Gemma language model, version 3.                                                            |
+| Google        | Gemma 4 26B A4B       | Gema    | 256K    | 256K          | $0.13           | $0.40            | Google's open source Gemma language model, version 4 - mixture of experts.                                       |
+| Google        | Gemma 4 31B           | Gem     | 256K    | 256K          | $0.14           | $0.40            | Google's open source Gemma language model, version 4 - full dense model.                                         |
 | Google        | Gemini 2.5 Flash Lite | Lite    | 1M      | 8K            | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
 | Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
 | Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K            | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                                |

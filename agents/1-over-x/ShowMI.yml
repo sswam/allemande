@@ -4,6 +4,8 @@ forward_allow:
   - Xilu
   - Vilu
   - Pixu
+  - Gemaz
+  - Gemz
   - Illu
   - Pilu
 forward_if_code: Illu
@@ -13,6 +15,8 @@ forward_if_denied:
   - Xilu
   - Vilu
   - Pixu
+  - Gemaz
+  - Gemz
   - Illu
   - Pilu
 forward_keep_prompts: True

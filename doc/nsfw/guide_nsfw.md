@@ -33,7 +33,7 @@ You can read our detailed [Terms of Service](/terms).
 ## Topless Pictures of Characters 🔥
 
 <link rel="stylesheet" href="/cast.css">
-<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cleo](/nsfw/cast/Cleo.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gema](/nsfw/cast/Gema.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
+<details markdown=1><summary>Women</summary><div markdown=1 class="cast small clear">![Aetheria](/nsfw/cast/Aetheria.jpg) ![Akane](/nsfw/cast/Akane.jpg) ![Ally](/nsfw/cast/Ally.jpg) ![Barbie](/nsfw/cast/Barbie.jpg) ![Brie](/nsfw/cast/Brie.jpg) ![Cleo](/nsfw/cast/Cleo.jpg) ![Dali](/nsfw/cast/Dali.jpg) ![Eira](/nsfw/cast/Eira.jpg) ![Emmie](/nsfw/cast/Emmie.jpg) ![Fenny](/nsfw/cast/Fenny.jpg) ![Gabby](/nsfw/cast/Gabby.jpg) ![Hanni](/nsfw/cast/Hanni.jpg) ![Nixie](/nsfw/cast/Nixie.jpg) ![Nova](/nsfw/cast/Nova.jpg) ![Pixi](/nsfw/cast/Pixi.jpg) ![Rozie](/nsfw/cast/Rozie.jpg) ![Sia](/nsfw/cast/Sia.jpg) ![Sio](/nsfw/cast/Sio.jpg) ![Soli](/nsfw/cast/Soli.jpg) ![Nalani](/nsfw/cast/Nalani.jpg) ![Illu](/nsfw/cast/Illu.jpg) ![Gemu](/nsfw/cast/Gemu.jpg) ![Xilu](/nsfw/cast/Xilu.jpg)</div>
 </details>
 <details markdown=1><summary>Men</summary><div markdown=1 class="cast small clear">![Amir](/nsfw/cast/Amir.jpg) ![Atla](/nsfw/cast/Atla.jpg) ![Bast](/nsfw/cast/Bast.jpg) ![Calix](/nsfw/cast/Calix.jpg) ![Callam](/nsfw/cast/Callam.jpg) ![Chaz](/nsfw/cast/Chaz.jpg) ![Dante](/nsfw/cast/Dante.jpg) ![Ezio](/nsfw/cast/Ezio.jpg) ![Felixx](/nsfw/cast/Felixx.jpg) ![Gari](/nsfw/cast/Gari.jpg) ![Haka](/nsfw/cast/Haka.jpg) ![Jackson](/nsfw/cast/Jackson.jpg) ![Juon](/nsfw/cast/Juon.jpg) ![Kai](/nsfw/cast/Kai.jpg) ![Morf](/nsfw/cast/Morf.jpg) ![Pliny](/nsfw/cast/Pliny.jpg)</div>
 </details>
@@ -92,7 +92,7 @@ We can do taller portrait images with e.g. [T2] and wider landscape images with 
 
 The OpenAI, Anthropic and Google models support AI Vision, but only the Google models are okay with NSFW content.
 
-Xilu, Xillu, Illu and Gema are all based on Google models, and should be able to see NSFW images in the chat, when enabled.
+Xilu, Xillu, Illu and Gemu are all based on Google models, and should be able to see NSFW images in the chat, when enabled.
 
 The Google models do still have limits. If they refuse to respond, try turning off vision.
 
@@ -155,7 +155,7 @@ These variants on the Llama 3.1 8B model are set up for sexual role-play. Note: 
 ## Specialists based on Remote AI
 - **Assi**: The AI assistant (NSFW edition), she is a helpful and friendly guide for new users and technical support
 - **Xilu** and **Xillu** (Google): Expert with NSFW AI art prompts, ensuring high-quality image generation. Xilu is faster, Xillu uses a stronger model.
-- **Illu** and **Gema** (Google): Experts with SFW AI art prompts, ensuring high-quality image generation. Illu is faster, Gema uses a stronger model.
+- **Illu** and **Gemu** (Google): Experts with SFW AI art prompts, ensuring high-quality image generation. Illu is faster, Gemu uses a stronger model.
 - **Poli** (Google): An expert translator agent based on Google's Flash AI
 - **Summi** (Google): An expert summarizer agent based on Google's Flash AI
 - **Summar** (Google): An expert summarizer agent based on Google's Flash AI, using structured markdown format
@@ -196,6 +196,9 @@ Please do not use languages models other than those listed here for NSFW content
 |------------|-----------------------|--------|---------|------------|-----------------|------------------|---------------------------------------------------------------------------------------------------------|
 | Meta       | Llama 3.1 8B          | Elly*  | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
 | Meta       | Llama 3.3 70B         | Ellyn  | 128K    | 2048       | $0.10           | $0.32            | A stronger human-like model, for creativity and engaging conversations.                                 |
+| Google     | Gemma 3 27B           | Gemma  | 128K    | 128K       | $0.08           | $0.16            | Google's open source Gemma language model, version 3.                                                   |
+| Google     | Gemma 4 26B A4B       | Gema   | 256K    | 256K       | $0.13           | $0.40            | Google's open source Gemma language model, version 4 - mixture of experts.                              |
+| Google     | Gemma 4 31B           | Gem    | 256K    | 256K       | $0.14           | $0.40            | Google's open source Gemma language model, version 4 - full dense model.                                |
 | Google     | Gemini 2.5 Flash Lite | Lite   | 1M      | 8K         | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and economy.                                         |
 | Google     | Gemini 2.0 Flash      | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                     |
 | Google     | Gemini 2.5 Flash      | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                       |
