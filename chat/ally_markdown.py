@@ -440,56 +440,51 @@ ac
 RE_TAGS = re.compile(rf"""</?({"|".join(list(set(HTML_TAGS + SVG_TAGS + ALLYCHAT_TAGS)))})\b""", flags=re.IGNORECASE)
 
 
+_SPLIT_THINK_TOKEN_RE = re.compile(r"(`+)|(</?think>)")
+
+
 def try_split_think_tag_line(line: str) -> list[str]:
-    """Split a line with think tags into multiple lines. Returns list of lines."""
+    """Split a line on unquoted <think>/<\/think> tags into a list of strings.
 
-    # Helper: check if position is inside inline backticks
-    def is_quoted(text: str, pos: int) -> bool:
-        return text[:pos].count('`') % 2 == 1
+    Tags inside backtick code spans (any length) are treated as literal text.
+    Text segments adjacent to tags are stripped of surrounding whitespace.
+    Returns [line] unchanged if no think tags are present.
+    """
+    if "think>" not in line:
+        return [line]
 
-    open_pos = line.find('<think>')
-    close_pos = line.find('</think>')
+    result: list[str] = []
+    current_parts: list[str] = []
+    code_opener: str | None = None
+    last_end = 0
 
-    # Case 1: Both tags on same line (unquoted)
-    if open_pos != -1 and close_pos != -1 and close_pos > open_pos:
-        if not is_quoted(line, open_pos) and not is_quoted(line, close_pos):
-            before = line[:open_pos].rstrip()
-            between = line[open_pos+7:close_pos].strip()
-            after = line[close_pos+8:].lstrip()
+    def flush() -> None:
+        segment = "".join(current_parts).strip()
+        current_parts.clear()
+        if segment:
+            result.append(segment)
 
-            result = []
-            if before:
-                result.append(before)
-            result.append('<think>')
-            if between:
-                result.append(between)
-            result.append('</think>')
-            if after:
-                result.append(after)
-            return result
+    for m in _SPLIT_THINK_TOKEN_RE.finditer(line):
+        current_parts.append(line[last_end:m.start()])
+        last_end = m.end()
+        backticks, tag = m.group(1), m.group(2)
 
-    # Case 2: Opening tag at start of line (or only whitespace before)
-    if open_pos != -1 and not is_quoted(line, open_pos):
-        if open_pos == 0 or line[:open_pos].strip() == '':
-            after = line[open_pos+7:].lstrip()
-            result = ['<think>']
-            if after:
-                result.append(after)
-            return result
+        if backticks:
+            if code_opener is None:
+                code_opener = backticks
+            elif backticks == code_opener:
+                code_opener = None
+            current_parts.append(backticks)
+        elif code_opener is not None:
+            current_parts.append(tag)
+        else:
+            flush()
+            result.append(tag)
 
-    # Case 3: Closing tag at end of line (or only whitespace after)
-    if close_pos != -1 and not is_quoted(line, close_pos):
-        after_tag = line[close_pos+8:]
-        if after_tag.strip() == '':
-            before = line[:close_pos].rstrip()
-            result = []
-            if before:
-                result.append(before)
-            result.append('</think>')
-            return result
+    current_parts.append(line[last_end:])
+    flush()
 
-    # No splitting needed
-    return [line]
+    return result
 
 
 async def preprocess(content: str, bb_file: str, user: str | None, convert_think: bool=True) -> tuple[str, bool]:
