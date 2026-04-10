@@ -524,7 +524,7 @@ async def enqueue_image_jobs(
             continue
         logger.debug("  - compare job of %r", j.config.get("user"))
         if j.config.get("user") != user:
-            logger.info("  - different user, skipping")
+            logger.debug("  - different user, skipping")
             continue
         logger.debug("  - checking a job")
         priority += j.duration or TIME_EPSILON
