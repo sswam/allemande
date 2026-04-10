@@ -518,17 +518,22 @@ async def enqueue_image_jobs(
     # Calculate the priority for the first job, considering existing queued jobs for the user
     logger.debug("calc priority: %r jobs in queue, active job: %r", len(get_queue_jobs()), bool(job is not None))
     priority = current_time
-    j = None
+    last_job = None
     for j in ([] if job is None else [job]) + get_queue_jobs():
-        if not j or j.config.get("user") != user:
+        if not j:
+            continue
+        logger.debug("  - compare job of %r", j.config.get("user"))
+        if j.config.get("user") != user:
+            logger.info("  - different user, skipping")
             continue
         logger.debug("  - checking a job")
         priority += j.duration or TIME_EPSILON
         logger.debug("    - added that job's duration %r giving %r", j.duration, priority - current_time)
+        last_job = j
 
     # If would schedule earlier than the user's last job, go after it!
-    if j and priority < j.priority:
-        priority = j.priority + TIME_EPSILON
+    if last_job and priority < last_job.priority:
+        priority = last_job.priority + TIME_EPSILON
         logger.debug("    - increased priority past the last job: %r", priority - current_time)
 
     logger.info("priority: %.2f", priority - current_time)
