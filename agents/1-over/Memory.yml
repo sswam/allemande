@@ -10,6 +10,6 @@ recall_prefix: "*$NAME's memories!*"
 recall_suffix: "I was just remembering that to myself, not aloud. No one else heard it yet. I may use these memories in my response now!"
 recall_strip: false
 summary: true
-summary_prompt: null  # defaults to settings.SUMMARY_PROMPT_DEFAULT
+summary_prompt: "summarize what you'd like to remember from this full chat please, in full detail, including all the main people and things, but not including your self-talk or any pictures or @mentions.\n\nJust give the summary only with no prelude, in one paragraph of first person prose, from your point of view. Don't include anything you didn't know about or witness yourself!"  # defaults to settings.SUMMARY_PROMPT_DEFAULT
 summary_role: null  # means no agent
 remember: true

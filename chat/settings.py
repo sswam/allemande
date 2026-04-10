@@ -43,4 +43,4 @@ SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 
 LOAD_EAGER = False  # load tokenizer at startup
 
-SUMMARY_PROMPT_DEFAULT = "can you summarize what you'd like to remember from this full chat please, in full detail, including all the main people and things, but not including your self-talk or any pictures or @mentions.\n\nJust give the summary only with no prelude, in one paragraph of first person prose, from your point of view."
+SUMMARY_PROMPT_DEFAULT = "summarize what you'd like to remember from this full chat please"
