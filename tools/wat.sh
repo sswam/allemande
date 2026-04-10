@@ -9,6 +9,7 @@ wat() {
 	count= i=       # number of executions (unlimited if not set)
 	error= e=0      # exit on error
 	no_newline= n=  # suppress newline after command output
+	interact= I=    # press enter to run again before time
 
 	eval "$(ally)"
 
@@ -32,7 +33,11 @@ wat() {
 		if [ "$error" = 1 ]; then
 			break
 		fi
-		sleep "$interval"
+		if [ "$interact" = 1 ]; then
+			read -t "$interval" || true
+		else
+			sleep "$interval"
+		fi
 		i=$((i + 1))
 		[ -n "$count" ] && [ "$i" -eq "$count" ] && break
 	done
