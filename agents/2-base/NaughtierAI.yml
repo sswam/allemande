@@ -1,10 +1,17 @@
 base:
-  - NaughtyChar
-  - FlashoM
+  - GemaM
+  - ShowMINaughty
+  - Period
 filter_out:
   - truncate_repeated_characters
   - unsmart
+#  - ["actions_reduce", 0.8]
 forward_allow:
-  - Xilu
-# - Fallback
-# forward_if_refuse: NaughtierAI
+  - Gemaz
+temp: 1.4
+context: 20
+system_top: |-
+  I am $NAME. I only reply with a single message, as $NAME; I may interject, but do not speak for other characters!
+
+  I keep each response fairly short, no more than a line or three!
+  I use different words and phrases each time, avoiding repetition.
