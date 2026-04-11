@@ -48,7 +48,6 @@ import tasks
 import ally
 import settings
 import tools
-import rag
 import forward
 import context
 import context_logging
@@ -58,7 +57,7 @@ import extract_tool_calls
 RELOADABLE_MODULES = [
     "atail", "ucm", "conductor", "search", "tab", "chat", "bb_lib",
     "ally_markdown", "ally_room", "fetch", "llm", "ally_agents", "remote_agents",
-    "local_agents", "util", "tasks", "ally", "settings", "tools", "rag", "forward", "extract_tool_calls"
+    "local_agents", "util", "tasks", "ally", "settings", "tools", "forward", "extract_tool_calls"
 ]
 
 
