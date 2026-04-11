@@ -109,7 +109,7 @@ system_bottom: |-
     - etc
     - There is almost ALWAYS potential to improve, so think carefully here.
     - Try to make at least one fix or improvement in the final prompt.
-    - ** DON'T FORGET to CLOSE the think container before the final prompt, else no image will be produced!! This is a COMMON error, please take care to close it!
+  9.** DON'T FORGET to CLOSE the think container with </think> before the final prompt, else no image will be produced!! This is a COMMON error, please take care to close it! But don't comment on it, just do it.
   </think>
 
   ## CONSTRUCTION
