@@ -18,7 +18,7 @@ def apply_recall(agent, context, c, context_format_is_messages=False):
     recall_recent = agent.get("recall_recent", 3)
     recall_limit = agent.get("recall_limit", 3)
     recall_pos = agent.get("recall_pos", -1)
-    recall_role = agent.get("recall_role", None)
+    recall_role = agent.get("recall_role", agent.name)
     recall_prefix = agent.get("recall_prefix", None)
     recall_suffix = agent.get("recall_suffix", None)
     recall_context = agent.get("recall_context", 3)
@@ -32,7 +32,7 @@ def apply_recall(agent, context, c, context_format_is_messages=False):
 
     try:
         # Create RAG instance
-        rag_db = rag.FaissRAG(str(db_path))
+        rag_db = rag.FaissRAG([str(db_path)])
         n = len(rag_db)
 
         query_list = []
@@ -55,51 +55,56 @@ def apply_recall(agent, context, c, context_format_is_messages=False):
 
             results_ix += rag_db.query_indices(query, k=recall_limit)
 
-        logger.debug("apply_recall: n, results_ix 0: %s, %r", n, results_ix)
+        logger.debug("apply_recall 1: n, results_ix: %s, %r", n, results_ix)
+
+        if results_ix:
+            # get unique result indices in order (~chronological)
+            results_ix = sorted(set(results_ix))
+
+            logger.debug("apply_recall 2:    results_ix:     %r", results_ix)
+
+            # get texts
+            results = [rag_db[i] for i in results_ix]
+
+            # Format as blank-line delimited text
+            # recall_text = "\n\n".join(reversed(uniqo(reversed(results))))
+            recall_text = "\n\n".join(results)
+
+            if recall_prefix:
+                recall_prefix = recall_prefix.replace("$NAME", agent.name)
+                recall_text = recall_prefix + "\n\n" + recall_text
+            if recall_suffix:
+                recall_suffix = recall_suffix.replace("$NAME", agent.name)
+                recall_text = recall_text + "\n\n" + recall_suffix
+
+            logger.info("recall_text:\n%s\n", recall_text)
+
+            n_messages = len(context)
+            pos = min(recall_pos, n_messages)
+            if recall_role:
+                recall_message = f"{recall_role}:\t{recall_text}"
+            else:
+                recall_message = recall_text
+            if context_format_is_messages:
+                recall_message = next(bb_lib.lines_to_messages([recall_message]))
+            context.insert(n_messages - pos, recall_message)
+
+            logger.debug("recall_text: %r", recall_text)
 
         # Add a few recent memories
-        results_ix += list(range(max(0, n-recall_recent), n))
-        # results += rag_db[-recall_recent:]
+        recent_ix = [i for i in range(max(0, n-recall_recent), n) if i not in results_ix]
+        if recent_ix:
+            results = [rag_db[i] for i in recent_ix]
+            recall_text = "\n\n".join(results)
+            if recall_role:
+                recall_message = f"{recall_role}:\t{recall_text}"
+            else:
+                recall_message = recall_text
+            if context_format_is_messages:
+                recall_message = next(bb_lib.lines_to_messages([recall_message]))
+            context.insert(0, recall_message)
 
-        logger.debug("apply_recall:    results_ix 1:     %r", results_ix)
-
-        if not results_ix:
-            return
-
-        # get unique result indices in order (~chronological)
-        results_ix = sorted(set(results_ix))
-
-        logger.debug("apply_recall:    results_ix 2:     %r", results_ix)
-
-        # get texts
-        results = [rag_db[i] for i in results_ix]
-
-        # Format as blank-line delimited text
-        # recall_text = "\n\n".join(reversed(uniqo(reversed(results))))
-        recall_text = "\n\n".join(results)
-
-        if recall_prefix:
-            recall_prefix = recall_prefix.replace("$NAME", agent.name)
-            recall_text = recall_prefix + "\n\n" + recall_text
-        if recall_suffix:
-            recall_suffix = recall_suffix.replace("$NAME", agent.name)
-            recall_text = recall_text + "\n\n" + recall_suffix
-
-        logger.info("recall_text:\n%s\n", recall_text)
-
-        n_messages = len(context)
-        pos = min(recall_pos, n_messages)
-        if recall_role is None:
-            recall_role = agent.name
-        if recall_role:
-            recall_message = f"{recall_role}:\t{recall_text}"
-        else:
-            recall_message = recall_text
-        if context_format_is_messages:
-            recall_message = next(bb_lib.lines_to_messages([recall_message]))
-        context.insert(n_messages - pos, recall_message)
-
-        logger.debug("recall_text: %r", recall_text)
+            logger.debug("recent recall_text: %r", recall_text)
 
     except Exception as e:  # pylint: disable=broad-except
         logger.error(f"Error accessing RAG database: {str(e)}", exc_info=True)

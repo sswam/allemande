@@ -109,7 +109,7 @@ async def python_tool_rag(c, agent, query) -> str:
 
     try:
         # Create RAG instance
-        rag_db = rag.FaissRAG(str(db_path))
+        rag_db = rag.FaissRAG([str(db_path)])
 
         if do_import:
             # Import texts if -i flag specified
@@ -201,6 +201,7 @@ async def python_tool_summaries(c, agent, query) -> str | None:
             config["agents"][name] = {}
         config["agents"][name]["context"] = 1000
         config["agents"][name]["lines"] = 1
+        config["agents"][name]["forward"] = False
 
         responses, _temp_dir = await ally_chat_cli.ally_chat_cli_async(summary_role, agent.name, query, contexts, keep=False, options=config, rooms_dir=rooms_dir)
         if not responses:
@@ -234,7 +235,8 @@ async def python_tool_summaries(c, agent, query) -> str | None:
 
             try:
                 # Create RAG instance
-                rag_db = rag.FaissRAG(str(db_path))
+                logger.info(f"Saving Faiss DB: %s", str(db_path))
+                rag_db = rag.FaissRAG([str(db_path)])
                 rag_db.add_entry(content)
                 rag_db.save()
             except Exception as e:  # pylint: disable=broad-except

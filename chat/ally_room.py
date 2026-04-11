@@ -923,7 +923,9 @@ def relname_to_path(relname: str, room: Room) -> tuple[Path, str]:
     if relname.startswith("/"):
         path = Path(ROOMS_DIR) / relname[1:]
     else:
-        path = (room.path.parent / relname).resolve()
+        path = (room.path.parent / relname)
+        # Resolve '..' and '.' components without following symlinks
+        path = Path(os.path.normpath(path))
     return path, path_to_name(path)
 
 

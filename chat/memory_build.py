@@ -35,7 +35,7 @@ def memory_build(folder: str, agent: str) -> None:
 
     logger.info("Building memory index from %d files in %s", len(files), folder)
 
-    faiss_rag = rag.FaissRAG(db_path)
+    faiss_rag = rag.FaissRAG([db_path])
     for f in files:
         logger.debug("Adding entry from %s", f.name)
         faiss_rag.add_entry(f.read_text(encoding="utf-8"))
