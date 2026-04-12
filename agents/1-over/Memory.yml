@@ -3,7 +3,7 @@ recall: true
 recall_file: null  # defaults to the agent name in lower-case, in CWD; can also use abs paths like /db
 recall_recent: 3
 recall_limit: 3  # per query
-recall_context: 2  # do searches based on each of the last 3 messages, TODO might want different limits
+recall_context: 2  # do searches based on each of the last 2 messages, TODO might want different limits
 recall_pos: 3  # means back from bottom, 1 = above the query, 0 = below the query
 recall_role: null  # means the Agent
 recall_prefix: "*$NAME's memories!*"
@@ -13,6 +13,11 @@ summary: true
 summary_prompt: "summarize what you'd like to remember from this chat please, in full detail, including all the main people and things, but not including your self-talk or any pictures or @mentions.\n\nJust give the summary only with no prelude, in one paragraph of first person prose, from your point of view. Don't include anything you didn't know about or witness yourself!"  # defaults to settings.SUMMARY_PROMPT_DEFAULT
 summary_role: null  # means no agent
 remember: true
-rolling_summary: true
-rolling_summary_prompt: null  # defaults to summary_prompt
-rolling_summary_min_context: 20
+
+recall_recap: true  # enable reading the summary of the current chat
+recap: true
+recap_prompt: null  # defaults to summary_prompt
+recap_min_context: 20
+recap_type: rolling  # can also be "full", which is perhaps more accurate but heavier
+
+# Note: There is no prefix or suffix for recall_recent or recap yet, these are just presented at the top of the context.
