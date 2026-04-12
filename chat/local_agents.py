@@ -15,7 +15,7 @@ import conductor
 import chat
 import bb_lib
 import ally_markdown
-from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST
+from settings import LOCAL_AGENT_TIMEOUT, PATH_MODELS, PATH_VISUAL, PATH_VISUAL_REQUEST, AGENT_CONTEXT_DEFAULT
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
 from ally import yaml
 import ally_room
@@ -178,7 +178,7 @@ async def local_agent(c, agent, _query) -> str:
     invitation = name + ":"
 
     model_name = agent["model"]
-    n_context = agent.get("context")
+    n_context = agent.get("context", AGENT_CONTEXT_DEFAULT)
     if agent.get("type") in ["image_a1111"]:
         n_context = 1
 
@@ -255,8 +255,11 @@ async def local_agent(c, agent, _query) -> str:
 
     logger.debug("system message for %s: %s", agent.name, system_top or system_bottom)
 
-    if agent.get("recall") and context:
-        memory.apply_recall(agent, context, c)
+    if agent.get("recap"):
+        await memory.apply_and_update_recap(agent, context, c)
+
+    if agent.get("recall"):
+        await memory.apply_recall(agent, context, c)
 
     if system_bottom:
         n_messages = len(context)

@@ -1,6 +1,7 @@
 import re
 from pathlib import Path
 import logging
+import tempfile
 
 import ally_room
 import rag
@@ -187,60 +188,89 @@ async def python_tool_summaries(c, agent, query) -> str | None:
         if agent.get("summary"):
             summary_agents.append(agent)
 
-    contexts = [str(c.room.path)]
+    contexts = [None, str(c.room.path)]
     rooms_dir = c.room.path.parent
 
     # TODO could run these in parallel
     for agent in summary_agents:
-        name = agent.name.lower()
-        summary_role = agent.get("summary_role") or ""
-        query = agent.get("summary_prompt") or SUMMARY_PROMPT_DEFAULT
+        with tempfile.NamedTemporaryFile(mode='w') as temp:
+            summary_start = agent.get("summary_start", "")
+            summary_lines = agent.get("summary_lines", 3)
+            summary_stop_regexs = agent.get("summary_stop_regexs", [])
+            logger.info("summaries, name %s summary_stop_regexs: %r", agent.name, summary_stop_regexs)
 
-        # Apply a long context limit and single line limit
-        if name not in config["agents"]:
-            config["agents"][name] = {}
-        config["agents"][name]["context"] = 1000
-        config["agents"][name]["lines"] = 1
-        config["agents"][name]["forward"] = False
+            # FIXME this tempfile stuff sucks...
+            temp.write(summary_start)
+            temp.flush()
 
-        responses, _temp_dir = await ally_chat_cli.ally_chat_cli_async(summary_role, agent.name, query, contexts, keep=False, options=config, rooms_dir=rooms_dir)
-        if not responses:
-            logger.error("summaries, no response from agent: %s", name)
-            continue
+            contexts[0] = temp.name
 
-        user, content = responses[0]
-        user = str(user).lower()
+            name = agent.name.lower()
+            summary_role = agent.get("summary_role") or ""
+            query = agent.get("summary_prompt") or SUMMARY_PROMPT_DEFAULT
+            query = query.replace("$AGENT", agent.name)
 
-        if user != name:
-            logger.error("summaries, wrong agent responded for agent: %s -> %s", name, user)
-            continue
+            # Apply a long context limit and single line limit
+            if name not in config["agents"]:
+                config["agents"][name] = {}
+            config["agents"][name]["context"] = 1000
+            config["agents"][name]["lines"] = summary_lines
+            config["agents"][name]["stop_regexs"] = summary_stop_regexs
+            config["agents"][name]["forward"] = False
+            config["agents"][name]["summary"] = False
+            config["agents"][name]["recap"] = False
+            config["agents"][name]["recall"] = False
+            config["agents"][name]["system_bottom_pos"] = 1200
 
-        summary_file = c.room.path.with_suffix(f".{name}.s")
+            # TODO this won't include room missions yet
 
-        logger.info("summary from %s:\n%s", name, content)
-
-        # TODO options to save chat file name and timestamp/s
-        with open(summary_file, "w") as f:
-            f.write(content)
-
-        # run RAG ingest - TODO separate function / module for this?
-        if agent.get("remember"):
-            recall_file = agent.get("recall_file", agent.name.lower())
-            db_path, db_name_abs = ally_room.relname_to_path(recall_file, c.room)
-            db_access = ally_room.check_access(c.responsible_human, db_name_abs + ".index")
-
-            if not db_access.value & ally_room.Access.WRITE.value:
-                logger.error("summaries, permission denied to update RAG DB: %s.index", db_name_abs)
+            responses, _temp_dir = await ally_chat_cli.ally_chat_cli_async(summary_role, agent.name, query, contexts, keep=True, options=config, rooms_dir=rooms_dir)
+            if not responses:
+                logger.error("summaries, no response from agent: %s", name)
                 continue
 
-            try:
-                # Create RAG instance
-                logger.info(f"Saving Faiss DB: %s", str(db_path))
-                rag_db = rag.FaissRAG([str(db_path)])
-                rag_db.add_entry(content)
-                rag_db.save()
-            except Exception as e:  # pylint: disable=broad-except
-                logger.error(f"Error accessing RAG database: {str(e)}", exc_info=True)
+            user, content = responses[0]
+            user = str(user).lower()
+
+            if user != name:
+                logger.error("summaries, wrong agent responded for agent: %s -> %s", name, user)
+                continue
+
+            # filter out summary_stop_regexs, needed for remote models if prompted to use it
+            logger.info("summaries, summary_stop_regexs: %r", summary_stop_regexs)
+            if summary_stop_regexs:
+                logger.info("summaries, content before filter out STOP: %r", content)
+                lines = content.split('\n')
+                lines = [line for line in lines if not any(re.search(pattern, line) for pattern in summary_stop_regexs)]
+                content = '\n'.join(lines).strip()
+                logger.info("summaries, content after filter out STOP: %r", content)
+
+            summary_file = c.room.path.with_suffix(f".{name}.s")
+
+            logger.info("summary from %s:\n%s", name, content)
+
+            # TODO options to save chat file name and timestamp/s
+            with open(summary_file, "w") as f:
+                f.write(content)
+
+            # run RAG ingest - TODO separate function / module for this?
+            if agent.get("remember"):
+                recall_file = agent.get("recall_file", agent.name.lower())
+                db_path, db_name_abs = ally_room.relname_to_path(recall_file, c.room)
+                db_access = ally_room.check_access(c.responsible_human, db_name_abs + ".index")
+
+                if not db_access.value & ally_room.Access.WRITE.value:
+                    logger.error("summaries, permission denied to update RAG DB: %s.index", db_name_abs)
+                    continue
+
+                try:
+                    # Create RAG instance
+                    logger.info(f"Saving Faiss DB: %s", str(db_path))
+                    rag_db = rag.FaissRAG([str(db_path)])
+                    rag_db.add_entry(content)
+                    rag_db.save()
+                except Exception as e:  # pylint: disable=broad-except
+                    logger.error(f"Error accessing RAG database: {str(e)}", exc_info=True)
 
     return None
     # return [x.name for x in summary_agents]

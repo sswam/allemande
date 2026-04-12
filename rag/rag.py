@@ -136,6 +136,8 @@ class FaissRAG:
         """Find the k most similar texts across all DBs, returning list of (db_index, text_index)."""
         if not self.db_paths:
             return []
+        if len(self) == 0:
+            return []
         vec = self.query_vector(question)
         if vec is None:
             return []

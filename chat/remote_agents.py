@@ -15,7 +15,7 @@ import chat
 import bb_lib
 import ally_markdown
 import llm  # type: ignore, pylint: disable=wrong-import-order
-from settings import REMOTE_AGENT_RETRIES, PATH_ROOMS, PATH_HOME
+from settings import REMOTE_AGENT_RETRIES, PATH_ROOMS, PATH_HOME, AGENT_CONTEXT_DEFAULT
 from ally_room import Room
 from ally.llms import MODEL_FALLBACKS, SERVICES_BROKEN
 import filters
@@ -66,7 +66,7 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
 
     logger.debug("Running remote agent %r", agent)
 
-    n_context = agent["context"]
+    n_context = agent.get("context", AGENT_CONTEXT_DEFAULT)
     if n_context is not None:
         if n_context == 0:
             context = []
@@ -94,8 +94,11 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     context = filters.apply_filters_in(agent, context)
     logger.debug("Applying input filters, query after: %r", context[-1] if context else None)
 
+    if agent.get("recap"):
+        await memory.apply_and_update_recap(agent, context, c)
+
     if agent.get("recall") and context:
-        memory.apply_recall(agent, context, c)
+        await memory.apply_recall(agent, context, c)
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?

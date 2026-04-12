@@ -43,5 +43,5 @@ SAFE = os.environ.get("ALLYCHAT_SAFE", "1") == "1"
 
 LOAD_EAGER = False  # load tokenizer at startup
 
-SUMMARY_PROMPT_DEFAULT = "summarize what you'd like to remember from this full chat please"
+SUMMARY_PROMPT_DEFAULT = "summarize what you'd like to remember from this please"
 AGENT_CONTEXT_DEFAULT = 30

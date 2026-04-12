@@ -40,7 +40,7 @@ def memory_build(folder: str, agent: str) -> None:
         logger.debug("Adding entry from %s", f.name)
         faiss_rag.add_entry(f.read_text(encoding="utf-8"))
 
-    faiss_rag.save(db_path)
+    faiss_rag.save()
     logger.info("Saved memory index to %s", db_path)
 
 
