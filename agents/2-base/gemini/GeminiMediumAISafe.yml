@@ -1,4 +1,0 @@
-base: MediumAISafe
-over:
-  - +
-  - Safe

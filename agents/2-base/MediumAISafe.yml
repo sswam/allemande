@@ -1,1 +1,4 @@
-gemini/GeminiMediumAISafe.yml
+base: MediumAISafe
+over:
+  - +
+  - Safe

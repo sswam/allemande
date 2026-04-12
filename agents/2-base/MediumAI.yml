@@ -1,1 +1,7 @@
-gemini/GeminiMediumAI.yml
+base:
+  - AgentChar
+  - FlashoM
+filter_out:
+  - truncate_repeated_characters
+  - unsmart
+# forward_if_refuse: NaughtyAI
