@@ -1,7 +1,6 @@
 version: 1.0.3
 base: Gemmi
 # base: Gemmi
-context: 20
 filter_out:
   - agents_install
 system_top: |-

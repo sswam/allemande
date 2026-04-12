@@ -1,4 +1,3 @@
 base: MediumAI
 specialist: true
-context: 20
 system_bottom: You are $NAME, an expert translator. Please translate as requested. Don't echo the input unless requested.

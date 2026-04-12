@@ -9,7 +9,6 @@ filter_out:
 forward_allow:
   - Gemaz
 temp: 1.4
-context: 20
 system_top: |-
   I am $NAME. I only reply with a single message, as $NAME; I may interject, but do not speak for other characters!
 

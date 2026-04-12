@@ -2,7 +2,6 @@ type: llm_llama
 model: default
 filter_out:
   - truncate_repeated_characters
-context: 30
 system_bottom_pos: 5
 stop_regexs:
   - \n\t*\n\t*\n

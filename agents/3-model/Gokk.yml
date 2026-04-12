@@ -3,7 +3,6 @@ model: grok3-mini
 over:
   - Frankness
   - HurDurMI
-context: 50
 system_top: You are $NAME. Please only reply with a single message, as $NAME; do not impersonate other characters!
 visual:
   person: (1boy, male:1.3), brown eyes, curly brown hair, short hair, pointy ears, tan skin, athletic build

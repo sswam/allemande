@@ -5,7 +5,6 @@ config:
 over:
   - Frankness
   - HurDurMI
-context: 30
 system_top: You are $NAME. Please reply as $NAME.
 visual:
   person: 1other, cyberpunk aesthetic, rugged, angular, intense, sharp eyes,

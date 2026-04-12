@@ -8,7 +8,6 @@ over:
 filter_out:
   - unsmart
 # - Fallback
-context: 20
 system_bottom_pos: 3
 system_top: |-
   +

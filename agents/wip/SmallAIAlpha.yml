@@ -3,7 +3,6 @@ model: default
 over:
   - ShowMISmall
   - Period
-context: 30
 dedent: true
 temp: 0.95
 system_bottom_pos: 3
