@@ -143,7 +143,7 @@ Our group chats are good fun! This is the best way to learn the app properly and
 
 We like to have fun, including playful banter, but we don't allow unwanted bullying or abuse in the main group chats.
 
-Note that I may remove inactive accounts after a month or so. Please log in and try the app within 2 weeks. I can restore accounts on request, but your username might be different.
+Note that I may remove inactive accounts after a month or so. Please log in and try the app within 2 weeks. I can restore accounts on request.
 
 You can read more formal and detailed Terms of Use at https://allemande.ai/terms.html
 
