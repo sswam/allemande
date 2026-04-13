@@ -154,6 +154,11 @@ class Room:
             raise FileNotFoundError("Room not found.")
         #        empty = self.path.stat().st_size == 0
 
+        # remove .r recap files
+        if op in ["archive", "clear"]:
+            for file in self.path.parent.glob(f"{self.name}.*.r"):
+                file.unlink(missing_ok=True)
+
         if op == "archive":
             if not access & Access.MODERATE.value == Access.MODERATE.value:
                 raise PermissionError(f"You are not allowed to archive this room: {self.name}, user: {user}")
