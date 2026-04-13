@@ -1,8 +1,12 @@
 type: mixin
 
+memory: true
+
 recall: true
+recall_recent: true
+recall_relevant: true
 recall_file: null  # defaults to the agent name in lower-case, in CWD; can also use abs paths like /db
-recall_recent: 3
+recall_recent_count: 3
 recall_limit: 3  # per query
 recall_context: 2  # do searches based on each of the last 2 messages, TODO might want different limits
 recall_pos: 3  # means back from bottom, 1 = above the query, 0 = below the query
@@ -11,16 +15,15 @@ recall_prefix: "*$NAME's memories!*"
 recall_suffix: "I was just remembering that to myself, not aloud. No one else heard it yet. I may use these memories in my response now!"
 recall_strip: false
 
-summary: true
+memorize: true  # implies summary
+# summary: true
 summary_start: "**START**"
 summary_prompt: "summarize what you'd like to remember from the above please, in full detail, beginning where it says **START**, including all the other people (and their names), but not including your self-talk or any pictures or @mentions. Just give the summary only with no prelude, in one paragraph of first person prose, from your point of view. Don't include anything you didn't know about or witness yourself! End the summary with the word STOP on a line by itself. Please write the summary now, $AGENT."  # defaults to settings.SUMMARY_PROMPT_DEFAULT
 summary_lines: 3
 summary_stop_regexs:
   - \bSTOP\b
 summary_role: null  # means no agent
-remember: true
 
-recall_recap: true  # enable reading the summary of the current chat
 recap: true
 recap_prompt: null  # defaults to summary_prompt
 recap_min_context: 20
@@ -30,3 +33,14 @@ recap_keep_on_close: true
 recap_min_length: 200  # keep the old summary if new one is too short
 
 # Note: There is no prefix or suffix for recall_recent or recap yet, these are just presented at the top of the context.
+
+# Memory options in UI:
+#
+# recall:
+#
+# 0 - none
+# 1 - recap = true
+# 2 - and recall = recall_recent = true
+# 3 - and recall_relevant = true
+#
+# memorize: toggle

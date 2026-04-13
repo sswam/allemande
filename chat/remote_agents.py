@@ -94,11 +94,11 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
     context = filters.apply_filters_in(agent, context)
     logger.debug("Applying input filters, query after: %r", context[-1] if context else None)
 
-    if agent.get("recap"):
-        await memory.apply_and_update_recap(agent, context, c)
-
-    if agent.get("recall") and context:
-        await memory.apply_recall(agent, context, c)
+    if agent.get("memory"):
+        if agent.get("recap"):
+            await memory.apply_and_update_recap(agent, context, c)
+        if agent.get("recall"):
+            await memory.apply_recall(agent, context, c)
 
     # prepend mission / info / context
     # TODO try mission as a "system" message?

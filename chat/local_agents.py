@@ -255,11 +255,11 @@ async def local_agent(c, agent, _query) -> str:
 
     logger.debug("system message for %s: %s", agent.name, system_top or system_bottom)
 
-    if agent.get("recap"):
-        await memory.apply_and_update_recap(agent, context, c)
-
-    if agent.get("recall"):
-        await memory.apply_recall(agent, context, c)
+    if agent.get("memory"):
+        if agent.get("recap"):
+            await memory.apply_and_update_recap(agent, context, c)
+        if agent.get("recall"):
+            await memory.apply_recall(agent, context, c)
 
     if system_bottom:
         n_messages = len(context)

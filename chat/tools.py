@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 import logging
 import tempfile
+import asyncio
 
 import ally_room
 import rag
@@ -185,7 +186,7 @@ async def python_tool_summaries(c, agent, query) -> str | None:
         if not agent or agent.get("dumb") or agent.get("type") == "human":
             continue
         agent = agent.apply_config(config)
-        if agent.get("summary"):
+        if agent.get("memory") and (agent.get("memorize") or agent.get("summary")):
             summary_agents.append(agent)
 
     contexts = [None, str(c.room.path)]
@@ -214,15 +215,13 @@ async def python_tool_summaries(c, agent, query) -> str | None:
             if name not in config["agents"]:
                 config["agents"][name] = {}
             config["agents"][name]["context"] = 1000
+            config["agents"][name]["system_bottom_pos"] = 1200
             config["agents"][name]["lines"] = summary_lines
             config["agents"][name]["stop_regexs"] = summary_stop_regexs
             config["agents"][name]["forward"] = False
-            config["agents"][name]["summary"] = False
-            config["agents"][name]["recap"] = False
-            config["agents"][name]["recall"] = False
-            config["agents"][name]["system_bottom_pos"] = 1200
+            config["agents"][name]["memory"] = False
 
-            # TODO this won't include room missions yet
+            # TODO this won't see room missions yet
 
             responses, _temp_dir = await ally_chat_cli.ally_chat_cli_async(summary_role, agent.name, query, contexts, keep=True, options=config, rooms_dir=rooms_dir)
             if not responses:
@@ -241,7 +240,7 @@ async def python_tool_summaries(c, agent, query) -> str | None:
             if summary_stop_regexs:
                 logger.info("summaries, content before filter out STOP: %r", content)
                 lines = content.split('\n')
-                lines = [line for line in lines if not any(re.search(pattern, line) for pattern in summary_stop_regexs)]
+                lines = [line for line in lines if not any(re.match(pattern, line.strip()) for pattern in summary_stop_regexs)]
                 content = '\n'.join(lines).strip()
                 logger.info("summaries, content after filter out STOP: %r", content)
 
@@ -254,7 +253,7 @@ async def python_tool_summaries(c, agent, query) -> str | None:
                 f.write(content)
 
             # run RAG ingest - TODO separate function / module for this?
-            if agent.get("remember"):
+            if agent.get("memorize"):
                 recall_file = agent.get("recall_file", agent.name.lower())
                 db_path, db_name_abs = ally_room.relname_to_path(recall_file, c.room)
                 db_access = ally_room.check_access(c.responsible_human, db_name_abs + ".index")
@@ -269,6 +268,7 @@ async def python_tool_summaries(c, agent, query) -> str | None:
                     rag_db = rag.FaissRAG([str(db_path)])
                     rag_db.add_entry(content)
                     rag_db.save()
+                    await asyncio.sleep(0)
                 except Exception as e:  # pylint: disable=broad-except
                     logger.error(f"Error accessing RAG database: {str(e)}", exc_info=True)
 

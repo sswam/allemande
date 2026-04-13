@@ -110,4 +110,10 @@ export const icons = {
 
   filter: '<i class="bi bi-filter i20"></i>',
   usage: '<i class="bi bi-currency-dollar i20"></i>',
+
+  opt_recall: '<i class="bi bi-lightbulb-off i20"></i>',
+  opt_recall_1: '<i class="bi bi-lightbulb i20"></i>',
+  opt_recall_2: '<i class="bi bi-lightbulb-fill i20"></i>',
+  opt_recall_3: '<i class="bi bi-sun-fill i20"></i>',
+  opt_memorize: '<i class="bi bi-save i20"></i>',
 };

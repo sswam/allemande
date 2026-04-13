@@ -42,6 +42,8 @@ Please give feedback and share your ideas, to help make Ally Chat awesome. 🔥
 - Currently, free users enjoy unlimited text chat and image gen.
 - The only case where you might be limited, is if you are using expensive chat models too much.
 - We ask free users to participate in public chat, give feedback, or contribute in some way.
+- You can view your usage and its cost by pressing the <i class="bi-currency-dollar"></i> button at top-right. Press the same button again to close it.
+- Free users should try to keep their usage under $2 per month. Some models are currently free to use, and many are very inexpensive.
 
 ## Rules
 
@@ -71,7 +73,6 @@ You can read our detailed [Terms of Service](/terms).
 
 - **Image Processing**: We don't have img2img, face transfer, or LoRA training functions yet. The AIs can look at reference images for ideas if vision is enabled.
 - **Document Processing**: We are working on document conversion, vector embedding indexes and RAG to efficiently handle PDF documents and the like. It's not done yet.
-- **Memory**: We don't have automatic memory systems for AI characters yet. You can implement this manually by asking Summi or another summary agent to make a summary, then pasting into a new chat, a mission file, or an agent character sheet.
 - **Notifications**: We're working on AI initiative and notifications, it's not done yet.
 - **Voice Chat**: Voice chat is under development, it's going to be good!
 - **Account Management**: To reset your password, change your name or contact details, or delete your account, please message Sam.
@@ -143,6 +144,12 @@ There is a <i class="bi-compass"></i> nav menu at top-left with shortcuts to dif
 The folder view only allows to browse to different files and folders. To delete a file you need to click in to edit the file, then clear it.
 
 To create a room or file, just type its pathname in the room field at the top of the app.
+
+You can clear a chat room using the <i class="bi-trash3"></i> clear button. You should not normally do this in a public chat room!
+
+Rooms can be organized into numbered "pages". When you finish a chat, press the <i class="bi-archive"></i> archive button. This will move the chat to a numbered page, for example the room `joe/chat` might move to `joe/chat-0` or `joe/chat-1` and so on. You can browse these old pages using the <i class="bi-arrow-left-right"></i> pages menu at the top left.
+
+When you finish with a page and archive it, AI characters may store memories about that page; see the Memory section below for details. If you don't archive a page, they won't make any memories (this may change in future).
 
 ## Tips and Tricks
 
@@ -257,6 +264,36 @@ Advanced: You can enable vision for more images in any room. Please turn it off 
 5. Please clear the **images** option to be blank when you are not using AI vision. This makes responses faster, and can save money.
 6. If you set the **images** option to blank, AI vision is disabled entirely for that chat room.
 
+## Memory
+
+Ally Chat supports memory for some characters, so that they can roughly recall the current chat, a few of their recent chats, and other relevant chats. A chat will only be memorized when it is archived. Memories are always saved in the same folder as the chat, which is good for privacy and has other uses. Memories won't leak from private chat to public chat, for example.
+
+If you don't want characters to recall previous chats, set the Recall option to <i class="bi bi-lightbulb"></i> for recall of the current chat only. If you don't want them to save new memories when you archive a chat (for a sort of incognito mode), turn off the Memorize option.
+
+Read on for technical details of how this works, and options to control it!
+
+All agents can see a certain number of previous messages in the current chat, this is called the context. Most agents have a context of 30 messages. You can adjust the context on the fly, in room options. Please keep it reasonably small most of the time, for efficiency.
+
+If the Recall button in Room Options is turned off <i class="bi bi-lightbulb-off"></i>, agents will ONLY see this limited context, and no other memories.
+
+We have three other memory recall settings, and each builds on the previous. You can cycle through them by pressing the Recall button. Note that each level can slow down the chat a little.
+
+1. <i class="bi bi-lightbulb"></i> Recap: Agents can see a recap summary of the current chat, up to at least the start of their context window. So they should remember at least an overview of what has been happening in the entire chat.
+
+2. <i class="bi bi-lightbulb-fill"></i> Recent: In addition to the recap, agents can see summaries of several recent chats that they were in (normally 3 recent chats). So they will remember the flow of a narrative that spans several chats.
+
+3. <i class="bi bi-sun-fill"></i> Relevant: In addition to the recap and recent chats, agents can see summaries of other relevant chats that they were in. The measure of relevance is based on a few recent messages in the current chat (normally the last 2 messages).
+
+There is also a Memorize option in Room Options. If this is enabled, each character in a chat will make a summary of the chat and save it as a memory, when the room is archived - if memory is enabled for that character. If you don't want to archive a room, you can also activate this by typing `-@summaries` as a chat message at the end of the room.
+
+After archiving a room, there will be a short delay before the new memories are available. So, wait perhaps 30 seconds before continuing with the same characters if you want proper continuity. If you want to continue a role-play or chat directly, you might have to hint to the characters that you're still in the same scene somehow, otherwise they tend to assume that it's "another day" or another scene.
+
+All of the memory options are turned on by default, however memory must also be enabled for the agent in question. Memory is currently enabled for less expensive characters, but not for the most expensive agents.
+
+Note that our memory systems are currently based on summaries and imperfect recall systems, so they will not be comprehensive or fully detailed. At present, memory in Ally Chat is better suited to chat and role-play rather than serious work. Characters certainly won't remember long stretches of text from previous chats verbatim.
+
+We don't yet have features to erase or edit a character's memories. If you want to do that, please contact the developer.
+
 ## How to use Tool Agents
 
 We have several agents that are not LLMs and do not fully understand natural language, such as search engines, programming tools, and AI image generators. When talking to these agents, say their name, then exactly what you want. Don't say anything else afterwards. For example:
@@ -264,170 +301,6 @@ We have several agents that are not LLMs and do not fully understand natural lan
     @Dogu, fortune
 
 This asks the shell agent to run the fortune program, and give you a "fortune cookie".
-
-## Examples of Advanced Syntax
-
-### HTML and SVG
-
-We can safely embed any HTML or SVG.
-
-Don't quote the markup in backticks if you want them to render in the chat.
-
-### TeX math
-
-Inline math goes between dollar signs, like $ y = \sqrt{x} $.
-
-Displayed math goes between double dollar signs:
-
-$$
-y = \sqrt{x}
-$$
-
-### Graphviz
-
-The easiest way to get a diagram is to ask one of the stronger AIs to draw a diagrams with dot or mermaid code:
-
-> Hey Claude, can you dissect this very sentence in a diagram, using dot or mermaid code?
-
-You can ask for transparent backgrounds and medium gray edges and text for better visibility in any theme.
-
-```dot
-graph {
-    bgcolor="transparent"
-    node [style=filled, fillcolor="#808080"]
-    edge [color="#808080"]
-    A -- B -- C -- A
-}
-```
-
-```dot
-digraph G {
-    bgcolor="transparent"
-    node [style=filled, fillcolor="#808080"]
-    edge [color="#808080"]
-    A -> B;
-    B -> C;
-}
-```
-
-### Mermaid Diagrams
-
-```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#808080',
-    'primaryTextColor': '#ffffff',
-    'primaryBorderColor': '#404040',
-    'lineColor': '#808080',
-    'secondaryColor': '#808080',
-    'tertiaryColor': '#808080'
-  }
-}}%%
-flowchart TD
-    A[Start] --> B{Decision?}
-
-    B -->|Yes| C[Do something]
-    B -->|No| D[Do something else]
-    C --> E["End (or is it)?"]
-    D --> E
-```
-
-Note: We need to quote labels that contain parentheses.
-
-### JavaScript
-
-#### Drawing on the shared canvas (experimental)
-
-<script>
-h = canvas.height;
-ctx.fillStyle = 'red';
-ctx.fillRect(10, 10, 100, 100);
-</script>
-
-#### Using a fresh canvas in the chat
-
-<canvas id="canvas1" tabindex=0></canvas>
-<script>
-canvas1 = document.getElementById('canvas1');
-ctx1 = canvas1.getContext('2d');
-h = canvas1.height;
-ctx1.fillStyle = 'red';
-ctx1.fillRect(10, 10, 100, 100);
-</script>
-
-If you use key events, bind on the canvas element, not the document,
-use `tabindex=0` to make the canvas focusable, and stopPropagation for keys you handle.
-
-#### Drawing a chart with uPlot, and our helper functions
-
-Note that uPlot defaults to "time" on the x-axis, so turn that off unless needed.
-
-<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.iife.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.min.css">
-<div id="smartphone_market_share_1"></div>
-
-<script>
-data = [
-    [0, 1, 2, 3, 4],
-    [22.1, 19.4, 13.3, 11.2, 7.8]
-];
-
-textColor = getCssVarColorHex("--text");
-gridColor = hexColorWithOpacity(textColor, 0.1);
-fillColor = hexColorWithOpacity(textColor, 0.05);
-
-companies = ["Samsung", "Apple", "Xiaomi", "OPPO", "vivo"];
-
-opts = {
-    title: "Global Smartphone Market Share Q3 2023 (%)",
-    width: 600,
-    height: 300,
-    series: [
-        {
-            label: "Company"
-        },
-        {
-            label: "Market Share %",
-            stroke: textColor,
-            fill: fillColor,
-            paths: uPlot.paths.bars({size: [0.6, 100]}),
-        }
-    ],
-    scales: {
-        x: {
-            time: false,
-            range: [-0.5, 4.5]
-        }
-    },
-    axes: [
-        {
-            values: (self, splits) => splits.map(i => companies[i]),
-            stroke: textColor,
-            grid: {stroke: gridColor},
-            size: 70  // Give more space for labels
-        },
-        {
-            stroke: textColor,
-            grid: {stroke: gridColor}
-        }
-    ]
-};
-
-uplot = new uPlot(opts, data, document.getElementById("smartphone_market_share_1"))
-</script>
-
-#### Running JavaScript in the Chat
-
-IMPORTANT:
-- N.B. NOTE WELL! Please do NOT quote JavaScript in backticks or indent the whole block if you want it to run in the browser, i.e. in the chat app.
-- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
-- Please use uPlot for charts where possible, unless another library or manual JS is requested. You need to pull in the required uPlot JavaScript and CSS first.
-- The shared canvas (experimental) is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
-- Please use the TOP LEFT part of the canvas by default. Don't center in the canvas or try to fill the width or height unless requested. If you use another part it can be hard for the user to view it all.
-- For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
-- If the user wants to see the code, they can enable our view -> code option.
-- You can add canvases, divs, svg, etc inline in the chat as needed. Please use unique descriptive IDs when doing so.
 
 ## AI Models
 
@@ -1127,6 +1000,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-chevron-bar-down"></i> <i class="bi-chevron-bar-up"></i> |  | End / Home | Go to end or start of room |
 | User's Name |  | User \* | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
 | <i class="bi-question-lg"></i> |  | Help | Read the Intro and Guide, and get strong AI help to use the app. |
+| <i class="bi-currency-dollar"></i> |  | Usage | View your usage by month, day, and agent, with costs in US$. Click the button again to close the usage view. |
 | <i class="bi-door-closed"></i> |  | Log out \* | Log out from Ally Chat, returns to the main Allemande home page |
 
 \* only visible after pressing Alt/Option or swiping the input field on mobile.
@@ -1189,7 +1063,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 - There is a button to open a virtual keyboard, like a super calculator
 - There is a menu button with many other options, including matrix entry
 
-## Options Menu
+## Room Options Menu
 
 | Icon | Shortcut | Name | Description |
 |---------|----------|------|-------------|
@@ -1199,6 +1073,8 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 |  |  | Temp | Temperature / creativity 0.0 - ~2.0, 1.0 is normal |
 |  |  | Mission | Mission file to use, - for none |
 |  |  | Name | Change your name in the chat |
+| <i class="bi bi-sun-fill"></i> |  | Recall | Cycle memory recall mode: <i class="bi bi-lightbulb-off"></i> none, <i class="bi bi-lightbulb"></i> recap of this chat, <i class="bi bi-lightbulb-fill"></i> also recent chats, <i class="bi bi-sun-fill"></i> also relevant older chats |
+| <i class="bi bi-save"></i> |  | Memorize | Save memories, when this chat is archived (for some characters) |
 
 ## Moderator Tools (Room Owner)
 
@@ -1209,7 +1085,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-pencil"></i> | `Alt+E` | Edit | Edit the room |
 | <i class="bi-play"></i> |  | Auto | Auto play (try shift, ctrl) |
 | <i class="bi-archive"></i> | `Alt+A` | Archive | Archive this room |
-| <i class="bi-trash3"></i> | `Alt+X` | Clear | Clear this room |
+| <i class="bi-trash4"></i> | `Alt+X` | Clear | Clear this room |
 |  | `Alt+H` | Re-render | Re-renders the HTML page from markdown (mainly for developers) |
 
 ## Editor Controls
@@ -1360,3 +1236,166 @@ visual:
   person: 1boy, plump, fluffy, cloud-like
 ```
 
+## Examples of Advanced Syntax
+
+### HTML and SVG
+
+We can safely embed any HTML or SVG.
+
+Don't quote the markup in backticks if you want them to render in the chat.
+
+### TeX math
+
+Inline math goes between dollar signs, like $ y = \sqrt{x} $.
+
+Displayed math goes between double dollar signs:
+
+$$
+y = \sqrt{x}
+$$
+
+### Graphviz
+
+The easiest way to get a diagram is to ask one of the stronger AIs to draw a diagrams with dot or mermaid code:
+
+> Hey @Claude, can you dissect this very sentence in a diagram, using dot or mermaid code?
+
+You can ask for transparent backgrounds and medium gray edges and text for better visibility in any theme.
+
+```dot
+graph {
+    bgcolor="transparent"
+    node [style=filled, fillcolor="#808080"]
+    edge [color="#808080"]
+    A -- B -- C -- A
+}
+```
+
+```dot
+digraph G {
+    bgcolor="transparent"
+    node [style=filled, fillcolor="#808080"]
+    edge [color="#808080"]
+    A -> B;
+    B -> C;
+}
+```
+
+### Mermaid Diagrams
+
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#808080',
+    'primaryTextColor': '#ffffff',
+    'primaryBorderColor': '#404040',
+    'lineColor': '#808080',
+    'secondaryColor': '#808080',
+    'tertiaryColor': '#808080'
+  }
+}}%%
+flowchart TD
+    A[Start] --> B{Decision?}
+
+    B -->|Yes| C[Do something]
+    B -->|No| D[Do something else]
+    C --> E["End (or is it)?"]
+    D --> E
+```
+
+Note: We need to quote labels that contain parentheses.
+
+### JavaScript
+
+#### Drawing on the shared canvas (experimental)
+
+<script>
+h = canvas.height;
+ctx.fillStyle = 'red';
+ctx.fillRect(10, 10, 100, 100);
+</script>
+
+#### Using a fresh canvas in the chat
+
+<canvas id="canvas1" tabindex=0></canvas>
+<script>
+canvas1 = document.getElementById('canvas1');
+ctx1 = canvas1.getContext('2d');
+h = canvas1.height;
+ctx1.fillStyle = 'red';
+ctx1.fillRect(10, 10, 100, 100);
+</script>
+
+If you use key events, bind on the canvas element, not the document,
+use `tabindex=0` to make the canvas focusable, and stopPropagation for keys you handle.
+
+#### Drawing a chart with uPlot, and our helper functions
+
+Note that uPlot defaults to "time" on the x-axis, so turn that off unless needed.
+
+<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.iife.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.24/dist/uPlot.min.css">
+<div id="smartphone_market_share_1"></div>
+
+<script>
+data = [
+    [0, 1, 2, 3, 4],
+    [22.1, 19.4, 13.3, 11.2, 7.8]
+];
+
+textColor = getCssVarColorHex("--text");
+gridColor = hexColorWithOpacity(textColor, 0.1);
+fillColor = hexColorWithOpacity(textColor, 0.05);
+
+companies = ["Samsung", "Apple", "Xiaomi", "OPPO", "vivo"];
+
+opts = {
+    title: "Global Smartphone Market Share Q3 2023 (%)",
+    width: 600,
+    height: 300,
+    series: [
+        {
+            label: "Company"
+        },
+        {
+            label: "Market Share %",
+            stroke: textColor,
+            fill: fillColor,
+            paths: uPlot.paths.bars({size: [0.6, 100]}),
+        }
+    ],
+    scales: {
+        x: {
+            time: false,
+            range: [-0.5, 4.5]
+        }
+    },
+    axes: [
+        {
+            values: (self, splits) => splits.map(i => companies[i]),
+            stroke: textColor,
+            grid: {stroke: gridColor},
+            size: 70  // Give more space for labels
+        },
+        {
+            stroke: textColor,
+            grid: {stroke: gridColor}
+        }
+    ]
+};
+
+uplot = new uPlot(opts, data, document.getElementById("smartphone_market_share_1"))
+</script>
+
+#### Running JavaScript in the Chat
+
+IMPORTANT:
+- N.B. NOTE WELL! Please do NOT quote JavaScript in backticks or indent the whole block if you want it to run in the browser, i.e. in the chat app.
+- N.B. NOTE WELL! Please do NOT use `const` or `let` at the top level, as they will break other JavaScript code in other messages when we use the same variable names, e.g. iterating on code.
+- Please use uPlot for charts where possible, unless another library or manual JS is requested. You need to pull in the required uPlot JavaScript and CSS first.
+- The shared canvas (experimental) is already set up. Don't change its dimensions, which are set to the full screen size. The background is transparent to respect the user's theme, probably not white or black. You can clear to some other background color but only if needed. You can draw or draw in saturated colors or medium gray, which is visible in most themes, or use the --text CSS variable which definitely contrasts with the background.
+- Please use the TOP LEFT part of the canvas by default. Don't center in the canvas or try to fill the width or height unless requested. If you use another part it can be hard for the user to view it all.
+- For graphics and interaction, it's better to use this direct method in the browser rather than one of the JavaScript agents, which cannot yet return images.
+- If the user wants to see the code, they can enable our view -> code option.
+- You can add canvases, divs, svg, etc inline in the chat as needed. Please use unique descriptive IDs when doing so.

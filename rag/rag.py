@@ -138,6 +138,8 @@ class FaissRAG:
             return []
         if len(self) == 0:
             return []
+        if k == 0:
+            return []
         vec = self.query_vector(question)
         if vec is None:
             return []

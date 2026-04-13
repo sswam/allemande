@@ -3074,12 +3074,29 @@ async function get_options() {
   const mission = data?.mission === "" ? "-" : data?.mission ?? "";
   const name = data?.users?.[user]?.name ?? "";
 
+  // recall button is complex
+  const recap = data?.agents?.all?.recap ?? true;
+  const recent = (data?.agents?.all?.recall ?? true) && (data?.agents?.all?.recall_recent ?? true);
+  const relevant = (data?.agents?.all?.recall ?? true) && (data?.agents?.all?.recall_relevant ?? true);
+
+  let recall;
+  if (recap && recent && relevant) recall = 3;
+  else if (recap && recent) recall = 2;
+  else if (recap) recall = 1;
+  else recall = 0;
+
+  const memorize = (data?.agents?.all?.memorize ?? true) ? 1 : 0;
+
   $id("opt_context").value = context;
   $id("opt_lines").value = lines;
   $id("opt_images").value = images;
   $id("opt_temp").value = temp;
   $id("opt_mission").value = mission;
   $id("opt_name").value = name;
+  active_set("opt_recall", recall);
+  active_set("opt_memorize", memorize);
+
+  opt_recall_update_button(recall);
 
   return data;
 }
@@ -3181,6 +3198,58 @@ async function opt_name(ev) {
       users: {
         [user]: {
           name
+        }
+      }
+    }
+  });
+}
+
+async function opt_recall(ev) {
+  const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
+  let recall = active_get("opt_recall");
+  recall = (recall + delta + 4) % 4;
+  active_set("opt_recall", recall);
+  opt_recall_update_button(recall);
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          recap: recall >= 1,
+          recall: recall >= 2,
+          recall_recent: recall >= 2,
+          recall_relevant: recall == 3,
+        }
+      }
+    }
+  });
+}
+
+function opt_recall_update_button(recall) {
+  const $opt_recall = $id('opt_recall');
+  if (recall == 0) {
+    $opt_recall.innerHTML = icons["opt_recall"]
+    $opt_recall.title = "recall: none";
+  } else if (recall == 1) {
+    $opt_recall.innerHTML = icons["opt_recall_1"]
+    $opt_recall.title = "recall: recap of this chat";
+  } else if (recall == 2) {
+    $opt_recall.innerHTML = icons["opt_recall_2"]
+    $opt_recall.title = "recall: recap of this chat, and recent chats";
+  } else if (recall == 3) {
+    $opt_recall.innerHTML = icons["opt_recall_3"]
+    $opt_recall.title = "recall: recap of this chat, recent chats, and relevant older chats";
+  }
+}
+
+async function opt_memorize(ev) {
+  const memorize = active_toggle("opt_memorize")
+  await set_options({
+    room: room,
+    options: {
+      agents: {
+        all: {
+          memorize: Boolean(memorize),
         }
       }
     }
@@ -4137,6 +4206,8 @@ export async function init() {
   $on($id("opt_temp"), "change", opt_temp);
   $on($id("opt_mission"), "change", opt_mission);
   $on($id("opt_name"), "change", opt_name);
+  $on($id("opt_recall"), "click", opt_recall);
+  $on($id("opt_memorize"), "click", opt_memorize);
   $on($id("opt_cancel"), "click", () => set_controls());
 
   $on($id("nav_cancel"), "click", () => set_top_left());

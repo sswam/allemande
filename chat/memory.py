@@ -26,8 +26,8 @@ async def apply_recall(agent, context, c):
     TODO: use async
     """
     recall_file = agent.get("recall_file", agent.name.lower())
-    recall_recent = agent.get("recall_recent", 3)
-    recall_limit = agent.get("recall_limit", 3)
+    recall_recent = agent.get("recall_recent_count", 3) if agent.get("recall_recent") else 0
+    recall_limit = agent.get("recall_limit", 3) if agent.get("recall_relevant") else 0
     recall_pos = agent.get("recall_pos", -1)
     recall_role = agent.get("recall_role", agent.name)
     recall_prefix = agent.get("recall_prefix", None)
@@ -62,6 +62,7 @@ async def apply_recall(agent, context, c):
             logger.info("RAG query: %s", query)
 
             results_ix += rag_db.query_indices(query, k=recall_limit)
+            await asyncio.sleep(0)
 
         logger.debug("apply_recall 1: n, results_ix: %s, %r", n, results_ix)
 
@@ -245,13 +246,13 @@ async def build_recap_file(agent, c, recap_text, start, end):
         if name not in config["agents"]:
             config["agents"][name] = {}
         config["agents"][name]["context"] = 1000
+        config["agents"][name]["system_bottom_pos"] = 1200
         config["agents"][name]["lines"] = summary_lines
         config["agents"][name]["stop_regexs"] = summary_stop_regexs
         config["agents"][name]["forward"] = False
-        config["agents"][name]["summary"] = False
-        config["agents"][name]["recap"] = False
-        config["agents"][name]["recall"] = False
-        config["agents"][name]["system_bottom_pos"] = 1200
+        config["agents"][name]["memory"] = False
+
+        # TODO this won't see room missions yet
 
         responses, _temp_dir = await ally_chat_cli.ally_chat_cli_async(summary_role, agent.name, query, contexts, keep=True, options=config, rooms_dir=rooms_dir)
         if not responses:
@@ -264,7 +265,7 @@ async def build_recap_file(agent, c, recap_text, start, end):
         # filter out summary_stop_regexs, needed for remote models if prompted to use it
         if summary_stop_regexs:
             lines = content.split('\n')
-            lines = [line for line in lines if not any(re.search(pattern, line) for pattern in summary_stop_regexs)]
+            lines = [line for line in lines if not any(re.match(pattern, line.strip()) for pattern in summary_stop_regexs)]
             content = '\n'.join(lines).strip()
 
         if user != name:
