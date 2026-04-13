@@ -169,9 +169,6 @@ async def local_agent(c, agent, _query) -> str:
     # Note: the invitation should not end with a space, or the model might use lots of emojis!
     name = agent.name
 
-    # Allow to override agent settings in the config
-    agent = agent.apply_config(c.config)
-
     logger.debug("Running local agent %r", agent)
 
     # invitation = c.args.delim + name + ":"

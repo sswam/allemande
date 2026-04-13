@@ -61,9 +61,6 @@ async def remote_agent(c, agent, _query, visual_templates_local=None) -> str:
 
     name = agent.name
 
-    # Allow to override agent settings in the config
-    agent = agent.apply_config(c.config)
-
     logger.debug("Running remote agent %r", agent)
 
     n_context = agent.get("context", AGENT_CONTEXT_DEFAULT)

@@ -332,12 +332,14 @@ async def run_each_bot(c, bots):
     for bot in bots:
         agent = c.agents.get(bot)
 
+        # Allow to override agent settings in the room config
+        agent = agent.apply_config(c.config)
+
         if not should_process_bot(agent):
             continue
 
         query, tool_call_ix = find_matching_tool_call_query(agent, tool_calls, tool_call_ix)
 
-        agent = c.agents.get(bot)
         response = await generate_agent_response(c, agent, query=query)
 
         if response is None:
