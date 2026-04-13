@@ -300,6 +300,10 @@ class Agent:
         if no_over:
             data["over"] = []
 
+        # XXX temporary hack, need to rework images
+        if reference.get("memory") and not self.get("memory"):
+            data["base"].append("Memory")
+
         # hack to keep prompts from reference agent
         # can't fully evaluate because will bring in the ShowMI overlay too
         if keep_prompts:
