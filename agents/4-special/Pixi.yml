@@ -1,4 +1,5 @@
 base: SmallAI
+memory: false
 over: []
 macro_fields: []
 lines_force: 0

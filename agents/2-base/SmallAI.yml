@@ -2,3 +2,8 @@ base:
   - Char
   - EllyM
   - SmallAISettings
+  - Memory
+recap_type: full
+recall_recent_count: 1
+recall_limit: 1  # per query
+recall_context: 1  # do searches based on the last message only

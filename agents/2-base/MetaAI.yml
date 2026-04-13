@@ -4,9 +4,6 @@ over:
   - Period
 poke_if:
   - "```"
-# base: MediumAI
-# type: google
-# model: gemini-2.5-flash
 forward: true
 forward_allow: null
 forward_deny:
