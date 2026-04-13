@@ -91,7 +91,7 @@ const VIEW_OPTIONS_DEFAULT = {
   highlight_theme_light: "a11y-light",
   highlight_theme_dark: "a11y-dark",
   fullscreen: 0,
-  advanced: 0,
+  advanced: 1,
   audio_stt: 0,
   audio_tts: 0,
   audio_vad: 0,
@@ -2559,6 +2559,8 @@ function set_view_options(new_view_options) {
 }
 
 async function view_options_apply() {
+  view_options.advanced = 1;  // only this mode for now
+
   // const type = await get_file_type(room);
   simple = view_options.advanced < 0;
   // if (view_options.advanced < 1) {
