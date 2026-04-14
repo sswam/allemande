@@ -1082,7 +1082,7 @@ async function set_view_options(new_view_options) {
     cl.toggle("alt", view_options.alt == 1);
     cl.toggle("code_source", view_options.source >= 1);
     cl.toggle("script_source", view_options.source >= 2);
-    cl.toggle("rendered_source", view_options.source >= 3);
+    cl.toggle("extra_source", view_options.source >= 2);
     cl.toggle("canvas", view_options.canvas >= 1);
     cl.toggle("messages", view_options.canvas <= 1);
     cl.toggle("clean", view_options.clean == 1);
@@ -1135,6 +1135,7 @@ async function set_view_options(new_view_options) {
 
   if (file_type === "dir") {
     set_dir_sort(view_options.dir_sort);
+    cl.toggle("extra_source", view_options.source >= 2);
   }
 
   // if (filter !== view_options.filter) {

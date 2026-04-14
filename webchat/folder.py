@@ -31,7 +31,7 @@ mimetypes.init()
 __version__ = "0.3.2"
 
 # File categorization
-SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md", "base"]
+SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md", "base", "r", "s"]
 MEDIA_FILE_EXTS = ["webm", "jpg"]
 
 MIME_TYPE_ICONS = {
@@ -97,6 +97,8 @@ MIME_TYPE_ICONS = {
     "text/x-allychat": "🗨️",  # a speech bubble
     "text/x-allychat-mission": "📜",  # a scroll
     "text/x-allychat-base": "📜",  # a scroll also, was: "🗋",  # a blank page
+    "text/x-allychat-recap": "📜",  # a scroll
+    "text/x-allychat-summary": "📜",  # a scroll
     "text/yaml": "⚙️",  # a gear
     "text/x-allychat-agent": "🧑",
     "text/x-allychat-multiple": "💬",  # multiple pages for numbered files
@@ -107,7 +109,11 @@ SPECIAL_TYPES = {
     "m": "text/x-allychat-mission",
     "base": "text/x-allychat-base",
     "yml": "text/yaml",
+    "r": "text/x-allychat-recap",
+    "s": "text/x-allychat-summary",
 }
+
+ADVANCED_TYPES = { "base", "r", "s" }
 
 
 @dataclasses.dataclass
@@ -220,6 +226,7 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
             continue
 
         record: dict[str, Any] = {
+            "ext": ext,
             "mime_type": mime_type,
             "icon": icon,
             "mtime": mtime,
@@ -287,6 +294,9 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
         if not ally_room.check_access(info.user, pathname + item.name + dir_suffix).value & Access.READ.value:
             continue
 
+        in_agents = pathname.startswith("agents/") or "/agents/" in pathname
+        record["advanced"] = ext in ADVANCED_TYPES or (not in_agents and ext == "yml")
+
         listing.append(record)
 
     return sorted(listing, key=lambda x: (x["type_sort"], natsort_key(x["name"])))
@@ -315,8 +325,11 @@ def get_dir_listing_html(
     # Generate HTML for directory listing
     html.append('<ul class="directory-listing">')
     for item in listing:
+        classes = ""
+        if item["advanced"]:
+            classes = ' extra_source'
         html.append(f'''
-            <li class="item-{item['type']}" data-type-sort="{item['type_sort']}" data-mtime="{item['mtime']}">
+            <li class="item-{item['type']}{classes}" data-type-sort="{item['type_sort']}" data-mtime="{item['mtime']}">
                 <a href="{item['link']}">
                     <span class="icon" title="{item['mime_type']}">{item['icon']}</span>
                     <span class="name">{item['name']}</span>

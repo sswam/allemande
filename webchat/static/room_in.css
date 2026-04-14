@@ -52,18 +52,18 @@ body.code_source:not(.script_source) .content :has(+ script:not(.hide, [src]))::
 	margin-left: var(--label-gap);
 }
 
-body.rendered_source .content script:not(.hide, [src])::before {
+body.extra_source .content script:not(.hide, [src])::before {
 	content: "<script>";
 	display: block;
 	font-weight: normal;
 	margin-left: calc(-2 * var(--font-size-code));
 }
 
-body.rendered_source .content script:not(.hide, [src]) {
+body.extra_source .content script:not(.hide, [src]) {
 	margin-left: calc(2 * var(--font-size-code));
 }
 
-body.rendered_source .content script:not(.hide, [src])::after {
+body.extra_source .content script:not(.hide, [src])::after {
 	content: "</script>";
 	display: block;
 	font-weight: normal;
@@ -828,7 +828,7 @@ body:not(.images):not(.alt) .image {
 	display: none;
 }
 
-body:not(.rendered_source) :is(.language-latex, .language-dot, .language-mermaid) {
+body:not(.extra_source) :is(.language-latex, .language-dot, .language-mermaid, .extra_source) {
 	display: none;
 }
 

@@ -1058,7 +1058,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-image"></i> | `Alt+I` | Images | Cycle images display: normal, blur, hidden |
 | <i class="bi-alphabet"></i> | `Alt+A` | Alt | Toggle showing alt captions |
 | <i class="bi-arrows-angle-expand"></i> <i class="bi-arrows-angle-contract"></i> |  | Image Size | Change image size |
-| <i class="bi-braces"></i> |  | Code | Cycle code display: clean, basics, javascript/math/diagram source |
+| <i class="bi-braces"></i> |  | Code | Cycle code display: clean, basics, javascript/math/diagram source and system files |
 | <i class="bi-asterisk"></i> |  | Color | Highlight code |
 | <i class="bi-layout-three-columns"></i> |  | Columns | View chat in columns |
 | <i class="bi-arrows-collapse-vertical"></i> |  | Compact | Compact view |

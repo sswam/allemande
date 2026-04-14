@@ -116,4 +116,6 @@ export const icons = {
   opt_recall_2: '<i class="bi bi-lightbulb-fill i20"></i>',
   opt_recall_3: '<i class="bi bi-sun-fill i20"></i>',
   opt_memorize: '<i class="bi bi-save i20"></i>',
+
+  send_for_image: '<i class="bi bi-image i20"></i>',
 };

@@ -407,6 +407,16 @@ async function send(ev) {
   $content.placeholder = "";
 }
 
+async function send_for_image(ev) {
+  if (ev)
+    ev.preventDefault();
+  const prompt = "@+image";
+  if (ev && ev.altKey || $content.value == "") {
+    return await send_text("-@+image");
+  }
+  return await send_text("@+image " + $content.value);
+}
+
 async function send_text(text) {
   const formData = new FormData();
   formData.append("room", $room.value);
@@ -2240,7 +2250,7 @@ function auto_play_back_off() {
 
 const EDITABLE_EXTENSIONS = [
   // plain text
-  "bb", "m", "base", "txt", "md", "markdown",
+  "bb", "m", "base", "txt", "md", "markdown", "r", "s",
   // web files
   "html", "htm", "css",
   // textual data
@@ -2799,7 +2809,7 @@ function view_alt(ev) {
 function view_source(ev) {
   const delta = ev.shiftKey || ev.ctrlKey ? -1 : 1;
   if (view_options.advanced)
-    view_options.source = (view_options.source + delta + 4) % 4;
+    view_options.source = (view_options.source + delta + 3) % 3;
   else
     view_options.source = view_options.source ? 0 : 2;
   view_options_apply();
@@ -4136,6 +4146,7 @@ export async function init() {
   $on($edit, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.edit));
 
   $on($id("send"), "click", send);
+  $on($id("send_for_image"), "click", send_for_image);
 
   $on($id("add"), "click", () => set_controls("input_add"));
   $on($id("mod"), "click", () => set_controls("input_mod"));

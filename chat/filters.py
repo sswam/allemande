@@ -99,10 +99,14 @@ def filter_in_think_brackets(response: str, place: int) -> str:
     return response
 
 
-def filter_in_remove_at_from_mentions(response: str, place: int) -> str:
-    """Replace e.g. @Ally with Ally"""
-    response2 = re.sub(r"(\s)@(\w)", r"\1\2", response)
-    return response2
+def filter_in_clean_up_mentions(response: str, place: int) -> str:
+    """
+    1. Replace e.g. @Ally with Ally
+    2. Strip leading @+over or @^base from line
+    """
+    response = re.sub(r"(\s)@(\w)", r"\1\2", response)
+    response = re.sub(r"^@[+^]\w+\s", "", response)
+    return response
 
 
 def filter_out_think_brackets(response: str) -> str:
@@ -601,7 +605,7 @@ def apply_user_filters_out(user: str, content: str) -> str:
 filters_in = {
     "think_add_example": filter_in_think_add_example,
     "think_brackets": filter_in_think_brackets,
-    "remove_at_from_mentions": filter_in_remove_at_from_mentions,
+    "clean_up_mentions": filter_in_clean_up_mentions,
 }
 
 

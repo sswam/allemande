@@ -4,7 +4,7 @@ temp: 0.8
 hacky_anti_rep: true
 filter_in:
   - think_brackets
-  - remove_at_from_mentions
+  - clean_up_mentions
 filter_out:
   - think_brackets
   - remove_indent

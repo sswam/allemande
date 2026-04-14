@@ -490,6 +490,9 @@ def try_split_think_tag_line(line: str) -> list[str]:
 async def preprocess(content: str, bb_file: str, user: str | None, convert_think: bool=True) -> tuple[str, bool]:
     """Preprocess chat message content, for markdown-katex, and other fixes"""
 
+    # Strip leading @+over or @^base from line
+    content = re.sub(r"^(@[+^]\w+\s)", r'<span class="extra_source">\1</span>', content)
+
     # replace $foo$ with $`foo`$
     # replace $$\n...\n$$ with ```latex\n...\n```
 
