@@ -333,7 +333,8 @@ async def run_each_bot(c, bots):
         agent = c.agents.get(bot)
 
         # Allow to override agent settings in the room config
-        agent = agent.apply_config(c.config)
+        if agent:
+            agent = agent.apply_config(c.config)
 
         if not should_process_bot(agent):
             continue
