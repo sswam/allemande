@@ -157,9 +157,9 @@ You can make more space for text entry and the bottom-right buttons by moving th
 
 Click code to copy it. You can paste into the input or elsewhere.
 
-Poke an image gen prompt several times to create multiple images. You can do similar with other agents too, e.g. with Jessi to make several jokes.
+Poke an image gen prompt several times to create multiple images. You can do similar with other agents too.
 
-On mobile or in narrow windows, some UI elements may scroll horizontally. Swipe on mobile or use Shift + mousewheel on a computer.
+On mobile or in narrow windows, you might need to scroll some menus horizontally. Swipe on mobile or use Shift + mousewheel on a computer.
 
 ## Basic Markdown
 
