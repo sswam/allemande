@@ -224,6 +224,7 @@ Required:
 1. Character's name
 
 Optional (use "." for default, or "-" for none):
+
 2. Clothing
 3. Emotion/Facial expression
 4. Age (or description of age)
@@ -292,7 +293,7 @@ All of the memory options are turned on by default, however memory must also be 
 
 Note that our memory systems are currently based on summaries and imperfect recall systems, so they will not be comprehensive or fully detailed. At present, memory in Ally Chat is better suited to chat and role-play rather than serious work. Characters certainly won't remember long stretches of text from previous chats verbatim.
 
-We don't yet have features to erase or edit a character's memories. If you want to do that, please contact the developer.
+We don't yet have features to erase or edit a character's memories. If you want to do that, please contact Sam.
 
 ## How to use Tool Agents
 
@@ -394,12 +395,18 @@ digraph Google {
     node [shape=box, style=filled, fillcolor="#C8C8FF", fontname="Helvetica"]
 
     "Google" [label=<<b>Google</b>>]
+    "Gemma" [label=<<b>Gemma</b><br/><font point-size="10">Gemma 3</font><br/><font point-size="8">128K context 128K output</font><br/><font point-size="8">Open Source</font>>]
+    "Gema" [label=<<b>Gema</b><br/><font point-size="10">Gemma 4 26B A4B</font><br/><font point-size="8">256K context 256K output</font><br/><font point-size="8">Mixture of Experts</font>>]
+    "Gem" [label=<<b>Gem</b><br/><font point-size="10">Gemma 4 31B</font><br/><font point-size="8">256K context 256K output</font><br/><font point-size="8">Strongest Gemma</font>>]
     "Lite" [label=<<b>Lite</b><br/><font point-size="10">Gemini 2.5 Flash Lite</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, economical</font>>]
     "Flasho" [label=<<b>Flasho</b><br/><font point-size="10">Gemini 2.0 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast, less censored</font>>]
     "Flashi" [label=<<b>Flashi</b><br/><font point-size="10">Gemini 2.5 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Fast and very capable</font>>]
     "Gemmi" [label=<<b>Gemmi</b><br/><font point-size="10">Gemini 2.5 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Very strong and capable</font>>]
     "Gemi" [label=<<b>Gemi</b><br/><font point-size="10">Gemini 3 Pro</font><br/><font point-size="8">1M context 64K output</font><br/><font point-size="8">Most strong and capable</font>>]
 
+    "Google" -> "Gemma"
+    "Google" -> "Gema"
+    "Google" -> "Gem"
     "Google" -> "Lite"
     "Google" -> "Flasho"
     "Google" -> "Flashi"
@@ -431,6 +438,7 @@ digraph Perplexity {
 
 ### xAI Models
 
+```dot
 digraph xAI {
   graph [bgcolor=transparent]
   edge [color="#CCCCCC"]
@@ -457,6 +465,7 @@ digraph xAI {
   "xAI" -> "Gok"
   "xAI" -> "Groc"
 }
+```
 
 ### DeepSeek Models
 
@@ -520,8 +529,10 @@ digraph MoonshotAI {
 
     "MoonshotAI" [label=<<b>MoonshotAI</b>>]
     "Kimi" [label=<<b>Kimi</b><br/><font point-size="10">Kimi K2 0905</font><br/><font point-size="8">262K context</font><br/><font point-size="8">General, reasoning</font>>]
+    "Kimmi" [label=<<b>Kimmi</b><br/><font point-size="10">Kimi K2.5</font><br/><font point-size="8">262K context</font><br/><font point-size="8">Strongest Kimi</font>>]
 
     "MoonshotAI" -> "Kimi"
+    "MoonshotAI" -> "Kimmi"
 }
 ```
 
@@ -1047,7 +1058,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-image"></i> | `Alt+I` | Images | Cycle images display: normal, blur, hidden |
 | <i class="bi-alphabet"></i> | `Alt+A` | Alt | Toggle showing alt captions |
 | <i class="bi-arrows-angle-expand"></i> <i class="bi-arrows-angle-contract"></i> |  | Image Size | Change image size |
-| <i class="bi-braces"></i> |  | Source | View source (clean, basics, javascript, math/diagram source) |
+| <i class="bi-braces"></i> |  | Code | Cycle code display: clean, basics, javascript/math/diagram source |
 | <i class="bi-asterisk"></i> |  | Color | Highlight code |
 | <i class="bi-layout-three-columns"></i> |  | Columns | View chat in columns |
 | <i class="bi-arrows-collapse-vertical"></i> |  | Compact | Compact view |
