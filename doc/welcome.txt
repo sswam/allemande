@@ -3,7 +3,7 @@ Our subreddits: r/AllyChat and r/AllyChatX (NSFW)
 
 I'm Sam, the developer, from Melbourne, Australia.
 
-* To set up your account, what's your first name (recommended) or preferred screen name, and how old are you?
+* To set up your account, what's your first name, and how old are you?
 
 If you like, you can also answer these questions, but it's not required:
 
@@ -13,3 +13,4 @@ If you like, you can also answer these questions, but it's not required:
 4. Do you prefer to chat in another language?
 5. Your biggest annoyance with other AI apps?
 6. Your dream feature with AI chat?
+7. I recommend you use your real first name as a screen name, for immersion (and it's likely less identifying). But you can choose a different screen name if you like. It should be short, a single word, no numbers or punctuation, and preferably sound like a real name.
