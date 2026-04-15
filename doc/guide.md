@@ -305,9 +305,9 @@ This asks the shell agent to run the fortune program, and give you a "fortune co
 
 ## AI Models
 
-### Overview of AI Models
+### Meta AI Models
 
-```dot
+```dot-
 digraph Meta {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -315,20 +315,14 @@ digraph Meta {
 
     "Meta" [label=<<b>Meta</b>>]
     "Elly" [label=<<b>Elly</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Fast base model</font>>]
-    "Ally" [label=<<b>Ally</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
-    "Barbie" [label=<<b>Barbie</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Playful</font>>]
-    "Callam" [label=<<b>Callam ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Humorous</font>>]
+    "Ally" [label=<<b>Ally ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
     "Ellyn" [label=<<b>Ellyn ...</b><br/><font point-size="10">Llama 3.3 70B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Strong base model</font>>]
-    "Allie" [label=<<b>Allie ...</b><br/><font point-size="10">Llama 3.3 70B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Creative, strong</font>>]
     "Skout" [label=<<b>Skout</b><br/><font point-size="10">Llama 4 Scout</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Fast new open model</font>>]
     "Mavi" [label=<<b>Mavi</b><br/><font point-size="10">Llama 4 Maverick</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Powerful new open model</font>>]
 
     "Meta" -> "Elly"
     "Meta" -> "Ally"
-    "Meta" -> "Barbie"
-    "Meta" -> "Callam"
     "Meta" -> "Ellyn"
-    "Meta" -> "Allie"
     "Meta" -> "Skout"
     "Meta" -> "Mavi"
 }
@@ -336,7 +330,7 @@ digraph Meta {
 
 ### OpenAI Models
 
-```dot
+```dot-
 digraph OpenAI {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -369,7 +363,7 @@ digraph OpenAI {
 
 ### Anthropic Models
 
-```dot
+```dot-
 digraph Anthropic {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -388,7 +382,7 @@ digraph Anthropic {
 
 ### Google Models
 
-```dot
+```dot-
 digraph Google {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -417,7 +411,7 @@ digraph Google {
 
 ### Perplexity Models
 
-```dot
+```dot-
 digraph Perplexity {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -438,7 +432,7 @@ digraph Perplexity {
 
 ### xAI Models
 
-```dot
+```dot-
 digraph xAI {
   graph [bgcolor=transparent]
   edge [color="#CCCCCC"]
@@ -469,7 +463,7 @@ digraph xAI {
 
 ### DeepSeek Models
 
-```dot
+```dot-
 digraph DeepSeek {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -488,7 +482,7 @@ digraph DeepSeek {
 
 ### Alibaba Models
 
-```dot
+```dot-
 digraph Alibaba {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -503,7 +497,7 @@ digraph Alibaba {
 
 ### Mistral Models
 
-```dot
+```dot-
 digraph Mistral {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -521,7 +515,7 @@ digraph Mistral {
 
 ### MoonshotAI Models
 
-```dot
+```dot-
 digraph MoonshotAI {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -538,7 +532,7 @@ digraph MoonshotAI {
 
 ### Z.AI Models
 
-```dot
+```dot-
 digraph ZAI {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -553,7 +547,7 @@ digraph ZAI {
 
 ### Stable Diffusion Art Models
 
-```dot
+```dot-
 digraph StabilityAI {
     graph [bgcolor=transparent]
     edge [color="#CCCCCC"]
@@ -876,8 +870,8 @@ type: visual
 |---------------|-----------------------|---------|---------|---------------|-----------------|------------------|------------------------------------------------------------------------------------------------------------------|
 | Meta          | Llama 3.1 8B          | Ally*   | 4K      | 4K            | N/A             | N/A              | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
 | Meta          | Llama 3.3 70B         | Ellyn   | 128K    | 2048          | $0.10           | $0.32            | A stronger human-like model, for creativity and engaging conversations.                                          |
-| Meta          | Llama 4 Scout         | Skout   | 512K    | 512K          | N/A             | N/A              | A fast new open model from Meta.                                                                                 |
-| Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | N/A             | N/A              | A powerful new open model from Meta, achieving high performance at low cost.                                     |
+| Meta          | Llama 4 Scout         | Skout   | 512K    | 512K          | $0.08           | $0.30            | A fast new open model from Meta.                                                                                 |
+| Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | $0.15           | $0.60            | A powerful new open model from Meta, achieving high performance at low cost.                                     |
 | Anthropic     | Claude 4.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
 | Anthropic     | Claude 4.6 Sonnet     | Claude  | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                                     |
 | Anthropic     | Claude 4.6 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00           | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
@@ -946,10 +940,10 @@ Ally Chat is more or less uncensored, but some models are censored by their crea
 Claude: Can talk about adult concerns including sexuality, but will not engage with NSFW topics.
 OpenAI and xAI Models: Limited engagement with NSFW topics.
 Gemini, DeepSeek, Mistral: Can engage with any NSFW topic.
-Llama: Can engage with any NSFW topic, practically uncensored but may be reluctant by default.
+Llama 3: Can engage with any NSFW topic, practically uncensored but may be reluctant by default.
 Venice Uncensored: Fully uncensored, or as close as it gets.
 
-If you notice any unexpected censorship, please report it to us, many issues can be fixed by adjusting character prompts.
+If you notice any unexpected censorship, please report it to us. Many issues can be fixed by adjusting character prompts.
 
 We have a wide range of models to choose from, so if one model is too censored for your needs, try another.
 
@@ -962,7 +956,7 @@ Note that the buttons are small and only the icons are visible, not any text. Th
 Many buttons react differently to shift, ctrl, and Alt/Option click; experiment to find out!
 
 | Component | Description |
-|-----------|-------------|
+|---|---|
 | Room Name | Input/display field for current chat room (top center) |
 | Messages View | Secure iframe showing chat messages |
 | Input Area | Message composition textarea (bottom) |
@@ -971,7 +965,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ## Top-Left Controls
 
 | Icon | Shortcut | Name | Description |
-|------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-lock"></i> <i class="bi-unlock"></i> |  | Privacy | Locked for private, unlocked for public; click to go to the main public room or your main private room |
 | <i class="bi-compass"></i> |  | Nav | Navigation menu |
 | <i class="bi-arrow-left-right"></i> | | Pages | Pages menu |
@@ -981,7 +975,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ### Navigation Menu
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-house"></i> |  | Home | Go to your private folder: $user/chat |
 | <i class="bi-people"></i> |  | Ally Chat | Go to main public room: Ally Chat |
 | <i class="bi-explicit"></i> |  | NSFW | Go to main public NSFW room nsfw/nsfw (visible when enabled for the user, unless declined) |
@@ -991,6 +985,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ### Pages Menu
 
 | Icon | Shortcut | Name | Description |
+|---|---|---|---|
 | <i class="bi-skip-start"></i> | `Ctrl+[` | First | Go to first page |
 | <i class="bi-caret-left"></i> | `Ctrl+,` | Prev | Previous page |
 | <i class="bi-caret-right"></i> | `Ctrl+.` | Next | Next page, numbered like chat-0, chat-1 ... |
@@ -1000,14 +995,14 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ### Room Operations Submenu
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-copy"></i> | `Alt+C` | Copy | Copy the room or file |
 | <i class="bi-box-arrow-right"></i> | `Alt+M` | Move | Rename or move the room or file |
 
 ## Top-Right Controls
 
 | Icon | Shortcut | Name | Description |
-|------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-chevron-bar-down"></i> <i class="bi-chevron-bar-up"></i> |  | End / Home | Go to end or start of room |
 | User's Name |  | User \* | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
 | <i class="bi-question-lg"></i> |  | Help | Read the Intro and Guide, and get strong AI help to use the app. |
@@ -1019,7 +1014,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ## Bottom-Right Controls
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-send"></i> | `Ctrl+Enter` | Send | Send message (visible when message entered) |
 | <i class="bi-hand-index-thumb"></i> | `Alt+Enter` | Poke | Prompt AI response (visible when no message) |
 | <i class="bi-plus-lg"></i> |  | Add | Upload files and record media menu |
@@ -1030,7 +1025,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ## Add Menu
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|----------|
+|---|---|---|---|
 | <i class="bi-upload"></i> |  | Upload files | Select files to upload |
 | <i class="bi-camera"></i> \*\* |  | Take a Photo | Opens camera controls |
 | <i class="bi-mic"></i> |  | Record audio | Opens recording controls |
@@ -1042,7 +1037,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ### Recording Controls
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-pause"></i> |  | Time | Shows duration, click to pause/resume |
 | <i class="bi-stop"></i> |  | Stop | End recording and preview |
 |  |  | Preview | Review recording before upload |
@@ -1052,7 +1047,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ## View Settings Menu
 
 | Icon | Shortcut | Setting | Description |
-|---------|----------|-------------|----------|
+|---|---|---|---|
 | <i class="bi-fonts"></i> |  | Font Size | Change font size |
 | <i class="bi-palette"></i> |  | Theme | Change UI theme (many themes) |
 | <i class="bi-image"></i> | `Alt+I` | Images | Cycle images display: normal, blur, hidden |
@@ -1077,7 +1072,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 ## Room Options Menu
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 |  |  | Context | Number of recent messages AI can see (NOT tokens) |
 |  |  | Lines | Limit number of lines of AI output |
 |  |  | Images | Number of recent images AI can see |
@@ -1087,10 +1082,10 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi bi-sun-fill"></i> |  | Recall | Cycle memory recall mode: <i class="bi bi-lightbulb-off"></i> none, <i class="bi bi-lightbulb"></i> recap of this chat, <i class="bi bi-lightbulb-fill"></i> also recent chats, <i class="bi bi-sun-fill"></i> also relevant older chats |
 | <i class="bi bi-save"></i> |  | Memorize | Save memories, when this chat is archived (for some characters) |
 
-## Moderator Tools (Room Owner)
+## Moderator Tools
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-x-lg"></i> | `Alt+Z` | Undo | Remove last message |
 | <i class="bi-arrow-counterclockwise"></i> | `Alt+R` | Retry | Retry last message |
 | <i class="bi-pencil"></i> | `Alt+E` | Edit | Edit the room |
@@ -1101,10 +1096,10 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 
 ## Editor Controls
 
-When editing (room owner only), these controls appear:
+When editing, these controls appear:
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-indent"></i> | `Alt+T` | Indent | Insert a tab or indent the selected text. |
 | <i class="bi-unindent"></i> | `Shift+Alt+T` | Dedent | Remove a tab or dedent the selected text. |
 | <i class="bi-arrow-counterclockwise"></i> |  | Reset | Revert changes. |
@@ -1116,7 +1111,7 @@ When editing (room owner only), these controls appear:
 Clicking on an image in the chat enters image viewing mode.
 
 | Action | Mouse Click | Keyboard Shortcut | Swipe (Mobile) | Description |
-|---------------------|----------------------------------|---------------------------------|-------------------|-------------------------------------------------------------|
+|---|---|---|---|---|
 | Close | Click near the middle | `Q` or `Esc` | N/A | Return to normal chat mode. |
 | Fullscreen | Click near the top-middle | `F` | Swipe Up | Toggle full-screen. |
 | Zoom | Click near the bottom-middle | `M` | Swipe Down | Cycle zoom: `Fit`, `Cover`, `Original Size`. |
@@ -1135,7 +1130,7 @@ Clicking on an image in the chat enters image viewing mode.
 ## Additional Keyboard Shortcuts
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 | <i class="bi-indent"></i> | `Alt+T` | Indent | Insert tab or indent text |
 | <i class="bi-unindent"></i> | `Shift+Alt+T` | Dedent | Dedent text |
 |  | `Alt+Backspace` | Clear Content | Clear message input |
@@ -1147,7 +1142,7 @@ Clicking on an image in the chat enters image viewing mode.
 ## Keyboard Shortcuts in Messages Section
 
 | Icon | Shortcut | Name | Description |
-|---------|----------|------|-------------|
+|---|---|---|---|
 |  | `Alt+F` | Fullscreen | Toggle full-screen mode for the messages section. |
 |  | `Alt+G` | Grab | Toggle grab events. When enabled, keyboard presses will not trigger Ally Chat UI actions, useful for embedded games. |
 

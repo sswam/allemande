@@ -6,8 +6,6 @@ const room = await $import("chat:room");
 
 // TODO where to configure this!!
 const BLOCK = {
-	// "ganja/tasha":1,
-	// "ganja/bradd":1,
 	// "sam/ganja":1,
 }
 
@@ -33,6 +31,13 @@ async function render_math(node) {
     while (rendered.lastChild) {
       appendAfter.after(rendered.lastChild);
     }
+  }
+}
+
+function hide_code_with_language_dash(node) {
+  for (const el of node.querySelectorAll('code[class$="-"]')) {
+    el.setAttribute('class', el.getAttribute('class').slice(0, -1));
+    el.classList.add('hidden');
   }
 }
 
@@ -342,6 +347,10 @@ export async function processMessage(newMessage) {
   }
 
   // console.log(newMessage.outerHTML);
+
+  // apply "hidden" class for class="foo-" (trailing dash)
+  // I'm using this hack to hide graphviz source for model diagrams in the guide
+  hide_code_with_language_dash(newContent);
 
   // render TeX math
   await render_math(newContent);
