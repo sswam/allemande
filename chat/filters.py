@@ -1,5 +1,5 @@
 """
-This module provides filters for processing chat responses and agent installations.
+This module provides filters for processing chat input and output messages, and installing agents.
 """
 
 import random
@@ -19,22 +19,22 @@ __version__ = "0.1.4"
 
 logger = logs.get_logger()
 
-def filter_out_agents_install(response: str, root: str = "") -> str:
-    """Install agents from a response by extracting YAML blocks and saving them to files."""
-    logger.debug("filter_out_agents_install input response:\n\n%s", response)
+def filter_out_agents_install(message: str, root: str = "") -> str:
+    """Install agents from a message by extracting YAML blocks and saving them to files."""
+    logger.debug("filter_out_agents_install input message:\n\n%s", message)
 
     # remove indent and role label
-    dedented_response = re.sub(r"^.*?\t", "", response, flags=re.MULTILINE)
+    dedented_message = re.sub(r"^.*?\t", "", message, flags=re.MULTILINE)
 
     # Extract YAML blocks
     yaml_blocks = regex.findall(
         r"```yaml\n(.*?)```",
-        dedented_response,
+        dedented_message,
         flags=regex.DOTALL | regex.IGNORECASE
     )
 
     all_yaml = "".join(yaml_blocks)
-    logger.debug("Found %d YAML blocks in response: %r", len(yaml_blocks), yaml_blocks)
+    logger.debug("Found %d YAML blocks in message: %r", len(yaml_blocks), yaml_blocks)
 
     # Extract agent files
     yaml_agents = regex.findall(
@@ -81,54 +81,90 @@ def filter_out_agents_install(response: str, root: str = "") -> str:
         except (OSError, IOError) as e:
             logger.error("Failed to write agent file %s: %s", file_path, str(e))
 
-    return response
+    return message
 
 
-def filter_in_think_add_example(response: str, place: int, example: str = "I was thinking... what was I thinking...?") -> str:
-    """Add an example <think> section to the response, if not already present."""
+def filter_in_think_add_example(message: str, place: int, example: str = "I was thinking... what was I thinking...?") -> str:
+    """Add an example <think> section to the message, if not already present."""
     # TODO make sure it's own message, not another agent's message
     # TODO maybe not needed?
-    if place == 1 and "<think>" not in response:
-        response = re.sub("\t", f"\t<think>{example}</think>\n\t", response, count=1)
-    return response
+    if place == 1 and "<think>" not in message:
+        message = re.sub("\t", f"\t<think>{example}</think>\n\t", message, count=1)
+    return message
 
 
-def filter_in_think_brackets(response: str, place: int) -> str:
+def filter_in_think_brackets(message: str, place: int) -> str:
     """Replace <think>thinking sections</think> with [thinking sections]."""
-    response = re.sub(r"<think>(.*?)</think>", lambda thought: f"[{thought.group(1).strip()}]", response, flags=re.DOTALL)
-    return response
+    message = re.sub(r"<think>(.*?)</think>", lambda thought: f"[{thought.group(1).strip()}]", message, flags=re.DOTALL)
+    return message
 
 
-def filter_in_clean_up_mentions(response: str, place: int) -> str:
+def filter_in_clean_up_mentions(message: str, place: int) -> str:
     """
     1. Replace e.g. @Ally with Ally
     2. Strip leading @+over or @^base from line
     """
-    response = re.sub(r"(\s)@(\w)", r"\1\2", response)
-    response = re.sub(r"^@[+^]\w+\s", "", response)
-    return response
+    message = re.sub(r"(\s)@(\w)", r"\1\2", message)
+    message = re.sub(r"^@[+^]\w+\s", "", message)
+    return message
 
 
-def filter_out_think_brackets(response: str) -> str:
+def clean_up_input_message(message: str) -> str:
+    """
+    1. Squash multiple blank lines into a single blank line
+    2. If message content is empty, i.e. message is only Name:\t\s*, remove it
+    3. Strip
+    """
+    message = re.sub(r'\n{3,}', '\n\n', message)
+    message = re.sub(r'^.*?:\t\s*$', '', message)
+    message = message.strip()
+    return message
+
+
+def filter_in_remove_images(message: str, _place: int) -> str:
+        """
+        Remove ![...](...) images, and squash blank lines.
+        """
+        # Remove markdown images: ![alt text](url)
+        message = re.sub(r'!\[([^\]]*)\]\([^\)]*\)', '', message)
+
+        message = clean_up_input_message(message)
+
+        return message
+
+
+def filter_in_remove_code(message: str, _place: int) -> str:
+        """
+        Remove ``` ... ``` code, and squash blank lines.
+        """
+        # Remove fenced code blocks: ```...``` (``` might not be at start of a line)
+        message = re.sub(r'```.*?```', '', message, flags=re.DOTALL)
+
+        message = clean_up_input_message(message)
+
+        return message
+
+
+def filter_out_think_brackets(message: str) -> str:
     """Replace [thinking sections] with <think>thinking sections</think>."""
     # match at start and end of lines only, so we don't match images / links
-    response = re.sub(r"\t\[(.*?)\]$", r"\t<think>\1</think>", response, flags=re.DOTALL|re.MULTILINE)
-    return response
+    message = re.sub(r"\t\[(.*?)\]$", r"\t<think>\1</think>", message, flags=re.DOTALL|re.MULTILINE)
+    return message
 
 
-def filter_out_think_fix(response: str) -> str:
+def filter_out_think_fix(message: str) -> str:
     """Fix nesting and formatting of <think></think> containers.
     Ensures there is always a newline immediately after the closing </think> tag.
     """
-    logger.info("filter_think_fix 1 input: %s", response)
+    logger.info("filter_think_fix 1 input: %s", message)
 
     # Extract all text between first <think> and last </think>
     think_pattern = r'<think>(.*)</think>'
-    match = re.search(think_pattern, response, flags=re.DOTALL)
+    match = re.search(think_pattern, message, flags=re.DOTALL)
 
     if not match:
         logger.info("filter_think_fix 2: no think tags found")
-        return response
+        return message
 
     logger.info("filter_think_fix 2 found think tags: %s", match.group(0)[:100])
 
@@ -142,8 +178,8 @@ def filter_out_think_fix(response: str) -> str:
     logger.info("filter_think_fix 3 after removing nested tags: %s", cleaned_content[:100])
 
     # Get text before and after
-    before = response[:start_pos]
-    after = response[end_pos:]
+    before = message[:start_pos]
+    after = message[end_pos:]
 
     # Split before into lines to analyze the last line
     lines_before = before.split('\n')
@@ -181,28 +217,28 @@ def filter_out_think_fix(response: str) -> str:
     return result
 
 
-def filter_out_actions_reduce(response: str, keep_prob: float = 0.5) -> str:
-    """Reduce the number of *actions* in the response, based on keep_prob (0-1)."""
-    logger.warning("filter_out_actions_reduce: %r %s", keep_prob, response)
-    response2 = re.sub(r"( *)\*\w[^*]*? [^*]*?[^*\s*]\*[.!?]* *",
+def filter_out_actions_reduce(message: str, keep_prob: float = 0.5) -> str:
+    """Reduce the number of *actions* in the message, based on keep_prob (0-1)."""
+    logger.warning("filter_out_actions_reduce: %r %s", keep_prob, message)
+    message2 = re.sub(r"( *)\*\w[^*]*? [^*]*?[^*\s*]\*[.!?]* *",
         lambda action: action.group(0) if random.random() < keep_prob else " ",
-        response, flags=re.DOTALL)
-    logger.warning("  %s", response2)
+        message, flags=re.DOTALL)
+    logger.warning("  %s", message2)
 
     # Strip spaces and reduce blank lines
-    response2 = re.sub(r"^\t +", "\t", response2, flags=re.MULTILINE)
-    response2 = re.sub(r" +$", "", response2, flags=re.MULTILINE)
-    response2 = re.sub(r"\n{3,}", "\n\n", response2)
+    message2 = re.sub(r"^\t +", "\t", message2, flags=re.MULTILINE)
+    message2 = re.sub(r" +$", "", message2, flags=re.MULTILINE)
+    message2 = re.sub(r"\n{3,}", "\n\n", message2)
 
-    if response2 and not re.search(r":\t?$", response2):
-        return response2
-    return response
+    if message2 and not re.search(r":\t?$", message2):
+        return message2
+    return message
 
 
-def filter_out_actions_fix(response: str) -> str:
-    """Attempt to fix *actions* syntax in the response."""
-    logger.warning("filter_out_actions_fix: processing response:\n%s", response)
-    lines = response.split("\n")
+def filter_out_actions_fix(message: str) -> str:
+    """Attempt to fix *actions* syntax in the message."""
+    logger.warning("filter_out_actions_fix: processing message:\n%s", message)
+    lines = message.split("\n")
     for i in range(len(lines)):
         line = lines[i]
 
@@ -241,9 +277,9 @@ def filter_out_actions_fix(response: str) -> str:
 
             lines[i] = prefix + content
 
-    response = "\n".join(lines)
+    message = "\n".join(lines)
 
-    return response
+    return message
 
 
 RE_EMOJIS = re.compile("["
@@ -264,63 +300,63 @@ RE_EMOJIS = re.compile("["
         "]+", flags=re.UNICODE)
 
 
-def filter_out_emojis(response: str, keep_prob: float = 0.0) -> str:
-    """Reduce the number of emojis in the response, based on keep_prob (0-1)."""
+def filter_out_emojis(message: str, keep_prob: float = 0.0) -> str:
+    """Reduce the number of emojis in the message, based on keep_prob (0-1)."""
     if keep_prob == 0.0:
-        return RE_EMOJIS.sub('', response)
+        return RE_EMOJIS.sub('', message)
     if keep_prob == 1.0:
-        return response
-    return RE_EMOJIS.sub(lambda m: m.group(0) if random.random() < keep_prob else '', response)
+        return message
+    return RE_EMOJIS.sub(lambda m: m.group(0) if random.random() < keep_prob else '', message)
 
 
-def filter_out_emdash(response: str, keep_prob: float = 0.0, replacement: str = " - ") -> str:
+def filter_out_emdash(message: str, keep_prob: float = 0.0, replacement: str = " - ") -> str:
     """Replace em-dash characters with a replacement string, based on keep_prob (0-1)."""
     # Handle different types of em-dashes and their Unicode variants
     # includes em-dash, en-dash, and horizontal bar, strips surrounding spaces
     emdash_pattern = r'( *)(?:[-\u2014\u2013\u2015] *?)+( *)'
 
     if keep_prob == 0.0:
-        return re.sub(emdash_pattern, r"\1"+replacement+r"\2", response)
+        return re.sub(emdash_pattern, r"\1"+replacement+r"\2", message)
     if keep_prob == 1.0:
-        return response
-    return re.sub(emdash_pattern, lambda m: m.group(0) if random.random() < keep_prob else m.group(1)+replacement+m.group(2), response)
+        return message
+    return re.sub(emdash_pattern, lambda m: m.group(0) if random.random() < keep_prob else m.group(1)+replacement+m.group(2), message)
 
 
-def filter_out_fix_image_prompts(response: str) -> str:
+def filter_out_fix_image_prompts(message: str) -> str:
     """Fix image prompts generated by ... less formal syntax-oriented agents!"""
     art_model_default = "Coni"
 
-    logger.info("filter_out_fix_image_prompts 1: %s", response)
+    logger.info("filter_out_fix_image_prompts 1: %s", message)
 
     # Strip leading tabs from all lines
-    lines = response.split('\n')
-    response = '\n'.join(line.lstrip('\t') for line in lines)
+    lines = message.split('\n')
+    message = '\n'.join(line.lstrip('\t') for line in lines)
 
     # First pass: collect and fix properly quoted image prompts
-    quoted_prompts = list(regex.finditer(r"```\s*(.*?)```", response, flags=regex.DOTALL))
+    quoted_prompts = list(regex.finditer(r"```\s*(.*?)```", message, flags=regex.DOTALL))
 
     if quoted_prompts:
         logger.info("Found %d quoted image prompt blocks", len(quoted_prompts))
-        response = fix_quoted_prompts(response, quoted_prompts, art_model_default)
+        message = fix_quoted_prompts(message, quoted_prompts, art_model_default)
     else:
         logger.info("No quoted image prompts found, checking for unquoted prompts")
-        response = find_and_fix_unquoted_prompts(response, art_model_default)
+        message = find_and_fix_unquoted_prompts(message, art_model_default)
 
     # Clean up $ArtModel lines outside of prompts
-    response = remove_art_model_lines(response)
+    message = remove_art_model_lines(message)
 
     # Remove chat: prefix from lines
-    response = remove_chat_prefix(response)
+    message = remove_chat_prefix(message)
 
     # Prefix each line other than the first with a leading tab
-    lines = response.split('\n')
+    lines = message.split('\n')
     if len(lines) > 1:
-        response = lines[0] + '\n' + '\n'.join('\t' + line for line in lines[1:])
+        message = lines[0] + '\n' + '\n'.join('\t' + line for line in lines[1:])
 
-    return response
+    return message
 
 
-def fix_quoted_prompts(response: str, quoted_prompts: list, art_model_default: str) -> str:
+def fix_quoted_prompts(message: str, quoted_prompts: list, art_model_default: str) -> str:
     """Fix already-quoted image prompts in place."""
     offset = 0
     for match in quoted_prompts:
@@ -332,19 +368,19 @@ def fix_quoted_prompts(response: str, quoted_prompts: list, art_model_default: s
         logger.info("Fixing quoted prompt: %s...", prompt_content[:50])
         fixed_content = fix_prompt_content(prompt_content, art_model_default)
 
-        # Replace in response accounting for offset changes
+        # Replace in message accounting for offset changes
         start = match.start() + offset
         end = match.end() + offset
         replacement = f"```\n{fixed_content}\n```"
-        response = response[:start] + replacement + response[end:]
+        message = message[:start] + replacement + message[end:]
         offset += len(replacement) - (end - start)
 
-    return response
+    return message
 
 
-def find_and_fix_unquoted_prompts(response: str, art_model_default: str) -> str:
+def find_and_fix_unquoted_prompts(message: str, art_model_default: str) -> str:
     """Find unquoted image prompts and wrap them in code blocks."""
-    lines = response.split('\n')
+    lines = message.split('\n')
     result_lines: list[str] = []
     i = 0
 
@@ -418,9 +454,9 @@ def fix_prompt_content(prompt: str, art_model_default: str) -> str:
     return prompt
 
 
-def remove_art_model_lines(response: str) -> str:
+def remove_art_model_lines(message: str) -> str:
     """Remove lines that begin with $ArtModel outside of code blocks."""
-    lines = response.split('\n')
+    lines = message.split('\n')
     result_lines: list[str] = []
     in_code_block = False
 
@@ -439,9 +475,9 @@ def remove_art_model_lines(response: str) -> str:
     return '\n'.join(result_lines)
 
 
-def remove_chat_prefix(response: str) -> str:
+def remove_chat_prefix(message: str) -> str:
     """Remove chat: prefix from lines."""
-    lines = response.split('\n')
+    lines = message.split('\n')
     result_lines: list[str] = []
 
     for line in lines:
@@ -453,33 +489,33 @@ def remove_chat_prefix(response: str) -> str:
     return '\n'.join(result_lines)
 
 
-def filter_out_fallback(response: str) -> str:
+def filter_out_fallback(message: str) -> str:
     """Try again with a different model if failing"""
     # TODO implement this, needs settings from agent, a bit complex, maybe not
     # suitable as a filter
-    return response
+    return message
 
 
-def filter_out_truncate_repeated_characters(response: str, max_repeat=80) -> str:
+def filter_out_truncate_repeated_characters(message: str, max_repeat=80) -> str:
     """Truncate repeated characters to a maximum"""
     # Handle single character repetitions
-    response = re.sub(rf'(.)\1{{{max_repeat-1},}}', lambda m: m.group(1) * (max_repeat-1), response)
+    message = re.sub(rf'(.)\1{{{max_repeat-1},}}', lambda m: m.group(1) * (max_repeat-1), message)
 
     # Handle two character pattern repetitions (e.g., "ababab...")
-    response = re.sub(rf'(..)\1{{{max_repeat//2-1},}}', lambda m: m.group(1) * (max_repeat//2-1), response)
+    message = re.sub(rf'(..)\1{{{max_repeat//2-1},}}', lambda m: m.group(1) * (max_repeat//2-1), message)
 
     # Handle three character pattern repetitions (e.g., "abcabcabc...")
-    response = re.sub(rf'(...)\1{{{max_repeat//3-1},}}', lambda m: m.group(1) * (max_repeat//3-1), response)
+    message = re.sub(rf'(...)\1{{{max_repeat//3-1},}}', lambda m: m.group(1) * (max_repeat//3-1), message)
 
-    return response
+    return message
 
 
-def filter_out_remove_indent(response: str) -> str:
+def filter_out_remove_indent(message: str) -> str:
     """
-    Remove any indent with tabs in the response.
+    Remove any indent with tabs in the message.
     This method isn't exactly correct, but good enough for the purpose.
     """
-    lines = response.split("\n")
+    lines = message.split("\n")
     for i in range(len(lines)):
         line = lines[i]
 
@@ -498,18 +534,18 @@ def filter_out_remove_indent(response: str) -> str:
 
             lines[i] = prefix + content
 
-    response = "\n".join(lines)
+    message = "\n".join(lines)
 
-    return response
+    return message
 
 
-def filter_out_test_chat_loop(response: str) -> str:
+def filter_out_test_chat_loop(message: str) -> str:
     """
     Replace any @ mention with @Xilu, causes Xilu to always attempt a chat loop.
     This is only to aid debugging, not for actual use!
     """
-    response = re.sub(r"@\w+", "@Xilu", response)
-    return response
+    message = re.sub(r"@\w+", "@Xilu", message)
+    return message
 
 
 def apply_filters_in(agent: ally_agents.Agent, history: list[str]) -> list[str]:
@@ -540,14 +576,16 @@ def apply_filters_in(agent: ally_agents.Agent, history: list[str]) -> list[str]:
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Agent %r: Error in filter_in %r: %s", agent.name, filter_name, str(e))
 
+    history_new = [x for x in history_new if x]
+
     return history_new
 
 
-def apply_filters_out(agent: ally_agents.Agent, response: str) -> str:
-    """Apply output filters to the response."""
+def apply_filters_out(agent: ally_agents.Agent, message: str) -> str:
+    """Apply output filters to the message."""
     filters = agent.get("filter_out")
     if not filters:
-        return response
+        return message
 
     for filter_name in filters:
         if isinstance(filter_name, list):
@@ -562,13 +600,13 @@ def apply_filters_out(agent: ally_agents.Agent, response: str) -> str:
             continue
 
         try:
-            logger.debug("response before filter %r:\n%s", filter_name, response)
-            response = filter_fn(response, *filter_args)  # type: ignore[arg-type]
-            logger.debug("response after filter %r:\n%s", filter_name, response)
+            logger.debug("message before filter %r:\n%s", filter_name, message)
+            message = filter_fn(message, *filter_args)  # type: ignore[arg-type]
+            logger.debug("message after filter %r:\n%s", filter_name, message)
         except Exception as e:  # pylint: disable=broad-except
             logger.exception("Agent %r: Error in filter_out %r: %s", agent.name, filter_name, str(e))
 
-    return response
+    return message
 
 
 def apply_user_filters_out(user: str, content: str) -> str:
@@ -606,6 +644,8 @@ filters_in = {
     "think_add_example": filter_in_think_add_example,
     "think_brackets": filter_in_think_brackets,
     "clean_up_mentions": filter_in_clean_up_mentions,
+    "remove_images": filter_in_remove_images,
+    "remove_code": filter_in_remove_code,
 }
 
 

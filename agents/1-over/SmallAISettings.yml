@@ -5,6 +5,8 @@ hacky_anti_rep: true
 filter_in:
   - think_brackets
   - clean_up_mentions
+  - remove_images
+  - remove_code
 filter_out:
   - think_brackets
   - remove_indent
