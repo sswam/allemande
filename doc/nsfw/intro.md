@@ -146,7 +146,6 @@ Remember: AIs aren't perfect - feel free to retry if a response seems unusual!
 ## Current Limitations and Work in Progress
 
 - It's difficult for new users (WIP)
-- no memory (can do it manually, WIP)
 - no documents / RAG (WIP)
 - no notifications (WIP)
 - no voice chat (WIP)
