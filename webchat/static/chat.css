@@ -77,7 +77,7 @@ body.simple #inputrow {
 	min-height: 5em;
 	max-height: 50dvh;
 }
-#inputrow > .controls {
+#inputrow .controls:not(.large_controls) {
 	flex-basis: fit-content;
 	flex: 0 1 auto;
 	overflow-x: auto;
@@ -86,7 +86,8 @@ body.simple #inputrow {
 	scrollbar-width: none;
 	width: fit-content;
 }
-#inputrow > .controls > *,
+#inputrow .controls > *,
+#inputrow .controls > div > *,
 #top :is(button, a.button) {
 	min-width: 2rem;
 	min-height: 2rem;
@@ -96,7 +97,7 @@ body.simple #inputrow > .controls > * {
 	max-height: 3rem;
 	background: var(--background) !important;
 }
-#inputrow > .controls > * {
+#inputrow .controls > * {
 	flex-grow: 1;
 }
 #inputrow > .controls > video, #inputrow > .controls > img {
@@ -130,6 +131,16 @@ body.simple #resizer {
 	display: flex;
 	flex-flow: column wrap;
 	gap: var(--pad);
+}
+.row_wrap {
+	display: flex;
+	flex-flow: row wrap;
+	gap: var(--pad);
+	align-content: flex-start;
+}
+.row_break { /* XXX remove */
+	width: 100% !important;
+	height: 0 !important;
 }
 
 .col_wrap_ff {
@@ -252,6 +263,7 @@ iframe#messages_iframe.overlay {
 	bottom: 0;
 	border: none;
 	border-radius: 0;
+	z-index: 101;
 }
 
 body.dark .back { background-color: #303060 !important; color: white !important; }
@@ -354,7 +366,7 @@ div.controls > button#send {
 	flex-grow: 2;
 }
 
-#inputrow > .controls > input {
+#inputrow .controls input {
 	width: calc(4rem + var(--pad));
 	min-width: calc(4rem + var(--pad));
 /*	width: calc(2rem);
@@ -744,7 +756,6 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
   }
 }
 
-
 /* usage display */
 
 #view_usage {
@@ -811,3 +822,39 @@ body:not(.intro) :is(#intro, #intro-help-arrow) {
     font-size: 12px;
     flex-shrink: 0;
 }
+
+/* large controls */
+
+body.large_options .input {
+	display: none;
+}
+
+body.large_options #inputrow {
+	min-height: 50%;
+}
+
+#inputrow {
+	position: relative;
+}
+
+div.large_controls {
+	background: var(--background);
+	display: flex;
+	flex-direction: column;
+	width: 100% !important;
+	overflow: auto;
+	padding: var(--pad);
+	border-radius: var(--radius);
+	/* TODO: show scrollbar? */
+}
+div.large_controls > * {
+	flex: 0 0 auto !important;
+}
+div.large_controls > .back {
+	position: absolute;
+	bottom: var(--pad);
+	right: var(--pad);
+	width: 2em;
+}
+
+h2 { color: var(--text); }

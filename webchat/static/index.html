@@ -120,32 +120,21 @@
 				document.getElementById("inputrow").style.flexBasis = input_row_height + "px";
 		</script>
 
-		<textarea id="content" name="content" class="content_input grow" placeholder=" "></textarea>
-		<math-field id="math_input" class="hidden"></math-field>
+		<textarea id="content" name="content" class="input content_input grow" placeholder=" "></textarea>
+		<math-field id="math_input" class="input hidden"></math-field>
 		<div class="controls col_wrap" id="input_main">
 			<button id="send">send</button>
 			<button id="send_for_image" title="get an image" class="dev">get an image</button>
 			<button id="send_for_narrative" title="get narrative" class="dev">get narrative</button>
 			<button id="add" title="add a file or recording">add</button>
 			<button id="add_file_2" title="upload files" class="hidden standard option-simple">file</button>
-			<button id="view" title="view settings" class="standard advanced">view</button>
 			<button id="audio" title="audio settings" class="boffin">audio</button>
-			<button id="opt" title="room options" class="standard advanced">opt</button>
-			<button id="mod" title="owner tools" class="admin standard advanced">mod</button>
 			<button id="mod_archive_2" title="archive this room" class="simple option">archive</button>
 			<button id="view_theme_bw" title="change the theme" class="simple option">theme</button>
 			<button id="view_standard" title="standard mode" class="simple standard advanced option hidden">standard mode</button>
-		</div>
-		<div class="controls col_wrap hidden" id="input_mod">
 			<button id="mod_undo" title="remove the last message: alt+z">undo</button>
 			<button id="mod_retry" title="retry the last message: alt+r">retry</button>
-			<button id="mod_edit" title="edit the room: alt+e">edit</button>
-			<button id="mod_auto" title="auto play" class="hidden dev early">auto</button>
-			<!--<button id="rotate" disabled>rotate</button>-->
-			<button id="mod_archive" title="archive this room: shift+alt+a">archive</button>
-			<button id="mod_clear" title="clear this room: alt+x">clear</button>
-			<button id="mod_clean" title="clean up this room" class="boffin">clean</button>
-			<button id="mod_cancel" class="back">back</button>
+			<button id="opt" title="view and room options" class="standard advanced">opt</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_add">
 			<input id="files" name="files" type="file" class="inputfile hide" tabindex="-1" multiple/>
@@ -179,27 +168,6 @@
 			<button id="edit_save" title="save changes" class="okay">save</button>
 			<button id="edit_close" class="back">close</button>
 		</div>
-		<div class="controls col_wrap hidden" id="input_view">
-			<button id="view_font_size" title="change font size">font size</button>
-			<button id="view_theme" title="change the theme">theme</button>
-			<button id="view_ids" title="view message IDs" class="boffin">IDs</button>
-			<button id="view_images" title="show images: alt+i" class="active">images</button>
-			<button id="view_alt" title="show alt captions: alt+a">alt</button>
-			<button id="view_image_size" title="change image size">image size</button>
-			<button id="view_source" title="view code" class="active">source</button>
-			<button id="view_highlight" title="highlight code" class="active">color</button>
-			<button id="view_details" title="view thoughts and details" class="boffin">details</button>
-			<button id="view_canvas" title="view JavaScript canvas" class="boffin">canvas</button>
-			<button id="view_toc" title="view table of contents" class="boffin">contents</button>
-			<button id="view_clean" title="clean reading view: shift+alt+c" class="boffin">clean</button>
-			<button id="view_columns" title="view chat in columns (scroll to the right)">columns</button>
-			<button id="view_compact" title="compact view">compact</button>
-			<button id="view_history" title="view change history">history</button>
-			<button id="view_fullscreen" title="view fullscreen" class="noios">fullscreen</button>
-			<input id="view_items" placeholder="items" title="number of search results to show" class="boffin">
-			<button id="view_advanced" title="boffin mode / early access" class="hidden dev">boffin</button>
-			<button id="view_cancel" class="back">back</button>
-		</div>
 		<div class="controls col_wrap hidden" id="input_audio">
 			<button id="audio_stt" title="speech to text">stt</button>
 			<button id="audio_tts" title="text to speech">tts</button>
@@ -208,18 +176,53 @@
 			<input id="audio_voice" placeholder="voice" title="text to speech voice">
 			<button id="audio_cancel" class="back">back</button>
 		</div>
-		<div class="controls col_wrap hidden" id="input_opt">
-			<input id="opt_context" placeholder="context" title="number of recent messages AI can see">
-			<input id="opt_lines" placeholder="lines" title="limit number of lines of AI output (local models only)">
-			<input id="opt_images" placeholder="images" title="number of recent images AI can see">
-			<input id="opt_temp" placeholder="temp" title="temperature: like creativity or inebriation; 1 is normal, 0 is deterministic, 1.5 is high">
-			<input id="opt_mission" placeholder="mission" title="mission files to use, - for none">
-			<input id="opt_name" placeholder="name" title="change your name in the chat">
-			<button id="opt_recall" title="recall: none">recall</button>
-			<button id="opt_memorize" title="memorize: save memories, when this chat is archived">memorize</button>
-<!--			<input id="opt_over" placeholder="over" title="overlay files, - for none, Foo to add, -Foo to remove" class="advanced">
-			<input id="opt_base" placeholder="base" title="base files, - for none, Foo to add, -Foo to remove" class="advanced">
-			<input id="opt_model" placeholder="model" title="model override" class="advanced">-->
+		<div class="controls large_controls hidden" id="input_opt">
+			<h2>View Options</h2>
+			<div class="row_wrap">
+				<button id="view_font_size" title="change font size">font size</button>
+				<button id="view_theme" title="change the theme">theme</button>
+				<button id="view_ids" title="view message IDs" class="boffin">IDs</button>
+				<button id="view_images" title="show images: alt+i" class="active">images</button>
+				<button id="view_alt" title="show alt captions: alt+a">alt</button>
+				<button id="view_image_size" title="change image size">image size</button>
+				<button id="view_source" title="view code" class="active">source</button>
+				<button id="view_highlight" title="highlight code" class="active">color</button>
+				<button id="view_details" title="view thoughts and details" class="boffin">details</button>
+				<button id="view_canvas" title="view JavaScript canvas" class="boffin">canvas</button>
+				<button id="view_toc" title="view table of contents" class="boffin">contents</button>
+				<button id="view_clean" title="clean reading view: shift+alt+c" class="boffin">clean</button>
+				<button id="view_columns" title="view chat in columns (scroll to the right)">columns</button>
+				<button id="view_compact" title="compact view">compact</button>
+				<button id="view_history" title="view change history">history</button>
+				<button id="view_fullscreen" title="view fullscreen" class="noios">fullscreen</button>
+				<input id="view_items" placeholder="items" title="number of search results to show" class="boffin">
+				<button id="view_advanced" title="boffin mode / early access" class="hidden dev">boffin</button>
+			</div>
+			<h2>Room Options</h2>
+			<div class="row_wrap">
+				<input id="opt_context" placeholder="context" title="number of recent messages AI can see">
+				<input id="opt_lines" placeholder="lines" title="limit number of lines of AI output">
+				<input id="opt_images" placeholder="images" title="number of recent images AI can see">
+				<input id="opt_temp" placeholder="temp" title="temperature: like creativity or inebriation; 1 is normal, 0 is deterministic, 1.5 is high">
+				<input id="opt_mission" placeholder="mission" title="mission files to use, - for none">
+				<input id="opt_name" placeholder="name" title="change your name in the chat">
+				<input id="opt_artist" placeholder="artist" title="the image button triggers this agent" class="dev">
+				<input id="opt_writer" placeholder="writer" title="the narrative button triggers this agent" class="dev">
+				<button id="opt_recall" title="recall: none">recall</button>
+				<button id="opt_memorize" title="memorize: save memories, when this chat is archived">memorize</button>
+	<!--			<input id="opt_over" placeholder="over" title="overlay files, - for none, Foo to add, -Foo to remove" class="advanced">
+				<input id="opt_base" placeholder="base" title="base files, - for none, Foo to add, -Foo to remove" class="advanced">
+				<input id="opt_model" placeholder="model" title="model override" class="advanced">-->
+			</div>
+			<h2>Room Tools</h2>
+			<div class="row_wrap">
+				<button id="mod_edit" title="edit the room: alt+e">edit</button>
+				<button id="mod_auto" title="auto play" class="hidden dev early">auto</button>
+				<!--<button id="rotate" disabled>rotate</button>-->
+				<button id="mod_archive" title="archive this room: shift+alt+a">archive</button>
+				<button id="mod_clear" title="clear this room: alt+x">clear</button>
+				<button id="mod_clean" title="clean up this room" class="boffin">clean</button>
+			</div>
 			<button id="opt_cancel" class="back">back</button>
 		</div>
 	</div>

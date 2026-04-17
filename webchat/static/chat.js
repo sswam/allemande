@@ -2137,7 +2137,7 @@ export function set_controls(id) {
   if (id === "input_main") {
     setTimeout(() => focus_content_on_pc());
   }
-  if (id === "input_view") {
+  if (id === "input_opt") {
     if (view_theme_original_text) {
       $id("view_theme").textContent = view_theme_original_text;
     } else {
@@ -2148,6 +2148,10 @@ export function set_controls(id) {
   }
   controls = id;
   focus_content_on_pc();
+
+  const large_options = id == "input_opt";
+  const cl = document.body.classList;
+  cl.toggle("large_options", large_options);
 }
 
 // top controls --------------------------------------------------------------
@@ -4149,8 +4153,8 @@ export async function init() {
   $on($id("send_for_image"), "click", send_for_image);
 
   $on($id("add"), "click", () => set_controls("input_add"));
-  $on($id("mod"), "click", () => set_controls("input_mod"));
-  $on($id("view"), "click", () => set_controls("input_view"));
+  // $on($id("mod"), "click", () => set_controls("input_mod"));
+  // $on($id("view"), "click", () => set_controls("input_view"));
   $on($id("opt"), "click", () => set_controls("input_opt"));
   $on($id("audio"), "click", () => set_controls("input_audio"));
 
@@ -4173,7 +4177,7 @@ export async function init() {
   // $on($id('mod_rotate'), 'click', rotate_chat);
   $on($id("mod_auto"), "click", auto_play);
   $on($id("mod_edit"), "click", () => edit());
-  $on($id("mod_cancel"), "click", () => set_controls());
+  // $on($id("mod_cancel"), "click", () => set_controls());
 
   $on($id("add_file"), "click", file_clicked);
   $on($id("add_file_2"), "click", file_clicked);
@@ -4211,7 +4215,7 @@ export async function init() {
   $on($id("view_items"), "keyup", view_items);
   $on($id("view_advanced"), "click", view_advanced);
   $on($id("view_standard"), "click", view_standard);
-  $on($id("view_cancel"), "click", () => set_controls());
+  // $on($id("view_cancel"), "click", () => set_controls());
 
   $on($id("opt_context"), "change", opt_context);
   $on($id("opt_lines"), "change", opt_lines);
