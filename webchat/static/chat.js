@@ -868,6 +868,7 @@ export async function set_room(room_new, no_history) {
 
   $body.classList.toggle("private", is_private);
   $body.classList.toggle("nsfw_zone", room_nsfw);
+  $id("mod_clear").classList.toggle("hidden", !is_private);
 
   // check if we're moving / copying a room or file
   if (active_get("room_ops_move") || active_get("room_ops_copy")) {
