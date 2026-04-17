@@ -177,7 +177,7 @@
 			<button id="audio_cancel" class="back">back</button>
 		</div>
 		<div class="controls large_controls hidden" id="input_opt">
-			<h2>View Options</h2>
+			<h2><span id="view"></span> View Options</h2>
 			<div class="row_wrap">
 				<button id="view_font_size" title="change font size">font size</button>
 				<button id="view_theme" title="change the theme">theme</button>
@@ -198,7 +198,7 @@
 				<input id="view_items" placeholder="items" title="number of search results to show" class="boffin">
 				<button id="view_advanced" title="boffin mode / early access" class="hidden dev">boffin</button>
 			</div>
-			<h2>Room Options</h2>
+			<h2><span id="room_opt"></span> Room Options</h2>
 			<div class="row_wrap">
 				<input id="opt_context" placeholder="context" title="number of recent messages AI can see">
 				<input id="opt_lines" placeholder="lines" title="limit number of lines of AI output">
@@ -214,7 +214,7 @@
 				<input id="opt_base" placeholder="base" title="base files, - for none, Foo to add, -Foo to remove" class="advanced">
 				<input id="opt_model" placeholder="model" title="model override" class="advanced">-->
 			</div>
-			<h2>Room Tools</h2>
+			<h2><span id="mod"></span> Room Tools</h2>
 			<div class="row_wrap">
 				<button id="mod_edit" title="edit the room: alt+e">edit</button>
 				<button id="mod_auto" title="auto play" class="hidden dev early">auto</button>

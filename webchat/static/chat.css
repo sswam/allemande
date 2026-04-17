@@ -854,7 +854,12 @@ div.large_controls > .back {
 	position: absolute;
 	bottom: var(--pad);
 	right: var(--pad);
-	width: 2em;
+	width: 2rem;
 }
 
-h2 { color: var(--text); }
+.large_controls h2 {
+	color: var(--text);
+}
+.large_controls h2:not(:first-child) {
+	margin-top: 1.25rem;
+}
