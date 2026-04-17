@@ -154,14 +154,16 @@ class Room:
             raise FileNotFoundError("Room not found.")
         #        empty = self.path.stat().st_size == 0
 
+        is_private = self.name.startswith(user+"/")  # hacky, should use some permission
+
         # remove .r recap files
         if op in ["archive", "clear"]:
+            if not access & Access.MODERATE.value == Access.MODERATE.value:
+                raise PermissionError(f"You are not allowed to {op} this room: {self.name}, user: {user}")
             for file in self.path.parent.glob(f"{self.name}.*.r"):
                 file.unlink(missing_ok=True)
 
         if op == "archive":
-            if not access & Access.MODERATE.value == Access.MODERATE.value:
-                raise PermissionError(f"You are not allowed to archive this room: {self.name}, user: {user}")
             # run room-archive script with room name
             # TODO in Python
             # options = self.get_options(user)
@@ -179,9 +181,8 @@ class Room:
             # TODO in Python, archive half, keep half. Media?
             # subprocess.run(["room-rotate", self.name], check=True)
         elif op == "clear":
-            # if not access & Access.ADMIN.value == Access.ADMIN.value:
-            if not access & Access.MODERATE.value == Access.MODERATE.value:
-                raise PermissionError(f"You are not allowed to clear this room: {self.name}, user: {user}")
+            if not is_private:
+                raise PermissionError(f"You are not allowed to {op} this room: {self.name}, user: {user}")
             if backup:
                 backup_file(str(self.path))
             # If there is a base file, copy it to the room
