@@ -682,7 +682,7 @@ async def allm_chat(opts: Options, messages):
     vendor = model["vendor"]
 
     if opts.vision and model.get("vision", False):
-        logger.debug("llm_chat: vision, trying to format messages")
+        logger.debug("llm_chat: vision, trying to format messages: %r", messages)
         messages = [llm_vision.format_message_for_vision(message, vendor) for message in messages]
         logger.debug("llm_chat: vision messages: %r", [msg for msg in messages if "image" in msg["content"] or "image_url" in msg["content"]])
     else:

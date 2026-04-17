@@ -200,7 +200,7 @@ def format_image(image_source: str, vendor: str, detail: str = "auto") -> dict[s
     if is_url(image_source):
         if not image_source.startswith(("http://", "https://")):
             raise ValueError("Invalid URL format. URL must start with http:// or https://")
-        if vendor == "openai":
+        if vendor == ["openai", "openrouter", "xai"]:
             return {"type": "image_url", "image_url": {"url": image_source, "detail": detail}}
         if vendor == "anthropic":
             return {"type": "image", "source": {"type": "url", "url": image_source}}
@@ -215,7 +215,7 @@ def format_image(image_source: str, vendor: str, detail: str = "auto") -> dict[s
         # Get JPEG version and encode
         file_path, mime_type = get_image_to_send(image_source, detail)
 
-        if vendor == "openai":
+        if vendor in ["openai", "openrouter", "xai"]:
             base64_image = encode_image_file(str(file_path))
             return {"type": "image_url", "image_url": {"url": f"data:{mime_type};base64,{base64_image}", "detail": detail}}
         if vendor == "anthropic":
@@ -255,7 +255,7 @@ def format_message_for_vision(message: dict, vendor: str, detail: str = "auto") 
         message.pop("images", None)
         return message
 
-    if vendor not in ["openai", "anthropic", "google"]:
+    if vendor not in ["openai", "anthropic", "google", "openrouter", "xai"]:
         raise ValueError(f"Unsupported vendor: {vendor}")
 
     try:

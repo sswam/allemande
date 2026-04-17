@@ -71,7 +71,7 @@ You can read our detailed [Terms of Service](/terms).
 
 ### Work in Progess
 
-- **Image Processing**: We don't have img2img, face transfer, or LoRA training functions yet. The AIs can look at reference images for ideas if vision is enabled.
+- **Image Processing**: We don't have img2img, face transfer, or LoRA training functions yet. The AIs can look at reference images for ideas (see AI Vision below).
 - **Document Processing**: We are working on document conversion, vector embedding indexes and RAG to efficiently handle PDF documents and the like. It's not done yet.
 - **Notifications**: We're working on AI initiative and notifications, it's not done yet.
 - **Voice Chat**: Voice chat is under development, it's going to be good!
@@ -252,7 +252,7 @@ If you tap an image in the chat, it will zoom to fill the window.
 
 ## AI Vision
 
-Characters based on models from OpenAI, Anthropic and Google can see images in the chat. Other characters cannot. They all tend to pretend that they can see them, though! When images have alt text, it helps unsighted users and text-only models.
+Characters based on models from OpenAI, Anthropic and Google can see images in the chat, also Grok and Gok from xAI. Other characters cannot. They may tend to pretend that they can see them, though! When images have alt text, it helps unsighted users and text-only models.
 
 By default, AIs can see one image from the immediately preceding message, such as a single uploaded image. They cannot see other images in the chat history.
 
@@ -440,8 +440,6 @@ digraph xAI {
 
   "xAI" [label=<<b>xAI</b>>]
 
-  "Grokko" [label=<<b>Grokko</b><br/><font point-size="10">Grok 2 Vision</font><br/><font point-size="8">32K context</font><br/><font point-size="8">Vision capable</font>>]
-
   "Rocki" [label=<<b>Rocki</b><br/><font point-size="10">Grok 3</font><br/><font point-size="8">131K context</font><br/><font point-size="8">$3/$15 per M tokens</font>>]
 
   "Gokk" [label=<<b>Gokk</b><br/><font point-size="10">Grok 3 Mini</font><br/><font point-size="8">131K context</font><br/><font point-size="8">$0.30/$0.50 per M tokens</font>>]
@@ -452,7 +450,6 @@ digraph xAI {
 
   "Groc" [label=<<b>Groc</b><br/><font point-size="10">Grok Code Fast</font><br/><font point-size="8">256K context</font><br/><font point-size="8">Code specialized</font>>]
 
-  "xAI" -> "Grokko"
   "xAI" -> "Rocki"
   "xAI" -> "Gokk"
   "xAI" -> "Grok"
@@ -635,7 +632,6 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strong Gemini language model
 - **Gemi** (Gemini 3 Pro, Google): Google's strongest Gemini language model
-- **Grokko** (Grok 2, xAI): xAI's second quirky and intelligent language model
 - **Rocki** (Grok 3, xAI): xAI's third quirky and intelligent language model
 - **Gokk** (Grok 3 Mini, xAI): xAI's third quirky and intelligent language model (mini)
 - **Grok** (Grok 4, xAI): xAI's latest quirky and intelligent language model
@@ -824,7 +820,7 @@ Recommend models for role-play:
 
 These models support NSFW chat, but are not focused on it.
 
-The google, openai, and anthropic models support image vision. Only the google models allow NSFW image vision.
+The Google, OpenAI, and Anthropic models support image vision, also Grok and Gok from xAI. Only the Google and xAI models allow NSFW image vision.
 
 Note: Claude won't approach NSFW, don't use him for that!
 
@@ -897,7 +893,6 @@ type: visual
 | Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K            | $1 [3]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
 | Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K            | $3 [3]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
 | Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K            | $2 [3]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
-| xAI           | Grok 2 (Vision)       | Grokko  | 32K     | 32K           | $2              | $10              | xAI's helpful, truthful and humorous Grok 2 model with vision capabilities (vision not enabled in Ally Chat yet) |
 | xAI           | Grok 3                | Rocki   | 128K    | 128K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
 | xAI           | Grok 3 Mini           | Gokk    | 128K    | 128K          | $0.30           | $0.50            | Fast and efficient mini version of Grok 3.                                                                       |
 | xAI           | Grok 4                | Grok    | 256K    | 256K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                               |

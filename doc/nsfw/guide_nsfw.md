@@ -90,7 +90,7 @@ We can do taller portrait images with e.g. [T2] and wider landscape images with 
 
 ## NSFW AI Vision
 
-The OpenAI, Anthropic and Google models support AI Vision, but only the Google models are okay with NSFW content.
+The Google, OpenAI, and Anthropic models support image vision, also Grok and Gok from xAI. Only the Google and xAI models allow NSFW image vision.
 
 Xilu, Xillu, Illu and Gemu are all based on Google models, and should be able to see NSFW images in the chat, when enabled.
 
