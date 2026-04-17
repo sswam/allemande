@@ -118,4 +118,5 @@ export const icons = {
   opt_memorize: '<i class="bi bi-save i20"></i>',
 
   send_for_image: '<i class="bi bi-image i20"></i>',
+  send_for_narrative: '<i class="bi bi-justify-left i20"></i>',
 };
