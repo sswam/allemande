@@ -384,7 +384,7 @@ class Agent:
             # tz_offset = timezone(timedelta(hours=11))  # or timezone(timedelta(seconds=11*3600))
 
             now = datetime.now(tz)
-            date = now.strftime("%Y-%m-%d")
+            date = now.strftime("%Y-%m-%d %A")
             time = now.strftime("%H:%M:%S")
             tz_str = now.strftime("%Z")
             timestamp = f"{date} {time} {tz_str}"
