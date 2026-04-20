@@ -372,7 +372,7 @@ digraph Anthropic {
     "Anthropic" [label=<<b>Anthropic</b>>]
     "Clia" [label=<<b>Clia</b><br/><font point-size="10">Claude 4.5 Haiku</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Quick, creative</font>>]
     "Claude" [label=<<b>Claude</b><br/><font point-size="10">Claude 4.6 Sonnet</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Programming, writing</font>>]
-    "Claudo" [label=<<b>Claudo</b><br/><font point-size="10">Claude 4.6 Opus</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Strongest reasoning</font>>]
+    "Claudo" [label=<<b>Claudo</b><br/><font point-size="10">Claude 4.7 Opus</font><br/><font point-size="8">200K context</font><br/><font point-size="8">Strongest reasoning</font>>]
 
     "Anthropic" -> "Clia"
     "Anthropic" -> "Claude"
@@ -621,7 +621,7 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Skout** (Meta Llama 4 Scout): A fast new open model from Meta
 - **Mavi** (Meta Llama 4 Maverick): A powerful new open model from Meta
 - **Claude** (Claude 4.6 Sonnet, Anthropic): A strong and reliable model from Anthropic, expert at coding
-- **Claudo** (Claude 4.6 Opus, Anthropic): The most powerful reasoning model from Anthropic [disabled by default due to high cost]
+- **Claudo** (Claude 4.7 Opus, Anthropic): The most powerful reasoning model from Anthropic [disabled by default due to high cost]
 - **Clia** (Claude 4.5 Haiku, Anthropic): Designed for quick, intelligent conversations with a creative edge
 - **Emmy** (GPT-4.1, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
 - **Emmo** (GPT-4o, OpenAI): Known for her intelligence and adaptability, perfect for varied conversations
@@ -870,7 +870,7 @@ type: visual
 | Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | $0.15           | $0.60            | A powerful new open model from Meta, achieving high performance at low cost.                                     |
 | Anthropic     | Claude 4.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
 | Anthropic     | Claude 4.6 Sonnet     | Claude  | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                                     |
-| Anthropic     | Claude 4.6 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00           | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Anthropic     | Claude 4.7 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00           | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
 | Google        | Gemma 3 27B           | Gemma   | 128K    | 128K          | $0.08           | $0.16            | Google's open source Gemma language model, version 3.                                                            |
 | Google        | Gemma 4 26B A4B       | Gema    | 256K    | 256K          | $0.13           | $0.40            | Google's open source Gemma language model, version 4 - mixture of experts.                                       |
 | Google        | Gemma 4 31B           | Gem     | 256K    | 256K          | $0.14           | $0.40            | Google's open source Gemma language model, version 4 - full dense model.                                         |
