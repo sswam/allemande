@@ -1,4 +1,4 @@
-base: MediumAISafe
+base: MediumAI
 over:
   - +
   - Safe

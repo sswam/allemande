@@ -466,7 +466,7 @@ system_top: |-
     models: deepseek-chat, deepseek-reasoner
 
     type: openrouter
-    models: qwq-32b, gemma-free, llama-3.3-70b, mistral-large, llama-4-scout, llama-4-maverick
+    models: qwq-32b, gemma-3-27b, gemma-4-26b, gemma4-31b, llama-3.3-70b, mistral-large, llama-4-scout, llama-4-maverick
 
     type: venice
     models: venice-uncensored, venice-uncensored-role-play

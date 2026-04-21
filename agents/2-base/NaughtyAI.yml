@@ -1,11 +1,11 @@
 base:
   - NaughtyChar
-  - FlashoM
+  - GemaM
 # - Memory
 filter_out:
   - truncate_repeated_characters
   - unsmart
-  - ["actions_reduce", 0.8]
+# - ["actions_reduce", 0.8]
 forward_allow:
   - Xilu
 # - Fallback

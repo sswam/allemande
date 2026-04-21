@@ -1,6 +1,6 @@
 base:
   - AgentChar
-  - FlashoM
+  - GemaM
 # - Memory
 filter_out:
   - truncate_repeated_characters

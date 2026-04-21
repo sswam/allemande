@@ -836,7 +836,7 @@ type: deepseek
 models: deepseek-reasoner, deepseek-chat
 
 type: openrouter
-models: qwq-32b, gemma, gemma4, llama-3.3-70b, mistral-large, llama-4-scout, llama-4-maverick
+models: qwq-32b, gemma-3-27b, gemma-4-26b, gemma4-31b, llama-3.3-70b, mistral-large, llama-4-scout, llama-4-maverick
 
 #### SFW only
 
