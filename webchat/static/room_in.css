@@ -24,6 +24,10 @@ body.simple div.messages {
 }
 */
 
+.message .label {
+	font-weight: bold;
+}
+
 .message > .content {
 	margin: 0 0 0 var(--label-indent);
 /*	width: fit-content;
