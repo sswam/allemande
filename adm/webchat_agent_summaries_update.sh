@@ -27,20 +27,20 @@ webchat-agent-summaries-update() {
 		fi
 
 		prev=""
-		model="flasho"
+		model="gema"
 		if [ -s "$summary_file" ]; then
 			prev="
 Compare the agent file carefully to the previous summary below, and update the summary only if needed (else copy exactly), maintaining the same format:
 
 $(< "$summary_file")
 "
-			model="flashi"
+			model="gema"
 		fi
 
 		printf "%s: " "$name"
-		< "$file" process -m="$model" "Summarize character/agent '$name' in one extremely concise line: include occupation, function, visual traits: gender, hair, eyes, ethnicity.
+		< "$file" process -m="$model" "Summarize character/agent '$name' in one extremely concise line: if known, include occupation, function, visual traits: gender, hair, eyes, ethnicity.
 
-For media characters, include source and year. For AI agents, note type and function. Include full name if different from main name. Don't describe as an AI or LLM unless purely functional with no visual. For AI characters, please mention the LLM model at the start of the description, but only if not llm_llama (the default).
+For media characters, include source and year if known. For AI agents, note type and function. Include full name if different from main name. Don't describe as an AI or LLM unless purely functional with no visual. For AI characters, please mention the LLM model at the start of the description, but only 1. if it's known, i.e. specified, and 2. if it's not llm_llama (the default).
 
 If derived from another agent, note the differences. Format as shown in examples for Zozzi and Anna. Omit missing info.
 
