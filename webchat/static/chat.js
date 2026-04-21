@@ -34,8 +34,8 @@ let room_nsfw = false;
 let access_denied = false;
 let icons;
 
-const narrator = "Nova";
-const illustrator = "Illu";
+// const narrator = "Nova";
+// const illustrator = "Illu";
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 // const isFirefox = navigator.userAgent.includes('Firefox');
@@ -407,14 +407,36 @@ async function send(ev) {
   $content.placeholder = "";
 }
 
-async function send_for_image(ev) {
+async function artist(ev) {
   if (ev)
     ev.preventDefault();
-  const prompt = "@+image";
-  if (ev && ev.altKey || $content.value == "") {
-    return await send_text("-@+image");
-  }
-  return await send_text("@+image " + $content.value);
+  const artist = $id("opt_artist").value;
+  const prompt = "-@" + artist;
+  return await send_text(prompt);
+
+  // could use alt to toggle nsfw or 2ndary artist perhaps
+
+  // const prompt = "@+image";
+  // if (ev && ev.altKey || $content.value == "") {
+  //   return await send_text("-@+image");
+  // }
+  // return await send_text("@+image " + $content.value);
+}
+
+async function writer(ev) {
+  if (ev)
+    ev.preventDefault();
+  const writer = $id("opt_writer").value;
+  const prompt = "-@" + writer;
+  return await send_text(prompt);
+
+  // could use alt to toggle nsfw or 2ndary artist perhaps
+
+  // const prompt = "@+image";
+  // if (ev && ev.altKey || $content.value == "") {
+  //   return await send_text("-@+image");
+  // }
+  // return await send_text("@+image " + $content.value);
 }
 
 async function send_text(text) {
@@ -914,7 +936,8 @@ export async function set_room(room_new, no_history) {
   if (type == "room") {
     try {
       await get_options();  // can throw if access denied
-    } catch {
+    } catch (err) {
+      console.error("get_options failed", err);
       await setup_all_link_buttons();
       return;
     }
@@ -1196,6 +1219,7 @@ async function load_user_files() {
   const name = user.replace(/\b./g, c => c.toUpperCase());
   nag = nag.replace(/\$USER\b/g, encode_entities(name));
   nag = nag.replace(/\$CONTACT\b/g, config.CONTACT);
+  nag = nag.replace(/\$PATREON\b/g, config.PATREON);
   setup_system_message(nag);
 
 //  modules.user_script = userScript; // XXX isn't that automatic?
@@ -1527,8 +1551,8 @@ function setup_main_ui_shortcuts() {
     ['alt+e', () => edit(), 'Edit file', ADMIN],
     ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
 
-    ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
-    ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
+    // ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
+    // ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
     ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
     ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
     ['ctrl+alt+a', (ev) => content_insert(ev, "α"), 'Insert alpha: α'],
@@ -3067,7 +3091,6 @@ function show_theme_name() {
 // options -------------------------------------------------------------------
 
 async function get_options() {
-//  console.log("get_options", room);
   const query = new URLSearchParams({
     room,
   });
@@ -3077,7 +3100,7 @@ async function get_options() {
     throw new Error("GET options request failed");
   }
   const data = await response.json();
-//  console.log("get_options", data);
+  // console.log("get_options", data);
 
   if (data.redirect) {
     set_room(data.redirect, true);
@@ -3090,6 +3113,8 @@ async function get_options() {
   const temp = data?.agents?.all?.temp ?? "";
   const mission = data?.mission === "" ? "-" : data?.mission ?? "";
   const name = data?.users?.[user]?.name ?? "";
+  const artist = data?.artist ?? (room_nsfw ? config.ARTIST_NSFW : config.ARTIST_SFW);
+  const writer = data?.writer ?? (room_nsfw ? config.WRITER_NSFW : config.WRITER_SFW);
 
   // recall button is complex
   const recap = data?.agents?.all?.recap ?? true;
@@ -3110,10 +3135,14 @@ async function get_options() {
   $id("opt_temp").value = temp;
   $id("opt_mission").value = mission;
   $id("opt_name").value = name;
+  $id("opt_artist").value = artist;
+  $id("opt_writer").value = writer;
   active_set("opt_recall", recall);
   active_set("opt_memorize", memorize);
 
   opt_recall_update_button(recall);
+  opt_artist_changed();
+  opt_writer_changed();
 
   return data;
 }
@@ -3219,6 +3248,42 @@ async function opt_name(ev) {
       }
     }
   });
+}
+
+async function opt_artist(ev) {
+  let artist = ev.target.value;
+  const artist_default = room_nsfw ? config.ARTIST_NSFW : config.ARTIST_SFW;
+  artist = artist === artist_default ? null : artist.trim();
+  await set_options({
+    room: room,
+    options: {
+      artist
+    }
+  });
+  opt_artist_changed();
+}
+
+async function opt_writer(ev) {
+  let writer = ev.target.value;
+  const writer_default = room_nsfw ? config.WRITER_NSFW : config.WRITER_SFW;
+  writer = writer === writer_default ? null : writer.trim();
+  await set_options({
+    room: room,
+    options: {
+      writer
+    }
+  });
+  opt_writer_changed();
+}
+
+function opt_artist_changed() {
+  const artist = $id("opt_artist").value;
+  $id("artist").classList.toggle("hidden", artist === "");
+}
+
+function opt_writer_changed() {
+  const writer = $id("opt_writer").value;
+  $id("writer").classList.toggle("hidden", writer === "");
 }
 
 async function opt_recall(ev) {
@@ -4151,7 +4216,8 @@ export async function init() {
   $on($edit, "keydown", (ev) => dispatch_shortcut(ev, shortcuts.edit));
 
   $on($id("send"), "click", send);
-  $on($id("send_for_image"), "click", send_for_image);
+  $on($id("artist"), "click", artist);
+  $on($id("writer"), "click", writer);
 
   $on($id("add"), "click", () => set_controls("input_add"));
   // $on($id("mod"), "click", () => set_controls("input_mod"));
@@ -4224,6 +4290,8 @@ export async function init() {
   $on($id("opt_temp"), "change", opt_temp);
   $on($id("opt_mission"), "change", opt_mission);
   $on($id("opt_name"), "change", opt_name);
+  $on($id("opt_artist"), "change", opt_artist);
+  $on($id("opt_writer"), "change", opt_writer);
   $on($id("opt_recall"), "click", opt_recall);
   $on($id("opt_memorize"), "click", opt_memorize);
   $on($id("opt_cancel"), "click", () => set_controls());

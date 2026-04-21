@@ -47,7 +47,7 @@ export const icons = {
   view_theme: '<i class="bi bi-palette i20"></i>',
   view_theme_bw: '<i class="bi bi-palette i20"></i>',
 //  view_theme_bw: '<i class="bi bi-yin-yang i20"></i>',
-  view_images: '<i class="bi bi-image i20"></i>',
+  view_images: '<i class="bi bi-images i20"></i>',
   view_alt: '<i class="bi bi-alphabet i22"></i>',
   view_source: '<i class="bi bi-braces i20"></i>',
   view_highlight: '<i class="bi bi-asterisk i16"></i>',
@@ -116,6 +116,6 @@ export const icons = {
   opt_recall_3: '<i class="bi bi-sun-fill i20"></i>',
   opt_memorize: '<i class="bi bi-save i20"></i>',
 
-  send_for_image: '<i class="bi bi-image i20"></i>',
-  send_for_narrative: '<i class="bi bi-justify-left i20"></i>',
+  artist: '<i class="bi bi-image i20"></i>',
+  writer: '<i class="bi bi-justify-left i20"></i>',
 };
