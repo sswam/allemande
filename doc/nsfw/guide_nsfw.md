@@ -192,33 +192,30 @@ Please do not use languages models other than those listed here for NSFW content
 
 #### Language Models (NSFW capable)
 
-| Creator    | Model                 | Name   | Context | Max Output | Input Price / M | Output Price / M | Description                                                                                             |
-|------------|-----------------------|--------|---------|------------|-----------------|------------------|---------------------------------------------------------------------------------------------------------|
-| Meta       | Llama 3.1 8B          | Elly*  | 4096    | 4096       | N/A             | N/A              | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
-| Meta       | Llama 3.3 70B         | Ellyn  | 128K    | 2048       | $0.10           | $0.32            | A stronger human-like model, for creativity and engaging conversations.                                 |
-| Google     | Gemma 3 27B           | Gemma  | 128K    | 128K       | $0.08           | $0.16            | Google's open source Gemma language model, version 3.                                                   |
-| Google     | Gemma 4 26B A4B       | Gema   | 256K    | 256K       | $0.13           | $0.40            | Google's open source Gemma language model, version 4 - mixture of experts.                              |
-| Google     | Gemma 4 31B           | Gem    | 256K    | 256K       | $0.14           | $0.40            | Google's open source Gemma language model, version 4 - full dense model.                                |
-| Google     | Gemini 2.5 Flash Lite | Lite   | 1M      | 8K         | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and economy.                                         |
-| Google     | Gemini 2.0 Flash      | Flasho | 1M      | 64K        | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                     |
-| Google     | Gemini 2.5 Flash      | Flashi | 1M      | 8K         | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                       |
-| Google     | Gemini 2.5 Pro        | Gemmi  | 1M      | 64K        | $1.25 [1]       | $10.00 [1]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                       |
-| Google     | Gemini 3 Pro          | Gemi   | 1M      | 64K        | $2 [1]          | $12.00 [1]       | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                    |
-| xAI        | Grok 4                | Grok   | 256K    | 256K       | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                      |
-| xAI        | Grok 4 Fast           | Gok    | 2M      | 2M         | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                             |
-| DeepSeek   | DeepSeek Chat V3      | Dese   | 64K     | 8192       | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                         |
-| DeepSeek   | DeepSeek Chat V3.2    | Desee  | 64K     | 8192       | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                      |
-| Mistral    | Mistral Large 2411    | Misti  | 128K    | 128K       | $2              | $6               | Mistral's strongest language model, very capable and creative.                                          |
-| Mistral+   | Venice Uncensored 1.1 | Veni   | 32K     | 32K        | $0.20           | $0.90            | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                              |
-| Mistral+   | Venice Role Play      | Venni  | 128K    | 128K       | $0.50           | $2               | Venice Role Play Uncensored.                                                                            |
-| MoonshotAI | Kimi K2 0905          | Kimi   | 262K    | 262K       | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |
-| MoonshotAI | Kimi K2.5             | Kimmi  | 262K    | 262K       | $0.45           | $2.50            | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
-| Z.AI       | GLM 4.6               | Glimi  | 205K    | 205K       | $0.50           | $1.90            | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.               |
+| Creator    | Model                 | Name   | Input | Output | Description                                                                                             |
+|------------|-----------------------|--------|-------|--------|---------------------------------------------------------------------------------------------------------|
+| Meta       | Llama 3.1 8B          | Elly   | N/A   | N/A    | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
+| Meta       | Llama 3.3 70B         | Ellyn  | $0.10 | $0.32  | A stronger human-like model, for creativity and engaging conversations.                                 |
+| Google     | Gemma 3 27B           | Gemma  | $0.08 | $0.16  | Google's open source Gemma language model, version 3.                                                   |
+| Google     | Gemma 4 26B A4B       | Gema   | $0.13 | $0.40  | Google's open source Gemma language model, version 4 - mixture of experts.                              |
+| Google     | Gemma 4 31B           | Gem    | $0.14 | $0.40  | Google's open source Gemma language model, version 4 - full dense model.                                |
+| Google     | Gemini 2.5 Flash Lite | Lite   | $0.10 | $0.40  | Google's fastest Gemini model, optimized for speed and economy.                                         |
+| Google     | Gemini 2.0 Flash      | Flasho | $0.10 | $0.40  | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                     |
+| Google     | Gemini 2.5 Flash      | Flashi | $0.30 | $2.50  | Google's fast Gemini model, optimized for speed and very capable.                                       |
+| Google     | Gemini 2.5 Pro        | Gemmi  | $1.25 | $10.00 | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                       |
+| Google     | Gemini 3 Pro          | Gemi   | $2    | $12.00 | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                    |
+| xAI        | Grok 4                | Grok   | $3    | $15    | xAI's helpful, truthful and humorous Grok 4 model.                                                      |
+| xAI        | Grok 4 Fast           | Gok    | $0.20 | $0.50  | Ultra-fast Grok 4 with extended context for standard tasks.                                             |
+| DeepSeek   | DeepSeek Chat V3      | Dese   | $0.20 | $0.80  | DeepSeek's creative and intelligent chat model.                                                         |
+| DeepSeek   | DeepSeek Chat V3.2    | Desee  | $0.27 | $1.10  | DeepSeek's creative and intelligent chat model, with extra smarts.                                      |
+| Mistral    | Mistral Large 2411    | Misti  | $2    | $6     | Mistral's strongest language model, very capable and creative.                                          |
+| Mistral+   | Venice Uncensored 1.1 | Veni   | $0.20 | $0.90  | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                              |
+| Mistral+   | Venice Role Play      | Venni  | $0.50 | $2     | Venice Role Play Uncensored.                                                                            |
+| MoonshotAI | Kimi K2 0905          | Kimi   | $0.39 | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |
+| MoonshotAI | Kimi K2.5             | Kimmi  | $0.45 | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
+| Z.AI       | GLM 4.6               | Glimi  | $0.50 | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.               |
 
-* The Llama 3.1 8B model (Elly) powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
-
-1. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
-   Gemini 3 Pro pricing: input/M: $2 (<=200K) / $4 (>200K), output/M: $12.00 (<=200K) / $18.00 (>200K)
+Input and output costs are measured in US dollars per million tokens.
 
 #### Image Models
 

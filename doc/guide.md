@@ -145,7 +145,7 @@ The folder view only allows to browse to different files and folders. To delete 
 
 To create a room or file, just type its pathname in the room field at the top of the app.
 
-You can clear a chat room using the <i class="bi-trash3"></i> clear button. You should not normally do this in a public chat room!
+You can clear a private chat room using the <i class="bi-trash3"></i> clear button.
 
 Rooms can be organized into numbered "pages". When you finish a chat, press the <i class="bi-archive"></i> archive button. This will move the chat to a numbered page, for example the room `joe/chat` might move to `joe/chat-0` or `joe/chat-1` and so on. You can browse these old pages using the <i class="bi-arrow-left-right"></i> pages menu at the top left.
 
@@ -315,13 +315,11 @@ digraph Meta {
 
     "Meta" [label=<<b>Meta</b>>]
     "Elly" [label=<<b>Elly</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Fast base model</font>>]
-    "Ally" [label=<<b>Ally ...</b><br/><font point-size="10">Llama 3.1 8B</font><br/><font point-size="8">4K context</font><br/><font point-size="8">Creative</font>>]
     "Ellyn" [label=<<b>Ellyn ...</b><br/><font point-size="10">Llama 3.3 70B</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Strong base model</font>>]
     "Skout" [label=<<b>Skout</b><br/><font point-size="10">Llama 4 Scout</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Fast new open model</font>>]
     "Mavi" [label=<<b>Mavi</b><br/><font point-size="10">Llama 4 Maverick</font><br/><font point-size="8">128K context</font><br/><font point-size="8">Powerful new open model</font>>]
 
     "Meta" -> "Elly"
-    "Meta" -> "Ally"
     "Meta" -> "Ellyn"
     "Meta" -> "Skout"
     "Meta" -> "Mavi"
@@ -862,60 +860,54 @@ type: visual
 
 #### Language Models
 
-| Creator       | Model                 | Name    | Context | Max Output    | Input Price / M | Output Price / M | Description                                                                                                      |
-|---------------|-----------------------|---------|---------|---------------|-----------------|------------------|------------------------------------------------------------------------------------------------------------------|
-| Meta          | Llama 3.1 8B          | Ally*   | 4K      | 4K            | N/A             | N/A              | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
-| Meta          | Llama 3.3 70B         | Ellyn   | 128K    | 2048          | $0.10           | $0.32            | A stronger human-like model, for creativity and engaging conversations.                                          |
-| Meta          | Llama 4 Scout         | Skout   | 512K    | 512K          | $0.08           | $0.30            | A fast new open model from Meta.                                                                                 |
-| Meta          | Llama 4 Maverick      | Mavi    | 256K    | 256K          | $0.15           | $0.60            | A powerful new open model from Meta, achieving high performance at low cost.                                     |
-| Anthropic     | Claude 4.5 Haiku      | Clia    | 200K    | 8K            | $0.80           | $4.00            | Anthropic's fast and affordable model for quick, creative conversations.                                         |
-| Anthropic     | Claude 4.6 Sonnet     | Claude  | 200K    | 8K / 128K [1] | $3.00           | $15.00           | Anthropic's most powerful model; supports extended thinking.                                                     |
-| Anthropic     | Claude 4.7 Opus       | Claudo  | 200K    | 8K / 128K [1] | $5.00           | $25.00           | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
-| Google        | Gemma 3 27B           | Gemma   | 128K    | 128K          | $0.08           | $0.16            | Google's open source Gemma language model, version 3.                                                            |
-| Google        | Gemma 4 26B A4B       | Gema    | 256K    | 256K          | $0.13           | $0.40            | Google's open source Gemma language model, version 4 - mixture of experts.                                       |
-| Google        | Gemma 4 31B           | Gem     | 256K    | 256K          | $0.14           | $0.40            | Google's open source Gemma language model, version 4 - full dense model.                                         |
-| Google        | Gemini 2.5 Flash Lite | Lite    | 1M      | 8K            | $0.10           | $0.40            | Google's fastest Gemini model, optimized for speed and economy.                                                  |
-| Google        | Gemini 2.0 Flash      | Flasho  | 1M      | 8K            | $0.10           | $0.40            | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
-| Google        | Gemini 2.5 Flash      | Flashi  | 1M      | 8K            | $0.30           | $2.50            | Google's fast Gemini model, optimized for speed and very capable.                                                |
-| Google        | Gemini 2.5 Pro        | Gemmi   | 1M      | 64K           | $1.25 [2]       | $10.00 [2]       | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
-| Google        | Gemini 3 Pro          | Gemi    | 1M      | 64K           | $2 [2]          | $12.00 [2]       | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                             |
-| OpenAI        | GPT-4.1-mini          | Dav     | 128K    | 15K           | $0.40           | $1.60            | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
-| OpenAI        | GPT-4.1               | Emmy    | 1M      | 32K           | $2              | $8.00            | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
-| OpenAI        | GPT-4o                | Emmo    | 128K    | 16K           | $2.5            | $10.00           | OpenAI's adaptable and versatile model, perfect for varied conversations (similar to 4.1 but more expensive)     |
-| OpenAI        | o4-mini               | Fermi   | 200K    | 100K          | $1.10           | $4.40            | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
-| OpenAI        | o3                    | Grace   | 200K    | 100K          | $10.00          | $40.00           | OpenAI's most powerful reasoning model for advanced applications.                                                |
-| OpenAI        | GPT-5-nano            | Heis    | 400K    | 128K          | $0.05           | $0.40            | OpenAI's fastest, most cost-efficient version of GPT-5.                                                          |
-| OpenAI        | GPT-5-mini            | Heise   | 400K    | 128K          | $0.25           | $2.00            | OpenAI's faster, cost-efficient version of GPT-5 for well-defined tasks.                                         |
-| OpenAI        | GPT-5                 | Heisen  | 400K    | 128K          | $1.25           | $10.00           | OpenAI's best model for coding and agentic tasks across domains.                                                 |
-| OpenAI        | gpt-oss-20b           | Gos     | 128K    | 128K          | $0.04           | $0.15            | OpenAI's medium-sized open-weight model for low latency domains.                                                 |
-| OpenAI        | gpt-oss-120b          | Goss    | 128K    | 128K          | $0.072          | $0.28            | OpenAI's most powerful open-weight model, fits into an H100 GPU.                                                 |
-| Perplexity    | Sonar                 | Sona    | 128K    | 8K            | $1              | $1               | Perplexity's fastest and most affordable Online model with live internet data.                                   |
-| Perplexity    | Sonar Reasoning       | Sonari  | 128K    | 8K            | $1 [3]          | $5               | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
-| Perplexity    | Sonar Pro             | Sagi    | 200K    | 8K            | $3 [3]          | $15              | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
-| Perplexity    | Sonar Reasoning Pro   | Sageri  | 128K    | 8K            | $2 [3]          | $8               | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
-| xAI           | Grok 3                | Rocki   | 128K    | 128K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
-| xAI           | Grok 3 Mini           | Gokk    | 128K    | 128K          | $0.30           | $0.50            | Fast and efficient mini version of Grok 3.                                                                       |
-| xAI           | Grok 4                | Grok    | 256K    | 256K          | $3              | $15              | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
-| xAI           | Grok 4 Fast           | Gok     | 2M      | 2M            | $0.20           | $0.50            | Ultra-fast Grok 4 with extended context for standard tasks.                                                      |
-| xAI           | Grok Code Fast        | Groc    | 256K    | 256K          | $0.20           | $1.50            | Specialized fast model optimized for code generation and analysis.                                               |
-| DeepSeek      | DeepSeek Chat V3      | Dese    | 64K     | 8192          | $0.20           | $0.80            | DeepSeek's creative and intelligent chat model.                                                                  |
-| DeepSeek      | DeepSeek Chat V3.2    | Desee   | 64K     | 8192          | $0.27           | $1.10            | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
-| DeepSeek      | DeepSeek Reasoner R1  | Deseri  | 64K     | 8192          | $0.55           | $2.19            | DeepSeek's strong and creative reasoning model.                                                                  |
-| Alibaba Cloud | QwQ 32B               | Qwen    | 128K    | 128K          | N/A             | N/A              | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
-| Mistral       | Mistral Large 2411    | Misti   | 128K    | 128K          | $2              | $6               | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
-| Mistral+      | Venice Uncensored 1.1 | Veni    | 32K     | 32K           | $0.20           | $0.90            | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                                       |
-| Mistral+      | Venice Role Play      | Venni   | 128K    | 128K          | $0.50           | $2               | Venice Role Play Uncensored.                                                                                     |
-| MoonshotAI    | Kimi K2 0905          | Kimi    | 262K    | 262K          | $0.39           | $1.90            | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
-| MoonshotAI    | Kimi K2.5             | Kimmi   | 262K    | 262K          | $0.45           | $2.50            | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling.          |
-| Z.AI          | GLM 4.6               | Glimi   | 205K    | 205K          | $0.50           | $1.90            | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.                        |
+| Creator       | Model                 | Name    | Input  | Output | Description                                                                                                      |
+|---------------|-----------------------|---------|--------|--------|------------------------------------------------------------------------------------------------------------------|
+| Meta          | Llama 3.1 8B          | Elly    | N/A    | N/A    | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
+| Meta          | Llama 3.3 70B         | Ellyn   | $0.10  | $0.32  | A stronger human-like model, for creativity and engaging conversations.                                          |
+| Meta          | Llama 4 Scout         | Skout   | $0.08  | $0.30  | A fast new open model from Meta.                                                                                 |
+| Meta          | Llama 4 Maverick      | Mavi    | $0.15  | $0.60  | A powerful new open model from Meta, achieving high performance at low cost.                                     |
+| Anthropic     | Claude 4.5 Haiku      | Clia    | $0.80  | $4.00  | Anthropic's fast and affordable model for quick, creative conversations.                                         |
+| Anthropic     | Claude 4.6 Sonnet     | Claude  | $3.00  | $15.00 | Anthropic's most powerful model; supports extended thinking.                                                     |
+| Anthropic     | Claude 4.7 Opus       | Claudo  | $5.00  | $25.00 | Anthropic's most powerful reasoning model; supports extended thinking.                                           |
+| Google        | Gemma 3 27B           | Gemma   | $0.08  | $0.16  | Google's open source Gemma language model, version 3.                                                            |
+| Google        | Gemma 4 26B A4B       | Gema    | $0.13  | $0.40  | Google's open source Gemma language model, version 4 - mixture of experts.                                       |
+| Google        | Gemma 4 31B           | Gem     | $0.14  | $0.40  | Google's open source Gemma language model, version 4 - full dense model.                                         |
+| Google        | Gemini 2.5 Flash Lite | Lite    | $0.10  | $0.40  | Google's fastest Gemini model, optimized for speed and economy.                                                  |
+| Google        | Gemini 2.0 Flash      | Flasho  | $0.10  | $0.40  | Google's fast Gemini model, optimized for speed, hardly censored, and very capable.                              |
+| Google        | Gemini 2.5 Flash      | Flashi  | $0.30  | $2.50  | Google's fast Gemini model, optimized for speed and very capable.                                                |
+| Google        | Gemini 2.5 Pro        | Gemmi   | $1.25  | $10.00 | Google's powerful Gemini 2.5 model optimized for a wide range of reasoning tasks.                                |
+| Google        | Gemini 3 Pro          | Gemi    | $2     | $12.00 | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                             |
+| OpenAI        | GPT-4.1-mini          | Dav     | $0.40  | $1.60  | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
+| OpenAI        | GPT-4.1               | Emmy    | $2     | $8.00  | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
+| OpenAI        | GPT-4o                | Emmo    | $2.5   | $10.00 | OpenAI's adaptable and versatile model, perfect for varied conversations (similar to 4.1 but more expensive)     |
+| OpenAI        | o4-mini               | Fermi   | $1.10  | $4.40  | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
+| OpenAI        | o3                    | Grace   | $10.00 | $40.00 | OpenAI's most powerful reasoning model for advanced applications.                                                |
+| OpenAI        | GPT-5-nano            | Heis    | $0.05  | $0.40  | OpenAI's fastest, most cost-efficient version of GPT-5.                                                          |
+| OpenAI        | GPT-5-mini            | Heise   | $0.25  | $2.00  | OpenAI's faster, cost-efficient version of GPT-5 for well-defined tasks.                                         |
+| OpenAI        | GPT-5                 | Heisen  | $1.25  | $10.00 | OpenAI's best model for coding and agentic tasks across domains.                                                 |
+| OpenAI        | gpt-oss-20b           | Gos     | $0.04  | $0.15  | OpenAI's medium-sized open-weight model for low latency domains.                                                 |
+| OpenAI        | gpt-oss-120b          | Goss    | $0.072 | $0.28  | OpenAI's most powerful open-weight model, fits into an H100 GPU.                                                 |
+| Perplexity    | Sonar                 | Sona    | $1     | $1     | Perplexity's fastest and most affordable Online model with live internet data.                                   |
+| Perplexity    | Sonar Reasoning       | Sonari  | $1     | $5     | Online model with live internet data, focusing on reasoning abilities, search costs are much lower than for Pro. |
+| Perplexity    | Sonar Pro             | Sagi    | $3     | $15    | Online model with live internet data; Perplexity's high-performance option. Includes search costs.               |
+| Perplexity    | Sonar Reasoning Pro   | Sageri  | $2     | $8     | Online model with live internet data, specializing in complex reasoning tasks. $5/1000 search queries.           |
+| xAI           | Grok 3                | Rocki   | $3     | $15    | xAI's helpful, truthful and humorous Grok 3 model.                                                               |
+| xAI           | Grok 3 Mini           | Gokk    | $0.30  | $0.50  | Fast and efficient mini version of Grok 3.                                                                       |
+| xAI           | Grok 4                | Grok    | $3     | $15    | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
+| xAI           | Grok 4 Fast           | Gok     | $0.20  | $0.50  | Ultra-fast Grok 4 with extended context for standard tasks.                                                      |
+| xAI           | Grok Code Fast        | Groc    | $0.20  | $1.50  | Specialized fast model optimized for code generation and analysis.                                               |
+| DeepSeek      | DeepSeek Chat V3      | Dese    | $0.20  | $0.80  | DeepSeek's creative and intelligent chat model.                                                                  |
+| DeepSeek      | DeepSeek Chat V3.2    | Desee   | $0.27  | $1.10  | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
+| DeepSeek      | DeepSeek Reasoner R1  | Deseri  | $0.55  | $2.19  | DeepSeek's strong and creative reasoning model.                                                                  |
+| Alibaba Cloud | QwQ 32B               | Qwen    | N/A    | N/A    | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
+| Mistral       | Mistral Large 2411    | Misti   | $2     | $6     | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
+| Mistral+      | Venice Uncensored 1.1 | Veni    | $0.20  | $0.90  | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                                       |
+| Mistral+      | Venice Role Play      | Venni   | $0.50  | $2     | Venice Role Play Uncensored.                                                                                     |
+| MoonshotAI    | Kimi K2 0905          | Kimi    | $0.39  | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
+| MoonshotAI    | Kimi K2.5             | Kimmi   | $0.45  | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling.          |
+| Z.AI          | GLM 4.6               | Glimi   | $0.50  | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.                        |
 
-* The Llama model powers numerous characters and agents including Ally, Barbie, Callam, Cleo, etc.
-
-1. Claude 4's larger output window is not yet enabled in our app.
-2. Gemini 2.5 Pro pricing: input/M: $1.25 (<=200K) / $2.50 (>200K), output/M: $10.00 (<=200K) / $15.00 (>200K)
-   Gemini 3 Pro pricing: input/M: $2 (<=200K) / $4 (>200K), output/M: $12.00 (<=200K) / $18.00 (>200K)
-3. Only the Perplexity models have access to search the internet. They incur search costs of $5 per 1000 searches.
-   Other models can search using the Goog tool, and fetch pages using `Dogu, web-text URL`.
+Input and output costs are measured in US dollars per million tokens.
 
 #### Image Models (SFW)
 
@@ -930,19 +922,17 @@ type: visual
 
 #### Censorship
 
-Ally Chat is more or less uncensored, but some models are censored by their creators to different degrees.
+Ally Chat is against censorship, but some models are censored by their creators to different degrees.
 
 Claude: Can talk about adult concerns including sexuality, but will not engage with NSFW topics.
 OpenAI and xAI Models: Limited engagement with NSFW topics.
-Gemini, DeepSeek, Mistral: Can engage with any NSFW topic.
-Llama 3: Can engage with any NSFW topic, practically uncensored but may be reluctant by default.
+Gemini, DeepSeek, Mistral: Can engage with most NSFW topics.
+Llama 3: Can engage with any NSFW topic, practically uncensored, but may be reluctant by default.
 Venice Uncensored: Fully uncensored, or as close as it gets.
 
 If you notice any unexpected censorship, please report it to us. Many issues can be fixed by adjusting character prompts.
 
 We have a wide range of models to choose from, so if one model is too censored for your needs, try another.
-
-Please do not attempt to jailbreak the more censored models, as this may be against their terms of service, and might impact our access to those services. If you want to experiment with this, please ask permission.
 
 # Ally Chat User Interface Guide
 
@@ -967,6 +957,8 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-file-text"></i> |  | Room Ops \* | Rename or copy a room or file |
 |  | `Ctrl+;` or `Esc` | Room Name | Change room |
 
+\* only visible after pressing Alt/Option or swiping the input field on mobile.
+
 ### Navigation Menu
 
 | Icon | Shortcut | Name | Description |
@@ -985,7 +977,7 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-caret-left"></i> | `Ctrl+,` | Prev | Previous page |
 | <i class="bi-caret-right"></i> | `Ctrl+.` | Next | Next page, numbered like chat-0, chat-1 ... |
 | <i class="bi-skip-end"></i> | `Ctrl+]` | Last | Go to last numbered page |
-|  | `Ctrl+\\` | New | Go to new numbered page beyond last one |
+|  | `Ctrl+\` | New | Go to new numbered page beyond last one |
 
 ### Room Operations Submenu
 
@@ -999,7 +991,6 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
 | <i class="bi-chevron-bar-down"></i> <i class="bi-chevron-bar-up"></i> |  | End / Home | Go to end or start of room |
-| User's Name |  | User \* | Cycle main rooms and folders: `$user/chat`, `$user/`, `$user`, `Ally Chat` |
 | <i class="bi-question-lg"></i> |  | Help | Read the Intro and Guide, and get strong AI help to use the app. |
 | <i class="bi-currency-dollar"></i> |  | Usage | View your usage by month, day, and agent, with costs in US$. Click the button again to close the usage view. |
 | <i class="bi-door-closed"></i> |  | Log out \* | Log out from Ally Chat, returns to the main Allemande home page |
@@ -1012,10 +1003,12 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 |---|---|---|---|
 | <i class="bi-send"></i> | `Ctrl+Enter` | Send | Send message (visible when message entered) |
 | <i class="bi-hand-index-thumb"></i> | `Alt+Enter` | Poke | Prompt AI response (visible when no message) |
+| <i class="bi-image"></i> | `Alt+V` | Artist | Request an image from the artist agent (visible if configured in Room Options) |
+| <i class="bi-justify-left"></i> | `Alt+N` | Writer | Request narrative from the writer agent (visible if configured in Room Options) |
 | <i class="bi-plus-lg"></i> |  | Add | Upload files and record media menu |
-| <i class="bi-eye"></i> |  | View | view settings |
-| <i class="bi-gear"></i> |  | Opt | Room options |
-| <i class="bi-shield"></i> |  | Mod | Moderation tools |
+| <i class="bi-x-lg"></i> | `Alt+Z` | Undo | Remove last message |
+| <i class="bi-arrow-counterclockwise"></i> | `Alt+R` | Retry | Retry last message |
+| <i class="bi-three-dots-vertical"></i> |  | Opt | Opens options and tools |
 
 ## Add Menu
 
@@ -1029,6 +1022,15 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 
 \*\* On computer only; use <i class="bi-upload"></i> on a mobile device
 
+### Math Editor
+
+- [Full math-field documentation](https://cortexjs.io/mathfield/)
+- Type to enter math
+- Press enter or click the math button again to save it as TeX in the main message entry.
+- You can also paste TeX into the math entry
+- There is a button to open a virtual keyboard, like a super calculator
+- There is a menu button with many other options, including matrix entry
+
 ### Recording Controls
 
 | Icon | Shortcut | Name | Description |
@@ -1039,13 +1041,17 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-check-lg"></i> |  | Save | Upload recording |
 | <i class="bi-x-lg"></i> |  | Cancel | Discard recording |
 
-## View Settings Menu
+## Options and Tools
+
+This is a large screen which takes up the bottom half of the display, and includes View Options, Room Options and Room Tools.
+
+### <i class="bi bi-eye"></i> View Options
 
 | Icon | Shortcut | Setting | Description |
 |---|---|---|---|
 | <i class="bi-fonts"></i> |  | Font Size | Change font size |
 | <i class="bi-palette"></i> |  | Theme | Change UI theme (many themes) |
-| <i class="bi-image"></i> | `Alt+I` | Images | Cycle images display: normal, blur, hidden |
+| <i class="bi-images"></i> | `Alt+I` | Images | Cycle images display: normal, blur, hidden |
 | <i class="bi-alphabet"></i> | `Alt+A` | Alt | Toggle showing alt captions |
 | <i class="bi-arrows-angle-expand"></i> <i class="bi-arrows-angle-contract"></i> |  | Image Size | Change image size |
 | <i class="bi-braces"></i> |  | Code | Cycle code display: clean, basics, javascript/math/diagram source and system files |
@@ -1055,43 +1061,32 @@ Many buttons react differently to shift, ctrl, and Alt/Option click; experiment 
 | <i class="bi-clock-history"></i> |  | History | View change history (deleted and edited messages) |
 | <i class="bi-arrows-fullscreen"></i> |  | Full-screen | Make chat area full-screen (off, whole window, full-screen) |
 
-### Math Editor
-
-- [Full math-field documentation](https://cortexjs.io/mathfield/)
-- Type to enter math
-- Press enter or click the math button again to save it as TeX in the main message entry.
-- You can also paste TeX into the math entry
-- There is a button to open a virtual keyboard, like a super calculator
-- There is a menu button with many other options, including matrix entry
-
-## Room Options Menu
+### <i class="bi bi-gear"></i> Room Options
 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
 |  |  | Context | Number of recent messages AI can see (NOT tokens) |
 |  |  | Lines | Limit number of lines of AI output |
-|  |  | Images | Number of recent images AI can see |
+|  |  | Vision | Number of recent images AI can see |
 |  |  | Temp | Temperature / creativity 0.0 - ~2.0, 1.0 is normal |
-|  |  | Mission | Mission file to use, - for none |
 |  |  | Name | Change your name in the chat |
+|  |  | Artist | An agent to make images when you press the Artist button (default: Illu) |
+|  |  | Writer | An agent to write narrative when your press the Writer button (default: none; try Nova or Novi) |
 | <i class="bi bi-sun-fill"></i> |  | Recall | Cycle memory recall mode: <i class="bi bi-lightbulb-off"></i> none, <i class="bi bi-lightbulb"></i> recap of this chat, <i class="bi bi-lightbulb-fill"></i> also recent chats, <i class="bi bi-sun-fill"></i> also relevant older chats |
 | <i class="bi bi-save"></i> |  | Memorize | Save memories, when this chat is archived (for some characters) |
 
-## Moderator Tools
+### <i class="bi bi-shield"></i> Room Options
 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
-| <i class="bi-x-lg"></i> | `Alt+Z` | Undo | Remove last message |
-| <i class="bi-arrow-counterclockwise"></i> | `Alt+R` | Retry | Retry last message |
 | <i class="bi-pencil"></i> | `Alt+E` | Edit | Edit the room |
-| <i class="bi-play"></i> |  | Auto | Auto play (try shift, ctrl) |
 | <i class="bi-archive"></i> | `Alt+A` | Archive | Archive this room |
-| <i class="bi-trash4"></i> | `Alt+X` | Clear | Clear this room |
+| <i class="bi-trash3"></i> | `Alt+X` | Clear | Clear this room (only for private rooms) |
 |  | `Alt+H` | Re-render | Re-renders the HTML page from markdown (mainly for developers) |
 
 ## Editor Controls
 
-When editing, these controls appear:
+When editing a room or file, these controls appear:
 
 | Icon | Shortcut | Name | Description |
 |---|---|---|---|
@@ -1151,8 +1146,6 @@ You can create a file myroom.m to give instructions to all AIs in the "myroom" r
 
 You can create a file myroom.illu.m to give instructions to Illu in the "myroom" room, or similar for any agent.
 
-You can set a custom mission file name to use in the advanced room options UI. Omit the .m suffix in this case.
-
 ## Room Option Files
 
 When you change room options in the UI, it sets these options in a roomname.yml file. You can edit this file directly. You can also create `options.yml` which will apply to all rooms in a folder.
@@ -1171,8 +1164,6 @@ mediator:
   - anyone
   - anyone
   - anyone
-mission: ''
-mission_pos: -8
 ```
 
 - **mediator** is a list of agents that will respond by default, and under other conditions.
