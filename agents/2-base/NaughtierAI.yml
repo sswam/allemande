@@ -1,8 +1,8 @@
 base:
   - GemaM
-  - ShowMINaughty
+# - ShowMINaughty
   - Period
-# - Memory
+  - Memory
 filter_out:
   - truncate_repeated_characters
   - unsmart

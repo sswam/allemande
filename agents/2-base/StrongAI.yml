@@ -4,7 +4,7 @@ model: deepseek-chat
 # model: gpt-4
 over:
   - Frankness
-  - ShowMI
+# - ShowMI
   - Period
   - Thunk
 filter_out:

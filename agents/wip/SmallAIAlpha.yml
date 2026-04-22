@@ -1,7 +1,7 @@
 type: llm_llama
 model: default
 over:
-  - ShowMISmall
+# - ShowMISmall
   - Period
 dedent: true
 temp: 0.95

@@ -1,7 +1,7 @@
 base:
   - AgentChar
   - GemaM
-# - Memory
+  - Memory
 filter_out:
   - truncate_repeated_characters
   - unsmart
