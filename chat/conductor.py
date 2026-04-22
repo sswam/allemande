@@ -664,7 +664,8 @@ def who_should_respond(
     for agent in agents_to_respond:
         agent_data = agents.get(agent)
         agent_type = agent_data.get("type")
-        logger.info("  %s: %s", agent, agent_type)
+        agent_model = agent_data.get("model")
+        logger.info("  %s: %s - %s", agent, agent_type, agent_model)
 
     logger.debug("who_should_respond 24")
 
