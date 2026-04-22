@@ -1551,8 +1551,8 @@ function setup_main_ui_shortcuts() {
     ['alt+e', () => edit(), 'Edit file', ADMIN],
     ['alt+h', rerender_html, 'Re-render HTML', ADMIN],
 
-    // ['alt+n', () => invoke(narrator), 'Invoke the narrator'],
-    // ['alt+v', () => invoke(illustrator), 'Invoke the illustrator'],
+    ['alt+v', artist, 'Invoke the illustrator'],
+    ['alt+n', writer, 'Invoke the narrator'],
     ['alt+/', () => invoke("anyone"), 'Invoke anyone randomly'],
     ['shift+alt+/', () => invoke("everyone"), 'Invoke everyone'],
     ['ctrl+alt+a', (ev) => content_insert(ev, "α"), 'Insert alpha: α'],

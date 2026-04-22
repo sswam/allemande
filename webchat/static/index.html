@@ -124,8 +124,8 @@
 		<math-field id="math_input" class="input hidden"></math-field>
 		<div class="controls col_wrap" id="input_main">
 			<button id="send">send</button>
-			<button id="artist" title="request an image from the artist agent" class="hidden">request an image</button>
-			<button id="writer" title="request narrative from the write agent" class="hidden">request narrative</button>
+			<button id="artist" title="artist: request an image from the artist agent" class="hidden">request an image</button>
+			<button id="writer" title="writer: request narrative from the writer agent" class="hidden">request narrative</button>
 			<button id="add" title="add a file or recording">add</button>
 			<button id="add_file_2" title="upload files" class="hidden standard option-simple">file</button>
 			<button id="audio" title="audio settings" class="boffin">audio</button>
@@ -202,12 +202,12 @@
 			<div class="row_wrap">
 				<input id="opt_context" placeholder="context" title="number of recent messages AI can see">
 				<input id="opt_lines" placeholder="lines" title="limit number of lines of AI output">
-				<input id="opt_images" placeholder="images" title="number of recent images AI can see">
+				<input id="opt_images" placeholder="vision" title="number of recent images AI can see">
 				<input id="opt_temp" placeholder="temp" title="temperature: like creativity or inebriation; 1 is normal, 0 is deterministic, 1.5 is high">
 				<input id="opt_mission" placeholder="mission" title="mission files to use, - for none" class="hidden">
 				<input id="opt_name" placeholder="name" title="change your name in the chat">
-				<input id="opt_artist" placeholder="artist" title="the artist button triggers this agent">
-				<input id="opt_writer" placeholder="writer" title="the writer button triggers this agent">
+				<input id="opt_artist" placeholder="artist" title="the Artist button triggers this agent">
+				<input id="opt_writer" placeholder="writer" title="the Writer button triggers this agent">
 				<button id="opt_recall" title="recall: none">recall</button>
 				<button id="opt_memorize" title="memorize: save memories, when this chat is archived">memorize</button>
 	<!--			<input id="opt_over" placeholder="over" title="overlay files, - for none, Foo to add, -Foo to remove" class="advanced">
