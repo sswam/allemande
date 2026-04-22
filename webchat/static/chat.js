@@ -1114,11 +1114,19 @@ function send_to_help_iframe(message) {
 // navigation ----------------------------------------------------------------
 
 function nav_click(ev) {
-  if (event.button !== 0 || event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)
+  if (ev.button !== 0 || ev.shiftKey || ev.ctrlKey || ev.altKey || ev.metaKey)
     // let the browser do the default action, e.g. open this same page in another tab
     return true;
   ev.preventDefault();
   set_top_left("top_left_nav");
+}
+
+function nav_close_menu_on_normal_click(ev) {
+  if (ev.button !== 0 || ev.shiftKey || ev.ctrlKey || ev.altKey || ev.metaKey)
+    // leave the menu open on 'alternative' clicks
+    return true;
+  set_top_left();
+  return true;
 }
 
 function nav_up(ev) {
@@ -1792,13 +1800,12 @@ async function setup_nav_buttons() {
   $nav_allychat.href = "/" + query_to_hash(config.PUBLIC_ROOM);
 
   // Setup nsfw buttons --------------------
-  for (const $nav_nsfw of $$(".nav_nsfw")) {
-    const nsfw_button_go_to_sfw = room == config.NSFW_ROOM;
-    const target_room = nsfw_button_go_to_sfw ? config.PUBLIC_ROOM : config.NSFW_ROOM;
-    const target_room_desc = nsfw_button_go_to_sfw ? "SFW" : "NSFW";
-    $nav_nsfw.href = "/" + query_to_hash(target_room);
-    $nav_nsfw.title = `Go to the main ${target_room_desc} room: ${target_room}`;
-  }
+  const $nav_nsfw = $id("nav_nsfw");
+  const nsfw_button_go_to_sfw = room == config.NSFW_ROOM;
+  const target_room = nsfw_button_go_to_sfw ? config.PUBLIC_ROOM : config.NSFW_ROOM;
+  const target_room_desc = nsfw_button_go_to_sfw ? "SFW" : "NSFW";
+  $nav_nsfw.href = "/" + query_to_hash(target_room);
+  $nav_nsfw.title = `Go to the main ${target_room_desc} room: ${target_room}`;
 
   // Setup porch button --------------------
   const $nav_porch = $id("nav_porch");
@@ -3736,8 +3743,8 @@ export function nsfw_zone_set(accepted) {
     nsfw_zone_gate(false);
 
   // Show NSFW nav buttons if accepted
-  for (const el of $$('a.nav_nsfw'))
-    show(el, accepted !== "0");
+  const nav_nsfw = $id('nav_nsfw');
+  show(nav_nsfw, accepted !== "0");
 
   if (accepted == null)
     return localStorage.removeItem('nsfw_zone');
@@ -3759,8 +3766,7 @@ export function nsfw_zone_init() {
 
   // Hide NSFW nav buttons if explicitly opted out
   if (nsfwSetting !== "0")
-    for (const el of $$('a.nav_nsfw'))
-      show(el);
+    show($id('nav_nsfw'));
 }
 
 export function nsfw_zone_room_changed() {
@@ -4231,6 +4237,11 @@ export async function init() {
   /* $on($id("scroll"), "click", () => set_top("top_scroll")); */
   $on($id("filter"), "click", () => set_top("top_filter"));
   $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
+
+  // nav buttons
+  for (const nav_button_id of ["nav_home", "nav_allychat", "nav_nsfw", "nav_up"]) {
+    $on($id(nav_button_id), "click", nav_close_menu_on_normal_click);
+  }
 
   // select functions
   $on($id("select_cancel"), "click", select_cancel);
