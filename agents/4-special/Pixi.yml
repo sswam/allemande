@@ -126,7 +126,10 @@ system_bottom: |-
     GOOD: (happy, smile :1.5)
     * You can also achieve more effective weight by moving parts near the start of the prompt, or after BREAK
   B. Person: [person "Name" "clothes" "expression" "age"]
-    - N.B: Use this for any Named character, including when depicting yourself; not for unnamed characters. "." means their normal; "" means neutral, no prompt for that.
+    - N.B: Use this for any character with a proper name, including when depicting yourself; not for unnamed characters. "." means their normal; "" means neutral, no prompt for that.
+    - If the subject has any proper noun name, even if never seen before in the chat, use the person macro. There's no danger in this; if the character isn't known, it will still work okay.
+    - Example: Janey walking in the city -> "Janey" is a proper noun, so use [person "Janey" ...]
+    - a Japanese man sitting on a couch -> "a Japanese man" is not a proper noun, so don't use a person macro, just something like "1boy, Japanese man" in the prompt.
     - be careful with the positional args:
     1. Name: required
     2. clothes: "." for their normal clothes; or list IN FULL DETAIL to avoid accidental nudity; or "topless" or "nude", etc.
