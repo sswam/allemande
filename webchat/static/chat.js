@@ -369,12 +369,14 @@ async function send_form_data(formData) {
   return data;
 }
 
-async function send(ev) {
+async function send(ev, prepend, button) {
   if (ev)
     ev.preventDefault();
 
+  button = button || "send";
+
   if (await get_file_type($room.value) === "dir") {
-    flash($id("send"), "error");
+    flash($id(button), "error");
     return;
   }
 
@@ -384,9 +386,9 @@ async function send(ev) {
   // TODO this is weird, especially adding to it, maybe don't?  Just shift-click could clear it.
   // could be useful to block auto-play though... ???
   if (ev && ev.shiftKey)
-    return active_inc("send");
+    return active_inc(button);
   if (ev && ev.ctrlKey)
-    return active_dec("send");
+    return active_dec(button);
 
   // if alt is pressed, send an empty message (poke)
   if (ev && ev.altKey)
@@ -396,12 +398,16 @@ async function send(ev) {
   const message = $content.value;
   set_content("");
 
+  if (prepend) {
+    formData.set("content", prepend + message);
+  }
+
   try {
     await send_form_data(formData);
   } catch (err) {
     console.error(err.message);
     set_content(message);
-    error("send");
+    error(button);
   }
 
   $content.placeholder = "";
@@ -410,34 +416,39 @@ async function send(ev) {
 async function artist(ev) {
   if (ev)
     ev.preventDefault();
-  const artist = $id("opt_artist").value;
-  const prompt = "-@" + artist;
-  return await send_text(prompt);
-
-  // could use alt to toggle nsfw or 2ndary artist perhaps
-
-  // const prompt = "@+image";
-  // if (ev && ev.altKey || $content.value == "") {
-  //   return await send_text("-@+image");
-  // }
-  // return await send_text("@+image " + $content.value);
+  await invoke_agent($id("opt_artist").value, "artist");
 }
 
 async function writer(ev) {
   if (ev)
     ev.preventDefault();
-  const writer = $id("opt_writer").value;
-  const prompt = "-@" + writer;
-  return await send_text(prompt);
-
-  // could use alt to toggle nsfw or 2ndary artist perhaps
-
-  // const prompt = "@+image";
-  // if (ev && ev.altKey || $content.value == "") {
-  //   return await send_text("-@+image");
-  // }
-  // return await send_text("@+image " + $content.value);
+  await invoke_agent($id("opt_writer").value, "writer");
 }
+
+async function invoke_agent(name, button) {
+  if ($content.value) {
+    const prepend = "+@" + name + ", ";
+    return await send(null, prepend, button);
+  } else {
+    const prompt = "-@" + name;
+    try {
+      return await send_text(prompt);
+    } catch (err) {
+      console.error(err.message);
+      error(button);
+    }
+  }
+}
+
+
+// could use alt to toggle nsfw or 2ndary artist perhaps
+
+// const prompt = "@+image";
+// if (ev && ev.altKey || $content.value == "") {
+//   return await send_text("-@+image");
+// }
+// return await send_text("@+image " + $content.value);
+
 
 async function send_text(text) {
   const formData = new FormData();
@@ -3284,11 +3295,13 @@ async function opt_writer(ev) {
 }
 
 function opt_artist_changed() {
+  if (embed) return;
   const artist = $id("opt_artist").value;
   $id("artist").classList.toggle("hidden", artist === "");
 }
 
 function opt_writer_changed() {
+  if (embed) return;
   const writer = $id("opt_writer").value;
   $id("writer").classList.toggle("hidden", writer === "");
 }

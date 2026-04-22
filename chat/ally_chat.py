@@ -241,6 +241,8 @@ async def process_room(file, request_index, args, history_start=0, skip=None, ag
 
             c = context.Context(agents2, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room, local_visual_dir)
 
+            handle_hidden_directions(message, history, history_messages, file, args, last_message_id)
+
             count = await run_each_bot(c, bots)
         finally:
             shutil.rmtree(local_visual_dir)
@@ -302,6 +304,15 @@ def handle_directed_poke(message, history, history_messages, file, args, last_me
     chat.chat_write(file, [undo_message], delim=args.delim, invitation=args.delim)
     message = history_messages[-1] if history_messages else None
     return message, history, history_messages
+
+
+def handle_hidden_directions(message, history, history_messages, file, args, last_message_id):
+    """Handle soft undo for hidden directions."""
+    if not message or not message["content"].startswith("+@"):
+        return
+
+    undo_message = f"{message['user']}:\t<ac rm={last_message_id}>"
+    chat.chat_write(file, [undo_message], delim=args.delim, invitation=args.delim)
 
 
 def determine_responders(message, agents, history_messages, config, room, mission, poke):
