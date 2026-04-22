@@ -106,9 +106,9 @@ class Room:
                 logger.info("  as alias (2) %s", user)
 
         # support narration by moderators
-        if content.startswith("--") and access & Access.MODERATE.value == Access.MODERATE.value:
+        if content.startswith("-- ") and access & Access.MODERATE.value == Access.MODERATE.value:
             user = None
-            content = content[2:]
+            content = content[3:]
 
         # strip trailing whitespace from each line
         content = "\n".join(line.rstrip() for line in content.rstrip().splitlines())
