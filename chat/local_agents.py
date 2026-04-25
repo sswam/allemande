@@ -381,7 +381,7 @@ async def local_agent(c, agent, _query) -> str:
         PATH_VISUAL_REQUEST.unlink(missing_ok=True)
         PATH_VISUAL_REQUEST.symlink_to(c.local_visual_dir)
         try:
-            seed = agent.get("unp_seed_visual")
+            seed = None  # agent.get("unp_seed_visual")
 
             # need to get negative prompt from unprompted, this is a bit ugly!
             pos_neg = re.split(r"\s*\bNEGATIVE\b\s*", fulltext2, 1)
@@ -396,9 +396,18 @@ async def local_agent(c, agent, _query) -> str:
             fulltext2 = "[set negative_prompt] " + pos_neg[1] + " [/set] " + pos_neg[0]
             fulltext2 += " NEGATIVE [get negative_prompt]"
 
-            fulltext2 = unprompted(fulltext2, seed)
+            fulltext2, unp_vars = unprompted(fulltext2, seed)
             input_count = len(fulltext2)
             logger.debug("image prompt after running unprompted: %r", fulltext2)
+
+            defaults = { "steps": 15, "width": 768, "height": 1024 }
+            for v in defaults:
+                if v not in gen_config:
+                    gen_config[v] = defaults[v]
+
+            for v in ["seed", "width", "height", "steps", "cfg_scale", "count", "pag", "hires", "hq"]:
+                if v in unp_vars:
+                    gen_config[v] = unp_vars[v]
         except Exception as e:
             logger.error("Unprompted error for art agent %r: %s %s", name, type(e).__name__, str(e))
         finally:

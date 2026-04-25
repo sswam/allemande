@@ -57,7 +57,7 @@ def unprompted(input_string, seed=None, cleanup=True, unprompted=None):
     # if not unprompted:
     #     unprompted.goodbye()
 
-    return result
+    return result, unprompted.shortcode_user_vars
 
 
 @argh.arg("--debug", help="enable debug logging")
