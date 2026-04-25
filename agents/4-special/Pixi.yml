@@ -7,6 +7,7 @@ lines_force: 0
 poke_if:
   - "```"
 specialist: true
+narrator: soft
 filter_in: []
 filter_out:
   - fix_image_prompts

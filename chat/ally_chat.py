@@ -237,13 +237,17 @@ async def process_room(file, request_index, args, history_start=0, skip=None, ag
             bots, responsible_human = determine_responders(message, agents2, history_messages, config, room, mission, poke)
             logger.info("who should respond: %r; responsible: %r", bots, responsible_human)
 
-            message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
+            directed_poke, message, history, history_messages = handle_directed_poke(message, history, history_messages, file, args, last_message_id)
 
             c = context.Context(agents2, file, args, history, history_start, mission, summary, config, responsible_human, poke, skip, room, local_visual_dir)
 
-            handle_hidden_directions(message, history, history_messages, file, args, last_message_id)
+            hidden_directions = False
+            if not directed_poke:
+                hidden_directions = handle_hidden_directions(message, history, history_messages, file, args, last_message_id)
 
-            count = await run_each_bot(c, bots)
+            hidden = directed_poke or hidden_directions
+
+            count = await run_each_bot(c, bots, hidden)
         finally:
             shutil.rmtree(local_visual_dir)
         logger.info("\n\n%s -------- END -------- %s\n", request_index, room.name)
@@ -296,23 +300,29 @@ def should_skip_editing_command(history_messages, poke):
 def handle_directed_poke(message, history, history_messages, file, args, last_message_id):
     """Handle soft undo for directed-poke commands."""
     if not message or not message["content"].startswith("-@"):
-        return message, history, history_messages
+        return False, message, history, history_messages
 
     undo_message = f"{message['user']}:\t<ac rm={last_message_id}>"
     history_messages.pop()
     history.pop()
     chat.chat_write(file, [undo_message], delim=args.delim, invitation=args.delim)
     message = history_messages[-1] if history_messages else None
-    return message, history, history_messages
+    return True, message, history, history_messages
 
 
 def handle_hidden_directions(message, history, history_messages, file, args, last_message_id):
     """Handle soft undo for hidden directions."""
     if not message or not message["content"].startswith("+@"):
-        return
+        return False
+
+    # remove narrator's name from direction
+    message["content"] = re.sub(r"^\+@.*?, ", "", message["content"])
+    history[-1] = bb_lib.message_to_text(message)
 
     undo_message = f"{message['user']}:\t<ac rm={last_message_id}>"
     chat.chat_write(file, [undo_message], delim=args.delim, invitation=args.delim)
+
+    return True
 
 
 def determine_responders(message, agents, history_messages, config, room, mission, poke):
@@ -328,7 +338,7 @@ def determine_responders(message, agents, history_messages, config, room, missio
     return bots, responsible_human
 
 
-async def run_each_bot(c, bots):
+async def run_each_bot(c, bots, hidden):
     """Run each agent and process responses."""
     if c.history:
         query = c.history[-1]
@@ -360,7 +370,10 @@ async def run_each_bot(c, bots):
         response = response.lstrip().rstrip("\n ")
         response, agent2 = await forward.handle_forwarding(generate_agent_response, response, agent, c)
 
-        response = apply_narrator_mode(response, agent2)
+        narrator = agent2.get("narrator")
+        if narrator == "hard" or (narrator == "soft" and hidden):
+            response = apply_narrator_mode(response, agent2)
+
         poke_next = should_poke_next(response, agent2)
 
         c.history.append(response)
@@ -456,9 +469,6 @@ def prepare_query(history, agent, bot, query=None):
 
 def apply_narrator_mode(response, agent):
     """Apply narrator mode transformations to response."""
-    if agent.get("narrator") != "hard":
-        return response
-
     response = response.lstrip(f'{agent.name}:')
     lines = response.split("\n")
     dedented = [line[1:] if line.startswith("\t") else line for line in lines]
