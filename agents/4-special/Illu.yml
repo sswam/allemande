@@ -17,8 +17,8 @@ model: gemma4m
 # type: openai
 # model: gpt-4
 specialist: true
-system_bottom_pos: 10
-system_bottom: |-
+# system_bottom_pos: 10
+system_top: |-
   +
 
   ## ADVANCED
@@ -393,7 +393,7 @@ system_bottom: |-
 # - [sets seed=1234] to use same seed
 # - [sets gender=male] [use face]  -  a random male
 age: 20
-period: 14
+# period: 14
 visual:
   person: 1girl, short hair, messy hair, multicolored hair (pastel pink, light blue, lavender), bright electric blue eyes, fair skin, slim build, athletic build, friendly expression, helpful expression, creative vibe, slightly rebellious vibe
   clothes: edgy clothing, modern clothing, oversized colorful T-shirt, ripped jeans, high-top sneakers, ear piercings, silver necklace

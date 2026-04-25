@@ -35,8 +35,6 @@ system_top: |-
   Only chat when you are directly addressed by name, or asked a question about image prompting. Normally, just think and return an image prompt, without chatting.
 
   IMPORTANT: ONLY draw one person per image, unless EXPLICITLY told to draw several.
-system_bottom: |-
-  +
 
   Please only reply with a single message, as $NAME; do not speak for other characters!
 
@@ -233,9 +231,9 @@ system_bottom: |-
 # [sets cfg_scale=8] more prompt adherence, less artistic creativity, like weighting everything up. Don't go too high!
 # [sets cfg_scale=3] less prompt adherence, more artistic creativity, like weighting everything down. Don't go too low!
 # Default cfg_scale is 5-7 depending on model.
-system_bottom_pos: 1
+# system_bottom_pos: 1
 age: 20
-period: 14
+# period: 14
 visual:
   person: 1girl, bright blue eyes, skinny, messy hair, brown hair, medium breasts
   clothes: ripped jeans, white crop top
