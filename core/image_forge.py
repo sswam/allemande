@@ -44,13 +44,13 @@ MAX_HIRES_PIXELS = (1024 * 2.8125) ** 2
 # - an actual time limit, just stop after that time
 # - fair queueing, handle multiple requests. How? need to know user?
 
-DEFAULT_SHORTCUT = "P0"
+DEFAULT_SHORTCUT = None  # "P0"  # disabled because it overrides custom width/height/steps settings
 MAX_COUNT = 10
 MAX_STEPS = 150  # 30
 
 TIME_EPSILON = 0.001  # a small time to add to distinguish job order
 JOB_PENALTY = 0.01  # Adds about 1/10 second per medium sized job
-JOB_BASE_TIME = 10 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
+JOB_BASE_TIME = 60 # 120 # 60 # 25 # seconds, base time for a job at 1024x1024x15
 JOB_PRIVATE_PENALTY = 2
 MIN_STEPS = 15
 MIN_JOB_PENALTY = 1
@@ -136,7 +136,7 @@ QUALITY_MAX = 9   # TODO drop to 4 again if it's a problem! secret feature...
 
 def process_hq_macro(config: dict, sets: dict) -> dict:
     """Process hq macro and update config accordingly"""
-    hq = float(sets.get("hq", 0))
+    hq = float(sets.get("hq", config.get("hq", 0)))
 
     if hq == 0:
         # hq=0 - disable adetailer, no hires
@@ -415,7 +415,7 @@ async def complete_batch(job: ImageJob):
 
     data = yaml.dump(
         {
-            "seed": job.seed,
+            "seed": job.seed - job.count + 1,
             "metadata": metadata,
         }
     )
@@ -600,16 +600,17 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
             break
     else:
         shortcut = DEFAULT_SHORTCUT
-    if len(shortcut) == 1:
+    if shortcut and len(shortcut) == 1:
         shortcut += DEFAULT_SHORTCUT[1]
 
-    shape = shortcut[0]
-    quality = int((shortcut)[1])
+    if shortcut:
+        shape = shortcut[0]
+        quality = int((shortcut)[1])
 
-    quality = clamp(quality, QUALITY_MIN, QUALITY_MAX)
+        quality = clamp(quality, QUALITY_MIN, QUALITY_MAX)
 
-    apply_shortcut(sets, shape, quality)
-    need_update_macros = True
+        apply_shortcut(sets, shape, quality)
+        need_update_macros = True
 
     # Process settings
     for setting in ["steps", "width", "height", "hires", "seed", "pag", "ad_checkpoint", "denoising_strength"]:
