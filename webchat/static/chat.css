@@ -863,3 +863,13 @@ div.large_controls > .back {
 .large_controls h2:not(:first-child) {
 	margin-top: 1.25rem;
 }
+
+#view_edit_agent {
+	gap: var(--pad);
+}
+#view_edit_agent > * {
+	min-height: 2rem;
+}
+#view_edit_agent > textarea {
+	resize: none;
+}

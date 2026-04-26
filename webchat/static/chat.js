@@ -19,7 +19,6 @@ const $room = $id("room");
 const $content = $id("content");
 const $math_input = $id("math_input");
 const $messages_iframe = $id("messages_iframe");
-const $form = $id("form");
 const $title = $("title");
 const $inputrow = $id("inputrow");
 const $edit = $id("view_edit");
@@ -394,12 +393,16 @@ async function send(ev, prepend, button) {
   if (ev && ev.altKey)
     return await poke();
 
-  const formData = new FormData($form);
+  const formData = new FormData();
+  formData.append("op", "post");
+  formData.append("room", room);
   const message = $content.value;
   set_content("");
 
   if (prepend) {
-    formData.set("content", prepend + message);
+    formData.append("content", prepend + message);
+  } else {
+    formData.append("content", message);
   }
 
   try {
@@ -2455,7 +2458,10 @@ async function edit(file) {
   }
 
   edit_set_text(editor_text_orig);
-  set_view("view_edit");
+  if (dev && type == "agent")
+    set_view("view_edit_agent")
+  else
+    set_view("view_edit");
   set_controls("input_edit");
   $edit.focus();
   // set caret at end
