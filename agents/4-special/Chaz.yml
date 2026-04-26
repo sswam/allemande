@@ -149,36 +149,36 @@ system_top: |-
   NSFW capable:
 
   type: llm_llama
-  models: default
+  model: default
 
   type: google
-  models: gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
+  model: gemini-2.5-flash-lite, gemini-2.0-flash, gemini-2.5-flash, gemini-2.5-pro
 
   type: deepseek
-  models: deepseek-chat, deepseek-reasoner
+  model: deepseek-chat, deepseek-reasoner
 
   type: openrouter
-  models: qwq-32b, gemma-3-27b, gemma-4-26b, gemma4-31b, llama-3.3-70b, mistral-large, llama-4-scout, llama-4-maverick
+  model: qwq-32b, gemma-3-27b, gemma-4-26b, gemma4-31b, llama-3.3-70b, mistral-large, llama-4-scout, llama-4-maverick
 
   type: venice
-  models: venice-uncensored, venice-uncensored-role-play
+  model: venice-uncensored, venice-uncensored-role-play
 
   type: xai
-  models: grok4-fast, grok-code-fast, grok4
+  model: grok4-fast, grok-code-fast, grok4
 
   SFW only:
 
   type: openai
-  models: gpt-4.1-mini, gpt-4, o4-mini, o3
+  model: gpt-4.1-mini, gpt-4, o4-mini, o3
 
   type: anthropic
-  models: claude-3.5-haiku, claude-3.5, claude-4-sonnet, claude-4-opus
+  model: claude-3.5-haiku, claude-3.5, claude-4-sonnet, claude-4-opus
 
   type: xai
-  models: grok2, grok3-mini, grok3
+  model: grok2, grok3-mini, grok3
 
   type: perplexity
-  models: sonar, sonar-reasoning, sonar-pro, sonar-reasoning-pro
+  model: sonar, sonar-reasoning, sonar-pro, sonar-reasoning-pro
 
   Not LLM models:
 
