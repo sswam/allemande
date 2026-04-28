@@ -309,7 +309,7 @@ export function format(obj, indent = 0) {
         }
     }
 
-    return lines.join('\n');
+    return lines.join('\n').trimEnd() + '\n';
 }
 
 // ---------- CLI ----------
@@ -323,7 +323,8 @@ async function main() {
     const text = new TextDecoder().decode(allBytes);
     const obj = parse(text);
     // console.log(obj);
-    console.log(format(obj));
+    const output = format(obj);
+    await Deno.stdout.write(new TextEncoder().encode(output));
 }
 
 if (import.meta.main) main(); // eslint-disable-line no-undef

@@ -312,6 +312,7 @@ let theme;
 let last_users = [];
 
 const ADMIN = "admin";
+const DEFAULT = "default";
 
 // developer functions -------------------------------------------------------
 
@@ -621,6 +622,86 @@ function edit_indent(ev) {
 
 function edit_dedent(ev) {
   textarea_indent($edit, true);
+}
+
+function edit_auto_indent(ev) {
+//  ev.preventDefault();
+  const textarea = ev.target;
+  if (textarea == $edit && editor_file.endsWith(".yml"))
+    edit_auto_indent_yaml(textarea)
+  else
+    edit_auto_indent_chat(textarea)
+  return true;
+}
+
+function get_line_indent_yaml(line) {
+  const match = line.match(/^((?:  )*)/);
+  return match ? match[1] : '';
+}
+
+function edit_auto_indent_yaml(textarea) {
+  const { value, selectionStart, selectionEnd } = textarea;
+
+  // Get the start of the selection (selected text will be replaced by textarea_insert)
+  const start = Math.min(selectionStart, selectionEnd);
+
+  // Split all lines to find previous, current, and next lines
+  const lines = value.split('\n');
+
+  // Find which line index the cursor is on
+  let charCount = 0;
+  let currentLineIndex = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const lineLength = lines[i].length + 1; // +1 for the '\n'
+    if (charCount + lineLength > start) {
+      currentLineIndex = i;
+      break;
+    }
+    charCount += lineLength;
+  }
+
+  // Get indents of previous, current, and next lines (if they exist)
+  const indents = [];
+
+  if (currentLineIndex > 0) {
+    indents.push(get_line_indent_yaml(lines[currentLineIndex - 1]));
+  }
+
+  indents.push(get_line_indent_yaml(lines[currentLineIndex]));
+
+  if (currentLineIndex < lines.length - 1) {
+    indents.push(get_line_indent_yaml(lines[currentLineIndex + 1]));
+  }
+
+  // Use the largest indent (by length)
+  const indent = indents.reduce((a, b) => a.length >= b.length ? a : b, '');
+
+  // Insert newline + largest indent
+  // Do this after the newline is naturally inserted, so the textarea can scroll.
+  setTimeout(() => textarea_insert(textarea, indent), 0);
+}
+
+function edit_auto_indent_chat(textarea) {
+  const { value, selectionStart, selectionEnd } = textarea;
+
+  // Get the start of the selection (selected text will be replaced by textarea_insert)
+  const start = Math.min(selectionStart, selectionEnd);
+
+  // Get the text before the cursor/selection-start to determine current line's indent
+  const textBefore = value.substring(0, start);
+
+  // Find the beginning of the current line
+  const lineStart = textBefore.lastIndexOf('\n') + 1;
+  const currentLine = textBefore.substring(lineStart);
+
+  // Count total number of tabs in the current line
+  const tabCount = (currentLine.match(/\t/g) || []).length;
+  const indent = '\t'.repeat(tabCount);
+
+  // Insert newline + same indent
+  // textarea_insert(textarea, '\n' + indent);
+  // Do this after the newline is naturally inserted, so the textarea can scroll.
+  setTimeout(() => textarea_insert(textarea, indent), 0);
 }
 
 function textarea_indent(textarea, dedent = false) {
@@ -1481,8 +1562,8 @@ shortcuts_clear();
 
 function shortcuts_to_dict(shortcuts) {
   const dict = {};
-  for (const [key, fn, desc, admin] of shortcuts) {
-    dict[key] = { fn, desc, admin };
+  for (const [key, fn, desc, admin, with_default] of shortcuts) {
+    dict[key] = { fn, desc, admin, with_default };
   }
   return dict;
 }
@@ -1512,7 +1593,8 @@ function dispatch_shortcut(ev, shortcuts) {
   }
 
   if (shortcut && !ev.repeat) {
-    ev.preventDefault();
+    if (!shortcut?.with_default)
+      ev.preventDefault();
     shortcut.fn(ev);
     return true;
   }
@@ -1595,6 +1677,7 @@ function setup_main_ui_shortcuts() {
   add_shortcuts(shortcuts.edit, [
     ['alt+t', edit_indent, 'Insert tab / indent'],
     ['shift+alt+t', edit_dedent, 'dedent'],
+    ['enter', edit_auto_indent, 'newline', false, DEFAULT],
     ['escape', edit_close_back, 'Close edit'],
     ['ctrl+s', edit_save, 'Save edit'],
     ['ctrl+enter', edit_save_and_close, 'Save edit and close'],
@@ -2335,6 +2418,7 @@ const DISALLOWED_EXTENSIONS = [
 async function check_mime_type(file) {
   // FIXME: this doesn't work due to a CORS access control issue
   return "";
+  /*
   const response = await fetch(ROOMS_URL + "/" + file, {
     method: "HEAD",
     mode: "cors",
@@ -2345,6 +2429,7 @@ async function check_mime_type(file) {
   }
   const mime = response.headers.get("Content-Type");
   return mime;
+  */
 }
 
 async function check_cannot_edit(file) {
@@ -2434,8 +2519,7 @@ function edit_get_text() {
 }
 
 async function edit_changed() {
-  const edit_agent_mode = dev && type == "agent";
-  if (edit_agent_mode)
+  if (edit_agent_mode())
     await edit_agent_update_text();
   console.log("orig", editor_text_orig);
   console.log("new ", edit_get_text());
@@ -2466,16 +2550,11 @@ async function edit(file) {
 
   set_controls("input_edit");
 
-  let edit_agent_mode = dev && type == "agent";
+  const agent_mode = edit_agent_mode();
 
-  show("edit_advanced", edit_agent_mode);
-  if (edit_agent_mode && view_options.edit_advanced)
-    edit_agent_mode = false;
-
-  show("edit_indent", !edit_agent_mode);
-  show("edit_dedent", !edit_agent_mode);
-  // TODO advanced edit button for agents
-  if (edit_agent_mode)
+  show("edit_indent", !agent_mode);
+  show("edit_dedent", !agent_mode);
+  if (agent_mode)
     return await edit_agent();
 
   edit_set_text(editor_text_orig);
@@ -2491,8 +2570,7 @@ async function edit_save() {
     return false;
   }
 
-  const edit_agent_mode = dev && type == "agent";
-  if (edit_agent_mode)
+  if (edit_agent_mode())
     await edit_agent_update_text();
 
   edit_get_text();
@@ -2536,8 +2614,7 @@ async function edit_save_and_close() {
 async function edit_reset() {
   if (await edit_changed())
     if (!confirm_except_iOS("Discard changes?")) return;
-  const edit_agent_mode = dev && type == "agent";
-  if (edit_agent_mode)
+  if (edit_agent_mode())
     return edit_agent_reset();
   edit_set_text(editor_text_orig);
 }
@@ -2596,6 +2673,10 @@ async function edit_close(ev) {
 
 // edit agent ----------------------------------------------------------------
 
+function edit_agent_mode() {
+  return early && type == "agent" && !view_options.edit_advanced;
+}
+
 async function edit_agent() {
   set_view("view_edit_agent")
 
@@ -2607,9 +2688,10 @@ async function edit_agent() {
 async function edit_agent_reset() {
   const ym = await $import("ym");
 
-  const agent = ym.parse(editor_text_orig);
+  let agent = ym.parse(editor_text_orig);
+  agent = convert_agent_to_use_description(agent);
   editor_text_orig = ym.format(agent);
-  console.log(agent);
+  // console.log(agent);
 
   const name = editor_file.replace(/.*\//, "").replace(/\.[^/.]+$/, "");
   $id("ea_name").value = name;
@@ -2623,6 +2705,33 @@ async function edit_agent_reset() {
 
   const show_visual_age = visual_age !== calc_visual_age_from_age(age);
   show($id("ea_visual_age"), show_visual_age);
+}
+
+function convert_agent_to_use_description(agent) {
+  if (agent.description)
+    return agent;
+  const l_top = (agent.system_top ?? "").length;
+  const l_bot = (agent.system_bottom ?? "").length;
+  let old_key, new_value;
+  if (l_bot > l_top) {
+    old_key = "system_bottom";
+    new_value = agent.system_bottom.replace(/^\+\s*|\s*\+$/, "");
+  } else if (l_top) {
+    old_key = "system_top";
+    new_value = agent.system_top.replace(/^\+\s*|\s*\+$/, "");
+  } else {
+    return agent;
+  }
+  // preserve order of keys, while renaming the key
+  const agent2 = Object.fromEntries(
+    Object.entries(agent).map(([key, value]) =>
+      [
+        key === old_key ? "description" : key,
+        key === old_key ? new_value : value
+      ]
+    )
+  );
+  return agent2;
 }
 
 async function edit_agent_update_text() {
@@ -3052,10 +3161,10 @@ function view_standard(ev) {
 }
 
 async function edit_advanced(ev) {
-  view_options.edit_advanced = (view_options.edit_advanced + 1) % 2;
-  view_options_apply();
   const file = editor_file;
   await edit_close();
+  view_options.edit_advanced = (view_options.edit_advanced + 1) % 2;
+  view_options_apply();
   await edit(file);
 }
 
@@ -3747,25 +3856,25 @@ function select_cancel(ev) {
 
 // function load_filter() {
 //   const filterValue = view_options.filter ?? get_filter_default();
-// 
+//
 //   $id('filter_query').value = filterValue;                                     // console.log("=== load_filter ===", "view_options.filter:", view_options.filter, "FILTER_DEFAULT:", get_filter_default(), "Resolved:", filterValue, "Set input to:", $id('filter_query').value);
 //   active_set("filter", view_options.filter != "");
 // }
-// 
+//
 // function save_filter() {
 //   view_options.filter = $id('filter_query').value;                             // console.log("=== save_filter START ===", "Before:", view_options.filter, "Input value:", $id('filter_query').value, "FILTER_DEFAULT:", get_filter_default());
 //   active_set("filter", view_options.filter != "");
-// 
+//
 //   if (view_options.filter == get_filter_default()) {
 //     view_options.filter = null;                                                // console.log("  Filter matches DEFAULT - reset to null. Final:", view_options.filter);
 //   }                                                                            // else { console.log("  Filter is custom - keeping value:", view_options.filter); }
-// 
+//
 //                                                                                // console.log("=== save_filter END ===", "Final filter:", view_options.filter);
 // }
-// 
+//
 // function filter_changed(ev) {
 //   save_filter();                                                               // console.log("=== filter_changed ===", "Event:", ev?.type, "Target:", ev?.target, "Value:", ev?.target?.value);
-// 
+//
 //   view_options_apply();                                                        // console.log("  Called view_options_apply()");
 // }
 

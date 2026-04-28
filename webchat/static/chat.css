@@ -870,9 +870,24 @@ div.large_controls > .back {
 #view_edit_agent textarea {
 	resize: none;
 }
+
+#view_edit_agent textarea {
+	transition: flex-grow 0.3s ease;
+}
+
 #view_edit_agent textarea:focus {
+	flex-grow: 2;
+}
+
+#view_edit_agent textarea:focus.grow {
+	flex-grow: 8;
+}
+
+#view_edit_agent textarea:focus.grow2,
+#view_edit_agent textarea:focus.grow3 {
 	flex-grow: 10;
 }
+
 /* .items_grow > * {
 	flex: 1;
 } */
