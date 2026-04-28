@@ -136,6 +136,7 @@ trap 'message-and-exit 1' INT
 
 get_options() {
     run_initial_gens=1
+    edit_message_at_start=0
 
     while getopts "nC:BPGs543cioMgfm:F:exa:h" opt; do
         case "$opt" in
@@ -164,8 +165,8 @@ get_options() {
             run_initial_gens=0
             ;;
         e)
-            git-commit
-            exit 0
+            run_initial_gens=0
+            edit_message_at_start=1
             ;;
         x)
             cleanup
@@ -610,6 +611,10 @@ messy() {
         if [ ! -e "$review" ] || [ "$(cat "$review")" = "LGTM" ]; then
             generate-commit-message "$model"
         fi
+    fi
+
+    if (( edit_message_at_start )); then
+        ${EDITOR:-vi} "$commit_message"
     fi
 
     interactive_menu
