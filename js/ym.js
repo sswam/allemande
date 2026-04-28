@@ -3,21 +3,27 @@
 
 // ym.js - "minus minus" YAML-like parser and formatter
 // Usage (CLI): node ym.js < input.yaml
+// version: 0.1.1
 
 // ---------- helpers ----------
 
+const YAML_SPECIAL = /[:{}[\],&*#?|\-<>=!%@~]/;
+
 function getIndent(line) {
     return line.match(/^(\s*)/)[1].length;
-}
-
-function looksLikeKey(trimmed) {
-    return /^\w[\w ./-]*\s*:/.test(trimmed);
 }
 
 function stripQuotes(s) {
     if (s && (s[0] === '"' || s[0] === "'"))
         return s.replace(/^["']|["']$/g, '').replace(/\\/g, '');
     return s;
+}
+
+function quoteIfNeeded(s) {
+    if (typeof s !== "string") return s;
+    if (!YAML_SPECIAL.test(s)) return s;
+    const escaped = s.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\t/g, "\\t").replace(/\n/g, "\\n");
+    return `"${escaped}"`;
 }
 
 // ---------- parser helpers ----------
@@ -37,10 +43,6 @@ function parseBlockScalar(lines, idx, baseIndent) {
         if (indent > baseIndent) {
             parts.push(trimmed);
             idx++;
-        } else if (indent === 0 && !looksLikeKey(trimmed)) {
-            // fault-tolerant: unindented non-key line included in value
-            parts.push(trimmed);
-            idx++;
         } else {
             break;
         }
@@ -51,7 +53,7 @@ function parseBlockScalar(lines, idx, baseIndent) {
 }
 
 function parseContinuation(lines, idx, baseIndent, firstLine) {
-    // collect implicit continuation lines after a string value
+    // collect implicit continuation lines after a string value, joined with space
     const parts = [firstLine];
     while (idx < lines.length) {
         const line = lines[idx];
@@ -61,56 +63,81 @@ function parseContinuation(lines, idx, baseIndent, firstLine) {
         if (indent > baseIndent) {
             parts.push(trimmed);
             idx++;
-        } else if (indent === 0 && !looksLikeKey(trimmed)) {
-            // fault-tolerant: unindented non-key line
-            parts.push(trimmed);
-            idx++;
         } else {
             break;
         }
     }
-    return [parts.join('\n'), idx];
+    return [parts.join(' '), idx];
 }
 
-function parseEmptyValue(lines, idx, baseIndent) {
+function parseListValue(lines, idx, arrIndent, baseIndent, commentCount) {
+    // parse a list, allowing comment lines mid-list
+    // returns [items, commentsSoFar, idx]
+    // comments are returned as { key, value } to be inserted in the parent obj
+    const items = [];
+    const comments = [];
+    while (idx < lines.length) {
+        const line = lines[idx];
+        const trimmed = line.trim();
+        if (!trimmed) { idx++; continue; }
+        const indent = getIndent(line);
+        if (indent < arrIndent) break;
+        if (indent > arrIndent) { idx++; continue; }
+
+        if (trimmed.startsWith('#')) {
+            // comment mid-list: key encodes comment index and next item index
+            const commentLines = [];
+            while (idx < lines.length) {
+                const l = lines[idx];
+                const t = l.trim();
+                if (!t) break;
+                if (!t.startsWith('#')) break;
+                commentLines.push(t);
+                idx++;
+            }
+            const ck = `__#${commentCount}.${items.length}`;
+            comments.push({ key: ck, value: commentLines.join('\n') });
+            commentCount++;
+            continue;
+        }
+
+        if (!trimmed.startsWith('- ') && trimmed !== '-') break;
+        items.push(trimmed.slice(2).trim());
+        idx++;
+    }
+    return [items, comments, commentCount, idx];
+}
+
+function parseEmptyValue(lines, idx, baseIndent, commentCount) {
+    // NOTE: The heuristic to detect `[items, comments]` array result in
+    // `parseEmptyValue` is a bit awkward - I noted this could be refactored
+    // with a result object for clarity
+
     // skip blank lines
     while (idx < lines.length && !lines[idx].trim()) idx++;
 
-    if (idx >= lines.length) return ['', idx];
+    if (idx >= lines.length) return ['', commentCount, idx];
 
     const nextLine = lines[idx];
     const nextTrimmed = nextLine.trim();
     const nextIndent = getIndent(nextLine);
 
-    if (nextIndent <= baseIndent) return ['', idx];
+    if (nextIndent <= baseIndent) return ['', commentCount, idx];
 
     if (nextTrimmed.startsWith('- ') || nextTrimmed === '-') {
-        // array value
-        const items = [];
-        const arrIndent = nextIndent;
-        while (idx < lines.length) {
-            const line = lines[idx];
-            const trimmed = line.trim();
-            if (!trimmed) { idx++; continue; }
-            const indent = getIndent(line);
-            if (indent < arrIndent) break;
-            if (indent > arrIndent) { idx++; continue; }
-            if (!trimmed.startsWith('- ') && trimmed !== '-') break;
-            items.push(trimmed.slice(2).trim());
-            idx++;
-        }
-        return [items, idx];
+        const [items, comments, newCount, newIdx] = parseListValue(lines, idx, nextIndent, baseIndent, commentCount);
+        return [[items, comments], newCount, newIdx];
     }
 
     // nested dict
-    return parseBlock(lines, idx, nextIndent);
+    const [obj, newIdx] = parseBlock(lines, idx, nextIndent, commentCount);
+    return [obj, commentCount, newIdx];
 }
 
 // ---------- main parser ----------
 
-function parseBlock(lines, idx, baseIndent) {
+function parseBlock(lines, idx, baseIndent, commentCount = 0) {
     const obj = {};
-    let commentCount = 0;
 
     while (idx < lines.length) {
         const line = lines[idx];
@@ -133,7 +160,7 @@ function parseBlock(lines, idx, baseIndent) {
                 commentLines.push(t);
                 idx++;
             }
-            const ck = '__#' + commentCount++;
+            const ck = `__#${commentCount++}`;
             obj[ck] = commentLines.join('\n');
             continue;
         }
@@ -151,7 +178,19 @@ function parseBlock(lines, idx, baseIndent) {
         } else if (value === '[]') {
             value = [];
         } else if (value === '') {
-            [value, idx] = parseEmptyValue(lines, idx, baseIndent);
+            let listResult;
+            [listResult, commentCount, idx] = parseEmptyValue(lines, idx, baseIndent, commentCount);
+            // listResult may be [items, comments] for arrays, or obj for dicts, or ''
+            if (Array.isArray(listResult) && listResult.length === 2 && Array.isArray(listResult[1]) && listResult[1].length >= 0 && Array.isArray(listResult[0])) {
+                const [items, comments] = listResult;
+                // insert list-associated comments into obj before the key
+                for (const c of comments) {
+                    obj[c.key] = c.value;
+                }
+                value = items;
+            } else {
+                value = listResult;
+            }
         } else {
             value = stripQuotes(value);
             [value, idx] = parseContinuation(lines, idx, baseIndent, value);
@@ -172,11 +211,13 @@ export function parse(text) {
 // ---------- formatter ----------
 
 export function format(obj, indent = 0) {
-    const prefix = '  '.repeat(indent);
+    const prefix = "  ".repeat(indent);
     const lines = [];
 
     for (const key of Object.keys(obj)) {
-        if (key.startsWith('__#')) {
+        if (key.startsWith("__#")) {
+            // comment: check if it's a list comment (has a dot, e.g. __#3.0) — skip here, handled in array output
+            if (/^__#\d+\.\d+$/.test(key)) continue;
             for (const cl of obj[key].split('\n'))
                 lines.push(prefix + cl);
             continue;
@@ -187,18 +228,29 @@ export function format(obj, indent = 0) {
                 lines.push(`${prefix}${key}: []`);
             } else {
                 lines.push(`${prefix}${key}:`);
-                for (const item of value)
-                    lines.push(`${prefix}- ${item}`);
+                // gather list comments keyed as __#N.itemIndex
+                const listComments = {};
+                for (const k of Object.keys(obj)) {
+                    const lm = k.match(/^__#\d+\.(\d+)$/);
+                    if (lm) listComments[parseInt(lm[1])] = obj[k];
+                }
+                for (let i = 0; i < value.length; i++) {
+                    if (listComments[i] !== undefined) {
+                        for (const cl of listComments[i].split('\n'))
+                            lines.push(`${prefix}${cl}`);
+                    }
+                    lines.push(`${prefix}- ${quoteIfNeeded(value[i])}`);
+                }
             }
-        } else if (value !== null && typeof value === 'object') {
+        } else if (value !== null && typeof value === "object") {
             lines.push(`${prefix}${key}:`);
             lines.push(format(value, indent + 1));
-        } else if (typeof value === 'string' && value.includes('\n')) {
+        } else if (typeof value === "string" && value.includes('\n')) {
             lines.push(`${prefix}${key}: |-`);
             for (const l of value.split('\n'))
                 lines.push(`${prefix}  ${l}`);
         } else {
-            lines.push(`${prefix}${key}: ${value ?? ''}`);
+            lines.push(`${prefix}${key}: ${quoteIfNeeded(value) ?? ''}`);
         }
     }
 
@@ -210,8 +262,10 @@ export function format(obj, indent = 0) {
 async function main() {
     let chunks = [];
     for await (const chunk of Deno.stdin.readable) chunks.push(chunk);
-    const text = Buffer.concat(chunks).toString('utf8');
-    console.log(format(parse(text)));
+    const text = Buffer.concat(chunks).toString("utf8");
+    const obj = parse(text);
+    // console.log(obj);
+    console.log(format(obj));
 }
 
 if (import.meta.main) main();
