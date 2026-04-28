@@ -12,7 +12,7 @@ Usage as a module:
 
 import sys
 import logging
-from typing import TextIO
+from typing import TextIO, Any
 
 from ally import main
 
@@ -76,7 +76,25 @@ def read_records(input: TextIO, use_dot: bool = False) -> list[dict[str, str]]:
     return records
 
 
-def write_record(output: TextIO, record: dict[str, str], indent: str = '\t', use_dot: bool = False):
+def is_iterable(obj):
+    try:
+        iter(obj)
+        return True
+    except TypeError:
+        return False
+
+
+def is_dicty(obj):
+    return hasattr(obj, "items")
+
+
+def scalar_to_str(value: bool|int|float|str) -> str:
+    if isinstance(value, bool):
+        value = int(value)
+    return str(value)
+
+
+def write_record(output: TextIO, record: dict[str, Any], indent: str = '\t', use_dot: bool = False, end = '\n', key_prefix=""):
     """Write a single record to the output file."""
     field_order = record.get("__field_order__")
     if field_order is None:
@@ -86,18 +104,25 @@ def write_record(output: TextIO, record: dict[str, str], indent: str = '\t', use
         if not key in record or key == "__field_order__":
             continue
         value = record[key]
-        lines = value.split('\n')
-        output.write(f"{key}: {lines[0]}\n")
-        for line in lines[1:]:
-            if use_dot and not line.strip():
-                output.write(".\n")
-            else:
-                output.write(f"{indent}{line}\n")
+        if is_dicty(value):
+            write_record(output, value, indent, use_dot, end="", key_prefix=key_prefix+key+".")
+        elif not isinstance(value, str) and is_iterable(value):
+            value = "\n".join(scalar_to_str(x) for x in value)
+        else:
+            value = scalar_to_str(value)
+            lines = value.split('\n')
+            output.write(f"{key_prefix}{key}:{indent}{lines[0]}\n")
+            for line in lines[1:]:
+                if use_dot and not line:
+                    output.write(".\n")
+                else:
+                    output.write(f"{indent}{line}\n")
 
-    output.write("\n")
+    if end:
+        output.write("\n")
 
 
-def write_records(output: TextIO, records: list[dict[str, str]], indent: str = '\t', use_dot: bool = False):
+def write_records(output: TextIO, records: list[dict[str, Any]], indent: str = '\t', use_dot: bool = False):
     """Write records to the output file."""
     for record in records:
         write_record(output, record, indent, use_dot)
