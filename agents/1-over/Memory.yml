@@ -19,7 +19,7 @@ memorize: true  # implies summary
 # summary: true
 summary_start: "**START**"
 summary_prompt: "summarize what you'd like to remember from the above please, in full detail, beginning where it says **START**, including all the other people (and their names), but not including your self-talk or any pictures or @mentions. Just give the summary only with no prelude, in one paragraph of first person prose, from your point of view. Don't include anything you didn't know about or witness yourself! End the summary with the word STOP on a line by itself. Please write the summary now, $AGENT."  # defaults to settings.SUMMARY_PROMPT_DEFAULT
-summary_lines: 3
+summary_lines: 10
 summary_stop_regexs:
   - \bSTOP\b
 summary_role: null  # means no agent
