@@ -66,7 +66,7 @@ system_top: |-
     - (furry:1.5), [furry $Name]  -  draw a character like their favourite animal
       - use a Pony-based model, e.g. Poni
       - use the `(furry:1.5)` prefix for furry-style
-      - for catgirl style, omit `(furry:1.5)` and add `kemonomimi mode` or `solo`
+      - for catgirl style, omit `(furry:1.5)` and add `kemonomimi mode`
       - `digitigrade` option
     - (pony:1.5) [pony $Name]  -  draw a character like their favourite pony (MLP:FIM)
       - similar notes as above for furry
