@@ -2,7 +2,7 @@
 
 // CONFIG
 
-const VERSION = "0.9.726";
+const VERSION = "0.9.735";
 
 const DEBUG = false;
 
@@ -34,6 +34,7 @@ const URLS_TO_CACHE = {
     "/embed.js",
     "/embed.css",
     "/icons.js",
+    "/ym.js",
 //    "/icons.css",
 //    "/icons.woff2",
     "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap",

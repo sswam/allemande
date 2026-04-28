@@ -6,9 +6,12 @@ SHELL=bash
 # BOOTSTRAP_ICONS_CSS=https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css
 # BOOTSTRAP_ICONS_WOFF2=https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff2
 
-static_files = $(wildcard static/*.html) $(wildcard static/*.css) $(wildcard static/*.js) $(wildcard static/*.wasm) $(wildcard static/*.json) $(wildcard static/*.png) $(wildcard static/*.webp)
+static_files = $(wildcard static/*.html) $(wildcard static/*.css) $(wildcard static/*.js) $(wildcard static/*.wasm) $(wildcard static/*.json) $(wildcard static/*.png) $(wildcard static/*.webp) static/ym.js
 
 all: build.stamp get ../users.txt # static/icons.css
+
+static/ym.js: ../js/ym.js
+	cp -a $< $@
 
 build.stamp: $(static_files) ../site/auth.js
 	echo $(static_files)
