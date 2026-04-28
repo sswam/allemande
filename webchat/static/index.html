@@ -105,19 +105,30 @@
 
 	<textarea id="view_edit" class="view editor grow hidden"></textarea>
 
-	<div id="view_edit_agent" class="view grow col hidden">
-		<input id="ea_name" name="ea_name" type="text" readonly title="name" placeholder="name">
-		<select id="ea_type" name="ea_type" title="type">
-			<option value="character">character - a character for chat and role-playing</option>
-			<option value="agent">agent - a functional assistant, with prompting for safety and productivity</option>
-			<option value="clean">clean - a vanilla LLM with no extras</option>
-		</select>
-		<input id="ea_model" name="ea_model" type="text" title="model" placeholder="model">
-		<textarea id="ea_prompt" name="ea_prompt" class="grow" title="description" placeholder="description"></textarea>
-		<input id="ea_age" name="ea_age" type="text" title="age" placeholder="age">
-		<textarea id="ea_visual" name="ea_visual" title="visual" placeholder="visual"></textarea>
-		<input id="ea_visual_clothes" name="ea_visual_clothes" type="text" title="visual - clothes" placeholder="visual - clothes">
-		<input id="ea_visual_emo" name="ea_visual_emo" type="text" title="visual - expression" placeholder="visual - expression">
+	<div id="view_edit_agent" class="view grow col gap hidden">
+		<div class="row wide gap">
+			<input id="ea_name" readonly title="name" placeholder="name" class="grow2">
+			<input id="ea_age" title="age" placeholder="age" class="grow" type="search">
+			<input id="ea_visual_age" title="visual - age" placeholder="visual - age" class="grow2" type="search">
+		</div>
+		<div class="row wide gap">
+			<select id="ea_type" title="type" class="grow2">
+				<option value="character">character - chat and role-play</option>
+				<option value="agent">agent - a safe, productive assistant</option>
+				<option value="plain">plain - an LLM with no extras</option>
+			</select>
+			<!--<input id="ea_model" title="model" placeholder="model" class="grow" type="search">-->
+			<input list="ea_model_options" id="ea_model" title="model" placeholder="model" class="grow">
+			<datalist id="ea_model_options">
+			  <option value="SmallAI" label="Small, fast, free chat based on Llama 3 8B">
+			  <option value="MediumAI">
+			  <option value="StrongAI">
+			</datalist>
+		</div>
+		<textarea id="ea_description" class="grow3" title="description" placeholder="description"></textarea>
+		<textarea id="ea_visual_person" class="grow" title="visual - person" placeholder="visual - person"></textarea>
+		<textarea id="ea_visual_clothes" class="grow" title="visual - clothes" placeholder="visual - clothes"></textarea>
+		<textarea id="ea_visual_emo" title="visual - expression" placeholder="visual - expression"></textarea>
 	</div>
 
 	<div id="view_usage" class="view usage grow hidden"></div>
@@ -174,12 +185,12 @@
 			<button id="rec_preview_cancel" class="cancel">cancel</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_edit">
-			<button id="edit_advanced" title="simple editor" class="hidden">advanced</button>
 			<button id="edit_indent" title="insert tab / indent">indent</button>
 			<button id="edit_dedent" title="dedent">dedent</button>
 			<button id="edit_reset" title="revert changes" class="cancel">reset</button>
 			<button id="edit_clear" title="clear the file" class="cancel">clear</button>
 			<button id="edit_save" title="save changes" class="okay">save</button>
+			<button id="edit_advanced" title="simple editor" class="dev">advanced</button>
 			<button id="edit_close" class="back">close</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_audio">

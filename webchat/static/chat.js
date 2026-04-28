@@ -930,7 +930,7 @@ export async function set_room(room_new, no_history) {
 
 //  if (view === "view_edit" && type == "dir" && !edit_close()) {
 //    // reject browsing to a directory if we have unsaved changes in the editor
-  if (view === "view_edit" && !edit_close()) {
+  if (view === "view_edit" && !await edit_close()) {
     // reject browsing if we have unsaved changes in the editor
     $room.value = room;
     history.forward();  // typically we would get here from the back button?  and this doesn't hurt if not
@@ -1442,7 +1442,7 @@ function room_prev() {
 
 function room_first() {
   let num = room_get_number();
-  if (num === null || num === -1)
+  if (num === null)
     return null;
   return room_set_number("");
 }
@@ -1492,6 +1492,8 @@ export function add_shortcuts(shortcuts, shortcuts_list) {
 }
 
 function dispatch_shortcut(ev, shortcuts) {
+  if (!ev.key)  // needed for input with datalist
+    return;
   const key = ev.key.toLowerCase();
   if (key !== "alt" && ev.altKey)
     view_option_skip_alt = true;
@@ -1832,7 +1834,7 @@ async function setup_nav_buttons() {
   // Setup first page button --------------------
   const $pages_first = $id("pages_first");
   const page_first = room_first();
-  if (page_first) {
+  if (page_first && page_first != room) {
     $pages_first.href = query_to_hash(page_first);
   } else {
     $pages_first.removeAttribute("href");
@@ -2431,7 +2433,12 @@ function edit_get_text() {
   return editor_text;
 }
 
-function edit_changed() {
+async function edit_changed() {
+  const edit_agent_mode = dev && type == "agent";
+  if (edit_agent_mode)
+    await edit_agent_update_text();
+  console.log("orig", editor_text_orig);
+  console.log("new ", edit_get_text());
   return edit_get_text() !== editor_text_orig;
 }
 
@@ -2457,12 +2464,22 @@ async function edit(file) {
     await error("mod_edit");
   }
 
-  edit_set_text(editor_text_orig);
-  if (dev && type == "agent")
-    set_view("view_edit_agent")
-  else
-    set_view("view_edit");
   set_controls("input_edit");
+
+  let edit_agent_mode = dev && type == "agent";
+
+  show("edit_advanced", edit_agent_mode);
+  if (edit_agent_mode && view_options.edit_advanced)
+    edit_agent_mode = false;
+
+  show("edit_indent", !edit_agent_mode);
+  show("edit_dedent", !edit_agent_mode);
+  // TODO advanced edit button for agents
+  if (edit_agent_mode)
+    return await edit_agent();
+
+  edit_set_text(editor_text_orig);
+  set_view("view_edit");
   $edit.focus();
   // set caret at end
   $edit.selectionStart = $edit.selectionEnd = $edit.value.length;
@@ -2473,6 +2490,10 @@ async function edit_save() {
     error("edit_save");
     return false;
   }
+
+  const edit_agent_mode = dev && type == "agent";
+  if (edit_agent_mode)
+    await edit_agent_update_text();
 
   edit_get_text();
 
@@ -2512,9 +2533,12 @@ async function edit_save_and_close() {
     edit_close_back();
 }
 
-function edit_reset() {
-  if (edit_changed())
+async function edit_reset() {
+  if (await edit_changed())
     if (!confirm_except_iOS("Discard changes?")) return;
+  const edit_agent_mode = dev && type == "agent";
+  if (edit_agent_mode)
+    return edit_agent_reset();
   edit_set_text(editor_text_orig);
 }
 
@@ -2528,7 +2552,7 @@ async function edit_close_back(ev) {
   // if ends with EXTENSION, strip it off
   const stem = editor_file.replace(new RegExp(quotemeta(EXTENSION)+"$"), "");
   const type = await get_file_type(stem);
-  if (edit_close() && (type == "file" || type == "access" || type == "agent" || type == "options")) {
+  if (await edit_close() && (type == "file" || type == "access" || type == "agent" || type == "options")) {
     // if can't go back, go to parent folder
     if (history.length > 1)
       history.back();
@@ -2537,10 +2561,10 @@ async function edit_close_back(ev) {
   }
 }
 
-function edit_close(ev) {
+async function edit_close(ev) {
   if (ev)
     ev.stopPropagation();
-  if (edit_changed())
+  if (await edit_changed())
     if (!confirm_except_iOS("Discard changes?")) return false;
   // const type = await get_file_type(editor_file);
   // // const leafname = editor_file.replace(/.*\//, "");
@@ -2569,6 +2593,76 @@ function edit_close(ev) {
   //   set_room(change_to_room);
   return true;
 }
+
+// edit agent ----------------------------------------------------------------
+
+async function edit_agent() {
+  set_view("view_edit_agent")
+
+  edit_agent_reset();
+
+  $id("ea_name").focus();
+}
+
+async function edit_agent_reset() {
+  const ym = await $import("ym");
+
+  const agent = ym.parse(editor_text_orig);
+  editor_text_orig = ym.format(agent);
+  console.log(agent);
+
+  const name = editor_file.replace(/.*\//, "").replace(/\.[^/.]+$/, "");
+  $id("ea_name").value = name;
+  $id("ea_model").value = agent.base ?? "";
+  $id("ea_description").value = agent.description ?? "";
+  const age = $id("ea_age").value = agent.age ?? "";
+  $id("ea_visual_person").value = agent.visual?.person ?? "";
+  $id("ea_visual_clothes").value = agent.visual?.clothes ?? "";
+  $id("ea_visual_emo").value = agent.visual?.emo ?? "";
+  const visual_age = $id("ea_visual_age").value = agent.visual?.age ?? "";
+
+  const show_visual_age = visual_age !== calc_visual_age_from_age(age);
+  show($id("ea_visual_age"), show_visual_age);
+}
+
+async function edit_agent_update_text() {
+  const ym = await $import("ym");
+
+  const agent = ym.parse(editor_text_orig);
+  agent.visual ??= {};
+
+  agent.base = $id("ea_model").value;
+  agent.description = $id("ea_description").value;
+  agent.age = $id("ea_age").value;
+  agent.visual.person = $id("ea_visual_person").value;
+  agent.visual.clothes = $id("ea_visual_clothes").value;
+  agent.visual.emo = $id("ea_visual_emo").value;
+
+  if ($id("ea_visual_age").classList.contains("hidden")) {
+    agent.visual.age = calc_visual_age_from_age(agent.age);
+  } else {
+    agent.visual.age = $id("ea_visual_age").value;
+  }
+
+  $edit.value = ym.format(agent);
+}
+
+function is_number(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function calc_visual_age_from_age(age) {
+  if (!is_number(age) || age < 0)
+    return "";
+  const word =
+    age >= 18 ? "adult" :
+    age >= 13 ? "teenage" :
+    age >= 4 ? "child" :
+    age >= 1 ? "toddler" :
+    "baby";
+  return `${word} ${age} years old`;
+}
+
 
 // view options --------------------------------------------------------------
 
@@ -2957,9 +3051,12 @@ function view_standard(ev) {
   message_changed();
 }
 
-function edit_advanced(ev) {
+async function edit_advanced(ev) {
   view_options.edit_advanced = (view_options.edit_advanced + 1) % 2;
   view_options_apply();
+  const file = editor_file;
+  await edit_close();
+  await edit(file);
 }
 
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
@@ -3975,13 +4072,15 @@ function beta_test() {
 
 // usage ---------------------------------------------------------------------
 
+let view_prev;
 async function usage() {
   if (view == "view_usage") {
     $id("usage").classList.remove("back");
-    set_view();
+    set_view(view_prev);
     return;
   }
 
+  view_prev = view;
   set_view("view_usage");
   $id("usage").classList.add("back");
 
@@ -4180,6 +4279,41 @@ async function usage() {
   const now = new Date();
   await showUsageForMonth(now);
 }
+
+
+// combo boxes ---------------------------------------------------------------
+
+function handle_combo_focus(event) {
+  const el = event.target;
+  // Store value in placeholder so it stays visible as a hint
+  el.placeholder = el.value;
+  // Clear value to force datalist to show all options
+  el.value = '';
+}
+
+function handle_combo_blur(event) {
+  const el = event.target;
+  // Restore original value if the user didn't type/select anything new
+  if (el.value === '') {
+    el.value = el.placeholder;
+    el.placeholder = el.dataset.placeholder;
+  }
+}
+
+function handle_combo_change(event) {
+  const el = event.target;
+  el.blur();
+}
+
+function setup_combo_boxes() {
+  for (const el of $$("input[list]")) {
+    el.dataset.placeholder = el.placeholder;
+    $on(el, "focus", handle_combo_focus);
+    $on(el, "change", handle_combo_change);
+    $on(el, "blur", handle_combo_blur);
+  }
+}
+
 
 // main ----------------------------------------------------------------------
 
@@ -4386,6 +4520,8 @@ export async function init() {
     view_standard(1);
 
   welcome();  // async
+
+  setup_combo_boxes();
 
   /* This breaks scrolling in view_edit, etc, and I forget why I added it!
   $on(document, "touchmove", function(e) {

@@ -340,11 +340,11 @@ body.light .active--3 { background-color: #68d0d0 !important; color: black !impo
 body.light .active--4 { background-color: #70e0e0 !important; color: black !important; }
 body.light .active--5 { background-color: #78f0f0 !important; color: black !important; }
 
-body.dark input[placeholder]:not(:placeholder-shown) {
+body.dark #inputrow input[placeholder]:not(:placeholder-shown) {
 	background-color: #606030 !important; color: white !important;
 }
 
-body.light input[placeholder]:not(:placeholder-shown) {
+body.light #inputrow input[placeholder]:not(:placeholder-shown) {
 	background-color: #b0b058 !important; color: black !important;
 }
 
@@ -864,12 +864,15 @@ div.large_controls > .back {
 	margin-top: 1.25rem;
 }
 
-#view_edit_agent {
-	gap: var(--pad);
-}
-#view_edit_agent > * {
+#view_edit_agent * {
 	min-height: 2rem;
 }
-#view_edit_agent > textarea {
+#view_edit_agent textarea {
 	resize: none;
 }
+#view_edit_agent textarea:focus {
+	flex-grow: 10;
+}
+/* .items_grow > * {
+	flex: 1;
+} */

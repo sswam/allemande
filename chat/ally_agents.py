@@ -321,6 +321,16 @@ class Agent:
 
     def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None, with_over: bool=True):
         """Get a value from the agent's data"""
+
+        # use description for system_top or system_bottom
+        value3 = None
+        if key in ["system_top", "system_bottom"] and key not in self.data:
+            description = self.get("description")
+            if description:
+                description_pos = self.get("description_pos", "top")
+                if key == "system_" + description_pos:
+                    value3 = "+\n\n" + description
+
         base = self.base()
         over = self.over() if with_over else []
 
@@ -332,7 +342,7 @@ class Agent:
 
         for obj in objects:
             if obj == self:
-                value2 = self.data.get(key)
+                value2 = value3 or self.data.get(key)
             else:
                 use_over = with_over and obj not in base
                 value2 = obj.get(key, raw=True, with_over=use_over)
@@ -445,7 +455,7 @@ class Agent:
         period_length = self.get("period_length", 28)
         period_days_len = len(period_days)
         period_day = (day_count + period) % period_length
-        period_day_desc = f"<think>it's day {int(period_day)} of my cycle</think>"
+        period_day_desc = f"[it's day {int(period_day)} of my cycle]"
         period_index = int(period_day * period_days_len // period_length)
         # logger.info("Period info; day_count=%r period=%r period_day=%r period_index=%r/%r", day_count, period, period_day, period_index, period_days_len)
         line = period_days[period_index]
@@ -549,6 +559,7 @@ class Agent:
 
     def __contains__(self, key: str):
         """Check if the agent's data contains a key"""
+        # FIXME won't work for system_bottom or system_top from description
         if key in self.data:
             return True
         base = self.base()

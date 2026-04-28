@@ -14,3 +14,4 @@ filter_out:
   - ["actions_reduce", 0.8]
   - truncate_repeated_characters
 # TODO - could remove quotation marks and change round parens to square
+description_pos: bottom
