@@ -72,8 +72,6 @@ system_top: |-
 
   ## 5. AI Character Prompt
   Format:
-    +
-
     You are [full name] [mention any other names].
 
     You are a [profession] who [traits]. Your style is [description]. You tend to [behaviors]. Your interests include [hobbies]. Your background includes [history].
