@@ -194,7 +194,7 @@ Please do not use languages models other than those listed here for NSFW content
 
 | Creator    | Model                 | Name   | Input | Output | Description                                                                                             |
 |------------|-----------------------|--------|-------|--------|---------------------------------------------------------------------------------------------------------|
-| Meta       | Llama 3.1 8B          | Elly   | N/A   | N/A    | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
+| Meta       | Llama 3.1 8B          | Elly   | $0    | $0     | A smaller human-like model, for creativity and engaging conversations. Most characters use this model.  |
 | Meta       | Llama 3.3 70B         | Ellyn  | $0.10 | $0.32  | A stronger human-like model, for creativity and engaging conversations.                                 |
 | Google     | Gemma 3 27B           | Gemma  | $0.08 | $0.16  | Google's open source Gemma language model, version 3.                                                   |
 | Google     | Gemma 4 26B A4B       | Gema   | $0.13 | $0.40  | Google's open source Gemma language model, version 4 - mixture of experts.                              |
@@ -207,11 +207,11 @@ Please do not use languages models other than those listed here for NSFW content
 | xAI        | Grok 4                | Grok   | $3    | $15    | xAI's helpful, truthful and humorous Grok 4 model.                                                      |
 | xAI        | Grok 4 Fast           | Gok    | $0.20 | $0.50  | Ultra-fast Grok 4 with extended context for standard tasks.                                             |
 | DeepSeek   | DeepSeek Chat V3      | Dese   | $0.20 | $0.80  | DeepSeek's creative and intelligent chat model.                                                         |
-| DeepSeek   | DeepSeek Chat V3.2    | Desee  | $0.27 | $1.10  | DeepSeek's creative and intelligent chat model, with extra smarts.                                      |
+| DeepSeek   | DeepSeek V4 Flash     | Desee  | $0.14 | $0.28  | DeepSeek's creative and intelligent chat model, with extra smarts.                                      |
 | Mistral    | Mistral Large 2411    | Misti  | $2    | $6     | Mistral's strongest language model, very capable and creative.                                          |
 | Mistral+   | Venice Uncensored 1.1 | Veni   | $0.20 | $0.90  | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                              |
 | Mistral+   | Venice Role Play      | Venni  | $0.50 | $2     | Venice Role Play Uncensored.                                                                            |
-| MoonshotAI | Kimi K2 0905          | Kimi   | $0.39 | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |
+| MoonshotAI | Kimi K2 0905          | Kimi   | $0.39 | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |
 | MoonshotAI | Kimi K2.5             | Kimmi  | $0.45 | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
 | Z.AI       | GLM 4.6               | Glimi  | $0.50 | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.               |
 
@@ -225,8 +225,8 @@ Input and output costs are measured in US dollars per million tokens.
 | LEOSAM        | HelloWorld XL       | Hily | A popular model based on SDXL, for high-quality realistic, concept art and fantasy art including soft-core erotica  |
 | Autismix anon | AutismMix Confetti  | Poni | Mix of Pony with "some stuff", a popular model for anime-style art                                                  |
 | Cyberdelia    | CyberRealistic Pony | Coni | CyberRealistic Pony is the awesome Pony Diffusion with some CyberRealistic elements, a realistic Pony model         |
-| SubtleShader  | Big Love Pony       | Pigi | The more Pony-flavoured variant, a bit less realistic but with a better understanding of booru tags                 |
 | SubtleShader  | Big Love XL         | Bigi | State of the art erotic art, our most realistic model aside from Jily, with more SDXL than Pony                     |
+| SubtleShader  | Big Love Pony       | Pigi | The more Pony-flavoured variant, a bit less realistic but with a better understanding of booru tags                 |
 | Tauron        | Eros Ultima Hybrid  | Yoni | A merge of SDXL with PonyXL, can generate high-quality and quite realistic erotic art                               |
 | Stable Yogi   | Babes               | Boni | This pony-based model is tuned to render beautiful women and erotic art                                             |
 | coyotte       | Lustify V6 OLT      | Lusy | This SDXL-based model is very realistic, and excellent for NSFW art and can also do SFW art                         |

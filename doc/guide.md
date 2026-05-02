@@ -466,8 +466,8 @@ digraph DeepSeek {
 
     "DeepSeek" [label=<<b>DeepSeek</b>>]
     "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
-    "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek Chat (V3.2)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
-    "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek Reasoner (R1)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Strong Reasoning, Creative</font>>]
+    "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek V4 Flash</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
+    "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek V4 Flash (reasoning)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Strong Reasoning, Creative</font>>]
 
     "DeepSeek" -> "Dese"
     "DeepSeek" -> "Desee"
@@ -636,8 +636,8 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Gok** (Grok 4 Fast, xAI): xAI's latest quirky and intelligent language model (fast)
 - **Groc** (Grok Code Fast, xAI): xAI's fast coding specialist model
 - **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
-- **Desee** (DeepSeek Chat V3.2): DeepSeek's creative and intelligent chat model, with extra smarts
-- **Deseri** (DeepSeek Reasoner R1): DeepSeek's strong and creative reasoning model
+- **Desee** (DeepSeek V4 Flash): DeepSeek's creative and intelligent chat model, with extra smarts
+- **Deseri** (DeepSeek V4 Flash - Reasoning): DeepSeek's strong and creative reasoning model
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
 - **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
 - **Veni** (Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition): Uncensored
@@ -814,7 +814,8 @@ Recommend models for role-play:
 - llm_llama / default  (can be inconsistent, but very human-like)
 - llama-3.3-70b  (a stronger variant)
 - google / gemini-2.0-flash, gemini-2.5-flash, or gemini-2.5-pro (the latter for very brainy characters)
-- mistral-large (a paid model)
+- mistral-large
+- venice role play
 
 These models support NSFW chat, but are not focused on it.
 
@@ -862,7 +863,7 @@ type: visual
 
 | Creator       | Model                 | Name    | Input  | Output | Description                                                                                                      |
 |---------------|-----------------------|---------|--------|--------|------------------------------------------------------------------------------------------------------------------|
-| Meta          | Llama 3.1 8B          | Elly    | N/A    | N/A    | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
+| Meta          | Llama 3.1 8B          | Elly    | $0     | $0     | A small human-like model, for creativity and engaging conversations. Most characters use this model.             |
 | Meta          | Llama 3.3 70B         | Ellyn   | $0.10  | $0.32  | A stronger human-like model, for creativity and engaging conversations.                                          |
 | Meta          | Llama 4 Scout         | Skout   | $0.08  | $0.30  | A fast new open model from Meta.                                                                                 |
 | Meta          | Llama 4 Maverick      | Mavi    | $0.15  | $0.60  | A powerful new open model from Meta, achieving high performance at low cost.                                     |
@@ -879,7 +880,7 @@ type: visual
 | Google        | Gemini 3 Pro          | Gemi    | $2     | $12.00 | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                             |
 | OpenAI        | GPT-4.1-mini          | Dav     | $0.40  | $1.60  | OpenAI's fast and affordable model, ideal for efficient interactions.                                            |
 | OpenAI        | GPT-4.1               | Emmy    | $2     | $8.00  | OpenAI's adaptable and versatile model, perfect for varied conversations.                                        |
-| OpenAI        | GPT-4o                | Emmo    | $2.5   | $10.00 | OpenAI's adaptable and versatile model, perfect for varied conversations (similar to 4.1 but more expensive)     |
+| OpenAI        | GPT-4o                | Emmo    | $2.5   | $10.00 | OpenAI's adaptable and versatile model, perfect for varied conversations (similar to 4.1 but more expensive).    |
 | OpenAI        | o4-mini               | Fermi   | $1.10  | $4.40  | OpenAI's fast and affordable model, ideal for efficient reasoning.                                               |
 | OpenAI        | o3                    | Grace   | $10.00 | $40.00 | OpenAI's most powerful reasoning model for advanced applications.                                                |
 | OpenAI        | GPT-5-nano            | Heis    | $0.05  | $0.40  | OpenAI's fastest, most cost-efficient version of GPT-5.                                                          |
@@ -897,13 +898,13 @@ type: visual
 | xAI           | Grok 4 Fast           | Gok     | $0.20  | $0.50  | Ultra-fast Grok 4 with extended context for standard tasks.                                                      |
 | xAI           | Grok Code Fast        | Groc    | $0.20  | $1.50  | Specialized fast model optimized for code generation and analysis.                                               |
 | DeepSeek      | DeepSeek Chat V3      | Dese    | $0.20  | $0.80  | DeepSeek's creative and intelligent chat model.                                                                  |
-| DeepSeek      | DeepSeek Chat V3.2    | Desee   | $0.27  | $1.10  | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
-| DeepSeek      | DeepSeek Reasoner R1  | Deseri  | $0.55  | $2.19  | DeepSeek's strong and creative reasoning model.                                                                  |
-| Alibaba Cloud | QwQ 32B               | Qwen    | N/A    | N/A    | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
+| DeepSeek      | DeepSeek V4 Flash     | Desee   | $0.14  | $0.28  | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
+| DeepSeek      | DeepSeek V4 Flash + R | Deseri  | $0.14  | $0.28  | DeepSeek's strong and creative reasoning model.                                                                  |
+| Alibaba Cloud | QwQ 32B               | Qwen    | $0.15  | $0.58  | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Mistral       | Mistral Large 2411    | Misti   | $2     | $6     | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
 | Mistral+      | Venice Uncensored 1.1 | Veni    | $0.20  | $0.90  | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                                       |
 | Mistral+      | Venice Role Play      | Venni   | $0.50  | $2     | Venice Role Play Uncensored.                                                                                     |
-| MoonshotAI    | Kimi K2 0905          | Kimi    | $0.39  | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
+| MoonshotAI    | Kimi K2 0905          | Kimi    | $0.39  | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
 | MoonshotAI    | Kimi K2.5             | Kimmi   | $0.45  | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling.          |
 | Z.AI          | GLM 4.6               | Glimi   | $0.50  | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.                        |
 

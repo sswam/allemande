@@ -348,9 +348,9 @@ MODELS = {
         "aliases": ["desee"],
         "vendor": "deepseek",
         "id": "deepseek-chat",
-        "description": "deepseek-chat points to DeepSeek-V3.2",
-        "cost_in": 0.27,
-        "cost_out": 1.10,
+        "description": "deepseek-chat points to deepseek-v4-flash",
+        "cost_in": 0.14,
+        "cost_out": 0.28,
     },
     "deepseek-reasoner": {
         "aliases": ["deseri"],
