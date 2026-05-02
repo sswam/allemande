@@ -891,3 +891,37 @@ div.large_controls > .back {
 /* .items_grow > * {
 	flex: 1;
 } */
+
+/* Forcefully style Prompts */
+
+dialog[role="dialog"], dialog[role="dialog"] * {
+	font: inherit !important;
+}
+
+dialog[role="dialog"], dialog[role="dialog"] div {
+  background: var(--background) !important;
+  color: var(--text) !important;
+}
+
+dialog[role="dialog"] button {
+  border-radius: var(--radius) !important;
+  background-color: var(--button) !important;
+}
+dialog[role="dialog"] button:hover,
+dialog[role="dialog"] button:focus {
+	background: var(--button-focus) !important;
+}
+
+/* cancel == .back */
+body.light dialog[role="dialog"] button[value=cancel] {
+  background-color: #9090b0 !important; color: black !important;
+}
+body.dark dialog[role="dialog"] button[value=cancel] {
+  background-color: #303060 !important; color: white !important;
+}
+
+dialog[role="dialog"] input {
+  background: var(--input) !important;
+  color: var(--text) !important;
+  border: 0.0625rem solid var(--border) !important;
+}

@@ -54,10 +54,12 @@ async function detectIncognito() {
 }
 const incognito = await detectIncognito();
 
+/*
 function confirm_except_iOS(message) {
   if (iOS) return true;
   return confirm(message);
 }
+*/
 
 let lastMessageId = null;
 
@@ -956,8 +958,6 @@ async function get_file_type(name) {
 }
 
 export async function set_room(room_new, no_history) {
-  // console.log("set_room: ", room_new);
-
   // check if room_new was passed
   if (room_new === undefined) {
     $room.value = $room.value.trim();
@@ -1004,20 +1004,20 @@ export async function set_room(room_new, no_history) {
     }
   }
 
-  type = await get_file_type(room_new);
-
-  if (type != "room")
-    $body.classList.remove("empty");
-
 //  if (view === "view_edit" && type == "dir" && !edit_close()) {
 //    // reject browsing to a directory if we have unsaved changes in the editor
-  if (view === "view_edit" && !await edit_close()) {
+  if ((view === "view_edit" || view === "view_edit_agent") && !await edit_close()) {
     // reject browsing if we have unsaved changes in the editor
     $room.value = room;
     history.forward();  // typically we would get here from the back button?  and this doesn't hurt if not
     error("room");
     return;
   }
+
+  type = await get_file_type(room_new);
+
+  if (type != "room")
+    $body.classList.remove("empty");
 
   room = $room.value = room_new;
   set_title_hash(room, no_history);
@@ -1057,12 +1057,14 @@ export async function set_room(room_new, no_history) {
     editor_text_orig = null;
   } else if (type == "file" || type == "access" || type == "agent" || type == "options") {
     // start editing the file
-    edit(room_new);
+    await edit(room_new);
   } else if (type == "media") {
     // media, e.g. PDF, just view  XXX FIXME
   }
 
-  if (view !== "view_edit") {
+  if (view === "view_edit" || view === "view_edit_agent") {
+    view_options_apply();
+  } else {
     reset_ui();
     // if (view_options.advanced)
     //   set_top("top_scroll");
@@ -1914,6 +1916,16 @@ async function setup_nav_buttons() {
   const $nav_home = $id("nav_home");
   $nav_home.href = "/" + query_to_hash(user + "/chat");
 
+  // Setup agents button --------------------
+  const $nav_agents = $id("nav_agents");
+  if (room.startsWith(user + "/")) {
+    $nav_agents.href = "/" + query_to_hash(user + "/agents/");
+  } else if (room.startsWith("nsfw/")) {
+    $nav_agents.href = "/" + query_to_hash("agents/nsfw/" + user + "/");
+  } else {
+    $nav_agents.href = "/" + query_to_hash("agents/" + user + "/");
+  }
+
   // Setup first page button --------------------
   const $pages_first = $id("pages_first");
   const page_first = room_first();
@@ -2128,7 +2140,7 @@ async function clear_chat(ev, op) {
   // else
   //   throw new Error("invalid op: " + op);
 
-  if (confirm_message && !confirm_except_iOS(confirm_message)) return;
+  if (confirm_message && !await Prompts.confirm(confirm_message)) return;
 
   if (ev)
     ev.preventDefault();
@@ -2253,6 +2265,7 @@ function reset_ui() {
   active_reset("add_file");
   active_reset("edit_save");
   stop_auto_play();
+  view_options_apply();
   // TODO stop any current recording
 }
 
@@ -2521,8 +2534,8 @@ function edit_get_text() {
 async function edit_changed() {
   if (edit_agent_mode())
     await edit_agent_update_text();
-  console.log("orig", editor_text_orig);
-  console.log("new ", edit_get_text());
+  // console.log("orig", editor_text_orig);
+  // console.log("new ", edit_get_text());
   return edit_get_text() !== editor_text_orig;
 }
 
@@ -2613,7 +2626,7 @@ async function edit_save_and_close() {
 
 async function edit_reset() {
   if (await edit_changed())
-    if (!confirm_except_iOS("Discard changes?")) return;
+    if (!await Prompts.confirm("Discard changes?")) return;
   if (edit_agent_mode())
     return edit_agent_reset();
   edit_set_text(editor_text_orig);
@@ -2639,12 +2652,10 @@ async function edit_close_back(ev) {
 }
 
 async function edit_close(ev) {
-  console.log("edit_close");
   if (ev)
     ev.stopPropagation();
   if (await edit_changed())
-    if (!confirm_except_iOS("Discard changes?")) return false;
-  console.log("unchanged or confirmed");
+    if (!await Prompts.confirm("Discard changes?")) return false;
   // const type = await get_file_type(editor_file);
   // // const leafname = editor_file.replace(/.*\//, "");
   // let dirname;
@@ -2675,6 +2686,15 @@ async function edit_close(ev) {
 
 // edit agent ----------------------------------------------------------------
 
+async function agent_new() {
+  const name = await Prompts.prompt("Agent name?");
+  if (name) {
+    set_room(`${room}${name}.yml`);
+  } else {
+    await error(`agent_new`);
+  }
+}
+
 function edit_agent_mode() {
   return type == "agent" && !view_options.edit_advanced;
 }
@@ -2697,8 +2717,8 @@ async function edit_agent_reset() {
 
   const name = editor_file.replace(/.*\//, "").replace(/\.[^/.]+$/, "");
   $id("ea_name").value = name;
-  $id("ea_type").value = agent.base[0] ?? "";
-  $id("ea_model").value = agent.base[1] ?? "";
+  $id("ea_type").value = (agent.base ?? [])[0] ?? "";
+  $id("ea_model").value = (agent.base ?? [])[1] ?? "";
   $id("ea_description").value = blank_to_dash(agent.description);
   const age = $id("ea_age").value = blank_to_dash(agent.age);
   $id("ea_visual_person").value = blank_to_dash(agent.visual?.person);
@@ -2814,6 +2834,9 @@ async function edit_agent_update_text() {
     agent.base.push(type);
   if (model && model !== "-")
     agent.base.push(model);
+  if (!agent.base.length) {
+    delete agent.base;
+  }
   agent.description = dash_to_blank($id("ea_description").value);
   agent.age = dash_to_blank($id("ea_age").value);
   agent.visual.person = dash_to_blank($id("ea_visual_person").value);
@@ -2872,7 +2895,7 @@ function setup_view_options() {
   }
   // set_default_room();
   run_view_options_updates();
-  view_options_apply();
+  // view_options_apply();
   on_room_ready(view_options_apply);
 }
 
@@ -2903,6 +2926,7 @@ function set_view_options(new_view_options) {
 }
 
 async function view_options_apply() {
+  // console.log("view_options_apply");
   view_options.advanced = 1;  // only this mode for now
 
   // const type = await get_file_type(room);
@@ -3100,6 +3124,9 @@ async function view_options_apply() {
   }
   show("dir_sort", type === "dir");
   show("pages", type !== "dir");
+
+  // show agent_new
+  show("agent_new", type === "dir" && room.match(/(^|\/)agents\//));
 
   // console.log("view options applied:", view_options);
 
@@ -4542,8 +4569,8 @@ export async function init() {
   controls_layout_hack_for_firefox_and_safari();
   load_theme();
   setup_dev_early();
-  await on_hash_change();
   setup_view_options();
+  await on_hash_change();
   setup_embed_vs_main_ui();
 
   $on($content, "input", message_changed);
@@ -4580,7 +4607,7 @@ export async function init() {
   $on($id("room_ops"), "click", () => set_top_left("top_left_room_ops"));
 
   // nav buttons
-  for (const nav_button_id of ["nav_home", "nav_allychat", "nav_nsfw", "nav_up"]) {
+  for (const nav_button_id of ["nav_home", "nav_allychat", "nav_nsfw", "nav_up", "nav_agents"]) {
     $on($id(nav_button_id), "click", nav_close_menu_on_normal_click);
   }
 
@@ -4652,6 +4679,7 @@ export async function init() {
   $on($id("pages_cancel"), "click", () => set_top_left());
 
   $on($id("dir_sort"), "click", dir_sort);
+  $on($id("agent_new"), "click", agent_new);
 
   // $on($id("scroll_home"), "click", (ev) => scroll_home_end(ev, 0));
   // $on($id("scroll_end"), "click", (ev) => scroll_home_end(ev, 1));

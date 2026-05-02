@@ -39,7 +39,8 @@ shuffle_lists();
 - You can now change your screen name on the fly in a room, with options -> name under the "gear" menu.
 - I enabled a basic memory system, for "character" agents only at the moment. It's enabled everywhere, but the memory stores are per-folder for privacy and such.
 - Many agents like Loni, Lori, Illu, and Xilu now use the faster, smarter DeepSeek 4 Flash model, instead of Gemini Flash 2.0 or Gemma 4.
-- New simpler agent editor released! Switch between basic and advanced modes with the <i class="bi-lightbulb"></i> button.
+- New simple agent editor! Switch between basic and advanced modes with the <i class="bi-lightbulb"></i> button.
+- Can create a new agent in the current zone, with <i class="bi bi-compass"></i> nav -> <i class="bi bi-person"></i> agents -> <i class="bi bi-person-add"></i> new agent.
 </details>
 
 <!-- say hi, @Lori -->

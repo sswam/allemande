@@ -34,6 +34,7 @@
 			<a class="button" href="" id="nav" title="navigation">nav</a>
 			<a class="button" href="" id="pages" title="pages">pages</a>
 			<a class="button hidden" href="" id="dir_sort" title="sort">sort_alpha</a>
+			<button class="hidden" id="agent_new" title="add a new agent">new agent</button>
 			<button id="select" title="select messages" class="boffin">select</button> <!-- should be advanced when done -->
 			<button id="room_ops" title="room operations" class="option">room</button>
 		</div>
@@ -44,6 +45,7 @@
 			<a class="button nsfw hidden" href="" id="nav_nsfw" title="go to the main NSFW room">nsfw</a>
 			<a class="button hidden" href="" id="nav_porch" title="your 'porch', a public room you control">porch</a>
 			<a class="button" href="" id="nav_up" title="go up to the parent folder: alt+u">up</a>
+			<a class="button" href="" id="nav_agents" title="go to your agents folder in this zone">agents</a>
 		</div>
 		<div class="top_left_controls row gap hidden" id="top_left_pages">
 			<button id="pages_cancel" class="back">back</button>
@@ -325,6 +327,7 @@
 <script src="record.js"></script>
 <script src="resizer.js"></script>
 <script src="debug.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prompts-js"></script>
 <script>
 (async () => {
 	await Promise.all([

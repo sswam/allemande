@@ -22,6 +22,7 @@ export const icons = {
   scroll_pagedown: '<i class="bi bi-chevron-down i20"></i>',
   nav: '<i class="bi bi-compass i18"></i>',
   nav_up: '<i class="bi bi-folder i20"></i>',
+  nav_agents: '<i class="bi bi-person i20"></i>',
   nav_porch: '<i class="bi bi-house-door i20"></i>',
   nav_home: '<i class="bi bi-house i20"></i>',
   nav_allychat: '<i class="bi bi-people i20"></i>',
@@ -118,4 +119,6 @@ export const icons = {
 
   artist: '<i class="bi bi-image i20"></i>',
   writer: '<i class="bi bi-justify-left i20"></i>',
+
+  agent_new: '<i class="bi bi-person-add i20"></i>',
 };
