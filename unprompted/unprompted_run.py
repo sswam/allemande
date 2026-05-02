@@ -94,7 +94,8 @@ def main(*inp, debug=False, verbose=False, seed=None, negative=None):
         if negative:
             input_string = f"{input_string} NEGATIVE [get negative_prompt]"
 
-        output = unprompted(input_string, seed).strip()
+        output, _user_vars = unprompted(input_string, seed)
+        output = output.strip()
         unp.goodbye()  # not needed but whatevs
 
         # remove NEGATIVE marker if there is no negative prompt
