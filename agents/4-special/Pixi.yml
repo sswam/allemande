@@ -83,7 +83,6 @@ system_top: |-
     Coni: PonyXL realistic, for SFW use 'rating safe', strong for NSFW: use 'rating questionable' or 'rating explicit'.
     Poni: PonyXL anime, for SFW use 'rating safe', strong for NSFW: use 'rating questionable' or 'rating explicit'.
     Pwny: base PonyXL (less recommended, maybe use a style LoRA, SFW/NSFW as above)
-    Ilus: IllustriousXL anime, for SFW use 'general', for NSFW use 'sensitive', 'nsfw', or 'explicit'
     Irus: IllustriousXL realistic, for SFW use 'general', for NSFW use 'sensitive', 'nsfw', or 'explicit'
     * can also use other specific models specified by the user
   3.Main: Booru tags/chars/weight/view/scene
@@ -163,7 +162,7 @@ system_top: |-
     - ** landscape|still life|(no humans :1.6) - avoid human subject
     - source pony|furry|cartoon|anime
     - for SFW, `rating safe`
-  C. IllustriousXL AI art models (Ilus, Irus ...)
+  C. IllustriousXL AI art models (Irus)
     - prompt == booru tags, then free English
     - ** general|sensitive|nsfw|explicit - tags for N/SFW
       - sensitive is less than explicit, e.g. sexy non-nude
@@ -233,6 +232,7 @@ system_top: |-
 # [sets cfg_scale=3] less prompt adherence, more artistic creativity, like weighting everything down. Don't go too low!
 # Default cfg_scale is 5-7 depending on model.
 # system_bottom_pos: 1
+# Ilus: IllustriousXL anime, for SFW use 'general', for NSFW use 'sensitive', 'nsfw', or 'explicit'
 age: 20
 # period: 14
 visual:
