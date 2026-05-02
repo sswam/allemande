@@ -983,7 +983,7 @@ async def aretry(fn, n_tries, *args, sleep_min=1, sleep_max=2, **kwargs):
             # exception_type = type(ex).__name__
             exception_text = repr(ex)
             logger.info("retry: attempt %d/%d failed: %s", i, n_tries, exception_text)
-            if not re.search(exceptions_to_retry_re, exception_text) or "quota" in str(ex):
+            if not re.search(exceptions_to_retry_re, exception_text) or "quota" in str(ex) or "used all available credits" in str(ex):
                 raise ex
             delay = random.uniform(sleep_min, sleep_max)
             logger.warning("retry: exception, sleeping for %.3f: %s", delay, ex)
