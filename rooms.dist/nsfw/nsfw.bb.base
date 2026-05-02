@@ -37,8 +37,9 @@ shuffle_lists();
 - We've greatly improved the chat quality with Llama recently, by removing repetitive fragments from the context.
 - You can now prompt for several images from a single message, and so can Xilu and the characters.
 - You can now change your screen name on the fly in a room, with options -> name under the "gear" menu.
-- I enabled a basic memory system, for SmallAI (Llama 3) characters only at the moment. It's enabled everywhere, but the memory stores are per-folder for privacy and such.
-- I've switched over nearly everything that was using Gemini Flash 2.0 to use Gemma 4 instead now. This should avoid "429 resource exausted" errors.
+- I enabled a basic memory system, for "character" agents only at the moment. It's enabled everywhere, but the memory stores are per-folder for privacy and such.
+- Many agents like Loni, Lori, Illu, and Xilu now use the faster, smarter DeepSeek 4 Flash model, instead of Gemini Flash 2.0 or Gemma 4.
+- New simpler agent editor released! Switch between basic and advanced modes with the <i class="bi-lightbulb"></i> button.
 </details>
 
 <!-- say hi, @Lori -->
