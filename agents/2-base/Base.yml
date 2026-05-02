@@ -1,11 +1,9 @@
-type: llm_llama
-model: default
-filter_out:
-  - truncate_repeated_characters
-system_bottom_pos: 5
-stop_regexs:
-  - \n\t*\n\t*\n
+type: mixin
 system_top: |-
   $NAME_FULLNAME_ALIASES.
 system_bottom: |-
   I am $NAME.
+description_pos: top
+system_bottom_pos: 5
+filter_out:
+  - truncate_repeated_characters

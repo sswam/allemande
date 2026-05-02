@@ -13,7 +13,7 @@ HELP_MODEL_NSFW := flashi
 default:
 	@echo >&2 "doc does not build with default target"
 
-up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} ../rooms/agents/CastMembers.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/terms.bb summaries.md  # agent_colours.css help.md nsfw/help_nsfw.md nsfw/help.md
+up: nsfw/guide.md ../rooms/intro.bb ../rooms/guide.bb ../rooms/${IMAGE_SFW} ../rooms/nsfw/intro.bb ../rooms/nsfw/guide.bb ../rooms/nsfw/${IMAGE_NSFW} ../rooms/agents/CastMembers.yml ../rooms/lora.bb ../rooms/nsfw/lora.bb ../rooms/terms.bb summaries.md models.tsv # agent_colours.css help.md nsfw/help_nsfw.md nsfw/help.md
 
 nsfw/guide.md: guide.md nsfw/guide_nsfw.md  # nsfw/extra.md
 	rm -f $@
@@ -119,5 +119,8 @@ agent_colours.tsv: summaries.md
 
 agent_colours.css: agent_colours.tsv
 	<$< ./agent_colours_tsv_to_css.py >$@
+
+models.tsv: guide.md
+	<$< sed -n '/^#### Language Models/,/^Input and output costs/p' | grep '^|' | markdown-table-to-tsv | grep . | tail -n +2 >$@
 
 .PHONY: default up

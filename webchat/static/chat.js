@@ -2674,7 +2674,7 @@ async function edit_close(ev) {
 // edit agent ----------------------------------------------------------------
 
 function edit_agent_mode() {
-  return early && type == "agent" && !view_options.edit_advanced;
+  return type == "agent" && !view_options.edit_advanced;
 }
 
 async function edit_agent() {
@@ -2689,13 +2689,14 @@ async function edit_agent_reset() {
   const ym = await $import("ym");
 
   let agent = ym.parse(editor_text_orig);
-  agent = convert_agent_to_use_description(agent);
+  agent = convert_agent_for_simple_editor(agent);
   editor_text_orig = ym.format(agent);
   // console.log(agent);
 
   const name = editor_file.replace(/.*\//, "").replace(/\.[^/.]+$/, "");
   $id("ea_name").value = name;
-  $id("ea_model").value = agent.base ?? "";
+  $id("ea_type").value = agent.base[0] ?? "";
+  $id("ea_model").value = agent.base[1] ?? "";
   $id("ea_description").value = agent.description ?? "";
   const age = $id("ea_age").value = agent.age ?? "";
   $id("ea_visual_person").value = agent.visual?.person ?? "";
@@ -2707,31 +2708,74 @@ async function edit_agent_reset() {
   show($id("ea_visual_age"), show_visual_age);
 }
 
-function convert_agent_to_use_description(agent) {
-  if (agent.description)
-    return agent;
-  const l_top = (agent.system_top ?? "").length;
-  const l_bot = (agent.system_bottom ?? "").length;
-  let old_key, new_value;
-  if (l_bot > l_top) {
-    old_key = "system_bottom";
-    new_value = agent.system_bottom.replace(/^\+\s*|\s*\+$/, "");
-  } else if (l_top) {
-    old_key = "system_top";
-    new_value = agent.system_top.replace(/^\+\s*|\s*\+$/, "");
-  } else {
-    return agent;
+function convert_agent_for_simple_editor(agent) {
+  if (!agent.description) {
+    const l_top = (agent.system_top ?? "").length;
+    const l_bot = (agent.system_bottom ?? "").length;
+    let old_key, new_value;
+    if (l_bot > l_top) {
+      old_key = "system_bottom";
+      new_value = agent.system_bottom.replace(/^\+\s*|\s*\+$/, "");
+    } else if (l_top) {
+      old_key = "system_top";
+      new_value = agent.system_top.replace(/^\+\s*|\s*\+$/, "");
+    } else {
+      return agent;
+    }
+    // preserve order of keys, while renaming the key
+    agent = Object.fromEntries(
+      Object.entries(agent).map(([key, value]) =>
+        [
+          key === old_key ? "description" : key,
+          key === old_key ? new_value : value
+        ]
+      )
+    );
   }
-  // preserve order of keys, while renaming the key
-  const agent2 = Object.fromEntries(
-    Object.entries(agent).map(([key, value]) =>
-      [
-        key === old_key ? "description" : key,
-        key === old_key ? new_value : value
-      ]
-    )
-  );
-  return agent2;
+
+  // extract type and model from agent.base array
+  let base = agent.base ?? "";
+  base = typeof base === 'string' ? [base] : base;
+  let type, model;
+  if (base.length == 1) {
+    type = "Base";
+    model = base[0];
+  } else {
+    [type, model] = base;
+  }
+
+  // migrate aliases
+  if (model == "NaughtyAI" || model == "NaughtierAI")
+    model = "MediumAI";
+  if (model == "SmallAI") {
+    type = "Char";
+    model = "Small";
+  } else if (model == "MediumAI") {
+    type = "Char";
+    model = "Medium";
+  } else if (model == "StrongAI") {
+    type = "Agent";
+    model = "Medium";
+  } else if (model == "StrongestAI") {
+    type = "Agent";
+    model = "Strong";
+  } else if (model.match(/M$/)) {
+    model = model.replace(/M$/, "");
+  } else if (base.length == 1) {
+    type = model;
+    model = "";
+  }
+
+  if (model)
+    agent.base = [type, model];
+  else
+    agent.base = [type];
+
+  return agent;
+}
+
+function is_value_in_datalist(str, datalist) {
+  return Array.from(datalist.options).some(option => option.value === str);
 }
 
 async function edit_agent_update_text() {
@@ -2740,7 +2784,16 @@ async function edit_agent_update_text() {
   const agent = ym.parse(editor_text_orig);
   agent.visual ??= {};
 
-  agent.base = $id("ea_model").value;
+  let model = $id("ea_model").value;
+  if (model && !["Small", "Medium", "Strong"].includes(model) && is_value_in_datalist(model, $id("ea_model_options")))
+    model += "M";
+  let type = $id("ea_type").value;
+
+  agent.base = []
+  if (type)
+    agent.base.push(type);
+  if (model)
+    agent.base.push(model);
   agent.description = $id("ea_description").value;
   agent.age = $id("ea_age").value;
   agent.visual.person = $id("ea_visual_person").value;

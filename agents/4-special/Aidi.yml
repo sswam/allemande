@@ -1,4 +1,5 @@
-base: Lite
+base: Desee
+# base: Lite
 # info:
 #   room: true
 #   date: true

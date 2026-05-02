@@ -112,17 +112,26 @@
 			<input id="ea_visual_age" title="visual - age" placeholder="visual - age" class="grow2" type="search">
 		</div>
 		<div class="row wide gap">
-			<select id="ea_type" title="type" class="grow2">
-				<option value="character">character - chat and role-play</option>
-				<option value="agent">agent - a safe, productive assistant</option>
-				<option value="plain">plain - an LLM with no extras</option>
-			</select>
-			<!--<input id="ea_model" title="model" placeholder="model" class="grow" type="search">-->
+			<input list="ea_type_options" id="ea_type" title="type" placeholder="type" class="grow">
+			<datalist id="ea_type_options">
+				<option value="Char" label="a character for chat and role-play">
+				<option value="Agent" label="a safe, productive assistant">
+				<option value="Base" label="a plain LLM or agent with no extras">
+			</datalist>
 			<input list="ea_model_options" id="ea_model" title="model" placeholder="model" class="grow">
 			<datalist id="ea_model_options">
-			  <option value="SmallAI" label="Small, fast, free chat based on Llama 3 8B">
-			  <option value="MediumAI">
-			  <option value="StrongAI">
+			  <option value="Small" label="Ø - fast free chat → Elly">
+			  <option value="Medium" label="$ - chat and help → Desee">
+			  <option value="Strong" label="$$$ - strong assistant → Gemmi">
+			  <option value="Elly" label="Ø - fast, free chat with Llama 3 8B">
+			  <option value="Desee" label="$ - chat and help with DeepSeek 4 Flash">
+			  <option value="Gema" label="$ - chat and help with Gemma 4 26B">
+			  <option value="Veni" label="$ - chat and help with Venice Uncensored">
+			  <option value="Lite" label="$ - fast chat and help with Gemini 2.5 Flash Lite">
+			  <option value="Flashi" label="$$ - chat and help with Gemini 2.5 Flash">
+			  <option value="Clia" label="$$ - chat and help with Claude Haiku">
+			  <option value="Gemmi" label="$$$ - chat and help with Gemini 2.5 Pro">
+			  <option value="Claude" label="$$$ - chat and help with Claude Sonnet">
 			</datalist>
 		</div>
 		<textarea id="ea_description" class="grow3" title="description" placeholder="description"></textarea>
@@ -190,7 +199,7 @@
 			<button id="edit_reset" title="revert changes" class="cancel">reset</button>
 			<button id="edit_clear" title="clear the file" class="cancel">clear</button>
 			<button id="edit_save" title="save changes" class="okay">save</button>
-			<button id="edit_advanced" title="simple editor" class="early">advanced</button>
+			<button id="edit_advanced" title="simple editor">advanced</button>
 			<button id="edit_close" class="back">close</button>
 		</div>
 		<div class="controls col_wrap hidden" id="input_audio">

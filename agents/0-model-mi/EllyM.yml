@@ -1,2 +1,24 @@
 type: llm_llama
 model: default
+description_pos: bottom
+stop_regexs:
+  - \n\t*\n\t*\n
+lines: 2
+temp: 0.8
+hacky_anti_rep: true
+filter_in:
+  - think_brackets
+  - clean_up_mentions
+  - remove_images
+  - remove_code
+filter_out:
+  - +
+  - think_brackets
+  - remove_indent
+  - actions_fix
+  - ["actions_reduce", 0.8]
+# TODO - could remove quotation marks and change round parens to square
+recap_type: full
+recall_recent_count: 1
+recall_limit: 1  # per query
+recall_context: 1  # do searches based on the last message only

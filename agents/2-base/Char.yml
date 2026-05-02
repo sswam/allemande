@@ -1,5 +1,7 @@
-base: Base
+type: mixin
+base:
+  - Base
+  - Memory
 over:
   - +
-# - ShowMI
   - Period

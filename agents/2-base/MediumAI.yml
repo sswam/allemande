@@ -1,8 +1,4 @@
 base:
   - AgentChar
-  - GemaM
+  - DeseeM
   - Memory
-filter_out:
-  - truncate_repeated_characters
-  - unsmart
-# forward_if_refuse: NaughtyAI

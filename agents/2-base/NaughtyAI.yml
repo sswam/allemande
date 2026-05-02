@@ -1,12 +1,11 @@
 base:
-  - NaughtyChar
-  - GemaM
-  - Memory
+  - Char
+  - DeseeM
+
 filter_out:
-  - truncate_repeated_characters
-  - unsmart
+# - unsmart
 # - ["actions_reduce", 0.8]
-forward_allow:
-  - Xilu
+# forward_allow:
+#   - Xilu
 # - Fallback
 # forward_if_refuse: NaughtierAI
