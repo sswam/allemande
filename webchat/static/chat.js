@@ -2639,10 +2639,12 @@ async function edit_close_back(ev) {
 }
 
 async function edit_close(ev) {
+  console.log("edit_close");
   if (ev)
     ev.stopPropagation();
   if (await edit_changed())
     if (!confirm_except_iOS("Discard changes?")) return false;
+  console.log("unchanged or confirmed");
   // const type = await get_file_type(editor_file);
   // // const leafname = editor_file.replace(/.*\//, "");
   // let dirname;
@@ -2697,15 +2699,31 @@ async function edit_agent_reset() {
   $id("ea_name").value = name;
   $id("ea_type").value = agent.base[0] ?? "";
   $id("ea_model").value = agent.base[1] ?? "";
-  $id("ea_description").value = agent.description ?? "";
-  const age = $id("ea_age").value = agent.age ?? "";
-  $id("ea_visual_person").value = agent.visual?.person ?? "";
-  $id("ea_visual_clothes").value = agent.visual?.clothes ?? "";
-  $id("ea_visual_emo").value = agent.visual?.emo ?? "";
-  const visual_age = $id("ea_visual_age").value = agent.visual?.age ?? "";
+  $id("ea_description").value = blank_to_dash(agent.description);
+  const age = $id("ea_age").value = blank_to_dash(agent.age);
+  $id("ea_visual_person").value = blank_to_dash(agent.visual?.person);
+  $id("ea_visual_clothes").value = blank_to_dash(agent.visual?.clothes);
+  $id("ea_visual_emo").value = blank_to_dash(agent.visual?.emo);
+  const visual_age = $id("ea_visual_age").value = blank_to_dash(agent.visual?.age);
 
   const show_visual_age = visual_age !== calc_visual_age_from_age(age);
   show($id("ea_visual_age"), show_visual_age);
+}
+
+function blank_to_dash(s) {
+  if (s === undefined)
+    return ""
+  if (s === "")
+    return "-"
+  return s;
+}
+
+function dash_to_blank(s) {
+  if (s === "")
+    return undefined;
+  if (s === "-")
+    return "";
+  return s;
 }
 
 function convert_agent_for_simple_editor(agent) {
@@ -2759,7 +2777,7 @@ function convert_agent_for_simple_editor(agent) {
   } else if (model == "StrongestAI") {
     type = "Agent";
     model = "Strong";
-  } else if (model.match(/M$/)) {
+  } else if (model && model.match(/M$/)) {
     model = model.replace(/M$/, "");
   } else if (base.length == 1) {
     type = model;
@@ -2768,8 +2786,10 @@ function convert_agent_for_simple_editor(agent) {
 
   if (model)
     agent.base = [type, model];
-  else
+  else if (type)
     agent.base = [type];
+  else
+    agent.base = [];
 
   return agent;
 }
@@ -2790,20 +2810,25 @@ async function edit_agent_update_text() {
   let type = $id("ea_type").value;
 
   agent.base = []
-  if (type)
+  if (type && type !== "-")
     agent.base.push(type);
-  if (model)
+  if (model && model !== "-")
     agent.base.push(model);
-  agent.description = $id("ea_description").value;
-  agent.age = $id("ea_age").value;
-  agent.visual.person = $id("ea_visual_person").value;
-  agent.visual.clothes = $id("ea_visual_clothes").value;
-  agent.visual.emo = $id("ea_visual_emo").value;
+  agent.description = dash_to_blank($id("ea_description").value);
+  agent.age = dash_to_blank($id("ea_age").value);
+  agent.visual.person = dash_to_blank($id("ea_visual_person").value);
+  agent.visual.clothes = dash_to_blank($id("ea_visual_clothes").value);
+  agent.visual.emo = dash_to_blank($id("ea_visual_emo").value);
 
   if ($id("ea_visual_age").classList.contains("hidden")) {
-    agent.visual.age = calc_visual_age_from_age(agent.age);
+    agent.visual.age = dash_to_blank(calc_visual_age_from_age(agent.age));
   } else {
-    agent.visual.age = $id("ea_visual_age").value;
+    agent.visual.age = dash_to_blank($id("ea_visual_age").value);
+  }
+
+  // remove .visual if no defined keys
+  if (Object.values(agent.visual).every(v => v === undefined)) {
+    delete agent.visual;
   }
 
   $edit.value = ym.format(agent);
@@ -3215,7 +3240,8 @@ function view_standard(ev) {
 
 async function edit_advanced(ev) {
   const file = editor_file;
-  await edit_close();
+  if (!await edit_close())
+    return;
   view_options.edit_advanced = (view_options.edit_advanced + 1) % 2;
   view_options_apply();
   await edit(file);

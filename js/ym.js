@@ -304,7 +304,7 @@ export function format(obj, indent = 0) {
         } else if (value !== null && typeof value === "object") {
             lines.push(`${prefix}${key}:`);
             lines.push(format(value, indent + 1));
-        } else {
+        } else if (value !== undefined) {
             lines.push(...formatScalar(key, value, prefix));
         }
     }
