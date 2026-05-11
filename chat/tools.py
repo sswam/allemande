@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 async def python_tool_agent_yaml(c, agent, query) -> str:
     """Return a YAML definition for a python_tool agent, optionally filtered by grep pattern."""
 
-    # Split args as agent names
+    # Join args as agent name
     args = query.split()
     grep_pattern = None
 
@@ -36,31 +36,27 @@ async def python_tool_agent_yaml(c, agent, query) -> str:
             args.pop(i)
             break
 
-    result: list[str] = []
+    name = " ".join(args)
 
-    for name in args:
-        name = name.replace("_", " ")
-        agent = c.agents.get(name) if c.agents else None
-        if not agent:
-            result.append(f"Agent '{name}' not found")
-            continue
+    name = name.replace("_", " ")  # for compatibility with old mode
+    agent = c.agents.get(name) if c.agents else None
+    if not agent:
+        return f"Agent '{name}' not found"
 
-        if flat:
-            file_content = agent.to_yaml(flat=True).rstrip()
-        else:
-            file_content = agent.get_file().rstrip()
+    if flat:
+        file_content = agent.to_yaml(flat=True).rstrip()
+    else:
+        file_content = agent.get_file().rstrip()
 
-        # Apply grep filter if pattern specified
-        if grep_pattern:
-            filtered_lines = []
-            for line in file_content.split('\n'):
-                if re.search(grep_pattern, line):
-                    filtered_lines.append(line)
-            file_content = '\n'.join(filtered_lines)
+    # Apply grep filter if pattern specified
+    if grep_pattern:
+        filtered_lines = []
+        for line in file_content.split('\n'):
+            if re.search(grep_pattern, line):
+                filtered_lines.append(line)
+        file_content = '\n'.join(filtered_lines)
 
-        result.append(file_content)
-
-    return "\n\n".join(result)
+    return file_content
 
 
 async def python_tool_rag(c, agent, query) -> str:
