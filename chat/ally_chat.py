@@ -370,7 +370,7 @@ async def run_each_bot(c, bots, hidden):
         response = response.lstrip().rstrip("\n ")
         response, agent2 = await forward.handle_forwarding(generate_agent_response, response, agent, c)
 
-        narrator = agent2.get("narrator")
+        narrator = agent.get("narrator")
         if narrator == "hard" or (narrator == "soft" and hidden):
             response = apply_narrator_mode(response, agent2)
 
