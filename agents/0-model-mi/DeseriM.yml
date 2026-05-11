@@ -1,2 +1,4 @@
 type: deepseek
-model: deepseek-reasoner
+model: deepseek-v4-pro
+thinking_level: null
+# high / max

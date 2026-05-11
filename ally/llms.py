@@ -352,13 +352,13 @@ MODELS = {
         "cost_in": 0.14,
         "cost_out": 0.28,
     },
-    "deepseek-reasoner": {
+    "deepseek-v4-pro": {
         "aliases": ["deseri"],
         "vendor": "deepseek",
-        "id": "deepseek-reasoner",
-        "description": "deepseek-reasoner points to DeepSeek-R1",
-        "cost_in": 0.55,
-        "cost_out": 2.19,
+        "id": "deepseek-v4-pro",
+        "description": "deepseek-v4-pro",
+        "cost_in": 1.74,
+        "cost_out": 3.48,
     },
     "llama-3.1-8b": {
         "aliases": ["ellie"],

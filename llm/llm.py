@@ -291,7 +291,7 @@ class Options(AutoInit):  # pylint: disable=too-few-public-methods
 # Async functions for different API clients
 
 
-async def achat_openai(opts: Options, messages, client=None, citations=False):
+async def achat_openai(opts: Options, messages, client=None, citations=False, variant=None):
     """Chat with OpenAI ChatGPT models asynchronously."""
     if client is None:
         client = openai_async_client
@@ -334,19 +334,28 @@ async def achat_openai(opts: Options, messages, client=None, citations=False):
             logger.warning("achat_openai: too many stop sequences, truncating to 4")
             options["stop"] = opts.stop[:4]
 
+    if variant == "deepseek":
+        thinking_level = opts.thinking_level
+        if thinking_level:
+            thinking = "enabled"
+            options["reasoning_effort"] = thinking_level
+        else:
+            thinking = "disabled"
+        options["extra_body"] = {"thinking": {"type": thinking}}
+
+    # logger.info("options: %s", options)
+
     start_time = 0
     if opts.timeit:
         start_time = time.time()
 
-    # logger.info("options: %s", options)
-
     raw_response = await client.chat.completions.with_raw_response.create(**options)
     response = raw_response.parse()
 
-    # logger.warning("raw response: %r %r", raw_response, dir(raw_response))
-
     if opts.timeit:
         print(f"time: {time.time() - start_time:.3f}", file=stderr)
+
+    # logger.warning("raw response: %r %r", raw_response, dir(raw_response))
 
     logger.debug("llm: response: %s", response)
 
@@ -457,7 +466,7 @@ async def achat_xai(opts: Options, messages):
 
 async def achat_deepseek(opts: Options, messages):
     """Chat with Deepseek models asynchronously."""
-    return await achat_openai(opts, messages, client=deepseek_async_client)
+    return await achat_openai(opts, messages, client=deepseek_async_client, variant="deepseek")
 
 
 async def achat_openrouter(opts: Options, messages):

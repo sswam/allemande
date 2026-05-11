@@ -466,8 +466,8 @@ digraph DeepSeek {
 
     "DeepSeek" [label=<<b>DeepSeek</b>>]
     "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
-    "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek V4 Flash</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
-    "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek V4 Flash (reasoning)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Strong Reasoning, Creative</font>>]
+    "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek V4 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Creative, Intelligent</font>>]
+    "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek V4 Pro</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Strong, Creative</font>>]
 
     "DeepSeek" -> "Dese"
     "DeepSeek" -> "Desee"
@@ -635,9 +635,9 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Grok** (Grok 4, xAI): xAI's latest quirky and intelligent language model
 - **Gok** (Grok 4 Fast, xAI): xAI's latest quirky and intelligent language model (fast)
 - **Groc** (Grok Code Fast, xAI): xAI's fast coding specialist model
-- **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model
-- **Desee** (DeepSeek V4 Flash): DeepSeek's creative and intelligent chat model, with extra smarts
-- **Deseri** (DeepSeek V4 Flash - Reasoning): DeepSeek's strong and creative reasoning model
+- **Dese** (DeepSeek Chat V3): DeepSeek's classic creative and intelligent chat model
+- **Desee** (DeepSeek V4 Flash): DeepSeek's fast, creative and intelligent chat model
+- **Deseri** (DeepSeek V4 Pro): DeepSeek's strongest model
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
 - **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
 - **Veni** (Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition): Uncensored
@@ -897,9 +897,9 @@ type: visual
 | xAI           | Grok 4                | Grok    | $3     | $15    | xAI's helpful, truthful and humorous Grok 4 model.                                                               |
 | xAI           | Grok 4 Fast           | Gok     | $0.20  | $0.50  | Ultra-fast Grok 4 with extended context for standard tasks.                                                      |
 | xAI           | Grok Code Fast        | Groc    | $0.20  | $1.50  | Specialized fast model optimized for code generation and analysis.                                               |
-| DeepSeek      | DeepSeek Chat V3      | Dese    | $0.20  | $0.80  | DeepSeek's creative and intelligent chat model.                                                                  |
-| DeepSeek      | DeepSeek V4 Flash     | Desee   | $0.14  | $0.28  | DeepSeek's creative and intelligent chat model, with extra smarts.                                               |
-| DeepSeek      | DeepSeek V4 Flash + R | Deseri  | $0.14  | $0.28  | DeepSeek's strong and creative reasoning model.                                                                  |
+| DeepSeek      | DeepSeek Chat V3      | Dese    | $0.20  | $0.80  | DeepSeek's classic creative and intelligent chat model.                                                          |
+| DeepSeek      | DeepSeek V4 Flash     | Desee   | $0.14  | $0.28  | DeepSeek's fast, creative and intelligent chat model.                                                            |
+| DeepSeek      | DeepSeek V4 Pro       | Deseri  | $1.74  | $3.48  | DeepSeek's strongest model.                                                                                      |
 | Alibaba Cloud | QwQ 32B               | Qwen    | $0.15  | $0.58  | Qwen is a reasoning model from Alibaba Cloud, strong at various tasks, and able to run on consumer GPUs.         |
 | Mistral       | Mistral Large 2411    | Misti   | $2     | $6     | Mistral's general-purpose reasoning model, strong at various tasks.                                              |
 | Mistral+      | Venice Uncensored 1.1 | Veni    | $0.20  | $0.90  | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                                       |

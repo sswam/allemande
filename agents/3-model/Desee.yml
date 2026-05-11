@@ -1,5 +1,4 @@
-type: deepseek
-model: deepseek-chat
+base: DeseeM
 over:
   - Frankness
   - HurDurMI

@@ -119,14 +119,15 @@ You can also create your own characters, and the developer (Sam) is happy to hel
 - **Pyrite** (Gemini 2.0 Flash): A playful woman with sultry eyes, long raven hair, and large natural breasts.
 
 ### Base Models (NSFW capable)
-- **Elly**: (Llama 3.1 8B): a small, human-like uncensored and private model  [recommended]
-- **Ellyn**: (Llama 3.3 70B): a stronger, human-like model
-- **Flasho** (Gemini 2.0 Flash, Google): Google's fast Gemini 2.0 language model  [recommended]
+- **Elly** (Llama 3.1 8B): a small, human-like uncensored and private model  [recommended]
+- **Ellyn** (Llama 3.3 70B): a stronger, human-like model
+- **Gema** (Gemma 4 26B A4B, Google): Google's open source mixture of experts language model  [recommended]
+- **Gem** (Gemma 4 31B): Google's open source dense language model
 - **Flashi** (Gemini 2.5 Flash, Google): Google's fast Gemini 2.5 language model
 - **Gemmi** (Gemini 2.5 Pro, Google): Google's strong Gemini language model
 - **Gemi** (Gemini 3 Pro, Google): Google's strongest Gemini language model
-- **Dese** (DeepSeek Chat V3): DeepSeek's creative and intelligent chat model  [recommended]
-- **Desee** (DeepSeek Chat V3.2): DeepSeek's creative and intelligent chat model
+- **Dese** (DeepSeek Chat V3): DeepSeek's classic creative and intelligent chat model
+- **Desee** (DeepSeek V4 Flash): DeepSeek's fast, creative and intelligent chat model  [recommended]
 - **Misti** (Mistral Large 2411): Mistral's strongest language model
 - **Veni** (Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition): Uncensored
 - **Venni** (Venice Role Play Uncensored): Uncensored
@@ -143,7 +144,7 @@ These variants on the Gemini and DeepSeek models use a very short prompt to enab
 - **Xlashi** (Gemini 2.5 Flash, Google)
 - **Xemmi** (Gemini 2.5 Pro, Google)
 - **Xese** (DeepSeek Chat V3)
-- **Xesee** (DeepSeek Chat V3.2)
+- **Xesee** (DeepSeek V4 Flash)
 
 ### Sexual Variants
 
@@ -206,8 +207,8 @@ Please do not use languages models other than those listed here for NSFW content
 | Google     | Gemini 3 Pro          | Gemi   | $2    | $12.00 | Google's most powerful Gemini 3 model optimized for a wide range of reasoning tasks.                    |
 | xAI        | Grok 4                | Grok   | $3    | $15    | xAI's helpful, truthful and humorous Grok 4 model.                                                      |
 | xAI        | Grok 4 Fast           | Gok    | $0.20 | $0.50  | Ultra-fast Grok 4 with extended context for standard tasks.                                             |
-| DeepSeek   | DeepSeek Chat V3      | Dese   | $0.20 | $0.80  | DeepSeek's creative and intelligent chat model.                                                         |
-| DeepSeek   | DeepSeek V4 Flash     | Desee  | $0.14 | $0.28  | DeepSeek's creative and intelligent chat model, with extra smarts.                                      |
+| DeepSeek   | DeepSeek Chat V3      | Dese   | $0.20 | $0.80  | DeepSeek's classic creative and intelligent chat model.                                                 |
+| DeepSeek   | DeepSeek V4 Flash     | Desee  | $0.14 | $0.28  | DeepSeek's fast creative and intelligent chat model.                                                    |
 | Mistral    | Mistral Large 2411    | Misti  | $2    | $6     | Mistral's strongest language model, very capable and creative.                                          |
 | Mistral+   | Venice Uncensored 1.1 | Veni   | $0.20 | $0.90  | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                              |
 | Mistral+   | Venice Role Play      | Venni  | $0.50 | $2     | Venice Role Play Uncensored.                                                                            |

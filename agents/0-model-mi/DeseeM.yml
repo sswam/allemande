@@ -1,3 +1,4 @@
 type: deepseek
 model: deepseek-chat
-system_bottom_pos: 0
+thinking_level: null
+# high / max
