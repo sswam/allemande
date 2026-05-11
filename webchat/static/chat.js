@@ -2757,18 +2757,18 @@ function convert_agent_for_simple_editor(agent) {
     } else if (l_top) {
       old_key = "system_top";
       new_value = agent.system_top.replace(/^\+\s*|\s*\+$/, "");
-    } else {
-      return agent;
     }
-    // preserve order of keys, while renaming the key
-    agent = Object.fromEntries(
-      Object.entries(agent).map(([key, value]) =>
-        [
-          key === old_key ? "description" : key,
-          key === old_key ? new_value : value
-        ]
-      )
-    );
+    if (old_key) {
+      // preserve order of keys, while renaming the key
+      agent = Object.fromEntries(
+        Object.entries(agent).map(([key, value]) =>
+          [
+            key === old_key ? "description" : key,
+            key === old_key ? new_value : value
+          ]
+        )
+      );
+    }
   }
 
   // extract type and model from agent.base array
