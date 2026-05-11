@@ -24,7 +24,7 @@ import random
 import pytz
 
 from ally import main, logs  # type: ignore
-from chat import Room
+from ally_room import Room
 
 __version__ = "0.1.1"
 
