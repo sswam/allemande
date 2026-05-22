@@ -459,7 +459,7 @@ async def local_agent(c, agent, _query) -> str:
     except (FileNotFoundError, KeyError):
         pass
 
-    image_alt_type = c.config.get("image_alt", "both")
+    image_alt_type = c.config.get("image_alt", "expanded")
 
     image_count = 0
     output_count = 0
