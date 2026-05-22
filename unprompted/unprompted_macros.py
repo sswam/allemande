@@ -233,3 +233,7 @@ def update_macros(prompt: str, settings: dict[str, dict[str, str]|None]) -> str:
             result += macro_str
 
     return result.strip()
+
+def strip_macros(prompt: str) -> str:
+    """ Strip all macros from the prompt """
+    return re.sub(r"\[.*?\]", "", prompt)

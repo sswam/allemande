@@ -21,7 +21,7 @@ import forge_client  # type: ignore
 import slug  # type: ignore
 import stamp  # type: ignore
 from ally import main, logs  # type: ignore
-from unprompted_macros import parse_macros, update_macros  # type: ignore
+from unprompted_macros import parse_macros, update_macros, strip_macros  # type: ignore
 from ally.util import clamp, read_lines_from_file
 
 __version__ = "0.2.2"
@@ -92,9 +92,9 @@ SHAPE_GEOMETRY = {
     "l": (("896", "768"), ("1152", "896")),
     "L": (("1024", "768"), ("1280", "960")),
     "t": (("640", "896"), ("832", "1216")),
-    "T": (("640", "1120"), ("768", "1344")),
+    "T": (("640", "1152"), ("768", "1344")),
     "w": (("896", "640"), ("1216", "832")),
-    "W": (("1120", "640"), ("1344", "768")),
+    "W": (("1152", "640"), ("1344", "768")),
     "v": (("640", "1280"), ("768", "1536")),
     "V": (("512", "1280"), ("640", "1536")),
     "x": (("1280", "640"), ("1536", "768")),
@@ -112,9 +112,9 @@ QUALITY_STEPS = {
 
 QUALITY_HQ = {
     0: 0,
-    2: 1,
+    1: 1,
     3: 1.5,
-    4: 2,
+    4: 1.5,
     5: 3,   # 2.86 2.8125  >4K height
 }
 
@@ -227,7 +227,7 @@ def apply_shortcut(sets: dict[str, str], shape: str, quality: int):
     """Apply a shortcut to the sets macro"""
     add = {}
 
-    resolution_option = 0 if quality == 0 else 1
+    resolution_option = 0 if quality <= 1 else 1
     add["width"], add["height"] = SHAPE_GEOMETRY[shape][resolution_option]
 
     # add["hq"] = "0"
@@ -601,7 +601,7 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
     else:
         shortcut = DEFAULT_SHORTCUT
     if shortcut and len(shortcut) == 1:
-        shortcut += DEFAULT_SHORTCUT[1]
+        shortcut += DEFAULT_SHORTCUT[1] if DEFAULT_SHORTCUT else "0"
 
     if shortcut:
         shape = shortcut[0]
@@ -659,23 +659,23 @@ def process_prompt_and_config(prompt: str, config: dict, macros: dict, room: str
     return prompt, negative_prompt, config, regional_kwargs, need_update_macros, sets, shortcut
 
 
-def update_prompt_with_macros(prompt: str, config: dict, sets: dict[str, str], shortcut: str | None = None) -> str:
-    """Update the prompt with macros"""
-    sets["width"] = str(config["width"])
-    sets["height"] = str(config["height"])
-    sets["hires"] = str(config["hires"])
-    sets["steps"] = str(config["steps"])
-    # Remove settings that shouldn't be in the final prompt sets string
-    for k in ["seed", "pag", "ad_checkpoint", "denoising_strength"]:
-        if k in sets:
-            sets[k] = "---REMOVEME---"
-    update = {"sets": sets, "rp": None}
-    logger.info("update_prompt_with_macros: sets=%s, shortcut=%s", sets, shortcut)
-    if shortcut:
-        update[shortcut] = None
-    prompt = update_macros(prompt, update)
-    prompt = re.sub(r"\w+=---REMOVEME---", "", prompt)
-    return prompt
+# def update_prompt_with_macros(prompt: str, config: dict, sets: dict[str, str], shortcut: str | None = None) -> str:
+#     """Update the prompt with macros"""
+#     sets["width"] = str(config["width"])
+#     sets["height"] = str(config["height"])
+#     sets["hires"] = str(config["hires"])
+#     sets["steps"] = str(config["steps"])
+#     # Remove settings that shouldn't be in the final prompt sets string
+#     for k in ["seed", "pag", "ad_checkpoint", "denoising_strength"]:
+#         if k in sets:
+#             sets[k] = "---REMOVEME---"
+#     update = {"sets": sets, "rp": None}
+#     logger.info("update_prompt_with_macros: sets=%s, shortcut=%s", sets, shortcut)
+#     if shortcut:
+#         update[shortcut] = None
+#     prompt = update_macros(prompt, update)
+#     prompt = re.sub(r"\w+=---REMOVEME---", "", prompt)
+#     return prompt
 
 
 async def process_request(portals: str, portal_str: Path, req: str) -> None:
@@ -709,8 +709,10 @@ async def process_request(portals: str, portal_str: Path, req: str) -> None:
             prompt, config, macros, room
         )
 
-        if need_update_macros:
-            prompt = update_prompt_with_macros(prompt, config, sets, shortcut)
+        # if need_update_macros:
+        #     prompt = update_prompt_with_macros(prompt, config, sets, shortcut)
+
+        prompt = strip_macros(prompt)
 
         slugged_prompt = slug.slug(prompt)
         if isinstance(slugged_prompt, list):
