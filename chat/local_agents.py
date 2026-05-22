@@ -466,7 +466,14 @@ async def local_agent(c, agent, _query) -> str:
 
     # look for attachments, other files in resp/ in sorted order
     # service image_a1111 should return a file name in response
-    for resp_file in sorted(resp.iterdir()):
+
+    def sort_by_seed(path):
+        match = re.search(r'_(\d+)\.[^.]+$', path.name)
+        if match:
+            return (0, int(match.group(1)), '')
+        return (1, 0, path.name)
+
+    for resp_file in sorted(resp.iterdir(), key=sort_by_seed):
         if resp_file.name in ["new.txt", "request.txt", "config.yaml", "log.txt", "result.yaml"]:
             continue
 
