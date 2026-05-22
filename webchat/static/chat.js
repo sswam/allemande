@@ -2866,7 +2866,7 @@ function calc_visual_age_from_age(age) {
     return "";
   const word =
     age >= 18 ? "adult" :
-    age >= 13 ? "teenage" :
+    age >= 13 ? "teenager" :
     age >= 4 ? "child" :
     age >= 1 ? "toddler" :
     "baby";
