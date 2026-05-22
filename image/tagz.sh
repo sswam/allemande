@@ -5,6 +5,7 @@
 
 tagz() {
 	local nlimit= n=20      # limit number of results per tag
+	local markdown= m=1     # output markdown
 
 	eval "$(ally)"
 
@@ -14,8 +15,13 @@ tagz() {
 		printf "## %s\n" "$query"
 		(
 			techo count tag
-			grep -i -- "\(\\<\|_\)$query" ~/danbooru_tags_post_count.csv | sed 's/_/ /g; s/,/\t/;' | kut 2 1 | head -n "$nlimit" || true
-		) | tsv2markdown
+			grep -i -- "\(\\<\|_\)$query.*," ~/danbooru_tags_post_count.csv | sed 's/_/ /g; s/,/\t/;' | kut 2 1 | head -n "$nlimit" || true
+		) |
+		if (( markdown )); then
+ 		        tsv2markdown
+		else
+			cat
+		fi
 		echo
 	done
 }
