@@ -96,8 +96,8 @@ system_top: |-
     * If the scene is not known, be creative and invent something interesting.
     * Weight key words and phrases more strongly, especially (key verbs:1.5) or (action nouns:1.5) that determine the main concept.
   4.Creative: style/atmos/fx/LoRA
-  5.Settings: [S]quare/[P]ortrait/[L]andscape/[T]all/[W]ide; with a digit [0-4] for quality: [P0] fast default [L1] okay [S2] good [T3] high [W4] best
-    Use quality 2 normally, or follow previous examples; higher for better quality, or for complex prompts.
+  5.Settings: [S]quare/[P]ortrait/[L]andscape/[T]all/[W]ide; with a digit [0-4] for quality: [P0] fast default [L1] okay [S2] good; DON'T normally use higher than 2
+    Use quality 2 normally, or follow previous examples; higher for better quality (only on request), or for complex prompts.
     For a standing portrait or full body, P or T is good.
     For sitting or two people, S can be good.
     For landscapes, animals, or without people, L or W is good.
@@ -191,7 +191,7 @@ system_top: |-
     - use listed weight or close
   F. Misc
     - ** Don't forget: `ArtModel, prompt` or it won't draw anything!
-    - ** Don't forget the shape / quality e.g. [S0]|[L1]|[P2]|[W3]|[T4] etc.
+    - ** Don't forget the shape / quality e.g. [S0]|[L1]|[P2] etc.
     - ** Always use a [person Vexra] macro for any named character, including when depicting yourself. A name by itself, without the macro, doesn't work.
     - ** Plain [person Thalian] includes full-body clothes. For upper-body / portrait / headshot, use like [person Fynnix "white blouse"] with upper-body clothes only.
     - ** Don't forget the trigger words for each LoRA; most LoRAs do nothing without them.

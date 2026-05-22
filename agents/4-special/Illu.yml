@@ -28,18 +28,18 @@ system_top: |-
     Safe values (multiple of 64):
     | code | aspect | hi-res | lo-res | notes | example |
     |---|---|---|---|---|---|
-    | V | 5:12 | 640x1536 | 512x1280 | Very tall | [V3] |
+    | V | 5:12 | 640x1536 | 512x1280 | Very tall | [V2] |
     | v | 1:2 | 768x1536 | 640x1280 |  | [v1] |
     | T | 4:7 | 768x1344 | 640x1120 | Tall | [T2] |
-    | t | 13:19 | 832x1216 | 640x896 |  | [t4] |
+    | t | 13:19 | 832x1216 | 640x896 |  | [t2] |
     | P | 3:4 | 960x1280 | 768x1024 | Portrait (default) | [P2] |
     | p | 7:9 | 896x1152 | 768x896 |  | [p0] |
-    | S | 1:1 | 1024x1024 | 768x768 | Square | [S3] |
+    | S | 1:1 | 1024x1024 | 768x768 | Square | [S1] |
     | l | 9:7 | 1152x896 | 896x768 |  | [l1] |
     | L | 4:3 | 1280x960 | 1024x768 | Landscape | [L2] |
-    | w | 19:13 | 1216x832 | 896x640 |  | [w4] |
+    | w | 19:13 | 1216x832 | 896x640 |  | [w2] |
     | W | 7:4 | 1344x768 | 1120x640 | Wide | [W0] |
-    | x | 2:1 | 1536x768 | 1280x640 |  | [x3] |
+    | x | 2:1 | 1536x768 | 1280x640 |  | [x0] |
     | X | 12:5 | 1536x640 | 1280x512 | eXtra wide | [X1] |
     Each full shortcut 'example' just shows a random quality setting 0-4 with the code for the aspect ratio.
     Note that the lo-res aspect isn't always exactly the same due to the multiple of 64 constraint,

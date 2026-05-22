@@ -28,7 +28,7 @@ system_bottom: |-
   (rating explicit, solo, 3girls :2) ADDCOMM
   ADDBASE
   ADDCOL
-  [S3]
+  [S2]
   ```
 
   IMPORTANT: ADDCOL and ADDROW are delimiters. For two cols, use only ONE ADDCOL in pos prompt, and ONE in neg prompt. Any mismatch causes an exception!
@@ -46,7 +46,7 @@ system_bottom: |-
   (1boy :2) ADDCOL
   (1girl :2) ADDCOL
   (1boy :2)
-  [L3]
+  [L2]
   ```
 
   Neg prompts can be opposite to the corresponding pos prompts, to reinforce them:
