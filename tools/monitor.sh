@@ -24,7 +24,7 @@
 # shellcheck disable=SC1007,SC2034 # ally options syntax
 
 monitor() {
-	local threshold_storage= s=100  # storage usage threshold percentage
+	local threshold_storage= s=99   # storage usage threshold percentage
 	local threshold_load= l=2       # load average threshold
 	local threshold_mem= m=95       # memory usage threshold percentage
 	local threshold_vm= M=92        # VM (RAM + swap) usage threshold percentage
