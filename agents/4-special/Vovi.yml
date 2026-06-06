@@ -1,0 +1,5 @@
+# an uncensored narrator agent
+base: Novi
+type: venice
+model: venice-uncensored
+temp: 0.8
