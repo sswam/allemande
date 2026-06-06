@@ -9,6 +9,7 @@ import rag
 import bb_lib
 import conductor
 import ally_chat_cli
+import memory_tidy
 
 from settings import SUMMARY_PROMPT_DEFAULT
 
@@ -239,6 +240,8 @@ async def python_tool_summaries(c, agent, query) -> str | None:
                 lines = [line for line in lines if not any(re.match(pattern, line.strip()) for pattern in summary_stop_regexs)]
                 content = '\n'.join(lines).strip()
                 logger.info("summaries, content after filter out STOP: %r", content)
+
+            content = memory_tidy.tidy(content)
 
             summary_file = c.room.path.with_suffix(f".{name}.s")
 
