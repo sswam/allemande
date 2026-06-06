@@ -459,7 +459,7 @@ async def local_agent(c, agent, _query) -> str:
     except (FileNotFoundError, KeyError):
         pass
 
-    image_alt_type = c.config.get("image_alt", "expanded")
+    image_alt_type = c.config.get("image_alt") or "expanded"
 
     image_count = 0
     output_count = 0
@@ -486,18 +486,21 @@ async def local_agent(c, agent, _query) -> str:
                 text = f"#{image_seed} "
                 image_seed += 1
             text += agent["name"] + ", "
-            show_raw_prompt = image_alt_type in ["raw", "both"] or not resp_file.stem in image_metadata
-            show_expanded_prompt = image_alt_type in ["expanded", "both"] and resp_file.stem in image_metadata
+            show_raw_prompt = re.search(r"\braw\b", image_alt_type) or not resp_file.stem in image_metadata
+            show_expanded_prompt = re.search(r"\bexpanded\b", image_alt_type)
+            show_final_prompt = re.search(r"\bfinal\b", image_alt_type) and resp_file.stem in image_metadata
+            prompts = []
             if show_raw_prompt:
-                text += fulltext
-            if show_raw_prompt and show_expanded_prompt:
-                text += "  ----  "
+                prompts.append(fulltext)
             if show_expanded_prompt:
+                prompts.append(fulltext2)
+            if show_final_prompt:
                 prompt = image_metadata[resp_file.stem]
                 prompt = re.sub(r"^parameters: ", "", prompt)
                 prompt = re.sub(r"\n+Steps:.*", "", prompt)
                 prompt = re.sub(r"\n+Negative prompt: ", " NEGATIVE ", prompt)
-                text += prompt
+                prompts.append(prompt)
+            text += "  ----  ".join(prompts)
             image_count += 1
 
         output_count += os.path.getsize(resp_file)
