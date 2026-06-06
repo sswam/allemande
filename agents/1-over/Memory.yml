@@ -28,9 +28,10 @@ recap: true
 recap_prompt: null  # defaults to summary_prompt
 recap_min_context: 20
 recap_type: rolling  # can be "rolling" which is lighter but can accumulate errors, or "full", which is more accurate but heavier and might run into context length issues
-recap_keep_old: true
-recap_keep_on_close: true
+recap_keep_old: false
+# recap_keep_on_close: true
 recap_min_length: 200  # keep the old summary if new one is too short
+recap_summary_length_limit: 500
 
 # Note: There is no prefix or suffix for recall_recent or recap yet, these are just presented at the top of the context.
 
