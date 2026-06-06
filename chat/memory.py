@@ -11,6 +11,7 @@ from ally import stopwords
 import bb_lib
 from settings import REMOTE_AGENT_RETRIES, PATH_ROOMS, PATH_HOME, AGENT_CONTEXT_DEFAULT
 import ally_chat_cli
+import memory_tidy
 
 
 logging.basicConfig(level=logging.INFO)
@@ -119,8 +120,7 @@ def get_recap_lock(chat_id, agent_id):
     """ Get a lock to prevent concurrent access / update for an agent's recap of a chat """
     key = (chat_id, agent_id)
     if key not in _recap_locks:
-        lock = _recap_locks[key] = asyncio.Lock()
-        return lock
+        _recap_locks[key] = asyncio.Lock()
     return _recap_locks[key]
 
 
@@ -205,10 +205,27 @@ async def apply_and_update_recap(agent, context, c):
 async def build_recap_file(agent, c, recap_text, start, end):
     """ Build a recap file """
 
+    recap_type = agent.get("recap_type")
+    recap_summary_length_limit = agent.get("recap_summary_length_limit", 500)
+
+    # For recap type full_or_rolling, if a chat gets long for a full summary, switch to rolling mode
+    if recap_type == "full_or_rolling":
+        if end < recap_summary_length_limit:
+            recap_type = "full"
+        else:
+            recap_type = "rolling"
+
     # For "full" mode, make a new summary of the whole chat
-    if agent.get("recap_type") == "full":
+    if recap_type == "full":
         recap_text = None
         start = 0
+
+    # Limit how many messages to summarize in one go, favoring more recent messages.
+    # For recap type rolling, this means if a character is not chatting for a long time, they will miss part of what happened, which makes sense in some cases.
+    # For recap type full, this means if a chat gets long, the character will forget about the start of it.
+    start = max(start, end - recap_summary_length_limit)
+
+    logger.info("effective recap_type and range for %s: %s %s - %s", agent.name, recap_type, start, end)
 
     # Get context for new summary and reformat it neatly
     context = c.history[start:end]
@@ -262,15 +279,17 @@ async def build_recap_file(agent, c, recap_text, start, end):
         user, content = responses[0]
         user = str(user).lower()
 
+        if user != name:
+            logger.error("build_recap_file, wrong agent responded for agent: %s -> %s", name, user)
+            return None, ""
+
         # filter out summary_stop_regexs, needed for remote models if prompted to use it
         if summary_stop_regexs:
             lines = content.split('\n')
             lines = [line for line in lines if not any(re.match(pattern, line.strip()) for pattern in summary_stop_regexs)]
             content = '\n'.join(lines).strip()
 
-        if user != name:
-            logger.error("build_recap_file, wrong agent responded for agent: %s -> %s", name, user)
-            return None, ""
+        content = memory_tidy.tidy(content)
 
         if len(content) < recap_min_length:
             logger.error("build_recap_file, response too short: %s < %s", len(content), recap_min_length)
