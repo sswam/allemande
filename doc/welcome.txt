@@ -1,9 +1,12 @@
 Thanks for your interest in Ally Chat!
-Our subreddits: r/AllyChat and r/AllyChatX (NSFW)
+
+* To set up your account, what's your first name, and how old are you?
+
+----
 
 I'm Sam, the developer, from Melbourne, Australia.
 
-* To set up your account, what's your first name, and how old are you?
+Our subreddits: r/AllyChat and r/AllyChatX (NSFW)
 
 If you like, you can also answer these questions, but it's not required:
 
