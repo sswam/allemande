@@ -209,6 +209,7 @@ Please do not use languages models other than those listed here for NSFW content
 | xAI        | Grok 4 Fast           | Gok    | $0.20 | $0.50  | Ultra-fast Grok 4 with extended context for standard tasks.                                             |
 | DeepSeek   | DeepSeek Chat V3      | Dese   | $0.20 | $0.80  | DeepSeek's classic creative and intelligent chat model.                                                 |
 | DeepSeek   | DeepSeek V4 Flash     | Desee  | $0.14 | $0.28  | DeepSeek's fast creative and intelligent chat model.                                                    |
+| DeepSeek   | DeepSeek V4 Pro       | Deseri | $0.435 | $0.87 | DeepSeek's strongest model.                                                                             |
 | Mistral    | Mistral Large 2411    | Misti  | $2    | $6     | Mistral's strongest language model, very capable and creative.                                          |
 | Mistral+   | Venice Uncensored 1.1 | Veni   | $0.20 | $0.90  | Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition.                                              |
 | Mistral+   | Venice Role Play      | Venni  | $0.50 | $2     | Venice Role Play Uncensored.                                                                            |
