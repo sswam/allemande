@@ -18,7 +18,7 @@ filter_out:
   - actions_fix
   - ["actions_reduce", 0.8]
 # TODO - could remove quotation marks and change round parens to square
-recap_type: full
+recap_type: full_or_rolling
 recall_recent_count: 1
 recall_limit: 1  # per query
 recall_context: 1  # do searches based on the last message only
