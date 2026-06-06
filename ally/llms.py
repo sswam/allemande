@@ -357,8 +357,8 @@ MODELS = {
         "vendor": "deepseek",
         "id": "deepseek-v4-pro",
         "description": "deepseek-v4-pro",
-        "cost_in": 1.74,
-        "cost_out": 3.48,
+        "cost_in": 0.435,
+        "cost_out": 0.87,
     },
     "llama-3.1-8b": {
         "aliases": ["ellie"],
