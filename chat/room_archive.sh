@@ -17,6 +17,7 @@ room=${room%.bb}
 from="$ALLEMANDE_HOME/rooms/$room.bb"
 dirname="$(dirname "$from")"
 basename="$(basename "$from")"
+to=""
 
 if [ ! -f "$from" ]; then
 	echo "No such file: $from" >&2
@@ -46,6 +47,9 @@ fi
 
 # Remove log file if present
 rm -f "$dirname/${basename%.bb}.log"
+
+# Remove memory recap files if present
+rm -f "$dirname/${basename%.bb}."*".r"
 
 # Copy ownership and permissions from the archived file to the new file
 if [ -e "$to" ]; then
