@@ -27,7 +27,7 @@ import yt_dlp
 
 import fetch
 from ally_room import check_access, safe_path_for_local_file
-from bb_lib import lines_to_messages
+from bb_lib import lines_to_messages, message_hash
 from ally.quote import quote_words  # type: ignore  # pylint: disable=wrong-import-order
 import stamps
 from ally.util import asyncify
@@ -864,6 +864,7 @@ def user_to_display(user: str|None) -> str|None:
 
 async def message_to_html(message: dict[str, str], bb_file: str) -> str:
     """Convert a chat message to HTML."""
+    msg_hash = message_hash(message)
     # logger.info("message_to_html 1:\n%s", message["content"])
     content, has_math = await preprocess(message["content"], bb_file, message.get("user"))
     # logger.info("message_to_html 2:\n%s", content)
@@ -899,8 +900,8 @@ async def message_to_html(message: dict[str, str], bb_file: str) -> str:
         title = ""
         if user != user_display:
             title = f' title="{user_ee}"'
-        return f"""<div class="message" user="{user_ee}"><div class="label"{title}>{user_display_ee}:</div><div class="content">{html_content}</div></div>\n\n"""
-    return f"""<div class="message narrative"><div class="content">{html_content}</div></div>\n\n"""
+        return f"""<div class="message" user="{user_ee}" hash="{msg_hash}"><div class="label"{title}>{user_display_ee}:</div><div class="content">{html_content}</div></div>\n\n"""
+    return f"""<div class="message narrative" hash="{msg_hash}"><div class="content">{html_content}</div></div>\n\n"""
 
 
 LANGUAGES = r"python|bash|sh|shell|console|html|xml|css|javascript|js|json|yaml|yml|toml|ini|sql|c|cpp|csharp|cs|java|kotlin|swift|php|perl|ruby|lua|rust|go|dart|scala|groovy|powershell|plaintext"

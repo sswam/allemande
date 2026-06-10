@@ -184,7 +184,7 @@ chat-api:
 	cd $(WEBCHAT) && awatch -a -i -p ../Makefile chat_api.py ../chat/chat.py ../chat/ally_room.py ../chat/ally_service.py -s -- uvicorn chat_api:app --timeout-graceful-shutdown 5  # --reload
 
 stream:
-	cd $(WEBCHAT) && awatch -a -i -p ../Makefile stream.py folder.py ../chat/chat.py ../chat/ally_room.py ../text/atail.py ../ally/cache.py ../chat/ally_service.py -s -- uvicorn stream:app --port 8001 --timeout-graceful-shutdown 1  # --reload
+	cd $(WEBCHAT) && awatch -a -i -p ../Makefile stream.py folder.py ../chat/chat.py ../chat/ally_room.py ../text/atail.py ../ally/cache.py ../chat/ally_service.py ../chat/ally_tts.py -s -- uvicorn stream:app --port 8001 --timeout-graceful-shutdown 1  # --reload
 
 auth:
 	cd auth && uvicorn auth:app --reload --timeout-graceful-shutdown 5 --port 8002

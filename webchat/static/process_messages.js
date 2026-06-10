@@ -120,7 +120,7 @@ async function ensurePreviousMessagesProcessed(element) {
   return [id, false];
 }
 
-function getMessageId(element) {
+export function getMessageId(element) {
   let id = null;
   const match = element.className.match(/(?:^|\s)m(\d+)(?:\s|$)/);
   if (match)

@@ -2,7 +2,7 @@
 
 """
 Watch a chat file and stream it to the browser like tail -f.
-Also serves directory listings.
+Also serves directory listings and TTS voice (cached or generate).
 """
 
 import os
@@ -14,7 +14,7 @@ import urllib
 
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import StreamingResponse, Response, JSONResponse, HTMLResponse
+from starlette.responses import StreamingResponse, Response, JSONResponse, HTMLResponse, FileResponse
 from starlette.exceptions import HTTPException
 from starlette.templating import Jinja2Templates
 import uvicorn
@@ -29,6 +29,7 @@ from util import sanitize_pathname, safe_join
 import folder
 from ally_service import get_user, add_mtime_to_resource_pathnames
 import settings
+import ally_tts
 
 from ally import cache
 PATH_USERS = Path(os.environ["ALLEMANDE_USERS"]) / "users"
@@ -305,6 +306,16 @@ async def stream(request, path=""):
         if want_json:
             return JSONResponse(folder.get_dir_listing(path, pathname, info))
         return HTMLResponse(folder.get_dir_listing_html(path, pathname, info, templates, context))
+
+    # Check for TTS files
+    if re.search(r"\.tts/[^/]*\.mp3", pathname):
+        media_type = "audio/mpeg"
+        if not path.exists():
+            await ally_tts.generate_tts_file(path, pathname)
+        # TODO return a static empty-ish mp3 for empty file
+        if path.exists():
+            return FileResponse(path, media_type=media_type)
+        raise HTTPException(status_code=404, detail="Not found")
 
     media_type = "text/plain"
     header = ""

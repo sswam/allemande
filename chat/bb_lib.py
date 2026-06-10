@@ -8,6 +8,7 @@ import logging
 from typing import Any, TextIO, IO, Iterator, cast
 from dataclasses import dataclass
 import re
+import hashlib
 
 from util import Symbol
 
@@ -149,7 +150,7 @@ def message_to_text(message: dict[str, Any]) -> str:
         text = "".join(lines2)
     else:
         text = content
-    return text.rstrip("\n") + "\n"
+    return text.rstrip() + "\n"
 
 
 def messages_to_lines(messages):
@@ -203,3 +204,14 @@ def save_chat_messages(messages: list[ChatMessage], destination: str | Path | Te
     path = Path(destination) if isinstance(destination, str) else destination
     with path.open(mode, encoding="utf-8") as f:
         save_chat_messages(messages, f)
+
+def message_hash(message: dict[str, str]) -> str:
+    """Calculate a hash of the message including user and content"""
+    text = message_to_text(message)
+    return text_hash(text)
+
+
+def text_hash(text: str) -> str:
+    """Calculate a 32-bit hax hash of the text"""
+    byte_data = text.encode('utf-8')
+    return hashlib.sha256(byte_data).hexdigest()[:8]

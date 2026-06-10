@@ -93,6 +93,9 @@ function offline() {
 
 export function clear() {
   // console.log("GOT CLEAR() FROM SERVER");
+  const menu = $id("message_menu");
+  hide(menu);
+  $("div.messages_wrap").before(menu);
   $("div.messages").innerHTML = "";
   clean_up_server_events();
 }
@@ -910,6 +913,8 @@ async function click(ev) {
   }
   */
 
+  message_menu_click(ev);
+
   // copy username from label?
   if (ev.target.matches(".message .label")) {
     ev.preventDefault();
@@ -1090,6 +1095,7 @@ async function set_view_options(new_view_options) {
     cl.toggle("history", view_options.history == 1);
     cl.toggle("ids-hover", view_options.ids == 1);
     cl.toggle("ids", view_options.ids == 2);
+    cl.toggle("msg_tts", view_options.voice_manual||view_options.voice_tts||view_options.voice_stt);
     // if (old_view_options.columns != view_options.columns)
     //   restoreScrollPosition();
   }
@@ -1722,6 +1728,94 @@ function fix_browser_copy(ev) {
   console.log(container.innerHTML);
 }
 
+// message menu --------------------------------------------------------------
+
+// Global variable to store the currently selected message element
+let $message_with_menu = null;
+
+function message_menu_click(event) {
+  // Find the static menu element
+  const menu = $id("message_menu");
+
+  // Scenario 1: Clicked inside the open menu itself
+  if (menu.contains(event.target)) {
+    return;
+  }
+
+  // Check if the user clicked inside a message
+  const message = event.target.closest(".message");
+  
+  // Scenario 2: Clicked inside a message
+  if (message) {
+    // If the menu is already open on THIS message, close it
+    if ($message_with_menu === message) {
+      hide(menu);
+      $message_with_menu = null;
+    } else {
+      // Otherwise, move the menu into this message and show it
+      message.appendChild(menu);
+      show(menu);
+      $message_with_menu = message;
+    }
+    return;
+  }
+  
+  // Scenario 3: Clicked anywhere else outside
+  hide(menu);
+  $message_with_menu = null;
+}
+
+async function get_message_id($message) {
+  const process_messages = await $import("chat:process_messages");
+  return process_messages.getMessageId($message);
+}
+
+async function msg_undo_click(event) {
+  const id = await get_message_id($message_with_menu);
+  window.parent.postMessage({ type: "undo", message_id: id }, ALLYCHAT_CHAT_URL);
+  hide("message_menu");
+  $message_with_menu = null;
+}
+
+async function msg_tts_click(event) {
+  play_message_tts($message_with_menu, true); // async
+  hide("message_menu");
+  $message_with_menu = null;
+}
+
+async function play_message_tts($message, gen_if_needed) {
+  const id = await get_message_id($message);
+  const hash = $message.getAttribute("hash");
+  const url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
+
+  console.log(url);
+
+  play_audio_from_url(url);
+
+  // if (gen_if_needed) {
+  //   window.parent.postMessage({ type: "tts", message_id: id, hash: hash }, ALLYCHAT_CHAT_URL);
+  // }
+}
+
+function handle_media_error(event) {
+    const error = event.target.error;
+    console.error(`Media Error [Code ${error.code}]: ${error.message}`);
+}
+
+async function play_audio_from_url(url) {
+    const audio = new Audio(url);
+
+    audio.addEventListener('error', handle_media_error);
+
+    try {
+        await audio.play();
+        console.log("Audio is playing successfully!");
+    } catch (error) {
+        // Catch autoplay blockers or execution failures
+        console.error("Playback failed:", error.message);
+    }
+}
+
 // main ----------------------------------------------------------------------
 
 async function load_user_script() {
@@ -1803,6 +1897,9 @@ export async function room_main() {
   $on($body, "touchcancel", touch_cancel);
   // double click / tap
   $on($body, "dblclick", mouse_double_click);
+
+  $on($id("msg_undo"), "click", msg_undo_click);
+  $on($id("msg_tts"), "click", msg_tts_click);
 
   setup_keyboard_shortcuts();
   if (inIframe)

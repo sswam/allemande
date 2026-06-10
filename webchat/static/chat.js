@@ -93,11 +93,11 @@ const VIEW_OPTIONS_DEFAULT = {
   highlight_theme_dark: "a11y-dark",
   fullscreen: 0,
   advanced: 1,
-  audio_stt: 0,
-  audio_tts: 0,
-  audio_vad: 0,
-  audio_auto: 0,
-  audio_voice: "ballad",
+  voice_manual: 0,
+  voice_stt: 0,
+  voice_tts: 0,
+  voice_vad: 0,
+  voice_auto: 0,
   help: 0,
   embed: 0,
   dir_sort: "time",
@@ -140,18 +140,18 @@ let view_options_embed = {
   advanced: 1,
 };
 
-let tts_voice_options = [
-  'alloy',
-  'ash',
-  'ballad',
-  'coral',
-  'echo',
-  'fable',
-  'nova',
-  'onyx',
-  'sage',
-  'shimmer',
-];
+// let tts_voice_options = [
+//   'alloy',
+//   'ash',
+//   'ballad',
+//   'coral',
+//   'echo',
+//   'fable',
+//   'nova',
+//   'onyx',
+//   'sage',
+//   'shimmer',
+// ];
 
 let view_image_size_delta = 1;
 let view_font_size_delta = 1;
@@ -1788,6 +1788,12 @@ function handle_message(ev) {
     return;
   }
 
+  if (ev.data.type == "undo") {
+    const id = ev.data.message_id;
+    undo_message(id);  // async
+    return;
+  }
+
   /*
   if (ev.data.type == "size_change") {
     console.log("size_change", ev.data);
@@ -1820,6 +1826,12 @@ function handle_message(ev) {
       new KeyboardEvent(ev.data.type, ev.data)
     );
   }
+}
+
+async function undo_message(id) {
+  if (!await Prompts.confirm("Remove message "+id+"?")) return;
+  await send_text(`<ac rm=${id}>`);
+  active_dec("send");  // FIXME this is wonky
 }
 
 function set_overlay(overlay) {
@@ -2969,6 +2981,11 @@ async function view_options_apply() {
   if (view_options.toc)
     view_options.canvas = 0;
 
+  // set voice_auto if all component options are set
+  if (view_options.voice_tts && view_options.voice_stt && view_options.voice_vad) {
+    view_options.voice_auto = 1;
+  }
+
   // update buttons
   // TODO simplify / de-dup this code
   active_set("view_ids", view_options.ids);
@@ -2990,10 +3007,11 @@ async function view_options_apply() {
   active_set("view_advanced", view_options.advanced > 1);
   active_set("view_standard", view_options.advanced >= 0);
   $inputrow.style.flexBasis = view_options.input_row_height + "px";
-  active_set("audio_stt", view_options.audio_stt);
-  active_set("audio_tts", view_options.audio_tts);
-  active_set("audio_vad", view_options.audio_vad);
-  active_set("audio_auto", view_options.audio_auto);
+  active_set("voice_manual", view_options.voice_manual);
+  active_set("voice_stt", view_options.voice_stt);
+  active_set("voice_tts", view_options.voice_tts);
+  active_set("voice_vad", view_options.voice_vad);
+  active_set("voice_auto", view_options.voice_auto);
   active_set("edit_advanced", view_options.edit_advanced > 0);
 
   active_set("help", view_options.help > 0);
@@ -3031,8 +3049,6 @@ async function view_options_apply() {
     $edit_advanced.innerHTML = icons["edit_simple"];
     $edit_advanced.title = "simple editor";
   }
-
-  $id("audio_voice").value = view_options.audio_voice;
 
   const cl = document.body.classList;
   cl.toggle("simple", view_options.advanced == -1);
@@ -3676,10 +3692,61 @@ async function opt_memorize(ev) {
   });
 }
 
+async function voice_manual(ev) {
+  view_options.voice_manual = !view_options.voice_manual;
+  if (view_options.voice_manual) {
+    view_options.voice_tts = view_options.voice_stt = view_options.voice_vad = view_options.voice_auto = 0;
+  }
+  view_options_apply();
+}
+
+async function voice_tts(ev) {
+  view_options.voice_tts = !view_options.voice_tts;
+  if (view_options.voice_tts) {
+    view_options.voice_manual = 0;
+  } else {
+    view_options.voice_auto = 0;
+  }
+  view_options_apply();
+}
+
+async function voice_stt(ev) {
+  view_options.voice_stt = !view_options.voice_stt;
+  if (view_options.voice_stt) {
+    view_options.voice_manual = 0;
+  } else {
+    view_options.voice_auto = 0;
+    view_options.voice_vad = 0;
+  }
+  view_options_apply();
+}
+
+async function voice_vad(ev) {
+  view_options.voice_vad = !view_options.voice_vad;
+  if (view_options.voice_vad) {
+    view_options.voice_manual = 0;
+    view_options.voice_stt = 1;
+  } else {
+    view_options.voice_auto = 0;
+  }
+  view_options_apply();
+}
+
+async function voice_auto(ev) {
+  view_options.voice_auto = !view_options.voice_auto;
+  if (view_options.voice_auto) {
+    view_options.voice_manual = 0;
+    view_options.voice_tts = view_options.voice_stt = view_options.voice_vad = 1;
+  } else {
+    view_options.voice_tts = view_options.voice_stt = view_options.voice_vad = 0;
+  }
+  view_options_apply();
+}
+
 async function setup_icons() {
   await $import("icons");
   icons = modules.icons.icons;
-  for (const prefix of ["mod", "add", "view", "opt", "nav", "pages", "scroll", "audio", "select", "room_ops"]) { //, "filter"]) {
+  for (const prefix of ["mod", "add", "opt", "nav", "pages", "scroll", "select", "room_ops"]) { //, "filter"]) {
     icons[`${prefix}_cancel`] = icons[prefix]; // icons["x"];
   }
 //  icons["edit_close"] = icons["x"];
@@ -3706,7 +3773,7 @@ async function setup_icons() {
   icons["add_file_2"] = icons["add_file"];
   icons["font_contract"] = icons["font_expand"];
   icons["mod_auto"] = icons["auto"];
-  icons["audio_auto"] = icons["auto"];
+  icons["voice_auto"] = icons["auto"];
 
   icons["help_undo"] = icons["x_large"];
   icons["help_retry"] = icons["undo"];
@@ -4529,7 +4596,6 @@ function setup_combo_boxes() {
   }
 }
 
-
 // main ----------------------------------------------------------------------
 
 export async function init() {
@@ -4597,7 +4663,6 @@ export async function init() {
   // $on($id("mod"), "click", () => set_controls("input_mod"));
   // $on($id("view"), "click", () => set_controls("input_view"));
   $on($id("opt"), "click", () => set_controls("input_opt"));
-  $on($id("audio"), "click", () => set_controls("input_audio"));
 
   $on($id("nav"), "click", nav_click);
   $on($id("pages"), "click", pages_click);
@@ -4663,6 +4728,12 @@ export async function init() {
   $on($id("view_standard"), "click", view_standard);
   // $on($id("view_cancel"), "click", () => set_controls());
 
+  $on($id("voice_manual"), "click", voice_manual);
+  $on($id("voice_tts"), "click", voice_tts);
+  $on($id("voice_stt"), "click", voice_stt);
+  $on($id("voice_vad"), "click", voice_vad);
+  $on($id("voice_auto"), "click", voice_auto);
+
   $on($id("opt_context"), "change", opt_context);
   $on($id("opt_lines"), "change", opt_lines);
   $on($id("opt_images"), "change", opt_images);
@@ -4699,8 +4770,6 @@ export async function init() {
   $on($id("room_ops_move"), "click", move_mode);
   $on($id("room_ops_copy"), "click", copy_mode);
   $on($id("room_ops_cancel"), "click", () => set_top_left());
-
-  $on($id("audio_cancel"), "click", () => set_controls());
 
   $on($room, "change", () => set_room());
   $on(window, "hashchange", on_hash_change);

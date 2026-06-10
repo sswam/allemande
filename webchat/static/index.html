@@ -164,7 +164,6 @@
 			<button id="writer" title="writer: request narrative from the writer agent" class="hidden">request narrative</button>
 			<button id="add" title="add a file or recording">add</button>
 			<button id="add_file_2" title="upload files" class="hidden standard option-simple">file</button>
-			<button id="audio" title="audio settings" class="boffin">audio</button>
 			<button id="mod_archive_2" title="archive this room" class="simple option">archive</button>
 			<button id="view_theme_bw" title="change the theme" class="simple option">theme</button>
 			<button id="view_standard" title="standard mode" class="simple standard advanced option hidden">standard mode</button>
@@ -204,14 +203,6 @@
 			<button id="edit_advanced" title="simple editor">advanced</button>
 			<button id="edit_close" class="back">close</button>
 		</div>
-		<div class="controls col_wrap hidden" id="input_audio">
-			<button id="audio_stt" title="speech to text">stt</button>
-			<button id="audio_tts" title="text to speech">tts</button>
-			<button id="audio_vad" title="voice activity detection">vad</button>
-			<button id="audio_auto" title="automatic voice chat">auto</button>
-			<input id="audio_voice" placeholder="voice" title="text to speech voice">
-			<button id="audio_cancel" class="back">back</button>
-		</div>
 		<div class="controls large_controls hidden" id="input_opt">
 			<h2><span id="view"></span> View Options</h2>
 			<div class="row_wrap">
@@ -233,6 +224,15 @@
 				<button id="view_fullscreen" title="view fullscreen" class="noios">fullscreen</button>
 				<input id="view_items" placeholder="items" title="number of search results to show" class="boffin">
 				<button id="view_advanced" title="boffin mode / early access" class="hidden dev">boffin</button>
+			</div>
+			<h2><span id="voice"></span> Voice Options</h2>
+			<div class="row_wrap">
+				<button id="voice_manual" class="dev" title="manual voice chat">manual</button>
+				<button id="voice_auto" class="dev" title="automatic voice chat">auto</button>
+				<button id="voice_tts" title="text to speech">tts</button>
+				<button id="voice_stt" class="dev" title="speech to text">stt</button>
+				<button id="voice_vad" class="dev" title="voice activity detection">vad</button>
+				<!--<input id="voice_voice" placeholder="voice" title="text to speech voice">-->
 			</div>
 			<h2><span id="room_opt"></span> Room Options</h2>
 			<div class="row_wrap">

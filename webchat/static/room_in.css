@@ -1644,3 +1644,22 @@ summary:has(> .h1), .h1 { font-size: 2rem; font-weight: bold; }
 summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
 .h1 { font-size: 2rem; font-weight: bold; color: var(--text); }
 .h2 { font-size: 1.5rem; font-weight: bold; color: var(--text); }
+
+/* message menu --------------------------------------------------------- */
+
+#message_menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  background: var(--background);
+  padding: 0.25rem 0.25rem;
+  border-radius: 0.5rem;
+  color: var(--text);
+  display: flex;
+  gap: var(--pad);
+}
+
+body:not(.msg_tts) button#msg_tts {
+	display: none;
+}
