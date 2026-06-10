@@ -85,13 +85,18 @@ safe-mount() {
 
 	# Verify mount worked
 	if ! mountpoint -q "$mount_point"; then
+		echo >&2 "not mounted?"
 		return 1
 	fi
 
 	# If test path specified, verify it exists
 	if [ -n "$test_path" ]; then
-		timeout "$test_timeout" test -e "$mount_point/$test_path"
-		return $?
+		if timeout "$test_timeout" test -e "$mount_point/$test_path"; then
+			:
+		else
+			echo >&2 "test path not found: $test_path"
+			return 1
+		fi
 	fi
 
 	return 0

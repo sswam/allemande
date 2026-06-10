@@ -21,7 +21,7 @@ ALLEMANDE_UID="777"
 ALLEMANDE_GID="$ALLEMANDE_UID"
 CHATUSER_GID="60000"
 ALLEMANDE_PORTALS="/var/spool/allemande"
-ALLEMANDE_MODULES="llm_llama stt_whisper image_a1111"
+ALLEMANDE_MODULES="llm_llama image_a1111 stt_whisper tts_omnivoice"
 ALLEMANDE_BOXES="prep todo doing done error history"
 
 ALLEMANDE_SCREEN="allemande"

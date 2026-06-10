@@ -12,7 +12,7 @@ TEMPLATES := $(WEBCHAT)/templates
 SUBDIRS := $(dir $(wildcard */Makefile))
 
 JOBS := server_start server_stop beorn server default run-i3 run frontend backend dev \
-	run core vi-online vi-local vscode-online vscode-local voice webchat llm whisper chat-api stream auth watch \
+	run core vi-online vi-local vscode-online vscode-local voice webchat llm whisper omnivoice chat-api stream auth watch \
 	bb2html build-ui nginx logs perms brain mike speak \
 	firefox-webchat-online firefox-webchat-local firefox-pro-local firefox-pro-online \
 	chrome-webchat-online chrome-webchat-local \
@@ -95,7 +95,7 @@ uninstall:
 	allemande-uninstall
 	web-uninstall
 
-core: llm.xt images.xt forge.xt whisper.xt backup.xt cup.xt # notify.xt
+core: llm.xt images.xt forge.xt whisper.xt omnivoice.xt backup.xt cup.xt # notify.xt
 
 voice: mike.xt speak.xt whisper.xt
 
@@ -119,7 +119,7 @@ alfred:
 	cd $(ALLEMANDE_HOME)/apps/alfred && \
 	./alfred-webui.py
 
-core.xtc: llm.xtc images.xtc forge.xtc whisper.xtc
+core.xtc: llm.xtc images.xtc forge.xtc whisper.xtc omnivoice.xtc
 
 voice.xtc: mike.xtc speak.xtc  # brain.xtc
 
@@ -138,6 +138,9 @@ llm:
 
 whisper:
 	while true; do make mount && nice ionice $(PYTHON) core/stt_whisper.py -v; sleep 1; done
+
+omnivoice:
+	while true; do make mount && nice ionice $(PYTHON) core/tts_omnivoice.py -v; sleep 1; done
 
 images:
 	while true; do make mount && $(PYTHON) core/image_forge.py -v; sleep 1; done
