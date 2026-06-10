@@ -316,13 +316,13 @@ async def serve_requests_inotify(portals: str, gen: Callable, stop_forge: bool =
             if not req.is_dir():
                 continue
             logger.info("Initial request: %s in %s", req, portal)
-            await process_request(portals, portal, req.name, gen, stop_forge=stop_forge)
+            await process_request(Path(portals), portal, req.name, gen, stop_forge=stop_forge)
     for event in i.event_gen(yield_nones=False):
         (_, type_names, path, filename) = event
         logger.debug("PATH=[%r] FILENAME=[%r] EVENT_TYPES=%r", path, filename, type_names)
         portal = Path(path).parent
         logger.info("New request: %s in %s", filename, portal)
-        await process_request(portals, portal, filename, gen, stop_forge=stop_forge)
+        await process_request(Path(portals), portal, filename, gen, stop_forge=stop_forge)
 
 
 def find_todo_requests(portals: str = str(portals_dir)) -> list[tuple[Path, str]]:
@@ -349,7 +349,7 @@ async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float 
     for portal, req in known_requests:
         logger.info("Initial request: %s in %s", req, portal)
         served_count += 1
-        await process_request(portals, portal, req, gen, stop_forge=stop_forge)
+        await process_request(Path(portals), portal, req, gen, stop_forge=stop_forge)
 
     # known_requests_set = set(known_requests)
 
@@ -366,7 +366,7 @@ async def serve_requests_poll(portals: str, gen: Callable, poll_interval: float 
             for portal, req_name in new_requests:
                 logger.info("New request: %s in %s", req_name, portal)
                 served_count += 1
-                await process_request(portals, portal, req_name, gen, stop_forge=stop_forge)
+                await process_request(Path(portals), portal, req_name, gen, stop_forge=stop_forge)
             # known_requests_set = set(new_requests)
             last_request_time = asyncio.get_event_loop().time()
 

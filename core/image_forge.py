@@ -813,7 +813,7 @@ async def serve_requests(portals: str = str(portals_dir), poll_interval: float =
     known_requests = find_todo_requests(portals)
     for portal, req_name in known_requests:
         logger.debug("Initial request detected: %s in %s", req_name, portal)
-        await process_request(portals, portal, req_name)
+        await process_request(Path(portals), portal, req_name)
 
     # known_requests_set = set(known_requests)
 
@@ -824,7 +824,7 @@ async def serve_requests(portals: str = str(portals_dir), poll_interval: float =
                 # if (portal, req_name) in known_requests_set:
                 #     continue
                 logger.debug("New request detected: %s in %s", req_name, portal)
-                await process_request(portals, portal, req_name)
+                await process_request(Path(portals), portal, req_name)
 
             # known_requests_set = set(new_requests)
 

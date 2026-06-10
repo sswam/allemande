@@ -153,7 +153,7 @@ async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2
     known_requests = find_todo_requests(portals)
     for portal, req in known_requests:
         logger.debug("Initial request detected: %s in %s", req, portal)
-        await process_request(portals, portal, req, gen, model=model)
+        await process_request(Path(portals), portal, req, gen, model=model)
 
     known_requests_set = set(known_requests)
 
@@ -163,7 +163,7 @@ async def serve_requests(portals: str = str(portals_dir), model: str = "large-v2
             if (portal, req_name) in known_requests_set:
                 continue
             logger.debug("New request detected: %s in %s", req_name, portal)
-            await process_request(portals, portal, req_name, gen, model=model)
+            await process_request(Path(portals), portal, req_name, gen, model=model)
 
         known_requests_set = set(new_requests)
 
