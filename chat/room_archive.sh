@@ -51,8 +51,13 @@ rm -f "$dirname/${basename%.bb}.log"
 # Remove memory recap files if present
 rm -f "$dirname/${basename%.bb}."*".r"
 
-# Copy ownership and permissions from the archived file to the new file
 if [ -e "$to" ]; then
+	# Copy ownership and permissions from the archived file to the new file
 	chown --reference="$to" "$from"
 	chmod --reference="$to" "$from"
+
+	# Move .tts folder if present
+	if [ -e "${from%.bb}.tts" ]; then
+		mv -T "${from%.bb}.tts" "${to%.bb}.tts"
+	fi
 fi
