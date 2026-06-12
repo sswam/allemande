@@ -19,7 +19,7 @@ remove_old_media_from_rooms() {
 	fi
 
 	# Get a list of all jpg files older than $days days, not in the cast directory, and are owner writable
-	find "." -mtime +"$days" -type f \( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' -o -name '*.mp4' \) -not -path '*/cast/*' -perm /200 | sed 's|^\./||' | sort > .all_media_files.txt
+	find "." -mtime +"$days" -type f \( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' -o -name '*.mp4' -o -name '*.mp3' \) -not -path '*/cast/*' -perm /200 | sed 's|^\./||' | sort > .all_media_files.txt
 
 	# Get list of files tracked by Git
 	# NOTE: doesn't handle sub-repositories
