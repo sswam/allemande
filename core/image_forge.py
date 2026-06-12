@@ -573,6 +573,11 @@ async def enqueue_image_jobs(
         new_job.duration = duration_adjusted
         logger.info("weight, job_penalty, duration: %.2f, %.2f, %.2f", weight, job_penalty, new_job.duration)
 
+        # first job starts at 1/2 estimated duration, not 0
+        if i == 0:
+            priority += (new_job.duration or TIME_EPSILON) / 2
+            new_job.priority = priority
+
         if priority - current_time > MAX_QUEUE_DELAY:
             # Don't add the job if would run too far out in the future, as the client will have timed out, and better to give immediate feedback for too many pokes, and not clutter the queue
             logger.info("skipping new job: priority %.0f > %.0f seconds", priority, MAX_QUEUE_DELAY)
