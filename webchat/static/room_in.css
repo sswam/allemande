@@ -1649,7 +1649,7 @@ summary:has(> .h2), .h2 { font-size: 1.5rem; font-weight: bold; }
 
 #message_menu {
   position: absolute;
-  top: 0;
+  bottom: 100%;
   right: 0;
   z-index: 10;
   background: var(--background);
