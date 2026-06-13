@@ -1,0 +1,6 @@
+# A software tool to fetch LoRAs from Civitai
+type: tool
+command:
+- civitai_download
+format: markdown
+args: True
