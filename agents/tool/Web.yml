@@ -1,4 +1,4 @@
-# A software tool to summarize web pages
+# A software tool to fetch web pages as text / markdown
 type: tool
 command:
 - web_text
