@@ -3,7 +3,7 @@ model: default
 description_pos: bottom
 stop_regexs:
   - \n\t*\n\t*\n
-lines: 2
+lines: 1
 temp: 0.8
 hacky_anti_rep: true
 filter_in:
