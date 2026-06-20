@@ -11,11 +11,13 @@ import os
 import time
 from pathlib import Path
 from typing import TextIO, Any
+import chat
 
 import aionotify  # type: ignore
 
 from ally import main, logs, yaml  # type: ignore
 from bb_lib import lines_to_messages, message_to_text, ChatMessage
+import bb_lib
 
 __version__ = "0.1.5"
 
@@ -51,16 +53,21 @@ def create_room_content(
     if contexts:
         for context in contexts:
             if context == "-":
-                stdin_content = sys.stdin.read()
-                # content += f"#File: stdin\n\n{stdin_content}\n\n"
-                content += f"{stdin_content}\n\n"
+                file_content = sys.stdin.read()
             else:
                 context_path = Path(context)
                 if context_path.is_file():
                     with open(context_path) as f:
                         file_content = f.read()
-                    # content += f"#File: {context_path.name}\n\n{file_content}\n\n"
-                    content += f"{file_content}\n\n"
+
+            # apply editing commands before appending, as ids may be different
+            history_messages = list(bb_lib.lines_to_messages(file_content.splitlines()))
+            history_messages = chat.apply_editing_commands(history_messages)
+            history = list(bb_lib.messages_to_lines(history_messages))
+            history_text = "\n".join(history)
+
+            # content += f"#File: {context_path.name}\n\n{file_content}\n\n"
+            content += f"{history_text}\n\n"
 
     # Add the user's query message
     if query:
