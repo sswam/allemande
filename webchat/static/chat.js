@@ -4363,6 +4363,7 @@ async function usage() {
   }
 
   view_prev = view;
+  $id("view_usage").innerHTML = "";
   set_view("view_usage");
   $id("usage").classList.add("back");
 
@@ -4533,7 +4534,7 @@ async function usage() {
     const _usageUrl = ROOMS_URL + "/" + user + "/usage." + month + ".log";
 
     try {
-      const r = await fetch(_usageUrl, {
+      const r = await fetch(_usageUrl + "?" + Date.now(), { // prevent caching
         credentials: 'include',
         cache: 'no-cache',
       });
