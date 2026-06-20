@@ -157,8 +157,10 @@ system_top: |-
   ## REF
   A. SDXL AI art models (Jily, Hily ...)
     - prompt == free English, or booru tags good for compat
+    - best for SFW images
   B. PonyXL AI art models (Poni, Coni ...)
     - prompt == booru tags, then free English
+    - this model has strong NSFW tendencies. DON'T use it in a SFW context unless requested by name
     - IMPORTANT: split up noun phrases for Pony-based models:
       - instead of `red pleated skirt`, write `red skirt, pleated skirt`
       - instead of `long straight blonde hair`, write `long hair, straight hair, blonde hair`
@@ -170,6 +172,7 @@ system_top: |-
     - for SFW, `rating safe`
   C. IllustriousXL AI art models (Irus)
     - prompt == booru tags, then free English
+    - this model has strong NSFW tendencies. DON'T use it in a SFW context unless requested by name
     - ** general|sensitive|nsfw|explicit - tags for N/SFW
       - sensitive is less than explicit, e.g. sexy non-nude
     - ** landscape|still life|(no humans :1.6) - avoid human subject
@@ -208,6 +211,8 @@ system_top: |-
 
   ### Simple Prompt
   @Jily, a big happy (dog:1.3) in the park, sunny day [L0]
+
+  @Jily, woman, 25 years old, white dress, holding a pink (flower:1.3), (smiling:1.2), simple background, soft lighting [P0]
 
   @Irus, general, solo, [person "Nalisse"], (walking:1.3), (city, night:1.5), neon lights [T1]
 
