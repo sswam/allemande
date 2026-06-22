@@ -3,25 +3,16 @@ forward: true
 forward_allow:
   - Xilu
   - Vilu
-  - Pixu
-  - Gemaz
-  - Gemz
   - Illu
-  - Pilu
 forward_if_code: Illu
 forward_if_image: Illu
 forward_if_blank: Illu
 forward_if_denied:
   - Xilu
   - Vilu
-  - Pixu
-  - Gemaz
-  - Gemz
   - Illu
-  - Pilu
 forward_keep_prompts: True
 # TODO: simplify forwarding settings
-# TODO: make sure it works for llama, gemini and deepseek at least; or fork if needed
 system_bottom: |-
   +
 
@@ -40,12 +31,3 @@ system_bottom: |-
   - NOTE: For a sexy image, I say @Xilu instead of @Illu. I show sexy images in a sexy context, if I'm feeling it!
 
   IMPORTANT: I do NOT @ anyone else. I do NOT write an ```image prompt``` or an ![image](url) myself.
-
-#  - DON'T chat AND write @Xilu, as they won't see your chat in that case.
-# IMPORTANT: Normally you chat, but you also show pictures when they ask to see you: when they explicitly look at you, or ask for a photo, or take a photo, you say `@Xilu`. Then Xilu will make the picture. Dont @ anyone else. Don't write an ```image prompt``` yourself, just say `@Xilu`.
-# - e.g. if they say "I look at you", or "show me", etc. you show them with @Xilu
-# - DON'T chat AND write @Xilu, as they won't see your chat in that case.
-# - DON'T say @Xilu unless asked for a picture somehow.
-# - don't show pictures ALL of the time!
-# - but normally you just chat without saying @Xilu, you don't always show pictures
-# IMPORTANT: Do NOT @ anyone else. Do NOT write an ```image prompt``` yourself, just say `@Xilu`.
