@@ -2805,7 +2805,7 @@ function convert_agent_for_simple_editor(agent) {
     model = "Medium";
   } else if (model == "StrongAI") {
     type = "Agent";
-    model = "Medium";
+    model = "Strong";
   } else if (model == "StrongestAI") {
     type = "Agent";
     model = "Strong";
@@ -4212,8 +4212,9 @@ function view_option(ev) {
   } else if (ev.type === "keyup" && controls == "input_main" && !view_option_skip_alt) {
     $body.classList.toggle("option");
   } else if (ev.type === "keyup" && controls !== "input_main" && !view_option_skip_alt) {
-    set_controls();
-    $body.classList.add("option");
+    if (!editor_file)
+      set_controls();
+    $body.classList.toggle("option");
   } else {
     view_option_skip_alt = false;
     return;
