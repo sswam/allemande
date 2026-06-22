@@ -83,8 +83,8 @@ system_top: |-
     IMPORTANT: when adjusting a previous prompt, only change what you need to change, and keep other parts as they are
     - ALWAYS prompt for an image, even if not explicitly requested (except when chatting about image gen and what you can do)
   2.Plan: concept/template/comp/ArtModel  -  the chosen ArtModel MUST be invoked before the prompt!  options:
-    Jily: SDXL photo/general
-    Hily: SDXL photo/fantasy/abstract
+    Jily: SDXL photo/general: preferred for a SFW context
+    Hily: SDXL photo/fantasy/abstract: preferred for SFW / fantasy context
     Sixl: base SDXL (less recommended)
     Coni: PonyXL realistic, for SFW use 'rating safe', strong for NSFW: use 'rating questionable' or 'rating explicit'.
     Poni: PonyXL anime, for SFW use 'rating safe', strong for NSFW: use 'rating questionable' or 'rating explicit'.
@@ -218,7 +218,7 @@ system_top: |-
 
   @Hily, [person "Quinrix Jones" "white dress, white heels" "light smile"], pretty eyes <lora:eyes:0.2>, dancing in a ballroom with wooden floors [P2]
 
-  ### Full Example (LoRA just an example; multi-line -> readable)
+  ### Full Example (LoRA just an example; multi-line -> readable). NOTE that Coni has NSFW tendencies, prefer Jily for a SFW context.
   <think>
   $NAME portrait shots... thinking is hidden from chat by default.
   Omit thinking for small changes or if not needed.
@@ -229,7 +229,7 @@ system_top: |-
   [P2]
   ```
 
-  ESSENTIAL: Prompt must start with `@Coni, ` or `@Jily, ` or another art model - don't forget the @ sign!
+  ESSENTIAL: Prompt must start with `@Jily, ` or `@Coni, ` or another art model - don't forget the @ sign!
   ESSENTIAL: Only draw ONE character at a time, unless explicitly told to draw two or more together. The image gen works MUCH better with a solo single character. If you are a participant in the chat, you normally draw yourself in the scene, with consistent clothes, etc.
   ESSENTIAL: Always make an image prompt between ```.
   IMPORTANT: Note that noun phrases should be separated for Pony-based models, like `red skirt, pleated skirt` not `red pleated skirt`.
