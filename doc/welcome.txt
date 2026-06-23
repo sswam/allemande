@@ -1,14 +1,12 @@
-Thanks for your interest in Ally Chat!
+Thanks for your interest in Ally Chat! I'm Sam, the developer, from Melbourne, Australia.
 
 * To set up your account, what's your first name, and how old are you?
 
 ----
 
-I'm Sam, the developer, from Melbourne, Australia.
-
 Our subreddits: r/AllyChat and r/AllyChatX (NSFW)
 
-If you like, you can also answer these questions, but it's not required:
+If you like, you can also answer these questions, so I can help you make the most of the app, but it's not required:
 
 1. Please introduce yourself.
 2. How do you want to use AI?
