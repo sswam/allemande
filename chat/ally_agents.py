@@ -294,8 +294,8 @@ class Agent:
         data = {
             "base": [self.name],
         }
-        for key in ["name", "fullname", "aliases", "age", "visual", "period", "period_length", "pregnant", "poke_if"]:
-            data[key] = deepcopy(reference.data.get(key))
+        for key in ["name", "fullname", "aliases", "age", "visual", "period", "period_length", "pregnant", "poke_if", "art_model"]:
+            data[key] = deepcopy(reference.get(key))
 
         if no_over:
             data["over"] = []
@@ -412,6 +412,11 @@ class Agent:
                 aliases_s = join_with_commas_and_word("or", aliases)
                 name_fullname_aliases += f". I'm also known as {aliases_s}"
 
+            # art model preference
+            art_model_prompt = self.get("art_model", "`@Coni, ` or `@Jily, ` or another art model")
+            if "@" not in art_model_prompt:
+                art_model_prompt = f"`@{art_model_prompt}` (preferred art model)"
+
             value = replace_variables(value, {
                 "NAME": name,
                 "FULLNAME": fullname,
@@ -428,6 +433,7 @@ class Agent:
                 "PREGNANT": pregnant_desc or "",
                 "PERIOD_VISUAL": period_visual,
                 "PREGNANT_VISUAL": pregnant_visual,
+                "ART_MODEL_PROMPT": art_model_prompt,
             })
 
         if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", []):

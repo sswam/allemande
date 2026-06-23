@@ -2,7 +2,7 @@ type: mixin
 base:
   - Base
   - Memory
-  - ShowMI
 over:
   - +
   - Period
+  - ShowMI
