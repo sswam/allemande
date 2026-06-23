@@ -468,10 +468,12 @@ digraph DeepSeek {
     "Dese" [label=<<b>Dese</b><br/><font point-size="10">DeepSeek Chat (V3)</font><br/><font point-size="8">64K context</font><br/><font point-size="8">Creative, Intelligent</font>>]
     "Desee" [label=<<b>Desee</b><br/><font point-size="10">DeepSeek V4 Flash</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Creative, Intelligent</font>>]
     "Deseri" [label=<<b>Deseri</b><br/><font point-size="10">DeepSeek V4 Pro</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Strong, Creative</font>>]
+    "Aion" [label=<<b>Aion</b><br/><font point-size="10">Uncensored DeepSeek 3.2</font><br/><font point-size="8">1M context</font><br/><font point-size="8">Uncensored, Role Play</font>>]
 
     "DeepSeek" -> "Dese"
     "DeepSeek" -> "Desee"
     "DeepSeek" -> "Deseri"
+    "DeepSeek" -> "Aion"
 }
 ```
 
@@ -641,7 +643,8 @@ All of the above characters are based on Llama 3.1 8B. They act very human-like.
 - **Qwen** (Alibaba QwQ 32B): A small but very capable model
 - **Misti** (Mistral Large 2411): Mistral's general-purpose reasoning model
 - **Veni** (Venice Uncensored 1.1; Dolphin Mistral 24B Venice Edition): Uncensored
-- **Venni** (Venice Role Play Uncensored): Uncensored
+- **Venni** (Venice Role Play Uncensored): Uncensored role play
+- **Aion** (Uncensored DeepSeek 3.2): A strong uncensored model for chat, writing, and role play
 
 These characters are not prompted, or only minimally: they serve for direct access to the base models.
 
@@ -907,6 +910,7 @@ type: visual
 | MoonshotAI    | Kimi K2 0905          | Kimi    | $0.39  | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.           |
 | MoonshotAI    | Kimi K2.5             | Kimmi   | $0.45  | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling.          |
 | Z.AI          | GLM 4.6               | Glimi   | $0.50  | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.                        |
+| Aion          | DeepSeek 3 Uncensored | Aion    | $1     | $2     | Based on DeepSeek 3.3, a strong uncensored model for chat, writing and role play.                                |
 
 Input and output costs are measured in US dollars per million tokens.
 

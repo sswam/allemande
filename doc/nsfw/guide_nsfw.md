@@ -216,6 +216,7 @@ Please do not use languages models other than those listed here for NSFW content
 | MoonshotAI | Kimi K2 0905          | Kimi   | $0.39 | $1.90  | MoonshotAI: Kimi K2 0905, a 1 trillion parameter, mixture-of-experts model for reasoning and tool use.  |
 | MoonshotAI | Kimi K2.5             | Kimmi  | $0.45 | $2.50  | MoonshotAI: Kimi K2.5, native multimodal, strong in general reasoning, visual coding, and tool-calling. |
 | Z.AI       | GLM 4.6               | Glimi  | $0.50 | $1.90  | Z.AI: GLM 4.6: advanced agentic, reasoning and coding capabilities, with refined writing.               |
+| Aion       | DeepSeek 3 Uncensored | Aion   | $1    | $2     | Based on DeepSeek 3.2, a strong uncensored model for chat, writing and role play.                       |
 
 Input and output costs are measured in US dollars per million tokens.
 
