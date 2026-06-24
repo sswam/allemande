@@ -44,24 +44,45 @@ def gen(config: dict, request_dir: Path, model: OmniVoice) -> None:
     """Generate speech audio from the text file in request_dir."""
     text = (request_dir / "request.txt").read_text(encoding="utf-8").strip()
 
-    instruct = config.get("instruct")
     ref = config.get("ref")
     voice = config.get("voice")
 
     kwargs: dict = {"text": text}
 
-    if instruct:
-        kwargs["instruct"] = instruct
+    def safe_path(base_dir: Path, untrusted: Path) -> Path:
+        """Resolve path and ensure it stays within base_dir."""
+        resolved_base = base_dir.resolve()
+        resolved_path = (base_dir / untrusted).resolve()
+        if not resolved_path.is_relative_to(resolved_base):
+            raise ValueError(
+                f"path {untrusted!r} escapes base directory {base_dir!r}"
+            )
+        return resolved_path
 
+    # XXX must implement access control here or in ally_tts.py
     if ref:
-        ref_path = Path(ref)
-        kwargs["ref_audio"] = str(request_dir / ref_path)
-        kwargs["ref_text"] = (request_dir / ref_path.parent / f"{ref_path.stem}.txt").read_text(encoding="utf-8")
+        base_dir = request_dir
+        audio_path = Path(ref)
+    elif voice and "/" in voice:
+        base_dir = rooms_dir
+        audio_path = Path(voice + ".mp3")
     elif voice:
-        # XXX must implement access control here
-        voice_path = Path(voice)
-        kwargs["ref_audio"] = str(rooms_dir / voice_path)
-        kwargs["ref_text"] = (rooms_dir / voice_path.parent / f"{voice_path.stem}.txt").read_text(encoding="utf-8")
+        audio_path = None
+    else:
+        raise ValueError("must provide voice or ref")
+
+    if audio_path:
+        safe_audio_path = safe_path(base_dir, audio_path)
+        safe_txt_path = safe_path(base_dir, audio_path.parent / f"{audio_path.stem}.txt")
+
+        txt_path = safe_txt_path
+        lines = txt_path.read_text(encoding="utf-8").splitlines()
+        kwargs["instruct"] = lines[0].strip()
+        if safe_audio_path.exists():
+            kwargs["ref_audio"] = str(safe_audio_path)
+            kwargs["ref_text"] = "\n".join(lines[1:]).strip()
+    else:
+        kwargs["instruct"] = voice
 
     audio = model.generate(**kwargs)
     out_path = request_dir / "response.mp3"
