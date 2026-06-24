@@ -9,9 +9,10 @@ import shutil
 
 import bb_lib
 from ally import portals  # type: ignore, pylint: disable=wrong-import-order
-from settings import TTS_TIMEOUT
+from settings import TTS_TIMEOUT, TTS_VOICE_DEFAULT
 import chat
 import filters
+import ally_room
 
 
 logging.basicConfig(level=logging.INFO)
@@ -28,7 +29,7 @@ async def generate_tts_file(path: Path, pathname: str):
     msg_id, msg_hash = m.groups()
     room_file = re.sub(r"\.tts$", r".bb", str(path.parent))
 
-    logger.info("pathname, room_file, msg_id, msg_hash: %r, %r, %r, %r", pathname, room_file, msg_id, msg_hash)
+    # logger.info("pathname, room_file, msg_id, msg_hash: %r, %r, %r, %r", pathname, room_file, msg_id, msg_hash)
 
     messages = bb_lib.load_chat_messages(room_file)
 
@@ -60,10 +61,15 @@ async def generate_tts_file(path: Path, pathname: str):
         path.write_text("")
         return
 
-    voice = "voice/female.mp3"
-    instruct = "female, australian accent"
+    agents_dict = ally_room.read_agents_dicts(Path(room_file).parent)
+    voice = agents_dict.get(user.lower(), {}).get("voice", TTS_VOICE_DEFAULT)
 
-    config = { "voice": voice, "instruct": instruct }
+    logger.info("generate_tts_file: %s %s %s", room_file, msg_id, voice)
+
+    # XXX TODO access control - here or perhaps in core/tts_omnivoice
+    # XXX TODO locking
+
+    config = { "voice": voice }
 
     service = "tts_omnivoice"
     portal = portals.get_portal(service)

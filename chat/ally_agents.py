@@ -694,10 +694,17 @@ class Agents:
         self.services: dict[str, Any] = services
         self.parent: Agents|None = parent
 
-    def write_agents_list(self, path: str) -> None:
+    def write_agents_dict(self, path: str) -> None:
         """Write the list of agents to a file."""
-        agent_names = sorted(set(agent.name for agent in self.agents.values() if agent.get("type") not in [None, "human", "visual", "mixin"]))
-        cache.save(path, agent_names, noclobber=False)
+        agents_dict = {}
+        for agent in self.agents.values():
+            if agent.get("type") in [None, "human", "visual", "mixin"]:
+                continue
+            agent_info = {}
+            if agent.get("voice") is not None:
+                agent_info["voice"] = agent.get("voice")
+            agents_dict[agent.name] = agent_info
+        cache.save(path, agents_dict, noclobber=False)
 
     def load_agent_without_setup(self, agent_file: Path) -> Agent | None:
         """Load an agent from a file."""

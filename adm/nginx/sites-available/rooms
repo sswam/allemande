@@ -22,6 +22,7 @@ map $first_path_segment $allow {
 	old        1;
 	cast       1;
 	dev        1;
+	voice      1;
 	~\.tts$    1;
 	default    0;
 }

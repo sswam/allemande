@@ -793,21 +793,20 @@ def load_config(dir_path: Path, filename: str, check_hidden=True) -> dict[str, A
     return config_all
 
 
-def read_agents_list(path) -> list[str]:
-    """Read the list of agents from a file."""
+def read_agents_dict(path) -> dict:
+    """Read the agents dict from a file."""
     if not path.exists():
-        return []
-    agent_names = cache.load(path)
-    if not isinstance(agent_names, list):
-        raise ValueError("Invalid agents list")
-    agent_names = [name.lower() for name in agent_names]
-    return agent_names
+        return {}
+    agents_dict = cache.load(path)
+    if not isinstance(agents_dict, dict):
+        raise ValueError("Invalid agents dict")
+    return {k.lower(): v for k, v in agents_dict.items()}
 
 
-def read_agents_lists(path) -> list[str]:
-    """Read the list of agents from a file."""
+def read_agents_dicts(path) -> dict:
+    """Read and merge agents dicts from a path up to the top directory, with deeper dirs taking precedence."""
     top_dir = Path(os.environ["ALLEMANDE_ROOMS"])
-    agent_names = []
+    merged = {}
 
     room_dir = path
     # if not a dir, go to parent
@@ -816,15 +815,27 @@ def read_agents_lists(path) -> list[str]:
     if top_dir != room_dir and top_dir not in room_dir.parents:
         raise ValueError(f"Invalid room directory: {room_dir}")
 
+    # Collect dirs from room up to top
+    dirs = []
+    current = room_dir
     while True:
-        agent_names.extend(read_agents_list(room_dir / ".agents.yml"))
-        if room_dir == top_dir:
+        dirs.append(current)
+        if current == top_dir:
             break
-        room_dir = room_dir.parent
+        current = current.parent
 
-    agent_names.extend(read_agents_list(top_dir / ".agents_global.yml"))
+    # Process from top down (global first, then top_dir, then closer dirs),
+    # so deeper dirs take precedence by overwriting
+    merged.update(read_agents_dict(top_dir / ".agents_global.yml"))
+    for d in reversed(dirs):
+        merged.update(read_agents_dict(d / ".agents.yml"))
 
-    return list(set(agent_names))
+    return merged
+
+
+def read_agents_lists(path) -> list[str]:
+    """Read the de-duplicated list of agent names from a path up to the top directory."""
+    return list(read_agents_dicts(path).keys())
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments

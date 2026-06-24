@@ -289,7 +289,13 @@ async def stream(request, path=""):
     login_base_url = rooms_base_url.replace("rooms.", "")
     info = folder.FolderInfo(user=user, chat_base_url=chat_base_url, rooms_base_url=rooms_base_url, login_base_url=login_base_url)
 
-    if not ally_room.check_access(user, pathname).value & Access.READ.value:
+    is_tts_file = re.search(r"\.tts/[^/]*\.mp3$", pathname)
+
+    check_access_pathname = pathname
+    if is_tts_file:
+        check_access_pathname = str(Path(pathname).parent)
+
+    if not ally_room.check_access(user, check_access_pathname).value & Access.READ.value:
         raise HTTPException(status_code=404, detail="Not found")
 
     # readlink $ALLEMANDE_USERS/$user/theme.css
@@ -308,7 +314,7 @@ async def stream(request, path=""):
         return HTMLResponse(folder.get_dir_listing_html(path, pathname, info, templates, context))
 
     # Check for TTS files
-    if re.search(r"\.tts/[^/]*\.mp3", pathname):
+    if is_tts_file:
         media_type = "audio/mpeg"
         if not path.exists():
             await ally_tts.generate_tts_file(path, pathname)

@@ -10,7 +10,7 @@ webchat_user_conflicts() {
 
 	< "$ALLYCHAT_HOME"/.htpasswd cut -f1 -d: | sort > users.txt
 	(cd "$ALLEMANDE_AGENTS" ; find . -name '*.yml' | grep -v '/\.' | sed 's/\.yml$//; s/.*\///') | lc | sort > agents.txt
-	< ~/rooms/.agents_global.yml sed 's/^  - //' | lc | sort > agents_loaded.txt
+	< ~/rooms/.agents_global.yml sed 's/:.*//;' | grep -v '^ ' | lc | sort > agents_loaded.txt
 
 	printf '## virtual agents\n'
 	comm -3 agents.txt agents_loaded.txt | tee virtual_agent_conflicts.txt

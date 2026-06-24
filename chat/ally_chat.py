@@ -187,7 +187,7 @@ def load_local_agents(room, agents=None, local_visual_dir: Path|None=None):
         agents = ally_agents.Agents(services, parent=agents)
         agents.load(agent_dir, visual_dir=local_visual_dir)
 
-        agents.write_agents_list(agent_dir.parent / ".agents.yml")
+        agents.write_agents_dict(agent_dir.parent / ".agents.yml")
 
         logger.info("Loaded agents from %s", agent_dir)
         logger.debug("Agents: %r", agents.names())
@@ -821,7 +821,7 @@ async def watch_loop(args):
         #     if agents_dir.is_dir():
         #         agents.load(agents_dir, private=True)
 
-        agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
+        agents.write_agents_dict(settings.PATH_ROOMS / ".agents_global.yml")
 
         while (line := await queue.get()) is not None:
             try:
@@ -847,7 +847,7 @@ async def watch_loop(args):
                     request_index += 1
                 elif file_type == "agent":
                     agents.handle_file_change(file_path, change_type)
-                    agents.write_agents_list(settings.PATH_ROOMS / ".agents_global.yml")
+                    agents.write_agents_dict(settings.PATH_ROOMS / ".agents_global.yml")
                 elif file_type == "contrib" and change_type == Change.added:
                     move_contrib(file_path)
                 else:

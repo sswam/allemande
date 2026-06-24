@@ -19,11 +19,13 @@ remove_old_media_from_rooms() {
 	fi
 
 	# Get a list of all jpg files older than $days days, not in the cast directory, and are owner writable
-	find "." -mtime +"$days" -type f \( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' -o -name '*.mp4' -o -name '*.mp3' \) -not -path '*/cast/*' -perm /200 | sed 's|^\./||' | sort > .all_media_files.txt
+	find "." -mtime +"$days" -type f \
+		\( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' -o -name '*.gif' -o -name '*.mp4' -o -name '*.mp3' \) \
+		-not -path '*/cast/*' -not -path '*/voice/*' -perm /200 | sed 's|^\./||' | sort > .all_media_files.txt
 
 	# Get list of files tracked by Git
 	# NOTE: doesn't handle sub-repositories
-	git ls-files | grep -E '\.(jpe?g|png|mp4)$' || true | sed 's|^\./||' | sort > .git_media_files.txt
+	git ls-files | grep -E '\.(jpe?g|png|mp4|gif)$' || true | sed 's|^\./||' | sort > .git_media_files.txt
 
 	# Use comm to find files that are in all_jpg_files but not in git_jpg_files, and remove them
 	comm -23 .all_media_files.txt .git_media_files.txt | xargs-better rm -f --

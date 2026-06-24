@@ -33,6 +33,7 @@ __version__ = "0.3.2"
 # File categorization
 SYSTEM_TEXT_FILE_EXTS = ["m", "yml", "txt", "css", "js", "md", "base", "r", "s"]
 MEDIA_FILE_EXTS = ["webm", "jpg"]
+VOICE_FILE_EXTS = ["mp3"]
 
 MIME_TYPE_ICONS = {
     # Main categories
@@ -276,6 +277,15 @@ def get_dir_listing(path: Path, pathname: str, info: FolderInfo) -> list[dict[st
                     "type": "file",
                     "type_sort": 10 + SYSTEM_TEXT_FILE_EXTS.index(ext),
                     "link": f"/#{pathname_esc}{name_esc}",  # edit file
+                }
+            )
+        elif ext in VOICE_FILE_EXTS:
+            record.update(
+                {
+                    "name": item.name,
+                    "type": "file",
+                    "type_sort": 10 + SYSTEM_TEXT_FILE_EXTS.index("txt"),  # so the .mp3 shows near its txt file
+                    "link": f"{info.rooms_base_url}/{pathname}{item.name}",
                 }
             )
         else:

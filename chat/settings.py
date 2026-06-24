@@ -32,7 +32,6 @@ ROOM_PATH_MAX_LENGTH = 1000
 ROOM_MAX_DEPTH = 10
 
 LOCAL_AGENT_TIMEOUT = 20 * 60  # 20 minutes
-TTS_TIMEOUT = 60  # 1 minute
 FETCH_TIMEOUT = 30  # 30 seconds
 
 REMOTE_AGENT_RETRIES = 4
@@ -46,3 +45,6 @@ LOAD_EAGER = False  # load tokenizer at startup
 
 SUMMARY_PROMPT_DEFAULT = "summarize what you'd like to remember from this please"
 AGENT_CONTEXT_DEFAULT = 30
+
+TTS_VOICE_DEFAULT = "voice/female"
+TTS_TIMEOUT = 60  # 1 minute
