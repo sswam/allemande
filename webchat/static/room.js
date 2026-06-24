@@ -1778,23 +1778,19 @@ async function msg_undo_click(event) {
 }
 
 async function msg_tts_click(event) {
+  const regen = event.shiftKey;
   play_message_tts($message_with_menu, true); // async
   hide("message_menu");
-  $message_with_menu = null;
 }
 
-async function play_message_tts($message, gen_if_needed) {
+async function play_message_tts($message, regen) {
   const id = await get_message_id($message);
   const hash = $message.getAttribute("hash");
-  const url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
-
-  console.log(url);
+  let url = `/${room}.tts/${id}.${hash}.mp3?stream=1`;
+  if (regen)
+    url += "&regen=1";
 
   play_audio_from_url(url);
-
-  // if (gen_if_needed) {
-  //   window.parent.postMessage({ type: "tts", message_id: id, hash: hash }, ALLYCHAT_CHAT_URL);
-  // }
 }
 
 function handle_media_error(event) {

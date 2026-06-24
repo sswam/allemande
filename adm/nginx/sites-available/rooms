@@ -100,7 +100,7 @@ server {
 		auth_request /_auth;
 
 		if ($args ~* stream=1) {
-			rewrite ^ /stream$uri? last;
+			rewrite ^ /stream$uri?$args last;
 		}
 		if ($args ~* snapshot=1) {
 			rewrite ^ /stream$uri?snapshot=1 last;
