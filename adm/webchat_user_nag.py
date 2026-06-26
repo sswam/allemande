@@ -82,6 +82,7 @@ def process_single_record(
     nag_dir: Path,
     users_dir: Path,
     ultimatum_start: datetime | None = None,
+    no_act: bool = False,
 ) -> None:
     """
     Process a single user record and update their nag file.
@@ -97,29 +98,41 @@ def process_single_record(
 
     if nag == "no":
         nag_file = None
-    elif support in ["family", "friend"]:
-        nag_file = "nag-friend.html"
     elif support:
-        nag_file = "nag-supporter.html"
-    elif user_info.is_public_supporter:
-        nag_file = "nag-supporter.html"
+        nag_file = None
     elif user_info.is_new:
-        nag_file = "nag-new.html"
+        nag_file = None
     elif user_info.is_inactive:
-        nag_file = "nag-inactive.html"
-    elif user_info.is_old and ultimatum_start and now > ultimatum_start:
-        nag_file = "nag-hiki-stubborn.html"
-    elif user_info.is_nsfw:
-        nag_file = "nag-hiki-nsfw.html"
+        nag_file = None
     else:
-        nag_file = "nag-hiki-sfw.html"
+        nag_file = "nag-patreon.html"
+
+    # if nag == "no":
+    #     nag_file = None
+    # elif support in ["family", "friend"]:
+    #     nag_file = "nag-friend.html"
+    # elif support:
+    #     nag_file = "nag-supporter.html"
+    # elif user_info.is_public_supporter:
+    #     nag_file = "nag-supporter.html"
+    # elif user_info.is_new:
+    #     nag_file = "nag-new.html"
+    # elif user_info.is_inactive:
+    #     nag_file = "nag-inactive.html"
+    # elif user_info.is_old and ultimatum_start and now > ultimatum_start:
+    #     nag_file = "nag-hiki-stubborn.html"
+    # elif user_info.is_nsfw:
+    #     nag_file = "nag-hiki-nsfw.html"
+    # else:
+    #     nag_file = "nag-hiki-sfw.html"
 
     user_nag_file = users_dir / rec['name'] / "nag.html"
 
     # Handle the "no nag" case
     if not nag_file:
-        user_nag_file.unlink(missing_ok=True)
-        user_nag_file.touch()
+        if not no_act:
+            user_nag_file.unlink(missing_ok=True)
+        # user_nag_file.touch()
         print(rec["name"], "", support or "", "", sep="\t")
         return
 
@@ -151,8 +164,9 @@ def process_single_record(
             pass
 
     # Update/create the symlink
-    user_nag_file.unlink(missing_ok=True)
-    user_nag_file.symlink_to(target_nag_file)
+    if not no_act:
+        user_nag_file.unlink(missing_ok=True)
+        user_nag_file.symlink_to(target_nag_file)
 
     print(rec["name"], nag_file, support or "", sep="\t")
 
@@ -163,6 +177,7 @@ def process_records(
     indent: str = '\t',
     use_dot: bool = False,
     append: bool = False,
+    no_act: bool = False,
 ) -> None:
     """
     Read records from input, process them, and write to output.
@@ -179,11 +194,12 @@ def process_records(
     now = datetime.now()
 
     for rec in recs:
-        process_single_record(rec, now, nag_dir, users_dir, ultimatum_start=ultimatum_start)
+        process_single_record(rec, now, nag_dir, users_dir, ultimatum_start=ultimatum_start, no_act=no_act)
 
 
 def setup_args(arg):
     """Set up command-line arguments."""
+    arg("-n", "--no_act", help="Dry run, do not apply changes", action="store_true")
 
 
 if __name__ == "__main__":
