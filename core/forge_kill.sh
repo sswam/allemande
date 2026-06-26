@@ -7,7 +7,7 @@ forge-kill() {
 
 	eval "$(ally)"
 
-	PID=$(psgrep forge/venv | awk '{print $2}')
+	PID=$(psgrep forge/venv forge-neo/venv webui/venv | awk '{print $2}')
 	if [ -n "$PID" ]; then
 		set -x
 		kill -$signal $PID || true  # shellcheck disable=SC2086

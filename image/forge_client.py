@@ -25,17 +25,18 @@ __version__ = "0.1.0"
 
 logger = main.get_logger()
 
-API_URL = "http://127.0.0.1:7860/sdapi/v1/txt2img"
+API_URL = "http://127.0.0.1:$PORT/sdapi/v1/txt2img"
 MAX_RETRIES = 5
 RETRY_DELAY = 10
 
 
-async def generate_image(session, params, restart_on_fail=False) -> dict[str, Any]:
+async def generate_image(session, port, params, restart_on_fail=False) -> dict[str, Any]:
     """Send a request to the API and return the response."""
     max_retries = MAX_RETRIES if restart_on_fail else 1
+    api_url = API_URL.replace("$PORT", str(port))
     for attempt in range(max_retries):
         try:
-            async with session.post(API_URL, json=params) as response:
+            async with session.post(api_url, json=params) as response:
                 response = await response.json()
                 if "images" not in response:
                     raise ValueError(f"Got no images in response: {json.dumps(response)}")
@@ -100,6 +101,7 @@ async def request(
     clip_skip: int|None = None,
     restart_on_fail: bool = True,  # XXX was True, False
     ad_checkpoint: str|None = None,
+    port: int|None = 7860,
 ) -> int:
     """
     Generate images using the Stable Diffusion WebUI API.
@@ -120,6 +122,7 @@ async def request(
         prompt, negative_prompt = pony_biolerplate(pony, prompt, negative_prompt)
 
     params: dict[str, Any] = {
+        "infotext": "",  # suppress a warning
         "prompt": prompt,
         "negative_prompt": negative_prompt,
         "sampler_name": sampler_name,
@@ -176,7 +179,7 @@ async def request(
                     continue
                 logger.debug("Generating image %s/%s", i + 1, count)
                 params["seed"] = (seed + i) % 2**32
-                response = await generate_image(session, params, restart_on_fail=restart_on_fail)
+                response = await generate_image(session, port, params, restart_on_fail=restart_on_fail)
                 image = base64.b64decode(response["images"][0])
                 with open(image_file, "wb") as f:
                     f.write(image)
@@ -250,10 +253,10 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
                 "ad_denoising_strength": 0.4,
                 "ad_cfg_scale": 7,
                 "ad_checkpoint": ad_checkpoint if ad_use_checkpoint else "Use same checkpoint",
-                "ad_clip_skip": 1,
+                # "ad_clip_skip": 1,
                 "ad_confidence": 0.3,
-                "ad_controlnet_guidance_end": 1,
-                "ad_controlnet_guidance_start": 0,
+                # "ad_controlnet_guidance_end": 1,
+                # "ad_controlnet_guidance_start": 0,
                 "ad_controlnet_model": "None",
                 "ad_controlnet_module": "None",
                 "ad_controlnet_weight": 1,
@@ -281,7 +284,7 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
                 "ad_tab_enable": True,
                 "ad_use_cfg_scale": False,
                 "ad_use_checkpoint": ad_use_checkpoint,
-                "ad_use_clip_skip": False,
+                # "ad_use_clip_skip": False,
                 "ad_use_inpaint_width_height": False,
                 "ad_use_noise_multiplier": False,
                 "ad_use_sampler": False,
@@ -304,7 +307,7 @@ def perturbed_attention_guidance_add_params(params: dict[str, Any], pag_scale: f
     # I just copied them from the API payload extension.
     params["alwayson_scripts"]["PerturbedAttentionGuidance Integrated"] = {
       "args": [
-        False,
+        True,
         pag_scale,
         0.0,  # Attenuation (linear, % of scale)
         0.0,  # Start step
@@ -375,6 +378,7 @@ def setup_args(arg):
     arg("--rp-threshold", help="regional prompter threshold")
     arg("--clip-skip", help="clip skip", type=int)
     arg("--ad-checkpoint", help="checkpoint for adetailer", type=str)
+    arg("--port", help="webui API port", type=int)
 
 
 if __name__ == "__main__":
