@@ -250,7 +250,7 @@ def adetailer_add_params(params, adetailer, ad_mask_k_largest, ad_checkpoint):
         args.append(
             {
 #                "ad_denoising_strength": 0.3,
-                "ad_denoising_strength": 0.4,
+                "ad_denoising_strength": 0.3,
                 "ad_cfg_scale": 7,
                 "ad_checkpoint": ad_checkpoint if ad_use_checkpoint else "Use same checkpoint",
                 # "ad_clip_skip": 1,
