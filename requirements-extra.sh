@@ -46,10 +46,13 @@ cd ~/soft-ai/
 git clone https://github.com/nklb/remove-blank-pages
 
 
-# -------- Forge Stable Diffusion Webui ------------------------------
+# -------- Forge Neo Stable Diffusion Webui ------------------------------
 # You can install this normally as described on their github.
 # Currently needed for image generation with core/image_forge.py
-# https://github.com/AUTOMATIC1111/stable-diffusion-webui
+# https://github.com/Haoming02/sd-webui-forge-classic/tree/neo
+#
+# After running to generate config.json, make config changes
+# shown in doc/sd_webui_config_changes.json
 
 
 # -------- ComfyUI -----------------------------------------------------------
