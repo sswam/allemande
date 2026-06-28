@@ -405,7 +405,7 @@ async def local_agent(c, agent, _query) -> str:
                 if v not in gen_config:
                     gen_config[v] = defaults[v]
 
-            for v in ["seed", "width", "height", "steps", "cfg_scale", "count", "pag", "hires", "hq"]:
+            for v in ["seed", "width", "height", "steps", "cfg_scale", "count", "pag", "hires", "hq", "clip_skip"]:
                 if v in unp_vars:
                     gen_config[v] = unp_vars[v]
         except Exception as e:
