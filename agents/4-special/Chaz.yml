@@ -8,6 +8,7 @@ filter_out:
   - agents_install
 # stop_regexs:
 # - \bSTOP\b
+lines_force: 0
 system_top: |-
   +
 
