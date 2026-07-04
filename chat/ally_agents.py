@@ -319,23 +319,20 @@ class Agent:
         logger.debug("apply_identity: agent: %r", agent)
         return agent
 
-    def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None, with_over: bool=True, agents: Agents|None=None):
+    def get(self, key: str, default=None, raise_error=False, raw=False, room: str|None = None, with_over: bool=True):
         """Get a value from the agent's data"""
-
-        if agents is None:
-            agents = self.agents
 
         # use description for system_top or system_bottom
         value3 = None
         if key in ["system_top", "system_bottom"] and key not in self.data:
-            description = self.get("description", agents=agents)
+            description = self.get("description")
             if description:
-                description_pos = self.get("description_pos", "top", agents=agents)
+                description_pos = self.get("description_pos", "top")
                 if key == "system_" + description_pos:
                     value3 = "+\n\n" + description
 
-        base = self.base(agents=agents)
-        over = self.over(agents=agents) if with_over else []
+        base = self.base()
+        over = self.over() if with_over else []
 
         value = None
 
@@ -348,7 +345,7 @@ class Agent:
                 value2 = value3 or self.data.get(key)
             else:
                 use_over = with_over and obj not in base
-                value2 = obj.get(key, raw=True, with_over=use_over, agents=agents)
+                value2 = obj.get(key, raw=True, with_over=use_over)
             if value is not None and value2 is not None:
                 value2 = agent_merger.merge(deepcopy(value), value2)
             if value2 is not None and (obj == self or not (key, value2) == ("type","mixin")):
@@ -384,12 +381,12 @@ class Agent:
         # TODO do this more generally for other variables?
         # replace $ROOM with the room name
         if value and key in ["system_top", "system_bottom", "system_bottom_role", "visual"]:
-            name = self.get("name", agents=agents)
-            fullname = self.get("fullname", name, agents=agents)
-            aliases = self.get("aliases", agents=agents) or [name]
+            name = self.get("name")
+            fullname = self.get("fullname", name)
+            aliases = self.get("aliases") or [name]
             aliases_or = ", ".join(aliases[:-1]) + " or " + aliases[-1] if len(aliases) > 1 else aliases[0]
 
-            tz_name = self.get("timezone", "UTC", agents=agents)
+            tz_name = self.get("timezone", "UTC")
             tz: timezone|ZoneInfo = timezone.utc
             if tz_name != "UTC":
                 tz = ZoneInfo(tz_name)
@@ -403,10 +400,10 @@ class Agent:
             timestamp = f"{date} {time} {tz_str}"
 
             # TODO 1st person, 2nd person, 3rd person options
-            period, period_desc, period_day, period_length, period_visual = self.get_period(now, agents=agents)
-            pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual = self.get_pregnant(now, agents=agents)
+            period, period_desc, period_day, period_length, period_visual = self.get_period(now)
+            pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual = self.get_pregnant(now)
 
-            aliases = self.get("aliases", agents=agents)
+            aliases = self.get("aliases")
 
             name_fullname_aliases = f"I am {name}"
             if fullname and fullname != name:
@@ -416,7 +413,7 @@ class Agent:
                 name_fullname_aliases += f". I'm also known as {aliases_s}"
 
             # art model preference
-            art_model_prompt = self.get("art_model", "`@Coni, ` or `@Jily, ` or another art model", agents=agents)
+            art_model_prompt = self.get("art_model", "`@Coni, ` or `@Jily, ` or another art model")
             if "@" not in art_model_prompt:
                 art_model_prompt = f"`@{art_model_prompt}` (preferred art model)"
 
@@ -439,8 +436,8 @@ class Agent:
                 "ART_MODEL_PROMPT": art_model_prompt,
             })
 
-        if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", [], agents=agents):
-            seed = self.get("unp_seed", agents=agents)
+        if key not in MACRO_FIELDS_NOPE and key in self.get("macro_fields", []):
+            seed = self.get("unp_seed")
             try:
                 logger.info("Applying Unprompted for agent %r key %s", self.name, key)
                 value = unprompted(value, seed)
@@ -452,25 +449,23 @@ class Agent:
 
         return value
 
-    def get_period(self, now, agents=None):
+    def get_period(self, now):
         """Get the period description, day, and length."""
-        if agents is None:
-            agents = self.agents
-        period = self.get("period", agents=agents)
-        period_extra = self.get("period_extra", agents=agents)
-        if not isinstance(period, int) or self.get("pregnant", agents=agents):
+        period = self.get("period")
+        period_extra = self.get("period_extra")
+        if not isinstance(period, int) or self.get("pregnant"):
             return None, "", None, None, ""
         day_count = now.toordinal() + now.hour / 24 + now.minute / 1440 + now.second / 86400
         period_days = cache.load(str(PATH_AGENTS/"period.txt")) or " "
         period_days = period_days.splitlines()
-        period_length = self.get("period_length", 28, agents=agents)
+        period_length = self.get("period_length", 28)
         period_days_len = len(period_days)
         period_day = (day_count + period) % period_length
         period_day_desc = f"[it's day {int(period_day)} of my cycle]"
         period_index = int(period_day * period_days_len // period_length)
         # logger.info("Period info; day_count=%r period=%r period_day=%r period_index=%r/%r", day_count, period, period_day, period_index, period_days_len)
         line = period_days[period_index]
-        name = self.get("name", agents=agents)
+        name = self.get("name")
         # period_desc = f"I'm {name}. {period_day_desc}. " + line.split("\t")[1]
         period_desc = f"{period_day_desc} " + line.split("\t")[1]
         if period_extra:
@@ -485,11 +480,9 @@ class Agent:
         # logger.info("Period visual: %r", period_visual)
         return period, period_desc, period_day, period_length, period_visual
 
-    def get_pregnant(self, now, agents=None):
+    def get_pregnant(self, now):
         """Get the pregnancy description."""
-        if agents is None:
-            agents = self.agents
-        pregnant = self.get("pregnant", agents=agents)
+        pregnant = self.get("pregnant")
         pregnant_desc = ""
         if not isinstance(pregnant, dict):
             return "", None, None, None, ""
@@ -516,7 +509,7 @@ class Agent:
             duration_desc += f", I am due in {days_left} days!"
         elif days_left <= 14:
             duration_desc += f", I am due pretty soon!"
-        name = self.get("name", agents=agents)
+        name = self.get("name")
         pregnant_desc = f"I, {name}, {duration_desc}"
         # logger.info("Pregnancy info: days_pregnant=%r total_days=%r", days_pregnant, total_days)
         # logger.info("Pregnancy description: %r", pregnant_desc)
@@ -525,10 +518,8 @@ class Agent:
         # logger.info("Pregnancy visual: %r", pregnant_visual)
         return pregnant, pregnant_desc, days_pregnant, total_days, pregnant_visual
 
-    def base(self, agents=None):
+    def base(self):
         """Get the base agents"""
-        if agents is None:
-            agents = self.agents
         base_names = self.data.get("base", [])
         if base_names and isinstance(base_names, str):
             base_names = [base_names]
@@ -537,25 +528,23 @@ class Agent:
             if name == "super" and self.agents.parent:
                 agent = self.agents.parent.get(self.name)
             else:
-                agent = agents.get(name)
+                agent = self.agents.get(name)
             if agent:
                 base.append(agent)
             else:
                 logger.debug("Base agent %s not found for %s", name, self.name)
         return base
 
-    def over(self, agents=None):
+    def over(self):
         """Get the over agents"""
-        if agents is None:
-            agents = self.agents
-        over_names = self.get("over", [], with_over=False, agents=agents)
+        over_names = self.get("over", [], with_over=False)
         if over_names and isinstance(over_names, str):
             over_names = [over_names]
         over = []
         for name in uniqo(over_names):
             if name == "+":
                 continue
-            agent = agents.get(name)
+            agent = self.agents.get(name)
             if agent:
                 over.append(agent)
             else:
@@ -826,21 +815,13 @@ class Agents:
 
         agent.update_visual()
 
-    def get(self, name: str, agents: Agents|None = None) -> Agent | None:
+    def get(self, name: str) -> Agent | None:
         """Get an agent by name."""
-        if agents is None:
-            agents = self
         name = name.lower()
         if name in self.agents:
-            agent = self.agents[name]
-            if agent.agents != agents:
-                agent = Agent(data={
-                    "name": agent.name,
-                    "base": ["super"],
-                }, agents=agents)
-            return agent
+            return self.agents[name]
         if self.parent:
-            return self.parent.get(name, agents=agents)
+            return self.parent.get(name)
         return None
 
     def set(self, name: str, agent: Agent):
