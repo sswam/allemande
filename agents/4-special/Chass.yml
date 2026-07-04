@@ -1,5 +1,6 @@
-type: openai
-model: o4-mini
+base: DeseeM
+# type: openai
+# model: o4-mini
 specialist: true
 stop_regexs:
   - \bSTOP\b
