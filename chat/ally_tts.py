@@ -54,7 +54,7 @@ async def generate_tts_file(path: Path, pathname: str):
     content, _n_own_messages = chat.remove_thinking_sections(content, None, 0)
     content = filters.filter_in_remove_code(content, 0)
     content = filters.filter_in_remove_images(content, 0)
-    content = re.sub(r"\*.*?\*", "", content)
+    # content = re.sub(r"\*.*?\*", "", content)  # remove *italics / actions* - disabled for now as it's flaky
 
     # handle empty content
     if not content:
