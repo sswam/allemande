@@ -1779,7 +1779,7 @@ async function msg_undo_click(event) {
 
 async function msg_tts_click(event) {
   const regen = event.shiftKey;
-  play_message_tts($message_with_menu, true); // async
+  play_message_tts($message_with_menu, regen); // async
   hide("message_menu");
 }
 
