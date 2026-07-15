@@ -2016,7 +2016,7 @@ function file_clicked() {
 async function files_changed(ev) {
   const files = ev.target.files;
   // clear the file input so we can upload the same file again
-  upload_files(files, true);  // in the background
+  upload_files(files, false);  // in the background
   ev.target.value = "";
   // set_controls();
 }
@@ -2038,7 +2038,7 @@ function content_drop(event) {
   event.preventDefault();
   $content.classList.remove("drop_target");
   const files = event.dataTransfer.files;
-  upload_files(files, true);
+  upload_files(files, false);
 }
 
 function content_paste(event) {
@@ -2053,7 +2053,7 @@ function content_paste(event) {
   }
   if (files.length > 0) {
     event.preventDefault();
-    upload_files(files, true)
+    upload_files(files, false)
   }
 }
 
